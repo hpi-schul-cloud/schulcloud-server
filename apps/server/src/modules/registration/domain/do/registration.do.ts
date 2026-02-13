@@ -1,5 +1,5 @@
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Mail, PlainTextMailContent } from '@infra/mail';
+import { RegistrationConfig } from '@modules/registration/registration.config';
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { EntityId } from '@shared/domain/types';
 
@@ -102,9 +102,9 @@ export class Registration extends DomainObject<RegistrationProps> {
 		return this.props.roomIds.length === 0;
 	}
 
-	public generateRegistrationMail(roomName: string): Mail {
-		const mailContent = this.generateRegistrationMailContent(roomName);
-		const senderAddress = Configuration.get('SMTP_SENDER') as string;
+	public generateRegistrationMail(roomName: string, config: RegistrationConfig): Mail {
+		const mailContent = this.generateRegistrationMailContent(roomName, config);
+		const senderAddress = config.fromEmailAddress;
 		const completeMail: Mail = {
 			mail: mailContent,
 			recipients: [this.email],
@@ -113,24 +113,24 @@ export class Registration extends DomainObject<RegistrationProps> {
 		return completeMail;
 	}
 
-	private generateRegistrationLink(): string {
-		const hostUrl = Configuration.get('HOST') as string;
+	private generateRegistrationLink(config: RegistrationConfig): string {
+		const { hostUrl } = config;
 		const baseRegistrationUrl = `${hostUrl}/registration-external-members/`;
 		const registrationLink = `${baseRegistrationUrl}?registration-secret=${this.registrationSecret}`;
 
 		return registrationLink;
 	}
 
-	private generateRegistrationMailContent(roomName: string): PlainTextMailContent {
+	private generateRegistrationMailContent(roomName: string, config: RegistrationConfig): PlainTextMailContent {
 		const stripTags = (html: string): string =>
 			html
 				.replace(/<hr\s*\/?>/gim, '\n\n------------\n\n')
 				.replace(/<(\/p>|<br\s*\/)>/gim, '\n')
 				.replace(/<\/?[^>]+(>|$)/g, '');
 
-		const productName = Configuration.get('SC_TITLE') as string;
+		const productName = config.scTitle;
 		const subject = `${productName}: Einladung zur Registrierung und Zugriff auf den Raum ${roomName}`;
-		const registrationLink = this.generateRegistrationLink();
+		const registrationLink = this.generateRegistrationLink(config);
 
 		const germanHtml = `Hallo ${this.firstName} ${this.lastName},
 <p>dies ist eine Einladung, dem Raum ${roomName} beizutreten. Um den Raum betreten zu können, ist eine Registrierung in der ${productName} erforderlich. Bitte auf den folgenden Link klicken, um die Registrierung vorzunehmen:<br />

@@ -20,7 +20,6 @@ import { groupFactory } from '@modules/group/testing';
 import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
 import { userDoFactory } from '@modules/user/testing';
 import { InternalServerErrorException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException, ValidationErrorLoggableException } from '@shared/common/loggable-exception';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
@@ -44,7 +43,7 @@ import {
 	ProvisioningSystemDto,
 } from '../../dto';
 import { PoliciesInfoErrorResponseLoggable } from '../../loggable';
-import { ProvisioningConfig } from '../../provisioning.config';
+import { PROVISIONING_CONFIG_TOKEN, ProvisioningConfig } from '../../provisioning.config';
 import { externalGroupDtoFactory, externalSchoolDtoFactory, externalUserDtoFactory } from '../../testing';
 import { SchulconnexAsyncProvisioningStrategy } from './schulconnex-async-provisioning.strategy';
 import { SchulconnexResponseMapper } from './schulconnex-response-mapper';
@@ -68,7 +67,7 @@ describe(SchulconnexAsyncProvisioningStrategy.name, () => {
 	let groupService: DeepMocked<GroupService>;
 	let schulconnexResponseMapper: DeepMocked<SchulconnexResponseMapper>;
 	let schulconnexRestClient: DeepMocked<SchulconnexRestClient>;
-	let configService: DeepMocked<ConfigService<ProvisioningConfig, true>>;
+	let config: ProvisioningConfig;
 	let logger: DeepMocked<Logger>;
 
 	let validationFunction: SpyInstance<
@@ -113,8 +112,12 @@ describe(SchulconnexAsyncProvisioningStrategy.name, () => {
 					useValue: createMock<SchulconnexRestClient>(),
 				},
 				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService>(),
+					provide: PROVISIONING_CONFIG_TOKEN,
+					useValue: {
+						featureSchulconnexGroupProvisioningEnabled: true,
+						featureSchulconnexMediaLicenseEnabled: true,
+						provisioningSchulconnexPoliciesInfoUrl: 'policiesInfoUrl',
+					},
 				},
 				{
 					provide: Logger,
@@ -132,7 +135,7 @@ describe(SchulconnexAsyncProvisioningStrategy.name, () => {
 		groupService = module.get(GroupService);
 		schulconnexResponseMapper = module.get(SchulconnexResponseMapper);
 		schulconnexRestClient = module.get(SchulconnexRestClient);
-		configService = module.get(ConfigService);
+		config = module.get(PROVISIONING_CONFIG_TOKEN);
 		logger = module.get(Logger);
 
 		validationFunction = jest.spyOn(classValidator, 'validate');
@@ -196,8 +199,8 @@ describe(SchulconnexAsyncProvisioningStrategy.name, () => {
 				const schulconnexPoliciesInfoResponse: SchulconnexPoliciesInfoResponse =
 					schulconnexPoliciesInfoResponseFactory.build({ data: [schulconnexPoliciesInfoLicenseResponse] });
 
-				configService.get.mockReturnValueOnce(true);
-				configService.get.mockReturnValueOnce(true);
+				config.featureSchulconnexGroupProvisioningEnabled = true;
+				config.featureSchulconnexMediaLicenseEnabled = true;
 				schulconnexRestClient.getPersonInfo.mockResolvedValueOnce(schulconnexResponse);
 				schulconnexResponseMapper.mapToExternalUserDto.mockReturnValue(user);
 				schulconnexResponseMapper.mapToExternalSchoolDto.mockReturnValue(school);
@@ -298,8 +301,8 @@ describe(SchulconnexAsyncProvisioningStrategy.name, () => {
 					name: 'schoolName',
 				});
 
-				configService.get.mockReturnValueOnce(false);
-				configService.get.mockReturnValueOnce(false);
+				config.featureSchulconnexGroupProvisioningEnabled = false;
+				config.featureSchulconnexMediaLicenseEnabled = false;
 				schulconnexRestClient.getPersonInfo.mockResolvedValueOnce(schulconnexResponse);
 				schulconnexResponseMapper.mapToExternalUserDto.mockReturnValue(user);
 				schulconnexResponseMapper.mapToExternalSchoolDto.mockReturnValue(school);
@@ -350,8 +353,8 @@ describe(SchulconnexAsyncProvisioningStrategy.name, () => {
 					name: 'schoolName',
 				});
 
-				configService.get.mockReturnValueOnce(false);
-				configService.get.mockReturnValueOnce(true);
+				config.featureSchulconnexGroupProvisioningEnabled = false;
+				config.featureSchulconnexMediaLicenseEnabled = true;
 				schulconnexRestClient.getPersonInfo.mockResolvedValueOnce(schulconnexResponse);
 				schulconnexResponseMapper.mapToExternalUserDto.mockReturnValue(user);
 				schulconnexResponseMapper.mapToExternalSchoolDto.mockReturnValue(school);
@@ -399,8 +402,8 @@ describe(SchulconnexAsyncProvisioningStrategy.name, () => {
 					name: 'schoolName',
 				});
 
-				configService.get.mockReturnValueOnce(false);
-				configService.get.mockReturnValueOnce(false);
+				config.featureSchulconnexGroupProvisioningEnabled = false;
+				config.featureSchulconnexMediaLicenseEnabled = false;
 				schulconnexRestClient.getPersonInfo.mockResolvedValueOnce(schulconnexResponse);
 				schulconnexResponseMapper.mapToExternalUserDto.mockReturnValue(user);
 				schulconnexResponseMapper.mapToExternalSchoolDto.mockReturnValue(school);
@@ -557,8 +560,8 @@ describe(SchulconnexAsyncProvisioningStrategy.name, () => {
 					schulconnexPoliciesInfoLicenseResponse,
 				]);
 
-				configService.get.mockReturnValueOnce(false);
-				configService.get.mockReturnValueOnce(true);
+				config.featureSchulconnexGroupProvisioningEnabled = false;
+				config.featureSchulconnexMediaLicenseEnabled = true;
 				schulconnexRestClient.getPersonInfo.mockResolvedValueOnce(schulconnexResponse);
 				schulconnexResponseMapper.mapToExternalUserDto.mockReturnValue(user);
 				schulconnexResponseMapper.mapToExternalSchoolDto.mockReturnValue(school);
@@ -647,8 +650,8 @@ describe(SchulconnexAsyncProvisioningStrategy.name, () => {
 
 				schulconnexSchoolProvisioningService.provisionExternalSchool.mockResolvedValueOnce(school);
 				schulconnexUserProvisioningService.provisionExternalUser.mockResolvedValueOnce(user);
-				configService.get.mockReturnValueOnce(false);
-				configService.get.mockReturnValueOnce(false);
+				config.featureSchulconnexGroupProvisioningEnabled = false;
+				config.featureSchulconnexMediaLicenseEnabled = false;
 
 				return {
 					oauthData,
@@ -726,10 +729,10 @@ describe(SchulconnexAsyncProvisioningStrategy.name, () => {
 
 				schulconnexSchoolProvisioningService.provisionExternalSchool.mockResolvedValueOnce(school);
 				schulconnexUserProvisioningService.provisionExternalUser.mockResolvedValueOnce(user);
-				configService.get.mockReturnValueOnce(true);
+				config.featureSchulconnexGroupProvisioningEnabled = true;
 				schulconnexGroupProvisioningService.filterExternalGroups.mockResolvedValueOnce([externalGroup]);
 				groupService.findGroups.mockResolvedValueOnce({ data: [groupToKeep, groupToRemove], total: 2 });
-				configService.get.mockReturnValueOnce(false);
+				config.featureSchulconnexMediaLicenseEnabled = false;
 
 				return {
 					oauthData,
@@ -802,8 +805,8 @@ describe(SchulconnexAsyncProvisioningStrategy.name, () => {
 
 				schulconnexSchoolProvisioningService.provisionExternalSchool.mockResolvedValueOnce(school);
 				schulconnexUserProvisioningService.provisionExternalUser.mockResolvedValueOnce(user);
-				configService.get.mockReturnValueOnce(false);
-				configService.get.mockReturnValueOnce(true);
+				config.featureSchulconnexGroupProvisioningEnabled = false;
+				config.featureSchulconnexMediaLicenseEnabled = true;
 
 				return {
 					oauthData,
@@ -860,8 +863,8 @@ describe(SchulconnexAsyncProvisioningStrategy.name, () => {
 
 				schulconnexSchoolProvisioningService.provisionExternalSchool.mockResolvedValueOnce(school);
 				schulconnexUserProvisioningService.provisionExternalUser.mockResolvedValueOnce(user);
-				configService.get.mockReturnValueOnce(false);
-				configService.get.mockReturnValueOnce(true);
+				config.featureSchulconnexGroupProvisioningEnabled = false;
+				config.featureSchulconnexMediaLicenseEnabled = true;
 
 				return {
 					oauthData,
@@ -914,7 +917,7 @@ describe(SchulconnexAsyncProvisioningStrategy.name, () => {
 
 				schulconnexSchoolProvisioningService.provisionExternalSchool.mockResolvedValueOnce(school);
 				schulconnexUserProvisioningService.provisionExternalUser.mockResolvedValueOnce(user);
-				configService.get.mockReturnValueOnce(true);
+				config.featureSchulconnexGroupProvisioningEnabled = true;
 
 				return {
 					oauthData,

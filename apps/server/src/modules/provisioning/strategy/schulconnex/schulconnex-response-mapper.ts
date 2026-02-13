@@ -14,8 +14,7 @@ import {
 } from '@infra/schulconnex-client';
 import { GroupTypes } from '@modules/group';
 import { RoleName } from '@modules/role';
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { Inject, Injectable } from '@nestjs/common';
 import { InvalidLaufzeitResponseLoggableException, InvalidLernperiodeResponseLoggableException } from '../../domain';
 import {
 	ExternalGroupDto,
@@ -25,7 +24,7 @@ import {
 	ExternalUserDto,
 } from '../../dto';
 import { GroupRoleUnknownLoggable } from '../../loggable';
-import { ProvisioningConfig } from '../../provisioning.config';
+import { PROVISIONING_CONFIG_TOKEN, ProvisioningConfig } from '../../provisioning.config';
 
 const RoleMapping: Partial<Record<SchulconnexRole | string, RoleName>> = {
 	[SchulconnexRole.LEHR]: RoleName.TEACHER,
@@ -57,7 +56,8 @@ export class SchulconnexResponseMapper {
 	SCHOOLNUMBER_PREFIX_REGEX = /^NI_/;
 
 	constructor(
-		private readonly configService: ConfigService<ProvisioningConfig, true>,
+		@Inject(PROVISIONING_CONFIG_TOKEN)
+		private readonly config: ProvisioningConfig,
 		private readonly logger: Logger
 	) {}
 
@@ -127,7 +127,7 @@ export class SchulconnexResponseMapper {
 			(count: number, group: SchulconnexGruppenResponse) => count + (group.sonstige_gruppenzugehoerige?.length ?? 0),
 			groups.length
 		);
-		const limit: number | undefined = this.configService.get('PROVISIONING_SCHULCONNEX_GROUP_USERS_LIMIT');
+		const limit: number | undefined = this.config.provisioningSchulconnexGroupUsersLimit;
 		const shouldProvisionOtherUsers: boolean = limit === undefined || usersInGroupsCount < limit;
 
 		const mapped: ExternalGroupDto[] = groups
@@ -158,7 +158,7 @@ export class SchulconnexResponseMapper {
 		}
 
 		let otherUsers: ExternalGroupUserDto[] | undefined;
-		if (this.configService.get('FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED') && shouldProvisionOtherUsers) {
+		if (this.config.featureOtherGroupusersProvisioningEnabled && shouldProvisionOtherUsers) {
 			otherUsers = group.sonstige_gruppenzugehoerige
 				? group.sonstige_gruppenzugehoerige
 						.map((relation): ExternalGroupUserDto | null => this.mapToExternalGroupUser(relation))

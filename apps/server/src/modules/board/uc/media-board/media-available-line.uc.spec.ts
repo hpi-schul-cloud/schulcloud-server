@@ -11,11 +11,11 @@ import { MediaUserLicense, MediaUserLicenseService } from '@modules/user-license
 import { mediaUserLicenseFactory } from '@modules/user-license/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
-import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 import { setupEntities } from '@testing/database';
 import { BoardNodeRule } from '../../authorisation/board-node.rule';
+import { BOARD_CONFIG_TOKEN, BoardConfig } from '../../board.config';
 import {
 	BoardNodeAuthorizable,
 	MediaAvailableLine,
@@ -24,7 +24,6 @@ import {
 	MediaBoardColors,
 	MediaExternalToolElement,
 } from '../../domain';
-import type { MediaBoardConfig } from '../../media-board.config';
 import {
 	BoardNodeAuthorizableService,
 	BoardNodeService,
@@ -48,7 +47,7 @@ describe(MediaAvailableLineUc.name, () => {
 	let boardNodeRule: DeepMocked<BoardNodeRule>;
 	let boardNodeService: DeepMocked<BoardNodeService>;
 	let mediaAvailableLineService: DeepMocked<MediaAvailableLineService>;
-	let configService: DeepMocked<ConfigService<MediaBoardConfig, true>>;
+	let config: BoardConfig;
 	let mediaBoardService: DeepMocked<MediaBoardService>;
 	let mediaUserLicenseService: DeepMocked<MediaUserLicenseService>;
 	let mediaSchoolLicenseService: DeepMocked<MediaSchoolLicenseService>;
@@ -80,8 +79,8 @@ describe(MediaAvailableLineUc.name, () => {
 					useValue: createMock<MediaAvailableLineService>(),
 				},
 				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService>(),
+					provide: BOARD_CONFIG_TOKEN,
+					useValue: new BoardConfig(),
 				},
 				{
 					provide: MediaBoardService,
@@ -104,7 +103,7 @@ describe(MediaAvailableLineUc.name, () => {
 		boardNodeRule = module.get(BoardNodeRule);
 		boardNodeService = module.get(BoardNodeService);
 		mediaAvailableLineService = module.get(MediaAvailableLineService);
-		configService = module.get(ConfigService);
+		config = module.get(BOARD_CONFIG_TOKEN);
 		mediaBoardService = module.get(MediaBoardService);
 		mediaUserLicenseService = module.get(MediaUserLicenseService);
 		mediaSchoolLicenseService = module.get(MediaSchoolLicenseService);
@@ -121,12 +120,7 @@ describe(MediaAvailableLineUc.name, () => {
 	describe('getMediaAvailableLine', () => {
 		describe('when the user request the available line', () => {
 			const setup = () => {
-				const config: Partial<MediaBoardConfig> = {
-					FEATURE_MEDIA_SHELF_ENABLED: true,
-					FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED: false,
-					FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED: false,
-				};
-				configService.get.mockImplementation((key: keyof MediaBoardConfig) => config[key]);
+				config.featureMediaShelfEnabled = true;
 				const user: User = userFactory.build();
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 
@@ -258,16 +252,9 @@ describe(MediaAvailableLineUc.name, () => {
 		});
 
 		describe('when licensing feature flag FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED is enabled', () => {
-			const config: Partial<MediaBoardConfig> = {
-				FEATURE_MEDIA_SHELF_ENABLED: true,
-				FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED: true,
-				FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED: false,
-			};
-
 			describe('when tool has no mediumId', () => {
 				const setup = () => {
-					configService.get.mockImplementation((key: keyof MediaBoardConfig) => config[key]);
-
+					config.featureSchulconnexMediaLicenseEnabled = true;
 					const user: User = userFactory.build();
 					const mediaBoard: MediaBoard = mediaBoardFactory.build();
 					const mediaAvailableLineElement: MediaAvailableLineElement = mediaAvailableLineElementFactory.build();
@@ -334,7 +321,7 @@ describe(MediaAvailableLineUc.name, () => {
 
 			describe('when license exist', () => {
 				const setup = () => {
-					configService.get.mockReturnValue(true);
+					config.featureSchulconnexMediaLicenseEnabled = true;
 
 					const user: User = userFactory.build();
 					const mediaBoard: MediaBoard = mediaBoardFactory.build();
@@ -407,7 +394,7 @@ describe(MediaAvailableLineUc.name, () => {
 
 			describe('when license does not exist', () => {
 				const setup = () => {
-					configService.get.mockReturnValue(true);
+					config.featureSchulconnexMediaLicenseEnabled = true;
 
 					const user: User = userFactory.build();
 					const mediaBoard: MediaBoard = mediaBoardFactory.build();
@@ -448,15 +435,9 @@ describe(MediaAvailableLineUc.name, () => {
 		});
 
 		describe('when licensing feature flag FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED is enabled', () => {
-			const config: Partial<MediaBoardConfig> = {
-				FEATURE_MEDIA_SHELF_ENABLED: true,
-				FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED: false,
-				FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED: true,
-			};
-
 			describe('when tool has no mediumId', () => {
 				const setup = () => {
-					configService.get.mockImplementation((key: keyof MediaBoardConfig) => config[key]);
+					config.featureVidisMediaActivationsEnabled = true;
 
 					const user: User = userFactory.build();
 					const mediaBoard: MediaBoard = mediaBoardFactory.build();
@@ -524,7 +505,7 @@ describe(MediaAvailableLineUc.name, () => {
 
 			describe('when license exist', () => {
 				const setup = () => {
-					configService.get.mockReturnValue(true);
+					config.featureSchulconnexMediaLicenseEnabled = true;
 
 					const user: User = userFactory.build();
 					const mediaBoard: MediaBoard = mediaBoardFactory.build();
@@ -596,7 +577,7 @@ describe(MediaAvailableLineUc.name, () => {
 
 			describe('when license does not exist', () => {
 				const setup = () => {
-					configService.get.mockReturnValue(true);
+					config.featureSchulconnexMediaLicenseEnabled = true;
 
 					const user: User = userFactory.build();
 					const mediaBoard: MediaBoard = mediaBoardFactory.build();
@@ -636,9 +617,9 @@ describe(MediaAvailableLineUc.name, () => {
 			});
 		});
 
-		describe('when the feature is disabled', () => {
+		describe('when the feature FEATURE_MEDIA_SHELF_ENABLED is disabled', () => {
 			const setup = () => {
-				configService.get.mockReturnValue(false);
+				config.featureMediaShelfEnabled = false;
 
 				const userId = new ObjectId().toHexString();
 				const mediaBoardId = new ObjectId().toHexString();
@@ -662,10 +643,11 @@ describe(MediaAvailableLineUc.name, () => {
 	describe('updateAvailableLineColor', () => {
 		describe('when changes the color of the available line', () => {
 			const setup = () => {
+				config.featureMediaShelfEnabled = true;
+
 				const user = userFactory.build();
 				const mediaBoard = mediaBoardFactory.build();
 
-				configService.get.mockReturnValueOnce(true);
 				boardNodeService.findByClassAndId.mockResolvedValueOnce(mediaBoard);
 
 				return {
@@ -694,12 +676,12 @@ describe(MediaAvailableLineUc.name, () => {
 			});
 		});
 
-		describe('when the feature is disabled', () => {
+		describe('when the feature FEATURE_MEDIA_SHELF_ENABLED is disabled', () => {
 			const setup = () => {
 				const user = userFactory.build();
 				const mediaBoard = mediaBoardFactory.build();
 
-				configService.get.mockReturnValueOnce(false);
+				config.featureMediaShelfEnabled = false;
 
 				return {
 					user,
@@ -723,7 +705,7 @@ describe(MediaAvailableLineUc.name, () => {
 				const user = userFactory.build();
 				const mediaBoard = mediaBoardFactory.build();
 
-				configService.get.mockReturnValueOnce(true);
+				config.featureMediaShelfEnabled = true;
 				boardNodeService.findByClassAndId.mockResolvedValueOnce(mediaBoard);
 
 				return {
@@ -753,12 +735,12 @@ describe(MediaAvailableLineUc.name, () => {
 			});
 		});
 
-		describe('when the feature is disabled', () => {
+		describe('when the feature FEATURE_MEDIA_SHELF_ENABLED is disabled', () => {
 			const setup = () => {
 				const user = userFactory.build();
 				const mediaBoard = mediaBoardFactory.build();
 
-				configService.get.mockReturnValueOnce(false);
+				config.featureMediaShelfEnabled = false;
 
 				return {
 					user,

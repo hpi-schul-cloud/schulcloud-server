@@ -1,7 +1,8 @@
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { EntityManager } from '@mikro-orm/mongodb';
+import { CopyApiResponse } from '@modules/copy-helper';
 import { GroupEntityTypes } from '@modules/group/entity';
 import { groupEntityFactory } from '@modules/group/testing';
+import { RoomEntity } from '@modules/room';
 import { roomMembershipEntityFactory } from '@modules/room-membership/testing';
 import { roomEntityFactory } from '@modules/room/testing';
 import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
@@ -12,15 +13,15 @@ import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
-import { CopyApiResponse } from '@modules/copy-helper';
-import { RoomEntity } from '@modules/room';
 import { ShareTokenParentType } from '../../domainobject/share-token.do';
+import { SHARING_PUBLIC_API_CONFIG_TOKEN, SharingPublicApiConfig } from '../../sharing.config';
 import { shareTokenFactory } from '../../testing/share-token.factory';
 
 describe('Sharing Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let testApiClient: TestApiClient;
+	let config: SharingPublicApiConfig;
 
 	beforeAll(async () => {
 		const module = await Test.createTestingModule({
@@ -31,12 +32,12 @@ describe('Sharing Controller (API)', () => {
 		await app.init();
 		em = module.get(EntityManager);
 		testApiClient = new TestApiClient(app, 'sharetoken');
+		config = module.get<SharingPublicApiConfig>(SHARING_PUBLIC_API_CONFIG_TOKEN);
 	});
 
 	beforeEach(async () => {
 		await cleanupCollections(em);
-		Configuration.set('FEATURE_ROOM_SHARE', true);
-		Configuration.set('FEATURE_ROOM_COPY_ENABLED', true);
+		config.featureRoomShare = true;
 	});
 
 	afterAll(async () => {
@@ -46,7 +47,7 @@ describe('Sharing Controller (API)', () => {
 	describe('POST /sharetoken/:token/import', () => {
 		describe('when the feature is disabled', () => {
 			const setup = async () => {
-				Configuration.set('FEATURE_ROOM_SHARE', false);
+				config.featureRoomShare = false;
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 				const room = roomEntityFactory.buildWithId();
 				const { roomOwnerRole } = RoomRolesTestFactory.createRoomRoles();

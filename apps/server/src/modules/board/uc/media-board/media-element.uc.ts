@@ -2,15 +2,14 @@ import { AuthorizationService } from '@modules/authorization';
 import { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
 import { SchoolExternalToolService } from '@modules/tool/school-external-tool';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { Inject, Injectable } from '@nestjs/common';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 import { throwForbiddenIfFalse } from '@shared/common/utils';
 import type { EntityId } from '@shared/domain/types';
 import { BoardNodeRule } from '../../authorisation/board-node.rule';
+import { BOARD_CONFIG_TOKEN, BoardConfig } from '../../board.config';
 import { MediaBoard, MediaBoardNodeFactory, MediaExternalToolElement, MediaLine } from '../../domain';
 import { MediaBoardElementAlreadyExistsLoggableException } from '../../loggable';
-import type { MediaBoardConfig } from '../../media-board.config';
 import { BoardNodeAuthorizableService, BoardNodeService, MediaBoardService } from '../../service';
 
 @Injectable()
@@ -18,9 +17,9 @@ export class MediaElementUc {
 	constructor(
 		private readonly authorizationService: AuthorizationService,
 		private readonly boardNodeService: BoardNodeService,
+		@Inject(BOARD_CONFIG_TOKEN) private readonly config: BoardConfig,
 		private readonly boardNodeAuthorizableService: BoardNodeAuthorizableService,
 		private readonly boardNodeRule: BoardNodeRule,
-		private readonly configService: ConfigService<MediaBoardConfig, true>,
 		private readonly mediaBoardService: MediaBoardService,
 		private readonly mediaBoardNodeFactory: MediaBoardNodeFactory,
 		private readonly schoolExternalToolService: SchoolExternalToolService
@@ -91,8 +90,8 @@ export class MediaElementUc {
 		await this.boardNodeService.delete(element);
 	}
 
-	private checkFeatureEnabled() {
-		if (!this.configService.get('FEATURE_MEDIA_SHELF_ENABLED')) {
+	private checkFeatureEnabled(): void {
+		if (!this.config.featureMediaShelfEnabled) {
 			throw new FeatureDisabledLoggableException('FEATURE_MEDIA_SHELF_ENABLED');
 		}
 	}

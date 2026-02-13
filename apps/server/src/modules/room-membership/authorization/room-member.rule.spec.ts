@@ -1,6 +1,7 @@
 import { EntityManager } from '@mikro-orm/core';
 import {
 	Action,
+	AUTHORIZATION_CONFIG_TOKEN,
 	AuthorizationContext,
 	AuthorizationHelper,
 	AuthorizationInjectionService,
@@ -28,7 +29,13 @@ describe(RoomMemberRule.name, () => {
 		await setupEntities([User]);
 
 		const module: TestingModule = await Test.createTestingModule({
-			providers: [RoomMemberRule, RoomRule, AuthorizationHelper, AuthorizationInjectionService],
+			providers: [
+				RoomMemberRule,
+				RoomRule,
+				AuthorizationHelper,
+				AuthorizationInjectionService,
+				{ provide: AUTHORIZATION_CONFIG_TOKEN, useValue: {} },
+			],
 		}).compile();
 
 		module.get(RoomRule);

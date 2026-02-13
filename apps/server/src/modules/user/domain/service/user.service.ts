@@ -2,14 +2,14 @@ import { Logger } from '@core/logger';
 import { type RoleDto, RoleName, RoleService } from '@modules/role';
 import type { SchoolEntity } from '@modules/school/repo';
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { Page, RoleReference } from '@shared/domain/domainobject';
-import type { IFindOptions, LanguageType } from '@shared/domain/interface';
+import type { IFindOptions, LanguageType, Permission } from '@shared/domain/interface';
 import type { Counted, EntityId } from '@shared/domain/types';
 import type { UserDto } from '../../api/dto';
-import type { UserConfig, UserDo } from '../../domain';
+import type { UserDo } from '../../domain';
 import type { User } from '../../repo/user.entity';
 import { UserMikroOrmRepo } from '../../repo/user.repo';
+import { USER_CONFIG_TOKEN, UserConfig } from '../../user.config';
 import { USER_DO_REPO, UserDoRepo } from '../interface';
 import { AddSecondarySchoolToUsersRoleErrorLoggableException } from '../loggable';
 import { UserMapper } from '../mapper';
@@ -21,7 +21,7 @@ export class UserService {
 	constructor(
 		@Inject(USER_DO_REPO) private readonly userDoRepo: UserDoRepo,
 		private readonly userRepo: UserMikroOrmRepo,
-		private readonly configService: ConfigService<UserConfig, true>,
+		@Inject(USER_CONFIG_TOKEN) private readonly userConfig: UserConfig,
 		private readonly roleService: RoleService,
 		private readonly logger: Logger
 	) {
@@ -37,7 +37,7 @@ export class UserService {
 
 	public async me(userId: EntityId): Promise<[User, string[]]> {
 		const user = await this.userRepo.findById(userId, true);
-		const permissions = user.resolvePermissions();
+		const permissions = this.resolvePermissions(user);
 
 		return [user, permissions];
 	}
@@ -104,7 +104,8 @@ export class UserService {
 	}
 
 	public async findPublicTeachersBySchool(schoolId: EntityId, options?: IFindOptions<UserDo>): Promise<Page<UserDo>> {
-		const discoverabilitySetting = this.configService.get<string>('TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION');
+		const discoverabilitySetting = this.userConfig.teacherVisibilityForExternalTeamInvitation;
+
 		if (discoverabilitySetting === 'disabled') {
 			return new Page<UserDo>([], 0);
 		}
@@ -196,7 +197,7 @@ export class UserService {
 	}
 
 	private checkAvailableLanguages(language: LanguageType): void {
-		if (!this.configService.get<string[]>('AVAILABLE_LANGUAGES').includes(language)) {
+		if (!this.userConfig.availableLanguages.includes(language)) {
 			throw new BadRequestException('Language is not activated.');
 		}
 	}
@@ -259,5 +260,16 @@ export class UserService {
 		const existingUsers = users.filter((user): user is UserDo => Boolean(user));
 
 		return existingUsers;
+	}
+
+	public resolvePermissions(user: User): Permission[] {
+		const { teacherStudentVisibilityIsConfigurable, teacherStudentVisibilityIsEnabledByDefault } = this.userConfig;
+
+		const permissions = user.resolvePermissions(
+			teacherStudentVisibilityIsConfigurable,
+			teacherStudentVisibilityIsEnabledByDefault
+		);
+
+		return permissions;
 	}
 }

@@ -15,6 +15,7 @@ import {
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { RequestTimeout } from '@shared/common/decorators';
 import { ApiValidationError } from '@shared/common/error';
+import { BOARD_INCOMING_REQUEST_TIMEOUT_COPY_API_KEY } from '../timeout.config';
 import { BoardUc } from '../uc';
 import {
 	BoardResponse,
@@ -27,8 +28,8 @@ import {
 	VisibilityBodyParams,
 } from './dto';
 import { BoardContextResponse } from './dto/board/board-context.reponse';
-import { BoardResponseMapper, ColumnResponseMapper, CreateBoardResponseMapper } from './mapper';
 import { ReadersCanEditBodyParams } from './dto/board/readers-can-edit.body.params';
+import { BoardResponseMapper, ColumnResponseMapper, CreateBoardResponseMapper } from './mapper';
 
 @ApiTags('Board')
 @JwtAuthentication()
@@ -139,7 +140,7 @@ export class BoardController {
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@Post(':boardId/copy')
-	@RequestTimeout('INCOMING_REQUEST_TIMEOUT_COPY_API')
+	@RequestTimeout(BOARD_INCOMING_REQUEST_TIMEOUT_COPY_API_KEY)
 	public async copyBoard(
 		@Param() urlParams: BoardUrlParams,
 		@CurrentUser() currentUser: ICurrentUser

@@ -3,12 +3,11 @@ import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helpe
 import { RoomMembershipService } from '@modules/room-membership';
 import { RoomRule } from '@modules/room-membership/authorization/room.rule';
 import { SagaService } from '@modules/saga';
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { Inject, Injectable } from '@nestjs/common';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 import { throwForbiddenIfFalse } from '@shared/common/utils';
 import { EntityId } from '@shared/domain/types';
-import { RoomConfig } from '../room.config';
+import { ROOM_PUBLIC_API_CONFIG_TOKEN, RoomPublicApiConfig } from '../room.config';
 
 @Injectable()
 export class RoomCopyUc {
@@ -17,7 +16,7 @@ export class RoomCopyUc {
 		private readonly roomRule: RoomRule,
 		private readonly roomMembershipService: RoomMembershipService,
 		private readonly authorizationService: AuthorizationService,
-		private readonly configService: ConfigService<RoomConfig, true>
+		@Inject(ROOM_PUBLIC_API_CONFIG_TOKEN) private readonly config: RoomPublicApiConfig
 	) {}
 
 	public async copyRoom(userId: EntityId, roomId: EntityId): Promise<CopyStatus> {
@@ -52,7 +51,7 @@ export class RoomCopyUc {
 	}
 
 	private checkFeatureRoomCopyEnabled(): void {
-		if (!this.configService.get('FEATURE_ROOM_COPY_ENABLED', { infer: true })) {
+		if (!this.config.featureRoomCopyEnabled) {
 			throw new FeatureDisabledLoggableException('FEATURE_ROOM_COPY_ENABLED');
 		}
 	}

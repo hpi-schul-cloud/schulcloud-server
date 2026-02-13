@@ -6,6 +6,7 @@ import { InvalidTargetLoggable } from '../errors/invalid-target.loggable';
 import { SyncStrategy } from '../strategy/sync-strategy';
 import { TspSyncStrategy } from '../strategy/tsp/tsp-sync.strategy';
 import { SyncStrategyTarget } from '../sync-strategy.types';
+import { SYNC_CONFIG_TOKEN } from '../sync.config';
 import { SyncService } from './sync.service';
 
 describe(SyncService.name, () => {
@@ -19,6 +20,16 @@ describe(SyncService.name, () => {
 			providers: [
 				SyncService,
 				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
+				},
+				{
+					provide: SYNC_CONFIG_TOKEN,
+					useValue: {
+						tspSyncEnabled: true,
+					},
+				},
+				{
 					provide: TspSyncStrategy,
 					useValue: createMock<TspSyncStrategy>({
 						getType(): SyncStrategyTarget {
@@ -28,10 +39,6 @@ describe(SyncService.name, () => {
 							return Promise.resolve();
 						},
 					}),
-				},
-				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
 				},
 			],
 		}).compile();

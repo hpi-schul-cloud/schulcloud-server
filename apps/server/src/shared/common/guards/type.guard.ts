@@ -103,6 +103,20 @@ export class TypeGuard {
 		return value;
 	}
 
+	public static isArrayOfStrings(value: unknown): value is string[] {
+		const isArrayOfStrings = TypeGuard.isArray(value) && value.every((item) => TypeGuard.isString(item));
+
+		return isArrayOfStrings;
+	}
+
+	public static checkArrayOfStrings(value: unknown): string[] {
+		if (!TypeGuard.isArrayOfStrings(value)) {
+			throw new Error('Type is not an array of strings.');
+		}
+
+		return value;
+	}
+
 	public static isDefinedObject(value: unknown): value is object {
 		const isObject = typeof value === 'object' && !TypeGuard.isArray(value) && !TypeGuard.isNull(value);
 

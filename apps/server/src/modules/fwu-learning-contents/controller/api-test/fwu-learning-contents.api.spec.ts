@@ -1,13 +1,15 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { ConfigurationModule } from '@infra/configuration';
 import { S3ClientAdapter } from '@infra/s3-client';
+import { FWU_PUBLIC_API_CONFIG_TOKEN, FwuPublicApiConfig } from '@modules/fwu-learning-contents';
 import { INestApplication, NotFoundException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
+import { TEST_JWT_CONFIG_TOKEN, TestJwtModuleConfig } from '@testing/test-jwt-module.config';
 import { Readable } from 'stream';
 import { FwuLearningContentsTestModule } from '../../fwu-learning-contents-test.module';
-import { FWU_CONTENT_S3_CONNECTION } from '../../fwu-learning-contents.config';
+import { FWU_S3_CLIENT_INJECTION_TOKEN } from '../../fwu.const';
 import { FwuItem } from '../../interface/fwu-item';
 import { FwuListResponse } from '../dto/fwu-list.response';
 
@@ -21,19 +23,28 @@ describe('FwuLearningContents Controller (api)', () => {
 	let app: INestApplication;
 	let s3ClientAdapter: DeepMocked<S3ClientAdapter>;
 	let testApiClient: TestApiClient;
+	let jwtConfig: TestJwtModuleConfig;
+	let fwuConfig: FwuPublicApiConfig;
 
 	beforeAll(async () => {
 		const module = await Test.createTestingModule({
-			imports: [FwuLearningContentsTestModule],
+			imports: [
+				FwuLearningContentsTestModule,
+				ConfigurationModule.register(TEST_JWT_CONFIG_TOKEN, TestJwtModuleConfig),
+			],
 		})
-			.overrideProvider(FWU_CONTENT_S3_CONNECTION)
+			.overrideProvider(FWU_S3_CLIENT_INJECTION_TOKEN)
 			.useValue(createMock<S3ClientAdapter>())
 			.compile();
 
 		app = module.createNestApplication();
 		await app.init();
-		s3ClientAdapter = module.get(FWU_CONTENT_S3_CONNECTION);
+		jwtConfig = module.get(TEST_JWT_CONFIG_TOKEN);
+		s3ClientAdapter = module.get(FWU_S3_CLIENT_INJECTION_TOKEN);
 		testApiClient = new TestApiClient(app, 'fwu');
+		fwuConfig = module.get<FwuPublicApiConfig>(FWU_PUBLIC_API_CONFIG_TOKEN);
+
+		fwuConfig.fwuContentEnabled = true;
 	});
 
 	afterAll(async () => {
@@ -41,8 +52,6 @@ describe('FwuLearningContents Controller (api)', () => {
 	});
 
 	describe('requestFwuContent', () => {
-		Configuration.set('FEATURE_FWU_CONTENT_ENABLED', true);
-
 		describe('when user is not authenticated', () => {
 			it('should return 401 status', async () => {
 				const response = await testApiClient.get('12345/example.txt');
@@ -68,7 +77,7 @@ describe('FwuLearningContents Controller (api)', () => {
 				s3ClientAdapter.get.mockResolvedValueOnce(fileResponse);
 
 				const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent();
-				const loggedInClient = testApiClient.loginByUser(studentAccount, studentUser);
+				const loggedInClient = testApiClient.loginByUser(studentAccount, studentUser, jwtConfig);
 
 				return { path, fileResponse, text, loggedInClient };
 			};
@@ -112,7 +121,7 @@ describe('FwuLearningContents Controller (api)', () => {
 				s3ClientAdapter.get.mockRejectedValueOnce(error);
 
 				const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent();
-				const loggedInClient = testApiClient.loginByUser(studentAccount, studentUser);
+				const loggedInClient = testApiClient.loginByUser(studentAccount, studentUser, jwtConfig);
 
 				return { loggedInClient };
 			};
@@ -132,15 +141,14 @@ describe('FwuLearningContents Controller (api)', () => {
 				s3ClientAdapter.get.mockRejectedValueOnce(error);
 
 				const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent();
-				const loggedInClient = testApiClient.loginByUser(studentAccount, studentUser);
+				const loggedInClient = testApiClient.loginByUser(studentAccount, studentUser, jwtConfig);
+				fwuConfig.fwuContentEnabled = false;
 
 				return { loggedInClient };
 			};
 
 			it('should return InternalServerErrorException', async () => {
 				const { loggedInClient } = setup();
-
-				Configuration.set('FEATURE_FWU_CONTENT_ENABLED', false);
 
 				const response = await loggedInClient.get('12345/example.txt');
 
@@ -160,10 +168,9 @@ describe('FwuLearningContents Controller (api)', () => {
 
 		describe('when feature is not enabled', () => {
 			const setup = () => {
-				Configuration.set('FEATURE_FWU_CONTENT_ENABLED', false);
-
 				const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent();
-				const loggedInClient = testApiClient.loginByUser(studentAccount, studentUser);
+				const loggedInClient = testApiClient.loginByUser(studentAccount, studentUser, jwtConfig);
+				fwuConfig.fwuContentEnabled = false;
 
 				return { loggedInClient };
 			};
@@ -187,10 +194,9 @@ describe('FwuLearningContents Controller (api)', () => {
 				};
 
 				const setup = () => {
-					Configuration.set('FEATURE_FWU_CONTENT_ENABLED', true);
-
 					const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent();
-					const loggedInClient = testApiClient.loginByUser(studentAccount, studentUser);
+					const loggedInClient = testApiClient.loginByUser(studentAccount, studentUser, jwtConfig);
+					fwuConfig.fwuContentEnabled = true;
 
 					const htmlContent = `<html>
 						<body>
@@ -230,10 +236,8 @@ describe('FwuLearningContents Controller (api)', () => {
 
 				describe('thumbnailUrl parsing', () => {
 					const setupWithPlayerTag = (playerHtmlContent: string) => {
-						Configuration.set('FEATURE_FWU_CONTENT_ENABLED', true);
-
 						const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent();
-						const loggedInClient = testApiClient.loginByUser(studentAccount, studentUser);
+						const loggedInClient = testApiClient.loginByUser(studentAccount, studentUser, jwtConfig);
 
 						const htmlContent = `<html>
 						<body>

@@ -1,11 +1,12 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { defaultMikroOrmOptions } from '@shared/common/defaultMikroOrmOptions';
+import { findOneOrFailHandler } from '@shared/common/database-error.handler';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { ObjectId } from '@mikro-orm/mongodb';
 import fs from 'fs';
 import { PushDeleteRequestsOptionsBuilder } from './builder';
 import { UnsyncedEntitiesOptionsBuilder } from './builder/unsynced-entities-options.builder';
 import { DeletionConsoleModule } from './deletion-console.app.module';
+import { DELETION_CONSOLE_CONFIG_TOKEN } from './deletion-console.config';
 import { TEST_ENTITIES } from './deletion-console.entity.imports';
 import { DeletionQueueConsole } from './deletion-queue.console';
 import { BatchDeletionUc } from './uc';
@@ -19,9 +20,15 @@ describe(DeletionQueueConsole.name, () => {
 		module = await Test.createTestingModule({
 			imports: [
 				DeletionConsoleModule,
-				MongoMemoryDatabaseModule.forRoot({ ...defaultMikroOrmOptions, entities: TEST_ENTITIES }),
+				MongoMemoryDatabaseModule.forRoot({ ...findOneOrFailHandler, entities: TEST_ENTITIES }),
 			],
-		}).compile();
+		})
+			.overrideProvider(DELETION_CONSOLE_CONFIG_TOKEN)
+			.useValue({
+				adminApiClientBaseUrl: 'http://api-admin:4030',
+				adminApiClientApiKey: '652559c2-93da-42ad-94e1-640e3afbaca0',
+			})
+			.compile();
 
 		console = module.get(DeletionQueueConsole);
 		batchDeletionUc = module.get(BatchDeletionUc);

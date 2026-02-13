@@ -7,7 +7,6 @@ import { systemFactory } from '@modules/system/testing';
 import { UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
-import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import {
 	AuthorizationError,
@@ -17,7 +16,7 @@ import {
 } from '@shared/common/error';
 import { setupEntities } from '@testing/database';
 import 'reflect-metadata';
-import { AccountConfig } from '../../account-config';
+import { ACCOUNT_CONFIG_TOKEN, AccountConfig } from '../../account-config';
 import { accountDoFactory, accountFactory } from '../../testing';
 import { Account, AccountSave, UpdateAccount } from '../do';
 import { IdmCallbackLoggableException } from '../error';
@@ -32,13 +31,13 @@ describe('AccountService', () => {
 	let accountService: AccountService;
 	let accountServiceIdm: DeepMocked<AccountServiceIdm>;
 	let accountServiceDb: DeepMocked<AccountServiceDb>;
-	let configService: DeepMocked<ConfigService>;
+	let config: AccountConfig;
 	let logger: DeepMocked<Logger>;
 	let userService: DeepMocked<UserService>;
 	let accountRepo: DeepMocked<AccountRepo>;
 
 	const newAccountService = () =>
-		new AccountService(accountServiceDb, accountServiceIdm, configService, logger, userService, accountRepo);
+		new AccountService(accountServiceDb, accountServiceIdm, config, logger, userService, accountRepo);
 
 	const defaultPassword = 'DummyPasswd!1';
 	const otherPassword = 'DummyPasswd!2';
@@ -67,8 +66,8 @@ describe('AccountService', () => {
 					useValue: createMock<Logger>(),
 				},
 				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService<AccountConfig, true>>(),
+					provide: ACCOUNT_CONFIG_TOKEN,
+					useValue: AccountConfig,
 				},
 				{
 					provide: ACCOUNT_REPO,
@@ -83,7 +82,7 @@ describe('AccountService', () => {
 		accountServiceDb = module.get(AccountServiceDb);
 		accountServiceIdm = module.get(AccountServiceIdm);
 		accountService = module.get(AccountService);
-		configService = module.get(ConfigService);
+		config = module.get(ACCOUNT_CONFIG_TOKEN);
 		logger = module.get(Logger);
 		userService = module.get(UserService);
 		accountRepo = module.get(ACCOUNT_REPO);
@@ -112,7 +111,7 @@ describe('AccountService', () => {
 
 		describe('When identity management is primary', () => {
 			const setup = () => {
-				configService.get.mockReturnValue(true);
+				config.identityManagementLoginEnabled = true;
 				accountServiceIdm.findById.mockResolvedValueOnce(accountDoFactory.build());
 
 				return newAccountService();
@@ -142,7 +141,6 @@ describe('AccountService', () => {
 
 		describe('When identity management is primary', () => {
 			const setup = () => {
-				configService.get.mockReturnValue(true);
 				accountServiceIdm.findByUserId.mockResolvedValueOnce(accountDoFactory.build());
 
 				return newAccountService();
@@ -172,7 +170,6 @@ describe('AccountService', () => {
 
 		describe('when identity management is primary', () => {
 			const setup = () => {
-				configService.get.mockReturnValue(true);
 				accountServiceIdm.findByUsernameAndSystemId.mockResolvedValueOnce(accountDoFactory.build());
 
 				return newAccountService();
@@ -202,7 +199,6 @@ describe('AccountService', () => {
 
 		describe('When identity management is primary', () => {
 			const setup = () => {
-				configService.get.mockReturnValue(true);
 				accountServiceIdm.findMultipleByUserId.mockResolvedValueOnce([accountDoFactory.build()]);
 
 				return newAccountService();
@@ -232,7 +228,6 @@ describe('AccountService', () => {
 
 		describe('When identity management is primary', () => {
 			const setup = () => {
-				configService.get.mockReturnValue(true);
 				accountServiceIdm.findByUserIdOrFail.mockResolvedValueOnce(accountDoFactory.build());
 
 				return newAccountService();
@@ -256,7 +251,8 @@ describe('AccountService', () => {
 
 		describe('When calling save in accountService if feature is enabled', () => {
 			const setup = () => {
-				configService.get.mockReturnValue(true);
+				config.identityManagementLoginEnabled = true;
+				config.identityManagementStoreEnabled = true;
 
 				const account = accountDoFactory.build();
 
@@ -276,7 +272,8 @@ describe('AccountService', () => {
 
 		describe('When calling save in accountService if feature is disabled', () => {
 			const setup = () => {
-				configService.get.mockReturnValueOnce(false);
+				config.identityManagementLoginEnabled = true;
+				config.identityManagementStoreEnabled = false;
 
 				accountServiceDb.save.mockResolvedValueOnce({
 					getProps: () => {
@@ -297,7 +294,8 @@ describe('AccountService', () => {
 
 		describe('when identity management is primary', () => {
 			const setup = () => {
-				configService.get.mockReturnValue(true);
+				config.identityManagementLoginEnabled = true;
+				config.identityManagementStoreEnabled = true;
 
 				const account = accountDoFactory.build();
 
@@ -316,7 +314,8 @@ describe('AccountService', () => {
 
 		describe(`when identity management is primary and can't update account`, () => {
 			const setup = () => {
-				configService.get.mockReturnValue(true);
+				config.identityManagementLoginEnabled = true;
+				config.identityManagementStoreEnabled = true;
 
 				const account = accountDoFactory.build();
 
@@ -334,7 +333,8 @@ describe('AccountService', () => {
 
 		describe(`when identity management is primary and can't update username`, () => {
 			const setup = () => {
-				configService.get.mockReturnValue(true);
+				config.identityManagementLoginEnabled = false;
+				config.identityManagementStoreEnabled = true;
 
 				const account = accountDoFactory.build();
 
@@ -358,7 +358,6 @@ describe('AccountService', () => {
 			const setup = () => {
 				const accounts = accountDoFactory.buildList(1);
 
-				configService.get.mockReturnValue(true);
 				accountServiceDb.saveAll.mockResolvedValueOnce(accounts);
 				accountServiceIdm.saveAll.mockResolvedValueOnce(accounts);
 
@@ -389,6 +388,8 @@ describe('AccountService', () => {
 
 		describe('When calling saveWithValidation on accountService', () => {
 			const setup = () => {
+				config.identityManagementLoginEnabled = false;
+				config.identityManagementStoreEnabled = false;
 				const spy = jest.spyOn(accountService, 'save');
 
 				accountServiceDb.save.mockResolvedValueOnce({
@@ -430,6 +431,8 @@ describe('AccountService', () => {
 
 		describe('When username for an external user is not an email', () => {
 			const setup = () => {
+				config.identityManagementLoginEnabled = false;
+				config.identityManagementStoreEnabled = false;
 				accountServiceDb.save.mockResolvedValueOnce({
 					getProps: () => {
 						return { id: '' };
@@ -450,6 +453,8 @@ describe('AccountService', () => {
 
 		describe('When username for an external user is a ldap search string', () => {
 			const setup = () => {
+				config.identityManagementLoginEnabled = false;
+				config.identityManagementStoreEnabled = false;
 				accountServiceDb.save.mockResolvedValueOnce({
 					getProps: () => {
 						return { id: '' };
@@ -506,7 +511,8 @@ describe('AccountService', () => {
 
 		describe('When username already exists in identity management', () => {
 			const setup = () => {
-				configService.get.mockReturnValue(true);
+				config.identityManagementLoginEnabled = true;
+				config.identityManagementStoreEnabled = true;
 
 				accountServiceIdm.isUniqueEmail.mockResolvedValueOnce(false);
 			};
@@ -523,7 +529,8 @@ describe('AccountService', () => {
 
 		describe('When identity management is primary', () => {
 			const setup = () => {
-				configService.get.mockReturnValue(true);
+				config.identityManagementLoginEnabled = true;
+				config.identityManagementStoreEnabled = true;
 
 				const account = accountDoFactory.build({
 					password: defaultPasswordHash,
@@ -556,7 +563,8 @@ describe('AccountService', () => {
 
 		describe('When calling updateUsername in accountService if idm feature is enabled', () => {
 			const setup = () => {
-				configService.get.mockReturnValue(true);
+				config.identityManagementLoginEnabled = true;
+				config.identityManagementStoreEnabled = true;
 
 				accountServiceDb.updateUsername.mockResolvedValueOnce({
 					getProps: () => {
@@ -577,7 +585,8 @@ describe('AccountService', () => {
 
 		describe('When calling updateUsername in accountService if idm feature is disabled', () => {
 			const setup = () => {
-				configService.get.mockReturnValue(false);
+				config.identityManagementLoginEnabled = false;
+				config.identityManagementStoreEnabled = false;
 
 				accountServiceDb.updateUsername.mockResolvedValueOnce({
 					getProps: () => {
@@ -598,7 +607,8 @@ describe('AccountService', () => {
 
 		describe('When identity management is primary', () => {
 			const setup = () => {
-				configService.get.mockReturnValue(true);
+				config.identityManagementLoginEnabled = true;
+				config.identityManagementStoreEnabled = true;
 
 				accountServiceDb.updateUsername.mockResolvedValueOnce({
 					getProps: () => {
@@ -637,7 +647,8 @@ describe('AccountService', () => {
 
 		describe('when identity management is primary', () => {
 			const setup = () => {
-				configService.get.mockReturnValue(true);
+				config.identityManagementLoginEnabled = true;
+				config.identityManagementStoreEnabled = true;
 
 				accountServiceDb.updateLastTriedFailedLogin.mockResolvedValueOnce({
 					getProps: () => {
@@ -666,7 +677,8 @@ describe('AccountService', () => {
 
 		describe('When calling updatePassword in accountService if feature is enabled', () => {
 			const setup = () => {
-				configService.get.mockReturnValue(true);
+				config.identityManagementLoginEnabled = true;
+				config.identityManagementStoreEnabled = true;
 
 				accountServiceDb.updatePassword.mockResolvedValueOnce({
 					getProps: () => {
@@ -687,7 +699,8 @@ describe('AccountService', () => {
 
 		describe('When calling updatePassword in accountService if feature is disabled', () => {
 			const setup = () => {
-				configService.get.mockReturnValue(false);
+				config.identityManagementLoginEnabled = false;
+				config.identityManagementStoreEnabled = false;
 
 				accountServiceDb.updatePassword.mockResolvedValueOnce({
 					getProps: () => {
@@ -707,7 +720,8 @@ describe('AccountService', () => {
 		});
 		describe('When identity management is primary', () => {
 			const setup = () => {
-				configService.get.mockReturnValue(true);
+				config.identityManagementLoginEnabled = true;
+				config.identityManagementStoreEnabled = true;
 
 				accountServiceDb.updatePassword.mockResolvedValueOnce({
 					getProps: () => {
@@ -743,7 +757,8 @@ describe('AccountService', () => {
 
 		describe('When calling validatePassword in accountService if feature is enabled', () => {
 			const setup = () => {
-				configService.get.mockReturnValue(true);
+				config.identityManagementLoginEnabled = true;
+				config.identityManagementStoreEnabled = true;
 				accountServiceIdm.validatePassword.mockResolvedValueOnce(true);
 
 				return newAccountService();
@@ -768,7 +783,8 @@ describe('AccountService', () => {
 
 		describe('When calling delete in accountService if feature is enabled', () => {
 			const setup = () => {
-				configService.get.mockReturnValueOnce(true);
+				config.identityManagementLoginEnabled = true;
+				config.identityManagementStoreEnabled = true;
 			};
 
 			it('should call delete in accountServiceIdm', async () => {
@@ -781,7 +797,8 @@ describe('AccountService', () => {
 
 		describe('When calling delete in accountService if feature is disabled', () => {
 			const setup = () => {
-				configService.get.mockReturnValueOnce(false);
+				config.identityManagementLoginEnabled = false;
+				config.identityManagementStoreEnabled = false;
 			};
 
 			it('should not call delete in accountServiceIdm', async () => {
@@ -794,7 +811,8 @@ describe('AccountService', () => {
 
 		describe('When identity management is primary', () => {
 			const setup = () => {
-				configService.get.mockReturnValue(true);
+				config.identityManagementLoginEnabled = true;
+				config.identityManagementStoreEnabled = true;
 				return newAccountService();
 			};
 
@@ -809,6 +827,8 @@ describe('AccountService', () => {
 	describe('deleteByUserId', () => {
 		describe('When calling deleteByUserId in accountService', () => {
 			it('should call deleteByUserId in accountServiceDb', async () => {
+				config.identityManagementLoginEnabled = false;
+				config.identityManagementStoreEnabled = false;
 				await expect(accountService.deleteByUserId('userId')).resolves.not.toThrow();
 				expect(accountServiceDb.deleteByUserId).toHaveBeenCalledTimes(1);
 			});
@@ -816,7 +836,8 @@ describe('AccountService', () => {
 
 		describe('When calling deleteByUserId in accountService if feature is enabled', () => {
 			const setup = () => {
-				configService.get.mockReturnValueOnce(true);
+				config.identityManagementLoginEnabled = true;
+				config.identityManagementStoreEnabled = true;
 				accountServiceDb.deleteByUserId.mockResolvedValueOnce(['accountId']);
 				accountServiceIdm.deleteByUserId.mockResolvedValueOnce(['accountId']);
 			};
@@ -831,7 +852,8 @@ describe('AccountService', () => {
 
 		describe('When calling deleteByUserId in accountService if feature is disabled', () => {
 			const setup = () => {
-				configService.get.mockReturnValueOnce(false);
+				config.identityManagementLoginEnabled = false;
+				config.identityManagementStoreEnabled = false;
 			};
 
 			it('should not call deleteByUserId in accountServiceIdm', async () => {
@@ -844,7 +866,8 @@ describe('AccountService', () => {
 
 		describe('When identity management is primary', () => {
 			const setup = () => {
-				configService.get.mockReturnValue(true);
+				config.identityManagementLoginEnabled = true;
+				config.identityManagementStoreEnabled = true;
 				return newAccountService();
 			};
 
@@ -902,7 +925,7 @@ describe('AccountService', () => {
 	describe('when identity management is primary', () => {
 		describe('findById', () => {
 			const setup = () => {
-				configService.get.mockReturnValue(true);
+				config.identityManagementLoginEnabled = true;
 				accountServiceIdm.findById.mockResolvedValueOnce(accountDoFactory.build());
 
 				return newAccountService();
@@ -917,7 +940,7 @@ describe('AccountService', () => {
 
 		describe('searchByUsernamePartialMatch', () => {
 			const setup = () => {
-				configService.get.mockReturnValue(true);
+				config.identityManagementStoreEnabled = true;
 				accountServiceIdm.searchByUsernamePartialMatch.mockResolvedValueOnce([accountDoFactory.buildList(1), 1]);
 
 				return newAccountService();
@@ -947,7 +970,7 @@ describe('AccountService', () => {
 
 		describe('when identity management is primary', () => {
 			const setup = () => {
-				configService.get.mockReturnValue(true);
+				config.identityManagementLoginEnabled = true;
 				accountServiceIdm.searchByUsernameExactMatch.mockResolvedValueOnce([accountDoFactory.buildList(1), 1]);
 
 				return newAccountService();
@@ -964,7 +987,7 @@ describe('AccountService', () => {
 	describe('executeIdmMethod', () => {
 		describe('When idm feature is enabled', () => {
 			const setup = () => {
-				configService.get.mockReturnValueOnce(true);
+				config.identityManagementLoginEnabled = true;
 				const testError = new Error('error');
 				accountServiceIdm.deleteByUserId.mockImplementationOnce(() => {
 					throw testError;
@@ -985,7 +1008,7 @@ describe('AccountService', () => {
 
 		describe('When idm feature is enabled', () => {
 			const setup = () => {
-				configService.get.mockReturnValueOnce(true);
+				config.identityManagementLoginEnabled = true;
 				const spyLogger = jest.spyOn(logger, 'debug');
 				const deleteByUserIdMock = jest.spyOn(accountServiceIdm, 'deleteByUserId');
 				deleteByUserIdMock.mockImplementationOnce(() => {
@@ -1007,6 +1030,8 @@ describe('AccountService', () => {
 	describe('updateMyAccount', () => {
 		describe('When account is external', () => {
 			const setup = () => {
+				config.identityManagementLoginEnabled = false;
+				config.identityManagementStoreEnabled = false;
 				const mockSchool = schoolEntityFactory.buildWithId();
 
 				const mockExternalUser = userFactory.buildWithId({
@@ -1994,6 +2019,8 @@ describe('AccountService', () => {
 
 		describe('when a user logs in for the first time (if undefined)', () => {
 			const setup = () => {
+				config.identityManagementLoginEnabled = false;
+				config.identityManagementStoreEnabled = false;
 				const mockSchool = schoolEntityFactory.buildWithId();
 
 				const mockStudentUser = userFactory.buildWithId({

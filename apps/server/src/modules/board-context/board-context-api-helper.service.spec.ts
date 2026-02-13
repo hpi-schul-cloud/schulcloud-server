@@ -53,10 +53,10 @@ describe('BoardContextApiHelperService', () => {
 				},
 				{
 					provide: BOARD_CONTEXT_PUBLIC_API_CONFIG,
-					useValue: createMock<BoardContextPublicApiConfig>({
+					useValue: {
 						FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED: false,
 						FEATURE_VIDEOCONFERENCE_ENABLED: false,
-					}),
+					},
 				},
 			],
 		}).compile();
@@ -139,8 +139,8 @@ describe('BoardContextApiHelperService', () => {
 
 						course.features = [CourseFeatures.VIDEOCONFERENCE];
 						legacySchoolService.hasFeature.mockResolvedValueOnce(true);
-						boardContextApiConfig.FEATURE_VIDEOCONFERENCE_ENABLED = true;
-						boardContextApiConfig.FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED = true;
+						boardContextApiConfig.featureVideoconferenceEnabled = true;
+						boardContextApiConfig.featureColumnBoardVideoconferenceEnabled = true;
 
 						const result = await service.getFeaturesForBoardNode(boardNode.id);
 
@@ -154,8 +154,8 @@ describe('BoardContextApiHelperService', () => {
 
 						course.features = [CourseFeatures.VIDEOCONFERENCE];
 						legacySchoolService.hasFeature.mockResolvedValueOnce(false);
-						boardContextApiConfig.FEATURE_VIDEOCONFERENCE_ENABLED = true;
-						boardContextApiConfig.FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED = true;
+						boardContextApiConfig.featureVideoconferenceEnabled = true;
+						boardContextApiConfig.featureColumnBoardVideoconferenceEnabled = true;
 						const result = await service.getFeaturesForBoardNode(boardNode.id);
 
 						expect(result).toEqual([]);
@@ -168,8 +168,8 @@ describe('BoardContextApiHelperService', () => {
 
 						course.features = [CourseFeatures.VIDEOCONFERENCE];
 						legacySchoolService.hasFeature.mockResolvedValueOnce(true);
-						boardContextApiConfig.FEATURE_VIDEOCONFERENCE_ENABLED = false;
-						boardContextApiConfig.FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED = true;
+						boardContextApiConfig.featureVideoconferenceEnabled = false;
+						boardContextApiConfig.featureColumnBoardVideoconferenceEnabled = true;
 
 						const result = await service.getFeaturesForBoardNode(boardNode.id);
 
@@ -183,8 +183,8 @@ describe('BoardContextApiHelperService', () => {
 
 						course.features = [CourseFeatures.VIDEOCONFERENCE];
 						legacySchoolService.hasFeature.mockResolvedValueOnce(true);
-						boardContextApiConfig.FEATURE_VIDEOCONFERENCE_ENABLED = true;
-						boardContextApiConfig.FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED = false;
+						boardContextApiConfig.featureVideoconferenceEnabled = true;
+						boardContextApiConfig.featureColumnBoardVideoconferenceEnabled = false;
 
 						const result = await service.getFeaturesForBoardNode(boardNode.id);
 
@@ -200,8 +200,8 @@ describe('BoardContextApiHelperService', () => {
 					const course = courseEntityFactory.build();
 					courseService.findById.mockResolvedValueOnce(course);
 					legacySchoolService.hasFeature.mockResolvedValueOnce(true);
-					boardContextApiConfig.FEATURE_VIDEOCONFERENCE_ENABLED = true;
-					boardContextApiConfig.FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED = true;
+					boardContextApiConfig.featureVideoconferenceEnabled = true;
+					boardContextApiConfig.featureColumnBoardVideoconferenceEnabled = true;
 
 					const result = await service.getFeaturesForBoardNode(boardNode.id);
 
@@ -216,8 +216,8 @@ describe('BoardContextApiHelperService', () => {
 					const course = courseEntityFactory.build();
 					courseService.findById.mockResolvedValueOnce(course);
 					legacySchoolService.hasFeature.mockResolvedValueOnce(true);
-					boardContextApiConfig.FEATURE_VIDEOCONFERENCE_ENABLED = false;
-					boardContextApiConfig.FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED = false;
+					boardContextApiConfig.featureVideoconferenceEnabled = false;
+					boardContextApiConfig.featureColumnBoardVideoconferenceEnabled = false;
 
 					const result = await service.getFeaturesForBoardNode(boardNode.id);
 
@@ -247,8 +247,8 @@ describe('BoardContextApiHelperService', () => {
 					const { boardNode } = setup();
 
 					legacySchoolService.hasFeature.mockResolvedValueOnce(true);
-					boardContextApiConfig.FEATURE_VIDEOCONFERENCE_ENABLED = true;
-					boardContextApiConfig.FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED = true;
+					boardContextApiConfig.featureVideoconferenceEnabled = true;
+					boardContextApiConfig.featureColumnBoardVideoconferenceEnabled = true;
 
 					const result = await service.getFeaturesForBoardNode(boardNode.id);
 
@@ -261,8 +261,8 @@ describe('BoardContextApiHelperService', () => {
 					const { boardNode } = setup();
 
 					legacySchoolService.hasFeature.mockResolvedValueOnce(false);
-					boardContextApiConfig.FEATURE_VIDEOCONFERENCE_ENABLED = true;
-					boardContextApiConfig.FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED = true;
+					boardContextApiConfig.featureVideoconferenceEnabled = true;
+					boardContextApiConfig.featureColumnBoardVideoconferenceEnabled = true;
 
 					const result = await service.getFeaturesForBoardNode(boardNode.id);
 
@@ -275,8 +275,8 @@ describe('BoardContextApiHelperService', () => {
 					const { boardNode } = setup();
 
 					legacySchoolService.hasFeature.mockResolvedValueOnce(true);
-					boardContextApiConfig.FEATURE_VIDEOCONFERENCE_ENABLED = false;
-					boardContextApiConfig.FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED = true;
+					boardContextApiConfig.featureVideoconferenceEnabled = false;
+					boardContextApiConfig.featureColumnBoardVideoconferenceEnabled = true;
 
 					const result = await service.getFeaturesForBoardNode(boardNode.id);
 
@@ -289,8 +289,8 @@ describe('BoardContextApiHelperService', () => {
 					const { boardNode } = setup();
 
 					legacySchoolService.hasFeature.mockResolvedValueOnce(true);
-					boardContextApiConfig.FEATURE_VIDEOCONFERENCE_ENABLED = true;
-					boardContextApiConfig.FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED = false;
+					boardContextApiConfig.featureVideoconferenceEnabled = true;
+					boardContextApiConfig.featureColumnBoardVideoconferenceEnabled = false;
 
 					const result = await service.getFeaturesForBoardNode(boardNode.id);
 
@@ -303,8 +303,8 @@ describe('BoardContextApiHelperService', () => {
 					const { boardNode } = setup();
 
 					legacySchoolService.hasFeature.mockResolvedValueOnce(false);
-					boardContextApiConfig.FEATURE_VIDEOCONFERENCE_ENABLED = false;
-					boardContextApiConfig.FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED = false;
+					boardContextApiConfig.featureVideoconferenceEnabled = false;
+					boardContextApiConfig.featureColumnBoardVideoconferenceEnabled = false;
 
 					const result = await service.getFeaturesForBoardNode(boardNode.id);
 

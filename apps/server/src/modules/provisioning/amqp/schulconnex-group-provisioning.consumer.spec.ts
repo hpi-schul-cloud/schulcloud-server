@@ -4,10 +4,11 @@ import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { GroupService } from '@modules/group';
 import { groupFactory } from '@modules/group/testing';
-import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { GroupProvisioningSuccessfulLoggable } from '../loggable';
+import { PROVISIONING_EXCHANGE_CONFIG_TOKEN } from '../provisioning-exchange.config';
+import { PROVISIONING_CONFIG_TOKEN, ProvisioningConfig } from '../provisioning.config';
 import { ENTITIES } from '../schulconnex-group-provisioning.entity.imports';
 import { SchulconnexCourseSyncService, SchulconnexGroupProvisioningService } from '../strategy/schulconnex/service';
 import { externalGroupDtoFactory, externalSchoolDtoFactory } from '../testing';
@@ -21,7 +22,7 @@ describe(SchulconnexGroupProvisioningConsumer.name, () => {
 	let schulconnexGroupProvisioningService: DeepMocked<SchulconnexGroupProvisioningService>;
 	let schulconnexCourseSyncService: DeepMocked<SchulconnexCourseSyncService>;
 	let groupService: DeepMocked<GroupService>;
-	let configService: DeepMocked<ConfigService>;
+	let config: ProvisioningConfig;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -44,12 +45,21 @@ describe(SchulconnexGroupProvisioningConsumer.name, () => {
 					useValue: createMock<GroupService>(),
 				},
 				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService>(),
+					provide: PROVISIONING_CONFIG_TOKEN,
+					useValue: {
+						featureSchulconnexCourseSyncEnabled: true,
+					},
 				},
 				{
 					provide: MikroORM,
 					useValue: await setupEntities(ENTITIES),
+				},
+				{
+					provide: PROVISIONING_EXCHANGE_CONFIG_TOKEN,
+					useValue: {
+						exchangeName: 'provisioning-exchange',
+						exchangeType: 'direct',
+					},
 				},
 			],
 		}).compile();
@@ -59,7 +69,7 @@ describe(SchulconnexGroupProvisioningConsumer.name, () => {
 		schulconnexGroupProvisioningService = module.get(SchulconnexGroupProvisioningService);
 		schulconnexCourseSyncService = module.get(SchulconnexCourseSyncService);
 		groupService = module.get(GroupService);
-		configService = module.get(ConfigService);
+		config = module.get(PROVISIONING_CONFIG_TOKEN);
 	});
 
 	afterAll(async () => {
@@ -80,7 +90,7 @@ describe(SchulconnexGroupProvisioningConsumer.name, () => {
 
 				groupService.findByExternalSource.mockResolvedValueOnce(null);
 				schulconnexGroupProvisioningService.provisionExternalGroup.mockResolvedValueOnce(provisionedGroup);
-				configService.get.mockReturnValueOnce(true);
+				config.featureSchulconnexCourseSyncEnabled = true;
 
 				return {
 					systemId,
@@ -158,7 +168,7 @@ describe(SchulconnexGroupProvisioningConsumer.name, () => {
 
 				groupService.findByExternalSource.mockResolvedValueOnce(existingGroup);
 				schulconnexGroupProvisioningService.provisionExternalGroup.mockResolvedValueOnce(provisionedGroup);
-				configService.get.mockReturnValueOnce(true);
+				config.featureSchulconnexCourseSyncEnabled = true;
 
 				return {
 					systemId,
@@ -235,7 +245,7 @@ describe(SchulconnexGroupProvisioningConsumer.name, () => {
 
 				groupService.findByExternalSource.mockResolvedValueOnce(null);
 				schulconnexGroupProvisioningService.provisionExternalGroup.mockResolvedValueOnce(null);
-				configService.get.mockReturnValueOnce(true);
+				config.featureSchulconnexCourseSyncEnabled = true;
 
 				return {
 					systemId,
@@ -278,7 +288,7 @@ describe(SchulconnexGroupProvisioningConsumer.name, () => {
 
 				groupService.findByExternalSource.mockResolvedValueOnce(null);
 				schulconnexGroupProvisioningService.provisionExternalGroup.mockResolvedValueOnce(provisionedGroup);
-				configService.get.mockReturnValueOnce(false);
+				config.featureSchulconnexCourseSyncEnabled = false;
 
 				return {
 					systemId,

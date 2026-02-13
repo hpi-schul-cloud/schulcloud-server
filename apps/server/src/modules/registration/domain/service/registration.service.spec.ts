@@ -3,8 +3,11 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MailService } from '@infra/mail';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountService } from '@modules/account';
+import { REGISTRATION_CONFIG_TOKEN } from '@modules/registration/registration.config';
 import { RoleName, RoleService } from '@modules/role';
+import { RoomService } from '@modules/room';
 import { RoomMembershipService } from '@modules/room-membership';
+import { roomFactory } from '@modules/room/testing';
 import { SchoolService } from '@modules/school';
 import { SchoolPurpose } from '@modules/school/domain';
 import { schoolFactory } from '@modules/school/testing';
@@ -18,8 +21,6 @@ import { registrationFactory } from '../../testing/registration.factory';
 import { Registration, RegistrationCreateProps, RegistrationProps } from '../do';
 import { ResendingRegistrationMailLoggable } from '../error/resend-registration-mail.loggable';
 import { RegistrationService } from './registration.service';
-import { RoomService } from '@modules/room';
-import { roomFactory } from '@modules/room/testing';
 
 describe('RegistrationService', () => {
 	let module: TestingModule;
@@ -73,6 +74,15 @@ describe('RegistrationService', () => {
 				{
 					provide: RoomService,
 					useValue: createMock<RoomService>(),
+				},
+				{
+					provide: REGISTRATION_CONFIG_TOKEN,
+					useValue: {
+						featureExternalPersonRegistrationEnabled: true,
+						fromEmailAddress: 'no-reply@example.com',
+						scTitle: 'dBildungscloud',
+						hostUrl: 'https://example.com',
+					},
 				},
 			],
 		}).compile();

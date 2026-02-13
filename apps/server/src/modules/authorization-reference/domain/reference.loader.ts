@@ -33,7 +33,7 @@ export class ReferenceLoader {
 		throw new NotImplementedException('REPO_OR_SERVICE_NOT_IMPLEMENT');
 	}
 
-	async loadAuthorizableObject(
+	public async loadAuthorizableObject(
 		objectName: AuthorizableReferenceType,
 		objectId: EntityId
 	): Promise<AuthorizableObject | BaseDO> {
