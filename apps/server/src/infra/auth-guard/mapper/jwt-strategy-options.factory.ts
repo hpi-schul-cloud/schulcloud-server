@@ -1,23 +1,17 @@
-import { ConfigService } from '@nestjs/config';
-import { Algorithm } from 'jsonwebtoken';
 import { JwtFromRequestFunction, StrategyOptions } from 'passport-jwt';
 import { JwtAuthGuardConfig } from '../config';
 
 export class JwtStrategyOptionsFactory {
-	static build(
-		jwtFromRequestFunction: JwtFromRequestFunction,
-		configService: ConfigService<JwtAuthGuardConfig>
-	): StrategyOptions {
-		const publicKey = configService.getOrThrow<string>('JWT_PUBLIC_KEY');
-		const algorithm = configService.getOrThrow<string>('JWT_SIGNING_ALGORITHM') as Algorithm;
+	public static build(jwtFromRequestFunction: JwtFromRequestFunction, config: JwtAuthGuardConfig): StrategyOptions {
+		const { jwtPublicKey, jwtSigningAlgorithm, scDomain } = config;
 
 		const options = {
 			jwtFromRequest: jwtFromRequestFunction,
-			secretOrKey: publicKey,
+			secretOrKey: jwtPublicKey,
 			ignoreExpiration: false,
-			algorithms: [algorithm],
-			issuer: configService.getOrThrow<string>('SC_DOMAIN'),
-			audience: configService.getOrThrow<string>('SC_DOMAIN'),
+			algorithms: [jwtSigningAlgorithm],
+			issuer: scDomain,
+			audience: scDomain,
 		};
 
 		return options;

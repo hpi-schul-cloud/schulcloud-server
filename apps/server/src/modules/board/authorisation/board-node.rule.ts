@@ -1,4 +1,9 @@
 import { Action, AuthorizationContext, AuthorizationInjectionService, Rule } from '@modules/authorization';
+import { UserService } from '@modules/user';
+import { type User } from '@modules/user/repo';
+import { Injectable } from '@nestjs/common';
+import { Permission } from '@shared/domain/interface';
+import { EntityId } from '@shared/domain/types';
 import {
 	BoardNodeAuthorizable,
 	BoardRoles,
@@ -6,19 +11,15 @@ import {
 	isDrawingElement,
 	isSubmissionItem,
 	isSubmissionItemContent,
+	isVideoConferenceElement,
 	MediaBoard,
 	SubmissionItem,
 	UserWithBoardRoles,
-} from '@modules/board';
-import { User } from '@modules/user/repo';
-import { Injectable } from '@nestjs/common';
-import { Permission } from '@shared/domain/interface';
-import { EntityId } from '@shared/domain/types';
-import { isVideoConferenceElement } from '../domain';
+} from '../domain';
 
 @Injectable()
 export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
-	constructor(authorisationInjectionService: AuthorizationInjectionService) {
+	constructor(authorisationInjectionService: AuthorizationInjectionService, private readonly userService: UserService) {
 		authorisationInjectionService.injectAuthorizationRule(this);
 	}
 
@@ -72,7 +73,7 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 		authorizable: BoardNodeAuthorizable,
 		requiredPermissions: Permission[]
 	): boolean {
-		const schoolPermissions = user.resolvePermissions();
+		const schoolPermissions = this.userService.resolvePermissions(user);
 		const boardPermissions = authorizable.getUserPermissions(user.id);
 
 		const permissions = Array.from(new Set([...schoolPermissions, ...boardPermissions]));

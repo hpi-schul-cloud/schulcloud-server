@@ -1,12 +1,14 @@
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { MailModule } from '@infra/mail';
+import { MAIL_CONFIG_TOKEN, MailConfig, MailModule } from '@infra/mail';
+import { RABBITMQ_CONFIG_TOKEN, RabbitMQConfig } from '@infra/rabbitmq';
 import { Module } from '@nestjs/common';
 
 @Module({
 	imports: [
-		MailModule.forRoot({
-			exchange: Configuration.get('MAIL_SEND_EXCHANGE') as string,
-			routingKey: Configuration.get('MAIL_SEND_ROUTING_KEY') as string,
+		MailModule.register({
+			exchangeConfigConstructor: MailConfig,
+			exchangeConfigInjectionToken: MAIL_CONFIG_TOKEN,
+			configInjectionToken: RABBITMQ_CONFIG_TOKEN,
+			configConstructor: RabbitMQConfig,
 		}),
 	],
 	exports: [MailModule],

@@ -1,9 +1,26 @@
+import { AlertPublicApiConfig } from '@modules/alert';
+import { BoardPublicApiConfig } from '@modules/board';
 import { BoardContextPublicApiConfig } from '@modules/board-context';
+import { CommonCartridgePublicApiConfig } from '@modules/common-cartridge';
+import { FwuPublicApiConfig } from '@modules/fwu-learning-contents';
+import { LearnroomPublicApiConfig } from '@modules/learnroom';
+import { OauthPublicApiConfig } from '@modules/oauth';
+import { ProvisioningPublicApiConfig } from '@modules/provisioning';
+import { RegistrationPublicApiConfig } from '@modules/registration';
+import { RocketChatPublicApiConfig } from '@modules/rocketchat';
+import { RoomPublicApiConfig } from '@modules/room';
+import { RosterPublicApiConfig } from '@modules/roster';
+import { SharingPublicApiConfig } from '@modules/sharing';
+import { TaskPublicApiConfig } from '@modules/task';
+import { ToolPublicApiConfig } from '@modules/tool';
+import { UserPublicApiConfig } from '@modules/user';
+import { UserImportPublicApiConfig } from '@modules/user-import';
+import { UserLoginMigrationPublicApiConfig } from '@modules/user-login-migration';
 import { VideoConferencePublicApiConfig } from '@modules/video-conference';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { LanguageType } from '@shared/domain/interface';
 import { SchulcloudTheme } from '@shared/domain/types';
-import type { ServerConfig } from '../..';
+import type { ServerPublicApiConfig } from '../..';
 import { Timezone } from '../../types/timezone.enum';
 
 export class ConfigResponse {
@@ -259,89 +276,108 @@ export class ConfigResponse {
 	@ApiProperty({ type: String, nullable: true })
 	ROOM_MEMBER_ADD_EXTERNAL_PERSON_REQUIREMENTS_URL: string | null;
 
-	constructor(config: ServerConfig & VideoConferencePublicApiConfig & BoardContextPublicApiConfig) {
-		this.ACCESSIBILITY_REPORT_EMAIL = config.ACCESSIBILITY_REPORT_EMAIL;
-		this.SC_CONTACT_EMAIL = config.SC_CONTACT_EMAIL;
-		this.SC_CONTACT_EMAIL_SUBJECT = config.SC_CONTACT_EMAIL_SUBJECT;
-		this.ADMIN_TABLES_DISPLAY_CONSENT_COLUMN = config.ADMIN_TABLES_DISPLAY_CONSENT_COLUMN;
-		this.ALERT_STATUS_URL = config.ALERT_STATUS_URL;
-		this.CALENDAR_SERVICE_ENABLED = config.CALENDAR_SERVICE_ENABLED;
-		this.FEATURE_ES_COLLECTIONS_ENABLED = config.FEATURE_ES_COLLECTIONS_ENABLED;
-		this.FEATURE_TEAMS_ENABLED = config.FEATURE_TEAMS_ENABLED;
-		this.FEATURE_LERNSTORE_ENABLED = config.FEATURE_LERNSTORE_ENABLED;
-		this.FEATURE_FWU_CONTENT_ENABLED = config.FEATURE_FWU_CONTENT_ENABLED;
-		this.FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED =
-			config.FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED;
-		this.TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE = config.TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE;
-		this.TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT = config.TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT;
-		this.TEACHER_STUDENT_VISIBILITY__IS_VISIBLE = config.TEACHER_STUDENT_VISIBILITY__IS_VISIBLE;
-		this.FEATURE_SCHOOL_POLICY_ENABLED_NEW = config.FEATURE_SCHOOL_POLICY_ENABLED_NEW;
-		this.FEATURE_SCHOOL_TERMS_OF_USE_ENABLED = config.FEATURE_SCHOOL_TERMS_OF_USE_ENABLED;
-		this.FEATURE_COLUMN_BOARD_ENABLED = config.FEATURE_COLUMN_BOARD_ENABLED;
-		this.FEATURE_COLUMN_BOARD_SUBMISSIONS_ENABLED = config.FEATURE_COLUMN_BOARD_SUBMISSIONS_ENABLED;
+	constructor(
+		config: ServerPublicApiConfig &
+			VideoConferencePublicApiConfig &
+			BoardContextPublicApiConfig &
+			AlertPublicApiConfig &
+			OauthPublicApiConfig &
+			BoardPublicApiConfig &
+			ProvisioningPublicApiConfig &
+			RegistrationPublicApiConfig &
+			RosterPublicApiConfig &
+			RoomPublicApiConfig &
+			SharingPublicApiConfig &
+			CommonCartridgePublicApiConfig &
+			ToolPublicApiConfig &
+			TaskPublicApiConfig &
+			LearnroomPublicApiConfig &
+			UserPublicApiConfig &
+			UserImportPublicApiConfig &
+			UserLoginMigrationPublicApiConfig &
+			FwuPublicApiConfig &
+			RocketChatPublicApiConfig
+	) {
+		this.ACCESSIBILITY_REPORT_EMAIL = config.accessibilityReportEmail;
+		this.SC_CONTACT_EMAIL = config.scContactEmail;
+		this.SC_CONTACT_EMAIL_SUBJECT = config.scContactEmailSubject;
+		this.ADMIN_TABLES_DISPLAY_CONSENT_COLUMN = config.adminTablesDisplayConsentColumn;
+		this.ALERT_STATUS_URL = config.alertStatusUrl;
+		this.CALENDAR_SERVICE_ENABLED = config.calendarServiceEnabled;
+		this.FEATURE_ES_COLLECTIONS_ENABLED = config.featureEsCollectionsEnabled;
+		this.FEATURE_TEAMS_ENABLED = config.featureTeamsEnabled;
+		this.FEATURE_LERNSTORE_ENABLED = config.featureLernstoreEnabled;
+		this.FEATURE_FWU_CONTENT_ENABLED = config.fwuContentEnabled;
+		this.FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED = config.featureAdminToggleStudentLernstoreViewEnabled;
+		this.TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE = config.teacherStudentVisibilityIsConfigurable;
+		this.TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT = config.teacherStudentVisibilityIsEnabledByDefault;
+		this.TEACHER_STUDENT_VISIBILITY__IS_VISIBLE = config.teacherStudentVisibilityIsVisible;
+		this.FEATURE_SCHOOL_POLICY_ENABLED_NEW = config.featureSchoolPolicyEnabledNew;
+		this.FEATURE_SCHOOL_TERMS_OF_USE_ENABLED = config.featureSchoolTermsOfUseEnabled;
+		this.FEATURE_COLUMN_BOARD_ENABLED = config.featureColumnBoardEnabled;
+		this.FEATURE_COLUMN_BOARD_SUBMISSIONS_ENABLED = config.featureColumnBoardSubmissionsEnabled;
 		this.FEATURE_COLUMN_BOARD_COLLABORATIVE_TEXT_EDITOR_ENABLED =
-			config.FEATURE_COLUMN_BOARD_COLLABORATIVE_TEXT_EDITOR_ENABLED;
-		this.FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED = config.FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED;
-		this.FEATURE_COLUMN_BOARD_EXTERNAL_TOOLS_ENABLED = config.FEATURE_COLUMN_BOARD_EXTERNAL_TOOLS_ENABLED;
-		this.FEATURE_COLUMN_BOARD_SHARE = config.FEATURE_COLUMN_BOARD_SHARE;
-		this.FEATURE_COLUMN_BOARD_SOCKET_ENABLED = config.FEATURE_COLUMN_BOARD_SOCKET_ENABLED;
-		this.FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED = config.FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED;
-		this.FEATURE_COLUMN_BOARD_FILE_FOLDER_ENABLED = config.FEATURE_COLUMN_BOARD_FILE_FOLDER_ENABLED;
-		this.FEATURE_COURSE_SHARE = config.FEATURE_COURSE_SHARE;
-		this.FEATURE_LOGIN_LINK_ENABLED = config.FEATURE_LOGIN_LINK_ENABLED;
-		this.FEATURE_LESSON_SHARE = config.FEATURE_LESSON_SHARE;
-		this.FEATURE_TASK_SHARE = config.FEATURE_TASK_SHARE;
-		this.FEATURE_BOARD_LAYOUT_ENABLED = config.FEATURE_BOARD_LAYOUT_ENABLED;
-		this.FEATURE_USER_MIGRATION_ENABLED = config.FEATURE_USER_MIGRATION_ENABLED;
-		this.FEATURE_COPY_SERVICE_ENABLED = config.FEATURE_COPY_SERVICE_ENABLED;
-		this.FEATURE_CONSENT_NECESSARY = config.FEATURE_CONSENT_NECESSARY;
-		this.FEATURE_COMMON_CARTRIDGE_COURSE_EXPORT_ENABLED = config.FEATURE_COMMON_CARTRIDGE_COURSE_EXPORT_ENABLED;
-		this.FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_ENABLED = config.FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_ENABLED;
-		this.FEATURE_USER_LOGIN_MIGRATION_ENABLED = config.FEATURE_USER_LOGIN_MIGRATION_ENABLED;
-		this.FEATURE_ALLOW_INSECURE_LDAP_URL_ENABLED = config.FEATURE_ALLOW_INSECURE_LDAP_URL_ENABLED;
-		this.GHOST_BASE_URL = config.GHOST_BASE_URL;
-		this.ROCKETCHAT_SERVICE_ENABLED = config.ROCKETCHAT_SERVICE_ENABLED;
-		this.I18N__AVAILABLE_LANGUAGES = config.I18N__AVAILABLE_LANGUAGES;
-		this.I18N__DEFAULT_LANGUAGE = config.I18N__DEFAULT_LANGUAGE;
-		this.I18N__FALLBACK_LANGUAGE = config.I18N__FALLBACK_LANGUAGE;
-		this.I18N__DEFAULT_TIMEZONE = config.I18N__DEFAULT_TIMEZONE;
-		this.JWT_SHOW_TIMEOUT_WARNING_SECONDS = config.JWT_SHOW_TIMEOUT_WARNING_SECONDS;
-		this.JWT_TIMEOUT_SECONDS = config.JWT_TIMEOUT_SECONDS;
-		this.NOT_AUTHENTICATED_REDIRECT_URL = config.NOT_AUTHENTICATED_REDIRECT_URL;
-		this.DOCUMENT_BASE_DIR = config.DOCUMENT_BASE_DIR;
-		this.SC_THEME = config.SC_THEME;
-		this.SC_TITLE = config.SC_TITLE;
-		this.TRAINING_URL = config.TRAINING_URL;
-		this.MIGRATION_END_GRACE_PERIOD_MS = config.MIGRATION_END_GRACE_PERIOD_MS;
-		this.FEATURE_SHOW_OUTDATED_USERS = config.FEATURE_SHOW_OUTDATED_USERS;
-		this.FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION = config.FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION;
-		this.CTL_TOOLS_RELOAD_TIME_MS = config.CTL_TOOLS_RELOAD_TIME_MS;
-		this.FEATURE_CTL_TOOLS_COPY_ENABLED = config.FEATURE_CTL_TOOLS_COPY_ENABLED;
-		this.FEATURE_PREFERRED_CTL_TOOLS_ENABLED = config.FEATURE_PREFERRED_CTL_TOOLS_ENABLED;
-		this.FEATURE_SHOW_MIGRATION_WIZARD = config.FEATURE_SHOW_MIGRATION_WIZARD;
-		this.MIGRATION_WIZARD_DOCUMENTATION_LINK = config.MIGRATION_WIZARD_DOCUMENTATION_LINK;
-		this.FEATURE_TLDRAW_ENABLED = config.FEATURE_TLDRAW_ENABLED;
-		this.FEATURE_VIDEOCONFERENCE_ENABLED = config.FEATURE_VIDEOCONFERENCE_ENABLED;
-		this.FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED = config.FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED;
-		this.FEATURE_MEDIA_SHELF_ENABLED = config.FEATURE_MEDIA_SHELF_ENABLED;
-		this.BOARD_COLLABORATION_URI = config.BOARD_COLLABORATION_URI;
-		this.FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED = config.FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED;
-		this.FEATURE_AI_TUTOR_ENABLED = config.FEATURE_AI_TUTOR_ENABLED;
-		this.FEATURE_ADMINISTRATE_ROOMS_ENABLED = config.FEATURE_ADMINISTRATE_ROOMS_ENABLED;
-		this.FEATURE_BOARD_READERS_CAN_EDIT_TOGGLE = config.FEATURE_BOARD_READERS_CAN_EDIT_TOGGLE;
-		this.FEATURE_EXTERNAL_PERSON_REGISTRATION_ENABLED = config.FEATURE_EXTERNAL_PERSON_REGISTRATION_ENABLED;
-		this.FEATURE_ROOM_COPY_ENABLED = config.FEATURE_ROOM_COPY_ENABLED;
-		this.FEATURE_ROOM_SHARE = config.FEATURE_ROOM_SHARE;
-		this.FEATURE_ROOM_ADD_EXTERNAL_PERSONS_ENABLED = config.FEATURE_ROOM_ADD_EXTERNAL_PERSONS_ENABLED;
-		this.FEATURE_ROOM_REGISTER_EXTERNAL_PERSONS_ENABLED = config.FEATURE_ROOM_REGISTER_EXTERNAL_PERSONS_ENABLED;
-		this.FEATURE_ROOM_LINK_INVITATION_EXTERNAL_PERSONS_ENABLED =
-			config.FEATURE_ROOM_LINK_INVITATION_EXTERNAL_PERSONS_ENABLED;
-		this.FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED = config.FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED;
-		this.FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED = config.FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED;
-		this.LICENSE_SUMMARY_URL = config.LICENSE_SUMMARY_URL;
-		this.ROOM_MEMBER_INFO_URL = config.ROOM_MEMBER_INFO_URL;
-		this.ROOM_MEMBER_ADD_EXTERNAL_PERSON_REQUIREMENTS_URL = config.ROOM_MEMBER_ADD_EXTERNAL_PERSON_REQUIREMENTS_URL;
-		this.FEATURE_COLUMN_BOARD_H5P_ENABLED = config.FEATURE_COLUMN_BOARD_H5P_ENABLED;
-		this.FEATURE_COLUMN_BOARD_COLLABORA_ENABLED = config.FEATURE_COLUMN_BOARD_COLLABORA_ENABLED;
+			config.featureColumnBoardCollaborativeTextEditorEnabled;
+		this.FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED = config.featureColumnBoardLinkElementEnabled;
+		this.FEATURE_COLUMN_BOARD_EXTERNAL_TOOLS_ENABLED = config.featureColumnBoardExternalToolsEnabled;
+		this.FEATURE_COLUMN_BOARD_SHARE = config.featureColumnBoardShare;
+		this.FEATURE_COLUMN_BOARD_SOCKET_ENABLED = config.featureColumnBoardSocketEnabled;
+		this.FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED = config.featureColumnBoardVideoconferenceEnabled;
+		this.FEATURE_COLUMN_BOARD_FILE_FOLDER_ENABLED = config.featureColumnBoardFileFolderEnabled;
+		this.FEATURE_COURSE_SHARE = config.featureCourseShare;
+		this.FEATURE_LOGIN_LINK_ENABLED = config.featureLoginLinkEnabled;
+		this.FEATURE_LESSON_SHARE = config.featureLessonShare;
+		this.FEATURE_TASK_SHARE = config.featureTaskShare;
+		this.FEATURE_BOARD_LAYOUT_ENABLED = config.featureBoardLayoutEnabled;
+		this.FEATURE_USER_MIGRATION_ENABLED = config.featureUserMigrationEnabled;
+		this.FEATURE_COPY_SERVICE_ENABLED = config.featureCopyServiceEnabled;
+		this.FEATURE_CONSENT_NECESSARY = config.featureConsentNecessary;
+		this.FEATURE_COMMON_CARTRIDGE_COURSE_EXPORT_ENABLED = config.courseExportEnabled;
+		this.FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_ENABLED = config.courseImportEnabled;
+		this.FEATURE_USER_LOGIN_MIGRATION_ENABLED = config.featureUserLoginMigrationEnabled;
+		this.FEATURE_ALLOW_INSECURE_LDAP_URL_ENABLED = config.featureAllowInsecureLdapUrlEnabled;
+		this.GHOST_BASE_URL = config.ghostBaseUrl;
+		this.ROCKETCHAT_SERVICE_ENABLED = config.rocketChatServiceEnabled;
+		this.I18N__AVAILABLE_LANGUAGES = config.availableLanguages;
+		this.I18N__DEFAULT_LANGUAGE = config.i18nDefaultLanguage;
+		this.I18N__FALLBACK_LANGUAGE = config.i18nFallbackLanguage;
+		this.I18N__DEFAULT_TIMEZONE = config.i18nDefaultTimezone;
+		this.JWT_SHOW_TIMEOUT_WARNING_SECONDS = config.jwtShowTimeoutWarningSeconds;
+		this.JWT_TIMEOUT_SECONDS = config.jwtTimeoutSeconds;
+		this.NOT_AUTHENTICATED_REDIRECT_URL = config.notAuthenticatedRedirectUrl;
+		this.DOCUMENT_BASE_DIR = config.documentBaseDir;
+		this.SC_THEME = config.scTheme;
+		this.SC_TITLE = config.scTitle;
+		this.TRAINING_URL = config.trainingUrl;
+		this.MIGRATION_END_GRACE_PERIOD_MS = config.migrationEndGracePeriodMs;
+		this.FEATURE_SHOW_OUTDATED_USERS = config.featureShowOutdatedUsers;
+		this.FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION = config.featureEnableLdapSyncDuringMigration;
+		this.CTL_TOOLS_RELOAD_TIME_MS = config.ctlToolsReloadTimeMs;
+		this.FEATURE_CTL_TOOLS_COPY_ENABLED = config.featureCtlToolsCopyEnabled;
+		this.FEATURE_PREFERRED_CTL_TOOLS_ENABLED = config.featurePreferredCtlToolsEnabled;
+		this.FEATURE_SHOW_MIGRATION_WIZARD = config.featureShowMigrationWizard;
+		this.MIGRATION_WIZARD_DOCUMENTATION_LINK = config.migrationWizardDocumentationLink;
+		this.FEATURE_TLDRAW_ENABLED = config.featureTldrawEnabled;
+		this.FEATURE_VIDEOCONFERENCE_ENABLED = config.featureVideoConferenceEnabled;
+		this.FEATURE_MEDIA_SHELF_ENABLED = config.featureMediaShelfEnabled;
+		this.FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED = config.featureSchulconnexCourseSyncEnabled;
+		this.BOARD_COLLABORATION_URI = config.boardCollaborationUri;
+		this.FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED = config.featureSchulconnexMediaLicenseEnabled;
+		this.FEATURE_AI_TUTOR_ENABLED = config.featureAiTutorEnabled;
+		this.FEATURE_ADMINISTRATE_ROOMS_ENABLED = config.featureAdministrateRoomsEnabled;
+		this.FEATURE_BOARD_READERS_CAN_EDIT_TOGGLE = config.featureBoardReadersCanEditToggle;
+		this.FEATURE_EXTERNAL_PERSON_REGISTRATION_ENABLED = config.featureExternalPersonRegistrationEnabled;
+		this.FEATURE_ROOM_COPY_ENABLED = config.featureRoomCopyEnabled;
+		this.FEATURE_ROOM_SHARE = config.featureRoomShare;
+		this.FEATURE_ROOM_ADD_EXTERNAL_PERSONS_ENABLED = config.featureRoomAddExternalPersonsEnabled;
+		this.FEATURE_ROOM_REGISTER_EXTERNAL_PERSONS_ENABLED = config.featureRoomRegisterExternalPersonsEnabled;
+		this.FEATURE_ROOM_LINK_INVITATION_EXTERNAL_PERSONS_ENABLED = config.featureRoomLinkInvitationExternalPersonsEnabled;
+		this.FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED = config.featureExternalSystemLogoutEnabled;
+		this.FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED = config.featureVidisMediaActivationsEnabled;
+		this.LICENSE_SUMMARY_URL = config.licenseSummaryUrl;
+		this.ROOM_MEMBER_INFO_URL = config.roomMemberInfoUrl;
+		this.ROOM_MEMBER_ADD_EXTERNAL_PERSON_REQUIREMENTS_URL = config.roomMemberAddExternalPersonRequirementsUrl;
+		this.FEATURE_COLUMN_BOARD_H5P_ENABLED = config.featureColumnBoardH5pEnabled;
+		this.FEATURE_COLUMN_BOARD_COLLABORA_ENABLED = config.featureColumnBoardCollaboraEnabled;
 	}
 }

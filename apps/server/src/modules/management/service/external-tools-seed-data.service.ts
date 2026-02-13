@@ -14,13 +14,12 @@ import {
 	ToolContextType,
 } from '@modules/tool/common/enum';
 import { Inject, Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { ManagementSeedDataConfig } from '../config';
+import { MANAGEMENT_SEED_DATA_CONFIG_TOKEN, ManagementSeedDataConfig } from '../management-seed-data.config';
 
 @Injectable()
 export class ExternalToolsSeedDataService {
 	constructor(
-		private readonly configService: ConfigService<ManagementSeedDataConfig, true>,
+		@Inject(MANAGEMENT_SEED_DATA_CONFIG_TOKEN) private readonly config: ManagementSeedDataConfig,
 		@Inject(DefaultEncryptionService) private readonly encryptionService: EncryptionService,
 		private readonly externalToolService: ExternalToolService,
 		private readonly oauthProviderService: OauthProviderService,
@@ -30,14 +29,16 @@ export class ExternalToolsSeedDataService {
 	public async import(): Promise<number> {
 		const externalTools: ExternalTool[] = [];
 
-		const nextcloudName: string | undefined = this.configService.get<string>(
-			'NEXTCLOUD_SOCIALLOGIN_OIDC_INTERNAL_NAME'
-		);
-		const nextcloudBaseUrl: string | undefined = this.configService.get<string>('NEXTCLOUD_BASE_URL');
-		const nextcloudClientId: string | undefined = this.configService.get<string>('NEXTCLOUD_CLIENT_ID');
-		const nextcloudClientSecret: string | undefined = this.configService.get<string>('NEXTCLOUD_CLIENT_SECRET');
-		const nextcloudScopes: string | undefined = this.configService.get<string>('NEXTCLOUD_SCOPES');
-
+		const nextcloudName: string | undefined = this.config.nextcloudSocialloginOidcInternalName;
+		const {
+			ctlSeedSecretOnlineDiaDeutsch: onlineDiaDeutschSecret,
+			ctlSeedSecretOnlineDiaMathe: onlineDiaMatheSecret,
+			ctlSeedSecretMerlin: merlinSecret,
+			nextcloudBaseUrl,
+			nextcloudClientId,
+			nextcloudClientSecret,
+			nextcloudScopes,
+		} = this.config;
 		if (nextcloudBaseUrl && nextcloudClientId && nextcloudClientSecret) {
 			externalTools.push(
 				new ExternalTool({
@@ -61,9 +62,6 @@ export class ExternalToolsSeedDataService {
 			);
 		}
 
-		const onlineDiaDeutschSecret: string | undefined = this.configService.get<string>(
-			'CTL_SEED_SECRET_ONLINE_DIA_DEUTSCH'
-		);
 		if (onlineDiaDeutschSecret) {
 			externalTools.push(
 				new ExternalTool({
@@ -127,7 +125,6 @@ export class ExternalToolsSeedDataService {
 			);
 		}
 
-		const onlineDiaMatheSecret: string | undefined = this.configService.get<string>('CTL_SEED_SECRET_ONLINE_DIA_MATHE');
 		if (onlineDiaMatheSecret) {
 			externalTools.push(
 				new ExternalTool({
@@ -191,7 +188,6 @@ export class ExternalToolsSeedDataService {
 			);
 		}
 
-		const merlinSecret: string | undefined = this.configService.get<string>('CTL_SEED_SECRET_MERLIN');
 		if (merlinSecret) {
 			externalTools.push(
 				new ExternalTool({
@@ -201,7 +197,7 @@ export class ExternalToolsSeedDataService {
 					config: new Lti11ToolConfig({
 						baseUrl: 'https://nds.edupool.de',
 						key: 'xvD0eMHxEPsKI198',
-						secret: this.encryptionService.encrypt(onlineDiaMatheSecret),
+						secret: this.encryptionService.encrypt(merlinSecret),
 						lti_message_type: LtiMessageType.CONTENT_ITEM_SELECTION_REQUEST,
 						privacy_permission: LtiPrivacyPermission.ANONYMOUS,
 						launch_presentation_locale: 'de-DE',

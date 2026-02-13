@@ -1,10 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { OauthSessionToken, OauthSessionTokenService } from '@modules/oauth';
+import { OAUTH_PUBLIC_API_CONFIG_TOKEN, OauthSessionToken, OauthSessionTokenService } from '@modules/oauth';
 import { oauthSessionTokenFactory } from '@modules/oauth/testing';
-import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FeatureDisabledLoggableException, NotFoundLoggableException } from '@shared/common/loggable-exception';
+import { OauthPublicApiConfig } from '../oauth.config';
 import { OAuthUc } from './oauth.uc';
 
 describe(OAuthUc.name, () => {
@@ -12,7 +12,7 @@ describe(OAuthUc.name, () => {
 	let uc: OAuthUc;
 
 	let oauthSessionTokenService: DeepMocked<OauthSessionTokenService>;
-	let configService: DeepMocked<ConfigService>;
+	let config: OauthPublicApiConfig;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -23,15 +23,18 @@ describe(OAuthUc.name, () => {
 					useValue: createMock<OauthSessionTokenService>(),
 				},
 				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService>(),
+					provide: OAUTH_PUBLIC_API_CONFIG_TOKEN,
+					useValue: {
+						featureLoginLinkEnabled: true,
+						featureExternalSystemLogoutEnabled: true,
+					},
 				},
 			],
 		}).compile();
 
 		uc = module.get(OAuthUc);
 		oauthSessionTokenService = module.get(OauthSessionTokenService);
-		configService = module.get(ConfigService);
+		config = module.get(OAUTH_PUBLIC_API_CONFIG_TOKEN);
 	});
 
 	beforeEach(() => {
@@ -47,7 +50,7 @@ describe(OAuthUc.name, () => {
 			const setup = () => {
 				const userId = new ObjectId().toHexString();
 
-				configService.getOrThrow.mockReturnValueOnce(false);
+				config.featureExternalSystemLogoutEnabled = false;
 
 				return { userId };
 			};
@@ -69,7 +72,8 @@ describe(OAuthUc.name, () => {
 					const sessionToken = oauthSessionTokenFactory.build();
 
 					oauthSessionTokenService.findLatestByUserId.mockResolvedValueOnce(sessionToken);
-					configService.getOrThrow.mockReturnValueOnce(true);
+
+					config.featureExternalSystemLogoutEnabled = true;
 
 					return { sessionToken };
 				};
@@ -87,7 +91,7 @@ describe(OAuthUc.name, () => {
 				const setup = () => {
 					const userId = new ObjectId().toHexString();
 
-					configService.getOrThrow.mockReturnValueOnce(true);
+					config.featureExternalSystemLogoutEnabled = true;
 
 					return { userId };
 				};

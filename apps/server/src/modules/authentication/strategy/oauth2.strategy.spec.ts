@@ -9,6 +9,7 @@ import { userDoFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityId } from '@shared/domain/types';
 import { JwtTestFactory } from '@testing/factory/jwt.test.factory';
+import { AUTHENTICATION_CONFIG_TOKEN, AuthenticationConfig } from '../authentication-config';
 import { OauthCurrentUser } from '../interface';
 import {
 	AccountNotFoundLoggableException,
@@ -16,7 +17,6 @@ import {
 	UserAccountDeactivatedLoggableException,
 } from '../loggable';
 import { Oauth2Strategy } from './oauth2.strategy';
-import { ConfigService } from '@nestjs/config';
 
 describe(Oauth2Strategy.name, () => {
 	let module: TestingModule;
@@ -25,7 +25,7 @@ describe(Oauth2Strategy.name, () => {
 	let accountService: DeepMocked<AccountService>;
 	let oauthService: DeepMocked<OAuthService>;
 	let oauthSessionTokenService: DeepMocked<OauthSessionTokenService>;
-	let configService: DeepMocked<ConfigService>;
+	let config: AuthenticationConfig;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -44,8 +44,8 @@ describe(Oauth2Strategy.name, () => {
 					useValue: createMock<OauthSessionTokenService>(),
 				},
 				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService>(),
+					provide: AUTHENTICATION_CONFIG_TOKEN,
+					useValue: AuthenticationConfig,
 				},
 			],
 		}).compile();
@@ -54,7 +54,7 @@ describe(Oauth2Strategy.name, () => {
 		accountService = module.get(AccountService);
 		oauthService = module.get(OAuthService);
 		oauthSessionTokenService = module.get(OauthSessionTokenService);
-		configService = module.get(ConfigService);
+		config = module.get(AUTHENTICATION_CONFIG_TOKEN);
 	});
 
 	afterAll(async () => {
@@ -84,7 +84,7 @@ describe(Oauth2Strategy.name, () => {
 				);
 				oauthService.provisionUser.mockResolvedValue(user);
 				accountService.findByUserId.mockResolvedValue(account);
-				configService.getOrThrow.mockReturnValueOnce(true);
+				config.externalSystemLogoutEnabled = true;
 
 				return {
 					systemId,
@@ -234,7 +234,7 @@ describe(Oauth2Strategy.name, () => {
 				);
 				oauthService.provisionUser.mockResolvedValue(user);
 				accountService.findByUserId.mockResolvedValue(account);
-				configService.getOrThrow.mockReturnValueOnce(false);
+				config.externalSystemLogoutEnabled = false;
 
 				return { systemId };
 			};

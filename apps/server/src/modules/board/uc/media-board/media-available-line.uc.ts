@@ -3,15 +3,15 @@ import { MediaSchoolLicense, MediaSchoolLicenseService } from '@modules/school-l
 import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { MediaUserLicense, MediaUserLicenseService } from '@modules/user-license';
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { Inject, Injectable } from '@nestjs/common';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 import { throwForbiddenIfFalse } from '@shared/common/utils';
 import { EntityId } from '@shared/domain/types';
 import { BoardNodeRule } from '../../authorisation/board-node.rule';
 import { MediaAvailableLine, MediaBoard } from '../../domain';
 import { MediaBoardColors } from '../../domain/media-board/types';
-import type { MediaBoardConfig } from '../../media-board.config';
+
+import { BOARD_CONFIG_TOKEN, BoardConfig } from '../../board.config';
 import {
 	BoardNodeAuthorizableService,
 	BoardNodeService,
@@ -28,7 +28,7 @@ export class MediaAvailableLineUc {
 		private readonly boardNodeService: BoardNodeService,
 		private readonly mediaAvailableLineService: MediaAvailableLineService,
 		private readonly mediaBoardService: MediaBoardService,
-		private readonly configService: ConfigService<MediaBoardConfig, true>,
+		@Inject(BOARD_CONFIG_TOKEN) private readonly config: BoardConfig,
 		private readonly mediaUserLicenseService: MediaUserLicenseService,
 		private readonly mediaSchoolLicenseService: MediaSchoolLicenseService
 	) {}
@@ -98,11 +98,11 @@ export class MediaAvailableLineUc {
 	): Promise<[ExternalTool, SchoolExternalTool][]> {
 		let filteredTools = matchedTools;
 
-		if (this.configService.get('FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED')) {
+		if (this.config.featureSchulconnexMediaLicenseEnabled) {
 			filteredTools = await this.filterUnlicensedTools(userId, filteredTools);
 		}
 
-		if (this.configService.get('FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED')) {
+		if (this.config.featureVidisMediaActivationsEnabled) {
 			filteredTools = await this.getToolsForUserAndSchool(schoolId, matchedTools, filteredTools);
 		}
 
@@ -151,7 +151,7 @@ export class MediaAvailableLineUc {
 	}
 
 	private checkFeatureEnabled(): void {
-		if (!this.configService.get('FEATURE_MEDIA_SHELF_ENABLED')) {
+		if (!this.config.featureMediaShelfEnabled) {
 			throw new FeatureDisabledLoggableException('FEATURE_MEDIA_SHELF_ENABLED');
 		}
 	}

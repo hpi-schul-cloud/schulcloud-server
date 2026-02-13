@@ -1,19 +1,19 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Course, CourseDoService, CourseSyncAttribute, CourseSyncService } from '@modules/course';
-import { courseFactory } from '@modules/course/testing';
 import {
 	CourseSynchronizationHistory,
 	CourseSynchronizationHistoryProps,
 	CourseSynchronizationHistoryService,
 } from '@modules/course-synchronization-history';
 import { courseSynchronizationHistoryFactory } from '@modules/course-synchronization-history/testing';
+import { courseFactory } from '@modules/course/testing';
 import { Group } from '@modules/group';
 import { groupFactory } from '@modules/group/testing';
-import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ExternalSource } from '@shared/domain/domainobject';
 import { CourseSyncHistoryGroupExternalSourceMissingLoggableException } from '../../../loggable';
+import { PROVISIONING_CONFIG_TOKEN, ProvisioningConfig } from '../../../provisioning.config';
 import { SchulconnexCourseSyncService } from './schulconnex-course-sync.service';
 
 describe(SchulconnexCourseSyncService.name, () => {
@@ -22,7 +22,7 @@ describe(SchulconnexCourseSyncService.name, () => {
 	let courseDoService: DeepMocked<CourseDoService>;
 	let courseSyncService: DeepMocked<CourseSyncService>;
 	let courseSyncHistoryService: DeepMocked<CourseSynchronizationHistoryService>;
-	let configService: DeepMocked<ConfigService>;
+	let config: ProvisioningConfig;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -41,8 +41,8 @@ describe(SchulconnexCourseSyncService.name, () => {
 					useValue: createMock<CourseSynchronizationHistoryService>(),
 				},
 				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService>(),
+					provide: PROVISIONING_CONFIG_TOKEN,
+					useValue: { schulconnexCourseSyncHistoryExpirationSeconds: undefined },
 				},
 			],
 		}).compile();
@@ -51,7 +51,7 @@ describe(SchulconnexCourseSyncService.name, () => {
 		courseDoService = module.get(CourseDoService);
 		courseSyncService = module.get(CourseSyncService);
 		courseSyncHistoryService = module.get(CourseSynchronizationHistoryService);
-		configService = module.get(ConfigService);
+		config = module.get(PROVISIONING_CONFIG_TOKEN);
 	});
 
 	afterAll(async () => {
@@ -277,7 +277,7 @@ describe(SchulconnexCourseSyncService.name, () => {
 				const mockExpirationSeconds = 5 * 24 * 60 * 60;
 				const mockDate = new Date();
 
-				configService.getOrThrow.mockReturnValueOnce(mockExpirationSeconds);
+				config.schulconnexCourseSyncHistoryExpirationSeconds = mockExpirationSeconds;
 				jest.spyOn(Date, 'now').mockReturnValueOnce(mockDate.getTime());
 
 				return {

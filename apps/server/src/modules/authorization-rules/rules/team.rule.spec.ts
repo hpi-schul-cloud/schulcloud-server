@@ -1,4 +1,5 @@
 import {
+	AUTHORIZATION_CONFIG_TOKEN,
 	AuthorizationContextBuilder,
 	AuthorizationHelper,
 	AuthorizationInjectionService,
@@ -26,7 +27,12 @@ describe('TeamRule', () => {
 		await setupEntities([User]);
 
 		const module: TestingModule = await Test.createTestingModule({
-			providers: [AuthorizationHelper, TeamRule, AuthorizationInjectionService],
+			providers: [
+				AuthorizationHelper,
+				TeamRule,
+				AuthorizationInjectionService,
+				{ provide: AUTHORIZATION_CONFIG_TOKEN, useValue: {} },
+			],
 		}).compile();
 
 		rule = await module.get(TeamRule);

@@ -2,31 +2,16 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-admin-client-cjs-index';
 import { Clients } from '@keycloak/keycloak-admin-client/lib/resources/clients';
 import { Test, TestingModule } from '@nestjs/testing';
-import { IKeycloakSettings, KeycloakSettings } from '../interface/keycloak-settings.interface';
+import { KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN, KeycloakAdministrationConfig } from '../keycloak-administration.config';
 import { KeycloakAdministrationService } from './keycloak-administration.service';
 
 describe('KeycloakAdministrationService', () => {
 	let module: TestingModule;
 	let kcAdminClient: DeepMocked<KeycloakAdminClient>;
-	let settings: IKeycloakSettings;
+	let config: KeycloakAdministrationConfig;
 	let service: KeycloakAdministrationService;
 
 	const kcApiClientMock = createMock<Clients>();
-
-	const getSettings = (): IKeycloakSettings => {
-		return {
-			internalBaseUrl: 'http://localhost:8080',
-			externalBaseUrl: 'http://localhost:8080',
-			realmName: 'master',
-			clientId: 'client',
-			credentials: {
-				username: 'username',
-				password: 'password',
-				grantType: 'password',
-				clientId: 'client-id',
-			},
-		};
-	};
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -37,14 +22,26 @@ describe('KeycloakAdministrationService', () => {
 					useValue: createMock<KeycloakAdminClient>(),
 				},
 				{
-					provide: KeycloakSettings,
-					useFactory: getSettings,
+					provide: KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
+					useValue: {
+						identityManagementEnabled: true,
+						internalBaseUrl: 'http://localhost:8080',
+						externalBaseUrl: 'http://localhost:8080',
+						realmName: 'master',
+						clientId: 'client',
+						credentials: {
+							username: 'username',
+							password: 'password',
+							grantType: 'password',
+							clientId: 'client-id',
+						},
+					},
 				},
 			],
 		}).compile();
 
 		kcAdminClient = module.get(KeycloakAdminClient);
-		settings = module.get(KeycloakSettings);
+		config = module.get<KeycloakAdministrationConfig>(KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN);
 		service = module.get(KeycloakAdministrationService);
 
 		kcAdminClient.realms.update = jest.fn();
@@ -104,21 +101,21 @@ describe('KeycloakAdministrationService', () => {
 
 	describe('getAdminUser', () => {
 		it('should return the admin username', () => {
-			expect(service.getAdminUser()).toBe(settings.credentials.username);
+			expect(service.getAdminUser()).toBe(config.credentials.username);
 		});
 	});
 
 	describe('getWellKnownUrl', () => {
 		it('should return the well known URL', () => {
 			const wellKnownUrl = service.getWellKnownUrl();
-			expect(wellKnownUrl).toContain(settings.internalBaseUrl);
-			expect(wellKnownUrl).toContain(settings.realmName);
+			expect(wellKnownUrl).toContain(config.internalBaseUrl);
+			expect(wellKnownUrl).toContain(config.realmName);
 		});
 	});
 
 	describe('getClientId', () => {
 		it('should return the client id', () => {
-			expect(service.getClientId()).toBe(settings.clientId);
+			expect(service.getClientId()).toBe(config.clientId);
 		});
 	});
 
@@ -141,7 +138,7 @@ describe('KeycloakAdministrationService', () => {
 		it('should call the keycloak admin client with the correct params', async () => {
 			await service.setPasswordPolicy();
 			expect(kcAdminClient.realms.update).toBeCalledWith(
-				{ realm: settings.realmName },
+				{ realm: config.realmName },
 				{ passwordPolicy: 'hashIterations(310000)' }
 			);
 		});

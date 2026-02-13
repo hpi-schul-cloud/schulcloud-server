@@ -8,11 +8,11 @@ export const BOARD_CONTEXT_PUBLIC_API_CONFIG = 'BOARD_CONTEXT_PUBLIC_API_CONFIG'
 export class BoardContextPublicApiConfig {
 	@IsBoolean()
 	@StringToBoolean()
-	@ConfigProperty()
-	public FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED = true;
+	@ConfigProperty('FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED')
+	public featureColumnBoardVideoconferenceEnabled = true;
 
 	@IsBoolean()
 	@StringToBoolean()
-	@ConfigProperty()
-	public FEATURE_VIDEOCONFERENCE_ENABLED = true;
+	@ConfigProperty('FEATURE_VIDEOCONFERENCE_ENABLED')
+	public featureVideoconferenceEnabled = false;
 }

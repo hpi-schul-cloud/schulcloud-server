@@ -1,6 +1,5 @@
 import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { externalToolFactory } from '@modules/tool/external-tool/testing';
 import { userDoFactory } from '@modules/user/testing';
 import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
@@ -9,6 +8,7 @@ import { Page } from '@shared/domain/domainobject';
 import { IFindOptions } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { ExternalToolPseudonymEntity } from '../entity';
+import { PSEUDONYM_CONFIG_TOKEN } from '../pseudonym.config';
 import { ExternalToolPseudonymRepo, Pseudonym } from '../repo';
 import { pseudonymFactory } from '../testing';
 import { PseudonymService } from './pseudonym.service';
@@ -32,6 +32,12 @@ describe('PseudonymService', () => {
 				{
 					provide: Logger,
 					useValue: createMock<Logger>(),
+				},
+				{
+					provide: PSEUDONYM_CONFIG_TOKEN,
+					useValue: {
+						hostUrl: 'https://host.de',
+					},
 				},
 			],
 		}).compile();
@@ -422,7 +428,6 @@ describe('PseudonymService', () => {
 			const setup = () => {
 				const pseudonym = 'pseudonym';
 				const host = 'https://host.de';
-				Configuration.set('HOST', host);
 
 				return {
 					pseudonym,

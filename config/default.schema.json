@@ -50,11 +50,6 @@
 			"default": 16,
 			"description": "Second gate for consent. Starting at this age parent consent is not required"
 		},
-		"LOGIN_BLOCK_TIME": {
-			"type": "integer",
-			"default": 15,
-			"description": "Time difference for the brute force check in seconds"
-		},
 		"FORCE_SEND_EMAIL": {
 			"type": "boolean",
 			"default": false,
@@ -104,35 +99,6 @@
 			"enum": ["disabled", "opt-in", "opt-out", "enabled"],
 			"description": "defines wheter students may create teams or not. if enabled system wide there are options general enabled or opt-in/-out by school admin required."
 		},
-		"SESSION_VALKEY": {
-			"type": "object",
-			"description": "Session configuration ",
-			"properties": {
-				"MODE": {
-					"type": "string",
-					"default": "cluster",
-					"enum": ["cluster", "single", "in-memory"],
-					"description": "Define valkey mode."
-				},
-				"URI": {
-					"type": "string",
-					"pattern": "(rediss?:)?//((\\w+)?(:.+@)?)?((\\w+)?(:\\w+))?(/d+)?(\\?db=\\d+(&password=.+(&option=.+)*)?)?",
-					"description": "URL of a Valkey server. If undefined, JWT whitelisting and timeouts will be disabled. Format: [redis[s]:]//[[user][:password@]][host][:port][/db-number][?db=db-number[&password=bar[&option=value]]]"
-				},
-				"SENTINEL_NAME": {
-					"type": "string",
-					"description": "The name of the Redis Sentinel."
-				},
-				"SENTINEL_PASSWORD": {
-					"type": "string",
-					"description": "The password for the Redis Sentinel service."
-				},
-				"SENTINEL_SERVICE_NAME": {
-					"type": "string",
-					"description": "The name of the Redis Sentinel service."
-				}
-			}
-		},
 		"PIN_MAX_AGE_SECONDS": {
 			"type": "integer",
 			"default": 86400,
@@ -177,41 +143,6 @@
 			"default": 2629746,
 			"description": "After this many seconds (default is one month) of inactivity, a user gets logged out when accepted extended login duration."
 		},
-		"TSP_API_CLIENT_BASE_URL": {
-			"type": "string",
-			"default": "",
-			"description": "The TSP API base URL."
-		},
-		"TSP_API_CLIENT_TOKEN_LIFETIME_MS": {
-			"type": "number",
-			"default": "30000",
-			"description": "The TSP token lifetime in milliseconds."
-		},
-		"TSP_SYNC_SCHOOL_LIMIT": {
-			"type": "number",
-			"default": "10",
-			"description": "The amount of schools the sync handles at once."
-		},
-		"TSP_SYNC_SCHOOL_DAYS_TO_FETCH": {
-			"type": "number",
-			"default": "1",
-			"description": "The amount of days for which the sync fetches schools from the TSP."
-		},
-		"TSP_SYNC_DATA_LIMIT": {
-			"type": "number",
-			"default": "150",
-			"description": "The amount of school data updates the sync handles at once."
-		},
-		"TSP_SYNC_DATA_DAYS_TO_FETCH": {
-			"type": "number",
-			"default": "1",
-			"description": "The amount of days for which the sync fetches school data from the TSP."
-		},
-		"FEATURE_TSP_SYNC_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Feature toggle for TSP sync."
-		},
 		"BLOCK_DISPOSABLE_EMAIL_DOMAINS": {
 			"type": "boolean",
 			"default": true,
@@ -226,11 +157,6 @@
 			"type": "string",
 			"default": "",
 			"description": "Add custom domain to the list of blocked domains (comma separated list)."
-		},
-		"FEATURE_VIDEOCONFERENCE_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "If enabled, adds video conferences to teams and courses."
 		},
 		"VIDEOCONFERENCE_DEFAULT_PRESENTATION": {
 			"type": "string",
@@ -253,276 +179,10 @@
 			"type": "string",
 			"description": "The value is used to disable logging color in terminal and is set in production always to true. It is not connected to the loggers it self."
 		},
-		"FILES_STORAGE": {
-			"type": "object",
-			"description": "Files storage server properties, required always to be defined",
-			"required": ["SERVICE_BASE_URL"],
-			"properties": {
-				"SERVICE_BASE_URL": {
-					"type": "string",
-					"format": "uri",
-					"default": "http://localhost:4444",
-					"description": "The URI of the file service"
-				}
-			},
-			"default": {
-				"SERVICE_BASE_URL": "http://localhost:4444"
-			}
-		},
-		"COMMON_CARTRIDGE": {
-			"type": "object",
-			"description": "Common cartridge properties, required always to be defined",
-			"properties": {
-				"INCOMING_REQUEST_TIMEOUT_MS": {
-					"type": "integer",
-					"minimum": 0,
-					"default": 600000,
-					"description": "Timeout for incoming requests to the common cartridge service in milliseconds."
-				}
-			},
-			"default": {}
-		},
-		"FWU_CONTENT": {
-			"type": "object",
-			"description": "Properties of the S3 storage containing FWU content",
-			"required": ["S3_ENDPOINT", "S3_REGION", "S3_BUCKET", "S3_ACCESS_KEY", "S3_SECRET_KEY"],
-			"properties": {
-				"S3_ENDPOINT": {
-					"type": "string",
-					"format": "uri",
-					"default": "http://localhost:4568",
-					"description": "The URI of the S3 provider"
-				},
-				"S3_REGION": {
-					"type": "string",
-					"default": "de",
-					"description": "Region name of bucket"
-				},
-				"S3_BUCKET": {
-					"type": "string",
-					"default": "",
-					"description": "Bucket name"
-				},
-				"S3_ACCESS_KEY": {
-					"type": "string",
-					"default": "",
-					"description": "Access Key to S3"
-				},
-				"S3_SECRET_KEY": {
-					"type": "string",
-					"default": "",
-					"description": "Secret key to S3"
-				},
-				"INCOMING_REQUEST_TIMEOUT_MS": {
-					"type": "integer",
-					"minimum": 0,
-					"default": 600000,
-					"description": "Timeout for incoming requests to the fwu-learning-contents in milliseconds."
-				}
-			}
-		},
-		"H5P_EDITOR": {
-			"type": "object",
-			"description": "Properties of the H5P server microservice and library management job",
-			"required": ["S3_ENDPOINT", "S3_REGION", "S3_BUCKET_CONTENT", "S3_BUCKET_LIBRARIES"],
-			"default": {},
-			"properties": {
-				"S3_ENDPOINT": {
-					"type": "string",
-					"format": "uri",
-					"default": "http://localhost:4568",
-					"description": "The URI of the S3 provider"
-				},
-				"S3_REGION": {
-					"type": "string",
-					"default": "eu-central-2",
-					"description": "Region name of bucket"
-				},
-				"S3_ACCESS_KEY_ID": {
-					"type": "string",
-					"default": "",
-					"description": "Access Key to S3_BUCKET_CONTENT with RW and listing buckets permissions"
-				},
-				"S3_SECRET_ACCESS_KEY": {
-					"type": "string",
-					"default": "",
-					"description": "Secret key to to S3_BUCKET_CONTENT with RW and listing buckets permissions"
-				},
-				"LIBRARIES_S3_ACCESS_KEY_ID": {
-					"type": "string",
-					"default": "",
-					"description": "Access Key to S3_BUCKET_LIBRARIES (at least read and listing buckets permissions for editor, aditionally write permission for library management)"
-				},
-				"LIBRARIES_S3_SECRET_ACCESS_KEY": {
-					"type": "string",
-					"default": "",
-					"description": "Secret key to S3_BUCKET_LIBRARIES (at least read and listing buckets permissions for editor, aditionally write permission for library management)"
-				},
-				"S3_BUCKET_CONTENT": {
-					"type": "string",
-					"default": "",
-					"description": "Content Bucket name"
-				},
-				"S3_BUCKET_LIBRARIES": {
-					"type": "string",
-					"default": "",
-					"description": "Library Bucket name"
-				},
-				"EXCHANGE": {
-					"type": "string",
-					"default": "h5p-editor",
-					"description": "rabbitmq exchange name for h5p editor"
-				},
-				"INCOMING_REQUEST_TIMEOUT": {
-					"type": "integer",
-					"minimum": 0,
-					"default": 600000,
-					"description": "Timeout for incoming requests (including file uploads) to the h5p editor in milliseconds."
-				},
-				"INSTALL_LIBRARY_LOCK_MAX_OCCUPATION_TIME": {
-					"type": "integer",
-					"minimum": 0,
-					"default": 600000,
-					"description": "The number of milliseconds that code has until a single library is installed. If this time is exceeded the lock will be freed and the library installation has failed."
-				},
-				"LIBRARY_LIST_PATH": {
-					"type": "string",
-					"default": "config/h5p-libraries.yaml",
-					"description": "Path to yaml file with list of h5p content type libraries which should be installed"
-				},
-				"EXIT_ON_ERROR": {
-					"type": "boolean",
-					"default": true,
-					"description": "By default, the application is terminated after an uncaughtException has been logged. If this is not the desired behavior, set exitOnError to false."
-				}
-			}
-		},
-		"H5P_Library": {
-			"type": "object",
-			"description": "Properties of the H5P server microservice",
-			"required": ["S3_ENDPOINT", "S3_BUCKET_LIBRARIES", "S3_ACCESS_KEY_ID", "S3_SECRET_ACCESS_KEY"],
-			"default": {},
-			"properties": {
-				"S3_ENDPOINT": {
-					"type": "string",
-					"format": "uri",
-					"default": "http://localhost:4568",
-					"description": "The URI of the S3 provider"
-				},
-				"S3_ACCESS_KEY_ID": {
-					"type": "string",
-					"default": "",
-					"description": "Access Key to S3_BUCKET_CONTENT with R/W permissions"
-				},
-				"S3_SECRET_ACCESS_KEY": {
-					"type": "string",
-					"default": "",
-					"description": "Secret key to S3_BUCKET_CONTENT with R/W permissions"
-				},
-				"S3_BUCKET_LIBRARIES": {
-					"type": "string",
-					"default": "",
-					"description": "Library Bucket name"
-				},
-				"LOG_LEVEL": {
-					"type": "string",
-					"default": "info",
-					"description": "Log level for H5P library manager.",
-					"enum": ["emerg", "alert", "crit", "error", "warning", "notice", "info", "debug"]
-				}
-			}
-		},
 		"FEATURE_FWU_CONTENT_ENABLED": {
 			"type": "boolean",
 			"default": false,
 			"description": "Defines if backend for the FWU content in the Learnstore is enabled."
-		},
-		"FEATURE_IDENTITY_MANAGEMENT_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Enables the Identity Management (ErWIn IDM) feature. Determines if Keycloak related modules will be loaded during startup. Prerequisite to set further FEATURE_IDENTITY_MANAGEMENT_X flags"
-		},
-		"FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Enables the Identity Management (ErWIn IDM) as account storage. If activated, account related create, update and delete operations are mirrored into Keycloak. Prerequisite to set FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED flag."
-		},
-		"FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Enables the login via Keycloak with the Identity Management (ErWIn IDM) for users managed by dBildungscloud. If activated, Keycloak will be used as the primary source to read for the dBildungscloud login."
-		},
-		"IDENTITY_MANAGEMENT": {
-			"type": "object",
-			"description": "Identity management server properties.",
-			"required": [
-				"INTERNAL_URI",
-				"EXTERNAL_URI",
-				"TENANT",
-				"CLIENTID",
-				"ADMIN_CLIENTID",
-				"ADMIN_USER",
-				"ADMIN_PASSWORD"
-			],
-			"properties": {
-				"INTERNAL_URI": {
-					"type": "string",
-					"default": null,
-					"description": "The ErWIn IDM base URI for Kubernetes cluster internal use."
-				},
-				"EXTERNAL_URI": {
-					"type": "string",
-					"default": null,
-					"description": "The ErWIn IDM base URI for Kubernetes cluster external use."
-				},
-				"TENANT": {
-					"type": "string",
-					"default": null,
-					"description": "The ErWIn IDM tenant."
-				},
-				"CLIENTID": {
-					"type": "string",
-					"default": null,
-					"description": "The ErWIn IDM tenant client."
-				},
-				"ADMIN_CLIENTID": {
-					"type": "string",
-					"default": null,
-					"description": "The ErWIn IDM admin client."
-				},
-				"ADMIN_USER": {
-					"type": "string",
-					"default": null,
-					"description": "The ErWIn IDM admin user."
-				},
-				"ADMIN_PASSWORD": {
-					"type": "string",
-					"default": null,
-					"description": "The ErWIn IDM admin password."
-				}
-			}
-		},
-		"OIDCMOCK": {
-			"type": "object",
-			"description": "OpenID Connect Identity Provider mock server for develop and testing purpose (set these values for local seeding purpose).",
-			"required": [],
-			"properties": {
-				"BASE_URL": {
-					"type": "string",
-					"default": null,
-					"description": "The mock server base path."
-				},
-				"CLIENT_ID": {
-					"type": "string",
-					"default": null,
-					"description": "The mock server accepted client id."
-				},
-				"CLIENT_SECRET": {
-					"type": "string",
-					"default": null,
-					"description": "The mock server accepted client's secret."
-				}
-			}
 		},
 		"CLAMAV": {
 			"type": "object",
@@ -577,22 +237,6 @@
 			"default": "http://localhost:3030/api",
 			"pattern": ".*(?<!/)$",
 			"description": "The server endpoint, for external calls like Antivirus service. When called from docker container, can be http://host.docker.internal:3030"
-		},
-		"PUBLIC_BACKEND_URL": {
-			"type": "string",
-			"format": "uri",
-			"pattern": ".*(?<!/)$",
-			"description": "The server api url that is accessible from the web (should end without a slash)."
-		},
-		"ALERT_STATUS_URL": {
-			"type": "string",
-			"default": null,
-			"description": "The url of status message provider (should end without a slash)."
-		},
-		"ALERT_CACHE_INTERVAL_MIN": {
-			"type": "number",
-			"default": 1,
-			"description": "Time between updating alerts (in minutes)"
 		},
 		"HYDRA_URI": {
 			"type": "string",
@@ -670,35 +314,10 @@
 			"default": "default",
 			"description": "The used theming."
 		},
-		"SC_SHORTNAME": {
-			"type": "string",
-			"default": "dbc",
-			"description": "The sort name of the instance (dbc, nbc, brb, thr)."
-		},
 		"FEATURE_OAUTH_LOGIN": {
 			"type": "boolean",
 			"default": "false",
 			"description": "Oauth Login Endpoints Enabled."
-		},
-		"FEATURE_LOGIN_LINK_ENABLED": {
-			"type": "boolean",
-			"default": "false",
-			"description": "Login via Link generation (to the right form)."
-		},
-		"FEATURE_USER_LOGIN_MIGRATION_ENABLED": {
-			"type": "boolean",
-			"default": "false",
-			"description": "Enables the oauth system migration feature."
-		},
-		"MIGRATION_END_GRACE_PERIOD_MS": {
-			"type": "number",
-			"default": "604800000",
-			"description": "Grace period before school admin cannot restart oauth migration anymore. Value is given in ms and default is 7 days"
-		},
-		"FEATURE_SCHULCONNEX_GROUP_PROVISIONING_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Groups of type class also gets provisioned, when provisioning a user via oauth login."
 		},
 		"SC_TITLE": {
 			"type": "string",
@@ -709,48 +328,25 @@
 			"type": "string",
 			"description": "The Schulcloud domain."
 		},
-		"TRAINING_URL": {
-			"type": "string",
-			"default": "https://lernen.dbildungscloud.de",
-			"description": "URL for the platform training material"
-		},
-		"FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED": {
-			"type": "boolean",
-			"default": true,
-			"description": "Allows school admin to toggle student's LERNSTORE_VIEW permission."
-		},
 		"TEACHER_STUDENT_VISIBILITY": {
 			"type": "object",
 			"description": "Configuration regarding teachers' STUDENT_LIST permission.",
 			"properties": {
-				"IS_CONFIGURABLE": {
-					"type": "boolean",
-					"description": "Allows school admin to toggle teachers' STUDENT_LIST permission."
-				},
 				"IS_ENABLED_BY_DEFAULT": {
 					"type": "boolean",
+					"default": true,
 					"description": "Grants teachers STUDENT_LIST permission by default."
 				},
 				"IS_VISIBLE": {
 					"type": "boolean",
+					"default": true,
 					"description": "Defines whether feature toggle for visibility of students to teachers is visible."
 				}
 			},
 			"default": {
-				"IS_CONFIGURABLE": false,
 				"IS_ENABLED_BY_DEFAULT": true,
 				"IS_VISIBLE": true
 			}
-		},
-		"FEATURE_SCHOOL_POLICY_ENABLED_NEW": {
-			"type": "boolean",
-			"default": false,
-			"description": "Enables uploading of school specific Privacy Policy on new admin page."
-		},
-		"FEATURE_SCHOOL_TERMS_OF_USE_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Enables uploading of school specific Terms of Use on new admin page."
 		},
 		"ROCKETCHAT_SERVICE_ENABLED": {
 			"type": "boolean",
@@ -772,16 +368,6 @@
 			"default": null,
 			"description": "rocketchat admin token"
 		},
-		"ROCKET_CHAT_ADMIN_USER": {
-			"type": "string",
-			"default": null,
-			"description": "rocketchat admin user"
-		},
-		"ROCKET_CHAT_ADMIN_PASSWORD": {
-			"type": "string",
-			"default": null,
-			"description": "rocketchat admin password"
-		},
 		"ROCKET_CHAT_CLIENT_TIMEOUT_MS": {
 			"type": "number",
 			"default": 30000,
@@ -791,16 +377,6 @@
 			"type": "string",
 			"description": "Synchronous encryption key used to secure search user passwords",
 			"pattern": ".{16}.*"
-		},
-		"AES_KEY": {
-			"type": "string",
-			"description": "Symmetric encryption key used to encrypt and decrypt secrets.",
-			"pattern": ".{16}.*"
-		},
-		"FEATURE_ETHERPAD_ENABLED": {
-			"type": "boolean",
-			"default": true,
-			"description": "Etherpad feature enabled"
 		},
 		"ETHERPAD": {
 			"type": "object",
@@ -832,55 +408,6 @@
 					"description": "If Session Valid time is smaller than this, a new session is created on request."
 				}
 			}
-		},
-		"NEXTCLOUD_BASE_URL": {
-			"type": "string",
-			"default": "http://nextcloud.localhost:9090",
-			"description": "API URI for Nextcloud"
-		},
-		"NEXTCLOUD_CLIENT_ID": {
-			"type": "string",
-			"description": "Client id for Nextcloud"
-		},
-		"NEXTCLOUD_CLIENT_SECRET": {
-			"type": "string",
-			"description": "Client secret for Nextcloud"
-		},
-		"NEXTCLOUD_ADMIN_USER": {
-			"type": "string",
-			"default": "admin",
-			"description": "Admin-user for Nextcloud-API"
-		},
-		"NEXTCLOUD_ADMIN_PASS": {
-			"type:": "string",
-			"default": "admin",
-			"description": "Admin-password for Nextcloud-API"
-		},
-		"NEXTCLOUD_SCOPES": {
-			"type:": "string",
-			"default": "openid offline profile email groups",
-			"description": "ClientId for Nextcloud Oauth2 Login"
-		},
-		"NEXTCLOUD_SOCIALLOGIN_OIDC_INTERNAL_NAME": {
-			"type:": "string",
-			"default": "SchulcloudNextcloud",
-			"description": "Internal name of schulcloud oidc provider of nextcloud's social login app"
-		},
-		"MEDIA_SOURCE_VIDIS_USERNAME": {
-			"type:": "string",
-			"description": "Username for VIDIS api"
-		},
-		"MEDIA_SOURCE_VIDIS_PASSWORD": {
-			"type:": "string",
-			"description": "Password for VIDIS api"
-		},
-		"MEDIA_SOURCE_BILO_CLIENT_ID": {
-			"type:": "string",
-			"description": "Client id for Bildungslogin api"
-		},
-		"MEDIA_SOURCE_BILO_CLIENT_SECRET": {
-			"type:": "string",
-			"description": "Client secret for Bildungslogin api"
 		},
 		"HYDRA_PUBLIC_URI": {
 			"type:": "string",
@@ -958,47 +485,10 @@
 			"description": "when set, this is interpreted as a regex to extend the ignorelist for the API validation with any routes matching the regex.",
 			"examples": [".*/courses/[0-9a-f]{24}($|/$)"]
 		},
-		"FEATURE_PROMETHEUS_METRICS_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Feature flag for collecting and exporting Prometheus metrics."
-		},
-		"PROMETHEUS_METRICS_ROUTE": {
-			"type": "string",
-			"default": "/metrics",
-			"description": "Route at which Prometheus metrics are exported (if enabled by the feature flag)."
-		},
-		"PROMETHEUS_METRICS_PORT": {
-			"type": "number",
-			"default": 9090,
-			"description": "Port number on which the additional server (that exports Prometheus metrics) is listening on (if enabled by the feature flag). Please remember that it must be different than the main app listening port as the Prometheus app server will run on a different port and you can't run two servers on the same port."
-		},
-		"PROMETHEUS_METRICS_COLLECT_DEFAULT_METRICS": {
-			"type": "boolean",
-			"default": true,
-			"description": "Toggle that enables/disables collecting default Prometheus client metrics (e.g. NodeJS or OS-related ones)."
-		},
-		"PROMETHEUS_METRICS_COLLECT_METRICS_ROUTE_METRICS": {
-			"type": "boolean",
-			"default": true,
-			"description": "Toggle that enables/disables collecting metrics of the metrics route itself (like metrics route calls count or response time)."
-		},
 		"FEATURE_MONGOOSE_LOGGING_ENABLED": {
 			"type": "boolean",
 			"default": false,
 			"description": "Enable logging for mongoose database calls."
-		},
-		"INCOMING_REQUEST_TIMEOUT_API": {
-			"type": "integer",
-			"minimum": 0,
-			"default": 8000,
-			"description": "Timeout for incoming requests to the API in milliseconds."
-		},
-		"INCOMING_REQUEST_TIMEOUT_COPY_API": {
-			"type": "integer",
-			"minimum": 0,
-			"default": 60000,
-			"description": "Timeout for incoming requests to the copy API in milliseconds."
 		},
 		"FEATURE_SYNC_LAST_SYNCED_AT_ENABLED": {
 			"type": "boolean",
@@ -1033,17 +523,6 @@
 			"description": "Log level for api.",
 			"enum": ["emerg", "alert", "crit", "error", "warning", "notice", "info", "debug"]
 		},
-		"NEST_LOG_LEVEL": {
-			"type": "string",
-			"default": "notice",
-			"description": "Nest Log level for api. The http flag is for request logging. The http flag do only work by api methods with added 'request logging interceptor'.",
-			"enum": ["emerg", "alert", "crit", "error", "warning", "notice", "info", "debug"]
-		},
-		"EXIT_ON_ERROR": {
-			"type": "boolean",
-			"default": true,
-			"description": "By default, the application is terminated after an uncaughtException has been logged. If this is not the desired behavior, set exitOnError to false."
-		},
 		"SYNC_QUEUE_NAME": {
 			"type": "string",
 			"default": "sync_ldap",
@@ -1053,11 +532,6 @@
 			"type": "string",
 			"default": "mail-drop",
 			"description": "Exchange name for mail sending"
-		},
-		"MAIL_SEND_ROUTING_KEY": {
-			"type": "string",
-			"default": "mail-drop",
-			"description": "Routing key name for mail sending"
 		},
 		"MEMORY_INTERVAL_TIME": {
 			"type": "integer",
@@ -1069,179 +543,10 @@
 			"default": false,
 			"description": "Enabled that every request is logged with the information route and method"
 		},
-		"SUPPORT_PROBLEM_EMAIL_ADDRESS": {
-			"type": "string",
-			"default": "ticketsystem@dbildungscloud.de",
-			"description": "Email address used for reporting a problem"
-		},
-		"SUPPORT_WISH_EMAIL_ADDRESS": {
-			"type": "string",
-			"default": "ticketsystem@dbildungscloud.de",
-			"description": "Email addresses used for reporting a wish"
-		},
-		"ADMIN_TABLES_DISPLAY_CONSENT_COLUMN": {
-			"type": "boolean",
-			"default": true,
-			"description": "Display/Hide admin tables consent column"
-		},
-		"JWT_SHOW_TIMEOUT_WARNING_SECONDS": {
-			"type": "integer",
-			"default": 3600,
-			"description": "Determines the time in seconds to show the timeout warning in the client"
-		},
-		"FEATURE_TEAMS_ENABLED": {
-			"type": "boolean",
-			"default": true,
-			"description": "Enables user's use of the teams feature in the client"
-		},
-		"NOT_AUTHENTICATED_REDIRECT_URL": {
-			"type": "string",
-			"default": "/login",
-			"description": "Determines the url to be redirected to when the user is not authenticated"
-		},
-		"SC_CONTACT_EMAIL": {
-			"type": "string",
-			"default": "ticketsystem@dbildungscloud.de",
-			"description": "Email address used for contacting"
-		},
-		"SC_CONTACT_EMAIL_SUBJECT": {
-			"type": "string",
-			"default": "Bildungscloud Anfrage",
-			"description": "Email subject used for contacting"
-		},
-		"ACCESSIBILITY_REPORT_EMAIL": {
-			"type": "string",
-			"default": "dbildungscloud@dataport.de",
-			"description": "Email to report accessibility issue"
-		},
-		"FEATURE_COLUMN_BOARD_ENABLED": {
-			"type": "boolean",
-			"default": true,
-			"description": "Toggle for activating the column board."
-		},
-		"FEATURE_COLUMN_BOARD_FILE_FOLDER_ENABLED": {
-			"type": "boolean",
-			"default": true,
-			"description": "Enable file folder elements in column board."
-		},
-		"FEATURE_COLUMN_BOARD_SUBMISSIONS_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Enable submissions in column board."
-		},
-		"FEATURE_COLUMN_BOARD_COLLABORATIVE_TEXT_EDITOR_ENABLED": {
-			"type": "boolean",
-			"default": true,
-			"description": "Enable collaborative text editor in column board."
-		},
-		"FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED": {
-			"type": "boolean",
-			"default": true,
-			"description": "Enable link elements in column board."
-		},
-		"FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED": {
-			"type": "boolean",
-			"default": true,
-			"description": "Enable video conference elements in column board."
-		},
-		"FEATURE_COLUMN_BOARD_H5P_ENABLED": {
-			"type": "boolean",
-			"default": true,
-			"description": "Enables h5p on the column board"
-		},
-		"FEATURE_COLUMN_BOARD_COLLABORA_ENABLED": {
-			"type": "boolean",
-			"default": true,
-			"description": "Enables edit of office documents on the column board"
-		},
 		"COLUMN_BOARD_HELP_LINK": {
 			"type": "string",
 			"default": "https://docs.dbildungscloud.de/pages/viewpage.action?pageId=270827606",
 			"description": "link to userfacing documentation of the column board feature"
-		},
-		"FEATURE_COURSE_SHARE": {
-			"type": "boolean",
-			"default": false,
-			"description": "Toggle for course sharing feature."
-		},
-		"FEATURE_LESSON_SHARE": {
-			"type": "boolean",
-			"default": false,
-			"description": "Toggle for lesson sharing feature."
-		},
-		"FEATURE_TASK_SHARE": {
-			"type": "boolean",
-			"default": false,
-			"description": "Toggle for the task sharing feature."
-		},
-		"FEATURE_COLUMN_BOARD_SHARE": {
-			"type": "boolean",
-			"default": false,
-			"description": "Toggle for the column board sharing feature."
-		},
-		"FEATURE_COLUMN_BOARD_SOCKET_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Toggle for the column board web socket feature."
-		},
-		"FEATURE_BOARD_LAYOUT_ENABLED": {
-			"type": "boolean",
-			"default": true,
-			"description": "Toggle for the column board layout feature."
-		},
-		"FEATURE_USER_MIGRATION_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Enable user migration page for admin to bind ldap accounts to local accounts"
-		},
-		"FEATURE_USER_MIGRATION_SYSTEM_ID": {
-			"type": "string",
-			"default": "",
-			"description": "SystemId for migration of users from system. To use this please set FEATURE_USER_MIGRATION_CENTRAL_LDAP in the client"
-		},
-		"IMPORTUSER_SAVE_ALL_MATCHES_REQUEST_TIMEOUT_MS": {
-			"type": "integer",
-			"description": "Timeout in milliseconds for saving all import user matches",
-			"default": 60000
-		},
-		"FEATURE_COPY_SERVICE_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Toggle for copy course feature."
-		},
-		"FEATURE_COMMON_CARTRIDGE_COURSE_EXPORT_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Toggle for the IMSCC course download feature."
-		},
-		"GEOGEBRA_BASE_URL": {
-			"type": "string",
-			"format": "uri",
-			"default": "https://www.geogebra.org",
-			"pattern": ".*(?<!/)$",
-			"description": "Base URL of GeoGebra materials"
-		},
-		"FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Toggle for the Common Cartridge course import feature."
-		},
-		"FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_MAX_FILE_SIZE": {
-			"type": "integer",
-			"default": 2000000000,
-			"description": "The maximum file upload size in bytes for the Common Cartridge file during import."
-		},
-		"GHOST_BASE_URL": {
-			"type": "string",
-			"format": "uri",
-			"default": "https://blog.dbildungscloud.de",
-			"pattern": ".*(?<!/)$",
-			"description": "Base URL of ghost blog (should end without a slash)"
-		},
-		"FEATURE_CONSENT_NECESSARY": {
-			"type": "boolean",
-			"default": true,
-			"description": "Determines if consent is necessary during registration."
 		},
 		"COOKIE": {
 			"type": "object",
@@ -1299,93 +604,10 @@
 				}
 			}
 		},
-		"FEATURE_ALLOW_INSECURE_LDAP_URL_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Enables feature that allows the insecure LDAP URL (with ldap:// protocol)."
-		},
-		"ADMIN_API": {
-			"type": "object",
-			"description": "Configuration of the schulcloud-server's admin API.",
-			"properties": {
-				"ENABLED": {
-					"type": "boolean",
-					"default": true,
-					"description": "Flag to turn on/off the Admin API."
-				},
-				"PORT": {
-					"type": "number",
-					"default": 4030,
-					"description": "Port of the exposed Admin API server."
-				},
-				"ALLOWED_API_KEYS": {
-					"type": "string",
-					"default": "",
-					"description": "Allowed Admin API keys (for accessing the Admin API). - A comma seperated list of strings where description is optional e.g. [<description>:]<token>,[<description>:]<token>"
-				},
-				"DELETION_DELETE_AFTER_MINUTES": {
-					"type": "number",
-					"default": 43200,
-					"description": "threshold in minutes, after which a deletion request can be processed"
-				},
-				"DELETION_MODIFICATION_THRESHOLD_MS": {
-					"type": "number",
-					"default": 300000,
-					"description": "threshold in milliseconds to try again to process a hanging Pending or Failed deletion requests"
-				},
-				"DELETION_CONSIDER_FAILED_AFTER_MS": {
-					"type": "number",
-					"default": 360000000,
-					"description": "threshold in milliseconds to stop trying to process Pending or Failed deletion requests"
-				},
-				"DELETION_EXECUTION_BATCH_NUMBER": {
-					"type": "number",
-					"default": 20,
-					"description": "max amount of deletion requests to be executed in one batch"
-				}
-			},
-			"default": {}
-		},
-		"FEATURE_SHOW_OUTDATED_USERS": {
-			"type": "boolean",
-			"default": false,
-			"description": "This feature flag controls whether the outdated user accounts are displayed or not. After a migration, all user accounts which were not migrated will be marked as outdated."
-		},
-		"FEATURE_ENABLE_LDAP_SYNC_DURING_MIGRATION": {
-			"type": "boolean",
-			"default": false,
-			"description": "Displays the school-feature switch ENABLE_LDAP_SYNC_DURING_MIGRATION on the school-settings page."
-		},
 		"FEATURE_CTL_CONTEXT_CONFIGURATION_ENABLED": {
 			"type": "boolean",
 			"default": false,
 			"description": "Enables the configuration of custom parameters for context external tools"
-		},
-		"FEATURE_COLUMN_BOARD_EXTERNAL_TOOLS_ENABLED": {
-			"type": "boolean",
-			"default": true,
-			"description": "Enables external tools on the column board"
-		},
-		"FEATURE_PREFERRED_CTL_TOOLS_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Enables preferred external tools on the column board"
-		},
-		"CTL_TOOLS": {
-			"type": "object",
-			"description": "CTL Tools properties",
-			"properties": {
-				"EXTERNAL_TOOL_MAX_LOGO_SIZE_IN_BYTES": {
-					"type": "integer",
-					"default": 300000,
-					"description": "Maximum size of the logo of an external tool in bytes"
-				},
-				"PREFERRED_TOOLS_LIMIT": {
-					"type": "integer",
-					"default": 5,
-					"description": "Maximum number of preferred tools that can be set"
-				}
-			}
 		},
 		"FEATURE_GROUPS_IN_COURSE_ENABLED": {
 			"type": "boolean",
@@ -1396,25 +618,6 @@
 			"type": "boolean",
 			"default": false,
 			"description": "Enables the calculation of the outdated status of an external tool without the usage of the db attribute version"
-		},
-		"FEATURE_CTL_TOOLS_COPY_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Enables the copying of ctl tools when copying a course."
-		},
-		"CTL_TOOLS_RELOAD_TIME_MS": {
-			"type": "number",
-			"default": 299000,
-			"description": "Sets the time before launch request data is called again from server"
-		},
-		"FEATURE_SHOW_MIGRATION_WIZARD": {
-			"type": "boolean",
-			"default": false,
-			"description": "Enables the migration wizard on the school administration page in the migration section."
-		},
-		"MIGRATION_WIZARD_DOCUMENTATION_LINK": {
-			"type": "string",
-			"description": "The documentation page that gets rendered in the migration wizard tool."
 		},
 		"ADMIN_API_CLIENT": {
 			"type": "object",
@@ -1433,11 +636,6 @@
 				"BASE_URL": "http://localhost:4030",
 				"API_KEY": ""
 			}
-		},
-		"FEATURE_TLDRAW_ENABLED": {
-			"type": "boolean",
-			"default": true,
-			"description": "Enables tldraw feature"
 		},
 		"TLDRAW_ADMIN_API_CLIENT": {
 			"type": "object",
@@ -1461,190 +659,30 @@
 			"type": "object",
 			"description": "Configuration of the schulcloud's schulconnex client.",
 			"properties": {
-				"API_URL": {
-					"type": "string",
-					"description": "Base URL of the schulconnex API (from dof)",
-					"examples": ["https://api-dienste.stage.niedersachsen-login.schule/v1/"]
-				},
-				"TOKEN_ENDPOINT": {
-					"type": "string",
-					"description": "Token endpoint of the schulconnex API (from dof)",
-					"examples": ["https://api-dienste.stage.niedersachsen-login.schule/v1/oauth2/token"]
-				},
-				"CLIENT_ID": {
-					"type": "string",
-					"description": "Client ID for accessing the schulconnex API (from server vault)"
-				},
-				"CLIENT_SECRET": {
-					"type": "string",
-					"description": "Client secret for accessing the schulconnex API (from server vault)"
-				},
-				"PERSON_INFO_TIMEOUT_IN_MS": {
-					"type": "integer",
-					"description": "Timeout in milliseconds for fetching person info from schulconnex",
-					"default": 3000
-				},
 				"PERSONEN_INFO_TIMEOUT_IN_MS": {
 					"type": "integer",
 					"description": "Timeout in milliseconds for fetching personen info from schulconnex",
 					"default": 120000
-				},
-				"POLICIES_INFO_TIMEOUT_IN_MS": {
-					"type": "integer",
-					"description": "Timeout in milliseconds for fetching policies info from schulconnex",
-					"default": 4000
 				}
 			},
 			"default": {
-				"API_URL": "",
-				"TOKEN_ENDPOINT": "",
-				"CLIENT_ID": "",
-				"CLIENT_SECRET": ""
+				"PERSONEN_INFO_TIMEOUT_IN_MS": 120000
 			}
-		},
-		"HOSTNAME": {
-			"type": "string",
-			"description": "Hostname. Should usually not be defined as it's expected to be taken from the process env."
-		},
-		"HEALTH_CHECKS_EXCLUDE_MONGODB": {
-			"type": "boolean",
-			"default": false,
-			"description": "Toggle that, when enabled, excludes MongoDB from the health checks."
-		},
-		"FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Enables the synchronization of courses with linked groups during provisioning."
-		},
-		"SYNCHRONIZATION_CHUNK": {
-			"type": "number",
-			"default": 10000,
-			"description": "Size of chunk for synchronization"
 		},
 		"FEATURE_MEDIA_SHELF_ENABLED": {
 			"type": "boolean",
 			"default": false,
 			"description": "Enables the media shelf feature"
 		},
-		"FEATURE_MIGRATION_WIZARD_WITH_USER_LOGIN_MIGRATION": {
-			"type": "boolean",
-			"default": false,
-			"description": "Enables the migration wizard to use the user login migration process"
-		},
-		"FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Enables the provisioning of other groupusers"
-		},
-		"FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Enables the storing and checking media license of users"
-		},
-		"PROVISIONING_SCHULCONNEX_POLICIES_INFO_URL": {
-			"type": "string",
-			"default": "",
-			"description": "URL for fetching policies info from moin.schule schulconnex",
-			"examples": ["https://api-dienste.stage.niedersachsen-login.schule/v1/policies-info"]
-		},
-		"PROVISIONING_SCHULCONNEX_GROUP_USERS_LIMIT": {
-			"type": "number",
-			"description": "Maximum number of users in group that still get processed during schulconnex provisioning"
-		},
-		"PROVISIONING_SCHULCONNEX_EXCHANGE": {
-			"type": "string",
-			"default": "schulconnex-provisioning",
-			"description": "rabbitmq exchange name for schulconnex provisioning"
-		},
-		"BOARD_COLLABORATION_URI": {
-			"type": "string",
-			"default": "ws://localhost:4450",
-			"description": "URL for connecting to the WebSocketServer"
-		},
-		"FEATURE_AI_TUTOR_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Enables the AI Tutor"
-		},
-		"CALENDAR_SERVICE_ENABLED": {
-			"type": "boolean",
-			"default": true,
-			"description": "Enables calender service"
-		},
-		"FEATURE_BOARD_READERS_CAN_EDIT_TOGGLE": {
-			"type": "boolean",
-			"default": true,
-			"description": "Enables the toggle that allows board readers to edit the board"
-		},
-		"FEATURE_EXTERNAL_PERSON_REGISTRATION_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Enables the registation feature for external persons"
-		},
-		"FEATURE_ROOM_COPY_ENABLED": {
-			"type": "boolean",
-			"default": true,
-			"description": "Enables the rooms feature to duplicate rooms"
-		},
-		"FEATURE_ROOM_SHARE": {
-			"type": "boolean",
-			"default": true,
-			"description": "Enables the room sharing feature"
-		},
-		"FEATURE_ROOM_ADD_EXTERNAL_PERSONS_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Enables adding external persons to a room."
-		},
-		"FEATURE_ROOM_REGISTER_EXTERNAL_PERSONS_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Enables the registration of external persons in a room."
-		},
-		"FEATURE_ROOM_LINK_INVITATION_EXTERNAL_PERSONS_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Enables link based invitations for external persons in a room."
-		},
-		"FEATURE_ADMINISTRATE_ROOMS_ENABLED": {
-			"type": "boolean",
-			"default": "false",
-			"description": "Enables the administration of rooms by school admins"
-		},
 		"FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED": {
 			"type": "boolean",
 			"default": "false",
 			"description": "Enables the external system logout feature"
 		},
-		"FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Enables VIDIS media activation synchronisation"
-		},
 		"ENABLE_SYNC_LEGACY_INDEXES_VIA_FEATHERS_SERVICE": {
 			"type": "boolean",
 			"default": "false",
 			"description": "if calling sync legacy indexes is allowed, only management module should have access to this, this should not exist in the long term when all entites and their indexes have been migrated"
-		},
-		"LICENSE_SUMMARY_URL": {
-			"type": "string",
-			"default": "",
-			"description": "URL for SBOM summary for SVS"
-		},
-		"ROOM_MEMBER_INFO_URL": {
-			"type": "string",
-			"default": null,
-			"description": "The url for further information in room member administration."
-		},
-		"ROOM_MEMBER_ADD_EXTERNAL_PERSON_REQUIREMENTS_URL": {
-			"type": "string",
-			"default": null,
-			"description": "The url for further information about the requirements for adding external persons to rooms."
-		},
-		"SCHULCONNEX_COURSE_SYNC_HISTORY_EXPIRATION_SECONDS": {
-			"type": "number",
-			"default": 864000,
-			"description": "Number of seconds for a course synchronization history from schulconnex provisioning to expire."
 		},
 		"RELEASE_NOTES_REPO_URL": {
 			"type": "string",

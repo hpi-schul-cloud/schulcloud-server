@@ -1,8 +1,7 @@
 import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { FileRecordParentType } from '@infra/rabbitmq';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
-import { FileDto, FilesStorageClientAdapterService } from '@modules/files-storage-client';
+import { FileDto, FileRecordParentType, FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { LessonEntity, Material } from '@modules/lesson/repo';
 import { User } from '@modules/user/repo';
 import { Test, TestingModule } from '@nestjs/testing';
