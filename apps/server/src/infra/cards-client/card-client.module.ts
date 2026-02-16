@@ -1,5 +1,5 @@
 import { ConfigurationModule } from '@infra/configuration';
-import { DynamicModule, Module, Scope } from '@nestjs/common';
+import { DynamicModule, Module } from '@nestjs/common';
 import { CardClientAdapter } from './card-client.adapter';
 import { InternalCardClientConfig } from './card-client.config';
 import { BoardCardApi, BoardElementApi, Configuration } from './generated';
@@ -14,7 +14,6 @@ export class CardClientModule {
 			CardClientAdapter,
 			{
 				provide: BoardCardApi,
-				scope: Scope.REQUEST,
 				useFactory: (config: InternalCardClientConfig): BoardCardApi => {
 					const { basePath } = config;
 					const configuration = new Configuration({
@@ -27,7 +26,6 @@ export class CardClientModule {
 			},
 			{
 				provide: BoardElementApi,
-				scope: Scope.REQUEST,
 				useFactory: (config: InternalCardClientConfig): BoardElementApi => {
 					const { basePath } = config;
 					const configuration = new Configuration({

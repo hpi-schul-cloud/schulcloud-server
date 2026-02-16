@@ -17,8 +17,7 @@ export class FilesStorageClientAdapter {
 		private readonly errorLogger: ErrorLogger,
 		// these should be removed when the generated client supports downloading files as arraybuffer
 		private readonly httpService: HttpService,
-		private readonly config: InternalFilesStorageClientConfig,
-		private readonly req: Request
+		private readonly config: InternalFilesStorageClientConfig
 	) {
 		this.logger.setContext(FilesStorageClientAdapter.name);
 	}

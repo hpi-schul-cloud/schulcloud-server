@@ -1,5 +1,5 @@
 import { ConfigurationModule } from '@infra/configuration';
-import { DynamicModule, Module, Scope } from '@nestjs/common';
+import { DynamicModule, Module } from '@nestjs/common';
 import { BoardsClientAdapter } from './boards-client.adapter';
 import { InternalBoardsClientConfig } from './boards-client.config';
 import { BoardApi, Configuration } from './generated';
@@ -14,7 +14,6 @@ export class BoardsClientModule {
 			BoardsClientAdapter,
 			{
 				provide: BoardApi,
-				scope: Scope.REQUEST,
 				useFactory: (config: InternalBoardsClientConfig): BoardApi => {
 					const { basePath } = config;
 					const configuration = new Configuration({
