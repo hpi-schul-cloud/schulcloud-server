@@ -35,6 +35,7 @@ import {
 	SchulconnexToolProvisioningService,
 	SchulconnexUserProvisioningService,
 } from './strategy/schulconnex/service';
+import { TeamModule } from '@modules/team';
 
 @Module({
 	imports: [
@@ -45,6 +46,7 @@ import {
 		SystemModule,
 		LoggerModule,
 		GroupModule,
+		TeamModule,
 		CourseModule,
 		SchulconnexClientModule.registerAsync(),
 		UserLicenseModule,
