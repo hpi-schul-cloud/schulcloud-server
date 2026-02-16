@@ -181,7 +181,7 @@
 		"@nestjs/cqrs": "^11.0.3",
 		"@nestjs/jwt": "^10.2.0",
 		"@nestjs/microservices": "^10.4.15",
-		"@nestjs/passport": "^10.0.3",
+		"@nestjs/passport": "^11.0.5",
 		"@nestjs/platform-express": "^10.4.15",
 		"@nestjs/platform-socket.io": "^10.4.15",
 		"@nestjs/swagger": "^8.1.1",
