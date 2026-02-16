@@ -27,25 +27,10 @@ export class ServerPublicApiConfig {
 	@IsBoolean()
 	public adminTablesDisplayConsentColumn = true;
 
-	@ConfigProperty('FEATURE_ES_COLLECTIONS_ENABLED')
-	@StringToBoolean()
-	@IsBoolean()
-	public featureEsCollectionsEnabled = false;
-
 	@ConfigProperty('FEATURE_TEAMS_ENABLED')
 	@StringToBoolean()
 	@IsBoolean()
 	public featureTeamsEnabled = true;
-
-	@ConfigProperty('FEATURE_LERNSTORE_ENABLED')
-	@StringToBoolean()
-	@IsBoolean()
-	public featureLernstoreEnabled = true;
-
-	@ConfigProperty('FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED')
-	@StringToBoolean()
-	@IsBoolean()
-	public featureAdminToggleStudentLernstoreViewEnabled = true;
 
 	@ConfigProperty('TEACHER_STUDENT_VISIBILITY__IS_VISIBLE')
 	@StringToBoolean()

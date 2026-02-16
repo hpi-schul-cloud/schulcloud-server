@@ -111,12 +111,12 @@ describe('User Entity', () => {
 				const setup = () => {
 					const role = roleFactory.build({
 						name: RoleName.ADMINISTRATOR,
-						permissions: [permissionA, Permission.STUDENT_LIST, Permission.LERNSTORE_VIEW],
+						permissions: [permissionA, Permission.STUDENT_LIST],
 					});
 					const school = schoolEntityFactory.build({
 						permissions: {
 							teacher: { [Permission.STUDENT_LIST]: false },
-							student: { [Permission.LERNSTORE_VIEW]: false },
+							student: {},
 						},
 					});
 					const user = userFactory.build({ roles: [role], school });
@@ -129,7 +129,7 @@ describe('User Entity', () => {
 
 					const result = user.resolvePermissions(false, false);
 
-					expect(result.sort()).toEqual([permissionA, Permission.STUDENT_LIST, Permission.LERNSTORE_VIEW].sort());
+					expect(result.sort()).toEqual([permissionA, Permission.STUDENT_LIST].sort());
 				});
 			});
 		});
@@ -165,7 +165,7 @@ describe('User Entity', () => {
 						const school = schoolEntityFactory.build({
 							permissions: {
 								teacher: { [Permission.STUDENT_LIST]: false },
-								student: { [Permission.LERNSTORE_VIEW]: true },
+								student: {},
 							},
 						});
 						const user = userFactory.build({ roles: [role], school });
@@ -241,95 +241,6 @@ describe('User Entity', () => {
 
 						expect(result.sort()).toEqual([permissionA].sort());
 					});
-				});
-			});
-		});
-
-		describe('when user is a student', () => {
-			describe('when LERNSTORE_VIEW permission is not set for school', () => {
-				describe('when user has LERNSTORE_VIEW permission from his role', () => {
-					const setup = () => {
-						const role = roleFactory.build({ name: RoleName.STUDENT, permissions: [Permission.LERNSTORE_VIEW] });
-						const school = schoolEntityFactory.build();
-						const user = userFactory.build({ roles: [role], school });
-
-						return { user };
-					};
-
-					it('should return the unchanged permissions of the user', () => {
-						const { user } = setup();
-
-						const result = user.resolvePermissions(false, false);
-
-						expect(result.sort()).toEqual([Permission.LERNSTORE_VIEW].sort());
-					});
-				});
-
-				describe('when user does not have LERNSTORE_VIEW permission from his role', () => {
-					const setup = () => {
-						const role = roleFactory.build({ name: RoleName.STUDENT, permissions: [permissionA] });
-						const school = schoolEntityFactory.build();
-						const user = userFactory.build({ roles: [role], school });
-
-						return { user };
-					};
-
-					it('should return the unchanged permissions of the user', () => {
-						const { user } = setup();
-
-						const result = user.resolvePermissions(false, false);
-
-						expect(result.sort()).toEqual([permissionA].sort());
-					});
-				});
-			});
-
-			describe('when school permissions `LERNSTORE_VIEW` is true', () => {
-				const setup = () => {
-					const role = roleFactory.build({ name: RoleName.STUDENT, permissions: [permissionA] });
-					const school = schoolEntityFactory.build({
-						permissions: {
-							teacher: { [Permission.STUDENT_LIST]: true },
-							student: { [Permission.LERNSTORE_VIEW]: true },
-						},
-					});
-					const user = userFactory.build({ roles: [role], school });
-
-					return { user };
-				};
-
-				it('should return the permissions of the user and the school permissions', () => {
-					const { user } = setup();
-
-					const result = user.resolvePermissions(false, false);
-
-					expect(result.sort()).toEqual([permissionA, Permission.LERNSTORE_VIEW].sort());
-				});
-			});
-
-			describe('when school permissions `LERNSTORE_VIEW` is false', () => {
-				const setup = () => {
-					const role = roleFactory.build({
-						name: RoleName.STUDENT,
-						permissions: [permissionA, Permission.LERNSTORE_VIEW],
-					});
-					const school = schoolEntityFactory.build({
-						permissions: {
-							teacher: { [Permission.STUDENT_LIST]: true },
-							student: { [Permission.LERNSTORE_VIEW]: false },
-						},
-					});
-					const user = userFactory.build({ roles: [role], school });
-
-					return { user };
-				};
-
-				it('should return the permissions of the user and the school permissions', () => {
-					const { user } = setup();
-
-					const result = user.resolvePermissions(false, false);
-
-					expect(result.sort()).toEqual([permissionA].sort());
 				});
 			});
 		});
