@@ -49,7 +49,6 @@ const roleSeedData: { [key: string | RoleName]: SeedRoleProperties } = {
 			Permission.HELPDESK_CREATE,
 			Permission.HOMEWORK_VIEW,
 			Permission.JOIN_MEETING,
-			Permission.LERNSTORE_VIEW,
 			Permission.LINK_CREATE,
 			Permission.NEWS_VIEW,
 			Permission.NEXTCLOUD_USER,
