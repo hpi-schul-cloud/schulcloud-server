@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { CoursesClientConfig } from './courses-client.config';
+import { InternalCoursesClientConfig } from './courses-client.config';
 import {
 	Configuration,
 	CourseCommonCartridgeMetadataResponse,
@@ -11,7 +10,7 @@ import {
 
 @Injectable()
 export class CoursesClientAdapter {
-	constructor(private readonly configService: ConfigService<CoursesClientConfig, true>) {}
+	constructor(private readonly config: InternalCoursesClientConfig) {}
 
 	public async getCourseCommonCartridgeMetadata(
 		jwt: string,
@@ -29,7 +28,7 @@ export class CoursesClientAdapter {
 	}
 
 	private coursesApi(jwt: string): CoursesApi {
-		const basePath = this.configService.getOrThrow<string>('API_HOST');
+		const { basePath } = this.config;
 		const configuration = new Configuration({
 			basePath: `${basePath}/v3`,
 			accessToken: jwt,

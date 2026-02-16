@@ -5,10 +5,9 @@ import { BoardsClientAdapter, ColumnResponse } from '@infra/boards-client';
 import { CardClientAdapter, CardControllerCreateElement201Response } from '@infra/cards-client';
 import { ColumnClientAdapter } from '@infra/column-client';
 import { CoursesClientAdapter } from '@infra/courses-client';
-import { FilesStorageClientAdapter, FilesStorageClientConfig } from '@infra/files-storage-client';
+import { FilesStorageClientAdapter, InternalFilesStorageClientConfig } from '@infra/files-storage-client';
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import axios from 'axios';
 import jwt from 'jsonwebtoken';
@@ -40,7 +39,7 @@ interface ColumnResource {
 @EventsHandler(ImportCourseEvent)
 export class CommonCartridgeImportConsumer implements IEventHandler<ImportCourseEvent> {
 	constructor(
-		private readonly configService: ConfigService<FilesStorageClientConfig, true>,
+		private readonly config: InternalFilesStorageClientConfig,
 		private readonly httpService: HttpService,
 		private readonly coursesClient: CoursesClientAdapter,
 		private readonly boardsClient: BoardsClientAdapter,
@@ -106,7 +105,7 @@ export class CommonCartridgeImportConsumer implements IEventHandler<ImportCourse
 			})
 		);
 
-		const baseUrl = this.configService.getOrThrow<string>('FILES_STORAGE__SERVICE_BASE_URL');
+		const baseUrl = this.config.basePath;
 		const fullFileUrl = new URL(event.fileUrl, baseUrl).toString();
 
 		const getRequestObservable = this.httpService.get(fullFileUrl.toString(), {
