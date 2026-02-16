@@ -270,7 +270,7 @@
 		"@faker-js/faker": "^9.6.0",
 		"@feathersjs/adapter-tests": "^5.0.33",
 		"@golevelup/ts-jest": "0.5.0",
-		"@nestjs/cli": "^11.0.14",
+		"@nestjs/cli": "^11.0.16",
 		"@nestjs/schematics": "^10.2.3",
 		"@nestjs/testing": "^10.4.15",
 		"@openapitools/openapi-generator-cli": "^2.25.2",
