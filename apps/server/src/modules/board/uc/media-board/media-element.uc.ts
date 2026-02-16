@@ -39,7 +39,7 @@ export class MediaElementUc {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(targetLine);
 
-		throwForbiddenIfFalse(this.boardNodeRule.canMoveElement(user, boardNodeAuthorizable));
+		throwForbiddenIfFalse(this.boardNodeRule.can('moveElement', user, boardNodeAuthorizable));
 
 		await this.boardNodeService.move(element, targetLine, targetPosition);
 	}
@@ -56,7 +56,7 @@ export class MediaElementUc {
 
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(line);
-		throwForbiddenIfFalse(this.boardNodeRule.canCreateElement(user, boardNodeAuthorizable));
+		throwForbiddenIfFalse(this.boardNodeRule.can('createElement', user, boardNodeAuthorizable));
 
 		const mediaBoard = await this.boardNodeService.findByClassAndId(MediaBoard, line.rootId);
 
@@ -85,7 +85,7 @@ export class MediaElementUc {
 
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(element);
-		throwForbiddenIfFalse(this.boardNodeRule.canDeleteElement(user, boardNodeAuthorizable));
+		throwForbiddenIfFalse(this.boardNodeRule.can('deleteElement', user, boardNodeAuthorizable));
 
 		await this.boardNodeService.delete(element);
 	}
