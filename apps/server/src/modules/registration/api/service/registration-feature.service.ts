@@ -1,14 +1,13 @@
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { Inject, Injectable } from '@nestjs/common';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
-import { RegistrationConfig } from '../../registration.config';
+import { REGISTRATION_PUBLIC_API_CONFIG_TOKEN, RegistrationPublicApiConfig } from '../../registration.config';
 
 @Injectable()
 export class RegistrationFeatureService {
-	constructor(private readonly configService: ConfigService<RegistrationConfig, true>) {}
+	constructor(@Inject(REGISTRATION_PUBLIC_API_CONFIG_TOKEN) private readonly config: RegistrationPublicApiConfig) {}
 
 	public checkFeatureRegistrationEnabled(): void {
-		if (!this.configService.get('FEATURE_EXTERNAL_PERSON_REGISTRATION_ENABLED', { infer: true })) {
+		if (!this.config.featureExternalPersonRegistrationEnabled) {
 			throw new FeatureDisabledLoggableException('FEATURE_EXTERNAL_PERSON_REGISTRATION_ENABLED');
 		}
 	}

@@ -1,19 +1,20 @@
 import { LegacyLogger } from '@core/logger';
 import { faker } from '@faker-js/faker';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { ConfigurationModule } from '@infra/configuration';
 import { HttpStatus, StreamableFile, UnauthorizedException } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Request, Response } from 'express';
 import { Readable } from 'stream';
+import { COMMON_CARTRIDGE_CONFIG_TOKEN, CommonCartridgeConfig } from '../common-cartridge.config';
 import { CommonCartridgeVersion } from '../export/common-cartridge.enums';
 import { CommonCartridgeExportResponse } from '../service/common-cartridge-export.response';
 import { CommonCartridgeUc } from '../uc/common-cartridge.uc';
 import { CommonCartridgeController } from './common-cartridge.controller';
 import { ExportCourseParams } from './dto';
+import { CommonCartridgeStartImportBodyParams } from './dto/common-cartridge-start-import-body.params';
 import { CourseExportBodyParams } from './dto/course-export.body.params';
 import { CourseQueryParams } from './dto/course.query.params';
-import { CommonCartridgeStartImportBodyParams } from './dto/common-cartridge-start-import-body.params';
 
 describe('CommonCartridgeController', () => {
 	let module: TestingModule;
@@ -22,16 +23,7 @@ describe('CommonCartridgeController', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [
-				ConfigModule.forRoot({
-					isGlobal: true,
-					load: [
-						() => {
-							return { FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_MAX_FILE_SIZE: 10_000 };
-						},
-					],
-				}),
-			],
+			imports: [ConfigurationModule.register(COMMON_CARTRIDGE_CONFIG_TOKEN, CommonCartridgeConfig)],
 			controllers: [CommonCartridgeController],
 			providers: [
 				{
@@ -124,43 +116,21 @@ describe('CommonCartridgeController', () => {
 	describe('importCourse', () => {
 		describe('when importing a course', () => {
 			const setup = () => {
-				const request = createMock<Request>();
 				const startImportParams: CommonCartridgeStartImportBodyParams = {
 					fileName: faker.system.fileName(),
 					fileRecordId: faker.string.uuid(),
 					fileUrl: faker.internet.url(),
 				};
 
-				request.headers.cookie = `jwt=${faker.internet.jwt()}`;
-
-				return { request, startImportParams };
+				return { startImportParams };
 			};
 
-			it('should call the uc with the correct parameters', async () => {
-				const { request, startImportParams } = setup();
+			it('should call the uc with the correct parameters', () => {
+				const { startImportParams } = setup();
 
-				await sut.importCourse(request, startImportParams);
+				sut.importCourse(startImportParams);
 
 				expect(commonCartridgeUcMock.startCourseImport).toHaveBeenCalledTimes(1);
-			});
-		});
-
-		describe('when importing a course without jwt', () => {
-			const setup = () => {
-				const request = createMock<Request>();
-				const startImportParams: CommonCartridgeStartImportBodyParams = {
-					fileName: faker.system.fileName(),
-					fileRecordId: faker.string.uuid(),
-					fileUrl: faker.internet.url(),
-				};
-
-				return { request, startImportParams };
-			};
-
-			it('should throw UnauthorizedException', async () => {
-				const { request, startImportParams } = setup();
-
-				await expect(sut.importCourse(request, startImportParams)).rejects.toThrow(UnauthorizedException);
 			});
 		});
 	});

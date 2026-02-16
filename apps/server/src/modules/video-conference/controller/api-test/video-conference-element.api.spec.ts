@@ -1,6 +1,7 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { accountFactory } from '@modules/account/testing';
 import { BoardExternalReferenceType } from '@modules/board';
+import { BOARD_CONTEXT_PUBLIC_API_CONFIG, BoardContextPublicApiConfig } from '@modules/board-context';
 import {
 	cardEntityFactory,
 	columnBoardEntityFactory,
@@ -37,6 +38,7 @@ describe('VideoConferenceController (API)', () => {
 	let em: EntityManager;
 	let axiosMock: MockAdapter;
 	let testApiClient: TestApiClient;
+	let boardContextConfig: BoardContextPublicApiConfig;
 
 	beforeAll(async () => {
 		const moduleRef: TestingModule = await Test.createTestingModule({
@@ -48,6 +50,9 @@ describe('VideoConferenceController (API)', () => {
 		em = app.get(EntityManager);
 		axiosMock = new MockAdapter(axios);
 		testApiClient = new TestApiClient(app, 'videoconference2');
+		boardContextConfig = app.get(BOARD_CONTEXT_PUBLIC_API_CONFIG);
+		boardContextConfig.featureColumnBoardVideoconferenceEnabled = true;
+		boardContextConfig.featureVideoconferenceEnabled = true;
 	});
 
 	afterAll(async () => {

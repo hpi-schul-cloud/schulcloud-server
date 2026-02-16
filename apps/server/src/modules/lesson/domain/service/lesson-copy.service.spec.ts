@@ -1,5 +1,4 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Configuration } from '@hpi-schul-cloud/commons';
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
@@ -14,6 +13,7 @@ import { AuthorizableObject } from '@shared/domain/domain-object';
 import { BaseEntity } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
+import { LESSON_CONFIG_TOKEN, LessonConfig } from '../../lesson.config';
 import {
 	ComponentEtherpadProperties,
 	ComponentGeogebraProperties,
@@ -37,7 +37,7 @@ describe('lesson copy service', () => {
 	let copyHelperService: DeepMocked<CopyHelperService>;
 	let etherpadService: DeepMocked<EtherpadService>;
 	let lessonRepo: DeepMocked<LessonRepo>;
-	let configurationSpy: jest.SpyInstance;
+	let lessonConfig: LessonConfig;
 
 	afterAll(async () => {
 		await module.close();
@@ -68,6 +68,13 @@ describe('lesson copy service', () => {
 					provide: LessonRepo,
 					useValue: createMock<LessonRepo>(),
 				},
+				{
+					provide: LESSON_CONFIG_TOKEN,
+					useValue: {
+						featureEtherpadEnabled: true,
+						padUri: 'http://pad.uri',
+					},
+				},
 			],
 		}).compile();
 
@@ -83,6 +90,7 @@ describe('lesson copy service', () => {
 		copyHelperService.buildCopyEntityDict.mockReturnValue(map);
 		etherpadService = module.get(EtherpadService);
 		lessonRepo = module.get(LessonRepo);
+		lessonConfig = module.get(LESSON_CONFIG_TOKEN);
 	});
 
 	describe('handleCopyLesson', () => {
@@ -827,22 +835,12 @@ describe('lesson copy service', () => {
 
 			etherpadService.createEtherpad.mockResolvedValue('abc');
 
-			configurationSpy = jest.spyOn(Configuration, 'get').mockImplementation((config: string) => {
-				if (config === 'FEATURE_ETHERPAD_ENABLED') {
-					return true;
-				}
-				if (config === 'ETHERPAD__PAD_URI') {
-					return 'http://pad.uri';
-				}
-				return null;
-			});
-
 			return { user, originalCourse, destinationCourse, originalLesson };
 		};
 
 		it('should not call etherpad service, if feature flag is false', async () => {
 			const { user, destinationCourse, originalLesson } = setup();
-			configurationSpy = jest.spyOn(Configuration, 'get').mockReturnValue(false);
+			lessonConfig.featureEtherpadEnabled = false;
 
 			const status = await copyService.copyLesson({
 				originalLessonId: originalLesson.id,
@@ -851,11 +849,10 @@ describe('lesson copy service', () => {
 			});
 
 			const lessonContents = (status.copyEntity as LessonEntity).contents as ComponentProperties[];
-			expect(configurationSpy).toHaveBeenCalledWith('FEATURE_ETHERPAD_ENABLED');
 			expect(etherpadService.createEtherpad).not.toHaveBeenCalled();
 			expect(lessonContents).toEqual([]);
 
-			configurationSpy = jest.spyOn(Configuration, 'get').mockReturnValue(true);
+			lessonConfig.featureEtherpadEnabled = true;
 		});
 
 		it('should call etherpad service to create new etherpad', async () => {

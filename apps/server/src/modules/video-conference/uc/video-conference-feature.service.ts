@@ -45,6 +45,6 @@ export class VideoConferenceFeatureService {
 	}
 
 	private isVideoConferenceEnabledForConfig(): boolean {
-		return this.config.FEATURE_VIDEOCONFERENCE_ENABLED;
+		return this.config.featureVideoConferenceEnabled;
 	}
 }

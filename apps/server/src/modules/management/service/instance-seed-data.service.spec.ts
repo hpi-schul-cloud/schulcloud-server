@@ -1,14 +1,14 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Instance, InstanceService } from '@modules/instance';
-import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
+import { MANAGEMENT_SEED_DATA_CONFIG_TOKEN, ManagementSeedDataConfig } from '../management-seed-data.config';
 import { InstancesSeedDataService } from './instances-seed-data.service';
 
 describe(InstancesSeedDataService.name, () => {
 	let module: TestingModule;
 	let service: InstancesSeedDataService;
 
-	let configService: DeepMocked<ConfigService>;
+	let config: ManagementSeedDataConfig;
 	let instanceService: DeepMocked<InstanceService>;
 
 	beforeAll(async () => {
@@ -16,8 +16,8 @@ describe(InstancesSeedDataService.name, () => {
 			providers: [
 				InstancesSeedDataService,
 				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService>(),
+					provide: MANAGEMENT_SEED_DATA_CONFIG_TOKEN,
+					useValue: {},
 				},
 				{
 					provide: InstanceService,
@@ -27,7 +27,7 @@ describe(InstancesSeedDataService.name, () => {
 		}).compile();
 
 		service = module.get(InstancesSeedDataService);
-		configService = module.get(ConfigService);
+		config = module.get(MANAGEMENT_SEED_DATA_CONFIG_TOKEN);
 		instanceService = module.get(InstanceService);
 	});
 
@@ -42,7 +42,7 @@ describe(InstancesSeedDataService.name, () => {
 	describe('import', () => {
 		describe('when creating seed data for the instance', () => {
 			const setup = () => {
-				configService.get.mockReturnValueOnce('dbc'); // SC_SHORTNAME
+				config.scShortName = 'dbc';
 			};
 
 			it('should import the instance', async () => {

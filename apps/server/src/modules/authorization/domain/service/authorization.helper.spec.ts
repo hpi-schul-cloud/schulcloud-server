@@ -7,18 +7,31 @@ import { Submission, Task } from '@modules/task/repo';
 import { taskFactory } from '@modules/task/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
+import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
+import { AUTHORIZATION_CONFIG_TOKEN } from '../../authorization.config';
 import { AuthorizationHelper } from './authorization.helper';
 
 describe('AuthorizationHelper', () => {
-	// If we have a class with no dependencies, do we still wanna build a testing module? Or is it fine like this?
-	const service = new AuthorizationHelper();
+	let service: AuthorizationHelper;
 	const permissionA = 'a' as Permission;
 	const permissionB = 'b' as Permission;
 	const permissionC = 'c' as Permission;
 
 	beforeAll(async () => {
+		const module: TestingModule = await Test.createTestingModule({
+			providers: [
+				AuthorizationHelper,
+				{
+					provide: AUTHORIZATION_CONFIG_TOKEN,
+					useValue: {},
+				},
+			],
+		}).compile();
+
+		service = module.get<AuthorizationHelper>(AuthorizationHelper);
+
 		await setupEntities([User, CourseEntity, CourseGroupEntity, Task, LessonEntity, Submission, Material]);
 	});
 

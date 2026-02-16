@@ -1,9 +1,8 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ValidationError } from '@shared/common/error';
 import { Page } from '@shared/domain/domainobject';
-import { ToolConfig } from '../../tool-config';
+import { TOOL_CONFIG_TOKEN, ToolConfig } from '../../tool-config';
 import { ExternalTool } from '../domain';
 import { ExternalToolMediumStatus } from '../enum';
 import { externalToolFactory } from '../testing';
@@ -18,7 +17,7 @@ describe(ExternalToolValidationService.name, () => {
 
 	let externalToolService: DeepMocked<ExternalToolService>;
 	let commonToolValidationService: DeepMocked<ExternalToolParameterValidationService>;
-	let configService: DeepMocked<ConfigService<ToolConfig, true>>;
+	let config: ToolConfig;
 	let logoService: DeepMocked<ExternalToolLogoService>;
 
 	beforeAll(async () => {
@@ -34,8 +33,8 @@ describe(ExternalToolValidationService.name, () => {
 					useValue: createMock<ExternalToolParameterValidationService>(),
 				},
 				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService<ToolConfig, true>>(),
+					provide: TOOL_CONFIG_TOKEN,
+					useValue: {},
 				},
 				{
 					provide: ExternalToolLogoService,
@@ -47,7 +46,7 @@ describe(ExternalToolValidationService.name, () => {
 		service = module.get(ExternalToolValidationService);
 		externalToolService = module.get(ExternalToolService);
 		commonToolValidationService = module.get(ExternalToolParameterValidationService);
-		configService = module.get(ConfigService);
+		config = module.get(TOOL_CONFIG_TOKEN);
 		logoService = module.get(ExternalToolLogoService);
 	});
 
@@ -214,7 +213,7 @@ describe(ExternalToolValidationService.name, () => {
 		describe('when external tool has a given base64 logo', () => {
 			const setup = () => {
 				const externalTool: ExternalTool = externalToolFactory.withBase64Logo().build();
-				configService.get.mockReturnValue(30000);
+				config.ctlToolsExternalToolMaxLogoSizeInBytes = 30000;
 
 				return { externalTool };
 			};
@@ -238,7 +237,7 @@ describe(ExternalToolValidationService.name, () => {
 					const mockedPreferredToolsPage: Page<ExternalTool> = new Page<ExternalTool>([], 0);
 
 					externalToolService.findExternalTools.mockResolvedValue(mockedPreferredToolsPage);
-					configService.get.mockReturnValue(10);
+					config.ctlToolsPreferredToolsLimit = 10;
 
 					return {
 						externalTool,
@@ -264,7 +263,7 @@ describe(ExternalToolValidationService.name, () => {
 					const mockedPreferredToolsPage: Page<ExternalTool> = new Page<ExternalTool>([], 0);
 
 					externalToolService.findExternalTools.mockResolvedValue(mockedPreferredToolsPage);
-					configService.get.mockReturnValue(10);
+					config.ctlToolsPreferredToolsLimit = 10;
 
 					const expectedError = new ValidationError(
 						`tool_preferred_tools_missing_icon_name: The icon name of the preferred tool ${externalTool.name} is missing.`
@@ -295,7 +294,7 @@ describe(ExternalToolValidationService.name, () => {
 					const mockedPreferredToolsPage: Page<ExternalTool> = new Page<ExternalTool>([], 0);
 
 					externalToolService.findExternalTools.mockResolvedValue(mockedPreferredToolsPage);
-					configService.get.mockReturnValue(10);
+					config.ctlToolsPreferredToolsLimit = 10;
 
 					const expectedError = new ValidationError(
 						`tool_preferred_tools_missing_icon_name: The icon name of the preferred tool ${externalTool.name} is missing.`
@@ -329,7 +328,7 @@ describe(ExternalToolValidationService.name, () => {
 					);
 
 					externalToolService.findExternalTools.mockResolvedValue(mockedPreferredToolsPage);
-					configService.get.mockReturnValue(3);
+					config.ctlToolsPreferredToolsLimit = 3;
 
 					const expectedError = new ValidationError(
 						`tool_preferred_tools_limit_reached: Unable to add a new preferred tool, the total limit had been reached.`
@@ -363,7 +362,7 @@ describe(ExternalToolValidationService.name, () => {
 					);
 
 					externalToolService.findExternalTools.mockResolvedValue(mockedPreferredToolsPage);
-					configService.get.mockReturnValue(3);
+					config.ctlToolsPreferredToolsLimit = 3;
 
 					const expectedError = new ValidationError(
 						`tool_preferred_tools_limit_reached: Unable to add a new preferred tool, the total limit had been reached.`
@@ -392,7 +391,7 @@ describe(ExternalToolValidationService.name, () => {
 				const mockedPreferredToolsPage: Page<ExternalTool> = new Page<ExternalTool>([], 0);
 
 				externalToolService.findExternalTools.mockResolvedValue(mockedPreferredToolsPage);
-				configService.get.mockReturnValue(10);
+				config.ctlToolsPreferredToolsLimit = 10;
 
 				return {
 					externalTool,
@@ -415,7 +414,7 @@ describe(ExternalToolValidationService.name, () => {
 					const mockedPreferredToolsPage: Page<ExternalTool> = new Page<ExternalTool>([], 0);
 
 					externalToolService.findExternalTools.mockResolvedValue(mockedPreferredToolsPage);
-					configService.get.mockReturnValue(10);
+					config.ctlToolsPreferredToolsLimit = 10;
 
 					const expectedError = new ValidationError(
 						`tool_medium_status: This medium status must be one of: active, draft or template.`
@@ -443,7 +442,7 @@ describe(ExternalToolValidationService.name, () => {
 						const mockedPreferredToolsPage: Page<ExternalTool> = new Page<ExternalTool>([], 0);
 
 						externalToolService.findExternalTools.mockResolvedValue(mockedPreferredToolsPage);
-						configService.get.mockReturnValue(10);
+						config.ctlToolsPreferredToolsLimit = 10;
 
 						return {
 							externalTool,
@@ -466,7 +465,7 @@ describe(ExternalToolValidationService.name, () => {
 						const mockedPreferredToolsPage: Page<ExternalTool> = new Page<ExternalTool>([], 0);
 
 						externalToolService.findExternalTools.mockResolvedValue(mockedPreferredToolsPage);
-						configService.get.mockReturnValue(10);
+						config.ctlToolsPreferredToolsLimit = 10;
 
 						const expectedError = new ValidationError(
 							`tool_medium_status_active: This medium is active but is not linked to an external medium.`
@@ -497,7 +496,7 @@ describe(ExternalToolValidationService.name, () => {
 						const mockedPreferredToolsPage: Page<ExternalTool> = new Page<ExternalTool>([], 0);
 
 						externalToolService.findExternalTools.mockResolvedValue(mockedPreferredToolsPage);
-						configService.get.mockReturnValue(10);
+						config.ctlToolsPreferredToolsLimit = 10;
 
 						return {
 							externalTool,
@@ -522,7 +521,7 @@ describe(ExternalToolValidationService.name, () => {
 						const mockedPreferredToolsPage: Page<ExternalTool> = new Page<ExternalTool>([], 0);
 
 						externalToolService.findExternalTools.mockResolvedValue(mockedPreferredToolsPage);
-						configService.get.mockReturnValue(10);
+						config.ctlToolsPreferredToolsLimit = 10;
 
 						const expectedError = new ValidationError(
 							`tool_medium_status_draft: This medium is draft but is not linked to an external medium.`
@@ -553,7 +552,7 @@ describe(ExternalToolValidationService.name, () => {
 						const mockedPreferredToolsPage: Page<ExternalTool> = new Page<ExternalTool>([], 0);
 
 						externalToolService.findExternalTools.mockResolvedValue(mockedPreferredToolsPage);
-						configService.get.mockReturnValue(10);
+						config.ctlToolsPreferredToolsLimit = 10;
 
 						return {
 							externalTool,
@@ -577,7 +576,7 @@ describe(ExternalToolValidationService.name, () => {
 						const mockedPreferredToolsPage: Page<ExternalTool> = new Page<ExternalTool>([], 0);
 
 						externalToolService.findExternalTools.mockResolvedValue(mockedPreferredToolsPage);
-						configService.get.mockReturnValue(10);
+						config.ctlToolsPreferredToolsLimit = 10;
 
 						const expectedError = new ValidationError(
 							`tool_medium_status_template: This template cannot be linked to a specific medium.`
@@ -783,7 +782,7 @@ describe(ExternalToolValidationService.name, () => {
 		describe('when external tool has a given base64 logo', () => {
 			const setup = () => {
 				const externalTool: ExternalTool = externalToolFactory.withBase64Logo().build();
-				configService.get.mockReturnValue(30000);
+				config.ctlToolsExternalToolMaxLogoSizeInBytes = 30000;
 
 				return { externalTool };
 			};
@@ -815,7 +814,7 @@ describe(ExternalToolValidationService.name, () => {
 						const existingPreferredTools: Page<ExternalTool> = new Page<ExternalTool>([], 0);
 
 						externalToolService.findExternalTools.mockResolvedValue(existingPreferredTools);
-						configService.get.mockReturnValue(10);
+						config.ctlToolsPreferredToolsLimit = 10;
 
 						return {
 							existingToolToUpdateId: existingToolToUpdate.id,
@@ -848,7 +847,7 @@ describe(ExternalToolValidationService.name, () => {
 						const existingPreferredTools: Page<ExternalTool> = new Page<ExternalTool>([], 0);
 
 						externalToolService.findExternalTools.mockResolvedValue(existingPreferredTools);
-						configService.get.mockReturnValue(10);
+						config.ctlToolsPreferredToolsLimit = 10;
 
 						const expectedError = new ValidationError(
 							`tool_preferred_tools_missing_icon_name: The icon name of the preferred tool ${toolWithNewParams.name} is missing.`
@@ -886,7 +885,7 @@ describe(ExternalToolValidationService.name, () => {
 						const existingPreferredTools: Page<ExternalTool> = new Page<ExternalTool>([], 0);
 
 						externalToolService.findExternalTools.mockResolvedValue(existingPreferredTools);
-						configService.get.mockReturnValue(10);
+						config.ctlToolsPreferredToolsLimit = 10;
 
 						const expectedError = new ValidationError(
 							`tool_preferred_tools_missing_icon_name: The icon name of the preferred tool ${toolWithNewParams.name} is missing.`
@@ -930,7 +929,7 @@ describe(ExternalToolValidationService.name, () => {
 						);
 
 						externalToolService.findExternalTools.mockResolvedValue(existingPreferredTools);
-						configService.get.mockReturnValue(3);
+						config.ctlToolsPreferredToolsLimit = 3;
 
 						const expectedError = new ValidationError(
 							`tool_preferred_tools_limit_reached: Unable to add a new preferred tool, the total limit had been reached.`
@@ -975,7 +974,7 @@ describe(ExternalToolValidationService.name, () => {
 						);
 
 						externalToolService.findExternalTools.mockResolvedValue(existingPreferredTools);
-						configService.get.mockReturnValue(3);
+						config.ctlToolsPreferredToolsLimit = 3;
 
 						const expectedError = new ValidationError(
 							`tool_preferred_tools_limit_reached: Unable to add a new preferred tool, the total limit had been reached.`
@@ -1025,7 +1024,7 @@ describe(ExternalToolValidationService.name, () => {
 					);
 
 					externalToolService.findExternalTools.mockResolvedValue(existingTools);
-					configService.get.mockReturnValue(4);
+					config.ctlToolsPreferredToolsLimit = 4;
 
 					return {
 						existingToolToUpdateId: existingToolToUpdate.id,
@@ -1067,7 +1066,7 @@ describe(ExternalToolValidationService.name, () => {
 					);
 
 					externalToolService.findExternalTools.mockResolvedValue(existingTools);
-					configService.get.mockReturnValue(2);
+					config.ctlToolsPreferredToolsLimit = 2;
 
 					const expectedError = new ValidationError(
 						`tool_preferred_tools_limit_reached: Unable to add a new preferred tool, the total limit had been reached.`

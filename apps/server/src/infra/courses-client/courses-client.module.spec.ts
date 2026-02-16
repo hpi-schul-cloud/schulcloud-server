@@ -1,9 +1,16 @@
-import { faker } from '@faker-js/faker';
-import { createMock } from '@golevelup/ts-jest';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigProperty, Configuration } from '@infra/configuration';
 import { Test, TestingModule } from '@nestjs/testing';
+import { IsUrl } from 'class-validator';
 import { CoursesClientAdapter } from './courses-client.adapter';
+import { InternalCoursesClientConfig } from './courses-client.config';
 import { CoursesClientModule } from './courses-client.module';
+
+@Configuration()
+class TestConfig implements InternalCoursesClientConfig {
+	@ConfigProperty('API_HOST')
+	@IsUrl({ require_tld: false })
+	basePath = 'https://api.example.com/courses';
+}
 
 describe(CoursesClientModule.name, () => {
 	let module: TestingModule;
@@ -11,15 +18,8 @@ describe(CoursesClientModule.name, () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [CoursesClientModule, ConfigModule.forRoot({ isGlobal: true })],
-		})
-			.overrideProvider(ConfigService)
-			.useValue(
-				createMock<ConfigService>({
-					getOrThrow: () => faker.internet.url(),
-				})
-			)
-			.compile();
+			imports: [CoursesClientModule.register('COURSES_CLIENT_CONFIG', TestConfig)],
+		}).compile();
 
 		sut = module.get(CoursesClientModule);
 	});

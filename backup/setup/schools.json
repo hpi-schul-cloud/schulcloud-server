@@ -180,9 +180,7 @@
 		"__v": 0,
 		"purpose": "demo",
 		"permissions": {
-			"student": {
-				"LERNSTORE_VIEW": true
-			}
+			"student": {}
 		},
 		"language": "de",
 		"logo_dataUrl": "",
@@ -193,9 +191,7 @@
 			"$oid": "5fa318f2b229544f2c697a56"
 		},
 		"documentBaseDirType": "",
-		"systems": [{
-			"$oid": "62c7f233f35a554ba3ed0000"
-		}],
+		"systems": [],
 		"experimental": false,
 		"pilot": false,
 		"features": [
@@ -229,9 +225,7 @@
 		"__v": 0,
 		"purpose": "demo",
 		"permissions": {
-			"student": {
-				"LERNSTORE_VIEW": true
-			}
+			"student": {}
 		},
 		"language": "de",
 		"logo_dataUrl": "",
@@ -271,9 +265,7 @@
 		"__v": 0,
 		"purpose": "demo",
 		"permissions": {
-			"student": {
-				"LERNSTORE_VIEW": true
-			}
+			"student": {}
 		},
 		"language": "en",
 		"logo_dataUrl": "",

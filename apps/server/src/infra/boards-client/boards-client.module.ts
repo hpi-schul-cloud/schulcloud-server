@@ -1,25 +1,37 @@
-import { Module } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { ConfigurationModule } from '@infra/configuration';
+import { DynamicModule, Module, Scope } from '@nestjs/common';
 import { BoardsClientAdapter } from './boards-client.adapter';
-import { BoardsClientConfig } from './boards-client.config';
+import { InternalBoardsClientConfig } from './boards-client.config';
 import { BoardApi, Configuration } from './generated';
 
-@Module({
-	providers: [
-		BoardsClientAdapter,
-		{
-			provide: BoardApi,
-			useFactory: (configService: ConfigService<BoardsClientConfig, true>): BoardApi => {
-				const basePath = configService.getOrThrow<string>('API_HOST');
-				const configuration = new Configuration({
-					basePath: `${basePath}/v3`,
-				});
+@Module({})
+export class BoardsClientModule {
+	public static register(
+		configInjectionToken: string,
+		configConstructor: new () => InternalBoardsClientConfig
+	): DynamicModule {
+		const providers = [
+			BoardsClientAdapter,
+			{
+				provide: BoardApi,
+				scope: Scope.REQUEST,
+				useFactory: (config: InternalBoardsClientConfig): BoardApi => {
+					const { basePath } = config;
+					const configuration = new Configuration({
+						basePath: `${basePath}/v3`,
+					});
 
-				return new BoardApi(configuration);
+					return new BoardApi(configuration);
+				},
+				inject: [configInjectionToken],
 			},
-			inject: [ConfigService],
-		},
-	],
-	exports: [BoardsClientAdapter],
-})
-export class BoardsClientModule {}
+		];
+
+		return {
+			module: BoardsClientModule,
+			imports: [ConfigurationModule.register(configInjectionToken, configConstructor)],
+			providers,
+			exports: [BoardsClientAdapter],
+		};
+	}
+}

@@ -5,10 +5,9 @@ import {
 	CourseSynchronizationHistoryService,
 } from '@modules/course-synchronization-history';
 import { Group } from '@modules/group';
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { Inject, Injectable } from '@nestjs/common';
 import { CourseSyncHistoryGroupExternalSourceMissingLoggableException } from '../../../loggable';
-import type { ProvisioningConfig } from '../../../provisioning.config';
+import { PROVISIONING_CONFIG_TOKEN, type ProvisioningConfig } from '../../../provisioning.config';
 
 @Injectable()
 export class SchulconnexCourseSyncService {
@@ -16,7 +15,8 @@ export class SchulconnexCourseSyncService {
 		private readonly courseDoService: CourseDoService,
 		private readonly courseSyncService: CourseSyncService,
 		private readonly courseSynchronizationHistoryService: CourseSynchronizationHistoryService,
-		private readonly configService: ConfigService<ProvisioningConfig, true>
+		@Inject(PROVISIONING_CONFIG_TOKEN)
+		private readonly config: ProvisioningConfig
 	) {}
 
 	public async synchronizeCourseWithGroup(newGroup: Group, oldGroup?: Group): Promise<void> {
@@ -59,9 +59,7 @@ export class SchulconnexCourseSyncService {
 			throw new CourseSyncHistoryGroupExternalSourceMissingLoggableException(group.id);
 		}
 
-		const expirationInSeconds: number = this.configService.getOrThrow<number>(
-			'SCHULCONNEX_COURSE_SYNC_HISTORY_EXPIRATION_SECONDS'
-		);
+		const expirationInSeconds: number = this.config.schulconnexCourseSyncHistoryExpirationSeconds;
 		const expiresAt = new Date(Date.now() + expirationInSeconds * 1000);
 
 		const histories: CourseSynchronizationHistory[] = [];

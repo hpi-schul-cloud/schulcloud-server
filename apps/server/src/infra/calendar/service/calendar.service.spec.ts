@@ -1,13 +1,13 @@
+import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { CalendarEventDto, CalendarService } from '@infra/calendar';
 import { HttpService } from '@nestjs/axios';
 import { HttpStatus, InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Logger } from '@core/logger';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
 import { AxiosResponse } from 'axios';
 import { of, throwError } from 'rxjs';
+import { CALENDAR_CONFIG_TOKEN, CalendarConfig } from '../calendar.config';
 import { CalendarEventId } from '../interface/calendar-event-id.interface';
 import { CalendarEvent } from '../interface/calendar-event.interface';
 import { CalendarMapper } from '../mapper/calendar.mapper';
@@ -20,14 +20,6 @@ describe('CalendarServiceSpec', () => {
 	let calendarMapper: DeepMocked<CalendarMapper>;
 
 	beforeAll(async () => {
-		jest.spyOn(Configuration, 'get').mockImplementation((key: string) => {
-			switch (key) {
-				case 'CALENDAR_URI':
-					return 'http://localhost:4000';
-				default:
-					return null;
-			}
-		});
 		module = await Test.createTestingModule({
 			providers: [
 				CalendarService,
@@ -42,6 +34,10 @@ describe('CalendarServiceSpec', () => {
 				{
 					provide: Logger,
 					useValue: createMock<Logger>(),
+				},
+				{
+					provide: CALENDAR_CONFIG_TOKEN,
+					useValue: new CalendarConfig(),
 				},
 			],
 		}).compile();

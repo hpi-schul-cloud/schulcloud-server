@@ -1,25 +1,36 @@
-import { Module } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { ConfigurationModule } from '@infra/configuration';
+import { DynamicModule, Module } from '@nestjs/common';
 import { ColumnClientAdapter } from './column-client.adapter';
-import { ColumnClientConfig } from './column-client.config';
+import { InternalColumnClientConfig } from './column-client.config';
 import { BoardColumnApi, Configuration } from './generated';
 
-@Module({
-	providers: [
-		ColumnClientAdapter,
-		{
-			provide: BoardColumnApi,
-			useFactory: (configService: ConfigService<ColumnClientConfig, true>): BoardColumnApi => {
-				const basePath = configService.getOrThrow<string>('API_HOST');
-				const configuration = new Configuration({
-					basePath: `${basePath}/v3`,
-				});
+@Module({})
+export class ColumnClientModule {
+	public static register(
+		configInjectionToken: string,
+		configConstructor: new () => InternalColumnClientConfig
+	): DynamicModule {
+		const providers = [
+			ColumnClientAdapter,
+			{
+				provide: BoardColumnApi,
+				useFactory: (config: InternalColumnClientConfig): BoardColumnApi => {
+					const { basePath } = config;
+					const configuration = new Configuration({
+						basePath: `${basePath}/v3`,
+					});
 
-				return new BoardColumnApi(configuration);
+					return new BoardColumnApi(configuration);
+				},
+				inject: [configInjectionToken],
 			},
-			inject: [ConfigService],
-		},
-	],
-	exports: [ColumnClientAdapter],
-})
-export class ColumnClientModule {}
+		];
+
+		return {
+			module: ColumnClientModule,
+			imports: [ConfigurationModule.register(configInjectionToken, configConstructor)],
+			providers,
+			exports: [ColumnClientAdapter],
+		};
+	}
+}

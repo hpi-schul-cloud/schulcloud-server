@@ -1,9 +1,8 @@
-import { MediaBoardConfig } from '@modules/board/media-board.config';
 import { MediaSchoolLicense, MediaSchoolLicenseService } from '@modules/school-license';
 import { UserService } from '@modules/user';
 import { MediaUserLicense, MediaUserLicenseService } from '@modules/user-license';
+import { Inject } from '@nestjs/common';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
-import { ConfigService } from '@nestjs/config';
 import { ValidationError } from '@shared/common/error';
 import { EntityId } from '@shared/domain/types';
 import {
@@ -14,6 +13,7 @@ import {
 import { CommonToolValidationService } from '../../common/service';
 import { ExternalTool } from '../../external-tool/domain';
 import { SchoolExternalTool } from '../../school-external-tool/domain';
+import { TOOL_CONFIG_TOKEN, ToolConfig } from '../../tool-config';
 import { ContextExternalToolLaunchable } from '../domain';
 
 @Injectable()
@@ -22,7 +22,7 @@ export class ToolConfigurationStatusService {
 		private readonly commonToolValidationService: CommonToolValidationService,
 		private readonly mediaUserLicenseService: MediaUserLicenseService,
 		private readonly mediaSchoolLicenseService: MediaSchoolLicenseService,
-		private readonly configService: ConfigService<MediaBoardConfig, true>,
+		@Inject(TOOL_CONFIG_TOKEN) private readonly config: ToolConfig,
 		private readonly userService: UserService
 	) {}
 
@@ -104,7 +104,7 @@ export class ToolConfigurationStatusService {
 	}
 
 	private async isToolLicensedForUser(externalTool: ExternalTool, userId: EntityId): Promise<boolean> {
-		if (this.configService.get('FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED')) {
+		if (this.config.featureSchulconnexMediaLicenseEnabled) {
 			const mediaUserLicenses: MediaUserLicense[] = await this.mediaUserLicenseService.getMediaUserLicensesForUser(
 				userId
 			);
@@ -123,7 +123,7 @@ export class ToolConfigurationStatusService {
 	}
 
 	private async isToolLicensedForSchool(externalTool: ExternalTool, schoolId: EntityId): Promise<boolean> {
-		if (this.configService.get('FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED')) {
+		if (this.config.featureVidisMediaActivationsEnabled) {
 			const mediaSchoolLicenses: MediaSchoolLicense[] =
 				await this.mediaSchoolLicenseService.findMediaSchoolLicensesBySchoolId(schoolId);
 

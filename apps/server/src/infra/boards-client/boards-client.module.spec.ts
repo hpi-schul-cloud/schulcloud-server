@@ -1,28 +1,23 @@
+import { ConfigProperty, Configuration } from '@infra/configuration';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ConfigModule } from '@nestjs/config';
-import { faker } from '@faker-js/faker';
+import { IsUrl } from 'class-validator';
 import { BoardsClientAdapter } from './boards-client.adapter';
-import { BoardsClientConfig } from './boards-client.config';
+import { InternalBoardsClientConfig } from './boards-client.config';
 import { BoardsClientModule } from './boards-client.module';
+
+@Configuration()
+class TestInternalBoardsClientConfig implements InternalBoardsClientConfig {
+	@ConfigProperty('API_HOST')
+	@IsUrl({ require_tld: false })
+	basePath = 'https://api.example.com/boards';
+}
 
 describe(BoardsClientModule.name, () => {
 	let module: TestingModule;
 
 	beforeEach(async () => {
 		module = await Test.createTestingModule({
-			imports: [
-				BoardsClientModule,
-				ConfigModule.forRoot({
-					isGlobal: true,
-					load: [
-						(): BoardsClientConfig => {
-							return {
-								API_HOST: faker.internet.url(),
-							};
-						},
-					],
-				}),
-			],
+			imports: [BoardsClientModule.register('BOARDS_CLIENT_CONFIG', TestInternalBoardsClientConfig)],
 		}).compile();
 	});
 

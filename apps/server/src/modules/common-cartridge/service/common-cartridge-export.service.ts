@@ -305,9 +305,11 @@ export class CommonCartridgeExportService {
 			identifier: createIdentifier(card.id),
 		});
 
-		await Promise.all(
-			card.elements.map((element) => this.addCardElementToOrganization(jwt, element, version, cardOrganization))
-		);
+		// INFO: for await keeps the order of files in cards in the correct order
+		// with Promise.all, the order of files would be random
+		for await (const cardElement of card.elements) {
+			await this.addCardElementToOrganization(jwt, cardElement, version, cardOrganization);
+		}
 	}
 
 	private async openStreamsToFiles(

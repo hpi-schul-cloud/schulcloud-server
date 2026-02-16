@@ -5,7 +5,7 @@ import { RoleName } from '@modules/role';
 import { Role } from '@modules/role/repo';
 import { roleFactory } from '@modules/role/testing';
 import { schoolEntityFactory, schoolYearEntityFactory } from '@modules/school/testing';
-import { serverConfig, ServerConfig, ServerTestModule } from '@modules/server';
+import { ServerTestModule } from '@modules/server';
 import { systemEntityFactory } from '@modules/system/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
@@ -28,8 +28,6 @@ describe('Group (API)', () => {
 	let testApiClient: TestApiClient;
 
 	beforeAll(async () => {
-		const config: ServerConfig = serverConfig();
-		config.FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED = true;
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
 		}).compile();

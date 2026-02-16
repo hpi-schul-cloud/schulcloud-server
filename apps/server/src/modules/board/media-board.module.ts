@@ -2,7 +2,7 @@ import { ToolModule } from '@modules/tool';
 import { Module } from '@nestjs/common';
 import { MediaBoardNodeFactory } from './domain';
 import { BoardNodeRepo } from './repo';
-import { MediaBoardService, MediaAvailableLineService } from './service';
+import { MediaAvailableLineService, MediaBoardService } from './service';
 
 @Module({
 	imports: [ToolModule],

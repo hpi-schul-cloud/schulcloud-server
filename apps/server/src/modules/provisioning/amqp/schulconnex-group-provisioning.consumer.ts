@@ -1,15 +1,20 @@
 import { Logger } from '@core/logger';
 import { RabbitPayload, RabbitSubscribe } from '@golevelup/nestjs-rabbitmq';
-import { SchulconnexProvisioningEvents, SchulconnexProvisioningExchange } from '@infra/rabbitmq';
-import { MikroORM, EnsureRequestContext } from '@mikro-orm/core';
+import { EnsureRequestContext, MikroORM } from '@mikro-orm/core';
 import { type Group, GroupService } from '@modules/group';
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { Inject, Injectable } from '@nestjs/common';
 import { SchulconnexGroupProvisioningMessage } from '../domain';
 import { GroupProvisioningSuccessfulLoggable } from '../loggable';
-import { ProvisioningConfig } from '../provisioning.config';
+import {
+	InternalProvisioningExchangeConfig,
+	PROVISIONING_EXCHANGE_CONFIG_TOKEN,
+} from '../provisioning-exchange.config';
+import { PROVISIONING_CONFIG_TOKEN, ProvisioningConfig } from '../provisioning.config';
 import { SchulconnexCourseSyncService, SchulconnexGroupProvisioningService } from '../strategy/schulconnex/service';
+import { SchulconnexProvisioningEvents } from './schulconnex.exchange';
 
+// Using a variable here to access the exchange name in the decorator
+let provisionedExchangeName: string | undefined;
 @Injectable()
 export class SchulconnexGroupProvisioningConsumer {
 	constructor(
@@ -17,14 +22,17 @@ export class SchulconnexGroupProvisioningConsumer {
 		private readonly schulconnexGroupProvisioningService: SchulconnexGroupProvisioningService,
 		private readonly schulconnexCourseSyncService: SchulconnexCourseSyncService,
 		private readonly groupService: GroupService,
-		private readonly configService: ConfigService<ProvisioningConfig, true>,
+		@Inject(PROVISIONING_CONFIG_TOKEN)
+		private readonly config: ProvisioningConfig,
+		@Inject(PROVISIONING_EXCHANGE_CONFIG_TOKEN) private readonly exchangeConfig: InternalProvisioningExchangeConfig,
 		private readonly orm: MikroORM
 	) {
 		this.logger.setContext(SchulconnexGroupProvisioningConsumer.name);
+		provisionedExchangeName = this.exchangeConfig.exchangeName;
 	}
 
 	@RabbitSubscribe({
-		exchange: SchulconnexProvisioningExchange,
+		exchange: provisionedExchangeName,
 		routingKey: SchulconnexProvisioningEvents.GROUP_PROVISIONING,
 		queue: SchulconnexProvisioningEvents.GROUP_PROVISIONING,
 	})
@@ -44,7 +52,7 @@ export class SchulconnexGroupProvisioningConsumer {
 			payload.systemId
 		);
 
-		if (this.configService.get('FEATURE_SCHULCONNEX_COURSE_SYNC_ENABLED') && provisionedGroup) {
+		if (this.config.featureSchulconnexCourseSyncEnabled && provisionedGroup) {
 			await this.schulconnexCourseSyncService.synchronizeCourseWithGroup(provisionedGroup, existingGroup ?? undefined);
 			if (!existingGroup) {
 				await this.schulconnexCourseSyncService.synchronizeCoursesFromHistory(provisionedGroup);

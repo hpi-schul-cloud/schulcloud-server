@@ -1,9 +1,10 @@
-import { Configuration } from '@hpi-schul-cloud/commons';
 import { CopyDictionary, CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { CopyFilesService, FileUrlReplacement } from '@modules/files-storage-client';
 import { TaskCopyService } from '@modules/task';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
+import { EntityId } from '@shared/domain/types';
 import { randomBytes } from 'crypto';
+import { LESSON_CONFIG_TOKEN, LessonConfig } from '../../lesson.config';
 import {
 	ComponentEtherpadProperties,
 	ComponentGeogebraProperties,
@@ -17,7 +18,6 @@ import {
 } from '../../repo';
 import { LessonCopyParams } from '../types';
 import { EtherpadService } from './etherpad.service';
-import { EntityId } from '@shared/domain/types';
 
 @Injectable()
 export class LessonCopyService {
@@ -26,7 +26,8 @@ export class LessonCopyService {
 		private readonly taskCopyService: TaskCopyService,
 		private readonly etherpadService: EtherpadService,
 		private readonly lessonRepo: LessonRepo,
-		private readonly copyFilesService: CopyFilesService
+		private readonly copyFilesService: CopyFilesService,
+		@Inject(LESSON_CONFIG_TOKEN) private readonly config: LessonConfig
 	) {}
 
 	public async copyLesson(params: LessonCopyParams): Promise<CopyStatus> {
@@ -191,7 +192,7 @@ export class LessonCopyService {
 	}
 
 	private isTypeThatShouldBeCopied(type: ComponentType): boolean {
-		const etherpadEnabled = Configuration.get('FEATURE_ETHERPAD_ENABLED') as boolean;
+		const etherpadEnabled = this.config.featureEtherpadEnabled;
 
 		return etherpadEnabled || type !== ComponentType.ETHERPAD;
 	}
@@ -307,7 +308,7 @@ export class LessonCopyService {
 			content.title
 		);
 		if (etherpadPadId) {
-			const etherpadUri = Configuration.get('ETHERPAD__PAD_URI') as string;
+			const etherpadUri = this.config.padUri;
 			content.url = `${etherpadUri}/${etherpadPadId}`;
 			copy.content = content;
 			return copy;

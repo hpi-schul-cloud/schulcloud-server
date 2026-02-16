@@ -4,15 +4,16 @@ import { AccountEntity } from '@modules/account/repo';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
 import { systemEntityFactory } from '@modules/system/testing';
+import { UserService } from '@modules/user';
 import type { User } from '@modules/user/repo';
 import { ExecutionContext, HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
+import { Permission } from '@shared/domain/interface';
 import { currentUserFactory } from '@testing/factory/currentuser.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { Request } from 'express';
 import { MeResponse } from '../dto';
-import { Permission } from '@shared/domain/interface';
 
 const mapToMeResponseObject = (user: User, account: AccountEntity, permissions: Permission[]): MeResponse => {
 	const roles = user.getRoles();
@@ -49,6 +50,7 @@ describe('Me Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let testApiClient: TestApiClient;
+	let userService: UserService;
 
 	describe('me', () => {
 		describe('when user is logged in with SVS', () => {
@@ -61,6 +63,7 @@ describe('Me Controller (API)', () => {
 				await app.init();
 				em = app.get(EntityManager);
 				testApiClient = new TestApiClient(app, 'me');
+				userService = app.get(UserService);
 			});
 
 			afterAll(async () => {
@@ -84,15 +87,15 @@ describe('Me Controller (API)', () => {
 			describe('when valid jwt is passed', () => {
 				describe('when user is a student', () => {
 					const setup = async () => {
-						// The LERNSTORE_VIEW permission on the school is set here as an example. See the unit tests for all variations.
-						const school = schoolEntityFactory.build({ permissions: { student: { LERNSTORE_VIEW: true } } });
+						// The STUDENT_LIST permission on the school is set here as an example. See the unit tests for all variations.
+						const school = schoolEntityFactory.build({ permissions: { student: { STUDENT_LIST: true } } });
 						const { studentAccount: account, studentUser: user } = UserAndAccountTestFactory.buildStudent({ school });
 
 						await em.persist([account, user]).flush();
 						em.clear();
 
 						const loggedInClient = await testApiClient.login(account);
-						const expectedPermissions = user.resolvePermissions();
+						const expectedPermissions = userService.resolvePermissions(user);
 						const expectedResponse = mapToMeResponseObject(user, account, expectedPermissions);
 
 						return { loggedInClient, expectedResponse };
@@ -116,7 +119,7 @@ describe('Me Controller (API)', () => {
 						em.clear();
 
 						const loggedInClient = await testApiClient.login(account);
-						const expectedPermissions = user.resolvePermissions();
+						const expectedPermissions = userService.resolvePermissions(user);
 						const expectedResponse = mapToMeResponseObject(user, account, expectedPermissions);
 
 						return { loggedInClient, expectedResponse };
@@ -140,7 +143,7 @@ describe('Me Controller (API)', () => {
 						em.clear();
 
 						const loggedInClient = await testApiClient.login(account);
-						const expectedPermissions = user.resolvePermissions();
+						const expectedPermissions = userService.resolvePermissions(user);
 						const expectedResponse = mapToMeResponseObject(user, account, expectedPermissions);
 
 						return { loggedInClient, expectedResponse };
@@ -195,7 +198,7 @@ describe('Me Controller (API)', () => {
 					em.clear();
 
 					const loggedInClient = await testApiClient.login(studentAccount);
-					const expectedPermissions = studentUser.resolvePermissions();
+					const expectedPermissions = userService.resolvePermissions(studentUser);
 
 					currentUser = currentUserFactory.build({
 						userId: studentUser.id,

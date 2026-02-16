@@ -4,11 +4,12 @@ import { GroupEntity } from '@modules/group/entity/group.entity';
 import { RoleName } from '@modules/role';
 import { Role } from '@modules/role/repo';
 import { roleFactory } from '@modules/role/testing';
+import { ROOM_PUBLIC_API_CONFIG_TOKEN, RoomPublicApiConfig } from '@modules/room/room.config';
 import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
 import { createRoomWithUserGroup } from '@modules/room/testing/room-with-membership.test.factory';
 import { SchoolEntity } from '@modules/school/repo';
 import { schoolEntityFactory } from '@modules/school/testing';
-import { serverConfig, ServerTestModule, type ServerConfig } from '@modules/server';
+import { ServerTestModule } from '@modules/server';
 import { User } from '@modules/user/repo';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
@@ -20,7 +21,7 @@ describe('Room Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let testApiClient: TestApiClient;
-	let config: ServerConfig;
+	let config: RoomPublicApiConfig;
 
 	beforeAll(async () => {
 		const moduleFixture = await Test.createTestingModule({
@@ -32,12 +33,12 @@ describe('Room Controller (API)', () => {
 		em = app.get(EntityManager);
 		testApiClient = new TestApiClient(app, 'rooms');
 
-		config = serverConfig();
+		config = moduleFixture.get<RoomPublicApiConfig>(ROOM_PUBLIC_API_CONFIG_TOKEN);
 	});
 
 	beforeEach(async () => {
 		await cleanupCollections(em);
-		config.FEATURE_ROOM_LINK_INVITATION_EXTERNAL_PERSONS_ENABLED = true;
+		config.featureRoomLinkInvitationExternalPersonsEnabled = true;
 	});
 
 	afterAll(async () => {

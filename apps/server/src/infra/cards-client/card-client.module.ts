@@ -1,36 +1,50 @@
-import { Module } from '@nestjs/common';
-import { CardClientAdapter, CardClientConfig } from '.';
-import { ConfigService } from '@nestjs/config';
+import { ConfigurationModule } from '@infra/configuration';
+import { DynamicModule, Module, Scope } from '@nestjs/common';
+import { CardClientAdapter } from './card-client.adapter';
+import { InternalCardClientConfig } from './card-client.config';
 import { BoardCardApi, BoardElementApi, Configuration } from './generated';
 
-@Module({
-	providers: [
-		CardClientAdapter,
-		{
-			provide: BoardCardApi,
-			useFactory: (configService: ConfigService<CardClientConfig, true>): BoardCardApi => {
-				const basePath = configService.getOrThrow<string>('API_HOST');
-				const configuration = new Configuration({
-					basePath: `${basePath}/v3`,
-				});
+@Module({})
+export class CardClientModule {
+	public static register(
+		configInjectionToken: string,
+		configConstructor: new () => InternalCardClientConfig
+	): DynamicModule {
+		const providers = [
+			CardClientAdapter,
+			{
+				provide: BoardCardApi,
+				scope: Scope.REQUEST,
+				useFactory: (config: InternalCardClientConfig): BoardCardApi => {
+					const { basePath } = config;
+					const configuration = new Configuration({
+						basePath: `${basePath}/v3`,
+					});
 
-				return new BoardCardApi(configuration);
+					return new BoardCardApi(configuration);
+				},
+				inject: [configInjectionToken],
 			},
-			inject: [ConfigService],
-		},
-		{
-			provide: BoardElementApi,
-			useFactory: (configService: ConfigService<CardClientConfig, true>): BoardElementApi => {
-				const basePath = configService.getOrThrow<string>('API_HOST');
-				const configuration = new Configuration({
-					basePath: `${basePath}/v3`,
-				});
+			{
+				provide: BoardElementApi,
+				scope: Scope.REQUEST,
+				useFactory: (config: InternalCardClientConfig): BoardElementApi => {
+					const { basePath } = config;
+					const configuration = new Configuration({
+						basePath: `${basePath}/v3`,
+					});
 
-				return new BoardElementApi(configuration);
+					return new BoardElementApi(configuration);
+				},
+				inject: [configInjectionToken],
 			},
-			inject: [ConfigService],
-		},
-	],
-	exports: [CardClientAdapter],
-})
-export class CardClientModule {}
+		];
+
+		return {
+			module: CardClientModule,
+			imports: [ConfigurationModule.register(configInjectionToken, configConstructor)],
+			exports: [CardClientAdapter],
+			providers,
+		};
+	}
+}

@@ -14,6 +14,6 @@ export {
 	RobjExportSchule,
 	VersionResponse,
 } from './generated/models';
-export { TspClientConfig } from './tsp-client-config';
 export { TspClientFactory } from './tsp-client-factory';
+export { TSP_CLIENT_CONFIG_TOKEN, TspClientConfig } from './tsp-client.config';
 export { TspClientModule } from './tsp-client.module';

@@ -1,13 +1,13 @@
 import { ICurrentUser } from '@infra/auth-guard';
-import { IdentityManagementConfig, IdentityManagementOauthService } from '@infra/identity-management';
+import { IdentityManagementOauthService } from '@infra/identity-management';
 import { Account } from '@modules/account';
 import { UserService } from '@modules/user';
-import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { TypeGuard } from '@shared/common/guards';
 import bcrypt from 'bcryptjs';
 import { Strategy } from 'passport-local';
+import { AUTHENTICATION_CONFIG_TOKEN, AuthenticationConfig } from '../authentication-config';
 import { CurrentUserMapper } from '../mapper';
 import { AuthenticationService } from '../services/authentication.service';
 
@@ -16,7 +16,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 	constructor(
 		private readonly authenticationService: AuthenticationService,
 		private readonly idmOauthService: IdentityManagementOauthService,
-		private readonly configService: ConfigService<IdentityManagementConfig, true>,
+		@Inject(AUTHENTICATION_CONFIG_TOKEN) private readonly config: AuthenticationConfig,
 		private readonly userService: UserService
 	) {
 		super();
@@ -26,7 +26,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 		({ username, password } = this.cleanupInput(username, password));
 		const account = await this.authenticationService.loadAccount(username);
 
-		if (this.configService.get('FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED')) {
+		if (this.config.identityManagementLoginEnabled) {
 			const jwt = await this.idmOauthService.resourceOwnerPasswordGrant(username, password);
 			TypeGuard.checkNotNullOrUndefined(jwt, new UnauthorizedException());
 		} else {

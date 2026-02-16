@@ -1,28 +1,23 @@
-import { faker } from '@faker-js/faker/.';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigProperty, Configuration } from '@infra/configuration';
 import { Test, TestingModule } from '@nestjs/testing';
+import { IsUrl } from 'class-validator';
 import { ColumnClientAdapter } from './column-client.adapter';
-import { ColumnClientConfig } from './column-client.config';
+import { InternalColumnClientConfig } from './column-client.config';
 import { ColumnClientModule } from './column-client.module';
+
+@Configuration()
+class TestConfig implements InternalColumnClientConfig {
+	@ConfigProperty('API_HOST')
+	@IsUrl({ require_tld: false })
+	basePath = 'https://api.example.com/columns';
+}
 
 describe('ColumnClientModule', () => {
 	let module: TestingModule;
 
 	beforeEach(async () => {
 		module = await Test.createTestingModule({
-			imports: [
-				ColumnClientModule,
-				ConfigModule.forRoot({
-					isGlobal: true,
-					load: [
-						(): ColumnClientConfig => {
-							return {
-								API_HOST: faker.internet.url(),
-							};
-						},
-					],
-				}),
-			],
+			imports: [ColumnClientModule.register('COLUMN_CLIENT_CONFIG', TestConfig)],
 		}).compile();
 	});
 

@@ -1,12 +1,5 @@
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { HttpService } from '@nestjs/axios';
-import {
-	Inject,
-	Injectable,
-	NotFoundException,
-	NotImplementedException,
-	UnprocessableEntityException,
-} from '@nestjs/common';
+import { ErrorUtils } from '@core/error/utils';
+import { LegacyLogger } from '@core/logger';
 import {
 	GroupUsers,
 	GroupfoldersCreated,
@@ -16,28 +9,29 @@ import {
 	OcsResponse,
 	SuccessfulRes,
 } from '@infra/collaborative-storage/strategy/nextcloud/nextcloud.interface';
-import { ErrorUtils } from '@core/error/utils';
-import { LegacyLogger } from '@core/logger';
+import { HttpService } from '@nestjs/axios';
+import { Injectable, NotFoundException, NotImplementedException, UnprocessableEntityException } from '@nestjs/common';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';
 import { parseInt } from 'lodash';
 import { Observable, firstValueFrom } from 'rxjs';
+import { InternalCollaborativeStorageAdapterConfig } from '../../collaborative-storage-adapter.config';
 
 @Injectable()
 export class NextcloudClient {
 	private readonly baseURL: string;
 
-	config: AxiosRequestConfig;
+	private readonly axiosConfig: AxiosRequestConfig;
 
 	constructor(
 		private readonly logger: LegacyLogger,
 		private readonly httpService: HttpService,
-		@Inject('oidcInternalName') readonly oidcInternalName: string
+		private readonly config: InternalCollaborativeStorageAdapterConfig
 	) {
-		this.baseURL = Configuration.get('NEXTCLOUD_BASE_URL') as string;
-		this.config = {
+		this.baseURL = this.config.nextcloudBaseUrl;
+		this.axiosConfig = {
 			auth: {
-				username: Configuration.get('NEXTCLOUD_ADMIN_USER') as string,
-				password: Configuration.get('NEXTCLOUD_ADMIN_PASS') as string,
+				username: this.config.nextcloudAdminUsername,
+				password: this.config.nextcloudAdminPassword,
 			},
 			headers: { 'OCS-APIRequest': true, Accept: 'Application/json' },
 		};
@@ -383,19 +377,19 @@ export class NextcloudClient {
 	}
 
 	private get<T = unknown>(apiPath: string): Observable<AxiosResponse<T>> {
-		return this.httpService.get<T>(`${this.baseURL}${apiPath}`, this.config);
+		return this.httpService.get<T>(`${this.baseURL}${apiPath}`, this.axiosConfig);
 	}
 
 	private post<T = unknown>(apiPath: string, data: unknown): Observable<AxiosResponse<T>> {
-		return this.httpService.post<T>(`${this.baseURL}${apiPath}`, data, this.config);
+		return this.httpService.post<T>(`${this.baseURL}${apiPath}`, data, this.axiosConfig);
 	}
 
 	private put<T = unknown>(apiPath: string, data: unknown): Observable<AxiosResponse<T>> {
-		return this.httpService.put<T>(`${this.baseURL}${apiPath}`, data, this.config);
+		return this.httpService.put<T>(`${this.baseURL}${apiPath}`, data, this.axiosConfig);
 	}
 
 	private delete<T = unknown>(apiPath: string): Observable<AxiosResponse<T>> {
-		return this.httpService.delete<T>(`${this.baseURL}${apiPath}`, this.config);
+		return this.httpService.delete<T>(`${this.baseURL}${apiPath}`, this.axiosConfig);
 	}
 
 	/**
@@ -416,7 +410,7 @@ export class NextcloudClient {
 	 * @returns String of format: prefix-value
 	 */
 	public getNameWithPrefix(value: string): string {
-		return `${this.oidcInternalName}-${value}`;
+		return `${this.config.oidcInternalName}-${value}`;
 	}
 
 	/**

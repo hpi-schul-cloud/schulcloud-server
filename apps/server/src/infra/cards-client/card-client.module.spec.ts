@@ -1,26 +1,23 @@
-import { faker } from '@faker-js/faker/.';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigProperty, Configuration } from '@infra/configuration';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CardClientAdapter, CardClientConfig, CardClientModule } from '.';
+import { IsUrl } from 'class-validator';
+import { CardClientAdapter } from './card-client.adapter';
+import { InternalCardClientConfig } from './card-client.config';
+import { CardClientModule } from './card-client.module';
+
+@Configuration()
+class TestConfig implements InternalCardClientConfig {
+	@ConfigProperty('API_HOST')
+	@IsUrl({ require_tld: false })
+	basePath = 'https://api.example.com/cards';
+}
 
 describe('CardClientModule', () => {
 	let module: TestingModule;
 
 	beforeEach(async () => {
 		module = await Test.createTestingModule({
-			imports: [
-				CardClientModule,
-				ConfigModule.forRoot({
-					isGlobal: true,
-					load: [
-						(): CardClientConfig => {
-							return {
-								API_HOST: faker.internet.url(),
-							};
-						},
-					],
-				}),
-			],
+			imports: [CardClientModule.register('CARD_CLIENT_CONFIG', TestConfig)],
 		}).compile();
 	});
 
