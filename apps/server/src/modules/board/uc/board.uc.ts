@@ -7,13 +7,12 @@ import { CourseService } from '@modules/course';
 import { RoomService } from '@modules/room';
 import { RoomMembershipService } from '@modules/room-membership';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 import { throwForbiddenIfFalse } from '@shared/common/utils';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { BoardNodeRule } from '../authorisation/board-node.rule';
-import { BoardConfig } from '../board.config';
+import { BOARD_CONFIG_TOKEN, BoardConfig } from '../board.config';
 import { CreateBoardBodyParams } from '../controller/dto';
 import {
 	BoardExternalReference,
@@ -41,7 +40,7 @@ export class BoardUc {
 		private readonly boardNodeFactory: BoardNodeFactory,
 		private readonly boardContextApiHelperService: BoardContextApiHelperService,
 		private readonly boardNodeAuthorizableService: BoardNodeAuthorizableService,
-		private readonly configService: ConfigService<BoardConfig, true>,
+		@Inject(BOARD_CONFIG_TOKEN) private readonly config: BoardConfig,
 		private readonly boardNodeRule: BoardNodeRule
 	) {
 		this.logger.setContext(BoardUc.name);
@@ -186,7 +185,7 @@ export class BoardUc {
 		boardId: EntityId,
 		readersCanEdit: boolean
 	): Promise<ColumnBoard> {
-		if (!this.configService.get('FEATURE_BOARD_READERS_CAN_EDIT_TOGGLE', { infer: true })) {
+		if (!this.config.featureBoardReadersCanEditToggle) {
 			throw new FeatureDisabledLoggableException('FEATURE_BOARD_READERS_CAN_EDIT_TOGGLE');
 		}
 

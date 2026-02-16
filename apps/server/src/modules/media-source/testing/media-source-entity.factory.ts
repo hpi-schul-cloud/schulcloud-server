@@ -12,7 +12,9 @@ import { mediaSourceVidisConfigEmbeddableFactory } from './media-source-basic-au
 import { mediaSourceOAuthConfigEmbeddableFactory } from './media-source-oauth-config.embeddable.factory';
 
 export class MediaSourceEntityFactory extends BaseFactory<MediaSourceEntity, MediaSourceEntityProps> {
-	public withBiloFormat(otherParams?: DeepPartial<MediaSourceOauthConfigEmbeddable>): this {
+	public withBiloFormat(
+		otherParams?: DeepPartial<MediaSourceOauthConfigEmbeddable> & { encryptionKey?: string }
+	): this {
 		const params: DeepPartial<MediaSourceEntityProps> = {
 			format: MediaSourceDataFormat.BILDUNGSLOGIN,
 			oauthConfig: mediaSourceOAuthConfigEmbeddableFactory.build(otherParams),
@@ -21,7 +23,9 @@ export class MediaSourceEntityFactory extends BaseFactory<MediaSourceEntity, Med
 		return this.params(params);
 	}
 
-	public withVidisFormat(otherParams?: DeepPartial<MediaSourceVidisConfigEmbeddable>): this {
+	public withVidisFormat(
+		otherParams?: DeepPartial<MediaSourceVidisConfigEmbeddable> & { encryptionKey?: string }
+	): this {
 		const params: DeepPartial<MediaSourceEntityProps> = {
 			format: MediaSourceDataFormat.VIDIS,
 			vidisConfig: mediaSourceVidisConfigEmbeddableFactory.build(otherParams),

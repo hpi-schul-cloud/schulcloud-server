@@ -2,14 +2,13 @@ import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { AuthorizationService } from '@modules/authorization';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
-import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 import { setupEntities } from '@testing/database';
 import { BoardNodeRule } from '../../authorisation/board-node.rule';
+import { BOARD_CONFIG_TOKEN, BoardConfig } from '../../board.config';
 import { BoardNodeAuthorizable, MediaBoard, MediaLine } from '../../domain';
 import { MediaBoardColors } from '../../domain/media-board/types';
-import type { MediaBoardConfig } from '../../media-board.config';
 import { BoardNodeAuthorizableService, BoardNodeService, MediaBoardService } from '../../service';
 import { mediaBoardFactory, mediaLineFactory } from '../../testing';
 import { MediaLineUc } from './media-line.uc';
@@ -20,8 +19,8 @@ describe(MediaLineUc.name, () => {
 
 	let mediaBoardService: DeepMocked<MediaBoardService>;
 	let boardNodeService: DeepMocked<BoardNodeService>;
+	let config: BoardConfig;
 	let boardNodeAuthorizableService: DeepMocked<BoardNodeAuthorizableService>;
-	let configService: DeepMocked<ConfigService<MediaBoardConfig, true>>;
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let boardNodeRule: DeepMocked<BoardNodeRule>;
 
@@ -48,8 +47,8 @@ describe(MediaLineUc.name, () => {
 					useValue: createMock<BoardNodeAuthorizableService>(),
 				},
 				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService>(),
+					provide: BOARD_CONFIG_TOKEN,
+					useValue: new BoardConfig(),
 				},
 				{
 					provide: BoardNodeRule,
@@ -61,8 +60,8 @@ describe(MediaLineUc.name, () => {
 		uc = module.get(MediaLineUc);
 		mediaBoardService = module.get(MediaBoardService);
 		boardNodeService = module.get(BoardNodeService);
+		config = module.get(BOARD_CONFIG_TOKEN);
 		boardNodeAuthorizableService = module.get(BoardNodeAuthorizableService);
-		configService = module.get(ConfigService);
 		authorizationService = module.get(AuthorizationService);
 		boardNodeRule = module.get(BoardNodeRule);
 	});
@@ -82,7 +81,7 @@ describe(MediaLineUc.name, () => {
 				const mediaBoard: MediaBoard = mediaBoardFactory.build();
 				const mediaLine = mediaLineFactory.build();
 
-				configService.get.mockReturnValueOnce(true);
+				config.featureMediaShelfEnabled = true;
 
 				boardNodeService.findByClassAndId.mockResolvedValueOnce(mediaLine).mockResolvedValueOnce(mediaBoard);
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
@@ -134,7 +133,7 @@ describe(MediaLineUc.name, () => {
 				const mediaBoard = mediaBoardFactory.build();
 				const mediaLine = mediaLineFactory.build();
 
-				configService.get.mockReturnValueOnce(false);
+				config.featureMediaShelfEnabled = false;
 
 				return {
 					user,
@@ -159,7 +158,7 @@ describe(MediaLineUc.name, () => {
 				const user = userFactory.build();
 				const mediaLine = mediaLineFactory.build();
 
-				configService.get.mockReturnValueOnce(true);
+				config.featureMediaShelfEnabled = true;
 
 				boardNodeService.findByClassAndId.mockResolvedValueOnce(mediaLine);
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
@@ -197,7 +196,7 @@ describe(MediaLineUc.name, () => {
 				const user = userFactory.build();
 				const mediaLine = mediaLineFactory.build();
 
-				configService.get.mockReturnValueOnce(false);
+				config.featureMediaShelfEnabled = false;
 
 				return {
 					user,
@@ -221,7 +220,7 @@ describe(MediaLineUc.name, () => {
 				const user = userFactory.build();
 				const mediaLine = mediaLineFactory.build();
 
-				configService.get.mockReturnValueOnce(true);
+				config.featureMediaShelfEnabled = true;
 				boardNodeService.findByClassAndId.mockResolvedValueOnce(mediaLine);
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 				boardNodeAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(
@@ -255,7 +254,7 @@ describe(MediaLineUc.name, () => {
 				const user = userFactory.build();
 				const mediaLine = mediaLineFactory.build();
 
-				configService.get.mockReturnValueOnce(false);
+				config.featureMediaShelfEnabled = false;
 
 				return {
 					user,
@@ -277,7 +276,7 @@ describe(MediaLineUc.name, () => {
 				const user = userFactory.build();
 				const mediaLine = mediaLineFactory.build();
 
-				configService.get.mockReturnValueOnce(true);
+				config.featureMediaShelfEnabled = true;
 
 				boardNodeService.findByClassAndId.mockResolvedValueOnce(mediaLine);
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
@@ -316,7 +315,7 @@ describe(MediaLineUc.name, () => {
 				const user = userFactory.build();
 				const mediaLine = mediaLineFactory.build();
 
-				configService.get.mockReturnValueOnce(false);
+				config.featureMediaShelfEnabled = false;
 
 				return {
 					user,
@@ -340,7 +339,7 @@ describe(MediaLineUc.name, () => {
 				const user = userFactory.build();
 				const mediaLine = mediaLineFactory.build();
 
-				configService.get.mockReturnValueOnce(true);
+				config.featureMediaShelfEnabled = true;
 
 				boardNodeService.findByClassAndId.mockResolvedValueOnce(mediaLine);
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
@@ -378,7 +377,7 @@ describe(MediaLineUc.name, () => {
 				const user = userFactory.build();
 				const mediaLine = mediaLineFactory.build();
 
-				configService.get.mockReturnValueOnce(false);
+				config.featureMediaShelfEnabled = false;
 
 				return {
 					user,

@@ -1,5 +1,7 @@
-import { DeepMocked, createMock } from '@golevelup/ts-jest';
-import { ConfigService } from '@nestjs/config';
+import {
+	COMMON_CARTRIDGE_CONFIG_TOKEN,
+	CommonCartridgeConfig,
+} from '@modules/common-cartridge/common-cartridge.config';
 import { Test, TestingModule } from '@nestjs/testing';
 import AdmZip from 'adm-zip';
 import { readFile } from 'node:fs/promises';
@@ -8,20 +10,20 @@ import { CommonCartridgeFileValidatorPipe } from './common-cartridge-file-valida
 describe('CommonCartridgeFileValidatorPipe', () => {
 	let module: TestingModule;
 	let sut: CommonCartridgeFileValidatorPipe;
-	let configServiceMock: DeepMocked<ConfigService>;
+	let config: CommonCartridgeConfig;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				CommonCartridgeFileValidatorPipe,
 				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService>(),
+					provide: COMMON_CARTRIDGE_CONFIG_TOKEN,
+					useValue: new CommonCartridgeConfig(),
 				},
 			],
 		}).compile();
 		sut = module.get(CommonCartridgeFileValidatorPipe);
-		configServiceMock = module.get(ConfigService);
+		config = module.get(COMMON_CARTRIDGE_CONFIG_TOKEN);
 	});
 
 	afterAll(async () => {
@@ -43,7 +45,7 @@ describe('CommonCartridgeFileValidatorPipe', () => {
 				const buffer = await readFile('./apps/server/src/modules/common-cartridge/testing/assets/v1.1.0/manifest.xml');
 
 				archive.addFile('imsmanifest.xml', buffer);
-				configServiceMock.getOrThrow.mockReturnValue(1000);
+				config.courseImportMaxFileSize = 1000;
 
 				return {
 					file: { size: 1000, buffer: archive.toBuffer() } as unknown as Express.Multer.File,
@@ -71,7 +73,7 @@ describe('CommonCartridgeFileValidatorPipe', () => {
 
 		describe('when the file is too big', () => {
 			const setup = () => {
-				configServiceMock.getOrThrow.mockReturnValue(1000);
+				config.courseImportMaxFileSize = 1000;
 
 				return { file: { size: 1001 } as unknown as Express.Multer.File };
 			};
@@ -85,7 +87,7 @@ describe('CommonCartridgeFileValidatorPipe', () => {
 
 		describe('when the file is not a zip archive', () => {
 			const setup = () => {
-				configServiceMock.getOrThrow.mockReturnValue(1000);
+				config.courseImportMaxFileSize = 1000;
 
 				return {
 					file: { size: 1000, buffer: Buffer.from('') } as unknown as Express.Multer.File,

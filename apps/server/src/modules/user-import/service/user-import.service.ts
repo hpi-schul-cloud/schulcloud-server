@@ -7,8 +7,9 @@ import { System, SystemService } from '@modules/system';
 import { UserService } from '@modules/user';
 import { UserLoginMigrationDO } from '@modules/user-login-migration';
 import { User } from '@modules/user/repo';
-import { ForbiddenException, Injectable, InternalServerErrorException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { ForbiddenException, Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { EntityId } from '@shared/domain/types';
+import { UserAlreadyAssignedToImportUserError } from '../domain/error';
 import { ImportUser, MatchCreator } from '../entity';
 import {
 	SchoolIdDoesNotMatchWithUserSchoolId,
@@ -16,14 +17,13 @@ import {
 	UserMigrationIsNotEnabled,
 } from '../loggable';
 import { ImportUserRepo } from '../repo/import-user.repo';
-import { UserImportConfig } from '../user-import-config';
-import { UserAlreadyAssignedToImportUserError } from '../domain/error';
-import { EntityId } from '@shared/domain/types';
+import { USER_IMPORT_CONFIG_TOKEN, UserImportConfig } from '../user-import-config';
 
 @Injectable()
 export class UserImportService {
 	constructor(
-		private readonly configService: ConfigService<UserImportConfig, true>,
+		@Inject(USER_IMPORT_CONFIG_TOKEN)
+		private readonly userImportConfig: UserImportConfig,
 		private readonly userImportRepo: ImportUserRepo,
 		private readonly systemService: SystemService,
 		private readonly userService: UserService,
@@ -36,7 +36,7 @@ export class UserImportService {
 	}
 
 	public async getMigrationSystem(): Promise<System> {
-		const systemId: string = this.configService.get('FEATURE_USER_MIGRATION_SYSTEM_ID');
+		const systemId: string = this.userImportConfig.featureUserMigrationSystemId;
 
 		const system: System = await this.systemService.findByIdOrFail(systemId);
 
@@ -44,7 +44,7 @@ export class UserImportService {
 	}
 
 	public checkFeatureEnabledAndIsLdapPilotSchool(school: LegacySchoolDo): void {
-		const enabled = this.configService.get<boolean>('FEATURE_USER_MIGRATION_ENABLED');
+		const enabled = this.userImportConfig.featureUserMigrationEnabled;
 		const isLdapPilotSchool = school.features && school.features.includes(SchoolFeature.LDAP_UNIVENTION_MIGRATION);
 
 		if (!enabled && !isLdapPilotSchool) {

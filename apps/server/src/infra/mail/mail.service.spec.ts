@@ -1,8 +1,8 @@
+import { Logger } from '@core/logger';
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
-import { createMock } from '@golevelup/ts-jest';
-import { ConfigService } from '@nestjs/config';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { MailConfig } from './interfaces/mail-config';
+import { MAIL_CONFIG_TOKEN, MailConfig } from './mail.config';
 import { Mail } from './mail.interface';
 import { MailService } from './mail.service';
 
@@ -10,27 +10,30 @@ describe('MailService', () => {
 	let module: TestingModule;
 	let service: MailService;
 	let amqpConnection: AmqpConnection;
+	let config: MailConfig;
+	let logger: DeepMocked<Logger>;
 
 	const mailServiceOptions = {
-		exchange: 'exchange',
-		routingKey: 'routingKey',
+		exchangeName: 'exchange',
+		mailSendRoutingKey: 'routingKey',
+		blocklistOfEmailDomains: ['schul-cloud.org', 'example.com'],
+		shouldSendEmail: false,
 	};
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
-				MailService,
 				{ provide: AmqpConnection, useValue: { publish: () => {} } },
-				{ provide: 'MAIL_SERVICE_OPTIONS', useValue: mailServiceOptions },
-				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService<MailConfig, true>>({ get: () => ['schul-cloud.org', 'example.com'] }),
-				},
+				{ provide: MAIL_CONFIG_TOKEN, useValue: mailServiceOptions },
+				{ provide: Logger, useValue: createMock<Logger>() },
 			],
 		}).compile();
 
-		service = module.get(MailService);
 		amqpConnection = module.get(AmqpConnection);
+		config = module.get(MAIL_CONFIG_TOKEN);
+		logger = module.get(Logger);
+
+		service = new MailService(amqpConnection, config, logger);
 	});
 
 	afterAll(async () => {
@@ -57,8 +60,10 @@ describe('MailService', () => {
 				expect(amqpConnectionSpy).toHaveBeenCalledTimes(0);
 			});
 		});
+
 		describe('when sending email', () => {
 			it('should remove email address that have blacklisted domain and send given data to queue', async () => {
+				config.shouldSendEmail = true;
 				const data: Mail = {
 					mail: { plainTextContent: 'content', subject: 'Test' },
 					recipients: ['test@schul-cloud.org', 'test@example1.com', 'test2@schul-cloud.org', 'test3@schul-cloud.org'],
@@ -77,8 +82,37 @@ describe('MailService', () => {
 				expect(data.bcc).toEqual(['test@example2.com']);
 				expect(data.replyTo).toEqual(['test@example3.com']);
 
-				const expectedParams = [mailServiceOptions.exchange, mailServiceOptions.routingKey, data, { persistent: true }];
+				const expectedParams = [
+					mailServiceOptions.exchangeName,
+					mailServiceOptions.mailSendRoutingKey,
+					data,
+					{ persistent: true },
+				];
 				expect(amqpConnectionSpy).toHaveBeenCalledWith(...expectedParams);
+			});
+		});
+
+		describe('when sending email is disabled', () => {
+			it('should log email data instead of sending it', async () => {
+				config.shouldSendEmail = false;
+				const data: Mail = {
+					mail: { plainTextContent: 'content', subject: 'Test' },
+					recipients: ['test@test.org'],
+					from: 'noreply@dbildungscloud.de',
+				};
+
+				const expectedParams = {
+					attachments: false,
+					plainTextContent: 'content',
+					recipients: ['test@test.org'],
+					replyTo: '',
+					subject: 'Test',
+				};
+
+				await service.send(data);
+
+				expect(logger.debug).toHaveBeenCalledTimes(1);
+				expect(logger.debug).toHaveBeenCalledWith(expect.objectContaining(expectedParams));
 			});
 		});
 	});

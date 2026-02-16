@@ -5,14 +5,13 @@ import { IdentityManagementService } from '@infra/identity-management';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
-import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common/error';
 import { EntityId } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
 import bcrypt from 'bcryptjs';
 import { v1 } from 'uuid';
-import { AccountConfig } from '../../account-config';
+import { ACCOUNT_CONFIG_TOKEN, AccountConfig } from '../../account-config';
 import { accountDoFactory } from '../../testing';
 import { Account, IdmAccount } from '../do';
 import { ACCOUNT_REPO, AccountRepo } from '../interface';
@@ -22,7 +21,7 @@ describe('AccountDbService', () => {
 	let module: TestingModule;
 	let accountService: AccountServiceDb;
 	let accountRepo: DeepMocked<AccountRepo>;
-	let configServiceMock: DeepMocked<ConfigService>;
+	let configMock: DeepMocked<AccountConfig>;
 	let idmServiceMock: DeepMocked<IdentityManagementService>;
 
 	const defaultPassword = 'DummyPasswd!1';
@@ -51,8 +50,8 @@ describe('AccountDbService', () => {
 					useValue: createMock<Logger>(),
 				},
 				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService<AccountConfig, true>>(),
+					provide: ACCOUNT_CONFIG_TOKEN,
+					useValue: new AccountConfig(),
 				},
 				{
 					provide: IdentityManagementService,
@@ -62,7 +61,7 @@ describe('AccountDbService', () => {
 		}).compile();
 		accountRepo = module.get(ACCOUNT_REPO);
 		accountService = module.get(AccountServiceDb);
-		configServiceMock = module.get(ConfigService);
+		configMock = module.get(ACCOUNT_CONFIG_TOKEN);
 		idmServiceMock = module.get(IdentityManagementService);
 
 		await setupEntities([User]);
@@ -110,7 +109,7 @@ describe('AccountDbService', () => {
 				mockTeacherAccount.activated = false;
 
 				accountRepo.findById.mockResolvedValue(mockTeacherAccount);
-				configServiceMock.get.mockReturnValue(true);
+				configMock.identityManagementStoreEnabled = true;
 				idmServiceMock.findAccountById.mockResolvedValue(accountMock);
 
 				return { mockTeacherAccount };

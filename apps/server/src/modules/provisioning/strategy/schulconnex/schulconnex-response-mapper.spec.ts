@@ -14,18 +14,17 @@ import {
 } from '@infra/schulconnex-client/testing';
 import { GroupTypes } from '@modules/group';
 import { RoleName } from '@modules/role';
-import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { InvalidLaufzeitResponseLoggableException, InvalidLernperiodeResponseLoggableException } from '../../domain';
 import { ExternalGroupDto, ExternalLicenseDto, ExternalSchoolDto, ExternalUserDto } from '../../dto';
-import { ProvisioningConfig } from '../../provisioning.config';
+import { PROVISIONING_CONFIG_TOKEN, ProvisioningConfig } from '../../provisioning.config';
 import { SchulconnexResponseMapper } from './schulconnex-response-mapper';
 
 describe(SchulconnexResponseMapper.name, () => {
 	let module: TestingModule;
 	let mapper: SchulconnexResponseMapper;
 
-	const config: Partial<ProvisioningConfig> = {};
+	let config: ProvisioningConfig;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -36,20 +35,22 @@ describe(SchulconnexResponseMapper.name, () => {
 					useValue: createMock<Logger>(),
 				},
 				{
-					provide: ConfigService<ProvisioningConfig, true>,
+					provide: PROVISIONING_CONFIG_TOKEN,
 					useValue: {
-						get: jest.fn().mockImplementation((key: keyof ProvisioningConfig) => config[key]),
+						featureOtherGroupusersProvisioningEnabled: false,
+						provisioningSchulconnexGroupUsersLimit: undefined,
 					},
 				},
 			],
 		}).compile();
 
 		mapper = module.get(SchulconnexResponseMapper);
+		config = module.get<ProvisioningConfig>(PROVISIONING_CONFIG_TOKEN);
 	});
 
 	beforeEach(() => {
-		config.FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED = false;
-		config.PROVISIONING_SCHULCONNEX_GROUP_USERS_LIMIT = undefined;
+		config.featureOtherGroupusersProvisioningEnabled = false;
+		config.provisioningSchulconnexGroupUsersLimit = undefined;
 	});
 
 	describe('mapToExternalSchoolDto', () => {
@@ -152,7 +153,7 @@ describe(SchulconnexResponseMapper.name, () => {
 
 		describe('when group type class is given', () => {
 			const setup = () => {
-				config.FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED = true;
+				config.featureOtherGroupusersProvisioningEnabled = true;
 
 				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
 
@@ -287,7 +288,7 @@ describe(SchulconnexResponseMapper.name, () => {
 
 		describe('when no other participants are provided and FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED is false', () => {
 			const setup = () => {
-				config.FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED = false;
+				config.featureOtherGroupusersProvisioningEnabled = false;
 				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
 				schulconnexResponse.personenkontexte[0].gruppen![0].sonstige_gruppenzugehoerige = undefined;
 
@@ -307,7 +308,7 @@ describe(SchulconnexResponseMapper.name, () => {
 
 		describe('when no other participants are provided and FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED is true', () => {
 			const setup = () => {
-				config.FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED = true;
+				config.featureOtherGroupusersProvisioningEnabled = true;
 
 				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
 				schulconnexResponse.personenkontexte[0].gruppen![0].sonstige_gruppenzugehoerige = undefined;
@@ -328,7 +329,7 @@ describe(SchulconnexResponseMapper.name, () => {
 
 		describe('when other participants have unknown roles', () => {
 			const setup = () => {
-				config.FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED = true;
+				config.featureOtherGroupusersProvisioningEnabled = true;
 
 				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
 				schulconnexResponse.personenkontexte[0].gruppen![0]!.sonstige_gruppenzugehoerige = [
@@ -531,8 +532,8 @@ describe(SchulconnexResponseMapper.name, () => {
 
 		describe('when there are too many users in groups', () => {
 			const setup = () => {
-				config.FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED = true;
-				config.PROVISIONING_SCHULCONNEX_GROUP_USERS_LIMIT = 1;
+				config.featureOtherGroupusersProvisioningEnabled = true;
+				config.provisioningSchulconnexGroupUsersLimit = 1;
 
 				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
 
@@ -556,8 +557,8 @@ describe(SchulconnexResponseMapper.name, () => {
 
 		describe('when there are not too many users in groups', () => {
 			const setup = () => {
-				config.FEATURE_OTHER_GROUPUSERS_PROVISIONING_ENABLED = true;
-				config.PROVISIONING_SCHULCONNEX_GROUP_USERS_LIMIT = 10;
+				config.featureOtherGroupusersProvisioningEnabled = true;
+				config.provisioningSchulconnexGroupUsersLimit = 10;
 
 				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
 

@@ -18,15 +18,15 @@ export class BBBService {
 	) {}
 
 	protected get baseUrl(): string {
-		return this.config.VIDEOCONFERENCE_HOST;
+		return this.config.videoConferenceHost;
 	}
 
 	protected get salt(): string {
-		return this.config.VIDEOCONFERENCE_SALT;
+		return this.config.videoConferenceSalt;
 	}
 
 	protected get presentationUrl(): string {
-		return this.config.VIDEOCONFERENCE_DEFAULT_PRESENTATION;
+		return this.config.videoConferenceDefaultPresentation;
 	}
 
 	/** Note no guard, or type check. Should be private. */

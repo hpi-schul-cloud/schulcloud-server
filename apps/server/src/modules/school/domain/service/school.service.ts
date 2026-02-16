@@ -1,11 +1,10 @@
 import { System, SystemService } from '@modules/system';
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { TypeGuard } from '@shared/common/guards';
 import { IFindOptions } from '@shared/domain/interface/find-options';
 import { EntityId } from '@shared/domain/types/entity-id';
-import { SchoolConfig } from '../../school.config';
-import { School, SchoolProps, SystemForLdapLogin } from '../do';
+import { SCHOOL_CONFIG_TOKEN, SchoolConfig, StudentTeamCreationOption } from '../../school.config';
+import { School, SchoolProps, SchoolYear, SystemForLdapLogin } from '../do';
 import { SchoolForLdapLogin, SchoolForLdapLoginProps } from '../do/school-for-ldap-login';
 import { SchoolFactory } from '../factory';
 import { SCHOOL_REPO, SchoolRepo, SchoolUpdateBody } from '../interface';
@@ -22,7 +21,7 @@ export class SchoolService {
 	constructor(
 		@Inject(SCHOOL_REPO) private readonly schoolRepo: SchoolRepo,
 		private readonly systemService: SystemService,
-		private readonly configService: ConfigService<SchoolConfig, true>
+		@Inject(SCHOOL_CONFIG_TOKEN) private readonly config: SchoolConfig
 	) {}
 
 	public async getSchoolById(schoolId: EntityId): Promise<School> {
@@ -86,7 +85,7 @@ export class SchoolService {
 		return { schools, count: result.count };
 	}
 
-	public async getCurrentYear(schoolId: EntityId) {
+	public async getCurrentYear(schoolId: EntityId): Promise<SchoolYear | undefined> {
 		const school = await this.getSchoolById(schoolId);
 		return school.currentYear;
 	}
@@ -225,15 +224,15 @@ export class SchoolService {
 	}
 
 	private canStudentCreateTeam(school: School): boolean {
-		const configValue = this.configService.get<string>('STUDENT_TEAM_CREATION');
+		const configValue = this.config.studentTeamCreation;
 		const { enableStudentTeamCreation } = school.getProps();
 
 		return (
-			configValue === 'enabled' ||
-			(configValue === 'opt-in' && enableStudentTeamCreation) ||
+			configValue === StudentTeamCreationOption.ENABLED ||
+			(configValue === StudentTeamCreationOption.OPT_IN && enableStudentTeamCreation) ||
 			// It is necessary to check enableStudentTeamCreation to be not false here,
 			// because it being undefined means that the school has not opted out yet.
-			(configValue === 'opt-out' && enableStudentTeamCreation !== false)
+			(configValue === StudentTeamCreationOption.OPT_OUT && enableStudentTeamCreation !== false)
 		);
 	}
 

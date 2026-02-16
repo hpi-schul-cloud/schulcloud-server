@@ -1,13 +1,11 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
-import type { ProvisioningConfig } from '@modules/provisioning';
 import { RoleDto, RoleName, RoleService } from '@modules/role';
 import { roleDtoFactory } from '@modules/role/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
 import { userDoFactory, userFactory } from '@modules/user/testing';
-import { ConfigService } from '@nestjs/config';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
@@ -16,6 +14,7 @@ import { IFindOptions, SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
 import { Group, GroupAggregateScope, GroupDeletedEvent, GroupTypes, GroupVisibilityPermission } from '../domain';
+import { GROUP_CONFIG_TOKEN, GroupConfig } from '../group.config';
 import { GroupRepo } from '../repo';
 import { groupFactory } from '../testing';
 import { GroupService } from './group.service';
@@ -27,7 +26,7 @@ describe('GroupService', () => {
 	let userService: DeepMocked<UserService>;
 	let groupRepo: DeepMocked<GroupRepo>;
 	let eventBus: DeepMocked<EventBus>;
-	let configService: DeepMocked<ConfigService<ProvisioningConfig, true>>;
+	let config: GroupConfig;
 
 	beforeAll(async () => {
 		await setupEntities([User]);
@@ -52,8 +51,10 @@ describe('GroupService', () => {
 					useValue: createMock<EventBus>(),
 				},
 				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService>(),
+					provide: GROUP_CONFIG_TOKEN,
+					useValue: {
+						featureSchulconnexCourseSyncEnabled: true,
+					},
 				},
 			],
 		}).compile();
@@ -63,7 +64,7 @@ describe('GroupService', () => {
 		userService = module.get(UserService);
 		groupRepo = module.get(GroupRepo);
 		eventBus = module.get(EventBus);
-		configService = module.get(ConfigService);
+		config = module.get(GROUP_CONFIG_TOKEN);
 	});
 
 	afterAll(async () => {
@@ -343,7 +344,7 @@ describe('GroupService', () => {
 					},
 				};
 
-				configService.get.mockReturnValueOnce(true);
+				config.featureSchulconnexCourseSyncEnabled = true;
 				groupRepo.findGroupsForScope.mockResolvedValueOnce(new Page<Group>(groups, 2));
 
 				return {
@@ -384,7 +385,7 @@ describe('GroupService', () => {
 				const user = userFactory.buildWithId();
 				const groups: Group[] = groupFactory.buildList(2);
 
-				configService.get.mockReturnValueOnce(false);
+				config.featureSchulconnexCourseSyncEnabled = false;
 				groupRepo.findGroupsForScope.mockResolvedValueOnce(new Page<Group>(groups, 2));
 
 				return {

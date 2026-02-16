@@ -1,17 +1,16 @@
-import { Configuration } from '@hpi-schul-cloud/commons';
+import { InternalDatabaseConfig } from '@infra/database';
 import { IoAdapter } from '@nestjs/platform-socket.io';
-import { ServerOptions, Server } from 'socket.io';
 import { createAdapter } from '@socket.io/mongo-adapter';
 import { MongoClient } from 'mongodb';
+import { Server, ServerOptions } from 'socket.io';
 
 const COLLECTION_NAME = 'socketio-adapter-events';
 
 export class MongoIoAdapter extends IoAdapter {
 	private adapterConstructor: ReturnType<typeof createAdapter> | undefined = undefined;
 
-	public async connectToMongoDb(): Promise<void> {
-		const connectionString = Configuration.has('DB_URL') ? (Configuration.get('DB_URL') as string) : '';
-		const mongoClient = new MongoClient(connectionString);
+	public async connectToMongoDb(dbConfig: InternalDatabaseConfig): Promise<void> {
+		const mongoClient = new MongoClient(dbConfig.dbUrl);
 		await mongoClient.connect();
 
 		const mongoCollection = mongoClient.db().collection(COLLECTION_NAME);

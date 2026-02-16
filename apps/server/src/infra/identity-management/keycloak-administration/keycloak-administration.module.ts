@@ -1,19 +1,21 @@
+import { ConfigurationModule } from '@infra/configuration';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-admin-client-cjs-index';
-import { Module } from '@nestjs/common';
-import { KeycloakSettings } from './interface/keycloak-settings.interface';
-import KeycloakConfiguration from './keycloak-config';
+import { DynamicModule, Module } from '@nestjs/common';
+import { KeycloakAdministrationConfig } from './keycloak-administration.config';
 import { KeycloakAdministrationService } from './service/keycloak-administration.service';
 
-@Module({
-	controllers: [],
-	providers: [
-		KeycloakAdminClient,
-		{
-			provide: KeycloakSettings,
-			useValue: KeycloakConfiguration.keycloakSettings,
-		},
-		KeycloakAdministrationService,
-	],
-	exports: [KeycloakAdministrationService],
-})
-export class KeycloakAdministrationModule {}
+@Module({})
+export class KeycloakAdministrationModule {
+	public static register(
+		configInjectionToken: string,
+		configConstructor: new () => KeycloakAdministrationConfig
+	): DynamicModule {
+		return {
+			module: KeycloakAdministrationModule,
+			imports: [ConfigurationModule.register(configInjectionToken, configConstructor)],
+			controllers: [],
+			providers: [KeycloakAdminClient, KeycloakAdministrationService],
+			exports: [KeycloakAdministrationService],
+		};
+	}
+}
