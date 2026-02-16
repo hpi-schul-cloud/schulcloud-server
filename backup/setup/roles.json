@@ -138,14 +138,14 @@
 			"START_MEETING",
 			"JOIN_MEETING",
 			"GROUP_LIST",
-			"GROUP_FULL_ADMIN",
 			"SCHOOL_SYSTEM_EDIT",
 			"SCHOOL_SYSTEM_VIEW",
 			"USER_CHANGE_OWN_NAME",
 			"MEDIA_SCHOOL_LICENSE_ADMIN",
 			"SCHOOL_LIST_DISCOVERABLE_TEACHERS",
 			"SCHOOL_ADMINISTRATE_ROOMS",
-			"SCHOOL_LIST_ROOM_MEMBERS"
+			"SCHOOL_LIST_ROOM_MEMBERS",
+			"GROUP_FULL_ADMIN"
 		],
 		"__v": 2
 	},
@@ -203,7 +203,6 @@
 			"TOOL_EDIT",
 			"YEARS_EDIT",
 			"GROUP_LIST",
-			"GROUP_FULL_ADMIN",
 			"USER_CHANGE_OWN_NAME",
 			"ACCOUNT_VIEW",
 			"ACCOUNT_DELETE",
@@ -211,7 +210,8 @@
 			"USER_LOGIN_MIGRATION_ROLLBACK",
 			"MEDIA_SOURCE_ADMIN",
 			"INSTANCE_EDIT",
-			"CAN_EXECUTE_INSTANCE_OPERATIONS"
+			"CAN_EXECUTE_INSTANCE_OPERATIONS",
+			"GROUP_FULL_ADMIN"
 		],
 		"__v": 2
 	},
@@ -221,7 +221,7 @@
 		},
 		"name": "teacher",
 		"updatedAt": {
-			"$date": "2025-07-31T12:29:47.091Z"
+			"$date": "2026-02-16T14:26:29.665Z"
 		},
 		"createdAt": {
 			"$date": "2017-01-01T00:06:37.148Z"
@@ -648,13 +648,6 @@
 	},
 	{
 		"_id": {
-			"$oid": "68ece70b963025351f0a98c4"
-		},
-		"name": "guestExternalPerson",
-		"permissions": []
-	},
-	{
-		"_id": {
 			"$oid": "675abdb4e76b1142cd4c89e3"
 		},
 		"name": "roomowner",
@@ -701,6 +694,13 @@
 			"$oid": "6834512d020bf0a70deb4b22"
 		},
 		"name": "roomapplicant",
+		"permissions": []
+	},
+	{
+		"_id": {
+			"$oid": "68ece70b963025351f0a98c4"
+		},
+		"name": "guestExternalPerson",
 		"permissions": []
 	}
 ]
