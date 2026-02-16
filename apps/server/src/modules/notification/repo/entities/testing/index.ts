@@ -1,1 +1,1 @@
-export { notificationFactory } from '../../../domain/testing/notification.factory';
+export { notificationEntityFactory } from './notification.entity.factory';

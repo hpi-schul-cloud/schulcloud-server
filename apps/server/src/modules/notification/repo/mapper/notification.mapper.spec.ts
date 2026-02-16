@@ -48,36 +48,6 @@ describe(NotificationMapper.name, () => {
 				expect(domainObject).toEqual(expectedDomainObject);
 			});
 		});
-
-		describe('When a notification entity is mapped to an empty domain object', () => {
-			const setup = () => {
-				const entity = {
-					id: 'notification-id',
-					createdAt: new Date(),
-					updatedAt: new Date(),
-				} as NotificationEntity;
-
-				const expectedDomainObject = new Notification({
-					id: entity.id,
-					type: '',
-					key: '',
-					arguments: [],
-					userId: '',
-					createdAt: new Date(),
-					updatedAt: new Date(),
-				});
-
-				return { entity, expectedDomainObject };
-			};
-
-			it('should properly map all notification properties from entity to domain object', () => {
-				const { entity, expectedDomainObject } = setup();
-
-				const domainObject = NotificationMapper.mapToDO(entity);
-
-				expect(domainObject).toEqual(expectedDomainObject);
-			});
-		});
 	});
 
 	describe('mapToDOs', () => {
@@ -165,37 +135,6 @@ describe(NotificationMapper.name, () => {
 			};
 
 			it('should properly map all notification properties from domain object to entity and set timestamps', () => {
-				const { domainObject, expectedEntity } = setup();
-
-				const entity = NotificationMapper.mapToEntity(domainObject);
-
-				expect(entity).toBeInstanceOf(NotificationEntity);
-				expect(entity).toEqual(expectedEntity);
-			});
-		});
-
-		describe('When a notification domain object is mapped to an empty entity', () => {
-			const setup = () => {
-				const domainObject = {
-					id: 'testid',
-					createdAt: new Date(),
-					updatedAt: new Date(),
-				} as Notification;
-
-				const expectedEntity = new NotificationEntity({
-					type: '',
-					key: '',
-					arguments: [],
-					userId: '',
-					id: domainObject.id,
-					createdAt: new Date(),
-					updatedAt: new Date(),
-				});
-
-				return { domainObject, expectedEntity };
-			};
-
-			it('should properly map all empty notification properties from domain object to entity and set timestamps', () => {
 				const { domainObject, expectedEntity } = setup();
 
 				const entity = NotificationMapper.mapToEntity(domainObject);

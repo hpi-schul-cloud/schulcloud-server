@@ -3,7 +3,6 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { NotificationService } from './notification.service';
 import { NotificationRepo } from '../../repo/notification.repo';
 import { NotificationType } from '../../types/notification-type.enum';
-import { NotificationEntity } from '../../repo/entities/notification.entity';
 import { Logger } from '@core/logger';
 import { faker } from '@faker-js/faker/.';
 import { Notification } from '../do';
@@ -61,17 +60,7 @@ describe(NotificationService.name, () => {
 					updatedAt: new Date(),
 				});
 
-				const mappedEntity: NotificationEntity = {
-					id: notification.id,
-					type: notification.type,
-					key: notification.key,
-					arguments: notification.arguments,
-					userId: notification.userId,
-					createdAt: notification.createdAt,
-					updatedAt: notification.updatedAt,
-				} as NotificationEntity;
-
-				return { type, key, args, userid, notification, mappedEntity };
+				return { type, key, args, userid, notification };
 			};
 
 			it('should create a notification and log a warning', async () => {
