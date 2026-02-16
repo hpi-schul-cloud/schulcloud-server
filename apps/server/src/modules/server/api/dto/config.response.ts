@@ -67,22 +67,13 @@ export class ConfigResponse {
 	ALERT_STATUS_URL: string | null;
 
 	@ApiProperty()
-	FEATURE_ES_COLLECTIONS_ENABLED: boolean;
-
-	@ApiProperty()
 	FEATURE_EXTENSIONS_ENABLED: boolean;
 
 	@ApiProperty()
 	FEATURE_TEAMS_ENABLED: boolean;
 
 	@ApiProperty()
-	FEATURE_LERNSTORE_ENABLED: boolean;
-
-	@ApiProperty()
 	FEATURE_FWU_CONTENT_ENABLED: boolean;
-
-	@ApiProperty()
-	FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED: boolean;
 
 	@ApiProperty()
 	TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE: boolean;
@@ -307,12 +298,9 @@ export class ConfigResponse {
 		this.ADMIN_TABLES_DISPLAY_CONSENT_COLUMN = config.adminTablesDisplayConsentColumn;
 		this.ALERT_STATUS_URL = config.alertStatusUrl;
 		this.CALENDAR_SERVICE_ENABLED = config.calendarServiceEnabled;
-		this.FEATURE_ES_COLLECTIONS_ENABLED = config.featureEsCollectionsEnabled;
 		this.FEATURE_EXTENSIONS_ENABLED = config.featureExtensionsEnabled;
 		this.FEATURE_TEAMS_ENABLED = config.featureTeamsEnabled;
-		this.FEATURE_LERNSTORE_ENABLED = config.featureLernstoreEnabled;
 		this.FEATURE_FWU_CONTENT_ENABLED = config.fwuContentEnabled;
-		this.FEATURE_ADMIN_TOGGLE_STUDENT_LERNSTORE_VIEW_ENABLED = config.featureAdminToggleStudentLernstoreViewEnabled;
 		this.TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE = config.teacherStudentVisibilityIsConfigurable;
 		this.TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT = config.teacherStudentVisibilityIsEnabledByDefault;
 		this.TEACHER_STUDENT_VISIBILITY__IS_VISIBLE = config.teacherStudentVisibilityIsVisible;

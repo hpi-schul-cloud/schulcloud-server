@@ -46,6 +46,7 @@ describe('UserRepo', () => {
 
 	afterEach(async () => {
 		await cleanupCollections(em);
+		jest.restoreAllMocks();
 	});
 
 	it('should be defined', () => {
