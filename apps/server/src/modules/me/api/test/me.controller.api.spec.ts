@@ -87,8 +87,8 @@ describe('Me Controller (API)', () => {
 			describe('when valid jwt is passed', () => {
 				describe('when user is a student', () => {
 					const setup = async () => {
-						// The LERNSTORE_VIEW permission on the school is set here as an example. See the unit tests for all variations.
-						const school = schoolEntityFactory.build({ permissions: { student: { LERNSTORE_VIEW: true } } });
+						// The STUDENT_LIST permission on the school is set here as an example. See the unit tests for all variations.
+						const school = schoolEntityFactory.build({ permissions: { student: { STUDENT_LIST: true } } });
 						const { studentAccount: account, studentUser: user } = UserAndAccountTestFactory.buildStudent({ school });
 
 						await em.persist([account, user]).flush();
