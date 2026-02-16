@@ -250,8 +250,8 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 		const emitter = this.buildBoardSocketEmitter({ socket, action: 'fetch-board' });
 		const { userId } = this.getCurrentUser(socket);
 		try {
-			const { board, features, permissions } = await this.boardUc.findBoard(userId, data.boardId);
-			const responsePayload = BoardResponseMapper.mapToResponse(board, features, permissions);
+			const { board, features, permissions, allowedOperations } = await this.boardUc.findBoard(userId, data.boardId);
+			const responsePayload = BoardResponseMapper.mapToResponse(board, features, permissions, allowedOperations);
 			await emitter.joinRoom(board);
 			emitter.emitSuccess(responsePayload);
 		} catch (err) {

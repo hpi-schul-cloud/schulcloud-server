@@ -17,7 +17,7 @@ export class RoomAuthorizable implements AuthorizableObject {
 
 	public readonly members: UserWithRoomRoles[];
 
-	constructor(roomId: EntityId, members: UserWithRoomRoles[], schoolId: EntityId) {
+	constructor(roomId: EntityId, members: UserWithRoomRoles[] = [], schoolId: EntityId) {
 		this.members = members;
 		this.roomId = roomId;
 		this.schoolId = schoolId;

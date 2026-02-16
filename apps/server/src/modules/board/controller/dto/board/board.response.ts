@@ -1,7 +1,9 @@
+import { BoardOperation, BoardOperationValues } from '@modules/board/authorisation/board-node.rule';
 import { ApiProperty } from '@nestjs/swagger';
 import { bsonStringPattern } from '@shared/controller/bson-string-pattern';
 import { DecodeHtmlEntities } from '@shared/controller/transformer';
 import { Permission } from '@shared/domain/interface/permission.enum';
+import { IsIn } from 'class-validator';
 import { BoardFeature, BoardLayout } from '../../../domain';
 import { TimestampsResponse } from '../timestamps.response';
 import { ColumnResponse } from './column.response';
@@ -17,6 +19,7 @@ export class BoardResponse {
 		layout,
 		features,
 		permissions,
+		allowedOperations,
 	}: BoardResponse) {
 		this.id = id;
 		this.title = title;
@@ -27,6 +30,7 @@ export class BoardResponse {
 		this.layout = layout;
 		this.features = features;
 		this.permissions = permissions;
+		this.allowedOperations = allowedOperations;
 	}
 
 	@ApiProperty({
@@ -60,4 +64,16 @@ export class BoardResponse {
 
 	@ApiProperty({ enum: Permission, isArray: true, enumName: 'Permission' })
 	public permissions: Permission[];
+
+	@ApiProperty({
+		type: 'object',
+		properties: BoardOperationValues.reduce((acc, op) => {
+			acc[op] = { type: 'boolean' };
+			return acc;
+		}, {}),
+		additionalProperties: false,
+		required: [...BoardOperationValues],
+	})
+	@IsIn(BoardOperationValues)
+	public allowedOperations: Record<BoardOperation, boolean>;
 }
