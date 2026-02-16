@@ -433,38 +433,6 @@
 			"default": null,
 			"description": "A string that contains recievers of the daily stat and other mails. Can contain mutliple mails, seperated by comma"
 		},
-		"FEATURE_LERNSTORE_ENABLED": {
-			"type": "boolean",
-			"default": true,
-			"description": "Defines if backend for the Lern-Store Edu-Sharing is enabled."
-		},
-		"ES_DOMAIN": {
-			"type": "string",
-			"format": "uri",
-			"pattern": ".*(?<!/)$",
-			"description": "The URL for the edu-sharing repository.",
-			"default": "https://mv-repo.schul-cloud.org"
-		},
-		"ES_USER": {
-			"type": "string",
-			"description": "The username for edu-sharing api access",
-			"default": ""
-		},
-		"ES_PASSWORD": {
-			"type": "string",
-			"description": "The password for edu-sharing api access",
-			"default": ""
-		},
-		"FEATURE_ES_SEARCHABLE_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "When enabled, only content having searchable flag will be returned by Lern-Store"
-		},
-		"FEATURE_ES_COLLECTIONS_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "When enabled, collections will be searchable in Lern-Store"
-		},
 		"SILENT_ERROR_ENABLED": {
 			"type": "boolean",
 			"default": false,
