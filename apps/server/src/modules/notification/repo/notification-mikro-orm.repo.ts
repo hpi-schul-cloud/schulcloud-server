@@ -5,9 +5,10 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { NotificationMapper } from './mapper';
 import { Notification } from '../domain/do/notification.do';
 import { EntityId } from '@shared/domain/types';
+import { NotificationRepo } from '.';
 
 @Injectable()
-export class NotificationRepo {
+export class NotificationMikroOrmRepo implements NotificationRepo {
 	constructor(private readonly em: EntityManager) {}
 
 	get entityName(): EntityName<NotificationEntity> {

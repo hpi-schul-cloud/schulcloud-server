@@ -2,11 +2,11 @@ import { Module } from '@nestjs/common';
 import { NotificationService } from './domain/service/notification.service';
 
 import { LoggerModule } from '@core/logger';
-import { NotificationRepo } from './repo/notification.repo';
+import { NotificationMikroOrmRepo } from './repo/notification-mikro-orm.repo';
 
 @Module({
 	imports: [LoggerModule],
-	providers: [NotificationService, NotificationRepo],
+	providers: [NotificationService, NotificationMikroOrmRepo],
 	exports: [NotificationService],
 })
 export class NotificationModule {}

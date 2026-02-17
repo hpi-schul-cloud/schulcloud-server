@@ -1,4 +1,4 @@
-import { NotificationRepo } from './notification.repo';
+import { NotificationMikroOrmRepo } from './notification-mikro-orm.repo';
 import { NotificationEntity } from './entities/notification.entity';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { EntityManager } from '@mikro-orm/mongodb';
@@ -9,9 +9,9 @@ import { Notification } from '../domain/do/notification.do';
 import { notificationFactory } from '../domain/testing/notification.factory';
 import { notificationEntityFactory } from './entities/testing/notification.entity.factory';
 
-describe(NotificationRepo.name, () => {
+describe(NotificationMikroOrmRepo.name, () => {
 	let module: TestingModule;
-	let repo: NotificationRepo;
+	let repo: NotificationMikroOrmRepo;
 	let em: EntityManager;
 
 	beforeAll(async () => {
@@ -21,10 +21,10 @@ describe(NotificationRepo.name, () => {
 					entities: [NotificationEntity],
 				}),
 			],
-			providers: [NotificationRepo],
+			providers: [NotificationMikroOrmRepo],
 		}).compile();
 
-		repo = module.get(NotificationRepo);
+		repo = module.get(NotificationMikroOrmRepo);
 		em = module.get(EntityManager);
 	});
 

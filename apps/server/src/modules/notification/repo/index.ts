@@ -1,1 +1,1 @@
-export { NotificationRepo } from './notification.repo';
+export { NotificationMikroOrmRepo as NotificationRepo } from './notification-mikro-orm.repo';

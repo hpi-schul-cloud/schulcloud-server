@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
-import { NotificationRepo } from '../../repo/notification.repo';
 import { Logger } from '@core/logger';
 import { NotificationLoggable } from '../loggable/notification-loggable';
 import { Notification } from '../../domain/do/notification.do';
+import { NotificationRepo } from '../interfaces/notification.repo.interface';
 
 @Injectable()
 export class NotificationService {
