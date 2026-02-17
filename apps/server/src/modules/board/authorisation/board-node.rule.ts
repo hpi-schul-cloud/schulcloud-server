@@ -140,7 +140,7 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 		authorizable: BoardNodeAuthorizable,
 		requiredPermissions: Permission[]
 	): boolean {
-		const schoolPermissions = this.userService.resolvePermissions(user);
+		const schoolPermissions: Permission[] = this.userService.resolvePermissions(user);
 		const boardPermissions = authorizable.getUserPermissions(user.id);
 
 		const permissions = Array.from(new Set([...schoolPermissions, ...boardPermissions]));

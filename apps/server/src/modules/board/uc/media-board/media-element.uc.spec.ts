@@ -111,7 +111,7 @@ describe(MediaElementUc.name, () => {
 				boardNodeAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(
 					mediaLine as unknown as BoardNodeAuthorizable
 				);
-				boardNodeRule.canMoveElement.mockReturnValue(true);
+				boardNodeRule.can.mockReturnValue(true);
 
 				return {
 					user,
@@ -138,7 +138,7 @@ describe(MediaElementUc.name, () => {
 
 				await uc.moveElement(user.id, mediaElement.id, mediaLine.id, 1);
 
-				expect(boardNodeRule.canMoveElement).toHaveBeenCalledWith(user, mediaLine);
+				expect(boardNodeRule.can).toHaveBeenCalledWith('moveElement', user, mediaLine);
 			});
 
 			it('should move the element', async () => {
@@ -147,7 +147,7 @@ describe(MediaElementUc.name, () => {
 				boardNodeAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(
 					mediaLine as unknown as BoardNodeAuthorizable
 				);
-				boardNodeRule.canMoveElement.mockReturnValueOnce(true);
+				boardNodeRule.can.mockReturnValueOnce(true);
 
 				await uc.moveElement(user.id, mediaElement.id, mediaLine.id, 1);
 
@@ -199,7 +199,7 @@ describe(MediaElementUc.name, () => {
 				boardNodeAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(
 					mediaLine as unknown as BoardNodeAuthorizable
 				);
-				boardNodeRule.canCreateElement.mockReturnValue(true);
+				boardNodeRule.can.mockReturnValue(true);
 				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
 				mediaBoardService.checkElementExists.mockResolvedValueOnce(false);
 
@@ -226,19 +226,19 @@ describe(MediaElementUc.name, () => {
 
 			it('should check the authorization', async () => {
 				const { user, mediaLine, mediaElement } = setup();
-				boardNodeRule.canCreateElement.mockReturnValueOnce(true);
+				boardNodeRule.can.mockReturnValueOnce(true);
 				boardNodeAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(
 					mediaLine as unknown as BoardNodeAuthorizable
 				);
 
 				await uc.createElement(user.id, mediaElement.id, mediaLine.id, 1);
 
-				expect(boardNodeRule.canCreateElement).toHaveBeenCalledWith(user, mediaLine);
+				expect(boardNodeRule.can).toHaveBeenCalledWith('createElement', user, mediaLine);
 			});
 
 			it('should find the board', async () => {
 				const { user, mediaLine, mediaElement } = setup();
-				boardNodeRule.canCreateElement.mockReturnValueOnce(true);
+				boardNodeRule.can.mockReturnValueOnce(true);
 
 				await uc.createElement(user.id, mediaElement.id, mediaLine.id, 1);
 
@@ -247,7 +247,7 @@ describe(MediaElementUc.name, () => {
 
 			it('should find the school external tool', async () => {
 				const { user, mediaLine, mediaElement } = setup();
-				boardNodeRule.canCreateElement.mockReturnValueOnce(true);
+				boardNodeRule.can.mockReturnValueOnce(true);
 
 				await uc.createElement(user.id, mediaElement.id, mediaLine.id, 1);
 
@@ -256,7 +256,7 @@ describe(MediaElementUc.name, () => {
 
 			it('should check if element exists already on board', async () => {
 				const { user, mediaLine, mediaElement, mediaBoard, schoolExternalTool } = setup();
-				boardNodeRule.canCreateElement.mockReturnValueOnce(true);
+				boardNodeRule.can.mockReturnValueOnce(true);
 
 				await uc.createElement(user.id, mediaElement.id, mediaLine.id, 1);
 
@@ -265,7 +265,7 @@ describe(MediaElementUc.name, () => {
 
 			it('should create the element', async () => {
 				const { user, mediaLine, mediaElement, contextExternalTool } = setup();
-				boardNodeRule.canCreateElement.mockReturnValueOnce(true);
+				boardNodeRule.can.mockReturnValueOnce(true);
 
 				await uc.createElement(user.id, mediaElement.id, mediaLine.id, 1);
 
@@ -276,7 +276,7 @@ describe(MediaElementUc.name, () => {
 
 			it('should add the element to the line', async () => {
 				const { user, mediaLine, mediaElement } = setup();
-				boardNodeRule.canCreateElement.mockReturnValueOnce(true);
+				boardNodeRule.can.mockReturnValueOnce(true);
 
 				await uc.createElement(user.id, mediaElement.id, mediaLine.id, 1);
 
@@ -285,7 +285,7 @@ describe(MediaElementUc.name, () => {
 
 			it('should return the created element', async () => {
 				const { user, mediaLine, mediaElement } = setup();
-				boardNodeRule.canCreateElement.mockReturnValueOnce(true);
+				boardNodeRule.can.mockReturnValueOnce(true);
 
 				const result: MediaExternalToolElement = await uc.createElement(user.id, mediaElement.id, mediaLine.id, 1);
 
@@ -311,7 +311,7 @@ describe(MediaElementUc.name, () => {
 				boardNodeAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(
 					mediaLine as unknown as BoardNodeAuthorizable
 				);
-				boardNodeRule.canCreateElement.mockReturnValue(true);
+				boardNodeRule.can.mockReturnValue(true);
 
 				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
 				mediaBoardService.checkElementExists.mockResolvedValueOnce(true);
@@ -328,7 +328,7 @@ describe(MediaElementUc.name, () => {
 
 			it('should throw an exception', async () => {
 				const { user, mediaBoard, mediaLine, mediaElement, schoolExternalTool } = setup();
-				boardNodeRule.canCreateElement.mockReturnValueOnce(true);
+				boardNodeRule.can.mockReturnValueOnce(true);
 
 				await expect(uc.createElement(user.id, mediaElement.id, mediaLine.id, 1)).rejects.toThrow(
 					new MediaBoardElementAlreadyExistsLoggableException(mediaBoard.id, schoolExternalTool.id)
@@ -379,7 +379,7 @@ describe(MediaElementUc.name, () => {
 
 			it('should check the authorization', async () => {
 				const { user, mediaElement } = setup();
-				boardNodeRule.canDeleteElement.mockReturnValueOnce(true);
+				boardNodeRule.can.mockReturnValueOnce(true);
 				boardNodeAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(
 					mediaElement as unknown as BoardNodeAuthorizable
 				);
@@ -387,12 +387,12 @@ describe(MediaElementUc.name, () => {
 
 				await uc.deleteElement(user.id, mediaElement.id);
 
-				expect(boardNodeRule.canDeleteElement).toHaveBeenCalledWith(user, mediaElement);
+				expect(boardNodeRule.can).toHaveBeenCalledWith('deleteElement', user, mediaElement);
 			});
 
 			it('should delete the element', async () => {
 				const { user, mediaElement } = setup();
-				boardNodeRule.canDeleteElement.mockReturnValueOnce(true);
+				boardNodeRule.can.mockReturnValueOnce(true);
 				boardNodeAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(
 					mediaElement as unknown as BoardNodeAuthorizable
 				);
