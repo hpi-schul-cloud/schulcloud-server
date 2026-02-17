@@ -1,31 +1,29 @@
+import { DomainErrorHandler } from '@core/error';
+import { Logger } from '@core/logger';
 import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { BoardsClientAdapter } from '@infra/boards-client';
 import { CardClientAdapter } from '@infra/cards-client';
 import { ColumnClientAdapter } from '@infra/column-client';
 import { CoursesClientAdapter } from '@infra/courses-client';
-import { FilesStorageClientAdapter, FilesStorageClientConfig } from '@infra/files-storage-client';
-import { ImportCourseParams } from '@infra/rabbitmq';
+import { FilesStorageClientAdapter } from '@infra/files-storage-client';
 import { HttpService } from '@nestjs/axios';
-import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
+import axios, { InternalAxiosRequestConfig } from 'axios';
 import { from } from 'rxjs';
 import { CommonCartridgeFileParser } from '../import/common-cartridge-file-parser';
 import { CommonCartridgeXmlResourceType } from '../import/common-cartridge-import.enums';
 import { commonCartridgeOrganizationPropsFactory as organizationFactory } from '../testing/common-cartridge-organization-props.factory';
+import { CommonCartridgeImportService } from './common-cartridge-import.service';
 import { CommonCartridgeImportMapper } from './common-cartridge-import.mapper';
-import { CommonCartridgeImportConsumer } from './common-cartridge-import.consumer';
-import { DomainErrorHandler } from '@core/error';
-import { Logger } from '@core/logger';
-import axios, { InternalAxiosRequestConfig } from 'axios';
 
 jest.mock('../import/common-cartridge-file-parser');
 jest.mock('axios');
 
-describe(CommonCartridgeImportConsumer.name, () => {
+describe(CommonCartridgeImportService.name, () => {
 	let module: TestingModule;
-	let sut: CommonCartridgeImportConsumer;
+	let sut: CommonCartridgeImportService;
 	let coursesClientAdapterMock: DeepMocked<CoursesClientAdapter>;
 	let boardsClientAdapterMock: DeepMocked<BoardsClientAdapter>;
 	let columnClientAdapterMock: DeepMocked<ColumnClientAdapter>;
@@ -38,7 +36,7 @@ describe(CommonCartridgeImportConsumer.name, () => {
 	beforeEach(async () => {
 		module = await Test.createTestingModule({
 			providers: [
-				CommonCartridgeImportConsumer,
+				CommonCartridgeImportService,
 				{
 					provide: CoursesClientAdapter,
 					useValue: createMock<CoursesClientAdapter>(),
@@ -80,21 +78,9 @@ describe(CommonCartridgeImportConsumer.name, () => {
 					useValue: createMock<DomainErrorHandler>(),
 				},
 			],
-			imports: [
-				ConfigModule.forRoot({
-					isGlobal: true,
-					load: [
-						(): FilesStorageClientConfig => {
-							return {
-								FILES_STORAGE__SERVICE_BASE_URL: faker.internet.url(),
-							};
-						},
-					],
-				}),
-			],
 		}).compile();
 
-		sut = module.get(CommonCartridgeImportConsumer);
+		sut = module.get(CommonCartridgeImportService);
 		coursesClientAdapterMock = module.get(CoursesClientAdapter);
 		boardsClientAdapterMock = module.get(BoardsClientAdapter);
 		columnClientAdapterMock = module.get(ColumnClientAdapter);

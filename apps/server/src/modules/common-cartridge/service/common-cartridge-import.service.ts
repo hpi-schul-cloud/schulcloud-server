@@ -8,7 +8,6 @@ import { CoursesClientAdapter } from '@infra/courses-client';
 import { FilesStorageClientAdapter } from '@infra/files-storage-client';
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
-import { EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import axios from 'axios';
 import jwt from 'jsonwebtoken';
 import { lastValueFrom } from 'rxjs';
@@ -36,8 +35,7 @@ interface ColumnResource {
 }
 
 @Injectable()
-@EventsHandler(ImportCourseEvent)
-export class CommonCartridgeImportConsumer implements IEventHandler<ImportCourseEvent> {
+export class CommonCartridgeImportService {
 	constructor(
 		private readonly httpService: HttpService,
 		private readonly coursesClient: CoursesClientAdapter,
@@ -49,10 +47,35 @@ export class CommonCartridgeImportConsumer implements IEventHandler<ImportCourse
 		private readonly logger: Logger,
 		private readonly errorHandler: DomainErrorHandler
 	) {
-		this.logger.setContext(CommonCartridgeImportConsumer.name);
+		this.logger.setContext(CommonCartridgeImportService.name);
 	}
 
-	public async handle(event: ImportCourseEvent): Promise<void> {
+	public async importCourse(event: ImportCourseEvent): Promise<void> {
+		const { interceptorReq, interceptorRes } = this.registerAxiosInterceptors();
+
+		const file = await this.fetchFile(event);
+		if (!file) {
+			return;
+		}
+
+		const parser = new CommonCartridgeFileParser(file, DEFAULT_FILE_PARSER_OPTIONS);
+
+		await Promise.allSettled([
+			this.createCourse(parser, event),
+			this.fileClient.deleteFile(event.jwt, event.fileRecordId),
+		]);
+
+		this.logger.debug(
+			new CommonCartridgeMessageLoggable('Import finished', {
+				fileRecordId: event.fileRecordId,
+			})
+		);
+
+		axios.interceptors.request.eject(interceptorReq);
+		axios.interceptors.response.eject(interceptorRes);
+	}
+
+	private registerAxiosInterceptors(): { interceptorReq: number; interceptorRes: number } {
 		const interceptorReq = axios.interceptors.request.use(
 			(req) => req,
 			(err) => {
@@ -73,27 +96,7 @@ export class CommonCartridgeImportConsumer implements IEventHandler<ImportCourse
 			}
 		);
 
-		const file = await this.fetchFile(event);
-
-		if (!file) {
-			return;
-		}
-
-		const parser = new CommonCartridgeFileParser(file, DEFAULT_FILE_PARSER_OPTIONS);
-
-		await Promise.allSettled([
-			this.createCourse(parser, event),
-			this.fileClient.deleteFile(event.jwt, event.fileRecordId),
-		]);
-
-		this.logger.debug(
-			new CommonCartridgeMessageLoggable('Import finished', {
-				fileRecordId: event.fileRecordId,
-			})
-		);
-
-		axios.interceptors.request.eject(interceptorReq);
-		axios.interceptors.response.eject(interceptorRes);
+		return { interceptorReq, interceptorRes };
 	}
 
 	private async fetchFile(event: ImportCourseEvent): Promise<Buffer | null> {

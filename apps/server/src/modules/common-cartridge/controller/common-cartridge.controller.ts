@@ -1,17 +1,5 @@
 import { JwtAuthentication } from '@infra/auth-guard';
-import {
-	Body,
-	Controller,
-	HttpCode,
-	HttpStatus,
-	Param,
-	Post,
-	Query,
-	Req,
-	Res,
-	StreamableFile,
-	UnauthorizedException,
-} from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Param, Post, Query, Req, Res, StreamableFile } from '@nestjs/common';
 import {
 	ApiBadRequestResponse,
 	ApiBody,
@@ -23,7 +11,6 @@ import {
 	ApiTags,
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { JwtExtractor } from '@shared/common/utils';
 import { Request, Response } from 'express';
 import { CommonCartridgeUc } from '../uc/common-cartridge.uc';
 import { CourseExportBodyParams, CourseQueryParams, ExportCourseParams } from './dto';
@@ -43,13 +30,7 @@ export class CommonCartridgeController {
 		@Req() req: Request,
 		@Res({ passthrough: true }) response: Response
 	): Promise<StreamableFile> {
-		const jwt = JwtExtractor.extractJwtFromRequest(req);
-		if (!jwt) {
-			throw new UnauthorizedException();
-		}
-
 		const result = await this.commonCartridgeUC.exportCourse(
-			jwt,
 			exportCourseParams.courseId,
 			queryParams.version,
 			bodyParams.topics,

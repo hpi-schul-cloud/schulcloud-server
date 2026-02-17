@@ -22,10 +22,11 @@ import { API_HOST_CONFIG_TOKEN, ApiHostConfig } from './api-client.config';
 import { CardClientModule as OldCardClientModule } from './common-cartridge-client/card-client/card-client.module';
 import { LessonClientModule } from './common-cartridge-client/lesson-client/lesson-client.module';
 import { CourseRoomsModule } from './common-cartridge-client/room-client';
-import { CommonCartridgeExportService, CommonCartridgeImportConsumer, CommonCartridgeProducer } from './service';
+import { CommonCartridgeExportService, CommonCartridgeImportService } from './service';
 import { CommonCartridgeExportMapper } from './service/common-cartridge-export.mapper';
 import { CommonCartridgeImportMapper } from './service/common-cartridge-import.mapper';
 import { CommonCartridgeUc } from './uc/common-cartridge.uc';
+import { CommonCartridgeImportHandler } from './handler/common-cartridge-import.handler';
 
 @Module({
 	imports: [
@@ -53,8 +54,8 @@ import { CommonCartridgeUc } from './uc/common-cartridge.uc';
 		CommonCartridgeImportMapper,
 		CommonCartridgeUc,
 		CommonCartridgeExportService,
-		CommonCartridgeImportConsumer,
-		CommonCartridgeProducer,
+		CommonCartridgeImportHandler,
+		CommonCartridgeImportService,
 	],
 	exports: [CommonCartridgeUc],
 })

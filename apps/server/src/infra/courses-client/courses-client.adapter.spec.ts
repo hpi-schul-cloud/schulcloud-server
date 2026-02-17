@@ -3,8 +3,6 @@ import { createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CoursesClientAdapter } from './courses-client.adapter';
 import { CoursesApi, CreateCourseBodyParams } from './generated';
-import { CoursesClientConfig } from './courses-client.config';
-import { ConfigModule } from '@nestjs/config';
 
 const coursesApiMock = createMock<CoursesApi>();
 jest.mock('./generated/api/courses-api', () => {
@@ -19,18 +17,12 @@ describe(CoursesClientAdapter.name, () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			providers: [CoursesClientAdapter],
-			imports: [
-				ConfigModule.forRoot({
-					isGlobal: true,
-					load: [
-						(): CoursesClientConfig => {
-							return {
-								API_HOST: faker.internet.url(),
-							};
-						},
-					],
-				}),
+			providers: [
+				CoursesClientAdapter,
+				{
+					provide: CoursesApi,
+					useValue: coursesApiMock,
+				},
 			],
 		}).compile();
 
@@ -62,7 +54,11 @@ describe(CoursesClientAdapter.name, () => {
 
 			await sut.getCourseCommonCartridgeMetadata(jwt, courseId);
 
-			expect(coursesApiMock.courseControllerGetCourseCcMetadataById).toHaveBeenCalledWith(courseId);
+			expect(coursesApiMock.courseControllerGetCourseCcMetadataById).toHaveBeenCalledWith(courseId, {
+				headers: {
+					Authorization: `Bearer ${jwt}`,
+				},
+			});
 		});
 	});
 
@@ -81,7 +77,11 @@ describe(CoursesClientAdapter.name, () => {
 
 			await sut.createCourse(jwt, params);
 
-			expect(coursesApiMock.courseControllerCreateCourse).toHaveBeenCalledWith(params);
+			expect(coursesApiMock.courseControllerCreateCourse).toHaveBeenCalledWith(params, {
+				headers: {
+					Authorization: `Bearer ${jwt}`,
+				},
+			});
 		});
 	});
 });
