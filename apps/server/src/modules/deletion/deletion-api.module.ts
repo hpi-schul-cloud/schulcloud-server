@@ -1,5 +1,6 @@
 import { LoggerModule } from '@core/logger';
 import { ConfigurationModule } from '@infra/configuration';
+import { AuthenticationModule } from '@modules/authentication';
 import { AuthorizationModule } from '@modules/authorization';
 import { SagaModule } from '@modules/saga';
 import { UserModule } from '@modules/user';
@@ -13,7 +14,6 @@ import { DeletionRequestController } from './api/controller/deletion-request.con
 import { DeletionRequestPublicUc, DeletionRequestUc } from './api/uc';
 import { DeletionBatchUc } from './api/uc/deletion-batch.uc';
 import { DELETION_CONFIG_TOKEN, DeletionConfig } from './deletion.config';
-import { AuthenticationApiModule } from '@modules/authentication/authentication-api.module';
 
 @Module({
 	imports: [
@@ -22,7 +22,7 @@ import { AuthenticationApiModule } from '@modules/authentication/authentication-
 		SagaModule,
 		UserModule,
 		AccountModule,
-		AuthenticationApiModule,
+		AuthenticationModule,
 		AuthorizationModule,
 		ConfigurationModule.register(DELETION_CONFIG_TOKEN, DeletionConfig),
 	],

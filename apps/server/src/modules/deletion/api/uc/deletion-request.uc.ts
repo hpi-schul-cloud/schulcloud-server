@@ -23,7 +23,7 @@ export class DeletionRequestUc {
 		private readonly deletionExecutionService: DeletionExecutionService,
 		private readonly logger: LegacyLogger,
 		private readonly accountService: AccountService,
-		authenticationService: AuthenticationService,
+		private readonly authenticationService: AuthenticationService,
 		private readonly userService: UserService
 	) {
 		this.logger.setContext(DeletionRequestUc.name);

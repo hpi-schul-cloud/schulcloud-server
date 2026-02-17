@@ -1,17 +1,17 @@
 import { Logger } from '@core/logger';
 import { CreateJwtPayload, ICurrentUser, JwtPayloadFactory } from '@infra/auth-guard';
-import { Account, AccountService } from '@modules/account';
-import { User } from '@modules/user/repo';
 import { Inject, Injectable } from '@nestjs/common';
 import { JwtService, JwtSignOptions } from '@nestjs/jwt';
 import { randomUUID } from 'crypto';
 import jwt, { JwtPayload } from 'jsonwebtoken';
+import { Account, AccountService } from '@modules/account';
+import { User } from '@modules/user/repo';
+import { EntityId } from '@shared/domain/types';
 import { AUTHENTICATION_CONFIG_TOKEN, AuthenticationConfig } from '../authentication-config';
 import { BruteForceError, UnauthorizedLoggableException } from '../errors';
 import { JwtWhitelistAdapter } from '../helper/jwt-whitelist.adapter';
 import { ShdUserCreateTokenLoggable, UserAccountDeactivatedLoggableException } from '../loggable';
 import { CurrentUserMapper } from '../mapper';
-import {EntityId} from "@shared/domain/types";
 
 @Injectable()
 export class AuthenticationService {
