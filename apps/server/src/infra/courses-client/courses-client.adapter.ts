@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { InternalCoursesClientConfig } from './courses-client.config';
+import { RawAxiosRequestConfig } from 'axios';
 import {
-	Configuration,
 	CourseCommonCartridgeMetadataResponse,
 	CoursesApi,
 	CreateCourseBodyParams,
@@ -10,30 +9,28 @@ import {
 
 @Injectable()
 export class CoursesClientAdapter {
-	constructor(private readonly config: InternalCoursesClientConfig) {}
+	constructor(private readonly coursesApi: CoursesApi) {}
 
 	public async getCourseCommonCartridgeMetadata(
 		jwt: string,
 		courseId: string
 	): Promise<CourseCommonCartridgeMetadataResponse> {
-		const response = await this.coursesApi(jwt).courseControllerGetCourseCcMetadataById(courseId);
+		const response = await this.coursesApi.courseControllerGetCourseCcMetadataById(courseId, this.getAxiosConfig(jwt));
 
 		return response.data;
 	}
 
 	public async createCourse(jwt: string, params: CreateCourseBodyParams): Promise<CreateCourseResponse> {
-		const response = await this.coursesApi(jwt).courseControllerCreateCourse(params);
+		const response = await this.coursesApi.courseControllerCreateCourse(params, this.getAxiosConfig(jwt));
 
 		return response.data;
 	}
 
-	private coursesApi(jwt: string): CoursesApi {
-		const { basePath } = this.config;
-		const configuration = new Configuration({
-			basePath: `${basePath}/v3`,
-			accessToken: jwt,
-		});
-
-		return new CoursesApi(configuration);
+	private getAxiosConfig(jwt: string): RawAxiosRequestConfig {
+		return {
+			headers: {
+				Authorization: `Bearer ${jwt}`,
+			},
+		};
 	}
 }

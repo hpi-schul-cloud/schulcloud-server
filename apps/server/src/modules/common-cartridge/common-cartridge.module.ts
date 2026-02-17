@@ -1,3 +1,4 @@
+import { CoreModule } from '@core/core.module';
 import { LoggerModule } from '@core/logger';
 import { BoardsClientModule } from '@infra/boards-client';
 import { CardClientModule } from '@infra/cards-client';
@@ -14,7 +15,9 @@ import {
 	FilesStorageClientModule as FilesMetadataClientModule,
 	FilesStorageClientConfig,
 } from '@modules/files-storage-client';
+import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
+import { CqrsModule } from '@nestjs/cqrs';
 import { API_HOST_CONFIG_TOKEN, ApiHostConfig } from './api-client.config';
 import { CardClientModule as OldCardClientModule } from './common-cartridge-client/card-client/card-client.module';
 import { LessonClientModule } from './common-cartridge-client/lesson-client/lesson-client.module';
@@ -41,6 +44,9 @@ import { CommonCartridgeUc } from './uc/common-cartridge.uc';
 		LessonClientModule.register(API_HOST_CONFIG_TOKEN, ApiHostConfig),
 		ColumnClientModule.register(API_HOST_CONFIG_TOKEN, ApiHostConfig),
 		CardClientModule.register(API_HOST_CONFIG_TOKEN, ApiHostConfig),
+		CqrsModule,
+		HttpModule,
+		CoreModule,
 	],
 	providers: [
 		CommonCartridgeExportMapper,
