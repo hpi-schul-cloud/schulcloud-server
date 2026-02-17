@@ -11,6 +11,7 @@ import { BruteForceError, UnauthorizedLoggableException } from '../errors';
 import { JwtWhitelistAdapter } from '../helper/jwt-whitelist.adapter';
 import { ShdUserCreateTokenLoggable, UserAccountDeactivatedLoggableException } from '../loggable';
 import { CurrentUserMapper } from '../mapper';
+import {EntityId} from "@shared/domain/types";
 
 @Injectable()
 export class AuthenticationService {
@@ -99,8 +100,9 @@ export class AuthenticationService {
 		}
 	}
 
-	public async removeUserFromWhitelist(account: Account): Promise<void> {
-		await this.jwtWhitelistAdapter.removeFromWhitelist(account.id);
+	public async removeUserFromWhitelist(account: Account | EntityId): Promise<void> {
+		const accountId = typeof account === 'string' ? account : account.id;
+		await this.jwtWhitelistAdapter.removeFromWhitelist(accountId);
 	}
 
 	private isValidJwt(decodedJwt: JwtPayload | null): decodedJwt is { accountId: string; jti: string } {

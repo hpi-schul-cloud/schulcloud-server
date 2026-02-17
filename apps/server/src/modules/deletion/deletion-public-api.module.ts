@@ -9,7 +9,7 @@ import { AccountModule } from '../account';
 import { UserModule } from '@modules/user';
 
 @Module({
-	imports: [LoggerModule, DeletionModule, UserModule, AccountModule, AuthorizationModule],
+	imports: [LoggerModule, DeletionModule, UserModule, AccountModule, Autheen],
 	controllers: [DeletionRequestPublicController],
 	providers: [DeletionRequestPublicUc],
 })

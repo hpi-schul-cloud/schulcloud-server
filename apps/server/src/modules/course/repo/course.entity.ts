@@ -121,7 +121,7 @@ export class CourseEntity extends BaseEntityWithTimestamps implements TaskParent
 	classes = new Collection<ClassEntity>(this);
 
 	@ManyToMany(() => GroupEntity, undefined, { fieldName: 'groupIds' })
-	groups = new Collection<GroupEntity>(this);
+	groups= new Collection<GroupEntity>(this);
 
 	@ManyToOne(() => GroupEntity, { nullable: true })
 	syncedWithGroup?: GroupEntity;

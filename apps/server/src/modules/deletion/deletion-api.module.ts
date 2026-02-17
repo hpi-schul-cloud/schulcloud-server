@@ -13,6 +13,7 @@ import { DeletionRequestController } from './api/controller/deletion-request.con
 import { DeletionRequestPublicUc, DeletionRequestUc } from './api/uc';
 import { DeletionBatchUc } from './api/uc/deletion-batch.uc';
 import { DELETION_CONFIG_TOKEN, DeletionConfig } from './deletion.config';
+import { AuthenticationApiModule } from '@modules/authentication/authentication-api.module';
 
 @Module({
 	imports: [
@@ -21,6 +22,7 @@ import { DELETION_CONFIG_TOKEN, DeletionConfig } from './deletion.config';
 		SagaModule,
 		UserModule,
 		AccountModule,
+		AuthenticationApiModule,
 		AuthorizationModule,
 		ConfigurationModule.register(DELETION_CONFIG_TOKEN, DeletionConfig),
 	],

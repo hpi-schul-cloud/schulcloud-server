@@ -39,6 +39,7 @@ import { RoomApiModule } from '@modules/room/room-api.module';
 import { findOneOrFailHandler } from '@shared/common/database-error.handler';
 import { ADMIN_API_SERVER_CONFIG_TOKEN, AdminApiServerConfig } from './admin-api-server.config';
 import { ENTITIES, TEST_ENTITIES } from './admin-api-server.entity.imports';
+import { AuthenticationApiModule } from '@modules/authentication/authentication-api.module';
 
 const serverModules = [
 	ConfigurationModule.register(ADMIN_API_SERVER_CONFIG_TOKEN, AdminApiServerConfig),
@@ -56,6 +57,7 @@ const serverModules = [
 		},
 	]),
 	AccountApiModule,
+	AuthenticationApiModule,
 	MediaBoardApiModule,
 	ClassModule,
 	CourseApiModule,
