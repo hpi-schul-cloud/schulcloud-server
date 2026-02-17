@@ -17,6 +17,7 @@ import { CommonCartridgeXmlResourceType } from '../import/common-cartridge-impor
 import { commonCartridgeOrganizationPropsFactory as organizationFactory } from '../testing/common-cartridge-organization-props.factory';
 import { CommonCartridgeImportService } from './common-cartridge-import.service';
 import { CommonCartridgeImportMapper } from './common-cartridge-import.mapper';
+import { ImportCourseEvent } from '../domain/events/import-course.event';
 
 jest.mock('../import/common-cartridge-file-parser');
 jest.mock('axios');
@@ -182,7 +183,7 @@ describe(CommonCartridgeImportService.name, () => {
 		commonCartridgeFileParser.getTitle.mockReturnValue(undefined);
 
 		const schoolId = faker.string.uuid();
-		const payload: ImportCourseParams = {
+		const event: ImportCourseEvent = {
 			jwt: faker.internet.jwt({
 				payload: {
 					schoolId,
@@ -193,7 +194,7 @@ describe(CommonCartridgeImportService.name, () => {
 			fileUrl: faker.internet.url(),
 		};
 
-		return { column1, column2, card1, card2, element1, element2, board, payload, schoolId };
+		return { column1, column2, card1, card2, element1, element2, board, event, schoolId };
 	};
 
 	describe('importFile', () => {
@@ -201,22 +202,22 @@ describe(CommonCartridgeImportService.name, () => {
 			const setup = () => setupBase();
 
 			it('should create a course', async () => {
-				const { payload } = setup();
+				const { event } = setup();
 
-				await sut.importFile(payload);
+				await sut.importCourse(event);
 
-				expect(coursesClientAdapterMock.createCourse).toHaveBeenCalledWith(payload.jwt, {
+				expect(coursesClientAdapterMock.createCourse).toHaveBeenCalledWith(event.jwt, {
 					name: 'test course',
 					color: '#455B6A',
 				});
 			});
 
 			it('should create a board', async () => {
-				const { payload } = setup();
+				const { event } = setup();
 
-				await sut.importFile(payload);
+				await sut.importCourse(event);
 
-				expect(boardsClientAdapterMock.createBoard).toHaveBeenCalledWith(payload.jwt, {
+				expect(boardsClientAdapterMock.createBoard).toHaveBeenCalledWith(event.jwt, {
 					title: 'Mock Board',
 					layout: 'columns',
 					parentId: expect.any(String),
@@ -225,45 +226,45 @@ describe(CommonCartridgeImportService.name, () => {
 			});
 
 			it('should create a column', async () => {
-				const { payload } = setup();
+				const { event } = setup();
 
-				await sut.importFile(payload);
+				await sut.importCourse(event);
 
-				expect(boardsClientAdapterMock.createBoardColumn).toHaveBeenCalledWith(payload.jwt, expect.any(String));
+				expect(boardsClientAdapterMock.createBoardColumn).toHaveBeenCalledWith(event.jwt, expect.any(String));
 				expect(boardsClientAdapterMock.createBoardColumn).toHaveBeenCalledTimes(3);
 			});
 
 			it('should update column title', async () => {
-				const { payload } = setup();
+				const { event } = setup();
 
-				await sut.importFile(payload);
+				await sut.importCourse(event);
 
 				expect(columnClientAdapterMock.updateBoardColumnTitle).toHaveBeenCalledTimes(3);
 			});
 
 			it('should create cards and update titles', async () => {
-				const { payload } = setup();
+				const { event } = setup();
 
-				await sut.importFile(payload);
+				await sut.importCourse(event);
 
 				expect(columnClientAdapterMock.createCard).toHaveBeenCalledTimes(3);
 			});
 
 			it('should create an element', async () => {
-				const { payload } = setup();
+				const { event } = setup();
 
-				await sut.importFile(payload);
+				await sut.importCourse(event);
 
 				expect(cardClientAdapterMock.createCardElement).toHaveBeenCalledTimes(3);
 			});
 
 			it('should upload files', async () => {
-				const { payload, schoolId } = setup();
+				const { event, schoolId } = setup();
 
-				await sut.importFile(payload);
+				await sut.importCourse(event);
 
 				expect(filesStorageClientAdapterMock.upload).toHaveBeenCalledWith(
-					payload.jwt,
+					event.jwt,
 					schoolId,
 					'school',
 					expect.any(String),
@@ -273,12 +274,12 @@ describe(CommonCartridgeImportService.name, () => {
 			});
 
 			it('should upload file folder', async () => {
-				const { payload, schoolId } = setup();
+				const { event, schoolId } = setup();
 
-				await sut.importFile(payload);
+				await sut.importCourse(event);
 
 				expect(filesStorageClientAdapterMock.upload).toHaveBeenCalledWith(
-					payload.jwt,
+					event.jwt,
 					schoolId,
 					'school',
 					expect.any(String),
@@ -287,7 +288,7 @@ describe(CommonCartridgeImportService.name, () => {
 				);
 
 				expect(filesStorageClientAdapterMock.upload).toHaveBeenCalledWith(
-					payload.jwt,
+					event.jwt,
 					schoolId,
 					'school',
 					expect.any(String),
@@ -297,19 +298,19 @@ describe(CommonCartridgeImportService.name, () => {
 			});
 
 			it('should create card element without resource', async () => {
-				const { payload } = setup();
+				const { event } = setup();
 
-				await sut.importFile(payload);
+				await sut.importCourse(event);
 
 				expect(cardClientAdapterMock.createCardElement).toHaveBeenCalled();
 			});
 
 			it('should delete the course file', async () => {
-				const { payload } = setup();
+				const { event } = setup();
 
-				await sut.importFile(payload);
+				await sut.importCourse(event);
 
-				expect(filesStorageClientAdapterMock.deleteFile).toHaveBeenCalledWith(payload.jwt, payload.fileRecordId);
+				expect(filesStorageClientAdapterMock.deleteFile).toHaveBeenCalledWith(event.jwt, event.fileRecordId);
 			});
 		});
 
@@ -321,11 +322,11 @@ describe(CommonCartridgeImportService.name, () => {
 			};
 
 			it(`should give 'Untitled Course' as title`, async () => {
-				const { payload } = setup();
+				const { event } = setup();
 
-				await sut.importFile(payload);
+				await sut.importCourse(event);
 
-				expect(coursesClientAdapterMock.createCourse).toHaveBeenCalledWith(payload.jwt, {
+				expect(coursesClientAdapterMock.createCourse).toHaveBeenCalledWith(event.jwt, {
 					name: 'Untitled Course',
 					color: '#455B6A',
 				});
@@ -342,9 +343,9 @@ describe(CommonCartridgeImportService.name, () => {
 			};
 
 			it(`should stop processing`, async () => {
-				const { payload } = setup();
+				const { event } = setup();
 
-				await sut.importFile(payload);
+				await sut.importCourse(event);
 
 				expect(coursesClientAdapterMock.createCourse).not.toHaveBeenCalled();
 			});
@@ -365,27 +366,27 @@ describe(CommonCartridgeImportService.name, () => {
 			};
 
 			it(`should create request and response handlers`, async () => {
-				const { payload, useSpyRequest, useSpyResponse } = setup();
+				const { event, useSpyRequest, useSpyResponse } = setup();
 
-				await sut.importFile(payload);
+				await sut.importCourse(event);
 
 				expect(useSpyRequest).toHaveBeenCalled();
 				expect(useSpyResponse).toHaveBeenCalled();
 			});
 
 			it(`should eject request and response handlers`, async () => {
-				const { payload, ejectSpyRequest, ejectSpyResponse } = setup();
+				const { event, ejectSpyRequest, ejectSpyResponse } = setup();
 
-				await sut.importFile(payload);
+				await sut.importCourse(event);
 
 				expect(ejectSpyRequest).toHaveBeenCalled();
 				expect(ejectSpyResponse).toHaveBeenCalled();
 			});
 
 			it(`should passthrough request config`, async () => {
-				const { payload, useSpyRequest } = setup();
+				const { event, useSpyRequest } = setup();
 
-				await sut.importFile(payload);
+				await sut.importCourse(event);
 
 				const configInterceptor = useSpyRequest.mock.calls[0][0];
 
@@ -404,9 +405,9 @@ describe(CommonCartridgeImportService.name, () => {
 			});
 
 			it(`should passthrough response`, async () => {
-				const { payload, useSpyResponse } = setup();
+				const { event, useSpyResponse } = setup();
 
-				await sut.importFile(payload);
+				await sut.importCourse(event);
 
 				const responseInterceptor = useSpyResponse.mock.calls[1][0];
 
@@ -421,9 +422,9 @@ describe(CommonCartridgeImportService.name, () => {
 			});
 
 			it(`should passthrough request error and call domainErrorHandler`, async () => {
-				const { payload, useSpyRequest } = setup();
+				const { event, useSpyRequest } = setup();
 
-				await sut.importFile(payload);
+				await sut.importCourse(event);
 
 				const errorInterceptor = useSpyRequest.mock.calls[0][1];
 
@@ -441,9 +442,9 @@ describe(CommonCartridgeImportService.name, () => {
 			});
 
 			it(`should passthrough response error and call domainErrorHandler`, async () => {
-				const { payload, useSpyResponse } = setup();
+				const { event, useSpyResponse } = setup();
 
-				await sut.importFile(payload);
+				await sut.importCourse(event);
 
 				const errorInterceptor = useSpyResponse.mock.calls[1][1];
 

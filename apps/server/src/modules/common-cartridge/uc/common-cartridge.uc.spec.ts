@@ -3,16 +3,22 @@ import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Readable } from 'stream';
 import { CommonCartridgeVersion } from '../export/common-cartridge.enums';
-import { CommonCartridgeProducer } from '../service';
 import { CommonCartridgeExportResponse } from '../service/common-cartridge-export.response';
 import { CommonCartridgeExportService } from '../service/common-cartridge-export.service';
 import { CommonCartridgeUc } from './common-cartridge.uc';
+import { EventBus } from '@nestjs/cqrs';
+import { REQUEST } from '@nestjs/core';
+import { ImportCourseEvent } from '../domain/events/import-course.event';
+import { ImportCourseParams } from '../domain/import-course.params';
+import { Request } from 'express';
+import { UnauthorizedException } from '@nestjs/common';
 
 describe('CommonCartridgeUc', () => {
 	let module: TestingModule;
 	let sut: CommonCartridgeUc;
 	let commonCartridgeExportServiceMock: DeepMocked<CommonCartridgeExportService>;
-	let commonCartridgeProducerMock: DeepMocked<CommonCartridgeProducer>;
+	let eventBusMock: DeepMocked<EventBus>;
+	let requestMock: DeepMocked<Request>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -23,15 +29,20 @@ describe('CommonCartridgeUc', () => {
 					useValue: createMock<CommonCartridgeExportService>(),
 				},
 				{
-					provide: CommonCartridgeProducer,
-					useValue: createMock<CommonCartridgeProducer>(),
+					provide: EventBus,
+					useValue: createMock<EventBus>(),
+				},
+				{
+					provide: REQUEST,
+					useValue: createMock<Request>(),
 				},
 			],
 		}).compile();
 
 		sut = module.get(CommonCartridgeUc);
 		commonCartridgeExportServiceMock = module.get(CommonCartridgeExportService);
-		commonCartridgeProducerMock = module.get(CommonCartridgeProducer);
+		eventBusMock = module.get(EventBus);
+		requestMock = module.get(REQUEST);
 	});
 
 	afterAll(async () => {
@@ -43,58 +54,114 @@ describe('CommonCartridgeUc', () => {
 	});
 
 	describe('exportCourse', () => {
-		const setup = () => {
-			const jwt = faker.internet.jwt();
-			const courseId = faker.string.uuid();
-			const version = CommonCartridgeVersion.V_1_1_0;
-			const topics = [faker.lorem.sentence(), faker.lorem.sentence()];
-			const tasks = [faker.lorem.sentence(), faker.lorem.sentence()];
-			const columnBoards = [faker.lorem.sentence(), faker.lorem.sentence()];
-			const expected: CommonCartridgeExportResponse = {
-				name: faker.string.alpha(),
-				data: Readable.from(''),
+		describe('when jwt is given', () => {
+			const setup = () => {
+				const jwt = faker.internet.jwt();
+				const courseId = faker.string.uuid();
+				const version = CommonCartridgeVersion.V_1_1_0;
+				const topics = [faker.lorem.sentence(), faker.lorem.sentence()];
+				const tasks = [faker.lorem.sentence(), faker.lorem.sentence()];
+				const columnBoards = [faker.lorem.sentence(), faker.lorem.sentence()];
+				const expected: CommonCartridgeExportResponse = {
+					name: faker.string.alpha(),
+					data: Readable.from(''),
+				};
+
+				requestMock.headers.cookie = `jwt=${jwt}`;
+				commonCartridgeExportServiceMock.exportCourse.mockResolvedValue(expected);
+
+				return { jwt, courseId, version, topics, tasks, columnBoards, expected };
 			};
 
-			commonCartridgeExportServiceMock.exportCourse.mockResolvedValue(expected);
+			it('should return a course export response with file IDs and metadata of a course', async () => {
+				const { jwt, courseId, expected, version, tasks, columnBoards, topics } = setup();
 
-			return { jwt, courseId, version, topics, tasks, columnBoards, expected };
-		};
+				expect(await sut.exportCourse(courseId, version, topics, tasks, columnBoards)).toEqual(expected);
+				expect(commonCartridgeExportServiceMock.exportCourse).toHaveBeenCalledWith(
+					jwt,
+					courseId,
+					version,
+					topics,
+					tasks,
+					columnBoards
+				);
+			});
+		});
 
-		it('should return a course export response with file IDs and metadata of a course', async () => {
-			const { jwt, courseId, expected, version, tasks, columnBoards, topics } = setup();
+		describe('when jwt is missing in request', () => {
+			const setup = () => {
+				const courseId = faker.string.uuid();
+				const version = CommonCartridgeVersion.V_1_1_0;
+				const topics = [faker.lorem.sentence(), faker.lorem.sentence()];
+				const tasks = [faker.lorem.sentence(), faker.lorem.sentence()];
+				const columnBoards = [faker.lorem.sentence(), faker.lorem.sentence()];
 
-			expect(await sut.exportCourse(jwt, courseId, version, topics, tasks, columnBoards)).toEqual(expected);
-			expect(commonCartridgeExportServiceMock.exportCourse).toHaveBeenCalledWith(
-				jwt,
-				courseId,
-				version,
-				topics,
-				tasks,
-				columnBoards
-			);
+				requestMock.headers.cookie = undefined;
+
+				return { courseId, version, topics, tasks, columnBoards };
+			};
+
+			it('should throw UnauthorizedException', async () => {
+				const { courseId, version, tasks, columnBoards, topics } = setup();
+
+				await expect(sut.exportCourse(courseId, version, topics, tasks, columnBoards)).rejects.toThrow(
+					UnauthorizedException
+				);
+			});
 		});
 	});
 
 	describe('importCourse', () => {
-		const setup = () => {
-			const jwt = faker.internet.jwt();
-			const fileRecordId = faker.string.uuid();
-			const fileName = faker.system.fileName();
-			const fileUrl = faker.internet.url();
+		describe('when jwt is given', () => {
+			const setup = () => {
+				const jwt = faker.internet.jwt();
+				const fileRecordId = faker.string.uuid();
+				const fileName = faker.system.fileName();
+				const fileUrl = faker.internet.url();
 
-			return { jwt, fileRecordId, fileName, fileUrl };
-		};
+				const params: ImportCourseParams = {
+					fileRecordId,
+					fileName,
+					fileUrl,
+				};
 
-		it('should call the import service', async () => {
-			const { jwt, fileRecordId, fileName, fileUrl } = setup();
+				requestMock.headers.cookie = `jwt=${jwt}`;
 
-			await sut.startCourseImport(jwt, fileRecordId, fileName, fileUrl);
+				return { params, jwt };
+			};
 
-			expect(commonCartridgeProducerMock.importCourse).toHaveBeenCalledWith({
-				jwt,
-				fileRecordId,
-				fileName,
-				fileUrl,
+			it('should call the import service', () => {
+				const { params, jwt } = setup();
+
+				sut.startCourseImport(params);
+
+				expect(eventBusMock.publish).toHaveBeenCalledWith(
+					new ImportCourseEvent(jwt, params.fileRecordId, params.fileName, params.fileUrl)
+				);
+			});
+		});
+
+		describe('when jwt is missing in request', () => {
+			const setup = () => {
+				const fileRecordId = faker.string.uuid();
+				const fileName = faker.system.fileName();
+				const fileUrl = faker.internet.url();
+
+				const params: ImportCourseParams = {
+					fileRecordId,
+					fileName,
+					fileUrl,
+				};
+
+				requestMock.headers.cookie = undefined;
+
+				return { params };
+			};
+
+			it('should throw UnauthorizedException', () => {
+				const { params } = setup();
+
+				expect(() => sut.startCourseImport(params)).toThrow(UnauthorizedException);
 			});
 		});
 	});

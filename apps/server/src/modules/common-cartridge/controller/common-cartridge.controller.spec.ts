@@ -2,7 +2,7 @@ import { LegacyLogger } from '@core/logger';
 import { faker } from '@faker-js/faker';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { ConfigurationModule } from '@infra/configuration';
-import { HttpStatus, StreamableFile, UnauthorizedException } from '@nestjs/common';
+import { HttpStatus, StreamableFile } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Request, Response } from 'express';
 import { Readable } from 'stream';
@@ -83,31 +83,6 @@ describe('CommonCartridgeController', () => {
 				expect(result).toBeInstanceOf(StreamableFile);
 				expect(result.options.disposition).toBe(
 					`attachment; filename="${expected.name}"; filename*=UTF-8''${expected.name}`
-				);
-			});
-		});
-
-		describe('when exporting a course without jwt', () => {
-			const setup = () => {
-				const courseId = faker.string.uuid();
-				const params = { courseId } as ExportCourseParams;
-				const query = { version: CommonCartridgeVersion.V_1_1_0 } as CourseQueryParams;
-				const body = {
-					topics: [faker.string.uuid(), faker.string.uuid()],
-					tasks: [faker.string.uuid()],
-					columnBoards: [faker.string.uuid(), faker.string.uuid()],
-				} as CourseExportBodyParams;
-				const mockRequest = createMock<Request>();
-				const mockResponse = createMock<Response>();
-
-				return { params, query, body, mockRequest, mockResponse };
-			};
-
-			it('should throw UnauthorizedException', async () => {
-				const { params, query, body, mockRequest, mockResponse } = setup();
-
-				await expect(sut.exportCourse(params, query, body, mockRequest, mockResponse)).rejects.toThrow(
-					UnauthorizedException
 				);
 			});
 		});
