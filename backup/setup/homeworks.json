@@ -31,7 +31,8 @@
 		},
 		"__v": 0,
 		"publicSubmissions": false,
-		"private": false
+		"private": false,
+		"archived": []
 	},
 	{
 		"_id": {
@@ -65,7 +66,8 @@
 			"$date": "2017-08-28T12:02:45.639Z"
 		},
 		"__v": 0,
-		"private": false
+		"private": false,
+		"archived": []
 	},
 	{
 		"_id": {
@@ -99,7 +101,8 @@
 			"$date": "2017-08-28T12:03:47.302Z"
 		},
 		"__v": 0,
-		"publicSubmissions": false
+		"publicSubmissions": false,
+		"archived": []
 	},
 	{
 		"_id": {
@@ -133,7 +136,8 @@
 		},
 		"__v": 0,
 		"publicSubmissions": false,
-		"private": false
+		"private": false,
+		"archived": []
 	},
 	{
 		"_id": {
@@ -167,7 +171,8 @@
 		},
 		"__v": 0,
 		"publicSubmissions": false,
-		"private": false
+		"private": false,
+		"archived": []
 	},
 	{
 		"_id": {
@@ -201,7 +206,8 @@
 		},
 		"__v": 0,
 		"publicSubmissions": false,
-		"private": false
+		"private": false,
+		"archived": []
 	},
 	{
 		"_id": {
@@ -235,7 +241,8 @@
 		},
 		"__v": 0,
 		"publicSubmissions": false,
-		"private": false
+		"private": false,
+		"archived": []
 	},
 	{
 		"_id": {
@@ -269,7 +276,8 @@
 		},
 		"__v": 0,
 		"publicSubmissions": false,
-		"private": false
+		"private": false,
+		"archived": []
 	},
 	{
 		"_id": {
@@ -301,7 +309,8 @@
 		"createdAt": {
 			"$date": "2017-09-05T09:34:31.875Z"
 		},
-		"__v": 0
+		"__v": 0,
+		"archived": []
 	},
 	{
 		"_id": {
@@ -334,7 +343,8 @@
 		"createdAt": {
 			"$date": "2017-09-05T09:34:56.418Z"
 		},
-		"__v": 0
+		"__v": 0,
+		"archived": []
 	},
 	{
 		"_id": {
@@ -368,7 +378,8 @@
 		},
 		"__v": 0,
 		"publicSubmissions": false,
-		"private": false
+		"private": false,
+		"archived": []
 	},
 	{
 		"_id": {
@@ -402,7 +413,8 @@
 			"$date": "2017-09-05T09:40:44.117Z"
 		},
 		"__v": 0,
-		"publicSubmissions": false
+		"publicSubmissions": false,
+		"archived": []
 	},
 	{
 		"_id": {
@@ -436,7 +448,8 @@
 		},
 		"__v": 0,
 		"publicSubmissions": false,
-		"private": false
+		"private": false,
+		"archived": []
 	},
 	{
 		"_id": {
@@ -470,7 +483,8 @@
 			"$date": "2017-09-06T11:34:51.710Z"
 		},
 		"__v": 0,
-		"publicSubmissions": false
+		"publicSubmissions": false,
+		"archived": []
 	},
 	{
 		"_id": {
@@ -504,7 +518,8 @@
 		},
 		"__v": 0,
 		"publicSubmissions": false,
-		"private": false
+		"private": false,
+		"archived": []
 	},
 	{
 		"_id": {
@@ -538,7 +553,8 @@
 		},
 		"__v": 0,
 		"publicSubmissions": false,
-		"private": false
+		"private": false,
+		"archived": []
 	},
 	{
 		"_id": {
@@ -568,7 +584,8 @@
 		"createdAt": {
 			"$date": "2017-09-22T09:41:00.385Z"
 		},
-		"__v": 0
+		"__v": 0,
+		"archived": []
 	},
 	{
 		"_id": {

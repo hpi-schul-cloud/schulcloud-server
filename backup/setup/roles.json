@@ -604,7 +604,8 @@
 		"permissions": [
 			"ROOM_LEAVE_ROOM",
 			"ROOM_LIST_CONTENT"
-		]
+		],
+		"roles": []
 	},
 	{
 		"_id": {
@@ -616,7 +617,8 @@
 			"ROOM_LEAVE_ROOM",
 			"ROOM_LIST_CONTENT",
 			"ROOM_LIST_DRAFTS"
-		]
+		],
+		"roles": []
 	},
 	{
 		"_id": {
@@ -630,21 +632,24 @@
 		"updatedAt": {
 			"$date": "2024-11-22T09:29:01.346Z"
 		},
-		"__v": 0
+		"__v": 0,
+		"roles": []
 	},
 	{
 		"_id": {
 			"$oid": "674444262ba8186272dc8abb"
 		},
 		"name": "guestStudent",
-		"permissions": []
+		"permissions": [],
+		"roles": []
 	},
 	{
 		"_id": {
 			"$oid": "674444262ba8186272dc8abc"
 		},
 		"name": "guestTeacher",
-		"permissions": []
+		"permissions": [],
+		"roles": []
 	},
 	{
 		"_id": {
@@ -666,7 +671,8 @@
 			"ROOM_LIST_DRAFTS",
 			"ROOM_MANAGE_VIDEOCONFERENCES",
 			"ROOM_COPY"
-		]
+		],
+		"roles": []
 	},
 	{
 		"_id": {
@@ -687,20 +693,23 @@
 			"ROOM_LIST_DRAFTS",
 			"ROOM_MANAGE_VIDEOCONFERENCES",
 			"ROOM_COPY"
-		]
+		],
+		"roles": []
 	},
 	{
 		"_id": {
 			"$oid": "6834512d020bf0a70deb4b22"
 		},
 		"name": "roomapplicant",
-		"permissions": []
+		"permissions": [],
+		"roles": []
 	},
 	{
 		"_id": {
 			"$oid": "68ece70b963025351f0a98c4"
 		},
 		"name": "guestExternalPerson",
-		"permissions": []
+		"permissions": [],
+		"roles": []
 	}
 ]
