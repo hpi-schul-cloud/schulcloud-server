@@ -111,7 +111,7 @@ describe('CommonCartridgeUc', () => {
 		});
 	});
 
-	describe('importCourse', () => {
+	describe('startCourseImport', () => {
 		describe('when jwt is given', () => {
 			const setup = () => {
 				const jwt = faker.internet.jwt();
