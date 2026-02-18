@@ -48,10 +48,9 @@ export class DeletionRequestUc {
 
 		if (deletionRequest.targetRef.domain === DomainName.USER) {
 			const deleteAt = new Date();
-			await this.userService.flagAsDeleted(deletionRequest.targetRef.id, deleteAt);
+
 			try {
 				await this.accountService.deactivateAccount(deletionRequest.targetRef.id, deleteAt);
-				await this.authenticationService.removeUserFromWhitelist(deletionRequest.targetRef.id);
 			} catch (error) {
 				if (error instanceof NotFoundException) {
 					this.logger.warn({
@@ -61,6 +60,9 @@ export class DeletionRequestUc {
 					});
 				}
 			}
+
+			await this.userService.flagAsDeleted(deletionRequest.targetRef.id, deleteAt);
+			await this.authenticationService.removeUserFromWhitelist(deletionRequest.targetRef.id);
 		}
 
 		return result;
