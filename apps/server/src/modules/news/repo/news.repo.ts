@@ -1,13 +1,13 @@
-import { ObjectId } from '@mikro-orm/mongodb';
 import { EntityName, FilterQuery, QueryOrderMap } from '@mikro-orm/core';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { IFindOptions } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
 import { BaseRepo } from '@shared/repo/base.repo';
+import { getFieldName } from '@shared/repo/utils/repo-helper';
 import { NewsTargetFilter } from './news-target-filter';
 import { CourseNews, News, SchoolNews, TeamNews } from './news.entity';
 import { NewsScope } from './scope/news-scope';
-import { getFieldName } from '@shared/repo/utils/repo-helper';
 
 @Injectable()
 export class NewsRepo extends BaseRepo<News> {
@@ -91,15 +91,13 @@ export class NewsRepo extends BaseRepo<News> {
 			...pagination,
 			orderBy: order as QueryOrderMap<News>,
 		});
-		await this._em.populate(newsEntities, this.propertiesToPopulate as never[]);
 		// populate target for all inheritances of news which not works when the list contains different types
-		const discriminatorColumn = 'target';
 		const schoolNews = newsEntities.filter((news) => news instanceof SchoolNews);
-		await this._em.populate(schoolNews, [discriminatorColumn]);
+		await this._em.populate(schoolNews, this.propertiesToPopulate as never[]);
 		const teamNews = newsEntities.filter((news) => news instanceof TeamNews);
-		await this._em.populate(teamNews, [discriminatorColumn]);
+		await this._em.populate(teamNews, this.propertiesToPopulate as never[]);
 		const courseNews = newsEntities.filter((news) => news instanceof CourseNews);
-		await this._em.populate(courseNews, [discriminatorColumn]);
+		await this._em.populate(courseNews, this.propertiesToPopulate as never[]);
 		return [newsEntities, count];
 	}
 }
