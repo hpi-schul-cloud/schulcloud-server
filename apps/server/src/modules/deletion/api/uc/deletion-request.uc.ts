@@ -50,7 +50,8 @@ export class DeletionRequestUc {
 			const deleteAt = new Date();
 
 			try {
-				await this.accountService.deactivateAccount(deletionRequest.targetRef.id, deleteAt);
+				const account = await this.accountService.deactivateAccount(deletionRequest.targetRef.id, deleteAt);
+				await this.authenticationService.removeUserFromWhitelist(account);
 			} catch (error) {
 				if (error instanceof NotFoundException) {
 					this.logger.warn({
@@ -62,7 +63,6 @@ export class DeletionRequestUc {
 			}
 
 			await this.userService.flagAsDeleted(deletionRequest.targetRef.id, deleteAt);
-			await this.authenticationService.removeUserFromWhitelist(deletionRequest.targetRef.id);
 		}
 
 		return result;

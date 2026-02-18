@@ -6,7 +6,6 @@ import { randomUUID } from 'crypto';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { Account, AccountService } from '@modules/account';
 import { User } from '@modules/user/repo';
-import { EntityId } from '@shared/domain/types';
 import { AUTHENTICATION_CONFIG_TOKEN, AuthenticationConfig } from '../authentication-config';
 import { BruteForceError, UnauthorizedLoggableException } from '../errors';
 import { JwtWhitelistAdapter } from '../helper/jwt-whitelist.adapter';
@@ -100,9 +99,8 @@ export class AuthenticationService {
 		}
 	}
 
-	public async removeUserFromWhitelist(account: Account | EntityId): Promise<void> {
-		const accountId = typeof account === 'string' ? account : account.id;
-		await this.jwtWhitelistAdapter.removeFromWhitelist(accountId);
+	public async removeUserFromWhitelist(account: Account): Promise<void> {
+		await this.jwtWhitelistAdapter.removeFromWhitelist(account.id);
 	}
 
 	private isValidJwt(decodedJwt: JwtPayload | null): decodedJwt is { accountId: string; jti: string } {
