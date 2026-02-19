@@ -80,6 +80,24 @@ describe(`board lookup in course (api)`, () => {
 				expect(result.columns[0].id).toEqual(columnNode.id);
 				expect(result.columns[0].cards).toHaveLength(3);
 			});
+
+			it('should include allowed operations', async () => {
+				const { loggedInClient, columnBoardNode } = await setup();
+
+				const response = await loggedInClient.get(columnBoardNode.id);
+				const result = response.body as BoardResponse;
+
+				expect(result.allowedOperations).toEqual(
+					expect.objectContaining({
+						createCard: true,
+						createColumn: true,
+						deleteCard: true,
+						moveCard: true,
+						moveColumn: true,
+						updateCardTitle: true,
+					})
+				);
+			});
 		});
 
 		describe('board layout', () => {

@@ -3,7 +3,7 @@ import { Action, AuthorizationService } from '@modules/authorization';
 import { RoleName, RoomRole } from '@modules/role';
 import { RoomAuthorizable, RoomMembershipService } from '@modules/room-membership';
 import { RoomMemberRule } from '@modules/room-membership/authorization/room-member.rule';
-import { RoomRule } from '@modules/room-membership/authorization/room.rule';
+import { RoomOperation, RoomRule } from '@modules/room-membership/authorization/room.rule';
 import { RoomMemberAuthorizable } from '@modules/room-membership/do/room-member-authorizable.do';
 import { RoomMembershipStats } from '@modules/room-membership/type/room-membership-stats.type';
 import { School, SchoolService } from '@modules/school';
@@ -84,7 +84,7 @@ export class RoomUc {
 	public async createRoom(userId: EntityId, props: CreateRoomBodyParams): Promise<Room> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 
-		throwUnauthorizedIfFalse(this.roomRule.canCreateRoom(user));
+		throwUnauthorizedIfFalse(this.roomRule.can('createRoom', user, null as unknown as RoomAuthorizable));
 
 		const room = await this.roomService.createRoom({ ...props, schoolId: user.school.id });
 
@@ -97,40 +97,43 @@ export class RoomUc {
 		}
 	}
 
-	public async getSingleRoom(userId: EntityId, roomId: EntityId): Promise<{ room: Room; permissions: Permission[] }> {
+	public async getSingleRoom(
+		userId: EntityId,
+		roomId: EntityId
+	): Promise<{ room: Room; allowedOperations: Record<RoomOperation, boolean> }> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const roomAuthorizable = await this.roomMembershipService.getRoomAuthorizable(roomId);
 
-		throwForbiddenIfFalse(this.roomRule.canAccessRoom(user, roomAuthorizable));
+		throwForbiddenIfFalse(this.roomRule.can('accessRoom', user, roomAuthorizable));
 
 		const room = await this.roomService.getSingleRoom(roomId);
-		const permissions = this.getPermissions(userId, roomAuthorizable);
+		const allowedOperations = this.roomRule.listAllowedOperations(user, roomAuthorizable);
 
-		return { room, permissions };
+		return { room, allowedOperations };
 	}
 
 	public async updateRoom(
 		userId: EntityId,
 		roomId: EntityId,
 		props: UpdateRoomBodyParams
-	): Promise<{ room: Room; permissions: Permission[] }> {
+	): Promise<{ room: Room; allowedOperations: Record<RoomOperation, boolean> }> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const roomAuthorizable = await this.roomMembershipService.getRoomAuthorizable(roomId);
 
-		throwForbiddenIfFalse(this.roomRule.canUpdateRoom(user, roomAuthorizable));
+		throwForbiddenIfFalse(this.roomRule.can('updateRoom', user, roomAuthorizable));
 
 		const room = await this.roomService.getSingleRoom(roomId);
 		await this.roomService.updateRoom(room, props);
-		const permissions = this.getPermissions(userId, roomAuthorizable);
+		const allowedOperations = this.roomRule.listAllowedOperations(user, roomAuthorizable);
 
-		return { room, permissions };
+		return { room, allowedOperations };
 	}
 
 	public async deleteRoom(userId: EntityId, roomId: EntityId): Promise<void> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const roomAuthorizable = await this.roomMembershipService.getRoomAuthorizable(roomId);
 
-		throwForbiddenIfFalse(this.roomRule.canDeleteRoom(user, roomAuthorizable));
+		throwForbiddenIfFalse(this.roomRule.can('deleteRoom', user, roomAuthorizable));
 
 		const room = await this.roomService.getSingleRoom(roomId);
 		await this.roomService.deleteRoom(room);
@@ -142,9 +145,9 @@ export class RoomUc {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const roomAuthorizable = await this.roomMembershipService.getRoomAuthorizable(roomId);
 
-		throwForbiddenIfFalse(this.roomRule.canGetRoomMembers(user, roomAuthorizable));
+		throwForbiddenIfFalse(this.roomRule.can('getRoomMembers', user, roomAuthorizable));
 
-		const membersResponse = await this.getRoomMembersResponse(roomAuthorizable);
+		const membersResponse = await this.getRoomMembersResponse(user, roomAuthorizable);
 		return membersResponse;
 	}
 
@@ -152,9 +155,9 @@ export class RoomUc {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const roomAuthorizable = await this.roomMembershipService.getRoomAuthorizable(roomId);
 
-		throwForbiddenIfFalse(this.roomRule.canGetRoomMembersRedacted(user, roomAuthorizable));
+		throwForbiddenIfFalse(this.roomRule.can('getRoomMembersRedacted', user, roomAuthorizable));
 
-		const membersResponse = await this.getRoomMembersResponse(roomAuthorizable);
+		const membersResponse = await this.getRoomMembersResponse(user, roomAuthorizable);
 		const redactedMembersResponse = this.handleAnonymization(membersResponse, user.school.id);
 		return redactedMembersResponse;
 	}
@@ -163,7 +166,7 @@ export class RoomUc {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const roomAuthorizable = await this.roomMembershipService.getRoomAuthorizable(roomId);
 
-		throwForbiddenIfFalse(this.roomRule.canAddMembers(user, roomAuthorizable));
+		throwForbiddenIfFalse(this.roomRule.can('addMembers', user, roomAuthorizable));
 
 		await this.checkAreAllUsersAccessible(user, newUserIds);
 
@@ -175,7 +178,7 @@ export class RoomUc {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const roomAuthorizable = await this.roomMembershipService.getRoomAuthorizable(roomId);
 
-		throwForbiddenIfFalse(this.roomRule.canAddExternalPersonByEmail(user, roomAuthorizable));
+		throwForbiddenIfFalse(this.roomRule.can('addExternalPersonByEmail', user, roomAuthorizable));
 
 		const existingUser = await this.getUserByEmail(email);
 		this.checkUserIsExternalPerson(existingUser);
@@ -194,7 +197,7 @@ export class RoomUc {
 		const user = await this.authorizationService.getUserWithPermissions(currentUserId);
 		const roomAuthorizable = await this.roomMembershipService.getRoomAuthorizable(roomId);
 
-		throwForbiddenIfFalse(this.roomRule.canChangeRolesOfMembers(user, roomAuthorizable));
+		throwForbiddenIfFalse(this.roomRule.can('changeRolesOfMembers', user, roomAuthorizable));
 
 		await this.checkRoomRolesForExternalPersons(userIds, roleName);
 		this.preventChangingOwnersRole(roomAuthorizable, userIds, currentUserId);
@@ -207,7 +210,7 @@ export class RoomUc {
 		const roomAuthorizable = await this.roomMembershipService.getRoomAuthorizable(roomId);
 		const roomMemberAuthorizable = await this.getRoomMemberAuthorizable(roomAuthorizable, targetUserId);
 
-		throwForbiddenIfFalse(this.roomMemberRule.canPassOwnershipTo(user, roomMemberAuthorizable));
+		throwForbiddenIfFalse(this.roomMemberRule.can('passOwnershipTo', user, roomMemberAuthorizable));
 
 		const currenRoomOwner = roomAuthorizable.members.find((member) =>
 			member.roles.some((role) => role.name === RoleName.ROOMOWNER)
@@ -222,7 +225,7 @@ export class RoomUc {
 		const user = await this.authorizationService.getUserWithPermissions(currentUserId);
 		const roomAuthorizable = await this.roomMembershipService.getRoomAuthorizable(roomId);
 
-		throwForbiddenIfFalse(this.roomRule.canLeaveRoom(user, roomAuthorizable));
+		throwForbiddenIfFalse(this.roomRule.can('leaveRoom', user, roomAuthorizable));
 
 		await this.roomMembershipService.removeMembersFromRoom(roomId, [currentUserId]);
 	}
@@ -239,16 +242,19 @@ export class RoomUc {
 				(authorizable) => authorizable.member.userId === member.userId
 			);
 			if (roomMemberAuthorizable) {
-				throwForbiddenIfFalse(this.roomMemberRule.canRemoveMember(user, roomMemberAuthorizable));
+				throwForbiddenIfFalse(this.roomMemberRule.can('removeMember', user, roomMemberAuthorizable));
 			}
 		}
 		await this.roomMembershipService.removeMembersFromRoom(roomId, userIds);
 	}
 
-	private async getRoomMembersResponse(roomAuthorizable: RoomAuthorizable): Promise<RoomMemberResponse[]> {
+	private async getRoomMembersResponse(
+		currentUser: User,
+		roomAuthorizable: RoomAuthorizable
+	): Promise<RoomMemberResponse[]> {
 		const userIds = roomAuthorizable.members.map((member) => member.userId);
-		const users = (await this.userService.findByIds(userIds)).filter((user) => !user.deletedAt);
-		const membersResponse = this.buildRoomMembersResponse(users, roomAuthorizable);
+		const users = (await this.userService.getUserEntitiesWithRoles(userIds)).filter((user) => !user.deletedAt);
+		const membersResponse = await this.buildRoomMembersResponse(currentUser, users, roomAuthorizable);
 
 		return membersResponse;
 	}
@@ -266,13 +272,27 @@ export class RoomUc {
 		}
 	}
 
-	private buildRoomMembersResponse(users: UserDo[], roomAuthorizable: RoomAuthorizable): RoomMemberResponse[] {
+	private async buildRoomMembersResponse(
+		currentUser: User,
+		users: User[],
+		roomAuthorizable: RoomAuthorizable
+	): Promise<RoomMemberResponse[]> {
+		const roomMemberAuthorizables = await this.getRoomMemberAuthorizables(roomAuthorizable);
 		const membersResponse = users.map((user) => {
 			const member = roomAuthorizable.members.find((item) => item.userId === user.id);
 			if (!member) {
 				/* istanbul ignore next */
 				throw new Error('User not found in room members');
 			}
+
+			const roomMemberAuthorizable = roomMemberAuthorizables.find(
+				(authorizable) => authorizable.member.userId === user.id
+			);
+			if (!roomMemberAuthorizable) {
+				/* istanbul ignore next */
+				throw new Error('User not found in room member authorizables');
+			}
+			const allowedOperations = this.roomMemberRule.listAllowedOperations(currentUser, roomMemberAuthorizable);
 			const schoolRoleNames = user.roles.map((role) => role.name);
 			return new RoomMemberResponse({
 				userId: member.userId,
@@ -280,8 +300,9 @@ export class RoomUc {
 				lastName: user.lastName,
 				roomRoleName: member.roles[0].name ?? '',
 				schoolRoleNames,
-				schoolName: user.schoolName ?? '',
-				schoolId: user.schoolId,
+				schoolName: user.school.name ?? '',
+				schoolId: user.school.id,
+				allowedOperations,
 			});
 		});
 		return membersResponse;

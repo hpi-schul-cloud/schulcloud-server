@@ -39,7 +39,7 @@ export class ElementUc {
 		const boardNode = await this.boardNodeService.findRoot(element);
 		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(boardNode);
 
-		throwForbiddenIfFalse(this.boardNodeRule.canViewElement(user, boardNodeAuthorizable));
+		throwForbiddenIfFalse(this.boardNodeRule.can('viewElement', user, boardNodeAuthorizable));
 
 		const parentHierarchy = await this.boardContextApiHelperService.getParentsOfElement(element.rootId);
 
@@ -56,7 +56,7 @@ export class ElementUc {
 		const boardNode = await this.boardNodeService.findRoot(element);
 		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(boardNode);
 
-		throwForbiddenIfFalse(this.boardNodeRule.canUpdateElement(user, boardNodeAuthorizable));
+		throwForbiddenIfFalse(this.boardNodeRule.can('updateElement', user, boardNodeAuthorizable));
 
 		await this.boardNodeService.updateContent(element, content);
 
@@ -69,7 +69,7 @@ export class ElementUc {
 		const boardNode = await this.boardNodeService.findRoot(element);
 		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(boardNode);
 
-		throwForbiddenIfFalse(this.boardNodeRule.canDeleteElement(user, boardNodeAuthorizable));
+		throwForbiddenIfFalse(this.boardNodeRule.can('deleteElement', user, boardNodeAuthorizable));
 
 		const { rootId } = element; // needs to be captured before deletion
 		await this.boardNodeService.delete(element);
@@ -83,7 +83,7 @@ export class ElementUc {
 		const boardNode = await this.boardNodeService.findRoot(element);
 		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(boardNode);
 
-		throwForbiddenIfFalse(this.boardNodeRule.canViewElement(user, boardNodeAuthorizable));
+		throwForbiddenIfFalse(this.boardNodeRule.can('viewElement', user, boardNodeAuthorizable));
 	}
 
 	public async createSubmissionItem(
@@ -109,7 +109,7 @@ export class ElementUc {
 		const boardNode = await this.boardNodeService.findRoot(submissionContainerElement);
 		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(boardNode);
 
-		throwForbiddenIfFalse(this.boardNodeRule.canViewElement(user, boardNodeAuthorizable));
+		throwForbiddenIfFalse(this.boardNodeRule.can('viewElement', user, boardNodeAuthorizable));
 
 		const submissionItem = this.boardNodeFactory.buildSubmissionItem({ completed, userId });
 

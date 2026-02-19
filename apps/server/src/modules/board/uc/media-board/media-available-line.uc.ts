@@ -40,7 +40,7 @@ export class MediaAvailableLineUc {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(board);
 
-		throwForbiddenIfFalse(this.boardNodeRule.canViewMediaBoard(user, boardNodeAuthorizable));
+		throwForbiddenIfFalse(this.boardNodeRule.can('viewMediaBoard', user, boardNodeAuthorizable));
 
 		const schoolExternalToolsForAvailableMediaLine: SchoolExternalTool[] =
 			await this.mediaAvailableLineService.getUnusedAvailableSchoolExternalTools(user, board);
@@ -70,7 +70,7 @@ export class MediaAvailableLineUc {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(board);
 
-		throwForbiddenIfFalse(this.boardNodeRule.canUpdateMediaBoardColor(user, boardNodeAuthorizable));
+		throwForbiddenIfFalse(this.boardNodeRule.can('updateMediaBoardColor', user, boardNodeAuthorizable));
 
 		await this.mediaBoardService.updateBackgroundColor(board, color);
 	}
@@ -86,7 +86,7 @@ export class MediaAvailableLineUc {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(board);
 
-		throwForbiddenIfFalse(this.boardNodeRule.canCollapseMediaBoard(user, boardNodeAuthorizable));
+		throwForbiddenIfFalse(this.boardNodeRule.can('collapseMediaBoard', user, boardNodeAuthorizable));
 
 		await this.mediaBoardService.updateCollapsed(board, mediaAvailableLineCollapsed);
 	}

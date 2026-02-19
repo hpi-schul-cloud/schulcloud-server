@@ -35,6 +35,13 @@ export class UserService {
 		return userWithRoles;
 	}
 
+	public async getUserEntitiesWithRoles(userIds: EntityId[]): Promise<User[]> {
+		// only roles required, no need for the other populates
+		const usersWithRoles = await this.userRepo.findByIds(userIds, true);
+
+		return usersWithRoles;
+	}
+
 	public async me(userId: EntityId): Promise<[User, string[]]> {
 		const user = await this.userRepo.findById(userId, true);
 		const permissions = this.resolvePermissions(user);
@@ -105,14 +112,12 @@ export class UserService {
 
 	public async findPublicTeachersBySchool(schoolId: EntityId, options?: IFindOptions<UserDo>): Promise<Page<UserDo>> {
 		const discoverabilitySetting = this.userConfig.teacherVisibilityForExternalTeamInvitation;
-
 		if (discoverabilitySetting === 'disabled') {
 			return new Page<UserDo>([], 0);
 		}
 
 		const role = await this.roleService.findByName(RoleName.TEACHER);
 		const query: UserQuery = { schoolId, roleId: role.id };
-
 		if (discoverabilitySetting === 'opt-out') {
 			query.discoverable = UserDiscoverableQuery.NOT_FALSE;
 		}
