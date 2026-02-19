@@ -66,7 +66,6 @@ export class BoardUc {
 	): Promise<{
 		board: ColumnBoard;
 		features: BoardFeature[];
-		permissions: Permission[];
 		allowedOperations: Record<BoardOperation, boolean>;
 	}> {
 		// TODO set depth=2 to reduce data?
@@ -77,9 +76,8 @@ export class BoardUc {
 		throwForbiddenIfFalse(this.boardNodeRule.can('findBoard', user, boardNodeAuthorizable));
 
 		const features = await this.boardContextApiHelperService.getFeaturesForBoardNode(boardId);
-		const permissions = boardNodeAuthorizable.getUserPermissions(userId);
 		const allowedOperations = this.boardNodeRule.listAllowedOperations(user, boardNodeAuthorizable);
-		return { board, features, permissions, allowedOperations };
+		return { board, features, allowedOperations };
 	}
 
 	public async findBoardContext(userId: EntityId, boardId: EntityId): Promise<BoardExternalReference> {
