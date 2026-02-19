@@ -28,7 +28,9 @@ export class RoomInvitationLink extends DomainObject<RoomInvitationLinkProps> {
 	}
 
 	public getProps(): RoomInvitationLinkProps {
-		// Note: Propagated hotfix. Will be resolved with mikro-orm update. Look at the comment in board-node.do.ts.
+		// We need to make sure that only properties of type T are returned
+		// At runtime the props are a MikroORM entity that has additional non-persisted properties
+		// see @Property({ persist: false })
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore
