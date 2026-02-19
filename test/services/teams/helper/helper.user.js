@@ -1,18 +1,17 @@
 const { ObjectId } = require('mongoose').Types;
-
 const { BadRequest } = require('../../../../src/errors');
 const rolesModel = require('../../../../src/services/role/model');
 const { userModel } = require('../../../../src/services/user/model');
 const appPromise = require('../../../../src/app');
-
-const { TEST_PW, TEST_HASH } = require('../../../../config/globals');
-
-const AT = '@schul-cloud.org';
-
 const { warning } = require('../../../../src/logger/index');
+
+const TEST_PW = (process.env.TEST_PW || '').trim();
+const TEST_HASH = (process.env.TEST_HASH || '').trim();
 
 if (TEST_PW === '') warning('TEST_PW is not defined');
 if (TEST_HASH === '') warning('TEST_HASH is not defined');
+
+const AT = '@schul-cloud.org';
 
 const REQUEST_PARAMS = {
 	headers: { 'content-type': 'application/json' },
