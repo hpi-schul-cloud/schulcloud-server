@@ -1,5 +1,4 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
-import { Permission } from '@shared/domain/interface/permission.enum';
 import { BoardOperation } from '../../authorisation/board-node.rule';
 import { BoardFeature, Column, ColumnBoard } from '../../domain';
 import { BoardResponse, TimestampsResponse } from '../dto';
@@ -9,7 +8,6 @@ export class BoardResponseMapper {
 	public static mapToResponse(
 		board: ColumnBoard,
 		features: BoardFeature[],
-		permissions: Permission[],
 		allowedOperations: Record<BoardOperation, boolean>
 	): BoardResponse {
 		const result = new BoardResponse({
@@ -30,7 +28,6 @@ export class BoardResponseMapper {
 			readersCanEdit: board.readersCanEdit,
 			layout: board.layout,
 			features,
-			permissions,
 			allowedOperations,
 		});
 		return result;

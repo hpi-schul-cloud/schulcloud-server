@@ -1,39 +1,48 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { Permission } from '@shared/domain/interface';
+import { RoomOperation, RoomOperationValues } from '@modules/room-membership/authorization/room.rule';
 import { RoomColor, RoomFeatures } from '@modules/room/domain/type';
-import { IsEnum } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsEnum, IsIn } from 'class-validator';
 
 export class RoomDetailsResponse {
 	@ApiProperty()
-	id: string;
+	public id: string;
 
 	@ApiProperty()
-	name: string;
+	public name: string;
 
 	@ApiProperty({ enum: RoomColor, enumName: 'RoomColor' })
 	@IsEnum(RoomColor)
-	color: RoomColor;
+	public color: RoomColor;
 
 	@ApiProperty()
-	schoolId: string;
+	public schoolId: string;
 
 	@ApiPropertyOptional({ type: Date })
-	startDate?: Date;
+	public startDate?: Date;
 
 	@ApiPropertyOptional({ type: Date })
-	endDate?: Date;
+	public endDate?: Date;
 
 	@ApiProperty({ type: Date })
-	createdAt: Date;
+	public createdAt: Date;
 
 	@ApiProperty({ type: Date })
-	updatedAt: Date;
+	public updatedAt: Date;
 
-	@ApiProperty({ enum: Permission, isArray: true, enumName: 'Permission' })
-	permissions: Permission[];
+	@ApiProperty({
+		type: 'object',
+		properties: RoomOperationValues.reduce((acc, op) => {
+			acc[op] = { type: 'boolean' };
+			return acc;
+		}, {}),
+		additionalProperties: false,
+		required: [...RoomOperationValues],
+	})
+	@IsIn(RoomOperationValues)
+	public allowedOperations: Record<RoomOperation, boolean>;
 
 	@ApiProperty({ enum: RoomFeatures, isArray: true, enumName: 'RoomFeatures' })
-	features: RoomFeatures[];
+	public features: RoomFeatures[];
 
 	constructor(room: RoomDetailsResponse) {
 		this.id = room.id;
@@ -46,7 +55,7 @@ export class RoomDetailsResponse {
 		this.createdAt = room.createdAt;
 		this.updatedAt = room.updatedAt;
 
-		this.permissions = room.permissions;
+		this.allowedOperations = room.allowedOperations;
 		this.features = room.features;
 	}
 }

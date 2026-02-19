@@ -2,7 +2,6 @@ import { BoardOperation, BoardOperationValues } from '@modules/board/authorisati
 import { ApiProperty } from '@nestjs/swagger';
 import { bsonStringPattern } from '@shared/controller/bson-string-pattern';
 import { DecodeHtmlEntities } from '@shared/controller/transformer';
-import { Permission } from '@shared/domain/interface/permission.enum';
 import { IsIn } from 'class-validator';
 import { BoardFeature, BoardLayout } from '../../../domain';
 import { TimestampsResponse } from '../timestamps.response';
@@ -18,7 +17,6 @@ export class BoardResponse {
 		readersCanEdit,
 		layout,
 		features,
-		permissions,
 		allowedOperations,
 	}: BoardResponse) {
 		this.id = id;
@@ -29,7 +27,6 @@ export class BoardResponse {
 		this.readersCanEdit = readersCanEdit;
 		this.layout = layout;
 		this.features = features;
-		this.permissions = permissions;
 		this.allowedOperations = allowedOperations;
 	}
 
@@ -61,9 +58,6 @@ export class BoardResponse {
 
 	@ApiProperty({ enum: BoardFeature, isArray: true, enumName: 'BoardFeature' })
 	public features: BoardFeature[];
-
-	@ApiProperty({ enum: Permission, isArray: true, enumName: 'Permission' })
-	public permissions: Permission[];
 
 	@ApiProperty({
 		type: 'object',

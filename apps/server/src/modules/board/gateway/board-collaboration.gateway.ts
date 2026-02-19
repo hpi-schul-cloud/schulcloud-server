@@ -135,7 +135,7 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 		try {
 			const board = await this.boardUc.deleteBoard(userId, data.boardId);
 			emitter.emitToClientAndRoom(data, board);
-		} catch (err) {
+		} catch {
 			emitter.emitFailure(data);
 		}
 	}
@@ -149,7 +149,7 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 		try {
 			const board = await this.boardUc.updateBoardTitle(userId, data.boardId, data.newTitle);
 			emitter.emitToClientAndRoom(data, board);
-		} catch (err) {
+		} catch {
 			emitter.emitFailure(data);
 		}
 	}
@@ -163,7 +163,7 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 		try {
 			const card = await this.cardUc.updateCardTitle(userId, data.cardId, data.newTitle);
 			emitter.emitToClientAndRoom(data, card);
-		} catch (err) {
+		} catch {
 			emitter.emitFailure(data);
 		}
 	}
@@ -177,7 +177,7 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 		try {
 			const card = await this.cardUc.updateCardHeight(userId, data.cardId, data.newHeight);
 			emitter.emitToClientAndRoom(data, card);
-		} catch (err) {
+		} catch {
 			emitter.emitFailure(data);
 		}
 	}
@@ -191,7 +191,7 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 		try {
 			const rootId = await this.cardUc.deleteCard(userId, data.cardId);
 			emitter.emitToClientAndRoom(data, rootId);
-		} catch (err) {
+		} catch {
 			emitter.emitFailure(data);
 		}
 	}
@@ -212,7 +212,7 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 			};
 
 			emitter.emitToClientAndRoom(responsePayload, card);
-		} catch (err) {
+		} catch {
 			emitter.emitFailure(data);
 		}
 	}
@@ -237,7 +237,7 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 			// payload needs to be returned to allow the client to do sequential operation
 			// of createColumn and move the card into that column
 			return responsePayload;
-		} catch (err) {
+		} catch {
 			emitter.emitFailure(data);
 			return {};
 		}
@@ -250,11 +250,11 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 		const emitter = this.buildBoardSocketEmitter({ socket, action: 'fetch-board' });
 		const { userId } = this.getCurrentUser(socket);
 		try {
-			const { board, features, permissions, allowedOperations } = await this.boardUc.findBoard(userId, data.boardId);
-			const responsePayload = BoardResponseMapper.mapToResponse(board, features, permissions, allowedOperations);
+			const { board, features, allowedOperations } = await this.boardUc.findBoard(userId, data.boardId);
+			const responsePayload = BoardResponseMapper.mapToResponse(board, features, allowedOperations);
 			await emitter.joinRoom(board);
 			emitter.emitSuccess(responsePayload);
-		} catch (err) {
+		} catch {
 			emitter.emitFailure(data);
 		}
 	}
@@ -268,7 +268,7 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 		try {
 			const { toBoard } = await this.columnUc.moveCard(userId, data.cardId, data.toColumnId, data.newIndex);
 			emitter.emitToClientAndRoom(data, toBoard.id);
-		} catch (err) {
+		} catch {
 			emitter.emitFailure(data);
 		}
 	}
@@ -292,7 +292,7 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 			} else {
 				emitter.emitToRoom(payload, result.toBoard.id);
 			}
-		} catch (err) {
+		} catch {
 			emitter.emitFailure(data);
 		}
 	}
@@ -312,7 +312,7 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 				duplicatedCard: cardResponse,
 			};
 			emitter.emitToClientAndRoom(responsePayload, card);
-		} catch (err) {
+		} catch {
 			emitter.emitFailure(data);
 		}
 	}
@@ -331,7 +331,7 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 				data.columnMove.addedIndex
 			);
 			emitter.emitToClientAndRoom(data, column);
-		} catch (err) {
+		} catch {
 			emitter.emitFailure(data);
 		}
 	}
@@ -345,7 +345,7 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 		try {
 			const column = await this.columnUc.updateColumnTitle(userId, data.columnId, data.newTitle);
 			emitter.emitToClientAndRoom(data, column);
-		} catch (err) {
+		} catch {
 			emitter.emitFailure(data);
 		}
 	}
@@ -359,7 +359,7 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 		try {
 			const board = await this.boardUc.updateReadersCanEdit(userId, data.boardId, data.readersCanEdit);
 			emitter.emitToClientAndRoom(data, board);
-		} catch (err) {
+		} catch {
 			emitter.emitFailure(data);
 		}
 	}
@@ -373,7 +373,7 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 		try {
 			const board = await this.boardUc.updateVisibility(userId, data.boardId, data.isVisible);
 			emitter.emitToClientAndRoom(data, board);
-		} catch (err) {
+		} catch {
 			emitter.emitFailure(data);
 		}
 	}
@@ -387,7 +387,7 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 		try {
 			const board: ColumnBoard = await this.boardUc.updateLayout(userId, data.boardId, data.layout);
 			emitter.emitToClientAndRoom(data, board);
-		} catch (err) {
+		} catch {
 			emitter.emitFailure(data);
 		}
 	}
@@ -401,7 +401,7 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 		try {
 			const rootId = await this.columnUc.deleteColumn(userId, data.columnId);
 			emitter.emitToClientAndRoom(data, rootId);
-		} catch (err) {
+		} catch {
 			emitter.emitFailure(data);
 		}
 	}
@@ -417,7 +417,7 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 			const cardResponses = cards.map((card) => CardResponseMapper.mapToResponse(card));
 
 			emitter.emitSuccess({ cards: cardResponses });
-		} catch (err) {
+		} catch {
 			emitter.emitFailure(data);
 		}
 	}
@@ -443,7 +443,7 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 			emitter.emitToClientAndRoom(responsePayload, element);
 
 			response = responsePayload.newElement;
-		} catch (err) {
+		} catch {
 			emitter.emitFailure(data);
 		}
 
@@ -459,7 +459,7 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 		try {
 			const element = await this.elementUc.updateElement(userId, data.elementId, data.data.content);
 			emitter.emitToClientAndRoom(data, element);
-		} catch (err) {
+		} catch {
 			emitter.emitFailure(data);
 		}
 	}
@@ -474,7 +474,7 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 		try {
 			const rootId = await this.elementUc.deleteElement(userId, data.elementId);
 			emitter.emitToClientAndRoom(data, rootId);
-		} catch (err) {
+		} catch {
 			emitter.emitFailure(data);
 		}
 	}
@@ -489,7 +489,7 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 		try {
 			const element = await this.cardUc.moveElement(userId, data.elementId, data.toCardId, data.toPosition);
 			emitter.emitToClientAndRoom(data, element);
-		} catch (err) {
+		} catch {
 			emitter.emitFailure(data);
 		}
 	}

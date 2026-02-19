@@ -26,6 +26,19 @@ export class UserMikroOrmRepo extends BaseRepo<User> {
 		return user;
 	}
 
+	public async findByIds(ids: EntityId[], populate = false): Promise<User[]> {
+		const users = await this._em.find(User, { id: { $in: ids } });
+
+		if (populate) {
+			await this._em.populate(users, ['roles', 'school.id', 'school.name', 'school.systems', 'school.currentYear']);
+			for (const user of users) {
+				await this.populateRoles(user.roles.getItems());
+			}
+		}
+
+		return users;
+	}
+
 	public async findByIdOrNull(id: EntityId, populate = false): Promise<User | null> {
 		const user: User | null = await this._em.findOne(User, { id });
 
