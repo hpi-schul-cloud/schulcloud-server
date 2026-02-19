@@ -25,6 +25,11 @@
 			"type": "integer",
 			"description": "Setting value enable the lead time measurement for requests. Legacy."
 		},
+		"MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE": {
+			"type": "integer",
+			"default": 5242880,
+			"description": "Maximum total size of attachments in bytes. Default 5 MB = 5 * 1024 *1024. Legacy."
+		},
 		"REQUEST_OPTION": {
 			"type": "object",
 			"description": "Request helper options for internal requests.",

@@ -1,8 +1,10 @@
-const { LOG_LEVEL, NODE_ENV, ENVIRONMENTS } = require('../../config/globals');
+const { Configuration } = require('@hpi-schul-cloud/commons');
+const { ENVIRONMENTS } = require('../../config/environments');
 const { getDevelopFormat, getProductionFormat, getTestFormat, createLogger } = require('./utils');
 
+
 let selectedFormat;
-switch (NODE_ENV) {
+switch (Configuration.get('NODE_ENV')) {
 	case ENVIRONMENTS.TEST:
 		selectedFormat = getTestFormat();
 		break;
@@ -15,6 +17,6 @@ switch (NODE_ENV) {
 		selectedFormat = getDevelopFormat();
 }
 
-const logger = createLogger(selectedFormat, LOG_LEVEL);
+const logger = createLogger(selectedFormat, Configuration.get('LOG_LEVEL'));
 
 module.exports = logger;

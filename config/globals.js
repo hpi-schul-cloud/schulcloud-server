@@ -1,28 +1,11 @@
 /* eslint-disable no-process-env */
 
 const { Configuration } = require('@hpi-schul-cloud/commons');
-const ENVIRONMENTS = {
-	DEVELOPMENT: 'development',
-	TEST: 'test',
-	PRODUCTION: 'production',
-	MIGRATION: 'migration',
-};
-
-const { NODE_ENV = ENVIRONMENTS.DEVELOPMENT } = process.env;
 
 const globals = {
-	MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE: 5 * 1024 * 1024, // 5MB
-
 	SC_THEME: Configuration.get('SC_THEME'),
 	SC_TITLE: Configuration.get('SC_TITLE'),
 	SMTP_SENDER: Configuration.get('SMTP_SENDER'),
-
-	LEAD_TIME: process.env.LEAD_TIME ? parseInt(process.env.LEAD_TIME, 10) : undefined,
-	/**
-	 * default value 'development' matches default of app.get('env'), but use globals
-	 */
-	NODE_ENV,
-	ENVIRONMENTS,
 	LOG_LEVEL: Configuration.get('LOG_LEVEL'),
 	// secrets aws
 	// are you sure about that? access key = secret key?

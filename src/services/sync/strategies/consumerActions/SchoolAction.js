@@ -2,7 +2,7 @@ const AWSStrategy = require('../../../fileStorage/strategies/awsS3');
 const BaseConsumerAction = require('./BaseConsumerAction');
 // TODO: place from where it is importat must be fixed later
 const { LDAP_SYNC_ACTIONS } = require('../SyncMessageBuilder');
-const { NODE_ENV, ENVIRONMENTS } = require('../../../../../config/globals');
+const { ENVIRONMENTS } = require('../../../../../config/environments');
 const { SchoolRepo } = require('../../repo');
 const { fileStorageTypes } = require('../../../school/model');
 const { BadRequest } = require('../../../../errors');
@@ -61,7 +61,7 @@ class SchoolAction extends BaseConsumerAction {
 
 	createDefaultStorageOptions({ schoolId, fileStorageType }) {
 		// create buckets only in production mode
-		if (fileStorageType && NODE_ENV === ENVIRONMENTS.PRODUCTION) {
+		if (fileStorageType && Configuration.get('NODE_ENV') === ENVIRONMENTS.PRODUCTION) {
 			const fileStorageStrategy = new AWSStrategy();
 			fileStorageStrategy.create(schoolId).catch((err) => {
 				if (err && err.code !== 'BucketAlreadyOwnedByYou') {

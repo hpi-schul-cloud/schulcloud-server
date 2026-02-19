@@ -2,7 +2,7 @@ const { authenticate } = require('@feathersjs/authentication');
 const { iff, isProvider, discard, disallow, keepInArray, keep } = require('feathers-hooks-common');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const { Forbidden } = require('../../../errors');
-const { NODE_ENV, ENVIRONMENTS } = require('../../../../config/globals');
+const { ENVIRONMENTS } = require('../../../../config/environments');
 const logger = require('../../../logger');
 const { equal } = require('../../../helper/compare').ObjectId;
 const globalHooks = require('../../../hooks');
@@ -105,7 +105,7 @@ const setCurrentYearIfMissing = async (hook) => {
 
 const createDefaultStorageOptions = (hook) => {
 	// create buckets only in production mode
-	if (NODE_ENV !== ENVIRONMENTS.PRODUCTION) {
+	if (Configuration.get('NODE_ENV') !== ENVIRONMENTS.PRODUCTION) {
 		return Promise.resolve(hook);
 	}
 	const schoolId = hook.result._id;

@@ -12,7 +12,6 @@ const {
 	isTokenAvailable,
 	ensureTokenIsWhitelisted,
 } = require('./services/authentication/logic/whitelist');
-const { LEAD_TIME } = require('../config/globals');
 
 const sanitizeDataHook = (context) => {
 	if ((context.data || context.result) && context.path && context.path !== 'authentication') {
@@ -92,6 +91,8 @@ const errorHandler = (context) => {
 
 // adding in this position will detect intern request to
 const leadTimeDetection = (context) => {
+	const LEAD_TIME = Configuration.get('LEAD_TIME');
+
 	if (context.params.leadTime) {
 		const timeDelta = Date.now() - context.params.leadTime;
 		if (timeDelta >= LEAD_TIME) {
@@ -125,6 +126,8 @@ const leadTimeDetection = (context) => {
 };
 
 function setupAppHooks(app) {
+	const LEAD_TIME = Configuration.get('LEAD_TIME');
+
 	const before = {
 		all: [iff(isProvider('external'), handleAutoLogout)],
 		find: [],

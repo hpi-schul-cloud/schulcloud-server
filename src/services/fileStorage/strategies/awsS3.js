@@ -3,7 +3,7 @@ const { AesEncryptionHelper } = require('../../../../dist/apps/server/shared/com
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const aws = require('aws-sdk');
 const mongoose = require('mongoose');
-const { NODE_ENV, ENVIRONMENTS } = require('../../../../config/globals');
+const { ENVIRONMENTS } = require('../../../../config/environments');
 const { NotFound, BadRequest, GeneralError } = require('../../../errors');
 const logger = require('../../../logger');
 const { schoolModel } = require('../../school/model');
@@ -183,7 +183,7 @@ class AWSS3Strategy {
 			try {
 				//	awsConfig = require(`../../../../config/secrets.${prodMode ? 'js' : 'json'}`).aws;
 				/* eslint-disable global-require, no-unused-expressions */
-				NODE_ENV === ENVIRONMENTS.PRODUCTION
+				Configuration.get('NODE_ENV') === ENVIRONMENTS.PRODUCTION
 					? (awsConfig = require('../../../../config/secrets.js').aws)
 					: (awsConfig = require('../../../../config/secrets.json').aws);
 				/* eslint-enable global-require, no-unused-expressions */
