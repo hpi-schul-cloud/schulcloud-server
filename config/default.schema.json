@@ -47,6 +47,21 @@
 			"type": "string",
 			"description": "AWS Endpoint URL for S3 storage. Legacy."
 		},
+		"DISPLAY_REQUEST_LEVEL": {
+			"type": "integer",
+			"default": 0,
+			"description": "Log level for incoming requests. 0 = no logging, 1 = log method and url, 2 = log method, url and query, 3 = log method, url, query and headers.authorization. Legacy."
+		},
+		"CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS": {
+			"type": "integer",
+			"default": 16,
+			"description": "Minimum age in years for giving consent without parents. Legacy."
+		},
+		"SECURITY_CHECK_SERVICE_PATH": {
+			"type": "string",
+			"default": "/v1/fileStorage/securityCheck/",
+			"description": "Path for the file security check service. Path must start and end with a slash. Legacy."
+		},
 		"REQUEST_OPTION": {
 			"type": "object",
 			"description": "Request helper options for internal requests.",
@@ -312,7 +327,7 @@
 		},
 		"FILE_SECURITY_CHECK_MAX_FILE_SIZE": {
 			"type": "integer",
-			"description": "Maximum file size for antivirus check in Byte.",
+			"description": "Maximum file size for antivirus check in Byte. 512MB = 512 * 1024 * 1024. Legacy.",
 			"default": 25000000
 		},
 		"FILE_SECURITY_CHECK_SERVICE_URI": {

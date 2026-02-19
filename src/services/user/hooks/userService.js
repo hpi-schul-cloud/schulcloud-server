@@ -1,16 +1,12 @@
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const { authenticate } = require('@feathersjs/authentication');
 const { keep } = require('feathers-hooks-common');
-
 const { Forbidden, NotFound, BadRequest, GeneralError } = require('../../../errors');
 const logger = require('../../../logger');
 const { ObjectId } = require('../../../helper/compare');
 const { hasRoleNoHook, hasPermissionNoHook, hasPermission } = require('../../../hooks');
-
 const { getAge } = require('../../../utils');
-
 const constants = require('../../../utils/constants');
-const { CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS} = require('../../../../config/globals');
 
 /**
  *
@@ -206,6 +202,7 @@ const pinIsVerified = (hook) => {
 		.find({ query: { email, verified: true } })
 		.then((pins) => {
 			if (pins.data.length === 1 && pins.data[0].pin) {
+				const CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS = Configuration.get('CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS');
 				const age = getAge(hook.data.birthday);
 
 				if (!((hook.data.roles || []).includes('student') && age < CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS)) {

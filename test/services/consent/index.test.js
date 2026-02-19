@@ -1,14 +1,14 @@
 const assert = require('assert');
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
-
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const { expect } = require('chai');
 const { BadRequest } = require('../../../src/errors');
 const appPromise = require('../../../src/app');
-const globals = require('../../../config/globals');
 
 const testObjects = require('../helpers/testObjects')(appPromise());
 const { setupNestServices, closeNestServices } = require('../../utils/setup.nest.services');
+const SC_THEME = Configuration.get('SC_THEME');
 
 let consentService;
 let consentVersionService;
@@ -137,34 +137,34 @@ describe('consent service', () => {
 	it('consentVersionService create method should return an error if shdUpload and instance NBC', async () => {
 		const superHeroUser = await testObjects.createTestUser({ roles: ['superhero'] });
 		const params = await testObjects.generateRequestParamsFromUser(superHeroUser);
-		const OLD_SC_THEME = globals.SC_THEME;
-		globals.SC_THEME = 'n21';
+		const OLD_SC_THEME = SC_THEME;
+		SC_THEME = 'n21';
 
 		await chai
 			.expect(consentVersionService.create({}, params))
 			.to.be.rejectedWith(BadRequest, 'SHD consent upload is disabled for NBC instance.');
 
-		globals.SC_THEME = OLD_SC_THEME;
+		SC_THEME = OLD_SC_THEME;
 	});
 
 	it('consentVersionService create method should not return an error if shdUpload and instance different than NBC', async () => {
 		const superHeroUser = await testObjects.createTestUser({ roles: ['superhero'] });
 		const params = await testObjects.generateRequestParamsFromUser(superHeroUser);
-		const OLD_SC_THEME = globals.SC_THEME;
-		globals.SC_THEME = 'default';
+		const OLD_SC_THEME = SC_THEME;
+		SC_THEME = 'default';
 
 		await chai
 			.expect(consentVersionService.create({}, params))
 			.to.not.be.rejectedWith(BadRequest, 'SHD consent upload is disabled for NBC instance.');
 
-		globals.SC_THEME = OLD_SC_THEME;
+		SC_THEME = OLD_SC_THEME;
 	});
 
 	it('consentVersionService create method should create new consent if SHD upload', async () => {
 		const superHeroUser = await testObjects.createTestUser({ roles: ['superhero'] });
 		const params = await testObjects.generateRequestParamsFromUser(superHeroUser);
-		const OLD_SC_THEME = globals.SC_THEME;
-		globals.SC_THEME = 'default';
+		const OLD_SC_THEME = SC_THEME;
+		SC_THEME = 'default';
 
 		const consentParams = {
 			title: 'Test title',
@@ -179,7 +179,7 @@ describe('consent service', () => {
 		expect(result).has.property('publishedAt').and.is.not.null;
 		expect(result).has.property('consentText').and.is.equal(consentParams.consentText);
 
-		globals.SC_THEME = OLD_SC_THEME;
+		SC_THEME = OLD_SC_THEME;
 	});
 
 	it('consentVersionService create method should upload conset version when user is an admin', async () => {

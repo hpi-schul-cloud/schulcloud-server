@@ -1,8 +1,7 @@
 const { expect } = require('chai');
 const sinon = require('sinon');
-
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const appPromise = require('../../../src/app');
-const { SMTP_SENDER } = require('../../../config/globals');
 
 describe('Mail Service', async () => {
 	const app = await appPromise();
@@ -76,7 +75,7 @@ describe('Mail Service', async () => {
 			// assert that mail service was actually called
 			expect(nestMailService.send.calledOnce).to.equal(true);
 			const payload = nestMailService.send.firstCall.args[0];
-			expect(payload.from).to.equal(SMTP_SENDER);
+			expect(payload.from).to.equal(Configuration.get('SMTP_SENDER'));
 		});
 	});
 
