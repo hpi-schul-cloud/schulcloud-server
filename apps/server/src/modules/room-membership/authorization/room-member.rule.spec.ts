@@ -217,7 +217,7 @@ describe(RoomMemberRule.name, () => {
 				])('%s => %s  =  (%s)', async (alias, targetUserAlias, expected) => {
 					const { user, roomMemberAuthorizable } = await setup(alias, targetUserAlias);
 
-					const result = service.canPassOwnershipTo(user, roomMemberAuthorizable);
+					const result = service.can('passOwnershipTo', user, roomMemberAuthorizable);
 
 					expect(result).toBe(expected);
 				});
@@ -233,7 +233,7 @@ describe(RoomMemberRule.name, () => {
 				])('%s => %s  =  (%s)', async (alias, targetUserAlias, expected) => {
 					const { user, roomMemberAuthorizable } = await setup(alias, targetUserAlias);
 
-					const result = service.canPassOwnershipTo(user, roomMemberAuthorizable);
+					const result = service.can('passOwnershipTo', user, roomMemberAuthorizable);
 
 					expect(result).toBe(expected);
 				});
@@ -249,7 +249,7 @@ describe(RoomMemberRule.name, () => {
 				])('%s => %s  =  (%s)', async (alias, targetUserAlias, expected) => {
 					const { user, roomMemberAuthorizable } = await setup(alias, targetUserAlias);
 
-					const result = service.canPassOwnershipTo(user, roomMemberAuthorizable);
+					const result = service.can('passOwnershipTo', user, roomMemberAuthorizable);
 
 					expect(result).toBe(expected);
 				});
@@ -267,7 +267,7 @@ describe(RoomMemberRule.name, () => {
 				])('%s => %s  =  (%s)', async (alias, targetUserAlias, expected) => {
 					const { user, roomMemberAuthorizable } = await setup(alias, targetUserAlias);
 
-					const result = service.canPassOwnershipTo(user, roomMemberAuthorizable);
+					const result = service.can('passOwnershipTo', user, roomMemberAuthorizable);
 
 					expect(result).toBe(expected);
 				});
@@ -283,7 +283,7 @@ describe(RoomMemberRule.name, () => {
 				])('%s => %s  =  (%s)', async (alias, targetUserAlias, expected) => {
 					const { user, roomMemberAuthorizable } = await setup(alias, targetUserAlias);
 
-					const result = service.canPassOwnershipTo(user, roomMemberAuthorizable);
+					const result = service.can('passOwnershipTo', user, roomMemberAuthorizable);
 
 					expect(result).toBe(expected);
 				});
@@ -299,7 +299,7 @@ describe(RoomMemberRule.name, () => {
 				])('%s => %s  =  (%s)', async (alias, targetUserAlias, expected) => {
 					const { user, roomMemberAuthorizable } = await setup(alias, targetUserAlias);
 
-					const result = service.canPassOwnershipTo(user, roomMemberAuthorizable);
+					const result = service.can('passOwnershipTo', user, roomMemberAuthorizable);
 
 					expect(result).toBe(expected);
 				});
@@ -314,7 +314,7 @@ describe(RoomMemberRule.name, () => {
 				])('%s => %s  =  (%s)', async (alias, targetUserAlias, expected) => {
 					const { user, roomMemberAuthorizable } = await setup(alias, targetUserAlias);
 
-					const result = service.canPassOwnershipTo(user, roomMemberAuthorizable);
+					const result = service.can('passOwnershipTo', user, roomMemberAuthorizable);
 
 					expect(result).toBe(expected);
 				});
@@ -330,7 +330,7 @@ describe(RoomMemberRule.name, () => {
 				])('%s => %s  =  (%s)', async (alias, targetUserAlias, expected) => {
 					const { user, roomMemberAuthorizable } = await setup(alias, targetUserAlias);
 
-					const result = service.canPassOwnershipTo(user, roomMemberAuthorizable);
+					const result = service.can('passOwnershipTo', user, roomMemberAuthorizable);
 
 					expect(result).toBe(expected);
 				});
