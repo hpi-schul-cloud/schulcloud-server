@@ -325,7 +325,9 @@ describe('UserScope', () => {
 			it('should add a query that removes deleted users', () => {
 				scope1.withDeleted(false);
 
-				expect(scope1.query).toEqual({ $or: [{ deletedAt: { $exists: false } }, { deletedAt: null }] });
+				expect(scope1.query).toEqual({
+					$or: [{ deletedAt: { $exists: false } }, { deletedAt: null }, { deletedAt: { $gte: expect.any(Date) } }],
+				});
 			});
 		});
 	});

@@ -1,7 +1,7 @@
 import { LegacyLogger } from '@core/logger';
 import { AccountService } from '@modules/account';
 import { UserService } from '@modules/user';
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { DELETION_CONFIG_TOKEN, DeletionConfig } from '../../deletion.config';
 import { DomainDeletionReportBuilder } from '../../domain/builder';
@@ -45,7 +45,19 @@ export class DeletionRequestUc {
 		);
 
 		if (deletionRequest.targetRef.domain === DomainName.USER) {
-			await this.accountService.deactivateAccount(deletionRequest.targetRef.id, new Date());
+			const deleteAt = new Date();
+			await this.userService.flagAsDeleted(deletionRequest.targetRef.id, deleteAt);
+			try {
+				await this.accountService.deactivateAccount(deletionRequest.targetRef.id, deleteAt);
+			} catch (error) {
+				if (error instanceof NotFoundException) {
+					this.logger.warn({
+						action: 'createDeletionRequest',
+						message: error.message,
+						deletionRequest,
+					});
+				}
+			}
 		}
 
 		return result;
