@@ -11,6 +11,20 @@
 			"enum": ["development", "test", "production", "migration"],
 			"default": "production"
 		},
+		"BODYPARSER_JSON_LIMIT": {
+			"type": "string",
+			"default": "20mb",
+			"description": "The maximum size of JSON request bodies. Legacy."
+		},
+		"MONGOOSE_CONNECTION_POOL_SIZE": {
+			"type": "integer",
+			"default": 10,
+			"description": "The size of the MongoDB connection pool. Legacy."
+		},
+		"LEAD_TIME": {
+			"type": "integer",
+			"description": "Setting value enable the lead time measurement for requests. Legacy."
+		},
 		"REQUEST_OPTION": {
 			"type": "object",
 			"description": "Request helper options for internal requests.",

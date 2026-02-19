@@ -9,7 +9,6 @@ const bodyParser = require('body-parser');
 const { ObjectId } = require('mongoose').Types;
 
 const { RequestContext } = require('@mikro-orm/core');
-const { BODYPARSER_JSON_LIMIT, LEAD_TIME } = require('../config/globals');
 
 const middleware = require('./middleware');
 const setupConfiguration = require('./configuration');
@@ -26,6 +25,9 @@ const { setupFacadeLocator } = require('./utils/facadeLocator');
 const setupSwagger = require('./swagger');
 const { initializeRedisClient } = require('./utils/redis');
 const { setupAppHooks } = require('./app.hooks');
+
+const BODYPARSER_JSON_LIMIT = Configuration.get('BODYPARSER_JSON_LIMIT');
+const LEAD_TIME = Configuration.get('LEAD_TIME');
 
 let feathersApp;
 
@@ -51,9 +53,9 @@ const setupApp = async (orm) => {
 		.options('*', cors())
 		.use(cors())
 		.configure(setupConfiguration)
-		.use('/', bodyParser.json({ limit: '10mb' }))
+		.use('/', bodyParser.json({ limit: BODYPARSER_JSON_LIMIT }))
 		.use(bodyParser.urlencoded({ extended: true }))
-		.use(bodyParser.raw({ type: () => true, limit: '10mb' }))
+		.use(bodyParser.raw({ type: () => true, limit: BODYPARSER_JSON_LIMIT }))
 		.use(defaultHeaders)
 		.use((req, res, next) => {
 			if (orm) {

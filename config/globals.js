@@ -11,12 +11,7 @@ const ENVIRONMENTS = {
 const { NODE_ENV = ENVIRONMENTS.DEVELOPMENT } = process.env;
 
 const globals = {
-	BODYPARSER_JSON_LIMIT: process.env.BODYPARSER_JSON_LIMIT || '20mb',
-	DB_URL: Configuration.get('DB_URL'),
-	DB_USERNAME: Configuration.has('DB_USERNAME') ? Configuration.get('DB_USERNAME') : undefined,
-	DB_PASSWORD: Configuration.has('DB_PASSWORD') ? Configuration.get('DB_PASSWORD') : undefined,
 	MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE: 5 * 1024 * 1024, // 5MB
-	MONGOOSE_CONNECTION_POOL_SIZE: parseInt(process.env.MONGOOSE_CONNECTION_POOL_SIZE || '10', 10),
 
 	SC_THEME: Configuration.get('SC_THEME'),
 	SC_TITLE: Configuration.get('SC_TITLE'),

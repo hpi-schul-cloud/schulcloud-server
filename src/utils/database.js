@@ -4,14 +4,7 @@ const mongoose = require('mongoose');
 const uriFormat = require('mongodb-uri');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const logger = require('../logger');
-const {
-	NODE_ENV,
-	MONGOOSE_CONNECTION_POOL_SIZE,
-	DB_URL,
-	DB_USERNAME,
-	DB_PASSWORD,
-	ENVIRONMENTS,
-} = require('../../config/globals');
+const { ENVIRONMENTS } = require('../../config/environments');
 
 logger.info('database audit log is globally disabled');
 
@@ -37,6 +30,10 @@ function addAuthenticationToMongooseOptions(username, password, mongooseOptions)
 }
 
 function getConnectionOptions() {
+	const DB_URL = Configuration.get('DB_URL');
+	const DB_USERNAME = Configuration.get('DB_USERNAME');
+	const DB_PASSWORD = Configuration.get('DB_PASSWORD');
+
 	return {
 		url: DB_URL,
 		username: DB_USERNAME,
@@ -79,6 +76,9 @@ function connect() {
 	const options = getConnectionOptions();
 
 	logger.info('connect to database host');
+
+	const NODE_ENV = Configuration.get('NODE_ENV');
+	const MONGOOSE_CONNECTION_POOL_SIZE = Configuration.get('MONGOOSE_CONNECTION_POOL_SIZE');
 
 	const mongooseOptions = {
 		autoIndex: NODE_ENV !== ENVIRONMENTS.PRODUCTION,
