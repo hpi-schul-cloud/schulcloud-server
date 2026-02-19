@@ -70,13 +70,12 @@ export class RoomRule implements Rule<RoomAuthorizable> {
 			addAllStudents: canAddAllStudents,
 			addExternalPersonByEmail: canAddExternalPersonByEmail,
 			addMembers: canAddMembers,
-			arrangeRooms: canArrangeRooms,
+			arrangeRooms: canEditContent,
 			changeRolesOfMembers: canChangeRolesOfMembers,
 			copyRoom: canCopyRoom,
 			createRoom: canCreateRoom,
 			deleteRoom: canDeleteRoom,
 			editContent: canEditContent,
-			editRoomContent: canEditRoomContent,
 			getRoomMembers: canGetRoomMembers,
 			getRoomMembersRedacted: canGetRoomMembersRedacted,
 			leaveRoom: canLeaveRoom,
@@ -224,14 +223,6 @@ const canAddMembers = (user: User, roomAuthorizable: RoomAuthorizable): boolean 
 
 const canEditContent = (user: User, roomAuthorizable: RoomAuthorizable): boolean => {
 	const { roomPermissions } = resolveUserPermissions(user, roomAuthorizable);
-	const hasRoomPermission = roomPermissions.includes(Permission.ROOM_EDIT_CONTENT);
-
-	return hasRoomPermission;
-};
-
-const canArrangeRooms = (user: User, roomAuthorizable: RoomAuthorizable): boolean => {
-	const { roomPermissions } = resolveUserPermissions(user, roomAuthorizable);
-
 	const hasRoomPermission = roomPermissions.includes(Permission.ROOM_EDIT_CONTENT);
 
 	return hasRoomPermission;
