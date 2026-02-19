@@ -17,7 +17,6 @@ export const RoomOperationValues = [
 	'createRoom',
 	'deleteRoom',
 	'editContent',
-	'editRoomContent',
 	'getRoomMembers',
 	'getRoomMembersRedacted',
 	'leaveRoom',
@@ -241,14 +240,6 @@ const canChangeRolesOfMembers = (user: User, roomAuthorizable: RoomAuthorizable)
 	const hasRoomPermission = roomPermissions.includes(Permission.ROOM_CHANGE_ROLES);
 
 	return hasRoomPermission;
-};
-
-const canEditRoomContent = (user: User, roomAuthorizable: RoomAuthorizable): boolean => {
-	const { roomPermissions } = resolveUserPermissions(user, roomAuthorizable);
-
-	const result = roomPermissions.includes(Permission.ROOM_EDIT_CONTENT);
-
-	return result;
 };
 
 const canLeaveRoom = (user: User, roomAuthorizable: RoomAuthorizable): boolean => {
