@@ -89,12 +89,12 @@ describe(`board lookup in course (api)`, () => {
 
 				expect(result.allowedOperations).toEqual(
 					expect.objectContaining({
-						addCard: true,
-						addColumn: true,
-						delete: true,
+						createCard: true,
+						createColumn: true,
+						deleteCard: true,
 						moveCard: true,
 						moveColumn: true,
-						update: true,
+						updateCardTitle: true,
 					})
 				);
 			});
