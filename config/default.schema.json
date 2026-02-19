@@ -30,6 +30,23 @@
 			"default": 5242880,
 			"description": "Maximum total size of attachments in bytes. Default 5 MB = 5 * 1024 *1024. Legacy."
 		},
+		"AWS_ACCESS_KEY": {
+			"type": "string",
+			"description": "AWS Access Key for S3 storage. Legacy."
+		},
+		"AWS_SECRET_ACCESS_KEY": {
+			"type": "string",
+			"description": "AWS Secret Access Key for S3 storage. Legacy."
+		},
+		"AWS_REGION": {
+			"type": "string",
+			"default": "eu-de",
+			"description": "AWS Region for S3 storage. Legacy."
+		},
+		"AWS_ENDPOINT_URL": {
+			"type": "string",
+			"description": "AWS Endpoint URL for S3 storage. Legacy."
+		},
 		"REQUEST_OPTION": {
 			"type": "object",
 			"description": "Request helper options for internal requests.",
