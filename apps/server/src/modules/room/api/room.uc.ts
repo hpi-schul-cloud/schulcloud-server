@@ -305,7 +305,6 @@ export class RoomUc {
 				allowedOperations,
 			});
 		});
-		console.log('membersResponse', membersResponse);
 		return membersResponse;
 	}
 
