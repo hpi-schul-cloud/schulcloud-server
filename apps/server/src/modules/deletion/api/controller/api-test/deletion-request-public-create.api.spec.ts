@@ -7,6 +7,7 @@ import { TestApiClient } from '@testing/test-api-client';
 import { AccountEntity } from '@modules/account/repo';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { DeletionRequestParams } from '../dto';
+import { User } from '@modules/user/repo';
 
 const baseRouteName = '/deletionRequestsPublic';
 
@@ -83,6 +84,15 @@ describe(`deletionRequest public create (api)`, () => {
 
 			const account = await em.findOne(AccountEntity, { userId: new ObjectId(studentUser.id) });
 			expect(account?.deactivatedAt).toBeDefined();
+		});
+
+		it('should flag user as deleted until actual deletion is performed', async () => {
+			const { studentUser, queryString, loggedInClient } = await setup();
+
+			await loggedInClient.delete(`?${queryString}`);
+
+			const user = await em.findOne(User, { id: studentUser.id });
+			expect(user?.deletedAt).toBeDefined();
 		});
 
 		it('should not fail if the target user has no account', async () => {

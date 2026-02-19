@@ -1,4 +1,5 @@
 import { LegacyLogger } from '@core/logger';
+import { NotFoundException } from '@nestjs/common';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountService } from '@modules/account';
@@ -23,6 +24,7 @@ describe(DeletionRequestUc.name, () => {
 	let deletionRequestService: DeepMocked<DeletionRequestService>;
 	let deletionLogService: DeepMocked<DeletionLogService>;
 	let config: DeletionConfig;
+	let legacyLogger: DeepMocked<LegacyLogger>;
 	let deletionExecutionService: DeepMocked<DeletionExecutionService>;
 	let accountService: DeepMocked<AccountService>;
 	let userService: DeepMocked<UserService>;
@@ -68,6 +70,7 @@ describe(DeletionRequestUc.name, () => {
 		deletionRequestService = module.get(DeletionRequestService);
 		deletionLogService = module.get(DeletionLogService);
 		config = module.get(DELETION_CONFIG_TOKEN);
+		legacyLogger = module.get(LegacyLogger);
 		deletionExecutionService = module.get(DeletionExecutionService);
 		accountService = module.get(AccountService);
 		userService = module.get(UserService);
@@ -139,6 +142,14 @@ describe(DeletionRequestUc.name, () => {
 				});
 			});
 
+			it('should call userService.flagAsDeleted if domain is DomainName.User', async () => {
+				const { deletionRequestToCreate } = setup();
+
+				await uc.createDeletionRequest(deletionRequestToCreate);
+
+				expect(userService.flagAsDeleted).toHaveBeenCalledWith(deletionRequestToCreate.targetRef.id, expect.any(Date));
+			});
+
 			it('should call accountService.deactivateAccount if domain is DomainName.User', async () => {
 				const { deletionRequestToCreate } = setup();
 
@@ -148,6 +159,15 @@ describe(DeletionRequestUc.name, () => {
 					deletionRequestToCreate.targetRef.id,
 					expect.any(Date)
 				);
+			});
+
+			it('should log a warning if account is not found', async () => {
+				const { deletionRequestToCreate } = setup();
+				accountService.deactivateAccount.mockRejectedValueOnce(new NotFoundException());
+
+				await uc.createDeletionRequest(deletionRequestToCreate);
+
+				expect(legacyLogger.warn).toHaveBeenCalled();
 			});
 		});
 	});
