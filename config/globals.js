@@ -3,10 +3,6 @@
 const { Configuration } = require('@hpi-schul-cloud/commons');
 
 const globals = {
-	SC_THEME: Configuration.get('SC_THEME'),
-	SC_TITLE: Configuration.get('SC_TITLE'),
-	SMTP_SENDER: Configuration.get('SMTP_SENDER'),
-	LOG_LEVEL: Configuration.get('LOG_LEVEL'),
 	// secrets aws
 	// are you sure about that? access key = secret key?
 	// not used anyway, only used when FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED = false

@@ -1,5 +1,5 @@
 const { authenticate } = require('@feathersjs/authentication');
-const { Configuration } = require('@hpi-schul-cloud/commons/lib');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const {
 	Forbidden,
 	NotFound,
@@ -10,7 +10,6 @@ const {
 	NotAcceptable,
 } = require('../../../errors');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
-const { SC_TITLE } = require('../../../../config/globals');
 
 const globalHooks = require('../../../hooks');
 const logger = require('../../../logger');
@@ -597,6 +596,7 @@ const sendInfo = (hook) => {
 
 	return getSessionUser(hook)
 		.then((user) => {
+			const SC_TITLE = Configuration.get('SC_TITLE');
 			globalHooks.sendEmail(hook, {
 				subject: `${SC_TITLE}: Team-Einladung`,
 				emails: [email],

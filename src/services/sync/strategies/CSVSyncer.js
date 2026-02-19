@@ -2,10 +2,9 @@ const { parse } = require('papaparse');
 const { mix } = require('mixwith');
 const { Forbidden } = require('@feathersjs/errors');
 const moment = require('moment');
-
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const Syncer = require('./Syncer');
 const ClassImporter = require('./mixins/ClassImporter');
-const { SC_TITLE } = require('../../../../config/globals');
 const { equal } = require('../../../helper/compare').ObjectId;
 
 function stripBOM(string) {
@@ -377,6 +376,7 @@ class CSVSyncer extends mix(Syncer).with(ClassImporter) {
 	async emailUser(user) {
 		try {
 			if (user && user.email && user.schoolId && user.shortLink) {
+				const SC_TITLE = Configuration.get('SC_TITLE');
 				await this.app.service('mails').create({
 					email: user.email,
 					subject: `Einladung für die Nutzung der ${SC_TITLE}!`,
