@@ -32,6 +32,15 @@ export class BoardContextApiHelperService {
 		return type === BoardExternalReferenceType.User;
 	}
 
+	public async isLockedRoom(context: BoardExternalReference): Promise<boolean> {
+		if (context.type === BoardExternalReferenceType.Room) {
+			const room = await this.roomService.getSingleRoom(context.id);
+
+		}
+
+		return true;
+	}
+
 	public async getParentsOfElement(boardId: EntityId): Promise<ParentNodeInfo[]> {
 		const columnBoard = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId, 0);
 		const { type, id } = columnBoard.context;

@@ -1,10 +1,12 @@
 import { Action, AuthorizationContext, AuthorizationInjectionService, Rule } from '@modules/authorization';
 import { UserService } from '@modules/user';
+import { BoardContextApiHelperService } from '@modules/board-context';
 import { type User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import {
+	BoardExternalReferenceType,
 	BoardNodeAuthorizable,
 	BoardRoles,
 	ColumnBoard,
@@ -19,7 +21,7 @@ import {
 
 @Injectable()
 export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
-	constructor(authorisationInjectionService: AuthorizationInjectionService, private readonly userService: UserService) {
+	constructor(authorisationInjectionService: AuthorizationInjectionService, private readonly userService: UserService, private readonly boardContextApiHelperService: BoardContextApiHelperService) {
 		authorisationInjectionService.injectAuthorizationRule(this);
 	}
 
@@ -361,6 +363,27 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 		return this.isBoardReader(userWithBoardRoles);
 	}
 
+	private async isBoardLocked(authorizable: BoardNodeAuthorizable): Promise<boolean> {
+		if (!(authorizable.rootNode instanceof ColumnBoard)) {
+			return false;
+		}
+
+		const { context } = authorizable.rootNode;
+
+		if (context.type === BoardExternalReferenceType.Course) {
+			// TODO get course and check if it's locked or not
+		}
+
+		if (context.type === BoardExternalReferenceType.Room) {
+			// TODO get room and check if it's locked or not
+			if (await this.boardContextApiHelperService.isLockedRoom(context.id)) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
 	private canEditBoard(user: User, authorizable: BoardNodeAuthorizable): boolean {
 		const permissions = authorizable.getUserPermissions(user.id);
 
@@ -378,6 +401,10 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 	}
 
 	private canViewBoard(user: User, authorizable: BoardNodeAuthorizable): boolean {
+		if (!this.isBoardLocked(authorizable)) {
+			return false;
+		}
+
 		const permissions = authorizable.getUserPermissions(user.id);
 
 		const isBoard = authorizable.rootNode instanceof ColumnBoard || authorizable.rootNode instanceof MediaBoard;
