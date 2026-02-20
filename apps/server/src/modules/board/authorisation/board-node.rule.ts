@@ -362,6 +362,10 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 	}
 
 	private canEditBoard(user: User, authorizable: BoardNodeAuthorizable): boolean {
+		if (!authorizable.boardContextSettings.isUnlocked) {
+			return false;
+		}
+
 		const permissions = authorizable.getUserPermissions(user.id);
 
 		const isBoard = authorizable.rootNode instanceof ColumnBoard || authorizable.rootNode instanceof MediaBoard;
@@ -370,6 +374,10 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 	}
 
 	private canManageBoard(user: User, authorizable: BoardNodeAuthorizable): boolean {
+		if (!authorizable.boardContextSettings.isUnlocked) {
+			return false;
+		}
+
 		const permissions = authorizable.getUserPermissions(user.id);
 
 		const isBoard = authorizable.rootNode instanceof ColumnBoard || authorizable.rootNode instanceof MediaBoard;
@@ -378,10 +386,15 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 	}
 
 	private canViewBoard(user: User, authorizable: BoardNodeAuthorizable): boolean {
+		if (!authorizable.boardContextSettings.isUnlocked) {
+			return false;
+		}
+
 		const permissions = authorizable.getUserPermissions(user.id);
 
 		const isBoard = authorizable.rootNode instanceof ColumnBoard || authorizable.rootNode instanceof MediaBoard;
 		const canViewBoard = permissions.includes(Permission.BOARD_VIEW);
+
 		return isBoard && canViewBoard;
 	}
 

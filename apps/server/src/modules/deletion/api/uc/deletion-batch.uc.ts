@@ -88,13 +88,11 @@ export class DeletionBatchUc {
 		const allowedUserRoles = [
 			RoleName.STUDENT,
 			RoleName.COURSESTUDENT,
-			/*
 			RoleName.TEACHER,
 			RoleName.COURSETEACHER,
 			RoleName.COURSESUBSTITUTIONTEACHER,
 			RoleName.ADMINISTRATOR,
 			RoleName.COURSEADMINISTRATOR,
-			 */
 		];
 
 		const validUserIds: EntityId[] = [];
