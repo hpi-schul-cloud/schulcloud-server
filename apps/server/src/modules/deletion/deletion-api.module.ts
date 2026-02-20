@@ -1,5 +1,6 @@
 import { LoggerModule } from '@core/logger';
 import { ConfigurationModule } from '@infra/configuration';
+import { AuthenticationModule } from '@modules/authentication';
 import { AuthorizationModule } from '@modules/authorization';
 import { SagaModule } from '@modules/saga';
 import { UserModule } from '@modules/user';
@@ -21,6 +22,7 @@ import { DELETION_CONFIG_TOKEN, DeletionConfig } from './deletion.config';
 		SagaModule,
 		UserModule,
 		AccountModule,
+		AuthenticationModule,
 		AuthorizationModule,
 		ConfigurationModule.register(DELETION_CONFIG_TOKEN, DeletionConfig),
 	],

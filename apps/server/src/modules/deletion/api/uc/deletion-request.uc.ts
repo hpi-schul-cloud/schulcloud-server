@@ -1,8 +1,9 @@
-import { LegacyLogger } from '@core/logger';
-import { AccountService } from '@modules/account';
-import { UserService } from '@modules/user';
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
+import { AccountService } from '@modules/account';
+import { AuthenticationService } from '@modules/authentication';
+import { LegacyLogger } from '@core/logger';
+import { UserService } from '@modules/user';
 import { DELETION_CONFIG_TOKEN, DeletionConfig } from '../../deletion.config';
 import { DomainDeletionReportBuilder } from '../../domain/builder';
 import { DeletionLog, DeletionRequest } from '../../domain/do';
@@ -22,6 +23,7 @@ export class DeletionRequestUc {
 		private readonly deletionExecutionService: DeletionExecutionService,
 		private readonly logger: LegacyLogger,
 		private readonly accountService: AccountService,
+		private readonly authenticationService: AuthenticationService,
 		private readonly userService: UserService
 	) {
 		this.logger.setContext(DeletionRequestUc.name);
@@ -45,7 +47,22 @@ export class DeletionRequestUc {
 		);
 
 		if (deletionRequest.targetRef.domain === DomainName.USER) {
-			await this.accountService.deactivateAccount(deletionRequest.targetRef.id, new Date());
+			const deleteAt = new Date();
+
+			try {
+				const account = await this.accountService.deactivateAccount(deletionRequest.targetRef.id, deleteAt);
+				await this.authenticationService.removeUserFromWhitelist(account);
+			} catch (error) {
+				if (error instanceof NotFoundException) {
+					this.logger.warn({
+						action: 'createDeletionRequest',
+						message: error.message,
+						deletionRequest,
+					});
+				}
+			}
+
+			await this.userService.flagAsDeleted(deletionRequest.targetRef.id, deleteAt);
 		}
 
 		return result;

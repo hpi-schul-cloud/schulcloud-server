@@ -609,7 +609,7 @@ describe('UserRepo', () => {
 		});
 
 		const setupFind = async () => {
-			const query = {
+			let query = {
 				schoolId: undefined,
 				isOutdated: undefined,
 				lastLoginSystemChangeSmallerThan: undefined,
@@ -617,6 +617,11 @@ describe('UserRepo', () => {
 				lastLoginSystemChangeBetweenEnd: undefined,
 				lastLoginSystemChangeBetweenStart: undefined,
 			};
+			const deletedFilter = {
+				$or: [{ deletedAt: { $exists: false } }, { deletedAt: null }, { deletedAt: { $gte: expect.any(Date) } }],
+			};
+
+			query = { ...query, ...deletedFilter };
 
 			const options: IFindOptions<UserDo> = {};
 
@@ -631,12 +636,12 @@ describe('UserRepo', () => {
 
 			const emFindAndCountSpy = jest.spyOn(em, 'findAndCount');
 
-			return { query, options, users, emFindAndCountSpy };
+			return { query, options, users, emFindAndCountSpy, deletedFilter };
 		};
 
 		describe('sorting', () => {
 			it('should create queryOrderMap with options.order', async () => {
-				const { query, options, emFindAndCountSpy } = await setupFind();
+				const { query, options, emFindAndCountSpy, deletedFilter } = await setupFind();
 				options.order = {
 					id: SortOrder.asc,
 				};
@@ -645,7 +650,7 @@ describe('UserRepo', () => {
 
 				expect(emFindAndCountSpy).toHaveBeenCalledWith(
 					User,
-					{},
+					deletedFilter,
 					expect.objectContaining<FindOptions<User>>({
 						orderBy: expect.objectContaining<QueryOrderMap<User>>({ _id: options.order.id }) as QueryOrderMap<User>,
 					})
@@ -653,14 +658,14 @@ describe('UserRepo', () => {
 			});
 
 			it('should create queryOrderMap with an empty object', async () => {
-				const { query, options, emFindAndCountSpy } = await setupFind();
+				const { query, options, emFindAndCountSpy, deletedFilter } = await setupFind();
 				options.order = undefined;
 
 				await repo.find(query, options);
 
 				expect(emFindAndCountSpy).toHaveBeenCalledWith(
 					User,
-					{},
+					deletedFilter,
 					expect.objectContaining<FindOptions<User>>({
 						orderBy: expect.objectContaining<QueryOrderMap<User>>({}) as QueryOrderMap<User>,
 					})
@@ -741,6 +746,9 @@ describe('UserRepo', () => {
 					lastLoginSystemChangeBetweenStart: new Date(),
 					lastLoginSystemChangeBetweenEnd: new Date(),
 				};
+				const deletedFilter = {
+					$or: [{ deletedAt: { $exists: false } }, { deletedAt: null }, { deletedAt: { $gte: expect.any(Date) } }],
+				};
 
 				const options: IFindOptions<UserDo> = {};
 
@@ -755,11 +763,11 @@ describe('UserRepo', () => {
 
 				const emFindAndCountSpy = jest.spyOn(em, 'findAndCount');
 
-				return { query, options, users, emFindAndCountSpy };
+				return { query, options, users, emFindAndCountSpy, deletedFilter };
 			};
 
 			it('should add query to scope', async () => {
-				const { query, options, emFindAndCountSpy } = await setup();
+				const { query, options, emFindAndCountSpy, deletedFilter } = await setup();
 
 				await repo.find(query, options);
 
@@ -800,6 +808,7 @@ describe('UserRepo', () => {
 									$eq: query.outdatedSince,
 								},
 							},
+							deletedFilter,
 						],
 					},
 					expect.objectContaining<FindOptions<User>>({

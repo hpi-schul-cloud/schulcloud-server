@@ -50,6 +50,7 @@ class AdminOverview {
 		const mappedData = teams.data.map((team) => {
 			const createdAtMySchool = isSameId(team.schoolId, sessionSchoolId);
 			const hasMembersOfOtherSchools = team.schoolIds.length > 1;
+			team.userIds = team.userIds.filter((user) => !user.userId.deletedAt || user.userId.deletedAt > new Date());
 			let schoolMembers = AdminOverview.getMembersBySchool(team, sessionSchoolId);
 			const ownerExist = team.userIds.some((user) => user.role.name === 'teamowner'); // role is populated
 			const hasRocketChat = team.features.includes(TEAM_FEATURES.ROCKET_CHAT);

@@ -64,6 +64,8 @@ spec:
             name: api-secret
         - secretRef:
             name: admin-api-server-secret
+        - secretRef:
+            name: session-valkey-password
         command: ['npm', 'run', 'nest:start:admin-api-server:prod']
         resources:
           limits:
