@@ -4,7 +4,6 @@ import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { ConfigurationModule } from '@infra/configuration';
 import { HttpStatus, StreamableFile } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { currentUserFactory } from '@testing/factory/currentuser.factory';
 import { Request, Response } from 'express';
 import { Readable } from 'stream';
 import { COMMON_CARTRIDGE_CONFIG_TOKEN, CommonCartridgeConfig } from '../common-cartridge.config';
@@ -13,6 +12,7 @@ import { CommonCartridgeExportResponse } from '../service/common-cartridge-expor
 import { CommonCartridgeUc } from '../uc/common-cartridge.uc';
 import { CommonCartridgeController } from './common-cartridge.controller';
 import { ExportCourseParams } from './dto';
+import { CommonCartridgeStartImportBodyParams } from './dto/common-cartridge-start-import-body.params';
 import { CourseExportBodyParams } from './dto/course-export.body.params';
 import { CourseQueryParams } from './dto/course.query.params';
 
@@ -50,57 +50,62 @@ describe('CommonCartridgeController', () => {
 	});
 
 	describe('exportCourse', () => {
-		const setup = () => {
-			const courseId = faker.string.uuid();
-			const params = { courseId } as ExportCourseParams;
-			const query = { version: CommonCartridgeVersion.V_1_1_0 } as CourseQueryParams;
-			const body = {
-				topics: [faker.string.uuid(), faker.string.uuid()],
-				tasks: [faker.string.uuid()],
-				columnBoards: [faker.string.uuid(), faker.string.uuid()],
-			} as CourseExportBodyParams;
-			const expected: CommonCartridgeExportResponse = {
-				data: Readable.from(faker.lorem.paragraphs(100)),
-				name: faker.string.alpha(),
+		describe('when exporting a course', () => {
+			const setup = () => {
+				const courseId = faker.string.uuid();
+				const params = { courseId } as ExportCourseParams;
+				const query = { version: CommonCartridgeVersion.V_1_1_0 } as CourseQueryParams;
+				const body = {
+					topics: [faker.string.uuid(), faker.string.uuid()],
+					tasks: [faker.string.uuid()],
+					columnBoards: [faker.string.uuid(), faker.string.uuid()],
+				} as CourseExportBodyParams;
+				const expected: CommonCartridgeExportResponse = {
+					data: Readable.from(faker.lorem.paragraphs(100)),
+					name: faker.string.alpha(),
+				};
+				const mockRequest = createMock<Request>();
+				mockRequest.headers.cookie = `jwt=${faker.internet.jwt()}`;
+
+				const mockResponse = createMock<Response>();
+
+				commonCartridgeUcMock.exportCourse.mockResolvedValue(expected);
+
+				return { params, expected, query, body, mockRequest, mockResponse };
 			};
-			const mockRequest = createMock<Request>();
-			const mockResponse = createMock<Response>();
 
-			commonCartridgeUcMock.exportCourse.mockResolvedValue(expected);
+			it('should return a streamable file', async () => {
+				const { params, expected, query, body, mockRequest, mockResponse } = setup();
 
-			return { params, expected, query, body, mockRequest, mockResponse };
-		};
+				const result = await sut.exportCourse(params, query, body, mockRequest, mockResponse);
 
-		it('should return a streamable file', async () => {
-			const { params, expected, query, body, mockRequest, mockResponse } = setup();
-
-			const result = await sut.exportCourse(params, query, body, mockRequest, mockResponse);
-
-			expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.OK);
-			expect(result).toBeInstanceOf(StreamableFile);
-			expect(result.options.disposition).toBe(
-				`attachment; filename="${expected.name}"; filename*=UTF-8''${expected.name}`
-			);
+				expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.OK);
+				expect(result).toBeInstanceOf(StreamableFile);
+				expect(result.options.disposition).toBe(
+					`attachment; filename="${expected.name}"; filename*=UTF-8''${expected.name}`
+				);
+			});
 		});
 	});
 
 	describe('importCourse', () => {
 		describe('when importing a course', () => {
 			const setup = () => {
-				const user = currentUserFactory.build();
-				const file: Express.Multer.File = new StreamableFile(
-					Buffer.from(faker.lorem.paragraphs(100)),
-					'file.zip'
-				) as unknown as Express.Multer.File;
+				const startImportParams: CommonCartridgeStartImportBodyParams = {
+					fileName: faker.system.fileName(),
+					fileRecordId: faker.string.uuid(),
+					fileUrl: faker.internet.url(),
+				};
 
-				return { user, file };
+				return { startImportParams };
 			};
-			it('should call the uc with the correct parameters', async () => {
-				const { user, file } = setup();
 
-				await sut.importCourse(user, file);
+			it('should call the uc with the correct parameters', () => {
+				const { startImportParams } = setup();
 
-				expect(commonCartridgeUcMock.importCourse).toHaveBeenCalledTimes(1);
+				sut.importCourse(startImportParams);
+
+				expect(commonCartridgeUcMock.startCourseImport).toHaveBeenCalledTimes(1);
 			});
 		});
 	});

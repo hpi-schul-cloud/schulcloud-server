@@ -1,8 +1,5 @@
 import { ConfigurationModule } from '@infra/configuration';
-import { DynamicModule, Module, Scope } from '@nestjs/common';
-import { REQUEST } from '@nestjs/core';
-import { JwtExtractor } from '@shared/common/utils';
-import { Request } from 'express';
+import { DynamicModule, Module } from '@nestjs/common';
 import { ColumnClientAdapter } from './column-client.adapter';
 import { InternalColumnClientConfig } from './column-client.config';
 import { BoardColumnApi, Configuration } from './generated';
@@ -17,18 +14,15 @@ export class ColumnClientModule {
 			ColumnClientAdapter,
 			{
 				provide: BoardColumnApi,
-				scope: Scope.REQUEST,
-				useFactory: (config: InternalColumnClientConfig, request: Request): BoardColumnApi => {
+				useFactory: (config: InternalColumnClientConfig): BoardColumnApi => {
 					const { basePath } = config;
-					const accessToken = JwtExtractor.extractJwtFromRequestOrFail(request);
 					const configuration = new Configuration({
 						basePath: `${basePath}/v3`,
-						accessToken,
 					});
 
 					return new BoardColumnApi(configuration);
 				},
-				inject: [configInjectionToken, REQUEST],
+				inject: [configInjectionToken],
 			},
 		];
 

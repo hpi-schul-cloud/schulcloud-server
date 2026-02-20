@@ -26,7 +26,7 @@ import {
 	RoomBoardDto,
 } from '../common-cartridge-client/room-client/dto';
 import { CommonCartridgeVersion } from '../export/common-cartridge.enums';
-import { CommonCartridgeExportMessageLoggable } from '../loggable/common-cartridge-export-message.loggable';
+import { CommonCartridgeMessageLoggable } from '../loggable/common-cartridge-export-message.loggable';
 import {
 	boardColumnFactory,
 	boardLessonFactory,
@@ -94,6 +94,7 @@ describe('CommonCartridgeExportService', () => {
 		courseRoomsClientAdapterMock.getRoomBoardByCourseId.mockResolvedValue(room);
 
 		const exported = await sut.exportCourse(
+			faker.internet.jwt(),
 			courseMetadata.id,
 			version,
 			exportTopics ? [room.elements[1].content.id] : [],
@@ -468,19 +469,21 @@ describe('CommonCartridgeExportService', () => {
 				courseRoomsClientAdapterMock.getRoomBoardByCourseId.mockResolvedValue(room);
 
 				const courseId = faker.string.uuid();
-				return { courseId };
+				const jwt = faker.internet.jwt();
+
+				return { courseId, jwt };
 			};
 
 			it('should log warning on warning level', async () => {
-				const { courseId } = setup();
+				const { courseId, jwt } = setup();
 
-				const result = await sut.exportCourse(courseId, CommonCartridgeVersion.V_1_1_0, [], [], []);
+				const result = await sut.exportCourse(jwt, courseId, CommonCartridgeVersion.V_1_1_0, [], [], []);
 				const archive = result.data;
 
 				archive.emit('warning', {} as unknown as ArchiverError);
 
 				expect(logger.warning).toHaveBeenCalledWith(
-					new CommonCartridgeExportMessageLoggable('Warning while creating archive', {
+					new CommonCartridgeMessageLoggable('Warning while creating archive', {
 						courseId,
 						cause: JSON.stringify({}),
 					})
@@ -488,9 +491,9 @@ describe('CommonCartridgeExportService', () => {
 			});
 
 			it('should log progress updates on debug level', async () => {
-				const { courseId } = setup();
+				const { courseId, jwt } = setup();
 
-				const result = await sut.exportCourse(courseId, CommonCartridgeVersion.V_1_1_0, [], [], []);
+				const result = await sut.exportCourse(jwt, courseId, CommonCartridgeVersion.V_1_1_0, [], [], []);
 				const archive = result.data;
 
 				archive.emit('progress', {
@@ -505,7 +508,7 @@ describe('CommonCartridgeExportService', () => {
 				} as ProgressData);
 
 				expect(logger.debug).toHaveBeenCalledWith(
-					new CommonCartridgeExportMessageLoggable('Progress for CC export: 1 of 2 total processed.', {
+					new CommonCartridgeMessageLoggable('Progress for CC export: 1 of 2 total processed.', {
 						courseId,
 						entries: {
 							total: 2,
@@ -520,9 +523,9 @@ describe('CommonCartridgeExportService', () => {
 			});
 
 			it('should throw on error', async () => {
-				const { courseId } = setup();
+				const { courseId, jwt } = setup();
 
-				const result = await sut.exportCourse(courseId, CommonCartridgeVersion.V_1_1_0, [], [], []);
+				const result = await sut.exportCourse(jwt, courseId, CommonCartridgeVersion.V_1_1_0, [], [], []);
 				const archive = result.data;
 
 				expect(() => archive.emit('error', {} as unknown as ArchiverError)).toThrow(
@@ -588,17 +591,18 @@ describe('CommonCartridgeExportService', () => {
 					.mockResolvedValueOnce(fileRecordResponseFactory.build());
 
 				const courseId = faker.string.uuid();
-				return { courseId, taskId: boardTask.id, fileDto1, fileDto2 };
+				const jwt = faker.internet.jwt();
+				return { jwt, courseId, taskId: boardTask.id, fileDto1, fileDto2 };
 			};
 
 			it('should be skipped and logged', async () => {
-				const { courseId, taskId, fileDto1, fileDto2 } = setup();
+				const { jwt, courseId, taskId, fileDto1, fileDto2 } = setup();
 
-				const result = await sut.exportCourse(courseId, CommonCartridgeVersion.V_1_1_0, [], [taskId], []);
+				const result = await sut.exportCourse(jwt, courseId, CommonCartridgeVersion.V_1_1_0, [], [taskId], []);
 				expect(result).toBeDefined();
 
-				expect(filesStorageClientAdapterMock.getStream).not.toHaveBeenCalledWith(fileDto1.id, fileDto1.name);
-				expect(filesStorageClientAdapterMock.getStream).toHaveBeenCalledWith(fileDto2.id, fileDto2.name);
+				expect(filesStorageClientAdapterMock.getStream).not.toHaveBeenCalledWith(jwt, fileDto1.id, fileDto1.name);
+				expect(filesStorageClientAdapterMock.getStream).toHaveBeenCalledWith(jwt, fileDto2.id, fileDto2.name);
 				expect(logger.info).toHaveBeenCalledTimes(1);
 			});
 		});
@@ -656,7 +660,7 @@ describe('CommonCartridgeExportService', () => {
 					securityCheckStatus: 'blocked',
 				});
 				const fileRecordNotBlocked = fileRecordResponseFactory.build();
-				filesStorageClientAdapterMock.getFileRecord.mockImplementation((fileRecordId) => {
+				filesStorageClientAdapterMock.getFileRecord.mockImplementation((jwt, fileRecordId) => {
 					if (fileRecordId === fileDto1.id) {
 						return Promise.resolve(fileRecordBlocked);
 					}
@@ -664,17 +668,18 @@ describe('CommonCartridgeExportService', () => {
 				});
 
 				const courseId = faker.string.uuid();
-				return { courseId, boardId: room.elements[2].content.id, fileDto1, fileDto2 };
+				const jwt = faker.internet.jwt();
+				return { jwt, courseId, boardId: room.elements[2].content.id, fileDto1, fileDto2 };
 			};
 
 			it('should be skipped and logged', async () => {
-				const { courseId, boardId, fileDto1, fileDto2 } = setup();
+				const { jwt, courseId, boardId, fileDto1, fileDto2 } = setup();
 
-				const result = await sut.exportCourse(courseId, CommonCartridgeVersion.V_1_1_0, [], [], [boardId]);
+				const result = await sut.exportCourse(jwt, courseId, CommonCartridgeVersion.V_1_1_0, [], [], [boardId]);
 				expect(result).toBeDefined();
 
-				expect(filesStorageClientAdapterMock.getStream).not.toHaveBeenCalledWith(fileDto1.id, fileDto1.name);
-				expect(filesStorageClientAdapterMock.getStream).toHaveBeenCalledWith(fileDto2.id, fileDto2.name);
+				expect(filesStorageClientAdapterMock.getStream).not.toHaveBeenCalledWith(jwt, fileDto1.id, fileDto1.name);
+				expect(filesStorageClientAdapterMock.getStream).toHaveBeenCalledWith(jwt, fileDto2.id, fileDto2.name);
 				expect(logger.info).toHaveBeenCalledTimes(4);
 			});
 		});

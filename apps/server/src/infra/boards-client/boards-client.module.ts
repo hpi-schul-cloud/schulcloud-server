@@ -1,8 +1,5 @@
 import { ConfigurationModule } from '@infra/configuration';
-import { DynamicModule, Module, Scope } from '@nestjs/common';
-import { REQUEST } from '@nestjs/core';
-import { JwtExtractor } from '@shared/common/utils';
-import { Request } from 'express';
+import { DynamicModule, Module } from '@nestjs/common';
 import { BoardsClientAdapter } from './boards-client.adapter';
 import { InternalBoardsClientConfig } from './boards-client.config';
 import { BoardApi, Configuration } from './generated';
@@ -17,18 +14,15 @@ export class BoardsClientModule {
 			BoardsClientAdapter,
 			{
 				provide: BoardApi,
-				scope: Scope.REQUEST,
-				useFactory: (config: InternalBoardsClientConfig, request: Request): BoardApi => {
+				useFactory: (config: InternalBoardsClientConfig): BoardApi => {
 					const { basePath } = config;
-					const accessToken = JwtExtractor.extractJwtFromRequestOrFail(request);
 					const configuration = new Configuration({
 						basePath: `${basePath}/v3`,
-						accessToken,
 					});
 
 					return new BoardApi(configuration);
 				},
-				inject: [configInjectionToken, REQUEST],
+				inject: [configInjectionToken],
 			},
 		];
 

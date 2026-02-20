@@ -1,10 +1,6 @@
-import { faker } from '@faker-js/faker/.';
-import { createMock } from '@golevelup/ts-jest';
 import { ConfigProperty, Configuration } from '@infra/configuration';
-import { REQUEST } from '@nestjs/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { IsUrl } from 'class-validator';
-import { Request } from 'express';
 import { CardClientAdapter } from './card-client.adapter';
 import { InternalCardClientConfig } from './card-client.config';
 import { CardClientModule } from './card-client.module';
@@ -19,19 +15,10 @@ class TestConfig implements InternalCardClientConfig {
 describe('CardClientModule', () => {
 	let module: TestingModule;
 
-	const requestMock = createMock<Request>({
-		headers: {
-			authorization: `Bearer ${faker.string.alphanumeric(42)}`,
-		},
-	});
-
 	beforeEach(async () => {
 		module = await Test.createTestingModule({
 			imports: [CardClientModule.register('CARD_CLIENT_CONFIG', TestConfig)],
-		})
-			.overrideProvider(REQUEST)
-			.useValue(requestMock)
-			.compile();
+		}).compile();
 	});
 
 	afterAll(async () => {

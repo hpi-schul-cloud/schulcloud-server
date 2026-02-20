@@ -1,4 +1,4 @@
-import { createMock } from '@golevelup/ts-jest';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BoardCardApi, BoardElementApi, ContentElementType } from './generated';
 import { CardClientAdapter } from '.';
@@ -8,25 +8,26 @@ import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
 describe(CardClientAdapter.name, () => {
 	let module: TestingModule;
 	let sut: CardClientAdapter;
-
-	const cardApiMock = createMock<BoardCardApi>();
-	const boardElementApiMock = createMock<BoardElementApi>();
+	let cardApiMock: DeepMocked<BoardCardApi>;
+	let boardElementApiMock: DeepMocked<BoardElementApi>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				CardClientAdapter,
 				{
-					provide: BoardElementApi,
-					useValue: boardElementApiMock,
+					provide: BoardCardApi,
+					useValue: createMock<BoardCardApi>(),
 				},
 				{
-					provide: BoardCardApi,
-					useValue: cardApiMock,
+					provide: BoardElementApi,
+					useValue: createMock<BoardElementApi>(),
 				},
 			],
 		}).compile();
 		sut = module.get(CardClientAdapter);
+		cardApiMock = module.get(BoardCardApi);
+		boardElementApiMock = module.get(BoardElementApi);
 	});
 
 	afterAll(async () => {
@@ -54,20 +55,27 @@ describe(CardClientAdapter.name, () => {
 					axiosResponseFactory.build({ data: { id: cardId, type: ContentElementType.RICH_TEXT } })
 				);
 
+				const jwt = faker.internet.jwt();
+
 				return {
 					cardId,
 					createContentElementBodyParams,
+					jwt,
 				};
 			};
 
 			it('should call cardApi.cardControllerCreateElement', async () => {
-				const { cardId, createContentElementBodyParams } = setup();
+				const { cardId, createContentElementBodyParams, jwt } = setup();
 
-				const response = await sut.createCardElement(cardId, createContentElementBodyParams);
+				const response = await sut.createCardElement(jwt, cardId, createContentElementBodyParams);
 
 				expect(response.id).toEqual(cardId);
 				expect(response.type).toEqual(ContentElementType.RICH_TEXT);
-				expect(cardApiMock.cardControllerCreateElement).toHaveBeenCalledWith(cardId, createContentElementBodyParams);
+				expect(cardApiMock.cardControllerCreateElement).toHaveBeenCalledWith(cardId, createContentElementBodyParams, {
+					headers: {
+						Authorization: `Bearer ${jwt}`,
+					},
+				});
 			});
 		});
 	});
@@ -79,19 +87,25 @@ describe(CardClientAdapter.name, () => {
 				const renameBodyParams = {
 					title: faker.lorem.words(),
 				};
+				const jwt = faker.internet.jwt();
 
 				return {
 					cardId,
 					renameBodyParams,
+					jwt,
 				};
 			};
 
 			it('should call cardApi.cardControllerUpdateCardTitle', async () => {
-				const { cardId, renameBodyParams } = setup();
+				const { cardId, renameBodyParams, jwt } = setup();
 
-				await sut.updateCardTitle(cardId, renameBodyParams);
+				await sut.updateCardTitle(jwt, cardId, renameBodyParams);
 
-				expect(cardApiMock.cardControllerUpdateCardTitle).toHaveBeenCalledWith(cardId, renameBodyParams);
+				expect(cardApiMock.cardControllerUpdateCardTitle).toHaveBeenCalledWith(cardId, renameBodyParams, {
+					headers: {
+						Authorization: `Bearer ${jwt}`,
+					},
+				});
 			});
 		});
 	});
@@ -114,21 +128,29 @@ describe(CardClientAdapter.name, () => {
 					axiosResponseFactory.build({ data: updateElementContentBodyParams })
 				);
 
+				const jwt = faker.internet.jwt();
+
 				return {
 					elementId,
 					updateElementContentBodyParams,
+					jwt,
 				};
 			};
 
 			it('should call elementAPI.elementControllerUpdateElement', async () => {
-				const { elementId, updateElementContentBodyParams } = setup();
+				const { elementId, updateElementContentBodyParams, jwt } = setup();
 
-				const response = await sut.updateCardElement(elementId, updateElementContentBodyParams);
+				const response = await sut.updateCardElement(jwt, elementId, updateElementContentBodyParams);
 
 				expect(response).toEqual(updateElementContentBodyParams);
 				expect(boardElementApiMock.elementControllerUpdateElement).toHaveBeenCalledWith(
 					elementId,
-					updateElementContentBodyParams
+					updateElementContentBodyParams,
+					{
+						headers: {
+							Authorization: `Bearer ${jwt}`,
+						},
+					}
 				);
 			});
 		});

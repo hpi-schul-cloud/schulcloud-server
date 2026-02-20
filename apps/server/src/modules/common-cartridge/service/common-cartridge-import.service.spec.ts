@@ -1,19 +1,26 @@
+import { DomainErrorHandler } from '@core/error';
+import { Logger } from '@core/logger';
 import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { BoardsClientAdapter } from '@infra/boards-client';
 import { CardClientAdapter } from '@infra/cards-client';
 import { ColumnClientAdapter } from '@infra/column-client';
 import { CoursesClientAdapter } from '@infra/courses-client';
-import { Test, TestingModule } from '@nestjs/testing';
-import { CommonCartridgeFileParser } from '../import/common-cartridge-file-parser';
-import { commonCartridgeOrganizationPropsFactory as organizationFactory } from '../testing/common-cartridge-organization-props.factory';
-import { CommonCartridgeImportMapper } from './common-cartridge-import.mapper';
-import { CommonCartridgeImportService } from './common-cartridge-import.service';
-import { currentUserFactory } from '@testing/factory/currentuser.factory';
 import { FilesStorageClientAdapter } from '@infra/files-storage-client';
+import { HttpService } from '@nestjs/axios';
+import { Test, TestingModule } from '@nestjs/testing';
+import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
+import axios, { InternalAxiosRequestConfig } from 'axios';
+import { from } from 'rxjs';
+import { CommonCartridgeFileParser } from '../import/common-cartridge-file-parser';
 import { CommonCartridgeXmlResourceType } from '../import/common-cartridge-import.enums';
+import { commonCartridgeOrganizationPropsFactory as organizationFactory } from '../testing/common-cartridge-organization-props.factory';
+import { CommonCartridgeImportService } from './common-cartridge-import.service';
+import { CommonCartridgeImportMapper } from './common-cartridge-import.mapper';
+import { ImportCourseEvent } from '../domain/events/import-course.event';
 
 jest.mock('../import/common-cartridge-file-parser');
+jest.mock('axios');
 
 describe(CommonCartridgeImportService.name, () => {
 	let module: TestingModule;
@@ -24,6 +31,8 @@ describe(CommonCartridgeImportService.name, () => {
 	let cardClientAdapterMock: DeepMocked<CardClientAdapter>;
 	let filesStorageClientAdapterMock: DeepMocked<FilesStorageClientAdapter>;
 	let commonCartridgeFileParser: DeepMocked<CommonCartridgeFileParser>;
+	let httpServiceMock: DeepMocked<HttpService>;
+	let domainErrorHandler: DeepMocked<DomainErrorHandler>;
 
 	beforeEach(async () => {
 		module = await Test.createTestingModule({
@@ -57,6 +66,18 @@ describe(CommonCartridgeImportService.name, () => {
 					provide: CommonCartridgeFileParser,
 					useValue: createMock<CommonCartridgeFileParser>(),
 				},
+				{
+					provide: HttpService,
+					useValue: createMock<HttpService>(),
+				},
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
+				},
+				{
+					provide: DomainErrorHandler,
+					useValue: createMock<DomainErrorHandler>(),
+				},
 			],
 		}).compile();
 
@@ -66,6 +87,9 @@ describe(CommonCartridgeImportService.name, () => {
 		columnClientAdapterMock = module.get(ColumnClientAdapter);
 		cardClientAdapterMock = module.get(CardClientAdapter);
 		filesStorageClientAdapterMock = module.get(FilesStorageClientAdapter);
+		httpServiceMock = module.get(HttpService);
+		domainErrorHandler = module.get(DomainErrorHandler);
+
 		commonCartridgeFileParser = createMock<CommonCartridgeFileParser>();
 		(CommonCartridgeFileParser as jest.Mock).mockImplementation(() => commonCartridgeFileParser);
 	});
@@ -120,9 +144,9 @@ describe(CommonCartridgeImportService.name, () => {
 		element3.isResource = true;
 		element3.pathDepth = 3;
 
-		const currentUser = currentUserFactory.build();
-
 		const orgs = [board, column1, card1, element1, column2, card2, element2, column3, card3, element3];
+
+		httpServiceMock.get.mockReturnValue(from([axiosResponseFactory.build({ data: file })]));
 
 		commonCartridgeFileParser.getTitle.mockReturnValueOnce('test course');
 
@@ -158,7 +182,19 @@ describe(CommonCartridgeImportService.name, () => {
 
 		commonCartridgeFileParser.getTitle.mockReturnValue(undefined);
 
-		return { file, currentUser, column1, column2, card1, card2, element1, element2, board };
+		const schoolId = faker.string.uuid();
+		const event: ImportCourseEvent = {
+			jwt: faker.internet.jwt({
+				payload: {
+					schoolId,
+				},
+			}),
+			fileName: faker.system.fileName(),
+			fileRecordId: faker.string.uuid(),
+			fileUrl: faker.internet.url(),
+		};
+
+		return { column1, column2, card1, card2, element1, element2, board, event, schoolId };
 	};
 
 	describe('importFile', () => {
@@ -166,19 +202,22 @@ describe(CommonCartridgeImportService.name, () => {
 			const setup = () => setupBase();
 
 			it('should create a course', async () => {
-				const { file, currentUser } = setup();
+				const { event } = setup();
 
-				await sut.importFile(file, currentUser);
+				await sut.importCourse(event);
 
-				expect(coursesClientAdapterMock.createCourse).toHaveBeenCalledWith({ name: 'test course', color: '#455B6A' });
+				expect(coursesClientAdapterMock.createCourse).toHaveBeenCalledWith(event.jwt, {
+					name: 'test course',
+					color: '#455B6A',
+				});
 			});
 
 			it('should create a board', async () => {
-				const { file, currentUser } = setup();
+				const { event } = setup();
 
-				await sut.importFile(file, currentUser);
+				await sut.importCourse(event);
 
-				expect(boardsClientAdapterMock.createBoard).toHaveBeenCalledWith({
+				expect(boardsClientAdapterMock.createBoard).toHaveBeenCalledWith(event.jwt, {
 					title: 'Mock Board',
 					layout: 'columns',
 					parentId: expect.any(String),
@@ -187,80 +226,91 @@ describe(CommonCartridgeImportService.name, () => {
 			});
 
 			it('should create a column', async () => {
-				const { file, currentUser } = setup();
+				const { event } = setup();
 
-				await sut.importFile(file, currentUser);
+				await sut.importCourse(event);
 
-				expect(boardsClientAdapterMock.createBoardColumn).toHaveBeenCalledWith(expect.any(String));
+				expect(boardsClientAdapterMock.createBoardColumn).toHaveBeenCalledWith(event.jwt, expect.any(String));
 				expect(boardsClientAdapterMock.createBoardColumn).toHaveBeenCalledTimes(3);
 			});
 
 			it('should update column title', async () => {
-				const { file, currentUser } = setup();
+				const { event } = setup();
 
-				await sut.importFile(file, currentUser);
+				await sut.importCourse(event);
 
 				expect(columnClientAdapterMock.updateBoardColumnTitle).toHaveBeenCalledTimes(3);
 			});
 
 			it('should create cards and update titles', async () => {
-				const { file, currentUser } = setup();
+				const { event } = setup();
 
-				await sut.importFile(file, currentUser);
+				await sut.importCourse(event);
 
 				expect(columnClientAdapterMock.createCard).toHaveBeenCalledTimes(3);
 			});
 
 			it('should create an element', async () => {
-				const { file, currentUser } = setup();
+				const { event } = setup();
 
-				await sut.importFile(file, currentUser);
+				await sut.importCourse(event);
 
 				expect(cardClientAdapterMock.createCardElement).toHaveBeenCalledTimes(3);
 			});
 
 			it('should upload files', async () => {
-				const { file, currentUser } = setup();
+				const { event, schoolId } = setup();
 
-				await sut.importFile(file, currentUser);
+				await sut.importCourse(event);
 
 				expect(filesStorageClientAdapterMock.upload).toHaveBeenCalledWith(
+					event.jwt,
+					schoolId,
+					'school',
 					expect.any(String),
-					expect.any(String),
-					expect.any(String),
-					expect.any(String),
+					'boardnodes',
 					new File([''], 'file-element.pdf')
 				);
 			});
 
 			it('should upload file folder', async () => {
-				const { file, currentUser } = setup();
+				const { event, schoolId } = setup();
 
-				await sut.importFile(file, currentUser);
+				await sut.importCourse(event);
 
 				expect(filesStorageClientAdapterMock.upload).toHaveBeenCalledWith(
+					event.jwt,
+					schoolId,
+					'school',
 					expect.any(String),
-					expect.any(String),
-					expect.any(String),
-					expect.any(String),
+					'boardnodes',
 					new File([''], 'file1-folder.pdf')
 				);
 
 				expect(filesStorageClientAdapterMock.upload).toHaveBeenCalledWith(
+					event.jwt,
+					schoolId,
+					'school',
 					expect.any(String),
-					expect.any(String),
-					expect.any(String),
-					expect.any(String),
+					'boardnodes',
 					new File([''], 'file2-folder.pdf')
 				);
 			});
 
 			it('should create card element without resource', async () => {
-				const { file, currentUser } = setup();
+				const { event } = setup();
 
-				await sut.importFile(file, currentUser);
+				await sut.importCourse(event);
 
 				expect(cardClientAdapterMock.createCardElement).toHaveBeenCalled();
+			});
+
+			it('should delete the course file', async () => {
+				const { event } = setup();
+
+				await sut.importCourse(event);
+
+				expect(filesStorageClientAdapterMock.deleteFile).toHaveBeenCalledWith(event.jwt, event.fileRecordId);
 			});
 		});
 
@@ -268,20 +318,147 @@ describe(CommonCartridgeImportService.name, () => {
 			const setup = () => {
 				commonCartridgeFileParser.getTitle.mockReturnValueOnce(undefined);
 
-				const { file, currentUser } = setupBase();
-
-				return { file, currentUser };
+				return setupBase();
 			};
 
 			it(`should give 'Untitled Course' as title`, async () => {
-				const { file, currentUser } = setup();
+				const { event } = setup();
 
-				await sut.importFile(file, currentUser);
+				await sut.importCourse(event);
 
-				expect(coursesClientAdapterMock.createCourse).toHaveBeenCalledWith({
+				expect(coursesClientAdapterMock.createCourse).toHaveBeenCalledWith(event.jwt, {
 					name: 'Untitled Course',
 					color: '#455B6A',
 				});
+			});
+		});
+
+		describe('when no file can be retrieved', () => {
+			const setup = () => {
+				const setupData = setupBase();
+
+				httpServiceMock.get.mockReturnValue(from([axiosResponseFactory.build({ data: null })]));
+
+				return setupData;
+			};
+
+			it(`should stop processing`, async () => {
+				const { event } = setup();
+
+				await sut.importCourse(event);
+
+				expect(coursesClientAdapterMock.createCourse).not.toHaveBeenCalled();
+			});
+		});
+
+		describe('when axios interceptors are registered', () => {
+			const setup = () => {
+				const setupData = setupBase();
+
+				const useSpyRequest = jest.spyOn(axios.interceptors.request, 'use');
+				const useSpyResponse = jest.spyOn(axios.interceptors.response, 'use');
+				const ejectSpyRequest = jest.spyOn(axios.interceptors.request, 'eject');
+				const ejectSpyResponse = jest.spyOn(axios.interceptors.response, 'eject');
+
+				// [useSpyRequest, useSpyResponse, ejectSpyRequest, ejectSpyResponse].forEach((mock) => mock.mockClear());
+
+				return { ...setupData, useSpyRequest, useSpyResponse, ejectSpyRequest, ejectSpyResponse };
+			};
+
+			it(`should create request and response handlers`, async () => {
+				const { event, useSpyRequest, useSpyResponse } = setup();
+
+				await sut.importCourse(event);
+
+				expect(useSpyRequest).toHaveBeenCalled();
+				expect(useSpyResponse).toHaveBeenCalled();
+			});
+
+			it(`should eject request and response handlers`, async () => {
+				const { event, ejectSpyRequest, ejectSpyResponse } = setup();
+
+				await sut.importCourse(event);
+
+				expect(ejectSpyRequest).toHaveBeenCalled();
+				expect(ejectSpyResponse).toHaveBeenCalled();
+			});
+
+			it(`should passthrough request config`, async () => {
+				const { event, useSpyRequest } = setup();
+
+				await sut.importCourse(event);
+
+				const configInterceptor = useSpyRequest.mock.calls[0][0];
+
+				if (!configInterceptor) {
+					fail(`Can't find config interceptor`);
+				}
+
+				const config = {
+					headers: {
+						'Content-Type': 'test',
+					},
+				} as InternalAxiosRequestConfig;
+
+				const result = configInterceptor(config);
+				expect(result).toStrictEqual(config);
+			});
+
+			it(`should passthrough response`, async () => {
+				const { event, useSpyResponse } = setup();
+
+				await sut.importCourse(event);
+
+				const responseInterceptor = useSpyResponse.mock.calls[1][0];
+
+				if (!responseInterceptor) {
+					fail(`Can't find response interceptor`);
+				}
+
+				const response = axiosResponseFactory.build();
+
+				const result = responseInterceptor(response);
+				expect(result).toStrictEqual(response);
+			});
+
+			it(`should passthrough request error and call domainErrorHandler`, async () => {
+				const { event, useSpyRequest } = setup();
+
+				await sut.importCourse(event);
+
+				const errorInterceptor = useSpyRequest.mock.calls[0][1];
+
+				if (!errorInterceptor) {
+					fail(`Can't find error interceptor`);
+				}
+
+				const err = new Error('Test');
+
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+				const result = errorInterceptor(err);
+				expect(result).toStrictEqual(err);
+
+				expect(domainErrorHandler.exec).toHaveBeenCalledWith(err);
+			});
+
+			it(`should passthrough response error and call domainErrorHandler`, async () => {
+				const { event, useSpyResponse } = setup();
+
+				await sut.importCourse(event);
+
+				const errorInterceptor = useSpyResponse.mock.calls[1][1];
+
+				if (!errorInterceptor) {
+					fail(`Can't find error interceptor`);
+				}
+
+				const err = new Error('Test');
+
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+				const result = errorInterceptor(err);
+				expect(result).toStrictEqual(err);
+
+				expect(domainErrorHandler.exec).toHaveBeenCalledWith(err);
 			});
 		});
 	});

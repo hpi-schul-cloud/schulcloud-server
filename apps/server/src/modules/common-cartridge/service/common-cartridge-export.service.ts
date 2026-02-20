@@ -31,7 +31,7 @@ import { CommonCartridgeFileBuilder } from '../export/builders/common-cartridge-
 import { CommonCartridgeOrganizationNode } from '../export/builders/common-cartridge-organization-node';
 import { CommonCartridgeVersion } from '../export/common-cartridge.enums';
 import { createIdentifier } from '../export/utils';
-import { CommonCartridgeExportMessageLoggable } from '../loggable/common-cartridge-export-message.loggable';
+import { CommonCartridgeMessageLoggable } from '../loggable/common-cartridge-export-message.loggable';
 import { CommonCartridgeExportMapper } from './common-cartridge-export.mapper';
 import { CommonCartridgeExportResponse } from './common-cartridge-export.response';
 
@@ -54,15 +54,14 @@ export class CommonCartridgeExportService {
 	}
 
 	public async exportCourse(
+		jwt: string,
 		courseId: string,
 		version: CommonCartridgeVersion,
 		exportedTopics: string[],
 		exportedTasks: string[],
 		exportedColumnBoards: string[]
 	): Promise<CommonCartridgeExportResponse> {
-		this.logger.debug(
-			new CommonCartridgeExportMessageLoggable('New Common-Cartridge export started', { courseId, version })
-		);
+		this.logger.debug(new CommonCartridgeMessageLoggable('New Common-Cartridge export started', { courseId, version }));
 
 		const archive = this.createArchiver(courseId);
 		const builder = new CommonCartridgeFileBuilder(
@@ -71,36 +70,39 @@ export class CommonCartridgeExportService {
 			this.logger
 		);
 
-		const courseCommonCartridgeMetadata = await this.coursesClientAdapter.getCourseCommonCartridgeMetadata(courseId);
-		this.logger.debug(new CommonCartridgeExportMessageLoggable('Loaded course metadata', { courseId }));
+		const courseCommonCartridgeMetadata = await this.coursesClientAdapter.getCourseCommonCartridgeMetadata(
+			jwt,
+			courseId
+		);
+		this.logger.debug(new CommonCartridgeMessageLoggable('Loaded course metadata', { courseId }));
 
 		builder.addMetadata(this.mapper.mapCourseToMetadata(courseCommonCartridgeMetadata));
 
 		// get room board and the structure of the course
 		const roomBoard = await this.courseRoomsClientAdapter.getRoomBoardByCourseId(courseId);
-		this.logger.debug(new CommonCartridgeExportMessageLoggable('Loaded roomboard of course', { courseId }));
+		this.logger.debug(new CommonCartridgeMessageLoggable('Loaded roomboard of course', { courseId }));
 
 		// add lessons to organization
 		await this.addLessons(builder, version, roomBoard.elements, exportedTopics);
-		this.logger.debug(new CommonCartridgeExportMessageLoggable('Added lessons of course', { courseId }));
+		this.logger.debug(new CommonCartridgeMessageLoggable('Added lessons of course', { courseId }));
 
 		// add tasks to organization
-		await this.addTasks(builder, version, roomBoard.elements, exportedTasks);
-		this.logger.debug(new CommonCartridgeExportMessageLoggable('Added tasks of course', { courseId }));
+		await this.addTasks(jwt, builder, version, roomBoard.elements, exportedTasks);
+		this.logger.debug(new CommonCartridgeMessageLoggable('Added tasks of course', { courseId }));
 
 		// add column boards and cards to organization
-		await this.addColumnBoards(builder, version, roomBoard.elements, exportedColumnBoards);
-		this.logger.debug(new CommonCartridgeExportMessageLoggable('Added boards of course', { courseId }));
+		await this.addColumnBoards(jwt, builder, version, roomBoard.elements, exportedColumnBoards);
+		this.logger.debug(new CommonCartridgeMessageLoggable('Added boards of course', { courseId }));
 
 		builder.build();
-		this.logger.debug(new CommonCartridgeExportMessageLoggable('Built archive', { courseId }));
+		this.logger.debug(new CommonCartridgeMessageLoggable('Built archive', { courseId }));
 
 		const response: CommonCartridgeExportResponse = {
 			data: builder.archive,
 			name: `${roomBoard.title}-${new Date().toISOString()}.imscc`,
 		};
 
-		this.logger.debug(new CommonCartridgeExportMessageLoggable('Finished export of course', { courseId }));
+		this.logger.debug(new CommonCartridgeMessageLoggable('Finished export of course', { courseId }));
 
 		return response;
 	}
@@ -110,7 +112,7 @@ export class CommonCartridgeExportService {
 
 		archive.on('warning', (err) => {
 			this.logger.warning(
-				new CommonCartridgeExportMessageLoggable('Warning while creating archive', {
+				new CommonCartridgeMessageLoggable('Warning while creating archive', {
 					courseId,
 					cause: JSON.stringify(err),
 				})
@@ -119,7 +121,7 @@ export class CommonCartridgeExportService {
 
 		archive.on('progress', (progress) => {
 			this.logger.debug(
-				new CommonCartridgeExportMessageLoggable(
+				new CommonCartridgeMessageLoggable(
 					`Progress for CC export: ${progress.entries.processed} of ${progress.entries.total} total processed.`,
 					{ courseId, ...progress }
 				)
@@ -132,7 +134,7 @@ export class CommonCartridgeExportService {
 
 		archive.on('close', () => {
 			this.logger.debug(
-				new CommonCartridgeExportMessageLoggable(`Archive closed. Length: ${archive.pointer()}`, { courseId })
+				new CommonCartridgeMessageLoggable(`Archive closed. Length: ${archive.pointer()}`, { courseId })
 			);
 		});
 
@@ -180,6 +182,7 @@ export class CommonCartridgeExportService {
 	}
 
 	private async addTasks(
+		jwt: string,
 		builder: CommonCartridgeFileBuilder,
 		version: CommonCartridgeVersion,
 		elements: BoardElementDto[],
@@ -204,22 +207,22 @@ export class CommonCartridgeExportService {
 
 				const filesMetadata = await this.filesMetadataClientAdapter.listFilesOfParent(task.id);
 				const fileRecords = await Promise.all(
-					filesMetadata.map((fileDto) => this.filesStorageClientAdapter.getFileRecord(fileDto.id))
+					filesMetadata.map((fileDto) => this.filesStorageClientAdapter.getFileRecord(jwt, fileDto.id))
 				);
 
 				await Promise.all(
 					filesMetadata.map(async (fileMetadata, index) => {
 						if (fileRecords[index].securityCheckStatus === FileRecordScanStatus.BLOCKED) {
 							this.logger.info(
-								new CommonCartridgeExportMessageLoggable(
-									'A file was skipped because the securityCheckStatus is BLOCKED',
-									{ fileId: fileMetadata.id, taskId: task.id }
-								)
+								new CommonCartridgeMessageLoggable('A file was skipped because the securityCheckStatus is BLOCKED', {
+									fileId: fileMetadata.id,
+									taskId: task.id,
+								})
 							);
 							return;
 						}
 
-						const fileStream = await this.filesStorageClientAdapter.getStream(fileMetadata.id, fileMetadata.name);
+						const fileStream = await this.filesStorageClientAdapter.getStream(jwt, fileMetadata.id, fileMetadata.name);
 
 						if (fileStream) {
 							const resource = this.mapper.mapFileToResource(fileMetadata, fileStream);
@@ -233,6 +236,7 @@ export class CommonCartridgeExportService {
 	}
 
 	private async addColumnBoards(
+		jwt: string,
 		builder: CommonCartridgeFileBuilder,
 		version: CommonCartridgeVersion,
 		elements: BoardElementDto[],
@@ -243,7 +247,7 @@ export class CommonCartridgeExportService {
 			.filter((columnBoard) => exportedColumnBoards.includes(columnBoard.id))
 			.map((columBoard) => columBoard.columnBoardId);
 		const boardSkeletons: BoardResponse[] = await Promise.all(
-			columnBoardsIds.map((columnBoardId) => this.boardClientAdapter.getBoardSkeletonById(columnBoardId))
+			columnBoardsIds.map((columnBoardId) => this.boardClientAdapter.getBoardSkeletonById(jwt, columnBoardId))
 		);
 
 		await Promise.all(
@@ -254,13 +258,16 @@ export class CommonCartridgeExportService {
 				});
 
 				await Promise.all(
-					boardSkeleton.columns.map((column) => this.addColumnToOrganization(column, version, columnBoardOrganization))
+					boardSkeleton.columns.map((column) =>
+						this.addColumnToOrganization(jwt, column, version, columnBoardOrganization)
+					)
 				);
 			})
 		);
 	}
 
 	private async addColumnToOrganization(
+		jwt: string,
 		column: ColumnResponse,
 		version: CommonCartridgeVersion,
 		columnBoardOrganization: CommonCartridgeOrganizationNode
@@ -275,7 +282,7 @@ export class CommonCartridgeExportService {
 			const listOfCards: CardListResponseDto = await this.cardClientAdapter.getAllBoardCardsByIds(cardsIds);
 			const sortedCards = this.sortCardsAfterRetrieval(cardsIds, listOfCards.data);
 
-			await Promise.all(sortedCards.map((card) => this.addCardToOrganization(card, version, columnOrganization)));
+			await Promise.all(sortedCards.map((card) => this.addCardToOrganization(jwt, card, version, columnOrganization)));
 		}
 	}
 
@@ -288,6 +295,7 @@ export class CommonCartridgeExportService {
 	}
 
 	private async addCardToOrganization(
+		jwt: string,
 		card: CardResponseDto,
 		version: CommonCartridgeVersion,
 		columnOrganization: CommonCartridgeOrganizationNode
@@ -300,23 +308,26 @@ export class CommonCartridgeExportService {
 		// INFO: for await keeps the order of files in cards in the correct order
 		// with Promise.all, the order of files would be random
 		for await (const cardElement of card.elements) {
-			await this.addCardElementToOrganization(cardElement, version, cardOrganization);
+			await this.addCardElementToOrganization(jwt, cardElement, version, cardOrganization);
 		}
 	}
 
-	private async openStreamsToFiles(element: CardResponseElementsInnerDto): Promise<FileMetadataAndStream[]> {
+	private async openStreamsToFiles(
+		jwt: string,
+		element: CardResponseElementsInnerDto
+	): Promise<FileMetadataAndStream[]> {
 		const fileMetadataBufferArray: FileMetadataAndStream[] = [];
 
 		if (element.type === ContentElementType.FILE || element.type === ContentElementType.FILE_FOLDER) {
 			const filesMetadata = await this.filesMetadataClientAdapter.listFilesOfParent(element.id);
 			const fileRecords = await Promise.all(
-				filesMetadata.map((fileDto) => this.filesStorageClientAdapter.getFileRecord(fileDto.id))
+				filesMetadata.map((fileDto) => this.filesStorageClientAdapter.getFileRecord(jwt, fileDto.id))
 			);
 
 			const streamPromises = filesMetadata.map(async (fileMetadata, index) => {
 				if (fileRecords[index].securityCheckStatus === FileRecordScanStatus.BLOCKED) {
 					this.logger.info(
-						new CommonCartridgeExportMessageLoggable('A file was skipped because the securityCheckStatus is BLOCKED', {
+						new CommonCartridgeMessageLoggable('A file was skipped because the securityCheckStatus is BLOCKED', {
 							fileId: fileMetadata.id,
 							elementId: element.id,
 						})
@@ -324,7 +335,7 @@ export class CommonCartridgeExportService {
 					return;
 				}
 
-				const file = await this.filesStorageClientAdapter.getStream(fileMetadata.id, fileMetadata.name);
+				const file = await this.filesStorageClientAdapter.getStream(jwt, fileMetadata.id, fileMetadata.name);
 
 				if (!file) {
 					return undefined;
@@ -348,6 +359,7 @@ export class CommonCartridgeExportService {
 	}
 
 	private async addCardElementToOrganization(
+		jwt: string,
 		element: CardResponseElementsInnerDto,
 		version: CommonCartridgeVersion,
 		cardOrganization: CommonCartridgeOrganizationNode
@@ -362,7 +374,7 @@ export class CommonCartridgeExportService {
 				cardOrganization.addResource(linkResource);
 				break;
 			case ContentElementType.FILE:
-				const metadataAndStreamsForFile = await this.openStreamsToFiles(element);
+				const metadataAndStreamsForFile = await this.openStreamsToFiles(jwt, element);
 
 				for (const fileMetadata of metadataAndStreamsForFile) {
 					const { file, fileDto } = fileMetadata;
@@ -375,7 +387,7 @@ export class CommonCartridgeExportService {
 				if (version !== CommonCartridgeVersion.V_1_3_0) {
 					break;
 				}
-				const metadataAndStreamsForFolder = await this.openStreamsToFiles(element);
+				const metadataAndStreamsForFolder = await this.openStreamsToFiles(jwt, element);
 				const fileFolderResource = this.mapper.mapFileFolderToResource(
 					element as FileFolderElementResponseDto,
 					metadataAndStreamsForFolder

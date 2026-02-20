@@ -1,10 +1,6 @@
-import { faker } from '@faker-js/faker/.';
-import { createMock } from '@golevelup/ts-jest';
 import { ConfigProperty, Configuration } from '@infra/configuration';
-import { REQUEST } from '@nestjs/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { IsUrl } from 'class-validator';
-import { Request } from 'express';
 import { ColumnClientAdapter } from './column-client.adapter';
 import { InternalColumnClientConfig } from './column-client.config';
 import { ColumnClientModule } from './column-client.module';
@@ -19,19 +15,10 @@ class TestConfig implements InternalColumnClientConfig {
 describe('ColumnClientModule', () => {
 	let module: TestingModule;
 
-	const requestMock = createMock<Request>({
-		headers: {
-			authorization: `Bearer ${faker.string.alphanumeric(42)}`,
-		},
-	});
-
 	beforeEach(async () => {
 		module = await Test.createTestingModule({
 			imports: [ColumnClientModule.register('COLUMN_CLIENT_CONFIG', TestConfig)],
-		})
-			.overrideProvider(REQUEST)
-			.useValue(requestMock)
-			.compile();
+		}).compile();
 	});
 
 	afterAll(async () => {
