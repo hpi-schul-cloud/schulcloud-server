@@ -27,7 +27,7 @@ function connect() {
 	const mongooseOptions = {
 		autoIndex: Configuration.get('NODE_ENV') !== ENVIRONMENTS.PRODUCTION,
 		maxPoolSize:  Configuration.get('MONGOOSE_CONNECTION_POOL_SIZE'), // https://mongoosejs.com/docs/migrating_to_6.html#mongodb-driver-40
-		useNewUrlParser: true,
+		// useNewUrlParser: true, @DEPRICATED in mongoose 6, now default
 	};
 
 	const auth = {};

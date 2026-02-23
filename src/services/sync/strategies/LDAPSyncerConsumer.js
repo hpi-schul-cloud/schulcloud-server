@@ -1,11 +1,9 @@
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const rabbitMq = require('../../../utils/rabbitmq');
 const { syncLogger } = require('../../../logger/syncLogger');
 const { ENVIRONMENTS } = require('../../../../config/environments');
-
-const { SchoolAction, UserAction, ClassAction } = require('./consumerActions');
-
 const { BadRequest } = require('../../../errors');
-
+const { SchoolAction, UserAction, ClassAction } = require('./consumerActions');
 const { LDAP_SYNC_CHANNEL_NAME } = require('./LDAPSyncer');
 
 /**
