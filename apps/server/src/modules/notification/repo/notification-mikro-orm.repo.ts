@@ -5,7 +5,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { NotificationMapper } from './mapper';
 import { Notification } from '../domain/do/notification.do';
 import { EntityId } from '@shared/domain/types';
-import { NotificationRepo } from '.';
+import { NotificationRepo } from '../domain/interfaces/notification.repo.interface';
 
 @Injectable()
 export class NotificationMikroOrmRepo implements NotificationRepo {
