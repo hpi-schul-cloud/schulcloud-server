@@ -63,12 +63,7 @@ const teamMainHook = globalHooks.ifNotLocal((hook) =>
 			}
 			const sessionSchoolId = bsonIdToString(sessionUser.schoolId);
 
-			if (method === 'create') {
-				// eslint-disable-next-line no-param-reassign
-				team = updateMissingDataInHookForCreate(hook, sessionUser);
-				users.push(sessionUser);
-				hook.data = team;
-			} else if (method === 'find') {
+			if (method === 'find') {
 				hook.params.query.userIds = { $elemMatch: { userId } };
 				return hook;
 			}
@@ -841,14 +836,6 @@ exports.before = {
 	],
 	find: [teamMainHook],
 	get: [teamMainHook],
-	create: [
-		filterToRelated(keys.data, 'data'),
-		globalHooks.injectUserId,
-		isAllowedToCreateTeams,
-		testInputData,
-		updateUsersForEachClass,
-		teamMainHook,
-	], // inject is needing?
 	update: [blockedMethod],
 	patch: [
 		rejectDefaultFilePermissionUpdatesIfNotPermitted,
