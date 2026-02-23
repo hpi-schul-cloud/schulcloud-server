@@ -31,7 +31,13 @@ export class NotificationService {
 		});
 
 		await this.notificationRepo.create(notification);
-		this.logger.info(new NotificationLoggable('A notification entry was created.'));
+		this.logger.info(
+			new NotificationLoggable('A notification entry was created.', {
+				type: notification.type,
+				key: notification.key,
+				arguments: notification.arguments.join(','),
+			})
+		);
 		return notification;
 	}
 }
