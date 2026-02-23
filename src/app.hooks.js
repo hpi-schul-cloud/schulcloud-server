@@ -91,11 +91,9 @@ const errorHandler = (context) => {
 
 // adding in this position will detect intern request to
 const leadTimeDetection = (context) => {
-	const LEAD_TIME = Configuration.get('LEAD_TIME');
-
 	if (context.params.leadTime) {
 		const timeDelta = Date.now() - context.params.leadTime;
-		if (timeDelta >= LEAD_TIME) {
+		if (timeDelta >= Configuration.get('LEAD_TIME')) {
 			const {
 				path,
 				id,

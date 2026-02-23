@@ -11,6 +11,10 @@
 			"enum": ["development", "test", "production", "migration"],
 			"default": "production"
 		},
+		"AES_KEY": {
+			"type": "string",
+			"description": "AES key for encryption and decryption."
+		},
 		"BODYPARSER_JSON_LIMIT": {
 			"type": "string",
 			"default": "20mb",
@@ -131,7 +135,8 @@
 					"default": "de,en,es,ua",
 					"description": "Available languages"
 				}
-			}
+			},
+			"default": {}
 		},
 		"SYNC_API_KEY": {
 			"type": "string",
@@ -566,62 +571,6 @@
 			"type": "string",
 			"default": "https://docs.dbildungscloud.de/pages/viewpage.action?pageId=270827606",
 			"description": "link to userfacing documentation of the column board feature"
-		},
-		"COOKIE": {
-			"type": "object",
-			"description": "Cookie properties, required always to be defined",
-			"properties": {
-				"SAME_SITE": {
-					"type": "string",
-					"default": "none",
-					"enum": ["none", "lax", "strict"],
-					"description": "Value for cookies sameSite property. When SECURE flag is false, 'None' is not allowed in SAME_SITE and Lax should be used as default instead"
-				},
-				"HTTP_ONLY": {
-					"type": "boolean",
-					"default": false,
-					"description": "Value for cookies httpOnly property"
-				},
-				"HOST_ONLY": {
-					"type": "boolean",
-					"default": true,
-					"description": "Value for cookies hostOnly property"
-				},
-				"SECURE": {
-					"type": "boolean",
-					"default": true,
-					"description": "Value for cookies httpOnly property"
-				},
-				"EXPIRES_SECONDS": {
-					"type": "integer",
-					"default": 2592000000,
-					"description": "Expiration in seconds from now"
-				}
-			},
-			"required": ["SAME_SITE", "HTTP_ONLY", "HOST_ONLY", "SECURE", "EXPIRES_SECONDS"],
-			"allOf": [
-				{
-					"$ref": "#/properties/COOKIE/definitions/SAME_SITE_SECURE_VALID"
-				}
-			],
-			"definitions": {
-				"SAME_SITE_SECURE_VALID": {
-					"if": {
-						"properties": {
-							"SECURE": {
-								"const": false
-							}
-						}
-					},
-					"then": {
-						"properties": {
-							"SAME_SITE": {
-								"enum": ["lax", "strict"]
-							}
-						}
-					}
-				}
-			}
 		},
 		"FEATURE_CTL_CONTEXT_CONFIGURATION_ENABLED": {
 			"type": "boolean",
