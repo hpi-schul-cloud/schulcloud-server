@@ -24,7 +24,6 @@ const {
 	GeneralError,
 	customErrorMessages,
 } = require('../../utils/generalUtils');
-const { Configuration } = require('@hpi-schul-cloud/commons/lib');
 
 const buildActivationLinkMail = (user, entry) => {
 	const SC_TITLE = Configuration.get('SC_TITLE');
