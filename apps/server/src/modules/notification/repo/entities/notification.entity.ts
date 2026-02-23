@@ -8,8 +8,7 @@ export interface NotificationEntityProps {
 	key: string;
 	arguments: string[];
 	userId: string;
-	createdAt?: Date;
-	updatedAt?: Date;
+	expiresAt: Date;
 }
 
 @Entity({ tableName: 'user-notification-message' })
@@ -26,6 +25,9 @@ export class NotificationEntity extends BaseEntityWithTimestamps {
 	@Property({ nullable: true })
 	userId: string;
 
+	@Property({ nullable: true })
+	expiresAt: Date;
+
 	constructor(props: NotificationEntityProps) {
 		super();
 
@@ -37,13 +39,6 @@ export class NotificationEntity extends BaseEntityWithTimestamps {
 		this.key = props.key;
 		this.arguments = props.arguments;
 		this.userId = props.userId;
-
-		if (props.createdAt !== undefined) {
-			this.createdAt = props.createdAt;
-		}
-
-		if (props.updatedAt !== undefined) {
-			this.updatedAt = props.updatedAt;
-		}
+		this.expiresAt = props.expiresAt;
 	}
 }

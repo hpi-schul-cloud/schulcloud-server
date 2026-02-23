@@ -3,7 +3,6 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { NotificationService } from './notification.service';
 import { NotificationType } from '../../types';
 import { Logger } from '@core/logger';
-import { Notification } from '../do';
 import { NotificationRepo } from '../interfaces';
 
 describe(NotificationService.name, () => {
@@ -50,15 +49,13 @@ describe(NotificationService.name, () => {
 	describe('create', () => {
 		describe('when a notification is created', () => {
 			const setup = () => {
-				const notification = new Notification({
-					id: 'testid',
+				const notification = {
 					type: NotificationType.ERROR,
 					key: 'ERROR_KEY',
 					arguments: ['arg1'],
 					userId: 'user-id',
-					createdAt: new Date(),
-					updatedAt: new Date(),
-				});
+					expiresAt: new Date(),
+				};
 
 				return { notification };
 			};
@@ -66,15 +63,23 @@ describe(NotificationService.name, () => {
 			it('should create a notification', async () => {
 				const { notification } = setup();
 
-				await sut.create(notification);
+				await sut.createNotification(notification);
 
-				expect(notificationRepoMock.create).toHaveBeenCalledWith(notification);
+				expect(notificationRepoMock.create).toHaveBeenCalledWith(
+					expect.objectContaining({
+						id: expect.any(String),
+						type: notification.type,
+						key: notification.key,
+						arguments: notification.arguments,
+						expiresAt: expect.any(Date),
+					})
+				);
 			});
 
 			it('should log an information', async () => {
 				const { notification } = setup();
 
-				await sut.create(notification);
+				await sut.createNotification(notification);
 
 				expect(loggerMock.info).toHaveBeenCalledTimes(1);
 			});

@@ -18,6 +18,7 @@ describe(NotificationEntity.name, () => {
 					key: 'SOME_NOTIFICATION_KEY',
 					arguments: ['arg1', 'arg2'],
 					userId: 'user-123',
+					expiresAt: new Date(),
 				};
 
 				return { props };

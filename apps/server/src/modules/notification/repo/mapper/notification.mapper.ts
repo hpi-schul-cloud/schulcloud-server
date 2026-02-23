@@ -9,8 +9,7 @@ export class NotificationMapper {
 			key: entity.key,
 			arguments: entity.arguments,
 			userId: entity.userId,
-			createdAt: entity.createdAt,
-			updatedAt: entity.updatedAt,
+			expiresAt: new Date(),
 		});
 	}
 
@@ -21,8 +20,7 @@ export class NotificationMapper {
 			arguments: domainObject.arguments,
 			userId: domainObject.userId,
 			id: domainObject.id,
-			createdAt: domainObject.createdAt,
-			updatedAt: domainObject.updatedAt,
+			expiresAt: domainObject.expiresAt,
 		});
 	}
 

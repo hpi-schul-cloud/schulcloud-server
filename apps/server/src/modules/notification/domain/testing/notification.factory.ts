@@ -3,7 +3,6 @@ import { NotificationType } from '../../types';
 import { DoBaseFactory } from '@testing/factory/domainobject';
 import { Notification, NotificationProps } from '../do';
 
-const fixedDate = new Date();
 export const notificationFactory = DoBaseFactory.define<Notification, NotificationProps>(Notification, () => {
 	return {
 		id: new ObjectId().toHexString(),
@@ -11,7 +10,6 @@ export const notificationFactory = DoBaseFactory.define<Notification, Notificati
 		key: 'INFO_KEY',
 		arguments: ['arg1'],
 		userId: 'user-id',
-		createdAt: fixedDate,
-		updatedAt: fixedDate,
+		expiresAt: new Date(),
 	};
 });

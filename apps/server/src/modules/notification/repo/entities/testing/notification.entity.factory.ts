@@ -13,8 +13,7 @@ export const notificationEntityFactory = DoBaseFactory.define<NotificationEntity
 			key: 'INFO_KEY',
 			arguments: ['arg1'],
 			userId: 'user-id',
-			createdAt: fixedDate,
-			updatedAt: fixedDate,
+			expiresAt: fixedDate,
 		};
 	}
 );

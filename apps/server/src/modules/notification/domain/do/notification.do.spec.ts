@@ -10,8 +10,7 @@ describe(Notification.name, () => {
 					key: 'IMPORT_COMPLETED',
 					arguments: ['course-123', 'success'],
 					userId: 'user-123',
-					createdAt: new Date(),
-					updatedAt: new Date(),
+					expiresAt: new Date(),
 				};
 
 				const domainObject = new Notification(props);
@@ -34,8 +33,7 @@ describe(Notification.name, () => {
 					key: 'IMPORT_FAILED',
 					arguments: ['course-456', 'error'],
 					userId: 'user-456',
-					createdAt: new Date(),
-					updatedAt: new Date(),
+					expiresAt: new Date(),
 				};
 
 				const notificationDo = new Notification(props);
@@ -60,8 +58,7 @@ describe(Notification.name, () => {
 					key: 'IMPORT_IN_PROGRESS',
 					arguments: ['course-789', 'progress'],
 					userId: 'user-789',
-					createdAt: new Date(),
-					updatedAt: new Date(),
+					expiresAt: new Date(),
 				};
 
 				const notificationDo = new Notification(props);
@@ -77,6 +74,7 @@ describe(Notification.name, () => {
 					key: notificationDo.key,
 					arguments: notificationDo.arguments,
 					userId: notificationDo.userId,
+					expiresAt: notificationDo.expiresAt,
 				};
 
 				const expectedValues = {
@@ -84,6 +82,7 @@ describe(Notification.name, () => {
 					key: props.key,
 					arguments: props.arguments,
 					userId: props.userId,
+					expiresAt: props.expiresAt,
 				};
 
 				expect(getterValues).toEqual(expectedValues);

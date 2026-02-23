@@ -6,8 +6,7 @@ export interface NotificationProps extends AuthorizableObject {
 	key: string;
 	arguments: string[];
 	userId: EntityId;
-	createdAt?: Date;
-	updatedAt?: Date;
+	expiresAt: Date;
 }
 
 export class Notification extends DomainObject<NotificationProps> {
@@ -27,11 +26,7 @@ export class Notification extends DomainObject<NotificationProps> {
 		return this.props.userId;
 	}
 
-	get createdAt(): Date | undefined {
-		return this.props.createdAt;
-	}
-
-	get updatedAt(): Date | undefined {
-		return this.props.updatedAt;
+	get expiresAt(): Date {
+		return this.props.expiresAt;
 	}
 }

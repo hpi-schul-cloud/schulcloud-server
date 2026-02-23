@@ -23,8 +23,7 @@ describe(NotificationMapper.name, () => {
 					key: 'NOTIFICATION_KEY',
 					arguments: ['arg1', 'arg2'],
 					userId: 'user-id',
-					createdAt: new Date(),
-					updatedAt: new Date(),
+					expiresAt: new Date(),
 				} as NotificationEntity;
 
 				const expectedDomainObject = new Notification({
@@ -33,8 +32,7 @@ describe(NotificationMapper.name, () => {
 					key: entity.key,
 					arguments: entity.arguments,
 					userId: entity.userId,
-					createdAt: fixedDate,
-					updatedAt: fixedDate,
+					expiresAt: entity.expiresAt,
 				});
 
 				return { entity, expectedDomainObject };
@@ -68,8 +66,7 @@ describe(NotificationMapper.name, () => {
 						key: 'NOTIFICATION_KEY_1',
 						arguments: ['arg1'],
 						userId: 'user-id-1',
-						createdAt: new Date(),
-						updatedAt: new Date(),
+						expiresAt: new Date(),
 					} as NotificationEntity,
 					{
 						id: 'notification-id-2',
@@ -77,8 +74,7 @@ describe(NotificationMapper.name, () => {
 						key: 'NOTIFICATION_KEY_2',
 						arguments: ['arg2a', 'arg2b'],
 						userId: 'user-id-2',
-						createdAt: new Date(),
-						updatedAt: new Date(),
+						expiresAt: new Date(),
 					} as NotificationEntity,
 				];
 
@@ -90,8 +86,7 @@ describe(NotificationMapper.name, () => {
 							key: entity.key,
 							arguments: entity.arguments,
 							userId: entity.userId,
-							createdAt: entity.createdAt,
-							updatedAt: entity.updatedAt,
+							expiresAt: entity.expiresAt,
 						})
 				);
 
@@ -117,8 +112,7 @@ describe(NotificationMapper.name, () => {
 					key: 'NOTIFICATION_KEY',
 					arguments: ['arg1', 'arg2'],
 					userId: 'user-id',
-					createdAt: new Date(),
-					updatedAt: new Date(),
+					expiresAt: new Date(),
 				});
 
 				const expectedEntity = new NotificationEntity({
@@ -127,8 +121,7 @@ describe(NotificationMapper.name, () => {
 					arguments: domainObject.arguments,
 					userId: domainObject.userId,
 					id: domainObject.id,
-					createdAt: new Date(),
-					updatedAt: new Date(),
+					expiresAt: domainObject.expiresAt,
 				});
 
 				return { domainObject, expectedEntity };
@@ -163,8 +156,7 @@ describe(NotificationMapper.name, () => {
 						key: 'NOTIFICATION_KEY_1',
 						arguments: ['arg1'],
 						userId: 'user-id-1',
-						createdAt: new Date(),
-						updatedAt: new Date(),
+						expiresAt: new Date(),
 					}),
 					new Notification({
 						id: 'notification-id-2',
@@ -172,8 +164,7 @@ describe(NotificationMapper.name, () => {
 						key: 'NOTIFICATION_KEY_2',
 						arguments: ['arg2a', 'arg2b'],
 						userId: 'user-id-2',
-						createdAt: new Date(),
-						updatedAt: new Date(),
+						expiresAt: new Date(),
 					}),
 				];
 
@@ -185,8 +176,7 @@ describe(NotificationMapper.name, () => {
 							arguments: domainObject.arguments,
 							userId: domainObject.userId,
 							id: domainObject.id,
-							createdAt: fixedDate,
-							updatedAt: fixedDate,
+							expiresAt: domainObject.expiresAt,
 						})
 				);
 

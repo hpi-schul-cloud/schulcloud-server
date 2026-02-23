@@ -3,6 +3,16 @@ import { Logger } from '@core/logger';
 import { NotificationLoggable } from '../loggable';
 import { Notification } from '../../domain/do';
 import { NotificationRepo } from '../interfaces';
+import { NotificationType } from '../../types';
+import { ObjectId } from '@mikro-orm/mongodb';
+
+export type NotificationEntry = {
+	type: NotificationType;
+	key: string;
+	arguments: string[];
+	userId: string;
+	expiresAt: Date;
+};
 
 @Injectable()
 export class NotificationService {
@@ -10,7 +20,16 @@ export class NotificationService {
 		logger.setContext(NotificationService.name);
 	}
 
-	public async create(notification: Notification): Promise<Notification> {
+	public async createNotification(entry: NotificationEntry): Promise<Notification> {
+		const notification = new Notification({
+			id: new ObjectId().toHexString(),
+			type: entry.type,
+			key: entry.key,
+			arguments: entry.arguments,
+			userId: entry.userId,
+			expiresAt: entry.expiresAt,
+		});
+
 		await this.notificationRepo.create(notification);
 		this.logger.info(new NotificationLoggable('A notification entry was created.'));
 		return notification;

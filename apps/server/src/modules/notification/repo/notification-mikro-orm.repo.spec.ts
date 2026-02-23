@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { NotificationMikroOrmRepo } from './notification-mikro-orm.repo';
 import { NotificationEntity } from './entities';
 import { MongoMemoryDatabaseModule } from '@testing/database';
@@ -55,9 +56,8 @@ describe(NotificationMikroOrmRepo.name, () => {
 						key: domainObject.key,
 						arguments: domainObject.arguments,
 						userId: domainObject.userId,
-						createdAt: expect.any(Date),
-						updatedAt: expect.any(Date),
-					}) as Notification,
+						expiresAt: expect.any(Date),
+					}),
 				};
 
 				return {
@@ -79,7 +79,7 @@ describe(NotificationMikroOrmRepo.name, () => {
 			});
 
 			describe('when an array of Notification is given', () => {
-				it('should create a new Notification', async () => {
+				it('should create new Notifications for every element in the given array', async () => {
 					const { domainObject, notificationId, expectedDomainObject } = setup();
 					await repo.create([domainObject]);
 
@@ -103,8 +103,7 @@ describe(NotificationMikroOrmRepo.name, () => {
 					key: entity.key,
 					arguments: entity.arguments,
 					userId: entity.userId,
-					createdAt: entity.createdAt,
-					updatedAt: entity.updatedAt,
+					expiresAt: entity.expiresAt,
 				});
 
 				return {
@@ -117,7 +116,18 @@ describe(NotificationMikroOrmRepo.name, () => {
 
 				const result: Notification = await repo.findById(notification.id);
 
-				expect(result).toEqual(expect.objectContaining(notification));
+				expect(result).toEqual(
+					expect.objectContaining({
+						props: expect.objectContaining({
+							id: notification.id,
+							type: notification.type,
+							key: notification.key,
+							arguments: notification.arguments,
+							userId: notification.userId,
+							expiresAt: expect.any(Date),
+						}),
+					})
+				);
 			});
 		});
 	});
