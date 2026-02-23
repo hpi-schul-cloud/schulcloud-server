@@ -88,6 +88,11 @@ export class UserMikroOrmRepo extends BaseRepo<User> {
 		return deletedUserNumber;
 	}
 
+	public async flagAsDeleted(userId: EntityId, deletedDate?: Date): Promise<void> {
+		const deletedAt = deletedDate ?? new Date();
+		await this._em.nativeUpdate(this.entityName, { id: userId }, { deletedAt });
+	}
+
 	public async getParentEmailsFromUser(userId: EntityId): Promise<string[]> {
 		const user: User | null = await this._em.findOne(User, { id: userId });
 		let parentsEmails: string[] = [];

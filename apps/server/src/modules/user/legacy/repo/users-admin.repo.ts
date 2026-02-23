@@ -43,6 +43,8 @@ export class UsersAdminRepo extends BaseRepo<User> {
 			],
 		};
 
+		SearchQueryHelper.setDeletedFilter(query, new Date());
+
 		const aggregation = createMultiDocumentAggregation(query);
 
 		return this._em.aggregate(User, aggregation);
@@ -86,6 +88,8 @@ export class UsersAdminRepo extends BaseRepo<User> {
 		}
 		SearchQueryHelper.setSearchParametersIfExist(query, params);
 		SearchQueryHelper.setDateParametersIfExists(query, params);
+
+		SearchQueryHelper.setDeletedFilter(query, new Date());
 
 		const aggregation = createMultiDocumentAggregation(query);
 
