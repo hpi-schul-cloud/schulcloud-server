@@ -181,11 +181,13 @@ export class AccountService extends AbstractAccountService {
 		return targetAccount;
 	}
 
-	public async deactivateAccount(userId: EntityId, deactivatedAt: Date): Promise<void> {
+	public async deactivateAccount(userId: EntityId, deactivatedAt: Date): Promise<Account> {
 		const account = await this.accountRepo.findByUserIdOrFail(userId);
 		account.deactivatedAt = deactivatedAt;
 
 		await this.save(account);
+
+		return account;
 	}
 
 	public async reactivateAccount(userId: EntityId): Promise<void> {

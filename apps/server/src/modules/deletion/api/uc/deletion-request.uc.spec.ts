@@ -3,6 +3,7 @@ import { NotFoundException } from '@nestjs/common';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountService } from '@modules/account';
+import { AuthenticationService } from '@modules/authentication';
 import { UserService } from '@modules/user';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
@@ -27,6 +28,7 @@ describe(DeletionRequestUc.name, () => {
 	let legacyLogger: DeepMocked<LegacyLogger>;
 	let deletionExecutionService: DeepMocked<DeletionExecutionService>;
 	let accountService: DeepMocked<AccountService>;
+	let authenticationService: DeepMocked<AuthenticationService>;
 	let userService: DeepMocked<UserService>;
 
 	beforeAll(async () => {
@@ -60,6 +62,10 @@ describe(DeletionRequestUc.name, () => {
 					useValue: createMock<AccountService>(),
 				},
 				{
+					provide: AuthenticationService,
+					useValue: createMock<AuthenticationService>(),
+				},
+				{
 					provide: UserService,
 					useValue: createMock<UserService>(),
 				},
@@ -73,6 +79,7 @@ describe(DeletionRequestUc.name, () => {
 		legacyLogger = module.get(LegacyLogger);
 		deletionExecutionService = module.get(DeletionExecutionService);
 		accountService = module.get(AccountService);
+		authenticationService = module.get(AuthenticationService);
 		userService = module.get(UserService);
 	});
 
@@ -158,6 +165,16 @@ describe(DeletionRequestUc.name, () => {
 				expect(accountService.deactivateAccount).toHaveBeenCalledWith(
 					deletionRequestToCreate.targetRef.id,
 					expect.any(Date)
+				);
+			});
+
+			it('should call authenticationService.removeUserFromWhitelist if domain is DomainName.User', async () => {
+				const { deletionRequestToCreate } = setup();
+
+				await uc.createDeletionRequest(deletionRequestToCreate);
+
+				expect(authenticationService.removeUserFromWhitelist).toHaveBeenCalledWith(
+					deletionRequestToCreate.targetRef.id
 				);
 			});
 

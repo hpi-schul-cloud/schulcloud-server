@@ -2,6 +2,7 @@ import { LegacyLogger } from '@core/logger';
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { ICurrentUser } from '@infra/auth-guard';
 import { AccountService } from '@modules/account';
+import { AuthenticationService } from '@modules/authentication';
 import { AuthorizationService } from '@modules/authorization';
 import { UserService } from '@modules/user';
 import { Permission } from '@shared/domain/interface';
@@ -18,7 +19,8 @@ export class DeletionRequestPublicUc {
 		private readonly logger: LegacyLogger,
 		private readonly accountService: AccountService,
 		private readonly userService: UserService,
-		private readonly authService: AuthorizationService
+		private readonly authService: AuthorizationService,
+		private readonly authenticationService: AuthenticationService
 	) {
 		this.logger.setContext(DeletionRequestPublicUc.name);
 	}
@@ -73,9 +75,9 @@ export class DeletionRequestPublicUc {
 		);
 
 		const deleteAt = new Date();
-		await this.userService.flagAsDeleted(targetRefId, deleteAt);
 		try {
-			await this.accountService.deactivateAccount(targetRefId, deleteAt);
+			const account = await this.accountService.deactivateAccount(targetRefId, deleteAt);
+			await this.authenticationService.removeUserFromWhitelist(account);
 		} catch (error) {
 			// it can be the user has no account (either deleted or never finished the registration process)
 			this.logger.error({
@@ -84,6 +86,8 @@ export class DeletionRequestPublicUc {
 				error: (error as Error).message,
 			});
 		}
+
+		await this.userService.flagAsDeleted(targetRefId, deleteAt);
 
 		return result;
 	}

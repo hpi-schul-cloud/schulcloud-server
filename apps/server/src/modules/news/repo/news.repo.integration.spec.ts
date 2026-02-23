@@ -19,6 +19,8 @@ import { NewsTargetModel } from '../domain';
 import { CourseNews, News, SchoolNews, TeamNews } from './news.entity';
 import { NewsRepo } from './news.repo';
 import { courseEntityFactory } from '@modules/course/testing';
+import { teamFactory } from '@modules/team/testing/team.factory';
+import { schoolEntityFactory } from '@modules/school/testing';
 
 describe('NewsRepo', () => {
 	let repo: NewsRepo;
@@ -298,6 +300,29 @@ describe('NewsRepo', () => {
 			const resultCourseIds = result.map((news) => news.target.id);
 			const reverseCourseIds = courseIds.sort((r1, r2) => (r1 > r2 ? -1 : 1));
 			expect(resultCourseIds).toEqual(reverseCourseIds);
+		});
+
+		it('should populate target on all target types', async () => {
+			const school = schoolEntityFactory.build();
+			const schoolNews = schoolNewsFactory.build({ target: school });
+			const team = teamFactory.build();
+			const teamNews = teamNewsFactory.build({ target: team });
+
+			await em.persist([school, team, schoolNews, teamNews]).flush();
+			em.clear();
+
+			const teamTarget = {
+				targetModel: NewsTargetModel.Team,
+				targetIds: [teamNews.target.id],
+			};
+			const schoolTarget = {
+				targetModel: NewsTargetModel.School,
+				targetIds: [schoolNews.target.id],
+			};
+
+			const [result] = await repo.findAllPublished([teamTarget, schoolTarget]);
+
+			expect(result.every((news) => news.target != null)).toBe(true);
 		});
 	});
 
