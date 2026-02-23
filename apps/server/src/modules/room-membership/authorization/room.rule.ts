@@ -18,6 +18,10 @@ export class RoomRule implements Rule<RoomAuthorizable> {
 	}
 
 	public hasPermission(user: User, object: RoomAuthorizable, context: AuthorizationContext): boolean {
+		if (!this.isUnlocked(object)) {
+			return false;
+		}
+
 		const { action, requiredPermissions } = context;
 		const roomPermissions = this.resolveRoomPermissions(user, object);
 
@@ -44,6 +48,10 @@ export class RoomRule implements Rule<RoomAuthorizable> {
 	}
 
 	public canCopyRoom(user: User, roomAuthorizable: RoomAuthorizable): boolean {
+		if (!this.isUnlocked(roomAuthorizable)) {
+			return false;
+		}
+
 		const { roomPermissions } = this.resolveUserPermissions(user, roomAuthorizable);
 		const hasRoomPermission = roomPermissions.includes(Permission.ROOM_COPY_ROOM);
 
@@ -51,6 +59,10 @@ export class RoomRule implements Rule<RoomAuthorizable> {
 	}
 
 	public canAccessRoom(user: User, roomAuthorizable: RoomAuthorizable): boolean {
+		if (!this.isUnlocked(roomAuthorizable)) {
+			return false;
+		}
+
 		const { schoolPermissions, roomPermissions } = this.resolveUserPermissions(user, roomAuthorizable);
 		const hasAdminPermission = schoolPermissions.includes(Permission.SCHOOL_ADMINISTRATE_ROOMS);
 
@@ -83,6 +95,10 @@ export class RoomRule implements Rule<RoomAuthorizable> {
 	}
 
 	public canAddMembers(user: User, roomAuthorizable: RoomAuthorizable): boolean {
+		if (!this.isUnlocked(roomAuthorizable)) {
+			return false;
+		}
+
 		const { schoolPermissions, roomPermissions } = this.resolveUserPermissions(user, roomAuthorizable);
 		const hasSchoolPermission = schoolPermissions.includes(Permission.SCHOOL_ADMINISTRATE_ROOMS);
 		const hasRoomPermission = roomPermissions.includes(Permission.ROOM_ADD_MEMBERS);
@@ -95,6 +111,10 @@ export class RoomRule implements Rule<RoomAuthorizable> {
 	}
 
 	public canAddExternalPersonByEmail(user: User, roomAuthorizable: RoomAuthorizable): boolean {
+		if (!this.isUnlocked(roomAuthorizable)) {
+			return false;
+		}
+
 		const { roomPermissions } = this.resolveUserPermissions(user, roomAuthorizable);
 		const hasRoomPermission = roomPermissions.includes(Permission.ROOM_ADD_MEMBERS);
 
@@ -102,6 +122,10 @@ export class RoomRule implements Rule<RoomAuthorizable> {
 	}
 
 	public canChangeRolesOfMembers(user: User, roomAuthorizable: RoomAuthorizable): boolean {
+		if (!this.isUnlocked(roomAuthorizable)) {
+			return false;
+		}
+
 		const { roomPermissions } = this.resolveUserPermissions(user, roomAuthorizable);
 
 		const hasRoomPermission = roomPermissions.includes(Permission.ROOM_CHANGE_ROLES);
@@ -110,6 +134,10 @@ export class RoomRule implements Rule<RoomAuthorizable> {
 	}
 
 	public canLeaveRoom(user: User, roomAuthorizable: RoomAuthorizable): boolean {
+		if (!this.isUnlocked(roomAuthorizable)) {
+			return false;
+		}
+
 		const { roomPermissions } = this.resolveUserPermissions(user, roomAuthorizable);
 
 		const hasRoomPermission = roomPermissions.includes(Permission.ROOM_LEAVE_ROOM);
@@ -118,6 +146,10 @@ export class RoomRule implements Rule<RoomAuthorizable> {
 	}
 
 	public canUpdateRoom(user: User, roomAuthorizable: RoomAuthorizable): boolean {
+		if (!this.isUnlocked(roomAuthorizable)) {
+			return false;
+		}
+
 		const { roomPermissions } = this.resolveUserPermissions(user, roomAuthorizable);
 
 		const result = roomPermissions.includes(Permission.ROOM_EDIT_ROOM);
@@ -126,6 +158,10 @@ export class RoomRule implements Rule<RoomAuthorizable> {
 	}
 
 	public canDeleteRoom(user: User, roomAuthorizable: RoomAuthorizable): boolean {
+		if (!this.isUnlocked(roomAuthorizable)) {
+			return false;
+		}
+
 		const { schoolPermissions, roomPermissions } = this.resolveUserPermissions(user, roomAuthorizable);
 		const hasRoomPermission = roomPermissions.includes(Permission.ROOM_DELETE_ROOM);
 		const isOwnSchool = roomAuthorizable.schoolId === user.school.id;
@@ -137,6 +173,10 @@ export class RoomRule implements Rule<RoomAuthorizable> {
 	}
 
 	public canGetRoomMembers(user: User, roomAuthorizable: RoomAuthorizable): boolean {
+		if (!this.isUnlocked(roomAuthorizable)) {
+			return false;
+		}
+
 		const { schoolPermissions, roomPermissions } = this.resolveUserPermissions(user, roomAuthorizable);
 		const hasSchoolPermission = schoolPermissions.includes(Permission.SCHOOL_LIST_ROOM_MEMBERS);
 		const hasRoomPermission = roomPermissions.includes(Permission.ROOM_LIST_CONTENT);
@@ -147,10 +187,22 @@ export class RoomRule implements Rule<RoomAuthorizable> {
 	}
 
 	public canGetRoomMembersRedacted(user: User, roomAuthorizable: RoomAuthorizable): boolean {
+		if (!this.isUnlocked(roomAuthorizable)) {
+			return false;
+		}
+
 		const { schoolPermissions } = this.resolveUserPermissions(user, roomAuthorizable);
 		const hasSchoolPermission = schoolPermissions.includes(Permission.SCHOOL_ADMINISTRATE_ROOMS);
 
 		return hasSchoolPermission;
+	}
+
+	private isUnlocked(roomAuthorizable: RoomAuthorizable): boolean {
+		const hasOwner = roomAuthorizable.members.some((member) =>
+			member.roles.some((role) => role.name === RoleName.ROOMOWNER)
+		);
+
+		return hasOwner;
 	}
 
 	private hasAccessToSchool(user: User, schoolId: string): boolean {
