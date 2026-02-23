@@ -15,31 +15,6 @@ const encodeMongoURI = (urlString) => {
 };
 
 /**
- * @deprecated it look like it is not in use anymore, please check before using it.
- * Splitting the inputs into 3 letters for search indexing.
- * + first letter
- * + first two letters combination
- * to increase the quality
- *
- * @param {*} string
- * @returns [Array]
- */
-const splitForSearchIndexes = (...searchTexts) => {
-	const arr = [];
-	searchTexts.forEach((item) => {
-		item.split(' ').forEach((it) => {
-			// eslint-disable-next-line no-plusplus
-			if (it.length === 0) return;
-
-			arr.push(it.slice(0, 1));
-			if (it.length > 1) arr.push(it.slice(0, 2));
-			for (let i = 0; i < it.length - 2; i += 1) arr.push(it.slice(i, i + 3));
-		});
-	});
-	return arr;
-};
-
-/**
  * creates the initial connection to a mongodb.
  * see https://mongoosejs.com/docs/connections.html#error-handling for error handling
  *
@@ -69,6 +44,13 @@ function connect() {
 	// https://mongoosejs.com/docs/6.x/docs/migrating_to_6.html#strictquery-is-removed-and-replaced-by-strict
 	// https://mongoosejs.com/docs/7.x/docs/migrating_to_7.html#strictquery
 	mongoose.set('strictQuery', false);
+
+	if (Configuration.get('FEATURE_MONGOOSE_LOGGING_ENABLED')) {
+		mongoose.set('debug', true);
+	} else {
+		logger.info('database debug log is globally disabled');
+	}
+
 	return mongoose.connect(encodeMongoURI(Configuration.get('DB_URL')), mongooseOptions).then((resolved) => {
 		// handle errors that appear after connection setup
 		mongoose.connection.on('error', (err) => {
@@ -82,14 +64,7 @@ function close() {
 	return mongoose.connection.close();
 }
 
-if (Configuration.get('FEATURE_MONGOOSE_LOGGING_ENABLED')) {
-	mongoose.set('debug', true);
-} else {
-	logger.info('database debug log is globally disabled');
-}
-
 module.exports = {
 	connect,
 	close,
-	splitForSearchIndexes,
 };
