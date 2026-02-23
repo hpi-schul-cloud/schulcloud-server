@@ -1,1 +1,1 @@
-export { Notification } from './notification.do';
+export { Notification, NotificationProps } from './notification.do';

@@ -1,10 +1,10 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { NotificationService } from './notification.service';
-import { NotificationType } from '../../types/notification-type.enum';
+import { NotificationType } from '../../types';
 import { Logger } from '@core/logger';
 import { Notification } from '../do';
-import { NotificationRepo } from '../interfaces/notification.repo.interface';
+import { NotificationRepo } from '../interfaces';
 
 describe(NotificationService.name, () => {
 	let module: TestingModule;

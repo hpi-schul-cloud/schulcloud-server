@@ -1,5 +1,5 @@
 import { NotificationEntity } from '../entities';
-import { Notification } from '../../domain/do/notification.do';
+import { Notification } from '../../domain/do';
 
 export class NotificationMapper {
 	public static mapToDO(entity: NotificationEntity): Notification {

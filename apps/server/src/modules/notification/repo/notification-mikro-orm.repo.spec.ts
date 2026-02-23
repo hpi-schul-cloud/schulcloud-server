@@ -1,13 +1,13 @@
 import { NotificationMikroOrmRepo } from './notification-mikro-orm.repo';
-import { NotificationEntity } from './entities/notification.entity';
+import { NotificationEntity } from './entities';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { TestingModule } from '@nestjs/testing/testing-module';
 import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { Notification } from '../domain/do/notification.do';
-import { notificationFactory } from '../domain/testing/notification.factory';
-import { notificationEntityFactory } from './entities/testing/notification.entity.factory';
+import { Notification } from '../domain/do';
+import { notificationFactory } from '../domain/testing';
+import { notificationEntityFactory } from './entities/testing';
 
 describe(NotificationMikroOrmRepo.name, () => {
 	let module: TestingModule;

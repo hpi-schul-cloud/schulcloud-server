@@ -1,11 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { NotificationEntity } from './entities/notification.entity';
+import { NotificationEntity } from './entities';
 import { EntityName, Utils } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { NotificationMapper } from './mapper';
-import { Notification } from '../domain/do/notification.do';
+import { Notification } from '../domain/do';
 import { EntityId } from '@shared/domain/types';
-import { NotificationRepo } from '../domain/interfaces/notification.repo.interface';
+import { NotificationRepo } from '../domain/interfaces';
 
 @Injectable()
 export class NotificationMikroOrmRepo implements NotificationRepo {

@@ -1,7 +1,7 @@
 import { EntityName } from '@mikro-orm/core';
 import { NotificationEntity } from '../../repo/entities';
 import { EntityId } from '@shared/domain/types';
-import { Notification } from '../do/notification.do';
+import { Notification } from '../do';
 
 export interface NotificationRepo {
 	get entityName(): EntityName<NotificationEntity>;

@@ -1,4 +1,4 @@
-import { Notification } from '../../domain/do/notification.do';
+import { Notification } from '../../domain/do';
 import { NotificationEntity } from '../entities';
 import { NotificationMapper } from './notification.mapper';
 
