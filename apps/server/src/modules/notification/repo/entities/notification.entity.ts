@@ -12,7 +12,7 @@ export interface NotificationEntityProps {
 	updatedAt?: Date;
 }
 
-@Entity({ tableName: 'cc-user-notification-message' })
+@Entity({ tableName: 'user-notification-message' })
 export class NotificationEntity extends BaseEntityWithTimestamps {
 	@Property({ nullable: true })
 	type: string;

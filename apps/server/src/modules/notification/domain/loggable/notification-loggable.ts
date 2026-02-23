@@ -5,7 +5,7 @@ export class NotificationLoggable implements Loggable {
 
 	public getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
 		return {
-			type: 'COMMON_CARTRIDGE_IMPORT_MESSAGE_NOTIFICATION',
+			type: 'IMPORT_MESSAGE_NOTIFICATION',
 			message: this.message,
 			data: this.data,
 		};
