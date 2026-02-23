@@ -14,7 +14,7 @@ const encodeMongoURI = (urlString) => {
 
 function connect() {
 	mongoose.Promise = global.Promise;
-	logger.info('connect to database host');
+	logger.info('Try to connect to database...');
 
 	const mongooseOptions = {
 		autoIndex: Configuration.get('NODE_ENV') !== ENVIRONMENTS.PRODUCTION,
@@ -34,10 +34,11 @@ function connect() {
 
 	if (Configuration.get('FEATURE_MONGOOSE_LOGGING_ENABLED')) {
 		mongoose.set('debug', true);
-		logger.info('database debug log is globally enabled');
+		logger.info('Database debug log is globally enabled!');
 	}
 
 	return mongoose.connect(encodeMongoURI(Configuration.get('DB_URL')), mongooseOptions).then((resolved) => {
+		logger.info('Connected to database!');
 		mongoose.connection.on('error', (err) => {
 			logger.error(err);
 		});
