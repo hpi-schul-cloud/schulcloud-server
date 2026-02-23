@@ -48,6 +48,7 @@ function connect() {
 }
 
 function close() {
+	logger.info('Try to close database connection...');
 	return mongoose.connection.close();
 }
 
