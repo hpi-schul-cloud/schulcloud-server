@@ -7,27 +7,19 @@ const cors = require('cors');
 const { rest } = require('@feathersjs/express');
 const bodyParser = require('body-parser');
 const { ObjectId } = require('mongoose').Types;
-
 const { RequestContext } = require('@mikro-orm/core');
-
 const middleware = require('./middleware');
 const setupConfiguration = require('./configuration');
 const services = require('./services');
 const components = require('./components');
-
 const requestLog = require('./logger/RequestLogger');
-
 const defaultHeaders = require('./middleware/defaultHeaders');
 const handleResponseType = require('./middleware/handleReponseType');
 const errorHandler = require('./middleware/errorHandler');
-
 const { setupFacadeLocator } = require('./utils/facadeLocator');
 const setupSwagger = require('./swagger');
 const { initializeRedisClient } = require('./utils/redis');
 const { setupAppHooks } = require('./app.hooks');
-
-const BODYPARSER_JSON_LIMIT = Configuration.get('BODYPARSER_JSON_LIMIT');
-const LEAD_TIME = Configuration.get('LEAD_TIME');
 
 let feathersApp;
 
@@ -38,7 +30,7 @@ const setupApp = async (orm) => {
 	const config = configuration();
 	app.configure(config);
 
-	if (LEAD_TIME) {
+	if (Configuration.has('LEAD_TIME')) {
 		app.use((req, res, next) => {
 			req.leadTime = Date.now();
 			next();
@@ -53,9 +45,9 @@ const setupApp = async (orm) => {
 		.options('*', cors())
 		.use(cors())
 		.configure(setupConfiguration)
-		.use('/', bodyParser.json({ limit: BODYPARSER_JSON_LIMIT }))
+		.use('/', bodyParser.json({ limit: Configuration.get('BODYPARSER_JSON_LIMIT') }))
 		.use(bodyParser.urlencoded({ extended: true }))
-		.use(bodyParser.raw({ type: () => true, limit: BODYPARSER_JSON_LIMIT }))
+		.use(bodyParser.raw({ type: () => true, limit: Configuration.get('BODYPARSER_JSON_LIMIT') }))
 		.use(defaultHeaders)
 		.use((req, res, next) => {
 			if (orm) {

@@ -26,7 +26,7 @@ const buildAllSearchableStringsForUser = _buildAllSearchableStringsForUserUntype
 
 /** Database URL */
 const DB_URL = Configuration.get('DB_URL') as string;
-const DB_PASSWORD = Configuration.get('DB_PASSWORD') as string;
-const DB_USERNAME = Configuration.get('DB_USERNAME') as string;
+const DB_PASSWORD = Configuration.has('DB_PASSWORD') ? (Configuration.get('DB_PASSWORD') as string) : undefined;
+const DB_USERNAME = Configuration.has('DB_USERNAME') ? (Configuration.get('DB_USERNAME') as string) : undefined;
 
 export { buildAllSearchableStringsForUser, DB_PASSWORD, DB_URL, DB_USERNAME };

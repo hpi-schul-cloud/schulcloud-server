@@ -1,6 +1,6 @@
 // Global hooks that run for every service
 const { iff, isProvider } = require('feathers-hooks-common');
-
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const { SlowQuery } = require('./errors');
 const logger = require('./logger');
 const {
@@ -126,8 +126,6 @@ const leadTimeDetection = (context) => {
 };
 
 function setupAppHooks(app) {
-	const LEAD_TIME = Configuration.get('LEAD_TIME');
-
 	const before = {
 		all: [iff(isProvider('external'), handleAutoLogout)],
 		find: [],
@@ -163,7 +161,7 @@ function setupAppHooks(app) {
 	if (app.get('DISPLAY_REQUEST_LEVEL') > 1) {
 		before.all.unshift(displayInternRequests(app.get('DISPLAY_REQUEST_LEVEL')));
 	}
-	if (LEAD_TIME) {
+	if (Configuration.has('LEAD_TIME')) {
 		['find', 'get', 'create', 'update', 'patch', 'remove'].forEach((m) => {
 			if (Array.isArray(after[m])) {
 				after[m].push(leadTimeDetection);
