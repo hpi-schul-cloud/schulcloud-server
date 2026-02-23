@@ -16,7 +16,7 @@ describe(NotificationLoggable.name, () => {
 				const result = loggable.getLogMessage();
 
 				expect(result).toEqual({
-					type: 'COMMON_CARTRIDGE_IMPORT_MESSAGE_NOTIFICATION',
+					type: 'IMPORT_MESSAGE_NOTIFICATION',
 					message,
 				});
 			});
