@@ -391,10 +391,10 @@ const _isSubmissionItemOfUser = (user: User, authorizable: BoardNodeAuthorizable
 };
 
 const _canCreateExternalToolElement = (user: User, authorizable: BoardNodeAuthorizable): boolean => {
-	const permissions = authorizable.getUserPermissions(user.id);
+	const schoolPermissions = [...user.roles].flatMap((role) => role.permissions ?? []);
 
 	const isBoard = authorizable.rootNode instanceof ColumnBoard || authorizable.rootNode instanceof MediaBoard;
-	const canCreateExternalToolElement = permissions.includes(Permission.CONTEXT_TOOL_ADMIN);
+	const canCreateExternalToolElement = schoolPermissions.includes(Permission.CONTEXT_TOOL_ADMIN);
 
 	return isBoard && canCreateExternalToolElement;
 };
