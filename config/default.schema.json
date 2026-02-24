@@ -72,17 +72,16 @@
 			"properties": {
 				"KEEP_ALIVE": {
 					"type": "boolean",
-					"description": "Add Keep-Alive header to the request connection."
+					"description": "Add Keep-Alive header to the request connection.",
+					"default": true
 				},
 				"TIMEOUT_MS": {
 					"type": "integer",
-					"description": "Outgoing request timeout in milliseconds."
+					"description": "Outgoing request timeout in milliseconds.",
+					"default": 5000
 				}
 			},
-			"default": {
-				"TIMEOUT_MS": 5000,
-				"KEEP_ALIVE": true
-			}
+			"default": {}
 		},
 		"CALENDAR_API_KEY": {
 			"type": "string",
@@ -247,17 +246,16 @@
 			"properties": {
 				"SERVICE_HOSTNAME": {
 					"type": "string",
-					"description": "IP of host to connect to TCP interface"
+					"description": "IP of host to connect to TCP interface",
+					"default": "localhost"
 				},
 				"SERVICE_PORT": {
 					"type": "number",
-					"description": "Port of host to use when connecting via TCP interface"
+					"description": "Port of host to use when connecting via TCP interface",
+					"default": 3310
 				}
 			},
-			"default": {
-				"SERVICE_HOSTNAME": "localhost",
-				"SERVICE_PORT": 3310
-			}
+			"default": {}
 		},
 		"RABBITMQ_URI": {
 			"type": "string",
@@ -399,10 +397,7 @@
 					"description": "Defines whether feature toggle for visibility of students to teachers is visible."
 				}
 			},
-			"default": {
-				"IS_ENABLED_BY_DEFAULT": true,
-				"IS_VISIBLE": true
-			}
+			"default": {}
 		},
 		"ROCKETCHAT_SERVICE_ENABLED": {
 			"type": "boolean",
@@ -463,7 +458,8 @@
 					"default": 7200,
 					"description": "If Session Valid time is smaller than this, a new session is created on request."
 				}
-			}
+			},
+			"default": {}
 		},
 		"HYDRA_PUBLIC_URI": {
 			"type:": "string",
@@ -611,17 +607,16 @@
 			"properties": {
 				"BASE_URL": {
 					"type": "string",
-					"description": "Base URL of the Tldraw's Admin API."
+					"description": "Base URL of the Tldraw's Admin API.",
+					"default": "http://localhost:3349"
 				},
 				"API_KEY": {
 					"type": "string",
-					"description": "API key for accessing the Tldraw's Admin API."
+					"description": "API key for accessing the Tldraw's Admin API.",
+					"default": ""
 				}
 			},
-			"default": {
-				"BASE_URL": "http://localhost:3349",
-				"API_KEY": ""
-			}
+			"default": {}
 		},
 		"SCHULCONNEX_CLIENT": {
 			"type": "object",
@@ -633,9 +628,7 @@
 					"default": 120000
 				}
 			},
-			"default": {
-				"PERSONEN_INFO_TIMEOUT_IN_MS": 120000
-			}
+			"default": {}
 		},
 		"FEATURE_MEDIA_SHELF_ENABLED": {
 			"type": "boolean",
