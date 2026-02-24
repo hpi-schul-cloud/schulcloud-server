@@ -1,4 +1,5 @@
 import { NotificationEntity, NotificationEntityProps } from './notification.entity';
+import { NotificationType } from '../../types';
 
 describe(NotificationEntity.name, () => {
 	describe('constructor', () => {
@@ -14,7 +15,7 @@ describe(NotificationEntity.name, () => {
 			const setup = () => {
 				const props: NotificationEntityProps = {
 					id: 'some-id',
-					type: 'INFO',
+					type: NotificationType.NOTE,
 					key: 'SOME_NOTIFICATION_KEY',
 					arguments: ['arg1', 'arg2'],
 					userId: 'user-123',

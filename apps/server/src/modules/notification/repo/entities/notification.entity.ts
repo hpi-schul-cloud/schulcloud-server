@@ -1,10 +1,11 @@
-import { Entity, Property } from '@mikro-orm/core';
+import { Entity, Index, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
+import { NotificationType } from '../../types';
 
 export interface NotificationEntityProps {
 	id?: EntityId;
-	type: string;
+	type: NotificationType;
 	key: string;
 	arguments: string[];
 	userId: string;
@@ -14,7 +15,7 @@ export interface NotificationEntityProps {
 @Entity({ tableName: 'user-notification-message' })
 export class NotificationEntity extends BaseEntityWithTimestamps {
 	@Property({ nullable: true })
-	type: string;
+	type: NotificationType;
 
 	@Property({ nullable: true })
 	key: string;
@@ -26,6 +27,7 @@ export class NotificationEntity extends BaseEntityWithTimestamps {
 	userId: string;
 
 	@Property({ nullable: true })
+	@Index({ options: { expireAfterSeconds: 0 } })
 	expiresAt: Date;
 
 	constructor(props: NotificationEntityProps) {

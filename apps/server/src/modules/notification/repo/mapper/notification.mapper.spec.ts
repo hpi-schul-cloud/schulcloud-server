@@ -1,6 +1,7 @@
 import { Notification } from '../../domain/do';
 import { NotificationEntity } from '../entities';
 import { NotificationMapper } from './notification.mapper';
+import { NotificationType } from '../../types';
 
 describe(NotificationMapper.name, () => {
 	const fixedDate = new Date('2023-01-01T00:00:00.000Z');
@@ -19,7 +20,7 @@ describe(NotificationMapper.name, () => {
 			const setup = () => {
 				const entity = {
 					id: 'notification-id',
-					type: 'NOTIFICATION_TYPE',
+					type: NotificationType.ERROR,
 					key: 'NOTIFICATION_KEY',
 					arguments: ['arg1', 'arg2'],
 					userId: 'user-id',
@@ -62,7 +63,7 @@ describe(NotificationMapper.name, () => {
 				const entities: NotificationEntity[] = [
 					{
 						id: 'notification-id-1',
-						type: 'NOTIFICATION_TYPE_1',
+						type: NotificationType.NOTE,
 						key: 'NOTIFICATION_KEY_1',
 						arguments: ['arg1'],
 						userId: 'user-id-1',
@@ -70,7 +71,7 @@ describe(NotificationMapper.name, () => {
 					} as NotificationEntity,
 					{
 						id: 'notification-id-2',
-						type: 'NOTIFICATION_TYPE_2',
+						type: NotificationType.ERROR,
 						key: 'NOTIFICATION_KEY_2',
 						arguments: ['arg2a', 'arg2b'],
 						userId: 'user-id-2',
@@ -108,7 +109,7 @@ describe(NotificationMapper.name, () => {
 			const setup = () => {
 				const domainObject = new Notification({
 					id: 'notification-id',
-					type: 'NOTIFICATION_TYPE',
+					type: NotificationType.ERROR,
 					key: 'NOTIFICATION_KEY',
 					arguments: ['arg1', 'arg2'],
 					userId: 'user-id',
@@ -152,7 +153,7 @@ describe(NotificationMapper.name, () => {
 				const domainObjects = [
 					new Notification({
 						id: 'notification-id-1',
-						type: 'NOTIFICATION_TYPE_1',
+						type: NotificationType.NOTE,
 						key: 'NOTIFICATION_KEY_1',
 						arguments: ['arg1'],
 						userId: 'user-id-1',
@@ -160,7 +161,7 @@ describe(NotificationMapper.name, () => {
 					}),
 					new Notification({
 						id: 'notification-id-2',
-						type: 'NOTIFICATION_TYPE_2',
+						type: NotificationType.ERROR,
 						key: 'NOTIFICATION_KEY_2',
 						arguments: ['arg2a', 'arg2b'],
 						userId: 'user-id-2',

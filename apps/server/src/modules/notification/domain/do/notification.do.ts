@@ -1,8 +1,9 @@
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { EntityId } from '@shared/domain/types';
+import { NotificationType } from '../../types';
 
 export interface NotificationProps extends AuthorizableObject {
-	type: string;
+	type: NotificationType;
 	key: string;
 	arguments: string[];
 	userId: EntityId;
@@ -10,7 +11,7 @@ export interface NotificationProps extends AuthorizableObject {
 }
 
 export class Notification extends DomainObject<NotificationProps> {
-	get type(): string {
+	get type(): NotificationType {
 		return this.props.type;
 	}
 

@@ -1,4 +1,5 @@
 import { Notification } from './notification.do';
+import { NotificationType } from '../../types';
 
 describe(Notification.name, () => {
 	describe('constructor', () => {
@@ -6,7 +7,7 @@ describe(Notification.name, () => {
 			const setup = () => {
 				const props = {
 					id: 'notification-id1',
-					type: 'common-cartridge',
+					type: NotificationType.NOTE,
 					key: 'IMPORT_COMPLETED',
 					arguments: ['course-123', 'success'],
 					userId: 'user-123',
@@ -29,7 +30,7 @@ describe(Notification.name, () => {
 			const setup = () => {
 				const props = {
 					id: 'notification-id-1',
-					type: 'common-cartridge',
+					type: NotificationType.NOTE,
 					key: 'IMPORT_FAILED',
 					arguments: ['course-456', 'error'],
 					userId: 'user-456',
@@ -54,7 +55,7 @@ describe(Notification.name, () => {
 			const setup = () => {
 				const props = {
 					id: 'notification-id-2',
-					type: 'common-cartridge',
+					type: NotificationType.ERROR,
 					key: 'IMPORT_IN_PROGRESS',
 					arguments: ['course-789', 'progress'],
 					userId: 'user-789',
