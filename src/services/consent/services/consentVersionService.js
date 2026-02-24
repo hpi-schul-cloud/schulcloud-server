@@ -1,5 +1,6 @@
 const { authenticate } = require('@feathersjs/authentication');
 const { iff, isProvider, disallow } = require('feathers-hooks-common');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const { BadRequest } = require('../../../errors');
 const { restrictToCurrentSchool, denyIfNotCurrentSchoolOrEmpty, hasPermission } = require('../../../hooks');
 const { isSuperheroUser } = require('../../../helper/userHelpers');
