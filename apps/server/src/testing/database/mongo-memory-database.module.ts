@@ -10,6 +10,7 @@ const dbName = (): string => _.times(20, () => _.random(35).toString(36)).join('
 
 const createMikroOrmModule = (options: MikroOrmModuleAsyncOptions): MaybePromise<DynamicModule> => {
 	const mikroOrmModule = MikroOrmModule.forRootAsync({
+		driver: MongoDriver,
 		useFactory: () => {
 			// eslint-disable-next-line @typescript-eslint/restrict-template-expressions, no-process-env
 			const clientUrl = `${process.env.MONGO_TEST_URI}/${dbName()}`;

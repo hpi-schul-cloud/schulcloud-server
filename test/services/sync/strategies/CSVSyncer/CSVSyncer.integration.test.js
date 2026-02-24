@@ -1339,14 +1339,14 @@ describe('CSVSyncer Integration', () => {
 			{
 				email: 'amail@bdaydomain.de',
 				birthday: '17.08.1988',
-				parsed: moment.utc('08/17/1988').toDate(),
+				parsed: moment.utc('08/17/1988', 'MM/DD/YYYY').toDate(),
 				firstName: 'Peter',
 				lastName: 'Griffin',
 			},
 			{
 				email: 'bmail@bdaydomain.de',
 				birthday: '01/04/1990',
-				parsed: moment.utc('04/01/1990').toDate(),
+				parsed: moment.utc('04/01/1990', 'MM/DD/YYYY').toDate(),
 				firstName: 'Adam',
 				lastName: 'West',
 			},
