@@ -27,11 +27,6 @@ export class ServerPublicApiConfig {
 	@IsBoolean()
 	public adminTablesDisplayConsentColumn = true;
 
-	@ConfigProperty('FEATURE_EXTENSIONS_ENABLED')
-	@StringToBoolean()
-	@IsBoolean()
-	public featureExtensionsEnabled = true;
-
 	@ConfigProperty('FEATURE_TEAMS_ENABLED')
 	@StringToBoolean()
 	@IsBoolean()
