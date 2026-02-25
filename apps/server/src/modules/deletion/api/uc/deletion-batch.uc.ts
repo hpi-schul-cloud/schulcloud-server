@@ -22,7 +22,7 @@ export class DeletionBatchUc {
 		private readonly deletionBatchService: DeletionBatchService,
 		private readonly accountService: AccountService,
 		private readonly userService: UserService
-	) {}
+	) { }
 
 	public async createDeletionBatch(params: CreateDeletionBatchParams): Promise<DeletionBatchSummary> {
 		const { validUserIds, invalidUserIds, skippedUserIds } = await this.validateAndFilterUserIds(params.targetRefIds);
@@ -88,13 +88,11 @@ export class DeletionBatchUc {
 		const allowedUserRoles = [
 			RoleName.STUDENT,
 			RoleName.COURSESTUDENT,
-			/*
 			RoleName.TEACHER,
 			RoleName.COURSETEACHER,
 			RoleName.COURSESUBSTITUTIONTEACHER,
 			RoleName.ADMINISTRATOR,
 			RoleName.COURSEADMINISTRATOR,
-			 */
 		];
 
 		const validUserIds: EntityId[] = [];
