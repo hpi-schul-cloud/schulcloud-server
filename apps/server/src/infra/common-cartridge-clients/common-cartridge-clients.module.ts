@@ -1,6 +1,15 @@
 import { ConfigurationModule } from '@infra/configuration';
 import { DynamicModule, Module } from '@nestjs/common';
 import {
+	BoardsClientAdapter,
+	CardClientAdapter,
+	ColumnClientAdapter,
+	CourseRoomsClientAdapter,
+	CoursesClientAdapter,
+	LessonClientAdapter,
+} from './adapter';
+import { InternalCommonCartridgeClientsConfig } from './common-cartridge-clients.config';
+import {
 	BoardApi,
 	BoardCardApi,
 	BoardColumnApi,
@@ -10,15 +19,6 @@ import {
 	CoursesApi,
 	LessonApi,
 } from './generated';
-import { InternalCommonCartridgeClientsConfig } from './common-cartridge-clients.config';
-import {
-	BoardsClientAdapter,
-	CardClientAdapter,
-	ColumnClientAdapter,
-	CourseRoomsClientAdapter,
-	CoursesClientAdapter,
-	LessonClientAdapter,
-} from './adapter';
 
 @Module({})
 export class CommonCartridgeClientsModule {

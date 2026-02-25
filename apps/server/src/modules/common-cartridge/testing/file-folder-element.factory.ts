@@ -2,22 +2,37 @@ import { Factory } from 'fishery';
 import { faker } from '@faker-js/faker';
 import { ContentElementType } from '@modules/board';
 import { BaseFactory } from '@testing/factory/base.factory';
-import { FileFolderElementContentDto } from '../../../infra/common-cartridge-clients/dto/card/file-folder-element-content.dto';
-import { FileFolderElementResponseDto } from '../../../infra/common-cartridge-clients/dto/card';
+import {
+	FileFolderElementContent,
+	FileFolderElementResponse,
+	TimestampsResponse,
+} from '@infra/common-cartridge-clients';
 
-export const fileFolderElementContentFactory = Factory.define<FileFolderElementContentDto>(() => {
+export const fileFolderElementContentFactory = Factory.define<FileFolderElementContent>(() => {
 	return {
 		title: faker.lorem.text(),
 	};
 });
 
-class FileFolderElementResponseDtoFactory extends BaseFactory<
-	FileFolderElementResponseDto,
-	Readonly<FileFolderElementResponseDto>
-> {}
+class FileFolderElementResponseImpl implements FileFolderElementResponse {
+	public readonly id: string;
+	public readonly type: ContentElementType;
+	public readonly content: FileFolderElementContent;
+	public readonly timestamps: TimestampsResponse;
 
+	constructor(props: Readonly<FileFolderElementResponseImpl>) {
+		this.id = props.id;
+		this.type = props.type;
+		this.content = props.content;
+		this.timestamps = props.timestamps;
+	}
+}
+class FileFolderElementResponseDtoFactory extends BaseFactory<
+	FileFolderElementResponseImpl,
+	Readonly<FileFolderElementResponseImpl>
+> {}
 export const fileFolderElementResponseDtoFactory = FileFolderElementResponseDtoFactory.define(
-	FileFolderElementResponseDto,
+	FileFolderElementResponseImpl,
 	() => {
 		return {
 			id: faker.string.uuid(),

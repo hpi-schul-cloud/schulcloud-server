@@ -1,11 +1,10 @@
 import { faker } from '@faker-js/faker';
 import { BaseFactory } from '@testing/factory/base.factory';
 import { Factory } from 'fishery';
-import { LinkElementContentDto } from '../../../infra/common-cartridge-clients/dto/card/link-element-content.dto';
-import { LinkElementResponseDto } from '../../../infra/common-cartridge-clients/dto/card/link-element-response.dto';
 import { ContentElementType } from '../../../infra/common-cartridge-clients/enum/content-element-type.enum';
+import { LinkElementContent, LinkElementResponse, TimestampsResponse } from '@infra/common-cartridge-clients';
 
-export const linkElementContentFactory = Factory.define<LinkElementContentDto>(() => {
+export const linkElementContentFactory = Factory.define<LinkElementContent>(() => {
 	return {
 		url: faker.internet.url(),
 		title: faker.lorem.word(),
@@ -13,8 +12,21 @@ export const linkElementContentFactory = Factory.define<LinkElementContentDto>((
 	};
 });
 
-class LinkElementFactory extends BaseFactory<LinkElementResponseDto, Readonly<LinkElementResponseDto>> {}
-export const linkElementFactory = LinkElementFactory.define(LinkElementResponseDto, () => {
+class LinkElementResponseImpl implements LinkElementResponse {
+	public readonly id: string;
+	public readonly type: ContentElementType;
+	public readonly content: LinkElementContent;
+	public readonly timestamps: TimestampsResponse;
+
+	constructor(props: Readonly<LinkElementResponseImpl>) {
+		this.id = props.id;
+		this.type = props.type;
+		this.content = props.content;
+		this.timestamps = props.timestamps;
+	}
+}
+class LinkElementFactory extends BaseFactory<LinkElementResponseImpl, Readonly<LinkElementResponseImpl>> {}
+export const linkElementFactory = LinkElementFactory.define(LinkElementResponseImpl, () => {
 	return {
 		id: faker.string.uuid(),
 		type: ContentElementType.LINK,

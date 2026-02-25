@@ -11,7 +11,6 @@ export const richTextElementContentFactory = Factory.define<RichTextElementConte
 	};
 });
 
-class RichTextElementFactory extends BaseFactory<RichTextElementResponseImpl, Readonly<RichTextElementResponseImpl>> {}
 class RichTextElementResponseImpl implements RichTextElementResponse {
 	public readonly id: string;
 	public readonly type: ContentElementType;
@@ -25,6 +24,7 @@ class RichTextElementResponseImpl implements RichTextElementResponse {
 		this.timestamps = props.timestamps;
 	}
 }
+class RichTextElementFactory extends BaseFactory<RichTextElementResponseImpl, Readonly<RichTextElementResponseImpl>> {}
 export const richTextElementFactroy = RichTextElementFactory.define(RichTextElementResponseImpl, () => {
 	return {
 		id: faker.string.uuid(),

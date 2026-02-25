@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker';
 import {
+	BoardColumnBoardResponse,
 	BoardLessonResponse,
 	BoardResponse,
 	BoardTaskResponse,
@@ -9,6 +10,8 @@ import {
 	ColumnResponse,
 	CourseCommonCartridgeMetadataResponse,
 	LessonContentResponse,
+	LessonContentResponseContent,
+	LessonLinkedTaskResponse,
 	LessonResponse,
 	SingleColumnBoardResponse,
 } from '@infra/common-cartridge-clients';
@@ -84,6 +87,11 @@ export const cardResponseFactory = Factory.define<CardResponse>(({ sequence, par
 			deletedAt: undefined,
 		},
 		title: faker.lorem.sentence(),
+		timestamps: {
+			createdAt: faker.date.past().toString(),
+			lastUpdatedAt: faker.date.recent().toString(),
+			deletedAt: undefined,
+		},
 	};
 });
 
@@ -117,7 +125,7 @@ export const listOfCardResponseFactory = CardListResponseDtoFactory.define(({ tr
 	};
 });
 
-export const lessonLinkedTaskFactory = Factory.define<LessonLinkedTaskDto>(() => {
+export const lessonLinkedTaskFactory = Factory.define<LessonLinkedTaskResponse>(() => {
 	return {
 		name: faker.lorem.word(),
 		description: faker.lorem.paragraph(),
@@ -134,7 +142,7 @@ export const lessonLinkedTaskFactory = Factory.define<LessonLinkedTaskDto>(() =>
 	};
 });
 
-export const lernstoreContentFactory = Factory.define<LessonContentDto>(({ sequence }) => {
+export const lernstoreContentFactory = Factory.define<LessonContentResponseContent>(({ sequence }) => {
 	return {
 		id: sequence.toString(),
 		type: 'resources',
@@ -163,11 +171,14 @@ export const lernstoreContentFactory = Factory.define<LessonContentDto>(({ seque
 		title: faker.lorem.sentence(),
 		component: 'resources',
 		hidden: faker.datatype.boolean(),
+		description: faker.lorem.lines(),
+		materialId: faker.string.uuid(),
 	};
 });
 
 export const lessonContentFactory = Factory.define<LessonContentResponse>(({ sequence }) => {
 	return {
+		_id: sequence.toString(),
 		id: sequence.toString(),
 		type: faker.lorem.word(),
 		content: { text: 'text' },
@@ -179,6 +190,7 @@ export const lessonContentFactory = Factory.define<LessonContentResponse>(({ seq
 
 export const lessonFactory = Factory.define<LessonResponse>(({ sequence }) => {
 	return {
+		_id: sequence.toString(),
 		id: sequence.toString(),
 		name: faker.lorem.word(),
 		courseId: undefined,
@@ -187,7 +199,6 @@ export const lessonFactory = Factory.define<LessonResponse>(({ sequence }) => {
 		position: faker.number.int(),
 		contents: [lessonContentFactory.build()],
 		materials: [],
-		linkedTasks: [lessonLinkedTaskFactory.build(), lessonLinkedTaskFactory.build()],
 	};
 });
 
@@ -216,18 +227,18 @@ export const boardTaskFactory = Factory.define<BoardTaskResponse>(({ sequence })
 		description: faker.lorem.word(),
 		displayColor: faker.lorem.word(),
 		dueDate: faker.date.recent().toISOString(),
-		status: new BoardTaskStatusResponse({
+		status: {
 			submitted: faker.number.int(),
 			maxSubmissions: faker.number.int(),
 			graded: faker.number.int(),
 			isDraft: faker.datatype.boolean(),
 			isSubstitutionTeacher: faker.datatype.boolean(),
 			isFinished: faker.datatype.boolean(),
-		}),
+		},
 	};
 });
 
-export const boardColumnFactory = Factory.define<BoardColumnBoardDto>(() => {
+export const boardColumnFactory = Factory.define<BoardColumnBoardResponse>(() => {
 	return {
 		id: faker.string.uuid(),
 		title: faker.lorem.word(),

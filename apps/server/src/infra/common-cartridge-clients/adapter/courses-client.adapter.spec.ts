@@ -1,19 +1,13 @@
 import { faker } from '@faker-js/faker';
-import { createMock } from '@golevelup/ts-jest';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CoursesClientAdapter } from './courses-client.adapter';
 import { CoursesApi, CreateCourseBodyParams } from '../generated';
 
-const coursesApiMock = createMock<CoursesApi>();
-jest.mock('./generated/api/courses-api', () => {
-	return {
-		CoursesApi: jest.fn().mockImplementation(() => coursesApiMock),
-	};
-});
-
 describe(CoursesClientAdapter.name, () => {
 	let module: TestingModule;
 	let sut: CoursesClientAdapter;
+	let coursesApiMock: DeepMocked<CoursesApi>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -21,12 +15,13 @@ describe(CoursesClientAdapter.name, () => {
 				CoursesClientAdapter,
 				{
 					provide: CoursesApi,
-					useValue: coursesApiMock,
+					useValue: createMock<CoursesApi>(),
 				},
 			],
 		}).compile();
 
 		sut = module.get(CoursesClientAdapter);
+		coursesApiMock = module.get(CoursesApi);
 	});
 
 	afterAll(async () => {

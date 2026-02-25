@@ -50,6 +50,7 @@ describe(CourseRoomsClientAdapter.name, () => {
 						isSynchronized: faker.datatype.boolean(),
 					},
 				});
+				courseRoomsApi.courseRoomsControllerGetRoomBoard.mockResolvedValueOnce(response);
 
 				return { roomId, response, jwt };
 			};
@@ -58,8 +59,12 @@ describe(CourseRoomsClientAdapter.name, () => {
 				const { roomId, response, jwt } = setup();
 				const result = await service.getRoomBoardByCourseId(jwt, roomId);
 
-				expect(courseRoomsApi.courseRoomsControllerGetRoomBoard).toHaveBeenCalledWith(roomId);
-				expect(result).toEqual(response);
+				expect(courseRoomsApi.courseRoomsControllerGetRoomBoard).toHaveBeenCalledWith(roomId, {
+					headers: {
+						Authorization: `Bearer ${jwt}`,
+					},
+				});
+				expect(result).toBe(response.data);
 			});
 		});
 	});
