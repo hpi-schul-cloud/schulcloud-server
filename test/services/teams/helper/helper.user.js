@@ -5,7 +5,9 @@ const { userModel } = require('../../../../src/services/user/model');
 const appPromise = require('../../../../src/app');
 const { warning } = require('../../../../src/logger/index');
 
+// eslint-disable-next-line no-process-env
 const TEST_PW = (process.env.TEST_PW || '').trim();
+// eslint-disable-next-line no-process-env
 const TEST_HASH = (process.env.TEST_HASH || '').trim();
 
 if (TEST_PW === '') warning('TEST_PW is not defined');
