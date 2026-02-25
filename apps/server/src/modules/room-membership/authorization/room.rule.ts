@@ -10,7 +10,6 @@ export const RoomOperationValues = [
 	'addAllStudents',
 	'addExternalPersonByEmail',
 	'addMembers',
-	'addAllStudents',
 	'arrangeRooms',
 	'changeRolesOfMembers',
 	'copyRoom',
