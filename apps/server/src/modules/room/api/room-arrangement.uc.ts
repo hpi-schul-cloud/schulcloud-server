@@ -3,6 +3,7 @@ import { RoleName } from '@modules/role';
 import { RoomMembershipService } from '@modules/room-membership';
 import { RoomRule } from '@modules/room-membership/authorization/room.rule';
 import { Injectable } from '@nestjs/common';
+import { TypeGuard } from '@shared/common/guards';
 import { EntityId } from '@shared/domain/types';
 import { RoomArrangementService, RoomService } from '../domain';
 import { RoomPermissionService } from './service';
@@ -46,7 +47,7 @@ export class RoomArrangementUc {
 					isLocked: !hasOwner,
 				};
 			})
-			.filter((item) => !!item);
+			.filter((room) => TypeGuard.isNotNullOrUndefined(room));
 
 		return roomsWithAllowedOperationsAndLockedStatus;
 	}

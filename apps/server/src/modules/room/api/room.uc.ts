@@ -293,7 +293,8 @@ export class RoomUc {
 				throw new Error('User not found in room member authorizables');
 			}
 			const allowedOperations = this.roomMemberRule.listAllowedOperations(currentUser, roomMemberAuthorizable);
-			const schoolRoleNames = user.roles.map((role) => role.name);
+			const schoolRoleNames = user.roles.getItems().map((role) => role.name);
+
 			return new RoomMemberResponse({
 				userId: member.userId,
 				firstName: user.firstName,
