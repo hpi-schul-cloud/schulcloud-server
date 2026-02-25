@@ -10,7 +10,6 @@ export const RoomOperationValues = [
 	'addAllStudents',
 	'addExternalPersonByEmail',
 	'addMembers',
-	'addAllStudents',
 	'arrangeRooms',
 	'changeRolesOfMembers',
 	'copyRoom',
@@ -296,10 +295,10 @@ const canShareRoom = (user: User, roomAuthorizable: RoomAuthorizable): boolean =
 
 const canUpdateRoomInvitationLinks = (user: User, roomAuthorizable: RoomAuthorizable): boolean => {
 	const { schoolPermissions, roomPermissions } = resolveUserPermissions(user, roomAuthorizable);
-	const hasSchooolPermission = schoolPermissions.includes(Permission.SCHOOL_MANAGE_ROOM_INVITATIONLINKS);
+	const hasSchoolPermission = schoolPermissions.includes(Permission.SCHOOL_MANAGE_ROOM_INVITATIONLINKS);
 	const hasRoomPermission = roomPermissions.includes(Permission.ROOM_MANAGE_INVITATIONLINKS);
 
-	const canUpdateRoomInvitationLinks = hasSchooolPermission && hasRoomPermission;
+	const canUpdateRoomInvitationLinks = hasSchoolPermission && hasRoomPermission;
 
 	return canUpdateRoomInvitationLinks;
 };
