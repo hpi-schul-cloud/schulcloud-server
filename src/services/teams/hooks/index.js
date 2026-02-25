@@ -62,12 +62,7 @@ const teamMainHook = globalHooks.ifNotLocal((hook) =>
 			}
 			const sessionSchoolId = bsonIdToString(sessionUser.schoolId);
 
-			if (method === 'create') {
-				// eslint-disable-next-line no-param-reassign
-				team = updateMissingDataInHookForCreate(hook, sessionUser);
-				users.push(sessionUser);
-				hook.data = team;
-			} else if (method === 'find') {
+			if (method === 'find') {
 				hook.params.query.userIds = { $elemMatch: { userId } };
 				return hook;
 			}
@@ -648,36 +643,6 @@ const addCurrentUser = globalHooks.ifNotLocal((hook) => {
 });
 
 /**
- * Test if the sessionUser is allowed to create a team. Every teacher and admin can create teams.
- * Students can create teams if it is not disabled (can be blocked by school settings)
- * If not throw an error.
- * @beforeHook
- */
-const isAllowedToCreateTeams = (hook) =>
-	getSessionUser(hook).then((sessionUser) =>
-		hook.app
-			.service('schools')
-			.get(hook.data.schoolId)
-			.then((school) => {
-				const roleNames = sessionUser.roles.map((role) => role.name);
-				if (
-					roleNames.includes('superhero') ||
-					roleNames.includes('administrator') ||
-					roleNames.includes('teacher') ||
-					roleNames.includes('student')
-				) {
-					if (roleNames.includes('student') && !school.isTeamCreationByStudentsEnabled) {
-						throw new Forbidden('Your school admin does not allow team creations by students.');
-					}
-				} else {
-					throw new Forbidden('Only administrator, teacher and students can create teams.');
-				}
-
-				return hook;
-			})
-	);
-
-/**
  * Test if data.userId is set. If true it test if the role is teacher. If not throw an error.
  * @beforeHook
  */
@@ -841,14 +806,6 @@ exports.before = {
 	],
 	find: [teamMainHook],
 	get: [teamMainHook],
-	create: [
-		filterToRelated(keys.data, 'data'),
-		globalHooks.injectUserId,
-		isAllowedToCreateTeams,
-		testInputData,
-		updateUsersForEachClass,
-		teamMainHook,
-	], // inject is needing?
 	update: [blockedMethod],
 	patch: [
 		rejectDefaultFilePermissionUpdatesIfNotPermitted,
