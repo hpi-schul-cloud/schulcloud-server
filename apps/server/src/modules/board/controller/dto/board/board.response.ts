@@ -2,7 +2,6 @@ import { BoardOperation, BoardOperationValues } from '@modules/board/authorisati
 import { ApiProperty } from '@nestjs/swagger';
 import { bsonStringPattern } from '@shared/controller/bson-string-pattern';
 import { DecodeHtmlEntities } from '@shared/controller/transformer';
-import { IsIn } from 'class-validator';
 import { BoardFeature, BoardLayout } from '../../../domain';
 import { TimestampsResponse } from '../timestamps.response';
 import { ColumnResponse } from './column.response';
@@ -68,6 +67,5 @@ export class BoardResponse {
 		additionalProperties: false,
 		required: [...BoardOperationValues],
 	})
-	@IsIn(BoardOperationValues)
 	public allowedOperations: Record<BoardOperation, boolean>;
 }

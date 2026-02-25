@@ -4,7 +4,6 @@ import {
 	RoomMemberOperationValues,
 } from '@modules/room-membership/authorization/room-member.rule';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsIn } from 'class-validator';
 
 export class RoomMemberResponse {
 	@ApiProperty()
@@ -37,7 +36,6 @@ export class RoomMemberResponse {
 		additionalProperties: false,
 		required: [...RoomMemberOperationValues],
 	})
-	@IsIn(RoomMemberOperationValues)
 	public allowedOperations: Record<RoomMemberOperation, boolean>;
 
 	constructor(props: RoomMemberResponse) {

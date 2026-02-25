@@ -1,7 +1,7 @@
 import { RoomOperation, RoomOperationValues } from '@modules/room-membership/authorization/room.rule';
 import { RoomColor, RoomFeatures } from '@modules/room/domain/type';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsEnum, IsIn } from 'class-validator';
+import { IsEnum } from 'class-validator';
 
 export class RoomDetailsResponse {
 	@ApiProperty()
@@ -38,7 +38,6 @@ export class RoomDetailsResponse {
 		additionalProperties: false,
 		required: [...RoomOperationValues],
 	})
-	@IsIn(RoomOperationValues)
 	public allowedOperations: Record<RoomOperation, boolean>;
 
 	@ApiProperty({ enum: RoomFeatures, isArray: true, enumName: 'RoomFeatures' })
