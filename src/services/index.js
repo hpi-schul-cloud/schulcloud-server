@@ -8,7 +8,6 @@ const calendar = require('./calendar');
 const school = require('./school');
 const system = require('./system');
 const lesson = require('./lesson');
-const edusharing = require('./edusharing');
 const account = require('./account');
 const authentication = require('./authentication');
 const user = require('./user');
@@ -82,7 +81,6 @@ module.exports = function initializeServices() {
 	app.configure(oauth2);
 	app.configure(roster);
 	app.configure(datasources);
-	app.configure(edusharing);
 	app.configure(etherpad);
 	app.configure(storageProvider);
 	app.configure(activation);

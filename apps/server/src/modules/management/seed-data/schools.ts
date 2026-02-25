@@ -141,9 +141,7 @@ const seedSchools: SeedSchoolProperties[] = [
 		currentYear: SeedSchoolYearEnum['2022/23'],
 		purpose: SchoolPurpose.DEMO,
 		permissions: {
-			student: {
-				LERNSTORE_VIEW: true,
-			},
+			student: {},
 		},
 		features: [SchoolFeature.ROCKET_CHAT, SchoolFeature.STUDENTVISIBILITY, SchoolFeature.OAUTH_PROVISIONING_ENABLED],
 		documentBaseDirType: '',
@@ -170,9 +168,7 @@ const seedSchools: SeedSchoolProperties[] = [
 		currentYear: SeedSchoolYearEnum['2022/23'],
 		purpose: SchoolPurpose.DEMO,
 		permissions: {
-			student: {
-				LERNSTORE_VIEW: true,
-			},
+			student: {},
 		},
 		features: [SchoolFeature.ROCKET_CHAT, SchoolFeature.OAUTH_PROVISIONING_ENABLED],
 		documentBaseDirType: '',
@@ -194,9 +190,7 @@ const seedSchools: SeedSchoolProperties[] = [
 		currentYear: SeedSchoolYearEnum['2022/23'],
 		purpose: SchoolPurpose.DEMO,
 		permissions: {
-			student: {
-				LERNSTORE_VIEW: true,
-			},
+			student: {},
 		},
 		features: [SchoolFeature.ROCKET_CHAT, SchoolFeature.STUDENTVISIBILITY, SchoolFeature.OAUTH_PROVISIONING_ENABLED],
 		documentBaseDirType: '',

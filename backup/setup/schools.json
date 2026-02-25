@@ -180,9 +180,7 @@
 		"__v": 0,
 		"purpose": "demo",
 		"permissions": {
-			"student": {
-				"LERNSTORE_VIEW": true
-			}
+			"student": {}
 		},
 		"language": "de",
 		"logo_dataUrl": "",
@@ -227,9 +225,7 @@
 		"__v": 0,
 		"purpose": "demo",
 		"permissions": {
-			"student": {
-				"LERNSTORE_VIEW": true
-			}
+			"student": {}
 		},
 		"language": "de",
 		"logo_dataUrl": "",
@@ -269,9 +265,7 @@
 		"__v": 0,
 		"purpose": "demo",
 		"permissions": {
-			"student": {
-				"LERNSTORE_VIEW": true
-			}
+			"student": {}
 		},
 		"language": "en",
 		"logo_dataUrl": "",

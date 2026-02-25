@@ -131,6 +131,14 @@ describe(`deletionRequest create (api)`, () => {
 			expect(account?.deactivatedAt).toBeDefined();
 		});
 
+		it('should flag user as deleted until actual deletion is performed', async () => {
+			const { deletionRequestToCreate } = await setup();
+
+			await testApiClient.post('', deletionRequestToCreate);
+			const account = await em.findOne(AccountEntity, { userId: new ObjectId(deletionRequestToCreate.targetRef.id) });
+			expect(account?.deactivatedAt).toBeDefined();
+		});
+
 		describe('when the "delete after minutes" param has not been provided', () => {
 			it('should set the "deleteAfter" date to the date after the default DELETION_DELETE_AFTER_MINUTES ', async () => {
 				const { deletionRequestToCreate, defaultDeleteAfterMinutes, operationalTimeToleranceInSeconds } = await setup();

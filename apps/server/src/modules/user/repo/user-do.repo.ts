@@ -38,6 +38,7 @@ export class UserDoMikroOrmRepo extends BaseDORepo<UserDo, User> implements User
 				query.lastLoginSystemChangeBetweenEnd
 			)
 			.withOutdatedSince(query.outdatedSince)
+			.withDeleted(false)
 			.allowEmptyQuery(true);
 
 		order._id = order._id ?? SortOrder.asc;

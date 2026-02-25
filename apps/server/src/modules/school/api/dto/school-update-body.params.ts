@@ -32,11 +32,7 @@ class TeacherPermissionParams implements TeacherPermission {
 	[Permission.STUDENT_LIST]?: boolean;
 }
 
-class StudentPermissionParams implements StudentPermission {
-	@ApiPropertyOptional()
-	@IsBoolean()
-	[Permission.LERNSTORE_VIEW]?: boolean;
-}
+class StudentPermissionParams implements StudentPermission {}
 
 class SchoolPermissionsParams implements SchoolPermissions {
 	@IsOptional()

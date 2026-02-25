@@ -277,10 +277,6 @@ export class User extends BaseEntityWithTimestamps {
 			);
 		}
 
-		if (roles.some((role) => role.name === RoleName.STUDENT)) {
-			setOfPermissions = this.resolveSchoolPermissionsForStudent(setOfPermissions, schoolPermissions);
-		}
-
 		return setOfPermissions;
 	}
 
@@ -300,19 +296,6 @@ export class User extends BaseEntityWithTimestamps {
 			setOfPermissions.add(Permission.STUDENT_LIST);
 		} else {
 			setOfPermissions.delete(Permission.STUDENT_LIST);
-		}
-
-		return setOfPermissions;
-	}
-
-	private resolveSchoolPermissionsForStudent(
-		setOfPermissions: Set<Permission>,
-		schoolPermissions?: SchoolRoles
-	): Set<Permission> {
-		if (schoolPermissions?.student?.LERNSTORE_VIEW === true) {
-			setOfPermissions.add(Permission.LERNSTORE_VIEW);
-		} else if (schoolPermissions?.student?.LERNSTORE_VIEW === false) {
-			setOfPermissions.delete(Permission.LERNSTORE_VIEW);
 		}
 
 		return setOfPermissions;

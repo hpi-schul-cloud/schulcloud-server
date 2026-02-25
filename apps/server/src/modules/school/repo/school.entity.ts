@@ -50,9 +50,6 @@ export interface SchoolProperties {
 export class SchoolRolePermission {
 	@Property({ nullable: true })
 	STUDENT_LIST?: boolean;
-
-	@Property({ nullable: true })
-	LERNSTORE_VIEW?: boolean;
 }
 
 @Embeddable()
