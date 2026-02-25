@@ -1,25 +1,26 @@
 import { faker } from '@faker-js/faker';
-import { Factory } from 'fishery';
-import { CourseCommonCartridgeMetadataDto } from '@infra/courses-client/dto';
-import { BoardResponse, ColumnResponse, CardSkeletonResponse } from '@infra/boards-client';
-import { LessonContentDto, LessonDto, LessonLinkedTaskDto } from '../common-cartridge-client/lesson-client/dto';
-import { CardListResponseDto } from '../common-cartridge-client/card-client/dto/card-list-response.dto';
-import { CardResponseDto } from '../common-cartridge-client/card-client/dto/card-response.dto';
 import {
-	RoomBoardDto,
-	BoardTaskStatusDto,
-	BoardTaskDto,
-	BoardLessonDto,
-	BoardColumnBoardDto,
-} from '../common-cartridge-client/room-client/dto';
-import { BoardElementDtoType } from '../common-cartridge-client/room-client/enums/board-element.enum';
-import { BoardLayout } from '../common-cartridge-client/room-client/enums/board-layout.enum';
-import { richTextElementFactroy } from './rich-text-element.factory';
-import { linkElementFactory } from './link-element.factory';
+	BoardLessonResponse,
+	BoardResponse,
+	BoardTaskResponse,
+	CardListResponse,
+	CardResponse,
+	CardSkeletonResponse,
+	ColumnResponse,
+	CourseCommonCartridgeMetadataResponse,
+	LessonContentResponse,
+	LessonResponse,
+	SingleColumnBoardResponse,
+} from '@infra/common-cartridge-clients';
+import { Factory } from 'fishery';
+import { BoardElementDtoType } from '../../../infra/common-cartridge-clients/enum/board-element.enum';
+import { BoardLayout } from '../../../infra/common-cartridge-clients/enum/board-layout.enum';
 import { fileElementResponseDtoFactory } from './file-element.factory';
 import { fileFolderElementResponseDtoFactory } from './file-folder-element.factory';
+import { linkElementFactory } from './link-element.factory';
+import { richTextElementFactroy } from './rich-text-element.factory';
 
-export const courseMetadataFactory = Factory.define<CourseCommonCartridgeMetadataDto>(({ sequence }) => {
+export const courseMetadataFactory = Factory.define<CourseCommonCartridgeMetadataResponse>(({ sequence }) => {
 	return {
 		id: sequence.toString(),
 		title: faker.lorem.sentence(),
@@ -55,6 +56,8 @@ export const columnBoardFactory = Factory.define<BoardResponse>(({ sequence }) =
 		isVisible: faker.datatype.boolean(),
 		layout: BoardLayout.COLUMNS,
 		features: [],
+		permissions: [],
+		readersCanEdit: false,
 		timestamps: {
 			createdAt: faker.date.recent().toISOString(),
 			lastUpdatedAt: faker.date.recent().toISOString(),
@@ -62,7 +65,7 @@ export const columnBoardFactory = Factory.define<BoardResponse>(({ sequence }) =
 	};
 });
 
-export const cardResponseFactory = Factory.define<CardResponseDto>(({ sequence, params }) => {
+export const cardResponseFactory = Factory.define<CardResponse>(({ sequence, params }) => {
 	return {
 		id: params.id ?? sequence.toString(),
 		height: faker.number.int(),
@@ -88,7 +91,7 @@ type CardListResponseDtoFactoryTransientParams = {
 	cardIds: string[];
 };
 
-class CardListResponseDtoFactory extends Factory<CardListResponseDto, CardListResponseDtoFactoryTransientParams> {
+class CardListResponseDtoFactory extends Factory<CardListResponse, CardListResponseDtoFactoryTransientParams> {
 	public withCardIds(cardIds: string[]): this {
 		return this.transient({
 			cardIds,
@@ -97,7 +100,7 @@ class CardListResponseDtoFactory extends Factory<CardListResponseDto, CardListRe
 }
 
 export const listOfCardResponseFactory = CardListResponseDtoFactory.define(({ transientParams }) => {
-	let data: CardResponseDto[] = [];
+	let data: CardResponse[] = [];
 
 	if (transientParams.cardIds) {
 		data = transientParams.cardIds.map((cardId) =>
@@ -163,7 +166,7 @@ export const lernstoreContentFactory = Factory.define<LessonContentDto>(({ seque
 	};
 });
 
-export const lessonContentFactory = Factory.define<LessonContentDto>(({ sequence }) => {
+export const lessonContentFactory = Factory.define<LessonContentResponse>(({ sequence }) => {
 	return {
 		id: sequence.toString(),
 		type: faker.lorem.word(),
@@ -174,9 +177,9 @@ export const lessonContentFactory = Factory.define<LessonContentDto>(({ sequence
 	};
 });
 
-export const lessonFactory = Factory.define<LessonDto>(({ sequence }) => {
+export const lessonFactory = Factory.define<LessonResponse>(({ sequence }) => {
 	return {
-		lessonId: sequence.toString(),
+		id: sequence.toString(),
 		name: faker.lorem.word(),
 		courseId: undefined,
 		courseGroupId: faker.string.uuid(),
@@ -188,7 +191,7 @@ export const lessonFactory = Factory.define<LessonDto>(({ sequence }) => {
 	};
 });
 
-export const boardLessonFactory = Factory.define<BoardLessonDto>(() => {
+export const boardLessonFactory = Factory.define<BoardLessonResponse>(() => {
 	return {
 		id: faker.string.uuid(),
 		name: faker.lorem.word(),
@@ -202,7 +205,7 @@ export const boardLessonFactory = Factory.define<BoardLessonDto>(() => {
 	};
 });
 
-export const boardTaskFactory = Factory.define<BoardTaskDto>(({ sequence }) => {
+export const boardTaskFactory = Factory.define<BoardTaskResponse>(({ sequence }) => {
 	return {
 		id: sequence.toString(),
 		name: faker.lorem.word(),
@@ -213,7 +216,7 @@ export const boardTaskFactory = Factory.define<BoardTaskDto>(({ sequence }) => {
 		description: faker.lorem.word(),
 		displayColor: faker.lorem.word(),
 		dueDate: faker.date.recent().toISOString(),
-		status: new BoardTaskStatusDto({
+		status: new BoardTaskStatusResponse({
 			submitted: faker.number.int(),
 			maxSubmissions: faker.number.int(),
 			graded: faker.number.int(),
@@ -236,7 +239,7 @@ export const boardColumnFactory = Factory.define<BoardColumnBoardDto>(() => {
 	};
 });
 
-export const roomFactory = Factory.define<RoomBoardDto>(({ sequence }) => {
+export const roomFactory = Factory.define<SingleColumnBoardResponse>(({ sequence }) => {
 	return {
 		roomId: sequence.toString(),
 		title: faker.lorem.word(),

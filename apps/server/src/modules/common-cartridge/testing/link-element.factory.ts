@@ -1,9 +1,9 @@
 import { faker } from '@faker-js/faker';
 import { BaseFactory } from '@testing/factory/base.factory';
 import { Factory } from 'fishery';
-import { LinkElementContentDto } from '../common-cartridge-client/card-client/dto/link-element-content.dto';
-import { LinkElementResponseDto } from '../common-cartridge-client/card-client/dto/link-element-response.dto';
-import { ContentElementType } from '../common-cartridge-client/card-client/enums/content-element-type.enum';
+import { LinkElementContentDto } from '../../../infra/common-cartridge-clients/dto/card/link-element-content.dto';
+import { LinkElementResponseDto } from '../../../infra/common-cartridge-clients/dto/card/link-element-response.dto';
+import { ContentElementType } from '../../../infra/common-cartridge-clients/enum/content-element-type.enum';
 
 export const linkElementContentFactory = Factory.define<LinkElementContentDto>(() => {
 	return {

@@ -2,8 +2,8 @@ import { Factory } from 'fishery';
 import { faker } from '@faker-js/faker';
 import { ContentElementType } from '@modules/board';
 import { BaseFactory } from '@testing/factory/base.factory';
-import { FileElementContentDto } from '../common-cartridge-client/card-client/dto/file-element-content.dto';
-import { FileElementResponseDto } from '../common-cartridge-client/card-client/dto';
+import { FileElementContentDto } from '../../../infra/common-cartridge-clients/dto/card/file-element-content.dto';
+import { FileElementResponseDto } from '../../../infra/common-cartridge-clients/dto/card';
 
 export const fileElementContentFactory = Factory.define<FileElementContentDto>(() => {
 	return {

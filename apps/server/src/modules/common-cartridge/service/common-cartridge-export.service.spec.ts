@@ -16,7 +16,7 @@ import {
 	CardListResponseDto,
 	LinkElementContentDto,
 	RichTextElementContentDto,
-} from '../common-cartridge-client/card-client/dto';
+} from '../../../infra/common-cartridge-clients/dto/card';
 import { LessonClientAdapter } from '../common-cartridge-client/lesson-client/lesson-client.adapter';
 import { CourseRoomsClientAdapter } from '../common-cartridge-client/room-client';
 import {
