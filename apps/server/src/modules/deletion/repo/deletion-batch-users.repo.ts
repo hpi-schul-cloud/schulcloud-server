@@ -12,9 +12,14 @@ export type UsersCountByRole = {
 	userCount: number;
 };
 
+export type UserWithRoles = {
+	id: string;
+	roles: string[];
+};
+
 @Injectable()
 export class DeletionBatchUsersRepo {
-	constructor(private readonly em: EntityManager) {}
+	constructor(private readonly em: EntityManager) { }
 
 	public async countUsersByRole(userIds: EntityId[]): Promise<UsersCountByRole[]> {
 		if (userIds.length === 0) {
@@ -102,5 +107,61 @@ export class DeletionBatchUsersRepo {
 		const usersByRole = await this.em.getConnection().aggregate<UserIdsByRole>('users', pipeline);
 
 		return usersByRole;
+	}
+
+	public async getUsersWithRoles(userIds: EntityId[]): Promise<UserWithRoles[]> {
+		if (userIds.length === 0) {
+			return [];
+		}
+		const pipeline = [
+			{
+				$match: {
+					_id: { $in: userIds.map((id) => new ObjectId(id)) },
+				},
+			},
+			{
+				$unwind: {
+					path: '$roles',
+					preserveNullAndEmptyArrays: true,
+				},
+			},
+			{
+				$lookup: {
+					from: 'roles',
+					localField: 'roles',
+					foreignField: '_id',
+					as: 'roleDetails',
+				},
+			},
+			{
+				$unwind: {
+					path: '$roleDetails',
+					preserveNullAndEmptyArrays: true,
+				},
+			},
+			{
+				$group: {
+					_id: '$_id',
+					roles: { $push: '$roleDetails.name' },
+				},
+			},
+			{
+				$project: {
+					_id: 0,
+					id: { $toString: '$_id' },
+					roles: {
+						$filter: {
+							input: '$roles',
+							as: 'role',
+							cond: { $ne: ['$$role', null] },
+						},
+					},
+				},
+			},
+		];
+
+		const usersWithRoles = await this.em.getConnection().aggregate<UserWithRoles>('users', pipeline);
+
+		return usersWithRoles;
 	}
 }

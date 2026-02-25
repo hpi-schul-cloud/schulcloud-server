@@ -41,7 +41,7 @@ export class DeletionBatchService {
 		private readonly deletionBatchRepo: DeletionBatchRepo,
 		private readonly deletionBatchUsersRepo: DeletionBatchUsersRepo,
 		private readonly deletionRequestService: DeletionRequestService
-	) {}
+	) { }
 
 	public async findById(batchId: EntityId): Promise<DeletionBatch> {
 		const deletionBatch = await this.deletionBatchRepo.findById(batchId);
@@ -176,6 +176,38 @@ export class DeletionBatchService {
 		const usersByRole = await this.deletionBatchUsersRepo.countUsersByRole(userIds);
 
 		return usersByRole;
+	}
+
+	public async filterUsersByRoles(
+		userIds: EntityId[],
+		allowedRoles: string[]
+	): Promise<{ validUserIds: EntityId[]; invalidUserIds: EntityId[]; skippedUserIds: EntityId[] }> {
+		const validUserIds: EntityId[] = [];
+		const invalidUserIds: EntityId[] = [];
+		const skippedUserIds: EntityId[] = [];
+
+		const usersWithRoles = await this.deletionBatchUsersRepo.getUsersWithRoles(userIds);
+
+		const userRoleMap = new Map<EntityId, string[]>();
+		for (const user of usersWithRoles) {
+			userRoleMap.set(user.id, user.roles);
+		}
+
+		for (const userId of userIds) {
+			if (!userRoleMap.has(userId)) {
+				invalidUserIds.push(userId);
+			} else {
+				const roles = userRoleMap.get(userId)!;
+				const hasAllowedRole = roles.some((role) => allowedRoles.includes(role));
+				if (hasAllowedRole) {
+					validUserIds.push(userId);
+				} else {
+					skippedUserIds.push(userId);
+				}
+			}
+		}
+
+		return { validUserIds, invalidUserIds, skippedUserIds };
 	}
 
 	private async buildSummary(batch: DeletionBatch): Promise<DeletionBatchSummary> {

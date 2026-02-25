@@ -1,6 +1,5 @@
 import { RoleName } from '@modules/role';
 import { AccountService } from '@modules/account';
-import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions } from '@shared/domain/interface';
@@ -21,7 +20,6 @@ export class DeletionBatchUc {
 	constructor(
 		private readonly deletionBatchService: DeletionBatchService,
 		private readonly accountService: AccountService,
-		private readonly userService: UserService
 	) { }
 
 	public async createDeletionBatch(params: CreateDeletionBatchParams): Promise<DeletionBatchSummary> {
@@ -95,25 +93,7 @@ export class DeletionBatchUc {
 			RoleName.COURSEADMINISTRATOR,
 		];
 
-		const validUserIds: EntityId[] = [];
-		const invalidUserIds: EntityId[] = [];
-		const skippedUserIds: EntityId[] = [];
-
-		// TODO optimise findByIdsAndRoles
-		const userChecks = targetRefIds.map(async (userId) => {
-			const user = await this.userService.findByIdOrNull(userId);
-			if (user) {
-				if (user.roles.some((role) => allowedUserRoles.includes(role.name))) {
-					validUserIds.push(userId);
-				} else {
-					skippedUserIds.push(userId);
-				}
-			} else {
-				invalidUserIds.push(userId);
-			}
-		});
-
-		await Promise.all(userChecks);
+		const { validUserIds, invalidUserIds, skippedUserIds } = await this.deletionBatchService.filterUsersByRoles(targetRefIds, allowedUserRoles);
 
 		return { validUserIds, invalidUserIds, skippedUserIds };
 	}
