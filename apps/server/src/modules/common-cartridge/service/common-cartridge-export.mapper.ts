@@ -92,10 +92,10 @@ export class CommonCartridgeExportMapper {
 			case LessonContentResponseComponent.RESOURCES: {
 				const { resources } = lessonContent.content as ComponentLernstorePropsImpl;
 				return (
-					resources.map((resource) => {
+					resources.map((resource, index) => {
 						return {
 							type: CommonCartridgeResourceType.WEB_LINK,
-							identifier: createIdentifier(lessonContent.id),
+							identifier: `${createIdentifier(lessonContent.id)}-${index}`,
 							title: resource.title,
 							url: resource.url || '',
 						};
