@@ -19,7 +19,7 @@ export type UserWithRoles = {
 
 @Injectable()
 export class DeletionBatchUsersRepo {
-	constructor(private readonly em: EntityManager) { }
+	constructor(private readonly em: EntityManager) {}
 
 	public async countUsersByRole(userIds: EntityId[]): Promise<UsersCountByRole[]> {
 		if (userIds.length === 0) {
@@ -110,19 +110,12 @@ export class DeletionBatchUsersRepo {
 	}
 
 	public async getUsersWithRoles(userIds: EntityId[]): Promise<UserWithRoles[]> {
-		if (userIds.length === 0) {
-			return [];
-		}
+		if (userIds.length === 0) return [];
+
 		const pipeline = [
 			{
 				$match: {
 					_id: { $in: userIds.map((id) => new ObjectId(id)) },
-				},
-			},
-			{
-				$unwind: {
-					path: '$roles',
-					preserveNullAndEmptyArrays: true,
 				},
 			},
 			{
@@ -134,26 +127,14 @@ export class DeletionBatchUsersRepo {
 				},
 			},
 			{
-				$unwind: {
-					path: '$roleDetails',
-					preserveNullAndEmptyArrays: true,
-				},
-			},
-			{
-				$group: {
-					_id: '$_id',
-					roles: { $push: '$roleDetails.name' },
-				},
-			},
-			{
 				$project: {
 					_id: 0,
 					id: { $toString: '$_id' },
 					roles: {
-						$filter: {
-							input: '$roles',
+						$map: {
+							input: '$roleDetails',
 							as: 'role',
-							cond: { $ne: ['$$role', null] },
+							in: '$$role.name',
 						},
 					},
 				},
