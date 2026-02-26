@@ -190,13 +190,13 @@ describe('CommonCartridgeExportMapper', () => {
 
 				expect(result[0]).toEqual({
 					type: CommonCartridgeResourceType.WEB_LINK,
-					identifier: `i${lessonContent.id ?? ''}`,
+					identifier: `i${lessonContent.id ?? ''}-0`,
 					title: (lessonContent.content as ComponentLernstorePropsImpl).resources[0].title,
 					url: (lessonContent.content as ComponentLernstorePropsImpl).resources[0].url,
 				});
 				expect(result[1]).toEqual({
 					type: CommonCartridgeResourceType.WEB_LINK,
-					identifier: `i${lessonContent.id ?? ''}`,
+					identifier: `i${lessonContent.id ?? ''}-1`,
 					title: (lessonContent.content as ComponentLernstorePropsImpl).resources[1].title,
 					url: (lessonContent.content as ComponentLernstorePropsImpl).resources[1].url,
 				});
