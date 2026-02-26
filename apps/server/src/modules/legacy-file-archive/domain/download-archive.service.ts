@@ -53,27 +53,57 @@ export class DownloadArchiveService implements OnModuleInit {
 		ownerType: OwnerType,
 		archiveName: string
 	): Promise<GetFileResponse> {
-		console.log(`Downloading files for ownerId: ${ownerId}, ownerType: ${ownerType}, archiveName: ${archiveName}`);
 		const files = await this.filesRepo.findByIdAndOwnerType(ownerId, ownerType);
 
+		const filesById = this.createFileMap(files);
+		const downloadableFiles = this.filterDownloadableFiles(files);
+		this.ensureFilesExist(downloadableFiles);
+
+		const fileResponses = await this.downloadFiles(downloadableFiles, filesById);
+		const archive = ArchiveFactory.create(fileResponses, downloadableFiles, this.logger);
+
+		return FileResponseFactory.createFromArchive(archiveName, archive);
+	}
+
+	private ensureFilesExist(files: FileEntity[]): void {
 		if (files.length === 0) {
 			throw new NotFoundException('No files found to download as archive');
 		}
+	}
 
-		const getFileResponses: GetFileResponse[] = await Promise.all(
-			files.map(async (file) => {
-				const fileData = await this.downloadFile(file);
-				return {
-					name: file.name,
-					data: fileData.data,
-				};
-			})
-		);
+	private createFileMap(files: FileEntity[]): Map<EntityId, FileEntity> {
+		return new Map(files.map((file) => [file.id, file]));
+	}
 
-		const archive = ArchiveFactory.create(getFileResponses, files, this.logger);
-		const fileResponse = FileResponseFactory.createFromArchive(archiveName, archive);
+	private filterDownloadableFiles(files: FileEntity[]): FileEntity[] {
+		return files.filter((file) => !file.isDirectory);
+	}
 
-		return fileResponse;
+	private downloadFiles(files: FileEntity[], filesById: Map<EntityId, FileEntity>): Promise<GetFileResponse[]> {
+		const filePromises = files.map((file) => this.downloadFileWithPath(file, filesById));
+
+		return Promise.all(filePromises);
+	}
+
+	private async downloadFileWithPath(file: FileEntity, filesById: Map<EntityId, FileEntity>): Promise<GetFileResponse> {
+		const fileData = await this.downloadFile(file);
+
+		return {
+			name: this.buildFilePath(file, filesById),
+			data: fileData.data,
+		};
+	}
+
+	private buildFilePath(file: FileEntity, filesById: Map<EntityId, FileEntity>): string {
+		const pathSegments: string[] = [];
+		let currentFile: FileEntity | undefined = file;
+
+		while (currentFile) {
+			pathSegments.unshift(currentFile.name);
+			currentFile = currentFile.parentId ? filesById.get(currentFile.parentId) : undefined;
+		}
+
+		return pathSegments.join('/');
 	}
 
 	private async downloadFile(file: FileEntity): Promise<GetFileResponse> {
