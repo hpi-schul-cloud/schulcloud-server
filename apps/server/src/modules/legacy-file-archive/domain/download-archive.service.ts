@@ -14,6 +14,8 @@ import { GetFileResponse, OwnerType } from './interfaces';
 
 @Injectable()
 export class DownloadArchiveService implements OnModuleInit {
+	private s3Clients = new Map<string, { s3Client: S3Client; provider: StorageProviderEntity }>();
+
 	constructor(
 		private readonly logger: Logger,
 		private readonly storageProviderRepo: StorageProviderRepo,
@@ -24,28 +26,7 @@ export class DownloadArchiveService implements OnModuleInit {
 	}
 
 	public async onModuleInit(): Promise<void> {
-		await this.initializeS3ClientAdapters();
-	}
-
-	private s3Clients = new Map<string, { s3Client: S3Client; provider: StorageProviderEntity }>();
-
-	private async initializeS3ClientAdapters(): Promise<void> {
-		const providers = await this.storageProviderRepo.findAll();
-
-		providers.forEach((provider) => {
-			const s3Client = new S3Client({
-				endpoint: provider.endpointUrl,
-				region: provider.region,
-				credentials: {
-					accessKeyId: provider.accessKeyId,
-					secretAccessKey: provider.secretAccessKey,
-				},
-				forcePathStyle: true,
-				tls: true,
-			});
-
-			this.s3Clients.set(provider.id, { s3Client, provider });
-		});
+		await this.initializeS3Clients();
 	}
 
 	public async downloadFilesAsArchive(
@@ -63,6 +44,30 @@ export class DownloadArchiveService implements OnModuleInit {
 		const archive = ArchiveFactory.create(fileResponses, downloadableFiles, this.logger);
 
 		return FileResponseFactory.createFromArchive(archiveName, archive);
+	}
+
+	private async initializeS3Clients(): Promise<void> {
+		const providers = await this.storageProviderRepo.findAll();
+
+		providers.forEach((provider) => {
+			const s3Client = this.createS3Client(provider);
+			this.s3Clients.set(provider.id, { s3Client, provider });
+		});
+	}
+
+	private createS3Client(provider: StorageProviderEntity): S3Client {
+		const s3Client = new S3Client({
+			endpoint: provider.endpointUrl,
+			region: provider.region,
+			credentials: {
+				accessKeyId: provider.accessKeyId,
+				secretAccessKey: provider.secretAccessKey,
+			},
+			forcePathStyle: true,
+			tls: true,
+		});
+
+		return s3Client;
 	}
 
 	private ensureFilesExist(files: FileEntity[]): void {
@@ -88,10 +93,12 @@ export class DownloadArchiveService implements OnModuleInit {
 	private async downloadFileWithPath(file: FileEntity, filesById: Map<EntityId, FileEntity>): Promise<GetFileResponse> {
 		const fileData = await this.downloadFile(file);
 
-		return {
+		const fileResponse = {
 			name: this.buildFilePath(file, filesById),
 			data: fileData.data,
 		};
+
+		return fileResponse;
 	}
 
 	private buildFilePath(file: FileEntity, filesById: Map<EntityId, FileEntity>): string {
@@ -108,25 +115,29 @@ export class DownloadArchiveService implements OnModuleInit {
 
 	private async downloadFile(file: FileEntity): Promise<GetFileResponse> {
 		const { s3Client, provider } = this.getClientForFile(file);
-
 		const storageFileName = TypeGuard.checkNotNullOrUndefined(file.storageFileName);
+
+		const config = this.createS3Config(file, provider);
+		const adapter = new S3ClientAdapter(s3Client, config, this.logger, this.domainErrorHandler, provider.id);
+
+		const data = await adapter.get(storageFileName);
+
+		return FileResponseFactory.create(data, file.name);
+	}
+
+	private createS3Config(file: FileEntity, provider: StorageProviderEntity): S3Config {
 		const bucket = TypeGuard.checkNotNullOrUndefined(file.bucket);
 		const region = TypeGuard.checkNotNullOrUndefined(provider.region);
 
-		const config: S3Config = {
-			bucket: bucket,
+		const config = {
+			bucket,
 			endpoint: provider.endpointUrl,
-			region: region,
+			region,
 			accessKeyId: provider.accessKeyId,
 			secretAccessKey: provider.secretAccessKey,
 		};
 
-		const adapter = new S3ClientAdapter(s3Client, config, this.logger, this.domainErrorHandler, provider.id);
-
-		const data = await adapter.get(storageFileName);
-		const fileResponse = FileResponseFactory.create(data, file.name);
-
-		return fileResponse;
+		return config;
 	}
 
 	private getClientForFile(file: FileEntity): { s3Client: S3Client; provider: StorageProviderEntity } {
