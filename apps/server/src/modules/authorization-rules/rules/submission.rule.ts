@@ -94,6 +94,6 @@ export class SubmissionRule implements Rule<Submission> {
 		const { dueDate } = submission.task;
 		const now = new Date();
 
-		return dueDate === undefined || dueDate > now;
+		return dueDate === undefined || dueDate === null || dueDate > now;
 	}
 }
