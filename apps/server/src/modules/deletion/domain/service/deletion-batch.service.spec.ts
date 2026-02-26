@@ -1,13 +1,13 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { ObjectId } from '@mikro-orm/mongodb';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ObjectId } from '@mikro-orm/mongodb';
+import { Test, TestingModule } from '@nestjs/testing';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions } from '@shared/domain/interface';
-import { CreateDeletionBatchParams, DeletionBatchService, DeletionBatchSummary } from './deletion-batch.service';
 import { DeletionBatchRepo, DeletionBatchUsersRepo, UsersCountByRole } from '../../repo';
-import { DeletionRequestService } from './deletion-request.service';
 import { DeletionBatch, DeletionRequest } from '../do';
 import { BatchStatus, DomainName, StatusModel } from '../types';
+import { CreateDeletionBatchParams, DeletionBatchService, DeletionBatchSummary } from './deletion-batch.service';
+import { DeletionRequestService } from './deletion-request.service';
 
 describe('DeletionBatchService', () => {
 	let service: DeletionBatchService;
@@ -371,7 +371,7 @@ describe('DeletionBatchService', () => {
 			expect(deletionBatchUsersRepo.getUsersWithRoles).toHaveBeenCalledWith(userIds);
 		});
 
-		it('should correct filter and return valid, invalid, and skipped user IDs', async () => {
+		it('should correctly filter userIds by roles and return valid, invalid, and skipped userIds', async () => {
 			const { validId, invalidId, skippedId, userIds, allowedRoles } = setup();
 
 			const result = await service.filterUsersByRoles(userIds, allowedRoles);

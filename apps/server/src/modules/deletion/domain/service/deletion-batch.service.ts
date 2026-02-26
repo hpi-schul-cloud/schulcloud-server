@@ -1,8 +1,8 @@
+import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { ObjectId } from '@mikro-orm/mongodb';
 import { DeletionBatchUsersRepo, UserIdsByRole, UsersCountByRole } from '../../repo';
 import { DeletionBatchRepo } from '../../repo/deletion-batch.repo';
 import { DeletionBatch, DeletionRequest } from '../do';
@@ -41,7 +41,7 @@ export class DeletionBatchService {
 		private readonly deletionBatchRepo: DeletionBatchRepo,
 		private readonly deletionBatchUsersRepo: DeletionBatchUsersRepo,
 		private readonly deletionRequestService: DeletionRequestService
-	) { }
+	) {}
 
 	public async findById(batchId: EntityId): Promise<DeletionBatch> {
 		const deletionBatch = await this.deletionBatchRepo.findById(batchId);
@@ -194,16 +194,16 @@ export class DeletionBatchService {
 		}
 
 		for (const userId of userIds) {
-			if (!userRoleMap.has(userId)) {
-				invalidUserIds.push(userId);
-			} else {
-				const roles = userRoleMap.get(userId)!;
+			const roles = userRoleMap.get(userId);
+			if (roles && Array.isArray(roles)) {
 				const hasAllowedRole = roles.some((role) => allowedRoles.includes(role));
 				if (hasAllowedRole) {
 					validUserIds.push(userId);
 				} else {
 					skippedUserIds.push(userId);
 				}
+			} else {
+				invalidUserIds.push(userId);
 			}
 		}
 
