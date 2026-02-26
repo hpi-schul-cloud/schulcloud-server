@@ -1,5 +1,5 @@
-import { RoleName } from '@modules/role';
 import { AccountService } from '@modules/account';
+import { RoleName } from '@modules/role';
 import { Injectable } from '@nestjs/common';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions } from '@shared/domain/interface';
@@ -19,8 +19,8 @@ const revalidateAfterMinutes = 60;
 export class DeletionBatchUc {
 	constructor(
 		private readonly deletionBatchService: DeletionBatchService,
-		private readonly accountService: AccountService,
-	) { }
+		private readonly accountService: AccountService
+	) {}
 
 	public async createDeletionBatch(params: CreateDeletionBatchParams): Promise<DeletionBatchSummary> {
 		const { validUserIds, invalidUserIds, skippedUserIds } = await this.validateAndFilterUserIds(params.targetRefIds);
@@ -93,7 +93,10 @@ export class DeletionBatchUc {
 			RoleName.COURSEADMINISTRATOR,
 		];
 
-		const { validUserIds, invalidUserIds, skippedUserIds } = await this.deletionBatchService.filterUsersByRoles(targetRefIds, allowedUserRoles);
+		const { validUserIds, invalidUserIds, skippedUserIds } = await this.deletionBatchService.filterUsersByRoles(
+			targetRefIds,
+			allowedUserRoles
+		);
 
 		return { validUserIds, invalidUserIds, skippedUserIds };
 	}
