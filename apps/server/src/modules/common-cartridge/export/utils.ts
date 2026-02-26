@@ -18,8 +18,6 @@ export function buildXmlString(obj: unknown): string {
 }
 
 export function createIdentifier(identifier?: string | ObjectId | unknown): string {
-	console.log(`Generating Identifier for: ${util.inspect(identifier)}`);
-
 	if (!identifier) {
 		return `i${new ObjectId().toString()}`;
 	}
@@ -28,6 +26,7 @@ export function createIdentifier(identifier?: string | ObjectId | unknown): stri
 		return `i${identifier.toString()}`;
 	}
 
+	// edgecase for stringified ObjectId returned from controller
 	if (
 		typeof identifier === 'object' &&
 		'buffer' in identifier &&
