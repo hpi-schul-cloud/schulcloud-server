@@ -8,9 +8,8 @@ import { TypeGuard } from '@shared/common/guards';
 import { EntityId } from '@shared/domain/types';
 import { FileEntity } from '../entity';
 import { FilesRepo } from '../repo';
-import { ArchiveFactory } from './archive.factory';
-import { FileResponseFactory } from './file-response.factory';
-import { GetFileResponse, OwnerType } from './interfaces';
+import { ArchiveFactory, FileResponseFactory } from './factory';
+import { GetFileResponse, OwnerType } from './interface';
 
 @Injectable()
 export class DownloadArchiveService implements OnModuleInit {

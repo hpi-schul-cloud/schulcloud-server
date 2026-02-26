@@ -1,2 +1,2 @@
 export * from './download-archive.service';
-export * from './interfaces';
+export * from './interface';

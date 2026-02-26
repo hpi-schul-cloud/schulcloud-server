@@ -2,8 +2,8 @@ import { Logger } from '@core/logger';
 import { InternalServerErrorException } from '@nestjs/common';
 import archiver from 'archiver';
 import { PassThrough } from 'node:stream';
-import { FileEntity } from '../entity';
-import { GetFileResponse } from './interfaces';
+import { FileEntity } from '../../entity';
+import { GetFileResponse } from '../interface';
 
 export class ArchiveFactory {
 	public static create(

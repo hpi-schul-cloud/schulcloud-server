@@ -1,5 +1,5 @@
 import { StreamableFile } from '@nestjs/common';
-import { GetFileResponse } from '../domain';
+import { GetFileResponse } from '../../domain';
 
 export class StreamableFileMapper {
 	public static fromResponse(fileResponse: GetFileResponse): StreamableFile {

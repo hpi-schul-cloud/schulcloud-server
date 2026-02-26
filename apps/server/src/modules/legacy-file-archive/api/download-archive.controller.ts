@@ -12,10 +12,10 @@ import {
 import { ApiHeader, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common/error';
 import { Request, Response } from 'express';
-import { GetFileResponse } from '../domain/interfaces/get-file-response';
+import { GetFileResponse } from '../domain/interface/get-file-response';
 import { DownloadArchiveUC } from './download-archive.uc';
 import { ArchiveFileParams } from './dto';
-import { StreamableFileMapper } from './stream.response.mapper';
+import { StreamableFileMapper } from './mapper';
 
 @ApiTags('DownloadArchive')
 @Controller('download-archive')

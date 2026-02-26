@@ -1,5 +1,5 @@
 import { AuthorizationBodyParamsReferenceType } from '@infra/authorization-client';
-import { OwnerType } from '../domain/interfaces/owner-type.enum';
+import { OwnerType } from '../../domain';
 
 export class AuthorizationReferenceTypeMapper {
 	public static mapOwnerTypeToReferenceType(ownerType: OwnerType): AuthorizationBodyParamsReferenceType {
