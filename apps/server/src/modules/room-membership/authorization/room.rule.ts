@@ -109,6 +109,14 @@ export class RoomRule implements Rule<RoomAuthorizable> {
 		return can;
 	}
 
+	public checkLockedRoom(user: User, roomAuthorizable: RoomAuthorizable): boolean {
+		if (!isUnlocked(roomAuthorizable) && !canAdministerRoom(user, roomAuthorizable)) {
+			return false;
+		}
+
+		return true;
+	}
+
 	private hasAccessToSchool(user: User, schoolId: string): boolean {
 		const primarySchoolId = user.school.id;
 		const secondarySchools = user.secondarySchools ?? [];
@@ -364,4 +372,10 @@ const isUnlocked = (roomAuthorizable: RoomAuthorizable): boolean => {
 	);
 
 	return hasOwner;
+};
+
+const canAdministerRoom = (user: User, roomAuthorizable: RoomAuthorizable): boolean => {
+	const { schoolPermissions } = resolveUserPermissions(user, roomAuthorizable);
+	const hasAdminPermission = schoolPermissions.includes(Permission.SCHOOL_ADMINISTRATE_ROOMS);
+	return hasAdminPermission;
 };
