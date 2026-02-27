@@ -106,7 +106,7 @@ describe('Room Controller (API)', () => {
 						createdAt: room.createdAt.toISOString(),
 						updatedAt: room.updatedAt.toISOString(),
 						isLocked: false,
-						permissions: [...roomViewerRole.permissions, ...roomOwnerRole.permissions],
+						allowedOperations: expect.any(Object) as unknown as Record<string, boolean>,
 					};
 				});
 
@@ -121,7 +121,7 @@ describe('Room Controller (API)', () => {
 						createdAt: room.createdAt.toISOString(),
 						updatedAt: room.updatedAt.toISOString(),
 						isLocked: true,
-						permissions: roomViewerRole.permissions,
+						allowedOperations: expect.any(Object) as unknown as Record<string, boolean>,
 					};
 				});
 

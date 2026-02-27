@@ -28,7 +28,7 @@ export class CardUc {
 		const boardAuthorizables = await this.boardNodeAuthorizableService.getBoardAuthorizables(cards);
 
 		const allowedCards = boardAuthorizables.reduce((allowedNodes: AnyBoardNode[], boardNodeAuthorizable) => {
-			if (this.boardNodeRule.canFindCards(user, boardNodeAuthorizable)) {
+			if (this.boardNodeRule.can('findCards', user, boardNodeAuthorizable)) {
 				allowedNodes.push(boardNodeAuthorizable.boardNode);
 			}
 			return allowedNodes;
@@ -42,7 +42,7 @@ export class CardUc {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(card);
 
-		throwForbiddenIfFalse(this.boardNodeRule.canUpdateCardHeight(user, boardNodeAuthorizable));
+		throwForbiddenIfFalse(this.boardNodeRule.can('updateCardHeight', user, boardNodeAuthorizable));
 
 		await this.boardNodeService.updateHeight(card, height);
 		return card;
@@ -53,7 +53,7 @@ export class CardUc {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(card);
 
-		throwForbiddenIfFalse(this.boardNodeRule.canUpdateCardTitle(user, boardNodeAuthorizable));
+		throwForbiddenIfFalse(this.boardNodeRule.can('updateCardTitle', user, boardNodeAuthorizable));
 
 		await this.boardNodeService.updateTitle(card, title);
 		return card;
@@ -64,7 +64,7 @@ export class CardUc {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(card);
 
-		throwForbiddenIfFalse(this.boardNodeRule.canDeleteCard(user, boardNodeAuthorizable));
+		throwForbiddenIfFalse(this.boardNodeRule.can('deleteCard', user, boardNodeAuthorizable));
 
 		const { rootId } = card; // needs to be captured before deletion
 		await this.boardNodeService.delete(card);
@@ -84,7 +84,7 @@ export class CardUc {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(card);
 
-		throwForbiddenIfFalse(this.boardNodeRule.canCreateElement(user, boardNodeAuthorizable));
+		throwForbiddenIfFalse(this.boardNodeRule.can('createElement', user, boardNodeAuthorizable));
 
 		const element = this.boardNodeFactory.buildContentElement(type);
 
@@ -104,7 +104,7 @@ export class CardUc {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(targetCard);
 
-		throwForbiddenIfFalse(this.boardNodeRule.canMoveElement(user, boardNodeAuthorizable));
+		throwForbiddenIfFalse(this.boardNodeRule.can('moveElement', user, boardNodeAuthorizable));
 
 		await this.boardNodeService.move(element, targetCard, targetPosition);
 
