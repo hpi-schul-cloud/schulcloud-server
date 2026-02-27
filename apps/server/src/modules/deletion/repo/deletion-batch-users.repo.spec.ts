@@ -109,7 +109,7 @@ describe(DeletionBatchUsersRepo.name, () => {
 
 				await em.persist([studentRole, teacherRole, student1, student2, teacher1]).flush();
 
-				const result: UserIdsByRole[] = await repo.getUsersByRole([student1.id, student2.id, teacher1.id]);
+				const result = await repo.getUsersByRole([student1.id, student2.id, teacher1.id]);
 
 				const studentEntry = result.find((r) => r.roleName === RoleName.STUDENT);
 				const teacherEntry = result.find((r) => r.roleName === RoleName.TEACHER);
