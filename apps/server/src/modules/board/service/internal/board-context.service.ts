@@ -67,7 +67,9 @@ export class BoardContextService {
 				isUnlocked: hasTeachers,
 			};
 		} else if (rootNode.context.type === BoardExternalReferenceType.User) {
-			return {};
+			return {
+				isUnlocked: true,
+			};
 		} else {
 			throw new Error(`Unknown context type: '${rootNode.context.type as string}'`);
 		}
