@@ -84,7 +84,11 @@ describe(`card move to board (api)`, () => {
 				.flush();
 			em.clear();
 
-			const createRoomMembership = async (user: User, roomId: EntityId, role: 'viewer' | 'editor' | 'admin' | 'owner') => {
+			const createRoomMembership = async (
+				user: User,
+				roomId: EntityId,
+				role: 'viewer' | 'editor' | 'admin' | 'owner'
+			) => {
 				let userRole: typeof roomViewerRole | typeof roomEditorRole | typeof roomAdminRole | typeof roomOwnerRole;
 				if (role === 'viewer') {
 					userRole = roomViewerRole;
