@@ -1,3 +1,4 @@
+import { Configuration } from '@hpi-schul-cloud/commons';
 import { Type } from '@mikro-orm/core';
 import { AesEncryptionHelper } from '@shared/common/utils';
 
@@ -13,11 +14,10 @@ export class StorageProviderEncryptedStringType extends Type<string, string> {
 		if (this.customKey) {
 			return this.customKey;
 		}
-		// eslint-disable-next-line no-process-env
-		return process.env.S3_KEY as string;
+		return Configuration.get('S3_KEY') as string;
 	}
 
-	public convertToDatabaseValue(value: string | undefined): string {
+	convertToDatabaseValue(value: string | undefined): string {
 		// keep nullish values
 		if (value == null) {
 			return value as unknown as string;
@@ -32,7 +32,7 @@ export class StorageProviderEncryptedStringType extends Type<string, string> {
 		return encryptedString;
 	}
 
-	public convertToJSValue(value: string | undefined): string {
+	convertToJSValue(value: string | undefined): string {
 		// keep nullish values
 		if (value == null) {
 			return value as unknown as string;
