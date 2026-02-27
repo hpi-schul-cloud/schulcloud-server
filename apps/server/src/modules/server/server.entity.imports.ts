@@ -16,7 +16,6 @@ import {
 	LessonBoardElement,
 	TaskBoardElement,
 } from '@modules/learnroom/repo';
-import { FileEntity } from '@modules/legacy-file-archive/entity';
 import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { LessonEntity, Material } from '@modules/lesson/repo';
 import { MediaSourceEntity } from '@modules/media-source/entity';
@@ -70,7 +69,6 @@ export const ENTITIES = [
 	DashboardEntity,
 	ExternalToolEntity,
 	FederalStateEntity,
-	FileEntity,
 	ImportUser,
 	LessonEntity,
 	LessonBoardElement,

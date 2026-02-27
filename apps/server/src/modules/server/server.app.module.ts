@@ -32,7 +32,6 @@ import { GroupApiModule } from '@modules/group/group-api.module';
 import { HelpdeskApiModule } from '@modules/helpdesk';
 import { LEARNROOM_PUBLIC_API_CONFIG_TOKEN, LearnroomPublicApiConfig } from '@modules/learnroom';
 import { LearnroomApiModule } from '@modules/learnroom/learnroom-api.module';
-import { LegacyFileArchiveApiModule } from '@modules/legacy-file-archive/legacy-file-archive.module';
 import { LegacySchoolApiModule } from '@modules/legacy-school/legacy-school.api-module';
 import { LessonApiModule } from '@modules/lesson/lesson-api.module';
 import { MeApiModule } from '@modules/me/me-api.module';
@@ -172,7 +171,6 @@ const serverModules = [
 	OAuthApiModule,
 	MoinSchuleClassModule,
 	DeletionPublicApiModule,
-	LegacyFileArchiveApiModule,
 ];
 
 const providers = [ServerUc];
