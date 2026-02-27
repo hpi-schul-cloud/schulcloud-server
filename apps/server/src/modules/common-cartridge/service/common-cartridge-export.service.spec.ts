@@ -34,7 +34,7 @@ import {
 	lessonLinkedTaskFactory,
 	listOfCardResponseFactory,
 	roomFactory,
-} from '../testing/common-cartridge-dtos.factory';
+} from '../testing/common-cartridge-elements.factory';
 import { CommonCartridgeExportMapper } from './common-cartridge-export.mapper';
 import { CommonCartridgeExportService } from './common-cartridge-export.service';
 

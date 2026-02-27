@@ -1,6 +1,8 @@
 import { faker } from '@faker-js/faker';
 import {
 	BoardColumnBoardResponse,
+	BoardElementResponseType,
+	BoardLayout,
 	BoardLessonResponse,
 	BoardResponse,
 	BoardTaskResponse,
@@ -16,10 +18,8 @@ import {
 	SingleColumnBoardResponse,
 } from '@infra/common-cartridge-clients';
 import { Factory } from 'fishery';
-import { BoardElementDtoType } from '../../../infra/common-cartridge-clients/enum/board-element.enum';
-import { BoardLayout } from '../../../infra/common-cartridge-clients/enum/board-layout.enum';
-import { fileElementResponseDtoFactory } from './file-element.factory';
-import { fileFolderElementResponseDtoFactory } from './file-folder-element.factory';
+import { fileElementResponseFactory } from './file-element.factory';
+import { fileFolderElementResponseFactory } from './file-folder-element.factory';
 import { linkElementFactory } from './link-element.factory';
 import { richTextElementFactroy } from './rich-text-element.factory';
 
@@ -75,16 +75,11 @@ export const cardResponseFactory = Factory.define<CardResponse>(({ sequence, par
 		elements: [
 			richTextElementFactroy.build(),
 			linkElementFactory.build(),
-			fileElementResponseDtoFactory.build(),
-			fileFolderElementResponseDtoFactory.build(),
+			fileElementResponseFactory.build(),
+			fileFolderElementResponseFactory.build(),
 		],
 		visibilitySettings: {
 			publishedAt: faker.date.recent().toISOString(),
-		},
-		timeStamps: {
-			lastUpdatedAt: faker.date.recent().toISOString(),
-			createdAt: faker.date.recent().toISOString(),
-			deletedAt: undefined,
 		},
 		title: faker.lorem.sentence(),
 		timestamps: {
@@ -95,11 +90,11 @@ export const cardResponseFactory = Factory.define<CardResponse>(({ sequence, par
 	};
 });
 
-type CardListResponseDtoFactoryTransientParams = {
+type CardListResponseFactoryTransientParams = {
 	cardIds: string[];
 };
 
-class CardListResponseDtoFactory extends Factory<CardListResponse, CardListResponseDtoFactoryTransientParams> {
+class CardListResponseFactory extends Factory<CardListResponse, CardListResponseFactoryTransientParams> {
 	public withCardIds(cardIds: string[]): this {
 		return this.transient({
 			cardIds,
@@ -107,7 +102,7 @@ class CardListResponseDtoFactory extends Factory<CardListResponse, CardListRespo
 	}
 }
 
-export const listOfCardResponseFactory = CardListResponseDtoFactory.define(({ transientParams }) => {
+export const listOfCardResponseFactory = CardListResponseFactory.define(({ transientParams }) => {
 	let data: CardResponse[] = [];
 
 	if (transientParams.cardIds) {
@@ -257,15 +252,15 @@ export const roomFactory = Factory.define<SingleColumnBoardResponse>(({ sequence
 		displayColor: faker.lorem.word(),
 		elements: [
 			{
-				type: BoardElementDtoType.TASK,
+				type: BoardElementResponseType.TASK,
 				content: boardTaskFactory.build(),
 			},
 			{
-				type: BoardElementDtoType.LESSON,
+				type: BoardElementResponseType.LESSON,
 				content: boardLessonFactory.build(),
 			},
 			{
-				type: BoardElementDtoType.COLUMN_BOARD,
+				type: BoardElementResponseType.COLUMN_BOARD,
 				content: boardColumnFactory.build(),
 			},
 		],

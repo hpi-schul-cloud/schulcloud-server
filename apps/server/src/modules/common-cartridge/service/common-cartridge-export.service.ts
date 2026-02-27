@@ -2,6 +2,7 @@ import { Logger } from '@core/logger';
 import {
 	BoardColumnBoardResponse,
 	BoardElementResponse,
+	BoardElementResponseType,
 	BoardLessonResponse,
 	BoardResponse,
 	BoardsClientAdapter,
@@ -10,6 +11,7 @@ import {
 	CardResponse,
 	CardResponseElementsInner,
 	ColumnResponse,
+	ContentElementType,
 	CourseRoomsClientAdapter,
 	CoursesClientAdapter,
 	FileElementResponse,
@@ -24,8 +26,6 @@ import { FileDto, FilesStorageClientAdapterService } from '@modules/files-storag
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import archiver from 'archiver';
 import { Stream } from 'node:stream';
-import { BoardElementDtoType } from '../../../infra/common-cartridge-clients/enum/board-element.enum';
-import { ContentElementType } from '../../../infra/common-cartridge-clients/enum/content-element-type.enum';
 import { CommonCartridgeFileBuilder } from '../export/builders/common-cartridge-file-builder';
 import { CommonCartridgeOrganizationNode } from '../export/builders/common-cartridge-organization-node';
 import { CommonCartridgeVersion } from '../export/common-cartridge.enums';
@@ -406,7 +406,7 @@ export class CommonCartridgeExportService {
 
 	private filterTasksFromBoardElements(elements: BoardElementResponse[]): BoardTaskResponse[] {
 		const tasks = elements
-			.filter((element) => element.type === BoardElementDtoType.TASK)
+			.filter((element) => element.type === BoardElementResponseType.TASK)
 			.map((element) => element.content as BoardTaskResponse);
 
 		return tasks;
@@ -414,7 +414,7 @@ export class CommonCartridgeExportService {
 
 	private filterLessonFromBoardElements(elements: BoardElementResponse[]): BoardLessonResponse[] {
 		const lessons = elements
-			.filter((element) => element.type == BoardElementDtoType.LESSON)
+			.filter((element) => element.type == BoardElementResponseType.LESSON)
 			.map((element) => element.content as BoardLessonResponse);
 
 		return lessons;
@@ -422,7 +422,7 @@ export class CommonCartridgeExportService {
 
 	private filterColumnBoardFromBoardElement(elements: BoardElementResponse[]): BoardColumnBoardResponse[] {
 		const columnBoard = elements
-			.filter((element) => element.type === BoardElementDtoType.COLUMN_BOARD)
+			.filter((element) => element.type === BoardElementResponseType.COLUMN_BOARD)
 			.map((element) => element.content as BoardColumnBoardResponse);
 
 		return columnBoard;

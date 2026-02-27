@@ -27,11 +27,11 @@ class FileFolderElementResponseImpl implements FileFolderElementResponse {
 		this.timestamps = props.timestamps;
 	}
 }
-class FileFolderElementResponseDtoFactory extends BaseFactory<
+class FileFolderElementResponseFactory extends BaseFactory<
 	FileFolderElementResponseImpl,
 	Readonly<FileFolderElementResponseImpl>
 > {}
-export const fileFolderElementResponseDtoFactory = FileFolderElementResponseDtoFactory.define(
+export const fileFolderElementResponseFactory = FileFolderElementResponseFactory.define(
 	FileFolderElementResponseImpl,
 	() => {
 		return {

@@ -24,8 +24,8 @@ class FileElementResponseImpl implements FileElementResponse {
 		this.timestamps = props.timestamps;
 	}
 }
-class FileElementResponseDtoFactory extends BaseFactory<FileElementResponseImpl, Readonly<FileElementResponseImpl>> {}
-export const fileElementResponseDtoFactory = FileElementResponseDtoFactory.define(FileElementResponseImpl, () => {
+class FileElementResponseFactory extends BaseFactory<FileElementResponseImpl, Readonly<FileElementResponseImpl>> {}
+export const fileElementResponseFactory = FileElementResponseFactory.define(FileElementResponseImpl, () => {
 	return {
 		id: faker.string.uuid(),
 		type: ContentElementType.FILE,

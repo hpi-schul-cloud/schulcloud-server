@@ -23,7 +23,7 @@ import {
 	lessonContentFactory,
 	lessonFactory,
 	lessonLinkedTaskFactory,
-} from '../testing/common-cartridge-dtos.factory';
+} from '../testing/common-cartridge-elements.factory';
 import { linkElementFactory } from '../testing/link-element.factory';
 import { richTextElementFactroy } from '../testing/rich-text-element.factory';
 import { CommonCartridgeExportMapper } from './common-cartridge-export.mapper';
