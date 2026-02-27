@@ -20,6 +20,8 @@ async function bootstrap(): Promise<void> {
 	// WinstonLogger
 	nestApp.useLogger(await nestApp.resolve(LegacyLogger));
 
+	enableOpenApiDocs(nestApp, 'docs');
+
 	await createMetricsServer(nestApp, 'Legacy File Archive Download App');
 
 	await nestApp.init();
