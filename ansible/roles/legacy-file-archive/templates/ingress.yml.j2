@@ -18,6 +18,14 @@ metadata:
 {% endif %}
 spec:
   ingressClassName: {{ INGRESS_CLASS }}
+{% if CLUSTER_ISSUER is defined or (TLS_ENABLED is defined and TLS_ENABLED|bool) %}
+  tls:
+  - hosts:
+      - {{ DOMAIN }}
+{% if CLUSTER_ISSUER is defined %}
+    secretName: {{ DOMAIN }}-tls
+{% endif %}
+{% endif %}
   rules:
   - host: {{ DOMAIN }}
     http:
@@ -29,11 +37,3 @@ spec:
             name: legacy-file-archive-svc
             port:
               number: 3351
-{% if TLS_ENABLED is defined and TLS_ENABLED|bool %}
-  tls:
-  - hosts:
-    - {{ DOMAIN }}
-{% if TLS_CERTIFICATE_SECRET %}
-    secretName: {{ TLS_CERTIFICATE_SECRET }}
-{% endif %}
-{% endif %}
