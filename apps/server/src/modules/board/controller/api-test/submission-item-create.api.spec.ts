@@ -44,7 +44,11 @@ describe('submission create (api)', () => {
 			await cleanupCollections(em);
 			const { teacherUser } = UserAndAccountTestFactory.buildTeacher();
 			const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-			const course = courseEntityFactory.build({ school: studentUser.school, students: [studentUser], teachers: [teacherUser] });
+			const course = courseEntityFactory.build({
+				school: studentUser.school,
+				students: [studentUser],
+				teachers: [teacherUser],
+			});
 			await em.persist([studentAccount, studentUser, teacherUser, course]).flush();
 
 			const columnBoardNode = columnBoardEntityFactory.build({
