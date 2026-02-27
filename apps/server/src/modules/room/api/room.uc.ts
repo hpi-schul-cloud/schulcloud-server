@@ -104,6 +104,8 @@ export class RoomUc {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const roomAuthorizable = await this.roomMembershipService.getRoomAuthorizable(roomId);
 
+		await this.roomPermissionService.checkRoomIsUnlocked(roomId);
+
 		throwForbiddenIfFalse(this.roomRule.can('accessRoom', user, roomAuthorizable));
 
 		const room = await this.roomService.getSingleRoom(roomId);
@@ -165,6 +167,11 @@ export class RoomUc {
 	public async addMembersToRoom(userId: EntityId, roomId: EntityId, newUserIds: Array<EntityId>): Promise<RoomRole> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const roomAuthorizable = await this.roomMembershipService.getRoomAuthorizable(roomId);
+
+		const hasOwner = roomAuthorizable.members.some((member) =>
+			member.roles.some((role) => role.name === RoleName.ROOMOWNER)
+		);
+
 
 		throwForbiddenIfFalse(this.roomRule.can('addMembers', user, roomAuthorizable));
 
