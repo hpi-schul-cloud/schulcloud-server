@@ -1,10 +1,4 @@
-import {
-	Action,
-	AuthorizationContext,
-	AuthorizationHelper,
-	AuthorizationInjectionService,
-	Rule,
-} from '@modules/authorization';
+import { AuthorizationContext, AuthorizationHelper, AuthorizationInjectionService, Rule } from '@modules/authorization';
 import { RoleName } from '@modules/role';
 import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
@@ -12,6 +6,12 @@ import { Permission } from '@shared/domain/interface';
 import { RoomAuthorizable } from '../do/room-authorizable.do';
 import { RoomMemberAuthorizable } from '../do/room-member-authorizable.do';
 import { RoomRule } from './room.rule';
+
+export const RoomMemberOperationValues = ['changeRole', 'passOwnershipTo', 'removeMember'] as const;
+
+export type RoomMemberOperation = (typeof RoomMemberOperationValues)[number]; // turn string list to type union of strings
+
+type OperationFn = (user: User, authorizable: RoomMemberAuthorizable) => boolean;
 
 @Injectable()
 export class RoomMemberRule implements Rule<RoomMemberAuthorizable> {
@@ -44,7 +44,63 @@ export class RoomMemberRule implements Rule<RoomMemberAuthorizable> {
 		return missingPermissions.length === 0;
 	}
 
-	public canPassOwnershipTo(user: User, object: RoomMemberAuthorizable): boolean {
+	// eslint-disable-next-line @typescript-eslint/explicit-function-return-type
+	public getOperationMap() {
+		const map = {
+			changeRole: this.canChangeRole.bind(this),
+			passOwnershipTo: this.canPassOwnershipTo.bind(this),
+			removeMember: this.canRemoveMember.bind(this),
+		} satisfies Record<RoomMemberOperation, OperationFn>;
+
+		return map;
+	}
+
+	public listAllowedOperations(user: User, authorizable: RoomMemberAuthorizable): Record<RoomMemberOperation, boolean> {
+		const list: Record<RoomMemberOperation, boolean> = {} as Record<RoomMemberOperation, boolean>;
+		const map = this.getOperationMap();
+		const operations = Object.keys(map) as RoomMemberOperation[];
+
+		for (const operation of operations) {
+			const fn = map[operation];
+			list[operation] = fn(user, authorizable);
+		}
+
+		return list;
+	}
+
+	public can(operation: RoomMemberOperation, user: User, authorizable: RoomMemberAuthorizable): boolean {
+		const canFunction = this.getOperationMap()[operation];
+
+		const can = canFunction(user, authorizable);
+
+		return can;
+	}
+
+	private canChangeRole(user: User, object: RoomMemberAuthorizable): boolean {
+		const { roomPermissions } = this.resolveUserPermissions(user, object.roomAuthorizable);
+
+		const isChangeRoleOfRoomOwner = object.member.roomRoleName === RoleName.ROOMOWNER;
+		if (isChangeRoleOfRoomOwner) {
+			return false;
+		}
+
+		const hasRoomPermission = roomPermissions.includes(Permission.ROOM_CHANGE_ROLES);
+		const isHimself = object.member.userId === user.id;
+		if (hasRoomPermission && !isHimself) {
+			return true;
+		}
+
+		const isAdminOfSchoolOfMember = this.isAdminOfSchoolOfMember(user, object);
+		if (isAdminOfSchoolOfMember) {
+			return true;
+		}
+
+		return false;
+	}
+
+	private canPassOwnershipTo(user: User, object: RoomMemberAuthorizable): boolean {
+		const { roomPermissions } = this.resolveUserPermissions(user, object.roomAuthorizable);
+
 		const isAlreadyRoomOwner = object.member.roomRoleName === RoleName.ROOMOWNER;
 		const isStudent = object.member.schoolRoleNames.includes(RoleName.STUDENT);
 		const isExternalPerson = object.member.schoolRoleNames.includes(RoleName.EXTERNALPERSON);
@@ -52,21 +108,18 @@ export class RoomMemberRule implements Rule<RoomMemberAuthorizable> {
 			return false;
 		}
 
-		const isAdminOfUserSchool = this.isAdminOfUserSchool(user, object);
-		if (isAdminOfUserSchool) {
+		const isAdminOfSchoolOfMember = this.isAdminOfSchoolOfMember(user, object);
+		if (isAdminOfSchoolOfMember) {
 			return true;
 		}
 
-		const hasPermission = this.roomRule.hasPermission(user, object.roomAuthorizable, {
-			action: Action.write,
-			requiredPermissions: [Permission.ROOM_CHANGE_OWNER],
-		});
-		const isNotHimself = object.member.userId !== user.id;
+		const hasPermission = roomPermissions.includes(Permission.ROOM_CHANGE_OWNER);
+		const isHimself = object.member.userId === user.id;
 
-		return hasPermission && isNotHimself;
+		return hasPermission && !isHimself;
 	}
 
-	public canRemoveMember(user: User, object: RoomMemberAuthorizable): boolean {
+	private canRemoveMember(user: User, object: RoomMemberAuthorizable): boolean {
 		const { roomPermissions } = this.resolveUserPermissions(user, object.roomAuthorizable);
 
 		const isRemoveRoomOwner = object.member.roomRoleName === RoleName.ROOMOWNER;
@@ -80,15 +133,15 @@ export class RoomMemberRule implements Rule<RoomMemberAuthorizable> {
 			return true;
 		}
 
-		const isAdminOfUserSchool = this.isAdminOfUserSchool(user, object);
-		if (isAdminOfUserSchool) {
+		const isAdminOfSchoolOfMember = this.isAdminOfSchoolOfMember(user, object);
+		if (isAdminOfSchoolOfMember) {
 			return true;
 		}
 
 		return false;
 	}
 
-	private isAdminOfUserSchool(user: User, object: RoomMemberAuthorizable): boolean {
+	private isAdminOfSchoolOfMember(user: User, object: RoomMemberAuthorizable): boolean {
 		const canAdministrateSchoolRooms = this.authorizationHelper.hasOneOfPermissions(user, [
 			Permission.SCHOOL_ADMINISTRATE_ROOMS,
 		]);
