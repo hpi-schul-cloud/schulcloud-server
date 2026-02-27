@@ -34,7 +34,7 @@ export class MediaLineUc {
 
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(targetBoard);
-		throwForbiddenIfFalse(this.boardNodeRule.canCreateMediaBoardLine(user, boardNodeAuthorizable));
+		throwForbiddenIfFalse(this.boardNodeRule.can('createMediaBoardLine', user, boardNodeAuthorizable));
 
 		await this.boardNodeService.move(line, targetBoard, targetPosition);
 	}
@@ -46,7 +46,7 @@ export class MediaLineUc {
 
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(line);
-		throwForbiddenIfFalse(this.boardNodeRule.canUpdateMediaBoardLine(user, boardNodeAuthorizable));
+		throwForbiddenIfFalse(this.boardNodeRule.can('updateMediaBoardLine', user, boardNodeAuthorizable));
 
 		await this.boardNodeService.updateTitle(line, title);
 	}
@@ -58,7 +58,7 @@ export class MediaLineUc {
 
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(line);
-		throwForbiddenIfFalse(this.boardNodeRule.canUpdateMediaBoardLine(user, boardNodeAuthorizable));
+		throwForbiddenIfFalse(this.boardNodeRule.can('updateMediaBoardLineColor', user, boardNodeAuthorizable));
 
 		await this.mediaBoardService.updateBackgroundColor(line, color);
 	}
@@ -70,7 +70,7 @@ export class MediaLineUc {
 
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(line);
-		throwForbiddenIfFalse(this.boardNodeRule.canUpdateMediaBoardLine(user, boardNodeAuthorizable));
+		throwForbiddenIfFalse(this.boardNodeRule.can('collapseMediaBoardLine', user, boardNodeAuthorizable));
 
 		await this.mediaBoardService.updateCollapsed(line, collapsed);
 	}
@@ -82,7 +82,7 @@ export class MediaLineUc {
 
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(line);
-		throwForbiddenIfFalse(this.boardNodeRule.canDeleteMediaBoardLine(user, boardNodeAuthorizable));
+		throwForbiddenIfFalse(this.boardNodeRule.can('deleteMediaBoardLine', user, boardNodeAuthorizable));
 
 		await this.boardNodeService.delete(line);
 	}
