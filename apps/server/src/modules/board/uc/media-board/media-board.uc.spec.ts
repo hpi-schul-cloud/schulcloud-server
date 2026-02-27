@@ -191,12 +191,12 @@ describe(MediaBoardUc.name, () => {
 
 				await uc.createLine(user.id, mediaBoard.id);
 
-				expect(boardNodeRule.canCreateMediaBoardLine).toHaveBeenCalledWith(user, mediaBoard);
+				expect(boardNodeRule.can).toHaveBeenCalledWith('createMediaBoardLine', user, mediaBoard);
 			});
 
 			it('should return a new media line', async () => {
 				const { user, mediaBoard, mediaLine } = setup();
-				boardNodeRule.canCreateMediaBoardLine.mockReturnValueOnce(true);
+				boardNodeRule.can.mockReturnValueOnce(true);
 
 				const result = await uc.createLine(user.id, mediaBoard.id);
 
@@ -244,7 +244,7 @@ describe(MediaBoardUc.name, () => {
 
 			it('should check the authorization', async () => {
 				const { user, mediaBoard } = setup();
-				boardNodeRule.canUpdateMediaBoardLayout.mockReturnValueOnce(true);
+				boardNodeRule.can.mockReturnValueOnce(true);
 				boardNodeAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(
 					mediaBoard as unknown as BoardNodeAuthorizable
 				);
@@ -252,12 +252,12 @@ describe(MediaBoardUc.name, () => {
 
 				await uc.setLayout(user.id, mediaBoard.id, BoardLayout.GRID);
 
-				expect(boardNodeRule.canUpdateMediaBoardLayout).toHaveBeenCalledWith(user, mediaBoard);
+				expect(boardNodeRule.can).toHaveBeenCalledWith('updateMediaBoardLayout', user, mediaBoard);
 			});
 
 			it('should change the layout', async () => {
 				const { user, mediaBoard } = setup();
-				boardNodeRule.canUpdateMediaBoardLayout.mockReturnValueOnce(true);
+				boardNodeRule.can.mockReturnValueOnce(true);
 
 				await uc.setLayout(user.id, mediaBoard.id, BoardLayout.GRID);
 
