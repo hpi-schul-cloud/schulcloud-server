@@ -46,7 +46,7 @@ describe(`card move to board (api)`, () => {
 
 	describe('when boards belong to room', () => {
 		const setup = async () => {
-			const { roomViewerRole, roomEditorRole, roomAdminRole } = RoomRolesTestFactory.createRoomRoles();
+			const { roomViewerRole, roomEditorRole, roomAdminRole, roomOwnerRole } = RoomRolesTestFactory.createRoomRoles();
 
 			const school = schoolEntityFactory.buildWithId();
 
@@ -84,12 +84,14 @@ describe(`card move to board (api)`, () => {
 				.flush();
 			em.clear();
 
-			const createRoomMembership = async (user: User, roomId: EntityId, role: 'viewer' | 'editor' | 'admin') => {
-				let userRole: typeof roomViewerRole | typeof roomEditorRole | typeof roomAdminRole;
+			const createRoomMembership = async (user: User, roomId: EntityId, role: 'viewer' | 'editor' | 'admin' | 'owner') => {
+				let userRole: typeof roomViewerRole | typeof roomEditorRole | typeof roomAdminRole | typeof roomOwnerRole;
 				if (role === 'viewer') {
 					userRole = roomViewerRole;
 				} else if (role === 'editor') {
 					userRole = roomEditorRole;
+				} else if (role === 'owner') {
+					userRole = roomOwnerRole;
 				} else {
 					userRole = roomAdminRole;
 				}
@@ -131,6 +133,7 @@ describe(`card move to board (api)`, () => {
 				it('should return status 200', async () => {
 					const { loginTeacher, createRoomMembership, teacherUser, rooms, cardNode, toColumnNode } = await setup();
 
+					await createRoomMembership(teacherUser, rooms[0].id, 'owner');
 					await createRoomMembership(teacherUser, rooms[0].id, 'admin');
 
 					const loggedInClient = await loginTeacher();
@@ -148,6 +151,7 @@ describe(`card move to board (api)`, () => {
 				it('should return status 200', async () => {
 					const { loginTeacher, createRoomMembership, teacherUser, rooms, cardNode, toColumnNode } = await setup();
 
+					await createRoomMembership(teacherUser, rooms[0].id, 'owner');
 					await createRoomMembership(teacherUser, rooms[0].id, 'editor');
 
 					const loggedInClient = await loginTeacher();
@@ -200,6 +204,7 @@ describe(`card move to board (api)`, () => {
 					const { loginTeacher, createRoomMembership, teacherUser, rooms, cardNode, toColumnNodeInOtherRoom } =
 						await setup();
 
+					await createRoomMembership(teacherUser, rooms[0].id, 'owner');
 					await createRoomMembership(teacherUser, rooms[0].id, 'admin');
 					await createRoomMembership(teacherUser, rooms[1].id, 'editor');
 
