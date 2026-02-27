@@ -1,8 +1,12 @@
 import { faker } from '@faker-js/faker';
+import {
+	ContentElementType,
+	RichTextElementContent,
+	RichTextElementResponse,
+	TimestampsResponse,
+} from '@infra/common-cartridge-clients';
 import { BaseFactory } from '@testing/factory/base.factory';
 import { Factory } from 'fishery';
-import { ContentElementType } from '../../../infra/common-cartridge-clients/enum/content-element-type.enum';
-import { RichTextElementContent, RichTextElementResponse, TimestampsResponse } from '@infra/common-cartridge-clients';
 
 export const richTextElementContentFactory = Factory.define<RichTextElementContent>(() => {
 	return {

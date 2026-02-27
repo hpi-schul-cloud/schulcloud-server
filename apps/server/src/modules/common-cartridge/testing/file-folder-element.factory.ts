@@ -1,12 +1,12 @@
-import { Factory } from 'fishery';
 import { faker } from '@faker-js/faker';
-import { ContentElementType } from '@modules/board';
-import { BaseFactory } from '@testing/factory/base.factory';
 import {
+	ContentElementType,
 	FileFolderElementContent,
 	FileFolderElementResponse,
 	TimestampsResponse,
 } from '@infra/common-cartridge-clients';
+import { BaseFactory } from '@testing/factory/base.factory';
+import { Factory } from 'fishery';
 
 export const fileFolderElementContentFactory = Factory.define<FileFolderElementContent>(() => {
 	return {
