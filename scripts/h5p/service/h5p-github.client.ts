@@ -86,6 +86,12 @@ export class H5pGitHubClient {
 			const libraryJson = JSON.parse(libraryJsonContent);
 
 			if (libraryJson.machineName) {
+				if (libraryRepoMap[libraryJson.machineName]) {
+					console.error(
+						`Duplicate machineName "${libraryJson.machineName}" found in repository ${repo.name}. Skipping this entry.`
+					);
+					continue;
+				}
 				libraryRepoMap[libraryJson.machineName] = `${organization}/${repo.name}`;
 			}
 		}
