@@ -458,6 +458,13 @@ export class H5pLibraryPackagerService {
 			'H5PEditor.QuestionSetTextualEditor': {
 				'1.2.4': '14',
 			},
+			'H5PEditor.BranchingScenario': {
+				'1.4.2': '18',
+				'1.3.0': '14',
+				'1.2.5': '14',
+				'1.1.3': '10',
+				'1.0.6': '10',
+			},
 		};
 		const oldNodeVersion = oldNodeVersions[library]?.[tag];
 
