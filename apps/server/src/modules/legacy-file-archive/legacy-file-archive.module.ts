@@ -1,6 +1,7 @@
 import { CoreModule } from '@core/core.module';
 import { ErrorModule } from '@core/error';
 import { LoggerModule } from '@core/logger';
+import { AuthGuardModule, AuthGuardOptions, JWT_AUTH_GUARD_CONFIG_TOKEN, JwtAuthGuardConfig } from '@infra/auth-guard';
 import {
 	AUTHORIZATION_CLIENT_CONFIG_TOKEN,
 	AuthorizationClientConfig,
@@ -20,6 +21,13 @@ import { FilesRepo } from './repo';
 		CoreModule,
 		LoggerModule,
 		AuthorizationClientModule.register(AUTHORIZATION_CLIENT_CONFIG_TOKEN, AuthorizationClientConfig),
+		AuthGuardModule.register([
+			{
+				option: AuthGuardOptions.JWT,
+				configInjectionToken: JWT_AUTH_GUARD_CONFIG_TOKEN,
+				configConstructor: JwtAuthGuardConfig,
+			},
+		]),
 		ErrorModule,
 		DatabaseModule.register({
 			configInjectionToken: DATABASE_CONFIG_TOKEN,

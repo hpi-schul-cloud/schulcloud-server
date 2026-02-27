@@ -16,9 +16,11 @@ import { GetFileResponse } from '../domain/interface/get-file-response';
 import { DownloadArchiveUC } from './download-archive.uc';
 import { ArchiveFileParams } from './dto';
 import { StreamableFileMapper } from './mapper';
+import { JwtAuthentication } from '@infra/auth-guard';
 
 @ApiTags('DownloadArchive')
 @Controller('download-archive')
+@JwtAuthentication()
 export class DownloadArchiveController {
 	constructor(private readonly downloadArchiveUC: DownloadArchiveUC) {}
 
