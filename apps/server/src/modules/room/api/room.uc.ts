@@ -173,11 +173,6 @@ export class RoomUc {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const roomAuthorizable = await this.roomMembershipService.getRoomAuthorizable(roomId);
 
-		const hasOwner = roomAuthorizable.members.some((member) =>
-			member.roles.some((role) => role.name === RoleName.ROOMOWNER)
-		);
-
-
 		throwForbiddenIfFalse(this.roomRule.can('addMembers', user, roomAuthorizable));
 
 		await this.checkAreAllUsersAccessible(user, newUserIds);
