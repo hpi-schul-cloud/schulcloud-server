@@ -803,7 +803,10 @@ describe(BoardNodeRule.name, () => {
 
 				describe('when board settings allow editors to create video conferences', () => {
 					it('should return true if trying to "read"', () => {
-						const { user, boardNodeAuthorizable } = setup({ canRoomEditorManageVideoconference: true, isUnlocked: true });
+						const { user, boardNodeAuthorizable } = setup({
+							canRoomEditorManageVideoconference: true,
+							isUnlocked: true,
+						});
 
 						const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
 							action: Action.read,
@@ -813,7 +816,10 @@ describe(BoardNodeRule.name, () => {
 						expect(res).toBe(true);
 					});
 					it('should return true if trying to "write" ', () => {
-						const { user, boardNodeAuthorizable } = setup({ canRoomEditorManageVideoconference: true, isUnlocked: true });
+						const { user, boardNodeAuthorizable } = setup({
+							canRoomEditorManageVideoconference: true,
+							isUnlocked: true,
+						});
 
 						const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
 							action: Action.write,
@@ -826,7 +832,10 @@ describe(BoardNodeRule.name, () => {
 
 				describe('when board settings prohibit editors to create video conferences', () => {
 					it('should return true if trying to "read"', () => {
-						const { user, boardNodeAuthorizable } = setup({ canRoomEditorManageVideoconference: false, isUnlocked: true });
+						const { user, boardNodeAuthorizable } = setup({
+							canRoomEditorManageVideoconference: false,
+							isUnlocked: true,
+						});
 
 						const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
 							action: Action.read,
@@ -836,7 +845,10 @@ describe(BoardNodeRule.name, () => {
 						expect(res).toBe(true);
 					});
 					it('should return true if trying to "write" ', () => {
-						const { user, boardNodeAuthorizable } = setup({ canRoomEditorManageVideoconference: false, isUnlocked: true });
+						const { user, boardNodeAuthorizable } = setup({
+							canRoomEditorManageVideoconference: false,
+							isUnlocked: true,
+						});
 
 						const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
 							action: Action.write,
@@ -866,7 +878,10 @@ describe(BoardNodeRule.name, () => {
 
 				describe('when board settings allow editors to create video conferences', () => {
 					it('should return true if trying to "read"', () => {
-						const { user, boardNodeAuthorizable } = setup({ canRoomEditorManageVideoconference: true, isUnlocked: true });
+						const { user, boardNodeAuthorizable } = setup({
+							canRoomEditorManageVideoconference: true,
+							isUnlocked: true,
+						});
 
 						const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
 							action: Action.read,
@@ -877,7 +892,10 @@ describe(BoardNodeRule.name, () => {
 					});
 
 					it('should return true if trying to "write" ', () => {
-						const { user, boardNodeAuthorizable } = setup({ canRoomEditorManageVideoconference: true, isUnlocked: true });
+						const { user, boardNodeAuthorizable } = setup({
+							canRoomEditorManageVideoconference: true,
+							isUnlocked: true,
+						});
 
 						const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
 							action: Action.write,
@@ -890,7 +908,10 @@ describe(BoardNodeRule.name, () => {
 
 				describe('when board settings prohibit editors to create video conferences', () => {
 					it('should return true if trying to "read"', () => {
-						const { user, boardNodeAuthorizable } = setup({ canRoomEditorManageVideoconference: false, isUnlocked: true });
+						const { user, boardNodeAuthorizable } = setup({
+							canRoomEditorManageVideoconference: false,
+							isUnlocked: true,
+						});
 
 						const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
 							action: Action.read,
@@ -901,7 +922,10 @@ describe(BoardNodeRule.name, () => {
 					});
 
 					it('should return false if trying to "write" ', () => {
-						const { user, boardNodeAuthorizable } = setup({ canRoomEditorManageVideoconference: false, isUnlocked: true });
+						const { user, boardNodeAuthorizable } = setup({
+							canRoomEditorManageVideoconference: false,
+							isUnlocked: true,
+						});
 
 						const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
 							action: Action.write,
@@ -931,7 +955,10 @@ describe(BoardNodeRule.name, () => {
 
 				describe('when board settings allow editors to create video conferences', () => {
 					it('should return true if trying to "read"', () => {
-						const { user, boardNodeAuthorizable } = setup({ canRoomEditorManageVideoconference: true, isUnlocked: true });
+						const { user, boardNodeAuthorizable } = setup({
+							canRoomEditorManageVideoconference: true,
+							isUnlocked: true,
+						});
 
 						const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
 							action: Action.read,
@@ -942,7 +969,10 @@ describe(BoardNodeRule.name, () => {
 					});
 
 					it('should return false if trying to "write" ', () => {
-						const { user, boardNodeAuthorizable } = setup({ canRoomEditorManageVideoconference: true, isUnlocked: true });
+						const { user, boardNodeAuthorizable } = setup({
+							canRoomEditorManageVideoconference: true,
+							isUnlocked: true,
+						});
 
 						const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
 							action: Action.write,
@@ -955,7 +985,10 @@ describe(BoardNodeRule.name, () => {
 
 				describe('when board settings prohibit editors to create video conferences', () => {
 					it('should return true if trying to "read"', () => {
-						const { user, boardNodeAuthorizable } = setup({ canRoomEditorManageVideoconference: false, isUnlocked: true });
+						const { user, boardNodeAuthorizable } = setup({
+							canRoomEditorManageVideoconference: false,
+							isUnlocked: true,
+						});
 
 						const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
 							action: Action.read,
@@ -966,7 +999,10 @@ describe(BoardNodeRule.name, () => {
 					});
 
 					it('should return false if trying to "write" ', () => {
-						const { user, boardNodeAuthorizable } = setup({ canRoomEditorManageVideoconference: false, isUnlocked: true });
+						const { user, boardNodeAuthorizable } = setup({
+							canRoomEditorManageVideoconference: false,
+							isUnlocked: true,
+						});
 
 						const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
 							action: Action.write,
@@ -1085,7 +1121,7 @@ describe(BoardNodeRule.name, () => {
 			};
 
 			it('should return the expected allowed operations', () => {
-				const { user, boardNodeAuthorizable } = setup({ canRoomEditorManageVideoconference: true, isUnlocked: true  });
+				const { user, boardNodeAuthorizable } = setup({ canRoomEditorManageVideoconference: true, isUnlocked: true });
 
 				const res = boardNodeRule.listAllowedOperations(user, boardNodeAuthorizable);
 				const expectedAllowedOperations = {
