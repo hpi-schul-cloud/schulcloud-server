@@ -15,7 +15,7 @@ import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
-import { BoardExternalReferenceType, BoardNodeAuthorizable, BoardRoles, UserWithBoardRoles } from '../../domain';
+import { BoardExternalReferenceType, BoardRoles, UserWithBoardRoles } from '../../domain';
 import { columnBoardFactory, columnFactory } from '../../testing';
 import { BoardContextService } from './board-context.service';
 import { RoleName } from '@modules/role';
