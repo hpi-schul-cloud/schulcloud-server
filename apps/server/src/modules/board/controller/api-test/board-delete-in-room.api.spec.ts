@@ -142,7 +142,7 @@ describe(`board delete in room (api)`, () => {
 			await loggedInClient.delete(columnBoardNode.id);
 
 			// wait for event bus
-			await new Promise((resolve) => setTimeout(resolve, 10));
+			await new Promise((resolve) => setTimeout(resolve, 50));
 
 			const roomContent = await em.findOneOrFail('RoomContentEntity', {
 				roomId: columnBoardNode.context?.id,
