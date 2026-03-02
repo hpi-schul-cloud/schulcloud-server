@@ -1,9 +1,5 @@
 import { CoreModule } from '@core/core.module';
 import { LoggerModule } from '@core/logger';
-import { BoardsClientModule } from '@infra/boards-client';
-import { CardClientModule } from '@infra/cards-client';
-import { ColumnClientModule } from '@infra/column-client';
-import { CoursesClientModule } from '@infra/courses-client';
 import {
 	FILE_STORAGE_CLIENT_CONFIG_TOKEN,
 	FilesStorageClientModule,
@@ -19,14 +15,12 @@ import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 import { API_HOST_CONFIG_TOKEN, ApiHostConfig } from './api-client.config';
-import { CardClientModule as OldCardClientModule } from './common-cartridge-client/card-client/card-client.module';
-import { LessonClientModule } from './common-cartridge-client/lesson-client/lesson-client.module';
-import { CourseRoomsModule } from './common-cartridge-client/room-client';
 import { CommonCartridgeExportService, CommonCartridgeImportService } from './service';
 import { CommonCartridgeExportMapper } from './service/common-cartridge-export.mapper';
 import { CommonCartridgeImportMapper } from './service/common-cartridge-import.mapper';
 import { CommonCartridgeUc } from './uc/common-cartridge.uc';
 import { CommonCartridgeImportHandler } from './handler/common-cartridge-import.handler';
+import { CommonCartridgeClientsModule } from '@infra/common-cartridge-clients/common-cartridge-clients.module';
 
 @Module({
 	imports: [
@@ -38,13 +32,7 @@ import { CommonCartridgeImportHandler } from './handler/common-cartridge-import.
 		}),
 		FilesStorageClientModule.register(FILE_STORAGE_CLIENT_CONFIG_TOKEN, FileStorageClientConfig),
 		LoggerModule,
-		CoursesClientModule.register(API_HOST_CONFIG_TOKEN, ApiHostConfig),
-		BoardsClientModule.register(API_HOST_CONFIG_TOKEN, ApiHostConfig),
-		CourseRoomsModule.register(API_HOST_CONFIG_TOKEN, ApiHostConfig),
-		OldCardClientModule.register(API_HOST_CONFIG_TOKEN, ApiHostConfig),
-		LessonClientModule.register(API_HOST_CONFIG_TOKEN, ApiHostConfig),
-		ColumnClientModule.register(API_HOST_CONFIG_TOKEN, ApiHostConfig),
-		CardClientModule.register(API_HOST_CONFIG_TOKEN, ApiHostConfig),
+		CommonCartridgeClientsModule.register(API_HOST_CONFIG_TOKEN, ApiHostConfig),
 		CqrsModule,
 		HttpModule,
 		CoreModule,

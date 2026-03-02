@@ -2,22 +2,24 @@ import { DomainErrorHandler } from '@core/error';
 import { Logger } from '@core/logger';
 import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { BoardsClientAdapter } from '@infra/boards-client';
-import { CardClientAdapter } from '@infra/cards-client';
-import { ColumnClientAdapter } from '@infra/column-client';
-import { CoursesClientAdapter } from '@infra/courses-client';
+import {
+	BoardsClientAdapter,
+	CardClientAdapter,
+	ColumnClientAdapter,
+	CoursesClientAdapter,
+} from '@infra/common-cartridge-clients';
 import { FilesStorageClientAdapter } from '@infra/files-storage-client';
 import { HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
 import axios, { InternalAxiosRequestConfig } from 'axios';
 import { from } from 'rxjs';
+import { ImportCourseEvent } from '../domain/events/import-course.event';
 import { CommonCartridgeFileParser } from '../import/common-cartridge-file-parser';
 import { CommonCartridgeXmlResourceType } from '../import/common-cartridge-import.enums';
 import { commonCartridgeOrganizationPropsFactory as organizationFactory } from '../testing/common-cartridge-organization-props.factory';
-import { CommonCartridgeImportService } from './common-cartridge-import.service';
 import { CommonCartridgeImportMapper } from './common-cartridge-import.mapper';
-import { ImportCourseEvent } from '../domain/events/import-course.event';
+import { CommonCartridgeImportService } from './common-cartridge-import.service';
 
 jest.mock('../import/common-cartridge-file-parser');
 jest.mock('axios');

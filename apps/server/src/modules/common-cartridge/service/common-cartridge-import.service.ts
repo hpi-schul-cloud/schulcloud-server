@@ -1,10 +1,13 @@
 import { DomainErrorHandler } from '@core/error';
 import { Logger } from '@core/logger';
 import { JwtPayload } from '@infra/auth-guard';
-import { BoardsClientAdapter, ColumnResponse } from '@infra/boards-client';
-import { CardClientAdapter, CardControllerCreateElement201Response } from '@infra/cards-client';
-import { ColumnClientAdapter } from '@infra/column-client';
-import { CoursesClientAdapter } from '@infra/courses-client';
+import {
+	BoardsClientAdapter,
+	CardClientAdapter,
+	CardControllerCreateElement201Response,
+	ColumnClientAdapter,
+	CoursesClientAdapter,
+} from '@infra/common-cartridge-clients';
 import { FilesStorageClientAdapter } from '@infra/files-storage-client';
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
@@ -21,6 +24,7 @@ import {
 } from '../import/common-cartridge-import.types';
 import { CommonCartridgeMessageLoggable } from '../loggable/common-cartridge-export-message.loggable';
 import { CommonCartridgeImportMapper } from './common-cartridge-import.mapper';
+import { ColumnResponse } from '@infra/common-cartridge-clients';
 
 const DEPTH_BOARD = 0;
 const DEPTH_COLUMN = 1;

@@ -1,8 +1,19 @@
 import { Logger } from '@core/logger';
 import { faker } from '@faker-js/faker';
-import { DeepMocked, createMock } from '@golevelup/ts-jest';
-import { BoardResponse, BoardsClientAdapter } from '@infra/boards-client';
-import { CoursesClientAdapter } from '@infra/courses-client';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import {
+	BoardResponse,
+	BoardsClientAdapter,
+	BoardTaskResponse,
+	CardClientAdapter,
+	CardListResponse,
+	CourseRoomsClientAdapter,
+	CoursesClientAdapter,
+	LessonClientAdapter,
+	LinkElementContent,
+	RichTextElementContent,
+	SingleColumnBoardResponse,
+} from '@infra/common-cartridge-clients';
 import { FilesStorageClientAdapter } from '@infra/files-storage-client';
 import { fileRecordResponseFactory } from '@infra/files-storage-client/testing';
 import { FileDto, FileRecordParentType, FilesStorageClientAdapterService } from '@modules/files-storage-client';
@@ -11,20 +22,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import AdmZip from 'adm-zip';
 import { ArchiverError, ProgressData } from 'archiver';
 import { Readable } from 'stream';
-import { CardClientAdapter } from '../common-cartridge-client/card-client/card-client.adapter';
-import {
-	CardListResponseDto,
-	LinkElementContentDto,
-	RichTextElementContentDto,
-} from '../common-cartridge-client/card-client/dto';
-import { LessonClientAdapter } from '../common-cartridge-client/lesson-client/lesson-client.adapter';
-import { CourseRoomsClientAdapter } from '../common-cartridge-client/room-client';
-import {
-	BoardColumnBoardDto,
-	BoardLessonDto,
-	BoardTaskDto,
-	RoomBoardDto,
-} from '../common-cartridge-client/room-client/dto';
 import { CommonCartridgeVersion } from '../export/common-cartridge.enums';
 import { CommonCartridgeMessageLoggable } from '../loggable/common-cartridge-export-message.loggable';
 import {
@@ -34,9 +31,10 @@ import {
 	columnBoardFactory,
 	courseMetadataFactory,
 	lessonFactory,
+	lessonLinkedTaskFactory,
 	listOfCardResponseFactory,
 	roomFactory,
-} from '../testing/common-cartridge-dtos.factory';
+} from '../testing/common-cartridge-elements.factory';
 import { CommonCartridgeExportMapper } from './common-cartridge-export.mapper';
 import { CommonCartridgeExportService } from './common-cartridge-export.service';
 
@@ -66,6 +64,7 @@ describe('CommonCartridgeExportService', () => {
 	) => {
 		const courseMetadata = courseMetadataFactory.build();
 		const lessons = lessonFactory.buildList(2);
+		const lessonTasks = lessonLinkedTaskFactory.buildList(2);
 		const [lesson] = lessons;
 		lesson.courseId = courseMetadata.id;
 
@@ -74,21 +73,21 @@ describe('CommonCartridgeExportService', () => {
 			.map((c) => c.cards)
 			.flat()
 			.map((c) => c.cardId);
-		const listOfCardsResponse: CardListResponseDto = listOfCardResponseFactory.withCardIds(cardIds).build();
-		const boardTask: BoardTaskDto = boardTaskFactory.build();
+		const listOfCardsResponse: CardListResponse = listOfCardResponseFactory.withCardIds(cardIds).build();
+		const boardTask: BoardTaskResponse = boardTaskFactory.build();
 		boardTask.courseName = courseMetadata.title;
 
-		const room: RoomBoardDto = roomFactory.build();
+		const room: SingleColumnBoardResponse = roomFactory.build();
 		room.title = courseMetadata.title;
 		room.elements[0].content = boardTask;
-		room.elements[1].content = new BoardLessonDto(boardLessonFactory.build());
-		room.elements[1].content.id = lesson.lessonId;
+		room.elements[1].content = boardLessonFactory.build();
+		room.elements[1].content.id = lesson.id;
 		room.elements[1].content.name = lesson.name;
-		room.elements[2].content = new BoardColumnBoardDto(boardColumnFactory.build());
+		room.elements[2].content = boardColumnFactory.build();
 
 		coursesClientAdapterMock.getCourseCommonCartridgeMetadata.mockResolvedValue(courseMetadata);
 		lessonClientAdapterMock.getLessonById.mockResolvedValue(lesson);
-		lessonClientAdapterMock.getLessonTasks.mockResolvedValue(lesson.linkedTasks ?? []);
+		lessonClientAdapterMock.getLessonTasks.mockResolvedValue(lessonTasks);
 		boardClientAdapterMock.getBoardSkeletonById.mockResolvedValue(boardSkeleton);
 		cardClientAdapterMock.getAllBoardCardsByIds.mockResolvedValue(listOfCardsResponse);
 		courseRoomsClientAdapterMock.getRoomBoardByCourseId.mockResolvedValue(room);
@@ -119,11 +118,12 @@ describe('CommonCartridgeExportService', () => {
 			room,
 			lesson,
 			lessons,
+			lessonTasks,
 			boardTask,
 			boardSkeleton,
 			listOfCardsResponse,
-			textElement: listOfCardsResponse.data[0].elements[0].content as RichTextElementContentDto,
-			linkElement: listOfCardsResponse.data[0].elements[1].content as LinkElementContentDto,
+			textElement: listOfCardsResponse.data[0].elements[0].content as RichTextElementContent,
+			linkElement: listOfCardsResponse.data[0].elements[1].content as LinkElementContent,
 		};
 	};
 
@@ -261,10 +261,10 @@ describe('CommonCartridgeExportService', () => {
 			});
 
 			it('should add tasks of lesson to manifest file', async () => {
-				const { archive, lesson } = await setup();
+				const { archive, lessonTasks } = await setup();
 				const manifest = archive.getEntry('imsmanifest.xml')?.getData().toString();
 
-				lesson.linkedTasks.forEach((linkedTask) => {
+				lessonTasks.forEach((linkedTask) => {
 					expect(manifest).toContain(`<title>${linkedTask.name}</title>`);
 				});
 			});
@@ -335,10 +335,10 @@ describe('CommonCartridgeExportService', () => {
 			});
 
 			it('should add tasks of lesson to manifest file', async () => {
-				const { archive, lesson } = await setup();
+				const { archive, lessonTasks } = await setup();
 				const manifest = archive.getEntry('imsmanifest.xml')?.getData().toString();
 
-				lesson.linkedTasks.forEach((linkedTask) => {
+				lessonTasks.forEach((linkedTask) => {
 					expect(manifest).toContain(`<title>${linkedTask.name}</title>`);
 				});
 			});
@@ -444,26 +444,28 @@ describe('CommonCartridgeExportService', () => {
 				const [lesson] = lessons;
 				lesson.courseId = courseMetadata.id;
 
+				const lessonTasks = lessonLinkedTaskFactory.buildList(2);
+
 				const boardSkeleton: BoardResponse = columnBoardFactory.build();
 				const cardIds = boardSkeleton.columns
 					.map((c) => c.cards)
 					.flat()
 					.map((c) => c.cardId);
-				const listOfCardsResponse: CardListResponseDto = listOfCardResponseFactory.withCardIds(cardIds).build();
-				const boardTask: BoardTaskDto = boardTaskFactory.build();
+				const listOfCardsResponse: CardListResponse = listOfCardResponseFactory.withCardIds(cardIds).build();
+				const boardTask: BoardTaskResponse = boardTaskFactory.build();
 				boardTask.courseName = courseMetadata.title;
 
-				const room: RoomBoardDto = roomFactory.build();
+				const room: SingleColumnBoardResponse = roomFactory.build();
 				room.title = courseMetadata.title;
 				room.elements[0].content = boardTask;
-				room.elements[1].content = new BoardLessonDto(boardLessonFactory.build());
-				room.elements[1].content.id = lesson.lessonId;
+				room.elements[1].content = boardLessonFactory.build();
+				room.elements[1].content.id = lesson.id;
 				room.elements[1].content.name = lesson.name;
-				room.elements[2].content = new BoardColumnBoardDto(boardColumnFactory.build());
+				room.elements[2].content = boardColumnFactory.build();
 
 				coursesClientAdapterMock.getCourseCommonCartridgeMetadata.mockResolvedValue(courseMetadata);
 				lessonClientAdapterMock.getLessonById.mockResolvedValue(lesson);
-				lessonClientAdapterMock.getLessonTasks.mockResolvedValue(lesson.linkedTasks ?? []);
+				lessonClientAdapterMock.getLessonTasks.mockResolvedValue(lessonTasks);
 				boardClientAdapterMock.getBoardSkeletonById.mockResolvedValue(boardSkeleton);
 				cardClientAdapterMock.getAllBoardCardsByIds.mockResolvedValue(listOfCardsResponse);
 				courseRoomsClientAdapterMock.getRoomBoardByCourseId.mockResolvedValue(room);
@@ -540,27 +542,28 @@ describe('CommonCartridgeExportService', () => {
 				const lessons = lessonFactory.buildList(2);
 				const [lesson] = lessons;
 				lesson.courseId = courseMetadata.id;
+				const lessonTasks = lessonLinkedTaskFactory.buildList(2);
 
 				const boardSkeleton: BoardResponse = columnBoardFactory.build();
 				const cardIds = boardSkeleton.columns
 					.map((c) => c.cards)
 					.flat()
 					.map((c) => c.cardId);
-				const listOfCardsResponse: CardListResponseDto = listOfCardResponseFactory.withCardIds(cardIds).build();
-				const boardTask: BoardTaskDto = boardTaskFactory.build();
+				const listOfCardsResponse: CardListResponse = listOfCardResponseFactory.withCardIds(cardIds).build();
+				const boardTask: BoardTaskResponse = boardTaskFactory.build();
 				boardTask.courseName = courseMetadata.title;
 
-				const room: RoomBoardDto = roomFactory.build();
+				const room: SingleColumnBoardResponse = roomFactory.build();
 				room.title = courseMetadata.title;
 				room.elements[0].content = boardTask;
-				room.elements[1].content = new BoardLessonDto(boardLessonFactory.build());
-				room.elements[1].content.id = lesson.lessonId;
+				room.elements[1].content = boardLessonFactory.build();
+				room.elements[1].content.id = lesson.id;
 				room.elements[1].content.name = lesson.name;
-				room.elements[2].content = new BoardColumnBoardDto(boardColumnFactory.build());
+				room.elements[2].content = boardColumnFactory.build();
 
 				coursesClientAdapterMock.getCourseCommonCartridgeMetadata.mockResolvedValue(courseMetadata);
 				lessonClientAdapterMock.getLessonById.mockResolvedValue(lesson);
-				lessonClientAdapterMock.getLessonTasks.mockResolvedValue(lesson.linkedTasks ?? []);
+				lessonClientAdapterMock.getLessonTasks.mockResolvedValue(lessonTasks);
 				boardClientAdapterMock.getBoardSkeletonById.mockResolvedValue(boardSkeleton);
 				cardClientAdapterMock.getAllBoardCardsByIds.mockResolvedValue(listOfCardsResponse);
 				courseRoomsClientAdapterMock.getRoomBoardByCourseId.mockResolvedValue(room);
@@ -613,27 +616,28 @@ describe('CommonCartridgeExportService', () => {
 				const lessons = lessonFactory.buildList(2);
 				const [lesson] = lessons;
 				lesson.courseId = courseMetadata.id;
+				const lessonTasks = lessonLinkedTaskFactory.buildList(2);
 
 				const boardSkeleton: BoardResponse = columnBoardFactory.build();
 				const cardIds = boardSkeleton.columns
 					.map((c) => c.cards)
 					.flat()
 					.map((c) => c.cardId);
-				const listOfCardsResponse: CardListResponseDto = listOfCardResponseFactory.withCardIds(cardIds).build();
-				const boardTask: BoardTaskDto = boardTaskFactory.build();
+				const listOfCardsResponse: CardListResponse = listOfCardResponseFactory.withCardIds(cardIds).build();
+				const boardTask: BoardTaskResponse = boardTaskFactory.build();
 				boardTask.courseName = courseMetadata.title;
 
-				const room: RoomBoardDto = roomFactory.build();
+				const room: SingleColumnBoardResponse = roomFactory.build();
 				room.title = courseMetadata.title;
 				room.elements[0].content = boardTask;
-				room.elements[1].content = new BoardLessonDto(boardLessonFactory.build());
-				room.elements[1].content.id = lesson.lessonId;
+				room.elements[1].content = boardLessonFactory.build();
+				room.elements[1].content.id = lesson.id;
 				room.elements[1].content.name = lesson.name;
-				room.elements[2].content = new BoardColumnBoardDto(boardColumnFactory.build());
+				room.elements[2].content = boardColumnFactory.build();
 
 				coursesClientAdapterMock.getCourseCommonCartridgeMetadata.mockResolvedValue(courseMetadata);
 				lessonClientAdapterMock.getLessonById.mockResolvedValue(lesson);
-				lessonClientAdapterMock.getLessonTasks.mockResolvedValue(lesson.linkedTasks ?? []);
+				lessonClientAdapterMock.getLessonTasks.mockResolvedValue(lessonTasks);
 				boardClientAdapterMock.getBoardSkeletonById.mockResolvedValue(boardSkeleton);
 				cardClientAdapterMock.getAllBoardCardsByIds.mockResolvedValue(listOfCardsResponse);
 				courseRoomsClientAdapterMock.getRoomBoardByCourseId.mockResolvedValue(room);

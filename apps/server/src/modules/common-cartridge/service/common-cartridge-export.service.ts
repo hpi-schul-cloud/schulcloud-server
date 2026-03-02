@@ -1,32 +1,31 @@
 import { Logger } from '@core/logger';
-import { BoardResponse, BoardsClientAdapter, ColumnResponse } from '@infra/boards-client';
-import { CoursesClientAdapter } from '@infra/courses-client';
+import {
+	BoardColumnBoardResponse,
+	BoardElementResponse,
+	BoardElementResponseType,
+	BoardLessonResponse,
+	BoardResponse,
+	BoardsClientAdapter,
+	BoardTaskResponse,
+	CardClientAdapter,
+	CardResponse,
+	CardResponseElementsInner,
+	ColumnResponse,
+	ContentElementType,
+	CourseRoomsClientAdapter,
+	CoursesClientAdapter,
+	FileElementResponse,
+	FileFolderElementResponse,
+	LessonClientAdapter,
+	LessonContentResponse,
+	LinkElementResponse,
+	RichTextElementResponse,
+} from '@infra/common-cartridge-clients';
 import { FileRecordScanStatus, FilesStorageClientAdapter } from '@infra/files-storage-client';
 import { FileDto, FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import archiver from 'archiver';
 import { Stream } from 'node:stream';
-import { CardClientAdapter } from '../common-cartridge-client/card-client';
-import {
-	CardListResponseDto,
-	CardResponseDto,
-	FileElementResponseDto,
-	FileFolderElementResponseDto,
-	LinkElementResponseDto,
-	RichTextElementResponseDto,
-} from '../common-cartridge-client/card-client/dto';
-import { ContentElementType } from '../common-cartridge-client/card-client/enums/content-element-type.enum';
-import { CardResponseElementsInnerDto } from '../common-cartridge-client/card-client/types/card-response-elements-inner.type';
-import { LessonClientAdapter } from '../common-cartridge-client/lesson-client';
-import { LessonContentDto } from '../common-cartridge-client/lesson-client/dto';
-import { CourseRoomsClientAdapter } from '../common-cartridge-client/room-client';
-import {
-	BoardColumnBoardDto,
-	BoardElementDto,
-	BoardLessonDto,
-	BoardTaskDto,
-} from '../common-cartridge-client/room-client/dto';
-import { BoardElementDtoType } from '../common-cartridge-client/room-client/enums/board-element.enum';
 import { CommonCartridgeFileBuilder } from '../export/builders/common-cartridge-file-builder';
 import { CommonCartridgeOrganizationNode } from '../export/builders/common-cartridge-organization-node';
 import { CommonCartridgeVersion } from '../export/common-cartridge.enums';
@@ -79,11 +78,11 @@ export class CommonCartridgeExportService {
 		builder.addMetadata(this.mapper.mapCourseToMetadata(courseCommonCartridgeMetadata));
 
 		// get room board and the structure of the course
-		const roomBoard = await this.courseRoomsClientAdapter.getRoomBoardByCourseId(courseId);
+		const roomBoard = await this.courseRoomsClientAdapter.getRoomBoardByCourseId(jwt, courseId);
 		this.logger.debug(new CommonCartridgeMessageLoggable('Loaded roomboard of course', { courseId }));
 
 		// add lessons to organization
-		await this.addLessons(builder, version, roomBoard.elements, exportedTopics);
+		await this.addLessons(jwt, builder, version, roomBoard.elements, exportedTopics);
 		this.logger.debug(new CommonCartridgeMessageLoggable('Added lessons of course', { courseId }));
 
 		// add tasks to organization
@@ -142,7 +141,7 @@ export class CommonCartridgeExportService {
 	}
 
 	private addComponentToOrganization(
-		component: LessonContentDto,
+		component: LessonContentResponse,
 		lessonOrganization: CommonCartridgeOrganizationNode
 	): void {
 		const resources = this.mapper.mapContentToResources(component);
@@ -159,14 +158,24 @@ export class CommonCartridgeExportService {
 	}
 
 	private async addLessons(
+		jwt: string,
 		builder: CommonCartridgeFileBuilder,
 		version: CommonCartridgeVersion,
-		elements: BoardElementDto[],
+		elements: BoardElementResponse[],
 		topics: string[]
 	): Promise<void> {
 		const filteredLessons = this.filterLessonFromBoardElements(elements);
 		const lessonsIds = filteredLessons.filter((lesson) => topics.includes(lesson.id)).map((lesson) => lesson.id);
-		const lessons = await Promise.all(lessonsIds.map((elementId) => this.lessonClientAdapter.getLessonById(elementId)));
+		const lessons = await Promise.all(
+			lessonsIds.map(async (elementId) => {
+				const [lesson, linkedTasks] = await Promise.all([
+					this.lessonClientAdapter.getLessonById(jwt, elementId),
+					this.lessonClientAdapter.getLessonTasks(jwt, elementId),
+				]);
+
+				return { ...lesson, linkedTasks };
+			})
+		);
 
 		lessons.forEach((lesson) => {
 			const lessonsOrganization = builder.createOrganization(this.mapper.mapLessonToOrganization(lesson));
@@ -185,10 +194,10 @@ export class CommonCartridgeExportService {
 		jwt: string,
 		builder: CommonCartridgeFileBuilder,
 		version: CommonCartridgeVersion,
-		elements: BoardElementDto[],
+		elements: BoardElementResponse[],
 		exportedTasks: string[]
 	): Promise<void> {
-		const tasks: BoardTaskDto[] = this.filterTasksFromBoardElements(elements).filter((task) =>
+		const tasks: BoardTaskResponse[] = this.filterTasksFromBoardElements(elements).filter((task) =>
 			exportedTasks.includes(task.id)
 		);
 		const tasksOrganization = builder.createOrganization({
@@ -239,7 +248,7 @@ export class CommonCartridgeExportService {
 		jwt: string,
 		builder: CommonCartridgeFileBuilder,
 		version: CommonCartridgeVersion,
-		elements: BoardElementDto[],
+		elements: BoardElementResponse[],
 		exportedColumnBoards: string[]
 	): Promise<void> {
 		const columnBoards = this.filterColumnBoardFromBoardElement(elements);
@@ -279,15 +288,15 @@ export class CommonCartridgeExportService {
 
 		if (column.cards.length) {
 			const cardsIds = column.cards.map((card) => card.cardId);
-			const listOfCards: CardListResponseDto = await this.cardClientAdapter.getAllBoardCardsByIds(cardsIds);
+			const listOfCards = await this.cardClientAdapter.getAllBoardCardsByIds(jwt, cardsIds);
 			const sortedCards = this.sortCardsAfterRetrieval(cardsIds, listOfCards.data);
 
 			await Promise.all(sortedCards.map((card) => this.addCardToOrganization(jwt, card, version, columnOrganization)));
 		}
 	}
 
-	private sortCardsAfterRetrieval(cardsIds: string[], retrievedCards: CardResponseDto[]): CardResponseDto[] {
-		const retrievedCardsById = new Map<string, CardResponseDto>();
+	private sortCardsAfterRetrieval(cardsIds: string[], retrievedCards: CardResponse[]): CardResponse[] {
+		const retrievedCardsById = new Map<string, CardResponse>();
 		retrievedCards.forEach((retrievedCard) => retrievedCardsById.set(retrievedCard.id, retrievedCard));
 
 		const sortedCards = cardsIds.map((id) => retrievedCardsById.get(id)).filter((element) => !!element);
@@ -296,7 +305,7 @@ export class CommonCartridgeExportService {
 
 	private async addCardToOrganization(
 		jwt: string,
-		card: CardResponseDto,
+		card: CardResponse,
 		version: CommonCartridgeVersion,
 		columnOrganization: CommonCartridgeOrganizationNode
 	): Promise<void> {
@@ -312,10 +321,7 @@ export class CommonCartridgeExportService {
 		}
 	}
 
-	private async openStreamsToFiles(
-		jwt: string,
-		element: CardResponseElementsInnerDto
-	): Promise<FileMetadataAndStream[]> {
+	private async openStreamsToFiles(jwt: string, element: CardResponseElementsInner): Promise<FileMetadataAndStream[]> {
 		const fileMetadataBufferArray: FileMetadataAndStream[] = [];
 
 		if (element.type === ContentElementType.FILE || element.type === ContentElementType.FILE_FOLDER) {
@@ -360,17 +366,17 @@ export class CommonCartridgeExportService {
 
 	private async addCardElementToOrganization(
 		jwt: string,
-		element: CardResponseElementsInnerDto,
+		element: CardResponseElementsInner,
 		version: CommonCartridgeVersion,
 		cardOrganization: CommonCartridgeOrganizationNode
 	): Promise<void> {
 		switch (element.type) {
 			case ContentElementType.RICH_TEXT:
-				const resource = this.mapper.mapRichTextElementToResource(element as RichTextElementResponseDto);
+				const resource = this.mapper.mapRichTextElementToResource(element as RichTextElementResponse);
 				cardOrganization.addResource(resource);
 				break;
 			case ContentElementType.LINK:
-				const linkResource = this.mapper.mapLinkElementToResource(element as LinkElementResponseDto);
+				const linkResource = this.mapper.mapLinkElementToResource(element as LinkElementResponse);
 				cardOrganization.addResource(linkResource);
 				break;
 			case ContentElementType.FILE:
@@ -378,7 +384,7 @@ export class CommonCartridgeExportService {
 
 				for (const fileMetadata of metadataAndStreamsForFile) {
 					const { file, fileDto } = fileMetadata;
-					const fileResource = this.mapper.mapFileToResource(fileDto, file, element as FileElementResponseDto);
+					const fileResource = this.mapper.mapFileToResource(fileDto, file, element as FileElementResponse);
 					cardOrganization.addResource(fileResource);
 				}
 
@@ -389,7 +395,7 @@ export class CommonCartridgeExportService {
 				}
 				const metadataAndStreamsForFolder = await this.openStreamsToFiles(jwt, element);
 				const fileFolderResource = this.mapper.mapFileFolderToResource(
-					element as FileFolderElementResponseDto,
+					element as FileFolderElementResponse,
 					metadataAndStreamsForFolder
 				);
 				cardOrganization.addResource(fileFolderResource);
@@ -398,26 +404,26 @@ export class CommonCartridgeExportService {
 		}
 	}
 
-	private filterTasksFromBoardElements(elements: BoardElementDto[]): BoardTaskDto[] {
+	private filterTasksFromBoardElements(elements: BoardElementResponse[]): BoardTaskResponse[] {
 		const tasks = elements
-			.filter((element) => element.type === BoardElementDtoType.TASK)
-			.map((element) => element.content as BoardTaskDto);
+			.filter((element) => element.type === BoardElementResponseType.TASK)
+			.map((element) => element.content as BoardTaskResponse);
 
 		return tasks;
 	}
 
-	private filterLessonFromBoardElements(elements: BoardElementDto[]): BoardLessonDto[] {
+	private filterLessonFromBoardElements(elements: BoardElementResponse[]): BoardLessonResponse[] {
 		const lessons = elements
-			.filter((element) => element.content instanceof BoardLessonDto)
-			.map((element) => element.content as BoardLessonDto);
+			.filter((element) => element.type == BoardElementResponseType.LESSON)
+			.map((element) => element.content as BoardLessonResponse);
 
 		return lessons;
 	}
 
-	private filterColumnBoardFromBoardElement(elements: BoardElementDto[]): BoardColumnBoardDto[] {
+	private filterColumnBoardFromBoardElement(elements: BoardElementResponse[]): BoardColumnBoardResponse[] {
 		const columnBoard = elements
-			.filter((element) => element.type === BoardElementDtoType.COLUMN_BOARD)
-			.map((element) => element.content as BoardColumnBoardDto);
+			.filter((element) => element.type === BoardElementResponseType.COLUMN_BOARD)
+			.map((element) => element.content as BoardColumnBoardResponse);
 
 		return columnBoard;
 	}
