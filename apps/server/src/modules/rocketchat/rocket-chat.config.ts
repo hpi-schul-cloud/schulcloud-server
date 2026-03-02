@@ -22,22 +22,26 @@ export class RocketChatConfig extends RocketChatPublicApiConfig {
 
 	@ConfigProperty('ROCKET_CHAT_ADMIN_ID')
 	@IsString()
-	@IsOptional()
+	@ValidateIf(
+		(config: RocketChatConfig) => (!config.adminUser || !config.adminPassword) && config.rocketChatServiceEnabled
+	)
 	public adminId!: string;
 
 	@ConfigProperty('ROCKET_CHAT_ADMIN_TOKEN')
 	@IsString()
-	@IsOptional()
+	@ValidateIf(
+		(config: RocketChatConfig) => (!config.adminUser || !config.adminPassword) && config.rocketChatServiceEnabled
+	)
 	public adminToken!: string;
 
 	@ConfigProperty('ROCKET_CHAT_ADMIN_USER')
 	@IsString()
-	@ValidateIf((config: RocketChatConfig) => config.rocketChatServiceEnabled)
+	@ValidateIf((config: RocketChatConfig) => (!config.adminId || !config.adminToken) && config.rocketChatServiceEnabled)
 	public adminUser!: string;
 
 	@ConfigProperty('ROCKET_CHAT_ADMIN_PASSWORD')
 	@IsString()
-	@ValidateIf((config: RocketChatConfig) => config.rocketChatServiceEnabled)
+	@ValidateIf((config: RocketChatConfig) => (!config.adminId || !config.adminToken) && config.rocketChatServiceEnabled)
 	public adminPassword!: string;
 
 	@ConfigProperty('ROCKET_CHAT_CLIENT_TIMEOUT_MS')

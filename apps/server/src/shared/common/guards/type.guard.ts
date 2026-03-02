@@ -240,4 +240,8 @@ export class TypeGuard {
 
 		return value;
 	}
+
+	public static isNotNullOrUndefined<T>(value: T | null | undefined): value is T {
+		return !TypeGuard.isNull(value) && !TypeGuard.isUndefined(value);
+	}
 }
