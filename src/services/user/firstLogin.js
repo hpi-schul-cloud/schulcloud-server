@@ -1,6 +1,7 @@
 const moment = require('moment');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const constants = require('../../utils/constants');
+const { BadRequest } = require('../../errors');
 
 const getAutomaticConsent = () => ({
 	form: 'digital',
@@ -76,10 +77,6 @@ const firstLogin = async (data, params, app) => {
 	if (data.studentBirthdate) {
 		userUpdate.birthday = parseDate(data.studentBirthdate);
 	}
-
-	// TODO: consent also part of user now, why not patch by this request. Is the third parameter really needed?
-	userPromise = app.service('users').patch(user._id, userUpdate, { account: params.account });
-
 	// consents
 	const consentSkipCondition = Configuration.get('SKIP_CONDITIONS_CONSENT');
 	if (consentSkipCondition !== '') {
@@ -106,16 +103,14 @@ const firstLogin = async (data, params, app) => {
 		}
 	}
 
-	if (data.privacyConsent || data.termsOfUseConsent) {
+	if (data.privacyConsent && data.termsOfUseConsent) {
 		consentUpdate.userId = user._id;
 		consentUpdate.userConsent = {
 			form: 'digital',
 			privacyConsent: data.privacyConsent,
 			termsOfUseConsent: data.termsOfUseConsent,
 		};
-	}
-
-	if (data.termsOfUseConsentVersion || data.privacyConsentVersion) {
+	} else if (data.termsOfUseConsentVersion && data.privacyConsentVersion) {
 		const updateConsentDates = (consent) => {
 			if (data.privacyConsentVersion) {
 				consent.privacyConsent = true;
@@ -161,9 +156,7 @@ const firstLogin = async (data, params, app) => {
 					},
 				});
 			});
-	}
-
-	if (data.parent_privacyConsent || data.parent_termsOfUseConsent) {
+	} else if (data.parent_privacyConsent && data.parent_termsOfUseConsent) {
 		consentUpdate.userId = user._id;
 		consentUpdate.parentConsents = [
 			{
@@ -172,8 +165,15 @@ const firstLogin = async (data, params, app) => {
 				termsOfUseConsent: data.parent_termsOfUseConsent,
 			},
 		];
+	} else if (user.consent?.parentConsents?.privacyConsent && user.consent?.parentConsents?.termsOfUseConsent) {
+		// User already has valid parent consents - no action needed
+	} else {
+		throw new BadRequest('privacy consent and terms of use consent should be set to true');
 	}
+
 	if (consentUpdate.userId) consentPromise = app.service('consents').create(consentUpdate);
+	// TODO: consent also part of user now, why not patch by this request. Is the third parameter really needed?
+	userPromise = app.service('users').patch(user._id, userUpdate, { account: params.account });
 
 	return Promise.all([userPromise, consentPromise, updateConsentUsingVersions]);
 };
