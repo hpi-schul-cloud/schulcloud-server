@@ -1,4 +1,4 @@
-import { Action, AuthorizationService } from '@modules/authorization';
+import { AuthorizationService } from '@modules/authorization';
 import { RoleName } from '@modules/role';
 import { RoomMembershipService } from '@modules/room-membership';
 import { RoomRule } from '@modules/room-membership/authorization/room.rule';
@@ -6,8 +6,8 @@ import { Injectable } from '@nestjs/common';
 import { TypeGuard } from '@shared/common/guards';
 import { EntityId } from '@shared/domain/types';
 import { RoomArrangementService, RoomService } from '../domain';
-import { RoomPermissionService } from './service';
 import { RoomWithAllowedOperationsAndLockedStatus } from './type/room-with-locked-status';
+import { throwForbiddenIfFalse } from '@shared/common/utils/wrap-with-exception';
 
 @Injectable()
 export class RoomArrangementUc {
@@ -15,7 +15,6 @@ export class RoomArrangementUc {
 		private readonly authorizationService: AuthorizationService,
 		private readonly roomMembershipService: RoomMembershipService,
 		private readonly roomService: RoomService,
-		private readonly roomPermissionService: RoomPermissionService,
 		private readonly roomArrangementService: RoomArrangementService,
 		private readonly roomRule: RoomRule
 	) {}
@@ -53,8 +52,10 @@ export class RoomArrangementUc {
 	}
 
 	public async moveRoomInUserArrangement(userId: EntityId, roomId: EntityId, toPosition: number): Promise<void> {
-		await this.roomService.getSingleRoom(roomId);
-		await this.roomPermissionService.checkRoomAuthorizationByIds(userId, roomId, Action.read);
+		const roomAuthorizable = await this.roomMembershipService.getRoomAuthorizable(roomId);
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+
+		throwForbiddenIfFalse(this.roomRule.can('accessRoom', user, roomAuthorizable));
 
 		await this.roomArrangementService.moveRoom(userId, roomId, toPosition);
 	}
