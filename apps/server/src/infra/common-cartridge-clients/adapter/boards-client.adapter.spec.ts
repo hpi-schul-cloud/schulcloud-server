@@ -2,8 +2,9 @@ import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
-import { BoardsClientAdapter } from './boards-client.adapter';
 import { BoardApi, BoardResponse, CreateBoardBodyParams, CreateBoardResponse } from '../generated';
+import { AdapterUtils } from './adapter.utils';
+import { BoardsClientAdapter } from './boards-client.adapter';
 
 describe(BoardsClientAdapter.name, () => {
 	let module: TestingModule;
@@ -66,11 +67,10 @@ describe(BoardsClientAdapter.name, () => {
 				const response = await sut.createBoard(jwt, params);
 
 				expect(response).toEqual(responseData);
-				expect(boardApiMock.boardControllerCreateBoard).toHaveBeenCalledWith(params, {
-					headers: {
-						Authorization: `Bearer ${jwt}`,
-					},
-				});
+				expect(boardApiMock.boardControllerCreateBoard).toHaveBeenCalledWith(
+					params,
+					AdapterUtils.createAxiosConfigForJwt(jwt)
+				);
 			});
 		});
 	});
@@ -113,11 +113,10 @@ describe(BoardsClientAdapter.name, () => {
 				const response = await sut.getBoardSkeletonById(jwt, boardId);
 
 				expect(response).toEqual(responseData);
-				expect(boardApiMock.boardControllerGetBoardSkeleton).toHaveBeenCalledWith(boardId, {
-					headers: {
-						Authorization: `Bearer ${jwt}`,
-					},
-				});
+				expect(boardApiMock.boardControllerGetBoardSkeleton).toHaveBeenCalledWith(
+					boardId,
+					AdapterUtils.createAxiosConfigForJwt(jwt)
+				);
 			});
 		});
 	});
@@ -147,11 +146,10 @@ describe(BoardsClientAdapter.name, () => {
 				const response = await sut.createBoardColumn(jwt, boardId);
 
 				expect(response).toEqual(responseData);
-				expect(boardApiMock.boardControllerCreateColumn).toHaveBeenCalledWith(boardId, {
-					headers: {
-						Authorization: `Bearer ${jwt}`,
-					},
-				});
+				expect(boardApiMock.boardControllerCreateColumn).toHaveBeenCalledWith(
+					boardId,
+					AdapterUtils.createAxiosConfigForJwt(jwt)
+				);
 			});
 		});
 	});

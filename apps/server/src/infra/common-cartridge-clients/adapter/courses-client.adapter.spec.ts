@@ -1,8 +1,9 @@
 import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { CoursesClientAdapter } from './courses-client.adapter';
 import { CoursesApi, CreateCourseBodyParams } from '../generated';
+import { AdapterUtils } from './adapter.utils';
+import { CoursesClientAdapter } from './courses-client.adapter';
 
 describe(CoursesClientAdapter.name, () => {
 	let module: TestingModule;
@@ -49,11 +50,10 @@ describe(CoursesClientAdapter.name, () => {
 
 			await sut.getCourseCommonCartridgeMetadata(jwt, courseId);
 
-			expect(coursesApiMock.courseControllerGetCourseCcMetadataById).toHaveBeenCalledWith(courseId, {
-				headers: {
-					Authorization: `Bearer ${jwt}`,
-				},
-			});
+			expect(coursesApiMock.courseControllerGetCourseCcMetadataById).toHaveBeenCalledWith(
+				courseId,
+				AdapterUtils.createAxiosConfigForJwt(jwt)
+			);
 		});
 	});
 
@@ -72,11 +72,10 @@ describe(CoursesClientAdapter.name, () => {
 
 			await sut.createCourse(jwt, params);
 
-			expect(coursesApiMock.courseControllerCreateCourse).toHaveBeenCalledWith(params, {
-				headers: {
-					Authorization: `Bearer ${jwt}`,
-				},
-			});
+			expect(coursesApiMock.courseControllerCreateCourse).toHaveBeenCalledWith(
+				params,
+				AdapterUtils.createAxiosConfigForJwt(jwt)
+			);
 		});
 	});
 });

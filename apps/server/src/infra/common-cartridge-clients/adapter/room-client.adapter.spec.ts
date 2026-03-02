@@ -1,9 +1,10 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { faker } from '@faker-js/faker';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Test, TestingModule } from '@nestjs/testing';
 import { AxiosResponse } from 'axios';
-import { CourseRoomsClientAdapter } from './room-client.adapter';
 import { CourseRoomsApi, SingleColumnBoardResponse } from '../generated';
+import { AdapterUtils } from './adapter.utils';
+import { CourseRoomsClientAdapter } from './room-client.adapter';
 
 describe(CourseRoomsClientAdapter.name, () => {
 	let module: TestingModule;
@@ -59,11 +60,10 @@ describe(CourseRoomsClientAdapter.name, () => {
 				const { roomId, response, jwt } = setup();
 				const result = await service.getRoomBoardByCourseId(jwt, roomId);
 
-				expect(courseRoomsApi.courseRoomsControllerGetRoomBoard).toHaveBeenCalledWith(roomId, {
-					headers: {
-						Authorization: `Bearer ${jwt}`,
-					},
-				});
+				expect(courseRoomsApi.courseRoomsControllerGetRoomBoard).toHaveBeenCalledWith(
+					roomId,
+					AdapterUtils.createAxiosConfigForJwt(jwt)
+				);
 				expect(result).toBe(response.data);
 			});
 		});

@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { RawAxiosRequestConfig } from 'axios';
 import {
 	BoardCardApi,
 	BoardElementApi,
@@ -10,13 +9,17 @@ import {
 	RenameBodyParams,
 	UpdateElementContentBodyParams,
 } from '../generated';
+import { AdapterUtils } from './adapter.utils';
 
 @Injectable()
 export class CardClientAdapter {
 	constructor(private readonly cardApi: BoardCardApi, private readonly elementApi: BoardElementApi) {}
 
 	public async getAllBoardCardsByIds(jwt: string, cardsIds: string[]): Promise<CardListResponse> {
-		const getBoardCardsResponse = await this.cardApi.cardControllerGetCards(cardsIds, this.getAxiosConfig(jwt));
+		const getBoardCardsResponse = await this.cardApi.cardControllerGetCards(
+			cardsIds,
+			AdapterUtils.createAxiosConfigForJwt(jwt)
+		);
 
 		return getBoardCardsResponse.data;
 	}
@@ -29,14 +32,18 @@ export class CardClientAdapter {
 		const element = await this.cardApi.cardControllerCreateElement(
 			cardId,
 			createContentElementBodyParams,
-			this.getAxiosConfig(jwt)
+			AdapterUtils.createAxiosConfigForJwt(jwt)
 		);
 
 		return element.data;
 	}
 
 	public async updateCardTitle(jwt: string, cardId: string, renameBodyParams: RenameBodyParams): Promise<void> {
-		await this.cardApi.cardControllerUpdateCardTitle(cardId, renameBodyParams, this.getAxiosConfig(jwt));
+		await this.cardApi.cardControllerUpdateCardTitle(
+			cardId,
+			renameBodyParams,
+			AdapterUtils.createAxiosConfigForJwt(jwt)
+		);
 	}
 
 	public async updateCardElement(
@@ -47,17 +54,9 @@ export class CardClientAdapter {
 		const anyElementResponse = await this.elementApi.elementControllerUpdateElement(
 			elementId,
 			updateElementContentBodyParams,
-			this.getAxiosConfig(jwt)
+			AdapterUtils.createAxiosConfigForJwt(jwt)
 		);
 
 		return anyElementResponse.data;
-	}
-
-	private getAxiosConfig(jwt: string): RawAxiosRequestConfig {
-		return {
-			headers: {
-				Authorization: `Bearer ${jwt}`,
-			},
-		};
 	}
 }

@@ -2,8 +2,9 @@ import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
-import { ColumnClientAdapter } from './column-client.adapter';
 import { BoardColumnApi, CreateCardBodyParamsRequiredEmptyElements } from '../generated';
+import { AdapterUtils } from './adapter.utils';
+import { ColumnClientAdapter } from './column-client.adapter';
 
 describe(ColumnClientAdapter.name, () => {
 	let module: TestingModule;
@@ -61,11 +62,11 @@ describe(ColumnClientAdapter.name, () => {
 				const response = await sut.createCard(jwt, columnId, cardParams);
 
 				expect(response).toEqual(columnId);
-				expect(columnApiMock.columnControllerCreateCard).toHaveBeenCalledWith(columnId, cardParams, {
-					headers: {
-						Authorization: `Bearer ${jwt}`,
-					},
-				});
+				expect(columnApiMock.columnControllerCreateCard).toHaveBeenCalledWith(
+					columnId,
+					cardParams,
+					AdapterUtils.createAxiosConfigForJwt(jwt)
+				);
 			});
 		});
 	});
@@ -93,11 +94,7 @@ describe(ColumnClientAdapter.name, () => {
 				expect(columnApiMock.columnControllerUpdateColumnTitle).toHaveBeenCalledWith(
 					columnId,
 					{ title },
-					{
-						headers: {
-							Authorization: `Bearer ${jwt}`,
-						},
-					}
+					AdapterUtils.createAxiosConfigForJwt(jwt)
 				);
 			});
 		});

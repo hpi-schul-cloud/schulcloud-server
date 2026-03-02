@@ -2,9 +2,10 @@ import { faker } from '@faker-js/faker/.';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
-import { BoardCardApi, BoardElementApi, CardListResponse, CardResponse, ContentElementType } from '../generated';
-import { CardClientAdapter } from './card-client.adapter';
 import { AxiosResponse } from 'axios';
+import { BoardCardApi, BoardElementApi, CardListResponse, CardResponse, ContentElementType } from '../generated';
+import { AdapterUtils } from './adapter.utils';
+import { CardClientAdapter } from './card-client.adapter';
 
 describe(CardClientAdapter.name, () => {
 	let module: TestingModule;
@@ -98,11 +99,11 @@ describe(CardClientAdapter.name, () => {
 
 				expect(response.id).toEqual(cardId);
 				expect(response.type).toEqual(ContentElementType.RICH_TEXT);
-				expect(cardApiMock.cardControllerCreateElement).toHaveBeenCalledWith(cardId, createContentElementBodyParams, {
-					headers: {
-						Authorization: `Bearer ${jwt}`,
-					},
-				});
+				expect(cardApiMock.cardControllerCreateElement).toHaveBeenCalledWith(
+					cardId,
+					createContentElementBodyParams,
+					AdapterUtils.createAxiosConfigForJwt(jwt)
+				);
 			});
 		});
 	});
@@ -128,11 +129,11 @@ describe(CardClientAdapter.name, () => {
 
 				await sut.updateCardTitle(jwt, cardId, renameBodyParams);
 
-				expect(cardApiMock.cardControllerUpdateCardTitle).toHaveBeenCalledWith(cardId, renameBodyParams, {
-					headers: {
-						Authorization: `Bearer ${jwt}`,
-					},
-				});
+				expect(cardApiMock.cardControllerUpdateCardTitle).toHaveBeenCalledWith(
+					cardId,
+					renameBodyParams,
+					AdapterUtils.createAxiosConfigForJwt(jwt)
+				);
 			});
 		});
 	});
@@ -173,11 +174,7 @@ describe(CardClientAdapter.name, () => {
 				expect(boardElementApiMock.elementControllerUpdateElement).toHaveBeenCalledWith(
 					elementId,
 					updateElementContentBodyParams,
-					{
-						headers: {
-							Authorization: `Bearer ${jwt}`,
-						},
-					}
+					AdapterUtils.createAxiosConfigForJwt(jwt)
 				);
 			});
 		});
