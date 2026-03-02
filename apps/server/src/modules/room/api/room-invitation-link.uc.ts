@@ -71,10 +71,10 @@ export class RoomInvitationLinkUc {
 
 		const roomIds = roomInvitationLinks.map((link) => link.roomId);
 		const uniqueRoomIds = [...new Set(roomIds)];
-		const roomWriteAccess = await this.canWriteToRooms(userId, uniqueRoomIds);
-		const hasWriteAccessOnAllRooms = roomWriteAccess.every((access) => access);
+		const roomsAddMembersPermission = await this.canOnRooms(userId, uniqueRoomIds, 'addMembers');
+		const hasAddMembersPermissionOnAllRooms = roomsAddMembersPermission.every(Boolean);
 
-		throwForbiddenIfFalse(hasWriteAccessOnAllRooms);
+		throwForbiddenIfFalse(hasAddMembersPermissionOnAllRooms);
 
 		await this.roomInvitationLinkService.deleteLinks(linkIds);
 	}
@@ -212,11 +212,6 @@ export class RoomInvitationLinkUc {
 		);
 
 		return roomAuthorizables.map((roomAuthorizable) => this.roomRule.can(operation, user, roomAuthorizable));
-	}
-
-	private canWriteToRooms(userId: EntityId, roomIds: EntityId[]): Promise<boolean[]> {
-		// original implementaiton checdked for addMembers, so keeping it the same
-		return this.canOnRooms(userId, roomIds, 'addMembers');
 	}
 
 	private checkFeatureLinkInvitationExternalPersonsEnabled(): void {
