@@ -4,6 +4,7 @@ import archiver from 'archiver';
 import { PassThrough } from 'node:stream';
 import { FileEntity } from '../../entity';
 import { GetFileResponse } from '../interface';
+import { CreateArchiveLoggable } from '../loggable';
 
 export class ArchiveFactory {
 	public static create(
@@ -43,20 +44,10 @@ export class ArchiveFactory {
 	}
 
 	private static logWarning(fileRecords: FileEntity[], logger?: Logger): void {
-		/* logger?.warning(
-			new FileStorageActionsLoggable('Warning while creating archive', {
-				action: 'createArchive',
-				sourcePayload: fileRecords,
-			})
-		); */
+		logger?.warning(new CreateArchiveLoggable('Warning while creating archive', 'createArchive', fileRecords));
 	}
 
 	private static logClose(fileRecords: FileEntity[], logger?: Logger): void {
-		/* logger?.debug(
-			new FileStorageActionsLoggable('Archive created', {
-				action: 'createArchive',
-				sourcePayload: fileRecords,
-			})
-		); */
+		logger?.debug(new CreateArchiveLoggable('Archive created', 'createArchive', fileRecords));
 	}
 }

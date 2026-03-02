@@ -34,6 +34,17 @@ describe('ArchiveFactory', () => {
 		archive.on('error', (err) => done(err));
 	});
 
+	it('should log warning on ENOENT warning', () => {
+		const files = [createFileResponse('file.txt', 'test')];
+		const fileRecords: FileEntity[] = [];
+
+		const archive = ArchiveFactory.create(files, fileRecords, logger, 'zip');
+
+		archive.emit('warning', { code: 'ENOENT', message: 'File not found' });
+
+		expect(logger.warning).toHaveBeenCalledTimes(1);
+	});
+
 	it('should throw an Error on non-ENOENT warning', () => {
 		const files = [createFileResponse('file.txt', 'test')];
 		const fileRecords: FileEntity[] = [];
