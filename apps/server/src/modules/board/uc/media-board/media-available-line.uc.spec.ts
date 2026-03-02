@@ -181,7 +181,7 @@ describe(MediaAvailableLineUc.name, () => {
 
 				await uc.getMediaAvailableLine(user.id, mediaBoard.id);
 
-				expect(boardNodeRule.canViewMediaBoard).toHaveBeenCalledWith(user, mediaBoard);
+				expect(boardNodeRule.can).toHaveBeenCalledWith('viewMediaBoard', user, mediaBoard);
 			});
 
 			it('should get the user from authrorization service', async () => {
@@ -664,7 +664,7 @@ describe(MediaAvailableLineUc.name, () => {
 
 				await uc.updateAvailableLineColor(user.id, mediaBoard.id, MediaBoardColors.RED);
 
-				expect(boardNodeRule.canUpdateMediaBoardColor).toHaveBeenCalledWith(user, mediaBoard);
+				expect(boardNodeRule.can).toHaveBeenCalledWith('updateMediaBoardColor', user, mediaBoard);
 			});
 
 			it('should collapse the line', async () => {
@@ -723,7 +723,7 @@ describe(MediaAvailableLineUc.name, () => {
 
 				await uc.collapseAvailableLine(user.id, mediaBoard.id, true);
 
-				expect(boardNodeRule.canCollapseMediaBoard).toHaveBeenCalledWith(user, mediaBoard);
+				expect(boardNodeRule.can).toHaveBeenCalledWith('collapseMediaBoard', user, mediaBoard);
 			});
 
 			it('should collapse the line', async () => {

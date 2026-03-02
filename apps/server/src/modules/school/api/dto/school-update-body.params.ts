@@ -4,14 +4,7 @@ import { LanguageType, Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { Transform, Type } from 'class-transformer';
 import { IsBoolean, IsEnum, IsMongoId, IsOptional, IsString, Matches, ValidateNested } from 'class-validator';
-import {
-	FileStorageType,
-	SchoolFeature,
-	SchoolPermissions,
-	SchoolUpdateBody,
-	StudentPermission,
-	TeacherPermission,
-} from '../../domain';
+import { FileStorageType, SchoolFeature, SchoolPermissions, SchoolUpdateBody, TeacherPermission } from '../../domain';
 
 export class SchoolLogo {
 	@ApiPropertyOptional()
@@ -32,18 +25,11 @@ class TeacherPermissionParams implements TeacherPermission {
 	[Permission.STUDENT_LIST]?: boolean;
 }
 
-class StudentPermissionParams implements StudentPermission {}
-
 class SchoolPermissionsParams implements SchoolPermissions {
 	@IsOptional()
 	@ValidateNested()
 	@ApiPropertyOptional()
 	teacher?: TeacherPermissionParams;
-
-	@IsOptional()
-	@ValidateNested()
-	@ApiPropertyOptional()
-	student?: StudentPermissionParams;
 }
 
 export class SchoolUpdateBodyParams implements SchoolUpdateBody {
