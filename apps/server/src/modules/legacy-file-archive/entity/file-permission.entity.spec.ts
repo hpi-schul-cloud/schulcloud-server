@@ -6,7 +6,7 @@ describe(FilePermissionEntity.name, () => {
 	describe('constructor', () => {
 		const setup = () => {
 			const refId = new ObjectId();
-			const refPermModel = OwnerType.USER;
+			const refPermModel = OwnerType.User;
 
 			return { refId, refPermModel };
 		};

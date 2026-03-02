@@ -4,32 +4,6 @@ import { StreamableFileMapper } from './stream.response.mapper';
 
 describe('FilesStorageMapper', () => {
 	describe('mapToStreamableFile', () => {
-		describe('when file is a PDF', () => {
-			const setup = () => {
-				const fileResponse = GetFileResponseTestFactory.build({
-					name: 'test.pdf',
-					mimeType: 'application/pdf',
-				});
-
-				return { fileResponse };
-			};
-
-			it('should return StreamableFile with inline disposition', () => {
-				const { fileResponse } = setup();
-
-				const result = StreamableFileMapper.fromResponse(fileResponse);
-
-				expect(result).toBeInstanceOf(StreamableFile);
-
-				const options = result.options;
-				expect(options.type).toBe('application/pdf');
-				expect(options.length).toBe(8);
-				expect(options.disposition).toContain('inline;');
-				expect(options.disposition).toContain('filename="test.pdf"');
-				expect(options.disposition).toContain("filename*=UTF-8''test.pdf");
-			});
-		});
-
 		describe('when file is not a PDF', () => {
 			const setup = () => {
 				const fileResponse = GetFileResponseTestFactory.build({

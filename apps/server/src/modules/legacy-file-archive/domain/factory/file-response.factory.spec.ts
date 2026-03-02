@@ -1,5 +1,5 @@
-import { ArchiveTestFactory } from '@modules/files-storage/testing/archive.test.factory';
 import { Readable } from 'node:stream';
+import { ArchiveTestFactory } from '../../testing';
 import { FileResponseFactory } from './file-response.factory';
 
 describe('FileResponseFactory', () => {

@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { storageProviderFactory } from '@modules/school/testing';
-import { FileOwnerModel } from '../domain';
+import { OwnerType } from '../domain';
 import { FileSecurityCheckEntity } from './file-security-check.entity';
 import { FileEntity } from './file.entity';
 import { fileEntityFactory, filePermissionEntityFactory } from './testing';
@@ -231,7 +231,7 @@ describe(FileEntity.name, () => {
 					],
 					parentId: new ObjectId().toHexString(),
 					ownerId: userId,
-					refOwnerModel: FileOwnerModel.USER,
+					refOwnerModel: OwnerType.User,
 					creatorId: userId,
 					permissions: [filePermissionEntityFactory.build({ refId: userId })],
 					lockId: new ObjectId().toHexString(),
@@ -287,7 +287,7 @@ describe(FileEntity.name, () => {
 							storageFileName: 'name',
 							storageProvider,
 							ownerId: userId,
-							refOwnerModel: FileOwnerModel.USER,
+							refOwnerModel: OwnerType.User,
 							creatorId: userId,
 							permissions: [filePermissionEntityFactory.build({ refId: userId })],
 						});
@@ -304,7 +304,7 @@ describe(FileEntity.name, () => {
 							bucket: 'bucket',
 							storageProvider,
 							ownerId: userId,
-							refOwnerModel: FileOwnerModel.USER,
+							refOwnerModel: OwnerType.User,
 							creatorId: userId,
 							permissions: [filePermissionEntityFactory.build({ refId: userId })],
 						});
@@ -321,7 +321,7 @@ describe(FileEntity.name, () => {
 							bucket: 'bucket',
 							storageFileName: 'name',
 							ownerId: userId,
-							refOwnerModel: FileOwnerModel.USER,
+							refOwnerModel: OwnerType.User,
 							creatorId: userId,
 							permissions: [filePermissionEntityFactory.build({ refId: userId })],
 						});

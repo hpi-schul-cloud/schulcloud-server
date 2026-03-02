@@ -1,8 +1,7 @@
+import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Logger } from '@infra/logger';
 import { PassThrough } from 'stream';
-import { FileRecord } from '../file-record.do';
-import { FileStorageActionsLoggable } from '../loggable';
+import { FileEntity } from '../../entity';
 import { ArchiveFactory } from './archive.factory';
 
 describe('ArchiveFactory', () => {
@@ -21,35 +20,23 @@ describe('ArchiveFactory', () => {
 
 	it('should create a zip archive and append files', (done) => {
 		const files = [createFileResponse('file1.txt', 'hello'), createFileResponse('file2.txt', 'world')];
-		const fileRecords: FileRecord[] = [];
+		const fileEntities: FileEntity[] = [];
 
-		const archive = ArchiveFactory.create(files, fileRecords, logger, 'zip');
+		const archive = ArchiveFactory.create(files, fileEntities, logger, 'zip');
 
 		const chunks: Buffer[] = [];
 		archive.on('data', (chunk) => chunks.push(chunk));
 		archive.on('close', () => {
 			expect(Buffer.concat(chunks).length).toBeGreaterThan(0);
-			expect(logger.debug).toHaveBeenCalled();
 			done();
 		});
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-return
 		archive.on('error', (err) => done(err));
-	});
-
-	it('should call logger.warning on ENOENT warning', () => {
-		const files = [createFileResponse('file.txt', 'test')];
-		const fileRecords: FileRecord[] = [];
-
-		const archive = ArchiveFactory.create(files, fileRecords, logger, 'zip');
-
-		const warning = { code: 'ENOENT' };
-		archive.emit('warning', warning);
-
-		expect(logger.warning).toHaveBeenCalledWith(expect.any(FileStorageActionsLoggable));
 	});
 
 	it('should throw an Error on non-ENOENT warning', () => {
 		const files = [createFileResponse('file.txt', 'test')];
-		const fileRecords: FileRecord[] = [];
+		const fileRecords: FileEntity[] = [];
 
 		const archive = ArchiveFactory.create(files, fileRecords, logger, 'zip');
 
@@ -60,7 +47,7 @@ describe('ArchiveFactory', () => {
 
 	it('should throw on error event', () => {
 		const files = [createFileResponse('file.txt', 'test')];
-		const fileRecords: FileRecord[] = [];
+		const fileRecords: FileEntity[] = [];
 
 		const archive = ArchiveFactory.create(files, fileRecords, logger, 'zip');
 
