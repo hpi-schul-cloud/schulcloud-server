@@ -2,8 +2,8 @@ import { S3Client } from '@aws-sdk/client-s3';
 import { DomainErrorHandler } from '@core/error';
 import { Logger } from '@core/logger';
 import { S3ClientAdapter, S3Config } from '@infra/s3-client';
-import { StorageProviderEntity, StorageProviderRepo } from '@modules/school/repo';
-import { Injectable, NotFoundException, OnModuleInit } from '@nestjs/common';
+import { StorageProviderRepo, type StorageProviderEntity } from '@modules/school/repo';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { TypeGuard } from '@shared/common/guards';
 import { EntityId } from '@shared/domain/types';
 import { FileEntity } from '../entity';
@@ -12,20 +12,14 @@ import { ArchiveFactory, FileResponseFactory } from './factory';
 import { GetFileResponse, OwnerType } from './interface';
 
 @Injectable()
-export class DownloadArchiveService implements OnModuleInit {
-	private s3Clients = new Map<string, { s3Client: S3Client; provider: StorageProviderEntity }>();
-
+export class DownloadArchiveService {
 	constructor(
 		private readonly logger: Logger,
-		private readonly storageProviderRepo: StorageProviderRepo,
 		private readonly filesRepo: FilesRepo,
+		private readonly storageProviderRepo: StorageProviderRepo,
 		private readonly domainErrorHandler: DomainErrorHandler
 	) {
 		this.logger.setContext(DownloadArchiveService.name);
-	}
-
-	public async onModuleInit(): Promise<void> {
-		await this.initializeS3Clients();
 	}
 
 	public async downloadFilesAsArchive(
@@ -43,15 +37,6 @@ export class DownloadArchiveService implements OnModuleInit {
 		const archive = ArchiveFactory.create(fileResponses, downloadableFiles, this.logger);
 
 		return FileResponseFactory.createFromArchive(archiveName, archive);
-	}
-
-	private async initializeS3Clients(): Promise<void> {
-		const providers = await this.storageProviderRepo.findAll();
-
-		providers.forEach((provider) => {
-			const s3Client = this.createS3Client(provider);
-			this.s3Clients.set(provider.id, { s3Client, provider });
-		});
 	}
 
 	private createS3Client(provider: StorageProviderEntity): S3Client {
@@ -113,7 +98,7 @@ export class DownloadArchiveService implements OnModuleInit {
 	}
 
 	private async downloadFile(file: FileEntity): Promise<GetFileResponse> {
-		const { s3Client, provider } = this.getClientForFile(file);
+		const { s3Client, provider } = await this.getClientForFile(file);
 		const storageFileName = TypeGuard.checkNotNullOrUndefined(file.storageFileName);
 
 		const config = this.createS3Config(file, provider);
@@ -139,22 +124,14 @@ export class DownloadArchiveService implements OnModuleInit {
 		return config;
 	}
 
-	private getClientForFile(file: FileEntity): { s3Client: S3Client; provider: StorageProviderEntity } {
-		const storageProvider = TypeGuard.checkNotNullOrUndefined(
-			file.storageProvider,
-			new Error(`File ${file.id} has no provider.`)
-		);
+	private async getClientForFile(file: FileEntity): Promise<{ s3Client: S3Client; provider: StorageProviderEntity }> {
+		if (!file.storageProvider?.id)
+			throw new NotFoundException(`File with id ${file.id} does not have a storage provider assigned`);
 
-		const clientProviderObject = this.s3Clients.get(storageProvider.id);
-		const checkedClient = TypeGuard.checkNotNullOrUndefined(
-			clientProviderObject?.s3Client,
-			new Error('Provider is invalid.')
-		);
-		const checkedProvider = TypeGuard.checkNotNullOrUndefined(
-			clientProviderObject?.provider,
-			new Error('Provider is invalid.')
-		);
+		const storageProvider = await this.storageProviderRepo.findById(file.storageProvider?.id);
 
-		return { s3Client: checkedClient, provider: checkedProvider };
+		const s3Client = this.createS3Client(storageProvider);
+
+		return { s3Client, provider: storageProvider };
 	}
 }
