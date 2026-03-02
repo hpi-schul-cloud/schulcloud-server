@@ -14,7 +14,9 @@ import { DownloadArchiveController } from './api/download-archive.controller';
 import { DownloadArchiveUC } from './api/download-archive.uc';
 import { DownloadArchiveService } from './domain';
 import { FileEntity } from './entity';
+import { LEGACY_FILE_ARCHIVE_CONFIG_TOKEN, LegacyFileArchiveConfig } from './legacy-file-archive.config';
 import { FilesRepo } from './repo';
+import { ConfigurationModule } from '@infra/configuration';
 
 @Module({
 	imports: [
@@ -34,6 +36,7 @@ import { FilesRepo } from './repo';
 			configConstructor: DatabaseConfig,
 			entities: [FileEntity],
 		}),
+		ConfigurationModule.register(LEGACY_FILE_ARCHIVE_CONFIG_TOKEN, LegacyFileArchiveConfig),
 	],
 	controllers: [DownloadArchiveController],
 	providers: [DownloadArchiveService, DownloadArchiveUC, StorageProviderRepo, FilesRepo],
