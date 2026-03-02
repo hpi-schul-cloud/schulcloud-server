@@ -35,7 +35,7 @@ export class MediaBoardUc {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(board);
 
-		throwForbiddenIfFalse(this.boardNodeRule.canCreateMediaBoardLine(user, boardNodeAuthorizable));
+		throwForbiddenIfFalse(this.boardNodeRule.can('createMediaBoardLine', user, boardNodeAuthorizable));
 
 		const line = this.mediaBoardNodeFactory.buildMediaLine({
 			title: '',
@@ -55,7 +55,7 @@ export class MediaBoardUc {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(board);
 
-		throwForbiddenIfFalse(this.boardNodeRule.canUpdateMediaBoardLayout(user, boardNodeAuthorizable));
+		throwForbiddenIfFalse(this.boardNodeRule.can('updateMediaBoardLayout', user, boardNodeAuthorizable));
 
 		await this.mediaBoardService.updateLayout(board, layout);
 	}

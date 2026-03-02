@@ -11,7 +11,7 @@ import { FeatureDisabledLoggableException } from '@shared/common/loggable-except
 import { throwForbiddenIfFalse } from '@shared/common/utils';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { BoardNodeRule } from '../authorisation/board-node.rule';
+import { BoardNodeRule, BoardOperation } from '../authorisation/board-node.rule';
 import { BOARD_CONFIG_TOKEN, BoardConfig } from '../board.config';
 import { CreateBoardBodyParams } from '../controller/dto';
 import {
@@ -63,17 +63,21 @@ export class BoardUc {
 	public async findBoard(
 		userId: EntityId,
 		boardId: EntityId
-	): Promise<{ board: ColumnBoard; features: BoardFeature[]; permissions: Permission[] }> {
+	): Promise<{
+		board: ColumnBoard;
+		features: BoardFeature[];
+		allowedOperations: Record<BoardOperation, boolean>;
+	}> {
 		// TODO set depth=2 to reduce data?
 		const board = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId);
 		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(board);
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 
-		throwForbiddenIfFalse(this.boardNodeRule.canFindBoard(user, boardNodeAuthorizable));
+		throwForbiddenIfFalse(this.boardNodeRule.can('findBoard', user, boardNodeAuthorizable));
 
 		const features = await this.boardContextApiHelperService.getFeaturesForBoardNode(boardId);
-		const permissions = boardNodeAuthorizable.getUserPermissions(userId);
-		return { board, features, permissions };
+		const allowedOperations = this.boardNodeRule.listAllowedOperations(user, boardNodeAuthorizable);
+		return { board, features, allowedOperations };
 	}
 
 	public async findBoardContext(userId: EntityId, boardId: EntityId): Promise<BoardExternalReference> {
@@ -81,7 +85,7 @@ export class BoardUc {
 		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(board);
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 
-		throwForbiddenIfFalse(this.boardNodeRule.canFindBoard(user, boardNodeAuthorizable));
+		throwForbiddenIfFalse(this.boardNodeRule.can('findBoard', user, boardNodeAuthorizable));
 
 		return board.context;
 	}
@@ -91,7 +95,7 @@ export class BoardUc {
 		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(board);
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 
-		throwForbiddenIfFalse(this.boardNodeRule.canDeleteBoard(user, boardNodeAuthorizable));
+		throwForbiddenIfFalse(this.boardNodeRule.can('deleteBoard', user, boardNodeAuthorizable));
 
 		await this.boardNodeService.delete(board);
 		return board;
@@ -102,7 +106,7 @@ export class BoardUc {
 		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(board);
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 
-		throwForbiddenIfFalse(this.boardNodeRule.canUpdateBoardTitle(user, boardNodeAuthorizable));
+		throwForbiddenIfFalse(this.boardNodeRule.can('updateBoardTitle', user, boardNodeAuthorizable));
 
 		await this.boardNodeService.updateTitle(board, title);
 		return board;
@@ -113,7 +117,7 @@ export class BoardUc {
 		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(board);
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 
-		throwForbiddenIfFalse(this.boardNodeRule.canCreateColumn(user, boardNodeAuthorizable));
+		throwForbiddenIfFalse(this.boardNodeRule.can('createColumn', user, boardNodeAuthorizable));
 
 		const column = this.boardNodeFactory.buildColumn();
 
@@ -133,12 +137,12 @@ export class BoardUc {
 		const column = await this.boardNodeService.findByClassAndId(Column, columnId);
 		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(column);
 
-		throwForbiddenIfFalse(this.boardNodeRule.canMoveColumn(user, boardNodeAuthorizable));
+		throwForbiddenIfFalse(this.boardNodeRule.can('moveColumn', user, boardNodeAuthorizable));
 
 		const targetBoard = await this.boardNodeService.findByClassAndId(ColumnBoard, targetBoardId);
 		const boardNodeAuthorizableTargetBoard = await this.boardNodeAuthorizableService.getBoardAuthorizable(targetBoard);
 
-		throwForbiddenIfFalse(this.boardNodeRule.canMoveColumn(user, boardNodeAuthorizableTargetBoard));
+		throwForbiddenIfFalse(this.boardNodeRule.can('moveColumn', user, boardNodeAuthorizableTargetBoard));
 
 		await this.boardNodeService.move(column, targetBoard, targetPosition);
 		return column;
@@ -149,7 +153,7 @@ export class BoardUc {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(board);
 
-		throwForbiddenIfFalse(this.boardNodeRule.canCopyBoard(user, boardNodeAuthorizable));
+		throwForbiddenIfFalse(this.boardNodeRule.can('copyBoard', user, boardNodeAuthorizable));
 
 		const sourceStorageLocationReference = await this.getStorageLocationReference(board.context);
 		const targetStorageLocationReference = { id: targetSchoolId, type: StorageLocation.SCHOOL };
@@ -173,7 +177,7 @@ export class BoardUc {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(board);
 
-		throwForbiddenIfFalse(this.boardNodeRule.canUpdateBoardVisibility(user, boardNodeAuthorizable));
+		throwForbiddenIfFalse(this.boardNodeRule.can('updateBoardVisibility', user, boardNodeAuthorizable));
 
 		await this.boardNodeService.updateVisibility(board, isVisible);
 
@@ -193,7 +197,7 @@ export class BoardUc {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(board);
 
-		throwForbiddenIfFalse(this.boardNodeRule.canUpdateReadersCanEditSetting(user, boardNodeAuthorizable));
+		throwForbiddenIfFalse(this.boardNodeRule.can('updateReadersCanEditSetting', user, boardNodeAuthorizable));
 
 		await this.columnBoardService.updateReadersCanEdit(board, readersCanEdit);
 		return board;
@@ -204,7 +208,7 @@ export class BoardUc {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(board);
 
-		throwForbiddenIfFalse(this.boardNodeRule.canUpdateBoardLayout(user, boardNodeAuthorizable));
+		throwForbiddenIfFalse(this.boardNodeRule.can('updateBoardLayout', user, boardNodeAuthorizable));
 
 		await this.boardNodeService.updateLayout(board, layout);
 		return board;
