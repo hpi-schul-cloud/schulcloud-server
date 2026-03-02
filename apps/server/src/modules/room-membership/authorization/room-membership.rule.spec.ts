@@ -265,7 +265,7 @@ describe(RoomRule.name, () => {
 				it('should return true', () => {
 					const { userWithPermission } = setup();
 
-					const result = service.canCreateRoom(userWithPermission);
+					const result = service.can('createRoom', userWithPermission, null as unknown as RoomAuthorizable);
 
 					expect(result).toBe(true);
 				});
@@ -275,7 +275,7 @@ describe(RoomRule.name, () => {
 				it('should return false', () => {
 					const { userWithoutPermission } = setup();
 
-					const result = service.canCreateRoom(userWithoutPermission);
+					const result = service.can('createRoom', userWithoutPermission, null as unknown as RoomAuthorizable);
 
 					expect(result).toBe(false);
 				});
@@ -285,7 +285,7 @@ describe(RoomRule.name, () => {
 
 	describe('canCopyRoom', () => {
 		const setup = () => {
-			const userWithPermission = userFactory.buildWithId();
+			const userWithPermission = userFactory.asTeacher().buildWithId();
 			const userWithoutPermission = userFactory.buildWithId();
 
 			const roleDtoWithPermission = roleDtoFactory.build({ permissions: [Permission.ROOM_COPY_ROOM] });
@@ -321,7 +321,7 @@ describe(RoomRule.name, () => {
 			it('should return true', () => {
 				const { userWithPermission, roomAuthorizableWithPermission } = setup();
 
-				const result = service.canCopyRoom(userWithPermission, roomAuthorizableWithPermission);
+				const result = service.can('copyRoom', userWithPermission, roomAuthorizableWithPermission);
 
 				expect(result).toBe(true);
 			});
@@ -331,7 +331,7 @@ describe(RoomRule.name, () => {
 			it('should return false', () => {
 				const { userWithoutPermission, roomAuthorizableWithoutPermission } = setup();
 
-				const result = service.canCopyRoom(userWithoutPermission, roomAuthorizableWithoutPermission);
+				const result = service.can('copyRoom', userWithoutPermission, roomAuthorizableWithoutPermission);
 
 				expect(result).toBe(false);
 			});
@@ -357,7 +357,7 @@ describe(RoomRule.name, () => {
 				it('should return true', () => {
 					const { user, roomAuthorizable } = setup();
 
-					const result = service.canAccessRoom(user, roomAuthorizable);
+					const result = service.can('accessRoom', user, roomAuthorizable);
 
 					expect(result).toBe(true);
 				});
@@ -381,7 +381,7 @@ describe(RoomRule.name, () => {
 				it('should return true', () => {
 					const { user, roomAuthorizable } = setup();
 
-					const result = service.canAccessRoom(user, roomAuthorizable);
+					const result = service.can('accessRoom', user, roomAuthorizable);
 
 					expect(result).toBe(true);
 				});
@@ -404,7 +404,7 @@ describe(RoomRule.name, () => {
 				it('should return true', () => {
 					const { user, roomAuthorizable } = setup();
 
-					const result = service.canAccessRoom(user, roomAuthorizable);
+					const result = service.can('accessRoom', user, roomAuthorizable);
 
 					expect(result).toBe(true);
 				});
@@ -431,7 +431,7 @@ describe(RoomRule.name, () => {
 				it('should return true', () => {
 					const { user, roomAuthorizable } = setup();
 
-					const result = service.canAccessRoom(user, roomAuthorizable);
+					const result = service.can('accessRoom', user, roomAuthorizable);
 
 					expect(result).toBe(true);
 				});
@@ -453,7 +453,7 @@ describe(RoomRule.name, () => {
 				it('should return false', () => {
 					const { user, roomAuthorizable } = setup();
 
-					const result = service.canAccessRoom(user, roomAuthorizable);
+					const result = service.can('accessRoom', user, roomAuthorizable);
 
 					expect(result).toBe(false);
 				});
@@ -478,7 +478,7 @@ describe(RoomRule.name, () => {
 			it('should return true', () => {
 				const { user, roomAuthorizable } = setup();
 
-				const result = service.canAddMembers(user, roomAuthorizable);
+				const result = service.can('addMembers', user, roomAuthorizable);
 
 				expect(result).toBe(true);
 			});
@@ -501,7 +501,7 @@ describe(RoomRule.name, () => {
 			it('should return true', () => {
 				const { user, roomAuthorizable } = setup();
 
-				const result = service.canAddMembers(user, roomAuthorizable);
+				const result = service.can('addMembers', user, roomAuthorizable);
 
 				expect(result).toBe(true);
 			});
@@ -525,7 +525,7 @@ describe(RoomRule.name, () => {
 			it('should return false', () => {
 				const { user, roomAuthorizable } = setup();
 
-				const result = service.canAddMembers(user, roomAuthorizable);
+				const result = service.can('addMembers', user, roomAuthorizable);
 
 				expect(result).toBe(false);
 			});
@@ -547,7 +547,7 @@ describe(RoomRule.name, () => {
 			it('should return false', () => {
 				const { user, roomAuthorizable } = setup();
 
-				const result = service.canAddMembers(user, roomAuthorizable);
+				const result = service.can('addMembers', user, roomAuthorizable);
 
 				expect(result).toBe(false);
 			});
@@ -598,7 +598,7 @@ describe(RoomRule.name, () => {
 			it('should return true', () => {
 				const { userWithPermission, roomAuthorizableWithPermission } = setup();
 
-				const result = service.canAddExternalPersonByEmail(userWithPermission, roomAuthorizableWithPermission);
+				const result = service.can('addExternalPersonByEmail', userWithPermission, roomAuthorizableWithPermission);
 
 				expect(result).toBe(true);
 			});
@@ -608,7 +608,11 @@ describe(RoomRule.name, () => {
 			it('should return false', () => {
 				const { userWithoutPermission, roomAuthorizableWithoutPermission } = setup();
 
-				const result = service.canAddExternalPersonByEmail(userWithoutPermission, roomAuthorizableWithoutPermission);
+				const result = service.can(
+					'addExternalPersonByEmail',
+					userWithoutPermission,
+					roomAuthorizableWithoutPermission
+				);
 
 				expect(result).toBe(false);
 			});
@@ -659,7 +663,7 @@ describe(RoomRule.name, () => {
 			it('should return true', () => {
 				const { userWithPermission, roomAuthorizableWithPermission } = setup();
 
-				const result = service.canChangeRolesOfMembers(userWithPermission, roomAuthorizableWithPermission);
+				const result = service.can('changeRolesOfMembers', userWithPermission, roomAuthorizableWithPermission);
 
 				expect(result).toBe(true);
 			});
@@ -669,7 +673,7 @@ describe(RoomRule.name, () => {
 			it('should return false', () => {
 				const { userWithoutPermission, roomAuthorizableWithoutPermission } = setup();
 
-				const result = service.canChangeRolesOfMembers(userWithoutPermission, roomAuthorizableWithoutPermission);
+				const result = service.can('changeRolesOfMembers', userWithoutPermission, roomAuthorizableWithoutPermission);
 
 				expect(result).toBe(false);
 			});
@@ -720,7 +724,7 @@ describe(RoomRule.name, () => {
 			it('should return true', () => {
 				const { userWithPermission, roomAuthorizableWithPermission } = setup();
 
-				const result = service.canLeaveRoom(userWithPermission, roomAuthorizableWithPermission);
+				const result = service.can('leaveRoom', userWithPermission, roomAuthorizableWithPermission);
 
 				expect(result).toBe(true);
 			});
@@ -730,7 +734,7 @@ describe(RoomRule.name, () => {
 			it('should return false', () => {
 				const { userWithoutPermission, roomAuthorizableWithoutPermission } = setup();
 
-				const result = service.canLeaveRoom(userWithoutPermission, roomAuthorizableWithoutPermission);
+				const result = service.can('leaveRoom', userWithoutPermission, roomAuthorizableWithoutPermission);
 
 				expect(result).toBe(false);
 			});
@@ -781,7 +785,7 @@ describe(RoomRule.name, () => {
 			it('should return true', () => {
 				const { userWithPermission, roomAuthorizableWithPermission } = setup();
 
-				const result = service.canUpdateRoom(userWithPermission, roomAuthorizableWithPermission);
+				const result = service.can('updateRoom', userWithPermission, roomAuthorizableWithPermission);
 
 				expect(result).toBe(true);
 			});
@@ -791,7 +795,7 @@ describe(RoomRule.name, () => {
 			it('should return false', () => {
 				const { userWithoutPermission, roomAuthorizableWithoutPermission } = setup();
 
-				const result = service.canUpdateRoom(userWithoutPermission, roomAuthorizableWithoutPermission);
+				const result = service.can('updateRoom', userWithoutPermission, roomAuthorizableWithoutPermission);
 
 				expect(result).toBe(false);
 			});
@@ -815,7 +819,7 @@ describe(RoomRule.name, () => {
 			it('should return true', () => {
 				const { user, roomAuthorizable } = setup();
 
-				const result = service.canDeleteRoom(user, roomAuthorizable);
+				const result = service.can('deleteRoom', user, roomAuthorizable);
 
 				expect(result).toBe(true);
 			});
@@ -838,7 +842,7 @@ describe(RoomRule.name, () => {
 			it('should return true', () => {
 				const { user, roomAuthorizable } = setup();
 
-				const result = service.canDeleteRoom(user, roomAuthorizable);
+				const result = service.can('deleteRoom', user, roomAuthorizable);
 
 				expect(result).toBe(true);
 			});
@@ -862,7 +866,7 @@ describe(RoomRule.name, () => {
 			it('should return false', () => {
 				const { user, roomAuthorizable } = setup();
 
-				const result = service.canDeleteRoom(user, roomAuthorizable);
+				const result = service.can('deleteRoom', user, roomAuthorizable);
 
 				expect(result).toBe(false);
 			});
@@ -884,7 +888,7 @@ describe(RoomRule.name, () => {
 			it('should return false', () => {
 				const { user, roomAuthorizable } = setup();
 
-				const result = service.canDeleteRoom(user, roomAuthorizable);
+				const result = service.can('deleteRoom', user, roomAuthorizable);
 
 				expect(result).toBe(false);
 			});
@@ -909,7 +913,7 @@ describe(RoomRule.name, () => {
 			it('should return true', () => {
 				const { user, roomAuthorizable } = setup();
 
-				const result = service.canGetRoomMembers(user, roomAuthorizable);
+				const result = service.can('getRoomMembers', user, roomAuthorizable);
 
 				expect(result).toBe(true);
 			});
@@ -932,7 +936,7 @@ describe(RoomRule.name, () => {
 			it('should return false', () => {
 				const { user, roomAuthorizable } = setup();
 
-				const result = service.canGetRoomMembers(user, roomAuthorizable);
+				const result = service.can('getRoomMembers', user, roomAuthorizable);
 
 				expect(result).toBe(false);
 			});
@@ -954,7 +958,7 @@ describe(RoomRule.name, () => {
 			it('should return false', () => {
 				const { user, roomAuthorizable } = setup();
 
-				const result = service.canGetRoomMembers(user, roomAuthorizable);
+				const result = service.can('getRoomMembers', user, roomAuthorizable);
 
 				expect(result).toBe(false);
 			});
@@ -976,7 +980,7 @@ describe(RoomRule.name, () => {
 			it('should return false', () => {
 				const { user, roomAuthorizable } = setup();
 
-				const result = service.canGetRoomMembers(user, roomAuthorizable);
+				const result = service.can('getRoomMembers', user, roomAuthorizable);
 
 				expect(result).toBe(false);
 			});
@@ -1027,7 +1031,7 @@ describe(RoomRule.name, () => {
 			it('should return true', () => {
 				const { userWithPermission, roomAuthorizableWithPermission } = setup();
 
-				const result = service.canGetRoomMembersRedacted(userWithPermission, roomAuthorizableWithPermission);
+				const result = service.can('getRoomMembersRedacted', userWithPermission, roomAuthorizableWithPermission);
 
 				expect(result).toBe(true);
 			});
@@ -1037,7 +1041,7 @@ describe(RoomRule.name, () => {
 			it('should return false', () => {
 				const { userWithoutPermission, roomAuthorizableWithoutPermission } = setup();
 
-				const result = service.canGetRoomMembersRedacted(userWithoutPermission, roomAuthorizableWithoutPermission);
+				const result = service.can('getRoomMembersRedacted', userWithoutPermission, roomAuthorizableWithoutPermission);
 
 				expect(result).toBe(false);
 			});

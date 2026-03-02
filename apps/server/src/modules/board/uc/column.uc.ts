@@ -28,7 +28,7 @@ export class ColumnUc {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(column);
 
-		throwForbiddenIfFalse(this.boardNodeRule.canDeleteColumn(user, boardNodeAuthorizable));
+		throwForbiddenIfFalse(this.boardNodeRule.can('deleteColumn', user, boardNodeAuthorizable));
 
 		const { rootId } = column; // needs to be captured before deletion
 		await this.boardNodeService.delete(column);
@@ -41,7 +41,7 @@ export class ColumnUc {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(column);
 
-		throwForbiddenIfFalse(this.boardNodeRule.canUpdateColumnTitle(user, boardNodeAuthorizable));
+		throwForbiddenIfFalse(this.boardNodeRule.can('updateColumnTitle', user, boardNodeAuthorizable));
 
 		await this.boardNodeService.updateTitle(column, title);
 		return column;
@@ -56,7 +56,7 @@ export class ColumnUc {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(column);
 
-		throwForbiddenIfFalse(this.boardNodeRule.canCreateCard(user, boardNodeAuthorizable));
+		throwForbiddenIfFalse(this.boardNodeRule.can('createCard', user, boardNodeAuthorizable));
 
 		const elements = requiredEmptyElements.map((type) => this.boardNodeFactory.buildContentElement(type));
 		const card = this.boardNodeFactory.buildCard(elements);
@@ -84,10 +84,10 @@ export class ColumnUc {
 		const fromBoard = await this.columnBoardService.findById(card.rootId, 0);
 		const toBoard = await this.columnBoardService.findById(toColumn.rootId, 0);
 
-		throwForbiddenIfFalse(this.boardNodeRule.canMoveCard(user, boardNodeAuthorizable));
+		throwForbiddenIfFalse(this.boardNodeRule.can('moveCard', user, boardNodeAuthorizable));
 		const isNotBoardContent = fromBoard.context.id !== toBoard.context.id;
 		if (isNotBoardContent) {
-			throwForbiddenIfFalse(this.boardNodeRule.canRelocateContent(user, boardNodeAuthorizable));
+			throwForbiddenIfFalse(this.boardNodeRule.can('relocateContent', user, boardNodeAuthorizable));
 		}
 
 		await this.boardNodeService.move(card, toColumn, toPosition);
@@ -103,7 +103,7 @@ export class ColumnUc {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(card);
 
-		throwForbiddenIfFalse(this.boardNodeRule.canCopyCard(user, boardNodeAuthorizable));
+		throwForbiddenIfFalse(this.boardNodeRule.can('copyCard', user, boardNodeAuthorizable));
 
 		const copyStatus = await this.columnBoardService.copyCard({
 			originalCardId: card.id,
