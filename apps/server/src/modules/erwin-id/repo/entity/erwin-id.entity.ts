@@ -1,31 +1,26 @@
-import { Entity, Index, Property, Unique } from '@mikro-orm/core';
+import { Entity, Property, Unique } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { ErwinIdReferencedEntityType } from '../../types';
 
 export interface ErwinIdEntityProps {
 	id?: EntityId;
-	type: ErwinIdReferencedEntityType;
-	erwinId: string;
-	systemId: string;
-	externalId: string;
+	erwinId: string; // UUID from Erwin Portal
+	type: ErwinIdReferencedEntityType; // user or school
+	erwinIdReferencedEntityId: EntityId; // user or school id from SVS
 }
 
 @Entity({ tableName: 'erwin-ids' })
 @Unique({ properties: ['erwinId'] })
 export class ErwinIdEntity extends BaseEntityWithTimestamps {
 	@Property()
-	type: ErwinIdReferencedEntityType;
-
-	@Property()
-	@Index()
 	erwinId: string;
 
 	@Property()
-	systemId: string;
+	type: ErwinIdReferencedEntityType;
 
 	@Property()
-	externalId: string;
+	erwinIdReferencedEntityId: EntityId;
 
 	constructor(props: ErwinIdEntityProps) {
 		super();
@@ -34,9 +29,8 @@ export class ErwinIdEntity extends BaseEntityWithTimestamps {
 			this.id = props.id;
 		}
 
-		this.type = props.type;
 		this.erwinId = props.erwinId;
-		this.systemId = props.systemId;
-		this.externalId = props.externalId;
+		this.type = props.type;
+		this.erwinIdReferencedEntityId = props.erwinIdReferencedEntityId;
 	}
 }
