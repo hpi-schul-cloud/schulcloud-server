@@ -8,7 +8,7 @@ export const filePermissionEntityFactory = BaseFactory.define<FilePermissionEnti
 	() => {
 		return {
 			refId: new ObjectId().toHexString(),
-			refPermModel: OwnerType.USER,
+			refPermModel: OwnerType.User,
 		};
 	}
 );

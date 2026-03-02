@@ -1,8 +1,8 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { storageProviderFactory } from '@modules/school/testing';
 import { BaseFactory } from '@testing/factory/base.factory';
-import { FileEntity, FileEntityProps } from '../..';
-import { FileOwnerModel } from '../../../domain';
+import { OwnerType } from '../../../domain';
+import { FileEntity, FileEntityProps } from '../../file.entity';
 import { filePermissionEntityFactory } from './file-permission-entity.factory';
 
 export const fileEntityFactory = BaseFactory.define<FileEntity, FileEntityProps>(FileEntity, ({ sequence }) => {
@@ -17,7 +17,7 @@ export const fileEntityFactory = BaseFactory.define<FileEntity, FileEntityProps>
 		storageProvider: storageProviderFactory.buildWithId(),
 		thumbnail: 'https://example.com/thumbnail.png',
 		ownerId: userId,
-		refOwnerModel: FileOwnerModel.USER,
+		refOwnerModel: OwnerType.User,
 		creatorId: userId,
 		permissions: [filePermissionEntityFactory.build({ refId: userId })],
 		versionKey: 0,
