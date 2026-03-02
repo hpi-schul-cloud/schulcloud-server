@@ -1,6 +1,7 @@
 import { Logger } from '@core/logger';
 import { AuthorizationClientAdapter, AuthorizationContextBuilder } from '@infra/authorization-client';
 import { Injectable } from '@nestjs/common';
+import { Permission } from '@shared/domain/interface';
 import { DownloadArchiveService, GetFileResponse } from '../domain';
 import { ArchiveFileParams } from './dto';
 import { AuthorizationReferenceTypeMapper } from './mapper';
@@ -30,8 +31,11 @@ export class DownloadArchiveUC {
 	private async checkPermission(params: ArchiveFileParams): Promise<void> {
 		const { ownerId, ownerType } = params;
 		const referenceType = AuthorizationReferenceTypeMapper.mapOwnerTypeToReferenceType(ownerType);
-		// TODO: Add correct context
-		const context = AuthorizationContextBuilder.read([]);
+		const context = AuthorizationContextBuilder.read([
+			Permission.TEAM_VIEW,
+			Permission.COURSE_VIEW,
+			Permission.FILESTORAGE_VIEW,
+		]);
 
 		await this.authorizationClientAdapter.checkPermissionsByReference(referenceType, ownerId, context);
 	}
