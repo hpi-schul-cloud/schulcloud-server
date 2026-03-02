@@ -1,11 +1,10 @@
-import { Action, AuthorizationService } from '@modules/authorization';
+import { AuthorizationService } from '@modules/authorization';
 import { RoleName } from '@modules/role';
-import { RoomAuthorizable, RoomMembershipService } from '@modules/room-membership';
+import { RoomMembershipService } from '@modules/room-membership';
 import { SchoolService } from '@modules/school';
 import { User } from '@modules/user/repo';
 import { HttpStatus, Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception/feature-disabled.loggable-exception';
-import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { RoomInvitationLink, RoomInvitationLinkUpdateProps } from '../domain/do/room-invitation-link.do';
 import { RoomInvitationLinkService } from '../domain/service/room-invitation-link.service';
@@ -13,6 +12,8 @@ import { ROOM_PUBLIC_API_CONFIG_TOKEN, RoomPublicApiConfig } from '../room.confi
 import { CreateRoomInvitationLinkBodyParams } from './dto/request/create-room-invitation-link.body.params';
 import { RoomInvitationLinkError } from './dto/response/room-invitation-link.error';
 import { RoomInvitationLinkValidationError } from './type/room-invitation-link-validation-error.enum';
+import { RoomOperation, RoomRule } from '@modules/room-membership/authorization/room.rule';
+import { throwForbiddenIfFalse } from '@shared/common/utils/wrap-with-exception';
 
 @Injectable()
 export class RoomInvitationLinkUc {
@@ -21,16 +22,15 @@ export class RoomInvitationLinkUc {
 		private readonly roomMembershipService: RoomMembershipService,
 		private readonly roomInvitationLinkService: RoomInvitationLinkService,
 		private readonly authorizationService: AuthorizationService,
-		private readonly schoolService: SchoolService
+		private readonly schoolService: SchoolService,
+		private readonly roomRule: RoomRule
 	) {}
 
 	public async createLink(userId: EntityId, props: CreateRoomInvitationLinkBodyParams): Promise<RoomInvitationLink> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const roomAuthorizable = await this.roomMembershipService.getRoomAuthorizable(props.roomId);
-		this.authorizationService.checkPermission(user, roomAuthorizable, {
-			action: Action.write,
-			requiredPermissions: [Permission.ROOM_ADD_MEMBERS],
-		});
+
+		throwForbiddenIfFalse(this.roomRule.can('addMembers', user, roomAuthorizable));
 
 		const roomInvitationLink = await this.roomInvitationLinkService.createLink({
 			...props,
@@ -43,10 +43,11 @@ export class RoomInvitationLinkUc {
 
 	public async updateLink(userId: EntityId, props: RoomInvitationLinkUpdateProps): Promise<RoomInvitationLink> {
 		const roomInvitationLink = await this.roomInvitationLinkService.findById(props.id);
+		const { roomId } = roomInvitationLink;
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const roomAuthorizable = await this.roomMembershipService.getRoomAuthorizable(roomId);
 
-		await this.checkRoomAuthorizationByIds(userId, [roomInvitationLink.roomId], Action.write, [
-			Permission.ROOM_ADD_MEMBERS,
-		]);
+		throwForbiddenIfFalse(this.roomRule.can('addMembers', user, roomAuthorizable));
 
 		roomInvitationLink.title = props.title ?? roomInvitationLink.title;
 		roomInvitationLink.isUsableByExternalPersons =
@@ -70,12 +71,19 @@ export class RoomInvitationLinkUc {
 
 		const roomIds = roomInvitationLinks.map((link) => link.roomId);
 		const uniqueRoomIds = [...new Set(roomIds)];
-		await this.checkRoomAuthorizationByIds(userId, uniqueRoomIds, Action.write, [Permission.ROOM_ADD_MEMBERS]);
+		const roomWriteAccess = await this.canWriteToRooms(userId, uniqueRoomIds);
+		const hasWriteAccessOnAllRooms = roomWriteAccess.every((access) => access);
+
+		throwForbiddenIfFalse(hasWriteAccessOnAllRooms);
+
 		await this.roomInvitationLinkService.deleteLinks(linkIds);
 	}
 
 	public async listLinksByRoomId(userId: EntityId, roomId: EntityId): Promise<RoomInvitationLink[]> {
-		await this.checkRoomAuthorizationByIds(userId, [roomId], Action.write, [Permission.ROOM_ADD_MEMBERS]);
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const roomAuthorizable = await this.roomMembershipService.getRoomAuthorizable(roomId);
+
+		throwForbiddenIfFalse(this.roomRule.can('addMembers', user, roomAuthorizable));
 
 		const links = await this.roomInvitationLinkService.findLinkByRoomId(roomId);
 
@@ -197,21 +205,18 @@ export class RoomInvitationLinkUc {
 		}
 	}
 
-	private async checkRoomAuthorizationByIds(
-		userId: EntityId,
-		roomIds: EntityId[],
-		action: Action,
-		requiredPermissions: Permission[] = []
-	): Promise<RoomAuthorizable[]> {
+	private async canOnRooms(userId: EntityId, roomIds: EntityId[], operation: RoomOperation): Promise<boolean[]> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
-		const authorizablePromises = roomIds.map((roomId) => this.roomMembershipService.getRoomAuthorizable(roomId));
-		const RoomAuthorizables = await Promise.all(authorizablePromises);
+		const roomAuthorizables = await Promise.all(
+			roomIds.map((roomId) => this.roomMembershipService.getRoomAuthorizable(roomId))
+		);
 
-		for (const roomAuthorizable of RoomAuthorizables) {
-			this.authorizationService.checkPermission(user, roomAuthorizable, { action, requiredPermissions });
-		}
+		return roomAuthorizables.map((roomAuthorizable) => this.roomRule.can(operation, user, roomAuthorizable));
+	}
 
-		return RoomAuthorizables;
+	private canWriteToRooms(userId: EntityId, roomIds: EntityId[]): Promise<boolean[]> {
+		// original implementaiton checdked for addMembers, so keeping it the same
+		return this.canOnRooms(userId, roomIds, 'addMembers');
 	}
 
 	private checkFeatureLinkInvitationExternalPersonsEnabled(): void {
