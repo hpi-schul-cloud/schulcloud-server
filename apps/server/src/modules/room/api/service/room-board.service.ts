@@ -11,31 +11,24 @@ export class RoomBoardService {
 	) {}
 
 	public async getOrderedBoards(roomId: EntityId): Promise<ColumnBoard[]> {
-		const boards = await this.getAvailableBoardsInRoom(roomId);
-		const contentExists = await this.roomContentService.contentExists(roomId);
-		if (!contentExists) {
-			const boardIds = boards.map((board) => board.id);
-			await this.roomContentService.createContent(roomId, boardIds);
-		} else {
-			const boardIds = await this.roomContentService.getBoardOrder(roomId);
-			boards.sort((a, b) => boardIds.indexOf(a.id) - boardIds.indexOf(b.id));
-		}
-
+		const boards = await this.syncRoomContent(roomId);
+		const boardIds = await this.roomContentService.getBoardOrder(roomId);
+		boards.sort((a, b) => boardIds.indexOf(a.id) - boardIds.indexOf(b.id));
 		return boards;
 	}
 
 	public async addBoardToRoom(roomId: EntityId, boardId: EntityId): Promise<void> {
-		await this.ensureRoomHasContent(roomId);
+		await this.syncRoomContent(roomId);
 		await this.roomContentService.addBoard(roomId, boardId);
 	}
 
 	public async moveBoardInRoom(roomId: EntityId, boardId: EntityId, toPosition: number): Promise<void> {
-		await this.ensureRoomHasContent(roomId);
+		await this.syncRoomContent(roomId);
 		await this.roomContentService.moveBoard(roomId, boardId, toPosition);
 	}
 
 	public async removeBoardFromRoom(roomId: EntityId, boardId: EntityId): Promise<void> {
-		await this.ensureRoomHasContent(roomId);
+		await this.syncRoomContent(roomId);
 		await this.roomContentService.removeBoard(roomId, boardId);
 	}
 
@@ -52,7 +45,7 @@ export class RoomBoardService {
 		targetRoomId: EntityId,
 		boardMappings: Map<EntityId, EntityId>
 	): Promise<void> {
-		await this.ensureRoomHasContent(sourceRoomId);
+		await this.syncRoomContent(sourceRoomId);
 		const sourceBoardIds = await this.roomContentService.getBoardOrder(sourceRoomId);
 		const targetBoardIds = (await this.getAvailableBoardsInRoom(targetRoomId)).map((board) => board.id);
 
@@ -73,15 +66,6 @@ export class RoomBoardService {
 		await this.roomContentService.createContent(targetRoomId, orderedTargetBoardIds);
 	}
 
-	private async ensureRoomHasContent(roomId: EntityId): Promise<void> {
-		const contentExists = await this.roomContentService.contentExists(roomId);
-		if (!contentExists) {
-			const boards = await this.getAvailableBoardsInRoom(roomId);
-			const boardIds = boards.map((board) => board.id);
-			await this.roomContentService.createContent(roomId, boardIds);
-		}
-	}
-
 	private async getAvailableBoardsInRoom(roomId: EntityId): Promise<ColumnBoard[]> {
 		const boardIdsInRoom = await this.columnBoardService.findByExternalReference(
 			{
@@ -91,5 +75,32 @@ export class RoomBoardService {
 			0
 		);
 		return boardIdsInRoom;
+	}
+
+	private async syncRoomContent(roomId: EntityId): Promise<ColumnBoard[]> {
+		const availableBoards = await this.getAvailableBoardsInRoom(roomId);
+		const availableBoardIds = availableBoards.map((board) => board.id);
+
+		const contentExists = await this.roomContentService.contentExists(roomId);
+
+		if (!contentExists) {
+			await this.roomContentService.createContent(roomId, availableBoardIds);
+			return availableBoards;
+		}
+
+		const existingBoardOrder = await this.roomContentService.getBoardOrder(roomId);
+		const hasRemovedBoards = existingBoardOrder.some((id) => !availableBoardIds.includes(id));
+		const hasAddedBoards = availableBoardIds.some((id) => !existingBoardOrder.includes(id));
+
+		if (hasRemovedBoards || hasAddedBoards) {
+			const retainedBoardIds = existingBoardOrder.filter((id) => availableBoardIds.includes(id));
+			const appendedBoardIds = availableBoardIds.filter((id) => !existingBoardOrder.includes(id));
+			const syncedBoardIds = [...retainedBoardIds, ...appendedBoardIds];
+
+			await this.roomContentService.deleteContent(roomId);
+			await this.roomContentService.createContent(roomId, syncedBoardIds);
+		}
+
+		return availableBoards;
 	}
 }
