@@ -6,6 +6,7 @@ import {
 	CardClientAdapter,
 	CardControllerCreateElement201Response,
 	ColumnClientAdapter,
+	ColumnResponse,
 	CoursesClientAdapter,
 } from '@infra/common-cartridge-clients';
 import { FilesStorageClientAdapter } from '@infra/files-storage-client';
@@ -24,7 +25,6 @@ import {
 } from '../import/common-cartridge-import.types';
 import { CommonCartridgeMessageLoggable } from '../loggable/common-cartridge-export-message.loggable';
 import { CommonCartridgeImportMapper } from './common-cartridge-import.mapper';
-import { ColumnResponse } from '@infra/common-cartridge-clients';
 
 const DEPTH_BOARD = 0;
 const DEPTH_COLUMN = 1;
