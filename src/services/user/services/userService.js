@@ -67,6 +67,11 @@ class UserService {
 		return this.app.service('usersModel').patch(id, data, prepareInternalParams(params));
 	}
 
+	/* used in tests cleanup */
+	remove(id, params) {
+		return this.app.service('usersModel').remove(id, prepareInternalParams(params));
+	}
+
 	async setup(app) {
 		this.app = app;
 	}
