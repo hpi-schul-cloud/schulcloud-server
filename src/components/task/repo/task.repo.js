@@ -1,6 +1,6 @@
 const { SubmissionModel, HomeworkModel } = require('./db');
 const { validateObjectId } = require('../../helper/validation.helper');
-const { updateManyResult, deleteManyResult } = require('../../helper/repo.helper');
+const { updateManyResult, deleteManyResult } = require('../../../services/fileStorage/repo/repo.helper');
 
 /** Homeworks */
 const privateHomeworkQuery = (userId) => ({ private: true, teacherId: userId });

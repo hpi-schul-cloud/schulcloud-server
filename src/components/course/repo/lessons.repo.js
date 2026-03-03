@@ -1,5 +1,5 @@
 const { lessonModel } = require('./db/lesson');
-const { updateManyResult } = require('../../helper/repo.helper');
+const { updateManyResult } = require('../../../services/fileStorage/repo/repo.helper');
 
 /**
  * Filter lessons by contents including the given user.

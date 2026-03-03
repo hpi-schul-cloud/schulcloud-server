@@ -1,5 +1,5 @@
 const { courseModel } = require('../../../services/user-group/model');
-const { updateManyResult } = require('../../helper/repo.helper');
+const { updateManyResult } = require('../../../services/fileStorage/repo/repo.helper');
 
 // filter
 

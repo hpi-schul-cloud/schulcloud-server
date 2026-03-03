@@ -4,7 +4,7 @@ const { ObjectId } = require('mongoose').Types;
 
 const { removePermissionsThatUserCanAccess, removePersonalFiles } = require('./deleteUserData.uc').private;
 
-const fileRepo = require('../repo/files.repo');
+const fileRepo = require('../../../services/fileStorage/repo/files.repo');
 const { GeneralError } = require('../../../errors');
 
 describe('deletedUserData.uc.unit', () => {

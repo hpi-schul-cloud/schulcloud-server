@@ -1,6 +1,6 @@
 const { AssertionError } = require('../../../errors');
 
-const filesRepo = require('../repo/files.repo');
+const filesRepo = require('../../../services/fileStorage/repo/files.repo');
 
 const { facadeLocator } = require('../../../utils/facadeLocator');
 

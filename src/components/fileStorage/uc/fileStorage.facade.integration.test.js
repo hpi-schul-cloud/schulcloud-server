@@ -3,7 +3,7 @@ const { ObjectId } = require('mongoose').Types;
 const appPromise = require('../../../app');
 const testObjects = require('../../../../test/services/helpers/testObjects')(appPromise());
 
-const { filesRepo } = require('../repo');
+const { filesRepo } = require('../../../services/fileStorage/repo');
 
 const { setupNestServices, closeNestServices } = require('../../../../test/utils/setup.nest.services');
 

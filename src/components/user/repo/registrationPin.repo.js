@@ -1,5 +1,5 @@
 const { registrationPinModel } = require('../../../services/user/model');
-const { deleteManyResult } = require('../../helper/repo.helper');
+const { deleteManyResult } = require('../../../services/fileStorage/repo/repo.helper');
 const { validateNotEmptyString } = require('../../helper/validation.helper');
 
 const byEmailFilter = (email) => {
