@@ -1,13 +1,13 @@
 import { EntityDictionary, EntityName } from '@mikro-orm/core';
-import { FindOptions, EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { EntityManager, FindOptions, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { BaseRepo } from '@shared/repo/base.repo';
-import { FileOwnerModel } from '../domain';
+import { FileOwnerModel, FilesRepoInterface } from '../domain';
 import { FileEntity } from '../entity';
 
 @Injectable()
-export class FilesRepo extends BaseRepo<FileEntity> {
+export class FilesRepo extends BaseRepo<FileEntity> implements FilesRepoInterface {
 	constructor(protected readonly _em: EntityManager) {
 		super(_em);
 	}
@@ -34,6 +34,17 @@ export class FilesRepo extends BaseRepo<FileEntity> {
 		const filter = {
 			owner: new ObjectId(ownerUserId),
 			refOwnerModel: FileOwnerModel.USER,
+		};
+
+		const files = await this._em.find(FileEntity, filter);
+
+		return files as FileEntity[];
+	}
+
+	public async findByIdAndOwnerType(ownerId: EntityId, ownerType: FileOwnerModel): Promise<FileEntity[]> {
+		const filter = {
+			owner: new ObjectId(ownerId),
+			refOwnerModel: ownerType,
 		};
 
 		const files = await this._em.find(FileEntity, filter);

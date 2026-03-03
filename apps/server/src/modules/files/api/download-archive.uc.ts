@@ -1,9 +1,9 @@
 import { Logger } from '@core/logger';
 import { AuthorizationClientAdapter, AuthorizationContextBuilder } from '@infra/authorization-client';
 import { Injectable } from '@nestjs/common';
-import { DownloadArchiveService, GetFileResponse } from '../domain';
 import { ArchiveFileParams } from './dto';
 import { AuthorizationReferenceTypeMapper } from './mapper';
+import { DownloadArchiveService, GetFileResponse } from '../domain';
 
 @Injectable()
 export class DownloadArchiveUC {

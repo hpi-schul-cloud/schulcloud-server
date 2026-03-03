@@ -26,9 +26,8 @@ import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.tes
 import { TestApiClient } from '@testing/test-api-client';
 import { TEST_JWT_CONFIG_TOKEN, TestJwtModuleConfig } from '@testing/test-jwt-module.config';
 import { Readable } from 'stream';
-import { DownloadArchiveService, OwnerType } from '../../domain';
-import { FileEntity } from '../../entity/file.entity';
-import { fileEntityFactory } from '../../entity/testing/factory/file-entity.factory';
+import { DownloadArchiveService, FileOwnerModel, FILES_REPO } from '../../domain';
+import { FileEntity, fileEntityFactory } from '../../entity';
 import { LEGACY_FILE_ARCHIVE_CONFIG_TOKEN, LegacyFileArchiveConfig } from '../../legacy-file-archive.config';
 import { FilesRepo } from '../../repo';
 import { DownloadArchiveController } from '../download-archive.controller';
@@ -63,7 +62,12 @@ describe('DownloadArchive Controller (API)', () => {
 				ConfigurationModule.register(TEST_JWT_CONFIG_TOKEN, TestJwtModuleConfig),
 			],
 			controllers: [DownloadArchiveController],
-			providers: [DownloadArchiveService, DownloadArchiveUC, StorageProviderRepo, FilesRepo],
+			providers: [
+				DownloadArchiveService,
+				DownloadArchiveUC,
+				StorageProviderRepo,
+				{ provide: FILES_REPO, useClass: FilesRepo },
+			],
 		})
 			.overrideProvider(AuthorizationClientAdapter)
 			.useValue(createMock<AuthorizationClientAdapter>())
@@ -91,7 +95,7 @@ describe('DownloadArchive Controller (API)', () => {
 			it('should return 401', async () => {
 				const params = {
 					ownerId: '507f1f77bcf86cd799439011',
-					ownerType: OwnerType.Team,
+					ownerType: FileOwnerModel.TEAMS,
 					archiveName: 'test-archive.zip',
 				};
 
@@ -114,7 +118,7 @@ describe('DownloadArchive Controller (API)', () => {
 				const { loggedInClient } = setup();
 				const params = {
 					ownerId: 'invalid-id',
-					ownerType: OwnerType.Team,
+					ownerType: FileOwnerModel.TEAMS,
 					archiveName: 'test-archive.zip',
 				};
 
@@ -177,7 +181,7 @@ describe('DownloadArchive Controller (API)', () => {
 				const { loggedInClient } = setup();
 				const params = {
 					ownerId: '507f1f77bcf86cd799439011',
-					ownerType: OwnerType.Team,
+					ownerType: FileOwnerModel.TEAMS,
 					archiveName: 'test-archive.zip',
 				};
 
@@ -205,7 +209,7 @@ describe('DownloadArchive Controller (API)', () => {
 				const { teamId, loggedInClient } = setup();
 				const params = {
 					ownerId: teamId,
-					ownerType: OwnerType.Team,
+					ownerType: FileOwnerModel.TEAMS,
 					archiveName: 'team-archive.zip',
 				};
 
@@ -231,7 +235,7 @@ describe('DownloadArchive Controller (API)', () => {
 				const { courseId, loggedInClient } = setup();
 				const params = {
 					ownerId: courseId,
-					ownerType: OwnerType.Course,
+					ownerType: FileOwnerModel.COURSE,
 					archiveName: 'course-archive.zip',
 				};
 
@@ -257,7 +261,7 @@ describe('DownloadArchive Controller (API)', () => {
 				const { otherUserId, loggedInClient } = setup();
 				const params = {
 					ownerId: otherUserId,
-					ownerType: OwnerType.User,
+					ownerType: FileOwnerModel.USER,
 					archiveName: 'user-archive.zip',
 				};
 
@@ -281,14 +285,14 @@ describe('DownloadArchive Controller (API)', () => {
 				const file1 = fileEntityFactory.build({
 					name: 'team-doc.pdf',
 					ownerId: team.id,
-					refOwnerModel: OwnerType.Team,
+					refOwnerModel: FileOwnerModel.TEAMS,
 					storageProvider,
 					isDirectory: false,
 				});
 				const file2 = fileEntityFactory.build({
 					name: 'notes.txt',
 					ownerId: team.id,
-					refOwnerModel: OwnerType.Team,
+					refOwnerModel: FileOwnerModel.TEAMS,
 					storageProvider,
 					isDirectory: false,
 				});
@@ -309,7 +313,7 @@ describe('DownloadArchive Controller (API)', () => {
 				const { teamId, loggedInClient, archiveName } = await setup();
 				const params = {
 					ownerId: teamId,
-					ownerType: OwnerType.Team,
+					ownerType: FileOwnerModel.TEAMS,
 					archiveName,
 				};
 
@@ -334,14 +338,14 @@ describe('DownloadArchive Controller (API)', () => {
 				const file1 = fileEntityFactory.build({
 					name: 'syllabus.pdf',
 					ownerId: course.id,
-					refOwnerModel: OwnerType.Course,
+					refOwnerModel: FileOwnerModel.COURSE,
 					storageProvider,
 					isDirectory: false,
 				});
 				const file2 = fileEntityFactory.build({
 					name: 'lecture.pptx',
 					ownerId: course.id,
-					refOwnerModel: OwnerType.Course,
+					refOwnerModel: FileOwnerModel.COURSE,
 					storageProvider,
 					isDirectory: false,
 				});
@@ -361,7 +365,7 @@ describe('DownloadArchive Controller (API)', () => {
 				const { courseId, loggedInClient, archiveName } = await setup();
 				const params = {
 					ownerId: courseId,
-					ownerType: OwnerType.Course,
+					ownerType: FileOwnerModel.COURSE,
 					archiveName,
 				};
 
@@ -385,14 +389,14 @@ describe('DownloadArchive Controller (API)', () => {
 				const file1 = fileEntityFactory.build({
 					name: 'personal-doc.docx',
 					ownerId: teacherUser.id,
-					refOwnerModel: OwnerType.User,
+					refOwnerModel: FileOwnerModel.USER,
 					storageProvider,
 					isDirectory: false,
 				});
 				const file2 = fileEntityFactory.build({
 					name: 'photo.jpg',
 					ownerId: teacherUser.id,
-					refOwnerModel: OwnerType.User,
+					refOwnerModel: FileOwnerModel.USER,
 					storageProvider,
 					isDirectory: false,
 				});
@@ -412,7 +416,7 @@ describe('DownloadArchive Controller (API)', () => {
 				const { userId, loggedInClient, archiveName } = await setup();
 				const params = {
 					ownerId: userId,
-					ownerType: OwnerType.User,
+					ownerType: FileOwnerModel.USER,
 					archiveName,
 				};
 
@@ -436,7 +440,7 @@ describe('DownloadArchive Controller (API)', () => {
 				const file1 = fileEntityFactory.build({
 					name: 'team-doc.pdf',
 					ownerId: teacherUser.id,
-					refOwnerModel: OwnerType.User,
+					refOwnerModel: FileOwnerModel.USER,
 					storageProvider,
 					isDirectory: false,
 				});
@@ -460,7 +464,7 @@ describe('DownloadArchive Controller (API)', () => {
 				const { userId, loggedInClient, archiveName } = await setup();
 				const params = {
 					ownerId: userId,
-					ownerType: OwnerType.User,
+					ownerType: FileOwnerModel.USER,
 					archiveName,
 				};
 

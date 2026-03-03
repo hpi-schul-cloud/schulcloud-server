@@ -15,11 +15,11 @@ import {
 import { ApiHeader, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common/error';
 import { Request, Response } from 'express';
-import { GetFileResponse } from '../domain/interface/get-file-response';
 import { LEGACY_FILE_ARCHIVE_CONFIG_TOKEN, LegacyFileArchiveConfig } from '../legacy-file-archive.config';
 import { DownloadArchiveUC } from './download-archive.uc';
 import { ArchiveFileParams } from './dto';
 import { StreamableFileMapper } from './mapper';
+import { GetFileResponse } from '../domain';
 
 @ApiTags('DownloadArchive')
 @Controller('download-archive')

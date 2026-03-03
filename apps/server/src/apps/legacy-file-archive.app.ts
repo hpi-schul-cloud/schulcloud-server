@@ -1,13 +1,13 @@
 /* istanbul ignore file */
 /* eslint-disable no-console */
 import { createRequestLoggerMiddleware, LegacyLogger, Logger, LOGGER_CONFIG_TOKEN, LoggerConfig } from '@core/logger';
-import { LegacyFileArchiveApiModule } from '@modules/legacy-file-archive';
 import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import express from 'express';
 import { install as sourceMapInstall } from 'source-map-support';
 import { AppStartLoggable, enableOpenApiDocs } from './helpers';
 import { createMetricsServer } from './helpers/metrics.server';
+import { LegacyFileArchiveApiModule } from '@modules/files';
 
 async function bootstrap(): Promise<void> {
 	sourceMapInstall();

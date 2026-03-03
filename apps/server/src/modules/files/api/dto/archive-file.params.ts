@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { EntityId } from '@shared/domain/types';
 import { IsEnum, IsMongoId, IsString } from 'class-validator';
-import { OwnerType } from '../../domain';
+import { FileOwnerModel } from '../../domain';
 
 export class ArchiveFileParams {
 	@ApiProperty()
@@ -9,8 +9,8 @@ export class ArchiveFileParams {
 	public ownerId!: EntityId;
 
 	@ApiProperty()
-	@IsEnum(OwnerType)
-	public ownerType!: OwnerType;
+	@IsEnum(FileOwnerModel)
+	public ownerType!: FileOwnerModel;
 
 	@ApiProperty()
 	@IsString()

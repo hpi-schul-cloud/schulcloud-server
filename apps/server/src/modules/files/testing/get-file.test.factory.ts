@@ -1,6 +1,6 @@
 import { GetFile } from '@infra/s3-client';
 import { Readable } from 'stream';
-import { GetFileResponse } from '../domain/interface';
+import { GetFileResponse } from '../domain';
 
 export class GetFileTestFactory {
 	public static build(props?: { contentRange?: string; mimeType?: string; contentForReadable?: string }): GetFile {

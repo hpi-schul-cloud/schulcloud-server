@@ -3,8 +3,8 @@ import { InternalServerErrorException } from '@nestjs/common';
 import archiver from 'archiver';
 import { PassThrough } from 'node:stream';
 import { FileEntity } from '../../entity';
-import { GetFileResponse } from '../interface';
 import { CreateArchiveLoggable } from '../loggable';
+import { GetFileResponse } from '../types';
 
 export class ArchiveFactory {
 	public static create(

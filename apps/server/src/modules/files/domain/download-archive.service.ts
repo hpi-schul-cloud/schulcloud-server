@@ -3,19 +3,18 @@ import { DomainErrorHandler } from '@core/error';
 import { Logger } from '@core/logger';
 import { S3ClientAdapter, S3Config } from '@infra/s3-client';
 import { StorageProviderRepo, type StorageProviderEntity } from '@modules/school/repo';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { TypeGuard } from '@shared/common/guards';
 import { EntityId } from '@shared/domain/types';
 import { FileEntity } from '../entity';
-import { FilesRepo } from '../repo';
 import { ArchiveFactory, FileResponseFactory } from './factory';
-import { GetFileResponse, OwnerType } from './interface';
+import { FileOwnerModel, FILES_REPO, FilesRepoInterface, GetFileResponse } from './types';
 
 @Injectable()
 export class DownloadArchiveService {
 	constructor(
 		private readonly logger: Logger,
-		private readonly filesRepo: FilesRepo,
+		@Inject(FILES_REPO) private readonly filesRepo: FilesRepoInterface,
 		private readonly storageProviderRepo: StorageProviderRepo,
 		private readonly domainErrorHandler: DomainErrorHandler
 	) {
@@ -24,7 +23,7 @@ export class DownloadArchiveService {
 
 	public async downloadFilesAsArchive(
 		ownerId: EntityId,
-		ownerType: OwnerType,
+		ownerType: FileOwnerModel,
 		archiveName: string
 	): Promise<GetFileResponse> {
 		const files = await this.filesRepo.findByIdAndOwnerType(ownerId, ownerType);

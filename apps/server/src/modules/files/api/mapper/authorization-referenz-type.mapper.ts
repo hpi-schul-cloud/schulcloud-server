@@ -1,14 +1,14 @@
 import { AuthorizationBodyParamsReferenceType } from '@infra/authorization-client';
-import { OwnerType } from '../../domain';
+import { FileOwnerModel } from '../../domain';
 
 export class AuthorizationReferenceTypeMapper {
-	public static mapOwnerTypeToReferenceType(ownerType: OwnerType): AuthorizationBodyParamsReferenceType {
+	public static mapOwnerTypeToReferenceType(ownerType: FileOwnerModel): AuthorizationBodyParamsReferenceType {
 		switch (ownerType) {
-			case OwnerType.User:
+			case FileOwnerModel.USER:
 				return AuthorizationBodyParamsReferenceType.USERS;
-			case OwnerType.Course:
+			case FileOwnerModel.COURSE:
 				return AuthorizationBodyParamsReferenceType.COURSES;
-			case OwnerType.Team:
+			case FileOwnerModel.TEAMS:
 				return AuthorizationBodyParamsReferenceType.TEAMS;
 			default:
 				throw new Error('Unknown OwnerType');

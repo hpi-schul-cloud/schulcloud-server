@@ -2,6 +2,7 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { StorageProviderEntity } from '@modules/school/repo';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@testing/database';
+import { FileOwnerModel } from '../domain';
 import { FileEntity } from '../entity';
 import { fileEntityFactory, filePermissionEntityFactory } from '../entity/testing';
 import { FilesRepo } from './files.repo';
@@ -224,6 +225,59 @@ describe(FilesRepo.name, () => {
 
 					expect(results).toHaveLength(0);
 				});
+			});
+		});
+	});
+
+	describe('findByIdAndOwnerType', () => {
+		describe('when there are files with same owner id and different owner	 type', () => {
+			it('should find files by owner id and owner type', async () => {
+				const ownerId = new ObjectId().toHexString();
+				const file1 = fileEntityFactory.build({ ownerId, refOwnerModel: FileOwnerModel.USER });
+				const file2 = fileEntityFactory.build({ ownerId, refOwnerModel: FileOwnerModel.USER });
+				const file3 = fileEntityFactory.build({ ownerId, refOwnerModel: FileOwnerModel.COURSE });
+
+				await repo.save([file1, file2, file3]);
+
+				const foundFiles = await repo.findByIdAndOwnerType(file1.ownerId, FileOwnerModel.USER);
+
+				expect(foundFiles).toHaveLength(2);
+				expect(foundFiles).toEqual(
+					expect.arrayContaining([expect.objectContaining({ id: file1.id }), expect.objectContaining({ id: file2.id })])
+				);
+			});
+		});
+
+		describe('when there are no files with same owner id and owner type', () => {
+			it('should return empty array', async () => {
+				const ownerId = new ObjectId().toHexString();
+				const file1 = fileEntityFactory.build({ ownerId, refOwnerModel: FileOwnerModel.USER });
+				const file2 = fileEntityFactory.build({ ownerId, refOwnerModel: FileOwnerModel.USER });
+				const file3 = fileEntityFactory.build({ ownerId, refOwnerModel: FileOwnerModel.COURSE });
+
+				await repo.save([file1, file2, file3]);
+
+				const foundFiles = await repo.findByIdAndOwnerType(file1.ownerId, FileOwnerModel.TEAMS);
+
+				expect(foundFiles).toHaveLength(0);
+			});
+		});
+
+		describe('when there are no files with same owner id', () => {
+			it('should return empty array', async () => {
+				const ownerId1 = new ObjectId().toHexString();
+				const ownerId2 = new ObjectId().toHexString();
+
+				const file1 = fileEntityFactory.build({ ownerId: ownerId1, refOwnerModel: FileOwnerModel.USER });
+				const file2 = fileEntityFactory.build({ ownerId: ownerId2, refOwnerModel: FileOwnerModel.USER });
+				const file3 = fileEntityFactory.build({ ownerId: ownerId2, refOwnerModel: FileOwnerModel.COURSE });
+
+				await repo.save([file1, file2, file3]);
+
+				const foundFiles = await repo.findByIdAndOwnerType(ownerId1, FileOwnerModel.USER);
+
+				expect(foundFiles).toHaveLength(1);
+				expect(foundFiles[0].id).toBe(file1.id);
 			});
 		});
 	});
