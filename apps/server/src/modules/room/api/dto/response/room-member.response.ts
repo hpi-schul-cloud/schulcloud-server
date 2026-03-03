@@ -1,4 +1,8 @@
 import { RoleName } from '@modules/role';
+import {
+	RoomMemberOperation,
+	RoomMemberOperationValues,
+} from '@modules/room-membership/authorization/room-member.rule';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class RoomMemberResponse {
@@ -23,6 +27,17 @@ export class RoomMemberResponse {
 	@ApiProperty()
 	public userId!: string;
 
+	@ApiProperty({
+		type: 'object',
+		properties: RoomMemberOperationValues.reduce((acc, op) => {
+			acc[op] = { type: 'boolean' };
+			return acc;
+		}, {}),
+		additionalProperties: false,
+		required: [...RoomMemberOperationValues],
+	})
+	public allowedOperations: Record<RoomMemberOperation, boolean>;
+
 	constructor(props: RoomMemberResponse) {
 		this.userId = props.userId;
 		this.firstName = props.firstName;
@@ -31,5 +46,6 @@ export class RoomMemberResponse {
 		this.schoolRoleNames = props.schoolRoleNames;
 		this.schoolName = props.schoolName;
 		this.schoolId = props.schoolId;
+		this.allowedOperations = props.allowedOperations;
 	}
 }
