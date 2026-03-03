@@ -40,14 +40,16 @@ const setupApp = async (orm) => {
 	setupFacadeLocator(app);
 	setupSwagger(app);
 
+	const BODYPARSER_JSON_LIMIT = Configuration.get('BODYPARSER_JSON_LIMIT');
+
 	app
 		.use(compress())
 		.options('*', cors())
 		.use(cors())
 		.configure(setupConfiguration)
-		.use('/', bodyParser.json({ limit: Configuration.get('BODYPARSER_JSON_LIMIT') }))
+		.use('/', bodyParser.json({ limit: BODYPARSER_JSON_LIMIT }))
 		.use(bodyParser.urlencoded({ extended: true }))
-		.use(bodyParser.raw({ type: () => true, limit: Configuration.get('BODYPARSER_JSON_LIMIT') }))
+		.use(bodyParser.raw({ type: () => true, limit: BODYPARSER_JSON_LIMIT }))
 		.use(defaultHeaders)
 		.use((req, res, next) => {
 			if (orm) {
