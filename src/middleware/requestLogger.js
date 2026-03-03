@@ -10,13 +10,13 @@ const { Configuration } = require('@hpi-schul-cloud/commons');
 	level 4 log intern accounts requests
 */
 module.exports = function requstLogger(_app) {
-	const { DISPLAY_REQUEST_LEVEL } = Configuration.get('DISPLAY_REQUEST_LEVEL');
+	const DISPLAY_REQUEST_LEVEL = Configuration.get('DISPLAY_REQUEST_LEVEL');
 	const app = _app || this;
-	const level = DISPLAY_REQUEST_LEVEL;
-	app.set('DISPLAY_REQUEST_LEVEL', level);
 
-	if (level > 0) {
-		console.log('DISPLAY_REQUEST_LEVEL=', level);
+	app.set('DISPLAY_REQUEST_LEVEL', DISPLAY_REQUEST_LEVEL);
+
+	if (DISPLAY_REQUEST_LEVEL > 0) {
+		console.log('DISPLAY_REQUEST_LEVEL=', DISPLAY_REQUEST_LEVEL);
 		let counter = -1;
 		let lastRequestTime = Date.now();
 		const delayTime = 500;

@@ -8,8 +8,7 @@ const { ENVIRONMENTS } = require('../../config/environments');
 const getDevelopFormat = () =>
 	format.combine(format.errors({ stack: true }), format.timestamp(), format.prettyPrint({ depth: 5, colorize: true }));
 
-const getProductionFormat = () =>
-	format.combine(format.errors({ stack: true }), format.timestamp(), format.json());
+const getProductionFormat = () => format.combine(format.errors({ stack: true }), format.timestamp(), format.json());
 
 const getTestFormat = () => format.combine(format.prettyPrint({ depth: 1, colorize: true }));
 

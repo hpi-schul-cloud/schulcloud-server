@@ -11,7 +11,6 @@ const { StorageProviderModel } = require('../../storageProvider/model');
 const UserModel = require('../../user/model');
 const { updateProviderForSchool, findProviderForSchool } = require('../utils/providerAssignmentHelper');
 
-const HOST = Configuration.get('HOST');
 const BUCKET_NAME_PREFIX = 'bucket-';
 
 const getBoolean = (value) => value === true || value === 'true';
@@ -20,7 +19,7 @@ const getCorsRules = () => [
 	{
 		AllowedHeaders: ['*'],
 		AllowedMethods: ['PUT'],
-		AllowedOrigins: [HOST],
+		AllowedOrigins: [Configuration.get('HOST')],
 		MaxAgeSeconds: 300,
 	},
 ];

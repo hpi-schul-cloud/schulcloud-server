@@ -103,20 +103,20 @@ const setCurrentYearIfMissing = async (hook) => {
 	return Promise.resolve(hook);
 };
 
-const createDefaultStorageOptions = (hook) => {
+const createDefaultStorageOptions = (context) => {
 	// create buckets only in production mode
 	if (Configuration.get('NODE_ENV') !== ENVIRONMENTS.PRODUCTION) {
-		return Promise.resolve(hook);
+		return Promise.resolve(context);
 	}
-	const schoolId = hook.result._id;
+	const schoolId = context.result._id;
 	const fileStorageStrategy = new AWSStrategy();
 	return fileStorageStrategy
 		.create(schoolId)
-		.then(() => hook)
+		.then(() => context)
 		.catch((err) => {
 			if (err && err.code === 'BucketAlreadyOwnedByYou') {
 				// The bucket already exists
-				return hook;
+				return context;
 			}
 			throw err;
 		});
@@ -281,13 +281,13 @@ const validateCounty = async (context) => {
 	return context;
 };
 
-const setDefaultStudentListPermission = async (hook) => {
+const setDefaultStudentListPermission = async (context) => {
 	if (Configuration.get('TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT')) {
-		hook.data.permissions = hook.data.permissions || {};
-		hook.data.permissions.teacher = hook.data.permissions.teacher || {};
-		hook.data.permissions.teacher.STUDENT_LIST = true;
+		context.data.permissions = context.data.permissions || {};
+		context.data.permissions.teacher = context.data.permissions.teacher || {};
+		context.data.permissions.teacher.STUDENT_LIST = true;
 	}
-	return hook;
+	return context;
 };
 
 const preventSystemsChange = async (context) => {

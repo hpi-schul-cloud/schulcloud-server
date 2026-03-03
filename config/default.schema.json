@@ -330,8 +330,8 @@
 		},
 		"FILE_SECURITY_CHECK_MAX_FILE_SIZE": {
 			"type": "integer",
-			"description": "Maximum file size for antivirus check in Byte. 512MB = 512 * 1024 * 1024. Legacy.",
-			"default": 25000000
+			"description": "Maximum file size for antivirus check in Byte. 2,5 GB = 2,5 * 1024 * 1024 * 1024. Used in legacy code but is similar to files-storage deployment.",
+			"default": 2684354560
 		},
 		"FILE_SECURITY_CHECK_SERVICE_URI": {
 			"type": "string",

@@ -2,7 +2,6 @@ const { Configuration } = require('@hpi-schul-cloud/commons');
 const { ENVIRONMENTS } = require('../../config/environments');
 const { getDevelopFormat, getProductionFormat, getTestFormat, createLogger } = require('./utils');
 
-
 let selectedFormat;
 switch (Configuration.get('NODE_ENV')) {
 	case ENVIRONMENTS.TEST:
