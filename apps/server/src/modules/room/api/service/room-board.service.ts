@@ -11,7 +11,8 @@ export class RoomBoardService {
 	) {}
 
 	public async getOrderedBoards(roomId: EntityId): Promise<ColumnBoard[]> {
-		const boards = await this.syncRoomContent(roomId);
+		await this.syncRoomContent(roomId);
+		const boards = await this.getAvailableBoardsInRoom(roomId);
 		const boardIds = await this.roomContentService.getBoardOrder(roomId);
 		boards.sort((a, b) => boardIds.indexOf(a.id) - boardIds.indexOf(b.id));
 		return boards;
@@ -77,7 +78,7 @@ export class RoomBoardService {
 		return boardIdsInRoom;
 	}
 
-	private async syncRoomContent(roomId: EntityId): Promise<ColumnBoard[]> {
+	private async syncRoomContent(roomId: EntityId): Promise<void> {
 		const availableBoards = await this.getAvailableBoardsInRoom(roomId);
 		const availableBoardIds = availableBoards.map((board) => board.id);
 
@@ -85,7 +86,7 @@ export class RoomBoardService {
 
 		if (!contentExists) {
 			await this.roomContentService.createContent(roomId, availableBoardIds);
-			return availableBoards;
+			return;
 		}
 
 		const existingBoardOrder = await this.roomContentService.getBoardOrder(roomId);
@@ -100,7 +101,5 @@ export class RoomBoardService {
 			await this.roomContentService.deleteContent(roomId);
 			await this.roomContentService.createContent(roomId, syncedBoardIds);
 		}
-
-		return availableBoards;
 	}
 }
