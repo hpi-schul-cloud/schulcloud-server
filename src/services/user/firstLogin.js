@@ -168,7 +168,7 @@ const firstLogin = async (data, params, app) => {
 	} else if (user.consent?.parentConsents?.privacyConsent && user.consent?.parentConsents?.termsOfUseConsent) {
 		// User already has valid parent consents - no action needed
 	} else {
-		throw new BadRequest('privacy consent and terms of use consent should be set to true');
+		throw new BadRequest('PRIVACY_AND_TERMS_OF_USE_CONSENT_NO_SET');
 	}
 
 	if (consentUpdate.userId) consentPromise = app.service('consents').create(consentUpdate);
