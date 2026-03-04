@@ -1,8 +1,8 @@
-const { FileModel } = require('./db');
+const { FileModel } = require('../model');
 const { AssertionError, NotFound } = require('../../../errors');
 const { isValid: isValidObjectId } = require('../../../helper/compare').ObjectId;
 const { missingParameters } = require('../../../errors/assertionErrorHelper');
-const { updateManyResult } = require('../../helper/repo.helper');
+const { updateManyResult } = require('./repo.helper');
 
 const permissionSearchQuery = (userId) => ({
 	permissions: {
