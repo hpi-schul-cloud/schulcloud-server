@@ -440,6 +440,13 @@ export class H5pLibraryPackagerService {
 
 	private isOldNodeVersionRequired(library: string, tag: string): string | undefined {
 		const oldNodeVersions = {
+			'H5P.AdventCalendar': {
+				'0.2.5': '14',
+			},
+			'H5P.Agamotto': {
+				'1.5.4': '14',
+				'1.4.3': '14',
+			},
 			'H5P.CoursePresentation': {
 				'1.22.11': '14',
 				'1.21.7': '14',
@@ -447,6 +454,11 @@ export class H5pLibraryPackagerService {
 				'1.19.3': '10',
 				'1.18.1': '8',
 				'1.17.10': '8',
+			},
+			'H5P.Crossword': {
+				'0.4.9': '14',
+				'v0.2.0': '14',
+				'v0.1.10': '14',
 			},
 			'H5P.Questionnaire': {
 				'1.1.2': '14',
