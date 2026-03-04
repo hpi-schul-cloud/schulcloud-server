@@ -97,7 +97,7 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 	}
 
 	public hasPermission(user: User, authorizable: BoardNodeAuthorizable, context: AuthorizationContext): boolean {
-		if (!authorizable.boardContextSettings.isUnlocked) {
+		if (authorizable.boardContextSettings.isLocked) {
 			return false;
 		}
 
@@ -366,7 +366,7 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 }
 
 const _canEditBoard = (user: User, authorizable: BoardNodeAuthorizable): boolean => {
-	if (!authorizable.boardContextSettings.isUnlocked) {
+	if (authorizable.boardContextSettings.isLocked) {
 		return false;
 	}
 
@@ -378,7 +378,7 @@ const _canEditBoard = (user: User, authorizable: BoardNodeAuthorizable): boolean
 };
 
 const _canManageBoard = (user: User, authorizable: BoardNodeAuthorizable): boolean => {
-	if (!authorizable.boardContextSettings.isUnlocked) {
+	if (authorizable.boardContextSettings.isLocked) {
 		return false;
 	}
 
@@ -390,7 +390,7 @@ const _canManageBoard = (user: User, authorizable: BoardNodeAuthorizable): boole
 };
 
 const _canViewBoard = (user: User, authorizable: BoardNodeAuthorizable): boolean => {
-	if (!authorizable.boardContextSettings.isUnlocked) {
+	if (authorizable.boardContextSettings.isLocked) {
 		return false;
 	}
 
@@ -402,7 +402,7 @@ const _canViewBoard = (user: User, authorizable: BoardNodeAuthorizable): boolean
 };
 
 const _isSubmissionItemOfUser = (user: User, authorizable: BoardNodeAuthorizable): boolean => {
-	if (!authorizable.boardContextSettings.isUnlocked) {
+	if (authorizable.boardContextSettings.isLocked) {
 		return false;
 	}
 
@@ -411,7 +411,7 @@ const _isSubmissionItemOfUser = (user: User, authorizable: BoardNodeAuthorizable
 };
 
 const _canCreateExternalToolElement = (user: User, authorizable: BoardNodeAuthorizable): boolean => {
-	if (!authorizable.boardContextSettings.isUnlocked) {
+	if (authorizable.boardContextSettings.isLocked) {
 		return false;
 	}
 
@@ -424,7 +424,7 @@ const _canCreateExternalToolElement = (user: User, authorizable: BoardNodeAuthor
 };
 
 const canFindBoard = (user: User, authorizable: BoardNodeAuthorizable): boolean => {
-	if (!authorizable.boardContextSettings.isUnlocked) {
+	if (authorizable.boardContextSettings.isLocked) {
 		return false;
 	}
 
@@ -443,7 +443,7 @@ const canFindBoard = (user: User, authorizable: BoardNodeAuthorizable): boolean 
 };
 
 const canManageVideoConference = (user: User, authorizable: BoardNodeAuthorizable): boolean => {
-	if (!authorizable.boardContextSettings.isUnlocked) {
+	if (authorizable.boardContextSettings.isLocked) {
 		return false;
 	}
 
@@ -455,7 +455,7 @@ const canManageVideoConference = (user: User, authorizable: BoardNodeAuthorizabl
 };
 
 const canUpdateReadersCanEditSetting = (user: User, authorizable: BoardNodeAuthorizable): boolean => {
-	if (!authorizable.boardContextSettings.isUnlocked) {
+	if (authorizable.boardContextSettings.isLocked) {
 		return false;
 	}
 
@@ -468,7 +468,7 @@ const canUpdateReadersCanEditSetting = (user: User, authorizable: BoardNodeAutho
 };
 
 const canRelocateContent = (user: User, authorizable: BoardNodeAuthorizable): boolean => {
-	if (!authorizable.boardContextSettings.isUnlocked) {
+	if (authorizable.boardContextSettings.isLocked) {
 		return false;
 	}
 
@@ -481,7 +481,7 @@ const canRelocateContent = (user: User, authorizable: BoardNodeAuthorizable): bo
 };
 
 const canShareBoardNode = (user: User, authorizable: BoardNodeAuthorizable): boolean => {
-	if (!authorizable.boardContextSettings.isUnlocked) {
+	if (authorizable.boardContextSettings.isLocked) {
 		return false;
 	}
 

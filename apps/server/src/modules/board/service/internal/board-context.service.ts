@@ -58,17 +58,17 @@ export class BoardContextService {
 			const canRoomEditorManageVideoconference = this.roomService.canEditorManageVideoconferences(room);
 			return {
 				canRoomEditorManageVideoconference,
-				isUnlocked: hasOwner,
+				isLocked: !hasOwner,
 			};
 		} else if (rootNode.context.type === BoardExternalReferenceType.Course) {
 			const course = await this.courseService.findById(rootNode.context.id);
 			const hasTeachers = course.teachers.length > 0;
 			return {
-				isUnlocked: hasTeachers,
+				isLocked: !hasTeachers,
 			};
 		} else if (rootNode.context.type === BoardExternalReferenceType.User) {
 			return {
-				isUnlocked: true,
+				isLocked: false,
 			};
 		} else {
 			throw new Error(`Unknown context type: '${rootNode.context.type as string}'`);

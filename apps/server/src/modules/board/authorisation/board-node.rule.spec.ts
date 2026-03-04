@@ -59,7 +59,7 @@ describe(BoardNodeRule.name, () => {
 					id: new ObjectId().toHexString(),
 					boardNode: anyBoardNode,
 					rootNode: columnBoard,
-					boardContextSettings: { isUnlocked: true },
+					boardContextSettings: { isLocked: false },
 				});
 				return { user, boardNodeAuthorizable };
 			};
@@ -103,7 +103,7 @@ describe(BoardNodeRule.name, () => {
 					id: new ObjectId().toHexString(),
 					boardNode: anyBoardNode,
 					rootNode: columnBoard,
-					boardContextSettings: { isUnlocked: true },
+					boardContextSettings: { isLocked: false },
 				});
 
 				return { user, boardNodeAuthorizable };
@@ -131,7 +131,7 @@ describe(BoardNodeRule.name, () => {
 					id: new ObjectId().toHexString(),
 					boardNode: anyBoardNode,
 					rootNode: columnBoard,
-					boardContextSettings: { isUnlocked: true },
+					boardContextSettings: { isLocked: false },
 				});
 
 				return { user, boardNodeAuthorizable };
@@ -160,7 +160,7 @@ describe(BoardNodeRule.name, () => {
 					id: new ObjectId().toHexString(),
 					boardNode: anyBoardNode,
 					rootNode: columnBoard,
-					boardContextSettings: { isUnlocked: true },
+					boardContextSettings: { isLocked: false },
 				});
 
 				return { user, permissionA, boardNodeAuthorizable };
@@ -190,7 +190,7 @@ describe(BoardNodeRule.name, () => {
 					id: new ObjectId().toHexString(),
 					boardNode: anyBoardNode,
 					rootNode: columnBoard,
-					boardContextSettings: { isUnlocked: true },
+					boardContextSettings: { isLocked: false },
 				});
 
 				return { userWithoutPermision, boardNodeAuthorizable };
@@ -218,7 +218,7 @@ describe(BoardNodeRule.name, () => {
 					id: new ObjectId().toHexString(),
 					boardNode: anyBoardNode,
 					rootNode: columnBoard,
-					boardContextSettings: { isUnlocked: true },
+					boardContextSettings: { isLocked: false },
 				});
 
 				return { user, boardNodeAuthorizable };
@@ -247,7 +247,7 @@ describe(BoardNodeRule.name, () => {
 						id: new ObjectId().toHexString(),
 						boardNode: anyBoardNode,
 						rootNode: columnBoard,
-						boardContextSettings: { isUnlocked: true },
+						boardContextSettings: { isLocked: false },
 					});
 
 					return { user, boardNodeAuthorizable };
@@ -286,7 +286,7 @@ describe(BoardNodeRule.name, () => {
 						id: new ObjectId().toHexString(),
 						boardNode: anyBoardNode,
 						rootNode: columnBoard,
-						boardContextSettings: { isUnlocked: true },
+						boardContextSettings: { isLocked: false },
 					});
 
 					return { user, boardNodeAuthorizable };
@@ -327,7 +327,7 @@ describe(BoardNodeRule.name, () => {
 						id: new ObjectId().toHexString(),
 						boardNode: submissionItem,
 						rootNode: columnBoard,
-						boardContextSettings: { isUnlocked: true },
+						boardContextSettings: { isLocked: false },
 					});
 
 					return { user, boardNodeAuthorizable };
@@ -366,7 +366,7 @@ describe(BoardNodeRule.name, () => {
 						id: new ObjectId().toHexString(),
 						boardNode: submissionItem,
 						rootNode: columnBoard,
-						boardContextSettings: { isUnlocked: true },
+						boardContextSettings: { isLocked: false },
 					});
 
 					return { user, boardNodeAuthorizable };
@@ -405,7 +405,7 @@ describe(BoardNodeRule.name, () => {
 						id: new ObjectId().toHexString(),
 						boardNode: submissionItem,
 						rootNode: columnBoard,
-						boardContextSettings: { isUnlocked: true },
+						boardContextSettings: { isLocked: false },
 					});
 
 					return { user, boardNodeAuthorizable };
@@ -448,7 +448,7 @@ describe(BoardNodeRule.name, () => {
 						boardNode: fileElement,
 						parentNode: submissionItem,
 						rootNode: columnBoard,
-						boardContextSettings: { isUnlocked: true },
+						boardContextSettings: { isLocked: false },
 					});
 
 					return { user, boardNodeAuthorizable };
@@ -489,7 +489,7 @@ describe(BoardNodeRule.name, () => {
 						boardNode: fileElement,
 						parentNode: submissionItem,
 						rootNode: columnBoard,
-						boardContextSettings: { isUnlocked: true },
+						boardContextSettings: { isLocked: false },
 					});
 
 					return { user, boardNodeAuthorizable };
@@ -530,7 +530,7 @@ describe(BoardNodeRule.name, () => {
 						boardNode: anyBoardDo,
 						parentNode: submissionItem,
 						rootNode: columnBoard,
-						boardContextSettings: { isUnlocked: true },
+						boardContextSettings: { isLocked: false },
 					});
 
 					return { user, boardNodeAuthorizable };
@@ -578,7 +578,7 @@ describe(BoardNodeRule.name, () => {
 						boardNode: anyBoardDo,
 						parentNode: submissionItem,
 						rootNode: columnBoard,
-						boardContextSettings: { isUnlocked: true },
+						boardContextSettings: { isLocked: false },
 					});
 
 					const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
@@ -598,7 +598,7 @@ describe(BoardNodeRule.name, () => {
 						parentNode: submissionItem,
 						boardNode: notAllowedChildElement,
 						rootNode: columnBoard,
-						boardContextSettings: { isUnlocked: true },
+						boardContextSettings: { isLocked: false },
 					});
 
 					const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
@@ -623,7 +623,7 @@ describe(BoardNodeRule.name, () => {
 							id: new ObjectId().toHexString(),
 							boardNode: drawingElement,
 							rootNode: columnBoard,
-							boardContextSettings: { isUnlocked: true },
+							boardContextSettings: { isLocked: false },
 						});
 
 						return { user, boardNodeAuthorizable };
@@ -662,7 +662,7 @@ describe(BoardNodeRule.name, () => {
 							id: new ObjectId().toHexString(),
 							boardNode: drawingElement,
 							rootNode: columnBoard,
-							boardContextSettings: { isUnlocked: true },
+							boardContextSettings: { isLocked: false },
 						});
 
 						return { user, boardNodeAuthorizable };
@@ -703,7 +703,7 @@ describe(BoardNodeRule.name, () => {
 							id: new ObjectId().toHexString(),
 							boardNode: drawingElement,
 							rootNode: columnBoard,
-							boardContextSettings: { isUnlocked: true },
+							boardContextSettings: { isLocked: false },
 						});
 						userService.resolvePermissions.mockReturnValueOnce([...userPermissions, ...studentPermissions]);
 
@@ -754,7 +754,7 @@ describe(BoardNodeRule.name, () => {
 							id: new ObjectId().toHexString(),
 							boardNode: drawingElement,
 							rootNode: columnBoard,
-							boardContextSettings: { isUnlocked: true },
+							boardContextSettings: { isLocked: false },
 						});
 						userService.resolvePermissions.mockReturnValueOnce([...userPermissions, ...studentPermissions]);
 
@@ -805,7 +805,7 @@ describe(BoardNodeRule.name, () => {
 					it('should return true if trying to "read"', () => {
 						const { user, boardNodeAuthorizable } = setup({
 							canRoomEditorManageVideoconference: true,
-							isUnlocked: true,
+							isLocked: false,
 						});
 
 						const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
@@ -818,7 +818,7 @@ describe(BoardNodeRule.name, () => {
 					it('should return true if trying to "write" ', () => {
 						const { user, boardNodeAuthorizable } = setup({
 							canRoomEditorManageVideoconference: true,
-							isUnlocked: true,
+							isLocked: false,
 						});
 
 						const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
@@ -834,7 +834,7 @@ describe(BoardNodeRule.name, () => {
 					it('should return true if trying to "read"', () => {
 						const { user, boardNodeAuthorizable } = setup({
 							canRoomEditorManageVideoconference: false,
-							isUnlocked: true,
+							isLocked: false,
 						});
 
 						const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
@@ -847,7 +847,7 @@ describe(BoardNodeRule.name, () => {
 					it('should return true if trying to "write" ', () => {
 						const { user, boardNodeAuthorizable } = setup({
 							canRoomEditorManageVideoconference: false,
-							isUnlocked: true,
+							isLocked: false,
 						});
 
 						const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
@@ -880,7 +880,7 @@ describe(BoardNodeRule.name, () => {
 					it('should return true if trying to "read"', () => {
 						const { user, boardNodeAuthorizable } = setup({
 							canRoomEditorManageVideoconference: true,
-							isUnlocked: true,
+							isLocked: false,
 						});
 
 						const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
@@ -894,7 +894,7 @@ describe(BoardNodeRule.name, () => {
 					it('should return true if trying to "write" ', () => {
 						const { user, boardNodeAuthorizable } = setup({
 							canRoomEditorManageVideoconference: true,
-							isUnlocked: true,
+							isLocked: false,
 						});
 
 						const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
@@ -910,7 +910,7 @@ describe(BoardNodeRule.name, () => {
 					it('should return true if trying to "read"', () => {
 						const { user, boardNodeAuthorizable } = setup({
 							canRoomEditorManageVideoconference: false,
-							isUnlocked: true,
+							isLocked: false,
 						});
 
 						const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
@@ -924,7 +924,7 @@ describe(BoardNodeRule.name, () => {
 					it('should return false if trying to "write" ', () => {
 						const { user, boardNodeAuthorizable } = setup({
 							canRoomEditorManageVideoconference: false,
-							isUnlocked: true,
+							isLocked: false,
 						});
 
 						const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
@@ -957,7 +957,7 @@ describe(BoardNodeRule.name, () => {
 					it('should return true if trying to "read"', () => {
 						const { user, boardNodeAuthorizable } = setup({
 							canRoomEditorManageVideoconference: true,
-							isUnlocked: true,
+							isLocked: false,
 						});
 
 						const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
@@ -971,7 +971,7 @@ describe(BoardNodeRule.name, () => {
 					it('should return false if trying to "write" ', () => {
 						const { user, boardNodeAuthorizable } = setup({
 							canRoomEditorManageVideoconference: true,
-							isUnlocked: true,
+							isLocked: false,
 						});
 
 						const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
@@ -987,7 +987,7 @@ describe(BoardNodeRule.name, () => {
 					it('should return true if trying to "read"', () => {
 						const { user, boardNodeAuthorizable } = setup({
 							canRoomEditorManageVideoconference: false,
-							isUnlocked: true,
+							isLocked: false,
 						});
 
 						const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
@@ -1001,7 +1001,7 @@ describe(BoardNodeRule.name, () => {
 					it('should return false if trying to "write" ', () => {
 						const { user, boardNodeAuthorizable } = setup({
 							canRoomEditorManageVideoconference: false,
-							isUnlocked: true,
+							isLocked: false,
 						});
 
 						const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
@@ -1034,7 +1034,7 @@ describe(BoardNodeRule.name, () => {
 			};
 
 			it('should return the expected allowed operations', () => {
-				const { user, boardNodeAuthorizable } = setup({ canRoomEditorManageVideoconference: true, isUnlocked: true });
+				const { user, boardNodeAuthorizable } = setup({ canRoomEditorManageVideoconference: true, isLocked: false });
 
 				const res = boardNodeRule.listAllowedOperations(user, boardNodeAuthorizable);
 				const expectedAllowedOperations = {
@@ -1121,7 +1121,7 @@ describe(BoardNodeRule.name, () => {
 			};
 
 			it('should return the expected allowed operations', () => {
-				const { user, boardNodeAuthorizable } = setup({ canRoomEditorManageVideoconference: true, isUnlocked: true });
+				const { user, boardNodeAuthorizable } = setup({ canRoomEditorManageVideoconference: true, isLocked: false });
 
 				const res = boardNodeRule.listAllowedOperations(user, boardNodeAuthorizable);
 				const expectedAllowedOperations = {
@@ -1208,7 +1208,7 @@ describe(BoardNodeRule.name, () => {
 			};
 
 			it('should return the expected allowed operations', () => {
-				const { user, boardNodeAuthorizable } = setup({ canRoomEditorManageVideoconference: true, isUnlocked: true });
+				const { user, boardNodeAuthorizable } = setup({ canRoomEditorManageVideoconference: true, isLocked: false });
 
 				const res = boardNodeRule.listAllowedOperations(user, boardNodeAuthorizable);
 
@@ -1279,7 +1279,7 @@ describe(BoardNodeRule.name, () => {
 			});
 		});
 
-		describe('when board is locked (isUnlocked is false)', () => {
+		describe('when board is locked ', () => {
 			const setup = () => {
 				const user = userFactory.asTeacher().buildWithId();
 				const videoConferenceElement = videoConferenceElementFactory.build();
@@ -1289,7 +1289,7 @@ describe(BoardNodeRule.name, () => {
 					id: new ObjectId().toHexString(),
 					boardNode: videoConferenceElement,
 					rootNode: columnBoard,
-					boardContextSettings: { isUnlocked: false },
+					boardContextSettings: { isLocked: true },
 				});
 
 				return { user, boardNodeAuthorizable };
@@ -1377,7 +1377,7 @@ describe(BoardNodeRule.name, () => {
 				id: new ObjectId().toHexString(),
 				boardNode: anyBoardNode,
 				rootNode: columnBoard,
-				boardContextSettings: { isUnlocked: false },
+				boardContextSettings: { isLocked: true },
 			});
 
 			return { user, boardNodeAuthorizable };
