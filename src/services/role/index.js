@@ -6,7 +6,6 @@ const Role = require('./model');
 const hooks = require('./hooks');
 const { PermissionService, permissionHooks } = require('./services/permissions');
 const { UserPermissions, userPermissionsHooks } = require('./services/userPermissions');
-const { UserRoles, userRolesHooks } = require('./services/userRoles');
 const { definePermissions, PERMISSIONS, ROLES } = require('./utils/permissions');
 
 module.exports = function setup() {
@@ -22,10 +21,6 @@ module.exports = function setup() {
 	};
 
 	app.use('/roles/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
-
-	app.use('/roles/user', new UserRoles());
-	const userRoles = app.service('/roles/user');
-	userRoles.hooks(userRolesHooks);
 
 	app.use('/permissions/user', new UserPermissions());
 	const userPermissions = app.service('/permissions/user');
@@ -47,7 +42,7 @@ module.exports = function setup() {
 		'TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT',
 		ROLES.TEACHER,
 		PERMISSIONS.STUDENT_LIST
-		// TODO: importent add this again, after school permission service can handle multiple permissions
+		// TODO: important add this again, after school permission service can handle multiple permissions
 		// PERMISSIONS.STUDENT_EDIT,
 		// PERMISSIONS.STUDENT_CREATE,
 		// PERMISSIONS.STUDENT_DELETE,
