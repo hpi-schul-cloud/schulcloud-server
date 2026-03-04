@@ -53,7 +53,7 @@ const params: Params = {
 
 const main = async (): Promise<void> => {
 	const organizations = params.organizations.length > 0 ? params.organizations : ['h5p'];
-	const users = params.users.length > 0 ? params.users : ['otacke'];
+	const users = params.users.length > 0 ? params.users : ['jithin-space', 'otacke'];
 	const target = params.target || 'scripts/h5p/config/h5p-library-repo-map.yaml';
 
 	const gitHubClient = new H5pGitHubClient();

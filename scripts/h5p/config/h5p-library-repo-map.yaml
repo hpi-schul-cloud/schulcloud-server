@@ -78,6 +78,7 @@ H5P.GoToScene: h5p/h5p-go-to-scene
 H5P.GreetingCard: h5p/h5p-greeting-card
 H5P.GuessTheAnswer: h5p/h5p-guess-the-answer
 H5P.GuidedTour: h5p/h5p-guided-tour
+H5P.Hangman: jithin-space/h5p-hangman
 H5P.HelloReact: otacke/h5p-react-boilerplate
 H5P.HelloWorld: h5p/h5p-boilerplate
 H5P.HighlightTheWords: otacke/h5p-highlight-the-words
@@ -86,10 +87,13 @@ H5P.IdeaBoardExercise: otacke/h5p-idea-board-exercise
 H5P.IFrameEmbed: h5p/h5p-iframe-embed
 H5P.Image: h5p/h5p-image
 H5P.ImageGallery: h5p/h5p-image-gallery
+H5P.ImageGrid: jithin-space/H5P-ImageGrid
 H5P.ImageHotspotQuestion: h5p/h5p-image-hotspot-question
 H5P.ImageHotspots: h5p/h5p-image-hotspots
 H5P.ImageJuxtaposition: otacke/h5p-image-juxtaposition
 H5P.ImageMultipleHotspotQuestion: h5p/h5p-image-multiple-hotspot-question
+H5P.ImagePair: jithin-space/h5p-image-pair
+H5P.ImageSequencing: jithin-space/h5p-ImageSequencing
 H5P.ImageSlide: h5p/h5p-image-slide
 H5P.ImageSlider: h5p/h5p-image-slider
 H5P.ImageZoom: otacke/h5p-image-zoom
@@ -106,6 +110,7 @@ H5P.KewArCode: otacke/h5p-kewar-code
 H5P.LabelExercise: otacke/h5p-label-exercise
 H5P.Link: h5p/h5p-link
 H5P.LinkedImageSwap: otacke/h5p-image-swap
+H5P.MarkTheLetters: jithin-space/h5p-mark-the-letters
 H5P.MarkTheWords: h5p/h5p-mark-the-words
 H5P.Matching: h5p/h5p-matching
 H5P.MaterialDesignIcons: h5p/h5p-material-design-icons
@@ -117,6 +122,7 @@ H5P.ModelViewerScript: otacke/h5p-modelviewer-script
 H5P.MultiChoice: h5p/h5p-multi-choice
 H5P.MultiMediaChoice: h5p/h5p-multi-media-choice
 H5P.NDLATimeline: otacke/h5p-ndla-timeline
+H5P.NewContent: jithin-space/quiz
 H5P.Nil: h5p/h5p-nil
 H5P.OpenEndedQuestion: h5p/h5p-open-ended-question
 H5P.PdfViewer: h5p/h5p-pdf-viewer
@@ -130,6 +136,7 @@ H5P.ProfileConfigurator: otacke/h5p-profile-configurator-xr
 H5P.Question: h5p/h5p-question
 H5P.Questionnaire: h5p/h5p-questionnaire
 H5P.QuestionSet: h5p/h5p-question-set
+H5P.ReactionTimeGame: jithin-space/h5p-temp
 H5P.Row: h5p/h5p-row
 H5P.RowColumn: h5p/h5p-row-column
 H5P.Shape: h5p/h5p-shape
@@ -197,6 +204,7 @@ H5PEditor.InputRow: otacke/h5p-editor-input-row
 H5PEditor.InteractiveVideo: h5p/h5p-editor-interactive-video
 H5PEditor.KewArCode: otacke/h5p-editor-kewar-code
 H5PEditor.LabelExercise: otacke/h5p-editor-label-exercise
+H5PEditor.LocationPicker: jithin-space/h5p-editor-location-picker
 H5PEditor.MultiLineSelect: h5p/h5p-editor-multi-line-select
 H5PEditor.MultiMediaChoice: h5p/h5p-editor-multi-media-choice
 H5PEditor.PhraseRandomizer: otacke/h5p-editor-phrase-randomizer
@@ -229,5 +237,6 @@ H5PEditor.Wizard: h5p/h5p-editor-wizard
 jQuery.ui: h5p/jquery-ui
 Odometer: h5p/odometer
 Shepherd: h5p/shepherd
+StorymapJS: jithin-space/storymapjs
 Tether: h5p/tether
 TimelineJS: h5p/timelinejs
