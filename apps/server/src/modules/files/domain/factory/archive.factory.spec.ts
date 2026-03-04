@@ -1,7 +1,7 @@
 import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { PassThrough } from 'stream';
-import { FileEntity } from '../../entity';
+import { FileDo } from '../do';
 import { ArchiveFactory } from './archive.factory';
 
 describe('ArchiveFactory', () => {
@@ -20,7 +20,7 @@ describe('ArchiveFactory', () => {
 
 	it('should create a zip archive and append files', (done) => {
 		const files = [createFileResponse('file1.txt', 'hello'), createFileResponse('file2.txt', 'world')];
-		const fileEntities: FileEntity[] = [];
+		const fileEntities: FileDo[] = [];
 
 		const archive = ArchiveFactory.create(files, fileEntities, logger, 'zip');
 
@@ -36,7 +36,7 @@ describe('ArchiveFactory', () => {
 
 	it('should log warning on ENOENT warning', () => {
 		const files = [createFileResponse('file.txt', 'test')];
-		const fileRecords: FileEntity[] = [];
+		const fileRecords: FileDo[] = [];
 
 		const archive = ArchiveFactory.create(files, fileRecords, logger, 'zip');
 
@@ -47,7 +47,7 @@ describe('ArchiveFactory', () => {
 
 	it('should throw an Error on non-ENOENT warning', () => {
 		const files = [createFileResponse('file.txt', 'test')];
-		const fileRecords: FileEntity[] = [];
+		const fileRecords: FileDo[] = [];
 
 		const archive = ArchiveFactory.create(files, fileRecords, logger, 'zip');
 
@@ -58,7 +58,7 @@ describe('ArchiveFactory', () => {
 
 	it('should throw on error event', () => {
 		const files = [createFileResponse('file.txt', 'test')];
-		const fileRecords: FileEntity[] = [];
+		const fileRecords: FileDo[] = [];
 
 		const archive = ArchiveFactory.create(files, fileRecords, logger, 'zip');
 

@@ -8,7 +8,7 @@ import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Archiver } from 'archiver';
 import { Readable } from 'stream';
-import { fileEntityFactory } from '../entity/testing/factory/file-entity.factory';
+import { fileDomainFactory } from '../testing';
 import { DownloadArchiveService } from './download-archive.service';
 import { ArchiveFactory } from './factory';
 import { FileOwnerModel, FILES_REPO, FilesRepoInterface } from './types';
@@ -58,17 +58,17 @@ describe('DownloadArchiveService', () => {
 		describe('when repo returns files and download is successful', () => {
 			const setup = () => {
 				const storageProvider = storageProviderFactory.buildWithId({ region: 'us-east-1' });
-				const file1 = fileEntityFactory.build({
+				const file1 = fileDomainFactory.build({
 					isDirectory: false,
-					storageProvider,
+					storageProviderId: storageProvider.id,
 					storageFileName: 'file1.txt',
 					bucket: 'bucket1',
 					name: 'test1.txt',
 					parentId: undefined,
 				});
-				const file2 = fileEntityFactory.build({
+				const file2 = fileDomainFactory.build({
 					isDirectory: false,
-					storageProvider,
+					storageProviderId: storageProvider.id,
 					storageFileName: 'file2.txt',
 					bucket: 'bucket2',
 					name: 'test2.txt',
@@ -147,8 +147,8 @@ describe('DownloadArchiveService', () => {
 
 		describe('when only directories exist', () => {
 			const setup = () => {
-				const file1 = fileEntityFactory.build({ isDirectory: true });
-				const file2 = fileEntityFactory.build({ isDirectory: true });
+				const file1 = fileDomainFactory.build({ isDirectory: true });
+				const file2 = fileDomainFactory.build({ isDirectory: true });
 
 				const ownerId = 'owner123';
 				const ownerType = FileOwnerModel.COURSE;
@@ -172,21 +172,21 @@ describe('DownloadArchiveService', () => {
 			const setup = () => {
 				const storageProvider = storageProviderFactory.buildWithId({ region: 'us-east-1' });
 
-				const rootFolder = fileEntityFactory.build({
+				const rootFolder = fileDomainFactory.build({
 					isDirectory: true,
 					name: 'Documents',
 					parentId: undefined,
 				});
 
-				const subFolder = fileEntityFactory.build({
+				const subFolder = fileDomainFactory.build({
 					isDirectory: true,
 					name: 'Subfolder',
 					parentId: rootFolder.id,
 				});
 
-				const file = fileEntityFactory.build({
+				const file = fileDomainFactory.build({
 					isDirectory: false,
-					storageProvider,
+					storageProviderId: storageProvider.id,
 					storageFileName: 'file1.txt',
 					bucket: 'bucket1',
 					name: 'document.txt',

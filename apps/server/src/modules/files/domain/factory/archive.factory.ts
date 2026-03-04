@@ -2,14 +2,14 @@ import { Logger } from '@core/logger';
 import { InternalServerErrorException } from '@nestjs/common';
 import archiver from 'archiver';
 import { PassThrough } from 'node:stream';
-import { FileEntity } from '../../entity';
+import { FileDo } from '../do';
 import { CreateArchiveLoggable } from '../loggable';
 import { GetFileResponse } from '../types';
 
 export class ArchiveFactory {
 	public static create(
 		files: GetFileResponse[],
-		fileRecords: FileEntity[],
+		fileRecords: FileDo[],
 		logger?: Logger,
 		archiveType: archiver.Format = 'zip'
 	): archiver.Archiver {
@@ -43,11 +43,11 @@ export class ArchiveFactory {
 		return archive;
 	}
 
-	private static logWarning(fileRecords: FileEntity[], logger?: Logger): void {
+	private static logWarning(fileRecords: FileDo[], logger?: Logger): void {
 		logger?.warning(new CreateArchiveLoggable('Warning while creating archive', 'createArchive', fileRecords));
 	}
 
-	private static logClose(fileRecords: FileEntity[], logger?: Logger): void {
+	private static logClose(fileRecords: FileDo[], logger?: Logger): void {
 		logger?.debug(new CreateArchiveLoggable('Archive created', 'createArchive', fileRecords));
 	}
 }

@@ -6,7 +6,7 @@ import { StorageProviderRepo, type StorageProviderEntity } from '@modules/school
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { TypeGuard } from '@shared/common/guards';
 import { EntityId } from '@shared/domain/types';
-import { FileEntity } from '../entity';
+import { FileDo } from './do';
 import { ArchiveFactory, FileResponseFactory } from './factory';
 import { FileOwnerModel, FILES_REPO, FilesRepoInterface, GetFileResponse } from './types';
 
@@ -53,27 +53,27 @@ export class DownloadArchiveService {
 		return s3Client;
 	}
 
-	private ensureFilesExist(files: FileEntity[]): void {
+	private ensureFilesExist(files: FileDo[]): void {
 		if (files.length === 0) {
 			throw new NotFoundException('No files found to download as archive');
 		}
 	}
 
-	private createFileMap(files: FileEntity[]): Map<EntityId, FileEntity> {
+	private createFileMap(files: FileDo[]): Map<EntityId, FileDo> {
 		return new Map(files.map((file) => [file.id, file]));
 	}
 
-	private filterDownloadableFiles(files: FileEntity[]): FileEntity[] {
+	private filterDownloadableFiles(files: FileDo[]): FileDo[] {
 		return files.filter((file) => !file.isDirectory);
 	}
 
-	private downloadFiles(files: FileEntity[], filesById: Map<EntityId, FileEntity>): Promise<GetFileResponse[]> {
+	private downloadFiles(files: FileDo[], filesById: Map<EntityId, FileDo>): Promise<GetFileResponse[]> {
 		const filePromises = files.map((file) => this.downloadFileWithPath(file, filesById));
 
 		return Promise.all(filePromises);
 	}
 
-	private async downloadFileWithPath(file: FileEntity, filesById: Map<EntityId, FileEntity>): Promise<GetFileResponse> {
+	private async downloadFileWithPath(file: FileDo, filesById: Map<EntityId, FileDo>): Promise<GetFileResponse> {
 		const fileData = await this.downloadFile(file);
 
 		const fileResponse = {
@@ -84,9 +84,9 @@ export class DownloadArchiveService {
 		return fileResponse;
 	}
 
-	private buildFilePath(file: FileEntity, filesById: Map<EntityId, FileEntity>): string {
+	private buildFilePath(file: FileDo, filesById: Map<EntityId, FileDo>): string {
 		const pathSegments: string[] = [];
-		let currentFile: FileEntity | undefined = file;
+		let currentFile: FileDo | undefined = file;
 
 		while (currentFile) {
 			pathSegments.unshift(currentFile.name);
@@ -96,7 +96,7 @@ export class DownloadArchiveService {
 		return pathSegments.join('/');
 	}
 
-	private async downloadFile(file: FileEntity): Promise<GetFileResponse> {
+	private async downloadFile(file: FileDo): Promise<GetFileResponse> {
 		const { s3Client, provider } = await this.getClientForFile(file);
 		const storageFileName = TypeGuard.checkNotNullOrUndefined(file.storageFileName);
 
@@ -108,7 +108,7 @@ export class DownloadArchiveService {
 		return FileResponseFactory.create(data, file.name);
 	}
 
-	private createS3Config(file: FileEntity, provider: StorageProviderEntity): S3Config {
+	private createS3Config(file: FileDo, provider: StorageProviderEntity): S3Config {
 		const bucket = TypeGuard.checkNotNullOrUndefined(file.bucket);
 		const region = TypeGuard.checkNotNullOrUndefined(provider.region);
 
@@ -123,11 +123,11 @@ export class DownloadArchiveService {
 		return config;
 	}
 
-	private async getClientForFile(file: FileEntity): Promise<{ s3Client: S3Client; provider: StorageProviderEntity }> {
-		if (!file.storageProvider?.id)
+	private async getClientForFile(file: FileDo): Promise<{ s3Client: S3Client; provider: StorageProviderEntity }> {
+		if (!file.storageProviderId)
 			throw new NotFoundException(`File with id ${file.id} does not have a storage provider assigned`);
 
-		const storageProvider = await this.storageProviderRepo.findById(file.storageProvider?.id);
+		const storageProvider = await this.storageProviderRepo.findById(file.storageProviderId);
 
 		const s3Client = this.createS3Client(storageProvider);
 
