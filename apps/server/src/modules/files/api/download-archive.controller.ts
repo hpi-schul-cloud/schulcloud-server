@@ -22,7 +22,7 @@ import { ArchiveFileParams } from './dto';
 import { StreamableFileMapper } from './mapper';
 
 @ApiTags('DownloadArchive')
-@Controller('download-archive')
+@Controller('legacy-file-archive')
 @JwtAuthentication()
 export class DownloadArchiveController {
 	constructor(
