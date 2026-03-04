@@ -20,5 +20,5 @@ export class CollaborativeTextEditorConfig {
 	 */
 	@ConfigProperty('ETHERPAD__PAD_URI')
 	@IsUrl({ require_tld: false })
-	public padUri = 'http://default/p/';
+	public padUri;
 }
