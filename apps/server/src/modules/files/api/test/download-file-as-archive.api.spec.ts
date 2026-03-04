@@ -77,7 +77,7 @@ describe('DownloadArchive Controller (API)', () => {
 		await app.init();
 		em = app.get(EntityManager);
 		jwtConfig = moduleFixture.get(TEST_JWT_CONFIG_TOKEN);
-		testApiClient = new TestApiClient(app, 'download-archive');
+		testApiClient = new TestApiClient(app, 'legacy-file-archive');
 		config = moduleFixture.get(LEGACY_FILE_ARCHIVE_CONFIG_TOKEN);
 		authorizationClient = moduleFixture.get(AuthorizationClientAdapter);
 	});
