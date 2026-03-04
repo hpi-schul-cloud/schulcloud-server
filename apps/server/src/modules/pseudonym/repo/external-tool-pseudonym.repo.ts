@@ -72,6 +72,7 @@ export class ExternalToolPseudonymRepo {
 			}
 		);
 
+		/* istanbul ignore next */
 		if (!result) {
 			throw new InternalServerErrorException('unexpected null result from findOneAndUpdate');
 		}
