@@ -92,11 +92,13 @@ export class ExternalToolPseudonymRepo {
 			return [];
 		}
 
-		const removePromises = externalPseudonyms.map((externalPseudonym) => this.em.remove(externalPseudonym).flush());
+		for (const pseudonym of externalPseudonyms) {
+			this.em.remove(pseudonym);
+		}
+		await this.em.flush();
 
-		await Promise.all(removePromises);
-
-		return this.getExternalPseudonymId(externalPseudonyms);
+		const deletedIds = this.getExternalPseudonymId(externalPseudonyms);
+		return deletedIds;
 	}
 
 	public async findPseudonymByPseudonym(pseudonym: string): Promise<Pseudonym | null> {
