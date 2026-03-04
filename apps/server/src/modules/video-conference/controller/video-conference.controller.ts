@@ -47,6 +47,7 @@ export class VideoConferenceController {
 		@Param() scopeParams: VideoConferenceScopeParams,
 		@Body() params: VideoConferenceCreateParams
 	): Promise<void> {
+		// validation doesn't fullfill the requirement of logoutUrl being same origin, so we need to check it here
 		if (params.logoutUrl && new URL(params.logoutUrl).origin !== req.headers.origin) {
 			throw new InvalidOriginForLogoutUrlLoggableException(params.logoutUrl, req.headers.origin);
 		}
