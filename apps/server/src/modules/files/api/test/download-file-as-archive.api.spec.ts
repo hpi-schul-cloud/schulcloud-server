@@ -426,54 +426,5 @@ describe('DownloadArchive Controller (API)', () => {
 				expect(response.headers['content-type']).toContain('application/zip');
 			});
 		});
-
-		describe('when request includes Range header for partial content', () => {
-			const setup = async () => {
-				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-
-				const loggedInClient = testApiClient.loginByUser(teacherAccount, teacherUser, jwtConfig);
-				const archiveName = 'team-files.zip';
-
-				const storageProvider = storageProviderFactory.buildWithId({ region: 'us-east-1' });
-				await em.persist(storageProvider).flush();
-
-				const file1 = fileEntityFactory.build({
-					name: 'team-doc.pdf',
-					ownerId: teacherUser.id,
-					refOwnerModel: FileOwnerModel.USER,
-					storageProvider,
-					isDirectory: false,
-				});
-				await em.persist([file1]).flush();
-
-				const mockContent = 'mock file content for range request';
-				const contentRange = 'bytes 0-99/1000';
-
-				jest.spyOn(S3ClientAdapter.prototype, 'get').mockResolvedValue({
-					data: Readable.from(mockContent),
-					contentType: 'application/zip',
-					contentLength: 100,
-					contentRange,
-					etag: 'mock-etag',
-				});
-
-				return { userId: teacherUser.id, loggedInClient, archiveName, contentRange };
-			};
-
-			it('should return 200 status (currently does not implement range request handling)', async () => {
-				const { userId, loggedInClient, archiveName } = await setup();
-				const params = {
-					ownerId: userId,
-					ownerType: FileOwnerModel.USER,
-					archiveName,
-				};
-
-				const response = await loggedInClient.post('download-files-as-archive', params).set('Range', 'bytes=0-99');
-
-				// Note: Currently returns 200 because bytesRange parameter is not passed to streamFileToClient
-				// When range request handling is fully implemented, this should return 206
-				expect(response.status).toEqual(HttpStatus.OK);
-			});
-		});
 	});
 });

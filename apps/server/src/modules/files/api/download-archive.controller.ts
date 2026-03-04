@@ -15,11 +15,11 @@ import {
 import { ApiHeader, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common/error';
 import { Request, Response } from 'express';
+import { GetFileResponse } from '../domain';
 import { LEGACY_FILE_ARCHIVE_CONFIG_TOKEN, LegacyFileArchiveConfig } from '../legacy-file-archive.config';
 import { DownloadArchiveUC } from './download-archive.uc';
 import { ArchiveFileParams } from './dto';
 import { StreamableFileMapper } from './mapper';
-import { GetFileResponse } from '../domain';
 
 @ApiTags('DownloadArchive')
 @Controller('download-archive')
@@ -65,27 +65,9 @@ export class DownloadArchiveController {
 		}
 	}
 
-	private streamFileToClient(
-		req: Request,
-		fileResponse: GetFileResponse,
-		httpResponse: Response,
-		bytesRange?: string
-	): StreamableFile {
+	private streamFileToClient(req: Request, fileResponse: GetFileResponse, httpResponse: Response): StreamableFile {
 		req.on('close', () => fileResponse.data.destroy());
-
-		// If bytes range has been defined, set Accept-Ranges and Content-Range HTTP headers
-		// in a response and also set 206 Partial Content HTTP status code to inform the caller
-		// about the partial data stream. Otherwise, just set a 200 OK HTTP status code.
-		if (bytesRange) {
-			httpResponse.set({
-				'Accept-Ranges': 'bytes',
-				'Content-Range': fileResponse.contentRange,
-			});
-
-			httpResponse.status(HttpStatus.PARTIAL_CONTENT);
-		} else {
-			httpResponse.status(HttpStatus.OK);
-		}
+		httpResponse.status(HttpStatus.OK);
 
 		const streamableFile = StreamableFileMapper.fromResponse(fileResponse);
 
