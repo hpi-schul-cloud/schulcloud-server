@@ -2,7 +2,7 @@ const { expect } = require('chai');
 const { ObjectId } = require('mongoose').Types;
 const { filesRepo } = require('./index');
 
-const { FileModel } = require('./db');
+const { FileModel } = require('../model');
 
 const { NotFound } = require('../../../errors');
 
