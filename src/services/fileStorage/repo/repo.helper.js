@@ -1,4 +1,4 @@
-const { error } = require('../../logger');
+const { error } = require('../../../logger');
 
 /**
  * https://mongoosejs.com/docs/6.x/docs/migrating_to_6.html#mongodb-driver-40
