@@ -8,8 +8,8 @@ import {
 	ColumnClientAdapter,
 	ColumnResponse,
 	CoursesClientAdapter,
+	FilesStorageClientAdapter,
 } from '@infra/common-cartridge-clients';
-import { FilesStorageClientAdapter } from '@infra/files-storage-client';
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';

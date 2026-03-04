@@ -20,8 +20,9 @@ import {
 	LessonContentResponse,
 	LinkElementResponse,
 	RichTextElementResponse,
+	FileRecordScanStatus,
+	FilesStorageClientAdapter,
 } from '@infra/common-cartridge-clients';
-import { FileRecordScanStatus, FilesStorageClientAdapter } from '@infra/files-storage-client';
 import { FileDto, FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import archiver from 'archiver';

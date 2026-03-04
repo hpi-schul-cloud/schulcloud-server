@@ -1,10 +1,5 @@
 import { CoreModule } from '@core/core.module';
 import { LoggerModule } from '@core/logger';
-import {
-	FILE_STORAGE_CLIENT_CONFIG_TOKEN,
-	FilesStorageClientModule,
-	FileStorageClientConfig,
-} from '@infra/files-storage-client';
 import { RABBITMQ_CONFIG_TOKEN, RabbitMQConfig } from '@infra/rabbitmq';
 import {
 	FILES_STORAGE_CLIENT_CONFIG_TOKEN,
@@ -24,18 +19,17 @@ import { CommonCartridgeClientsModule } from '@infra/common-cartridge-clients/co
 
 @Module({
 	imports: [
+		LoggerModule,
+		CqrsModule,
+		HttpModule,
+		CoreModule,
 		FilesMetadataClientModule.register({
 			exchangeConfigConstructor: FilesStorageClientConfig,
 			exchangeConfigInjectionToken: FILES_STORAGE_CLIENT_CONFIG_TOKEN,
 			configInjectionToken: RABBITMQ_CONFIG_TOKEN,
 			configConstructor: RabbitMQConfig,
 		}),
-		FilesStorageClientModule.register(FILE_STORAGE_CLIENT_CONFIG_TOKEN, FileStorageClientConfig),
-		LoggerModule,
 		CommonCartridgeClientsModule.register(API_HOST_CONFIG_TOKEN, ApiHostConfig),
-		CqrsModule,
-		HttpModule,
-		CoreModule,
 	],
 	providers: [
 		CommonCartridgeExportMapper,

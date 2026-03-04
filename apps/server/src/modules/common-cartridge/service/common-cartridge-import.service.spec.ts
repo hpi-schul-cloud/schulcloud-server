@@ -7,8 +7,8 @@ import {
 	CardClientAdapter,
 	ColumnClientAdapter,
 	CoursesClientAdapter,
+	FilesStorageClientAdapter,
 } from '@infra/common-cartridge-clients';
-import { FilesStorageClientAdapter } from '@infra/files-storage-client';
 import { HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';

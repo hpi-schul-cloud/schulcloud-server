@@ -1,4 +1,6 @@
+import { LoggerModule } from '@core/logger';
 import { ConfigurationModule } from '@infra/configuration';
+import { HttpModule } from '@nestjs/axios';
 import { DynamicModule, Module } from '@nestjs/common';
 import {
 	BoardsClientAdapter,
@@ -6,9 +8,16 @@ import {
 	ColumnClientAdapter,
 	CourseRoomsClientAdapter,
 	CoursesClientAdapter,
+	FilesStorageClientAdapter,
 	LessonClientAdapter,
 } from './adapter';
-import { InternalCommonCartridgeClientsConfig } from './common-cartridge-clients.config';
+import {
+	FILE_STORAGE_CLIENT_CONFIG_TOKEN,
+	FileStorageClientConfig,
+	InternalCommonCartridgeClientsConfig,
+	InternalFilesStorageClientConfig,
+} from './common-cartridge-clients.configs';
+import { FileApi } from './fs-generated';
 import {
 	BoardApi,
 	BoardCardApi,
@@ -111,6 +120,18 @@ export class CommonCartridgeClientsModule {
 				},
 				inject: [configInjectionToken],
 			},
+			{
+				provide: FileApi,
+				useFactory: (config: InternalFilesStorageClientConfig): FileApi => {
+					const { basePath } = config;
+					const configuration = new Configuration({
+						basePath: `${basePath}/v3`,
+					});
+
+					return new FileApi(configuration);
+				},
+				inject: [FILE_STORAGE_CLIENT_CONFIG_TOKEN],
+			},
 		];
 
 		const adapters = [
@@ -120,13 +141,19 @@ export class CommonCartridgeClientsModule {
 			CoursesClientAdapter,
 			LessonClientAdapter,
 			CourseRoomsClientAdapter,
+			FilesStorageClientAdapter,
 		];
 
 		const providers = [...apis, ...adapters];
 
 		return {
 			module: CommonCartridgeClientsModule,
-			imports: [ConfigurationModule.register(configInjectionToken, configConstructor)],
+			imports: [
+				LoggerModule,
+				HttpModule,
+				ConfigurationModule.register(configInjectionToken, configConstructor),
+				ConfigurationModule.register(FILE_STORAGE_CLIENT_CONFIG_TOKEN, FileStorageClientConfig),
+			],
 			providers,
 			exports: [...adapters],
 		};

@@ -13,8 +13,8 @@ import {
 	LinkElementContent,
 	RichTextElementContent,
 	SingleColumnBoardResponse,
+	FilesStorageClientAdapter,
 } from '@infra/common-cartridge-clients';
-import { FilesStorageClientAdapter } from '@infra/files-storage-client';
 import { fileRecordResponseFactory } from '@infra/files-storage-client/testing';
 import { FileDto, FileRecordParentType, FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { InternalServerErrorException } from '@nestjs/common';

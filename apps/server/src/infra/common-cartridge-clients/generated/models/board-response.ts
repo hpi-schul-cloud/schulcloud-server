@@ -21,10 +21,10 @@ import type { BoardFeature } from './board-feature';
 import type { BoardLayout } from './board-layout';
 // May contain unused imports in some cases
 // @ts-ignore
-import type { ColumnResponse } from './column-response';
+import type { BoardResponseAllowedOperations } from './board-response-allowed-operations';
 // May contain unused imports in some cases
 // @ts-ignore
-import type { Permission } from './permission';
+import type { ColumnResponse } from './column-response';
 // May contain unused imports in some cases
 // @ts-ignore
 import type { TimestampsResponse } from './timestamps-response';
@@ -85,10 +85,10 @@ export interface BoardResponse {
     'features': Array<BoardFeature>;
     /**
      * 
-     * @type {Array<Permission>}
+     * @type {BoardResponseAllowedOperations}
      * @memberof BoardResponse
      */
-    'permissions': Array<Permission>;
+    'allowedOperations'?: BoardResponseAllowedOperations;
 }
 
 

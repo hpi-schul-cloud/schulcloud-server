@@ -111,6 +111,30 @@
 					"withSeparateModelsAndApi": true
 				}
 			},
+			"common-cartridge-files-storage-api": {
+				"generatorName": "typescript-axios",
+				"inputSpec": "http://localhost:4444/api/v3/file/docs-json",
+				"output": "./apps/server/src/infra/common-cartridge-clients/fs-generated",
+				"skipValidateSpec": true,
+				"enablePostProcessFile": true,
+				"openapiNormalizer": {
+					"FILTER": "operationId:upload|download|uploadFromUrl|deleteByParent|deleteFile|getFileRecord"
+				},
+				"globalProperty": {
+					"models": "FileRecordResponse:StreamableFile:FileRecordParentType:FileRecordScanStatus:PreviewStatus:StorageLocation:FileUrlParams:FileRecordListResponse:SingleFileParams",
+					"apis": "",
+					"supportingFiles": ""
+				},
+				"additionalProperties": {
+					"apiPackage": "api",
+					"enumNameSuffix": "",
+					"enumPropertyNaming": "UPPERCASE",
+					"modelPackage": "models",
+					"supportsES6": true,
+					"withInterfaces": true,
+					"withSeparateModelsAndApi": true
+				}
+			},
 			"authorization-api": {
 				"generatorName": "typescript-axios",
 				"inputSpec": "http://localhost:3030/api/v3/docs-json",
