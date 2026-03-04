@@ -13,7 +13,7 @@ export class Migration20260303090629 extends Migration {
 		},
 		*/
 		const results = await this.getCollection('schools').updateMany(
-			{ $or: [{'permissions.student.LERNSTORE_VIEW': { $exists: true } }, {'permissions.student': { $eq: {} } } ] },
+			{ $or: [{ 'permissions.student.LERNSTORE_VIEW': { $exists: true } }, { 'permissions.student': {} }] },
 			{ $unset: { 'permissions.student': '' } }
 		);
 
