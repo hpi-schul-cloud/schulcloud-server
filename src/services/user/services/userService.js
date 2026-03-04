@@ -147,6 +147,7 @@ const userHooks = {
 			resolveToIds('/roles', 'data.roles', 'name'),
 			updateAccountUsername,
 		],
+		remove: [disallow('external')],
 	},
 	after: {
 		all: [],
