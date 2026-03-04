@@ -21,7 +21,9 @@ describe('ExternalToolPseudonymRepo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [ExternalToolPseudonymEntity, User] })],
+			imports: [
+				MongoMemoryDatabaseModule.forRoot({ entities: [ExternalToolPseudonymEntity, User], ensureIndexes: true }),
+			],
 			providers: [
 				ExternalToolPseudonymRepo,
 				{
