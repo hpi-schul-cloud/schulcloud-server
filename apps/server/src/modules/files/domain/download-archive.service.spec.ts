@@ -175,6 +175,35 @@ describe('DownloadArchiveService', () => {
 			});
 		});
 
+		describe('when a file has no storage provider assigned', () => {
+			const setup = () => {
+				const file = fileDomainFactory.build({
+					isDirectory: false,
+					storageProviderId: undefined,
+					storageFileName: 'file1.txt',
+					bucket: 'bucket1',
+					name: 'test.txt',
+					parentId: undefined,
+				});
+
+				const ownerId = 'owner123';
+				const ownerType = FileOwnerModel.USER;
+				const archiveName = 'test-archive';
+
+				filesRepo.findByIdAndOwnerType.mockResolvedValueOnce([file]);
+
+				return { ownerId, ownerType, archiveName, file };
+			};
+
+			it('should throw NotFoundException with file id in message', async () => {
+				const { ownerId, ownerType, archiveName, file } = setup();
+
+				await expect(service.downloadFilesAsArchive(ownerId, ownerType, archiveName)).rejects.toThrow(
+					new NotFoundException(`File with id ${file.id} does not have a storage provider assigned`)
+				);
+			});
+		});
+
 		describe('when files have nested folder structure', () => {
 			const setup = () => {
 				const storageProvider = storageProviderFactory.buildWithId({ region: 'us-east-1' });
