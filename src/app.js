@@ -11,7 +11,6 @@ const { RequestContext } = require('@mikro-orm/core');
 const middleware = require('./middleware');
 const setupConfiguration = require('./configuration');
 const services = require('./services');
-const components = require('./components');
 const requestLog = require('./logger/RequestLogger');
 const defaultHeaders = require('./middleware/defaultHeaders');
 const handleResponseType = require('./middleware/handleReponseType');
@@ -83,7 +82,7 @@ const setupApp = async (orm) => {
 			next();
 		});
 	}
-	app.configure(services).configure(components).configure(middleware).configure(setupAppHooks).configure(errorHandler);
+	app.configure(services).configure(middleware).configure(setupAppHooks).configure(errorHandler);
 
 	return app;
 };

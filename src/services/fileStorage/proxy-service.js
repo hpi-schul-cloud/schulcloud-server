@@ -2,7 +2,7 @@ const fs = require('fs');
 const url = require('url');
 const axios = require('axios');
 const { Configuration } = require('@hpi-schul-cloud/commons');
-const { filesRepo } = require('../../components/fileStorage/repo');
+const { filesRepo } = require('./repo');
 
 const { Forbidden, NotFound, BadRequest, GeneralError } = require('../../errors');
 
