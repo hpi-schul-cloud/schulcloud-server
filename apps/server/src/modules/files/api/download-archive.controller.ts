@@ -35,10 +35,6 @@ export class DownloadArchiveController {
 		status: 200,
 		schema: { type: 'string', format: 'binary' },
 	})
-	@ApiResponse({
-		status: 206,
-		schema: { type: 'string', format: 'binary' },
-	})
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
@@ -53,7 +49,6 @@ export class DownloadArchiveController {
 		this.featureEnabled();
 
 		const data = await this.downloadArchiveUC.downloadFilesOfParentAsArchive(params);
-
 		const streamableFile = this.streamFileToClient(req, data, response);
 
 		return streamableFile;
