@@ -105,8 +105,8 @@ export class RoomUc {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const roomAuthorizable = await this.roomMembershipService.getRoomAuthorizable(roomId);
 
-		const checkLockedRoom = this.roomRule.isLockedRoom(user, roomAuthorizable);
-		if (!checkLockedRoom) {
+		const isLockedRoom = this.roomRule.isLockedRoom(user, roomAuthorizable);
+		if (!isLockedRoom) {
 			const room = await this.roomService.getSingleRoom(roomId);
 			throw new LockedRoomLoggableException(room.name, room.id);
 		}

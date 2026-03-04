@@ -472,12 +472,12 @@ describe(BoardContextService.name, () => {
 				return { columnBoard };
 			};
 
-			it('should return unlocked settings object', async () => {
+			it('should return isLocked false settings object', async () => {
 				const { columnBoard } = setup();
 
 				const result = await service.getBoardSettings(columnBoard);
 
-				expect(result).toEqual({ isUnlocked: true });
+				expect(result).toEqual({ isLocked: false });
 			});
 		});
 
@@ -493,12 +493,12 @@ describe(BoardContextService.name, () => {
 				return { columnBoard };
 			};
 
-			it('should return isUnlocked true', async () => {
+			it('should return isLocked false', async () => {
 				const { columnBoard } = setup();
 
 				const result = await service.getBoardSettings(columnBoard);
 
-				expect(result).toEqual({ isUnlocked: true });
+				expect(result).toEqual({ isLocked: false });
 			});
 		});
 
@@ -535,7 +535,7 @@ describe(BoardContextService.name, () => {
 
 					const result = await service.getBoardSettings(columnBoard);
 
-					expect(result).toEqual({ canRoomEditorManageVideoconference: true, isUnlocked: true });
+					expect(result).toEqual({ canRoomEditorManageVideoconference: true, isLocked: false });
 					expect(roomService.canEditorManageVideoconferences).toHaveBeenCalledWith(room);
 				});
 			});
@@ -548,7 +548,7 @@ describe(BoardContextService.name, () => {
 
 					const result = await service.getBoardSettings(columnBoard);
 
-					expect(result).toEqual({ canRoomEditorManageVideoconference: false, isUnlocked: true });
+					expect(result).toEqual({ canRoomEditorManageVideoconference: false, isLocked: false });
 					expect(roomService.canEditorManageVideoconferences).toHaveBeenCalledWith(room);
 				});
 			});

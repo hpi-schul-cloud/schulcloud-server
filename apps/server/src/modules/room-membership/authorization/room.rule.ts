@@ -112,7 +112,7 @@ export class RoomRule implements Rule<RoomAuthorizable> {
 	public isLockedRoom(user: User, roomAuthorizable: RoomAuthorizable): boolean {
 		const { schoolPermissions } = resolveUserPermissions(user, roomAuthorizable);
 		const canAdministrateSchoolRooms = schoolPermissions.includes(Permission.SCHOOL_ADMINISTRATE_ROOMS);
-		if (!canAdministrateSchoolRooms && isLocked(roomAuthorizable)) {
+		if (!canAdministrateSchoolRooms && isLockedRoom(roomAuthorizable)) {
 			return false;
 		}
 
@@ -168,7 +168,7 @@ const canCreateRoom = (user: User): boolean => {
 };
 
 const canCopyRoom = (user: User, roomAuthorizable: RoomAuthorizable): boolean => {
-	if (isLocked(roomAuthorizable)) {
+	if (isLockedRoom(roomAuthorizable)) {
 		return false;
 	}
 
@@ -184,7 +184,7 @@ const canAccessRoom = (user: User, roomAuthorizable: RoomAuthorizable): boolean 
 	const { schoolPermissions, roomPermissions } = resolveUserPermissions(user, roomAuthorizable);
 	const canAdministrateSchoolRooms = schoolPermissions.includes(Permission.SCHOOL_ADMINISTRATE_ROOMS);
 
-	if (!canAdministrateSchoolRooms && isLocked(roomAuthorizable)) {
+	if (!canAdministrateSchoolRooms && isLockedRoom(roomAuthorizable)) {
 		return false;
 	}
 
@@ -220,7 +220,7 @@ const canAddMembers = (user: User, roomAuthorizable: RoomAuthorizable): boolean 
 	const { schoolPermissions, roomPermissions } = resolveUserPermissions(user, roomAuthorizable);
 	const canAdministrateSchoolRooms = schoolPermissions.includes(Permission.SCHOOL_ADMINISTRATE_ROOMS);
 
-	if (!canAdministrateSchoolRooms && isLocked(roomAuthorizable)) {
+	if (!canAdministrateSchoolRooms && isLockedRoom(roomAuthorizable)) {
 		return false;
 	}
 
@@ -234,7 +234,7 @@ const canAddMembers = (user: User, roomAuthorizable: RoomAuthorizable): boolean 
 };
 
 const canEditContent = (user: User, roomAuthorizable: RoomAuthorizable): boolean => {
-	if (isLocked(roomAuthorizable)) {
+	if (isLockedRoom(roomAuthorizable)) {
 		return false;
 	}
 
@@ -245,7 +245,7 @@ const canEditContent = (user: User, roomAuthorizable: RoomAuthorizable): boolean
 };
 
 const canAddExternalPersonByEmail = (user: User, roomAuthorizable: RoomAuthorizable): boolean => {
-	if (isLocked(roomAuthorizable)) {
+	if (isLockedRoom(roomAuthorizable)) {
 		return false;
 	}
 
@@ -264,7 +264,7 @@ const canChangeRolesOfMembers = (user: User, roomAuthorizable: RoomAuthorizable)
 };
 
 const canLeaveRoom = (user: User, roomAuthorizable: RoomAuthorizable): boolean => {
-	if (isLocked(roomAuthorizable)) {
+	if (isLockedRoom(roomAuthorizable)) {
 		return false;
 	}
 
@@ -276,7 +276,7 @@ const canLeaveRoom = (user: User, roomAuthorizable: RoomAuthorizable): boolean =
 };
 
 const canUpdateRoom = (user: User, roomAuthorizable: RoomAuthorizable): boolean => {
-	if (isLocked(roomAuthorizable)) {
+	if (isLockedRoom(roomAuthorizable)) {
 		return false;
 	}
 
@@ -293,7 +293,7 @@ const canDeleteRoom = (user: User, roomAuthorizable: RoomAuthorizable): boolean 
 	const isOwnSchool = roomAuthorizable.schoolId === user.school.id;
 	const canAdministrateSchoolRooms = schoolPermissions.includes(Permission.SCHOOL_ADMINISTRATE_ROOMS);
 
-	if (!canAdministrateSchoolRooms && isLocked(roomAuthorizable)) {
+	if (!canAdministrateSchoolRooms && isLockedRoom(roomAuthorizable)) {
 		return false;
 	}
 
@@ -303,7 +303,7 @@ const canDeleteRoom = (user: User, roomAuthorizable: RoomAuthorizable): boolean 
 };
 
 const canGetRoomMembers = (user: User, roomAuthorizable: RoomAuthorizable): boolean => {
-	if (isLocked(roomAuthorizable)) {
+	if (isLockedRoom(roomAuthorizable)) {
 		return false;
 	}
 
@@ -324,7 +324,7 @@ const canGetRoomMembersRedacted = (user: User, roomAuthorizable: RoomAuthorizabl
 };
 
 const canShareRoom = (user: User, roomAuthorizable: RoomAuthorizable): boolean => {
-	if (isLocked(roomAuthorizable)) {
+	if (isLockedRoom(roomAuthorizable)) {
 		return false;
 	}
 
@@ -368,7 +368,7 @@ const canViewMemberlist = (user: User, roomAuthorizable: RoomAuthorizable): bool
 	return hasSchoolPermission;
 };
 
-const isLocked = (roomAuthorizable: RoomAuthorizable): boolean => {
+const isLockedRoom = (roomAuthorizable: RoomAuthorizable): boolean => {
 	const hasOwner = roomAuthorizable.members.some((member) =>
 		member.roles.some((role) => role.name === RoleName.ROOMOWNER)
 	);
