@@ -1,4 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { InternalJwtWhitelistConfig, JWT_WHITELIST_CONFIG_TOKEN } from '@infra/auth-guard';
 import { StorageClient } from '@infra/valkey-client';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -18,6 +19,10 @@ describe(JwtWhitelistAdapter.name, () => {
 				{
 					provide: SESSION_VALKEY_CLIENT,
 					useValue: createMock<StorageClient>(),
+				},
+				{
+					provide: JWT_WHITELIST_CONFIG_TOKEN,
+					useValue: { jwtTimeoutSeconds: 7200 } as InternalJwtWhitelistConfig,
 				},
 			],
 		}).compile();
