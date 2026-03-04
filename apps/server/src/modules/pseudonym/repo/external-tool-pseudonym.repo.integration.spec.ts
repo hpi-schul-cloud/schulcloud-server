@@ -199,25 +199,77 @@ describe('ExternalToolPseudonymRepo', () => {
 				const entity: ExternalToolPseudonymEntity = externalToolPseudonymEntityFactory.buildWithId();
 				await em.persist(entity).flush();
 
+				const updatedDomainObject = pseudonymFactory.build({
+					pseudonym: uuidv4(),
+					toolId: entity.toolId.toHexString(),
+					userId: entity.userId.toHexString(),
+				});
+
 				return {
-					domainObject: pseudonymFactory.build({
-						id: entity.id,
-						pseudonym: uuidv4(),
-						toolId: new ObjectId().toHexString(),
-						userId: new ObjectId().toHexString(),
-					}),
+					entity,
+					domainObject: updatedDomainObject,
 				};
 			};
 
-			it('should update an existing pseudonym', async () => {
-				const { domainObject } = await setup();
+			it('should update the pseudonym value of the existing record', async () => {
+				const { entity, domainObject } = await setup();
 
 				const result: Pseudonym = await repo.createOrUpdate(domainObject);
 
-				expect(result.id).toEqual(domainObject.id);
+				expect(result.id).toEqual(entity.id);
 				expect(result.pseudonym).toEqual(domainObject.pseudonym);
 				expect(result.toolId).toEqual(domainObject.toolId);
 				expect(result.userId).toEqual(domainObject.userId);
+			});
+
+			it('should not change createdAt on update', async () => {
+				const { entity, domainObject } = await setup();
+
+				const result: Pseudonym = await repo.createOrUpdate(domainObject);
+
+				expect(result.createdAt).toEqual(entity.createdAt);
+			});
+		});
+
+		describe('when createOrUpdate is called concurrently with the same userId and toolId', () => {
+			const setup = () => {
+				const sharedUserId = new ObjectId().toHexString();
+				const sharedToolId = new ObjectId().toHexString();
+
+				const domainObject1 = pseudonymFactory.build({
+					pseudonym: uuidv4(),
+					toolId: sharedToolId,
+					userId: sharedUserId,
+				});
+
+				const domainObject2 = pseudonymFactory.build({
+					pseudonym: uuidv4(),
+					toolId: sharedToolId,
+					userId: sharedUserId,
+				});
+
+				return { domainObject1, domainObject2, sharedUserId, sharedToolId };
+			};
+
+			it('should not throw a duplicate-key error', async () => {
+				const { domainObject1, domainObject2 } = setup();
+
+				await expect(
+					Promise.all([repo.createOrUpdate(domainObject1), repo.createOrUpdate(domainObject2)])
+				).resolves.not.toThrow();
+			});
+
+			it('should result in exactly one document in the database', async () => {
+				const { domainObject1, domainObject2, sharedUserId, sharedToolId } = setup();
+
+				await Promise.all([repo.createOrUpdate(domainObject1), repo.createOrUpdate(domainObject2)]);
+
+				const count = await em.count(ExternalToolPseudonymEntity, {
+					userId: new ObjectId(sharedUserId),
+					toolId: new ObjectId(sharedToolId),
+				});
+
+				expect(count).toEqual(1);
 			});
 		});
 	});

@@ -1,5 +1,5 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions, Pagination } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
@@ -49,24 +49,41 @@ export class ExternalToolPseudonymRepo {
 	}
 
 	public async createOrUpdate(domainObject: Pseudonym): Promise<Pseudonym> {
-		const existing: ExternalToolPseudonymEntity | undefined = this.em
-			.getUnitOfWork()
-			.getById<ExternalToolPseudonymEntity>(ExternalToolPseudonymEntity.name, domainObject.id);
+		const collection = this.em.getCollection(ExternalToolPseudonymEntity);
 
-		const entityProps: ExternalToolPseudonymEntityProps = this.mapDomainObjectToEntityProperties(domainObject);
-		let entity: ExternalToolPseudonymEntity = new ExternalToolPseudonymEntity(entityProps);
+		const userId = new ObjectId(domainObject.userId);
+		const toolId = new ObjectId(domainObject.toolId);
+		const now = new Date();
 
-		if (existing) {
-			entity = this.em.assign(existing, entity);
-		} else {
-			this.em.persist(entity);
+		const result = await collection.findOneAndUpdate(
+			{ userId, toolId },
+			{
+				$set: {
+					pseudonym: domainObject.pseudonym,
+					updatedAt: now,
+				},
+				$setOnInsert: {
+					createdAt: now,
+				},
+			},
+			{
+				upsert: true,
+				returnDocument: 'after',
+			}
+		);
+
+		if (!result) {
+			throw new InternalServerErrorException('unexpected null result from findOneAndUpdate');
 		}
 
-		await this.em.flush();
-
-		const savedDomainObject: Pseudonym = this.mapEntityToDomainObject(entity);
-
-		return savedDomainObject;
+		return new Pseudonym({
+			id: result._id.toHexString(),
+			pseudonym: result.pseudonym,
+			toolId: result.toolId.toHexString(),
+			userId: result.userId.toHexString(),
+			createdAt: result.createdAt,
+			updatedAt: result.updatedAt,
+		});
 	}
 
 	public async deletePseudonymsByUserId(userId: EntityId): Promise<EntityId[]> {
