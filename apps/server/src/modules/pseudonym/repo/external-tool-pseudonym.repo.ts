@@ -5,7 +5,7 @@ import { IFindOptions, Pagination } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { Scope } from '@shared/repo/scope';
 import { PseudonymSearchQuery } from '../domain';
-import { ExternalToolPseudonymEntity, ExternalToolPseudonymEntityProps } from '../entity';
+import { ExternalToolPseudonymEntity } from '../entity';
 import { PseudonymScope } from '../entity/pseudonym.scope';
 import { Pseudonym } from './pseudonym.do';
 
@@ -128,14 +128,6 @@ export class ExternalToolPseudonymRepo {
 		});
 
 		return pseudonym;
-	}
-
-	protected mapDomainObjectToEntityProperties(entityDO: Pseudonym): ExternalToolPseudonymEntityProps {
-		return {
-			pseudonym: entityDO.pseudonym,
-			toolId: new ObjectId(entityDO.toolId),
-			userId: new ObjectId(entityDO.userId),
-		};
 	}
 
 	public async findPseudonym(query: PseudonymSearchQuery, options?: IFindOptions<Pseudonym>): Promise<Page<Pseudonym>> {
