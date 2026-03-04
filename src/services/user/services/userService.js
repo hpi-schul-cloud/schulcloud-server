@@ -26,8 +26,6 @@ const {
 	checkJwt,
 	checkUniqueAccount,
 	updateAccountUsername,
-	removeStudentFromClasses,
-	removeStudentFromCourses,
 	sanitizeData,
 	pinIsVerified,
 	protectImmutableAttributes,
@@ -36,8 +34,6 @@ const {
 	decorateAvatar,
 	decorateUsers,
 	handleClassId,
-	pushRemoveEvent,
-	enforceRoleHierarchyOnDelete,
 	enforceRoleHierarchyOnCreate,
 	filterResult,
 	generateRegistrationLink,
@@ -71,6 +67,7 @@ class UserService {
 		return this.app.service('usersModel').patch(id, data, prepareInternalParams(params));
 	}
 
+	/* used in tests testObjects.cleanup() */
 	remove(id, params) {
 		return this.app.service('usersModel').remove(id, prepareInternalParams(params));
 	}
@@ -150,11 +147,7 @@ const userHooks = {
 			resolveToIds('/roles', 'data.roles', 'name'),
 			updateAccountUsername,
 		],
-		remove: [
-			authenticate('jwt'),
-			iff(isProvider('external'), preventPopulate),
-			iff(isProvider('external'), [restrictToCurrentSchool, enforceRoleHierarchyOnDelete]),
-		],
+		remove: [disallow('external')],
 	},
 	after: {
 		all: [],
@@ -183,12 +176,6 @@ const userHooks = {
 		create: [handleClassId],
 		update: [iff(isProvider('external'), filterResult)],
 		patch: [iff(isProvider('external'), filterResult)],
-		remove: [
-			pushRemoveEvent,
-			removeStudentFromClasses,
-			removeStudentFromCourses,
-			iff(isProvider('external'), filterResult),
-		],
 	},
 };
 
