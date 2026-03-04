@@ -10,13 +10,6 @@ const createFileResponse = (name: string, content: string): { name: string; data
 	return { name, data: stream };
 };
 
-/**
- * const archive = ArchiveTestFactory.build(done);
- * archive.on('close', () => {
- *		expect(..);
- *		done();
- *	});
- */
 export class ArchiveTestFactory {
 	public static build(done: (err?: unknown) => void, chunks: Buffer[] = [], logger?: Logger): archiver.Archiver {
 		const fileResponses = [createFileResponse('file1.txt', 'hello'), createFileResponse('file2.txt', 'world')];
