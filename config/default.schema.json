@@ -432,7 +432,6 @@
 		"ETHERPAD": {
 			"type": "object",
 			"description": "Etherpad settings",
-			"required": ["PAD_URI"],
 			"properties": {
 				"URI": {
 					"type": "string",
