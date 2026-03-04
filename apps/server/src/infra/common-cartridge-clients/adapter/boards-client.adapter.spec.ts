@@ -86,7 +86,7 @@ describe(BoardsClientAdapter.name, () => {
 					columns: [],
 					isVisible: true,
 					features: [],
-					permissions: [],
+					allowedOperations: [],
 					readersCanEdit: false,
 					timestamps: {
 						createdAt: faker.date.recent().toISOString(),
