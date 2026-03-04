@@ -1,0 +1,239 @@
+import { DomainErrorHandler } from '@core/error';
+import { Logger } from '@core/logger';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { S3ClientAdapter } from '@infra/s3-client';
+import { StorageProviderRepo } from '@modules/school/repo';
+import { storageProviderFactory } from '@modules/school/testing';
+import { NotFoundException } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { Archiver } from 'archiver';
+import { Readable } from 'stream';
+import { fileEntityFactory } from '../entity/testing/factory/file-entity.factory';
+import { DownloadArchiveService } from './download-archive.service';
+import { ArchiveFactory } from './factory';
+import { FileOwnerModel, FILES_REPO, FilesRepoInterface } from './types';
+
+describe('DownloadArchiveService', () => {
+	let service: DownloadArchiveService;
+	let filesRepo: DeepMocked<FilesRepoInterface>;
+	let storageProviderRepo: DeepMocked<StorageProviderRepo>;
+
+	beforeAll(async () => {
+		const module: TestingModule = await Test.createTestingModule({
+			providers: [
+				DownloadArchiveService,
+				{
+					provide: FILES_REPO,
+					useValue: createMock<FilesRepoInterface>(),
+				},
+				{
+					provide: StorageProviderRepo,
+					useValue: createMock<StorageProviderRepo>(),
+				},
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
+				},
+				{
+					provide: DomainErrorHandler,
+					useValue: createMock<DomainErrorHandler>(),
+				},
+			],
+		}).compile();
+
+		service = module.get(DownloadArchiveService);
+		filesRepo = module.get(FILES_REPO);
+		storageProviderRepo = module.get(StorageProviderRepo);
+	});
+
+	afterEach(() => {
+		jest.resetAllMocks();
+	});
+
+	it('should be defined', () => {
+		expect(service).toBeDefined();
+	});
+
+	describe('downloadFilesAsArchive', () => {
+		describe('when repo returns files and download is successful', () => {
+			const setup = () => {
+				const storageProvider = storageProviderFactory.buildWithId({ region: 'us-east-1' });
+				const file1 = fileEntityFactory.build({
+					isDirectory: false,
+					storageProvider,
+					storageFileName: 'file1.txt',
+					bucket: 'bucket1',
+					name: 'test1.txt',
+					parentId: undefined,
+				});
+				const file2 = fileEntityFactory.build({
+					isDirectory: false,
+					storageProvider,
+					storageFileName: 'file2.txt',
+					bucket: 'bucket2',
+					name: 'test2.txt',
+					parentId: undefined,
+				});
+
+				const ownerId = 'owner123';
+				const ownerType = FileOwnerModel.USER;
+				const archiveName = 'test-archive';
+
+				filesRepo.findByIdAndOwnerType.mockResolvedValueOnce([file1, file2]);
+				storageProviderRepo.findById.mockResolvedValueOnce(storageProvider);
+
+				const mockStream1 = new Readable();
+				const mockStream2 = new Readable();
+				mockStream1.push('content1');
+				mockStream1.push(null);
+				mockStream2.push('content2');
+				mockStream2.push(null);
+
+				jest
+					.spyOn(S3ClientAdapter.prototype, 'get')
+					.mockResolvedValueOnce({ data: mockStream1 })
+					.mockResolvedValueOnce({ data: mockStream2 });
+
+				const mockArchive = createMock<Archiver>();
+				const spy = jest.spyOn(ArchiveFactory, 'create').mockReturnValueOnce(mockArchive);
+
+				return { ownerId, ownerType, archiveName, file1, file2, spy };
+			};
+
+			it('should return a file response with archive', async () => {
+				const { ownerId, ownerType, archiveName } = setup();
+
+				const result = await service.downloadFilesAsArchive(ownerId, ownerType, archiveName);
+
+				expect(result.name).toBe(`${archiveName}.zip`);
+				expect(result.contentType).toBe('application/zip');
+			});
+
+			it('should call ArchiveFactory with correct file paths', async () => {
+				const { ownerId, ownerType, archiveName, file1, file2, spy } = setup();
+
+				await service.downloadFilesAsArchive(ownerId, ownerType, archiveName);
+
+				expect(spy).toHaveBeenCalledWith(
+					expect.arrayContaining([
+						expect.objectContaining({ name: file1.name }),
+						expect.objectContaining({ name: file2.name }),
+					]),
+					expect.any(Array),
+					expect.anything()
+				);
+			});
+		});
+
+		describe('when no files exist', () => {
+			const setup = () => {
+				const ownerId = 'owner123';
+				const ownerType = FileOwnerModel.USER;
+				const archiveName = 'test-archive';
+
+				filesRepo.findByIdAndOwnerType.mockResolvedValueOnce([]);
+
+				return { ownerId, ownerType, archiveName };
+			};
+
+			it('should throw NotFoundException', async () => {
+				const { ownerId, ownerType, archiveName } = setup();
+
+				await expect(service.downloadFilesAsArchive(ownerId, ownerType, archiveName)).rejects.toThrow(
+					new NotFoundException('No files found to download as archive')
+				);
+			});
+		});
+
+		describe('when only directories exist', () => {
+			const setup = () => {
+				const file1 = fileEntityFactory.build({ isDirectory: true });
+				const file2 = fileEntityFactory.build({ isDirectory: true });
+
+				const ownerId = 'owner123';
+				const ownerType = FileOwnerModel.COURSE;
+				const archiveName = 'test-archive';
+
+				filesRepo.findByIdAndOwnerType.mockResolvedValueOnce([file1, file2]);
+
+				return { ownerId, ownerType, archiveName };
+			};
+
+			it('should throw NotFoundException', async () => {
+				const { ownerId, ownerType, archiveName } = setup();
+
+				await expect(service.downloadFilesAsArchive(ownerId, ownerType, archiveName)).rejects.toThrow(
+					new NotFoundException('No files found to download as archive')
+				);
+			});
+		});
+
+		describe('when files have nested folder structure', () => {
+			const setup = () => {
+				const storageProvider = storageProviderFactory.buildWithId({ region: 'us-east-1' });
+
+				const rootFolder = fileEntityFactory.build({
+					isDirectory: true,
+					name: 'Documents',
+					parentId: undefined,
+				});
+
+				const subFolder = fileEntityFactory.build({
+					isDirectory: true,
+					name: 'Subfolder',
+					parentId: rootFolder.id,
+				});
+
+				const file = fileEntityFactory.build({
+					isDirectory: false,
+					storageProvider,
+					storageFileName: 'file1.txt',
+					bucket: 'bucket1',
+					name: 'document.txt',
+					parentId: subFolder.id,
+				});
+
+				const ownerId = 'owner123';
+				const ownerType = FileOwnerModel.TEAMS;
+				const archiveName = 'test-archive';
+
+				filesRepo.findByIdAndOwnerType.mockResolvedValueOnce([rootFolder, subFolder, file]);
+				storageProviderRepo.findById.mockResolvedValue(storageProvider);
+
+				const mockStream = new Readable();
+				mockStream.push('content');
+				mockStream.push(null);
+
+				jest.spyOn(S3ClientAdapter.prototype, 'get').mockResolvedValueOnce({ data: mockStream });
+
+				const mockArchive = createMock<any>();
+				jest.spyOn(ArchiveFactory, 'create').mockReturnValue(mockArchive);
+
+				return { ownerId, ownerType, archiveName, file, rootFolder, subFolder };
+			};
+
+			it('should preserve folder structure in archive', async () => {
+				const { ownerId, ownerType, archiveName } = setup();
+
+				const result = await service.downloadFilesAsArchive(ownerId, ownerType, archiveName);
+
+				expect(result.name).toBe(`${archiveName}.zip`);
+				expect(result.contentType).toBe('application/zip');
+				expect(result.data).toBeDefined();
+			});
+
+			it('should call ArchiveFactory with correct nested path', async () => {
+				const { ownerId, ownerType, archiveName, file, rootFolder, subFolder } = setup();
+
+				await service.downloadFilesAsArchive(ownerId, ownerType, archiveName);
+
+				const expectedPath = `${rootFolder.name}/${subFolder.name}/${file.name}`;
+				expect(ArchiveFactory.create).toHaveBeenCalledWith(
+					expect.arrayContaining([expect.objectContaining({ name: expectedPath })]),
+					expect.any(Array),
+					expect.anything()
+				);
+			});
+		});
+	});
+});
