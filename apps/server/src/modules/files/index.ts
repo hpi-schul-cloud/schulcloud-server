@@ -1,2 +1,2 @@
 export { FilesModule } from './files.module';
-export { LegacyFileArchiveApiModule } from './legacy-file-archive.module';
+export { LegacyFileArchiveApiModule } from './legacy-file-archive.app.module';
