@@ -31,7 +31,7 @@ import { CommonCartridgeFileBuilder } from '../export/builders/common-cartridge-
 import { CommonCartridgeOrganizationNode } from '../export/builders/common-cartridge-organization-node';
 import { CommonCartridgeVersion } from '../export/common-cartridge.enums';
 import { createIdentifier } from '../export/utils';
-import { CommonCartridgeMessageLoggable } from '../loggable/common-cartridge-export-message.loggable';
+import { CommonCartridgeMessageLoggable } from '../loggable/common-cartridge-message.loggable';
 import { CommonCartridgeExportMapper } from './common-cartridge-export.mapper';
 import { CommonCartridgeExportResponse } from './common-cartridge-export.response';
 

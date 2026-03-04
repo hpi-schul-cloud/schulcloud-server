@@ -23,7 +23,7 @@ import {
 	CommonCartridgeOrganizationProps,
 	DEFAULT_FILE_PARSER_OPTIONS,
 } from '../import/common-cartridge-import.types';
-import { CommonCartridgeMessageLoggable } from '../loggable/common-cartridge-export-message.loggable';
+import { CommonCartridgeMessageLoggable } from '../loggable/common-cartridge-message.loggable';
 import { CommonCartridgeImportMapper } from './common-cartridge-import.mapper';
 
 const DEPTH_BOARD = 0;

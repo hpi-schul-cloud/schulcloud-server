@@ -53,13 +53,13 @@ describe('CommonCartridgeController', () => {
 		describe('when exporting a course', () => {
 			const setup = () => {
 				const courseId = faker.string.uuid();
-				const params = { courseId } as ExportCourseParams;
-				const query = { version: CommonCartridgeVersion.V_1_1_0 } as CourseQueryParams;
-				const body = {
+				const params: ExportCourseParams = { courseId };
+				const query: CourseQueryParams = { version: CommonCartridgeVersion.V_1_1_0 };
+				const body: CourseExportBodyParams = {
 					topics: [faker.string.uuid(), faker.string.uuid()],
 					tasks: [faker.string.uuid()],
 					columnBoards: [faker.string.uuid(), faker.string.uuid()],
-				} as CourseExportBodyParams;
+				};
 				const expected: CommonCartridgeExportResponse = {
 					data: Readable.from(faker.lorem.paragraphs(100)),
 					name: faker.string.alpha(),

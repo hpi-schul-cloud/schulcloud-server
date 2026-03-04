@@ -5,7 +5,7 @@ export class CommonCartridgeMessageLoggable implements Loggable {
 
 	public getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
 		return {
-			type: 'COMMON_CARTRIDGE_EXPORT_MESSAGE_LOGGABLE',
+			type: 'COMMON_CARTRIDGE_MESSAGE_LOGGABLE',
 			message: this.message,
 			data: this.data,
 		};

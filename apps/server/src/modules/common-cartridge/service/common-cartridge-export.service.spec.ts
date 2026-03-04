@@ -23,7 +23,7 @@ import AdmZip from 'adm-zip';
 import { ArchiverError, ProgressData } from 'archiver';
 import { Readable } from 'stream';
 import { CommonCartridgeVersion } from '../export/common-cartridge.enums';
-import { CommonCartridgeMessageLoggable } from '../loggable/common-cartridge-export-message.loggable';
+import { CommonCartridgeMessageLoggable } from '../loggable/common-cartridge-message.loggable';
 import {
 	boardColumnFactory,
 	boardLessonFactory,

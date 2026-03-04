@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker/.';
-import { CommonCartridgeMessageLoggable } from './common-cartridge-export-message.loggable';
+import { CommonCartridgeMessageLoggable } from './common-cartridge-message.loggable';
 
 describe(CommonCartridgeMessageLoggable.name, () => {
 	describe('getLogMessage', () => {
@@ -16,7 +16,7 @@ describe(CommonCartridgeMessageLoggable.name, () => {
 			const loggedMessage = loggable.getLogMessage();
 
 			expect(loggedMessage).toEqual({
-				type: 'COMMON_CARTRIDGE_EXPORT_MESSAGE_LOGGABLE',
+				type: 'COMMON_CARTRIDGE_MESSAGE_LOGGABLE',
 				message: message,
 			});
 		});

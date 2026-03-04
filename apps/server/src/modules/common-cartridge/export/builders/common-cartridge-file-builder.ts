@@ -18,7 +18,7 @@ import { CommonCartridgeResourceCollectionBuilder } from './common-cartridge-res
 
 import { Logger } from '@core/logger';
 import archiver from 'archiver';
-import { CommonCartridgeMessageLoggable } from '../../loggable/common-cartridge-export-message.loggable';
+import { CommonCartridgeMessageLoggable } from '../../loggable/common-cartridge-message.loggable';
 import { ResourceFileContent } from '../interfaces/common-cartridge-resource.interface';
 
 export type CommonCartridgeFileBuilderProps = {
