@@ -17,11 +17,18 @@ describe('DownloadArchiveService', () => {
 	let service: DownloadArchiveService;
 	let filesRepo: DeepMocked<FilesRepoInterface>;
 	let storageProviderRepo: DeepMocked<StorageProviderRepo>;
+	let module: TestingModule;
 
 	beforeAll(async () => {
-		const module: TestingModule = await Test.createTestingModule({
+		module = await Test.createTestingModule({
 			providers: [
 				DownloadArchiveService,
+				{
+					provide: Logger,
+					useValue: {
+						setContext: jest.fn(),
+					},
+				},
 				{
 					provide: FILES_REPO,
 					useValue: createMock<FilesRepoInterface>(),
@@ -29,10 +36,6 @@ describe('DownloadArchiveService', () => {
 				{
 					provide: StorageProviderRepo,
 					useValue: createMock<StorageProviderRepo>(),
-				},
-				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
 				},
 				{
 					provide: DomainErrorHandler,
@@ -46,8 +49,12 @@ describe('DownloadArchiveService', () => {
 		storageProviderRepo = module.get(StorageProviderRepo);
 	});
 
+	afterAll(async () => {
+		await module.close();
+	});
+
 	afterEach(() => {
-		jest.resetAllMocks();
+		jest.restoreAllMocks();
 	});
 
 	it('should be defined', () => {
@@ -206,7 +213,7 @@ describe('DownloadArchiveService', () => {
 
 				jest.spyOn(S3ClientAdapter.prototype, 'get').mockResolvedValueOnce({ data: mockStream });
 
-				const mockArchive = createMock<any>();
+				const mockArchive = createMock<Archiver>();
 				jest.spyOn(ArchiveFactory, 'create').mockReturnValue(mockArchive);
 
 				return { ownerId, ownerType, archiveName, file, rootFolder, subFolder };
