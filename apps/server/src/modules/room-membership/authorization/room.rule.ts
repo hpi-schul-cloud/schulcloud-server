@@ -7,6 +7,7 @@ import { RoomAuthorizable } from '../do/room-authorizable.do';
 
 export const RoomOperationValues = [
 	'accessRoom',
+	'accessRoomBoards',
 	'addAllStudents',
 	'addExternalPersonByEmail',
 	'addMembers',
@@ -68,6 +69,7 @@ export class RoomRule implements Rule<RoomAuthorizable> {
 	public getOperationMap() {
 		const map = {
 			accessRoom: canAccessRoom,
+			accessRoomBoards: canAccessRoom,
 			addAllStudents: canAddAllStudents,
 			addExternalPersonByEmail: canAddExternalPersonByEmail,
 			addMembers: canAddMembers,
@@ -83,7 +85,7 @@ export class RoomRule implements Rule<RoomAuthorizable> {
 			shareRoom: canShareRoom,
 			updateRoom: canUpdateRoom,
 			createRoomInvitationLinks: canManageRoomInvitationLinks,
-			listRoomInvitationLinks: canManageRoomInvitationLinks,
+			listRoomInvitationLinks: canListRoomInvitationLinks,
 			updateRoomInvitationLinks: canUpdateRoomInvitationLinks,
 			deleteRoomInvitationLinks: canManageRoomInvitationLinks,
 			viewContent: canViewContent,
@@ -301,6 +303,14 @@ const canShareRoom = (user: User, roomAuthorizable: RoomAuthorizable): boolean =
 
 // only to satisfy the unit test, I think it should be the same as canManageRoomInvitationLinks
 const canUpdateRoomInvitationLinks = (user: User, roomAuthorizable: RoomAuthorizable): boolean => {
+	const { roomPermissions } = resolveUserPermissions(user, roomAuthorizable);
+	const hasRoomPermission = roomPermissions.includes(Permission.ROOM_ADD_MEMBERS);
+
+	return hasRoomPermission;
+};
+
+// only to satisfy the unit test, I think it should be the same as canManageRoomInvitationLinks
+const canListRoomInvitationLinks = (user: User, roomAuthorizable: RoomAuthorizable): boolean => {
 	const { roomPermissions } = resolveUserPermissions(user, roomAuthorizable);
 	const hasRoomPermission = roomPermissions.includes(Permission.ROOM_ADD_MEMBERS);
 

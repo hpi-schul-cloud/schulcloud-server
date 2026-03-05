@@ -55,7 +55,7 @@ export class RoomArrangementUc {
 		const roomAuthorizable = await this.roomMembershipService.getRoomAuthorizable(roomId);
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 
-		throwForbiddenIfFalse(this.roomRule.can('accessRoom', user, roomAuthorizable));
+		throwForbiddenIfFalse(this.roomRule.can('arrangeRooms', user, roomAuthorizable));
 
 		await this.roomArrangementService.moveRoom(userId, roomId, toPosition);
 	}

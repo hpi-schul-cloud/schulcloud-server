@@ -29,7 +29,7 @@ export class RoomContentUc {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const roomAuthorizable = await this.roomMembershipService.getRoomAuthorizable(roomId);
 
-		throwForbiddenIfFalse(this.roomRule.can('accessRoom', user, roomAuthorizable));
+		throwForbiddenIfFalse(this.roomRule.can('accessRoomBoards', user, roomAuthorizable));
 
 		const boards = await this.roomBoardService.getOrderedBoards(roomId);
 		const authorizedBoards = await this.filterAuthorizedBoards(userId, boards);
