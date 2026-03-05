@@ -1,8 +1,10 @@
 import { faker } from '@faker-js/faker';
 import { IdTokenExtractionFailureLoggableException } from '@modules/oauth/loggable';
 import { RoleName } from '@modules/role';
+import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
+import * as classValidator from 'class-validator';
 import jwt from 'jsonwebtoken';
 import {
 	ExternalClassDto,
@@ -14,6 +16,7 @@ import {
 } from '../../dto';
 import { ErwinProvisioningStrategy } from './erwin.strategy';
 import { ErwinRole } from '../../../role/domain';
+import { ErwinKlassePayload } from './erwin.klasse.payload';
 
 describe('ErwinProvisioningStrategy', () => {
 	let module: TestingModule;
@@ -282,6 +285,138 @@ describe('ErwinProvisioningStrategy', () => {
 				const { input } = setup();
 
 				await expect(sut.getData(input)).rejects.toThrow(IdTokenExtractionFailureLoggableException);
+			});
+		});
+
+		describe('when erwinId (sub) is empty string after extraction', () => {
+			const setup = () => {
+				const input = new OauthDataStrategyInputDto({
+					system: new ProvisioningSystemDto({
+						systemId: faker.string.uuid(),
+						provisioningStrategy: SystemProvisioningStrategy.ERWIN,
+					}),
+					idToken: faker.string.alphanumeric(20),
+					accessToken: faker.string.alphanumeric(20),
+				});
+
+				jest.spyOn(jwt, 'decode').mockImplementation(() => {
+					return {
+						sub: '',
+						personExternalId: faker.string.uuid(),
+						personFirstName: faker.person.firstName(),
+						personLastName: faker.person.lastName(),
+						personErwinRole: ErwinRole.LERN,
+						personEmail: faker.internet.email(),
+						personGeburtstag: faker.date.past(),
+						schuleExternalId: faker.string.uuid(),
+						schuleName: faker.company.name(),
+						schuleZugehoerigZu: faker.location.city(),
+						klassen: [],
+					};
+				});
+
+				return { input };
+			};
+
+			it('should throw IdTokenExtractionFailureLoggableException for person.sub', async () => {
+				const { input } = setup();
+
+				await expect(sut.getData(input)).rejects.toThrow(IdTokenExtractionFailureLoggableException);
+			});
+		});
+
+		describe('when erwinId is falsy after validation passes', () => {
+			const setup = () => {
+				const input = new OauthDataStrategyInputDto({
+					system: new ProvisioningSystemDto({
+						systemId: faker.string.uuid(),
+						provisioningStrategy: SystemProvisioningStrategy.ERWIN,
+					}),
+					idToken: faker.string.alphanumeric(20),
+					accessToken: faker.string.alphanumeric(20),
+				});
+
+				jest.spyOn(jwt, 'decode').mockImplementation(() => {
+					return {
+						sub: '',
+						personExternalId: faker.string.uuid(),
+						personFirstName: faker.person.firstName(),
+						personLastName: faker.person.lastName(),
+						personErwinRole: ErwinRole.LERN,
+						personEmail: faker.internet.email(),
+						personGeburtstag: faker.date.past(),
+						schuleExternalId: faker.string.uuid(),
+						schuleName: faker.company.name(),
+						schuleZugehoerigZu: faker.location.city(),
+						klassen: [],
+					};
+				});
+
+				const validateSpy = jest.spyOn(classValidator, 'validate').mockResolvedValueOnce([]);
+
+				return { input, validateSpy };
+			};
+
+			it('should throw IdTokenExtractionFailureLoggableException for person.sub', async () => {
+				const { input, validateSpy } = setup();
+
+				await expect(sut.getData(input)).rejects.toThrow(IdTokenExtractionFailureLoggableException);
+
+				validateSpy.mockRestore();
+			});
+		});
+
+		describe('when token contains klassen with ErwinKlassePayload data', () => {
+			const setup = () => {
+				const klassePayload1 = new ErwinKlassePayload('class-ext-id-1', 'Klasse 5a');
+				const klassePayload2 = new ErwinKlassePayload('class-ext-id-2', 'Klasse 5b');
+
+				const input = new OauthDataStrategyInputDto({
+					system: new ProvisioningSystemDto({
+						systemId: faker.string.uuid(),
+						provisioningStrategy: SystemProvisioningStrategy.ERWIN,
+					}),
+					idToken: faker.string.alphanumeric(20),
+					accessToken: faker.string.alphanumeric(20),
+				});
+
+				jest.spyOn(jwt, 'decode').mockImplementation(() => {
+					return {
+						sub: faker.string.uuid(),
+						personExternalId: faker.string.uuid(),
+						personFirstName: faker.person.firstName(),
+						personLastName: faker.person.lastName(),
+						personErwinRole: ErwinRole.LERN,
+						personEmail: faker.internet.email(),
+						personGeburtstag: faker.date.past(),
+						schuleExternalId: faker.string.uuid(),
+						schuleName: faker.company.name(),
+						schuleZugehoerigZu: faker.location.city(),
+						klassen: [klassePayload1, klassePayload2],
+					};
+				});
+
+				return { input, klassePayload1, klassePayload2 };
+			};
+
+			it('should map ErwinKlassePayload to ExternalClassDto correctly', async () => {
+				const { input, klassePayload1, klassePayload2 } = setup();
+
+				const result = await sut.getData(input);
+
+				expect(result.externalClasses).toHaveLength(2);
+				expect(result.externalClasses).toEqual([
+					new ExternalClassDto({ externalId: klassePayload1.externalId, name: klassePayload1.name }),
+					new ExternalClassDto({ externalId: klassePayload2.externalId, name: klassePayload2.name }),
+				]);
+			});
+		});
+	});
+
+	describe('apply', () => {
+		describe('when called', () => {
+			it('should throw NotImplementedException', () => {
+				expect(() => sut.apply()).toThrow(NotImplementedException);
 			});
 		});
 	});
