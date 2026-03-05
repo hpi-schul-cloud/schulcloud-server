@@ -460,6 +460,23 @@ export class H5pLibraryPackagerService {
 				'v0.2.0': '14',
 				'v0.1.10': '14',
 			},
+			'H5P.GameMap': {
+				'1.1.1': '18',
+				'1.0.6': '18',
+			},
+			'H5P.ImageJuxtaposition': {
+				'1.4.1': '14',
+			},
+			'H5P.InteractiveBook': {
+				'1.3.6': '14',
+				'1.2.10': '14',
+				'1.1.0': '10',
+				'1.0.1': '10',
+			},
+			'H5P.KewArCode': {
+				'v1.1.2': '18',
+				'1.0.0': '14',
+			},
 			'H5P.Questionnaire': {
 				'1.1.2': '14',
 				'1.0.2': '14',
@@ -467,8 +484,24 @@ export class H5pLibraryPackagerService {
 			'H5P.SimpleMultiChoice': {
 				'1.0.5': '14',
 			},
-			'H5PEditor.QuestionSetTextualEditor': {
-				'1.2.4': '14',
+			'H5P.SortParagraphs': {
+				'0.10.7': '14',
+			},
+			'H5P.Tabs': {
+				'1.0.4': '18',
+			},
+			'H5P.ThreeImage': {
+				'0.5.8': '18',
+				'0.4.11': '10',
+				'0.3.11': '10',
+				'0.2.13': '10',
+			},
+			'H5P.Transcript': {
+				'1.1.1': '14',
+				'1.0.0': '14',
+			},
+			'H5P.TranscriptLibrary': {
+				'1.0.0': '14',
 			},
 			'H5PEditor.BranchingScenario': {
 				'1.4.2': '18',
@@ -477,7 +510,19 @@ export class H5pLibraryPackagerService {
 				'1.1.3': '10',
 				'1.0.6': '10',
 			},
+			'H5PEditor.GameMap': {
+				'1.0.1': '18',
+			},
+			'H5PEditor.QuestionSetTextualEditor': {
+				'1.2.4': '14',
+			},
+			'H5PEditor.ThreeImage': {
+				'0.4.7': '10',
+				'0.3.3': '10',
+				'0.2.0': '10',
+			},
 		};
+
 		const oldNodeVersion = oldNodeVersions[library]?.[tag];
 
 		return oldNodeVersion;
@@ -488,6 +533,7 @@ export class H5pLibraryPackagerService {
 			'H5P.CoursePresentation': ['1.18.1', '1.17.10'],
 			'H5P.Questionnaire': ['1.1.2', '1.0.2'],
 			'H5P.SimpleMultiChoice': ['1.0.5'],
+			'H5P.Transcript': ['1.1.1', '1.0.0'],
 		};
 		const installRequired = installInsteadOfCi[library]?.includes(tag);
 
