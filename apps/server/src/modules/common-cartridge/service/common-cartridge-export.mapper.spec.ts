@@ -6,7 +6,8 @@ import {
 	LessonContentResponseComponent,
 	LessonContentResponseContent,
 } from '@infra/common-cartridge-clients';
-import { FileDto, FileRecordParentType } from '@modules/files-storage-client';
+import { fileRecordResponseFactory } from '@infra/files-storage-client/testing';
+import { FileRecordParentType } from '@modules/files-storage-client';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Readable } from 'stream';
 import {
@@ -397,14 +398,12 @@ describe('CommonCartridgeExportMapper', () => {
 		describe('when mapping file to resource', () => {
 			const setup = () => {
 				const file = Readable.from(faker.lorem.paragraphs(100));
-				const fileRecord: FileDto = {
+				const fileRecord = fileRecordResponseFactory.build({
 					id: faker.string.uuid(),
 					name: 'file.zip',
 					parentId: faker.string.uuid(),
 					parentType: FileRecordParentType.Course,
-					createdAt: new Date(),
-					updatedAt: new Date(),
-				};
+				});
 
 				return { file, fileRecord };
 			};

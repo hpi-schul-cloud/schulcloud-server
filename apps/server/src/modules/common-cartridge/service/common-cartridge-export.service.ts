@@ -1,4 +1,5 @@
 import { Logger } from '@core/logger';
+import { JwtPayload } from '@infra/auth-guard';
 import {
 	BoardColumnBoardResponse,
 	BoardElementResponse,
@@ -28,6 +29,7 @@ import {
 } from '@infra/common-cartridge-clients';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import archiver from 'archiver';
+import jwt from 'jsonwebtoken';
 import { Stream } from 'node:stream';
 import { CommonCartridgeFileBuilder } from '../export/builders/common-cartridge-file-builder';
 import { CommonCartridgeOrganizationNode } from '../export/builders/common-cartridge-organization-node';
@@ -216,33 +218,31 @@ export class CommonCartridgeExportService {
 
 				taskOrganization.addResource(this.mapper.mapTaskToResource(task, version));
 
-				const filesMetadata = await this.filesStorageClientAdapter.list(
+				const { schoolId } = this.getJwtPayload(jwt);
+				const fileRecords = await this.filesStorageClientAdapter.list(
 					jwt,
-					task.id, // WIE NEED SCHOOL_ID
+					schoolId,
 					StorageLocation.SCHOOL,
 					task.id,
 					FileRecordParentType.TASKS
 				);
-				const fileRecords = await Promise.all(
-					filesMetadata.map((fileDto) => this.filesStorageClientAdapter.getFileRecord(jwt, fileDto.id))
-				);
 
 				await Promise.all(
-					filesMetadata.map(async (fileMetadata, index) => {
-						if (fileRecords[index].securityCheckStatus === FileRecordScanStatus.BLOCKED) {
+					fileRecords.map(async (fileRecord) => {
+						if (fileRecord.securityCheckStatus === FileRecordScanStatus.BLOCKED) {
 							this.logger.info(
 								new CommonCartridgeMessageLoggable('A file was skipped because the securityCheckStatus is BLOCKED', {
-									fileId: fileMetadata.id,
+									fileId: fileRecord.id,
 									taskId: task.id,
 								})
 							);
 							return;
 						}
 
-						const fileStream = await this.filesStorageClientAdapter.getStream(jwt, fileMetadata.id, fileMetadata.name);
+						const fileStream = await this.filesStorageClientAdapter.getStream(jwt, fileRecord.id, fileRecord.name);
 
 						if (fileStream) {
-							const resource = this.mapper.mapFileToResource(fileMetadata, fileStream);
+							const resource = this.mapper.mapFileToResource(fileRecord, fileStream);
 
 							taskOrganization.addResource(resource);
 						}
@@ -333,38 +333,36 @@ export class CommonCartridgeExportService {
 		const fileMetadataBufferArray: FileMetadataAndStream[] = [];
 
 		if (element.type === ContentElementType.FILE || element.type === ContentElementType.FILE_FOLDER) {
-			const filesMetadata = await this.filesStorageClientAdapter.list(
+			const { schoolId } = this.getJwtPayload(jwt);
+			const fileRecords = await this.filesStorageClientAdapter.list(
 				jwt,
-				element.id, // WIE NEED SCHOOL_ID
+				schoolId,
 				StorageLocation.SCHOOL,
 				element.id,
 				FileRecordParentType.BOARDNODES
 			);
-			const fileRecords = await Promise.all(
-				filesMetadata.map((fileDto) => this.filesStorageClientAdapter.getFileRecord(jwt, fileDto.id))
-			);
 
-			const streamPromises = filesMetadata.map(async (fileMetadata, index) => {
-				if (fileRecords[index].securityCheckStatus === FileRecordScanStatus.BLOCKED) {
+			const streamPromises = fileRecords.map(async (fileRecord) => {
+				if (fileRecord.securityCheckStatus === FileRecordScanStatus.BLOCKED) {
 					this.logger.info(
 						new CommonCartridgeMessageLoggable('A file was skipped because the securityCheckStatus is BLOCKED', {
-							fileId: fileMetadata.id,
+							fileId: fileRecord.id,
 							elementId: element.id,
 						})
 					);
 					return;
 				}
 
-				const file = await this.filesStorageClientAdapter.getStream(jwt, fileMetadata.id, fileMetadata.name);
+				const file = await this.filesStorageClientAdapter.getStream(jwt, fileRecord.id, fileRecord.name);
 
 				if (!file) {
 					return undefined;
 				}
 
 				const fileMetadataAndStream: FileMetadataAndStream = {
-					name: fileMetadata.name,
+					name: fileRecord.name,
 					file,
-					fileDto: fileMetadata,
+					fileDto: fileRecord,
 				};
 
 				return fileMetadataAndStream;
@@ -440,5 +438,11 @@ export class CommonCartridgeExportService {
 			.map((element) => element.content as BoardColumnBoardResponse);
 
 		return columnBoard;
+	}
+
+	private getJwtPayload(jwtToken: string): JwtPayload {
+		const decodedJwt = jwt.decode(jwtToken, { json: true }) as JwtPayload;
+
+		return decodedJwt;
 	}
 }

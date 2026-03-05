@@ -9,11 +9,11 @@ import {
 	CardListResponse,
 	CourseRoomsClientAdapter,
 	CoursesClientAdapter,
+	FilesStorageClientAdapter,
 	LessonClientAdapter,
 	LinkElementContent,
 	RichTextElementContent,
 	SingleColumnBoardResponse,
-	FilesStorageClientAdapter,
 } from '@infra/common-cartridge-clients';
 import { fileRecordResponseFactory } from '@infra/files-storage-client/testing';
 import { FileDto, FileRecordParentType, FilesStorageClientAdapterService } from '@modules/files-storage-client';
@@ -46,7 +46,6 @@ describe('CommonCartridgeExportService', () => {
 	let cardClientAdapterMock: DeepMocked<CardClientAdapter>;
 	let boardClientAdapterMock: DeepMocked<BoardsClientAdapter>;
 	let lessonClientAdapterMock: DeepMocked<LessonClientAdapter>;
-	let filesMetadataClientAdapterMock: DeepMocked<FilesStorageClientAdapterService>;
 	let filesStorageClientAdapterMock: DeepMocked<FilesStorageClientAdapter>;
 	let logger: DeepMocked<Logger>;
 
@@ -145,7 +144,7 @@ describe('CommonCartridgeExportService', () => {
 
 		const file = Readable.from(faker.lorem.paragraphs(100));
 
-		filesMetadataClientAdapterMock.listFilesOfParent.mockResolvedValue([fileDto]);
+		filesStorageClientAdapterMock.list.mockResolvedValue([fileRecord]);
 		filesStorageClientAdapterMock.getFileRecord.mockResolvedValue(fileRecord);
 		filesStorageClientAdapterMock.getStream.mockResolvedValue(file);
 
@@ -186,10 +185,6 @@ describe('CommonCartridgeExportService', () => {
 					useValue: createMock<FilesStorageClientAdapter>(),
 				},
 				{
-					provide: FilesStorageClientAdapterService,
-					useValue: createMock<FilesStorageClientAdapterService>(),
-				},
-				{
 					provide: Logger,
 					useValue: createMock<Logger>(),
 				},
@@ -202,7 +197,6 @@ describe('CommonCartridgeExportService', () => {
 		cardClientAdapterMock = module.get(CardClientAdapter);
 		boardClientAdapterMock = module.get(BoardsClientAdapter);
 		lessonClientAdapterMock = module.get(LessonClientAdapter);
-		filesMetadataClientAdapterMock = module.get(FilesStorageClientAdapterService);
 		filesStorageClientAdapterMock = module.get(FilesStorageClientAdapter);
 		logger = module.get(Logger);
 	});
@@ -568,44 +562,33 @@ describe('CommonCartridgeExportService', () => {
 				cardClientAdapterMock.getAllBoardCardsByIds.mockResolvedValue(listOfCardsResponse);
 				courseRoomsClientAdapterMock.getRoomBoardByCourseId.mockResolvedValue(room);
 
-				const fileDto1: FileDto = new FileDto({
-					id: faker.string.uuid(),
-					name: faker.system.fileName(),
-					parentId: faker.string.uuid(),
-					parentType: FileRecordParentType.Course,
-					createdAt: faker.date.past(),
-					updatedAt: faker.date.recent(),
-				});
-				const fileDto2: FileDto = new FileDto({
-					id: faker.string.uuid(),
-					name: faker.system.fileName(),
-					parentId: faker.string.uuid(),
-					parentType: FileRecordParentType.Course,
-					createdAt: faker.date.past(),
-					updatedAt: faker.date.recent(),
-				});
-
-				filesMetadataClientAdapterMock.listFilesOfParent.mockResolvedValueOnce([fileDto1, fileDto2]);
-				const fileRecord = fileRecordResponseFactory.build({
+				const fileRecordBlocked = fileRecordResponseFactory.build({
 					securityCheckStatus: 'blocked',
 				});
-				filesStorageClientAdapterMock.getFileRecord
-					.mockResolvedValueOnce(fileRecord)
-					.mockResolvedValueOnce(fileRecordResponseFactory.build());
+				const fileRecordNotBlocked = fileRecordResponseFactory.build();
+				filesStorageClientAdapterMock.list.mockResolvedValueOnce([fileRecordBlocked, fileRecordNotBlocked]);
 
 				const courseId = faker.string.uuid();
 				const jwt = faker.internet.jwt();
-				return { jwt, courseId, taskId: boardTask.id, fileDto1, fileDto2 };
+				return { jwt, courseId, taskId: boardTask.id, fileRecordBlocked, fileRecordNotBlocked };
 			};
 
 			it('should be skipped and logged', async () => {
-				const { jwt, courseId, taskId, fileDto1, fileDto2 } = setup();
+				const { jwt, courseId, taskId, fileRecordBlocked, fileRecordNotBlocked } = setup();
 
 				const result = await sut.exportCourse(jwt, courseId, CommonCartridgeVersion.V_1_1_0, [], [taskId], []);
 				expect(result).toBeDefined();
 
-				expect(filesStorageClientAdapterMock.getStream).not.toHaveBeenCalledWith(jwt, fileDto1.id, fileDto1.name);
-				expect(filesStorageClientAdapterMock.getStream).toHaveBeenCalledWith(jwt, fileDto2.id, fileDto2.name);
+				expect(filesStorageClientAdapterMock.getStream).not.toHaveBeenCalledWith(
+					jwt,
+					fileRecordBlocked.id,
+					fileRecordBlocked.name
+				);
+				expect(filesStorageClientAdapterMock.getStream).toHaveBeenCalledWith(
+					jwt,
+					fileRecordNotBlocked.id,
+					fileRecordNotBlocked.name
+				);
 				expect(logger.info).toHaveBeenCalledTimes(1);
 			});
 		});
@@ -642,48 +625,33 @@ describe('CommonCartridgeExportService', () => {
 				cardClientAdapterMock.getAllBoardCardsByIds.mockResolvedValue(listOfCardsResponse);
 				courseRoomsClientAdapterMock.getRoomBoardByCourseId.mockResolvedValue(room);
 
-				const fileDto1: FileDto = new FileDto({
-					id: faker.string.uuid(),
-					name: faker.system.fileName(),
-					parentId: faker.string.uuid(),
-					parentType: FileRecordParentType.Course,
-					createdAt: faker.date.past(),
-					updatedAt: faker.date.recent(),
-				});
-				const fileDto2: FileDto = new FileDto({
-					id: faker.string.uuid(),
-					name: faker.system.fileName(),
-					parentId: faker.string.uuid(),
-					parentType: FileRecordParentType.Course,
-					createdAt: faker.date.past(),
-					updatedAt: faker.date.recent(),
-				});
-
-				filesMetadataClientAdapterMock.listFilesOfParent.mockResolvedValue([fileDto1, fileDto2]);
 				const fileRecordBlocked = fileRecordResponseFactory.build({
 					securityCheckStatus: 'blocked',
 				});
 				const fileRecordNotBlocked = fileRecordResponseFactory.build();
-				filesStorageClientAdapterMock.getFileRecord.mockImplementation((jwt, fileRecordId) => {
-					if (fileRecordId === fileDto1.id) {
-						return Promise.resolve(fileRecordBlocked);
-					}
-					return Promise.resolve(fileRecordNotBlocked);
-				});
+				filesStorageClientAdapterMock.list.mockResolvedValue([fileRecordBlocked, fileRecordNotBlocked]);
 
 				const courseId = faker.string.uuid();
 				const jwt = faker.internet.jwt();
-				return { jwt, courseId, boardId: room.elements[2].content.id, fileDto1, fileDto2 };
+				return { jwt, courseId, boardId: room.elements[2].content.id, fileRecordBlocked, fileRecordNotBlocked };
 			};
 
 			it('should be skipped and logged', async () => {
-				const { jwt, courseId, boardId, fileDto1, fileDto2 } = setup();
+				const { jwt, courseId, boardId, fileRecordBlocked, fileRecordNotBlocked } = setup();
 
 				const result = await sut.exportCourse(jwt, courseId, CommonCartridgeVersion.V_1_1_0, [], [], [boardId]);
 				expect(result).toBeDefined();
 
-				expect(filesStorageClientAdapterMock.getStream).not.toHaveBeenCalledWith(jwt, fileDto1.id, fileDto1.name);
-				expect(filesStorageClientAdapterMock.getStream).toHaveBeenCalledWith(jwt, fileDto2.id, fileDto2.name);
+				expect(filesStorageClientAdapterMock.getStream).not.toHaveBeenCalledWith(
+					jwt,
+					fileRecordBlocked.id,
+					fileRecordBlocked.name
+				);
+				expect(filesStorageClientAdapterMock.getStream).toHaveBeenCalledWith(
+					jwt,
+					fileRecordNotBlocked.id,
+					fileRecordNotBlocked.name
+				);
 				expect(logger.info).toHaveBeenCalledTimes(4);
 			});
 		});

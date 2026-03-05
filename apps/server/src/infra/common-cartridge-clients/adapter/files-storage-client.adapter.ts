@@ -47,6 +47,7 @@ export class FilesStorageClientAdapter {
 
 		return data.data;
 	}
+
 	public async getFileRecord(jwt: string, fileRecordId: string): Promise<FileRecordResponse> {
 		const response = await this.fileApi.getFileRecord(fileRecordId, AdapterUtils.createAxiosConfigForJwt(jwt));
 		const { data } = response;

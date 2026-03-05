@@ -81,6 +81,46 @@ describe(FilesStorageClientAdapter.name, () => {
 		expect(filesStorageClientAdapter).toBeDefined();
 	});
 
+	describe('list', () => {
+		describe('when listing file records', () => {
+			const setup = () => {
+				const jwt = faker.internet.jwt();
+				const storageLocationId = faker.string.uuid();
+				const storageLocation = StorageLocation.SCHOOL;
+				const parentId = faker.string.uuid();
+				const parentType = FileRecordParentType.USERS;
+
+				const fileRecords = fileRecordResponseFactory.buildList(3);
+				fileApiMock.list.mockResolvedValueOnce(axiosResponseFactory.build({ data: { data: fileRecords } }));
+
+				return { jwt, storageLocationId, storageLocation, parentId, parentType, fileRecords };
+			};
+
+			it('should delegate to fileApi', async () => {
+				const { jwt, storageLocationId, storageLocation, parentId, parentType, fileRecords } = setup();
+
+				const result = await filesStorageClientAdapter.list(
+					jwt,
+					storageLocationId,
+					storageLocation,
+					parentId,
+					parentType
+				);
+
+				expect(fileApiMock.list).toHaveBeenCalledWith(
+					storageLocationId,
+					storageLocation,
+					parentId,
+					parentType,
+					undefined,
+					undefined,
+					AdapterUtils.createAxiosConfigForJwt(jwt)
+				);
+				expect(result).toStrictEqual(fileRecords);
+			});
+		});
+	});
+
 	describe('getFileRecord', () => {
 		describe('when fetching file records', () => {
 			const setup = () => {
