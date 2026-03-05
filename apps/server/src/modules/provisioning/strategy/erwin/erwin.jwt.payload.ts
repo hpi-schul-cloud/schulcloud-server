@@ -1,10 +1,10 @@
 import { ErwinRole } from '../../../role/domain/type/rolename.enum';
-import { IsArray, IsDate, IsNotEmpty, IsString } from 'class-validator';
+import { IsArray, IsDate, IsNotEmpty, IsString, IsUUID } from 'class-validator';
 import { JwtPayload } from 'jsonwebtoken';
 import { ErwinKlassePayload } from './erwin.klasse.payload';
 
 export class ErwinJwtPayload implements JwtPayload {
-	@IsString()
+	@IsUUID()
 	@IsNotEmpty()
 	public sub!: string;
 

@@ -1,3 +1,4 @@
+import { faker } from '@faker-js/faker';
 import { IdTokenExtractionFailureLoggableException } from '@modules/oauth';
 import { RoleName } from '@modules/role';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -58,13 +59,13 @@ describe('ErwinProvisioningStrategy', () => {
 
 				jest.spyOn(jwt, 'decode').mockImplementation(() => {
 					return {
-						sub: 'erwinUserId',
+						sub: '550e8400-e29b-41d4-a716-446655440000',
 						personExternalId: 'personExternalId',
 						personFirstName: 'firstName',
 						personLastName: 'lastName',
 						personErwinRole: ErwinRole.LERN,
 						personEmail: 'test@example.com',
-						personGeburtstag: '2000-01-01',
+						personGeburtstag: new Date('2000-01-01'),
 						schuleExternalId: 'schoolExternalId',
 						schuleName: 'Test School',
 						schuleZugehoerigZu: 'Berlin',
@@ -77,7 +78,7 @@ describe('ErwinProvisioningStrategy', () => {
 
 				const expectedUser = new ExternalUserDto({
 					externalId: 'personExternalId',
-					erWInId: 'erwinUserId',
+					erWInId: '550e8400-e29b-41d4-a716-446655440000',
 					roles: [RoleName.STUDENT],
 					firstName: 'firstName',
 					lastName: 'lastName',
@@ -115,25 +116,25 @@ describe('ErwinProvisioningStrategy', () => {
 			const setup = () => {
 				const input = new OauthDataStrategyInputDto({
 					system: new ProvisioningSystemDto({
-						systemId: 'systemId',
+						systemId: faker.string.uuid(),
 						provisioningStrategy: SystemProvisioningStrategy.ERWIN,
 					}),
-					idToken: 'erwinIdToken',
-					accessToken: 'erwinAccessToken',
+					idToken: faker.string.alphanumeric(20),
+					accessToken: faker.string.alphanumeric(20),
 				});
 
 				jest.spyOn(jwt, 'decode').mockImplementation(() => {
 					return {
-						sub: 'erwinUserId',
-						personExternalId: 'personExternalId',
-						personFirstName: 'firstName',
-						personLastName: 'lastName',
+						sub: faker.string.uuid(),
+						personExternalId: faker.string.uuid(),
+						personFirstName: faker.person.firstName(),
+						personLastName: faker.person.lastName(),
 						personErwinRole: ErwinRole.LEHR,
-						personEmail: 'test@example.com',
-						personGeburtstag: '2000-01-01',
-						schuleExternalId: 'schoolExternalId',
-						schuleName: 'Test School',
-						schuleZugehoerigZu: 'Berlin',
+						personEmail: faker.internet.email(),
+						personGeburtstag: faker.date.past(),
+						schuleExternalId: faker.string.uuid(),
+						schuleName: faker.company.name(),
+						schuleZugehoerigZu: faker.location.city(),
 						klassen: [],
 					};
 				});
@@ -154,25 +155,25 @@ describe('ErwinProvisioningStrategy', () => {
 			const setup = () => {
 				const input = new OauthDataStrategyInputDto({
 					system: new ProvisioningSystemDto({
-						systemId: 'systemId',
+						systemId: faker.string.uuid(),
 						provisioningStrategy: SystemProvisioningStrategy.ERWIN,
 					}),
-					idToken: 'erwinIdToken',
-					accessToken: 'erwinAccessToken',
+					idToken: faker.string.alphanumeric(20),
+					accessToken: faker.string.alphanumeric(20),
 				});
 
 				jest.spyOn(jwt, 'decode').mockImplementation(() => {
 					return {
-						sub: 'erwinUserId',
-						personExternalId: 'personExternalId',
-						personFirstName: 'firstName',
-						personLastName: 'lastName',
+						sub: faker.string.uuid(),
+						personExternalId: faker.string.uuid(),
+						personFirstName: faker.person.firstName(),
+						personLastName: faker.person.lastName(),
 						personErwinRole: ErwinRole.LEIT,
-						personEmail: 'test@example.com',
-						personGeburtstag: '2000-01-01',
-						schuleExternalId: 'schoolExternalId',
-						schuleName: 'Test School',
-						schuleZugehoerigZu: 'Berlin',
+						personEmail: faker.internet.email(),
+						personGeburtstag: faker.date.past(),
+						schuleExternalId: faker.string.uuid(),
+						schuleName: faker.company.name(),
+						schuleZugehoerigZu: faker.location.city(),
 						klassen: [],
 					};
 				});
@@ -193,11 +194,11 @@ describe('ErwinProvisioningStrategy', () => {
 			const setup = () => {
 				const input = new OauthDataStrategyInputDto({
 					system: new ProvisioningSystemDto({
-						systemId: 'systemId',
+						systemId: faker.string.uuid(),
 						provisioningStrategy: SystemProvisioningStrategy.ERWIN,
 					}),
-					idToken: 'invalidIdToken',
-					accessToken: 'invalidAccessToken',
+					idToken: faker.string.alphanumeric(20),
+					accessToken: faker.string.alphanumeric(20),
 				});
 
 				jest.spyOn(jwt, 'decode').mockImplementation(() => null);
@@ -216,25 +217,24 @@ describe('ErwinProvisioningStrategy', () => {
 			const setup = () => {
 				const input = new OauthDataStrategyInputDto({
 					system: new ProvisioningSystemDto({
-						systemId: 'systemId',
+						systemId: faker.string.uuid(),
 						provisioningStrategy: SystemProvisioningStrategy.ERWIN,
 					}),
-					idToken: 'erwinIdToken',
-					accessToken: 'erwinAccessToken',
+					idToken: faker.string.alphanumeric(20),
+					accessToken: faker.string.alphanumeric(20),
 				});
 
 				jest.spyOn(jwt, 'decode').mockImplementation(() => {
 					return {
-						sub: 'erwinUserId',
-						// personExternalId is missing
-						personFirstName: 'firstName',
-						personLastName: 'lastName',
+						sub: faker.string.uuid(),
+						personFirstName: faker.person.firstName(),
+						personLastName: faker.person.lastName(),
 						personErwinRole: ErwinRole.LERN,
-						personEmail: 'test@example.com',
-						personGeburtstag: '2000-01-01',
-						schuleExternalId: 'schoolExternalId',
-						schuleName: 'Test School',
-						schuleZugehoerigZu: 'Berlin',
+						personEmail: faker.internet.email(),
+						personGeburtstag: faker.date.past(),
+						schuleExternalId: faker.string.uuid(),
+						schuleName: faker.company.name(),
+						schuleZugehoerigZu: faker.location.city(),
 						klassen: [],
 					};
 				});
@@ -253,25 +253,24 @@ describe('ErwinProvisioningStrategy', () => {
 			const setup = () => {
 				const input = new OauthDataStrategyInputDto({
 					system: new ProvisioningSystemDto({
-						systemId: 'systemId',
+						systemId: faker.string.uuid(),
 						provisioningStrategy: SystemProvisioningStrategy.ERWIN,
 					}),
-					idToken: 'erwinIdToken',
-					accessToken: 'erwinAccessToken',
+					idToken: faker.string.alphanumeric(20),
+					accessToken: faker.string.alphanumeric(20),
 				});
 
 				jest.spyOn(jwt, 'decode').mockImplementation(() => {
 					return {
-						// sub is missing
-						personExternalId: 'personExternalId',
-						personFirstName: 'firstName',
-						personLastName: 'lastName',
+						personExternalId: faker.string.uuid(),
+						personFirstName: faker.person.firstName(),
+						personLastName: faker.person.lastName(),
 						personErwinRole: ErwinRole.LERN,
-						personEmail: 'test@example.com',
-						personGeburtstag: '2000-01-01',
-						schuleExternalId: 'schoolExternalId',
-						schuleName: 'Test School',
-						schuleZugehoerigZu: 'Berlin',
+						personEmail: faker.internet.email(),
+						personGeburtstag: faker.date.past(),
+						schuleExternalId: faker.string.uuid(),
+						schuleName: faker.company.name(),
+						schuleZugehoerigZu: faker.location.city(),
 						klassen: [],
 					};
 				});
