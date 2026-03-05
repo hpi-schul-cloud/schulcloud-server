@@ -125,7 +125,7 @@ export class CommonCartridgeClientsModule {
 				useFactory: (config: InternalFilesStorageClientConfig): FileApi => {
 					const { basePath } = config;
 					const configuration = new Configuration({
-						basePath: `${basePath}/v3`,
+						basePath: `${basePath}/api/v3`,
 					});
 
 					return new FileApi(configuration);
