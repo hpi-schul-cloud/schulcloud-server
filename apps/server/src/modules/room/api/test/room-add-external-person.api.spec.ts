@@ -53,6 +53,7 @@ describe('Room Controller (API)', () => {
 	describe('PATCH /rooms/:roomId/members/add-by-email', () => {
 		const setupRoomWithMembers = async () => {
 			const school = schoolEntityFactory.buildWithId();
+			const { teacherUser: ownerUser } = UserAndAccountTestFactory.buildTeacher({ school });
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
 			const { teacherAccount: otherTeacherAccount, teacherUser: otherTeacherUser } =
 				UserAndAccountTestFactory.buildTeacher({ school: teacherUser.school });
@@ -65,11 +66,12 @@ describe('Room Controller (API)', () => {
 			const teacherGuestRole = roleFactory.buildWithId({ name: RoleName.GUESTTEACHER });
 			const studentGuestRole = roleFactory.buildWithId({ name: RoleName.GUESTSTUDENT });
 			const externalPersonGuestRole = roleFactory.buildWithId({ name: RoleName.GUESTEXTERNALPERSON });
-			const { roomEditorRole, roomAdminRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
+			const { roomEditorRole, roomAdminRole, roomViewerRole, roomOwnerRole } = RoomRolesTestFactory.createRoomRoles();
 			const roomWithExistingExternalPerson = roomEntityFactory.buildWithId({ schoolId: teacherUser.school.id });
 
 			const externalPersonMemberGroupEntity = groupEntityFactory.buildWithId({
 				users: [
+					{ role: roomOwnerRole, user: ownerUser },
 					{ role: roomAdminRole, user: teacherUser },
 					{ role: roomViewerRole, user: externalPersonUser },
 				],
@@ -79,7 +81,10 @@ describe('Room Controller (API)', () => {
 			});
 
 			const userGroupEntity = groupEntityFactory.buildWithId({
-				users: [{ role: roomAdminRole, user: teacherUser }],
+				users: [
+					{ role: roomOwnerRole, user: ownerUser },
+					{ role: roomAdminRole, user: teacherUser },
+				],
 				type: GroupEntityTypes.ROOM,
 				organization: teacherUser.school,
 				externalSource: undefined,
@@ -106,6 +111,8 @@ describe('Room Controller (API)', () => {
 					roomAdminRole,
 					roomEditorRole,
 					roomViewerRole,
+					roomOwnerRole,
+					ownerUser,
 					teacherAccount,
 					teacherUser,
 					externalPersonUser,

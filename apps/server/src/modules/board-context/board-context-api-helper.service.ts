@@ -25,9 +25,11 @@ export class BoardContextApiHelperService {
 	private isCourse(type: BoardExternalReferenceType): boolean {
 		return type === BoardExternalReferenceType.Course;
 	}
+
 	private isRoom(type: BoardExternalReferenceType): boolean {
 		return type === BoardExternalReferenceType.Room;
 	}
+
 	private isUser(type: BoardExternalReferenceType): boolean {
 		return type === BoardExternalReferenceType.User;
 	}
