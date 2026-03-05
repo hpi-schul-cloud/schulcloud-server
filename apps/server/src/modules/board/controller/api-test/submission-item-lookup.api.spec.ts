@@ -166,14 +166,19 @@ describe('submission item lookup (api)', () => {
 			await cleanupCollections(em);
 
 			const school = schoolEntityFactory.buildWithId();
+			const { teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
 			const { studentAccount: studentAccount1, studentUser: studentUser1 } = UserAndAccountTestFactory.buildStudent({
 				school,
 			});
 			const { studentAccount: studentAccount2, studentUser: studentUser2 } = UserAndAccountTestFactory.buildStudent({
 				school,
 			});
-			const course = courseEntityFactory.build({ school, teachers: [], students: [studentUser1, studentUser2] });
-			await em.persist([studentAccount1, studentUser1, studentAccount2, studentUser2, course]).flush();
+			const course = courseEntityFactory.build({
+				school,
+				teachers: [teacherUser],
+				students: [studentUser1, studentUser2],
+			});
+			await em.persist([studentAccount1, studentUser1, studentAccount2, studentUser2, teacherUser, course]).flush();
 
 			const columnBoardNode = columnBoardEntityFactory.build({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },

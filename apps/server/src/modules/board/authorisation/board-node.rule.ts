@@ -97,6 +97,10 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 	}
 
 	public hasPermission(user: User, authorizable: BoardNodeAuthorizable, context: AuthorizationContext): boolean {
+		if (authorizable.boardContextSettings.isLocked) {
+			return false;
+		}
+
 		const hasAllPermissions = this.hasAllPermissions(user, authorizable, context.requiredPermissions);
 		if (!hasAllPermissions) {
 			return false;
@@ -362,6 +366,10 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 }
 
 const _canEditBoard = (user: User, authorizable: BoardNodeAuthorizable): boolean => {
+	if (authorizable.boardContextSettings.isLocked) {
+		return false;
+	}
+
 	const permissions = authorizable.getUserPermissions(user.id);
 
 	const isBoard = authorizable.rootNode instanceof ColumnBoard || authorizable.rootNode instanceof MediaBoard;
@@ -370,6 +378,10 @@ const _canEditBoard = (user: User, authorizable: BoardNodeAuthorizable): boolean
 };
 
 const _canManageBoard = (user: User, authorizable: BoardNodeAuthorizable): boolean => {
+	if (authorizable.boardContextSettings.isLocked) {
+		return false;
+	}
+
 	const permissions = authorizable.getUserPermissions(user.id);
 
 	const isBoard = authorizable.rootNode instanceof ColumnBoard || authorizable.rootNode instanceof MediaBoard;
@@ -378,6 +390,10 @@ const _canManageBoard = (user: User, authorizable: BoardNodeAuthorizable): boole
 };
 
 const _canViewBoard = (user: User, authorizable: BoardNodeAuthorizable): boolean => {
+	if (authorizable.boardContextSettings.isLocked) {
+		return false;
+	}
+
 	const permissions = authorizable.getUserPermissions(user.id);
 
 	const isBoard = authorizable.rootNode instanceof ColumnBoard || authorizable.rootNode instanceof MediaBoard;
@@ -386,11 +402,19 @@ const _canViewBoard = (user: User, authorizable: BoardNodeAuthorizable): boolean
 };
 
 const _isSubmissionItemOfUser = (user: User, authorizable: BoardNodeAuthorizable): boolean => {
+	if (authorizable.boardContextSettings.isLocked) {
+		return false;
+	}
+
 	const { boardNode } = authorizable;
 	return boardNode instanceof SubmissionItem && boardNode.userId === user.id;
 };
 
 const _canCreateExternalToolElement = (user: User, authorizable: BoardNodeAuthorizable): boolean => {
+	if (authorizable.boardContextSettings.isLocked) {
+		return false;
+	}
+
 	const schoolPermissions = [...user.roles].flatMap((role) => role.permissions ?? []);
 
 	const isBoard = authorizable.rootNode instanceof ColumnBoard || authorizable.rootNode instanceof MediaBoard;
@@ -400,6 +424,10 @@ const _canCreateExternalToolElement = (user: User, authorizable: BoardNodeAuthor
 };
 
 const canFindBoard = (user: User, authorizable: BoardNodeAuthorizable): boolean => {
+	if (authorizable.boardContextSettings.isLocked) {
+		return false;
+	}
+
 	const canViewBoard = _canViewBoard(user, authorizable);
 	const permissions = authorizable.getUserPermissions(user.id);
 
@@ -415,6 +443,10 @@ const canFindBoard = (user: User, authorizable: BoardNodeAuthorizable): boolean 
 };
 
 const canManageVideoConference = (user: User, authorizable: BoardNodeAuthorizable): boolean => {
+	if (authorizable.boardContextSettings.isLocked) {
+		return false;
+	}
+
 	const permissions = authorizable.getUserPermissions(user.id);
 
 	const isBoard = authorizable.rootNode instanceof ColumnBoard || authorizable.rootNode instanceof MediaBoard;
@@ -423,6 +455,10 @@ const canManageVideoConference = (user: User, authorizable: BoardNodeAuthorizabl
 };
 
 const canUpdateReadersCanEditSetting = (user: User, authorizable: BoardNodeAuthorizable): boolean => {
+	if (authorizable.boardContextSettings.isLocked) {
+		return false;
+	}
+
 	const permissions = authorizable.getUserPermissions(user.id);
 
 	const isBoard = authorizable.boardNode instanceof ColumnBoard;
@@ -432,6 +468,10 @@ const canUpdateReadersCanEditSetting = (user: User, authorizable: BoardNodeAutho
 };
 
 const canRelocateContent = (user: User, authorizable: BoardNodeAuthorizable): boolean => {
+	if (authorizable.boardContextSettings.isLocked) {
+		return false;
+	}
+
 	const permissions = authorizable.getUserPermissions(user.id);
 
 	const isBoard = authorizable.rootNode instanceof ColumnBoard;
@@ -441,6 +481,10 @@ const canRelocateContent = (user: User, authorizable: BoardNodeAuthorizable): bo
 };
 
 const canShareBoardNode = (user: User, authorizable: BoardNodeAuthorizable): boolean => {
+	if (authorizable.boardContextSettings.isLocked) {
+		return false;
+	}
+
 	const permissions = authorizable.getUserPermissions(user.id);
 
 	const isBoard = authorizable.rootNode instanceof ColumnBoard || authorizable.rootNode instanceof MediaBoard;
