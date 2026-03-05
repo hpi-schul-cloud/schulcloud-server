@@ -1,34 +1,52 @@
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { ErwinRole } from '../../../role/domain/type/rolename.enum';
+import { IsArray, IsDate, IsNotEmpty, IsString } from 'class-validator';
 import { JwtPayload } from 'jsonwebtoken';
+import { ErwinKlassePayload } from './erwin.klasse.payload';
 
 export class ErwinJwtPayload implements JwtPayload {
 	@IsString()
 	@IsNotEmpty()
 	public sub!: string;
 
-	@IsOptional()
+	@IsNotEmpty()
 	@IsString()
-	public sid: string | undefined;
+	public personExternalId!: string;
 
 	@IsString()
 	@IsNotEmpty()
-	public erwinRole!: string;
+	public personFirstName!: string;
 
 	@IsString()
 	@IsNotEmpty()
-	public personVorname!: string;
+	public personLastName!: string;
 
 	@IsString()
 	@IsNotEmpty()
-	public personNachname!: string;
+	public personErwinRole!: ErwinRole;
 
 	@IsString()
 	@IsNotEmpty()
-	public erwinSchuleNummer!: string;
+	public personEmail!: string;
+
+	@IsDate()
+	@IsNotEmpty()
+	public personGeburtstag!: string;
 
 	@IsString()
-	@IsOptional()
-	public erwinKlasseIds?: string;
+	@IsNotEmpty()
+	public schuleExternalId!: string;
+
+	@IsString()
+	@IsNotEmpty()
+	public schuleName!: string;
+
+	@IsString()
+	@IsNotEmpty()
+	public schuleZugehoerigZu!: string;
+
+	@IsArray()
+	@IsNotEmpty()
+	public klassen!: ErwinKlassePayload[];
 
 	constructor(data: Partial<ErwinJwtPayload>) {
 		Object.assign(this, data);

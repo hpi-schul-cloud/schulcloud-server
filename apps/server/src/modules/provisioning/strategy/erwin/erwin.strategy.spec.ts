@@ -1,4 +1,3 @@
-import { createMock } from '@golevelup/ts-jest';
 import { IdTokenExtractionFailureLoggableException } from '@modules/oauth';
 import { RoleName } from '@modules/role';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -12,8 +11,8 @@ import {
 	OauthDataStrategyInputDto,
 	ProvisioningSystemDto,
 } from '../../dto';
-import { TspProvisioningService } from '../../service/tsp-provisioning.service';
 import { ErwinProvisioningStrategy } from './erwin.strategy';
+import { ErwinRole } from '../../../role/domain';
 
 describe('ErwinProvisioningStrategy', () => {
 	let module: TestingModule;
@@ -21,13 +20,7 @@ describe('ErwinProvisioningStrategy', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			providers: [
-				ErwinProvisioningStrategy,
-				{
-					provide: TspProvisioningService,
-					useValue: createMock<TspProvisioningService>(),
-				},
-			],
+			providers: [ErwinProvisioningStrategy],
 		}).compile();
 
 		sut = module.get(ErwinProvisioningStrategy);
@@ -42,142 +35,255 @@ describe('ErwinProvisioningStrategy', () => {
 	});
 
 	describe('getType', () => {
-		it('should return type ERWIN', () => {
-			const result = sut.getType();
-			expect(result).toEqual(SystemProvisioningStrategy.ERWIN);
+		describe('when called', () => {
+			it('should return type ERWIN', () => {
+				const result = sut.getType();
+
+				expect(result).toEqual(SystemProvisioningStrategy.ERWIN);
+			});
 		});
 	});
 
 	describe('getData', () => {
-		const setup = () => {
-			const input = new OauthDataStrategyInputDto({
-				system: new ProvisioningSystemDto({
-					systemId: 'externalSchoolId',
-					provisioningStrategy: SystemProvisioningStrategy.ERWIN,
-				}),
-				idToken: 'erwinIdToken',
-				accessToken: 'erwinAccessToken',
-			});
+		describe('when token is valid with all required fields', () => {
+			const setup = () => {
+				const input = new OauthDataStrategyInputDto({
+					system: new ProvisioningSystemDto({
+						systemId: 'systemId',
+						provisioningStrategy: SystemProvisioningStrategy.ERWIN,
+					}),
+					idToken: 'erwinIdToken',
+					accessToken: 'erwinAccessToken',
+				});
 
-			jest.spyOn(jwt, 'decode').mockImplementation(() => {
-				return {
-					sub: 'externalUserId',
-					erwinRole: 'schueler,lehrer,admin',
-					personVorname: 'firstName',
-					personNachname: 'lastName',
-					erwinSchuleNummer: 'externalSchoolId',
-					erwinKlasseIds: 'externalClassId1,externalClassId2',
-				};
-			});
+				jest.spyOn(jwt, 'decode').mockImplementation(() => {
+					return {
+						sub: 'erwinUserId',
+						personExternalId: 'personExternalId',
+						personFirstName: 'firstName',
+						personLastName: 'lastName',
+						personErwinRole: ErwinRole.LERN,
+						personEmail: 'test@example.com',
+						personGeburtstag: '2000-01-01',
+						schuleExternalId: 'schoolExternalId',
+						schuleName: 'Test School',
+						schuleZugehoerigZu: 'Berlin',
+						klassen: [
+							{ externalId: 'classExternalId1', name: 'Class 1' },
+							{ externalId: 'classExternalId2', name: 'Class 2' },
+						],
+					};
+				});
 
-			const user = new ExternalUserDto({
-				externalId: 'externalUserId',
-				erWInId: 'externalUserId',
-				roles: [RoleName.STUDENT, RoleName.TEACHER, RoleName.ADMINISTRATOR],
-				firstName: 'firstName',
-				lastName: 'lastName',
-			});
+				const expectedUser = new ExternalUserDto({
+					externalId: 'personExternalId',
+					erWInId: 'erwinUserId',
+					roles: [RoleName.STUDENT],
+					firstName: 'firstName',
+					lastName: 'lastName',
+				});
 
-			const school = new ExternalSchoolDto({
-				externalId: 'externalSchoolId',
-			});
+				const expectedSchool = new ExternalSchoolDto({
+					externalId: 'schoolExternalId',
+					name: 'Test School',
+					location: 'Berlin',
+				});
 
-			const externalClass1 = new ExternalClassDto({ externalId: 'externalClassId1' });
-			const externalClass2 = new ExternalClassDto({ externalId: 'externalClassId2' });
-			const externalClasses = [externalClass1, externalClass2];
+				const expectedClasses = [
+					new ExternalClassDto({ externalId: 'classExternalId1', name: 'Class 1' }),
+					new ExternalClassDto({ externalId: 'classExternalId2', name: 'Class 2' }),
+				];
 
-			return { input, user, school, externalClasses };
-		};
+				return { input, expectedUser, expectedSchool, expectedClasses };
+			};
 
-		it('should return mapped oauthDataDto if input is valid', async () => {
-			const { input, user, school, externalClasses } = setup();
-			const result = await sut.getData(input);
+			it('should return mapped oauthDataDto', async () => {
+				const { input, expectedUser, expectedSchool, expectedClasses } = setup();
 
-			expect(result).toEqual<OauthDataDto>({
-				system: input.system,
-				externalUser: user,
-				externalSchool: school,
-				externalClasses,
+				const result = await sut.getData(input);
+
+				expect(result).toEqual<OauthDataDto>({
+					system: input.system,
+					externalUser: expectedUser,
+					externalSchool: expectedSchool,
+					externalClasses: expectedClasses,
+				});
 			});
 		});
 
-		it('should throw IdTokenExtractionFailure if token is invalid', async () => {
-			const input = new OauthDataStrategyInputDto({
-				system: new ProvisioningSystemDto({
-					systemId: 'externalSchoolId',
-					provisioningStrategy: SystemProvisioningStrategy.ERWIN,
-				}),
-				idToken: 'invalidIdToken',
-				accessToken: 'erwinAccessToken',
+		describe('when token is valid with LEHR role', () => {
+			const setup = () => {
+				const input = new OauthDataStrategyInputDto({
+					system: new ProvisioningSystemDto({
+						systemId: 'systemId',
+						provisioningStrategy: SystemProvisioningStrategy.ERWIN,
+					}),
+					idToken: 'erwinIdToken',
+					accessToken: 'erwinAccessToken',
+				});
+
+				jest.spyOn(jwt, 'decode').mockImplementation(() => {
+					return {
+						sub: 'erwinUserId',
+						personExternalId: 'personExternalId',
+						personFirstName: 'firstName',
+						personLastName: 'lastName',
+						personErwinRole: ErwinRole.LEHR,
+						personEmail: 'test@example.com',
+						personGeburtstag: '2000-01-01',
+						schuleExternalId: 'schoolExternalId',
+						schuleName: 'Test School',
+						schuleZugehoerigZu: 'Berlin',
+						klassen: [],
+					};
+				});
+
+				return { input };
+			};
+
+			it('should map LEHR role to TEACHER', async () => {
+				const { input } = setup();
+
+				const result = await sut.getData(input);
+
+				expect(result.externalUser.roles).toEqual([RoleName.TEACHER]);
 			});
-			jest.spyOn(jwt, 'decode').mockImplementation(() => null);
-			await expect(sut.getData(input)).rejects.toThrow(new IdTokenExtractionFailureLoggableException('sub'));
 		});
 
-		it('should throw IdTokenExtractionFailure if roles are missing or unknown', async () => {
-			const input = new OauthDataStrategyInputDto({
-				system: new ProvisioningSystemDto({
-					systemId: 'externalSchoolId',
-					provisioningStrategy: SystemProvisioningStrategy.ERWIN,
-				}),
-				idToken: 'erwinIdToken',
-				accessToken: 'erwinAccessToken',
+		describe('when token is valid with LEIT role', () => {
+			const setup = () => {
+				const input = new OauthDataStrategyInputDto({
+					system: new ProvisioningSystemDto({
+						systemId: 'systemId',
+						provisioningStrategy: SystemProvisioningStrategy.ERWIN,
+					}),
+					idToken: 'erwinIdToken',
+					accessToken: 'erwinAccessToken',
+				});
+
+				jest.spyOn(jwt, 'decode').mockImplementation(() => {
+					return {
+						sub: 'erwinUserId',
+						personExternalId: 'personExternalId',
+						personFirstName: 'firstName',
+						personLastName: 'lastName',
+						personErwinRole: ErwinRole.LEIT,
+						personEmail: 'test@example.com',
+						personGeburtstag: '2000-01-01',
+						schuleExternalId: 'schoolExternalId',
+						schuleName: 'Test School',
+						schuleZugehoerigZu: 'Berlin',
+						klassen: [],
+					};
+				});
+
+				return { input };
+			};
+
+			it('should map LEIT role to ADMINISTRATOR', async () => {
+				const { input } = setup();
+
+				const result = await sut.getData(input);
+
+				expect(result.externalUser.roles).toEqual([RoleName.ADMINISTRATOR]);
 			});
-			jest.spyOn(jwt, 'decode').mockImplementation(() => {
-				return {
-					sub: 'externalUserId',
-					erwinRole: '',
-					personVorname: 'firstName',
-					personNachname: 'lastName',
-					erwinSchuleNummer: 'externalSchoolId',
-					erwinKlasseIds: 'externalClassId1,externalClassId2',
-				};
-			});
-			await expect(sut.getData(input)).rejects.toThrow(IdTokenExtractionFailureLoggableException);
 		});
 
-		it('should throw IdTokenExtractionFailure if erwinRole contains only unknown roles', async () => {
-			const input = new OauthDataStrategyInputDto({
-				system: new ProvisioningSystemDto({
-					systemId: 'externalSchoolId',
-					provisioningStrategy: SystemProvisioningStrategy.ERWIN,
-				}),
-				idToken: 'erwinIdToken',
-				accessToken: 'erwinAccessToken',
+		describe('when token decoding returns null', () => {
+			const setup = () => {
+				const input = new OauthDataStrategyInputDto({
+					system: new ProvisioningSystemDto({
+						systemId: 'systemId',
+						provisioningStrategy: SystemProvisioningStrategy.ERWIN,
+					}),
+					idToken: 'invalidIdToken',
+					accessToken: 'invalidAccessToken',
+				});
+
+				jest.spyOn(jwt, 'decode').mockImplementation(() => null);
+
+				return { input };
+			};
+
+			it('should throw IdTokenExtractionFailureLoggableException', async () => {
+				const { input } = setup();
+
+				await expect(sut.getData(input)).rejects.toThrow(IdTokenExtractionFailureLoggableException);
 			});
-			jest.spyOn(jwt, 'decode').mockImplementation(() => {
-				return {
-					sub: 'externalUserId',
-					erwinRole: 'unknownrole1,unknownrole2',
-					personVorname: 'firstName',
-					personNachname: 'lastName',
-					erwinSchuleNummer: 'externalSchoolId',
-					erwinKlasseIds: 'externalClassId1,externalClassId2',
-				};
-			});
-			await expect(sut.getData(input)).rejects.toThrow(IdTokenExtractionFailureLoggableException);
 		});
 
-		it('should throw IdTokenExtractionFailure if roles property is missing in payload', async () => {
-			const input = new OauthDataStrategyInputDto({
-				system: new ProvisioningSystemDto({
-					systemId: 'externalSchoolId',
-					provisioningStrategy: SystemProvisioningStrategy.ERWIN,
-				}),
-				idToken: 'erwinIdToken',
-				accessToken: 'erwinAccessToken',
+		describe('when required field is missing in payload', () => {
+			const setup = () => {
+				const input = new OauthDataStrategyInputDto({
+					system: new ProvisioningSystemDto({
+						systemId: 'systemId',
+						provisioningStrategy: SystemProvisioningStrategy.ERWIN,
+					}),
+					idToken: 'erwinIdToken',
+					accessToken: 'erwinAccessToken',
+				});
+
+				jest.spyOn(jwt, 'decode').mockImplementation(() => {
+					return {
+						sub: 'erwinUserId',
+						// personExternalId is missing
+						personFirstName: 'firstName',
+						personLastName: 'lastName',
+						personErwinRole: ErwinRole.LERN,
+						personEmail: 'test@example.com',
+						personGeburtstag: '2000-01-01',
+						schuleExternalId: 'schoolExternalId',
+						schuleName: 'Test School',
+						schuleZugehoerigZu: 'Berlin',
+						klassen: [],
+					};
+				});
+
+				return { input };
+			};
+
+			it('should throw IdTokenExtractionFailureLoggableException', async () => {
+				const { input } = setup();
+
+				await expect(sut.getData(input)).rejects.toThrow(IdTokenExtractionFailureLoggableException);
 			});
-			jest.spyOn(jwt, 'decode').mockImplementation(() => {
-				return {
-					sub: 'externalUserId',
-					// erwinRole is missing
-					personVorname: 'firstName',
-					personNachname: 'lastName',
-					erwinSchuleNummer: 'externalSchoolId',
-					erwinKlasseIds: 'externalClassId1,externalClassId2',
-				};
+		});
+
+		describe('when sub field is missing in payload', () => {
+			const setup = () => {
+				const input = new OauthDataStrategyInputDto({
+					system: new ProvisioningSystemDto({
+						systemId: 'systemId',
+						provisioningStrategy: SystemProvisioningStrategy.ERWIN,
+					}),
+					idToken: 'erwinIdToken',
+					accessToken: 'erwinAccessToken',
+				});
+
+				jest.spyOn(jwt, 'decode').mockImplementation(() => {
+					return {
+						// sub is missing
+						personExternalId: 'personExternalId',
+						personFirstName: 'firstName',
+						personLastName: 'lastName',
+						personErwinRole: ErwinRole.LERN,
+						personEmail: 'test@example.com',
+						personGeburtstag: '2000-01-01',
+						schuleExternalId: 'schoolExternalId',
+						schuleName: 'Test School',
+						schuleZugehoerigZu: 'Berlin',
+						klassen: [],
+					};
+				});
+
+				return { input };
+			};
+
+			it('should throw IdTokenExtractionFailureLoggableException', async () => {
+				const { input } = setup();
+
+				await expect(sut.getData(input)).rejects.toThrow(IdTokenExtractionFailureLoggableException);
 			});
-			await expect(sut.getData(input)).rejects.toThrow(IdTokenExtractionFailureLoggableException);
 		});
 	});
 });

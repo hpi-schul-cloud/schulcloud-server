@@ -14,6 +14,7 @@ import {
 } from '../../dto';
 import { ProvisioningStrategy } from '../base.strategy';
 import { ErwinJwtPayload } from './erwin.jwt.payload';
+import { ErwinRole } from '../../../role/domain';
 
 @Injectable()
 export class ErwinProvisioningStrategy extends ProvisioningStrategy {
@@ -42,20 +43,20 @@ export class ErwinProvisioningStrategy extends ProvisioningStrategy {
 		throw new NotImplementedException();
 	}
 
-	private mapRoles(erwinRole: string): RoleName | null {
-		const roleNameLowerCase = erwinRole.toLowerCase();
+	// private mapRoles(erwinRole: string): RoleName | null {
+	// 	const roleNameLowerCase = erwinRole.toLowerCase();
 
-		switch (roleNameLowerCase) {
-			case 'lehrer':
-				return RoleName.TEACHER;
-			case 'schueler':
-				return RoleName.STUDENT;
-			case 'admin':
-				return RoleName.ADMINISTRATOR;
-			default:
-				return null;
-		}
-	}
+	// 	switch (roleNameLowerCase) {
+	// 		case 'lehrer':
+	// 			return RoleName.TEACHER;
+	// 		case 'schueler':
+	// 			return RoleName.STUDENT;
+	// 		case 'admin':
+	// 			return RoleName.ADMINISTRATOR;
+	// 		default:
+	// 			return null;
+	// 	}
+	// }
 
 	private async parseAndValidateToken(input: OauthDataStrategyInputDto): Promise<ErwinJwtPayload> {
 		const decodedAccessToken: JwtPayload | null = jwt.decode(input.accessToken, { json: true });
@@ -82,29 +83,38 @@ export class ErwinProvisioningStrategy extends ProvisioningStrategy {
 		externalSchoolDto: ExternalSchoolDto;
 		externalClassDtoList: ExternalClassDto[];
 	} {
-		const externalUserDto = new ExternalUserDto({
-			externalId: payload.sub,
+		const externalUserDto: ExternalUserDto = new ExternalUserDto({
+			externalId: payload.personExternalId,
 			erWInId: payload.sub,
-			firstName: payload.personVorname,
-			lastName: payload.personNachname,
-			roles: payload.erwinRole
-				.split(',')
-				.map((role) => this.mapRoles(role))
-				.filter((role): role is RoleName => role !== null),
+			firstName: payload.personFirstName,
+			lastName: payload.personLastName,
+			roles: [this.mapErwinRoleToRoleName(payload.personErwinRole)],
 		});
 
 		if (!externalUserDto.roles || externalUserDto.roles.length < 1) {
 			throw new IdTokenExtractionFailureLoggableException('person.role', { externalId: externalUserDto.externalId });
 		}
 
-		const externalSchoolDto = new ExternalSchoolDto({
-			externalId: payload.erwinSchuleNummer,
+		const externalSchoolDto: ExternalSchoolDto = new ExternalSchoolDto({
+			externalId: payload.schuleExternalId,
+			location: payload.schuleZugehoerigZu,
+			name: payload.schuleName,
 		});
 
-		const externalClassDtoList = payload.erwinKlasseIds
-			? payload.erwinKlasseIds.split(',').map((classId) => new ExternalClassDto({ externalId: classId }))
-			: [];
+		const externalClassDtoList = payload.klassen.map(
+			(klasse) => new ExternalClassDto({ name: klasse.name, externalId: klasse.externalId })
+		);
 
 		return { externalUserDto, externalSchoolDto, externalClassDtoList };
+	}
+
+	private mapErwinRoleToRoleName(role: ErwinRole): RoleName {
+		const mapErwinRoleToSchulcloudRoleName: Record<ErwinRole, RoleName> = {
+			[ErwinRole.LERN]: RoleName.STUDENT,
+			[ErwinRole.LEHR]: RoleName.TEACHER,
+			[ErwinRole.LEIT]: RoleName.ADMINISTRATOR,
+		};
+
+		return mapErwinRoleToSchulcloudRoleName[role];
 	}
 }
