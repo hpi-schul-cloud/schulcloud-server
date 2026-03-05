@@ -88,7 +88,7 @@ describe(MediaLineUc.name, () => {
 				boardNodeAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(
 					mediaBoard as unknown as BoardNodeAuthorizable
 				);
-				boardNodeRule.canCreateMediaBoardLine.mockReturnValue(true);
+				boardNodeRule.can.mockReturnValue(true);
 
 				return {
 					user,
@@ -111,11 +111,11 @@ describe(MediaLineUc.name, () => {
 				boardNodeAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(
 					mediaBoard as unknown as BoardNodeAuthorizable
 				);
-				boardNodeRule.canCreateMediaBoardLine.mockReturnValueOnce(true);
+				boardNodeRule.can.mockReturnValueOnce(true);
 
 				await uc.moveLine(user.id, mediaLine.id, mediaBoard.id, 1);
 
-				expect(boardNodeRule.canCreateMediaBoardLine).toHaveBeenCalledWith(user, mediaBoard);
+				expect(boardNodeRule.can).toHaveBeenCalledWith('createMediaBoardLine', user, mediaBoard);
 			});
 
 			it('should move the line', async () => {
@@ -165,7 +165,7 @@ describe(MediaLineUc.name, () => {
 				boardNodeAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(
 					mediaLine as unknown as BoardNodeAuthorizable
 				);
-				boardNodeRule.canUpdateMediaBoardLine.mockReturnValue(true);
+				boardNodeRule.can.mockReturnValue(true);
 
 				return {
 					user,
@@ -175,11 +175,11 @@ describe(MediaLineUc.name, () => {
 
 			it('should check the authorization', async () => {
 				const { user, mediaLine } = setup();
-				boardNodeRule.canUpdateMediaBoardLine.mockReturnValueOnce(true);
+				boardNodeRule.can.mockReturnValueOnce(true);
 
 				await uc.updateLineTitle(user.id, mediaLine.id, 'newTitle');
 
-				expect(boardNodeRule.canUpdateMediaBoardLine).toHaveBeenCalledWith(user, mediaLine);
+				expect(boardNodeRule.can).toHaveBeenCalledWith('updateMediaBoardLine', user, mediaLine);
 			});
 
 			it('should rename the line', async () => {
@@ -226,18 +226,18 @@ describe(MediaLineUc.name, () => {
 				boardNodeAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(
 					mediaLine as unknown as BoardNodeAuthorizable
 				);
-				boardNodeRule.canDeleteMediaBoardLine.mockReturnValue(true);
+				boardNodeRule.can.mockReturnValue(true);
 
 				return { user, mediaLine };
 			};
 
 			it('should check the authorization', async () => {
 				const { user, mediaLine } = setup();
-				boardNodeRule.canDeleteMediaBoardLine.mockReturnValueOnce(true);
+				boardNodeRule.can.mockReturnValueOnce(true);
 
 				await uc.deleteLine(user.id, mediaLine.id);
 
-				expect(boardNodeRule.canDeleteMediaBoardLine).toHaveBeenCalledWith(user, mediaLine);
+				expect(boardNodeRule.can).toHaveBeenCalledWith('deleteMediaBoardLine', user, mediaLine);
 			});
 
 			it('should delete the line', async () => {
@@ -283,7 +283,7 @@ describe(MediaLineUc.name, () => {
 				boardNodeAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(
 					mediaLine as unknown as BoardNodeAuthorizable
 				);
-				boardNodeRule.canUpdateElement.mockReturnValue(true);
+				boardNodeRule.can.mockReturnValue(true);
 
 				return {
 					user,
@@ -293,16 +293,16 @@ describe(MediaLineUc.name, () => {
 
 			it('should check the authorization', async () => {
 				const { user, mediaLine } = setup();
-				boardNodeRule.canUpdateMediaBoardLine.mockReturnValueOnce(true);
+				boardNodeRule.can.mockReturnValueOnce(true);
 
 				await uc.updateLineColor(user.id, mediaLine.id, MediaBoardColors.BLUE);
 
-				expect(boardNodeRule.canUpdateMediaBoardLine).toHaveBeenCalledWith(user, mediaLine);
+				expect(boardNodeRule.can).toHaveBeenCalledWith('updateMediaBoardLineColor', user, mediaLine);
 			});
 
 			it('should set background color', async () => {
 				const { user, mediaLine } = setup();
-				boardNodeRule.canUpdateMediaBoardLine.mockReturnValueOnce(true);
+				boardNodeRule.can.mockReturnValueOnce(true);
 
 				await uc.updateLineColor(user.id, mediaLine.id, MediaBoardColors.BLUE);
 
@@ -346,7 +346,7 @@ describe(MediaLineUc.name, () => {
 				boardNodeAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(
 					mediaLine as unknown as BoardNodeAuthorizable
 				);
-				boardNodeRule.canUpdateMediaBoardLine.mockReturnValue(true);
+				boardNodeRule.can.mockReturnValue(true);
 
 				return {
 					user,
@@ -356,11 +356,11 @@ describe(MediaLineUc.name, () => {
 
 			it('should check the authorization', async () => {
 				const { user, mediaLine } = setup();
-				boardNodeRule.canUpdateMediaBoardLine.mockReturnValueOnce(true);
+				boardNodeRule.can.mockReturnValueOnce(true);
 
 				await uc.collapseLine(user.id, mediaLine.id, true);
 
-				expect(boardNodeRule.canUpdateMediaBoardLine).toHaveBeenCalledWith(user, mediaLine);
+				expect(boardNodeRule.can).toHaveBeenCalledWith('collapseMediaBoardLine', user, mediaLine);
 			});
 
 			it('should collapse the line', async () => {

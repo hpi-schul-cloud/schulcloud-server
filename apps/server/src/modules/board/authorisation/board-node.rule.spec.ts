@@ -19,10 +19,10 @@ import {
 	submissionItemFactory,
 	videoConferenceElementFactory,
 } from '../testing';
-import { BoardNodeRule } from './board-node.rule';
+import { BoardNodeRule, BoardOperation } from './board-node.rule';
 
 describe(BoardNodeRule.name, () => {
-	let service: BoardNodeRule;
+	let boardNodeRule: BoardNodeRule;
 	let injectionService: AuthorizationInjectionService;
 	let userService: DeepMocked<UserService>;
 
@@ -37,14 +37,14 @@ describe(BoardNodeRule.name, () => {
 			],
 		}).compile();
 
-		service = await module.get(BoardNodeRule);
+		boardNodeRule = await module.get(BoardNodeRule);
 		injectionService = await module.get(AuthorizationInjectionService);
 		userService = await module.get(UserService);
 	});
 
 	describe('injection', () => {
 		it('should inject itself into authorisation module', () => {
-			expect(injectionService.getAuthorizationRules()).toContain(service);
+			expect(injectionService.getAuthorizationRules()).toContain(boardNodeRule);
 		});
 	});
 
@@ -59,7 +59,7 @@ describe(BoardNodeRule.name, () => {
 					id: new ObjectId().toHexString(),
 					boardNode: anyBoardNode,
 					rootNode: columnBoard,
-					boardContextSettings: {},
+					boardContextSettings: { isLocked: false },
 				});
 				return { user, boardNodeAuthorizable };
 			};
@@ -67,7 +67,7 @@ describe(BoardNodeRule.name, () => {
 			it('should return true', () => {
 				const { boardNodeAuthorizable, user } = setup();
 
-				const result = service.isApplicable(user, boardNodeAuthorizable);
+				const result = boardNodeRule.isApplicable(user, boardNodeAuthorizable);
 
 				expect(result).toStrictEqual(true);
 			});
@@ -82,7 +82,7 @@ describe(BoardNodeRule.name, () => {
 			it('should return false', () => {
 				const { user } = setup();
 
-				const result = service.isApplicable(user, user);
+				const result = boardNodeRule.isApplicable(user, user);
 
 				expect(result).toStrictEqual(false);
 			});
@@ -103,7 +103,7 @@ describe(BoardNodeRule.name, () => {
 					id: new ObjectId().toHexString(),
 					boardNode: anyBoardNode,
 					rootNode: columnBoard,
-					boardContextSettings: {},
+					boardContextSettings: { isLocked: false },
 				});
 
 				return { user, boardNodeAuthorizable };
@@ -112,7 +112,7 @@ describe(BoardNodeRule.name, () => {
 			it('should return "true"', () => {
 				const { user, boardNodeAuthorizable } = setup();
 
-				const res = service.hasPermission(user, boardNodeAuthorizable, {
+				const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
 					action: Action.read,
 					requiredPermissions: [],
 				});
@@ -131,7 +131,7 @@ describe(BoardNodeRule.name, () => {
 					id: new ObjectId().toHexString(),
 					boardNode: anyBoardNode,
 					rootNode: columnBoard,
-					boardContextSettings: {},
+					boardContextSettings: { isLocked: false },
 				});
 
 				return { user, boardNodeAuthorizable };
@@ -140,7 +140,7 @@ describe(BoardNodeRule.name, () => {
 			it('should return "true"', () => {
 				const { user, boardNodeAuthorizable } = setup();
 
-				const res = service.hasPermission(user, boardNodeAuthorizable, {
+				const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
 					action: Action.read,
 					requiredPermissions: [Permission.BOARD_VIEW],
 				});
@@ -160,7 +160,7 @@ describe(BoardNodeRule.name, () => {
 					id: new ObjectId().toHexString(),
 					boardNode: anyBoardNode,
 					rootNode: columnBoard,
-					boardContextSettings: {},
+					boardContextSettings: { isLocked: false },
 				});
 
 				return { user, permissionA, boardNodeAuthorizable };
@@ -169,7 +169,7 @@ describe(BoardNodeRule.name, () => {
 			it('should return "false"', () => {
 				const { user, permissionA, boardNodeAuthorizable } = setup();
 
-				const res = service.hasPermission(user, boardNodeAuthorizable, {
+				const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
 					action: Action.write,
 					requiredPermissions: [permissionA],
 				});
@@ -190,7 +190,7 @@ describe(BoardNodeRule.name, () => {
 					id: new ObjectId().toHexString(),
 					boardNode: anyBoardNode,
 					rootNode: columnBoard,
-					boardContextSettings: {},
+					boardContextSettings: { isLocked: false },
 				});
 
 				return { userWithoutPermision, boardNodeAuthorizable };
@@ -199,7 +199,7 @@ describe(BoardNodeRule.name, () => {
 			it('should return "false"', () => {
 				const { userWithoutPermision, boardNodeAuthorizable } = setup();
 
-				const res = service.hasPermission(userWithoutPermision, boardNodeAuthorizable, {
+				const res = boardNodeRule.hasPermission(userWithoutPermision, boardNodeAuthorizable, {
 					action: Action.read,
 					requiredPermissions: [],
 				});
@@ -218,7 +218,7 @@ describe(BoardNodeRule.name, () => {
 					id: new ObjectId().toHexString(),
 					boardNode: anyBoardNode,
 					rootNode: columnBoard,
-					boardContextSettings: {},
+					boardContextSettings: { isLocked: false },
 				});
 
 				return { user, boardNodeAuthorizable };
@@ -227,7 +227,7 @@ describe(BoardNodeRule.name, () => {
 			it('should return "false"', () => {
 				const { user, boardNodeAuthorizable } = setup();
 
-				const res = service.hasPermission(user, boardNodeAuthorizable, {
+				const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
 					action: Action.read,
 					requiredPermissions: [],
 				});
@@ -247,25 +247,27 @@ describe(BoardNodeRule.name, () => {
 						id: new ObjectId().toHexString(),
 						boardNode: anyBoardNode,
 						rootNode: columnBoard,
-						boardContextSettings: {},
+						boardContextSettings: { isLocked: false },
 					});
 
 					return { user, boardNodeAuthorizable };
 				};
+
 				it('it should return true if trying to "write" ', () => {
 					const { user, boardNodeAuthorizable } = setup();
 
-					const res = service.hasPermission(user, boardNodeAuthorizable, {
+					const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
 						action: Action.write,
 						requiredPermissions: [],
 					});
 
 					expect(res).toBe(true);
 				});
+
 				it('it should return true if trying to "read" ', () => {
 					const { user, boardNodeAuthorizable } = setup();
 
-					const res = service.hasPermission(user, boardNodeAuthorizable, {
+					const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
 						action: Action.read,
 						requiredPermissions: [],
 					});
@@ -273,6 +275,7 @@ describe(BoardNodeRule.name, () => {
 					expect(res).toBe(true);
 				});
 			});
+
 			describe('when user is Reader', () => {
 				const setup = () => {
 					const user = userFactory.buildWithId();
@@ -283,25 +286,27 @@ describe(BoardNodeRule.name, () => {
 						id: new ObjectId().toHexString(),
 						boardNode: anyBoardNode,
 						rootNode: columnBoard,
-						boardContextSettings: {},
+						boardContextSettings: { isLocked: false },
 					});
 
 					return { user, boardNodeAuthorizable };
 				};
+
 				it('it should return false if trying to "write" ', () => {
 					const { user, boardNodeAuthorizable } = setup();
 
-					const res = service.hasPermission(user, boardNodeAuthorizable, {
+					const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
 						action: Action.write,
 						requiredPermissions: [],
 					});
 
 					expect(res).toBe(false);
 				});
+
 				it('it should return false if trying to "read" ', () => {
 					const { user, boardNodeAuthorizable } = setup();
 
-					const res = service.hasPermission(user, boardNodeAuthorizable, {
+					const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
 						action: Action.write,
 						requiredPermissions: [],
 					});
@@ -322,25 +327,27 @@ describe(BoardNodeRule.name, () => {
 						id: new ObjectId().toHexString(),
 						boardNode: submissionItem,
 						rootNode: columnBoard,
-						boardContextSettings: {},
+						boardContextSettings: { isLocked: false },
 					});
 
 					return { user, boardNodeAuthorizable };
 				};
+
 				it('it should return false if trying to "write" ', () => {
 					const { user, boardNodeAuthorizable } = setup();
 
-					const res = service.hasPermission(user, boardNodeAuthorizable, {
+					const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
 						action: Action.write,
 						requiredPermissions: [],
 					});
 
 					expect(res).toBe(false);
 				});
+
 				it('it should return true if trying to "read"', () => {
 					const { user, boardNodeAuthorizable } = setup();
 
-					const res = service.hasPermission(user, boardNodeAuthorizable, {
+					const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
 						action: Action.read,
 						requiredPermissions: [],
 					});
@@ -348,6 +355,7 @@ describe(BoardNodeRule.name, () => {
 					expect(res).toBe(true);
 				});
 			});
+
 			describe('when user is Reader and creator of the submissionItem', () => {
 				const setup = () => {
 					const user = userFactory.buildWithId();
@@ -358,25 +366,27 @@ describe(BoardNodeRule.name, () => {
 						id: new ObjectId().toHexString(),
 						boardNode: submissionItem,
 						rootNode: columnBoard,
-						boardContextSettings: {},
+						boardContextSettings: { isLocked: false },
 					});
 
 					return { user, boardNodeAuthorizable };
 				};
+
 				it('it should return "true" if trying to "write" ', () => {
 					const { user, boardNodeAuthorizable } = setup();
 
-					const res = service.hasPermission(user, boardNodeAuthorizable, {
+					const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
 						action: Action.write,
 						requiredPermissions: [],
 					});
 
 					expect(res).toBe(true);
 				});
+
 				it('it should return "true" if trying to "read"', () => {
 					const { user, boardNodeAuthorizable } = setup();
 
-					const res = service.hasPermission(user, boardNodeAuthorizable, {
+					const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
 						action: Action.read,
 						requiredPermissions: [],
 					});
@@ -384,6 +394,7 @@ describe(BoardNodeRule.name, () => {
 					expect(res).toBe(true);
 				});
 			});
+
 			describe('when user is Reader and not creator of the submissionItem', () => {
 				const setup = () => {
 					const user = userFactory.buildWithId();
@@ -394,25 +405,27 @@ describe(BoardNodeRule.name, () => {
 						id: new ObjectId().toHexString(),
 						boardNode: submissionItem,
 						rootNode: columnBoard,
-						boardContextSettings: {},
+						boardContextSettings: { isLocked: false },
 					});
 
 					return { user, boardNodeAuthorizable };
 				};
+
 				it('it should return "false" if trying to "write" ', () => {
 					const { user, boardNodeAuthorizable } = setup();
 
-					const res = service.hasPermission(user, boardNodeAuthorizable, {
+					const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
 						action: Action.write,
 						requiredPermissions: [],
 					});
 
 					expect(res).toBe(false);
 				});
+
 				it('it should return "false" if trying to "read"', () => {
 					const { user, boardNodeAuthorizable } = setup();
 
-					const res = service.hasPermission(user, boardNodeAuthorizable, {
+					const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
 						action: Action.read,
 						requiredPermissions: [],
 					});
@@ -435,25 +448,27 @@ describe(BoardNodeRule.name, () => {
 						boardNode: fileElement,
 						parentNode: submissionItem,
 						rootNode: columnBoard,
-						boardContextSettings: {},
+						boardContextSettings: { isLocked: false },
 					});
 
 					return { user, boardNodeAuthorizable };
 				};
+
 				it('it should return false if trying to "write" ', () => {
 					const { user, boardNodeAuthorizable } = setup();
 
-					const res = service.hasPermission(user, boardNodeAuthorizable, {
+					const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
 						action: Action.write,
 						requiredPermissions: [],
 					});
 
 					expect(res).toBe(false);
 				});
+
 				it('it should return true if trying to "read"', () => {
 					const { user, boardNodeAuthorizable } = setup();
 
-					const res = service.hasPermission(user, boardNodeAuthorizable, {
+					const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
 						action: Action.read,
 						requiredPermissions: [],
 					});
@@ -461,6 +476,7 @@ describe(BoardNodeRule.name, () => {
 					expect(res).toBe(true);
 				});
 			});
+
 			describe('when user is Reader and creator of the submissionItem', () => {
 				const setup = () => {
 					const user = userFactory.buildWithId();
@@ -473,25 +489,27 @@ describe(BoardNodeRule.name, () => {
 						boardNode: fileElement,
 						parentNode: submissionItem,
 						rootNode: columnBoard,
-						boardContextSettings: {},
+						boardContextSettings: { isLocked: false },
 					});
 
 					return { user, boardNodeAuthorizable };
 				};
+
 				it('it should return "true" if trying to "write" ', () => {
 					const { user, boardNodeAuthorizable } = setup();
 
-					const res = service.hasPermission(user, boardNodeAuthorizable, {
+					const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
 						action: Action.write,
 						requiredPermissions: [],
 					});
 
 					expect(res).toBe(true);
 				});
+
 				it('it should return "true" if trying to "read"', () => {
 					const { user, boardNodeAuthorizable } = setup();
 
-					const res = service.hasPermission(user, boardNodeAuthorizable, {
+					const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
 						action: Action.read,
 						requiredPermissions: [],
 					});
@@ -499,6 +517,7 @@ describe(BoardNodeRule.name, () => {
 					expect(res).toBe(true);
 				});
 			});
+
 			describe('when user is Reader and not creator of the submissionItem', () => {
 				const setup = () => {
 					const user = userFactory.buildWithId();
@@ -511,25 +530,27 @@ describe(BoardNodeRule.name, () => {
 						boardNode: anyBoardDo,
 						parentNode: submissionItem,
 						rootNode: columnBoard,
-						boardContextSettings: {},
+						boardContextSettings: { isLocked: false },
 					});
 
 					return { user, boardNodeAuthorizable };
 				};
+
 				it('it should return "false" if trying to "write" ', () => {
 					const { user, boardNodeAuthorizable } = setup();
 
-					const res = service.hasPermission(user, boardNodeAuthorizable, {
+					const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
 						action: Action.write,
 						requiredPermissions: [],
 					});
 
 					expect(res).toBe(false);
 				});
+
 				it('it should return "false" if trying to "read"', () => {
 					const { user, boardNodeAuthorizable } = setup();
 
-					const res = service.hasPermission(user, boardNodeAuthorizable, {
+					const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
 						action: Action.read,
 						requiredPermissions: [],
 					});
@@ -537,6 +558,7 @@ describe(BoardNodeRule.name, () => {
 					expect(res).toBe(false);
 				});
 			});
+
 			describe('when bordDo is wrong type', () => {
 				const setup = () => {
 					const user = userFactory.buildWithId();
@@ -545,6 +567,7 @@ describe(BoardNodeRule.name, () => {
 
 					return { user, notAllowedChildElement, submissionItem };
 				};
+
 				it('when boardDo is undefined, it should return false', () => {
 					const { user, submissionItem } = setup();
 					const anyBoardDo = fileElementFactory.build();
@@ -555,10 +578,10 @@ describe(BoardNodeRule.name, () => {
 						boardNode: anyBoardDo,
 						parentNode: submissionItem,
 						rootNode: columnBoard,
-						boardContextSettings: {},
+						boardContextSettings: { isLocked: false },
 					});
 
-					const res = service.hasPermission(user, boardNodeAuthorizable, {
+					const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
 						action: Action.write,
 						requiredPermissions: [],
 					});
@@ -575,10 +598,10 @@ describe(BoardNodeRule.name, () => {
 						parentNode: submissionItem,
 						boardNode: notAllowedChildElement,
 						rootNode: columnBoard,
-						boardContextSettings: {},
+						boardContextSettings: { isLocked: false },
 					});
 
-					const res = service.hasPermission(user, boardNodeAuthorizable, {
+					const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
 						action: Action.write,
 						requiredPermissions: [],
 					});
@@ -587,6 +610,7 @@ describe(BoardNodeRule.name, () => {
 				});
 			});
 		});
+
 		describe('when boardDoAuthorizable.boardDo is a drawingElement', () => {
 			describe('when required permissions do not include FILESTORAGE_CREATE or FILESTORAGE_VIEW or FILESTORAGE_REMOVE', () => {
 				describe('when user is Editor', () => {
@@ -599,25 +623,27 @@ describe(BoardNodeRule.name, () => {
 							id: new ObjectId().toHexString(),
 							boardNode: drawingElement,
 							rootNode: columnBoard,
-							boardContextSettings: {},
+							boardContextSettings: { isLocked: false },
 						});
 
 						return { user, boardNodeAuthorizable };
 					};
+
 					it('should return true if trying to "read"', () => {
 						const { user, boardNodeAuthorizable } = setup();
 
-						const res = service.hasPermission(user, boardNodeAuthorizable, {
+						const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
 							action: Action.read,
 							requiredPermissions: [],
 						});
 
 						expect(res).toBe(true);
 					});
+
 					it('should return true if trying to "write" ', () => {
 						const { user, boardNodeAuthorizable } = setup();
 
-						const res = service.hasPermission(user, boardNodeAuthorizable, {
+						const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
 							action: Action.write,
 							requiredPermissions: [],
 						});
@@ -625,6 +651,7 @@ describe(BoardNodeRule.name, () => {
 						expect(res).toBe(true);
 					});
 				});
+
 				describe('when user is Reader', () => {
 					const setup = () => {
 						const user = userFactory.buildWithId();
@@ -635,25 +662,27 @@ describe(BoardNodeRule.name, () => {
 							id: new ObjectId().toHexString(),
 							boardNode: drawingElement,
 							rootNode: columnBoard,
-							boardContextSettings: {},
+							boardContextSettings: { isLocked: false },
 						});
 
 						return { user, boardNodeAuthorizable };
 					};
+
 					it('should return true if trying to "read"', () => {
 						const { user, boardNodeAuthorizable } = setup();
 
-						const res = service.hasPermission(user, boardNodeAuthorizable, {
+						const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
 							action: Action.read,
 							requiredPermissions: [],
 						});
 
 						expect(res).toBe(true);
 					});
+
 					it('should return false if trying to "write" ', () => {
 						const { user, boardNodeAuthorizable } = setup();
 
-						const res = service.hasPermission(user, boardNodeAuthorizable, {
+						const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
 							action: Action.write,
 							requiredPermissions: [],
 						});
@@ -662,6 +691,7 @@ describe(BoardNodeRule.name, () => {
 					});
 				});
 			});
+
 			describe('when required permissions include FILESTORAGE_CREATE or FILESTORAGE_VIEW', () => {
 				describe('when user is Editor', () => {
 					const setup = () => {
@@ -673,36 +703,39 @@ describe(BoardNodeRule.name, () => {
 							id: new ObjectId().toHexString(),
 							boardNode: drawingElement,
 							rootNode: columnBoard,
-							boardContextSettings: {},
+							boardContextSettings: { isLocked: false },
 						});
 						userService.resolvePermissions.mockReturnValueOnce([...userPermissions, ...studentPermissions]);
 
 						return { user, boardNodeAuthorizable };
 					};
+
 					it('should return true if trying to "read"', () => {
 						const { user, boardNodeAuthorizable } = setup();
 
-						const res = service.hasPermission(user, boardNodeAuthorizable, {
+						const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
 							action: Action.read,
 							requiredPermissions: [Permission.FILESTORAGE_VIEW],
 						});
 
 						expect(res).toBe(true);
 					});
+
 					it('should return true if trying to "write" ', () => {
 						const { user, boardNodeAuthorizable } = setup();
 
-						const res = service.hasPermission(user, boardNodeAuthorizable, {
+						const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
 							action: Action.write,
 							requiredPermissions: [Permission.FILESTORAGE_CREATE],
 						});
 
 						expect(res).toBe(true);
 					});
+
 					it('should return true if trying to "write" ', () => {
 						const { user, boardNodeAuthorizable } = setup();
 
-						const res = service.hasPermission(user, boardNodeAuthorizable, {
+						const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
 							action: Action.write,
 							requiredPermissions: [Permission.FILESTORAGE_REMOVE],
 						});
@@ -710,6 +743,7 @@ describe(BoardNodeRule.name, () => {
 						expect(res).toBe(true);
 					});
 				});
+
 				describe('when user is Reader', () => {
 					const setup = () => {
 						const user = userFactory.asStudent().buildWithId();
@@ -720,7 +754,7 @@ describe(BoardNodeRule.name, () => {
 							id: new ObjectId().toHexString(),
 							boardNode: drawingElement,
 							rootNode: columnBoard,
-							boardContextSettings: {},
+							boardContextSettings: { isLocked: false },
 						});
 						userService.resolvePermissions.mockReturnValueOnce([...userPermissions, ...studentPermissions]);
 
@@ -729,7 +763,7 @@ describe(BoardNodeRule.name, () => {
 					it('should return true if trying to "read"', () => {
 						const { user, boardNodeAuthorizable } = setup();
 
-						const res = service.hasPermission(user, boardNodeAuthorizable, {
+						const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
 							action: Action.read,
 							requiredPermissions: [Permission.FILESTORAGE_VIEW],
 						});
@@ -739,7 +773,7 @@ describe(BoardNodeRule.name, () => {
 					it('should ALSO return true if trying to "write" ', () => {
 						const { user, boardNodeAuthorizable } = setup();
 
-						const res = service.hasPermission(user, boardNodeAuthorizable, {
+						const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
 							action: Action.write,
 							requiredPermissions: [Permission.FILESTORAGE_CREATE],
 						});
@@ -766,11 +800,15 @@ describe(BoardNodeRule.name, () => {
 
 					return { user, boardNodeAuthorizable };
 				};
+
 				describe('when board settings allow editors to create video conferences', () => {
 					it('should return true if trying to "read"', () => {
-						const { user, boardNodeAuthorizable } = setup({ canRoomEditorManageVideoconference: true });
+						const { user, boardNodeAuthorizable } = setup({
+							canRoomEditorManageVideoconference: true,
+							isLocked: false,
+						});
 
-						const res = service.hasPermission(user, boardNodeAuthorizable, {
+						const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
 							action: Action.read,
 							requiredPermissions: [],
 						});
@@ -778,9 +816,12 @@ describe(BoardNodeRule.name, () => {
 						expect(res).toBe(true);
 					});
 					it('should return true if trying to "write" ', () => {
-						const { user, boardNodeAuthorizable } = setup({ canRoomEditorManageVideoconference: true });
+						const { user, boardNodeAuthorizable } = setup({
+							canRoomEditorManageVideoconference: true,
+							isLocked: false,
+						});
 
-						const res = service.hasPermission(user, boardNodeAuthorizable, {
+						const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
 							action: Action.write,
 							requiredPermissions: [],
 						});
@@ -791,9 +832,12 @@ describe(BoardNodeRule.name, () => {
 
 				describe('when board settings prohibit editors to create video conferences', () => {
 					it('should return true if trying to "read"', () => {
-						const { user, boardNodeAuthorizable } = setup({ canRoomEditorManageVideoconference: false });
+						const { user, boardNodeAuthorizable } = setup({
+							canRoomEditorManageVideoconference: false,
+							isLocked: false,
+						});
 
-						const res = service.hasPermission(user, boardNodeAuthorizable, {
+						const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
 							action: Action.read,
 							requiredPermissions: [],
 						});
@@ -801,9 +845,12 @@ describe(BoardNodeRule.name, () => {
 						expect(res).toBe(true);
 					});
 					it('should return true if trying to "write" ', () => {
-						const { user, boardNodeAuthorizable } = setup({ canRoomEditorManageVideoconference: false });
+						const { user, boardNodeAuthorizable } = setup({
+							canRoomEditorManageVideoconference: false,
+							isLocked: false,
+						});
 
-						const res = service.hasPermission(user, boardNodeAuthorizable, {
+						const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
 							action: Action.write,
 							requiredPermissions: [],
 						});
@@ -812,6 +859,7 @@ describe(BoardNodeRule.name, () => {
 					});
 				});
 			});
+
 			describe('when user is Editor', () => {
 				const setup = (boardSettings: BoardContextSettings) => {
 					const user = userFactory.asTeacher().buildWithId();
@@ -827,21 +875,29 @@ describe(BoardNodeRule.name, () => {
 
 					return { user, boardNodeAuthorizable };
 				};
+
 				describe('when board settings allow editors to create video conferences', () => {
 					it('should return true if trying to "read"', () => {
-						const { user, boardNodeAuthorizable } = setup({ canRoomEditorManageVideoconference: true });
+						const { user, boardNodeAuthorizable } = setup({
+							canRoomEditorManageVideoconference: true,
+							isLocked: false,
+						});
 
-						const res = service.hasPermission(user, boardNodeAuthorizable, {
+						const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
 							action: Action.read,
 							requiredPermissions: [],
 						});
 
 						expect(res).toBe(true);
 					});
-					it('should return true if trying to "write" ', () => {
-						const { user, boardNodeAuthorizable } = setup({ canRoomEditorManageVideoconference: true });
 
-						const res = service.hasPermission(user, boardNodeAuthorizable, {
+					it('should return true if trying to "write" ', () => {
+						const { user, boardNodeAuthorizable } = setup({
+							canRoomEditorManageVideoconference: true,
+							isLocked: false,
+						});
+
+						const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
 							action: Action.write,
 							requiredPermissions: [],
 						});
@@ -852,19 +908,26 @@ describe(BoardNodeRule.name, () => {
 
 				describe('when board settings prohibit editors to create video conferences', () => {
 					it('should return true if trying to "read"', () => {
-						const { user, boardNodeAuthorizable } = setup({ canRoomEditorManageVideoconference: false });
+						const { user, boardNodeAuthorizable } = setup({
+							canRoomEditorManageVideoconference: false,
+							isLocked: false,
+						});
 
-						const res = service.hasPermission(user, boardNodeAuthorizable, {
+						const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
 							action: Action.read,
 							requiredPermissions: [],
 						});
 
 						expect(res).toBe(true);
 					});
-					it('should return false if trying to "write" ', () => {
-						const { user, boardNodeAuthorizable } = setup({ canRoomEditorManageVideoconference: false });
 
-						const res = service.hasPermission(user, boardNodeAuthorizable, {
+					it('should return false if trying to "write" ', () => {
+						const { user, boardNodeAuthorizable } = setup({
+							canRoomEditorManageVideoconference: false,
+							isLocked: false,
+						});
+
+						const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
 							action: Action.write,
 							requiredPermissions: [],
 						});
@@ -873,6 +936,7 @@ describe(BoardNodeRule.name, () => {
 					});
 				});
 			});
+
 			describe('when user is Reader', () => {
 				const setup = (boardSettings: BoardContextSettings) => {
 					const user = userFactory.asTeacher().buildWithId();
@@ -888,21 +952,29 @@ describe(BoardNodeRule.name, () => {
 
 					return { user, boardNodeAuthorizable };
 				};
+
 				describe('when board settings allow editors to create video conferences', () => {
 					it('should return true if trying to "read"', () => {
-						const { user, boardNodeAuthorizable } = setup({ canRoomEditorManageVideoconference: true });
+						const { user, boardNodeAuthorizable } = setup({
+							canRoomEditorManageVideoconference: true,
+							isLocked: false,
+						});
 
-						const res = service.hasPermission(user, boardNodeAuthorizable, {
+						const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
 							action: Action.read,
 							requiredPermissions: [],
 						});
 
 						expect(res).toBe(true);
 					});
-					it('should return false if trying to "write" ', () => {
-						const { user, boardNodeAuthorizable } = setup({ canRoomEditorManageVideoconference: true });
 
-						const res = service.hasPermission(user, boardNodeAuthorizable, {
+					it('should return false if trying to "write" ', () => {
+						const { user, boardNodeAuthorizable } = setup({
+							canRoomEditorManageVideoconference: true,
+							isLocked: false,
+						});
+
+						const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
 							action: Action.write,
 							requiredPermissions: [],
 						});
@@ -913,19 +985,26 @@ describe(BoardNodeRule.name, () => {
 
 				describe('when board settings prohibit editors to create video conferences', () => {
 					it('should return true if trying to "read"', () => {
-						const { user, boardNodeAuthorizable } = setup({ canRoomEditorManageVideoconference: false });
+						const { user, boardNodeAuthorizable } = setup({
+							canRoomEditorManageVideoconference: false,
+							isLocked: false,
+						});
 
-						const res = service.hasPermission(user, boardNodeAuthorizable, {
+						const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
 							action: Action.read,
 							requiredPermissions: [],
 						});
 
 						expect(res).toBe(true);
 					});
-					it('should return false if trying to "write" ', () => {
-						const { user, boardNodeAuthorizable } = setup({ canRoomEditorManageVideoconference: false });
 
-						const res = service.hasPermission(user, boardNodeAuthorizable, {
+					it('should return false if trying to "write" ', () => {
+						const { user, boardNodeAuthorizable } = setup({
+							canRoomEditorManageVideoconference: false,
+							isLocked: false,
+						});
+
+						const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
 							action: Action.write,
 							requiredPermissions: [],
 						});
@@ -934,6 +1013,396 @@ describe(BoardNodeRule.name, () => {
 					});
 				});
 			});
+		});
+	});
+
+	describe('listAllowedOperations', () => {
+		describe('when user is Administrator and BoardAdmin', () => {
+			const setup = (boardSettings: BoardContextSettings) => {
+				const user = userFactory.asAdmin().buildWithId();
+				const videoConferenceElement = videoConferenceElementFactory.build();
+				const columnBoard = columnBoardFactory.build();
+				const boardNodeAuthorizable = boardNodeAuthorizableFactory.build({
+					users: [{ userId: user.id, roles: [BoardRoles.EDITOR, BoardRoles.ADMIN] }],
+					id: new ObjectId().toHexString(),
+					boardNode: videoConferenceElement,
+					rootNode: columnBoard,
+					boardContextSettings: boardSettings,
+				});
+
+				return { user, boardNodeAuthorizable };
+			};
+
+			it('should return the expected allowed operations', () => {
+				const { user, boardNodeAuthorizable } = setup({ canRoomEditorManageVideoconference: true, isLocked: false });
+
+				const res = boardNodeRule.listAllowedOperations(user, boardNodeAuthorizable);
+				const expectedAllowedOperations = {
+					// board
+					copyBoard: true,
+					deleteBoard: true,
+					findBoard: true,
+					relocateContent: true,
+					shareBoard: true,
+					updateBoardLayout: true,
+					updateBoardTitle: true,
+					updateReadersCanEditSetting: false,
+
+					// column
+					createColumn: true,
+					deleteColumn: true,
+					moveColumn: true,
+					updateColumnTitle: true,
+
+					// card
+					copyCard: true,
+					createCard: true,
+					deleteCard: true,
+					findCards: true,
+					moveCard: true,
+					shareCard: true,
+					updateCardHeight: true,
+					updateCardTitle: true,
+
+					// element
+					createElement: true,
+					deleteElement: true,
+					moveElement: true,
+					updateElement: true,
+					viewElement: true,
+
+					// element / externalToolElement
+					createExternalToolElement: false,
+
+					// element / fileElement
+					createFileElement: true,
+
+					// element / submissionElement
+					createSubmissionItemContent: false,
+					deleteSubmissionItem: false,
+					updateSubmissionItem: false,
+
+					// element / videoConferenceElement
+					manageVideoConference: true,
+
+					// mediaBoard
+					collapseMediaBoard: true,
+					updateBoardVisibility: true,
+					updateMediaBoardColor: true,
+					updateMediaBoardLayout: true,
+					viewMediaBoard: true,
+
+					// mediaBoardLine
+					collapseMediaBoardLine: true,
+					createMediaBoardLine: true,
+					deleteMediaBoardLine: true,
+					updateMediaBoardLine: true,
+					updateMediaBoardLineColor: true,
+				} satisfies Record<BoardOperation, boolean>;
+
+				expect(res).toEqual(expectedAllowedOperations);
+			});
+		});
+
+		describe('when user is Teacher and BoardEditor', () => {
+			const setup = (boardSettings: BoardContextSettings) => {
+				const user = userFactory.asTeacher().buildWithId();
+				const videoConferenceElement = videoConferenceElementFactory.build();
+				const columnBoard = columnBoardFactory.build();
+				const boardNodeAuthorizable = boardNodeAuthorizableFactory.build({
+					users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }],
+					id: new ObjectId().toHexString(),
+					boardNode: videoConferenceElement,
+					rootNode: columnBoard,
+					boardContextSettings: boardSettings,
+				});
+
+				return { user, boardNodeAuthorizable };
+			};
+
+			it('should return the expected allowed operations', () => {
+				const { user, boardNodeAuthorizable } = setup({ canRoomEditorManageVideoconference: true, isLocked: false });
+
+				const res = boardNodeRule.listAllowedOperations(user, boardNodeAuthorizable);
+				const expectedAllowedOperations = {
+					// board
+					copyBoard: true,
+					deleteBoard: true,
+					findBoard: true,
+					relocateContent: false,
+					shareBoard: false,
+					updateBoardLayout: true,
+					updateBoardTitle: true,
+					updateReadersCanEditSetting: false,
+
+					// column
+					createColumn: true,
+					deleteColumn: true,
+					moveColumn: true,
+					updateColumnTitle: true,
+
+					// card
+					copyCard: true,
+					createCard: true,
+					deleteCard: true,
+					findCards: true,
+					moveCard: true,
+					shareCard: false,
+					updateCardHeight: true,
+					updateCardTitle: true,
+
+					// element
+					createElement: true,
+					deleteElement: true,
+					moveElement: true,
+					updateElement: true,
+					viewElement: true,
+
+					// element / externalToolElement
+					createExternalToolElement: true,
+
+					// element / fileElement
+					createFileElement: true,
+
+					// element / submissionElement
+					createSubmissionItemContent: false,
+					deleteSubmissionItem: false,
+					updateSubmissionItem: false,
+
+					// element / videoConferenceElement
+					manageVideoConference: true,
+
+					// mediaBoard
+					collapseMediaBoard: true,
+					updateBoardVisibility: true,
+					updateMediaBoardColor: true,
+					updateMediaBoardLayout: true,
+					viewMediaBoard: true,
+
+					// mediaBoardLine
+					collapseMediaBoardLine: true,
+					createMediaBoardLine: true,
+					deleteMediaBoardLine: true,
+					updateMediaBoardLine: true,
+					updateMediaBoardLineColor: true,
+				} satisfies Record<BoardOperation, boolean>;
+
+				expect(res).toEqual(expectedAllowedOperations);
+			});
+		});
+
+		describe('when user is Student and BoardReader', () => {
+			const setup = (boardSettings: BoardContextSettings) => {
+				const user = userFactory.asStudent().buildWithId();
+				const videoConferenceElement = videoConferenceElementFactory.build();
+				const columnBoard = columnBoardFactory.build();
+				const boardNodeAuthorizable = boardNodeAuthorizableFactory.build({
+					users: [{ userId: user.id, roles: [BoardRoles.READER] }],
+					id: new ObjectId().toHexString(),
+					boardNode: videoConferenceElement,
+					rootNode: columnBoard,
+					boardContextSettings: boardSettings,
+				});
+
+				return { user, boardNodeAuthorizable };
+			};
+
+			it('should return the expected allowed operations', () => {
+				const { user, boardNodeAuthorizable } = setup({ canRoomEditorManageVideoconference: true, isLocked: false });
+
+				const res = boardNodeRule.listAllowedOperations(user, boardNodeAuthorizable);
+
+				const expectedAllowedOperations = {
+					// board
+					copyBoard: false,
+					deleteBoard: false,
+					findBoard: true,
+					relocateContent: false,
+					shareBoard: false,
+					updateBoardLayout: false,
+					updateBoardTitle: false,
+					updateReadersCanEditSetting: false,
+
+					// column
+					createColumn: false,
+					deleteColumn: false,
+					moveColumn: false,
+					updateColumnTitle: false,
+
+					// card
+					copyCard: false,
+					createCard: false,
+					deleteCard: false,
+					findCards: true,
+					moveCard: false,
+					shareCard: false,
+					updateCardHeight: false,
+					updateCardTitle: false,
+
+					// element
+					createElement: false,
+					deleteElement: false,
+					moveElement: false,
+					updateElement: false,
+					viewElement: true,
+
+					// element / externalToolElement
+					createExternalToolElement: false,
+
+					// element / fileElement
+					createFileElement: false,
+
+					// element / submissionElement
+					createSubmissionItemContent: false,
+					deleteSubmissionItem: false,
+					updateSubmissionItem: false,
+
+					// element / videoConferenceElement
+					manageVideoConference: false,
+
+					// mediaBoard
+					collapseMediaBoard: false,
+					updateBoardVisibility: false,
+					updateMediaBoardColor: false,
+					updateMediaBoardLayout: false,
+					viewMediaBoard: true,
+
+					// mediaBoardLine
+					collapseMediaBoardLine: false,
+					createMediaBoardLine: false,
+					deleteMediaBoardLine: false,
+					updateMediaBoardLine: false,
+					updateMediaBoardLineColor: false,
+				} satisfies Record<BoardOperation, boolean>;
+
+				expect(res).toEqual(expectedAllowedOperations);
+			});
+		});
+
+		describe('when board is locked ', () => {
+			const setup = () => {
+				const user = userFactory.asTeacher().buildWithId();
+				const videoConferenceElement = videoConferenceElementFactory.build();
+				const columnBoard = columnBoardFactory.build();
+				const boardNodeAuthorizable = boardNodeAuthorizableFactory.build({
+					users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }],
+					id: new ObjectId().toHexString(),
+					boardNode: videoConferenceElement,
+					rootNode: columnBoard,
+					boardContextSettings: { isLocked: true },
+				});
+
+				return { user, boardNodeAuthorizable };
+			};
+
+			it('should return all operations as false', () => {
+				const { user, boardNodeAuthorizable } = setup();
+
+				const res = boardNodeRule.listAllowedOperations(user, boardNodeAuthorizable);
+				const expectedAllowedOperations = {
+					// board
+					copyBoard: false,
+					deleteBoard: false,
+					findBoard: false,
+					relocateContent: false,
+					shareBoard: false,
+					updateBoardLayout: false,
+					updateBoardTitle: false,
+					updateReadersCanEditSetting: false,
+
+					// column
+					createColumn: false,
+					deleteColumn: false,
+					moveColumn: false,
+					updateColumnTitle: false,
+
+					// card
+					copyCard: false,
+					createCard: false,
+					deleteCard: false,
+					findCards: false,
+					moveCard: false,
+					shareCard: false,
+					updateCardHeight: false,
+					updateCardTitle: false,
+
+					// element
+					createElement: false,
+					deleteElement: false,
+					moveElement: false,
+					updateElement: false,
+					viewElement: false,
+
+					// element / externalToolElement
+					createExternalToolElement: false,
+
+					// element / fileElement
+					createFileElement: false,
+
+					// element / submissionElement
+					createSubmissionItemContent: false,
+					deleteSubmissionItem: false,
+					updateSubmissionItem: false,
+
+					// element / videoConferenceElement
+					manageVideoConference: false,
+
+					// mediaBoard
+					collapseMediaBoard: false,
+					updateBoardVisibility: false,
+					updateMediaBoardColor: false,
+					updateMediaBoardLayout: false,
+					viewMediaBoard: false,
+
+					// mediaBoardLine
+					collapseMediaBoardLine: false,
+					createMediaBoardLine: false,
+					deleteMediaBoardLine: false,
+					updateMediaBoardLine: false,
+					updateMediaBoardLineColor: false,
+				} satisfies Record<BoardOperation, boolean>;
+
+				expect(res).toEqual(expectedAllowedOperations);
+			});
+		});
+	});
+
+	describe('hasPermission when board is locked', () => {
+		const setup = () => {
+			const user = userFactory.buildWithId();
+			const anyBoardNode = fileElementFactory.build();
+			const columnBoard = columnBoardFactory.build();
+			const boardNodeAuthorizable = boardNodeAuthorizableFactory.build({
+				users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }],
+				id: new ObjectId().toHexString(),
+				boardNode: anyBoardNode,
+				rootNode: columnBoard,
+				boardContextSettings: { isLocked: true },
+			});
+
+			return { user, boardNodeAuthorizable };
+		};
+
+		it('should return false for read action', () => {
+			const { user, boardNodeAuthorizable } = setup();
+
+			const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
+				action: Action.read,
+				requiredPermissions: [],
+			});
+
+			expect(res).toBe(false);
+		});
+
+		it('should return false for write action', () => {
+			const { user, boardNodeAuthorizable } = setup();
+
+			const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
+				action: Action.write,
+				requiredPermissions: [],
+			});
+
+			expect(res).toBe(false);
 		});
 	});
 });

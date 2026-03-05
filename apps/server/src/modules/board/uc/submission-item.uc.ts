@@ -41,7 +41,7 @@ export class SubmissionItemUc {
 			submissionContainerElement
 		);
 
-		throwForbiddenIfFalse(this.boardNodeRule.canViewElement(user, boardNodeAuthorizable));
+		throwForbiddenIfFalse(this.boardNodeRule.can('viewElement', user, boardNodeAuthorizable));
 
 		const submissionItems = submissionContainerElement.children.filter(isSubmissionItem);
 
@@ -67,7 +67,7 @@ export class SubmissionItemUc {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(submissionItem);
 
-		throwForbiddenIfFalse(this.boardNodeRule.canUpdateSubmissionItem(user, boardNodeAuthorizable));
+		throwForbiddenIfFalse(this.boardNodeRule.can('updateSubmissionItem', user, boardNodeAuthorizable));
 
 		await this.boardNodeService.updateCompleted(submissionItem, completed);
 
@@ -79,7 +79,7 @@ export class SubmissionItemUc {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(submissionItem);
 
-		throwForbiddenIfFalse(this.boardNodeRule.canDeleteSubmissionItem(user, boardNodeAuthorizable));
+		throwForbiddenIfFalse(this.boardNodeRule.can('deleteSubmissionItem', user, boardNodeAuthorizable));
 
 		await this.boardNodeService.delete(submissionItem);
 	}
@@ -97,7 +97,7 @@ export class SubmissionItemUc {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(submissionItem);
 
-		throwForbiddenIfFalse(this.boardNodeRule.canCreateSubmissionItemContent(user, boardNodeAuthorizable));
+		throwForbiddenIfFalse(this.boardNodeRule.can('createSubmissionItemContent', user, boardNodeAuthorizable));
 
 		const element = this.boardNodeFactory.buildContentElement(type);
 		if (!(isFileElement(element) || isRichTextElement(element))) {

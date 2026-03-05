@@ -265,7 +265,7 @@ describe(RoomRule.name, () => {
 				it('should return true', () => {
 					const { userWithPermission } = setup();
 
-					const result = service.canCreateRoom(userWithPermission);
+					const result = service.can('createRoom', userWithPermission, null as unknown as RoomAuthorizable);
 
 					expect(result).toBe(true);
 				});
@@ -275,7 +275,7 @@ describe(RoomRule.name, () => {
 				it('should return false', () => {
 					const { userWithoutPermission } = setup();
 
-					const result = service.canCreateRoom(userWithoutPermission);
+					const result = service.can('createRoom', userWithoutPermission, null as unknown as RoomAuthorizable);
 
 					expect(result).toBe(false);
 				});
@@ -285,15 +285,20 @@ describe(RoomRule.name, () => {
 
 	describe('canCopyRoom', () => {
 		const setup = () => {
-			const userWithPermission = userFactory.buildWithId();
+			const userWithPermission = userFactory.asTeacher().buildWithId();
 			const userWithoutPermission = userFactory.buildWithId();
+			const userRoomOwner = userFactory.buildWithId();
 
 			const roleDtoWithPermission = roleDtoFactory.build({ permissions: [Permission.ROOM_COPY_ROOM] });
 			const roleDtoWithoutPermission = roleDtoFactory.build({ permissions: [] });
+			const roleOwner = roleDtoFactory.build({ name: RoleName.ROOMOWNER });
 
 			const roomAuthorizableWithPermission = new RoomAuthorizable(
 				'roomId',
-				[{ roles: [roleDtoWithPermission], userId: userWithPermission.id, userSchoolId: userWithPermission.school.id }],
+				[
+					{ roles: [roleDtoWithPermission], userId: userWithPermission.id, userSchoolId: userWithPermission.school.id },
+					{ roles: [roleOwner], userId: userRoomOwner.id, userSchoolId: userRoomOwner.school.id },
+				],
 				userWithPermission.school.id
 			);
 
@@ -321,7 +326,7 @@ describe(RoomRule.name, () => {
 			it('should return true', () => {
 				const { userWithPermission, roomAuthorizableWithPermission } = setup();
 
-				const result = service.canCopyRoom(userWithPermission, roomAuthorizableWithPermission);
+				const result = service.can('copyRoom', userWithPermission, roomAuthorizableWithPermission);
 
 				expect(result).toBe(true);
 			});
@@ -331,7 +336,7 @@ describe(RoomRule.name, () => {
 			it('should return false', () => {
 				const { userWithoutPermission, roomAuthorizableWithoutPermission } = setup();
 
-				const result = service.canCopyRoom(userWithoutPermission, roomAuthorizableWithoutPermission);
+				const result = service.can('copyRoom', userWithoutPermission, roomAuthorizableWithoutPermission);
 
 				expect(result).toBe(false);
 			});
@@ -357,7 +362,7 @@ describe(RoomRule.name, () => {
 				it('should return true', () => {
 					const { user, roomAuthorizable } = setup();
 
-					const result = service.canAccessRoom(user, roomAuthorizable);
+					const result = service.can('accessRoom', user, roomAuthorizable);
 
 					expect(result).toBe(true);
 				});
@@ -381,7 +386,7 @@ describe(RoomRule.name, () => {
 				it('should return true', () => {
 					const { user, roomAuthorizable } = setup();
 
-					const result = service.canAccessRoom(user, roomAuthorizable);
+					const result = service.can('accessRoom', user, roomAuthorizable);
 
 					expect(result).toBe(true);
 				});
@@ -404,7 +409,7 @@ describe(RoomRule.name, () => {
 				it('should return true', () => {
 					const { user, roomAuthorizable } = setup();
 
-					const result = service.canAccessRoom(user, roomAuthorizable);
+					const result = service.can('accessRoom', user, roomAuthorizable);
 
 					expect(result).toBe(true);
 				});
@@ -431,7 +436,7 @@ describe(RoomRule.name, () => {
 				it('should return true', () => {
 					const { user, roomAuthorizable } = setup();
 
-					const result = service.canAccessRoom(user, roomAuthorizable);
+					const result = service.can('accessRoom', user, roomAuthorizable);
 
 					expect(result).toBe(true);
 				});
@@ -453,7 +458,7 @@ describe(RoomRule.name, () => {
 				it('should return false', () => {
 					const { user, roomAuthorizable } = setup();
 
-					const result = service.canAccessRoom(user, roomAuthorizable);
+					const result = service.can('accessRoom', user, roomAuthorizable);
 
 					expect(result).toBe(false);
 				});
@@ -465,10 +470,15 @@ describe(RoomRule.name, () => {
 		describe('when user has room add members permission', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
+				const userOwner = userFactory.buildWithId();
 				const roomRoleDto = roleDtoFactory.build({ permissions: [Permission.ROOM_ADD_MEMBERS] });
+				const roleOwner = roleDtoFactory.build({ name: RoleName.ROOMOWNER });
 				const roomAuthorizable = new RoomAuthorizable(
 					'roomId',
-					[{ roles: [roomRoleDto], userId: user.id, userSchoolId: user.school.id }],
+					[
+						{ roles: [roomRoleDto], userId: user.id, userSchoolId: user.school.id },
+						{ roles: [roleOwner], userId: userOwner.id, userSchoolId: userOwner.school.id },
+					],
 					user.school.id
 				);
 
@@ -478,7 +488,7 @@ describe(RoomRule.name, () => {
 			it('should return true', () => {
 				const { user, roomAuthorizable } = setup();
 
-				const result = service.canAddMembers(user, roomAuthorizable);
+				const result = service.can('addMembers', user, roomAuthorizable);
 
 				expect(result).toBe(true);
 			});
@@ -501,7 +511,7 @@ describe(RoomRule.name, () => {
 			it('should return true', () => {
 				const { user, roomAuthorizable } = setup();
 
-				const result = service.canAddMembers(user, roomAuthorizable);
+				const result = service.can('addMembers', user, roomAuthorizable);
 
 				expect(result).toBe(true);
 			});
@@ -525,7 +535,7 @@ describe(RoomRule.name, () => {
 			it('should return false', () => {
 				const { user, roomAuthorizable } = setup();
 
-				const result = service.canAddMembers(user, roomAuthorizable);
+				const result = service.can('addMembers', user, roomAuthorizable);
 
 				expect(result).toBe(false);
 			});
@@ -547,7 +557,7 @@ describe(RoomRule.name, () => {
 			it('should return false', () => {
 				const { user, roomAuthorizable } = setup();
 
-				const result = service.canAddMembers(user, roomAuthorizable);
+				const result = service.can('addMembers', user, roomAuthorizable);
 
 				expect(result).toBe(false);
 			});
@@ -558,9 +568,11 @@ describe(RoomRule.name, () => {
 		const setup = () => {
 			const userWithPermission = userFactory.buildWithId();
 			const userWithoutPermission = userFactory.buildWithId();
+			const userOwner = userFactory.buildWithId();
 
 			const roomRoleDtoWithPermission = roleDtoFactory.build({ permissions: [Permission.ROOM_ADD_MEMBERS] });
 			const roomRoleDtoWithoutPermission = roleDtoFactory.build({ permissions: [] });
+			const roleOwner = roleDtoFactory.build({ name: RoleName.ROOMOWNER });
 
 			const roomAuthorizableWithPermission = new RoomAuthorizable(
 				'roomId',
@@ -569,6 +581,11 @@ describe(RoomRule.name, () => {
 						roles: [roomRoleDtoWithPermission],
 						userId: userWithPermission.id,
 						userSchoolId: userWithPermission.school.id,
+					},
+					{
+						roles: [roleOwner],
+						userId: userOwner.id,
+						userSchoolId: userOwner.school.id,
 					},
 				],
 				userWithPermission.school.id
@@ -598,7 +615,7 @@ describe(RoomRule.name, () => {
 			it('should return true', () => {
 				const { userWithPermission, roomAuthorizableWithPermission } = setup();
 
-				const result = service.canAddExternalPersonByEmail(userWithPermission, roomAuthorizableWithPermission);
+				const result = service.can('addExternalPersonByEmail', userWithPermission, roomAuthorizableWithPermission);
 
 				expect(result).toBe(true);
 			});
@@ -608,7 +625,11 @@ describe(RoomRule.name, () => {
 			it('should return false', () => {
 				const { userWithoutPermission, roomAuthorizableWithoutPermission } = setup();
 
-				const result = service.canAddExternalPersonByEmail(userWithoutPermission, roomAuthorizableWithoutPermission);
+				const result = service.can(
+					'addExternalPersonByEmail',
+					userWithoutPermission,
+					roomAuthorizableWithoutPermission
+				);
 
 				expect(result).toBe(false);
 			});
@@ -619,9 +640,11 @@ describe(RoomRule.name, () => {
 		const setup = () => {
 			const userWithPermission = userFactory.buildWithId();
 			const userWithoutPermission = userFactory.buildWithId();
+			const userOwner = userFactory.buildWithId();
 
 			const roomRoleDtoWithPermission = roleDtoFactory.build({ permissions: [Permission.ROOM_CHANGE_ROLES] });
 			const roomRoleDtoWithoutPermission = roleDtoFactory.build({ permissions: [] });
+			const roleOwner = roleDtoFactory.build({ name: RoleName.ROOMOWNER });
 
 			const roomAuthorizableWithPermission = new RoomAuthorizable(
 				'roomId',
@@ -630,6 +653,11 @@ describe(RoomRule.name, () => {
 						roles: [roomRoleDtoWithPermission],
 						userId: userWithPermission.id,
 						userSchoolId: userWithPermission.school.id,
+					},
+					{
+						roles: [roleOwner],
+						userId: userOwner.id,
+						userSchoolId: userOwner.school.id,
 					},
 				],
 				userWithPermission.school.id
@@ -659,7 +687,7 @@ describe(RoomRule.name, () => {
 			it('should return true', () => {
 				const { userWithPermission, roomAuthorizableWithPermission } = setup();
 
-				const result = service.canChangeRolesOfMembers(userWithPermission, roomAuthorizableWithPermission);
+				const result = service.can('changeRolesOfMembers', userWithPermission, roomAuthorizableWithPermission);
 
 				expect(result).toBe(true);
 			});
@@ -669,7 +697,7 @@ describe(RoomRule.name, () => {
 			it('should return false', () => {
 				const { userWithoutPermission, roomAuthorizableWithoutPermission } = setup();
 
-				const result = service.canChangeRolesOfMembers(userWithoutPermission, roomAuthorizableWithoutPermission);
+				const result = service.can('changeRolesOfMembers', userWithoutPermission, roomAuthorizableWithoutPermission);
 
 				expect(result).toBe(false);
 			});
@@ -680,9 +708,11 @@ describe(RoomRule.name, () => {
 		const setup = () => {
 			const userWithPermission = userFactory.buildWithId();
 			const userWithoutPermission = userFactory.buildWithId();
+			const userOwner = userFactory.buildWithId();
 
 			const roomRoleDtoWithPermission = roleDtoFactory.build({ permissions: [Permission.ROOM_LEAVE_ROOM] });
 			const roomRoleDtoWithoutPermission = roleDtoFactory.build({ permissions: [] });
+			const roleOwner = roleDtoFactory.build({ name: RoleName.ROOMOWNER });
 
 			const roomAuthorizableWithPermission = new RoomAuthorizable(
 				'roomId',
@@ -691,6 +721,11 @@ describe(RoomRule.name, () => {
 						roles: [roomRoleDtoWithPermission],
 						userId: userWithPermission.id,
 						userSchoolId: userWithPermission.school.id,
+					},
+					{
+						roles: [roleOwner],
+						userId: userOwner.id,
+						userSchoolId: userOwner.school.id,
 					},
 				],
 				userWithPermission.school.id
@@ -720,7 +755,7 @@ describe(RoomRule.name, () => {
 			it('should return true', () => {
 				const { userWithPermission, roomAuthorizableWithPermission } = setup();
 
-				const result = service.canLeaveRoom(userWithPermission, roomAuthorizableWithPermission);
+				const result = service.can('leaveRoom', userWithPermission, roomAuthorizableWithPermission);
 
 				expect(result).toBe(true);
 			});
@@ -730,7 +765,7 @@ describe(RoomRule.name, () => {
 			it('should return false', () => {
 				const { userWithoutPermission, roomAuthorizableWithoutPermission } = setup();
 
-				const result = service.canLeaveRoom(userWithoutPermission, roomAuthorizableWithoutPermission);
+				const result = service.can('leaveRoom', userWithoutPermission, roomAuthorizableWithoutPermission);
 
 				expect(result).toBe(false);
 			});
@@ -741,9 +776,11 @@ describe(RoomRule.name, () => {
 		const setup = () => {
 			const userWithPermission = userFactory.buildWithId();
 			const userWithoutPermission = userFactory.buildWithId();
+			const userOwner = userFactory.buildWithId();
 
 			const roomRoleDtoWithPermission = roleDtoFactory.build({ permissions: [Permission.ROOM_EDIT_ROOM] });
 			const roomRoleDtoWithoutPermission = roleDtoFactory.build({ permissions: [] });
+			const roleOwner = roleDtoFactory.build({ name: RoleName.ROOMOWNER });
 
 			const roomAuthorizableWithPermission = new RoomAuthorizable(
 				'roomId',
@@ -752,6 +789,11 @@ describe(RoomRule.name, () => {
 						roles: [roomRoleDtoWithPermission],
 						userId: userWithPermission.id,
 						userSchoolId: userWithPermission.school.id,
+					},
+					{
+						roles: [roleOwner],
+						userId: userOwner.id,
+						userSchoolId: userOwner.school.id,
 					},
 				],
 				userWithPermission.school.id
@@ -781,7 +823,7 @@ describe(RoomRule.name, () => {
 			it('should return true', () => {
 				const { userWithPermission, roomAuthorizableWithPermission } = setup();
 
-				const result = service.canUpdateRoom(userWithPermission, roomAuthorizableWithPermission);
+				const result = service.can('updateRoom', userWithPermission, roomAuthorizableWithPermission);
 
 				expect(result).toBe(true);
 			});
@@ -791,7 +833,7 @@ describe(RoomRule.name, () => {
 			it('should return false', () => {
 				const { userWithoutPermission, roomAuthorizableWithoutPermission } = setup();
 
-				const result = service.canUpdateRoom(userWithoutPermission, roomAuthorizableWithoutPermission);
+				const result = service.can('updateRoom', userWithoutPermission, roomAuthorizableWithoutPermission);
 
 				expect(result).toBe(false);
 			});
@@ -802,10 +844,15 @@ describe(RoomRule.name, () => {
 		describe('when user has room delete permission', () => {
 			const setup = () => {
 				const user = userFactory.buildWithId();
+				const userOwner = userFactory.buildWithId();
 				const roomRoleDto = roleDtoFactory.build({ permissions: [Permission.ROOM_DELETE_ROOM] });
+				const roleOwner = roleDtoFactory.build({ name: RoleName.ROOMOWNER });
 				const roomAuthorizable = new RoomAuthorizable(
 					'roomId',
-					[{ roles: [roomRoleDto], userId: user.id, userSchoolId: user.school.id }],
+					[
+						{ roles: [roomRoleDto], userId: user.id, userSchoolId: user.school.id },
+						{ roles: [roleOwner], userId: userOwner.id, userSchoolId: userOwner.school.id },
+					],
 					user.school.id
 				);
 
@@ -815,7 +862,7 @@ describe(RoomRule.name, () => {
 			it('should return true', () => {
 				const { user, roomAuthorizable } = setup();
 
-				const result = service.canDeleteRoom(user, roomAuthorizable);
+				const result = service.can('deleteRoom', user, roomAuthorizable);
 
 				expect(result).toBe(true);
 			});
@@ -838,7 +885,7 @@ describe(RoomRule.name, () => {
 			it('should return true', () => {
 				const { user, roomAuthorizable } = setup();
 
-				const result = service.canDeleteRoom(user, roomAuthorizable);
+				const result = service.can('deleteRoom', user, roomAuthorizable);
 
 				expect(result).toBe(true);
 			});
@@ -862,7 +909,7 @@ describe(RoomRule.name, () => {
 			it('should return false', () => {
 				const { user, roomAuthorizable } = setup();
 
-				const result = service.canDeleteRoom(user, roomAuthorizable);
+				const result = service.can('deleteRoom', user, roomAuthorizable);
 
 				expect(result).toBe(false);
 			});
@@ -884,7 +931,7 @@ describe(RoomRule.name, () => {
 			it('should return false', () => {
 				const { user, roomAuthorizable } = setup();
 
-				const result = service.canDeleteRoom(user, roomAuthorizable);
+				const result = service.can('deleteRoom', user, roomAuthorizable);
 
 				expect(result).toBe(false);
 			});
@@ -896,10 +943,15 @@ describe(RoomRule.name, () => {
 			const setup = () => {
 				const schoolRole = roleFactory.build({ permissions: [Permission.SCHOOL_LIST_ROOM_MEMBERS] });
 				const user = userFactory.buildWithId({ roles: [schoolRole] });
+				const userOwner = userFactory.buildWithId();
 				const roomRoleDto = roleDtoFactory.build({ permissions: [Permission.ROOM_LIST_CONTENT] });
+				const roleOwner = roleDtoFactory.build({ name: RoleName.ROOMOWNER });
 				const roomAuthorizable = new RoomAuthorizable(
 					'roomId',
-					[{ roles: [roomRoleDto], userId: user.id, userSchoolId: user.school.id }],
+					[
+						{ roles: [roomRoleDto], userId: user.id, userSchoolId: user.school.id },
+						{ roles: [roleOwner], userId: userOwner.id, userSchoolId: userOwner.school.id },
+					],
 					user.school.id
 				);
 
@@ -909,7 +961,7 @@ describe(RoomRule.name, () => {
 			it('should return true', () => {
 				const { user, roomAuthorizable } = setup();
 
-				const result = service.canGetRoomMembers(user, roomAuthorizable);
+				const result = service.can('getRoomMembers', user, roomAuthorizable);
 
 				expect(result).toBe(true);
 			});
@@ -932,7 +984,7 @@ describe(RoomRule.name, () => {
 			it('should return false', () => {
 				const { user, roomAuthorizable } = setup();
 
-				const result = service.canGetRoomMembers(user, roomAuthorizable);
+				const result = service.can('getRoomMembers', user, roomAuthorizable);
 
 				expect(result).toBe(false);
 			});
@@ -954,7 +1006,7 @@ describe(RoomRule.name, () => {
 			it('should return false', () => {
 				const { user, roomAuthorizable } = setup();
 
-				const result = service.canGetRoomMembers(user, roomAuthorizable);
+				const result = service.can('getRoomMembers', user, roomAuthorizable);
 
 				expect(result).toBe(false);
 			});
@@ -976,7 +1028,7 @@ describe(RoomRule.name, () => {
 			it('should return false', () => {
 				const { user, roomAuthorizable } = setup();
 
-				const result = service.canGetRoomMembers(user, roomAuthorizable);
+				const result = service.can('getRoomMembers', user, roomAuthorizable);
 
 				expect(result).toBe(false);
 			});
@@ -988,8 +1040,10 @@ describe(RoomRule.name, () => {
 			const schoolRoleWithPermission = roleFactory.build({ permissions: [Permission.SCHOOL_ADMINISTRATE_ROOMS] });
 			const userWithPermission = userFactory.buildWithId({ roles: [schoolRoleWithPermission] });
 			const userWithoutPermission = userFactory.buildWithId();
+			const userOwner = userFactory.buildWithId();
 
 			const roomRoleDto = roleDtoFactory.build({ permissions: [] });
+			const roleOwner = roleDtoFactory.build({ name: RoleName.ROOMOWNER });
 
 			const roomAuthorizableWithPermission = new RoomAuthorizable(
 				'roomId',
@@ -998,6 +1052,11 @@ describe(RoomRule.name, () => {
 						roles: [roomRoleDto],
 						userId: userWithPermission.id,
 						userSchoolId: userWithPermission.school.id,
+					},
+					{
+						roles: [roleOwner],
+						userId: userOwner.id,
+						userSchoolId: userOwner.school.id,
 					},
 				],
 				userWithPermission.school.id
@@ -1027,7 +1086,7 @@ describe(RoomRule.name, () => {
 			it('should return true', () => {
 				const { userWithPermission, roomAuthorizableWithPermission } = setup();
 
-				const result = service.canGetRoomMembersRedacted(userWithPermission, roomAuthorizableWithPermission);
+				const result = service.can('getRoomMembersRedacted', userWithPermission, roomAuthorizableWithPermission);
 
 				expect(result).toBe(true);
 			});
@@ -1037,7 +1096,7 @@ describe(RoomRule.name, () => {
 			it('should return false', () => {
 				const { userWithoutPermission, roomAuthorizableWithoutPermission } = setup();
 
-				const result = service.canGetRoomMembersRedacted(userWithoutPermission, roomAuthorizableWithoutPermission);
+				const result = service.can('getRoomMembersRedacted', userWithoutPermission, roomAuthorizableWithoutPermission);
 
 				expect(result).toBe(false);
 			});
