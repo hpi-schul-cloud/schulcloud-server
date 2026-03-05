@@ -29,7 +29,7 @@ async function bootstrap(): Promise<void> {
 	const logger = await nestApp.resolve(Logger);
 	const loggerConfig = await nestApp.resolve<LoggerConfig>(LOGGER_CONFIG_TOKEN);
 	nestApp.use(createRequestLoggerMiddleware(loggerConfig));
-	const basePath = '/api/v3';
+	const basePath = '/api/v1';
 	const port = 3351;
 
 	rootExpress.use(basePath, nestExpress);

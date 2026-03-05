@@ -1,13 +1,13 @@
 import { JwtAuthentication } from '@infra/auth-guard';
 import {
-	Body,
 	Controller,
 	ForbiddenException,
+	Get,
 	HttpStatus,
 	Inject,
 	InternalServerErrorException,
 	NotImplementedException,
-	Post,
+	Query,
 	Req,
 	Res,
 	StreamableFile,
@@ -22,9 +22,9 @@ import { ArchiveFileParams } from './dto';
 import { StreamableFileMapper } from './mapper';
 
 @ApiTags('DownloadArchive')
-@Controller('legacy-file-archive')
+@Controller('filestorage/files/archive')
 @JwtAuthentication()
-export class DownloadArchiveController {
+export class LegacyFileArchiveController {
 	constructor(
 		private readonly downloadArchiveUC: DownloadArchiveUC,
 		@Inject(LEGACY_FILE_ARCHIVE_CONFIG_TOKEN) private readonly config: LegacyFileArchiveConfig
@@ -40,9 +40,9 @@ export class DownloadArchiveController {
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
 	@ApiResponse({ status: 501, type: NotImplementedException })
 	@ApiHeader({ name: 'Range', required: false })
-	@Post('/download-files-as-archive')
+	@Get()
 	public async downloadFilesAsArchive(
-		@Body() params: ArchiveFileParams,
+		@Query() params: ArchiveFileParams,
 		@Req() req: Request,
 		@Res({ passthrough: true }) response: Response
 	): Promise<StreamableFile | void> {

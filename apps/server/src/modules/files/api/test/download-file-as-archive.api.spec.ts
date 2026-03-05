@@ -30,7 +30,7 @@ import { DownloadArchiveService, FileOwnerModel, FILES_REPO } from '../../domain
 import { FileEntity, fileEntityFactory } from '../../entity';
 import { LEGACY_FILE_ARCHIVE_CONFIG_TOKEN, LegacyFileArchiveConfig } from '../../legacy-file-archive.config';
 import { FilesRepo } from '../../repo';
-import { DownloadArchiveController } from '../download-archive.controller';
+import { LegacyFileArchiveController } from '../download-archive.controller';
 import { DownloadArchiveUC } from '../download-archive.uc';
 
 describe('DownloadArchive Controller (API)', () => {
@@ -61,7 +61,7 @@ describe('DownloadArchive Controller (API)', () => {
 				ConfigurationModule.register(LEGACY_FILE_ARCHIVE_CONFIG_TOKEN, LegacyFileArchiveConfig),
 				ConfigurationModule.register(TEST_JWT_CONFIG_TOKEN, TestJwtModuleConfig),
 			],
-			controllers: [DownloadArchiveController],
+			controllers: [LegacyFileArchiveController],
 			providers: [
 				DownloadArchiveService,
 				DownloadArchiveUC,
@@ -77,7 +77,7 @@ describe('DownloadArchive Controller (API)', () => {
 		await app.init();
 		em = app.get(EntityManager);
 		jwtConfig = moduleFixture.get(TEST_JWT_CONFIG_TOKEN);
-		testApiClient = new TestApiClient(app, 'legacy-file-archive');
+		testApiClient = new TestApiClient(app, 'filestorage/files/archive');
 		config = moduleFixture.get(LEGACY_FILE_ARCHIVE_CONFIG_TOKEN);
 		authorizationClient = moduleFixture.get(AuthorizationClientAdapter);
 	});
@@ -99,7 +99,7 @@ describe('DownloadArchive Controller (API)', () => {
 					archiveName: 'test-archive.zip',
 				};
 
-				const response = await testApiClient.post('download-files-as-archive', params);
+				const response = await testApiClient.get().query(params);
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 			});
@@ -122,7 +122,7 @@ describe('DownloadArchive Controller (API)', () => {
 					archiveName: 'test-archive.zip',
 				};
 
-				const response = await loggedInClient.post('download-files-as-archive', params);
+				const response = await loggedInClient.get().query(params);
 
 				expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
 				expect(response.body).toEqual(
@@ -150,7 +150,7 @@ describe('DownloadArchive Controller (API)', () => {
 					archiveName: 'test-archive.zip',
 				};
 
-				const response = await loggedInClient.post('download-files-as-archive', params);
+				const response = await loggedInClient.get().query(params);
 
 				expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
 				expect(response.body).toEqual(
@@ -185,7 +185,7 @@ describe('DownloadArchive Controller (API)', () => {
 					archiveName: 'test-archive.zip',
 				};
 
-				const response = await loggedInClient.post('download-files-as-archive', params);
+				const response = await loggedInClient.get().query(params);
 
 				expect(response.status).toEqual(HttpStatus.NOT_IMPLEMENTED);
 
@@ -213,7 +213,7 @@ describe('DownloadArchive Controller (API)', () => {
 					archiveName: 'team-archive.zip',
 				};
 
-				const response = await loggedInClient.post('download-files-as-archive', params);
+				const response = await loggedInClient.get().query(params);
 
 				expect(response.status).toEqual(HttpStatus.FORBIDDEN);
 			});
@@ -239,7 +239,7 @@ describe('DownloadArchive Controller (API)', () => {
 					archiveName: 'course-archive.zip',
 				};
 
-				const response = await loggedInClient.post('download-files-as-archive', params);
+				const response = await loggedInClient.get().query(params);
 
 				expect(response.status).toEqual(HttpStatus.FORBIDDEN);
 			});
@@ -265,7 +265,7 @@ describe('DownloadArchive Controller (API)', () => {
 					archiveName: 'user-archive.zip',
 				};
 
-				const response = await loggedInClient.post('download-files-as-archive', params);
+				const response = await loggedInClient.get().query(params);
 
 				expect(response.status).toEqual(HttpStatus.FORBIDDEN);
 			});
@@ -317,7 +317,7 @@ describe('DownloadArchive Controller (API)', () => {
 					archiveName,
 				};
 
-				const response = await loggedInClient.post('download-files-as-archive', params);
+				const response = await loggedInClient.get().query(params);
 
 				expect(response.status).toEqual(HttpStatus.OK);
 				expect(response.headers['content-type']).toContain('application/zip');
@@ -369,7 +369,7 @@ describe('DownloadArchive Controller (API)', () => {
 					archiveName,
 				};
 
-				const response = await loggedInClient.post('download-files-as-archive', params);
+				const response = await loggedInClient.get().query(params);
 
 				expect(response.status).toEqual(HttpStatus.OK);
 				expect(response.headers['content-type']).toContain('application/zip');
@@ -420,7 +420,7 @@ describe('DownloadArchive Controller (API)', () => {
 					archiveName,
 				};
 
-				const response = await loggedInClient.post('download-files-as-archive', params);
+				const response = await loggedInClient.get().query(params);
 
 				expect(response.status).toEqual(HttpStatus.OK);
 				expect(response.headers['content-type']).toContain('application/zip');

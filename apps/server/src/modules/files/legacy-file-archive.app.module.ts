@@ -11,7 +11,7 @@ import { ConfigurationModule } from '@infra/configuration';
 import { DATABASE_CONFIG_TOKEN, DatabaseConfig, DatabaseModule } from '@infra/database';
 import { StorageProviderEntity, StorageProviderRepo } from '@modules/school/repo';
 import { Module } from '@nestjs/common';
-import { DownloadArchiveController, DownloadArchiveUC } from './api';
+import { DownloadArchiveUC, LegacyFileArchiveController } from './api';
 import { DownloadArchiveService, FILES_REPO } from './domain';
 import { FileEntity } from './entity';
 import { LEGACY_FILE_ARCHIVE_CONFIG_TOKEN, LegacyFileArchiveConfig } from './legacy-file-archive.config';
@@ -37,7 +37,7 @@ import { FilesRepo } from './repo';
 		}),
 		ConfigurationModule.register(LEGACY_FILE_ARCHIVE_CONFIG_TOKEN, LegacyFileArchiveConfig),
 	],
-	controllers: [DownloadArchiveController],
+	controllers: [LegacyFileArchiveController],
 	providers: [
 		DownloadArchiveService,
 		DownloadArchiveUC,
