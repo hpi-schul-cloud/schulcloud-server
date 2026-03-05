@@ -26,7 +26,6 @@ export class RoomInvitationLinkRule implements Rule<RoomInvitationLinkAuthorizab
 		return isMatched;
 	}
 
-	// TODO anpassen
 	public hasPermission(user: User, object: RoomInvitationLinkAuthorizable, context: AuthorizationContext): boolean {
 		const { action, requiredPermissions } = context;
 		const roomPermissions = resolveRoomPermissions(user, object);
@@ -63,8 +62,7 @@ export class RoomInvitationLinkRule implements Rule<RoomInvitationLinkAuthorizab
 		const operations = Object.keys(map) as RoomInvitationLinkOperation[];
 
 		for (const operation of operations) {
-			const fn = map[operation];
-			list[operation] = fn(user, authorizable);
+			list[operation] = this.can(operation, user, authorizable);
 		}
 
 		return list;
@@ -86,7 +84,7 @@ export class RoomInvitationLinkRule implements Rule<RoomInvitationLinkAuthorizab
 		try {
 			canFunction(user, authorizable);
 			return true;
-		} catch (error) {
+		} catch {
 			return false;
 		}
 	}
@@ -175,9 +173,6 @@ const checkCreatorSchoolRestriction = (user: User, authorizable: RoomInvitationL
 
 const checkStudentFromOtherSchool = (user: User, authorizable: RoomInvitationLinkAuthorizable): void => {
 	const { roomInvitationLink } = authorizable;
-	if (!roomInvitationLink) {
-		throw new RoomInvitationLinkError(RoomInvitationLinkValidationError.INVALID_LINK, HttpStatus.NOT_FOUND);
-	}
 
 	const isStudent = user.getRoles().some((role) => role.name === RoleName.STUDENT);
 	if (user.school.id !== roomInvitationLink.creatorSchoolId && isStudent) {
