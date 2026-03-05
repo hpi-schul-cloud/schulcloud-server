@@ -18,7 +18,7 @@ export class RoomContentUc {
 
 	public async getRoomBoards(userId: EntityId, roomId: EntityId): Promise<ColumnBoard[]> {
 		await this.roomService.getSingleRoom(roomId);
-		await this.roomPermissionService.checkRoomIsUnlocked(roomId);
+		await this.roomPermissionService.checkRoomIsLocked(roomId);
 		await this.roomPermissionService.checkRoomAuthorizationByIds(userId, roomId, Action.read);
 
 		const boards = await this.roomBoardService.getOrderedBoards(roomId);
@@ -29,7 +29,7 @@ export class RoomContentUc {
 
 	public async moveBoard(userId: EntityId, roomId: EntityId, boardId: EntityId, toPosition: number): Promise<void> {
 		await this.roomService.getSingleRoom(roomId);
-		await this.roomPermissionService.checkRoomIsUnlocked(roomId);
+		await this.roomPermissionService.checkRoomIsLocked(roomId);
 		await this.roomPermissionService.checkRoomAuthorizationByIds(userId, roomId, Action.write);
 
 		const board = await this.columnBoardService.findById(boardId);

@@ -45,6 +45,8 @@ describe(`board delete in room (api)`, () => {
 	const setup = async () => {
 		const school = schoolEntityFactory.buildWithId();
 
+		const userWithOwnerRole = userFactory.buildWithId({ school });
+
 		const userWithEditRole = userFactory.buildWithId({ school });
 		const accountWithEditRole = accountFactory.withUser(userWithEditRole).build();
 
@@ -54,11 +56,12 @@ describe(`board delete in room (api)`, () => {
 		const noAccessUser = userFactory.buildWithId({ school });
 		const noAccessAccount = accountFactory.withUser(noAccessUser).build();
 
-		const { roomEditorRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
+		const { roomEditorRole, roomViewerRole, roomOwnerRole } = RoomRolesTestFactory.createRoomRoles();
 
 		const userGroup = groupEntityFactory.buildWithId({
 			type: GroupEntityTypes.ROOM,
 			users: [
+				{ user: userWithOwnerRole, role: roomOwnerRole },
 				{ user: userWithEditRole, role: roomEditorRole },
 				{ user: userWithViewRole, role: roomViewerRole },
 			],
@@ -139,7 +142,7 @@ describe(`board delete in room (api)`, () => {
 			await loggedInClient.delete(columnBoardNode.id);
 
 			// wait for event bus
-			await new Promise((resolve) => setTimeout(resolve, 10));
+			await new Promise((resolve) => setTimeout(resolve, 50));
 
 			const roomContent = await em.findOneOrFail('RoomContentEntity', {
 				roomId: columnBoardNode.context?.id,
