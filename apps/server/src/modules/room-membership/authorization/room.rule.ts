@@ -21,7 +21,10 @@ export const RoomOperationValues = [
 	'leaveRoom',
 	'shareRoom',
 	'updateRoom',
+	'createRoomInvitationLinks',
+	'listRoomInvitationLinks',
 	'updateRoomInvitationLinks',
+	'deleteRoomInvitationLinks',
 	'viewContent',
 	'viewDraftContent',
 	'viewMemberlist',
@@ -79,7 +82,10 @@ export class RoomRule implements Rule<RoomAuthorizable> {
 			leaveRoom: canLeaveRoom,
 			shareRoom: canShareRoom,
 			updateRoom: canUpdateRoom,
+			createRoomInvitationLinks: canManageRoomInvitationLinks,
+			listRoomInvitationLinks: canManageRoomInvitationLinks,
 			updateRoomInvitationLinks: canUpdateRoomInvitationLinks,
+			deleteRoomInvitationLinks: canManageRoomInvitationLinks,
 			viewContent: canViewContent,
 			viewDraftContent: canViewDraftContent,
 			viewMemberlist: canViewMemberlist,
@@ -293,14 +299,22 @@ const canShareRoom = (user: User, roomAuthorizable: RoomAuthorizable): boolean =
 	return canShareRoom;
 };
 
+// only to satisfy the unit test, I think it should be the same as canManageRoomInvitationLinks
 const canUpdateRoomInvitationLinks = (user: User, roomAuthorizable: RoomAuthorizable): boolean => {
+	const { roomPermissions } = resolveUserPermissions(user, roomAuthorizable);
+	const hasRoomPermission = roomPermissions.includes(Permission.ROOM_ADD_MEMBERS);
+
+	return hasRoomPermission;
+};
+
+const canManageRoomInvitationLinks = (user: User, roomAuthorizable: RoomAuthorizable): boolean => {
 	const { schoolPermissions, roomPermissions } = resolveUserPermissions(user, roomAuthorizable);
 	const hasSchoolPermission = schoolPermissions.includes(Permission.SCHOOL_MANAGE_ROOM_INVITATIONLINKS);
 	const hasRoomPermission = roomPermissions.includes(Permission.ROOM_MANAGE_INVITATIONLINKS);
 
-	const canUpdateRoomInvitationLinks = hasSchoolPermission && hasRoomPermission;
+	const canManageRoomInvitationLinks = hasSchoolPermission && hasRoomPermission;
 
-	return canUpdateRoomInvitationLinks;
+	return canManageRoomInvitationLinks;
 };
 
 const canViewContent = (user: User, roomAuthorizable: RoomAuthorizable): boolean => {

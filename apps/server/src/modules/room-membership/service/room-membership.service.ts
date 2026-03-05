@@ -1,9 +1,9 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Group, GroupService, GroupTypes } from '@modules/group';
 import { RoleName, RoleService, RoomRole } from '@modules/role';
-import { RoomService } from '@modules/room';
+import { ROOM_PUBLIC_API_CONFIG_TOKEN, RoomPublicApiConfig, RoomService } from '@modules/room';
 import { UserService } from '@modules/user';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { Page } from '@shared/domain/domainobject';
 import { Pagination } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
@@ -13,6 +13,9 @@ import { RoomMember } from '../do/room-member.do';
 import { RoomMembership } from '../do/room-membership.do';
 import { RoomMembershipRepo } from '../repo/room-membership.repo';
 import { MemberStats, RoomMembershipStats } from '../type/room-membership-stats.type';
+import { RoomInvitationLink } from '@modules/room/domain/do/room-invitation-link.do';
+import { RoomInvitationLinkAuthorizable } from '../do/room-invitation-link-authorizable.do';
+import { SchoolService } from '@modules/school/domain/service/school.service';
 
 @Injectable()
 export class RoomMembershipService {
@@ -21,7 +24,9 @@ export class RoomMembershipService {
 		private readonly roomMembershipRepo: RoomMembershipRepo,
 		private readonly roleService: RoleService,
 		private readonly roomService: RoomService,
-		private readonly userService: UserService
+		private readonly userService: UserService,
+		private readonly schoolService: SchoolService,
+		@Inject(ROOM_PUBLIC_API_CONFIG_TOKEN) private readonly roomConfig: RoomPublicApiConfig
 	) {}
 
 	public async createNewRoomMembership(roomId: EntityId, ownerUserId: EntityId): Promise<RoomMembership> {
@@ -173,6 +178,22 @@ export class RoomMembershipService {
 		const roomAuthorizables = await this.getAuthorizables([group], [roomMembership]);
 
 		return roomAuthorizables[0];
+	}
+
+	public async getRoomInvitationLinkAuthorizable(
+		roomInvitationLink: RoomInvitationLink
+	): Promise<RoomInvitationLinkAuthorizable> {
+		const { creatorSchoolId, roomId } = roomInvitationLink;
+
+		const creatorSchool = await this.schoolService.getSchoolById(creatorSchoolId);
+		const roomAuthorizable = await this.getRoomAuthorizable(roomId);
+
+		return new RoomInvitationLinkAuthorizable(
+			roomAuthorizable,
+			roomInvitationLink,
+			creatorSchool.name,
+			this.roomConfig
+		);
 	}
 
 	private async getAuthorizables(groups: Group[], roomMemberships: RoomMembership[]): Promise<RoomAuthorizable[]> {
