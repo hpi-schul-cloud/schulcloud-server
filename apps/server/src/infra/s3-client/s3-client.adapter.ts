@@ -373,41 +373,22 @@ export class S3ClientAdapter {
 	/* istanbul ignore next */
 	private setupTimeOutAndErrorHandling(sourceStream: Readable, passthroughStream: PassThrough, context: string): void {
 		const STREAM_TIMEOUT_MS = 60 * 1000;
-		let timeoutTimer: NodeJS.Timeout | undefined;
+		const timeoutTimer = this.createStreamTimeout(sourceStream, passthroughStream, context, STREAM_TIMEOUT_MS);
 
-		const startOrResetTimeout = (): void => {
-			this.clearStreamTimeout(timeoutTimer);
-			timeoutTimer = this.createStreamTimeout(sourceStream, passthroughStream, context, STREAM_TIMEOUT_MS);
-		};
-
-		const cleanup = (): void => {
-			this.clearStreamTimeout(timeoutTimer);
-		};
-
-		sourceStream.on('data', startOrResetTimeout);
+		sourceStream.on('data', () => {
+			timeoutTimer.refresh();
+		});
 		sourceStream.on('error', (error) => {
 			this.logSourceStreamError(error.message, context);
-			cleanup();
+			clearTimeout(timeoutTimer);
 			this.destroyStreamIfNotDestroyed(passthroughStream, error);
 		});
-		sourceStream.on('close', cleanup);
-		sourceStream.on('end', cleanup);
 
 		passthroughStream.on('error', (error) => {
 			this.logPassthroughStreamError(error.message, context);
-			cleanup();
-			this.destroyStreamIfNotDestroyed(sourceStream);
+			clearTimeout(timeoutTimer);
+			this.destroyStreamIfNotDestroyed(sourceStream, error);
 		});
-		passthroughStream.on('close', cleanup);
-
-		startOrResetTimeout();
-	}
-
-	/* istanbul ignore next */
-	private clearStreamTimeout(timer: NodeJS.Timeout | undefined): void {
-		if (timer) {
-			clearTimeout(timer);
-		}
 	}
 
 	/* istanbul ignore next */
@@ -418,13 +399,13 @@ export class S3ClientAdapter {
 		timeoutMs: number
 	): NodeJS.Timeout {
 		return setTimeout(() => {
-			if (sourceStream.destroyed || passthroughStream.destroyed) {
+			if (sourceStream.destroyed && passthroughStream.destroyed) {
 				return;
 			}
 
 			this.logStreamUnresponsive(context);
-			sourceStream.destroy();
-			passthroughStream.destroy();
+			this.destroyStreamIfNotDestroyed(sourceStream);
+			this.destroyStreamIfNotDestroyed(passthroughStream);
 		}, timeoutMs);
 	}
 
