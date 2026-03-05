@@ -214,6 +214,66 @@ export const FileApiAxiosParamCreator = function (configuration?: Configuration)
         },
         /**
          * 
+         * @summary Get a list of file meta data of a parent entityId.
+         * @param {string} storageLocationId 
+         * @param {StorageLocation} storageLocation 
+         * @param {string} parentId 
+         * @param {FileRecordParentType} parentType 
+         * @param {number} [skip] Number of elements (not pages) to be skipped
+         * @param {number} [limit] Page limit, defaults to 10.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        list: async (storageLocationId: string, storageLocation: StorageLocation, parentId: string, parentType: FileRecordParentType, skip?: number, limit?: number, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'storageLocationId' is not null or undefined
+            assertParamExists('list', 'storageLocationId', storageLocationId)
+            // verify required parameter 'storageLocation' is not null or undefined
+            assertParamExists('list', 'storageLocation', storageLocation)
+            // verify required parameter 'parentId' is not null or undefined
+            assertParamExists('list', 'parentId', parentId)
+            // verify required parameter 'parentType' is not null or undefined
+            assertParamExists('list', 'parentType', parentType)
+            const localVarPath = `/file/list/{storageLocation}/{storageLocationId}/{parentType}/{parentId}`
+                .replace(`{${"storageLocationId"}}`, encodeURIComponent(String(storageLocationId)))
+                .replace(`{${"storageLocation"}}`, encodeURIComponent(String(storageLocation)))
+                .replace(`{${"parentId"}}`, encodeURIComponent(String(parentId)))
+                .replace(`{${"parentType"}}`, encodeURIComponent(String(parentType)));
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearer required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+            if (skip !== undefined) {
+                localVarQueryParameter['skip'] = skip;
+            }
+
+            if (limit !== undefined) {
+                localVarQueryParameter['limit'] = limit;
+            }
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
          * @summary Streamable upload of a binary file.
          * @param {string} storageLocationId 
          * @param {StorageLocation} storageLocation 
@@ -398,6 +458,24 @@ export const FileApiFp = function(configuration?: Configuration) {
         },
         /**
          * 
+         * @summary Get a list of file meta data of a parent entityId.
+         * @param {string} storageLocationId 
+         * @param {StorageLocation} storageLocation 
+         * @param {string} parentId 
+         * @param {FileRecordParentType} parentType 
+         * @param {number} [skip] Number of elements (not pages) to be skipped
+         * @param {number} [limit] Page limit, defaults to 10.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async list(storageLocationId: string, storageLocation: StorageLocation, parentId: string, parentType: FileRecordParentType, skip?: number, limit?: number, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FileRecordListResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.list(storageLocationId, storageLocation, parentId, parentType, skip, limit, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['FileApi.list']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
          * @summary Streamable upload of a binary file.
          * @param {string} storageLocationId 
          * @param {StorageLocation} storageLocation 
@@ -487,6 +565,21 @@ export const FileApiFactory = function (configuration?: Configuration, basePath?
         },
         /**
          * 
+         * @summary Get a list of file meta data of a parent entityId.
+         * @param {string} storageLocationId 
+         * @param {StorageLocation} storageLocation 
+         * @param {string} parentId 
+         * @param {FileRecordParentType} parentType 
+         * @param {number} [skip] Number of elements (not pages) to be skipped
+         * @param {number} [limit] Page limit, defaults to 10.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        list(storageLocationId: string, storageLocation: StorageLocation, parentId: string, parentType: FileRecordParentType, skip?: number, limit?: number, options?: any): AxiosPromise<FileRecordListResponse> {
+            return localVarFp.list(storageLocationId, storageLocation, parentId, parentType, skip, limit, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
          * @summary Streamable upload of a binary file.
          * @param {string} storageLocationId 
          * @param {StorageLocation} storageLocation 
@@ -566,6 +659,21 @@ export interface FileApiInterface {
      * @memberof FileApiInterface
      */
     getFileRecord(fileRecordId: string, options?: RawAxiosRequestConfig): AxiosPromise<FileRecordResponse>;
+
+    /**
+     * 
+     * @summary Get a list of file meta data of a parent entityId.
+     * @param {string} storageLocationId 
+     * @param {StorageLocation} storageLocation 
+     * @param {string} parentId 
+     * @param {FileRecordParentType} parentType 
+     * @param {number} [skip] Number of elements (not pages) to be skipped
+     * @param {number} [limit] Page limit, defaults to 10.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof FileApiInterface
+     */
+    list(storageLocationId: string, storageLocation: StorageLocation, parentId: string, parentType: FileRecordParentType, skip?: number, limit?: number, options?: RawAxiosRequestConfig): AxiosPromise<FileRecordListResponse>;
 
     /**
      * 
@@ -655,6 +763,23 @@ export class FileApi extends BaseAPI implements FileApiInterface {
      */
     public getFileRecord(fileRecordId: string, options?: RawAxiosRequestConfig) {
         return FileApiFp(this.configuration).getFileRecord(fileRecordId, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Get a list of file meta data of a parent entityId.
+     * @param {string} storageLocationId 
+     * @param {StorageLocation} storageLocation 
+     * @param {string} parentId 
+     * @param {FileRecordParentType} parentType 
+     * @param {number} [skip] Number of elements (not pages) to be skipped
+     * @param {number} [limit] Page limit, defaults to 10.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof FileApi
+     */
+    public list(storageLocationId: string, storageLocation: StorageLocation, parentId: string, parentType: FileRecordParentType, skip?: number, limit?: number, options?: RawAxiosRequestConfig) {
+        return FileApiFp(this.configuration).list(storageLocationId, storageLocation, parentId, parentType, skip, limit, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

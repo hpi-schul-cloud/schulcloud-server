@@ -27,6 +27,26 @@ export class FilesStorageClientAdapter {
 		this.logger.setContext(FilesStorageClientAdapter.name);
 	}
 
+	public async list(
+		jwt: string,
+		storageLocationId: string,
+		storageLocation: StorageLocation,
+		parentId: string,
+		parentType: FileRecordParentType
+	): Promise<FileRecordResponse[]> {
+		const response = await this.fileApi.list(
+			storageLocationId,
+			storageLocation,
+			parentId,
+			parentType,
+			undefined,
+			undefined,
+			AdapterUtils.createAxiosConfigForJwt(jwt)
+		);
+		const { data } = response;
+
+		return data.data;
+	}
 	public async getFileRecord(jwt: string, fileRecordId: string): Promise<FileRecordResponse> {
 		const response = await this.fileApi.getFileRecord(fileRecordId, AdapterUtils.createAxiosConfigForJwt(jwt));
 		const { data } = response;

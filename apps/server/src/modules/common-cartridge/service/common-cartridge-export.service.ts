@@ -16,14 +16,16 @@ import {
 	CoursesClientAdapter,
 	FileElementResponse,
 	FileFolderElementResponse,
+	FileRecordParentType,
+	FileRecordResponse,
+	FileRecordScanStatus,
+	FilesStorageClientAdapter,
 	LessonClientAdapter,
 	LessonContentResponse,
 	LinkElementResponse,
 	RichTextElementResponse,
-	FileRecordScanStatus,
-	FilesStorageClientAdapter,
+	StorageLocation,
 } from '@infra/common-cartridge-clients';
-import { FileDto, FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import archiver from 'archiver';
 import { Stream } from 'node:stream';
@@ -35,7 +37,7 @@ import { CommonCartridgeMessageLoggable } from '../loggable/common-cartridge-mes
 import { CommonCartridgeExportMapper } from './common-cartridge-export.mapper';
 import { CommonCartridgeExportResponse } from './common-cartridge-export.response';
 
-export type FileMetadataAndStream = { name: string; file: Stream; fileDto: FileDto };
+export type FileMetadataAndStream = { name: string; file: Stream; fileDto: FileRecordResponse };
 
 @Injectable()
 export class CommonCartridgeExportService {
@@ -45,7 +47,6 @@ export class CommonCartridgeExportService {
 		private readonly coursesClientAdapter: CoursesClientAdapter,
 		private readonly courseRoomsClientAdapter: CourseRoomsClientAdapter,
 		private readonly lessonClientAdapter: LessonClientAdapter,
-		private readonly filesMetadataClientAdapter: FilesStorageClientAdapterService,
 		private readonly filesStorageClientAdapter: FilesStorageClientAdapter,
 		private readonly mapper: CommonCartridgeExportMapper,
 		private readonly logger: Logger
@@ -215,7 +216,13 @@ export class CommonCartridgeExportService {
 
 				taskOrganization.addResource(this.mapper.mapTaskToResource(task, version));
 
-				const filesMetadata = await this.filesMetadataClientAdapter.listFilesOfParent(task.id);
+				const filesMetadata = await this.filesStorageClientAdapter.list(
+					jwt,
+					task.id, // WIE NEED SCHOOL_ID
+					StorageLocation.SCHOOL,
+					task.id,
+					FileRecordParentType.TASKS
+				);
 				const fileRecords = await Promise.all(
 					filesMetadata.map((fileDto) => this.filesStorageClientAdapter.getFileRecord(jwt, fileDto.id))
 				);
@@ -326,7 +333,13 @@ export class CommonCartridgeExportService {
 		const fileMetadataBufferArray: FileMetadataAndStream[] = [];
 
 		if (element.type === ContentElementType.FILE || element.type === ContentElementType.FILE_FOLDER) {
-			const filesMetadata = await this.filesMetadataClientAdapter.listFilesOfParent(element.id);
+			const filesMetadata = await this.filesStorageClientAdapter.list(
+				jwt,
+				element.id, // WIE NEED SCHOOL_ID
+				StorageLocation.SCHOOL,
+				element.id,
+				FileRecordParentType.BOARDNODES
+			);
 			const fileRecords = await Promise.all(
 				filesMetadata.map((fileDto) => this.filesStorageClientAdapter.getFileRecord(jwt, fileDto.id))
 			);

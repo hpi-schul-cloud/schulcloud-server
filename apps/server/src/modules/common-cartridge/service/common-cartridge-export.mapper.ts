@@ -7,6 +7,7 @@ import {
 	CourseCommonCartridgeMetadataResponse,
 	FileElementResponse,
 	FileFolderElementResponse,
+	FileRecordResponse,
 	LessonContentResponse,
 	LessonContentResponseComponent,
 	LessonLinkedTaskResponse,
@@ -14,7 +15,6 @@ import {
 	LinkElementResponse,
 	RichTextElementResponse,
 } from '@infra/common-cartridge-clients';
-import { FileDto } from '@modules/files-storage-client';
 import sanitizeHtml from 'sanitize-html';
 import { Stream } from 'stream';
 import { CommonCartridgeOrganizationProps } from '../export/builders/common-cartridge-file-builder';
@@ -179,7 +179,7 @@ export class CommonCartridgeExportMapper {
 	}
 
 	public mapFileToResource(
-		fileRecord: FileDto,
+		fileRecord: FileRecordResponse,
 		file: Stream,
 		element?: FileElementResponse
 	): CommonCartridgeResourceProps {
