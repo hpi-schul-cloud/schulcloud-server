@@ -11,6 +11,7 @@ import {
 	SchulconnexAsyncProvisioningStrategy,
 	TspProvisioningStrategy,
 } from '../strategy';
+import { ErwinProvisioningStrategy } from '../strategy/erwin';
 import { provisioningSystemDtoFactory } from '../testing';
 import { ProvisioningService } from './provisioning.service';
 
@@ -50,6 +51,14 @@ describe(ProvisioningService.name, () => {
 					useValue: createMock<TspProvisioningStrategy>({
 						getType(): SystemProvisioningStrategy {
 							return SystemProvisioningStrategy.TSP;
+						},
+					}),
+				},
+				{
+					provide: ErwinProvisioningStrategy,
+					useValue: createMock<ErwinProvisioningStrategy>({
+						getType(): SystemProvisioningStrategy {
+							return SystemProvisioningStrategy.ERWIN;
 						},
 					}),
 				},
