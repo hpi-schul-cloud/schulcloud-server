@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { IdTokenExtractionFailureLoggableException } from '@modules/oauth';
+import { IdTokenExtractionFailureLoggableException } from '@modules/oauth/loggable';
 import { RoleName } from '@modules/role';
 import { schoolFactory } from '@modules/school/testing';
 import { userDoFactory } from '@modules/user/testing';
