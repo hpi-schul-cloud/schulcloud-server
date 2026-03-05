@@ -191,24 +191,18 @@ export class FileSystemHelper {
 		return result;
 	}
 
-	public static unzipAndRenameFolder(
-		filePath: string,
-		folderPath: string,
-		tempFolder: string,
-		repo: string,
-		tag: string
-	): void {
+	public static unzipAndRenameFolder(filePath: string, folderPath: string, tempFolder: string): void {
 		const extractedFolderPath = this.unzipFile(filePath, tempFolder);
-		this.renameFolder(folderPath, extractedFolderPath, repo, tag);
+		this.renameFolder(folderPath, extractedFolderPath);
 	}
 
-	public static renameFolder(folderPath: string, tempFolder: string, repo: string, tag: string): void {
+	public static renameFolder(folderPath: string, tempFolder: string): void {
 		if (tempFolder === folderPath) {
 			return;
 		}
 
 		if (!this.pathExists(tempFolder)) {
-			throw new Error(`Repository folder ${repo} does not exist in temporary folder.`);
+			throw new Error(`Temporary folder ${tempFolder} does not exist.`);
 		}
 
 		if (this.pathExists(folderPath)) {

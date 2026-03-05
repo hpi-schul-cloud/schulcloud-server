@@ -297,7 +297,7 @@ export class H5pLibraryPackagerService {
 		if (FileSystemHelper.pathExists(folderPath)) {
 			FileSystemHelper.removeFolder(folderPath);
 		}
-		FileSystemHelper.unzipAndRenameFolder(filePath, folderPath, tempFolder, repo, tag);
+		FileSystemHelper.unzipAndRenameFolder(filePath, folderPath, tempFolder);
 		FileSystemHelper.removeFile(filePath);
 
 		// TODO: gefühlt gehört das in den try catch rein, es sind dafür aber viel zu viele try catch instanzen.
