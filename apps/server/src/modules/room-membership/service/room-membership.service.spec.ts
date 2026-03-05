@@ -28,7 +28,6 @@ describe('RoomMembershipService', () => {
 	let roleService: DeepMocked<RoleService>;
 	let roomService: DeepMocked<RoomService>;
 	let userService: DeepMocked<UserService>;
-	let schoolService: DeepMocked<SchoolService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -72,7 +71,6 @@ describe('RoomMembershipService', () => {
 		roleService = module.get(RoleService);
 		roomService = module.get(RoomService);
 		userService = module.get(UserService);
-		schoolService = module.get(SchoolService);
 	});
 
 	afterAll(async () => {
