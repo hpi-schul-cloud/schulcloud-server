@@ -70,14 +70,14 @@ export class ErwinProvisioningStrategy extends ProvisioningStrategy {
 	} {
 		const externalUserDto: ExternalUserDto = new ExternalUserDto({
 			externalId: payload.personExternalId,
-			erWInId: payload.sub,
+			erwinId: payload.sub,
 			firstName: payload.personFirstName,
 			lastName: payload.personLastName,
 			roles: [this.mapErwinRoleToRoleName(payload.personErwinRole)],
 		});
 
-		if (!externalUserDto.roles || externalUserDto.roles.length < 1) {
-			throw new IdTokenExtractionFailureLoggableException('person.role', { externalId: externalUserDto.externalId });
+		if (!externalUserDto.erwinId) {
+			throw new IdTokenExtractionFailureLoggableException('person.sub', { erwinId: externalUserDto.erwinId });
 		}
 
 		const externalSchoolDto: ExternalSchoolDto = new ExternalSchoolDto({

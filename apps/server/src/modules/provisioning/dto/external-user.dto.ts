@@ -3,7 +3,7 @@ import { RoleName } from '@modules/role';
 export class ExternalUserDto {
 	public externalId: string;
 
-	public erWInId?: string;
+	public erwinId?: string;
 
 	public firstName?: string;
 
@@ -19,7 +19,7 @@ export class ExternalUserDto {
 
 	constructor(props: ExternalUserDto) {
 		this.externalId = props.externalId;
-		this.erWInId = props.erWInId;
+		this.erwinId = props.erwinId;
 		this.firstName = props.firstName;
 		this.preferredName = props.preferredName;
 		this.lastName = props.lastName;
