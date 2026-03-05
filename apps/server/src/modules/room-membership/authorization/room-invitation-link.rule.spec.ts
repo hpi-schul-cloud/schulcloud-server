@@ -25,6 +25,21 @@ describe(RoomInvitationLinkRule.name, () => {
 	let service: RoomInvitationLinkRule;
 	let injectionService: AuthorizationInjectionService;
 
+	const DEFAULT_ROOM_CONFIG: RoomPublicApiConfig = {
+		featureRoomCopyEnabled: true,
+		featureRoomLinkInvitationExternalPersonsEnabled: true,
+		roomMemberAddExternalPersonRequirementsUrl: null,
+		featureRoomAddExternalPersonsEnabled: false,
+		featureRoomRegisterExternalPersonsEnabled: false,
+		featureAdministrateRoomsEnabled: true,
+		roomMemberInfoUrl: 'http://example.com/room-member-info',
+	};
+
+	const SCHOOL_IDS = {
+		DEFAULT: '69a9a9f030b4d4076fa35978',
+		DIFFERENT: '507f1f77bcf86cd799439012',
+	};
+
 	beforeAll(async () => {
 		await setupEntities([User]);
 
@@ -48,51 +63,33 @@ describe(RoomInvitationLinkRule.name, () => {
 	});
 
 	describe('isApplicable', () => {
-		describe('when entity is applicable', () => {
-			const setup = () => {
-				const user = userFactory.buildWithId();
-				const roomInvitationLink = roomInvitationLinkTestFactory.build();
-				const roomAuthorizable = new RoomAuthorizable('roomId', [], '69a9a9f030b4d4076fa35978');
-				const roomConfig: RoomPublicApiConfig = {
-					featureRoomCopyEnabled: true,
-					featureRoomLinkInvitationExternalPersonsEnabled: true,
-					roomMemberAddExternalPersonRequirementsUrl: null,
-					featureRoomAddExternalPersonsEnabled: false,
-					featureRoomRegisterExternalPersonsEnabled: false,
-					featureAdministrateRoomsEnabled: true,
-					roomMemberInfoUrl: 'http://example.com/room-member-info',
-				};
-				const authorizable = new RoomInvitationLinkAuthorizable(
-					roomAuthorizable,
-					roomInvitationLink,
-					'schoolName',
-					roomConfig
-				);
+		const createAuthorizable = () => {
+			const roomInvitationLink = roomInvitationLinkTestFactory.build();
+			const roomAuthorizable = new RoomAuthorizable('roomId', [], SCHOOL_IDS.DEFAULT);
+			return new RoomInvitationLinkAuthorizable(
+				roomAuthorizable,
+				roomInvitationLink,
+				'schoolName',
+				DEFAULT_ROOM_CONFIG
+			);
+		};
 
-				return { user, authorizable };
-			};
+		it('should return true for RoomInvitationLinkAuthorizable entities', () => {
+			const user = userFactory.buildWithId();
+			const authorizable = createAuthorizable();
 
-			it('should return true', () => {
-				const { user, authorizable } = setup();
-				const result = service.isApplicable(user, authorizable);
+			const result = service.isApplicable(user, authorizable);
 
-				expect(result).toBe(true);
-			});
+			expect(result).toBe(true);
 		});
 
-		describe('when entity is not applicable', () => {
-			const setup = () => {
-				const user = userFactory.buildWithId();
-				return { user };
-			};
+		it('should return false for other entities', () => {
+			const user = userFactory.buildWithId();
+			const { roomAuthorizable } = createAuthorizable();
 
-			it('should return false', () => {
-				const { user } = setup();
+			const result = service.isApplicable(user, roomAuthorizable);
 
-				const result = service.isApplicable(user, user);
-
-				expect(result).toBe(false);
-			});
+			expect(result).toBe(false);
 		});
 	});
 
@@ -108,20 +105,11 @@ describe(RoomInvitationLinkRule.name, () => {
 			const roomInvitationLink = roomInvitationLinkTestFactory.build();
 			const members = [{ userId: user.id, roles: [role], userSchoolId }];
 			const roomAuthorizable = new RoomAuthorizable('roomId', members, authorizableSchoolId);
-			const roomConfig: RoomPublicApiConfig = {
-				featureRoomCopyEnabled: true,
-				featureRoomLinkInvitationExternalPersonsEnabled: true,
-				roomMemberAddExternalPersonRequirementsUrl: null,
-				featureRoomAddExternalPersonsEnabled: false,
-				featureRoomRegisterExternalPersonsEnabled: false,
-				featureAdministrateRoomsEnabled: true,
-				roomMemberInfoUrl: 'http://example.com/room-member-info',
-			};
 			const authorizable = new RoomInvitationLinkAuthorizable(
 				roomAuthorizable,
 				roomInvitationLink,
 				'schoolName',
-				roomConfig
+				DEFAULT_ROOM_CONFIG
 			);
 			const context = authorizationContextFactory.build({
 				action: Action.read,
@@ -133,7 +121,7 @@ describe(RoomInvitationLinkRule.name, () => {
 
 		describe('when user has no access to school', () => {
 			it('should return false', () => {
-				const { user, authorizable, context } = setup('69a9a9f030b4d4076fa35978', 'b9a9a9f030b4d4076fa35aaa', [
+				const { user, authorizable, context } = setup(SCHOOL_IDS.DEFAULT, SCHOOL_IDS.DIFFERENT, [
 					Permission.ROOM_MANAGE_INVITATIONLINKS,
 				]);
 
@@ -146,8 +134,8 @@ describe(RoomInvitationLinkRule.name, () => {
 		describe('when user lacks required room permissions', () => {
 			it('should return false', () => {
 				const { user, authorizable, context } = setup(
-					'69a9a9f030b4d4076fa35978',
-					'69a9a9f030b4d4076fa35978',
+					SCHOOL_IDS.DEFAULT,
+					SCHOOL_IDS.DEFAULT,
 					[],
 					[Permission.ROOM_MANAGE_INVITATIONLINKS]
 				);
@@ -215,8 +203,8 @@ describe(RoomInvitationLinkRule.name, () => {
 				activeUntil?: Date;
 			} = {},
 			featureEnabled = true,
-			userSchoolId = '507f1f77bcf86cd799439011',
-			linkCreatorSchoolId = '507f1f77bcf86cd799439011'
+			userSchoolId = SCHOOL_IDS.DEFAULT,
+			linkCreatorSchoolId = SCHOOL_IDS.DEFAULT
 		) => {
 			let user: User;
 			if (userRole === RoleName.TEACHER) {
@@ -237,15 +225,10 @@ describe(RoomInvitationLinkRule.name, () => {
 				activeUntil: linkConfig.activeUntil ?? new Date(Date.now() + 1000 * 60 * 60), // 1 hour from now
 				creatorSchoolId: linkCreatorSchoolId,
 			});
-			const roomAuthorizable = new RoomAuthorizable('roomId', [], '69a9a9f030b4d4076fa35978');
-			const roomConfig: RoomPublicApiConfig = {
-				featureRoomCopyEnabled: true,
+			const roomAuthorizable = new RoomAuthorizable('roomId', [], SCHOOL_IDS.DEFAULT);
+			const roomConfig = {
+				...DEFAULT_ROOM_CONFIG,
 				featureRoomLinkInvitationExternalPersonsEnabled: featureEnabled,
-				roomMemberAddExternalPersonRequirementsUrl: null,
-				featureRoomAddExternalPersonsEnabled: false,
-				featureRoomRegisterExternalPersonsEnabled: false,
-				featureAdministrateRoomsEnabled: true,
-				roomMemberInfoUrl: 'http://example.com/room-member-info',
 			};
 			const authorizable = new RoomInvitationLinkAuthorizable(
 				roomAuthorizable,
@@ -268,60 +251,72 @@ describe(RoomInvitationLinkRule.name, () => {
 		});
 
 		describe('for student users', () => {
-			it('should allow useRoomInvitationLinks when link is usable by students', () => {
-				const { user, authorizable } = setup(RoleName.STUDENT, { isUsableByStudents: true });
+			describe('when link is usable by students', () => {
+				it('should allow useRoomInvitationLinks', () => {
+					const { user, authorizable } = setup(RoleName.STUDENT, { isUsableByStudents: true });
 
-				const result = service.listAllowedOperations(user, authorizable);
+					const result = service.listAllowedOperations(user, authorizable);
 
-				expect(result.useRoomInvitationLinks).toBe(true);
+					expect(result.useRoomInvitationLinks).toBe(true);
+				});
 			});
 
-			it('should not allow useRoomInvitationLinks when link is not usable by students', () => {
-				const { user, authorizable } = setup(RoleName.STUDENT, { isUsableByStudents: false });
+			describe('when link is not usable by students', () => {
+				it('should not allow useRoomInvitationLinks', () => {
+					const { user, authorizable } = setup(RoleName.STUDENT, { isUsableByStudents: false });
 
-				const result = service.listAllowedOperations(user, authorizable);
+					const result = service.listAllowedOperations(user, authorizable);
 
-				expect(result.useRoomInvitationLinks).toBe(false);
+					expect(result.useRoomInvitationLinks).toBe(false);
+				});
 			});
 
-			it('should not allow useRoomInvitationLinks when student is from different school', () => {
-				const { user, authorizable } = setup(
-					RoleName.STUDENT,
-					{ isUsableByStudents: true },
-					true,
-					'507f1f77bcf86cd799439012',
-					'507f1f77bcf86cd799439011'
-				);
+			describe('when student is from different school', () => {
+				it('should not allow useRoomInvitationLinks', () => {
+					const { user, authorizable } = setup(
+						RoleName.STUDENT,
+						{ isUsableByStudents: true },
+						true,
+						SCHOOL_IDS.DIFFERENT,
+						SCHOOL_IDS.DEFAULT
+					);
 
-				const result = service.listAllowedOperations(user, authorizable);
+					const result = service.listAllowedOperations(user, authorizable);
 
-				expect(result.useRoomInvitationLinks).toBe(false);
+					expect(result.useRoomInvitationLinks).toBe(false);
+				});
 			});
 		});
 
 		describe('for external person users', () => {
-			it('should allow useRoomInvitationLinks when link is usable by external persons and feature is enabled', () => {
-				const { user, authorizable } = setup(RoleName.EXTERNALPERSON, { isUsableByExternalPersons: true }, true);
+			describe('when link is usable by external persons and feature is enabled', () => {
+				it('should allow useRoomInvitationLinks', () => {
+					const { user, authorizable } = setup(RoleName.EXTERNALPERSON, { isUsableByExternalPersons: true }, true);
 
-				const result = service.listAllowedOperations(user, authorizable);
+					const result = service.listAllowedOperations(user, authorizable);
 
-				expect(result.useRoomInvitationLinks).toBe(true);
+					expect(result.useRoomInvitationLinks).toBe(true);
+				});
 			});
 
-			it('should not allow useRoomInvitationLinks when feature is disabled', () => {
-				const { user, authorizable } = setup(RoleName.EXTERNALPERSON, { isUsableByExternalPersons: true }, false);
+			describe('when feature is disabled', () => {
+				it('should not allow useRoomInvitationLinks', () => {
+					const { user, authorizable } = setup(RoleName.EXTERNALPERSON, { isUsableByExternalPersons: true }, false);
 
-				const result = service.listAllowedOperations(user, authorizable);
+					const result = service.listAllowedOperations(user, authorizable);
 
-				expect(result.useRoomInvitationLinks).toBe(false);
+					expect(result.useRoomInvitationLinks).toBe(false);
+				});
 			});
 
-			it('should not allow useRoomInvitationLinks when link is not usable by external persons', () => {
-				const { user, authorizable } = setup(RoleName.EXTERNALPERSON, { isUsableByExternalPersons: false }, true);
+			describe('when link is not usable by external persons', () => {
+				it('should not allow useRoomInvitationLinks', () => {
+					const { user, authorizable } = setup(RoleName.EXTERNALPERSON, { isUsableByExternalPersons: false }, true);
 
-				const result = service.listAllowedOperations(user, authorizable);
+					const result = service.listAllowedOperations(user, authorizable);
 
-				expect(result.useRoomInvitationLinks).toBe(false);
+					expect(result.useRoomInvitationLinks).toBe(false);
+				});
 			});
 		});
 
@@ -337,76 +332,85 @@ describe(RoomInvitationLinkRule.name, () => {
 		});
 
 		describe('when link is restricted to creator school', () => {
-			it('should not allow useRoomInvitationLinks for users from different schools', () => {
-				const { user, authorizable } = setup(
-					RoleName.TEACHER,
-					{ restrictedToCreatorSchool: true },
-					true,
-					'507f1f77bcf86cd799439013',
-					'507f1f77bcf86cd799439014'
-				);
+			describe('when user is from different school', () => {
+				it('should not allow useRoomInvitationLinks', () => {
+					const { user, authorizable } = setup(
+						RoleName.TEACHER,
+						{ restrictedToCreatorSchool: true },
+						true,
+						'507f1f77bcf86cd799439013',
+						'507f1f77bcf86cd799439014'
+					);
 
-				const result = service.listAllowedOperations(user, authorizable);
+					const result = service.listAllowedOperations(user, authorizable);
 
-				expect(result.useRoomInvitationLinks).toBe(false);
+					expect(result.useRoomInvitationLinks).toBe(false);
+				});
 			});
 
-			it('should allow useRoomInvitationLinks for users from same school', () => {
-				const { user, authorizable } = setup(
-					RoleName.TEACHER,
-					{ restrictedToCreatorSchool: true },
-					true,
-					'69a9a9f030b4d4076fa35978',
-					'69a9a9f030b4d4076fa35978'
-				);
+			describe('when user is from same school', () => {
+				it('should allow useRoomInvitationLinks', () => {
+					const { user, authorizable } = setup(
+						RoleName.TEACHER,
+						{ restrictedToCreatorSchool: true },
+						true,
+						SCHOOL_IDS.DEFAULT,
+						SCHOOL_IDS.DEFAULT
+					);
 
-				const result = service.listAllowedOperations(user, authorizable);
+					const result = service.listAllowedOperations(user, authorizable);
 
-				expect(result.useRoomInvitationLinks).toBe(true);
+					expect(result.useRoomInvitationLinks).toBe(true);
+				});
 			});
 		});
 	});
 
 	describe('can', () => {
-		const setup = () => {
-			const user = userFactory.asTeacher().buildWithId();
-			const roomInvitationLink = roomInvitationLinkTestFactory.build();
-			const roomAuthorizable = new RoomAuthorizable('roomId', [], '69a9a9f030b4d4076fa35978');
-			const roomConfig: RoomPublicApiConfig = {
-				featureRoomCopyEnabled: true,
-				featureRoomLinkInvitationExternalPersonsEnabled: true,
-				roomMemberAddExternalPersonRequirementsUrl: null,
-				featureRoomAddExternalPersonsEnabled: false,
-				featureRoomRegisterExternalPersonsEnabled: false,
-				featureAdministrateRoomsEnabled: true,
-				roomMemberInfoUrl: 'http://example.com/room-member-info',
-			};
-			const authorizable = new RoomInvitationLinkAuthorizable(
-				roomAuthorizable,
-				roomInvitationLink,
-				'schoolName',
-				roomConfig
-			);
+		describe('when operation is allowed', () => {
+			it('should return true', () => {
+				const user = userFactory.asTeacher().buildWithId();
+				user.school.id = SCHOOL_IDS.DEFAULT;
 
-			return { user, authorizable };
-		};
+				const roomInvitationLink = roomInvitationLinkTestFactory.build({
+					creatorSchoolId: SCHOOL_IDS.DEFAULT,
+				});
+				const roomAuthorizable = new RoomAuthorizable('roomId', [], SCHOOL_IDS.DEFAULT);
+				const authorizable = new RoomInvitationLinkAuthorizable(
+					roomAuthorizable,
+					roomInvitationLink,
+					'schoolName',
+					DEFAULT_ROOM_CONFIG
+				);
 
-		it('should return true when operation is allowed', () => {
-			const { user, authorizable } = setup();
+				const result = service.can('useRoomInvitationLinks', user, authorizable);
 
-			const result = service.can('useRoomInvitationLinks', user, authorizable);
-
-			expect(result).toBe(true);
+				expect(result).toBe(true);
+			});
 		});
 
-		it('should return false when operation throws an error', () => {
-			const { user, authorizable } = setup();
-			const expiredDate = new Date(Date.now() - 1000 * 60 * 60); // 1 hour ago
-			authorizable.roomInvitationLink.activeUntil = expiredDate;
+		describe('when operation throws an error', () => {
+			it('should return false', () => {
+				const user = userFactory.asTeacher().buildWithId();
+				user.school.id = SCHOOL_IDS.DEFAULT;
+				const expiredDate = new Date(Date.now() - 1000 * 60 * 60); // 1 hour ago
 
-			const result = service.can('useRoomInvitationLinks', user, authorizable);
+				const roomInvitationLink = roomInvitationLinkTestFactory.build({
+					activeUntil: expiredDate,
+					creatorSchoolId: SCHOOL_IDS.DEFAULT,
+				});
+				const roomAuthorizable = new RoomAuthorizable('roomId', [], SCHOOL_IDS.DEFAULT);
+				const authorizable = new RoomInvitationLinkAuthorizable(
+					roomAuthorizable,
+					roomInvitationLink,
+					'schoolName',
+					DEFAULT_ROOM_CONFIG
+				);
 
-			expect(result).toBe(false);
+				const result = service.can('useRoomInvitationLinks', user, authorizable);
+
+				expect(result).toBe(false);
+			});
 		});
 	});
 
@@ -497,49 +501,61 @@ describe(RoomInvitationLinkRule.name, () => {
 			return { user, authorizable };
 		};
 
-		it('should throw RoomInvitationLinkError when link is expired', () => {
-			const expiredDate = new Date(Date.now() - 1000 * 60 * 60); // 1 hour ago
-			const { user, authorizable } = setup(RoleName.TEACHER, { activeUntil: expiredDate });
+		describe('when link is expired', () => {
+			it('should throw RoomInvitationLinkError', () => {
+				const expiredDate = new Date(Date.now() - 1000 * 60 * 60); // 1 hour ago
+				const { user, authorizable } = setup(RoleName.TEACHER, { activeUntil: expiredDate });
 
-			expect(() => service.check('useRoomInvitationLinks', user, authorizable)).toThrow(RoomInvitationLinkError);
+				expect(() => service.check('useRoomInvitationLinks', user, authorizable)).toThrow(RoomInvitationLinkError);
+			});
 		});
 
-		it('should throw RoomInvitationLinkError when role is not valid for link', () => {
-			const { user, authorizable } = setup(RoleName.STUDENT, { isUsableByStudents: false });
+		describe('when role is not valid for link', () => {
+			it('should throw RoomInvitationLinkError', () => {
+				const { user, authorizable } = setup(RoleName.STUDENT, { isUsableByStudents: false });
 
-			expect(() => service.check('useRoomInvitationLinks', user, authorizable)).toThrow(RoomInvitationLinkError);
+				expect(() => service.check('useRoomInvitationLinks', user, authorizable)).toThrow(RoomInvitationLinkError);
+			});
 		});
 
-		it('should throw FeatureDisabledLoggableException when external persons feature is disabled', () => {
-			const { user, authorizable } = setup(RoleName.EXTERNALPERSON, { isUsableByExternalPersons: true }, false);
+		describe('when external persons feature is disabled', () => {
+			it('should throw FeatureDisabledLoggableException', () => {
+				const { user, authorizable } = setup(RoleName.EXTERNALPERSON, { isUsableByExternalPersons: true }, false);
 
-			expect(() => service.check('useRoomInvitationLinks', user, authorizable)).toThrow(
-				FeatureDisabledLoggableException
-			);
+				expect(() => service.check('useRoomInvitationLinks', user, authorizable)).toThrow(
+					FeatureDisabledLoggableException
+				);
+			});
 		});
 
-		it('should throw RoomInvitationLinkError when link is restricted to creator school but user is from different school', () => {
-			const { user, authorizable } = setup(
-				RoleName.TEACHER,
-				{ restrictedToCreatorSchool: true },
-				true,
-				'507f1f77bcf86cd799439015',
-				'507f1f77bcf86cd799439016'
-			);
+		describe('when link is restricted to creator school', () => {
+			describe('when user is from different school', () => {
+				it('should throw RoomInvitationLinkError', () => {
+					const { user, authorizable } = setup(
+						RoleName.TEACHER,
+						{ restrictedToCreatorSchool: true },
+						true,
+						'507f1f77bcf86cd799439015',
+						'507f1f77bcf86cd799439016'
+					);
 
-			expect(() => service.check('useRoomInvitationLinks', user, authorizable)).toThrow(RoomInvitationLinkError);
+					expect(() => service.check('useRoomInvitationLinks', user, authorizable)).toThrow(RoomInvitationLinkError);
+				});
+			});
 		});
 
-		it('should throw RoomInvitationLinkError when student is from different school', () => {
-			const { user, authorizable } = setup(
-				RoleName.STUDENT,
-				{ isUsableByStudents: true },
-				true,
-				'507f1f77bcf86cd799439017',
-				'507f1f77bcf86cd799439018'
-			);
+		describe('when student is from different school', () => {
+			it('should throw RoomInvitationLinkError', () => {
+				const { user, authorizable } = setup(
+					RoleName.STUDENT,
+					{ isUsableByStudents: true },
+					true,
+					'507f1f77bcf86cd799439017',
+					'507f1f77bcf86cd799439018'
+				);
 
-			expect(() => service.check('useRoomInvitationLinks', user, authorizable)).toThrow(RoomInvitationLinkError);
+				expect(() => service.check('useRoomInvitationLinks', user, authorizable)).toThrow(RoomInvitationLinkError);
+			});
 		});
 	});
 });
