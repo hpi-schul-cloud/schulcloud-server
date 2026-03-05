@@ -69,42 +69,6 @@ describe('ExternalToolPseudonymRepo', () => {
 		});
 	});
 
-	describe('findByUserIdAndToolId', () => {
-		describe('when pseudonym is existing', () => {
-			const setup = async () => {
-				const entity: ExternalToolPseudonymEntity = externalToolPseudonymEntityFactory.buildWithId();
-
-				await em.persist(entity).flush();
-
-				return {
-					entity,
-				};
-			};
-
-			it('should return a pseudonym', async () => {
-				const { entity } = await setup();
-
-				const result: Pseudonym | null = await repo.findByUserIdAndToolId(
-					entity.userId.toHexString(),
-					entity.toolId.toHexString()
-				);
-
-				expect(result?.id).toEqual(entity.id);
-			});
-		});
-
-		describe('when there is no pseudonym', () => {
-			it('should return null', async () => {
-				const result: Pseudonym | null = await repo.findByUserIdAndToolId(
-					new ObjectId().toHexString(),
-					new ObjectId().toHexString()
-				);
-
-				expect(result).toBeNull();
-			});
-		});
-	});
-
 	describe('findPseudonymsByUserId', () => {
 		describe('when pseudonym is existing', () => {
 			const setup = async () => {

@@ -24,21 +24,6 @@ export class ExternalToolPseudonymRepo {
 		return domainObject;
 	}
 
-	public async findByUserIdAndToolId(userId: EntityId, toolId: EntityId): Promise<Pseudonym | null> {
-		const entity: ExternalToolPseudonymEntity | null = await this.em.findOne(ExternalToolPseudonymEntity, {
-			userId: new ObjectId(userId),
-			toolId: new ObjectId(toolId),
-		});
-
-		if (!entity) {
-			return null;
-		}
-
-		const domainObject: Pseudonym = this.mapEntityToDomainObject(entity);
-
-		return domainObject;
-	}
-
 	public async findByUserId(userId: EntityId): Promise<Pseudonym[]> {
 		const entities: ExternalToolPseudonymEntity[] = await this.em.find(ExternalToolPseudonymEntity, {
 			userId: new ObjectId(userId),
