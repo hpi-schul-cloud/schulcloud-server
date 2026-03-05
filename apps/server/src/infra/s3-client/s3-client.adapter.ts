@@ -370,7 +370,6 @@ export class S3ClientAdapter {
 		return filteredPathObjects;
 	}
 
-	/* istanbul ignore next */
 	private setupTimeOutAndErrorHandling(sourceStream: Readable, passthroughStream: PassThrough, context: string): void {
 		const STREAM_TIMEOUT_MS = 60 * 1000;
 		const timeoutTimer = this.createStreamTimeout(sourceStream, passthroughStream, context, STREAM_TIMEOUT_MS);
@@ -391,7 +390,6 @@ export class S3ClientAdapter {
 		});
 	}
 
-	/* istanbul ignore next */
 	private createStreamTimeout(
 		sourceStream: Readable,
 		passthroughStream: PassThrough,
@@ -409,7 +407,6 @@ export class S3ClientAdapter {
 		}, timeoutMs);
 	}
 
-	/* istanbul ignore next */
 	private destroyStreamIfNotDestroyed(stream: Readable | PassThrough, error?: Error): void {
 		if (!stream.destroyed) {
 			stream.destroy(error);

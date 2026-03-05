@@ -214,6 +214,166 @@ describe(S3ClientAdapter.name, () => {
 				await expect(service.get(pathToFile)).rejects.toThrow('S3ClientAdapter:get');
 			});
 		});
+
+		describe('stream timeout and error handling', () => {
+			const setup = () => {
+				const { pathToFile } = createParameter();
+				const sourceStream = new PassThrough();
+				const resultObj = {
+					Body: sourceStream,
+					ContentType: 'data.ContentType',
+					ContentLength: 'data.ContentLength',
+					ContentRange: 'data.ContentRange',
+					ETag: 'data.ETag',
+				};
+
+				// @ts-expect-error Testcase
+				client.send.mockResolvedValueOnce(resultObj);
+
+				return { pathToFile, sourceStream };
+			};
+
+			describe('WHEN source stream emits an error', () => {
+				it('should log the source stream error and destroy the passthrough stream', async () => {
+					const { pathToFile, sourceStream } = setup();
+
+					const result = await service.get(pathToFile);
+					const passthroughStream = result.data;
+
+					sourceStream.emit('error', new Error('Source error'));
+
+					expect(logger.warning).toHaveBeenCalledWith(
+						// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+						expect.objectContaining({ message: expect.stringContaining('Source stream error: Source error') })
+					);
+					expect(passthroughStream.destroyed).toBe(true);
+				});
+			});
+
+			describe('WHEN passthrough stream emits an error', () => {
+				it('should log the passthrough stream error and destroy the source stream', async () => {
+					const { pathToFile, sourceStream } = setup();
+
+					const result = await service.get(pathToFile);
+					const passthroughStream = result.data;
+
+					passthroughStream.emit('error', new Error('Passthrough error'));
+
+					expect(logger.warning).toHaveBeenCalledWith(
+						expect.objectContaining({
+							// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+							message: expect.stringContaining('Passthrough stream error: Passthrough error'),
+						})
+					);
+					expect(sourceStream.destroyed).toBe(true);
+				});
+			});
+
+			describe('WHEN source stream is already destroyed when passthrough emits an error', () => {
+				it('should not call destroy() on the already-destroyed source stream', async () => {
+					const { pathToFile, sourceStream } = setup();
+
+					const result = await service.get(pathToFile);
+					const passthroughStream = result.data;
+
+					sourceStream.destroy();
+					const destroySpy = jest.spyOn(sourceStream, 'destroy');
+
+					passthroughStream.emit('error', new Error('Passthrough error'));
+
+					expect(destroySpy).not.toHaveBeenCalled();
+				});
+			});
+
+			describe('WHEN passthrough stream is already destroyed when source emits an error', () => {
+				it('should not call destroy() on the already-destroyed passthrough stream', async () => {
+					const { pathToFile, sourceStream } = setup();
+
+					const result = await service.get(pathToFile);
+					const passthroughStream = result.data;
+
+					passthroughStream.destroy();
+					const destroySpy = jest.spyOn(passthroughStream, 'destroy');
+
+					sourceStream.emit('error', new Error('Source error'));
+
+					expect(destroySpy).not.toHaveBeenCalled();
+				});
+			});
+
+			describe('WHEN timeout fires and streams are not yet destroyed', () => {
+				it('should destroy both streams and log stream unresponsive', async () => {
+					jest.useFakeTimers();
+
+					const { pathToFile, sourceStream } = setup();
+
+					const result = await service.get(pathToFile);
+					const passthroughStream = result.data;
+
+					jest.advanceTimersByTime(60 * 1000 + 1);
+
+					expect(logger.info).toHaveBeenCalledWith(
+						// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+						expect.objectContaining({ message: expect.stringContaining('Stream unresponsive') })
+					);
+					expect(sourceStream.destroyed).toBe(true);
+					expect(passthroughStream.destroyed).toBe(true);
+
+					jest.useRealTimers();
+				});
+			});
+
+			describe('WHEN timeout fires but both streams are already destroyed', () => {
+				it('should not log stream unresponsive and should not attempt additional destroys', async () => {
+					jest.useFakeTimers();
+
+					const { pathToFile, sourceStream } = setup();
+
+					const result = await service.get(pathToFile);
+					const passthroughStream = result.data;
+
+					sourceStream.destroy();
+					passthroughStream.destroy();
+
+					const sourceDestroySpy = jest.spyOn(sourceStream, 'destroy');
+					const passthroughDestroySpy = jest.spyOn(passthroughStream, 'destroy');
+
+					jest.advanceTimersByTime(60 * 1000 + 1);
+
+					expect(logger.info).not.toHaveBeenCalled();
+					expect(sourceDestroySpy).not.toHaveBeenCalled();
+					expect(passthroughDestroySpy).not.toHaveBeenCalled();
+
+					jest.useRealTimers();
+				});
+			});
+
+			describe('WHEN source stream emits data', () => {
+				it('should refresh the timeout so it does not fire at the original deadline', async () => {
+					jest.useFakeTimers();
+
+					const { pathToFile, sourceStream } = setup();
+
+					const result = await service.get(pathToFile);
+					const passthroughStream = result.data;
+
+					// Advance to just before the timeout
+					jest.advanceTimersByTime(59 * 1000);
+
+					// Emit data to refresh the timer
+					sourceStream.emit('data', Buffer.from('chunk'));
+
+					// Advance past the original 60 s deadline (only 1 s elapsed since refresh)
+					jest.advanceTimersByTime(2 * 1000);
+
+					// Timer was refreshed, so neither stream should be destroyed yet
+					expect(sourceStream.destroyed).toBe(false);
+					expect(passthroughStream.destroyed).toBe(false);
+
+					jest.useRealTimers();
+				});
+			});
+		});
 	});
 
 	describe('create', () => {
