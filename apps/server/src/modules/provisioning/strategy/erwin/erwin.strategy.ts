@@ -43,21 +43,6 @@ export class ErwinProvisioningStrategy extends ProvisioningStrategy {
 		throw new NotImplementedException();
 	}
 
-	// private mapRoles(erwinRole: string): RoleName | null {
-	// 	const roleNameLowerCase = erwinRole.toLowerCase();
-
-	// 	switch (roleNameLowerCase) {
-	// 		case 'lehrer':
-	// 			return RoleName.TEACHER;
-	// 		case 'schueler':
-	// 			return RoleName.STUDENT;
-	// 		case 'admin':
-	// 			return RoleName.ADMINISTRATOR;
-	// 		default:
-	// 			return null;
-	// 	}
-	// }
-
 	private async parseAndValidateToken(input: OauthDataStrategyInputDto): Promise<ErwinJwtPayload> {
 		const decodedAccessToken: JwtPayload | null = jwt.decode(input.accessToken, { json: true });
 
