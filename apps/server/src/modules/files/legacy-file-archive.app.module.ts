@@ -13,6 +13,7 @@ import { StorageProviderEntity, StorageProviderRepo } from '@modules/school/repo
 import { Module } from '@nestjs/common';
 import { DownloadArchiveUC, LegacyFileArchiveController } from './api';
 import { DownloadArchiveService, FILES_REPO } from './domain';
+import { FileAuthContextService } from './domain/file-auth-context.service';
 import { FileEntity } from './entity';
 import { LEGACY_FILE_ARCHIVE_CONFIG_TOKEN, LegacyFileArchiveConfig } from './legacy-file-archive.config';
 import { FilesRepo } from './repo';
@@ -41,6 +42,7 @@ import { FilesRepo } from './repo';
 	providers: [
 		DownloadArchiveService,
 		DownloadArchiveUC,
+		FileAuthContextService,
 		StorageProviderRepo,
 		{ provide: FILES_REPO, useClass: FilesRepo },
 	],

@@ -1,3 +1,4 @@
+export * from './file-auth-context';
 export * from './file-owner-model.enum';
 export * from './file-permission-reference-model.enum';
 export * from './file-security-check-status.enum';

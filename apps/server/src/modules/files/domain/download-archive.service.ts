@@ -6,8 +6,10 @@ import { StorageProviderRepo, type StorageProviderEntity } from '@modules/school
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { TypeGuard } from '@shared/common/guards';
 import { EntityId } from '@shared/domain/types';
+
 import { FileDo } from './do';
 import { ArchiveFactory, FileResponseFactory } from './factory';
+import { FileAuthContextService } from './file-auth-context.service';
 import { FileOwnerModel, FILES_REPO, FilesRepoInterface, GetFileResponse } from './types';
 
 @Injectable()
@@ -16,7 +18,8 @@ export class DownloadArchiveService {
 		private readonly logger: Logger,
 		@Inject(FILES_REPO) private readonly filesRepo: FilesRepoInterface,
 		private readonly storageProviderRepo: StorageProviderRepo,
-		private readonly domainErrorHandler: DomainErrorHandler
+		private readonly domainErrorHandler: DomainErrorHandler,
+		private readonly fileAuthContextService: FileAuthContextService
 	) {
 		this.logger.setContext(DownloadArchiveService.name);
 	}
@@ -24,9 +27,12 @@ export class DownloadArchiveService {
 	public async downloadFilesAsArchive(
 		ownerId: EntityId,
 		ownerType: FileOwnerModel,
-		archiveName: string
+		archiveName: string,
+		userId: EntityId,
+		userRoleIds: EntityId[] = []
 	): Promise<GetFileResponse> {
-		const files = await this.filesRepo.findByIdAndOwnerType(ownerId, ownerType);
+		const authContext = await this.fileAuthContextService.buildContext(ownerId, ownerType, userId, userRoleIds);
+		const files = await this.filesRepo.findByIdAndOwnerType(ownerId, ownerType, authContext);
 
 		const filesById = this.createFileMap(files);
 		const downloadableFiles = this.filterDownloadableFiles(files);
