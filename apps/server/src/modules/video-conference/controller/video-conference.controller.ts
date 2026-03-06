@@ -46,13 +46,6 @@ export class VideoConferenceController {
 		@Param() scopeParams: VideoConferenceScopeParams,
 		@Body() params: VideoConferenceCreateParams
 	): Promise<void> {
-		console.log('Received request to start video conference with params:', {
-			userId: currentUser.userId,
-			scope: scopeParams.scope,
-			scopeId: scopeParams.scopeId,
-			headersOrigin: req.headers.origin,
-		});
-
 		const scopeRef = new ScopeRef(scopeParams.scopeId, scopeParams.scope);
 		const videoConferenceOptions: VideoConferenceOptions = VideoConferenceMapper.toVideoConferenceOptions(params);
 

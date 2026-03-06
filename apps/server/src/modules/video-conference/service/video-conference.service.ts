@@ -220,6 +220,7 @@ export class VideoConferenceService {
 					scopeId,
 					scopeName: VideoConferenceScope.COURSE,
 					logoutUrl: `${this.hostUrl}/courses/${scopeId}?activeTab=tools`,
+					//logoutUrl: `${this.hostUrl}/courses/${scopeId}?activeTab=tools`,
 					title: ensureMinTitleLength(course.name),
 				};
 			}
