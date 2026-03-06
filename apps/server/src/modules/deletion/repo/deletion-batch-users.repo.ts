@@ -12,6 +12,11 @@ export type UsersCountByRole = {
 	userCount: number;
 };
 
+export type UserWithRoles = {
+	id: string;
+	roles: string[];
+};
+
 @Injectable()
 export class DeletionBatchUsersRepo {
 	constructor(private readonly em: EntityManager) {}
@@ -102,5 +107,42 @@ export class DeletionBatchUsersRepo {
 		const usersByRole = await this.em.getConnection().aggregate<UserIdsByRole>('users', pipeline);
 
 		return usersByRole;
+	}
+
+	public async getUsersWithRoles(userIds: EntityId[]): Promise<UserWithRoles[]> {
+		if (userIds.length === 0) return [];
+
+		const pipeline = [
+			{
+				$match: {
+					_id: { $in: userIds.map((id) => new ObjectId(id)) },
+				},
+			},
+			{
+				$lookup: {
+					from: 'roles',
+					localField: 'roles',
+					foreignField: '_id',
+					as: 'roleDetails',
+				},
+			},
+			{
+				$project: {
+					_id: 0,
+					id: { $toString: '$_id' },
+					roles: {
+						$map: {
+							input: '$roleDetails',
+							as: 'role',
+							in: '$$role.name',
+						},
+					},
+				},
+			},
+		];
+
+		const usersWithRoles = await this.em.getConnection().aggregate<UserWithRoles>('users', pipeline);
+
+		return usersWithRoles;
 	}
 }
