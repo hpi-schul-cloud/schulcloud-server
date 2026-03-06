@@ -85,8 +85,8 @@ export class RoomRule implements Rule<RoomAuthorizable> {
 			shareRoom: canShareRoom,
 			updateRoom: canUpdateRoom,
 			createRoomInvitationLinks: canManageRoomInvitationLinks,
-			listRoomInvitationLinks: canListRoomInvitationLinks,
-			updateRoomInvitationLinks: canUpdateRoomInvitationLinks,
+			listRoomInvitationLinks: canManageRoomInvitationLinks,
+			updateRoomInvitationLinks: canManageRoomInvitationLinks,
 			deleteRoomInvitationLinks: canManageRoomInvitationLinks,
 			viewContent: canViewContent,
 			viewDraftContent: canViewDraftContent,
@@ -341,22 +341,6 @@ const canShareRoom = (user: User, roomAuthorizable: RoomAuthorizable): boolean =
 	const canShareRoom = canCreateRoom(user) && hasRoomPermission;
 
 	return canShareRoom;
-};
-
-// only to satisfy the unit test, I think it should be the same as canManageRoomInvitationLinks
-const canUpdateRoomInvitationLinks = (user: User, roomAuthorizable: RoomAuthorizable): boolean => {
-	const { roomPermissions } = resolveUserPermissions(user, roomAuthorizable);
-	const hasRoomPermission = roomPermissions.includes(Permission.ROOM_ADD_MEMBERS);
-
-	return hasRoomPermission;
-};
-
-// only to satisfy the unit test, I think it should be the same as canManageRoomInvitationLinks
-const canListRoomInvitationLinks = (user: User, roomAuthorizable: RoomAuthorizable): boolean => {
-	const { roomPermissions } = resolveUserPermissions(user, roomAuthorizable);
-	const hasRoomPermission = roomPermissions.includes(Permission.ROOM_ADD_MEMBERS);
-
-	return hasRoomPermission;
 };
 
 const canManageRoomInvitationLinks = (user: User, roomAuthorizable: RoomAuthorizable): boolean => {
