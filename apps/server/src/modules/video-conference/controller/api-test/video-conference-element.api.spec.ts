@@ -211,7 +211,6 @@ describe('VideoConferenceController (API)', () => {
 					everyAttendeeJoinsMuted: true,
 					everybodyJoinsAsModerator: true,
 					moderatorMustApproveJoinRequests: true,
-					logoutUrl: 'http://from.other.origin/',
 				};
 
 				const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
