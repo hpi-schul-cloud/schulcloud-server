@@ -50,17 +50,8 @@ export class VideoConferenceController {
 			userId: currentUser.userId,
 			scope: scopeParams.scope,
 			scopeId: scopeParams.scopeId,
-			//logoutUrl: params.logoutUrl,
 			headersOrigin: req.headers.origin,
 		});
-		//if (params.logoutUrl) {
-		//	console.log('origin', new URL(params.logoutUrl).origin);
-		//}
-		//console.log('request headers:', req.headers);
-		//// validation doesn't fullfill the requirement of logoutUrl being same origin, so we need to check it here
-		//if (params.logoutUrl && new URL(params.logoutUrl).origin !== req.headers.origin) {
-		//	throw new InvalidOriginForLogoutUrlLoggableException(params.logoutUrl, req.headers.origin);
-		//}
 
 		const scopeRef = new ScopeRef(scopeParams.scopeId, scopeParams.scope);
 		const videoConferenceOptions: VideoConferenceOptions = VideoConferenceMapper.toVideoConferenceOptions(params);
