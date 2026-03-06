@@ -343,8 +343,7 @@ export class H5pLibraryPackagerService {
 				patchVersion: number;
 				[key: string]: any;
 			};
-			let [tagMajor, tagMinor, tagPatch] = tag.split('.').map(Number);
-			if (!tagPatch) tagPatch = 0;
+			const { major: tagMajor, minor: tagMinor, patch: tagPatch } = this.parseTagVersion(tag);
 			if (json.majorVersion !== tagMajor || json.minorVersion !== tagMinor || json.patchVersion !== tagPatch) {
 				json.majorVersion = tagMajor;
 				json.minorVersion = tagMinor;
@@ -358,6 +357,15 @@ export class H5pLibraryPackagerService {
 		}
 
 		return changed;
+	}
+
+	// Remove 'v' prefix if present (e.g., "v1.2.3" -> "1.2.3") and parse version numbers
+	private parseTagVersion(tag: string): { major: number; minor: number; patch: number } {
+		const normalizedTag = tag.replace(/^v/, '');
+		const [major, minor, patch] = normalizedTag.split('.').map(Number);
+		const tagVersion = { major, minor, patch: patch || 0 };
+
+		return tagVersion;
 	}
 
 	private logCorrectedVersionInLibraryJson(folderPath: string, tag: string): void {

@@ -47,7 +47,7 @@ export class H5pLibraryUploaderService {
 		if (!FileSystemHelper.pathExists(localFolderPath)) {
 			throw new Error(`Folder ${localFolderPath} does not exist.`);
 		}
-		const s3FolderPath = `h5p-libraries/${folderName}`;
+		const s3FolderPath = this.buildS3FolderPath(folderName);
 		const folderExistsInS3 = await this.checkFolderAlreadyExistsInS3(s3FolderPath);
 		if (folderExistsInS3) {
 			const isUpdateNeeded = await this.checkIfUpdateIsNeeded(localFolderPath, s3FolderPath);
@@ -59,6 +59,14 @@ export class H5pLibraryUploaderService {
 			return;
 		}
 		await this.addLibrary(localFolderPath, s3FolderPath);
+	}
+
+	// Remove 'v' prefix from version number (e.g., "H5P.ImageJuxtaposition-v1.1" -> "H5P.ImageJuxtaposition-1.1")
+	private buildS3FolderPath(folderName: string): string {
+		const normalizedFolderName = folderName.replace(/-v(\d)/, '-$1');
+		const s3FolderPath = `h5p-libraries/${normalizedFolderName}`;
+
+		return s3FolderPath;
 	}
 
 	private async checkFolderAlreadyExistsInS3(s3FolderPath: string): Promise<boolean> {
