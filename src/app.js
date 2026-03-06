@@ -14,7 +14,6 @@ const { BODYPARSER_JSON_LIMIT, LEAD_TIME } = require('../config/globals');
 const middleware = require('./middleware');
 const setupConfiguration = require('./configuration');
 const services = require('./services');
-const components = require('./components');
 
 const requestLog = require('./logger/RequestLogger');
 
@@ -87,7 +86,7 @@ const setupApp = async (orm) => {
 			next();
 		});
 	}
-	app.configure(services).configure(components).configure(middleware).configure(setupAppHooks).configure(errorHandler);
+	app.configure(services).configure(middleware).configure(setupAppHooks).configure(errorHandler);
 
 	return app;
 };

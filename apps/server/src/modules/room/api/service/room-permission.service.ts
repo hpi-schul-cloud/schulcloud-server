@@ -47,7 +47,7 @@ export class RoomPermissionService {
 		return hasRoomPermissions;
 	}
 
-	public async checkRoomIsUnlocked(roomId: EntityId): Promise<void> {
+	public async checkRoomIsLocked(roomId: EntityId): Promise<void> {
 		const roomAuthorizable = await this.roomMembershipService.getRoomAuthorizable(roomId);
 
 		const hasOwner = roomAuthorizable.members.some((member) =>
