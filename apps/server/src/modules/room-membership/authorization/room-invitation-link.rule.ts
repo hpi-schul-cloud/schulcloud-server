@@ -69,9 +69,9 @@ export class RoomInvitationLinkRule implements Rule<RoomInvitationLinkAuthorizab
 	}
 
 	public check(operation: RoomInvitationLinkOperation, user: User, authorizable: RoomInvitationLinkAuthorizable): void {
-		const canFunction = this.getOperationMap()[operation];
+		const checkFunction = this.getOperationMap()[operation];
 
-		canFunction(user, authorizable);
+		checkFunction(user, authorizable);
 	}
 
 	public can(
@@ -79,10 +79,8 @@ export class RoomInvitationLinkRule implements Rule<RoomInvitationLinkAuthorizab
 		user: User,
 		authorizable: RoomInvitationLinkAuthorizable
 	): boolean {
-		const canFunction = this.getOperationMap()[operation];
-
 		try {
-			canFunction(user, authorizable);
+			this.check(operation, user, authorizable);
 			return true;
 		} catch {
 			return false;
@@ -114,7 +112,7 @@ const resolveRoomPermissions = (user: User, object: RoomInvitationLinkAuthorizab
 		.flatMap((role) => role.permissions ?? []);
 };
 
-const checkValidity = (user: User, authorizable: RoomInvitationLinkAuthorizable): void => {
+const checkAllowedToUseInvitationLink = (user: User, authorizable: RoomInvitationLinkAuthorizable): void => {
 	const { roomInvitationLink } = authorizable;
 
 	checkRoleValidity(user, authorizable);
@@ -143,7 +141,7 @@ const checkRoleValidity = (user: User, authorizable: RoomInvitationLinkAuthoriza
 		return;
 	}
 	if (isExternalPerson && roomInvitationLink.isUsableByExternalPersons) {
-		if (!authorizable.config.featureRoomLinkInvitationExternalPersonsEnabled) {
+		if (!authorizable.roomPublicApiConfig.featureRoomLinkInvitationExternalPersonsEnabled) {
 			throw new FeatureDisabledLoggableException('FEATURE_ROOM_LINK_INVITATION_EXTERNAL_PERSONS_ENABLED');
 		}
 		return;
@@ -186,6 +184,6 @@ const checkStudentFromOtherSchool = (user: User, authorizable: RoomInvitationLin
 };
 
 const canUseRoomInvitationLinks = (user: User, authorizable: RoomInvitationLinkAuthorizable): boolean => {
-	checkValidity(user, authorizable);
+	checkAllowedToUseInvitationLink(user, authorizable);
 	return true;
 };

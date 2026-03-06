@@ -289,7 +289,7 @@ describe(RoomInvitationLinkRule.name, () => {
 		});
 
 		describe('for external person users', () => {
-			describe('when link is usable by external persons and feature is enabled', () => {
+			describe('when link is usable by external persons', () => {
 				it('should allow useRoomInvitationLinks', () => {
 					const { user, authorizable } = setup(RoleName.EXTERNALPERSON, { isUsableByExternalPersons: true }, true);
 

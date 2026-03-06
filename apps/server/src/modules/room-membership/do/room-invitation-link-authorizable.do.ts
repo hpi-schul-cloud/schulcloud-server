@@ -13,21 +13,21 @@ export class RoomInvitationLinkAuthorizable implements AuthorizableObject {
 
 	public readonly schoolName: string;
 
+	public readonly roomPublicApiConfig: RoomPublicApiConfig;
+
 	constructor(
 		roomAuthorizable: RoomAuthorizable,
 		roomInvitationLink: RoomInvitationLink,
 		schoolName: string,
-		private readonly roomConfig: RoomPublicApiConfig
+		roomPublicApiConfig: RoomPublicApiConfig
 	) {
 		this.schoolName = schoolName;
 		this.roomAuthorizable = roomAuthorizable;
 		this.roomInvitationLink = roomInvitationLink;
+		this.roomPublicApiConfig = roomPublicApiConfig;
 	}
 
 	get schoolId(): EntityId {
 		return this.roomAuthorizable.schoolId;
-	}
-	get config(): RoomPublicApiConfig {
-		return this.roomConfig;
 	}
 }

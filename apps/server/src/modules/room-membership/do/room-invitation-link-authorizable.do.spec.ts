@@ -38,19 +38,19 @@ describe('RoomInvitationLinkAuthorizable', () => {
 		return { roomInvitationLinkAuthorizable, roomConfig, roomInvitationLink };
 	};
 
-	it('should get schoolId', () => {
+	it('should provide schoolId', () => {
 		const { roomInvitationLinkAuthorizable } = setup();
 
 		expect(roomInvitationLinkAuthorizable.schoolId).toEqual('schoolId');
 	});
 
-	it('should get config', () => {
+	it('should provide config', () => {
 		const { roomInvitationLinkAuthorizable, roomConfig } = setup();
 
 		expect(roomInvitationLinkAuthorizable.config).toEqual(roomConfig);
 	});
 
-	it('should get roomInvitationLink', () => {
+	it('should provide roomInvitationLink', () => {
 		const { roomInvitationLinkAuthorizable, roomInvitationLink } = setup();
 
 		expect(roomInvitationLinkAuthorizable.roomInvitationLink).toEqual(roomInvitationLink);
