@@ -1,8 +1,8 @@
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
-import { EntityId } from '@shared/domain/types';
-import { AnyBoardNode } from './types';
 import { Permission } from '@shared/domain/interface';
+import { EntityId } from '@shared/domain/types';
 import { isColumnBoard } from './colum-board.do';
+import { AnyBoardNode } from './types';
 
 export enum BoardRoles {
 	EDITOR = 'editor',
@@ -27,7 +27,9 @@ export interface BoardNodeAuthorizableProps extends AuthorizableObject {
 }
 
 export interface BoardContextSettings {
-	canRoomEditorManageVideoconference?: boolean;
+	canEditorsManageVideoconference?: boolean;
+	canReadersEdit?: boolean;
+	canAdminsToggleReadersCanEdit?: boolean;
 	isLocked?: boolean;
 }
 
@@ -78,8 +80,8 @@ export class BoardNodeAuthorizable extends DomainObject<BoardNodeAuthorizablePro
 
 		if (user?.roles.includes(BoardRoles.EDITOR)) {
 			const permissions: Permission[] = [Permission.BOARD_VIEW, Permission.BOARD_EDIT, Permission.BOARD_MANAGE];
-			const canRoomEditorManageVideoconference = this.boardContextSettings.canRoomEditorManageVideoconference ?? false;
-			if (canRoomEditorManageVideoconference) {
+			const canEditorsManageVideoconference = this.boardContextSettings.canEditorsManageVideoconference ?? false;
+			if (canEditorsManageVideoconference) {
 				permissions.push(Permission.BOARD_MANAGE_VIDEOCONFERENCE);
 			}
 			return permissions;

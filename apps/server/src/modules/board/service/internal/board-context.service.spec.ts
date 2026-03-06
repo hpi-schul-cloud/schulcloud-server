@@ -5,8 +5,9 @@ import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { GroupTypes } from '@modules/group';
 import { groupFactory } from '@modules/group/testing';
+import { RoleName } from '@modules/role';
 import { roleFactory } from '@modules/role/testing';
-import { RoomService } from '@modules/room';
+import { RoomFeatures, RoomService } from '@modules/room';
 import { RoomAuthorizable, RoomMembershipService } from '@modules/room-membership';
 import { roomMembershipFactory } from '@modules/room-membership/testing';
 import { roomFactory } from '@modules/room/testing';
@@ -18,7 +19,6 @@ import { setupEntities } from '@testing/database';
 import { BoardExternalReferenceType, BoardRoles, UserWithBoardRoles } from '../../domain';
 import { columnBoardFactory, columnFactory } from '../../testing';
 import { BoardContextService } from './board-context.service';
-import { RoleName } from '@modules/role';
 
 describe(BoardContextService.name, () => {
 	let module: TestingModule;
@@ -477,7 +477,12 @@ describe(BoardContextService.name, () => {
 
 				const result = await service.getBoardSettings(columnBoard);
 
-				expect(result).toEqual({ isLocked: false });
+				expect(result).toEqual({
+					canEditorsManageVideoconference: false,
+					canReadersEdit: false,
+					canAdminsToggleReadersCanEdit: false,
+					isLocked: false,
+				});
 			});
 		});
 
@@ -498,7 +503,12 @@ describe(BoardContextService.name, () => {
 
 				const result = await service.getBoardSettings(columnBoard);
 
-				expect(result).toEqual({ isLocked: false });
+				expect(result).toEqual({
+					canEditorsManageVideoconference: false,
+					canReadersEdit: false,
+					canAdminsToggleReadersCanEdit: false,
+					isLocked: false,
+				});
 			});
 		});
 
@@ -531,25 +541,32 @@ describe(BoardContextService.name, () => {
 				it('should return settings with canRoomEditorManageVideoconference true', async () => {
 					const { columnBoard, room } = setup();
 
-					roomService.canEditorManageVideoconferences.mockReturnValueOnce(true);
+					room.features = [RoomFeatures.EDITOR_MANAGE_VIDEOCONFERENCE];
 
 					const result = await service.getBoardSettings(columnBoard);
 
-					expect(result).toEqual({ canRoomEditorManageVideoconference: true, isLocked: false });
-					expect(roomService.canEditorManageVideoconferences).toHaveBeenCalledWith(room);
+					expect(result).toEqual({
+						canEditorsManageVideoconference: true,
+						canReadersEdit: false,
+						canAdminsToggleReadersCanEdit: true,
+						isLocked: false,
+					});
 				});
 			});
 
 			describe('when room editor can NOT manage videoconference', () => {
-				it('should return settings with canRoomEditorManageVideoconference false', async () => {
+				it('should return settings with canEditorsManageVideoconference false', async () => {
 					const { columnBoard, room } = setup();
-
-					roomService.canEditorManageVideoconferences.mockReturnValueOnce(false);
+					room.features = [];
 
 					const result = await service.getBoardSettings(columnBoard);
 
-					expect(result).toEqual({ canRoomEditorManageVideoconference: false, isLocked: false });
-					expect(roomService.canEditorManageVideoconferences).toHaveBeenCalledWith(room);
+					expect(result).toEqual({
+						canEditorsManageVideoconference: false,
+						canReadersEdit: false,
+						canAdminsToggleReadersCanEdit: true,
+						isLocked: false,
+					});
 				});
 			});
 		});

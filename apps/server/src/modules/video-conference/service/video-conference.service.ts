@@ -124,6 +124,7 @@ export class VideoConferenceService {
 			const roomMember = roomAuthorizable.members.find((member) => member.userId === authorizableUser.id);
 
 			if (roomMember) {
+				// should be a check against permission.BOARD_MANAGE_VIDEOCONFERENCE
 				return roomMember.roles.some((role) => role.name === RoleName.ROOMADMIN);
 			}
 
@@ -134,11 +135,11 @@ export class VideoConferenceService {
 			const boardAuthorisedUser = boardDoAuthorizable.users.find((user) => user.userId === authorizableUser.id);
 
 			if (boardAuthorisedUser) {
-				const canRoomEditorManageVideoconference =
-					boardDoAuthorizable.boardContextSettings.canRoomEditorManageVideoconference ?? false;
+				const canEditorsManageVideoconference =
+					boardDoAuthorizable.boardContextSettings.canEditorsManageVideoconference ?? false;
 				const isBoardEditor = boardAuthorisedUser.roles.includes(BoardRoles.EDITOR);
 				const isBoardAdmin = boardAuthorisedUser.roles.includes(BoardRoles.ADMIN);
-				return (canRoomEditorManageVideoconference && isBoardEditor) || isBoardAdmin;
+				return (canEditorsManageVideoconference && isBoardEditor) || isBoardAdmin;
 			}
 
 			return false;

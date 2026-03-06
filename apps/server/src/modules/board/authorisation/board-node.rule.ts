@@ -353,10 +353,10 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 		authorizable: BoardNodeAuthorizable
 	): boolean {
 		if (context.action === Action.write) {
-			const canRoomEditorManageVideoconference =
-				authorizable.boardContextSettings.canRoomEditorManageVideoconference ?? false;
+			const canEditorsManageVideoconference =
+				authorizable.boardContextSettings.canEditorsManageVideoconference ?? false;
 			return (
-				(canRoomEditorManageVideoconference && this.isBoardEditor(userWithBoardRoles)) ||
+				(canEditorsManageVideoconference && this.isBoardEditor(userWithBoardRoles)) ||
 				this.isBoardAdmin(userWithBoardRoles)
 			);
 		}
@@ -449,6 +449,7 @@ const canManageVideoConference = (user: User, authorizable: BoardNodeAuthorizabl
 
 	const permissions = authorizable.getUserPermissions(user.id);
 
+	// TODO: move board setting relevance from authorizable to here
 	const isBoard = authorizable.rootNode instanceof ColumnBoard || authorizable.rootNode instanceof MediaBoard;
 	const canManageVideoConference = permissions.includes(Permission.BOARD_MANAGE_VIDEOCONFERENCE);
 	return isBoard && canManageVideoConference;

@@ -1,5 +1,6 @@
 import { CourseService } from '@modules/course';
-import { RoomService } from '@modules/room';
+import { RoleName } from '@modules/role';
+import { RoomFeatures, RoomService } from '@modules/room';
 import { RoomMembershipService, UserWithRoomRoles } from '@modules/room-membership';
 import { Injectable } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
@@ -11,7 +12,6 @@ import {
 	BoardRoles,
 	UserWithBoardRoles,
 } from '../../domain';
-import { RoleName } from '@modules/role';
 
 @Injectable()
 export class BoardContextService {
@@ -46,33 +46,55 @@ export class BoardContextService {
 			return {};
 		}
 
-		if (rootNode.context.type === BoardExternalReferenceType.Room) {
-			const roomId = rootNode.context.id;
-			const room = await this.roomService.getSingleRoom(roomId);
+		switch (rootNode.context.type) {
+			case BoardExternalReferenceType.Room: {
+				const roomId = rootNode.context.id;
+				const room = await this.roomService.getSingleRoom(roomId);
 
-			const roomAuthorizable = await this.roomMembershipService.getRoomAuthorizable(roomId);
-			const hasOwner = roomAuthorizable.members.some((member) =>
-				member.roles.some((role) => role.name === RoleName.ROOMOWNER)
-			);
+				const roomAuthorizable = await this.roomMembershipService.getRoomAuthorizable(roomId);
+				const hasOwner = roomAuthorizable.members.some((member) =>
+					member.roles.some((role) => role.name === RoleName.ROOMOWNER)
+				);
 
-			const canRoomEditorManageVideoconference = this.roomService.canEditorManageVideoconferences(room);
-			return {
-				canRoomEditorManageVideoconference,
-				isLocked: !hasOwner,
-			};
-		} else if (rootNode.context.type === BoardExternalReferenceType.Course) {
-			const course = await this.courseService.findById(rootNode.context.id);
-			const hasTeachers = course.teachers.length > 0;
-			return {
-				isLocked: !hasTeachers,
-			};
-		} else if (rootNode.context.type === BoardExternalReferenceType.User) {
-			return {
-				isLocked: false,
-			};
-		} else {
-			throw new Error(`Unknown context type: '${rootNode.context.type as string}'`);
+				const canEditorsManageVideoconference = room.features.includes(RoomFeatures.EDITOR_MANAGE_VIDEOCONFERENCE);
+
+				return {
+					canEditorsManageVideoconference,
+					canReadersEdit: this.determineCanReadersEdit(rootNode),
+					canAdminsToggleReadersCanEdit: true,
+					isLocked: !hasOwner,
+				};
+			}
+
+			case BoardExternalReferenceType.Course: {
+				const course = await this.courseService.findById(rootNode.context.id);
+				const hasTeachers = course.teachers.length > 0;
+				return {
+					canEditorsManageVideoconference: false,
+					canReadersEdit: false,
+					canAdminsToggleReadersCanEdit: false,
+					isLocked: !hasTeachers,
+				};
+			}
+
+			case BoardExternalReferenceType.User:
+				return {
+					canEditorsManageVideoconference: false,
+					canReadersEdit: false,
+					canAdminsToggleReadersCanEdit: false,
+					isLocked: false,
+				};
 		}
+
+		// theoreticall fallback if BoardExternalReferenceType was extended but not implemented here yet
+		throw new Error(`Unknown context type: '${rootNode.context.type as string}'`);
+	}
+
+	private determineCanReadersEdit(rootNode: AnyBoardNode): boolean {
+		if ('readersCanEdit' in rootNode && rootNode.readersCanEdit !== undefined) {
+			return rootNode.readersCanEdit;
+		}
+		return false;
 	}
 
 	private async getFromRoom(roomId: EntityId): Promise<UserWithBoardRoles[]> {
