@@ -4,6 +4,7 @@ import { createRequestLoggerMiddleware, LegacyLogger, Logger, LOGGER_CONFIG_TOKE
 import { LegacyFileArchiveApiModule } from '@modules/files';
 import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import express from 'express';
 import { install as sourceMapInstall } from 'source-map-support';
 import { AppStartLoggable, enableOpenApiDocs } from './helpers';
@@ -20,7 +21,18 @@ async function bootstrap(): Promise<void> {
 	// WinstonLogger
 	nestApp.useLogger(await nestApp.resolve(LegacyLogger));
 
-	enableOpenApiDocs(nestApp, 'legacy-file-archive/docs');
+	const config = new DocumentBuilder()
+		.addServer('/api/v1/') // add default path as server to have correct urls ald let 'try out' work
+		.setTitle('Schulcloud-Verbund-Software Server API')
+		.setDescription('This is v1 of Legacy File Archive Server.')
+		.setVersion('1.0')
+		/** set authentication for all routes enabled by default */
+		.addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT' })
+		.build();
+	const document = SwaggerModule.createDocument(nestApp, config);
+	SwaggerModule.setup('/legacy-file-archive/docs', nestApp, document);
+
+	enableOpenApiDocs(nestApp, '/legacy-file-archive/docs');
 	await createMetricsServer(nestApp, 'Legacy File Archive Download App');
 
 	await nestApp.init();
