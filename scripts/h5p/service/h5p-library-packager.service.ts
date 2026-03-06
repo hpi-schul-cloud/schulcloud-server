@@ -197,20 +197,21 @@ export class H5pLibraryPackagerService {
 	}
 
 	private getHighestPatchTags(tags: string[]): string[] {
-		const semverRegex = /^v?(\d+)\.(\d+)\.(\d+)$/;
+		const semverRegex = /^v?(\d+)\.(\d+)(?:\.(\d+))?$/;
 		const versionMap = new Map<string, { tag: string; patch: number }>();
 		for (const tag of tags) {
 			const match = tag.match(semverRegex);
 			if (!match) continue;
 			const [, major, minor, patch] = match;
 			const key = `${major}.${minor}`;
-			const patchNum = parseInt(patch, 10);
+			const patchNum = patch ? parseInt(patch, 10) : 0;
 			const existing = versionMap.get(key);
 			if (!existing || patchNum > existing.patch) {
 				versionMap.set(key, { tag, patch: patchNum });
 			}
 		}
 		const highestPatchTags = Array.from(versionMap.values()).map((v) => v.tag);
+
 		return highestPatchTags;
 	}
 
@@ -342,7 +343,8 @@ export class H5pLibraryPackagerService {
 				patchVersion: number;
 				[key: string]: any;
 			};
-			const [tagMajor, tagMinor, tagPatch] = tag.split('.').map(Number);
+			let [tagMajor, tagMinor, tagPatch] = tag.split('.').map(Number);
+			if (!tagPatch) tagPatch = 0;
 			if (json.majorVersion !== tagMajor || json.minorVersion !== tagMinor || json.patchVersion !== tagPatch) {
 				json.majorVersion = tagMajor;
 				json.minorVersion = tagMinor;
