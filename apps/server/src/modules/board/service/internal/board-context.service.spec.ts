@@ -430,7 +430,7 @@ describe(BoardContextService.name, () => {
 		});
 	});
 
-	describe('getBoardSettings', () => {
+	describe('getBoardConfiguration', () => {
 		describe('when node has no context', () => {
 			const setup = () => {
 				const column = columnFactory.build({});
@@ -438,10 +438,10 @@ describe(BoardContextService.name, () => {
 				return { column };
 			};
 
-			it('should return empty settings object', async () => {
+			it('should return empty board configuration object', async () => {
 				const { column } = setup();
 
-				const result = await service.getBoardSettings(column);
+				const result = await service.getBoardConfiguration(column);
 
 				expect(result).toEqual({});
 			});
@@ -459,7 +459,7 @@ describe(BoardContextService.name, () => {
 			it('should throw an error', async () => {
 				const { columnBoard } = setup();
 
-				await expect(service.getBoardSettings(columnBoard)).rejects.toThrowError();
+				await expect(service.getBoardConfiguration(columnBoard)).rejects.toThrowError();
 			});
 		});
 
@@ -472,10 +472,10 @@ describe(BoardContextService.name, () => {
 				return { columnBoard };
 			};
 
-			it('should return isLocked false settings object', async () => {
+			it('should return isLocked false in board configuration object', async () => {
 				const { columnBoard } = setup();
 
-				const result = await service.getBoardSettings(columnBoard);
+				const result = await service.getBoardConfiguration(columnBoard);
 
 				expect(result).toEqual({
 					canEditorsManageVideoconference: false,
@@ -501,7 +501,7 @@ describe(BoardContextService.name, () => {
 			it('should return isLocked false', async () => {
 				const { columnBoard } = setup();
 
-				const result = await service.getBoardSettings(columnBoard);
+				const result = await service.getBoardConfiguration(columnBoard);
 
 				expect(result).toEqual({
 					canEditorsManageVideoconference: false,
@@ -538,12 +538,12 @@ describe(BoardContextService.name, () => {
 			};
 
 			describe('when room editor can manage videoconference', () => {
-				it('should return settings with canRoomEditorManageVideoconference true', async () => {
+				it('should return board configuration with canEditorsManageVideoconference true', async () => {
 					const { columnBoard, room } = setup();
 
 					room.features = [RoomFeatures.EDITOR_MANAGE_VIDEOCONFERENCE];
 
-					const result = await service.getBoardSettings(columnBoard);
+					const result = await service.getBoardConfiguration(columnBoard);
 
 					expect(result).toEqual({
 						canEditorsManageVideoconference: true,
@@ -555,11 +555,11 @@ describe(BoardContextService.name, () => {
 			});
 
 			describe('when room editor can NOT manage videoconference', () => {
-				it('should return settings with canEditorsManageVideoconference false', async () => {
+				it('should return board configuration with canEditorsManageVideoconference false', async () => {
 					const { columnBoard, room } = setup();
 					room.features = [];
 
-					const result = await service.getBoardSettings(columnBoard);
+					const result = await service.getBoardConfiguration(columnBoard);
 
 					expect(result).toEqual({
 						canEditorsManageVideoconference: false,

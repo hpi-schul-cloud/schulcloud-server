@@ -7,7 +7,7 @@ import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import {
 	AnyBoardNode,
-	BoardContextSettings,
+	BoardConfiguration,
 	BoardExternalReferenceType,
 	BoardRoles,
 	UserWithBoardRoles,
@@ -41,7 +41,7 @@ export class BoardContextService {
 		return usersWithRoles;
 	}
 
-	public async getBoardSettings(rootNode: AnyBoardNode): Promise<BoardContextSettings> {
+	public async getBoardConfiguration(rootNode: AnyBoardNode): Promise<BoardConfiguration> {
 		if (!('context' in rootNode)) {
 			return {};
 		}

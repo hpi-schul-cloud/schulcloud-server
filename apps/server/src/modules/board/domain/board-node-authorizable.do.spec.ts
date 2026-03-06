@@ -1,11 +1,11 @@
-import { columnBoardFactory, columnFactory } from '../testing';
-import { BoardNodeAuthorizable, BoardRoles, BoardContextSettings } from './board-node-authorizable.do';
-import { Permission } from '@shared/domain/interface';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { Permission } from '@shared/domain/interface';
+import { columnBoardFactory, columnFactory } from '../testing';
+import { BoardConfiguration, BoardNodeAuthorizable, BoardRoles } from './board-node-authorizable.do';
 import { ColumnBoardProps } from './types';
 
 describe('Board Node Authorizable Domain Object', () => {
-	const setup = (props?: { boardContextSettings?: BoardContextSettings; rootPartial?: Partial<ColumnBoardProps> }) => {
+	const setup = (props?: { boardConfiguration?: BoardConfiguration; rootPartial?: Partial<ColumnBoardProps> }) => {
 		const readerId = new ObjectId().toString();
 		const editorId = new ObjectId().toString();
 		const adminId = new ObjectId().toString();
@@ -20,7 +20,7 @@ describe('Board Node Authorizable Domain Object', () => {
 			id: anyBoardDo.id,
 			boardNode: anyBoardDo,
 			rootNode: columnBoardFactory.build(props?.rootPartial),
-			boardContextSettings: props?.boardContextSettings || {},
+			boardConfiguration: props?.boardConfiguration || {},
 		});
 
 		return { anyBoardDo, boardNodeAuthorizable, readerId, editorId, adminId };
@@ -49,9 +49,9 @@ describe('Board Node Authorizable Domain Object', () => {
 			expect(permissions).toEqual([Permission.BOARD_VIEW, Permission.BOARD_EDIT, Permission.BOARD_MANAGE]);
 		});
 
-		it('when canRoomEditorManageVideoconference is enabled, editor should get videoconference permission', () => {
+		it('when canEditorsManageVideoconference is enabled, editor should get videoconference permission', () => {
 			const { boardNodeAuthorizable, editorId } = setup({
-				boardContextSettings: { canRoomEditorManageVideoconference: true },
+				boardConfiguration: { canEditorsManageVideoconference: true },
 			});
 
 			const permissions = boardNodeAuthorizable.getUserPermissions(editorId);
