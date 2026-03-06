@@ -165,73 +165,73 @@ describe('VideoConferenceController (API)', () => {
 			});
 		});
 
-		describe('when the logoutUrl is from a wrong origin', () => {
-			const setup = async () => {
-				const school = schoolEntityFactory.buildWithId({ features: [] });
+		//describe('when the logoutUrl is from a wrong origin', () => {
+		//	const setup = async () => {
+		//		const school = schoolEntityFactory.buildWithId({ features: [] });
 
-				const room = roomEntityFactory.build({
-					schoolId: school.id,
-					startDate: new Date('2024-10-01'),
-					endDate: new Date('2024-10-20'),
-				});
-				const { roomEditorRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
-				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
-				const userGroup = groupEntityFactory.buildWithId({
-					organization: school,
-					users: [{ role: roomEditorRole, user: teacherUser }],
-				});
-				const roomMembership = roomMembershipEntityFactory.build({ roomId: room.id, userGroupId: userGroup.id });
+		//		const room = roomEntityFactory.build({
+		//			schoolId: school.id,
+		//			startDate: new Date('2024-10-01'),
+		//			endDate: new Date('2024-10-20'),
+		//		});
+		//		const { roomEditorRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
+		//		const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
+		//		const userGroup = groupEntityFactory.buildWithId({
+		//			organization: school,
+		//			users: [{ role: roomEditorRole, user: teacherUser }],
+		//		});
+		//		const roomMembership = roomMembershipEntityFactory.build({ roomId: room.id, userGroupId: userGroup.id });
 
-				const columnBoardNode = columnBoardEntityFactory.build({
-					context: { id: room.id, type: BoardExternalReferenceType.Room },
-				});
-				const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
-				const cardNode = cardEntityFactory.withParent(columnNode).build();
-				const elementNode = videoConferenceElementEntityFactory.withParent(cardNode).build();
+		//		const columnBoardNode = columnBoardEntityFactory.build({
+		//			context: { id: room.id, type: BoardExternalReferenceType.Room },
+		//		});
+		//		const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
+		//		const cardNode = cardEntityFactory.withParent(columnNode).build();
+		//		const elementNode = videoConferenceElementEntityFactory.withParent(cardNode).build();
 
-				await em
-					.persist([
-						columnBoardNode,
-						columnNode,
-						cardNode,
-						elementNode,
-						room,
-						roomMembership,
-						school,
-						teacherAccount,
-						teacherUser,
-						userGroup,
-						roomEditorRole,
-						roomViewerRole,
-					])
-					.flush();
-				em.clear();
+		//		await em
+		//			.persist([
+		//				columnBoardNode,
+		//				columnNode,
+		//				cardNode,
+		//				elementNode,
+		//				room,
+		//				roomMembership,
+		//				school,
+		//				teacherAccount,
+		//				teacherUser,
+		//				userGroup,
+		//				roomEditorRole,
+		//				roomViewerRole,
+		//			])
+		//			.flush();
+		//		em.clear();
 
-				const params: VideoConferenceCreateParams = {
-					everyAttendeeJoinsMuted: true,
-					everybodyJoinsAsModerator: true,
-					moderatorMustApproveJoinRequests: true,
-				};
+		//		const params: VideoConferenceCreateParams = {
+		//			everyAttendeeJoinsMuted: true,
+		//			everybodyJoinsAsModerator: true,
+		//			moderatorMustApproveJoinRequests: true,
+		//		};
 
-				const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
+		//		const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
 
-				return {
-					loggedInClient,
-					params,
-				};
-			};
+		//		return {
+		//			loggedInClient,
+		//			params,
+		//		};
+		//	};
 
-			//it('should return bad request', async () => {
-			//	const { loggedInClient, params } = await setup();
+		//	//it('should return bad request', async () => {
+		//	//	const { loggedInClient, params } = await setup();
 
-			//	const response: Response = await loggedInClient.put(
-			//		`${VideoConferenceScope.ROOM}/${new ObjectId().toHexString()}/start`,
-			//		params
-			//	);
+		//	//	const response: Response = await loggedInClient.put(
+		//	//		`${VideoConferenceScope.ROOM}/${new ObjectId().toHexString()}/start`,
+		//	//		params
+		//	//	);
 
-			//	expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
-			//});
-		});
+		//	//	expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
+		//	//});
+		//});
 
 		describe('when conference params are given', () => {
 			describe('when school has not enabled the school feature videoconference', () => {
