@@ -2,7 +2,6 @@ import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard'
 import { Body, Controller, Get, HttpStatus, Param, Put, Req } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
-import { InvalidOriginForLogoutUrlLoggableException } from '../error';
 import { VideoConferenceOptions } from '../interface';
 import { VideoConferenceMapper } from '../mapper/video-conference.mapper';
 import { VideoConferenceCreateUc, VideoConferenceEndUc, VideoConferenceInfoUc, VideoConferenceJoinUc } from '../uc';
@@ -47,10 +46,21 @@ export class VideoConferenceController {
 		@Param() scopeParams: VideoConferenceScopeParams,
 		@Body() params: VideoConferenceCreateParams
 	): Promise<void> {
-		// validation doesn't fullfill the requirement of logoutUrl being same origin, so we need to check it here
-		if (params.logoutUrl && new URL(params.logoutUrl).origin !== req.headers.origin) {
-			throw new InvalidOriginForLogoutUrlLoggableException(params.logoutUrl, req.headers.origin);
-		}
+		console.log('Received request to start video conference with params:', {
+			userId: currentUser.userId,
+			scope: scopeParams.scope,
+			scopeId: scopeParams.scopeId,
+			//logoutUrl: params.logoutUrl,
+			headersOrigin: req.headers.origin,
+		});
+		//if (params.logoutUrl) {
+		//	console.log('origin', new URL(params.logoutUrl).origin);
+		//}
+		//console.log('request headers:', req.headers);
+		//// validation doesn't fullfill the requirement of logoutUrl being same origin, so we need to check it here
+		//if (params.logoutUrl && new URL(params.logoutUrl).origin !== req.headers.origin) {
+		//	throw new InvalidOriginForLogoutUrlLoggableException(params.logoutUrl, req.headers.origin);
+		//}
 
 		const scopeRef = new ScopeRef(scopeParams.scopeId, scopeParams.scope);
 		const videoConferenceOptions: VideoConferenceOptions = VideoConferenceMapper.toVideoConferenceOptions(params);
