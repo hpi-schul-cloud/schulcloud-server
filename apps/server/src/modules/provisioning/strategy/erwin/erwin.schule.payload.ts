@@ -12,8 +12,4 @@ export class ErwinSchulePayload {
 	@IsString()
 	@IsNotEmpty()
 	public zugehoerigZu!: string;
-
-	constructor(payload: Partial<ErwinSchulePayload>) {
-		Object.assign(this, payload);
-	}
 }

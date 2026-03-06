@@ -10,13 +10,13 @@ export class ErwinJwtPayload implements JwtPayload {
 	public sub!: string;
 
 	@ValidateNested()
+	@IsNotEmpty()
 	public person!: ErwinPersonPayload;
 
 	@ValidateNested()
 	public schule!: ErwinSchulePayload;
 
 	@IsArray()
-	@IsNotEmpty()
 	public klassen!: ErwinKlassePayload[];
 
 	constructor(data: Partial<ErwinJwtPayload>) {

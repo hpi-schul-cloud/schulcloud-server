@@ -25,8 +25,4 @@ export class ErwinPersonPayload {
 	@IsDate()
 	@IsNotEmpty()
 	public geburtstag!: string;
-
-	constructor(payload: Partial<ErwinPersonPayload>) {
-		Object.assign(this, payload);
-	}
 }
