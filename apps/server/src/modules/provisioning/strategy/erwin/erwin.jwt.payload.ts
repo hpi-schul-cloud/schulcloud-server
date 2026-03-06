@@ -17,7 +17,7 @@ export class ErwinJwtPayload implements JwtPayload {
 	public schule!: ErwinSchulePayload;
 
 	@IsArray()
-	public klassen!: ErwinKlassePayload[];
+	public klassen?: ErwinKlassePayload[];
 
 	constructor(data: Partial<ErwinJwtPayload>) {
 		Object.assign(this, data);
