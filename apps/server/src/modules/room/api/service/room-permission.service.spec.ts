@@ -131,19 +131,19 @@ describe('RoomPermissionService', () => {
 		});
 	});
 
-	describe('checkRoomIsUnlocked', () => {
-		it('checkRoomIsUnlocked: does nothing when a room owner is present', async () => {
+	describe('checkRoomIsLocked', () => {
+		it('checkRoomIsLocked: does nothing when a room owner is present', async () => {
 			const { service, roomService } = setup({ hasOwner: true });
 
-			await expect(service.checkRoomIsUnlocked('room-123')).resolves.toBeUndefined();
+			await expect(service.checkRoomIsLocked('room-123')).resolves.toBeUndefined();
 
 			expect(roomService.getSingleRoom).not.toHaveBeenCalled();
 		});
 
-		it('checkRoomIsUnlocked: throws LockedRoomLoggableException when no room owner', async () => {
+		it('checkRoomIsLocked: throws LockedRoomLoggableException when no room owner', async () => {
 			const { service, roomService } = setup({ hasOwner: false, roomServiceRoom: { id: 'room-123', name: 'My Room' } });
 
-			await expect(service.checkRoomIsUnlocked('room-123')).rejects.toThrow(LockedRoomLoggableException);
+			await expect(service.checkRoomIsLocked('room-123')).rejects.toThrow(LockedRoomLoggableException);
 
 			expect(roomService.getSingleRoom).toHaveBeenCalledWith('room-123');
 		});

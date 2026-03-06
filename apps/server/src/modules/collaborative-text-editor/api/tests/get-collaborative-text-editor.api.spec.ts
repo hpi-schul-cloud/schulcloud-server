@@ -113,8 +113,13 @@ describe('Collaborative Text Editor Controller (API)', () => {
 		describe('when request is valid', () => {
 			describe('when no session for user exists', () => {
 				const setup = async () => {
+					const { teacherUser: teacher } = UserAndAccountTestFactory.buildTeacher();
 					const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-					const course = courseEntityFactory.build({ school: studentUser.school, students: [studentUser] });
+					const course = courseEntityFactory.build({
+						school: studentUser.school,
+						students: [studentUser],
+						teachers: [teacher],
+					});
 
 					await em.persist([studentAccount, studentUser, course]).flush();
 
@@ -178,8 +183,13 @@ describe('Collaborative Text Editor Controller (API)', () => {
 
 			describe('when other sessions for user already exists', () => {
 				const setup = async () => {
+					const { teacherUser: teacher } = UserAndAccountTestFactory.buildTeacher();
 					const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-					const course = courseEntityFactory.build({ school: studentUser.school, students: [studentUser] });
+					const course = courseEntityFactory.build({
+						school: studentUser.school,
+						students: [studentUser],
+						teachers: [teacher],
+					});
 
 					await em.persist([studentUser, course]).flush();
 
@@ -245,8 +255,13 @@ describe('Collaborative Text Editor Controller (API)', () => {
 
 			describe('when session for user already exists', () => {
 				const setup = async () => {
+					const { teacherUser: teacher } = UserAndAccountTestFactory.buildTeacher();
 					const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-					const course = courseEntityFactory.build({ school: studentUser.school, students: [studentUser] });
+					const course = courseEntityFactory.build({
+						school: studentUser.school,
+						students: [studentUser],
+						teachers: [teacher],
+					});
 
 					await em.persist([studentUser, course]).flush();
 
