@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { IdTokenExtractionFailureLoggableException } from '@modules/oauth';
+import { IdTokenExtractionFailureLoggableException } from '@modules/oauth/loggable';
 import { RoleName } from '@modules/role';
 import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';

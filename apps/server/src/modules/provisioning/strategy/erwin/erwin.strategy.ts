@@ -1,4 +1,4 @@
-import { IdTokenExtractionFailureLoggableException } from '@modules/oauth';
+import { IdTokenExtractionFailureLoggableException } from '@modules/oauth/loggable';
 import { RoleName } from '@modules/role';
 import { Injectable, NotImplementedException } from '@nestjs/common';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
