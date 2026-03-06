@@ -1,4 +1,4 @@
-import { IdTokenExtractionFailureLoggableException } from '@modules/oauth/loggable';
+import { IdTokenExtractionFailureLoggableException } from '@modules/oauth';
 import { RoleName } from '@modules/role';
 import { Injectable, NotImplementedException } from '@nestjs/common';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
@@ -14,7 +14,7 @@ import {
 } from '../../dto';
 import { ProvisioningStrategy } from '../base.strategy';
 import { ErwinJwtPayload } from './erwin.jwt.payload';
-import { ErwinRole } from '../../../role/domain';
+import { ErwinRole, MappedSvsRolle, PayloadRolle } from './enums/rolle.enum';
 
 @Injectable()
 export class ErwinProvisioningStrategy extends ProvisioningStrategy {
@@ -69,11 +69,11 @@ export class ErwinProvisioningStrategy extends ProvisioningStrategy {
 		externalClassDtoList: ExternalClassDto[];
 	} {
 		const externalUserDto: ExternalUserDto = new ExternalUserDto({
-			externalId: payload.personExternalId,
+			externalId: payload.person.externalId,
 			erwinId: payload.sub,
-			firstName: payload.personFirstName,
-			lastName: payload.personLastName,
-			roles: [this.mapErwinRoleToRoleName(payload.personErwinRole)],
+			firstName: payload.person.firstName,
+			lastName: payload.person.lastName,
+			roles: [this.mapPayloadRoleToRoleName(payload.person.role)],
 		});
 
 		if (!externalUserDto.erwinId) {
@@ -81,9 +81,9 @@ export class ErwinProvisioningStrategy extends ProvisioningStrategy {
 		}
 
 		const externalSchoolDto: ExternalSchoolDto = new ExternalSchoolDto({
-			externalId: payload.schuleExternalId,
-			location: payload.schuleZugehoerigZu,
-			name: payload.schuleName,
+			externalId: payload.schule.externalId,
+			location: payload.schule.zugehoerigZu,
+			name: payload.schule.name,
 		});
 
 		const externalClassDtoList = payload.klassen.map(
@@ -93,13 +93,24 @@ export class ErwinProvisioningStrategy extends ProvisioningStrategy {
 		return { externalUserDto, externalSchoolDto, externalClassDtoList };
 	}
 
-	private mapErwinRoleToRoleName(role: ErwinRole): RoleName {
-		const mapErwinRoleToSchulcloudRoleName: Record<ErwinRole, RoleName> = {
+	private mapPayloadRoleToRoleName(role: PayloadRolle): RoleName {
+		const erwinRoleMap: Record<ErwinRole, RoleName> = {
 			[ErwinRole.LERN]: RoleName.STUDENT,
 			[ErwinRole.LEHR]: RoleName.TEACHER,
 			[ErwinRole.LEIT]: RoleName.ADMINISTRATOR,
 		};
+		const mappedSvsRolleMap: Record<MappedSvsRolle, RoleName> = {
+			[MappedSvsRolle.USER]: RoleName.USER,
+			[MappedSvsRolle.STUDENT]: RoleName.STUDENT,
+			[MappedSvsRolle.TEACHER]: RoleName.TEACHER,
+			[MappedSvsRolle.SUPERHERO]: RoleName.SUPERHERO,
+			[MappedSvsRolle.ADMIN]: RoleName.ADMINISTRATOR,
+		};
 
-		return mapErwinRoleToSchulcloudRoleName[role];
+		if (Object.values(ErwinRole).includes(role as ErwinRole)) {
+			return erwinRoleMap[role as ErwinRole];
+		}
+
+		return mappedSvsRolleMap[role as MappedSvsRolle];
 	}
 }

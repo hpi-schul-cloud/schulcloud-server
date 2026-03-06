@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { IdTokenExtractionFailureLoggableException } from '@modules/oauth/loggable';
+import { IdTokenExtractionFailureLoggableException } from '@modules/oauth';
 import { RoleName } from '@modules/role';
 import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -15,7 +15,7 @@ import {
 	ProvisioningSystemDto,
 } from '../../dto';
 import { ErwinProvisioningStrategy } from './erwin.strategy';
-import { ErwinRole } from '../../../role/domain';
+import { ErwinRole, MappedSvsRolle } from './enums/rolle.enum';
 import { ErwinKlassePayload } from './erwin.klasse.payload';
 
 describe('ErwinProvisioningStrategy', () => {
@@ -63,15 +63,19 @@ describe('ErwinProvisioningStrategy', () => {
 				jest.spyOn(jwt, 'decode').mockImplementation(() => {
 					return {
 						sub: '550e8400-e29b-41d4-a716-446655440000',
-						personExternalId: 'personExternalId',
-						personFirstName: 'firstName',
-						personLastName: 'lastName',
-						personErwinRole: ErwinRole.LERN,
-						personEmail: 'test@example.com',
-						personGeburtstag: new Date('2000-01-01'),
-						schuleExternalId: 'schoolExternalId',
-						schuleName: 'Test School',
-						schuleZugehoerigZu: 'Berlin',
+						person: {
+							externalId: 'personExternalId',
+							firstName: 'firstName',
+							lastName: 'lastName',
+							role: ErwinRole.LERN,
+							email: 'test@example.com',
+							geburtstag: new Date('2000-01-01'),
+						},
+						schule: {
+							externalId: 'schoolExternalId',
+							name: 'Test School',
+							zugehoerigZu: 'Berlin',
+						},
 						klassen: [
 							{ externalId: 'classExternalId1', name: 'Class 1' },
 							{ externalId: 'classExternalId2', name: 'Class 2' },
@@ -98,11 +102,13 @@ describe('ErwinProvisioningStrategy', () => {
 					new ExternalClassDto({ externalId: 'classExternalId2', name: 'Class 2' }),
 				];
 
-				return { input, expectedUser, expectedSchool, expectedClasses };
+				const validateSpy = jest.spyOn(classValidator, 'validate').mockResolvedValueOnce([]);
+
+				return { input, expectedUser, expectedSchool, expectedClasses, validateSpy };
 			};
 
 			it('should return mapped oauthDataDto', async () => {
-				const { input, expectedUser, expectedSchool, expectedClasses } = setup();
+				const { input, expectedUser, expectedSchool, expectedClasses, validateSpy } = setup();
 
 				const result = await sut.getData(input);
 
@@ -112,6 +118,8 @@ describe('ErwinProvisioningStrategy', () => {
 					externalSchool: expectedSchool,
 					externalClasses: expectedClasses,
 				});
+
+				validateSpy.mockRestore();
 			});
 		});
 
@@ -129,28 +137,36 @@ describe('ErwinProvisioningStrategy', () => {
 				jest.spyOn(jwt, 'decode').mockImplementation(() => {
 					return {
 						sub: faker.string.uuid(),
-						personExternalId: faker.string.uuid(),
-						personFirstName: faker.person.firstName(),
-						personLastName: faker.person.lastName(),
-						personErwinRole: ErwinRole.LEHR,
-						personEmail: faker.internet.email(),
-						personGeburtstag: faker.date.past(),
-						schuleExternalId: faker.string.uuid(),
-						schuleName: faker.company.name(),
-						schuleZugehoerigZu: faker.location.city(),
+						person: {
+							externalId: faker.string.uuid(),
+							firstName: faker.person.firstName(),
+							lastName: faker.person.lastName(),
+							role: ErwinRole.LEHR,
+							email: faker.internet.email(),
+							geburtstag: faker.date.past(),
+						},
+						schule: {
+							externalId: faker.string.uuid(),
+							name: faker.company.name(),
+							zugehoerigZu: faker.location.city(),
+						},
 						klassen: [],
 					};
 				});
 
-				return { input };
+				const validateSpy = jest.spyOn(classValidator, 'validate').mockResolvedValueOnce([]);
+
+				return { input, validateSpy };
 			};
 
 			it('should map LEHR role to TEACHER', async () => {
-				const { input } = setup();
+				const { input, validateSpy } = setup();
 
 				const result = await sut.getData(input);
 
 				expect(result.externalUser.roles).toEqual([RoleName.TEACHER]);
+
+				validateSpy.mockRestore();
 			});
 		});
 
@@ -168,28 +184,83 @@ describe('ErwinProvisioningStrategy', () => {
 				jest.spyOn(jwt, 'decode').mockImplementation(() => {
 					return {
 						sub: faker.string.uuid(),
-						personExternalId: faker.string.uuid(),
-						personFirstName: faker.person.firstName(),
-						personLastName: faker.person.lastName(),
-						personErwinRole: ErwinRole.LEIT,
-						personEmail: faker.internet.email(),
-						personGeburtstag: faker.date.past(),
-						schuleExternalId: faker.string.uuid(),
-						schuleName: faker.company.name(),
-						schuleZugehoerigZu: faker.location.city(),
+						person: {
+							externalId: faker.string.uuid(),
+							firstName: faker.person.firstName(),
+							lastName: faker.person.lastName(),
+							role: ErwinRole.LEIT,
+							email: faker.internet.email(),
+							geburtstag: faker.date.past(),
+						},
+						schule: {
+							externalId: faker.string.uuid(),
+							name: faker.company.name(),
+							zugehoerigZu: faker.location.city(),
+						},
 						klassen: [],
 					};
 				});
 
-				return { input };
+				const validateSpy = jest.spyOn(classValidator, 'validate').mockResolvedValueOnce([]);
+
+				return { input, validateSpy };
 			};
 
 			it('should map LEIT role to ADMINISTRATOR', async () => {
-				const { input } = setup();
+				const { input, validateSpy } = setup();
 
 				const result = await sut.getData(input);
 
 				expect(result.externalUser.roles).toEqual([RoleName.ADMINISTRATOR]);
+
+				validateSpy.mockRestore();
+			});
+		});
+
+		describe('when token is valid with MappedSvsRolle USER role', () => {
+			const setup = () => {
+				const input = new OauthDataStrategyInputDto({
+					system: new ProvisioningSystemDto({
+						systemId: faker.string.uuid(),
+						provisioningStrategy: SystemProvisioningStrategy.ERWIN,
+					}),
+					idToken: faker.string.alphanumeric(20),
+					accessToken: faker.string.alphanumeric(20),
+				});
+
+				jest.spyOn(jwt, 'decode').mockImplementation(() => {
+					return {
+						sub: faker.string.uuid(),
+						person: {
+							externalId: faker.string.uuid(),
+							firstName: faker.person.firstName(),
+							lastName: faker.person.lastName(),
+							role: MappedSvsRolle.USER,
+							email: faker.internet.email(),
+							geburtstag: faker.date.past(),
+						},
+						schule: {
+							externalId: faker.string.uuid(),
+							name: faker.company.name(),
+							zugehoerigZu: faker.location.city(),
+						},
+						klassen: [],
+					};
+				});
+
+				const validateSpy = jest.spyOn(classValidator, 'validate').mockResolvedValueOnce([]);
+
+				return { input, validateSpy };
+			};
+
+			it('should map USER role to USER', async () => {
+				const { input, validateSpy } = setup();
+
+				const result = await sut.getData(input);
+
+				expect(result.externalUser.roles).toEqual([RoleName.USER]);
+
+				validateSpy.mockRestore();
 			});
 		});
 
@@ -230,14 +301,18 @@ describe('ErwinProvisioningStrategy', () => {
 				jest.spyOn(jwt, 'decode').mockImplementation(() => {
 					return {
 						sub: faker.string.uuid(),
-						personFirstName: faker.person.firstName(),
-						personLastName: faker.person.lastName(),
-						personErwinRole: ErwinRole.LERN,
-						personEmail: faker.internet.email(),
-						personGeburtstag: faker.date.past(),
-						schuleExternalId: faker.string.uuid(),
-						schuleName: faker.company.name(),
-						schuleZugehoerigZu: faker.location.city(),
+						person: {
+							firstName: faker.person.firstName(),
+							lastName: faker.person.lastName(),
+							role: ErwinRole.LERN,
+							email: faker.internet.email(),
+							geburtstag: faker.date.past(),
+						},
+						schule: {
+							externalId: faker.string.uuid(),
+							name: faker.company.name(),
+							zugehoerigZu: faker.location.city(),
+						},
 						klassen: [],
 					};
 				});
@@ -265,15 +340,19 @@ describe('ErwinProvisioningStrategy', () => {
 
 				jest.spyOn(jwt, 'decode').mockImplementation(() => {
 					return {
-						personExternalId: faker.string.uuid(),
-						personFirstName: faker.person.firstName(),
-						personLastName: faker.person.lastName(),
-						personErwinRole: ErwinRole.LERN,
-						personEmail: faker.internet.email(),
-						personGeburtstag: faker.date.past(),
-						schuleExternalId: faker.string.uuid(),
-						schuleName: faker.company.name(),
-						schuleZugehoerigZu: faker.location.city(),
+						person: {
+							externalId: faker.string.uuid(),
+							firstName: faker.person.firstName(),
+							lastName: faker.person.lastName(),
+							role: ErwinRole.LERN,
+							email: faker.internet.email(),
+							geburtstag: faker.date.past(),
+						},
+						schule: {
+							externalId: faker.string.uuid(),
+							name: faker.company.name(),
+							zugehoerigZu: faker.location.city(),
+						},
 						klassen: [],
 					};
 				});
@@ -302,15 +381,19 @@ describe('ErwinProvisioningStrategy', () => {
 				jest.spyOn(jwt, 'decode').mockImplementation(() => {
 					return {
 						sub: '',
-						personExternalId: faker.string.uuid(),
-						personFirstName: faker.person.firstName(),
-						personLastName: faker.person.lastName(),
-						personErwinRole: ErwinRole.LERN,
-						personEmail: faker.internet.email(),
-						personGeburtstag: faker.date.past(),
-						schuleExternalId: faker.string.uuid(),
-						schuleName: faker.company.name(),
-						schuleZugehoerigZu: faker.location.city(),
+						person: {
+							externalId: faker.string.uuid(),
+							firstName: faker.person.firstName(),
+							lastName: faker.person.lastName(),
+							role: ErwinRole.LERN,
+							email: faker.internet.email(),
+							geburtstag: faker.date.past(),
+						},
+						schule: {
+							externalId: faker.string.uuid(),
+							name: faker.company.name(),
+							zugehoerigZu: faker.location.city(),
+						},
 						klassen: [],
 					};
 				});
@@ -339,15 +422,19 @@ describe('ErwinProvisioningStrategy', () => {
 				jest.spyOn(jwt, 'decode').mockImplementation(() => {
 					return {
 						sub: '',
-						personExternalId: faker.string.uuid(),
-						personFirstName: faker.person.firstName(),
-						personLastName: faker.person.lastName(),
-						personErwinRole: ErwinRole.LERN,
-						personEmail: faker.internet.email(),
-						personGeburtstag: faker.date.past(),
-						schuleExternalId: faker.string.uuid(),
-						schuleName: faker.company.name(),
-						schuleZugehoerigZu: faker.location.city(),
+						person: {
+							externalId: faker.string.uuid(),
+							firstName: faker.person.firstName(),
+							lastName: faker.person.lastName(),
+							role: ErwinRole.LERN,
+							email: faker.internet.email(),
+							geburtstag: faker.date.past(),
+						},
+						schule: {
+							externalId: faker.string.uuid(),
+							name: faker.company.name(),
+							zugehoerigZu: faker.location.city(),
+						},
 						klassen: [],
 					};
 				});
@@ -383,24 +470,30 @@ describe('ErwinProvisioningStrategy', () => {
 				jest.spyOn(jwt, 'decode').mockImplementation(() => {
 					return {
 						sub: faker.string.uuid(),
-						personExternalId: faker.string.uuid(),
-						personFirstName: faker.person.firstName(),
-						personLastName: faker.person.lastName(),
-						personErwinRole: ErwinRole.LERN,
-						personEmail: faker.internet.email(),
-						personGeburtstag: faker.date.past(),
-						schuleExternalId: faker.string.uuid(),
-						schuleName: faker.company.name(),
-						schuleZugehoerigZu: faker.location.city(),
+						person: {
+							externalId: faker.string.uuid(),
+							firstName: faker.person.firstName(),
+							lastName: faker.person.lastName(),
+							role: ErwinRole.LERN,
+							email: faker.internet.email(),
+							geburtstag: faker.date.past(),
+						},
+						schule: {
+							externalId: faker.string.uuid(),
+							name: faker.company.name(),
+							zugehoerigZu: faker.location.city(),
+						},
 						klassen: [klassePayload1, klassePayload2],
 					};
 				});
 
-				return { input, klassePayload1, klassePayload2 };
+				const validateSpy = jest.spyOn(classValidator, 'validate').mockResolvedValueOnce([]);
+
+				return { input, klassePayload1, klassePayload2, validateSpy };
 			};
 
 			it('should map ErwinKlassePayload to ExternalClassDto correctly', async () => {
-				const { input, klassePayload1, klassePayload2 } = setup();
+				const { input, klassePayload1, klassePayload2, validateSpy } = setup();
 
 				const result = await sut.getData(input);
 
@@ -409,6 +502,8 @@ describe('ErwinProvisioningStrategy', () => {
 					new ExternalClassDto({ externalId: klassePayload1.externalId, name: klassePayload1.name }),
 					new ExternalClassDto({ externalId: klassePayload2.externalId, name: klassePayload2.name }),
 				]);
+
+				validateSpy.mockRestore();
 			});
 		});
 	});

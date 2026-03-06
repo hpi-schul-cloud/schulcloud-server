@@ -49,9 +49,3 @@ export type RoomRole = (typeof RoomRoleArray)[number];
 
 export const GuestRoleArray = [RoleName.GUESTSTUDENT, RoleName.GUESTTEACHER, RoleName.GUESTEXTERNALPERSON] as const;
 export type GuestRole = (typeof GuestRoleArray)[number];
-
-export enum ErwinRole {
-	LERN = 'LERN',
-	LEHR = 'LEHR',
-	LEIT = 'LEIT',
-}
