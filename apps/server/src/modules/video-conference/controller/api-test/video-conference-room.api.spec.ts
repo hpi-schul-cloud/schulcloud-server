@@ -1,4 +1,4 @@
-import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { EntityManager } from '@mikro-orm/mongodb';
 import { accountFactory } from '@modules/account/testing';
 import { groupEntityFactory } from '@modules/group/testing';
 import { RoleName } from '@modules/role';
@@ -212,7 +212,7 @@ describe('VideoConferenceController (API)', () => {
 
 		//		expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
 		//	});
-		});
+		//});
 
 		describe('when conference params are given', () => {
 			describe('when school has not enabled the school feature videoconference', () => {
