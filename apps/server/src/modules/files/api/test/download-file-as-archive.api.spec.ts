@@ -27,8 +27,8 @@ import { Readable } from 'stream';
 import { DownloadArchiveService, FileOwnerModel, LegacyFileStorageAdapter } from '../../domain';
 import { LEGACY_FILE_ARCHIVE_CONFIG_TOKEN, LegacyFileArchiveConfig } from '../../legacy-file-archive.config';
 import { fileDomainFactory } from '../../testing';
-import { LegacyFileArchiveController } from '../download-archive.controller';
 import { DownloadArchiveUC } from '../download-archive.uc';
+import { LegacyFileArchiveController } from '../legacy-file-archive.controller';
 
 describe('DownloadArchive Controller (API)', () => {
 	let app: INestApplication;
