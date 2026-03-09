@@ -1,15 +1,19 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { EventBus } from '@nestjs/cqrs';
 import { EntityId } from '@shared/domain/types';
 import { AnyElementContentBody } from '../controller/dto';
 import {
 	AnyBoardNode,
 	AnyContentElement,
 	AnyMediaElement,
+	BoardExternalReferenceType,
 	ColumnBoard,
 	isAnyMediaElement,
 	isContentElement,
 	MediaBoard,
 } from '../domain';
+import { RoomBoardCreatedEvent } from '../domain/events/room-board-created.event';
+import { RoomBoardDeletedEvent } from '../domain/events/room-board-deleted.event';
 import { BoardNodeRepo } from '../repo/board-node.repo';
 import { BoardNodeDeleteHooksService } from './internal/board-node-delete-hooks.service';
 import { ContentElementUpdateService } from './internal/content-element-update.service';
@@ -25,11 +29,15 @@ export class BoardNodeService {
 	constructor(
 		private readonly boardNodeRepo: BoardNodeRepo,
 		private readonly contentElementUpdateService: ContentElementUpdateService,
-		private readonly boardNodeDeleteHooksService: BoardNodeDeleteHooksService
+		private readonly boardNodeDeleteHooksService: BoardNodeDeleteHooksService,
+		private readonly eventBus: EventBus
 	) {}
 
 	public async addRoot(boardNode: ColumnBoard | MediaBoard): Promise<void> {
 		await this.boardNodeRepo.save(boardNode);
+		if (boardNode instanceof ColumnBoard && boardNode.context.type === BoardExternalReferenceType.Room) {
+			this.eventBus.publish(new RoomBoardCreatedEvent(boardNode.id, boardNode.context.id));
+		}
 	}
 
 	public async addToParent(parent: AnyBoardNode, child: AnyBoardNode, position?: number): Promise<void> {
@@ -185,5 +193,8 @@ export class BoardNodeService {
 		}
 		await this.boardNodeRepo.delete(boardNode);
 		await this.boardNodeDeleteHooksService.afterDelete(boardNode);
+		if (boardNode instanceof ColumnBoard && boardNode.context.type === BoardExternalReferenceType.Room) {
+			this.eventBus.publish(new RoomBoardDeletedEvent(boardNode.id, boardNode.context.id));
+		}
 	}
 }

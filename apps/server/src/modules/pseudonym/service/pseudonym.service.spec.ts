@@ -110,7 +110,7 @@ describe('PseudonymService', () => {
 				};
 			};
 
-			it('should call pseudonymRepo.findByUserIdAndToolId', async () => {
+			it('should call pseudonymRepo.findByUserIdAndToolIdOrFail', async () => {
 				const { user, externalTool } = setup();
 
 				await service.findByUserAndToolOrThrow(user, externalTool);
@@ -172,70 +172,18 @@ describe('PseudonymService', () => {
 
 		describe('when tool parameter is an ExternalToolDO', () => {
 			const setup = () => {
+				const pseudonym = pseudonymFactory.build();
 				const user = userDoFactory.buildWithId();
 				const externalTool = externalToolFactory.buildWithId();
 
 				return {
+					pseudonym,
 					user,
 					externalTool,
 				};
 			};
 
 			it('should call externalToolPseudonymRepo', async () => {
-				const { user, externalTool } = setup();
-
-				await service.findOrCreatePseudonym(user, externalTool);
-
-				expect(externalToolPseudonymRepo.findByUserIdAndToolId).toHaveBeenCalledWith(user.id, externalTool.id);
-			});
-		});
-
-		describe('when the pseudonym exists', () => {
-			const setup = () => {
-				const pseudonym = pseudonymFactory.build();
-				const user = userDoFactory.buildWithId();
-				const externalTool = externalToolFactory.buildWithId();
-
-				externalToolPseudonymRepo.findByUserIdAndToolId.mockResolvedValueOnce(pseudonym);
-
-				return {
-					pseudonym,
-					user,
-					externalTool,
-				};
-			};
-
-			it('should return the pseudonym', async () => {
-				const { pseudonym, user, externalTool } = setup();
-
-				const result = await service.findOrCreatePseudonym(user, externalTool);
-
-				expect(result.id).toEqual(pseudonym.id);
-				expect(result.toolId).toEqual(pseudonym.toolId);
-				expect(result.userId).toEqual(pseudonym.userId);
-				expect(result.pseudonym).toEqual(pseudonym.pseudonym);
-				expect(result.createdAt).toBeDefined();
-				expect(result.updatedAt).toBeDefined();
-			});
-		});
-
-		describe('when no pseudonym exists yet', () => {
-			const setup = () => {
-				const pseudonym = pseudonymFactory.build();
-				const user = userDoFactory.buildWithId();
-				const externalTool = externalToolFactory.buildWithId();
-
-				externalToolPseudonymRepo.findByUserIdAndToolId.mockResolvedValueOnce(null);
-				externalToolPseudonymRepo.createOrUpdate.mockResolvedValueOnce(pseudonym);
-
-				return {
-					pseudonym,
-					user,
-					externalTool,
-				};
-			};
-
-			it('should create and save a new pseudonym', async () => {
 				const { user, externalTool } = setup();
 
 				await service.findOrCreatePseudonym(user, externalTool);
@@ -250,6 +198,7 @@ describe('PseudonymService', () => {
 
 			it('should return the pseudonym', async () => {
 				const { pseudonym, user, externalTool } = setup();
+				externalToolPseudonymRepo.createOrUpdate.mockResolvedValueOnce(pseudonym);
 
 				const result = await service.findOrCreatePseudonym(user, externalTool);
 
