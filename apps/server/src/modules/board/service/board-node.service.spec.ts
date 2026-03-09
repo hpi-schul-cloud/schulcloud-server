@@ -2,6 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { User } from '@modules/user/repo';
 import { NotFoundException } from '@nestjs/common';
+import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { BoardLayout, Card, ColumnBoard } from '../domain';
@@ -39,6 +40,10 @@ describe(BoardNodeService.name, () => {
 				{
 					provide: BoardNodeDeleteHooksService,
 					useValue: createMock<BoardNodeDeleteHooksService>(),
+				},
+				{
+					provide: EventBus,
+					useValue: createMock<EventBus>(),
 				},
 			],
 		}).compile();
