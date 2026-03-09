@@ -42,12 +42,16 @@ describe(`board copy with room relation (api)`, () => {
 
 	describe('with valid user', () => {
 		const setup = async (columnBoardProps: Partial<ColumnBoardProps> = {}) => {
-			const { roomEditorRole } = RoomRolesTestFactory.createRoomRoles();
+			const { roomEditorRole, roomOwnerRole } = RoomRolesTestFactory.createRoomRoles();
 			const school = schoolEntityFactory.buildWithId();
+			const { teacherUser: ownerUser } = UserAndAccountTestFactory.buildTeacher({ school });
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
 			const userGroup = groupEntityFactory.buildWithId({
 				type: GroupEntityTypes.ROOM,
-				users: [{ role: roomEditorRole, user: teacherUser }],
+				users: [
+					{ role: roomEditorRole, user: teacherUser },
+					{ role: roomOwnerRole, user: ownerUser },
+				],
 			});
 			const room = roomEntityFactory.buildWithId({ schoolId: teacherUser.school.id });
 			const roomMembership = roomMembershipEntityFactory.build({

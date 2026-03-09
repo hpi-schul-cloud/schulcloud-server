@@ -1,6 +1,5 @@
-import { RoleName } from '@modules/role';
 import { AccountService } from '@modules/account';
-import { UserService } from '@modules/user';
+import { RoleName } from '@modules/role';
 import { Injectable } from '@nestjs/common';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions } from '@shared/domain/interface';
@@ -20,8 +19,7 @@ const revalidateAfterMinutes = 60;
 export class DeletionBatchUc {
 	constructor(
 		private readonly deletionBatchService: DeletionBatchService,
-		private readonly accountService: AccountService,
-		private readonly userService: UserService
+		private readonly accountService: AccountService
 	) {}
 
 	public async createDeletionBatch(params: CreateDeletionBatchParams): Promise<DeletionBatchSummary> {
@@ -88,34 +86,17 @@ export class DeletionBatchUc {
 		const allowedUserRoles = [
 			RoleName.STUDENT,
 			RoleName.COURSESTUDENT,
-			/*
 			RoleName.TEACHER,
 			RoleName.COURSETEACHER,
 			RoleName.COURSESUBSTITUTIONTEACHER,
 			RoleName.ADMINISTRATOR,
 			RoleName.COURSEADMINISTRATOR,
-			 */
 		];
 
-		const validUserIds: EntityId[] = [];
-		const invalidUserIds: EntityId[] = [];
-		const skippedUserIds: EntityId[] = [];
-
-		// TODO optimise findByIdsAndRoles
-		const userChecks = targetRefIds.map(async (userId) => {
-			const user = await this.userService.findByIdOrNull(userId);
-			if (user) {
-				if (user.roles.some((role) => allowedUserRoles.includes(role.name))) {
-					validUserIds.push(userId);
-				} else {
-					skippedUserIds.push(userId);
-				}
-			} else {
-				invalidUserIds.push(userId);
-			}
-		});
-
-		await Promise.all(userChecks);
+		const { validUserIds, invalidUserIds, skippedUserIds } = await this.deletionBatchService.filterUsersByRoles(
+			targetRefIds,
+			allowedUserRoles
+		);
 
 		return { validUserIds, invalidUserIds, skippedUserIds };
 	}
