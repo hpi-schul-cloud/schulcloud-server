@@ -77,7 +77,6 @@ export class H5pLibraryPackagerService {
 		const options: GitHubClientOptions = { maxRetries: 3 };
 		const tags = await this.gitHubClient.fetchAllTags(repoName, options);
 		let filteredTags = this.getHighestPatchTags(tags);
-		filteredTags = ['v1.1.2'];
 
 		const currentH5pHubTag = await this.getCurrentTagFromH5pHub(library);
 		if (currentH5pHubTag) {
