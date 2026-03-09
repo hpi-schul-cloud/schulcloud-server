@@ -1,4 +1,4 @@
-import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
+import { JwtAuthentication } from '@infra/auth-guard';
 import {
 	Controller,
 	ForbiddenException,
@@ -14,6 +14,7 @@ import {
 } from '@nestjs/common';
 import { ApiHeader, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common/error';
+import { JwtExtractor } from '@shared/common/utils';
 import { Request, Response } from 'express';
 import { GetFileResponse } from '../domain';
 import { LEGACY_FILE_ARCHIVE_CONFIG_TOKEN, LegacyFileArchiveConfig } from '../legacy-file-archive.config';
@@ -43,17 +44,13 @@ export class LegacyFileArchiveController {
 	@Get()
 	public async downloadFilesAsArchive(
 		@Query() params: ArchiveFileParams,
-		@CurrentUser() currentUser: ICurrentUser,
 		@Req() req: Request,
 		@Res({ passthrough: true }) response: Response
 	): Promise<StreamableFile | void> {
 		this.featureEnabled();
 
-		const data = await this.downloadArchiveUC.downloadFilesOfParentAsArchive(
-			params,
-			currentUser.userId,
-			currentUser.roles
-		);
+		const jwt = JwtExtractor.extractJwtFromRequestOrFail(req);
+		const data = await this.downloadArchiveUC.downloadFilesOfParentAsArchive(params, jwt);
 		const streamableFile = this.streamFileToClient(req, data, response);
 
 		return streamableFile;

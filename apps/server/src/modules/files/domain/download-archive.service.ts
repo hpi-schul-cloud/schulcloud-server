@@ -3,36 +3,28 @@ import { DomainErrorHandler } from '@core/error';
 import { Logger } from '@core/logger';
 import { S3ClientAdapter, S3Config } from '@infra/s3-client';
 import { StorageProviderRepo, type StorageProviderEntity } from '@modules/school/repo';
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { TypeGuard } from '@shared/common/guards';
 import { EntityId } from '@shared/domain/types';
 
 import { FileDo } from './do';
 import { ArchiveFactory, FileResponseFactory } from './factory';
-import { FileAuthContextService } from './file-auth-context.service';
-import { FileOwnerModel, FILES_REPO, FilesRepoInterface, GetFileResponse } from './types';
+import { LegacyFileStorageAdapter } from './legacy-file-storage.adapter';
+import { GetFileResponse } from './types';
 
 @Injectable()
 export class DownloadArchiveService {
 	constructor(
 		private readonly logger: Logger,
-		@Inject(FILES_REPO) private readonly filesRepo: FilesRepoInterface,
+		private readonly legacyFileStorageAdapter: LegacyFileStorageAdapter,
 		private readonly storageProviderRepo: StorageProviderRepo,
-		private readonly domainErrorHandler: DomainErrorHandler,
-		private readonly fileAuthContextService: FileAuthContextService
+		private readonly domainErrorHandler: DomainErrorHandler
 	) {
 		this.logger.setContext(DownloadArchiveService.name);
 	}
 
-	public async downloadFilesAsArchive(
-		ownerId: EntityId,
-		ownerType: FileOwnerModel,
-		archiveName: string,
-		userId: EntityId,
-		userRoleIds: EntityId[] = []
-	): Promise<GetFileResponse> {
-		const authContext = await this.fileAuthContextService.buildContext(ownerId, ownerType, userId, userRoleIds);
-		const files = await this.filesRepo.findByIdAndOwnerType(ownerId, ownerType, authContext);
+	public async downloadFilesAsArchive(ownerId: EntityId, archiveName: string, jwt: string): Promise<GetFileResponse> {
+		const files = await this.legacyFileStorageAdapter.getFilesForOwner(ownerId, jwt);
 
 		const filesById = this.createFileMap(files);
 		const downloadableFiles = this.filterDownloadableFiles(files);

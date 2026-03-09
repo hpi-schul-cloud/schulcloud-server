@@ -10,18 +10,17 @@ import {
 import { ConfigurationModule } from '@infra/configuration';
 import { DATABASE_CONFIG_TOKEN, DatabaseConfig, DatabaseModule } from '@infra/database';
 import { StorageProviderEntity, StorageProviderRepo } from '@modules/school/repo';
+import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { DownloadArchiveUC, LegacyFileArchiveController } from './api';
-import { DownloadArchiveService, FILES_REPO } from './domain';
-import { FileAuthContextService } from './domain/file-auth-context.service';
-import { FileEntity } from './entity';
+import { DownloadArchiveService, LegacyFileStorageAdapter } from './domain';
 import { LEGACY_FILE_ARCHIVE_CONFIG_TOKEN, LegacyFileArchiveConfig } from './legacy-file-archive.config';
-import { FilesRepo } from './repo';
 
 @Module({
 	imports: [
 		CoreModule,
 		LoggerModule,
+		HttpModule,
 		AuthorizationClientModule.register(AUTHORIZATION_CLIENT_CONFIG_TOKEN, AuthorizationClientConfig),
 		AuthGuardModule.register([
 			{
@@ -34,17 +33,11 @@ import { FilesRepo } from './repo';
 		DatabaseModule.register({
 			configInjectionToken: DATABASE_CONFIG_TOKEN,
 			configConstructor: DatabaseConfig,
-			entities: [FileEntity, StorageProviderEntity],
+			entities: [StorageProviderEntity],
 		}),
 		ConfigurationModule.register(LEGACY_FILE_ARCHIVE_CONFIG_TOKEN, LegacyFileArchiveConfig),
 	],
 	controllers: [LegacyFileArchiveController],
-	providers: [
-		DownloadArchiveService,
-		DownloadArchiveUC,
-		FileAuthContextService,
-		StorageProviderRepo,
-		{ provide: FILES_REPO, useClass: FilesRepo },
-	],
+	providers: [DownloadArchiveService, DownloadArchiveUC, LegacyFileStorageAdapter, StorageProviderRepo],
 })
 export class LegacyFileArchiveApiModule {}

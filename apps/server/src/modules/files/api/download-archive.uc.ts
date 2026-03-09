@@ -1,7 +1,6 @@
 import { Logger } from '@core/logger';
 import { AuthorizationClientAdapter, AuthorizationContextBuilder } from '@infra/authorization-client';
 import { Injectable } from '@nestjs/common';
-import { EntityId } from '@shared/domain/types';
 import { DownloadArchiveService, GetFileResponse } from '../domain';
 import { ArchiveFileParams } from './dto';
 import { AuthorizationReferenceTypeMapper } from './mapper';
@@ -16,20 +15,10 @@ export class DownloadArchiveUC {
 		this.logger.setContext(DownloadArchiveUC.name);
 	}
 
-	public async downloadFilesOfParentAsArchive(
-		params: ArchiveFileParams,
-		userId: EntityId,
-		userRoleIds: EntityId[] = []
-	): Promise<GetFileResponse> {
+	public async downloadFilesOfParentAsArchive(params: ArchiveFileParams, jwt: string): Promise<GetFileResponse> {
 		await this.checkPermission(params);
 
-		const fileResponse = await this.filesStorageService.downloadFilesAsArchive(
-			params.ownerId,
-			params.ownerType,
-			params.archiveName,
-			userId,
-			userRoleIds
-		);
+		const fileResponse = await this.filesStorageService.downloadFilesAsArchive(params.ownerId, params.archiveName, jwt);
 
 		return fileResponse;
 	}

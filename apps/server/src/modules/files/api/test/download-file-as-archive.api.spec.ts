@@ -12,8 +12,6 @@ import {
 import { ConfigurationModule } from '@infra/configuration';
 import { S3ClientAdapter } from '@infra/s3-client';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { CourseEntity } from '@modules/course/repo';
-import { courseEntityFactory } from '@modules/course/testing';
 import { StorageProviderEntity, StorageProviderRepo } from '@modules/school/repo';
 import { storageProviderFactory } from '@modules/school/testing';
 import { teamFactory } from '@modules/team/testing';
@@ -26,10 +24,9 @@ import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.tes
 import { TestApiClient } from '@testing/test-api-client';
 import { TEST_JWT_CONFIG_TOKEN, TestJwtModuleConfig } from '@testing/test-jwt-module.config';
 import { Readable } from 'stream';
-import { DownloadArchiveService, FileOwnerModel, FILES_REPO } from '../../domain';
-import { FileEntity, fileEntityFactory } from '../../entity';
+import { DownloadArchiveService, FileOwnerModel, LegacyFileStorageAdapter } from '../../domain';
 import { LEGACY_FILE_ARCHIVE_CONFIG_TOKEN, LegacyFileArchiveConfig } from '../../legacy-file-archive.config';
-import { FilesRepo } from '../../repo';
+import { fileDomainFactory } from '../../testing';
 import { LegacyFileArchiveController } from '../download-archive.controller';
 import { DownloadArchiveUC } from '../download-archive.uc';
 
@@ -40,6 +37,7 @@ describe('DownloadArchive Controller (API)', () => {
 	let jwtConfig: TestJwtModuleConfig;
 	let config: LegacyFileArchiveConfig;
 	let authorizationClient: DeepMocked<AuthorizationClientAdapter>;
+	let legacyFileStorageAdapter: DeepMocked<LegacyFileStorageAdapter>;
 
 	beforeAll(async () => {
 		const moduleFixture = await Test.createTestingModule({
@@ -56,9 +54,8 @@ describe('DownloadArchive Controller (API)', () => {
 				]),
 				ErrorModule,
 				MongoMemoryDatabaseModule.forRoot({
-					entities: [FileEntity, StorageProviderEntity, User, CourseEntity],
+					entities: [StorageProviderEntity, User],
 				}),
-				ConfigurationModule.register(LEGACY_FILE_ARCHIVE_CONFIG_TOKEN, LegacyFileArchiveConfig),
 				ConfigurationModule.register(TEST_JWT_CONFIG_TOKEN, TestJwtModuleConfig),
 			],
 			controllers: [LegacyFileArchiveController],
@@ -66,7 +63,14 @@ describe('DownloadArchive Controller (API)', () => {
 				DownloadArchiveService,
 				DownloadArchiveUC,
 				StorageProviderRepo,
-				{ provide: FILES_REPO, useClass: FilesRepo },
+				{
+					provide: LegacyFileStorageAdapter,
+					useValue: createMock<LegacyFileStorageAdapter>(),
+				},
+				{
+					provide: LEGACY_FILE_ARCHIVE_CONFIG_TOKEN,
+					useValue: { featureTeamArchiveDownload: true, legacyBaseUrl: 'http://localhost:3030' },
+				},
 			],
 		})
 			.overrideProvider(AuthorizationClientAdapter)
@@ -80,6 +84,7 @@ describe('DownloadArchive Controller (API)', () => {
 		testApiClient = new TestApiClient(app, 'filestorage/files/archive');
 		config = moduleFixture.get(LEGACY_FILE_ARCHIVE_CONFIG_TOKEN);
 		authorizationClient = moduleFixture.get(AuthorizationClientAdapter);
+		legacyFileStorageAdapter = moduleFixture.get(LegacyFileStorageAdapter);
 	});
 
 	beforeEach(async () => {
@@ -221,20 +226,19 @@ describe('DownloadArchive Controller (API)', () => {
 
 		describe('when user does not have permission to access the course', () => {
 			const setup = () => {
-				const course = courseEntityFactory.buildWithId();
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
 				authorizationClient.checkPermissionsByReference.mockRejectedValueOnce(new ForbiddenException());
 
 				const loggedInClient = testApiClient.loginByUser(studentAccount, studentUser, jwtConfig);
 
-				return { courseId: course.id, loggedInClient };
+				return { loggedInClient };
 			};
 
 			it('should return 403', async () => {
-				const { courseId, loggedInClient } = setup();
+				const { loggedInClient } = setup();
 				const params = {
-					ownerId: courseId,
+					ownerId: '507f1f77bcf86cd799439011',
 					ownerType: FileOwnerModel.COURSE,
 					archiveName: 'course-archive.zip',
 				};
@@ -282,22 +286,18 @@ describe('DownloadArchive Controller (API)', () => {
 				const storageProvider = storageProviderFactory.buildWithId({ region: 'us-east-1' });
 				await em.persist(storageProvider).flush();
 
-				const file1 = fileEntityFactory.build({
+				const file1 = fileDomainFactory.build({
 					name: 'team-doc.pdf',
-					ownerId: team.id,
-					refOwnerModel: FileOwnerModel.TEAMS,
-					storageProvider,
+					storageProviderId: storageProvider.id,
 					isDirectory: false,
 				});
-				const file2 = fileEntityFactory.build({
+				const file2 = fileDomainFactory.build({
 					name: 'notes.txt',
-					ownerId: team.id,
-					refOwnerModel: FileOwnerModel.TEAMS,
-					storageProvider,
+					storageProviderId: storageProvider.id,
 					isDirectory: false,
 				});
-				await em.persist([file1, file2]).flush();
-				em.clear();
+
+				legacyFileStorageAdapter.getFilesForOwner.mockResolvedValueOnce([file1, file2]);
 
 				jest.spyOn(S3ClientAdapter.prototype, 'get').mockResolvedValue({
 					data: Readable.from('mock file content'),
@@ -327,7 +327,6 @@ describe('DownloadArchive Controller (API)', () => {
 		describe('when user successfully downloads course archive', () => {
 			const setup = async () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-				const course = courseEntityFactory.buildWithId({ teachers: [teacherUser] });
 
 				const loggedInClient = testApiClient.loginByUser(teacherAccount, teacherUser, jwtConfig);
 				const archiveName = 'course-files.zip';
@@ -335,21 +334,18 @@ describe('DownloadArchive Controller (API)', () => {
 				const storageProvider = storageProviderFactory.buildWithId({ region: 'us-east-1' });
 				await em.persist(storageProvider).flush();
 
-				const file1 = fileEntityFactory.build({
+				const file1 = fileDomainFactory.build({
 					name: 'syllabus.pdf',
-					ownerId: course.id,
-					refOwnerModel: FileOwnerModel.COURSE,
-					storageProvider,
+					storageProviderId: storageProvider.id,
 					isDirectory: false,
 				});
-				const file2 = fileEntityFactory.build({
+				const file2 = fileDomainFactory.build({
 					name: 'lecture.pptx',
-					ownerId: course.id,
-					refOwnerModel: FileOwnerModel.COURSE,
-					storageProvider,
+					storageProviderId: storageProvider.id,
 					isDirectory: false,
 				});
-				await em.persist([file1, file2]).flush();
+
+				legacyFileStorageAdapter.getFilesForOwner.mockResolvedValueOnce([file1, file2]);
 
 				jest.spyOn(S3ClientAdapter.prototype, 'get').mockResolvedValue({
 					data: Readable.from('mock file content'),
@@ -358,7 +354,7 @@ describe('DownloadArchive Controller (API)', () => {
 					etag: 'mock-etag',
 				});
 
-				return { courseId: course.id, loggedInClient, archiveName };
+				return { courseId: '507f1f77bcf86cd799439011', loggedInClient, archiveName };
 			};
 
 			it('should return 200 with archive file', async () => {
@@ -386,21 +382,18 @@ describe('DownloadArchive Controller (API)', () => {
 				const storageProvider = storageProviderFactory.buildWithId({ region: 'us-east-1' });
 				await em.persist(storageProvider).flush();
 
-				const file1 = fileEntityFactory.build({
+				const file1 = fileDomainFactory.build({
 					name: 'personal-doc.docx',
-					ownerId: teacherUser.id,
-					refOwnerModel: FileOwnerModel.USER,
-					storageProvider,
+					storageProviderId: storageProvider.id,
 					isDirectory: false,
 				});
-				const file2 = fileEntityFactory.build({
+				const file2 = fileDomainFactory.build({
 					name: 'photo.jpg',
-					ownerId: teacherUser.id,
-					refOwnerModel: FileOwnerModel.USER,
-					storageProvider,
+					storageProviderId: storageProvider.id,
 					isDirectory: false,
 				});
-				await em.persist([file1, file2]).flush();
+
+				legacyFileStorageAdapter.getFilesForOwner.mockResolvedValueOnce([file1, file2]);
 
 				jest.spyOn(S3ClientAdapter.prototype, 'get').mockResolvedValue({
 					data: Readable.from('mock file content'),

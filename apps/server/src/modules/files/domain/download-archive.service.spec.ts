@@ -11,13 +11,11 @@ import { Readable } from 'stream';
 import { fileDomainFactory } from '../testing';
 import { DownloadArchiveService } from './download-archive.service';
 import { ArchiveFactory } from './factory';
-import { FileAuthContextService } from './file-auth-context.service';
-import { FileOwnerModel, FILES_REPO, FilesRepoInterface } from './types';
+import { LegacyFileStorageAdapter } from './legacy-file-storage.adapter';
 
 describe('DownloadArchiveService', () => {
 	let service: DownloadArchiveService;
-	let filesRepo: DeepMocked<FilesRepoInterface>;
-	let fileAuthContextService: DeepMocked<FileAuthContextService>;
+	let legacyFileStorageAdapter: DeepMocked<LegacyFileStorageAdapter>;
 	let storageProviderRepo: DeepMocked<StorageProviderRepo>;
 	let module: TestingModule;
 
@@ -32,8 +30,8 @@ describe('DownloadArchiveService', () => {
 					},
 				},
 				{
-					provide: FILES_REPO,
-					useValue: createMock<FilesRepoInterface>(),
+					provide: LegacyFileStorageAdapter,
+					useValue: createMock<LegacyFileStorageAdapter>(),
 				},
 				{
 					provide: StorageProviderRepo,
@@ -43,16 +41,11 @@ describe('DownloadArchiveService', () => {
 					provide: DomainErrorHandler,
 					useValue: createMock<DomainErrorHandler>(),
 				},
-				{
-					provide: FileAuthContextService,
-					useValue: createMock<FileAuthContextService>(),
-				},
 			],
 		}).compile();
 
 		service = module.get(DownloadArchiveService);
-		filesRepo = module.get(FILES_REPO);
-		fileAuthContextService = module.get(FileAuthContextService);
+		legacyFileStorageAdapter = module.get(LegacyFileStorageAdapter);
 		storageProviderRepo = module.get(StorageProviderRepo);
 	});
 
@@ -69,11 +62,7 @@ describe('DownloadArchiveService', () => {
 	});
 
 	describe('downloadFilesAsArchive', () => {
-		const defaultAuthContext = { userId: 'user123', requiresRolePermission: false, readableRoleIds: [] };
-
-		beforeEach(() => {
-			fileAuthContextService.buildContext.mockResolvedValue(defaultAuthContext);
-		});
+		const jwt = 'test-jwt';
 
 		describe('when repo returns files and download is successful', () => {
 			const setup = () => {
@@ -96,11 +85,9 @@ describe('DownloadArchiveService', () => {
 				});
 
 				const ownerId = 'owner123';
-				const ownerType = FileOwnerModel.USER;
 				const archiveName = 'test-archive';
-				const userId = 'user123';
 
-				filesRepo.findByIdAndOwnerType.mockResolvedValueOnce([file1, file2]);
+				legacyFileStorageAdapter.getFilesForOwner.mockResolvedValueOnce([file1, file2]);
 				storageProviderRepo.findById.mockResolvedValueOnce(storageProvider);
 
 				const mockStream1 = new Readable();
@@ -118,22 +105,22 @@ describe('DownloadArchiveService', () => {
 				const mockArchive = createMock<Archiver>();
 				const spy = jest.spyOn(ArchiveFactory, 'create').mockReturnValueOnce(mockArchive);
 
-				return { ownerId, ownerType, archiveName, userId, file1, file2, spy };
+				return { ownerId, archiveName, file1, file2, spy };
 			};
 
 			it('should return a file response with archive', async () => {
-				const { ownerId, ownerType, archiveName, userId } = setup();
+				const { ownerId, archiveName } = setup();
 
-				const result = await service.downloadFilesAsArchive(ownerId, ownerType, archiveName, userId);
+				const result = await service.downloadFilesAsArchive(ownerId, archiveName, jwt);
 
 				expect(result.name).toBe(`${archiveName}.zip`);
 				expect(result.contentType).toBe('application/zip');
 			});
 
 			it('should call ArchiveFactory with correct file paths', async () => {
-				const { ownerId, ownerType, archiveName, userId, file1, file2, spy } = setup();
+				const { ownerId, archiveName, file1, file2, spy } = setup();
 
-				await service.downloadFilesAsArchive(ownerId, ownerType, archiveName, userId);
+				await service.downloadFilesAsArchive(ownerId, archiveName, jwt);
 
 				expect(spy).toHaveBeenCalledWith(
 					expect.arrayContaining([
@@ -149,19 +136,17 @@ describe('DownloadArchiveService', () => {
 		describe('when no files exist', () => {
 			const setup = () => {
 				const ownerId = 'owner123';
-				const ownerType = FileOwnerModel.USER;
 				const archiveName = 'test-archive';
-				const userId = 'user123';
 
-				filesRepo.findByIdAndOwnerType.mockResolvedValueOnce([]);
+				legacyFileStorageAdapter.getFilesForOwner.mockResolvedValueOnce([]);
 
-				return { ownerId, ownerType, archiveName, userId };
+				return { ownerId, archiveName };
 			};
 
 			it('should throw NotFoundException', async () => {
-				const { ownerId, ownerType, archiveName, userId } = setup();
+				const { ownerId, archiveName } = setup();
 
-				await expect(service.downloadFilesAsArchive(ownerId, ownerType, archiveName, userId)).rejects.toThrow(
+				await expect(service.downloadFilesAsArchive(ownerId, archiveName, jwt)).rejects.toThrow(
 					new NotFoundException('No files found to download as archive')
 				);
 			});
@@ -173,19 +158,17 @@ describe('DownloadArchiveService', () => {
 				const file2 = fileDomainFactory.build({ isDirectory: true });
 
 				const ownerId = 'owner123';
-				const ownerType = FileOwnerModel.COURSE;
 				const archiveName = 'test-archive';
-				const userId = 'user123';
 
-				filesRepo.findByIdAndOwnerType.mockResolvedValueOnce([file1, file2]);
+				legacyFileStorageAdapter.getFilesForOwner.mockResolvedValueOnce([file1, file2]);
 
-				return { ownerId, ownerType, archiveName, userId };
+				return { ownerId, archiveName };
 			};
 
 			it('should throw NotFoundException', async () => {
-				const { ownerId, ownerType, archiveName, userId } = setup();
+				const { ownerId, archiveName } = setup();
 
-				await expect(service.downloadFilesAsArchive(ownerId, ownerType, archiveName, userId)).rejects.toThrow(
+				await expect(service.downloadFilesAsArchive(ownerId, archiveName, jwt)).rejects.toThrow(
 					new NotFoundException('No files found to download as archive')
 				);
 			});
@@ -203,19 +186,17 @@ describe('DownloadArchiveService', () => {
 				});
 
 				const ownerId = 'owner123';
-				const ownerType = FileOwnerModel.USER;
 				const archiveName = 'test-archive';
-				const userId = 'user123';
 
-				filesRepo.findByIdAndOwnerType.mockResolvedValueOnce([file]);
+				legacyFileStorageAdapter.getFilesForOwner.mockResolvedValueOnce([file]);
 
-				return { ownerId, ownerType, archiveName, userId, file };
+				return { ownerId, archiveName, file };
 			};
 
 			it('should throw NotFoundException with file id in message', async () => {
-				const { ownerId, ownerType, archiveName, userId, file } = setup();
+				const { ownerId, archiveName, file } = setup();
 
-				await expect(service.downloadFilesAsArchive(ownerId, ownerType, archiveName, userId)).rejects.toThrow(
+				await expect(service.downloadFilesAsArchive(ownerId, archiveName, jwt)).rejects.toThrow(
 					new NotFoundException(`File with id ${file.id} does not have a storage provider assigned`)
 				);
 			});
@@ -247,11 +228,9 @@ describe('DownloadArchiveService', () => {
 				});
 
 				const ownerId = 'owner123';
-				const ownerType = FileOwnerModel.TEAMS;
 				const archiveName = 'test-archive';
-				const userId = 'user123';
 
-				filesRepo.findByIdAndOwnerType.mockResolvedValueOnce([rootFolder, subFolder, file]);
+				legacyFileStorageAdapter.getFilesForOwner.mockResolvedValueOnce([rootFolder, subFolder, file]);
 				storageProviderRepo.findById.mockResolvedValue(storageProvider);
 
 				const mockStream = new Readable();
@@ -263,13 +242,13 @@ describe('DownloadArchiveService', () => {
 				const mockArchive = createMock<Archiver>();
 				jest.spyOn(ArchiveFactory, 'create').mockReturnValue(mockArchive);
 
-				return { ownerId, ownerType, archiveName, userId, file, rootFolder, subFolder };
+				return { ownerId, archiveName, file, rootFolder, subFolder };
 			};
 
 			it('should preserve folder structure in archive', async () => {
-				const { ownerId, ownerType, archiveName, userId } = setup();
+				const { ownerId, archiveName } = setup();
 
-				const result = await service.downloadFilesAsArchive(ownerId, ownerType, archiveName, userId);
+				const result = await service.downloadFilesAsArchive(ownerId, archiveName, jwt);
 
 				expect(result.name).toBe(`${archiveName}.zip`);
 				expect(result.contentType).toBe('application/zip');
@@ -277,9 +256,9 @@ describe('DownloadArchiveService', () => {
 			});
 
 			it('should call ArchiveFactory with correct nested path', async () => {
-				const { ownerId, ownerType, archiveName, userId, file, rootFolder, subFolder } = setup();
+				const { ownerId, archiveName, file, rootFolder, subFolder } = setup();
 
-				await service.downloadFilesAsArchive(ownerId, ownerType, archiveName, userId);
+				await service.downloadFilesAsArchive(ownerId, archiveName, jwt);
 
 				const expectedPath = `${rootFolder.name}/${subFolder.name}/${file.name}`;
 				expect(ArchiveFactory.create).toHaveBeenCalledWith(

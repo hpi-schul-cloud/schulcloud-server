@@ -1,6 +1,6 @@
 import { ConfigProperty, Configuration } from '@infra/configuration';
 import { StringToBoolean } from '@shared/controller/transformer';
-import { IsBoolean } from 'class-validator';
+import { IsBoolean, IsUrl } from 'class-validator';
 
 export const LEGACY_FILE_ARCHIVE_CONFIG_TOKEN = 'LEGACY_FILE_ARCHIVE_CONFIG_TOKEN';
 
@@ -10,4 +10,8 @@ export class LegacyFileArchiveConfig {
 	@IsBoolean()
 	@StringToBoolean()
 	public featureTeamArchiveDownload = true;
+
+	@ConfigProperty('API_HOST')
+	@IsUrl({ require_tld: false })
+	public legacyBaseUrl!: string;
 }
