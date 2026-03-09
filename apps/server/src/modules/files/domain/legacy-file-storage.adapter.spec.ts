@@ -3,7 +3,7 @@ import { HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AxiosResponse } from 'axios';
 import { of } from 'rxjs';
-import { LEGACY_FILE_ARCHIVE_CONFIG_TOKEN, LegacyFileArchiveConfig } from '../legacy-file-archive.config';
+import { LEGACY_FILE_ARCHIVE_CONFIG_TOKEN } from '../legacy-file-archive.config';
 import { LegacyFileStorageAdapter } from './legacy-file-storage.adapter';
 
 const buildAxiosResponse = (data: unknown): AxiosResponse =>
@@ -28,7 +28,7 @@ describe('LegacyFileStorageAdapter', () => {
 				},
 				{
 					provide: LEGACY_FILE_ARCHIVE_CONFIG_TOKEN,
-					useValue: { legacyBaseUrl } satisfies Partial<LegacyFileArchiveConfig>,
+					useValue: { legacyBaseUrl },
 				},
 			],
 		}).compile();
