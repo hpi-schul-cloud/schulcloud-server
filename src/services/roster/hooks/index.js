@@ -1,8 +1,26 @@
 const { Configuration } = require('@hpi-schul-cloud/commons/lib');
+const jwt = require('jsonwebtoken');
 const { BadRequest } = require('../../../errors');
 const oauth2 = require('../../oauth2/hooks');
 
 const webUri = Configuration.get('HOST');
+
+/**
+ * Validates that the token is a valid JWT format with no additional injected content
+ * @param {string} token - The token to validate
+ * @throws {BadRequest} If the token is not a valid JWT or contains additional content
+ */
+const validateJwtFormat = (token) => {
+	// Ensure token only contains valid JWT characters (Base64URL: alphanumeric, hyphen, underscore, and exactly 2 dots)
+	if (!/^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]*$/.test(token)) {
+		throw new BadRequest('Invalid token format');
+	}
+
+	// Verify it can be decoded as a valid JWT
+	if (!jwt.decode(token)) {
+		throw new BadRequest('Invalid token format');
+	}
+};
 
 module.exports = {
 	/**
@@ -11,17 +29,23 @@ module.exports = {
 	 * sets context.params.tokenInfo with oauth user information
 	 * @param {*} context
 	 */
-	tokenIsActive: (context) =>
-		context.app
+	tokenIsActive: (context) => {
+		const token = context.params.headers.authorization.replace('Bearer ', '');
+
+		// Validate that the token is a valid JWT format
+		validateJwtFormat(token);
+
+		return context.app
 			.service('/oauth2/introspect')
-			.create({ token: context.params.headers.authorization.replace('Bearer ', '') })
+			.create({ token })
 			.then((introspection) => {
 				if (introspection.active) {
 					context.params.tokenInfo = introspection;
 					return context;
 				}
 				throw new BadRequest('Access token invalid');
-			}),
+			});
+	},
 
 	/**
 	 * expects obfuscated_subject to match external pseudonym from route.user or
