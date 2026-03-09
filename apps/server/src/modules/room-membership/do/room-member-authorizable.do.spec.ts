@@ -19,7 +19,7 @@ describe('RoomMemberAuthorizable', () => {
 		return { roomMemberAuthorizable };
 	};
 
-	it('should get schoolId', () => {
+	it('should provide schoolId', () => {
 		const { roomMemberAuthorizable } = setup();
 		expect(roomMemberAuthorizable.schoolId).toEqual('schoolId');
 	});

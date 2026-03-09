@@ -39,6 +39,7 @@ export class RoomRolesTestFactory {
 				Permission.ROOM_EDIT_ROOM,
 				Permission.ROOM_LEAVE_ROOM,
 				Permission.ROOM_LIST_CONTENT,
+				Permission.ROOM_MANAGE_INVITATIONLINKS,
 				Permission.ROOM_REMOVE_MEMBERS,
 				Permission.ROOM_SHARE_ROOM,
 			],
