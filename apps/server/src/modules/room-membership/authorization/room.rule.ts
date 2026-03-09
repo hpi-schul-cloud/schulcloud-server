@@ -7,6 +7,7 @@ import { RoomAuthorizable } from '../do/room-authorizable.do';
 
 export const RoomOperationValues = [
 	'accessRoom',
+	'accessRoomBoards',
 	'addAllStudents',
 	'addExternalPersonByEmail',
 	'addMembers',
@@ -21,7 +22,10 @@ export const RoomOperationValues = [
 	'leaveRoom',
 	'shareRoom',
 	'updateRoom',
+	'createRoomInvitationLinks',
+	'listRoomInvitationLinks',
 	'updateRoomInvitationLinks',
+	'deleteRoomInvitationLinks',
 	'viewContent',
 	'viewDraftContent',
 	'viewMemberlist',
@@ -65,6 +69,7 @@ export class RoomRule implements Rule<RoomAuthorizable> {
 	public getOperationMap() {
 		const map = {
 			accessRoom: canAccessRoom,
+			accessRoomBoards: canAccessRoom,
 			addAllStudents: canAddAllStudents,
 			addExternalPersonByEmail: canAddExternalPersonByEmail,
 			addMembers: canAddMembers,
@@ -79,7 +84,10 @@ export class RoomRule implements Rule<RoomAuthorizable> {
 			leaveRoom: canLeaveRoom,
 			shareRoom: canShareRoom,
 			updateRoom: canUpdateRoom,
-			updateRoomInvitationLinks: canUpdateRoomInvitationLinks,
+			createRoomInvitationLinks: canManageRoomInvitationLinks,
+			listRoomInvitationLinks: canListRoomInvitationLinks,
+			updateRoomInvitationLinks: canManageRoomInvitationLinks,
+			deleteRoomInvitationLinks: canManageRoomInvitationLinks,
 			viewContent: canViewContent,
 			viewDraftContent: canViewDraftContent,
 			viewMemberlist: canViewMemberlist,
@@ -335,14 +343,21 @@ const canShareRoom = (user: User, roomAuthorizable: RoomAuthorizable): boolean =
 	return canShareRoom;
 };
 
-const canUpdateRoomInvitationLinks = (user: User, roomAuthorizable: RoomAuthorizable): boolean => {
+const canManageRoomInvitationLinks = (user: User, roomAuthorizable: RoomAuthorizable): boolean => {
 	const { schoolPermissions, roomPermissions } = resolveUserPermissions(user, roomAuthorizable);
 	const hasSchoolPermission = schoolPermissions.includes(Permission.SCHOOL_MANAGE_ROOM_INVITATIONLINKS);
 	const hasRoomPermission = roomPermissions.includes(Permission.ROOM_MANAGE_INVITATIONLINKS);
 
-	const canUpdateRoomInvitationLinks = hasSchoolPermission && hasRoomPermission;
+	const canManageRoomInvitationLinks = hasSchoolPermission && hasRoomPermission;
 
-	return canUpdateRoomInvitationLinks;
+	return canManageRoomInvitationLinks;
+};
+
+const canListRoomInvitationLinks = (user: User, roomAuthorizable: RoomAuthorizable): boolean => {
+	const { roomPermissions } = resolveUserPermissions(user, roomAuthorizable);
+	const canListRoomInvitationLinks = roomPermissions.includes(Permission.ROOM_MANAGE_INVITATIONLINKS);
+
+	return canListRoomInvitationLinks;
 };
 
 const canViewContent = (user: User, roomAuthorizable: RoomAuthorizable): boolean => {
