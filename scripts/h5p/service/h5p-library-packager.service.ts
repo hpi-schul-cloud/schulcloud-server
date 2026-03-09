@@ -77,6 +77,7 @@ export class H5pLibraryPackagerService {
 		const options: GitHubClientOptions = { maxRetries: 3 };
 		const tags = await this.gitHubClient.fetchAllTags(repoName, options);
 		let filteredTags = this.getHighestPatchTags(tags);
+		filteredTags = ['v1.1.2'];
 
 		const currentH5pHubTag = await this.getCurrentTagFromH5pHub(library);
 		if (currentH5pHubTag) {
@@ -885,15 +886,16 @@ export class H5pLibraryPackagerService {
 
 	private getHighestVersionTags(tags: string[], majorVersion: number, minorVersion: number): string | undefined {
 		const matchingTags = tags.filter((t) => {
-			const [maj, min] = t.split('.').map(Number);
+			const normalizedTag = t.replace(/^v/, '');
+			const [maj, min] = normalizedTag.split('.').map(Number);
 
 			return maj === majorVersion && min === minorVersion;
 		});
 		let highestVersionTag;
 		if (matchingTags.length > 0) {
 			highestVersionTag = matchingTags.reduce((a, b) => {
-				const patchA = Number(a.split('.')[2]);
-				const patchB = Number(b.split('.')[2]);
+				const patchA = Number(a.replace(/^v/, '').split('.')[2]);
+				const patchB = Number(b.replace(/^v/, '').split('.')[2]);
 				return patchA > patchB ? a : b;
 			});
 		}
