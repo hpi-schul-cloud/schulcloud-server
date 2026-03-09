@@ -25,12 +25,11 @@ export class DownloadArchiveService {
 
 	public async downloadFilesAsArchive(ownerId: EntityId, archiveName: string, jwt: string): Promise<GetFileResponse> {
 		const files = await this.legacyFileStorageAdapter.getFilesForOwner(ownerId, jwt);
-
 		const filesById = this.createFileMap(files);
 		const downloadableFiles = this.filterDownloadableFiles(files);
-		this.ensureFilesExist(downloadableFiles);
 
 		const fileResponses = await this.downloadFiles(downloadableFiles, filesById);
+
 		const archive = ArchiveFactory.create(fileResponses, downloadableFiles, this.logger);
 
 		return FileResponseFactory.createFromArchive(archiveName, archive);
@@ -51,12 +50,6 @@ export class DownloadArchiveService {
 		return s3Client;
 	}
 
-	private ensureFilesExist(files: FileDo[]): void {
-		if (files.length === 0) {
-			throw new NotFoundException('No files found to download as archive');
-		}
-	}
-
 	private createFileMap(files: FileDo[]): Map<EntityId, FileDo> {
 		return new Map(files.map((file) => [file.id, file]));
 	}
@@ -66,6 +59,10 @@ export class DownloadArchiveService {
 	}
 
 	private downloadFiles(files: FileDo[], filesById: Map<EntityId, FileDo>): Promise<GetFileResponse[]> {
+		if (files.length === 0) {
+			return Promise.resolve([]);
+		}
+
 		const filePromises = files.map((file) => this.downloadFileWithPath(file, filesById));
 
 		return Promise.all(filePromises);

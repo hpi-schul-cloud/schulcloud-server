@@ -64,7 +64,7 @@ describe('DownloadArchiveService', () => {
 	describe('downloadFilesAsArchive', () => {
 		const jwt = 'test-jwt';
 
-		describe('when repo returns files and download is successful', () => {
+		describe('when adapter returns files and download is successful', () => {
 			const setup = () => {
 				const storageProvider = storageProviderFactory.buildWithId({ region: 'us-east-1' });
 				const file1 = fileDomainFactory.build({
@@ -88,7 +88,7 @@ describe('DownloadArchiveService', () => {
 				const archiveName = 'test-archive';
 
 				legacyFileStorageAdapter.getFilesForOwner.mockResolvedValueOnce([file1, file2]);
-				storageProviderRepo.findById.mockResolvedValueOnce(storageProvider);
+				storageProviderRepo.findById.mockResolvedValue(storageProvider);
 
 				const mockStream1 = new Readable();
 				const mockStream2 = new Readable();
@@ -140,15 +140,19 @@ describe('DownloadArchiveService', () => {
 
 				legacyFileStorageAdapter.getFilesForOwner.mockResolvedValueOnce([]);
 
+				const mockArchive = createMock<Archiver>();
+				jest.spyOn(ArchiveFactory, 'create').mockReturnValueOnce(mockArchive);
+
 				return { ownerId, archiveName };
 			};
 
-			it('should throw NotFoundException', async () => {
+			it('should return an empty archive response', async () => {
 				const { ownerId, archiveName } = setup();
 
-				await expect(service.downloadFilesAsArchive(ownerId, archiveName, jwt)).rejects.toThrow(
-					new NotFoundException('No files found to download as archive')
-				);
+				const result = await service.downloadFilesAsArchive(ownerId, archiveName, jwt);
+
+				expect(result.name).toBe(`${archiveName}.zip`);
+				expect(result.contentType).toBe('application/zip');
 			});
 		});
 
@@ -162,15 +166,19 @@ describe('DownloadArchiveService', () => {
 
 				legacyFileStorageAdapter.getFilesForOwner.mockResolvedValueOnce([file1, file2]);
 
+				const mockArchive = createMock<Archiver>();
+				jest.spyOn(ArchiveFactory, 'create').mockReturnValueOnce(mockArchive);
+
 				return { ownerId, archiveName };
 			};
 
-			it('should throw NotFoundException', async () => {
+			it('should return an archive response with no downloadable files', async () => {
 				const { ownerId, archiveName } = setup();
 
-				await expect(service.downloadFilesAsArchive(ownerId, archiveName, jwt)).rejects.toThrow(
-					new NotFoundException('No files found to download as archive')
-				);
+				const result = await service.downloadFilesAsArchive(ownerId, archiveName, jwt);
+
+				expect(result.name).toBe(`${archiveName}.zip`);
+				expect(result.contentType).toBe('application/zip');
 			});
 		});
 
