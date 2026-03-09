@@ -43,21 +43,21 @@ export class LegacyFileStorageAdapter {
 		const rawFiles: LegacyFileResponse[] = Array.isArray(response.data) ? response.data : [];
 
 		const mapped = rawFiles.map(
-			(f) =>
+			(file) =>
 				new FileDo({
-					id: f._id,
-					name: f.name,
-					isDirectory: f.isDirectory,
-					parentId: f.parent,
-					storageFileName: f.storageFileName,
-					bucket: f.bucket,
-					storageProviderId: f.storageProviderId,
+					id: file._id,
+					name: file.name,
+					isDirectory: file.isDirectory,
+					parentId: file.parent,
+					storageFileName: file.storageFileName,
+					bucket: file.bucket,
+					storageProviderId: file.storageProviderId,
 				})
 		);
 
 		const childFetches = rawFiles
-			.filter((f) => f.isDirectory)
-			.map((dir) => this.fetchRecursively(ownerId, dir._id, jwt));
+			.filter((file) => file.isDirectory)
+			.map((directory) => this.fetchRecursively(ownerId, directory._id, jwt));
 
 		const children = (await Promise.all(childFetches)).flat();
 
