@@ -5,6 +5,7 @@ import { groupFactory } from '@modules/group/testing';
 import { RoleDto, RoleName, RoleService } from '@modules/role';
 import { roleDtoFactory, roleFactory } from '@modules/role/testing';
 import { RoomService } from '@modules/room';
+import { ROOM_PUBLIC_API_CONFIG_TOKEN, RoomPublicApiConfig } from '@modules/room';
 import { roomFactory } from '@modules/room/testing';
 import { schoolFactory } from '@modules/school/testing';
 import { UserDo, UserService } from '@modules/user';
@@ -17,6 +18,7 @@ import { RoomAuthorizable } from '../do/room-authorizable.do';
 import { RoomMembershipRepo } from '../repo/room-membership.repo';
 import { roomMembershipFactory } from '../testing';
 import { RoomMembershipService } from './room-membership.service';
+import { SchoolService } from '@modules/school/domain/service/school.service';
 
 describe('RoomMembershipService', () => {
 	let module: TestingModule;
@@ -51,6 +53,14 @@ describe('RoomMembershipService', () => {
 				{
 					provide: UserService,
 					useValue: createMock<UserService>(),
+				},
+				{
+					provide: SchoolService,
+					useValue: createMock<SchoolService>(),
+				},
+				{
+					provide: ROOM_PUBLIC_API_CONFIG_TOKEN,
+					useValue: createMock<RoomPublicApiConfig>(),
 				},
 			],
 		}).compile();
