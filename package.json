@@ -180,7 +180,7 @@
 		"@nestjs/websockets": "^10.4.15",
 		"@socket.io/mongo-adapter": "^0.3.2",
 		"adm-zip": "^0.5.16",
-		"ajv": "^8.17.1",
+		"ajv": "^8.18.0",
 		"amqplib": "^0.10.7",
 		"archiver": "^7.0.1",
 		"arg": "^5.0.2",
