@@ -17,7 +17,7 @@ describe('RoomInvitationLinkAuthorizable', () => {
 			activeUntil: new Date(Date.now() + 1000 * 60 * 60), // active for 1 hour
 		});
 
-		const roomConfig = {
+		const roomPublicApiConfig = {
 			featureRoomCopyEnabled: true,
 			featureRoomLinkInvitationExternalPersonsEnabled: false,
 			roomMemberAddExternalPersonRequirementsUrl: null,
@@ -32,10 +32,10 @@ describe('RoomInvitationLinkAuthorizable', () => {
 			roomAuthorizable,
 			roomInvitationLink,
 			'schoolName',
-			roomConfig
+			roomPublicApiConfig
 		);
 
-		return { roomInvitationLinkAuthorizable, roomConfig, roomInvitationLink };
+		return { roomInvitationLinkAuthorizable, roomConfig: roomPublicApiConfig, roomInvitationLink };
 	};
 
 	it('should provide schoolId', () => {
@@ -44,10 +44,10 @@ describe('RoomInvitationLinkAuthorizable', () => {
 		expect(roomInvitationLinkAuthorizable.schoolId).toEqual('schoolId');
 	});
 
-	it('should provide config', () => {
+	it('should provide room public API config', () => {
 		const { roomInvitationLinkAuthorizable, roomConfig } = setup();
 
-		expect(roomInvitationLinkAuthorizable.config).toEqual(roomConfig);
+		expect(roomInvitationLinkAuthorizable.roomPublicApiConfig).toEqual(roomConfig);
 	});
 
 	it('should provide roomInvitationLink', () => {
