@@ -1,19 +1,12 @@
 import { HttpService } from '@nestjs/axios';
 import { Inject, Injectable } from '@nestjs/common';
+import { TypeGuard } from '@shared/common/guards';
 import { EntityId } from '@shared/domain/types';
+import { AxiosResponse } from 'axios';
 import { firstValueFrom } from 'rxjs';
 import { LEGACY_FILE_ARCHIVE_CONFIG_TOKEN, LegacyFileArchiveConfig } from '../legacy-file-archive.config';
 import { FileDo } from './do';
-
-interface LegacyFileResponse {
-	_id: string;
-	name: string;
-	isDirectory: boolean;
-	parent?: string;
-	storageFileName?: string;
-	bucket?: string;
-	storageProviderId?: string;
-}
+import { FileFactory, LegacyFileResponse } from './factory';
 
 @Injectable()
 export class LegacyFileStorageAdapter {
@@ -23,44 +16,74 @@ export class LegacyFileStorageAdapter {
 	) {}
 
 	public getFilesForOwner(ownerId: EntityId, jwt: string): Promise<FileDo[]> {
-		return this.fetchRecursively(ownerId, undefined, jwt);
+		const files = this.fetchRecursively(ownerId, undefined, jwt);
+
+		return files;
 	}
 
 	private async fetchRecursively(ownerId: EntityId, parentId: string | undefined, jwt: string): Promise<FileDo[]> {
-		const baseUrl = String(this.config.legacyBaseUrl);
+		const response = await this.getFiles(jwt, ownerId, parentId);
+		const rawFiles = this.validateResponse(response);
+		const files = this.mapToFileDos(rawFiles);
+
+		const directories = rawFiles.filter((file) => file.isDirectory);
+		const filePromises = directories.map((directory) => this.fetchRecursively(ownerId, directory._id, jwt));
+		const filesFromSubfolders = (await Promise.all(filePromises)).flat();
+
+		return [...files, ...filesFromSubfolders];
+	}
+
+	private mapToFileDos(filesResponses: LegacyFileResponse[]): FileDo[] {
+		return filesResponses.map((fileResponse) => FileFactory.buildFromLegacyFileResponse(fileResponse));
+	}
+
+	private validateResponse(response: AxiosResponse): LegacyFileResponse[] {
+		const rawData: unknown = response.data;
+		const arrayData = TypeGuard.checkArray(rawData);
+		const rawFiles: LegacyFileResponse[] = arrayData.map((item, index) =>
+			LegacyFileStorageAdapter.checkLegacyFileResponse(item, index)
+		);
+
+		return rawFiles;
+	}
+
+	private async getFiles(jwt: string, ownerId: EntityId, parentId?: EntityId): Promise<AxiosResponse> {
+		const { legacyBaseUrl } = this.config;
+
 		const params: Record<string, string> = { owner: ownerId };
+
 		if (parentId !== undefined) {
 			params.parent = parentId;
 		}
 
 		const response = await firstValueFrom(
-			this.httpService.get<LegacyFileResponse[]>(`${baseUrl}/fileStorage`, {
+			this.httpService.get(`${legacyBaseUrl}/fileStorage`, {
 				params,
 				headers: { authorization: `Bearer ${jwt}` },
 			})
 		);
 
-		const rawFiles: LegacyFileResponse[] = Array.isArray(response.data) ? response.data : [];
+		return response;
+	}
 
-		const mapped = rawFiles.map(
-			(file) =>
-				new FileDo({
-					id: file._id,
-					name: file.name,
-					isDirectory: file.isDirectory,
-					parentId: file.parent,
-					storageFileName: file.storageFileName,
-					bucket: file.bucket,
-					storageProviderId: file.storageProviderId,
-				})
-		);
+	private static checkLegacyFileResponse(value: unknown, index: number): LegacyFileResponse {
+		if (!TypeGuard.isDefinedObject(value)) {
+			throw new Error(`Unexpected item shape at index ${index} in legacy file storage response`);
+		}
+		const obj = value as Record<string, unknown>;
 
-		const childFetches = rawFiles
-			.filter((file) => file.isDirectory)
-			.map((directory) => this.fetchRecursively(ownerId, directory._id, jwt));
+		if (
+			!TypeGuard.isString(obj._id) ||
+			!TypeGuard.isString(obj.name) ||
+			!TypeGuard.isBoolean(obj.isDirectory) ||
+			(!TypeGuard.isUndefined(obj.parent) && !TypeGuard.isString(obj.parent)) ||
+			(!TypeGuard.isUndefined(obj.storageFileName) && !TypeGuard.isString(obj.storageFileName)) ||
+			(!TypeGuard.isUndefined(obj.bucket) && !TypeGuard.isString(obj.bucket)) ||
+			(!TypeGuard.isUndefined(obj.storageProviderId) && !TypeGuard.isString(obj.storageProviderId))
+		) {
+			throw new Error(`Unexpected item shape at index ${index} in legacy file storage response`);
+		}
 
-		const children = (await Promise.all(childFetches)).flat();
-
-		return [...mapped, ...children];
+		return obj as unknown as LegacyFileResponse;
 	}
 }
