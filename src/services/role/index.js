@@ -5,7 +5,6 @@ const path = require('path');
 const Role = require('./model');
 const hooks = require('./hooks');
 const { PermissionService, permissionHooks } = require('./services/permissions');
-const { UserPermissions, userPermissionsHooks } = require('./services/userPermissions');
 const { definePermissions, PERMISSIONS, ROLES } = require('./utils/permissions');
 
 module.exports = function setup() {
@@ -21,10 +20,6 @@ module.exports = function setup() {
 	};
 
 	app.use('/roles/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
-
-	app.use('/permissions/user', new UserPermissions());
-	const userPermissions = app.service('/permissions/user');
-	userPermissions.hooks(userPermissionsHooks);
 
 	app.use('/roles/:roleName/permissions', new PermissionService());
 	const permissionService = app.service('/roles/:roleName/permissions');

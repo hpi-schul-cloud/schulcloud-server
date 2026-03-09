@@ -241,33 +241,6 @@ paths:
       tags:
         - roles
       security: []
-  '/permissions/user/{id}':
-    get:
-      parameters:
-        - in: path
-          name: id
-          description: ID of user to return
-          schema:
-            type: integer
-          required: true
-      responses:
-        '200':
-          description: success
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/user'
-        '401':
-          description: not authenticated
-        '404':
-          description: not found
-        '500':
-          description: general error
-      description: Retrieves a single resource with the given id from the service.
-      summary: ''
-      tags:
-        - permissions
-      security: []
   '/roles/{roleName}/permissions':
     get:
       parameters:
