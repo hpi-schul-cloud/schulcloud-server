@@ -35,7 +35,7 @@ describe('RoomInvitationLinkAuthorizable', () => {
 			roomPublicApiConfig
 		);
 
-		return { roomInvitationLinkAuthorizable, roomConfig: roomPublicApiConfig, roomInvitationLink };
+		return { roomInvitationLinkAuthorizable, roomPublicApiConfig, roomInvitationLink };
 	};
 
 	it('should provide schoolId', () => {
@@ -45,9 +45,9 @@ describe('RoomInvitationLinkAuthorizable', () => {
 	});
 
 	it('should provide room public API config', () => {
-		const { roomInvitationLinkAuthorizable, roomConfig } = setup();
+		const { roomInvitationLinkAuthorizable, roomPublicApiConfig } = setup();
 
-		expect(roomInvitationLinkAuthorizable.roomPublicApiConfig).toEqual(roomConfig);
+		expect(roomInvitationLinkAuthorizable.roomPublicApiConfig).toEqual(roomPublicApiConfig);
 	});
 
 	it('should provide roomInvitationLink', () => {
