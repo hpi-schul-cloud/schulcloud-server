@@ -17,7 +17,7 @@ import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { BoardExternalReferenceType, BoardRoles, UserWithBoardRoles } from '../../domain';
-import { columnBoardFactory, columnFactory } from '../../testing';
+import { columnBoardFactory, columnFactory, mediaBoardFactory } from '../../testing';
 import { BoardContextService } from './board-context.service';
 
 describe(BoardContextService.name, () => {
@@ -574,6 +574,32 @@ describe(BoardContextService.name, () => {
 						canAdminsToggleReadersCanEdit: true,
 						isLocked: false,
 					});
+				});
+			});
+		});
+
+		describe('when node is a MediaBoard', () => {
+			const setup = () => {
+				const teacher = userFactory.build();
+				const course = courseEntityFactory.buildWithId({ teachers: [teacher], school: teacher.school });
+				courseService.findById.mockResolvedValue(course);
+
+				const mediaBoard = mediaBoardFactory.build({
+					context: { id: course.id, type: BoardExternalReferenceType.Course },
+				});
+
+				return { mediaBoard };
+			};
+
+			it('should return a default board configuration object', async () => {
+				const { mediaBoard } = setup();
+				const result = await service.getBoardConfiguration(mediaBoard);
+
+				expect(result).toEqual({
+					canEditorsManageVideoconference: false,
+					canReadersEdit: false,
+					canAdminsToggleReadersCanEdit: false,
+					isLocked: false,
 				});
 			});
 		});
