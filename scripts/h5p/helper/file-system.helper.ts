@@ -134,9 +134,14 @@ export class FileSystemHelper {
 		rmSync(folderPath, { recursive: true, force: true });
 	}
 
-	public static unzipFile(zipFilePath: string, outputDir: string): void {
+	public static unzipFile(zipFilePath: string, outputDir: string): string {
 		const zip = new AdmZip(zipFilePath);
 		zip.extractAllTo(outputDir, true);
+
+		const entries = zip.getEntries();
+		const rootFolder = entries[0]?.entryName.split('/')[0];
+
+		return join(outputDir, rootFolder);
 	}
 
 	public static getTempDir(): string {
@@ -186,33 +191,25 @@ export class FileSystemHelper {
 		return result;
 	}
 
-	public static unzipAndRenameFolder(
-		filePath: string,
-		folderPath: string,
-		tempFolder: string,
-		repo: string,
-		tag: string
-	): void {
-		this.unzipFile(filePath, tempFolder);
-		this.renameFolder(folderPath, tempFolder, repo, tag);
+	public static unzipAndRenameFolder(filePath: string, folderPath: string, tempFolder: string): void {
+		const extractedFolderPath = this.unzipFile(filePath, tempFolder);
+		this.renameFolder(folderPath, extractedFolderPath);
 	}
 
-	public static renameFolder(folderPath: string, tempFolder: string, repo: string, tag: string): void {
-		const repoName = repo.split('/')[1];
-		const repoNameFolder = join(tempFolder, `${repoName}-${tag}`);
-		if (repoNameFolder === folderPath) {
+	public static renameFolder(folderPath: string, tempFolder: string): void {
+		if (tempFolder === folderPath) {
 			return;
 		}
 
-		if (!this.pathExists(repoNameFolder)) {
-			throw new Error(`Repository folder ${repo} does not exist in temporary folder.`);
+		if (!this.pathExists(tempFolder)) {
+			throw new Error(`Temporary folder ${tempFolder} does not exist.`);
 		}
 
 		if (this.pathExists(folderPath)) {
 			this.removeFolder(folderPath);
 		}
 
-		renameSync(repoNameFolder, folderPath);
+		renameSync(tempFolder, folderPath);
 	}
 
 	public static getStatsOfPath(filePath: string): Stats {
