@@ -6,7 +6,7 @@ import { Role } from '@modules/role/repo';
 import { roleFactory } from '@modules/role/testing';
 import { RoomMembershipEntity } from '@modules/room-membership';
 import { roomMembershipEntityFactory } from '@modules/room-membership/testing';
-import { ROOM_PUBLIC_API_CONFIG_TOKEN, RoomPublicApiConfig } from '@modules/room/room.config';
+import { ROOM_PUBLIC_API_CONFIG_TOKEN, RoomPublicApiConfig } from '@modules/room';
 import { roomEntityFactory } from '@modules/room/testing';
 import { roomInvitationLinkEntityFactory } from '@modules/room/testing/room-invitation-link-entity.factory';
 import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
@@ -90,8 +90,13 @@ describe('Room Invitation Link Controller (API)', () => {
 			roomInvitationLinkConfig: RoomInvitationLinkConfig,
 			roleName: UserRole,
 			userSchool: UserSchool,
-			previousRole?: RoleName
+			previousRole?: RoleName,
+			featureEnabledForExternalPersons?: boolean
 		) => {
+			if (featureEnabledForExternalPersons !== undefined) {
+				config.featureRoomLinkInvitationExternalPersonsEnabled = featureEnabledForExternalPersons;
+			}
+
 			const school = schoolEntityFactory.buildWithId();
 			const room = roomEntityFactory.buildWithId({
 				schoolId: school.id,
@@ -222,7 +227,7 @@ describe('Room Invitation Link Controller (API)', () => {
 			});
 
 			describe('when the user is an external person', () => {
-				it('should return a 403 error', async () => {
+				it('should return http status 403', async () => {
 					const { loggedInClient, roomInvitationLink } = await setup(
 						{},
 						UserRole.EXTERNAL_PERSON,
@@ -267,90 +272,121 @@ describe('Room Invitation Link Controller (API)', () => {
 				UserRole.TEACHER,
 				{ isUsableByExternalPersons: false, isUsableByStudents: false },
 				UserSchool.SAME_SCHOOL,
+				'true',
 				HttpStatus.CREATED,
 			],
 			[
 				UserRole.TEACHER,
 				{ isUsableByExternalPersons: true, isUsableByStudents: false },
 				UserSchool.SAME_SCHOOL,
+				'true',
 				HttpStatus.CREATED,
 			],
 			[
 				UserRole.TEACHER,
 				{ isUsableByExternalPersons: false, isUsableByStudents: true },
 				UserSchool.SAME_SCHOOL,
+				'true',
 				HttpStatus.CREATED,
 			],
 			[
 				UserRole.TEACHER,
 				{ isUsableByExternalPersons: true, isUsableByStudents: true },
 				UserSchool.SAME_SCHOOL,
+				'true',
 				HttpStatus.CREATED,
 			],
 			[
 				UserRole.STUDENT,
 				{ isUsableByExternalPersons: false, isUsableByStudents: false },
 				UserSchool.SAME_SCHOOL,
+				'true',
 				HttpStatus.FORBIDDEN,
 			],
 			[
 				UserRole.STUDENT,
 				{ isUsableByExternalPersons: true, isUsableByStudents: false },
 				UserSchool.SAME_SCHOOL,
+				'true',
 				HttpStatus.FORBIDDEN,
 			],
 			[
 				UserRole.STUDENT,
 				{ isUsableByExternalPersons: false, isUsableByStudents: true },
 				UserSchool.SAME_SCHOOL,
+				'true',
 				HttpStatus.CREATED,
 			],
 			[
 				UserRole.STUDENT,
 				{ isUsableByExternalPersons: true, isUsableByStudents: true },
 				UserSchool.SAME_SCHOOL,
+				'true',
 				HttpStatus.CREATED,
 			],
 			[
 				UserRole.EXTERNAL_PERSON,
 				{ isUsableByExternalPersons: false, isUsableByStudents: false },
 				UserSchool.SAME_SCHOOL,
+				'true',
 				HttpStatus.FORBIDDEN,
 			],
 			[
 				UserRole.EXTERNAL_PERSON,
 				{ isUsableByExternalPersons: true, isUsableByStudents: false },
 				UserSchool.SAME_SCHOOL,
+				'true',
 				HttpStatus.CREATED,
+			],
+			[
+				UserRole.EXTERNAL_PERSON,
+				{ isUsableByExternalPersons: true, isUsableByStudents: false },
+				UserSchool.SAME_SCHOOL,
+				'false',
+				HttpStatus.FORBIDDEN,
 			],
 			[
 				UserRole.EXTERNAL_PERSON,
 				{ isUsableByExternalPersons: false, isUsableByStudents: true },
 				UserSchool.SAME_SCHOOL,
+				'true',
 				HttpStatus.FORBIDDEN,
 			],
 			[
 				UserRole.EXTERNAL_PERSON,
 				{ isUsableByExternalPersons: true, isUsableByStudents: true },
 				UserSchool.SAME_SCHOOL,
+				'true',
 				HttpStatus.CREATED,
 			],
-		])('usable by external persons and students', (roleName, roomInvitationLinkConfig, fromSameSchool, httpStatus) => {
-			const config = JSON.stringify(roomInvitationLinkConfig);
-			describe(`when room config is '${config}' and user is a ${roleName} from '${fromSameSchool}'`, () => {
-				it(`should return http status ${httpStatus}`, async () => {
-					const { loggedInClient, roomInvitationLink } = await setup(
-						roomInvitationLinkConfig,
-						roleName,
-						fromSameSchool
-					);
+			[
+				UserRole.EXTERNAL_PERSON,
+				{ isUsableByExternalPersons: true, isUsableByStudents: true },
+				UserSchool.SAME_SCHOOL,
+				'false',
+				HttpStatus.FORBIDDEN,
+			],
+		])(
+			'usable by external persons and students',
+			(roleName, roomInvitationLinkConfig, fromSameSchool, featureEnabled, httpStatus) => {
+				const config = JSON.stringify(roomInvitationLinkConfig);
+				describe(`when room config is '${config}' and user is a ${roleName} from '${fromSameSchool} and external persons invitation feature is ${featureEnabled}'`, () => {
+					it(`should return http status ${httpStatus}`, async () => {
+						const { loggedInClient, roomInvitationLink } = await setup(
+							roomInvitationLinkConfig,
+							roleName,
+							fromSameSchool,
+							undefined,
+							featureEnabled === 'true'
+						);
 
-					const response = await loggedInClient.post(`/${roomInvitationLink.id}`);
+						const response = await loggedInClient.post(`/${roomInvitationLink.id}`);
 
-					expect(response.status).toBe(httpStatus);
+						expect(response.status).toBe(httpStatus);
+					});
 				});
-			});
-		});
+			}
+		);
 
 		describe.each([
 			[UserRole.TEACHER, { restrictedToCreatorSchool: true }, UserSchool.OTHER_SCHOOL, HttpStatus.FORBIDDEN],
