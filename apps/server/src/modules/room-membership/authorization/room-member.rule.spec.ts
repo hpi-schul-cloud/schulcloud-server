@@ -22,7 +22,6 @@ import { RoomRule } from './room.rule';
 
 describe(RoomMemberRule.name, () => {
 	let service: RoomMemberRule;
-	// let roomRule: RoomRule;
 	let injectionService: AuthorizationInjectionService;
 
 	beforeAll(async () => {
