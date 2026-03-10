@@ -456,10 +456,17 @@ describe(BoardContextService.name, () => {
 				return { columnBoard };
 			};
 
-			it('should throw an error', async () => {
+			it('should return a default board configuration object', async () => {
 				const { columnBoard } = setup();
 
-				await expect(service.getBoardConfiguration(columnBoard)).rejects.toThrowError();
+				const result = await service.getBoardConfiguration(columnBoard);
+
+				expect(result).toEqual({
+					canEditorsManageVideoconference: false,
+					canReadersEdit: false,
+					canAdminsToggleReadersCanEdit: false,
+					isLocked: false,
+				});
 			});
 		});
 
