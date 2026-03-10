@@ -1,11 +1,9 @@
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const rabbitMq = require('../../../utils/rabbitmq');
 const { syncLogger } = require('../../../logger/syncLogger');
-const { NODE_ENV, ENVIRONMENTS } = require('../../../../config/globals');
-
-const { SchoolAction, UserAction, ClassAction } = require('./consumerActions');
-
+const { ENVIRONMENTS } = require('../../../../config/environments');
 const { BadRequest } = require('../../../errors');
-
+const { SchoolAction, UserAction, ClassAction } = require('./consumerActions');
 const { LDAP_SYNC_CHANNEL_NAME } = require('./LDAPSyncer');
 
 /**
@@ -34,7 +32,7 @@ class LDAPSyncerConsumer {
 const setupConsumer = (app) => {
 	const syncQueue = rabbitMq.getChannel(LDAP_SYNC_CHANNEL_NAME, { durable: true });
 
-	const shouldUseFilter = NODE_ENV === ENVIRONMENTS.PRODUCTION;
+	const shouldUseFilter = Configuration.get('NODE_ENV') === ENVIRONMENTS.PRODUCTION;
 	const consumer = new LDAPSyncerConsumer(
 		new SchoolAction(shouldUseFilter),
 		new UserAction(app, shouldUseFilter),

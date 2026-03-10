@@ -1,8 +1,6 @@
 const { Configuration } = require('@hpi-schul-cloud/commons');
-
 const logger = require('../../logger');
-
-const { SMTP_SENDER, NODE_ENV, ENVIRONMENTS } = require('../../../config/globals');
+const { ENVIRONMENTS } = require('../../../config/environments');
 
 const checkForToken = (params, app) => {
 	if ((params.headers || {}).token) {
@@ -27,6 +25,8 @@ module.exports = function setup(app) {
 		// POST
 		async create(data, params) {
 			const FORCE_SEND_EMAIL = Configuration.get('FORCE_SEND_EMAIL');
+			const NODE_ENV = Configuration.get('NODE_ENV');
+			const SMTP_SENDER = Configuration.get('SMTP_SENDER');
 
 			const user = await checkForToken(params, app);
 

@@ -89,10 +89,14 @@ describe('submission item delete (api)', () => {
 	describe('when user is a student trying to delete his own submission item', () => {
 		const setup = async () => {
 			await cleanupCollections(em);
-
+			const { teacherUser } = UserAndAccountTestFactory.buildTeacher();
 			const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-			const course = courseEntityFactory.build({ school: studentUser.school, students: [studentUser] });
-			await em.persist([studentAccount, studentUser, course]).flush();
+			const course = courseEntityFactory.build({
+				school: studentUser.school,
+				students: [studentUser],
+				teachers: [teacherUser],
+			});
+			await em.persist([studentAccount, studentUser, teacherUser, course]).flush();
 
 			const columnBoardNode = columnBoardEntityFactory.build({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },

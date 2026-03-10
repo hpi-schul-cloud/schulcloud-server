@@ -1,4 +1,6 @@
-const { SC_TITLE } = require('../../../../config/globals');
+const { Configuration } = require('@hpi-schul-cloud/commons');
+
+const SC_TITLE = Configuration.get('SC_TITLE');
 
 const close = `\n\nViel Spaß und einen guten Start wünscht dir dein ${SC_TITLE}-Team`;
 

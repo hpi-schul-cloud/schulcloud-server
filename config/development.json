@@ -15,13 +15,6 @@
 	"S3_KEY": "abcdefghijklmnop",
 	"AES_KEY": "thisisnotsecure12",
 	"LDAP_PASSWORD_ENCRYPTION_KEY": "thisisnotsecure12",
-	"COOKIE": {
-		"SAME_SITE": "lax",
-		"HTTP_ONLY": false,
-		"HOST_ONLY": false,
-		"SECURE": false,
-		"EXPIRES_SECONDS": 2592000000
-	},
 	"HYDRA_URI": "http://localhost:9001",
 	"ETHERPAD": {
 		"PAD_URI": "http://localhost:9001/p",
