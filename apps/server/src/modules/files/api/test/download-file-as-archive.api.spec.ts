@@ -11,22 +11,19 @@ import {
 } from '@infra/authorization-client';
 import { ConfigurationModule } from '@infra/configuration';
 import { S3ClientAdapter } from '@infra/s3-client';
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { StorageProviderEntity, StorageProviderRepo } from '@modules/school/repo';
 import { storageProviderFactory } from '@modules/school/testing';
-import { teamFactory } from '@modules/team/testing';
-import { User } from '@modules/user/repo';
 import { ForbiddenException, HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
-import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { TEST_JWT_CONFIG_TOKEN, TestJwtModuleConfig } from '@testing/test-jwt-module.config';
 import { Readable } from 'stream';
 import { DownloadArchiveService, FileOwnerModel, LegacyFileStorageAdapter } from '../../domain';
 import { LEGACY_FILE_ARCHIVE_CONFIG_TOKEN, LegacyFileArchiveConfig } from '../../legacy-file-archive.config';
-import { fileDomainFactory } from '../../testing';
+import { accountForLoginFactory, fileDomainFactory, userForLoginFactory } from '../../testing';
 import { DownloadArchiveUC } from '../download-archive.uc';
 import { LegacyFileArchiveController } from '../legacy-file-archive.controller';
 
@@ -54,7 +51,7 @@ describe('DownloadArchive Controller (API)', () => {
 				]),
 				ErrorModule,
 				MongoMemoryDatabaseModule.forRoot({
-					entities: [StorageProviderEntity, User],
+					entities: [StorageProviderEntity],
 				}),
 				ConfigurationModule.register(TEST_JWT_CONFIG_TOKEN, TestJwtModuleConfig),
 			],
@@ -112,7 +109,8 @@ describe('DownloadArchive Controller (API)', () => {
 
 		describe('when ownerId in params is not a mongo id', () => {
 			const setup = () => {
-				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+				const studentAccount = accountForLoginFactory.build();
+				const studentUser = userForLoginFactory.build();
 
 				const loggedInClient = testApiClient.loginByUser(studentAccount, studentUser, jwtConfig);
 
@@ -140,7 +138,8 @@ describe('DownloadArchive Controller (API)', () => {
 
 		describe('when ownerType is invalid', () => {
 			const setup = () => {
-				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+				const studentAccount = accountForLoginFactory.build();
+				const studentUser = userForLoginFactory.build();
 
 				const loggedInClient = testApiClient.loginByUser(studentAccount, studentUser, jwtConfig);
 
@@ -173,7 +172,8 @@ describe('DownloadArchive Controller (API)', () => {
 
 		describe('when feature is not enabled', () => {
 			const setup = () => {
-				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+				const studentAccount = accountForLoginFactory.build();
+				const studentUser = userForLoginFactory.build();
 
 				const loggedInClient = testApiClient.loginByUser(studentAccount, studentUser, jwtConfig);
 
@@ -200,14 +200,15 @@ describe('DownloadArchive Controller (API)', () => {
 
 		describe('when user does not have permission to access the team', () => {
 			const setup = () => {
-				const team = teamFactory.buildWithId();
-				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+				const teamId = new ObjectId().toHexString();
+				const studentAccount = accountForLoginFactory.build();
+				const studentUser = userForLoginFactory.build();
 
 				authorizationClient.checkPermissionsByReference.mockRejectedValueOnce(new ForbiddenException());
 
 				const loggedInClient = testApiClient.loginByUser(studentAccount, studentUser, jwtConfig);
 
-				return { teamId: team.id, loggedInClient };
+				return { teamId, loggedInClient };
 			};
 
 			it('should return 403', async () => {
@@ -226,7 +227,8 @@ describe('DownloadArchive Controller (API)', () => {
 
 		describe('when user does not have permission to access the course', () => {
 			const setup = () => {
-				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+				const studentAccount = accountForLoginFactory.build();
+				const studentUser = userForLoginFactory.build();
 
 				authorizationClient.checkPermissionsByReference.mockRejectedValueOnce(new ForbiddenException());
 
@@ -251,8 +253,9 @@ describe('DownloadArchive Controller (API)', () => {
 
 		describe('when user does not have permission to access another user', () => {
 			const setup = () => {
-				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-				const { studentUser: otherStudentUser } = UserAndAccountTestFactory.buildStudent();
+				const studentAccount = accountForLoginFactory.build();
+				const studentUser = userForLoginFactory.build();
+				const otherStudentUser = userForLoginFactory.build();
 
 				authorizationClient.checkPermissionsByReference.mockRejectedValueOnce(new ForbiddenException());
 
@@ -277,8 +280,9 @@ describe('DownloadArchive Controller (API)', () => {
 
 		describe('when user successfully downloads team archive', () => {
 			const setup = async () => {
-				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-				const team = teamFactory.withRoleAndUserId(teacherUser.roles[0], teacherUser.id).buildWithId();
+				const teacherAccount = accountForLoginFactory.build();
+				const teacherUser = userForLoginFactory.build();
+				const teamId = new ObjectId().toHexString();
 
 				const loggedInClient = testApiClient.loginByUser(teacherAccount, teacherUser, jwtConfig);
 				const archiveName = 'team-files.zip';
@@ -306,7 +310,7 @@ describe('DownloadArchive Controller (API)', () => {
 					etag: 'mock-etag',
 				});
 
-				return { teamId: team.id, loggedInClient, archiveName };
+				return { teamId, loggedInClient, archiveName };
 			};
 
 			it('should return 200 with archive file', async () => {
@@ -326,7 +330,8 @@ describe('DownloadArchive Controller (API)', () => {
 
 		describe('when user successfully downloads course archive', () => {
 			const setup = async () => {
-				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
+				const teacherAccount = accountForLoginFactory.build();
+				const teacherUser = userForLoginFactory.build();
 
 				const loggedInClient = testApiClient.loginByUser(teacherAccount, teacherUser, jwtConfig);
 				const archiveName = 'course-files.zip';
@@ -374,7 +379,8 @@ describe('DownloadArchive Controller (API)', () => {
 
 		describe('when user successfully downloads user archive', () => {
 			const setup = async () => {
-				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
+				const teacherAccount = accountForLoginFactory.build();
+				const teacherUser = userForLoginFactory.build();
 
 				const loggedInClient = testApiClient.loginByUser(teacherAccount, teacherUser, jwtConfig);
 				const archiveName = 'user-files.zip';
