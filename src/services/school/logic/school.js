@@ -1,9 +1,9 @@
 const { URL } = require('url');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const logger = require('../../../logger');
-const { SC_THEME } = require('../../../../config/globals');
 
 const getDocumentBaseDir = (school) => {
+	const SC_THEME = Configuration.get('SC_THEME');
 	// parse id eventually from populated schoolGroup if defined, otherwise set false
 	const groupId = school.schoolGroupId ? school.schoolGroupId._id || school.schoolGroupId : false;
 	let schoolBaseDir;

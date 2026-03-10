@@ -14,6 +14,7 @@ export class DatabaseModule {
 			module: DatabaseModule,
 			imports: [
 				MikroOrmModule.forRootAsync({
+					driver: MongoDriver,
 					useFactory: (config: DatabaseConfig) =>
 						defineConfig({
 							findOneOrFailHandler,

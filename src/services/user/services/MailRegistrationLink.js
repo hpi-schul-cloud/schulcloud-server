@@ -1,12 +1,11 @@
 /* eslint-disable no-await-in-loop */
 const { authenticate } = require('@feathersjs/authentication').hooks;
-
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const { BadRequest } = require('../../../errors');
 const { hasPermission } = require('../../../hooks');
 
-const { SC_TITLE } = require('../../../../config/globals');
-
 const mailContent = (firstName, lastName, registrationLink) => {
+	const SC_TITLE = Configuration.get('SC_TITLE');
 	const mail = {
 		subject: `Einladung für die Nutzung der ${SC_TITLE}!`,
 		content: {
