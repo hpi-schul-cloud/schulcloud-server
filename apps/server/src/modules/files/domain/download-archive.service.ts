@@ -58,14 +58,14 @@ export class DownloadArchiveService {
 		return files.filter((file) => !file.isDirectory);
 	}
 
-	private downloadFiles(files: FileDo[], filesById: Map<EntityId, FileDo>): Promise<GetFileResponse[]> {
+	private async downloadFiles(files: FileDo[], filesById: Map<EntityId, FileDo>): Promise<GetFileResponse[]> {
 		if (files.length === 0) {
-			return Promise.resolve([]);
+			return [];
 		}
 
 		const filePromises = files.map((file) => this.downloadFileWithPath(file, filesById));
 
-		return Promise.all(filePromises);
+		return await Promise.all(filePromises);
 	}
 
 	private async downloadFileWithPath(file: FileDo, filesById: Map<EntityId, FileDo>): Promise<GetFileResponse> {
