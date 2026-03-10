@@ -364,16 +364,27 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 	}
 }
 
+const hasBoardRole = (user: User, authorizable: BoardNodeAuthorizable, role: BoardRoles): boolean => {
+	const userWithBoardRoles = authorizable.users.find((u) => u.userId === user.id);
+	return userWithBoardRoles?.roles.includes(role) ?? false;
+};
+
 const _canEditBoard = (user: User, authorizable: BoardNodeAuthorizable): boolean => {
 	if (authorizable.boardConfiguration.isLocked) {
 		return false;
 	}
 
-	const permissions = authorizable.getUserPermissions(user.id);
-
 	const isBoard = authorizable.rootNode instanceof ColumnBoard || authorizable.rootNode instanceof MediaBoard;
-	const canEditBoard = permissions.includes(Permission.BOARD_EDIT);
-	return isBoard && canEditBoard;
+	if (!isBoard) return false;
+
+	const permissions = authorizable.getUserPermissions(user.id);
+	const hasEditPermission = permissions.includes(Permission.BOARD_EDIT);
+	if (hasEditPermission) return true;
+
+	const isReader = hasBoardRole(user, authorizable, BoardRoles.READER);
+	const readersCanEdit = authorizable.boardConfiguration.canReadersEdit ?? false;
+
+	return isReader && readersCanEdit;
 };
 
 const _canManageBoard = (user: User, authorizable: BoardNodeAuthorizable): boolean => {
@@ -448,9 +459,15 @@ const canManageVideoConference = (user: User, authorizable: BoardNodeAuthorizabl
 
 	const permissions = authorizable.getUserPermissions(user.id);
 
-	// TODO: move board setting relevance from authorizable to here
 	const isBoard = authorizable.rootNode instanceof ColumnBoard || authorizable.rootNode instanceof MediaBoard;
-	const canManageVideoConference = permissions.includes(Permission.BOARD_MANAGE_VIDEOCONFERENCE);
+
+	const hasPermission = permissions.includes(Permission.BOARD_MANAGE_VIDEOCONFERENCE);
+
+	const isEditor = hasBoardRole(user, authorizable, BoardRoles.EDITOR);
+	const canEditorsManageVideoconference = authorizable.boardConfiguration.canEditorsManageVideoconference ?? false;
+
+	const canManageVideoConference = hasPermission || (isEditor && canEditorsManageVideoconference);
+
 	return isBoard && canManageVideoConference;
 };
 

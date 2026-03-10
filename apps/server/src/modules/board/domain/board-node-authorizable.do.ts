@@ -1,7 +1,6 @@
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { isColumnBoard } from './colum-board.do';
 import { AnyBoardNode } from './types';
 
 export enum BoardRoles {
@@ -79,26 +78,14 @@ export class BoardNodeAuthorizable extends DomainObject<BoardNodeAuthorizablePro
 		}
 
 		if (user?.roles.includes(BoardRoles.EDITOR)) {
-			const permissions: Permission[] = [Permission.BOARD_VIEW, Permission.BOARD_EDIT, Permission.BOARD_MANAGE];
-			const canEditorsManageVideoconference = this.boardConfiguration.canEditorsManageVideoconference ?? false;
-			if (canEditorsManageVideoconference) {
-				permissions.push(Permission.BOARD_MANAGE_VIDEOCONFERENCE);
-			}
-			return permissions;
+			return [Permission.BOARD_VIEW, Permission.BOARD_EDIT, Permission.BOARD_MANAGE];
 		}
 
 		if (user?.roles.includes(BoardRoles.READER)) {
 			const permissions = [Permission.BOARD_VIEW];
-			if (this.readersCanEdit(this.rootNode)) {
-				permissions.push(Permission.BOARD_EDIT);
-			}
 			return permissions;
 		}
 
 		return [];
-	}
-
-	private readersCanEdit(rootNode: AnyBoardNode): boolean {
-		return isColumnBoard(rootNode) && rootNode.readersCanEdit;
 	}
 }
