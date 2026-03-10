@@ -1,5 +1,5 @@
-import { IsDate, IsNotEmpty, IsString } from 'class-validator';
-import { PayloadRolle } from './enums/rolle.enum';
+import { IsDateString, IsEmail, IsEnum, IsNotEmpty, IsString } from 'class-validator';
+import { MappedSvsRolle, PayloadRolle, ErwinRole } from './enums/rolle.enum';
 
 export class ErwinPersonPayload {
 	@IsNotEmpty()
@@ -14,15 +14,15 @@ export class ErwinPersonPayload {
 	@IsNotEmpty()
 	public lastName!: string;
 
-	@IsString()
+	@IsEnum([MappedSvsRolle, ErwinRole])
 	@IsNotEmpty()
 	public role!: PayloadRolle;
 
-	@IsString()
+	@IsEmail()
 	@IsNotEmpty()
 	public email!: string;
 
-	@IsDate()
+	@IsDateString()
 	@IsNotEmpty()
 	public geburtstag!: string;
 }

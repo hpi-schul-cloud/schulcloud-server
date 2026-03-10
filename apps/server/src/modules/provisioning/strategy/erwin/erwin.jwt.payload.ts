@@ -1,4 +1,4 @@
-import { IsArray, IsNotEmpty, IsUUID, ValidateNested } from 'class-validator';
+import { IsArray, IsDefined, IsNotEmpty, IsUUID, ValidateNested } from 'class-validator';
 import { JwtPayload } from 'jsonwebtoken';
 import { ErwinKlassePayload } from './erwin.klasse.payload';
 import { ErwinPersonPayload } from './erwin.person.payload';
@@ -10,12 +10,14 @@ export class ErwinJwtPayload implements JwtPayload {
 	public sub!: string;
 
 	@ValidateNested()
-	@IsNotEmpty()
+	@IsDefined()
 	public person!: ErwinPersonPayload;
 
 	@ValidateNested()
+	@IsDefined()
 	public schule!: ErwinSchulePayload;
 
+	@ValidateNested()
 	@IsArray()
 	public klassen?: ErwinKlassePayload[];
 
