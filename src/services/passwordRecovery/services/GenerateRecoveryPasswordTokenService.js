@@ -6,9 +6,6 @@ const PasswordRecoveryModel = require('../model');
 const { randomStringAsBase64Url } = require('../../../utils/randomNumberGenerator');
 const globalHooks = require('../../../hooks');
 const logger = require('../../../logger/index');
-const { SC_TITLE } = require('../../../../config/globals');
-
-const HOST = Configuration.get('HOST');
 
 class GenerateRecoveryPasswordTokenService {
 	constructor(passwordRecovery) {
@@ -52,6 +49,9 @@ const sendInfo = (context) => {
 			.service('/users')
 			.get(context.data.user)
 			.then((user) => {
+				const SC_TITLE = Configuration.get('SC_TITLE');
+				const HOST = Configuration.get('HOST');
+
 				const recoveryLink = `${HOST}/pwrecovery/${context.result.token}`;
 				const mailContent = `Sehr geehrte/r ${user.firstName} ${user.lastName}, \n
 							Bitte setzen Sie Ihr Passwort unter folgendem Link zurück:

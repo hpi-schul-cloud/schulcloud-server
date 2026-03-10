@@ -3,22 +3,13 @@ import { DynamicModule, Module } from '@nestjs/common';
 import { ConfigModule, ConfigModuleOptions, ConfigService } from '@nestjs/config';
 import { ConfigurationFactory } from './configuration.factory';
 
-const getEnvConfig = (): ConfigModuleOptions => {
-	const envConfig = {
+const getNodeEnv = (): string => process.env.NODE_ENV || 'development';
+const envFilesHighestPriorityFirst = ['.env', `.env.${getNodeEnv()}`];
+const loadEnvConfigInOrder = (): ConfigModuleOptions => {
+	return {
 		cache: true,
-		envFilePath: '.env',
-		ignoreEnvFile: false,
+		envFilePath: envFilesHighestPriorityFirst,
 	};
-
-	if (process.env.NODE_ENV === 'test') {
-		envConfig.envFilePath = '.env.test';
-	}
-
-	if (process.env.NODE_ENV === 'production') {
-		envConfig.ignoreEnvFile = true;
-	}
-
-	return envConfig;
 };
 
 @Module({})
@@ -28,7 +19,7 @@ export class ConfigurationModule {
 		configConstructor: new () => T
 	): DynamicModule {
 		return {
-			imports: [ConfigModule.forRoot(getEnvConfig())],
+			imports: [ConfigModule.forRoot(loadEnvConfigInOrder())],
 			providers: [
 				{
 					provide: configInjectionToken,

@@ -1,15 +1,11 @@
 const { MikroORM } = require('@mikro-orm/core');
 const { Test } = require('@nestjs/testing');
-const { MikroOrmModule } = require('@mikro-orm/nestjs');
-const { ConfigModule } = require('@nestjs/config');
 
 // run 'npm run nest:build' for the following imports to work,
 // this is a workaround to make TypeScript modules available in JavaScript
-const { defineConfig, MongoDriver } = require('@mikro-orm/mongodb');
 const { AccountApiModule } = require('../../dist/apps/server/modules/account/account-api.module');
 const { AccountUc } = require('../../dist/apps/server/modules/account/api/account.uc');
 const { AccountService } = require('../../dist/apps/server/modules/account/domain/services/account.service');
-const { DB_PASSWORD, DB_URL, DB_USERNAME } = require('../../dist/apps/server/imports-from-feathers');
 const { TeamService } = require('../../dist/apps/server/modules/team/domain/service/team.service');
 const { TeamApiModule } = require('../../dist/apps/server/modules/team/team-api.module');
 const { AuthorizationModule } = require('../../dist/apps/server/modules/authorization');

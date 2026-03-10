@@ -27,7 +27,7 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - name: setup environment file
-        run: cp .env.default .env
+        run: cp .env.development .env
       - name: mongodb setup
         uses: supercharge/mongodb-github-action@1.12.1
       - name: setup

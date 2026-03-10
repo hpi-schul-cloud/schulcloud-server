@@ -7,20 +7,14 @@ const cors = require('cors');
 const { rest } = require('@feathersjs/express');
 const bodyParser = require('body-parser');
 const { ObjectId } = require('mongoose').Types;
-
 const { RequestContext } = require('@mikro-orm/core');
-const { BODYPARSER_JSON_LIMIT, LEAD_TIME } = require('../config/globals');
-
 const middleware = require('./middleware');
 const setupConfiguration = require('./configuration');
 const services = require('./services');
-
 const requestLog = require('./logger/RequestLogger');
-
 const defaultHeaders = require('./middleware/defaultHeaders');
 const handleResponseType = require('./middleware/handleReponseType');
 const errorHandler = require('./middleware/errorHandler');
-
 const { setupFacadeLocator } = require('./utils/facadeLocator');
 const setupSwagger = require('./swagger');
 const { initializeRedisClient } = require('./utils/redis');
@@ -35,7 +29,7 @@ const setupApp = async (orm) => {
 	const config = configuration();
 	app.configure(config);
 
-	if (LEAD_TIME) {
+	if (Configuration.has('LEAD_TIME')) {
 		app.use((req, res, next) => {
 			req.leadTime = Date.now();
 			next();
@@ -45,14 +39,16 @@ const setupApp = async (orm) => {
 	setupFacadeLocator(app);
 	setupSwagger(app);
 
+	const BODYPARSER_JSON_LIMIT = Configuration.get('BODYPARSER_JSON_LIMIT');
+
 	app
 		.use(compress())
 		.options('*', cors())
 		.use(cors())
 		.configure(setupConfiguration)
-		.use('/', bodyParser.json({ limit: '10mb' }))
+		.use('/', bodyParser.json({ limit: BODYPARSER_JSON_LIMIT }))
 		.use(bodyParser.urlencoded({ extended: true }))
-		.use(bodyParser.raw({ type: () => true, limit: '10mb' }))
+		.use(bodyParser.raw({ type: () => true, limit: BODYPARSER_JSON_LIMIT }))
 		.use(defaultHeaders)
 		.use((req, res, next) => {
 			if (orm) {
