@@ -1,6 +1,6 @@
 const { authenticate } = require('@feathersjs/authentication').hooks;
 const { iff, isProvider, disallow } = require('feathers-hooks-common');
-const { SC_TITLE } = require('../../../../../config/globals');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const logger = require('../../../../logger');
 
 const {
@@ -26,6 +26,7 @@ const {
 } = require('../../utils/generalUtils');
 
 const buildActivationLinkMail = (user, entry) => {
+	const SC_TITLE = Configuration.get('SC_TITLE');
 	const activationLink = createActivationLink(entry.activationCode);
 	const email = entry.quarantinedObject;
 	const subject = 'Bestätige deine E-Mail-Adresse';
@@ -42,7 +43,7 @@ const buildActivationLinkMail = (user, entry) => {
 };
 
 const buildFYIMail = (user) => {
-	/* eslint-disable max-len */
+	const SC_TITLE = Configuration.get('SC_TITLE');
 	const subject = 'E-Mail-Adresse geändert';
 	const content = {
 		text: `E-Mail-Adresse geändert

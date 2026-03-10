@@ -1,6 +1,6 @@
 const { expect } = require('chai');
 const moment = require('moment');
-
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const appPromise = require('../../../../../src/app');
 const roleModel = require('../../../../../src/services/role/model');
 const { userModel } = require('../../../../../src/services/user/model');
@@ -20,7 +20,6 @@ const {
 } = require('../../../helpers/services/classes')(appPromise());
 
 const CSVSyncer = require('../../../../../src/services/sync/strategies/CSVSyncer');
-const { SC_TITLE } = require('../../../../../config/globals');
 
 const { MockEmailService } = require('./helper');
 
@@ -492,7 +491,7 @@ describe('CSVSyncer Integration', () => {
 			expect(stats.classes.failed).to.equal(0);
 
 			expect(emails.length).to.equal(3);
-			expect(emails[0].subject).to.equal(`Einladung für die Nutzung der ${SC_TITLE}!`);
+			expect(emails[0].subject).to.equal(`Einladung für die Nutzung der ${Configuration.get('SC_TITLE')}!`);
 			expect(emails[0].content.text).to.include('Hallo Chuck Bartowski!');
 
 			await Promise.all(
@@ -1340,14 +1339,14 @@ describe('CSVSyncer Integration', () => {
 			{
 				email: 'amail@bdaydomain.de',
 				birthday: '17.08.1988',
-				parsed: moment.utc('08/17/1988').toDate(),
+				parsed: moment.utc('08/17/1988', 'MM/DD/YYYY').toDate(),
 				firstName: 'Peter',
 				lastName: 'Griffin',
 			},
 			{
 				email: 'bmail@bdaydomain.de',
 				birthday: '01/04/1990',
-				parsed: moment.utc('04/01/1990').toDate(),
+				parsed: moment.utc('04/01/1990', 'MM/DD/YYYY').toDate(),
 				firstName: 'Adam',
 				lastName: 'West',
 			},
