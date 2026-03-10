@@ -41,6 +41,7 @@ import {
 	SchulconnexUserProvisioningService,
 } from './strategy/schulconnex/service';
 import { TeamModule } from '@modules/team';
+import { ErwinProvisioningStrategy } from './strategy/erwin';
 
 @Module({
 	imports: [
@@ -86,6 +87,7 @@ import { TeamModule } from '@modules/team';
 		OidcMockProvisioningStrategy,
 		TspProvisioningStrategy,
 		TspProvisioningService,
+		ErwinProvisioningStrategy,
 		SchulconnexGroupProvisioningProducer,
 		SchulconnexLicenseProvisioningProducer,
 	],
