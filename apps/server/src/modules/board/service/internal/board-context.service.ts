@@ -10,6 +10,8 @@ import {
 	BoardConfiguration,
 	BoardExternalReferenceType,
 	BoardRoles,
+	ColumnBoard,
+	MediaBoard,
 	UserWithBoardRoles,
 } from '../../domain';
 
@@ -47,37 +49,14 @@ export class BoardContextService {
 		}
 
 		switch (rootNode.context.type) {
-			case BoardExternalReferenceType.Room: {
-				const roomId = rootNode.context.id;
-				const room = await this.roomService.getSingleRoom(roomId);
+			case BoardExternalReferenceType.Room:
+				return await this.getBoardConfigurationInRoomContext(rootNode);
 
-				const roomAuthorizable = await this.roomMembershipService.getRoomAuthorizable(roomId);
-				const hasOwner = roomAuthorizable.members.some((member) =>
-					member.roles.some((role) => role.name === RoleName.ROOMOWNER)
-				);
-
-				const canEditorsManageVideoconference = room.features.includes(RoomFeatures.EDITOR_MANAGE_VIDEOCONFERENCE);
-
-				return {
-					canEditorsManageVideoconference,
-					canReadersEdit: this.determineCanReadersEdit(rootNode),
-					canAdminsToggleReadersCanEdit: true,
-					isLocked: !hasOwner,
-				};
-			}
-
-			case BoardExternalReferenceType.Course: {
-				const course = await this.courseService.findById(rootNode.context.id);
-				const hasTeachers = course.teachers.length > 0;
-				return {
-					canEditorsManageVideoconference: false,
-					canReadersEdit: false,
-					canAdminsToggleReadersCanEdit: false,
-					isLocked: !hasTeachers,
-				};
-			}
+			case BoardExternalReferenceType.Course:
+				return await this.getBoardConfigurationInCourseContext(rootNode);
 
 			case BoardExternalReferenceType.User:
+			default:
 				return {
 					canEditorsManageVideoconference: false,
 					canReadersEdit: false,
@@ -85,9 +64,36 @@ export class BoardContextService {
 					isLocked: false,
 				};
 		}
+	}
 
-		// theoreticall fallback if BoardExternalReferenceType was extended but not implemented here yet
-		throw new Error(`Unknown context type: '${rootNode.context.type as string}'`);
+	private async getBoardConfigurationInRoomContext(rootNode: MediaBoard | ColumnBoard): Promise<BoardConfiguration> {
+		const roomId = rootNode.context.id;
+		const room = await this.roomService.getSingleRoom(roomId);
+
+		const roomAuthorizable = await this.roomMembershipService.getRoomAuthorizable(roomId);
+		const hasOwner = roomAuthorizable.members.some((member) =>
+			member.roles.some((role) => role.name === RoleName.ROOMOWNER)
+		);
+
+		const canEditorsManageVideoconference = room.features.includes(RoomFeatures.EDITOR_MANAGE_VIDEOCONFERENCE);
+
+		return {
+			canEditorsManageVideoconference,
+			canReadersEdit: this.determineCanReadersEdit(rootNode),
+			canAdminsToggleReadersCanEdit: true,
+			isLocked: !hasOwner,
+		};
+	}
+
+	private async getBoardConfigurationInCourseContext(rootNode: MediaBoard | ColumnBoard): Promise<BoardConfiguration> {
+		const course = await this.courseService.findById(rootNode.context.id);
+		const hasTeachers = course.teachers.length > 0;
+		return {
+			canEditorsManageVideoconference: false,
+			canReadersEdit: false,
+			canAdminsToggleReadersCanEdit: false,
+			isLocked: !hasTeachers,
+		};
 	}
 
 	private determineCanReadersEdit(rootNode: AnyBoardNode): boolean {
