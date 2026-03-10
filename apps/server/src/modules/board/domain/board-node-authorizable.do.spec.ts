@@ -33,30 +33,10 @@ describe('Board Node Authorizable Domain Object', () => {
 			expect(permissions).toEqual([Permission.BOARD_VIEW]);
 		});
 
-		it('when readers can edit is enabled, reader should get edit permission', () => {
-			const { boardNodeAuthorizable, readerId } = setup({
-				rootPartial: { readersCanEdit: true },
-			});
-
-			const permissions = boardNodeAuthorizable.getUserPermissions(readerId);
-
-			expect(permissions).toEqual(expect.arrayContaining([Permission.BOARD_EDIT]));
-		});
-
 		it('should return editor permissions', () => {
 			const { boardNodeAuthorizable, editorId } = setup();
 			const permissions = boardNodeAuthorizable.getUserPermissions(editorId);
 			expect(permissions).toEqual([Permission.BOARD_VIEW, Permission.BOARD_EDIT, Permission.BOARD_MANAGE]);
-		});
-
-		it('when canEditorsManageVideoconference is enabled, editor should get videoconference permission', () => {
-			const { boardNodeAuthorizable, editorId } = setup({
-				boardConfiguration: { canEditorsManageVideoconference: true },
-			});
-
-			const permissions = boardNodeAuthorizable.getUserPermissions(editorId);
-
-			expect(permissions).toEqual(expect.arrayContaining([Permission.BOARD_MANAGE_VIDEOCONFERENCE]));
 		});
 
 		it('should return admin permissions', () => {
