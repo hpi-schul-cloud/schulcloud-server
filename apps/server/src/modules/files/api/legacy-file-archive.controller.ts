@@ -14,7 +14,6 @@ import {
 } from '@nestjs/common';
 import { ApiHeader, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common/error';
-import { JwtExtractor } from '@shared/common/utils';
 import { Request, Response } from 'express';
 import { GetFileResponse } from '../domain';
 import { LEGACY_FILE_ARCHIVE_CONFIG_TOKEN, LegacyFileArchiveConfig } from '../legacy-file-archive.config';
@@ -49,8 +48,7 @@ export class LegacyFileArchiveController {
 	): Promise<StreamableFile | void> {
 		this.featureEnabled();
 
-		const jwt = JwtExtractor.extractJwtFromRequestOrFail(req);
-		const data = await this.downloadArchiveUC.downloadFilesOfParentAsArchive(params, jwt);
+		const data = await this.downloadArchiveUC.downloadFilesOfParentAsArchive(params);
 		const streamableFile = this.streamFileToClient(req, data, response);
 
 		return streamableFile;

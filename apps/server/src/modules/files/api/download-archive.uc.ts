@@ -15,10 +15,10 @@ export class DownloadArchiveUC {
 		this.logger.setContext(DownloadArchiveUC.name);
 	}
 
-	public async downloadFilesOfParentAsArchive(params: ArchiveFileParams, jwt: string): Promise<GetFileResponse> {
+	public async downloadFilesOfParentAsArchive(params: ArchiveFileParams): Promise<GetFileResponse> {
 		await this.checkPermission(params);
 
-		const fileResponse = await this.filesStorageService.downloadFilesAsArchive(params.ownerId, params.archiveName, jwt);
+		const fileResponse = await this.filesStorageService.downloadFilesAsArchive(params.ownerId, params.archiveName);
 
 		return fileResponse;
 	}

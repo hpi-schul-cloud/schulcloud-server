@@ -62,8 +62,6 @@ describe('DownloadArchiveService', () => {
 	});
 
 	describe('downloadFilesAsArchive', () => {
-		const jwt = 'test-jwt';
-
 		describe('when adapter returns files and download is successful', () => {
 			const setup = () => {
 				const storageProvider = storageProviderFactory.buildWithId({ region: 'us-east-1' });
@@ -111,7 +109,7 @@ describe('DownloadArchiveService', () => {
 			it('should return a file response with archive', async () => {
 				const { ownerId, archiveName } = setup();
 
-				const result = await service.downloadFilesAsArchive(ownerId, archiveName, jwt);
+				const result = await service.downloadFilesAsArchive(ownerId, archiveName);
 
 				expect(result.name).toBe(`${archiveName}.zip`);
 				expect(result.contentType).toBe('application/zip');
@@ -120,7 +118,7 @@ describe('DownloadArchiveService', () => {
 			it('should call ArchiveFactory with correct file paths', async () => {
 				const { ownerId, archiveName, file1, file2, spy } = setup();
 
-				await service.downloadFilesAsArchive(ownerId, archiveName, jwt);
+				await service.downloadFilesAsArchive(ownerId, archiveName);
 
 				expect(spy).toHaveBeenCalledWith(
 					expect.arrayContaining([
@@ -149,7 +147,7 @@ describe('DownloadArchiveService', () => {
 			it('should return an empty archive response', async () => {
 				const { ownerId, archiveName } = setup();
 
-				const result = await service.downloadFilesAsArchive(ownerId, archiveName, jwt);
+				const result = await service.downloadFilesAsArchive(ownerId, archiveName);
 
 				expect(result.name).toBe(`${archiveName}.zip`);
 				expect(result.contentType).toBe('application/zip');
@@ -175,7 +173,7 @@ describe('DownloadArchiveService', () => {
 			it('should return an archive response with no downloadable files', async () => {
 				const { ownerId, archiveName } = setup();
 
-				const result = await service.downloadFilesAsArchive(ownerId, archiveName, jwt);
+				const result = await service.downloadFilesAsArchive(ownerId, archiveName);
 
 				expect(result.name).toBe(`${archiveName}.zip`);
 				expect(result.contentType).toBe('application/zip');
@@ -204,7 +202,7 @@ describe('DownloadArchiveService', () => {
 			it('should throw NotFoundException with file id in message', async () => {
 				const { ownerId, archiveName, file } = setup();
 
-				await expect(service.downloadFilesAsArchive(ownerId, archiveName, jwt)).rejects.toThrow(
+				await expect(service.downloadFilesAsArchive(ownerId, archiveName)).rejects.toThrow(
 					new NotFoundException(`File with id ${file.id} does not have a storage provider assigned`)
 				);
 			});
@@ -256,7 +254,7 @@ describe('DownloadArchiveService', () => {
 			it('should preserve folder structure in archive', async () => {
 				const { ownerId, archiveName } = setup();
 
-				const result = await service.downloadFilesAsArchive(ownerId, archiveName, jwt);
+				const result = await service.downloadFilesAsArchive(ownerId, archiveName);
 
 				expect(result.name).toBe(`${archiveName}.zip`);
 				expect(result.contentType).toBe('application/zip');
@@ -266,7 +264,7 @@ describe('DownloadArchiveService', () => {
 			it('should call ArchiveFactory with correct nested path', async () => {
 				const { ownerId, archiveName, file, rootFolder, subFolder } = setup();
 
-				await service.downloadFilesAsArchive(ownerId, archiveName, jwt);
+				await service.downloadFilesAsArchive(ownerId, archiveName);
 
 				const expectedPath = `${rootFolder.name}/${subFolder.name}/${file.name}`;
 				expect(ArchiveFactory.create).toHaveBeenCalledWith(

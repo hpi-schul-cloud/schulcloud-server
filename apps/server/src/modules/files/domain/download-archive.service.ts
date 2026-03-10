@@ -23,8 +23,8 @@ export class DownloadArchiveService {
 		this.logger.setContext(DownloadArchiveService.name);
 	}
 
-	public async downloadFilesAsArchive(ownerId: EntityId, archiveName: string, jwt: string): Promise<GetFileResponse> {
-		const files = await this.legacyFileStorageAdapter.getFilesForOwner(ownerId, jwt);
+	public async downloadFilesAsArchive(ownerId: EntityId, archiveName: string): Promise<GetFileResponse> {
+		const files = await this.legacyFileStorageAdapter.getFilesForOwner(ownerId);
 		const filesById = this.createFileMap(files);
 		const downloadableFiles = this.filterDownloadableFiles(files);
 

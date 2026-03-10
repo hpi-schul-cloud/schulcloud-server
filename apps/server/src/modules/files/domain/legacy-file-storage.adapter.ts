@@ -1,8 +1,11 @@
 import { HttpService } from '@nestjs/axios';
 import { Inject, Injectable } from '@nestjs/common';
+import { REQUEST } from '@nestjs/core';
 import { TypeGuard } from '@shared/common/guards';
+import { JwtExtractor } from '@shared/common/utils';
 import { EntityId } from '@shared/domain/types';
 import { AxiosResponse } from 'axios';
+import { Request } from 'express';
 import { firstValueFrom } from 'rxjs';
 import { LEGACY_FILE_ARCHIVE_CONFIG_TOKEN, LegacyFileArchiveConfig } from '../legacy-file-archive.config';
 import { FileDo } from './do';
@@ -12,22 +15,23 @@ import { FileFactory, LegacyFileResponse } from './factory';
 export class LegacyFileStorageAdapter {
 	constructor(
 		private readonly httpService: HttpService,
-		@Inject(LEGACY_FILE_ARCHIVE_CONFIG_TOKEN) private readonly config: LegacyFileArchiveConfig
+		@Inject(LEGACY_FILE_ARCHIVE_CONFIG_TOKEN) private readonly config: LegacyFileArchiveConfig,
+		@Inject(REQUEST) private readonly request: Request
 	) {}
 
-	public getFilesForOwner(ownerId: EntityId, jwt: string): Promise<FileDo[]> {
-		const files = this.fetchRecursively(ownerId, undefined, jwt);
+	public getFilesForOwner(ownerId: EntityId): Promise<FileDo[]> {
+		const files = this.fetchRecursively(ownerId, undefined);
 
 		return files;
 	}
 
-	private async fetchRecursively(ownerId: EntityId, parentId: string | undefined, jwt: string): Promise<FileDo[]> {
-		const response = await this.getFiles(jwt, ownerId, parentId);
+	private async fetchRecursively(ownerId: EntityId, parentId: string | undefined): Promise<FileDo[]> {
+		const response = await this.getFiles(ownerId, parentId);
 		const rawFiles = this.validateResponse(response);
 		const files = this.mapToFileDos(rawFiles);
 
 		const directories = rawFiles.filter((file) => file.isDirectory);
-		const filePromises = directories.map((directory) => this.fetchRecursively(ownerId, directory._id, jwt));
+		const filePromises = directories.map((directory) => this.fetchRecursively(ownerId, directory._id));
 		const filesFromSubfolders = (await Promise.all(filePromises)).flat();
 
 		return [...files, ...filesFromSubfolders];
@@ -47,8 +51,9 @@ export class LegacyFileStorageAdapter {
 		return rawFiles;
 	}
 
-	private async getFiles(jwt: string, ownerId: EntityId, parentId?: EntityId): Promise<AxiosResponse> {
+	private async getFiles(ownerId: EntityId, parentId?: EntityId): Promise<AxiosResponse> {
 		const { legacyBaseUrl } = this.config;
+		const jwt = JwtExtractor.extractJwtFromRequestOrFail(this.request);
 
 		const params: Record<string, string> = { owner: ownerId };
 

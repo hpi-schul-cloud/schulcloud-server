@@ -1,5 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { HttpService } from '@nestjs/axios';
+import { REQUEST } from '@nestjs/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AxiosResponse } from 'axios';
 import { of } from 'rxjs';
@@ -29,6 +30,10 @@ describe('LegacyFileStorageAdapter', () => {
 				{
 					provide: LEGACY_FILE_ARCHIVE_CONFIG_TOKEN,
 					useValue: { legacyBaseUrl },
+				},
+				{
+					provide: REQUEST,
+					useValue: { headers: { authorization: `Bearer ${jwt}` } },
 				},
 			],
 		}).compile();
@@ -77,7 +82,7 @@ describe('LegacyFileStorageAdapter', () => {
 			it('should return a FileDo for each file', async () => {
 				const { rawFiles } = setup();
 
-				const result = await adapter.getFilesForOwner(ownerId, jwt);
+				const result = await adapter.getFilesForOwner(ownerId);
 
 				expect(result).toHaveLength(rawFiles.length);
 				expect(result[0].id).toBe('file-1');
@@ -89,7 +94,7 @@ describe('LegacyFileStorageAdapter', () => {
 			it('should call the correct URL with owner param and JWT header', async () => {
 				setup();
 
-				await adapter.getFilesForOwner(ownerId, jwt);
+				await adapter.getFilesForOwner(ownerId);
 
 				expect(httpService.get).toHaveBeenCalledWith(`${legacyBaseUrl}/fileStorage`, {
 					params: { owner: ownerId },
@@ -113,7 +118,7 @@ describe('LegacyFileStorageAdapter', () => {
 			it('should recursively fetch children of directories', async () => {
 				const { childFile } = setup();
 
-				const result = await adapter.getFilesForOwner(ownerId, jwt);
+				const result = await adapter.getFilesForOwner(ownerId);
 
 				expect(result).toHaveLength(2);
 				expect(result.find((f) => f.id === childFile._id)).toBeDefined();
@@ -122,7 +127,7 @@ describe('LegacyFileStorageAdapter', () => {
 			it('should pass the directory _id as parent param in the recursive call', async () => {
 				const { directory } = setup();
 
-				await adapter.getFilesForOwner(ownerId, jwt);
+				await adapter.getFilesForOwner(ownerId);
 
 				expect(httpService.get).toHaveBeenCalledWith(`${legacyBaseUrl}/fileStorage`, {
 					params: { owner: ownerId, parent: directory._id },
@@ -148,7 +153,7 @@ describe('LegacyFileStorageAdapter', () => {
 			it('should return all files from all nesting levels', async () => {
 				const { dir1, dir2, file } = setup();
 
-				const result = await adapter.getFilesForOwner(ownerId, jwt);
+				const result = await adapter.getFilesForOwner(ownerId);
 
 				expect(result).toHaveLength(3);
 				expect(result.map((f) => f.id)).toEqual(expect.arrayContaining([dir1._id, dir2._id, file._id]));
@@ -159,7 +164,7 @@ describe('LegacyFileStorageAdapter', () => {
 			it('should return an empty array', async () => {
 				httpService.get.mockReturnValueOnce(of(buildAxiosResponse([])));
 
-				const result = await adapter.getFilesForOwner(ownerId, jwt);
+				const result = await adapter.getFilesForOwner(ownerId);
 
 				expect(result).toEqual([]);
 			});
@@ -170,7 +175,7 @@ describe('LegacyFileStorageAdapter', () => {
 				const rawFile = { _id: 'file-opt', name: 'bare.txt', isDirectory: false };
 				httpService.get.mockReturnValueOnce(of(buildAxiosResponse([rawFile])));
 
-				const result = await adapter.getFilesForOwner(ownerId, jwt);
+				const result = await adapter.getFilesForOwner(ownerId);
 
 				expect(result[0].parentId).toBeUndefined();
 				expect(result[0].storageFileName).toBeUndefined();
@@ -183,7 +188,7 @@ describe('LegacyFileStorageAdapter', () => {
 			it('should throw an error', async () => {
 				httpService.get.mockReturnValueOnce(of(buildAxiosResponse({ _id: 'file-1', name: 'file.txt' })));
 
-				await expect(adapter.getFilesForOwner(ownerId, jwt)).rejects.toThrow();
+				await expect(adapter.getFilesForOwner(ownerId)).rejects.toThrow();
 			});
 		});
 
@@ -192,7 +197,7 @@ describe('LegacyFileStorageAdapter', () => {
 				const invalid = { name: 'no-id.txt', isDirectory: false };
 				httpService.get.mockReturnValueOnce(of(buildAxiosResponse([invalid])));
 
-				await expect(adapter.getFilesForOwner(ownerId, jwt)).rejects.toThrow(
+				await expect(adapter.getFilesForOwner(ownerId)).rejects.toThrow(
 					'Unexpected item shape at index 0 in legacy file storage response'
 				);
 			});
@@ -203,7 +208,7 @@ describe('LegacyFileStorageAdapter', () => {
 				const invalid = { _id: 'file-x', isDirectory: false };
 				httpService.get.mockReturnValueOnce(of(buildAxiosResponse([invalid])));
 
-				await expect(adapter.getFilesForOwner(ownerId, jwt)).rejects.toThrow(
+				await expect(adapter.getFilesForOwner(ownerId)).rejects.toThrow(
 					'Unexpected item shape at index 0 in legacy file storage response'
 				);
 			});
@@ -214,7 +219,7 @@ describe('LegacyFileStorageAdapter', () => {
 				const invalid = { _id: 'file-x', name: 'file.txt', isDirectory: 'yes' };
 				httpService.get.mockReturnValueOnce(of(buildAxiosResponse([invalid])));
 
-				await expect(adapter.getFilesForOwner(ownerId, jwt)).rejects.toThrow(
+				await expect(adapter.getFilesForOwner(ownerId)).rejects.toThrow(
 					'Unexpected item shape at index 0 in legacy file storage response'
 				);
 			});
@@ -225,7 +230,7 @@ describe('LegacyFileStorageAdapter', () => {
 				const invalid = { _id: 'file-x', name: 'file.txt', isDirectory: false, bucket: 123 };
 				httpService.get.mockReturnValueOnce(of(buildAxiosResponse([invalid])));
 
-				await expect(adapter.getFilesForOwner(ownerId, jwt)).rejects.toThrow(
+				await expect(adapter.getFilesForOwner(ownerId)).rejects.toThrow(
 					'Unexpected item shape at index 0 in legacy file storage response'
 				);
 			});
@@ -234,7 +239,7 @@ describe('LegacyFileStorageAdapter', () => {
 				const invalid = { _id: 'file-x', name: 'file.txt', isDirectory: false, parent: 42 };
 				httpService.get.mockReturnValueOnce(of(buildAxiosResponse([invalid])));
 
-				await expect(adapter.getFilesForOwner(ownerId, jwt)).rejects.toThrow(
+				await expect(adapter.getFilesForOwner(ownerId)).rejects.toThrow(
 					'Unexpected item shape at index 0 in legacy file storage response'
 				);
 			});
@@ -243,7 +248,7 @@ describe('LegacyFileStorageAdapter', () => {
 				const invalid = { _id: 'file-x', name: 'file.txt', isDirectory: false, storageFileName: true };
 				httpService.get.mockReturnValueOnce(of(buildAxiosResponse([invalid])));
 
-				await expect(adapter.getFilesForOwner(ownerId, jwt)).rejects.toThrow(
+				await expect(adapter.getFilesForOwner(ownerId)).rejects.toThrow(
 					'Unexpected item shape at index 0 in legacy file storage response'
 				);
 			});
@@ -252,7 +257,7 @@ describe('LegacyFileStorageAdapter', () => {
 				const invalid = { _id: 'file-x', name: 'file.txt', isDirectory: false, storageProviderId: {} };
 				httpService.get.mockReturnValueOnce(of(buildAxiosResponse([invalid])));
 
-				await expect(adapter.getFilesForOwner(ownerId, jwt)).rejects.toThrow(
+				await expect(adapter.getFilesForOwner(ownerId)).rejects.toThrow(
 					'Unexpected item shape at index 0 in legacy file storage response'
 				);
 			});
@@ -265,7 +270,7 @@ describe('LegacyFileStorageAdapter', () => {
 
 				httpService.get.mockReturnValueOnce(of(buildAxiosResponse([valid, invalid])));
 
-				await expect(adapter.getFilesForOwner(ownerId, jwt)).rejects.toThrow(
+				await expect(adapter.getFilesForOwner(ownerId)).rejects.toThrow(
 					'Unexpected item shape at index 1 in legacy file storage response'
 				);
 			});
@@ -275,7 +280,7 @@ describe('LegacyFileStorageAdapter', () => {
 			it('should throw an error', async () => {
 				httpService.get.mockReturnValueOnce(of(buildAxiosResponse(['not-an-object'])));
 
-				await expect(adapter.getFilesForOwner(ownerId, jwt)).rejects.toThrow(
+				await expect(adapter.getFilesForOwner(ownerId)).rejects.toThrow(
 					'Unexpected item shape at index 0 in legacy file storage response'
 				);
 			});
