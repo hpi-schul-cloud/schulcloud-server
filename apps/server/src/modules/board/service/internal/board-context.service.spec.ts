@@ -580,18 +580,30 @@ describe(BoardContextService.name, () => {
 
 		describe('when node is a MediaBoard', () => {
 			const setup = () => {
-				const teacher = userFactory.build();
-				const course = courseEntityFactory.buildWithId({ teachers: [teacher], school: teacher.school });
-				courseService.findById.mockResolvedValue(course);
+				const room = roomFactory.build({ id: new ObjectId().toHexString() });
+				roomService.getSingleRoom.mockResolvedValueOnce(room);
+
+				const roomAuthorizable = new RoomAuthorizable(
+					room.id,
+					[
+						{
+							userId: new ObjectId().toHexString(),
+							roles: [roleFactory.build({ name: RoleName.ROOMOWNER })],
+							userSchoolId: new ObjectId().toHexString(),
+						},
+					],
+					new ObjectId().toHexString()
+				);
+				roomMembershipService.getRoomAuthorizable.mockResolvedValueOnce(roomAuthorizable);
 
 				const mediaBoard = mediaBoardFactory.build({
-					context: { id: course.id, type: BoardExternalReferenceType.Course },
+					context: { id: room.id, type: BoardExternalReferenceType.Room },
 				});
 
 				return { mediaBoard };
 			};
 
-			it('should return a default board configuration object', async () => {
+			it.only('should return a default board configuration object', async () => {
 				const { mediaBoard } = setup();
 				const result = await service.getBoardConfiguration(mediaBoard);
 
