@@ -60,7 +60,7 @@ const ignorePathsList = [
 	/|(.*\/fileStorage\/permission($|\/$))/,
 	/|(.*\/fileStorage\/permission\/[0-9a-f]{24}($|\/$))/,
 	/|(.*\/fileStorage\/files\/new($|\/$))/,
-	/|(.*\/fileStorage\/.*($|\/$))/, // for security check (final path read from globals)
+	/|(.*\/fileStorage\/.*($|\/$))/,
 	/|(.*\/fileStorage\/thumbnail($|\/$))/,
 	/|(.*\/fileStorage\/thumbnail\/[0-9a-f]{24}($|\/$))/,
 	/|(.*\/help\/documents($|\/$))/,
