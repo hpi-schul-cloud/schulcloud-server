@@ -1,6 +1,5 @@
 import { ConfigProperty, Configuration } from '@infra/configuration';
 import { CommaSeparatedStringToArray, StringToNumber } from '@shared/controller/transformer';
-import { IsBytesString } from '@shared/controller/validator';
 import { LanguageType } from '@shared/domain/interface';
 import { IsEnum, IsNumber, IsString } from 'class-validator';
 
@@ -8,9 +7,10 @@ export const H5P_EDITOR_CONFIG_TOKEN = 'H5P_EDITOR_CONFIG_TOKEN';
 
 @Configuration()
 export class H5PEditorConfig {
-	@ConfigProperty('H5P_EDITOR__BODYPARSER_JSON_LIMIT')
-	@IsBytesString()
-	public bodyParserJsonLimit = '4mb';
+	@ConfigProperty('H5P_EDITOR__BODYPARSER_JSON_LIMIT_IN_BYTES')
+	@IsNumber()
+	@StringToNumber()
+	public bodyParserJsonLimit = 4194304; // 4MB
 
 	@ConfigProperty('H5P_EDITOR__LIBRARY_LIST_PATH')
 	@IsString()
