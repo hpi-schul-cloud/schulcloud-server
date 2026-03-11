@@ -734,6 +734,33 @@ describe('SubmissionRule', () => {
 							expect(result).toBe(true);
 						});
 					});
+
+					describe('when due date has passed, submissions are not public, and user is submitter', () => {
+						const setup = () => {
+							const permission = 'a' as Permission;
+							const user = buildUserWithPermission(permission);
+							const course = courseEntityFactory.build({ students: [user] });
+							const task = taskFactory.build({
+								course,
+								publicSubmissions: false,
+								dueDate: new Date(Date.now() - 10000),
+							});
+							const submission = submissionFactory.submitted().build({ task, student: user });
+
+							return { user, submission, permission };
+						};
+
+						it('should return true', () => {
+							const { user, submission, permission } = setup();
+
+							const result = submissionRule.hasPermission(user, submission, {
+								action: Action.read,
+								requiredPermissions: [permission],
+							});
+
+							expect(result).toBe(true);
+						});
+					});
 				});
 
 				describe('when user does not have write access nor are submissions public', () => {
