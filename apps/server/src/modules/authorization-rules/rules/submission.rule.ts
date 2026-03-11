@@ -64,7 +64,8 @@ export class SubmissionRule implements Rule<Submission> {
 		if (submission.isSubmitted()) {
 			hasReadAccess =
 				this.hasWriteAccess(user, submission) ||
-				(this.hasParentTaskReadAccess(user, submission) && submission.task.areSubmissionsPublic());
+				(this.hasParentTaskReadAccess(user, submission) && submission.task.areSubmissionsPublic()) ||
+				submission.isUserSubmitter(user);
 		} else {
 			hasReadAccess = submission.isUserSubmitter(user);
 		}
