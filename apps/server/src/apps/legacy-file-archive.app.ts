@@ -30,9 +30,8 @@ async function bootstrap(): Promise<void> {
 		.addBearerAuth({ type: 'http', scheme: 'bearer', bearerFormat: 'JWT' })
 		.build();
 	const document = SwaggerModule.createDocument(nestApp, config);
-	SwaggerModule.setup('/legacy-file-archive/docs', nestApp, document);
+	SwaggerModule.setup('/filestorage/files/archive/docs', nestApp, document);
 
-	enableOpenApiDocs(nestApp, '/legacy-file-archive/docs');
 	await createMetricsServer(nestApp, 'Legacy File Archive Download App');
 
 	await nestApp.init();
