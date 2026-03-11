@@ -9,8 +9,7 @@ import { install as sourceMapInstall } from 'source-map-support';
 
 // application imports
 import { createRequestLoggerMiddleware, LegacyLogger, LOGGER_CONFIG_TOKEN, LoggerConfig } from '@core/logger';
-import { H5PEditorAppModule } from '@modules/h5p-content-management/h5p-editor.app.module';
-import { H5P_EDITOR_CONFIG_TOKEN, H5PEditorConfig } from '@modules/h5p-content-management/h5p-editor.config';
+import { H5P_EDITOR_CONFIG_TOKEN, H5PEditorAppModule, H5PEditorConfig } from '@modules/h5p-content-management';
 import { enableOpenApiDocs } from './helpers';
 
 async function bootstrap(): Promise<void> {
