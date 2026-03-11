@@ -1,12 +1,5 @@
 import { registerDecorator, ValidationOptions } from 'class-validator';
 
-/**
- * Validates that a string is a valid bytes format as accepted by the `bytes` library
- * (used by body-parser). Valid formats include:
- * - Numbers as strings: '1024'
- * - Numbers with units: '100b', '1kb', '1mb', '1gb', '1tb', '1pb'
- * - Units are case-insensitive
- */
 export function IsBytesString(validationOptions?: ValidationOptions): PropertyDecorator {
 	return (object: object, propertyKey: string | symbol): void => {
 		const propertyName = String(propertyKey);
