@@ -31,7 +31,7 @@ async function bootstrap(): Promise<void> {
 	// customize nest app settings
 	nestApp.enableCors({ exposedHeaders: ['Content-Disposition'] });
 	const h5pEditorConfig = await nestApp.resolve<H5PEditorConfig>(H5P_EDITOR_CONFIG_TOKEN);
-	nestApp.useBodyParser('json', { limit: h5pEditorConfig.bodyParserJsonLimit });
+	nestApp.useBodyParser('json', { limit: h5pEditorConfig.bodyParserJsonLimitInBytes });
 	enableOpenApiDocs(nestApp, 'docs');
 
 	await nestApp.init();

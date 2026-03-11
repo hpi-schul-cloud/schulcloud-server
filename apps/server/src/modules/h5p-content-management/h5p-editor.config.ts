@@ -10,7 +10,7 @@ export class H5PEditorConfig {
 	@ConfigProperty('H5P_EDITOR__BODYPARSER_JSON_LIMIT_IN_BYTES')
 	@IsNumber()
 	@StringToNumber()
-	public bodyParserJsonLimit = 4194304; // 4MB
+	public bodyParserJsonLimitInBytes = 4194304; // 4MB
 
 	@ConfigProperty('H5P_EDITOR__LIBRARY_LIST_PATH')
 	@IsString()
