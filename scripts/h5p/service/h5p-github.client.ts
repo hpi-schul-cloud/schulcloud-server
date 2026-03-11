@@ -5,6 +5,16 @@ import { GitHubContentTreeResponse } from '../interface/github-content-tree.resp
 import { GitHubRepository, GitHubRepositoryResponse } from '../interface/github-repository.response';
 import { GitHubTagResponse } from '../interface/github-tag.response';
 
+export enum GitHubOwnerType {
+	Organization = 'orgs',
+	User = 'users',
+}
+
+export type GitHubOwner = {
+	type: GitHubOwnerType;
+	name: string;
+};
+
 export interface GitHubClientOptions {
 	maxRetries: number;
 }
@@ -24,13 +34,29 @@ export class H5pGitHubClient {
 		this.token = personalAccessToken;
 	}
 
-	public async fetchRepositoriesFromOrganization(organization: string): Promise<GitHubRepositoryResponse> {
+	public getLibraryRepoMapFromGitHub = async (owners: GitHubOwner[]): Promise<Record<string, string>> => {
+		let libraryRepoMap: Record<string, string> = {};
+
+		for (const owner of owners) {
+			const repos = await this.fetchRepositories(owner.type, owner.name);
+			const ownerType = owner.type === GitHubOwnerType.Organization ? 'organization' : 'user';
+			console.log(`Found ${repos.length} repositories in the ${owner.name} ${ownerType}.`);
+			const repoMap = await this.buildLibraryRepoMapFromRepos(owner.name, repos);
+			console.log(`Built libraryRepoMap for ${owner.name} ${ownerType} with ${Object.keys(repoMap).length} entries.`);
+			libraryRepoMap = { ...libraryRepoMap, ...repoMap };
+		}
+		console.log(`Built libraryRepoMap for all owners with ${Object.keys(libraryRepoMap).length} entries.`);
+
+		return libraryRepoMap;
+	};
+
+	public async fetchRepositories(type: GitHubOwnerType, owner: string): Promise<GitHubRepositoryResponse> {
 		let repos: GitHubRepositoryResponse = [];
 		let page = 1;
 		const perPage = 100; // Maximum allowed by GitHub API
 
 		while (true) {
-			const response = await this.fetchRepositoriesOfOrganizationPagewise(organization, page, perPage);
+			const response = await this.fetchRepositoriesPagewise(type, owner, page, perPage);
 			if (!response) {
 				repos = [];
 				break;
@@ -47,32 +73,33 @@ export class H5pGitHubClient {
 		return repos;
 	}
 
-	private async fetchRepositoriesOfOrganizationPagewise(
-		organization: string,
+	private async fetchRepositoriesPagewise(
+		type: GitHubOwnerType,
+		owner: string,
 		page: number = 1,
 		perPage: number = 100
 	): Promise<GitHubRepositoryResponse | undefined> {
 		let result: GitHubRepositoryResponse | undefined;
-		const url = `https://api.github.com/orgs/${organization}/repos?type=public&per_page=${perPage}&page=${page}`;
+		const url = `https://api.github.com/${type}/${owner}/repos?type=public&per_page=${perPage}&page=${page}`;
 		try {
 			const headers = this.getHeaders();
 			const response: AxiosResponse<GitHubRepositoryResponse> = await axios.get(url, { headers });
 			result = response.data;
 		} catch (error) {
-			console.error(`Error fetching repositories for organization ${organization} on page ${page}:`, error);
+			console.error(`Error fetching repositories for ${owner} on page ${page}:`, error);
 		}
 
 		return result;
 	}
 
 	public async buildLibraryRepoMapFromRepos(
-		organization: string,
+		owner: string,
 		repos: GitHubRepositoryResponse
 	): Promise<Record<string, string>> {
 		const libraryRepoMap: Record<string, string> = {};
 
 		for (const repo of repos) {
-			const response = await this.getLibraryJsonFromRepo(organization, repo);
+			const response = await this.getLibraryJsonFromRepo(owner, repo);
 			if (!response) {
 				continue;
 			}
@@ -86,7 +113,13 @@ export class H5pGitHubClient {
 			const libraryJson = JSON.parse(libraryJsonContent);
 
 			if (libraryJson.machineName) {
-				libraryRepoMap[libraryJson.machineName] = `${organization}/${repo.name}`;
+				if (libraryRepoMap[libraryJson.machineName]) {
+					console.error(
+						`Duplicate machineName "${libraryJson.machineName}" found in repository ${repo.name}. Skipping this entry.`
+					);
+					continue;
+				}
+				libraryRepoMap[libraryJson.machineName] = `${owner}/${repo.name}`;
 			}
 		}
 
@@ -94,11 +127,11 @@ export class H5pGitHubClient {
 	}
 
 	private async getLibraryJsonFromRepo(
-		organization: string,
+		owner: string,
 		repo: GitHubRepository
 	): Promise<AxiosResponse<GitHubContentTreeResponse> | undefined> {
 		let result: AxiosResponse<GitHubContentTreeResponse> | undefined;
-		const url = `https://api.github.com/repos/${organization}/${repo.name}/contents/library.json`;
+		const url = `https://api.github.com/repos/${owner}/${repo.name}/contents/library.json`;
 		try {
 			const headers = this.getHeaders();
 			result = await axios.get(url, { headers });
