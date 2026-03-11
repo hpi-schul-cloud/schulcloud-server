@@ -1,7 +1,7 @@
 /* istanbul ignore file */
 /* eslint-disable no-console */
 import { NestFactory } from '@nestjs/core';
-import { ExpressAdapter } from '@nestjs/platform-express';
+import { ExpressAdapter, NestExpressApplication } from '@nestjs/platform-express';
 import express from 'express';
 
 // register source-map-support for debugging
@@ -20,7 +20,7 @@ async function bootstrap(): Promise<void> {
 
 	const nestExpressAdapter = new ExpressAdapter(nestExpress);
 
-	const nestApp = await NestFactory.create(H5PEditorAppModule, nestExpressAdapter);
+	const nestApp = await NestFactory.create<NestExpressApplication>(H5PEditorAppModule, nestExpressAdapter);
 	// WinstonLogger
 	nestApp.useLogger(await nestApp.resolve(LegacyLogger));
 
@@ -29,6 +29,7 @@ async function bootstrap(): Promise<void> {
 
 	// customize nest app settings
 	nestApp.enableCors({ exposedHeaders: ['Content-Disposition'] });
+	nestApp.useBodyParser('json', { limit: '4mb' });
 	enableOpenApiDocs(nestApp, 'docs');
 
 	await nestApp.init();
