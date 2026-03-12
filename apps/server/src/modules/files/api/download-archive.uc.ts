@@ -1,4 +1,3 @@
-import { Logger } from '@core/logger';
 import { AuthorizationClientAdapter, AuthorizationContextBuilder } from '@infra/authorization-client';
 import { Injectable } from '@nestjs/common';
 import { DownloadArchiveService, GetFileResponse } from '../domain';
@@ -8,12 +7,9 @@ import { AuthorizationReferenceTypeMapper } from './mapper';
 @Injectable()
 export class DownloadArchiveUC {
 	constructor(
-		private readonly logger: Logger,
 		private readonly authorizationClientAdapter: AuthorizationClientAdapter,
 		private readonly filesStorageService: DownloadArchiveService
-	) {
-		this.logger.setContext(DownloadArchiveUC.name);
-	}
+	) {}
 
 	public async downloadFilesOfParentAsArchive(params: ArchiveFileParams): Promise<GetFileResponse> {
 		await this.checkPermission(params);
