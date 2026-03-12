@@ -1,4 +1,4 @@
-import { EntityManager, EntityName, Utils } from '@mikro-orm/mongodb';
+import { EntityManager, EntityName } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types/entity-id';
 import { ErwinIdentifier } from '../domain/do';
@@ -14,13 +14,10 @@ export class ErwinIdentifierMikroOrmRepo implements ErwinIdentifierRepo {
 		return ErwinIdentifierEntity;
 	}
 
-	public async create(erwinIdentifier: ErwinIdentifier | ErwinIdentifier[]): Promise<void> {
-		const erwinIdentifiers = Utils.asArray(erwinIdentifier);
+	public async create(erwinIdentifier: ErwinIdentifier): Promise<void> {
+		const erwinIdentifierEntity: ErwinIdentifierEntity = ErwinIdentifierMapper.mapToEntity(erwinIdentifier);
 
-		erwinIdentifiers.forEach((domainObject) => {
-			const erwinIdentifierEntity: ErwinIdentifierEntity = ErwinIdentifierMapper.mapToEntity(domainObject);
-			this.em.persist(erwinIdentifierEntity);
-		});
+		this.em.persist(erwinIdentifierEntity);
 
 		await this.em.flush();
 	}
@@ -47,5 +44,25 @@ export class ErwinIdentifierMikroOrmRepo implements ErwinIdentifierRepo {
 		const mappedErwinIdentifier: ErwinIdentifier = ErwinIdentifierMapper.mapToDO(erwinIdentifierEntity);
 
 		return mappedErwinIdentifier;
+	}
+
+	public async findByReferencedEntityId(referencedEntityId: EntityId): Promise<ErwinIdentifier | null> {
+		const erwinIdentifierEntity: ErwinIdentifierEntity | null = await this.em.findOne(ErwinIdentifierEntity, {
+			referencedEntityId: referencedEntityId,
+		});
+
+		if (!erwinIdentifierEntity) {
+			return null;
+		}
+
+		const mappedErwinIdentifier: ErwinIdentifier = ErwinIdentifierMapper.mapToDO(erwinIdentifierEntity);
+
+		return mappedErwinIdentifier;
+	}
+
+	public async deleteById(erwinIdentifierId: EntityId): Promise<void> {
+		const entity = await this.em.findOneOrFail(ErwinIdentifierEntity, { id: erwinIdentifierId });
+
+		await this.em.remove(entity).flush();
 	}
 }

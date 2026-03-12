@@ -6,9 +6,11 @@ import { ErwinIdentifier } from '../do';
 export interface ErwinIdentifierRepo {
 	get entityName(): EntityName<ErwinIdentifierEntity>;
 
-	create(erwinIdentifier: ErwinIdentifier | ErwinIdentifier[]): Promise<void>;
+	create(erwinIdentifier: ErwinIdentifier): Promise<void>;
 
 	findById(erwinIdentifierEntityId: EntityId): Promise<ErwinIdentifier>;
 
 	findByErwinId(erwinId: string): Promise<ErwinIdentifier | null>;
+
+	findByReferencedEntityId(referencedEntityId: EntityId): Promise<ErwinIdentifier | null>;
 }
