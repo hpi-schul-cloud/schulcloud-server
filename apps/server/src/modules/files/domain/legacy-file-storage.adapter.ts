@@ -27,10 +27,10 @@ export class LegacyFileStorageAdapter {
 
 	private async fetchRecursively(ownerId: EntityId, parentId: string | undefined): Promise<FileDo[]> {
 		const response = await this.getFiles(ownerId, parentId);
-		const rawFiles = this.validateResponse(response);
-		const files = this.mapToFileDos(rawFiles);
+		const fileResponses = this.validateResponse(response);
+		const files = this.mapToFileDos(fileResponses);
 
-		const directories = rawFiles.filter((file) => file.isDirectory);
+		const directories = fileResponses.filter((file) => file.isDirectory);
 		const filePromises = directories.map((directory) => this.fetchRecursively(ownerId, directory._id));
 		const filesFromSubfolders = (await Promise.all(filePromises)).flat();
 
@@ -44,15 +44,12 @@ export class LegacyFileStorageAdapter {
 	private validateResponse(response: AxiosResponse): LegacyFileResponse[] {
 		const rawData: unknown = response.data;
 		const arrayData = TypeGuard.checkArray(rawData);
-		const rawFiles: LegacyFileResponse[] = arrayData.map((item, index) =>
-			LegacyFileStorageAdapter.checkLegacyFileResponse(item, index)
-		);
+		const fileResponses = arrayData.map((item, index) => this.checkLegacyFileResponse(item, index));
 
-		return rawFiles;
+		return fileResponses;
 	}
 
 	private async getFiles(ownerId: EntityId, parentId?: EntityId): Promise<AxiosResponse> {
-		const { legacyBaseUrl } = this.config;
 		const jwt = JwtExtractor.extractJwtFromRequestOrFail(this.request);
 
 		const params: Record<string, string> = { owner: ownerId };
@@ -62,7 +59,7 @@ export class LegacyFileStorageAdapter {
 		}
 
 		const response = await firstValueFrom(
-			this.httpService.get(`${legacyBaseUrl}/fileStorage`, {
+			this.httpService.get(`${this.config.legacyBaseUrl}/fileStorage`, {
 				params,
 				headers: { authorization: `Bearer ${jwt}` },
 			})
@@ -71,7 +68,7 @@ export class LegacyFileStorageAdapter {
 		return response;
 	}
 
-	private static checkLegacyFileResponse(value: unknown, index: number): LegacyFileResponse {
+	private checkLegacyFileResponse(value: unknown, index: number): LegacyFileResponse {
 		if (!TypeGuard.isDefinedObject(value)) {
 			throw new Error(`Unexpected item shape at index ${index} in legacy file storage response`);
 		}
