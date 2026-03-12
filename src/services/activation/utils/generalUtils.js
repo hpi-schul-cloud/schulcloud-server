@@ -113,39 +113,6 @@ const validEntry = async (entry) => {
 	}
 };
 
-const createNewEntry = async (ref, userId, keyword, quarantinedObject) => {
-	try {
-		const entry = await (ref.app || ref).service('activationModel').create({
-			userId,
-			keyword,
-			quarantinedObject,
-		});
-		return entry;
-	} catch (error) {
-		throw new Error('Could not create a quarantined object.');
-	}
-};
-
-/**
- * Create new Entry (job) or returns already existing entry if the quarantinedObject is equal
- * @param {*} ref 					this
- * @param {ObjectId} userId 		UserId
- * @param {String} keyword 			keyword
- * @param {*} quarantinedObject 	quarantinedObject (e.g: email)
- * @returns {Object}				returns newly created Entry
- */
-const createEntry = async (ref, userId, keyword, quarantinedObject) => {
-	const entry = await getEntriesByUserId(ref, userId, keyword);
-	if (entry) {
-		if (entry.quarantinedObject === quarantinedObject) {
-			return entry;
-		}
-		await deleteEntry(ref, entry._id);
-	}
-	const newEntry = await createNewEntry(ref, userId, keyword, quarantinedObject);
-	return newEntry;
-};
-
 /**
  * Will send email with informatrion from mail {receiver, subject, content}
  * also sets mailSent and updatedAt for entry by entryId
@@ -191,7 +158,6 @@ module.exports = {
 	getUser,
 	getQuarantinedObject,
 	createQuarantinedObject,
-	createEntry,
 	deleteEntry,
 	validEntry,
 	createActivationLink,

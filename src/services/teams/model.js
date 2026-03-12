@@ -67,7 +67,6 @@ teamUserSchema.index({ schoolId: 1 }); // ?
 teamsSchema.index({ schoolId: 1 }); // ?
 teamsSchema.index({ schoolIds: 1 }); // ?
 
-const teamInvitedUserModel = mongoose.model('_teamInvitedUserSchema', teamInvitedUserSchema);
 const teamUserModel = mongoose.model('_teamUserSchema', teamUserSchema);
 const teamsModel = mongoose.model('teams', teamsSchema);
 
@@ -75,7 +74,6 @@ module.exports = {
 	TEAM_FEATURES,
 	teamsModel,
 	permissionSchema,
-	teamInvitedUserModel,
 	teamUserModel,
 	teamsSchema,
 };
