@@ -1,7 +1,14 @@
 import { ConfigurationModule } from '@infra/configuration';
+import {
+	SESSION_VALKEY_CLIENT_CONFIG_TOKEN,
+	ValkeyClientModule,
+	ValkeyClientSessionConfig,
+} from '@infra/valkey-client';
 import { DynamicModule, Module, Provider } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { JwtValidationAdapter } from './adapter';
+import { AUTH_GUARD_VALKEY_CLIENT, JWT_WHITELIST_CONFIG_TOKEN } from './auth-guard.constants';
+import { JwtWhitelistConfig } from './config';
 import {
 	AuthGuardModuleOptions,
 	AuthGuardOptions,
@@ -35,9 +42,20 @@ export class AuthGuardModule {
 			}
 		});
 
+		const valkeyClientModule = ValkeyClientModule.register({
+			clientInjectionToken: AUTH_GUARD_VALKEY_CLIENT,
+			configInjectionToken: SESSION_VALKEY_CLIENT_CONFIG_TOKEN,
+			configConstructor: ValkeyClientSessionConfig,
+		});
+
 		return {
 			module: AuthGuardModule,
-			imports: [PassportModule, ...imports],
+			imports: [
+				PassportModule,
+				valkeyClientModule,
+				ConfigurationModule.register(JWT_WHITELIST_CONFIG_TOKEN, JwtWhitelistConfig),
+				...imports,
+			],
 			providers,
 			exports: [JwtValidationAdapter],
 		};

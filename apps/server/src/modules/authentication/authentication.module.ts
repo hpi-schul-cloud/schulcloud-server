@@ -1,4 +1,5 @@
 import { LoggerModule } from '@core/logger';
+import { JWT_WHITELIST_CONFIG_TOKEN, JwtWhitelistConfig } from '@infra/auth-guard';
 import { ConfigurationModule } from '@infra/configuration';
 import { EncryptionModule } from '@infra/encryption';
 import { IdentityManagementModule } from '@infra/identity-management';
@@ -82,6 +83,7 @@ const createJwtOptions = (config: JwtModuleConfig): JwtModuleOptions => {
 			configConstructor: ValkeyClientSessionConfig,
 			configInjectionToken: SESSION_VALKEY_CLIENT_CONFIG_TOKEN,
 		}),
+		ConfigurationModule.register(JWT_WHITELIST_CONFIG_TOKEN, JwtWhitelistConfig),
 		UserModule,
 		HttpModule,
 		EncryptionModule.register(AUTHENTICATION_ENCRYPTION_CONFIG_TOKEN, AuthenticationEncryptionConfig),
