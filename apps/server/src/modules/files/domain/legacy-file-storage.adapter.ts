@@ -6,6 +6,7 @@ import { JwtExtractor } from '@shared/common/utils';
 import { EntityId } from '@shared/domain/types';
 import { AxiosResponse } from 'axios';
 import { Request } from 'express';
+import { Readable } from 'node:stream';
 import { firstValueFrom } from 'rxjs';
 import { LEGACY_FILE_ARCHIVE_CONFIG_TOKEN, LegacyFileArchiveConfig } from '../legacy-file-archive.config';
 import { FileDo } from './do';
@@ -23,6 +24,32 @@ export class LegacyFileStorageAdapter {
 		const files = this.fetchRecursively(ownerId, undefined);
 
 		return files;
+	}
+
+	public async getSignedUrl(fileId: EntityId, fileName: string): Promise<string> {
+		const jwt = JwtExtractor.extractJwtFromRequestOrFail(this.request);
+
+		const response = await firstValueFrom(
+			this.httpService.get<{ url: string }>(`${this.config.legacyBaseUrl}/fileStorage/signedUrl`, {
+				params: { file: fileId, download: true, name: fileName },
+				headers: { authorization: `Bearer ${jwt}` },
+			})
+		);
+
+		const rawData: unknown = response.data;
+		if (!TypeGuard.isDefinedObject(rawData) || !TypeGuard.isString((rawData as Record<string, unknown>).url)) {
+			throw new Error('Unexpected response shape from /fileStorage/signedUrl endpoint');
+		}
+
+		return (rawData as { url: string }).url;
+	}
+
+	public async downloadFile(fileId: EntityId, fileName: string): Promise<Readable> {
+		const signedUrl = await this.getSignedUrl(fileId, fileName);
+
+		const response = await firstValueFrom(this.httpService.get<Readable>(signedUrl, { responseType: 'stream' }));
+
+		return response.data;
 	}
 
 	private async fetchRecursively(ownerId: EntityId, parentId: string | undefined): Promise<FileDo[]> {

@@ -1,5 +1,4 @@
 import { CoreModule } from '@core/core.module';
-import { ErrorModule } from '@core/error';
 import { LoggerModule } from '@core/logger';
 import { AuthGuardModule, AuthGuardOptions, JWT_AUTH_GUARD_CONFIG_TOKEN, JwtAuthGuardConfig } from '@infra/auth-guard';
 import {
@@ -8,9 +7,6 @@ import {
 	AuthorizationClientModule,
 } from '@infra/authorization-client';
 import { ConfigurationModule } from '@infra/configuration';
-import { DATABASE_CONFIG_TOKEN, DatabaseConfig, DatabaseModule } from '@infra/database';
-// Direct import of repo of other module is not allowed by architecture rules, but for this legacy temporary code it is acceptable.
-import { StorageProviderEntity, StorageProviderRepo } from '@modules/school/repo';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { DownloadArchiveUC, LegacyFileArchiveController } from './api';
@@ -30,15 +26,9 @@ import { LEGACY_FILE_ARCHIVE_CONFIG_TOKEN, LegacyFileArchiveConfig } from './leg
 				configConstructor: JwtAuthGuardConfig,
 			},
 		]),
-		ErrorModule,
-		DatabaseModule.register({
-			configInjectionToken: DATABASE_CONFIG_TOKEN,
-			configConstructor: DatabaseConfig,
-			entities: [StorageProviderEntity],
-		}),
 		ConfigurationModule.register(LEGACY_FILE_ARCHIVE_CONFIG_TOKEN, LegacyFileArchiveConfig),
 	],
 	controllers: [LegacyFileArchiveController],
-	providers: [DownloadArchiveService, DownloadArchiveUC, LegacyFileStorageAdapter, StorageProviderRepo],
+	providers: [DownloadArchiveService, DownloadArchiveUC, LegacyFileStorageAdapter],
 })
 export class LegacyFileArchiveApiModule {}

@@ -286,4 +286,83 @@ describe('LegacyFileStorageAdapter', () => {
 			});
 		});
 	});
+
+	describe('getSignedUrl', () => {
+		const fileId = 'file-abc';
+		const fileName = 'document.pdf';
+		const signedUrl = 'https://s3.example.com/bucket/file?X-Amz-Signature=abc123';
+
+		describe('when the legacy service returns a signed URL', () => {
+			it('should return the URL string', async () => {
+				httpService.get.mockReturnValueOnce(of(buildAxiosResponse({ url: signedUrl })));
+
+				const result = await adapter.getSignedUrl(fileId, fileName);
+
+				expect(result).toBe(signedUrl);
+			});
+
+			it('should call the signedUrl endpoint with correct params and JWT header', async () => {
+				httpService.get.mockReturnValueOnce(of(buildAxiosResponse({ url: signedUrl })));
+
+				await adapter.getSignedUrl(fileId, fileName);
+
+				expect(httpService.get).toHaveBeenCalledWith(`${legacyBaseUrl}/fileStorage/signedUrl`, {
+					params: { file: fileId, download: true, name: fileName },
+					headers: { authorization: `Bearer ${jwt}` },
+				});
+			});
+		});
+
+		describe('when the response does not contain a url string', () => {
+			it('should throw an error', async () => {
+				httpService.get.mockReturnValueOnce(of(buildAxiosResponse({ url: 123 })));
+
+				await expect(adapter.getSignedUrl(fileId, fileName)).rejects.toThrow(
+					'Unexpected response shape from /fileStorage/signedUrl endpoint'
+				);
+			});
+
+			it('should throw an error when response has no url field', async () => {
+				httpService.get.mockReturnValueOnce(of(buildAxiosResponse({ other: 'data' })));
+
+				await expect(adapter.getSignedUrl(fileId, fileName)).rejects.toThrow(
+					'Unexpected response shape from /fileStorage/signedUrl endpoint'
+				);
+			});
+		});
+	});
+
+	describe('downloadFile', () => {
+		const fileId = 'file-abc';
+		const fileName = 'document.pdf';
+		const signedUrl = 'https://s3.example.com/bucket/file?X-Amz-Signature=abc123';
+
+		describe('when signed URL is obtained and file downloads successfully', () => {
+			it('should return a readable stream', async () => {
+				const { Readable } = require('stream');
+				const mockStream = new Readable({ read() {} });
+
+				httpService.get
+					.mockReturnValueOnce(of(buildAxiosResponse({ url: signedUrl })))
+					.mockReturnValueOnce(of(buildAxiosResponse(mockStream)));
+
+				const result = await adapter.downloadFile(fileId, fileName);
+
+				expect(result).toBe(mockStream);
+			});
+
+			it('should fetch the signed URL without auth headers', async () => {
+				const { Readable } = require('stream');
+				const mockStream = new Readable({ read() {} });
+
+				httpService.get
+					.mockReturnValueOnce(of(buildAxiosResponse({ url: signedUrl })))
+					.mockReturnValueOnce(of(buildAxiosResponse(mockStream)));
+
+				await adapter.downloadFile(fileId, fileName);
+
+				expect(httpService.get).toHaveBeenCalledWith(signedUrl, { responseType: 'stream' });
+			});
+		});
+	});
 });
