@@ -9,6 +9,7 @@ import {
 } from '@infra/authorization-client';
 import { ConfigurationModule } from '@infra/configuration';
 import { DATABASE_CONFIG_TOKEN, DatabaseConfig, DatabaseModule } from '@infra/database';
+// Direct import of repo of other module is not allowed by architecture rules, but for this legacy temporary code it is acceptable.
 import { StorageProviderEntity, StorageProviderRepo } from '@modules/school/repo';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
