@@ -1,3 +1,4 @@
+import { S3ServiceException } from '@aws-sdk/client-s3';
 import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
@@ -189,6 +190,78 @@ describe(DeleteFilesUc.name, () => {
 				await service.deleteMarkedFiles(thresholdDate, batchSize);
 
 				expect(spy).toBeCalledTimes(2);
+
+				spy.mockRestore();
+			});
+		});
+
+		describe('when S3 bucket does not exist (NoSuchBucket)', () => {
+			const setup = () => {
+				const thresholdDate = new Date();
+				const batchSize = 3;
+
+				const userId = new ObjectId().toHexString();
+				const storageProvider = storageProviderFactory.build();
+
+				const exampleFiles = [
+					fileEntityFactory.buildWithId({
+						storageProvider,
+						ownerId: userId,
+						creatorId: userId,
+						permissions: [filePermissionEntityFactory.build({ refId: userId })],
+						isDirectory: false,
+					}),
+				];
+
+				const noSuchBucketError = new S3ServiceException({
+					name: 'NoSuchBucket',
+					$fault: 'client',
+					$metadata: {},
+					message: 'The specified bucket does not exist',
+				});
+
+				const s3ClientMock = {
+					send: jest.fn().mockRejectedValue(noSuchBucketError),
+				};
+
+				// Please note the second try, that found no more files that needs to be deleted.
+				filesRepo.findForCleanup.mockResolvedValueOnce(exampleFiles).mockResolvedValueOnce([]);
+				storageProviderRepo.findAll.mockResolvedValueOnce([storageProvider]);
+				const spy = jest
+					// eslint-disable-next-line @typescript-eslint/no-explicit-any
+					.spyOn(DeleteFilesUc.prototype as any, 'getClientForFile')
+					.mockImplementation(() => s3ClientMock);
+
+				return { thresholdDate, batchSize, exampleFiles, spy, s3ClientMock };
+			};
+
+			it('should log a warning but not an error', async () => {
+				const { thresholdDate, batchSize, spy } = setup();
+
+				await service.deleteMarkedFiles(thresholdDate, batchSize);
+
+				expect(logger.warn).toHaveBeenCalledTimes(1);
+				expect(logger.error).not.toHaveBeenCalled();
+
+				spy.mockRestore();
+			});
+
+			it('should still delete the file from the database', async () => {
+				const { thresholdDate, batchSize, exampleFiles, spy } = setup();
+
+				await service.deleteMarkedFiles(thresholdDate, batchSize);
+
+				expect(filesRepo.delete).toHaveBeenCalledWith(exampleFiles[0]);
+
+				spy.mockRestore();
+			});
+
+			it('should report the file as successfully deleted', async () => {
+				const { thresholdDate, batchSize, spy } = setup();
+
+				await service.deleteMarkedFiles(thresholdDate, batchSize);
+
+				expect(logger.log).toHaveBeenCalledWith(expect.stringContaining('1 out of 1 files were successfully deleted'));
 
 				spy.mockRestore();
 			});
