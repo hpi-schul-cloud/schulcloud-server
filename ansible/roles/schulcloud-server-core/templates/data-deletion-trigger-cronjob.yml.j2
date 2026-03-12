@@ -14,7 +14,7 @@ metadata:
   name: data-deletion-trigger-cronjob
 spec:
   concurrencyPolicy: Forbid
-  schedule: "{{ SERVER_DATA_DELETION_TRIGGER_CRONJOB_SCHEDULE|default("@hourly", true) }}"
+  schedule: "{{ SERVER_DATA_DELETION_TRIGGER_CRONJOB_SCHEDULE|default("*/5 * * * *", true) }}"
   jobTemplate:
     metadata:
       labels:
