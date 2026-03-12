@@ -7,7 +7,7 @@ import { storageProviderFactory } from '@modules/school/testing';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Archiver } from 'archiver';
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 import { fileDomainFactory } from '../testing';
 import { DownloadArchiveService } from './download-archive.service';
 import { ArchiveFactory } from './factory';

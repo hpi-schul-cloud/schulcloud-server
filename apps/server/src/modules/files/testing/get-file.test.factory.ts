@@ -1,5 +1,5 @@
 import { GetFile } from '@infra/s3-client';
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 import { GetFileResponse } from '../domain';
 
 export class GetFileTestFactory {

@@ -1,6 +1,6 @@
 import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { PassThrough } from 'stream';
+import { PassThrough } from 'node:stream';
 import { FileDo } from '../do';
 import { ArchiveFactory } from './archive.factory';
 

@@ -20,7 +20,7 @@ import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { TestApiClient } from '@testing/test-api-client';
 import { TEST_JWT_CONFIG_TOKEN, TestJwtModuleConfig } from '@testing/test-jwt-module.config';
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 import { DownloadArchiveService, FileOwnerModel, LegacyFileStorageAdapter } from '../../domain';
 import { LEGACY_FILE_ARCHIVE_CONFIG_TOKEN, LegacyFileArchiveConfig } from '../../legacy-file-archive.config';
 import { accountForLoginFactory, fileDomainFactory, userForLoginFactory } from '../../testing';
