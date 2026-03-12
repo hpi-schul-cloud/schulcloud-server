@@ -6,19 +6,33 @@ const oauth2 = require('../../oauth2/hooks');
 const webUri = Configuration.get('HOST');
 
 /**
- * Validates that the token is a valid JWT format with no additional injected content
+ * Validates that the token does not contain any injected content like query parameters,
+ * URL fragments, or other potentially malicious characters.
+ * Works for both JWT and opaque tokens.
  * @param {string} token - The token to validate
- * @throws {BadRequest} If the token is not a valid JWT or contains additional content
+ * @throws {BadRequest} If the token contains suspicious characters
  */
-const validateJwtFormat = (token) => {
-	// Ensure token only contains valid JWT characters (Base64URL: alphanumeric, hyphen, underscore, and exactly 2 dots)
-	if (!/^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]*$/.test(token)) {
+const validateTokenFormat = (token) => {
+	if (!token || typeof token !== 'string') {
 		throw new BadRequest('Invalid token format');
 	}
 
-	// Verify it can be decoded as a valid JWT
-	if (!jwt.decode(token)) {
+	// Block characters commonly used for injection attacks:
+	// ? - query parameters
+	// & - query parameter separator
+	// = - query parameter assignment (outside of Base64)
+	// # - URL fragments
+	// / - path traversal
+	// \ - path traversal (Windows)
+	// < > - HTML/XML injection
+	// spaces, newlines, carriage returns - header injection
+	if (/[?&#/<>\\\s\r\n]/.test(token)) {
 		throw new BadRequest('Invalid token format');
+	}
+
+	// Optionally: ensure reasonable length to prevent DoS
+	if (token.length > 4096) {
+		throw new BadRequest('Token too long');
 	}
 };
 
@@ -32,8 +46,7 @@ module.exports = {
 	tokenIsActive: (context) => {
 		const token = context.params.headers.authorization.replace('Bearer ', '');
 
-		// Validate that the token is a valid JWT format
-		validateJwtFormat(token);
+		validateTokenFormat(token);
 
 		return context.app
 			.service('/oauth2/introspect')
