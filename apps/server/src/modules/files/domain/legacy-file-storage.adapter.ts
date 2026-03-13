@@ -10,7 +10,9 @@ import { Readable } from 'node:stream';
 import { firstValueFrom } from 'rxjs';
 import { LEGACY_FILE_ARCHIVE_CONFIG_TOKEN, LegacyFileArchiveConfig } from '../legacy-file-archive.config';
 import { FileDo } from './do';
-import { FileFactory, LegacyFileResponse } from './factory';
+import { FileFactory } from './factory';
+import { LegacyFileResponseVo } from './vo';
+import { LegacyFileResponse } from './types';
 
 @Injectable()
 export class LegacyFileStorageAdapter {
@@ -27,12 +29,10 @@ export class LegacyFileStorageAdapter {
 	}
 
 	public async getSignedUrl(fileId: EntityId, fileName: string): Promise<string> {
-		const jwt = JwtExtractor.extractJwtFromRequestOrFail(this.request);
-
 		const responseData = await firstValueFrom(
 			this.httpService.get(`${this.config.legacyBaseUrl}/fileStorage/signedUrl`, {
 				params: { file: fileId, download: true, name: fileName },
-				headers: { authorization: `Bearer ${jwt}` },
+				headers: this.getAuthorizationHeader(),
 			})
 		);
 
@@ -68,21 +68,19 @@ export class LegacyFileStorageAdapter {
 		return [...files, ...filesFromSubfolders];
 	}
 
-	private mapToFileDos(filesResponses: LegacyFileResponse[]): FileDo[] {
+	private mapToFileDos(filesResponses: LegacyFileResponseVo[]): FileDo[] {
 		return filesResponses.map((fileResponse) => FileFactory.buildFromLegacyFileResponse(fileResponse));
 	}
 
-	private validateResponse(response: AxiosResponse): LegacyFileResponse[] {
-		const rawData: unknown = response.data;
-		const arrayData = TypeGuard.checkArray(rawData);
-		const fileResponses = arrayData.map((item, index) => this.checkLegacyFileResponse(item, index));
+	private validateResponse(response: AxiosResponse<LegacyFileResponse[]>): LegacyFileResponseVo[] {
+		const { data } = response;
+		const arrayData = TypeGuard.checkArray(data);
+		const fileResponses = arrayData.map((item) => new LegacyFileResponseVo(item));
 
 		return fileResponses;
 	}
 
-	private async getFiles(ownerId: EntityId, parentId?: EntityId): Promise<AxiosResponse> {
-		const jwt = JwtExtractor.extractJwtFromRequestOrFail(this.request);
-
+	private async getFiles(ownerId: EntityId, parentId?: EntityId): Promise<AxiosResponse<LegacyFileResponse[]>> {
 		const params: Record<string, string> = { owner: ownerId };
 
 		if (parentId !== undefined) {
@@ -92,31 +90,16 @@ export class LegacyFileStorageAdapter {
 		const response = await firstValueFrom(
 			this.httpService.get(`${this.config.legacyBaseUrl}/fileStorage`, {
 				params,
-				headers: { authorization: `Bearer ${jwt}` },
+				headers: this.getAuthorizationHeader(),
 			})
 		);
 
 		return response;
 	}
 
-	private checkLegacyFileResponse(value: unknown, index: number): LegacyFileResponse {
-		if (!TypeGuard.isDefinedObject(value)) {
-			throw new Error(`Unexpected item shape at index ${index} in legacy file storage response`);
-		}
-		const obj = value as Record<string, unknown>;
+	private getAuthorizationHeader(): Record<string, string> {
+		const jwt = JwtExtractor.extractJwtFromRequestOrFail(this.request);
 
-		if (
-			!TypeGuard.isString(obj._id) ||
-			!TypeGuard.isString(obj.name) ||
-			!TypeGuard.isBoolean(obj.isDirectory) ||
-			(!TypeGuard.isUndefined(obj.parent) && !TypeGuard.isString(obj.parent)) ||
-			(!TypeGuard.isUndefined(obj.storageFileName) && !TypeGuard.isString(obj.storageFileName)) ||
-			(!TypeGuard.isUndefined(obj.bucket) && !TypeGuard.isString(obj.bucket)) ||
-			(!TypeGuard.isUndefined(obj.storageProviderId) && !TypeGuard.isString(obj.storageProviderId))
-		) {
-			throw new Error(`Unexpected item shape at index ${index} in legacy file storage response`);
-		}
-
-		return obj as unknown as LegacyFileResponse;
+		return { authorization: `Bearer ${jwt}` };
 	}
 }

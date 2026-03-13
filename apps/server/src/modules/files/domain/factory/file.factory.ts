@@ -1,21 +1,12 @@
 import { FileDo, FileProps } from '../do';
-
-export interface LegacyFileResponse {
-	_id: string;
-	name: string;
-	isDirectory: boolean;
-	parent?: string;
-	storageFileName?: string;
-	bucket?: string;
-	storageProviderId?: string;
-}
+import { LegacyFileResponseVo } from '../vo';
 
 export class FileFactory {
 	public static build(props: FileProps): FileDo {
 		return new FileDo(props);
 	}
 
-	public static buildFromLegacyFileResponse(response: LegacyFileResponse): FileDo {
+	public static buildFromLegacyFileResponse(response: LegacyFileResponseVo): FileDo {
 		return FileFactory.build({
 			id: response._id,
 			name: response.name,

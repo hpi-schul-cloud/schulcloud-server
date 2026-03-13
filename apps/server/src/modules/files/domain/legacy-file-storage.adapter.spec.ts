@@ -3,6 +3,7 @@ import { HttpService } from '@nestjs/axios';
 import { REQUEST } from '@nestjs/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AxiosResponse } from 'axios';
+import { ObjectId } from 'bson';
 import { Readable } from 'node:stream';
 import { of } from 'rxjs';
 import { LEGACY_FILE_ARCHIVE_CONFIG_TOKEN } from '../legacy-file-archive.config';
@@ -60,15 +61,15 @@ describe('LegacyFileStorageAdapter', () => {
 			const setup = () => {
 				const rawFiles = [
 					{
-						_id: 'file-1',
+						_id: new ObjectId().toHexString(),
 						name: 'document.pdf',
 						isDirectory: false,
 						storageFileName: 'abc123.pdf',
 						bucket: 'bucket-A',
-						storageProviderId: 'sp-1',
+						storageProviderId: new ObjectId().toHexString(),
 					},
 					{
-						_id: 'file-2',
+						_id: new ObjectId().toHexString(),
 						name: 'image.png',
 						isDirectory: false,
 						parent: undefined,
@@ -86,9 +87,9 @@ describe('LegacyFileStorageAdapter', () => {
 				const result = await adapter.getFilesForOwner(ownerId);
 
 				expect(result).toHaveLength(rawFiles.length);
-				expect(result[0].id).toBe('file-1');
+				expect(result[0].id).toBe(rawFiles[0]._id);
 				expect(result[0].name).toBe('document.pdf');
-				expect(result[1].id).toBe('file-2');
+				expect(result[1].id).toBe(rawFiles[1]._id);
 				expect(result[1].name).toBe('image.png');
 			});
 
@@ -106,8 +107,8 @@ describe('LegacyFileStorageAdapter', () => {
 
 		describe('when the response contains a directory', () => {
 			const setup = () => {
-				const directory = { _id: 'dir-1', name: 'my-folder', isDirectory: true };
-				const childFile = { _id: 'file-3', name: 'child.txt', isDirectory: false };
+				const directory = { _id: new ObjectId().toHexString(), name: 'my-folder', isDirectory: true };
+				const childFile = { _id: new ObjectId().toHexString(), name: 'child.txt', isDirectory: false };
 
 				httpService.get
 					.mockReturnValueOnce(of(buildAxiosResponse([directory])))
@@ -139,9 +140,9 @@ describe('LegacyFileStorageAdapter', () => {
 
 		describe('when the response contains nested directories', () => {
 			const setup = () => {
-				const dir1 = { _id: 'dir-1', name: 'folder1', isDirectory: true };
-				const dir2 = { _id: 'dir-2', name: 'folder2', isDirectory: true };
-				const file = { _id: 'file-deep', name: 'deep.txt', isDirectory: false };
+				const dir1 = { _id: new ObjectId().toHexString(), name: 'folder1', isDirectory: true };
+				const dir2 = { _id: new ObjectId().toHexString(), name: 'folder2', isDirectory: true };
+				const file = { _id: new ObjectId().toHexString(), name: 'deep.txt', isDirectory: false };
 
 				httpService.get
 					.mockReturnValueOnce(of(buildAxiosResponse([dir1])))
@@ -173,7 +174,7 @@ describe('LegacyFileStorageAdapter', () => {
 
 		describe('when optional fields are undefined', () => {
 			it('should map the file with undefined optional fields', async () => {
-				const rawFile = { _id: 'file-opt', name: 'bare.txt', isDirectory: false };
+				const rawFile = { _id: new ObjectId().toHexString(), name: 'bare.txt', isDirectory: false };
 				httpService.get.mockReturnValueOnce(of(buildAxiosResponse([rawFile])));
 
 				const result = await adapter.getFilesForOwner(ownerId);
@@ -187,7 +188,9 @@ describe('LegacyFileStorageAdapter', () => {
 
 		describe('when the response is not an array', () => {
 			it('should throw an error', async () => {
-				httpService.get.mockReturnValueOnce(of(buildAxiosResponse({ _id: 'file-1', name: 'file.txt' })));
+				httpService.get.mockReturnValueOnce(
+					of(buildAxiosResponse({ _id: new ObjectId().toHexString(), name: 'file.txt' }))
+				);
 
 				await expect(adapter.getFilesForOwner(ownerId)).rejects.toThrow();
 			});
@@ -199,80 +202,90 @@ describe('LegacyFileStorageAdapter', () => {
 				httpService.get.mockReturnValueOnce(of(buildAxiosResponse([invalid])));
 
 				await expect(adapter.getFilesForOwner(ownerId)).rejects.toThrow(
-					'Unexpected item shape at index 0 in legacy file storage response'
+					/has failed the validation:.*property _id has failed the following constraints: isMongoId/s
 				);
 			});
 		});
 
 		describe('when a response item is missing required field name', () => {
 			it('should throw an error', async () => {
-				const invalid = { _id: 'file-x', isDirectory: false };
+				const invalid = { _id: new ObjectId().toHexString(), isDirectory: false };
 				httpService.get.mockReturnValueOnce(of(buildAxiosResponse([invalid])));
 
 				await expect(adapter.getFilesForOwner(ownerId)).rejects.toThrow(
-					'Unexpected item shape at index 0 in legacy file storage response'
+					/has failed the validation:.*property name has failed the following constraints: isString/s
 				);
 			});
 		});
 
 		describe('when a response item has a non-boolean isDirectory', () => {
 			it('should throw an error', async () => {
-				const invalid = { _id: 'file-x', name: 'file.txt', isDirectory: 'yes' };
+				const invalid = { _id: new ObjectId().toHexString(), name: 'file.txt', isDirectory: 'yes' };
 				httpService.get.mockReturnValueOnce(of(buildAxiosResponse([invalid])));
 
 				await expect(adapter.getFilesForOwner(ownerId)).rejects.toThrow(
-					'Unexpected item shape at index 0 in legacy file storage response'
+					/has failed the validation:.*property isDirectory has failed the following constraints: isBoolean/s
 				);
 			});
 		});
 
 		describe('when a response item has a non-string optional field', () => {
 			it('should throw an error for a non-string bucket', async () => {
-				const invalid = { _id: 'file-x', name: 'file.txt', isDirectory: false, bucket: 123 };
+				const invalid = { _id: new ObjectId().toHexString(), name: 'file.txt', isDirectory: false, bucket: 123 };
 				httpService.get.mockReturnValueOnce(of(buildAxiosResponse([invalid])));
 
 				await expect(adapter.getFilesForOwner(ownerId)).rejects.toThrow(
-					'Unexpected item shape at index 0 in legacy file storage response'
+					/has failed the validation:.*property bucket has failed the following constraints: isString/s
 				);
 			});
 
-			it('should throw an error for a non-string parent', async () => {
-				const invalid = { _id: 'file-x', name: 'file.txt', isDirectory: false, parent: 42 };
+			it('should throw an error for a non-mongoId parent', async () => {
+				const invalid = { _id: new ObjectId().toHexString(), name: 'file.txt', isDirectory: false, parent: 42 };
 				httpService.get.mockReturnValueOnce(of(buildAxiosResponse([invalid])));
 
 				await expect(adapter.getFilesForOwner(ownerId)).rejects.toThrow(
-					'Unexpected item shape at index 0 in legacy file storage response'
+					/has failed the validation:.*property parent has failed the following constraints: isMongoId/s
 				);
 			});
 
 			it('should throw an error for a non-string storageFileName', async () => {
-				const invalid = { _id: 'file-x', name: 'file.txt', isDirectory: false, storageFileName: true };
+				const invalid = {
+					_id: new ObjectId().toHexString(),
+					name: 'file.txt',
+					isDirectory: false,
+					storageFileName: true,
+				};
 				httpService.get.mockReturnValueOnce(of(buildAxiosResponse([invalid])));
 
 				await expect(adapter.getFilesForOwner(ownerId)).rejects.toThrow(
-					'Unexpected item shape at index 0 in legacy file storage response'
+					/has failed the validation:.*property storageFileName has failed the following constraints: isString/s
 				);
 			});
 
-			it('should throw an error for a non-string storageProviderId', async () => {
-				const invalid = { _id: 'file-x', name: 'file.txt', isDirectory: false, storageProviderId: {} };
+			it('should throw an error for a non-mongoId storageProviderId', async () => {
+				const invalid = {
+					_id: new ObjectId().toHexString(),
+					name: 'file.txt',
+					isDirectory: false,
+					storageProviderId: {},
+				};
 				httpService.get.mockReturnValueOnce(of(buildAxiosResponse([invalid])));
 
 				await expect(adapter.getFilesForOwner(ownerId)).rejects.toThrow(
-					'Unexpected item shape at index 0 in legacy file storage response'
+					/has failed the validation:.*property storageProviderId has failed the following constraints: isMongoId/s
 				);
 			});
 		});
 
 		describe('when a second item is invalid', () => {
 			it('should throw with the correct index', async () => {
-				const valid = { _id: 'file-1', name: 'file.txt', isDirectory: false };
-				const invalid = { _id: 'file-2', isDirectory: false };
+				const valid = { _id: new ObjectId().toHexString(), name: 'file.txt', isDirectory: false };
+				const invalid = { _id: new ObjectId().toHexString(), isDirectory: false };
 
 				httpService.get.mockReturnValueOnce(of(buildAxiosResponse([valid, invalid])));
 
 				await expect(adapter.getFilesForOwner(ownerId)).rejects.toThrow(
-					'Unexpected item shape at index 1 in legacy file storage response'
+					/has failed the validation:.*property name has failed the following constraints: isString/s
 				);
 			});
 		});
@@ -282,7 +295,7 @@ describe('LegacyFileStorageAdapter', () => {
 				httpService.get.mockReturnValueOnce(of(buildAxiosResponse(['not-an-object'])));
 
 				await expect(adapter.getFilesForOwner(ownerId)).rejects.toThrow(
-					'Unexpected item shape at index 0 in legacy file storage response'
+					/has failed the validation:.*property name has failed the following constraints: isString/s
 				);
 			});
 		});
@@ -291,7 +304,7 @@ describe('LegacyFileStorageAdapter', () => {
 	describe('getSignedUrl', () => {
 		describe('when the legacy service returns a signed URL', () => {
 			const setup = () => {
-				const fileId = 'file-abc';
+				const fileId = new ObjectId().toHexString();
 				const fileName = 'document.pdf';
 				const signedUrl = 'https://s3.example.com/bucket/file?X-Amz-Signature=abc123';
 
@@ -322,7 +335,7 @@ describe('LegacyFileStorageAdapter', () => {
 
 		describe('when the response does not contain a url string', () => {
 			const setup = () => {
-				const fileId = 'file-abc';
+				const fileId = new ObjectId().toHexString();
 				const fileName = 'document.pdf';
 
 				return { fileId, fileName };
@@ -347,7 +360,7 @@ describe('LegacyFileStorageAdapter', () => {
 	describe('downloadFile', () => {
 		describe('when signed URL is obtained and file downloads successfully', () => {
 			const setup = () => {
-				const fileId = 'file-abc';
+				const fileId = new ObjectId().toHexString();
 				const fileName = 'document.pdf';
 				const signedUrl = 'https://s3.example.com/bucket/file?X-Amz-Signature=abc123';
 				const mockStream = new Readable({ read() {} });
