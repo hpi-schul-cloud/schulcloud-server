@@ -11,8 +11,8 @@ import { firstValueFrom } from 'rxjs';
 import { LEGACY_FILE_ARCHIVE_CONFIG_TOKEN, LegacyFileArchiveConfig } from '../legacy-file-archive.config';
 import { FileDo } from './do';
 import { FileFactory } from './factory';
-import { LegacyFileResponseVo } from './vo';
 import { LegacyFileResponse } from './types';
+import { LegacyFileResponseVo, SignedUrlResponseVO } from './vo';
 
 @Injectable()
 export class LegacyFileStorageAdapter {
@@ -28,32 +28,26 @@ export class LegacyFileStorageAdapter {
 		return files;
 	}
 
-	public async getSignedUrl(fileId: EntityId, fileName: string): Promise<string> {
+	public async getSignedUrl(fileId: EntityId, fileName: string): Promise<SignedUrlResponseVO> {
 		const responseData = await firstValueFrom(
-			this.httpService.get(`${this.config.legacyBaseUrl}/fileStorage/signedUrl`, {
+			this.httpService.get<{ url: string }>(`${this.config.legacyBaseUrl}/fileStorage/signedUrl`, {
 				params: { file: fileId, download: true, name: fileName },
 				headers: this.getAuthorizationHeader(),
 			})
 		);
 
-		const url = this.validateSignedUrlResponse(responseData);
+		const signedUrlResponse = new SignedUrlResponseVO(responseData.data.url);
 
-		return url;
+		return signedUrlResponse;
 	}
 
 	public async downloadFile(fileId: EntityId, fileName: string): Promise<Readable> {
-		const signedUrl = await this.getSignedUrl(fileId, fileName);
+		const signedUrlResponse = await this.getSignedUrl(fileId, fileName);
+		const { url } = signedUrlResponse;
 
-		const response = await firstValueFrom(this.httpService.get<Readable>(signedUrl, { responseType: 'stream' }));
+		const response = await firstValueFrom(this.httpService.get<Readable>(url, { responseType: 'stream' }));
 
 		return response.data;
-	}
-
-	private validateSignedUrlResponse(response: AxiosResponse): string {
-		const urlValue = TypeGuard.checkKeyInObject(response.data, 'url');
-		const url = TypeGuard.checkString(urlValue);
-
-		return url;
 	}
 
 	private async fetchRecursively(ownerId: EntityId, parentId: string | undefined): Promise<FileDo[]> {

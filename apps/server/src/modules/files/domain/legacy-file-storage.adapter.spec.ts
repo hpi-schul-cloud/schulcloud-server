@@ -8,6 +8,7 @@ import { Readable } from 'node:stream';
 import { of } from 'rxjs';
 import { LEGACY_FILE_ARCHIVE_CONFIG_TOKEN } from '../legacy-file-archive.config';
 import { LegacyFileStorageAdapter } from './legacy-file-storage.adapter';
+import { SignedUrlResponseVO } from './vo';
 
 const buildAxiosResponse = (data: unknown): AxiosResponse =>
 	({ data, status: 200, statusText: 'OK', headers: {}, config: {} } as AxiosResponse);
@@ -318,7 +319,7 @@ describe('LegacyFileStorageAdapter', () => {
 
 				const result = await adapter.getSignedUrl(fileId, fileName);
 
-				expect(result).toBe(signedUrl);
+				expect(result).toEqual(new SignedUrlResponseVO(signedUrl));
 			});
 
 			it('should call the signedUrl endpoint with correct params and JWT header', async () => {
@@ -341,18 +342,13 @@ describe('LegacyFileStorageAdapter', () => {
 				return { fileId, fileName };
 			};
 
-			it('should throw an error when url is not a string', async () => {
-				const { fileId, fileName } = setup();
-				httpService.get.mockReturnValueOnce(of(buildAxiosResponse({ url: 123 })));
-
-				await expect(adapter.getSignedUrl(fileId, fileName)).rejects.toThrow('Type is not a string');
-			});
-
 			it('should throw an error when response has no url field', async () => {
 				const { fileId, fileName } = setup();
 				httpService.get.mockReturnValueOnce(of(buildAxiosResponse({ other: 'data' })));
 
-				await expect(adapter.getSignedUrl(fileId, fileName)).rejects.toThrow('Object has no url.');
+				await expect(adapter.getSignedUrl(fileId, fileName)).rejects.toThrow(
+					/has failed the validation:.*property url has failed the following constraints: isUrl/s
+				);
 			});
 		});
 	});
