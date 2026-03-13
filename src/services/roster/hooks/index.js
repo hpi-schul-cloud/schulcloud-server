@@ -13,7 +13,7 @@ const webUri = Configuration.get('HOST');
  */
 const validateTokenFormat = (token) => {
 	if (!token || typeof token !== 'string') {
-		throw new BadRequest('Invalid token format');
+		throw new BadRequest('Invalid token type');
 	}
 
 	// Block characters commonly used for injection attacks:
