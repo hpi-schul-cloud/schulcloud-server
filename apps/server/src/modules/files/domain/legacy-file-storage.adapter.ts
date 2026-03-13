@@ -29,19 +29,16 @@ export class LegacyFileStorageAdapter {
 	public async getSignedUrl(fileId: EntityId, fileName: string): Promise<string> {
 		const jwt = JwtExtractor.extractJwtFromRequestOrFail(this.request);
 
-		const response = await firstValueFrom(
-			this.httpService.get<{ url: string }>(`${this.config.legacyBaseUrl}/fileStorage/signedUrl`, {
+		const responseData = await firstValueFrom(
+			this.httpService.get(`${this.config.legacyBaseUrl}/fileStorage/signedUrl`, {
 				params: { file: fileId, download: true, name: fileName },
 				headers: { authorization: `Bearer ${jwt}` },
 			})
 		);
 
-		const rawData: unknown = response.data;
-		if (!TypeGuard.isDefinedObject(rawData) || !TypeGuard.isString((rawData as Record<string, unknown>).url)) {
-			throw new Error('Unexpected response shape from /fileStorage/signedUrl endpoint');
-		}
+		const url = this.validateSignedUrlResponse(responseData);
 
-		return (rawData as { url: string }).url;
+		return url;
 	}
 
 	public async downloadFile(fileId: EntityId, fileName: string): Promise<Readable> {
@@ -50,6 +47,13 @@ export class LegacyFileStorageAdapter {
 		const response = await firstValueFrom(this.httpService.get<Readable>(signedUrl, { responseType: 'stream' }));
 
 		return response.data;
+	}
+
+	private validateSignedUrlResponse(response: AxiosResponse): string {
+		const urlValue = TypeGuard.checkKeyInObject(response.data, 'url');
+		const url = TypeGuard.checkString(urlValue);
+
+		return url;
 	}
 
 	private async fetchRecursively(ownerId: EntityId, parentId: string | undefined): Promise<FileDo[]> {

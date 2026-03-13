@@ -3,6 +3,7 @@ import { HttpService } from '@nestjs/axios';
 import { REQUEST } from '@nestjs/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AxiosResponse } from 'axios';
+import { Readable } from 'node:stream';
 import { of } from 'rxjs';
 import { LEGACY_FILE_ARCHIVE_CONFIG_TOKEN } from '../legacy-file-archive.config';
 import { LegacyFileStorageAdapter } from './legacy-file-storage.adapter';
@@ -288,13 +289,19 @@ describe('LegacyFileStorageAdapter', () => {
 	});
 
 	describe('getSignedUrl', () => {
-		const fileId = 'file-abc';
-		const fileName = 'document.pdf';
-		const signedUrl = 'https://s3.example.com/bucket/file?X-Amz-Signature=abc123';
-
 		describe('when the legacy service returns a signed URL', () => {
-			it('should return the URL string', async () => {
+			const setup = () => {
+				const fileId = 'file-abc';
+				const fileName = 'document.pdf';
+				const signedUrl = 'https://s3.example.com/bucket/file?X-Amz-Signature=abc123';
+
 				httpService.get.mockReturnValueOnce(of(buildAxiosResponse({ url: signedUrl })));
+
+				return { fileId, fileName, signedUrl };
+			};
+
+			it('should return the URL string', async () => {
+				const { fileId, fileName, signedUrl } = setup();
 
 				const result = await adapter.getSignedUrl(fileId, fileName);
 
@@ -302,7 +309,7 @@ describe('LegacyFileStorageAdapter', () => {
 			});
 
 			it('should call the signedUrl endpoint with correct params and JWT header', async () => {
-				httpService.get.mockReturnValueOnce(of(buildAxiosResponse({ url: signedUrl })));
+				const { fileId, fileName } = setup();
 
 				await adapter.getSignedUrl(fileId, fileName);
 
@@ -314,37 +321,46 @@ describe('LegacyFileStorageAdapter', () => {
 		});
 
 		describe('when the response does not contain a url string', () => {
-			it('should throw an error', async () => {
+			const setup = () => {
+				const fileId = 'file-abc';
+				const fileName = 'document.pdf';
+
+				return { fileId, fileName };
+			};
+
+			it('should throw an error when url is not a string', async () => {
+				const { fileId, fileName } = setup();
 				httpService.get.mockReturnValueOnce(of(buildAxiosResponse({ url: 123 })));
 
-				await expect(adapter.getSignedUrl(fileId, fileName)).rejects.toThrow(
-					'Unexpected response shape from /fileStorage/signedUrl endpoint'
-				);
+				await expect(adapter.getSignedUrl(fileId, fileName)).rejects.toThrow('Type is not a string');
 			});
 
 			it('should throw an error when response has no url field', async () => {
+				const { fileId, fileName } = setup();
 				httpService.get.mockReturnValueOnce(of(buildAxiosResponse({ other: 'data' })));
 
-				await expect(adapter.getSignedUrl(fileId, fileName)).rejects.toThrow(
-					'Unexpected response shape from /fileStorage/signedUrl endpoint'
-				);
+				await expect(adapter.getSignedUrl(fileId, fileName)).rejects.toThrow('Object has no url.');
 			});
 		});
 	});
 
 	describe('downloadFile', () => {
-		const fileId = 'file-abc';
-		const fileName = 'document.pdf';
-		const signedUrl = 'https://s3.example.com/bucket/file?X-Amz-Signature=abc123';
-
 		describe('when signed URL is obtained and file downloads successfully', () => {
-			it('should return a readable stream', async () => {
-				const { Readable } = require('stream');
+			const setup = () => {
+				const fileId = 'file-abc';
+				const fileName = 'document.pdf';
+				const signedUrl = 'https://s3.example.com/bucket/file?X-Amz-Signature=abc123';
 				const mockStream = new Readable({ read() {} });
 
 				httpService.get
 					.mockReturnValueOnce(of(buildAxiosResponse({ url: signedUrl })))
 					.mockReturnValueOnce(of(buildAxiosResponse(mockStream)));
+
+				return { fileId, fileName, signedUrl, mockStream };
+			};
+
+			it('should return a readable stream', async () => {
+				const { fileId, fileName, mockStream } = setup();
 
 				const result = await adapter.downloadFile(fileId, fileName);
 
@@ -352,12 +368,7 @@ describe('LegacyFileStorageAdapter', () => {
 			});
 
 			it('should fetch the signed URL without auth headers', async () => {
-				const { Readable } = require('stream');
-				const mockStream = new Readable({ read() {} });
-
-				httpService.get
-					.mockReturnValueOnce(of(buildAxiosResponse({ url: signedUrl })))
-					.mockReturnValueOnce(of(buildAxiosResponse(mockStream)));
+				const { fileId, fileName, signedUrl } = setup();
 
 				await adapter.downloadFile(fileId, fileName);
 
