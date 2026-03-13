@@ -31,20 +31,6 @@ export class LessonUC {
 		return true;
 	}
 
-	public async getLessons(userId: EntityId, courseId: EntityId): Promise<LessonEntity[]> {
-		const user = await this.authorizationService.getUserWithPermissions(userId);
-		const course = await this.courseService.findOneForUser(courseId, userId, user.school.id);
-
-		this.authorizationService.checkPermission(user, course, AuthorizationContextBuilder.read([Permission.COURSE_VIEW]));
-
-		const [lessons] = await this.lessonService.findByCourseIds([courseId]);
-		const filteredLessons = lessons.filter((lesson) =>
-			this.authorizationService.hasPermission(user, lesson, AuthorizationContextBuilder.read([Permission.TOPIC_VIEW]))
-		);
-
-		return filteredLessons;
-	}
-
 	public async getLesson(userId: EntityId, lessonId: EntityId): Promise<LessonEntity> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const lesson = await this.lessonService.findById(lessonId);

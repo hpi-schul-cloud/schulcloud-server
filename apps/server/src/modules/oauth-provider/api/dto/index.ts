@@ -7,7 +7,6 @@ export { LoginRequestBody } from './request/login-request.body';
 export { OauthClientCreateBody } from './request/oauth-client-create.body';
 export { OauthClientUpdateBody } from './request/oauth-client-update.body';
 export { RevokeConsentParams } from './request/revoke-consent.params';
-export { UserParams } from './request/user.params';
 export { OauthClientResponse } from './response/oauth-client.response';
 export { ConsentResponse } from './response/consent.response';
 export { RedirectResponse } from './response/redirect.response';
