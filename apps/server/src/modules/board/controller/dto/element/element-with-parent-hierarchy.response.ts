@@ -11,7 +11,6 @@ import { FileFolderElementResponse } from './file-folder-element.response';
 import { H5pElementResponse } from './h5p-element.response';
 import { LinkElementResponse } from './link-element.response';
 import { RichTextElementResponse } from './rich-text-element.response';
-import { SubmissionContainerElementResponse } from './submission-container-element.response';
 import { VideoConferenceElementResponse } from './video-conference-element.response';
 
 export class ParentNodeInfoResponse {
@@ -40,7 +39,6 @@ export class ParentNodeInfoResponse {
 	FileElementResponse,
 	LinkElementResponse,
 	RichTextElementResponse,
-	SubmissionContainerElementResponse,
 	DrawingElementResponse,
 	CollaborativeTextEditorElementResponse,
 	DeletedElementResponse,
@@ -62,7 +60,6 @@ export class ElementWithParentHierarchyResponse {
 			{ $ref: getSchemaPath(FileElementResponse) },
 			{ $ref: getSchemaPath(LinkElementResponse) },
 			{ $ref: getSchemaPath(RichTextElementResponse) },
-			{ $ref: getSchemaPath(SubmissionContainerElementResponse) },
 			{ $ref: getSchemaPath(DrawingElementResponse) },
 			{ $ref: getSchemaPath(CollaborativeTextEditorElementResponse) },
 			{ $ref: getSchemaPath(DeletedElementResponse) },
