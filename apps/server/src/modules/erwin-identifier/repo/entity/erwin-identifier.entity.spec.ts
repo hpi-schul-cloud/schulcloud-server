@@ -3,7 +3,7 @@ import { ErwinIdentifierEntity, ErwinIdentifierEntityProps } from './erwin-ident
 
 describe(ErwinIdentifierEntity.name, () => {
 	describe('constructor', () => {
-		describe('When constructor is called without props', () => {
+		describe('when constructor is called without props', () => {
 			it('should throw an error', () => {
 				// @ts-expect-error: Test case
 				const test = () => new ErwinIdentifierEntity();
@@ -11,7 +11,7 @@ describe(ErwinIdentifierEntity.name, () => {
 			});
 		});
 
-		describe('When constructor is called with all properties', () => {
+		describe('when constructor is called with all properties', () => {
 			const setup = () => {
 				const props: ErwinIdentifierEntityProps = {
 					id: 'entity-id',

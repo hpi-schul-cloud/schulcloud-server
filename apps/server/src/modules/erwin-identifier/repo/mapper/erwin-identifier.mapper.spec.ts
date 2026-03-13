@@ -16,7 +16,7 @@ describe(ErwinIdentifierMapper.name, () => {
 	});
 
 	describe('mapToDO', () => {
-		describe('When an erwinIdentifier entity is mapped to a domain object', () => {
+		describe('when an erwinIdentifier entity is mapped to a domain object', () => {
 			const setup = () => {
 				const entity = {
 					id: 'erwin-id-entity-id',
@@ -47,7 +47,7 @@ describe(ErwinIdentifierMapper.name, () => {
 	});
 
 	describe('mapToEntity', () => {
-		describe('When an erwinIdentifier domain object is mapped to an entity', () => {
+		describe('when an erwinIdentifier domain object is mapped to an entity', () => {
 			const setup = () => {
 				const domainObject = new ErwinIdentifier({
 					id: 'erwin-id-domain-id',
@@ -78,7 +78,7 @@ describe(ErwinIdentifierMapper.name, () => {
 	});
 
 	describe('mapToDOs', () => {
-		describe('When an empty erwinIdentifier entities array is mapped to domain objects', () => {
+		describe('when an empty erwinIdentifier entities array is mapped to domain objects', () => {
 			it('should return an empty domain objects array for an empty entities array', () => {
 				const domainObjects = ErwinIdentifierMapper.mapToDOs([]);
 
@@ -129,7 +129,7 @@ describe(ErwinIdentifierMapper.name, () => {
 	});
 
 	describe('mapToEntities', () => {
-		describe('When an empty erwinIdentifier domain objects array is mapped to entities', () => {
+		describe('when an empty erwinIdentifier domain objects array is mapped to entities', () => {
 			it('should return an empty entities array for an empty erwinIdentifier domain objects array', () => {
 				const entities = ErwinIdentifierMapper.mapToEntities([]);
 
@@ -137,7 +137,7 @@ describe(ErwinIdentifierMapper.name, () => {
 			});
 		});
 
-		describe('When multiple erwinIdentifier domain objects are mapped to entities', () => {
+		describe('when multiple erwinIdentifier domain objects are mapped to entities', () => {
 			const setup = () => {
 				const domainObjects = [
 					new ErwinIdentifier({

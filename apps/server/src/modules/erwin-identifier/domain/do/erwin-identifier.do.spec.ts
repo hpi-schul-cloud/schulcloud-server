@@ -4,7 +4,7 @@ import { ErwinIdentifier } from './erwin-identifier.do';
 
 describe(ErwinIdentifier.name, () => {
 	describe('constructor', () => {
-		describe('When constructor is called with required properties', () => {
+		describe('when constructor is called with required properties', () => {
 			const setup = () => {
 				const props = {
 					id: 'erwin-id-1',
@@ -33,7 +33,7 @@ describe(ErwinIdentifier.name, () => {
 	});
 
 	describe('getters', () => {
-		describe('When getters are used on a created ErwinIdentifier', () => {
+		describe('when getters are used on a created ErwinIdentifier', () => {
 			const setup = () => {
 				const props = {
 					id: 'erwin-id-2',

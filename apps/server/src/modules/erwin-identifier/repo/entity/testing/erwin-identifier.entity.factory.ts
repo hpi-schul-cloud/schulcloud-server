@@ -16,5 +16,14 @@ export const erwinIdentifierEntityFactoryWithUser = DoBaseFactory.define<
 	};
 });
 
-export const erwinIdentifierEntityFactoryWithSchool = (): ErwinIdentifierEntity =>
-	erwinIdentifierEntityFactoryWithUser.build({ type: ReferencedEntityType.SCHOOL });
+export const erwinIdentifierEntityFactoryWithSchool = DoBaseFactory.define<
+	ErwinIdentifierEntity,
+	ErwinIdentifierEntityProps
+>(ErwinIdentifierEntity, () => {
+	return {
+		id: new ObjectId().toHexString(),
+		erwinId: faker.string.uuid(),
+		type: ReferencedEntityType.SCHOOL,
+		referencedEntityId: new ObjectId().toHexString(),
+	};
+});
