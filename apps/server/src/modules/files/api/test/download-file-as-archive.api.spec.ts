@@ -279,7 +279,7 @@ describe('DownloadArchive Controller (API)', () => {
 		});
 
 		describe('when user successfully downloads team archive', () => {
-			const setup = async () => {
+			const setup = () => {
 				const teacherAccount = accountForLoginFactory.build();
 				const teacherUser = userForLoginFactory.build();
 				const teamId = new ObjectId().toHexString();
@@ -308,7 +308,7 @@ describe('DownloadArchive Controller (API)', () => {
 			};
 
 			it('should return 200 with archive file', async () => {
-				const { teamId, loggedInClient, archiveName } = await setup();
+				const { teamId, loggedInClient, archiveName } = setup();
 				const params = {
 					ownerId: teamId,
 					ownerType: FileOwnerModel.TEAMS,
@@ -323,7 +323,7 @@ describe('DownloadArchive Controller (API)', () => {
 		});
 
 		describe('when user successfully downloads course archive', () => {
-			const setup = async () => {
+			const setup = () => {
 				const teacherAccount = accountForLoginFactory.build();
 				const teacherUser = userForLoginFactory.build();
 
@@ -356,7 +356,7 @@ describe('DownloadArchive Controller (API)', () => {
 			};
 
 			it('should return 200 with archive file', async () => {
-				const { courseId, loggedInClient, archiveName } = await setup();
+				const { courseId, loggedInClient, archiveName } = setup();
 				const params = {
 					ownerId: courseId,
 					ownerType: FileOwnerModel.COURSE,
@@ -371,7 +371,7 @@ describe('DownloadArchive Controller (API)', () => {
 		});
 
 		describe('when user successfully downloads user archive', () => {
-			const setup = async () => {
+			const setup = () => {
 				const teacherAccount = accountForLoginFactory.build();
 				const teacherUser = userForLoginFactory.build();
 
@@ -404,7 +404,7 @@ describe('DownloadArchive Controller (API)', () => {
 			};
 
 			it('should return 200 with archive file', async () => {
-				const { userId, loggedInClient, archiveName } = await setup();
+				const { userId, loggedInClient, archiveName } = setup();
 				const params = {
 					ownerId: userId,
 					ownerType: FileOwnerModel.USER,
