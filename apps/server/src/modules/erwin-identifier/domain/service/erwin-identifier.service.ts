@@ -29,12 +29,48 @@ export class ErwinIdentifierService {
 
 		await this.erwinIdentifierRepo.create(erwinIdentifier);
 		this.logger.info(
-			new ErwinIdentifierLoggable('An erwinId entry was created.', {
+			new ErwinIdentifierLoggable('An erwinIdentifier entry was created.', {
 				erwinId: erwinIdentifier.erwinId,
 				type: erwinIdentifier.type,
 				referencedEntityId: erwinIdentifier.referencedEntityId,
 			})
 		);
+		return erwinIdentifier;
+	}
+
+	public async findByErwinId(erwinId: string): Promise<ErwinIdentifier | null> {
+		const erwinIdentifier = await this.erwinIdentifierRepo.findByErwinId(erwinId);
+
+		if (!erwinIdentifier) {
+			return null;
+		}
+
+		this.logger.info(
+			new ErwinIdentifierLoggable('ErwinIdentifier entry was fetched by erwinId.', {
+				erwinId: erwinIdentifier.erwinId,
+				type: erwinIdentifier.type,
+				referencedEntityId: erwinIdentifier.referencedEntityId,
+			})
+		);
+
+		return erwinIdentifier;
+	}
+
+	public async findByReferencedEntityId(referencedEntityId: EntityId): Promise<ErwinIdentifier | null> {
+		const erwinIdentifier = await this.erwinIdentifierRepo.findByReferencedEntityId(referencedEntityId);
+
+		if (!erwinIdentifier) {
+			return null;
+		}
+
+		this.logger.info(
+			new ErwinIdentifierLoggable('ErwinIdentifier entry was fetched by referencedEntityId.', {
+				erwinId: erwinIdentifier.erwinId,
+				type: erwinIdentifier.type,
+				referencedEntityId: erwinIdentifier.referencedEntityId,
+			})
+		);
+
 		return erwinIdentifier;
 	}
 }

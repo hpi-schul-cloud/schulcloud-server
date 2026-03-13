@@ -13,4 +13,6 @@ export interface ErwinIdentifierRepo {
 	findByErwinId(erwinId: string): Promise<ErwinIdentifier | null>;
 
 	findByReferencedEntityId(referencedEntityId: EntityId): Promise<ErwinIdentifier | null>;
+
+	deleteById(erwinIdentifierEntityId: EntityId): Promise<void>;
 }
