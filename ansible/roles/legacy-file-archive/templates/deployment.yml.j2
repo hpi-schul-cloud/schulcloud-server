@@ -1,0 +1,114 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: legacy-file-archive-deployment
+  namespace: {{ NAMESPACE }}
+{% if ANNOTATIONS is defined and ANNOTATIONS|bool %}
+  annotations:
+{% if RELOADER is defined and RELOADER|bool %}
+    reloader.stakater.com/auto: "true"
+{% endif %}
+{% endif %}
+  labels:
+    app: legacy-file-archive
+    app.kubernetes.io/part-of: schulcloud-verbund
+    app.kubernetes.io/version: {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+    app.kubernetes.io/name: legacy-file-archive
+    app.kubernetes.io/component: server
+    app.kubernetes.io/managed-by: ansible
+    git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
+    git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
+spec:
+  replicas: {{ LEGACY_FILE_ARCHIVE_REPLICAS|default("1", true) }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      #maxUnavailable: 1
+  revisionHistoryLimit: 4
+  paused: false
+  selector:
+    matchLabels:
+      app: legacy-file-archive
+  template:
+    metadata:
+      labels:
+        app: legacy-file-archive
+        app.kubernetes.io/part-of: schulcloud-verbund
+        app.kubernetes.io/version: {{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+        app.kubernetes.io/name: legacy-file-archive
+        app.kubernetes.io/component: server
+        app.kubernetes.io/managed-by: ansible
+        git.branch: {{ SCHULCLOUD_SERVER_BRANCH_NAME }}
+        git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
+    spec:
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        runAsNonRoot: true
+      os:
+        name: linux
+      containers:
+      - name: legacy-file-archive
+        image: {{ SCHULCLOUD_SERVER_IMAGE }}:{{ SCHULCLOUD_SERVER_IMAGE_TAG }}
+        imagePullPolicy: IfNotPresent
+        env:
+        - name: NODE_OPTIONS
+          value: "--max-old-space-size={{ ((LEGACY_FILE_ARCHIVE_MEMORY_LIMITS | regex_replace('Gi', '')|int * 1024 * 0.8)|int) }}"
+        envFrom:
+        - configMapRef:
+            name: legacy-file-archive-configmap
+        - secretRef:
+            name: legacy-file-archive-secret
+        - secretRef:
+            name: session-valkey-password
+        command: ['npm', 'run', 'nest:start:legacy-file-archive:prod']
+        ports:
+        - name: api
+          containerPort: 3351
+          protocol: TCP
+        resources:
+          limits:
+            cpu: {{ LEGACY_FILE_ARCHIVE_CPU_LIMITS|default("2000m", true) }}
+            memory: {{ LEGACY_FILE_ARCHIVE_MEMORY_LIMITS }}
+          requests:
+            cpu: {{ LEGACY_FILE_ARCHIVE_CPU_REQUESTS|default("100m", true) }}
+            memory: {{ LEGACY_FILE_ARCHIVE_MEMORY_REQUESTS }}
+{% if AFFINITY_ENABLE is defined and AFFINITY_ENABLE|bool %}
+      affinity:
+        podAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 9
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/part-of
+                  operator: In
+                  values:
+                  - schulcloud-verbund
+              topologyKey: "kubernetes.io/hostname"
+              namespaceSelector: {}
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+{% if ANIT_AFFINITY_NODEPOOL_ENABLE is defined and ANIT_AFFINITY_NODEPOOL_ENABLE|bool %}
+          - weight: 10
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/name
+                  operator: In
+                  values:
+                  - legacy-file-archive
+              topologyKey: {{ ANIT_AFFINITY_NODEPOOL_TOPOLOGY_KEY }}
+{% endif %}
+          - weight: 20
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/name
+                  operator: In
+                  values:
+                  - legacy-file-archive
+              topologyKey: "kubernetes.io/hostname"
+{% endif %}

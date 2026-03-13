@@ -1,0 +1,13 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: legacy-file-archive-pod-monitor
+  namespace: {{ NAMESPACE }}
+  labels:
+    app: legacy-file-archive
+spec:
+  selector:
+    matchLabels:
+      app: legacy-file-archive
+  podMetricsEndpoints:
+  - port: metrics

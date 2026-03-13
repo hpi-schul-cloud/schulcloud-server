@@ -1,0 +1,70 @@
+- name: Configmap
+  kubernetes.core.k8s:
+    kubeconfig: ~/.kube/config
+    namespace: '{{ NAMESPACE }}'
+    template: configmap.yml.j2
+  when: WITH_LEGACY_FILE_ARCHIVE is defined and WITH_LEGACY_FILE_ARCHIVE|bool
+  tags:
+    - configmap
+
+- name: External Secret
+  kubernetes.core.k8s:
+    kubeconfig: ~/.kube/config
+    namespace: '{{ NAMESPACE }}'
+    template: external-secret.yml.j2
+    state: "{{ 'present' if
+      WITH_BRANCH_MONGO_DB_MANAGEMENT is defined and WITH_BRANCH_MONGO_DB_MANAGEMENT|bool and
+      WITH_LEGACY_FILE_ARCHIVE is defined and WITH_LEGACY_FILE_ARCHIVE|bool
+      else 'absent'}}"
+  when:
+    - EXTERNAL_SECRETS_OPERATOR is defined and EXTERNAL_SECRETS_OPERATOR|bool
+  tags:
+    - 1password
+
+- name: 1Password
+  kubernetes.core.k8s:
+    kubeconfig: ~/.kube/config
+    namespace: '{{ NAMESPACE }}'
+    template: onepassword.yml.j2
+  when:
+    - ONEPASSWORD_OPERATOR is defined and ONEPASSWORD_OPERATOR|bool
+    - WITH_LEGACY_FILE_ARCHIVE is defined and WITH_LEGACY_FILE_ARCHIVE|bool
+  tags:
+    - 1password
+
+- name: Deployment
+  kubernetes.core.k8s:
+    kubeconfig: ~/.kube/config
+    namespace: '{{ NAMESPACE }}'
+    template: deployment.yml.j2
+  when: WITH_LEGACY_FILE_ARCHIVE is defined and WITH_LEGACY_FILE_ARCHIVE|bool
+  tags:
+    - deployment
+
+- name: Service
+  kubernetes.core.k8s:
+    kubeconfig: ~/.kube/config
+    namespace: '{{ NAMESPACE }}'
+    template: svc.yml.j2
+  when: WITH_LEGACY_FILE_ARCHIVE is defined and WITH_LEGACY_FILE_ARCHIVE|bool
+  tags:
+    - service
+
+- name: Ingress
+  kubernetes.core.k8s:
+    kubeconfig: ~/.kube/config
+    namespace: '{{ NAMESPACE }}'
+    template: ingress.yml.j2
+  when: WITH_LEGACY_FILE_ARCHIVE is defined and WITH_LEGACY_FILE_ARCHIVE|bool
+  tags:
+    - ingress
+
+- name: Legacy File Archive pod monitor
+  kubernetes.core.k8s:
+    kubeconfig: ~/.kube/config
+    namespace: '{{ NAMESPACE }}'
+    template: pod-monitor.yml.j2
+    state: 'present'
+  when: WITH_LEGACY_FILE_ARCHIVE is defined and WITH_LEGACY_FILE_ARCHIVE|bool
+  tags:
+    - prometheus

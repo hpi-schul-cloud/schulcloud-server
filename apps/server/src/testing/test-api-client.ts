@@ -1,12 +1,20 @@
 import type { AccountEntity } from '@modules/account/repo';
 import { defaultTestPassword } from '@modules/account/testing/account.factory';
-// eslint-disable-next-line @typescript-eslint/no-restricted-imports
-import type { User } from '@modules/user/repo';
 import { INestApplication } from '@nestjs/common';
 import type { Server } from 'node:net';
 import supertest, { Response } from 'supertest';
 import { JwtAuthenticationFactory } from './factory/jwt-authentication.factory';
 import { TestJwtModuleConfig } from './test-jwt-module.config';
+
+interface AccountForLogin {
+	id: string;
+}
+
+interface UserForLogin {
+	id: string;
+	school: { id: string };
+	roles: ArrayLike<{ id: string }>;
+}
 
 interface AuthenticationResponse {
 	accessToken: string;
@@ -131,7 +139,7 @@ export class TestApiClient {
 		);
 	}
 
-	public loginByUser(account: AccountEntity, user: User, jwtConfig: TestJwtModuleConfig): this {
+	public loginByUser(account: AccountForLogin, user: UserForLogin, jwtConfig: TestJwtModuleConfig): this {
 		const jwt = JwtAuthenticationFactory.createJwt(
 			{
 				accountId: account.id,
