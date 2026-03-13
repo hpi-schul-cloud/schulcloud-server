@@ -1,6 +1,5 @@
 import { EntityManager } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { adminApiServerConfig } from '@modules/server/admin-api-server.config';
 import { AdminApiServerTestModule } from '@modules/server/admin-api.server.app.module';
 import { userFactory } from '@modules/user/testing';
 import { INestApplication } from '@nestjs/common';
@@ -18,9 +17,6 @@ describe('getBatches ', () => {
 	const API_KEY = 'someotherkey';
 
 	beforeAll(async () => {
-		const config = adminApiServerConfig();
-		config.ADMIN_API__ALLOWED_API_KEYS = [API_KEY];
-
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [AdminApiServerTestModule],
 		}).compile();
@@ -60,7 +56,7 @@ describe('getBatches ', () => {
 				invalidIds: [invalidId2],
 				createdAt: now,
 			});
-			await em.persistAndFlush([student1, student2, student3, teacher1, teacher2, batch1, batch2]);
+			await em.persist([student1, student2, student3, teacher1, teacher2, batch1, batch2]).flush();
 			em.clear();
 
 			const deletionBatchListResponse1 = {

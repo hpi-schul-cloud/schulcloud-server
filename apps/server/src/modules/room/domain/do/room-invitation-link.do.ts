@@ -6,7 +6,8 @@ export interface RoomInvitationLinkProps extends AuthorizableObject {
 	id: EntityId;
 	title: string;
 	restrictedToCreatorSchool: boolean;
-	isOnlyForTeachers: boolean;
+	isUsableByExternalPersons: boolean;
+	isUsableByStudents: boolean;
 	activeUntil?: Date;
 	requiresConfirmation: boolean;
 	roomId: EntityId;
@@ -27,7 +28,9 @@ export class RoomInvitationLink extends DomainObject<RoomInvitationLinkProps> {
 	}
 
 	public getProps(): RoomInvitationLinkProps {
-		// Note: Propagated hotfix. Will be resolved with mikro-orm update. Look at the comment in board-node.do.ts.
+		// We need to make sure that only properties of type T are returned
+		// At runtime the props are a MikroORM entity that has additional non-persisted properties
+		// see @Property({ persist: false })
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore
@@ -64,12 +67,20 @@ export class RoomInvitationLink extends DomainObject<RoomInvitationLinkProps> {
 		this.props.restrictedToCreatorSchool = value;
 	}
 
-	get isOnlyForTeachers(): boolean {
-		return this.props.isOnlyForTeachers;
+	get isUsableByExternalPersons(): boolean {
+		return this.props.isUsableByExternalPersons;
 	}
 
-	set isOnlyForTeachers(value: boolean) {
-		this.props.isOnlyForTeachers = value;
+	set isUsableByExternalPersons(value: boolean) {
+		this.props.isUsableByExternalPersons = value;
+	}
+
+	get isUsableByStudents(): boolean {
+		return this.props.isUsableByStudents;
+	}
+
+	set isUsableByStudents(value: boolean) {
+		this.props.isUsableByStudents = value;
 	}
 
 	get activeUntil(): Date | undefined {

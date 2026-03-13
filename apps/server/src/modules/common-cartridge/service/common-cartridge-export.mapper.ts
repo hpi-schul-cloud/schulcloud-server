@@ -1,12 +1,22 @@
-import sanitizeHtml from 'sanitize-html';
-import { FileDto } from '@modules/files-storage-client';
-import { CourseCommonCartridgeMetadataDto } from '@infra/courses-client/dto';
 import {
-	LessonContentDto,
-	LessonContentDtoComponentValues,
-	LessonDto,
-	LessonLinkedTaskDto,
-} from '../common-cartridge-client/lesson-client/dto';
+	BoardTaskResponse,
+	ComponentEtherpadPropsImpl,
+	ComponentGeogebraPropsImpl,
+	ComponentLernstorePropsImpl,
+	ComponentTextPropsImpl,
+	CourseCommonCartridgeMetadataResponse,
+	FileElementResponse,
+	FileFolderElementResponse,
+	FileRecordResponse,
+	LessonContentResponse,
+	LessonContentResponseComponent,
+	LessonLinkedTaskResponse,
+	LessonResponse,
+	LinkElementResponse,
+	RichTextElementResponse,
+} from '@infra/common-cartridge-clients';
+import sanitizeHtml from 'sanitize-html';
+import { Stream } from 'stream';
 import { CommonCartridgeOrganizationProps } from '../export/builders/common-cartridge-file-builder';
 import {
 	CommonCartridgeElementType,
@@ -15,17 +25,10 @@ import {
 	CommonCartridgeVersion,
 } from '../export/common-cartridge.enums';
 import { CommonCartridgeElementProps } from '../export/elements/common-cartridge-element-factory';
-import { createIdentifier } from '../export/utils';
 import { CommonCartridgeResourceProps } from '../export/resources/common-cartridge-resource-factory';
-import { BoardTaskDto } from '../common-cartridge-client/room-client/dto/board-task.dto';
-import { RichTextElementResponseDto } from '../common-cartridge-client/card-client/dto/rich-text-element-response.dto';
-import { LinkElementResponseDto } from '../common-cartridge-client/card-client/dto/link-element-response.dto';
-import { ComponentTextPropsDto } from '../common-cartridge-client/lesson-client/dto/component-text-props.dto';
-import { ComponentGeogebraPropsDto } from '../common-cartridge-client/lesson-client/dto/component-geogebra-props.dto';
-import { ComponentLernstorePropsDto } from '../common-cartridge-client/lesson-client/dto/component-lernstore-props.dto';
-import { ComponentEtherpadPropsDto } from '../common-cartridge-client/lesson-client/dto/component-etherpad-props.dto';
-import { FileElementResponseDto } from '../common-cartridge-client/card-client/dto/file-element-response.dto';
-import { Stream } from 'stream';
+import { FileElement } from '../export/resources/v1.3.0/common-cartridge-file-folder-resource';
+import { createIdentifier } from '../export/utils';
+import { FileMetadataAndStream } from './common-cartridge-export.service';
 
 export class CommonCartridgeExportMapper {
 	private static readonly GEOGEBRA_BASE_URL: string = 'https://geogebra.org';
@@ -40,7 +43,7 @@ export class CommonCartridgeExportMapper {
 		};
 	}
 
-	public mapCourseToMetadata(courseMetadata: CourseCommonCartridgeMetadataDto): CommonCartridgeElementProps {
+	public mapCourseToMetadata(courseMetadata: CourseCommonCartridgeMetadataResponse): CommonCartridgeElementProps {
 		return {
 			type: CommonCartridgeElementType.METADATA,
 			title: courseMetadata.title,
@@ -49,50 +52,50 @@ export class CommonCartridgeExportMapper {
 		};
 	}
 
-	public mapLessonToOrganization(lesson: LessonDto): CommonCartridgeOrganizationProps {
+	public mapLessonToOrganization(lesson: LessonResponse): CommonCartridgeOrganizationProps {
 		return {
-			identifier: createIdentifier(lesson.lessonId),
+			identifier: createIdentifier(lesson.id),
 			title: lesson.name,
 		};
 	}
 
 	public mapContentToResources(
-		lessonContent: LessonContentDto
+		lessonContent: LessonContentResponse
 	): CommonCartridgeResourceProps | CommonCartridgeResourceProps[] {
 		switch (lessonContent.component) {
-			case LessonContentDtoComponentValues.TEXT:
+			case LessonContentResponseComponent.TEXT:
 				return {
 					type: CommonCartridgeResourceType.WEB_CONTENT,
 					identifier: createIdentifier(lessonContent.id),
 					title: lessonContent.title,
-					html: `<p>${(lessonContent.content as ComponentTextPropsDto).text ?? ''}</p>`,
+					html: `<p>${(lessonContent.content as ComponentTextPropsImpl).text ?? ''}</p>`,
 					intendedUse: CommonCartridgeIntendedUseType.UNSPECIFIED,
 				};
-			case LessonContentDtoComponentValues.GEO_GEBRA:
+			case LessonContentResponseComponent.GEO_GEBRA:
 				return {
 					type: CommonCartridgeResourceType.WEB_LINK,
 					identifier: createIdentifier(lessonContent.id),
 					title: lessonContent.title,
 					url: `${CommonCartridgeExportMapper.GEOGEBRA_BASE_URL}/m/${
-						(lessonContent.content as ComponentGeogebraPropsDto).materialId
+						(lessonContent.content as ComponentGeogebraPropsImpl).materialId
 					}`,
 				};
-			case LessonContentDtoComponentValues.ETHERPAD:
+			case LessonContentResponseComponent.ETHERPAD:
 				return {
 					type: CommonCartridgeResourceType.WEB_LINK,
 					identifier: createIdentifier(lessonContent.id),
-					title: (lessonContent.content as ComponentEtherpadPropsDto).description
-						? `${lessonContent.title} - ${(lessonContent.content as ComponentEtherpadPropsDto).description}`
+					title: (lessonContent.content as ComponentEtherpadPropsImpl).description
+						? `${lessonContent.title} - ${(lessonContent.content as ComponentEtherpadPropsImpl).description}`
 						: lessonContent.title,
-					url: (lessonContent.content as ComponentEtherpadPropsDto).url,
+					url: (lessonContent.content as ComponentEtherpadPropsImpl).url,
 				};
-			case LessonContentDtoComponentValues.RESOURCES: {
-				const { resources } = lessonContent.content as ComponentLernstorePropsDto;
+			case LessonContentResponseComponent.RESOURCES: {
+				const { resources } = lessonContent.content as ComponentLernstorePropsImpl;
 				return (
-					resources.map((resource) => {
+					resources.map((resource, index) => {
 						return {
 							type: CommonCartridgeResourceType.WEB_LINK,
-							identifier: createIdentifier(lessonContent.id),
+							identifier: `${createIdentifier(lessonContent.id)}-${index}`,
 							title: resource.title,
 							url: resource.url || '',
 						};
@@ -104,14 +107,14 @@ export class CommonCartridgeExportMapper {
 		}
 	}
 
-	public mapContentToOrganization(content: LessonContentDto): CommonCartridgeOrganizationProps {
+	public mapContentToOrganization(content: LessonContentResponse): CommonCartridgeOrganizationProps {
 		return {
 			identifier: createIdentifier(content.id),
 			title: content.title,
 		};
 	}
 
-	public mapTaskToResource(task: BoardTaskDto, version: CommonCartridgeVersion): CommonCartridgeResourceProps {
+	public mapTaskToResource(task: BoardTaskResponse, version: CommonCartridgeVersion): CommonCartridgeResourceProps {
 		const intendedUse = ((): CommonCartridgeIntendedUseType => {
 			switch (version) {
 				case CommonCartridgeVersion.V_1_1_0:
@@ -133,7 +136,7 @@ export class CommonCartridgeExportMapper {
 	}
 
 	public mapLinkedTaskToResource(
-		task: LessonLinkedTaskDto,
+		task: LessonLinkedTaskResponse,
 		version: CommonCartridgeVersion
 	): CommonCartridgeResourceProps {
 		const intendedUse = ((): CommonCartridgeIntendedUseType => {
@@ -156,7 +159,7 @@ export class CommonCartridgeExportMapper {
 		};
 	}
 
-	public mapRichTextElementToResource(element: RichTextElementResponseDto): CommonCartridgeResourceProps {
+	public mapRichTextElementToResource(element: RichTextElementResponse): CommonCartridgeResourceProps {
 		return {
 			type: CommonCartridgeResourceType.WEB_CONTENT,
 			identifier: createIdentifier(element.id),
@@ -166,7 +169,7 @@ export class CommonCartridgeExportMapper {
 		};
 	}
 
-	public mapLinkElementToResource(element: LinkElementResponseDto): CommonCartridgeResourceProps {
+	public mapLinkElementToResource(element: LinkElementResponse): CommonCartridgeResourceProps {
 		return {
 			type: CommonCartridgeResourceType.WEB_LINK,
 			identifier: createIdentifier(element.id),
@@ -176,9 +179,9 @@ export class CommonCartridgeExportMapper {
 	}
 
 	public mapFileToResource(
-		fileRecord: FileDto,
+		fileRecord: FileRecordResponse,
 		file: Stream,
-		element?: FileElementResponseDto
+		element?: FileElementResponse
 	): CommonCartridgeResourceProps {
 		return {
 			type: CommonCartridgeResourceType.FILE,
@@ -186,6 +189,23 @@ export class CommonCartridgeExportMapper {
 			title: element?.content.caption?.trim() ? element.content.caption : fileRecord.name,
 			fileName: fileRecord.name,
 			file,
+		};
+	}
+
+	public mapFileFolderToResource(
+		fileFolderElement: FileFolderElementResponse,
+		fileFolderData: FileMetadataAndStream[]
+	): CommonCartridgeResourceProps {
+		return {
+			type: CommonCartridgeResourceType.FILE_FOLDER,
+			title: fileFolderElement.content.title,
+			identifier: createIdentifier(fileFolderElement.id),
+			files: fileFolderData.map((data): FileElement => {
+				return {
+					file: data.file,
+					fileName: data.name,
+				};
+			}),
 		};
 	}
 

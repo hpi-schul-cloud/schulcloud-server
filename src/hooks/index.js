@@ -7,16 +7,16 @@ const { v4: uuidv4 } = require('uuid');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const _ = require('lodash');
 const mongoose = require('mongoose');
-const { Forbidden, GeneralError, NotFound, BadRequest, TypeError } = require('../errors');
+const { Forbidden, GeneralError, NotFound, BadRequest } = require('../errors');
 const { equal: equalIds } = require('../helper/compare').ObjectId;
 
 const logger = require('../logger');
-const { MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE, NODE_ENV, ENVIRONMENTS } = require('../../config/globals');
+const { ENVIRONMENTS } = require('../../config/environments');
 const { isDisposableEmail } = require('../utils/disposableEmail');
 const { getRestrictPopulatesHook, preventPopulate } = require('./restrictPopulate');
 const { transformToDataTransferObject } = require('./transformToDataTransferObject');
-// Add any common hooks you want to share across services in here.
 
+// Add any common hooks you want to share across services in here.
 exports.preventPopulate = preventPopulate;
 exports.getRestrictPopulatesHook = getRestrictPopulatesHook;
 exports.transformToDataTransferObject = transformToDataTransferObject;
@@ -34,8 +34,8 @@ exports.ifNotLocal = function ifNotLocal(hookForRemoteRequests) {
 
 exports.forceHookResolve = (forcedHook) => (context) => {
 	forcedHook(context)
-		.then(() => Promise.resolve(context))
-		.catch(() => Promise.resolve(context));
+		.then(() => context)
+		.catch(() => context);
 };
 
 exports.isAdmin = () => (context) => {
@@ -53,7 +53,7 @@ exports.isSuperHero = () => (context) => {
 		if (!(user.data[0].roles.filter((u) => u.name === 'superhero').length > 0)) {
 			throw new Forbidden('you are not a superhero, sorry...');
 		}
-		return Promise.resolve(context);
+		return context;
 	});
 };
 
@@ -97,7 +97,7 @@ const hasPermission = (inputPermissions) => {
 				if (!hasAnyPermission) {
 					throw new Forbidden(`You don't have one of the permissions: ${permissionNames.join(', ')}.`);
 				}
-				return Promise.resolve(context);
+				return context;
 			});
 	};
 };
@@ -285,8 +285,10 @@ exports.computeProperty = (Model, functionName, variableName) => (context) =>
 		.then((result) => {
 			context.result[variableName] = Array.from(result); // save it in the resulting object
 		})
-		.catch((e) => logger.error(e))
-		.then(() => Promise.resolve(context));
+		.catch((e) => {
+			logger.error(e);
+		})
+		.then(() => context);
 
 exports.mapPaginationQuery = (context) => {
 	if ((context.params.query || {}).$limit === '-1') {
@@ -493,7 +495,8 @@ exports.restrictToUsersOwnCourses = (context) =>
 		return context;
 	});
 
-const isProductionMode = NODE_ENV === ENVIRONMENTS.PRODUCTION;
+
+const isProductionMode = Configuration.get('NODE_ENV') === ENVIRONMENTS.PRODUCTION;
 exports.mapPayload = (context) => {
 	if (!isProductionMode) {
 		logger.info(
@@ -587,6 +590,9 @@ exports.checkSchoolOwnership = (context) => {
 };
 
 function validatedAttachments(attachments) {
+	const MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE = Configuration.get(
+		'MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE'
+	);
 	let cTotalBufferSize = 0;
 	attachments.forEach((element) => {
 		if (
@@ -598,6 +604,7 @@ function validatedAttachments(attachments) {
 			throw new Error('Email Attachment is not a valid file!');
 		}
 		cTotalBufferSize += element.size;
+
 		if (cTotalBufferSize >= MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE) {
 			throw new BadRequest('Email Attachments exceed the max. total file limit.');
 		}

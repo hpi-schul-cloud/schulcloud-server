@@ -13,6 +13,7 @@ import {
 } from '../bbb';
 import { VideoConferenceDO, VideoConferenceScope } from '../domain';
 import { BBBService, VideoConferenceService } from '../service';
+import { VIDEO_CONFERENCE_CONFIG_TOKEN } from '../video-conference-config';
 import { VideoConferenceCreateUc } from './video-conference-create.uc';
 import { VideoConferenceFeatureService } from './video-conference-feature.service';
 
@@ -38,6 +39,12 @@ describe('VideoConferenceCreateUc', () => {
 				{
 					provide: VideoConferenceFeatureService,
 					useValue: createMock<VideoConferenceFeatureService>(),
+				},
+				{
+					provide: VIDEO_CONFERENCE_CONFIG_TOKEN,
+					useValue: {
+						scHostUrl: 'http://test-host',
+					},
 				},
 			],
 		}).compile();
@@ -78,7 +85,7 @@ describe('VideoConferenceCreateUc', () => {
 	};
 
 	describe('createIfNotRunning', () => {
-		describe('when meeting is not running', () => {
+		describe('when meeting is not already running', () => {
 			describe('when user role is moderator', () => {
 				const setup = () => {
 					const user = userDoFactory.buildWithId();
@@ -106,6 +113,7 @@ describe('VideoConferenceCreateUc', () => {
 						options: options,
 						salt: 'salt',
 					});
+					videoConferenceService.findVideoConferenceByScopeIdAndScope.mockResolvedValueOnce(vcDo);
 					videoConferenceService.createOrUpdateVideoConferenceForScopeWithOptions.mockResolvedValueOnce(vcDo);
 
 					bbbService.getMeetingInfo.mockRejectedValueOnce(new Error('Meeting not found'));
@@ -127,7 +135,15 @@ describe('VideoConferenceCreateUc', () => {
 					expect(videoConferenceFeatureService.checkVideoConferenceFeatureEnabled).toHaveBeenCalled();
 				});
 
-				it('should call bbbService.getMeetingInfo', async () => {
+				it('should call videoConferenceService.findVideoConferenceByScopeIdAndScope', async () => {
+					const { currentUserId, scope, options } = setup();
+
+					await uc.createIfNotRunning(currentUserId, scope, options);
+
+					expect(videoConferenceService.findVideoConferenceByScopeIdAndScope).toBeCalledWith(scope.id, scope.scope);
+				});
+
+				it('should call check if meeting is running by calling bbbService.getMeetingInfo', async () => {
 					const { currentUserId, scope, options } = setup();
 
 					await uc.createIfNotRunning(currentUserId, scope, options);
@@ -201,6 +217,7 @@ describe('VideoConferenceCreateUc', () => {
 						options: options,
 						salt: 'salt',
 					});
+					videoConferenceService.findVideoConferenceByScopeIdAndScope.mockResolvedValueOnce(vcDo);
 					videoConferenceService.createOrUpdateVideoConferenceForScopeWithOptions.mockResolvedValueOnce(vcDo);
 
 					return { currentUserId, scope, options };
@@ -216,7 +233,7 @@ describe('VideoConferenceCreateUc', () => {
 			});
 		});
 
-		describe('when meeting is running', () => {
+		describe('when meeting is already running', () => {
 			const setup = () => {
 				const user = userDoFactory.buildWithId();
 				const currentUserId = user.id as string;
@@ -291,6 +308,7 @@ describe('VideoConferenceCreateUc', () => {
 					options: options,
 					salt: 'salt',
 				});
+				videoConferenceService.findVideoConferenceByScopeIdAndScope.mockResolvedValueOnce(vcDo);
 				videoConferenceService.createOrUpdateVideoConferenceForScopeWithOptions.mockResolvedValueOnce(vcDo);
 				return { user, currentUserId, scope, options };
 			};

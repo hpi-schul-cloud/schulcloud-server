@@ -37,13 +37,13 @@ describe(`board create (api)`, () => {
 			await cleanupCollections(em);
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 			const course = courseEntityFactory.build({ school: teacherUser.school, teachers: [teacherUser] });
-			await em.persistAndFlush([teacherUser, teacherAccount, course]);
+			await em.persist([teacherUser, teacherAccount, course]).flush();
 
 			const columnBoardNode = columnBoardEntityFactory.build({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
 
-			await em.persistAndFlush([columnBoardNode]);
+			await em.persist([columnBoardNode]).flush();
 			em.clear();
 
 			const loggedInClient = await apiClient.login(teacherAccount);
@@ -74,13 +74,13 @@ describe(`board create (api)`, () => {
 			await cleanupCollections(em);
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 			const course = courseEntityFactory.build({ teachers: [] });
-			await em.persistAndFlush([teacherUser, teacherAccount, course]);
+			await em.persist([teacherUser, teacherAccount, course]).flush();
 
 			const columnBoardNode = columnBoardEntityFactory.build({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
 
-			await em.persistAndFlush([columnBoardNode]);
+			await em.persist([columnBoardNode]).flush();
 			em.clear();
 
 			const loggedInClient = await apiClient.login(teacherAccount);
@@ -102,13 +102,13 @@ describe(`board create (api)`, () => {
 			await cleanupCollections(em);
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 			const course = courseEntityFactory.build({ teachers: [] });
-			await em.persistAndFlush([teacherUser, teacherAccount, course]);
+			await em.persist([teacherUser, teacherAccount, course]).flush();
 
 			const columnBoardNode = columnBoardEntityFactory.build({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
 
-			await em.persistAndFlush([columnBoardNode]);
+			await em.persist([columnBoardNode]).flush();
 			em.clear();
 
 			return { columnBoardNode };

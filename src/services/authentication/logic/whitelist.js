@@ -51,7 +51,7 @@ const createRedisIdentifierFromJwtToken = (token) => {
 /**
  * Routes as (regular expressions) which should be ignored for the auto-logout feature.
  */
-const AUTO_LOGOUT_BLACKLIST = [/^accounts\/jwtTimer$/, /^authentication$/, /^wopi\//, /roster\//];
+const AUTO_LOGOUT_BLACKLIST = [/^accounts\/jwtTimer$/, /^authentication$/, /roster\//];
 
 /**
  * a path string or false when expect false

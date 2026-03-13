@@ -44,6 +44,7 @@ describe(`board lookup in room (api)`, () => {
 
 	const setup = async () => {
 		const school = schoolEntityFactory.buildWithId();
+		const userWithOwnerRole = userFactory.buildWithId({ school });
 		const userWithEditRole = userFactory.buildWithId({ school });
 		const accountWithEditRole = accountFactory.withUser(userWithEditRole).build();
 
@@ -53,11 +54,12 @@ describe(`board lookup in room (api)`, () => {
 		const noAccessUser = userFactory.buildWithId({ school });
 		const noAccessAccount = accountFactory.withUser(noAccessUser).build();
 
-		const { roomEditorRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
+		const { roomEditorRole, roomViewerRole, roomOwnerRole } = RoomRolesTestFactory.createRoomRoles();
 
 		const userGroup = groupEntityFactory.buildWithId({
 			type: GroupEntityTypes.ROOM,
 			users: [
+				{ user: userWithOwnerRole, role: roomOwnerRole },
 				{ user: userWithEditRole, role: roomEditorRole },
 				{ user: userWithViewRole, role: roomViewerRole },
 			],
@@ -68,20 +70,22 @@ describe(`board lookup in room (api)`, () => {
 
 		const roomMembership = roomMembershipEntityFactory.build({ roomId: room.id, userGroupId: userGroup.id });
 
-		await em.persistAndFlush([
-			accountWithEditRole,
-			accountWithViewRole,
-			noAccessAccount,
-			userWithEditRole,
-			userWithViewRole,
-			noAccessUser,
-			roomEditorRole,
-			roomViewerRole,
-			userGroup,
-			room,
-			roomMembership,
-			school,
-		]);
+		await em
+			.persist([
+				accountWithEditRole,
+				accountWithViewRole,
+				noAccessAccount,
+				userWithEditRole,
+				userWithViewRole,
+				noAccessUser,
+				roomEditorRole,
+				roomViewerRole,
+				userGroup,
+				room,
+				roomMembership,
+				school,
+			])
+			.flush();
 
 		const columnBoardNode = columnBoardEntityFactory.build({
 			context: { id: room.id, type: BoardExternalReferenceType.Room },
@@ -92,7 +96,7 @@ describe(`board lookup in room (api)`, () => {
 		const cardNode3 = cardEntityFactory.withParent(columnNode).build();
 		const notOfThisBoardCardNode = cardEntityFactory.build();
 
-		await em.persistAndFlush([columnBoardNode, columnNode, cardNode1, cardNode2, cardNode3, notOfThisBoardCardNode]);
+		await em.persist([columnBoardNode, columnNode, cardNode1, cardNode2, cardNode3, notOfThisBoardCardNode]).flush();
 		em.clear();
 
 		return {

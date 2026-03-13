@@ -1,22 +1,23 @@
 import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { OauthConfig, System, SystemService } from '@modules/system';
 import { Inject, Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { ManagementSeedDataConfig } from '../config';
+import { MANAGEMENT_SEED_DATA_CONFIG_TOKEN, ManagementSeedDataConfig } from '../management-seed-data.config';
 
 @Injectable()
 export class SystemsSeedDataService {
 	constructor(
-		private readonly configService: ConfigService<ManagementSeedDataConfig, true>,
+		@Inject(MANAGEMENT_SEED_DATA_CONFIG_TOKEN) private readonly config: ManagementSeedDataConfig,
 		private readonly systemService: SystemService,
 		@Inject(DefaultEncryptionService) private readonly defaultEncryptionService: EncryptionService
 	) {}
 
 	public async import(): Promise<number> {
-		const scTheme: string | undefined = this.configService.get<string>('SC_THEME');
-		const moinSchuleClientId: string | undefined = this.configService.get<string>('SCHULCONNEX_CLIENT_ID');
-		const moinSchuleClientSecret: string | undefined = this.configService.get<string>('SCHULCONNEX_CLIENT_SECRET');
+		const {
+			scTheme,
+			schulconnexClientId: moinSchuleClientId,
+			schulconnexClientSecret: moinSchuleClientSecret,
+		} = this.config;
 
 		if (scTheme === 'n21' && moinSchuleClientId && moinSchuleClientSecret) {
 			const encryptedMoinSchuleSecret: string = this.defaultEncryptionService.encrypt(moinSchuleClientSecret);

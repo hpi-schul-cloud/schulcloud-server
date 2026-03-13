@@ -1,12 +1,17 @@
 import { Readable } from 'stream';
 
 export interface S3Config {
-	connectionName: string;
 	endpoint: string;
 	region: string;
 	bucket: string;
 	accessKeyId: string;
 	secretAccessKey: string;
+}
+
+export interface S3ClientModuleOptions {
+	clientInjectionToken: string;
+	configInjectionToken: string;
+	configConstructor: new () => S3Config;
 }
 
 export interface GetFile {
@@ -25,6 +30,7 @@ export interface CopyFiles {
 export interface File {
 	data: Readable;
 	mimeType: string;
+	abortSignal?: AbortSignal;
 }
 
 export interface ListFiles {

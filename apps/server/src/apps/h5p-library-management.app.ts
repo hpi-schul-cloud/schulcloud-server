@@ -1,15 +1,14 @@
 /* istanbul ignore file */
 /* eslint-disable no-console */
 import { LegacyLogger } from '@core/logger';
-import { H5PLibraryManagementService } from '@modules/h5p-library-management';
-import { H5PLibraryManagementModule } from '@modules/h5p-library-management/h5p-library-management.app.module';
+import { H5PLibraryManagementJobModule, H5PLibraryManagementService } from '@modules/h5p-content-management';
 import { NestFactory } from '@nestjs/core';
 import { install as sourceMapInstall } from 'source-map-support';
 
 async function bootstrap(): Promise<void> {
 	sourceMapInstall();
 
-	const nestApp = await NestFactory.createApplicationContext(H5PLibraryManagementModule);
+	const nestApp = await NestFactory.createApplicationContext(H5PLibraryManagementJobModule);
 
 	// WinstonLogger
 	nestApp.useLogger(await nestApp.resolve(LegacyLogger));

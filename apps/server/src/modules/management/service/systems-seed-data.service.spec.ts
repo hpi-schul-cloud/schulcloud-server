@@ -1,16 +1,16 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { OauthConfig, System, SystemService } from '@modules/system';
-import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
+import { MANAGEMENT_SEED_DATA_CONFIG_TOKEN, ManagementSeedDataConfig } from '../management-seed-data.config';
 import { SystemsSeedDataService } from './systems-seed-data.service';
 
 describe(SystemsSeedDataService.name, () => {
 	let module: TestingModule;
 	let service: SystemsSeedDataService;
 
-	let configService: DeepMocked<ConfigService>;
+	let config: ManagementSeedDataConfig;
 	let systemService: DeepMocked<SystemService>;
 	let encryptionService: DeepMocked<EncryptionService>;
 
@@ -19,8 +19,8 @@ describe(SystemsSeedDataService.name, () => {
 			providers: [
 				SystemsSeedDataService,
 				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService>(),
+					provide: MANAGEMENT_SEED_DATA_CONFIG_TOKEN,
+					useValue: {},
 				},
 				{
 					provide: SystemService,
@@ -34,7 +34,7 @@ describe(SystemsSeedDataService.name, () => {
 		}).compile();
 
 		service = module.get(SystemsSeedDataService);
-		configService = module.get(ConfigService);
+		config = module.get(MANAGEMENT_SEED_DATA_CONFIG_TOKEN);
 		systemService = module.get(SystemService);
 		encryptionService = module.get(DefaultEncryptionService);
 	});
@@ -50,9 +50,9 @@ describe(SystemsSeedDataService.name, () => {
 	describe('import', () => {
 		describe('when the environment is nbc and moin.schule client id and secret are defined', () => {
 			const setup = () => {
-				configService.get.mockReturnValueOnce('n21');
-				configService.get.mockReturnValueOnce('client-id');
-				configService.get.mockReturnValueOnce('client-secret');
+				config.scTheme = 'n21';
+				config.schulconnexClientId = 'client-id';
+				config.schulconnexClientSecret = 'client-secret';
 				encryptionService.encrypt.mockReturnValueOnce('encrypted-client-secret');
 			};
 
@@ -107,9 +107,9 @@ describe(SystemsSeedDataService.name, () => {
 
 		describe('when the environment is not nbc and sanis client id and secret are not defined', () => {
 			const setup = () => {
-				configService.get.mockReturnValueOnce('brb');
-				configService.get.mockReturnValueOnce(undefined);
-				configService.get.mockReturnValueOnce(undefined);
+				config.scTheme = 'brb';
+				config.schulconnexClientId = undefined;
+				config.schulconnexClientSecret = undefined;
 			};
 
 			it('should not import sanis', async () => {

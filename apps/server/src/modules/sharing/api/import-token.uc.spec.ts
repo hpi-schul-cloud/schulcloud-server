@@ -2,9 +2,9 @@ import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { StorageLocation } from '@infra/files-storage-client';
 import { AuthorizationService } from '@modules/authorization';
-import { BoardExternalReferenceType, ColumnBoardService } from '@modules/board';
-import { CopyColumnBoardParams } from '@modules/board/service/internal';
-import { columnBoardFactory } from '@modules/board/testing';
+import { BoardExternalReferenceType, BoardNodeService, ColumnBoardService } from '@modules/board';
+import { CopyCardParams, CopyColumnBoardParams } from '@modules/board/service/internal';
+import { cardFactory, columnBoardFactory, columnFactory } from '@modules/board/testing';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { CourseService } from '@modules/course';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
@@ -43,6 +43,7 @@ describe('ShareTokenUC', () => {
 	let courseService: DeepMocked<CourseService>;
 	let roomService: DeepMocked<RoomService>;
 	let columnBoardService: DeepMocked<ColumnBoardService>;
+	let boardNodeService: DeepMocked<BoardNodeService>;
 	let sagaService: DeepMocked<SagaService>;
 	let shareTokenPermissionService: DeepMocked<ShareTokenPermissionService>;
 
@@ -83,6 +84,10 @@ describe('ShareTokenUC', () => {
 					useValue: createMock<ColumnBoardService>(),
 				},
 				{
+					provide: BoardNodeService,
+					useValue: createMock<BoardNodeService>(),
+				},
+				{
 					provide: SagaService,
 					useValue: createMock<SagaService>(),
 				},
@@ -106,6 +111,7 @@ describe('ShareTokenUC', () => {
 		courseService = module.get(CourseService);
 		roomService = module.get(RoomService);
 		columnBoardService = module.get(ColumnBoardService);
+		boardNodeService = module.get(BoardNodeService);
 		sagaService = module.get(SagaService);
 		shareTokenPermissionService = module.get(ShareTokenPermissionService);
 
@@ -413,6 +419,102 @@ describe('ShareTokenUC', () => {
 				await uc.importShareToken(user.id, shareToken.token, newName, course.id);
 				expect(columnBoardService.swapLinkedIdsInBoards).toHaveBeenCalled();
 			});
+			it('should return the result', async () => {
+				const { user, shareToken, columnBoard, status } = setup();
+
+				const newName = 'NewName';
+
+				const result = await uc.importShareToken(user.id, shareToken.token, newName, columnBoard.id);
+
+				expect(result).toEqual(status);
+			});
+		});
+
+		describe('when parent is a card', () => {
+			const setup = () => {
+				const school = schoolEntityFactory.buildWithId();
+				const user = userFactory.buildWithId({ school });
+				const course = courseEntityFactory.buildWithId({ school });
+				const destinationCourse = courseEntityFactory.buildWithId({ school });
+				courseService.findById.mockResolvedValueOnce(course).mockResolvedValueOnce(destinationCourse);
+
+				const columnBoard = columnBoardFactory.build();
+				const destinationColumnBoard = columnBoardFactory.build({
+					context: { type: BoardExternalReferenceType.Course, id: destinationCourse.id },
+				});
+				const destinationColumn = columnFactory.build({});
+				columnBoardService.findById.mockResolvedValueOnce(columnBoard).mockResolvedValueOnce(destinationColumnBoard);
+
+				const card = cardFactory.build();
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(destinationColumn).mockResolvedValueOnce(card);
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+
+				const status: CopyStatus = {
+					type: CopyElementType.CARD,
+					status: CopyStatusEnum.SUCCESS,
+					copyEntity: card,
+				};
+				columnBoardService.copyCard.mockResolvedValueOnce(status);
+
+				const payload: ShareTokenPayload = { parentType: ShareTokenParentType.Card, parentId: card.id };
+				const shareToken = shareTokenDOFactory.build({ payload });
+				service.lookupToken.mockResolvedValueOnce(shareToken);
+
+				return {
+					user,
+					shareToken,
+					school,
+					course,
+					card,
+					columnBoard,
+					destinationColumnBoard,
+					destinationColumn,
+					status,
+				};
+			};
+
+			it('should get token from service', async () => {
+				const { user, shareToken, course } = setup();
+				await uc.importShareToken(user.id, shareToken.token, 'NewName', course.id);
+				expect(service.lookupToken).toHaveBeenCalledWith(shareToken.token);
+			});
+
+			it('should check the permission to create the card', async () => {
+				const { user, shareToken, destinationColumnBoard } = setup();
+
+				await uc.importShareToken(user.id, shareToken.token, 'NewName', destinationColumnBoard.context.id);
+
+				expect(shareTokenPermissionService.checkCourseWritePermission).toHaveBeenCalledWith(
+					user,
+					destinationColumnBoard.context.id,
+					Permission.COURSE_EDIT
+				);
+			});
+
+			it('should throw if destination column id is not given', async () => {
+				const { user, shareToken } = setup();
+				courseService.findById.mockRestore();
+
+				await expect(uc.importShareToken(user.id, shareToken.token, 'NewName')).rejects.toThrowError(
+					BadRequestException
+				);
+			});
+
+			it('should call the card copy service', async () => {
+				const { user, shareToken, course, card, destinationColumn } = setup();
+				const newName = 'NewName';
+				await uc.importShareToken(user.id, shareToken.token, newName, destinationColumn.id);
+				expect(columnBoardService.copyCard).toHaveBeenCalledWith<CopyCardParams[]>({
+					originalCardId: card.id,
+					sourceStorageLocationReference: { type: StorageLocation.SCHOOL, id: course.school.id },
+					targetStorageLocationReference: { type: StorageLocation.SCHOOL, id: course.school.id },
+					userId: user.id,
+					copyTitle: newName,
+					targetSchoolId: user.school.id,
+					destinationColumnId: destinationColumn.id,
+				});
+			});
+
 			it('should return the result', async () => {
 				const { user, shareToken, columnBoard, status } = setup();
 

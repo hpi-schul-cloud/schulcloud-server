@@ -26,7 +26,7 @@ describe('LtiRoleMapper', () => {
 
 		describe('when the provided roles have no mapping', () => {
 			it('should not return a role mapping for these roles', () => {
-				const result: LtiRole[] = LtiRoleMapper.mapRolesToLtiRoles([RoleName.EXPERT, RoleName.HELPDESK]);
+				const result: LtiRole[] = LtiRoleMapper.mapRolesToLtiRoles([RoleName.EXTERNALPERSON, RoleName.HELPDESK]);
 
 				expect(result).toEqual([]);
 			});

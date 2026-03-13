@@ -41,7 +41,7 @@ describe(`card move (api)`, () => {
 		const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 
 		const course = courseEntityFactory.build({ school: teacherUser.school, teachers: [teacherUser] });
-		await em.persistAndFlush([teacherUser, teacherAccount, course]);
+		await em.persist([teacherUser, teacherAccount, course]).flush();
 
 		const columnBoardNode = columnBoardEntityFactory.build({
 			context: { id: course.id, type: BoardExternalReferenceType.Course },
@@ -52,7 +52,7 @@ describe(`card move (api)`, () => {
 		const targetColumn = columnEntityFactory.withParent(columnBoardNode).build();
 		const targetColumnCards = cardEntityFactory.withParent(targetColumn).buildList(4);
 
-		await em.persistAndFlush([cardNode1, cardNode2, parentColumn, targetColumn, columnBoardNode, ...targetColumnCards]);
+		await em.persist([cardNode1, cardNode2, parentColumn, targetColumn, columnBoardNode, ...targetColumnCards]).flush();
 		em.clear();
 
 		const loggedInClient = await testApiClient.login(teacherAccount);
@@ -61,7 +61,7 @@ describe(`card move (api)`, () => {
 	};
 
 	describe('with valid user', () => {
-		it('should return status 204', async () => {
+		it('should return status 200', async () => {
 			const { loggedInClient, cardNode1, targetColumn } = await setup();
 
 			const params: MoveCardBodyParams = {
@@ -71,7 +71,7 @@ describe(`card move (api)`, () => {
 
 			const response = await loggedInClient.put(`${cardNode1.id}/position`, params);
 
-			expect(response.status).toEqual(204);
+			expect(response.status).toEqual(200);
 		});
 
 		it('should actually move the card', async () => {
@@ -128,7 +128,7 @@ describe(`card move (api)`, () => {
 			const vars = await setup();
 
 			const { studentAccount: noAccessAccount, studentUser: noAccessUser } = UserAndAccountTestFactory.buildStudent();
-			await em.persistAndFlush([noAccessAccount, noAccessUser]);
+			await em.persist([noAccessAccount, noAccessUser]).flush();
 			const loggedInClient = await testApiClient.login(noAccessAccount);
 
 			return {

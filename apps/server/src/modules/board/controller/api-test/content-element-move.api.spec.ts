@@ -46,7 +46,7 @@ describe(`content element move (api)`, () => {
 		const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 
 		const course = courseEntityFactory.build({ school: teacherUser.school, teachers: [teacherUser] });
-		await em.persistAndFlush([teacherUser, teacherAccount, course]);
+		await em.persist([teacherUser, teacherAccount, course]).flush();
 
 		const columnBoardNode = columnBoardEntityFactory.build({
 			context: { id: course.id, type: BoardExternalReferenceType.Course },
@@ -57,7 +57,7 @@ describe(`content element move (api)`, () => {
 		const targetCardElements = richTextElementEntityFactory.withParent(targetCard).buildList(4);
 		const element = richTextElementEntityFactory.withParent(parentCard).build();
 
-		await em.persistAndFlush([parentCard, column, targetCard, columnBoardNode, ...targetCardElements, element]);
+		await em.persist([parentCard, column, targetCard, columnBoardNode, ...targetCardElements, element]).flush();
 		em.clear();
 
 		const loggedInClient = await testApiClient.login(teacherAccount);
@@ -109,7 +109,7 @@ describe(`content element move (api)`, () => {
 			const vars = await setup();
 
 			const { studentAccount: noAccessAccount, studentUser: noAccessUser } = UserAndAccountTestFactory.buildStudent();
-			await em.persistAndFlush([noAccessAccount, noAccessUser]);
+			await em.persist([noAccessAccount, noAccessUser]).flush();
 			const loggedInClient = await testApiClient.login(noAccessAccount);
 
 			return {

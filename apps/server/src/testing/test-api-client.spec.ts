@@ -19,32 +19,32 @@ import { TestApiClient } from './test-api-client';
 @Controller('')
 class TestController {
 	@Delete(':id')
-	async delete(@Headers('authorization') authorization: string) {
+	public delete(@Headers('authorization') authorization: string) {
 		return Promise.resolve({ method: 'delete', authorization });
 	}
 
 	@Post()
-	async post(@Headers('authorization') authorization: string) {
+	public post(@Headers('authorization') authorization: string) {
 		return Promise.resolve({ method: 'post', authorization });
 	}
 
 	@Get(':id')
-	async get(@Headers('authorization') authorization: string) {
+	public get(@Headers('authorization') authorization: string) {
 		return Promise.resolve({ method: 'get', authorization });
 	}
 
 	@Put()
-	async put(@Headers('authorization') authorization: string) {
+	public put(@Headers('authorization') authorization: string) {
 		return Promise.resolve({ method: 'put', authorization });
 	}
 
 	@Patch(':id')
-	async patch(@Headers('authorization') authorization: string) {
+	public patch(@Headers('authorization') authorization: string) {
 		return Promise.resolve({ method: 'patch', authorization });
 	}
 
 	@Post('/authentication/local')
-	async jwt() {
+	public jwt() {
 		return Promise.resolve({ accessToken: '123' });
 	}
 }
@@ -52,7 +52,7 @@ class TestController {
 @Controller('')
 class TestErrorController {
 	@Post('/authentication/local')
-	async jwt() {
+	public jwt() {
 		return Promise.reject(new UnauthorizedException());
 	}
 }
@@ -60,17 +60,17 @@ class TestErrorController {
 @Controller('')
 class TestXApiKeyController {
 	@Delete(':id')
-	async delete(@Headers('X-API-KEY') authorization: string) {
+	public delete(@Headers('X-API-KEY') authorization: string) {
 		return Promise.resolve({ method: 'delete', authorization });
 	}
 
 	@Post()
-	async post(@Headers('X-API-KEY') authorization: string) {
+	public post(@Headers('X-API-KEY') authorization: string) {
 		return Promise.resolve({ method: 'post', authorization });
 	}
 
 	@Get(':id')
-	async get(@Headers('X-API-KEY') authorization: string) {
+	public get(@Headers('X-API-KEY') authorization: string) {
 		return Promise.resolve({ method: 'get', authorization });
 	}
 }

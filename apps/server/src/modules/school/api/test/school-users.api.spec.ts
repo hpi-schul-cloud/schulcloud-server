@@ -1,12 +1,14 @@
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { AUTHORIZATION_CONFIG_TOKEN, AuthorizationConfig } from '@modules/authorization';
 import { classEntityFactory } from '@modules/class/entity/testing/factory/class.entity.factory';
 import { GroupEntityTypes } from '@modules/group/entity';
 import { groupEntityFactory } from '@modules/group/testing';
+import { RoleName } from '@modules/role';
 import { Role } from '@modules/role/repo';
+import { roleFactory } from '@modules/role/testing';
 import { SchoolEntity } from '@modules/school/repo';
 import { schoolEntityFactory, schoolYearEntityFactory } from '@modules/school/testing';
-import { serverConfig, ServerConfig, ServerTestModule } from '@modules/server';
+import { ServerTestModule } from '@modules/server';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
@@ -14,16 +16,13 @@ import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
-import { TestConfigHelper } from '@testing/test-config.helper';
 import { SchoolUserListResponse } from '../dto';
-import { roleFactory } from '@modules/role/testing';
-import { RoleName } from '@modules/role';
 
 describe('School Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let testApiClient: TestApiClient;
-	let testConfigHelper: TestConfigHelper<ServerConfig>;
+	let authorizationConfig: AuthorizationConfig;
 
 	beforeAll(async () => {
 		const moduleFixture = await Test.createTestingModule({
@@ -34,9 +33,7 @@ describe('School Controller (API)', () => {
 		await app.init();
 		em = app.get(EntityManager);
 		testApiClient = new TestApiClient(app, 'school');
-
-		const config = serverConfig();
-		testConfigHelper = new TestConfigHelper(config);
+		authorizationConfig = moduleFixture.get<AuthorizationConfig>(AUTHORIZATION_CONFIG_TOKEN);
 	});
 
 	beforeEach(async () => {
@@ -49,10 +46,6 @@ describe('School Controller (API)', () => {
 
 	afterAll(async () => {
 		await app.close();
-	});
-
-	afterEach(() => {
-		testConfigHelper.reset();
 	});
 
 	const mapUsersWithSchoolName = (users: User[], schoolName: string) => {
@@ -82,7 +75,7 @@ describe('School Controller (API)', () => {
 			const setup = async () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 
-				await em.persistAndFlush([teacherAccount, teacherUser]);
+				await em.persist([teacherAccount, teacherUser]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);
@@ -108,7 +101,7 @@ describe('School Controller (API)', () => {
 			const setup = async () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 
-				await em.persistAndFlush([teacherAccount, teacherUser]);
+				await em.persist([teacherAccount, teacherUser]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);
@@ -135,7 +128,7 @@ describe('School Controller (API)', () => {
 				const teachersOfSchool = userFactory.buildList(3, { school, roles: [teacherRole] });
 				const publicTeachersOfSchool = userFactory.buildList(2, { school, roles: [teacherRole], discoverable: true });
 
-				await em.persistAndFlush([teacherAccount, teacherUser, ...teachersOfSchool, ...publicTeachersOfSchool]);
+				await em.persist([teacherAccount, teacherUser, ...teachersOfSchool, ...publicTeachersOfSchool]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);
@@ -145,7 +138,6 @@ describe('School Controller (API)', () => {
 
 			it('should return only public teachers', async () => {
 				const { loggedInClient, school, publicTeachersOfSchool } = await setup();
-				testConfigHelper.set('TEACHER_VISIBILITY_FOR_EXTERNAL_TEAM_INVITATION', 'opt-in');
 
 				const response = await loggedInClient.get(`${school.id}/teachers`);
 				const body = response.body as SchoolUserListResponse;
@@ -167,15 +159,17 @@ describe('School Controller (API)', () => {
 				const teacherRole = roleFactory.buildWithId({ name: RoleName.TEACHER });
 				const teachersOfSchool = userFactory.buildList(3, { school: teachersSchool, roles: [studentRole] });
 
-				await em.persistAndFlush([
-					studentAccount,
-					studentUser,
-					...teachersOfSchool,
-					studentRole,
-					teacherRole,
-					teachersSchool,
-					userSchool,
-				]);
+				await em
+					.persist([
+						studentAccount,
+						studentUser,
+						...teachersOfSchool,
+						studentRole,
+						teacherRole,
+						teachersSchool,
+						userSchool,
+					])
+					.flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
@@ -214,7 +208,7 @@ describe('School Controller (API)', () => {
 				const otherSchool = schoolEntityFactory.build();
 				const teachersOfOtherSchool = userFactory.buildList(3, { school: otherSchool, roles: [teacherRole] });
 
-				await em.persistAndFlush([teacherAccount, teacherUser, ...teachersOfSchool, ...teachersOfOtherSchool]);
+				await em.persist([teacherAccount, teacherUser, ...teachersOfSchool, ...teachersOfOtherSchool]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);
@@ -258,7 +252,7 @@ describe('School Controller (API)', () => {
 			const setup = async () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 
-				await em.persistAndFlush([teacherAccount, teacherUser]);
+				await em.persist([teacherAccount, teacherUser]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);
@@ -284,7 +278,7 @@ describe('School Controller (API)', () => {
 			const setup = async () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 
-				await em.persistAndFlush([teacherAccount, teacherUser]);
+				await em.persist([teacherAccount, teacherUser]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);
@@ -304,11 +298,11 @@ describe('School Controller (API)', () => {
 
 		describe('when user has no permission to view all students', () => {
 			beforeEach(() => {
-				Configuration.set('TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT', false);
+				authorizationConfig.teacherStudentVisibilityIsEnabledByDefault = false;
 			});
 
 			afterEach(() => {
-				Configuration.set('TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT', true);
+				authorizationConfig.teacherStudentVisibilityIsEnabledByDefault = true;
 			});
 
 			const setup = async (userRole: 'teacher' | 'student', config: { sameSchool?: boolean }) => {
@@ -317,7 +311,7 @@ describe('School Controller (API)', () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school: userSchool });
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({ school: userSchool });
 
-				await em.persistAndFlush([teacherAccount, teacherUser, studentUser, studentAccount, userSchool, school]);
+				await em.persist([teacherAccount, teacherUser, studentUser, studentAccount, userSchool, school]).flush();
 
 				const { studentIds: studentIdsOfCurrentClass } = await buildClassWithAdditionalStudents({
 					teacherUser,
@@ -490,7 +484,7 @@ describe('School Controller (API)', () => {
 					year: classYear?._id,
 				});
 
-				await em.persistAndFlush([createdClass, ...studentsOfSchoolInClass]);
+				await em.persist([createdClass, ...studentsOfSchoolInClass]).flush();
 
 				return { createdClass, studentIds };
 			};
@@ -532,7 +526,7 @@ describe('School Controller (API)', () => {
 
 				const studentIds = [data.studentUser._id, ...studentsOfSchoolInMoinSchuleClass.map((student) => student._id)];
 
-				await em.persistAndFlush([moinSchuleClass, ...studentsOfSchoolInMoinSchuleClass]);
+				await em.persist([moinSchuleClass, ...studentsOfSchoolInMoinSchuleClass]).flush();
 
 				return { moinSchuleClass, studentIds };
 			};
@@ -543,7 +537,7 @@ describe('School Controller (API)', () => {
 					roles: [role],
 				});
 
-				await em.persistAndFlush(users);
+				await em.persist(users).flush();
 
 				const userIds = users.map((user) => user._id);
 
@@ -560,7 +554,7 @@ describe('School Controller (API)', () => {
 				const studentRole = studentUser.roles[0];
 				const studentsOfSchool = userFactory.buildList(3, { school, roles: [studentRole] });
 
-				await em.persistAndFlush([teacherAccount, teacherUser, studentAccount, studentUser, ...studentsOfSchool]);
+				await em.persist([teacherAccount, teacherUser, studentAccount, studentUser, ...studentsOfSchool]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);
@@ -581,6 +575,7 @@ describe('School Controller (API)', () => {
 
 		describe('when user has permission to view students and is in the correct school', () => {
 			const setup = async () => {
+				authorizationConfig.teacherStudentVisibilityIsEnabledByDefault = true;
 				const school = schoolEntityFactory.build();
 				const otherSchool = schoolEntityFactory.build();
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
@@ -588,7 +583,7 @@ describe('School Controller (API)', () => {
 				const studentRole = studentUser.roles[0];
 				const studentsOfSchool = userFactory.buildList(3, { school, roles: [studentRole] });
 
-				await em.persistAndFlush([studentUser, studentAccount, teacherAccount, teacherUser, ...studentsOfSchool]);
+				await em.persist([studentUser, studentAccount, teacherAccount, teacherUser, ...studentsOfSchool]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);

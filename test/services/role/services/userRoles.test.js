@@ -11,6 +11,7 @@ describe('userRoles', () => {
 
 	const ROLES = {
 		TEST: 'test',
+		TEST_WITH_DIFFERENT_PERMISSIONS: 'test with different permissions',
 		OTHER: 'other',
 		NOTHING: 'nothing spezial',
 	};
@@ -63,7 +64,7 @@ describe('userRoles', () => {
 		});
 
 		testRoleWithDiffrentPermissons = await testObjects.createTestRole({
-			name: ROLES.TEST,
+			name: ROLES.TEST_WITH_DIFFERENT_PERMISSIONS,
 			permissions: otherPermissions,
 		});
 
@@ -117,7 +118,7 @@ describe('userRoles', () => {
 	it('should get role with new permisson', async () => {
 		const roles = await userRoles.get(testUser2._id, { account: accountTestUser2 });
 		const result = roles.map((role) => role.permissions);
-		expect(result[0]).to.deep.equal([...testRoleWithDiffrentPermissons.permissions, testPermissions[0]]);
+		expect(result[0]).to.deep.equal(testRoleWithDiffrentPermissons.permissions);
 	});
 
 	it('should get not updated role permissions', async () => {

@@ -1,28 +1,31 @@
+import { FilterQuery } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { ServerTestModule, serverConfig, type ServerConfig } from '@modules/server';
+import { BoardExternalReference, BoardExternalReferenceType } from '@modules/board';
+import { BoardNodeEntity } from '@modules/board/repo/entity/board-node.entity';
+import { columnBoardEntityFactory } from '@modules/board/testing/entity/column-board-entity.factory';
+import { CopyStatus } from '@modules/copy-helper';
+import { GroupEntityTypes } from '@modules/group/entity/group.entity';
+import { groupEntityFactory } from '@modules/group/testing';
+import { roomMembershipEntityFactory } from '@modules/room-membership/testing';
+import { RoomContentType } from '@modules/room/domain';
+import { ROOM_PUBLIC_API_CONFIG_TOKEN, RoomPublicApiConfig } from '@modules/room/room.config';
+import { roomContentEntityFactory } from '@modules/room/testing';
+import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
+import { schoolEntityFactory } from '@modules/school/testing';
+import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
-import { GroupEntityTypes } from '@modules/group/entity/group.entity';
-import { groupEntityFactory } from '@modules/group/testing';
-import { roomMembershipEntityFactory } from '@modules/room-membership/testing';
-import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
-import { schoolEntityFactory } from '@modules/school/testing';
+import { RoomContentEntity, RoomEntity } from '../../repo';
 import { roomEntityFactory } from '../../testing/room-entity.factory';
-import { CopyStatus } from '@modules/copy-helper';
-import { columnBoardEntityFactory } from '@modules/board/testing/entity/column-board-entity.factory';
-import { BoardExternalReference, BoardExternalReferenceType } from '@modules/board';
-import { BoardNodeEntity } from '@modules/board/repo/entity/board-node.entity';
-import { FilterQuery } from '@mikro-orm/core';
-import { RoomEntity } from '../../repo';
 
 describe('POST /rooms/:roomId/copy', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let testApiClient: TestApiClient;
-	let config: ServerConfig;
+	let config: RoomPublicApiConfig;
 
 	beforeAll(async () => {
 		const moduleFixture = await Test.createTestingModule({
@@ -34,12 +37,12 @@ describe('POST /rooms/:roomId/copy', () => {
 		em = app.get(EntityManager);
 		testApiClient = new TestApiClient(app, 'rooms');
 
-		config = serverConfig();
+		config = moduleFixture.get<RoomPublicApiConfig>(ROOM_PUBLIC_API_CONFIG_TOKEN);
 	});
 
 	beforeEach(async () => {
 		await cleanupCollections(em);
-		config.FEATURE_ROOM_COPY_ENABLED = true;
+		config.featureRoomCopyEnabled = true;
 	});
 
 	afterAll(async () => {
@@ -55,10 +58,10 @@ describe('POST /rooms/:roomId/copy', () => {
 
 	describe('when the feature is disabled', () => {
 		const setup = async () => {
-			config.FEATURE_ROOM_COPY_ENABLED = false;
+			config.featureRoomCopyEnabled = false;
 
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-			await em.persistAndFlush([teacherAccount, teacherUser]);
+			await em.persist([teacherAccount, teacherUser]).flush();
 			em.clear();
 
 			const loggedInClient = await testApiClient.login(teacherAccount);
@@ -78,7 +81,7 @@ describe('POST /rooms/:roomId/copy', () => {
 	describe('when id is not a valid mongo id', () => {
 		const setup = async () => {
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-			await em.persistAndFlush([teacherAccount, teacherUser]);
+			await em.persist([teacherAccount, teacherUser]).flush();
 			em.clear();
 
 			const loggedInClient = await testApiClient.login(teacherAccount);
@@ -116,17 +119,19 @@ describe('POST /rooms/:roomId/copy', () => {
 				schoolId: studentUser.school.id,
 			});
 
-			await em.persistAndFlush([
-				school,
-				room,
-				roomViewerRole,
-				roomOwnerRole,
-				studentAccount,
-				studentUser,
-				teacherUser,
-				userGroup,
-				roomMembership,
-			]);
+			await em
+				.persist([
+					school,
+					room,
+					roomViewerRole,
+					roomOwnerRole,
+					studentAccount,
+					studentUser,
+					teacherUser,
+					userGroup,
+					roomMembership,
+				])
+				.flush();
 			em.clear();
 
 			const loggedInClient = await testApiClient.login(studentAccount);
@@ -160,20 +165,36 @@ describe('POST /rooms/:roomId/copy', () => {
 				schoolId: teacherUser.school.id,
 			});
 
-			await em.persistAndFlush([
-				school,
-				room,
-				roomOwnerRole,
-				teacherAccount,
-				teacherAccount,
-				teacherUser,
-				userGroup,
-				roomMembership,
-			]);
+			const boards = columnBoardEntityFactory.buildList(2, {
+				context: { id: room.id, type: BoardExternalReferenceType.Room },
+			});
+
+			const roomContent = roomContentEntityFactory.build({
+				roomId: room.id,
+				items: [
+					{ id: boards[1].id, type: RoomContentType.BOARD },
+					{ id: boards[0].id, type: RoomContentType.BOARD },
+				],
+			});
+
+			await em
+				.persist([
+					school,
+					room,
+					roomOwnerRole,
+					teacherAccount,
+					teacherAccount,
+					teacherUser,
+					userGroup,
+					roomMembership,
+					...boards,
+					roomContent,
+				])
+				.flush();
 			em.clear();
 
 			const loggedInClient = await testApiClient.login(teacherAccount);
-			return { loggedInClient, room };
+			return { loggedInClient, room, boards, roomContent };
 		};
 
 		it('should return a 201 response', async () => {
@@ -207,24 +228,31 @@ describe('POST /rooms/:roomId/copy', () => {
 		});
 
 		it('should copy the room boards', async () => {
-			const { loggedInClient, room } = await setup();
-
-			const columnBoardNode = columnBoardEntityFactory.build({
-				context: { id: room.id, type: BoardExternalReferenceType.Room },
-			});
-			await em.persistAndFlush([columnBoardNode]);
+			const { loggedInClient, room, boards } = await setup();
 
 			const response = await loggedInClient.post(`${room.id}/copy`);
 
 			const copiedRoomId = (response.body as CopyStatus).id;
 
-			const copiedBoard = await em.findOneOrFail(BoardNodeEntity, {
+			const copiedBoards = await em.find(BoardNodeEntity, {
 				context: {
 					_contextId: new ObjectId(copiedRoomId),
 					_contextType: BoardExternalReferenceType.Room,
 				} as FilterQuery<BoardExternalReference>,
 			});
-			expect(copiedBoard).toBeDefined();
+			expect(copiedBoards.length).toBe(boards.length);
+		});
+
+		it('should copy the room content', async () => {
+			const { loggedInClient, room, roomContent } = await setup();
+
+			const response = await loggedInClient.post(`${room.id}/copy`);
+
+			const copiedRoomId = (response.body as CopyStatus).id;
+
+			const copiedContent = await em.findOneOrFail(RoomContentEntity, { roomId: copiedRoomId });
+
+			expect(copiedContent.items.length).toBe(roomContent.items.length);
 		});
 	});
 
@@ -247,16 +275,9 @@ describe('POST /rooms/:roomId/copy', () => {
 				schoolId: teacherUser.school.id,
 			});
 
-			await em.persistAndFlush([
-				school,
-				room,
-				roomOwnerRole,
-				teacherAccount,
-				teacherAccount,
-				teacherUser,
-				userGroup,
-				roomMembership,
-			]);
+			await em
+				.persist([school, room, roomOwnerRole, teacherAccount, teacherAccount, teacherUser, userGroup, roomMembership])
+				.flush();
 			em.clear();
 
 			const loggedInClient = await testApiClient.login(teacherAccount);
@@ -298,26 +319,28 @@ describe('POST /rooms/:roomId/copy', () => {
 				schoolId: teacherUserOwner.school.id,
 			});
 
-			await em.persistAndFlush([
-				school,
-				otherSchool,
-				room,
-				roomAdminRole,
-				roomOwnerRole,
-				teacherAccountOwner,
-				teacherUserOwner,
-				userGroup,
-				roomMembership,
-				teacherAccountExternal,
-				teacherUserExternal,
-			]);
+			await em
+				.persist([
+					school,
+					otherSchool,
+					room,
+					roomAdminRole,
+					roomOwnerRole,
+					teacherAccountOwner,
+					teacherUserOwner,
+					userGroup,
+					roomMembership,
+					teacherAccountExternal,
+					teacherUserExternal,
+				])
+				.flush();
 			em.clear();
 
 			const loggedInClient = await testApiClient.login(teacherAccountExternal);
 			return { loggedInClient, room, school, otherSchool };
 		};
 
-		it("should copy the room in the user's school", async () => {
+		it("should copy the room into the user's school", async () => {
 			const { loggedInClient, room, otherSchool } = await setup();
 
 			const response = await loggedInClient.post(`${room.id}/copy`);

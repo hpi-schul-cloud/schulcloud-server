@@ -4,11 +4,10 @@ import ClientRepresentation from '@keycloak/keycloak-admin-client/lib/defs/clien
 import IdentityProviderMapperRepresentation from '@keycloak/keycloak-admin-client/lib/defs/identityProviderMapperRepresentation';
 import IdentityProviderRepresentation from '@keycloak/keycloak-admin-client/lib/defs/identityProviderRepresentation';
 import ProtocolMapperRepresentation from '@keycloak/keycloak-admin-client/lib/defs/protocolMapperRepresentation';
-import { ServerConfig } from '@modules/server/server.config';
 import { OidcConfig, SystemService, SystemType } from '@modules/system/domain';
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { Inject, Injectable } from '@nestjs/common';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
+import { KEYCLOAK_CONFIGURATION_CONFIG_TOKEN, KeycloakConfigurationConfig } from '../keycloak-configuration.config';
 import { OidcIdentityProviderMapper } from '../mapper/identity-provider.mapper';
 
 enum ConfigureAction {
@@ -25,7 +24,7 @@ const oidcExternalSubMapperName = 'External Sub Mapper';
 export class KeycloakConfigurationService {
 	constructor(
 		private readonly kcAdmin: KeycloakAdministrationService,
-		private readonly configService: ConfigService<ServerConfig, true>,
+		@Inject(KEYCLOAK_CONFIGURATION_CONFIG_TOKEN) private readonly config: KeycloakConfigurationConfig,
 		private readonly oidcIdentityProviderMapper: OidcIdentityProviderMapper,
 		private readonly systemService: SystemService
 	) {}
@@ -106,8 +105,8 @@ export class KeycloakConfigurationService {
 
 	public async configureClient(): Promise<void> {
 		const kc = await this.kcAdmin.callKcAdminClient();
-		const scDomain = this.configService.get<string>('SC_DOMAIN');
-		const redirectUri = scDomain === 'localhost' ? 'http://localhost:3030/' : `https://${scDomain}/`;
+		const redirectUri =
+			this.config.scDomain === 'localhost' ? 'http://localhost:3030/' : `https://${this.config.scDomain}/`;
 		const cr: ClientRepresentation = {
 			clientId: this.kcAdmin.getClientId(),
 			enabled: true,

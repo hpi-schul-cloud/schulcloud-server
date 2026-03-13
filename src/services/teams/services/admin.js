@@ -1,9 +1,8 @@
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const { Forbidden, NotFound, BadRequest } = require('../../../errors');
 const hooks = require('../hooks');
 const { TEAM_FEATURES } = require('../model');
 const { warning } = require('../../../logger/index');
-const { SC_TITLE } = require('../../../../config/globals');
-
 const { createUserWithRole } = require('../hooks/helpers');
 const { getBasic, patchTeam, getSessionUser } = require('../helpers');
 const { isArray, isArrayWithElement, isString, isDefined, isUndefined, isSameId } = require('../hooks/collection');
@@ -50,6 +49,7 @@ class AdminOverview {
 		const mappedData = teams.data.map((team) => {
 			const createdAtMySchool = isSameId(team.schoolId, sessionSchoolId);
 			const hasMembersOfOtherSchools = team.schoolIds.length > 1;
+			team.userIds = team.userIds.filter((user) => !user.userId.deletedAt || user.userId.deletedAt > new Date());
 			let schoolMembers = AdminOverview.getMembersBySchool(team, sessionSchoolId);
 			const ownerExist = team.userIds.some((user) => user.role.name === 'teamowner'); // role is populated
 			const hasRocketChat = team.features.includes(TEAM_FEATURES.ROCKET_CHAT);
@@ -190,6 +190,7 @@ class AdminOverview {
 	}
 
 	static formatText(text) {
+		const SC_TITLE = Configuration.get('SC_TITLE');
 		return `Hallo,
 		\nes besteht Klärungsbedarf zu deinem Team.
 		\nDu wurdest über die Administratoren-Kontaktfunktion benachrichtigt.
@@ -241,6 +242,7 @@ class AdminOverview {
 							throw new NotFound('No team found.');
 						}
 
+						const SC_TITLE = Configuration.get('SC_TITLE');
 						const subject = `${SC_TITLE}: Es besteht Klärungsbedarf zu deinem Team!`;
 						const mailService = this.app.service('/mails');
 						const ownerRoleId = ref.findRole('name', 'teamowner', '_id');

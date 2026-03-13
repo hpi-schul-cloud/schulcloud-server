@@ -1,9 +1,11 @@
+import { ConfigurationModule } from '@infra/configuration';
 import { forwardRef, Module } from '@nestjs/common';
 import { CommonToolModule } from './common';
 import { CommonToolService } from './common/service';
 import { ContextExternalToolModule } from './context-external-tool';
 import { ExternalToolModule } from './external-tool';
 import { SchoolExternalToolModule } from './school-external-tool';
+import { TOOL_CONFIG_TOKEN, ToolConfig } from './tool-config';
 import { ToolLaunchModule } from './tool-launch';
 
 @Module({
@@ -13,6 +15,7 @@ import { ToolLaunchModule } from './tool-launch';
 		SchoolExternalToolModule,
 		ContextExternalToolModule,
 		ToolLaunchModule,
+		ConfigurationModule.register(TOOL_CONFIG_TOKEN, ToolConfig),
 	],
 	providers: [CommonToolService],
 	exports: [

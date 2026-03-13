@@ -21,7 +21,9 @@ describe('ExternalToolPseudonymRepo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [ExternalToolPseudonymEntity, User] })],
+			imports: [
+				MongoMemoryDatabaseModule.forRoot({ entities: [ExternalToolPseudonymEntity, User], ensureIndexes: true }),
+			],
 			providers: [
 				ExternalToolPseudonymRepo,
 				{
@@ -47,7 +49,7 @@ describe('ExternalToolPseudonymRepo', () => {
 		describe('when pseudonym is existing', () => {
 			const setup = async () => {
 				const entity: ExternalToolPseudonymEntity = externalToolPseudonymEntityFactory.buildWithId();
-				await em.persistAndFlush(entity);
+				await em.persist(entity).flush();
 
 				return {
 					entity,
@@ -63,42 +65,6 @@ describe('ExternalToolPseudonymRepo', () => {
 				);
 
 				expect(result.id).toEqual(entity.id);
-			});
-		});
-	});
-
-	describe('findByUserIdAndToolId', () => {
-		describe('when pseudonym is existing', () => {
-			const setup = async () => {
-				const entity: ExternalToolPseudonymEntity = externalToolPseudonymEntityFactory.buildWithId();
-
-				await em.persistAndFlush(entity);
-
-				return {
-					entity,
-				};
-			};
-
-			it('should return a pseudonym', async () => {
-				const { entity } = await setup();
-
-				const result: Pseudonym | null = await repo.findByUserIdAndToolId(
-					entity.userId.toHexString(),
-					entity.toolId.toHexString()
-				);
-
-				expect(result?.id).toEqual(entity.id);
-			});
-		});
-
-		describe('when there is no pseudonym', () => {
-			it('should return null', async () => {
-				const result: Pseudonym | null = await repo.findByUserIdAndToolId(
-					new ObjectId().toHexString(),
-					new ObjectId().toHexString()
-				);
-
-				expect(result).toBeNull();
 			});
 		});
 	});
@@ -121,7 +87,7 @@ describe('ExternalToolPseudonymRepo', () => {
 					userId: user2.id,
 				});
 
-				await em.persistAndFlush([pseudonym1, pseudonym2, pseudonym3, pseudonym4]);
+				await em.persist([pseudonym1, pseudonym2, pseudonym3, pseudonym4]).flush();
 
 				return {
 					user1,
@@ -197,27 +163,79 @@ describe('ExternalToolPseudonymRepo', () => {
 		describe('when pseudonym is existing', () => {
 			const setup = async () => {
 				const entity: ExternalToolPseudonymEntity = externalToolPseudonymEntityFactory.buildWithId();
-				await em.persistAndFlush(entity);
+				await em.persist(entity).flush();
+
+				const updatedDomainObject = pseudonymFactory.build({
+					pseudonym: uuidv4(),
+					toolId: entity.toolId.toHexString(),
+					userId: entity.userId.toHexString(),
+				});
 
 				return {
-					domainObject: pseudonymFactory.build({
-						id: entity.id,
-						pseudonym: uuidv4(),
-						toolId: new ObjectId().toHexString(),
-						userId: new ObjectId().toHexString(),
-					}),
+					entity,
+					domainObject: updatedDomainObject,
 				};
 			};
 
-			it('should update an existing pseudonym', async () => {
-				const { domainObject } = await setup();
+			it('should update the pseudonym value of the existing record', async () => {
+				const { entity, domainObject } = await setup();
 
 				const result: Pseudonym = await repo.createOrUpdate(domainObject);
 
-				expect(result.id).toEqual(domainObject.id);
+				expect(result.id).toEqual(entity.id);
 				expect(result.pseudonym).toEqual(domainObject.pseudonym);
 				expect(result.toolId).toEqual(domainObject.toolId);
 				expect(result.userId).toEqual(domainObject.userId);
+			});
+
+			it('should not change createdAt on update', async () => {
+				const { entity, domainObject } = await setup();
+
+				const result: Pseudonym = await repo.createOrUpdate(domainObject);
+
+				expect(result.createdAt).toEqual(entity.createdAt);
+			});
+		});
+
+		describe('when createOrUpdate is called concurrently with the same userId and toolId', () => {
+			const setup = () => {
+				const sharedUserId = new ObjectId().toHexString();
+				const sharedToolId = new ObjectId().toHexString();
+
+				const domainObject1 = pseudonymFactory.build({
+					pseudonym: uuidv4(),
+					toolId: sharedToolId,
+					userId: sharedUserId,
+				});
+
+				const domainObject2 = pseudonymFactory.build({
+					pseudonym: uuidv4(),
+					toolId: sharedToolId,
+					userId: sharedUserId,
+				});
+
+				return { domainObject1, domainObject2, sharedUserId, sharedToolId };
+			};
+
+			it('should not throw a duplicate-key error', async () => {
+				const { domainObject1, domainObject2 } = setup();
+
+				await expect(
+					Promise.all([repo.createOrUpdate(domainObject1), repo.createOrUpdate(domainObject2)])
+				).resolves.not.toThrow();
+			});
+
+			it('should result in exactly one document in the database', async () => {
+				const { domainObject1, domainObject2, sharedUserId, sharedToolId } = setup();
+
+				await Promise.all([repo.createOrUpdate(domainObject1), repo.createOrUpdate(domainObject2)]);
+
+				const count = await em.count(ExternalToolPseudonymEntity, {
+					userId: new ObjectId(sharedUserId),
+					toolId: new ObjectId(sharedToolId),
+				});
+
+				expect(count).toEqual(1);
 			});
 		});
 	});
@@ -258,7 +276,7 @@ describe('ExternalToolPseudonymRepo', () => {
 					userId: user2.id,
 				});
 
-				await em.persistAndFlush([pseudonym1, pseudonym2, pseudonym3, pseudonym4]);
+				await em.persist([pseudonym1, pseudonym2, pseudonym3, pseudonym4]).flush();
 
 				const expectedResult = [pseudonym1.id, pseudonym2.id];
 
@@ -284,7 +302,7 @@ describe('ExternalToolPseudonymRepo', () => {
 		describe('when pseudonym is existing', () => {
 			const setup = async () => {
 				const entity: ExternalToolPseudonymEntity = externalToolPseudonymEntityFactory.buildWithId();
-				await em.persistAndFlush(entity);
+				await em.persist(entity).flush();
 				em.clear();
 
 				return {
@@ -337,7 +355,7 @@ describe('ExternalToolPseudonymRepo', () => {
 
 				const pseudonyms: ExternalToolPseudonymEntity[] = [pseudonym1, pseudonym2, pseudonym3];
 
-				await em.persistAndFlush([pseudonym1, pseudonym2, pseudonym3]);
+				await em.persist([pseudonym1, pseudonym2, pseudonym3]).flush();
 				em.clear();
 
 				return {
@@ -381,7 +399,7 @@ describe('ExternalToolPseudonymRepo', () => {
 
 				const pseudonyms: ExternalToolPseudonymEntity[] = [pseudonym1, pseudonym2, pseudonym3];
 
-				await em.persistAndFlush([pseudonym1, pseudonym2, pseudonym3]);
+				await em.persist([pseudonym1, pseudonym2, pseudonym3]).flush();
 				em.clear();
 
 				return {
@@ -425,7 +443,7 @@ describe('ExternalToolPseudonymRepo', () => {
 
 				const pseudonyms: ExternalToolPseudonymEntity[] = [pseudonym1, pseudonym2, pseudonym3];
 
-				await em.persistAndFlush([pseudonym1, pseudonym2, pseudonym3]);
+				await em.persist([pseudonym1, pseudonym2, pseudonym3]).flush();
 				em.clear();
 
 				return {

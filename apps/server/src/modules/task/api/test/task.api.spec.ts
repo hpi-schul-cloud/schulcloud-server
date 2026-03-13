@@ -72,7 +72,7 @@ describe('Task Controller (API)', () => {
 					description: '<p>test</p>',
 					descriptionInputFormat: InputFormat.RICH_TEXT_CK5,
 				});
-				await em.persistAndFlush([account, user, course, task]);
+				await em.persist([account, user, course, task]).flush();
 				em.clear();
 				const loggedInClient = await testApiClient.login(account);
 				return { loggedInClient, teacher: user, course, task };
@@ -99,7 +99,7 @@ describe('Task Controller (API)', () => {
 				const { account, user } = createTeacher(school);
 				const course = courseEntityFactory.build({ substitutionTeachers: [user], school });
 				const task = taskFactory.build({ course });
-				await em.persistAndFlush([account, user, course, task]);
+				await em.persist([account, user, course, task]).flush();
 				em.clear();
 				const loggedInClient = await testApiClient.login(account);
 				return { loggedInClient, teacher: user, course, task };
@@ -120,7 +120,7 @@ describe('Task Controller (API)', () => {
 				const { account, user } = createTeacher(school);
 				const course = courseEntityFactory.build({ teachers: [user], school });
 				const task = taskFactory.draft().build({ creator: user, course });
-				await em.persistAndFlush([account, user, course, task]);
+				await em.persist([account, user, course, task]).flush();
 				const loggedInClient = await testApiClient.login(account);
 				em.clear();
 				return { loggedInClient, teacher: user, course, task };
@@ -143,7 +143,7 @@ describe('Task Controller (API)', () => {
 				const { account, user } = createTeacher(school);
 				const course = courseEntityFactory.build({ teachers: [user], school });
 				const task = taskFactory.build({ creator: user, course, availableDate: tomorrow });
-				await em.persistAndFlush([account, user, course, task]);
+				await em.persist([account, user, course, task]).flush();
 				em.clear();
 				const loggedInClient = await testApiClient.login(account);
 				return { loggedInClient, teacher: user, course, task };
@@ -168,7 +168,7 @@ describe('Task Controller (API)', () => {
 				const course = courseEntityFactory.build({ teachers: [user, otherTeacher], school: user.school });
 				const task = taskFactory.build({ creator: otherTeacher, course, availableDate: tomorrow });
 
-				await em.persistAndFlush([account, user, course, task, otherTeacher, otherTeacherAccount]);
+				await em.persist([account, user, course, task, otherTeacher, otherTeacherAccount]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(account);
@@ -193,7 +193,7 @@ describe('Task Controller (API)', () => {
 				const { account: otherUserAccount, user: otherUser } = createStudent(school);
 				const course = courseEntityFactory.build({ teachers: [user], school });
 				const task = taskFactory.draft().build({ creator: otherUser, course });
-				await em.persistAndFlush([account, user, course, task, otherUser, otherUserAccount]);
+				await em.persist([account, user, course, task, otherUser, otherUserAccount]).flush();
 				em.clear();
 				const loggedInClient = await testApiClient.login(account);
 				return { loggedInClient, teacher: user, course, task, otherUser, otherUserAccount };
@@ -214,7 +214,7 @@ describe('Task Controller (API)', () => {
 				const school = schoolEntityFactory.buildWithId();
 				const { account, user } = createTeacher(school);
 				const course = courseEntityFactory.build({ teachers: [user], school });
-				await em.persistAndFlush([account, user, course]);
+				await em.persist([account, user, course]).flush();
 				em.clear();
 				const loggedInClient = await testApiClient.login(account);
 				return { loggedInClient, teacher: user, course };
@@ -265,7 +265,7 @@ describe('Task Controller (API)', () => {
 				const task1 = taskFactory.build({ course });
 				const task2 = taskFactory.build({ course });
 				const task3 = taskFactory.build({ course });
-				await em.persistAndFlush([account, user, course, task1, task2, task3]);
+				await em.persist([account, user, course, task1, task2, task3]).flush();
 				em.clear();
 				const loggedInClient = await testApiClient.login(account);
 				return { loggedInClient, teacher: user, course, task1, task2, task3 };
@@ -289,7 +289,7 @@ describe('Task Controller (API)', () => {
 				const task1 = taskFactory.build({ course: course1 });
 				const task2 = taskFactory.build({ course: course2 });
 				const task3 = taskFactory.build({ course: course3 });
-				await em.persistAndFlush([account, user, course1, course2, course3, task1, task2, task3]);
+				await em.persist([account, user, course1, course2, course3, task1, task2, task3]).flush();
 				em.clear();
 				const loggedInClient = await testApiClient.login(account);
 				return { loggedInClient, teacher: user, course1, course2, course3, task1, task2, task3 };
@@ -309,7 +309,7 @@ describe('Task Controller (API)', () => {
 				const { account: teacherAccount, user: teacher } = createTeacher(school);
 				const { account: studentAccount, user: student } = createTeacher(school);
 				const course = courseEntityFactory.build({ teachers: [teacher], students: [student], school });
-				await em.persistAndFlush([teacherAccount, studentAccount, teacher, student, course]);
+				await em.persist([teacherAccount, studentAccount, teacher, student, course]).flush();
 				em.clear();
 				return { teacherAccount, studentAccount, teacher, student, course };
 			};
@@ -333,7 +333,7 @@ describe('Task Controller (API)', () => {
 				const task2 = taskFactory.build({ course });
 				const task3 = taskFactory.build({ course });
 
-				await em.persistAndFlush([teacherAccount, studentAccount, teacher, student, course, task1, task2, task3]);
+				await em.persist([teacherAccount, studentAccount, teacher, student, course, task1, task2, task3]).flush();
 				em.clear();
 				return { teacherAccount, studentAccount, teacher, student, course, task1, task2, task3 };
 			};
@@ -358,7 +358,7 @@ describe('Task Controller (API)', () => {
 				const finishedTask = taskFactory.build({ course, finished: [student] });
 				openTask.submissions.add(submissionFactory.submitted().build({ task: openTask, student }));
 
-				await em.persistAndFlush([teacherAccount, studentAccount, teacher, student, course, openTask, finishedTask]);
+				await em.persist([teacherAccount, studentAccount, teacher, student, course, openTask, finishedTask]).flush();
 				em.clear();
 				return { teacherAccount, studentAccount, teacher, student, course, openTask, finishedTask };
 			};
@@ -424,7 +424,7 @@ describe('Task Controller (API)', () => {
 				const { account, user } = createStudent(school);
 				const course = courseEntityFactory.build({ students: [user], school });
 				const task = taskFactory.build({ course, private: true });
-				await em.persistAndFlush([account, user, course, task]);
+				await em.persist([account, user, course, task]).flush();
 				em.clear();
 				const loggedInClient = await testApiClient.login(account);
 				return { loggedInClient, student: user, course };
@@ -446,7 +446,7 @@ describe('Task Controller (API)', () => {
 				const { account, user } = createStudent(school);
 				const course = courseEntityFactory.build({ students: [user], school });
 				const task = taskFactory.build({ course, availableDate: tomorrow });
-				await em.persistAndFlush([account, user, course, task]);
+				await em.persist([account, user, course, task]).flush();
 				em.clear();
 				const loggedInClient = await testApiClient.login(account);
 				return { loggedInClient, student: user, course };
@@ -468,7 +468,7 @@ describe('Task Controller (API)', () => {
 				const { account, user } = createStudent(school);
 				const course = courseEntityFactory.build({ students: [user], school });
 				const task = taskFactory.build({ creator: user, course, availableDate: tomorrow });
-				await em.persistAndFlush([account, user, course, task]);
+				await em.persist([account, user, course, task]).flush();
 				em.clear();
 				const loggedInClient = await testApiClient.login(account);
 				return { loggedInClient, student: user, course };
@@ -491,7 +491,7 @@ describe('Task Controller (API)', () => {
 				const course = courseEntityFactory.build({ students: [user], school });
 				// @ts-expect-error expected value null in db
 				const task = taskFactory.build({ course, dueDate: null });
-				await em.persistAndFlush([account, user, course, task]);
+				await em.persist([account, user, course, task]).flush();
 				em.clear();
 				const loggedInClient = await testApiClient.login(account);
 				return { loggedInClient, student: user, course };
@@ -514,7 +514,7 @@ describe('Task Controller (API)', () => {
 				const untilDate = new Date(Date.now() - 60 * 1000);
 				const course = courseEntityFactory.build({ untilDate, students: [user], school });
 				const task = taskFactory.build({ course });
-				await em.persistAndFlush([account, user, course, task]);
+				await em.persist([account, user, course, task]).flush();
 				em.clear();
 				const loggedInClient = await testApiClient.login(account);
 				return { loggedInClient, student: user, course, task };
@@ -535,7 +535,7 @@ describe('Task Controller (API)', () => {
 				const school = schoolEntityFactory.buildWithId();
 				const { account, user } = createStudent(school);
 				const course = courseEntityFactory.build({ students: [user], school });
-				await em.persistAndFlush([account, user, course]);
+				await em.persist([account, user, course]).flush();
 				em.clear();
 				const loggedInClient = await testApiClient.login(account);
 				return { loggedInClient, student: user, course };
@@ -596,7 +596,7 @@ describe('Task Controller (API)', () => {
 				const task1 = taskFactory.build({ course: course1 });
 				const task2 = taskFactory.build({ course: course2 });
 				const task3 = taskFactory.build({ course: course3 });
-				await em.persistAndFlush([account, user, course1, course2, course3, task1, task2, task3]);
+				await em.persist([account, user, course1, course2, course3, task1, task2, task3]).flush();
 				em.clear();
 				const loggedInClient = await testApiClient.login(account);
 				return { loggedInClient, student: user, course1, course2, course3, task1, task2, task3 };

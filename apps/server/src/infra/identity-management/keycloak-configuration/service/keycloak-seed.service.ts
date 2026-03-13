@@ -1,20 +1,17 @@
+import { LegacyLogger } from '@core/logger';
 import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
 import { Inject } from '@nestjs/common';
-import { LegacyLogger } from '@core/logger';
 import fs from 'node:fs/promises';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
 import { JsonAccount } from '../interface/json-account.interface';
 import { JsonUser } from '../interface/json-user.interface';
-import {
-	IKeycloakConfigurationInputFiles,
-	KeycloakConfigurationInputFiles,
-} from '../interface/keycloak-configuration-input-files.interface';
+import { KEYCLOAK_CONFIGURATION_CONFIG_TOKEN, KeycloakConfigurationConfig } from '../keycloak-configuration.config';
 
 export class KeycloakSeedService {
 	constructor(
 		private readonly kcAdmin: KeycloakAdministrationService,
 		private readonly logger: LegacyLogger,
-		@Inject(KeycloakConfigurationInputFiles) private readonly inputFiles: IKeycloakConfigurationInputFiles
+		@Inject(KEYCLOAK_CONFIGURATION_CONFIG_TOKEN) private readonly config: KeycloakConfigurationConfig
 	) {}
 
 	async seed(): Promise<number> {
@@ -92,12 +89,12 @@ export class KeycloakSeedService {
 	}
 
 	private async loadAccounts(): Promise<JsonAccount[]> {
-		const data = await fs.readFile(this.inputFiles.accountsFile, { encoding: 'utf-8' });
+		const data = await fs.readFile(this.config.accountsFile, { encoding: 'utf-8' });
 		return JSON.parse(data) as JsonAccount[];
 	}
 
 	private async loadUsers(): Promise<JsonUser[]> {
-		const data = await fs.readFile(this.inputFiles.usersFile, { encoding: 'utf-8' });
+		const data = await fs.readFile(this.config.usersFile, { encoding: 'utf-8' });
 		return JSON.parse(data) as JsonUser[];
 	}
 }

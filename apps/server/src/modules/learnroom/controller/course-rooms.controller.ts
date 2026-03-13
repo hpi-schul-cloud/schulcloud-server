@@ -4,6 +4,7 @@ import { Body, Controller, Get, Param, Patch, Post } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { RequestTimeout } from '@shared/common/decorators';
 import { RoomBoardResponseMapper } from '../mapper/room-board-response.mapper';
+import { LEARNROOM_INCOMING_REQUEST_TIMEOUT_COPY_API_KEY } from '../timeout.config';
 import { CourseCopyUC } from '../uc/course-copy.uc';
 import { CourseRoomsUc } from '../uc/course-rooms.uc';
 import { LessonCopyUC } from '../uc/lesson-copy.uc';
@@ -65,7 +66,7 @@ export class CourseRoomsController {
 	}
 
 	@Post(':roomId/copy')
-	@RequestTimeout('INCOMING_REQUEST_TIMEOUT_COPY_API')
+	@RequestTimeout(LEARNROOM_INCOMING_REQUEST_TIMEOUT_COPY_API_KEY)
 	public async copyCourse(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: CourseRoomUrlParams
@@ -76,7 +77,7 @@ export class CourseRoomsController {
 	}
 
 	@Post('lessons/:lessonId/copy')
-	@RequestTimeout('INCOMING_REQUEST_TIMEOUT_COPY_API')
+	@RequestTimeout(LEARNROOM_INCOMING_REQUEST_TIMEOUT_COPY_API_KEY)
 	public async copyLesson(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: LessonUrlParams,

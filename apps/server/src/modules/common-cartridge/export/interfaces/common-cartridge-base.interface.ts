@@ -12,15 +12,15 @@ export abstract class CommonCartridgeBase {
 		this.checkVersion(baseProps.version);
 	}
 
-	public get identifier(): string | undefined {
+	get identifier(): string | undefined {
 		return this.baseProps.identifier;
 	}
 
-	public get title(): string | undefined {
+	get title(): string | undefined {
 		return this.baseProps.title;
 	}
 
-	abstract getSupportedVersion(): CommonCartridgeVersion;
+	public abstract getSupportedVersion(): CommonCartridgeVersion;
 
 	private checkVersion(target: CommonCartridgeVersion): void {
 		if (this.getSupportedVersion() !== target) {

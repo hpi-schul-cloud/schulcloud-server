@@ -14,5 +14,8 @@ export const fileRecordResponseFactory = Factory.define<FileRecordResponse>(({ s
 		mimeType: 'application/octet-stream',
 		parentType: FileRecordParentType.COURSES,
 		previewStatus: PreviewStatus.PREVIEW_POSSIBLE,
+		isUploading: false,
+		isCollaboraEditable: false,
+		exceedsCollaboraEditableFileSize: false,
 	};
 });

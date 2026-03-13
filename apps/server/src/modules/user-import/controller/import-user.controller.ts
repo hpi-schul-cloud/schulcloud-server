@@ -15,7 +15,11 @@ import { PaginationParams } from '@shared/controller/dto';
 import { IFindOptions } from '@shared/domain/interface';
 import { ImportUser } from '../entity';
 import { ImportUserMapper, UserMatchMapper } from '../mapper';
-import { UserImportFetchUc, UserImportUc } from '../uc';
+import {
+	IMPORTUSER_SAVE_ALL_MATCHES_REQUEST_TIMEOUT_MS_KEY,
+	SCHULCONNEX_CLIENT_PERSONEN_INFO_TIMEOUT_IN_MS_KEY,
+} from '../timeout.config';
+import { PopulateUserImportFetchUc, UserImportUc } from '../uc';
 import {
 	FilterImportUserParams,
 	FilterUserParams,
@@ -33,7 +37,10 @@ import { PopulateImportUserParams } from './dto/populate-import-user.params';
 @JwtAuthentication()
 @Controller('user/import')
 export class ImportUserController {
-	constructor(private readonly userImportUc: UserImportUc, private readonly userImportFetchUc: UserImportFetchUc) {}
+	constructor(
+		private readonly userImportUc: UserImportUc,
+		private readonly populateUserImportFetchUc: PopulateUserImportFetchUc
+	) {}
 
 	@Get()
 	public async findAllImportUsers(
@@ -103,7 +110,7 @@ export class ImportUserController {
 		return response;
 	}
 
-	@RequestTimeout('IMPORTUSER_SAVE_ALL_MATCHES_REQUEST_TIMEOUT_MS')
+	@RequestTimeout(IMPORTUSER_SAVE_ALL_MATCHES_REQUEST_TIMEOUT_MS_KEY)
 	@Post('migrate')
 	public async saveAllUsersMatches(@CurrentUser() currentUser: ICurrentUser): Promise<void> {
 		await this.userImportUc.saveAllUsersMatches(currentUser.userId);
@@ -122,7 +129,7 @@ export class ImportUserController {
 		await this.userImportUc.endSchoolInMaintenance(currentUser.userId);
 	}
 
-	@RequestTimeout('SCHULCONNEX_CLIENT__PERSONEN_INFO_TIMEOUT_IN_MS')
+	@RequestTimeout(SCHULCONNEX_CLIENT_PERSONEN_INFO_TIMEOUT_IN_MS_KEY)
 	@Post('populate-import-users')
 	@ApiOperation({
 		summary: 'Populates import users',
@@ -137,7 +144,7 @@ export class ImportUserController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() query: PopulateImportUserParams
 	): Promise<void> {
-		await this.userImportFetchUc.populateImportUsers(currentUser.userId, query.matchByPreferredName);
+		await this.populateUserImportFetchUc.populateImportUsers(currentUser.userId, query.matchByPreferredName);
 	}
 
 	@Post('cancel')

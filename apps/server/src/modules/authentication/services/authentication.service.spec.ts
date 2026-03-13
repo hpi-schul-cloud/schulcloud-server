@@ -9,12 +9,12 @@ import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { HttpService } from '@nestjs/axios';
 import { UnauthorizedException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { currentUserFactory } from '@testing/factory/currentuser.factory';
 import jwt from 'jsonwebtoken';
+import { AUTHENTICATION_CONFIG_TOKEN, AuthenticationConfig } from '../authentication-config';
 import { BruteForceError } from '../errors';
 import { JwtWhitelistAdapter } from '../helper/jwt-whitelist.adapter';
 import { UserAccountDeactivatedLoggableException } from '../loggable';
@@ -30,7 +30,7 @@ describe(AuthenticationService.name, () => {
 	let jwtWhitelistAdapter: DeepMocked<JwtWhitelistAdapter>;
 	let accountService: DeepMocked<AccountService>;
 	let jwtService: DeepMocked<JwtService>;
-	let configService: DeepMocked<ConfigService>;
+	let config: AuthenticationConfig;
 
 	const mockAccount: Account = new Account({
 		id: 'mockAccountId',
@@ -58,8 +58,8 @@ describe(AuthenticationService.name, () => {
 					useValue: createMock<AccountService>(),
 				},
 				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService>({ get: () => 15 }),
+					provide: AUTHENTICATION_CONFIG_TOKEN,
+					useValue: AuthenticationConfig,
 				},
 				{
 					provide: Logger,
@@ -84,7 +84,7 @@ describe(AuthenticationService.name, () => {
 		authenticationService = module.get(AuthenticationService);
 		accountService = module.get(AccountService);
 		jwtService = module.get(JwtService);
-		configService = module.get(ConfigService);
+		config = module.get(AUTHENTICATION_CONFIG_TOKEN);
 	});
 
 	afterEach(() => {
@@ -155,9 +155,9 @@ describe(AuthenticationService.name, () => {
 					targetUserAccount.systemId
 				);
 				const expiresIn = 150;
+				config.jwtLifetimeSupportSeconds = expiresIn;
 
 				accountService.findByUserIdOrFail.mockResolvedValueOnce(targetUserAccount);
-				configService.get.mockReturnValueOnce(expiresIn);
 				jwtService.sign.mockReturnValueOnce('jwt');
 
 				const expectedPayload = JwtPayloadFactory.buildFromSupportUser(mockCurrentUser, supportUser.id);
@@ -196,7 +196,6 @@ describe(AuthenticationService.name, () => {
 				const mockCurrentUser = currentUserFactory.withRole('random role').build();
 				const expectedPayload = JwtPayloadFactory.buildFromCurrentUser(mockCurrentUser);
 				const expiresIn = 15;
-				configService.get.mockReturnValueOnce(expiresIn);
 				jwtService.sign.mockReturnValueOnce('jwt');
 
 				return { mockCurrentUser, expectedPayload, expiresIn };
@@ -262,8 +261,11 @@ describe(AuthenticationService.name, () => {
 	describe('checkBrutForce', () => {
 		describe('when user tries multiple logins', () => {
 			const setup = (elapsedSeconds: number) => {
+				config.loginBlockTime = 15;
+
 				const lasttriedFailedLogin = new Date();
 				lasttriedFailedLogin.setSeconds(lasttriedFailedLogin.getSeconds() - elapsedSeconds);
+
 				return lasttriedFailedLogin;
 			};
 

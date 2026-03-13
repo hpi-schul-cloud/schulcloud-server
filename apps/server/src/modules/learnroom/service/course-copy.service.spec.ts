@@ -10,22 +10,21 @@ import { ContextExternalTool, CopyContextExternalToolRejectData } from '@modules
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { schoolExternalToolFactory } from '@modules/tool/school-external-tool/testing';
-import { ToolConfig } from '@modules/tool/tool-config';
 import { UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
-import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import {
 	contextExternalToolFactory,
 	copyContextExternalToolRejectDataFactory,
 } from '../../tool/context-external-tool/testing';
+import { LEARNROOM_CONFIG_TOKEN, LearnroomConfig } from '../learnroom.config';
 import { LegacyBoard, LegacyBoardElement, LegacyBoardRepo } from '../repo';
 import { boardFactory } from '../testing';
-import { BoardCopyService } from './board-copy.service';
 import { CourseCopyService } from './course-copy.service';
 import { CourseRoomsService } from './course-rooms.service';
+import { LegacyBoardCopyService } from './legacy-board-copy.service';
 
 describe('course copy service', () => {
 	let module: TestingModule;
@@ -33,12 +32,12 @@ describe('course copy service', () => {
 	let courseService: DeepMocked<CourseService>;
 	let boardRepo: DeepMocked<LegacyBoardRepo>;
 	let roomsService: DeepMocked<CourseRoomsService>;
-	let boardCopyService: DeepMocked<BoardCopyService>;
+	let boardCopyService: DeepMocked<LegacyBoardCopyService>;
 	let lessonCopyService: DeepMocked<LessonCopyService>;
 	let copyHelperService: DeepMocked<CopyHelperService>;
 	let userService: DeepMocked<UserService>;
 	let contextExternalToolService: DeepMocked<ContextExternalToolService>;
-	let configService: DeepMocked<ConfigService<ToolConfig, true>>;
+	let config: LearnroomConfig;
 
 	afterAll(async () => {
 		await module.close();
@@ -66,8 +65,8 @@ describe('course copy service', () => {
 					useValue: createMock<CourseRoomsService>(),
 				},
 				{
-					provide: BoardCopyService,
-					useValue: createMock<BoardCopyService>(),
+					provide: LegacyBoardCopyService,
+					useValue: createMock<LegacyBoardCopyService>(),
 				},
 				{
 					provide: LessonCopyService,
@@ -86,8 +85,10 @@ describe('course copy service', () => {
 					useValue: createMock<ContextExternalToolService>(),
 				},
 				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService<ToolConfig, true>>(),
+					provide: LEARNROOM_CONFIG_TOKEN,
+					useValue: {
+						featureCtlToolsCopyEnabled: true,
+					},
 				},
 			],
 		}).compile();
@@ -96,12 +97,12 @@ describe('course copy service', () => {
 		courseService = module.get(CourseService);
 		boardRepo = module.get(LegacyBoardRepo);
 		roomsService = module.get(CourseRoomsService);
-		boardCopyService = module.get(BoardCopyService);
+		boardCopyService = module.get(LegacyBoardCopyService);
 		lessonCopyService = module.get(LessonCopyService);
 		copyHelperService = module.get(CopyHelperService);
 		userService = module.get(UserService);
 		contextExternalToolService = module.get(ContextExternalToolService);
-		configService = module.get(ConfigService);
+		config = module.get<LearnroomConfig>(LEARNROOM_CONFIG_TOKEN);
 	});
 
 	beforeEach(() => {
@@ -147,8 +148,6 @@ describe('course copy service', () => {
 			boardCopyService.copyBoard.mockResolvedValue(boardCopyStatus);
 
 			lessonCopyService.updateCopiedEmbeddedTasks.mockReturnValue(boardCopyStatus);
-
-			configService.get.mockReturnValue(true);
 
 			return {
 				user,
@@ -498,7 +497,7 @@ describe('course copy service', () => {
 
 			lessonCopyService.updateCopiedEmbeddedTasks.mockReturnValue(boardCopyStatus);
 
-			configService.get.mockReturnValue(false);
+			config.featureCtlToolsCopyEnabled = false;
 
 			return {
 				user,

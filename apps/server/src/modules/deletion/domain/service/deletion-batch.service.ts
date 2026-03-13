@@ -1,8 +1,8 @@
+import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { ObjectId } from 'bson';
 import { DeletionBatchUsersRepo, UserIdsByRole, UsersCountByRole } from '../../repo';
 import { DeletionBatchRepo } from '../../repo/deletion-batch.repo';
 import { DeletionBatch, DeletionRequest } from '../do';
@@ -176,6 +176,38 @@ export class DeletionBatchService {
 		const usersByRole = await this.deletionBatchUsersRepo.countUsersByRole(userIds);
 
 		return usersByRole;
+	}
+
+	public async filterUsersByRoles(
+		userIds: EntityId[],
+		allowedRoles: string[]
+	): Promise<{ validUserIds: EntityId[]; invalidUserIds: EntityId[]; skippedUserIds: EntityId[] }> {
+		const validUserIds: EntityId[] = [];
+		const invalidUserIds: EntityId[] = [];
+		const skippedUserIds: EntityId[] = [];
+
+		const usersWithRoles = await this.deletionBatchUsersRepo.getUsersWithRoles(userIds);
+
+		const userRoleMap = new Map<EntityId, string[]>();
+		for (const user of usersWithRoles) {
+			userRoleMap.set(user.id, user.roles);
+		}
+
+		for (const userId of userIds) {
+			const roles = userRoleMap.get(userId);
+			if (roles && Array.isArray(roles)) {
+				const hasAllowedRole = roles.some((role) => allowedRoles.includes(role));
+				if (hasAllowedRole) {
+					validUserIds.push(userId);
+				} else {
+					skippedUserIds.push(userId);
+				}
+			} else {
+				invalidUserIds.push(userId);
+			}
+		}
+
+		return { validUserIds, invalidUserIds, skippedUserIds };
 	}
 
 	private async buildSummary(batch: DeletionBatch): Promise<DeletionBatchSummary> {

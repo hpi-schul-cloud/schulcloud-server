@@ -36,7 +36,7 @@ describe(`card create (api)`, () => {
 		await cleanupCollections(em);
 		const { teacherAccount: account, teacherUser: user } = UserAndAccountTestFactory.buildTeacher();
 		const course = courseEntityFactory.build({ school: user.school, teachers: [user] });
-		await em.persistAndFlush([user, account, course]);
+		await em.persist([user, account, course]).flush();
 
 		const columnBoardNode = columnBoardEntityFactory.build({
 			context: { id: course.id, type: BoardExternalReferenceType.Course },
@@ -44,7 +44,7 @@ describe(`card create (api)`, () => {
 
 		const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
 
-		await em.persistAndFlush([columnBoardNode, columnNode]);
+		await em.persist([columnBoardNode, columnNode]).flush();
 		em.clear();
 
 		const createCardBodyParams = {
@@ -123,7 +123,7 @@ describe(`card create (api)`, () => {
 		it('should return status 403', async () => {
 			const { columnNode } = await setup();
 			const { teacherAccount: account, teacherUser: user } = UserAndAccountTestFactory.buildTeacher();
-			await em.persistAndFlush([user, account]);
+			await em.persist([user, account]).flush();
 
 			const api = new TestApiClient(app, baseRouteName);
 			const loggedInClient = await api.login(account);
@@ -138,7 +138,7 @@ describe(`card create (api)`, () => {
 		it('should return status 403', async () => {
 			const { columnNode } = await setup();
 			const { teacherAccount: account, teacherUser: user } = UserAndAccountTestFactory.buildTeacher();
-			await em.persistAndFlush([user, account]);
+			await em.persist([user, account]).flush();
 
 			const response = await apiClient.post(`${columnNode.id}/cards`);
 

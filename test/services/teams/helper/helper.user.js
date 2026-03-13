@@ -1,18 +1,19 @@
 const { ObjectId } = require('mongoose').Types;
-
 const { BadRequest } = require('../../../../src/errors');
 const rolesModel = require('../../../../src/services/role/model');
 const { userModel } = require('../../../../src/services/user/model');
 const appPromise = require('../../../../src/app');
-
-const { TEST_PW, TEST_HASH } = require('../../../../config/globals');
-
-const AT = '@schul-cloud.org';
-
 const { warning } = require('../../../../src/logger/index');
+
+// eslint-disable-next-line no-process-env
+const TEST_PW = (process.env.TEST_PW || '').trim();
+// eslint-disable-next-line no-process-env
+const TEST_HASH = (process.env.TEST_HASH || '').trim();
 
 if (TEST_PW === '') warning('TEST_PW is not defined');
 if (TEST_HASH === '') warning('TEST_HASH is not defined');
+
+const AT = '@schul-cloud.org';
 
 const REQUEST_PARAMS = {
 	headers: { 'content-type': 'application/json' },
@@ -40,7 +41,7 @@ const getRoleByKey = (key, value) =>
 		.then(([role]) => role);
 
 const createUser = async (userId, roleName = 'student', schoolId = '5f2987e020834114b8efd6f8') => {
-	if (!['expert', 'student', 'teacher', 'parent', 'administrator', 'superhero'].includes(roleName)) {
+	if (!['externalPerson', 'student', 'teacher', 'parent', 'administrator', 'superhero'].includes(roleName)) {
 		throw BadRequest(`You want to test a not related role .${roleName}`);
 	}
 

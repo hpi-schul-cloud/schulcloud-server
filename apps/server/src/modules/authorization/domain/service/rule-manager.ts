@@ -17,7 +17,7 @@ export class RuleManager {
 		return rule;
 	}
 
-	private matchSingleRule(rules: Rule[]) {
+	private matchSingleRule(rules: Rule[]): Rule {
 		if (rules.length === 0) {
 			throw new NotImplementedException();
 		}

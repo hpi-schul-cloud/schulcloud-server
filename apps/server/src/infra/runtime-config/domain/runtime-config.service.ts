@@ -44,4 +44,8 @@ export class RuntimeConfigService {
 		}
 		return value;
 	}
+
+	public async save(runtimeConfigValue: RuntimeConfigValue): Promise<void> {
+		await this.repo.save(runtimeConfigValue);
+	}
 }

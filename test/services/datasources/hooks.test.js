@@ -134,7 +134,7 @@ describe('datasources hooks', () => {
 							schoolId: admin.schoolId,
 						},
 						{
-							config: { type: 'webuntis', secret: 'lorem ipsum' },
+							config: { type: 'something', secret: 'lorem ipsum' },
 							name: `somename${Date.now()}`,
 							schoolId: admin.schoolId,
 							protected: ['secret'],

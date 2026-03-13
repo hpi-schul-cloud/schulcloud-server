@@ -22,24 +22,24 @@ const stateMapping = {
 };
 
 export class VideoConferenceMapper {
-	static toVideoConferenceInfoResponse(videoConferenceInfo: VideoConferenceInfo): VideoConferenceInfoResponse {
+	public static toVideoConferenceInfoResponse(videoConferenceInfo: VideoConferenceInfo): VideoConferenceInfoResponse {
 		return new VideoConferenceInfoResponse({
 			state: this.toVideoConferenceStateResponse(videoConferenceInfo.state),
 			options: new VideoConferenceOptionsResponse(videoConferenceInfo.options),
 		});
 	}
 
-	static toVideoConferenceJoinResponse(videoConferenceJoin: VideoConferenceJoin): VideoConferenceJoinResponse {
+	public static toVideoConferenceJoinResponse(videoConferenceJoin: VideoConferenceJoin): VideoConferenceJoinResponse {
 		return new VideoConferenceJoinResponse({
 			url: videoConferenceJoin.url,
 		});
 	}
 
-	static toVideoConferenceStateResponse(state: VideoConferenceState): VideoConferenceStateResponse {
+	public static toVideoConferenceStateResponse(state: VideoConferenceState): VideoConferenceStateResponse {
 		return stateMapping[state];
 	}
 
-	static toVideoConferenceOptions(params: VideoConferenceCreateParams): VideoConferenceOptions {
+	public static toVideoConferenceOptions(params: VideoConferenceCreateParams): VideoConferenceOptions {
 		return {
 			everyAttendeeJoinsMuted: params.everyAttendeeJoinsMuted ?? defaultVideoConferenceOptions.everyAttendeeJoinsMuted,
 			everybodyJoinsAsModerator:

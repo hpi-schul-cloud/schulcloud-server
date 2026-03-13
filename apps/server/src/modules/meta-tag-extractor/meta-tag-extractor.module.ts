@@ -1,4 +1,5 @@
 import { LoggerModule } from '@core/logger';
+import { ConfigurationModule } from '@infra/configuration';
 import { ConsoleWriterModule } from '@infra/console';
 import { BoardModule } from '@modules/board';
 import { CourseModule } from '@modules/course';
@@ -7,9 +8,7 @@ import { TaskModule } from '@modules/task';
 import { UserModule } from '@modules/user';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
-import { createConfigModuleOptions } from '@shared/common/config-module-options';
-import metaTagExtractorConfig from './meta-tag-extractor.config';
+import { META_TAG_EXTRACTOR_CONFIG_TOKEN, MetaTagExtractorConfig } from './meta-tag-extractor.config';
 import { MetaTagExtractorService } from './service';
 import { MetaTagExternalUrlService } from './service/meta-tag-external-url.service';
 import { MetaTagInternalUrlService } from './service/meta-tag-internal-url.service';
@@ -25,7 +24,7 @@ import { BoardUrlHandler, CourseUrlHandler, LessonUrlHandler, TaskUrlHandler } f
 		LoggerModule,
 		TaskModule,
 		UserModule,
-		ConfigModule.forRoot(createConfigModuleOptions(metaTagExtractorConfig)),
+		ConfigurationModule.register(META_TAG_EXTRACTOR_CONFIG_TOKEN, MetaTagExtractorConfig),
 	],
 	providers: [
 		MetaTagExtractorService,

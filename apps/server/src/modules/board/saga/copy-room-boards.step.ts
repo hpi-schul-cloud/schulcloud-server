@@ -28,7 +28,7 @@ export class CopyRoomBoardsStep extends SagaStep<'copyRoomBoards'> {
 		userId: EntityId;
 		sourceRoomId: EntityId;
 		targetRoomId: EntityId;
-	}): Promise<{ id: EntityId; title: string }[]> {
+	}): Promise<{ id: EntityId; title: string; copyId: EntityId; originalId: EntityId }[]> {
 		const { userId, sourceRoomId, targetRoomId } = params;
 
 		const boardsCopied = await this.copyRoomBoards(userId, sourceRoomId, targetRoomId);
@@ -37,7 +37,12 @@ export class CopyRoomBoardsStep extends SagaStep<'copyRoomBoards'> {
 			if (!copyStatus.copyEntity) {
 				throw new Error('Copy status does not contain a copy entity');
 			}
-			return { id: copyStatus.copyEntity.id, title: (copyStatus.copyEntity as ColumnBoard).title };
+			return {
+				id: (copyStatus.copyEntity as ColumnBoard).id,
+				title: (copyStatus.copyEntity as ColumnBoard).title,
+				copyId: (copyStatus.copyEntity as ColumnBoard).id,
+				originalId: (copyStatus.originalEntity as ColumnBoard).id,
+			};
 		});
 
 		return result;

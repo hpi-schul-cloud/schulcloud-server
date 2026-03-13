@@ -100,7 +100,7 @@ describe(DeletionLogRepo.name, () => {
 			const setup = async () => {
 				// Test deletionLog entity
 				const entity: DeletionLogEntity = deletionLogEntityFactory.buildWithId();
-				await em.persistAndFlush(entity);
+				await em.persist(entity).flush();
 
 				const expectedDeletionLog = new DeletionLog({
 					id: entity.id,
@@ -154,7 +154,7 @@ describe(DeletionLogRepo.name, () => {
 					deletionRequestId: deletionRequest2Id,
 				});
 
-				await em.persistAndFlush([deletionLogEntity1, deletionLogEntity2, deletionLogEntity3]);
+				await em.persist([deletionLogEntity1, deletionLogEntity2, deletionLogEntity3]).flush();
 				em.clear();
 
 				const expectedArray = [

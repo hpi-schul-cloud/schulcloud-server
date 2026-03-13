@@ -55,7 +55,7 @@ data:
     OIDCMOCK_CLIENT_SECRET=$(encrypt_secret $OIDCMOCK__CLIENT_SECRET $AES_KEY)
     # Test LDAP server (deployed in the sc-common namespace) configuration (stored in the 'systems' collection).
     SEARCH_USER_PASSWORD=$(encrypt_secret $SC_COMMON_LDAP_PASSWORD $AES_KEY)
-    mongosh $DATABASE__URL --quiet --eval 'db.systems.insertMany([
+    mongosh $DB_URL --quiet --eval 'db.systems.insertMany([
     {
       "type" : "ldap",
       "alias" : "schoolOne0",
@@ -144,19 +144,9 @@ data:
       }
     }]);'
 
-    # Below is the IDM setup used for the development and testing
-    # It includes initialization of the OIDCMOCK based login and corresponding LDAP federation
-    IDM_ACTIVE={{ WITH_ERWINIDM }}
-    if [[ ${IDM_ACTIVE,,} == true ]]
-    then
-      curl --retry 360 --retry-all-errors --retry-delay 10 -X POST 'http://mgmt-svc:3333/api/management/idm/seed'
-    else
-      echo "Skip IDM initialization"
-    fi
-
     # AWS S3 storage configuration (stored in the 'storageproviders' collection).
     ENCRYPTED_AWS_SECRET_ACCESS_KEY=$(encrypt_secret $AWS_SECRET_ACCESS_KEY $S3_KEY)
-    mongosh $DATABASE__URL --quiet --eval 'db.storageproviders.insertOne( {
+    mongosh $DB_URL --quiet --eval 'db.storageproviders.insertOne( {
                                        "isShared" : true,
                                        "region" : "eu-central-1",
                                        "type" : "S3",
@@ -171,54 +161,11 @@ data:
 
     # Update secret for LTI test tool
     ENCRYPTED_LTI_TEST_TOOL_SECRET=$(encrypt_secret $LTI_TEST_TOOL_SECRET $AES_KEY)
-    mongosh $DATABASE__URL --quiet --eval 'db.getCollection("external-tools")
+    mongosh $DB_URL --quiet --eval 'db.getCollection("external-tools")
       .updateOne({ _id: ObjectId("647de247cf6a427b9d39e5b9") }, { $set: { config_secret: "'$ENCRYPTED_LTI_TEST_TOOL_SECRET'" } });'
 
     # Re-assign the k8s namespace name to a shorter variable to make the code a little bit more readable.
     NS=$K8S_NAMESPACE
-
-    # ========== Start of the Test BRB Univention LDAP system (also used on the REF BRB) configuration section.
-
-    # This is currently performed for any 'brb-*' namespace ('brb-main' for example).
-
-    if [ "$SC_THEME" = "brb" ]; then
-        UNIVENTION_LDAP_SYSTEM_ID=621beef78ec63ea12a3adae6
-        UNIVENTION_LDAP_FEDERAL_STATE_ID=0000b186816abba584714c53
-
-        # Encrypt LDAP server's search user password.
-        UNIVENTION_LDAP_SEARCH_USER_PASSWORD=$(encrypt_secret $UNIVENTION_LDAP_SEARCH_USER_PASSWORD $AES_KEY)
-
-        # Add (or replace) document with the test BRB Univention LDAP system configuration.
-        mongosh $DATABASE__URL --quiet --eval 'db.systems.replaceOne(
-            {
-                "_id": ObjectId("'$UNIVENTION_LDAP_SYSTEM_ID'"),
-            },
-            {
-                "_id": ObjectId("'$UNIVENTION_LDAP_SYSTEM_ID'"),
-                "alias": "TEST BRB UNIVENTION LDAP",
-                "ldapConfig": {
-                    "active": true,
-                    "federalState": ObjectId("'$UNIVENTION_LDAP_FEDERAL_STATE_ID'"),
-                    "url": "'$UNIVENTION_LDAP_URL'",
-                    "rootPath": "'$UNIVENTION_LDAP_ROOT_PATH'",
-                    "searchUser": "'$UNIVENTION_LDAP_SEARCH_USER'",
-                    "searchUserPassword": "'$UNIVENTION_LDAP_SEARCH_USER_PASSWORD'",
-                    "provider": "univention",
-                    "providerOptions": {
-                        "userAttributeNameMapping": {},
-                        "roleAttributeNameMapping": {},
-                        "classAttributeNameMapping": {}
-                    }
-                },
-                "type": "ldap"
-            },
-            {
-                "upsert": true
-            }
-        );'
-    fi
-
-    # ========== End of the Test BRB Univention LDAP system (also used on the REF BRB) configuration section.
 
     # ========== Start of the Bettermarks tool configuration section.
 
@@ -269,7 +216,7 @@ data:
 
             # Add Bettermarks' tools configuration as an external tool
             # (stored in the 'external-tools' collection) that uses OAuth.
-            mongosh $DATABASE__URL --quiet --eval 'db.getCollection("external-tools").replaceOne(
+            mongosh $DB_URL --quiet --eval 'db.getCollection("external-tools").replaceOne(
                 {
                   "name": "bettermarks",
                   "config_type": "oauth2"
@@ -307,7 +254,7 @@ data:
       echo "Adding TSP system to systems collection"
 
       TSP_SYSTEM_OAUTH_CLIENT_SECRET=$(encrypt_secret $TSP_SYSTEM_OAUTH_CLIENT_SECRET $AES_KEY)
-      mongosh $DATABASE__URL --quiet --eval 'db.systems.insertOne(
+      mongosh $DB_URL --quiet --eval 'db.systems.insertOne(
           {
             "_id": ObjectId("66d707f5c5202ba10c5e6256"),
             "alias": "TSP",
@@ -333,3 +280,42 @@ data:
       echo "Successfully added TSP system"
     fi
     # ========== End of TSP system creation
+
+    # ========== Start of FWU tool creation
+    if [[ $SC_THEME == "brb" ]]; then
+      echo "Adding FWU tool to external-tools collection"
+
+      mongosh $DB_URL --quiet --eval 'db.getCollection("external-tools").insertOne(
+          {
+            "_id" : ObjectId("6973657acd71a04085864fca"),
+            "name" : "FWU Medien",
+            "url" : "https://{{ NAMESPACE }}.brb.dbildungscloud.dev/media-shelf/fwu-media",
+            "config_type" : "basic",
+            "config_baseUrl" : "https://{{ NAMESPACE }}.brb.dbildungscloud.dev/media-shelf/fwu-media",
+            "parameters" : [ ],
+            "isHidden" : false,
+            "isDeactivated" : false,
+            "openNewTab" : true,
+            "restrictToContexts" : [ "board-element", "media-board" ],
+            "isPreferred" : true,
+            "iconName" : "FWU"
+          }
+      );'
+
+      echo "Adding FWU tool to school-external-tools collection"
+
+      mongosh $DB_URL --quiet --eval 'db.getCollection("school-external-tools").insertOne(
+          {
+            "_id" : ObjectId("697a1271edc7d941b031bfda"),
+            "tool" : ObjectId("6973657acd71a04085864fca"),
+            "school" : ObjectId("5f2987e020834114b8efd6f8"),
+            "schoolParameters" : [ ],
+            "isDeactivated" : false
+          }
+      );'
+
+      echo "Successfully added FWU tool"
+    fi
+    # ========== End of FWU tool creation
+
+

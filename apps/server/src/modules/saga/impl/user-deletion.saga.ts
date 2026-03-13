@@ -1,3 +1,4 @@
+import { EntityManager, RequestContext } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { SagaRegistryService, SagaStepRegistryService } from '../service';
@@ -24,13 +25,15 @@ export const UserDeletionSagaExecutionOrder: ModuleName[] = [
 	// ModuleName.USER,
 	ModuleName.USER_REGISTRATIONPIN,
 	ModuleName.NEWS,
+	ModuleName.ROOM,
 ];
 
 @Injectable()
 export class UserDeletionSaga extends Saga<'userDeletion'> {
 	constructor(
 		private readonly stepRegistry: SagaStepRegistryService,
-		private readonly sagaRegistry: SagaRegistryService
+		private readonly sagaRegistry: SagaRegistryService,
+		private readonly em: EntityManager
 	) {
 		super('userDeletion');
 		this.sagaRegistry.registerSaga(this);
@@ -43,9 +46,13 @@ export class UserDeletionSaga extends Saga<'userDeletion'> {
 
 		const results = await Promise.allSettled(
 			moduleNames.map((moduleName) =>
-				this.stepRegistry.executeStep(moduleName, 'deleteUserData', {
-					userId: params.userId,
-				})
+				RequestContext.create(
+					this.em,
+					async () =>
+						await this.stepRegistry.executeStep(moduleName, 'deleteUserData', {
+							userId: params.userId,
+						})
+				)
 			)
 		);
 

@@ -49,7 +49,7 @@ describe('School Controller (API)', () => {
 			const setup = async () => {
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin();
 
-				await em.persistAndFlush([adminAccount, adminUser]);
+				await em.persist([adminAccount, adminUser]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(adminAccount);
@@ -77,7 +77,7 @@ describe('School Controller (API)', () => {
 			const setup = async () => {
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin();
 
-				await em.persistAndFlush([adminAccount, adminUser]);
+				await em.persist([adminAccount, adminUser]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(adminAccount);
@@ -102,7 +102,7 @@ describe('School Controller (API)', () => {
 				const school = schoolEntityFactory.build();
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin();
 
-				await em.persistAndFlush([school, adminAccount, adminUser]);
+				await em.persist([school, adminAccount, adminUser]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(adminAccount);
@@ -129,7 +129,7 @@ describe('School Controller (API)', () => {
 				const school = schoolEntityFactory.build({ currentYear: schoolYears[1], systems });
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
-				await em.persistAndFlush([...schoolYears, school, adminAccount, adminUser]);
+				await em.persist([...schoolYears, school, adminAccount, adminUser]).flush();
 				em.clear();
 
 				const schoolYearResponses: DateToString<SchoolYearResponse>[] = schoolYears.map((schoolYear) => {
@@ -179,7 +179,7 @@ describe('School Controller (API)', () => {
 				const school = schoolEntityFactory.build({ currentYear: schoolYears[1], systems, inMaintenanceSince });
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
-				await em.persistAndFlush([...schoolYears, school, adminAccount, adminUser]);
+				await em.persist([...schoolYears, school, adminAccount, adminUser]).flush();
 				em.clear();
 
 				const schoolYearResponses: DateToString<SchoolYearResponse>[] = schoolYears.map((schoolYear) => {
@@ -228,7 +228,7 @@ describe('School Controller (API)', () => {
 				const school = schoolEntityFactory.build({ currentYear: schoolYears[1], systems });
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
-				await em.persistAndFlush([...schoolYears, school, adminAccount, adminUser]);
+				await em.persist([...schoolYears, school, adminAccount, adminUser]).flush();
 				em.clear();
 
 				const schoolYearResponses: DateToString<SchoolYearResponse>[] = schoolYears.map((schoolYear) => {
@@ -282,7 +282,7 @@ describe('School Controller (API)', () => {
 				});
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
-				await em.persistAndFlush([...schoolYears, school, adminAccount, adminUser]);
+				await em.persist([...schoolYears, school, adminAccount, adminUser]).flush();
 				em.clear();
 
 				const schoolYearResponses: DateToString<SchoolYearResponse>[] = schoolYears.map((schoolYear) => {
@@ -344,7 +344,7 @@ describe('School Controller (API)', () => {
 			const setup = async () => {
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin();
 
-				await em.persistAndFlush([adminAccount, adminUser]);
+				await em.persist([adminAccount, adminUser]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(adminAccount);
@@ -372,7 +372,7 @@ describe('School Controller (API)', () => {
 			const setup = async () => {
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin();
 
-				await em.persistAndFlush([adminAccount, adminUser]);
+				await em.persist([adminAccount, adminUser]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(adminAccount);
@@ -397,7 +397,7 @@ describe('School Controller (API)', () => {
 				const school = schoolEntityFactory.build();
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin();
 
-				await em.persistAndFlush([school, adminAccount, adminUser]);
+				await em.persist([school, adminAccount, adminUser]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(adminAccount);
@@ -422,7 +422,7 @@ describe('School Controller (API)', () => {
 				const school = schoolEntityFactory.build({ inUserMigration: true, inMaintenanceSince: new Date() });
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
-				await em.persistAndFlush([school, adminAccount, adminUser]);
+				await em.persist([school, adminAccount, adminUser]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(adminAccount);
@@ -448,7 +448,7 @@ describe('School Controller (API)', () => {
 				const school = schoolEntityFactory.build({ currentYear: schoolYears[2] });
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
-				await em.persistAndFlush([...schoolYears, school, adminAccount, adminUser]);
+				await em.persist([...schoolYears, school, adminAccount, adminUser]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(adminAccount);
@@ -475,7 +475,7 @@ describe('School Controller (API)', () => {
 				const school = schoolEntityFactory.build({ currentYear: schoolYears[1], systems });
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
-				await em.persistAndFlush([...schoolYears, school, adminAccount, adminUser]);
+				await em.persist([...schoolYears, school, adminAccount, adminUser]).flush();
 				em.clear();
 
 				const schoolYearResponses: DateToString<SchoolYearResponse>[] = schoolYears.map((schoolYear) => {
@@ -524,7 +524,7 @@ describe('School Controller (API)', () => {
 				const school = schoolEntityFactory.build({ currentYear: schoolYears[1], systems });
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
-				await em.persistAndFlush([...schoolYears, school, adminAccount, adminUser]);
+				await em.persist([...schoolYears, school, adminAccount, adminUser]).flush();
 				em.clear();
 
 				const schoolYearResponses: DateToString<SchoolYearResponse>[] = schoolYears.map((schoolYear) => {
@@ -577,7 +577,7 @@ describe('School Controller (API)', () => {
 				});
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
-				await em.persistAndFlush([...schoolYears, school, adminAccount, adminUser]);
+				await em.persist([...schoolYears, school, adminAccount, adminUser]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(adminAccount);
@@ -608,7 +608,7 @@ describe('School Controller (API)', () => {
 				});
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
-				await em.persistAndFlush([...schoolYears, school, adminAccount, adminUser]);
+				await em.persist([...schoolYears, school, adminAccount, adminUser]).flush();
 				em.clear();
 
 				const schoolYearResponses: DateToString<SchoolYearResponse>[] = schoolYears.map((schoolYear) => {
@@ -661,7 +661,7 @@ describe('School Controller (API)', () => {
 				});
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
-				await em.persistAndFlush([...schoolYears, school, adminAccount, adminUser]);
+				await em.persist([...schoolYears, school, adminAccount, adminUser]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(adminAccount);

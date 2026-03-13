@@ -12,7 +12,6 @@ describe('entity', () => {
 		orm = await MikroORM.init({
 			entities: [BaseEntityWithTimestamps, BoardNodeEntity],
 			clientUrl: 'mongodb://localhost:27017/boardtest',
-			type: 'mongo',
 			validate: true,
 			allowGlobalContext: true,
 		});
@@ -36,7 +35,7 @@ describe('entity', () => {
 				id: new ObjectId().toHexString(),
 			});
 
-			await orm.em.persistAndFlush(entity);
+			await orm.em.persist(entity).flush();
 			orm.em.clear();
 
 			const result = await orm.em.findOneOrFail(BoardNodeEntity, { id: entity.id });
@@ -46,7 +45,7 @@ describe('entity', () => {
 		it('should persist factory generated object', async () => {
 			const entity = columnBoardEntityFactory.build();
 
-			await orm.em.persistAndFlush(entity);
+			await orm.em.persist(entity).flush();
 			orm.em.clear();
 
 			const result = await orm.em.findOneOrFail(BoardNodeEntity, { id: entity.id });
@@ -60,7 +59,7 @@ describe('entity', () => {
 			entity.type = BoardNodeType.EXTERNAL_TOOL;
 			entity.contextExternalToolId = new ObjectId().toHexString();
 
-			await orm.em.persistAndFlush(entity);
+			await orm.em.persist(entity).flush();
 			orm.em.clear();
 
 			const result = await orm.em.findOneOrFail(BoardNodeEntity, { id: entity.id });
@@ -74,7 +73,7 @@ describe('entity', () => {
 			entity.type = BoardNodeType.H5P_ELEMENT;
 			entity.contentId = new ObjectId().toHexString();
 
-			await orm.em.persistAndFlush(entity);
+			await orm.em.persist(entity).flush();
 			orm.em.clear();
 
 			const result = await orm.em.findOneOrFail(BoardNodeEntity, { id: entity.id });

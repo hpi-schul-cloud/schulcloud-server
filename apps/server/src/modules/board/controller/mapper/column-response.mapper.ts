@@ -3,7 +3,7 @@ import { Card, Column } from '../../domain';
 import { CardSkeletonResponse, ColumnResponse, TimestampsResponse } from '../dto';
 
 export class ColumnResponseMapper {
-	static mapToResponse(column: Column): ColumnResponse {
+	public static mapToResponse(column: Column): ColumnResponse {
 		const result = new ColumnResponse({
 			id: column.id,
 			title: column.title ?? '',

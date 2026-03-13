@@ -1,16 +1,17 @@
 import { CourseService } from '@modules/course';
+import { RoomService } from '@modules/room';
 import { RoomMembershipService, UserWithRoomRoles } from '@modules/room-membership';
 import { Injectable } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import {
 	AnyBoardNode,
+	BoardContextSettings,
 	BoardExternalReferenceType,
 	BoardRoles,
-	BoardContextSettings,
 	UserWithBoardRoles,
 } from '../../domain';
-import { RoomService } from '@modules/room';
+import { RoleName } from '@modules/role';
 
 @Injectable()
 export class BoardContextService {
@@ -46,23 +47,37 @@ export class BoardContextService {
 		}
 
 		if (rootNode.context.type === BoardExternalReferenceType.Room) {
-			const room = await this.roomService.getSingleRoom(rootNode.context.id);
+			const roomId = rootNode.context.id;
+			const room = await this.roomService.getSingleRoom(roomId);
+
+			const roomAuthorizable = await this.roomMembershipService.getRoomAuthorizable(roomId);
+			const hasOwner = roomAuthorizable.members.some((member) =>
+				member.roles.some((role) => role.name === RoleName.ROOMOWNER)
+			);
+
 			const canRoomEditorManageVideoconference = this.roomService.canEditorManageVideoconferences(room);
 			return {
 				canRoomEditorManageVideoconference,
+				isLocked: !hasOwner,
 			};
 		} else if (rootNode.context.type === BoardExternalReferenceType.Course) {
-			return {};
+			const course = await this.courseService.findById(rootNode.context.id);
+			const hasTeachers = course.teachers.length > 0;
+			return {
+				isLocked: !hasTeachers,
+			};
 		} else if (rootNode.context.type === BoardExternalReferenceType.User) {
-			return {};
+			return {
+				isLocked: false,
+			};
 		} else {
 			throw new Error(`Unknown context type: '${rootNode.context.type as string}'`);
 		}
 	}
 
 	private async getFromRoom(roomId: EntityId): Promise<UserWithBoardRoles[]> {
-		const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(roomId);
-		const usersWithRoles: UserWithBoardRoles[] = roomMembershipAuthorizable.members.map((member) => {
+		const roomAuthorizable = await this.roomMembershipService.getRoomAuthorizable(roomId);
+		const usersWithRoles: UserWithBoardRoles[] = roomAuthorizable.members.map((member) => {
 			const roles = this.getBoardRolesFromRoomMembership(member);
 			return {
 				userId: member.userId,

@@ -7,9 +7,6 @@ export class LernstoreResources {
 	@ApiProperty({ description: 'description' })
 	public description: string;
 
-	@ApiPropertyOptional({ description: 'merlinReference' })
-	public merlinReference?: string;
-
 	@ApiProperty({ description: 'title' })
 	public title: string;
 
@@ -21,6 +18,5 @@ export class LernstoreResources {
 		this.description = props.description;
 		this.title = props.title;
 		this.url = props.url;
-		this.merlinReference = props.merlinReference;
 	}
 }

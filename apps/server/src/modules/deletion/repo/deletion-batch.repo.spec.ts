@@ -50,7 +50,7 @@ describe(DeletionBatchRepo.name, () => {
 	describe('findDeletionBatches', () => {
 		it('should find deletion batches', async () => {
 			const entity: DeletionBatchEntity = deletionBatchEntityFactory.buildWithId();
-			await em.persistAndFlush(entity);
+			await em.persist(entity).flush();
 
 			const result = await repo.findDeletionBatches({ pagination: { skip: 0, limit: 10 } });
 
@@ -63,7 +63,7 @@ describe(DeletionBatchRepo.name, () => {
 	describe('findById', () => {
 		it('should find a deletion batch by id', async () => {
 			const entity: DeletionBatchEntity = deletionBatchEntityFactory.buildWithId();
-			await em.persistAndFlush(entity);
+			await em.persist(entity).flush();
 
 			const result = await repo.findById(entity.id);
 
@@ -96,7 +96,7 @@ describe(DeletionBatchRepo.name, () => {
 	describe('delete', () => {
 		it('should delete a deletion batch', async () => {
 			const entity: DeletionBatchEntity = deletionBatchEntityFactory.buildWithId();
-			await em.persistAndFlush(entity);
+			await em.persist(entity).flush();
 
 			const domainObject = DeletionBatchDomainMapper.mapEntityToDo(entity);
 			await repo.delete(domainObject);
@@ -110,7 +110,7 @@ describe(DeletionBatchRepo.name, () => {
 	describe('updateStatus', () => {
 		it('should update the status of a deletion batch', async () => {
 			const entity: DeletionBatchEntity = deletionBatchEntityFactory.buildWithId();
-			await em.persistAndFlush(entity);
+			await em.persist(entity).flush();
 
 			const domainObject = DeletionBatchDomainMapper.mapEntityToDo(entity);
 			await repo.updateStatus(domainObject, BatchStatus.DELETION_REQUESTED);

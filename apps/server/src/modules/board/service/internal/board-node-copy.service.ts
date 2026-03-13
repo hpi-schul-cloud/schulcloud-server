@@ -1,6 +1,6 @@
-import { H5pEditorProducer } from '@infra/h5p-editor-client';
-import { CopyContentParams, CopyContentParentType } from '@infra/rabbitmq';
+import { CopyContentParams, CopyContentParentType, H5pEditorProducer } from '@infra/h5p-editor-client';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { BOARD_CONFIG_TOKEN, BoardConfig } from '@modules/board/board.config';
 import { CopyElementType, CopyHelperService, CopyMapper, type CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import type { CopyFileDto } from '@modules/files-storage-client/dto';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool';
@@ -8,9 +8,7 @@ import {
 	type ContextExternalTool,
 	CopyContextExternalToolRejectData,
 } from '@modules/tool/context-external-tool/domain';
-import type { ToolConfig } from '@modules/tool/tool-config';
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { Inject, Injectable } from '@nestjs/common';
 import type { EntityId } from '@shared/domain/types';
 import {
 	type AnyBoardNode,
@@ -49,7 +47,8 @@ export interface CopyContext {
 @Injectable()
 export class BoardNodeCopyService {
 	constructor(
-		private readonly configService: ConfigService<ToolConfig, true>,
+		@Inject(BOARD_CONFIG_TOKEN)
+		private readonly config: BoardConfig,
 		private readonly contextExternalToolService: ContextExternalToolService,
 		private readonly copyHelperService: CopyHelperService,
 		private readonly h5pEditorProducer: H5pEditorProducer
@@ -338,7 +337,7 @@ export class BoardNodeCopyService {
 			...this.buildSpecificProps([]),
 		});
 
-		if (!this.configService.get('FEATURE_CTL_TOOLS_COPY_ENABLED') || !original.contextExternalToolId) {
+		if (!this.config.featureCtlToolsCopyEnabled || !original.contextExternalToolId) {
 			const copyStatus: CopyStatus = {
 				copyEntity: copy,
 				type: CopyElementType.EXTERNAL_TOOL_ELEMENT,

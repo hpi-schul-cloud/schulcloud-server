@@ -53,7 +53,7 @@ describe('Room Invitation Link Controller (API)', () => {
 		describe('when id is not a valid mongo id', () => {
 			const setup = async () => {
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persist([studentAccount, studentUser]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
@@ -87,15 +87,9 @@ describe('Room Invitation Link Controller (API)', () => {
 					userGroupId: userGroup.id,
 					schoolId: school.id,
 				});
-				await em.persistAndFlush([
-					room,
-					roomInvitationLink,
-					roomMembership,
-					teacherAccount,
-					teacherUser,
-					userGroup,
-					roomAdminRole,
-				]);
+				await em
+					.persist([room, roomInvitationLink, roomMembership, teacherAccount, teacherUser, userGroup, roomAdminRole])
+					.flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);
@@ -111,7 +105,8 @@ describe('Room Invitation Link Controller (API)', () => {
 						title: 'Room Inivitation renamed',
 						activeUntil: new Date(Date.now() + 1000000),
 						requiresConfirmation: true,
-						isOnlyForTeachers: true,
+						isUsableByExternalPersons: false,
+						isUsableByStudents: false,
 						restrictedToCreatorSchool: true,
 					};
 
@@ -128,7 +123,8 @@ describe('Room Invitation Link Controller (API)', () => {
 						title: 'Room Inivitation renamed',
 						activeUntil: new Date(Date.now() + 1000000),
 						requiresConfirmation: true,
-						isOnlyForTeachers: true,
+						isUsableByExternalPersons: false,
+						isUsableByStudents: false,
 						restrictedToCreatorSchool: true,
 					};
 
@@ -168,21 +164,24 @@ describe('Room Invitation Link Controller (API)', () => {
 				const roomInvitationLink = roomInvitationLinkEntityFactory.build({
 					roomId: room.id,
 					requiresConfirmation: false,
-					isOnlyForTeachers: false,
+					isUsableByExternalPersons: false,
+					isUsableByStudents: true,
 					restrictedToCreatorSchool: false,
 					activeUntil: inOneWeek,
 					creatorUserId: teacherUser.id,
 					creatorSchoolId: school.id,
 				});
-				await em.persistAndFlush([
-					room,
-					roomInvitationLink,
-					teacherAccount,
-					teacherUser,
-					userGroupEntity,
-					roomMembership,
-					roomViewerRole,
-				]);
+				await em
+					.persist([
+						room,
+						roomInvitationLink,
+						teacherAccount,
+						teacherUser,
+						userGroupEntity,
+						roomMembership,
+						roomViewerRole,
+					])
+					.flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);
@@ -196,7 +195,8 @@ describe('Room Invitation Link Controller (API)', () => {
 					title: 'Room Inivitation renamed',
 					activeUntil: inOneWeek,
 					requiresConfirmation: true,
-					isOnlyForTeachers: true,
+					isUsableByExternalPersons: false,
+					isUsableByStudents: false,
 					restrictedToCreatorSchool: true,
 				};
 

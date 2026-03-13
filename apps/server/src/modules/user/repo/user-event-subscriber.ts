@@ -7,7 +7,7 @@ import { UserChangedSchoolEvent } from '../domain/events/user-changed-school.eve
 
 @Injectable()
 export class UserEventSubscriber implements EventSubscriber<User> {
-	constructor(em: EntityManager, private readonly eventBus: EventBus) {
+	constructor(private readonly em: EntityManager, private readonly eventBus: EventBus) {
 		em.getEventManager().registerSubscriber(this);
 	}
 

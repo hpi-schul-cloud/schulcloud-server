@@ -1,16 +1,15 @@
 import { LegacyLogger } from '@core/logger';
-import { Configuration } from '@hpi-schul-cloud/commons';
-import { DefaultEncryptionService, EncryptionService, LdapEncryptionService } from '@infra/encryption';
+import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { FileSystemAdapter } from '@infra/file-system';
 import { UmzugMigration } from '@mikro-orm/migrations-mongodb';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { StorageProviderEntity } from '@modules/school/repo';
 import { SystemEntity } from '@modules/system/repo';
 import { Inject, Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { AesEncryptionHelper } from '@shared/common/utils';
 import { orderBy } from 'lodash';
 import { BsonConverter } from '../converter/bson.converter';
+import { MANAGEMENT_SEED_DATA_CONFIG_TOKEN, ManagementSeedDataConfig } from '../management-seed-data.config';
 import { generateSeedData } from '../seed-data/generate-seed-data';
 import {
 	ExternalToolsSeedDataService,
@@ -19,6 +18,7 @@ import {
 	SystemsSeedDataService,
 } from '../service';
 import { DatabaseManagementService } from '../service/database-management.service';
+import { Document } from 'mongodb';
 
 export interface CollectionFilePath {
 	filePath: string;
@@ -41,11 +41,10 @@ export class DatabaseManagementUc {
 		private fileSystemAdapter: FileSystemAdapter,
 		private databaseManagementService: DatabaseManagementService,
 		private bsonConverter: BsonConverter,
-		private readonly configService: ConfigService,
+		@Inject(MANAGEMENT_SEED_DATA_CONFIG_TOKEN) private readonly config: ManagementSeedDataConfig,
 		private readonly logger: LegacyLogger,
 		private em: EntityManager,
 		@Inject(DefaultEncryptionService) private readonly defaultEncryptionService: EncryptionService,
-		@Inject(LdapEncryptionService) private readonly ldapEncryptionService: EncryptionService,
 		private readonly mediaSourcesSeedDataService: MediaSourcesSeedDataService,
 		private readonly systemsSeedDataService: SystemsSeedDataService,
 		private readonly externalToolsSeedDataService: ExternalToolsSeedDataService,
@@ -184,7 +183,7 @@ export class DatabaseManagementUc {
 				}
 				await this.dropCollectionIfExists(collectionName);
 
-				await this.em.persistAndFlush(data);
+				await this.em.persist(data).flush();
 
 				return `${collectionName}:${data.length}`;
 			});
@@ -240,7 +239,7 @@ export class DatabaseManagementUc {
 				// import backup data into database collection
 				const importedDocumentsAmount = await this.databaseManagementService.importCollection(
 					collectionName,
-					jsonDocuments
+					jsonDocuments as Document[]
 				);
 				// keep collection name and number of imported documents
 				seededCollectionsWithAmount.set(collectionName, importedDocumentsAmount);
@@ -387,15 +386,17 @@ export class DatabaseManagementUc {
 	}
 
 	private resolvePlaceholder(placeholder: string): string {
-		if (Configuration.has(placeholder)) {
-			return Configuration.get(placeholder) as string;
+		switch (placeholder) {
+			case 'OIDCMOCK__BASE_URL':
+				return this.config.oidcMockBaseUrl;
+			case 'OIDCMOCK__CLIENT_ID':
+				return this.config.oidcMockClientId;
+			case 'OIDCMOCK__CLIENT_SECRET':
+				return this.config.oidcMockClientSecret;
+			default:
+				this.logger.warn(`Placeholder "${placeholder}" could not be resolved!`);
+				return '';
 		}
-		const placeholderValue = this.configService.get<string>(placeholder);
-		if (placeholderValue) {
-			return placeholderValue;
-		}
-		this.logger.warn(`Placeholder "${placeholder}" could not be resolved!`);
-		return '';
 	}
 
 	private encryptSecrets(collectionName: string, jsonDocuments: unknown[]): void {
@@ -411,9 +412,6 @@ export class DatabaseManagementUc {
 			}
 			if (system.oidcConfig?.clientSecret) {
 				system.oidcConfig.clientSecret = this.defaultEncryptionService.encrypt(system.oidcConfig.clientSecret);
-			}
-			if (system.ldapConfig?.searchUserPassword) {
-				system.ldapConfig.searchUserPassword = this.ldapEncryptionService.encrypt(system.ldapConfig.searchUserPassword);
 			}
 		});
 		return systems;

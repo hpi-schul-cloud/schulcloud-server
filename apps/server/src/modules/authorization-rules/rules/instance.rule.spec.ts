@@ -1,4 +1,5 @@
 import {
+	AUTHORIZATION_CONFIG_TOKEN,
 	AuthorizationContext,
 	AuthorizationContextBuilder,
 	AuthorizationHelper,
@@ -7,11 +8,11 @@ import {
 import { instanceFactory } from '@modules/instance/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
+import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { InstanceRule } from './instance.rule';
-import { NotImplementedException } from '@nestjs/common';
 
 const TEST_PERMISSION = 'TEST_PERMISSION' as Permission;
 
@@ -24,7 +25,12 @@ describe(InstanceRule.name, () => {
 		await setupEntities([User]);
 
 		module = await Test.createTestingModule({
-			providers: [InstanceRule, AuthorizationHelper, AuthorizationInjectionService],
+			providers: [
+				InstanceRule,
+				AuthorizationHelper,
+				AuthorizationInjectionService,
+				{ provide: AUTHORIZATION_CONFIG_TOKEN, useValue: {} },
+			],
 		}).compile();
 
 		rule = module.get(InstanceRule);

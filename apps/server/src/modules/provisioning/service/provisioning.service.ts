@@ -9,6 +9,7 @@ import {
 	SchulconnexAsyncProvisioningStrategy,
 	TspProvisioningStrategy,
 } from '../strategy';
+import { ErwinProvisioningStrategy } from '../strategy/erwin';
 
 @Injectable()
 export class ProvisioningService {
@@ -21,11 +22,13 @@ export class ProvisioningService {
 		private readonly systemService: SystemService,
 		private readonly schulconnexAsyncProvisioningStrategy: SchulconnexAsyncProvisioningStrategy,
 		private readonly oidcMockStrategy: OidcMockProvisioningStrategy,
-		private readonly tspStrategy: TspProvisioningStrategy
+		private readonly tspStrategy: TspProvisioningStrategy,
+		private readonly erwinProvisioningStrategy: ErwinProvisioningStrategy
 	) {
 		this.registerStrategy(schulconnexAsyncProvisioningStrategy);
 		this.registerStrategy(oidcMockStrategy);
 		this.registerStrategy(tspStrategy);
+		this.registerStrategy(erwinProvisioningStrategy);
 	}
 
 	protected registerStrategy(strategy: ProvisioningStrategy): void {

@@ -1,3 +1,4 @@
+import { DomainErrorHandler } from '@core/error';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { H5pEditorProducer } from '@infra/h5p-editor-client';
 import { TldrawClientAdapter } from '@infra/tldraw-client';
@@ -26,6 +27,7 @@ describe(BoardNodeDeleteHooksService.name, () => {
 	let contextExternalToolService: DeepMocked<ContextExternalToolService>;
 	let collaborativeTextEditorService: DeepMocked<CollaborativeTextEditorService>;
 	let h5pEditorProducer: DeepMocked<H5pEditorProducer>;
+	let domainErrorHandler: DeepMocked<DomainErrorHandler>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -51,6 +53,10 @@ describe(BoardNodeDeleteHooksService.name, () => {
 					provide: H5pEditorProducer,
 					useValue: createMock<H5pEditorProducer>(),
 				},
+				{
+					provide: DomainErrorHandler,
+					useValue: createMock<DomainErrorHandler>(),
+				},
 			],
 		}).compile();
 
@@ -60,10 +66,11 @@ describe(BoardNodeDeleteHooksService.name, () => {
 		contextExternalToolService = module.get(ContextExternalToolService);
 		collaborativeTextEditorService = module.get(CollaborativeTextEditorService);
 		h5pEditorProducer = module.get(H5pEditorProducer);
+		domainErrorHandler = module.get(DomainErrorHandler);
 	});
 
 	afterEach(() => {
-		jest.resetAllMocks();
+		jest.restoreAllMocks();
 	});
 
 	afterAll(async () => {
@@ -72,30 +79,72 @@ describe(BoardNodeDeleteHooksService.name, () => {
 
 	describe('afterDelete', () => {
 		describe('when called with file element', () => {
-			const setup = () => {
-				return { boardNode: fileElementFactory.build() };
-			};
+			describe('when deleteFilesOfParent resolves', () => {
+				const setup = () => {
+					return { boardNode: fileElementFactory.build() };
+				};
 
-			it('should delete files', async () => {
-				const { boardNode } = setup();
+				it('should delete files', async () => {
+					const { boardNode } = setup();
 
-				await service.afterDelete(boardNode);
+					await service.afterDelete(boardNode);
 
-				expect(filesStorageClientAdapterService.deleteFilesOfParent).toHaveBeenCalledWith(boardNode.id);
+					expect(filesStorageClientAdapterService.deleteFilesOfParent).toHaveBeenCalledWith(boardNode.id);
+				});
+			});
+
+			describe('when deleteFilesOfParent rejects', () => {
+				const setup = () => {
+					const boardNode = fileElementFactory.build();
+					const error = new Error('delete error');
+					filesStorageClientAdapterService.deleteFilesOfParent.mockRejectedValueOnce(error);
+
+					return { boardNode, error };
+				};
+
+				it('should catch the error and call DomainErrorHandler', async () => {
+					const { boardNode, error } = setup();
+
+					await service.afterDelete(boardNode);
+
+					expect(filesStorageClientAdapterService.deleteFilesOfParent).toHaveBeenCalledWith(boardNode.id);
+					expect(domainErrorHandler.exec).toHaveBeenCalledWith(error);
+				});
 			});
 		});
 
 		describe('when called with file folder element', () => {
-			const setup = () => {
-				return { boardNode: fileFolderElementFactory.build() };
-			};
+			describe('when deleteFilesOfParent resolves', () => {
+				const setup = () => {
+					return { boardNode: fileFolderElementFactory.build() };
+				};
 
-			it('should delete files', async () => {
-				const { boardNode } = setup();
+				it('should delete files', async () => {
+					const { boardNode } = setup();
 
-				await service.afterDelete(boardNode);
+					await service.afterDelete(boardNode);
 
-				expect(filesStorageClientAdapterService.deleteFilesOfParent).toHaveBeenCalledWith(boardNode.id);
+					expect(filesStorageClientAdapterService.deleteFilesOfParent).toHaveBeenCalledWith(boardNode.id);
+				});
+			});
+
+			describe('when deleteFilesOfParent rejects', () => {
+				const setup = () => {
+					const boardNode = fileFolderElementFactory.build();
+					const error = new Error('delete error');
+					filesStorageClientAdapterService.deleteFilesOfParent.mockRejectedValueOnce(error);
+
+					return { boardNode, error };
+				};
+
+				it('should catch the error and call DomainErrorHandler', async () => {
+					const { boardNode, error } = setup();
+
+					await service.afterDelete(boardNode);
+
+					expect(filesStorageClientAdapterService.deleteFilesOfParent).toHaveBeenCalledWith(boardNode.id);
+					expect(domainErrorHandler.exec).toHaveBeenCalledWith(error);
+				});
 			});
 		});
 

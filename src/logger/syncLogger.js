@@ -3,18 +3,17 @@ const winston = require('winston');
 
 const { format } = winston;
 const { createLogger } = require('./utils');
-const { NODE_ENV, ENVIRONMENTS } = require('../../config/globals');
+const { ENVIRONMENTS } = require('../../config/environments');
 
 const getDevelopFormat = () =>
 	format.combine(format.errors({ stack: true }), format.timestamp(), format.prettyPrint({ depth: 5, colorize: true }));
 
-const getProductionFormat = () =>
-	format.combine(format.errors({ stack: true }), format.timestamp(), format.json());
+const getProductionFormat = () => format.combine(format.errors({ stack: true }), format.timestamp(), format.json());
 
 const getTestFormat = () => format.combine(format.prettyPrint({ depth: 1, colorize: true }));
 
 let selectedFormat;
-switch (NODE_ENV) {
+switch (Configuration.get('NODE_ENV')) {
 	case ENVIRONMENTS.TEST:
 		selectedFormat = getTestFormat();
 		break;

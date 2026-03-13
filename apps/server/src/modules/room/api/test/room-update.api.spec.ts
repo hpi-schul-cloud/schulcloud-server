@@ -48,7 +48,7 @@ describe('Room Controller (API)', () => {
 		describe('when id is not a valid mongo id', () => {
 			const setup = async () => {
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persist([studentAccount, studentUser]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
@@ -72,17 +72,17 @@ describe('Room Controller (API)', () => {
 					endDate: new Date('2024-10-20'),
 					schoolId: school.id,
 				});
-				const { roomEditorRole } = RoomRolesTestFactory.createRoomRoles();
+				const { roomOwnerRole } = RoomRolesTestFactory.createRoomRoles();
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
 				const userGroup = groupEntityFactory.buildWithId({
-					users: [{ role: roomEditorRole, user: teacherUser }],
+					users: [{ role: roomOwnerRole, user: teacherUser }],
 				});
 				const roomMembership = roomMembershipEntityFactory.build({
 					roomId: room.id,
 					userGroupId: userGroup.id,
 					schoolId: school.id,
 				});
-				await em.persistAndFlush([room, roomMembership, teacherAccount, teacherUser, userGroup, roomEditorRole]);
+				await em.persist([room, roomMembership, teacherAccount, teacherUser, userGroup, roomOwnerRole]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);
@@ -301,7 +301,7 @@ describe('Room Controller (API)', () => {
 					endDate: new Date('2024-10-20'),
 				});
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-				await em.persistAndFlush([room, teacherAccount, teacherUser]);
+				await em.persist([room, teacherAccount, teacherUser]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);

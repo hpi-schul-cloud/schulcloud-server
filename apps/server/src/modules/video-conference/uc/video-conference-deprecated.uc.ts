@@ -1,5 +1,3 @@
-import { randomBytes } from 'node:crypto';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { ICurrentUser } from '@infra/auth-guard';
 import { CalendarService } from '@infra/calendar';
 import { CalendarEventDto } from '@infra/calendar/dto/calendar-event.dto';
@@ -12,10 +10,11 @@ import { SchoolFeature } from '@modules/school/domain';
 import { TeamEntity, TeamRepo, TeamUserEntity } from '@modules/team/repo';
 import { UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
-import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Inject, Injectable } from '@nestjs/common';
 import { AuthorizableObject } from '@shared/domain/domain-object';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
+import { randomBytes } from 'node:crypto';
 import {
 	BBBBaseMeetingConfig,
 	BBBBaseResponse,
@@ -32,6 +31,7 @@ import { VideoConferenceDO, VideoConferenceOptionsDO, VideoConferenceScope } fro
 import { ErrorStatus } from '../error';
 import { defaultVideoConferenceOptions, VideoConferenceOptions } from '../interface';
 import { VideoConferenceRepo } from '../repo';
+import { VIDEO_CONFERENCE_CONFIG_TOKEN, VideoConferenceConfig } from '../video-conference-config';
 import { ScopeInfo, VideoConference, VideoConferenceInfo, VideoConferenceJoin, VideoConferenceState } from './dto';
 
 const PermissionMapping = {
@@ -44,8 +44,6 @@ const PermissionMapping = {
  */
 @Injectable()
 export class VideoConferenceDeprecatedUc {
-	private readonly hostURL: string;
-
 	constructor(
 		private readonly bbbService: BBBService,
 		private readonly authorizationService: AuthorizationService,
@@ -54,10 +52,9 @@ export class VideoConferenceDeprecatedUc {
 		private readonly courseService: CourseService,
 		private readonly userService: UserService,
 		private readonly calendarService: CalendarService,
-		private readonly schoolService: LegacySchoolService
-	) {
-		this.hostURL = Configuration.get('HOST') as string;
-	}
+		private readonly schoolService: LegacySchoolService,
+		@Inject(VIDEO_CONFERENCE_CONFIG_TOKEN) private readonly config: VideoConferenceConfig
+	) {}
 
 	/**
 	 * Creates a new video conference.
@@ -105,6 +102,9 @@ export class VideoConferenceDeprecatedUc {
 			// Patch options, if preset exists
 			vcDo = await this.videoConferenceRepo.findByScopeAndScopeId(refId, conferenceScope);
 			vcDo.options = options;
+			if (!vcDo.salt) {
+				vcDo.salt = randomBytes(16).toString('hex');
+			}
 		} catch (error) {
 			// Create new preset
 			vcDo = new VideoConferenceDO({
@@ -116,7 +116,7 @@ export class VideoConferenceDeprecatedUc {
 		}
 		await this.videoConferenceRepo.save(vcDo);
 
-		const bbbResponse = await this.bbbService.create(configBuilder.build());
+		const bbbResponse = await this.bbbService.create(configBuilder.withScDomain(this.config.scHostUrl).build());
 
 		return new VideoConference<BBBCreateResponse>({
 			state: VideoConferenceState.NOT_STARTED,
@@ -152,7 +152,7 @@ export class VideoConferenceDeprecatedUc {
 			role: bbbRole,
 		});
 
-		const isGuest = await this.isExpert(currentUser, conferenceScope, scopeInfo.scopeId);
+		const isGuest = await this.isExternalPersonOrTeamExpert(currentUser, conferenceScope, scopeInfo.scopeId);
 		const vcDO = await this.videoConferenceRepo.findByScopeAndScopeId(refId, conferenceScope);
 		configBuilder.withUserId(currentUser.userId);
 
@@ -204,6 +204,7 @@ export class VideoConferenceDeprecatedUc {
 			meetingID: refId,
 		});
 
+		// this one fails if salt is not set
 		const options: VideoConferenceOptionsDO = await this.videoConferenceRepo
 			.findByScopeAndScopeId(refId, conferenceScope)
 			.then((vcDO: VideoConferenceDO) => vcDO.options)
@@ -229,7 +230,7 @@ export class VideoConferenceDeprecatedUc {
 					})
 			);
 
-		const isGuest = await this.isExpert(currentUser, conferenceScope, scopeInfo.scopeId);
+		const isGuest = await this.isExternalPersonOrTeamExpert(currentUser, conferenceScope, scopeInfo.scopeId);
 
 		if (!this.canGuestJoin(isGuest, response.state, options.moderatorMustApproveJoinRequests)) {
 			throw new ForbiddenException(ErrorStatus.GUESTS_CANNOT_JOIN_CONFERENCE);
@@ -294,7 +295,7 @@ export class VideoConferenceDeprecatedUc {
 		});
 	}
 
-	protected async isExpert(
+	protected async isExternalPersonOrTeamExpert(
 		currentUser: ICurrentUser,
 		conferenceScope: VideoConferenceScope,
 		scopeId: string
@@ -303,7 +304,7 @@ export class VideoConferenceDeprecatedUc {
 			case VideoConferenceScope.COURSE: {
 				const roles: RoleName[] = currentUser.roles.map((role) => role as RoleName);
 
-				return roles.includes(RoleName.EXPERT);
+				return roles.includes(RoleName.EXTERNALPERSON);
 			}
 			case VideoConferenceScope.EVENT: {
 				const team: TeamEntity = await this.teamRepo.findById(scopeId);
@@ -343,7 +344,7 @@ export class VideoConferenceDeprecatedUc {
 					scopeInfo: {
 						scopeId: refId,
 						scopeName: VideoConferenceScope.COURSE,
-						logoutUrl: `${this.hostURL}/courses/${refId}?activeTab=tools`,
+						logoutUrl: `${this.config.scHostUrl}/courses/${refId}?activeTab=tools`,
 						title: course.name,
 					},
 					object: course,
@@ -357,7 +358,7 @@ export class VideoConferenceDeprecatedUc {
 					scopeInfo: {
 						scopeId: event.teamId,
 						scopeName: VideoConferenceScope.EVENT,
-						logoutUrl: `${this.hostURL}/teams/${event.teamId}?activeTab=events`,
+						logoutUrl: `${this.config.scHostUrl}/teams/${event.teamId}?activeTab=events`,
 						title: event.title,
 					},
 					object: team,
@@ -416,7 +417,7 @@ export class VideoConferenceDeprecatedUc {
 	 */
 	protected async throwOnFeaturesDisabled(schoolId: EntityId): Promise<void> {
 		// throw, if the feature has not been enabled
-		if (!Configuration.get('FEATURE_VIDEOCONFERENCE_ENABLED')) {
+		if (!this.config.featureVideoConferenceEnabled) {
 			throw new ForbiddenException(
 				ErrorStatus.SCHOOL_FEATURE_DISABLED,
 				'feature FEATURE_VIDEOCONFERENCE_ENABLED is disabled'

@@ -8,7 +8,6 @@ export const materialFactory = MaterialFactory.define<Material, MaterialProperti
 		client: 'test material client',
 		description: 'test material description',
 		license: [],
-		merlinReference: '',
 		relatedResources: [],
 		subjects: [],
 		tags: [],

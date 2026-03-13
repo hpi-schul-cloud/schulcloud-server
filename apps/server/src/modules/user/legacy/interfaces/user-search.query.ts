@@ -1,5 +1,7 @@
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { UserSortQuery } from './user-sort.query';
+
+type DateRangeQuery = Record<string, Date>;
 
 export interface UserSearchQuery {
 	_id?: any;
@@ -13,7 +15,7 @@ export interface UserSearchQuery {
 	consentStatus?: Record<string, string[]>;
 	classes?: string[];
 	searchQuery?: string;
-	createdAt?: Date;
-	outdatedSince?: Date;
-	lastLoginSystemChange?: Date;
+	createdAt?: DateRangeQuery;
+	outdatedSince?: DateRangeQuery;
+	lastLoginSystemChange?: DateRangeQuery;
 }

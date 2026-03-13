@@ -25,7 +25,7 @@ describe('CommonCartridgeFileParser', () => {
 			pathDepth: faker.number.int({ min: 1, max: 5 }),
 			isResource: true,
 			isInlined: false,
-			resourcePath: faker.system.filePath(),
+			resourcePaths: [faker.system.filePath()],
 			resourceType: faker.lorem.word(),
 		};
 
@@ -197,43 +197,6 @@ describe('CommonCartridgeFileParser', () => {
 				const { organizationProps } = setup();
 
 				expect(() => sut.getResource(organizationProps)).toThrow(CommonCartridgeResourceNotFoundException);
-				expect(admZipMock.getEntry).toHaveBeenCalledTimes(1);
-			});
-		});
-	});
-
-	describe('getResourceAsString', () => {
-		describe('when accessing existing resource', () => {
-			const setup = () => {
-				admZipMock.getEntry.mockReturnValue({} as AdmZip.IZipEntry);
-				admZipMock.readAsText.mockReturnValue(faker.lorem.paragraph());
-
-				return setupOrganizationProps();
-			};
-
-			it('should return resource as string', () => {
-				const { organizationProps } = setup();
-
-				const resource = sut.getResourceAsString(organizationProps);
-
-				expect(resource).toEqual(expect.any(String));
-				expect(admZipMock.getEntry).toHaveBeenCalledTimes(1);
-				expect(admZipMock.readAsText).toHaveBeenCalledTimes(1);
-			});
-		});
-
-		describe('when accessing non-existing resource', () => {
-			const setup = () => {
-				admZipMock.getEntry.mockReturnValue(null);
-				admZipMock.readAsText.mockReturnValue('');
-
-				return setupOrganizationProps();
-			};
-
-			it('should throw CommonCartridgeResourceNotFoundException', () => {
-				const { organizationProps } = setup();
-
-				expect(() => sut.getResourceAsString(organizationProps)).toThrow(CommonCartridgeResourceNotFoundException);
 				expect(admZipMock.getEntry).toHaveBeenCalledTimes(1);
 			});
 		});

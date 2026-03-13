@@ -61,7 +61,11 @@ spec:
         - configMapRef:
             name: admin-api-server-configmap
         - secretRef:
+            name: api-secret
+        - secretRef:
             name: admin-api-server-secret
+        - secretRef:
+            name: session-valkey-password
         command: ['npm', 'run', 'nest:start:admin-api-server:prod']
         resources:
           limits:

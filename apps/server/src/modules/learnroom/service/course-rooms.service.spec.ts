@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
+import { BoardExternalReferenceType } from '@modules/board';
+import { columnBoardEntityFactory } from '@modules/board/testing/entity/column-board-entity.factory';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { LessonService } from '@modules/lesson';
@@ -14,7 +14,7 @@ import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { ColumnBoardNodeRepo, LegacyBoard, LegacyBoardElement, LegacyBoardRepo } from '../repo';
-import { boardFactory, columnBoardNodeFactory } from '../testing';
+import { boardFactory } from '../testing';
 import { CourseRoomsService } from './course-rooms.service';
 
 describe('rooms service', () => {
@@ -24,14 +24,12 @@ describe('rooms service', () => {
 	let taskService: DeepMocked<TaskService>;
 	let legacyBoardRepo: DeepMocked<LegacyBoardRepo>;
 	let columnBoardNodeRepo: DeepMocked<ColumnBoardNodeRepo>;
-	let configBefore: IConfig;
 
 	afterAll(async () => {
 		await module.close();
 	});
 
 	beforeAll(async () => {
-		configBefore = Configuration.toObject({ plainSecrets: true });
 		await setupEntities([
 			User,
 			CourseEntity,
@@ -73,7 +71,6 @@ describe('rooms service', () => {
 
 	afterEach(() => {
 		jest.clearAllMocks();
-		Configuration.reset(configBefore);
 	});
 
 	describe('updateLegacyBoard', () => {
@@ -85,7 +82,9 @@ describe('rooms service', () => {
 				const lessons = lessonFactory.buildList(3, { course: room });
 				const legacyBoard = boardFactory.buildWithId({ course: room });
 
-				const columnBoardNode = columnBoardNodeFactory.build();
+				const columnBoardNode = columnBoardEntityFactory.build({
+					context: { type: BoardExternalReferenceType.Course, id: room.id },
+				});
 
 				// TODO what is this doing here?
 				legacyBoard.syncBoardElementReferences([...tasks, ...lessons, columnBoardNode]);

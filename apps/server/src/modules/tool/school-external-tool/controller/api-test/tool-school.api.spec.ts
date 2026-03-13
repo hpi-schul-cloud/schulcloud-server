@@ -6,7 +6,7 @@ import { columnBoardEntityFactory, externalToolElementEntityFactory } from '@mod
 import { MediaSourceLicenseType } from '@modules/media-source';
 import { mediaSourceEntityFactory } from '@modules/media-source/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
-import { serverConfig, ServerTestModule } from '@modules/server';
+import { ServerTestModule } from '@modules/server';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
@@ -20,6 +20,7 @@ import { contextExternalToolEntityFactory } from '../../../context-external-tool
 import { ExternalToolMediumStatus } from '../../../external-tool/enum/external-tool-medium-status.enum';
 import { ExternalToolEntity } from '../../../external-tool/repo';
 import { customParameterEntityFactory, externalToolEntityFactory } from '../../../external-tool/testing';
+import { TOOL_CONFIG_TOKEN, ToolConfig } from '../../../tool-config';
 import { SchoolExternalToolEntity } from '../../repo';
 import { schoolExternalToolConfigurationStatusFactory, schoolExternalToolEntityFactory } from '../../testing';
 import {
@@ -36,6 +37,7 @@ describe('ToolSchoolController (API)', () => {
 	let em: EntityManager;
 	let orm: MikroORM;
 	let testApiClient: TestApiClient;
+	let config: ToolConfig;
 
 	const basePath = '/tools/school-external-tools';
 
@@ -49,8 +51,9 @@ describe('ToolSchoolController (API)', () => {
 		em = app.get(EntityManager);
 		orm = app.get(MikroORM);
 		testApiClient = new TestApiClient(app, basePath);
+		config = app.get<ToolConfig>(TOOL_CONFIG_TOKEN);
 
-		serverConfig().FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED = true;
+		config.featureSchulconnexMediaLicenseEnabled = true;
 	});
 
 	afterAll(async () => {
@@ -184,6 +187,12 @@ describe('ToolSchoolController (API)', () => {
 				school,
 			});
 
+			const contextExternalToolEntity: ContextExternalToolEntity = contextExternalToolEntityFactory.buildWithId({
+				schoolTool: schoolExternalToolEntity,
+				contextType: ContextExternalToolType.BOARD_ELEMENT,
+				contextId: new ObjectId().toHexString(),
+			});
+
 			em.persist([
 				school,
 				adminUser,
@@ -192,6 +201,7 @@ describe('ToolSchoolController (API)', () => {
 				accountWithMissingPermission,
 				externalToolEntity,
 				schoolExternalToolEntity,
+				contextExternalToolEntity,
 			]);
 			await em.flush();
 			em.clear();
@@ -201,7 +211,12 @@ describe('ToolSchoolController (API)', () => {
 				accountWithMissingPermission
 			);
 
-			return { loggedInClientWithMissingPermission, loggedInClient, schoolExternalToolEntity };
+			return {
+				loggedInClientWithMissingPermission,
+				loggedInClient,
+				schoolExternalToolEntity,
+				contextExternalToolEntity,
+			};
 		};
 
 		it('should return forbidden when user is not authorized', async () => {
@@ -212,8 +227,8 @@ describe('ToolSchoolController (API)', () => {
 			expect(response.statusCode).toEqual(HttpStatus.FORBIDDEN);
 		});
 
-		it('should create a school external tool', async () => {
-			const { loggedInClient, schoolExternalToolEntity } = await setup();
+		it('should delete the school external tool and associated context external tool', async () => {
+			const { loggedInClient, schoolExternalToolEntity, contextExternalToolEntity } = await setup();
 
 			const response = await loggedInClient.delete(`${schoolExternalToolEntity.id}`);
 
@@ -223,6 +238,10 @@ describe('ToolSchoolController (API)', () => {
 				id: schoolExternalToolEntity.id,
 			});
 			expect(deleted).toBeNull();
+
+			await expect(
+				em.findOneOrFail('ContextExternalToolEntity', { id: contextExternalToolEntity.id })
+			).rejects.toThrow();
 		});
 	});
 
@@ -617,16 +636,18 @@ describe('ToolSchoolController (API)', () => {
 					Permission.SCHOOL_TOOL_ADMIN,
 				]);
 
-				await em.persistAndFlush([
-					adminAccount,
-					adminUser,
-					schoolExternalToolEntity,
-					...courseExternalToolEntitys,
-					...boardExternalToolEntitys,
-					...mediaBoardExternalToolEntitys,
-					board,
-					...externalToolElements,
-				]);
+				await em
+					.persist([
+						adminAccount,
+						adminUser,
+						schoolExternalToolEntity,
+						...courseExternalToolEntitys,
+						...boardExternalToolEntitys,
+						...mediaBoardExternalToolEntitys,
+						board,
+						...externalToolElements,
+					])
+					.flush();
 				em.clear();
 
 				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);

@@ -1,4 +1,4 @@
+export { CALENDAR_CONFIG_TOKEN, CalendarConfig } from './calendar.config';
 export { CalendarModule } from './calendar.module';
-export * from './service/calendar.service';
-export * from './dto/calendar-event.dto';
-export { CalendarConfig } from './calendar.config';
+export { CalendarEventDto } from './dto/calendar-event.dto';
+export { CalendarService } from './service/calendar.service';

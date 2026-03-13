@@ -14,18 +14,22 @@ import {
 	Query,
 } from '@nestjs/common';
 import { ApiExtraModels, ApiOperation, ApiResponse, ApiTags, getSchemaPath } from '@nestjs/swagger';
+import { RequestTimeout } from '@shared/common/decorators';
 import { ApiValidationError } from '@shared/common/error';
+import { BOARD_INCOMING_REQUEST_TIMEOUT_COPY_API_KEY } from '../timeout.config';
 import { CardUc, ColumnUc } from '../uc';
 import {
 	AnyContentElementResponse,
 	CardIdsParams,
 	CardListResponse,
+	CardResponse,
 	CardUrlParams,
 	CreateContentElementBodyParams,
 	DeletedElementResponse,
 	DrawingElementResponse,
 	ExternalToolElementResponse,
 	FileElementResponse,
+	FileFolderElementResponse,
 	H5pElementResponse,
 	LinkElementResponse,
 	MoveCardBodyParams,
@@ -34,8 +38,10 @@ import {
 	SubmissionContainerElementResponse,
 	VideoConferenceElementResponse,
 } from './dto';
+import { MoveCardResponse } from './dto/board/move-card.response';
 import { SetHeightBodyParams } from './dto/board/set-height.body.params';
 import { CardResponseMapper, ContentElementResponseFactory } from './mapper';
+import { MoveCardResponseMapper } from './mapper/move-card-response.mapper';
 
 @ApiTags('Board Card')
 @JwtAuthentication()
@@ -48,7 +54,7 @@ export class CardController {
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@Get()
-	async getCards(
+	public async getCards(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() cardIdParams: CardIdsParams
 	): Promise<CardListResponse> {
@@ -63,18 +69,25 @@ export class CardController {
 	}
 
 	@ApiOperation({ summary: 'Move a single card.' })
-	@ApiResponse({ status: 204 })
+	@ApiResponse({ status: 204, type: MoveCardResponse })
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
-	@HttpCode(204)
 	@Put(':cardId/position')
-	async moveCard(
+	public async moveCard(
 		@Param() urlParams: CardUrlParams,
 		@Body() bodyParams: MoveCardBodyParams,
 		@CurrentUser() currentUser: ICurrentUser
-	): Promise<void> {
-		await this.columnUc.moveCard(currentUser.userId, urlParams.cardId, bodyParams.toColumnId, bodyParams.toPosition);
+	): Promise<MoveCardResponse> {
+		const data = await this.columnUc.moveCard(
+			currentUser.userId,
+			urlParams.cardId,
+			bodyParams.toColumnId,
+			bodyParams.toPosition
+		);
+		const result = MoveCardResponseMapper.mapToReponse(data);
+
+		return result;
 	}
 
 	@ApiOperation({ summary: 'Update the height of a single card.' })
@@ -84,7 +97,7 @@ export class CardController {
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@HttpCode(204)
 	@Patch(':cardId/height')
-	async updateCardHeight(
+	public async updateCardHeight(
 		@Param() urlParams: CardUrlParams,
 		@Body() bodyParams: SetHeightBodyParams,
 		@CurrentUser() currentUser: ICurrentUser
@@ -99,7 +112,7 @@ export class CardController {
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@HttpCode(204)
 	@Patch(':cardId/title')
-	async updateCardTitle(
+	public async updateCardTitle(
 		@Param() urlParams: CardUrlParams,
 		@Body() bodyParams: RenameBodyParams,
 		@CurrentUser() currentUser: ICurrentUser
@@ -114,14 +127,31 @@ export class CardController {
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@HttpCode(204)
 	@Delete(':cardId')
-	async deleteCard(@Param() urlParams: CardUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<void> {
+	public async deleteCard(@Param() urlParams: CardUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<void> {
 		await this.cardUc.deleteCard(currentUser.userId, urlParams.cardId);
+	}
+
+	@ApiOperation({ summary: 'Copy a single card.' })
+	@ApiResponse({ status: 201, type: CardResponse })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
+	@Post(':cardId/copy')
+	@RequestTimeout(BOARD_INCOMING_REQUEST_TIMEOUT_COPY_API_KEY)
+	public async copyCard(
+		@Param() urlParams: CardUrlParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<CardResponse> {
+		const copiedCard = await this.columnUc.copyCard(currentUser.userId, urlParams.cardId, currentUser.schoolId);
+		const cardDto = CardResponseMapper.mapToResponse(copiedCard);
+		return cardDto;
 	}
 
 	@ApiOperation({ summary: 'Create a new element on a card.' })
 	@ApiExtraModels(
 		ExternalToolElementResponse,
 		FileElementResponse,
+		FileFolderElementResponse,
 		LinkElementResponse,
 		RichTextElementResponse,
 		SubmissionContainerElementResponse,
@@ -136,6 +166,7 @@ export class CardController {
 			oneOf: [
 				{ $ref: getSchemaPath(ExternalToolElementResponse) },
 				{ $ref: getSchemaPath(FileElementResponse) },
+				{ $ref: getSchemaPath(FileFolderElementResponse) },
 				{ $ref: getSchemaPath(LinkElementResponse) },
 				{ $ref: getSchemaPath(RichTextElementResponse) },
 				{ $ref: getSchemaPath(SubmissionContainerElementResponse) },
@@ -150,7 +181,7 @@ export class CardController {
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@Post(':cardId/elements')
-	async createElement(
+	public async createElement(
 		@Param() urlParams: CardUrlParams,
 		@Body() bodyParams: CreateContentElementBodyParams,
 		@CurrentUser() currentUser: ICurrentUser

@@ -8,7 +8,6 @@ import { GroupEntity } from '@modules/group/entity';
 import { InstanceEntity } from '@modules/instance';
 import {
 	ColumnBoardBoardElement,
-	ColumnBoardNode,
 	DashboardEntity,
 	DashboardGridElementEntity,
 	LegacyBoard,
@@ -22,11 +21,12 @@ import { MediaSourceEntity } from '@modules/media-source/entity';
 import { CourseNews, News, SchoolNews, TeamNews } from '@modules/news/repo';
 import { OauthSessionTokenEntity } from '@modules/oauth/entity';
 import { ExternalToolPseudonymEntity } from '@modules/pseudonym/entity';
+import { RegistrationEntity } from '@modules/registration';
 import { RegistrationPinEntity } from '@modules/registration-pin/entity';
 import { RocketChatUserEntity } from '@modules/rocketchat-user/entity';
 import { Role } from '@modules/role/repo';
 import { RoomMembershipEntity } from '@modules/room-membership/repo/entity/room-membership.entity';
-import { RoomEntity, RoomInvitationLinkEntity } from '@modules/room/repo/entity';
+import { RoomArrangementEntity, RoomEntity, RoomInvitationLinkEntity } from '@modules/room/repo/entity';
 import { MediaSchoolLicenseEntity, SchoolLicenseEntity } from '@modules/school-license/entity';
 import {
 	CountyEmbeddable,
@@ -49,13 +49,14 @@ import { MediaUserLicenseEntity, UserLicenseEntity } from '@modules/user-license
 import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { VideoConferenceEntity } from '@modules/video-conference/repo';
+import { RoomContentEntity } from '@modules/room/repo/entity/room-content.entity';
+import { RuntimeConfigEntity } from '@infra/runtime-config/repo/entity/runtime-config.entity';
 
 export const ENTITIES = [
 	AccountEntity,
 	BoardNodeEntity,
 	ClassEntity,
 	ColumnBoardBoardElement,
-	ColumnBoardNode,
 	DeletionRequestEntity,
 	DeletionLogEntity,
 	DeletionBatchEntity,
@@ -76,6 +77,7 @@ export const ENTITIES = [
 	Material,
 	News,
 	ExternalToolPseudonymEntity,
+	RegistrationEntity,
 	RocketChatUserEntity,
 	Role,
 	RoomEntity,
@@ -110,6 +112,9 @@ export const ENTITIES = [
 	MediaSchoolLicenseEntity,
 	OauthSessionTokenEntity,
 	LtiDeepLinkTokenEntity,
+	RoomContentEntity,
+	RoomArrangementEntity,
+	RuntimeConfigEntity,
 ];
 
 export const TEST_ENTITIES = [...ENTITIES];

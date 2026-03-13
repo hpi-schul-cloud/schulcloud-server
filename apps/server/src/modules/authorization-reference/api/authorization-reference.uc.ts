@@ -9,11 +9,13 @@ import {
 	AccessTokenParams,
 	AccessTokenPayloadResponse,
 	AccessTokenResponse,
+	AuthorizationManyReferencesBodyParams,
+	AuthorizedByReferenceResponse,
 	AuthorizedResponse,
 	CreateAccessTokenParams,
 } from './dto';
-import { AuthorizationResponseMapper } from './mapper';
 import { TokenMetadataFactory } from './factory';
+import { AuthorizationResponseMapper } from './mapper';
 import { TokenMetadata } from './vo';
 
 @Injectable()
@@ -40,6 +42,42 @@ export class AuthorizationReferenceUc {
 		const authorizationResponse = AuthorizationResponseMapper.mapToAuthorizedResponse(userId, hasPermission);
 
 		return authorizationResponse;
+	}
+
+	public async authorizeByReferences(
+		userId: EntityId,
+		params: AuthorizationManyReferencesBodyParams
+	): Promise<AuthorizedByReferenceResponse[]> {
+		const promises = params.references.map((reference) =>
+			this.validateUserPermission(userId, reference.referenceType, reference.referenceId, reference.context)
+		);
+
+		const authorizationResponses = await Promise.all(promises);
+
+		return authorizationResponses;
+	}
+
+	private async validateUserPermission(
+		userId: EntityId,
+		authorizableReferenceType: AuthorizableReferenceType,
+		authorizableReferenceId: EntityId,
+		context: AuthorizationContext
+	): Promise<AuthorizedByReferenceResponse> {
+		const hasPermission = await this.authorizationReferenceService.hasPermissionByReferences(
+			userId,
+			authorizableReferenceType,
+			authorizableReferenceId,
+			context
+		);
+
+		const response = AuthorizationResponseMapper.mapToAuthorizedByReferenceResponse(
+			userId,
+			hasPermission,
+			authorizableReferenceType,
+			authorizableReferenceId
+		);
+
+		return response;
 	}
 
 	public async createToken(

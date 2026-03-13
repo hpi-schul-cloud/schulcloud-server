@@ -1,35 +1,47 @@
+import { RoomOperation, RoomOperationValues } from '@modules/room-membership/authorization/room.rule';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsEnum } from 'class-validator';
 import { RoomColor } from '../../../domain/type';
 
 export class RoomItemResponse {
 	@ApiProperty()
-	id: string;
+	public id: string;
 
 	@ApiProperty()
-	name: string;
+	public name: string;
 
 	@ApiProperty({ enum: RoomColor, enumName: 'RoomColor' })
 	@IsEnum(RoomColor)
-	color: RoomColor;
+	public color: RoomColor;
 
 	@ApiProperty()
-	schoolId: string;
+	public schoolId: string;
 
 	@ApiPropertyOptional({ type: Date })
-	startDate?: Date;
+	public startDate?: Date;
 
 	@ApiPropertyOptional({ type: Date })
-	endDate?: Date;
+	public endDate?: Date;
 
 	@ApiProperty({ type: Date })
-	createdAt: Date;
+	public createdAt: Date;
 
 	@ApiProperty({ type: Date })
-	updatedAt: Date;
+	public updatedAt: Date;
+
+	@ApiProperty({
+		type: 'object',
+		properties: RoomOperationValues.reduce((acc, op) => {
+			acc[op] = { type: 'boolean' };
+			return acc;
+		}, {}),
+		additionalProperties: false,
+		required: [...RoomOperationValues],
+	})
+	public allowedOperations: Record<RoomOperation, boolean>;
 
 	@ApiProperty({ type: Boolean })
-	isLocked: boolean;
+	public isLocked: boolean;
 
 	constructor(room: RoomItemResponse) {
 		this.id = room.id;
@@ -42,6 +54,7 @@ export class RoomItemResponse {
 		this.createdAt = room.createdAt;
 		this.updatedAt = room.updatedAt;
 
+		this.allowedOperations = room.allowedOperations;
 		this.isLocked = room.isLocked;
 	}
 }

@@ -42,7 +42,7 @@ export class VideoConferenceService {
 	) {}
 
 	get hostUrl(): string {
-		return this.config.HOST;
+		return this.config.scHostUrl;
 	}
 
 	public canGuestJoin(isGuest: boolean, state: VideoConferenceState, waitingRoomEnabled: boolean): boolean {
@@ -52,20 +52,20 @@ export class VideoConferenceService {
 		return true;
 	}
 
-	public async hasExpertRole(
+	public async isExternalPersonOrTeamExpert(
 		userId: EntityId,
 		conferenceScope: VideoConferenceScope,
 		scopeId: string
 	): Promise<boolean> {
-		let isExpert = false;
+		let isExternalPerson = false;
 		switch (conferenceScope) {
 			case VideoConferenceScope.COURSE:
 			case VideoConferenceScope.ROOM:
 			case VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT: {
 				const user = await this.userService.findById(userId);
-				isExpert = this.existsOnlyExpertRole(user.roles);
+				isExternalPerson = this.existsOnlyExternalPersonRole(user.roles);
 
-				return isExpert;
+				return isExternalPerson;
 			}
 			case VideoConferenceScope.EVENT: {
 				const team = await this.teamRepo.findById(scopeId);
@@ -75,24 +75,24 @@ export class VideoConferenceService {
 					throw new ForbiddenException(ErrorStatus.UNKNOWN_USER, 'Cannot find user in team.');
 				}
 
-				isExpert = teamUser.role.name === RoleName.TEAMEXPERT;
-				return isExpert;
+				isExternalPerson = teamUser.role.name === RoleName.TEAMEXPERT;
+				return isExternalPerson;
 			}
 			default:
 				throw new BadRequestException('Unknown scope name.');
 		}
 	}
 
-	private existsOnlyExpertRole(roles: RoleReference[]): boolean {
+	private existsOnlyExternalPersonRole(roles: RoleReference[]): boolean {
 		const roleNames = roles.map((role: RoleReference) => role.name);
 
-		let isExpert = roleNames.includes(RoleName.EXPERT);
+		let isExternalPerson = roleNames.includes(RoleName.EXTERNALPERSON);
 
-		if (isExpert && roles.length > 1) {
-			isExpert = false;
+		if (isExternalPerson && roles.length > 1) {
+			isExternalPerson = false;
 		}
 
-		return isExpert;
+		return isExternalPerson;
 	}
 
 	// should be public to expose ressources to UC for passing it to authrisation and improve performance
@@ -120,8 +120,8 @@ export class VideoConferenceService {
 
 	private async hasStartMeetingAndCanRead(authorizableUser: User, entity: ConferenceResource): Promise<boolean> {
 		if (entity instanceof Room) {
-			const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(entity.id);
-			const roomMember = roomMembershipAuthorizable.members.find((member) => member.userId === authorizableUser.id);
+			const roomAuthorizable = await this.roomMembershipService.getRoomAuthorizable(entity.id);
+			const roomMember = roomAuthorizable.members.find((member) => member.userId === authorizableUser.id);
 
 			if (roomMember) {
 				return roomMember.roles.some((role) => role.name === RoleName.ROOMADMIN);
@@ -151,8 +151,8 @@ export class VideoConferenceService {
 
 	private async hasJoinMeetingAndCanRead(authorizableUser: User, entity: ConferenceResource): Promise<boolean> {
 		if (entity instanceof Room) {
-			const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(entity.id);
-			const roomMember = roomMembershipAuthorizable.members.find((member) => member.userId === authorizableUser.id);
+			const roomAuthorizable = await this.roomMembershipService.getRoomAuthorizable(entity.id);
+			const roomMember = roomAuthorizable.members.find((member) => member.userId === authorizableUser.id);
 
 			if (roomMember) {
 				return (
@@ -267,7 +267,7 @@ export class VideoConferenceService {
 
 		const role = await this.determineBbbRole(userId, scopeInfo.scopeId, scope);
 
-		const isBbbGuest = await this.hasExpertRole(userId, scope, scopeInfo.scopeId);
+		const isBbbGuest = await this.isExternalPersonOrTeamExpert(userId, scope, scopeInfo.scopeId);
 
 		return { role, isGuest: isBbbGuest };
 	}

@@ -1,5 +1,5 @@
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { EntityManager } from '@mikro-orm/mongodb';
+import { OAUTH_PROVIDER_CONFIG_TOKEN, OauthProviderConfig } from '@modules/oauth-provider/oauth-provider-config';
 import { externalToolPseudonymEntityFactory } from '@modules/pseudonym/testing';
 import { ServerTestModule } from '@modules/server';
 import { externalToolEntityFactory } from '@modules/tool/external-tool/testing';
@@ -31,12 +31,9 @@ describe(OauthProviderController.name, () => {
 	let em: EntityManager;
 	let axiosMock: MockAdapter;
 	let testApiClient: TestApiClient;
-
-	let hydraUri: string;
+	let configModule: OauthProviderConfig;
 
 	beforeAll(async () => {
-		hydraUri = Configuration.get('HYDRA_URI') as string;
-
 		const moduleFixture = await Test.createTestingModule({
 			imports: [ServerTestModule],
 		}).compile();
@@ -45,6 +42,7 @@ describe(OauthProviderController.name, () => {
 		await app.init();
 		em = app.get(EntityManager);
 		testApiClient = new TestApiClient(app, 'oauth2');
+		configModule = app.get<OauthProviderConfig>(OAUTH_PROVIDER_CONFIG_TOKEN);
 	});
 
 	beforeEach(async () => {
@@ -82,9 +80,11 @@ describe(OauthProviderController.name, () => {
 					Permission.OAUTH_CLIENT_EDIT,
 				]);
 
-				axiosMock.onGet(`${hydraUri}/clients/${clientId}`).replyOnce<ProviderOauthClient>(HttpStatus.OK, client);
+				axiosMock
+					.onGet(`${configModule.hydraUri}/clients/${clientId}`)
+					.replyOnce<ProviderOauthClient>(HttpStatus.OK, client);
 
-				await em.persistAndFlush([adminAccount, adminUser]);
+				await em.persist([adminAccount, adminUser]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(adminAccount);
@@ -127,9 +127,9 @@ describe(OauthProviderController.name, () => {
 					Permission.OAUTH_CLIENT_EDIT,
 				]);
 
-				axiosMock.onGet(`${hydraUri}/clients`).replyOnce<ProviderOauthClient[]>(HttpStatus.OK, clients);
+				axiosMock.onGet(`${configModule.hydraUri}/clients`).replyOnce<ProviderOauthClient[]>(HttpStatus.OK, clients);
 
-				await em.persistAndFlush([adminAccount, adminUser]);
+				await em.persist([adminAccount, adminUser]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(adminAccount);
@@ -168,9 +168,9 @@ describe(OauthProviderController.name, () => {
 					Permission.OAUTH_CLIENT_EDIT,
 				]);
 
-				axiosMock.onPost(`${hydraUri}/clients`).replyOnce<ProviderOauthClient>(HttpStatus.OK, client);
+				axiosMock.onPost(`${configModule.hydraUri}/clients`).replyOnce<ProviderOauthClient>(HttpStatus.OK, client);
 
-				await em.persistAndFlush([adminAccount, adminUser]);
+				await em.persist([adminAccount, adminUser]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(adminAccount);
@@ -215,9 +215,11 @@ describe(OauthProviderController.name, () => {
 					Permission.OAUTH_CLIENT_EDIT,
 				]);
 
-				axiosMock.onPut(`${hydraUri}/clients/${clientId}`).replyOnce<ProviderOauthClient>(HttpStatus.OK, client);
+				axiosMock
+					.onPut(`${configModule.hydraUri}/clients/${clientId}`)
+					.replyOnce<ProviderOauthClient>(HttpStatus.OK, client);
 
-				await em.persistAndFlush([adminAccount, adminUser]);
+				await em.persist([adminAccount, adminUser]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(adminAccount);
@@ -263,9 +265,9 @@ describe(OauthProviderController.name, () => {
 					Permission.OAUTH_CLIENT_EDIT,
 				]);
 
-				axiosMock.onDelete(`${hydraUri}/clients/${clientId}`).replyOnce<void>(HttpStatus.OK);
+				axiosMock.onDelete(`${configModule.hydraUri}/clients/${clientId}`).replyOnce<void>(HttpStatus.OK);
 
-				await em.persistAndFlush([adminAccount, adminUser]);
+				await em.persist([adminAccount, adminUser]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(adminAccount);
@@ -297,10 +299,10 @@ describe(OauthProviderController.name, () => {
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
 				axiosMock
-					.onGet(`${hydraUri}/oauth2/auth/requests/login?login_challenge=${challenge}`)
+					.onGet(`${configModule.hydraUri}/oauth2/auth/requests/login?login_challenge=${challenge}`)
 					.replyOnce<ProviderLoginResponse>(HttpStatus.OK, loginResponse);
 
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persist([studentAccount, studentUser]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
@@ -347,12 +349,12 @@ describe(OauthProviderController.name, () => {
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
 				axiosMock
-					.onGet(`${hydraUri}/oauth2/auth/requests/login?login_challenge=${challenge}`)
+					.onGet(`${configModule.hydraUri}/oauth2/auth/requests/login?login_challenge=${challenge}`)
 					.replyOnce<ProviderLoginResponse>(HttpStatus.OK, loginResponse)
-					.onPut(`${hydraUri}/oauth2/auth/requests/login/accept?login_challenge=${challenge}`)
+					.onPut(`${configModule.hydraUri}/oauth2/auth/requests/login/accept?login_challenge=${challenge}`)
 					.replyOnce<ProviderRedirectResponse>(HttpStatus.OK, redirectResponse);
 
-				await em.persistAndFlush([studentAccount, studentUser, externalTool]);
+				await em.persist([studentAccount, studentUser, externalTool]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
@@ -393,10 +395,10 @@ describe(OauthProviderController.name, () => {
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
 				axiosMock
-					.onPut(`${hydraUri}/oauth2/auth/requests/logout/accept?logout_challenge=${challenge}`)
+					.onPut(`${configModule.hydraUri}/oauth2/auth/requests/logout/accept?logout_challenge=${challenge}`)
 					.replyOnce<ProviderRedirectResponse>(HttpStatus.OK, redirectResponse);
 
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persist([studentAccount, studentUser]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
@@ -440,10 +442,10 @@ describe(OauthProviderController.name, () => {
 				});
 
 				axiosMock
-					.onGet(`${hydraUri}/oauth2/auth/requests/consent?consent_challenge=${challenge}`)
+					.onGet(`${configModule.hydraUri}/oauth2/auth/requests/consent?consent_challenge=${challenge}`)
 					.replyOnce<ProviderConsentResponse>(HttpStatus.OK, consentResponse);
 
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persist([studentAccount, studentUser]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
@@ -492,12 +494,12 @@ describe(OauthProviderController.name, () => {
 				const redirectResponse: ProviderRedirectResponse = { redirect_to: 'redirect' };
 
 				axiosMock
-					.onGet(`${hydraUri}/oauth2/auth/requests/consent?consent_challenge=${challenge}`)
+					.onGet(`${configModule.hydraUri}/oauth2/auth/requests/consent?consent_challenge=${challenge}`)
 					.replyOnce<ProviderConsentResponse>(HttpStatus.OK, consentResponse)
-					.onPut(`${hydraUri}/oauth2/auth/requests/consent/accept?consent_challenge=${challenge}`)
+					.onPut(`${configModule.hydraUri}/oauth2/auth/requests/consent/accept?consent_challenge=${challenge}`)
 					.replyOnce<ProviderRedirectResponse>(HttpStatus.OK, redirectResponse);
 
-				await em.persistAndFlush([studentAccount, studentUser, externalTool, pseudonym]);
+				await em.persist([studentAccount, studentUser, externalTool, pseudonym]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
@@ -540,10 +542,10 @@ describe(OauthProviderController.name, () => {
 				});
 
 				axiosMock
-					.onGet(`${hydraUri}/oauth2/auth/sessions/consent?subject=${studentUser.id}`)
+					.onGet(`${configModule.hydraUri}/oauth2/auth/sessions/consent?subject=${studentUser.id}`)
 					.replyOnce<ProviderConsentSessionResponse[]>(HttpStatus.OK, [consentListResponse]);
 
-				await em.persistAndFlush([studentAccount, studentUser, externalTool, pseudonym]);
+				await em.persist([studentAccount, studentUser, externalTool, pseudonym]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
@@ -586,10 +588,12 @@ describe(OauthProviderController.name, () => {
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
 				axiosMock
-					.onDelete(`${hydraUri}/oauth2/auth/sessions/consent?subject=${studentUser.id}&client=${clientId}`)
+					.onDelete(
+						`${configModule.hydraUri}/oauth2/auth/sessions/consent?subject=${studentUser.id}&client=${clientId}`
+					)
 					.replyOnce<void>(HttpStatus.OK);
 
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persist([studentAccount, studentUser]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(studentAccount);

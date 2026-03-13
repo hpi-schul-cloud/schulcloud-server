@@ -1,5 +1,5 @@
 import { currentUserFactory } from '@testing/factory/currentuser.factory';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { CreateJwtPayload } from '../interface';
 import { JwtPayloadFactory } from './jwt.factory';
 

@@ -429,6 +429,92 @@ describe(BiloMediaClientAdapter.name, () => {
 				await expect(promise).rejects.toThrow(new BiloMediaQueryUnprocessableResponseLoggableException());
 			});
 		});
+
+		describe('when only one of cover links is valid', () => {
+			const setup = () => {
+				const mediaSource: MediaSource = mediaSourceFactory.withBildungslogin().build();
+
+				const mockToken = new OAuthTokenDto({
+					accessToken: 'mock-access-token',
+					idToken: 'mock-id-token',
+					refreshToken: 'mock-refresh-token',
+				});
+
+				const validSmall = 'https://valid.example/cover-small.jpeg';
+				const data: BiloMediaQueryDataResponse = biloMediaQueryDataResponseFactory.build({
+					cover: { href: 'invalid-link', rel: 'src' },
+					coverSmall: { href: validSmall, rel: 'src' },
+				});
+				const response: BiloMediaQueryResponse = biloMediaQueryResponseFactory.build({
+					status: 200,
+					data,
+					query: { id: data.id },
+				});
+
+				const mockAxiosResponse: AxiosResponse<BiloMediaQueryResponse[]> = axiosResponseFactory.build({
+					data: [response],
+				});
+
+				jest.spyOn(oauthAdapterService, 'sendTokenRequest').mockResolvedValueOnce(mockToken);
+				jest.spyOn(httpService, 'post').mockReturnValueOnce(of(mockAxiosResponse));
+				jest.spyOn(encryptionService, 'decrypt').mockReturnValueOnce('client-secret-decrypted');
+
+				return { mediaSource, validSmall };
+			};
+
+			it('should accept the response and copy the valid URL to the invalid one', async () => {
+				const { mediaSource, validSmall } = setup();
+
+				const [result] = await service.fetchMediaMetadata(['ignored'], mediaSource);
+
+				expect(result.cover.href).toBe(validSmall);
+				expect(result.coverSmall.href).toBe(validSmall);
+			});
+		});
+
+		describe('when both cover links are invalid', () => {
+			const setup = () => {
+				const mediaSource: MediaSource = mediaSourceFactory.withBildungslogin().build();
+
+				const mockToken = new OAuthTokenDto({
+					accessToken: 'mock-access-token',
+					idToken: 'mock-id-token',
+					refreshToken: 'mock-refresh-token',
+				});
+
+				const data: BiloMediaQueryDataResponse = biloMediaQueryDataResponseFactory.build({
+					cover: { href: 'invalid', rel: 'src' },
+					coverSmall: { href: 'invalid', rel: 'src' },
+				});
+				const response: BiloMediaQueryResponse = biloMediaQueryResponseFactory.build({
+					status: 200,
+					data,
+					query: { id: data.id },
+				});
+
+				const mockAxiosResponse: AxiosResponse<BiloMediaQueryResponse[]> = axiosResponseFactory.build({
+					data: [response],
+				});
+
+				jest.spyOn(oauthAdapterService, 'sendTokenRequest').mockResolvedValueOnce(mockToken);
+				jest.spyOn(httpService, 'post').mockReturnValueOnce(of(mockAxiosResponse));
+				jest.spyOn(encryptionService, 'decrypt').mockReturnValueOnce('client-secret-decrypted');
+
+				return { mediaSource, response };
+			};
+
+			it('should set cover to empty strig', async () => {
+				const { mediaSource, response } = setup();
+
+				const results = await service.fetchMediaMetadata(['ignored1', 'ignored2'], mediaSource);
+
+				expect(results.length).toBe(1);
+				const correctedBad = results.find((r) => r.id === response.data.id);
+				expect(correctedBad).toBeDefined();
+				expect(correctedBad?.cover.href).toBe('');
+				expect(correctedBad?.coverSmall.href).toBe('');
+			});
+		});
 	});
 
 	describe('fetchMediumMetadata', () => {
@@ -724,6 +810,89 @@ describe(BiloMediaClientAdapter.name, () => {
 				const promise = service.fetchMediumMetadata(mediumId, mediaSource);
 
 				await expect(promise).rejects.toThrow(BiloMediaQueryUnprocessableResponseLoggableException);
+			});
+		});
+
+		describe('when only one of cover links is valid', () => {
+			const setup = () => {
+				const mediaSource: MediaSource = mediaSourceFactory.withBildungslogin().build();
+
+				const mockToken = new OAuthTokenDto({
+					accessToken: 'mock-access-token',
+					idToken: 'mock-id-token',
+					refreshToken: 'mock-refresh-token',
+				});
+
+				const validCover = 'https://valid.example/cover.jpeg';
+				const data: BiloMediaQueryDataResponse = biloMediaQueryDataResponseFactory.build({
+					cover: { href: validCover, rel: 'src' },
+					coverSmall: { href: 'invalid', rel: 'src' },
+				});
+				const response: BiloMediaQueryResponse = biloMediaQueryResponseFactory.build({
+					status: 200,
+					data,
+					query: { id: data.id },
+				});
+
+				const mockAxiosResponse: AxiosResponse<BiloMediaQueryResponse[]> = axiosResponseFactory.build({
+					data: [response],
+				});
+
+				jest.spyOn(oauthAdapterService, 'sendTokenRequest').mockResolvedValueOnce(mockToken);
+				jest.spyOn(httpService, 'post').mockReturnValueOnce(of(mockAxiosResponse));
+				jest.spyOn(encryptionService, 'decrypt').mockReturnValueOnce('client-secret-decrypted');
+
+				return { mediaSource, validCover };
+			};
+
+			it('should return corrected medium metadata', async () => {
+				const { mediaSource, validCover } = setup();
+
+				const result = await service.fetchMediumMetadata('id', mediaSource);
+
+				expect(result.cover.href).toBe(validCover);
+				expect(result.coverSmall.href).toBe(validCover);
+			});
+		});
+
+		describe('when both cover links are invalid', () => {
+			const setup = () => {
+				const mediaSource: MediaSource = mediaSourceFactory.withBildungslogin().build();
+
+				const mockToken = new OAuthTokenDto({
+					accessToken: 'mock-access-token',
+					idToken: 'mock-id-token',
+					refreshToken: 'mock-refresh-token',
+				});
+
+				const data: BiloMediaQueryDataResponse = biloMediaQueryDataResponseFactory.build({
+					cover: { href: 'invalid', rel: 'src' },
+					coverSmall: { href: 'invalid', rel: 'src' },
+				});
+				const response: BiloMediaQueryResponse = biloMediaQueryResponseFactory.build({
+					status: 200,
+					data,
+					query: { id: data.id },
+				});
+
+				const mockAxiosResponse: AxiosResponse<BiloMediaQueryResponse[]> = axiosResponseFactory.build({
+					data: [response],
+				});
+
+				jest.spyOn(oauthAdapterService, 'sendTokenRequest').mockResolvedValueOnce(mockToken);
+				jest.spyOn(httpService, 'post').mockReturnValueOnce(of(mockAxiosResponse));
+				jest.spyOn(encryptionService, 'decrypt').mockReturnValueOnce('client-secret-decrypted');
+
+				return { mediaSource };
+			};
+
+			it('should set cover to empty string', async () => {
+				const { mediaSource } = setup();
+
+				const correctedResponse = await service.fetchMediumMetadata('id', mediaSource);
+
+				expect(correctedResponse.cover.href).toBe('');
+				expect(correctedResponse.coverSmall.href).toBe('');
 			});
 		});
 	});

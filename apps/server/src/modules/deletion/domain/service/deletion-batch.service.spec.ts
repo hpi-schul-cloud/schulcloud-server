@@ -1,13 +1,13 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { ObjectId } from 'bson';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ObjectId } from '@mikro-orm/mongodb';
+import { Test, TestingModule } from '@nestjs/testing';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions } from '@shared/domain/interface';
-import { CreateDeletionBatchParams, DeletionBatchService, DeletionBatchSummary } from './deletion-batch.service';
 import { DeletionBatchRepo, DeletionBatchUsersRepo, UsersCountByRole } from '../../repo';
-import { DeletionRequestService } from './deletion-request.service';
 import { DeletionBatch, DeletionRequest } from '../do';
 import { BatchStatus, DomainName, StatusModel } from '../types';
+import { CreateDeletionBatchParams, DeletionBatchService, DeletionBatchSummary } from './deletion-batch.service';
+import { DeletionRequestService } from './deletion-request.service';
 
 describe('DeletionBatchService', () => {
 	let service: DeletionBatchService;
@@ -343,6 +343,44 @@ describe('DeletionBatchService', () => {
 			const result = await service.requestDeletionForBatch(batch, new Date());
 
 			expect(result).toEqual(expectedSummary);
+		});
+	});
+	describe('filterUsersByRoles', () => {
+		const setup = () => {
+			const validId = new ObjectId().toHexString();
+			const invalidId = new ObjectId().toHexString();
+			const skippedId = new ObjectId().toHexString();
+
+			const userIds = [validId, invalidId, skippedId];
+			const allowedRoles = ['student', 'teacher'];
+
+			deletionBatchUsersRepo.getUsersWithRoles.mockResolvedValueOnce([
+				{ id: validId, roles: ['student', 'otherRole'] },
+				{ id: skippedId, roles: ['admin'] },
+				// invalidId is not returned by the mock, simulating a missing user
+			]);
+
+			return { validId, invalidId, skippedId, userIds, allowedRoles };
+		};
+
+		it('should call repo to get users with roles', async () => {
+			const { userIds, allowedRoles } = setup();
+
+			await service.filterUsersByRoles(userIds, allowedRoles);
+
+			expect(deletionBatchUsersRepo.getUsersWithRoles).toHaveBeenCalledWith(userIds);
+		});
+
+		it('should correctly filter userIds by roles and return valid, invalid, and skipped userIds', async () => {
+			const { validId, invalidId, skippedId, userIds, allowedRoles } = setup();
+
+			const result = await service.filterUsersByRoles(userIds, allowedRoles);
+
+			expect(result).toEqual({
+				validUserIds: [validId],
+				invalidUserIds: [invalidId],
+				skippedUserIds: [skippedId],
+			});
 		});
 	});
 });

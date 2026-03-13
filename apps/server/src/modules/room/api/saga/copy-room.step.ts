@@ -1,10 +1,10 @@
 import { Logger } from '@core/logger';
+import { Injectable } from '@nestjs/common';
+import { EntityId } from '@shared/domain/types';
 import { Action, AuthorizationService } from '../../../authorization';
 import { CopyHelperService } from '../../../copy-helper';
 import { RoomMembershipService } from '../../../room-membership';
 import { ModuleName, SagaService, SagaStep } from '../../../saga';
-import { Injectable } from '@nestjs/common';
-import { EntityId } from '@shared/domain/types';
 import { Room, RoomService } from '../../domain';
 
 @Injectable()
@@ -59,8 +59,8 @@ export class CopyRoomStep extends SagaStep<'copyRoom'> {
 
 	private async deriveCopyName(userId: EntityId, originalRoomName: string): Promise<string> {
 		const authorizedRoomIds = await this.getAuthorizedRoomIds(userId, Action.read);
-		const existingRooms = await this.roomService.getRoomsByIds(authorizedRoomIds, {});
-		const existingNames = existingRooms.data.map((room: Room) => room.name);
+		const existingRooms = await this.roomService.getRoomsByIds(authorizedRoomIds);
+		const existingNames = existingRooms.map((room: Room) => room.name);
 		const newName = this.copyService.deriveCopyName(originalRoomName, existingNames);
 
 		return newName;
@@ -68,7 +68,7 @@ export class CopyRoomStep extends SagaStep<'copyRoom'> {
 
 	private async getAuthorizedRoomIds(userId: EntityId, action: Action): Promise<EntityId[]> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
-		const roomAuthorizables = await this.roomMembershipService.getRoomMembershipAuthorizablesByUserId(userId);
+		const roomAuthorizables = await this.roomMembershipService.getRoomAuthorizablesByUserId(userId);
 
 		const authorizedRoomIds = roomAuthorizables.filter((item) =>
 			this.authorizationService.hasPermission(user, item, { action, requiredPermissions: [] })

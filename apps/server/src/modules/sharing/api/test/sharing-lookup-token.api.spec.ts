@@ -1,4 +1,3 @@
-import { Configuration } from '@hpi-schul-cloud/commons';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { courseEntityFactory } from '@modules/course/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
@@ -10,6 +9,7 @@ import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.tes
 import { TestApiClient } from '@testing/test-api-client';
 import { ShareTokenContextType, ShareTokenParentType } from '../../domainobject/share-token.do';
 import { ShareTokenService } from '../../service';
+import { SHARING_PUBLIC_API_CONFIG_TOKEN, SharingPublicApiConfig } from '../../sharing.config';
 import { ShareTokenInfoResponse } from '../dto';
 
 describe(`share token lookup (api)`, () => {
@@ -17,6 +17,7 @@ describe(`share token lookup (api)`, () => {
 	let em: EntityManager;
 	let shareTokenService: ShareTokenService;
 	let testApiClient: TestApiClient;
+	let config: SharingPublicApiConfig;
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -29,6 +30,7 @@ describe(`share token lookup (api)`, () => {
 		shareTokenService = module.get(ShareTokenService);
 
 		testApiClient = new TestApiClient(app, 'sharetoken');
+		config = module.get<SharingPublicApiConfig>(SHARING_PUBLIC_API_CONFIG_TOKEN);
 	});
 
 	afterAll(async () => {
@@ -37,13 +39,13 @@ describe(`share token lookup (api)`, () => {
 
 	describe('with the feature disabled', () => {
 		const setup = async () => {
-			Configuration.set('FEATURE_COURSE_SHARE', false);
+			config.featureCourseShare = false;
 
 			const parentType = ShareTokenParentType.Course;
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({}, [Permission.COURSE_CREATE]);
 			const course = courseEntityFactory.build({ teachers: [teacherUser] });
 
-			await em.persistAndFlush([course, teacherAccount, teacherUser]);
+			await em.persist([course, teacherAccount, teacherUser]).flush();
 			em.clear();
 
 			const shareToken = await shareTokenService.createToken(
@@ -75,13 +77,13 @@ describe(`share token lookup (api)`, () => {
 
 	describe('with a valid token', () => {
 		const setup = async () => {
-			Configuration.set('FEATURE_COURSE_SHARE', true);
+			config.featureCourseShare = true;
 
 			const parentType = ShareTokenParentType.Course;
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({}, [Permission.COURSE_CREATE]);
 			const course = courseEntityFactory.build({ teachers: [teacherUser] });
 
-			await em.persistAndFlush([course, teacherAccount, teacherUser]);
+			await em.persist([course, teacherAccount, teacherUser]).flush();
 			em.clear();
 
 			const shareToken = await shareTokenService.createToken(
@@ -119,12 +121,12 @@ describe(`share token lookup (api)`, () => {
 
 	describe('with invalid token', () => {
 		const setup = async () => {
-			Configuration.set('FEATURE_COURSE_SHARE', true);
+			config.featureCourseShare = true;
 
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({}, [Permission.COURSE_CREATE]);
 			const course = courseEntityFactory.build({ teachers: [teacherUser] });
 
-			await em.persistAndFlush([course, teacherAccount, teacherUser]);
+			await em.persist([course, teacherAccount, teacherUser]).flush();
 			em.clear();
 
 			const loggedInClient = await testApiClient.login(teacherAccount);
@@ -152,14 +154,14 @@ describe(`share token lookup (api)`, () => {
 
 	describe('with invalid context', () => {
 		const setup = async () => {
-			Configuration.set('FEATURE_COURSE_SHARE', true);
+			config.featureCourseShare = true;
 
 			const parentType = ShareTokenParentType.Course;
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({}, [Permission.COURSE_CREATE]);
 			const otherSchool = schoolEntityFactory.build();
 			const course = courseEntityFactory.build({ teachers: [teacherUser] });
 
-			await em.persistAndFlush([course, teacherAccount, teacherUser, otherSchool]);
+			await em.persist([course, teacherAccount, teacherUser, otherSchool]).flush();
 			em.clear();
 
 			const context = {

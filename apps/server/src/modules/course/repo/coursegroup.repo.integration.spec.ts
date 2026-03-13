@@ -49,7 +49,7 @@ describe('course group repo', () => {
 		it('should return courseGroup with populated course', async () => {
 			const course = courseEntityFactory.build();
 			const courseGroup = courseGroupEntityFactory.build({ course });
-			await em.persistAndFlush(courseGroup);
+			await em.persist(courseGroup).flush();
 			em.clear();
 
 			const result = await repo.findById(courseGroup.id);
@@ -61,7 +61,7 @@ describe('course group repo', () => {
 	describe('findByCourses', () => {
 		it('should return the right types', async () => {
 			const courseGroup = courseGroupEntityFactory.build();
-			await em.persistAndFlush(courseGroup);
+			await em.persist(courseGroup).flush();
 			em.clear();
 
 			const [result, count] = await repo.findByCourseIds([courseGroup.course.id]);
@@ -73,7 +73,7 @@ describe('course group repo', () => {
 
 		it('should return right keys', async () => {
 			const courseGroup = courseGroupEntityFactory.build();
-			await em.persistAndFlush(courseGroup);
+			await em.persist(courseGroup).flush();
 			em.clear();
 
 			const [result] = await repo.findByCourseIds([courseGroup.course.id]);
@@ -88,14 +88,14 @@ describe('course group repo', () => {
 			const course2 = courseEntityFactory.build({ name: 'course #2' });
 			const course3 = courseEntityFactory.build({ name: 'course #3' });
 			const courses = [course1, course2, course3];
-			await em.persistAndFlush(courses);
+			await em.persist(courses).flush();
 
 			const courseGroups = [
 				courseGroupEntityFactory.build({ course: course1 }),
 				courseGroupEntityFactory.build({ course: course2 }),
 				courseGroupEntityFactory.build({ course: course3 }),
 			];
-			await em.persistAndFlush(courseGroups);
+			await em.persist(courseGroups).flush();
 			em.clear();
 
 			const [result, count] = await repo.findByCourseIds(courses.map((o) => o.id));
@@ -107,14 +107,14 @@ describe('course group repo', () => {
 			const course1 = courseEntityFactory.build({ name: 'course #1' });
 			const course2 = courseEntityFactory.build({ name: 'course #2' });
 			const courses = [course1, course2];
-			await em.persistAndFlush(courses);
+			await em.persist(courses).flush();
 
 			const courseGroups = [
 				courseGroupEntityFactory.build({ course: course2 }),
 				courseGroupEntityFactory.build({ course: course2 }),
 				courseGroupEntityFactory.build({ course: course2 }),
 			];
-			await em.persistAndFlush(courseGroups);
+			await em.persist(courseGroups).flush();
 			em.clear();
 
 			const [result, count] = await repo.findByCourseIds([course2.id]);
@@ -131,7 +131,7 @@ describe('course group repo', () => {
 				const courseGroup1 = courseGroupEntityFactory.studentsWithId(3).build({ course });
 				const courseGroup2 = courseGroupEntityFactory.build({ course });
 				const userId = courseGroup1.students[0].id;
-				await em.persistAndFlush([courseGroup1, courseGroup2]);
+				await em.persist([courseGroup1, courseGroup2]).flush();
 
 				return {
 					userId,
@@ -158,7 +158,7 @@ describe('course group repo', () => {
 				const courseGroup1 = courseGroupEntityFactory.studentsWithId(3).build({ course });
 				const courseGroup2 = courseGroupEntityFactory.studentsWithId(2).build({ course });
 				const userId = courseGroup1.students[0].id;
-				await em.persistAndFlush([courseGroup1, courseGroup2]);
+				await em.persist([courseGroup1, courseGroup2]).flush();
 				em.clear();
 
 				return {

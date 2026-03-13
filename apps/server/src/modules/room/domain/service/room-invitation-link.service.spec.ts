@@ -40,7 +40,8 @@ describe('RoomInvitationLinkService', () => {
 
 				const props = {
 					title: 'Test Link',
-					isOnlyForTeachers: true,
+					isUsableByExternalPersons: false,
+					isUsableByStudents: false,
 					restrictedToCreatorSchool: false,
 					activeUntil: inOneWeek,
 					roomId: '789',

@@ -58,7 +58,7 @@ describe('Task Controller (API)', () => {
 			});
 			const task = taskFactory.isPublished().build({ course });
 
-			await em.persistAndFlush([teacher.user, teacher.account, student.user, student.account, task]);
+			await em.persist([teacher.user, teacher.account, student.user, student.account, task]).flush();
 			em.clear();
 
 			const teacherClient = await testApiClient.login(teacher.account);

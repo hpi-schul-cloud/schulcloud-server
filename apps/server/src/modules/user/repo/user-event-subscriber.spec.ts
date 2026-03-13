@@ -41,13 +41,13 @@ describe(UserEventSubscriber.name, () => {
 
 	it('should publish event when user school changes', async () => {
 		const user = userFactory.build();
-		await em.persistAndFlush(user);
+		await em.persist(user).flush();
 		const school1 = schoolEntityFactory.build();
 		const school2 = schoolEntityFactory.build();
 		user.school = school1;
-		await em.persistAndFlush(user);
+		await em.persist(user).flush();
 		user.school = school2;
-		await em.persistAndFlush(user);
+		await em.persist(user).flush();
 		expect(eventBus.publish).toHaveBeenCalledWith(
 			expect.objectContaining({
 				constructor: expect.any(Function),
@@ -60,8 +60,8 @@ describe(UserEventSubscriber.name, () => {
 	it('should not publish event if school does not change', async () => {
 		const school = schoolEntityFactory.build();
 		const user = userFactory.build({ school });
-		await em.persistAndFlush(user);
-		await em.persistAndFlush(user); // no change
+		await em.persist(user).flush();
+		await em.persist(user).flush(); // no change
 		expect(eventBus.publish).not.toHaveBeenCalled();
 	});
 });

@@ -1,3 +1,4 @@
+import { ConfigurationModule } from '@infra/configuration';
 import { MongoIoAdapter } from '@infra/socketio';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { courseEntityFactory } from '@modules/course/testing';
@@ -8,6 +9,7 @@ import { InputFormat } from '@shared/domain/types/input-format.types';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { JwtAuthenticationFactory } from '@testing/factory/jwt-authentication.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
+import { TEST_JWT_CONFIG_TOKEN, TestJwtModuleConfig } from '@testing/test-jwt-module.config';
 import { Socket } from 'socket.io-client';
 import { BoardCollaborationTestModule } from '../../board-collaboration.app.module';
 import { BoardExternalReferenceType, BoardLayout, CardProps, ContentElementType } from '../../domain';
@@ -27,18 +29,22 @@ describe(BoardCollaborationGateway.name, () => {
 	let ioClient: Socket;
 	let unauthorizedIoClient: Socket;
 	let em: EntityManager;
+	let jwtConfig: TestJwtModuleConfig;
 
 	beforeAll(async () => {
 		const testingModule = await Test.createTestingModule({
-			imports: [BoardCollaborationTestModule],
+			imports: [BoardCollaborationTestModule, ConfigurationModule.register(TEST_JWT_CONFIG_TOKEN, TestJwtModuleConfig)],
 		}).compile();
 		app = testingModule.createNestApplication();
 
 		em = app.get(EntityManager);
-		const mongoUrl = em.config.getClientUrl();
+		jwtConfig = app.get<TestJwtModuleConfig>(TEST_JWT_CONFIG_TOKEN);
 
 		const mongoIoAdapter = new MongoIoAdapter(app);
-		await mongoIoAdapter.connectToMongoDb(mongoUrl);
+		// @ts-expect-error test
+		await mongoIoAdapter.connectToMongoDb({
+			dbUrl: 'mongodb://localhost:27017/board-collaboration-test',
+		});
 		app.useWebSocketAdapter(mongoIoAdapter);
 		await app.init();
 
@@ -56,28 +62,34 @@ describe(BoardCollaborationGateway.name, () => {
 		const school = schoolEntityFactory.build();
 		const { teacherUser, teacherAccount } = UserAndAccountTestFactory.buildTeacher({ school });
 
-		const teacherAuthJwt = JwtAuthenticationFactory.createJwt({
-			accountId: teacherAccount.id,
-			userId: teacherUser.id,
-			schoolId: teacherUser.school.id,
-			roles: [teacherUser.roles[0].id],
-			support: false,
-			isExternalUser: false,
-		});
+		const teacherAuthJwt = JwtAuthenticationFactory.createJwt(
+			{
+				accountId: teacherAccount.id,
+				userId: teacherUser.id,
+				schoolId: teacherUser.school.id,
+				roles: [teacherUser.roles[0].id],
+				support: false,
+				isExternalUser: false,
+			},
+			jwtConfig
+		);
 
 		const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent({ school });
 
-		const studentAuthJwt = JwtAuthenticationFactory.createJwt({
-			accountId: studentAccount.id,
-			userId: studentUser.id,
-			schoolId: studentUser.school.id,
-			roles: [studentUser.roles[0].id],
-			support: false,
-			isExternalUser: false,
-		});
+		const studentAuthJwt = JwtAuthenticationFactory.createJwt(
+			{
+				accountId: studentAccount.id,
+				userId: studentUser.id,
+				schoolId: studentUser.school.id,
+				roles: [studentUser.roles[0].id],
+				support: false,
+				isExternalUser: false,
+			},
+			jwtConfig
+		);
 
 		const course = courseEntityFactory.build({ school: school, teachers: [teacherUser] });
-		await em.persistAndFlush([teacherUser, teacherAccount, studentUser, studentAccount, course]);
+		await em.persist([teacherUser, teacherAccount, studentUser, studentAccount, course]).flush();
 
 		ioClient = await getSocketApiClient(app, teacherAuthJwt);
 		unauthorizedIoClient = await getSocketApiClient(app, studentAuthJwt);
@@ -95,7 +107,7 @@ describe(BoardCollaborationGateway.name, () => {
 		];
 		const elementNodes = richTextElementEntityFactory.withParent(cardNodes[0]).buildList(3);
 
-		await em.persistAndFlush([columnBoardNode, columnNode, columnNode2, ...cardNodes, ...elementNodes]);
+		await em.persist([columnBoardNode, columnNode, columnNode2, ...cardNodes, ...elementNodes]).flush();
 
 		em.clear();
 
@@ -136,6 +148,35 @@ describe(BoardCollaborationGateway.name, () => {
 				const failure = await waitForEvent(unauthorizedIoClient, 'create-card-failure');
 
 				expect(failure).toEqual({ columnId: columnNode.id });
+			});
+		});
+	});
+
+	describe('copy card', () => {
+		describe('when card exists', () => {
+			it('should answer with copied card', async () => {
+				const { cardNodes } = await setup();
+				const cardId = cardNodes[0].id;
+
+				ioClient.emit('duplicate-card-request', { cardId });
+				const success = (await waitForEvent(ioClient, 'duplicate-card-success')) as {
+					cardId: string;
+					copiedCard: CardProps;
+				};
+
+				expect(Object.keys(success)).toEqual(expect.arrayContaining(['cardId', 'duplicatedCard']));
+			});
+		});
+
+		describe('when user is not authorized', () => {
+			it('should answer with failure', async () => {
+				const { cardNodes } = await setup();
+				const cardId = cardNodes[0].id;
+
+				unauthorizedIoClient.emit('duplicate-card-request', { cardId });
+				const failure = await waitForEvent(unauthorizedIoClient, 'duplicate-card-failure');
+
+				expect(failure).toEqual({ cardId });
 			});
 		});
 	});
@@ -227,6 +268,79 @@ describe(BoardCollaborationGateway.name, () => {
 				const failure = await waitForEvent(unauthorizedIoClient, 'move-card-failure');
 
 				expect(failure).toEqual(moveCardProps);
+			});
+		});
+	});
+
+	describe('move card to board', () => {
+		describe('when moving card to another column', () => {
+			it('should answer with success', async () => {
+				const { columnNode, columnNode2, cardNodes } = await setup();
+
+				const moveCardToBoardProps = {
+					cardId: cardNodes[0].id,
+					fromColumnId: columnNode.id,
+					toColumnId: columnNode2.id,
+				};
+
+				ioClient.emit('move-card-to-board-request', moveCardToBoardProps);
+				const success = await waitForEvent(ioClient, 'move-card-to-board-success');
+
+				expect(success).toEqual(
+					expect.objectContaining({
+						toColumn: { id: columnNode2.id, title: columnNode2.title },
+					})
+				);
+			});
+		});
+
+		describe('when moving card to another board', () => {
+			const setupWithSecondBoard = async () => {
+				const params = await setup();
+				const { columnBoardNode } = params;
+
+				const secondColumnBoardNode = columnBoardEntityFactory.buildWithId({
+					context: columnBoardNode.context,
+				});
+				const secondColumnNode = columnEntityFactory.withParent(secondColumnBoardNode).build();
+				await em.persist([secondColumnBoardNode, secondColumnNode]).flush();
+				em.clear();
+
+				return { secondColumnNode, ...params };
+			};
+
+			it('should answer with success', async () => {
+				const { columnNode, secondColumnNode, cardNodes } = await setupWithSecondBoard();
+
+				const moveCardToBoardProps = {
+					cardId: cardNodes[0].id,
+					fromColumnId: columnNode.id,
+					toColumnId: secondColumnNode.id,
+				};
+
+				ioClient.emit('move-card-to-board-request', moveCardToBoardProps);
+				const success = await waitForEvent(ioClient, 'move-card-to-board-success');
+
+				expect(success).toEqual(
+					expect.objectContaining({ toColumn: { id: secondColumnNode.id, title: secondColumnNode.title } })
+				);
+			});
+		});
+
+		describe('when user is not authorized', () => {
+			it('should answer with failure', async () => {
+				const { columnNode, cardNodes } = await setup();
+
+				const moveCardToBoardProps = {
+					cardId: cardNodes[0].id,
+					fromColumnId: columnNode.id,
+					toColumnId: columnNode.id,
+				};
+
+				unauthorizedIoClient.emit('move-card-to-board-request', moveCardToBoardProps);
+				const failure = await waitForEvent(unauthorizedIoClient, 'move-card-to-board-failure');
+
+				expect(failure).toEqual(moveCardToBoardProps);
 			});
 		});
 	});
