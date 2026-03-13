@@ -124,7 +124,6 @@ export class VideoConferenceService {
 			const roomMember = roomAuthorizable.members.find((member) => member.userId === authorizableUser.id);
 
 			if (roomMember) {
-				// should be a check against permission.BOARD_MANAGE_VIDEOCONFERENCE
 				return roomMember.roles.some((role) => role.name === RoleName.ROOMADMIN);
 			}
 
