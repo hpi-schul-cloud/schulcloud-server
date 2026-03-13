@@ -59,12 +59,14 @@ export class DeletionBatchUc {
 			throw new CantCreateDeletionRequestsForBatchErrorLoggable(batchId, deletionBatch.status);
 		}
 
-		const revalidate = deletionBatch.createdAt.getTime() + revalidateAfterMinutes * 60 * 1000 > Date.now();
+		const revalidate = deletionBatch.createdAt.getTime() + revalidateAfterMinutes * 60 * 1000 < Date.now();
 
 		if (revalidate) {
-			const { invalidUserIds, skippedUserIds } = await this.validateAndFilterUserIds(deletionBatch.targetRefIds);
+			const allSavedUserIds = [...deletionBatch.targetRefIds, ...deletionBatch.invalidIds, ...deletionBatch.skippedIds];
+			const { validUserIds, invalidUserIds, skippedUserIds } = await this.validateAndFilterUserIds(allSavedUserIds);
 			deletionBatch = await this.deletionBatchService.updateBatch({
 				batchId,
+				validIds: validUserIds,
 				invalidIds: invalidUserIds,
 				skippedIds: skippedUserIds,
 			});
