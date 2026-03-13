@@ -1,5 +1,4 @@
 const { Configuration } = require('@hpi-schul-cloud/commons/lib');
-const jwt = require('jsonwebtoken');
 const { BadRequest } = require('../../../errors');
 const oauth2 = require('../../oauth2/hooks');
 
@@ -20,17 +19,14 @@ const validateTokenFormat = (token) => {
 	// Block characters commonly used for injection attacks:
 	// ? - query parameters
 	// & - query parameter separator
-	// = - query parameter assignment (outside of Base64)
 	// # - URL fragments
-	// / - path traversal
-	// \ - path traversal (Windows)
 	// < > - HTML/XML injection
 	// spaces, newlines, carriage returns - header injection
-	if (/[?&#/<>\\\s\r\n]/.test(token)) {
+	if (/[?&#<>\s\r\n]/.test(token)) {
 		throw new BadRequest('Invalid token format');
 	}
 
-	// Optionally: ensure reasonable length to prevent DoS
+	// ensure reasonable length to prevent DoS
 	if (token.length > 4096) {
 		throw new BadRequest('Token too long');
 	}
