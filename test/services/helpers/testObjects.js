@@ -18,7 +18,6 @@ const performanceMessurceLimits = {
 module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8' }) => {
 	const {
 		accounts,
-		activation,
 		base64Files,
 		classes,
 		consents,
@@ -47,7 +46,6 @@ module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8' }) => {
 		Promise.all(
 			[
 				accounts,
-				activation,
 				base64Files,
 				users,
 				consents,
@@ -87,7 +85,6 @@ module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8' }) => {
 			// Directly returned array and function that return the array are mixed.
 			// Please check if you change something!
 			accounts: accounts.info,
-			activation: activation.info,
 			base64Files: base64Files.info,
 			classes: classes.info,
 			courseGroups: courseGroups.info,
@@ -141,7 +138,6 @@ module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8' }) => {
 
 	return {
 		createTestAccount: accounts.create,
-		createTestActivation: activation.create,
 		createTestBase64File: base64Files.create,
 		createTestClass: classes.create,
 		createTestConsent: consents.create,
