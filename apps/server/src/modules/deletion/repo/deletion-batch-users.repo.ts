@@ -21,50 +21,6 @@ export type UserWithRoles = {
 export class DeletionBatchUsersRepo {
 	constructor(private readonly em: EntityManager) {}
 
-	public async countUsersByRole(userIds: EntityId[]): Promise<UsersCountByRole[]> {
-		if (userIds.length === 0) {
-			return [];
-		}
-		const pipeline = [
-			{
-				$match: {
-					_id: { $in: userIds.map((id) => new ObjectId(id)) },
-				},
-			},
-			{
-				$unwind: '$roles',
-			},
-			{
-				$lookup: {
-					from: 'roles',
-					localField: 'roles',
-					foreignField: '_id',
-					as: 'roleDetails',
-				},
-			},
-			{
-				$unwind: '$roleDetails',
-			},
-			{
-				$group: {
-					_id: '$roleDetails.name',
-					userCount: { $sum: 1 },
-				},
-			},
-			{
-				$project: {
-					_id: 0,
-					roleName: '$_id',
-					userCount: 1,
-				},
-			},
-		];
-
-		const usersByRole = await this.em.getConnection().aggregate<UsersCountByRole>('users', pipeline);
-
-		return usersByRole;
-	}
-
 	public async getUsersByRole(userIds: EntityId[]): Promise<UserIdsByRole[]> {
 		if (userIds.length === 0) {
 			return [];
@@ -74,9 +30,6 @@ export class DeletionBatchUsersRepo {
 				$match: {
 					_id: { $in: userIds.map((id) => new ObjectId(id)) },
 				},
-			},
-			{
-				$unwind: '$roles',
 			},
 			{
 				$lookup: {

@@ -3,7 +3,7 @@ import { Injectable } from '@nestjs/common';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { DeletionBatchUsersRepo, UserIdsByRole, UsersCountByRole } from '../../repo';
+import { DeletionBatchUsersRepo, UserIdsByRole, UsersCountByRole, UserWithRoles } from '../../repo';
 import { DeletionBatchRepo } from '../../repo/deletion-batch.repo';
 import { DeletionBatch, DeletionRequest } from '../do';
 import { BatchStatus, DomainName, StatusModel } from '../types';
@@ -35,6 +35,13 @@ export type DeletionBatchSummary = {
 	updatedAt: Date;
 };
 
+export type FilterUsersByRolesResult = {
+	validUserIds: EntityId[];
+	invalidUserIds: EntityId[];
+	skippedUserIds: EntityId[];
+	usersWithRoles: UserWithRoles[];
+};
+
 @Injectable()
 export class DeletionBatchService {
 	constructor(
@@ -53,7 +60,8 @@ export class DeletionBatchService {
 		params: CreateDeletionBatchParams,
 		validUserIds: EntityId[],
 		invalidIds: EntityId[] = [],
-		skippedIds: EntityId[] = []
+		skippedIds: EntityId[] = [],
+		usersWithRoles?: UserWithRoles[]
 	): Promise<DeletionBatchSummary> {
 		const newBatch = new DeletionBatch({
 			id: new ObjectId().toHexString(),
@@ -69,22 +77,25 @@ export class DeletionBatchService {
 
 		await this.deletionBatchRepo.save(newBatch);
 
-		const summary = await this.buildSummary(newBatch);
+		const summary = await this.buildSummary(newBatch, usersWithRoles);
 
 		return summary;
 	}
 
 	public async updateBatch({
 		batchId,
+		validIds,
 		invalidIds,
 		skippedIds,
 	}: {
 		batchId: EntityId;
+		validIds: EntityId[];
 		invalidIds: EntityId[];
 		skippedIds: EntityId[];
 	}): Promise<DeletionBatch> {
 		const deletionBatch = await this.deletionBatchRepo.findById(batchId);
 
+		deletionBatch.targetRefIds = validIds;
 		deletionBatch.invalidIds = invalidIds;
 		deletionBatch.skippedIds = skippedIds;
 		deletionBatch.updatedAt = new Date();
@@ -172,16 +183,19 @@ export class DeletionBatchService {
 	}
 
 	// TODO implement as join on deletionbatches.targetRefIds to avoid N+1
-	private async getUsersCountByRoles(userIds: EntityId[]): Promise<UsersCountByRole[]> {
-		const usersByRole = await this.deletionBatchUsersRepo.countUsersByRole(userIds);
+	private getUsersCountByRoles(userWithRoles: UserWithRoles[], userIds: EntityId[]): UsersCountByRole[] {
+		if (userIds.length === 0) return [];
 
-		return usersByRole;
+		const targetUserIds = new Set(userIds);
+		const roleCountMap = this.countRoleOccurrences(userWithRoles, targetUserIds);
+		const usersCountByRole = Array.from(roleCountMap, ([roleName, userCount]) => {
+			return { roleName, userCount };
+		});
+
+		return usersCountByRole;
 	}
 
-	public async filterUsersByRoles(
-		userIds: EntityId[],
-		allowedRoles: string[]
-	): Promise<{ validUserIds: EntityId[]; invalidUserIds: EntityId[]; skippedUserIds: EntityId[] }> {
+	public async filterUsersByRoles(userIds: EntityId[], allowedRoles: string[]): Promise<FilterUsersByRolesResult> {
 		const validUserIds: EntityId[] = [];
 		const invalidUserIds: EntityId[] = [];
 		const skippedUserIds: EntityId[] = [];
@@ -207,21 +221,44 @@ export class DeletionBatchService {
 			}
 		}
 
-		return { validUserIds, invalidUserIds, skippedUserIds };
+		return { validUserIds, invalidUserIds, skippedUserIds, usersWithRoles };
 	}
 
-	private async buildSummary(batch: DeletionBatch): Promise<DeletionBatchSummary> {
+	private async buildSummary(batch: DeletionBatch, usersWithRoles?: UserWithRoles[]): Promise<DeletionBatchSummary> {
+		let users = usersWithRoles;
+
+		if (!users) {
+			const allUserIds = [...new Set([...batch.targetRefIds, ...batch.invalidIds, ...batch.skippedIds])];
+			users = await this.deletionBatchUsersRepo.getUsersWithRoles(allUserIds);
+		}
+
 		const summary: DeletionBatchSummary = {
 			id: batch.id,
 			name: batch.name,
 			status: batch.status,
-			usersByRole: await this.getUsersCountByRoles(batch.targetRefIds),
+			usersByRole: this.getUsersCountByRoles(users, batch.targetRefIds),
 			invalidUsers: batch.invalidIds,
-			skippedUsersByRole: await this.getUsersCountByRoles(batch.skippedIds),
+			skippedUsersByRole: this.getUsersCountByRoles(users, batch.skippedIds),
 			createdAt: batch.createdAt,
 			updatedAt: batch.updatedAt,
 		};
 
 		return summary;
+	}
+
+	private countRoleOccurrences(usersWithRoles: UserWithRoles[], targetUserIds: Set<EntityId>): Map<string, number> {
+		const roleCountMap = new Map<string, number>();
+
+		for (const user of usersWithRoles) {
+			if (targetUserIds.has(user.id)) {
+				for (const role of user.roles) {
+					const currentCount = roleCountMap.get(role) ?? 0;
+					const updatedCount = currentCount + 1;
+					roleCountMap.set(role, updatedCount);
+				}
+			}
+		}
+
+		return roleCountMap;
 	}
 }

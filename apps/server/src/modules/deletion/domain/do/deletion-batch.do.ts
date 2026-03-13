@@ -42,6 +42,10 @@ export class DeletionBatch extends DomainObject<DeletionBatchProps> {
 		return this.props.targetRefIds;
 	}
 
+	set targetRefIds(value: EntityId[]) {
+		this.props.targetRefIds = value;
+	}
+
 	get invalidIds(): EntityId[] {
 		return this.props.invalidIds;
 	}
