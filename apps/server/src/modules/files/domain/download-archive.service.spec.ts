@@ -1,10 +1,5 @@
-import { DomainErrorHandler } from '@core/error';
 import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { S3ClientAdapter } from '@infra/s3-client';
-import { StorageProviderRepo } from '@modules/school/repo';
-import { storageProviderFactory } from '@modules/school/testing';
-import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Archiver } from 'archiver';
 import { Readable } from 'node:stream';
@@ -16,7 +11,6 @@ import { LegacyFileStorageAdapter } from './legacy-file-storage.adapter';
 describe('DownloadArchiveService', () => {
 	let service: DownloadArchiveService;
 	let legacyFileStorageAdapter: DeepMocked<LegacyFileStorageAdapter>;
-	let storageProviderRepo: DeepMocked<StorageProviderRepo>;
 	let module: TestingModule;
 
 	beforeAll(async () => {
@@ -33,20 +27,11 @@ describe('DownloadArchiveService', () => {
 					provide: LegacyFileStorageAdapter,
 					useValue: createMock<LegacyFileStorageAdapter>(),
 				},
-				{
-					provide: StorageProviderRepo,
-					useValue: createMock<StorageProviderRepo>(),
-				},
-				{
-					provide: DomainErrorHandler,
-					useValue: createMock<DomainErrorHandler>(),
-				},
 			],
 		}).compile();
 
 		service = module.get(DownloadArchiveService);
 		legacyFileStorageAdapter = module.get(LegacyFileStorageAdapter);
-		storageProviderRepo = module.get(StorageProviderRepo);
 	});
 
 	afterAll(async () => {
@@ -54,6 +39,7 @@ describe('DownloadArchiveService', () => {
 	});
 
 	afterEach(() => {
+		jest.clearAllMocks();
 		jest.restoreAllMocks();
 	});
 
@@ -64,29 +50,19 @@ describe('DownloadArchiveService', () => {
 	describe('downloadFilesAsArchive', () => {
 		describe('when adapter returns files and download is successful', () => {
 			const setup = () => {
-				const storageProvider = storageProviderFactory.buildWithId({ region: 'us-east-1' });
 				const file1 = fileDomainFactory.build({
 					isDirectory: false,
-					storageProviderId: storageProvider.id,
-					storageFileName: 'file1.txt',
-					bucket: 'bucket1',
 					name: 'test1.txt',
 					parentId: undefined,
 				});
 				const file2 = fileDomainFactory.build({
 					isDirectory: false,
-					storageProviderId: storageProvider.id,
-					storageFileName: 'file2.txt',
-					bucket: 'bucket2',
 					name: 'test2.txt',
 					parentId: undefined,
 				});
 
 				const ownerId = 'owner123';
 				const archiveName = 'test-archive';
-
-				legacyFileStorageAdapter.getFilesForOwner.mockResolvedValueOnce([file1, file2]);
-				storageProviderRepo.findById.mockResolvedValue(storageProvider);
 
 				const mockStream1 = new Readable();
 				const mockStream2 = new Readable();
@@ -95,10 +71,8 @@ describe('DownloadArchiveService', () => {
 				mockStream2.push('content2');
 				mockStream2.push(null);
 
-				jest
-					.spyOn(S3ClientAdapter.prototype, 'get')
-					.mockResolvedValueOnce({ data: mockStream1 })
-					.mockResolvedValueOnce({ data: mockStream2 });
+				legacyFileStorageAdapter.getFilesForOwner.mockResolvedValueOnce([file1, file2]);
+				legacyFileStorageAdapter.downloadFile.mockResolvedValueOnce(mockStream1).mockResolvedValueOnce(mockStream2);
 
 				const mockArchive = createMock<Archiver>();
 				const spy = jest.spyOn(ArchiveFactory, 'create').mockReturnValueOnce(mockArchive);
@@ -128,6 +102,15 @@ describe('DownloadArchiveService', () => {
 					expect.any(Array),
 					expect.anything()
 				);
+			});
+
+			it('should call downloadFile on the adapter for each file', async () => {
+				const { ownerId, archiveName, file1, file2 } = setup();
+
+				await service.downloadFilesAsArchive(ownerId, archiveName);
+
+				expect(legacyFileStorageAdapter.downloadFile).toHaveBeenCalledWith(file1.id, file1.name);
+				expect(legacyFileStorageAdapter.downloadFile).toHaveBeenCalledWith(file2.id, file2.name);
 			});
 		});
 
@@ -178,40 +161,18 @@ describe('DownloadArchiveService', () => {
 				expect(result.name).toBe(`${archiveName}.zip`);
 				expect(result.contentType).toBe('application/zip');
 			});
-		});
 
-		describe('when a file has no storage provider assigned', () => {
-			const setup = () => {
-				const file = fileDomainFactory.build({
-					isDirectory: false,
-					storageProviderId: undefined,
-					storageFileName: 'file1.txt',
-					bucket: 'bucket1',
-					name: 'test.txt',
-					parentId: undefined,
-				});
+			it('should not call downloadFile for directories', async () => {
+				const { ownerId, archiveName } = setup();
 
-				const ownerId = 'owner123';
-				const archiveName = 'test-archive';
+				await service.downloadFilesAsArchive(ownerId, archiveName);
 
-				legacyFileStorageAdapter.getFilesForOwner.mockResolvedValueOnce([file]);
-
-				return { ownerId, archiveName, file };
-			};
-
-			it('should throw NotFoundException with file id in message', async () => {
-				const { ownerId, archiveName, file } = setup();
-
-				await expect(service.downloadFilesAsArchive(ownerId, archiveName)).rejects.toThrow(
-					new NotFoundException(`File with id ${file.id} does not have a storage provider assigned`)
-				);
+				expect(legacyFileStorageAdapter.downloadFile).not.toHaveBeenCalled();
 			});
 		});
 
 		describe('when files have nested folder structure', () => {
 			const setup = () => {
-				const storageProvider = storageProviderFactory.buildWithId({ region: 'us-east-1' });
-
 				const rootFolder = fileDomainFactory.build({
 					isDirectory: true,
 					name: 'Documents',
@@ -226,9 +187,6 @@ describe('DownloadArchiveService', () => {
 
 				const file = fileDomainFactory.build({
 					isDirectory: false,
-					storageProviderId: storageProvider.id,
-					storageFileName: 'file1.txt',
-					bucket: 'bucket1',
 					name: 'document.txt',
 					parentId: subFolder.id,
 				});
@@ -236,14 +194,12 @@ describe('DownloadArchiveService', () => {
 				const ownerId = 'owner123';
 				const archiveName = 'test-archive';
 
-				legacyFileStorageAdapter.getFilesForOwner.mockResolvedValueOnce([rootFolder, subFolder, file]);
-				storageProviderRepo.findById.mockResolvedValue(storageProvider);
-
 				const mockStream = new Readable();
 				mockStream.push('content');
 				mockStream.push(null);
 
-				jest.spyOn(S3ClientAdapter.prototype, 'get').mockResolvedValueOnce({ data: mockStream });
+				legacyFileStorageAdapter.getFilesForOwner.mockResolvedValueOnce([rootFolder, subFolder, file]);
+				legacyFileStorageAdapter.downloadFile.mockResolvedValueOnce(mockStream);
 
 				const mockArchive = createMock<Archiver>();
 				jest.spyOn(ArchiveFactory, 'create').mockReturnValue(mockArchive);

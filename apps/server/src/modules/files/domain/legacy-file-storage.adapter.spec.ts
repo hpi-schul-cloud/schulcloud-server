@@ -3,6 +3,7 @@ import { HttpService } from '@nestjs/axios';
 import { REQUEST } from '@nestjs/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AxiosResponse } from 'axios';
+import { Readable } from 'node:stream';
 import { of } from 'rxjs';
 import { LEGACY_FILE_ARCHIVE_CONFIG_TOKEN } from '../legacy-file-archive.config';
 import { LegacyFileStorageAdapter } from './legacy-file-storage.adapter';
@@ -283,6 +284,95 @@ describe('LegacyFileStorageAdapter', () => {
 				await expect(adapter.getFilesForOwner(ownerId)).rejects.toThrow(
 					'Unexpected item shape at index 0 in legacy file storage response'
 				);
+			});
+		});
+	});
+
+	describe('getSignedUrl', () => {
+		describe('when the legacy service returns a signed URL', () => {
+			const setup = () => {
+				const fileId = 'file-abc';
+				const fileName = 'document.pdf';
+				const signedUrl = 'https://s3.example.com/bucket/file?X-Amz-Signature=abc123';
+
+				httpService.get.mockReturnValueOnce(of(buildAxiosResponse({ url: signedUrl })));
+
+				return { fileId, fileName, signedUrl };
+			};
+
+			it('should return the URL string', async () => {
+				const { fileId, fileName, signedUrl } = setup();
+
+				const result = await adapter.getSignedUrl(fileId, fileName);
+
+				expect(result).toBe(signedUrl);
+			});
+
+			it('should call the signedUrl endpoint with correct params and JWT header', async () => {
+				const { fileId, fileName } = setup();
+
+				await adapter.getSignedUrl(fileId, fileName);
+
+				expect(httpService.get).toHaveBeenCalledWith(`${legacyBaseUrl}/fileStorage/signedUrl`, {
+					params: { file: fileId, download: true, name: fileName },
+					headers: { authorization: `Bearer ${jwt}` },
+				});
+			});
+		});
+
+		describe('when the response does not contain a url string', () => {
+			const setup = () => {
+				const fileId = 'file-abc';
+				const fileName = 'document.pdf';
+
+				return { fileId, fileName };
+			};
+
+			it('should throw an error when url is not a string', async () => {
+				const { fileId, fileName } = setup();
+				httpService.get.mockReturnValueOnce(of(buildAxiosResponse({ url: 123 })));
+
+				await expect(adapter.getSignedUrl(fileId, fileName)).rejects.toThrow('Type is not a string');
+			});
+
+			it('should throw an error when response has no url field', async () => {
+				const { fileId, fileName } = setup();
+				httpService.get.mockReturnValueOnce(of(buildAxiosResponse({ other: 'data' })));
+
+				await expect(adapter.getSignedUrl(fileId, fileName)).rejects.toThrow('Object has no url.');
+			});
+		});
+	});
+
+	describe('downloadFile', () => {
+		describe('when signed URL is obtained and file downloads successfully', () => {
+			const setup = () => {
+				const fileId = 'file-abc';
+				const fileName = 'document.pdf';
+				const signedUrl = 'https://s3.example.com/bucket/file?X-Amz-Signature=abc123';
+				const mockStream = new Readable({ read() {} });
+
+				httpService.get
+					.mockReturnValueOnce(of(buildAxiosResponse({ url: signedUrl })))
+					.mockReturnValueOnce(of(buildAxiosResponse(mockStream)));
+
+				return { fileId, fileName, signedUrl, mockStream };
+			};
+
+			it('should return a readable stream', async () => {
+				const { fileId, fileName, mockStream } = setup();
+
+				const result = await adapter.downloadFile(fileId, fileName);
+
+				expect(result).toBe(mockStream);
+			});
+
+			it('should fetch the signed URL without auth headers', async () => {
+				const { fileId, fileName, signedUrl } = setup();
+
+				await adapter.downloadFile(fileId, fileName);
+
+				expect(httpService.get).toHaveBeenCalledWith(signedUrl, { responseType: 'stream' });
 			});
 		});
 	});
