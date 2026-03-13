@@ -12,8 +12,9 @@ import {
 import { ConfigurationModule } from '@infra/configuration';
 import { S3ClientAdapter } from '@infra/s3-client';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { StorageProviderEntity, StorageProviderRepo } from '@modules/school/repo';
+import { AccountEntity } from '@modules/account/repo';
 import { storageProviderFactory } from '@modules/school/testing';
+import { User } from '@modules/user/repo';
 import { ForbiddenException, HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
@@ -51,7 +52,7 @@ describe('DownloadArchive Controller (API)', () => {
 				]),
 				ErrorModule,
 				MongoMemoryDatabaseModule.forRoot({
-					entities: [StorageProviderEntity],
+					entities: [User, AccountEntity],
 				}),
 				ConfigurationModule.register(TEST_JWT_CONFIG_TOKEN, TestJwtModuleConfig),
 			],
@@ -59,7 +60,6 @@ describe('DownloadArchive Controller (API)', () => {
 			providers: [
 				DownloadArchiveService,
 				DownloadArchiveUC,
-				StorageProviderRepo,
 				{
 					provide: LegacyFileStorageAdapter,
 					useValue: createMock<LegacyFileStorageAdapter>(),
@@ -288,7 +288,6 @@ describe('DownloadArchive Controller (API)', () => {
 				const archiveName = 'team-files.zip';
 
 				const storageProvider = storageProviderFactory.buildWithId({ region: 'us-east-1' });
-				await em.persist(storageProvider).flush();
 
 				const file1 = fileDomainFactory.build({
 					name: 'team-doc.pdf',
@@ -302,13 +301,8 @@ describe('DownloadArchive Controller (API)', () => {
 				});
 
 				legacyFileStorageAdapter.getFilesForOwner.mockResolvedValueOnce([file1, file2]);
-
-				jest.spyOn(S3ClientAdapter.prototype, 'get').mockResolvedValue({
-					data: Readable.from('mock file content'),
-					contentType: 'application/octet-stream',
-					contentLength: 100,
-					etag: 'mock-etag',
-				});
+				legacyFileStorageAdapter.downloadFile.mockResolvedValue(Readable.from('mock file content'));
+				legacyFileStorageAdapter.getSignedUrl.mockResolvedValue('http://signed-url');
 
 				return { teamId, loggedInClient, archiveName };
 			};
@@ -337,7 +331,6 @@ describe('DownloadArchive Controller (API)', () => {
 				const archiveName = 'course-files.zip';
 
 				const storageProvider = storageProviderFactory.buildWithId({ region: 'us-east-1' });
-				await em.persist(storageProvider).flush();
 
 				const file1 = fileDomainFactory.build({
 					name: 'syllabus.pdf',
@@ -386,7 +379,6 @@ describe('DownloadArchive Controller (API)', () => {
 				const archiveName = 'user-files.zip';
 
 				const storageProvider = storageProviderFactory.buildWithId({ region: 'us-east-1' });
-				await em.persist(storageProvider).flush();
 
 				const file1 = fileDomainFactory.build({
 					name: 'personal-doc.docx',
