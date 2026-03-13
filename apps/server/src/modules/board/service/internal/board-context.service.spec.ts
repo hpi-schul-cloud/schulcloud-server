@@ -5,8 +5,9 @@ import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { GroupTypes } from '@modules/group';
 import { groupFactory } from '@modules/group/testing';
+import { RoleName } from '@modules/role';
 import { roleFactory } from '@modules/role/testing';
-import { RoomService } from '@modules/room';
+import { RoomFeatures, RoomService } from '@modules/room';
 import { RoomAuthorizable, RoomMembershipService } from '@modules/room-membership';
 import { roomMembershipFactory } from '@modules/room-membership/testing';
 import { roomFactory } from '@modules/room/testing';
@@ -16,9 +17,8 @@ import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { BoardExternalReferenceType, BoardRoles, UserWithBoardRoles } from '../../domain';
-import { columnBoardFactory, columnFactory } from '../../testing';
+import { columnBoardFactory, columnFactory, mediaBoardFactory } from '../../testing';
 import { BoardContextService } from './board-context.service';
-import { RoleName } from '@modules/role';
 
 describe(BoardContextService.name, () => {
 	let module: TestingModule;
@@ -64,14 +64,8 @@ describe(BoardContextService.name, () => {
 
 	describe('getUsersWithBoardRoles', () => {
 		describe('when node has no context', () => {
-			const setup = () => {
-				const column = columnFactory.build({});
-
-				return { column };
-			};
-
 			it('should return empty array', async () => {
-				const { column } = setup();
+				const column = columnFactory.build({});
 
 				const result = await service.getUsersWithBoardRoles(column);
 
@@ -96,16 +90,10 @@ describe(BoardContextService.name, () => {
 		});
 
 		describe('when node has a user context', () => {
-			const setup = () => {
+			it('should return user id + editor & admin role', async () => {
 				const columnBoard = columnBoardFactory.build({
 					context: { id: new ObjectId().toHexString(), type: BoardExternalReferenceType.User },
 				});
-
-				return { columnBoard };
-			};
-
-			it('should return user id + editor & admin role', async () => {
-				const { columnBoard } = setup();
 
 				const result = await service.getUsersWithBoardRoles(columnBoard);
 				const expected: UserWithBoardRoles[] = [
@@ -430,18 +418,12 @@ describe(BoardContextService.name, () => {
 		});
 	});
 
-	describe('getBoardSettings', () => {
+	describe('getBoardConfiguration', () => {
 		describe('when node has no context', () => {
-			const setup = () => {
+			it('should return empty board configuration object', async () => {
 				const column = columnFactory.build({});
 
-				return { column };
-			};
-
-			it('should return empty settings object', async () => {
-				const { column } = setup();
-
-				const result = await service.getBoardSettings(column);
+				const result = await service.getBoardConfiguration(column);
 
 				expect(result).toEqual({});
 			});
@@ -456,28 +438,34 @@ describe(BoardContextService.name, () => {
 				return { columnBoard };
 			};
 
-			it('should throw an error', async () => {
+			it('should return a default board configuration object', async () => {
 				const { columnBoard } = setup();
 
-				await expect(service.getBoardSettings(columnBoard)).rejects.toThrowError();
+				const result = await service.getBoardConfiguration(columnBoard);
+
+				expect(result).toEqual({
+					canEditorsManageVideoconference: false,
+					canReadersEdit: false,
+					canAdminsToggleReadersCanEdit: false,
+					isLocked: false,
+				});
 			});
 		});
 
 		describe('when node has user context', () => {
-			const setup = () => {
+			it('should return isLocked false in board configuration object', async () => {
 				const columnBoard = columnBoardFactory.build({
 					context: { id: new ObjectId().toHexString(), type: BoardExternalReferenceType.User },
 				});
 
-				return { columnBoard };
-			};
+				const result = await service.getBoardConfiguration(columnBoard);
 
-			it('should return isLocked false settings object', async () => {
-				const { columnBoard } = setup();
-
-				const result = await service.getBoardSettings(columnBoard);
-
-				expect(result).toEqual({ isLocked: false });
+				expect(result).toEqual({
+					canEditorsManageVideoconference: false,
+					canReadersEdit: false,
+					canAdminsToggleReadersCanEdit: false,
+					isLocked: false,
+				});
 			});
 		});
 
@@ -496,9 +484,14 @@ describe(BoardContextService.name, () => {
 			it('should return isLocked false', async () => {
 				const { columnBoard } = setup();
 
-				const result = await service.getBoardSettings(columnBoard);
+				const result = await service.getBoardConfiguration(columnBoard);
 
-				expect(result).toEqual({ isLocked: false });
+				expect(result).toEqual({
+					canEditorsManageVideoconference: false,
+					canReadersEdit: false,
+					canAdminsToggleReadersCanEdit: false,
+					isLocked: false,
+				});
 			});
 		});
 
@@ -528,28 +521,73 @@ describe(BoardContextService.name, () => {
 			};
 
 			describe('when room editor can manage videoconference', () => {
-				it('should return settings with canRoomEditorManageVideoconference true', async () => {
+				it('should return board configuration with canEditorsManageVideoconference true', async () => {
 					const { columnBoard, room } = setup();
 
-					roomService.canEditorManageVideoconferences.mockReturnValueOnce(true);
+					room.features = [RoomFeatures.EDITOR_MANAGE_VIDEOCONFERENCE];
 
-					const result = await service.getBoardSettings(columnBoard);
+					const result = await service.getBoardConfiguration(columnBoard);
 
-					expect(result).toEqual({ canRoomEditorManageVideoconference: true, isLocked: false });
-					expect(roomService.canEditorManageVideoconferences).toHaveBeenCalledWith(room);
+					expect(result).toEqual({
+						canEditorsManageVideoconference: true,
+						canReadersEdit: false,
+						canAdminsToggleReadersCanEdit: true,
+						isLocked: false,
+					});
 				});
 			});
 
 			describe('when room editor can NOT manage videoconference', () => {
-				it('should return settings with canRoomEditorManageVideoconference false', async () => {
+				it('should return board configuration with canEditorsManageVideoconference false', async () => {
 					const { columnBoard, room } = setup();
+					room.features = [];
 
-					roomService.canEditorManageVideoconferences.mockReturnValueOnce(false);
+					const result = await service.getBoardConfiguration(columnBoard);
 
-					const result = await service.getBoardSettings(columnBoard);
+					expect(result).toEqual({
+						canEditorsManageVideoconference: false,
+						canReadersEdit: false,
+						canAdminsToggleReadersCanEdit: true,
+						isLocked: false,
+					});
+				});
+			});
+		});
 
-					expect(result).toEqual({ canRoomEditorManageVideoconference: false, isLocked: false });
-					expect(roomService.canEditorManageVideoconferences).toHaveBeenCalledWith(room);
+		describe('when node is a MediaBoard', () => {
+			const setup = () => {
+				const room = roomFactory.build({ id: new ObjectId().toHexString() });
+				roomService.getSingleRoom.mockResolvedValueOnce(room);
+
+				const roomAuthorizable = new RoomAuthorizable(
+					room.id,
+					[
+						{
+							userId: new ObjectId().toHexString(),
+							roles: [roleFactory.build({ name: RoleName.ROOMOWNER })],
+							userSchoolId: new ObjectId().toHexString(),
+						},
+					],
+					new ObjectId().toHexString()
+				);
+				roomMembershipService.getRoomAuthorizable.mockResolvedValueOnce(roomAuthorizable);
+
+				const mediaBoard = mediaBoardFactory.build({
+					context: { id: room.id, type: BoardExternalReferenceType.Room },
+				});
+
+				return { mediaBoard };
+			};
+
+			it('should return a default board configuration object', async () => {
+				const { mediaBoard } = setup();
+				const result = await service.getBoardConfiguration(mediaBoard);
+
+				expect(result).toEqual({
+					canEditorsManageVideoconference: false,
+					canReadersEdit: false,
+					canAdminsToggleReadersCanEdit: false,
+					isLocked: false,
 				});
 			});
 		});

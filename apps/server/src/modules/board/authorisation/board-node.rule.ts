@@ -97,7 +97,7 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 	}
 
 	public hasPermission(user: User, authorizable: BoardNodeAuthorizable, context: AuthorizationContext): boolean {
-		if (authorizable.boardContextSettings.isLocked) {
+		if (authorizable.boardConfiguration.isLocked) {
 			return false;
 		}
 
@@ -353,10 +353,9 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 		authorizable: BoardNodeAuthorizable
 	): boolean {
 		if (context.action === Action.write) {
-			const canRoomEditorManageVideoconference =
-				authorizable.boardContextSettings.canRoomEditorManageVideoconference ?? false;
+			const canEditorsManageVideoconference = authorizable.boardConfiguration.canEditorsManageVideoconference ?? false;
 			return (
-				(canRoomEditorManageVideoconference && this.isBoardEditor(userWithBoardRoles)) ||
+				(canEditorsManageVideoconference && this.isBoardEditor(userWithBoardRoles)) ||
 				this.isBoardAdmin(userWithBoardRoles)
 			);
 		}
@@ -365,20 +364,31 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 	}
 }
 
+const hasBoardRole = (user: User, authorizable: BoardNodeAuthorizable, role: BoardRoles): boolean => {
+	const userWithBoardRoles = authorizable.users.find((u) => u.userId === user.id);
+	return userWithBoardRoles?.roles.includes(role) ?? false;
+};
+
 const _canEditBoard = (user: User, authorizable: BoardNodeAuthorizable): boolean => {
-	if (authorizable.boardContextSettings.isLocked) {
+	if (authorizable.boardConfiguration.isLocked) {
 		return false;
 	}
 
-	const permissions = authorizable.getUserPermissions(user.id);
-
 	const isBoard = authorizable.rootNode instanceof ColumnBoard || authorizable.rootNode instanceof MediaBoard;
-	const canEditBoard = permissions.includes(Permission.BOARD_EDIT);
-	return isBoard && canEditBoard;
+	if (!isBoard) return false;
+
+	const permissions = authorizable.getUserPermissions(user.id);
+	const hasEditPermission = permissions.includes(Permission.BOARD_EDIT);
+	if (hasEditPermission) return true;
+
+	const isReader = hasBoardRole(user, authorizable, BoardRoles.READER);
+	const readersCanEdit = authorizable.boardConfiguration.canReadersEdit ?? false;
+
+	return isReader && readersCanEdit;
 };
 
 const _canManageBoard = (user: User, authorizable: BoardNodeAuthorizable): boolean => {
-	if (authorizable.boardContextSettings.isLocked) {
+	if (authorizable.boardConfiguration.isLocked) {
 		return false;
 	}
 
@@ -390,7 +400,7 @@ const _canManageBoard = (user: User, authorizable: BoardNodeAuthorizable): boole
 };
 
 const _canViewBoard = (user: User, authorizable: BoardNodeAuthorizable): boolean => {
-	if (authorizable.boardContextSettings.isLocked) {
+	if (authorizable.boardConfiguration.isLocked) {
 		return false;
 	}
 
@@ -402,7 +412,7 @@ const _canViewBoard = (user: User, authorizable: BoardNodeAuthorizable): boolean
 };
 
 const _isSubmissionItemOfUser = (user: User, authorizable: BoardNodeAuthorizable): boolean => {
-	if (authorizable.boardContextSettings.isLocked) {
+	if (authorizable.boardConfiguration.isLocked) {
 		return false;
 	}
 
@@ -411,7 +421,7 @@ const _isSubmissionItemOfUser = (user: User, authorizable: BoardNodeAuthorizable
 };
 
 const _canCreateExternalToolElement = (user: User, authorizable: BoardNodeAuthorizable): boolean => {
-	if (authorizable.boardContextSettings.isLocked) {
+	if (authorizable.boardConfiguration.isLocked) {
 		return false;
 	}
 
@@ -424,7 +434,7 @@ const _canCreateExternalToolElement = (user: User, authorizable: BoardNodeAuthor
 };
 
 const canFindBoard = (user: User, authorizable: BoardNodeAuthorizable): boolean => {
-	if (authorizable.boardContextSettings.isLocked) {
+	if (authorizable.boardConfiguration.isLocked) {
 		return false;
 	}
 
@@ -443,19 +453,26 @@ const canFindBoard = (user: User, authorizable: BoardNodeAuthorizable): boolean 
 };
 
 const canManageVideoConference = (user: User, authorizable: BoardNodeAuthorizable): boolean => {
-	if (authorizable.boardContextSettings.isLocked) {
+	if (authorizable.boardConfiguration.isLocked) {
 		return false;
 	}
 
 	const permissions = authorizable.getUserPermissions(user.id);
 
 	const isBoard = authorizable.rootNode instanceof ColumnBoard || authorizable.rootNode instanceof MediaBoard;
-	const canManageVideoConference = permissions.includes(Permission.BOARD_MANAGE_VIDEOCONFERENCE);
+
+	const hasPermission = permissions.includes(Permission.BOARD_MANAGE_VIDEOCONFERENCE);
+
+	const isEditor = hasBoardRole(user, authorizable, BoardRoles.EDITOR);
+	const canEditorsManageVideoconference = authorizable.boardConfiguration.canEditorsManageVideoconference ?? false;
+
+	const canManageVideoConference = hasPermission || (isEditor && canEditorsManageVideoconference);
+
 	return isBoard && canManageVideoConference;
 };
 
 const canUpdateReadersCanEditSetting = (user: User, authorizable: BoardNodeAuthorizable): boolean => {
-	if (authorizable.boardContextSettings.isLocked) {
+	if (authorizable.boardConfiguration.isLocked) {
 		return false;
 	}
 
@@ -468,7 +485,7 @@ const canUpdateReadersCanEditSetting = (user: User, authorizable: BoardNodeAutho
 };
 
 const canRelocateContent = (user: User, authorizable: BoardNodeAuthorizable): boolean => {
-	if (authorizable.boardContextSettings.isLocked) {
+	if (authorizable.boardConfiguration.isLocked) {
 		return false;
 	}
 
@@ -481,7 +498,7 @@ const canRelocateContent = (user: User, authorizable: BoardNodeAuthorizable): bo
 };
 
 const canShareBoardNode = (user: User, authorizable: BoardNodeAuthorizable): boolean => {
-	if (authorizable.boardContextSettings.isLocked) {
+	if (authorizable.boardConfiguration.isLocked) {
 		return false;
 	}
 

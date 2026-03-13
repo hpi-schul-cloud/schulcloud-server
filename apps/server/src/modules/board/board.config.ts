@@ -10,7 +10,7 @@ export class BoardPublicApiConfig {
 	@ConfigProperty('FEATURE_MEDIA_SHELF_ENABLED')
 	@StringToBoolean()
 	@IsBoolean()
-	public featureMediaShelfEnabled = false;
+	public featureMediaShelfEnabled = true;
 
 	@ConfigProperty('FEATURE_BOARD_READERS_CAN_EDIT_TOGGLE')
 	@StringToBoolean()
@@ -20,7 +20,7 @@ export class BoardPublicApiConfig {
 	@ConfigProperty('FEATURE_COLUMN_BOARD_SUBMISSIONS_ENABLED')
 	@StringToBoolean()
 	@IsBoolean()
-	public featureColumnBoardSubmissionsEnabled = false;
+	public featureColumnBoardSubmissionsEnabled = true;
 
 	@ConfigProperty('FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED')
 	@StringToBoolean()
@@ -35,7 +35,7 @@ export class BoardPublicApiConfig {
 	@ConfigProperty('FEATURE_COLUMN_BOARD_SOCKET_ENABLED')
 	@StringToBoolean()
 	@IsBoolean()
-	public featureColumnBoardSocketEnabled = false;
+	public featureColumnBoardSocketEnabled = true;
 
 	@ConfigProperty('FEATURE_COLUMN_BOARD_FILE_FOLDER_ENABLED')
 	@StringToBoolean()
@@ -77,7 +77,7 @@ export class BoardConfig extends BoardPublicApiConfig {
 	@ConfigProperty('FEATURE_CTL_TOOLS_COPY_ENABLED')
 	@StringToBoolean()
 	@IsBoolean()
-	public featureCtlToolsCopyEnabled = false;
+	public featureCtlToolsCopyEnabled = true;
 
 	@IsUrl({ require_tld: false })
 	@ConfigProperty('HOST')
