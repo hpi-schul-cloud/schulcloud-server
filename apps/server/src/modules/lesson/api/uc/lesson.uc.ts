@@ -1,5 +1,4 @@
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
-import { CourseService } from '@modules/course';
 import { Injectable } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
@@ -12,8 +11,7 @@ import { LessonMapper } from '../mapper';
 export class LessonUC {
 	constructor(
 		private readonly authorizationService: AuthorizationService,
-		private readonly lessonService: LessonService,
-		private readonly courseService: CourseService
+		private readonly lessonService: LessonService
 	) {}
 
 	public async delete(userId: EntityId, lessonId: EntityId): Promise<boolean> {
