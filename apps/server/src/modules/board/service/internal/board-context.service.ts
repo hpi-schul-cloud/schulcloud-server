@@ -43,26 +43,26 @@ export class BoardContextService {
 		return usersWithRoles;
 	}
 
-	public async getBoardConfiguration(rootNode: AnyBoardNode): Promise<BoardConfiguration> {
+	public getBoardConfiguration(rootNode: AnyBoardNode): Promise<BoardConfiguration> {
 		if (!('context' in rootNode)) {
-			return {};
+			return Promise.resolve({});
 		}
 
 		switch (rootNode.context.type) {
 			case BoardExternalReferenceType.Room:
-				return await this.getBoardConfigurationInRoomContext(rootNode);
+				return this.getBoardConfigurationInRoomContext(rootNode);
 
 			case BoardExternalReferenceType.Course:
-				return await this.getBoardConfigurationInCourseContext(rootNode);
+				return this.getBoardConfigurationInCourseContext(rootNode);
 
 			case BoardExternalReferenceType.User:
 			default:
-				return {
+				return Promise.resolve({
 					canEditorsManageVideoconference: false,
 					canReadersEdit: false,
 					canAdminsToggleReadersCanEdit: false,
 					isLocked: false,
-				};
+				});
 		}
 	}
 
@@ -75,12 +75,13 @@ export class BoardContextService {
 			member.roles.some((role) => role.name === RoleName.ROOMOWNER)
 		);
 
+		const isColumnBoard = rootNode instanceof ColumnBoard;
 		const canEditorsManageVideoconference = room.features.includes(RoomFeatures.EDITOR_MANAGE_VIDEOCONFERENCE);
 
 		return {
-			canEditorsManageVideoconference,
+			canEditorsManageVideoconference: isColumnBoard && canEditorsManageVideoconference,
 			canReadersEdit: this.determineCanReadersEdit(rootNode),
-			canAdminsToggleReadersCanEdit: true,
+			canAdminsToggleReadersCanEdit: isColumnBoard,
 			isLocked: !hasOwner,
 		};
 	}

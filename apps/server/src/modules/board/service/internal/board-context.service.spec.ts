@@ -64,14 +64,8 @@ describe(BoardContextService.name, () => {
 
 	describe('getUsersWithBoardRoles', () => {
 		describe('when node has no context', () => {
-			const setup = () => {
-				const column = columnFactory.build({});
-
-				return { column };
-			};
-
 			it('should return empty array', async () => {
-				const { column } = setup();
+				const column = columnFactory.build({});
 
 				const result = await service.getUsersWithBoardRoles(column);
 
@@ -96,16 +90,10 @@ describe(BoardContextService.name, () => {
 		});
 
 		describe('when node has a user context', () => {
-			const setup = () => {
+			it('should return user id + editor & admin role', async () => {
 				const columnBoard = columnBoardFactory.build({
 					context: { id: new ObjectId().toHexString(), type: BoardExternalReferenceType.User },
 				});
-
-				return { columnBoard };
-			};
-
-			it('should return user id + editor & admin role', async () => {
-				const { columnBoard } = setup();
 
 				const result = await service.getUsersWithBoardRoles(columnBoard);
 				const expected: UserWithBoardRoles[] = [
@@ -432,14 +420,8 @@ describe(BoardContextService.name, () => {
 
 	describe('getBoardConfiguration', () => {
 		describe('when node has no context', () => {
-			const setup = () => {
-				const column = columnFactory.build({});
-
-				return { column };
-			};
-
 			it('should return empty board configuration object', async () => {
-				const { column } = setup();
+				const column = columnFactory.build({});
 
 				const result = await service.getBoardConfiguration(column);
 
@@ -471,16 +453,10 @@ describe(BoardContextService.name, () => {
 		});
 
 		describe('when node has user context', () => {
-			const setup = () => {
+			it('should return isLocked false in board configuration object', async () => {
 				const columnBoard = columnBoardFactory.build({
 					context: { id: new ObjectId().toHexString(), type: BoardExternalReferenceType.User },
 				});
-
-				return { columnBoard };
-			};
-
-			it('should return isLocked false in board configuration object', async () => {
-				const { columnBoard } = setup();
 
 				const result = await service.getBoardConfiguration(columnBoard);
 
@@ -603,7 +579,7 @@ describe(BoardContextService.name, () => {
 				return { mediaBoard };
 			};
 
-			it.only('should return a default board configuration object', async () => {
+			it('should return a default board configuration object', async () => {
 				const { mediaBoard } = setup();
 				const result = await service.getBoardConfiguration(mediaBoard);
 
