@@ -65,6 +65,11 @@ describe(ErwinIdentifierMikroOrmRepo.name, () => {
 				await repo.create(domainObject);
 
 				const result = await repo.findById(domainObject.id);
+
+				if (!result) {
+					fail('Expected to find an erwin identifier with the given id, but none was found.');
+				}
+
 				const resultProps = result.getProps();
 
 				expect(resultProps).toStrictEqual(expectedDoProps);
@@ -73,7 +78,7 @@ describe(ErwinIdentifierMikroOrmRepo.name, () => {
 	});
 
 	describe('findById', () => {
-		describe('when searching by id', () => {
+		describe('when an erwin identifier entity exists with the given id', () => {
 			const setup = async () => {
 				const entity: ErwinIdentifierEntity = erwinIdentifierEntityFactoryWithSchool.build();
 				await em.persist(entity).flush();
@@ -92,17 +97,24 @@ describe(ErwinIdentifierMikroOrmRepo.name, () => {
 				const { entity, expectedDoProps } = await setup();
 
 				const result = await repo.findById(entity.id);
+
+				if (!result) {
+					fail('Expected to find an erwin identifier with the given id, but none was found.');
+				}
+
 				const resultProps = result.getProps();
 
 				expect(resultProps).toStrictEqual(expectedDoProps);
 			});
+		});
 
-			it('should throw when no erwin identifier exists for the given id', async () => {
-				const nonExistingId = new ObjectId().toHexString();
+		describe('when no erwin identifier entity exists with the given id', () => {
+			it('should return null', async () => {
+				const nonExistingId = 'non-existing-id';
 
-				const result = repo.findById(nonExistingId);
+				const result = await repo.findById(nonExistingId);
 
-				await expect(result).rejects.toThrow();
+				expect(result).toBeNull();
 			});
 		});
 	});
