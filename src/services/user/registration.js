@@ -1,12 +1,9 @@
 const { Configuration } = require('@hpi-schul-cloud/commons');
-
 const { BadRequest } = require('../../errors');
 const { userModel: User } = require('./model');
 const consentModel = require('../consent/model');
 const { getAge } = require('../../utils');
 const logger = require('../../logger');
-
-const { CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS } = require('../../../config/globals');
 
 const permissionsAllowedToLogin = ['student', 'externalPerson', 'administrator', 'teacher'];
 
@@ -169,6 +166,7 @@ const registerUser = function register(data, params, app) {
 					);
 				}
 				// wrong age?
+				const CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS = Configuration.get('CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS');
 				const age = getAge(user.birthday);
 				if (data.parent_email && age >= CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS) {
 					return Promise.reject(

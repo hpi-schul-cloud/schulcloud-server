@@ -112,11 +112,15 @@ describe(`getElementWithParentHierarchy (api)`, () => {
 				const school = schoolEntityFactory.buildWithId();
 				const room = roomEntityFactory.buildWithId({ schoolId: school.id });
 
-				const { roomEditorRole } = RoomRolesTestFactory.createRoomRoles();
+				const { roomEditorRole, roomOwnerRole } = RoomRolesTestFactory.createRoomRoles();
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
+				const { teacherUser: roomOwnerUser } = UserAndAccountTestFactory.buildTeacher({ school });
 				const userGroup = groupEntityFactory.buildWithId({
 					type: GroupEntityTypes.ROOM,
-					users: [{ role: roomEditorRole, user: teacherUser }],
+					users: [
+						{ role: roomEditorRole, user: teacherUser },
+						{ role: roomOwnerRole, user: roomOwnerUser },
+					],
 					organization: school,
 				});
 				const roomMembership = roomMembershipEntityFactory.build({

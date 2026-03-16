@@ -131,30 +131,52 @@ describe('Room Controller (API)', () => {
 			});
 
 			describe('when multiple roomInvitationLinks exist', () => {
-				it('should delete the roomInvitationLink', async () => {
-					const { teacherOwnerAccount, roomInvitationLink, room } = await setup();
-					const additionalLinks = roomInvitationLinkEntityFactory.buildList(3, {
-						roomId: room.id,
+				describe('when all links belong to the same room', () => {
+					it('should delete the roomInvitationLink', async () => {
+						const { teacherOwnerAccount, roomInvitationLink, room } = await setup();
+						const additionalLinks = roomInvitationLinkEntityFactory.buildList(3, {
+							roomId: room.id,
+						});
+						await em.persist(additionalLinks).flush();
+						em.clear();
+
+						const loggedInClient = await testApiClient.login(teacherOwnerAccount);
+						const roomInvitationLinkIds = additionalLinks.map((link) => link.id);
+
+						const response = await loggedInClient.delete().query({ roomInvitationLinkIds });
+
+						expect(response.status).toBe(HttpStatus.NO_CONTENT);
+						await expect(em.findOneOrFail(RoomInvitationLinkEntity, roomInvitationLinkIds[0])).rejects.toThrow(
+							NotFoundException
+						);
+						await expect(em.findOneOrFail(RoomInvitationLinkEntity, roomInvitationLinkIds[1])).rejects.toThrow(
+							NotFoundException
+						);
+						await expect(em.findOneOrFail(RoomInvitationLinkEntity, roomInvitationLinkIds[2])).rejects.toThrow(
+							NotFoundException
+						);
+						await expect(em.findOneOrFail(RoomInvitationLinkEntity, roomInvitationLink.id)).resolves.toBeDefined();
 					});
-					await em.persist(additionalLinks).flush();
-					em.clear();
+				});
 
-					const loggedInClient = await testApiClient.login(teacherOwnerAccount);
-					const roomInvitationLinkIds = additionalLinks.map((link) => link.id);
+				describe('when links belong to different rooms', () => {
+					it('should return a 403 error and not delete any links', async () => {
+						const { teacherOwnerAccount, roomInvitationLink } = await setup();
+						const linkWithDifferentRoom = roomInvitationLinkEntityFactory.build({
+							roomId: 'a-different-room-id',
+						});
+						await em.persist(linkWithDifferentRoom).flush();
+						em.clear();
 
-					const response = await loggedInClient.delete().query({ roomInvitationLinkIds });
+						const loggedInClient = await testApiClient.login(teacherOwnerAccount);
+						const roomInvitationLinkIds = [roomInvitationLink.id, linkWithDifferentRoom.id];
 
-					expect(response.status).toBe(HttpStatus.NO_CONTENT);
-					await expect(em.findOneOrFail(RoomInvitationLinkEntity, roomInvitationLinkIds[0])).rejects.toThrow(
-						NotFoundException
-					);
-					await expect(em.findOneOrFail(RoomInvitationLinkEntity, roomInvitationLinkIds[1])).rejects.toThrow(
-						NotFoundException
-					);
-					await expect(em.findOneOrFail(RoomInvitationLinkEntity, roomInvitationLinkIds[2])).rejects.toThrow(
-						NotFoundException
-					);
-					await expect(em.findOneOrFail(RoomInvitationLinkEntity, roomInvitationLink.id)).resolves.toBeDefined();
+						const response = await loggedInClient.delete().query({ roomInvitationLinkIds });
+
+						expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+						await expect(em.findOneOrFail(RoomInvitationLinkEntity, roomInvitationLink.id)).resolves.toBeDefined();
+						await expect(em.findOneOrFail(RoomInvitationLinkEntity, linkWithDifferentRoom.id)).resolves.toBeDefined();
+					});
 				});
 			});
 

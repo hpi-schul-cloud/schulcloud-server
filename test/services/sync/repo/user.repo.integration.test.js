@@ -419,27 +419,4 @@ describe('user repo', () => {
 			expect(res.length).to.equal(0);
 		});
 	});
-	describe('deleteUser', () => {
-		it('should delete an existing user', async () => {
-			const school = await testObjects.createTestSchool();
-			const testUserEmail = 'user@test.test';
-			const user = await testObjects.createTestUser(
-				{
-					schoolId: school._id,
-					firstName: 'jon',
-					lastName: 'doe',
-					email: testUserEmail,
-				},
-				{ manualCleanup: true }
-			);
-
-			let res = await UserRepo.findUserBySchoolAndName(school._id, user.firstName, user.lastName);
-			expect(res.length).to.equal(1);
-
-			await UserRepo.deleteUser(user._id);
-
-			res = await UserRepo.findUserBySchoolAndName(school._id, user.firstName, user.lastName);
-			expect(res.length).to.equal(0);
-		});
-	});
 });

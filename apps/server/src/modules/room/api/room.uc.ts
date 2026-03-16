@@ -28,6 +28,7 @@ import { CantAssignRoomRoleToExternalPersonLoggableException } from './loggables
 import { CantChangeOwnersRoleLoggableException } from './loggables/cant-change-roomowners-role.error.loggable';
 import { RoomBoardService, RoomPermissionService } from './service';
 import { RoomStats } from './type/room-stats.type';
+import { LockedRoomLoggableException } from './loggables/locked-room-loggable-exception';
 
 @Injectable()
 export class RoomUc {
@@ -103,6 +104,12 @@ export class RoomUc {
 	): Promise<{ room: Room; allowedOperations: Record<RoomOperation, boolean> }> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const roomAuthorizable = await this.roomMembershipService.getRoomAuthorizable(roomId);
+
+		const isLockedRoom = this.roomRule.isLockedRoom(user, roomAuthorizable);
+		if (!isLockedRoom) {
+			const room = await this.roomService.getSingleRoom(roomId);
+			throw new LockedRoomLoggableException(room.name, room.id);
+		}
 
 		throwForbiddenIfFalse(this.roomRule.can('accessRoom', user, roomAuthorizable));
 

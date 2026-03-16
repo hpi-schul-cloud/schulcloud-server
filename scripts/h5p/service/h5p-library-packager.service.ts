@@ -197,20 +197,21 @@ export class H5pLibraryPackagerService {
 	}
 
 	private getHighestPatchTags(tags: string[]): string[] {
-		const semverRegex = /^v?(\d+)\.(\d+)\.(\d+)$/;
+		const semverRegex = /^v?(\d+)\.(\d+)(?:\.(\d+))?$/;
 		const versionMap = new Map<string, { tag: string; patch: number }>();
 		for (const tag of tags) {
 			const match = tag.match(semverRegex);
 			if (!match) continue;
 			const [, major, minor, patch] = match;
 			const key = `${major}.${minor}`;
-			const patchNum = parseInt(patch, 10);
+			const patchNum = patch ? parseInt(patch, 10) : 0;
 			const existing = versionMap.get(key);
 			if (!existing || patchNum > existing.patch) {
 				versionMap.set(key, { tag, patch: patchNum });
 			}
 		}
 		const highestPatchTags = Array.from(versionMap.values()).map((v) => v.tag);
+
 		return highestPatchTags;
 	}
 
@@ -297,7 +298,7 @@ export class H5pLibraryPackagerService {
 		if (FileSystemHelper.pathExists(folderPath)) {
 			FileSystemHelper.removeFolder(folderPath);
 		}
-		FileSystemHelper.unzipAndRenameFolder(filePath, folderPath, tempFolder, repo, tag);
+		FileSystemHelper.unzipAndRenameFolder(filePath, folderPath, tempFolder);
 		FileSystemHelper.removeFile(filePath);
 
 		// TODO: gefühlt gehört das in den try catch rein, es sind dafür aber viel zu viele try catch instanzen.
@@ -342,7 +343,7 @@ export class H5pLibraryPackagerService {
 				patchVersion: number;
 				[key: string]: any;
 			};
-			const [tagMajor, tagMinor, tagPatch] = tag.split('.').map(Number);
+			const { major: tagMajor, minor: tagMinor, patch: tagPatch } = this.parseTagVersion(tag);
 			if (json.majorVersion !== tagMajor || json.minorVersion !== tagMinor || json.patchVersion !== tagPatch) {
 				json.majorVersion = tagMajor;
 				json.minorVersion = tagMinor;
@@ -356,6 +357,15 @@ export class H5pLibraryPackagerService {
 		}
 
 		return changed;
+	}
+
+	// Remove 'v' prefix if present (e.g., "v1.2.3" -> "1.2.3") and parse version numbers
+	private parseTagVersion(tag: string): { major: number; minor: number; patch: number } {
+		const normalizedTag = tag.replace(/^v/, '');
+		const [major, minor, patch] = normalizedTag.split('.').map(Number);
+		const tagVersion = { major, minor, patch: patch || 0 };
+
+		return tagVersion;
 	}
 
 	private logCorrectedVersionInLibraryJson(folderPath: string, tag: string): void {
@@ -440,6 +450,13 @@ export class H5pLibraryPackagerService {
 
 	private isOldNodeVersionRequired(library: string, tag: string): string | undefined {
 		const oldNodeVersions = {
+			'H5P.AdventCalendar': {
+				'0.2.5': '14',
+			},
+			'H5P.Agamotto': {
+				'1.5.4': '14',
+				'1.4.3': '14',
+			},
 			'H5P.CoursePresentation': {
 				'1.22.11': '14',
 				'1.21.7': '14',
@@ -448,6 +465,28 @@ export class H5pLibraryPackagerService {
 				'1.18.1': '8',
 				'1.17.10': '8',
 			},
+			'H5P.Crossword': {
+				'0.4.9': '14',
+				'v0.2.0': '14',
+				'v0.1.10': '14',
+			},
+			'H5P.GameMap': {
+				'1.1.1': '18',
+				'1.0.6': '18',
+			},
+			'H5P.ImageJuxtaposition': {
+				'1.4.1': '14',
+			},
+			'H5P.InteractiveBook': {
+				'1.3.6': '14',
+				'1.2.10': '14',
+				'1.1.0': '10',
+				'1.0.1': '10',
+			},
+			'H5P.KewArCode': {
+				'v1.1.2': '18',
+				'1.0.0': '14',
+			},
 			'H5P.Questionnaire': {
 				'1.1.2': '14',
 				'1.0.2': '14',
@@ -455,10 +494,45 @@ export class H5pLibraryPackagerService {
 			'H5P.SimpleMultiChoice': {
 				'1.0.5': '14',
 			},
+			'H5P.SortParagraphs': {
+				'0.10.7': '14',
+			},
+			'H5P.Tabs': {
+				'1.0.4': '18',
+			},
+			'H5P.ThreeImage': {
+				'0.5.8': '18',
+				'0.4.11': '10',
+				'0.3.11': '10',
+				'0.2.13': '10',
+			},
+			'H5P.Transcript': {
+				'1.1.1': '14',
+				'1.0.0': '14',
+			},
+			'H5P.TranscriptLibrary': {
+				'1.0.0': '14',
+			},
+			'H5PEditor.BranchingScenario': {
+				'1.4.2': '18',
+				'1.3.0': '14',
+				'1.2.5': '14',
+				'1.1.3': '10',
+				'1.0.6': '10',
+			},
+			'H5PEditor.GameMap': {
+				'1.0.1': '18',
+			},
 			'H5PEditor.QuestionSetTextualEditor': {
 				'1.2.4': '14',
 			},
+			'H5PEditor.ThreeImage': {
+				'0.4.7': '10',
+				'0.3.3': '10',
+				'0.2.0': '10',
+			},
 		};
+
 		const oldNodeVersion = oldNodeVersions[library]?.[tag];
 
 		return oldNodeVersion;
@@ -469,6 +543,7 @@ export class H5pLibraryPackagerService {
 			'H5P.CoursePresentation': ['1.18.1', '1.17.10'],
 			'H5P.Questionnaire': ['1.1.2', '1.0.2'],
 			'H5P.SimpleMultiChoice': ['1.0.5'],
+			'H5P.Transcript': ['1.1.1', '1.0.0'],
 		};
 		const installRequired = installInsteadOfCi[library]?.includes(tag);
 
@@ -810,15 +885,16 @@ export class H5pLibraryPackagerService {
 
 	private getHighestVersionTags(tags: string[], majorVersion: number, minorVersion: number): string | undefined {
 		const matchingTags = tags.filter((t) => {
-			const [maj, min] = t.split('.').map(Number);
+			const normalizedTag = t.replace(/^v/, '');
+			const [maj, min] = normalizedTag.split('.').map(Number);
 
 			return maj === majorVersion && min === minorVersion;
 		});
 		let highestVersionTag;
 		if (matchingTags.length > 0) {
 			highestVersionTag = matchingTags.reduce((a, b) => {
-				const patchA = Number(a.split('.')[2]);
-				const patchB = Number(b.split('.')[2]);
+				const patchA = Number(a.replace(/^v/, '').split('.')[2]);
+				const patchB = Number(b.replace(/^v/, '').split('.')[2]);
 				return patchA > patchB ? a : b;
 			});
 		}
