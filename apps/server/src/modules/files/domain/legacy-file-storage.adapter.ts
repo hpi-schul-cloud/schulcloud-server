@@ -12,7 +12,7 @@ import { LEGACY_FILE_ARCHIVE_CONFIG_TOKEN, LegacyFileArchiveConfig } from '../le
 import { FileDo } from './do';
 import { FileFactory } from './factory';
 import { LegacyFileResponse } from './types';
-import { LegacyFileResponseVo, SignedUrlResponseVO } from './vo';
+import { AuthorizationTokenVo, LegacyFileResponseVo, SignedUrlResponseVO } from './vo';
 
 @Injectable()
 export class LegacyFileStorageAdapter {
@@ -92,8 +92,9 @@ export class LegacyFileStorageAdapter {
 	}
 
 	private getAuthorizationHeader(): Record<string, string> {
-		const jwt = JwtExtractor.extractJwtFromRequestOrFail(this.request);
+		const jwtString = JwtExtractor.extractJwtFromRequestOrFail(this.request);
+		const authorizationHeaderVo = new AuthorizationTokenVo(jwtString);
 
-		return { authorization: `Bearer ${jwt}` };
+		return { authorization: `Bearer ${authorizationHeaderVo.jwt}` };
 	}
 }

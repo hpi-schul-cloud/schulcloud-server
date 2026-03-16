@@ -1,3 +1,4 @@
+import { faker } from '@faker-js/faker/.';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { HttpService } from '@nestjs/axios';
 import { REQUEST } from '@nestjs/core';
@@ -19,7 +20,7 @@ describe('LegacyFileStorageAdapter', () => {
 	let module: TestingModule;
 
 	const legacyBaseUrl = 'http://legacy-server';
-	const jwt = 'test-jwt';
+	const jwt = faker.internet.jwt();
 	const ownerId = 'owner-123';
 
 	beforeAll(async () => {
