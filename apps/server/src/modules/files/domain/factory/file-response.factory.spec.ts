@@ -34,7 +34,7 @@ describe('FileResponseFactory', () => {
 	describe('createFromArchive()', () => {
 		const setup = (done: (err?: unknown) => void) => {
 			const logger = createMock<Logger>();
-			const archive = ArchiveTestFactory.build(done, [], logger);
+			const archive = ArchiveTestFactory.build(done, logger, []);
 
 			return { archive };
 		};

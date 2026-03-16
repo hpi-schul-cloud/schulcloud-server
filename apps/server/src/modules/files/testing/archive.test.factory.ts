@@ -11,7 +11,7 @@ const createFileResponse = (name: string, content: string): { name: string; data
 };
 
 export class ArchiveTestFactory {
-	public static build(done: (err?: unknown) => void, chunks: Buffer[] = [], logger: Logger): archiver.Archiver {
+	public static build(done: (err?: unknown) => void, logger: Logger, chunks: Buffer[] = []): archiver.Archiver {
 		const fileResponses = [createFileResponse('file1.txt', 'hello'), createFileResponse('file2.txt', 'world')];
 		const files: FileDo[] = [];
 		const archive = ArchiveFactory.create(fileResponses, files, logger, 'zip');
