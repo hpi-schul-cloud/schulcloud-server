@@ -77,7 +77,7 @@ export class BoardConfig extends BoardPublicApiConfig {
 	@ConfigProperty('FEATURE_CTL_TOOLS_COPY_ENABLED')
 	@StringToBoolean()
 	@IsBoolean()
-	public featureCtlToolsCopyEnabled = true;
+	public featureCtlToolsCopyEnabled = false;
 
 	@IsUrl({ require_tld: false })
 	@ConfigProperty('HOST')
