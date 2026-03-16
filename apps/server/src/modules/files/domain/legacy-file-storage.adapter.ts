@@ -28,7 +28,16 @@ export class LegacyFileStorageAdapter {
 		return files;
 	}
 
-	public async getSignedUrl(fileId: EntityId, fileName: string): Promise<SignedUrlResponseVO> {
+	public async downloadFile(fileId: EntityId, fileName: string): Promise<Readable> {
+		const signedUrlResponse = await this.getSignedUrl(fileId, fileName);
+		const { url } = signedUrlResponse;
+
+		const response = await firstValueFrom(this.httpService.get<Readable>(url, { responseType: 'stream' }));
+
+		return response.data;
+	}
+
+	private async getSignedUrl(fileId: EntityId, fileName: string): Promise<SignedUrlResponseVO> {
 		const responseData = await firstValueFrom(
 			this.httpService.get<{ url: string }>(`${this.config.legacyBaseUrl}/fileStorage/signedUrl`, {
 				params: { file: fileId, download: true, name: fileName },
@@ -39,15 +48,6 @@ export class LegacyFileStorageAdapter {
 		const signedUrlResponse = new SignedUrlResponseVO(responseData.data.url);
 
 		return signedUrlResponse;
-	}
-
-	public async downloadFile(fileId: EntityId, fileName: string): Promise<Readable> {
-		const signedUrlResponse = await this.getSignedUrl(fileId, fileName);
-		const { url } = signedUrlResponse;
-
-		const response = await firstValueFrom(this.httpService.get<Readable>(url, { responseType: 'stream' }));
-
-		return response.data;
 	}
 
 	private async fetchRecursively(ownerId: EntityId, parentId: string | undefined): Promise<FileDo[]> {

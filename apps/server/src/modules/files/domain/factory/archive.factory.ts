@@ -8,16 +8,16 @@ import { GetFileResponse } from '../types';
 
 export class ArchiveFactory {
 	public static create(
-		files: GetFileResponse[],
-		fileRecords: FileDo[],
-		logger?: Logger,
+		fileResponse: GetFileResponse[],
+		files: FileDo[],
+		logger: Logger,
 		archiveType: archiver.Format = 'zip'
 	): archiver.Archiver {
 		const archive = archiver(archiveType);
 
 		archive.on('warning', (err) => {
 			if (err.code === 'ENOENT') {
-				this.logWarning(fileRecords, logger);
+				this.logWarning(files, logger);
 			} else {
 				throw new InternalServerErrorException('Error while creating archive on warning event', { cause: err });
 			}
@@ -28,10 +28,10 @@ export class ArchiveFactory {
 		});
 
 		archive.on('close', () => {
-			this.logClose(fileRecords, logger);
+			this.logClose(files, logger);
 		});
 
-		for (const file of files) {
+		for (const file of fileResponse) {
 			const passthrough = new PassThrough();
 			file.data.pipe(passthrough);
 			archive.append(passthrough, { name: file.name });
@@ -43,11 +43,11 @@ export class ArchiveFactory {
 		return archive;
 	}
 
-	private static logWarning(fileRecords: FileDo[], logger?: Logger): void {
-		logger?.warning(new CreateArchiveLoggable('Warning while creating archive', 'createArchive', fileRecords));
+	private static logWarning(fileRecords: FileDo[], logger: Logger): void {
+		logger.warning(new CreateArchiveLoggable('Warning while creating archive', 'createArchive', fileRecords));
 	}
 
-	private static logClose(fileRecords: FileDo[], logger?: Logger): void {
-		logger?.debug(new CreateArchiveLoggable('Archive created', 'createArchive', fileRecords));
+	private static logClose(fileRecords: FileDo[], logger: Logger): void {
+		logger.debug(new CreateArchiveLoggable('Archive created', 'createArchive', fileRecords));
 	}
 }

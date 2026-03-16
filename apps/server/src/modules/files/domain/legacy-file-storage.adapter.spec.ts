@@ -9,7 +9,6 @@ import { Readable } from 'node:stream';
 import { of } from 'rxjs';
 import { LEGACY_FILE_ARCHIVE_CONFIG_TOKEN } from '../legacy-file-archive.config';
 import { LegacyFileStorageAdapter } from './legacy-file-storage.adapter';
-import { SignedUrlResponseVO } from './vo';
 
 const buildAxiosResponse = (data: unknown): AxiosResponse =>
 	({ data, status: 200, statusText: 'OK', headers: {}, config: {} } as AxiosResponse);
@@ -298,57 +297,6 @@ describe('LegacyFileStorageAdapter', () => {
 
 				await expect(adapter.getFilesForOwner(ownerId)).rejects.toThrow(
 					/has failed the validation:.*property name has failed the following constraints: isString/s
-				);
-			});
-		});
-	});
-
-	describe('getSignedUrl', () => {
-		describe('when the legacy service returns a signed URL', () => {
-			const setup = () => {
-				const fileId = new ObjectId().toHexString();
-				const fileName = 'document.pdf';
-				const signedUrl = 'https://s3.example.com/bucket/file?X-Amz-Signature=abc123';
-
-				httpService.get.mockReturnValueOnce(of(buildAxiosResponse({ url: signedUrl })));
-
-				return { fileId, fileName, signedUrl };
-			};
-
-			it('should return the URL string', async () => {
-				const { fileId, fileName, signedUrl } = setup();
-
-				const result = await adapter.getSignedUrl(fileId, fileName);
-
-				expect(result).toEqual(new SignedUrlResponseVO(signedUrl));
-			});
-
-			it('should call the signedUrl endpoint with correct params and JWT header', async () => {
-				const { fileId, fileName } = setup();
-
-				await adapter.getSignedUrl(fileId, fileName);
-
-				expect(httpService.get).toHaveBeenCalledWith(`${legacyBaseUrl}/fileStorage/signedUrl`, {
-					params: { file: fileId, download: true, name: fileName },
-					headers: { authorization: `Bearer ${jwt}` },
-				});
-			});
-		});
-
-		describe('when the response does not contain a url string', () => {
-			const setup = () => {
-				const fileId = new ObjectId().toHexString();
-				const fileName = 'document.pdf';
-
-				return { fileId, fileName };
-			};
-
-			it('should throw an error when response has no url field', async () => {
-				const { fileId, fileName } = setup();
-				httpService.get.mockReturnValueOnce(of(buildAxiosResponse({ other: 'data' })));
-
-				await expect(adapter.getSignedUrl(fileId, fileName)).rejects.toThrow(
-					/has failed the validation:.*property url has failed the following constraints: isUrl/s
 				);
 			});
 		});

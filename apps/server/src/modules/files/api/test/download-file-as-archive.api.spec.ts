@@ -97,9 +97,9 @@ describe('DownloadArchive Controller (API)', () => {
 		describe('when no user is logged in', () => {
 			it('should return 401', async () => {
 				const params = {
-					ownerId: '507f1f77bcf86cd799439011',
+					ownerId: new ObjectId().toHexString(),
 					ownerType: FileOwnerModel.TEAMS,
-					archiveName: 'test-archive.zip',
+					archiveName: 'test-archive',
 				};
 
 				const response = await testApiClient.get().query(params);
@@ -123,7 +123,7 @@ describe('DownloadArchive Controller (API)', () => {
 				const params = {
 					ownerId: 'invalid-id',
 					ownerType: FileOwnerModel.TEAMS,
-					archiveName: 'test-archive.zip',
+					archiveName: 'test-archive',
 				};
 
 				const response = await loggedInClient.get().query(params);
@@ -150,9 +150,9 @@ describe('DownloadArchive Controller (API)', () => {
 			it('should return 400', async () => {
 				const { loggedInClient } = setup();
 				const params = {
-					ownerId: '507f1f77bcf86cd799439011',
+					ownerId: new ObjectId().toHexString(),
 					ownerType: 'invalid-type',
-					archiveName: 'test-archive.zip',
+					archiveName: 'test-archive',
 				};
 
 				const response = await loggedInClient.get().query(params);
@@ -186,9 +186,9 @@ describe('DownloadArchive Controller (API)', () => {
 			it('should return 501', async () => {
 				const { loggedInClient } = setup();
 				const params = {
-					ownerId: '507f1f77bcf86cd799439011',
+					ownerId: new ObjectId().toHexString(),
 					ownerType: FileOwnerModel.TEAMS,
-					archiveName: 'test-archive.zip',
+					archiveName: 'test-archive',
 				};
 
 				const response = await loggedInClient.get().query(params);
@@ -217,7 +217,7 @@ describe('DownloadArchive Controller (API)', () => {
 				const params = {
 					ownerId: teamId,
 					ownerType: FileOwnerModel.TEAMS,
-					archiveName: 'team-archive.zip',
+					archiveName: 'team-archive',
 				};
 
 				const response = await loggedInClient.get().query(params);
@@ -241,9 +241,9 @@ describe('DownloadArchive Controller (API)', () => {
 			it('should return 403', async () => {
 				const { loggedInClient } = setup();
 				const params = {
-					ownerId: '507f1f77bcf86cd799439011',
+					ownerId: new ObjectId().toHexString(),
 					ownerType: FileOwnerModel.COURSE,
-					archiveName: 'course-archive.zip',
+					archiveName: 'course-archive',
 				};
 
 				const response = await loggedInClient.get().query(params);
@@ -268,9 +268,9 @@ describe('DownloadArchive Controller (API)', () => {
 			it('should return 403', async () => {
 				const { otherUserId, loggedInClient } = setup();
 				const params = {
-					ownerId: otherUserId,
+					ownerId: new ObjectId(otherUserId).toHexString(),
 					ownerType: FileOwnerModel.USER,
-					archiveName: 'user-archive.zip',
+					archiveName: 'user-archive',
 				};
 
 				const response = await loggedInClient.get().query(params);
@@ -286,7 +286,7 @@ describe('DownloadArchive Controller (API)', () => {
 				const teamId = new ObjectId().toHexString();
 
 				const loggedInClient = testApiClient.loginByUser(teacherAccount, teacherUser, jwtConfig);
-				const archiveName = 'team-files.zip';
+				const archiveName = 'team-files';
 
 				const storageProvider = storageProviderFactory.buildWithId({ region: 'us-east-1' });
 
@@ -303,6 +303,8 @@ describe('DownloadArchive Controller (API)', () => {
 
 				legacyFileStorageAdapter.getFilesForOwner.mockResolvedValueOnce([file1, file2]);
 				legacyFileStorageAdapter.downloadFile.mockResolvedValue(Readable.from('mock file content'));
+				// @ts-expect-error - we only need the url property for this test
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-call
 				legacyFileStorageAdapter.getSignedUrl.mockResolvedValue(new SignedUrlResponseVO('http://signed-url'));
 
 				return { teamId, loggedInClient, archiveName };
@@ -320,6 +322,7 @@ describe('DownloadArchive Controller (API)', () => {
 
 				expect(response.status).toEqual(HttpStatus.OK);
 				expect(response.headers['content-type']).toContain('application/zip');
+				expect(response.headers['content-disposition']).toContain(`filename="${archiveName}.zip"`);
 			});
 		});
 
@@ -329,7 +332,7 @@ describe('DownloadArchive Controller (API)', () => {
 				const teacherUser = userForLoginFactory.build();
 
 				const loggedInClient = testApiClient.loginByUser(teacherAccount, teacherUser, jwtConfig);
-				const archiveName = 'course-files.zip';
+				const archiveName = 'course-files';
 
 				const storageProvider = storageProviderFactory.buildWithId({ region: 'us-east-1' });
 
@@ -368,6 +371,7 @@ describe('DownloadArchive Controller (API)', () => {
 
 				expect(response.status).toEqual(HttpStatus.OK);
 				expect(response.headers['content-type']).toContain('application/zip');
+				expect(response.headers['content-disposition']).toContain(`filename="${archiveName}.zip"`);
 			});
 		});
 
@@ -377,7 +381,7 @@ describe('DownloadArchive Controller (API)', () => {
 				const teacherUser = userForLoginFactory.build();
 
 				const loggedInClient = testApiClient.loginByUser(teacherAccount, teacherUser, jwtConfig);
-				const archiveName = 'user-files.zip';
+				const archiveName = 'user-files';
 
 				const storageProvider = storageProviderFactory.buildWithId({ region: 'us-east-1' });
 
@@ -416,6 +420,7 @@ describe('DownloadArchive Controller (API)', () => {
 
 				expect(response.status).toEqual(HttpStatus.OK);
 				expect(response.headers['content-type']).toContain('application/zip');
+				expect(response.headers['content-disposition']).toContain(`filename="${archiveName}.zip"`);
 			});
 		});
 	});

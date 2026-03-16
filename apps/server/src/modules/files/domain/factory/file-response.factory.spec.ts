@@ -1,3 +1,5 @@
+import { Logger } from '@core/logger';
+import { createMock } from '@golevelup/ts-jest';
 import { Readable } from 'node:stream';
 import { ArchiveTestFactory } from '../../testing';
 import { FileResponseFactory } from './file-response.factory';
@@ -31,7 +33,8 @@ describe('FileResponseFactory', () => {
 
 	describe('createFromArchive()', () => {
 		const setup = (done: (err?: unknown) => void) => {
-			const archive = ArchiveTestFactory.build(done);
+			const logger = createMock<Logger>();
+			const archive = ArchiveTestFactory.build(done, [], logger);
 
 			return { archive };
 		};

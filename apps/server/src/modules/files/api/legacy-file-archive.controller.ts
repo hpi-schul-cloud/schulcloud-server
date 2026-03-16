@@ -4,7 +4,6 @@ import {
 	ForbiddenException,
 	Get,
 	HttpStatus,
-	Inject,
 	InternalServerErrorException,
 	NotImplementedException,
 	Query,
@@ -16,7 +15,6 @@ import { ApiHeader, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common/error';
 import { Request, Response } from 'express';
 import { GetFileResponse } from '../domain';
-import { LEGACY_FILE_ARCHIVE_CONFIG_TOKEN, LegacyFileArchiveConfig } from '../legacy-file-archive.config';
 import { DownloadArchiveUC } from './download-archive.uc';
 import { ArchiveFileParams } from './dto';
 import { StreamableFileMapper } from './mapper';
@@ -25,10 +23,7 @@ import { StreamableFileMapper } from './mapper';
 @Controller('filestorage/files/archive')
 @JwtAuthentication()
 export class LegacyFileArchiveController {
-	constructor(
-		private readonly downloadArchiveUC: DownloadArchiveUC,
-		@Inject(LEGACY_FILE_ARCHIVE_CONFIG_TOKEN) private readonly config: LegacyFileArchiveConfig
-	) {}
+	constructor(private readonly downloadArchiveUC: DownloadArchiveUC) {}
 
 	@ApiOperation({ summary: 'Download multiple files as a zip' })
 	@ApiResponse({
@@ -46,18 +41,10 @@ export class LegacyFileArchiveController {
 		@Req() req: Request,
 		@Res({ passthrough: true }) response: Response
 	): Promise<StreamableFile | void> {
-		this.featureEnabled();
-
 		const data = await this.downloadArchiveUC.downloadFilesOfParentAsArchive(params);
 		const streamableFile = this.streamFileToClient(req, data, response);
 
 		return streamableFile;
-	}
-
-	private featureEnabled(): void {
-		if (!this.config.featureTeamArchiveDownload) {
-			throw new NotImplementedException('Feature not enabled');
-		}
 	}
 
 	private streamFileToClient(req: Request, fileResponse: GetFileResponse, httpResponse: Response): StreamableFile {
