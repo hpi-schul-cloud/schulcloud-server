@@ -27,7 +27,7 @@ export class ErwinIdentifierMikroOrmRepo implements ErwinIdentifierRepo {
 			id: erwinIdentifierId,
 		});
 
-		const mappedErwinIdentifier: ErwinIdentifier = ErwinIdentifierMapper.mapToDO(erwinIdentifierEntity);
+		const mappedErwinIdentifier: ErwinIdentifier = ErwinIdentifierMapper.mapToDo(erwinIdentifierEntity);
 
 		return mappedErwinIdentifier;
 	}
@@ -41,7 +41,7 @@ export class ErwinIdentifierMikroOrmRepo implements ErwinIdentifierRepo {
 			return null;
 		}
 
-		const mappedErwinIdentifier: ErwinIdentifier = ErwinIdentifierMapper.mapToDO(erwinIdentifierEntity);
+		const mappedErwinIdentifier: ErwinIdentifier = ErwinIdentifierMapper.mapToDo(erwinIdentifierEntity);
 
 		return mappedErwinIdentifier;
 	}
@@ -55,7 +55,7 @@ export class ErwinIdentifierMikroOrmRepo implements ErwinIdentifierRepo {
 			return null;
 		}
 
-		const mappedErwinIdentifier: ErwinIdentifier = ErwinIdentifierMapper.mapToDO(erwinIdentifierEntity);
+		const mappedErwinIdentifier: ErwinIdentifier = ErwinIdentifierMapper.mapToDo(erwinIdentifierEntity);
 
 		return mappedErwinIdentifier;
 	}

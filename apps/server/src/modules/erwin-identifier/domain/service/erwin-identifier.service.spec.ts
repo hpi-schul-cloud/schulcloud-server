@@ -70,13 +70,13 @@ describe(ErwinIdentifierService.name, () => {
 				expect(result.erwinId).toBe(entry.erwinId);
 				expect(result.type).toBe(entry.type);
 				expect(result.referencedEntityId).toBe(entry.referencedEntityId);
-				expect(loggerMock.info).toHaveBeenCalledTimes(1);
+				expect(loggerMock.debug).toHaveBeenCalledTimes(1);
 			});
 		});
 
 		describe('findByErwinId', () => {
 			describe('when an erwinIdentifier exists for the erwinId', () => {
-				it('should return the erwinIdentifier and log an information', async () => {
+				it('should return the erwinIdentifier', async () => {
 					const erwinIdentifier: ErwinIdentifier = erwinIdentifierFactoryWithUser.build();
 					erwinIdentifierRepoMock.findByErwinId.mockResolvedValueOnce(erwinIdentifier);
 
@@ -84,12 +84,11 @@ describe(ErwinIdentifierService.name, () => {
 
 					expect(erwinIdentifierRepoMock.findByErwinId).toHaveBeenCalledWith(erwinIdentifier.erwinId);
 					expect(result).toStrictEqual(erwinIdentifier);
-					expect(loggerMock.info).toHaveBeenCalledTimes(1);
 				});
 			});
 
 			describe('when no erwinIdentifier exists for the erwinId', () => {
-				it('should return null and not log', async () => {
+				it('should return null', async () => {
 					const erwinId = 'non-existing-erwin-id';
 					erwinIdentifierRepoMock.findByErwinId.mockResolvedValue(null);
 
@@ -97,14 +96,13 @@ describe(ErwinIdentifierService.name, () => {
 
 					expect(erwinIdentifierRepoMock.findByErwinId).toHaveBeenCalledWith(erwinId);
 					expect(result).toBeNull();
-					expect(loggerMock.info).not.toHaveBeenCalled();
 				});
 			});
 		});
 
 		describe('findByReferencedEntityId', () => {
 			describe('when an erwinIdentifier exists for the referencedEntityId', () => {
-				it('should return the erwinIdentifier and log an information', async () => {
+				it('should return the erwinIdentifier', async () => {
 					const erwinIdentifier: ErwinIdentifier = erwinIdentifierFactoryWithSchool.build();
 					erwinIdentifierRepoMock.findByReferencedEntityId.mockResolvedValueOnce(erwinIdentifier);
 
@@ -114,12 +112,11 @@ describe(ErwinIdentifierService.name, () => {
 						erwinIdentifier.referencedEntityId
 					);
 					expect(result).toStrictEqual(erwinIdentifier);
-					expect(loggerMock.info).toHaveBeenCalledTimes(1);
 				});
 			});
 
 			describe('when no erwinIdentifier exists for the referencedEntityId', () => {
-				it('should return null and not log', async () => {
+				it('should return null', async () => {
 					const referencedEntityId = 'non-existing-referenced-entity-id';
 					erwinIdentifierRepoMock.findByReferencedEntityId.mockResolvedValueOnce(null);
 
@@ -127,7 +124,6 @@ describe(ErwinIdentifierService.name, () => {
 
 					expect(erwinIdentifierRepoMock.findByReferencedEntityId).toHaveBeenCalledWith(referencedEntityId);
 					expect(result).toBeNull();
-					expect(loggerMock.info).not.toHaveBeenCalled();
 				});
 			});
 		});

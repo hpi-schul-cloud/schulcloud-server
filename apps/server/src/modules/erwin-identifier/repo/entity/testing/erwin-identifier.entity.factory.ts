@@ -1,6 +1,5 @@
 import { faker } from '@faker-js/faker/.';
 import { DoBaseFactory } from '@testing/factory/domainobject';
-import { ObjectId } from 'bson';
 import { ReferencedEntityType } from '../../../types';
 import { ErwinIdentifierEntity, ErwinIdentifierEntityProps } from '../erwin-identifier.entity';
 
@@ -9,10 +8,10 @@ export const erwinIdentifierEntityFactoryWithUser = DoBaseFactory.define<
 	ErwinIdentifierEntityProps
 >(ErwinIdentifierEntity, () => {
 	return {
-		id: new ObjectId().toHexString(),
+		id: faker.string.uuid(),
 		erwinId: faker.string.uuid(),
 		type: ReferencedEntityType.USER,
-		referencedEntityId: new ObjectId().toHexString(),
+		referencedEntityId: faker.string.uuid(),
 	};
 });
 
@@ -21,9 +20,9 @@ export const erwinIdentifierEntityFactoryWithSchool = DoBaseFactory.define<
 	ErwinIdentifierEntityProps
 >(ErwinIdentifierEntity, () => {
 	return {
-		id: new ObjectId().toHexString(),
+		id: faker.string.uuid(),
 		erwinId: faker.string.uuid(),
 		type: ReferencedEntityType.SCHOOL,
-		referencedEntityId: new ObjectId().toHexString(),
+		referencedEntityId: faker.string.uuid(),
 	};
 });

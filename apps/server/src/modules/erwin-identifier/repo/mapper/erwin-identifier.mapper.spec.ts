@@ -1,6 +1,7 @@
 import { ErwinIdentifier } from '../../domain/do';
-import { ReferencedEntityType } from '../../types';
+import { erwinIdentifierFactoryWithUser } from '../../domain/testing';
 import { ErwinIdentifierEntity } from '../entity';
+import { erwinIdentifierEntityFactoryWithUser } from '../entity/testing';
 import { ErwinIdentifierMapper } from './erwin-identifier.mapper';
 
 describe(ErwinIdentifierMapper.name, () => {
@@ -15,15 +16,10 @@ describe(ErwinIdentifierMapper.name, () => {
 		jest.useRealTimers();
 	});
 
-	describe('mapToDO', () => {
+	describe('mapToDo', () => {
 		describe('when an erwinIdentifier entity is mapped to a domain object', () => {
 			const setup = () => {
-				const entity = {
-					id: 'erwin-id-entity-id',
-					erwinId: 'ERWIN123',
-					type: ReferencedEntityType.USER,
-					referencedEntityId: 'referenced-entity-id',
-				} as ErwinIdentifierEntity;
+				const entity = erwinIdentifierEntityFactoryWithUser.build();
 
 				const expectedDomainObject = new ErwinIdentifier({
 					id: entity.id,
@@ -38,7 +34,7 @@ describe(ErwinIdentifierMapper.name, () => {
 			it('should properly map all properties from entity to domain object', () => {
 				const { entity, expectedDomainObject } = setup();
 
-				const domainObject = ErwinIdentifierMapper.mapToDO(entity);
+				const domainObject = ErwinIdentifierMapper.mapToDo(entity);
 
 				expect(domainObject).toEqual(expectedDomainObject);
 				expect(domainObject).toBeInstanceOf(ErwinIdentifier);
@@ -49,12 +45,7 @@ describe(ErwinIdentifierMapper.name, () => {
 	describe('mapToEntity', () => {
 		describe('when an erwinIdentifier domain object is mapped to an entity', () => {
 			const setup = () => {
-				const domainObject = new ErwinIdentifier({
-					id: 'erwin-id-domain-id',
-					erwinId: 'ERWIN456',
-					type: ReferencedEntityType.USER,
-					referencedEntityId: 'referenced-entity-id-2',
-				});
+				const domainObject = erwinIdentifierFactoryWithUser.build();
 
 				const expectedEntity = new ErwinIdentifierEntity({
 					id: domainObject.id,
@@ -77,10 +68,10 @@ describe(ErwinIdentifierMapper.name, () => {
 		});
 	});
 
-	describe('mapToDOs', () => {
+	describe('mapToDos', () => {
 		describe('when an empty erwinIdentifier entities array is mapped to domain objects', () => {
 			it('should return an empty domain objects array for an empty entities array', () => {
-				const domainObjects = ErwinIdentifierMapper.mapToDOs([]);
+				const domainObjects = ErwinIdentifierMapper.mapToDos([]);
 
 				expect(domainObjects).toEqual([]);
 			});
@@ -88,20 +79,9 @@ describe(ErwinIdentifierMapper.name, () => {
 
 		describe('When multiple erwinIdentifier entities are mapped to domain objects', () => {
 			const setup = () => {
-				const entities: ErwinIdentifierEntity[] = [
-					{
-						id: 'erwin-id-entity-id-1',
-						erwinId: 'ERWIN1',
-						type: ReferencedEntityType.USER,
-						referencedEntityId: 'ref-entity-1',
-					} as ErwinIdentifierEntity,
-					{
-						id: 'erwin-id-entity-id-2',
-						erwinId: 'ERWIN2',
-						type: ReferencedEntityType.USER,
-						referencedEntityId: 'ref-entity-2',
-					} as ErwinIdentifierEntity,
-				];
+				const entity1: ErwinIdentifierEntity = erwinIdentifierEntityFactoryWithUser.build();
+				const entity2: ErwinIdentifierEntity = erwinIdentifierEntityFactoryWithUser.build();
+				const entities: ErwinIdentifierEntity[] = [entity1, entity2];
 
 				const expectedDomainObjects = entities.map(
 					(entity) =>
@@ -119,7 +99,7 @@ describe(ErwinIdentifierMapper.name, () => {
 			it('should properly map all entities to domain objects', () => {
 				const { entities, expectedDomainObjects } = setup();
 
-				const domainObjects = ErwinIdentifierMapper.mapToDOs(entities);
+				const domainObjects = ErwinIdentifierMapper.mapToDos(entities);
 
 				expect(domainObjects).toEqual(expectedDomainObjects);
 				expect(domainObjects[0]).toBeInstanceOf(ErwinIdentifier);
@@ -139,20 +119,9 @@ describe(ErwinIdentifierMapper.name, () => {
 
 		describe('when multiple erwinIdentifier domain objects are mapped to entities', () => {
 			const setup = () => {
-				const domainObjects = [
-					new ErwinIdentifier({
-						id: 'erwin-id-domain-id-1',
-						erwinId: 'ERWIN1',
-						type: ReferencedEntityType.USER,
-						referencedEntityId: 'ref-entity-1',
-					}),
-					new ErwinIdentifier({
-						id: 'erwin-id-domain-id-2',
-						erwinId: 'ERWIN2',
-						type: ReferencedEntityType.USER,
-						referencedEntityId: 'ref-entity-2',
-					}),
-				];
+				const domainObject1: ErwinIdentifier = erwinIdentifierFactoryWithUser.build();
+				const domainObject2: ErwinIdentifier = erwinIdentifierFactoryWithUser.build();
+				const domainObjects: ErwinIdentifier[] = [domainObject1, domainObject2];
 
 				const expectedEntities = domainObjects.map(
 					(domainObject) =>

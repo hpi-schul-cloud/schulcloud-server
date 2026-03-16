@@ -1,5 +1,4 @@
 import { faker } from '@faker-js/faker/.';
-import { ObjectId } from '@mikro-orm/mongodb';
 import { DoBaseFactory } from '@testing/factory/domainobject';
 import { ReferencedEntityType } from '../../types';
 import { ErwinIdentifier, ErwinIdentifierProps } from '../do';
@@ -8,10 +7,10 @@ export const erwinIdentifierFactoryWithUser = DoBaseFactory.define<ErwinIdentifi
 	ErwinIdentifier,
 	() => {
 		return {
-			id: new ObjectId().toHexString(),
+			id: faker.string.uuid(),
 			erwinId: faker.string.uuid(),
 			type: ReferencedEntityType.USER,
-			referencedEntityId: new ObjectId().toHexString(),
+			referencedEntityId: faker.string.uuid(),
 		};
 	}
 );
@@ -20,10 +19,10 @@ export const erwinIdentifierFactoryWithSchool = DoBaseFactory.define<ErwinIdenti
 	ErwinIdentifier,
 	() => {
 		return {
-			id: new ObjectId().toHexString(),
+			id: faker.string.uuid(),
 			erwinId: faker.string.uuid(),
 			type: ReferencedEntityType.SCHOOL,
-			referencedEntityId: new ObjectId().toHexString(),
+			referencedEntityId: faker.string.uuid(),
 		};
 	}
 );

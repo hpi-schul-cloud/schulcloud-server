@@ -2,7 +2,7 @@ import { ErwinIdentifier } from '../../domain/do';
 import { ErwinIdentifierEntity } from '../entity';
 
 export class ErwinIdentifierMapper {
-	public static mapToDO(entity: ErwinIdentifierEntity): ErwinIdentifier {
+	public static mapToDo(entity: ErwinIdentifierEntity): ErwinIdentifier {
 		return new ErwinIdentifier({
 			id: entity.id,
 			erwinId: entity.erwinId,
@@ -20,8 +20,8 @@ export class ErwinIdentifierMapper {
 		});
 	}
 
-	public static mapToDOs(entities: ErwinIdentifierEntity[]): ErwinIdentifier[] {
-		return entities.map((entity) => this.mapToDO(entity));
+	public static mapToDos(entities: ErwinIdentifierEntity[]): ErwinIdentifier[] {
+		return entities.map((entity) => this.mapToDo(entity));
 	}
 
 	public static mapToEntities(domainObjects: ErwinIdentifier[]): ErwinIdentifierEntity[] {
