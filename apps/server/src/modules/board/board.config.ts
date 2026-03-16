@@ -10,7 +10,7 @@ export class BoardPublicApiConfig {
 	@ConfigProperty('FEATURE_MEDIA_SHELF_ENABLED')
 	@StringToBoolean()
 	@IsBoolean()
-	public featureMediaShelfEnabled = true;
+	public featureMediaShelfEnabled = false;
 
 	@ConfigProperty('FEATURE_BOARD_READERS_CAN_EDIT_TOGGLE')
 	@StringToBoolean()
@@ -20,7 +20,7 @@ export class BoardPublicApiConfig {
 	@ConfigProperty('FEATURE_COLUMN_BOARD_SUBMISSIONS_ENABLED')
 	@StringToBoolean()
 	@IsBoolean()
-	public featureColumnBoardSubmissionsEnabled = true;
+	public featureColumnBoardSubmissionsEnabled = false;
 
 	@ConfigProperty('FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED')
 	@StringToBoolean()
@@ -35,7 +35,7 @@ export class BoardPublicApiConfig {
 	@ConfigProperty('FEATURE_COLUMN_BOARD_SOCKET_ENABLED')
 	@StringToBoolean()
 	@IsBoolean()
-	public featureColumnBoardSocketEnabled = true;
+	public featureColumnBoardSocketEnabled = false;
 
 	@ConfigProperty('FEATURE_COLUMN_BOARD_FILE_FOLDER_ENABLED')
 	@StringToBoolean()
