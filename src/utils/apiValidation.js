@@ -134,7 +134,6 @@ const ignorePathsList = [
 	/|(.*\/statistics($|\/$))/,
 	/|(.*\/statistics\/[0-9a-f]{24}($|\/$))/,
 	/|(.*\/statistics\/api($|\/$))/,
-	/|(.*\/statisticmails($|\/$))/,
 	/|(.*\/storageProvider($|\/$))/,
 	/|(.*\/storageProvider\/[0-9a-f]{24}($|\/$))/,
 	/|(.*\/storageProvider\/api($|\/$))/,

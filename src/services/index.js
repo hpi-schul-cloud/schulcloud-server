@@ -22,7 +22,6 @@ const homework = require('./homework');
 const passwordRecovery = require('./passwordRecovery');
 const releases = require('./releases');
 const statistic = require('./statistic');
-const statisticMails = require('./statisticMail');
 const consent = require('./consent');
 const oauth2 = require('./oauth2');
 const roster = require('./roster');
@@ -70,7 +69,6 @@ module.exports = function initializeServices() {
 	app.configure(passwordRecovery);
 	app.configure(releases);
 	app.configure(statistic);
-	app.configure(statisticMails);
 	app.configure(consent);
 	app.configure(ldap);
 	app.configure(ldapConfig);
