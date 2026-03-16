@@ -60,8 +60,6 @@ spec:
         - configMapRef:
             name: legacy-file-archive-configmap
         - secretRef:
-            name: legacy-file-archive-secret
-        - secretRef:
             name: session-valkey-password
         command: ['npm', 'run', 'nest:start:legacy-file-archive:prod']
         ports:
