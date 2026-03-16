@@ -4,7 +4,7 @@ import { ErwinIdentifier } from '../do';
 export interface ErwinIdentifierRepo {
 	create(erwinIdentifier: ErwinIdentifier): Promise<void>;
 
-	findById(erwinIdentifierEntityId: EntityId): Promise<ErwinIdentifier>;
+	findById(erwinIdentifierEntityId: EntityId): Promise<ErwinIdentifier | null>;
 
 	findByErwinId(erwinId: string): Promise<ErwinIdentifier | null>;
 

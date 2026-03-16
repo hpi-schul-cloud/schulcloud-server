@@ -22,10 +22,14 @@ export class ErwinIdentifierMikroOrmRepo implements ErwinIdentifierRepo {
 		await this.em.flush();
 	}
 
-	public async findById(erwinIdentifierId: EntityId): Promise<ErwinIdentifier> {
-		const erwinIdentifierEntity: ErwinIdentifierEntity = await this.em.findOneOrFail(ErwinIdentifierEntity, {
+	public async findById(erwinIdentifierId: EntityId): Promise<ErwinIdentifier | null> {
+		const erwinIdentifierEntity: ErwinIdentifierEntity | null = await this.em.findOne(ErwinIdentifierEntity, {
 			id: erwinIdentifierId,
 		});
+
+		if (!erwinIdentifierEntity) {
+			return null;
+		}
 
 		const mappedErwinIdentifier: ErwinIdentifier = ErwinIdentifierMapper.mapToDo(erwinIdentifierEntity);
 
