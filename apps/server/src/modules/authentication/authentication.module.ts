@@ -32,6 +32,7 @@ import { LdapService } from './services/ldap.service';
 import { LdapStrategy } from './strategy/ldap.strategy';
 import { LocalStrategy } from './strategy/local.strategy';
 import { Oauth2Strategy } from './strategy/oauth2.strategy';
+import { ErwinStrategy } from './strategy/erwin.strategy';
 
 const createJwtOptions = (config: JwtModuleConfig): JwtModuleOptions => {
 	const { algorithm, expiresIn, scDomain, privateKey, publicKey } = config;
@@ -95,6 +96,7 @@ const createJwtOptions = (config: JwtModuleConfig): JwtModuleOptions => {
 		Oauth2Strategy,
 		JwtWhitelistAdapter,
 		LogoutService,
+		ErwinStrategy,
 	],
 	exports: [AuthenticationService, LogoutService],
 })
