@@ -172,7 +172,6 @@ export class RegistrationService {
 		}
 
 		if (userDos.length > 1) {
-			// TODO: use correct exception
 			throw new BadRequestException('Multiple Users with this email already exist.');
 		}
 
