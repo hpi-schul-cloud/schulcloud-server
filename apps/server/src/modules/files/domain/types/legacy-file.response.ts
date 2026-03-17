@@ -1,3 +1,12 @@
+export enum SecurityCheckStatus {
+	PENDING = 'pending',
+	PASSED = 'passed',
+	FAILED = 'failed',
+	BLOCKED = 'blocked',
+}
+export interface SecurityCheck {
+	status: SecurityCheckStatus;
+}
 export interface LegacyFileResponse {
 	_id: string;
 	name: string;
@@ -6,4 +15,5 @@ export interface LegacyFileResponse {
 	storageFileName?: string;
 	bucket?: string;
 	storageProviderId?: string;
+	securityCheck?: SecurityCheck;
 }

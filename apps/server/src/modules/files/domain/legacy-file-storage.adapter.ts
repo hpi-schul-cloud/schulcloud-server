@@ -11,7 +11,7 @@ import { firstValueFrom } from 'rxjs';
 import { LEGACY_FILE_ARCHIVE_CONFIG_TOKEN, LegacyFileArchiveConfig } from '../legacy-file-archive.config';
 import { FileDo } from './do';
 import { FileFactory } from './factory';
-import { LegacyFileResponse } from './types';
+import { LegacyFileResponse, SecurityCheckStatus } from './types';
 import { AuthorizationTokenVo, LegacyFileResponseVo, SignedUrlResponseVO } from './vo';
 
 @Injectable()
@@ -68,8 +68,14 @@ export class LegacyFileStorageAdapter {
 
 	private validateResponse(response: AxiosResponse<LegacyFileResponse[]>): LegacyFileResponseVo[] {
 		const { data } = response;
-		const arrayData = TypeGuard.checkArray(data);
-		const fileResponses = arrayData.map((item) => new LegacyFileResponseVo(item));
+		TypeGuard.checkArray(data);
+		const fileResponses = data
+			.map((item) => {
+				if (item.securityCheck?.status !== SecurityCheckStatus.BLOCKED) {
+					return new LegacyFileResponseVo(item);
+				}
+			})
+			.filter((item) => item !== undefined);
 
 		return fileResponses;
 	}
