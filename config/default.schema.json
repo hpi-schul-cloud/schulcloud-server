@@ -479,11 +479,6 @@
 			"default": 7200,
 			"description": "The time in seconds during which the activation link is valid. After expiration the entry is removed from the database"
 		},
-		"ADMIN_MAIL_RECEIVERS": {
-			"type": "string",
-			"default": null,
-			"description": "A string that contains recievers of the daily stat and other mails. Can contain mutliple mails, seperated by comma"
-		},
 		"SILENT_ERROR_ENABLED": {
 			"type": "boolean",
 			"default": false,
