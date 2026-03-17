@@ -106,6 +106,64 @@ describe('LegacyFileStorageAdapter', () => {
 			});
 		});
 
+		describe('when the response contains flat files with a blocked file', () => {
+			const setup = () => {
+				const rawFiles = [
+					{
+						_id: new ObjectId().toHexString(),
+						name: 'document.pdf',
+						isDirectory: false,
+						storageFileName: 'abc123.pdf',
+						bucket: 'bucket-A',
+						storageProviderId: new ObjectId().toHexString(),
+						securityCheck: { status: 'passed' },
+					},
+					{
+						_id: new ObjectId().toHexString(),
+						name: 'virus.txt',
+						isDirectory: false,
+						storageFileName: 'virus.txt',
+						bucket: 'bucket-A',
+						storageProviderId: new ObjectId().toHexString(),
+						securityCheck: { status: 'blocked' },
+					},
+					{
+						_id: new ObjectId().toHexString(),
+						name: 'image.png',
+						isDirectory: false,
+						parent: undefined,
+					},
+				];
+
+				httpService.get.mockReturnValueOnce(of(buildAxiosResponse(rawFiles)));
+
+				return { rawFiles };
+			};
+
+			it('should return a FileDo for each file', async () => {
+				const { rawFiles } = setup();
+
+				const result = await adapter.getFilesForOwner(ownerId);
+
+				expect(result).toHaveLength(2);
+				expect(result[0].id).toBe(rawFiles[0]._id);
+				expect(result[0].name).toBe('document.pdf');
+				expect(result[1].id).toBe(rawFiles[2]._id);
+				expect(result[1].name).toBe('image.png');
+			});
+
+			it('should call the correct URL with owner param and JWT header', async () => {
+				setup();
+
+				await adapter.getFilesForOwner(ownerId);
+
+				expect(httpService.get).toHaveBeenCalledWith(`${legacyBaseUrl}/fileStorage`, {
+					params: { owner: ownerId },
+					headers: { authorization: `Bearer ${jwt}` },
+				});
+			});
+		});
+
 		describe('when the response contains a directory', () => {
 			const setup = () => {
 				const directory = { _id: new ObjectId().toHexString(), name: 'my-folder', isDirectory: true };
