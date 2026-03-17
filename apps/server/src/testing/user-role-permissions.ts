@@ -146,6 +146,7 @@ export const adminPermissions = [
 	Permission.NEWS_EDIT,
 	Permission.REQUEST_CONSENTS,
 	Permission.SCHOOL_ADMINISTRATE_ROOMS,
+	Permission.SCHOOL_CHAT_MANAGE,
 	Permission.SCHOOL_EDIT,
 	Permission.SCHOOL_LIST_ROOM_MEMBERS,
 	Permission.SCHOOL_LOGO_MANAGE,
