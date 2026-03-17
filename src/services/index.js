@@ -35,7 +35,6 @@ const help = require('./help');
 const database = require('../utils/database');
 const etherpad = require('./etherpad');
 const storageProvider = require('./storageProvider');
-const activation = require('./activation');
 const config = require('./config');
 const syncLegacyIndexes = require('./sync-legacy-indexes');
 const docs = require('./docs');
@@ -81,7 +80,6 @@ module.exports = function initializeServices() {
 	app.configure(datasources);
 	app.configure(etherpad);
 	app.configure(storageProvider);
-	app.configure(activation);
 	app.configure(syncLegacyIndexes);
 	app.configure(config);
 
