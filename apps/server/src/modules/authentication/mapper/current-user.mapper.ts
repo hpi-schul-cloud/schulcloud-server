@@ -1,27 +1,46 @@
 import { CurrentUserBuilder, ICurrentUser } from '@infra/auth-guard';
-import { Role } from '@modules/role/repo';
 import { UserDo } from '@modules/user';
-import { User } from '@modules/user/repo';
 import { ValidationError } from '@shared/common/error';
 import { RoleReference } from '@shared/domain/domainobject';
 
 export class CurrentUserMapper {
-	static userToICurrentUser(accountId: string, user: User, isExternalUser: boolean, systemId?: string): ICurrentUser {
-		const roles = user.roles.getItems().map((role: Role) => role.id);
+	public static userToICurrentUser(
+		accountId: string,
+		user: {
+			id?: string;
+			school?: { id?: string };
+			roles?: { id?: string }[] | { getItems?: () => { id: string }[] };
+		},
+		isExternalUser: boolean,
+		systemId?: string
+	): ICurrentUser {
+		let roles: string[] = [];
+		if (Array.isArray(user.roles)) {
+			roles = user.roles
+				.map((role) => (typeof role === 'object' && role && 'id' in role ? role.id : undefined))
+				.filter(Boolean) as string[];
+		} else if (
+			user.roles &&
+			typeof user.roles === 'object' &&
+			'getItems' in user.roles &&
+			typeof (user.roles as { getItems: unknown }).getItems === 'function'
+		) {
+			roles = (user.roles as { getItems: () => { id: string }[] }).getItems().map((role) => role.id);
+		}
+		const schoolId = user.school?.id;
 		const currentUser = new CurrentUserBuilder({
 			accountId,
-			userId: user.id,
-			schoolId: user.school.id,
+			userId: user.id as string,
+			schoolId: schoolId as string,
 			roles,
 		})
 			.asExternalUser(isExternalUser)
 			.withExternalSystem(systemId)
 			.build();
-
 		return currentUser;
 	}
 
-	static mapToOauthCurrentUser(
+	public static mapToOauthCurrentUser(
 		accountId: string,
 		user: UserDo,
 		systemId?: string,
@@ -45,6 +64,44 @@ export class CurrentUserMapper {
 
 		const currentUser = currentUserBuilder.build();
 
+		return currentUser;
+	}
+
+	public static mapToErwinCurrentUser(
+		accountId: string,
+		user: {
+			id?: string;
+			schoolId?: string;
+			school?: { id?: string };
+			roles?: { id?: string }[] | { getItems?: () => { id: string }[] };
+		},
+		systemId?: string,
+		isExternalUser?: boolean
+	): ICurrentUser {
+		const external = isExternalUser ?? false;
+		let roles: string[] = [];
+		if (Array.isArray(user.roles)) {
+			roles = user.roles
+				.map((role) => (typeof role === 'object' && role && 'id' in role ? role.id : undefined))
+				.filter(Boolean) as string[];
+		} else if (
+			user.roles &&
+			typeof user.roles === 'object' &&
+			'getItems' in user.roles &&
+			typeof (user.roles as { getItems: unknown }).getItems === 'function'
+		) {
+			roles = (user.roles as { getItems: () => { id: string }[] }).getItems().map((role) => role.id);
+		}
+		const schoolId = user.schoolId || user.school?.id;
+		const currentUser = new CurrentUserBuilder({
+			accountId,
+			userId: user.id as string,
+			schoolId: schoolId as string,
+			roles,
+		})
+			.asExternalUser(external)
+			.withExternalSystem(systemId)
+			.build();
 		return currentUser;
 	}
 }

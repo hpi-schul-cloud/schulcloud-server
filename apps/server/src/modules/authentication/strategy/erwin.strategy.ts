@@ -8,6 +8,7 @@ import { IdTokenExtractionFailureLoggableException, OAuthService, OauthSessionTo
 import { AccountService } from '@modules/account';
 import { AUTHENTICATION_CONFIG_TOKEN, AuthenticationConfig } from '../authentication-config';
 import { ICurrentUser } from '@infra/auth-guard';
+import { CurrentUserMapper } from '../mapper';
 import { ErwinAuthorizationBodyParams } from '../controllers/dto';
 import {
 	SchoolInMigrationLoggableException,
@@ -88,13 +89,12 @@ export class ErwinStrategy extends PassportStrategy(Strategy, StrategyType.ERWIN
 		typedUser.systemId = effectiveSystemId;
 		typedUser.isExternalUser = isExternalUser;
 
-		// partial ICurrentUser with the necessary info for the auth guard and downstream services
-		const currentUser: ICurrentUser = {
-			id: account.id,
-			user: typedUser,
-			account: account,
-		} as unknown as ICurrentUser;
-
+		const currentUser = CurrentUserMapper.mapToErwinCurrentUser(
+			account.id,
+			typedUser,
+			effectiveSystemId,
+			isExternalUser
+		);
 		return currentUser;
 	}
 }
