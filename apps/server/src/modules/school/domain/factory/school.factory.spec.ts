@@ -54,7 +54,7 @@ describe('SchoolFactory', () => {
 					},
 					fileStorageType: FileStorageType.AWS_S3,
 					language: LanguageType.EN,
-					features: new Set([SchoolFeature.ROCKET_CHAT]),
+					features: new Set([]),
 				};
 
 				return { school, partialBody };

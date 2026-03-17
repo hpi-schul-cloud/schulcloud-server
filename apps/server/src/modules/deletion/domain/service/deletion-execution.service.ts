@@ -72,7 +72,6 @@ export class DeletionExecutionService {
 			[ModuleName.GROUP]: DomainName.GROUP,
 			[ModuleName.LESSON]: DomainName.LESSONS,
 			[ModuleName.PSEUDONYM]: DomainName.PSEUDONYMS,
-			[ModuleName.ROCKETCHATUSER]: DomainName.ROCKETCHATUSER,
 			[ModuleName.TASK]: DomainName.TASK,
 			[ModuleName.TASK_SUBMISSION]: DomainName.SUBMISSIONS,
 			[ModuleName.TEAM]: DomainName.TEAMS,

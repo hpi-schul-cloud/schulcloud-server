@@ -109,7 +109,6 @@
 			"REQUEST_CONSENTS",
 			"SCHOOL_EDIT",
 			"SCHOOL_NEWS_EDIT",
-			"SCHOOL_CHAT_MANAGE",
 			"SCHOOL_LOGO_MANAGE",
 			"SCHOOL_STUDENT_TEAM_MANAGE",
 			"STUDENT_CREATE",
@@ -344,7 +343,6 @@
 		"permissions": [
 			"NEWS_VIEW",
 			"UPLOAD_FILES",
-			"USE_ROCKETCHAT",
 			"JOIN_MEETING"
 		],
 		"__v": 0
@@ -365,7 +363,6 @@
 			"CALENDAR_VIEW",
 			"NEWS_VIEW",
 			"UPLOAD_FILES",
-			"USE_ROCKETCHAT",
 			"JOIN_MEETING"
 		],
 		"__v": 0
