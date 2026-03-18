@@ -14,6 +14,7 @@ describe(DeletionRequestEntity.name, () => {
 			deleteAfter: new Date(),
 			targetRefId: new ObjectId().toHexString(),
 			status: StatusModel.REGISTERED,
+			batchId: new ObjectId().toHexString(),
 			createdAt: new Date(),
 			updatedAt: new Date(),
 		};

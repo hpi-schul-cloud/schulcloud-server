@@ -2,10 +2,10 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class UsersByRoleCountResponse {
 	@ApiProperty()
-	roleName: string;
+	public roleName: string;
 
 	@ApiProperty()
-	userCount: number;
+	public userCount: number;
 
 	constructor(usersByRole: UsersByRoleCountResponse) {
 		this.roleName = usersByRole.roleName;

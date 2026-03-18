@@ -34,6 +34,24 @@ export class DeletionBatch extends DomainObject<DeletionBatchProps> {
 		return this.props.status;
 	}
 
+	public startDeletion(): void {
+		this.props.status = BatchStatus.DELETION_REQUESTED;
+	}
+
+	public updateIds({
+		targetRefIds,
+		invalidIds,
+		skippedIds,
+	}: {
+		targetRefIds: EntityId[];
+		invalidIds: EntityId[];
+		skippedIds: EntityId[];
+	}): void {
+		this.props.targetRefIds = targetRefIds;
+		this.props.invalidIds = invalidIds;
+		this.props.skippedIds = skippedIds;
+	}
+
 	get targetRefDomain(): DomainName {
 		return this.props.targetRefDomain;
 	}
@@ -42,24 +60,12 @@ export class DeletionBatch extends DomainObject<DeletionBatchProps> {
 		return this.props.targetRefIds;
 	}
 
-	set targetRefIds(value: EntityId[]) {
-		this.props.targetRefIds = value;
-	}
-
 	get invalidIds(): EntityId[] {
 		return this.props.invalidIds;
 	}
 
-	set invalidIds(value: EntityId[]) {
-		this.props.invalidIds = value;
-	}
-
 	get skippedIds(): EntityId[] {
 		return this.props.skippedIds;
-	}
-
-	set skippedIds(value: EntityId[]) {
-		this.props.skippedIds = value;
 	}
 
 	get createdAt(): Date {

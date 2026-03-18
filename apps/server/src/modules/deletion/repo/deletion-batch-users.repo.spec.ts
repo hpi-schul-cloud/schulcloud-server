@@ -195,4 +195,93 @@ describe(DeletionBatchUsersRepo.name, () => {
 			});
 		});
 	});
+
+	describe('groupUserIdsByAllowedRoles', () => {
+		describe('when userIds is empty', () => {
+			it('should return empty arrays and set', async () => {
+				const result: GroupedUserIdsByRoles = await repo.groupUserIdsByAllowedRoles([], [RoleName.STUDENT]);
+
+				expect(result).toEqual({
+					validUsers: [],
+					skippedUsers: [],
+					foundUserIds: new Set(),
+				});
+			});
+		});
+
+		describe('when userIds do not match any existing users', () => {
+			it('should return empty arrays and set', async () => {
+				const result: GroupedUserIdsByRoles = await repo.groupUserIdsByAllowedRoles(
+					[new ObjectId().toHexString()],
+					[RoleName.STUDENT]
+				);
+
+				expect(result.validUsers).toEqual([]);
+				expect(result.skippedUsers).toEqual([]);
+				expect(result.foundUserIds.size).toBe(0);
+			});
+		});
+
+		describe('when users exist with different roles', () => {
+			it('should group users into valid and skipped based on allowed roles', async () => {
+				const studentRole = roleFactory.buildWithId({ name: RoleName.STUDENT });
+				const teacherRole = roleFactory.buildWithId({ name: RoleName.TEACHER });
+				const adminRole = roleFactory.buildWithId({ name: RoleName.ADMINISTRATOR });
+
+				const student = userFactory.buildWithId({ roles: [studentRole] });
+				const teacher = userFactory.buildWithId({ roles: [teacherRole] });
+				const admin = userFactory.buildWithId({ roles: [adminRole] });
+
+				await em.persist([studentRole, teacherRole, adminRole, student, teacher, admin]).flush();
+
+				const result: GroupedUserIdsByRoles = await repo.groupUserIdsByAllowedRoles(
+					[student.id, teacher.id, admin.id],
+					[RoleName.STUDENT, RoleName.TEACHER]
+				);
+
+				expect(result.validUsers.map((u) => u.id)).toEqual(expect.arrayContaining([student.id, teacher.id]));
+				expect(result.validUsers).toHaveLength(2);
+				expect(result.skippedUsers.map((u) => u.id)).toEqual([admin.id]);
+				expect(result.foundUserIds).toEqual(new Set([student.id, teacher.id, admin.id]));
+			});
+		});
+
+		describe('when a user has multiple roles including an allowed one', () => {
+			it('should classify the user as valid', async () => {
+				const studentRole = roleFactory.buildWithId({ name: RoleName.STUDENT });
+				const adminRole = roleFactory.buildWithId({ name: RoleName.ADMINISTRATOR });
+				const multiRoleUser = userFactory.buildWithId({ roles: [studentRole, adminRole] });
+
+				await em.persist([studentRole, adminRole, multiRoleUser]).flush();
+
+				const result: GroupedUserIdsByRoles = await repo.groupUserIdsByAllowedRoles(
+					[multiRoleUser.id],
+					[RoleName.STUDENT]
+				);
+
+				expect(result.validUsers.map((u) => u.id)).toEqual([multiRoleUser.id]);
+				expect(result.skippedUsers).toEqual([]);
+			});
+		});
+
+		describe('when mixing existing and non-existing userIds', () => {
+			it('should only return found users in results', async () => {
+				const studentRole = roleFactory.buildWithId({ name: RoleName.STUDENT });
+				const student = userFactory.buildWithId({ roles: [studentRole] });
+				const nonExistentId = new ObjectId().toHexString();
+
+				await em.persist([studentRole, student]).flush();
+
+				const result: GroupedUserIdsByRoles = await repo.groupUserIdsByAllowedRoles(
+					[student.id, nonExistentId],
+					[RoleName.STUDENT]
+				);
+
+				expect(result.validUsers.map((u) => u.id)).toEqual([student.id]);
+				expect(result.skippedUsers).toEqual([]);
+				expect(result.foundUserIds).toEqual(new Set([student.id]));
+				expect(result.foundUserIds.has(nonExistentId)).toBe(false);
+			});
+		});
+	});
 });

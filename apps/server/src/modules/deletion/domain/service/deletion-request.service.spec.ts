@@ -322,23 +322,6 @@ describe(DeletionRequestService.name, () => {
 		});
 	});
 
-	describe('update', () => {
-		describe('when updating deletionRequest', () => {
-			const setup = () => {
-				const deletionRequest = deletionRequestFactory.buildWithId();
-
-				return { deletionRequest };
-			};
-
-			it('should call deletionRequestRepo.update', async () => {
-				const { deletionRequest } = setup();
-				await service.update(deletionRequest);
-
-				expect(deletionRequestRepo.update).toBeCalledWith(deletionRequest);
-			});
-		});
-	});
-
 	describe('markDeletionRequestAsExecuted', () => {
 		describe('when mark deletionRequest as executed', () => {
 			const setup = () => {

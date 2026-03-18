@@ -322,7 +322,7 @@ describe('DeletionBatchService', () => {
 
 			await service.requestDeletionForBatch(batch, new Date());
 
-			expect(deletionRequestService.createDeletionRequestBatch).toHaveBeenCalledWith(
+			expect(deletionRequestService.createMultipleDeletionRequests).toHaveBeenCalledWith(
 				batch.targetRefIds,
 				batch.targetRefDomain,
 				expect.any(Date)

@@ -105,7 +105,7 @@ describe('DeletionBatchUc', () => {
 
 			it('should throw', async () => {
 				const { batch } = setup();
-				await expect(uc.createDeletionRequestForBatch(batch.id, new Date())).rejects.toThrow(
+				await expect(uc.requestDeletionForBatch(batch.id, new Date())).rejects.toThrow(
 					CantCreateDeletionRequestsForBatchErrorLoggable
 				);
 			});

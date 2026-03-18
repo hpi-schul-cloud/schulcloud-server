@@ -1,6 +1,6 @@
 export const enum StatusModel {
 	FAILED = 'failed',
-	FINISHED = 'finished',
+	// FINISHED = 'finished' // not really used?
 	PENDING = 'pending',
 	SUCCESS = 'success',
 	REGISTERED = 'registered',
