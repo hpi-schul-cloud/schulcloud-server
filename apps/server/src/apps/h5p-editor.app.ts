@@ -1,7 +1,7 @@
 /* istanbul ignore file */
 /* eslint-disable no-console */
 import { NestFactory } from '@nestjs/core';
-import { ExpressAdapter } from '@nestjs/platform-express';
+import { ExpressAdapter, NestExpressApplication } from '@nestjs/platform-express';
 import express from 'express';
 
 // register source-map-support for debugging
@@ -9,6 +9,7 @@ import { install as sourceMapInstall } from 'source-map-support';
 
 // application imports
 import { createRequestLoggerMiddleware, LegacyLogger, LOGGER_CONFIG_TOKEN, LoggerConfig } from '@core/logger';
+import { H5P_EDITOR_CONFIG_TOKEN, H5PEditorConfig } from '@modules/h5p-content-management';
 import { H5PEditorAppModule } from '@modules/h5p-content-management/h5p-editor.app.module';
 import { enableOpenApiDocs } from './helpers';
 
@@ -20,7 +21,7 @@ async function bootstrap(): Promise<void> {
 
 	const nestExpressAdapter = new ExpressAdapter(nestExpress);
 
-	const nestApp = await NestFactory.create(H5PEditorAppModule, nestExpressAdapter);
+	const nestApp = await NestFactory.create<NestExpressApplication>(H5PEditorAppModule, nestExpressAdapter);
 	// WinstonLogger
 	nestApp.useLogger(await nestApp.resolve(LegacyLogger));
 
@@ -29,6 +30,9 @@ async function bootstrap(): Promise<void> {
 
 	// customize nest app settings
 	nestApp.enableCors({ exposedHeaders: ['Content-Disposition'] });
+	const h5pEditorConfig = await nestApp.resolve<H5PEditorConfig>(H5P_EDITOR_CONFIG_TOKEN);
+	const { bodyParserJsonLimitInBytes } = h5pEditorConfig;
+	nestApp.useBodyParser('json', { limit: bodyParserJsonLimitInBytes });
 	enableOpenApiDocs(nestApp, 'docs');
 
 	await nestApp.init();
