@@ -11,6 +11,7 @@ import {
 } from '@lumieducation/h5p-server';
 import ContentManager from '@lumieducation/h5p-server/build/src/ContentManager';
 import ContentTypeInformationRepository from '@lumieducation/h5p-server/build/src/ContentTypeInformationRepository';
+import CachedLibraryStorage from '@lumieducation/h5p-server/build/src/implementation/cache/CachedLibraryStorage';
 import {
 	IFullLibraryName,
 	IInstalledLibrary,
@@ -20,6 +21,7 @@ import {
 } from '@lumieducation/h5p-server/build/src/types';
 import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { TypeGuard } from '@shared/common/guards';
+import { Cache } from 'cache-manager';
 import { readFileSync } from 'fs';
 import { Readable } from 'stream';
 import { parse } from 'yaml';
@@ -32,6 +34,7 @@ import {
 	H5PLibraryManagementLoggable,
 	H5PLibraryManagementMetricsLoggable,
 } from '../loggable';
+import { H5P_CACHE_PROVIDER_TOKEN } from '../provider';
 import { ContentStorage } from './content-storage.service';
 import LibraryManagementPermissionSystem from './library-management-permission-system';
 import { LibraryStorage } from './library-storage.service';
@@ -72,8 +75,15 @@ export class H5PLibraryManagementService {
 		private readonly libraryStorage: LibraryStorage,
 		private readonly contentStorage: ContentStorage,
 		@Inject(H5P_EDITOR_CONFIG_TOKEN) private readonly config: H5PEditorConfig,
+		@Inject(H5P_CACHE_PROVIDER_TOKEN) private readonly cacheAdapter: Cache,
 		private readonly logger: Logger
 	) {
+		const kvCache = new cacheImplementations.CachedKeyValueStorage('kvcache', this.cacheAdapter);
+
+		const cachedLibraryStorage = new cacheImplementations.CachedLibraryStorage(
+			new CachedLibraryStorage(libraryStorage, this.cacheAdapter)
+		);
+
 		const { installLibraryLockMaxOccupationTime } = this.config;
 		const h5pConfig = new H5PConfig(undefined, {
 			baseUrl: '/api/v3/h5p-editor',
@@ -81,10 +91,10 @@ export class H5PLibraryManagementService {
 			setFinishedEnabled: false,
 			installLibraryLockMaxOccupationTime,
 		});
-		const kvCache = new cacheImplementations.CachedKeyValueStorage('kvcache');
+
 		this.contentTypeCache = new ContentTypeCache(h5pConfig, kvCache);
 		this.libraryManager = new LibraryManager(
-			this.libraryStorage,
+			cachedLibraryStorage,
 			undefined,
 			undefined,
 			undefined,
