@@ -140,9 +140,7 @@ const seedSchools: SeedSchoolProperties[] = [
 		fileStorageType: FileStorageType.AWS_S3,
 		currentYear: SeedSchoolYearEnum['2022/23'],
 		purpose: SchoolPurpose.DEMO,
-		permissions: {
-			student: {},
-		},
+		permissions: {},
 		features: [SchoolFeature.ROCKET_CHAT, SchoolFeature.STUDENTVISIBILITY, SchoolFeature.OAUTH_PROVISIONING_ENABLED],
 		documentBaseDirType: '',
 		experimental: false,
@@ -167,9 +165,7 @@ const seedSchools: SeedSchoolProperties[] = [
 		fileStorageType: FileStorageType.AWS_S3,
 		currentYear: SeedSchoolYearEnum['2022/23'],
 		purpose: SchoolPurpose.DEMO,
-		permissions: {
-			student: {},
-		},
+		permissions: {},
 		features: [SchoolFeature.ROCKET_CHAT, SchoolFeature.OAUTH_PROVISIONING_ENABLED],
 		documentBaseDirType: '',
 		experimental: false,
@@ -189,9 +185,7 @@ const seedSchools: SeedSchoolProperties[] = [
 		fileStorageType: FileStorageType.AWS_S3,
 		currentYear: SeedSchoolYearEnum['2022/23'],
 		purpose: SchoolPurpose.DEMO,
-		permissions: {
-			student: {},
-		},
+		permissions: {},
 		features: [SchoolFeature.ROCKET_CHAT, SchoolFeature.STUDENTVISIBILITY, SchoolFeature.OAUTH_PROVISIONING_ENABLED],
 		documentBaseDirType: '',
 		experimental: false,
