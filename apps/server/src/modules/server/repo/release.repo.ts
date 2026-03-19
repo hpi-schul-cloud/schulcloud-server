@@ -1,0 +1,24 @@
+import { EntityManager } from '@mikro-orm/mongodb';
+import { Injectable } from '@nestjs/common';
+import { plainToInstance } from 'class-transformer';
+import { Release } from '../domain';
+import { ReleaseClass } from './release.class';
+
+@Injectable()
+export class ReleaseRepo {
+	constructor(private readonly em: EntityManager) {}
+
+	public async findAllReleases(): Promise<Release[]> {
+		const docs = await this.em.getCollection('releases').find({}).sort({ publishedAt: -1 }).toArray();
+		const releases = docs.map((doc) => {
+			const obj = { ...doc, id: doc._id.toString() };
+			delete (obj as { _id: unknown })._id;
+			const release = plainToInstance(ReleaseClass, obj);
+			// const errors = validateSync(release);
+			// if (errors.length) throw new Error('Validation or release transformation failed');
+			return release;
+		});
+
+		return releases;
+	}
+}
