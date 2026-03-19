@@ -15,7 +15,7 @@ export class BatchDeletionUc {
 		private readonly accountService: AccountService
 	) {}
 
-	async deleteRefsFromTxtFile(
+	public deleteRefsFromTxtFile(
 		refsFilePath: string,
 		targetRefDomain = 'user',
 		deleteInMinutes = 43200, // 43200 minutes = 720 hours = 30 days
@@ -32,7 +32,7 @@ export class BatchDeletionUc {
 		);
 	}
 
-	async deleteUnsynchronizedRefs(
+	public async deleteUnsynchronizedRefs(
 		systemId: string,
 		unsyncedForMinutes = 10080,
 		targetRefDomain = 'user',
