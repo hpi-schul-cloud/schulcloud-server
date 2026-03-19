@@ -6,12 +6,12 @@ export class Migration20260317132520 extends Migration {
 
 		try {
 			await this.getCollection('rocketchatusers').drop();
-		} catch (error: any) {
-			// Ignore "NamespaceNotFound" (collection does not exist) to keep migration idempotent
+		} catch (error: unknown) {
+			const err = error as { code?: number; codeName?: string; message?: string };
 			if (
-				error?.code !== 26 &&
-				error?.codeName !== 'NamespaceNotFound' &&
-				!String(error?.message || '').includes('NamespaceNotFound')
+				err?.code !== 26 &&
+				err?.codeName !== 'NamespaceNotFound' &&
+				!String(err?.message || '').includes('NamespaceNotFound')
 			) {
 				throw error;
 			}
@@ -20,11 +20,11 @@ export class Migration20260317132520 extends Migration {
 		try {
 			await this.getCollection('rocketchatchannels').drop();
 		} catch (error: any) {
-			// Ignore "NamespaceNotFound" (collection does not exist) to keep migration idempotent
+			const err = error as { code?: number; codeName?: string; message?: string };
 			if (
-				error?.code !== 26 &&
-				error?.codeName !== 'NamespaceNotFound' &&
-				!String(error?.message || '').includes('NamespaceNotFound')
+				err?.code !== 26 &&
+				err?.codeName !== 'NamespaceNotFound' &&
+				!String(err?.message || '').includes('NamespaceNotFound')
 			) {
 				throw error;
 			}
