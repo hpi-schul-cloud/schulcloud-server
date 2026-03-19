@@ -1,34 +1,17 @@
-import { Configuration } from '@hpi-schul-cloud/commons';
+import { ConfigProperty, Configuration } from '@infra/configuration';
+import { StringToBoolean } from '@shared/controller/transformer';
+import { IsBoolean, IsUrl } from 'class-validator';
 
+export const HEALTH_CONFIG_TOKEN = 'HEALTH_CONFIG_TOKEN';
+
+@Configuration()
 export class HealthConfig {
-	private static _instance: HealthConfig;
+	@ConfigProperty('HOSTNAME')
+	@IsUrl({ require_tld: false })
+	public hostname!: string;
 
-	private readonly _hostname: string;
-
-	get hostname(): string {
-		return this._hostname;
-	}
-
-	private readonly _exclude_mongodb: boolean;
-
-	get excludeMongoDB(): boolean {
-		return this._exclude_mongodb;
-	}
-
-	private constructor() {
-		this._hostname = Configuration.has('HOSTNAME') ? (Configuration.get('HOSTNAME') as string) : '';
-		this._exclude_mongodb = Configuration.get('HEALTH_CHECKS_EXCLUDE_MONGODB') as boolean;
-	}
-
-	public static get instance() {
-		if (this._instance === undefined) {
-			this._instance = new this();
-		}
-
-		return this._instance;
-	}
-
-	public static reload() {
-		this._instance = new this();
-	}
+	@ConfigProperty('HEALTH_CHECKS_EXCLUDE_MONGODB')
+	@StringToBoolean()
+	@IsBoolean()
+	public excludeMongoDB = false;
 }

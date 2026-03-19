@@ -42,7 +42,7 @@ export interface ExternalToolEntityProps {
 }
 
 @Entity({ tableName: 'external-tools' })
-@Unique({ properties: ['config_clientId'], options: { sparse: true } })
+@Unique({ properties: ['config.clientId'], options: { sparse: true } })
 export class ExternalToolEntity extends BaseEntityWithTimestamps {
 	@Unique()
 	@Property()

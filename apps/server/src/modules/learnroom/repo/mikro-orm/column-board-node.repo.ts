@@ -1,8 +1,8 @@
-import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { BoardExternalReference } from '@modules/board';
+import type { BoardNodeEntity } from '@modules/board/repo/entity/board-node.entity';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types/entity-id';
-import { ColumnBoardNode } from './column-board-node.entity';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 
 /**
  * @deprecated - this is here only for the sake of the legacy-board (lernraum)
@@ -11,18 +11,20 @@ import { ColumnBoardNode } from './column-board-node.entity';
 export class ColumnBoardNodeRepo {
 	constructor(private readonly em: EntityManager) {}
 
-	async findById(id: EntityId): Promise<ColumnBoardNode> {
-		const columnBoardNode = await this.em.findOneOrFail(ColumnBoardNode, id);
+	public async findById(id: EntityId): Promise<BoardNodeEntity> {
+		const boardNode = await this.em.findOneOrFail('BoardNodeEntity', { id });
 
-		return columnBoardNode;
+		return boardNode as BoardNodeEntity;
 	}
 
-	async findByExternalReference(reference: BoardExternalReference): Promise<ColumnBoardNode[]> {
-		const columnBoardNodes = await this.em.find(ColumnBoardNode, {
-			contextId: new ObjectId(reference.id),
-			contextType: reference.type,
+	public async findByExternalReference(reference: BoardExternalReference): Promise<BoardNodeEntity[]> {
+		const boardNodes = await this.em.find('BoardNodeEntity', {
+			context: {
+				_contextId: new ObjectId(reference.id),
+				_contextType: reference.type,
+			},
 		});
 
-		return columnBoardNodes;
+		return boardNodes as BoardNodeEntity[];
 	}
 }

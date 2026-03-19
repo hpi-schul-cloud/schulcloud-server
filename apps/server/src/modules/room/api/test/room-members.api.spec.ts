@@ -1,4 +1,5 @@
 import { EntityManager } from '@mikro-orm/mongodb';
+import { AccountEntity } from '@modules/account/repo';
 import { GroupEntityTypes } from '@modules/group/entity/group.entity';
 import { groupEntityFactory } from '@modules/group/testing';
 import { RoleName } from '@modules/role';
@@ -41,7 +42,9 @@ describe('Room Controller (API)', () => {
 	});
 
 	describe('GET /rooms/:roomId/members', () => {
-		const setupRoomWithExternalMembers = async (loginAs: RoleName.ADMINISTRATOR | RoleName.TEACHER) => {
+		const setupRoomWithExternalMembers = async (
+			loginAs: RoleName.ADMINISTRATOR | RoleName.TEACHER | RoleName.EXTERNALPERSON
+		) => {
 			const school = schoolEntityFactory.buildWithId();
 			const externalSchool = schoolEntityFactory.buildWithId();
 			const room = roomEntityFactory.buildWithId();
@@ -51,7 +54,9 @@ describe('Room Controller (API)', () => {
 			});
 
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
+			const { externalPersonAccount, externalPersonUser } = UserAndAccountTestFactory.buildExternalPerson({ school });
 			const { roomEditorRole, roomOwnerRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
+			em.persist([roomEditorRole, roomOwnerRole, roomViewerRole]);
 			const teacherRole = teacherUser.roles[0];
 			const studentRole = roleFactory.buildWithId({ name: RoleName.STUDENT });
 			const students = userFactory.buildList(2, { school, roles: [studentRole] });
@@ -68,6 +73,7 @@ describe('Room Controller (API)', () => {
 					{ role: roomViewerRole, user: students[0] },
 					{ role: roomViewerRole, user: students[1] },
 					{ role: roomViewerRole, user: externalStudent },
+					{ role: roomViewerRole, user: externalPersonUser },
 				],
 				type: GroupEntityTypes.ROOM,
 				organization: teacherUser.school,
@@ -78,24 +84,38 @@ describe('Room Controller (API)', () => {
 				roomId: room.id,
 				schoolId: school.id,
 			});
-			await em.persistAndFlush([
-				adminAccount,
-				adminUser,
-				room,
-				roomMemberships,
-				teacherAccount,
-				teacherUser,
-				userGroupEntity,
-				externalStudent,
-				...externalTeachers,
-				...students,
-				...teachers,
-			]);
+			await em
+				.persist([
+					adminAccount,
+					adminUser,
+					externalPersonAccount,
+					externalPersonUser,
+					room,
+					roomMemberships,
+					teacherAccount,
+					teacherUser,
+					userGroupEntity,
+					externalStudent,
+					...externalTeachers,
+					...students,
+					...teachers,
+				])
+				.flush();
 			em.clear();
 
-			const loginAccount = loginAs === RoleName.ADMINISTRATOR ? adminAccount : teacherAccount;
+			const getAccountByRole = (
+				roleName: RoleName.ADMINISTRATOR | RoleName.EXTERNALPERSON | RoleName.TEACHER
+			): AccountEntity => {
+				const acounts = {
+					[RoleName.ADMINISTRATOR]: adminAccount,
+					[RoleName.EXTERNALPERSON]: externalPersonAccount,
+					[RoleName.TEACHER]: teacherAccount,
+				};
 
-			const loggedInClient = await testApiClient.login(loginAccount);
+				return acounts[roleName];
+			};
+
+			const loggedInClient = await testApiClient.login(getAccountByRole(loginAs));
 
 			return {
 				loggedInClient,
@@ -103,6 +123,7 @@ describe('Room Controller (API)', () => {
 				students,
 				teachers,
 				adminUser,
+				externalPersonUser,
 				teacherUser,
 				externalStudent,
 				externalTeachers,
@@ -114,7 +135,7 @@ describe('Room Controller (API)', () => {
 
 		const setupInsufficientPermissionsUser = async () => {
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-			await em.persistAndFlush([teacherAccount, teacherUser]);
+			await em.persist([teacherAccount, teacherUser]).flush();
 			const loggedInClient = await testApiClient.login(teacherAccount);
 			return { loggedInClient };
 		};
@@ -147,6 +168,7 @@ describe('Room Controller (API)', () => {
 					teachers,
 					externalStudent,
 					externalTeachers,
+					externalPersonUser,
 					teacherUser,
 					roomEditorRole,
 					roomOwnerRole,
@@ -157,7 +179,7 @@ describe('Room Controller (API)', () => {
 
 				expect(response.status).toBe(HttpStatus.OK);
 				const body = response.body as RoomMemberListResponse;
-				expect(body.data.length).toEqual(8);
+				expect(body.data.length).toEqual(9);
 				expect(body.data).toContainEqual(
 					expect.objectContaining({
 						firstName: teacherUser.firstName,
@@ -219,6 +241,26 @@ describe('Room Controller (API)', () => {
 						schoolRoleNames: [RoleName.TEACHER],
 					})
 				);
+				const expertMember = body.data.find((member) => member.userId === externalPersonUser.id);
+				expect(expertMember).toEqual(
+					expect.objectContaining({
+						firstName: externalPersonUser.firstName,
+						lastName: externalPersonUser.lastName,
+						userId: externalPersonUser.id,
+						roomRoleName: roomViewerRole.name,
+						schoolRoleNames: [RoleName.EXTERNALPERSON],
+					})
+				);
+			});
+		});
+
+		describe('when the user is external and has no right to access room members', () => {
+			it('should return forbidden', async () => {
+				const { loggedInClient, room } = await setupRoomWithExternalMembers(RoleName.EXTERNALPERSON);
+
+				const response = await loggedInClient.get(`/${room.id}/members`);
+
+				expect(response.status).toBe(HttpStatus.FORBIDDEN);
 			});
 		});
 

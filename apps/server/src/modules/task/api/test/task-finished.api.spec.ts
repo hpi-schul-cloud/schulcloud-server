@@ -39,7 +39,7 @@ describe('Task controller (API)', () => {
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 			const task = taskFactory.finished(teacherUser).build({ creator: teacherUser });
 
-			await em.persistAndFlush([task, teacherAccount, teacherUser]);
+			await em.persist([task, teacherAccount, teacherUser]).flush();
 			em.clear();
 
 			const response = await apiClient.get();
@@ -58,7 +58,7 @@ describe('Task controller (API)', () => {
 			const course = courseEntityFactory.build({ teachers: [], school: teacherUser.school });
 			const task = taskFactory.finished(teacherUser).build({ course });
 
-			await em.persistAndFlush([task, teacherAccount, teacherUser]);
+			await em.persist([task, teacherAccount, teacherUser]).flush();
 			em.clear();
 
 			const loggedInClient = await apiClient.login(teacherAccount);
@@ -73,7 +73,7 @@ describe('Task controller (API)', () => {
 			const course = courseEntityFactory.build({ teachers: [teacherUser], school: teacherUser.school });
 			const task = taskFactory.finished(teacherUser).build({ course });
 
-			await em.persistAndFlush([task, teacherAccount, teacherUser]);
+			await em.persist([task, teacherAccount, teacherUser]).flush();
 			em.clear();
 
 			const loggedInClient = await apiClient.login(teacherAccount);
@@ -88,7 +88,7 @@ describe('Task controller (API)', () => {
 			const course = courseEntityFactory.build({ substitutionTeachers: [teacherUser], school: teacherUser.school });
 			const task = taskFactory.finished(teacherUser).build({ course });
 
-			await em.persistAndFlush([task, teacherAccount, teacherUser]);
+			await em.persist([task, teacherAccount, teacherUser]).flush();
 			em.clear();
 
 			const loggedInClient = await apiClient.login(teacherAccount);
@@ -110,7 +110,7 @@ describe('Task controller (API)', () => {
 			const setup = async () => {
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persist([studentAccount, studentUser]).flush();
 				em.clear();
 
 				const loggedInClient = await apiClient.login(studentAccount);
@@ -146,7 +146,7 @@ describe('Task controller (API)', () => {
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 				const task = taskFactory.finished(studentUser).build({ creator: studentUser });
 
-				await em.persistAndFlush([task, studentAccount, studentUser]);
+				await em.persist([task, studentAccount, studentUser]).flush();
 				em.clear();
 
 				const loggedInClient = await apiClient.login(studentAccount);
@@ -160,7 +160,7 @@ describe('Task controller (API)', () => {
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 				const task = taskFactory.finished(studentUser).draft().build({ creator: studentUser });
 
-				await em.persistAndFlush([task, studentAccount, studentUser]);
+				await em.persist([task, studentAccount, studentUser]).flush();
 				em.clear();
 
 				const loggedInClient = await apiClient.login(studentAccount);
@@ -174,7 +174,7 @@ describe('Task controller (API)', () => {
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 				const task = taskFactory.build({ creator: studentUser });
 
-				await em.persistAndFlush([task, studentAccount, studentUser]);
+				await em.persist([task, studentAccount, studentUser]).flush();
 				em.clear();
 
 				const loggedInClient = await apiClient.login(studentAccount);
@@ -200,7 +200,7 @@ describe('Task controller (API)', () => {
 					const { course, studentAccount, studentUser } = setup();
 					const task = taskFactory.build({ course });
 
-					await em.persistAndFlush([task, studentAccount, studentUser]);
+					await em.persist([task, studentAccount, studentUser]).flush();
 					em.clear();
 
 					const loggedInClient = await apiClient.login(studentAccount);
@@ -215,7 +215,7 @@ describe('Task controller (API)', () => {
 					const lesson = lessonFactory.build({ course, hidden: false });
 					const task = taskFactory.build({ course, lesson });
 
-					await em.persistAndFlush([task, studentAccount, studentUser]);
+					await em.persist([task, studentAccount, studentUser]).flush();
 					em.clear();
 
 					const loggedInClient = await apiClient.login(studentAccount);
@@ -230,7 +230,7 @@ describe('Task controller (API)', () => {
 					const lesson = lessonFactory.build({ course, hidden: false });
 					const task = taskFactory.finished(studentUser).build({ course, lesson });
 
-					await em.persistAndFlush([task, studentAccount, studentUser]);
+					await em.persist([task, studentAccount, studentUser]).flush();
 					em.clear();
 
 					const loggedInClient = await apiClient.login(studentAccount);
@@ -245,7 +245,7 @@ describe('Task controller (API)', () => {
 					const lesson = lessonFactory.build({ course, hidden: true });
 					const task = taskFactory.build({ course, lesson });
 
-					await em.persistAndFlush([task, studentAccount, studentUser]);
+					await em.persist([task, studentAccount, studentUser]).flush();
 					em.clear();
 
 					const loggedInClient = await apiClient.login(studentAccount);
@@ -260,7 +260,7 @@ describe('Task controller (API)', () => {
 					const lesson = lessonFactory.build({ course, hidden: true });
 					const task = taskFactory.finished(studentUser).build({ course, lesson });
 
-					await em.persistAndFlush([task, studentAccount, studentUser]);
+					await em.persist([task, studentAccount, studentUser]).flush();
 					em.clear();
 
 					const loggedInClient = await apiClient.login(studentAccount);
@@ -274,7 +274,7 @@ describe('Task controller (API)', () => {
 					const { course, studentAccount, studentUser } = setup();
 					const task = taskFactory.draft().build({ course, creator: studentUser });
 
-					await em.persistAndFlush([task, studentAccount, studentUser]);
+					await em.persist([task, studentAccount, studentUser]).flush();
 					em.clear();
 
 					const loggedInClient = await apiClient.login(studentAccount);
@@ -288,7 +288,7 @@ describe('Task controller (API)', () => {
 					const { course, studentAccount, studentUser } = setup();
 					const task = taskFactory.draft().finished(studentUser).build({ course, creator: studentUser });
 
-					await em.persistAndFlush([task, studentAccount, studentUser]);
+					await em.persist([task, studentAccount, studentUser]).flush();
 					em.clear();
 
 					const loggedInClient = await apiClient.login(studentAccount);
@@ -303,7 +303,7 @@ describe('Task controller (API)', () => {
 					const { studentAccount: otherAccount, studentUser: otherUser } = UserAndAccountTestFactory.buildStudent();
 					const task = taskFactory.draft().finished(studentUser).build({ course, creator: otherUser });
 
-					await em.persistAndFlush([task, studentAccount, studentUser, otherAccount, otherUser]);
+					await em.persist([task, studentAccount, studentUser, otherAccount, otherUser]).flush();
 					em.clear();
 
 					const loggedInClient = await apiClient.login(studentAccount);
@@ -317,7 +317,7 @@ describe('Task controller (API)', () => {
 					const { course, studentAccount, studentUser } = setup();
 					const task = taskFactory.finished(studentUser).build({ course });
 
-					await em.persistAndFlush([task, studentAccount, studentUser]);
+					await em.persist([task, studentAccount, studentUser]).flush();
 					em.clear();
 
 					const loggedInClient = await apiClient.login(studentAccount);
@@ -340,7 +340,7 @@ describe('Task controller (API)', () => {
 					const { course, studentAccount, studentUser } = setup();
 					const task = taskFactory.build({ course });
 
-					await em.persistAndFlush([task, studentAccount, studentUser]);
+					await em.persist([task, studentAccount, studentUser]).flush();
 					em.clear();
 
 					const loggedInClient = await apiClient.login(studentAccount);
@@ -355,7 +355,7 @@ describe('Task controller (API)', () => {
 					const lesson = lessonFactory.build({ course, hidden: false });
 					const task = taskFactory.build({ course, lesson });
 
-					await em.persistAndFlush([task, studentAccount, studentUser]);
+					await em.persist([task, studentAccount, studentUser]).flush();
 					em.clear();
 
 					const loggedInClient = await apiClient.login(studentAccount);
@@ -370,7 +370,7 @@ describe('Task controller (API)', () => {
 					const lesson = lessonFactory.build({ course, hidden: false });
 					const task = taskFactory.finished(studentUser).build({ course, lesson });
 
-					await em.persistAndFlush([task, studentAccount, studentUser]);
+					await em.persist([task, studentAccount, studentUser]).flush();
 					em.clear();
 
 					const loggedInClient = await apiClient.login(studentAccount);
@@ -385,7 +385,7 @@ describe('Task controller (API)', () => {
 					const lesson = lessonFactory.build({ course, hidden: true });
 					const task = taskFactory.build({ course, lesson });
 
-					await em.persistAndFlush([task, studentAccount, studentUser]);
+					await em.persist([task, studentAccount, studentUser]).flush();
 					em.clear();
 
 					const loggedInClient = await apiClient.login(studentAccount);
@@ -400,7 +400,7 @@ describe('Task controller (API)', () => {
 					const lesson = lessonFactory.build({ course, hidden: true });
 					const task = taskFactory.finished(studentUser).build({ course, lesson });
 
-					await em.persistAndFlush([task, studentAccount, studentUser]);
+					await em.persist([task, studentAccount, studentUser]).flush();
 					em.clear();
 
 					const loggedInClient = await apiClient.login(studentAccount);
@@ -414,7 +414,7 @@ describe('Task controller (API)', () => {
 					const { course, studentAccount, studentUser } = setup();
 					const task = taskFactory.draft().build({ course });
 
-					await em.persistAndFlush([task, studentAccount, studentUser]);
+					await em.persist([task, studentAccount, studentUser]).flush();
 					em.clear();
 
 					const loggedInClient = await apiClient.login(studentAccount);
@@ -428,7 +428,7 @@ describe('Task controller (API)', () => {
 					const { course, studentAccount, studentUser } = setup();
 					const task = taskFactory.draft().finished(studentUser).build({ course, creator: studentUser });
 
-					await em.persistAndFlush([task, studentAccount, studentUser]);
+					await em.persist([task, studentAccount, studentUser]).flush();
 					em.clear();
 
 					const loggedInClient = await apiClient.login(studentAccount);
@@ -443,7 +443,7 @@ describe('Task controller (API)', () => {
 					const { studentAccount: otherAccount, studentUser: otherUser } = UserAndAccountTestFactory.buildStudent();
 					const task = taskFactory.draft().finished(studentUser).build({ course, creator: otherUser });
 
-					await em.persistAndFlush([task, studentAccount, studentUser, otherAccount, otherUser]);
+					await em.persist([task, studentAccount, studentUser, otherAccount, otherUser]).flush();
 					em.clear();
 
 					const loggedInClient = await apiClient.login(studentAccount);
@@ -457,7 +457,7 @@ describe('Task controller (API)', () => {
 					const { course, studentAccount, studentUser } = setup();
 					const task = taskFactory.finished(studentUser).build({ course });
 
-					await em.persistAndFlush([task, studentAccount, studentUser]);
+					await em.persist([task, studentAccount, studentUser]).flush();
 					em.clear();
 
 					const loggedInClient = await apiClient.login(studentAccount);
@@ -484,7 +484,7 @@ describe('Task controller (API)', () => {
 					const { course, studentAccount, studentUser } = setup();
 					const task = taskFactory.build({ course });
 
-					await em.persistAndFlush([task, studentAccount, studentUser]);
+					await em.persist([task, studentAccount, studentUser]).flush();
 					em.clear();
 
 					const loggedInClient = await apiClient.login(studentAccount);
@@ -499,7 +499,7 @@ describe('Task controller (API)', () => {
 					const lesson = lessonFactory.build({ course, hidden: false });
 					const task = taskFactory.build({ course, lesson });
 
-					await em.persistAndFlush([task, studentAccount, studentUser]);
+					await em.persist([task, studentAccount, studentUser]).flush();
 					em.clear();
 
 					const loggedInClient = await apiClient.login(studentAccount);
@@ -514,7 +514,7 @@ describe('Task controller (API)', () => {
 					const lesson = lessonFactory.build({ course, hidden: false });
 					const task = taskFactory.finished(studentUser).build({ course, lesson });
 
-					await em.persistAndFlush([task, studentAccount, studentUser]);
+					await em.persist([task, studentAccount, studentUser]).flush();
 					em.clear();
 
 					const loggedInClient = await apiClient.login(studentAccount);
@@ -529,7 +529,7 @@ describe('Task controller (API)', () => {
 					const lesson = lessonFactory.build({ course, hidden: true });
 					const task = taskFactory.build({ course, lesson });
 
-					await em.persistAndFlush([task, studentAccount, studentUser]);
+					await em.persist([task, studentAccount, studentUser]).flush();
 					em.clear();
 
 					const loggedInClient = await apiClient.login(studentAccount);
@@ -544,7 +544,7 @@ describe('Task controller (API)', () => {
 					const lesson = lessonFactory.build({ course, hidden: true });
 					const task = taskFactory.finished(studentUser).build({ course, lesson });
 
-					await em.persistAndFlush([task, studentAccount, studentUser]);
+					await em.persist([task, studentAccount, studentUser]).flush();
 					em.clear();
 
 					const loggedInClient = await apiClient.login(studentAccount);
@@ -558,7 +558,7 @@ describe('Task controller (API)', () => {
 					const { course, studentAccount, studentUser } = setup();
 					const task = taskFactory.draft().build({ course, creator: studentUser });
 
-					await em.persistAndFlush([task, studentAccount, studentUser]);
+					await em.persist([task, studentAccount, studentUser]).flush();
 					em.clear();
 
 					const loggedInClient = await apiClient.login(studentAccount);
@@ -572,7 +572,7 @@ describe('Task controller (API)', () => {
 					const { course, studentAccount, studentUser } = setup();
 					const task = taskFactory.draft().finished(studentUser).build({ course, creator: studentUser });
 
-					await em.persistAndFlush([task, studentAccount, studentUser]);
+					await em.persist([task, studentAccount, studentUser]).flush();
 					em.clear();
 
 					const loggedInClient = await apiClient.login(studentAccount);
@@ -587,7 +587,7 @@ describe('Task controller (API)', () => {
 					const { studentAccount: otherAccount, studentUser: otherUser } = UserAndAccountTestFactory.buildStudent();
 					const task = taskFactory.draft().finished(studentUser).build({ course, creator: otherUser });
 
-					await em.persistAndFlush([task, studentAccount, studentUser, otherAccount, otherUser]);
+					await em.persist([task, studentAccount, studentUser, otherAccount, otherUser]).flush();
 					em.clear();
 
 					const loggedInClient = await apiClient.login(studentAccount);
@@ -601,7 +601,7 @@ describe('Task controller (API)', () => {
 					const { course, studentAccount, studentUser } = setup();
 					const task = taskFactory.finished(studentUser).build({ course });
 
-					await em.persistAndFlush([task, studentAccount, studentUser]);
+					await em.persist([task, studentAccount, studentUser]).flush();
 					em.clear();
 
 					const loggedInClient = await apiClient.login(studentAccount);
@@ -624,7 +624,7 @@ describe('Task controller (API)', () => {
 					const { course, studentAccount, studentUser } = setup();
 					const task = taskFactory.build({ course });
 
-					await em.persistAndFlush([task, studentAccount, studentUser]);
+					await em.persist([task, studentAccount, studentUser]).flush();
 					em.clear();
 
 					const loggedInClient = await apiClient.login(studentAccount);
@@ -639,7 +639,7 @@ describe('Task controller (API)', () => {
 					const lesson = lessonFactory.build({ course, hidden: false });
 					const task = taskFactory.build({ course, lesson });
 
-					await em.persistAndFlush([task, studentAccount, studentUser]);
+					await em.persist([task, studentAccount, studentUser]).flush();
 					em.clear();
 
 					const loggedInClient = await apiClient.login(studentAccount);
@@ -654,7 +654,7 @@ describe('Task controller (API)', () => {
 					const lesson = lessonFactory.build({ course, hidden: false });
 					const task = taskFactory.finished(studentUser).build({ course, lesson });
 
-					await em.persistAndFlush([task, studentAccount, studentUser]);
+					await em.persist([task, studentAccount, studentUser]).flush();
 					em.clear();
 
 					const loggedInClient = await apiClient.login(studentAccount);
@@ -669,7 +669,7 @@ describe('Task controller (API)', () => {
 					const lesson = lessonFactory.build({ course, hidden: true });
 					const task = taskFactory.build({ course, lesson });
 
-					await em.persistAndFlush([task, studentAccount, studentUser]);
+					await em.persist([task, studentAccount, studentUser]).flush();
 					em.clear();
 
 					const loggedInClient = await apiClient.login(studentAccount);
@@ -684,7 +684,7 @@ describe('Task controller (API)', () => {
 					const lesson = lessonFactory.build({ course, hidden: true });
 					const task = taskFactory.finished(studentUser).build({ course, lesson });
 
-					await em.persistAndFlush([task, studentAccount, studentUser]);
+					await em.persist([task, studentAccount, studentUser]).flush();
 					em.clear();
 
 					const loggedInClient = await apiClient.login(studentAccount);
@@ -698,7 +698,7 @@ describe('Task controller (API)', () => {
 					const { course, studentAccount, studentUser } = setup();
 					const task = taskFactory.draft().build({ course, creator: studentUser });
 
-					await em.persistAndFlush([task, studentAccount, studentUser]);
+					await em.persist([task, studentAccount, studentUser]).flush();
 					em.clear();
 
 					const loggedInClient = await apiClient.login(studentAccount);
@@ -712,7 +712,7 @@ describe('Task controller (API)', () => {
 					const { course, studentAccount, studentUser } = setup();
 					const task = taskFactory.draft().finished(studentUser).build({ course, creator: studentUser });
 
-					await em.persistAndFlush([task, studentAccount, studentUser]);
+					await em.persist([task, studentAccount, studentUser]).flush();
 					em.clear();
 
 					const loggedInClient = await apiClient.login(studentAccount);
@@ -727,7 +727,7 @@ describe('Task controller (API)', () => {
 					const { studentAccount: otherAccount, studentUser: otherUser } = UserAndAccountTestFactory.buildStudent();
 					const task = taskFactory.draft().finished(studentUser).build({ course, creator: otherUser });
 
-					await em.persistAndFlush([task, studentAccount, studentUser, otherAccount, otherUser]);
+					await em.persist([task, studentAccount, studentUser, otherAccount, otherUser]).flush();
 					em.clear();
 
 					const loggedInClient = await apiClient.login(studentAccount);
@@ -741,7 +741,7 @@ describe('Task controller (API)', () => {
 					const { course, studentAccount, studentUser } = setup();
 					const task = taskFactory.finished(studentUser).build({ course });
 
-					await em.persistAndFlush([task, studentAccount, studentUser]);
+					await em.persist([task, studentAccount, studentUser]).flush();
 					em.clear();
 
 					const loggedInClient = await apiClient.login(studentAccount);

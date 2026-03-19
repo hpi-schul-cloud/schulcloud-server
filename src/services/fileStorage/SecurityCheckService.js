@@ -1,8 +1,7 @@
 const { FileModel, SecurityCheckStatusTypes } = require('./model');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const hooks = require('./hooks/SecurityCheckService.hooks.js');
 const logger = require('../../logger');
-
-const { SECURITY_CHECK_SERVICE_PATH } = require('../../../config/globals');
 
 class SecurityCheckService {
 	async update(id, data) {
@@ -30,6 +29,7 @@ class SecurityCheckService {
 	}
 }
 
+const SECURITY_CHECK_SERVICE_PATH = Configuration.get('SECURITY_CHECK_SERVICE_PATH');
 module.exports = {
 	service: (app) => {
 		app.use(SECURITY_CHECK_SERVICE_PATH, new SecurityCheckService());

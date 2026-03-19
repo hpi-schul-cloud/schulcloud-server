@@ -14,6 +14,7 @@ import { UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { setupEntities } from '@testing/database';
+import { InternalCollaborativeStorageAdapterConfig } from '../../collaborative-storage-adapter.config';
 import { TeamRolePermissionsDto } from '../../dto/team-role-permissions.dto';
 import { NextcloudClient } from './nextcloud.client';
 import { NextcloudStrategy } from './nextcloud.strategy';
@@ -36,6 +37,7 @@ describe('NextCloudStrategy', () => {
 	let module: TestingModule;
 	let strategy: NextcloudStrategySpec;
 
+	let logger: DeepMocked<LegacyLogger>;
 	let client: DeepMocked<NextcloudClient>;
 	let pseudonymService: DeepMocked<PseudonymService>;
 	let userService: DeepMocked<UserService>;
@@ -50,19 +52,19 @@ describe('NextCloudStrategy', () => {
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
-				NextcloudStrategySpec,
+				{
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
+				},
 				{
 					provide: NextcloudClient,
-					useValue: createMock<NextcloudClient>({ oidcInternalName: toolName }),
+					useValue: createMock<NextcloudClient>(),
 				},
 				{
 					provide: PseudonymService,
 					useValue: createMock<PseudonymService>(),
 				},
-				{
-					provide: LegacyLogger,
-					useValue: createMock<LegacyLogger>(),
-				},
+
 				{
 					provide: ExternalToolService,
 					useValue: createMock<ExternalToolService>(),
@@ -74,11 +76,14 @@ describe('NextCloudStrategy', () => {
 			],
 		}).compile();
 
-		strategy = module.get(NextcloudStrategySpec);
+		logger = module.get(LegacyLogger);
 		client = module.get(NextcloudClient);
 		pseudonymService = module.get(PseudonymService);
 		userService = module.get(UserService);
 		externalToolService = module.get(ExternalToolService);
+		const config = {} as InternalCollaborativeStorageAdapterConfig;
+
+		strategy = new NextcloudStrategySpec(logger, client, pseudonymService, externalToolService, userService, config);
 
 		await setupEntities([User]);
 	});

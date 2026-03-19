@@ -1,4 +1,4 @@
-import { CourseCommonCartridgeMetadataResponse } from '@infra/courses-client';
+import { CourseCommonCartridgeMetadataResponse } from '@infra/common-cartridge-clients';
 import { CourseFileIdsResponse } from './common-cartridge.response';
 
 export class CourseExportBodyResponse {

@@ -1,3 +1,5 @@
+import { RegisterTimeoutConfig } from '@core/interceptor/register-timeout-config.decorator';
+import { ConfigurationModule } from '@infra/configuration';
 import { AuthorizationModule } from '@modules/authorization';
 import { AuthorizationReferenceModule } from '@modules/authorization-reference';
 import { ClassModule } from '@modules/class';
@@ -11,10 +13,12 @@ import { UserModule } from '@modules/user';
 import { Module } from '@nestjs/common';
 import { CourseRoomsController } from './controller/course-rooms.controller';
 import { DashboardController } from './controller/dashboard.controller';
+import { LEARNROOM_CONFIG_TOKEN, LearnroomConfig } from './learnroom.config';
 import { LearnroomModule } from './learnroom.module';
 import { RoomBoardResponseMapper } from './mapper/room-board-response.mapper';
 import { DashboardModelMapper, DashboardRepo, LegacyBoardRepo } from './repo';
 import { DASHBOARD_REPO } from './repo/mikro-orm/dashboard.repo';
+import { LEARNROOM_TIMEOUT_CONFIG_TOKEN, LearnroomTimeoutConfig } from './timeout.config';
 import {
 	CourseCopyUC,
 	CourseRoomsAuthorisationService,
@@ -41,6 +45,8 @@ import {
 		UserModule,
 		ClassModule,
 		CourseModule,
+		ConfigurationModule.register(LEARNROOM_CONFIG_TOKEN, LearnroomConfig),
+		ConfigurationModule.register(LEARNROOM_TIMEOUT_CONFIG_TOKEN, LearnroomTimeoutConfig),
 	],
 	controllers: [DashboardController, CourseRoomsController],
 	providers: [
@@ -60,4 +66,5 @@ import {
 		LegacyBoardRepo,
 	],
 })
+@RegisterTimeoutConfig(LEARNROOM_TIMEOUT_CONFIG_TOKEN)
 export class LearnroomApiModule {}

@@ -1,4 +1,4 @@
-import { FileRecordParentType } from '@infra/rabbitmq';
+import { FileRecordParentType } from '../interfaces';
 import { FileDto } from './file.dto';
 
 describe('FileDto', () => {

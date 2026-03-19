@@ -1,5 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { MailService } from '@infra/mail';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { ROOM_CONFIG_TOKEN } from '@modules/room/room.config';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ValidationError } from '@shared/common/error';
@@ -16,6 +18,7 @@ describe('RoomService', () => {
 	let service: RoomService;
 	let roomRepo: DeepMocked<RoomRepo>;
 	let eventBus: DeepMocked<EventBus>;
+	let mailService: DeepMocked<MailService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -29,12 +32,25 @@ describe('RoomService', () => {
 					provide: EventBus,
 					useValue: createMock<EventBus>(),
 				},
+				{
+					provide: MailService,
+					useValue: createMock<MailService>(),
+				},
+				{
+					provide: ROOM_CONFIG_TOKEN,
+					useValue: {
+						hostUrl: 'http://localhost:3000',
+						fromEmailAddress: 'example@sender.com',
+						productName: 'dBildungscloud',
+					},
+				},
 			],
 		}).compile();
 
 		service = module.get<RoomService>(RoomService);
 		roomRepo = module.get(RoomRepo);
 		eventBus = module.get(EventBus);
+		mailService = module.get(MailService);
 	});
 
 	afterAll(async () => {
@@ -221,6 +237,38 @@ describe('RoomService', () => {
 			const result = service.canEditorManageVideoconferences(room);
 
 			expect(result).toEqual(false);
+		});
+	});
+
+	describe('sendRoomWelcomeMail', () => {
+		const smtpSender = 'example@sender.com';
+		const roomName = 'My Test Room';
+
+		beforeEach(() => {
+			const mockRoom = {
+				getRoomName: () => roomName,
+			} as Room;
+
+			roomRepo.findById.mockResolvedValue(mockRoom);
+		});
+
+		it('should call mail service to send mail', async () => {
+			const email = 'test@example.com';
+			const roomId = 'room123';
+			const title = `Benachrichtigung über Zugang zum Raum ${roomName}`;
+
+			await service.sendRoomWelcomeMail(email, roomId);
+
+			expect(mailService.send).toHaveBeenCalledTimes(1);
+			expect(mailService.send).toHaveBeenCalledWith({
+				recipients: [email],
+				from: smtpSender,
+				mail: expect.objectContaining({
+					subject: `dBildungscloud: ${title}`,
+					plainTextContent: expect.stringContaining(roomName) as unknown,
+					htmlContent: '',
+				}) as unknown,
+			});
 		});
 	});
 });

@@ -33,15 +33,15 @@ describe('RoomMembership', () => {
 		expect(props).toEqual(roomMembershipProps);
 	});
 
-	it('should get roomId', () => {
+	it('should provide roomId', () => {
 		expect(roomMembership.roomId).toEqual(roomMembershipProps.roomId);
 	});
 
-	it('should get userGroupId', () => {
+	it('should provide userGroupId', () => {
 		expect(roomMembership.userGroupId).toEqual(roomMembershipProps.userGroupId);
 	});
 
-	it('should get schoolId', () => {
+	it('should provide schoolId', () => {
 		expect(roomMembership.schoolId).toEqual(roomMembershipProps.schoolId);
 	});
 });

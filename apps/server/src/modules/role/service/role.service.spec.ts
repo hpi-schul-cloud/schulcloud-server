@@ -40,6 +40,20 @@ describe('RoleService', () => {
 		jest.resetAllMocks();
 	});
 
+	describe('findAll', () => {
+		it('should find all role entities', async () => {
+			const roleEntities = roleFactory.buildList(3);
+			roleRepo.findAll.mockResolvedValue(roleEntities);
+
+			const entities: RoleDto[] = await roleService.findAll();
+
+			expect(entities).toHaveLength(3);
+			expect(entities).toContainEqual(expect.objectContaining({ id: roleEntities[0].id, name: roleEntities[0].name }));
+			expect(entities).toContainEqual(expect.objectContaining({ id: roleEntities[1].id, name: roleEntities[1].name }));
+			expect(entities).toContainEqual(expect.objectContaining({ id: roleEntities[2].id, name: roleEntities[2].name }));
+		});
+	});
+
 	describe('findById', () => {
 		it('should find role entity', async () => {
 			roleRepo.findById.mockResolvedValue(testRoleEntity);

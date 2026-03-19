@@ -79,7 +79,8 @@ class RocketChatUser {
 			const scUser = await this.app.service('users').get(userId, { query: { $populate: 'schoolId' } });
 			if (
 				!(
-					(scUser.schoolId.features || []).includes(SCHOOL_FEATURES.ROCKET_CHAT) || scUser.schoolId.purpose === 'expert'
+					(scUser.schoolId.features || []).includes(SCHOOL_FEATURES.ROCKET_CHAT) ||
+					scUser.schoolId.purpose === 'external_person_school'
 				)
 			) {
 				throw new BadRequest('this users school does not support rocket.chat');

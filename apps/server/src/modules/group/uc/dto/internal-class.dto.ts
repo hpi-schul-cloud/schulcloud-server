@@ -7,10 +7,10 @@ export interface InternalClassDtoProps<T> {
 	type: ClassRootType;
 	name: string;
 	externalSourceName?: string;
+	teacherNames: string[];
 	schoolYear?: string;
 	isUpgradable?: boolean;
 	studentCount: number;
-	teacherNames: string[];
 	original: T;
 }
 
@@ -23,13 +23,13 @@ export class InternalClassDto<T> {
 
 	public externalSourceName?: string;
 
+	public teacherNames: string[];
+
 	public schoolYear?: string;
 
 	public isUpgradable?: boolean;
 
 	public studentCount: number;
-
-	public teacherNames: string[];
 
 	public original: T;
 
@@ -38,10 +38,10 @@ export class InternalClassDto<T> {
 		this.type = props.type;
 		this.name = props.name;
 		this.externalSourceName = props.externalSourceName;
+		this.teacherNames = props.teacherNames;
 		this.schoolYear = props.schoolYear;
 		this.isUpgradable = props.isUpgradable;
 		this.studentCount = props.studentCount;
-		this.teacherNames = props.teacherNames;
 		this.original = props.original;
 	}
 

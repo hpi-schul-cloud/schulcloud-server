@@ -1,12 +1,11 @@
+import { EntityData, EntityManager, EntityName, ObjectId } from '@mikro-orm/mongodb';
 import { Inject, Injectable } from '@nestjs/common';
 import { BaseDomainObjectRepo } from '@shared/repo/base-domain-object.repo';
 import { RuntimeConfigDefault, RuntimeConfigValue } from '../domain/runtime-config-value.do';
-import { RuntimeConfigEntity } from './entity/runtime-config.entity';
 import { RuntimeConfigRepo } from '../domain/runtime-config.repo.interface';
-import { EntityData, EntityName } from '@mikro-orm/core/typings';
-import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { RuntimeConfigValueFactory } from './runtime-config-value.factory';
 import { RUNTIME_CONFIG_DEFAULTS } from '../injection-keys';
+import { RuntimeConfigEntity } from './entity/runtime-config.entity';
+import { RuntimeConfigValueFactory } from './runtime-config-value.factory';
 import { RuntimeConfigEntityMapper } from './runtime-config.entity-mapper';
 
 @Injectable()

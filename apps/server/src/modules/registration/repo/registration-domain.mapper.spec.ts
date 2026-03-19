@@ -15,7 +15,7 @@ describe('RegistrationDomainMapper', () => {
 				firstName: 'Test',
 				lastName: 'User',
 				roomIds: [roomId],
-				registrationHash: 'someHash',
+				registrationSecret: 'someSecret',
 			} as RegistrationEntity;
 
 			const result = RegistrationDomainMapper.mapEntityToDo(registrationEntity);
@@ -27,7 +27,7 @@ describe('RegistrationDomainMapper', () => {
 				firstName: 'Test',
 				lastName: 'User',
 				roomIds: [roomId],
-				registrationHash: 'someHash',
+				registrationSecret: 'someSecret',
 			});
 		});
 
@@ -40,7 +40,7 @@ describe('RegistrationDomainMapper', () => {
 				firstName: 'Existing',
 				lastName: 'User',
 				roomIds: [roomId],
-				registrationHash: 'someHash',
+				registrationSecret: 'someSecret',
 				createdAt: new Date('2023-01-01'),
 				updatedAt: new Date('2023-01-01'),
 			});
@@ -51,7 +51,7 @@ describe('RegistrationDomainMapper', () => {
 				firstName: 'Test2',
 				lastName: 'User2',
 				roomIds: [roomId],
-				registrationHash: 'someHash',
+				registrationSecret: 'someSecret',
 				domainObject: existingRegistration,
 			} as RegistrationEntity;
 
@@ -65,7 +65,7 @@ describe('RegistrationDomainMapper', () => {
 				firstName: 'Existing',
 				lastName: 'User',
 				roomIds: [existingRegistration.roomIds[0]],
-				registrationHash: 'someHash',
+				registrationSecret: 'someSecret',
 				createdAt: new Date('2023-01-01'),
 				updatedAt: new Date('2023-01-01'),
 			});
@@ -80,7 +80,7 @@ describe('RegistrationDomainMapper', () => {
 				firstName: 'Test',
 				lastName: 'User',
 				roomIds: [new ObjectId().toHexString()],
-				registrationHash: 'someHash',
+				registrationSecret: 'someSecret',
 			} as RegistrationEntity;
 
 			const result = RegistrationDomainMapper.mapEntityToDo(registrationEntity);
@@ -111,7 +111,7 @@ describe('RegistrationDomainMapper', () => {
 					firstName: 'Test',
 					lastName: 'User #1',
 					roomIds: [new ObjectId().toHexString()],
-					registrationHash: 'someHash',
+					registrationSecret: 'someSecret',
 					createdAt: new Date('2024-10-1'),
 					updatedAt: new Date('2024-10-1'),
 				};

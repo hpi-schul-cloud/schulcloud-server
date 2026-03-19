@@ -18,7 +18,6 @@ const performanceMessurceLimits = {
 module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8' }) => {
 	const {
 		accounts,
-		activation,
 		base64Files,
 		classes,
 		consents,
@@ -35,7 +34,6 @@ module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8' }) => {
 		lessons,
 		login,
 		registrationPins,
-		problems,
 		storageProviders,
 		submissions,
 		teams,
@@ -48,7 +46,6 @@ module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8' }) => {
 		Promise.all(
 			[
 				accounts,
-				activation,
 				base64Files,
 				users,
 				consents,
@@ -57,7 +54,6 @@ module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8' }) => {
 				classes,
 				courses,
 				courseGroups,
-				problems,
 				teams,
 				registrationPins,
 				roles,
@@ -89,7 +85,6 @@ module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8' }) => {
 			// Directly returned array and function that return the array are mixed.
 			// Please check if you change something!
 			accounts: accounts.info,
-			activation: activation.info,
 			base64Files: base64Files.info,
 			classes: classes.info,
 			courseGroups: courseGroups.info,
@@ -99,7 +94,6 @@ module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8' }) => {
 			homeworks: homeworks.info(),
 			lessons: lessons.info(),
 			registrationPins: registrationPins.info,
-			problems: problems.info,
 			schoolGroups: schoolGroups.info(),
 			schools: schools.info,
 			storageProviders: storageProviders.info,
@@ -144,7 +138,6 @@ module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8' }) => {
 
 	return {
 		createTestAccount: accounts.create,
-		createTestActivation: activation.create,
 		createTestBase64File: base64Files.create,
 		createTestClass: classes.create,
 		createTestConsent: consents.create,
@@ -156,7 +149,6 @@ module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8' }) => {
 		createTestHomework: homeworks.create,
 		createTestLesson: lessons.create,
 		createTestRegistrationPin: registrationPins.create,
-		createTestProblem: problems.create,
 		createTestRole: roles.create,
 		createTestSchool: schools.create,
 		createTestSchoolGroup: schoolGroups.create,

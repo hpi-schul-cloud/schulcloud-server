@@ -79,16 +79,18 @@ describe('Room Controller (API)', () => {
 					roomMembershipEntityFactory.build({ userGroupId: userGroupNoOwner.id, roomId: room.id, schoolId: school.id })
 				);
 
-				await em.persistAndFlush([
-					...rooms,
-					...roomsLocked,
-					...roomMemberships,
-					...roomMembershipsNoOnwer,
-					studentAccount,
-					studentUser,
-					userGroupEntity,
-					userGroupNoOwner,
-				]);
+				await em
+					.persist([
+						...rooms,
+						...roomsLocked,
+						...roomMemberships,
+						...roomMembershipsNoOnwer,
+						studentAccount,
+						studentUser,
+						userGroupEntity,
+						userGroupNoOwner,
+					])
+					.flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
@@ -104,6 +106,7 @@ describe('Room Controller (API)', () => {
 						createdAt: room.createdAt.toISOString(),
 						updatedAt: room.updatedAt.toISOString(),
 						isLocked: false,
+						allowedOperations: expect.any(Object) as unknown as Record<string, boolean>,
 					};
 				});
 
@@ -118,6 +121,7 @@ describe('Room Controller (API)', () => {
 						createdAt: room.createdAt.toISOString(),
 						updatedAt: room.updatedAt.toISOString(),
 						isLocked: true,
+						allowedOperations: expect.any(Object) as unknown as Record<string, boolean>,
 					};
 				});
 
@@ -134,7 +138,9 @@ describe('Room Controller (API)', () => {
 				const response = await loggedInClient.get();
 
 				expect(response.status).toBe(HttpStatus.OK);
-				expect(response.body as RoomListResponse).toEqual(expectedResponse);
+
+				const stripUpdatedAt = (arr: { updatedAt: unknown }[]) => arr.map(({ updatedAt, ...rest }) => rest);
+				expect(stripUpdatedAt((response.body as RoomListResponse).data)).toEqual(stripUpdatedAt(expectedResponse.data));
 			});
 
 			it('should return an alphabetically sorted list of rooms', async () => {
@@ -160,7 +166,7 @@ describe('Room Controller (API)', () => {
 							return { id: room.id };
 						}),
 					});
-					await em.persistAndFlush([roomArrangement]);
+					await em.persist([roomArrangement]).flush();
 					em.clear();
 
 					return { ...fixtures, roomArrangement };
@@ -188,7 +194,7 @@ describe('Room Controller (API)', () => {
 							roomId: otherRoom.id,
 							schoolId: school.id,
 						});
-						await em.persistAndFlush([otherRoom, roomMembership]);
+						await em.persist([otherRoom, roomMembership]).flush();
 						em.clear();
 
 						const response = await loggedInClient.get();
@@ -239,14 +245,9 @@ describe('Room Controller (API)', () => {
 					})
 				);
 
-				await em.persistAndFlush([
-					...rooms,
-					...roomMemberships,
-					studentAccount,
-					studentUser,
-					teacherUser,
-					userGroupEntity,
-				]);
+				await em
+					.persist([...rooms, ...roomMemberships, studentAccount, studentUser, teacherUser, userGroupEntity])
+					.flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(studentAccount);

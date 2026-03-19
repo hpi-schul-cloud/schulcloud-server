@@ -46,6 +46,7 @@ describe('UserRepo', () => {
 
 	afterEach(async () => {
 		await cleanupCollections(em);
+		jest.restoreAllMocks();
 	});
 
 	it('should be defined', () => {
@@ -61,7 +62,7 @@ describe('UserRepo', () => {
 		it('should find user without populating roles', async () => {
 			const user = userFactory.buildWithId();
 
-			await em.persistAndFlush(user);
+			await em.persist(user).flush();
 
 			const result = await repo.findById(user.id);
 
@@ -71,16 +72,16 @@ describe('UserRepo', () => {
 
 		it('should find user and populate roles', async () => {
 			const roles3 = roleFactory.buildList(1);
-			await em.persistAndFlush(roles3);
+			await em.persist(roles3).flush();
 
 			const roles2 = roleFactory.buildList(1, { roles: roles3 });
-			await em.persistAndFlush(roles2);
+			await em.persist(roles2).flush();
 
 			const roles1 = roleFactory.buildList(1, { roles: roles2 });
-			await em.persistAndFlush(roles1);
+			await em.persist(roles1).flush();
 
 			const user = userFactory.build({ roles: roles1 });
-			await em.persistAndFlush([user]);
+			await em.persist([user]).flush();
 
 			em.clear();
 
@@ -98,9 +99,9 @@ describe('UserRepo', () => {
 		it('should find user and populate secondary schools', async () => {
 			const school = schoolEntityFactory.buildWithId();
 			const role = roleFactory.buildWithId();
-			await em.persistAndFlush([school, role]);
+			await em.persist([school, role]).flush();
 			const user = userFactory.buildWithId({ secondarySchools: [{ school, role }] });
-			await em.persistAndFlush(user);
+			await em.persist(user).flush();
 
 			em.clear();
 
@@ -127,7 +128,7 @@ describe('UserRepo', () => {
 				school.systems.add(system);
 				user = userFactory.buildWithId({ externalId, school });
 
-				await em.persistAndFlush([user, system, school]);
+				await em.persist([user, system, school]).flush();
 			});
 
 			it('should find a user by its external id', async () => {
@@ -171,7 +172,7 @@ describe('UserRepo', () => {
 				school.systems.add(system);
 				users = userFactory.buildList(2, { externalId, school });
 
-				await em.persistAndFlush([...users, system, school]);
+				await em.persist([...users, system, school]).flush();
 			});
 
 			it('should throw error', async () => {
@@ -192,7 +193,7 @@ describe('UserRepo', () => {
 				const user1 = userFactory.buildWithId({ externalId: 'externalId', school: school1 });
 				const user2 = userFactory.buildWithId({ externalId: 'externalId', school: school2 });
 
-				await em.persistAndFlush([system1, system2, school1, school2, user1, user2]);
+				await em.persist([system1, system2, school1, school2, user1, user2]).flush();
 
 				const result = await repo.findByExternalId(user2.externalId as string, system2.id);
 
@@ -219,7 +220,7 @@ describe('UserRepo', () => {
 			school.systems.add(system);
 			user = userFactory.buildWithId({ externalId, school });
 
-			await em.persistAndFlush([user, system, school]);
+			await em.persist([user, system, school]).flush();
 		});
 
 		it('should find a user by its external id', async () => {
@@ -248,7 +249,7 @@ describe('UserRepo', () => {
 		it('should find user by email', async () => {
 			const originalUsername = 'USER@EXAMPLE.COM';
 			const user = userFactory.build({ email: originalUsername });
-			await em.persistAndFlush([user]);
+			await em.persist([user]).flush();
 			em.clear();
 
 			const result = await repo.findByEmail('USER@EXAMPLE.COM');
@@ -259,7 +260,7 @@ describe('UserRepo', () => {
 		it('should find user by email, ignoring case', async () => {
 			const originalUsername = 'USER@EXAMPLE.COM';
 			const user = userFactory.build({ email: originalUsername });
-			await em.persistAndFlush([user]);
+			await em.persist([user]).flush();
 			em.clear();
 
 			const result = await repo.findByEmail('USER@example.COM');
@@ -274,7 +275,7 @@ describe('UserRepo', () => {
 		it('should not find by wildcard', async () => {
 			const originalUsername = 'USER@EXAMPLE.COM';
 			const user = userFactory.build({ email: originalUsername });
-			await em.persistAndFlush([user]);
+			await em.persist([user]).flush();
 			em.clear();
 
 			const result = await repo.findByEmail('USER@EXAMPLECCOM');
@@ -288,7 +289,7 @@ describe('UserRepo', () => {
 			const email = 'USER@EXAMPLE.COM';
 			const role = roleFactory.buildWithId();
 			const user = userFactory.build({ email, roles: [role] });
-			await em.persistAndFlush([user]);
+			await em.persist([user]).flush();
 			em.clear();
 
 			const result = await repo.findByEmail(email);
@@ -459,12 +460,14 @@ describe('UserRepo', () => {
 						roleId: role.id,
 					};
 
-					await em.persistAndFlush([
-						userWithSchoolAndMultipleRoles,
-						userWithSchoolAndRole,
-						userWithDifferentSchool,
-						userWithDifferentRole,
-					]);
+					await em
+						.persist([
+							userWithSchoolAndMultipleRoles,
+							userWithSchoolAndRole,
+							userWithDifferentSchool,
+							userWithDifferentRole,
+						])
+						.flush();
 
 					return {
 						userWithDifferentRole,
@@ -520,13 +523,9 @@ describe('UserRepo', () => {
 					const userWithDifferentRole = userFactory.buildWithId({ school, roles: [otherRole] });
 					const userWithDifferentSchool = userFactory.buildWithId({ school: otherSchool, roles: [role] });
 
-					await em.persistAndFlush([
-						userOptedIn,
-						userOptedOut,
-						userUndecided,
-						userWithDifferentRole,
-						userWithDifferentSchool,
-					]);
+					await em
+						.persist([userOptedIn, userOptedOut, userUndecided, userWithDifferentRole, userWithDifferentSchool])
+						.flush();
 
 					return {
 						userOptedOut,
@@ -610,7 +609,7 @@ describe('UserRepo', () => {
 		});
 
 		const setupFind = async () => {
-			const query = {
+			let query = {
 				schoolId: undefined,
 				isOutdated: undefined,
 				lastLoginSystemChangeSmallerThan: undefined,
@@ -618,6 +617,11 @@ describe('UserRepo', () => {
 				lastLoginSystemChangeBetweenEnd: undefined,
 				lastLoginSystemChangeBetweenStart: undefined,
 			};
+			const deletedFilter = {
+				$or: [{ deletedAt: { $exists: false } }, { deletedAt: null }, { deletedAt: { $gte: expect.any(Date) } }],
+			};
+
+			query = { ...query, ...deletedFilter };
 
 			const options: IFindOptions<UserDo> = {};
 
@@ -628,16 +632,16 @@ describe('UserRepo', () => {
 			const userB = userFactory.buildWithId({ firstName: 'B' });
 			const userC = userFactory.buildWithId({ firstName: 'C' });
 			const users = [userA, userB, userC];
-			await em.persistAndFlush(users);
+			await em.persist(users).flush();
 
 			const emFindAndCountSpy = jest.spyOn(em, 'findAndCount');
 
-			return { query, options, users, emFindAndCountSpy };
+			return { query, options, users, emFindAndCountSpy, deletedFilter };
 		};
 
 		describe('sorting', () => {
 			it('should create queryOrderMap with options.order', async () => {
-				const { query, options, emFindAndCountSpy } = await setupFind();
+				const { query, options, emFindAndCountSpy, deletedFilter } = await setupFind();
 				options.order = {
 					id: SortOrder.asc,
 				};
@@ -646,7 +650,7 @@ describe('UserRepo', () => {
 
 				expect(emFindAndCountSpy).toHaveBeenCalledWith(
 					User,
-					{},
+					deletedFilter,
 					expect.objectContaining<FindOptions<User>>({
 						orderBy: expect.objectContaining<QueryOrderMap<User>>({ _id: options.order.id }) as QueryOrderMap<User>,
 					})
@@ -654,14 +658,14 @@ describe('UserRepo', () => {
 			});
 
 			it('should create queryOrderMap with an empty object', async () => {
-				const { query, options, emFindAndCountSpy } = await setupFind();
+				const { query, options, emFindAndCountSpy, deletedFilter } = await setupFind();
 				options.order = undefined;
 
 				await repo.find(query, options);
 
 				expect(emFindAndCountSpy).toHaveBeenCalledWith(
 					User,
-					{},
+					deletedFilter,
 					expect.objectContaining<FindOptions<User>>({
 						orderBy: expect.objectContaining<QueryOrderMap<User>>({}) as QueryOrderMap<User>,
 					})
@@ -742,6 +746,9 @@ describe('UserRepo', () => {
 					lastLoginSystemChangeBetweenStart: new Date(),
 					lastLoginSystemChangeBetweenEnd: new Date(),
 				};
+				const deletedFilter = {
+					$or: [{ deletedAt: { $exists: false } }, { deletedAt: null }, { deletedAt: { $gte: expect.any(Date) } }],
+				};
 
 				const options: IFindOptions<UserDo> = {};
 
@@ -752,15 +759,15 @@ describe('UserRepo', () => {
 				const userB = userFactory.buildWithId({ firstName: 'B' });
 				const userC = userFactory.buildWithId({ firstName: 'C' });
 				const users = [userA, userB, userC];
-				await em.persistAndFlush(users);
+				await em.persist(users).flush();
 
 				const emFindAndCountSpy = jest.spyOn(em, 'findAndCount');
 
-				return { query, options, users, emFindAndCountSpy };
+				return { query, options, users, emFindAndCountSpy, deletedFilter };
 			};
 
 			it('should add query to scope', async () => {
-				const { query, options, emFindAndCountSpy } = await setup();
+				const { query, options, emFindAndCountSpy, deletedFilter } = await setup();
 
 				await repo.find(query, options);
 
@@ -801,6 +808,7 @@ describe('UserRepo', () => {
 									$eq: query.outdatedSince,
 								},
 							},
+							deletedFilter,
 						],
 					},
 					expect.objectContaining<FindOptions<User>>({
@@ -834,7 +842,7 @@ describe('UserRepo', () => {
 
 				const user = userFactory.buildWithId({ roles: [role] });
 
-				await em.persistAndFlush([user, role]);
+				await em.persist([user, role]).flush();
 				em.clear();
 
 				return { user, role };

@@ -1,4 +1,4 @@
-import { ObjectId } from '@mikro-orm/mongodb';
+import { EntityName, ObjectId } from '@mikro-orm/mongodb';
 import type { Role } from '@modules/role/repo';
 import type { SchoolEntity } from '@modules/school/repo';
 import { Injectable } from '@nestjs/common';
@@ -11,7 +11,7 @@ import { User } from './user.entity';
 
 @Injectable()
 export class UserMikroOrmRepo extends BaseRepo<User> {
-	get entityName(): typeof User {
+	get entityName(): EntityName<User> {
 		return User;
 	}
 
@@ -24,6 +24,19 @@ export class UserMikroOrmRepo extends BaseRepo<User> {
 		}
 
 		return user;
+	}
+
+	public async findByIds(ids: EntityId[], populate = false): Promise<User[]> {
+		const users = await this._em.find(User, { id: { $in: ids } });
+
+		if (populate) {
+			await this._em.populate(users, ['roles', 'school.id', 'school.name', 'school.systems', 'school.currentYear']);
+			for (const user of users) {
+				await this.populateRoles(user.roles.getItems());
+			}
+		}
+
+		return users;
 	}
 
 	public async findByIdOrNull(id: EntityId, populate = false): Promise<User | null> {
@@ -86,6 +99,11 @@ export class UserMikroOrmRepo extends BaseRepo<User> {
 		});
 
 		return deletedUserNumber;
+	}
+
+	public async flagAsDeleted(userId: EntityId, deletedDate?: Date): Promise<void> {
+		const deletedAt = deletedDate ?? new Date();
+		await this._em.nativeUpdate(this.entityName, { id: userId }, { deletedAt });
 	}
 
 	public async getParentEmailsFromUser(userId: EntityId): Promise<string[]> {

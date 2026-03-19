@@ -1,17 +1,16 @@
-import { HttpService } from '@nestjs/axios';
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { ErrorUtils } from '@core/error/utils';
-import { firstValueFrom } from 'rxjs';
+import { HttpService } from '@nestjs/axios';
+import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { AxiosResponse, HttpStatusCode } from 'axios';
+import { firstValueFrom } from 'rxjs';
+import { DELETION_CONSOLE_CONFIG_TOKEN, DeletionConsoleConfig } from '../deletion-console.config';
 import { DeletionRequestInput, DeletionRequestOutput } from './interface';
-import { DeletionConsoleConfig } from '../deletion.config';
 
 @Injectable()
 export class DeletionClient {
 	constructor(
 		private readonly httpService: HttpService,
-		private readonly configService: ConfigService<DeletionConsoleConfig, true>
+		@Inject(DELETION_CONSOLE_CONFIG_TOKEN) private readonly config: DeletionConsoleConfig
 	) {}
 
 	public async queueDeletionRequest(input: DeletionRequestInput): Promise<DeletionRequestOutput> {
@@ -41,7 +40,7 @@ export class DeletionClient {
 
 	private async getDeletionRequestIds(limit?: number, runFailed?: boolean): Promise<string[]> {
 		try {
-			const baseUrl = this.configService.get('ADMIN_API_CLIENT_BASE_URL', { infer: true });
+			const baseUrl = this.config.adminApiClientBaseUrl;
 			const endpoint = '/admin/api/v1/deletionExecutions';
 			const getDeletionRequestsEndpoint = new URL(endpoint, baseUrl);
 
@@ -66,7 +65,7 @@ export class DeletionClient {
 
 	private async postDeletionRequest(input: DeletionRequestInput): Promise<AxiosResponse<DeletionRequestOutput, any>> {
 		const headers = this.createDefaultHeaders();
-		const baseUrl = this.configService.get('ADMIN_API_CLIENT_BASE_URL', { infer: true });
+		const baseUrl = this.config.adminApiClientBaseUrl;
 		const postDeletionRequestsEndpoint = new URL('/admin/api/v1/deletionRequests', baseUrl).toString();
 
 		const request = this.httpService.post<DeletionRequestOutput>(postDeletionRequestsEndpoint, input, headers);
@@ -78,7 +77,7 @@ export class DeletionClient {
 	private async postDeletionExecutionRequest(ids: string[]): Promise<AxiosResponse<any, any>> {
 		const defaultHeaders = this.createDefaultHeaders();
 
-		const baseUrl = this.configService.get('ADMIN_API_CLIENT_BASE_URL', { infer: true });
+		const baseUrl = this.config.adminApiClientBaseUrl;
 		const endpoint = '/admin/api/v1/deletionExecutions';
 
 		const postDeletionExecutionsEndpoint = new URL(endpoint, baseUrl);
@@ -94,7 +93,7 @@ export class DeletionClient {
 	}
 
 	private createDefaultHeaders() {
-		const apiKey = this.configService.get('ADMIN_API_CLIENT_API_KEY', { infer: true });
+		const apiKey = this.config.adminApiClientApiKey;
 
 		return {
 			headers: { 'X-Api-Key': apiKey },

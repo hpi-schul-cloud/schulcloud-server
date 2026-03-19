@@ -2,7 +2,7 @@ import { DynamicModule, Module } from '@nestjs/common';
 import { RuntimeConfigDefault } from './domain/runtime-config-value.do';
 import { RuntimeConfigMikroOrmRepo } from './repo/runtime-config.repo';
 import { RuntimeConfigService } from './domain/runtime-config.service';
-import { RUNTIME_CONFIG_DEFAULTS } from './injection-keys';
+import { RUNTIME_CONFIG_DEFAULTS, RUNTIME_CONFIG_REPO } from './injection-keys';
 
 interface RuntimeConfigModuleOptions {
 	defaults: RuntimeConfigDefault[];
@@ -20,7 +20,7 @@ export class RuntimeConfigModule {
 					useValue: options.defaults,
 				},
 				{
-					provide: RUNTIME_CONFIG_DEFAULTS,
+					provide: RUNTIME_CONFIG_REPO,
 					useClass: RuntimeConfigMikroOrmRepo,
 				},
 			],

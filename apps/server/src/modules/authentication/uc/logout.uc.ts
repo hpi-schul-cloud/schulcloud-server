@@ -1,12 +1,11 @@
-import { Account } from '@modules/account';
-import { BadRequestException, Injectable } from '@nestjs/common';
 import { ErrorLoggable } from '@core/error/loggable';
 import { Logger } from '@core/logger';
 import { ICurrentUser } from '@infra/auth-guard';
-import { ConfigService } from '@nestjs/config';
-import { AuthenticationService, LogoutService } from '../services';
-import { AuthenticationConfig } from '../authentication-config';
+import { Account } from '@modules/account';
+import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { AUTHENTICATION_CONFIG_TOKEN, AuthenticationConfig } from '../authentication-config';
 import { ExternalSystemLogoutIsDisabledLoggableException } from '../errors';
+import { AuthenticationService, LogoutService } from '../services';
 
 @Injectable()
 export class LogoutUc {
@@ -14,7 +13,7 @@ export class LogoutUc {
 		private readonly authenticationService: AuthenticationService,
 		private readonly logoutService: LogoutService,
 		private readonly logger: Logger,
-		private readonly configService: ConfigService<AuthenticationConfig, true>
+		@Inject(AUTHENTICATION_CONFIG_TOKEN) private readonly config: AuthenticationConfig
 	) {}
 
 	public async logout(jwt: string): Promise<void> {
@@ -38,7 +37,7 @@ export class LogoutUc {
 	}
 
 	public async externalSystemLogout(user: ICurrentUser): Promise<void> {
-		if (!this.configService.get<boolean>('FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED')) {
+		if (!this.config.externalSystemLogoutEnabled) {
 			throw new ExternalSystemLogoutIsDisabledLoggableException();
 		}
 

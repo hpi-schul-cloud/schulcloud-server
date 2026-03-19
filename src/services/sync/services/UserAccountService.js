@@ -34,26 +34,26 @@ class UserAccountService {
 
 	async createAccount(account) {
 		return this.lock.runExclusive(async () =>
-			RequestContext.createAsync(this.app.service('nest-orm').em, async () => {
+			RequestContext.create(this.app.service('nest-orm').em, async () => {
 				const newAccountData = {
 					userId: account.userId,
 					username: account.username.toLowerCase(),
 					systemId: account.systemId,
 					activated: true,
 				};
-				return this.app.service('nest-account-service').save(newAccountData);
+				return await this.app.service('nest-account-service').save(newAccountData);
 			})
 		);
 	}
 
 	async updateAccount(userId, account) {
 		return this.lock.runExclusive(async () =>
-			RequestContext.createAsync(this.app.service('nest-orm').em, async () => {
+			RequestContext.create(this.app.service('nest-orm').em, async () => {
 				const nestAccountService = this.app.service('nest-account-service');
 				const createdAccount = await nestAccountService.findByUserId(userId);
 				createdAccount.username = account.username.toLowerCase();
 				createdAccount.activated = true;
-				return this.app.service('nest-account-service').save(createdAccount);
+				return await this.app.service('nest-account-service').save(createdAccount);
 			})
 		);
 	}

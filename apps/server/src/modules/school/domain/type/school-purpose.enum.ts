@@ -1,5 +1,5 @@
 export enum SchoolPurpose {
-	EXPERT = 'expert',
+	EXTERNAL_PERSON_SCHOOL = 'external_person_school',
 	TOMBSTONE = 'tombstone',
 	DEMO = 'demo',
 	TEST = 'test',

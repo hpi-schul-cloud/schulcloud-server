@@ -1,10 +1,8 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { RoleName } from '@modules/role';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountService } from '@modules/account';
-import { UserDo, UserService } from '@modules/user';
-import { userDoFactory } from '@modules/user/testing';
+import { RoleName } from '@modules/role';
 import { Test, TestingModule } from '@nestjs/testing';
-import { ObjectId } from 'bson';
 import { CreateDeletionBatchParams, DeletionBatchService } from '../../domain/service';
 import { deletionBatchFactory } from '../../domain/testing';
 import { BatchStatus, DomainName } from '../../domain/types';
@@ -14,7 +12,6 @@ import { DeletionBatchUc } from './deletion-batch.uc';
 describe('DeletionBatchUc', () => {
 	let module: TestingModule;
 	let uc: DeletionBatchUc;
-	let userService: DeepMocked<UserService>;
 	let deletionBatchService: DeepMocked<DeletionBatchService>;
 
 	beforeAll(async () => {
@@ -26,10 +23,6 @@ describe('DeletionBatchUc', () => {
 					useValue: createMock<AccountService>(),
 				},
 				{
-					provide: UserService,
-					useValue: createMock<UserService>(),
-				},
-				{
 					provide: DeletionBatchService,
 					useValue: createMock<DeletionBatchService>(),
 				},
@@ -37,7 +30,6 @@ describe('DeletionBatchUc', () => {
 		}).compile();
 
 		uc = module.get(DeletionBatchUc);
-		userService = module.get(UserService);
 		deletionBatchService = module.get(DeletionBatchService);
 	});
 
@@ -48,14 +40,8 @@ describe('DeletionBatchUc', () => {
 	describe('createDeletionBatch', () => {
 		describe('when contains students, teachers, and invalid ids', () => {
 			const setup = () => {
-				const student: UserDo = userDoFactory.buildWithId({
-					id: new ObjectId().toHexString(),
-					roles: [{ id: 'roleid', name: RoleName.STUDENT }],
-				});
-				const teacher: UserDo = userDoFactory.buildWithId({
-					id: new ObjectId().toHexString(),
-					roles: [{ id: 'roleid', name: RoleName.TEACHER }],
-				});
+				const studentId = new ObjectId().toHexString();
+				const teacherId = new ObjectId().toHexString();
 				const invalidId = new ObjectId().toHexString();
 
 				const createDeletionBatchParams: CreateDeletionBatchParams = {
@@ -63,35 +49,46 @@ describe('DeletionBatchUc', () => {
 					targetRefDomain: DomainName.USER,
 					// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 					// @ts-ignore
-					targetRefIds: [student.id, teacher.id, invalidId],
+					targetRefIds: [studentId, teacherId, invalidId],
 				};
 
-				userService.findByIdOrNull
-					.mockResolvedValueOnce(student)
-					.mockResolvedValueOnce(teacher)
-					.mockResolvedValueOnce(null);
+				deletionBatchService.filterUsersByRoles.mockResolvedValue({
+					validUserIds: [studentId],
+					invalidUserIds: [invalidId],
+					skippedUserIds: [teacherId],
+				});
 
-				return { createDeletionBatchParams, student, teacher, invalidId };
+				return { createDeletionBatchParams, studentId, teacherId, invalidId };
 			};
-			it('should call user service to check all ids', async () => {
-				const { createDeletionBatchParams, student, teacher, invalidId } = setup();
+			it('should call filter method with correct parameters', async () => {
+				const { createDeletionBatchParams, studentId, teacherId, invalidId } = setup();
+				const allowedUserRoles = [
+					RoleName.STUDENT,
+					RoleName.COURSESTUDENT,
+					RoleName.TEACHER,
+					RoleName.COURSETEACHER,
+					RoleName.COURSESUBSTITUTIONTEACHER,
+					RoleName.ADMINISTRATOR,
+					RoleName.COURSEADMINISTRATOR,
+				];
+
 				await uc.createDeletionBatch(createDeletionBatchParams);
 
-				expect(userService.findByIdOrNull).toHaveBeenCalledTimes(3);
-				expect(userService.findByIdOrNull).toHaveBeenCalledWith(student.id);
-				expect(userService.findByIdOrNull).toHaveBeenCalledWith(teacher.id);
-				expect(userService.findByIdOrNull).toHaveBeenCalledWith(invalidId);
+				expect(deletionBatchService.filterUsersByRoles).toHaveBeenCalledWith(
+					[studentId, teacherId, invalidId],
+					allowedUserRoles
+				);
 			});
 			it('should call service with valid, skipped and invalid ids', async () => {
-				const { createDeletionBatchParams, student, teacher, invalidId } = setup();
+				const { createDeletionBatchParams, studentId, teacherId, invalidId } = setup();
 
 				await uc.createDeletionBatch(createDeletionBatchParams);
 
 				expect(deletionBatchService.createDeletionBatch).toHaveBeenCalledWith(
 					createDeletionBatchParams,
-					[student.id],
+					[studentId],
 					[invalidId],
-					[teacher.id]
+					[teacherId]
 				);
 			});
 		});

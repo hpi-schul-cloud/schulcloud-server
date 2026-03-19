@@ -22,6 +22,8 @@ import { RequestTimeout } from '@shared/common/decorators';
 import { ApiValidationError } from '@shared/common/error';
 import { IFindOptions } from '@shared/domain/interface';
 import { Room } from '../domain';
+import { ROOM_INCOMING_REQUEST_TIMEOUT_COPY_API_KEY } from '../timeout.config';
+import { AddByEmailBodyParams } from './dto/request/add-by-email.body.params';
 import { AddRoomMembersBodyParams } from './dto/request/add-room-members.body.params';
 import { ChangeRoomRoleBodyParams } from './dto/request/change-room-role.body.params';
 import { CreateRoomBodyParams } from './dto/request/create-room.body.params';
@@ -32,20 +34,20 @@ import { RoomPaginationParams } from './dto/request/room-pagination.params';
 import { RoomUrlParams } from './dto/request/room.url.params';
 import { UpdateRoomBodyParams } from './dto/request/update-room.body.params';
 import { RoomBoardListResponse } from './dto/response/room-board-list.response';
+import { RoomCreatedResponse } from './dto/response/room-created.response';
 import { RoomDetailsResponse } from './dto/response/room-details.response';
 import { RoomInvitationLinkListResponse } from './dto/response/room-invitation-link-list.response';
-import { RoomItemResponse } from './dto/response/room-item.response';
 import { RoomListResponse } from './dto/response/room-list.response';
 import { RoomMemberListResponse } from './dto/response/room-member-list.response';
 import { RoomRoleResponse } from './dto/response/room-role.response';
 import { RoomStatsListResponse } from './dto/response/room-stats-list.repsonse';
 import { RoomInvitationLinkMapper } from './mapper/room-invitation-link.mapper';
 import { RoomMapper } from './mapper/room.mapper';
+import { RoomArrangementUc } from './room-arrangement.uc';
+import { RoomContentUc } from './room-content.uc';
 import { RoomCopyUc } from './room-copy.uc';
 import { RoomInvitationLinkUc } from './room-invitation-link.uc';
 import { RoomUc } from './room.uc';
-import { RoomContentUc } from './room-content.uc';
-import { RoomArrangementUc } from './room-arrangement.uc';
 
 @ApiTags('Room')
 @JwtAuthentication()
@@ -113,7 +115,7 @@ export class RoomController {
 
 	@Post()
 	@ApiOperation({ summary: 'Create a new room' })
-	@ApiResponse({ status: HttpStatus.OK, description: 'Returns the details of a room', type: RoomItemResponse })
+	@ApiResponse({ status: HttpStatus.CREATED, type: RoomCreatedResponse })
 	@ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiValidationError })
 	@ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })
 	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
@@ -121,10 +123,10 @@ export class RoomController {
 	public async createRoom(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() createRoomParams: CreateRoomBodyParams
-	): Promise<RoomItemResponse> {
+	): Promise<RoomCreatedResponse> {
 		const room = await this.roomUc.createRoom(currentUser.userId, createRoomParams);
 
-		const response = RoomMapper.mapToRoomItemResponse({ room, isLocked: false });
+		const response = RoomMapper.mapToRoomCreatedResponse(room);
 
 		return response;
 	}
@@ -141,9 +143,9 @@ export class RoomController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: RoomUrlParams
 	): Promise<RoomDetailsResponse> {
-		const { room, permissions } = await this.roomUc.getSingleRoom(currentUser.userId, urlParams.roomId);
+		const { room, allowedOperations } = await this.roomUc.getSingleRoom(currentUser.userId, urlParams.roomId);
 
-		const response = RoomMapper.mapToRoomDetailsResponse(room, permissions);
+		const response = RoomMapper.mapToRoomDetailsResponse(room, allowedOperations);
 
 		return response;
 	}
@@ -217,9 +219,13 @@ export class RoomController {
 		@Param() urlParams: RoomUrlParams,
 		@Body() updateRoomParams: UpdateRoomBodyParams
 	): Promise<RoomDetailsResponse> {
-		const { room, permissions } = await this.roomUc.updateRoom(currentUser.userId, urlParams.roomId, updateRoomParams);
+		const { room, allowedOperations } = await this.roomUc.updateRoom(
+			currentUser.userId,
+			urlParams.roomId,
+			updateRoomParams
+		);
 
-		const response = RoomMapper.mapToRoomDetailsResponse(room, permissions);
+		const response = RoomMapper.mapToRoomDetailsResponse(room, allowedOperations);
 
 		return response;
 	}
@@ -250,6 +256,27 @@ export class RoomController {
 		@Body() bodyParams: AddRoomMembersBodyParams
 	): Promise<RoomRoleResponse> {
 		const roomRole = await this.roomUc.addMembersToRoom(currentUser.userId, urlParams.roomId, bodyParams.userIds);
+		const response = new RoomRoleResponse(roomRole);
+		return response;
+	}
+
+	@Patch(':roomId/members/add-by-email')
+	@ApiOperation({ summary: 'Add external person to room or trigger registration' })
+	@ApiResponse({ status: HttpStatus.OK, description: 'Patching successful', type: RoomRoleResponse })
+	@ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiValidationError })
+	@ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })
+	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
+	@ApiResponse({ status: '5XX', type: ErrorResponse })
+	public async addByEmail(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() urlParams: RoomUrlParams,
+		@Body() bodyParams: AddByEmailBodyParams
+	): Promise<RoomRoleResponse | void> {
+		const roomRole = await this.roomUc.addExternalPersonByEmailToRoom(
+			currentUser.userId,
+			urlParams.roomId,
+			bodyParams.email
+		);
 		const response = new RoomRoleResponse(roomRole);
 		return response;
 	}
@@ -374,7 +401,7 @@ export class RoomController {
 	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
 	@ApiResponse({ status: HttpStatus.NOT_FOUND, type: NotFoundException })
 	@ApiResponse({ status: '5XX', type: ErrorResponse })
-	@RequestTimeout('INCOMING_REQUEST_TIMEOUT_COPY_API')
+	@RequestTimeout(ROOM_INCOMING_REQUEST_TIMEOUT_COPY_API_KEY)
 	public async copyRoom(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: RoomUrlParams

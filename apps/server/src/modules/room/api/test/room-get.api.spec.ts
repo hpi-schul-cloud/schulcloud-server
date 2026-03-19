@@ -7,11 +7,11 @@ import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { Permission } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { roomEntityFactory } from '../../testing/room-entity.factory';
+import { RoomDetailsResponse } from '../dto/response/room-details.response';
 
 describe('Room Controller (API)', () => {
 	let app: INestApplication;
@@ -49,7 +49,7 @@ describe('Room Controller (API)', () => {
 		describe('when id is not a valid mongo id', () => {
 			const setup = async () => {
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persist([studentAccount, studentUser]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
@@ -85,16 +85,18 @@ describe('Room Controller (API)', () => {
 					roomId: room.id,
 					schoolId: school.id,
 				});
-				await em.persistAndFlush([
-					room,
-					studentAccount,
-					studentUser,
-					teacherUser,
-					roomOwnerRole,
-					roomViewerRole,
-					userGroupEntity,
-					roomMembership,
-				]);
+				await em
+					.persist([
+						room,
+						studentAccount,
+						studentUser,
+						teacherUser,
+						roomOwnerRole,
+						roomViewerRole,
+						userGroupEntity,
+						roomMembership,
+					])
+					.flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
@@ -108,7 +110,6 @@ describe('Room Controller (API)', () => {
 					endDate: room.endDate?.toISOString(),
 					createdAt: room.createdAt.toISOString(),
 					updatedAt: room.updatedAt.toISOString(),
-					permissions: [Permission.ROOM_LIST_CONTENT, Permission.ROOM_LEAVE_ROOM],
 					features: room.features,
 				};
 
@@ -120,7 +121,10 @@ describe('Room Controller (API)', () => {
 
 				const response = await loggedInClient.get(room.id);
 				expect(response.status).toBe(HttpStatus.OK);
-				expect(response.body).toEqual(expectedResponse);
+
+				const body = response.body as RoomDetailsResponse;
+				expect(body).toEqual(expect.objectContaining(expectedResponse));
+				expect(body.allowedOperations).toEqual(expect.objectContaining({ accessRoom: true, leaveRoom: true }));
 			});
 		});
 
@@ -128,7 +132,7 @@ describe('Room Controller (API)', () => {
 			const setup = async () => {
 				const room = roomEntityFactory.build();
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-				await em.persistAndFlush([room, teacherAccount, teacherUser]);
+				await em.persist([room, teacherAccount, teacherUser]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);
@@ -152,7 +156,7 @@ describe('Room Controller (API)', () => {
 				const school = schoolEntityFactory.buildWithId();
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({ school });
 
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persist([studentAccount, studentUser]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
@@ -187,7 +191,7 @@ describe('Room Controller (API)', () => {
 					roomId: room.id,
 					schoolId: school.id,
 				});
-				await em.persistAndFlush([room, studentAccount, studentUser, roomViewerRole, userGroupEntity, roomMembership]);
+				await em.persist([room, studentAccount, studentUser, roomViewerRole, userGroupEntity, roomMembership]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
@@ -231,18 +235,20 @@ describe('Room Controller (API)', () => {
 					roomId: room.id,
 					schoolId: school.id,
 				});
-				await em.persistAndFlush([
-					room,
-					adminAccount,
-					adminUser,
-					teacherUser,
-					teacherUser2,
-					studentUser,
-					roomOwnerRole,
-					roomViewerRole,
-					userGroupEntity,
-					roomMembership,
-				]);
+				await em
+					.persist([
+						room,
+						adminAccount,
+						adminUser,
+						teacherUser,
+						teacherUser2,
+						studentUser,
+						roomOwnerRole,
+						roomViewerRole,
+						userGroupEntity,
+						roomMembership,
+					])
+					.flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(adminAccount);
@@ -256,7 +262,6 @@ describe('Room Controller (API)', () => {
 					endDate: room.endDate?.toISOString(),
 					createdAt: room.createdAt.toISOString(),
 					updatedAt: room.updatedAt.toISOString(),
-					permissions: [],
 					features: room.features,
 				};
 
@@ -271,7 +276,9 @@ describe('Room Controller (API)', () => {
 					expect(userGroupEntity).toBeDefined();
 
 					expect(response.status).toBe(HttpStatus.OK);
-					expect(response.body).toEqual(expect.objectContaining(expectedResponse));
+					const body = response.body as unknown as RoomDetailsResponse;
+					expect(body).toEqual(expect.objectContaining(expectedResponse));
+					expect(body.allowedOperations).toEqual(expect.objectContaining({ accessRoom: true, addMembers: true }));
 				});
 			});
 
@@ -283,7 +290,9 @@ describe('Room Controller (API)', () => {
 					expect(userGroupEntity).toBeDefined();
 
 					expect(response.status).toBe(HttpStatus.OK);
-					expect(response.body).toEqual(expect.objectContaining(expectedResponse));
+					const body = response.body as unknown as RoomDetailsResponse;
+					expect(body).toEqual(expect.objectContaining(expectedResponse));
+					expect(body.allowedOperations).toEqual(expect.objectContaining({ accessRoom: true, addMembers: true }));
 				});
 			});
 		});
@@ -337,23 +346,25 @@ describe('Room Controller (API)', () => {
 					schoolId: otherSchool.id,
 				});
 
-				await em.persistAndFlush([
-					school,
-					otherSchool,
-					adminAccount,
-					adminUser,
-					teacherUser,
-					studentUser,
-					room,
-					roomWithOwnStudents,
-					studentUserFromOwnSchool,
-					roomViewerRole,
-					roomOwnerRole,
-					userGroupEntityRoom,
-					userGroupEntityRoomWithOwnStudent,
-					roomMembership,
-					roomMembershipWithOwnStudent,
-				]);
+				await em
+					.persist([
+						school,
+						otherSchool,
+						adminAccount,
+						adminUser,
+						teacherUser,
+						studentUser,
+						room,
+						roomWithOwnStudents,
+						studentUserFromOwnSchool,
+						roomViewerRole,
+						roomOwnerRole,
+						userGroupEntityRoom,
+						userGroupEntityRoomWithOwnStudent,
+						roomMembership,
+						roomMembershipWithOwnStudent,
+					])
+					.flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(adminAccount);

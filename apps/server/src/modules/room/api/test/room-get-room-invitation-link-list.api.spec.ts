@@ -50,7 +50,7 @@ describe('Room Invitation Link Controller (API)', () => {
 		describe('when id is not a valid mongo id', () => {
 			const setup = async () => {
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persist([studentAccount, studentUser]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
@@ -69,7 +69,7 @@ describe('Room Invitation Link Controller (API)', () => {
 			it('should return a 404 error', async () => {
 				const school = schoolEntityFactory.buildWithId();
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({ school });
-				await em.persistAndFlush([school, studentAccount, studentUser]);
+				await em.persist([school, studentAccount, studentUser]).flush();
 				const loggedInClient = await testApiClient.login(studentAccount);
 
 				const someId = new ObjectId().toHexString();
@@ -99,16 +99,18 @@ describe('Room Invitation Link Controller (API)', () => {
 					roomId: room.id,
 					schoolId: school.id,
 				});
-				await em.persistAndFlush([
-					room,
-					...roomInvitationLinks,
-					studentAccount,
-					studentUser,
-					roomAdminRole,
-					userGroupEntity,
-					roomMembership,
-					school,
-				]);
+				await em
+					.persist([
+						room,
+						...roomInvitationLinks,
+						studentAccount,
+						studentUser,
+						roomAdminRole,
+						userGroupEntity,
+						roomMembership,
+						school,
+					])
+					.flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
@@ -133,7 +135,7 @@ describe('Room Invitation Link Controller (API)', () => {
 			const setup = async () => {
 				const room = roomEntityFactory.build();
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-				await em.persistAndFlush([room, teacherAccount, teacherUser]);
+				await em.persist([room, teacherAccount, teacherUser]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);

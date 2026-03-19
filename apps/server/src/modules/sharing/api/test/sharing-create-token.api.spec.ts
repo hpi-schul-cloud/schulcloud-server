@@ -1,6 +1,10 @@
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { courseEntityFactory } from '@modules/course/testing';
+import { groupEntityFactory } from '@modules/group/testing';
+import { roomMembershipEntityFactory } from '@modules/room-membership/testing';
+import { roomEntityFactory } from '@modules/room/testing';
+import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server/server.app.module';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -8,6 +12,7 @@ import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { ShareTokenParentType } from '../../domainobject/share-token.do';
+import { SHARING_PUBLIC_API_CONFIG_TOKEN, SharingPublicApiConfig } from '../../sharing.config';
 import { ShareTokenResponse } from '../dto';
 
 const baseRouteName = '/sharetoken';
@@ -16,6 +21,7 @@ describe(`share token creation (api)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let apiClient: TestApiClient;
+	let config: SharingPublicApiConfig;
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -27,6 +33,7 @@ describe(`share token creation (api)`, () => {
 		em = module.get(EntityManager);
 
 		apiClient = new TestApiClient(app, baseRouteName);
+		config = module.get<SharingPublicApiConfig>(SHARING_PUBLIC_API_CONFIG_TOKEN);
 	});
 
 	afterAll(async () => {
@@ -40,10 +47,10 @@ describe(`share token creation (api)`, () => {
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 			const course = courseEntityFactory.build({ teachers: [teacherUser] });
 
-			await em.persistAndFlush([teacherAccount, teacherUser, course]);
+			await em.persist([teacherAccount, teacherUser, course]).flush();
 			em.clear();
 
-			Configuration.set('FEATURE_COURSE_SHARE', false);
+			config.featureCourseShare = false;
 
 			const loggedInClient = await apiClient.login(teacherAccount);
 
@@ -69,10 +76,10 @@ describe(`share token creation (api)`, () => {
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 			const course = courseEntityFactory.build({ teachers: [teacherUser] });
 
-			await em.persistAndFlush([teacherAccount, teacherUser, course]);
+			await em.persist([teacherAccount, teacherUser, course]).flush();
 			em.clear();
 
-			Configuration.set('FEATURE_COURSE_SHARE', true);
+			config.featureCourseShare = true;
 
 			const loggedInClient = await apiClient.login(teacherAccount);
 
@@ -168,10 +175,10 @@ describe(`share token creation (api)`, () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 				const course = courseEntityFactory.build({ teachers: [teacherUser] });
 
-				await em.persistAndFlush([teacherAccount, teacherUser, course]);
+				await em.persist([teacherAccount, teacherUser, course]).flush();
 				em.clear();
 
-				Configuration.set('FEATURE_COURSE_SHARE', true);
+				config.featureCourseShare = true;
 
 				const loggedInClient = await apiClient.login(teacherAccount);
 
@@ -282,10 +289,10 @@ describe(`share token creation (api)`, () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 				const course = courseEntityFactory.build({ teachers: [teacherUser] });
 
-				await em.persistAndFlush([teacherAccount, teacherUser, course]);
+				await em.persist([teacherAccount, teacherUser, course]).flush();
 				em.clear();
 
-				Configuration.set('FEATURE_COURSE_SHARE', true);
+				config.featureCourseShare = true;
 
 				return { course };
 			};
@@ -299,6 +306,68 @@ describe(`share token creation (api)`, () => {
 				});
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
+			});
+		});
+
+		describe('with valid room payload', () => {
+			const setup = async () => {
+				await cleanupCollections(em);
+
+				const school = schoolEntityFactory.buildWithId();
+				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
+				const { roomOwnerRole } = RoomRolesTestFactory.createRoomRoles();
+				const room = roomEntityFactory.build({ schoolId: school.id });
+				const group = groupEntityFactory.withTypeRoom().buildWithId({
+					organization: school,
+					users: [
+						{
+							user: teacherUser,
+							role: roomOwnerRole,
+						},
+					],
+				});
+				const roomMembership = roomMembershipEntityFactory.build({
+					roomId: room.id,
+					userGroupId: group.id,
+					schoolId: school.id,
+				});
+
+				await em.persist([school, teacherAccount, teacherUser, room, group, roomMembership, roomOwnerRole]).flush();
+				em.clear();
+
+				config.featureRoomShare = true;
+
+				const loggedInClient = await apiClient.login(teacherAccount);
+
+				return { room, user: teacherUser, loggedInClient };
+			};
+
+			it('should return status 201', async () => {
+				const { room, loggedInClient } = await setup();
+
+				const response = await loggedInClient.post(undefined, {
+					parentId: room.id,
+					parentType: ShareTokenParentType.Room,
+				});
+
+				expect(response.status).toEqual(HttpStatus.CREATED);
+			});
+
+			describe('when user is not in the school', () => {
+				it('should return status 403', async () => {
+					const { room, user, loggedInClient } = await setup();
+					user.school = schoolEntityFactory.buildWithId(); // different school
+					await em.persist(user).flush();
+					em.clear();
+
+					const response = await loggedInClient.post(undefined, {
+						parentId: room.id,
+						parentType: ShareTokenParentType.Room,
+						schoolExclusive: true,
+					});
+
+					expect(response.status).toEqual(HttpStatus.FORBIDDEN);
+				});
 			});
 		});
 	});

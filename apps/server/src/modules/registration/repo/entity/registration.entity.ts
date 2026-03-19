@@ -15,12 +15,15 @@ export class RegistrationEntity extends BaseEntityWithTimestamps implements Regi
 	lastName!: string;
 
 	@Index()
-	@Property({ type: 'ObjectId', fieldName: 'roomIds', nullable: false })
+	@Property({ type: 'EntityId[]', fieldName: 'roomIds', nullable: false })
 	roomIds!: EntityId[];
 
 	@Index()
 	@Property({ nullable: false })
-	registrationHash!: string;
+	registrationSecret!: string;
+
+	@Property({ nullable: true })
+	resentAt?: Date;
 
 	@Property({ persist: false })
 	domainObject: Registration | undefined;

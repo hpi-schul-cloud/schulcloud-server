@@ -15,7 +15,7 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { RequestTimeout } from '@shared/common/decorators';
 import { ApiValidationError } from '@shared/common/error';
 import { ShareTokenInfoResponseMapper, ShareTokenResponseMapper } from '../mapper';
-import { ShareTokenUC, ImportTokenUC } from './index';
+import { SHARING_INCOMING_REQUEST_TIMEOUT_COPY_API_KEY } from '../timeout.config';
 import {
 	ShareTokenBodyParams,
 	ShareTokenImportBodyParams,
@@ -23,17 +23,14 @@ import {
 	ShareTokenResponse,
 	ShareTokenUrlParams,
 } from './dto';
-import { ShareTokenPermissionService } from './service';
+import { ImportTokenUC } from './import-token.uc';
+import { ShareTokenUC } from './share-token.uc';
 
 @ApiTags('ShareToken')
 @JwtAuthentication()
 @Controller('sharetoken')
 export class ShareTokenController {
-	constructor(
-		private readonly shareTokenUC: ShareTokenUC,
-		private readonly importTokenUc: ImportTokenUC,
-		private readonly shareTokenPermissionService: ShareTokenPermissionService
-	) {}
+	constructor(private readonly shareTokenUC: ShareTokenUC, private readonly importTokenUc: ImportTokenUC) {}
 
 	@ApiOperation({ summary: 'Create a share token.' })
 	@ApiResponse({ status: 201, type: ShareTokenResponse })
@@ -86,7 +83,7 @@ export class ShareTokenController {
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
 	@ApiResponse({ status: 501, type: NotImplementedException })
 	@Post(':token/import')
-	@RequestTimeout('INCOMING_REQUEST_TIMEOUT_COPY_API')
+	@RequestTimeout(SHARING_INCOMING_REQUEST_TIMEOUT_COPY_API_KEY)
 	public async importShareToken(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() urlParams: ShareTokenUrlParams,

@@ -62,7 +62,7 @@ describe('Room Invitation Link Controller (API)', () => {
 		});
 		roomEntity._id = new ObjectId(roomEntity.id);
 
-		await em.persistAndFlush([roomEntity, userGroupEntity, roomMembership]);
+		await em.persist([roomEntity, userGroupEntity, roomMembership]).flush();
 		em.clear();
 
 		return { roomEntity, roomMembership, userGroupEntity };
@@ -81,7 +81,7 @@ describe('Room Invitation Link Controller (API)', () => {
 				const school = schoolEntityFactory.buildWithId();
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
 				const { roomOwnerRole } = RoomRolesTestFactory.createRoomRoles();
-				await em.persistAndFlush([school, teacherAccount, teacherUser, roomOwnerRole]);
+				await em.persist([school, teacherAccount, teacherUser, roomOwnerRole]).flush();
 				em.clear();
 
 				const { roomEntity } = await createRoomWithGroupEntity({}, [
@@ -126,7 +126,7 @@ describe('Room Invitation Link Controller (API)', () => {
 				const school = schoolEntityFactory.buildWithId();
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
 				const { roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
-				await em.persistAndFlush([teacherAccount, teacherUser, roomViewerRole]);
+				await em.persist([teacherAccount, teacherUser, roomViewerRole]).flush();
 				em.clear();
 
 				const { roomEntity } = await createRoomWithGroupEntity({}, [
@@ -162,7 +162,7 @@ describe('Room Invitation Link Controller (API)', () => {
 		describe('when the request is invalid', () => {
 			const setup = async () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-				await em.persistAndFlush([teacherAccount, teacherUser]);
+				await em.persist([teacherAccount, teacherUser]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);

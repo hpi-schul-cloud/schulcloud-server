@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-return */
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Test, TestingModule } from '@nestjs/testing';
 import { InputFormat } from '@shared/domain/types';
 import { CommonCartridgeXmlResourceType } from '../import/common-cartridge-import.enums';

@@ -28,6 +28,7 @@ export interface BoardNodeAuthorizableProps extends AuthorizableObject {
 
 export interface BoardContextSettings {
 	canRoomEditorManageVideoconference?: boolean;
+	isLocked?: boolean;
 }
 
 export class BoardNodeAuthorizable extends DomainObject<BoardNodeAuthorizableProps> {
@@ -71,6 +72,7 @@ export class BoardNodeAuthorizable extends DomainObject<BoardNodeAuthorizablePro
 				Permission.BOARD_MANAGE_READERS_CAN_EDIT,
 				Permission.BOARD_MANAGE,
 				Permission.BOARD_SHARE_BOARD,
+				Permission.BOARD_RELOCATE_CONTENT,
 			];
 		}
 

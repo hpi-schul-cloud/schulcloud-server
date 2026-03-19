@@ -1,8 +1,9 @@
 import { RegistrationCreateProps } from '../../../domain';
 import { ApiProperty } from '@nestjs/swagger';
+import { SanitizeHtml } from '@shared/controller/transformer';
 import { IsEmail, IsMongoId, IsString } from 'class-validator';
 
-export class CreateRegistrationBodyParams implements RegistrationCreateProps {
+export class CreateOrUpdateRegistrationBodyParams implements RegistrationCreateProps {
 	@IsEmail()
 	@ApiProperty({
 		description: 'The mail adress of the new user. Will also be used as username.',
@@ -12,6 +13,7 @@ export class CreateRegistrationBodyParams implements RegistrationCreateProps {
 	public email!: string;
 
 	@IsString()
+	@SanitizeHtml()
 	@ApiProperty({
 		description: 'The firstname of the new user.',
 		required: true,
@@ -20,6 +22,7 @@ export class CreateRegistrationBodyParams implements RegistrationCreateProps {
 	public firstName!: string;
 
 	@IsString()
+	@SanitizeHtml()
 	@ApiProperty({
 		description: 'The lastname of the new user.',
 		required: true,

@@ -1,9 +1,9 @@
 import { ICurrentUser, JwtAuthGuard } from '@infra/auth-guard';
 import { EntityManager } from '@mikro-orm/mongodb';
+import { AUTHENTICATION_CONFIG_TOKEN, AuthenticationConfig } from '@modules/authentication/authentication-config';
 import { OauthSessionTokenEntity } from '@modules/oauth/entity';
 import { oauthSessionTokenEntityFactory } from '@modules/oauth/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
-import { serverConfig, ServerConfig } from '@modules/server';
 import { ServerTestModule } from '@modules/server/server.app.module';
 import { systemEntityFactory, systemOauthConfigEntityFactory, systemOauthConfigFactory } from '@modules/system/testing';
 import { ExecutionContext, HttpStatus, INestApplication } from '@nestjs/common';
@@ -38,6 +38,7 @@ describe('Logout Controller (api)', () => {
 	let em: EntityManager;
 	let testApiClient: TestApiClient;
 	let axiosMock: MockAdapter;
+	let config: AuthenticationConfig;
 
 	beforeEach(async () => {
 		await cleanupCollections(em);
@@ -52,6 +53,7 @@ describe('Logout Controller (api)', () => {
 		await app.init();
 		em = app.get(EntityManager);
 		testApiClient = new TestApiClient(app, baseRouteName);
+		config = app.get<AuthenticationConfig>(AUTHENTICATION_CONFIG_TOKEN);
 	});
 
 	afterAll(async () => {
@@ -62,8 +64,7 @@ describe('Logout Controller (api)', () => {
 		describe('when a valid jwt is provided', () => {
 			const setup = async () => {
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persist([studentAccount, studentUser]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
@@ -107,7 +108,7 @@ describe('Logout Controller (api)', () => {
 					systemId: system.id,
 				});
 
-				await em.persistAndFlush([system, school, studentAccount, studentUser]);
+				await em.persist([system, school, studentAccount, studentUser]).flush();
 				em.clear();
 
 				const logoutToken = JwtTestFactory.createLogoutToken({
@@ -155,6 +156,7 @@ describe('Logout Controller (api)', () => {
 			em = app.get(EntityManager);
 			testApiClient = new TestApiClient(app, baseRouteName);
 			axiosMock = new MockAdapter(axios);
+			config = app.get<AuthenticationConfig>(AUTHENTICATION_CONFIG_TOKEN);
 		};
 
 		describe('when the user is not logged in', () => {
@@ -167,9 +169,8 @@ describe('Logout Controller (api)', () => {
 
 		describe('when the feature flag "FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED" is false', () => {
 			beforeAll(async () => {
-				const config: ServerConfig = serverConfig();
-				config.FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED = false;
 				await setupTestWithMocks();
+				config.externalSystemLogoutEnabled = false;
 			});
 
 			const setup = async () => {
@@ -177,7 +178,7 @@ describe('Logout Controller (api)', () => {
 				const system = systemEntityFactory.withOauthConfig().build();
 				const token = oauthSessionTokenEntityFactory.build({ user: studentUser });
 
-				await em.persistAndFlush([studentAccount, studentUser, system, token]);
+				await em.persist([studentAccount, studentUser, system, token]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
@@ -207,9 +208,8 @@ describe('Logout Controller (api)', () => {
 
 		describe('when the feature flag "FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED" is true', () => {
 			beforeAll(async () => {
-				const config: ServerConfig = serverConfig();
-				config.FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED = true;
 				await setupTestWithMocks();
+				config.externalSystemLogoutEnabled = true;
 			});
 
 			describe('when the external system does not return an error', () => {
@@ -218,7 +218,7 @@ describe('Logout Controller (api)', () => {
 					const system = systemEntityFactory.withOauthConfig().build();
 					const token = oauthSessionTokenEntityFactory.build({ user: studentUser });
 
-					await em.persistAndFlush([studentAccount, studentUser, system, token]);
+					await em.persist([studentAccount, studentUser, system, token]).flush();
 					em.clear();
 
 					const loggedInClient = await testApiClient.login(studentAccount);
@@ -255,7 +255,7 @@ describe('Logout Controller (api)', () => {
 					const system = systemEntityFactory.withOauthConfig().build();
 					const token = oauthSessionTokenEntityFactory.build({ user: studentUser });
 
-					await em.persistAndFlush([studentAccount, studentUser, system, token]);
+					await em.persist([studentAccount, studentUser, system, token]).flush();
 					em.clear();
 
 					const loggedInClient = await testApiClient.login(studentAccount);
@@ -292,7 +292,7 @@ describe('Logout Controller (api)', () => {
 					const system = systemEntityFactory.build();
 					const token = oauthSessionTokenEntityFactory.build({ user: studentUser });
 
-					await em.persistAndFlush([studentAccount, studentUser, system, token]);
+					await em.persist([studentAccount, studentUser, system, token]).flush();
 					em.clear();
 
 					const loggedInClient = await testApiClient.login(studentAccount);
@@ -331,7 +331,7 @@ describe('Logout Controller (api)', () => {
 					const system = systemEntityFactory.withOauthConfig().build({ oauthConfig });
 					const token = oauthSessionTokenEntityFactory.build({ user: studentUser });
 
-					await em.persistAndFlush([studentAccount, studentUser, system, token]);
+					await em.persist([studentAccount, studentUser, system, token]).flush();
 					em.clear();
 
 					const loggedInClient = await testApiClient.login(studentAccount);
@@ -368,7 +368,7 @@ describe('Logout Controller (api)', () => {
 					const oauthConfig = systemOauthConfigFactory.build();
 					const system = systemEntityFactory.withOauthConfig().build({ oauthConfig });
 
-					await em.persistAndFlush([studentAccount, studentUser, system]);
+					await em.persist([studentAccount, studentUser, system]).flush();
 					em.clear();
 
 					const loggedInClient = await testApiClient.login(studentAccount);
@@ -403,7 +403,7 @@ describe('Logout Controller (api)', () => {
 					const system = systemEntityFactory.withOauthConfig().build({ oauthConfig });
 					const token = oauthSessionTokenEntityFactory.build({ expiresAt: new Date(Date.now() - 5000) });
 
-					await em.persistAndFlush([studentAccount, studentUser, system, token]);
+					await em.persist([studentAccount, studentUser, system, token]).flush();
 					em.clear();
 
 					const loggedInClient = await testApiClient.login(studentAccount);

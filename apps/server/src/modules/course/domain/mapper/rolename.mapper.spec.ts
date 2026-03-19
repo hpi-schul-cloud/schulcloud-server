@@ -51,7 +51,7 @@ describe('rolename mapper', () => {
 
 	it('throws with unsupported role', () => {
 		const { course } = setup();
-		const role = roleFactory.build({ name: RoleName.EXPERT });
+		const role = roleFactory.build({ name: RoleName.EXTERNALPERSON });
 		const user = userFactory.buildWithId({ roles: [role] });
 
 		expect(() => RoleNameMapper.mapToRoleName(user, course)).toThrowError(

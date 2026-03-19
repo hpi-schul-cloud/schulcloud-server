@@ -46,6 +46,7 @@ describe('Room Controller (API)', () => {
 				['SameSchoolTeacher_roomadmin', 'sameSchool', 'teacher', 'roomadmin'],
 				['SameSchoolStudent_roomviewer', 'sameSchool', 'student', 'roomviewer'],
 				['SameSchoolTeacher_none', 'sameSchool', 'teacher', 'none'],
+				['SameSchoolExternalPerson_roomviewer', 'sameSchool', 'externalPerson', 'roomviewer'],
 				['OtherSchoolTeacher_roomeditor', 'otherSchool', 'teacher', 'roomeditor'],
 			]);
 			return roomSetup;
@@ -73,6 +74,7 @@ describe('Room Controller (API)', () => {
 
 				const updatedRoomMembership = await loggedInClient.get(`/${roomSetup.room.id}/members`);
 				const body = updatedRoomMembership.body as RoomMemberListResponse;
+
 				expect(body.data).toEqual(
 					expect.arrayContaining([expect.objectContaining({ userId: targetUser.id, roomRoleName: RoleName.ROOMOWNER })])
 				);
@@ -94,13 +96,27 @@ describe('Room Controller (API)', () => {
 					expect.arrayContaining([expect.objectContaining({ userId: owner.id, roomRoleName: RoleName.ROOMADMIN })])
 				);
 			});
+
+			describe('when the member is an external person', () => {
+				it('should change the current roomowner to room admin', async () => {
+					const roomSetup = await setup();
+					const loggedInClient = await roomSetup.loginUser('SameSchoolTeacher_roomowner');
+					const targetUser = roomSetup.getUserByName('SameSchoolExternalPerson_roomviewer');
+
+					const response = await loggedInClient.patch(`/${roomSetup.room.id}/members/pass-ownership`, {
+						userId: targetUser.id,
+					});
+
+					expect(response.status).toBe(HttpStatus.FORBIDDEN);
+				});
+			});
 		});
 
 		describe('when user is roomowner', () => {
 			it.each([
 				['SameSchoolTeacher_roomadmin', HttpStatus.OK],
 				['OtherSchoolTeacher_roomeditor', HttpStatus.OK],
-				['SameSchoolStudent_roomviewer', HttpStatus.BAD_REQUEST],
+				['SameSchoolStudent_roomviewer', HttpStatus.FORBIDDEN],
 				['SameSchoolTeacher_none', HttpStatus.FORBIDDEN],
 			] as [string, HttpStatus][])(
 				`when passing ownership to %s should return %d`,
@@ -149,7 +165,7 @@ describe('Room Controller (API)', () => {
 			it.each([
 				['SameSchoolTeacher_roomowner', HttpStatus.FORBIDDEN],
 				['SameSchoolTeacher_roomadmin', HttpStatus.OK],
-				['SameSchoolStudent_roomviewer', HttpStatus.BAD_REQUEST],
+				['SameSchoolStudent_roomviewer', HttpStatus.FORBIDDEN],
 				['OtherSchoolTeacher_roomeditor', HttpStatus.FORBIDDEN],
 				['SameSchoolTeacher_none', HttpStatus.FORBIDDEN],
 			] as [string, HttpStatus][])(
@@ -159,7 +175,7 @@ describe('Room Controller (API)', () => {
 					const { room } = roomSetup;
 
 					const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school: roomSetup.sameSchool });
-					await em.persistAndFlush([adminAccount, adminUser]);
+					await em.persist([adminAccount, adminUser]).flush();
 					em.clear();
 					const loggedInClient = await testApiClient.login(adminAccount);
 
@@ -181,7 +197,7 @@ describe('Room Controller (API)', () => {
 					]);
 
 					const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school: roomSetup.sameSchool });
-					await em.persistAndFlush([adminAccount, adminUser]);
+					await em.persist([adminAccount, adminUser]).flush();
 					em.clear();
 					const loggedInClient = await testApiClient.login(adminAccount);
 
@@ -218,7 +234,7 @@ describe('Room Controller (API)', () => {
 					const { room } = roomSetup;
 
 					const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school: roomSetup.otherSchool });
-					await em.persistAndFlush([adminAccount, adminUser]);
+					await em.persist([adminAccount, adminUser]).flush();
 					em.clear();
 
 					const targetUser = roomSetup.getUserByName(targetUserName);
@@ -249,7 +265,7 @@ describe('Room Controller (API)', () => {
 			it.each([
 				['SameSchoolTeacherAdmin_roomowner', HttpStatus.FORBIDDEN],
 				['SameSchoolTeacher_roomadmin', HttpStatus.OK],
-				['SameSchoolStudent_roomviewer', HttpStatus.BAD_REQUEST],
+				['SameSchoolStudent_roomviewer', HttpStatus.FORBIDDEN],
 				['OtherSchoolTeacher_roomeditor', HttpStatus.OK],
 				['SameSchoolTeacher_none', HttpStatus.FORBIDDEN],
 			] as [string, HttpStatus][])(
@@ -286,7 +302,7 @@ describe('Room Controller (API)', () => {
 			it.each([
 				['SameSchoolTeacher_roomowner', HttpStatus.FORBIDDEN],
 				['SameSchoolTeacherAdmin_roomadmin', HttpStatus.OK],
-				['SameSchoolStudent_roomviewer', HttpStatus.BAD_REQUEST],
+				['SameSchoolStudent_roomviewer', HttpStatus.FORBIDDEN],
 				['OtherSchoolTeacher_roomeditor', HttpStatus.FORBIDDEN],
 				['SameSchoolTeacher_none', HttpStatus.FORBIDDEN],
 			] as [string, HttpStatus][])(
@@ -323,7 +339,7 @@ describe('Room Controller (API)', () => {
 			it.each([
 				['OtherSchoolTeacher_roomowner', HttpStatus.FORBIDDEN],
 				['SameSchoolTeacherAdmin_roomadmin', HttpStatus.OK],
-				['SameSchoolStudent_roomviewer', HttpStatus.BAD_REQUEST],
+				['SameSchoolStudent_roomviewer', HttpStatus.FORBIDDEN],
 				['OtherSchoolTeacher_roomeditor', HttpStatus.OK],
 				['SameSchoolTeacher_none', HttpStatus.FORBIDDEN],
 			] as [string, HttpStatus][])(

@@ -18,6 +18,7 @@ import {
 import { SubmissionItemResponse } from '../dto';
 
 const baseRouteName = '/elements';
+
 describe('submission create (api)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
@@ -38,47 +39,17 @@ describe('submission create (api)', () => {
 		await app.close();
 	});
 
-	describe('when user is a valid teacher', () => {
-		const setup = async () => {
-			await cleanupCollections(em);
-
-			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-			const course = courseEntityFactory.build({ school: teacherUser.school, teachers: [teacherUser] });
-			await em.persistAndFlush([teacherAccount, teacherUser, course]);
-
-			const columnBoardNode = columnBoardEntityFactory.build({
-				context: { id: course.id, type: BoardExternalReferenceType.Course },
-			});
-
-			const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
-
-			const cardNode = cardEntityFactory.withParent(columnNode).build();
-
-			const submissionContainerNode = submissionContainerElementEntityFactory.withParent(cardNode).build();
-
-			await em.persistAndFlush([columnBoardNode, columnNode, cardNode, submissionContainerNode]);
-			em.clear();
-
-			const loggedInClient = await testApiClient.login(teacherAccount);
-
-			return { loggedInClient, teacherUser, columnBoardNode, columnNode, cardNode, submissionContainerNode };
-		};
-		it('should return status 403', async () => {
-			const { loggedInClient, submissionContainerNode } = await setup();
-
-			const response = await loggedInClient.post(`${submissionContainerNode.id}/submissions`, { completed: false });
-
-			expect(response.status).toEqual(403);
-		});
-	});
-
 	describe('when user is a student who is part of course', () => {
 		const setup = async () => {
 			await cleanupCollections(em);
-
+			const { teacherUser } = UserAndAccountTestFactory.buildTeacher();
 			const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-			const course = courseEntityFactory.build({ school: studentUser.school, students: [studentUser] });
-			await em.persistAndFlush([studentAccount, studentUser, course]);
+			const course = courseEntityFactory.build({
+				school: studentUser.school,
+				students: [studentUser],
+				teachers: [teacherUser],
+			});
+			await em.persist([studentAccount, studentUser, teacherUser, course]).flush();
 
 			const columnBoardNode = columnBoardEntityFactory.build({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
@@ -90,13 +61,14 @@ describe('submission create (api)', () => {
 
 			const submissionContainerNode = submissionContainerElementEntityFactory.withParent(cardNode).build();
 
-			await em.persistAndFlush([columnBoardNode, columnNode, cardNode, submissionContainerNode]);
+			await em.persist([columnBoardNode, columnNode, cardNode, submissionContainerNode]).flush();
 			em.clear();
 
 			const loggedInClient = await testApiClient.login(studentAccount);
 
 			return { loggedInClient, studentUser, columnBoardNode, columnNode, cardNode, submissionContainerNode };
 		};
+
 		it('should return status 201', async () => {
 			const { loggedInClient, submissionContainerNode } = await setup();
 
@@ -153,7 +125,7 @@ describe('submission create (api)', () => {
 
 			const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 			const course = courseEntityFactory.build({ school: studentUser.school, students: [] });
-			await em.persistAndFlush([studentAccount, studentUser, course]);
+			await em.persist([studentAccount, studentUser, course]).flush();
 
 			const columnBoardNode = columnBoardEntityFactory.build({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
@@ -165,7 +137,7 @@ describe('submission create (api)', () => {
 
 			const submissionContainerNode = submissionContainerElementEntityFactory.withParent(cardNode).build();
 
-			await em.persistAndFlush([columnBoardNode, columnNode, cardNode, submissionContainerNode]);
+			await em.persist([columnBoardNode, columnNode, cardNode, submissionContainerNode]).flush();
 			em.clear();
 
 			const loggedInClient = await testApiClient.login(studentAccount);
@@ -191,7 +163,7 @@ describe('submission create (api)', () => {
 
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 
-			await em.persistAndFlush([user, teacherAccount, teacherUser, course]);
+			await em.persist([user, teacherAccount, teacherUser, course]).flush();
 
 			const columnBoardNode = columnBoardEntityFactory.build({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
@@ -203,18 +175,19 @@ describe('submission create (api)', () => {
 
 			const submissionContainerNode = submissionContainerElementEntityFactory.withParent(cardNode).build();
 
-			await em.persistAndFlush([columnBoardNode, columnNode, cardNode, submissionContainerNode]);
+			await em.persist([columnBoardNode, columnNode, cardNode, submissionContainerNode]).flush();
 			em.clear();
 
 			const loggedInClient = await testApiClient.login(teacherAccount);
 
 			return { loggedInClient, columnBoardNode, columnNode, cardNode, submissionContainerNode };
 		};
+
 		it('should return 403', async () => {
 			const { loggedInClient, submissionContainerNode } = await setup();
 
 			const invalidUser = userFactory.build();
-			await em.persistAndFlush([invalidUser]);
+			await em.persist([invalidUser]).flush();
 
 			const response = await loggedInClient.post(`${submissionContainerNode.id}/submissions`, { completed: false });
 

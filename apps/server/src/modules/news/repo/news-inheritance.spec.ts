@@ -113,7 +113,7 @@ describe('News mapping', () => {
 		const course = new Course({ name: 'course #1' });
 		const news = new CourseNews({ title: 'course news #1', target: course });
 
-		await em.persistAndFlush(news);
+		await em.persist(news).flush();
 		em.clear();
 
 		const result = await em.findOneOrFail(CourseNews, news.id);

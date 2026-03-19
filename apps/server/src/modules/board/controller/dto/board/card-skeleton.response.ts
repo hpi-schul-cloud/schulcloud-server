@@ -10,11 +10,11 @@ export class CardSkeletonResponse {
 	@ApiProperty({
 		pattern: bsonStringPattern,
 	})
-	cardId: string;
+	public cardId: string;
 
 	@ApiProperty({
 		description:
 			'The approximate height of the referenced card. Intended to be used for prerendering purposes. Note, that different devices can lead to this value not being precise',
 	})
-	height: number;
+	public height: number;
 }

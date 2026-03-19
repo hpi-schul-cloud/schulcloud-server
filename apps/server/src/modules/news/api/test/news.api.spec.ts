@@ -12,6 +12,10 @@ import moment from 'moment';
 import { NewsTargetModel } from '../../domain';
 import { News } from '../../repo';
 import { CreateNewsParams, NewsListResponse, NewsResponse, UpdateNewsParams } from '../dto';
+import { courseEntityFactory } from '@modules/course/testing';
+import { CourseEntity } from '@modules/course/repo';
+import { TeamEntity } from '@modules/team/repo';
+import { teamFactory } from '@modules/team/testing';
 
 describe('News Controller (API)', () => {
 	let app: INestApplication;
@@ -59,6 +63,8 @@ describe('News Controller (API)', () => {
 	});
 
 	beforeEach(async () => {
+		await em.nativeDelete(TeamEntity, {});
+		await em.nativeDelete(CourseEntity, {});
 		await em.nativeDelete(News, {});
 	});
 
@@ -82,8 +88,22 @@ describe('News Controller (API)', () => {
 
 	const createTestNews = async (targetModel: NewsTargetModel, targetId: EntityId, user: User, unpublished = false) => {
 		const news = newTestNews(targetModel, targetId, user, unpublished);
-		await em.persistAndFlush(news);
+		await em.persist(news).flush();
 		return news;
+	};
+
+	const createCourseTarget = async (id: EntityId, user: User) => {
+		const course = courseEntityFactory.build({ school: user.school });
+		course.id = id;
+		await em.persist(course).flush();
+		return course;
+	};
+
+	const createTeamTarget = async (id: EntityId) => {
+		const team = teamFactory.build();
+		team.id = id;
+		await em.persist(team).flush();
+		return team;
 	};
 
 	describe('GET /news', () => {
@@ -91,7 +111,7 @@ describe('News Controller (API)', () => {
 			const setup = async () => {
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persist([studentAccount, studentUser]).flush();
 
 				const loggedInClient = await newsApiClient.login(studentAccount);
 
@@ -110,6 +130,7 @@ describe('News Controller (API)', () => {
 
 			it('should get for /news without parameters', async () => {
 				const { loggedInClient, studentUser } = await setup();
+				await createCourseTarget(courseTargetId, studentUser);
 				const news = await createTestNews(NewsTargetModel.Course, courseTargetId, studentUser);
 				const expected = {
 					data: [news],
@@ -124,6 +145,7 @@ describe('News Controller (API)', () => {
 
 			it('should get for /news with unpublished params only unpublished news', async () => {
 				const { loggedInClient, studentUser } = await setup();
+				await createCourseTarget(unpublishedCourseTargetId, studentUser);
 				const unpublishedNews = await createTestNews(
 					NewsTargetModel.Course,
 					unpublishedCourseTargetId,
@@ -155,7 +177,7 @@ describe('News Controller (API)', () => {
 			const setup = async () => {
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persist([studentAccount, studentUser]).flush();
 
 				const loggedInClient = await newsApiClient.login(studentAccount);
 
@@ -164,6 +186,7 @@ describe('News Controller (API)', () => {
 
 			it('should get news by id', async () => {
 				const { loggedInClient, studentUser } = await setup();
+				await createCourseTarget(courseTargetId, studentUser);
 				const news = await createTestNews(NewsTargetModel.Course, courseTargetId, studentUser);
 				const response = await loggedInClient.get(`${news._id.toHexString()}`).expect(200);
 				const body = response.body as NewsResponse;
@@ -183,7 +206,7 @@ describe('News Controller (API)', () => {
 
 				const news = await createTestNews(NewsTargetModel.Course, courseTargetId, studentUser);
 
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persist([studentAccount, studentUser]).flush();
 
 				return { news };
 			};
@@ -200,9 +223,10 @@ describe('News Controller (API)', () => {
 		describe('when user is authenticated', () => {
 			const setup = async () => {
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+				await createTeamTarget(teamTargetId);
 				const news = await createTestNews(NewsTargetModel.Team, teamTargetId, studentUser);
 
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persist([studentAccount, studentUser]).flush();
 
 				const loggedInClient = await teamsApiClient.login(studentAccount);
 
@@ -231,7 +255,7 @@ describe('News Controller (API)', () => {
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 				const news = await createTestNews(NewsTargetModel.Team, teamTargetId, studentUser);
 
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persist([studentAccount, studentUser]).flush();
 
 				return { news };
 			};
@@ -249,7 +273,7 @@ describe('News Controller (API)', () => {
 			const setup = async () => {
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persist([studentAccount, studentUser]).flush();
 
 				const loggedInClient = await newsApiClient.login(studentAccount);
 
@@ -314,7 +338,7 @@ describe('News Controller (API)', () => {
 			const setup = async () => {
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persist([studentAccount, studentUser]).flush();
 
 				const loggedInClient = await newsApiClient.login(studentAccount);
 
@@ -323,6 +347,7 @@ describe('News Controller (API)', () => {
 
 			it('should update news by update params', async () => {
 				const { loggedInClient, studentUser } = await setup();
+				await createCourseTarget(courseTargetId, studentUser);
 				const news = await createTestNews(NewsTargetModel.Course, courseTargetId, studentUser);
 
 				const params = {
@@ -342,6 +367,7 @@ describe('News Controller (API)', () => {
 			it('should do nothing if path an empty object for update', async () => {
 				const { loggedInClient, studentUser } = await setup();
 
+				await createCourseTarget(courseTargetId, studentUser);
 				const news = await createTestNews(NewsTargetModel.Course, courseTargetId, studentUser);
 				const params = {} as UpdateNewsParams;
 				await loggedInClient.patch(`${news._id.toString()}`).send(params).expect(200);
@@ -383,7 +409,7 @@ describe('News Controller (API)', () => {
 			const setup = async () => {
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persist([studentAccount, studentUser]).flush();
 
 				const loggedInClient = await newsApiClient.login(studentAccount);
 
@@ -392,6 +418,7 @@ describe('News Controller (API)', () => {
 
 			it('should delete news', async () => {
 				const { loggedInClient, studentUser } = await setup();
+				await createCourseTarget(courseTargetId, studentUser);
 				const news = await createTestNews(NewsTargetModel.Course, courseTargetId, studentUser);
 				const newsId = news._id.toHexString();
 
@@ -410,7 +437,7 @@ describe('News Controller (API)', () => {
 			const setup = async () => {
 				const { studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				await em.persistAndFlush([studentUser]);
+				await em.persist([studentUser]).flush();
 
 				const news = await createTestNews(NewsTargetModel.Course, courseTargetId, studentUser);
 				const newsId = news._id.toHexString();

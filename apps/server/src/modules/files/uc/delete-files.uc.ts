@@ -1,11 +1,13 @@
 /* eslint-disable no-await-in-loop */
-import { DeleteObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { DeleteObjectCommand, S3Client, S3ServiceException } from '@aws-sdk/client-s3';
 import { LegacyLogger } from '@core/logger';
 import { StorageProviderEntity, StorageProviderRepo } from '@modules/school/repo';
 import { Injectable } from '@nestjs/common';
 import { TypeGuard } from '@shared/common/guards';
 import { FileEntity } from '../entity';
 import { FilesRepo } from '../repo';
+
+const NO_SUCH_BUCKET = 'NoSuchBucket';
 
 @Injectable()
 export class DeleteFilesUc {
@@ -121,6 +123,20 @@ export class DeleteFilesUc {
 
 		const client = this.getClientForFile(file);
 
-		await client.send(deletionCommand);
+		try {
+			await client.send(deletionCommand);
+		} catch (error) {
+			if (error instanceof S3ServiceException && error.name === NO_SUCH_BUCKET) {
+				this.logger.warn(
+					`Bucket '${bucket ?? 'unknown'}' does not exist. File '${
+						file.id
+					}' will be removed from database without storage deletion.`
+				);
+
+				return;
+			}
+
+			throw error;
+		}
 	}
 }

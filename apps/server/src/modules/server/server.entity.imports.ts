@@ -8,7 +8,6 @@ import { GroupEntity } from '@modules/group/entity';
 import { InstanceEntity } from '@modules/instance';
 import {
 	ColumnBoardBoardElement,
-	ColumnBoardNode,
 	DashboardEntity,
 	DashboardGridElementEntity,
 	LegacyBoard,
@@ -51,13 +50,13 @@ import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { VideoConferenceEntity } from '@modules/video-conference/repo';
 import { RoomContentEntity } from '@modules/room/repo/entity/room-content.entity';
+import { RuntimeConfigEntity } from '@infra/runtime-config/repo/entity/runtime-config.entity';
 
 export const ENTITIES = [
 	AccountEntity,
 	BoardNodeEntity,
 	ClassEntity,
 	ColumnBoardBoardElement,
-	ColumnBoardNode,
 	DeletionRequestEntity,
 	DeletionLogEntity,
 	DeletionBatchEntity,
@@ -115,6 +114,7 @@ export const ENTITIES = [
 	LtiDeepLinkTokenEntity,
 	RoomContentEntity,
 	RoomArrangementEntity,
+	RuntimeConfigEntity,
 ];
 
 export const TEST_ENTITIES = [...ENTITIES];

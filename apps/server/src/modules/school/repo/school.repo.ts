@@ -1,5 +1,5 @@
 import { FindOptions } from '@mikro-orm/core';
-import { AutoPath, EntityData, EntityName } from '@mikro-orm/core/typings';
+import { EntityData, EntityName, Populate } from '@mikro-orm/core/typings';
 import type { SystemEntity } from '@modules/system/repo';
 import { Injectable } from '@nestjs/common';
 import { IFindOptions, SortOrder } from '@shared/domain/interface/find-options';
@@ -22,6 +22,7 @@ export class SchoolMikroOrmRepo extends BaseDomainObjectRepo<School, SchoolEntit
 		scope.byFederalState(query.federalStateId);
 		scope.byExternalId(query.externalId);
 		scope.bySystemId(query.systemId);
+		scope.byPurpose(query.purpose);
 
 		const findOptions = this.mapToMikroOrmOptions(options, ['federalState', 'currentYear']);
 
@@ -39,7 +40,7 @@ export class SchoolMikroOrmRepo extends BaseDomainObjectRepo<School, SchoolEntit
 		const scope = new SchoolScope();
 		scope.allowEmptyQuery(true);
 		scope.byFederalState(federalStateId);
-		scope.addQuery({ purpose: { $nin: [SchoolPurpose.EXPERT, SchoolPurpose.TOMBSTONE] } });
+		scope.addQuery({ purpose: { $nin: [SchoolPurpose.EXTERNAL_PERSON_SCHOOL, SchoolPurpose.TOMBSTONE] } });
 
 		const findOptions = this.mapToMikroOrmOptions(options, ['federalState', 'currentYear']);
 
@@ -100,6 +101,14 @@ export class SchoolMikroOrmRepo extends BaseDomainObjectRepo<School, SchoolEntit
 		return schools;
 	}
 
+	public async getAllSchoolIds(): Promise<EntityId[]> {
+		// Since we don't need any of the EntityManager's features here, we load the ids with a Mongo query to be more efficient.
+		const objectIds = await this.em.getCollection(this.entityName).distinct('_id');
+		const ids = objectIds.map((objectId) => objectId.toString());
+
+		return ids;
+	}
+
 	public async hasLdapSystem(schoolId: EntityId): Promise<boolean> {
 		const entity: SchoolEntity | null = await this.em.findOne(
 			SchoolEntity,
@@ -126,7 +135,7 @@ export class SchoolMikroOrmRepo extends BaseDomainObjectRepo<School, SchoolEntit
 
 	private mapToMikroOrmOptions<P extends string = never>(
 		options?: IFindOptions<SchoolProps>,
-		populate?: AutoPath<SchoolEntity, P>[]
+		populate?: Populate<SchoolEntity, P>
 	): FindOptions<SchoolEntity, P> {
 		const findOptions: FindOptions<SchoolEntity, P> = {
 			offset: options?.pagination?.skip,

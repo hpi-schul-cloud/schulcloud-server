@@ -1,4 +1,7 @@
+import { RegisterTimeoutConfig } from '@core/interceptor/register-timeout-config.decorator';
 import { LoggerModule } from '@core/logger';
+import { ConfigurationModule } from '@infra/configuration';
+import { AccountModule } from '@modules/account/account.module';
 import { AuthorizationModule } from '@modules/authorization';
 import { CopyHelperModule } from '@modules/copy-helper';
 import { SagaModule } from '@modules/saga';
@@ -8,23 +11,26 @@ import { BoardModule } from '../board';
 import { RoomMembershipModule } from '../room-membership/room-membership.module';
 import { UserModule } from '../user';
 import { RoomController, RoomInvitationLinkController, RoomInvitationLinkUc, RoomUc } from './api';
+import { RoomArrangementUc } from './api/room-arrangement.uc';
+import { RoomContentUc } from './api/room-content.uc';
 import { RoomCopyUc } from './api/room-copy.uc';
-import { RoomModule } from './room.module';
 import { CopyRoomStep } from './api/saga';
+import { CopyRoomContentStep } from './api/saga/copy-room-content.step';
+import { DeleteUserRoomDataStep } from './api/saga/delete-user-room-data.step';
 import {
-	RoomPermissionService,
 	RoomBoardCreatedHandler,
 	RoomBoardDeletedHandler,
 	RoomBoardService,
+	RoomPermissionService,
 } from './api/service';
-import { CopyRoomContentStep } from './api/saga/copy-room-content.step';
-import { RoomDeletedHandler } from './api/service/room-deleted.handler';
-import { RoomArrangementUc } from './api/room-arrangement.uc';
-import { RoomContentUc } from './api/room-content.uc';
+import { ROOM_PUBLIC_API_CONFIG_TOKEN, RoomPublicApiConfig } from './room.config';
+import { RoomModule } from './room.module';
+import { ROOM_TIMEOUT_CONFIG_TOKEN, RoomTimeoutConfig } from './timeout.config';
 
 @Module({
 	imports: [
 		RoomModule,
+		AccountModule,
 		AuthorizationModule,
 		LoggerModule,
 		RoomMembershipModule,
@@ -33,6 +39,8 @@ import { RoomContentUc } from './api/room-content.uc';
 		SchoolModule,
 		CopyHelperModule,
 		SagaModule,
+		ConfigurationModule.register(ROOM_PUBLIC_API_CONFIG_TOKEN, RoomPublicApiConfig),
+		ConfigurationModule.register(ROOM_TIMEOUT_CONFIG_TOKEN, RoomTimeoutConfig),
 	],
 	controllers: [RoomController, RoomInvitationLinkController],
 	providers: [
@@ -43,11 +51,12 @@ import { RoomContentUc } from './api/room-content.uc';
 		RoomContentUc,
 		CopyRoomStep,
 		CopyRoomContentStep,
+		DeleteUserRoomDataStep,
 		RoomPermissionService,
-		RoomDeletedHandler,
 		RoomBoardCreatedHandler,
 		RoomBoardDeletedHandler,
 		RoomBoardService,
 	],
 })
+@RegisterTimeoutConfig(ROOM_TIMEOUT_CONFIG_TOKEN)
 export class RoomApiModule {}

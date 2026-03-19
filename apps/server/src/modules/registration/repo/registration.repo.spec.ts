@@ -1,12 +1,12 @@
-import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { EntityManager } from '@mikro-orm/mongodb';
+import { RoomEntity } from '@modules/room';
+import { roomEntityFactory } from '@modules/room/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { registrationEntityFactory, registrationFactory } from '../testing';
 import { RegistrationEntity } from './entity';
 import { RegistrationRepo } from './registration.repo';
-import { roomEntityFactory } from '@modules/room/testing';
-import { RoomEntity } from '@modules/room';
 
 describe('RegistrationRepo', () => {
 	let module: TestingModule;
@@ -59,7 +59,7 @@ describe('RegistrationRepo', () => {
 	describe('findById', () => {
 		const setup = async () => {
 			const registrationEntity = registrationEntityFactory.buildWithId();
-			await em.persistAndFlush(registrationEntity);
+			await em.persist(registrationEntity).flush();
 			em.clear();
 
 			return { registrationEntity };
@@ -71,7 +71,7 @@ describe('RegistrationRepo', () => {
 			const result = await repo.findById(registrationEntity.id);
 			const expectedProps = {
 				...registrationEntity,
-				roomIds: registrationEntity.roomIds.map((id) => new ObjectId(id)),
+				roomIds: registrationEntity.roomIds,
 			};
 
 			expect(result.getProps()).toEqual(expectedProps);
@@ -82,7 +82,7 @@ describe('RegistrationRepo', () => {
 		const setup = async () => {
 			const mockedEmail = 'test@example.com';
 			const registrationEntity = registrationEntityFactory.buildWithId({ email: mockedEmail });
-			await em.persistAndFlush(registrationEntity);
+			await em.persist(registrationEntity).flush();
 			em.clear();
 
 			return { registrationEntity, mockedEmail };
@@ -93,7 +93,7 @@ describe('RegistrationRepo', () => {
 			const result = await repo.findByEmail(mockedEmail);
 			const expectedProps = {
 				...registrationEntity,
-				roomIds: registrationEntity.roomIds.map((id) => new ObjectId(id)),
+				roomIds: registrationEntity.roomIds,
 			};
 
 			expect(result?.getProps()).toEqual(expectedProps);
@@ -108,19 +108,19 @@ describe('RegistrationRepo', () => {
 	describe('findByHash', () => {
 		const setup = async () => {
 			const registrationEntity = registrationEntityFactory.buildWithId();
-			await em.persistAndFlush(registrationEntity);
+			await em.persist(registrationEntity).flush();
 			em.clear();
 
 			return { registrationEntity };
 		};
 
-		it('should be able to find a registration by registrationHash', async () => {
+		it('should be able to find a registration by registrationSecret', async () => {
 			const { registrationEntity } = await setup();
 
-			const result = await repo.findByHash(registrationEntity.registrationHash);
+			const result = await repo.findBySecret(registrationEntity.registrationSecret);
 			const expectedProps = {
 				...registrationEntity,
-				roomIds: registrationEntity.roomIds.map((id) => new ObjectId(id)),
+				roomIds: registrationEntity.roomIds,
 			};
 
 			expect(result.getProps()).toEqual(expectedProps);
@@ -134,13 +134,9 @@ describe('RegistrationRepo', () => {
 			const registrationEntityOne = registrationEntityFactory.buildWithId({ roomIds: [roomOne.id] });
 			const registrationEntityTwo = registrationEntityFactory.buildWithId({ roomIds: [roomOne.id, roomTwo.id] });
 			const registrationEntityThree = registrationEntityFactory.buildWithId({ roomIds: [roomTwo.id] });
-			await em.persistAndFlush([
-				roomOne,
-				roomTwo,
-				registrationEntityOne,
-				registrationEntityTwo,
-				registrationEntityThree,
-			]);
+			await em
+				.persist([roomOne, roomTwo, registrationEntityOne, registrationEntityTwo, registrationEntityThree])
+				.flush();
 			em.clear();
 
 			return { roomOne, roomTwo, registrationEntityOne, registrationEntityTwo, registrationEntityThree };
@@ -155,6 +151,57 @@ describe('RegistrationRepo', () => {
 				expect.arrayContaining([registrationEntityOne.id, registrationEntityTwo.id])
 			);
 			expect(result.map((r) => r.id)).not.toContain(registrationEntityThree.id);
+		});
+	});
+
+	describe('deleteByIds', () => {
+		const setup = async () => {
+			const registrationEntities = registrationEntityFactory.buildList(3);
+			await em.persist(registrationEntities).flush();
+			em.clear();
+
+			const registrationIds = registrationEntities.map((r) => r.id.toString());
+
+			return { registrationEntities, registrationIds };
+		};
+
+		it('should be able to delete a single registration by its ID', async () => {
+			const { registrationIds } = await setup();
+			const idToDelete = registrationIds[0];
+			await repo.deleteByIds([idToDelete]);
+
+			const deletedEntity = await em.findOne(RegistrationEntity, { id: idToDelete });
+			expect(deletedEntity).toBeNull();
+
+			const remainingEntities = await em.find(RegistrationEntity, {});
+			expect(remainingEntities.length).toBe(2);
+		});
+
+		it('should be able to delete multiple registrations by their IDs', async () => {
+			const { registrationIds } = await setup();
+			const idsToDelete = registrationIds.slice(0, 2);
+			await repo.deleteByIds(idsToDelete);
+
+			const deletedEntities = await em.find(RegistrationEntity, { id: { $in: idsToDelete } });
+			expect(deletedEntities.length).toBe(0);
+
+			const remainingEntities = await em.find(RegistrationEntity, {});
+			expect(remainingEntities.length).toBe(1);
+		});
+
+		it('should ignore non-existing IDs when deleting', async () => {
+			const { registrationIds } = await setup();
+			const [firstId, secondId, thirdId] = registrationIds;
+			const nonExistingId = 'nonexistent-id';
+			await repo.deleteByIds([firstId, nonExistingId]);
+
+			const deletedEntity = await em.findOne(RegistrationEntity, { id: firstId });
+			expect(deletedEntity).toBeNull();
+
+			const remainingEntities = await em.find(RegistrationEntity, {});
+			const remainingIds = remainingEntities.map((r) => r.id);
+			expect(remainingIds).toEqual([secondId, thirdId]);
+			expect(remainingEntities.length).toBe(2);
 		});
 	});
 });

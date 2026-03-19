@@ -10,7 +10,7 @@ export {
 	ProvisioningDto,
 	ProvisioningSystemDto,
 } from './dto';
-export { ProvisioningConfig } from './provisioning.config';
+export { PROVISIONING_PUBLIC_API_CONFIG, ProvisioningPublicApiConfig } from './provisioning.config';
 export { ProvisioningModule } from './provisioning.module';
 export { ProvisioningService } from './service/provisioning.service';
 export { OidcMockProvisioningStrategy, ProvisioningStrategy, SchulconnexResponseMapper } from './strategy';

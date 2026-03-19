@@ -36,15 +36,9 @@ describe('Users Admin Teachers Controller (API)', () => {
 
 		teacherUser2 = userFactory.withRole(teacherRole).buildWithId({ school });
 
-		await em.persistAndFlush([
-			currentYear,
-			school,
-			adminAccount,
-			adminUser,
-			teacherUser1,
-			teacherAccount1,
-			teacherUser2,
-		]);
+		await em
+			.persist([currentYear, school, adminAccount, adminUser, teacherUser1, teacherAccount1, teacherUser2])
+			.flush();
 		em.clear();
 
 		loggedInAdminClient = await apiClient.login(adminAccount);

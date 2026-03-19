@@ -1,11 +1,16 @@
 import { LoggerModule } from '@core/logger';
+import { TestEncryptionConfig } from '@infra/encryption';
 import { IdentityManagementModule, IdentityManagementService } from '@infra/identity-management';
+import {
+	KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
+	KeycloakAdministrationConfig,
+} from '@infra/identity-management/keycloak-administration/keycloak-administration.config';
 import { KeycloakAdministrationService } from '@infra/identity-management/keycloak-administration/service/keycloak-administration.service';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-admin-client-cjs-index';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { v1 } from 'uuid';
+import { ACCOUNT_CONFIG_TOKEN } from '../../account-config';
 import { AccountSave, IdmAccount } from '../do';
 import { AccountIdmToDoMapper, AccountIdmToDoMapperDb } from '../mapper';
 import { AccountServiceIdm } from './account-idm.service';
@@ -42,18 +47,16 @@ describe('AccountIdmService Integration', () => {
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [
-				ConfigModule.forRoot({
-					isGlobal: true,
-					ignoreEnvFile: true,
-					ignoreEnvVars: true,
-					validate: () => {
-						return {
-							FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED: true,
-							FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED: false,
-						};
+				IdentityManagementModule.register({
+					encryptionConfig: {
+						configConstructor: TestEncryptionConfig,
+						configInjectionToken: 'TEST_ENCRYPTION_CONFIG_TOKEN',
+					},
+					keycloakAdministrationConfig: {
+						configConstructor: KeycloakAdministrationConfig,
+						configInjectionToken: KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
 					},
 				}),
-				IdentityManagementModule,
 				LoggerModule,
 			],
 			providers: [
@@ -61,6 +64,13 @@ describe('AccountIdmService Integration', () => {
 				{
 					provide: AccountIdmToDoMapper,
 					useClass: AccountIdmToDoMapperDb,
+				},
+				{
+					provide: ACCOUNT_CONFIG_TOKEN,
+					useValue: {
+						identityManagementStoreEnabled: true,
+						identityManagementLoginEnabled: false,
+					},
 				},
 			],
 		}).compile();

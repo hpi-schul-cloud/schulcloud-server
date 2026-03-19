@@ -4,4 +4,3 @@ export {
 	lessonBoardElementFactory,
 	taskBoardElementFactory,
 } from './boardelement.factory';
-export { columnBoardNodeFactory } from './column-board-node.factory';

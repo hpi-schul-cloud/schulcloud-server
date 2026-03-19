@@ -6,10 +6,10 @@ import { NewsTargetFilter } from '../news-target-filter';
 import { News } from '../news.entity';
 
 export class NewsScope extends Scope<News> {
-	byTargets(targets: NewsTargetFilter[]): NewsScope {
+	public byTargets(targets: NewsTargetFilter[]): NewsScope {
 		const queries: FilterQuery<News>[] = targets.map((target) => {
 			return {
-				$and: [{ targetModel: target.targetModel }, { 'target:in': target.targetIds }],
+				$and: [{ targetModel: target.targetModel }, { target: { $in: target.targetIds } }],
 			};
 		});
 		if (queries.length === 0) {
@@ -23,26 +23,26 @@ export class NewsScope extends Scope<News> {
 		return this;
 	}
 
-	byPublished(): NewsScope {
+	public byPublished(): NewsScope {
 		const now = new Date();
 		this.addQuery({ displayAt: { $lte: now } });
 		return this;
 	}
 
-	byUnpublished(): NewsScope {
+	public byUnpublished(): NewsScope {
 		const now = new Date();
 		this.addQuery({ displayAt: { $gt: now } });
 		return this;
 	}
 
-	byCreator(creatorId: EntityId): NewsScope {
+	public byCreator(creatorId: EntityId): NewsScope {
 		if (creatorId !== undefined) {
 			this.addQuery({ creator: creatorId });
 		}
 		return this;
 	}
 
-	byUpdater(updaterId: EntityId): NewsScope {
+	public byUpdater(updaterId: EntityId): NewsScope {
 		if (updaterId !== undefined) {
 			this.addQuery({ updater: updaterId });
 		}

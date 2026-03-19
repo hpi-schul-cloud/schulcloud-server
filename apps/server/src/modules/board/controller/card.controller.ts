@@ -16,6 +16,7 @@ import {
 import { ApiExtraModels, ApiOperation, ApiResponse, ApiTags, getSchemaPath } from '@nestjs/swagger';
 import { RequestTimeout } from '@shared/common/decorators';
 import { ApiValidationError } from '@shared/common/error';
+import { BOARD_INCOMING_REQUEST_TIMEOUT_COPY_API_KEY } from '../timeout.config';
 import { CardUc, ColumnUc } from '../uc';
 import {
 	AnyContentElementResponse,
@@ -37,8 +38,10 @@ import {
 	SubmissionContainerElementResponse,
 	VideoConferenceElementResponse,
 } from './dto';
+import { MoveCardResponse } from './dto/board/move-card.response';
 import { SetHeightBodyParams } from './dto/board/set-height.body.params';
 import { CardResponseMapper, ContentElementResponseFactory } from './mapper';
+import { MoveCardResponseMapper } from './mapper/move-card-response.mapper';
 
 @ApiTags('Board Card')
 @JwtAuthentication()
@@ -66,18 +69,25 @@ export class CardController {
 	}
 
 	@ApiOperation({ summary: 'Move a single card.' })
-	@ApiResponse({ status: 204 })
+	@ApiResponse({ status: 204, type: MoveCardResponse })
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
-	@HttpCode(204)
 	@Put(':cardId/position')
 	public async moveCard(
 		@Param() urlParams: CardUrlParams,
 		@Body() bodyParams: MoveCardBodyParams,
 		@CurrentUser() currentUser: ICurrentUser
-	): Promise<void> {
-		await this.columnUc.moveCard(currentUser.userId, urlParams.cardId, bodyParams.toColumnId, bodyParams.toPosition);
+	): Promise<MoveCardResponse> {
+		const data = await this.columnUc.moveCard(
+			currentUser.userId,
+			urlParams.cardId,
+			bodyParams.toColumnId,
+			bodyParams.toPosition
+		);
+		const result = MoveCardResponseMapper.mapToReponse(data);
+
+		return result;
 	}
 
 	@ApiOperation({ summary: 'Update the height of a single card.' })
@@ -127,7 +137,7 @@ export class CardController {
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@Post(':cardId/copy')
-	@RequestTimeout('INCOMING_REQUEST_TIMEOUT_COPY_API')
+	@RequestTimeout(BOARD_INCOMING_REQUEST_TIMEOUT_COPY_API_KEY)
 	public async copyCard(
 		@Param() urlParams: CardUrlParams,
 		@CurrentUser() currentUser: ICurrentUser

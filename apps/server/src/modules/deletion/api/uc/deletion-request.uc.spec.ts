@@ -1,18 +1,19 @@
 import { LegacyLogger } from '@core/logger';
+import { NotFoundException } from '@nestjs/common';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { DeletionRequestEntity } from '@modules/deletion/repo/entity';
-import { ConfigService } from '@nestjs/config';
+import { ObjectId } from '@mikro-orm/mongodb';
+import { AccountService } from '@modules/account';
+import { AuthenticationService } from '@modules/authentication';
+import { UserService } from '@modules/user';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
-import { ObjectId } from 'bson';
-import { AccountService } from '@modules/account';
-import { UserService } from '@modules/user';
-import { DeletionConfig } from '../../deletion.config';
+import { DELETION_CONFIG_TOKEN, DeletionConfig } from '../../deletion.config';
 import { DomainDeletionReportBuilder } from '../../domain/builder';
 import { DomainDeletionReport } from '../../domain/interface';
 import { DeletionExecutionService, DeletionLogService, DeletionRequestService } from '../../domain/service';
-import { deletionLogFactory, deletionRequestFactory, deletionTestConfig } from '../../domain/testing';
+import { deletionLogFactory, deletionRequestFactory } from '../../domain/testing';
 import { DomainName, StatusModel } from '../../domain/types';
+import { DeletionRequestEntity } from '../../repo/entity';
 import { DeletionRequestLogResponseBuilder } from '../builder';
 import { DeletionRequestBodyParams } from '../controller/dto';
 import { DeletionLogStatisticBuilder, DeletionTargetRefBuilder } from '../controller/dto/builder';
@@ -23,9 +24,11 @@ describe(DeletionRequestUc.name, () => {
 	let uc: DeletionRequestUc;
 	let deletionRequestService: DeepMocked<DeletionRequestService>;
 	let deletionLogService: DeepMocked<DeletionLogService>;
-	let configService: DeepMocked<ConfigService<DeletionConfig, true>>;
+	let config: DeletionConfig;
+	let legacyLogger: DeepMocked<LegacyLogger>;
 	let deletionExecutionService: DeepMocked<DeletionExecutionService>;
 	let accountService: DeepMocked<AccountService>;
+	let authenticationService: DeepMocked<AuthenticationService>;
 	let userService: DeepMocked<UserService>;
 
 	beforeAll(async () => {
@@ -47,8 +50,8 @@ describe(DeletionRequestUc.name, () => {
 					useValue: createMock<LegacyLogger>(),
 				},
 				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService>(),
+					provide: DELETION_CONFIG_TOKEN,
+					useValue: {},
 				},
 				{
 					provide: DeletionExecutionService,
@@ -57,6 +60,10 @@ describe(DeletionRequestUc.name, () => {
 				{
 					provide: AccountService,
 					useValue: createMock<AccountService>(),
+				},
+				{
+					provide: AuthenticationService,
+					useValue: createMock<AuthenticationService>(),
 				},
 				{
 					provide: UserService,
@@ -68,9 +75,11 @@ describe(DeletionRequestUc.name, () => {
 		uc = module.get(DeletionRequestUc);
 		deletionRequestService = module.get(DeletionRequestService);
 		deletionLogService = module.get(DeletionLogService);
-		configService = module.get(ConfigService);
+		config = module.get(DELETION_CONFIG_TOKEN);
+		legacyLogger = module.get(LegacyLogger);
 		deletionExecutionService = module.get(DeletionExecutionService);
 		accountService = module.get(AccountService);
+		authenticationService = module.get(AuthenticationService);
 		userService = module.get(UserService);
 	});
 
@@ -140,6 +149,14 @@ describe(DeletionRequestUc.name, () => {
 				});
 			});
 
+			it('should call userService.flagAsDeleted if domain is DomainName.User', async () => {
+				const { deletionRequestToCreate } = setup();
+
+				await uc.createDeletionRequest(deletionRequestToCreate);
+
+				expect(userService.flagAsDeleted).toHaveBeenCalledWith(deletionRequestToCreate.targetRef.id, expect.any(Date));
+			});
+
 			it('should call accountService.deactivateAccount if domain is DomainName.User', async () => {
 				const { deletionRequestToCreate } = setup();
 
@@ -150,27 +167,35 @@ describe(DeletionRequestUc.name, () => {
 					expect.any(Date)
 				);
 			});
+
+			it('should call authenticationService.removeUserFromWhitelist if domain is DomainName.User', async () => {
+				const { deletionRequestToCreate } = setup();
+
+				await uc.createDeletionRequest(deletionRequestToCreate);
+
+				expect(authenticationService.removeUserFromWhitelist).toHaveBeenCalledWith(
+					deletionRequestToCreate.targetRef.id
+				);
+			});
+
+			it('should log a warning if account is not found', async () => {
+				const { deletionRequestToCreate } = setup();
+				accountService.deactivateAccount.mockRejectedValueOnce(new NotFoundException());
+
+				await uc.createDeletionRequest(deletionRequestToCreate);
+
+				expect(legacyLogger.warn).toHaveBeenCalled();
+			});
 		});
 	});
 
 	describe('executeDeletionRequests', () => {
 		describe('when deletionRequests to execute exists', () => {
 			const setup = () => {
-				configService.get.mockImplementation((key) => {
-					if (key === 'ADMIN_API__DELETION_DELETE_AFTER_MINUTES') {
-						return 1;
-					}
-					if (key === 'ADMIN_API__DELETION_MODIFICATION_THRESHOLD_MS') {
-						return 100;
-					}
-					if (key === 'ADMIN_API__DELETION_CONSIDER_FAILED_AFTER_MS') {
-						return 1000;
-					}
-					if (key === 'ADMIN_API__DELETION_EXECUTION_BATCH_NUMBER') {
-						return 2;
-					}
-					return deletionTestConfig()[key];
-				});
+				config.adminApiDeletionDeleteAfterMinutes = 1;
+				config.adminApiDeletionModificationThresholdMs = 100;
+				config.adminApiDeletionConsiderFailedAfterMs = 1000;
+				config.adminApiDeletionExecutionBatchNumber = 2;
 
 				const deletionRequest = deletionRequestFactory.buildWithId({ deleteAfter: new Date('2023-01-01') });
 				deletionRequestService.findByIds.mockResolvedValueOnce([deletionRequest]);

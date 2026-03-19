@@ -37,7 +37,7 @@ describe('MediaSourceController (API)', () => {
 			const setup = async () => {
 				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin();
 
-				await em.persistAndFlush([adminUser, adminAccount]);
+				await em.persist([adminUser, adminAccount]).flush();
 				em.clear();
 
 				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
@@ -64,7 +64,7 @@ describe('MediaSourceController (API)', () => {
 
 				const vidis = mediaSourceEntityFactory.withVidisFormat().build({});
 
-				await em.persistAndFlush([superheroUser, superheroAccount, bilo, vidis]);
+				await em.persist([superheroUser, superheroAccount, bilo, vidis]).flush();
 				em.clear();
 
 				const loggedInClient: TestApiClient = await testApiClient.login(superheroAccount);
@@ -103,7 +103,7 @@ describe('MediaSourceController (API)', () => {
 			const setup = async () => {
 				const { superheroUser, superheroAccount } = UserAndAccountTestFactory.buildSuperhero();
 
-				await em.persistAndFlush([superheroUser, superheroAccount]);
+				await em.persist([superheroUser, superheroAccount]).flush();
 				em.clear();
 
 				const loggedInClient: TestApiClient = await testApiClient.login(superheroAccount);

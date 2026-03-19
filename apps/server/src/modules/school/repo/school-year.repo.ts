@@ -5,10 +5,11 @@ import { SchoolYearRepo } from '../domain/interface';
 import { SchoolYearsNoYearsLeft } from '../domain/loggable';
 import { SchoolYearEntityMapper } from './mapper';
 import { SchoolYearEntity } from './school-year.entity';
+import { EntityName } from '@mikro-orm/core';
 
 @Injectable()
 export class SchoolYearMikroOrmRepo extends BaseRepo<SchoolYearEntity> implements SchoolYearRepo {
-	get entityName(): typeof SchoolYearEntity {
+	get entityName(): EntityName<SchoolYearEntity> {
 		return SchoolYearEntity;
 	}
 

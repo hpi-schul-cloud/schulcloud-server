@@ -1,7 +1,7 @@
 import { columnBoardFactory, columnFactory } from '../testing';
 import { BoardNodeAuthorizable, BoardRoles, BoardContextSettings } from './board-node-authorizable.do';
 import { Permission } from '@shared/domain/interface';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { ColumnBoardProps } from './types';
 
 describe('Board Node Authorizable Domain Object', () => {
@@ -69,6 +69,7 @@ describe('Board Node Authorizable Domain Object', () => {
 				Permission.BOARD_MANAGE_READERS_CAN_EDIT,
 				Permission.BOARD_MANAGE,
 				Permission.BOARD_SHARE_BOARD,
+				Permission.BOARD_RELOCATE_CONTENT,
 			]);
 		});
 	});

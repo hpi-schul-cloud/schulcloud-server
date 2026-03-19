@@ -1,6 +1,4 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { IConfig } from '@hpi-schul-cloud/commons/lib/interfaces/IConfig';
 import { AuthorizationService } from '@modules/authorization';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
@@ -12,6 +10,7 @@ import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
+import { LEARNROOM_CONFIG_TOKEN, LearnroomConfig } from '../learnroom.config';
 import { LegacyBoard, LegacyBoardElement } from '../repo';
 import { boardFactory, columnboardBoardElementFactory, lessonBoardElementFactory } from '../testing';
 import { LessonMetaData } from '../types';
@@ -23,15 +22,13 @@ describe(RoomBoardDTOFactory.name, () => {
 	let mapper: RoomBoardDTOFactory;
 	let roomsAuthorisationService: CourseRoomsAuthorisationService;
 	let authorisationService: DeepMocked<AuthorizationService>;
-	let configBefore: IConfig;
+	let config: LearnroomConfig;
 
 	afterAll(async () => {
 		await module.close();
-		Configuration.reset(configBefore);
 	});
 
 	beforeAll(async () => {
-		configBefore = Configuration.toObject({ plainSecrets: true });
 		module = await Test.createTestingModule({
 			imports: [],
 			providers: [
@@ -50,12 +47,18 @@ describe(RoomBoardDTOFactory.name, () => {
 					},
 				},
 				{ provide: AuthorizationService, useValue: createMock<AuthorizationService>() },
+				{
+					provide: LEARNROOM_CONFIG_TOKEN,
+					useValue: {},
+				},
 			],
 		}).compile();
 
 		roomsAuthorisationService = module.get(CourseRoomsAuthorisationService);
 		authorisationService = module.get(AuthorizationService);
 		mapper = module.get(RoomBoardDTOFactory);
+		config = module.get<LearnroomConfig>(LEARNROOM_CONFIG_TOKEN);
+
 		await setupEntities([
 			User,
 			CourseEntity,
@@ -386,7 +389,7 @@ describe(RoomBoardDTOFactory.name, () => {
 				it('should set lessons for student', () => {
 					const { user, room, board } = setup();
 
-					Configuration.set('FEATURE_COLUMN_BOARD_ENABLED', false);
+					config.featureColumnBoardEnabled = false;
 
 					const result = mapper.createDTO({ room, board, user });
 					expect(result.elements.length).toEqual(1);
@@ -397,7 +400,7 @@ describe(RoomBoardDTOFactory.name, () => {
 				it('should set lessons for student', () => {
 					const { user, room, board } = setup();
 
-					Configuration.set('FEATURE_COLUMN_BOARD_ENABLED', true);
+					config.featureColumnBoardEnabled = true;
 
 					const result = mapper.createDTO({ room, board, user });
 					expect(result.elements.length).toEqual(6);

@@ -1,20 +1,21 @@
+import { ConfigurationModule } from '@infra/configuration';
 import { Module } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { utilities, WinstonModule } from 'nest-winston';
 import winston from 'winston';
 import { ErrorLogger } from './error-logger';
-import { LoggerConfig } from './logger.config';
 import { LegacyLogger } from './legacy-logger.service';
 import { Logger } from './logger';
+import { LOGGER_CONFIG_TOKEN, LoggerConfig } from './logger.config';
 
 @Module({
 	imports: [
 		WinstonModule.forRootAsync({
-			useFactory: (configService: ConfigService<LoggerConfig, true>) => {
+			imports: [ConfigurationModule.register(LOGGER_CONFIG_TOKEN, LoggerConfig)],
+			useFactory: (config: LoggerConfig) => {
 				return {
 					levels: winston.config.syslog.levels,
-					level: configService.get<string>('NEST_LOG_LEVEL'),
-					exitOnError: configService.get<boolean>('EXIT_ON_ERROR'),
+					level: config.nestLogLevel,
+					exitOnError: config.exitOnError,
 					transports: [
 						new winston.transports.Console({
 							handleExceptions: true,
@@ -28,7 +29,7 @@ import { Logger } from './logger';
 					],
 				};
 			},
-			inject: [ConfigService],
+			inject: [LOGGER_CONFIG_TOKEN],
 		}),
 	],
 	providers: [LegacyLogger, Logger, ErrorLogger],

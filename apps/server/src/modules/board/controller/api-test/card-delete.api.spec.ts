@@ -45,7 +45,7 @@ describe(`card delete (api)`, () => {
 		const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 
 		const course = courseEntityFactory.build({ school: teacherUser.school, teachers: [teacherUser] });
-		await em.persistAndFlush([teacherUser, teacherAccount, course]);
+		await em.persist([teacherUser, teacherAccount, course]).flush();
 
 		const columnBoardNode = columnBoardEntityFactory.build({
 			context: { id: course.id, type: BoardExternalReferenceType.Course },
@@ -55,7 +55,7 @@ describe(`card delete (api)`, () => {
 		const richTextElementNode = richTextElementEntityFactory.withParent(cardNode).build();
 		const siblingCardNode = cardEntityFactory.withParent(columnNode).build({ position: 1 });
 
-		await em.persistAndFlush([columnBoardNode, columnNode, cardNode, siblingCardNode, richTextElementNode]);
+		await em.persist([columnBoardNode, columnNode, cardNode, siblingCardNode, richTextElementNode]).flush();
 		em.clear();
 
 		const loggedInClient = await testApiClient.login(teacherAccount);
@@ -112,7 +112,7 @@ describe(`card delete (api)`, () => {
 			const vars = await setup();
 
 			const { studentAccount: noAccessAccount, studentUser: noAccessUser } = UserAndAccountTestFactory.buildStudent();
-			await em.persistAndFlush([noAccessAccount, noAccessUser]);
+			await em.persist([noAccessAccount, noAccessUser]).flush();
 			const loggedInClient = await testApiClient.login(noAccessAccount);
 
 			return {

@@ -7,26 +7,26 @@ export const VIDEO_CONFERENCE_PUBLIC_API_CONFIG = 'VIDEO_CONFERENCE_PUBLIC_API_C
 export class VideoConferencePublicApiConfig {
 	@IsBoolean()
 	@StringToBoolean()
-	@ConfigProperty()
-	public FEATURE_VIDEOCONFERENCE_ENABLED = true;
+	@ConfigProperty('FEATURE_VIDEOCONFERENCE_ENABLED')
+	public featureVideoConferenceEnabled = false;
 }
 
 export const VIDEO_CONFERENCE_CONFIG_TOKEN = 'VIDEO_CONFERENCE_CONFIG_TOKEN';
 @Configuration()
 export class VideoConferenceConfig extends VideoConferencePublicApiConfig {
 	@IsUrl({ require_tld: false })
-	@ConfigProperty()
-	public HOST!: string;
+	@ConfigProperty('HOST')
+	public scHostUrl!: string;
 
 	@IsUrl({ require_tld: false })
-	@ConfigProperty()
-	public VIDEOCONFERENCE_HOST = 'https://bigbluebutton.schul-cloud.org/bigbluebutton';
+	@ConfigProperty('VIDEOCONFERENCE_HOST')
+	public videoConferenceHost = 'https://bigbluebutton.schul-cloud.org/bigbluebutton';
 
 	@IsString()
-	@ConfigProperty()
-	public VIDEOCONFERENCE_SALT = '';
+	@ConfigProperty('VIDEOCONFERENCE_SALT')
+	public videoConferenceSalt = '';
 
 	@IsString()
-	@ConfigProperty()
-	public VIDEOCONFERENCE_DEFAULT_PRESENTATION = '';
+	@ConfigProperty('VIDEOCONFERENCE_DEFAULT_PRESENTATION')
+	public videoConferenceDefaultPresentation = '';
 }

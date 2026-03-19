@@ -1,5 +1,5 @@
 const { authenticate } = require('@feathersjs/authentication');
-const { Configuration } = require('@hpi-schul-cloud/commons/lib');
+const { Configuration } = require('@hpi-schul-cloud/commons');
 const {
 	Forbidden,
 	NotFound,
@@ -10,7 +10,6 @@ const {
 	NotAcceptable,
 } = require('../../../errors');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
-const { SC_TITLE } = require('../../../../config/globals');
 
 const globalHooks = require('../../../hooks');
 const logger = require('../../../logger');
@@ -63,12 +62,7 @@ const teamMainHook = globalHooks.ifNotLocal((hook) =>
 			}
 			const sessionSchoolId = bsonIdToString(sessionUser.schoolId);
 
-			if (method === 'create') {
-				// eslint-disable-next-line no-param-reassign
-				team = updateMissingDataInHookForCreate(hook, sessionUser);
-				users.push(sessionUser);
-				hook.data = team;
-			} else if (method === 'find') {
+			if (method === 'find') {
 				hook.params.query.userIds = { $elemMatch: { userId } };
 				return hook;
 			}
@@ -597,6 +591,7 @@ const sendInfo = (hook) => {
 
 	return getSessionUser(hook)
 		.then((user) => {
+			const SC_TITLE = Configuration.get('SC_TITLE');
 			globalHooks.sendEmail(hook, {
 				subject: `${SC_TITLE}: Team-Einladung`,
 				emails: [email],
@@ -646,36 +641,6 @@ const addCurrentUser = globalHooks.ifNotLocal((hook) => {
 	}
 	return hook;
 });
-
-/**
- * Test if the sessionUser is allowed to create a team. Every teacher and admin can create teams.
- * Students can create teams if it is not disabled (can be blocked by school settings)
- * If not throw an error.
- * @beforeHook
- */
-const isAllowedToCreateTeams = (hook) =>
-	getSessionUser(hook).then((sessionUser) =>
-		hook.app
-			.service('schools')
-			.get(hook.data.schoolId)
-			.then((school) => {
-				const roleNames = sessionUser.roles.map((role) => role.name);
-				if (
-					roleNames.includes('superhero') ||
-					roleNames.includes('administrator') ||
-					roleNames.includes('teacher') ||
-					roleNames.includes('student')
-				) {
-					if (roleNames.includes('student') && !school.isTeamCreationByStudentsEnabled) {
-						throw new Forbidden('Your school admin does not allow team creations by students.');
-					}
-				} else {
-					throw new Forbidden('Only administrator, teacher and students can create teams.');
-				}
-
-				return hook;
-			})
-	);
 
 /**
  * Test if data.userId is set. If true it test if the role is teacher. If not throw an error.
@@ -794,7 +759,7 @@ const cleanUserIdsHook = (context) => {
 			cleanUserIdsFromTeam(team);
 		});
 	}
-}
+};
 
 /**
  * @afterHook
@@ -841,14 +806,6 @@ exports.before = {
 	],
 	find: [teamMainHook],
 	get: [teamMainHook],
-	create: [
-		filterToRelated(keys.data, 'data'),
-		globalHooks.injectUserId,
-		isAllowedToCreateTeams,
-		testInputData,
-		updateUsersForEachClass,
-		teamMainHook,
-	], // inject is needing?
 	update: [blockedMethod],
 	patch: [
 		rejectDefaultFilePermissionUpdatesIfNotPermitted,
@@ -882,7 +839,7 @@ exports.beforeExtern = {
 		dataExist,
 		teamRolesToHook,
 		globalHooks.hasPermission('TEAM_INVITE_EXTERNAL'),
-		hasTeamPermission(['INVITE_EXPERTS', 'INVITE_ADMINISTRATORS']),
+		hasTeamPermission(['INVITE_EXTERNAL_PERSONS', 'INVITE_ADMINISTRATORS']),
 		filterToRelated(['userId', 'email', 'role'], 'data'),
 		globalHooks.blockDisposableEmail('email'),
 		isTeacherDirectlyImport,

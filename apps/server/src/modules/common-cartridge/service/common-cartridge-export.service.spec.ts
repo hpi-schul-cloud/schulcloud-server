@@ -1,32 +1,29 @@
 import { Logger } from '@core/logger';
 import { faker } from '@faker-js/faker';
-import { DeepMocked, createMock } from '@golevelup/ts-jest';
-import { BoardResponse, BoardsClientAdapter } from '@infra/boards-client';
-import { CoursesClientAdapter } from '@infra/courses-client';
-import { FilesStorageClientAdapter } from '@infra/files-storage-client';
-import { FileRecordParentType } from '@infra/rabbitmq';
-import { FileDto, FilesStorageClientAdapterService } from '@modules/files-storage-client';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import {
+	BoardResponse,
+	BoardsClientAdapter,
+	BoardTaskResponse,
+	CardClientAdapter,
+	CardListResponse,
+	CourseRoomsClientAdapter,
+	CoursesClientAdapter,
+	FilesStorageClientAdapter,
+	LessonClientAdapter,
+	LinkElementContent,
+	RichTextElementContent,
+	SingleColumnBoardResponse,
+} from '@infra/common-cartridge-clients';
+import { fileRecordResponseFactory } from '@infra/files-storage-client/testing';
+import { FileDto, FileRecordParentType, FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import AdmZip from 'adm-zip';
 import { ArchiverError, ProgressData } from 'archiver';
 import { Readable } from 'stream';
-import { CardClientAdapter } from '../common-cartridge-client/card-client/card-client.adapter';
-import {
-	CardListResponseDto,
-	LinkElementContentDto,
-	RichTextElementContentDto,
-} from '../common-cartridge-client/card-client/dto';
-import { LessonClientAdapter } from '../common-cartridge-client/lesson-client/lesson-client.adapter';
-import { CourseRoomsClientAdapter } from '../common-cartridge-client/room-client';
-import {
-	BoardColumnBoardDto,
-	BoardLessonDto,
-	BoardTaskDto,
-	RoomBoardDto,
-} from '../common-cartridge-client/room-client/dto';
 import { CommonCartridgeVersion } from '../export/common-cartridge.enums';
-import { CommonCartridgeExportMessageLoggable } from '../loggable/common-cartridge-export-message.loggable';
+import { CommonCartridgeMessageLoggable } from '../loggable/common-cartridge-message.loggable';
 import {
 	boardColumnFactory,
 	boardLessonFactory,
@@ -34,9 +31,10 @@ import {
 	columnBoardFactory,
 	courseMetadataFactory,
 	lessonFactory,
+	lessonLinkedTaskFactory,
 	listOfCardResponseFactory,
 	roomFactory,
-} from '../testing/common-cartridge-dtos.factory';
+} from '../testing/common-cartridge-elements.factory';
 import { CommonCartridgeExportMapper } from './common-cartridge-export.mapper';
 import { CommonCartridgeExportService } from './common-cartridge-export.service';
 
@@ -48,14 +46,15 @@ describe('CommonCartridgeExportService', () => {
 	let cardClientAdapterMock: DeepMocked<CardClientAdapter>;
 	let boardClientAdapterMock: DeepMocked<BoardsClientAdapter>;
 	let lessonClientAdapterMock: DeepMocked<LessonClientAdapter>;
-	let filesMetadataClientAdapterMock: DeepMocked<FilesStorageClientAdapterService>;
 	let filesStorageClientAdapterMock: DeepMocked<FilesStorageClientAdapter>;
 	let logger: DeepMocked<Logger>;
 
 	const createXmlString = (nodeName: string, value: boolean | number | string): string =>
 		`<${nodeName}>${value.toString()}</${nodeName}>`;
+
 	const getFileContent = (archive: AdmZip, filePath: string): string | undefined =>
 		archive.getEntry(filePath)?.getData().toString();
+
 	const setupParams = async (
 		version: CommonCartridgeVersion,
 		exportTopics: boolean,
@@ -64,6 +63,7 @@ describe('CommonCartridgeExportService', () => {
 	) => {
 		const courseMetadata = courseMetadataFactory.build();
 		const lessons = lessonFactory.buildList(2);
+		const lessonTasks = lessonLinkedTaskFactory.buildList(2);
 		const [lesson] = lessons;
 		lesson.courseId = courseMetadata.id;
 
@@ -72,26 +72,27 @@ describe('CommonCartridgeExportService', () => {
 			.map((c) => c.cards)
 			.flat()
 			.map((c) => c.cardId);
-		const listOfCardsResponse: CardListResponseDto = listOfCardResponseFactory.withCardIds(cardIds).build();
-		const boardTask: BoardTaskDto = boardTaskFactory.build();
+		const listOfCardsResponse: CardListResponse = listOfCardResponseFactory.withCardIds(cardIds).build();
+		const boardTask: BoardTaskResponse = boardTaskFactory.build();
 		boardTask.courseName = courseMetadata.title;
 
-		const room: RoomBoardDto = roomFactory.build();
+		const room: SingleColumnBoardResponse = roomFactory.build();
 		room.title = courseMetadata.title;
 		room.elements[0].content = boardTask;
-		room.elements[1].content = new BoardLessonDto(boardLessonFactory.build());
-		room.elements[1].content.id = lesson.lessonId;
+		room.elements[1].content = boardLessonFactory.build();
+		room.elements[1].content.id = lesson.id;
 		room.elements[1].content.name = lesson.name;
-		room.elements[2].content = new BoardColumnBoardDto(boardColumnFactory.build());
+		room.elements[2].content = boardColumnFactory.build();
 
 		coursesClientAdapterMock.getCourseCommonCartridgeMetadata.mockResolvedValue(courseMetadata);
 		lessonClientAdapterMock.getLessonById.mockResolvedValue(lesson);
-		lessonClientAdapterMock.getLessonTasks.mockResolvedValue(lesson.linkedTasks ?? []);
+		lessonClientAdapterMock.getLessonTasks.mockResolvedValue(lessonTasks);
 		boardClientAdapterMock.getBoardSkeletonById.mockResolvedValue(boardSkeleton);
 		cardClientAdapterMock.getAllBoardCardsByIds.mockResolvedValue(listOfCardsResponse);
 		courseRoomsClientAdapterMock.getRoomBoardByCourseId.mockResolvedValue(room);
 
 		const exported = await sut.exportCourse(
+			faker.internet.jwt(),
 			courseMetadata.id,
 			version,
 			exportTopics ? [room.elements[1].content.id] : [],
@@ -116,15 +117,17 @@ describe('CommonCartridgeExportService', () => {
 			room,
 			lesson,
 			lessons,
+			lessonTasks,
 			boardTask,
 			boardSkeleton,
 			listOfCardsResponse,
-			textElement: listOfCardsResponse.data[0].elements[0].content as RichTextElementContentDto,
-			linkElement: listOfCardsResponse.data[0].elements[1].content as LinkElementContentDto,
+			textElement: listOfCardsResponse.data[0].elements[0].content as RichTextElementContent,
+			linkElement: listOfCardsResponse.data[0].elements[1].content as LinkElementContent,
 		};
 	};
+
 	const setupFile = () => {
-		const fileRecord: FileDto = new FileDto({
+		const fileDto: FileDto = new FileDto({
 			id: faker.string.uuid(),
 			name: faker.system.fileName(),
 			parentId: faker.string.uuid(),
@@ -132,12 +135,20 @@ describe('CommonCartridgeExportService', () => {
 			createdAt: faker.date.past(),
 			updatedAt: faker.date.recent(),
 		});
+		const fileRecord = fileRecordResponseFactory.build({
+			id: fileDto.id,
+			name: fileDto.name,
+			parentId: fileDto.parentId,
+			parentType: fileDto.parentType,
+		});
+
 		const file = Readable.from(faker.lorem.paragraphs(100));
 
-		filesMetadataClientAdapterMock.listFilesOfParent.mockResolvedValue([fileRecord]);
+		filesStorageClientAdapterMock.list.mockResolvedValue([fileRecord]);
+		filesStorageClientAdapterMock.getFileRecord.mockResolvedValue(fileRecord);
 		filesStorageClientAdapterMock.getStream.mockResolvedValue(file);
 
-		return { fileRecord, file };
+		return { fileDto, file };
 	};
 
 	beforeAll(async () => {
@@ -174,10 +185,6 @@ describe('CommonCartridgeExportService', () => {
 					useValue: createMock<FilesStorageClientAdapter>(),
 				},
 				{
-					provide: FilesStorageClientAdapterService,
-					useValue: createMock<FilesStorageClientAdapterService>(),
-				},
-				{
 					provide: Logger,
 					useValue: createMock<Logger>(),
 				},
@@ -190,7 +197,6 @@ describe('CommonCartridgeExportService', () => {
 		cardClientAdapterMock = module.get(CardClientAdapter);
 		boardClientAdapterMock = module.get(BoardsClientAdapter);
 		lessonClientAdapterMock = module.get(LessonClientAdapter);
-		filesMetadataClientAdapterMock = module.get(FilesStorageClientAdapterService);
 		filesStorageClientAdapterMock = module.get(FilesStorageClientAdapter);
 		logger = module.get(Logger);
 	});
@@ -228,7 +234,7 @@ describe('CommonCartridgeExportService', () => {
 				const { archive, courseMetadata } = await setup();
 
 				expect(getFileContent(archive, 'imsmanifest.xml')).toContain(
-					createXmlString('mnf:string', courseMetadata.title)
+					createXmlString('lomimscc:string', courseMetadata.title)
 				);
 			});
 
@@ -239,20 +245,20 @@ describe('CommonCartridgeExportService', () => {
 			});
 
 			it('should add task with file', async () => {
-				const { archive, boardTask, fileRecord } = await setup();
+				const { archive, boardTask, fileDto } = await setup();
 
 				expect(getFileContent(archive, 'imsmanifest.xml')).toContain(createXmlString('title', boardTask.name));
 
 				expect(getFileContent(archive, 'imsmanifest.xml')).toContain(`<resource identifier="i${boardTask.id}"`);
 
-				expect(getFileContent(archive, 'imsmanifest.xml')).toContain(`${fileRecord.name}"`);
+				expect(getFileContent(archive, 'imsmanifest.xml')).toContain(`${fileDto.name}"`);
 			});
 
 			it('should add tasks of lesson to manifest file', async () => {
-				const { archive, lesson } = await setup();
+				const { archive, lessonTasks } = await setup();
 				const manifest = archive.getEntry('imsmanifest.xml')?.getData().toString();
 
-				lesson.linkedTasks.forEach((linkedTask) => {
+				lessonTasks.forEach((linkedTask) => {
 					expect(manifest).toContain(`<title>${linkedTask.name}</title>`);
 				});
 			});
@@ -306,7 +312,7 @@ describe('CommonCartridgeExportService', () => {
 				const { archive, courseMetadata } = await setup();
 
 				expect(getFileContent(archive, 'imsmanifest.xml')).toContain(
-					createXmlString('mnf:string', courseMetadata.title)
+					createXmlString('lomimscc:string', courseMetadata.title)
 				);
 			});
 
@@ -323,10 +329,10 @@ describe('CommonCartridgeExportService', () => {
 			});
 
 			it('should add tasks of lesson to manifest file', async () => {
-				const { archive, lesson } = await setup();
+				const { archive, lessonTasks } = await setup();
 				const manifest = archive.getEntry('imsmanifest.xml')?.getData().toString();
 
-				lesson.linkedTasks.forEach((linkedTask) => {
+				lessonTasks.forEach((linkedTask) => {
 					expect(manifest).toContain(`<title>${linkedTask.name}</title>`);
 				});
 			});
@@ -432,44 +438,48 @@ describe('CommonCartridgeExportService', () => {
 				const [lesson] = lessons;
 				lesson.courseId = courseMetadata.id;
 
+				const lessonTasks = lessonLinkedTaskFactory.buildList(2);
+
 				const boardSkeleton: BoardResponse = columnBoardFactory.build();
 				const cardIds = boardSkeleton.columns
 					.map((c) => c.cards)
 					.flat()
 					.map((c) => c.cardId);
-				const listOfCardsResponse: CardListResponseDto = listOfCardResponseFactory.withCardIds(cardIds).build();
-				const boardTask: BoardTaskDto = boardTaskFactory.build();
+				const listOfCardsResponse: CardListResponse = listOfCardResponseFactory.withCardIds(cardIds).build();
+				const boardTask: BoardTaskResponse = boardTaskFactory.build();
 				boardTask.courseName = courseMetadata.title;
 
-				const room: RoomBoardDto = roomFactory.build();
+				const room: SingleColumnBoardResponse = roomFactory.build();
 				room.title = courseMetadata.title;
 				room.elements[0].content = boardTask;
-				room.elements[1].content = new BoardLessonDto(boardLessonFactory.build());
-				room.elements[1].content.id = lesson.lessonId;
+				room.elements[1].content = boardLessonFactory.build();
+				room.elements[1].content.id = lesson.id;
 				room.elements[1].content.name = lesson.name;
-				room.elements[2].content = new BoardColumnBoardDto(boardColumnFactory.build());
+				room.elements[2].content = boardColumnFactory.build();
 
 				coursesClientAdapterMock.getCourseCommonCartridgeMetadata.mockResolvedValue(courseMetadata);
 				lessonClientAdapterMock.getLessonById.mockResolvedValue(lesson);
-				lessonClientAdapterMock.getLessonTasks.mockResolvedValue(lesson.linkedTasks ?? []);
+				lessonClientAdapterMock.getLessonTasks.mockResolvedValue(lessonTasks);
 				boardClientAdapterMock.getBoardSkeletonById.mockResolvedValue(boardSkeleton);
 				cardClientAdapterMock.getAllBoardCardsByIds.mockResolvedValue(listOfCardsResponse);
 				courseRoomsClientAdapterMock.getRoomBoardByCourseId.mockResolvedValue(room);
 
 				const courseId = faker.string.uuid();
-				return { courseId };
+				const jwt = faker.internet.jwt();
+
+				return { courseId, jwt };
 			};
 
 			it('should log warning on warning level', async () => {
-				const { courseId } = setup();
+				const { courseId, jwt } = setup();
 
-				const result = await sut.exportCourse(courseId, CommonCartridgeVersion.V_1_1_0, [], [], []);
+				const result = await sut.exportCourse(jwt, courseId, CommonCartridgeVersion.V_1_1_0, [], [], []);
 				const archive = result.data;
 
 				archive.emit('warning', {} as unknown as ArchiverError);
 
 				expect(logger.warning).toHaveBeenCalledWith(
-					new CommonCartridgeExportMessageLoggable('Warning while creating archive', {
+					new CommonCartridgeMessageLoggable('Warning while creating archive', {
 						courseId,
 						cause: JSON.stringify({}),
 					})
@@ -477,9 +487,9 @@ describe('CommonCartridgeExportService', () => {
 			});
 
 			it('should log progress updates on debug level', async () => {
-				const { courseId } = setup();
+				const { courseId, jwt } = setup();
 
-				const result = await sut.exportCourse(courseId, CommonCartridgeVersion.V_1_1_0, [], [], []);
+				const result = await sut.exportCourse(jwt, courseId, CommonCartridgeVersion.V_1_1_0, [], [], []);
 				const archive = result.data;
 
 				archive.emit('progress', {
@@ -494,7 +504,7 @@ describe('CommonCartridgeExportService', () => {
 				} as ProgressData);
 
 				expect(logger.debug).toHaveBeenCalledWith(
-					new CommonCartridgeExportMessageLoggable('Progress for CC export: 1 of 2 total processed.', {
+					new CommonCartridgeMessageLoggable('Progress for CC export: 1 of 2 total processed.', {
 						courseId,
 						entries: {
 							total: 2,
@@ -509,14 +519,140 @@ describe('CommonCartridgeExportService', () => {
 			});
 
 			it('should throw on error', async () => {
-				const { courseId } = setup();
+				const { courseId, jwt } = setup();
 
-				const result = await sut.exportCourse(courseId, CommonCartridgeVersion.V_1_1_0, [], [], []);
+				const result = await sut.exportCourse(jwt, courseId, CommonCartridgeVersion.V_1_1_0, [], [], []);
 				const archive = result.data;
 
 				expect(() => archive.emit('error', {} as unknown as ArchiverError)).toThrow(
 					new InternalServerErrorException('Error while creating archive', { cause: {} })
 				);
+			});
+		});
+
+		describe('when file on task is blocked by antivirus', () => {
+			const setup = () => {
+				const courseMetadata = courseMetadataFactory.build();
+				const lessons = lessonFactory.buildList(2);
+				const [lesson] = lessons;
+				lesson.courseId = courseMetadata.id;
+				const lessonTasks = lessonLinkedTaskFactory.buildList(2);
+
+				const boardSkeleton: BoardResponse = columnBoardFactory.build();
+				const cardIds = boardSkeleton.columns
+					.map((c) => c.cards)
+					.flat()
+					.map((c) => c.cardId);
+				const listOfCardsResponse: CardListResponse = listOfCardResponseFactory.withCardIds(cardIds).build();
+				const boardTask: BoardTaskResponse = boardTaskFactory.build();
+				boardTask.courseName = courseMetadata.title;
+
+				const room: SingleColumnBoardResponse = roomFactory.build();
+				room.title = courseMetadata.title;
+				room.elements[0].content = boardTask;
+				room.elements[1].content = boardLessonFactory.build();
+				room.elements[1].content.id = lesson.id;
+				room.elements[1].content.name = lesson.name;
+				room.elements[2].content = boardColumnFactory.build();
+
+				coursesClientAdapterMock.getCourseCommonCartridgeMetadata.mockResolvedValue(courseMetadata);
+				lessonClientAdapterMock.getLessonById.mockResolvedValue(lesson);
+				lessonClientAdapterMock.getLessonTasks.mockResolvedValue(lessonTasks);
+				boardClientAdapterMock.getBoardSkeletonById.mockResolvedValue(boardSkeleton);
+				cardClientAdapterMock.getAllBoardCardsByIds.mockResolvedValue(listOfCardsResponse);
+				courseRoomsClientAdapterMock.getRoomBoardByCourseId.mockResolvedValue(room);
+
+				const fileRecordBlocked = fileRecordResponseFactory.build({
+					securityCheckStatus: 'blocked',
+				});
+				const fileRecordNotBlocked = fileRecordResponseFactory.build();
+				filesStorageClientAdapterMock.list.mockResolvedValueOnce([fileRecordBlocked, fileRecordNotBlocked]);
+
+				const courseId = faker.string.uuid();
+				const jwt = faker.internet.jwt();
+				return { jwt, courseId, taskId: boardTask.id, fileRecordBlocked, fileRecordNotBlocked };
+			};
+
+			it('should be skipped and logged', async () => {
+				const { jwt, courseId, taskId, fileRecordBlocked, fileRecordNotBlocked } = setup();
+
+				const result = await sut.exportCourse(jwt, courseId, CommonCartridgeVersion.V_1_1_0, [], [taskId], []);
+				expect(result).toBeDefined();
+
+				expect(filesStorageClientAdapterMock.getStream).not.toHaveBeenCalledWith(
+					jwt,
+					fileRecordBlocked.id,
+					fileRecordBlocked.name
+				);
+				expect(filesStorageClientAdapterMock.getStream).toHaveBeenCalledWith(
+					jwt,
+					fileRecordNotBlocked.id,
+					fileRecordNotBlocked.name
+				);
+				expect(logger.info).toHaveBeenCalledTimes(1);
+			});
+		});
+
+		describe('when file on card is blocked by antivirus', () => {
+			const setup = () => {
+				const courseMetadata = courseMetadataFactory.build();
+				const lessons = lessonFactory.buildList(2);
+				const [lesson] = lessons;
+				lesson.courseId = courseMetadata.id;
+				const lessonTasks = lessonLinkedTaskFactory.buildList(2);
+
+				const boardSkeleton: BoardResponse = columnBoardFactory.build();
+				const cardIds = boardSkeleton.columns
+					.map((c) => c.cards)
+					.flat()
+					.map((c) => c.cardId);
+				const listOfCardsResponse: CardListResponse = listOfCardResponseFactory.withCardIds(cardIds).build();
+				const boardTask: BoardTaskResponse = boardTaskFactory.build();
+				boardTask.courseName = courseMetadata.title;
+
+				const room: SingleColumnBoardResponse = roomFactory.build();
+				room.title = courseMetadata.title;
+				room.elements[0].content = boardTask;
+				room.elements[1].content = boardLessonFactory.build();
+				room.elements[1].content.id = lesson.id;
+				room.elements[1].content.name = lesson.name;
+				room.elements[2].content = boardColumnFactory.build();
+
+				coursesClientAdapterMock.getCourseCommonCartridgeMetadata.mockResolvedValue(courseMetadata);
+				lessonClientAdapterMock.getLessonById.mockResolvedValue(lesson);
+				lessonClientAdapterMock.getLessonTasks.mockResolvedValue(lessonTasks);
+				boardClientAdapterMock.getBoardSkeletonById.mockResolvedValue(boardSkeleton);
+				cardClientAdapterMock.getAllBoardCardsByIds.mockResolvedValue(listOfCardsResponse);
+				courseRoomsClientAdapterMock.getRoomBoardByCourseId.mockResolvedValue(room);
+
+				const fileRecordBlocked = fileRecordResponseFactory.build({
+					securityCheckStatus: 'blocked',
+				});
+				const fileRecordNotBlocked = fileRecordResponseFactory.build();
+				filesStorageClientAdapterMock.list.mockResolvedValue([fileRecordBlocked, fileRecordNotBlocked]);
+
+				const courseId = faker.string.uuid();
+				const jwt = faker.internet.jwt();
+				return { jwt, courseId, boardId: room.elements[2].content.id, fileRecordBlocked, fileRecordNotBlocked };
+			};
+
+			it('should be skipped and logged', async () => {
+				const { jwt, courseId, boardId, fileRecordBlocked, fileRecordNotBlocked } = setup();
+
+				const result = await sut.exportCourse(jwt, courseId, CommonCartridgeVersion.V_1_1_0, [], [], [boardId]);
+				expect(result).toBeDefined();
+
+				expect(filesStorageClientAdapterMock.getStream).not.toHaveBeenCalledWith(
+					jwt,
+					fileRecordBlocked.id,
+					fileRecordBlocked.name
+				);
+				expect(filesStorageClientAdapterMock.getStream).toHaveBeenCalledWith(
+					jwt,
+					fileRecordNotBlocked.id,
+					fileRecordNotBlocked.name
+				);
+				expect(logger.info).toHaveBeenCalledTimes(4);
 			});
 		});
 	});

@@ -53,11 +53,10 @@ spec:
       - name: common-cartridge
         image: {{ SCHULCLOUD_SERVER_IMAGE }}:{{ SCHULCLOUD_SERVER_IMAGE_TAG }}
         imagePullPolicy: IfNotPresent
+        env:
+        - name: NODE_OPTIONS
+          value: "--max-old-space-size={{ ((COMMON_CARTRIDGE_MEMORY_LIMITS | regex_replace('Gi', '')|int * 1024 * 0.8)|int) }}"
         envFrom:
-        - configMapRef:
-            name: api-configmap
-        - secretRef:
-            name: api-secret
         - configMapRef:
             name: common-cartridge-configmap
         - secretRef:
@@ -66,10 +65,10 @@ spec:
         resources:
           limits:
             cpu: {{ COMMON_CARTRIDGE_CPU_LIMITS|default("2000m", true) }}
-            memory: {{ COMMON_CARTRIDGE_MEMORY_LIMITS|default("2Gi", true) }}
+            memory: {{ COMMON_CARTRIDGE_MEMORY_LIMITS }}
           requests:
             cpu: {{ COMMON_CARTRIDGE_CPU_REQUESTS|default("100m", true) }}
-            memory: {{ COMMON_CARTRIDGE_MEMORY_REQUESTS|default("150Mi", true) }}
+            memory: {{ COMMON_CARTRIDGE_MEMORY_REQUESTS }}
 {% if AFFINITY_ENABLE is defined and AFFINITY_ENABLE|bool %}
       affinity:
         podAffinity:

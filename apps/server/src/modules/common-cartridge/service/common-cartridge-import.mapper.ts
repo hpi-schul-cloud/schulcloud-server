@@ -1,10 +1,10 @@
 import {
 	ContentElementType,
 	FileElementContentBody,
+	FileFolderElementContentBody,
 	LinkElementContentBody,
 	RichTextElementContentBody,
-	FileFolderElementContentBody,
-} from '@infra/cards-client';
+} from '@infra/common-cartridge-clients';
 import { InputFormat } from '@shared/domain/types';
 import { CommonCartridgeImportResourceProps, CommonCartridgeImportWebContentResourceProps } from '..';
 import { CommonCartridgeXmlResourceType } from '../import/common-cartridge-import.enums';
