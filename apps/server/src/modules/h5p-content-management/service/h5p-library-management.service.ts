@@ -34,7 +34,7 @@ import {
 	H5PLibraryManagementLoggable,
 	H5PLibraryManagementMetricsLoggable,
 } from '../loggable';
-import { H5P_CACHE_PROVIDER_TOKEN } from '../provider';
+import { H5P_CACHE_PROVIDER_TOKEN } from '../provider/h5p-cache.provider';
 import { ContentStorage } from './content-storage.service';
 import LibraryManagementPermissionSystem from './library-management-permission-system';
 import { LibraryStorage } from './library-storage.service';
