@@ -11,6 +11,8 @@ export class Migration20260318111956 extends Migration {
 		await this.getCollection('consents_history').drop();
 		await this.getCollection('course_external_tools').drop();
 		await this.getCollection('dashboarddefaultreference').drop();
+		await this.getCollection('datasources').drop();
+		await this.getCollection('datasourceruns').drop();
 		await this.getCollection('directories').drop();
 		await this.getCollection('drawings').drop();
 		await this.getCollection('external-tool-config').drop();
