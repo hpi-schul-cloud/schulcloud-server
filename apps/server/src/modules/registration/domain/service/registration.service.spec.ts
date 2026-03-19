@@ -464,7 +464,8 @@ describe('RegistrationService', () => {
 				expect(accountService.saveWithValidation).toHaveBeenCalledWith(
 					expect.objectContaining({
 						password: somePassword,
-					})
+					}),
+					{ allowUpdate: true }
 				);
 			});
 		});
@@ -524,7 +525,8 @@ describe('RegistrationService', () => {
 				expect(accountService.saveWithValidation).toHaveBeenCalledWith(
 					expect.objectContaining({
 						password: mockPassword,
-					})
+					}),
+					{ allowUpdate: true }
 				);
 			});
 		});
