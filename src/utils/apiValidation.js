@@ -7,13 +7,6 @@ const ignorePathsList = [
 	/|(.*\/accounts\/api($|\/$))/,
 	/|(.*\/accounts\/confirm($|\/$))/,
 	/|(.*\/accounts\/jwtTimer($|\/$))/, // todo: proper api-integrationtests with redis
-	/|(.*\/activationModel($|\/$))/,
-	/|(.*\/activationModel\/[0-9a-f]{24}($|\/$))/,
-	/|(.*\/activation($|\/$))/,
-	/|(.*\/activation\/[0-9a-f]{24}($|\/$))/,
-	/|(.*\/activation\/eMailAddress($|\/$))/,
-	/|(.*\/activation\/eMailAddress\/[0-9a-f]{24}($|\/$))/,
-	/|(.*\/activation\/api($|\/$))/,
 	/|(.*\/alert($|\/$))/,
 	/|(.*\/alert\/api($|\/$))/,
 	/|(.*\/authentication($|\/$))/, // todo: make sure external systems work with spec
@@ -60,7 +53,7 @@ const ignorePathsList = [
 	/|(.*\/fileStorage\/permission($|\/$))/,
 	/|(.*\/fileStorage\/permission\/[0-9a-f]{24}($|\/$))/,
 	/|(.*\/fileStorage\/files\/new($|\/$))/,
-	/|(.*\/fileStorage\/.*($|\/$))/, // for security check (final path read from globals)
+	/|(.*\/fileStorage\/.*($|\/$))/,
 	/|(.*\/fileStorage\/thumbnail($|\/$))/,
 	/|(.*\/fileStorage\/thumbnail\/[0-9a-f]{24}($|\/$))/,
 	/|(.*\/help\/documents($|\/$))/,

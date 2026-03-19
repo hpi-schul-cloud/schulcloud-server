@@ -25,14 +25,6 @@ coverage
 # Grunt intermediate storage (http://gruntjs.com/creating-plugins#storing-task-files)
 .grunt
 
-# Compiled binary addons (http://nodejs.org/api/addons.html)
-build/
-
-# Dependency directory
-# Commenting this out is preferred by some people, see
-# https://www.npmjs.org/doc/misc/npm-faq.html#should-i-check-my-node_modules-folder-into-git-
-node_modules
-
 # Users Environment Variables
 .lock-wscript
 
@@ -63,7 +55,6 @@ backup/*
 !.vscode/extensions.json
 
 # local dev secrets
-config/secrets.json
 *.env
 travis_rsa
 
@@ -74,13 +65,16 @@ version
 *.patch
 .build/travis_rsa
 
-# compiled output
+# Compiled binary addons (http://nodejs.org/api/addons.html)
+build/
 build
 /dist
-/node_modules
 
-# documentation
-/docs
+# Dependency directory
+# Commenting this out is preferred by some people, see
+# https://www.npmjs.org/doc/misc/npm-faq.html#should-i-check-my-node_modules-folder-into-git-
+node_modules
+/node_modules
 
 # Tests
 /coverage

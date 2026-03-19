@@ -82,7 +82,7 @@ export class RoomInvitationLinkController {
 	}
 
 	@Delete()
-	@ApiOperation({ summary: 'Delete a room invitation link' })
+	@ApiOperation({ summary: 'Delete invitation links of a room' })
 	@ApiResponse({ status: HttpStatus.NO_CONTENT, description: 'Deletion successful' })
 	@ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiValidationError })
 	@ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })

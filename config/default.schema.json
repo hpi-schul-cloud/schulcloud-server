@@ -11,23 +11,77 @@
 			"enum": ["development", "test", "production", "migration"],
 			"default": "production"
 		},
+		"AES_KEY": {
+			"type": "string",
+			"description": "AES key for encryption and decryption."
+		},
+		"BODYPARSER_JSON_LIMIT": {
+			"type": "string",
+			"default": "20mb",
+			"description": "The maximum size of JSON request bodies. Legacy."
+		},
+		"MONGOOSE_CONNECTION_POOL_SIZE": {
+			"type": "integer",
+			"default": 10,
+			"description": "The size of the MongoDB connection pool. Legacy."
+		},
+		"LEAD_TIME": {
+			"type": "integer",
+			"description": "Setting value enable the lead time measurement for requests. Legacy."
+		},
+		"MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE": {
+			"type": "integer",
+			"default": 5242880,
+			"description": "Maximum total size of attachments in bytes. Default 5 MB = 5 * 1024 *1024. Legacy."
+		},
+		"AWS_ACCESS_KEY": {
+			"type": "string",
+			"description": "AWS Access Key for S3 storage. Legacy."
+		},
+		"AWS_SECRET_ACCESS_KEY": {
+			"type": "string",
+			"description": "AWS Secret Access Key for S3 storage. Legacy."
+		},
+		"AWS_REGION": {
+			"type": "string",
+			"default": "eu-de",
+			"description": "AWS Region for S3 storage. Legacy."
+		},
+		"AWS_ENDPOINT_URL": {
+			"type": "string",
+			"description": "AWS Endpoint URL for S3 storage. Legacy."
+		},
+		"DISPLAY_REQUEST_LEVEL": {
+			"type": "integer",
+			"default": 0,
+			"description": "Log level for incoming requests. 0 = no logging, 1 = log method and url, 2 = log method, url and query, 3 = log method, url, query and headers.authorization. Legacy."
+		},
+		"CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS": {
+			"type": "integer",
+			"default": 16,
+			"description": "Minimum age in years for giving consent without parents. Legacy."
+		},
+		"SECURITY_CHECK_SERVICE_PATH": {
+			"type": "string",
+			"default": "/v1/fileStorage/securityCheck/",
+			"description": "Path for the file security check service. Path must start and end with a slash. Legacy."
+		},
 		"REQUEST_OPTION": {
 			"type": "object",
 			"description": "Request helper options for internal requests.",
 			"properties": {
 				"KEEP_ALIVE": {
 					"type": "boolean",
-					"description": "Add Keep-Alive header to the request connection."
+					"description": "Add Keep-Alive header to the request connection.",
+					"default": true
 				},
 				"TIMEOUT_MS": {
 					"type": "integer",
-					"description": "Outgoing request timeout in milliseconds."
+					"description": "Outgoing request timeout in milliseconds.",
+					"default": 5000
 				}
 			},
-			"default": {
-				"TIMEOUT_MS": 5000,
-				"KEEP_ALIVE": true
-			}
+			"default": {}
 		},
 		"CALENDAR_API_KEY": {
 			"type": "string",
@@ -80,7 +134,8 @@
 					"default": "de,en,es,ua",
 					"description": "Available languages"
 				}
-			}
+			},
+			"default": {}
 		},
 		"SYNC_API_KEY": {
 			"type": "string",
@@ -191,17 +246,16 @@
 			"properties": {
 				"SERVICE_HOSTNAME": {
 					"type": "string",
-					"description": "IP of host to connect to TCP interface"
+					"description": "IP of host to connect to TCP interface",
+					"default": "localhost"
 				},
 				"SERVICE_PORT": {
 					"type": "number",
-					"description": "Port of host to use when connecting via TCP interface"
+					"description": "Port of host to use when connecting via TCP interface",
+					"default": 3310
 				}
 			},
-			"default": {
-				"SERVICE_HOSTNAME": "localhost",
-				"SERVICE_PORT": 3310
-			}
+			"default": {}
 		},
 		"RABBITMQ_URI": {
 			"type": "string",
@@ -276,8 +330,8 @@
 		},
 		"FILE_SECURITY_CHECK_MAX_FILE_SIZE": {
 			"type": "integer",
-			"description": "Maximum file size for antivirus check in Byte.",
-			"default": 25000000
+			"description": "Maximum file size for antivirus check in Byte. 2,5 GB = 2,5 * 1024 * 1024 * 1024. Used in legacy code but is similar to files-storage deployment.",
+			"default": 2684354560
 		},
 		"FILE_SECURITY_CHECK_SERVICE_URI": {
 			"type": "string",
@@ -343,10 +397,7 @@
 					"description": "Defines whether feature toggle for visibility of students to teachers is visible."
 				}
 			},
-			"default": {
-				"IS_ENABLED_BY_DEFAULT": true,
-				"IS_VISIBLE": true
-			}
+			"default": {}
 		},
 		"ROCKETCHAT_SERVICE_ENABLED": {
 			"type": "boolean",
@@ -381,7 +432,6 @@
 		"ETHERPAD": {
 			"type": "object",
 			"description": "Etherpad settings",
-			"required": ["PAD_URI"],
 			"properties": {
 				"URI": {
 					"type": "string",
@@ -407,7 +457,8 @@
 					"default": 7200,
 					"description": "If Session Valid time is smaller than this, a new session is created on request."
 				}
-			}
+			},
+			"default": {}
 		},
 		"HYDRA_PUBLIC_URI": {
 			"type:": "string",
@@ -422,11 +473,6 @@
 			"type": "string",
 			"default": "",
 			"description": "A string with concatenated user types (student, employee) that don't need to explicitly state their consent with the terms and conditions. \"employee\" means teachers and admins."
-		},
-		"ACTIVATION_LINK_PERIOD_OF_VALIDITY_SECONDS": {
-			"type": "integer",
-			"default": 7200,
-			"description": "The time in seconds during which the activation link is valid. After expiration the entry is removed from the database"
 		},
 		"ADMIN_MAIL_RECEIVERS": {
 			"type": "string",
@@ -516,62 +562,6 @@
 			"default": "https://docs.dbildungscloud.de/pages/viewpage.action?pageId=270827606",
 			"description": "link to userfacing documentation of the column board feature"
 		},
-		"COOKIE": {
-			"type": "object",
-			"description": "Cookie properties, required always to be defined",
-			"properties": {
-				"SAME_SITE": {
-					"type": "string",
-					"default": "none",
-					"enum": ["none", "lax", "strict"],
-					"description": "Value for cookies sameSite property. When SECURE flag is false, 'None' is not allowed in SAME_SITE and Lax should be used as default instead"
-				},
-				"HTTP_ONLY": {
-					"type": "boolean",
-					"default": false,
-					"description": "Value for cookies httpOnly property"
-				},
-				"HOST_ONLY": {
-					"type": "boolean",
-					"default": true,
-					"description": "Value for cookies hostOnly property"
-				},
-				"SECURE": {
-					"type": "boolean",
-					"default": true,
-					"description": "Value for cookies httpOnly property"
-				},
-				"EXPIRES_SECONDS": {
-					"type": "integer",
-					"default": 2592000000,
-					"description": "Expiration in seconds from now"
-				}
-			},
-			"required": ["SAME_SITE", "HTTP_ONLY", "HOST_ONLY", "SECURE", "EXPIRES_SECONDS"],
-			"allOf": [
-				{
-					"$ref": "#/properties/COOKIE/definitions/SAME_SITE_SECURE_VALID"
-				}
-			],
-			"definitions": {
-				"SAME_SITE_SECURE_VALID": {
-					"if": {
-						"properties": {
-							"SECURE": {
-								"const": false
-							}
-						}
-					},
-					"then": {
-						"properties": {
-							"SAME_SITE": {
-								"enum": ["lax", "strict"]
-							}
-						}
-					}
-				}
-			}
-		},
 		"FEATURE_CTL_CONTEXT_CONFIGURATION_ENABLED": {
 			"type": "boolean",
 			"default": false,
@@ -611,17 +601,16 @@
 			"properties": {
 				"BASE_URL": {
 					"type": "string",
-					"description": "Base URL of the Tldraw's Admin API."
+					"description": "Base URL of the Tldraw's Admin API.",
+					"default": "http://localhost:3349"
 				},
 				"API_KEY": {
 					"type": "string",
-					"description": "API key for accessing the Tldraw's Admin API."
+					"description": "API key for accessing the Tldraw's Admin API.",
+					"default": ""
 				}
 			},
-			"default": {
-				"BASE_URL": "http://localhost:3349",
-				"API_KEY": ""
-			}
+			"default": {}
 		},
 		"SCHULCONNEX_CLIENT": {
 			"type": "object",
@@ -633,9 +622,7 @@
 					"default": 120000
 				}
 			},
-			"default": {
-				"PERSONEN_INFO_TIMEOUT_IN_MS": 120000
-			}
+			"default": {}
 		},
 		"FEATURE_MEDIA_SHELF_ENABLED": {
 			"type": "boolean",

@@ -311,6 +311,7 @@ export class LessonCopyService {
 			const etherpadUri = this.config.padUri;
 			content.url = `${etherpadUri}/${etherpadPadId}`;
 			copy.content = content;
+
 			return copy;
 		}
 		throw new Error('Failed to create etherpad');

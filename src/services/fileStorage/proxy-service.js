@@ -28,7 +28,6 @@ const { sortRoles } = require('../role/utils/rolesHelper');
 const { userModel } = require('../user/model');
 const logger = require('../../logger');
 const { equal: equalIds } = require('../../helper/compare').ObjectId;
-const { FILE_SECURITY_CHECK_MAX_FILE_SIZE, SECURITY_CHECK_SERVICE_PATH } = require('../../../config/globals');
 const AWSS3Strategy = require('./strategies/awsS3');
 
 const sanitizeObj = (obj) => {
@@ -82,6 +81,7 @@ const getStorageProviderIdAndBucket = async (userId, fileObject, strategy) => {
  */
 const prepareSecurityCheck = async (file, userId, strategy) => {
 	if (Configuration.get('ENABLE_FILE_SECURITY_CHECK') === true) {
+		const FILE_SECURITY_CHECK_MAX_FILE_SIZE =  Configuration.get('FILE_SECURITY_CHECK_MAX_FILE_SIZE');
 		if (file.size > FILE_SECURITY_CHECK_MAX_FILE_SIZE) {
 			return FileModel.updateOne(
 				{ _id: file._id },
@@ -104,6 +104,7 @@ const prepareSecurityCheck = async (file, userId, strategy) => {
 				download: true,
 			})
 			.then((signedUrl) => {
+				const SECURITY_CHECK_SERVICE_PATH = Configuration.get('SECURITY_CHECK_SERVICE_PATH');
 				const params = {
 					url: Configuration.get('FILE_SECURITY_CHECK_SERVICE_URI'),
 					method: 'POST',

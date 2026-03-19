@@ -1,0 +1,24 @@
+import { faker } from '@faker-js/faker/.';
+import { CommonCartridgeMessageLoggable } from './common-cartridge-message.loggable';
+
+describe(CommonCartridgeMessageLoggable.name, () => {
+	describe('getLogMessage', () => {
+		const setup = () => {
+			const message = faker.string.alphanumeric();
+			const loggable = new CommonCartridgeMessageLoggable(message);
+
+			return { loggable, message };
+		};
+
+		it('should return a loggable message', () => {
+			const { loggable, message } = setup();
+
+			const loggedMessage = loggable.getLogMessage();
+
+			expect(loggedMessage).toEqual({
+				type: 'COMMON_CARTRIDGE_MESSAGE_LOGGABLE',
+				message: message,
+			});
+		});
+	});
+});
