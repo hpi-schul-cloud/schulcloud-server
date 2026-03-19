@@ -47,6 +47,7 @@ describe('Room Controller (API)', () => {
 				email: registration.email,
 				firstName: registration.firstName,
 				lastName: registration.lastName,
+				registeredUserExists: false,
 				createdAt: registration.createdAt.toISOString(),
 				updatedAt: registration.updatedAt.toISOString(),
 			};
@@ -69,7 +70,7 @@ describe('Room Controller (API)', () => {
 			it('should return a registration', async () => {
 				const { registration, expectedResponse } = await setup();
 				const response = await testApiClient.get(`/by-secret/${registration.registrationSecret}`);
-				console.log(response.body);
+
 				expect(response.status).toBe(HttpStatus.OK);
 				expect(response.body).toEqual(expectedResponse);
 			});
