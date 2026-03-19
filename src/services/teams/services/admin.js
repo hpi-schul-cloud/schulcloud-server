@@ -1,7 +1,6 @@
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const { Forbidden, NotFound, BadRequest } = require('../../../errors');
 const hooks = require('../hooks');
-const { TEAM_FEATURES } = require('../model');
 const { warning } = require('../../../logger/index');
 const { createUserWithRole } = require('../hooks/helpers');
 const { getBasic, patchTeam, getSessionUser } = require('../helpers');
