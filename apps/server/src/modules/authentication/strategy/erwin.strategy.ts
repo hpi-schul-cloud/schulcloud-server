@@ -1,8 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-custom';
-import jwt from 'jsonwebtoken';
-import { ErwinJwtPayload } from '@modules/provisioning';
 import { StrategyType } from '../interface';
 import { IdTokenExtractionFailureLoggableException, OAuthService, OauthSessionTokenService } from '@modules/oauth';
 import { AccountService } from '@modules/account';
@@ -33,15 +31,20 @@ export class ErwinStrategy extends PassportStrategy(Strategy, StrategyType.ERWIN
 			throw new IdTokenExtractionFailureLoggableException('accessToken');
 		}
 
-		const decoded = jwt.decode(accessToken, { json: true });
-		if (!decoded) {
-			throw new IdTokenExtractionFailureLoggableException('decode');
+		const tokenDto = (await this.oauthService.authenticateUser('', '', accessToken)) as {
+			claims?: { systemId?: string };
+			systemId?: string;
+			idToken: string;
+			accessToken: string;
+		};
+
+		const systemId: string | undefined = tokenDto?.claims?.systemId ?? tokenDto?.systemId;
+
+		if (!systemId) {
+			throw new IdTokenExtractionFailureLoggableException('systemId');
 		}
 
-		const payload = new ErwinJwtPayload(decoded as Partial<ErwinJwtPayload>);
-		const erwinSystemId = payload.systemId;
-
-		const user = await this.oauthService.provisionUser(erwinSystemId || '', '', accessToken);
+		const user = await this.oauthService.provisionUser(systemId, tokenDto.idToken, tokenDto.accessToken);
 
 		if (!user || !user.id) {
 			throw new SchoolInMigrationLoggableException();
@@ -56,45 +59,7 @@ export class ErwinStrategy extends PassportStrategy(Strategy, StrategyType.ERWIN
 			throw new UserAccountDeactivatedLoggableException();
 		}
 
-		type UserWithSystemIds = typeof user & {
-			systemId?: string;
-			provisioningSystemId?: string;
-			externalId?: string;
-			isExternalUser?: boolean;
-		};
-
-		const typedUser = user as UserWithSystemIds;
-		const typedAccount = account as { systemId?: string };
-
-		// handling original provisioning systemId if present on user/account
-		let effectiveSystemId: string | undefined;
-		if (typedUser.systemId) {
-			effectiveSystemId = typedUser.systemId;
-		} else if (typedAccount.systemId) {
-			effectiveSystemId = typedAccount.systemId;
-		} else if (typedUser.provisioningSystemId) {
-			effectiveSystemId = typedUser.provisioningSystemId;
-		}
-
-		let isExternalUser = true;
-		if (!effectiveSystemId) {
-			if (typedUser.externalId) {
-				effectiveSystemId = erwinSystemId;
-			} else {
-				effectiveSystemId = undefined;
-				isExternalUser = false;
-			}
-		}
-
-		typedUser.systemId = effectiveSystemId;
-		typedUser.isExternalUser = isExternalUser;
-
-		const currentUser = CurrentUserMapper.mapToErwinCurrentUser(
-			account.id,
-			typedUser,
-			effectiveSystemId,
-			isExternalUser
-		);
+		const currentUser = CurrentUserMapper.mapToErwinCurrentUser(account.id, user, systemId, true);
 		return currentUser;
 	}
 }
