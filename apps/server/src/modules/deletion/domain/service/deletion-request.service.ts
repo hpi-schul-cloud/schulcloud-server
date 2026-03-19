@@ -79,19 +79,19 @@ export class DeletionRequestService {
 	public async getStatusOfDeletionRequestBatch(
 		batchId: EntityId
 	): Promise<{ pending: EntityId[]; failed: EntityId[]; success: EntityId[] }> {
-		const result = await this.deletionRequestRepo.groupByBatchIdAndStatus(batchId);
+		const result = await this.deletionRequestRepo.groupTargetRefIdsByBatchAndStatus(batchId);
 		const statusMap: { pending: EntityId[]; failed: EntityId[]; success: EntityId[] } = {
 			pending: [],
 			failed: [],
 			success: [],
 		};
-		for (const { status, deletionRequestIds } of result) {
+		for (const { status, targetRefIds } of result) {
 			if (status === StatusModel.PENDING || status === StatusModel.REGISTERED) {
-				statusMap.pending.push(...deletionRequestIds);
+				statusMap.pending.push(...targetRefIds);
 			} else if (status === StatusModel.FAILED) {
-				statusMap.failed.push(...deletionRequestIds);
+				statusMap.failed.push(...targetRefIds);
 			} else if (status === StatusModel.SUCCESS) {
-				statusMap.success.push(...deletionRequestIds);
+				statusMap.success.push(...targetRefIds);
 			}
 		}
 		return statusMap;
