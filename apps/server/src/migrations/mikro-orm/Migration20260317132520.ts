@@ -30,6 +30,24 @@ export class Migration20260317132520 extends Migration {
 			}
 		}
 
+		await this.getCollection('teams').updateMany(
+			{ features: 'rocketChat' },
+			{
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore // MongoDB types are wrong here
+				$pull: { features: 'rocketChat' },
+			}
+		);
+
+		await this.getCollection('schools').updateMany(
+			{ features: 'rocketChat' },
+			{
+				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// @ts-ignore // MongoDB types are wrong here
+				$pull: { features: 'rocketChat' },
+			}
+		);
+
 		console.log('Finished dropping Rocketchat Collections');
 	}
 
