@@ -66,6 +66,9 @@ spec:
         - name: api
           containerPort: 3351
           protocol: TCP
+        - name: metrics
+          containerPort: 9090
+          protocol: TCP
         resources:
           limits:
             cpu: {{ LEGACY_FILE_ARCHIVE_CPU_LIMITS|default("2000m", true) }}
