@@ -44,6 +44,7 @@ describe('datasourceRuns service', () => {
 	let testObjects;
 	let generateRequestParamsFromUser;
 	let datasourceRunIds;
+	let syncUserAccountService;
 
 	before(async () => {
 		app = await appPromise();
@@ -56,6 +57,7 @@ describe('datasourceRuns service', () => {
 		app.set('syncersStrategies', [MockSyncer, MockSyncerWithData]);
 		datasourceRunsService = app.service('datasourceRuns');
 
+		syncUserAccountService = app.service('sync/userAccount');
 		app.unuse('/sync/userAccount');
 
 		server = await app.listen(0);
@@ -63,6 +65,7 @@ describe('datasourceRuns service', () => {
 
 	after(async () => {
 		await testObjects.cleanup();
+		app.use('/sync/userAccount', syncUserAccountService);
 		await server.close();
 		await closeNestServices(nestServices);
 	});
