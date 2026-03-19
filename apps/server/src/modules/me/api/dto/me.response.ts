@@ -60,7 +60,6 @@ export class MeUserResponse {
 		this.customAvatarBackgroundColor = props.customAvatarBackgroundColor;
 	}
 }
-
 export class MeRoleResponse {
 	@ApiProperty()
 	public id: string;
@@ -71,6 +70,15 @@ export class MeRoleResponse {
 	constructor(props: MeRoleResponse) {
 		this.id = props.id;
 		this.name = props.name;
+	}
+}
+
+export class MePreferencesResponse {
+	@ApiProperty({ nullable: true })
+	public releaseDate?: string;
+
+	constructor(props: MePreferencesResponse) {
+		this.releaseDate = props.releaseDate;
 	}
 }
 
@@ -94,6 +102,9 @@ export class MeResponse {
 	public language?: LanguageType;
 
 	@ApiProperty()
+	public preferences: MePreferencesResponse;
+
+	@ApiProperty()
 	public account: MeAccountResponse;
 
 	@ApiPropertyOptional()
@@ -105,6 +116,7 @@ export class MeResponse {
 		this.roles = props.roles;
 		this.permissions = props.permissions;
 		this.language = props.language;
+		this.preferences = props.preferences;
 		this.account = props.account;
 		this.systemId = props.systemId;
 	}

@@ -1,7 +1,7 @@
 import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
-import { Controller, Get } from '@nestjs/common';
+import { Body, Controller, Get, Patch } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { MeResponse } from './dto';
+import { MeResponse, UpdatePreferencesBodyParams } from './dto';
 import { MeUc } from './me.uc';
 
 @ApiTags('Me')
@@ -22,5 +22,15 @@ export class MeController {
 		);
 
 		return res;
+	}
+
+	@ApiOperation({ summary: 'Resolve jwt and response informations about the owner of the jwt.' })
+	@ApiResponse({ status: 204 })
+	@Patch('preferences')
+	public async updateMePreferences(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Body() bodyParams: UpdatePreferencesBodyParams
+	): Promise<void> {
+		await this.meUc.updateMeReleaseDatePreference(currentUser.userId, bodyParams.releaseDate);
 	}
 }
