@@ -48,11 +48,7 @@ export class FileDo extends DomainObject<FileProps> {
 		if (segment === '' || segment === '.' || segment === '..') {
 			segment = '_';
 		}
-		// Enforce a reasonable maximum length to avoid excessively long archive entry names.
-		const maxLength = 255;
-		if (segment.length > maxLength) {
-			segment = segment.slice(0, maxLength);
-		}
+
 		return segment;
 	}
 }
