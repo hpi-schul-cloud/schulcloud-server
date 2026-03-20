@@ -15,8 +15,6 @@ import {
 	mediaExternalToolElementFactory,
 	mediaLineFactory,
 	richTextElementFactory,
-	submissionContainerElementFactory,
-	submissionItemFactory,
 	videoConferenceElementFactory,
 } from '../testing';
 
@@ -34,10 +32,6 @@ describe('getBoardNodeType', () => {
 		expect(getBoardNodeType(mediaExternalToolElementFactory.build())).toBe(BoardNodeType.MEDIA_EXTERNAL_TOOL_ELEMENT);
 		expect(getBoardNodeType(mediaLineFactory.build())).toBe(BoardNodeType.MEDIA_LINE);
 		expect(getBoardNodeType(richTextElementFactory.build())).toBe(BoardNodeType.RICH_TEXT_ELEMENT);
-		expect(getBoardNodeType(submissionContainerElementFactory.build())).toBe(
-			BoardNodeType.SUBMISSION_CONTAINER_ELEMENT
-		);
-		expect(getBoardNodeType(submissionItemFactory.build())).toBe(BoardNodeType.SUBMISSION_ITEM);
 		expect(getBoardNodeType(videoConferenceElementFactory.build())).toBe(BoardNodeType.VIDEO_CONFERENCE_ELEMENT);
 	});
 
