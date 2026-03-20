@@ -93,9 +93,6 @@ export class ConfigResponse {
 	FEATURE_COLUMN_BOARD_ENABLED: boolean;
 
 	@ApiProperty()
-	FEATURE_COLUMN_BOARD_SUBMISSIONS_ENABLED: boolean;
-
-	@ApiProperty()
 	FEATURE_COLUMN_BOARD_COLLABORATIVE_TEXT_EDITOR_ENABLED: boolean;
 
 	@ApiProperty()
@@ -298,7 +295,6 @@ export class ConfigResponse {
 		this.FEATURE_SCHOOL_POLICY_ENABLED_NEW = config.featureSchoolPolicyEnabledNew;
 		this.FEATURE_SCHOOL_TERMS_OF_USE_ENABLED = config.featureSchoolTermsOfUseEnabled;
 		this.FEATURE_COLUMN_BOARD_ENABLED = config.featureColumnBoardEnabled;
-		this.FEATURE_COLUMN_BOARD_SUBMISSIONS_ENABLED = config.featureColumnBoardSubmissionsEnabled;
 		this.FEATURE_COLUMN_BOARD_COLLABORATIVE_TEXT_EDITOR_ENABLED =
 			config.featureColumnBoardCollaborativeTextEditorEnabled;
 		this.FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED = config.featureColumnBoardLinkElementEnabled;
