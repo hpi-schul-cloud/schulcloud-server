@@ -1,5 +1,5 @@
 import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
-import { Body, Controller, Get, Patch } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, Patch } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { MeResponse, UpdatePreferencesBodyParams } from './dto';
 import { MeUc } from './me.uc';
@@ -26,6 +26,7 @@ export class MeController {
 
 	@ApiOperation({ summary: 'Resolve jwt and response informations about the owner of the jwt.' })
 	@ApiResponse({ status: 204 })
+	@HttpCode(204)
 	@Patch('preferences')
 	public async updateMePreferences(
 		@CurrentUser() currentUser: ICurrentUser,

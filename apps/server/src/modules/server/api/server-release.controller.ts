@@ -1,9 +1,12 @@
+import { JwtAuthentication } from '@infra/auth-guard';
 import { Controller, Get, Query } from '@nestjs/common';
-import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { PaginationParams } from '@shared/controller/dto';
 import { ReleaseService } from '../domain';
 import { ReleaseItemResponse, ReleaseListResponse } from './dto';
 
+@ApiTags('Release')
+@JwtAuthentication()
 @Controller('releases')
 export class ServerReleaseController {
 	constructor(private readonly releaseService: ReleaseService) {}
