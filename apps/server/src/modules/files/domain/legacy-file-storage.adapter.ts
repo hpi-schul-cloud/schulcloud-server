@@ -1,5 +1,5 @@
 import { HttpService } from '@nestjs/axios';
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import { TypeGuard } from '@shared/common/guards';
 import { JwtExtractor } from '@shared/common/utils';
@@ -31,26 +31,39 @@ export class LegacyFileStorageAdapter {
 	public async downloadFile(fileId: EntityId, fileName: string): Promise<Readable> {
 		const signedUrlResponse = await this.getSignedUrl(fileId, fileName);
 		const { url } = signedUrlResponse;
+		try {
+			const response = await firstValueFrom(this.httpService.get<Readable>(url, { responseType: 'stream' }));
 
-		const response = await firstValueFrom(this.httpService.get<Readable>(url, { responseType: 'stream' }));
-
-		return response.data;
+			return response.data;
+		} catch (error) {
+			throw new InternalServerErrorException(
+				`Failed to download file from legacy storage with id ${fileId} and name ${fileName}`,
+				{ cause: error }
+			);
+		}
 	}
 
 	private async getSignedUrl(fileId: EntityId, fileName: string): Promise<SignedUrlResponseVO> {
 		// The file name needs to be encoded twice to be correctly parsed by the S3 API.
 		const encodedFileName = encodeURI(encodeURIComponent(fileName));
 
-		const responseData = await firstValueFrom(
-			this.httpService.get<{ url: string }>(`${this.config.legacyBaseUrl}/fileStorage/signedUrl`, {
-				params: { file: fileId, download: true, name: encodedFileName },
-				headers: this.getAuthorizationHeader(),
-			})
-		);
+		try {
+			const responseData = await firstValueFrom(
+				this.httpService.get<{ url: string }>(`${this.config.legacyBaseUrl}/fileStorage/signedUrl`, {
+					params: { file: fileId, download: true, name: encodedFileName },
+					headers: this.getAuthorizationHeader(),
+				})
+			);
 
-		const signedUrlResponse = new SignedUrlResponseVO(responseData.data.url);
+			const signedUrlResponse = new SignedUrlResponseVO(responseData.data.url);
 
-		return signedUrlResponse;
+			return signedUrlResponse;
+		} catch (error) {
+			throw new InternalServerErrorException(
+				`Failed to get signed URL for file with id ${fileId} and name ${fileName}`,
+				{ cause: error }
+			);
+		}
 	}
 
 	private async fetchRecursively(ownerId: EntityId, parentId: string | undefined): Promise<FileDo[]> {
@@ -90,14 +103,18 @@ export class LegacyFileStorageAdapter {
 			params.parent = parentId;
 		}
 
-		const response = await firstValueFrom(
-			this.httpService.get(`${this.config.legacyBaseUrl}/fileStorage`, {
-				params,
-				headers: this.getAuthorizationHeader(),
-			})
-		);
+		try {
+			const response = await firstValueFrom(
+				this.httpService.get(`${this.config.legacyBaseUrl}/fileStorage`, {
+					params,
+					headers: this.getAuthorizationHeader(),
+				})
+			);
 
-		return response;
+			return response;
+		} catch (error) {
+			throw new InternalServerErrorException(`Failed to fetch files for owner with id ${ownerId}`, { cause: error });
+		}
 	}
 
 	private getAuthorizationHeader(): Record<string, string> {
