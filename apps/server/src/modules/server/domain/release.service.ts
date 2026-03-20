@@ -6,7 +6,7 @@ import { Release } from './types';
 export class ReleaseService {
 	constructor(private readonly releaseRepo: ReleaseRepo) {}
 
-	public async getAllReleases(): Promise<Release[]> {
-		return await this.releaseRepo.findAllReleases();
+	public async getReleases(skip?: number, limit?: number): Promise<Release[]> {
+		return await this.releaseRepo.findReleases(skip, limit);
 	}
 }

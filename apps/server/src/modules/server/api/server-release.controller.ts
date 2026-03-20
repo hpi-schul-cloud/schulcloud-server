@@ -1,5 +1,6 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { PaginationParams } from '@shared/controller/dto';
 import { ReleaseService } from '../domain';
 import { ReleaseItemResponse, ReleaseListResponse } from './dto';
 
@@ -10,8 +11,8 @@ export class ServerReleaseController {
 	@ApiOperation({ summary: 'Get the list of available releases' })
 	@ApiResponse({ status: 200, type: ReleaseListResponse })
 	@Get('')
-	public async getReleases(): Promise<ReleaseListResponse> {
-		const releases = await this.releaseService.getAllReleases();
+	public async getReleases(@Query() pagination: PaginationParams): Promise<ReleaseListResponse> {
+		const releases = await this.releaseService.getReleases(pagination.skip, pagination.limit);
 		const items = releases.map((release) => new ReleaseItemResponse(release));
 		const response = new ReleaseListResponse(items);
 
