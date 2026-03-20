@@ -11,7 +11,6 @@ import {
 } from '@lumieducation/h5p-server';
 import ContentManager from '@lumieducation/h5p-server/build/src/ContentManager';
 import ContentTypeInformationRepository from '@lumieducation/h5p-server/build/src/ContentTypeInformationRepository';
-import CachedLibraryStorage from '@lumieducation/h5p-server/build/src/implementation/cache/CachedLibraryStorage';
 import {
 	IFullLibraryName,
 	IInstalledLibrary,
@@ -80,9 +79,7 @@ export class H5PLibraryManagementService {
 	) {
 		const kvCache = new cacheImplementations.CachedKeyValueStorage('kvcache', this.cacheAdapter);
 
-		const cachedLibraryStorage = new cacheImplementations.CachedLibraryStorage(
-			new CachedLibraryStorage(libraryStorage, this.cacheAdapter)
-		);
+		const cachedLibraryStorage = new cacheImplementations.CachedLibraryStorage(libraryStorage, this.cacheAdapter);
 
 		const { installLibraryLockMaxOccupationTime } = this.config;
 		const h5pConfig = new H5PConfig(undefined, {
