@@ -84,10 +84,10 @@ import { MediaSourceApiModule } from '../media-source/media-source-api.module';
 import { SchoolLicenseApiModule } from '../school-license/school-license-api.module';
 import { ServerMailModule } from '../serverDynamicModuleWrappers/server-mail.module';
 import { ServerConfigController, ServerController, ServerReleaseController, ServerUc } from './api';
-import { SERVER_PUBLIC_API_CONFIG_TOKEN, ServerPublicApiConfig } from './server.config';
-import { ENTITIES, TEST_ENTITIES } from './server.entity.imports';
 import { ReleaseService } from './domain';
 import { ReleaseRepo } from './repo';
+import { SERVER_PUBLIC_API_CONFIG_TOKEN, ServerPublicApiConfig } from './server.config';
+import { ENTITIES, TEST_ENTITIES } from './server.entity.imports';
 
 const serverModules = [
 	HelpdeskApiModule,
