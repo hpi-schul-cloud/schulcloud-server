@@ -31,8 +31,14 @@ export class ArchiveFactory {
 			this.logClose(files, logger);
 		});
 
+		const handleStreamError = (err: unknown): void => {
+			archive.emit('error', err as Error);
+		};
+
 		for (const file of fileResponse) {
 			const passthrough = new PassThrough();
+			file.data.on('error', handleStreamError);
+			passthrough.on('error', handleStreamError);
 			file.data.pipe(passthrough);
 			archive.append(passthrough, { name: file.name });
 		}
