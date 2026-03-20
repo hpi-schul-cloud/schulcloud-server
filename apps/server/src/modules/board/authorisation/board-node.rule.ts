@@ -3,17 +3,13 @@ import { UserService } from '@modules/user';
 import { type User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
-import { EntityId } from '@shared/domain/types';
 import {
 	BoardNodeAuthorizable,
 	BoardRoles,
 	ColumnBoard,
 	isDrawingElement,
-	isSubmissionItem,
-	isSubmissionItemContent,
 	isVideoConferenceElement,
 	MediaBoard,
-	SubmissionItem,
 	UserWithBoardRoles,
 } from '../domain';
 
@@ -56,11 +52,6 @@ export const BoardOperationValues = [
 
 	// element / fileElement
 	'createFileElement',
-
-	// element / submissionElement
-	'createSubmissionItemContent',
-	'deleteSubmissionItem',
-	'updateSubmissionItem',
 
 	// element / videoConferenceElement
 	'manageVideoConference',
@@ -117,10 +108,6 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 			!this.isBoardEditor(userWithBoardRoles)
 		) {
 			return false;
-		}
-
-		if (this.shouldProcessSubmissionItem(authorizable)) {
-			return this.hasPermissionForSubmissionItem(user, userWithBoardRoles, authorizable, context);
 		}
 
 		if (this.shouldProcessDrawingElementFile(authorizable, context)) {
@@ -192,11 +179,6 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 
 			// element / fileElement
 			createFileElement: _canEditBoard,
-
-			// element / submissionElement
-			createSubmissionItemContent: _isSubmissionItemOfUser,
-			deleteSubmissionItem: _isSubmissionItemOfUser,
-			updateSubmissionItem: _isSubmissionItemOfUser,
 
 			// element / videoConferenceElement
 			manageVideoConference: canManageVideoConference,
@@ -270,79 +252,6 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 		return this.isBoardReader(userWithBoardRoles);
 	}
 
-	private shouldProcessSubmissionItem(boardNodeAuthorizable: BoardNodeAuthorizable): boolean {
-		return isSubmissionItem(boardNodeAuthorizable.boardNode) || isSubmissionItem(boardNodeAuthorizable.parentNode);
-	}
-
-	private hasPermissionForSubmissionItem(
-		user: User,
-		userWithBoardRoles: UserWithBoardRoles,
-		boardNodeAuthorizable: BoardNodeAuthorizable,
-		context: AuthorizationContext
-	): boolean {
-		// permission for elements under a submission item, are handled by the parent submission item
-		if (isSubmissionItem(boardNodeAuthorizable.parentNode)) {
-			if (!isSubmissionItemContent(boardNodeAuthorizable.boardNode)) {
-				return false;
-			}
-			boardNodeAuthorizable.boardNode = boardNodeAuthorizable.parentNode;
-			boardNodeAuthorizable.parentNode = undefined;
-		}
-
-		if (!isSubmissionItem(boardNodeAuthorizable.boardNode)) {
-			/* istanbul ignore next */
-			throw new Error('BoardDoAuthorizable.boardDo is not a submission item');
-		}
-
-		if (context.action === Action.write) {
-			return this.hasSubmissionItemWritePermission(userWithBoardRoles, boardNodeAuthorizable.boardNode);
-		}
-
-		return this.hasSubmissionItemReadPermission(userWithBoardRoles, boardNodeAuthorizable.boardNode);
-	}
-
-	private hasSubmissionItemWritePermission(
-		userWithBoardRoless: UserWithBoardRoles,
-		submissionItem: SubmissionItem
-	): boolean {
-		// teacher don't have write access
-		if (this.isBoardEditor(userWithBoardRoless)) {
-			return false;
-		}
-
-		// student has write access only for his own submission item
-		if (
-			this.isBoardReader(userWithBoardRoless) &&
-			this.isSubmissionItemCreator(userWithBoardRoless.userId, submissionItem)
-		) {
-			return true;
-		}
-
-		return false;
-	}
-
-	private hasSubmissionItemReadPermission(
-		userWithBoardRoless: UserWithBoardRoles,
-		submissionItem: SubmissionItem
-	): boolean {
-		if (this.isBoardEditor(userWithBoardRoless)) {
-			return true;
-		}
-
-		if (
-			this.isBoardReader(userWithBoardRoless) &&
-			this.isSubmissionItemCreator(userWithBoardRoless.userId, submissionItem)
-		) {
-			return true;
-		}
-
-		return false;
-	}
-
-	private isSubmissionItemCreator(userId: EntityId, submissionItem: SubmissionItem): boolean {
-		return submissionItem.userId === userId;
-	}
-
 	private shouldProcessVideoConferenceElement(boardNodeAuthorizable: BoardNodeAuthorizable): boolean {
 		return isVideoConferenceElement(boardNodeAuthorizable.boardNode);
 	}
@@ -399,15 +308,6 @@ const _canViewBoard = (user: User, authorizable: BoardNodeAuthorizable): boolean
 	const isBoard = authorizable.rootNode instanceof ColumnBoard || authorizable.rootNode instanceof MediaBoard;
 	const canViewBoard = permissions.includes(Permission.BOARD_VIEW);
 	return isBoard && canViewBoard;
-};
-
-const _isSubmissionItemOfUser = (user: User, authorizable: BoardNodeAuthorizable): boolean => {
-	if (authorizable.boardContextSettings.isLocked) {
-		return false;
-	}
-
-	const { boardNode } = authorizable;
-	return boardNode instanceof SubmissionItem && boardNode.userId === user.id;
 };
 
 const _canCreateExternalToolElement = (user: User, authorizable: BoardNodeAuthorizable): boolean => {
