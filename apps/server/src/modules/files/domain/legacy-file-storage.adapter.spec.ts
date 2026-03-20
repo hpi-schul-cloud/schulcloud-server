@@ -1,12 +1,13 @@
 import { faker } from '@faker-js/faker/.';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { HttpService } from '@nestjs/axios';
+import { InternalServerErrorException } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AxiosResponse } from 'axios';
 import { ObjectId } from 'bson';
 import { Readable } from 'node:stream';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 import { LEGACY_FILE_ARCHIVE_CONFIG_TOKEN } from '../legacy-file-archive.config';
 import { LegacyFileStorageAdapter } from './legacy-file-storage.adapter';
 
@@ -358,6 +359,15 @@ describe('LegacyFileStorageAdapter', () => {
 				);
 			});
 		});
+
+		describe('getFiles throws an error', () => {
+			it('should throw an InternalServerErrorException', async () => {
+				const error = new Error('Network error');
+				httpService.get.mockReturnValueOnce(throwError(() => error));
+
+				await expect(adapter.getFilesForOwner(ownerId)).rejects.toThrow(InternalServerErrorException);
+			});
+		});
 	});
 
 	describe('downloadFile', () => {
@@ -389,6 +399,26 @@ describe('LegacyFileStorageAdapter', () => {
 				await adapter.downloadFile(fileId, fileName);
 
 				expect(httpService.get).toHaveBeenCalledWith(signedUrl, { responseType: 'stream' });
+			});
+		});
+
+		describe('getSignedUrl throws an error', () => {
+			it('should throw an InternalServerErrorException', async () => {
+				const error = new Error('Network error');
+				httpService.get.mockReturnValueOnce(throwError(() => error));
+
+				await expect(adapter.downloadFile('file123', 'document.pdf')).rejects.toThrow(InternalServerErrorException);
+			});
+		});
+
+		describe('when downloadFile throws an error', () => {
+			it('should throw an InternalServerErrorException', async () => {
+				const error = new Error('Network error');
+				httpService.get
+					.mockReturnValueOnce(of(buildAxiosResponse({ url: 'signedUrl' })))
+					.mockReturnValueOnce(throwError(() => error));
+
+				await expect(adapter.downloadFile('file123', 'document.pdf')).rejects.toThrow(InternalServerErrorException);
 			});
 		});
 	});
