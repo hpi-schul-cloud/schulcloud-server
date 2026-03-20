@@ -59,7 +59,7 @@ export class DownloadArchiveService {
 		let currentFile: FileDo | undefined = file;
 
 		while (currentFile) {
-			pathSegments.unshift(currentFile.name);
+			pathSegments.unshift(currentFile.sanitizedName);
 			currentFile = currentFile.parentId ? filesById.get(currentFile.parentId) : undefined;
 		}
 
