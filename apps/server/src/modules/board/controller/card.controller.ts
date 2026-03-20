@@ -35,7 +35,6 @@ import {
 	MoveCardBodyParams,
 	RenameBodyParams,
 	RichTextElementResponse,
-	SubmissionContainerElementResponse,
 	VideoConferenceElementResponse,
 } from './dto';
 import { MoveCardResponse } from './dto/board/move-card.response';
@@ -154,7 +153,6 @@ export class CardController {
 		FileFolderElementResponse,
 		LinkElementResponse,
 		RichTextElementResponse,
-		SubmissionContainerElementResponse,
 		DrawingElementResponse,
 		DeletedElementResponse,
 		VideoConferenceElementResponse,
@@ -169,7 +167,6 @@ export class CardController {
 				{ $ref: getSchemaPath(FileFolderElementResponse) },
 				{ $ref: getSchemaPath(LinkElementResponse) },
 				{ $ref: getSchemaPath(RichTextElementResponse) },
-				{ $ref: getSchemaPath(SubmissionContainerElementResponse) },
 				{ $ref: getSchemaPath(DrawingElementResponse) },
 				{ $ref: getSchemaPath(DeletedElementResponse) },
 				{ $ref: getSchemaPath(VideoConferenceElementResponse) },

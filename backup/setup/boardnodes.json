@@ -2653,24 +2653,6 @@
 	},
 	{
 		"_id": {
-			"$oid": "6821dac237752ce145e64134"
-		},
-		"createdAt": {
-			"$date": "2025-05-12T11:25:54.011Z"
-		},
-		"updatedAt": {
-			"$date": "2025-05-20T11:43:50.936Z"
-		},
-		"path": ",681e051689002b0ee99aa298,681e052889002b0ee99aa29a,681e054189002b0ee99aa29e,",
-		"level": 3,
-		"position": 4,
-		"type": "submission-container-element",
-		"dueDate": {
-			"$date": "2035-05-24T10:00:00Z"
-		}
-	},
-	{
-		"_id": {
 			"$oid": "6821db1937752ce145e64135"
 		},
 		"createdAt": {

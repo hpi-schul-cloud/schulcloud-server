@@ -94,19 +94,6 @@ export class BoardNodeEntity extends BaseEntityWithTimestamps implements BoardNo
 	@Property({ type: 'string', nullable: true })
 	alternativeText: string | undefined;
 
-	// SubmissionContainerElement
-	// --------------------------------------------------------------------------
-	@Property({ type: 'Date', nullable: true })
-	dueDate: Date | undefined;
-
-	// SubmissionItem
-	// --------------------------------------------------------------------------
-	@Property({ type: 'boolean', nullable: true })
-	completed: boolean | undefined;
-
-	@Property({ type: ObjectIdType, nullable: true })
-	userId: EntityId | undefined;
-
 	// ExternalToolElement, MediaExternalToolElement
 	// --------------------------------------------------------------------------
 	@Property({ type: ObjectIdType, fieldName: 'contextExternalTool', nullable: true })

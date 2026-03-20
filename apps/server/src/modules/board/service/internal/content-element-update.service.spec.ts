@@ -10,7 +10,6 @@ import {
 	H5pContentBody,
 	LinkContentBody,
 	RichTextContentBody,
-	SubmissionContainerContentBody,
 	VideoConferenceContentBody,
 } from '../../controller/dto';
 import { BoardNodeRepo } from '../../repo';
@@ -22,7 +21,6 @@ import {
 	h5pElementFactory,
 	linkElementFactory,
 	richTextElementFactory,
-	submissionContainerElementFactory,
 	videoConferenceElementFactory,
 } from '../../testing';
 import { ContentElementUpdateService } from './content-element-update.service';
@@ -171,28 +169,6 @@ describe('ContentElementUpdateService', () => {
 			await service.updateContent(element, content);
 
 			expect(element.description).toBe('description');
-			expect(repo.save).toHaveBeenCalledWith(element);
-		});
-	});
-
-	describe('when the element is a SubmissionContainerElement', () => {
-		const setup = () => {
-			const element = submissionContainerElementFactory.build();
-			const content = new SubmissionContainerContentBody();
-			content.dueDate = new Date();
-
-			return {
-				element,
-				content,
-			};
-		};
-
-		it('should update SubmissionContainerElement', async () => {
-			const { element, content } = setup();
-
-			await service.updateContent(element, content);
-
-			expect(element.dueDate).toEqual(content.dueDate);
 			expect(repo.save).toHaveBeenCalledWith(element);
 		});
 	});
