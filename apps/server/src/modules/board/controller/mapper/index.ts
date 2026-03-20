@@ -10,7 +10,5 @@ export * from './file-element-response.mapper';
 export * from './link-element-response.mapper';
 export * from './parent-node-info-response.mapper';
 export * from './rich-text-element-response.mapper';
-export * from './submission-container-element-response.mapper';
-export * from './submission-item-response.mapper';
 export * from './video-conference-element-response.mapper';
 export * from './h5p-element-response.mapper';
