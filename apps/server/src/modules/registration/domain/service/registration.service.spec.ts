@@ -338,16 +338,6 @@ describe('RegistrationService', () => {
 	});
 
 	describe('getSingleRegistrationById', () => {
-		it('should call repo to get registration by id', async () => {
-			const registrationId = new ObjectId().toHexString();
-			const registration = registrationFactory.build({ id: registrationId });
-			registrationRepo.findById.mockResolvedValue(registration);
-
-			await service.getSingleRegistrationById(registrationId);
-
-			expect(registrationRepo.findById).toHaveBeenCalledWith(registrationId);
-		});
-
 		it('should return registration', async () => {
 			const registrationId = new ObjectId().toHexString();
 			const registration = registrationFactory.build({ id: registrationId });
@@ -356,6 +346,7 @@ describe('RegistrationService', () => {
 			const result = await service.getSingleRegistrationById(registrationId);
 
 			expect(result).toBe(registration);
+			expect(registrationRepo.findById).toHaveBeenCalledWith(registrationId);
 		});
 	});
 
