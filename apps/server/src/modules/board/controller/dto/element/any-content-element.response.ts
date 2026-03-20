@@ -7,14 +7,12 @@ import type { FileFolderElementResponse } from './file-folder-element.response';
 import type { H5pElementResponse } from './h5p-element.response';
 import type { LinkElementResponse } from './link-element.response';
 import { RichTextElementResponse } from './rich-text-element.response';
-import type { SubmissionContainerElementResponse } from './submission-container-element.response';
 import type { VideoConferenceElementResponse } from './video-conference-element.response';
 
 export type AnyContentElementResponse =
 	| FileElementResponse
 	| LinkElementResponse
 	| RichTextElementResponse
-	| SubmissionContainerElementResponse
 	| ExternalToolElementResponse
 	| DrawingElementResponse
 	| CollaborativeTextEditorElementResponse

@@ -1,4 +1,3 @@
-export * from './board-submission.controller';
 export * from './board-error-report.controller';
 export * from './board.controller';
 export * from './card.controller';

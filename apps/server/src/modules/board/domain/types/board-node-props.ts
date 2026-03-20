@@ -59,15 +59,6 @@ export interface RichTextElementProps extends BoardNodeProps {
 	inputFormat: InputFormat;
 }
 
-export interface SubmissionContainerElementProps extends BoardNodeProps {
-	dueDate?: Date;
-}
-
-export interface SubmissionItemProps extends BoardNodeProps {
-	completed: boolean;
-	userId: EntityId;
-}
-
 export interface VideoConferenceElementProps extends BoardNodeProps {
 	title: string;
 }
@@ -117,8 +108,6 @@ export type AnyBoardNodeProps =
 	| FileFolderElementProps
 	| LinkElementProps
 	| RichTextElementProps
-	| SubmissionContainerElementProps
-	| SubmissionItemProps
 	| VideoConferenceElementProps
 	| DeletedElementProps
 	| H5pElementProps

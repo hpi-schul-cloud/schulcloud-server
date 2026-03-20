@@ -6,7 +6,6 @@ import {
 	fileFolderElementFactory,
 	linkElementFactory,
 	richTextElementFactory,
-	submissionContainerElementFactory,
 	videoConferenceElementFactory,
 } from '../../testing';
 import {
@@ -16,7 +15,6 @@ import {
 	FileFolderElementResponse,
 	LinkElementResponse,
 	RichTextElementResponse,
-	SubmissionContainerElementResponse,
 	VideoConferenceElementResponse,
 } from '../dto';
 import { ContentElementResponseFactory } from './content-element-response.factory';
@@ -59,14 +57,6 @@ describe(ContentElementResponseFactory.name, () => {
 		const result = ContentElementResponseFactory.mapToResponse(drawingElement);
 
 		expect(result).toBeInstanceOf(DrawingElementResponse);
-	});
-
-	it('should return instance of SubmissionContainerElementResponse', () => {
-		const submissionContainerElement = submissionContainerElementFactory.build();
-
-		const result = ContentElementResponseFactory.mapToResponse(submissionContainerElement);
-
-		expect(result).toBeInstanceOf(SubmissionContainerElementResponse);
 	});
 
 	it('should return instance of DeletedElementResponse', () => {

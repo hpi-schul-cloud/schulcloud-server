@@ -12,7 +12,6 @@ import {
 	H5pElementResponse,
 	LinkElementResponse,
 	RichTextElementResponse,
-	SubmissionContainerElementResponse,
 	VideoConferenceElementResponse,
 } from '../element';
 import { TimestampsResponse } from '../timestamps.response';
@@ -24,7 +23,6 @@ import { VisibilitySettingsResponse } from './visibility-settings.response';
 	LinkElementResponse,
 	RichTextElementResponse,
 	DrawingElementResponse,
-	SubmissionContainerElementResponse,
 	CollaborativeTextEditorElementResponse,
 	DeletedElementResponse,
 	VideoConferenceElementResponse,
@@ -61,7 +59,6 @@ export class CardResponse {
 				{ $ref: getSchemaPath(FileElementResponse) },
 				{ $ref: getSchemaPath(LinkElementResponse) },
 				{ $ref: getSchemaPath(RichTextElementResponse) },
-				{ $ref: getSchemaPath(SubmissionContainerElementResponse) },
 				{ $ref: getSchemaPath(DrawingElementResponse) },
 				{ $ref: getSchemaPath(CollaborativeTextEditorElementResponse) },
 				{ $ref: getSchemaPath(DeletedElementResponse) },

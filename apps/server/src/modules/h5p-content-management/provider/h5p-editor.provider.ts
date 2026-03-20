@@ -1,5 +1,4 @@
 import { cacheImplementations, H5PEditor } from '@lumieducation/h5p-server';
-import CachedLibraryStorage from '@lumieducation/h5p-server/build/src/implementation/cache/CachedLibraryStorage';
 import { IH5PEditorOptions, ITranslationFunction } from '@lumieducation/h5p-server/build/src/types';
 import SvgSanitizer from '@lumieducation/h5p-svg-sanitizer';
 import { Cache } from 'cache-manager';
@@ -20,9 +19,7 @@ export const H5PEditorProvider = {
 		h5pEditorConfig: H5PEditorConfig
 	): Promise<H5PEditor> {
 		const cache = new cacheImplementations.CachedKeyValueStorage('kvcache', cacheAdapter);
-		const cachedLibraryStorage = new cacheImplementations.CachedLibraryStorage(
-			new CachedLibraryStorage(libraryStorage, cacheAdapter)
-		);
+		const cachedLibraryStorage = new cacheImplementations.CachedLibraryStorage(libraryStorage, cacheAdapter);
 
 		const { availableLanguages } = h5pEditorConfig;
 
