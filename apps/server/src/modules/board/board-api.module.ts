@@ -14,14 +14,13 @@ import { BoardModule } from './board.module';
 import {
 	BoardController,
 	BoardErrorReportController,
-	BoardSubmissionController,
 	CardController,
 	ColumnController,
 	ElementController,
 } from './controller';
 import { CopyRoomBoardsStep } from './saga';
 import { BOARD_TIMEOUT_CONFIG_TOKEN, BoardTimeoutConfig } from './timeout.config';
-import { BoardErrorReportUc, BoardUc, CardUc, ColumnUc, ElementUc, SubmissionItemUc } from './uc';
+import { BoardErrorReportUc, BoardUc, CardUc, ColumnUc, ElementUc } from './uc';
 
 @Module({
 	imports: [
@@ -37,15 +36,8 @@ import { BoardErrorReportUc, BoardUc, CardUc, ColumnUc, ElementUc, SubmissionIte
 		BoardContextApiHelperModule,
 		SagaModule,
 	],
-	controllers: [
-		BoardController,
-		ColumnController,
-		CardController,
-		ElementController,
-		BoardSubmissionController,
-		BoardErrorReportController,
-	],
-	providers: [BoardUc, BoardErrorReportUc, ColumnUc, CardUc, ElementUc, SubmissionItemUc, CopyRoomBoardsStep],
+	controllers: [BoardController, ColumnController, CardController, ElementController, BoardErrorReportController],
+	providers: [BoardUc, BoardErrorReportUc, ColumnUc, CardUc, ElementUc, CopyRoomBoardsStep],
 })
 @RegisterTimeoutConfig(BOARD_TIMEOUT_CONFIG_TOKEN)
 export class BoardApiModule {}
