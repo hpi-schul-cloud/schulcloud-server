@@ -895,5 +895,61 @@ describe('OAuthService', () => {
 				expect(result).toEqual(userFromErwin);
 			});
 		});
+
+		describe('when provisioning an existing user with an erwinId but no ErwinIdentifier exists', () => {
+			const setup = () => {
+				const systemId = new ObjectId().toHexString();
+				const idToken = 'idToken';
+				const accessToken = 'accessToken';
+				const externalUserId = 'externalUserId';
+				const erwinId = 'erwinId';
+
+				const userFromExternalId = userDoFactory.build({
+					id: new ObjectId().toHexString(),
+					externalId: externalUserId,
+				});
+
+				const provisioningData = new OauthDataDto({
+					system: {
+						systemId,
+						provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_ASYNC,
+						provisioningUrl: 'https://mock.person-info.de/',
+					},
+					externalUser: externalUserDtoFactory.build({
+						externalId: externalUserId,
+						erwinId,
+					}),
+					externalSchool: {
+						externalId: 'externalSchoolId',
+						name: 'External School',
+					},
+				});
+
+				provisioningService.getData.mockResolvedValueOnce(provisioningData);
+				erwinIdentifierService.findByErwinId.mockResolvedValueOnce(null);
+				userService.findByExternalId.mockResolvedValueOnce(userFromExternalId);
+
+				return {
+					systemId,
+					idToken,
+					accessToken,
+					provisioningData,
+					userFromExternalId,
+					externalUserId,
+					erwinId,
+				};
+			};
+
+			it('should fall back to externalId lookup and return the user', async () => {
+				const { systemId, idToken, accessToken, userFromExternalId, externalUserId, erwinId } = setup();
+
+				const result = await service.provisionUser(systemId, idToken, accessToken);
+
+				expect(erwinIdentifierService.findByErwinId).toHaveBeenCalledWith(erwinId);
+				expect(userService.findByIdOrNull).not.toHaveBeenCalled();
+				expect(userService.findByExternalId).toHaveBeenCalledWith(externalUserId, systemId);
+				expect(result).toEqual(userFromExternalId);
+			});
+		});
 	});
 });
