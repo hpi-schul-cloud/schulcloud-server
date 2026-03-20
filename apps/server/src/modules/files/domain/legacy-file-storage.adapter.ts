@@ -38,9 +38,12 @@ export class LegacyFileStorageAdapter {
 	}
 
 	private async getSignedUrl(fileId: EntityId, fileName: string): Promise<SignedUrlResponseVO> {
+		// The file name needs to be encoded twice to be correctly parsed by the S3 API.
+		const encodedFileName = encodeURI(encodeURIComponent(fileName));
+
 		const responseData = await firstValueFrom(
 			this.httpService.get<{ url: string }>(`${this.config.legacyBaseUrl}/fileStorage/signedUrl`, {
-				params: { file: fileId, download: true, name: fileName },
+				params: { file: fileId, download: true, name: encodedFileName },
 				headers: this.getAuthorizationHeader(),
 			})
 		);
