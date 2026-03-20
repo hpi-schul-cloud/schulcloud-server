@@ -17,11 +17,6 @@ export class BoardPublicApiConfig {
 	@IsBoolean()
 	public featureBoardReadersCanEditToggle = true;
 
-	@ConfigProperty('FEATURE_COLUMN_BOARD_SUBMISSIONS_ENABLED')
-	@StringToBoolean()
-	@IsBoolean()
-	public featureColumnBoardSubmissionsEnabled = false;
-
 	@ConfigProperty('FEATURE_COLUMN_BOARD_LINK_ELEMENT_ENABLED')
 	@StringToBoolean()
 	@IsBoolean()
