@@ -15,6 +15,8 @@ import { TestApiClient } from '@testing/test-api-client';
 import { REGISTRATION_PUBLIC_API_CONFIG_TOKEN, RegistrationPublicApiConfig } from '../../registration.config';
 import { registrationEntityFactory } from '../../testing/registration-entity.factory';
 
+const MOCK_PASSWORD = 'password123';
+
 describe('Room Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
@@ -78,7 +80,7 @@ describe('Room Controller (API)', () => {
 
 				const response = await testApiClient.post(`/by-secret/${registration.registrationSecret}/complete`, {
 					language: 'en',
-					password: 'password123',
+					password: MOCK_PASSWORD,
 				});
 
 				expect(response.status).toBe(HttpStatus.FORBIDDEN);
@@ -90,7 +92,7 @@ describe('Room Controller (API)', () => {
 				const { registration } = await setup();
 				const response = await testApiClient.post(`/by-secret/${registration.registrationSecret}/complete`, {
 					language: 'en',
-					password: 'password123',
+					password: MOCK_PASSWORD,
 				});
 
 				expect(response.status).toBe(HttpStatus.OK);
@@ -101,10 +103,88 @@ describe('Room Controller (API)', () => {
 			it('should return a 404 error', async () => {
 				const response = await testApiClient.post('/by-secret/someNonExistingSecret/complete', {
 					language: 'en',
-					password: 'password123',
+					password: MOCK_PASSWORD,
 				});
 
 				expect(response.status).toBe(HttpStatus.NOT_FOUND);
+			});
+		});
+
+		describe('when testing edge cases', () => {
+			it('should handle invalid registration secret format', async () => {
+				const response = await testApiClient.post('/by-secret/invalid-format/complete', {
+					language: 'en',
+					password: MOCK_PASSWORD,
+				});
+
+				expect(response.status).toBe(HttpStatus.NOT_FOUND);
+			});
+
+			it('should handle extremely long registration secret', async () => {
+				const longSecret = 'a'.repeat(1000);
+				const response = await testApiClient.post(`/by-secret/${longSecret}/complete`, {
+					language: 'en',
+					password: MOCK_PASSWORD,
+				});
+
+				expect(response.status).toBe(HttpStatus.NOT_FOUND);
+			});
+
+			it('should handle special characters in registration secret', async () => {
+				const specialSecret = 'invalid@#$%^&*()';
+				const response = await testApiClient.post(`/by-secret/${specialSecret}/complete`, {
+					language: 'en',
+					password: MOCK_PASSWORD,
+				});
+
+				expect(response.status).toBe(HttpStatus.NOT_FOUND);
+			});
+		});
+
+		describe('when testing different language values', () => {
+			it('should accept German language', async () => {
+				const { registration } = await setup();
+				const response = await testApiClient.post(`/by-secret/${registration.registrationSecret}/complete`, {
+					language: 'de',
+					password: MOCK_PASSWORD,
+				});
+
+				expect(response.status).toBe(HttpStatus.OK);
+			});
+
+			it('should accept Spanish language', async () => {
+				const { registration } = await setup();
+				const response = await testApiClient.post(`/by-secret/${registration.registrationSecret}/complete`, {
+					language: 'es',
+					password: MOCK_PASSWORD,
+				});
+
+				expect(response.status).toBe(HttpStatus.OK);
+			});
+
+			it('should handle missing password', async () => {
+				const { registration } = await setup();
+				const response = await testApiClient.post(`/by-secret/${registration.registrationSecret}/complete`, {
+					language: 'en',
+				});
+
+				expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+			});
+
+			it('should handle missing language', async () => {
+				const { registration } = await setup();
+				const response = await testApiClient.post(`/by-secret/${registration.registrationSecret}/complete`, {
+					password: MOCK_PASSWORD,
+				});
+
+				expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+			});
+
+			it('should handle empty payload', async () => {
+				const { registration } = await setup();
+				const response = await testApiClient.post(`/by-secret/${registration.registrationSecret}/complete`);
+
+				expect(response.status).toBe(HttpStatus.BAD_REQUEST);
 			});
 		});
 	});
