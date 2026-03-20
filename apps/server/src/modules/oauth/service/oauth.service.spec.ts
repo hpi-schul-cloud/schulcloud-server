@@ -2,6 +2,7 @@ import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { DefaultEncryptionService, EncryptionService, SymmetricKeyEncryptionService } from '@infra/encryption';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { erwinIdentifierFactoryWithUser, ErwinIdentifierService } from '@modules/erwin-identifier';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
 import { OauthAdapterService, OAuthTokenDto } from '@modules/oauth-adapter';
@@ -52,6 +53,7 @@ describe('OAuthService', () => {
 	let oauthAdapterService: DeepMocked<OauthAdapterService>;
 	let migrationCheckService: DeepMocked<MigrationCheckService>;
 	let schoolService: DeepMocked<LegacySchoolService>;
+	let erwinIdentifierService: DeepMocked<ErwinIdentifierService>;
 
 	let testSystem: System;
 	let testOauthConfig: OauthConfigEntity;
@@ -92,6 +94,10 @@ describe('OAuthService', () => {
 					provide: MigrationCheckService,
 					useValue: createMock<MigrationCheckService>(),
 				},
+				{
+					provide: ErwinIdentifierService,
+					useValue: createMock<ErwinIdentifierService>(),
+				},
 			],
 		}).compile();
 		service = module.get(OAuthService);
@@ -103,6 +109,7 @@ describe('OAuthService', () => {
 		oauthAdapterService = module.get(OauthAdapterService);
 		migrationCheckService = module.get(MigrationCheckService);
 		schoolService = module.get(LegacySchoolService);
+		erwinIdentifierService = module.get(ErwinIdentifierService);
 	});
 
 	afterAll(async () => {
@@ -827,6 +834,65 @@ describe('OAuthService', () => {
 				const result = await service.provisionUser(systemId, idToken, accessToken);
 
 				expect(result).toEqual(user);
+			});
+		});
+
+		describe('when provisioning an existing user with an erwinId', () => {
+			const setup = () => {
+				const systemId = new ObjectId().toHexString();
+				const idToken = 'idToken';
+				const accessToken = 'accessToken';
+				const externalUserId = 'externalUserId';
+				const erwinId = 'erwinId';
+
+				const userFromErwin = userDoFactory.build({
+					id: new ObjectId().toHexString(),
+				});
+
+				const provisioningData = new OauthDataDto({
+					system: {
+						systemId,
+						provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_ASYNC,
+						provisioningUrl: 'https://mock.person-info.de/',
+					},
+					externalUser: externalUserDtoFactory.build({
+						externalId: externalUserId,
+						erwinId,
+					}),
+					externalSchool: {
+						externalId: 'externalSchoolId',
+						name: 'External School',
+					},
+				});
+
+				const erwinIdentifier = erwinIdentifierFactoryWithUser.build({
+					erwinId,
+					referencedEntityId: userFromErwin.id,
+				});
+
+				provisioningService.getData.mockResolvedValueOnce(provisioningData);
+				erwinIdentifierService.findByErwinId.mockResolvedValueOnce(erwinIdentifier);
+				userService.findByIdOrNull.mockResolvedValueOnce(userFromErwin);
+
+				return {
+					systemId,
+					idToken,
+					accessToken,
+					provisioningData,
+					userFromErwin,
+					erwinId,
+				};
+			};
+
+			it('should find the user by Erwin ID and return it', async () => {
+				const { systemId, idToken, accessToken, userFromErwin, erwinId } = setup();
+
+				const result = await service.provisionUser(systemId, idToken, accessToken);
+
+				expect(erwinIdentifierService.findByErwinId).toHaveBeenCalledWith(erwinId);
+				expect(userService.findByIdOrNull).toHaveBeenCalled();
+				expect(userService.findByExternalId).not.toHaveBeenCalled();
+				expect(result).toEqual(userFromErwin);
 			});
 		});
 	});
