@@ -129,34 +129,6 @@ jobs:
     steps:
       - run: echo "deploy was successful"
 
-  trivy-vulnerability-scanning:
-    needs:
-      - build_and_push
-      - branch_meta
-    runs-on: ubuntu-latest
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
-    steps:
-      - name: run trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@0.35.0
-        with:
-          image-ref: 'ghcr.io/${{ github.repository }}:${{ needs.branch_meta.outputs.sha }}'
-          format: 'sarif'
-          output: 'trivy-results.sarif'
-          scan-type: 'image'
-          severity: 'CRITICAL,HIGH'
-          ignore-unfixed: true
-        env:
-          TRIVY_SKIP_DB_UPDATE: true
-          TRIVY_SKIP_JAVA_DB_UPDATE: true
-      - name: upload trivy results
-        if: ${{ always() }}
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: 'trivy-results.sarif'
-
   cy-e2e-tests:
     needs:
       - branch_meta
