@@ -48,9 +48,6 @@ import type { LinkElementResponse } from './link-element-response';
 import type { RichTextElementResponse } from './rich-text-element-response';
 // May contain unused imports in some cases
 // @ts-ignore
-import type { SubmissionContainerElementResponse } from './submission-container-element-response';
-// May contain unused imports in some cases
-// @ts-ignore
 import type { TimestampsResponse } from './timestamps-response';
 // May contain unused imports in some cases
 // @ts-ignore
@@ -60,6 +57,6 @@ import type { VideoConferenceElementResponse } from './video-conference-element-
  * @type CardResponseElementsInner
  * @export
  */
-export type CardResponseElementsInner = CollaborativeTextEditorElementResponse | DeletedElementResponse | DrawingElementResponse | ExternalToolElementResponse | FileElementResponse | FileFolderElementResponse | H5pElementResponse | LinkElementResponse | RichTextElementResponse | SubmissionContainerElementResponse | VideoConferenceElementResponse;
+export type CardResponseElementsInner = CollaborativeTextEditorElementResponse | DeletedElementResponse | DrawingElementResponse | ExternalToolElementResponse | FileElementResponse | FileFolderElementResponse | H5pElementResponse | LinkElementResponse | RichTextElementResponse | VideoConferenceElementResponse;
 
 

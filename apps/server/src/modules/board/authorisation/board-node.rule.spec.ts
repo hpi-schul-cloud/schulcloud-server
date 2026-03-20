@@ -16,7 +16,6 @@ import {
 	columnBoardFactory,
 	drawingElementFactory,
 	fileElementFactory,
-	submissionItemFactory,
 	videoConferenceElementFactory,
 } from '../testing';
 import { BoardNodeRule, BoardOperation } from './board-node.rule';
@@ -305,301 +304,6 @@ describe(BoardNodeRule.name, () => {
 
 				it('it should return false if trying to "read" ', () => {
 					const { user, boardNodeAuthorizable } = setup();
-
-					const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
-						action: Action.write,
-						requiredPermissions: [],
-					});
-
-					expect(res).toBe(false);
-				});
-			});
-		});
-
-		describe('when boardDoAuthorizable.boardDo is a submissionItem', () => {
-			describe('when user is Editor', () => {
-				const setup = () => {
-					const user = userFactory.buildWithId();
-					const submissionItem = submissionItemFactory.build();
-					const columnBoard = columnBoardFactory.build();
-					const boardNodeAuthorizable = boardNodeAuthorizableFactory.build({
-						users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }],
-						id: new ObjectId().toHexString(),
-						boardNode: submissionItem,
-						rootNode: columnBoard,
-						boardConfiguration: { isLocked: false },
-					});
-
-					return { user, boardNodeAuthorizable };
-				};
-
-				it('it should return false if trying to "write" ', () => {
-					const { user, boardNodeAuthorizable } = setup();
-
-					const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
-						action: Action.write,
-						requiredPermissions: [],
-					});
-
-					expect(res).toBe(false);
-				});
-
-				it('it should return true if trying to "read"', () => {
-					const { user, boardNodeAuthorizable } = setup();
-
-					const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
-						action: Action.read,
-						requiredPermissions: [],
-					});
-
-					expect(res).toBe(true);
-				});
-			});
-
-			describe('when user is Reader and creator of the submissionItem', () => {
-				const setup = () => {
-					const user = userFactory.buildWithId();
-					const submissionItem = submissionItemFactory.build({ userId: user.id });
-					const columnBoard = columnBoardFactory.build();
-					const boardNodeAuthorizable = boardNodeAuthorizableFactory.build({
-						users: [{ userId: user.id, roles: [BoardRoles.READER] }],
-						id: new ObjectId().toHexString(),
-						boardNode: submissionItem,
-						rootNode: columnBoard,
-						boardConfiguration: { isLocked: false },
-					});
-
-					return { user, boardNodeAuthorizable };
-				};
-
-				it('it should return "true" if trying to "write" ', () => {
-					const { user, boardNodeAuthorizable } = setup();
-
-					const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
-						action: Action.write,
-						requiredPermissions: [],
-					});
-
-					expect(res).toBe(true);
-				});
-
-				it('it should return "true" if trying to "read"', () => {
-					const { user, boardNodeAuthorizable } = setup();
-
-					const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
-						action: Action.read,
-						requiredPermissions: [],
-					});
-
-					expect(res).toBe(true);
-				});
-			});
-
-			describe('when user is Reader and not creator of the submissionItem', () => {
-				const setup = () => {
-					const user = userFactory.buildWithId();
-					const submissionItem = submissionItemFactory.build({ userId: new ObjectId().toHexString() });
-					const columnBoard = columnBoardFactory.build();
-					const boardNodeAuthorizable = boardNodeAuthorizableFactory.build({
-						users: [{ userId: user.id, roles: [BoardRoles.READER] }],
-						id: new ObjectId().toHexString(),
-						boardNode: submissionItem,
-						rootNode: columnBoard,
-						boardConfiguration: { isLocked: false },
-					});
-
-					return { user, boardNodeAuthorizable };
-				};
-
-				it('it should return "false" if trying to "write" ', () => {
-					const { user, boardNodeAuthorizable } = setup();
-
-					const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
-						action: Action.write,
-						requiredPermissions: [],
-					});
-
-					expect(res).toBe(false);
-				});
-
-				it('it should return "false" if trying to "read"', () => {
-					const { user, boardNodeAuthorizable } = setup();
-
-					const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
-						action: Action.read,
-						requiredPermissions: [],
-					});
-
-					expect(res).toBe(false);
-				});
-			});
-		});
-
-		describe('when boardDoAuthorizable.parentDo is a submissionItem', () => {
-			describe('when user is Editor', () => {
-				const setup = () => {
-					const user = userFactory.buildWithId();
-					const submissionItem = submissionItemFactory.build();
-					const fileElement = fileElementFactory.build();
-					const columnBoard = columnBoardFactory.build();
-					const boardNodeAuthorizable = boardNodeAuthorizableFactory.build({
-						users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }],
-						id: new ObjectId().toHexString(),
-						boardNode: fileElement,
-						parentNode: submissionItem,
-						rootNode: columnBoard,
-						boardConfiguration: { isLocked: false },
-					});
-
-					return { user, boardNodeAuthorizable };
-				};
-
-				it('it should return false if trying to "write" ', () => {
-					const { user, boardNodeAuthorizable } = setup();
-
-					const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
-						action: Action.write,
-						requiredPermissions: [],
-					});
-
-					expect(res).toBe(false);
-				});
-
-				it('it should return true if trying to "read"', () => {
-					const { user, boardNodeAuthorizable } = setup();
-
-					const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
-						action: Action.read,
-						requiredPermissions: [],
-					});
-
-					expect(res).toBe(true);
-				});
-			});
-
-			describe('when user is Reader and creator of the submissionItem', () => {
-				const setup = () => {
-					const user = userFactory.buildWithId();
-					const submissionItem = submissionItemFactory.build({ userId: user.id });
-					const fileElement = fileElementFactory.build();
-					const columnBoard = columnBoardFactory.build();
-					const boardNodeAuthorizable = boardNodeAuthorizableFactory.build({
-						users: [{ userId: user.id, roles: [BoardRoles.READER] }],
-						id: new ObjectId().toHexString(),
-						boardNode: fileElement,
-						parentNode: submissionItem,
-						rootNode: columnBoard,
-						boardConfiguration: { isLocked: false },
-					});
-
-					return { user, boardNodeAuthorizable };
-				};
-
-				it('it should return "true" if trying to "write" ', () => {
-					const { user, boardNodeAuthorizable } = setup();
-
-					const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
-						action: Action.write,
-						requiredPermissions: [],
-					});
-
-					expect(res).toBe(true);
-				});
-
-				it('it should return "true" if trying to "read"', () => {
-					const { user, boardNodeAuthorizable } = setup();
-
-					const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
-						action: Action.read,
-						requiredPermissions: [],
-					});
-
-					expect(res).toBe(true);
-				});
-			});
-
-			describe('when user is Reader and not creator of the submissionItem', () => {
-				const setup = () => {
-					const user = userFactory.buildWithId();
-					const anyBoardDo = fileElementFactory.build();
-					const submissionItem = submissionItemFactory.build({ userId: new ObjectId().toHexString() });
-					const columnBoard = columnBoardFactory.build();
-					const boardNodeAuthorizable = boardNodeAuthorizableFactory.build({
-						users: [{ userId: user.id, roles: [BoardRoles.READER] }],
-						id: new ObjectId().toHexString(),
-						boardNode: anyBoardDo,
-						parentNode: submissionItem,
-						rootNode: columnBoard,
-						boardConfiguration: { isLocked: false },
-					});
-
-					return { user, boardNodeAuthorizable };
-				};
-
-				it('it should return "false" if trying to "write" ', () => {
-					const { user, boardNodeAuthorizable } = setup();
-
-					const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
-						action: Action.write,
-						requiredPermissions: [],
-					});
-
-					expect(res).toBe(false);
-				});
-
-				it('it should return "false" if trying to "read"', () => {
-					const { user, boardNodeAuthorizable } = setup();
-
-					const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
-						action: Action.read,
-						requiredPermissions: [],
-					});
-
-					expect(res).toBe(false);
-				});
-			});
-
-			describe('when bordDo is wrong type', () => {
-				const setup = () => {
-					const user = userFactory.buildWithId();
-					const notAllowedChildElement = drawingElementFactory.build();
-					const submissionItem = submissionItemFactory.build();
-
-					return { user, notAllowedChildElement, submissionItem };
-				};
-
-				it('when boardDo is undefined, it should return false', () => {
-					const { user, submissionItem } = setup();
-					const anyBoardDo = fileElementFactory.build();
-					const columnBoard = columnBoardFactory.build();
-					const boardNodeAuthorizable = boardNodeAuthorizableFactory.build({
-						users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }],
-						id: new ObjectId().toHexString(),
-						boardNode: anyBoardDo,
-						parentNode: submissionItem,
-						rootNode: columnBoard,
-						boardConfiguration: { isLocked: false },
-					});
-
-					const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
-						action: Action.write,
-						requiredPermissions: [],
-					});
-
-					expect(res).toBe(false);
-				});
-
-				it('when boardDo is not allowed type, it should return false', () => {
-					const { user, submissionItem, notAllowedChildElement } = setup();
-					const columnBoard = columnBoardFactory.build();
-					const boardNodeAuthorizable = boardNodeAuthorizableFactory.build({
-						users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }],
-						id: new ObjectId().toHexString(),
-						parentNode: submissionItem,
-						boardNode: notAllowedChildElement,
-						rootNode: columnBoard,
-						boardConfiguration: { isLocked: false },
-					});
 
 					const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
 						action: Action.write,
@@ -1077,11 +781,6 @@ describe(BoardNodeRule.name, () => {
 					// element / fileElement
 					createFileElement: true,
 
-					// element / submissionElement
-					createSubmissionItemContent: false,
-					deleteSubmissionItem: false,
-					updateSubmissionItem: false,
-
 					// element / videoConferenceElement
 					manageVideoConference: true,
 
@@ -1163,11 +862,6 @@ describe(BoardNodeRule.name, () => {
 
 					// element / fileElement
 					createFileElement: true,
-
-					// element / submissionElement
-					createSubmissionItemContent: false,
-					deleteSubmissionItem: false,
-					updateSubmissionItem: false,
 
 					// element / videoConferenceElement
 					manageVideoConference: true,
@@ -1252,11 +946,6 @@ describe(BoardNodeRule.name, () => {
 					// element / fileElement
 					createFileElement: false,
 
-					// element / submissionElement
-					createSubmissionItemContent: false,
-					deleteSubmissionItem: false,
-					updateSubmissionItem: false,
-
 					// element / videoConferenceElement
 					manageVideoConference: false,
 
@@ -1338,11 +1027,6 @@ describe(BoardNodeRule.name, () => {
 
 					// element / fileElement
 					createFileElement: false,
-
-					// element / submissionElement
-					createSubmissionItemContent: false,
-					deleteSubmissionItem: false,
-					updateSubmissionItem: false,
 
 					// element / videoConferenceElement
 					manageVideoConference: false,

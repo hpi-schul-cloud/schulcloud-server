@@ -42,9 +42,6 @@ import type { LinkElementResponse } from './link-element-response';
 import type { RichTextElementResponse } from './rich-text-element-response';
 // May contain unused imports in some cases
 // @ts-ignore
-import type { SubmissionContainerElementResponse } from './submission-container-element-response';
-// May contain unused imports in some cases
-// @ts-ignore
 import type { TimestampsResponse } from './timestamps-response';
 // May contain unused imports in some cases
 // @ts-ignore
@@ -54,6 +51,6 @@ import type { VideoConferenceElementResponse } from './video-conference-element-
  * @type ElementControllerUpdateElement200Response
  * @export
  */
-export type ElementControllerUpdateElement200Response = DrawingElementResponse | ExternalToolElementResponse | FileElementResponse | FileFolderElementResponse | H5pElementResponse | LinkElementResponse | RichTextElementResponse | SubmissionContainerElementResponse | VideoConferenceElementResponse;
+export type ElementControllerUpdateElement200Response = DrawingElementResponse | ExternalToolElementResponse | FileElementResponse | FileFolderElementResponse | H5pElementResponse | LinkElementResponse | RichTextElementResponse | VideoConferenceElementResponse;
 
 
