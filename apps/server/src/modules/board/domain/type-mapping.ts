@@ -12,8 +12,6 @@ import { H5pElement } from './h5p-element.do';
 import { LinkElement } from './link-element.do';
 import { MediaBoard, MediaExternalToolElement, MediaLine } from './media-board';
 import { RichTextElement } from './rich-text-element.do';
-import { SubmissionContainerElement } from './submission-container-element.do';
-import { SubmissionItem } from './submission-item.do';
 import { type AnyBoardNode, BoardNodeType } from './types';
 import { VideoConferenceElement } from './video-conference-element.do';
 
@@ -32,8 +30,6 @@ const BoardNodeTypeToConstructor = {
 	[BoardNodeType.MEDIA_EXTERNAL_TOOL_ELEMENT]: MediaExternalToolElement,
 	[BoardNodeType.MEDIA_LINE]: MediaLine,
 	[BoardNodeType.RICH_TEXT_ELEMENT]: RichTextElement,
-	[BoardNodeType.SUBMISSION_CONTAINER_ELEMENT]: SubmissionContainerElement,
-	[BoardNodeType.SUBMISSION_ITEM]: SubmissionItem,
 	[BoardNodeType.VIDEO_CONFERENCE_ELEMENT]: VideoConferenceElement,
 	[BoardNodeType.DELETED_ELEMENT]: DeletedElement,
 	[BoardNodeType.H5P_ELEMENT]: H5pElement,

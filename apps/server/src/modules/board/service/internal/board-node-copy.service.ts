@@ -33,8 +33,6 @@ import {
 	type MediaExternalToolElement,
 	type MediaLine,
 	RichTextElement,
-	SubmissionContainerElement,
-	type SubmissionItem,
 	VideoConferenceElement,
 } from '../../domain';
 
@@ -80,12 +78,6 @@ export class BoardNodeCopyService {
 				break;
 			case BoardNodeType.DRAWING_ELEMENT:
 				result = await this.copyDrawingElement(boardNode as DrawingElement, context);
-				break;
-			case BoardNodeType.SUBMISSION_CONTAINER_ELEMENT:
-				result = await this.copySubmissionContainerElement(boardNode as SubmissionContainerElement, context);
-				break;
-			case BoardNodeType.SUBMISSION_ITEM:
-				result = await this.copySubmissionItem(boardNode as SubmissionItem, context);
 				break;
 			case BoardNodeType.EXTERNAL_TOOL:
 				result = await this.copyExternalToolElement(boardNode as ExternalToolElement, context);
@@ -294,37 +286,6 @@ export class BoardNodeCopyService {
 			copyEntity: copy,
 			type: CopyElementType.DRAWING_ELEMENT,
 			status: CopyStatusEnum.PARTIAL,
-		};
-
-		return Promise.resolve(result);
-	}
-
-	public async copySubmissionContainerElement(
-		original: SubmissionContainerElement,
-		context: CopyContext
-	): Promise<CopyStatus> {
-		const childrenResults = await this.copyChildrenOf(original, context);
-
-		const copy = new SubmissionContainerElement({
-			...original.getProps(),
-			...this.buildSpecificProps(childrenResults),
-		});
-
-		const result: CopyStatus = {
-			copyEntity: copy,
-			type: CopyElementType.SUBMISSION_CONTAINER_ELEMENT,
-			status: CopyStatusEnum.SUCCESS,
-			elements: childrenResults,
-		};
-
-		return Promise.resolve(result);
-	}
-
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	public copySubmissionItem(original: SubmissionItem, context: CopyContext): Promise<CopyStatus> {
-		const result: CopyStatus = {
-			type: CopyElementType.SUBMISSION_ITEM,
-			status: CopyStatusEnum.NOT_DOING,
 		};
 
 		return Promise.resolve(result);
