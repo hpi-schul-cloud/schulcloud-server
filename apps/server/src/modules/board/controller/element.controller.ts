@@ -9,16 +9,14 @@ import {
 	NotFoundException,
 	Param,
 	Patch,
-	Post,
 	Put,
 } from '@nestjs/common';
-import { ApiBody, ApiExtraModels, ApiOperation, ApiResponse, ApiTags, getSchemaPath } from '@nestjs/swagger';
+import { ApiExtraModels, ApiOperation, ApiResponse, ApiTags, getSchemaPath } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common/error';
 import { CardUc, ElementUc } from '../uc';
 import {
 	AnyContentElementResponse,
 	ContentElementUrlParams,
-	CreateSubmissionItemBodyParams,
 	DrawingElementContentBody,
 	DrawingElementResponse,
 	ElementWithParentHierarchyResponse,
@@ -35,14 +33,11 @@ import {
 	MoveContentElementBody,
 	RichTextElementContentBody,
 	RichTextElementResponse,
-	SubmissionContainerElementContentBody,
-	SubmissionContainerElementResponse,
-	SubmissionItemResponse,
 	UpdateElementContentBodyParams,
 	VideoConferenceElementContentBody,
 	VideoConferenceElementResponse,
 } from './dto';
-import { ContentElementResponseFactory, ParentNodeInfoResponseMapper, SubmissionItemResponseMapper } from './mapper';
+import { ContentElementResponseFactory, ParentNodeInfoResponseMapper } from './mapper';
 
 @ApiTags('Board Element')
 @JwtAuthentication()
@@ -100,7 +95,6 @@ export class ElementController {
 	@ApiExtraModels(
 		FileElementContentBody,
 		RichTextElementContentBody,
-		SubmissionContainerElementContentBody,
 		ExternalToolElementContentBody,
 		LinkElementContentBody,
 		DrawingElementContentBody,
@@ -116,7 +110,6 @@ export class ElementController {
 				{ $ref: getSchemaPath(FileElementResponse) },
 				{ $ref: getSchemaPath(LinkElementResponse) },
 				{ $ref: getSchemaPath(RichTextElementResponse) },
-				{ $ref: getSchemaPath(SubmissionContainerElementResponse) },
 				{ $ref: getSchemaPath(DrawingElementResponse) },
 				{ $ref: getSchemaPath(VideoConferenceElementResponse) },
 				{ $ref: getSchemaPath(FileFolderElementResponse) },
@@ -155,30 +148,6 @@ export class ElementController {
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {
 		await this.elementUc.deleteElement(currentUser.userId, urlParams.contentElementId);
-	}
-
-	@ApiOperation({ summary: 'Create a new submission item having parent a submission container element.' })
-	@ApiExtraModels(SubmissionItemResponse)
-	@ApiResponse({ status: 201, type: SubmissionItemResponse })
-	@ApiResponse({ status: 400, type: ApiValidationError })
-	@ApiResponse({ status: 403, type: ForbiddenException })
-	@ApiResponse({ status: 404, type: NotFoundException })
-	@ApiBody({ required: true, type: CreateSubmissionItemBodyParams })
-	@Post(':contentElementId/submissions')
-	public async createSubmissionItem(
-		@Param() urlParams: ContentElementUrlParams,
-		@Body() bodyParams: CreateSubmissionItemBodyParams,
-		@CurrentUser() currentUser: ICurrentUser
-	): Promise<SubmissionItemResponse> {
-		const submissionItem = await this.elementUc.createSubmissionItem(
-			currentUser.userId,
-			urlParams.contentElementId,
-			bodyParams.completed
-		);
-		const mapper = SubmissionItemResponseMapper.getInstance();
-		const response = mapper.mapSubmissionItemToResponse(submissionItem);
-
-		return response;
 	}
 
 	@ApiOperation({ summary: 'Check if user has read permission for any board element.' })
