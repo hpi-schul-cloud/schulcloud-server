@@ -12,7 +12,7 @@ import { LEGACY_FILE_ARCHIVE_CONFIG_TOKEN, LegacyFileArchiveConfig } from '../le
 import { FileDo } from './do';
 import { FileFactory } from './factory';
 import { LegacyFileResponse, SecurityCheckStatus } from './types';
-import { AuthorizationTokenVo, LegacyFileResponseVo, SignedUrlResponseVO } from './vo';
+import { AuthorizationTokenVo, LegacyFileResponseVo, SignedUrlResponseVo } from './vo';
 
 @Injectable()
 export class LegacyFileStorageAdapter {
@@ -42,7 +42,7 @@ export class LegacyFileStorageAdapter {
 		}
 	}
 
-	private async getSignedUrl(fileId: EntityId, fileName: string): Promise<SignedUrlResponseVO> {
+	private async getSignedUrl(fileId: EntityId, fileName: string): Promise<SignedUrlResponseVo> {
 		// The file name needs to be encoded twice to be correctly parsed by the S3 API.
 		const encodedFileName = encodeURI(encodeURIComponent(fileName));
 
@@ -54,7 +54,7 @@ export class LegacyFileStorageAdapter {
 				})
 			);
 
-			const signedUrlResponse = new SignedUrlResponseVO(responseData.data.url);
+			const signedUrlResponse = new SignedUrlResponseVo(responseData.data.url);
 
 			return signedUrlResponse;
 		} catch (error) {

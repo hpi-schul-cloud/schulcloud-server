@@ -23,7 +23,7 @@ import { TestApiClient } from '@testing/test-api-client';
 import { TEST_JWT_CONFIG_TOKEN, TestJwtModuleConfig } from '@testing/test-jwt-module.config';
 import { Readable } from 'node:stream';
 import { DownloadArchiveService, FileOwnerModel, LegacyFileStorageAdapter } from '../../domain';
-import { SignedUrlResponseVO } from '../../domain/vo';
+import { SignedUrlResponseVo } from '../../domain/vo';
 import { LEGACY_FILE_ARCHIVE_CONFIG_TOKEN, LegacyFileArchiveConfig } from '../../legacy-file-archive.config';
 import { accountForLoginFactory, fileDomainFactory, userForLoginFactory } from '../../testing';
 import { DownloadArchiveUC } from '../download-archive.uc';
@@ -305,7 +305,7 @@ describe('DownloadArchive Controller (API)', () => {
 				legacyFileStorageAdapter.downloadFile.mockResolvedValue(Readable.from('mock file content'));
 				// @ts-expect-error - we only need the url property for this test
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-call
-				legacyFileStorageAdapter.getSignedUrl.mockResolvedValue(new SignedUrlResponseVO('http://signed-url'));
+				legacyFileStorageAdapter.getSignedUrl.mockResolvedValue(new SignedUrlResponseVo('http://signed-url'));
 
 				return { teamId, loggedInClient, archiveName };
 			};
