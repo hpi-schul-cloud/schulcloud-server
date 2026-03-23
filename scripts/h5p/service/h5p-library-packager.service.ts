@@ -15,6 +15,7 @@ export class H5pLibraryPackagerService {
 	tempFolderPath: string;
 	gitHubClient: H5pGitHubClient;
 	h5pHubClient: H5pHubClient;
+	availableVersions: string[] = [];
 
 	constructor(libraryRepoMap: LibraryRepoMap, tempFolderPath?: string) {
 		if (!tempFolderPath) {
@@ -34,10 +35,10 @@ export class H5pLibraryPackagerService {
 
 	public async buildH5pLibrariesFromGitHubAsBulk(libraries: string[]): Promise<void> {
 		const result: InstallResults = { installedLibraries: new Set<string>(), failedLibraries: new Set<string>() };
-		const availableVersions: string[] = [];
+		this.availableVersions = [];
 		for (const library of libraries) {
 			this.logLibraryBanner(library);
-			const libraryResult = await this.buildLibrary(library, availableVersions);
+			const libraryResult = await this.buildLibrary(library);
 
 			console.log(`### Finished building of ${library}.`);
 			console.log(`### Successfully built libraries: ${this.formatLibraryList(libraryResult.installedLibraries)}`);
@@ -66,7 +67,7 @@ export class H5pLibraryPackagerService {
 		console.log(border);
 	}
 
-	private async buildLibrary(library: string, availableVersions: string[]): Promise<InstallResults> {
+	private async buildLibrary(library: string): Promise<InstallResults> {
 		const result: InstallResults = { installedLibraries: new Set<string>(), failedLibraries: new Set<string>() };
 		const repoName = this.mapMachineNameToGitHubRepo(library);
 		if (!repoName) {
@@ -85,7 +86,7 @@ export class H5pLibraryPackagerService {
 
 		console.log(`Found ${filteredTags.length} versions of ${library} in ${repoName}: ${filteredTags.join(', ')}`);
 		for (const tag of filteredTags) {
-			const tagResult = await this.buildLibraryVersionAndDependencies(library, tag, repoName, availableVersions);
+			const tagResult = await this.buildLibraryVersionAndDependencies(library, tag, repoName);
 
 			tagResult.installedLibraries.forEach((lib) => result.installedLibraries.add(lib));
 			tagResult.failedLibraries.forEach((lib) => result.failedLibraries.add(lib));
@@ -218,8 +219,7 @@ export class H5pLibraryPackagerService {
 	private async buildLibraryVersionAndDependencies(
 		library: string,
 		tag: string,
-		repoName: string,
-		availableVersions: string[]
+		repoName: string
 	): Promise<InstallResults> {
 		this.logStartBuildingOfLibraryFromGitHub(library, tag);
 		const result: InstallResults = {
@@ -227,8 +227,8 @@ export class H5pLibraryPackagerService {
 			failedLibraries: new Set<string>(),
 		};
 
-		if (this.isCurrentVersionAvailable(library, tag, availableVersions)) return result;
-		if (this.isNewerPatchVersionAvailable(library, tag, availableVersions)) return result;
+		if (this.isCurrentVersionAvailable(library, tag)) return result;
+		if (this.isNewerPatchVersionAvailable(library, tag)) return result;
 
 		const validLibrary = await this.buildLibraryTagFromGitHub(library, tag, repoName);
 		if (validLibrary) {
@@ -240,7 +240,7 @@ export class H5pLibraryPackagerService {
 
 			return result;
 		}
-		availableVersions.push(`${library}-${tag}`);
+		this.availableVersions.push(`${library}-${tag}`);
 
 		this.logStartBuildingOfDependenciesFromGitHub(library, tag);
 
@@ -254,7 +254,7 @@ export class H5pLibraryPackagerService {
 		}
 
 		for (const dependency of dependencies) {
-			const depResults = await this.buildLibraryDependency(dependency, library, tag, availableVersions);
+			const depResults = await this.buildLibraryDependency(dependency, library, tag);
 			depResults.installedLibraries.forEach((lib) => result.installedLibraries.add(lib));
 			depResults.failedLibraries.forEach((lib) => result.failedLibraries.add(lib));
 		}
@@ -794,8 +794,7 @@ export class H5pLibraryPackagerService {
 	private async buildLibraryDependency(
 		dependency: ILibraryName,
 		library: string,
-		tag: string,
-		availableVersions: string[]
+		tag: string
 	): Promise<InstallResults> {
 		const result: InstallResults = { installedLibraries: new Set<string>(), failedLibraries: new Set<string>() };
 
@@ -849,8 +848,7 @@ export class H5pLibraryPackagerService {
 		const dependencyResult = await this.buildLibraryVersionAndDependencies(
 			depName,
 			depTag,
-			depRepoName,
-			availableVersions
+			depRepoName
 		);
 		if (dependencyResult.failedLibraries.size === 0) {
 			this.logBuildingLibraryDependencySuccess(depName, depTag);
@@ -902,8 +900,8 @@ export class H5pLibraryPackagerService {
 		return highestVersionTag;
 	}
 
-	private isCurrentVersionAvailable(library: string, tag: string, availableVersions: string[]): boolean {
-		const currentPatchVersionAvailable = availableVersions.includes(`${library}-${tag}`);
+	private isCurrentVersionAvailable(library: string, tag: string): boolean {
+		const currentPatchVersionAvailable = this.availableVersions.includes(`${library}-${tag}`);
 
 		if (currentPatchVersionAvailable) {
 			this.logVersionAlreadyAvailable(library, tag);
@@ -916,9 +914,9 @@ export class H5pLibraryPackagerService {
 		console.log(`${library}-${tag} is already available.`);
 	}
 
-	private isNewerPatchVersionAvailable(library: string, tag: string, availableVersions: string[]): boolean {
+	private isNewerPatchVersionAvailable(library: string, tag: string): boolean {
 		const [tagMajor, tagMinor, tagPatch] = tag.split('.').map(Number);
-		const newerPatchVersionAvailable = availableVersions.some((v) => {
+		const newerPatchVersionAvailable = this.availableVersions.some((v) => {
 			const [lib, version] = v.split('-');
 			if (lib !== library) return false;
 			const [major, minor, patch] = version.split('.').map(Number);
