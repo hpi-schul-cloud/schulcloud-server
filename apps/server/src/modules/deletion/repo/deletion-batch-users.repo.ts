@@ -3,24 +3,14 @@ import { RoleName } from '@modules/role';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 
-export type UserIdsByRole = {
-	roleName: RoleName;
-	userIds: EntityId[];
-};
-
-export type UsersCountByRole = {
-	roleName: RoleName;
-	userCount: number;
-};
-
 export type UserWithRoles = {
 	id: EntityId;
-	roles: RoleName[];
+	roleIds: EntityId[];
 };
 
 export type GroupedUserIdsByRoles = {
-	withAllowedRole: { id: EntityId; roleIds: EntityId[] }[];
-	withoutAllowedRole: { id: EntityId; roleIds: EntityId[] }[];
+	withAllowedRole: UserWithRoles[];
+	withoutAllowedRole: UserWithRoles[];
 };
 
 @Injectable()
@@ -74,12 +64,7 @@ export class DeletionBatchUsersRepo {
 			},
 		];
 
-		type AggregationResult = {
-			withAllowedRole: { id: string; roleIds: string[] }[];
-			withoutAllowedRole: { id: string; roleIds: string[] }[];
-		};
-
-		const [result] = await this.em.getConnection().aggregate<AggregationResult>('users', pipeline);
+		const [result] = await this.em.getConnection().aggregate<GroupedUserIdsByRoles>('users', pipeline);
 
 		return result;
 	}

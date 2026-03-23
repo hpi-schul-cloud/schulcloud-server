@@ -47,6 +47,7 @@ describe(DeletionRequestEntity.name, () => {
 					deleteAfter: entity.deleteAfter,
 					targetRefId: entity.targetRefId,
 					status: entity.status,
+					batchId: entity.batchId,
 					createdAt: entity.createdAt,
 					updatedAt: entity.updatedAt,
 				};
