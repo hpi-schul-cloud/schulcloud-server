@@ -13,7 +13,6 @@ const { Schema } = mongoose;
 const fileStorageTypes = ['awsS3'];
 
 const SCHOOL_FEATURES = {
-	ROCKET_CHAT: 'rocketChat',
 	VIDEOCONFERENCE: 'videoconference',
 	NEXTCLOUD: 'nextcloud',
 	STUDENTVISIBILITY: 'studentVisibility', // deprecated
