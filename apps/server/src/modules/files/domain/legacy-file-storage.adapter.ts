@@ -36,10 +36,9 @@ export class LegacyFileStorageAdapter {
 
 			return response.data;
 		} catch (error) {
-			throw new InternalServerErrorException(
-				`Failed to download file from legacy storage with id ${fileId} and name ${fileName}`,
-				{ cause: error }
-			);
+			throw new InternalServerErrorException(`Failed to download file from legacy storage with id ${fileId}`, {
+				cause: error,
+			});
 		}
 	}
 
@@ -59,10 +58,7 @@ export class LegacyFileStorageAdapter {
 
 			return signedUrlResponse;
 		} catch (error) {
-			throw new InternalServerErrorException(
-				`Failed to get signed URL for file with id ${fileId} and name ${fileName}`,
-				{ cause: error }
-			);
+			throw new InternalServerErrorException(`Failed to get signed URL for file with id ${fileId}`, { cause: error });
 		}
 	}
 
