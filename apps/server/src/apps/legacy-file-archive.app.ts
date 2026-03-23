@@ -7,7 +7,7 @@ import { ExpressAdapter } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import express from 'express';
 import { install as sourceMapInstall } from 'source-map-support';
-import { AppStartLoggable, enableOpenApiDocs } from './helpers';
+import { AppStartLoggable } from './helpers';
 import { createMetricsServer } from './helpers/metrics.server';
 
 async function bootstrap(): Promise<void> {
@@ -16,7 +16,6 @@ async function bootstrap(): Promise<void> {
 	const nestExpress = express();
 	const nestExpressAdapter = new ExpressAdapter(nestExpress);
 	const nestApp = await NestFactory.create(LegacyFileArchiveApiModule, nestExpressAdapter);
-	enableOpenApiDocs(nestApp, 'docs');
 
 	// WinstonLogger
 	nestApp.useLogger(await nestApp.resolve(LegacyLogger));
