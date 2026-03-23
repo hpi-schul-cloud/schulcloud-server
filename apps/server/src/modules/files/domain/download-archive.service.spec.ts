@@ -21,6 +21,17 @@ const createMockArchive = (): DeepMocked<Archiver> => {
 	return mock;
 };
 
+const createMockArchiveWithError = (error: Error): DeepMocked<Archiver> => {
+	const mock = createMock<Archiver>();
+	mock.once.mockImplementation((event: string | symbol, listener: (...args: unknown[]) => void) => {
+		if (event === 'error') {
+			void Promise.resolve().then(() => listener(error));
+		}
+		return mock;
+	});
+	return mock;
+};
+
 describe('DownloadArchiveService', () => {
 	let service: DownloadArchiveService;
 	let legacyFileStorageAdapter: DeepMocked<LegacyFileStorageAdapter>;
@@ -238,6 +249,51 @@ describe('DownloadArchiveService', () => {
 				const expectedPath = `${rootFolder.name}/${subFolder.name}/${file.name}`;
 				const appendedNames = appendFileSpy.mock.calls.map(([, r]) => r.name);
 				expect(appendedNames).toContain(expectedPath);
+			});
+		});
+
+		describe('when archive emits an error during file append', () => {
+			const setup = () => {
+				const file = fileDomainFactory.build({
+					isDirectory: false,
+					name: 'test.txt',
+					parentId: undefined,
+				});
+
+				const error = new Error('archive error');
+				const ownerId = 'owner123';
+				const archiveName = 'test-archive';
+
+				const mockStream = new Readable();
+				mockStream.push('content');
+				mockStream.push(null);
+
+				legacyFileStorageAdapter.getFilesForOwner.mockResolvedValueOnce([file]);
+				legacyFileStorageAdapter.downloadFile.mockResolvedValueOnce(mockStream);
+
+				const mockArchive = createMockArchiveWithError(error);
+				jest.spyOn(ArchiveFactory, 'createEmpty').mockReturnValueOnce(mockArchive);
+				jest.spyOn(ArchiveFactory, 'appendFile').mockReturnValue(undefined);
+
+				return { ownerId, archiveName, error, mockArchive };
+			};
+
+			it('should remove the entry listener when an error occurs', async () => {
+				const { ownerId, archiveName, mockArchive } = setup();
+
+				await service.downloadFilesAsArchive(ownerId, archiveName);
+				await flushPromises();
+
+				expect(mockArchive.off).toHaveBeenCalledWith('entry', expect.any(Function));
+			});
+
+			it('should propagate the error to the archive via emit', async () => {
+				const { ownerId, archiveName, error, mockArchive } = setup();
+
+				await service.downloadFilesAsArchive(ownerId, archiveName);
+				await flushPromises();
+
+				expect(mockArchive.emit).toHaveBeenCalledWith('error', error);
 			});
 		});
 	});
