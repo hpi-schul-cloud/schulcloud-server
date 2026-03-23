@@ -1,6 +1,7 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
+import { validateSync } from 'class-validator';
 import { Release } from '../domain';
 import { ReleaseClass } from './release.class';
 
@@ -21,11 +22,11 @@ export class ReleaseRepo {
 
 		const docs = await cursor.toArray();
 		const releases = docs.map((doc) => {
-			const obj = { ...doc, id: doc._id.toString() };
+			const obj = { ...doc, id: doc._id };
 			delete (obj as { _id: unknown })._id;
 			const release = plainToInstance(ReleaseClass, obj);
-			// const errors = validateSync(release);
-			// if (errors.length) throw new Error('Validation or release transformation failed');
+			const errors = validateSync(release);
+			if (errors.length) throw new Error('Validation or release transformation failed');
 			return release;
 		});
 
