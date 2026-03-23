@@ -7,7 +7,6 @@ import { LearnroomPublicApiConfig } from '@modules/learnroom';
 import { OauthPublicApiConfig } from '@modules/oauth';
 import { ProvisioningPublicApiConfig } from '@modules/provisioning';
 import { RegistrationPublicApiConfig } from '@modules/registration';
-import { RocketChatPublicApiConfig } from '@modules/rocketchat';
 import { RoomPublicApiConfig } from '@modules/room';
 import { RosterPublicApiConfig } from '@modules/roster';
 import { SharingPublicApiConfig } from '@modules/sharing';
@@ -165,9 +164,6 @@ export class ConfigResponse {
 	@ApiProperty()
 	GHOST_BASE_URL: string;
 
-	@ApiProperty()
-	ROCKETCHAT_SERVICE_ENABLED: boolean;
-
 	// LERNSTORE_MODE: boolean; looks like not in use anymore
 
 	@ApiProperty({
@@ -283,8 +279,7 @@ export class ConfigResponse {
 			UserPublicApiConfig &
 			UserImportPublicApiConfig &
 			UserLoginMigrationPublicApiConfig &
-			FwuPublicApiConfig &
-			RocketChatPublicApiConfig
+			FwuPublicApiConfig
 	) {
 		this.ACCESSIBILITY_REPORT_EMAIL = config.accessibilityReportEmail;
 		this.SC_CONTACT_EMAIL = config.scContactEmail;
@@ -321,7 +316,6 @@ export class ConfigResponse {
 		this.FEATURE_USER_LOGIN_MIGRATION_ENABLED = config.featureUserLoginMigrationEnabled;
 		this.FEATURE_ALLOW_INSECURE_LDAP_URL_ENABLED = config.featureAllowInsecureLdapUrlEnabled;
 		this.GHOST_BASE_URL = config.ghostBaseUrl;
-		this.ROCKETCHAT_SERVICE_ENABLED = config.rocketChatServiceEnabled;
 		this.I18N__AVAILABLE_LANGUAGES = config.availableLanguages;
 		this.I18N__DEFAULT_LANGUAGE = config.i18nDefaultLanguage;
 		this.I18N__FALLBACK_LANGUAGE = config.i18nFallbackLanguage;
