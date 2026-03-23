@@ -16,7 +16,7 @@ export class CreateArchiveLoggable implements Loggable {
 			data: {
 				action: this.action,
 				fileIds: this.files.map((file) => file.id).join(','),
-				...(this.error !== undefined && { error: this.error }),
+				...(this.error !== undefined && { error: String(this.error) }),
 			},
 		};
 
