@@ -1,6 +1,6 @@
 import { AuthorizationBodyParamsReferenceType } from '@infra/authorization-client';
 import { FileOwnerModel } from '../../domain';
-import { AuthorizationReferenceTypeMapper } from './authorization-referenz-type.mapper';
+import { AuthorizationReferenceTypeMapper } from './authorization-reference-type.mapper';
 
 describe('AuthorizationReferenceTypeMapper', () => {
 	describe('mapOwnerTypeToReferenceType', () => {

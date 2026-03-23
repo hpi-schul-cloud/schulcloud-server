@@ -1,2 +1,2 @@
-export * from './authorization-referenz-type.mapper';
+export * from './authorization-reference-type.mapper';
 export * from './stream.response.mapper';
