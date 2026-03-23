@@ -374,7 +374,7 @@ describe('LegacyFileStorageAdapter', () => {
 		describe('when signed URL is obtained and file downloads successfully', () => {
 			const setup = () => {
 				const fileId = new ObjectId().toHexString();
-				const fileName = 'document.pdf';
+				const fileName = '/../../document.pdf';
 				const signedUrl = 'https://s3.example.com/bucket/file?X-Amz-Signature=abc123';
 				const mockStream = new Readable({ read() {} });
 
@@ -399,6 +399,16 @@ describe('LegacyFileStorageAdapter', () => {
 				await adapter.downloadFile(fileId, fileName);
 
 				expect(httpService.get).toHaveBeenCalledWith(signedUrl, { responseType: 'stream' });
+			});
+
+			it('should fetch the signed URL with correct params', async () => {
+				const { fileId, fileName } = setup();
+
+				await adapter.downloadFile(fileId, fileName);
+				expect(httpService.get).toHaveBeenCalledWith(`${legacyBaseUrl}/fileStorage/signedUrl`, {
+					params: { file: fileId, download: true, name: encodeURI(encodeURIComponent(fileName)) },
+					headers: { authorization: `Bearer ${jwt}` },
+				});
 			});
 		});
 
