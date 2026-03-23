@@ -10,10 +10,6 @@ import { LegacyFileStorageAdapter } from './legacy-file-storage.adapter';
 
 const flushPromises = (): Promise<void> => new Promise((resolve) => setImmediate(resolve));
 
-/**
- * Creates a mock Archiver whose `once('entry', cb)` fires `cb` asynchronously
- * so that `appendAndWaitForEntry` can resolve during tests without a real archive.
- */
 const createMockArchive = (): DeepMocked<Archiver> => {
 	const mock = createMock<Archiver>();
 	mock.once.mockImplementation((event: string | symbol, listener: (...args: unknown[]) => void) => {
@@ -113,8 +109,8 @@ describe('DownloadArchiveService', () => {
 				await service.downloadFilesAsArchive(ownerId, archiveName);
 				await flushPromises();
 
-				expect(appendFileSpy).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ name: file1.name }));
-				expect(appendFileSpy).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ name: file2.name }));
+				const appendedNames = appendFileSpy.mock.calls.map(([, r]) => r.name);
+				expect(appendedNames).toEqual(expect.arrayContaining([file1.name, file2.name]));
 			});
 
 			it('should call downloadFile on the adapter for each file', async () => {
@@ -240,7 +236,8 @@ describe('DownloadArchiveService', () => {
 				await flushPromises();
 
 				const expectedPath = `${rootFolder.name}/${subFolder.name}/${file.name}`;
-				expect(appendFileSpy).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ name: expectedPath }));
+				const appendedNames = appendFileSpy.mock.calls.map(([, r]) => r.name);
+				expect(appendedNames).toContain(expectedPath);
 			});
 		});
 	});

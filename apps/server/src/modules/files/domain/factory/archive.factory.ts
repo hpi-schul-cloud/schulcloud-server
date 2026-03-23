@@ -23,10 +23,6 @@ export class ArchiveFactory {
 		return archive;
 	}
 
-	/**
-	 * Creates an archiver with event handlers attached but without any files appended and without finalizing.
-	 * Use {@link appendFile} to add files and call `archive.finalize()` when done.
-	 */
 	public static createEmpty(files: FileDo[], logger: Logger, archiveType: archiver.Format = 'zip'): archiver.Archiver {
 		const archive = archiver(archiveType);
 
@@ -38,9 +34,6 @@ export class ArchiveFactory {
 			}
 		});
 
-		// Do not throw inside this handler — the error propagates naturally through the stream
-		// pipeline to whoever is consuming the archive (e.g. an HTTP response pipe). Throwing
-		// here would escape the event-loop tick with no try/catch and crash the process.
 		archive.on('error', (err) => {
 			logger.warning(new CreateArchiveLoggable('Error while creating archive', 'createArchive', files, err));
 		});
@@ -52,8 +45,6 @@ export class ArchiveFactory {
 		return archive;
 	}
 
-	/** Appends a single file stream to an existing archive. No PassThrough layer — the source
-	 * stream is handed directly to archiver to avoid an extra in-memory buffer. */
 	public static appendFile(archive: archiver.Archiver, fileResponse: GetFileResponse): void {
 		fileResponse.data.on('error', (err: unknown) => {
 			archive.emit('error', err as Error);

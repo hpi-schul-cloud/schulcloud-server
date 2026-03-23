@@ -40,10 +40,6 @@ export class DownloadArchiveService {
 		files: FileDo[],
 		filesById: Map<EntityId, FileDo>
 	): Promise<void> {
-		// Files are appended one at a time. We wait for archiver's 'entry' event before
-		// opening the next S3 stream so that at most one stream is ever flowing into the
-		// archiver's queue at a time. Without this, all concurrencyLimit streams would
-		// buffer their full contents in memory while waiting for archiver to process them.
 		for (const file of files) {
 			const fileResponse = await this.downloadFileWithPath(file, filesById);
 			await this.appendAndWaitForEntry(archive, fileResponse);
