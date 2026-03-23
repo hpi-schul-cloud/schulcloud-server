@@ -3,17 +3,13 @@ import { UserService } from '@modules/user';
 import { type User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
-import { EntityId } from '@shared/domain/types';
 import {
 	BoardNodeAuthorizable,
 	BoardRoles,
 	ColumnBoard,
 	isDrawingElement,
-	isSubmissionItem,
-	isSubmissionItemContent,
 	isVideoConferenceElement,
 	MediaBoard,
-	SubmissionItem,
 	UserWithBoardRoles,
 } from '../domain';
 
@@ -57,11 +53,6 @@ export const BoardOperationValues = [
 	// element / fileElement
 	'createFileElement',
 
-	// element / submissionElement
-	'createSubmissionItemContent',
-	'deleteSubmissionItem',
-	'updateSubmissionItem',
-
 	// element / videoConferenceElement
 	'manageVideoConference',
 
@@ -97,7 +88,7 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 	}
 
 	public hasPermission(user: User, authorizable: BoardNodeAuthorizable, context: AuthorizationContext): boolean {
-		if (authorizable.boardContextSettings.isLocked) {
+		if (authorizable.boardConfiguration.isLocked) {
 			return false;
 		}
 
@@ -117,10 +108,6 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 			!this.isBoardEditor(userWithBoardRoles)
 		) {
 			return false;
-		}
-
-		if (this.shouldProcessSubmissionItem(authorizable)) {
-			return this.hasPermissionForSubmissionItem(user, userWithBoardRoles, authorizable, context);
 		}
 
 		if (this.shouldProcessDrawingElementFile(authorizable, context)) {
@@ -192,11 +179,6 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 
 			// element / fileElement
 			createFileElement: _canEditBoard,
-
-			// element / submissionElement
-			createSubmissionItemContent: _isSubmissionItemOfUser,
-			deleteSubmissionItem: _isSubmissionItemOfUser,
-			updateSubmissionItem: _isSubmissionItemOfUser,
 
 			// element / videoConferenceElement
 			manageVideoConference: canManageVideoConference,
@@ -270,79 +252,6 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 		return this.isBoardReader(userWithBoardRoles);
 	}
 
-	private shouldProcessSubmissionItem(boardNodeAuthorizable: BoardNodeAuthorizable): boolean {
-		return isSubmissionItem(boardNodeAuthorizable.boardNode) || isSubmissionItem(boardNodeAuthorizable.parentNode);
-	}
-
-	private hasPermissionForSubmissionItem(
-		user: User,
-		userWithBoardRoles: UserWithBoardRoles,
-		boardNodeAuthorizable: BoardNodeAuthorizable,
-		context: AuthorizationContext
-	): boolean {
-		// permission for elements under a submission item, are handled by the parent submission item
-		if (isSubmissionItem(boardNodeAuthorizable.parentNode)) {
-			if (!isSubmissionItemContent(boardNodeAuthorizable.boardNode)) {
-				return false;
-			}
-			boardNodeAuthorizable.boardNode = boardNodeAuthorizable.parentNode;
-			boardNodeAuthorizable.parentNode = undefined;
-		}
-
-		if (!isSubmissionItem(boardNodeAuthorizable.boardNode)) {
-			/* istanbul ignore next */
-			throw new Error('BoardDoAuthorizable.boardDo is not a submission item');
-		}
-
-		if (context.action === Action.write) {
-			return this.hasSubmissionItemWritePermission(userWithBoardRoles, boardNodeAuthorizable.boardNode);
-		}
-
-		return this.hasSubmissionItemReadPermission(userWithBoardRoles, boardNodeAuthorizable.boardNode);
-	}
-
-	private hasSubmissionItemWritePermission(
-		userWithBoardRoless: UserWithBoardRoles,
-		submissionItem: SubmissionItem
-	): boolean {
-		// teacher don't have write access
-		if (this.isBoardEditor(userWithBoardRoless)) {
-			return false;
-		}
-
-		// student has write access only for his own submission item
-		if (
-			this.isBoardReader(userWithBoardRoless) &&
-			this.isSubmissionItemCreator(userWithBoardRoless.userId, submissionItem)
-		) {
-			return true;
-		}
-
-		return false;
-	}
-
-	private hasSubmissionItemReadPermission(
-		userWithBoardRoless: UserWithBoardRoles,
-		submissionItem: SubmissionItem
-	): boolean {
-		if (this.isBoardEditor(userWithBoardRoless)) {
-			return true;
-		}
-
-		if (
-			this.isBoardReader(userWithBoardRoless) &&
-			this.isSubmissionItemCreator(userWithBoardRoless.userId, submissionItem)
-		) {
-			return true;
-		}
-
-		return false;
-	}
-
-	private isSubmissionItemCreator(userId: EntityId, submissionItem: SubmissionItem): boolean {
-		return submissionItem.userId === userId;
-	}
-
 	private shouldProcessVideoConferenceElement(boardNodeAuthorizable: BoardNodeAuthorizable): boolean {
 		return isVideoConferenceElement(boardNodeAuthorizable.boardNode);
 	}
@@ -353,10 +262,9 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 		authorizable: BoardNodeAuthorizable
 	): boolean {
 		if (context.action === Action.write) {
-			const canRoomEditorManageVideoconference =
-				authorizable.boardContextSettings.canRoomEditorManageVideoconference ?? false;
+			const canEditorsManageVideoconference = authorizable.boardConfiguration.canEditorsManageVideoconference ?? false;
 			return (
-				(canRoomEditorManageVideoconference && this.isBoardEditor(userWithBoardRoles)) ||
+				(canEditorsManageVideoconference && this.isBoardEditor(userWithBoardRoles)) ||
 				this.isBoardAdmin(userWithBoardRoles)
 			);
 		}
@@ -365,20 +273,31 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 	}
 }
 
+const hasBoardRole = (user: User, authorizable: BoardNodeAuthorizable, role: BoardRoles): boolean => {
+	const userWithBoardRoles = authorizable.users.find((u) => u.userId === user.id);
+	return userWithBoardRoles?.roles.includes(role) ?? false;
+};
+
 const _canEditBoard = (user: User, authorizable: BoardNodeAuthorizable): boolean => {
-	if (authorizable.boardContextSettings.isLocked) {
+	if (authorizable.boardConfiguration.isLocked) {
 		return false;
 	}
 
-	const permissions = authorizable.getUserPermissions(user.id);
-
 	const isBoard = authorizable.rootNode instanceof ColumnBoard || authorizable.rootNode instanceof MediaBoard;
-	const canEditBoard = permissions.includes(Permission.BOARD_EDIT);
-	return isBoard && canEditBoard;
+	if (!isBoard) return false;
+
+	const permissions = authorizable.getUserPermissions(user.id);
+	const hasEditPermission = permissions.includes(Permission.BOARD_EDIT);
+	if (hasEditPermission) return true;
+
+	const isReader = hasBoardRole(user, authorizable, BoardRoles.READER);
+	const readersCanEdit = authorizable.boardConfiguration.canReadersEdit ?? false;
+
+	return isReader && readersCanEdit;
 };
 
 const _canManageBoard = (user: User, authorizable: BoardNodeAuthorizable): boolean => {
-	if (authorizable.boardContextSettings.isLocked) {
+	if (authorizable.boardConfiguration.isLocked) {
 		return false;
 	}
 
@@ -390,7 +309,7 @@ const _canManageBoard = (user: User, authorizable: BoardNodeAuthorizable): boole
 };
 
 const _canViewBoard = (user: User, authorizable: BoardNodeAuthorizable): boolean => {
-	if (authorizable.boardContextSettings.isLocked) {
+	if (authorizable.boardConfiguration.isLocked) {
 		return false;
 	}
 
@@ -401,17 +320,8 @@ const _canViewBoard = (user: User, authorizable: BoardNodeAuthorizable): boolean
 	return isBoard && canViewBoard;
 };
 
-const _isSubmissionItemOfUser = (user: User, authorizable: BoardNodeAuthorizable): boolean => {
-	if (authorizable.boardContextSettings.isLocked) {
-		return false;
-	}
-
-	const { boardNode } = authorizable;
-	return boardNode instanceof SubmissionItem && boardNode.userId === user.id;
-};
-
 const _canCreateExternalToolElement = (user: User, authorizable: BoardNodeAuthorizable): boolean => {
-	if (authorizable.boardContextSettings.isLocked) {
+	if (authorizable.boardConfiguration.isLocked) {
 		return false;
 	}
 
@@ -424,7 +334,7 @@ const _canCreateExternalToolElement = (user: User, authorizable: BoardNodeAuthor
 };
 
 const canFindBoard = (user: User, authorizable: BoardNodeAuthorizable): boolean => {
-	if (authorizable.boardContextSettings.isLocked) {
+	if (authorizable.boardConfiguration.isLocked) {
 		return false;
 	}
 
@@ -443,19 +353,26 @@ const canFindBoard = (user: User, authorizable: BoardNodeAuthorizable): boolean 
 };
 
 const canManageVideoConference = (user: User, authorizable: BoardNodeAuthorizable): boolean => {
-	if (authorizable.boardContextSettings.isLocked) {
+	if (authorizable.boardConfiguration.isLocked) {
 		return false;
 	}
 
 	const permissions = authorizable.getUserPermissions(user.id);
 
 	const isBoard = authorizable.rootNode instanceof ColumnBoard || authorizable.rootNode instanceof MediaBoard;
-	const canManageVideoConference = permissions.includes(Permission.BOARD_MANAGE_VIDEOCONFERENCE);
+
+	const hasPermission = permissions.includes(Permission.BOARD_MANAGE_VIDEOCONFERENCE);
+
+	const isEditor = hasBoardRole(user, authorizable, BoardRoles.EDITOR);
+	const canEditorsManageVideoconference = authorizable.boardConfiguration.canEditorsManageVideoconference ?? false;
+
+	const canManageVideoConference = hasPermission || (isEditor && canEditorsManageVideoconference);
+
 	return isBoard && canManageVideoConference;
 };
 
 const canUpdateReadersCanEditSetting = (user: User, authorizable: BoardNodeAuthorizable): boolean => {
-	if (authorizable.boardContextSettings.isLocked) {
+	if (authorizable.boardConfiguration.isLocked) {
 		return false;
 	}
 
@@ -468,7 +385,7 @@ const canUpdateReadersCanEditSetting = (user: User, authorizable: BoardNodeAutho
 };
 
 const canRelocateContent = (user: User, authorizable: BoardNodeAuthorizable): boolean => {
-	if (authorizable.boardContextSettings.isLocked) {
+	if (authorizable.boardConfiguration.isLocked) {
 		return false;
 	}
 
@@ -481,7 +398,7 @@ const canRelocateContent = (user: User, authorizable: BoardNodeAuthorizable): bo
 };
 
 const canShareBoardNode = (user: User, authorizable: BoardNodeAuthorizable): boolean => {
-	if (authorizable.boardContextSettings.isLocked) {
+	if (authorizable.boardConfiguration.isLocked) {
 		return false;
 	}
 

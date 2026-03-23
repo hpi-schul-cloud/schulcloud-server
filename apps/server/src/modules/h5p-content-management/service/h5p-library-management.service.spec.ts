@@ -11,15 +11,32 @@ import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { H5P_EDITOR_CONFIG_TOKEN } from '../h5p-editor.config';
 import { H5pConsistencyError, H5pTimeoutError } from '../interface';
+import { H5P_CACHE_PROVIDER_TOKEN } from '../provider';
+import { ILibraryAdministrationOverviewItemTestFactory, ILibraryInstallResultTestFactory } from '../testing';
 import { ContentStorage } from './content-storage.service';
 import { H5PLibraryManagementService, castToLibrariesContentType } from './h5p-library-management.service';
 import { LibraryStorage } from './library-storage.service';
-import { ILibraryAdministrationOverviewItemTestFactory, ILibraryInstallResultTestFactory } from '../testing';
+
 describe('H5PLibraryManagementService', () => {
 	let module: TestingModule;
 	let libraryStorage: jest.Mocked<LibraryStorage>;
+	let cacheMock: {
+		wrap: jest.Mock;
+		get: jest.Mock;
+		set: jest.Mock;
+		del: jest.Mock;
+		reset: jest.Mock;
+	};
 
 	beforeAll(async () => {
+		cacheMock = {
+			wrap: jest.fn((key: string, fn: () => Promise<unknown>) => fn()),
+			get: jest.fn(),
+			set: jest.fn(),
+			del: jest.fn(),
+			reset: jest.fn(),
+		};
+
 		module = await Test.createTestingModule({
 			providers: [
 				H5PLibraryManagementService,
@@ -39,6 +56,10 @@ describe('H5PLibraryManagementService', () => {
 					},
 				},
 				{
+					provide: H5P_CACHE_PROVIDER_TOKEN,
+					useValue: cacheMock,
+				},
+				{
 					provide: Logger,
 					useValue: createMock<Logger>(),
 				},
@@ -50,6 +71,11 @@ describe('H5PLibraryManagementService', () => {
 
 	afterAll(async () => {
 		await module.close();
+	});
+
+	beforeEach(() => {
+		// Reset cache wrap implementation after resetAllMocks
+		cacheMock.wrap.mockImplementation((key: string, fn: () => Promise<unknown>) => fn());
 	});
 
 	afterEach(() => {
@@ -98,6 +124,10 @@ describe('H5PLibraryManagementService', () => {
 			it('should uninstall unwanted libraries, install new libraries, synchronize libraries and check for broken libraries', async () => {
 				const { installedLibraries, service, synchronizedLibraries, uninstalledLibraries } = setup();
 
+				const availableLibraries: ILibraryAdministrationOverviewItem[] = [];
+				const getLibrariesSpy = jest
+					.spyOn(service.libraryAdministration, 'getLibraries')
+					.mockResolvedValueOnce(availableLibraries);
 				const uninstallSpy = jest
 					.spyOn(service, 'uninstallUnwantedLibrariesAsBulk')
 					.mockResolvedValueOnce(uninstalledLibraries);
@@ -109,11 +139,13 @@ describe('H5PLibraryManagementService', () => {
 
 				await service.run();
 
+				expect(getLibrariesSpy).toHaveBeenCalledTimes(1);
 				expect(uninstallSpy).toHaveBeenCalledTimes(1);
 				expect(installSpy).toHaveBeenCalledTimes(1);
 				expect(synchronizeSpy).toHaveBeenCalledTimes(1);
 				expect(checkBrokenLibsSpy).toHaveBeenCalledTimes(1);
 
+				getLibrariesSpy.mockRestore();
 				uninstallSpy.mockRestore();
 				installSpy.mockRestore();
 				synchronizeSpy.mockRestore();
@@ -651,13 +683,21 @@ describe('H5PLibraryManagementService', () => {
 						title: 'Library A',
 					});
 					libraryStorage.isInstalled.mockResolvedValueOnce(true);
-					libraryStorage.getInstalledLibraryNames.mockResolvedValueOnce([
-						{
-							machineName: 'libraryA',
-							majorVersion: 1,
-							minorVersion: 0,
-						},
-					]);
+					libraryStorage.getInstalledLibraryNames
+						.mockResolvedValueOnce([
+							{
+								machineName: 'libraryA',
+								majorVersion: 1,
+								minorVersion: 0,
+							},
+						])
+						.mockResolvedValueOnce([
+							{
+								machineName: 'libraryA',
+								majorVersion: 1,
+								minorVersion: 0,
+							},
+						]);
 					libraryStorage.getLibrary.mockResolvedValueOnce({
 						machineName: 'libraryA',
 						majorVersion: 1,
@@ -831,13 +871,21 @@ describe('H5PLibraryManagementService', () => {
 						title: 'Library A',
 					});
 					libraryStorage.isInstalled.mockResolvedValueOnce(true);
-					libraryStorage.getInstalledLibraryNames.mockResolvedValueOnce([
-						{
-							machineName: 'libraryA',
-							majorVersion: 1,
-							minorVersion: 0,
-						},
-					]);
+					libraryStorage.getInstalledLibraryNames
+						.mockResolvedValueOnce([
+							{
+								machineName: 'libraryA',
+								majorVersion: 1,
+								minorVersion: 0,
+							},
+						])
+						.mockResolvedValueOnce([
+							{
+								machineName: 'libraryA',
+								majorVersion: 1,
+								minorVersion: 0,
+							},
+						]);
 					libraryStorage.getLibrary.mockResolvedValueOnce({
 						machineName: 'libraryA',
 						majorVersion: 1,
@@ -902,13 +950,21 @@ describe('H5PLibraryManagementService', () => {
 						title: 'Library A',
 					});
 					libraryStorage.isInstalled.mockResolvedValueOnce(true);
-					libraryStorage.getInstalledLibraryNames.mockResolvedValueOnce([
-						{
-							machineName: 'libraryA',
-							majorVersion: 1,
-							minorVersion: 0,
-						},
-					]);
+					libraryStorage.getInstalledLibraryNames
+						.mockResolvedValueOnce([
+							{
+								machineName: 'libraryA',
+								majorVersion: 1,
+								minorVersion: 0,
+							},
+						])
+						.mockResolvedValueOnce([
+							{
+								machineName: 'libraryA',
+								majorVersion: 1,
+								minorVersion: 0,
+							},
+						]);
 					libraryStorage.getLibrary.mockResolvedValueOnce({
 						machineName: 'libraryA',
 						majorVersion: 1,
@@ -955,13 +1011,21 @@ describe('H5PLibraryManagementService', () => {
 						title: 'Library A',
 					});
 					libraryStorage.isInstalled.mockResolvedValueOnce(true);
-					libraryStorage.getInstalledLibraryNames.mockResolvedValueOnce([
-						{
-							machineName: 'libraryA',
-							majorVersion: 1,
-							minorVersion: 0,
-						},
-					]);
+					libraryStorage.getInstalledLibraryNames
+						.mockResolvedValueOnce([
+							{
+								machineName: 'libraryA',
+								majorVersion: 1,
+								minorVersion: 0,
+							},
+						])
+						.mockResolvedValueOnce([
+							{
+								machineName: 'libraryA',
+								majorVersion: 1,
+								minorVersion: 0,
+							},
+						]);
 					libraryStorage.getLibrary.mockResolvedValueOnce({
 						machineName: 'libraryA',
 						majorVersion: 1,
@@ -1007,13 +1071,21 @@ describe('H5PLibraryManagementService', () => {
 							title: 'Library A',
 						});
 						libraryStorage.isInstalled.mockResolvedValueOnce(true);
-						libraryStorage.getInstalledLibraryNames.mockResolvedValueOnce([
-							{
-								machineName: 'libraryA',
-								majorVersion: 1,
-								minorVersion: 0,
-							},
-						]);
+						libraryStorage.getInstalledLibraryNames
+							.mockResolvedValueOnce([
+								{
+									machineName: 'libraryA',
+									majorVersion: 1,
+									minorVersion: 0,
+								},
+							])
+							.mockResolvedValueOnce([
+								{
+									machineName: 'libraryA',
+									majorVersion: 1,
+									minorVersion: 0,
+								},
+							]);
 						libraryStorage.getLibrary.mockResolvedValueOnce({
 							machineName: 'libraryA',
 							majorVersion: 1,
@@ -1070,13 +1142,21 @@ describe('H5PLibraryManagementService', () => {
 							title: 'Library A',
 						});
 						libraryStorage.isInstalled.mockResolvedValueOnce(true);
-						libraryStorage.getInstalledLibraryNames.mockResolvedValueOnce([
-							{
-								machineName: 'libraryA',
-								majorVersion: 1,
-								minorVersion: 0,
-							},
-						]);
+						libraryStorage.getInstalledLibraryNames
+							.mockResolvedValueOnce([
+								{
+									machineName: 'libraryA',
+									majorVersion: 1,
+									minorVersion: 0,
+								},
+							])
+							.mockResolvedValueOnce([
+								{
+									machineName: 'libraryA',
+									majorVersion: 1,
+									minorVersion: 0,
+								},
+							]);
 						libraryStorage.getLibrary.mockResolvedValueOnce({
 							machineName: 'libraryA',
 							majorVersion: 1,
@@ -1123,13 +1203,21 @@ describe('H5PLibraryManagementService', () => {
 							title: 'Library A',
 						});
 						libraryStorage.isInstalled.mockResolvedValueOnce(true);
-						libraryStorage.getInstalledLibraryNames.mockResolvedValueOnce([
-							{
-								machineName: 'libraryA',
-								majorVersion: 1,
-								minorVersion: 0,
-							},
-						]);
+						libraryStorage.getInstalledLibraryNames
+							.mockResolvedValueOnce([
+								{
+									machineName: 'libraryA',
+									majorVersion: 1,
+									minorVersion: 0,
+								},
+							])
+							.mockResolvedValueOnce([
+								{
+									machineName: 'libraryA',
+									majorVersion: 1,
+									minorVersion: 0,
+								},
+							]);
 						libraryStorage.getLibrary.mockResolvedValueOnce({
 							machineName: 'libraryA',
 							majorVersion: 1,
@@ -1194,13 +1282,21 @@ describe('H5PLibraryManagementService', () => {
 							title: 'Library A',
 						});
 						libraryStorage.isInstalled.mockResolvedValueOnce(true);
-						libraryStorage.getInstalledLibraryNames.mockResolvedValueOnce([
-							{
-								machineName: 'libraryA',
-								majorVersion: 1,
-								minorVersion: 0,
-							},
-						]);
+						libraryStorage.getInstalledLibraryNames
+							.mockResolvedValueOnce([
+								{
+									machineName: 'libraryA',
+									majorVersion: 1,
+									minorVersion: 0,
+								},
+							])
+							.mockResolvedValueOnce([
+								{
+									machineName: 'libraryA',
+									majorVersion: 1,
+									minorVersion: 0,
+								},
+							]);
 						libraryStorage.getLibrary.mockResolvedValueOnce({
 							machineName: 'libraryA',
 							majorVersion: 1,

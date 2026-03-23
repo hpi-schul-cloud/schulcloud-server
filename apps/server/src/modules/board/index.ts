@@ -21,12 +21,9 @@ export {
 	isDrawingElement,
 	isLinkElement,
 	isRichTextElement,
-	isSubmissionItem,
-	isSubmissionItemContent,
 	// @modules/tool/tool-launch/service/auto-parameter-strategy/auto-context-name.strategy.ts
 	MediaBoard,
 	MediaBoardColors,
-	SubmissionItem,
 	UserWithBoardRoles,
 } from './domain';
 

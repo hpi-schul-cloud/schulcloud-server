@@ -22,7 +22,6 @@ type WithTitle<T> = Extract<T, { title: unknown }>;
 type WithVisibility<T> = Extract<T, { isVisible: unknown }>;
 type WithLayout<T> = Extract<T, { layout: unknown }>;
 type WithHeight<T> = Extract<T, { height: unknown }>;
-type WithCompleted<T> = Extract<T, { completed: unknown }>;
 
 @Injectable()
 export class BoardNodeService {
@@ -66,14 +65,6 @@ export class BoardNodeService {
 
 	public async updateHeight<T extends WithHeight<AnyBoardNode>>(node: T, height: T['height']): Promise<void> {
 		node.height = height;
-		await this.boardNodeRepo.save(node);
-	}
-
-	public async updateCompleted<T extends WithCompleted<AnyBoardNode>>(
-		node: T,
-		completed: T['completed']
-	): Promise<void> {
-		node.completed = completed;
 		await this.boardNodeRepo.save(node);
 	}
 
