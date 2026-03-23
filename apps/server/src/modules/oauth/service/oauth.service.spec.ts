@@ -2,7 +2,7 @@ import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { DefaultEncryptionService, EncryptionService, SymmetricKeyEncryptionService } from '@infra/encryption';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { erwinIdentifierFactoryWithUser, ErwinIdentifierService } from '@modules/erwin-identifier';
+import { ErwinIdentifier, ErwinIdentifierService, ReferencedEntityType } from '@modules/erwin-identifier';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
 import { OauthAdapterService, OAuthTokenDto } from '@modules/oauth-adapter';
@@ -865,10 +865,12 @@ describe('OAuthService', () => {
 					},
 				});
 
-				const erwinIdentifier = erwinIdentifierFactoryWithUser.build({
+				const erwinIdentifier = {
+					id: new ObjectId().toHexString(),
 					erwinId,
+					type: ReferencedEntityType.USER,
 					referencedEntityId: userFromErwin.id,
-				});
+				} as ErwinIdentifier;
 
 				provisioningService.getData.mockResolvedValueOnce(provisioningData);
 				erwinIdentifierService.findByErwinId.mockResolvedValueOnce(erwinIdentifier);
