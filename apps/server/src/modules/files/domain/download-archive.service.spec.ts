@@ -8,6 +8,8 @@ import { DownloadArchiveService } from './download-archive.service';
 import { ArchiveFactory } from './factory';
 import { LegacyFileStorageAdapter } from './legacy-file-storage.adapter';
 
+const flushPromises = (): Promise<void> => new Promise((resolve) => setImmediate(resolve));
+
 describe('DownloadArchiveService', () => {
 	let service: DownloadArchiveService;
 	let legacyFileStorageAdapter: DeepMocked<LegacyFileStorageAdapter>;
@@ -75,9 +77,10 @@ describe('DownloadArchiveService', () => {
 				legacyFileStorageAdapter.downloadFile.mockResolvedValueOnce(mockStream1).mockResolvedValueOnce(mockStream2);
 
 				const mockArchive = createMock<Archiver>();
-				const spy = jest.spyOn(ArchiveFactory, 'create').mockReturnValueOnce(mockArchive);
+				const createEmptySpy = jest.spyOn(ArchiveFactory, 'createEmpty').mockReturnValueOnce(mockArchive);
+				const appendFileSpy = jest.spyOn(ArchiveFactory, 'appendFile').mockReturnValue(undefined);
 
-				return { ownerId, archiveName, file1, file2, spy };
+				return { ownerId, archiveName, file1, file2, createEmptySpy, appendFileSpy };
 			};
 
 			it('should return a file response with archive', async () => {
@@ -90,24 +93,20 @@ describe('DownloadArchiveService', () => {
 			});
 
 			it('should call ArchiveFactory with correct file paths', async () => {
-				const { ownerId, archiveName, file1, file2, spy } = setup();
+				const { ownerId, archiveName, file1, file2, appendFileSpy } = setup();
 
 				await service.downloadFilesAsArchive(ownerId, archiveName);
+				await flushPromises();
 
-				expect(spy).toHaveBeenCalledWith(
-					expect.arrayContaining([
-						expect.objectContaining({ name: file1.name }),
-						expect.objectContaining({ name: file2.name }),
-					]),
-					expect.any(Array),
-					expect.anything()
-				);
+				expect(appendFileSpy).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ name: file1.name }));
+				expect(appendFileSpy).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ name: file2.name }));
 			});
 
 			it('should call downloadFile on the adapter for each file', async () => {
 				const { ownerId, archiveName, file1, file2 } = setup();
 
 				await service.downloadFilesAsArchive(ownerId, archiveName);
+				await flushPromises();
 
 				expect(legacyFileStorageAdapter.downloadFile).toHaveBeenCalledWith(file1.id, file1.name);
 				expect(legacyFileStorageAdapter.downloadFile).toHaveBeenCalledWith(file2.id, file2.name);
@@ -122,7 +121,7 @@ describe('DownloadArchiveService', () => {
 				legacyFileStorageAdapter.getFilesForOwner.mockResolvedValueOnce([]);
 
 				const mockArchive = createMock<Archiver>();
-				jest.spyOn(ArchiveFactory, 'create').mockReturnValueOnce(mockArchive);
+				jest.spyOn(ArchiveFactory, 'createEmpty').mockReturnValueOnce(mockArchive);
 
 				return { ownerId, archiveName };
 			};
@@ -148,7 +147,7 @@ describe('DownloadArchiveService', () => {
 				legacyFileStorageAdapter.getFilesForOwner.mockResolvedValueOnce([file1, file2]);
 
 				const mockArchive = createMock<Archiver>();
-				jest.spyOn(ArchiveFactory, 'create').mockReturnValueOnce(mockArchive);
+				jest.spyOn(ArchiveFactory, 'createEmpty').mockReturnValueOnce(mockArchive);
 
 				return { ownerId, archiveName };
 			};
@@ -166,6 +165,7 @@ describe('DownloadArchiveService', () => {
 				const { ownerId, archiveName } = setup();
 
 				await service.downloadFilesAsArchive(ownerId, archiveName);
+				await flushPromises();
 
 				expect(legacyFileStorageAdapter.downloadFile).not.toHaveBeenCalled();
 			});
@@ -202,9 +202,10 @@ describe('DownloadArchiveService', () => {
 				legacyFileStorageAdapter.downloadFile.mockResolvedValueOnce(mockStream);
 
 				const mockArchive = createMock<Archiver>();
-				jest.spyOn(ArchiveFactory, 'create').mockReturnValue(mockArchive);
+				jest.spyOn(ArchiveFactory, 'createEmpty').mockReturnValue(mockArchive);
+				const appendFileSpy = jest.spyOn(ArchiveFactory, 'appendFile').mockReturnValue(undefined);
 
-				return { ownerId, archiveName, file, rootFolder, subFolder };
+				return { ownerId, archiveName, file, rootFolder, subFolder, appendFileSpy };
 			};
 
 			it('should preserve folder structure in archive', async () => {
@@ -218,16 +219,13 @@ describe('DownloadArchiveService', () => {
 			});
 
 			it('should call ArchiveFactory with correct nested path', async () => {
-				const { ownerId, archiveName, file, rootFolder, subFolder } = setup();
+				const { ownerId, archiveName, file, rootFolder, subFolder, appendFileSpy } = setup();
 
 				await service.downloadFilesAsArchive(ownerId, archiveName);
+				await flushPromises();
 
 				const expectedPath = `${rootFolder.name}/${subFolder.name}/${file.name}`;
-				expect(ArchiveFactory.create).toHaveBeenCalledWith(
-					expect.arrayContaining([expect.objectContaining({ name: expectedPath })]),
-					expect.any(Array),
-					expect.anything()
-				);
+				expect(appendFileSpy).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ name: expectedPath }));
 			});
 		});
 	});

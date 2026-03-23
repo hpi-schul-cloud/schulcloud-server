@@ -13,6 +13,23 @@ export class ArchiveFactory {
 		logger: Logger,
 		archiveType: archiver.Format = 'zip'
 	): archiver.Archiver {
+		const archive = this.createEmpty(files, logger, archiveType);
+
+		for (const file of fileResponse) {
+			this.appendFile(archive, file);
+		}
+
+		// eslint-disable-next-line @typescript-eslint/no-floating-promises
+		archive.finalize();
+
+		return archive;
+	}
+
+	/**
+	 * Creates an archiver with event handlers attached but without any files appended and without finalizing.
+	 * Use {@link appendFile} to add files and call `archive.finalize()` when done.
+	 */
+	public static createEmpty(files: FileDo[], logger: Logger, archiveType: archiver.Format = 'zip'): archiver.Archiver {
 		const archive = archiver(archiveType);
 
 		archive.on('warning', (err) => {
@@ -31,22 +48,20 @@ export class ArchiveFactory {
 			this.logClose(files, logger);
 		});
 
+		return archive;
+	}
+
+	/** Appends a single file stream to an existing archive. */
+	public static appendFile(archive: archiver.Archiver, fileResponse: GetFileResponse): void {
 		const handleStreamError = (err: unknown): void => {
 			archive.emit('error', err as Error);
 		};
 
-		for (const file of fileResponse) {
-			const passthrough = new PassThrough();
-			file.data.on('error', handleStreamError);
-			passthrough.on('error', handleStreamError);
-			file.data.pipe(passthrough);
-			archive.append(passthrough, { name: file.name });
-		}
-
-		// eslint-disable-next-line @typescript-eslint/no-floating-promises
-		archive.finalize();
-
-		return archive;
+		const passthrough = new PassThrough();
+		fileResponse.data.on('error', handleStreamError);
+		passthrough.on('error', handleStreamError);
+		fileResponse.data.pipe(passthrough);
+		archive.append(passthrough, { name: fileResponse.name });
 	}
 
 	private static logWarning(fileRecords: FileDo[], logger: Logger): void {

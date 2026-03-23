@@ -1,7 +1,9 @@
 import { Logger } from '@core/logger';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
+import { Archiver } from 'archiver';
 
+import { LEGACY_FILE_ARCHIVE_CONFIG_TOKEN, LegacyFileArchiveConfig } from '../legacy-file-archive.config';
 import { FileDo } from './do';
 import { ArchiveFactory, FileResponseFactory } from './factory';
 import { LegacyFileStorageAdapter } from './legacy-file-storage.adapter';
@@ -9,7 +11,11 @@ import { GetFileResponse } from './types';
 
 @Injectable()
 export class DownloadArchiveService {
-	constructor(private readonly logger: Logger, private readonly legacyFileStorageAdapter: LegacyFileStorageAdapter) {
+	constructor(
+		private readonly logger: Logger,
+		private readonly legacyFileStorageAdapter: LegacyFileStorageAdapter,
+		@Inject(LEGACY_FILE_ARCHIVE_CONFIG_TOKEN) private readonly config: LegacyFileArchiveConfig
+	) {
 		this.logger.setContext(DownloadArchiveService.name);
 	}
 
@@ -18,9 +24,10 @@ export class DownloadArchiveService {
 		const filesById = this.createFileMap(files);
 		const downloadableFiles = this.filterDownloadableFiles(files);
 
-		const fileResponses = await this.downloadFiles(downloadableFiles, filesById);
-
-		const archive = ArchiveFactory.create(fileResponses, downloadableFiles, this.logger);
+		const archive = ArchiveFactory.createEmpty(downloadableFiles, this.logger);
+		this.populateArchiveAndFinalize(archive, downloadableFiles, filesById).catch((err: unknown) =>
+			archive.emit('error', err as Error)
+		);
 
 		return FileResponseFactory.createFromArchive(archiveName, archive);
 	}
@@ -33,14 +40,24 @@ export class DownloadArchiveService {
 		return files.filter((file) => !file.isDirectory);
 	}
 
-	private async downloadFiles(files: FileDo[], filesById: Map<EntityId, FileDo>): Promise<GetFileResponse[]> {
-		if (files.length === 0) {
-			return [];
+	private async populateArchiveAndFinalize(
+		archive: Archiver,
+		files: FileDo[],
+		filesById: Map<EntityId, FileDo>
+	): Promise<void> {
+		const { concurrencyLimit } = this.config;
+
+		for (let i = 0; i < files.length; i += concurrencyLimit) {
+			const batch = files.slice(i, i + concurrencyLimit);
+			await Promise.all(
+				batch.map(async (file) => {
+					const fileResponse = await this.downloadFileWithPath(file, filesById);
+					ArchiveFactory.appendFile(archive, fileResponse);
+				})
+			);
 		}
 
-		const filePromises = files.map((file) => this.downloadFileWithPath(file, filesById));
-
-		return await Promise.all(filePromises);
+		await archive.finalize();
 	}
 
 	private async downloadFileWithPath(file: FileDo, filesById: Map<EntityId, FileDo>): Promise<GetFileResponse> {

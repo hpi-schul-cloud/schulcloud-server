@@ -1,6 +1,6 @@
 import { ConfigProperty, Configuration } from '@infra/configuration';
-import { StringToBoolean } from '@shared/controller/transformer';
-import { IsBoolean, IsUrl } from 'class-validator';
+import { StringToBoolean, StringToNumber } from '@shared/controller/transformer';
+import { IsBoolean, IsNumber, IsUrl } from 'class-validator';
 
 export const LEGACY_FILE_ARCHIVE_CONFIG_TOKEN = 'LEGACY_FILE_ARCHIVE_CONFIG_TOKEN';
 
@@ -14,4 +14,9 @@ export class LegacyFileArchiveConfig {
 	@ConfigProperty('API_HOST')
 	@IsUrl({ require_tld: false })
 	public legacyBaseUrl!: string;
+
+	@ConfigProperty('LEGACY_FILE_ARCHIVE_DOWNLOAD_CONCURRENCY_LIMIT')
+	@IsNumber()
+	@StringToNumber()
+	public concurrencyLimit = 5;
 }
