@@ -7,6 +7,7 @@ import { fileDomainFactory } from '../testing';
 import { DownloadArchiveService } from './download-archive.service';
 import { ArchiveFactory } from './factory';
 import { LegacyFileStorageAdapter } from './legacy-file-storage.adapter';
+import { LEGACY_FILE_ARCHIVE_CONFIG_TOKEN } from '../legacy-file-archive.config';
 
 describe('DownloadArchiveService', () => {
 	let service: DownloadArchiveService;
@@ -26,6 +27,12 @@ describe('DownloadArchiveService', () => {
 				{
 					provide: LegacyFileStorageAdapter,
 					useValue: createMock<LegacyFileStorageAdapter>(),
+				},
+				{
+					provide: LEGACY_FILE_ARCHIVE_CONFIG_TOKEN,
+					useValue: {
+						concurrencyLimit: 2,
+					},
 				},
 			],
 		}).compile();
