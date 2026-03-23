@@ -21,6 +21,7 @@ export class Migration20260318111956 extends Migration {
 		await this.getCollection('keys').drop();
 		await this.getCollection('ltitools').drop();
 		await this.getCollection('newshistories').drop();
+		await this.getCollection('nexboardcibtebts').drop();
 		await this.getCollection('nexboardcontents').drop();
 		await this.getCollection('problems').drop();
 		await this.getCollection('pseudonyms').drop();
