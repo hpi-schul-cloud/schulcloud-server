@@ -148,7 +148,7 @@ const decorateYears = async (context) => {
 
 const updatesArray = (key) => key === '$push' || key === '$pull';
 const updatesChat = (key, data) => {
-	const chatFeatures = [SCHOOL_FEATURES.ROCKET_CHAT, SCHOOL_FEATURES.VIDEOCONFERENCE];
+	const chatFeatures = [SCHOOL_FEATURES.VIDEOCONFERENCE];
 	return updatesArray(key) && chatFeatures.indexOf(data[key].features) !== -1;
 };
 const updatesTeamCreation = (key, data) => updatesArray(key) && !isTeamCreationByStudentsEnabled(data[key]);
