@@ -455,8 +455,7 @@ describe('RegistrationService', () => {
 				expect(accountService.saveWithValidation).toHaveBeenCalledWith(
 					expect.objectContaining({
 						password: somePassword,
-					}),
-					{ allowUpdate: true }
+					})
 				);
 			});
 		});
