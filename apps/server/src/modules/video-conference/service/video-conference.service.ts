@@ -134,11 +134,11 @@ export class VideoConferenceService {
 			const boardAuthorisedUser = boardDoAuthorizable.users.find((user) => user.userId === authorizableUser.id);
 
 			if (boardAuthorisedUser) {
-				const canRoomEditorManageVideoconference =
-					boardDoAuthorizable.boardContextSettings.canRoomEditorManageVideoconference ?? false;
+				const canEditorsManageVideoconference =
+					boardDoAuthorizable.boardConfiguration.canEditorsManageVideoconference ?? false;
 				const isBoardEditor = boardAuthorisedUser.roles.includes(BoardRoles.EDITOR);
 				const isBoardAdmin = boardAuthorisedUser.roles.includes(BoardRoles.ADMIN);
-				return (canRoomEditorManageVideoconference && isBoardEditor) || isBoardAdmin;
+				return (canEditorsManageVideoconference && isBoardEditor) || isBoardAdmin;
 			}
 
 			return false;
