@@ -1,7 +1,6 @@
 import { Logger } from '@core/logger';
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { LEGACY_FILE_ARCHIVE_CONFIG_TOKEN, LegacyFileArchiveConfig } from '../legacy-file-archive.config';
 
 import { FileDo } from './do';
 import { ArchiveFactory, FileResponseFactory } from './factory';
@@ -10,11 +9,7 @@ import { GetFileResponse } from './types';
 
 @Injectable()
 export class DownloadArchiveService {
-	constructor(
-		private readonly logger: Logger,
-		private readonly legacyFileStorageAdapter: LegacyFileStorageAdapter,
-		@Inject(LEGACY_FILE_ARCHIVE_CONFIG_TOKEN) private readonly config: LegacyFileArchiveConfig
-	) {
+	constructor(private readonly logger: Logger, private readonly legacyFileStorageAdapter: LegacyFileStorageAdapter) {
 		this.logger.setContext(DownloadArchiveService.name);
 	}
 
@@ -43,17 +38,9 @@ export class DownloadArchiveService {
 			return [];
 		}
 
-		const { concurrencyLimit } = this.config;
-		const results: GetFileResponse[] = [];
+		const filePromises = files.map((file) => this.downloadFileWithPath(file, filesById));
 
-		for (let i = 0; i < files.length; i += concurrencyLimit) {
-			const batch = files.slice(i, i + concurrencyLimit);
-			const batchPromises = batch.map((file) => this.downloadFileWithPath(file, filesById));
-			const batchResults = await Promise.all(batchPromises);
-			results.push(...batchResults);
-		}
-
-		return results;
+		return await Promise.all(filePromises);
 	}
 
 	private async downloadFileWithPath(file: FileDo, filesById: Map<EntityId, FileDo>): Promise<GetFileResponse> {
