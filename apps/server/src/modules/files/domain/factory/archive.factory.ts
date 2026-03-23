@@ -1,7 +1,5 @@
 import { Logger } from '@core/logger';
-import { InternalServerErrorException } from '@nestjs/common';
 import archiver from 'archiver';
-import { PassThrough } from 'node:stream';
 import { FileDo } from '../do';
 import { CreateArchiveLoggable } from '../loggable';
 import { GetFileResponse } from '../types';
@@ -36,12 +34,15 @@ export class ArchiveFactory {
 			if (err.code === 'ENOENT') {
 				this.logWarning(files, logger);
 			} else {
-				throw new InternalServerErrorException('Error while creating archive on warning event', { cause: err });
+				logger.warning(new CreateArchiveLoggable('Warning while creating archive', 'createArchive', files, err));
 			}
 		});
 
+		// Do not throw inside this handler — the error propagates naturally through the stream
+		// pipeline to whoever is consuming the archive (e.g. an HTTP response pipe). Throwing
+		// here would escape the event-loop tick with no try/catch and crash the process.
 		archive.on('error', (err) => {
-			throw new InternalServerErrorException('Error while creating archive', { cause: err });
+			logger.warning(new CreateArchiveLoggable('Error while creating archive', 'createArchive', files, err));
 		});
 
 		archive.on('close', () => {
@@ -51,17 +52,13 @@ export class ArchiveFactory {
 		return archive;
 	}
 
-	/** Appends a single file stream to an existing archive. */
+	/** Appends a single file stream to an existing archive. No PassThrough layer — the source
+	 * stream is handed directly to archiver to avoid an extra in-memory buffer. */
 	public static appendFile(archive: archiver.Archiver, fileResponse: GetFileResponse): void {
-		const handleStreamError = (err: unknown): void => {
+		fileResponse.data.on('error', (err: unknown) => {
 			archive.emit('error', err as Error);
-		};
-
-		const passthrough = new PassThrough();
-		fileResponse.data.on('error', handleStreamError);
-		passthrough.on('error', handleStreamError);
-		fileResponse.data.pipe(passthrough);
-		archive.append(passthrough, { name: fileResponse.name });
+		});
+		archive.append(fileResponse.data, { name: fileResponse.name });
 	}
 
 	private static logWarning(fileRecords: FileDo[], logger: Logger): void {

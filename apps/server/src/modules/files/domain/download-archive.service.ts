@@ -1,9 +1,8 @@
 import { Logger } from '@core/logger';
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { Archiver } from 'archiver';
 
-import { LEGACY_FILE_ARCHIVE_CONFIG_TOKEN, LegacyFileArchiveConfig } from '../legacy-file-archive.config';
 import { FileDo } from './do';
 import { ArchiveFactory, FileResponseFactory } from './factory';
 import { LegacyFileStorageAdapter } from './legacy-file-storage.adapter';
@@ -11,11 +10,7 @@ import { GetFileResponse } from './types';
 
 @Injectable()
 export class DownloadArchiveService {
-	constructor(
-		private readonly logger: Logger,
-		private readonly legacyFileStorageAdapter: LegacyFileStorageAdapter,
-		@Inject(LEGACY_FILE_ARCHIVE_CONFIG_TOKEN) private readonly config: LegacyFileArchiveConfig
-	) {
+	constructor(private readonly logger: Logger, private readonly legacyFileStorageAdapter: LegacyFileStorageAdapter) {
 		this.logger.setContext(DownloadArchiveService.name);
 	}
 
@@ -45,19 +40,32 @@ export class DownloadArchiveService {
 		files: FileDo[],
 		filesById: Map<EntityId, FileDo>
 	): Promise<void> {
-		const { concurrencyLimit } = this.config;
-
-		for (let i = 0; i < files.length; i += concurrencyLimit) {
-			const batch = files.slice(i, i + concurrencyLimit);
-			await Promise.all(
-				batch.map(async (file) => {
-					const fileResponse = await this.downloadFileWithPath(file, filesById);
-					ArchiveFactory.appendFile(archive, fileResponse);
-				})
-			);
+		// Files are appended one at a time. We wait for archiver's 'entry' event before
+		// opening the next S3 stream so that at most one stream is ever flowing into the
+		// archiver's queue at a time. Without this, all concurrencyLimit streams would
+		// buffer their full contents in memory while waiting for archiver to process them.
+		for (const file of files) {
+			const fileResponse = await this.downloadFileWithPath(file, filesById);
+			await this.appendAndWaitForEntry(archive, fileResponse);
 		}
 
 		await archive.finalize();
+	}
+
+	private appendAndWaitForEntry(archive: Archiver, fileResponse: GetFileResponse): Promise<void> {
+		return new Promise<void>((resolve, reject) => {
+			const onEntry = (): void => {
+				archive.off('error', onError);
+				resolve();
+			};
+			const onError = (err: Error): void => {
+				archive.off('entry', onEntry);
+				reject(err);
+			};
+			archive.once('entry', onEntry);
+			archive.once('error', onError);
+			ArchiveFactory.appendFile(archive, fileResponse);
+		});
 	}
 
 	private async downloadFileWithPath(file: FileDo, filesById: Map<EntityId, FileDo>): Promise<GetFileResponse> {

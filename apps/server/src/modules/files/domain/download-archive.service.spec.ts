@@ -10,6 +10,21 @@ import { LegacyFileStorageAdapter } from './legacy-file-storage.adapter';
 
 const flushPromises = (): Promise<void> => new Promise((resolve) => setImmediate(resolve));
 
+/**
+ * Creates a mock Archiver whose `once('entry', cb)` fires `cb` asynchronously
+ * so that `appendAndWaitForEntry` can resolve during tests without a real archive.
+ */
+const createMockArchive = (): DeepMocked<Archiver> => {
+	const mock = createMock<Archiver>();
+	mock.once.mockImplementation((event: string | symbol, listener: (...args: unknown[]) => void) => {
+		if (event === 'entry') {
+			void Promise.resolve().then(() => listener());
+		}
+		return mock;
+	});
+	return mock;
+};
+
 describe('DownloadArchiveService', () => {
 	let service: DownloadArchiveService;
 	let legacyFileStorageAdapter: DeepMocked<LegacyFileStorageAdapter>;
@@ -76,7 +91,7 @@ describe('DownloadArchiveService', () => {
 				legacyFileStorageAdapter.getFilesForOwner.mockResolvedValueOnce([file1, file2]);
 				legacyFileStorageAdapter.downloadFile.mockResolvedValueOnce(mockStream1).mockResolvedValueOnce(mockStream2);
 
-				const mockArchive = createMock<Archiver>();
+				const mockArchive = createMockArchive();
 				const createEmptySpy = jest.spyOn(ArchiveFactory, 'createEmpty').mockReturnValueOnce(mockArchive);
 				const appendFileSpy = jest.spyOn(ArchiveFactory, 'appendFile').mockReturnValue(undefined);
 
@@ -120,7 +135,7 @@ describe('DownloadArchiveService', () => {
 
 				legacyFileStorageAdapter.getFilesForOwner.mockResolvedValueOnce([]);
 
-				const mockArchive = createMock<Archiver>();
+				const mockArchive = createMockArchive();
 				jest.spyOn(ArchiveFactory, 'createEmpty').mockReturnValueOnce(mockArchive);
 
 				return { ownerId, archiveName };
@@ -146,7 +161,7 @@ describe('DownloadArchiveService', () => {
 
 				legacyFileStorageAdapter.getFilesForOwner.mockResolvedValueOnce([file1, file2]);
 
-				const mockArchive = createMock<Archiver>();
+				const mockArchive = createMockArchive();
 				jest.spyOn(ArchiveFactory, 'createEmpty').mockReturnValueOnce(mockArchive);
 
 				return { ownerId, archiveName };
@@ -201,7 +216,7 @@ describe('DownloadArchiveService', () => {
 				legacyFileStorageAdapter.getFilesForOwner.mockResolvedValueOnce([rootFolder, subFolder, file]);
 				legacyFileStorageAdapter.downloadFile.mockResolvedValueOnce(mockStream);
 
-				const mockArchive = createMock<Archiver>();
+				const mockArchive = createMockArchive();
 				jest.spyOn(ArchiveFactory, 'createEmpty').mockReturnValue(mockArchive);
 				const appendFileSpy = jest.spyOn(ArchiveFactory, 'appendFile').mockReturnValue(undefined);
 

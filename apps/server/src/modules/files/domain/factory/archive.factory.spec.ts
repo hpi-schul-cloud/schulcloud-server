@@ -45,25 +45,25 @@ describe('ArchiveFactory', () => {
 		expect(logger.warning).toHaveBeenCalledTimes(1);
 	});
 
-	it('should throw an Error on non-ENOENT warning', () => {
+	it('should log warning on non-ENOENT warning', () => {
 		const files = [createFileResponse('file.txt', 'test')];
 		const fileRecords: FileDo[] = [];
 
 		const archive = ArchiveFactory.create(files, fileRecords, logger, 'zip');
 
-		expect(() => {
-			archive.emit('warning', { code: 'OTHER', message: 'Some error' });
-		}).toThrow('Error while creating archive on warning event');
+		archive.emit('warning', { code: 'OTHER', message: 'Some error' });
+
+		expect(logger.warning).toHaveBeenCalledTimes(1);
 	});
 
-	it('should throw on error event', () => {
+	it('should log on error event', () => {
 		const files = [createFileResponse('file.txt', 'test')];
 		const fileRecords: FileDo[] = [];
 
 		const archive = ArchiveFactory.create(files, fileRecords, logger, 'zip');
 
-		expect(() => {
-			archive.emit('error', new Error('archive error'));
-		}).toThrow('Error while creating archive');
+		archive.emit('error', new Error('archive error'));
+
+		expect(logger.warning).toHaveBeenCalledTimes(1);
 	});
 });
