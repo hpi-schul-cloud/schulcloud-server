@@ -170,12 +170,7 @@ export class H5pLibraryPackagerService {
 		}
 
 		for (const dependency of dependencies) {
-			const dependencySuccess = await this.buildLibraryDependency(dependency, library, tag);
-			if (!dependencySuccess) {
-				this.failedLibraries.add(`${library}-${tag}`);
-
-				return false;
-			}
+			await this.buildLibraryDependency(dependency, library, tag);
 		}
 		this.logFinishedBuildingOfLibraryFromGitHub(library, tag);
 
@@ -720,7 +715,7 @@ export class H5pLibraryPackagerService {
 		return results;
 	}
 
-	private async buildLibraryDependency(dependency: ILibraryName, library: string, tag: string): Promise<boolean> {
+	private async buildLibraryDependency(dependency: ILibraryName, library: string, tag: string): Promise<void> {
 		const depName = dependency.machineName;
 		const depMajor = dependency.majorVersion;
 		const depMinor = dependency.minorVersion;
@@ -732,7 +727,7 @@ export class H5pLibraryPackagerService {
 			this.logGithubRepositoryNotFound(dependency.machineName);
 			this.failedLibraries.add(`${depName}-${depMajor}.${depMinor}.x`);
 
-			return false;
+			return;
 		}
 
 		const tags = await this.gitHubClient.fetchAllTags(depRepoName);
@@ -741,7 +736,7 @@ export class H5pLibraryPackagerService {
 			this.logTagNotFound(dependency);
 			this.failedLibraries.add(`${depName}-${depMajor}.${depMinor}.x`);
 
-			return false;
+			return;
 		}
 
 		try {
@@ -772,7 +767,7 @@ export class H5pLibraryPackagerService {
 
 		// Early availability check to avoid unnecessary work
 		if (this.isCurrentVersionAvailable(depName, depTag) || this.isNewerPatchVersionAvailable(depName, depTag)) {
-			return true;
+			return;
 		}
 
 		if (this.isAlreadyFailed(depName, depTag)) {
@@ -785,8 +780,6 @@ export class H5pLibraryPackagerService {
 		} else {
 			this.logBuildingLibraryDependencyFailed(depName, depTag);
 		}
-
-		return success;
 	}
 
 	private logBuildingLibraryDependency(dependency: ILibraryName, library: string, tag: string): void {
