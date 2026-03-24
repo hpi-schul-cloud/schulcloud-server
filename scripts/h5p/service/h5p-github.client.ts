@@ -197,8 +197,8 @@ export class H5pGitHubClient {
 			try {
 				response = await this.fetch(url, options);
 			} catch (error) {
-			const message = error instanceof Error ? error.message : 'Unknown error';
-			console.error(`Failed to fetch tags for ${owner}/${repo}: ${message}`);
+				const message = error instanceof Error ? error.message : 'Unknown error';
+				console.error(`Failed to fetch tags for ${owner}/${repo}: ${message}`);
 
 				return [];
 			}
@@ -245,6 +245,7 @@ export class H5pGitHubClient {
 		} catch (error) {
 			const message = error instanceof Error ? error.message : 'Unknown error';
 			console.error(`Error downloading ${library} at tag ${tag}: ${message}`);
+			throw error instanceof Error ? error : new Error(message);
 		}
 	}
 
