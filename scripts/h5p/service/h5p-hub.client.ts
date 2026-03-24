@@ -5,7 +5,7 @@ import { Readable } from 'stream';
 import { FileSystemHelper } from '../helper/file-system.helper';
 
 export class H5pHubClient {
-	private versionCache: Map<string, IFullLibraryName | undefined> = new Map();
+	private versionCache: Map<string, IFullLibraryName> = new Map();
 
 	public async downloadContentType(library: string, filePath: string): Promise<void> {
 		const url = `https://api.h5p.org/v1/content-types/${library}`;
@@ -56,9 +56,10 @@ export class H5pHubClient {
 		);
 	}
 
-	public async getCurrentVersion(library: string): Promise<IFullLibraryName | undefined> {
-		if (this.versionCache.has(library)) {
-			return this.versionCache.get(library);
+	public async getCurrentVersion(library: string): Promise<IFullLibraryName> {
+		const cached = this.versionCache.get(library);
+		if (cached) {
+			return cached;
 		}
 
 		const tempDir = FileSystemHelper.getTempDir();
@@ -75,15 +76,7 @@ export class H5pHubClient {
 		}
 
 		console.log(`Downloading current version of ${library} from H5P Hub to ${filePath}.`);
-		try {
-			await this.downloadContentType(library, filePath);
-		} catch (error: unknown) {
-			console.error(
-				`Failed to download content type ${library}: ${error instanceof Error ? error.message : String(error)}`
-			);
-			this.versionCache.set(library, undefined);
-			return undefined;
-		}
+		await this.downloadContentType(library, filePath);
 
 		console.log(`Unzipping H5P Hub file ${filePath} to ${h5pHubFolder}.`);
 		const outputDir = FileSystemHelper.buildPath(h5pHubFolder, library);
@@ -96,9 +89,7 @@ export class H5pHubClient {
 		const folders = FileSystemHelper.getAllFolders(outputDir);
 		const folder = folders.find((f) => f.startsWith(library));
 		if (!folder) {
-			console.warn(`No folder found for library ${library} in unzipped H5P Hub content.`);
-			this.versionCache.set(library, undefined);
-			return undefined;
+			throw new Error(`No folder found for library ${library} in unzipped H5P Hub content.`);
 		}
 
 		const libraryFolder = FileSystemHelper.buildPath(outputDir, folder);
@@ -121,6 +112,7 @@ export class H5pHubClient {
 		);
 
 		this.versionCache.set(library, version);
+
 		return version;
 	}
 

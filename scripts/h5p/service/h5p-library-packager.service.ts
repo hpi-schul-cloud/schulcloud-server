@@ -76,9 +76,12 @@ export class H5pLibraryPackagerService {
 		const tags = await this.gitHubClient.fetchAllTags(repoName);
 		let filteredTags = this.getHighestPatchTags(tags);
 
-		const currentH5pHubTag = await this.h5pHubClient.getCurrentVersion(library);
-		if (currentH5pHubTag) {
+		try {
+			const currentH5pHubTag = await this.h5pHubClient.getCurrentVersion(library);
 			filteredTags = this.filterTagsByH5pHubVersion(filteredTags, currentH5pHubTag);
+		} catch (error) {
+			const message = error instanceof Error ? error.message : String(error);
+			console.warn(`Could not get current H5P Hub version for ${library}, building all versions: ${message}`);
 		}
 
 		console.log(`Found ${filteredTags.length} versions of ${library} in ${repoName}: ${filteredTags.join(', ')}`);
@@ -741,8 +744,8 @@ export class H5pLibraryPackagerService {
 			return false;
 		}
 
-		const currentH5pHubTag = await this.h5pHubClient.getCurrentVersion(depName);
-		if (currentH5pHubTag) {
+		try {
+			const currentH5pHubTag = await this.h5pHubClient.getCurrentVersion(depName);
 			const depPatch = Number(depTag.split('.')[2]);
 			if (
 				depMajor === currentH5pHubTag.majorVersion &&
@@ -756,6 +759,9 @@ export class H5pLibraryPackagerService {
 				);
 				depTag = `${depMajor}.${depMinor}.${currentH5pHubTag.patchVersion}`;
 			}
+		} catch (error) {
+			const message = error instanceof Error ? error.message : String(error);
+			console.warn(`Could not get current H5P Hub version for ${depName}, using latest tag: ${message}`);
 		}
 
 		// special handling for "FontAwesome" as version 4.5.6 seems to be broken
