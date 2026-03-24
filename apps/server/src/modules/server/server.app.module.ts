@@ -82,9 +82,8 @@ import { MongoMemoryDatabaseModule } from '@testing/database';
 import { MediaSourceApiModule } from '../media-source/media-source-api.module';
 import { SchoolLicenseApiModule } from '../school-license/school-license-api.module';
 import { ServerMailModule } from '../serverDynamicModuleWrappers/server-mail.module';
-import { ServerConfigController, ServerController, ServerReleaseController, ServerUc } from './api';
-import { ReleaseService } from './domain';
-import { ReleaseRepo } from './repo';
+import { ServerConfigController, ServerController, ServerUc } from './api';
+import { ReleaseApiModule } from './release-api.module';
 import { SERVER_PUBLIC_API_CONFIG_TOKEN, ServerPublicApiConfig } from './server.config';
 import { ENTITIES, TEST_ENTITIES } from './server.entity.imports';
 
@@ -170,10 +169,11 @@ const serverModules = [
 	OAuthApiModule,
 	MoinSchuleClassModule,
 	DeletionPublicApiModule,
+	ReleaseApiModule,
 ];
 
-const providers = [ServerUc, ReleaseService, ReleaseRepo];
-const controllers = [ServerController, ServerConfigController, ServerReleaseController];
+const providers = [ServerUc];
+const controllers = [ServerController, ServerConfigController];
 
 /**
  * Server Module used for production

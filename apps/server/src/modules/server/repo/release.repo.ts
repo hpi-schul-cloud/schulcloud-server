@@ -26,7 +26,9 @@ export class ReleaseRepo {
 			delete (obj as { _id: unknown })._id;
 			const release = plainToInstance(ReleaseClass, obj);
 			const errors = validateSync(release);
-			if (errors.length) throw new Error('Validation or release transformation failed');
+			if (errors.length) {
+				throw new Error('Validation of release document failed');
+			}
 			return release;
 		});
 

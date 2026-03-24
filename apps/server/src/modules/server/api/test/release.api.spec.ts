@@ -4,9 +4,10 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
+import { Release } from '../../domain';
 import { ReleaseListResponse } from '../dto';
 
-describe('Server Release Controller (API)', () => {
+describe('Release Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let testApiClient: TestApiClient;
@@ -42,22 +43,30 @@ describe('Server Release Controller (API)', () => {
 		describe('when the user is authenticated', () => {
 			const setup = async () => {
 				// Insert test data
-				await em.getCollection('releases').insertMany([
+				await em.getCollection<Release>('releases').insertMany([
 					{
-						title: 'Release 1',
-						description: 'Description for release 1',
-						authorName: 'Author 1',
-						authorUrl: 'https://example.com/author1',
+						// @ts-expect-error - MongoDB allows string _id values despite TypeScript types
+						_id: '268233054',
+						name: 'Release 1',
+						body: 'Description for release 1',
+						url: 'https://example.com/releases/tag/release-1',
+						author: 'JohnDoe',
+						authorUrl: 'https://example.com/JohnDoe',
 						createdAt: new Date('2024-01-01T00:00:00Z'),
 						publishedAt: new Date('2024-01-02T00:00:00Z'),
+						zipUrl: 'https://example.com/zipball/268233054',
 					},
 					{
-						title: 'Release 2',
-						description: 'Description for release 2',
-						authorName: 'Author 2',
-						authorUrl: 'https://example.com/author2',
-						createdAt: new Date('2024-02-01T00:00:00Z'),
+						// @ts-expect-error - MongoDB allows string _id values despite TypeScript types
+						_id: '249412456',
+						name: 'Release 2',
+						body: 'Description for release 2',
+						url: 'https://example.com/releases/tag/release-2',
+						author: 'JohnDoe',
+						authorUrl: 'https://example.com/JohnDoe',
+						createdAt: new Date('2024-02-02T00:00:00Z'),
 						publishedAt: new Date('2024-02-02T00:00:00Z'),
+						zipUrl: 'https://example.com/zipball/249412456',
 					},
 				]);
 
@@ -67,7 +76,7 @@ describe('Server Release Controller (API)', () => {
 
 				const loggedInClient = await testApiClient.login(studentAccount);
 
-				return { loggedInClient };
+				return { loggedInClient, user: studentUser, account: studentAccount };
 			};
 
 			it('should return a list of releases', async () => {
@@ -75,6 +84,17 @@ describe('Server Release Controller (API)', () => {
 				const response = await loggedInClient.get();
 				expect(response.status).toBe(HttpStatus.OK);
 				expect((response.body as ReleaseListResponse).data).toHaveLength(2);
+			});
+
+			describe('authorization', () => {
+				it('should return a 403 error if the user does not have the required permission', async () => {
+					const { loggedInClient, user } = await setup();
+					// Revoke the RELEASES_VIEW permission from the user
+					await em.nativeUpdate('roles', { _id: user.roles[0]._id }, { $pull: { permissions: 'RELEASES_VIEW' } });
+
+					const response = await loggedInClient.get();
+					expect(response.status).toBe(HttpStatus.FORBIDDEN);
+				});
 			});
 
 			describe('limit query parameter', () => {
