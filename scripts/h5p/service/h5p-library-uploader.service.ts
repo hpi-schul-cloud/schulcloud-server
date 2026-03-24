@@ -70,9 +70,9 @@ export class H5pLibraryUploaderService {
 	}
 
 	private async checkFolderAlreadyExistsInS3(s3FolderPath: string): Promise<boolean> {
-		const objects = await this.s3ClientHelper.listObjects(s3FolderPath);
-		const folderExistsInS3 = Array.isArray(objects.Contents) && objects.Contents.length > 0;
-		return folderExistsInS3;
+		const objects = await this.s3ClientHelper.listObjects(s3FolderPath, undefined, 1);
+
+		return Array.isArray(objects.Contents) && objects.Contents.length > 0;
 	}
 
 	private async checkIfUpdateIsNeeded(
@@ -98,19 +98,18 @@ export class H5pLibraryUploaderService {
 
 	private async getLibraryJsonFromS3(s3FolderPath: string): Promise<H5PLibrary | undefined> {
 		const s3LibraryJsonKey = `${s3FolderPath}/library.json`;
-		let s3LibraryJson: H5PLibrary | undefined;
 		try {
 			const s3LibraryContent = await this.s3ClientHelper.getFileContent(s3LibraryJsonKey);
-			s3LibraryJson = JSON.parse(s3LibraryContent.toString()) as H5PLibrary;
+
+			return JSON.parse(s3LibraryContent.toString()) as H5PLibrary;
 		} catch (error: unknown) {
 			if (this.isObjectWithAStringCode(error) && error.Code === 'NoSuchKey') {
 				console.error(`No library.json found in S3 at ${s3LibraryJsonKey}.`);
 
 				return undefined;
 			}
+			throw error;
 		}
-
-		return s3LibraryJson;
 	}
 
 	private isObjectWithAStringCode(obj: unknown): obj is { Code: string } {
@@ -208,31 +207,48 @@ export class H5pLibraryUploaderService {
 	}
 
 	private async uploadLibraryToS3(localFolderPath: string, s3FolderPath: string): Promise<void> {
-		try {
-			const uploadedFiles = await this.uploadFolderToS3Recursive(localFolderPath, s3FolderPath);
-			console.log(`Uploaded ${uploadedFiles.length} file(s) to S3: ${uploadedFiles.join(', ')}`);
-		} catch (error) {
-			const message = error instanceof Error ? error.message : 'Unknown error';
-			console.error(`Failed to upload folder ${localFolderPath} to ${s3FolderPath} in S3: ${message}`);
-			throw error;
-		}
+		const uploadedFiles = await this.uploadFolderToS3Recursive(localFolderPath, s3FolderPath);
+		console.log(`Uploaded ${uploadedFiles.length} file(s) to S3: ${uploadedFiles.join(', ')}`);
 	}
 
 	private async uploadFolderToS3Recursive(localDir: string, s3Prefix: string): Promise<string[]> {
+		const filesToUpload: { fullPath: string; s3Key: string }[] = [];
+		this.collectFilesForUpload(localDir, s3Prefix, filesToUpload);
+
+		const batchSize = 10;
 		const allUploadedFiles: string[] = [];
+
+		for (let i = 0; i < filesToUpload.length; i += batchSize) {
+			const batch = filesToUpload.slice(i, i + batchSize);
+			const uploadPromises = batch.map(async ({ fullPath, s3Key }) => {
+				const fileContent = FileSystemHelper.readFile(fullPath);
+				await this.s3ClientHelper.uploadFile(s3Key, fileContent);
+
+				return s3Key;
+			});
+			const uploadedKeys = await Promise.all(uploadPromises);
+			allUploadedFiles.push(...uploadedKeys);
+		}
+
+		return allUploadedFiles;
+	}
+
+	private collectFilesForUpload(
+		localDir: string,
+		s3Prefix: string,
+		filesToUpload: { fullPath: string; s3Key: string }[]
+	): void {
 		const entries = FileSystemHelper.getAllFilesAndFolders(localDir);
 		for (const entry of entries) {
 			const fullPath = FileSystemHelper.buildPath(localDir, entry.name);
 			const s3Key = s3Prefix ? `${s3Prefix}/${entry.name}` : entry.name;
 			if (entry.isDirectory()) {
-				const uploadedFiles = await this.uploadFolderToS3Recursive(fullPath, s3Key);
-				allUploadedFiles.push(...uploadedFiles);
+				this.collectFilesForUpload(fullPath, s3Key, filesToUpload);
 			} else if (entry.isFile()) {
-				const fileContent = FileSystemHelper.readFile(fullPath);
-				await this.s3ClientHelper.uploadFile(s3Key, fileContent);
-				allUploadedFiles.push(s3Key);
+				filesToUpload.push({ fullPath, s3Key });
+			} else {
+				// Skip symlinks and other special file types
 			}
 		}
-		return allUploadedFiles;
 	}
 }
