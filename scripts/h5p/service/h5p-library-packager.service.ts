@@ -90,8 +90,7 @@ export class H5pLibraryPackagerService {
 	private filterTagsByH5pHubVersion(tags: string[], currentH5pHubTag: IFullLibraryName): string[] {
 		const removedTags: string[] = [];
 		const filteredTags = tags.filter((tag) => {
-			const normalizedTag = tag.replace(/^v/, '');
-			const [major, minor, patch] = normalizedTag.split('.').map(Number);
+			const { major, minor, patch } = this.parseTagVersion(tag);
 
 			// Compare major version first
 			if (major < currentH5pHubTag.majorVersion) return true;
@@ -286,8 +285,7 @@ export class H5pLibraryPackagerService {
 
 	// Remove 'v' prefix if present (e.g., "v1.2.3" -> "1.2.3") and parse version numbers
 	private parseTagVersion(tag: string): { major: number; minor: number; patch: number } {
-		const normalizedTag = tag.replace(/^v/, '');
-		const [major, minor, patch] = normalizedTag.split('.').map(Number);
+		const { major, minor, patch } = this.parseTagVersion(tag);
 		const tagVersion = { major, minor, patch: patch || 0 };
 
 		return tagVersion;
@@ -786,16 +784,15 @@ export class H5pLibraryPackagerService {
 
 	private getHighestVersionTags(tags: string[], majorVersion: number, minorVersion: number): string | undefined {
 		const matchingTags = tags.filter((t) => {
-			const normalizedTag = t.replace(/^v/, '');
-			const [maj, min] = normalizedTag.split('.').map(Number);
+			const { major: tagMajor, minor: tagMinor } = this.parseTagVersion(t);
 
-			return maj === majorVersion && min === minorVersion;
+			return tagMajor === majorVersion && tagMinor === minorVersion;
 		});
 		let highestVersionTag;
 		if (matchingTags.length > 0) {
 			highestVersionTag = matchingTags.reduce((a, b) => {
-				const patchA = Number(a.replace(/^v/, '').split('.')[2]);
-				const patchB = Number(b.replace(/^v/, '').split('.')[2]);
+				const { patch: patchA } = this.parseTagVersion(a);
+				const { patch: patchB } = this.parseTagVersion(b);
 				return patchA > patchB ? a : b;
 			});
 		}
@@ -818,14 +815,12 @@ export class H5pLibraryPackagerService {
 	}
 
 	private isNewerPatchVersionAvailable(library: string, tag: string): boolean {
-		const normalizedTag = tag.replace(/^v/, '');
-		const [tagMajor, tagMinor, tagPatch] = normalizedTag.split('.').map(Number);
+		const { major: tagMajor, minor: tagMinor, patch: tagPatch } = this.parseTagVersion(tag);
 		const newerPatchVersionAvailable = this.availableVersions.some((v) => {
 			const [lib, version] = v.split('-');
 			if (lib !== library) return false;
-			const normalizedVersion = version.replace(/^v/, '');
-			const [major, minor, patch] = normalizedVersion.split('.').map(Number);
-			const result = major === tagMajor && minor === tagMinor && patch >= tagPatch;
+			const { major: versionMajor, minor: versionMinor, patch: versionPatch } = this.parseTagVersion(version);
+			const result = versionMajor === tagMajor && versionMinor === tagMinor && versionPatch >= tagPatch;
 			return result;
 		});
 
