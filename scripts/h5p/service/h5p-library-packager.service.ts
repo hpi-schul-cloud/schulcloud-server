@@ -137,9 +137,9 @@ export class H5pLibraryPackagerService {
 		return highestPatchTags;
 	}
 
-	private async buildLibraryVersionAndDependencies(library: string, tag: string, repoName: string): Promise<void> {
-		if (this.isCurrentVersionAvailable(library, tag)) return;
-		if (this.isNewerPatchVersionAvailable(library, tag)) return;
+	private async buildLibraryVersionAndDependencies(library: string, tag: string, repoName: string): Promise<boolean> {
+		if (this.isCurrentVersionAvailable(library, tag)) return true;
+		if (this.isNewerPatchVersionAvailable(library, tag)) return true;
 
 		this.logStartBuildingOfLibraryFromGitHub(library, tag);
 
@@ -151,7 +151,7 @@ export class H5pLibraryPackagerService {
 			this.failedLibraries.add(`${library}-${tag}`);
 			this.logBuildingOfLibraryFromGitHubFailed(library, tag);
 
-			return;
+			return false;
 		}
 		this.availableVersions.push(`${library}-${tag}`);
 
@@ -163,13 +163,15 @@ export class H5pLibraryPackagerService {
 		if (dependencies.length === 0) {
 			this.logNoDependenciesFoundForLibrary(library, tag);
 
-			return;
+			return true;
 		}
 
 		for (const dependency of dependencies) {
 			await this.buildLibraryDependency(dependency, library, tag);
 		}
 		this.logFinishedBuildingOfLibraryFromGitHub(library, tag);
+
+		return true;
 	}
 
 	private logStartBuildingOfLibraryFromGitHub(library: string, tag: string): void {
@@ -754,9 +756,8 @@ export class H5pLibraryPackagerService {
 			return;
 		}
 
-		const failedBefore = this.failedLibraries.size;
-		await this.buildLibraryVersionAndDependencies(depName, depTag, depRepoName);
-		if (this.failedLibraries.size === failedBefore) {
+		const success = await this.buildLibraryVersionAndDependencies(depName, depTag, depRepoName);
+		if (success) {
 			this.logBuildingLibraryDependencySuccess(depName, depTag);
 		} else {
 			this.logBuildingLibraryDependencyFailed(depName, depTag);
