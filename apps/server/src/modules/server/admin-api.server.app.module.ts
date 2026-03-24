@@ -26,8 +26,6 @@ import { GroupApiModule } from '@modules/group/group-api.module';
 import { LearnroomApiModule } from '@modules/learnroom/learnroom-api.module';
 import { NewsModule } from '@modules/news';
 import { PseudonymApiModule } from '@modules/pseudonym/pseudonym-api.module';
-import { RocketChatModule } from '@modules/rocketchat';
-import { RocketChatUserModule } from '@modules/rocketchat-user';
 import { TaskApiModule } from '@modules/task/task-api.module';
 import { TeamApiModule } from '@modules/team/team-api.module';
 import { UserApiModule } from '@modules/user/user-api.module';
@@ -67,8 +65,6 @@ const serverModules = [
 	LearnroomApiModule,
 	NewsModule,
 	PseudonymApiModule,
-	RocketChatModule,
-	RocketChatUserModule,
 	TaskApiModule,
 	TeamApiModule,
 	UserApiModule,

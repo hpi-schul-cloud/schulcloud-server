@@ -16,8 +16,6 @@ export * from './media-board.factory';
 export * from './media-external-tool-element.factory';
 export * from './media-line.factory';
 export * from './rich-text-element.factory';
-export * from './submission-container-element.factory';
-export * from './submission-item.factory';
 export * from './test-socket-api-client';
 export * from './video-conference-element.factory';
 export * from './h5p-element.factory';
