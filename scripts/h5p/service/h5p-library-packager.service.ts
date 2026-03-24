@@ -139,6 +139,7 @@ export class H5pLibraryPackagerService {
 	private async buildLibraryVersionAndDependencies(library: string, tag: string, repoName: string): Promise<boolean> {
 		if (this.isCurrentVersionAvailable(library, tag)) return true;
 		if (this.isNewerPatchVersionAvailable(library, tag)) return true;
+		if (this.isAlreadyFailed(library, tag)) return false;
 
 		this.logStartBuildingOfLibraryFromGitHub(library, tag);
 
@@ -760,6 +761,10 @@ export class H5pLibraryPackagerService {
 			return true;
 		}
 
+		if (this.isAlreadyFailed(depName, depTag)) {
+			return false;
+		}
+
 		const success = await this.buildLibraryVersionAndDependencies(depName, depTag, depRepoName);
 		if (success) {
 			this.logBuildingLibraryDependencySuccess(depName, depTag);
@@ -841,5 +846,19 @@ export class H5pLibraryPackagerService {
 
 	private logNewerPatchVersionAlreadyAvailable(library: string, tag: string): void {
 		console.log(`A newer patch version of ${library}-${tag} is already available.`);
+	}
+
+	private isAlreadyFailed(library: string, tag: string): boolean {
+		const isAlreadyFailed = this.failedLibraries.has(`${library}-${tag}`);
+
+		if (isAlreadyFailed) {
+			this.logLibraryAlreadyFailed(library, tag);
+		}
+
+		return isAlreadyFailed;
+	}
+
+	private logLibraryAlreadyFailed(library: string, tag: string): void {
+		console.log(`${library}-${tag} already failed previously, skipping.`);
 	}
 }
