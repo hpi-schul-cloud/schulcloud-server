@@ -502,7 +502,7 @@ export class H5pLibraryPackagerService {
 				installOptions.env = {}; // Ensure a clean environment
 			}
 
-const installResult = spawnSync(installCommand, installArgs, installOptions);
+			const installResult = spawnSync(installCommand, installArgs, installOptions);
 			if (installResult.status !== 0) {
 				this.logger.error(`npm install/ci failed`);
 				return false;
@@ -519,14 +519,14 @@ const installResult = spawnSync(installCommand, installArgs, installOptions);
 				buildOptions.env = {}; // Ensure a clean environment
 			}
 
-const buildResult = spawnSync(buildCommand, buildArgs, buildOptions);
+			const buildResult = spawnSync(buildCommand, buildArgs, buildOptions);
 			if (buildResult.status !== 0) {
 				this.logger.error(`npm run build failed`);
 				return false;
 			}
 
 			return true;
-} catch (error) {
+		} catch (error) {
 			const message = error instanceof Error ? error.message : 'Unknown error';
 			this.logger.error(`Build error: ${message}`);
 			return false;
@@ -588,7 +588,7 @@ const buildResult = spawnSync(buildCommand, buildArgs, buildOptions);
 				}
 			}
 
-	if (changed) {
+			if (changed) {
 				FileSystemHelper.writeJsonFile(libraryJsonPath, json);
 			}
 		} catch (error) {
@@ -615,7 +615,7 @@ const buildResult = spawnSync(buildCommand, buildArgs, buildOptions);
 		for (const relPath of ignoreFiles) {
 			const absPath = FileSystemHelper.buildPath(folderPath, relPath);
 			if (FileSystemHelper.pathExists(absPath)) {
-try {
+				try {
 					const stat = FileSystemHelper.getStatsOfPath(absPath);
 					if (stat.isDirectory()) {
 						FileSystemHelper.removeFolder(absPath);
