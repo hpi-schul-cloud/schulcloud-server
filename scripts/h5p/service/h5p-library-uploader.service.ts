@@ -221,7 +221,7 @@ export class H5pLibraryUploaderService {
 		for (let i = 0; i < filesToUpload.length; i += batchSize) {
 			const batch = filesToUpload.slice(i, i + batchSize);
 			const uploadPromises = batch.map(async ({ fullPath, s3Key }) => {
-				const fileContent = FileSystemHelper.readFile(fullPath);
+				const fileContent = FileSystemHelper.readFileAsBuffer(fullPath);
 				await this.s3ClientHelper.uploadFile(s3Key, fileContent);
 
 				return s3Key;

@@ -43,14 +43,20 @@ export class FileSystemHelper {
 	}
 
 	public static readJsonFile(filePath: string): unknown {
-		const content = readFileSync(filePath, { encoding: 'utf-8' });
+		const content = this.readFileAsString(filePath);
 		const json = JSON.parse(content) as unknown;
 
 		return json;
 	}
 
-	public static readFile(filePath: string): string {
+	public static readFileAsString(filePath: string): string {
 		const content = readFileSync(filePath, { encoding: 'utf-8' });
+
+		return content;
+	}
+
+	public static readFileAsBuffer(filePath: string): Buffer {
+		const content = readFileSync(filePath);
 
 		return content;
 	}
@@ -99,7 +105,7 @@ export class FileSystemHelper {
 	}
 
 	private static readYamlFile(filePath: string): any {
-		const content = readFileSync(filePath, { encoding: 'utf-8' });
+		const content = this.readFileAsString(filePath);
 		const yamlContent = parse(content);
 
 		return yamlContent;

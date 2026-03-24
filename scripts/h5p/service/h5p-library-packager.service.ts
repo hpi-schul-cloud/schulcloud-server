@@ -615,7 +615,7 @@ export class H5pLibraryPackagerService {
 		if (!FileSystemHelper.pathExists(ignoreFilePath)) {
 			return;
 		}
-		const ignoreContent = FileSystemHelper.readFile(ignoreFilePath);
+		const ignoreContent = FileSystemHelper.readFileAsString(ignoreFilePath);
 		const ignoreFiles = ignoreContent
 			.split(/\r?\n/)
 			.map((line) => line.trim())
