@@ -333,7 +333,10 @@ export class AccountService extends AbstractAccountService {
 		return combinedAccounts;
 	}
 
-	public async validateAccountBeforeSaveOrReject(accountSave: AccountSave): Promise<void> {
+	public async validateAccountBeforeSaveOrReject(
+		accountSave: AccountSave,
+		options: { allowUpdate?: boolean } = { allowUpdate: false }
+	): Promise<void> {
 		// if username is undefined or empty, throw error ✔
 		if (!accountSave.username || !isNotEmpty(accountSave.username)) {
 			throw new ValidationError('username can not be empty');
@@ -351,26 +354,29 @@ export class AccountService extends AbstractAccountService {
 		if (!accountSave.systemId && !isEmail(accountSave.username)) {
 			throw new ValidationError('Username is not an email');
 		}
-		// checkExistence ✔
-		if (accountSave.userId && (await this.findByUserId(accountSave.userId))) {
-			throw new ValidationError('Account already exists');
+
+		if (options?.allowUpdate === false) {
+			// checkExistence ✔
+			if (accountSave.userId && (await this.findByUserId(accountSave.userId))) {
+				throw new ValidationError('Account already exists');
+			}
+			// validateCredentials hook will not be ported ✔
+			// trimPassword hook will be done by class-validator ✔
+			// local.hooks.hashPassword('password'), will be done by account service ✔
+			// checkUnique ✔
+			if (!(await this.isUniqueEmail(accountSave.username))) {
+				throw new ValidationError('Username already exists');
+			}
+			// removePassword hook is not implemented
+			// const noPasswordStrategies = ['ldap', 'moodle', 'iserv'];
+			// if (dto.passwordStrategy && noPasswordStrategies.includes(dto.passwordStrategy)) {
+			// 	dto.password = undefined;
+			// }
 		}
-		// validateCredentials hook will not be ported ✔
-		// trimPassword hook will be done by class-validator ✔
-		// local.hooks.hashPassword('password'), will be done by account service ✔
-		// checkUnique ✔
-		if (!(await this.isUniqueEmail(accountSave.username))) {
-			throw new ValidationError('Username already exists');
-		}
-		// removePassword hook is not implemented
-		// const noPasswordStrategies = ['ldap', 'moodle', 'iserv'];
-		// if (dto.passwordStrategy && noPasswordStrategies.includes(dto.passwordStrategy)) {
-		// 	dto.password = undefined;
-		// }
 	}
 
-	public async saveWithValidation(accountSave: AccountSave): Promise<void> {
-		await this.validateAccountBeforeSaveOrReject(accountSave);
+	public async saveWithValidation(accountSave: AccountSave, options?: { allowUpdate?: boolean }): Promise<void> {
+		await this.validateAccountBeforeSaveOrReject(accountSave, options);
 		await this.save(accountSave);
 	}
 
