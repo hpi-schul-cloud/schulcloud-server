@@ -285,7 +285,8 @@ export class H5pLibraryPackagerService {
 
 	// Remove 'v' prefix if present (e.g., "v1.2.3" -> "1.2.3") and parse version numbers
 	private parseTagVersion(tag: string): { major: number; minor: number; patch: number } {
-		const { major, minor, patch } = this.parseTagVersion(tag);
+		const normalizedTag = tag.replace(/^v/, '');
+		const [major, minor, patch] = normalizedTag.split('.').map(Number);
 		const tagVersion = { major, minor, patch: patch || 0 };
 
 		return tagVersion;
