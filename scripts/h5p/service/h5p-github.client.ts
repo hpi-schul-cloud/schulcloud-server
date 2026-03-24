@@ -26,6 +26,8 @@ export class H5pGitHubClient {
 
 	private libraryRepoMap: LibraryRepoMap = {};
 
+	private tagsCache: Map<string, string[]> = new Map();
+
 	constructor(libraryRepoMap?: LibraryRepoMap) {
 		this.initialize();
 		if (libraryRepoMap) {
@@ -178,6 +180,10 @@ export class H5pGitHubClient {
 	}
 
 	public async fetchAllTags(repoName: string, options: GitHubClientOptions = { maxRetries: 3 }): Promise<string[]> {
+		if (this.tagsCache.has(repoName)) {
+			return this.tagsCache.get(repoName)!;
+		}
+
 		const [owner, repo] = repoName.split('/');
 		const perPage = 100;
 		let page = 1;
@@ -201,7 +207,12 @@ export class H5pGitHubClient {
 			page++;
 		} while (hasMore);
 
+		this.tagsCache.set(repoName, allTags);
 		return allTags;
+	}
+
+	public clearTagsCache(): void {
+		this.tagsCache = new Map();
 	}
 
 	private buildTagsUrl(owner: string, repo: string, page: number, perPage: number): string {
