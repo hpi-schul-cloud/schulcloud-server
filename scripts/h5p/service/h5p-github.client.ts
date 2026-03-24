@@ -256,7 +256,8 @@ export class H5pGitHubClient {
 				break;
 			} catch (error) {
 				attempt++;
-				console.error(`Error getting data from ${url} (Attempt ${attempt}/${options.maxRetries}):`, error);
+				const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+				console.error(`Error getting data from ${url} (Attempt ${attempt}/${options.maxRetries}): ${errorMessage}`);
 				if (attempt === options.maxRetries) {
 					throw new Error(`Failed to get data from ${url} after ${options.maxRetries} attempts.`);
 				}
