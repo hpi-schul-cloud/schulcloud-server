@@ -222,10 +222,14 @@ export class H5pLibraryUploaderService {
 		for (let i = 0; i < filesToUpload.length; i += batchSize) {
 			const batch = filesToUpload.slice(i, i + batchSize);
 			const uploadPromises = batch.map(async ({ fullPath, s3Key }) => {
-				const fileContent = FileSystemHelper.readFileAsBuffer(fullPath);
-				await this.s3ClientHelper.uploadFile(s3Key, fileContent);
-
-				return s3Key;
+				try {
+					const fileContent = FileSystemHelper.readFileAsBuffer(fullPath);
+					await this.s3ClientHelper.uploadFile(s3Key, fileContent);
+					return s3Key;
+				} catch (error) {
+					const message = error instanceof Error ? error.message : String(error);
+					throw new Error(`Failed to upload file to S3. s3Key="${s3Key}", fullPath="${fullPath}": ${message}`);
+				}
 			});
 			const uploadedKeys = await Promise.all(uploadPromises);
 			allUploadedFiles.push(...uploadedKeys);
