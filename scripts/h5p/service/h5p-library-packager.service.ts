@@ -90,7 +90,8 @@ export class H5pLibraryPackagerService {
 	private filterTagsByH5pHubVersion(tags: string[], currentH5pHubTag: IFullLibraryName): string[] {
 		const removedTags: string[] = [];
 		const filteredTags = tags.filter((tag) => {
-			const [major, minor, patch] = tag.split('.').map(Number);
+			const normalizedTag = tag.replace(/^v/, '');
+			const [major, minor, patch] = normalizedTag.split('.').map(Number);
 
 			// Compare major version first
 			if (major < currentH5pHubTag.majorVersion) return true;
@@ -816,11 +817,13 @@ export class H5pLibraryPackagerService {
 	}
 
 	private isNewerPatchVersionAvailable(library: string, tag: string): boolean {
-		const [tagMajor, tagMinor, tagPatch] = tag.split('.').map(Number);
+		const normalizedTag = tag.replace(/^v/, '');
+		const [tagMajor, tagMinor, tagPatch] = normalizedTag.split('.').map(Number);
 		const newerPatchVersionAvailable = this.availableVersions.some((v) => {
 			const [lib, version] = v.split('-');
 			if (lib !== library) return false;
-			const [major, minor, patch] = version.split('.').map(Number);
+			const normalizedVersion = version.replace(/^v/, '');
+			const [major, minor, patch] = normalizedVersion.split('.').map(Number);
 			const result = major === tagMajor && minor === tagMinor && patch >= tagPatch;
 			return result;
 		});
