@@ -166,7 +166,12 @@ export class H5pLibraryPackagerService {
 		}
 
 		for (const dependency of dependencies) {
-			await this.buildLibraryDependency(dependency, library, tag);
+			const dependencySuccess = await this.buildLibraryDependency(dependency, library, tag);
+			if (!dependencySuccess) {
+				this.failedLibraries.add(`${library}-${tag}`);
+
+				return false;
+			}
 		}
 		this.logFinishedBuildingOfLibraryFromGitHub(library, tag);
 
@@ -703,7 +708,7 @@ export class H5pLibraryPackagerService {
 		return results;
 	}
 
-	private async buildLibraryDependency(dependency: ILibraryName, library: string, tag: string): Promise<void> {
+	private async buildLibraryDependency(dependency: ILibraryName, library: string, tag: string): Promise<boolean> {
 		const depName = dependency.machineName;
 		const depMajor = dependency.majorVersion;
 		const depMinor = dependency.minorVersion;
@@ -715,7 +720,7 @@ export class H5pLibraryPackagerService {
 			this.logGithubRepositoryNotFound(dependency.machineName);
 			this.failedLibraries.add(dependency.machineName);
 
-			return;
+			return false;
 		}
 
 		const tags = await this.gitHubClient.fetchAllTags(depRepoName);
@@ -724,7 +729,7 @@ export class H5pLibraryPackagerService {
 			this.logTagNotFound(dependency);
 			this.failedLibraries.add(dependency.machineName);
 
-			return;
+			return false;
 		}
 
 		const currentH5pHubTag = await this.h5pHubClient.getCurrentVersion(depName);
@@ -752,7 +757,7 @@ export class H5pLibraryPackagerService {
 
 		// Early availability check to avoid unnecessary work
 		if (this.isCurrentVersionAvailable(depName, depTag) || this.isNewerPatchVersionAvailable(depName, depTag)) {
-			return;
+			return true;
 		}
 
 		const success = await this.buildLibraryVersionAndDependencies(depName, depTag, depRepoName);
@@ -761,6 +766,8 @@ export class H5pLibraryPackagerService {
 		} else {
 			this.logBuildingLibraryDependencyFailed(depName, depTag);
 		}
+
+		return success;
 	}
 
 	private logBuildingLibraryDependency(dependency: ILibraryName, library: string, tag: string): void {
