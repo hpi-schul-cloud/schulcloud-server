@@ -14,7 +14,7 @@ const args = arg(
 );
 
 if ('--help' in args) {
-	console.log(`Usage: node upload-h5p-libraries.js [opts]
+	console.info(`Usage: node upload-h5p-libraries.js [opts]
 OPTIONS:
     --help (-h)		Show this help.
     --tmp (-t)		The temporary folder to use for building libraries.

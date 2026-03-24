@@ -1,5 +1,6 @@
 import arg from 'arg';
 import { FileSystemHelper } from './helper/file-system.helper';
+import { h5pLogger } from './helper/h5p-logger.helper';
 import { GitHubOwner, GitHubOwnerType, H5pGitHubClient } from './service/h5p-github.client';
 
 const args = arg(
@@ -19,7 +20,7 @@ const args = arg(
 );
 
 if ('--help' in args) {
-	console.log(`Usage: node update-h5p-map.js [opts]
+	console.info(`Usage: node update-h5p-map.js [opts]
 OPTIONS:
 	--help (-h)				Show this help.
 	--organizations (-o)	Organization name(s) on GitHub. Can be comma-separated for multiple organizations.
@@ -74,7 +75,7 @@ const main = async (): Promise<void> => {
 	const libraryRepoMap = await gitHubClient.getLibraryRepoMapFromGitHub(owners);
 
 	FileSystemHelper.writeLibraryRepoMap(target, libraryRepoMap);
-	console.log(`Wrote library repo map to ${target}`);
+	h5pLogger.success(`Wrote library repo map to ${target}`);
 };
 
 main();

@@ -3,9 +3,11 @@ import axios, { AxiosResponse } from 'axios';
 import { createWriteStream } from 'fs';
 import { Readable } from 'stream';
 import { FileSystemHelper } from '../helper/file-system.helper';
+import { h5pLogger } from '../helper/h5p-logger.helper';
 
 export class H5pHubClient {
 	private versionCache: Map<string, IFullLibraryName> = new Map();
+	private readonly logger = h5pLogger;
 
 	public async downloadContentType(library: string, filePath: string): Promise<void> {
 		const url = `https://api.h5p.org/v1/content-types/${library}`;
@@ -21,7 +23,7 @@ export class H5pHubClient {
 				writer.on('error', (err) => reject(err));
 			});
 
-			console.log(`Downloaded content type ${library} to ${filePath}`);
+			this.logger.debug(`Downloaded content type ${library}`);
 		} catch (error: unknown) {
 			if (this.isObjectWithResponseStatus(error) && error.response.status === 404) {
 				throw new Error(`No content type available at H5P Hub for ${library}.`);
@@ -65,23 +67,23 @@ export class H5pHubClient {
 		const tempDir = FileSystemHelper.getTempDir();
 		const h5pHubFolder = FileSystemHelper.buildPath(tempDir, 'h5p-hub');
 		if (!FileSystemHelper.pathExists(h5pHubFolder)) {
-			console.log(`Creating H5P Hub folder at ${h5pHubFolder}.`);
+			this.logger.debug(`Creating H5P Hub folder`);
 			FileSystemHelper.createFolder(h5pHubFolder);
 		}
 
 		const filePath = FileSystemHelper.buildPath(h5pHubFolder, `${library}.h5p`);
 		if (FileSystemHelper.pathExists(filePath)) {
-			console.log(`Removing existing H5P Hub file at ${filePath}.`);
+			this.logger.debug(`Removing existing H5P Hub file`);
 			FileSystemHelper.removeFile(filePath);
 		}
 
-		console.log(`Downloading current version of ${library} from H5P Hub to ${filePath}.`);
+		this.logger.debug(`Downloading ${library} from H5P Hub...`);
 		await this.downloadContentType(library, filePath);
 
-		console.log(`Unzipping H5P Hub file ${filePath} to ${h5pHubFolder}.`);
+		this.logger.debug(`Unzipping H5P Hub file for ${library}`);
 		const outputDir = FileSystemHelper.buildPath(h5pHubFolder, library);
 		if (FileSystemHelper.pathExists(outputDir)) {
-			console.log(`Removing existing H5P Hub folder at ${outputDir}.`);
+			this.logger.debug(`Removing existing H5P Hub folder`);
 			FileSystemHelper.removeFolder(outputDir);
 		}
 		FileSystemHelper.unzipFile(filePath, outputDir);
@@ -107,9 +109,7 @@ export class H5pHubClient {
 			patchVersion: json.patchVersion,
 		};
 
-		console.log(
-			`Found current version of library from H5P Hub: ${version.machineName}-${version.majorVersion}.${version.minorVersion}.${version.patchVersion}`
-		);
+		this.logger.debug(`Found Hub version: ${version.majorVersion}.${version.minorVersion}.${version.patchVersion}`);
 
 		this.versionCache.set(library, version);
 

@@ -1,12 +1,15 @@
 import { IInstalledLibrary } from '@lumieducation/h5p-server/build/src/types';
 import { FileSystemHelper } from '../helper/file-system.helper';
+import { h5pLogger } from '../helper/h5p-logger.helper';
 
 export class H5pConsistencyChecker {
+	private readonly logger = h5pLogger;
+
 	public checkConsistency(folderPath: string): boolean {
 		try {
 			const libraryJsonPath = FileSystemHelper.getLibraryJsonPath(folderPath);
 			if (!FileSystemHelper.pathExists(libraryJsonPath)) {
-				this.logLibraryJsonNotFound(folderPath);
+				this.logger.error(`library.json not found in ${folderPath}`);
 				return false;
 			}
 
@@ -22,11 +25,11 @@ export class H5pConsistencyChecker {
 				return false;
 			}
 
-			this.logConsistencyCheckPassed(folderPath);
+			this.logger.debug('Consistency check passed');
 			return true;
 		} catch (error) {
 			const message = error instanceof Error ? error.message : 'Unknown error';
-			console.error(`Error during consistency check for ${folderPath}: ${message}`);
+			this.logger.error(`Consistency check error: ${message}`);
 			return false;
 		}
 	}
@@ -36,7 +39,7 @@ export class H5pConsistencyChecker {
 		const missingFiles = this.getMissingFiles(folderPath, jsPaths);
 
 		if (missingFiles.length > 0) {
-			this.logMissingFiles(folderPath, 'JS', missingFiles);
+			this.logger.error(`Missing JS files: ${missingFiles.join(', ')}`);
 			return true;
 		}
 
@@ -48,7 +51,7 @@ export class H5pConsistencyChecker {
 		const missingFiles = this.getMissingFiles(folderPath, cssPaths);
 
 		if (missingFiles.length > 0) {
-			this.logMissingFiles(folderPath, 'CSS', missingFiles);
+			this.logger.error(`Missing CSS files: ${missingFiles.join(', ')}`);
 			return true;
 		}
 
@@ -70,17 +73,5 @@ export class H5pConsistencyChecker {
 		});
 
 		return missingFiles;
-	}
-
-	private logLibraryJsonNotFound(folderPath: string): void {
-		console.error(`library.json not found in ${folderPath}`);
-	}
-
-	private logMissingFiles(folderPath: string, fileType: string, missingFiles: string[]): void {
-		console.error(`Missing ${fileType} files in ${folderPath}: ${missingFiles.join(', ')}`);
-	}
-
-	private logConsistencyCheckPassed(folderPath: string): void {
-		console.log(`Consistency check passed for ${folderPath}`);
 	}
 }

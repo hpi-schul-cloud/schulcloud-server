@@ -1,5 +1,6 @@
 import arg from 'arg';
 import { FileSystemHelper } from './helper/file-system.helper';
+import { LogLevel } from './helper/h5p-logger.helper';
 import { H5pLibraryPackagerService } from './service/h5p-library-packager.service';
 
 const args = arg(
@@ -12,6 +13,8 @@ const args = arg(
 		'-m': '--map',
 		'--tmp': String,
 		'-t': '--tmp',
+		'--verbose': Boolean,
+		'-v': '--verbose',
 	},
 	{
 		argv: process.argv.slice(2),
@@ -19,12 +22,13 @@ const args = arg(
 );
 
 if ('--help' in args) {
-	console.log(`Usage: node build-h5p-libraries.js [opts]
+	console.info(`Usage: node build-h5p-libraries.js [opts]
 OPTIONS:
     --help (-h)		Show this help.
     --input (-i)	The file containing the list of libraries to be installed.
     --map (-m)		The file containing the library to repository map.
     --tmp (-t)		The temporary folder to use for building libraries.
+    --verbose (-v)	Enable verbose/debug output.
 `);
 	process.exit(0);
 }
@@ -33,12 +37,14 @@ interface Params {
 	input?: string;
 	map?: string;
 	tmp?: string;
+	verbose?: boolean;
 }
 
 const params: Params = {
 	input: args._[0] || args['--input'],
 	map: args._[1] || args['--map'],
 	tmp: args._[2] || args['--tmp'],
+	verbose: args['--verbose'],
 };
 
 const main = async (): Promise<void> => {
@@ -50,6 +56,9 @@ const main = async (): Promise<void> => {
 	const libraryWishList = FileSystemHelper.readLibraryWishList(librariesFile);
 
 	const h5pLibraryPackagerService = new H5pLibraryPackagerService(libraryRepoMap, tempFolderPath);
+	if (params.verbose) {
+		h5pLibraryPackagerService.setLogLevel(LogLevel.VERBOSE);
+	}
 	await h5pLibraryPackagerService.buildH5pLibrariesFromGitHubAsBulk(libraryWishList);
 };
 

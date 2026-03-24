@@ -2,7 +2,7 @@ import { ILibraryName, LibraryName } from '@lumieducation/h5p-server';
 import { IFullLibraryName } from '@lumieducation/h5p-server/build/src/types';
 import { spawnSync, SpawnSyncOptions } from 'child_process';
 import { FileSystemHelper } from '../helper/file-system.helper';
-import { H5pLogger } from '../helper/h5p-logger.helper';
+import { h5pLogger, LogLevel } from '../helper/h5p-logger.helper';
 import { H5PLibrary } from '../interface/h5p-library';
 import { H5pConsistencyChecker } from './h5p-consistency-checker.service';
 import { H5pGitHubClient, LibraryRepoMap } from './h5p-github.client';
@@ -13,7 +13,7 @@ export class H5pLibraryPackagerService {
 	gitHubClient: H5pGitHubClient;
 	h5pHubClient: H5pHubClient;
 	consistencyChecker: H5pConsistencyChecker;
-	logger: H5pLogger;
+	private readonly logger = h5pLogger;
 	availableVersions: string[] = [];
 	installedLibraries: Set<string> = new Set();
 	failedLibraries: Set<string> = new Set();
@@ -33,7 +33,10 @@ export class H5pLibraryPackagerService {
 		this.gitHubClient = new H5pGitHubClient(libraryRepoMap);
 		this.h5pHubClient = new H5pHubClient();
 		this.consistencyChecker = new H5pConsistencyChecker();
-		this.logger = new H5pLogger();
+	}
+
+	public setLogLevel(level: LogLevel): void {
+		this.logger.setLogLevel(level);
 	}
 
 	public async buildH5pLibrariesFromGitHubAsBulk(libraries: string[]): Promise<void> {

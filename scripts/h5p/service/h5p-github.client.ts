@@ -1,6 +1,7 @@
 import axios, { AxiosResponse } from 'axios';
 import { createWriteStream } from 'fs';
 import { Readable } from 'stream';
+import { h5pLogger } from '../helper/h5p-logger.helper';
 import { GitHubContentTreeResponse } from '../interface/github-content-tree.response';
 import { GitHubRepository, GitHubRepositoryResponse } from '../interface/github-repository.response';
 import { GitHubTagResponse } from '../interface/github-tag.response';
@@ -22,6 +23,8 @@ export interface GitHubClientOptions {
 export type LibraryRepoMap = Record<string, string>;
 
 export class H5pGitHubClient {
+	private readonly logger = h5pLogger;
+
 	private token!: string;
 
 	private libraryRepoMap: LibraryRepoMap = {};
@@ -49,12 +52,14 @@ export class H5pGitHubClient {
 		for (const owner of owners) {
 			const repos = await this.fetchRepositories(owner.type, owner.name);
 			const ownerType = owner.type === GitHubOwnerType.Organization ? 'organization' : 'user';
-			console.log(`Found ${repos.length} repositories in the ${owner.name} ${ownerType}.`);
+			this.logger.debug(`Found ${repos.length} repositories in the ${owner.name} ${ownerType}.`);
 			const repoMap = await this.buildLibraryRepoMapFromRepos(owner.name, repos);
-			console.log(`Built libraryRepoMap for ${owner.name} ${ownerType} with ${Object.keys(repoMap).length} entries.`);
+			this.logger.debug(
+				`Built libraryRepoMap for ${owner.name} ${ownerType} with ${Object.keys(repoMap).length} entries.`
+			);
 			libraryRepoMap = { ...libraryRepoMap, ...repoMap };
 		}
-		console.log(`Built libraryRepoMap for all owners with ${Object.keys(libraryRepoMap).length} entries.`);
+		this.logger.debug(`Built libraryRepoMap for all owners with ${Object.keys(libraryRepoMap).length} entries.`);
 
 		this.libraryRepoMap = libraryRepoMap;
 
@@ -97,7 +102,8 @@ export class H5pGitHubClient {
 			const response: AxiosResponse<GitHubRepositoryResponse> = await axios.get(url, { headers });
 			result = response.data;
 		} catch (error) {
-			console.error(`Error fetching repositories for ${owner} on page ${page}:`, error);
+			const message = error instanceof Error ? error.message : 'Unknown error';
+			this.logger.error(`Error fetching repositories for ${owner} on page ${page}: ${message}`);
 		}
 
 		return result;
@@ -125,7 +131,7 @@ export class H5pGitHubClient {
 
 			if (libraryJson.machineName) {
 				if (libraryRepoMap[libraryJson.machineName]) {
-					console.error(
+					this.logger.debug(
 						`Duplicate machineName "${libraryJson.machineName}" found in repository ${repo.name}. Skipping this entry.`
 					);
 					continue;
@@ -148,10 +154,10 @@ export class H5pGitHubClient {
 			return await axios.get(url, { headers });
 		} catch (error: unknown) {
 			if (this.isObjectWithResponseStatus(error) && error.response.status === 404) {
-				console.error(`library.json does not exist in repository ${repo.name}.`);
+				this.logger.debug(`library.json does not exist in repository ${repo.name}.`);
 			} else {
 				const message = error instanceof Error ? error.message : 'Unknown error';
-				console.error(`Error fetching library.json from repository ${repo.name}: ${message}`);
+				this.logger.error(`Error fetching library.json from repository ${repo.name}: ${message}`);
 			}
 
 			return undefined;
@@ -171,7 +177,7 @@ export class H5pGitHubClient {
 
 	private checkContentOfLibraryJson(data: GitHubContentTreeResponse): boolean {
 		if (!data || !data.content || typeof data.content !== 'string') {
-			console.error('library.json content is missing or not a string.');
+			this.logger.debug('library.json content is missing or not a string.');
 
 			return false;
 		}
@@ -198,7 +204,7 @@ export class H5pGitHubClient {
 				response = await this.fetch(url, options);
 			} catch (error) {
 				const message = error instanceof Error ? error.message : 'Unknown error';
-				console.error(`Failed to fetch tags for ${owner}/${repo}: ${message}`);
+				this.logger.error(`Failed to fetch tags for ${owner}/${repo}: ${message}`);
 
 				return [];
 			}
@@ -241,10 +247,10 @@ export class H5pGitHubClient {
 				writer.on('error', (err) => reject(err));
 			});
 
-			console.log(`Downloaded ${tag} of ${library} to ${filePath}`);
+			this.logger.debug(`Downloaded ${tag} of ${library}`);
 		} catch (error) {
 			const message = error instanceof Error ? error.message : 'Unknown error';
-			console.error(`Error downloading ${library} at tag ${tag}: ${message}`);
+			this.logger.error(`Error downloading ${library} at tag ${tag}: ${message}`);
 			throw error instanceof Error ? error : new Error(message);
 		}
 	}
@@ -261,7 +267,7 @@ export class H5pGitHubClient {
 			} catch (error) {
 				attempt++;
 				const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-				console.error(`Error getting data from ${url} (Attempt ${attempt}/${options.maxRetries}): ${errorMessage}`);
+				this.logger.error(`Error getting data from ${url} (Attempt ${attempt}/${options.maxRetries}): ${errorMessage}`);
 				if (attempt === options.maxRetries) {
 					throw new Error(`Failed to get data from ${url} after ${options.maxRetries} attempts.`);
 				}

@@ -1,5 +1,17 @@
 /* eslint-disable no-console */
 /**
+ * Log levels for controlling output verbosity
+ */
+export enum LogLevel {
+	/** Only errors and essential output */
+	QUIET = 0,
+	/** Normal output (default) */
+	NORMAL = 1,
+	/** Verbose output including debug messages */
+	VERBOSE = 2,
+}
+
+/**
  * Log symbols for consistent visual feedback
  */
 export const LogSymbol = {
@@ -18,6 +30,21 @@ export const LogSymbol = {
 export class H5pLogger {
 	private indentLevel = 0;
 	private readonly indentSize = 2;
+	private logLevel: LogLevel = LogLevel.NORMAL;
+
+	/**
+	 * Set the log level
+	 */
+	public setLogLevel(level: LogLevel): void {
+		this.logLevel = level;
+	}
+
+	/**
+	 * Get the current log level
+	 */
+	public getLogLevel(): LogLevel {
+		return this.logLevel;
+	}
 
 	/**
 	 * Increase indentation level for nested operations
@@ -53,7 +80,18 @@ export class H5pLogger {
 	 * Log a message with current indentation
 	 */
 	public log(message: string): void {
-		console.log(`${this.getIndent()}${message}`);
+		if (this.logLevel >= LogLevel.NORMAL) {
+			console.log(`${this.getIndent()}${message}`);
+		}
+	}
+
+	/**
+	 * Log a debug message (only shown in verbose mode)
+	 */
+	public debug(message: string): void {
+		if (this.logLevel >= LogLevel.VERBOSE) {
+			console.log(`${this.getIndent()}${message}`);
+		}
 	}
 
 	/**
