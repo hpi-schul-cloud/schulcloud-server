@@ -201,10 +201,10 @@ export class H5pLibraryPackagerService {
 	}
 
 	private async buildLibraryVersionAndDependencies(library: string, tag: string, repoName: string): Promise<void> {
-		this.logStartBuildingOfLibraryFromGitHub(library, tag);
-
 		if (this.isCurrentVersionAvailable(library, tag)) return;
 		if (this.isNewerPatchVersionAvailable(library, tag)) return;
+
+		this.logStartBuildingOfLibraryFromGitHub(library, tag);
 
 		const validLibrary = await this.buildLibraryTagFromGitHub(library, tag, repoName);
 		if (validLibrary) {
