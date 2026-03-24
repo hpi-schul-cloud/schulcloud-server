@@ -209,7 +209,15 @@ export class H5pLibraryPackagerService {
 		// Dann wäre es möglich ein pre and post hook zu erstellen.
 		// Wenn man dann noch FileSystemHelper als Klasse instanziiert über ein factory könnte man dort noch mehr implizites Wissen weg kapseln.
 		const { filePath, folderPath, tempFolder } = FileSystemHelper.createTempFolder(this.tempFolderPath, library, tag);
-		await this.gitHubClient.downloadTag(repo, tag, filePath);
+
+		try {
+			await this.gitHubClient.downloadTag(repo, tag, filePath);
+		} catch (error) {
+			const message = error instanceof Error ? error.message : 'Unknown error';
+			console.error(`Failed to download tag ${tag} from ${repo} for ${library}: ${message}`);
+
+			return false;
+		}
 
 		if (FileSystemHelper.pathExists(folderPath)) {
 			FileSystemHelper.removeFolder(folderPath);
