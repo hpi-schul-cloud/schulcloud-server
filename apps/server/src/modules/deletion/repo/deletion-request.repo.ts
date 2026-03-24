@@ -1,4 +1,4 @@
-import { EntityManager, EntityName } from '@mikro-orm/mongodb';
+import { EntityManager, EntityName, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
@@ -127,7 +127,7 @@ export class DeletionRequestRepo {
 		batchId: EntityId
 	): Promise<{ status: StatusModel; targetRefIds: EntityId[] }[]> {
 		const pipeline = [
-			{ $match: { batchId } },
+			{ $match: { batchId: new ObjectId(batchId) } },
 			{
 				$group: {
 					_id: '$status',
