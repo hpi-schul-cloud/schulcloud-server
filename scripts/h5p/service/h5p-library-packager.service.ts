@@ -212,7 +212,10 @@ export class H5pLibraryPackagerService {
 		// TODO: gefühlt gehört das in den try catch rein, es sind dafür aber viel zu viele try catch instanzen.
 		// Genauso wie die downloadGitHubTag
 		// Wenn das umgesetzt wäre könnte das return result in das try catch rein
-		this.executeAdditionalBuildStepsIfRequired(folderPath, library, tag);
+		const buildSuccess = this.executeAdditionalBuildStepsIfRequired(folderPath, library, tag);
+		if (!buildSuccess) {
+			return false;
+		}
 
 		this.cleanUpUnwantedFilesinLibraryFolder(folderPath);
 
@@ -221,7 +224,7 @@ export class H5pLibraryPackagerService {
 		return validated;
 	}
 
-	private executeAdditionalBuildStepsIfRequired(folderPath: string, library: string, tag: string): void {
+	private executeAdditionalBuildStepsIfRequired(folderPath: string, library: string, tag: string): boolean {
 		this.checkAndCorrectLibraryJsonVersion(folderPath, tag);
 
 		if (this.isPrependNodeOptionsRequired(library, tag)) {
@@ -232,12 +235,23 @@ export class H5pLibraryPackagerService {
 			const legacyPeerDepsRequired = this.isLegacyPeerDepsRequired(library, tag);
 			const oldNodeVersion = this.isOldNodeVersionRequired(library, tag);
 			const installRequired = this.isInstallRequiredInsteadOfCi(library, tag);
-			this.executeBuildSteps(folderPath, library, legacyPeerDepsRequired, oldNodeVersion, installRequired);
+			const buildSuccess = this.executeBuildSteps(
+				folderPath,
+				library,
+				legacyPeerDepsRequired,
+				oldNodeVersion,
+				installRequired
+			);
+			if (!buildSuccess) {
+				return false;
+			}
 		}
 
 		if (this.isLibraryPathCorrectionRequired(library, tag)) {
 			this.checkAndCorrectLibraryJsonPaths(folderPath);
 		}
+
+		return true;
 	}
 
 	private checkAndCorrectLibraryJsonVersion(folderPath: string, tag: string): boolean {
@@ -463,7 +477,7 @@ export class H5pLibraryPackagerService {
 		legacyPeerDepsRequired: boolean = false,
 		oldNodeVersion: string | undefined = undefined,
 		installRequired: boolean = false
-	): void {
+	): boolean {
 		try {
 			this.logRunningNpmCiAndBuild(folderPath);
 
@@ -486,7 +500,8 @@ export class H5pLibraryPackagerService {
 			console.log('Execute install command:', installCommand, installArgs, installOptions);
 			const installResult = spawnSync(installCommand, installArgs, installOptions);
 			if (installResult.status !== 0) {
-				throw new Error('npm install/ci failed');
+				console.error(`npm install/ci failed for library ${library} in ${folderPath}`);
+				return false;
 			}
 
 			let buildCommand = 'npm';
@@ -503,10 +518,14 @@ export class H5pLibraryPackagerService {
 			console.log('Execute build command:', buildCommand, buildArgs, buildOptions);
 			const buildResult = spawnSync(buildCommand, buildArgs, buildOptions);
 			if (buildResult.status !== 0) {
-				throw new Error('npm run build failed');
+				console.error(`npm run build failed for library ${library} in ${folderPath}`);
+				return false;
 			}
+
+			return true;
 		} catch (error) {
 			console.error(`Unknown error while trying to build library ${library} in ${folderPath}:`, error);
+			return false;
 		}
 	}
 
