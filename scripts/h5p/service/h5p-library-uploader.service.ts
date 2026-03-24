@@ -69,8 +69,12 @@ export class H5pLibraryUploaderService {
 		return s3FolderPath;
 	}
 
+	private ensureTrailingSlash(s3FolderPath: string): string {
+		return s3FolderPath.endsWith('/') ? s3FolderPath : `${s3FolderPath}/`;
+	}
+
 	private async checkFolderAlreadyExistsInS3(s3FolderPath: string): Promise<boolean> {
-		const prefix = s3FolderPath.endsWith('/') ? s3FolderPath : `${s3FolderPath}/`;
+		const prefix = this.ensureTrailingSlash(s3FolderPath);
 		const objects = await this.s3ClientHelper.listObjects(prefix, undefined, 1);
 
 		return Array.isArray(objects.Contents) && objects.Contents.length > 0;
@@ -186,8 +190,9 @@ export class H5pLibraryUploaderService {
 
 	private async deleteFolderFromS3(s3FolderPath: string): Promise<void> {
 		try {
-			const deletedFiles = await this.s3ClientHelper.deleteFolder(s3FolderPath);
-			console.log(`Deleted ${deletedFiles.length} file(s) from S3 folder ${s3FolderPath}: ${deletedFiles.join(', ')}`);
+			const prefix = this.ensureTrailingSlash(s3FolderPath);
+			const deletedFiles = await this.s3ClientHelper.deleteFolder(prefix);
+			console.log(`Deleted ${deletedFiles.length} file(s) from S3 folder ${prefix}: ${deletedFiles.join(', ')}`);
 		} catch (error) {
 			const message = error instanceof Error ? error.message : 'Unknown error';
 			console.error(`Failed to delete folder ${s3FolderPath} from S3: ${message}`);
