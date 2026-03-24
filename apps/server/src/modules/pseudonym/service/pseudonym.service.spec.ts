@@ -188,12 +188,7 @@ describe('PseudonymService', () => {
 
 				await service.findOrCreatePseudonym(user, externalTool);
 
-				expect(externalToolPseudonymRepo.createOrUpdate).toHaveBeenCalledWith(
-					expect.objectContaining({
-						userId: user.id,
-						toolId: externalTool.id,
-					})
-				);
+				expect(externalToolPseudonymRepo.createOrUpdate).toHaveBeenCalledWith(user.id, externalTool.id);
 			});
 
 			it('should return the pseudonym', async () => {
