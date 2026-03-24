@@ -28,7 +28,6 @@ const roster = require('./roster');
 const ldap = require('./ldap');
 const ldapConfig = require('./ldap-config');
 const sync = require('./sync');
-const rocketChat = require('./rocketChat');
 const me = require('./me');
 const help = require('./help');
 const database = require('../utils/database');
@@ -73,7 +72,6 @@ module.exports = function initializeServices() {
 	app.configure(sync);
 	app.configure(me);
 	app.configure(help);
-	app.configure(rocketChat);
 	app.configure(oauth2);
 	app.configure(roster);
 	app.configure(etherpad);

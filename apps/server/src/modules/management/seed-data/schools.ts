@@ -99,7 +99,6 @@ const seedSchools: SeedSchoolProperties[] = [
 			},
 		},
 		features: [
-			SchoolFeature.ROCKET_CHAT,
 			SchoolFeature.LDAP_UNIVENTION_MIGRATION,
 			SchoolFeature.VIDEOCONFERENCE,
 			SchoolFeature.OAUTH_PROVISIONING_ENABLED,
@@ -122,7 +121,7 @@ const seedSchools: SeedSchoolProperties[] = [
 		fileStorageType: FileStorageType.AWS_S3,
 		currentYear: SeedSchoolYearEnum['2022/23'],
 		purpose: SchoolPurpose.EXTERNAL_PERSON_SCHOOL,
-		features: [SchoolFeature.ROCKET_CHAT, SchoolFeature.VIDEOCONFERENCE, SchoolFeature.OAUTH_PROVISIONING_ENABLED],
+		features: [SchoolFeature.VIDEOCONFERENCE, SchoolFeature.OAUTH_PROVISIONING_ENABLED],
 	},
 	{
 		id: '5fa2c5ccb229544f2c69666c',
@@ -141,7 +140,7 @@ const seedSchools: SeedSchoolProperties[] = [
 		currentYear: SeedSchoolYearEnum['2022/23'],
 		purpose: SchoolPurpose.DEMO,
 		permissions: {},
-		features: [SchoolFeature.ROCKET_CHAT, SchoolFeature.STUDENTVISIBILITY, SchoolFeature.OAUTH_PROVISIONING_ENABLED],
+		features: [SchoolFeature.STUDENTVISIBILITY, SchoolFeature.OAUTH_PROVISIONING_ENABLED],
 		documentBaseDirType: '',
 		experimental: false,
 		pilot: false,
@@ -165,8 +164,15 @@ const seedSchools: SeedSchoolProperties[] = [
 		fileStorageType: FileStorageType.AWS_S3,
 		currentYear: SeedSchoolYearEnum['2022/23'],
 		purpose: SchoolPurpose.DEMO,
+<<<<<<< HEAD
 		permissions: {},
 		features: [SchoolFeature.ROCKET_CHAT, SchoolFeature.OAUTH_PROVISIONING_ENABLED],
+=======
+		permissions: {
+			student: {},
+		},
+		features: [SchoolFeature.OAUTH_PROVISIONING_ENABLED],
+>>>>>>> main
 		documentBaseDirType: '',
 		experimental: false,
 		pilot: false,
@@ -185,8 +191,15 @@ const seedSchools: SeedSchoolProperties[] = [
 		fileStorageType: FileStorageType.AWS_S3,
 		currentYear: SeedSchoolYearEnum['2022/23'],
 		purpose: SchoolPurpose.DEMO,
+<<<<<<< HEAD
 		permissions: {},
 		features: [SchoolFeature.ROCKET_CHAT, SchoolFeature.STUDENTVISIBILITY, SchoolFeature.OAUTH_PROVISIONING_ENABLED],
+=======
+		permissions: {
+			student: {},
+		},
+		features: [SchoolFeature.STUDENTVISIBILITY, SchoolFeature.OAUTH_PROVISIONING_ENABLED],
+>>>>>>> main
 		documentBaseDirType: '',
 		experimental: false,
 		pilot: false,

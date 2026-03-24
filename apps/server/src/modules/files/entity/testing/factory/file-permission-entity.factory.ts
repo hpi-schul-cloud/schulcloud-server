@@ -1,7 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseFactory } from '@testing/factory/base.factory';
-import { FilePermissionEntity, FilePermissionEntityProps } from '../..';
 import { FilePermissionReferenceModel } from '../../../domain';
+import { FilePermissionEntity, FilePermissionEntityProps } from '../../file-permission.entity';
 
 export const filePermissionEntityFactory = BaseFactory.define<FilePermissionEntity, FilePermissionEntityProps>(
 	FilePermissionEntity,

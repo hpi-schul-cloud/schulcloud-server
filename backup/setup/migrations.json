@@ -127,6 +127,15 @@
 	},
 	{
 		"_id": {
+			"$oid": "69b9600e0baff39f9464ccab"
+		},
+		"name": "Migration20260317132520",
+		"executed_at": {
+			"$date": "2026-03-17T14:07:10.127Z"
+		}
+ 	},
+  {
+		"_id": {
 			"$oid": "69b3ef25ab30d60d9e54fbbd"
 		},
 		"name": "Migration20260313104950",

@@ -553,6 +553,83 @@ describe('AccountService', () => {
 		});
 	});
 
+	describe('validateAccountBeforeSaveOrReject', () => {
+		describe('when username is empty', () => {
+			it('should throw ValidationError', async () => {
+				const accountSave = { username: '', password: 'pw', systemId: undefined } as AccountSave;
+
+				await expect(accountService.validateAccountBeforeSaveOrReject(accountSave)).rejects.toThrow(ValidationError);
+			});
+		});
+
+		describe('when password is missing for local user', () => {
+			it('should throw ValidationError', async () => {
+				const accountSave = { username: 'test@mail.com', password: undefined, systemId: undefined } as AccountSave;
+
+				await expect(accountService.validateAccountBeforeSaveOrReject(accountSave)).rejects.toThrow(ValidationError);
+			});
+		});
+
+		describe('when username is not an email for local user', () => {
+			it('should throw ValidationError', async () => {
+				const accountSave = { username: 'not-an-email', password: 'pw', systemId: undefined } as AccountSave;
+
+				await expect(accountService.validateAccountBeforeSaveOrReject(accountSave)).rejects.toThrow(ValidationError);
+			});
+		});
+
+		describe('when account already exists', () => {
+			it('should throw ValidationError', async () => {
+				const accountSave = {
+					username: 'exists@mail.com',
+					password: 'pw',
+					userId: 'user1',
+					systemId: undefined,
+				} as AccountSave;
+				accountService.findByUserId = jest.fn().mockResolvedValueOnce({});
+
+				await expect(accountService.validateAccountBeforeSaveOrReject(accountSave)).rejects.toThrow(ValidationError);
+			});
+		});
+
+		describe('when username is not unique', () => {
+			it('should throw ValidationError', async () => {
+				const accountSave = { username: 'notunique@mail.com', password: 'pw', systemId: undefined } as AccountSave;
+				accountServiceDb.isUniqueEmail.mockResolvedValueOnce(false);
+
+				await expect(accountService.validateAccountBeforeSaveOrReject(accountSave)).rejects.toThrow(ValidationError);
+			});
+		});
+
+		describe('when username is sanitized for local user', () => {
+			it('should sanitize username', async () => {
+				const accountSave = { username: 'Test@Mail.com ', password: 'pw', systemId: undefined } as AccountSave;
+				accountServiceDb.isUniqueEmail.mockResolvedValueOnce(true);
+				accountServiceDb.findByUserId.mockResolvedValueOnce(null);
+
+				await expect(accountService.validateAccountBeforeSaveOrReject(accountSave)).resolves.not.toThrow();
+				expect(accountSave.username).toBe('test@mail.com');
+			});
+		});
+
+		describe('when allowUpdate is true', () => {
+			it('should not throw ValidationError for valid update', async () => {
+				const accountSave = {
+					username: 'valid@mail.com',
+					password: 'pw',
+					systemId: undefined,
+					userId: 'user1',
+				} as AccountSave;
+				accountServiceDb.isUniqueEmail.mockResolvedValueOnce(true);
+				accountServiceDb.findByUserId.mockResolvedValueOnce(null);
+
+				await expect(
+					accountService.validateAccountBeforeSaveOrReject(accountSave, { allowUpdate: true })
+				).resolves.not.toThrow();
+			});
+		});
+	});
+
 	describe('updateUsername', () => {
 		describe('When calling updateUsername in accountService', () => {
 			it('should call updateUsername in accountServiceDb', async () => {
