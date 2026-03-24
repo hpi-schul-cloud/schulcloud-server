@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: legacy-file-archive-svc
+  namespace: {{ NAMESPACE }}
+  labels:
+    app: legacy-file-archive
+spec:
+  type: ClusterIP
+  selector:
+    app: legacy-file-archive
+  ports:
+    - name: legacy-file-archive
+      protocol: TCP
+      port: 3351
+      targetPort: 3351

@@ -12,7 +12,6 @@ import { ColumnBoardService } from '@modules/board';
 import { CollaborativeStorageUc } from '@modules/collaborative-storage/uc/collaborative-storage.uc';
 import { GroupService } from '@modules/group';
 import { InternalServerModule } from '@modules/internal-server/internal-server.app.module';
-import { RocketChatService } from '@modules/rocketchat';
 import { FeathersRosterService } from '@modules/roster';
 import { ServerModule } from '@modules/server/server.app.module';
 import { TeamService } from '@modules/team';
@@ -79,8 +78,6 @@ async function bootstrap(): Promise<void> {
 			await mailService.send(data);
 		},
 	};
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
-	feathersExpress.services['nest-rocket-chat'] = nestApp.get(RocketChatService);
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
 	feathersExpress.services['nest-account-service'] = nestApp.get(AccountService);
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment

@@ -169,6 +169,15 @@
 			"compilerOptions": {
 				"tsConfigPath": "apps/server/tsconfig.app.json"
 			}
+		},
+		"legacy-file-archive": {
+			"type": "application",
+			"root": "apps/server",
+			"entryFile": "apps/legacy-file-archive.app",
+			"sourceRoot": "apps/server/src",
+			"compilerOptions": {
+				"tsConfigPath": "apps/server/tsconfig.app.json"
+			}
 		}
 	}
 }
