@@ -7,8 +7,6 @@ import { FileSystemHelper } from '../helper/file-system.helper';
 export class H5pHubClient {
 	private versionCache: Map<string, IFullLibraryName | undefined> = new Map();
 
-	constructor() {}
-
 	public async downloadContentType(library: string, filePath: string): Promise<void> {
 		const url = `https://api.h5p.org/v1/content-types/${library}`;
 

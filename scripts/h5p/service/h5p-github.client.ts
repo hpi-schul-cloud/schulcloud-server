@@ -141,21 +141,21 @@ export class H5pGitHubClient {
 		owner: string,
 		repo: GitHubRepository
 	): Promise<AxiosResponse<GitHubContentTreeResponse> | undefined> {
-		let result: AxiosResponse<GitHubContentTreeResponse> | undefined;
 		const url = `https://api.github.com/repos/${owner}/${repo.name}/contents/library.json`;
 		try {
 			const headers = this.getHeaders();
-			result = await axios.get(url, { headers });
+
+			return await axios.get(url, { headers });
 		} catch (error: unknown) {
 			if (this.isObjectWithResponseStatus(error) && error.response.status === 404) {
 				console.error(`library.json does not exist in repository ${repo.name}.`);
 			} else {
-				console.error(`Unknown error fetching library.json from repository ${repo.name}:`, error);
+				const message = error instanceof Error ? error.message : 'Unknown error';
+				console.error(`Error fetching library.json from repository ${repo.name}: ${message}`);
 			}
-			result = undefined;
-		}
 
-		return result;
+			return undefined;
+		}
 	}
 
 	private isObjectWithResponseStatus(obj: unknown): obj is { response: { status: number } } {
@@ -197,7 +197,9 @@ export class H5pGitHubClient {
 			try {
 				response = await this.fetch(url, options);
 			} catch (error) {
-				console.error(`Failed to fetch tags for ${owner}/${repo}.`, error);
+			const message = error instanceof Error ? error.message : 'Unknown error';
+			console.error(`Failed to fetch tags for ${owner}/${repo}: ${message}`);
+
 				return [];
 			}
 
@@ -241,7 +243,8 @@ export class H5pGitHubClient {
 
 			console.log(`Downloaded ${tag} of ${library} to ${filePath}`);
 		} catch (error) {
-			console.error(`Unknown error while downloading ${library} at tag ${tag}:`, error);
+			const message = error instanceof Error ? error.message : 'Unknown error';
+			console.error(`Error downloading ${library} at tag ${tag}: ${message}`);
 		}
 	}
 

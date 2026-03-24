@@ -25,7 +25,8 @@ export class H5pConsistencyChecker {
 			this.logConsistencyCheckPassed(folderPath);
 			return true;
 		} catch (error) {
-			console.error(`Error during consistency check for ${folderPath}:`, error);
+			const message = error instanceof Error ? error.message : 'Unknown error';
+			console.error(`Error during consistency check for ${folderPath}: ${message}`);
 			return false;
 		}
 	}

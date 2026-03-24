@@ -217,7 +217,7 @@ export class H5pLibraryPackagerService {
 			return false;
 		}
 
-		this.cleanUpUnwantedFilesinLibraryFolder(folderPath);
+		this.cleanUpUnwantedFilesInLibraryFolder(folderPath);
 
 		const validated = this.consistencyChecker.checkConsistency(folderPath);
 
@@ -274,7 +274,8 @@ export class H5pLibraryPackagerService {
 				this.logCorrectedVersionInLibraryJson(folderPath, tag);
 			}
 		} catch (error) {
-			console.error(`Error reading or correcting library.json in ${folderPath}:`, error);
+			const message = error instanceof Error ? error.message : 'Unknown error';
+			console.error(`Error reading or correcting library.json in ${folderPath}: ${message}`);
 		}
 
 		return changed;
@@ -524,7 +525,8 @@ export class H5pLibraryPackagerService {
 
 			return true;
 		} catch (error) {
-			console.error(`Unknown error while trying to build library ${library} in ${folderPath}:`, error);
+			const message = error instanceof Error ? error.message : 'Unknown error';
+			console.error(`Error building library ${library} in ${folderPath}: ${message}`);
 			return false;
 		}
 	}
@@ -593,7 +595,8 @@ export class H5pLibraryPackagerService {
 				this.logCorrectedFilePathsInLibraryJson(folderPath);
 			}
 		} catch (error) {
-			console.error(`Unknown error while reading or correcting library.json file paths in ${folderPath}:`, error);
+			const message = error instanceof Error ? error.message : 'Unknown error';
+			console.error(`Error reading or correcting library.json file paths in ${folderPath}: ${message}`);
 		}
 		return changed;
 	}
@@ -606,7 +609,7 @@ export class H5pLibraryPackagerService {
 		console.log(`Corrected file paths in library.json to only contain available files in ${folderPath}.`);
 	}
 
-	private cleanUpUnwantedFilesinLibraryFolder(folderPath: string): void {
+	private cleanUpUnwantedFilesInLibraryFolder(folderPath: string): void {
 		const ignoreFilePath = FileSystemHelper.buildPath(folderPath, '.h5pignore');
 		if (!FileSystemHelper.pathExists(ignoreFilePath)) {
 			return;
@@ -629,7 +632,8 @@ export class H5pLibraryPackagerService {
 						console.log(`Removed file from .h5pignore: ${absPath}`);
 					}
 				} catch (err) {
-					console.error(`Failed to remove ignored file or directory: ${absPath}`, err);
+					const message = err instanceof Error ? err.message : 'Unknown error';
+					console.error(`Failed to remove ignored file or directory ${absPath}: ${message}`);
 				}
 			}
 		}

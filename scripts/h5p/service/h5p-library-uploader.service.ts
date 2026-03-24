@@ -172,7 +172,8 @@ export class H5pLibraryUploaderService {
 			await this.uploadLibraryToS3(localFolderPath, s3FolderPath);
 			console.log(`Library ${localFolderPath} updated successfully in S3.`);
 		} catch (error) {
-			console.error(`Failed to update library ${localFolderPath} in S3:`, error);
+			const message = error instanceof Error ? error.message : 'Unknown error';
+			console.error(`Failed to update library ${localFolderPath} in S3: ${message}`);
 			throw error;
 		}
 	}
@@ -188,7 +189,8 @@ export class H5pLibraryUploaderService {
 			const deletedFiles = await this.s3ClientHelper.deleteFolder(s3FolderPath);
 			console.log(`Deleted ${deletedFiles.length} file(s) from S3 folder ${s3FolderPath}: ${deletedFiles.join(', ')}`);
 		} catch (error) {
-			console.error(`Failed to delete folder ${s3FolderPath} from S3:`, error);
+			const message = error instanceof Error ? error.message : 'Unknown error';
+			console.error(`Failed to delete folder ${s3FolderPath} from S3: ${message}`);
 			throw error;
 		}
 	}
@@ -199,7 +201,8 @@ export class H5pLibraryUploaderService {
 			await this.uploadLibraryToS3(localFolderPath, s3FolderPath);
 			console.log(`Library ${localFolderPath} added successfully to S3.`);
 		} catch (error) {
-			console.error(`Failed to add library ${localFolderPath} to S3:`, error);
+			const message = error instanceof Error ? error.message : 'Unknown error';
+			console.error(`Failed to add library ${localFolderPath} to S3: ${message}`);
 			throw error;
 		}
 	}
@@ -209,7 +212,8 @@ export class H5pLibraryUploaderService {
 			const uploadedFiles = await this.uploadFolderToS3Recursive(localFolderPath, s3FolderPath);
 			console.log(`Uploaded ${uploadedFiles.length} file(s) to S3: ${uploadedFiles.join(', ')}`);
 		} catch (error) {
-			console.error(`Failed to upload folder ${localFolderPath} to ${s3FolderPath} in S3:`, error);
+			const message = error instanceof Error ? error.message : 'Unknown error';
+			console.error(`Failed to upload folder ${localFolderPath} to ${s3FolderPath} in S3: ${message}`);
 			throw error;
 		}
 	}
