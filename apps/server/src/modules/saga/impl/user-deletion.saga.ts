@@ -17,7 +17,6 @@ export const UserDeletionSagaExecutionOrder: ModuleName[] = [
 	ModuleName.FILES_STORAGE,
 	ModuleName.LESSON,
 	ModuleName.PSEUDONYM,
-	ModuleName.ROCKETCHATUSER,
 	ModuleName.TASK,
 	ModuleName.TASK_SUBMISSION,
 	ModuleName.TEAM,
