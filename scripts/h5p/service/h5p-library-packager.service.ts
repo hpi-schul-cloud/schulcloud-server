@@ -730,7 +730,7 @@ export class H5pLibraryPackagerService {
 
 		if (!depRepoName) {
 			this.logGithubRepositoryNotFound(dependency.machineName);
-			this.failedLibraries.add(dependency.machineName);
+			this.failedLibraries.add(`${depName}-${depMajor}.${depMinor}.x`);
 
 			return false;
 		}
@@ -739,7 +739,7 @@ export class H5pLibraryPackagerService {
 		let depTag = this.getHighestVersionTags(tags, depMajor, depMinor);
 		if (!depTag) {
 			this.logTagNotFound(dependency);
-			this.failedLibraries.add(dependency.machineName);
+			this.failedLibraries.add(`${depName}-${depMajor}.${depMinor}.x`);
 
 			return false;
 		}
@@ -863,13 +863,20 @@ export class H5pLibraryPackagerService {
 	}
 
 	private isAlreadyFailed(library: string, tag: string): boolean {
-		const isAlreadyFailed = this.failedLibraries.has(`${library}-${tag}`);
-
-		if (isAlreadyFailed) {
+		// Check exact version match
+		if (this.failedLibraries.has(`${library}-${tag}`)) {
 			this.logLibraryAlreadyFailed(library, tag);
+			return true;
 		}
 
-		return isAlreadyFailed;
+		// Check wildcard match (e.g., "H5P.Foo-1.2.x" for failures without specific patch version)
+		const { major, minor } = this.parseTagVersion(tag);
+		if (this.failedLibraries.has(`${library}-${major}.${minor}.x`)) {
+			this.logLibraryAlreadyFailed(library, tag);
+			return true;
+		}
+
+		return false;
 	}
 
 	private logLibraryAlreadyFailed(library: string, tag: string): void {
