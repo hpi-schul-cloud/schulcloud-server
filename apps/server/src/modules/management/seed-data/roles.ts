@@ -263,7 +263,7 @@ const roleSeedData: { [key: string | RoleName]: SeedRoleProperties } = {
 		updatedAt: '2023-05-05T07:39:11.036Z',
 		name: RoleName.TEAMMEMBER,
 		roles: [],
-		permissions: [Permission.JOIN_MEETING, Permission.NEWS_VIEW, Permission.UPLOAD_FILES, Permission.USE_ROCKETCHAT],
+		permissions: [Permission.JOIN_MEETING, Permission.NEWS_VIEW, Permission.UPLOAD_FILES],
 	},
 	teamexpert: {
 		id: '5bb5c391fb457b1c3c0c7e10',
@@ -271,13 +271,7 @@ const roleSeedData: { [key: string | RoleName]: SeedRoleProperties } = {
 		updatedAt: '2023-05-05T07:39:11.040Z',
 		name: RoleName.TEAMEXPERT,
 		roles: [],
-		permissions: [
-			Permission.CALENDAR_VIEW,
-			Permission.JOIN_MEETING,
-			Permission.NEWS_VIEW,
-			Permission.UPLOAD_FILES,
-			Permission.USE_ROCKETCHAT,
-		],
+		permissions: [Permission.CALENDAR_VIEW, Permission.JOIN_MEETING, Permission.NEWS_VIEW, Permission.UPLOAD_FILES],
 	},
 	teamleader: {
 		id: '5bb5c49efb457b1c3c0c7e11',
