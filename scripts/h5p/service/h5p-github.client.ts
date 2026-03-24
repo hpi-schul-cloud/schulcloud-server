@@ -19,11 +19,18 @@ export interface GitHubClientOptions {
 	maxRetries: number;
 }
 
+export type LibraryRepoMap = Record<string, string>;
+
 export class H5pGitHubClient {
 	private token!: string;
 
-	constructor() {
+	private libraryRepoMap: LibraryRepoMap = {};
+
+	constructor(libraryRepoMap?: LibraryRepoMap) {
 		this.initialize();
+		if (libraryRepoMap) {
+			this.libraryRepoMap = libraryRepoMap;
+		}
 	}
 
 	public initialize(): void {
@@ -34,8 +41,8 @@ export class H5pGitHubClient {
 		this.token = personalAccessToken;
 	}
 
-	public getLibraryRepoMapFromGitHub = async (owners: GitHubOwner[]): Promise<Record<string, string>> => {
-		let libraryRepoMap: Record<string, string> = {};
+	public getLibraryRepoMapFromGitHub = async (owners: GitHubOwner[]): Promise<LibraryRepoMap> => {
+		let libraryRepoMap: LibraryRepoMap = {};
 
 		for (const owner of owners) {
 			const repos = await this.fetchRepositories(owner.type, owner.name);
@@ -46,6 +53,8 @@ export class H5pGitHubClient {
 			libraryRepoMap = { ...libraryRepoMap, ...repoMap };
 		}
 		console.log(`Built libraryRepoMap for all owners with ${Object.keys(libraryRepoMap).length} entries.`);
+
+		this.libraryRepoMap = libraryRepoMap;
 
 		return libraryRepoMap;
 	};
@@ -274,8 +283,8 @@ export class H5pGitHubClient {
 		return headers;
 	}
 
-	public mapMachineNameToGitHubRepo(libraryRepoMap: Record<string, string>, library: string): string | undefined {
-		const repo = libraryRepoMap[library];
+	public mapMachineNameToGitHubRepo(library: string): string | undefined {
+		const repo = this.libraryRepoMap[library];
 		return repo;
 	}
 }

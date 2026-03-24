@@ -3,13 +3,10 @@ import { IFullLibraryName } from '@lumieducation/h5p-server/build/src/types';
 import { spawnSync, SpawnSyncOptions } from 'child_process';
 import { FileSystemHelper } from '../helper/file-system.helper';
 import { H5PLibrary } from '../interface/h5p-library';
-import { GitHubClientOptions, H5pGitHubClient } from './h5p-github.client';
+import { GitHubClientOptions, H5pGitHubClient, LibraryRepoMap } from './h5p-github.client';
 import { H5pHubClient } from './h5p-hub.client';
 
-type LibraryRepoMap = Record<string, string>;
-
 export class H5pLibraryPackagerService {
-	libraryRepoMap: LibraryRepoMap;
 	tempFolderPath: string;
 	gitHubClient: H5pGitHubClient;
 	h5pHubClient: H5pHubClient;
@@ -28,8 +25,7 @@ export class H5pLibraryPackagerService {
 			FileSystemHelper.createFolder(this.tempFolderPath);
 		}
 
-		this.libraryRepoMap = libraryRepoMap;
-		this.gitHubClient = new H5pGitHubClient();
+		this.gitHubClient = new H5pGitHubClient(libraryRepoMap);
 		this.h5pHubClient = new H5pHubClient();
 	}
 
@@ -66,7 +62,7 @@ export class H5pLibraryPackagerService {
 	}
 
 	private async buildLibrary(library: string): Promise<void> {
-		const repoName = this.gitHubClient.mapMachineNameToGitHubRepo(this.libraryRepoMap, library);
+		const repoName = this.gitHubClient.mapMachineNameToGitHubRepo(library);
 		if (!repoName) {
 			console.log(`No GitHub repository found for ${library}.`);
 
@@ -770,7 +766,7 @@ export class H5pLibraryPackagerService {
 		const depMinor = dependency.minorVersion;
 		this.logBuildingLibraryDependency(dependency, library, tag);
 
-		const depRepoName = this.gitHubClient.mapMachineNameToGitHubRepo(this.libraryRepoMap, depName);
+		const depRepoName = this.gitHubClient.mapMachineNameToGitHubRepo(depName);
 
 		if (!depRepoName) {
 			this.logGithubRepositoryNotFound(dependency.machineName);
