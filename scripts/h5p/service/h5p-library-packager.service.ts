@@ -8,14 +8,14 @@ import { H5pHubClient } from './h5p-hub.client';
 
 type LibraryRepoMap = Record<string, string>;
 
-type InstallResults = { installedLibraries: Set<string>; failedLibraries: Set<string> };
-
 export class H5pLibraryPackagerService {
 	libraryRepoMap: LibraryRepoMap;
 	tempFolderPath: string;
 	gitHubClient: H5pGitHubClient;
 	h5pHubClient: H5pHubClient;
 	availableVersions: string[] = [];
+	installedLibraries: Set<string> = new Set();
+	failedLibraries: Set<string> = new Set();
 
 	constructor(libraryRepoMap: LibraryRepoMap, tempFolderPath?: string) {
 		if (!tempFolderPath) {
@@ -34,23 +34,21 @@ export class H5pLibraryPackagerService {
 	}
 
 	public async buildH5pLibrariesFromGitHubAsBulk(libraries: string[]): Promise<void> {
-		const result: InstallResults = { installedLibraries: new Set<string>(), failedLibraries: new Set<string>() };
 		this.availableVersions = [];
+		this.installedLibraries = new Set();
+		this.failedLibraries = new Set();
 		for (const library of libraries) {
 			this.logLibraryBanner(library);
-			const libraryResult = await this.buildLibrary(library);
+			await this.buildLibrary(library);
 
 			console.log(`### Finished building of ${library}.`);
-			console.log(`### Successfully built libraries: ${this.formatLibraryList(libraryResult.installedLibraries)}`);
-			console.log(`### Failed to build libraries: ${this.formatLibraryList(libraryResult.failedLibraries)}`);
-
-			libraryResult.installedLibraries.forEach((lib) => result.installedLibraries.add(lib));
-			libraryResult.failedLibraries.forEach((lib) => result.failedLibraries.add(lib));
+			console.log(`### Successfully built libraries: ${this.formatLibraryList(this.installedLibraries)}`);
+			console.log(`### Failed to build libraries: ${this.formatLibraryList(this.failedLibraries)}`);
 		}
 
 		console.log('>>> Installation Summary:');
-		console.log(`>>> Successfully installed libraries: ${this.formatLibraryList(result.installedLibraries)}`);
-		console.log(`>>> Failed to install libraries: ${this.formatLibraryList(result.failedLibraries)}`);
+		console.log(`>>> Successfully installed libraries: ${this.formatLibraryList(this.installedLibraries)}`);
+		console.log(`>>> Failed to install libraries: ${this.formatLibraryList(this.failedLibraries)}`);
 	}
 
 	private formatLibraryList(libraries: Set<string>): string {
@@ -67,13 +65,12 @@ export class H5pLibraryPackagerService {
 		console.log(border);
 	}
 
-	private async buildLibrary(library: string): Promise<InstallResults> {
-		const result: InstallResults = { installedLibraries: new Set<string>(), failedLibraries: new Set<string>() };
+	private async buildLibrary(library: string): Promise<void> {
 		const repoName = this.mapMachineNameToGitHubRepo(library);
 		if (!repoName) {
 			console.log(`No GitHub repository found for ${library}.`);
 
-			return result;
+			return;
 		}
 		const options: GitHubClientOptions = { maxRetries: 3 };
 		const tags = await this.gitHubClient.fetchAllTags(repoName, options);
@@ -86,13 +83,8 @@ export class H5pLibraryPackagerService {
 
 		console.log(`Found ${filteredTags.length} versions of ${library} in ${repoName}: ${filteredTags.join(', ')}`);
 		for (const tag of filteredTags) {
-			const tagResult = await this.buildLibraryVersionAndDependencies(library, tag, repoName);
-
-			tagResult.installedLibraries.forEach((lib) => result.installedLibraries.add(lib));
-			tagResult.failedLibraries.forEach((lib) => result.failedLibraries.add(lib));
+			await this.buildLibraryVersionAndDependencies(library, tag, repoName);
 		}
-
-		return result;
 	}
 
 	// TODO: move this to H5pGitHubClient?
@@ -216,29 +208,21 @@ export class H5pLibraryPackagerService {
 		return highestPatchTags;
 	}
 
-	private async buildLibraryVersionAndDependencies(
-		library: string,
-		tag: string,
-		repoName: string
-	): Promise<InstallResults> {
+	private async buildLibraryVersionAndDependencies(library: string, tag: string, repoName: string): Promise<void> {
 		this.logStartBuildingOfLibraryFromGitHub(library, tag);
-		const result: InstallResults = {
-			installedLibraries: new Set<string>(),
-			failedLibraries: new Set<string>(),
-		};
 
-		if (this.isCurrentVersionAvailable(library, tag)) return result;
-		if (this.isNewerPatchVersionAvailable(library, tag)) return result;
+		if (this.isCurrentVersionAvailable(library, tag)) return;
+		if (this.isNewerPatchVersionAvailable(library, tag)) return;
 
 		const validLibrary = await this.buildLibraryTagFromGitHub(library, tag, repoName);
 		if (validLibrary) {
-			result.installedLibraries.add(`${library}-${tag}`);
+			this.installedLibraries.add(`${library}-${tag}`);
 			this.logBuildingOfLibraryFromGitHubSuccessful(library, tag);
 		} else {
-			result.failedLibraries.add(`${library}-${tag}`);
+			this.failedLibraries.add(`${library}-${tag}`);
 			this.logBuildingOfLibraryFromGitHubFailed(library, tag);
 
-			return result;
+			return;
 		}
 		this.availableVersions.push(`${library}-${tag}`);
 
@@ -250,17 +234,13 @@ export class H5pLibraryPackagerService {
 		if (dependencies.length === 0) {
 			this.logNoDependenciesFoundForLibrary(library, tag);
 
-			return result;
+			return;
 		}
 
 		for (const dependency of dependencies) {
-			const depResults = await this.buildLibraryDependency(dependency, library, tag);
-			depResults.installedLibraries.forEach((lib) => result.installedLibraries.add(lib));
-			depResults.failedLibraries.forEach((lib) => result.failedLibraries.add(lib));
+			await this.buildLibraryDependency(dependency, library, tag);
 		}
 		this.logFinishedBuildingOfLibraryFromGitHub(library, tag);
-
-		return result;
 	}
 
 	private logStartBuildingOfLibraryFromGitHub(library: string, tag: string): void {
@@ -791,13 +771,7 @@ export class H5pLibraryPackagerService {
 		return results;
 	}
 
-	private async buildLibraryDependency(
-		dependency: ILibraryName,
-		library: string,
-		tag: string
-	): Promise<InstallResults> {
-		const result: InstallResults = { installedLibraries: new Set<string>(), failedLibraries: new Set<string>() };
-
+	private async buildLibraryDependency(dependency: ILibraryName, library: string, tag: string): Promise<void> {
 		const depName = dependency.machineName;
 		const depMajor = dependency.majorVersion;
 		const depMinor = dependency.minorVersion;
@@ -807,9 +781,9 @@ export class H5pLibraryPackagerService {
 
 		if (!depRepoName) {
 			this.logGithubRepositoryNotFound(dependency.machineName);
-			result.failedLibraries.add(dependency.machineName);
+			this.failedLibraries.add(dependency.machineName);
 
-			return result;
+			return;
 		}
 
 		const options: GitHubClientOptions = { maxRetries: 3 };
@@ -817,9 +791,9 @@ export class H5pLibraryPackagerService {
 		let depTag = this.getHighestVersionTags(tags, depMajor, depMinor);
 		if (!depTag) {
 			this.logTagNotFound(dependency);
-			result.failedLibraries.add(dependency.machineName);
+			this.failedLibraries.add(dependency.machineName);
 
-			return result;
+			return;
 		}
 
 		const currentH5pHubTag = await this.getCurrentTagFromH5pHub(depName);
@@ -845,20 +819,13 @@ export class H5pLibraryPackagerService {
 			depTag = '4.5.4';
 		}
 
-		const dependencyResult = await this.buildLibraryVersionAndDependencies(
-			depName,
-			depTag,
-			depRepoName
-		);
-		if (dependencyResult.failedLibraries.size === 0) {
+		const failedBefore = this.failedLibraries.size;
+		await this.buildLibraryVersionAndDependencies(depName, depTag, depRepoName);
+		if (this.failedLibraries.size === failedBefore) {
 			this.logBuildingLibraryDependencySuccess(depName, depTag);
 		} else {
 			this.logBuildingLibraryDependencyFailed(depName, depTag);
 		}
-		dependencyResult.installedLibraries.forEach((lib) => result.installedLibraries.add(lib));
-		dependencyResult.failedLibraries.forEach((lib) => result.failedLibraries.add(lib));
-
-		return result;
 	}
 
 	private logBuildingLibraryDependency(dependency: ILibraryName, library: string, tag: string): void {
