@@ -48,14 +48,12 @@ export class RegistrationService {
 		language: LanguageType,
 		password: string
 	): Promise<void> {
-		const userDo = await this.createUser(registration, language);
-		const user = await this.userService.save(userDo);
-		const account = this.createAccount(user, password);
-		await this.accountService.saveWithValidation(account);
+		const user = await this.createOrUpdateUser(registration, language);
 
 		if (user.id === undefined) {
 			throw new InternalServerErrorException('User ID is undefined after saving user.');
 		}
+		await this.createOrUpdateAccount(user, password);
 		await this.addUserToRooms(registration.roomIds, user.id);
 		await this.registrationRepo.deleteByIds([registration.id]);
 	}
@@ -165,6 +163,31 @@ export class RegistrationService {
 		return registration;
 	}
 
+	private async createOrUpdateUser(registration: Registration, language: LanguageType): Promise<UserDo> {
+		const userDos = await this.userService.findByEmail(registration.email);
+		if (userDos.length === 0) {
+			return this.createUser(registration, language);
+		}
+
+		if (userDos.length > 1) {
+			throw new BadRequestException('Multiple Users with this email already exist.');
+		}
+
+		const userDo = userDos[0];
+		if (registration.firstName || registration.lastName) {
+			userDo.firstName = registration.firstName;
+			userDo.lastName = registration.lastName;
+		}
+		userDo.birthday = userDo.birthday ?? new Date('2000-01-01'); // necessary to avoid parental consent dialog for children (when logging in)
+		userDo.consent = userDo.consent ?? this.createUserConsent();
+		userDo.preferences = userDo.preferences ?? { firstLogin: false };
+		userDo.language = userDo.language ?? language;
+
+		const user = await this.userService.save(userDo);
+
+		return user;
+	}
+
 	private async createUser(registration: Registration, language: LanguageType): Promise<UserDo> {
 		if (!registration.firstName || !registration.lastName) {
 			throw new BadRequestException('Firstname and Lastname need to be set to create user.');
@@ -182,7 +205,7 @@ export class RegistrationService {
 		}
 		const schoolId = externalPersonsSchools[0].id;
 
-		const newUser = new UserDo({
+		const userDo = new UserDo({
 			roles: roleRefs,
 			schoolId,
 			firstName: registration.firstName,
@@ -197,8 +220,25 @@ export class RegistrationService {
 			},
 			language,
 		});
-
+		const newUser = await this.userService.save(userDo);
 		return newUser;
+	}
+
+	private async createOrUpdateAccount(user: UserDo, password: string): Promise<void> {
+		if (password === '') {
+			return;
+		}
+
+		if (user.id) {
+			const account = await this.accountService.findByUserId(user.id);
+			if (account) {
+				account.password = password;
+				await this.accountService.saveWithValidation(account, { allowUpdate: true });
+			} else {
+				const newAccount = this.createAccount(user, password);
+				await this.accountService.saveWithValidation(newAccount);
+			}
+		}
 	}
 
 	private createAccount(user: UserDo, password: string): AccountSave {

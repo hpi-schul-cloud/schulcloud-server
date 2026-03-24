@@ -1,5 +1,6 @@
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { RoomMembershipService } from '@modules/room-membership';
+import { UserService } from '@modules/user';
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { LanguageType, Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
@@ -13,7 +14,8 @@ export class RegistrationUc {
 		private readonly authorizationService: AuthorizationService,
 		private readonly registrationService: RegistrationService,
 		private readonly registrationFeatureService: RegistrationFeatureService,
-		private readonly roomMembershipService: RoomMembershipService
+		private readonly roomMembershipService: RoomMembershipService,
+		private readonly userService: UserService
 	) {}
 
 	public async createOrUpdateRegistration(
@@ -29,12 +31,15 @@ export class RegistrationUc {
 		return registration;
 	}
 
-	public async getSingleRegistrationBySecret(registrationSecret: string): Promise<Registration> {
+	public async getSingleRegistrationBySecret(
+		registrationSecret: string
+	): Promise<{ registration: Registration; registeredUserExists: boolean }> {
 		this.registrationFeatureService.checkFeatureRegistrationEnabled();
 
 		const registration = await this.registrationService.getSingleRegistrationBySecret(registrationSecret);
+		const registeredUserExists = await this.registeredUserExists(registration.email);
 
-		return registration;
+		return { registration, registeredUserExists };
 	}
 
 	public async getRegistrationsByRoomId(userId: EntityId, roomId: EntityId): Promise<Registration[]> {
@@ -89,6 +94,18 @@ export class RegistrationUc {
 		const resentRegistrations = await this.registrationService.resendRegistrationMails(registrationIds);
 
 		return resentRegistrations;
+	}
+
+	private async registeredUserExists(email: string): Promise<boolean> {
+		const users = await this.userService.findByEmail(email);
+
+		if (users.length === 0) {
+			return false;
+		}
+
+		const isRegisteredUser = users[0].preferences || users[0].language ? true : false;
+
+		return isRegisteredUser;
 	}
 
 	private async checkPermissions(userId: EntityId, roomId: EntityId): Promise<void> {
