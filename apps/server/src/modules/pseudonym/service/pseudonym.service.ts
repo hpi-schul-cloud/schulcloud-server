@@ -45,16 +45,7 @@ export class PseudonymService {
 			throw new InternalServerErrorException('User or tool id is missing');
 		}
 
-		const pseudonym = new Pseudonym({
-			id: new ObjectId().toHexString(),
-			pseudonym: uuidv4(),
-			userId: user.id,
-			toolId: tool.id,
-			createdAt: new Date(),
-			updatedAt: new Date(),
-		});
-
-		const result = await this.externalToolPseudonymRepo.createOrUpdate(pseudonym);
+		const result = await this.externalToolPseudonymRepo.createOrUpdate(user.id, tool.id);
 
 		return result;
 	}
