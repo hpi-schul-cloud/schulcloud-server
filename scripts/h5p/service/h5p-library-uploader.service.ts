@@ -70,7 +70,8 @@ export class H5pLibraryUploaderService {
 	}
 
 	private async checkFolderAlreadyExistsInS3(s3FolderPath: string): Promise<boolean> {
-		const objects = await this.s3ClientHelper.listObjects(s3FolderPath, undefined, 1);
+		const prefix = s3FolderPath.endsWith('/') ? s3FolderPath : `${s3FolderPath}/`;
+		const objects = await this.s3ClientHelper.listObjects(prefix, undefined, 1);
 
 		return Array.isArray(objects.Contents) && objects.Contents.length > 0;
 	}
