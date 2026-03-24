@@ -3,6 +3,7 @@ import { IFullLibraryName } from '@lumieducation/h5p-server/build/src/types';
 import { spawnSync, SpawnSyncOptions } from 'child_process';
 import { FileSystemHelper } from '../helper/file-system.helper';
 import { H5PLibrary } from '../interface/h5p-library';
+import { H5pConsistencyChecker } from './h5p-consistency-checker.service';
 import { GitHubClientOptions, H5pGitHubClient, LibraryRepoMap } from './h5p-github.client';
 import { H5pHubClient } from './h5p-hub.client';
 
@@ -10,6 +11,7 @@ export class H5pLibraryPackagerService {
 	tempFolderPath: string;
 	gitHubClient: H5pGitHubClient;
 	h5pHubClient: H5pHubClient;
+	consistencyChecker: H5pConsistencyChecker;
 	availableVersions: string[] = [];
 	installedLibraries: Set<string> = new Set();
 	failedLibraries: Set<string> = new Set();
@@ -27,6 +29,7 @@ export class H5pLibraryPackagerService {
 
 		this.gitHubClient = new H5pGitHubClient(libraryRepoMap);
 		this.h5pHubClient = new H5pHubClient();
+		this.consistencyChecker = new H5pConsistencyChecker();
 	}
 
 	public async buildH5pLibrariesFromGitHubAsBulk(libraries: string[]): Promise<void> {
@@ -277,8 +280,7 @@ export class H5pLibraryPackagerService {
 
 		this.cleanUpUnwantedFilesinLibraryFolder(folderPath);
 
-		// TODO: Should this be kept as it would make H5P CLI required!?
-		const validated = this.validateH5pLibrary(folderPath);
+		const validated = this.consistencyChecker.checkConsistency(folderPath);
 
 		return validated;
 	}
@@ -643,26 +645,6 @@ export class H5pLibraryPackagerService {
 
 	private inputIsObjectWithPath(obj: any): boolean {
 		return typeof obj === 'object' && obj !== null && 'path' in obj && typeof obj.path === 'string';
-	}
-
-	private validateH5pLibrary(folderPath: string): boolean {
-		try {
-			const validateCommand = 'h5p';
-			const validateArgs = ['validate', folderPath];
-			const validateOptions: SpawnSyncOptions = { cwd: folderPath, stdio: 'inherit', shell: true };
-
-			const result = spawnSync(validateCommand, validateArgs, validateOptions);
-			if (result.status === 0) {
-				console.log(`'h5p validate' succeeded for ${folderPath}`);
-				return true;
-			} else {
-				console.error(`'h5p validate' failed for ${folderPath}`);
-				return false;
-			}
-		} catch (error) {
-			console.error(`Error running 'h5p validate' for ${folderPath}:`, error);
-			return false;
-		}
 	}
 
 	private logCorrectedFilePathsInLibraryJson(folderPath: string): void {
