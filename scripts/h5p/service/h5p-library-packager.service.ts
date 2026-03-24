@@ -66,7 +66,7 @@ export class H5pLibraryPackagerService {
 	}
 
 	private async buildLibrary(library: string): Promise<void> {
-		const repoName = this.mapMachineNameToGitHubRepo(library);
+		const repoName = this.gitHubClient.mapMachineNameToGitHubRepo(this.libraryRepoMap, library);
 		if (!repoName) {
 			console.log(`No GitHub repository found for ${library}.`);
 
@@ -85,13 +85,6 @@ export class H5pLibraryPackagerService {
 		for (const tag of filteredTags) {
 			await this.buildLibraryVersionAndDependencies(library, tag, repoName);
 		}
-	}
-
-	// TODO: move this to H5pGitHubClient?
-
-	private mapMachineNameToGitHubRepo(library: string): string | undefined {
-		const repo = this.libraryRepoMap[library];
-		return repo;
 	}
 
 	private async getCurrentTagFromH5pHub(library: string): Promise<IFullLibraryName | undefined> {
@@ -777,7 +770,7 @@ export class H5pLibraryPackagerService {
 		const depMinor = dependency.minorVersion;
 		this.logBuildingLibraryDependency(dependency, library, tag);
 
-		const depRepoName = this.mapMachineNameToGitHubRepo(depName);
+		const depRepoName = this.gitHubClient.mapMachineNameToGitHubRepo(this.libraryRepoMap, depName);
 
 		if (!depRepoName) {
 			this.logGithubRepositoryNotFound(dependency.machineName);

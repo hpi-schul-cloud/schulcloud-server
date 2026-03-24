@@ -273,4 +273,9 @@ export class H5pGitHubClient {
 		const headers: Record<string, string> = this.token ? { Authorization: `token ${this.token}` } : {};
 		return headers;
 	}
+
+	public mapMachineNameToGitHubRepo(libraryRepoMap: Record<string, string>, library: string): string | undefined {
+		const repo = libraryRepoMap[library];
+		return repo;
+	}
 }
