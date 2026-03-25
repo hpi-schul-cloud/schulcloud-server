@@ -12,3 +12,5 @@ export interface ErwinIdentifierRepo {
 
 	deleteById(erwinIdentifierEntityId: EntityId): Promise<void>;
 }
+
+export const ERWIN_IDENTIFIER_REPO = Symbol('ERWIN_IDENTIFIER_REPO');
