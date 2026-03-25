@@ -1,94 +1,5 @@
 const { Configuration } = require('@hpi-schul-cloud/commons');
 
-/**
- * Converts consentStatus to a filter condition for consent
- * @param  {...string} status
- */
-const createConsentFilterQuery = (...status) => {
-	const currentDate = new Date();
-	const secondConsentSwitchDate = new Date();
-	secondConsentSwitchDate.setFullYear(currentDate.getFullYear() - Configuration.get('CONSENT_AGE_SECOND'));
-	const firstConsentSwitchDate = new Date();
-	firstConsentSwitchDate.setFullYear(currentDate.getFullYear() - Configuration.get('CONSENT_AGE_FIRST'));
-
-	const createRequiredConsents = (...persons) =>
-		persons.reduce((person, current) => {
-			current[`consent.${person}.privacyConsent`] = true;
-			current[`consent.${person}.termsOfUseConsent`] = true;
-
-			return current;
-		}, {});
-
-	const createMissingConsents = (...persons) =>
-		persons.reduce(
-			(person, current) => {
-				current.$or.push({ [`consent.${person}.privacyConsent`]: true });
-				current.$or.push({ [`consent.${person}.termsOfUseConsent`]: true });
-
-				return current;
-			},
-			{ $or: [] }
-		);
-
-	const orConditions = status.reduce((query, stat) => {
-		if (stat === 'missing') {
-			query.push({
-				...createMissingConsents('userConsent'),
-				birthday: {
-					$gte: secondConsentSwitchDate,
-				},
-			});
-			query.push({
-				...createMissingConsents('parentConsents'),
-				birthday: {
-					$gt: firstConsentSwitchDate,
-					$lte: secondConsentSwitchDate,
-				},
-			});
-			query.push({
-				...createMissingConsents('parentConsents'),
-				birthday: {
-					$lt: firstConsentSwitchDate,
-				},
-			});
-		} else if (stat === 'parentAgree') {
-			query.push({
-				...createRequiredConsents('parentConsents'),
-				...createMissingConsents('userConsent'),
-				birthday: {
-					$gt: firstConsentSwitchDate,
-					$lte: secondConsentSwitchDate,
-				},
-			});
-		} else if (stat === 'ok') {
-			query.push({
-				...createRequiredConsents('userConsent'),
-				birthday: {
-					$gte: secondConsentSwitchDate,
-				},
-			});
-			query.push({
-				...createRequiredConsents('userConsent', 'parentConsents'),
-				birthday: {
-					$gt: firstConsentSwitchDate,
-					$lte: secondConsentSwitchDate,
-				},
-			});
-			query.push({
-				...createRequiredConsents('parentConsents'),
-				birthday: {
-					$lt: firstConsentSwitchDate,
-				},
-			});
-		}
-		return query;
-	}, []);
-
-	return {
-		$or: orConditions,
-	};
-};
-
 const checkParentConsent = (parentConsents) => {
 	if (!parentConsents) return false;
 	const agrements = parentConsents.filter((consent) => consent.privacyConsent && consent.termsOfUseConsent);
@@ -190,7 +101,6 @@ const modifyDataForUserSchema = ({ _id, userId, ...data }) => ({
 module.exports = {
 	defineConsentStatus,
 	isParentConsentRequired,
-	createConsentFilterQuery,
 	userToConsent,
 	modifyDataForUserSchema,
 };

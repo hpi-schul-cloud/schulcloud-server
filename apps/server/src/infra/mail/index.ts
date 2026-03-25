@@ -1,4 +1,4 @@
-export { MAIL_CONFIG_TOKEN, MAIL_EXCHANGE_CONFIG_TOKEN, MailConfig, MailExchange } from './mail.config';
+export { MAIL_CONFIG_TOKEN, MailConfig, MailExchange } from './mail.config';
 export {
 	AppendedAttachment,
 	InlineAttachment,

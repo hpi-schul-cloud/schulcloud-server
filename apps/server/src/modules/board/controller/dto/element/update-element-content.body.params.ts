@@ -4,7 +4,7 @@ import { Type } from 'class-transformer';
 import { IsEnum, IsMongoId, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { ContentElementType } from '../../../domain/types';
 
-export abstract class ElementContentBody {
+abstract class ElementContentBody {
 	@IsEnum(ContentElementType)
 	@ApiProperty({
 		enum: ContentElementType,

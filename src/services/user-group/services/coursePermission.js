@@ -63,5 +63,4 @@ const setup = (app) => {
 
 module.exports = {
 	setup,
-	courseRoles,
 };
