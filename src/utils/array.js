@@ -16,15 +16,18 @@ const flatten = (arr) =>
  * Emulates Feathers-style pagination on a given array.
  * @param {Array} data Array-like collection to paginate
  * @param {Object} params Feathers request params containing $paginate, $limit, and $skip
+ * @param {Object} options Feathers service options containing paginate.max
  * @returns {Object} { total, limit, skip, data }
  */
-const paginate = (data, params) => {
+const paginate = (data, params, options) => {
 	if (!params || !params.$paginate) {
 		return data;
 	}
 	let limit = params.$limit || data.length;
 	if (limit < 0) {
 		limit = data.length;
+	} else if (limit > options.paginate.max) {
+		limit = options.paginate.max;
 	}
 	let skip = params.$skip || 0;
 	if (skip < 0) {

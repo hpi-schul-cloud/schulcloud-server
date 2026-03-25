@@ -1,4 +1,4 @@
-export const enum FileOwnerModel {
+export enum FileOwnerModel {
 	USER = 'user',
 	COURSE = 'course',
 	TEAMS = 'teams',

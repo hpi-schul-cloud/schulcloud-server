@@ -1,14 +1,14 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { type EntityId } from '@shared/domain/types';
 import {
 	type AuthorizationLoaderService,
-	AuthorizationInjectionService,
 	AuthorizableReferenceType,
+	AuthorizationInjectionService,
 } from '@modules/authorization';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { type EntityId } from '@shared/domain/types';
 import { AnyBoardNode, BoardNodeAuthorizable, UserWithBoardRoles } from '../domain';
 import { BoardNodeRepo } from '../repo';
-import { BoardContextService } from './internal/board-context.service';
 import { BoardNodeService } from './board-node.service';
+import { BoardContextService } from './internal/board-context.service';
 
 @Injectable()
 export class BoardNodeAuthorizableService implements AuthorizationLoaderService {
@@ -36,7 +36,7 @@ export class BoardNodeAuthorizableService implements AuthorizationLoaderService 
 		const rootNode = await this.boardNodeService.findRoot(boardNode, 1);
 		const parentNode = await this.boardNodeService.findParent(boardNode, 1);
 		const users = await this.boardContextService.getUsersWithBoardRoles(rootNode);
-		const boardSettings = await this.boardContextService.getBoardSettings(rootNode);
+		const boardConfiguration = await this.boardContextService.getBoardConfiguration(rootNode);
 
 		const boardNodeAuthorizable = new BoardNodeAuthorizable({
 			users,
@@ -44,7 +44,7 @@ export class BoardNodeAuthorizableService implements AuthorizationLoaderService 
 			boardNode,
 			rootNode,
 			parentNode,
-			boardContextSettings: boardSettings,
+			boardConfiguration,
 		});
 
 		return boardNodeAuthorizable;
@@ -70,14 +70,14 @@ export class BoardNodeAuthorizableService implements AuthorizationLoaderService 
 			const rootNode = boardNodeMap[boardNode.rootId];
 			const parentNode = boardNode.parentId ? boardNodeMap[boardNode.parentId] : undefined;
 			const users = usersMap[boardNode.id];
-			const boardSettings = await this.boardContextService.getBoardSettings(rootNode);
+			const boardConfiguration = await this.boardContextService.getBoardConfiguration(rootNode);
 			const boardNodeAuthorizable = new BoardNodeAuthorizable({
 				users,
 				id: boardNode.id,
 				boardNode,
 				rootNode,
 				parentNode,
-				boardContextSettings: boardSettings,
+				boardConfiguration,
 			});
 			return boardNodeAuthorizable;
 		});

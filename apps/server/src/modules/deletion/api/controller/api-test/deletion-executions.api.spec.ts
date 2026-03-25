@@ -24,8 +24,6 @@ import { ExternalToolPseudonymEntity } from '@modules/pseudonym/entity';
 import { externalToolPseudonymEntityFactory } from '@modules/pseudonym/testing';
 import { RegistrationPinEntity } from '@modules/registration-pin/entity';
 import { registrationPinEntityFactory } from '@modules/registration-pin/entity/testing';
-import { rocketChatUserEntityFactory } from '@modules/rocketchat-user/entity/testing';
-import { RocketChatService } from '@modules/rocketchat/rocket-chat.service';
 import { RoomArrangementEntity } from '@modules/room';
 import { roomArrangementEntityFactory } from '@modules/room/testing';
 import { SchoolEntity } from '@modules/school/repo';
@@ -52,7 +50,6 @@ describe(`deletionExecution (api)`, () => {
 	const API_KEY = 'someotherkey';
 	let filesStorageProducer: DeepMocked<FilesStorageProducer>;
 	let calendarService: DeepMocked<CalendarService>;
-	let rocketChatService: DeepMocked<RocketChatService>;
 	let dashboardRepo: IDashboardRepo;
 
 	beforeAll(async () => {
@@ -63,8 +60,6 @@ describe(`deletionExecution (api)`, () => {
 			.useValue(createMock<FilesStorageProducer>())
 			.overrideProvider(CalendarService)
 			.useValue(createMock<CalendarService>())
-			.overrideProvider(RocketChatService)
-			.useValue(createMock<RocketChatService>())
 			.compile();
 
 		app = module.createNestApplication();
@@ -73,7 +68,6 @@ describe(`deletionExecution (api)`, () => {
 
 		filesStorageProducer = module.get(FilesStorageProducer);
 		calendarService = module.get(CalendarService);
-		rocketChatService = module.get(RocketChatService);
 		dashboardRepo = app.get(DASHBOARD_REPO);
 	});
 
@@ -227,8 +221,6 @@ describe(`deletionExecution (api)`, () => {
 				};
 				filesStorageProducer.removeCreatorIdFromFileRecords.mockResolvedValueOnce([mockFileStorage]);
 
-				const rocketChatUser = rocketChatUserEntityFactory.buildWithId({ userId: studentUser.id });
-
 				const roomArrangement = roomArrangementEntityFactory.build({ userId: studentUser.id });
 
 				await em
@@ -252,7 +244,6 @@ describe(`deletionExecution (api)`, () => {
 						submission,
 						groupSubmission,
 						registrationPin,
-						rocketChatUser,
 						roomArrangement,
 					])
 					.flush();
@@ -292,7 +283,6 @@ describe(`deletionExecution (api)`, () => {
 					submission,
 					groupSubmission,
 					registrationPin,
-					rocketChatUser,
 					roomArrangement,
 				};
 			};
@@ -317,7 +307,6 @@ describe(`deletionExecution (api)`, () => {
 					team,
 					submission,
 					groupSubmission,
-					rocketChatUser,
 					roomArrangement,
 				} = await setup();
 
@@ -419,8 +408,6 @@ describe(`deletionExecution (api)`, () => {
 
 				const checkRoomArrangement = await em.findOne(RoomArrangementEntity, whereRoomArrangement);
 				expect(checkRoomArrangement).toBeNull();
-
-				expect(rocketChatService.deleteUser).toHaveBeenCalledWith(rocketChatUser.username);
 
 				expect(filesStorageProducer.removeCreatorIdFromFileRecords).toHaveBeenCalledWith(studentUser.id);
 				expect(filesStorageProducer.removeCreatorIdFromFileRecords).toHaveBeenCalledWith(teacherUser.id);
