@@ -41,7 +41,6 @@ consentVersionSchema.virtual('consentData', {
 consentVersionSchema.set('toObject', { virtuals: true });
 consentVersionSchema.set('toJSON', { virtuals: false });
 
-// const consentModel = mongoose.model('consent', consentSchema);
 const ConsentVersionModel = mongoose.model('consentVersion', consentVersionSchema);
 
 module.exports = {

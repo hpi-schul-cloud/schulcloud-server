@@ -4,11 +4,6 @@ import { Task } from '@modules/task/repo';
 import { User } from '@modules/user/repo';
 import { Injectable, NotImplementedException } from '@nestjs/common';
 
-export enum TaskParentPermission {
-	read,
-	write,
-}
-
 @Injectable()
 export class CourseRoomsAuthorisationService {
 	public hasCourseWritePermission(user: User, course: CourseEntity): boolean {
