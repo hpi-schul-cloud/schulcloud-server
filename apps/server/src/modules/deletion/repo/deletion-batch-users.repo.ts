@@ -56,7 +56,13 @@ export class DeletionBatchUsersRepo {
 							$project: {
 								_id: 0,
 								id: { $toString: '$_id' },
-								roles: { $map: { input: '$roles', as: 'r', in: { $toString: '$$r' } } },
+								roles: {
+									$cond: {
+										if: { $eq: ['$roles', null] },
+										then: [],
+										else: { $map: { input: '$roles', as: 'r', in: { $toString: '$$r' } } },
+									},
+								},
 							},
 						},
 					],
