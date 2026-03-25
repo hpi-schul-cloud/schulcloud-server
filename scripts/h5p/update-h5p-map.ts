@@ -1,6 +1,6 @@
 import arg from 'arg';
 import { FileSystemHelper } from './helper/file-system.helper';
-import { h5pLogger } from './helper/h5p-logger.helper';
+import { h5pLogger, LogLevel } from './helper/h5p-logger.helper';
 import { GitHubOwner, GitHubOwnerType, H5pGitHubClient } from './service/h5p-github.client';
 
 const args = arg(
@@ -13,6 +13,8 @@ const args = arg(
 		'-u': '--users',
 		'--target': String,
 		'-t': '--target',
+		'--verbose': Boolean,
+		'-v': '--verbose',
 	},
 	{
 		argv: process.argv.slice(2),
@@ -26,6 +28,7 @@ OPTIONS:
 	--organizations (-o)	Organization name(s) on GitHub. Can be comma-separated for multiple organizations.
 	--users (-u)			User name(s) on GitHub. Can be comma-separated for multiple users.
 	--target (-t)			Path to the output file where the libraryRepoMap will be saved.
+	--verbose (-v)			Enable verbose logging.
 `);
 	process.exit(0);
 }
@@ -34,6 +37,7 @@ interface Params {
 	organizations: string[];
 	users: string[];
 	target?: string;
+	verbose?: boolean;
 }
 
 const parseCommaSeparated = (value: string | undefined): string[] => {
@@ -50,6 +54,7 @@ const params: Params = {
 	organizations: parseCommaSeparated(args._[0] || args['--organizations']),
 	users: parseCommaSeparated(args._[1] || args['--users']),
 	target: args._[2] || args['--target'],
+	verbose: args['--verbose'],
 };
 
 const main = async (): Promise<void> => {
@@ -71,6 +76,10 @@ const main = async (): Promise<void> => {
 		...otherOrganizations.map((org) => ({ type: GitHubOwnerType.Organization, name: org })),
 		...(hasH5pOrg ? [{ type: GitHubOwnerType.Organization, name: 'h5p' }] : []),
 	];
+
+	if (params.verbose) {
+		h5pLogger.setLogLevel(LogLevel.VERBOSE);
+	}
 
 	const libraryRepoMap = await gitHubClient.getLibraryRepoMapFromGitHub(owners);
 
