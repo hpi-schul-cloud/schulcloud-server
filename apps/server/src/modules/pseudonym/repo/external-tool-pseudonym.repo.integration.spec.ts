@@ -151,10 +151,10 @@ describe('ExternalToolPseudonymRepo', () => {
 			it('should create a new pseudonym if it does not exist', async () => {
 				const { domainObject } = setup();
 
-				const result: Pseudonym = await repo.createOrUpdate(domainObject);
+				const result: Pseudonym = await repo.createOrUpdate(domainObject.userId, domainObject.toolId);
 
 				expect(result.id).toBeTruthy();
-				expect(result.pseudonym).toEqual(domainObject.pseudonym);
+				expect(result.pseudonym).toEqual(expect.any(String));
 				expect(result.toolId).toEqual(domainObject.toolId);
 				expect(result.userId).toEqual(domainObject.userId);
 			});
@@ -177,23 +177,13 @@ describe('ExternalToolPseudonymRepo', () => {
 				};
 			};
 
-			it('should update the pseudonym value of the existing record', async () => {
+			it('should not change createdAt and pseudonym on update', async () => {
 				const { entity, domainObject } = await setup();
 
-				const result: Pseudonym = await repo.createOrUpdate(domainObject);
-
-				expect(result.id).toEqual(entity.id);
-				expect(result.pseudonym).toEqual(domainObject.pseudonym);
-				expect(result.toolId).toEqual(domainObject.toolId);
-				expect(result.userId).toEqual(domainObject.userId);
-			});
-
-			it('should not change createdAt on update', async () => {
-				const { entity, domainObject } = await setup();
-
-				const result: Pseudonym = await repo.createOrUpdate(domainObject);
+				const result: Pseudonym = await repo.createOrUpdate(domainObject.userId, domainObject.toolId);
 
 				expect(result.createdAt).toEqual(entity.createdAt);
+				expect(result.pseudonym).toEqual(entity.pseudonym);
 			});
 		});
 
@@ -221,14 +211,20 @@ describe('ExternalToolPseudonymRepo', () => {
 				const { domainObject1, domainObject2 } = setup();
 
 				await expect(
-					Promise.all([repo.createOrUpdate(domainObject1), repo.createOrUpdate(domainObject2)])
+					Promise.all([
+						repo.createOrUpdate(domainObject1.userId, domainObject1.toolId),
+						repo.createOrUpdate(domainObject2.userId, domainObject2.toolId),
+					])
 				).resolves.not.toThrow();
 			});
 
 			it('should result in exactly one document in the database', async () => {
 				const { domainObject1, domainObject2, sharedUserId, sharedToolId } = setup();
 
-				await Promise.all([repo.createOrUpdate(domainObject1), repo.createOrUpdate(domainObject2)]);
+				await Promise.all([
+					repo.createOrUpdate(domainObject1.userId, domainObject1.toolId),
+					repo.createOrUpdate(domainObject2.userId, domainObject2.toolId),
+				]);
 
 				const count = await em.count(ExternalToolPseudonymEntity, {
 					userId: new ObjectId(sharedUserId),

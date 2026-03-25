@@ -1,3 +1,4 @@
+import { RuntimeConfigEntity } from '@infra/runtime-config/repo/entity/runtime-config.entity';
 import { AccountEntity } from '@modules/account/repo';
 import { BoardNodeEntity } from '@modules/board/repo/entity';
 import { ClassEntity } from '@modules/class/entity';
@@ -26,6 +27,7 @@ import { RegistrationPinEntity } from '@modules/registration-pin/entity';
 import { Role } from '@modules/role/repo';
 import { RoomMembershipEntity } from '@modules/room-membership/repo/entity/room-membership.entity';
 import { RoomArrangementEntity, RoomEntity, RoomInvitationLinkEntity } from '@modules/room/repo/entity';
+import { RoomContentEntity } from '@modules/room/repo/entity/room-content.entity';
 import { MediaSchoolLicenseEntity, SchoolLicenseEntity } from '@modules/school-license/entity';
 import {
 	CountyEmbeddable,
@@ -48,8 +50,6 @@ import { MediaUserLicenseEntity, UserLicenseEntity } from '@modules/user-license
 import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { VideoConferenceEntity } from '@modules/video-conference/repo';
-import { RoomContentEntity } from '@modules/room/repo/entity/room-content.entity';
-import { RuntimeConfigEntity } from '@infra/runtime-config/repo/entity/runtime-config.entity';
 
 export const ENTITIES = [
 	AccountEntity,
