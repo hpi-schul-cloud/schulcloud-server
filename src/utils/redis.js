@@ -1,4 +1,3 @@
-const { Redis } = require('iovalkey');
 const { GeneralError } = require('../errors');
 
 let redisClient = false;
@@ -25,10 +24,6 @@ function getRedisClient() {
 	return redisClient;
 }
 
-function setRedisClient(client) {
-	redisClient = client;
-}
-
 const redisGetAsync = (...args) => {
 	if (redisClient) return redisClient.get(...args);
 	throw new GeneralError('No redis connection. Check for this via getRedisClient().');
@@ -49,7 +44,6 @@ const redisTtlAsync = (...args) => {
 module.exports = {
 	clearRedis,
 	initializeRedisClient,
-	setRedisClient,
 	getRedisClient,
 	redisGetAsync,
 	redisSetAsync,
