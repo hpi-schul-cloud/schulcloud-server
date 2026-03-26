@@ -1,18 +1,18 @@
+import { ICurrentUser } from '@infra/auth-guard';
+import { AccountService } from '@modules/account';
+import { OAuthService, OauthSessionToken, OauthSessionTokenFactory, OauthSessionTokenService } from '@modules/oauth';
 import { Inject, Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-custom';
-import { StrategyType } from '../interface';
-import { IdTokenExtractionFailureLoggableException, OAuthService, OauthSessionTokenService } from '@modules/oauth';
-import { AccountService } from '@modules/account';
 import { AUTHENTICATION_CONFIG_TOKEN, AuthenticationConfig } from '../authentication-config';
-import { ICurrentUser } from '@infra/auth-guard';
-import { CurrentUserMapper } from '../mapper';
-import { ErwinAuthorizationBodyParams } from '../controllers/dto';
+import { Oauth2AuthorizationBodyParams } from '../controllers/dto';
+import { StrategyType } from '../interface';
 import {
-	SchoolInMigrationLoggableException,
 	AccountNotFoundLoggableException,
+	SchoolInMigrationLoggableException,
 	UserAccountDeactivatedLoggableException,
 } from '../loggable';
+import { CurrentUserMapper } from '../mapper';
 
 @Injectable()
 export class ErwinStrategy extends PassportStrategy(Strategy, StrategyType.ERWIN) {
@@ -25,24 +25,10 @@ export class ErwinStrategy extends PassportStrategy(Strategy, StrategyType.ERWIN
 		super();
 	}
 
-	public async validate(request: { body: ErwinAuthorizationBodyParams }): Promise<ICurrentUser> {
-		const { accessToken } = request.body;
-		if (!accessToken) {
-			throw new IdTokenExtractionFailureLoggableException('accessToken');
-		}
+	public async validate(request: { body: Oauth2AuthorizationBodyParams }): Promise<ICurrentUser> {
+		const { systemId, redirectUri, code } = request.body;
 
-		const tokenDto = (await this.oauthService.authenticateUser('', '', accessToken)) as {
-			claims?: { systemId?: string };
-			systemId?: string;
-			idToken: string;
-			accessToken: string;
-		};
-
-		const systemId: string | undefined = tokenDto?.claims?.systemId ?? tokenDto?.systemId;
-
-		if (!systemId) {
-			throw new IdTokenExtractionFailureLoggableException('systemId');
-		}
+		const tokenDto = await this.oauthService.authenticateUser(systemId, redirectUri, code);
 
 		const user = await this.oauthService.provisionUser(systemId, tokenDto.idToken, tokenDto.accessToken);
 
@@ -55,8 +41,18 @@ export class ErwinStrategy extends PassportStrategy(Strategy, StrategyType.ERWIN
 			throw new AccountNotFoundLoggableException();
 		}
 
-		if (account.deactivatedAt && account.deactivatedAt.getTime() <= Date.now()) {
+		if (account.deactivatedAt !== undefined && account.deactivatedAt.getTime() <= Date.now()) {
 			throw new UserAccountDeactivatedLoggableException();
+		}
+
+		if (this.config.externalSystemLogoutEnabled) {
+			const oauthSessionToken: OauthSessionToken = OauthSessionTokenFactory.build({
+				userId: user.id,
+				systemId,
+				refreshToken: tokenDto.refreshToken,
+			});
+
+			await this.oauthSessionTokenService.save(oauthSessionToken);
 		}
 
 		const currentUser = CurrentUserMapper.mapToErwinCurrentUser(account.id, user, systemId, true);
