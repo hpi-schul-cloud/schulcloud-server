@@ -316,7 +316,7 @@ export class H5pGitHubClient {
 		}
 
 		if (!response || response.status < 200 || response.status >= 300) {
-			throw new Error(`GitHub API request failed${response ? ` with status ${response.status}` : ''}`);
+			throw new Error('GitHub API request failed' + (response ? ' with status ' + response.status : ''));
 		}
 
 		return response;
