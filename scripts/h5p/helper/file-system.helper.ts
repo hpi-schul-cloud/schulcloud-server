@@ -14,6 +14,7 @@ import {
 import { tmpdir } from 'os';
 import { join } from 'path';
 import { parse, stringify } from 'yaml';
+import { H5PLibrary } from '../interface/h5p-library';
 
 export class FileSystemHelper {
 	public static getAllFolders(dirPath: string): string[] {
@@ -59,6 +60,32 @@ export class FileSystemHelper {
 		const content = readFileSync(filePath);
 
 		return content;
+	}
+
+	public static readLibraryJson(filePath: string): H5PLibrary {
+		const libraryJson = this.readJsonFile(filePath);
+
+		if (!this.isLibraryJsonType(libraryJson)) {
+			throw new Error('Invalid input type for library.json');
+		}
+
+		return libraryJson;
+	}
+
+	private static isLibraryJsonType(object: unknown): object is H5PLibrary {
+		const isType =
+			typeof object === 'object' &&
+			object !== null &&
+			'machineName' in object &&
+			typeof object.machineName === 'string' &&
+			'majorVersion' in object &&
+			typeof object.majorVersion === 'number' &&
+			'minorVersion' in object &&
+			typeof object.minorVersion === 'number' &&
+			'patchVersion' in object &&
+			typeof object.patchVersion === 'number';
+
+		return isType;
 	}
 
 	public static readLibraryRepoMap(mapFile: string): Record<string, string> {

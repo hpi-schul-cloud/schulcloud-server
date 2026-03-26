@@ -96,12 +96,7 @@ export class H5pHubClient {
 
 		const libraryFolder = FileSystemHelper.buildPath(outputDir, folder);
 		const libraryJsonPath = FileSystemHelper.getLibraryJsonPath(libraryFolder);
-		const json = FileSystemHelper.readJsonFile(libraryJsonPath) as {
-			majorVersion: number;
-			minorVersion: number;
-			patchVersion: number;
-			[key: string]: any;
-		};
+		const json = FileSystemHelper.readLibraryJson(libraryJsonPath);
 		const version: IFullLibraryName = {
 			machineName: library,
 			majorVersion: json.majorVersion,

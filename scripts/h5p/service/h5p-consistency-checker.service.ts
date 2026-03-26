@@ -1,6 +1,6 @@
-import { IInstalledLibrary } from '@lumieducation/h5p-server/build/src/types';
 import { FileSystemHelper } from '../helper/file-system.helper';
 import { h5pLogger } from '../helper/h5p-logger.helper';
+import { H5PLibrary } from '../interface/h5p-library';
 
 export class H5pConsistencyChecker {
 	private readonly logger = h5pLogger;
@@ -13,7 +13,7 @@ export class H5pConsistencyChecker {
 				return false;
 			}
 
-			const libraryJson = FileSystemHelper.readJsonFile(libraryJsonPath) as IInstalledLibrary;
+			const libraryJson = FileSystemHelper.readLibraryJson(libraryJsonPath);
 
 			const jsIsMissing = this.checkJsFilesMissing(folderPath, libraryJson);
 			if (jsIsMissing) {
@@ -34,7 +34,7 @@ export class H5pConsistencyChecker {
 		}
 	}
 
-	private checkJsFilesMissing(folderPath: string, libraryJson: IInstalledLibrary): boolean {
+	private checkJsFilesMissing(folderPath: string, libraryJson: H5PLibrary): boolean {
 		const jsPaths = this.getJsPaths(libraryJson);
 		const missingFiles = this.getMissingFiles(folderPath, jsPaths);
 
@@ -46,7 +46,7 @@ export class H5pConsistencyChecker {
 		return false;
 	}
 
-	private checkCssFilesMissing(folderPath: string, libraryJson: IInstalledLibrary): boolean {
+	private checkCssFilesMissing(folderPath: string, libraryJson: H5PLibrary): boolean {
 		const cssPaths = this.getCssPaths(libraryJson);
 		const missingFiles = this.getMissingFiles(folderPath, cssPaths);
 
@@ -58,11 +58,11 @@ export class H5pConsistencyChecker {
 		return false;
 	}
 
-	private getJsPaths(libraryJson: IInstalledLibrary): string[] {
+	private getJsPaths(libraryJson: H5PLibrary): string[] {
 		return libraryJson.preloadedJs?.map((js) => js.path) || [];
 	}
 
-	private getCssPaths(libraryJson: IInstalledLibrary): string[] {
+	private getCssPaths(libraryJson: H5PLibrary): string[] {
 		return libraryJson.preloadedCss?.map((css) => css.path) || [];
 	}
 

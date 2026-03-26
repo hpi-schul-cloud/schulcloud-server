@@ -278,12 +278,7 @@ export class H5pLibraryPackagerService {
 		const libraryJsonPath = FileSystemHelper.getLibraryJsonPath(folderPath);
 		let changed = false;
 		try {
-			const json = FileSystemHelper.readJsonFile(libraryJsonPath) as {
-				majorVersion: number;
-				minorVersion: number;
-				patchVersion: number;
-				[key: string]: any;
-			};
+			const json = FileSystemHelper.readLibraryJson(libraryJsonPath);
 			const { major: tagMajor, minor: tagMinor, patch: tagPatch } = this.parseTagVersion(tag);
 			if (json.majorVersion !== tagMajor || json.minorVersion !== tagMinor || json.patchVersion !== tagPatch) {
 				json.majorVersion = tagMajor;
@@ -546,7 +541,7 @@ export class H5pLibraryPackagerService {
 	private checkAndCorrectLibraryJsonPaths(folderPath: string): boolean {
 		const libraryJsonPath = FileSystemHelper.getLibraryJsonPath(folderPath);
 		try {
-			const json = FileSystemHelper.readJsonFile(libraryJsonPath) as H5PLibrary;
+			const json = FileSystemHelper.readLibraryJson(libraryJsonPath);
 			const changed = this.filterInvalidPathsFromLibraryJson(json, folderPath);
 
 			if (changed) {
@@ -607,7 +602,9 @@ export class H5pLibraryPackagerService {
 	}
 
 	private inputIsObjectWithPath(obj: unknown): obj is { path: string } {
-		return typeof obj === 'object' && obj !== null && 'path' in obj && typeof (obj as { path: string }).path === 'string';
+		return (
+			typeof obj === 'object' && obj !== null && 'path' in obj && typeof (obj as { path: string }).path === 'string'
+		);
 	}
 
 	private cleanUpUnwantedFilesInLibraryFolder(folderPath: string): void {
@@ -641,11 +638,7 @@ export class H5pLibraryPackagerService {
 	private getDependenciesFromLibraryJson(repoName: string, tag: string): ILibraryName[] {
 		const { folderPath } = FileSystemHelper.createTempFolder(this.tempFolderPath, repoName, tag);
 		const libraryJsonPath = FileSystemHelper.getLibraryJsonPath(folderPath);
-		const libraryJsonContent = FileSystemHelper.readJsonFile(libraryJsonPath) as {
-			preloadedDependencies?: ILibraryName[];
-			editorDependencies?: ILibraryName[];
-			dynamicDependencies?: ILibraryName[];
-		};
+		const libraryJsonContent = FileSystemHelper.readLibraryJson(libraryJsonPath);
 		const dependencies = (libraryJsonContent?.preloadedDependencies ?? []).concat(
 			libraryJsonContent?.editorDependencies ?? [],
 			libraryJsonContent?.dynamicDependencies ?? []
