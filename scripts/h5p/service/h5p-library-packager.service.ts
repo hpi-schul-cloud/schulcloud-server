@@ -654,7 +654,7 @@ export class H5pLibraryPackagerService {
 		const semanticsJsonPath = FileSystemHelper.getSemanticsJsonPath(folderPath);
 		const semanticsFileExists = FileSystemHelper.pathExists(semanticsJsonPath);
 		if (semanticsFileExists) {
-			const semantics = FileSystemHelper.readJsonFile(semanticsJsonPath);
+			const semantics = FileSystemHelper.readSemanticsJson(semanticsJsonPath);
 			if (Array.isArray(semantics)) {
 				const libraryOptions = this.findLibraryOptions(semantics);
 				for (const libraryOption of libraryOptions) {

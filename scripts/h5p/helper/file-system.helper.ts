@@ -15,6 +15,7 @@ import { tmpdir } from 'os';
 import { join } from 'path';
 import { parse, stringify } from 'yaml';
 import { H5PLibrary } from '../interface/h5p-library';
+import { H5PSemanticField, H5PSemantics } from '../interface/h5p-semantics';
 
 export class FileSystemHelper {
 	public static getAllFolders(dirPath: string): string[] {
@@ -84,6 +85,35 @@ export class FileSystemHelper {
 			typeof object.minorVersion === 'number' &&
 			'patchVersion' in object &&
 			typeof object.patchVersion === 'number';
+
+		return isType;
+	}
+
+	public static readSemanticsJson(filePath: string): H5PSemantics {
+		const semanticsJson = this.readJsonFile(filePath);
+
+		if (!this.isSemanticsJsonType(semanticsJson)) {
+			throw new Error('Invalid input type for semantics.json');
+		}
+
+		return semanticsJson;
+	}
+
+	private static isSemanticsJsonType(object: any): object is H5PSemantics {
+		const isType = Array.isArray(object) && object.every((field) => this.isSemanticFieldType(field));
+		return isType;
+	}
+
+	private static isSemanticFieldType(object: any): object is H5PSemanticField {
+		const isType =
+			typeof object === 'object' &&
+			object !== null &&
+			'name' in object &&
+			typeof object.name === 'string' &&
+			'type' in object &&
+			typeof object.type === 'string' &&
+			'label' in object &&
+			typeof object.label === 'string';
 
 		return isType;
 	}
