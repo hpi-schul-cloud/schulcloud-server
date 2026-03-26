@@ -108,28 +108,24 @@ export class H5pLibraryPackagerService {
 	}
 
 	private filterTagsByH5pHubVersion(tags: string[], currentH5pHubTag: IFullLibraryName): string[] {
-		const removedTags: string[] = [];
 		const filteredTags = tags.filter((tag) => {
 			const { major, minor, patch } = this.parseTagVersion(tag);
 
 			// Compare major version first
 			if (major < currentH5pHubTag.majorVersion) return true;
 			if (major > currentH5pHubTag.majorVersion) {
-				removedTags.push(tag);
 				return false;
 			}
 
 			// Major versions are equal, compare minor version
 			if (minor < currentH5pHubTag.minorVersion) return true;
 			if (minor > currentH5pHubTag.minorVersion) {
-				removedTags.push(tag);
 				return false;
 			}
 
 			if (patch < currentH5pHubTag.patchVersion) return true;
 
 			// If versions are equal or tag is greater, exclude it
-			removedTags.push(tag);
 			return false;
 		});
 
