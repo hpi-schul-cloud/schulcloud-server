@@ -94,19 +94,19 @@ These commands internally execute the corresponding scripts in this folder. Chec
 
 ### update-h5p-map.ts
 
-To update the H5P library to GitHub repository map using `update-h5p-map.ts`, you only need the following environment variable:
+To update the H5P library to GitHub repository map using `update-h5p-map.ts`, you need the following environment variable:
 
-- `GITHUB_PERSONAL_ACCESS_TOKEN`: Required if you need to access private repositories or increase GitHub API rate limits. Set this variable to a valid GitHub personal access token.
+- `GITHUB_PERSONAL_ACCESS_TOKEN`: Required. Set this variable to a valid GitHub personal access token. Without a token, the script uses unauthenticated GitHub API access, which is limited to 60 requests per hour and will likely fail for larger operations. With a token, the rate limit increases to 5,000 requests per hour. A token is also required to access private repositories.
 
-Set this variable in your environment before running the script to avoid authentication or permission errors.
+Set this variable in your environment before running the script.
 
 ### package-h5p-libraries.ts
 
-To package H5P libraries using `package-h5p-libraries.ts`, you only need the following environment variable:
+To package H5P libraries using `package-h5p-libraries.ts`, you need the following environment variable:
 
-- `GITHUB_PERSONAL_ACCESS_TOKEN`: Required if you need to access private repositories or increase GitHub API rate limits. Set this variable to a valid GitHub personal access token.
+- `GITHUB_PERSONAL_ACCESS_TOKEN`: Required. Set this variable to a valid GitHub personal access token. Without a token, the script uses unauthenticated GitHub API access, which is limited to 60 requests per hour and will likely fail for larger operations. With a token, the rate limit increases to 5,000 requests per hour. A token is also required to access private repositories.
 
-Set this variable in your environment before running the script to avoid authentication or permission errors.
+Set this variable in your environment before running the script.
 
 ### upload-h5p-libraries.ts
 
