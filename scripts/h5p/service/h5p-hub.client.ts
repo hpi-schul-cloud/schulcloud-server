@@ -64,39 +64,69 @@ export class H5pHubClient {
 			return cached;
 		}
 
+		const version = await this.fetchVersionFromHub(library);
+		this.versionCache.set(library, version);
+
+		return version;
+	}
+
+	private async fetchVersionFromHub(library: string): Promise<IFullLibraryName> {
+		const h5pHubFolder = this.ensureH5pHubFolder();
+		const h5pFilePath = await this.downloadToTempFile(library, h5pHubFolder);
+		const extractedFolder = this.extractH5pPackage(library, h5pFilePath, h5pHubFolder);
+
+		return this.extractVersionFromLibrary(library, extractedFolder);
+	}
+
+	private ensureH5pHubFolder(): string {
 		const tempDir = FileSystemHelper.getTempDir();
 		const h5pHubFolder = FileSystemHelper.buildPath(tempDir, 'h5p-hub');
+
 		if (!FileSystemHelper.pathExists(h5pHubFolder)) {
 			this.logger.debug(`Creating H5P Hub folder`);
 			FileSystemHelper.createFolder(h5pHubFolder);
 		}
 
+		return h5pHubFolder;
+	}
+
+	private async downloadToTempFile(library: string, h5pHubFolder: string): Promise<string> {
 		const filePath = FileSystemHelper.buildPath(h5pHubFolder, `${library}.h5p`);
-		if (FileSystemHelper.pathExists(filePath)) {
-			this.logger.debug(`Removing existing H5P Hub file`);
-			FileSystemHelper.removeFile(filePath);
-		}
+
+		this.removeIfExists(filePath, 'file');
 
 		this.logger.debug(`Downloading ${library} from H5P Hub...`);
 		await this.downloadContentType(library, filePath);
 
-		this.logger.debug(`Unzipping H5P Hub file for ${library}`);
-		const outputDir = FileSystemHelper.buildPath(h5pHubFolder, library);
-		if (FileSystemHelper.pathExists(outputDir)) {
-			this.logger.debug(`Removing existing H5P Hub folder`);
-			FileSystemHelper.removeFolder(outputDir);
-		}
-		FileSystemHelper.unzipFile(filePath, outputDir);
+		return filePath;
+	}
 
+	private extractH5pPackage(library: string, h5pFilePath: string, h5pHubFolder: string): string {
+		const outputDir = FileSystemHelper.buildPath(h5pHubFolder, library);
+
+		this.removeIfExists(outputDir, 'folder');
+
+		this.logger.debug(`Unzipping H5P Hub file for ${library}`);
+		FileSystemHelper.unzipFile(h5pFilePath, outputDir);
+
+		return this.findLibraryFolder(library, outputDir);
+	}
+
+	private findLibraryFolder(library: string, outputDir: string): string {
 		const folders = FileSystemHelper.getAllFolders(outputDir);
 		const folder = folders.find((f) => f.startsWith(library));
+
 		if (!folder) {
 			throw new Error(`No folder found for library ${library} in unzipped H5P Hub content.`);
 		}
 
-		const libraryFolder = FileSystemHelper.buildPath(outputDir, folder);
+		return FileSystemHelper.buildPath(outputDir, folder);
+	}
+
+	private extractVersionFromLibrary(library: string, libraryFolder: string): IFullLibraryName {
 		const libraryJsonPath = FileSystemHelper.getLibraryJsonPath(libraryFolder);
 		const json = FileSystemHelper.readLibraryJson(libraryJsonPath);
+
 		const version: IFullLibraryName = {
 			machineName: library,
 			majorVersion: json.majorVersion,
@@ -106,9 +136,21 @@ export class H5pHubClient {
 
 		this.logger.debug(`Found Hub version: ${version.majorVersion}.${version.minorVersion}.${version.patchVersion}`);
 
-		this.versionCache.set(library, version);
-
 		return version;
+	}
+
+	private removeIfExists(path: string, type: 'file' | 'folder'): void {
+		if (!FileSystemHelper.pathExists(path)) {
+			return;
+		}
+
+		this.logger.debug(`Removing existing H5P Hub ${type}`);
+
+		if (type === 'file') {
+			FileSystemHelper.removeFile(path);
+		} else {
+			FileSystemHelper.removeFolder(path);
+		}
 	}
 
 	public clearVersionCache(): void {
