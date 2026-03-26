@@ -220,10 +220,6 @@ export class H5pLibraryPackagerService {
 		repo: string,
 		useMasterBranch = false
 	): Promise<boolean> {
-		// TODO: wenn wir filePath vorher erstellen könnten würde der tempFolder hinter dem unzipFile verschwinden welches folderPath zurück gibt.
-		// removeTemporaryFiles sollte dann auch nur folderPath als input brauchen.
-		// Dann wäre es möglich ein pre and post hook zu erstellen.
-		// Wenn man dann noch FileSystemHelper als Klasse instanziiert über ein factory könnte man dort noch mehr implizites Wissen weg kapseln.
 		const { filePath, folderPath, tempFolder } = FileSystemHelper.createTempFolder(this.tempFolderPath, library, tag);
 
 		try {
@@ -245,9 +241,6 @@ export class H5pLibraryPackagerService {
 		FileSystemHelper.unzipAndRenameFolder(filePath, folderPath, tempFolder);
 		FileSystemHelper.removeFile(filePath);
 
-		// TODO: gefühlt gehört das in den try catch rein, es sind dafür aber viel zu viele try catch instanzen.
-		// Genauso wie die downloadGitHubTag
-		// Wenn das umgesetzt wäre könnte das return result in das try catch rein
 		const buildSuccess = this.executeAdditionalBuildStepsIfRequired(folderPath, library, tag);
 		if (!buildSuccess) {
 			return false;
