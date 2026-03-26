@@ -760,7 +760,10 @@ export class H5pLibraryPackagerService {
 				depMinor === currentH5pHubTag.minorVersion &&
 				depPatch > currentH5pHubTag.patchVersion
 			) {
-				depTag = `${depMajor}.${depMinor}.${currentH5pHubTag.patchVersion}`;
+				const cappedTag = this.findTagByVersion(tags, depMajor, depMinor, currentH5pHubTag.patchVersion);
+				if (cappedTag) {
+					depTag = cappedTag;
+				}
 			}
 		} catch {
 			// Using latest available tag if Hub version unavailable
@@ -806,6 +809,14 @@ export class H5pLibraryPackagerService {
 		}
 
 		return highestVersionTag;
+	}
+
+	private findTagByVersion(tags: string[], major: number, minor: number, patch: number): string | undefined {
+		return tags.find((t) => {
+			const parsed = this.parseTagVersion(t);
+
+			return parsed.major === major && parsed.minor === minor && parsed.patch === patch;
+		});
 	}
 
 	private async checkMasterBranchVersion(
