@@ -18,7 +18,6 @@ describe('user hooks', () => {
 
 	before(async () => {
 		configBefore = Configuration.toObject({ plainSecrets: true });
-		Configuration.set('FEATURE_NEXBOARD_COPY_ENABLED', false);
 		app = await appPromise();
 		testObjects = testHelper(app);
 		userService = app.service('users');

@@ -20,7 +20,7 @@ import {
 import { DatabaseManagementService } from '../service/database-management.service';
 import { Document } from 'mongodb';
 
-export interface CollectionFilePath {
+interface CollectionFilePath {
 	filePath: string;
 	collectionName: string;
 }

@@ -1,10 +1,10 @@
 import { Logger } from '@core/logger';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { ReferencedEntityType } from '../../types';
 import { ErwinIdentifier } from '../do';
-import { ErwinIdentifierRepo } from '../interface';
+import { ERWIN_IDENTIFIER_REPO, ErwinIdentifierRepo } from '../interface';
 import { ErwinIdentifierLoggable } from '../loggable';
 
 export type ErwinIdentifierEntry = {
@@ -15,7 +15,10 @@ export type ErwinIdentifierEntry = {
 
 @Injectable()
 export class ErwinIdentifierService {
-	constructor(private readonly logger: Logger, private readonly erwinIdentifierRepo: ErwinIdentifierRepo) {
+	constructor(
+		private readonly logger: Logger,
+		@Inject(ERWIN_IDENTIFIER_REPO) private readonly erwinIdentifierRepo: ErwinIdentifierRepo
+	) {
 		logger.setContext(ErwinIdentifierService.name);
 	}
 

@@ -1,9 +1,7 @@
 /* eslint-disable import/extensions */
 import { buildAllSearchableStringsForUser as _buildAllSearchableStringsForUserUntyped } from '../../../src/utils/search.js';
 
-export { BruteForcePrevention } from '../../../src/errors/index.js';
 export {
-	addTokenToWhitelist,
 	createRedisIdentifierFromJwtData,
 	ensureTokenIsWhitelisted,
 	getRedisData,
