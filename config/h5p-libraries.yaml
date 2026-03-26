@@ -4,4 +4,5 @@
 #   ansible/roles/h5p-proxy/defaults/main.yaml
 # in the dof_app_deploy repository: https://github.com/hpi-schul-cloud/dof_app_deploy
 
-h5p_libraries: []
+h5p_libraries:
+  - H5P.Dictation

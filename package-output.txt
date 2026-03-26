@@ -1,0 +1,39 @@
+
+> h5p:package-h5p-libraries
+> tsc scripts/h5p/package-h5p-libraries.ts --esModuleInterop && set -a && source .env && set +a && node ./scripts/h5p/package-h5p-libraries.js --verbose
+
+
+═════════════════
+  H5P.Dictation
+═════════════════
+Creating H5P Hub folder
+Downloading H5P.Dictation from H5P Hub...
+Downloaded content type H5P.Dictation
+Unzipping H5P Hub file for H5P.Dictation
+Found Hub version: 1.3.3
+• Hub version: 1.3.3 (excluded 2 newer versions)
+• Building 3 version(s): v1.2.2, 1.1.1, 1.0.8
+  H5P.Dictation-v1.2.2
+    Downloaded tag v1.2.2 of otacke/h5p-dictation
+    • Running npm build...
+    ✗ npm install/ci failed
+    ✗ Build failed
+  H5P.Dictation-1.1.1
+    Downloaded tag 1.1.1 of otacke/h5p-dictation
+    • Running npm build...
+    ✗ npm install/ci failed
+    ✗ Build failed
+  H5P.Dictation-1.0.8
+    Downloaded tag 1.0.8 of otacke/h5p-dictation
+    • Running npm build...
+    ✗ npm install/ci failed
+    ✗ Build failed
+
+────────────────────────────────────────
+  Build Summary
+────────────────────────────────────────
+  Built:       0
+  Skipped:     0
+  Failed:      3
+────────────────────────────────────────
+• Failed: H5P.Dictation-1.0.8, H5P.Dictation-1.1.1, H5P.Dictation-v1.2.2

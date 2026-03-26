@@ -1,0 +1,3346 @@
+
+> h5p:upload-h5p-libraries
+> tsc scripts/h5p/upload-h5p-libraries.ts --esModuleInterop && set -a && source .env && set +a && node ./scripts/h5p/upload-h5p-libraries.js
+
+• Found 573 folders in the temporary directory.
+
+════════════
+  Drop-1.0
+════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════
+  EmbeddedJS-1.0
+══════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════
+  FontAwesome-4.1
+═══════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════
+  FontAwesome-4.3
+═══════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════
+  FontAwesome-4.5
+═══════════════════
+→ No update needed for FontAwesome-4.5
+
+══════════════════
+  H5P.AFrame-1.0
+══════════════════
+• Updating from H5P.AFrame-1.0.4 to H5P.AFrame-1.0.5
+✓ Updated successfully
+
+════════════════════
+  H5P.AFrameAR-3.1
+════════════════════
+• Updating from H5P.AFrameAR-3.1.1 to H5P.AFrameAR-3.1.2
+✓ Updated successfully
+
+═══════════════════════════════
+  H5P.AFrameOrbitControls-1.3
+═══════════════════════════════
+• Updating from H5P.AFrameOrbitControls-1.3.0 to H5P.AFrameOrbitControls-1.3.1
+✓ Updated successfully
+
+═══════════════════════
+  H5P.ARScavenger-1.2
+═══════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════
+  H5P.ARScavenger-1.3
+═══════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════
+  H5P.Accordion-1.0
+═════════════════════
+→ No update needed for H5P.Accordion-1.0
+
+════════════════════════
+  H5P.AdvancedText-1.0
+════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════════
+  H5P.AdvancedText-1.1
+════════════════════════
+• Updating from H5P.AdvancedText-1.1.14 to H5P.AdvancedText-1.1.16
+✓ Updated successfully
+
+══════════════════════════
+  H5P.AdventCalendar-0.2
+══════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════════
+  H5P.AdventCalendar-0.3
+══════════════════════════
+→ No update needed for H5P.AdventCalendar-0.3
+
+════════════════════
+  H5P.Agamotto-1.0
+════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════
+  H5P.Agamotto-1.1
+════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════
+  H5P.Agamotto-1.2
+════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════
+  H5P.Agamotto-1.3
+════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════
+  H5P.Agamotto-1.4
+════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════
+  H5P.Agamotto-1.5
+════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════
+  H5P.Agamotto-1.6
+════════════════════
+→ No update needed for H5P.Agamotto-1.6
+
+════════════════════
+  H5P.AppearIn-1.0
+════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════════
+  H5P.ArithmeticQuiz-1.0
+══════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════════
+  H5P.ArithmeticQuiz-1.1
+══════════════════════════
+→ No update needed for H5P.ArithmeticQuiz-1.1
+
+═════════════════
+  H5P.Audio-1.0
+═════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════
+  H5P.Audio-1.1
+═════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════
+  H5P.Audio-1.2
+═════════════════
+→ No update needed for H5P.Audio-1.2
+
+═════════════════
+  H5P.Audio-1.3
+═════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════
+  H5P.Audio-1.4
+═════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════
+  H5P.Audio-1.5
+═════════════════
+→ No update needed for H5P.Audio-1.5
+
+═════════════════════════
+  H5P.AudioRecorder-1.0
+═════════════════════════
+→ No update needed for H5P.AudioRecorder-1.0
+
+══════════════════
+  H5P.Blanks-1.1
+══════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════
+  H5P.Blanks-1.10
+═══════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════
+  H5P.Blanks-1.11
+═══════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════
+  H5P.Blanks-1.12
+═══════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════
+  H5P.Blanks-1.13
+═══════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════
+  H5P.Blanks-1.14
+═══════════════════
+→ No update needed for H5P.Blanks-1.14
+
+══════════════════
+  H5P.Blanks-1.3
+══════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════
+  H5P.Blanks-1.4
+══════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════
+  H5P.Blanks-1.6
+══════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════
+  H5P.Blanks-1.7
+══════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════
+  H5P.Blanks-1.8
+══════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════
+  H5P.Blanks-1.9
+══════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════════
+  H5P.BranchingQuestion-1.0
+═════════════════════════════
+→ No update needed for H5P.BranchingQuestion-1.0
+
+═════════════════════════════
+  H5P.BranchingScenario-1.0
+═════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════════
+  H5P.BranchingScenario-1.1
+═════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════════
+  H5P.BranchingScenario-1.2
+═════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════════
+  H5P.BranchingScenario-1.5
+═════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════════
+  H5P.BranchingScenario-1.6
+═════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════════
+  H5P.BranchingScenario-1.7
+═════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════
+  H5P.CKEditor-1.0
+════════════════════
+→ No update needed for H5P.CKEditor-1.0
+
+═════════════════
+  H5P.Chart-1.0
+═════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════
+  H5P.Chart-1.1
+═════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════
+  H5P.Chart-1.2
+═════════════════
+→ No update needed for H5P.Chart-1.2
+
+═══════════════════
+  H5P.Collage-0.1
+═══════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════
+  H5P.Collage-0.2
+═══════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════
+  H5P.Collage-0.3
+═══════════════════
+→ No update needed for H5P.Collage-0.3
+
+══════════════════
+  H5P.Column-1.1
+══════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════
+  H5P.Column-1.10
+═══════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════
+  H5P.Column-1.11
+═══════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════
+  H5P.Column-1.12
+═══════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════
+  H5P.Column-1.13
+═══════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════
+  H5P.Column-1.14
+═══════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════
+  H5P.Column-1.15
+═══════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════
+  H5P.Column-1.16
+═══════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════
+  H5P.Column-1.17
+═══════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════
+  H5P.Column-1.18
+═══════════════════
+→ No update needed for H5P.Column-1.18
+
+══════════════════
+  H5P.Column-1.2
+══════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════
+  H5P.Column-1.3
+══════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════
+  H5P.Column-1.4
+══════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════
+  H5P.Column-1.5
+══════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════
+  H5P.Column-1.6
+══════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════
+  H5P.Column-1.7
+══════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════
+  H5P.Column-1.8
+══════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════════
+  H5P.CombinationLock-1.0
+═══════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════
+  H5P.Components-1.0
+══════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════════
+  H5P.ContinuousText-1.1
+══════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════════
+  H5P.ContinuousText-1.2
+══════════════════════════
+→ No update needed for H5P.ContinuousText-1.2
+
+═══════════════════
+  H5P.Cornell-0.1
+═══════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════
+  H5P.Cornell-0.2
+═══════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════════════
+  H5P.CoursePresentation-1.10
+═══════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════════════
+  H5P.CoursePresentation-1.11
+═══════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════════════
+  H5P.CoursePresentation-1.12
+═══════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════════════
+  H5P.CoursePresentation-1.13
+═══════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════════════
+  H5P.CoursePresentation-1.14
+═══════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════════════
+  H5P.CoursePresentation-1.15
+═══════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════════════
+  H5P.CoursePresentation-1.16
+═══════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════════════
+  H5P.CoursePresentation-1.17
+═══════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════════════
+  H5P.CoursePresentation-1.18
+═══════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════════════
+  H5P.CoursePresentation-1.19
+═══════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════════════
+  H5P.CoursePresentation-1.2
+══════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════════════
+  H5P.CoursePresentation-1.20
+═══════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════════════
+  H5P.CoursePresentation-1.21
+═══════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════════════
+  H5P.CoursePresentation-1.22
+═══════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════════════
+  H5P.CoursePresentation-1.23
+═══════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════════════
+  H5P.CoursePresentation-1.24
+═══════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════════════
+  H5P.CoursePresentation-1.25
+═══════════════════════════════
+• Updating from H5P.CoursePresentation-1.25.31 to H5P.CoursePresentation-1.25.33
+✓ Updated successfully
+
+═══════════════════════════════
+  H5P.CoursePresentation-1.26
+═══════════════════════════════
+→ No update needed for H5P.CoursePresentation-1.26
+
+══════════════════════════════
+  H5P.CoursePresentation-1.4
+══════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════════════
+  H5P.CoursePresentation-1.5
+══════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════════════
+  H5P.CoursePresentation-1.6
+══════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════════════
+  H5P.CoursePresentation-1.7
+══════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════════════
+  H5P.CoursePresentation-1.8
+══════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════════════
+  H5P.CoursePresentation-1.9
+══════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════
+  H5P.Crossword-0.4
+═════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════
+  H5P.Crossword-0.5
+═════════════════════
+→ No update needed for H5P.Crossword-0.5
+
+══════════════════════
+  H5P.Crossword-v0.1
+══════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════
+  H5P.Crossword-v0.2
+══════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════
+  H5P.Dialogcards-1.0
+═══════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════
+  H5P.Dialogcards-1.1
+═══════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════
+  H5P.Dialogcards-1.2
+═══════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════
+  H5P.Dialogcards-1.3
+═══════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════
+  H5P.Dialogcards-1.4
+═══════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════
+  H5P.Dialogcards-1.5
+═══════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════
+  H5P.Dialogcards-1.6
+═══════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════
+  H5P.Dialogcards-1.7
+═══════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════
+  H5P.Dialogcards-1.8
+═══════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════
+  H5P.Dialogcards-1.9
+═══════════════════════
+→ No update needed for H5P.Dialogcards-1.9
+
+══════════════════════
+  H5P.Dictation-v1.2
+══════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════════════
+  H5P.DocumentExportPage-1.0
+══════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════════════
+  H5P.DocumentExportPage-1.1
+══════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════════════
+  H5P.DocumentExportPage-1.2
+══════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════════════
+  H5P.DocumentExportPage-1.3
+══════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════════════
+  H5P.DocumentExportPage-1.4
+══════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════════════
+  H5P.DocumentExportPage-1.5
+══════════════════════════════
+→ No update needed for H5P.DocumentExportPage-1.5
+
+═════════════════════════════
+  H5P.DocumentationTool-1.0
+═════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════════
+  H5P.DocumentationTool-1.1
+═════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════════
+  H5P.DocumentationTool-1.2
+═════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════════
+  H5P.DocumentationTool-1.3
+═════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════════
+  H5P.DocumentationTool-1.4
+═════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════════
+  H5P.DocumentationTool-1.5
+═════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════════
+  H5P.DocumentationTool-1.6
+═════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════════
+  H5P.DocumentationTool-1.7
+═════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════════
+  H5P.DocumentationTool-1.8
+═════════════════════════════
+→ No update needed for H5P.DocumentationTool-1.8
+
+════════════════════
+  H5P.DragNBar-1.0
+════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════
+  H5P.DragNBar-1.1
+════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════
+  H5P.DragNBar-1.2
+════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════
+  H5P.DragNBar-1.3
+════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════
+  H5P.DragNBar-1.4
+════════════════════
+→ No update needed for H5P.DragNBar-1.4
+
+════════════════════
+  H5P.DragNBar-1.5
+════════════════════
+• Updating from H5P.DragNBar-1.5.22 to H5P.DragNBar-1.5.23
+✓ Updated successfully
+
+═════════════════════
+  H5P.DragNDrop-1.0
+═════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════
+  H5P.DragNDrop-1.1
+═════════════════════
+→ No update needed for H5P.DragNDrop-1.1
+
+═══════════════════════
+  H5P.DragNResize-1.0
+═══════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════
+  H5P.DragNResize-1.1
+═══════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════
+  H5P.DragNResize-1.2
+═══════════════════════
+→ No update needed for H5P.DragNResize-1.2
+
+═════════════════════
+  H5P.DragNSort-1.0
+═════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════
+  H5P.DragNSort-1.1
+═════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════════
+  H5P.DragQuestion-1.1
+════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════
+  H5P.DragQuestion-1.10
+═════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════
+  H5P.DragQuestion-1.11
+═════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════
+  H5P.DragQuestion-1.12
+═════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════
+  H5P.DragQuestion-1.13
+═════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════
+  H5P.DragQuestion-1.14
+═════════════════════════
+→ No update needed for H5P.DragQuestion-1.14
+
+════════════════════════
+  H5P.DragQuestion-1.3
+════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════════
+  H5P.DragQuestion-1.4
+════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════════
+  H5P.DragQuestion-1.5
+════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════════
+  H5P.DragQuestion-1.6
+════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════════
+  H5P.DragQuestion-1.7
+════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════════
+  H5P.DragQuestion-1.8
+════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════════
+  H5P.DragQuestion-1.9
+════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════
+  H5P.DragText-1.1
+════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════
+  H5P.DragText-1.10
+═════════════════════
+→ No update needed for H5P.DragText-1.10
+
+════════════════════
+  H5P.DragText-1.3
+════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════
+  H5P.DragText-1.4
+════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════
+  H5P.DragText-1.5
+════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════
+  H5P.DragText-1.6
+════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════
+  H5P.DragText-1.7
+════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════
+  H5P.DragText-1.8
+════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════
+  H5P.DragText-1.9
+════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════
+  H5P.Essay-1.0
+═════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════
+  H5P.Essay-1.1
+═════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════
+  H5P.Essay-1.2
+═════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════
+  H5P.Essay-1.3
+═════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════
+  H5P.Essay-1.4
+═════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════
+  H5P.Essay-1.5
+═════════════════
+→ No update needed for H5P.Essay-1.5
+
+══════════════════════
+  H5P.ExportPage-1.0
+══════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════
+  H5P.ExportPage-1.1
+══════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════════════
+  H5P.ExportableTextArea-1.0
+══════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════════════
+  H5P.ExportableTextArea-1.1
+══════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════════════
+  H5P.ExportableTextArea-1.2
+══════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════════════
+  H5P.ExportableTextArea-1.3
+══════════════════════════════
+• Updating from H5P.ExportableTextArea-1.3.18 to H5P.ExportableTextArea-1.3.19
+✓ Updated successfully
+
+══════════════════════
+  H5P.Flashcards-1.0
+══════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════
+  H5P.Flashcards-1.1
+══════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════
+  H5P.Flashcards-1.2
+══════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════
+  H5P.Flashcards-1.3
+══════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════
+  H5P.Flashcards-1.4
+══════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════
+  H5P.Flashcards-1.5
+══════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════
+  H5P.Flashcards-1.6
+══════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════
+  H5P.FontIcons-1.0
+═════════════════════
+→ No update needed for H5P.FontIcons-1.0
+
+════════════════════════════
+  H5P.FreeTextQuestion-1.0
+════════════════════════════
+→ No update needed for H5P.FreeTextQuestion-1.0
+
+═══════════════════
+  H5P.GameMap-1.0
+═══════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════
+  H5P.GameMap-1.1
+═══════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════
+  H5P.GameMap-1.2
+═══════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════
+  H5P.GameMap-1.3
+═══════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════
+  H5P.GameMap-1.4
+═══════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════════
+  H5P.GoToQuestion-1.0
+════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════════
+  H5P.GoToQuestion-1.1
+════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════════
+  H5P.GoToQuestion-1.2
+════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════════
+  H5P.GoToQuestion-1.3
+════════════════════════
+→ No update needed for H5P.GoToQuestion-1.3
+
+═════════════════════
+  H5P.GoToScene-0.1
+═════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════════════
+  H5P.GoalsAssessmentPage-1.0
+═══════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════════════
+  H5P.GoalsAssessmentPage-1.1
+═══════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════════════
+  H5P.GoalsAssessmentPage-1.2
+═══════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════════════
+  H5P.GoalsAssessmentPage-1.3
+═══════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════════════
+  H5P.GoalsAssessmentPage-1.4
+═══════════════════════════════
+→ No update needed for H5P.GoalsAssessmentPage-1.4
+
+═════════════════════
+  H5P.GoalsPage-1.0
+═════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════
+  H5P.GoalsPage-1.1
+═════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════
+  H5P.GoalsPage-1.2
+═════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════
+  H5P.GoalsPage-1.3
+═════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════
+  H5P.GoalsPage-1.4
+═════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════
+  H5P.GoalsPage-1.5
+═════════════════════
+→ No update needed for H5P.GoalsPage-1.5
+
+══════════════════════════
+  H5P.GuessTheAnswer-1.0
+══════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════════
+  H5P.GuessTheAnswer-1.1
+══════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════════
+  H5P.GuessTheAnswer-1.2
+══════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════════
+  H5P.GuessTheAnswer-1.3
+══════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════════
+  H5P.GuessTheAnswer-1.4
+══════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════════
+  H5P.GuessTheAnswer-1.5
+══════════════════════════
+→ No update needed for H5P.GuessTheAnswer-1.5
+
+══════════════════════
+  H5P.GuidedTour-1.0
+══════════════════════
+→ No update needed for H5P.GuidedTour-1.0
+
+═══════════════════════
+  H5P.IFrameEmbed-1.0
+═══════════════════════
+→ No update needed for H5P.IFrameEmbed-1.0
+
+═════════════════════
+  H5P.IVHotspot-1.0
+═════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════
+  H5P.IVHotspot-1.1
+═════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════
+  H5P.IVHotspot-1.2
+═════════════════════
+• Updating from H5P.IVHotspot-1.2.17 to H5P.IVHotspot-1.2.18
+✓ Updated successfully
+
+═════════════════
+  H5P.Image-1.0
+═════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════
+  H5P.Image-1.1
+═════════════════
+• Updating from H5P.Image-1.1.22 to H5P.Image-1.1.23
+✓ Updated successfully
+
+════════════════════════════════
+  H5P.ImageHotspotQuestion-1.0
+════════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════════════════
+  H5P.ImageHotspotQuestion-1.1
+════════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════════════════
+  H5P.ImageHotspotQuestion-1.2
+════════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════════════════
+  H5P.ImageHotspotQuestion-1.3
+════════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════════════════
+  H5P.ImageHotspotQuestion-1.4
+════════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════════════════
+  H5P.ImageHotspotQuestion-1.5
+════════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════════════════
+  H5P.ImageHotspotQuestion-1.6
+════════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════════════════
+  H5P.ImageHotspotQuestion-1.7
+════════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════════════════
+  H5P.ImageHotspotQuestion-1.8
+════════════════════════════════
+→ No update needed for H5P.ImageHotspotQuestion-1.8
+
+═════════════════════════
+  H5P.ImageHotspots-1.0
+═════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════
+  H5P.ImageHotspots-1.1
+═════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════════
+  H5P.ImageHotspots-1.10
+══════════════════════════
+→ No update needed for H5P.ImageHotspots-1.10
+
+═════════════════════════
+  H5P.ImageHotspots-1.2
+═════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════
+  H5P.ImageHotspots-1.3
+═════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════
+  H5P.ImageHotspots-1.4
+═════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════
+  H5P.ImageHotspots-1.5
+═════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════
+  H5P.ImageHotspots-1.6
+═════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════
+  H5P.ImageHotspots-1.7
+═════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════
+  H5P.ImageHotspots-1.8
+═════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════
+  H5P.ImageHotspots-1.9
+═════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════════════
+  H5P.ImageJuxtaposition-1.2
+══════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════════════
+  H5P.ImageJuxtaposition-1.4
+══════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════════════
+  H5P.ImageJuxtaposition-1.5
+══════════════════════════════
+→ No update needed for H5P.ImageJuxtaposition-1.5
+
+═══════════════════════════════
+  H5P.ImageJuxtaposition-v1.1
+═══════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════════
+  H5P.ImageSequencing-1.1
+═══════════════════════════
+→ No update needed for H5P.ImageSequencing-1.1
+
+══════════════════════
+  H5P.ImageSlide-1.0
+══════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════
+  H5P.ImageSlide-1.1
+══════════════════════
+→ No update needed for H5P.ImageSlide-1.1
+
+═══════════════════════
+  H5P.ImageSlider-1.0
+═══════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════
+  H5P.ImageSlider-1.1
+═══════════════════════
+→ No update needed for H5P.ImageSlider-1.1
+
+═══════════════════════════
+  H5P.InteractiveBook-1.0
+═══════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════════
+  H5P.InteractiveBook-1.1
+═══════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════════════
+  H5P.InteractiveBook-1.10
+════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════════
+  H5P.InteractiveBook-1.2
+═══════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════════
+  H5P.InteractiveBook-1.3
+═══════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════════
+  H5P.InteractiveBook-1.4
+═══════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════════
+  H5P.InteractiveBook-1.5
+═══════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════════
+  H5P.InteractiveBook-1.6
+═══════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════════
+  H5P.InteractiveBook-1.7
+═══════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════════
+  H5P.InteractiveBook-1.8
+═══════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════════
+  H5P.InteractiveBook-1.9
+═══════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════════
+  H5P.InteractiveVideo-1.10
+═════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════════
+  H5P.InteractiveVideo-1.11
+═════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════════
+  H5P.InteractiveVideo-1.12
+═════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════════
+  H5P.InteractiveVideo-1.13
+═════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════════
+  H5P.InteractiveVideo-1.14
+═════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════════
+  H5P.InteractiveVideo-1.15
+═════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════════
+  H5P.InteractiveVideo-1.16
+═════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════════
+  H5P.InteractiveVideo-1.17
+═════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════════
+  H5P.InteractiveVideo-1.18
+═════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════════
+  H5P.InteractiveVideo-1.19
+═════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════════
+  H5P.InteractiveVideo-1.20
+═════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════════
+  H5P.InteractiveVideo-1.21
+═════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════════
+  H5P.InteractiveVideo-1.22
+═════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════════
+  H5P.InteractiveVideo-1.23
+═════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════════
+  H5P.InteractiveVideo-1.24
+═════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════════
+  H5P.InteractiveVideo-1.25
+═════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════════
+  H5P.InteractiveVideo-1.26
+═════════════════════════════
+• Updating from H5P.InteractiveVideo-1.26.35 to H5P.InteractiveVideo-1.26.40
+✓ Updated successfully
+
+═════════════════════════════
+  H5P.InteractiveVideo-1.27
+═════════════════════════════
+→ No update needed for H5P.InteractiveVideo-1.27
+
+════════════════════════════
+  H5P.InteractiveVideo-1.3
+════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════════════
+  H5P.InteractiveVideo-1.5
+════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════════════
+  H5P.InteractiveVideo-1.6
+════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════════════
+  H5P.InteractiveVideo-1.7
+════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════════════
+  H5P.InteractiveVideo-1.8
+════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════════════
+  H5P.InteractiveVideo-1.9
+════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════
+  H5P.JoubelUI-1.0
+════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════
+  H5P.JoubelUI-1.1
+════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════
+  H5P.JoubelUI-1.2
+════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════
+  H5P.JoubelUI-1.3
+════════════════════
+• Updating from H5P.JoubelUI-1.3.19 to H5P.JoubelUI-1.3.32
+✓ Updated successfully
+
+═════════════════════
+  H5P.KewArCode-1.0
+═════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════
+  H5P.KewArCode-v1.1
+══════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════
+  H5P.Link-1.0
+════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════
+  H5P.Link-1.1
+════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════
+  H5P.Link-1.2
+════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════
+  H5P.Link-1.3
+════════════════
+• Updating from H5P.Link-1.3.18 to H5P.Link-1.3.19
+✓ Updated successfully
+
+════════════════════════
+  H5P.MarkTheWords-1.1
+════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════
+  H5P.MarkTheWords-1.10
+═════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════
+  H5P.MarkTheWords-1.11
+═════════════════════════
+→ No update needed for H5P.MarkTheWords-1.11
+
+════════════════════════
+  H5P.MarkTheWords-1.3
+════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════════
+  H5P.MarkTheWords-1.4
+════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════════
+  H5P.MarkTheWords-1.5
+════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════════
+  H5P.MarkTheWords-1.6
+════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════════
+  H5P.MarkTheWords-1.7
+════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════════
+  H5P.MarkTheWords-1.8
+════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════════
+  H5P.MarkTheWords-1.9
+════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════════════
+  H5P.MaterialDesignIcons-1.0
+═══════════════════════════════
+→ No update needed for H5P.MaterialDesignIcons-1.0
+
+══════════════════════
+  H5P.MemoryGame-1.1
+══════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════
+  H5P.MemoryGame-1.2
+══════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════
+  H5P.MemoryGame-1.3
+══════════════════════
+→ No update needed for H5P.MemoryGame-1.3
+
+═══════════════════════
+  H5P.MultiChoice-1.1
+═══════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════════
+  H5P.MultiChoice-1.10
+════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════════
+  H5P.MultiChoice-1.11
+════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════════
+  H5P.MultiChoice-1.12
+════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════════
+  H5P.MultiChoice-1.13
+════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════════
+  H5P.MultiChoice-1.14
+════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════════
+  H5P.MultiChoice-1.15
+════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════════
+  H5P.MultiChoice-1.16
+════════════════════════
+→ No update needed for H5P.MultiChoice-1.16
+
+═══════════════════════
+  H5P.MultiChoice-1.3
+═══════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════
+  H5P.MultiChoice-1.4
+═══════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════
+  H5P.MultiChoice-1.5
+═══════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════
+  H5P.MultiChoice-1.6
+═══════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════
+  H5P.MultiChoice-1.7
+═══════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════
+  H5P.MultiChoice-1.8
+═══════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════
+  H5P.MultiChoice-1.9
+═══════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════════════
+  H5P.MultiMediaChoice-0.1
+════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════════════
+  H5P.MultiMediaChoice-0.2
+════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════════════
+  H5P.MultiMediaChoice-0.3
+════════════════════════════
+→ No update needed for H5P.MultiMediaChoice-0.3
+
+═══════════════
+  H5P.Nil-1.0
+═══════════════
+→ No update needed for H5P.Nil-1.0
+
+═════════════════════════════
+  H5P.OpenEndedQuestion-1.0
+═════════════════════════════
+→ No update needed for H5P.OpenEndedQuestion-1.0
+
+════════════════════
+  H5P.Question-1.0
+════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════
+  H5P.Question-1.1
+════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════
+  H5P.Question-1.2
+════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════
+  H5P.Question-1.3
+════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════
+  H5P.Question-1.4
+════════════════════
+→ No update needed for H5P.Question-1.4
+
+════════════════════
+  H5P.Question-1.5
+════════════════════
+• Updating from H5P.Question-1.5.15 to H5P.Question-1.5.47
+✓ Updated successfully
+
+═══════════════════════
+  H5P.QuestionSet-1.0
+═══════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════
+  H5P.QuestionSet-1.1
+═══════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════════
+  H5P.QuestionSet-1.10
+════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════════
+  H5P.QuestionSet-1.11
+════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════════
+  H5P.QuestionSet-1.12
+════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════════
+  H5P.QuestionSet-1.13
+════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════════
+  H5P.QuestionSet-1.14
+════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════════
+  H5P.QuestionSet-1.15
+════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════════
+  H5P.QuestionSet-1.16
+════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════════
+  H5P.QuestionSet-1.17
+════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════════
+  H5P.QuestionSet-1.18
+════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════════
+  H5P.QuestionSet-1.19
+════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════════
+  H5P.QuestionSet-1.20
+════════════════════════
+→ No update needed for H5P.QuestionSet-1.20
+
+═══════════════════════
+  H5P.QuestionSet-1.3
+═══════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════
+  H5P.QuestionSet-1.4
+═══════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════
+  H5P.QuestionSet-1.5
+═══════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════
+  H5P.QuestionSet-1.6
+═══════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════
+  H5P.QuestionSet-1.7
+═══════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════
+  H5P.QuestionSet-1.8
+═══════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════
+  H5P.QuestionSet-1.9
+═══════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════
+  H5P.Questionnaire-1.0
+═════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════
+  H5P.Questionnaire-1.1
+═════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════
+  H5P.Questionnaire-1.2
+═════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════
+  H5P.Questionnaire-1.3
+═════════════════════════
+→ No update needed for H5P.Questionnaire-1.3
+
+═══════════════
+  H5P.Row-1.0
+═══════════════
+→ No update needed for H5P.Row-1.0
+
+═════════════════════
+  H5P.RowColumn-1.0
+═════════════════════
+→ No update needed for H5P.RowColumn-1.0
+
+═════════════════
+  H5P.Shape-1.0
+═════════════════
+→ No update needed for H5P.Shape-1.0
+
+═════════════════════════════
+  H5P.SimpleMultiChoice-1.0
+═════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════════
+  H5P.SimpleMultiChoice-1.1
+═════════════════════════════
+→ No update needed for H5P.SimpleMultiChoice-1.1
+
+═══════════════════════════
+  H5P.SingleChoiceSet-1.0
+═══════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════════
+  H5P.SingleChoiceSet-1.1
+═══════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════════════
+  H5P.SingleChoiceSet-1.10
+════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════════════
+  H5P.SingleChoiceSet-1.11
+════════════════════════════
+→ No update needed for H5P.SingleChoiceSet-1.11
+
+═══════════════════════════
+  H5P.SingleChoiceSet-1.2
+═══════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════════
+  H5P.SingleChoiceSet-1.3
+═══════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════════
+  H5P.SingleChoiceSet-1.4
+═══════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════════
+  H5P.SingleChoiceSet-1.5
+═══════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════════
+  H5P.SingleChoiceSet-1.6
+═══════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════════
+  H5P.SingleChoiceSet-1.7
+═══════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════════
+  H5P.SingleChoiceSet-1.8
+═══════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════════
+  H5P.SingleChoiceSet-1.9
+═══════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════════
+  H5P.SortParagraphs-0.10
+═══════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════════
+  H5P.SortParagraphs-0.11
+═══════════════════════════
+→ No update needed for H5P.SortParagraphs-0.11
+
+═══════════════════
+  H5P.SoundJS-1.0
+═══════════════════
+→ No update needed for H5P.SoundJS-1.0
+
+════════════════════════
+  H5P.StandardPage-1.0
+════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════════
+  H5P.StandardPage-1.1
+════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════════
+  H5P.StandardPage-1.2
+════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════════
+  H5P.StandardPage-1.3
+════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════════
+  H5P.StandardPage-1.4
+════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════════
+  H5P.StandardPage-1.5
+════════════════════════
+• Updating from H5P.StandardPage-1.5.16 to H5P.StandardPage-1.5.21
+✓ Updated successfully
+
+═══════════════════
+  H5P.Summary-1.1
+═══════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════
+  H5P.Summary-1.10
+════════════════════
+→ No update needed for H5P.Summary-1.10
+
+═══════════════════
+  H5P.Summary-1.3
+═══════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════
+  H5P.Summary-1.4
+═══════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════
+  H5P.Summary-1.5
+═══════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════
+  H5P.Summary-1.6
+═══════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════
+  H5P.Summary-1.7
+═══════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════
+  H5P.Summary-1.8
+═══════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════
+  H5P.Summary-1.9
+═══════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════
+  H5P.Table-1.0
+═════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════
+  H5P.Table-1.1
+═════════════════
+• Updating from H5P.Table-1.1.18 to H5P.Table-1.1.19
+✓ Updated successfully
+
+═════════════════
+  H5P.Table-1.2
+═════════════════
+→ No update needed for H5P.Table-1.2
+
+════════════════
+  H5P.Tabs-1.0
+════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════
+  H5P.Tabs-1.1
+════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════
+  H5P.Text-1.0
+════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════
+  H5P.Text-1.1
+════════════════
+→ No update needed for H5P.Text-1.1
+
+══════════════════════════
+  H5P.TextInputField-1.0
+══════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════════
+  H5P.TextInputField-1.1
+══════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════════
+  H5P.TextInputField-1.2
+══════════════════════════
+→ No update needed for H5P.TextInputField-1.2
+
+═════════════════════════
+  H5P.TextUtilities-1.2
+═════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════
+  H5P.TextUtilities-1.3
+═════════════════════════
+→ No update needed for H5P.TextUtilities-1.3
+
+══════════════════════
+  H5P.ThreeImage-0.5
+══════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════
+  H5P.ThreeJS-1.0
+═══════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════
+  H5P.ThreeSixty-0.3
+══════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════
+  H5P.Timeline-1.0
+════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════
+  H5P.Timeline-1.1
+════════════════════
+→ No update needed for H5P.Timeline-1.1
+
+═════════════════
+  H5P.Timer-0.4
+═════════════════
+→ No update needed for H5P.Timer-0.4
+
+══════════════════════
+  H5P.Transcript-1.1
+══════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════════
+  H5P.TranscriptLibrary-1.1
+═════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════
+  H5P.Transition-1.0
+══════════════════════
+→ No update needed for H5P.Transition-1.0
+
+═════════════════════
+  H5P.TrueFalse-1.0
+═════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════
+  H5P.TrueFalse-1.1
+═════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════
+  H5P.TrueFalse-1.2
+═════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════
+  H5P.TrueFalse-1.3
+═════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════
+  H5P.TrueFalse-1.4
+═════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════
+  H5P.TrueFalse-1.5
+═════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════
+  H5P.TrueFalse-1.6
+═════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════
+  H5P.TrueFalse-1.7
+═════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════
+  H5P.TrueFalse-1.8
+═════════════════════
+→ No update needed for H5P.TrueFalse-1.8
+
+═══════════════════════════
+  H5P.TwitterUserFeed-1.0
+═══════════════════════════
+→ No update needed for H5P.TwitterUserFeed-1.0
+
+═════════════════
+  H5P.Video-1.0
+═════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════
+  H5P.Video-1.1
+═════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════
+  H5P.Video-1.2
+═════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════
+  H5P.Video-1.3
+═════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════
+  H5P.Video-1.4
+═════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════
+  H5P.Video-1.5
+═════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════
+  H5P.Video-1.6
+═════════════════
+→ No update needed for H5P.Video-1.6
+
+════════════════
+  H5P.XRay-0.1
+════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════════════════
+  H5PEditor.ARMarkerGenerator-1.0
+═══════════════════════════════════
+• Updating from H5PEditor.ARMarkerGenerator-1.0.3 to H5PEditor.ARMarkerGenerator-1.0.5
+✓ Updated successfully
+
+═══════════════════════════════
+  H5PEditor.AudioRecorder-1.0
+═══════════════════════════════
+• Updating from H5PEditor.AudioRecorder-1.0.11 to H5PEditor.AudioRecorder-1.0.12
+✓ Updated successfully
+
+═══════════════════════════════════
+  H5PEditor.BranchingQuestion-1.0
+═══════════════════════════════════
+→ No update needed for H5PEditor.BranchingQuestion-1.0
+
+═══════════════════════════════════
+  H5PEditor.BranchingScenario-1.0
+═══════════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════════════════
+  H5PEditor.BranchingScenario-1.1
+═══════════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════════════════
+  H5PEditor.BranchingScenario-1.2
+═══════════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════════════════
+  H5PEditor.BranchingScenario-1.3
+═══════════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════════════════
+  H5PEditor.BranchingScenario-1.4
+═══════════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════
+  H5PEditor.Collage-0.1
+═════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════
+  H5PEditor.Collage-0.2
+═════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════
+  H5PEditor.Collage-0.3
+═════════════════════════
+→ No update needed for H5PEditor.Collage-0.3
+
+═══════════════════════════════
+  H5PEditor.ColorSelector-1.0
+═══════════════════════════════
+→ No update needed for H5PEditor.ColorSelector-1.0
+
+═══════════════════════════════
+  H5PEditor.ColorSelector-1.1
+═══════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════════════
+  H5PEditor.ColorSelector-1.2
+═══════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════════════
+  H5PEditor.ColorSelector-1.3
+═══════════════════════════════
+→ No update needed for H5PEditor.ColorSelector-1.3
+
+═════════════════════════════════════
+  H5PEditor.CoursePresentation-1.10
+═════════════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════════════════
+  H5PEditor.CoursePresentation-1.11
+═════════════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════════════════
+  H5PEditor.CoursePresentation-1.12
+═════════════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════════════════
+  H5PEditor.CoursePresentation-1.13
+═════════════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════════════════
+  H5PEditor.CoursePresentation-1.14
+═════════════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════════════════
+  H5PEditor.CoursePresentation-1.15
+═════════════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════════════════
+  H5PEditor.CoursePresentation-1.16
+═════════════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════════════════
+  H5PEditor.CoursePresentation-1.17
+═════════════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════════════════
+  H5PEditor.CoursePresentation-1.18
+═════════════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════════════════
+  H5PEditor.CoursePresentation-1.19
+═════════════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════════════════════
+  H5PEditor.CoursePresentation-1.2
+════════════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════════════════
+  H5PEditor.CoursePresentation-1.20
+═════════════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════════════════
+  H5PEditor.CoursePresentation-1.21
+═════════════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════════════════
+  H5PEditor.CoursePresentation-1.22
+═════════════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════════════════
+  H5PEditor.CoursePresentation-1.23
+═════════════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════════════════
+  H5PEditor.CoursePresentation-1.24
+═════════════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════════════════
+  H5PEditor.CoursePresentation-1.25
+═════════════════════════════════════
+→ No update needed for H5PEditor.CoursePresentation-1.25
+
+════════════════════════════════════
+  H5PEditor.CoursePresentation-1.4
+════════════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════════════════════
+  H5PEditor.CoursePresentation-1.5
+════════════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════════════════════
+  H5PEditor.CoursePresentation-1.6
+════════════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════════════════════
+  H5PEditor.CoursePresentation-1.7
+════════════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════════════════════
+  H5PEditor.CoursePresentation-1.8
+════════════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════════════════════
+  H5PEditor.CoursePresentation-1.9
+════════════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════════
+  H5PEditor.DateTime-1.0
+══════════════════════════
+→ No update needed for H5PEditor.DateTime-1.0
+
+══════════════════════════════
+  H5PEditor.DragQuestion-1.0
+══════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════════════
+  H5PEditor.DragQuestion-1.10
+═══════════════════════════════
+→ No update needed for H5PEditor.DragQuestion-1.10
+
+══════════════════════════════
+  H5PEditor.DragQuestion-1.2
+══════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════════════
+  H5PEditor.DragQuestion-1.3
+══════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════════════
+  H5PEditor.DragQuestion-1.4
+══════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════════════
+  H5PEditor.DragQuestion-1.5
+══════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════════════
+  H5PEditor.DragQuestion-1.6
+══════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════════════
+  H5PEditor.DragQuestion-1.7
+══════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════════════
+  H5PEditor.DragQuestion-1.8
+══════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════════════
+  H5PEditor.DragQuestion-1.9
+══════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════════
+  H5PEditor.Duration-1.0
+══════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════════
+  H5PEditor.Duration-1.1
+══════════════════════════
+→ No update needed for H5PEditor.Duration-1.1
+
+═════════════════════════
+  H5PEditor.GameMap-1.0
+═════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════
+  H5PEditor.GameMap-1.1
+═════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════
+  H5PEditor.GameMap-1.2
+═════════════════════════
+• Updating from H5PEditor.GameMap-1.2.4 to H5PEditor.GameMap-1.2.5
+✓ Updated successfully
+
+═════════════════════════════════════════
+  H5PEditor.ImageCoordinateSelector-1.0
+═════════════════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════════════════════
+  H5PEditor.ImageCoordinateSelector-1.1
+═════════════════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════════════════════════════
+  H5PEditor.ImageCoordinateSelector-1.2
+═════════════════════════════════════════
+→ No update needed for H5PEditor.ImageCoordinateSelector-1.2
+
+══════════════════════════════════════
+  H5PEditor.ImageHotspotQuestion-1.0
+══════════════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════════════════════
+  H5PEditor.ImageHotspotQuestion-1.1
+══════════════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════════════════════
+  H5PEditor.ImageHotspotQuestion-1.2
+══════════════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════════════════════
+  H5PEditor.ImageHotspotQuestion-1.3
+══════════════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════════════════════
+  H5PEditor.ImageHotspotQuestion-1.4
+══════════════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════════════════════
+  H5PEditor.ImageHotspotQuestion-1.5
+══════════════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════════════════════
+  H5PEditor.ImageHotspotQuestion-1.6
+══════════════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════════════════════
+  H5PEditor.ImageHotspotQuestion-1.7
+══════════════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════════════════════
+  H5PEditor.ImageHotspotQuestion-1.8
+══════════════════════════════════════
+→ No update needed for H5PEditor.ImageHotspotQuestion-1.8
+
+══════════════════════════════════════
+  H5PEditor.ImportantDescription-0.1
+══════════════════════════════════════
+• Updating from H5PEditor.ImportantDescription-0.1.4 to H5PEditor.ImportantDescription-0.1.5
+✓ Updated successfully
+
+══════════════════════════
+  H5PEditor.InputRow-1.0
+══════════════════════════
+• Updating from H5PEditor.InputRow-1.0.1 to H5PEditor.InputRow-1.0.3
+✓ Updated successfully
+
+═══════════════════════════════════
+  H5PEditor.InteractiveVideo-1.10
+═══════════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════════════════
+  H5PEditor.InteractiveVideo-1.11
+═══════════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════════════════
+  H5PEditor.InteractiveVideo-1.12
+═══════════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════════════════
+  H5PEditor.InteractiveVideo-1.13
+═══════════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════════════════
+  H5PEditor.InteractiveVideo-1.14
+═══════════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════════════════
+  H5PEditor.InteractiveVideo-1.15
+═══════════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════════════════
+  H5PEditor.InteractiveVideo-1.16
+═══════════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════════════════
+  H5PEditor.InteractiveVideo-1.17
+═══════════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════════════════
+  H5PEditor.InteractiveVideo-1.19
+═══════════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════════════════
+  H5PEditor.InteractiveVideo-1.20
+═══════════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════════════════
+  H5PEditor.InteractiveVideo-1.21
+═══════════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════════════════
+  H5PEditor.InteractiveVideo-1.22
+═══════════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════════════════
+  H5PEditor.InteractiveVideo-1.23
+═══════════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════════════════
+  H5PEditor.InteractiveVideo-1.24
+═══════════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════════════════
+  H5PEditor.InteractiveVideo-1.25
+═══════════════════════════════════
+→ No update needed for H5PEditor.InteractiveVideo-1.25
+
+══════════════════════════════════
+  H5PEditor.InteractiveVideo-1.3
+══════════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════════════════
+  H5PEditor.InteractiveVideo-1.5
+══════════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════════════════
+  H5PEditor.InteractiveVideo-1.6
+══════════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════════════════
+  H5PEditor.InteractiveVideo-1.7
+══════════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════════════════
+  H5PEditor.InteractiveVideo-1.8
+══════════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════════════════
+  H5PEditor.InteractiveVideo-1.9
+══════════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════════
+  H5PEditor.KewArCode-1.0
+═══════════════════════════
+→ No update needed for H5PEditor.KewArCode-1.0
+
+══════════════════════════════════════════
+  H5PEditor.QuestionSetTextualEditor-1.0
+══════════════════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════════════════════════
+  H5PEditor.QuestionSetTextualEditor-1.1
+══════════════════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════════════════════════
+  H5PEditor.QuestionSetTextualEditor-1.2
+══════════════════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════════════════════════
+  H5PEditor.QuestionSetTextualEditor-1.3
+══════════════════════════════════════════
+→ No update needed for H5PEditor.QuestionSetTextualEditor-1.3
+
+════════════════════════════
+  H5PEditor.RadioGroup-1.0
+════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════════════
+  H5PEditor.RadioGroup-1.1
+════════════════════════════
+→ No update needed for H5PEditor.RadioGroup-1.1
+
+═══════════════════════════════
+  H5PEditor.RadioSelector-1.0
+═══════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════════════
+  H5PEditor.RadioSelector-1.1
+═══════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════════════
+  H5PEditor.RadioSelector-1.2
+═══════════════════════════════
+→ No update needed for H5PEditor.RadioSelector-1.2
+
+═══════════════════════════
+  H5PEditor.RangeList-1.0
+═══════════════════════════
+→ No update needed for H5PEditor.RangeList-1.0
+
+════════════════════════════════════
+  H5PEditor.SelectToggleFields-1.0
+════════════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════════════════════
+  H5PEditor.SelectToggleFields-1.1
+════════════════════════════════════
+→ No update needed for H5PEditor.SelectToggleFields-1.1
+
+══════════════════════════
+  H5PEditor.ShowWhen-1.0
+══════════════════════════
+→ No update needed for H5PEditor.ShowWhen-1.0
+
+══════════════════════════════════════════════
+  H5PEditor.SingleChoiceSetTextualEditor-1.0
+══════════════════════════════════════════════
+→ No update needed for H5PEditor.SingleChoiceSetTextualEditor-1.0
+
+══════════════════════════════════════
+  H5PEditor.SummaryTextualEditor-1.0
+══════════════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════════════════════
+  H5PEditor.SummaryTextualEditor-1.1
+══════════════════════════════════════
+→ No update needed for H5PEditor.SummaryTextualEditor-1.1
+
+═══════════════════════════
+  H5PEditor.TableList-1.0
+═══════════════════════════
+→ No update needed for H5PEditor.TableList-1.0
+
+══════════════════════
+  H5PEditor.Tabs-1.0
+══════════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════════════════════
+  H5PEditor.ThreeDModelLoader-1.0
+═══════════════════════════════════
+• Updating from H5PEditor.ThreeDModelLoader-1.0.4 to H5PEditor.ThreeDModelLoader-1.0.7
+✓ Updated successfully
+
+════════════════════════════
+  H5PEditor.ThreeImage-0.5
+════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════════
+  H5PEditor.Timecode-1.0
+══════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════════
+  H5PEditor.Timecode-1.1
+══════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════════
+  H5PEditor.Timecode-1.2
+══════════════════════════
+→ No update needed for H5PEditor.Timecode-1.2
+
+══════════════════════════
+  H5PEditor.UrlField-1.0
+══════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════════
+  H5PEditor.UrlField-1.1
+══════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════════
+  H5PEditor.UrlField-1.2
+══════════════════════════
+→ No update needed for H5PEditor.UrlField-1.2
+
+══════════════════════════════
+  H5PEditor.VerticalTabs-1.0
+══════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════════════
+  H5PEditor.VerticalTabs-1.1
+══════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════════════
+  H5PEditor.VerticalTabs-1.2
+══════════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════════════════
+  H5PEditor.VerticalTabs-1.3
+══════════════════════════════
+• Updating from H5PEditor.VerticalTabs-1.3.14 to H5PEditor.VerticalTabs-1.3.16
+✓ Updated successfully
+
+════════════════════════
+  H5PEditor.Wizard-1.0
+════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════════
+  H5PEditor.Wizard-1.1
+════════════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════════════
+  H5PEditor.Wizard-1.2
+════════════════════════
+→ No update needed for H5PEditor.Wizard-1.2
+
+══════════════════
+  MustacheJS-1.0
+══════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════
+  Odometer-1.0
+════════════════
+• Adding to S3...
+✓ Added successfully
+
+════════════════
+  Shepherd-1.0
+════════════════
+→ No update needed for Shepherd-1.0
+
+══════════════
+  Tether-1.0
+══════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════
+  TimelineJS-1.0
+══════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════
+  TimelineJS-1.1
+══════════════════
+→ No update needed for TimelineJS-1.1
+
+════════════
+  blob-1.0
+════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════
+  docxgenJS-1.0
+═════════════════
+• Adding to S3...
+✓ Added successfully
+
+═══════════════════
+  downloadify-1.0
+═══════════════════
+• Adding to S3...
+✓ Added successfully
+
+═════════════════
+  filesaver-1.0
+═════════════════
+• Adding to S3...
+✓ Added successfully
+
+══════════════════
+  flowplayer-1.0
+══════════════════
+→ No update needed for flowplayer-1.0
+
+══════════════════
+  jQuery.ui-1.10
+══════════════════
+→ No update needed for jQuery.ui-1.10
+
+═════════════════
+  swfobject-1.0
+═════════════════
+• Adding to S3...
+✓ Added successfully

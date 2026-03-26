@@ -471,6 +471,11 @@ export class H5pLibraryPackagerService {
 				'0.3.3': '10',
 				'0.2.0': '10',
 			},
+			'H5P.Dictation': {
+				'v1.2.2': '18',
+				'1.1.1': '14',
+				'1.0.8': '14',
+			},
 		};
 
 		const oldNodeVersion = oldNodeVersions[library]?.[tag];
