@@ -113,9 +113,7 @@ export class FileSystemHelper {
 			'name' in object &&
 			typeof object.name === 'string' &&
 			'type' in object &&
-			typeof object.type === 'string' &&
-			'label' in object &&
-			typeof object.label === 'string';
+			typeof object.type === 'string';
 
 		return isType;
 	}
