@@ -22,7 +22,7 @@ const args = arg(
 );
 
 if ('--help' in args) {
-	console.info(`Usage: node build-h5p-libraries.js [opts]
+	console.info(`Usage: node package-h5p-libraries.js [opts]
 OPTIONS:
     --help (-h)		Show this help.
     --input (-i)	The file containing the list of libraries to be installed.
