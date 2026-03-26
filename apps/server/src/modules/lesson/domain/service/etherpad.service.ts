@@ -3,7 +3,7 @@ import { EntityId } from '@shared/domain/types';
 import { FeathersServiceProvider } from '@infra/feathers';
 import { LegacyLogger } from '@core/logger';
 
-export type PadResponse = { data: { padID: string } };
+type PadResponse = { data: { padID: string } };
 
 @Injectable()
 export class EtherpadService {

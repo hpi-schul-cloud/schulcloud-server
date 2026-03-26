@@ -5,7 +5,6 @@ const consents = require('./consents');
 const consentVersion = require('./consentVersion');
 const courseGroups = require('./courseGroups');
 const courses = require('./courses');
-const datasources = require('./datasources');
 const files = require('./files');
 const homeworks = require('./homeworks');
 const lessons = require('./lessons');
@@ -36,7 +35,6 @@ module.exports = (app, opt) => {
 		schools: schools(app, opt),
 		years,
 		schoolGroups,
-		datasources: datasources(app, opt),
 		files: files(app, opt),
 		homeworks: homeworks(app, opt),
 		lessons,
