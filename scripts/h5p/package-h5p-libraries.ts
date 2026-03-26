@@ -22,7 +22,12 @@ const args = arg(
 );
 
 if ('--help' in args) {
-	console.info(`Usage: node package-h5p-libraries.js [opts]
+	console.info(`Usage: node package-h5p-libraries.js [opts] [input] [map] [tmp]
+POSITIONAL ARGUMENTS:
+    input			The file containing the list of libraries to be installed (alternative to --input).
+    map				The file containing the library to repository map (alternative to --map).
+    tmp				The temporary folder to use for building libraries (alternative to --tmp).
+
 OPTIONS:
     --help (-h)		Show this help.
     --input (-i)	The file containing the list of libraries to be installed.

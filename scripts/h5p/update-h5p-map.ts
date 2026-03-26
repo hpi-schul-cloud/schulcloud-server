@@ -22,7 +22,12 @@ const args = arg(
 );
 
 if ('--help' in args) {
-	console.info(`Usage: node update-h5p-map.js [opts]
+	console.info(`Usage: node update-h5p-map.js [opts] [organizations] [users] [target]
+POSITIONAL ARGUMENTS:
+	organizations			Organization name(s) on GitHub (alternative to --organizations).
+	users					User name(s) on GitHub (alternative to --users).
+	target					Path to the output file (alternative to --target).
+
 OPTIONS:
 	--help (-h)				Show this help.
 	--organizations (-o)	Organization name(s) on GitHub. Can be comma-separated for multiple organizations.
