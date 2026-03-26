@@ -271,13 +271,7 @@ export class H5pLibraryPackagerService {
 			const legacyPeerDepsRequired = this.isLegacyPeerDepsRequired(library, tag);
 			const oldNodeVersion = this.isOldNodeVersionRequired(library, tag);
 			const installRequired = this.isInstallRequiredInsteadOfCi(library, tag);
-			const buildSuccess = this.executeBuildSteps(
-				folderPath,
-				library,
-				legacyPeerDepsRequired,
-				oldNodeVersion,
-				installRequired
-			);
+			const buildSuccess = this.executeBuildSteps(folderPath, legacyPeerDepsRequired, oldNodeVersion, installRequired);
 			if (!buildSuccess) {
 				return false;
 			}
@@ -497,7 +491,6 @@ export class H5pLibraryPackagerService {
 
 	private executeBuildSteps(
 		folderPath: string,
-		library: string,
 		legacyPeerDepsRequired: boolean = false,
 		oldNodeVersion: string | undefined = undefined,
 		installRequired: boolean = false
