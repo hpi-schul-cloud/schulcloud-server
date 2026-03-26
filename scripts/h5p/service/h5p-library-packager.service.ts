@@ -545,62 +545,69 @@ export class H5pLibraryPackagerService {
 
 	private checkAndCorrectLibraryJsonPaths(folderPath: string): boolean {
 		const libraryJsonPath = FileSystemHelper.getLibraryJsonPath(folderPath);
-		let changed = false;
 		try {
 			const json = FileSystemHelper.readJsonFile(libraryJsonPath) as H5PLibrary;
-
-			// List of keys in library.json that may contain file paths
-			const filePathKeys = [
-				'preloadedJs',
-				'preloadedCss',
-				'editorJs',
-				'editorCss',
-				'dynamicDependencies',
-				'preloadedDependencies',
-				'editorDependencies',
-			];
-
-			for (const key of filePathKeys) {
-				if (Array.isArray(json[key])) {
-					// For dependencies, check for 'path' property
-					if (key.endsWith('Dependencies')) {
-						const filteredDeps = json[key].filter((dep) => {
-							if (this.inputIsObjectWithPath(dep)) {
-								const depPath = FileSystemHelper.buildPath(folderPath, dep.path);
-								return FileSystemHelper.pathExists(depPath);
-							}
-							return true;
-						});
-						if (filteredDeps.length !== json[key].length) {
-							json[key] = filteredDeps;
-							changed = true;
-						}
-					} else {
-						// For JS/CSS arrays, check each file path
-						const filteredFiles = json[key].filter((file) => {
-							const filePath = FileSystemHelper.buildPath(folderPath, file.path);
-							return FileSystemHelper.pathExists(filePath);
-						});
-						if (filteredFiles.length !== json[key].length) {
-							json[key] = filteredFiles;
-							changed = true;
-						}
-					}
-				}
-			}
+			const changed = this.filterInvalidPathsFromLibraryJson(json, folderPath);
 
 			if (changed) {
 				FileSystemHelper.writeJsonFile(libraryJsonPath, json);
 			}
+
+			return changed;
 		} catch (error) {
 			const message = error instanceof Error ? error.message : 'Unknown error';
 			this.logger.error(`Error correcting library.json paths: ${message}`);
+
+			return false;
 		}
-		return changed;
 	}
 
-	private inputIsObjectWithPath(obj: any): boolean {
-		return typeof obj === 'object' && obj !== null && 'path' in obj && typeof obj.path === 'string';
+	private filterInvalidPathsFromLibraryJson(json: H5PLibrary, folderPath: string): boolean {
+		const dependencyKeys = ['dynamicDependencies', 'preloadedDependencies', 'editorDependencies'];
+		const assetKeys = ['preloadedJs', 'preloadedCss', 'editorJs', 'editorCss'];
+
+		const dependenciesChanged = dependencyKeys.some((key) =>
+			this.filterArrayByPathExistence(json, key, folderPath, true)
+		);
+		const assetsChanged = assetKeys.some((key) => this.filterArrayByPathExistence(json, key, folderPath, false));
+
+		return dependenciesChanged || assetsChanged;
+	}
+
+	private filterArrayByPathExistence(
+		json: H5PLibrary,
+		key: string,
+		folderPath: string,
+		isDependency: boolean
+	): boolean {
+		const array = json[key];
+		if (!Array.isArray(array)) {
+			return false;
+		}
+
+		const filtered = array.filter((item) => this.isPathValid(item, folderPath, isDependency));
+		if (filtered.length === array.length) {
+			return false;
+		}
+
+		json[key] = filtered;
+
+		return true;
+	}
+
+	private isPathValid(item: unknown, folderPath: string, isDependency: boolean): boolean {
+		if (isDependency && !this.inputIsObjectWithPath(item)) {
+			return true;
+		}
+
+		const itemWithPath = item as { path: string };
+		const fullPath = FileSystemHelper.buildPath(folderPath, itemWithPath.path);
+
+		return FileSystemHelper.pathExists(fullPath);
+	}
+
+	private inputIsObjectWithPath(obj: unknown): obj is { path: string } {
+		return typeof obj === 'object' && obj !== null && 'path' in obj && typeof (obj as { path: string }).path === 'string';
 	}
 
 	private cleanUpUnwantedFilesInLibraryFolder(folderPath: string): void {
