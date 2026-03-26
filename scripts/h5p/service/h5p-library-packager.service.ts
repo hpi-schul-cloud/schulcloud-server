@@ -152,7 +152,12 @@ export class H5pLibraryPackagerService {
 		return highestPatchTags;
 	}
 
-	private async buildLibraryVersionAndDependencies(library: string, tag: string, repoName: string): Promise<boolean> {
+	private async buildLibraryVersionAndDependencies(
+		library: string,
+		tag: string,
+		repoName: string,
+		useMasterBranch = false
+	): Promise<boolean> {
 		const libVersion = `${library}-${tag}`;
 
 		if (this.isCurrentVersionAvailable(library, tag)) {
@@ -167,10 +172,11 @@ export class H5pLibraryPackagerService {
 		}
 		if (this.isAlreadyFailed(library, tag)) return false;
 
-		this.logger.log(`${libVersion}`);
+		const sourceLabel = useMasterBranch ? `${libVersion} (from master)` : libVersion;
+		this.logger.log(sourceLabel);
 		this.logger.indent();
 
-		const validLibrary = await this.buildLibraryTagFromGitHub(library, tag, repoName);
+		const validLibrary = await this.buildLibraryTagFromGitHub(library, tag, repoName, useMasterBranch);
 		if (validLibrary) {
 			this.installedLibraries.add(libVersion);
 			this.logger.success('Built successfully');
@@ -193,7 +199,7 @@ export class H5pLibraryPackagerService {
 		this.logger.log(`Dependencies (${dependencies.length}):`);
 		this.logger.indent();
 		for (const dependency of dependencies) {
-			await this.buildLibraryDependency(dependency, library, tag);
+			await this.buildLibraryDependency(dependency);
 		}
 		this.logger.dedent();
 		this.logger.dedent();
@@ -208,7 +214,12 @@ export class H5pLibraryPackagerService {
 		return dependencies.concat(softDependencies);
 	}
 
-	private async buildLibraryTagFromGitHub(library: string, tag: string, repo: string): Promise<boolean> {
+	private async buildLibraryTagFromGitHub(
+		library: string,
+		tag: string,
+		repo: string,
+		useMasterBranch = false
+	): Promise<boolean> {
 		// TODO: wenn wir filePath vorher erstellen könnten würde der tempFolder hinter dem unzipFile verschwinden welches folderPath zurück gibt.
 		// removeTemporaryFiles sollte dann auch nur folderPath als input brauchen.
 		// Dann wäre es möglich ein pre and post hook zu erstellen.
@@ -216,7 +227,11 @@ export class H5pLibraryPackagerService {
 		const { filePath, folderPath, tempFolder } = FileSystemHelper.createTempFolder(this.tempFolderPath, library, tag);
 
 		try {
-			await this.gitHubClient.downloadTag(repo, tag, filePath);
+			if (useMasterBranch) {
+				await this.gitHubClient.downloadBranch(repo, 'master', filePath);
+			} else {
+				await this.gitHubClient.downloadTag(repo, tag, filePath);
+			}
 		} catch (error) {
 			const message = error instanceof Error ? error.message : 'Unknown error';
 			this.logger.error(`Download failed: ${message}`);
@@ -712,7 +727,7 @@ export class H5pLibraryPackagerService {
 		return isLibraryField;
 	}
 
-	private async buildLibraryDependency(dependency: ILibraryName, library: string, tag: string): Promise<void> {
+	private async buildLibraryDependency(dependency: ILibraryName): Promise<void> {
 		const depName = dependency.machineName;
 		const depMajor = dependency.majorVersion;
 		const depMinor = dependency.minorVersion;
@@ -729,6 +744,16 @@ export class H5pLibraryPackagerService {
 
 		const tags = await this.gitHubClient.fetchAllTags(depRepoName);
 		let depTag = this.getHighestVersionTags(tags, depMajor, depMinor);
+		let useMasterBranch = false;
+
+		if (!depTag) {
+			const masterVersion = await this.checkMasterBranchVersion(depRepoName, depMajor, depMinor);
+			if (masterVersion) {
+				depTag = masterVersion;
+				useMasterBranch = true;
+			}
+		}
+
 		if (!depTag) {
 			this.logger.failure(`${depUberName}.x - no matching tag`);
 			this.failedLibraries.add(`${depName}-${depMajor}.${depMinor}.x`);
@@ -771,7 +796,7 @@ export class H5pLibraryPackagerService {
 		}
 
 		// Recursively build this dependency
-		await this.buildLibraryVersionAndDependencies(depName, depTag, depRepoName);
+		await this.buildLibraryVersionAndDependencies(depName, depTag, depRepoName, useMasterBranch);
 	}
 
 	private getHighestVersionTags(tags: string[], majorVersion: number, minorVersion: number): string | undefined {
@@ -790,6 +815,27 @@ export class H5pLibraryPackagerService {
 		}
 
 		return highestVersionTag;
+	}
+
+	private async checkMasterBranchVersion(
+		repoName: string,
+		requiredMajor: number,
+		requiredMinor: number
+	): Promise<string | undefined> {
+		const libraryJson = await this.gitHubClient.fetchLibraryJsonFromBranch(repoName, 'master');
+
+		if (!libraryJson) {
+			return undefined;
+		}
+
+		if (libraryJson.majorVersion === requiredMajor && libraryJson.minorVersion === requiredMinor) {
+			const version = `${libraryJson.majorVersion}.${libraryJson.minorVersion}.${libraryJson.patchVersion}`;
+			this.logger.debug(`Found matching version ${version} on master branch of ${repoName}`);
+
+			return version;
+		}
+
+		return undefined;
 	}
 
 	private isCurrentVersionAvailable(library: string, tag: string): boolean {

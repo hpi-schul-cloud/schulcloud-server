@@ -1,5 +1,6 @@
 import AdmZip from 'adm-zip';
 import {
+	createWriteStream,
 	Dirent,
 	existsSync,
 	mkdirSync,
@@ -13,6 +14,7 @@ import {
 } from 'fs';
 import { tmpdir } from 'os';
 import { join } from 'path';
+import { Readable } from 'stream';
 import { parse, stringify } from 'yaml';
 import { H5PLibrary } from '../interface/h5p-library';
 import { H5PSemanticField, H5PSemantics } from '../interface/h5p-semantics';
@@ -279,5 +281,15 @@ export class FileSystemHelper {
 		const statsOfPath = statSync(filePath);
 
 		return statsOfPath;
+	}
+
+	public static async writeStreamToFile(stream: Readable, filePath: string): Promise<void> {
+		const writer = createWriteStream(filePath);
+		stream.pipe(writer);
+
+		await new Promise<void>((resolve, reject) => {
+			writer.on('finish', () => resolve());
+			writer.on('error', (err) => reject(err));
+		});
 	}
 }

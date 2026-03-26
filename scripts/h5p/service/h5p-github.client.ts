@@ -1,10 +1,11 @@
 import axios, { AxiosResponse } from 'axios';
-import { createWriteStream } from 'fs';
 import { Readable } from 'stream';
+import { FileSystemHelper } from '../helper/file-system.helper';
 import { h5pLogger } from '../helper/h5p-logger.helper';
 import { GitHubContentTreeResponse } from '../interface/github-content-tree.response';
 import { GitHubRepository, GitHubRepositoryResponse } from '../interface/github-repository.response';
 import { GitHubTagResponse } from '../interface/github-tag.response';
+import { H5PLibrary } from '../interface/h5p-library';
 
 export enum GitHubOwnerType {
 	Organization = 'orgs',
@@ -185,6 +186,34 @@ export class H5pGitHubClient {
 		return true;
 	}
 
+	public async fetchLibraryJsonFromBranch(repoName: string, branch: string): Promise<H5PLibrary | undefined> {
+		const [owner, repo] = repoName.split('/');
+		const url = `https://api.github.com/repos/${owner}/${repo}/contents/library.json?ref=${branch}`;
+
+		try {
+			const headers = this.getHeaders();
+			const response: AxiosResponse<GitHubContentTreeResponse> = await axios.get(url, { headers });
+
+			if (!this.checkContentOfLibraryJson(response.data) || response.data.content === undefined) {
+				return undefined;
+			}
+
+			const libraryJsonContent = Buffer.from(response.data.content, 'base64').toString('utf-8');
+			const libraryJson = JSON.parse(libraryJsonContent) as H5PLibrary;
+
+			return libraryJson;
+		} catch (error: unknown) {
+			if (this.isObjectWithResponseStatus(error) && error.response.status === 404) {
+				this.logger.debug(`library.json does not exist in ${repoName} on branch ${branch}.`);
+			} else {
+				const message = error instanceof Error ? error.message : 'Unknown error';
+				this.logger.debug(`Error fetching library.json from ${repoName}@${branch}: ${message}`);
+			}
+
+			return undefined;
+		}
+	}
+
 	public async fetchAllTags(repoName: string, options: GitHubClientOptions = { maxRetries: 3 }): Promise<string[]> {
 		if (this.tagsCache.has(repoName)) {
 			return this.tagsCache.get(repoName)!;
@@ -232,27 +261,38 @@ export class H5pGitHubClient {
 	}
 
 	public async downloadTag(library: string, tag: string, filePath: string): Promise<void> {
+		return this.downloadArchive(library, 'tags', tag, filePath);
+	}
+
+	public async downloadBranch(library: string, branch: string, filePath: string): Promise<void> {
+		return this.downloadArchive(library, 'heads', branch, filePath);
+	}
+
+	private async downloadArchive(
+		library: string,
+		refType: 'tags' | 'heads',
+		ref: string,
+		filePath: string
+	): Promise<void> {
 		const [owner, repo] = library.split('/');
-		const url = `https://github.com/${owner}/${repo}/archive/refs/tags/${tag}.zip`;
+		const url = this.buildArchiveUrl(owner, repo, refType, ref);
 
 		try {
 			const response = await this.fetchContent(url);
+			await FileSystemHelper.writeStreamToFile(response.data, filePath);
 
-			// TODO: Move this to FileSystemHelper?
-			const writer = createWriteStream(filePath);
-			response.data.pipe(writer);
-
-			await new Promise<void>((resolve, reject) => {
-				writer.on('finish', () => resolve());
-				writer.on('error', (err) => reject(err));
-			});
-
-			this.logger.debug(`Downloaded ${tag} of ${library}`);
+			const refLabel = refType === 'tags' ? 'tag' : 'branch';
+			this.logger.debug(`Downloaded ${refLabel} ${ref} of ${library}`);
 		} catch (error) {
 			const message = error instanceof Error ? error.message : 'Unknown error';
-			this.logger.error(`Error downloading ${library} at tag ${tag}: ${message}`);
+			const refLabel = refType === 'tags' ? 'tag' : 'branch';
+			this.logger.error(`Error downloading ${refLabel} ${ref} from ${library}: ${message}`);
 			throw error instanceof Error ? error : new Error(message);
 		}
+	}
+
+	private buildArchiveUrl(owner: string, repo: string, refType: 'tags' | 'heads', ref: string): string {
+		return `https://github.com/${owner}/${repo}/archive/refs/${refType}/${ref}.zip`;
 	}
 
 	private async fetch(url: string, options: GitHubClientOptions): Promise<AxiosResponse<GitHubTagResponse>> {
