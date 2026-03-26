@@ -29,5 +29,4 @@ info.memory = () => ({
 });
 module.exports = {
 	info,
-	memoryUsage,
 };

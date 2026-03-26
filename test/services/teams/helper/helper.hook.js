@@ -1,6 +1,5 @@
 const service = require('../../../../src/utils/feathers-mongoose');
 const { Configuration } = require('@hpi-schul-cloud/commons');
-
 const { BadRequest } = require('../../../../src/errors');
 
 const HOST = Configuration.get('HOST');
@@ -122,18 +121,6 @@ const createHook = (app, opt = {}) => {
 	throw BadRequest('Is no hook object.');
 };
 
-const createHookStack = (app, opt) => {
-	const stack = {};
-	_TYPE.forEach((type) => {
-		stack[type] = {};
-		_METHOD.forEach((method) => {
-			stack[type][method] = createHook(app, { type, method, ...opt });
-		});
-	});
-	return stack;
-};
-
 module.exports = {
 	createHook,
-	createHookStack,
 };
