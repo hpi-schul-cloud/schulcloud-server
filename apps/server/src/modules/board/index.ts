@@ -17,7 +17,6 @@ export {
 	ColumnBoard,
 	ContentElementType,
 	isCard,
-	isColumn,
 	isColumnBoard,
 	isDrawingElement,
 	isLinkElement,

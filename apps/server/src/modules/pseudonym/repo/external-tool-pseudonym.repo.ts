@@ -8,6 +8,7 @@ import { PseudonymSearchQuery } from '../domain';
 import { ExternalToolPseudonymEntity } from '../entity';
 import { PseudonymScope } from '../entity/pseudonym.scope';
 import { Pseudonym } from './pseudonym.do';
+import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
 export class ExternalToolPseudonymRepo {
@@ -33,22 +34,20 @@ export class ExternalToolPseudonymRepo {
 		return pseudonyms;
 	}
 
-	public async createOrUpdate(domainObject: Pseudonym): Promise<Pseudonym> {
+	public async createOrUpdate(userId: EntityId, toolId: EntityId): Promise<Pseudonym> {
 		const collection = this.em.getCollection(ExternalToolPseudonymEntity);
 
-		const userId = new ObjectId(domainObject.userId);
-		const toolId = new ObjectId(domainObject.toolId);
 		const now = new Date();
 
 		const result = await collection.findOneAndUpdate(
-			{ userId, toolId },
+			{ userId: new ObjectId(userId), toolId: new ObjectId(toolId) },
 			{
 				$set: {
-					pseudonym: domainObject.pseudonym,
 					updatedAt: now,
 				},
 				$setOnInsert: {
 					createdAt: now,
+					pseudonym: uuidv4(),
 				},
 			},
 			{
