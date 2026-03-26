@@ -188,12 +188,12 @@ describe('PseudonymService', () => {
 
 				await service.findOrCreatePseudonym(user, externalTool);
 
-				expect(externalToolPseudonymRepo.createOrUpdate).toHaveBeenCalledWith(user.id, externalTool.id);
+				expect(externalToolPseudonymRepo.findOrCreate).toHaveBeenCalledWith(user.id, externalTool.id);
 			});
 
 			it('should return the pseudonym', async () => {
 				const { pseudonym, user, externalTool } = setup();
-				externalToolPseudonymRepo.createOrUpdate.mockResolvedValueOnce(pseudonym);
+				externalToolPseudonymRepo.findOrCreate.mockResolvedValueOnce(pseudonym);
 
 				const result = await service.findOrCreatePseudonym(user, externalTool);
 
@@ -284,10 +284,10 @@ describe('PseudonymService', () => {
 		});
 	});
 
-	describe('findPseudonymByPseudonym', () => {
+	describe('findByPseudonym', () => {
 		describe('when pseudonym is missing', () => {
 			const setup = () => {
-				externalToolPseudonymRepo.findPseudonymByPseudonym.mockResolvedValue(null);
+				externalToolPseudonymRepo.findByPseudonym.mockResolvedValue(null);
 			};
 
 			it('should return null', async () => {
@@ -303,7 +303,7 @@ describe('PseudonymService', () => {
 			const setup = () => {
 				const pseudonym = pseudonymFactory.build({ pseudonym: 'pseudonym' });
 
-				externalToolPseudonymRepo.findPseudonymByPseudonym.mockResolvedValue(pseudonym);
+				externalToolPseudonymRepo.findByPseudonym.mockResolvedValue(pseudonym);
 
 				return {
 					pseudonym,
@@ -315,7 +315,7 @@ describe('PseudonymService', () => {
 
 				await service.findPseudonymByPseudonym(pseudonym.pseudonym);
 
-				expect(externalToolPseudonymRepo.findPseudonymByPseudonym).toHaveBeenCalledWith(pseudonym.pseudonym);
+				expect(externalToolPseudonymRepo.findByPseudonym).toHaveBeenCalledWith(pseudonym.pseudonym);
 			});
 
 			it('should return the pseudonym', async () => {

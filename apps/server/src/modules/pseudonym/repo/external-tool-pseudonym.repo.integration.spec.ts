@@ -136,7 +136,7 @@ describe('ExternalToolPseudonymRepo', () => {
 		});
 	});
 
-	describe('createOrUpdate', () => {
+	describe('findOrCreate', () => {
 		describe('when pseudonym is new', () => {
 			const setup = () => {
 				return {
@@ -151,7 +151,7 @@ describe('ExternalToolPseudonymRepo', () => {
 			it('should create a new pseudonym if it does not exist', async () => {
 				const { domainObject } = setup();
 
-				const result: Pseudonym = await repo.createOrUpdate(domainObject.userId, domainObject.toolId);
+				const result: Pseudonym = await repo.findOrCreate(domainObject.userId, domainObject.toolId);
 
 				expect(result.id).toBeTruthy();
 				expect(result.pseudonym).toEqual(expect.any(String));
@@ -177,17 +177,17 @@ describe('ExternalToolPseudonymRepo', () => {
 				};
 			};
 
-			it('should not change createdAt and pseudonym on update', async () => {
+			it('should not change object and just return existing pseudonym', async () => {
 				const { entity, domainObject } = await setup();
 
-				const result: Pseudonym = await repo.createOrUpdate(domainObject.userId, domainObject.toolId);
+				const result: Pseudonym = await repo.findOrCreate(domainObject.userId, domainObject.toolId);
 
 				expect(result.createdAt).toEqual(entity.createdAt);
 				expect(result.pseudonym).toEqual(entity.pseudonym);
 			});
 		});
 
-		describe('when createOrUpdate is called concurrently with the same userId and toolId', () => {
+		describe('when findOrCreate is called concurrently with the same userId and toolId', () => {
 			const setup = () => {
 				const sharedUserId = new ObjectId().toHexString();
 				const sharedToolId = new ObjectId().toHexString();
@@ -212,8 +212,8 @@ describe('ExternalToolPseudonymRepo', () => {
 
 				await expect(
 					Promise.all([
-						repo.createOrUpdate(domainObject1.userId, domainObject1.toolId),
-						repo.createOrUpdate(domainObject2.userId, domainObject2.toolId),
+						repo.findOrCreate(domainObject1.userId, domainObject1.toolId),
+						repo.findOrCreate(domainObject2.userId, domainObject2.toolId),
 					])
 				).resolves.not.toThrow();
 			});
@@ -222,8 +222,8 @@ describe('ExternalToolPseudonymRepo', () => {
 				const { domainObject1, domainObject2, sharedUserId, sharedToolId } = setup();
 
 				await Promise.all([
-					repo.createOrUpdate(domainObject1.userId, domainObject1.toolId),
-					repo.createOrUpdate(domainObject2.userId, domainObject2.toolId),
+					repo.findOrCreate(domainObject1.userId, domainObject1.toolId),
+					repo.findOrCreate(domainObject2.userId, domainObject2.toolId),
 				]);
 
 				const count = await em.count(ExternalToolPseudonymEntity, {
