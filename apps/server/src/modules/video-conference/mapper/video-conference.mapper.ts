@@ -46,7 +46,6 @@ export class VideoConferenceMapper {
 				params.everybodyJoinsAsModerator ?? defaultVideoConferenceOptions.everybodyJoinsAsModerator,
 			moderatorMustApproveJoinRequests:
 				params.moderatorMustApproveJoinRequests ?? defaultVideoConferenceOptions.moderatorMustApproveJoinRequests,
-			logoutUrl: params.logoutUrl,
 		};
 	}
 }
