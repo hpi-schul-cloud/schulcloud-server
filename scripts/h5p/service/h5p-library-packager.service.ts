@@ -311,7 +311,9 @@ export class H5pLibraryPackagerService {
 	}
 
 	private logCorrectedVersionInLibraryJson(folderPath: string, tag: string): void {
-		// Silently corrected - no need to log
+		const { major, minor, patch } = this.parseTagVersion(tag);
+		const versionString = `${major}.${minor}.${patch}`;
+		this.logger.info(`Corrected library.json version in "${folderPath}" to ${versionString} (from tag "${tag}").`);
 	}
 
 	private isPrependNodeOptionsRequired(library: string, tag: string): boolean {
