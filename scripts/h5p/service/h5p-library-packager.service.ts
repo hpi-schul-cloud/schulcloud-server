@@ -490,10 +490,12 @@ export class H5pLibraryPackagerService {
 	): boolean {
 		try {
 			const nvmCommand = `source ~/.nvm/nvm.sh && nvm use ${oldNodeVersion}`;
+			const isVerbose = this.logger.getLogLevel() >= LogLevel.VERBOSE;
+			const stdio = isVerbose ? 'inherit' : 'pipe';
 
 			let installCommand = 'npm';
 			let installArgs = [installRequired ? 'install' : 'ci'];
-			const installOptions: SpawnSyncOptions = { cwd: folderPath, stdio: 'inherit' };
+			const installOptions: SpawnSyncOptions = { cwd: folderPath, stdio };
 			if (legacyPeerDepsRequired) {
 				installArgs.push('--legacy-peer-deps');
 			}
@@ -513,7 +515,7 @@ export class H5pLibraryPackagerService {
 
 			let buildCommand = 'npm';
 			let buildArgs = ['run', 'build'];
-			const buildOptions: SpawnSyncOptions = { cwd: folderPath, stdio: 'inherit' };
+			const buildOptions: SpawnSyncOptions = { cwd: folderPath, stdio };
 
 			if (oldNodeVersion) {
 				const bashCommand = `${nvmCommand} && npm ${buildArgs.join(' ')}`;
