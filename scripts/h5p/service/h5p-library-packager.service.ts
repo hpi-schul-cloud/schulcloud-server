@@ -4,6 +4,7 @@ import { spawnSync, SpawnSyncOptions } from 'child_process';
 import { FileSystemHelper } from '../helper/file-system.helper';
 import { h5pLogger, LogLevel } from '../helper/h5p-logger.helper';
 import { H5PLibrary } from '../interface/h5p-library';
+import { H5PSemanticField } from '../interface/h5p-semantics';
 import { H5pConsistencyChecker } from './h5p-consistency-checker.service';
 import { H5pGitHubClient, LibraryRepoMap } from './h5p-github.client';
 import { H5pHubClient } from './h5p-hub.client';
@@ -667,30 +668,48 @@ export class H5pLibraryPackagerService {
 		return softDependencies;
 	}
 
-	private findLibraryOptions(semantics: unknown[]): string[] {
-		const results: string[] = [];
+	private findLibraryOptions(semantics: H5PSemanticField[]): string[] {
+		const libraryOptions = semantics.flatMap((field) => this.extractLibraryOptionsFromNode(field));
 
-		function search(obj: unknown): void {
-			if (obj && typeof obj === 'object') {
-				if ('type' in obj && obj.type && obj.type === 'library' && 'options' in obj && Array.isArray(obj.options)) {
-					results.push(...obj.options);
-				}
-				for (const key in obj) {
-					const value = obj[key];
-					if (Array.isArray(value)) {
-						value.forEach(search);
-					} else if (typeof value === 'object' && value !== null) {
-						search(value);
-					} else {
-						// Primitive value, do nothing
-					}
-				}
-			}
+		return libraryOptions;
+	}
+
+	private extractLibraryOptionsFromNode(node: unknown): string[] {
+		if (!node || typeof node !== 'object') {
+			return [];
 		}
 
-		semantics.forEach(search);
+		const ownOptions = this.isLibraryField(node) ? node.options : [];
+		const childOptions = Object.values(node).flatMap((value) => this.extractLibraryOptionsFromValue(value));
+		const libraryOptions = [...ownOptions, ...childOptions];
 
-		return results;
+		return libraryOptions;
+	}
+
+	private extractLibraryOptionsFromValue(value: unknown): string[] {
+		if (Array.isArray(value)) {
+			const libraryOptions = value.flatMap((item) => this.extractLibraryOptionsFromNode(item));
+
+			return libraryOptions;
+		}
+		if (typeof value === 'object' && value !== null) {
+			const libraryOptions = this.extractLibraryOptionsFromNode(value);
+
+			return libraryOptions;
+		}
+
+		return [];
+	}
+
+	private isLibraryField(obj: object): obj is H5PSemanticField & { type: 'library'; options: string[] } {
+		const isLibraryField =
+			'type' in obj &&
+			obj.type === 'library' &&
+			'options' in obj &&
+			Array.isArray(obj.options) &&
+			obj.options.every((opt) => typeof opt === 'string');
+
+		return isLibraryField;
 	}
 
 	private async buildLibraryDependency(dependency: ILibraryName, library: string, tag: string): Promise<void> {
