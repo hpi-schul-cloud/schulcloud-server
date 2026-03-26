@@ -1,6 +1,5 @@
 import { IFullLibraryName } from '@lumieducation/h5p-server/build/src/types';
 import axios, { AxiosResponse } from 'axios';
-import { createWriteStream } from 'fs';
 import { Readable } from 'stream';
 import { FileSystemHelper } from '../helper/file-system.helper';
 import { h5pLogger } from '../helper/h5p-logger.helper';
@@ -14,14 +13,7 @@ export class H5pHubClient {
 
 		try {
 			const response = await this.fetchContentType(url);
-
-			const writer = createWriteStream(filePath);
-			response.data.pipe(writer);
-
-			await new Promise<void>((resolve, reject) => {
-				writer.on('finish', () => resolve());
-				writer.on('error', (err) => reject(err));
-			});
+			await FileSystemHelper.writeStreamToFile(response.data, filePath);
 
 			this.logger.debug(`Downloaded content type ${library}`);
 		} catch (error: unknown) {
