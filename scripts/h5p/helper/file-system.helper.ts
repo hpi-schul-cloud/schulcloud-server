@@ -75,29 +75,6 @@ export class FileSystemHelper {
 		return isType;
 	}
 
-	public static readLibraryWishList(filePath: string): string[] {
-		const librariesYamlContent = this.readYamlFile(filePath);
-
-		if (!this.isLibrariesContentType(librariesYamlContent)) {
-			throw new Error('Invalid input type for library wish list');
-		}
-
-		const libraryWishList = librariesYamlContent.h5p_libraries;
-
-		return libraryWishList;
-	}
-
-	private static isLibrariesContentType(object: any): boolean {
-		const isType =
-			typeof object === 'object' &&
-			!Array.isArray(object) &&
-			object !== null &&
-			'h5p_libraries' in object &&
-			Array.isArray(object.h5p_libraries);
-
-		return isType;
-	}
-
 	private static readYamlFile(filePath: string): any {
 		const content = readFileSync(filePath, { encoding: 'utf-8' });
 		const yamlContent = parse(content);

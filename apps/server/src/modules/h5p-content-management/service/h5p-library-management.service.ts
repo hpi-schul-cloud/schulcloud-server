@@ -18,12 +18,10 @@ import {
 	ILibraryMetadata,
 	ILibraryName,
 } from '@lumieducation/h5p-server/build/src/types';
-import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { TypeGuard } from '@shared/common/guards';
 import { Cache } from 'cache-manager';
-import { readFileSync } from 'fs';
 import { Readable } from 'stream';
-import { parse } from 'yaml';
 import { H5pDefaultUserFactory } from '../factory';
 import { H5P_EDITOR_CONFIG_TOKEN, H5PEditorConfig } from '../h5p-editor.config';
 import { H5pConsistencyError, H5pTimeoutError } from '../interface';
@@ -37,29 +35,6 @@ import { H5P_CACHE_PROVIDER_TOKEN } from '../provider/h5p-cache.provider';
 import { ContentStorage } from './content-storage.service';
 import LibraryManagementPermissionSystem from './library-management-permission-system';
 import { LibraryStorage } from './library-storage.service';
-
-interface LibrariesContentType {
-	h5p_libraries: string[];
-}
-
-function isLibrariesContentType(object: unknown): object is LibrariesContentType {
-	const isType =
-		typeof object === 'object' &&
-		!Array.isArray(object) &&
-		object !== null &&
-		'h5p_libraries' in object &&
-		Array.isArray(object.h5p_libraries);
-
-	return isType;
-}
-
-export const castToLibrariesContentType = (object: unknown): LibrariesContentType => {
-	if (!isLibrariesContentType(object)) {
-		throw new InternalServerErrorException('Invalid input type for castToLibrariesContentType');
-	}
-
-	return object;
-};
 
 @Injectable()
 export class H5PLibraryManagementService {
@@ -108,11 +83,8 @@ export class H5PLibraryManagementService {
 		);
 		const contentManager = new ContentManager(this.contentStorage, permissionSystem);
 		this.libraryAdministration = new LibraryAdministration(this.libraryManager, contentManager);
-		const { libraryListPath } = this.config;
 
-		const librariesYamlContent = readFileSync(libraryListPath, { encoding: 'utf-8' });
-		const librariesContentType = castToLibrariesContentType(parse(librariesYamlContent));
-		this.libraryWishList = librariesContentType.h5p_libraries;
+		this.libraryWishList = this.config.libraryList;
 
 		this.logger.setContext(H5PLibraryManagementService.name);
 	}

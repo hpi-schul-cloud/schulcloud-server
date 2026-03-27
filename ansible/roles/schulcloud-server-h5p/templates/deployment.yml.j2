@@ -69,11 +69,6 @@ spec:
             name: api-h5p-configmap
         - secretRef:
             name: api-h5p-secret
-        volumeMounts:
-        - name: libraries-list
-          mountPath: /schulcloud-server/config/h5p-libraries.yaml
-          subPath: h5p-libraries.yaml
-          readOnly: true
         command: ['npm', 'run', 'nest:start:h5p:prod']
         readinessProbe:
           httpGet:

@@ -7,14 +7,13 @@ import {
 	ILibraryName,
 } from '@lumieducation/h5p-server/build/src/types';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { H5P_EDITOR_CONFIG_TOKEN } from '../h5p-editor.config';
 import { H5pConsistencyError, H5pTimeoutError } from '../interface';
 import { H5P_CACHE_PROVIDER_TOKEN } from '../provider';
 import { ILibraryAdministrationOverviewItemTestFactory, ILibraryInstallResultTestFactory } from '../testing';
 import { ContentStorage } from './content-storage.service';
-import { H5PLibraryManagementService, castToLibrariesContentType } from './h5p-library-management.service';
+import { H5PLibraryManagementService } from './h5p-library-management.service';
 import { LibraryStorage } from './library-storage.service';
 
 describe('H5PLibraryManagementService', () => {
@@ -52,7 +51,6 @@ describe('H5PLibraryManagementService', () => {
 					provide: H5P_EDITOR_CONFIG_TOKEN,
 					useValue: {
 						installLibraryLockMaxOccupationTime: 5000,
-						libraryListPath: 'config/h5p-libraries.yaml',
 					},
 				},
 				{
@@ -80,17 +78,6 @@ describe('H5PLibraryManagementService', () => {
 
 	afterEach(() => {
 		jest.resetAllMocks();
-	});
-
-	describe('castToLibrariesContentType', () => {
-		describe('when castToLibrariesContentType has been called with an invalid object', () => {
-			it('should throw InternalServerErrorException', () => {
-				const randomObject = {
-					random: 1,
-				};
-				expect(() => castToLibrariesContentType(randomObject)).toThrow(InternalServerErrorException);
-			});
-		});
 	});
 
 	describe('run', () => {
