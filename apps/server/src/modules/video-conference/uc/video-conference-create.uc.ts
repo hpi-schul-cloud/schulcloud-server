@@ -104,7 +104,7 @@ export class VideoConferenceCreateUc {
 		const configBuilder: BBBCreateConfigBuilder = new BBBCreateConfigBuilder({
 			name: this.videoConferenceService.sanitizeString(scopeInfo.title),
 			meetingID: scopeId + salt,
-		}).withLogoutUrl(options.logoutUrl ?? scopeInfo.logoutUrl);
+		}).withLogoutUrl(scopeInfo.logoutUrl);
 
 		if (options.moderatorMustApproveJoinRequests) {
 			configBuilder.withGuestPolicy(GuestPolicy.ASK_MODERATOR);
