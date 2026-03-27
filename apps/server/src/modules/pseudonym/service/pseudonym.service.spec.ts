@@ -284,7 +284,7 @@ describe('PseudonymService', () => {
 		});
 	});
 
-	describe('findByPseudonym', () => {
+	describe('findOneByPseudonym', () => {
 		describe('when pseudonym is missing', () => {
 			const setup = () => {
 				externalToolPseudonymRepo.findByPseudonym.mockResolvedValue(null);
@@ -293,7 +293,7 @@ describe('PseudonymService', () => {
 			it('should return null', async () => {
 				setup();
 
-				const result = await service.findPseudonymByPseudonym('pseudonym');
+				const result = await service.findOneByPseudonym('pseudonym');
 
 				expect(result).toBeNull();
 			});
@@ -313,7 +313,7 @@ describe('PseudonymService', () => {
 			it('should call pseudonymRepo', async () => {
 				const { pseudonym } = setup();
 
-				await service.findPseudonymByPseudonym(pseudonym.pseudonym);
+				await service.findOneByPseudonym(pseudonym.pseudonym);
 
 				expect(externalToolPseudonymRepo.findByPseudonym).toHaveBeenCalledWith(pseudonym.pseudonym);
 			});
@@ -321,7 +321,7 @@ describe('PseudonymService', () => {
 			it('should return the pseudonym', async () => {
 				const { pseudonym } = setup();
 
-				const result = await service.findPseudonymByPseudonym(pseudonym.pseudonym);
+				const result = await service.findOneByPseudonym(pseudonym.pseudonym);
 
 				expect(result).toBeDefined();
 			});
@@ -337,7 +337,7 @@ describe('PseudonymService', () => {
 				const options: IFindOptions<Pseudonym> = {};
 				const page = new Page<Pseudonym>([pseudonymFactory.build()], 1);
 
-				externalToolPseudonymRepo.findPseudonym.mockResolvedValueOnce(page);
+				externalToolPseudonymRepo.findByQuery.mockResolvedValueOnce(page);
 
 				return {
 					query,
@@ -351,7 +351,7 @@ describe('PseudonymService', () => {
 
 				await service.findPseudonym(query, options);
 
-				expect(externalToolPseudonymRepo.findPseudonym).toHaveBeenCalledWith(query, options);
+				expect(externalToolPseudonymRepo.findByQuery).toHaveBeenCalledWith(query, options);
 			});
 
 			it('should return page with pseudonyms', async () => {

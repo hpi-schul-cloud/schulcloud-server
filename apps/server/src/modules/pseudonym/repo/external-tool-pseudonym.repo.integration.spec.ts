@@ -294,7 +294,7 @@ describe('ExternalToolPseudonymRepo', () => {
 		});
 	});
 
-	describe('findPseudonymByPseudonym', () => {
+	describe('findByPseudonym', () => {
 		describe('when pseudonym is existing', () => {
 			const setup = async () => {
 				const entity: ExternalToolPseudonymEntity = externalToolPseudonymEntityFactory.buildWithId();
@@ -309,7 +309,7 @@ describe('ExternalToolPseudonymRepo', () => {
 			it('should return a pseudonym', async () => {
 				const { entity } = await setup();
 
-				const result: Pseudonym | null = await repo.findPseudonymByPseudonym(entity.pseudonym);
+				const result: Pseudonym | null = await repo.findByPseudonym(entity.pseudonym);
 
 				expect(result?.id).toEqual(entity.id);
 			});
@@ -317,14 +317,14 @@ describe('ExternalToolPseudonymRepo', () => {
 
 		describe('when pseudonym not exists', () => {
 			it('should return null', async () => {
-				const pseudonym: Pseudonym | null = await repo.findPseudonymByPseudonym(uuidv4());
+				const pseudonym: Pseudonym | null = await repo.findByPseudonym(uuidv4());
 
 				expect(pseudonym).toBeNull();
 			});
 		});
 	});
 
-	describe('findPseudonym', () => {
+	describe('findByQuery', () => {
 		describe('when query with all parameters is given', () => {
 			const setup = async () => {
 				const query: PseudonymSearchQuery = {
@@ -363,7 +363,7 @@ describe('ExternalToolPseudonymRepo', () => {
 			it('should return all three pseudonyms', async () => {
 				const { query, pseudonyms } = await setup();
 
-				const page: Page<Pseudonym> = await repo.findPseudonym(query);
+				const page: Page<Pseudonym> = await repo.findByQuery(query);
 
 				expect(page.data.length).toEqual(pseudonyms.length);
 			});
@@ -407,7 +407,7 @@ describe('ExternalToolPseudonymRepo', () => {
 			it('should return one pseudonym', async () => {
 				const { query } = await setup();
 
-				const page: Page<Pseudonym> = await repo.findPseudonym(query, { pagination: { limit: 1 } });
+				const page: Page<Pseudonym> = await repo.findByQuery(query, { pagination: { limit: 1 } });
 
 				expect(page.data.length).toEqual(1);
 			});
@@ -451,7 +451,7 @@ describe('ExternalToolPseudonymRepo', () => {
 			it('should return the third element', async () => {
 				const { query, pseudonyms } = await setup();
 
-				const page: Page<Pseudonym> = await repo.findPseudonym(query, { pagination: { skip: 2 } });
+				const page: Page<Pseudonym> = await repo.findByQuery(query, { pagination: { skip: 2 } });
 
 				expect(page.data[0].id).toEqual(pseudonyms[2].id);
 			});

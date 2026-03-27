@@ -15,7 +15,7 @@ export class TooManyPseudonymsLoggableException extends BusinessError implements
 		);
 	}
 
-	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	public getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
 		return {
 			type: 'PSEUDONYMS_TOO_MANY_PSEUDONYMS_FOUND',
 			message: 'Too many pseudonyms where found.',

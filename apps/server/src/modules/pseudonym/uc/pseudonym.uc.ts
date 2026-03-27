@@ -15,10 +15,10 @@ export class PseudonymUc {
 		private readonly schoolService: LegacySchoolService
 	) {}
 
-	public async findPseudonymByPseudonym(userId: EntityId, pseudonym: string): Promise<Pseudonym> {
+	public async resolvePseudonymForUser(userId: EntityId, pseudonym: string): Promise<Pseudonym> {
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);
 
-		const foundPseudonym: Pseudonym | null = await this.pseudonymService.findPseudonymByPseudonym(pseudonym);
+		const foundPseudonym: Pseudonym | null = await this.pseudonymService.findOneByPseudonym(pseudonym);
 
 		if (foundPseudonym === null) {
 			throw new NotFoundLoggableException(Pseudonym.name, { pseudonym });

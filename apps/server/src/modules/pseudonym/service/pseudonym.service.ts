@@ -48,14 +48,14 @@ export class PseudonymService {
 		return result;
 	}
 
-	public async findPseudonymByPseudonym(pseudonym: string): Promise<Pseudonym | null> {
+	public async findOneByPseudonym(pseudonym: string): Promise<Pseudonym | null> {
 		const result = await this.externalToolPseudonymRepo.findByPseudonym(pseudonym);
 
 		return result;
 	}
 
 	public async findPseudonym(query: PseudonymSearchQuery, options: IFindOptions<Pseudonym>): Promise<Page<Pseudonym>> {
-		const result = await this.externalToolPseudonymRepo.findPseudonym(query, options);
+		const result = await this.externalToolPseudonymRepo.findByQuery(query, options);
 
 		return result;
 	}
