@@ -60,8 +60,31 @@ export class UserDeletionSaga extends Saga<'userDeletion'> {
 		const failedSteps = results.filter(isRejectedStep);
 
 		if (failedSteps.length > 0) {
+			const errorDetails = results
+				.map((result, index) => {
+					if (result.status === 'rejected') {
+						const moduleName = moduleNames[index];
+						const errorMessage = result.reason instanceof Error ? result.reason.message : String(result.reason);
+						const stack = result.reason instanceof Error ? result.reason.stack : 'No stack trace available';
+						return `${moduleName}: ${errorMessage}\nStack: ${stack}`;
+					}
+					return null;
+				})
+				.filter(Boolean);
+
+			const successfulModules = results
+				.map((result, index) => {
+					if (result.status === 'fulfilled') {
+						return moduleNames[index];
+					}
+					return null;
+				})
+				.filter(Boolean);
+
 			throw new Error(
-				`Some steps failed: ${failedSteps.map((r: PromiseRejectedResult) => r.reason as string).join(', ')}`
+				`User deletion failed for userId: ${params.userId}. ` +
+					`Failed modules:\n${errorDetails.join('\n---\n')}. ` +
+					`Successful modules: ${successfulModules.join(', ')}`
 			);
 		}
 
@@ -78,7 +101,11 @@ export class UserDeletionSaga extends Saga<'userDeletion'> {
 			successReports.push(userStepResult);
 		} catch (error) {
 			const message = error instanceof Error ? error.message : String(error);
-			throw new Error(`Step failed: Failed to delete user data in USER module: ${message}`);
+			const stack = error instanceof Error ? error.stack : 'No stack trace available';
+			throw new Error(
+				`User deletion saga failed at final USER module step for userId: ${params.userId}. ` +
+					`Error: ${message}. Stack trace: ${stack}`
+			);
 		}
 
 		return successReports;
