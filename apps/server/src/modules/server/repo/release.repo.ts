@@ -12,17 +12,17 @@ export class ReleaseRepo {
 	public async findReleases(skip?: number, limit?: number): Promise<Release[]> {
 		let cursor = this.em.getCollection('releases').find({}).sort({ publishedAt: -1 });
 
-		if (skip !== undefined) {
+		if (skip) {
 			cursor = cursor.skip(skip);
 		}
 
-		if (limit !== undefined) {
+		if (limit) {
 			cursor = cursor.limit(limit);
 		}
 
 		const docs = await cursor.toArray();
 		const releases = docs.map((doc) => {
-			const obj = { ...doc, id: doc._id };
+			const obj = { ...doc, id: String(doc._id) };
 			delete (obj as { _id: unknown })._id;
 			const release = plainToInstance(ReleaseClass, obj);
 			const errors = validateSync(release);

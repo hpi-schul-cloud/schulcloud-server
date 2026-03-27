@@ -60,6 +60,7 @@ export class MeUserResponse {
 		this.customAvatarBackgroundColor = props.customAvatarBackgroundColor;
 	}
 }
+
 export class MeRoleResponse {
 	@ApiProperty()
 	public id: string;
@@ -74,7 +75,7 @@ export class MeRoleResponse {
 }
 
 export class MePreferencesResponse {
-	@ApiProperty({ nullable: true })
+	@ApiPropertyOptional({ nullable: true })
 	public releaseDate?: string;
 
 	constructor(props: MePreferencesResponse) {

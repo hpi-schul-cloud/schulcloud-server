@@ -14,7 +14,7 @@ export class ReleaseController {
 	constructor(private readonly serverReleaseUc: ReleaseUc) {}
 
 	@ApiOperation({ summary: 'Get the list of available releases' })
-	@ApiResponse({ status: 200, type: ReleaseListResponse, description: 'Returns a list of rooms.' })
+	@ApiResponse({ status: 200, type: ReleaseListResponse, description: 'Returns a list of releases.' })
 	@ApiResponse({ status: 400, type: ApiValidationError, description: 'Bad Request' })
 	@ApiResponse({ status: 401, type: UnauthorizedException })
 	@ApiResponse({ status: 403, type: ForbiddenException })
