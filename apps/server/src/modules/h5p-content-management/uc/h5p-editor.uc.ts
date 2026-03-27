@@ -146,7 +146,6 @@ export class H5PEditorUc {
 			// filter response for libraries not contained in whitelist
 			const ajaxResponse = result as IHubInfo;
 			if (ajaxResponse && Array.isArray(ajaxResponse.libraries)) {
-				console.log('>>> this.config.libraryList', this.config.libraryList);
 				const libraryWhiteList = this.config.libraryList;
 				ajaxResponse.libraries = ajaxResponse.libraries.filter((library) =>
 					libraryWhiteList.includes(library.machineName)
