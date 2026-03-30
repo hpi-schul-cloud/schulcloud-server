@@ -3,12 +3,10 @@
  * Log levels for controlling output verbosity
  */
 export enum LogLevel {
-	/** Only errors and essential output */
-	QUIET = 0,
 	/** Normal output (default) */
-	NORMAL = 1,
+	NORMAL = 0,
 	/** Verbose output including debug messages */
-	VERBOSE = 2,
+	VERBOSE = 1,
 }
 
 /**
