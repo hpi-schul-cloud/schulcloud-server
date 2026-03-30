@@ -20,7 +20,8 @@ export class H5pHubClient {
 			if (this.isObjectWithResponseStatus(error) && error.response.status === 404) {
 				throw new Error(`No content type available at H5P Hub for ${library}.`);
 			} else {
-				throw new Error(`Unknown error fetching library.json from repository ${library}: ${error}`);
+				const message = error instanceof Error ? error.message : 'Unknown error';
+				throw new Error(`Error downloading content type from H5P Hub for ${library}: ${message}`);
 			}
 		}
 	}
