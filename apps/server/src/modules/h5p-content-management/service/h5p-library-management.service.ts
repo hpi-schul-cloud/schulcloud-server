@@ -43,7 +43,6 @@ export class H5PLibraryManagementService {
 	public contentTypeRepo: ContentTypeInformationRepository;
 	public libraryManager: LibraryManager;
 	public libraryAdministration: LibraryAdministration;
-	public libraryWishList: string[];
 
 	constructor(
 		private readonly libraryStorage: LibraryStorage,
@@ -83,8 +82,6 @@ export class H5PLibraryManagementService {
 		);
 		const contentManager = new ContentManager(this.contentStorage, permissionSystem);
 		this.libraryAdministration = new LibraryAdministration(this.libraryManager, contentManager);
-
-		this.libraryWishList = this.config.libraryList;
 
 		this.logger.setContext(H5PLibraryManagementService.name);
 	}
@@ -203,7 +200,7 @@ export class H5PLibraryManagementService {
 	): ILibraryAdministrationOverviewItem[] {
 		const unwantedLibraries = availableLibraries
 			.filter((lib) => {
-				const isLibraryInWishList = this.libraryWishList.includes(lib.machineName);
+				const isLibraryInWishList = this.config.libraryList.includes(lib.machineName);
 				const isNeededByOtherLibrary = lib.dependentsCount === 0;
 
 				return !isLibraryInWishList && isNeededByOtherLibrary;
@@ -237,7 +234,7 @@ export class H5PLibraryManagementService {
 		const installedLibraries: ILibraryInstallResult[] = [];
 		const availableVersions = this.getAvailableVersions(availableLibraries);
 
-		for (const library of this.libraryWishList) {
+		for (const library of this.config.libraryList) {
 			const installResults = await this.installLibrary(library, availableVersions);
 			installedLibraries.push(...installResults);
 		}
