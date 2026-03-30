@@ -84,7 +84,7 @@ describe(ErwinStrategy.name, () => {
 		schoolId: '',
 		secondarySchools: [],
 	};
-	const account = new Account({ id: accountId, username: 'username' });
+	const account = new Account({ id: accountId, username: 'username', systemId: erwinSystemId });
 	const tokenDto: {
 		systemId?: string;
 		idToken: string;
