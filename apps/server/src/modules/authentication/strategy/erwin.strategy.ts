@@ -1,18 +1,14 @@
 import { ICurrentUser } from '@infra/auth-guard';
 import { AccountService } from '@modules/account';
-import { OAuthService, OauthSessionToken, OauthSessionTokenFactory, OauthSessionTokenService } from '@modules/oauth';
+import { OAuthService, OauthSessionTokenService } from '@modules/oauth';
 import { Inject, Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy } from 'passport-custom';
 import { AUTHENTICATION_CONFIG_TOKEN, AuthenticationConfig } from '../authentication-config';
 import { Oauth2AuthorizationBodyParams } from '../controllers/dto';
 import { StrategyType } from '../interface';
-import {
-	AccountNotFoundLoggableException,
-	SchoolInMigrationLoggableException,
-	UserAccountDeactivatedLoggableException,
-} from '../loggable';
 import { CurrentUserMapper } from '../mapper';
+import { buildOauth2Context } from './oauth2-common.helper';
 
 @Injectable()
 export class ErwinStrategy extends PassportStrategy(Strategy, StrategyType.ERWIN) {
@@ -26,36 +22,15 @@ export class ErwinStrategy extends PassportStrategy(Strategy, StrategyType.ERWIN
 	}
 
 	public async validate(request: { body: Oauth2AuthorizationBodyParams }): Promise<ICurrentUser> {
-		const { systemId, redirectUri, code } = request.body;
+		const { user, account } = await buildOauth2Context(
+			request.body,
+			this.oauthService,
+			this.accountService,
+			this.oauthSessionTokenService,
+			this.config
+		);
 
-		const tokenDto = await this.oauthService.authenticateUser(systemId, redirectUri, code);
-
-		const user = await this.oauthService.provisionUser(systemId, tokenDto.idToken, tokenDto.accessToken);
-
-		if (!user || !user.id) {
-			throw new SchoolInMigrationLoggableException();
-		}
-
-		const account = await this.accountService.findByUserId(user.id);
-		if (!account) {
-			throw new AccountNotFoundLoggableException();
-		}
-
-		if (account.deactivatedAt !== undefined && account.deactivatedAt.getTime() <= Date.now()) {
-			throw new UserAccountDeactivatedLoggableException();
-		}
-
-		if (this.config.externalSystemLogoutEnabled) {
-			const oauthSessionToken: OauthSessionToken = OauthSessionTokenFactory.build({
-				userId: user.id,
-				systemId,
-				refreshToken: tokenDto.refreshToken,
-			});
-
-			await this.oauthSessionTokenService.save(oauthSessionToken);
-		}
-
-		const currentUser = CurrentUserMapper.mapToErwinCurrentUser(account.id, user, systemId, true);
+		const currentUser = CurrentUserMapper.mapToErwinCurrentUser(account.id, user, request.body.systemId, true);
 		return currentUser;
 	}
 }
