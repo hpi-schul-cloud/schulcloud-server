@@ -41,10 +41,8 @@ const createLogger = (formater, level) =>
 	});
 
 module.exports = {
-	addType,
 	getTestFormat,
 	getDevelopFormat,
 	getProductionFormat,
-	getConsoleTransport,
 	createLogger,
 };

@@ -13,12 +13,13 @@
 -->
 
 ## Links to Tickets or other pull requests
-
 <!--
 Base links to copy
 - https://github.com/hpi-schul-cloud/schulcloud-client/pull/????
 - https://ticketsystem.dbildungscloud.de/browse/BC-????
 -->
+<!-- related-prs-and-tickets-start -->
+<!-- related-prs-and-tickets-end -->
 
 ## Changes
 

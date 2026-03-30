@@ -42,5 +42,4 @@ const classObjectFromName = async (className, attributes) => {
 
 module.exports = {
 	classObjectFromName,
-	CLASS_NAME_FORMATS,
 };
