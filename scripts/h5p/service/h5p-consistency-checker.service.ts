@@ -14,16 +14,8 @@ export class H5pConsistencyChecker {
 			}
 
 			const libraryJson = FileSystemHelper.readLibraryJson(libraryJsonPath);
-
-			const jsIsMissing = this.checkJsFilesMissing(folderPath, libraryJson);
-			if (jsIsMissing) {
-				return false;
-			}
-
-			const cssIsMissing = this.checkCssFilesMissing(folderPath, libraryJson);
-			if (cssIsMissing) {
-				return false;
-			}
+			if (this.checkJsFilesMissing(folderPath, libraryJson)) return false;
+			if (this.checkCssFilesMissing(folderPath, libraryJson)) return false;
 
 			this.logger.debug('Consistency check passed');
 			return true;
