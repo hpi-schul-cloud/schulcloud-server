@@ -7,14 +7,13 @@ import {
 	ILibraryName,
 } from '@lumieducation/h5p-server/build/src/types';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { H5P_EDITOR_CONFIG_TOKEN } from '../h5p-editor.config';
 import { H5pConsistencyError, H5pTimeoutError } from '../interface';
 import { H5P_CACHE_PROVIDER_TOKEN } from '../provider';
 import { ILibraryAdministrationOverviewItemTestFactory, ILibraryInstallResultTestFactory } from '../testing';
 import { ContentStorage } from './content-storage.service';
-import { H5PLibraryManagementService, castToLibrariesContentType } from './h5p-library-management.service';
+import { H5PLibraryManagementService } from './h5p-library-management.service';
 import { LibraryStorage } from './library-storage.service';
 
 describe('H5PLibraryManagementService', () => {
@@ -27,6 +26,7 @@ describe('H5PLibraryManagementService', () => {
 		del: jest.Mock;
 		reset: jest.Mock;
 	};
+	const libraryWishList: string[] = [];
 
 	beforeAll(async () => {
 		cacheMock = {
@@ -52,7 +52,7 @@ describe('H5PLibraryManagementService', () => {
 					provide: H5P_EDITOR_CONFIG_TOKEN,
 					useValue: {
 						installLibraryLockMaxOccupationTime: 5000,
-						libraryListPath: 'config/h5p-libraries.yaml',
+						libraryList: libraryWishList,
 					},
 				},
 				{
@@ -79,18 +79,8 @@ describe('H5PLibraryManagementService', () => {
 	});
 
 	afterEach(() => {
+		libraryWishList.length = 0;
 		jest.resetAllMocks();
-	});
-
-	describe('castToLibrariesContentType', () => {
-		describe('when castToLibrariesContentType has been called with an invalid object', () => {
-			it('should throw InternalServerErrorException', () => {
-				const randomObject = {
-					random: 1,
-				};
-				expect(() => castToLibrariesContentType(randomObject)).toThrow(InternalServerErrorException);
-			});
-		});
 	});
 
 	describe('run', () => {
@@ -257,7 +247,7 @@ describe('H5PLibraryManagementService', () => {
 				const service = module.get(H5PLibraryManagementService);
 
 				const wantedLibraries = ['a', 'b'];
-				let availableLibraries = [
+				const availableLibraries = [
 					ILibraryAdministrationOverviewItemTestFactory.create({
 						machineName: 'a',
 						dependentsCount: 1,
@@ -288,13 +278,14 @@ describe('H5PLibraryManagementService', () => {
 				libraryStorage.deleteLibrary.mockImplementationOnce((lib) => {
 					const index = availableLibraries.findIndex((item) => item.machineName === lib.machineName);
 					if (index !== -1) {
-						availableLibraries = availableLibraries.splice(index, 1);
+						availableLibraries.splice(index, 1);
 					}
 
 					return Promise.resolve();
 				});
 
-				service.libraryWishList = wantedLibraries;
+				libraryWishList.length = 0;
+				libraryWishList.push(...wantedLibraries);
 
 				return { service, wantedLibraries, expectedUninstalled };
 			};
@@ -316,7 +307,7 @@ describe('H5PLibraryManagementService', () => {
 				const service = module.get(H5PLibraryManagementService);
 
 				const wantedLibraries = ['a'];
-				let availableLibraries = [
+				const availableLibraries = [
 					ILibraryAdministrationOverviewItemTestFactory.create({
 						machineName: 'a',
 						dependentsCount: 1,
@@ -349,13 +340,14 @@ describe('H5PLibraryManagementService', () => {
 					.mockImplementationOnce((lib) => {
 						const index = availableLibraries.findIndex((item) => item.machineName === lib.machineName);
 						if (index !== -1) {
-							availableLibraries = availableLibraries.splice(index, 1);
+							availableLibraries.splice(index, 1);
 						}
 
 						return Promise.resolve();
 					});
 
-				service.libraryWishList = wantedLibraries;
+				libraryWishList.length = 0;
+				libraryWishList.push(...wantedLibraries);
 
 				return { service, expectedUninstalled };
 			};
@@ -400,7 +392,8 @@ describe('H5PLibraryManagementService', () => {
 				const s3Error = new Error('S3ClientAdapter: Mocked S3 client exception');
 				libraryStorage.deleteLibrary.mockRejectedValueOnce(s3Error);
 
-				service.libraryWishList = wantedLibraries;
+				libraryWishList.length = 0;
+				libraryWishList.push(...wantedLibraries);
 
 				return { s3Error, service };
 			};
@@ -440,7 +433,8 @@ describe('H5PLibraryManagementService', () => {
 
 				jest.spyOn(service.libraryAdministration, 'getLibraries').mockResolvedValue(librariesToCheck);
 
-				service.libraryWishList = wantedLibraries;
+				libraryWishList.length = 0;
+				libraryWishList.push(...wantedLibraries);
 
 				return { service };
 			};
@@ -479,7 +473,8 @@ describe('H5PLibraryManagementService', () => {
 					}),
 				];
 
-				service.libraryWishList = wantedLibraries;
+				libraryWishList.length = 0;
+				libraryWishList.push(...wantedLibraries);
 
 				jest
 					.spyOn(service.contentTypeRepo, 'installContentType')
@@ -561,7 +556,8 @@ describe('H5PLibraryManagementService', () => {
 				const nonExistentLibrary = 'nonExistentLibrary';
 				const availableLibraries: ILibraryAdministrationOverviewItem[] = [];
 
-				service.libraryWishList = [nonExistentLibrary];
+				libraryWishList.length = 0;
+				libraryWishList.push(nonExistentLibrary);
 
 				jest
 					.spyOn(service.contentTypeCache, 'get')
@@ -591,7 +587,8 @@ describe('H5PLibraryManagementService', () => {
 
 				const availableLibraries: ILibraryAdministrationOverviewItem[] = [];
 
-				service.libraryWishList = [library];
+				libraryWishList.length = 0;
+				libraryWishList.push(library);
 
 				return { availableLibraries, service };
 			};
@@ -621,7 +618,8 @@ describe('H5PLibraryManagementService', () => {
 
 				const availableLibraries: ILibraryAdministrationOverviewItem[] = [];
 
-				service.libraryWishList = [library];
+				libraryWishList.length = 0;
+				libraryWishList.push(library);
 
 				return { availableLibraries, service };
 			};
@@ -652,7 +650,8 @@ describe('H5PLibraryManagementService', () => {
 
 			const availableLibraries: ILibraryAdministrationOverviewItem[] = [];
 
-			service.libraryWishList = [library];
+			libraryWishList.length = 0;
+			libraryWishList.push(library);
 
 			return { availableLibraries, service };
 		};
