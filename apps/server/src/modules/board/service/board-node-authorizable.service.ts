@@ -67,9 +67,8 @@ export class BoardNodeAuthorizableService implements AuthorizationLoaderService 
 				'Multiple contexts found for board nodes. All board nodes must share the same context to load authorizables.'
 			);
 		}
-		const rootNode = boardNodeMap[rootNodeIds[0]];
 
-		const preparedContext = await this.resolveContext(rootNode);
+		const preparedContext = await this.resolveContext(rootNodes[0]);
 		const users = preparedContext.getUsersWithBoardRoles();
 
 		const boardNodeAuthorizables = boardNodes.map((boardNode) => {
