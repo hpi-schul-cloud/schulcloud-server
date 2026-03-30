@@ -18,9 +18,9 @@ export class CurrentUserMapper {
 			typeof (user.roles as { getItems: unknown }).getItems === 'function'
 		) {
 			roles = (user.roles as { getItems: () => { id: string }[] }).getItems().map((role) => role.id);
+		} else {
+			return roles;
 		}
-
-		return roles;
 	}
 
 	public static userToICurrentUser(
