@@ -248,9 +248,9 @@ export class H5pLibraryPackagerService {
 
 		this.cleanUpUnwantedFilesInLibraryFolder(folderPath);
 
-		const validated = this.consistencyChecker.checkConsistency(folderPath);
+		const isConsistent = this.consistencyChecker.isConsistent(folderPath);
 
-		return validated;
+		return isConsistent;
 	}
 
 	private executeAdditionalBuildStepsIfRequired(folderPath: string, library: string, tag: string): boolean {

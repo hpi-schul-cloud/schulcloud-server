@@ -5,7 +5,7 @@ import { H5PLibrary } from '../interface/h5p-library';
 export class H5pConsistencyChecker {
 	private readonly logger = h5pLogger;
 
-	public checkConsistency(folderPath: string): boolean {
+	public isConsistent(folderPath: string): boolean {
 		try {
 			const libraryJsonPath = FileSystemHelper.getLibraryJsonPath(folderPath);
 			if (!FileSystemHelper.pathExists(libraryJsonPath)) {
@@ -14,8 +14,8 @@ export class H5pConsistencyChecker {
 			}
 
 			const libraryJson = FileSystemHelper.readLibraryJson(libraryJsonPath);
-			if (this.checkJsFilesMissing(folderPath, libraryJson)) return false;
-			if (this.checkCssFilesMissing(folderPath, libraryJson)) return false;
+			if (this.isJsFilesMissing(folderPath, libraryJson)) return false;
+			if (this.isCssFilesMissing(folderPath, libraryJson)) return false;
 
 			this.logger.debug('Consistency check passed');
 			return true;
@@ -26,7 +26,7 @@ export class H5pConsistencyChecker {
 		}
 	}
 
-	private checkJsFilesMissing(folderPath: string, libraryJson: H5PLibrary): boolean {
+	private isJsFilesMissing(folderPath: string, libraryJson: H5PLibrary): boolean {
 		const jsPaths = this.getJsPaths(libraryJson);
 		const missingFiles = this.getMissingFiles(folderPath, jsPaths);
 
@@ -38,7 +38,7 @@ export class H5pConsistencyChecker {
 		return false;
 	}
 
-	private checkCssFilesMissing(folderPath: string, libraryJson: H5PLibrary): boolean {
+	private isCssFilesMissing(folderPath: string, libraryJson: H5PLibrary): boolean {
 		const cssPaths = this.getCssPaths(libraryJson);
 		const missingFiles = this.getMissingFiles(folderPath, cssPaths);
 
