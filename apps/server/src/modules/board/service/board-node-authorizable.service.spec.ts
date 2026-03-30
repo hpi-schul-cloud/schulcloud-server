@@ -8,7 +8,7 @@ import { BoardNodeRepo } from '../repo';
 import { columnBoardFactory, columnFactory } from '../testing';
 import { BoardNodeAuthorizableService } from './board-node-authorizable.service';
 import { BoardNodeService } from './board-node.service';
-import { BoardContextService } from './internal/board-context.service';
+import { BoardContextResolverService, PreparedBoardContext } from './internal/board-context';
 
 describe(BoardNodeAuthorizableService.name, () => {
 	let module: TestingModule;
@@ -16,7 +16,7 @@ describe(BoardNodeAuthorizableService.name, () => {
 	let injectionService: DeepMocked<AuthorizationInjectionService>;
 	let boardNodeRepo: DeepMocked<BoardNodeRepo>;
 	let boardNodeService: DeepMocked<BoardNodeService>;
-	let boardContextService: DeepMocked<BoardContextService>;
+	let boardContextResolverService: DeepMocked<BoardContextResolverService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -31,8 +31,8 @@ describe(BoardNodeAuthorizableService.name, () => {
 					useValue: createMock<BoardNodeService>(),
 				},
 				{
-					provide: BoardContextService,
-					useValue: createMock<BoardContextService>(),
+					provide: BoardContextResolverService,
+					useValue: createMock<BoardContextResolverService>(),
 				},
 				{
 					provide: AuthorizationInjectionService,
@@ -45,7 +45,7 @@ describe(BoardNodeAuthorizableService.name, () => {
 		service = module.get(BoardNodeAuthorizableService);
 		boardNodeRepo = module.get(BoardNodeRepo);
 		boardNodeService = module.get(BoardNodeService);
-		boardContextService = module.get(BoardContextService);
+		boardContextResolverService = module.get(BoardContextResolverService);
 
 		await setupEntities([User]);
 	});
@@ -116,9 +116,13 @@ describe(BoardNodeAuthorizableService.name, () => {
 					roles: [BoardRoles.EDITOR],
 				},
 			];
-			boardContextService.getUsersWithBoardRoles.mockResolvedValue(usersWithRoles);
 			const boardConfiguration = { canEditorsManageVideoconference: true };
-			boardContextService.getBoardConfiguration.mockResolvedValueOnce(boardConfiguration);
+			const preparedContext: PreparedBoardContext = {
+				type: columnBoard.context.type,
+				getUsersWithBoardRoles: () => usersWithRoles,
+				getBoardConfiguration: () => boardConfiguration,
+			};
+			boardContextResolverService.resolve.mockResolvedValue(preparedContext);
 
 			return { boardConfiguration, columnBoard, column, usersWithRoles };
 		};
