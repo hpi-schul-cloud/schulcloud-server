@@ -49,10 +49,6 @@ spec:
         runAsNonRoot: true
       os:
         name: linux
-      volumes:
-        - name: libraries-list
-          configMap:
-            name: api-h5p-configmap
       containers:
       - name: api-h5p
         image: {{ SCHULCLOUD_SERVER_IMAGE }}:{{ SCHULCLOUD_SERVER_IMAGE_TAG }}
