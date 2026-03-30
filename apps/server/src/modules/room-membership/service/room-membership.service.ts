@@ -233,22 +233,13 @@ export class RoomMembershipService {
 		return userSchoolMap;
 	}
 
-	private async getAllRoomGroupsOfUser(userId: EntityId, skip = 0): Promise<Group[]> {
-		const { data, total } = await this.groupService.findGroups(
-			{
-				groupTypes: [GroupTypes.ROOM],
-				userId,
-			},
-			{ pagination: { skip, limit: 100 } }
-		);
+	private async getAllRoomGroupsOfUser(userId: EntityId): Promise<Group[]> {
+		const { data } = await this.groupService.findGroups({
+			groupTypes: [GroupTypes.ROOM],
+			userId,
+		});
 
-		const isAllDataLoaded = data.length + skip >= total;
-		if (isAllDataLoaded) {
-			return data;
-		} else {
-			const nextData = await this.getAllRoomGroupsOfUser(userId, skip + data.length);
-			return [...data, ...nextData];
-		}
+		return data;
 	}
 
 	private async getStats(groupsOnPage: Group[], schoolId: string): Promise<RoomMembershipStats[]> {
