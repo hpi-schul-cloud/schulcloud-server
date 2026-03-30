@@ -65,8 +65,8 @@ export class UserService {
 		return userDO;
 	}
 
-	public async findByIds(ids: string[]): Promise<UserDo[]> {
-		const userDOs = await this.userDoRepo.findByIds(ids, true);
+	public async findByIds(ids: string[], populate = true): Promise<UserDo[]> {
+		const userDOs = await this.userDoRepo.findByIds(ids, populate);
 
 		return userDOs;
 	}

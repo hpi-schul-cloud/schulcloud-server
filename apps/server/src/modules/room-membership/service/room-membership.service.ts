@@ -2,6 +2,8 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Group, GroupService, GroupTypes } from '@modules/group';
 import { RoleName, RoleService, RoomRole } from '@modules/role';
 import { ROOM_PUBLIC_API_CONFIG_TOKEN, RoomPublicApiConfig, RoomService } from '@modules/room';
+import { RoomInvitationLink } from '@modules/room/domain/do/room-invitation-link.do';
+import { SchoolService } from '@modules/school/domain/service/school.service';
 import { UserService } from '@modules/user';
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { Page } from '@shared/domain/domainobject';
@@ -9,13 +11,11 @@ import { Pagination } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { chunk } from 'lodash';
 import { RoomAuthorizable } from '../do/room-authorizable.do';
+import { RoomInvitationLinkAuthorizable } from '../do/room-invitation-link-authorizable.do';
 import { RoomMember } from '../do/room-member.do';
 import { RoomMembership } from '../do/room-membership.do';
 import { RoomMembershipRepo } from '../repo/room-membership.repo';
 import { MemberStats, RoomMembershipStats } from '../type/room-membership-stats.type';
-import { RoomInvitationLink } from '@modules/room/domain/do/room-invitation-link.do';
-import { RoomInvitationLinkAuthorizable } from '../do/room-invitation-link-authorizable.do';
-import { SchoolService } from '@modules/school/domain/service/school.service';
 
 @Injectable()
 export class RoomMembershipService {
@@ -222,9 +222,9 @@ export class RoomMembershipService {
 
 	private async getSchoolIdsOfUsers(userIds: EntityId[]): Promise<Map<EntityId, EntityId>> {
 		const userSchoolMap = new Map<EntityId, EntityId>();
-		const userIdChunks = chunk(userIds, 100);
+		const userIdChunks = chunk(userIds, 1000);
 		for (const userIdChunk of userIdChunks) {
-			const users = await this.userService.findByIds(userIdChunk);
+			const users = await this.userService.findByIds(userIdChunk, false);
 			for (const user of users) {
 				if (!user.id) continue;
 				userSchoolMap.set(user.id, user.schoolId);
