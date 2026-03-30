@@ -42,7 +42,9 @@ const main = async (): Promise<void> => {
 	const tempFolderPath = params.tmp;
 
 	const libraryRepoMap = FileSystemHelper.readLibraryRepoMap(mapFile);
-	const libraryWishList = process.env.H5P_EDITOR__LIBRARY_LIST ? process.env.H5P_EDITOR__LIBRARY_LIST.split(',') : [];
+	const libraryWishList = process.env.H5P_EDITOR__LIBRARY_LIST
+		? process.env.H5P_EDITOR__LIBRARY_LIST.split(',').map((item: string) => item.trim())
+		: [];
 	if (!libraryWishList || libraryWishList.length === 0) {
 		throw new Error('H5P_EDITOR__LIBRARY_LIST environment variable is not set or empty');
 	}
