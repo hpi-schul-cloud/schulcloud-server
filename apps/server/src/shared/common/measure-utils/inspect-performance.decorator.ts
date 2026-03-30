@@ -169,14 +169,11 @@ function formatDurationWithSelf(totalMs: number, selfMs: number | undefined): st
 	const totalFormatted = `${totalMs.toFixed(2)}ms`.padStart(TOTAL_TIME_WIDTH);
 
 	// If self time differs from total, show both
-	if (selfMs !== undefined && Math.abs(totalMs - selfMs) > 0.01) {
-		const selfFormatted = `${selfMs.toFixed(2)}ms`.padStart(SELF_TIME_WIDTH);
-		return `${ANSI_LIGHT_BLUE}${totalFormatted} (${selfFormatted})${ANSI_RESET}`;
-	}
-
-	// Leaf node (no children) - pad with spaces to maintain alignment
-	const emptyPadding = ' '.repeat(SELF_TIME_WIDTH + 3); // +3 for " ()" characters
-	return `${ANSI_LIGHT_BLUE}${totalFormatted}${emptyPadding}${ANSI_RESET}`;
+	const doesDurationDiffer = selfMs !== undefined && Math.abs(totalMs - selfMs) > 0.01;
+	const selfFormatted = doesDurationDiffer
+		? `${selfMs.toFixed(2)}ms`.padStart(SELF_TIME_WIDTH)
+		: ' '.repeat(SELF_TIME_WIDTH);
+	return `| ${ANSI_LIGHT_BLUE}${totalFormatted}${ANSI_RESET} | ${ANSI_LIGHT_BLUE}${selfFormatted}${ANSI_RESET} |`;
 }
 
 /**
@@ -240,8 +237,7 @@ export function formatAggregatedStats(aggregated: Record<string, AggregatedStats
 	// Calculate total execution time across all measurements
 	const totalExecutionTime = entries.reduce((sum, [, stats]) => sum + stats.totalMs, 0);
 	const totalCalls = entries.reduce((sum, [, stats]) => sum + stats.calls, 0);
-	lines.push(`---`);
-	lines.push(`Total: ${totalExecutionTime.toFixed(2)}ms (${totalCalls} calls)`);
+	lines.push(`Total execution time: ${totalExecutionTime.toFixed(2)}ms (${totalCalls} calls)`);
 
 	return lines.join('\n');
 }
