@@ -26,6 +26,7 @@ describe('H5PLibraryManagementService', () => {
 		del: jest.Mock;
 		reset: jest.Mock;
 	};
+	const libraryWishList: string[] = [];
 
 	beforeAll(async () => {
 		cacheMock = {
@@ -51,6 +52,7 @@ describe('H5PLibraryManagementService', () => {
 					provide: H5P_EDITOR_CONFIG_TOKEN,
 					useValue: {
 						installLibraryLockMaxOccupationTime: 5000,
+						libraryList: libraryWishList,
 					},
 				},
 				{
@@ -77,6 +79,7 @@ describe('H5PLibraryManagementService', () => {
 	});
 
 	afterEach(() => {
+		libraryWishList.length = 0;
 		jest.resetAllMocks();
 	});
 
@@ -244,7 +247,7 @@ describe('H5PLibraryManagementService', () => {
 				const service = module.get(H5PLibraryManagementService);
 
 				const wantedLibraries = ['a', 'b'];
-				let availableLibraries = [
+				const availableLibraries = [
 					ILibraryAdministrationOverviewItemTestFactory.create({
 						machineName: 'a',
 						dependentsCount: 1,
@@ -275,13 +278,14 @@ describe('H5PLibraryManagementService', () => {
 				libraryStorage.deleteLibrary.mockImplementationOnce((lib) => {
 					const index = availableLibraries.findIndex((item) => item.machineName === lib.machineName);
 					if (index !== -1) {
-						availableLibraries = availableLibraries.splice(index, 1);
+						availableLibraries.splice(index, 1);
 					}
 
 					return Promise.resolve();
 				});
 
-				service.libraryWishList = wantedLibraries;
+				libraryWishList.length = 0;
+				libraryWishList.push(...wantedLibraries);
 
 				return { service, wantedLibraries, expectedUninstalled };
 			};
@@ -303,7 +307,7 @@ describe('H5PLibraryManagementService', () => {
 				const service = module.get(H5PLibraryManagementService);
 
 				const wantedLibraries = ['a'];
-				let availableLibraries = [
+				const availableLibraries = [
 					ILibraryAdministrationOverviewItemTestFactory.create({
 						machineName: 'a',
 						dependentsCount: 1,
@@ -336,13 +340,14 @@ describe('H5PLibraryManagementService', () => {
 					.mockImplementationOnce((lib) => {
 						const index = availableLibraries.findIndex((item) => item.machineName === lib.machineName);
 						if (index !== -1) {
-							availableLibraries = availableLibraries.splice(index, 1);
+							availableLibraries.splice(index, 1);
 						}
 
 						return Promise.resolve();
 					});
 
-				service.libraryWishList = wantedLibraries;
+				libraryWishList.length = 0;
+				libraryWishList.push(...wantedLibraries);
 
 				return { service, expectedUninstalled };
 			};
@@ -387,7 +392,8 @@ describe('H5PLibraryManagementService', () => {
 				const s3Error = new Error('S3ClientAdapter: Mocked S3 client exception');
 				libraryStorage.deleteLibrary.mockRejectedValueOnce(s3Error);
 
-				service.libraryWishList = wantedLibraries;
+				libraryWishList.length = 0;
+				libraryWishList.push(...wantedLibraries);
 
 				return { s3Error, service };
 			};
@@ -427,7 +433,8 @@ describe('H5PLibraryManagementService', () => {
 
 				jest.spyOn(service.libraryAdministration, 'getLibraries').mockResolvedValue(librariesToCheck);
 
-				service.libraryWishList = wantedLibraries;
+				libraryWishList.length = 0;
+				libraryWishList.push(...wantedLibraries);
 
 				return { service };
 			};
@@ -466,7 +473,8 @@ describe('H5PLibraryManagementService', () => {
 					}),
 				];
 
-				service.libraryWishList = wantedLibraries;
+				libraryWishList.length = 0;
+				libraryWishList.push(...wantedLibraries);
 
 				jest
 					.spyOn(service.contentTypeRepo, 'installContentType')
@@ -548,7 +556,8 @@ describe('H5PLibraryManagementService', () => {
 				const nonExistentLibrary = 'nonExistentLibrary';
 				const availableLibraries: ILibraryAdministrationOverviewItem[] = [];
 
-				service.libraryWishList = [nonExistentLibrary];
+				libraryWishList.length = 0;
+				libraryWishList.push(nonExistentLibrary);
 
 				jest
 					.spyOn(service.contentTypeCache, 'get')
@@ -578,7 +587,8 @@ describe('H5PLibraryManagementService', () => {
 
 				const availableLibraries: ILibraryAdministrationOverviewItem[] = [];
 
-				service.libraryWishList = [library];
+				libraryWishList.length = 0;
+				libraryWishList.push(library);
 
 				return { availableLibraries, service };
 			};
@@ -608,7 +618,8 @@ describe('H5PLibraryManagementService', () => {
 
 				const availableLibraries: ILibraryAdministrationOverviewItem[] = [];
 
-				service.libraryWishList = [library];
+				libraryWishList.length = 0;
+				libraryWishList.push(library);
 
 				return { availableLibraries, service };
 			};
@@ -639,7 +650,8 @@ describe('H5PLibraryManagementService', () => {
 
 			const availableLibraries: ILibraryAdministrationOverviewItem[] = [];
 
-			service.libraryWishList = [library];
+			libraryWishList.length = 0;
+			libraryWishList.push(library);
 
 			return { availableLibraries, service };
 		};
