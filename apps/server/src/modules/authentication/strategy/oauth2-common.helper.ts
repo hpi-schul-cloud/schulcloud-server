@@ -1,4 +1,4 @@
-import { AccountService } from '@modules/account';
+import { Account, AccountService } from '@modules/account';
 import { UserDo } from '@modules/user';
 import { OAuthService, OauthSessionToken, OauthSessionTokenFactory, OauthSessionTokenService } from '@modules/oauth';
 import { AuthenticationConfig } from '../authentication-config';
@@ -11,12 +11,13 @@ import { Oauth2AuthorizationBodyParams } from '../controllers/dto';
 
 export interface Oauth2ContextResult {
 	user: UserDo;
-	account: { id: string; deactivatedAt?: Date };
+	account: Account;
 	tokenDto: {
 		idToken: string;
 		accessToken: string;
 		refreshToken?: string;
 	};
+	systemId: string;
 }
 
 export async function buildOauth2Context(
@@ -55,5 +56,5 @@ export async function buildOauth2Context(
 		await oauthSessionTokenService.save(oauthSessionToken);
 	}
 
-	return { user, account, tokenDto };
+	return { user, account, tokenDto, systemId };
 }

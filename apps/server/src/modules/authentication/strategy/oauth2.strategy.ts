@@ -23,7 +23,7 @@ export class Oauth2Strategy extends PassportStrategy(Strategy, StrategyType.OAUT
 	}
 
 	public async validate(request: { body: Oauth2AuthorizationBodyParams }): Promise<ICurrentUser> {
-		const { user, account, tokenDto } = await buildOauth2Context(
+		const { user, account, tokenDto, systemId } = await buildOauth2Context(
 			request.body,
 			this.oauthService,
 			this.accountService,
@@ -31,12 +31,7 @@ export class Oauth2Strategy extends PassportStrategy(Strategy, StrategyType.OAUT
 			this.config
 		);
 
-		const currentUser = CurrentUserMapper.mapToOauthCurrentUser(
-			account.id,
-			user,
-			request.body.systemId,
-			tokenDto.idToken
-		);
+		const currentUser = CurrentUserMapper.mapToOauthCurrentUser(account.id, user, systemId, tokenDto.idToken);
 		return currentUser;
 	}
 }

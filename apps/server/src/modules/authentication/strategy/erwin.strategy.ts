@@ -22,7 +22,7 @@ export class ErwinStrategy extends PassportStrategy(Strategy, StrategyType.ERWIN
 	}
 
 	public async validate(request: { body: Oauth2AuthorizationBodyParams }): Promise<ICurrentUser> {
-		const { user, account } = await buildOauth2Context(
+		const { user, account, systemId } = await buildOauth2Context(
 			request.body,
 			this.oauthService,
 			this.accountService,
@@ -30,7 +30,7 @@ export class ErwinStrategy extends PassportStrategy(Strategy, StrategyType.ERWIN
 			this.config
 		);
 
-		const currentUser = CurrentUserMapper.mapToErwinCurrentUser(account.id, user, request.body.systemId, true);
+		const currentUser = CurrentUserMapper.mapToErwinCurrentUser(account, user, systemId, true);
 		return currentUser;
 	}
 }

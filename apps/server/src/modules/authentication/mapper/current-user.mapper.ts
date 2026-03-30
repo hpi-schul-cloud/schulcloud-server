@@ -1,4 +1,5 @@
 import { CurrentUserBuilder, ICurrentUser } from '@infra/auth-guard';
+import { Account } from '@modules/account/domain/do/account';
 import { UserDo } from '@modules/user';
 import { ValidationError } from '@shared/common/error';
 import { RoleReference } from '@shared/domain/domainobject';
@@ -76,13 +77,12 @@ export class CurrentUserMapper {
 	}
 
 	public static mapToErwinCurrentUser(
-		accountId: string,
+		account: Account,
 		user: {
 			id?: string;
 			schoolId?: string;
 			school?: { id?: string };
 			roles?: { id?: string }[] | { getItems?: () => { id: string }[] };
-			systemId?: string;
 			externalId?: string;
 		},
 		systemId?: string,
@@ -90,11 +90,11 @@ export class CurrentUserMapper {
 	): ICurrentUser {
 		const roles = this.extractRoleIds(user);
 		const schoolId = user.schoolId || user.school?.id;
+		const accountId = account.id;
 
-		const resolvedSystemId = systemId ?? user.systemId;
 		const external = isExternalUser ?? false;
 
-		if (resolvedSystemId) {
+		if (systemId == account.systemId) {
 			// SVS systemId exists, keep it and return
 			return new CurrentUserBuilder({
 				accountId,
@@ -103,30 +103,32 @@ export class CurrentUserMapper {
 				roles,
 			})
 				.asExternalUser(external)
-				.withExternalSystem(resolvedSystemId)
-				.build();
-		} else if (user.externalId) {
-			// No SVS systemId, but UserDo.ExternalId exists: use Erwin systemId (assume passed as param)
-			return new CurrentUserBuilder({
-				accountId,
-				userId: user.id as string,
-				schoolId: schoolId as string,
-				roles,
-			})
-				.asExternalUser(true)
 				.withExternalSystem(systemId)
 				.build();
 		} else {
-			// No SVS systemId, no UserDo.ExternalId: empty systemId, set isExternalUser to false
-			return new CurrentUserBuilder({
-				accountId,
-				userId: user.id as string,
-				schoolId: schoolId as string,
-				roles,
-			})
-				.asExternalUser(false)
-				.withExternalSystem(undefined)
-				.build();
+			if (user.externalId) {
+				// No SVS systemId, but UserDo.ExternalId exists: use Erwin systemId (assume passed as param)
+				return new CurrentUserBuilder({
+					accountId,
+					userId: user.id as string,
+					schoolId: schoolId as string,
+					roles,
+				})
+					.asExternalUser(true)
+					.withExternalSystem(systemId)
+					.build();
+			} else {
+				// No SVS systemId, no UserDo.ExternalId: empty systemId, set isExternalUser to false
+				return new CurrentUserBuilder({
+					accountId,
+					userId: user.id as string,
+					schoolId: schoolId as string,
+					roles,
+				})
+					.asExternalUser(false)
+					.withExternalSystem(undefined)
+					.build();
+			}
 		}
 	}
 }

@@ -9,6 +9,7 @@ import { setupEntities } from '@testing/database';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { OauthCurrentUser } from '../interface';
 import { CurrentUserMapper } from './current-user.mapper';
+import { Account } from '@modules/account/domain/do/account';
 
 describe('CurrentUserMapper', () => {
 	beforeAll(async () => {
@@ -323,19 +324,27 @@ describe('CurrentUserMapper', () => {
 					const user = userFactory.buildWithId({
 						roles: [teacherRole],
 					});
-					const accountId = new ObjectId().toHexString();
+
+					const systemId = new ObjectId().toHexString();
+
+					const account = {
+						id: new ObjectId().toHexString(),
+						userId: new ObjectId().toHexString(),
+						systemId: systemId,
+					} as Account;
 
 					return {
 						teacherRole,
 						user,
-						accountId,
+						account,
 					};
 				};
 
 				it('should map with roles', () => {
-					const { accountId, teacherRole, user } = setup();
+					const { account, teacherRole, user } = setup();
 
-					const currentUser = CurrentUserMapper.mapToErwinCurrentUser(accountId, user, undefined, false);
+					const currentUser = CurrentUserMapper.mapToErwinCurrentUser(account, user, undefined, false);
+					const accountId = account.id;
 
 					expect(currentUser).toMatchObject({
 						accountId,
@@ -350,18 +359,25 @@ describe('CurrentUserMapper', () => {
 			describe('when user has no roles', () => {
 				const setup = () => {
 					const user = userFactory.buildWithId();
-					const accountId = new ObjectId().toHexString();
+					const systemId = new ObjectId().toHexString();
+
+					const account = {
+						id: new ObjectId().toHexString(),
+						userId: new ObjectId().toHexString(),
+						systemId: systemId,
+					} as Account;
 
 					return {
-						accountId,
+						account,
 						user,
 					};
 				};
 
 				it('should map without roles', () => {
-					const { accountId, user } = setup();
+					const { account, user } = setup();
 
-					const currentUser = CurrentUserMapper.mapToErwinCurrentUser(accountId, user, undefined, true);
+					const currentUser = CurrentUserMapper.mapToErwinCurrentUser(account, user, undefined, true);
+					const accountId = account.id;
 
 					expect(currentUser).toMatchObject({
 						accountId,
@@ -379,19 +395,24 @@ describe('CurrentUserMapper', () => {
 						school: schoolEntityFactory.buildWithId(),
 					});
 					const systemId = 'mockSystemId';
-					const accountId = new ObjectId().toHexString();
+					const account = {
+						id: new ObjectId().toHexString(),
+						userId: new ObjectId().toHexString(),
+						systemId: systemId,
+					} as Account;
 
 					return {
 						user,
 						systemId,
-						accountId,
+						account,
 					};
 				};
 
 				it('should map system and school', () => {
-					const { accountId, user, systemId } = setup();
+					const { account, user, systemId } = setup();
 
-					const currentUser = CurrentUserMapper.mapToErwinCurrentUser(accountId, user, systemId, false);
+					const currentUser = CurrentUserMapper.mapToErwinCurrentUser(account, user, systemId, false);
+					const accountId = account.id;
 
 					expect(currentUser).toMatchObject({
 						accountId,
@@ -410,18 +431,24 @@ describe('CurrentUserMapper', () => {
 						schoolId: 'mockSchoolId',
 						roles: [],
 					};
-					const accountId = new ObjectId().toHexString();
+					const systemId = new ObjectId().toHexString();
+					const account = {
+						id: new ObjectId().toHexString(),
+						userId: new ObjectId().toHexString(),
+						systemId: systemId,
+					} as Account;
 
 					return {
 						user,
-						accountId,
+						account,
 					};
 				};
 
 				it('should use schoolId property', () => {
-					const { accountId, user } = setup();
+					const { account, user } = setup();
 
-					const currentUser = CurrentUserMapper.mapToErwinCurrentUser(accountId, user, undefined, false);
+					const currentUser = CurrentUserMapper.mapToErwinCurrentUser(account, user, undefined, false);
+					const accountId = account.id;
 
 					expect(currentUser).toMatchObject({
 						accountId,
@@ -443,18 +470,24 @@ describe('CurrentUserMapper', () => {
 							getItems: () => [{ id: 'mockRoleId1' }, { id: 'mockRoleId2' }],
 						},
 					};
-					const accountId = new ObjectId().toHexString();
+					const systemId = new ObjectId().toHexString();
+					const account = {
+						id: new ObjectId().toHexString(),
+						userId: new ObjectId().toHexString(),
+						systemId: systemId,
+					} as Account;
 
 					return {
 						user,
-						accountId,
+						account,
 					};
 				};
 
 				it('should map roles using getItems()', () => {
-					const { accountId, user } = setup();
+					const { account, user } = setup();
 
-					const currentUser = CurrentUserMapper.mapToErwinCurrentUser(accountId, user, undefined, false);
+					const currentUser = CurrentUserMapper.mapToErwinCurrentUser(account, user, undefined, false);
+					const accountId = account.id;
 
 					expect(currentUser).toMatchObject({
 						accountId,
@@ -470,57 +503,48 @@ describe('CurrentUserMapper', () => {
 			describe('when isExternalUser is not provided', () => {
 				const setup = () => {
 					const user = userFactory.buildWithId();
-					const accountId = new ObjectId().toHexString();
+					const systemId = new ObjectId().toHexString();
+					const account = {
+						id: new ObjectId().toHexString(),
+						userId: new ObjectId().toHexString(),
+						systemId: systemId,
+					} as Account;
 
 					return {
-						accountId,
+						account,
 						user,
 					};
 				};
 
 				it('should default isExternalUser to false', () => {
-					const { accountId, user } = setup();
+					const { account, user } = setup();
 
-					const currentUser = CurrentUserMapper.mapToErwinCurrentUser(accountId, user);
+					const currentUser = CurrentUserMapper.mapToErwinCurrentUser(account, user);
 
 					expect(currentUser.isExternalUser).toBe(false);
 				});
 			});
 
 			it('should use SVS systemId if present', () => {
-				const user = {
-					id: 'userId',
-					school: { id: 'schoolId' },
-					roles: [],
-					systemId: 'svsSystemId',
-				};
-				const accountId = new ObjectId().toHexString();
-
-				const currentUser = CurrentUserMapper.mapToErwinCurrentUser(accountId, user);
-
-				expect(currentUser).toMatchObject({
-					accountId,
-					systemId: 'svsSystemId',
-					roles: [],
-					schoolId: 'schoolId',
-					userId: 'userId',
-					isExternalUser: false,
-				});
-			});
-
-			it('should use provided systemId if no SVS systemId', () => {
+				const systemId = 'svsSystemId';
 				const user = {
 					id: 'userId',
 					school: { id: 'schoolId' },
 					roles: [],
 				};
-				const accountId = new ObjectId().toHexString();
 
-				const currentUser = CurrentUserMapper.mapToErwinCurrentUser(accountId, user, 'providedSystemId');
+				const account = {
+					id: new ObjectId().toHexString(),
+					userId: new ObjectId().toHexString(),
+					systemId: systemId,
+				} as Account;
+				const accountId = account.id;
+
+				const currentUser = CurrentUserMapper.mapToErwinCurrentUser(account, user, systemId);
 
 				expect(currentUser).toMatchObject({
 					accountId,
-					systemId: 'providedSystemId',
+					systemId: systemId,
 					roles: [],
 					schoolId: 'schoolId',
 					userId: 'userId',
@@ -535,13 +559,18 @@ describe('CurrentUserMapper', () => {
 					roles: [],
 					externalId: 'erwinExternalId',
 				};
-				const accountId = new ObjectId().toHexString();
+				const systemId = 'erwinSystemId';
+				const account = {
+					id: new ObjectId().toHexString(),
+					userId: new ObjectId().toHexString(),
+				} as Account;
+				const accountId = account.id;
 
-				const currentUser = CurrentUserMapper.mapToErwinCurrentUser(accountId, user, undefined);
+				const currentUser = CurrentUserMapper.mapToErwinCurrentUser(account, user, systemId);
 
 				expect(currentUser).toMatchObject({
 					accountId,
-					systemId: undefined,
+					systemId: systemId,
 					roles: [],
 					schoolId: 'schoolId',
 					userId: 'userId',
@@ -555,9 +584,13 @@ describe('CurrentUserMapper', () => {
 					school: { id: 'schoolId' },
 					roles: [],
 				};
-				const accountId = new ObjectId().toHexString();
+				const account = {
+					id: new ObjectId().toHexString(),
+					userId: new ObjectId().toHexString(),
+				} as Account;
+				const accountId = account.id;
 
-				const currentUser = CurrentUserMapper.mapToErwinCurrentUser(accountId, user);
+				const currentUser = CurrentUserMapper.mapToErwinCurrentUser(account, user);
 
 				expect(currentUser).toMatchObject({
 					accountId,
