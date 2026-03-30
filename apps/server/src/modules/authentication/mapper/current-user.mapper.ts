@@ -21,6 +21,7 @@ export class CurrentUserMapper {
 		} else {
 			return roles;
 		}
+		return roles;
 	}
 
 	public static userToICurrentUser(
