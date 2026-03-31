@@ -30,9 +30,10 @@ import { VisibilitySettingsResponse } from './visibility-settings.response';
 	H5pElementResponse
 )
 export class CardResponse {
-	constructor({ id, title, height, elements, visibilitySettings, timestamps }: CardResponse) {
+	constructor({ id, title, color, height, elements, visibilitySettings, timestamps }: CardResponse) {
 		this.id = id;
 		this.title = title;
+		this.color = color;
 		this.height = height;
 		this.elements = elements;
 		this.visibilitySettings = visibilitySettings;
@@ -47,6 +48,9 @@ export class CardResponse {
 	@ApiPropertyOptional()
 	@DecodeHtmlEntities()
 	title?: string;
+
+	@ApiPropertyOptional()
+	color?: string;
 
 	@ApiProperty()
 	height: number;
