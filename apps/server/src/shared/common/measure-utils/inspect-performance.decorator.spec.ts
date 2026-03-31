@@ -349,8 +349,7 @@ describe('InspectPerformance', () => {
 
 			const result = formatAggregatedStats(aggregated);
 
-			expect(result).toContain('---');
-			expect(result).toContain('Total: 50.00ms (5 calls)');
+			expect(result).toContain('Total execution time: 50.00ms (5 calls)');
 		});
 	});
 

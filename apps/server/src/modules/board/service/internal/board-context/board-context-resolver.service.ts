@@ -56,39 +56,28 @@ export class BoardContextResolverService {
 	private async resolveCourseContext(courseId: string): Promise<CourseBoardContext> {
 		const course = await this.courseService.findById(courseId);
 
-		const schoolId = course.school.id;
-
 		const data: CourseBoardContextData = {
-			teachers: course
-				.getTeachersList()
-				.filter((user) => user.schoolId === schoolId)
-				.map((user): CourseUserInfo => {
-					return {
-						userId: user.id,
-						firstName: user.firstName,
-						lastName: user.lastName,
-					};
-				}),
-			substitutionTeachers: course
-				.getSubstitutionTeachersList()
-				.filter((user) => user.schoolId === schoolId)
-				.map((user): CourseUserInfo => {
-					return {
-						userId: user.id,
-						firstName: user.firstName,
-						lastName: user.lastName,
-					};
-				}),
-			students: course
-				.getStudentsList()
-				.filter((user) => user.schoolId === schoolId)
-				.map((user): CourseUserInfo => {
-					return {
-						userId: user.id,
-						firstName: user.firstName,
-						lastName: user.lastName,
-					};
-				}),
+			teachers: course.getTeachersList().map((user): CourseUserInfo => {
+				return {
+					userId: user.id,
+					firstName: user.firstName,
+					lastName: user.lastName,
+				};
+			}),
+			substitutionTeachers: course.getSubstitutionTeachersList().map((user): CourseUserInfo => {
+				return {
+					userId: user.id,
+					firstName: user.firstName,
+					lastName: user.lastName,
+				};
+			}),
+			students: course.getStudentsList().map((user): CourseUserInfo => {
+				return {
+					userId: user.id,
+					firstName: user.firstName,
+					lastName: user.lastName,
+				};
+			}),
 		};
 
 		return new CourseBoardContext(data);
