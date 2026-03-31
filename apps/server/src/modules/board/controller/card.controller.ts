@@ -36,6 +36,7 @@ import {
 	RenameBodyParams,
 	RichTextElementResponse,
 	VideoConferenceElementResponse,
+	UpdateCardColorBodyParams,
 } from './dto';
 import { MoveCardResponse } from './dto/board/move-card.response';
 import { SetHeightBodyParams } from './dto/board/set-height.body.params';
@@ -117,6 +118,21 @@ export class CardController {
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {
 		await this.cardUc.updateCardTitle(currentUser.userId, urlParams.cardId, bodyParams.title);
+	}
+
+	@ApiOperation({ summary: 'Update the color of a single card.' })
+	@ApiResponse({ status: 204 })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
+	@HttpCode(204)
+	@Patch(':cardId/color')
+	public async updateCardColor(
+		@Param() urlParams: CardUrlParams,
+		@Body() bodyParams: UpdateCardColorBodyParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<void> {
+		await this.cardUc.updateCardColor(currentUser.userId, urlParams.cardId, bodyParams.color);
 	}
 
 	@ApiOperation({ summary: 'Delete a single card.' })

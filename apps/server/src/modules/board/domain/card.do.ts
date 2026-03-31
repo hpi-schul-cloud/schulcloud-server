@@ -10,6 +10,14 @@ export class Card extends BoardNode<CardProps> {
 		this.props.title = title;
 	}
 
+	get color(): string | undefined {
+		return this.props.color;
+	}
+
+	set color(color: string | undefined) {
+		this.props.color = color;
+	}
+
 	get height(): number {
 		return this.props.height;
 	}

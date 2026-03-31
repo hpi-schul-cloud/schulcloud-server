@@ -59,6 +59,17 @@ export class CardUc {
 		return card;
 	}
 
+	public async updateCardColor(userId: EntityId, cardId: EntityId, color: string): Promise<Card> {
+		const card = await this.boardNodeService.findByClassAndId(Card, cardId);
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(card);
+
+		throwForbiddenIfFalse(this.boardNodeRule.can('updateCardColor', user, boardNodeAuthorizable));
+
+		await this.boardNodeService.updateColor(card, color);
+		return card;
+	}
+
 	public async deleteCard(userId: EntityId, cardId: EntityId): Promise<EntityId> {
 		const card = await this.boardNodeService.findByClassAndId(Card, cardId);
 		const user = await this.authorizationService.getUserWithPermissions(userId);

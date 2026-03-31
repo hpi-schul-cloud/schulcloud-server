@@ -8,6 +8,7 @@ import {
 	ElementControllerUpdateElement200Response,
 	RenameBodyParams,
 	UpdateElementContentBodyParams,
+	UpdateCardColorBodyParams,
 } from '../generated';
 import { AdapterUtils } from './adapter.utils';
 
@@ -42,6 +43,18 @@ export class CardClientAdapter {
 		await this.cardApi.cardControllerUpdateCardTitle(
 			cardId,
 			renameBodyParams,
+			AdapterUtils.createAxiosConfigForJwt(jwt)
+		);
+	}
+
+	public async updateCardColor(
+		jwt: string,
+		cardId: string,
+		updateCardColorParams: UpdateCardColorBodyParams
+	): Promise<void> {
+		await this.cardApi.cardControllerUpdateCardColor(
+			cardId,
+			updateCardColorParams,
 			AdapterUtils.createAxiosConfigForJwt(jwt)
 		);
 	}
