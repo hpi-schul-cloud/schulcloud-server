@@ -109,6 +109,7 @@ describe(ErwinStrategy.name, () => {
 		describe('when authenticateUser returns no systemId', () => {
 			it('should return user object with systemId from request', async () => {
 				oauthService.authenticateUser.mockResolvedValue({ idToken: 'id', accessToken: 'at' } as OAuthTokenDto);
+				oauthService.provisionUser.mockResolvedValue(user);
 				accountService.findByUserId.mockResolvedValue(account);
 				const result = await strategy.validate(validRequest);
 				expect(result).toBeDefined();
