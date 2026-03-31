@@ -318,4 +318,8 @@ export class User extends BaseEntityWithTimestamps {
 
 		return userInfo;
 	}
+
+	public getPreferences(): Record<string, unknown> {
+		return this.preferences ?? {};
+	}
 }
