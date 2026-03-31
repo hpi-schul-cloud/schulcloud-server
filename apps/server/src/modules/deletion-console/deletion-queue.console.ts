@@ -40,7 +40,7 @@ export class DeletionQueueConsole {
 			...sharedCommandOptions,
 		],
 	})
-	async pushDeletionRequests(options: PushDeletionRequestsOptions): Promise<void> {
+	public async pushDeletionRequests(options: PushDeletionRequestsOptions): Promise<void> {
 		const summary = await this.batchDeletionUc.deleteRefsFromTxtFile(
 			options.refsFilePath,
 			options.targetRefDomain,
@@ -70,7 +70,7 @@ export class DeletionQueueConsole {
 			...sharedCommandOptions,
 		],
 	})
-	async unsyncedEntities(options: UnsyncedEntitiesOptions): Promise<void> {
+	public async unsyncedEntities(options: UnsyncedEntitiesOptions): Promise<void> {
 		if (options.unsyncedForMinutes < 60) {
 			throw new Error(`invalid "unsyncedForMinutes" option value - minimum value is 60`);
 		}

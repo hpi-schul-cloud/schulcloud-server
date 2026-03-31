@@ -28,6 +28,10 @@ describe('getBatches ', () => {
 		await app.init();
 	});
 
+	beforeEach(async () => {
+		await em.nativeDelete('DeletionBatch', {});
+	});
+
 	afterAll(async () => {
 		await app.close();
 	});
@@ -63,17 +67,21 @@ describe('getBatches ', () => {
 				id: batch1.id,
 				name: batch1.name,
 				status: batch1.status,
-				usersByRole: [{ roleName: 'student', userCount: 2 }],
-				skippedUsersByRole: [{ roleName: 'teacher', userCount: 1 }],
-				invalidUsers: [invalidId1],
+				validUsers: 2,
+				invalidUsers: 1,
+				skippedUsers: 1,
+				createdAt: batch1.createdAt.toISOString(),
+				updatedAt: batch1.updatedAt.toISOString(),
 			};
 			const deletionBatchListResponse2 = {
 				id: batch2.id,
 				name: batch2.name,
 				status: batch2.status,
-				usersByRole: [{ roleName: 'student', userCount: 1 }],
-				skippedUsersByRole: [{ roleName: 'teacher', userCount: 1 }],
-				invalidUsers: [invalidId2],
+				validUsers: 1,
+				invalidUsers: 1,
+				skippedUsers: 1,
+				createdAt: batch2.createdAt.toISOString(),
+				updatedAt: batch2.updatedAt.toISOString(),
 			};
 
 			return { deletionBatchListResponse1, deletionBatchListResponse2 };
@@ -83,6 +91,10 @@ describe('getBatches ', () => {
 			const response = await testApiClient.get();
 
 			expect(response.status).toEqual(200);
+			// Should return empty list when no batches exist
+			const result = response.body as DeletionBatchListResponse;
+			expect(result.total).toEqual(0);
+			expect(result.data).toEqual([]);
 		});
 
 		it('should return a paginated list of deletion batches', async () => {
@@ -92,10 +104,7 @@ describe('getBatches ', () => {
 			const result = response.body as DeletionBatchListResponse;
 
 			expect(result.total).toEqual(2);
-			expect(result.data).toEqual([
-				expect.objectContaining(deletionBatchListResponse2),
-				expect.objectContaining(deletionBatchListResponse1),
-			]);
+			expect(result.data).toEqual(expect.arrayContaining([deletionBatchListResponse1, deletionBatchListResponse2]));
 		});
 	});
 });

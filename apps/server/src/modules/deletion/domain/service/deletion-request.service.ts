@@ -14,25 +14,6 @@ export class DeletionRequestService {
 		private readonly config: DeletionConfig
 	) {}
 
-	public async createDeletionRequestBatch(
-		targetRefIds: EntityId[],
-		targetRefDomain: DomainName,
-		deleteAfter: Date
-	): Promise<void> {
-		const deletionRequests = targetRefIds.map(
-			(targetRefId) =>
-				new DeletionRequest({
-					id: new ObjectId().toHexString(),
-					targetRefDomain,
-					deleteAfter,
-					targetRefId,
-					status: StatusModel.REGISTERED,
-				})
-		);
-
-		await this.deletionRequestRepo.create(deletionRequests);
-	}
-
 	public async createDeletionRequest(
 		targetRefId: EntityId,
 		targetRefDomain: DomainName,
@@ -49,6 +30,27 @@ export class DeletionRequestService {
 		await this.deletionRequestRepo.create(newDeletionRequest);
 
 		return { requestId: newDeletionRequest.id, deletionPlannedAt: newDeletionRequest.deleteAfter };
+	}
+
+	public async createMultipleDeletionRequests(
+		batchId: EntityId,
+		targetRefIds: EntityId[],
+		targetRefDomain: DomainName,
+		deleteAfter: Date
+	): Promise<void> {
+		const deletionRequests = targetRefIds.map(
+			(targetRefId) =>
+				new DeletionRequest({
+					id: new ObjectId().toHexString(),
+					targetRefDomain,
+					deleteAfter,
+					targetRefId,
+					status: StatusModel.REGISTERED,
+					batchId,
+				})
+		);
+
+		await this.deletionRequestRepo.create(deletionRequests);
 	}
 
 	public async findById(deletionRequestId: EntityId): Promise<DeletionRequest> {
@@ -74,23 +76,25 @@ export class DeletionRequestService {
 		return deletionRequests;
 	}
 
-	public findByStatusAndTargetRefId(status: StatusModel, targetRefIds: EntityId[]): Promise<DeletionRequest[]> {
-		switch (status) {
-			case StatusModel.REGISTERED:
-				return this.deletionRequestRepo.findRegisteredByTargetRefId(targetRefIds);
-			case StatusModel.PENDING:
-				return this.deletionRequestRepo.findPendingByTargetRefId(targetRefIds);
-			case StatusModel.FAILED:
-				return this.deletionRequestRepo.findFailedByTargetRefId(targetRefIds);
-			case StatusModel.SUCCESS:
-				return this.deletionRequestRepo.findSuccessfulByTargetRefId(targetRefIds);
-			default:
-				return Promise.resolve([]);
+	public async getStatusOfDeletionRequestBatch(
+		batchId: EntityId
+	): Promise<{ pending: EntityId[]; failed: EntityId[]; success: EntityId[] }> {
+		const result = await this.deletionRequestRepo.groupTargetRefIdsByBatchAndStatus(batchId);
+		const statusMap: { pending: EntityId[]; failed: EntityId[]; success: EntityId[] } = {
+			pending: [],
+			failed: [],
+			success: [],
+		};
+		for (const { status, targetRefIds } of result) {
+			if (status === StatusModel.PENDING || status === StatusModel.REGISTERED) {
+				statusMap.pending.push(...targetRefIds);
+			} else if (status === StatusModel.FAILED) {
+				statusMap.failed.push(...targetRefIds);
+			} else if (status === StatusModel.SUCCESS) {
+				statusMap.success.push(...targetRefIds);
+			}
 		}
-	}
-
-	public async update(deletionRequestToUpdate: DeletionRequest): Promise<void> {
-		await this.deletionRequestRepo.update(deletionRequestToUpdate);
+		return statusMap;
 	}
 
 	public async markDeletionRequestAsExecuted(deletionRequestId: EntityId): Promise<boolean> {
