@@ -2,6 +2,7 @@ import { Entity, Index, Property, Unique } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { EntityId } from '@shared/domain/types';
 import { DomainName, StatusModel } from '../../domain/types';
+import { ObjectIdType } from '@shared/repo/types/object-id.type';
 
 const SECONDS_OF_90_DAYS = 90 * 24 * 60 * 60;
 export interface DeletionRequestEntityProps {
@@ -10,6 +11,7 @@ export interface DeletionRequestEntityProps {
 	deleteAfter: Date;
 	targetRefId: EntityId;
 	status: StatusModel;
+	batchId?: EntityId;
 	createdAt?: Date;
 	updatedAt?: Date;
 }
@@ -35,6 +37,10 @@ export class DeletionRequestEntity extends BaseEntityWithTimestamps implements D
 	@Index()
 	status: StatusModel;
 
+	@Property({ type: ObjectIdType, nullable: true })
+	@Index()
+	batchId: EntityId | undefined;
+
 	constructor(props: DeletionRequestEntityProps) {
 		super();
 		if (props.id !== undefined) {
@@ -45,6 +51,7 @@ export class DeletionRequestEntity extends BaseEntityWithTimestamps implements D
 		this.deleteAfter = props.deleteAfter;
 		this.targetRefId = props.targetRefId;
 		this.status = props.status;
+		this.batchId = props.batchId;
 
 		if (props.createdAt !== undefined) {
 			this.createdAt = props.createdAt;

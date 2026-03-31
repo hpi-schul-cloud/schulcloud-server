@@ -277,4 +277,8 @@ export class UserService {
 
 		return permissions;
 	}
+
+	public async updateUserReleaseDatePreference(userId: EntityId, releaseDate: Date): Promise<void> {
+		await this.userRepo.updateUserPreferences(userId, { releaseDate: releaseDate.toISOString() });
+	}
 }
