@@ -145,6 +145,51 @@ describe('CurrentUserMapper', () => {
 					});
 				});
 			});
+
+			describe('when user has no ID', () => {
+				const setup = () => {
+					const user = {
+						school: schoolEntityFactory.buildWithId(),
+						roles: [],
+					};
+					const accountId = new ObjectId().toHexString();
+
+					return {
+						user,
+						accountId,
+					};
+				};
+
+				it('should throw ValidationError', () => {
+					const { accountId, user } = setup();
+
+					expect(() => CurrentUserMapper.userToICurrentUser(accountId, user, false)).toThrow(ValidationError);
+					expect(() => CurrentUserMapper.userToICurrentUser(accountId, user, false)).toThrow('user has no ID');
+				});
+			});
+
+			describe('when user has no school ID', () => {
+				const setup = () => {
+					const user = {
+						id: new ObjectId().toHexString(),
+						school: {},
+						roles: [],
+					};
+					const accountId = new ObjectId().toHexString();
+
+					return {
+						user,
+						accountId,
+					};
+				};
+
+				it('should throw ValidationError', () => {
+					const { accountId, user } = setup();
+
+					expect(() => CurrentUserMapper.userToICurrentUser(accountId, user, false)).toThrow(ValidationError);
+					expect(() => CurrentUserMapper.userToICurrentUser(accountId, user, false)).toThrow('user has no school ID');
+				});
+			});
 		});
 	});
 
@@ -628,6 +673,52 @@ describe('CurrentUserMapper', () => {
 					schoolId: 'schoolId',
 					userId: 'userId',
 					isExternalUser: true,
+				});
+			});
+
+			describe('when user has no ID', () => {
+				const setup = () => {
+					const user = {
+						schoolId: 'schoolId',
+						roles: [],
+					};
+					const account = {
+						id: new ObjectId().toHexString(),
+						userId: new ObjectId().toHexString(),
+						systemId: undefined,
+					} as Account;
+
+					return { user, account };
+				};
+
+				it('should throw ValidationError', () => {
+					const { user, account } = setup();
+
+					expect(() => CurrentUserMapper.mapToErwinCurrentUser(account, user)).toThrow(ValidationError);
+					expect(() => CurrentUserMapper.mapToErwinCurrentUser(account, user)).toThrow('user has no ID');
+				});
+			});
+
+			describe('when user has no school ID', () => {
+				const setup = () => {
+					const user = {
+						id: 'userId',
+						roles: [],
+					};
+					const account = {
+						id: new ObjectId().toHexString(),
+						userId: new ObjectId().toHexString(),
+						systemId: undefined,
+					} as Account;
+
+					return { user, account };
+				};
+
+				it('should throw ValidationError', () => {
+					const { user, account } = setup();
+
+					expect(() => CurrentUserMapper.mapToErwinCurrentUser(account, user)).toThrow(ValidationError);
+					expect(() => CurrentUserMapper.mapToErwinCurrentUser(account, user)).toThrow('user has no school ID');
 				});
 			});
 		});

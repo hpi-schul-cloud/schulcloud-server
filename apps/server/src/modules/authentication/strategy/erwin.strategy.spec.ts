@@ -66,7 +66,7 @@ describe(ErwinStrategy.name, () => {
 		firstName: '',
 		lastName: '',
 		roles: [],
-		schoolId: '',
+		schoolId: 'schoolId',
 		secondarySchools: [],
 	};
 	const account = new Account({ id: accountId, username: 'username', systemId: erwinSystemId });

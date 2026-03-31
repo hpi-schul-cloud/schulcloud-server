@@ -68,12 +68,20 @@ export class CurrentUserMapper {
 		isExternalUser: boolean,
 		systemId?: string
 	): ICurrentUser {
-		const roles = this.extractRoleIds(user);
+		if (!user.id) {
+			throw new ValidationError('user has no ID');
+		}
+
 		const schoolId = user.school?.id;
+		if (!schoolId) {
+			throw new ValidationError('user has no school ID');
+		}
+
+		const roles = this.extractRoleIds(user);
 		const currentUser = new CurrentUserBuilder({
 			accountId,
-			userId: user.id as string,
-			schoolId: schoolId as string,
+			userId: user.id,
+			schoolId,
 			roles,
 		})
 			.asExternalUser(isExternalUser)
@@ -121,8 +129,16 @@ export class CurrentUserMapper {
 		systemId?: string,
 		isExternalUser?: boolean
 	): ICurrentUser {
-		const roles = this.extractRoleIds(user);
+		if (!user.id) {
+			throw new ValidationError('user has no ID');
+		}
+
 		const schoolId = user.schoolId || user.school?.id;
+		if (!schoolId) {
+			throw new ValidationError('user has no school ID');
+		}
+
+		const roles = this.extractRoleIds(user);
 		const accountId = account.id;
 
 		const external = isExternalUser ?? false;
@@ -131,22 +147,15 @@ export class CurrentUserMapper {
 			// SVS systemId exists, keep it and return
 			return new CurrentUserBuilder({
 				accountId,
-				userId: user.id as string,
-				schoolId: schoolId as string,
+				userId: user.id,
+				schoolId,
 				roles,
 			})
 				.asExternalUser(external)
 				.withExternalSystem(systemId)
 				.build();
 		} else {
-			return this.handleExternalUser(
-				accountId,
-				user.id as string,
-				schoolId as string,
-				roles,
-				user.externalId,
-				systemId
-			);
+			return this.handleExternalUser(accountId, user.id, schoolId, roles, user.externalId, systemId);
 		}
 	}
 }
