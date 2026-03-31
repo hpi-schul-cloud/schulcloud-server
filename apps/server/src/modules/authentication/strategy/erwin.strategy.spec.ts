@@ -9,7 +9,6 @@ import {
 	AccountNotFoundLoggableException,
 	UserAccountDeactivatedLoggableException,
 } from '../loggable';
-import { CurrentUserMapper } from '../mapper';
 import { UserDo } from '@modules/user';
 import { OAuthTokenDto } from '@modules/oauth-adapter';
 import { Oauth2AuthorizationBodyParams } from '../controllers/dto';
@@ -20,21 +19,6 @@ describe(ErwinStrategy.name, () => {
 	let strategy: ErwinStrategy;
 	let oauthService: DeepMocked<OAuthService>;
 	let accountService: DeepMocked<AccountService>;
-
-	jest.mock(
-		'../mapper',
-		(): new () => CurrentUserMapper =>
-			class {
-				mapToErwinCurrentUser = jest.fn((accountId: string, user: UserDo, systemId: string, flag: boolean) => {
-					return {
-						id: accountId,
-						user,
-						systemId,
-						flag,
-					};
-				});
-			}
-	);
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
