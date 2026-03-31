@@ -320,7 +320,7 @@ export function setPerformanceLogger(logger: LoggerFunction): void {
 	loggerFn = logger;
 }
 
-function logSummary(measurements: Measurement[]): void {
+function logSummary(measurements: Measurement[], writeJson = false): void {
 	if (measurements.length === 0) return;
 	if (measurements[0].duration < globalConfig.logThresholdMs) return;
 
@@ -344,7 +344,9 @@ function logSummary(measurements: Measurement[]): void {
 		console.info(output);
 	}
 
-	// exportToJson(measurements, aggregated);
+	if (writeJson) {
+		exportToJson(measurements, aggregated);
+	}
 }
 
 function executeWithTracking(
