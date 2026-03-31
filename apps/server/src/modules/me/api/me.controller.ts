@@ -24,7 +24,7 @@ export class MeController {
 		return res;
 	}
 
-	@ApiOperation({ summary: 'Update the release date preference for the current user.' })
+	@ApiOperation({ summary: 'Update user preferences for the current user.' })
 	@ApiResponse({ status: 204 })
 	@HttpCode(204)
 	@Patch('preferences')
