@@ -298,7 +298,6 @@ function exportToJson(measurements: Measurement[], aggregated: Record<string, Ag
 		const safeLabel = rootMeasurement.label.replace(/[^a-zA-Z0-9.-]/g, '_');
 		const filename = `${timestamp}_${safeLabel}.json`;
 		const filepath = path.join(exportDir, filename);
-
 		fs.writeFileSync(filepath, JSON.stringify(report, null, 2), 'utf-8');
 	} catch {
 		// Silently fail - don't break the application for export errors
@@ -345,7 +344,7 @@ function logSummary(measurements: Measurement[]): void {
 		console.info(output);
 	}
 
-	exportToJson(measurements, aggregated);
+	// exportToJson(measurements, aggregated);
 }
 
 function executeWithTracking(

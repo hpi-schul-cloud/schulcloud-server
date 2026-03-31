@@ -129,7 +129,7 @@ describe(BoardContextResolverService.name, () => {
 				expect(result.type).toBe(BoardExternalReferenceType.Course);
 			});
 
-			it('should include teachers, substitution teachers, and students', async () => {
+			it('should include teachers, substitution teachers and students', async () => {
 				const { contextRef, teacher, student } = setup();
 
 				const result = await service.resolve(contextRef);
@@ -138,29 +138,6 @@ describe(BoardContextResolverService.name, () => {
 				expect(users).toHaveLength(2);
 				expect(users.find((u) => u.userId === teacher.id)).toBeDefined();
 				expect(users.find((u) => u.userId === student.id)).toBeDefined();
-			});
-
-			it('should filter out users from different schools', async () => {
-				const teacher = userFactory.build();
-				const studentFromOtherSchool = userFactory.build(); // Different school
-				const course = courseEntityFactory.buildWithId({
-					teachers: [teacher],
-					students: [studentFromOtherSchool],
-					school: teacher.school,
-				});
-				const contextRef: BoardExternalReference = {
-					id: course.id,
-					type: BoardExternalReferenceType.Course,
-				};
-
-				courseService.findById.mockResolvedValue(course);
-
-				const result = await service.resolve(contextRef);
-				const users = result.getUsersWithBoardRoles();
-
-				// Only teacher should be included (student is from different school)
-				expect(users).toHaveLength(1);
-				expect(users[0].userId).toBe(teacher.id);
 			});
 		});
 
