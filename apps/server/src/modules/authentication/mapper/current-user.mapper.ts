@@ -25,6 +25,39 @@ export class CurrentUserMapper {
 		return roles;
 	}
 
+	private static handleExternalUser(
+		accountId: string,
+		userId: string,
+		schoolId: string,
+		roles: string[],
+		externalId?: string,
+		systemId?: string
+	): ICurrentUser {
+		if (externalId) {
+			// No SVS systemId, but UserDo.ExternalId exists: use Erwin systemId (assume passed as param)
+			return new CurrentUserBuilder({
+				accountId,
+				userId,
+				schoolId,
+				roles,
+			})
+				.asExternalUser(true)
+				.withExternalSystem(systemId)
+				.build();
+		} else {
+			// No SVS systemId, no UserDo.ExternalId: empty systemId, set isExternalUser to false
+			return new CurrentUserBuilder({
+				accountId,
+				userId,
+				schoolId,
+				roles,
+			})
+				.asExternalUser(false)
+				.withExternalSystem(undefined)
+				.build();
+		}
+	}
+
 	public static userToICurrentUser(
 		accountId: string,
 		user: {
@@ -106,29 +139,14 @@ export class CurrentUserMapper {
 				.withExternalSystem(systemId)
 				.build();
 		} else {
-			if (user.externalId) {
-				// No SVS systemId, but UserDo.ExternalId exists: use Erwin systemId (assume passed as param)
-				return new CurrentUserBuilder({
-					accountId,
-					userId: user.id as string,
-					schoolId: schoolId as string,
-					roles,
-				})
-					.asExternalUser(true)
-					.withExternalSystem(systemId)
-					.build();
-			} else {
-				// No SVS systemId, no UserDo.ExternalId: empty systemId, set isExternalUser to false
-				return new CurrentUserBuilder({
-					accountId,
-					userId: user.id as string,
-					schoolId: schoolId as string,
-					roles,
-				})
-					.asExternalUser(false)
-					.withExternalSystem(undefined)
-					.build();
-			}
+			return this.handleExternalUser(
+				accountId,
+				user.id as string,
+				schoolId as string,
+				roles,
+				user.externalId,
+				systemId
+			);
 		}
 	}
 }
