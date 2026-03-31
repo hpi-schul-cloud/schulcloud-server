@@ -1,5 +1,4 @@
 export * from './board-context';
-export * from './board-context.service';
 export * from './board-copy.service';
 export * from './board-node-copy-context';
 export * from './board-node-copy.service';
