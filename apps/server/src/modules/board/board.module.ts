@@ -34,7 +34,6 @@ import {
 } from './service';
 import {
 	BoardContextResolverService,
-	BoardContextService,
 	BoardCopyService,
 	BoardNodeCopyService,
 	BoardNodeDeleteHooksService,
@@ -77,7 +76,6 @@ import { TLDRAW_CLIENT_CONFIG_TOKEN, TldrawClientConfig } from './tldraw-client.
 	providers: [
 		// TODO: move BoardDoAuthorizableService, BoardDoRepo, BoardDoService, BoardNodeRepo in separate module and move mediaboard related services in mediaboard module
 		BoardContextResolverService,
-		BoardContextService,
 		BoardNodeAuthorizableService,
 		BoardNodeRepo,
 		BoardNodeRule,
