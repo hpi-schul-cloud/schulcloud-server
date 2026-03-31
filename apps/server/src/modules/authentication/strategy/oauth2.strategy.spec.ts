@@ -149,7 +149,7 @@ describe(Oauth2Strategy.name, () => {
 			it('should throw a SchoolInMigrationError', async () => {
 				setup();
 
-				const func = async () =>
+				const func = () =>
 					strategy.validate({ body: { code: 'code', redirectUri: 'redirectUri', systemId: 'systemId' } });
 
 				await expect(func).rejects.toThrow(new SchoolInMigrationLoggableException());
@@ -174,7 +174,7 @@ describe(Oauth2Strategy.name, () => {
 			it('should throw an AccountNotFoundLoggableException', async () => {
 				setup();
 
-				const func = async () =>
+				const func = () =>
 					strategy.validate({
 						body: { code: 'code', redirectUri: 'redirectUri', systemId: 'systemId' },
 					});
@@ -207,7 +207,7 @@ describe(Oauth2Strategy.name, () => {
 
 			it('should throw an UserAccountDeactivated exception', async () => {
 				setup();
-				const func = async () =>
+				const func = () =>
 					strategy.validate({
 						body: { code: 'code', redirectUri: 'redirectUri', systemId: 'systemId' },
 					});
