@@ -94,7 +94,7 @@ export class CurrentUserMapper {
 
 		const external = isExternalUser ?? false;
 
-		if (systemId == account.systemId) {
+		if (systemId !== undefined && systemId === account.systemId) {
 			// SVS systemId exists, keep it and return
 			return new CurrentUserBuilder({
 				accountId,

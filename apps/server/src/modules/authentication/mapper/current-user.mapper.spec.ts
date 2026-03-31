@@ -601,6 +601,35 @@ describe('CurrentUserMapper', () => {
 					isExternalUser: false,
 				});
 			});
+
+			it('should not incorrectly match SVS branch when both systemId and account.systemId are undefined', () => {
+				const user = {
+					id: 'userId',
+					school: { id: 'schoolId' },
+					roles: [],
+					externalId: 'erwinExternalId',
+				};
+				const account = {
+					id: new ObjectId().toHexString(),
+					userId: new ObjectId().toHexString(),
+					systemId: undefined,
+				} as Account;
+				const accountId = account.id;
+
+				// When systemId param is undefined and account.systemId is undefined,
+				// the SVS branch should NOT be taken (strict equality + defined check).
+				// Instead, the externalId branch should be used.
+				const currentUser = CurrentUserMapper.mapToErwinCurrentUser(account, user, undefined);
+
+				expect(currentUser).toMatchObject({
+					accountId,
+					systemId: undefined,
+					roles: [],
+					schoolId: 'schoolId',
+					userId: 'userId',
+					isExternalUser: true,
+				});
+			});
 		});
 	});
 });
