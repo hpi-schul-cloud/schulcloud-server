@@ -67,6 +67,9 @@ export class BoardNodeEntity extends BaseEntityWithTimestamps implements BoardNo
 	@Property({ type: 'integer', nullable: true })
 	height: number | undefined;
 
+	@Property({ type: 'string', nullable: true })
+	color: string | undefined;
+
 	// RichTextElement
 	// --------------------------------------------------------------------------
 	@Property({ type: 'string', nullable: true })
