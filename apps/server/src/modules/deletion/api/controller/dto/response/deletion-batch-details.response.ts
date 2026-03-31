@@ -1,32 +1,51 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { EntityId } from '@shared/domain/types';
-import { UsersByRoleResponse } from './users-by-role.response';
 
 export class DeletionBatchDetailsResponse {
 	@ApiProperty()
-	id: string;
+	public id: string;
 
 	@ApiProperty()
-	pendingDeletions: EntityId[];
+	public name: string;
 
 	@ApiProperty()
-	failedDeletions: EntityId[];
+	public status: string;
 
 	@ApiProperty()
-	successfulDeletions: EntityId[];
+	public validUsers: string[];
 
 	@ApiProperty()
-	skippedDeletions: UsersByRoleResponse[];
+	public invalidUsers: string[];
 
 	@ApiProperty()
-	invalidIds: string[];
+	public skippedUsers: string[];
+
+	@ApiProperty()
+	public pendingDeletions: EntityId[];
+
+	@ApiProperty()
+	public failedDeletions: EntityId[];
+
+	@ApiProperty()
+	public successfulDeletions: EntityId[];
+
+	@ApiProperty({ type: Date })
+	public createdAt: Date;
+
+	@ApiProperty({ type: Date })
+	public updatedAt: Date;
 
 	constructor(item: DeletionBatchDetailsResponse) {
 		this.id = item.id;
+		this.name = item.name;
+		this.status = item.status;
+		this.validUsers = item.validUsers;
+		this.invalidUsers = item.invalidUsers;
+		this.skippedUsers = item.skippedUsers;
 		this.pendingDeletions = item.pendingDeletions;
 		this.failedDeletions = item.failedDeletions;
 		this.successfulDeletions = item.successfulDeletions;
-		this.skippedDeletions = item.skippedDeletions;
-		this.invalidIds = item.invalidIds;
+		this.createdAt = item.createdAt;
+		this.updatedAt = item.updatedAt;
 	}
 }
