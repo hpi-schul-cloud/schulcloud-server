@@ -25,13 +25,13 @@ jobs:
         ports:
           - 5672:5672
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - name: setup environment file
         run: cp .env.development .env
       - name: mongodb setup
-        uses: supercharge/mongodb-github-action@1.12.1
+        uses: supercharge/mongodb-github-action@315db7fe45ac2880b7758f1933e6e5d59afd5e94 # 1.12.1
       - name: setup
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
           node-version: ${{ env.NODE_VERSION }}
       - run: npm ci
