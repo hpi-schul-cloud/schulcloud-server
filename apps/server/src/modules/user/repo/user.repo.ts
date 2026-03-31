@@ -173,4 +173,12 @@ export class UserMikroOrmRepo extends BaseRepo<User> {
 
 		return foundUsers.map((user) => user.id);
 	}
+
+	public async updateUserPreferences(userId: EntityId, preferences: Record<string, unknown>): Promise<void> {
+		const update: Record<string, unknown> = {};
+		for (const [key, value] of Object.entries(preferences)) {
+			update[`preferences.${key}`] = value;
+		}
+		await this._em.nativeUpdate(User, { id: userId }, update);
+	}
 }
