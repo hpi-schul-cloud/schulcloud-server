@@ -8,6 +8,7 @@ import {
 	SchoolInMigrationLoggableException,
 	AccountNotFoundLoggableException,
 	UserAccountDeactivatedLoggableException,
+	MissingRefreshTokenLoggableException,
 } from '../loggable';
 import { UserDo } from '@modules/user';
 import { OAuthTokenDto } from '@modules/oauth-adapter';
@@ -238,7 +239,8 @@ describe(ErwinStrategy.name, () => {
 				}).compile();
 				const strategyWithLogout = testModule.get(ErwinStrategy);
 				const oauthSessionTokenService = testModule.get(OauthSessionTokenService);
-				oauthService.authenticateUser.mockResolvedValue(tokenDto as OAuthTokenDto);
+				const tokenDtoWithRefresh = { ...tokenDto, refreshToken: 'refresh-token' };
+				oauthService.authenticateUser.mockResolvedValue(tokenDtoWithRefresh as OAuthTokenDto);
 				oauthService.provisionUser.mockResolvedValue(user);
 				accountService.findByUserId.mockResolvedValue(account);
 				const fakeToken = { userId: 'u', systemId: 's', refreshToken: 'r', expiresAt: new Date() };
@@ -249,6 +251,28 @@ describe(ErwinStrategy.name, () => {
 
 				// Assert
 				expect(oauthSessionTokenService.save).toHaveBeenCalled();
+			});
+
+			it('should throw MissingRefreshTokenLoggableException when refreshToken is missing', async () => {
+				// Arrange
+				const config = { externalSystemLogoutEnabled: true };
+				const testModule = await Test.createTestingModule({
+					providers: [
+						ErwinStrategy,
+						{ provide: OAuthService, useValue: oauthService },
+						{ provide: AccountService, useValue: accountService },
+						{ provide: OauthSessionTokenService, useValue: createMock<OauthSessionTokenService>() },
+						{ provide: AUTHENTICATION_CONFIG_TOKEN, useValue: config },
+					],
+				}).compile();
+				const strategyWithLogout = testModule.get(ErwinStrategy);
+				const tokenDtoWithoutRefresh = { ...tokenDto, refreshToken: undefined };
+				oauthService.authenticateUser.mockResolvedValue(tokenDtoWithoutRefresh as unknown as OAuthTokenDto);
+				oauthService.provisionUser.mockResolvedValue(user);
+				accountService.findByUserId.mockResolvedValue(account);
+
+				// Act & Assert
+				await expect(strategyWithLogout.validate(validRequest)).rejects.toThrow(MissingRefreshTokenLoggableException);
 			});
 		});
 

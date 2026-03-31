@@ -4,6 +4,7 @@ import { OAuthService, OauthSessionToken, OauthSessionTokenFactory, OauthSession
 import { AuthenticationConfig } from '../authentication-config';
 import {
 	AccountNotFoundLoggableException,
+	MissingRefreshTokenLoggableException,
 	SchoolInMigrationLoggableException,
 	UserAccountDeactivatedLoggableException,
 } from '../loggable';
@@ -47,6 +48,10 @@ export async function buildOauth2Context(
 	}
 
 	if (config.externalSystemLogoutEnabled) {
+		if (!tokenDto.refreshToken) {
+			throw new MissingRefreshTokenLoggableException(systemId);
+		}
+
 		const oauthSessionToken: OauthSessionToken = OauthSessionTokenFactory.build({
 			userId: user.id,
 			systemId,
