@@ -1,9 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum } from 'class-validator';
-import { MediaBoardColors } from '../../../domain/media-board/types';
+import { Colors } from '../../../domain/media-board/types';
 
 export class ColorBodyParams {
-	@IsEnum(MediaBoardColors)
-	@ApiProperty({ enum: MediaBoardColors, enumName: 'MediaBoardColors' })
-	backgroundColor!: MediaBoardColors;
+	@IsEnum(Colors)
+	@ApiProperty({ enum: Colors, enumName: 'MediaBoardColors' })
+	backgroundColor!: Colors;
 }

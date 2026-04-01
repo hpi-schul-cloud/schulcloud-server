@@ -4,7 +4,7 @@ import {
 	BoardExternalReferenceType,
 	BoardLayout,
 	MediaBoard,
-	MediaBoardColors,
+	Colors,
 	MediaBoardProps,
 	ROOT_PATH,
 } from '../domain';
@@ -22,7 +22,7 @@ export const mediaBoardFactory = BaseFactory.define<MediaBoard, MediaBoardProps>
 			type: BoardExternalReferenceType.Course,
 			id: new ObjectId().toHexString(),
 		},
-		backgroundColor: MediaBoardColors.TRANSPARENT,
+		backgroundColor: Colors.TRANSPARENT,
 		collapsed: false,
 		layout: BoardLayout.LIST,
 	};

@@ -1,10 +1,10 @@
-import { MediaBoardColors } from './types';
+import { Colors } from './types';
 import { MediaAvailableLineElement } from './media-available-line-element.do';
 // TODO
 export class MediaAvailableLine {
 	elements: MediaAvailableLineElement[];
 
-	backgroundColor: MediaBoardColors;
+	backgroundColor: Colors;
 
 	collapsed: boolean;
 
@@ -17,6 +17,6 @@ export class MediaAvailableLine {
 
 export interface MediaAvailableLineProps {
 	elements: MediaAvailableLineElement[];
-	backgroundColor: MediaBoardColors;
+	backgroundColor: Colors;
 	collapsed: boolean;
 }

@@ -5,7 +5,7 @@ import { FeatureDisabledLoggableException } from '@shared/common/loggable-except
 import { throwForbiddenIfFalse } from '@shared/common/utils';
 import type { EntityId } from '@shared/domain/types';
 import { BoardNodeRule } from '../..//authorisation/board-node.rule';
-import { BoardLayout, MediaBoard, MediaBoardColors, MediaBoardNodeFactory, MediaLine } from '../../domain';
+import { BoardLayout, MediaBoard, Colors, MediaBoardNodeFactory, MediaLine } from '../../domain';
 import { BoardNodeAuthorizableService, BoardNodeService, MediaBoardService } from '../../service';
 
 @Injectable()
@@ -39,7 +39,7 @@ export class MediaBoardUc {
 
 		const line = this.mediaBoardNodeFactory.buildMediaLine({
 			title: '',
-			backgroundColor: MediaBoardColors.TRANSPARENT,
+			backgroundColor: Colors.TRANSPARENT,
 			collapsed: false,
 		});
 		await this.boardNodeService.addToParent(board, line);

@@ -7,7 +7,7 @@ import {
 	BoardLayout,
 	BoardNodeType,
 	ContentElementType,
-	MediaBoardColors,
+	Colors,
 	ROOT_PATH,
 } from '../../domain';
 import type { BoardNodeEntityProps } from '../types';
@@ -113,7 +113,7 @@ export class BoardNodeEntity extends BaseEntityWithTimestamps implements BoardNo
 	collapsed: boolean | undefined;
 
 	@Property({ type: 'MediaBoardColors', nullable: true })
-	backgroundColor: MediaBoardColors | undefined;
+	backgroundColor: Colors | undefined;
 
 	// DeletedElement
 	// --------------------------------------------------------------------------
