@@ -31,4 +31,8 @@ export class MeUc {
 
 		return dto;
 	}
+
+	public async updateMeReleaseDatePreference(userId: EntityId, releaseDate: Date): Promise<void> {
+		await this.userService.updateUserReleaseDatePreference(userId, releaseDate);
+	}
 }
