@@ -200,6 +200,15 @@ describe('ExternalToolPseudonymRepo', () => {
 				expect(secondResult.createdAt).toEqual(firstResult.createdAt);
 				expect(secondResult.updatedAt).toEqual(firstResult.updatedAt);
 			});
+		});
+
+		describe('when findOrCreate is called twice concurrently', () => {
+			const setup = () => {
+				const userId = new ObjectId().toHexString();
+				const toolId = new ObjectId().toHexString();
+
+				return { userId, toolId };
+			};
 
 			it('should not throw a duplicate-key error', async () => {
 				const { userId, toolId } = setup();
