@@ -54,7 +54,7 @@ export class BoardNodeService {
 	public async updateBackgroundColor<T extends WithBackgroundColor<AnyBoardNode>>(
 		node: T,
 		backgroundColor: T['backgroundColor']
-	) {
+	): Promise<void> {
 		node.backgroundColor = backgroundColor;
 
 		await this.boardNodeRepo.save(node);
