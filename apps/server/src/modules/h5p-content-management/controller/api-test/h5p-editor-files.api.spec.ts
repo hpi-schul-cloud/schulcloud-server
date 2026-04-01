@@ -212,14 +212,16 @@ describe('H5PEditor Controller (api)', () => {
 				const { loggedInClient, content } = await setup();
 
 				const mockFile = { content: 'Test File', size: 9, name: 'test.txt', birthtime: new Date() };
+				// For range bytes=2-4, return only the partial content (indices 2, 3, 4)
+				const partialContent = mockFile.content.substring(2, 5); // 'st '
 
-				contentStorage.getFileStream.mockResolvedValueOnce(Readable.from(mockFile.content));
+				contentStorage.getFileStream.mockResolvedValueOnce(Readable.from(partialContent));
 				contentStorage.getFileStats.mockResolvedValueOnce({ birthtime: mockFile.birthtime, size: mockFile.size });
 
 				const response = await loggedInClient.get(`content/${content.id}/${mockFile.name}`).set('Range', 'bytes=2-4');
 
 				expect(response.statusCode).toEqual(HttpStatus.PARTIAL_CONTENT);
-				expect(response.text).toBe(mockFile.content);
+				expect(response.text).toBe(partialContent);
 			});
 
 			it('should return 404 if file does not exist', async () => {
@@ -282,14 +284,16 @@ describe('H5PEditor Controller (api)', () => {
 
 			it('should work with range requests', async () => {
 				const { loggedInClient, mockFile, mockFileStats } = setup();
+				// For range bytes=2-4, return only the partial content (indices 2, 3, 4)
+				const partialContent = mockFile.content.substring(2, 5); // 'le '
 
-				temporaryStorage.getFileStream.mockResolvedValueOnce(Readable.from(mockFile.content));
+				temporaryStorage.getFileStream.mockResolvedValueOnce(Readable.from(partialContent));
 				temporaryStorage.getFileStats.mockResolvedValueOnce(mockFileStats);
 
 				const response = await loggedInClient.get(`temp-files/${mockFile.name}`).set('Range', 'bytes=2-4');
 
 				expect(response.statusCode).toEqual(HttpStatus.PARTIAL_CONTENT);
-				expect(response.text).toBe(mockFile.content);
+				expect(response.text).toBe(partialContent);
 			});
 
 			it('should return 404 if file does not exist', async () => {

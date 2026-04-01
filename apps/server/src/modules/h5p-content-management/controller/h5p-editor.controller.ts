@@ -121,7 +121,9 @@ export class H5PEditorController {
 
 		req.on('close', () => data.destroy());
 
-		return new StreamableFile(data, { type: contentType, length: contentLength });
+		const bodyLength = H5PEditorController.calculateBodyLength(contentLength, contentRange);
+
+		return new StreamableFile(data, { type: contentType, length: bodyLength });
 	}
 
 	@Get('temp-files/:file(*)')
@@ -141,7 +143,9 @@ export class H5PEditorController {
 
 		req.on('close', () => data.destroy());
 
-		return new StreamableFile(data, { type: contentType, length: contentLength });
+		const bodyLength = H5PEditorController.calculateBodyLength(contentLength, contentRange);
+
+		return new StreamableFile(data, { type: contentType, length: bodyLength });
 	}
 
 	@Get('ajax')
@@ -284,5 +288,13 @@ export class H5PEditorController {
 		} else {
 			res.status(HttpStatus.OK);
 		}
+	}
+
+	private static calculateBodyLength(contentLength: number, range?: { start: number; end: number }): number {
+		if (range) {
+			return range.end - range.start + 1;
+		}
+
+		return contentLength;
 	}
 }
