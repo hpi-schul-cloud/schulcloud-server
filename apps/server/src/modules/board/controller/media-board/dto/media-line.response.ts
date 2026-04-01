@@ -30,7 +30,7 @@ export class MediaLineResponse {
 
 	@ApiProperty({
 		enum: Colors,
-		enumName: 'MediaBoardColors',
+		enumName: 'Colors',
 		description: 'The background color of the media line',
 	})
 	backgroundColor: Colors;

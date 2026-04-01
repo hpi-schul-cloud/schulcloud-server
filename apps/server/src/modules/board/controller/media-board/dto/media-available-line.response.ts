@@ -11,7 +11,7 @@ export class MediaAvailableLineResponse {
 
 	@ApiProperty({
 		enum: Colors,
-		enumName: 'MediaBoardColors',
+		enumName: 'Colors',
 		description: 'Background color of available media line',
 	})
 	backgroundColor: Colors;
