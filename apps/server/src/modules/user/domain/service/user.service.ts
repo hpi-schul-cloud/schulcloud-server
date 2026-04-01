@@ -59,6 +59,12 @@ export class UserService {
 		return userDto;
 	}
 
+	public async getSchoolIdsByUserIds(userIds: EntityId[]): Promise<Map<EntityId, EntityId>> {
+		const userSchoolMap = await this.userDoRepo.getSchoolIdsByUserIds(userIds);
+
+		return userSchoolMap;
+	}
+
 	public async findById(id: string): Promise<UserDo> {
 		const userDO = await this.userDoRepo.findById(id, true);
 
