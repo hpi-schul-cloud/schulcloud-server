@@ -8,11 +8,9 @@ import { LdapConfigEntity, OauthConfigEntity, OidcConfigEntity, SystemEntity, Sy
 export const systemOauthConfigEntityFactory = BaseFactory.define<OauthConfigEntity, OauthConfigEntity>(
 	OauthConfigEntity,
 	() => {
-		// eslint-disable-next-line no-process-env
-		const aesKey = process.env.AES_KEY ?? 'test-key-with-32-characters-long';
 		return {
 			clientId: '12345',
-			clientSecret: AesEncryptionHelper.encrypt('mocksecret', aesKey),
+			clientSecret: AesEncryptionHelper.encrypt('mocksecret', 'randomStringWithAtLeast16Chars;'),
 			idpHint: 'mock-oauth-idpHint',
 			tokenEndpoint: 'https://mock.de/mock/auth/public/mockToken',
 			grantType: 'authorization_code',
