@@ -15,8 +15,8 @@ export class PseudonymUc {
 		private readonly schoolService: LegacySchoolService
 	) {}
 
-	public async resolvePseudonymForUser(userId: EntityId, pseudonym: string): Promise<Pseudonym> {
-		const user: User = await this.authorizationService.getUserWithPermissions(userId);
+	public async resolvePseudonymForUser(requestingUserId: EntityId, pseudonym: string): Promise<Pseudonym> {
+		const user: User = await this.authorizationService.getUserWithPermissions(requestingUserId);
 
 		const foundPseudonym: Pseudonym | null = await this.pseudonymService.findOneByPseudonym(pseudonym);
 
