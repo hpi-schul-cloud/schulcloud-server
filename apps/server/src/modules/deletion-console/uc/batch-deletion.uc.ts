@@ -15,7 +15,7 @@ export class BatchDeletionUc {
 		private readonly accountService: AccountService
 	) {}
 
-	async deleteRefsFromTxtFile(
+	public async deleteRefsFromTxtFile(
 		refsFilePath: string,
 		targetRefDomain = 'user',
 		deleteInMinutes = 43200, // 43200 minutes = 720 hours = 30 days
@@ -24,15 +24,17 @@ export class BatchDeletionUc {
 		// First, load all the references from the provided text file (with given path).
 		const refsFromTxtFile = ReferencesService.loadFromTxtFile(refsFilePath);
 
-		return this.buildInputsQueueDeletionRequestsAndReturnSummary(
+		const summary = await this.buildInputsQueueDeletionRequestsAndReturnSummary(
 			refsFromTxtFile,
 			targetRefDomain,
 			deleteInMinutes,
 			callsDelayMilliseconds
 		);
+
+		return summary;
 	}
 
-	async deleteUnsynchronizedRefs(
+	public async deleteUnsynchronizedRefs(
 		systemId: string,
 		unsyncedForMinutes = 10080,
 		targetRefDomain = 'user',
@@ -43,12 +45,14 @@ export class BatchDeletionUc {
 
 		const accountIds = await this.accountService.findByUserIdsAndSystemId(unsynchronizedUserIds, systemId);
 
-		return this.buildInputsQueueDeletionRequestsAndReturnSummary(
+		const summary = await this.buildInputsQueueDeletionRequestsAndReturnSummary(
 			accountIds,
 			targetRefDomain,
 			deleteInMinutes,
 			callsDelayMilliseconds
 		);
+
+		return summary;
 	}
 
 	private async buildInputsQueueDeletionRequestsAndReturnSummary(
