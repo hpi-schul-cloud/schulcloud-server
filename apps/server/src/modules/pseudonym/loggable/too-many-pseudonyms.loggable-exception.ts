@@ -8,8 +8,8 @@ export class TooManyPseudonymsLoggableException extends BusinessError implements
 		super(
 			{
 				type: 'PSEUDONYMS_TOO_MANY_PSEUDONYMS_FOUND',
-				title: 'Too many pseudonyms where found.',
-				defaultMessage: 'Too many pseudonyms where found.',
+				title: 'Too many pseudonyms were found.',
+				defaultMessage: 'Too many pseudonyms were found.',
 			},
 			HttpStatus.BAD_REQUEST
 		);
@@ -18,7 +18,7 @@ export class TooManyPseudonymsLoggableException extends BusinessError implements
 	public getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
 		return {
 			type: 'PSEUDONYMS_TOO_MANY_PSEUDONYMS_FOUND',
-			message: 'Too many pseudonyms where found.',
+			message: 'Too many pseudonyms were found.',
 			stack: this.stack,
 			data: {
 				pseudonym: this.pseudonym,
