@@ -5,7 +5,6 @@ import { AnyElementContentBody } from '../controller/dto';
 import {
 	AnyBoardNode,
 	AnyContentElement,
-	AnyMediaBoardNode,
 	AnyMediaElement,
 	BoardExternalReferenceType,
 	ColumnBoard,
@@ -60,7 +59,6 @@ export class BoardNodeService {
 
 		await this.boardNodeRepo.save(node);
 	}
-
 
 	public async updateVisibility<T extends WithVisibility<AnyBoardNode>>(
 		node: T,

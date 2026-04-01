@@ -13,7 +13,7 @@ import {
 import { EntityId } from '@shared/domain/types';
 import { Server } from 'socket.io';
 import { BOARD_CONFIG_TOKEN, BoardConfig } from '../board.config';
-import { AnyContentElementResponse, ColorBodyParams } from '../controller/dto';
+import { AnyContentElementResponse } from '../controller/dto';
 import {
 	BoardResponseMapper,
 	CardResponseMapper,

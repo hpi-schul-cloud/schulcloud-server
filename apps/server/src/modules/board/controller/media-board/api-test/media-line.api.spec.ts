@@ -350,9 +350,7 @@ describe('Media Line (API)', () => {
 						type: BoardExternalReferenceType.User,
 					},
 				});
-				const mediaLine = mediaLineEntityFactory
-					.withParent(mediaBoard)
-					.build({ backgroundColor: Colors.TRANSPARENT });
+				const mediaLine = mediaLineEntityFactory.withParent(mediaBoard).build({ backgroundColor: Colors.TRANSPARENT });
 
 				await em.persist([studentAccount, studentUser, mediaBoard, mediaLine]).flush();
 				em.clear();
