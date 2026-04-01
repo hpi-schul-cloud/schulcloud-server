@@ -96,9 +96,11 @@ describe(BoardContextResolverService.name, () => {
 		describe('when context type is Course', () => {
 			const setup = () => {
 				const teacher = userFactory.build();
+				const substitutionTeacher = userFactory.build({ school: teacher.school });
 				const student = userFactory.build({ school: teacher.school });
 				const course = courseEntityFactory.buildWithId({
 					teachers: [teacher],
+					substitutionTeachers: [substitutionTeacher],
 					students: [student],
 					school: teacher.school,
 				});
@@ -109,7 +111,7 @@ describe(BoardContextResolverService.name, () => {
 
 				courseService.findById.mockResolvedValue(course);
 
-				return { contextRef, course, teacher, student };
+				return { contextRef, course, teacher, substitutionTeacher, student };
 			};
 
 			it('should fetch the course', async () => {
@@ -130,13 +132,14 @@ describe(BoardContextResolverService.name, () => {
 			});
 
 			it('should include teachers, substitution teachers and students', async () => {
-				const { contextRef, teacher, student } = setup();
+				const { contextRef, teacher, substitutionTeacher, student } = setup();
 
 				const result = await service.resolve(contextRef);
 				const users = result.getUsersWithBoardRoles();
 
-				expect(users).toHaveLength(2);
+				expect(users).toHaveLength(3);
 				expect(users.find((u) => u.userId === teacher.id)).toBeDefined();
+				expect(users.find((u) => u.userId === substitutionTeacher.id)).toBeDefined();
 				expect(users.find((u) => u.userId === student.id)).toBeDefined();
 			});
 		});
