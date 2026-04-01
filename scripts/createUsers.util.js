@@ -69,6 +69,9 @@ function displayInfo() {
  */
 function createApiClients(baseUrl, jwt) {
 	const normalizedBaseUrl = baseUrl.endsWith('/') ? baseUrl.slice(0, -1) : baseUrl;
+	const isLocalhost = normalizedBaseUrl.includes('localhost') || normalizedBaseUrl.includes('127.0.0.1');
+	const apiV1PortSuffix = isLocalhost ? ':3030' : '';
+	const apiV3PortSuffix = isLocalhost ? ':4000' : '';
 
 	const headers = {
 		Authorization: `Bearer ${jwt}`,
@@ -77,43 +80,17 @@ function createApiClients(baseUrl, jwt) {
 
 	// API v1 on port 3030 for user creation
 	const v1Api = axios.create({
-		baseURL: `${normalizedBaseUrl}:3030/api/v1`,
+		baseURL: `${normalizedBaseUrl}${apiV1PortSuffix}/api/v1`,
 		headers,
 	});
 
 	// API v3 on port 4000 for /me and /rooms
 	const v3Api = axios.create({
-		baseURL: `${normalizedBaseUrl}:4000/api/v3`,
+		baseURL: `${normalizedBaseUrl}${apiV3PortSuffix}/api/v3`,
 		headers,
 	});
 
 	return { v1Api, v3Api };
-}
-
-/**
- * Fetches all roles and returns the teacher role ID
- * @param {import('axios').AxiosInstance} v1Api - The axios instance for API v1
- * @returns {Promise<string>} - Teacher role ID
- */
-async function getTeacherRoleId(v1Api) {
-	try {
-		const response = await v1Api.get('/roles');
-		const roles = response.data.data || response.data;
-
-		// Find the teacher role
-		const teacherRole = roles.find((role) => role.name === 'teacher');
-		if (!teacherRole) {
-			throw new Error('Teacher role not found in roles response');
-		}
-
-		console.log(`Found teacher role: ${teacherRole.name} (ID: ${teacherRole._id})`);
-		return teacherRole._id;
-	} catch (error) {
-		if (error.response) {
-			throw new Error(`Failed to fetch roles: ${error.response.status} - ${JSON.stringify(error.response.data)}`);
-		}
-		throw new Error(`Failed to fetch roles: ${error.message}`);
-	}
 }
 
 /**
@@ -227,7 +204,8 @@ async function main() {
 
 		// Fetch teacher role ID
 		console.log('\nFetching teacher role...');
-		const teacherRoleId = await getTeacherRoleId(v1Api);
+		const teacherRoleId =
+			(await prompt('Enter teacher role ID (default: 0000d186816abba584714c98): ')) || '0000d186816abba584714c98';
 
 		// Get number of users
 		const userCountStr = await prompt('\nHow many users should be created? ');
