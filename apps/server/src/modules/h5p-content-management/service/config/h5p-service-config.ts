@@ -24,4 +24,7 @@ h5pConfig.editorLibraryUrl = `${STATIC_FILES_BASE}/editor`;
 h5pConfig.contentUserStateSaveInterval = false;
 h5pConfig.setFinishedEnabled = false;
 
+h5pConfig.maxFileSize = 1024 * 1024 * 1024; // 1 GB
+h5pConfig.maxTotalSize = 1024 * 1024 * 1024; // 1 GB
+
 export const h5pUrlGenerator = new UrlGenerator(h5pConfig);
