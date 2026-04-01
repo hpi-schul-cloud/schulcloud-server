@@ -29,7 +29,7 @@ export interface ColumnProps extends BoardNodeProps {
 
 export interface CardProps extends BoardNodeProps {
 	title?: string;
-	color?: string;
+	backgroundColor?: Colors;
 	height: number;
 }
 

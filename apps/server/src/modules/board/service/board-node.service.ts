@@ -5,6 +5,7 @@ import { AnyElementContentBody } from '../controller/dto';
 import {
 	AnyBoardNode,
 	AnyContentElement,
+	AnyMediaBoardNode,
 	AnyMediaElement,
 	BoardExternalReferenceType,
 	ColumnBoard,
@@ -19,7 +20,7 @@ import { BoardNodeDeleteHooksService } from './internal/board-node-delete-hooks.
 import { ContentElementUpdateService } from './internal/content-element-update.service';
 
 type WithTitle<T> = Extract<T, { title: unknown }>;
-type WithColor<T> = Extract<T, { color: unknown }>;
+type WithBackgroundColor<T> = Extract<T, { backgroundColor: unknown }>;
 type WithVisibility<T> = Extract<T, { isVisible: unknown }>;
 type WithLayout<T> = Extract<T, { layout: unknown }>;
 type WithHeight<T> = Extract<T, { height: unknown }>;
@@ -51,10 +52,15 @@ export class BoardNodeService {
 		await this.boardNodeRepo.save(node);
 	}
 
-	public async updateColor<T extends WithColor<AnyBoardNode>>(node: T, color: T['color']): Promise<void> {
-		node.color = color;
+	public async updateBackgroundColor<T extends WithBackgroundColor<AnyBoardNode>>(
+		node: T,
+		backgroundColor: T['backgroundColor']
+	) {
+		node.backgroundColor = backgroundColor;
+
 		await this.boardNodeRepo.save(node);
 	}
+
 
 	public async updateVisibility<T extends WithVisibility<AnyBoardNode>>(
 		node: T,

@@ -67,9 +67,6 @@ export class BoardNodeEntity extends BaseEntityWithTimestamps implements BoardNo
 	@Property({ type: 'integer', nullable: true })
 	height: number | undefined;
 
-	@Property({ type: 'string', nullable: true })
-	color: string | undefined;
-
 	// RichTextElement
 	// --------------------------------------------------------------------------
 	@Property({ type: 'string', nullable: true })
@@ -112,7 +109,9 @@ export class BoardNodeEntity extends BaseEntityWithTimestamps implements BoardNo
 	@Property({ type: 'boolean', nullable: true })
 	collapsed: boolean | undefined;
 
-	@Property({ type: 'MediaBoardColors', nullable: true })
+	// MediaLine, MediaBoard, Card
+	// --------------------------------------------------------------------------
+	@Property({ type: 'Colors', nullable: true })
 	backgroundColor: Colors | undefined;
 
 	// DeletedElement

@@ -24,6 +24,7 @@ import {
 	CardListResponse,
 	CardResponse,
 	CardUrlParams,
+	ColorBodyParams,
 	CreateContentElementBodyParams,
 	DeletedElementResponse,
 	DrawingElementResponse,
@@ -36,7 +37,6 @@ import {
 	RenameBodyParams,
 	RichTextElementResponse,
 	VideoConferenceElementResponse,
-	UpdateCardColorBodyParams,
 } from './dto';
 import { MoveCardResponse } from './dto/board/move-card.response';
 import { SetHeightBodyParams } from './dto/board/set-height.body.params';
@@ -129,10 +129,10 @@ export class CardController {
 	@Patch(':cardId/color')
 	public async updateCardColor(
 		@Param() urlParams: CardUrlParams,
-		@Body() bodyParams: UpdateCardColorBodyParams,
+		@Body() bodyParams: ColorBodyParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {
-		await this.cardUc.updateCardColor(currentUser.userId, urlParams.cardId, bodyParams.color);
+		await this.cardUc.updateCardColor(currentUser.userId, urlParams.cardId, bodyParams.backgroundColor);
 	}
 
 	@ApiOperation({ summary: 'Delete a single card.' })
