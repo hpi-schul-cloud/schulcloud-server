@@ -1,4 +1,4 @@
-import { IsEnum, IsMongoId, } from 'class-validator';
+import { IsEnum, IsMongoId } from 'class-validator';
 import { Colors } from '../../domain';
 
 export class UpdateCardColorMessageParams {
