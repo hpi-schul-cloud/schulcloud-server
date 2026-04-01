@@ -91,8 +91,7 @@ export class BoardNodeAuthorizableService implements AuthorizationLoaderService 
 	}
 
 	private async resolveContext(rootNode: AnyBoardNode): Promise<PreparedBoardContext> {
-		if (!('context' in rootNode)) {
-			// Return a minimal context for nodes without context
+		if (!rootNode || !('context' in rootNode)) {
 			return {
 				type: undefined as never,
 				getUsersWithBoardRoles: () => [],
