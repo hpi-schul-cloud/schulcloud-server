@@ -275,9 +275,13 @@ export class H5PEditorController {
 	// These endpoints prevent 404 errors when H5P content types try to fetch/save user state
 	@Get('contentUserData/:contentId/:dataType/:subContentId')
 	public getContentUserData(
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		@Param('contentId') contentId: string,
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		@Param('dataType') dataType: string,
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		@Param('subContentId') subContentId: string,
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		@CurrentUser() currentUser: ICurrentUser
 	): { data: null; success: boolean } {
 		// Return empty data - user state persistence is disabled
@@ -286,10 +290,15 @@ export class H5PEditorController {
 
 	@Post('contentUserData/:contentId/:dataType/:subContentId')
 	public postContentUserData(
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		@Param('contentId') contentId: string,
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		@Param('dataType') dataType: string,
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		@Param('subContentId') subContentId: string,
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		@CurrentUser() currentUser: ICurrentUser,
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		@Body() body: unknown
 	): { success: boolean } {
 		// Accept but ignore - user state persistence is disabled
