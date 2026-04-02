@@ -17,7 +17,10 @@ export const H5PPlayerProvider = {
 		h5pEditorConfig: H5PEditorConfig
 	): Promise<H5PPlayer> => {
 		const libraryCache = new cacheImplementations.CachedLibraryStorage(libraryStorage, cacheAdapter);
-		const { availableLanguages } = h5pEditorConfig;
+		const { availableLanguages, maxFileSize, maxTotalSize } = h5pEditorConfig;
+
+		h5pConfig.maxFileSize = maxFileSize;
+		h5pConfig.maxTotalSize = maxTotalSize;
 
 		const translationFunction: ITranslationFunction = await Translator.translate(availableLanguages);
 		const h5pPlayer = new H5PPlayer(
