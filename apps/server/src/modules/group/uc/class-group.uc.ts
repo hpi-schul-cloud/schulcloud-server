@@ -94,10 +94,7 @@ export class ClassGroupUc {
 	}
 
 	private getGroupVisibilityPermission(user: User): GroupVisibilityPermission {
-		const canSeeAllSchoolGroups = this.authorizationService.hasAllPermissions(user, [
-			Permission.CLASS_FULL_ADMIN,
-			Permission.GROUP_FULL_ADMIN,
-		]);
+		const canSeeAllSchoolGroups = this.authorizationService.hasAllPermissions(user, [Permission.GROUP_FULL_ADMIN]);
 
 		if (canSeeAllSchoolGroups) {
 			return GroupVisibilityPermission.ALL_SCHOOL_GROUPS;
