@@ -13,7 +13,7 @@ export class Context implements BoardExternalReference {
 	@Property({ fieldName: 'contextType' })
 	public _contextType: BoardExternalReferenceType;
 
-	@Property({ fieldName: 'contextId', type: ObjectIdType })
+	@Property({ fieldName: 'context', type: ObjectIdType })
 	public _contextId: EntityId;
 
 	get type(): BoardExternalReferenceType {
