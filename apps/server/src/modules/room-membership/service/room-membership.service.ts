@@ -6,7 +6,6 @@ import { RoomInvitationLink } from '@modules/room/domain/do/room-invitation-link
 import { SchoolService } from '@modules/school/domain/service/school.service';
 import { UserService } from '@modules/user';
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
-import { InspectPerformance } from '@shared/common/measure-utils';
 import { Page } from '@shared/domain/domainobject';
 import { Pagination } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
@@ -161,7 +160,6 @@ export class RoomMembershipService {
 		return page;
 	}
 
-	@InspectPerformance()
 	public async getRoomAuthorizablesByUserId(userId: EntityId): Promise<RoomAuthorizable[]> {
 		const groups = await this.getAllRoomGroupsOfUser(userId);
 		const groupIds = groups.map((group) => group.id);
@@ -197,7 +195,6 @@ export class RoomMembershipService {
 		);
 	}
 
-	@InspectPerformance()
 	private async getAuthorizables(groups: Group[], roomMemberships: RoomMembership[]): Promise<RoomAuthorizable[]> {
 		const userIds = [...groups.flatMap((group) => group.users.map((user) => user.userId))];
 		const userSchoolMap = await this.userService.getSchoolIdsByUserIds(userIds);
@@ -222,7 +219,6 @@ export class RoomMembershipService {
 		return roomAuthorizables;
 	}
 
-	@InspectPerformance()
 	private async getAllRoomGroupsOfUser(userId: EntityId): Promise<Group[]> {
 		const { data } = await this.groupService.findGroups({
 			groupTypes: [GroupTypes.ROOM],

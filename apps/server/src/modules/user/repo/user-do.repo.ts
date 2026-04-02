@@ -4,7 +4,6 @@ import { Role } from '@modules/role/repo';
 import { SchoolEntity } from '@modules/school/repo';
 import { Injectable } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common/error';
-import { InspectPerformance } from '@shared/common/measure-utils';
 import { Page, RoleReference } from '@shared/domain/domainobject';
 import { type IFindOptions, type Pagination, SortOrder, type SortOrderMap } from '@shared/domain/interface';
 import type { EntityId } from '@shared/domain/types';
@@ -76,7 +75,6 @@ export class UserDoMikroOrmRepo extends BaseDORepo<UserDo, User> implements User
 		return userSchoolMap;
 	}
 
-	@InspectPerformance()
 	public async findByIds(ids: string[], populate = false): Promise<UserDo[]> {
 		const userIdChunks = chunk(ids, populate ? 200 : 500);
 
@@ -89,7 +87,6 @@ export class UserDoMikroOrmRepo extends BaseDORepo<UserDo, User> implements User
 		return userDOs;
 	}
 
-	@InspectPerformance()
 	private async findUserChunk(ids: string[], populate: boolean): Promise<User[]> {
 		const users = await this._em.find(User, { id: { $in: ids } });
 
