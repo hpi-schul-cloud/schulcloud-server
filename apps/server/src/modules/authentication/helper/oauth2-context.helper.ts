@@ -1,26 +1,17 @@
-import { Account, AccountService } from '@modules/account';
-import { UserDo } from '@modules/user';
+import { AccountService } from '@modules/account';
 import { OAuthService, OauthSessionToken, OauthSessionTokenFactory, OauthSessionTokenService } from '@modules/oauth';
 import { Inject, Injectable } from '@nestjs/common';
 import { AUTHENTICATION_CONFIG_TOKEN, AuthenticationConfig } from '../authentication-config';
+import { Oauth2AuthorizationBodyParams } from '../controllers/dto';
+import { Oauth2ContextResult } from '../interface';
 import {
 	AccountNotFoundLoggableException,
 	MissingRefreshTokenLoggableException,
 	SchoolInMigrationLoggableException,
 	UserAccountDeactivatedLoggableException,
 } from '../loggable';
-import { Oauth2AuthorizationBodyParams } from '../controllers/dto';
 
-export interface Oauth2ContextResult {
-	user: UserDo;
-	account: Account;
-	tokenDto: {
-		idToken: string;
-		accessToken: string;
-		refreshToken?: string;
-	};
-	systemId: string;
-}
+export { Oauth2ContextResult } from '../interface';
 
 @Injectable()
 export class Oauth2ContextHelper {
