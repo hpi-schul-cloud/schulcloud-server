@@ -598,8 +598,7 @@ describe('ClassGroupUc', () => {
 				await uc.findAllClasses(adminUser.id, adminUser.school.id);
 
 				expect(authorizationService.hasAllPermissions).toHaveBeenCalledWith<[User, string[]]>(adminUser, [
-					Permission.CLASS_FULL_ADMIN,
-					Permission.GROUP_FULL_ADMIN,
+					Permission.STUDENT_LIST,
 				]);
 			});
 
