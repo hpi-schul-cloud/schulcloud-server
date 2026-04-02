@@ -102,7 +102,6 @@ async function getCurrentUserInfo(v3Api) {
 	try {
 		const response = await v3Api.get('/me');
 		console.log(`Current user: ${response.data.firstName} ${response.data.lastName} (ID: ${response.data._id})`);
-		console.log(response.data);
 		return {
 			schoolId: response.data.schoolId,
 			userId: response.data._id,
