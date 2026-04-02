@@ -25,6 +25,7 @@ import { SignOptions } from 'jsonwebtoken';
 import { AUTHENTICATION_CONFIG_TOKEN, AuthenticationConfig, SESSION_VALKEY_CLIENT } from './authentication-config';
 import { AUTHENTICATION_ENCRYPTION_CONFIG_TOKEN, AuthenticationEncryptionConfig } from './encryption.config';
 import { JwtWhitelistAdapter } from './helper/jwt-whitelist.adapter';
+import { Oauth2ContextHelper } from './helper/oauth2-context.helper';
 import { JWT_STRATEGY_CONFIG_TOKEN, JwtModuleConfig } from './jwt-module.config';
 import { LogoutService } from './services';
 import { AuthenticationService } from './services/authentication.service';
@@ -95,6 +96,7 @@ const createJwtOptions = (config: JwtModuleConfig): JwtModuleOptions => {
 		LdapStrategy,
 		Oauth2Strategy,
 		JwtWhitelistAdapter,
+		Oauth2ContextHelper,
 		LogoutService,
 		ErwinStrategy,
 	],
