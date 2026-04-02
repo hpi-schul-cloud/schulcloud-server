@@ -2,7 +2,7 @@ import { DeletionRequest } from '../../domain/do';
 import { DeletionRequestEntity } from '../entity';
 
 export class DeletionRequestMapper {
-	static mapToDO(entity: DeletionRequestEntity): DeletionRequest {
+	public static mapToDO(entity: DeletionRequestEntity): DeletionRequest {
 		return new DeletionRequest({
 			id: entity.id,
 			createdAt: entity.createdAt,
@@ -11,10 +11,11 @@ export class DeletionRequestMapper {
 			deleteAfter: entity.deleteAfter,
 			targetRefId: entity.targetRefId,
 			status: entity.status,
+			batchId: entity.batchId,
 		});
 	}
 
-	static mapToEntity(domainObject: DeletionRequest): DeletionRequestEntity {
+	public static mapToEntity(domainObject: DeletionRequest): DeletionRequestEntity {
 		return new DeletionRequestEntity({
 			id: domainObject.id,
 			targetRefDomain: domainObject.targetRefDomain,
@@ -23,6 +24,7 @@ export class DeletionRequestMapper {
 			createdAt: domainObject.createdAt,
 			updatedAt: domainObject.updatedAt,
 			status: domainObject.status,
+			batchId: domainObject.batchId,
 		});
 	}
 }

@@ -60,7 +60,7 @@ describe('createBatch', () => {
 			expect(result.id).toBeDefined();
 		});
 
-		it('should acttually create the deletion batch', async () => {
+		it('should actually create the deletion batch', async () => {
 			const { createDeletionBatchBodyParams } = setup();
 
 			const response = await testApiClient.post('', createDeletionBatchBodyParams);

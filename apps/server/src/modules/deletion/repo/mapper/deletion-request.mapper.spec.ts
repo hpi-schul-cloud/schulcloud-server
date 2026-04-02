@@ -52,6 +52,7 @@ describe(DeletionRequestMapper.name, () => {
 					deleteAfter: domainObject.deleteAfter,
 					targetRefId: domainObject.targetRefId,
 					status: domainObject.status,
+					batchId: domainObject.batchId,
 					createdAt: domainObject.createdAt,
 					updatedAt: domainObject.updatedAt,
 				});
