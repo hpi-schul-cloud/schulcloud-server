@@ -186,7 +186,6 @@ const roleSeedData: { [key: string | RoleName]: SeedRoleProperties } = {
 			Permission.COURSE_EDIT,
 			Permission.COURSE_REMOVE,
 			Permission.ENTERTHECLOUD_START,
-			Permission.GROUP_FULL_ADMIN,
 			Permission.GROUP_LIST,
 			Permission.HOMEWORK_CREATE,
 			Permission.HOMEWORK_EDIT,
