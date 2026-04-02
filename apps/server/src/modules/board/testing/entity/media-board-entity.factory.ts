@@ -22,7 +22,7 @@ export const mediaBoardEntityFactory = BoardNodeEntityFactory.define<PropsWithTy
 					id: new ObjectId().toHexString(),
 			  });
 
-	const props = {
+	const props: PropsWithType<MediaBoardProps> = {
 		id: new ObjectId().toHexString(),
 		path: ROOT_PATH,
 		level: 0,
@@ -30,12 +30,12 @@ export const mediaBoardEntityFactory = BoardNodeEntityFactory.define<PropsWithTy
 		children: [],
 		createdAt: new Date(),
 		updatedAt: new Date(),
-		boardContext: context,
+		context,
 		backgroundColor: MediaBoardColors.TRANSPARENT,
 		collapsed: false,
 		layout: BoardLayout.LIST,
 		type: BoardNodeType.MEDIA_BOARD,
-	} as unknown as PropsWithType<MediaBoardProps>;
+	};
 
 	return props;
 });

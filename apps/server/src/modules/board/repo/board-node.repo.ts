@@ -1,4 +1,4 @@
-import { FilterQuery, RequiredEntityData, Utils } from '@mikro-orm/core';
+import { FilterQuery, Utils } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
@@ -40,7 +40,7 @@ export class BoardNodeRepo {
 
 	public async findByExternalReference(reference: BoardExternalReference, depth?: number): Promise<AnyBoardNode[]> {
 		const entities = await this.em.find(BoardNodeEntity, {
-			boardContext: {
+			context: {
 				_contextId: new ObjectId(reference.id),
 				_contextType: reference.type,
 			} as FilterQuery<BoardExternalReference>,
@@ -147,12 +147,7 @@ export class BoardNodeRepo {
 			const props = this.getProps(bn);
 
 			if (!(props instanceof BoardNodeEntity)) {
-				const entityProps = props as unknown as Record<string, unknown>;
-				if ('context' in entityProps && !('boardContext' in entityProps)) {
-					entityProps['boardContext'] = entityProps['context'];
-					delete entityProps['context'];
-				}
-				const entity = this.em.create(BoardNodeEntity, entityProps as RequiredEntityData<BoardNodeEntity>);
+				const entity = this.em.create(BoardNodeEntity, props);
 				entity.type = getBoardNodeType(bn);
 				this.setProps(bn, entity);
 				this.em.persist(entity);
