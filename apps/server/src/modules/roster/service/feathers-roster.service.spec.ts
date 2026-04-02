@@ -127,7 +127,7 @@ describe('FeathersRosterService', () => {
 				const user = userDoFactory.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.STUDENT }]).build();
 				const iFrameSubject = 'iFrameSubject';
 
-				pseudonymService.findPseudonymByPseudonym.mockResolvedValue(pseudonym);
+				pseudonymService.findOneByPseudonym.mockResolvedValue(pseudonym);
 				userService.findById.mockResolvedValue(user);
 				pseudonymService.getIframeSubject.mockReturnValue(iFrameSubject);
 
@@ -143,7 +143,7 @@ describe('FeathersRosterService', () => {
 
 				await service.getUsersMetadata(pseudonym.pseudonym);
 
-				expect(pseudonymService.findPseudonymByPseudonym).toHaveBeenCalledWith(pseudonym.pseudonym);
+				expect(pseudonymService.findOneByPseudonym).toHaveBeenCalledWith(pseudonym.pseudonym);
 			});
 
 			it('should call the user service to find the user', async () => {
@@ -181,7 +181,7 @@ describe('FeathersRosterService', () => {
 			const setup = () => {
 				const pseudonym = pseudonymFactory.build();
 
-				pseudonymService.findPseudonymByPseudonym.mockResolvedValue(null);
+				pseudonymService.findOneByPseudonym.mockResolvedValue(null);
 
 				return {
 					pseudonym,
@@ -204,7 +204,7 @@ describe('FeathersRosterService', () => {
 				const pseudonym = pseudonymFactory.build();
 				const user = userDoFactory.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.STUDENT }]).build();
 
-				pseudonymService.findPseudonymByPseudonym.mockResolvedValue(pseudonym);
+				pseudonymService.findOneByPseudonym.mockResolvedValue(pseudonym);
 				userService.findById.mockRejectedValueOnce(new DatabaseObjectNotFoundException(new Error()));
 
 				return {
@@ -252,7 +252,7 @@ describe('FeathersRosterService', () => {
 
 				config.featureColumnBoardExternalToolsEnabled = false;
 
-				pseudonymService.findPseudonymByPseudonym.mockResolvedValue(pseudonym);
+				pseudonymService.findOneByPseudonym.mockResolvedValue(pseudonym);
 				userService.findById.mockResolvedValueOnce(user);
 				externalToolService.findExternalToolByOAuth2ConfigClientId.mockResolvedValue(externalTool);
 				schoolExternalToolService.findSchoolExternalTools.mockResolvedValueOnce([schoolExternalTool]);
@@ -351,7 +351,7 @@ describe('FeathersRosterService', () => {
 					});
 				otherExternalToolElement.contextExternalToolId = otherContextExternalTool.id;
 
-				pseudonymService.findPseudonymByPseudonym.mockResolvedValue(pseudonym);
+				pseudonymService.findOneByPseudonym.mockResolvedValue(pseudonym);
 				userService.findById.mockResolvedValueOnce(user);
 				externalToolService.findExternalToolByOAuth2ConfigClientId.mockResolvedValue(externalTool);
 				schoolExternalToolService.findSchoolExternalTools.mockResolvedValueOnce([schoolExternalTool]);
@@ -445,7 +445,7 @@ describe('FeathersRosterService', () => {
 
 				config.featureColumnBoardExternalToolsEnabled = true;
 
-				pseudonymService.findPseudonymByPseudonym.mockResolvedValueOnce(pseudonym);
+				pseudonymService.findOneByPseudonym.mockResolvedValueOnce(pseudonym);
 				userService.findById.mockResolvedValue(user);
 				externalToolService.findExternalToolByOAuth2ConfigClientId.mockResolvedValueOnce(externalTool);
 				schoolExternalToolService.findSchoolExternalTools.mockResolvedValueOnce([schoolExternalTool]);
@@ -526,7 +526,7 @@ describe('FeathersRosterService', () => {
 			const setup = () => {
 				const pseudonym = pseudonymFactory.build();
 
-				pseudonymService.findPseudonymByPseudonym.mockResolvedValue(null);
+				pseudonymService.findOneByPseudonym.mockResolvedValue(null);
 
 				return {
 					pseudonym,
@@ -549,7 +549,7 @@ describe('FeathersRosterService', () => {
 				const user = userDoFactory.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.STUDENT }]).build();
 				const pseudonym = pseudonymFactory.build({ userId: user.id });
 
-				pseudonymService.findPseudonymByPseudonym.mockResolvedValue(pseudonym);
+				pseudonymService.findOneByPseudonym.mockResolvedValue(pseudonym);
 				userService.findById.mockResolvedValueOnce(user);
 				externalToolService.findExternalToolByOAuth2ConfigClientId.mockResolvedValue(null);
 
@@ -577,7 +577,7 @@ describe('FeathersRosterService', () => {
 					.withOauth2Config({ clientId })
 					.buildWithId({ isDeactivated: true });
 
-				pseudonymService.findPseudonymByPseudonym.mockResolvedValue(pseudonym);
+				pseudonymService.findOneByPseudonym.mockResolvedValue(pseudonym);
 				userService.findById.mockResolvedValueOnce(user);
 				externalToolService.findExternalToolByOAuth2ConfigClientId.mockResolvedValue(externalTool);
 
@@ -604,7 +604,7 @@ describe('FeathersRosterService', () => {
 				const clientId = 'testClientId';
 				const externalTool = externalToolFactory.withOauth2Config({ clientId }).buildWithId();
 
-				pseudonymService.findPseudonymByPseudonym.mockResolvedValue(pseudonym);
+				pseudonymService.findOneByPseudonym.mockResolvedValue(pseudonym);
 				userService.findById.mockResolvedValueOnce(user);
 				externalToolService.findExternalToolByOAuth2ConfigClientId.mockResolvedValue(externalTool);
 				schoolExternalToolService.findSchoolExternalTools.mockResolvedValueOnce([]);
