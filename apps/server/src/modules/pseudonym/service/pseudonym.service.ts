@@ -43,19 +43,19 @@ export class PseudonymService {
 			throw new InternalServerErrorException('User or tool id is missing');
 		}
 
-		const result = await this.externalToolPseudonymRepo.createOrUpdate(user.id, tool.id);
+		const result = await this.externalToolPseudonymRepo.findOrCreate(user.id, tool.id);
 
 		return result;
 	}
 
-	public async findPseudonymByPseudonym(pseudonym: string): Promise<Pseudonym | null> {
-		const result = await this.externalToolPseudonymRepo.findPseudonymByPseudonym(pseudonym);
+	public async findOneByPseudonym(pseudonym: string): Promise<Pseudonym | null> {
+		const result = await this.externalToolPseudonymRepo.findByPseudonym(pseudonym);
 
 		return result;
 	}
 
 	public async findPseudonym(query: PseudonymSearchQuery, options: IFindOptions<Pseudonym>): Promise<Page<Pseudonym>> {
-		const result = await this.externalToolPseudonymRepo.findPseudonym(query, options);
+		const result = await this.externalToolPseudonymRepo.findByQuery(query, options);
 
 		return result;
 	}
