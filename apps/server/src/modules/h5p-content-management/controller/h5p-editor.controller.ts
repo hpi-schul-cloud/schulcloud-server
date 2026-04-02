@@ -271,6 +271,31 @@ export class H5PEditorController {
 		return saveResponse;
 	}
 
+	// Content user data endpoints - stub implementations since contentUserStateSaveInterval is disabled
+	// These endpoints prevent 404 errors when H5P content types try to fetch/save user state
+	@Get('contentUserData/:contentId/:dataType/:subContentId')
+	public getContentUserData(
+		@Param('contentId') contentId: string,
+		@Param('dataType') dataType: string,
+		@Param('subContentId') subContentId: string,
+		@CurrentUser() currentUser: ICurrentUser
+	): { data: null; success: boolean } {
+		// Return empty data - user state persistence is disabled
+		return { data: null, success: true };
+	}
+
+	@Post('contentUserData/:contentId/:dataType/:subContentId')
+	public postContentUserData(
+		@Param('contentId') contentId: string,
+		@Param('dataType') dataType: string,
+		@Param('subContentId') subContentId: string,
+		@CurrentUser() currentUser: ICurrentUser,
+		@Body() body: unknown
+	): { success: boolean } {
+		// Accept but ignore - user state persistence is disabled
+		return { success: true };
+	}
+
 	private static setRangeResponseHeaders(
 		res: Response,
 		contentLength: number,
