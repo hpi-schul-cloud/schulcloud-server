@@ -6,10 +6,10 @@ import { RoomInvitationLink } from '@modules/room/domain/do/room-invitation-link
 import { SchoolService } from '@modules/school/domain/service/school.service';
 import { UserService } from '@modules/user';
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { InspectPerformance } from '@shared/common/measure-utils';
 import { Page } from '@shared/domain/domainobject';
 import { Pagination } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { chunk } from 'lodash';
 import { RoomAuthorizable } from '../do/room-authorizable.do';
 import { RoomInvitationLinkAuthorizable } from '../do/room-invitation-link-authorizable.do';
 import { RoomMember } from '../do/room-member.do';
@@ -161,6 +161,7 @@ export class RoomMembershipService {
 		return page;
 	}
 
+	@InspectPerformance()
 	public async getRoomAuthorizablesByUserId(userId: EntityId): Promise<RoomAuthorizable[]> {
 		const groups = await this.getAllRoomGroupsOfUser(userId);
 		const groupIds = groups.map((group) => group.id);
@@ -196,9 +197,10 @@ export class RoomMembershipService {
 		);
 	}
 
+	@InspectPerformance()
 	private async getAuthorizables(groups: Group[], roomMemberships: RoomMembership[]): Promise<RoomAuthorizable[]> {
 		const userIds = [...groups.flatMap((group) => group.users.map((user) => user.userId))];
-		const userSchoolMap = await this.getSchoolIdsOfUsers(userIds);
+		const userSchoolMap = await this.userService.getSchoolIdsByUserIds(userIds);
 
 		const roleDtos = await this.roleService.findAll();
 
@@ -220,19 +222,7 @@ export class RoomMembershipService {
 		return roomAuthorizables;
 	}
 
-	private async getSchoolIdsOfUsers(userIds: EntityId[]): Promise<Map<EntityId, EntityId>> {
-		const userSchoolMap = new Map<EntityId, EntityId>();
-		const userIdChunks = chunk(userIds, 1000);
-		for (const userIdChunk of userIdChunks) {
-			const users = await this.userService.findByIds(userIdChunk, false);
-			for (const user of users) {
-				if (!user.id) continue;
-				userSchoolMap.set(user.id, user.schoolId);
-			}
-		}
-		return userSchoolMap;
-	}
-
+	@InspectPerformance()
 	private async getAllRoomGroupsOfUser(userId: EntityId): Promise<Group[]> {
 		const { data } = await this.groupService.findGroups({
 			groupTypes: [GroupTypes.ROOM],
