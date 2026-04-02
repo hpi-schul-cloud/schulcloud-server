@@ -507,6 +507,7 @@ describe('RoomMembershipService', () => {
 			roleService.findByIds.mockResolvedValue([role]);
 			roleService.findAll.mockResolvedValue([role]);
 			userService.findByIds.mockResolvedValue([userDoFactory.buildWithId({ id: userId })]);
+			userService.getSchoolIdsByUserIds.mockResolvedValue(new Map([[userId, 'school456']]));
 
 			return { roomId, userId, groupId, roleId, roomMembership, group, role };
 		};
@@ -665,6 +666,7 @@ describe('RoomMembershipService', () => {
 			roleService.findByIds.mockResolvedValue(roles);
 			roleService.findAll.mockResolvedValue(roles);
 			userService.findByIds.mockResolvedValue([userDoFactory.buildWithId({ id: userId })]);
+			userService.getSchoolIdsByUserIds.mockResolvedValue(new Map([[userId, 'school123']]));
 
 			return { userId, roomMemberships, roles };
 		};
