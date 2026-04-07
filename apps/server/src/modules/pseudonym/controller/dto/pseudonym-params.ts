@@ -4,5 +4,5 @@ import { IsString } from 'class-validator';
 export class PseudonymParams {
 	@IsString()
 	@ApiProperty({ nullable: false, required: true })
-	pseudonym!: string;
+	public pseudonym!: string;
 }
