@@ -101,9 +101,8 @@ function createApiClients(baseUrl, jwt) {
 async function getCurrentUserInfo(v3Api) {
 	try {
 		const response = await v3Api.get('/me');
-		console.log(`Current user: ${response.data.firstName} ${response.data.lastName} (ID: ${response.data._id})`);
 		return {
-			schoolId: response.data.schoolId,
+			schoolId: response.data.school.id,
 			userId: response.data._id,
 		};
 	} catch (error) {
@@ -152,6 +151,27 @@ async function createUser(v1Api, schoolId, teacherRoleId, index) {
 	}
 }
 
+async function createUsers(userCount, v1Api, userInfo, teacherRoleId) {
+	const createdUsers = [];
+	const errors = [];
+
+	for (let i = 0; i < userCount; i++) {
+		try {
+			const user = await createUser(v1Api, userInfo.schoolId, teacherRoleId, i);
+			await new Promise((resolve) => setTimeout(resolve, 400));
+			createdUsers.push(user);
+			console.log(`[${i + 1}/${userCount}] Created user: ${user.email} (ID: ${user.userId})`);
+		} catch (error) {
+			errors.push({ index: i, error: error.message });
+			console.error(`[${i + 1}/${userCount}] Failed to create user: ${error.message}`);
+		}
+	}
+
+	console.log('\n' + '-'.repeat(70));
+	console.log(`Successfully created ${createdUsers.length} out of ${userCount} users.`);
+	return { createdUsers, errors };
+}
+
 /**
  * Adds users to a room with roomviewer role
  * @param {import('axios').AxiosInstance} v3Api - The axios instance for API v3
@@ -187,7 +207,7 @@ async function main() {
 		}
 
 		// Get JWT
-		const jwt = await prompt('Enter your JWT token: ');
+		const jwt = await prompt('Enter your JWT token of an admin: ');
 		if (!jwt) {
 			console.error('Error: JWT token is required.');
 			process.exit(1);
@@ -221,22 +241,7 @@ async function main() {
 		console.log(`Creating ${userCount} users...`);
 		console.log('-'.repeat(70));
 
-		const createdUsers = [];
-		const errors = [];
-
-		for (let i = 0; i < userCount; i++) {
-			try {
-				const user = await createUser(v1Api, userInfo.schoolId, teacherRoleId, i);
-				createdUsers.push(user);
-				console.log(`[${i + 1}/${userCount}] Created user: ${user.email} (ID: ${user.userId})`);
-			} catch (error) {
-				errors.push({ index: i, error: error.message });
-				console.error(`[${i + 1}/${userCount}] Failed to create user: ${error.message}`);
-			}
-		}
-
-		console.log('\n' + '-'.repeat(70));
-		console.log(`Successfully created ${createdUsers.length} out of ${userCount} users.`);
+		const { createdUsers, errors } = await createUsers(userCount, v1Api, userInfo, teacherRoleId);
 
 		// Add users to room if room ID was provided
 		if (roomId && createdUsers.length > 0) {
@@ -261,15 +266,6 @@ async function main() {
 			console.log(`Room ID:                ${roomId}`);
 		}
 		console.log('');
-
-		if (createdUsers.length > 0) {
-			console.log('Created users:');
-			createdUsers.forEach((user, index) => {
-				console.log(`  ${index + 1}. ${user.firstName} ${user.lastName}`);
-				console.log(`     Email:  ${user.email}`);
-				console.log(`     UserId: ${user.userId}`);
-			});
-		}
 
 		if (errors.length > 0) {
 			console.log('\nErrors:');
