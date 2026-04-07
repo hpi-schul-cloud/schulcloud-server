@@ -1,6 +1,6 @@
 import { IdTokenExtractionFailureLoggableException } from '@modules/oauth/loggable';
 import { RoleName } from '@modules/role';
-import { Injectable, NotImplementedException } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { validate } from 'class-validator';
 import jwt, { JwtPayload } from 'jsonwebtoken';
@@ -12,13 +12,15 @@ import {
 	OauthDataStrategyInputDto,
 	ProvisioningDto,
 } from '../../dto';
+import { BadDataLoggableException } from '../../loggable';
+import { ErwinProvisioningService } from '../../service/erwin-provisioning.service';
 import { ProvisioningStrategy } from '../base.strategy';
-import { ErwinJwtPayload } from './erwin.jwt.payload';
 import { ErwinRole, MappedSvsRolle, PayloadRolle } from './enums/rolle.enum';
+import { ErwinJwtPayload } from './erwin.jwt.payload';
 
 @Injectable()
 export class ErwinProvisioningStrategy extends ProvisioningStrategy {
-	constructor() {
+	constructor(private readonly erwinProvisioningService: ErwinProvisioningService) {
 		super();
 	}
 
@@ -38,9 +40,20 @@ export class ErwinProvisioningStrategy extends ProvisioningStrategy {
 		});
 	}
 
-	public override apply(): Promise<ProvisioningDto> {
-		// TODO: EW-1404 placeholder out of scope this ticket
-		throw new NotImplementedException();
+	public override async apply(data: OauthDataDto): Promise<ProvisioningDto> {
+		if (!data.externalSchool) {
+			throw new BadDataLoggableException('External school is missing', {
+				externalId: data.externalUser.externalId,
+			});
+		}
+
+		await this.erwinProvisioningService.provisionSchool(data.system, data.externalSchool);
+
+		// TODO: User Provisionierung
+
+		return new ProvisioningDto({
+			externalUserId: data.externalUser.externalId,
+		});
 	}
 
 	private async parseAndValidateToken(input: OauthDataStrategyInputDto): Promise<ErwinJwtPayload> {
@@ -82,6 +95,7 @@ export class ErwinProvisioningStrategy extends ProvisioningStrategy {
 
 		const externalSchoolDto: ExternalSchoolDto = new ExternalSchoolDto({
 			externalId: payload.schule.externalId,
+			erwinId: payload.schule.erwinId,
 			location: payload.schule.zugehoerigZu,
 			name: payload.schule.name,
 		});
