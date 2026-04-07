@@ -169,14 +169,17 @@ export class RoomMembershipService {
 
 	public async getRoomAuthorizable(roomId: EntityId): Promise<RoomAuthorizable> {
 		const roomMembership = await this.roomMembershipRepo.findByRoomId(roomId);
-		if (roomMembership === null) {
-			const room = await this.roomService.getSingleRoom(roomId);
-			return new RoomAuthorizable(roomId, [], room.schoolId);
+		if (roomMembership) {
+			const group = await this.groupService.findById(roomMembership.userGroupId);
+			const roomAuthorizables = await this.getAuthorizables([group], [roomMembership]);
+			const roomAuthorizable = roomAuthorizables.find((ra) => ra.roomId === roomId);
+			if (roomAuthorizable) {
+				return roomAuthorizable;
+			}
 		}
-		const group = await this.groupService.findById(roomMembership.userGroupId);
-		const roomAuthorizables = await this.getAuthorizables([group], [roomMembership]);
 
-		return roomAuthorizables[0];
+		const room = await this.roomService.getSingleRoom(roomId);
+		return new RoomAuthorizable(roomId, [], room.schoolId);
 	}
 
 	public async getRoomInvitationLinkAuthorizable(
