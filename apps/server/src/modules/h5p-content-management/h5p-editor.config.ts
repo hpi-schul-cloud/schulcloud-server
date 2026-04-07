@@ -12,6 +12,16 @@ export class H5PEditorConfig {
 	@StringToNumber()
 	public bodyParserJsonLimitInBytes = 4194304; // 4MB
 
+	@ConfigProperty('H5P_EDITOR__MAX_FILE_SIZE_IN_BYTES')
+	@IsNumber()
+	@StringToNumber()
+	public maxFileSize = 1024 * 1024 * 1024; // 1 GB
+
+	@ConfigProperty('H5P_EDITOR__MAX_TOTAL_SIZE_IN_BYTES')
+	@IsNumber()
+	@StringToNumber()
+	public maxTotalSize = 1024 * 1024 * 1024; // 1 GB
+
 	@ConfigProperty('H5P_EDITOR__INSTALL_LIBRARY_LOCK_MAX_OCCUPATION_TIME')
 	@StringToNumber()
 	@IsNumber()
