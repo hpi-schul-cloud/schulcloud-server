@@ -9,5 +9,5 @@ export class DeletionBatchListResponse extends PaginationResponse<DeletionBatchI
 	}
 
 	@ApiProperty({ type: [DeletionBatchItemResponse] })
-	data: DeletionBatchItemResponse[];
+	public data: DeletionBatchItemResponse[];
 }
