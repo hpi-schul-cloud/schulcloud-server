@@ -1,3 +1,4 @@
+import { LegacyLogger } from '@core/logger';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Group, GroupService, GroupTypes } from '@modules/group';
 import { RoleName, RoleService, RoomRole } from '@modules/role';
@@ -25,6 +26,7 @@ export class RoomMembershipService {
 		private readonly roomService: RoomService,
 		private readonly userService: UserService,
 		private readonly schoolService: SchoolService,
+		private readonly logger: LegacyLogger,
 		@Inject(ROOM_PUBLIC_API_CONFIG_TOKEN) private readonly roomConfig: RoomPublicApiConfig
 	) {}
 
@@ -168,18 +170,25 @@ export class RoomMembershipService {
 	}
 
 	public async getRoomAuthorizable(roomId: EntityId): Promise<RoomAuthorizable> {
+		const room = await this.roomService.getSingleRoom(roomId);
 		const roomMembership = await this.roomMembershipRepo.findByRoomId(roomId);
-		if (roomMembership) {
-			const group = await this.groupService.findById(roomMembership.userGroupId);
-			const roomAuthorizables = await this.getAuthorizables([group], [roomMembership]);
-			const roomAuthorizable = roomAuthorizables.find((ra) => ra.roomId === roomId);
-			if (roomAuthorizable) {
-				return roomAuthorizable;
-			}
+		if (roomMembership === null) {
+			this.logger.warn(`No room membership found for roomId ${roomId}`);
+			return new RoomAuthorizable(roomId, [], room.schoolId);
 		}
 
-		const room = await this.roomService.getSingleRoom(roomId);
-		return new RoomAuthorizable(roomId, [], room.schoolId);
+		const group = await this.groupService.findById(roomMembership.userGroupId);
+		if (group === null) {
+			this.logger.warn(`No group found for roomId ${roomId} groupId ${roomMembership.userGroupId}`);
+			return new RoomAuthorizable(roomId, [], room.schoolId);
+		}
+
+		const roomAuthorizables = await this.getAuthorizables([group], [roomMembership]);
+		if (roomAuthorizables.length !== 1) {
+			this.logger.warn(`Expected exactly 1 room authorizable for roomId ${roomId}, got ${roomAuthorizables.length}`);
+			return new RoomAuthorizable(roomId, [], room.schoolId);
+		}
+		return roomAuthorizables[0];
 	}
 
 	public async getRoomInvitationLinkAuthorizable(
