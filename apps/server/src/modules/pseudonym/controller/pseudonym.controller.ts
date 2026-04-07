@@ -24,11 +24,11 @@ export class PseudonymController {
 	@ApiUnauthorizedResponse()
 	@ApiForbiddenResponse()
 	@ApiOperation({ summary: 'Returns the related user and tool information to a pseudonym' })
-	async getPseudonym(
+	public async getPseudonym(
 		@Param() params: PseudonymParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<PseudonymResponse> {
-		const pseudonym: Pseudonym = await this.pseudonymUc.findPseudonymByPseudonym(currentUser.userId, params.pseudonym);
+		const pseudonym: Pseudonym = await this.pseudonymUc.resolvePseudonymForUser(currentUser.userId, params.pseudonym);
 
 		const pseudonymResponse: PseudonymResponse = PseudonymMapper.mapToResponse(pseudonym);
 

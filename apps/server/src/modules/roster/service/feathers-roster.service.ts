@@ -76,7 +76,7 @@ export class FeathersRosterService {
 	) {}
 
 	public async getUsersMetadata(pseudonym: string): Promise<UserMetadata> {
-		const loadedPseudonym = await this.findPseudonymByPseudonym(pseudonym);
+		const loadedPseudonym = await this.getByPseudonym(pseudonym);
 		const user = await this.userService.findById(loadedPseudonym.userId);
 
 		const userMetadata: UserMetadata = {
@@ -91,7 +91,7 @@ export class FeathersRosterService {
 	}
 
 	public async getUserGroups(pseudonym: string, oauth2ClientId: string): Promise<UserGroups> {
-		const pseudonymContext = await this.findPseudonymByPseudonym(pseudonym);
+		const pseudonymContext = await this.getByPseudonym(pseudonym);
 		const user = await this.userService.findById(pseudonymContext.userId);
 
 		const externalTool = await this.validateAndGetExternalTool(oauth2ClientId);
@@ -317,8 +317,8 @@ export class FeathersRosterService {
 		return roleName;
 	}
 
-	private async findPseudonymByPseudonym(pseudonym: string): Promise<Pseudonym> {
-		const loadedPseudonym = await this.pseudonymService.findPseudonymByPseudonym(pseudonym);
+	private async getByPseudonym(pseudonym: string): Promise<Pseudonym> {
+		const loadedPseudonym = await this.pseudonymService.findOneByPseudonym(pseudonym);
 
 		if (!loadedPseudonym) {
 			throw new NotFoundLoggableException(Pseudonym.name, { pseudonym });
