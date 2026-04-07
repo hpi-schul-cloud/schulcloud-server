@@ -1,28 +1,16 @@
 import { CurrentUserBuilder, ICurrentUser } from '@infra/auth-guard';
-import { Account } from '@modules/account/domain/do/account';
+import type { Account } from '@modules/account';
 import { UserDo } from '@modules/user';
 import { ValidationError } from '@shared/common/error';
-import { RoleReference } from '@shared/domain/domainobject';
 
 export class CurrentUserMapper {
-	private static extractRoleIds(user: { roles?: { id?: string }[] | { getItems?: () => { id: string }[] } }): string[] {
-		let roles: string[] = [];
-
-		if (Array.isArray(user.roles)) {
-			roles = user.roles
-				.map((role) => (typeof role === 'object' && role && 'id' in role ? role.id : undefined))
-				.filter(Boolean) as string[];
-		} else if (
-			user.roles &&
-			typeof user.roles === 'object' &&
-			'getItems' in user.roles &&
-			typeof (user.roles as { getItems: unknown }).getItems === 'function'
-		) {
-			roles = (user.roles as { getItems: () => { id: string }[] }).getItems().map((role) => role.id);
-		} else {
-			return roles;
-		}
-		return roles;
+	private static extractRoleIds(roles?: { id?: string }[]): string[] {
+		if (!roles) return [];
+		return roles
+			.filter(
+				(role): role is { id: string } => typeof role === 'object' && role !== null && typeof role.id === 'string'
+			)
+			.map((role) => role.id);
 	}
 
 	private static handleExternalUser(
@@ -77,12 +65,18 @@ export class CurrentUserMapper {
 			throw new ValidationError('user has no school ID');
 		}
 
-		const roles = this.extractRoleIds(user);
+		let rolesArray: { id?: string }[] | undefined;
+		if (user.roles && 'getItems' in user.roles && typeof user.roles.getItems === 'function') {
+			rolesArray = user.roles.getItems();
+		} else {
+			rolesArray = user.roles as { id?: string }[] | undefined;
+		}
+
 		const currentUser = new CurrentUserBuilder({
 			accountId,
 			userId: user.id,
 			schoolId,
-			roles,
+			roles: this.extractRoleIds(rolesArray),
 		})
 			.asExternalUser(isExternalUser)
 			.withExternalSystem(systemId)
@@ -100,12 +94,11 @@ export class CurrentUserMapper {
 			throw new ValidationError('user has no ID');
 		}
 
-		const roles = user.roles.map((roleRef: RoleReference) => roleRef.id);
 		const currentUserBuilder = new CurrentUserBuilder({
 			accountId,
 			userId: user.id,
 			schoolId: user.schoolId,
-			roles,
+			roles: this.extractRoleIds(user.roles),
 		}).withExternalSystem(systemId);
 
 		if (externalIdToken) {
@@ -119,13 +112,7 @@ export class CurrentUserMapper {
 
 	public static mapToErwinCurrentUser(
 		account: Account,
-		user: {
-			id?: string;
-			schoolId?: string;
-			school?: { id?: string };
-			roles?: { id?: string }[] | { getItems?: () => { id: string }[] };
-			externalId?: string;
-		},
+		user: UserDo,
 		systemId?: string,
 		isExternalUser?: boolean
 	): ICurrentUser {
@@ -133,12 +120,10 @@ export class CurrentUserMapper {
 			throw new ValidationError('user has no ID');
 		}
 
-		const schoolId = user.schoolId || user.school?.id;
-		if (!schoolId) {
+		if (!user.schoolId) {
 			throw new ValidationError('user has no school ID');
 		}
 
-		const roles = this.extractRoleIds(user);
 		const accountId = account.id;
 
 		const external = isExternalUser ?? false;
@@ -148,14 +133,21 @@ export class CurrentUserMapper {
 			return new CurrentUserBuilder({
 				accountId,
 				userId: user.id,
-				schoolId,
-				roles,
+				schoolId: user.schoolId,
+				roles: this.extractRoleIds(user.roles),
 			})
 				.asExternalUser(external)
 				.withExternalSystem(systemId)
 				.build();
 		} else {
-			return this.handleExternalUser(accountId, user.id, schoolId, roles, user.externalId, systemId);
+			return this.handleExternalUser(
+				accountId,
+				user.id,
+				user.schoolId,
+				this.extractRoleIds(user.roles),
+				user.externalId,
+				systemId
+			);
 		}
 	}
 }

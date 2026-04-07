@@ -2,6 +2,7 @@ import { RoleName } from '@modules/role';
 import { roleFactory } from '@modules/role/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { User } from '@modules/user/repo';
+import { UserDo } from '@modules/user';
 import { userDoFactory, userFactory } from '@modules/user/testing';
 import { ValidationError } from '@shared/common/error';
 import { Permission } from '@shared/domain/interface';
@@ -19,32 +20,23 @@ describe('CurrentUserMapper', () => {
 	describe('extractRoleIds', () => {
 		it('should return empty array if roles is undefined', () => {
 			const roles: string[] = (
-				CurrentUserMapper as unknown as { extractRoleIds: (input: Record<string, unknown>) => string[] }
-			).extractRoleIds({});
+				CurrentUserMapper as unknown as { extractRoleIds: (roles?: { id?: string }[]) => string[] }
+			).extractRoleIds(undefined);
 			expect(roles).toEqual([]);
 		});
 
 		it('should ignore roles that are not objects or missing id', () => {
 			const roles: string[] = (
-				CurrentUserMapper as unknown as { extractRoleIds: (input: Record<string, unknown>) => string[] }
-			).extractRoleIds({ roles: [null, undefined, 123, {}, { foo: 'bar' }] });
+				CurrentUserMapper as unknown as { extractRoleIds: (roles?: { id?: string }[]) => string[] }
+			).extractRoleIds([null, undefined, 123, {}, { foo: 'bar' }] as unknown as { id?: string }[]);
 			expect(roles).toEqual([]);
 		});
 
 		it('should handle roles as array of objects with id', () => {
 			const roles: string[] = (
-				CurrentUserMapper as unknown as { extractRoleIds: (input: Record<string, unknown>) => string[] }
-			).extractRoleIds({ roles: [{ id: 'r1' }, { id: 'r2' }] });
+				CurrentUserMapper as unknown as { extractRoleIds: (roles?: { id?: string }[]) => string[] }
+			).extractRoleIds([{ id: 'r1' }, { id: 'r2' }]);
 			expect(roles).toEqual(['r1', 'r2']);
-		});
-
-		it('should handle roles as object with getItems function', () => {
-			const roles: string[] = (
-				CurrentUserMapper as unknown as { extractRoleIds: (input: Record<string, unknown>) => string[] }
-			).extractRoleIds({
-				roles: { getItems: () => [{ id: 'r3' }, { id: 'r4' }] },
-			});
-			expect(roles).toEqual(['r3', 'r4']);
 		});
 	});
 
@@ -188,6 +180,43 @@ describe('CurrentUserMapper', () => {
 
 					expect(() => CurrentUserMapper.userToICurrentUser(accountId, user, false)).toThrow(ValidationError);
 					expect(() => CurrentUserMapper.userToICurrentUser(accountId, user, false)).toThrow('user has no school ID');
+				});
+			});
+
+			describe('when roles is a plain array (not a Collection)', () => {
+				const setup = () => {
+					const roleId1 = new ObjectId().toHexString();
+					const roleId2 = new ObjectId().toHexString();
+					const schoolId = new ObjectId().toHexString();
+					const userId = new ObjectId().toHexString();
+					const user = {
+						id: userId,
+						school: { id: schoolId },
+						roles: [{ id: roleId1 }, { id: roleId2 }],
+					};
+					const accountId = new ObjectId().toHexString();
+
+					return {
+						user,
+						accountId,
+						roleId1,
+						roleId2,
+						schoolId,
+					};
+				};
+
+				it('should map roles from plain array', () => {
+					const { accountId, user, roleId1, roleId2, schoolId } = setup();
+
+					const currentUser = CurrentUserMapper.userToICurrentUser(accountId, user, false);
+
+					expect(currentUser).toMatchObject({
+						accountId,
+						systemId: undefined,
+						roles: [roleId1, roleId2],
+						schoolId,
+						isExternalUser: false,
+					});
 				});
 			});
 		});
@@ -366,8 +395,8 @@ describe('CurrentUserMapper', () => {
 						name: RoleName.TEACHER,
 						permissions: [Permission.STUDENT_EDIT],
 					});
-					const user = userFactory.buildWithId({
-						roles: [teacherRole],
+					const user = userDoFactory.buildWithId({
+						roles: [{ id: teacherRole.id, name: teacherRole.name }],
 					});
 
 					const systemId = new ObjectId().toHexString();
@@ -395,7 +424,7 @@ describe('CurrentUserMapper', () => {
 						accountId,
 						systemId: undefined,
 						roles: [teacherRole.id],
-						schoolId: user.school.id,
+						schoolId: user.schoolId,
 						isExternalUser: false,
 					});
 				});
@@ -403,7 +432,7 @@ describe('CurrentUserMapper', () => {
 
 			describe('when user has no roles', () => {
 				const setup = () => {
-					const user = userFactory.buildWithId();
+					const user = userDoFactory.buildWithId();
 					const systemId = new ObjectId().toHexString();
 
 					const account = {
@@ -428,7 +457,7 @@ describe('CurrentUserMapper', () => {
 						accountId,
 						systemId: undefined,
 						roles: [],
-						schoolId: user.school.id,
+						schoolId: user.schoolId,
 						isExternalUser: false,
 					});
 				});
@@ -436,9 +465,7 @@ describe('CurrentUserMapper', () => {
 
 			describe('when systemId is provided', () => {
 				const setup = () => {
-					const user = userFactory.buildWithId({
-						school: schoolEntityFactory.buildWithId(),
-					});
+					const user = userDoFactory.buildWithId();
 					const systemId = 'mockSystemId';
 					const account = {
 						id: new ObjectId().toHexString(),
@@ -463,7 +490,7 @@ describe('CurrentUserMapper', () => {
 						accountId,
 						systemId,
 						roles: [],
-						schoolId: user.school.id,
+						schoolId: user.schoolId,
 						isExternalUser: false,
 					});
 				});
@@ -471,11 +498,10 @@ describe('CurrentUserMapper', () => {
 
 			describe('when user has schoolId property', () => {
 				const setup = () => {
-					const user = {
-						id: 'mockUserId',
+					const user = userDoFactory.buildWithId({
 						schoolId: 'mockSchoolId',
 						roles: [],
-					};
+					});
 					const systemId = new ObjectId().toHexString();
 					const account = {
 						id: new ObjectId().toHexString(),
@@ -500,7 +526,7 @@ describe('CurrentUserMapper', () => {
 						systemId: undefined,
 						roles: [],
 						schoolId: 'mockSchoolId',
-						userId: 'mockUserId',
+						userId: user.id,
 						isExternalUser: false,
 					});
 				});
@@ -508,13 +534,13 @@ describe('CurrentUserMapper', () => {
 
 			describe('when roles is a collection with getItems', () => {
 				const setup = () => {
-					const user = {
-						id: 'mockUserId',
-						school: { id: 'mockSchoolId' },
-						roles: {
-							getItems: () => [{ id: 'mockRoleId1' }, { id: 'mockRoleId2' }],
-						},
-					};
+					const user = userDoFactory.buildWithId({
+						schoolId: 'mockSchoolId',
+						roles: [
+							{ id: 'mockRoleId1', name: RoleName.TEACHER },
+							{ id: 'mockRoleId2', name: RoleName.STUDENT },
+						],
+					});
 					const systemId = new ObjectId().toHexString();
 					const account = {
 						id: new ObjectId().toHexString(),
@@ -528,7 +554,7 @@ describe('CurrentUserMapper', () => {
 					};
 				};
 
-				it('should map roles using getItems()', () => {
+				it('should map roles correctly', () => {
 					const { account, user } = setup();
 
 					const currentUser = CurrentUserMapper.mapToErwinCurrentUser(account, user, undefined, false);
@@ -539,7 +565,7 @@ describe('CurrentUserMapper', () => {
 						systemId: undefined,
 						roles: ['mockRoleId1', 'mockRoleId2'],
 						schoolId: 'mockSchoolId',
-						userId: 'mockUserId',
+						userId: user.id,
 						isExternalUser: false,
 					});
 				});
@@ -547,7 +573,7 @@ describe('CurrentUserMapper', () => {
 
 			describe('when isExternalUser is not provided', () => {
 				const setup = () => {
-					const user = userFactory.buildWithId();
+					const user = userDoFactory.buildWithId();
 					const systemId = new ObjectId().toHexString();
 					const account = {
 						id: new ObjectId().toHexString(),
@@ -572,11 +598,11 @@ describe('CurrentUserMapper', () => {
 
 			it('should use SVS systemId if present', () => {
 				const systemId = 'svsSystemId';
-				const user = {
+				const user = userDoFactory.build({
 					id: 'userId',
-					school: { id: 'schoolId' },
+					schoolId: 'schoolId',
 					roles: [],
-				};
+				});
 
 				const account = {
 					id: new ObjectId().toHexString(),
@@ -598,12 +624,12 @@ describe('CurrentUserMapper', () => {
 			});
 
 			it('should use Erwin systemId and set isExternalUser=true if user.externalId exists and no SVS systemId', () => {
-				const user = {
+				const user = userDoFactory.build({
 					id: 'userId',
-					school: { id: 'schoolId' },
+					schoolId: 'schoolId',
 					roles: [],
 					externalId: 'erwinExternalId',
-				};
+				});
 				const systemId = 'erwinSystemId';
 				const account = {
 					id: new ObjectId().toHexString(),
@@ -624,11 +650,11 @@ describe('CurrentUserMapper', () => {
 			});
 
 			it('should set systemId undefined and isExternalUser=false if no systemId and no externalId', () => {
-				const user = {
+				const user = userDoFactory.build({
 					id: 'userId',
-					school: { id: 'schoolId' },
+					schoolId: 'schoolId',
 					roles: [],
-				};
+				});
 				const account = {
 					id: new ObjectId().toHexString(),
 					userId: new ObjectId().toHexString(),
@@ -648,12 +674,12 @@ describe('CurrentUserMapper', () => {
 			});
 
 			it('should not incorrectly match SVS branch when both systemId and account.systemId are undefined', () => {
-				const user = {
+				const user = userDoFactory.build({
 					id: 'userId',
-					school: { id: 'schoolId' },
+					schoolId: 'schoolId',
 					roles: [],
 					externalId: 'erwinExternalId',
-				};
+				});
 				const account = {
 					id: new ObjectId().toHexString(),
 					userId: new ObjectId().toHexString(),
@@ -681,7 +707,7 @@ describe('CurrentUserMapper', () => {
 					const user = {
 						schoolId: 'schoolId',
 						roles: [],
-					};
+					} as unknown as UserDo;
 					const account = {
 						id: new ObjectId().toHexString(),
 						userId: new ObjectId().toHexString(),
@@ -704,7 +730,7 @@ describe('CurrentUserMapper', () => {
 					const user = {
 						id: 'userId',
 						roles: [],
-					};
+					} as unknown as UserDo;
 					const account = {
 						id: new ObjectId().toHexString(),
 						userId: new ObjectId().toHexString(),
