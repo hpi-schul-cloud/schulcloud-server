@@ -2,18 +2,18 @@ import { RuntimeConfigDefault } from '@infra/runtime-config';
 
 const RuntimeConfigDefaults: RuntimeConfigDefault[] = [
 	{
-		key: 'DASHBOARD_ANNOUNCEMENT_TEXT_ENABLED',
+		key: 'DASHBOARD_ANNOUNCEMENT_ENABLED',
 		type: 'boolean',
 		value: true,
 		description:
 			'Configures whether the dashboard announcement should be displayed or not. Useful for separating preparation and activation/deactivation of the announcement.',
 	},
 	{
-		key: 'DASHBOARD_ANNOUNCEMENT_TEXT_FOR_ROLES',
+		key: 'DASHBOARD_ANNOUNCEMENT_FOR_ROLES',
 		type: 'string',
 		value: 'Standard Ankündigungstext',
 		description:
-			'Announcement text for specific roles (use comma-separated list of roles: "admin", "teacher", "student" - all = "admin,teacher,student").',
+			'Announcement text for specific roles (use comma-separated list of roles: "admin", "teacher", "student", "external-person" - all = "admin,teacher,student,external-person").',
 	},
 	{
 		key: 'DASHBOARD_ANNOUNCEMENT_TEXT_DE',
