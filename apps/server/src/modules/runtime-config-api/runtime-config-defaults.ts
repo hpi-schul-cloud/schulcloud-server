@@ -11,7 +11,7 @@ const RuntimeConfigDefaults: RuntimeConfigDefault[] = [
 	{
 		key: 'DASHBOARD_ANNOUNCEMENT_FOR_ROLES',
 		type: 'string',
-		value: 'Standard Ankündigungstext',
+		value: 'admin,teacher,student,external-person',
 		description:
 			'Announcement text for specific roles (use comma-separated list of roles: "admin", "teacher", "student", "external-person" - all = "admin,teacher,student,external-person").',
 	},
