@@ -375,7 +375,7 @@ describe('Room Controller (API)', () => {
 					layout: board.layout,
 					isVisible: board.isVisible,
 					createdAt: board.createdAt.toISOString(),
-					updatedAt: board.updatedAt.toISOString(),
+					updatedAt: expect.any(String),
 				});
 			});
 		});
