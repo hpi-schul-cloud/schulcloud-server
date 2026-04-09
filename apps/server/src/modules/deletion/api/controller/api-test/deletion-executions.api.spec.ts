@@ -40,6 +40,7 @@ import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { deletionRequestEntityFactory } from '../../../repo/entity/testing';
+import { USER_CONFIG_TOKEN } from '@modules/user/user.config';
 
 const baseRouteName = '/deletionExecutions';
 
@@ -60,6 +61,8 @@ describe(`deletionExecution (api)`, () => {
 			.useValue(createMock<FilesStorageProducer>())
 			.overrideProvider(CalendarService)
 			.useValue(createMock<CalendarService>())
+			.overrideProvider(USER_CONFIG_TOKEN)
+			.useValue({ calendarServiceEnabled: true })
 			.compile();
 
 		app = module.createNestApplication();
