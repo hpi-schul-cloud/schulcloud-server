@@ -6,38 +6,38 @@ const RuntimeConfigDefaults: RuntimeConfigDefault[] = [
 		type: 'boolean',
 		value: true,
 		description:
-			'Configures whether the dashboard announcement should be displayed or not. Useful for separating preparation and activation/deactivation of the announcement.',
+			'Aktiviert ("AN") oder deaktiviert ("AUS") das Banner auf dem Dashboard für die unten definierten Rollen',
 	},
 	{
 		key: 'DASHBOARD_ANNOUNCEMENT_FOR_ROLES',
 		type: 'string',
 		value: 'admin,teacher,student,external-person',
 		description:
-			'Announcement text for specific roles (use comma-separated list of roles: "admin", "teacher", "student", "external-person" - all = "admin,teacher,student,external-person").',
+			'Zeigt das Banner den hier eingetragenen Rollen an (Nutze eine mit Komma getrennte Liste, um mehrere Rollen einzutragen: "admin", "teacher", "student", "external-person" - all = "admin,teacher,student,external-person").',
 	},
 	{
 		key: 'DASHBOARD_ANNOUNCEMENT_TEXT_DE',
 		type: 'string',
 		value: 'Standard Ankündigungstext',
-		description: 'Announcement text in German.',
+		description: 'Bannertext Deutsche Version.',
 	},
 	{
 		key: 'DASHBOARD_ANNOUNCEMENT_TEXT_EN',
 		type: 'string',
 		value: 'Standard announcement text',
-		description: 'Announcement text in English.',
+		description: 'Bannertext Englische Version.',
 	},
 	{
 		key: 'DASHBOARD_ANNOUNCEMENT_TEXT_ES',
 		type: 'string',
 		value: 'Texto de anuncio predeterminado',
-		description: 'Announcement text in Spanish.',
+		description: 'Bannertext Spanische Version.',
 	},
 	{
 		key: 'DASHBOARD_ANNOUNCEMENT_TEXT_UK',
 		type: 'string',
 		value: 'Стандартний текст оголошення',
-		description: 'Announcement text in Ukrainian.',
+		description: 'Bannertext Ukrainische Version.',
 	},
 ];
 
