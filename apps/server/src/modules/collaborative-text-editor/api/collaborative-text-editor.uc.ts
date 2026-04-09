@@ -20,7 +20,7 @@ export class CollaborativeTextEditorUc {
 		private readonly boardNodeAuthorizableService: BoardNodeAuthorizableService
 	) {}
 
-	async getOrCreateCollaborativeTextEditorForParent(
+	public async getOrCreateCollaborativeTextEditorForParent(
 		userId: string,
 		params: GetCollaborativeTextEditorForParentParams
 	): Promise<CollaborativeTextEditor> {
@@ -37,19 +37,22 @@ export class CollaborativeTextEditorUc {
 		return textEditor;
 	}
 
-	async deleteSessionsByUser(userId: EntityId): Promise<void> {
+	public async deleteSessionsByUser(userId: EntityId): Promise<void> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 
 		await this.collaborativeTextEditorService.deleteSessionsByUser(user.id);
 	}
 
-	private async authorizeByParentType(params: GetCollaborativeTextEditorForParentParams, user: User) {
+	private async authorizeByParentType(params: GetCollaborativeTextEditorForParentParams, user: User): Promise<void> {
 		if (params.parentType === CollaborativeTextEditorParentType.BOARD_CONTENT_ELEMENT) {
 			await this.authorizeForContentElement(params, user);
 		}
 	}
 
-	private async authorizeForContentElement(params: GetCollaborativeTextEditorForParentParams, user: User) {
+	private async authorizeForContentElement(
+		params: GetCollaborativeTextEditorForParentParams,
+		user: User
+	): Promise<void> {
 		const contentElement = await this.boardNodeService.findContentElementById(params.parentId);
 		const contentElementDoAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(contentElement);
 
