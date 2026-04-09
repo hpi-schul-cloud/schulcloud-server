@@ -1,16 +1,15 @@
 import { CurrentUserBuilder, ICurrentUser } from '@infra/auth-guard';
 import type { Account } from '@modules/account';
+import { Role } from '@modules/role';
 import { UserDo } from '@modules/user';
+import { User } from '@modules/user';
 import { ValidationError } from '@shared/common/error';
+import { RoleReference } from '@shared/domain/domainobject';
 
 export class CurrentUserMapper {
-	private static extractRoleIds(roles?: { id?: string }[]): string[] {
+	private static extractRoleIds(roles?: (Role | RoleReference)[]): string[] {
 		if (!roles) return [];
-		return roles
-			.filter(
-				(role): role is { id: string } => typeof role === 'object' && role !== null && typeof role.id === 'string'
-			)
-			.map((role) => role.id);
+		return roles.map((role) => role.id);
 	}
 
 	private static handleExternalUser(
@@ -48,34 +47,16 @@ export class CurrentUserMapper {
 
 	public static userToICurrentUser(
 		accountId: string,
-		user: {
-			id?: string;
-			school?: { id?: string };
-			roles?: { id?: string }[] | { getItems?: () => { id: string }[] };
-		},
+		user: User,
 		isExternalUser: boolean,
 		systemId?: string
 	): ICurrentUser {
-		if (!user.id) {
-			throw new ValidationError('user has no ID');
-		}
-
-		const schoolId = user.school?.id;
-		if (!schoolId) {
-			throw new ValidationError('user has no school ID');
-		}
-
-		let rolesArray: { id?: string }[] | undefined;
-		if (user.roles && 'getItems' in user.roles && typeof user.roles.getItems === 'function') {
-			rolesArray = user.roles.getItems();
-		} else {
-			rolesArray = user.roles as { id?: string }[] | undefined;
-		}
+		const rolesArray = user.roles.getItems();
 
 		const currentUser = new CurrentUserBuilder({
 			accountId,
 			userId: user.id,
-			schoolId,
+			schoolId: user.school.id,
 			roles: this.extractRoleIds(rolesArray),
 		})
 			.asExternalUser(isExternalUser)
