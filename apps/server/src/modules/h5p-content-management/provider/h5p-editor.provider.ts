@@ -21,7 +21,10 @@ export const H5PEditorProvider = {
 		const cache = new cacheImplementations.CachedKeyValueStorage('kvcache', cacheAdapter);
 		const cachedLibraryStorage = new cacheImplementations.CachedLibraryStorage(libraryStorage, cacheAdapter);
 
-		const { availableLanguages } = h5pEditorConfig;
+		const { availableLanguages, maxFileSize, maxTotalSize } = h5pEditorConfig;
+
+		h5pConfig.maxFileSize = maxFileSize;
+		h5pConfig.maxTotalSize = maxTotalSize;
 
 		const permissionSystem = new EditorPermissionSystem();
 		const h5pOptions: IH5PEditorOptions = {

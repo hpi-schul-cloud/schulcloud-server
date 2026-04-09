@@ -83,7 +83,7 @@ export class TemporaryFileStorage implements ITemporaryFileStorage {
 		const filePath = this.getFilePath(user.id, filename);
 
 		let range: string | undefined;
-		if (rangeStart && rangeEnd) {
+		if (rangeStart !== undefined && rangeEnd !== undefined) {
 			// Closed range
 			range = `bytes=${rangeStart}-${rangeEnd}`;
 		}
