@@ -24,6 +24,10 @@ export class CardUc {
 
 	public async findCards(userId: EntityId, cardIds: EntityId[]): Promise<Card[]> {
 		const cards = await this.boardNodeService.findByClassAndIds(Card, cardIds);
+		if (cards.length === 0) {
+			return [];
+		}
+
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const boardAuthorizables = await this.boardNodeAuthorizableService.getBoardAuthorizables(cards);
 
