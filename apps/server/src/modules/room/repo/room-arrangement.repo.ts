@@ -1,8 +1,8 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
+import { EntityId } from '@shared/domain/types';
 import { RoomArrangementItem } from '../domain';
 import { RoomArrangementEntity } from './entity';
-import { EntityId } from '@shared/domain/types';
 
 @Injectable()
 export class RoomArrangementRepo {
@@ -25,8 +25,10 @@ export class RoomArrangementRepo {
 	}
 
 	public async updateArrangement(userId: EntityId, items: RoomArrangementItem[]): Promise<void> {
+		this.em.clear();
 		const roomArrangement = await this.em.findOneOrFail(RoomArrangementEntity, { userId });
 		roomArrangement.items = items;
+		this.em.persist(roomArrangement);
 		await this.em.flush();
 	}
 
