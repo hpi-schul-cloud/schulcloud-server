@@ -1,4 +1,9 @@
-import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import {
+	AUTHORIZATION_CONFIG_TOKEN,
+	AuthorizationConfig,
+	AuthorizationContextBuilder,
+	AuthorizationService,
+} from '@modules/authorization';
 import { ClassService } from '@modules/class';
 import { Class } from '@modules/class/domain';
 import { ClassScope } from '@modules/class/repo';
@@ -30,10 +35,12 @@ export class ClassGroupUc {
 		private readonly systemService: SystemService,
 		private readonly schoolService: SchoolService,
 		private readonly authorizationService: AuthorizationService,
+		@Inject(AUTHORIZATION_CONFIG_TOKEN)
+		private readonly authorizationConfig: AuthorizationConfig,
 		private readonly schoolYearService: SchoolYearService,
 		private readonly courseService: CourseDoService,
 		@Inject(GROUP_CONFIG_TOKEN)
-		private readonly config: GroupConfig,
+		private readonly groupConfig: GroupConfig,
 		private readonly userService: UserService
 	) {}
 
@@ -54,7 +61,7 @@ export class ClassGroupUc {
 			AuthorizationContextBuilder.read([Permission.CLASS_VIEW, Permission.GROUP_VIEW])
 		);
 
-		const groupVisibilityPermission: GroupVisibilityPermission = this.getGroupVisibilityPermission(user);
+		const groupVisibilityPermission: GroupVisibilityPermission = await this.getGroupVisibilityPermission(user);
 		const page: Page<InternalClassDto<Group | Class>> = await this.findCombinedClassListPage(
 			user,
 			school,
@@ -75,7 +82,7 @@ export class ClassGroupUc {
 			async (dto: InternalClassDto<Group | Class>): Promise<ClassInfoDto> => {
 				let synchronizedCourses: Course[] | undefined;
 
-				if (this.config.featureSchulconnexCourseSyncEnabled && dto.isGroup()) {
+				if (this.groupConfig.featureSchulconnexCourseSyncEnabled && dto.isGroup()) {
 					synchronizedCourses = await this.courseService.findBySyncedGroup(dto.original);
 				}
 
@@ -93,8 +100,37 @@ export class ClassGroupUc {
 		return finalPage;
 	}
 
-	private getGroupVisibilityPermission(user: User): GroupVisibilityPermission {
-		const canSeeAllSchoolGroups = this.authorizationService.hasAllPermissions(user, [Permission.STUDENT_LIST]);
+	private async canTeachersSeeAllStudents(schoolId: EntityId): Promise<boolean> {
+		const school: School = await this.schoolService.getSchoolById(schoolId);
+		const schoolPermissions = school.getPermissions();
+
+		const visibilityIsConfigurable = this.authorizationConfig.teacherStudentVisibilityIsConfigurable;
+		const visibilityEnabledByDefault = this.authorizationConfig.teacherStudentVisibilityIsEnabledByDefault;
+
+		const [schoolHasStudentListConfigured, schoolHasStudentListPermission] = [
+			typeof schoolPermissions?.teacher?.STUDENT_LIST === 'boolean',
+			schoolPermissions?.teacher?.STUDENT_LIST === true,
+		];
+
+		const canSeeAllStudents =
+			visibilityIsConfigurable && schoolHasStudentListConfigured
+				? schoolHasStudentListPermission
+				: visibilityEnabledByDefault;
+
+		return canSeeAllStudents;
+	}
+
+	private async requiredPermissionsToSeeAllStudents(schoolId: EntityId): Promise<Permission[]> {
+		if (await this.canTeachersSeeAllStudents(schoolId)) {
+			return [Permission.STUDENT_LIST];
+		} else {
+			return [Permission.GROUP_FULL_ADMIN];
+		}
+	}
+
+	private async getGroupVisibilityPermission(user: User): Promise<GroupVisibilityPermission> {
+		const requiredPermissions: Permission[] = await this.requiredPermissionsToSeeAllStudents(user.school.id);
+		const canSeeAllSchoolGroups = this.authorizationService.hasAllPermissions(user, requiredPermissions);
 
 		if (canSeeAllSchoolGroups) {
 			return GroupVisibilityPermission.ALL_SCHOOL_GROUPS;
