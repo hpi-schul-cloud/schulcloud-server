@@ -1,18 +1,16 @@
-import { Injectable } from '@nestjs/common';
-import { RoomService } from '../domain';
-import { RoomBoardService, RoomPermissionService } from './service';
-import { EntityId } from '@shared/domain/types';
 import { Action, AuthorizationService } from '@modules/authorization';
 import { BoardNodeAuthorizableService, ColumnBoardService, type ColumnBoard } from '@modules/board';
-import { throwForbiddenIfFalse } from '@shared/common/utils/wrap-with-exception';
-import { RoomRule } from '@modules/room-membership/authorization/room.rule';
-import { RoomMembershipService } from '@modules/room-membership';
 import { BoardNodeRule } from '@modules/board/authorisation/board-node.rule';
+import { RoomMembershipService } from '@modules/room-membership';
+import { RoomRule } from '@modules/room-membership/authorization/room.rule';
+import { Injectable } from '@nestjs/common';
+import { throwForbiddenIfFalse } from '@shared/common/utils/wrap-with-exception';
+import { EntityId } from '@shared/domain/types';
+import { RoomBoardService, RoomPermissionService } from './service';
 
 @Injectable()
 export class RoomContentUc {
 	constructor(
-		private readonly roomService: RoomService,
 		private readonly roomRule: RoomRule,
 		private readonly boardNodeRule: BoardNodeRule,
 		private readonly roomPermissionService: RoomPermissionService,
@@ -24,7 +22,6 @@ export class RoomContentUc {
 	) {}
 
 	public async getRoomBoards(userId: EntityId, roomId: EntityId): Promise<ColumnBoard[]> {
-		await this.roomService.getSingleRoom(roomId);
 		await this.roomPermissionService.checkRoomIsLocked(roomId);
 
 		const user = await this.authorizationService.getUserWithPermissions(userId);
@@ -39,7 +36,6 @@ export class RoomContentUc {
 	}
 
 	public async moveBoard(userId: EntityId, roomId: EntityId, boardId: EntityId, toPosition: number): Promise<void> {
-		await this.roomService.getSingleRoom(roomId);
 		await this.roomPermissionService.checkRoomIsLocked(roomId);
 		await this.roomPermissionService.checkRoomAuthorizationByIds(userId, roomId, Action.write);
 
