@@ -20,9 +20,9 @@ import {
 } from '@nestjs/common';
 import { Readable } from 'stream';
 import { H5pFileDto } from '../controller/dto/h5p-file.dto';
+import { H5P_CONTENT_S3_CLIENT_INJECTION_TOKEN } from '../h5p-editor.const';
 import { H5PContent, H5PContentRepo } from '../repo';
 import { H5PCountUsageResult, LumiUserWithContentData } from '../types';
-import { H5P_CONTENT_S3_CLIENT_INJECTION_TOKEN } from '../h5p-editor.const';
 
 @Injectable()
 export class ContentStorage implements IContentStorage {
@@ -156,7 +156,7 @@ export class ContentStorage implements IContentStorage {
 		const filePath = this.getFilePath(contentId, file);
 
 		let range: string | undefined;
-		if (rangeStart && rangeEnd) {
+		if (rangeStart !== undefined && rangeEnd !== undefined) {
 			// Closed range
 			range = `bytes=${rangeStart}-${rangeEnd}`;
 		}

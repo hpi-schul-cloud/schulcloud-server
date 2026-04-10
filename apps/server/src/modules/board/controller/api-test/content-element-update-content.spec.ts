@@ -16,7 +16,6 @@ import {
 	columnEntityFactory,
 	fileElementEntityFactory,
 	richTextElementEntityFactory,
-	submissionContainerElementEntityFactory,
 } from '../../testing';
 
 describe(`content element update content (api)`, () => {
@@ -58,29 +57,9 @@ describe(`content element update content (api)`, () => {
 			const parentCard = cardEntityFactory.withParent(column).build();
 			const richTextElement = richTextElementEntityFactory.withParent(parentCard).build();
 			const fileElement = fileElementEntityFactory.withParent(parentCard).build();
-			const submissionContainerElement = submissionContainerElementEntityFactory.withParent(parentCard).build({
-				dueDate: undefined,
-			});
-
-			const tomorrow = new Date(Date.now() + 86400000);
-			const submissionContainerElementWithDueDate = submissionContainerElementEntityFactory
-				.withParent(parentCard)
-				.build({
-					dueDate: tomorrow,
-				});
 
 			await em
-				.persist([
-					teacherAccount,
-					teacherUser,
-					parentCard,
-					column,
-					columnBoardNode,
-					richTextElement,
-					fileElement,
-					submissionContainerElement,
-					submissionContainerElementWithDueDate,
-				])
+				.persist([teacherAccount, teacherUser, parentCard, column, columnBoardNode, richTextElement, fileElement])
 				.flush();
 			em.clear();
 
@@ -90,8 +69,6 @@ describe(`content element update content (api)`, () => {
 				loggedInClient,
 				richTextElement,
 				fileElement,
-				submissionContainerElement,
-				submissionContainerElementWithDueDate,
 			};
 		};
 
@@ -165,74 +142,13 @@ describe(`content element update content (api)`, () => {
 		});
 
 		it('should return status 200', async () => {
-			const { loggedInClient, submissionContainerElement } = await setup();
-			const response = await loggedInClient.patch(`${submissionContainerElement.id}/content`, {
-				data: {
-					content: {},
-					type: 'submissionContainer',
-				},
+			const { loggedInClient, richTextElement } = await setup();
+			const text = 'test text';
+			const response = await loggedInClient.patch(`${richTextElement.id}/content`, {
+				data: { content: { text, inputFormat: InputFormat.RICH_TEXT_CK5 }, type: ContentElementType.RICH_TEXT },
 			});
 
 			expect(response.statusCode).toEqual(200);
-		});
-
-		it('should not change dueDate when not proviced in submission container element without dueDate', async () => {
-			const { loggedInClient, submissionContainerElement } = await setup();
-
-			await loggedInClient.patch(`${submissionContainerElement.id}/content`, {
-				data: {
-					content: {},
-					type: 'submissionContainer',
-				},
-			});
-			const result = await em.findOneOrFail(BoardNodeEntity, submissionContainerElement.id);
-			expect(result.id).toEqual(submissionContainerElement.id);
-			expect(result.dueDate).toBeUndefined();
-		});
-
-		it('should set dueDate value when provided for submission container element', async () => {
-			const { loggedInClient, submissionContainerElement } = await setup();
-
-			const inThreeDays = new Date(Date.now() + 259200000);
-
-			await loggedInClient.patch(`${submissionContainerElement.id}/content`, {
-				data: {
-					content: { dueDate: inThreeDays },
-					type: 'submissionContainer',
-				},
-			});
-			const result = await em.findOneOrFail(BoardNodeEntity, submissionContainerElement.id);
-
-			expect(result.dueDate).toEqual(inThreeDays);
-		});
-
-		it('should unset dueDate value when dueDate parameter is null for submission container element', async () => {
-			const { loggedInClient, submissionContainerElementWithDueDate } = await setup();
-
-			await loggedInClient.patch(`${submissionContainerElementWithDueDate.id}/content`, {
-				data: {
-					content: {
-						dueDate: null,
-					},
-					type: 'submissionContainer',
-				},
-			});
-			const result = await em.findOneOrFail(BoardNodeEntity, submissionContainerElementWithDueDate.id);
-			expect(result.id).toEqual(submissionContainerElementWithDueDate.id);
-			expect(result.dueDate).toBeUndefined();
-		});
-
-		it('should return status 400 for wrong date format for submission container element', async () => {
-			const { loggedInClient, submissionContainerElement } = await setup();
-
-			const response = await loggedInClient.patch(`${submissionContainerElement.id}/content`, {
-				data: {
-					content: { dueDate: 'hello world' },
-					type: 'submissionContainer',
-				},
-			});
-
-			expect(response.statusCode).toEqual(400);
 		});
 	});
 
@@ -252,14 +168,13 @@ describe(`content element update content (api)`, () => {
 			const column = columnEntityFactory.withParent(columnBoardNode).build();
 			const parentCard = cardEntityFactory.withParent(column).build();
 			const richTextElement = richTextElementEntityFactory.withParent(parentCard).build();
-			const submissionContainerElement = submissionContainerElementEntityFactory.withParent(parentCard).build();
 
-			await em.persist([parentCard, column, columnBoardNode, richTextElement, submissionContainerElement]).flush();
+			await em.persist([parentCard, column, columnBoardNode, richTextElement]).flush();
 			em.clear();
 
 			const loggedInClient = await testApiClient.login(invalidTeacherAccount);
 
-			return { loggedInClient, richTextElement, submissionContainerElement };
+			return { loggedInClient, richTextElement };
 		};
 
 		it('should return status 403 for rich text element', async () => {
@@ -267,19 +182,6 @@ describe(`content element update content (api)`, () => {
 
 			const response = await loggedInClient.patch(`${richTextElement.id}/content`, {
 				data: { content: { text: 'hello world', inputFormat: InputFormat.RICH_TEXT_CK5 }, type: 'richText' },
-			});
-
-			expect(response.statusCode).toEqual(HttpStatus.FORBIDDEN);
-		});
-
-		it('should return status 403 for submission container element', async () => {
-			const { loggedInClient, submissionContainerElement } = await setup();
-
-			const response = await loggedInClient.patch(`${submissionContainerElement.id}/content`, {
-				data: {
-					content: {},
-					type: 'submissionContainer',
-				},
 			});
 
 			expect(response.statusCode).toEqual(HttpStatus.FORBIDDEN);

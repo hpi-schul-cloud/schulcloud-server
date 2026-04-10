@@ -5,10 +5,11 @@ import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
 import { systemEntityFactory } from '@modules/system/testing';
 import { UserService } from '@modules/user';
-import type { User } from '@modules/user/repo';
+import { User } from '@modules/user/repo';
 import { ExecutionContext, HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
+import { cleanupCollections } from '@testing/cleanup-collections';
 import { currentUserFactory } from '@testing/factory/currentuser.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
@@ -37,6 +38,7 @@ const mapToMeResponseObject = (user: User, account: AccountEntity, permissions: 
 				name: role.name,
 			},
 		],
+		preferences: user.getPreferences(),
 		permissions,
 		account: {
 			id: account.id,
@@ -66,6 +68,10 @@ describe('Me Controller (API)', () => {
 				userService = app.get(UserService);
 			});
 
+			beforeEach(async () => {
+				await cleanupCollections(em);
+			});
+
 			afterAll(async () => {
 				await app.close();
 			});
@@ -87,10 +93,8 @@ describe('Me Controller (API)', () => {
 			describe('when valid jwt is passed', () => {
 				describe('when user is a student', () => {
 					const setup = async () => {
-						// The STUDENT_LIST permission on the school is set here as an example. See the unit tests for all variations.
-						const school = schoolEntityFactory.build({ permissions: { student: { STUDENT_LIST: true } } });
+						const school = schoolEntityFactory.build();
 						const { studentAccount: account, studentUser: user } = UserAndAccountTestFactory.buildStudent({ school });
-
 						await em.persist([account, user]).flush();
 						em.clear();
 
@@ -182,6 +186,11 @@ describe('Me Controller (API)', () => {
 				await app.init();
 				em = app.get(EntityManager);
 				testApiClient = new TestApiClient(app, 'me');
+				userService = app.get(UserService);
+			});
+
+			beforeEach(async () => {
+				await cleanupCollections(em);
 			});
 
 			afterAll(async () => {
@@ -221,6 +230,29 @@ describe('Me Controller (API)', () => {
 
 					expect(response.statusCode).toEqual(HttpStatus.OK);
 					expect(response.body).toEqual(expectedResponse);
+				});
+
+				describe('updateMePreferences', () => {
+					it('should update the releaseDate preference and return status code 204', async () => {
+						const { loggedInClient } = await setup();
+
+						const newReleaseDate = new Date('2024-12-31T00:00:00Z').toISOString();
+
+						const response = await loggedInClient.patch('preferences', { releaseDate: newReleaseDate });
+
+						expect(response.statusCode).toEqual(HttpStatus.NO_CONTENT);
+
+						const updatedUser = await em.findOneOrFail(User, { id: currentUser.userId });
+						expect(updatedUser.getPreferences().releaseDate as string).toEqual(newReleaseDate);
+					});
+
+					it('should respond with validation error if an invalid releaseDate is passed', async () => {
+						const { loggedInClient } = await setup();
+
+						const response = await loggedInClient.patch('preferences').send({ releaseDate: 'invalid-date' });
+
+						expect(response.statusCode).toEqual(HttpStatus.BAD_REQUEST);
+					});
 				});
 			});
 		});

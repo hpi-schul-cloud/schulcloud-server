@@ -399,31 +399,6 @@
 			},
 			"default": {}
 		},
-		"ROCKETCHAT_SERVICE_ENABLED": {
-			"type": "boolean",
-			"default": false,
-			"description": "Enables chat function for the school."
-		},
-		"ROCKET_CHAT_URI": {
-			"type": "string",
-			"default": null,
-			"description": "rocketchat base uri"
-		},
-		"ROCKET_CHAT_ADMIN_ID": {
-			"type": "string",
-			"default": null,
-			"description": "rocketchat admin id"
-		},
-		"ROCKET_CHAT_ADMIN_TOKEN": {
-			"type": "string",
-			"default": null,
-			"description": "rocketchat admin token"
-		},
-		"ROCKET_CHAT_CLIENT_TIMEOUT_MS": {
-			"type": "number",
-			"default": 30000,
-			"description": "rocketchat client timeout in milliseconds"
-		},
 		"LDAP_PASSWORD_ENCRYPTION_KEY": {
 			"type": "string",
 			"description": "Synchronous encryption key used to secure search user passwords",
@@ -473,16 +448,6 @@
 			"type": "string",
 			"default": "",
 			"description": "A string with concatenated user types (student, employee) that don't need to explicitly state their consent with the terms and conditions. \"employee\" means teachers and admins."
-		},
-		"ACTIVATION_LINK_PERIOD_OF_VALIDITY_SECONDS": {
-			"type": "integer",
-			"default": 7200,
-			"description": "The time in seconds during which the activation link is valid. After expiration the entry is removed from the database"
-		},
-		"ADMIN_MAIL_RECEIVERS": {
-			"type": "string",
-			"default": null,
-			"description": "A string that contains recievers of the daily stat and other mails. Can contain mutliple mails, seperated by comma"
 		},
 		"SILENT_ERROR_ENABLED": {
 			"type": "boolean",

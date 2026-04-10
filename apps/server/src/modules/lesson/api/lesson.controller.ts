@@ -1,14 +1,7 @@
 import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import { Controller, Delete, Get, Param } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import {
-	LessonLinkedTaskResponse,
-	LessonMetadataListResponse,
-	LessonResponse,
-	LessonUrlParams,
-	LessonsUrlParams,
-} from './dto';
-import { LessonMapper } from './mapper';
+import { LessonLinkedTaskResponse, LessonResponse, LessonUrlParams } from './dto';
 import { LessonUC } from './uc';
 
 @ApiTags('Lesson')
@@ -22,18 +15,6 @@ export class LessonController {
 		const result = await this.lessonUC.delete(currentUser.userId, urlParams.lessonId);
 
 		return result;
-	}
-
-	@Get('course/:courseId')
-	public async getCourseLessons(
-		@Param() urlParams: LessonsUrlParams,
-		@CurrentUser() currentUser: ICurrentUser
-	): Promise<LessonMetadataListResponse> {
-		const lessons = await this.lessonUC.getLessons(currentUser.userId, urlParams.courseId);
-
-		const dtoList = lessons.map((lesson) => LessonMapper.mapToMetadataResponse(lesson));
-		const response = new LessonMetadataListResponse(dtoList, dtoList.length);
-		return response;
 	}
 
 	@Get(':lessonId')

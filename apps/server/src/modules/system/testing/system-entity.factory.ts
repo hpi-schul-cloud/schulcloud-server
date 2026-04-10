@@ -10,7 +10,7 @@ export const systemOauthConfigEntityFactory = BaseFactory.define<OauthConfigEnti
 	() => {
 		return {
 			clientId: '12345',
-			clientSecret: AesEncryptionHelper.encrypt('mocksecret', 'test-key-with-32-characters-long'),
+			clientSecret: AesEncryptionHelper.encrypt('mocksecret', 'randomStringWithAtLeast16Chars;'),
 			idpHint: 'mock-oauth-idpHint',
 			tokenEndpoint: 'https://mock.de/mock/auth/public/mockToken',
 			grantType: 'authorization_code',

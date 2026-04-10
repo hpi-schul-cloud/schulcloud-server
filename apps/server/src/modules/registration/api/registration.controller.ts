@@ -73,9 +73,11 @@ export class RegistrationController {
 	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
 	@ApiResponse({ status: '5XX', type: ErrorResponse })
 	public async getBySecret(@Param() urlParams: RegistrationBySecretUrlParams): Promise<RegistrationItemResponse> {
-		const registration = await this.registrationUc.getSingleRegistrationBySecret(urlParams.registrationSecret);
+		const { registration, registeredUserExists } = await this.registrationUc.getSingleRegistrationBySecret(
+			urlParams.registrationSecret
+		);
 
-		const response = RegistrationMapper.mapToRegistrationItemResponse(registration);
+		const response = RegistrationMapper.mapToRegistrationItemResponse(registration, registeredUserExists);
 
 		return response;
 	}

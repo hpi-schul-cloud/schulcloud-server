@@ -155,18 +155,6 @@ exports.hasSchoolPermission = (inputPermission) => async (context) => {
 	throw new Forbidden(`You don't have one of the permissions: ${inputPermission}.`);
 };
 
-/**
- * @param  {string, array[string]} permissions
- * @returns resolves if the current user has ALL of the given permissions
- */
-exports.hasAllPermissions = (permissions) => {
-	const permissionNames = typeof permissions === 'string' ? permissions : [permissions];
-	return (context) => {
-		const hasPermissions = permissionNames.every((permission) => hasPermission(permission)(context));
-		return Promise.all(hasPermissions);
-	};
-};
-
 exports.hasPermission = hasPermission;
 
 /*
@@ -495,7 +483,6 @@ exports.restrictToUsersOwnCourses = (context) =>
 		return context;
 	});
 
-
 const isProductionMode = Configuration.get('NODE_ENV') === ENVIRONMENTS.PRODUCTION;
 exports.mapPayload = (context) => {
 	if (!isProductionMode) {
@@ -574,20 +561,6 @@ exports.denyIfStudentTeamCreationNotAllowed =
 		}
 		return context;
 	};
-
-exports.checkSchoolOwnership = (context) => {
-	const { userId } = context.params.account;
-	const objectId = context.id;
-	const service = context.path;
-
-	const genericService = context.app.service(service);
-	const userService = context.app.service('users');
-
-	return Promise.all([userService.get(userId), genericService.get(objectId)]).then((res) => {
-		if (res[0].schoolId.equals(res[1].schoolId)) return context;
-		throw new Forbidden('You do not have valid permissions to access this.');
-	});
-};
 
 function validatedAttachments(attachments) {
 	const MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE = Configuration.get(
@@ -737,46 +710,6 @@ exports.sendEmail = (context, maildata) => {
 		return context;
 	}
 
-	return context;
-};
-
-exports.arrayIncludes = (array, includesList, excludesList) => {
-	for (let i = 0; i < includesList.length; i += 1) {
-		if (array.includes(includesList[i]) === false) {
-			return false;
-		}
-	}
-
-	for (let i = 0; i < excludesList.length; i += 1) {
-		if (array.includes(excludesList[i])) {
-			return false;
-		}
-	}
-	return true;
-};
-
-/** used for user decoration of create, update, patch requests for mongoose-diff-history */
-exports.decorateWithCurrentUserId = (context) => {
-	// todo decorate document removal
-	// todo simplify user extraction to do this only once
-	try {
-		if (!context.params.account) {
-			context.params.account = {};
-		}
-		const { userId } = context.params.account;
-		// if user not defined, try extract userId from jwt
-		if (!userId && (context.params.headers || {}).authorization) {
-			// const jwt = extractTokenFromBearerHeader(context.params.headers.authorization);
-			// userId = 'jwt'; // fixme
-		}
-		// eslint-disable-next-line no-underscore-dangle
-		if (userId && context.data && !context.data.__user) {
-			// eslint-disable-next-line no-underscore-dangle
-			context.data.__user = userId;
-		}
-	} catch (err) {
-		logger.error(err);
-	}
 	return context;
 };
 

@@ -49,7 +49,6 @@ import {
 	RegistrationModule,
 	RegistrationPublicApiConfig,
 } from '@modules/registration';
-import { ROCKET_CHAT_API_PUBLIC_CONFIG_TOKEN, RocketChatModule, RocketChatPublicApiConfig } from '@modules/rocketchat';
 import { ROOM_PUBLIC_API_CONFIG_TOKEN, RoomPublicApiConfig } from '@modules/room';
 import { RoomApiModule } from '@modules/room/room-api.module';
 import { ROSTER_PUBLIC_API_CONFIG_TOKEN, RosterPublicApiConfig } from '@modules/roster';
@@ -84,6 +83,7 @@ import { MediaSourceApiModule } from '../media-source/media-source-api.module';
 import { SchoolLicenseApiModule } from '../school-license/school-license-api.module';
 import { ServerMailModule } from '../serverDynamicModuleWrappers/server-mail.module';
 import { ServerConfigController, ServerController, ServerUc } from './api';
+import { ReleaseApiModule } from './release-api.module';
 import { SERVER_PUBLIC_API_CONFIG_TOKEN, ServerPublicApiConfig } from './server.config';
 import { ENTITIES, TEST_ENTITIES } from './server.entity.imports';
 
@@ -108,7 +108,6 @@ const serverModules = [
 	ConfigurationModule.register(USER_IMPORT_PUBLIC_API_CONFIG_TOKEN, UserImportPublicApiConfig),
 	ConfigurationModule.register(USER_LOGIN_MIGRATION_PUBLIC_API_CONFIG_TOKEN, UserLoginMigrationPublicApiConfig),
 	ConfigurationModule.register(FWU_PUBLIC_API_CONFIG_TOKEN, FwuPublicApiConfig),
-	ConfigurationModule.register(ROCKET_CHAT_API_PUBLIC_CONFIG_TOKEN, RocketChatPublicApiConfig),
 	ServerRuntimeConfigModule,
 	RuntimeConfigApiModule,
 	CoreModule,
@@ -142,7 +141,6 @@ const serverModules = [
 	}),
 	SystemApiModule,
 	ServerMailModule,
-	RocketChatModule,
 	VideoConferenceApiModule,
 	OauthProviderApiModule,
 	SharingApiModule,
@@ -171,6 +169,7 @@ const serverModules = [
 	OAuthApiModule,
 	MoinSchuleClassModule,
 	DeletionPublicApiModule,
+	ReleaseApiModule,
 ];
 
 const providers = [ServerUc];
@@ -199,7 +198,7 @@ export class ServerModule {}
  * Should have same modules than the @ServerModule while infrastucture Modules can be different.
  * Customizations:
  * - In Memory Database instead of external connection
- * // TODO add custom mail, rocketchat, and rabbitmq modules
+ * // TODO add custom mail, and rabbitmq modules
  * // TODO use instead of ServerModule when NODE_ENV=test
  */
 @Module({

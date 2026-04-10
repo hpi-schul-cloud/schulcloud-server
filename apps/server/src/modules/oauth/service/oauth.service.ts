@@ -1,5 +1,6 @@
 import { LegacyLogger } from '@core/logger';
 import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
+import { ErwinIdentifierService, ReferencedEntityType } from '@modules/erwin-identifier';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { AuthenticationCodeGrantTokenRequest, OAuthTokenDto, OauthAdapterService } from '@modules/oauth-adapter';
 import { TokenRequestMapper } from '@modules/oauth-adapter/mapper/token-request.mapper';
@@ -30,7 +31,8 @@ export class OAuthService {
 		private readonly provisioningService: ProvisioningService,
 		private readonly systemService: SystemService,
 		private readonly migrationCheckService: MigrationCheckService,
-		private readonly schoolService: LegacySchoolService
+		private readonly schoolService: LegacySchoolService,
+		private readonly erwinIdentifierService: ErwinIdentifierService
 	) {
 		this.logger.setContext(OAuthService.name);
 	}
@@ -55,6 +57,7 @@ export class OAuthService {
 
 		const externalUserId = data.externalUser.externalId;
 		const officialSchoolNumber = data.externalSchool?.officialSchoolNumber;
+		const { erwinId } = data.externalUser;
 
 		let isProvisioningEnabled = true;
 
@@ -80,7 +83,12 @@ export class OAuthService {
 			await this.provisioningService.provisionData(data);
 		}
 
-		const user: UserDo = await this.findUserAfterProvisioningOrThrow(externalUserId, systemId, officialSchoolNumber);
+		const user: UserDo = await this.findUserAfterProvisioningOrThrow(
+			externalUserId,
+			systemId,
+			officialSchoolNumber,
+			erwinId
+		);
 
 		return user;
 	}
@@ -88,8 +96,17 @@ export class OAuthService {
 	private async findUserAfterProvisioningOrThrow(
 		externalUserId: string,
 		systemId: EntityId,
-		officialSchoolNumber?: string
+		officialSchoolNumber?: string,
+		erwinId?: string
 	): Promise<UserDo> {
+		if (erwinId) {
+			const userByErwinId = await this.findUserByErwinId(erwinId);
+
+			if (userByErwinId) {
+				return userByErwinId;
+			}
+		}
+
 		const user = await this.userService.findByExternalId(externalUserId, systemId);
 
 		if (!user) {
@@ -99,6 +116,17 @@ export class OAuthService {
 		}
 
 		return user;
+	}
+
+	private async findUserByErwinId(erwinId: string): Promise<UserDo | null> {
+		const erwinIdentifier = await this.erwinIdentifierService.findByErwinId(erwinId);
+
+		if (!erwinIdentifier || erwinIdentifier.type !== ReferencedEntityType.USER) {
+			return null;
+		}
+		const userByErwinId = await this.userService.findByIdOrNull(erwinIdentifier.referencedEntityId);
+
+		return userByErwinId;
 	}
 
 	public async isOauthProvisioningEnabledForSchool(officialSchoolNumber: string): Promise<boolean> {
