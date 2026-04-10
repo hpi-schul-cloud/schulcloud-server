@@ -2,6 +2,8 @@ import { LoggerModule } from '@core/logger';
 import { ConfigurationModule } from '@infra/configuration';
 import { HttpModule } from '@nestjs/axios';
 import { DynamicModule, Module } from '@nestjs/common';
+import * as http from 'http';
+import * as https from 'https';
 import {
 	BoardsClientAdapter,
 	CardClientAdapter,
@@ -29,6 +31,11 @@ import {
 	LessonApi,
 } from './generated';
 
+// HTTP agents with keepAlive to prevent "socket hang up" errors during sequential API calls
+const httpAgent = new http.Agent({ keepAlive: true, maxSockets: 50 });
+const httpsAgent = new https.Agent({ keepAlive: true, maxSockets: 50 });
+const baseOptions = { httpAgent, httpsAgent };
+
 @Module({})
 export class CommonCartridgeClientsModule {
 	public static register(
@@ -42,6 +49,7 @@ export class CommonCartridgeClientsModule {
 					const { basePath } = config;
 					const configuration = new Configuration({
 						basePath: `${basePath}/v3`,
+						baseOptions,
 					});
 
 					return new BoardApi(configuration);
@@ -54,6 +62,7 @@ export class CommonCartridgeClientsModule {
 					const { basePath } = config;
 					const configuration = new Configuration({
 						basePath: `${basePath}/v3`,
+						baseOptions,
 					});
 
 					return new BoardCardApi(configuration);
@@ -66,6 +75,7 @@ export class CommonCartridgeClientsModule {
 					const { basePath } = config;
 					const configuration = new Configuration({
 						basePath: `${basePath}/v3`,
+						baseOptions,
 					});
 
 					return new BoardElementApi(configuration);
@@ -78,6 +88,7 @@ export class CommonCartridgeClientsModule {
 					const { basePath } = config;
 					const configuration = new Configuration({
 						basePath: `${basePath}/v3`,
+						baseOptions,
 					});
 
 					return new BoardColumnApi(configuration);
@@ -90,6 +101,7 @@ export class CommonCartridgeClientsModule {
 					const { basePath } = config;
 					const configuration = new Configuration({
 						basePath: `${basePath}/v3`,
+						baseOptions,
 					});
 
 					return new CoursesApi(configuration);
@@ -102,6 +114,7 @@ export class CommonCartridgeClientsModule {
 					const { basePath } = configInstance;
 					const configuration = new Configuration({
 						basePath: `${basePath}/v3`,
+						baseOptions,
 					});
 
 					return new LessonApi(configuration);
@@ -114,6 +127,7 @@ export class CommonCartridgeClientsModule {
 					const { basePath } = config;
 					const configuration = new Configuration({
 						basePath: `${basePath}/v3`,
+						baseOptions,
 					});
 
 					return new CourseRoomsApi(configuration);
@@ -126,6 +140,7 @@ export class CommonCartridgeClientsModule {
 					const { basePath } = config;
 					const configuration = new Configuration({
 						basePath: `${basePath}/api/v3`,
+						baseOptions,
 					});
 
 					return new FileApi(configuration);
