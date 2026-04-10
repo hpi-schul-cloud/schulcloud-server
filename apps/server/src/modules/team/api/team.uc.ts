@@ -5,12 +5,16 @@ import { AuthorizationContextBuilder, AuthorizationService } from '@modules/auth
 import { Permission } from '@shared/domain/interface';
 import { TEAM_PUBLIC_API_CONFIG_TOKEN, TeamPublicApiConfig } from '../team.config';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception/feature-disabled.loggable-exception';
+import { Room, RoomColor, RoomService } from '@modules/room';
+import { RoomMembershipService } from '@modules/room-membership';
 
 @Injectable()
 export class TeamUc {
 	constructor(
 		private readonly teamAuthorisableService: TeamAuthorisableService,
 		private readonly authorizationService: AuthorizationService,
+		private readonly roomService: RoomService,
+		private readonly roomMembershipService: RoomMembershipService,
 		@Inject(TEAM_PUBLIC_API_CONFIG_TOKEN) private readonly config: TeamPublicApiConfig
 	) {}
 
@@ -29,6 +33,15 @@ export class TeamUc {
 		);
 		this.authorizationService.checkAllPermissions(user, [Permission.SCHOOL_CREATE_ROOM]);
 
-		return Promise.resolve({ roomId: '1234123412341234' });
+		const room = await this.roomService.createRoom({
+			name: team.name,
+			color: RoomColor.BLUE_GREY,
+			schoolId: user.school.id,
+			features: [],
+		});
+
+		await this.roomMembershipService.createNewRoomMembership(room.id, userId);
+
+		return { roomId: room.id };
 	}
 }
