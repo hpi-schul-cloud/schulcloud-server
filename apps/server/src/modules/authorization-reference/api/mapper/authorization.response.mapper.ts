@@ -1,5 +1,11 @@
+import { AuthorizableReferenceType } from '@modules/authorization/domain';
 import { EntityId } from '@shared/domain/types';
-import { AccessTokenPayloadResponse, AccessTokenResponse, AuthorizedResponse } from '../dto/authorization.reponse';
+import {
+	AccessTokenPayloadResponse,
+	AccessTokenResponse,
+	AuthorizedByReferenceResponse,
+	AuthorizedResponse,
+} from '../dto/authorization.reponse';
 
 export class AuthorizationResponseMapper {
 	public static mapToAuthorizedResponse(userId: EntityId, isAuthorized: boolean): AuthorizedResponse {
@@ -9,6 +15,22 @@ export class AuthorizationResponseMapper {
 		});
 
 		return authorizationResponse;
+	}
+
+	public static mapToAuthorizedByReferenceResponse(
+		userId: EntityId,
+		isAuthorized: boolean,
+		referenceType: AuthorizableReferenceType,
+		referenceId: EntityId
+	): AuthorizedByReferenceResponse {
+		const authorizedByReferenceResponse = new AuthorizedByReferenceResponse({
+			userId,
+			isAuthorized,
+			referenceType,
+			referenceId,
+		});
+
+		return authorizedByReferenceResponse;
 	}
 
 	public static mapToAccessTokenResponse(token: string): AccessTokenResponse {

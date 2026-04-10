@@ -11,14 +11,14 @@ import {
 } from '../domain';
 import { BoardNodeRepo } from '../repo';
 import { BoardNodeService } from './board-node.service';
-import { ColumnBoardCopyService, ColumnBoardLinkService, CopyColumnBoardParams } from './internal';
+import { BoardCopyService, ColumnBoardLinkService, CopyColumnBoardParams, CopyCardParams } from './internal';
 
 @Injectable()
 export class ColumnBoardService {
 	constructor(
 		private readonly boardNodeRepo: BoardNodeRepo,
 		private readonly boardNodeService: BoardNodeService,
-		private readonly columnBoardCopyService: ColumnBoardCopyService,
+		private readonly boardCopyService: BoardCopyService,
 		private readonly columnBoardLinkService: ColumnBoardLinkService,
 		private readonly copyHelperService: CopyHelperService
 	) {}
@@ -41,6 +41,11 @@ export class ColumnBoardService {
 		await this.boardNodeService.updateVisibility(columnBoard, visibility);
 	}
 
+	public async updateReadersCanEdit(columnBoard: ColumnBoard, readersCanEdit: boolean): Promise<void> {
+		columnBoard.readersCanEdit = readersCanEdit;
+		await this.boardNodeRepo.save(columnBoard);
+	}
+
 	// @deprecated This is called from feathers. Should be removed when not needed anymore
 	public async deleteByCourseId(courseId: EntityId): Promise<void> {
 		await this.deleteByExternalReference({
@@ -56,16 +61,23 @@ export class ColumnBoardService {
 	}
 
 	public async copyColumnBoard(params: CopyColumnBoardParams): Promise<CopyStatus> {
-		const copyStatus = await this.columnBoardCopyService.copyColumnBoard(params);
+		const copyStatus = await this.boardCopyService.copyColumnBoard(params);
 
 		return copyStatus;
 	}
+
 	public async createColumnBoard(props: ColumnBoardProps): Promise<ColumnBoard> {
 		const columnBoard = new ColumnBoard(props);
 
 		await this.boardNodeRepo.save(columnBoard);
 
 		return columnBoard;
+	}
+
+	public async copyCard(params: CopyCardParams): Promise<CopyStatus> {
+		const copyStatus = await this.boardCopyService.copyCard(params);
+
+		return copyStatus;
 	}
 
 	public async swapLinkedIdsInBoards(copyStatus: CopyStatus, idMap?: Map<EntityId, EntityId>): Promise<CopyStatus> {
@@ -76,6 +88,10 @@ export class ColumnBoardService {
 		copyDict.forEach((value, key) => idMap.set(key, value.id));
 
 		const elements = copyStatus.elements ?? [];
+		if (copyStatus.type === CopyElementType.COLUMNBOARD && copyStatus.copyEntity) {
+			copyStatus.copyEntity = await this.swapLinkedIds(copyStatus.copyEntity?.id, idMap);
+		}
+
 		const updatedElements = await Promise.all(
 			elements.map(async (el) => {
 				if (el.type === CopyElementType.COLUMNBOARD && el.copyEntity) {

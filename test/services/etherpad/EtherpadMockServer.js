@@ -17,11 +17,11 @@ module.exports = function EtherpadMockServer(resolver, url = 'http://localhost:5
 	}
 
 	const uris = {
-		postAuthor: `${path}/createAuthorIfNotExistsFor`,
-		postGroup: `${path}/createGroupIfNotExistsFor`,
-		postPad: `${path}/createGroupPad`,
-		postSession: `${path}/createSession`,
-		postSessionList: `${path}/listSessionsOfAuthor`,
+		getAuthor: `${path}/createAuthorIfNotExistsFor`,
+		getGroup: `${path}/createGroupIfNotExistsFor`,
+		getPad: `${path}/createGroupPad`,
+		getSession: `${path}/createSession`,
+		getSessionList: `${path}/listSessionsOfAuthor`,
 	};
 
 	app.get('/ping', (req, res) => {
@@ -30,7 +30,7 @@ module.exports = function EtherpadMockServer(resolver, url = 'http://localhost:5
 		});
 	});
 
-	app.post(uris.postAuthor, (req, res) => {
+	app.get(uris.getAuthor, (req, res) => {
 		res.json({
 			code: 0,
 			message: 'ok',
@@ -40,7 +40,7 @@ module.exports = function EtherpadMockServer(resolver, url = 'http://localhost:5
 		}); // all data is fetched constructed from userid in jwt
 	});
 
-	app.post(uris.postGroup, (req, res) => {
+	app.get(uris.getGroup, (req, res) => {
 		res.json({
 			code: 0,
 			message: 'ok',
@@ -50,7 +50,7 @@ module.exports = function EtherpadMockServer(resolver, url = 'http://localhost:5
 		});
 	});
 
-	app.post(uris.postSessionList, (req, res) => {
+	app.get(uris.getSessionList, (req, res) => {
 		res.json({
 			code: 0,
 			message: 'ok',
@@ -64,7 +64,7 @@ module.exports = function EtherpadMockServer(resolver, url = 'http://localhost:5
 		});
 	});
 
-	app.post(uris.postPad, (req, res) => {
+	app.get(uris.getPad, (req, res) => {
 		res.json({
 			code: 0,
 			message: 'ok',
@@ -74,7 +74,7 @@ module.exports = function EtherpadMockServer(resolver, url = 'http://localhost:5
 		});
 	});
 
-	app.post(uris.postSession, (req, res) => {
+	app.get(uris.getSession, (req, res) => {
 		res.json({
 			code: 0,
 			message: 'ok',

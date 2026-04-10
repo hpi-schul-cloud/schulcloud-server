@@ -4,4 +4,5 @@ export enum CommonCartridgeXmlResourceType {
 	WEB_LINK_CC11 = 'imswl_xmlv1p1',
 	WEB_LINK_CC13 = 'imswl_xmlv1p3',
 	FILE = 'file',
+	FILE_FOLDER = 'fileFolder',
 }

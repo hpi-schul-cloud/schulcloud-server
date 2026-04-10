@@ -33,6 +33,20 @@ export class TypeGuard {
 		return value;
 	}
 
+	public static isBoolean(value: unknown): value is boolean {
+		const isBoolean = typeof value === 'boolean';
+
+		return isBoolean;
+	}
+
+	public static checkBoolean(value: unknown): boolean {
+		if (!TypeGuard.isBoolean(value)) {
+			throw new Error('Type is not a boolean');
+		}
+
+		return value;
+	}
+
 	public static isString(value: unknown): value is string {
 		const isString = typeof value === 'string';
 
@@ -84,6 +98,20 @@ export class TypeGuard {
 	public static checkArrayWithElements(value: unknown): [] {
 		if (!TypeGuard.isArrayWithElements(value)) {
 			throw new Error('Type is not an array with elements.');
+		}
+
+		return value;
+	}
+
+	public static isArrayOfStrings(value: unknown): value is string[] {
+		const isArrayOfStrings = TypeGuard.isArray(value) && value.every((item) => TypeGuard.isString(item));
+
+		return isArrayOfStrings;
+	}
+
+	public static checkArrayOfStrings(value: unknown): string[] {
+		if (!TypeGuard.isArrayOfStrings(value)) {
+			throw new Error('Type is not an array of strings.');
 		}
 
 		return value;
@@ -211,5 +239,9 @@ export class TypeGuard {
 		}
 
 		return value;
+	}
+
+	public static isNotNullOrUndefined<T>(value: T | null | undefined): value is T {
+		return !TypeGuard.isNull(value) && !TypeGuard.isUndefined(value);
 	}
 }

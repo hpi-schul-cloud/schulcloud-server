@@ -1,17 +1,19 @@
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { Action, AuthorizationService } from '@modules/authorization';
+import { AuthorizationService } from '@modules/authorization';
 import { MediaSchoolLicense, MediaSchoolLicenseService } from '@modules/school-license';
-import { MediaUserLicense, MediaUserLicenseService } from '@modules/user-license';
 import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
+import { MediaUserLicense, MediaUserLicenseService } from '@modules/user-license';
+import { Inject, Injectable } from '@nestjs/common';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
+import { throwForbiddenIfFalse } from '@shared/common/utils';
 import { EntityId } from '@shared/domain/types';
+import { BoardNodeRule } from '../../authorisation/board-node.rule';
 import { MediaAvailableLine, MediaBoard } from '../../domain';
 import { MediaBoardColors } from '../../domain/media-board/types';
-import type { MediaBoardConfig } from '../../media-board.config';
+
+import { BOARD_CONFIG_TOKEN, BoardConfig } from '../../board.config';
 import {
-	BoardNodePermissionService,
+	BoardNodeAuthorizableService,
 	BoardNodeService,
 	MediaAvailableLineService,
 	MediaBoardService,
@@ -21,11 +23,12 @@ import {
 export class MediaAvailableLineUc {
 	constructor(
 		private readonly authorizationService: AuthorizationService,
-		private readonly boardNodePermissionService: BoardNodePermissionService,
+		private readonly boardNodeAuthorizableService: BoardNodeAuthorizableService,
+		private readonly boardNodeRule: BoardNodeRule,
 		private readonly boardNodeService: BoardNodeService,
 		private readonly mediaAvailableLineService: MediaAvailableLineService,
 		private readonly mediaBoardService: MediaBoardService,
-		private readonly configService: ConfigService<MediaBoardConfig, true>,
+		@Inject(BOARD_CONFIG_TOKEN) private readonly config: BoardConfig,
 		private readonly mediaUserLicenseService: MediaUserLicenseService,
 		private readonly mediaSchoolLicenseService: MediaSchoolLicenseService
 	) {}
@@ -33,13 +36,14 @@ export class MediaAvailableLineUc {
 	public async getMediaAvailableLine(userId: EntityId, boardId: EntityId): Promise<MediaAvailableLine> {
 		this.checkFeatureEnabled();
 
-		const mediaBoard: MediaBoard = await this.boardNodeService.findByClassAndId(MediaBoard, boardId);
-
-		await this.boardNodePermissionService.checkPermission(userId, mediaBoard, Action.read);
-
+		const board: MediaBoard = await this.boardNodeService.findByClassAndId(MediaBoard, boardId);
 		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(board);
+
+		throwForbiddenIfFalse(this.boardNodeRule.can('viewMediaBoard', user, boardNodeAuthorizable));
+
 		const schoolExternalToolsForAvailableMediaLine: SchoolExternalTool[] =
-			await this.mediaAvailableLineService.getUnusedAvailableSchoolExternalTools(user, mediaBoard);
+			await this.mediaAvailableLineService.getUnusedAvailableSchoolExternalTools(user, board);
 
 		const availableExternalTools: ExternalTool[] =
 			await this.mediaAvailableLineService.getAvailableExternalToolsForSchool(schoolExternalToolsForAvailableMediaLine);
@@ -52,7 +56,7 @@ export class MediaAvailableLineUc {
 		const filteredTools = await this.getFilteredTools(userId, user.school.id, matchedTools);
 
 		const mediaAvailableLine: MediaAvailableLine = this.mediaAvailableLineService.createMediaAvailableLine(
-			mediaBoard,
+			board,
 			filteredTools
 		);
 
@@ -63,8 +67,10 @@ export class MediaAvailableLineUc {
 		this.checkFeatureEnabled();
 
 		const board: MediaBoard = await this.boardNodeService.findByClassAndId(MediaBoard, boardId);
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(board);
 
-		await this.boardNodePermissionService.checkPermission(userId, board, Action.write);
+		throwForbiddenIfFalse(this.boardNodeRule.can('updateMediaBoardColor', user, boardNodeAuthorizable));
 
 		await this.mediaBoardService.updateBackgroundColor(board, color);
 	}
@@ -77,8 +83,10 @@ export class MediaAvailableLineUc {
 		this.checkFeatureEnabled();
 
 		const board: MediaBoard = await this.boardNodeService.findByClassAndId(MediaBoard, boardId);
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(board);
 
-		await this.boardNodePermissionService.checkPermission(userId, board, Action.write);
+		throwForbiddenIfFalse(this.boardNodeRule.can('collapseMediaBoard', user, boardNodeAuthorizable));
 
 		await this.mediaBoardService.updateCollapsed(board, mediaAvailableLineCollapsed);
 	}
@@ -90,11 +98,11 @@ export class MediaAvailableLineUc {
 	): Promise<[ExternalTool, SchoolExternalTool][]> {
 		let filteredTools = matchedTools;
 
-		if (this.configService.get('FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED')) {
+		if (this.config.featureSchulconnexMediaLicenseEnabled) {
 			filteredTools = await this.filterUnlicensedTools(userId, filteredTools);
 		}
 
-		if (this.configService.get('FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED')) {
+		if (this.config.featureVidisMediaActivationsEnabled) {
 			filteredTools = await this.getToolsForUserAndSchool(schoolId, matchedTools, filteredTools);
 		}
 
@@ -143,7 +151,7 @@ export class MediaAvailableLineUc {
 	}
 
 	private checkFeatureEnabled(): void {
-		if (!this.configService.get('FEATURE_MEDIA_SHELF_ENABLED')) {
+		if (!this.config.featureMediaShelfEnabled) {
 			throw new FeatureDisabledLoggableException('FEATURE_MEDIA_SHELF_ENABLED');
 		}
 	}

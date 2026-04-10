@@ -1,5 +1,5 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
-import { Action, AuthorizationService } from '@modules/authorization';
+import { AuthorizationService } from '@modules/authorization';
 import { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
 import { contextExternalToolFactory } from '@modules/tool/context-external-tool/testing';
 import { SchoolExternalToolService } from '@modules/tool/school-external-tool';
@@ -7,14 +7,20 @@ import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { schoolExternalToolFactory } from '@modules/tool/school-external-tool/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
-import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 import { setupEntities } from '@testing/database';
-import { MediaBoard, MediaBoardNodeFactory, MediaExternalToolElement, MediaLine } from '../../domain';
+import { BoardNodeRule } from '../../authorisation/board-node.rule';
+import { BOARD_CONFIG_TOKEN, BoardConfig } from '../../board.config';
+import {
+	BoardNodeAuthorizable,
+	MediaBoard,
+	MediaBoardNodeFactory,
+	MediaExternalToolElement,
+	MediaLine,
+} from '../../domain';
 import { MediaBoardElementAlreadyExistsLoggableException } from '../../loggable';
-import type { MediaBoardConfig } from '../../media-board.config';
-import { BoardNodePermissionService, BoardNodeService, MediaBoardService } from '../../service';
+import { BoardNodeAuthorizableService, BoardNodeService, MediaBoardService } from '../../service';
 import { mediaBoardFactory, mediaExternalToolElementFactory, mediaLineFactory } from '../../testing';
 import { MediaElementUc } from './media-element.uc';
 
@@ -24,11 +30,12 @@ describe(MediaElementUc.name, () => {
 
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let boardNodeService: DeepMocked<BoardNodeService>;
-	let boardNodePermissionService: DeepMocked<BoardNodePermissionService>;
-	let configService: DeepMocked<ConfigService<MediaBoardConfig, true>>;
+	let config: BoardConfig;
+	let boardNodeAuthorizableService: DeepMocked<BoardNodeAuthorizableService>;
 	let mediaBoardService: DeepMocked<MediaBoardService>;
 	let mediaBoardNodeFactory: DeepMocked<MediaBoardNodeFactory>;
 	let schoolExternalToolService: DeepMocked<SchoolExternalToolService>;
+	let boardNodeRule: DeepMocked<BoardNodeRule>;
 
 	beforeAll(async () => {
 		await setupEntities([User]);
@@ -45,12 +52,12 @@ describe(MediaElementUc.name, () => {
 					useValue: createMock<BoardNodeService>(),
 				},
 				{
-					provide: BoardNodePermissionService,
-					useValue: createMock<BoardNodePermissionService>(),
+					provide: BoardNodeAuthorizableService,
+					useValue: createMock<BoardNodeAuthorizableService>(),
 				},
 				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService>(),
+					provide: BOARD_CONFIG_TOKEN,
+					useValue: new BoardConfig(),
 				},
 				{
 					provide: MediaBoardService,
@@ -64,17 +71,22 @@ describe(MediaElementUc.name, () => {
 					provide: SchoolExternalToolService,
 					useValue: createMock<SchoolExternalToolService>(),
 				},
+				{
+					provide: BoardNodeRule,
+					useValue: createMock<BoardNodeRule>(),
+				},
 			],
 		}).compile();
 
 		uc = module.get(MediaElementUc);
 		authorizationService = module.get(AuthorizationService);
 		boardNodeService = module.get(BoardNodeService);
-		boardNodePermissionService = module.get(BoardNodePermissionService);
-		configService = module.get(ConfigService);
+		config = module.get(BOARD_CONFIG_TOKEN);
+		boardNodeAuthorizableService = module.get(BoardNodeAuthorizableService);
 		mediaBoardService = module.get(MediaBoardService);
 		mediaBoardNodeFactory = module.get(MediaBoardNodeFactory);
 		schoolExternalToolService = module.get(SchoolExternalToolService);
+		boardNodeRule = module.get(BoardNodeRule);
 	});
 
 	afterAll(async () => {
@@ -92,9 +104,14 @@ describe(MediaElementUc.name, () => {
 				const mediaLine = mediaLineFactory.build();
 				const mediaElement = mediaExternalToolElementFactory.build();
 
-				configService.get.mockReturnValueOnce(true);
+				config.featureMediaShelfEnabled = true;
 				boardNodeService.findAnyMediaElementById.mockResolvedValueOnce(mediaElement);
 				boardNodeService.findByClassAndId.mockResolvedValueOnce(mediaLine);
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				boardNodeAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(
+					mediaLine as unknown as BoardNodeAuthorizable
+				);
+				boardNodeRule.can.mockReturnValue(true);
 
 				return {
 					user,
@@ -114,14 +131,23 @@ describe(MediaElementUc.name, () => {
 
 			it('should check the authorization', async () => {
 				const { user, mediaLine, mediaElement } = setup();
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				boardNodeAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(
+					mediaLine as unknown as BoardNodeAuthorizable
+				);
 
 				await uc.moveElement(user.id, mediaElement.id, mediaLine.id, 1);
 
-				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(user.id, mediaLine, Action.write);
+				expect(boardNodeRule.can).toHaveBeenCalledWith('moveElement', user, mediaLine);
 			});
 
 			it('should move the element', async () => {
 				const { user, mediaLine, mediaElement } = setup();
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				boardNodeAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(
+					mediaLine as unknown as BoardNodeAuthorizable
+				);
+				boardNodeRule.can.mockReturnValueOnce(true);
 
 				await uc.moveElement(user.id, mediaElement.id, mediaLine.id, 1);
 
@@ -135,7 +161,7 @@ describe(MediaElementUc.name, () => {
 				const mediaLine = mediaLineFactory.build();
 				const mediaElement = mediaExternalToolElementFactory.build();
 
-				configService.get.mockReturnValueOnce(false);
+				config.featureMediaShelfEnabled = false;
 
 				return {
 					user,
@@ -166,10 +192,14 @@ describe(MediaElementUc.name, () => {
 					.withSchoolExternalToolRef(schoolExternalTool.id, user.school.id)
 					.buildWithId();
 
-				configService.get.mockReturnValueOnce(true);
+				config.featureMediaShelfEnabled = true;
 				boardNodeService.findByClassAndId.mockResolvedValueOnce(mediaLine).mockResolvedValueOnce(mediaBoard);
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				boardNodeAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(
+					mediaLine as unknown as BoardNodeAuthorizable
+				);
+				boardNodeRule.can.mockReturnValue(true);
 				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
 				mediaBoardService.checkElementExists.mockResolvedValueOnce(false);
 
@@ -196,14 +226,19 @@ describe(MediaElementUc.name, () => {
 
 			it('should check the authorization', async () => {
 				const { user, mediaLine, mediaElement } = setup();
+				boardNodeRule.can.mockReturnValueOnce(true);
+				boardNodeAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(
+					mediaLine as unknown as BoardNodeAuthorizable
+				);
 
 				await uc.createElement(user.id, mediaElement.id, mediaLine.id, 1);
 
-				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(user.id, mediaLine, Action.write);
+				expect(boardNodeRule.can).toHaveBeenCalledWith('createElement', user, mediaLine);
 			});
 
 			it('should find the board', async () => {
 				const { user, mediaLine, mediaElement } = setup();
+				boardNodeRule.can.mockReturnValueOnce(true);
 
 				await uc.createElement(user.id, mediaElement.id, mediaLine.id, 1);
 
@@ -212,6 +247,7 @@ describe(MediaElementUc.name, () => {
 
 			it('should find the school external tool', async () => {
 				const { user, mediaLine, mediaElement } = setup();
+				boardNodeRule.can.mockReturnValueOnce(true);
 
 				await uc.createElement(user.id, mediaElement.id, mediaLine.id, 1);
 
@@ -220,6 +256,7 @@ describe(MediaElementUc.name, () => {
 
 			it('should check if element exists already on board', async () => {
 				const { user, mediaLine, mediaElement, mediaBoard, schoolExternalTool } = setup();
+				boardNodeRule.can.mockReturnValueOnce(true);
 
 				await uc.createElement(user.id, mediaElement.id, mediaLine.id, 1);
 
@@ -228,6 +265,7 @@ describe(MediaElementUc.name, () => {
 
 			it('should create the element', async () => {
 				const { user, mediaLine, mediaElement, contextExternalTool } = setup();
+				boardNodeRule.can.mockReturnValueOnce(true);
 
 				await uc.createElement(user.id, mediaElement.id, mediaLine.id, 1);
 
@@ -238,6 +276,7 @@ describe(MediaElementUc.name, () => {
 
 			it('should add the element to the line', async () => {
 				const { user, mediaLine, mediaElement } = setup();
+				boardNodeRule.can.mockReturnValueOnce(true);
 
 				await uc.createElement(user.id, mediaElement.id, mediaLine.id, 1);
 
@@ -246,6 +285,7 @@ describe(MediaElementUc.name, () => {
 
 			it('should return the created element', async () => {
 				const { user, mediaLine, mediaElement } = setup();
+				boardNodeRule.can.mockReturnValueOnce(true);
 
 				const result: MediaExternalToolElement = await uc.createElement(user.id, mediaElement.id, mediaLine.id, 1);
 
@@ -264,10 +304,14 @@ describe(MediaElementUc.name, () => {
 					.withSchoolExternalToolRef(schoolExternalTool.id, user.school.id)
 					.buildWithId();
 
-				configService.get.mockReturnValueOnce(true);
+				config.featureMediaShelfEnabled = true;
 				boardNodeService.findByClassAndId.mockResolvedValueOnce(mediaLine).mockResolvedValueOnce(mediaBoard);
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				boardNodeAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(
+					mediaLine as unknown as BoardNodeAuthorizable
+				);
+				boardNodeRule.can.mockReturnValue(true);
 
 				schoolExternalToolService.findById.mockResolvedValueOnce(schoolExternalTool);
 				mediaBoardService.checkElementExists.mockResolvedValueOnce(true);
@@ -284,6 +328,7 @@ describe(MediaElementUc.name, () => {
 
 			it('should throw an exception', async () => {
 				const { user, mediaBoard, mediaLine, mediaElement, schoolExternalTool } = setup();
+				boardNodeRule.can.mockReturnValueOnce(true);
 
 				await expect(uc.createElement(user.id, mediaElement.id, mediaLine.id, 1)).rejects.toThrow(
 					new MediaBoardElementAlreadyExistsLoggableException(mediaBoard.id, schoolExternalTool.id)
@@ -297,7 +342,7 @@ describe(MediaElementUc.name, () => {
 				const mediaLine = mediaLineFactory.build();
 				const mediaElement = mediaExternalToolElementFactory.build();
 
-				configService.get.mockReturnValueOnce(false);
+				config.featureMediaShelfEnabled = false;
 
 				return {
 					user,
@@ -322,8 +367,9 @@ describe(MediaElementUc.name, () => {
 				const user = userFactory.build();
 				const mediaElement = mediaExternalToolElementFactory.build();
 
-				configService.get.mockReturnValueOnce(true);
+				config.featureMediaShelfEnabled = true;
 				boardNodeService.findAnyMediaElementById.mockResolvedValueOnce(mediaElement);
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 
 				return {
 					user,
@@ -333,14 +379,23 @@ describe(MediaElementUc.name, () => {
 
 			it('should check the authorization', async () => {
 				const { user, mediaElement } = setup();
+				boardNodeRule.can.mockReturnValueOnce(true);
+				boardNodeAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(
+					mediaElement as unknown as BoardNodeAuthorizable
+				);
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
 
 				await uc.deleteElement(user.id, mediaElement.id);
 
-				expect(boardNodePermissionService.checkPermission).toHaveBeenCalledWith(user.id, mediaElement, Action.write);
+				expect(boardNodeRule.can).toHaveBeenCalledWith('deleteElement', user, mediaElement);
 			});
 
 			it('should delete the element', async () => {
 				const { user, mediaElement } = setup();
+				boardNodeRule.can.mockReturnValueOnce(true);
+				boardNodeAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(
+					mediaElement as unknown as BoardNodeAuthorizable
+				);
 
 				await uc.deleteElement(user.id, mediaElement.id);
 
@@ -353,7 +408,7 @@ describe(MediaElementUc.name, () => {
 				const user = userFactory.build();
 				const mediaElement = mediaExternalToolElementFactory.build();
 
-				configService.get.mockReturnValueOnce(false);
+				config.featureMediaShelfEnabled = false;
 
 				return {
 					user,

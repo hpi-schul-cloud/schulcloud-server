@@ -7,16 +7,16 @@ const { v4: uuidv4 } = require('uuid');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const _ = require('lodash');
 const mongoose = require('mongoose');
-const { Forbidden, GeneralError, NotFound, BadRequest, TypeError } = require('../errors');
+const { Forbidden, GeneralError, NotFound, BadRequest } = require('../errors');
 const { equal: equalIds } = require('../helper/compare').ObjectId;
 
 const logger = require('../logger');
-const { MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE, NODE_ENV, ENVIRONMENTS } = require('../../config/globals');
+const { ENVIRONMENTS } = require('../../config/environments');
 const { isDisposableEmail } = require('../utils/disposableEmail');
 const { getRestrictPopulatesHook, preventPopulate } = require('./restrictPopulate');
 const { transformToDataTransferObject } = require('./transformToDataTransferObject');
-// Add any common hooks you want to share across services in here.
 
+// Add any common hooks you want to share across services in here.
 exports.preventPopulate = preventPopulate;
 exports.getRestrictPopulatesHook = getRestrictPopulatesHook;
 exports.transformToDataTransferObject = transformToDataTransferObject;
@@ -34,8 +34,8 @@ exports.ifNotLocal = function ifNotLocal(hookForRemoteRequests) {
 
 exports.forceHookResolve = (forcedHook) => (context) => {
 	forcedHook(context)
-		.then(() => Promise.resolve(context))
-		.catch(() => Promise.resolve(context));
+		.then(() => context)
+		.catch(() => context);
 };
 
 exports.isAdmin = () => (context) => {
@@ -53,7 +53,7 @@ exports.isSuperHero = () => (context) => {
 		if (!(user.data[0].roles.filter((u) => u.name === 'superhero').length > 0)) {
 			throw new Forbidden('you are not a superhero, sorry...');
 		}
-		return Promise.resolve(context);
+		return context;
 	});
 };
 
@@ -97,7 +97,7 @@ const hasPermission = (inputPermissions) => {
 				if (!hasAnyPermission) {
 					throw new Forbidden(`You don't have one of the permissions: ${permissionNames.join(', ')}.`);
 				}
-				return Promise.resolve(context);
+				return context;
 			});
 	};
 };
@@ -153,18 +153,6 @@ exports.hasSchoolPermission = (inputPermission) => async (context) => {
 	}
 
 	throw new Forbidden(`You don't have one of the permissions: ${inputPermission}.`);
-};
-
-/**
- * @param  {string, array[string]} permissions
- * @returns resolves if the current user has ALL of the given permissions
- */
-exports.hasAllPermissions = (permissions) => {
-	const permissionNames = typeof permissions === 'string' ? permissions : [permissions];
-	return (context) => {
-		const hasPermissions = permissionNames.every((permission) => hasPermission(permission)(context));
-		return Promise.all(hasPermissions);
-	};
 };
 
 exports.hasPermission = hasPermission;
@@ -285,8 +273,10 @@ exports.computeProperty = (Model, functionName, variableName) => (context) =>
 		.then((result) => {
 			context.result[variableName] = Array.from(result); // save it in the resulting object
 		})
-		.catch((e) => logger.error(e))
-		.then(() => Promise.resolve(context));
+		.catch((e) => {
+			logger.error(e);
+		})
+		.then(() => context);
 
 exports.mapPaginationQuery = (context) => {
 	if ((context.params.query || {}).$limit === '-1') {
@@ -493,7 +483,7 @@ exports.restrictToUsersOwnCourses = (context) =>
 		return context;
 	});
 
-const isProductionMode = NODE_ENV === ENVIRONMENTS.PRODUCTION;
+const isProductionMode = Configuration.get('NODE_ENV') === ENVIRONMENTS.PRODUCTION;
 exports.mapPayload = (context) => {
 	if (!isProductionMode) {
 		logger.info(
@@ -572,21 +562,10 @@ exports.denyIfStudentTeamCreationNotAllowed =
 		return context;
 	};
 
-exports.checkSchoolOwnership = (context) => {
-	const { userId } = context.params.account;
-	const objectId = context.id;
-	const service = context.path;
-
-	const genericService = context.app.service(service);
-	const userService = context.app.service('users');
-
-	return Promise.all([userService.get(userId), genericService.get(objectId)]).then((res) => {
-		if (res[0].schoolId.equals(res[1].schoolId)) return context;
-		throw new Forbidden('You do not have valid permissions to access this.');
-	});
-};
-
 function validatedAttachments(attachments) {
+	const MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE = Configuration.get(
+		'MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE'
+	);
 	let cTotalBufferSize = 0;
 	attachments.forEach((element) => {
 		if (
@@ -598,6 +577,7 @@ function validatedAttachments(attachments) {
 			throw new Error('Email Attachment is not a valid file!');
 		}
 		cTotalBufferSize += element.size;
+
 		if (cTotalBufferSize >= MAXIMUM_ALLOWABLE_TOTAL_ATTACHMENTS_SIZE_BYTE) {
 			throw new BadRequest('Email Attachments exceed the max. total file limit.');
 		}
@@ -730,46 +710,6 @@ exports.sendEmail = (context, maildata) => {
 		return context;
 	}
 
-	return context;
-};
-
-exports.arrayIncludes = (array, includesList, excludesList) => {
-	for (let i = 0; i < includesList.length; i += 1) {
-		if (array.includes(includesList[i]) === false) {
-			return false;
-		}
-	}
-
-	for (let i = 0; i < excludesList.length; i += 1) {
-		if (array.includes(excludesList[i])) {
-			return false;
-		}
-	}
-	return true;
-};
-
-/** used for user decoration of create, update, patch requests for mongoose-diff-history */
-exports.decorateWithCurrentUserId = (context) => {
-	// todo decorate document removal
-	// todo simplify user extraction to do this only once
-	try {
-		if (!context.params.account) {
-			context.params.account = {};
-		}
-		const { userId } = context.params.account;
-		// if user not defined, try extract userId from jwt
-		if (!userId && (context.params.headers || {}).authorization) {
-			// const jwt = extractTokenFromBearerHeader(context.params.headers.authorization);
-			// userId = 'jwt'; // fixme
-		}
-		// eslint-disable-next-line no-underscore-dangle
-		if (userId && context.data && !context.data.__user) {
-			// eslint-disable-next-line no-underscore-dangle
-			context.data.__user = userId;
-		}
-	} catch (err) {
-		logger.error(err);
-	}
 	return context;
 };
 

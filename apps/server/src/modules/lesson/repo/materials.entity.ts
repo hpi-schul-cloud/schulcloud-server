@@ -16,7 +16,6 @@ export interface MaterialProperties {
 	client: string;
 	description?: string;
 	license: string[];
-	merlinReference?: string;
 	relatedResources: RelatedResourceProperties[];
 	subjects: string[];
 	tags: string[];
@@ -35,9 +34,6 @@ export class Material extends BaseEntityWithTimestamps {
 
 	@Property()
 	license: string[];
-
-	@Property()
-	merlinReference?: string;
 
 	@Property()
 	relatedResources: RelatedResourceProperties[] | [];
@@ -62,7 +58,6 @@ export class Material extends BaseEntityWithTimestamps {
 		this.client = props.client;
 		this.description = props.description || '';
 		this.license = props.license;
-		this.merlinReference = props.merlinReference || '';
 		this.relatedResources = props.relatedResources;
 		this.subjects = props.subjects;
 		this.tags = props.tags;

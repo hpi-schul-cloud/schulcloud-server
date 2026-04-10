@@ -15,6 +15,7 @@ import { TestApiClient } from '@testing/test-api-client';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { Response } from 'supertest';
+import { MEDIUM_METADATA_ENCRYPTION_CONFIG_TOKEN, MediumMetadataEncryptionConfig } from '../../encryption.config';
 
 describe('MediumMetadataController (API)', () => {
 	let app: INestApplication;
@@ -22,6 +23,7 @@ describe('MediumMetadataController (API)', () => {
 
 	let testApiClient: TestApiClient;
 	let axiosMock: MockAdapter;
+	let encryptionConfig: MediumMetadataEncryptionConfig;
 
 	beforeAll(async () => {
 		const moduleRef: TestingModule = await Test.createTestingModule({
@@ -35,6 +37,8 @@ describe('MediumMetadataController (API)', () => {
 
 		em = app.get(EntityManager);
 		testApiClient = new TestApiClient(app, 'medium-metadata');
+
+		encryptionConfig = app.get<MediumMetadataEncryptionConfig>(MEDIUM_METADATA_ENCRYPTION_CONFIG_TOKEN);
 	});
 
 	afterAll(async () => {
@@ -49,12 +53,13 @@ describe('MediumMetadataController (API)', () => {
 	describe('[GET] medium-metadata/medium/:mediumId/media-source/:mediaSourceId', () => {
 		describe('when mediumId, mediaSourceId are given', () => {
 			const setup = async () => {
-				const mediaSourceEntity = mediaSourceEntityFactory.withBiloFormat().build();
+				const encryptionKey = encryptionConfig.aesKey;
+				const mediaSourceEntity = mediaSourceEntityFactory.withBiloFormat({ encryptionKey }).build();
 
 				const { superheroUser, superheroAccount } = UserAndAccountTestFactory.buildSuperhero({}, [
 					Permission.MEDIA_SOURCE_ADMIN,
 				]);
-				await em.persistAndFlush([superheroAccount, superheroUser, mediaSourceEntity]);
+				await em.persist([superheroAccount, superheroUser, mediaSourceEntity]).flush();
 				em.clear();
 
 				axiosMock.onPost(/(.*)\/oauth(.*)/).replyOnce<OauthTokenResponse>(HttpStatus.OK, {
@@ -92,9 +97,10 @@ describe('MediumMetadataController (API)', () => {
 
 		describe('when mediumId not valid', () => {
 			const setup = async () => {
-				const mediaSourceEntity = mediaSourceEntityFactory.withBiloFormat().build();
+				const encryptionKey = encryptionConfig.aesKey;
+				const mediaSourceEntity = mediaSourceEntityFactory.withBiloFormat({ encryptionKey }).build();
 				const { superheroUser, superheroAccount } = UserAndAccountTestFactory.buildSuperhero();
-				await em.persistAndFlush([superheroAccount, superheroUser, mediaSourceEntity]);
+				await em.persist([superheroAccount, superheroUser, mediaSourceEntity]).flush();
 				em.clear();
 
 				const loggedInClient: TestApiClient = await testApiClient.login(superheroAccount);
@@ -113,12 +119,13 @@ describe('MediumMetadataController (API)', () => {
 
 		describe('when medium does not exist', () => {
 			const setup = async () => {
-				const mediaSourceEntity = mediaSourceEntityFactory.withVidisFormat().build();
+				const encryptionKey = encryptionConfig.aesKey;
+				const mediaSourceEntity = mediaSourceEntityFactory.withVidisFormat({ encryptionKey }).build();
 
 				const { superheroUser, superheroAccount } = UserAndAccountTestFactory.buildSuperhero({}, [
 					Permission.MEDIA_SOURCE_ADMIN,
 				]);
-				await em.persistAndFlush([superheroAccount, superheroUser, mediaSourceEntity]);
+				await em.persist([superheroAccount, superheroUser, mediaSourceEntity]).flush();
 				em.clear();
 
 				const responses: OfferDTO[] = vidisOfferItemFactory.buildList(1);
@@ -141,10 +148,11 @@ describe('MediumMetadataController (API)', () => {
 
 		describe('when mediaSource does not exist', () => {
 			const setup = async () => {
-				const mediaSourceEntity = mediaSourceEntityFactory.withBiloFormat().build();
+				const encryptionKey = encryptionConfig.aesKey;
+				const mediaSourceEntity = mediaSourceEntityFactory.withBiloFormat({ encryptionKey }).build();
 
 				const { superheroUser, superheroAccount } = UserAndAccountTestFactory.buildSuperhero();
-				await em.persistAndFlush([superheroAccount, superheroUser, mediaSourceEntity]);
+				await em.persist([superheroAccount, superheroUser, mediaSourceEntity]).flush();
 				em.clear();
 
 				axiosMock.onPost(/(.*)\/oauth(.*)/).replyOnce<OauthTokenResponse>(HttpStatus.OK, {
@@ -175,7 +183,7 @@ describe('MediumMetadataController (API)', () => {
 				const { superheroUser, superheroAccount } = UserAndAccountTestFactory.buildSuperhero({}, [
 					Permission.MEDIA_SOURCE_ADMIN,
 				]);
-				await em.persistAndFlush([superheroAccount, superheroUser]);
+				await em.persist([superheroAccount, superheroUser]).flush();
 				em.clear();
 
 				axiosMock.onPost(/(.*)\/oauth(.*)/).replyOnce<OauthTokenResponse>(HttpStatus.OK, {
@@ -200,7 +208,8 @@ describe('MediumMetadataController (API)', () => {
 
 		describe('when user is not authenticated', () => {
 			const setup = () => {
-				const mediaSourceEntity = mediaSourceEntityFactory.withBiloFormat().build();
+				const encryptionKey = encryptionConfig.aesKey;
+				const mediaSourceEntity = mediaSourceEntityFactory.withBiloFormat({ encryptionKey }).build();
 				return {
 					mediaSourceEntity,
 				};
@@ -219,13 +228,14 @@ describe('MediumMetadataController (API)', () => {
 
 		describe('when the media source responded with not found', () => {
 			const setup = async () => {
-				const mediaSourceEntity = mediaSourceEntityFactory.withBiloFormat().build();
+				const encryptionKey = encryptionConfig.aesKey;
+				const mediaSourceEntity = mediaSourceEntityFactory.withBiloFormat({ encryptionKey }).build();
 
 				const { superheroUser, superheroAccount } = UserAndAccountTestFactory.buildSuperhero({}, [
 					Permission.MEDIA_SOURCE_ADMIN,
 				]);
 
-				await em.persistAndFlush([superheroAccount, superheroUser, mediaSourceEntity]);
+				await em.persist([superheroAccount, superheroUser, mediaSourceEntity]).flush();
 				em.clear();
 
 				axiosMock.onPost(/(.*)\/oauth(.*)/).replyOnce<OauthTokenResponse>(HttpStatus.OK, {
@@ -265,13 +275,14 @@ describe('MediumMetadataController (API)', () => {
 
 		describe('when the media source responded with bad request', () => {
 			const setup = async () => {
-				const mediaSourceEntity = mediaSourceEntityFactory.withBiloFormat().build();
+				const encryptionKey = encryptionConfig.aesKey;
+				const mediaSourceEntity = mediaSourceEntityFactory.withBiloFormat({ encryptionKey }).build();
 
 				const { superheroUser, superheroAccount } = UserAndAccountTestFactory.buildSuperhero({}, [
 					Permission.MEDIA_SOURCE_ADMIN,
 				]);
 
-				await em.persistAndFlush([superheroAccount, superheroUser, mediaSourceEntity]);
+				await em.persist([superheroAccount, superheroUser, mediaSourceEntity]).flush();
 				em.clear();
 
 				axiosMock.onPost(/(.*)\/oauth(.*)/).replyOnce<OauthTokenResponse>(HttpStatus.OK, {
@@ -311,13 +322,14 @@ describe('MediumMetadataController (API)', () => {
 
 		describe('when the media source responded with unprocessable response', () => {
 			const setup = async () => {
-				const mediaSourceEntity = mediaSourceEntityFactory.withBiloFormat().build();
+				const encryptionKey = encryptionConfig.aesKey;
+				const mediaSourceEntity = mediaSourceEntityFactory.withBiloFormat({ encryptionKey }).build();
 
 				const { superheroUser, superheroAccount } = UserAndAccountTestFactory.buildSuperhero({}, [
 					Permission.MEDIA_SOURCE_ADMIN,
 				]);
 
-				await em.persistAndFlush([superheroAccount, superheroUser, mediaSourceEntity]);
+				await em.persist([superheroAccount, superheroUser, mediaSourceEntity]).flush();
 				em.clear();
 
 				axiosMock.onPost(/(.*)\/oauth(.*)/).replyOnce<OauthTokenResponse>(HttpStatus.OK, {

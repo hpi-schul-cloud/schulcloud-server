@@ -3,7 +3,6 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
 import { Inject, Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import {
 	AuthorizationError,
 	EntityNotFoundError,
@@ -12,7 +11,7 @@ import {
 } from '@shared/common/error';
 import { Counted, EntityId } from '@shared/domain/types';
 import { isEmail, isNotEmpty } from 'class-validator';
-import { AccountConfig } from '../../account-config';
+import { ACCOUNT_CONFIG_TOKEN, AccountConfig } from '../../account-config';
 import { Account, AccountSave, UpdateAccount, UpdateMyAccount } from '../do';
 import {
 	DeletedAccountLoggable,
@@ -45,14 +44,14 @@ export class AccountService extends AbstractAccountService {
 	constructor(
 		private readonly accountDb: AccountServiceDb,
 		private readonly accountIdm: AccountServiceIdm,
-		private readonly configService: ConfigService<AccountConfig, true>,
+		@Inject(ACCOUNT_CONFIG_TOKEN) private readonly config: AccountConfig,
 		private readonly logger: Logger,
 		private readonly userService: UserService,
 		@Inject(ACCOUNT_REPO) private readonly accountRepo: AccountRepo
 	) {
 		super();
 		this.logger.setContext(AccountService.name);
-		if (this.configService.get<boolean>('FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED') === true) {
+		if (this.config.identityManagementLoginEnabled === true) {
 			this.accountImpl = accountIdm;
 		} else {
 			this.accountImpl = accountDb;
@@ -182,11 +181,13 @@ export class AccountService extends AbstractAccountService {
 		return targetAccount;
 	}
 
-	public async deactivateAccount(userId: EntityId, deactivatedAt: Date): Promise<void> {
+	public async deactivateAccount(userId: EntityId, deactivatedAt: Date): Promise<Account> {
 		const account = await this.accountRepo.findByUserIdOrFail(userId);
 		account.deactivatedAt = deactivatedAt;
 
 		await this.save(account);
+
+		return account;
 	}
 
 	public async reactivateAccount(userId: EntityId): Promise<void> {
@@ -292,7 +293,7 @@ export class AccountService extends AbstractAccountService {
 			return account;
 		});
 
-		if (this.configService.get('FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED') === true) {
+		if (this.config.identityManagementStoreEnabled === true) {
 			if (
 				idmAccount === null ||
 				(accountSave.username && idmAccount.username.toLowerCase() !== accountSave.username.toLowerCase())
@@ -332,7 +333,10 @@ export class AccountService extends AbstractAccountService {
 		return combinedAccounts;
 	}
 
-	public async validateAccountBeforeSaveOrReject(accountSave: AccountSave): Promise<void> {
+	public async validateAccountBeforeSaveOrReject(
+		accountSave: AccountSave,
+		options: { allowUpdate?: boolean } = { allowUpdate: false }
+	): Promise<void> {
 		// if username is undefined or empty, throw error ✔
 		if (!accountSave.username || !isNotEmpty(accountSave.username)) {
 			throw new ValidationError('username can not be empty');
@@ -350,26 +354,29 @@ export class AccountService extends AbstractAccountService {
 		if (!accountSave.systemId && !isEmail(accountSave.username)) {
 			throw new ValidationError('Username is not an email');
 		}
-		// checkExistence ✔
-		if (accountSave.userId && (await this.findByUserId(accountSave.userId))) {
-			throw new ValidationError('Account already exists');
+
+		if (options?.allowUpdate === false) {
+			// checkExistence ✔
+			if (accountSave.userId && (await this.findByUserId(accountSave.userId))) {
+				throw new ValidationError('Account already exists');
+			}
+			// validateCredentials hook will not be ported ✔
+			// trimPassword hook will be done by class-validator ✔
+			// local.hooks.hashPassword('password'), will be done by account service ✔
+			// checkUnique ✔
+			if (!(await this.isUniqueEmail(accountSave.username))) {
+				throw new ValidationError('Username already exists');
+			}
+			// removePassword hook is not implemented
+			// const noPasswordStrategies = ['ldap', 'moodle', 'iserv'];
+			// if (dto.passwordStrategy && noPasswordStrategies.includes(dto.passwordStrategy)) {
+			// 	dto.password = undefined;
+			// }
 		}
-		// validateCredentials hook will not be ported ✔
-		// trimPassword hook will be done by class-validator ✔
-		// local.hooks.hashPassword('password'), will be done by account service ✔
-		// checkUnique ✔
-		if (!(await this.isUniqueEmail(accountSave.username))) {
-			throw new ValidationError('Username already exists');
-		}
-		// removePassword hook is not implemented
-		// const noPasswordStrategies = ['ldap', 'moodle', 'iserv'];
-		// if (dto.passwordStrategy && noPasswordStrategies.includes(dto.passwordStrategy)) {
-		// 	dto.password = undefined;
-		// }
 	}
 
-	public async saveWithValidation(accountSave: AccountSave): Promise<void> {
-		await this.validateAccountBeforeSaveOrReject(accountSave);
+	public async saveWithValidation(accountSave: AccountSave, options?: { allowUpdate?: boolean }): Promise<void> {
+		await this.validateAccountBeforeSaveOrReject(accountSave, options);
 		await this.save(accountSave);
 	}
 
@@ -445,7 +452,7 @@ export class AccountService extends AbstractAccountService {
 	}
 
 	private async executeIdmMethod<T>(idmCallback: () => Promise<T>): Promise<T | null> {
-		if (this.configService.get('FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED') === true) {
+		if (this.config.identityManagementStoreEnabled === true) {
 			try {
 				return await idmCallback();
 			} catch (error) {

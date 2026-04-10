@@ -124,7 +124,7 @@ const isNull = (e) => e === null;
  */
 const tryToCastToObjectId = (id) => {
 	try {
-		return ObjectId(id);
+		return new ObjectId(id);
 	} catch (err) {
 		return null;
 	}

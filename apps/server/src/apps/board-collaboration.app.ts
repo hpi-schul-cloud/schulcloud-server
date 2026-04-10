@@ -6,17 +6,19 @@ import { NestFactory } from '@nestjs/core';
 import { install as sourceMapInstall } from 'source-map-support';
 
 // application imports
-import { LegacyLogger, Logger } from '@core/logger';
+import { createRequestLoggerMiddleware, LegacyLogger, LoggerConfig } from '@core/logger';
+import { LOGGER_CONFIG_TOKEN } from '@core/logger/logger.config';
+import { DATABASE_CONFIG_TOKEN, InternalDatabaseConfig } from '@infra/database';
+import { MongoIoAdapter } from '@infra/socketio';
+import { SESSION_VALKEY_CLIENT } from '@modules/authentication/authentication-config';
 import { BoardCollaborationModule } from '@modules/board/board-collaboration.app.module';
+import { BOARD_CONFIG_TOKEN, BoardConfig } from '@modules/board/board.config';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import { SwaggerDocumentOptions } from '@nestjs/swagger';
 import express from 'express';
-import {
-	addPrometheusMetricsMiddlewaresIfEnabled,
-	createAndStartPrometheusMetricsAppIfEnabled,
-	enableOpenApiDocs,
-} from './helpers';
-import { createRequestLoggerMiddleware } from './helpers/request-logger-middleware';
+import { enableOpenApiDocs } from './helpers';
+import { createMetricsServer } from './helpers/metrics.server';
+import legacyRedisUtils = require('../../../../src/utils/redis');
 
 async function bootstrap(): Promise<void> {
 	sourceMapInstall();
@@ -28,29 +30,37 @@ async function bootstrap(): Promise<void> {
 	nestApp.useLogger(legacyLogger);
 	nestApp.enableCors({ exposedHeaders: ['Content-Disposition'] });
 
-	/* This is not used yet, and will be replaced by the new socket.io adapter
-	const ioAdapter = new RedisIoAdapter(nestApp);
-	ioAdapter.connectToRedis();
+	const ioAdapter = new MongoIoAdapter(nestApp);
+	const dbConfig = await nestApp.resolve<InternalDatabaseConfig>(DATABASE_CONFIG_TOKEN);
+
+	await ioAdapter.connectToMongoDb(dbConfig);
+
 	nestApp.useWebSocketAdapter(ioAdapter);
-	*/
+	legacyLogger.log('Using MongoDB as Socket.IO adapter');
 
 	const options: SwaggerDocumentOptions = {
 		operationIdFactory: (_controllerKey: string, methodKey: string) => methodKey,
 	};
 	enableOpenApiDocs(nestApp, 'docs', options);
-	const logger = await nestApp.resolve(Logger);
-	nestApp.use(createRequestLoggerMiddleware());
+	const loggerConfig = await nestApp.resolve<LoggerConfig>(LOGGER_CONFIG_TOKEN);
+	nestApp.use(createRequestLoggerMiddleware(loggerConfig));
+	// The redisClient must be initialized in the legacy part for the session handling (whitelisting of JWTs) to work.
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+	const sessionValkeyClient = await nestApp.resolve(SESSION_VALKEY_CLIENT);
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+	legacyRedisUtils.initializeRedisClient(sessionValkeyClient);
+
+	await createMetricsServer(nestApp, 'Board Collaboration Server App');
 
 	await nestApp.init();
 
-	addPrometheusMetricsMiddlewaresIfEnabled(logger, nestExpress);
+	const boardConfig = await nestApp.resolve<BoardConfig>(BOARD_CONFIG_TOKEN);
+	const { basePath } = boardConfig;
+
 	const port = 4450;
-	const basePath = '/board-collaboration';
 
 	nestApp.setGlobalPrefix(basePath);
-	await nestApp.listen(port, () => {
-		createAndStartPrometheusMetricsAppIfEnabled(logger);
-	});
+	await nestApp.listen(port, () => {});
 
 	console.log('##########################################');
 	console.log(`### Start Board Collaboration Server   ###`);

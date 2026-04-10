@@ -7,9 +7,14 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
-import { BoardExternalReferenceType, ColumnBoardProps } from '../../domain';
+import { BoardExternalReferenceType, BoardNodeType, ColumnBoardProps } from '../../domain';
 import { BoardNodeEntity } from '../../repo';
-import { columnBoardEntityFactory } from '../../testing';
+import {
+	cardEntityFactory,
+	columnBoardEntityFactory,
+	columnEntityFactory,
+	linkElementEntityFactory,
+} from '../../testing';
 
 const baseRouteName = '/boards';
 
@@ -41,15 +46,15 @@ describe(`board copy with course relation (api)`, () => {
 		const setup = async (columnBoardProps: Partial<ColumnBoardProps> = {}) => {
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 
-			const course = courseEntityFactory.build({ teachers: [teacherUser] });
-			await em.persistAndFlush([teacherAccount, teacherUser, course]);
+			const course = courseEntityFactory.build({ school: teacherUser.school, teachers: [teacherUser] });
+			await em.persist([teacherAccount, teacherUser, course]).flush();
 
 			const columnBoardNode = columnBoardEntityFactory.build({
 				...columnBoardProps,
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
 
-			await em.persistAndFlush([columnBoardNode]);
+			await em.persist([columnBoardNode]).flush();
 			em.clear();
 
 			const loggedInClient = await testApiClient.login(teacherAccount);
@@ -107,6 +112,47 @@ describe(`board copy with course relation (api)`, () => {
 			expect(result.isVisible).toBe(false);
 		});
 
+		describe('when board contains link elements', () => {
+			const setupWithLinkElement = async () => {
+				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
+
+				const course = courseEntityFactory.build({ school: teacherUser.school, teachers: [teacherUser] });
+				await em.persist([teacherAccount, teacherUser, course]).flush();
+
+				const columnBoardNode = columnBoardEntityFactory.build({
+					context: { id: course.id, type: BoardExternalReferenceType.Course },
+				});
+				const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
+				const cardNode = cardEntityFactory.withParent(columnNode).build();
+				const internalLinkElement = linkElementEntityFactory.withParent(cardNode).build({
+					url: `https://example.com/boards/${columnBoardNode.id}#card-${cardNode.id}`,
+					imageUrl: '',
+				});
+				await em.persist([columnBoardNode, columnNode, cardNode, internalLinkElement]).flush();
+				em.clear();
+
+				const loggedInClient = await testApiClient.login(teacherAccount);
+
+				return { loggedInClient, columnBoardNode };
+			};
+
+			it('should update internal links on the board copy', async () => {
+				const { loggedInClient, columnBoardNode } = await setupWithLinkElement();
+
+				const response = await loggedInClient.post(`${columnBoardNode.id}/copy`);
+				const body = response.body as CopyApiResponse;
+				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+				const copyId = body.id!;
+
+				const result = await em.find(BoardNodeEntity, {
+					path: { $re: `^https://example.com/boards/${copyId}` },
+					type: BoardNodeType.LINK_ELEMENT,
+				});
+
+				expect(result).toBeDefined();
+			});
+		});
+
 		describe('with invalid id', () => {
 			it('should return status 400', async () => {
 				const { loggedInClient } = await setup();
@@ -132,14 +178,14 @@ describe(`board copy with course relation (api)`, () => {
 		const setup = async () => {
 			const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-			const course = courseEntityFactory.build({ students: [studentUser] });
-			await em.persistAndFlush([studentUser, course]);
+			const course = courseEntityFactory.build({ school: studentUser.school, students: [studentUser] });
+			await em.persist([studentUser, course]).flush();
 
 			const columnBoardNode = columnBoardEntityFactory.build({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
 
-			await em.persistAndFlush([studentAccount, studentUser, columnBoardNode]);
+			await em.persist([studentAccount, studentUser, columnBoardNode]).flush();
 			em.clear();
 
 			const loggedInClient = await testApiClient.login(studentAccount);

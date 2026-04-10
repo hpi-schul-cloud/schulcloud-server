@@ -4,7 +4,6 @@
 // for more of what you can do here.
 
 const mongoose = require('mongoose');
-const { Configuration } = require('@hpi-schul-cloud/commons');
 const { getDocumentBaseDir } = require('./logic/school');
 const externalSourceSchema = require('../../helper/externalSourceSchema');
 const { countySchema } = require('../federalState/countyModel');
@@ -13,7 +12,6 @@ const { Schema } = mongoose;
 const fileStorageTypes = ['awsS3'];
 
 const SCHOOL_FEATURES = {
-	ROCKET_CHAT: 'rocketChat',
 	VIDEOCONFERENCE: 'videoconference',
 	NEXTCLOUD: 'nextcloud',
 	STUDENTVISIBILITY: 'studentVisibility', // deprecated
@@ -22,8 +20,6 @@ const SCHOOL_FEATURES = {
 	SHOW_OUTDATED_USERS: 'showOutdatedUsers',
 	ENABLE_LDAP_SYNC_DURING_MIGRATION: 'enableLdapSyncDuringMigration',
 };
-
-const SCHOOL_OF_DELETED_USERS = { name: 'graveyard school (tombstone users only)', purpose: 'tombstone' };
 
 const defaultFeatures = [];
 
@@ -179,7 +175,6 @@ const gradeLevelModel = mongoose.model('gradeLevel', gradeLevelSchema);
 
 module.exports = {
 	SCHOOL_FEATURES,
-	SCHOOL_OF_DELETED_USERS,
 	schoolSchema,
 	schoolModel,
 	schoolGroupModel,

@@ -184,9 +184,9 @@ export class TaskUC {
 		let permittedCourses: CourseEntity[] = [];
 
 		if (neededPermission === Action.write) {
-			permittedCourses = await this.courseService.findAllForTeacherOrSubstituteTeacher(user.id);
+			permittedCourses = await this.courseService.findAllForTeacherOrSubstituteTeacher(user.id, user.school.id);
 		} else if (neededPermission === Action.read) {
-			permittedCourses = await this.courseService.findAllByUserId(user.id);
+			[permittedCourses] = await this.courseService.findAllByUserId(user.id, user.school.id);
 		}
 
 		return permittedCourses;

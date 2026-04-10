@@ -1,20 +1,28 @@
+import { CoreModule } from '@core/core.module';
 import { LoggerModule } from '@core/logger';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
-import { H5pEditorClientModule } from '@infra/h5p-editor-client';
+import { ConfigurationModule } from '@infra/configuration';
+import { H5P_EXCHANGE_CONFIG_TOKEN, H5pEditorClientModule, H5pExchangeConfig } from '@infra/h5p-editor-client';
+import { RABBITMQ_CONFIG_TOKEN, RabbitMQConfig } from '@infra/rabbitmq';
 import { TldrawClientModule } from '@infra/tldraw-client';
 import { CollaborativeTextEditorModule } from '@modules/collaborative-text-editor';
 import { CopyHelperModule } from '@modules/copy-helper';
 import { CourseModule } from '@modules/course';
+import {
+	FILES_STORAGE_CLIENT_CONFIG_TOKEN,
+	FilesStorageClientConfig,
+	FilesStorageClientModule,
+} from '@modules/files-storage-client';
 import { RoomModule } from '@modules/room';
-import { FilesStorageClientModule } from '@modules/files-storage-client';
 import { ContextExternalToolModule } from '@modules/tool/context-external-tool';
 import { UserModule } from '@modules/user';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
+import { CqrsModule } from '@nestjs/cqrs';
 import { AuthorizationModule } from '../authorization';
 import { RoomMembershipModule } from '../room-membership';
 import { BoardNodeRule } from './authorisation/board-node.rule';
-import { BoardNodeFactory } from './domain';
+import { BOARD_CONFIG_TOKEN, BoardConfig } from './board.config';
+import { BoardNodeFactory, MediaBoardNodeFactory } from './domain';
 import { BoardNodeRepo } from './repo';
 import {
 	BoardCommonToolService,
@@ -25,41 +33,52 @@ import {
 	MediaBoardService,
 } from './service';
 import {
-	BoardContextService,
+	BoardContextResolverService,
+	BoardCopyService,
 	BoardNodeCopyService,
 	BoardNodeDeleteHooksService,
-	ColumnBoardCopyService,
 	ColumnBoardLinkService,
 	ColumnBoardReferenceService,
 	ColumnBoardTitleService,
 	ContentElementUpdateService,
 } from './service/internal';
+import { TLDRAW_CLIENT_CONFIG_TOKEN, TldrawClientConfig } from './tldraw-client.config';
 
 @Module({
 	imports: [
+		CoreModule,
 		CourseModule,
 		CopyHelperModule,
-		FilesStorageClientModule,
 		LoggerModule,
 		UserModule,
 		ContextExternalToolModule,
 		HttpModule,
-		TldrawClientModule.register({
-			TLDRAW_ADMIN_API_CLIENT_BASE_URL: Configuration.get('TLDRAW_ADMIN_API_CLIENT__BASE_URL') as string,
-			TLDRAW_ADMIN_API_CLIENT_API_KEY: Configuration.get('TLDRAW_ADMIN_API_CLIENT__API_KEY') as string,
-		}),
+		TldrawClientModule.register(TLDRAW_CLIENT_CONFIG_TOKEN, TldrawClientConfig),
 		CollaborativeTextEditorModule,
 		AuthorizationModule,
 		RoomModule,
 		RoomMembershipModule,
-		H5pEditorClientModule,
+		H5pEditorClientModule.register({
+			exchangeConfigInjectionToken: H5P_EXCHANGE_CONFIG_TOKEN,
+			exchangeConfigConstructor: H5pExchangeConfig,
+			configInjectionToken: RABBITMQ_CONFIG_TOKEN,
+			configConstructor: RabbitMQConfig,
+		}),
+		FilesStorageClientModule.register({
+			exchangeConfigConstructor: FilesStorageClientConfig,
+			exchangeConfigInjectionToken: FILES_STORAGE_CLIENT_CONFIG_TOKEN,
+			configInjectionToken: RABBITMQ_CONFIG_TOKEN,
+			configConstructor: RabbitMQConfig,
+		}),
+		CqrsModule,
+		ConfigurationModule.register(BOARD_CONFIG_TOKEN, BoardConfig),
 	],
 	providers: [
 		// TODO: move BoardDoAuthorizableService, BoardDoRepo, BoardDoService, BoardNodeRepo in separate module and move mediaboard related services in mediaboard module
-		BoardNodeRule,
-		BoardContextService,
+		BoardContextResolverService,
 		BoardNodeAuthorizableService,
 		BoardNodeRepo,
+		BoardNodeRule,
 		BoardNodeService,
 		BoardNodeFactory,
 		BoardNodeCopyService,
@@ -67,17 +86,19 @@ import {
 		BoardNodeDeleteHooksService,
 		ColumnBoardService,
 		ContentElementUpdateService,
-		ColumnBoardCopyService,
+		BoardCopyService,
 		ColumnBoardLinkService,
 		ColumnBoardReferenceService,
 		ColumnBoardTitleService,
 		ContextExternalToolDeletedEventHandlerService,
 		// TODO replace by import of MediaBoardModule (fix dependency cycle)
+		MediaBoardNodeFactory,
 		MediaBoardService,
 	],
 	exports: [
 		BoardNodeAuthorizableService,
 		BoardNodeFactory,
+		BoardNodeRule,
 		BoardNodeService,
 		BoardCommonToolService,
 		ColumnBoardService,

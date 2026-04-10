@@ -24,15 +24,14 @@ import { schoolFactory } from '@modules/school/testing';
 import { System, SystemService, SystemType } from '@modules/system';
 import { systemFactory, systemOauthConfigFactory } from '@modules/system/testing';
 import { UserDo } from '@modules/user';
-import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { SyncStrategyTarget } from '../../sync-strategy.types';
+import { SYNC_CONFIG_TOKEN, SyncConfig } from '../../sync.config';
 import { TspFetchService } from './tsp-fetch.service';
 import { TspOauthDataMapper, TspUserInfo } from './tsp-oauth-data.mapper';
 import { TspSchoolService } from './tsp-school.service';
-import { TspSyncConfig } from './tsp-sync.config';
 import { TspSyncStrategy } from './tsp-sync.strategy';
 
 describe(TspSyncStrategy.name, () => {
@@ -40,9 +39,9 @@ describe(TspSyncStrategy.name, () => {
 	let sut: TspSyncStrategy;
 	let tspSyncService: DeepMocked<TspSchoolService>;
 	let tspFetchService: DeepMocked<TspFetchService>;
+	let config: SyncConfig;
 	let provisioningService: DeepMocked<TspProvisioningService>;
 	let tspOauthDataMapper: DeepMocked<TspOauthDataMapper>;
-	let configService: DeepMocked<ConfigService<TspSyncConfig, true>>;
 	let systemService: DeepMocked<SystemService>;
 
 	beforeAll(async () => {
@@ -62,8 +61,8 @@ describe(TspSyncStrategy.name, () => {
 					useValue: createMock<Logger>(),
 				},
 				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService<TspSyncConfig, true>>(),
+					provide: SYNC_CONFIG_TOKEN,
+					useValue: new SyncConfig(),
 				},
 				{
 					provide: TspProvisioningService,
@@ -83,9 +82,9 @@ describe(TspSyncStrategy.name, () => {
 		sut = module.get(TspSyncStrategy);
 		tspSyncService = module.get(TspSchoolService);
 		tspFetchService = module.get(TspFetchService);
+		config = module.get(SYNC_CONFIG_TOKEN);
 		provisioningService = module.get(TspProvisioningService);
 		tspOauthDataMapper = module.get(TspOauthDataMapper);
-		configService = module.get(ConfigService);
 		systemService = module.get(SystemService);
 	});
 
@@ -124,7 +123,6 @@ describe(TspSyncStrategy.name, () => {
 		foundSystem?: System;
 		updatedAccount?: Account;
 		updatedUser?: UserDo;
-		configValues?: unknown[];
 		processBatchSize?: number;
 		classBatchResult?: { classCreationCount: number; classUpdateCount: number };
 	}) => {
@@ -143,8 +141,6 @@ describe(TspSyncStrategy.name, () => {
 				usersOfClasses: new Map(),
 			}
 		);
-
-		params.configValues?.forEach((value) => configService.getOrThrow.mockReturnValueOnce(value));
 
 		provisioningService.provisionUserBatch.mockResolvedValueOnce(params.processBatchSize ?? 0);
 		provisioningService.provisionClassBatch.mockResolvedValueOnce(
@@ -200,7 +196,6 @@ describe(TspSyncStrategy.name, () => {
 					},
 					foundSystemSchools: [school],
 					foundSystem: system,
-					configValues: [1, 10, 15, 50],
 				});
 
 				return {
@@ -236,13 +231,13 @@ describe(TspSyncStrategy.name, () => {
 				await sut.sync();
 
 				expect(tspFetchService.fetchTspTeachers).toHaveBeenCalledTimes(1);
-				expect(tspFetchService.fetchTspTeachers).toHaveBeenCalledWith(system, 15);
+				expect(tspFetchService.fetchTspTeachers).toHaveBeenCalledWith(system, config.dataDaysToFetch);
 
 				expect(tspFetchService.fetchTspStudents).toHaveBeenCalledTimes(1);
-				expect(tspFetchService.fetchTspStudents).toHaveBeenCalledWith(system, 15);
+				expect(tspFetchService.fetchTspStudents).toHaveBeenCalledWith(system, config.dataDaysToFetch);
 
 				expect(tspFetchService.fetchTspClasses).toHaveBeenCalledTimes(1);
-				expect(tspFetchService.fetchTspClasses).toHaveBeenCalledWith(system, 15);
+				expect(tspFetchService.fetchTspClasses).toHaveBeenCalledWith(system, config.dataDaysToFetch);
 			});
 
 			it('should load all schools', async () => {
@@ -315,7 +310,6 @@ describe(TspSyncStrategy.name, () => {
 				setupMockServices({
 					fetchedSchools: tspSchools,
 					foundSystem: system,
-					configValues: [1, 10, 15, 50],
 				});
 
 				return { system, tspSchool };
@@ -345,7 +339,6 @@ describe(TspSyncStrategy.name, () => {
 					}),
 					fetchedSchools: tspSchools,
 					foundSchool: school,
-					configValues: [1, 10, 15, 50],
 				});
 
 				return { school, tspSchool };
@@ -374,7 +367,6 @@ describe(TspSyncStrategy.name, () => {
 						oauthConfig: systemOauthConfigFactory.build(),
 					}),
 					fetchedSchools: tspSchools,
-					configValues: [1, 10, 15, 50],
 				});
 			};
 
@@ -398,7 +390,6 @@ describe(TspSyncStrategy.name, () => {
 						oauthConfig: systemOauthConfigFactory.build(),
 					}),
 					foundSystemSchools: schoolFactory.buildList(2),
-					configValues: [1, 10, 15, 50],
 				});
 			};
 
@@ -428,7 +419,6 @@ describe(TspSyncStrategy.name, () => {
 						}),
 						usersOfClasses: new Map(),
 					},
-					configValues: [1, 10, 15, 50],
 				});
 			};
 
@@ -458,7 +448,6 @@ describe(TspSyncStrategy.name, () => {
 							[faker.string.uuid(), [{ externalId: faker.string.uuid(), role: RoleName.TEACHER }]],
 						]),
 					},
-					configValues: [1, 10, 15, 50],
 				});
 			};
 			it('should throw NotFoundLoggableException', async () => {

@@ -93,7 +93,6 @@
 		},
 		"purpose": "demo",
 		"features": [
-			"rocketChat",
 			"ldapUniventionMigrationSchool",
 			"videoconference",
 			"oauthProvisioningEnabled"
@@ -112,7 +111,7 @@
 		"updatedAt": {
 			"$date": "2020-07-27T08:21:14.719Z"
 		},
-		"name": "Expertenschule",
+		"name": "Externe-Personen-Schule",
 		"federalState": {
 			"$oid": "0000b186816abba584714c53"
 		},
@@ -133,9 +132,8 @@
 		"currentYear": {
 			"$oid": "5ebd6dc14a431f75ec9a3e7b"
 		},
-		"purpose": "expert",
+		"purpose": "external_person_school",
         "features" : [
-			"rocketChat",
 			"videoconference",
 			"oauthProvisioningEnabled"
 		]
@@ -149,7 +147,6 @@
 		"experimental": false,
 		"pilot": false,
 		"features": [
-			"rocketChat",
 			"studentVisibility",
 			"oauthProvisioningEnabled"
 		],
@@ -180,9 +177,7 @@
 		"__v": 0,
 		"purpose": "demo",
 		"permissions": {
-			"student": {
-				"LERNSTORE_VIEW": true
-			}
+			"student": {}
 		},
 		"language": "de",
 		"logo_dataUrl": "",
@@ -193,13 +188,10 @@
 			"$oid": "5fa318f2b229544f2c697a56"
 		},
 		"documentBaseDirType": "",
-		"systems": [{
-			"$oid": "62c7f233f35a554ba3ed0000"
-		}],
+		"systems": [],
 		"experimental": false,
 		"pilot": false,
 		"features": [
-			"rocketChat",
 			"oauthProvisioningEnabled"
 		],
 		"name": "Ludwig van Beethoven-Liceum",
@@ -229,9 +221,7 @@
 		"__v": 0,
 		"purpose": "demo",
 		"permissions": {
-			"student": {
-				"LERNSTORE_VIEW": true
-			}
+			"student": {}
 		},
 		"language": "de",
 		"logo_dataUrl": "",
@@ -247,7 +237,6 @@
 		"experimental": false,
 		"pilot": false,
 		"features": [
-			"rocketChat",
 			"studentVisibility",
 			"oauthProvisioningEnabled"
 		],
@@ -271,9 +260,7 @@
 		"__v": 0,
 		"purpose": "demo",
 		"permissions": {
-			"student": {
-				"LERNSTORE_VIEW": true
-			}
+			"student": {}
 		},
 		"language": "en",
 		"logo_dataUrl": "",
@@ -374,7 +361,6 @@
 		},
 		"purpose": "demo",
 		"features": [
-			"rocketChat",
 			"ldapUniventionMigrationSchool",
 			"videoconference",
 			"oauthProvisioningEnabled"
@@ -416,7 +402,6 @@
 		},
 		"purpose": "demo",
 		"features": [
-			"rocketChat",
 			"ldapUniventionMigrationSchool",
 			"videoconference",
 			"oauthProvisioningEnabled"
@@ -458,7 +443,6 @@
 		},
 		"purpose": "demo",
 		"features": [
-			"rocketChat",
 			"videoconference"
 		],
 		"enableStudentTeamCreation": false,
@@ -504,7 +488,6 @@
 			}
 		},
         "features": [
-			"rocketChat",
 			"videoconference"
 		]
 	}

@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+const { ObjectId } = require('mongoose').Types;
 const assert = require('assert').strict;
 
 const appPromise = require('../../../../src/app');
@@ -27,12 +27,12 @@ describe("'/teams/manage/admin' service", () => {
 	describe('mapped function', () => {
 		let teams;
 		let expectedResult;
-		const sessionSchoolId = mongoose.Types.ObjectId('4edd40c86762e0fb12000003');
+		const sessionSchoolId = new ObjectId('4edd40c86762e0fb12000003');
 
 		beforeEach(() => {
 			const createdAt = Date.now();
-			const teamId = mongoose.Types.ObjectId('5f2987e020834114b8efd6f7');
-			const userId = mongoose.Types.ObjectId('0000d733686abba584714c55');
+			const teamId = new ObjectId('5f2987e020834114b8efd6f7');
+			const userId = new ObjectId('0000d733686abba584714c55');
 
 			teams = {
 				data: [
@@ -97,7 +97,6 @@ describe("'/teams/manage/admin' service", () => {
 						desciption: 'Spintatenpower makes teams greate again',
 						createdAtMySchool: true,
 						hasMembersOfOtherSchools: false,
-						hasRocketChat: false,
 						createdAt,
 						ownerExist: true,
 						schools: [
@@ -139,7 +138,7 @@ describe("'/teams/manage/admin' service", () => {
 		});
 
 		it('created at other school', async () => {
-			const schoolId = mongoose.Types.ObjectId('4edd40c86372e0fb12000007');
+			const schoolId = new ObjectId('4edd40c86372e0fb12000007');
 
 			teams.data[0].schoolId = schoolId;
 			teams.data[0].userIds[0].schoolId = schoolId;
@@ -156,13 +155,6 @@ describe("'/teams/manage/admin' service", () => {
 
 			const result = AdminOverview.mapped(teams, sessionSchoolId);
 
-			assert.deepStrictEqual(result, expectedResult);
-		});
-
-		it('rocket chat is activeted', async () => {
-			teams.data[0].features.push('rocketChat');
-			expectedResult.data[0].hasRocketChat = true;
-			const result = AdminOverview.mapped(teams, sessionSchoolId);
 			assert.deepStrictEqual(result, expectedResult);
 		});
 	});

@@ -1,8 +1,8 @@
 import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Configuration } from '@hpi-schul-cloud/commons';
 import { DefaultEncryptionService, EncryptionService, SymmetricKeyEncryptionService } from '@infra/encryption';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { ErwinIdentifier, ErwinIdentifierService, ReferencedEntityType } from '@modules/erwin-identifier';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
 import { OauthAdapterService, OAuthTokenDto } from '@modules/oauth-adapter';
@@ -53,11 +53,10 @@ describe('OAuthService', () => {
 	let oauthAdapterService: DeepMocked<OauthAdapterService>;
 	let migrationCheckService: DeepMocked<MigrationCheckService>;
 	let schoolService: DeepMocked<LegacySchoolService>;
+	let erwinIdentifierService: DeepMocked<ErwinIdentifierService>;
 
 	let testSystem: System;
 	let testOauthConfig: OauthConfigEntity;
-
-	const hostUri = 'https://mock.de';
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -95,6 +94,10 @@ describe('OAuthService', () => {
 					provide: MigrationCheckService,
 					useValue: createMock<MigrationCheckService>(),
 				},
+				{
+					provide: ErwinIdentifierService,
+					useValue: createMock<ErwinIdentifierService>(),
+				},
 			],
 		}).compile();
 		service = module.get(OAuthService);
@@ -106,6 +109,7 @@ describe('OAuthService', () => {
 		oauthAdapterService = module.get(OauthAdapterService);
 		migrationCheckService = module.get(MigrationCheckService);
 		schoolService = module.get(LegacySchoolService);
+		erwinIdentifierService = module.get(ErwinIdentifierService);
 	});
 
 	afterAll(async () => {
@@ -117,16 +121,6 @@ describe('OAuthService', () => {
 	});
 
 	beforeEach(() => {
-		jest.spyOn(Configuration, 'get').mockImplementation((key: string): unknown => {
-			switch (key) {
-				case 'HOST':
-				case 'PUBLIC_BACKEND_URL':
-					return hostUri;
-				default:
-					throw new Error(`No mock for key '${key}'`);
-			}
-		});
-
 		testSystem = systemFactory.withOauthConfig().build();
 		testOauthConfig = testSystem.oauthConfig as OauthConfigEntity;
 	});
@@ -840,6 +834,123 @@ describe('OAuthService', () => {
 				const result = await service.provisionUser(systemId, idToken, accessToken);
 
 				expect(result).toEqual(user);
+			});
+		});
+
+		describe('when provisioning an existing user with an erwinId', () => {
+			const setup = () => {
+				const systemId = new ObjectId().toHexString();
+				const idToken = 'idToken';
+				const accessToken = 'accessToken';
+				const externalUserId = 'externalUserId';
+				const erwinId = 'erwinId';
+
+				const userFromErwin = userDoFactory.build({
+					id: new ObjectId().toHexString(),
+				});
+
+				const provisioningData = new OauthDataDto({
+					system: {
+						systemId,
+						provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_ASYNC,
+						provisioningUrl: 'https://mock.person-info.de/',
+					},
+					externalUser: externalUserDtoFactory.build({
+						externalId: externalUserId,
+						erwinId,
+					}),
+					externalSchool: {
+						externalId: 'externalSchoolId',
+						name: 'External School',
+					},
+				});
+
+				const erwinIdentifier = {
+					id: new ObjectId().toHexString(),
+					erwinId,
+					type: ReferencedEntityType.USER,
+					referencedEntityId: userFromErwin.id,
+				} as ErwinIdentifier;
+
+				provisioningService.getData.mockResolvedValueOnce(provisioningData);
+				erwinIdentifierService.findByErwinId.mockResolvedValueOnce(erwinIdentifier);
+				userService.findByIdOrNull.mockResolvedValueOnce(userFromErwin);
+
+				return {
+					systemId,
+					idToken,
+					accessToken,
+					provisioningData,
+					userFromErwin,
+					erwinId,
+				};
+			};
+
+			it('should find the user by Erwin ID and return it', async () => {
+				const { systemId, idToken, accessToken, userFromErwin, erwinId } = setup();
+
+				const result = await service.provisionUser(systemId, idToken, accessToken);
+
+				expect(erwinIdentifierService.findByErwinId).toHaveBeenCalledWith(erwinId);
+				expect(userService.findByIdOrNull).toHaveBeenCalled();
+				expect(userService.findByExternalId).not.toHaveBeenCalled();
+				expect(result).toEqual(userFromErwin);
+			});
+		});
+
+		describe('when provisioning an existing user with an erwinId but no ErwinIdentifier exists', () => {
+			const setup = () => {
+				const systemId = new ObjectId().toHexString();
+				const idToken = 'idToken';
+				const accessToken = 'accessToken';
+				const externalUserId = 'externalUserId';
+				const erwinId = 'erwinId';
+
+				const userFromExternalId = userDoFactory.build({
+					id: new ObjectId().toHexString(),
+					externalId: externalUserId,
+				});
+
+				const provisioningData = new OauthDataDto({
+					system: {
+						systemId,
+						provisioningStrategy: SystemProvisioningStrategy.SCHULCONNEX_ASYNC,
+						provisioningUrl: 'https://mock.person-info.de/',
+					},
+					externalUser: externalUserDtoFactory.build({
+						externalId: externalUserId,
+						erwinId,
+					}),
+					externalSchool: {
+						externalId: 'externalSchoolId',
+						name: 'External School',
+					},
+				});
+
+				provisioningService.getData.mockResolvedValueOnce(provisioningData);
+				erwinIdentifierService.findByErwinId.mockResolvedValueOnce(null);
+				userService.findByExternalId.mockResolvedValueOnce(userFromExternalId);
+
+				return {
+					systemId,
+					idToken,
+					accessToken,
+					provisioningData,
+					userFromExternalId,
+					externalUserId,
+					erwinId,
+				};
+			};
+
+			it('should fall back to externalId lookup and return the user', async () => {
+				const { systemId, idToken, accessToken, userFromExternalId, externalUserId, erwinId } = setup();
+
+				const result = await service.provisionUser(systemId, idToken, accessToken);
+
+				expect(erwinIdentifierService.findByErwinId).toHaveBeenCalledWith(erwinId);
+				expect(userService.findByIdOrNull).not.toHaveBeenCalled();
+				expect(userService.findByExternalId).toHaveBeenCalledWith(externalUserId, systemId);
+				expect(result).toEqual(userFromExternalId);
 			});
 		});
 	});

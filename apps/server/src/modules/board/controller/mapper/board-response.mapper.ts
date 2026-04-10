@@ -1,11 +1,15 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
+import { BoardOperation } from '../../authorisation/board-node.rule';
 import { BoardFeature, Column, ColumnBoard } from '../../domain';
 import { BoardResponse, TimestampsResponse } from '../dto';
 import { ColumnResponseMapper } from './column-response.mapper';
-import { Permission } from '@shared/domain/interface/permission.enum';
 
 export class BoardResponseMapper {
-	public static mapToResponse(board: ColumnBoard, features: BoardFeature[], permissions: Permission[]): BoardResponse {
+	public static mapToResponse(
+		board: ColumnBoard,
+		features: BoardFeature[],
+		allowedOperations: Record<BoardOperation, boolean>
+	): BoardResponse {
 		const result = new BoardResponse({
 			id: board.id,
 			title: board.title,
@@ -21,9 +25,10 @@ export class BoardResponseMapper {
 			}),
 			timestamps: new TimestampsResponse({ lastUpdatedAt: board.updatedAt, createdAt: board.createdAt }),
 			isVisible: board.isVisible,
+			readersCanEdit: board.readersCanEdit,
 			layout: board.layout,
 			features,
-			permissions,
+			allowedOperations,
 		});
 		return result;
 	}

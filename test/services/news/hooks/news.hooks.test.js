@@ -61,7 +61,7 @@ describe('news hooks', () => {
 
 			expect(await newsHistoryModel.countDocuments()).to.equal(4);
 			await deleteNewsHistory({ id: newsId.toString() });
-			expect(await newsHistoryModel.countDocuments()).to.equal(2);
+			expect(await newsHistoryModel.countDocuments()).to.equal(3);
 
 			// cleanup
 			await newsHistoryModel.deleteMany({}).exec();

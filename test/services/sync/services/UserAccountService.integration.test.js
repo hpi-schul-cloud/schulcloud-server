@@ -46,7 +46,7 @@ describe('UserAccountService integration', () => {
 			}
 
 			if (createdUser) {
-				await userModel.remove(createdUser);
+				await userModel.deleteOne(createdUser);
 				createdUser = undefined;
 			}
 

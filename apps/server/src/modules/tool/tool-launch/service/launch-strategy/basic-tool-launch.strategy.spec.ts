@@ -12,6 +12,7 @@ import {
 	AutoContextNameStrategy,
 	AutoGroupExternalUuidStrategy,
 	AutoMediumIdStrategy,
+	AutoPublisherStrategy,
 	AutoSchoolIdStrategy,
 	AutoSchoolNumberStrategy,
 } from '../auto-parameter-strategy';
@@ -45,6 +46,10 @@ describe('BasicToolLaunchStrategy', () => {
 				{
 					provide: AutoMediumIdStrategy,
 					useValue: createMock<AutoMediumIdStrategy>(),
+				},
+				{
+					provide: AutoPublisherStrategy,
+					useValue: createMock<AutoPublisherStrategy>(),
 				},
 				{
 					provide: AutoGroupExternalUuidStrategy,

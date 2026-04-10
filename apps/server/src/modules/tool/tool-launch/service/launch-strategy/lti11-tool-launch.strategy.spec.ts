@@ -1,5 +1,4 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { PseudonymService } from '@modules/pseudonym/service';
@@ -26,12 +25,14 @@ import {
 import { externalToolFactory } from '../../../external-tool/testing';
 import { SchoolExternalTool } from '../../../school-external-tool/domain';
 import { schoolExternalToolFactory } from '../../../school-external-tool/testing';
+import { TOOL_CONFIG_TOKEN, ToolConfig } from '../../../tool-config';
 import { LaunchRequestMethod, LaunchType, PropertyData, PropertyLocation, ToolLaunchRequest } from '../../types';
 import {
 	AutoContextIdStrategy,
 	AutoContextNameStrategy,
 	AutoGroupExternalUuidStrategy,
 	AutoMediumIdStrategy,
+	AutoPublisherStrategy,
 	AutoSchoolIdStrategy,
 	AutoSchoolNumberStrategy,
 } from '../auto-parameter-strategy';
@@ -47,6 +48,7 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 	let ltiDeepLinkTokenService: DeepMocked<LtiDeepLinkTokenService>;
 	let ltiDeepLinkingService: DeepMocked<LtiDeepLinkingService>;
 	let encryptionService: DeepMocked<EncryptionService>;
+	let config: ToolConfig;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -93,12 +95,20 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 					useValue: createMock<AutoMediumIdStrategy>(),
 				},
 				{
+					provide: AutoPublisherStrategy,
+					useValue: createMock<AutoPublisherStrategy>(),
+				},
+				{
 					provide: AutoGroupExternalUuidStrategy,
 					useValue: createMock<AutoGroupExternalUuidStrategy>(),
 				},
 				{
 					provide: DefaultEncryptionService,
 					useValue: createMock<EncryptionService>(),
+				},
+				{
+					provide: TOOL_CONFIG_TOKEN,
+					useValue: new ToolConfig(),
 				},
 			],
 		}).compile();
@@ -111,6 +121,7 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 		ltiDeepLinkTokenService = module.get(LtiDeepLinkTokenService);
 		ltiDeepLinkingService = module.get(LtiDeepLinkingService);
 		encryptionService = module.get(DefaultEncryptionService);
+		config = module.get(TOOL_CONFIG_TOKEN);
 	});
 
 	afterAll(async () => {
@@ -651,7 +662,7 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 					const user = userDoFactory.buildWithId(undefined, userId);
 					const ltiDeepLinkToken = ltiDeepLinkTokenFactory.build();
 
-					const publicBackendUrl = Configuration.get('PUBLIC_BACKEND_URL') as string;
+					const { publicBackendUrl } = config;
 					const callbackUrl = `${publicBackendUrl}/v3/tools/context-external-tools/${contextExternalTool.id}/lti11-deep-link-callback`;
 
 					userService.findById.mockResolvedValue(user);

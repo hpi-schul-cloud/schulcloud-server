@@ -14,6 +14,7 @@ import { TestApiClient } from '@testing/test-api-client';
 import { BoardExternalReferenceType } from '../../domain';
 import { BoardNodeEntity } from '../../repo';
 import { columnBoardEntityFactory } from '../../testing';
+import { schoolEntityFactory } from '@modules/school/testing';
 
 const baseRouteName = '/boards';
 
@@ -42,49 +43,55 @@ describe(`board update visibility with room relation (api)`, () => {
 	});
 
 	const setup = async () => {
-		const userWithEditRole = userFactory.buildWithId();
+		const school = schoolEntityFactory.buildWithId();
+		const userWithOwnerRole = userFactory.buildWithId({ school });
+		const userWithEditRole = userFactory.buildWithId({ school });
 		const accountWithEditRole = accountFactory.withUser(userWithEditRole).build();
 
-		const userWithViewRole = userFactory.buildWithId();
+		const userWithViewRole = userFactory.buildWithId({ school });
 		const accountWithViewRole = accountFactory.withUser(userWithViewRole).build();
 
-		const noAccessUser = userFactory.buildWithId();
+		const noAccessUser = userFactory.buildWithId({ school });
 		const noAccessAccount = accountFactory.withUser(noAccessUser).build();
 
-		const { roomEditorRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
+		const { roomEditorRole, roomViewerRole, roomOwnerRole } = RoomRolesTestFactory.createRoomRoles();
 
 		const userGroup = groupEntityFactory.buildWithId({
 			type: GroupEntityTypes.ROOM,
 			users: [
+				{ user: userWithOwnerRole, role: roomOwnerRole },
 				{ user: userWithEditRole, role: roomEditorRole },
 				{ user: userWithViewRole, role: roomViewerRole },
 			],
+			organization: school,
 		});
 
-		const room = roomEntityFactory.buildWithId();
+		const room = roomEntityFactory.buildWithId({ schoolId: school.id });
 
 		const roomMembership = roomMembershipEntityFactory.build({ roomId: room.id, userGroupId: userGroup.id });
 
-		await em.persistAndFlush([
-			accountWithEditRole,
-			accountWithViewRole,
-			noAccessAccount,
-			userWithEditRole,
-			userWithViewRole,
-			noAccessUser,
-			roomEditorRole,
-			roomViewerRole,
-			userGroup,
-			room,
-			roomMembership,
-		]);
+		await em
+			.persist([
+				accountWithEditRole,
+				accountWithViewRole,
+				noAccessAccount,
+				userWithEditRole,
+				userWithViewRole,
+				noAccessUser,
+				roomEditorRole,
+				roomViewerRole,
+				userGroup,
+				room,
+				roomMembership,
+			])
+			.flush();
 
 		const columnBoardNode = columnBoardEntityFactory.build({
 			isVisible: false,
 			context: { id: room.id, type: BoardExternalReferenceType.Room },
 		});
 
-		await em.persistAndFlush([columnBoardNode]);
+		await em.persist([columnBoardNode]).flush();
 		em.clear();
 
 		return { accountWithEditRole, accountWithViewRole, noAccessAccount, columnBoardNode };

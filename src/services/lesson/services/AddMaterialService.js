@@ -14,9 +14,9 @@ class AddMaterialService {
 	}
 
 	async createOne(data, params) {
-		const { title, client, url, merlinReference } = data;
+		const { title, client, url } = data;
 
-		const material = await this.app.service('materials').create({ title, client, url, merlinReference });
+		const material = await this.app.service('materials').create({ title, client, url });
 
 		await this.app.service('lessons').patch(params.lesson._id, {
 			courseId: params.lesson.courseId,

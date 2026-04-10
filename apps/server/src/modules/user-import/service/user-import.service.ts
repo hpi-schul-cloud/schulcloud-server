@@ -7,17 +7,23 @@ import { System, SystemService } from '@modules/system';
 import { UserService } from '@modules/user';
 import { UserLoginMigrationDO } from '@modules/user-login-migration';
 import { User } from '@modules/user/repo';
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { ForbiddenException, Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { EntityId } from '@shared/domain/types';
+import { UserAlreadyAssignedToImportUserError } from '../domain/error';
 import { ImportUser, MatchCreator } from '../entity';
-import { UserMigrationCanceledLoggable, UserMigrationIsNotEnabled } from '../loggable';
+import {
+	SchoolIdDoesNotMatchWithUserSchoolId,
+	UserMigrationCanceledLoggable,
+	UserMigrationIsNotEnabled,
+} from '../loggable';
 import { ImportUserRepo } from '../repo/import-user.repo';
-import { UserImportConfig } from '../user-import-config';
+import { USER_IMPORT_CONFIG_TOKEN, UserImportConfig } from '../user-import-config';
 
 @Injectable()
 export class UserImportService {
 	constructor(
-		private readonly configService: ConfigService<UserImportConfig, true>,
+		@Inject(USER_IMPORT_CONFIG_TOKEN)
+		private readonly userImportConfig: UserImportConfig,
 		private readonly userImportRepo: ImportUserRepo,
 		private readonly systemService: SystemService,
 		private readonly userService: UserService,
@@ -30,15 +36,15 @@ export class UserImportService {
 	}
 
 	public async getMigrationSystem(): Promise<System> {
-		const systemId: string = this.configService.get('FEATURE_USER_MIGRATION_SYSTEM_ID');
+		const systemId: string = this.userImportConfig.featureUserMigrationSystemId;
 
 		const system: System = await this.systemService.findByIdOrFail(systemId);
 
 		return system;
 	}
 
-	public checkFeatureEnabled(school: LegacySchoolDo): void {
-		const enabled = this.configService.get<boolean>('FEATURE_USER_MIGRATION_ENABLED');
+	public checkFeatureEnabledAndIsLdapPilotSchool(school: LegacySchoolDo): void {
+		const enabled = this.userImportConfig.featureUserMigrationEnabled;
 		const isLdapPilotSchool = school.features && school.features.includes(SchoolFeature.LDAP_UNIVENTION_MIGRATION);
 
 		if (!enabled && !isLdapPilotSchool) {
@@ -105,5 +111,20 @@ export class UserImportService {
 		await this.schoolService.save(school, true);
 
 		this.logger.notice(new UserMigrationCanceledLoggable(school));
+	}
+
+	public validateSameSchool(schoolId: EntityId, importUser: ImportUser, userMatch: User): void {
+		if (schoolId !== userMatch.school.id || schoolId !== importUser.school.id) {
+			this.logger.warning(
+				new SchoolIdDoesNotMatchWithUserSchoolId(userMatch.school.id, importUser.school.id, schoolId)
+			);
+			throw new ForbiddenException('not same school');
+		}
+	}
+
+	public checkUserIsAlreadyAssigned(hasMatch: ImportUser | null): void {
+		if (hasMatch !== null) {
+			throw new UserAlreadyAssignedToImportUserError();
+		}
 	}
 }

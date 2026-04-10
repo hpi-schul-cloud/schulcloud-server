@@ -1,5 +1,5 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { serverConfig, ServerTestModule, type ServerConfig } from '@modules/server';
+import { ServerTestModule } from '@modules/server';
 import { ContextExternalToolEntity, ContextExternalToolType } from '@modules/tool/context-external-tool/repo';
 import { contextExternalToolEntityFactory } from '@modules/tool/context-external-tool/testing';
 import { externalToolEntityFactory } from '@modules/tool/external-tool/testing';
@@ -8,6 +8,7 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
+import { BOARD_CONFIG_TOKEN, BoardConfig } from '../../../board.config';
 import { BoardExternalReferenceType } from '../../../domain';
 import { BoardNodeEntity } from '../../../repo';
 import {
@@ -23,6 +24,7 @@ describe('Media Element (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let testApiClient: TestApiClient;
+	let config: BoardConfig;
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -33,6 +35,7 @@ describe('Media Element (API)', () => {
 		await app.init();
 		em = module.get(EntityManager);
 		testApiClient = new TestApiClient(app, baseRouteName);
+		config = module.get<BoardConfig>(BOARD_CONFIG_TOKEN);
 	});
 
 	afterAll(async () => {
@@ -42,8 +45,7 @@ describe('Media Element (API)', () => {
 	describe('[PUT] /media-elements/:lineId/position', () => {
 		describe('when a valid user moves a element on their media board', () => {
 			const setup = async () => {
-				const config: ServerConfig = serverConfig();
-				config.FEATURE_MEDIA_SHELF_ENABLED = true;
+				config.featureMediaShelfEnabled = true;
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
@@ -57,7 +59,7 @@ describe('Media Element (API)', () => {
 				const mediaElementA = mediaExternalToolElementEntityFactory.withParent(mediaLine).build({ position: 0 });
 				const mediaElementB = mediaExternalToolElementEntityFactory.withParent(mediaLine).build({ position: 1 });
 
-				await em.persistAndFlush([studentAccount, studentUser, mediaBoard, mediaLine, mediaElementA, mediaElementB]);
+				await em.persist([studentAccount, studentUser, mediaBoard, mediaLine, mediaElementA, mediaElementB]).flush();
 				em.clear();
 
 				const studentClient = await testApiClient.login(studentAccount);
@@ -88,8 +90,7 @@ describe('Media Element (API)', () => {
 
 		describe('when the media board feature is disabled', () => {
 			const setup = async () => {
-				const config: ServerConfig = serverConfig();
-				config.FEATURE_MEDIA_SHELF_ENABLED = false;
+				config.featureMediaShelfEnabled = false;
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
@@ -102,7 +103,7 @@ describe('Media Element (API)', () => {
 				const mediaLine = mediaLineEntityFactory.withParent(mediaBoard).build();
 				const mediaElement = mediaExternalToolElementEntityFactory.withParent(mediaLine).build({ position: 0 });
 
-				await em.persistAndFlush([studentAccount, studentUser, mediaBoard, mediaLine, mediaElement]);
+				await em.persist([studentAccount, studentUser, mediaBoard, mediaLine, mediaElement]).flush();
 				em.clear();
 
 				const studentClient = await testApiClient.login(studentAccount);
@@ -135,8 +136,7 @@ describe('Media Element (API)', () => {
 
 		describe('when the user is invalid', () => {
 			const setup = async () => {
-				const config: ServerConfig = serverConfig();
-				config.FEATURE_MEDIA_SHELF_ENABLED = true;
+				config.featureMediaShelfEnabled = true;
 
 				const mediaBoard = mediaBoardEntityFactory.build({
 					context: {
@@ -147,7 +147,7 @@ describe('Media Element (API)', () => {
 				const mediaLine = mediaLineEntityFactory.withParent(mediaBoard).build();
 				const mediaElement = mediaExternalToolElementEntityFactory.withParent(mediaLine).build({ position: 0 });
 
-				await em.persistAndFlush([mediaBoard, mediaLine]);
+				await em.persist([mediaBoard, mediaLine]).flush();
 				em.clear();
 
 				return {
@@ -179,8 +179,7 @@ describe('Media Element (API)', () => {
 	describe('[POST] /media-elements', () => {
 		describe('when a valid user creates a new element on their media board', () => {
 			const setup = async () => {
-				const config: ServerConfig = serverConfig();
-				config.FEATURE_MEDIA_SHELF_ENABLED = true;
+				config.featureMediaShelfEnabled = true;
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
@@ -197,14 +196,9 @@ describe('Media Element (API)', () => {
 				});
 				const mediaLine = mediaLineEntityFactory.withParent(mediaBoard).build();
 
-				await em.persistAndFlush([
-					studentAccount,
-					studentUser,
-					mediaBoard,
-					mediaLine,
-					externalTool,
-					schoolExternalTool,
-				]);
+				await em
+					.persist([studentAccount, studentUser, mediaBoard, mediaLine, externalTool, schoolExternalTool])
+					.flush();
 				em.clear();
 
 				const studentClient = await testApiClient.login(studentAccount);
@@ -239,8 +233,7 @@ describe('Media Element (API)', () => {
 
 		describe('when the user is invalid', () => {
 			const setup = () => {
-				const config: ServerConfig = serverConfig();
-				config.FEATURE_MEDIA_SHELF_ENABLED = true;
+				config.featureMediaShelfEnabled = true;
 			};
 
 			it('should return unauthorized', async () => {
@@ -264,12 +257,11 @@ describe('Media Element (API)', () => {
 
 		describe('when the media board feature is disabled', () => {
 			const setup = async () => {
-				const config: ServerConfig = serverConfig();
-				config.FEATURE_MEDIA_SHELF_ENABLED = false;
+				config.featureMediaShelfEnabled = false;
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persist([studentAccount, studentUser]).flush();
 				em.clear();
 
 				const studentClient = await testApiClient.login(studentAccount);
@@ -302,8 +294,7 @@ describe('Media Element (API)', () => {
 	describe('[DELETE] /media-elements/:elementId', () => {
 		describe('when a valid user deletes an element on their media board', () => {
 			const setup = async () => {
-				const config: ServerConfig = serverConfig();
-				config.FEATURE_MEDIA_SHELF_ENABLED = true;
+				config.featureMediaShelfEnabled = true;
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
@@ -328,16 +319,18 @@ describe('Media Element (API)', () => {
 					.withParent(mediaLine)
 					.build({ contextExternalToolId: contextExternalTool.id });
 
-				await em.persistAndFlush([
-					studentAccount,
-					studentUser,
-					mediaBoard,
-					mediaLine,
-					mediaElement,
-					externalTool,
-					schoolExternalTool,
-					contextExternalTool,
-				]);
+				await em
+					.persist([
+						studentAccount,
+						studentUser,
+						mediaBoard,
+						mediaLine,
+						mediaElement,
+						externalTool,
+						schoolExternalTool,
+						contextExternalTool,
+					])
+					.flush();
 				em.clear();
 
 				const studentClient = await testApiClient.login(studentAccount);
@@ -365,8 +358,7 @@ describe('Media Element (API)', () => {
 
 		describe('when the user is invalid', () => {
 			const setup = () => {
-				const config: ServerConfig = serverConfig();
-				config.FEATURE_MEDIA_SHELF_ENABLED = true;
+				config.featureMediaShelfEnabled = true;
 			};
 
 			it('should return unauthorized', async () => {
@@ -386,12 +378,11 @@ describe('Media Element (API)', () => {
 
 		describe('when the media board feature is disabled', () => {
 			const setup = async () => {
-				const config: ServerConfig = serverConfig();
-				config.FEATURE_MEDIA_SHELF_ENABLED = false;
+				config.featureMediaShelfEnabled = false;
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persist([studentAccount, studentUser]).flush();
 				em.clear();
 
 				const studentClient = await testApiClient.login(studentAccount);

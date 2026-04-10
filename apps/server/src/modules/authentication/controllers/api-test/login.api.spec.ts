@@ -5,7 +5,7 @@ import { OauthTokenResponse } from '@modules/oauth-adapter';
 import { RoleName } from '@modules/role';
 import { roleFactory } from '@modules/role/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
-import { ServerTestModule } from '@modules/server/server.app.module';
+import { ServerTestModule } from '@modules/server';
 import { SystemEntity } from '@modules/system/repo';
 import { systemEntityFactory } from '@modules/system/testing';
 import { User } from '@modules/user/repo';
@@ -195,7 +195,7 @@ describe('Login Controller (api)', () => {
 					deactivatedAt: moment().add(1, 'd').toDate(),
 				});
 
-				await em.persistAndFlush([system, school, studentRoles, user, account]);
+				await em.persist([system, school, studentRoles, user, account]).flush();
 
 				const params: LdapAuthorizationBodyParams = {
 					username: ldapAccountUserName,
@@ -247,7 +247,7 @@ describe('Login Controller (api)', () => {
 					systemId: system.id,
 				});
 
-				await em.persistAndFlush([system, school, studentRoles, user, account]);
+				await em.persist([system, school, studentRoles, user, account]).flush();
 
 				const params: LdapAuthorizationBodyParams = {
 					username: 'nonExistentUser',
@@ -289,7 +289,7 @@ describe('Login Controller (api)', () => {
 					deactivatedAt: new Date(),
 				});
 
-				await em.persistAndFlush([system, school, studentRoles, user, account]);
+				await em.persist([system, school, studentRoles, user, account]).flush();
 
 				const params: LdapAuthorizationBodyParams = {
 					username: ldapAccountUserName,
@@ -331,7 +331,7 @@ describe('Login Controller (api)', () => {
 					systemId: system.id,
 				});
 
-				await em.persistAndFlush([system, school, studentRole, user, account]);
+				await em.persist([system, school, studentRole, user, account]).flush();
 
 				const params: LdapAuthorizationBodyParams = {
 					username: ldapAccountUserName,
@@ -389,7 +389,7 @@ describe('Login Controller (api)', () => {
 					deactivatedAt: moment().add(1, 'd').toDate(),
 				});
 
-				await em.persistAndFlush([system, school, studentRoles, user, account]);
+				await em.persist([system, school, studentRoles, user, account]).flush();
 				em.clear();
 
 				const idToken: string = JwtTestFactory.createJwt({
@@ -471,7 +471,7 @@ describe('Login Controller (api)', () => {
 					deactivatedAt: new Date(),
 				});
 
-				await em.persistAndFlush([system, school, teacherRoles, user, account]);
+				await em.persist([system, school, teacherRoles, user, account]).flush();
 
 				const idToken: string = JwtTestFactory.createJwt({
 					iss: system.oauthConfig?.issuer,

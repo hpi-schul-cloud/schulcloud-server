@@ -1,4 +1,9 @@
-import { Action, AuthorizationHelper, AuthorizationInjectionService } from '@modules/authorization';
+import {
+	Action,
+	AUTHORIZATION_CONFIG_TOKEN,
+	AuthorizationHelper,
+	AuthorizationInjectionService,
+} from '@modules/authorization';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory, courseFactory } from '@modules/course/testing';
 import { roleFactory } from '@modules/role/testing';
@@ -24,7 +29,12 @@ describe('CourseRule', () => {
 		await setupEntities([User, CourseEntity, CourseGroupEntity]);
 
 		module = await Test.createTestingModule({
-			providers: [AuthorizationHelper, CourseRule, AuthorizationInjectionService],
+			providers: [
+				AuthorizationHelper,
+				CourseRule,
+				AuthorizationInjectionService,
+				{ provide: AUTHORIZATION_CONFIG_TOKEN, useValue: {} },
+			],
 		}).compile();
 
 		service = await module.get(CourseRule);

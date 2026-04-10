@@ -1,16 +1,12 @@
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const { authenticate } = require('@feathersjs/authentication');
 const { keep } = require('feathers-hooks-common');
-
 const { Forbidden, NotFound, BadRequest, GeneralError } = require('../../../errors');
 const logger = require('../../../logger');
 const { ObjectId } = require('../../../helper/compare');
 const { hasRoleNoHook, hasPermissionNoHook, hasPermission } = require('../../../hooks');
-
 const { getAge } = require('../../../utils');
-
 const constants = require('../../../utils/constants');
-const { CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS} = require('../../../../config/globals');
 
 /**
  *
@@ -128,48 +124,25 @@ const updateAccountUsername = async (context) => {
 	return context;
 };
 
-const removeStudentFromClasses = async (hook) => {
-	// todo: move this functionality into classes, using events.
-	// todo: what about teachers?
-	const classesService = hook.app.service('/classes');
-	const userIds = hook.id || (hook.result || []).map((u) => u._id);
-	if (userIds === undefined) {
+
+const removeUserFromEntity = async (hook, serviceName) => {
+	const model = serviceName === 'courses' ? 'courseModel' : 'classModel';
+	const service = hook.app.service('/' + serviceName);
+	let userIds = hook.id || (hook.result || []).map((u) => u._id);
+	if (!userIds) {
 		throw new BadRequest(
 			'Der Nutzer wurde gelöscht, konnte aber eventuell nicht aus allen Klassen/Kursen entfernt werden.'
 		);
 	}
-
-	try {
-		const usersClasses = await classesService.find({ query: { userIds: { $in: userIds } } });
-		await Promise.all(
-			usersClasses.data.map((klass) => classesService.patch(klass._id, { $pull: { userIds: { $in: userIds } } }))
-		);
-	} catch (err) {
-		throw new Forbidden(
-			'Der Nutzer wurde gelöscht, konnte aber eventuell nicht aus allen Klassen/Kursen entfernt werden.',
-			err
-		);
-	}
-
-	return hook;
-};
-
-const removeStudentFromCourses = async (hook) => {
-	// todo: move this functionality into courses, using events.
-	// todo: what about teachers?
-	const coursesService = hook.app.service('/courses');
-	const userIds = hook.id || (hook.result || []).map((u) => u._id);
-	if (userIds === undefined) {
-		throw new BadRequest(
-			'Der Nutzer wurde gelöscht, konnte aber eventuell nicht aus allen Klassen/Kursen entfernt werden.'
-		);
+	if (!Array.isArray(userIds)) {
+		userIds = [userIds];
 	}
 
 	try {
-		const usersCourses = await coursesService.find({ query: { userIds: { $in: userIds } } });
+		const usersItems = await service.find({ query: { userIds: { $in: userIds } } });
 		await Promise.all(
-			usersCourses.data.map((course) =>
-				hook.app.service('courseModel').patch(course._id, { $pull: { userIds: { $in: userIds } } })
+			usersItems.data.map((item) =>
+				hook.app.service(model).patch(item._id, { $pull: { userIds: { $in: userIds } } })
 			)
 		);
 	} catch (err) {
@@ -178,6 +151,16 @@ const removeStudentFromCourses = async (hook) => {
 			err
 		);
 	}
+};
+
+const removeStudentFromClasses = async (hook) => {
+	await removeUserFromEntity(hook, 'classes');
+
+	return hook;
+};
+
+const removeStudentFromCourses = async (hook) => {
+	await removeUserFromEntity(hook, 'courses');
 };
 
 const sanitizeData = (hook) => {
@@ -219,6 +202,7 @@ const pinIsVerified = (hook) => {
 		.find({ query: { email, verified: true } })
 		.then((pins) => {
 			if (pins.data.length === 1 && pins.data[0].pin) {
+				const CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS = Configuration.get('CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS');
 				const age = getAge(hook.data.birthday);
 
 				if (!((hook.data.roles || []).includes('student') && age < CONSENT_WITHOUT_PARENTS_MIN_AGE_YEARS)) {
@@ -376,78 +360,6 @@ const handleClassId = (hook) => {
 			$push: { userIds: hook.result._id },
 		})
 		.then((res) => Promise.resolve(hook));
-};
-
-const pushRemoveEvent = (hook) => {
-	hook.app.emit('users:after:remove', hook);
-	return hook;
-};
-
-const enforceRoleHierarchyOnDeleteSingle = async (context) => {
-	try {
-		const userIsSuperhero = await hasRoleNoHook(context, context.params.account.userId, 'superhero');
-		if (userIsSuperhero) return context;
-
-		const [targetIsStudent, targetIsTeacher, targetIsAdmin] = await Promise.all([
-			hasRoleNoHook(context, context.id, 'student'),
-			hasRoleNoHook(context, context.id, 'teacher'),
-			hasRoleNoHook(context, context.id, 'administrator'),
-		]);
-		let permissionChecks = [true];
-		if (targetIsStudent) {
-			permissionChecks.push(hasPermissionNoHook(context, context.params.account.userId, 'STUDENT_DELETE'));
-		}
-		if (targetIsTeacher) {
-			permissionChecks.push(hasPermissionNoHook(context, context.params.account.userId, 'TEACHER_DELETE'));
-		}
-		if (targetIsAdmin) {
-			permissionChecks.push(hasRoleNoHook(context, context.params.account.userId, 'superhero'));
-		}
-		permissionChecks = await Promise.all(permissionChecks);
-
-		if (!permissionChecks.reduce((accumulator, val) => accumulator && val)) {
-			throw new Forbidden('you dont have permission to delete this user!');
-		}
-
-		return context;
-	} catch (error) {
-		logger.error(error);
-		throw new Forbidden('you dont have permission to delete this user!');
-	}
-};
-
-const enforceRoleHierarchyOnDeleteBulk = async (context) => {
-	const user = await context.app.service('users').get(context.params.account.userId);
-	const canDeleteStudent = user.permissions.includes('STUDENT_DELETE');
-	const canDeleteTeacher = user.permissions.includes('TEACHER_DELETE');
-	const rolePromises = [];
-	if (canDeleteStudent) {
-		rolePromises.push(
-			context.app
-				.service('roles')
-				.find({ query: { name: 'student' } })
-				.then((r) => r.data[0]._id)
-		);
-	}
-	if (canDeleteTeacher) {
-		rolePromises.push(
-			context.app
-				.service('roles')
-				.find({ query: { name: 'teacher' } })
-				.then((r) => r.data[0]._id)
-		);
-	}
-	const allowedRoles = await Promise.all(rolePromises);
-
-	// there may not be any role in user.roles that is not in rolesToDelete
-	const roleQuery = { $nor: [{ roles: { $elemMatch: { $nin: allowedRoles } } }] };
-	context.params.query = { $and: [context.params.query, roleQuery] };
-	return context;
-};
-
-const enforceRoleHierarchyOnDelete = async (context) => {
-	if (context.id) return enforceRoleHierarchyOnDeleteSingle(context);
-	return enforceRoleHierarchyOnDeleteBulk(context);
 };
 
 /**
@@ -621,8 +533,6 @@ module.exports = {
 	decorateAvatar,
 	decorateUsers,
 	handleClassId,
-	pushRemoveEvent,
-	enforceRoleHierarchyOnDelete,
 	enforceRoleHierarchyOnCreate,
 	filterResult,
 	generateRegistrationLink,

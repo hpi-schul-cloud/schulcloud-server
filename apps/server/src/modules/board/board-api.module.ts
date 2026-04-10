@@ -1,27 +1,31 @@
+import { RegisterTimeoutConfig } from '@core/interceptor/register-timeout-config.decorator';
 import { LoggerModule } from '@core/logger';
+import { ConfigurationModule } from '@infra/configuration';
 import { AuthorizationModule } from '@modules/authorization';
+import { CopyHelperModule } from '@modules/copy-helper';
 import { CourseModule } from '@modules/course';
 import { RoomMembershipModule } from '@modules/room-membership';
+import { SagaModule } from '@modules/saga';
 import { forwardRef, Module } from '@nestjs/common';
 import { BoardContextApiHelperModule } from '../board-context';
 import { RoomModule } from '../room';
+import { BOARD_CONFIG_TOKEN, BoardConfig } from './board.config';
 import { BoardModule } from './board.module';
 import {
 	BoardController,
 	BoardErrorReportController,
-	BoardSubmissionController,
 	CardController,
 	ColumnController,
 	ElementController,
 } from './controller';
-import { BoardNodePermissionService } from './service';
-import { BoardUc, BoardErrorReportUc, CardUc, ColumnUc, ElementUc, SubmissionItemUc } from './uc';
-import { SagaModule } from '@modules/saga';
 import { CopyRoomBoardsStep } from './saga';
-import { CopyHelperModule } from '@modules/copy-helper';
+import { BOARD_TIMEOUT_CONFIG_TOKEN, BoardTimeoutConfig } from './timeout.config';
+import { BoardErrorReportUc, BoardUc, CardUc, ColumnUc, ElementUc } from './uc';
 
 @Module({
 	imports: [
+		ConfigurationModule.register(BOARD_CONFIG_TOKEN, BoardConfig),
+		ConfigurationModule.register(BOARD_TIMEOUT_CONFIG_TOKEN, BoardTimeoutConfig),
 		CopyHelperModule,
 		CourseModule,
 		BoardModule,
@@ -32,23 +36,8 @@ import { CopyHelperModule } from '@modules/copy-helper';
 		BoardContextApiHelperModule,
 		SagaModule,
 	],
-	controllers: [
-		BoardController,
-		ColumnController,
-		CardController,
-		ElementController,
-		BoardSubmissionController,
-		BoardErrorReportController,
-	],
-	providers: [
-		BoardUc,
-		BoardNodePermissionService,
-		BoardErrorReportUc,
-		ColumnUc,
-		CardUc,
-		ElementUc,
-		SubmissionItemUc,
-		CopyRoomBoardsStep,
-	],
+	controllers: [BoardController, ColumnController, CardController, ElementController, BoardErrorReportController],
+	providers: [BoardUc, BoardErrorReportUc, ColumnUc, CardUc, ElementUc, CopyRoomBoardsStep],
 })
+@RegisterTimeoutConfig(BOARD_TIMEOUT_CONFIG_TOKEN)
 export class BoardApiModule {}

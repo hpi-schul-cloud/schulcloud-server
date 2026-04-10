@@ -2,6 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { User } from '@modules/user/repo';
 import { NotFoundException } from '@nestjs/common';
+import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { BoardLayout, Card, ColumnBoard } from '../domain';
@@ -39,6 +40,10 @@ describe(BoardNodeService.name, () => {
 				{
 					provide: BoardNodeDeleteHooksService,
 					useValue: createMock<BoardNodeDeleteHooksService>(),
+				},
+				{
+					provide: EventBus,
+					useValue: createMock<EventBus>(),
 				},
 			],
 		}).compile();
@@ -310,6 +315,33 @@ describe(BoardNodeService.name, () => {
 				await service.updateLayout(node, BoardLayout.LIST);
 
 				expect(boardNodeRepo.save).toHaveBeenCalledWith(expected);
+			});
+		});
+	});
+
+	describe('updateVisibility', () => {
+		describe('when updating the visibility to false', () => {
+			const setup = () => {
+				const node = columnBoardFactory.build({
+					layout: BoardLayout.COLUMNS,
+					readersCanEdit: true,
+					isVisible: true,
+				});
+
+				return {
+					node,
+				};
+			};
+
+			it('should reset the readers can edit flag to false', async () => {
+				const { node } = setup();
+
+				expect(node.isVisible).toBe(true);
+				expect(node.readersCanEdit).toBe(true);
+				await service.updateVisibility(node, false);
+
+				expect(node.isVisible).toBe(false);
+				expect(node.readersCanEdit).toBe(false);
 			});
 		});
 	});

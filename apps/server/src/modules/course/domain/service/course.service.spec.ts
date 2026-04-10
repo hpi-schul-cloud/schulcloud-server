@@ -1,7 +1,5 @@
 import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { User } from '@modules/user/repo';
-import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { CourseEntity, CourseGroupEntity, CourseRepo } from '../../repo';
@@ -14,7 +12,7 @@ describe('CourseService', () => {
 	let courseRepo: DeepMocked<CourseRepo>;
 
 	beforeAll(async () => {
-		await setupEntities([User, CourseEntity, CourseGroupEntity]);
+		await setupEntities([CourseEntity, CourseGroupEntity]);
 		module = await Test.createTestingModule({
 			providers: [
 				CourseService,
@@ -57,56 +55,23 @@ describe('CourseService', () => {
 		});
 	});
 
-	describe('findAllCoursesByUserId', () => {
-		describe('when finding by userId', () => {
-			const setup = () => {
-				const user = userFactory.buildWithId();
-				const course1 = courseEntityFactory.buildWithId({ students: [user] });
-				const course2 = courseEntityFactory.buildWithId({ teachers: [user] });
-				const course3 = courseEntityFactory.buildWithId({ substitutionTeachers: [user] });
-				const allCourses = [course1, course2, course3];
-
-				courseRepo.findAllByUserId.mockResolvedValue([allCourses, allCourses.length]);
-
-				return {
-					user,
-					allCourses,
-				};
-			};
-
-			it('should call courseRepo.findAllByUserId', async () => {
-				const { user } = setup();
-
-				await courseService.findAllCoursesByUserId(user.id);
-
-				expect(courseRepo.findAllByUserId).toBeCalledWith(user.id, undefined, undefined);
-			});
-
-			it('should return array of courses with userId', async () => {
-				const { user, allCourses } = setup();
-
-				const [courses] = await courseService.findAllCoursesByUserId(user.id);
-
-				expect(courses.length).toEqual(3);
-				expect(courses).toEqual(allCourses);
-			});
-		});
-	});
-
 	describe('findAllByUserId', () => {
 		const setup = () => {
 			const userId = 'userId';
+			const schoolId = 'someSchoolId';
+			const filter = {};
+			const options = { pagination: undefined, order: undefined };
 			courseRepo.findAllByUserId.mockResolvedValueOnce([[], 0]);
 
-			return { userId };
+			return { userId, schoolId, filter, options };
 		};
 
 		it('should call findAllByUserId from course repository', async () => {
-			const { userId } = setup();
+			const { userId, schoolId, filter, options } = setup();
 
-			await expect(courseService.findAllByUserId(userId)).resolves.not.toThrow();
+			await expect(courseService.findAllByUserId(userId, schoolId, filter, options)).resolves.not.toThrow();
 
-			expect(courseRepo.findAllByUserId).toBeCalledWith(userId, undefined, undefined);
+			expect(courseRepo.findAllByUserId).toBeCalledWith(userId, schoolId, filter, options);
 		});
 	});
 

@@ -1,13 +1,11 @@
-export * from './error.mapper';
-export * from './exchange';
+export { ErrorMapper } from './error.mapper';
 export {
-	FilesStorageExchange,
-	H5pEditorExchange,
-	MailSendExchange,
-	RabbitMqConfig,
-	RabbitMqURI,
-	SchulconnexProvisioningExchange,
-} from './rabbitmq.config';
-export * from './rabbitmq.module';
-export * from './rpc-message';
-export * from './rpc-message-producer';
+	InternalRabbitMQConfig,
+	InternalRabbitMQExchangeConfig,
+	RabbitMQExchangeType,
+	RabbitMQModuleOptions,
+} from './rabbitmq-module.options';
+export { RABBITMQ_CONFIG_TOKEN, RabbitMQConfig } from './rabbitmq.config';
+export { RabbitMQWrapperModule } from './rabbitmq.module';
+export { IError, RpcMessage } from './rpc-message';
+export { RpcMessageProducer } from './rpc-message-producer';

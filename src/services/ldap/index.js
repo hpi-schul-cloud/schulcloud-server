@@ -193,32 +193,11 @@ module.exports = function LDAPService() {
 				client.destroy(); // will also unbind internally
 			} catch (err) {
 				if (err instanceof NoClientInstanceError) {
-					logger.warning(err);
+					logger.warning('Connection already closed or client not found', { error: err });
 				} else {
 					logger.error('Could not disconnect from LDAP server', { error: err });
 				}
 			}
-		}
-
-		/**
-		 * Authenticate a user via the LDAP server identified by the LDAP config
-		 * asociated with the login system
-		 * @param {System} system the login system object
-		 * @param {String} qualifiedUsername the fully qualified username,
-		 * including root path, ou, dn, etc.
-		 * @param {String} password the password
-		 * @return {Promise} resolves with LDAP user object if successfully
-		 * logged in, otherwise rejects with error
-		 */
-		authenticate(system, qualifiedUsername, password) {
-			const config = system.ldapConfig;
-			return this._connect(config, qualifiedUsername, password).then((connection) => {
-				if (connection.connected) {
-					connection.unbind();
-					return true;
-				}
-				throw new NotAuthenticated('User could not authenticate');
-			});
 		}
 
 		/**
@@ -285,24 +264,6 @@ module.exports = function LDAPService() {
 		}
 
 		/**
-		 * Returns first LDAP object matching the given search string and options
-		 * @see searchCollection
-		 * @param {LdapConfig} config the ldapConfig
-		 * @param {String} searchString the search string
-		 * @param {Object} options search options
-		 * @return {Promise[Object]} resolves with object matching the query,
-		 * rejects with error otherwise
-		 */
-		searchObject(config, searchString, options) {
-			return this.searchCollection(config, searchString, options).then((objects) => {
-				if (objects.length > 0) {
-					return Promise.resolve(objects[0]);
-				}
-				return Promise.reject(new Error(`Object "${searchString}" not found`));
-			});
-		}
-
-		/**
 		 * Returns all schools on the LDAP server
 		 * @param {LdapConfig} config the ldapConfig
 		 * @return {Promise[Array[Object]]} resolves with all school objects or
@@ -334,16 +295,6 @@ module.exports = function LDAPService() {
 			return getLDAPStrategy(app, config).getClasses(school);
 		}
 
-		/**
-		 * Returns all experts on the LDAP server
-		 * @param {LdapConfig} config the ldapConfig
-		 * @return {Promise[Object]} resolves with all expert objects or rejects
-		 * with error
-		 */
-		getExperts(config) {
-			const { searchString, options } = getLDAPStrategy(app, config).getExpertsQuery();
-			return this.searchCollection(config, searchString, options);
-		}
 	}
 
 	app.use('/ldap/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));

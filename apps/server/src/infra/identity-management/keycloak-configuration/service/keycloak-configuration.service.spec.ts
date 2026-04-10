@@ -8,18 +8,15 @@ import { Clients } from '@keycloak/keycloak-admin-client/lib/resources/clients';
 import { IdentityProviders } from '@keycloak/keycloak-admin-client/lib/resources/identityProviders';
 import { Realms } from '@keycloak/keycloak-admin-client/lib/resources/realms';
 import { SystemService } from '@modules/system';
-import { HttpService } from '@nestjs/axios';
-import { ConfigService } from '@nestjs/config';
-import { Test, TestingModule } from '@nestjs/testing';
 import { systemFactory } from '@modules/system/testing';
+import { HttpService } from '@nestjs/axios';
+import { Test, TestingModule } from '@nestjs/testing';
 import { AxiosResponse } from 'axios';
 import { of } from 'rxjs';
 import { v1 } from 'uuid';
-import {
-	IKeycloakSettings,
-	KeycloakSettings,
-} from '../../keycloak-administration/interface/keycloak-settings.interface';
+import { KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN } from '../../keycloak-administration/keycloak-administration.config';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
+import { KEYCLOAK_CONFIGURATION_CONFIG_TOKEN, KeycloakConfigurationConfig } from '../keycloak-configuration.config';
 import { OidcIdentityProviderMapper } from '../mapper/identity-provider.mapper';
 import { KeycloakConfigurationService } from './keycloak-configuration.service';
 
@@ -27,10 +24,9 @@ describe('KeycloakConfigurationService Unit', () => {
 	let module: TestingModule;
 	let client: DeepMocked<KeycloakAdminClient>;
 	let service: KeycloakConfigurationService;
-	let configService: DeepMocked<ConfigService>;
+	let config: KeycloakConfigurationConfig;
 	let systemService: DeepMocked<SystemService>;
 	let httpServiceMock: DeepMocked<HttpService>;
-	let settings: IKeycloakSettings;
 
 	const kcApiClientIdentityProvidersMock = createMock<IdentityProviders>();
 	const kcApiClientMock = createMock<Clients>();
@@ -45,21 +41,6 @@ describe('KeycloakConfigurationService Unit', () => {
 		lastName: 'admin',
 		email: 'admin@email.tld',
 		username: adminUsername,
-	};
-
-	const getSettings = (): IKeycloakSettings => {
-		return {
-			internalBaseUrl: 'http://localhost:8080',
-			externalBaseUrl: 'http://localhost:8080',
-			realmName: 'master',
-			clientId: 'dBildungscloud',
-			credentials: {
-				username: adminUsername,
-				password: 'password',
-				grantType: 'password',
-				clientId: 'client-id',
-			},
-		};
 	};
 
 	const systems = systemFactory.withOidcConfig().buildList(1);
@@ -78,6 +59,19 @@ describe('KeycloakConfigurationService Unit', () => {
 		},
 	];
 
+	const keycloakAdminConfigValues = {
+		internalBaseUrl: 'http://localhost:8080',
+		externalBaseUrl: 'http://localhost:8080',
+		realmName: 'master',
+		clientId: 'dBildungscloud',
+		credentials: {
+			username: adminUsername,
+			password: 'password',
+			grantType: 'password',
+			clientId: 'client-id',
+		},
+	};
+
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
@@ -90,7 +84,7 @@ describe('KeycloakConfigurationService Unit', () => {
 							.mockImplementation(async (): Promise<KeycloakAdminClient> => Promise.resolve(client)),
 						testKcConnection: jest.fn().mockResolvedValue(true),
 						getAdminUser: jest.fn().mockReturnValue(adminUser.username),
-						getClientId: jest.fn().mockResolvedValue(getSettings().clientId),
+						getClientId: jest.fn().mockResolvedValue(keycloakAdminConfigValues.clientId),
 						getClientSecret: jest.fn().mockResolvedValue('clientSecret'),
 					},
 				},
@@ -98,7 +92,7 @@ describe('KeycloakConfigurationService Unit', () => {
 					provide: KeycloakAdminClient,
 					useValue: createMock<KeycloakAdminClient>({
 						auth: (): Promise<void> => {
-							if (settings.credentials.username !== adminUser.username) throw new Error();
+							if (keycloakAdminConfigValues.credentials.username !== adminUser.username) throw new Error();
 							return Promise.resolve();
 						},
 						setConfig: () => {},
@@ -113,14 +107,12 @@ describe('KeycloakConfigurationService Unit', () => {
 					useValue: createMock<SystemService>(),
 				},
 				{
-					provide: KeycloakSettings,
-					useFactory: getSettings,
+					provide: KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
+					useValue: keycloakAdminConfigValues,
 				},
 				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService>({
-						get: (key: string) => `${key}-value`,
-					}),
+					provide: KEYCLOAK_CONFIGURATION_CONFIG_TOKEN,
+					useValue: KeycloakConfigurationConfig,
 				},
 				{
 					provide: OidcIdentityProviderMapper,
@@ -134,12 +126,9 @@ describe('KeycloakConfigurationService Unit', () => {
 		}).compile();
 		client = module.get(KeycloakAdminClient);
 		service = module.get(KeycloakConfigurationService);
-		configService = module.get(ConfigService);
-		settings = module.get(KeycloakSettings);
+		config = module.get<KeycloakConfigurationConfig>(KEYCLOAK_CONFIGURATION_CONFIG_TOKEN);
 		systemService = module.get(SystemService);
 		httpServiceMock = module.get(HttpService);
-
-		configService.get.mockImplementation((key: string) => `${key}-value`);
 	});
 
 	afterAll(async () => {
@@ -227,12 +216,12 @@ describe('KeycloakConfigurationService Unit', () => {
 		});
 
 		it('should create a redirectUri with localhost', async () => {
-			configService.get.mockReturnValue('localhost');
+			config.scDomain = 'localhost';
 			await expect(service.configureClient()).resolves.not.toThrow();
 		});
 
 		it('should create a redirectUri with something other than localhost', async () => {
-			configService.get.mockReturnValue('anotherDomain');
+			config.scDomain = 'anotherDomain';
 			await expect(service.configureClient()).resolves.not.toThrow();
 		});
 

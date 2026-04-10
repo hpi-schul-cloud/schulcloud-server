@@ -1,40 +1,37 @@
 import { createMock } from '@golevelup/ts-jest';
-import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
-import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { ServerTestModule } from '@modules/server/server.app.module';
-import { Configuration } from '@hpi-schul-cloud/commons';
-import { cleanupCollections } from '@testing/cleanup-collections';
-import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
-import { TestApiClient } from '@testing/test-api-client';
-import { CopyApiResponse } from '@modules/copy-helper';
-import { CourseEntity } from '@modules/course/repo';
-import { courseEntityFactory } from '@modules/course/testing';
-import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
-import { lessonFactory } from '@modules/lesson/testing';
-import { Task } from '@modules/task/repo';
-import { taskFactory } from '@modules/task/testing';
-import { BoardExternalReferenceType, BoardNodeType } from '@modules/board';
+import { EntityManager, FilterQuery, ObjectId } from '@mikro-orm/mongodb';
+import { BoardExternalReference, BoardExternalReferenceType, BoardNodeType } from '@modules/board';
 import {
 	cardEntityFactory,
 	columnBoardEntityFactory,
 	columnEntityFactory,
 	linkElementEntityFactory,
 } from '@modules/board/testing';
-import { SingleColumnBoardResponse } from '../dto';
-import { ColumnBoardNode, LegacyBoard } from '../../repo';
-import { boardFactory } from '../../testing';
+import { CopyApiResponse } from '@modules/copy-helper';
+import { CourseEntity } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
+import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
+import { lessonFactory } from '@modules/lesson/testing';
+import { ServerTestModule } from '@modules/server/server.app.module';
+import { Task } from '@modules/task/repo';
+import { taskFactory } from '@modules/task/testing';
+import { INestApplication } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { cleanupCollections } from '@testing/cleanup-collections';
+import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
+import { TestApiClient } from '@testing/test-api-client';
 import { BoardNodeEntity } from '../../../board/repo';
 import { LessonEntity } from '../../../lesson/repo';
+import { LEARNROOM_CONFIG_TOKEN, LearnroomConfig } from '../../learnroom.config';
+import { LegacyBoard } from '../../repo';
+import { boardFactory } from '../../testing';
+import { SingleColumnBoardResponse } from '../dto';
 
 describe('Course Rooms Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let apiClient: TestApiClient;
-
-	const setConfig = () => {
-		Configuration.set('FEATURE_COPY_SERVICE_ENABLED', true);
-	};
+	let config: LearnroomConfig;
 
 	beforeAll(async () => {
 		const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -47,9 +44,10 @@ describe('Course Rooms Controller (API)', () => {
 		app = moduleFixture.createNestApplication();
 		await app.init();
 		em = app.get(EntityManager);
-		setConfig();
 
 		apiClient = new TestApiClient(app, '/course-rooms');
+		config = app.get<LearnroomConfig>(LEARNROOM_CONFIG_TOKEN);
+		config.featureCopyServiceEnabled = true;
 	});
 
 	afterAll(async () => {
@@ -61,11 +59,12 @@ describe('Course Rooms Controller (API)', () => {
 		describe('when user is loggedin', () => {
 			const setup = async () => {
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-				const { teacherUser } = UserAndAccountTestFactory.buildTeacher();
-				const course = courseEntityFactory.build({ students: [studentUser], teachers: [teacherUser] });
+				const { school } = studentUser;
+				const { teacherUser } = UserAndAccountTestFactory.buildTeacher({ school: school });
+				const course = courseEntityFactory.build({ school: school, students: [studentUser], teachers: [teacherUser] });
 				const task = taskFactory.build({ course });
 
-				await em.persistAndFlush([course, task, studentAccount, studentUser, teacherUser]);
+				await em.persist([course, task, studentAccount, studentUser, teacherUser]).flush();
 				em.clear();
 
 				const loggedInClient = await apiClient.login(studentAccount);
@@ -87,10 +86,10 @@ describe('Course Rooms Controller (API)', () => {
 		describe('when user is not loggedin', () => {
 			const setup = async () => {
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-				const course = courseEntityFactory.build({ students: [studentUser] });
+				const course = courseEntityFactory.build({ school: studentUser.school, students: [studentUser] });
 				const task = taskFactory.build({ course });
 
-				await em.persistAndFlush([course, task, studentAccount, studentUser]);
+				await em.persist([course, task, studentAccount, studentUser]).flush();
 				em.clear();
 
 				return { course };
@@ -107,62 +106,112 @@ describe('Course Rooms Controller (API)', () => {
 	});
 
 	describe('[PATCH] ElementVisibility', () => {
-		describe('when user is loggedin', () => {
+		describe('when user is logged in', () => {
 			const setup = async () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-				const course = courseEntityFactory.build({ teachers: [teacherUser] });
+				const course = courseEntityFactory.build({ school: teacherUser.school, teachers: [teacherUser] });
 				const board = boardFactory.buildWithId({ course });
-				const task = taskFactory.draft().build({ course });
-				board.syncBoardElementReferences([task]);
+				const visibleTask = taskFactory.draft().build({ course });
+				const invisibleTask = taskFactory.build({ course });
+				const visibleColumnBoard = columnBoardEntityFactory.build({
+					context: { type: BoardExternalReferenceType.Course, id: course.id },
+					isVisible: true,
+				});
+				const invisibleColumnBoard = columnBoardEntityFactory.build({
+					context: { type: BoardExternalReferenceType.Course, id: course.id },
+					isVisible: false,
+				});
+				board.syncBoardElementReferences([visibleTask, visibleColumnBoard, invisibleTask, invisibleColumnBoard]);
 
-				await em.persistAndFlush([course, board, task, teacherAccount, teacherUser]);
+				await em
+					.persist([
+						course,
+						board,
+						visibleTask,
+						visibleColumnBoard,
+						invisibleTask,
+						invisibleColumnBoard,
+						teacherAccount,
+						teacherUser,
+					])
+					.flush();
 				em.clear();
-
-				const params = { visibility: true };
 
 				const loggedInClient = await apiClient.login(teacherAccount);
 
-				return { loggedInClient, course, task, params };
+				return { loggedInClient, course, visibleTask, visibleColumnBoard, invisibleTask, invisibleColumnBoard };
 			};
 
 			it('should return 200', async () => {
-				const { loggedInClient, course, task, params } = await setup();
+				const { loggedInClient, course, invisibleTask } = await setup();
 
-				const response = await loggedInClient.patch(`${course.id}/elements/${task.id}/visibility`).send(params);
+				const response = await loggedInClient
+					.patch(`${course.id}/elements/${invisibleTask.id}/visibility`)
+					.send({ visibility: true });
 
 				expect(response.status).toEqual(200);
 			});
 
 			it('should make task visible', async () => {
-				const { loggedInClient, course, task, params } = await setup();
+				const { loggedInClient, course, invisibleTask } = await setup();
 
-				await loggedInClient.patch(`${course.id}/elements/${task.id}/visibility`).send(params);
-				const updatedTask = await em.findOneOrFail(Task, task.id);
+				await em.nativeUpdate(Task, { id: invisibleTask.id }, { private: true });
 
-				expect(updatedTask.isDraft()).toEqual(false);
+				await loggedInClient.patch(`${course.id}/elements/${invisibleTask.id}/visibility`).send({ visibility: true });
+				const updatedTask = await em.findOneOrFail(Task, invisibleTask.id);
+
+				expect(updatedTask.isDraft()).toBe(false);
 			});
 
-			it('should make task invisibible', async () => {
-				const { loggedInClient, course, task } = await setup();
+			it('should make task invisible', async () => {
+				const { loggedInClient, course, visibleTask } = await setup();
 
-				const params = { visibility: false };
+				await loggedInClient
+					.patch(`/course-rooms/${course.id}/elements/${visibleTask.id}/visibility`)
+					.send({ visibility: false });
+				const updatedTask = await em.findOneOrFail(Task, visibleTask.id);
 
-				await loggedInClient.patch(`/course-rooms/${course.id}/elements/${task.id}/visibility`).send(params);
-				const updatedTask = await em.findOneOrFail(Task, task.id);
+				expect(updatedTask.isDraft()).toBe(true);
+			});
 
-				expect(updatedTask.isDraft()).toEqual(true);
+			describe('when element refers to a column board', () => {
+				it('should make board element visible', async () => {
+					const { loggedInClient, course, invisibleColumnBoard } = await setup();
+
+					await em.nativeUpdate(BoardNodeEntity, { id: invisibleColumnBoard.id }, { isVisible: false });
+
+					await loggedInClient
+						.patch(`${course.id}/elements/${invisibleColumnBoard.id}/visibility`)
+						.send({ visibility: true });
+					const updatedColumnBoard = await em.findOneOrFail(BoardNodeEntity, invisibleColumnBoard.id);
+
+					expect(updatedColumnBoard.isVisible).toBe(true);
+				});
+
+				it('should make board element invisible', async () => {
+					const { loggedInClient, course, visibleColumnBoard } = await setup();
+
+					await em.nativeUpdate(BoardNodeEntity, { id: visibleColumnBoard.id }, { isVisible: true });
+
+					await loggedInClient
+						.patch(`${course.id}/elements/${visibleColumnBoard.id}/visibility`)
+						.send({ visibility: false });
+					const updatedColumnBoard = await em.findOneOrFail(BoardNodeEntity, visibleColumnBoard.id);
+
+					expect(updatedColumnBoard.isVisible).toBe(false);
+				});
 			});
 		});
 
-		describe('when user is not loggedin', () => {
+		describe('when user is not logged in', () => {
 			const setup = async () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-				const course = courseEntityFactory.build({ teachers: [teacherUser] });
+				const course = courseEntityFactory.build({ school: teacherUser.school, teachers: [teacherUser] });
 				const board = boardFactory.buildWithId({ course });
 				const task = taskFactory.draft().build({ course });
 				board.syncBoardElementReferences([task]);
 
-				await em.persistAndFlush([course, board, task, teacherAccount, teacherUser]);
+				await em.persist([course, board, task, teacherAccount, teacherUser]).flush();
 				em.clear();
 
 				const params = { visibility: true };
@@ -184,13 +233,13 @@ describe('Course Rooms Controller (API)', () => {
 		describe('when user is logged in', () => {
 			const setup = async () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-				const course = courseEntityFactory.build({ teachers: [teacherUser] });
+				const course = courseEntityFactory.build({ school: teacherUser.school, teachers: [teacherUser] });
 				const board = boardFactory.buildWithId({ course });
 				const tasks = taskFactory.buildList(3, { course });
 				const lessons = lessonFactory.buildList(3, { course });
 				board.syncBoardElementReferences([...tasks, ...lessons]);
 
-				await em.persistAndFlush([course, board, ...tasks, ...lessons, teacherAccount, teacherUser]);
+				await em.persist([course, board, ...tasks, ...lessons, teacherAccount, teacherUser]).flush();
 				em.clear();
 
 				const params = {
@@ -214,13 +263,13 @@ describe('Course Rooms Controller (API)', () => {
 		describe('when user is not logged in', () => {
 			const setup = async () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-				const course = courseEntityFactory.build({ teachers: [teacherUser] });
+				const course = courseEntityFactory.build({ school: teacherUser.school, teachers: [teacherUser] });
 				const board = boardFactory.buildWithId({ course });
 				const tasks = taskFactory.buildList(3, { course });
 				const lessons = lessonFactory.buildList(3, { course });
 				board.syncBoardElementReferences([...tasks, ...lessons]);
 
-				await em.persistAndFlush([course, board, ...tasks, ...lessons, teacherAccount, teacherUser]);
+				await em.persist([course, board, ...tasks, ...lessons, teacherAccount, teacherUser]).flush();
 				em.clear();
 
 				const params = {
@@ -244,13 +293,13 @@ describe('Course Rooms Controller (API)', () => {
 		describe('when user is logged in', () => {
 			const setup = async () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-				const course = courseEntityFactory.build({ teachers: [teacherUser] });
+				const course = courseEntityFactory.build({ school: teacherUser.school, teachers: [teacherUser] });
 				const board = boardFactory.build({ course });
 				const tasks = taskFactory.buildList(3, { course });
 				const lessons = lessonFactory.buildList(3, { course });
 				board.syncBoardElementReferences([...tasks, ...lessons]);
 
-				await em.persistAndFlush([course, teacherAccount, teacherUser, board, ...tasks, ...lessons]);
+				await em.persist([course, teacherAccount, teacherUser, board, ...tasks, ...lessons]).flush();
 				em.clear();
 
 				const loggedInClient = await apiClient.login(teacherAccount);
@@ -292,13 +341,13 @@ describe('Course Rooms Controller (API)', () => {
 		describe('when user is not logged in', () => {
 			const setup = async () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-				const course = courseEntityFactory.build({ teachers: [teacherUser] });
+				const course = courseEntityFactory.build({ school: teacherUser.school, teachers: [teacherUser] });
 				const board = boardFactory.build({ course });
 				const tasks = taskFactory.buildList(3, { course });
 				const lessons = lessonFactory.buildList(3, { course });
 				board.syncBoardElementReferences([...tasks, ...lessons]);
 
-				await em.persistAndFlush([course, teacherAccount, teacherUser, board, ...tasks, ...lessons]);
+				await em.persist([course, teacherAccount, teacherUser, board, ...tasks, ...lessons]).flush();
 				em.clear();
 
 				return { course };
@@ -317,7 +366,7 @@ describe('Course Rooms Controller (API)', () => {
 			const setup = async () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 
-				const course = courseEntityFactory.buildWithId({ teachers: [teacherUser] });
+				const course = courseEntityFactory.buildWithId({ school: teacherUser.school, teachers: [teacherUser] });
 				const task = taskFactory.draft().buildWithId({ course });
 				const lesson = lessonFactory.buildWithId({ course });
 
@@ -333,45 +382,47 @@ describe('Course Rooms Controller (API)', () => {
 
 				const linkElementToTask = linkElementEntityFactory
 					.withParent(cardNode)
-					.build({ url: `https://example.com/${task.id}` });
+					.build({ url: `https://example.com/${task.id}`, imageUrl: '' });
 
 				const linkElementToLesson = linkElementEntityFactory
 					.withParent(cardNode)
-					.build({ url: `https://example.com/${lesson.id}` });
+					.build({ url: `https://example.com/${lesson.id}`, imageUrl: '' });
 
 				const linkElementToColumnBoard = linkElementEntityFactory
 					.withParent(cardNode)
-					.build({ url: `https://example.com/${columnBoard2.id}` });
+					.build({ url: `https://example.com/${columnBoard2.id}`, imageUrl: '' });
 
 				const linkElementToCourse = linkElementEntityFactory
 					.withParent(cardNode)
-					.build({ url: `https://example.com/${course.id}` });
+					.build({ url: `https://example.com/${course.id}`, imageUrl: '' });
 
 				const legacyBoard = boardFactory.buildWithId({ course });
 
-				await em.persistAndFlush([
-					teacherAccount,
-					teacherUser,
-					course,
-					lesson,
-					task,
-					columnBoard1,
-					columnBoard2,
-					columnNode,
-					cardNode,
-					linkElementToTask,
-					linkElementToLesson,
-					linkElementToColumnBoard,
-					linkElementToCourse,
-					legacyBoard,
-				]);
+				await em
+					.persist([
+						teacherAccount,
+						teacherUser,
+						course,
+						lesson,
+						task,
+						columnBoard1,
+						columnBoard2,
+						columnNode,
+						cardNode,
+						linkElementToTask,
+						linkElementToLesson,
+						linkElementToColumnBoard,
+						linkElementToCourse,
+						legacyBoard,
+					])
+					.flush();
 				em.clear();
 
-				const columnBoardNode1 = await em.findOneOrFail(ColumnBoardNode, columnBoard1.id);
-				const columnBoardNode2 = await em.findOneOrFail(ColumnBoardNode, columnBoard2.id);
+				const columnBoardNode1 = await em.findOneOrFail(BoardNodeEntity, columnBoard1.id);
+				const columnBoardNode2 = await em.findOneOrFail(BoardNodeEntity, columnBoard2.id);
 				legacyBoard.syncBoardElementReferences([task, lesson, columnBoardNode1, columnBoardNode2]);
 
-				await em.persistAndFlush([legacyBoard]);
+				await em.persist([legacyBoard]).flush();
 				em.clear();
 
 				const loggedInClient = await apiClient.login(teacherAccount);
@@ -388,7 +439,12 @@ describe('Course Rooms Controller (API)', () => {
 
 				const copiedTask = await em.findOneOrFail(Task, { course: copyCourseId });
 				const copiedLesson = await em.findOneOrFail(LessonEntity, { course: copyCourseId });
-				const copiedColumnBoards = await em.find(ColumnBoardNode, { contextId: new ObjectId(copyCourseId) });
+				const copiedColumnBoards = await em.find(BoardNodeEntity, {
+					context: {
+						_contextId: new ObjectId(copyCourseId),
+						_contextType: BoardExternalReferenceType.Course,
+					} as FilterQuery<BoardExternalReference>,
+				});
 
 				const linkElements = await em.find(BoardNodeEntity, {
 					type: BoardNodeType.LINK_ELEMENT,
@@ -419,10 +475,10 @@ describe('Course Rooms Controller (API)', () => {
 		describe('when user is logged in', () => {
 			const setup = async () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-				const course = courseEntityFactory.build({ teachers: [teacherUser] });
+				const course = courseEntityFactory.build({ school: teacherUser.school, teachers: [teacherUser] });
 				const lesson = lessonFactory.build({ course });
 
-				await em.persistAndFlush([lesson, course, teacherAccount, teacherUser]);
+				await em.persist([lesson, course, teacherAccount, teacherUser]).flush();
 				em.clear();
 
 				const loggedInClient = await apiClient.login(teacherAccount);
@@ -442,10 +498,10 @@ describe('Course Rooms Controller (API)', () => {
 		describe('when user is not logged in', () => {
 			const setup = async () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-				const course = courseEntityFactory.build({ teachers: [teacherUser] });
+				const course = courseEntityFactory.build({ school: teacherUser.school, teachers: [teacherUser] });
 				const lesson = lessonFactory.build({ course });
 
-				await em.persistAndFlush([lesson, course, teacherAccount, teacherUser]);
+				await em.persist([lesson, course, teacherAccount, teacherUser]).flush();
 				em.clear();
 
 				return { course, lesson };

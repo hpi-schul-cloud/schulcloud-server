@@ -72,7 +72,7 @@ describe(SchoolExternalToolRepo.name, () => {
 		const setup = async () => {
 			const { externalToolEntity, school, schoolExternalTool1, schoolExternalTool3 } = createTools();
 
-			await em.persistAndFlush([school, externalToolEntity, schoolExternalTool1, schoolExternalTool3]);
+			await em.persist([school, externalToolEntity, schoolExternalTool1, schoolExternalTool3]).flush();
 			em.clear();
 
 			return { externalToolEntity, school, schoolExternalTool1, schoolExternalTool3 };
@@ -91,7 +91,7 @@ describe(SchoolExternalToolRepo.name, () => {
 		const setup = async () => {
 			const { externalToolEntity, school, schoolExternalTool1, schoolExternalTool3 } = createTools();
 
-			await em.persistAndFlush([school, externalToolEntity, schoolExternalTool1, schoolExternalTool3]);
+			await em.persist([school, externalToolEntity, schoolExternalTool1, schoolExternalTool3]).flush();
 			em.clear();
 
 			return { externalToolEntity, school, schoolExternalTool1, schoolExternalTool3 };
@@ -116,7 +116,7 @@ describe(SchoolExternalToolRepo.name, () => {
 			const setup = async () => {
 				const { externalToolEntity, school, schoolExternalTool1, schoolExternalTool3 } = createTools();
 
-				await em.persistAndFlush([school, externalToolEntity, schoolExternalTool1, schoolExternalTool3]);
+				await em.persist([school, externalToolEntity, schoolExternalTool1, schoolExternalTool3]).flush();
 				em.clear();
 
 				return { externalToolEntity, school, schoolExternalTool1, schoolExternalTool3 };
@@ -175,7 +175,7 @@ describe(SchoolExternalToolRepo.name, () => {
 			const setup = async () => {
 				const { school, schoolExternalTool1 } = createTools();
 
-				await em.persistAndFlush([school, schoolExternalTool1]);
+				await em.persist([school, schoolExternalTool1]).flush();
 				em.clear();
 
 				const query: SchoolExternalToolQuery = {
@@ -198,7 +198,7 @@ describe(SchoolExternalToolRepo.name, () => {
 			const setup = async () => {
 				const { school, externalToolEntity, schoolExternalTool1 } = createTools();
 
-				await em.persistAndFlush([school, externalToolEntity, schoolExternalTool1]);
+				await em.persist([school, externalToolEntity, schoolExternalTool1]).flush();
 				em.clear();
 
 				const query: SchoolExternalToolQuery = {
@@ -221,7 +221,7 @@ describe(SchoolExternalToolRepo.name, () => {
 			const setup = async () => {
 				const { school, schoolExternalTool1, schoolExternalTool2, schoolExternalTool3 } = createTools();
 
-				await em.persistAndFlush([school, schoolExternalTool1, schoolExternalTool2, schoolExternalTool3]);
+				await em.persist([school, schoolExternalTool1, schoolExternalTool2, schoolExternalTool3]).flush();
 				em.clear();
 
 				return { schoolExternalTool1, schoolExternalTool2, schoolExternalTool3 };
@@ -265,7 +265,7 @@ describe(SchoolExternalToolRepo.name, () => {
 			const setup = async () => {
 				const { school, schoolExternalTool1, schoolExternalTool2, schoolExternalTool3 } = createTools();
 
-				await em.persistAndFlush([school, schoolExternalTool1, schoolExternalTool2, schoolExternalTool3]);
+				await em.persist([school, schoolExternalTool1, schoolExternalTool2, schoolExternalTool3]).flush();
 				em.clear();
 
 				const query: SchoolExternalToolQuery = {
@@ -290,7 +290,7 @@ describe(SchoolExternalToolRepo.name, () => {
 		const setup = async () => {
 			const { schoolExternalTool1 } = createTools();
 
-			await em.persistAndFlush([schoolExternalTool1]);
+			await em.persist([schoolExternalTool1]).flush();
 			em.clear();
 
 			return { schoolExternalTool1 };
@@ -311,7 +311,7 @@ describe(SchoolExternalToolRepo.name, () => {
 		const setup = async () => {
 			const { schoolExternalTool1 } = createTools();
 
-			await em.persistAndFlush([schoolExternalTool1]);
+			await em.persist([schoolExternalTool1]).flush();
 			em.clear();
 
 			return { schoolExternalTool1 };

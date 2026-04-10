@@ -1,31 +1,41 @@
 import { Collection } from '@mikro-orm/core';
 import { RoleName } from '@modules/role';
 import { Role } from '@modules/role/repo';
+import { type UserDo } from '@modules/user';
 import { User } from '@modules/user/repo';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
+import { Permission } from '@shared/domain/interface';
+import { AUTHORIZATION_CONFIG_TOKEN, AuthorizationConfig } from '../../authorization.config';
 
 @Injectable()
 export class AuthorizationHelper {
-	public hasAllPermissions(user: User, requiredPermissions: string[]): boolean {
-		const usersPermissions = user.resolvePermissions();
+	constructor(@Inject(AUTHORIZATION_CONFIG_TOKEN) private readonly config: AuthorizationConfig) {}
+	public hasAllPermissions(user: User, requiredPermissions: Permission[]): boolean {
+		const usersPermissions = user.resolvePermissions(
+			this.config.teacherStudentVisibilityIsConfigurable,
+			this.config.teacherStudentVisibilityIsEnabledByDefault
+		);
 		const hasAllPermissions = requiredPermissions.every((p) => usersPermissions.includes(p));
 
 		return hasAllPermissions;
 	}
 
-	public hasAllPermissionsByRole(role: Role, requiredPermissions: string[]): boolean {
+	public hasAllPermissionsByRole(role: Role, requiredPermissions: Permission[]): boolean {
 		const permissions = role.resolvePermissions();
 		const hasAllPermissions = requiredPermissions.every((p) => permissions.includes(p));
 
 		return hasAllPermissions;
 	}
 
-	public hasOneOfPermissions(user: User, requiredPermissions: string[]): boolean {
+	public hasOneOfPermissions(user: User, requiredPermissions: Permission[]): boolean {
 		// TODO: Wouldn't it make more sense to return true for an empty permissions-array?
 		if (!Array.isArray(requiredPermissions) || requiredPermissions.length === 0) {
 			return false;
 		}
-		const permissions = user.resolvePermissions();
+		const permissions = user.resolvePermissions(
+			this.config.teacherStudentVisibilityIsConfigurable,
+			this.config.teacherStudentVisibilityIsEnabledByDefault
+		);
 		const hasPermission = requiredPermissions.some((p) => permissions.includes(p));
 
 		return hasPermission;
@@ -57,5 +67,25 @@ export class AuthorizationHelper {
 		}
 
 		return result;
+	}
+
+	public determineDiscoverability(entity: UserDo): boolean {
+		const discoverabilitySetting = this.config.teacherVisibilityForExternalTeamInvitation;
+
+		if (discoverabilitySetting === 'disabled') {
+			return false;
+		}
+		if (discoverabilitySetting === 'enabled') {
+			return true;
+		}
+
+		if (discoverabilitySetting === 'opt-in') {
+			return entity.discoverable ?? false;
+		}
+		if (discoverabilitySetting === 'opt-out') {
+			return entity.discoverable ?? true;
+		}
+
+		throw new Error('Invalid discoverability setting');
 	}
 }

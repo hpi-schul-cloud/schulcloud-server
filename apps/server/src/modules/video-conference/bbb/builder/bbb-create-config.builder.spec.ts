@@ -1,13 +1,8 @@
-import { Configuration } from '@hpi-schul-cloud/commons';
-import { BBBCreateConfigBuilder } from './bbb-create-config.builder';
 import { BBBCreateConfig, GuestPolicy } from '../request/bbb-create.config';
+import { BBBCreateConfigBuilder } from './bbb-create-config.builder';
 
 describe('BBBCreateConfigBuilder', () => {
 	const SC_DOMAIN = 'server origin name';
-
-	beforeAll(() => {
-		jest.spyOn(Configuration, 'get').mockReturnValue(SC_DOMAIN);
-	});
 
 	afterAll(() => {
 		jest.clearAllMocks();
@@ -30,7 +25,7 @@ describe('BBBCreateConfigBuilder', () => {
 		builder.withGuestPolicy(guestPolicy);
 		builder.withMuteOnStart(muteOnStart);
 
-		const result: BBBCreateConfig = builder.build();
+		const result: BBBCreateConfig = builder.withScDomain(SC_DOMAIN).build();
 
 		// Assert
 		expect(result.name).toEqual(name);
@@ -49,7 +44,7 @@ describe('BBBCreateConfigBuilder', () => {
 		const builder = new BBBCreateConfigBuilder(new BBBCreateConfig({ name, meetingID }));
 
 		// Act
-		const result: BBBCreateConfig = builder.build();
+		const result: BBBCreateConfig = builder.withScDomain(SC_DOMAIN).build();
 
 		// Assert
 		expect(result.name).toEqual(name);

@@ -54,8 +54,8 @@ describe(`content element delete (api)`, () => {
 		const setup = async () => {
 			await cleanupCollections(em);
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-			const course = courseEntityFactory.build({ teachers: [teacherUser] });
-			await em.persistAndFlush([teacherAccount, teacherUser, course]);
+			const course = courseEntityFactory.build({ school: teacherUser.school, teachers: [teacherUser] });
+			await em.persist([teacherAccount, teacherUser, course]).flush();
 
 			const columnBoardNode = columnBoardEntityFactory.build({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
@@ -65,7 +65,7 @@ describe(`content element delete (api)`, () => {
 			const element = richTextElementEntityFactory.withParent(cardNode).build();
 			const sibling = richTextElementEntityFactory.withParent(cardNode).build();
 
-			await em.persistAndFlush([columnBoardNode, columnNode, cardNode, element, sibling]);
+			await em.persist([columnBoardNode, columnNode, cardNode, element, sibling]).flush();
 			em.clear();
 
 			const loggedInClient = await apiClient.login(teacherAccount);
@@ -103,8 +103,8 @@ describe(`content element delete (api)`, () => {
 		const setup = async () => {
 			await cleanupCollections(em);
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-			const course = courseEntityFactory.build({ teachers: [] });
-			await em.persistAndFlush([teacherAccount, teacherUser, course]);
+			const course = courseEntityFactory.build({ school: teacherUser.school, teachers: [] });
+			await em.persist([teacherAccount, teacherUser, course]).flush();
 
 			const columnBoardNode = columnBoardEntityFactory.build({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
@@ -114,7 +114,7 @@ describe(`content element delete (api)`, () => {
 			const element = richTextElementEntityFactory.withParent(cardNode).build();
 			const sibling = richTextElementEntityFactory.withParent(cardNode).build();
 
-			await em.persistAndFlush([columnBoardNode, columnNode, cardNode, element, sibling]);
+			await em.persist([columnBoardNode, columnNode, cardNode, element, sibling]).flush();
 			em.clear();
 
 			const loggedInClient = await apiClient.login(teacherAccount);
@@ -136,8 +136,8 @@ describe(`content element delete (api)`, () => {
 			const drawingSetup = async () => {
 				await cleanupCollections(em);
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-				const course = courseEntityFactory.build({ teachers: [teacherUser] });
-				await em.persistAndFlush([teacherAccount, teacherUser, course]);
+				const course = courseEntityFactory.build({ school: teacherUser.school, teachers: [teacherUser] });
+				await em.persist([teacherAccount, teacherUser, course]).flush();
 
 				const columnBoardNode = columnBoardEntityFactory.build({
 					context: { id: course.id, type: BoardExternalReferenceType.Course },
@@ -149,7 +149,7 @@ describe(`content element delete (api)`, () => {
 				filesStorageClientAdapterService.deleteFilesOfParent.mockResolvedValueOnce([]);
 				drawingElementAdapterService.deleteDrawingBinData.mockResolvedValueOnce();
 
-				await em.persistAndFlush([columnBoardNode, columnNode, cardNode, element]);
+				await em.persist([columnBoardNode, columnNode, cardNode, element]).flush();
 				em.clear();
 
 				const loggedInClient = await apiClient.login(teacherAccount);
@@ -178,8 +178,8 @@ describe(`content element delete (api)`, () => {
 			const drawingSetup = async () => {
 				await cleanupCollections(em);
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-				const course = courseEntityFactory.build({ teachers: [teacherUser] });
-				await em.persistAndFlush([teacherAccount, teacherUser, course]);
+				const course = courseEntityFactory.build({ school: teacherUser.school, teachers: [teacherUser] });
+				await em.persist([teacherAccount, teacherUser, course]).flush();
 
 				const columnBoardNode = columnBoardEntityFactory.build({
 					context: { id: course.id, type: BoardExternalReferenceType.Course },
@@ -191,7 +191,7 @@ describe(`content element delete (api)`, () => {
 				filesStorageClientAdapterService.deleteFilesOfParent.mockResolvedValueOnce([]);
 				drawingElementAdapterService.deleteDrawingBinData.mockResolvedValueOnce();
 
-				await em.persistAndFlush([columnBoardNode, columnNode, cardNode, element]);
+				await em.persist([columnBoardNode, columnNode, cardNode, element]).flush();
 				em.clear();
 
 				return { element };
@@ -210,8 +210,8 @@ describe(`content element delete (api)`, () => {
 			const drawingSetup = async () => {
 				await cleanupCollections(em);
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-				const course = courseEntityFactory.build({ teachers: [], students: [studentUser] });
-				await em.persistAndFlush([studentAccount, studentUser, course]);
+				const course = courseEntityFactory.build({ school: studentUser.school, teachers: [], students: [studentUser] });
+				await em.persist([studentAccount, studentUser, course]).flush();
 
 				const columnBoardNode = columnBoardEntityFactory.build({
 					context: { id: course.id, type: BoardExternalReferenceType.Course },
@@ -223,7 +223,7 @@ describe(`content element delete (api)`, () => {
 				filesStorageClientAdapterService.deleteFilesOfParent.mockResolvedValueOnce([]);
 				drawingElementAdapterService.deleteDrawingBinData.mockResolvedValueOnce();
 
-				await em.persistAndFlush([columnBoardNode, columnNode, cardNode, element]);
+				await em.persist([columnBoardNode, columnNode, cardNode, element]).flush();
 				em.clear();
 
 				const loggedInClient = await apiClient.login(studentAccount);

@@ -12,6 +12,11 @@ export interface StepType {
 
 	copyRoomBoards: {
 		params: { userId: EntityId; sourceRoomId: EntityId; targetRoomId: EntityId };
-		result: { id: EntityId; title: string }[];
+		result: { id: EntityId; title: string; copyId: EntityId; originalId: EntityId }[];
+	};
+
+	copyRoomContent: {
+		params: { sourceRoomId: EntityId; targetRoomId: EntityId; boardMappings: Map<EntityId, EntityId> };
+		result: void;
 	};
 }

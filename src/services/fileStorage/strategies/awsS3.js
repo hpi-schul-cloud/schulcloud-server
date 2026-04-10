@@ -1,9 +1,9 @@
 const { promisify } = require('es6-promisify');
-const CryptoJS = require('crypto-js');
+const { AesEncryptionHelper } = require('../../../../dist/apps/server/shared/common/utils/aes-encryption');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const aws = require('aws-sdk');
 const mongoose = require('mongoose');
-const { NODE_ENV, ENVIRONMENTS } = require('../../../../config/globals');
+const { ENVIRONMENTS } = require('../../../../config/environments');
 const { NotFound, BadRequest, GeneralError } = require('../../../errors');
 const logger = require('../../../logger');
 const { schoolModel } = require('../../school/model');
@@ -11,7 +11,6 @@ const { StorageProviderModel } = require('../../storageProvider/model');
 const UserModel = require('../../user/model');
 const { updateProviderForSchool, findProviderForSchool } = require('../utils/providerAssignmentHelper');
 
-const HOST = Configuration.get('HOST');
 const BUCKET_NAME_PREFIX = 'bucket-';
 
 const getBoolean = (value) => value === true || value === 'true';
@@ -20,7 +19,7 @@ const getCorsRules = () => [
 	{
 		AllowedHeaders: ['*'],
 		AllowedMethods: ['PUT'],
-		AllowedOrigins: [HOST],
+		AllowedOrigins: [Configuration.get('HOST')],
 		MaxAgeSeconds: 300,
 	},
 ];
@@ -65,9 +64,7 @@ const chooseProvider = async (schoolId) => {
 
 const getS3 = (storageProvider, awsClientHelper) => {
 	const S3_KEY = Configuration.get('S3_KEY');
-	storageProvider.secretAccessKey = CryptoJS.AES.decrypt(storageProvider.secretAccessKey, S3_KEY).toString(
-		CryptoJS.enc.Utf8
-	);
+	storageProvider.secretAccessKey = AesEncryptionHelper.decrypt(storageProvider.secretAccessKey, S3_KEY);
 
 	const config = new awsClientHelper.Config({
 		signatureVersion: 'v4',
@@ -173,6 +170,34 @@ const createBucket = async (awsObject, awsClientHelper) => {
 	}
 };
 
+const loadDevelopmentAwsConfig = () => {
+	const HOST = Configuration.get('HOST');
+	const AWS_ACCESS_KEY = Configuration.get('AWS_ACCESS_KEY');
+	const AWS_SECRET_ACCESS_KEY = Configuration.get('AWS_SECRET_ACCESS_KEY');
+	const AWS_REGION = Configuration.get('AWS_REGION');
+	const AWS_ENDPOINT_URL = Configuration.get('AWS_ENDPOINT_URL');
+
+	const awsConfig = {
+		signatureVersion: 'v4',
+		s3ForcePathStyle: true,
+		sslEnabled: true,
+		accessKeyId: AWS_ACCESS_KEY,
+		secretAccessKey: AWS_SECRET_ACCESS_KEY,
+		region: AWS_REGION,
+		endpointUrl: AWS_ENDPOINT_URL,
+		cors_rules: [
+			{
+				AllowedHeaders: ['*'],
+				AllowedMethods: ['PUT'],
+				AllowedOrigins: [HOST],
+				MaxAgeSeconds: 300,
+			},
+		],
+	};
+
+	return awsConfig;
+};
+
 class AWSS3Strategy {
 	constructor(awsClientHelper, config) {
 		this.awsClientHelper = awsClientHelper || aws;
@@ -183,12 +208,10 @@ class AWSS3Strategy {
 		let awsConfig = {}; // TODO: Need cleanup to make it testable
 		if (Configuration.get('FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED') === false) {
 			try {
-				//	awsConfig = require(`../../../../config/secrets.${prodMode ? 'js' : 'json'}`).aws;
 				/* eslint-disable global-require, no-unused-expressions */
-				NODE_ENV === ENVIRONMENTS.PRODUCTION
-					? (awsConfig = require('../../../../config/secrets.js').aws)
+				Configuration.get('NODE_ENV') === ENVIRONMENTS.PRODUCTION
+					? (awsConfig = loadDevelopmentAwsConfig())
 					: (awsConfig = require('../../../../config/secrets.json').aws);
-				/* eslint-enable global-require, no-unused-expressions */
 			} catch (e) {
 				logger.warning("The AWS config couldn't be read");
 			}

@@ -1,33 +1,33 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { faker } from '@faker-js/faker';
-import { FileRecordParentType } from '@infra/rabbitmq';
-import { FileDto } from '@modules/files-storage-client';
-import { CommonCartridgeExportMapper } from './common-cartridge-export.mapper';
 import {
-	boardTaskFactory,
-	courseMetadataFactory,
-	lessonContentFactory,
-	lessonFactory,
-	lessonLinkedTaskFactory,
-} from '../testing/common-cartridge-dtos.factory';
-import { linkElementFactory } from '../testing/link-element.factory';
-import { richTextElementFactroy } from '../testing/rich-text-element.factory';
+	ComponentEtherpadPropsImpl,
+	ComponentGeogebraPropsImpl,
+	ComponentLernstorePropsImpl,
+	LessonContentResponseComponent,
+	LessonContentResponseContent,
+} from '@infra/common-cartridge-clients';
+import { fileRecordResponseFactory } from '@infra/files-storage-client/testing';
+import { FileRecordParentType } from '@modules/files-storage-client';
+import { Test, TestingModule } from '@nestjs/testing';
+import { Readable } from 'stream';
 import {
 	CommonCartridgeElementType,
 	CommonCartridgeIntendedUseType,
 	CommonCartridgeResourceType,
 	CommonCartridgeVersion,
 } from '../export/common-cartridge.enums';
-import { ComponentGeogebraPropsDto } from '../common-cartridge-client/lesson-client/dto/component-geogebra-props.dto';
-import { ComponentEtherpadPropsDto } from '../common-cartridge-client/lesson-client/dto/component-etherpad-props.dto';
-import { createIdentifier } from '../export/utils';
-import { LessonContentResponseContentInnerDto } from '../common-cartridge-client/lesson-client/dto/lesson-content-response-inner.dto';
-import {
-	LessonContentDtoComponent,
-	LessonContentDtoComponentValues,
-} from '../common-cartridge-client/lesson-client/dto';
 import { CommonCartridgeResourceProps } from '../export/resources/common-cartridge-resource-factory';
-import { ComponentLernstorePropsDto } from '../common-cartridge-client/lesson-client/dto/component-lernstore-props.dto';
+import { createIdentifier } from '../export/utils';
+import {
+	boardTaskFactory,
+	courseMetadataFactory,
+	lessonContentFactory,
+	lessonFactory,
+	lessonLinkedTaskFactory,
+} from '../testing/common-cartridge-elements.factory';
+import { linkElementFactory } from '../testing/link-element.factory';
+import { richTextElementFactroy } from '../testing/rich-text-element.factory';
+import { CommonCartridgeExportMapper } from './common-cartridge-export.mapper';
 
 const GEOGEBRA_BASE_URL = 'https://geogebra.org';
 
@@ -106,7 +106,7 @@ describe('CommonCartridgeExportMapper', () => {
 				const result = sut.mapLessonToOrganization(lesson);
 
 				expect(result).toEqual({
-					identifier: createIdentifier(lesson.lessonId),
+					identifier: createIdentifier(lesson.id),
 					title: lesson.name,
 				});
 			});
@@ -117,7 +117,7 @@ describe('CommonCartridgeExportMapper', () => {
 		describe('when lesson content is GeoGebra', () => {
 			const setup = () => {
 				const lessonContent = lessonContentFactory.build();
-				lessonContent.component = LessonContentDtoComponentValues.GEO_GEBRA;
+				lessonContent.component = LessonContentResponseComponent.GEO_GEBRA;
 				lessonContent.content = {
 					materialId: faker.string.uuid(),
 				};
@@ -132,7 +132,7 @@ describe('CommonCartridgeExportMapper', () => {
 					type: CommonCartridgeResourceType.WEB_LINK,
 					identifier: `i${lessonContent.id ?? ''}`,
 					title: lessonContent.title,
-					url: `${GEOGEBRA_BASE_URL}/m/${(lessonContent.content as ComponentGeogebraPropsDto).materialId}`,
+					url: `${GEOGEBRA_BASE_URL}/m/${(lessonContent.content as ComponentGeogebraPropsImpl).materialId}`,
 				});
 			});
 		});
@@ -140,7 +140,7 @@ describe('CommonCartridgeExportMapper', () => {
 		describe('when lesson content is Etherpad', () => {
 			const setup = () => {
 				const lessonContent = lessonContentFactory.build();
-				lessonContent.component = LessonContentDtoComponentValues.ETHERPAD;
+				lessonContent.component = LessonContentResponseComponent.ETHERPAD;
 				lessonContent.content = {
 					description: faker.lorem.sentence(),
 					title: faker.lorem.sentence(),
@@ -156,8 +156,8 @@ describe('CommonCartridgeExportMapper', () => {
 				expect(result).toEqual({
 					type: CommonCartridgeResourceType.WEB_LINK,
 					identifier: `i${lessonContent.id ?? ''}`,
-					title: `${lessonContent.title} - ${(lessonContent.content as ComponentEtherpadPropsDto).description}`,
-					url: (lessonContent.content as ComponentEtherpadPropsDto).url,
+					title: `${lessonContent.title} - ${(lessonContent.content as ComponentEtherpadPropsImpl).description}`,
+					url: (lessonContent.content as ComponentEtherpadPropsImpl).url,
 				});
 			});
 		});
@@ -165,7 +165,7 @@ describe('CommonCartridgeExportMapper', () => {
 		describe('when lesson content is Lernstore', () => {
 			const setup = () => {
 				const lessonContent = lessonContentFactory.build();
-				lessonContent.component = LessonContentDtoComponentValues.RESOURCES;
+				lessonContent.component = LessonContentResponseComponent.RESOURCES;
 				lessonContent.content = {
 					resources: [
 						{
@@ -173,14 +173,12 @@ describe('CommonCartridgeExportMapper', () => {
 							title: faker.lorem.sentence(),
 							client: faker.company.name(),
 							description: faker.lorem.sentence(),
-							merlinReference: faker.string.uuid(),
 						},
 						{
 							url: faker.internet.url(),
 							title: faker.lorem.sentence(),
 							client: faker.company.name(),
 							description: faker.lorem.sentence(),
-							merlinReference: faker.string.uuid(),
 						},
 					],
 				};
@@ -193,15 +191,15 @@ describe('CommonCartridgeExportMapper', () => {
 
 				expect(result[0]).toEqual({
 					type: CommonCartridgeResourceType.WEB_LINK,
-					identifier: `i${lessonContent.id ?? ''}`,
-					title: (lessonContent.content as ComponentLernstorePropsDto).resources[0].title,
-					url: (lessonContent.content as ComponentLernstorePropsDto).resources[0].url,
+					identifier: `i${lessonContent.id ?? ''}-0`,
+					title: (lessonContent.content as ComponentLernstorePropsImpl).resources[0].title,
+					url: (lessonContent.content as ComponentLernstorePropsImpl).resources[0].url,
 				});
 				expect(result[1]).toEqual({
 					type: CommonCartridgeResourceType.WEB_LINK,
-					identifier: `i${lessonContent.id ?? ''}`,
-					title: (lessonContent.content as ComponentLernstorePropsDto).resources[1].title,
-					url: (lessonContent.content as ComponentLernstorePropsDto).resources[1].url,
+					identifier: `i${lessonContent.id ?? ''}-1`,
+					title: (lessonContent.content as ComponentLernstorePropsImpl).resources[1].title,
+					url: (lessonContent.content as ComponentLernstorePropsImpl).resources[1].url,
 				});
 			});
 		});
@@ -209,8 +207,8 @@ describe('CommonCartridgeExportMapper', () => {
 		describe('when lesson has no content', () => {
 			const setup = () => {
 				const lessonContent = lessonContentFactory.build();
-				lessonContent.content = {} as unknown as LessonContentResponseContentInnerDto;
-				lessonContent.component = {} as unknown as LessonContentDtoComponent;
+				lessonContent.content = {} as unknown as LessonContentResponseContent;
+				lessonContent.component = {} as unknown as LessonContentResponseComponent;
 
 				return { lessonContent };
 			};
@@ -399,15 +397,13 @@ describe('CommonCartridgeExportMapper', () => {
 	describe('mapFileToResource', () => {
 		describe('when mapping file to resource', () => {
 			const setup = () => {
-				const file = Buffer.from(faker.lorem.paragraphs(100));
-				const fileRecord: FileDto = {
+				const file = Readable.from(faker.lorem.paragraphs(100));
+				const fileRecord = fileRecordResponseFactory.build({
 					id: faker.string.uuid(),
 					name: 'file.zip',
 					parentId: faker.string.uuid(),
 					parentType: FileRecordParentType.Course,
-					createdAt: new Date(),
-					updatedAt: new Date(),
-				};
+				});
 
 				return { file, fileRecord };
 			};
@@ -422,7 +418,7 @@ describe('CommonCartridgeExportMapper', () => {
 					identifier: expect.any(String),
 					title: fileRecord.name,
 					fileName: fileRecord.name,
-					fileContent: file,
+					file: file,
 				});
 			});
 		});

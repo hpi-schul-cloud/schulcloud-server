@@ -1,2 +1,0 @@
-# Libraries can be configured with ansible (ConfigMap is mounted here)
-h5p_libraries: []

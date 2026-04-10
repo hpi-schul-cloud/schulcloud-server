@@ -4,7 +4,7 @@ import { BoardNodeType, LinkElementProps, ROOT_PATH } from '../../domain';
 
 export const linkElementEntityFactory = BoardNodeEntityFactory.define<PropsWithType<LinkElementProps>>(
 	({ sequence }) => {
-		return {
+		const props: PropsWithType<LinkElementProps> = {
 			id: new ObjectId().toHexString(),
 			path: ROOT_PATH,
 			level: 0,
@@ -13,10 +13,12 @@ export const linkElementEntityFactory = BoardNodeEntityFactory.define<PropsWithT
 			children: [],
 			description: `description #${sequence}`,
 			url: `url #${sequence}`,
-			imageUrl: `image-url #${sequence}`,
+			imageUrl: '',
 			createdAt: new Date(),
 			updatedAt: new Date(),
 			type: BoardNodeType.LINK_ELEMENT,
 		};
+
+		return props;
 	}
 );

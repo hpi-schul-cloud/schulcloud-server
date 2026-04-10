@@ -56,14 +56,6 @@ export class CommonCartridgeFileParser {
 		return resource;
 	}
 
-	public getResourceAsString(organization: CommonCartridgeOrganizationProps): string {
-		this.checkOrganization(organization);
-
-		const resource = this.archive.readAsText(organization.resourcePath);
-
-		return resource;
-	}
-
 	private getManifestFromArchive(): CheerioAPI {
 		try {
 			const manifestString = CommonCartridgeImportUtils.getManifestFileAsString(this.archive);
@@ -80,7 +72,11 @@ export class CommonCartridgeFileParser {
 	}
 
 	private checkOrganization(organization: CommonCartridgeOrganizationProps): void {
-		if (!organization.isResource || !this.archive.getEntry(organization.resourcePath)) {
+		const resourceMissing =
+			!organization.isResource ||
+			organization.resourcePaths.map((path) => this.archive.getEntry(path)).filter((entry) => entry === null).length >
+				0;
+		if (resourceMissing) {
 			throw new CommonCartridgeResourceNotFoundException();
 		}
 	}

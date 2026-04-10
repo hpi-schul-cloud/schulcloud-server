@@ -98,7 +98,7 @@ describe('dashboard uc', () => {
 			const currentUser = currentUserFactory.build();
 			await controller.findForUser(currentUser);
 
-			expect(spy).toHaveBeenCalledWith(currentUser.userId);
+			expect(spy).toHaveBeenCalledWith(currentUser.userId, currentUser.schoolId);
 		});
 	});
 

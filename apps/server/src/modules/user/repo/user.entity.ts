@@ -1,4 +1,4 @@
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
+import { buildAllSearchableStringsForUser } from '@imports-from-feathers';
 import {
 	BeforeCreate,
 	BeforeUpdate,
@@ -24,7 +24,6 @@ import { LanguageType, Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { ConsentEntity } from './consent.entity';
 import { UserParentsEntity } from './user-parents.entity';
-import { buildAllSearchableStringsForUser } from '@imports-from-feathers';
 
 export interface UserProperties {
 	email: string;
@@ -224,12 +223,15 @@ export class User extends BaseEntityWithTimestamps {
 		}
 	}
 
-	public resolvePermissions(): string[] {
+	public resolvePermissions(
+		teacherStudentVisibilityIsConfigurable: boolean,
+		teacherStudentVisibilityIsEnabledByDefault: boolean
+	): Permission[] {
 		if (!this.roles.isInitialized(true)) {
 			throw new ReferenceNotPopulatedLoggableException('user', 'roles');
 		}
 
-		let permissions: string[] = [];
+		let permissions: Permission[] = [];
 
 		const roles = this.getRoles();
 		roles.forEach((role) => {
@@ -237,14 +239,24 @@ export class User extends BaseEntityWithTimestamps {
 			permissions = [...permissions, ...rolePermissions];
 		});
 
-		const setOfPermissions = this.resolveSchoolPermissions(permissions, roles);
+		const setOfPermissions = this.resolveSchoolPermissions(
+			permissions,
+			roles,
+			teacherStudentVisibilityIsConfigurable,
+			teacherStudentVisibilityIsEnabledByDefault
+		);
 
 		const uniquePermissions = [...setOfPermissions];
 
 		return uniquePermissions;
 	}
 
-	private resolveSchoolPermissions(permissions: string[], roles: Role[]): Set<string> {
+	private resolveSchoolPermissions(
+		permissions: Permission[],
+		roles: Role[],
+		teacherStudentVisibilityIsConfigurable: boolean,
+		teacherStudentVisibilityIsEnabledByDefault: boolean
+	): Set<Permission> {
 		if (!wrap(this.school).isInitialized()) {
 			throw new ReferenceNotPopulatedLoggableException('user', 'school');
 		}
@@ -252,52 +264,38 @@ export class User extends BaseEntityWithTimestamps {
 		const schoolPermissions = this.school.permissions;
 		let setOfPermissions = new Set(permissions);
 
-		// This exclusion is necessary because of possible double roles (e.g., admin and teacher). Then the higher role should keep its permissions.
-		if (roles.some((role) => role.name === RoleName.ADMINISTRATOR || role.name === RoleName.SUPERHERO)) {
+		if (roles.some((role) => role.name === RoleName.SUPERHERO || role.name === RoleName.ADMINISTRATOR)) {
 			return setOfPermissions;
 		}
 
 		if (roles.some((role) => role.name === RoleName.TEACHER)) {
-			setOfPermissions = this.resolveSchoolPermissionsForTeacher(setOfPermissions, schoolPermissions);
-		}
-
-		if (roles.some((role) => role.name === RoleName.STUDENT)) {
-			setOfPermissions = this.resolveSchoolPermissionsForStudent(setOfPermissions, schoolPermissions);
+			setOfPermissions = this.resolveSchoolPermissionsForTeacher(
+				setOfPermissions,
+				teacherStudentVisibilityIsConfigurable,
+				teacherStudentVisibilityIsEnabledByDefault,
+				schoolPermissions
+			);
 		}
 
 		return setOfPermissions;
 	}
 
 	private resolveSchoolPermissionsForTeacher(
-		setOfPermissions: Set<string>,
+		setOfPermissions: Set<Permission>,
+		teacherStudentVisibilityIsConfigurable: boolean,
+		teacherStudentVisibilityIsEnabledByDefault: boolean,
 		schoolPermissions?: SchoolRoles
-	): Set<string> {
-		const isEnabledByDefault = Configuration.get('TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT') as boolean;
-		const isConfigurable = Configuration.get('TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE') as boolean;
-
-		if (isConfigurable) {
+	): Set<Permission> {
+		if (teacherStudentVisibilityIsConfigurable) {
 			if (schoolPermissions?.teacher?.STUDENT_LIST) {
 				setOfPermissions.add(Permission.STUDENT_LIST);
 			} else {
 				setOfPermissions.delete(Permission.STUDENT_LIST);
 			}
-		} else if (isEnabledByDefault) {
+		} else if (teacherStudentVisibilityIsEnabledByDefault) {
 			setOfPermissions.add(Permission.STUDENT_LIST);
 		} else {
 			setOfPermissions.delete(Permission.STUDENT_LIST);
-		}
-
-		return setOfPermissions;
-	}
-
-	private resolveSchoolPermissionsForStudent(
-		setOfPermissions: Set<string>,
-		schoolPermissions?: SchoolRoles
-	): Set<string> {
-		if (schoolPermissions?.student?.LERNSTORE_VIEW === true) {
-			setOfPermissions.add(Permission.LERNSTORE_VIEW);
-		} else if (schoolPermissions?.student?.LERNSTORE_VIEW === false) {
-			setOfPermissions.delete(Permission.LERNSTORE_VIEW);
 		}
 
 		return setOfPermissions;
@@ -319,5 +317,9 @@ export class User extends BaseEntityWithTimestamps {
 		};
 
 		return userInfo;
+	}
+
+	public getPreferences(): Record<string, unknown> {
+		return this.preferences ?? {};
 	}
 }

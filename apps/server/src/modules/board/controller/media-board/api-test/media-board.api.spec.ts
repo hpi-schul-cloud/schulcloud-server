@@ -1,6 +1,7 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { BOARD_CONFIG_TOKEN, BoardConfig } from '@modules/board/board.config';
 import { mediaSourceEntityFactory } from '@modules/media-source/testing';
-import { serverConfig, type ServerConfig, ServerTestModule } from '@modules/server';
+import { ServerTestModule } from '@modules/server';
 import { contextExternalToolEntityFactory } from '@modules/tool/context-external-tool/testing';
 import { externalToolEntityFactory } from '@modules/tool/external-tool/testing';
 import { schoolExternalToolEntityFactory } from '@modules/tool/school-external-tool/testing';
@@ -11,7 +12,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { DateToString } from '@testing/date-to-string';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
-import { TestConfigHelper } from '@testing/test-config.helper';
 import { BoardExternalReferenceType, BoardLayout, MediaBoardColors } from '../../../domain';
 import { BoardNodeEntity } from '../../../repo';
 import {
@@ -34,7 +34,7 @@ describe('Media Board (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let testApiClient: TestApiClient;
-	let testConfigHelper: TestConfigHelper<ServerConfig>;
+	let config: BoardConfig;
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -46,22 +46,17 @@ describe('Media Board (API)', () => {
 		em = module.get(EntityManager);
 		testApiClient = new TestApiClient(app, baseRouteName);
 
-		const config = serverConfig();
-		testConfigHelper = new TestConfigHelper(config);
+		config = module.get<BoardConfig>(BOARD_CONFIG_TOKEN);
 	});
 
 	afterAll(async () => {
 		await app.close();
 	});
 
-	afterEach(() => {
-		testConfigHelper.reset();
-	});
-
 	describe('[GET] /media-boards/me', () => {
 		describe('when a valid user accesses their media board', () => {
 			const setup = async () => {
-				testConfigHelper.set('FEATURE_MEDIA_SHELF_ENABLED', true);
+				config.featureMediaShelfEnabled = true;
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
@@ -77,7 +72,7 @@ describe('Media Board (API)', () => {
 					.withParent(mediaLine)
 					.build({ contextExternalToolId });
 
-				await em.persistAndFlush([studentAccount, studentUser, mediaBoard, mediaLine, mediaElement]);
+				await em.persist([studentAccount, studentUser, mediaBoard, mediaLine, mediaElement]).flush();
 				em.clear();
 
 				const studentClient = await testApiClient.login(studentAccount);
@@ -118,7 +113,9 @@ describe('Media Board (API)', () => {
 									id: mediaElement.id,
 									timestamps: {
 										createdAt: mediaElement.createdAt.toISOString(),
-										lastUpdatedAt: mediaElement.updatedAt.toISOString(),
+										lastUpdatedAt: expect.stringMatching(
+											/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/
+										) as unknown as string, // any iso string, to avoid ms differences based unstable test
 									},
 									content: {
 										contextExternalToolId,
@@ -133,11 +130,11 @@ describe('Media Board (API)', () => {
 
 		describe('when the media board feature is disabled', () => {
 			const setup = async () => {
-				testConfigHelper.set('FEATURE_MEDIA_SHELF_ENABLED', false);
+				config.featureMediaShelfEnabled = false;
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persist([studentAccount, studentUser]).flush();
 				em.clear();
 
 				const studentClient = await testApiClient.login(studentAccount);
@@ -164,7 +161,7 @@ describe('Media Board (API)', () => {
 
 		describe('when the user is invalid', () => {
 			const setup = () => {
-				testConfigHelper.set('FEATURE_MEDIA_SHELF_ENABLED', true);
+				config.featureMediaShelfEnabled = true;
 			};
 
 			it('should return unauthorized', async () => {
@@ -186,7 +183,7 @@ describe('Media Board (API)', () => {
 	describe('[POST] /media-boards/:boardId/media-lines', () => {
 		describe('when a valid user creates a line on their media board', () => {
 			const setup = async () => {
-				testConfigHelper.set('FEATURE_MEDIA_SHELF_ENABLED', true);
+				config.featureMediaShelfEnabled = true;
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
@@ -197,7 +194,7 @@ describe('Media Board (API)', () => {
 					},
 				});
 
-				await em.persistAndFlush([studentAccount, studentUser, mediaBoard]);
+				await em.persist([studentAccount, studentUser, mediaBoard]).flush();
 				em.clear();
 
 				const studentClient = await testApiClient.login(studentAccount);
@@ -229,7 +226,7 @@ describe('Media Board (API)', () => {
 
 		describe('when the media board feature is disabled', () => {
 			const setup = async () => {
-				testConfigHelper.set('FEATURE_MEDIA_SHELF_ENABLED', false);
+				config.featureMediaShelfEnabled = false;
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 				const mediaBoard = mediaBoardEntityFactory.build({
@@ -239,7 +236,7 @@ describe('Media Board (API)', () => {
 					},
 				});
 
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persist([studentAccount, studentUser]).flush();
 				em.clear();
 
 				const studentClient = await testApiClient.login(studentAccount);
@@ -267,7 +264,7 @@ describe('Media Board (API)', () => {
 
 		describe('when the user is invalid', () => {
 			const setup = async () => {
-				testConfigHelper.set('FEATURE_MEDIA_SHELF_ENABLED', true);
+				config.featureMediaShelfEnabled = true;
 
 				const mediaBoard = mediaBoardEntityFactory.build({
 					context: {
@@ -276,7 +273,7 @@ describe('Media Board (API)', () => {
 					},
 				});
 
-				await em.persistAndFlush([mediaBoard]);
+				await em.persist([mediaBoard]).flush();
 				em.clear();
 
 				return {
@@ -303,7 +300,7 @@ describe('Media Board (API)', () => {
 	describe('[GET] /media-board/:boardId/media-available-line', () => {
 		describe('when a valid user requests their available media line', () => {
 			const setup = async () => {
-				testConfigHelper.set('FEATURE_MEDIA_SHELF_ENABLED', true);
+				config.featureMediaShelfEnabled = true;
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
@@ -342,18 +339,20 @@ describe('Media Board (API)', () => {
 					.withParent(mediaLine)
 					.build({ contextExternalToolId: contextExternalTool.id });
 
-				await em.persistAndFlush([
-					studentAccount,
-					studentUser,
-					externalTool,
-					unusedExternalTool,
-					schoolExternalTool,
-					unusedSchoolExternalTool,
-					contextExternalTool,
-					mediaBoard,
-					mediaLine,
-					mediaElement,
-				]);
+				await em
+					.persist([
+						studentAccount,
+						studentUser,
+						externalTool,
+						unusedExternalTool,
+						schoolExternalTool,
+						unusedSchoolExternalTool,
+						contextExternalTool,
+						mediaBoard,
+						mediaLine,
+						mediaElement,
+					])
+					.flush();
 				em.clear();
 
 				const studentClient = await testApiClient.login(studentAccount);
@@ -393,7 +392,7 @@ describe('Media Board (API)', () => {
 
 		describe('when the user is unauthorized', () => {
 			const setup = async () => {
-				testConfigHelper.set('FEATURE_MEDIA_SHELF_ENABLED', true);
+				config.featureMediaShelfEnabled = true;
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
@@ -404,7 +403,7 @@ describe('Media Board (API)', () => {
 					},
 				});
 
-				await em.persistAndFlush([studentAccount, studentUser, mediaBoard]);
+				await em.persist([studentAccount, studentUser, mediaBoard]).flush();
 				em.clear();
 
 				return {
@@ -429,7 +428,7 @@ describe('Media Board (API)', () => {
 
 		describe('when the user is invalid', () => {
 			const setup = async () => {
-				testConfigHelper.set('FEATURE_MEDIA_SHELF_ENABLED', true);
+				config.featureMediaShelfEnabled = true;
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
@@ -440,7 +439,7 @@ describe('Media Board (API)', () => {
 					},
 				});
 
-				await em.persistAndFlush([studentAccount, studentUser, mediaBoard]);
+				await em.persist([studentAccount, studentUser, mediaBoard]).flush();
 				em.clear();
 
 				const studentClient = await testApiClient.login(studentAccount);
@@ -468,7 +467,7 @@ describe('Media Board (API)', () => {
 
 		describe('when the media board feature is disabled', () => {
 			const setup = async () => {
-				testConfigHelper.set('FEATURE_MEDIA_SHELF_ENABLED', false);
+				config.featureMediaShelfEnabled = false;
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
@@ -479,7 +478,7 @@ describe('Media Board (API)', () => {
 					},
 				});
 
-				await em.persistAndFlush([studentAccount, studentUser, mediaBoard]);
+				await em.persist([studentAccount, studentUser, mediaBoard]).flush();
 				em.clear();
 
 				const studentClient = await testApiClient.login(studentAccount);
@@ -507,8 +506,8 @@ describe('Media Board (API)', () => {
 
 		describe('when a licensing feature is enabled', () => {
 			const setup = async () => {
-				testConfigHelper.set('FEATURE_MEDIA_SHELF_ENABLED', true);
-				testConfigHelper.set('FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED', true);
+				config.featureMediaShelfEnabled = true;
+				config.featureSchulconnexMediaLicenseEnabled = true;
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
@@ -562,21 +561,23 @@ describe('Media Board (API)', () => {
 					mediaSource,
 				});
 
-				await em.persistAndFlush([
-					studentAccount,
-					studentUser,
-					externalTool,
-					licensedUnusedExternalTool,
-					unusedExternalTool,
-					schoolExternalTool,
-					licensedUnusedSchoolExternalTool,
-					unusedSchoolExternalTool,
-					contextExternalTool,
-					mediaBoard,
-					mediaLine,
-					mediaElement,
-					userLicense,
-				]);
+				await em
+					.persist([
+						studentAccount,
+						studentUser,
+						externalTool,
+						licensedUnusedExternalTool,
+						unusedExternalTool,
+						schoolExternalTool,
+						licensedUnusedSchoolExternalTool,
+						unusedSchoolExternalTool,
+						contextExternalTool,
+						mediaBoard,
+						mediaLine,
+						mediaElement,
+						userLicense,
+					])
+					.flush();
 				em.clear();
 
 				const studentClient = await testApiClient.login(studentAccount);
@@ -624,7 +625,7 @@ describe('Media Board (API)', () => {
 	describe('[GET] /media-board/:boardId/media-available-line/collapse', () => {
 		describe('when a valid user requests their available media line', () => {
 			const setup = async () => {
-				testConfigHelper.set('FEATURE_MEDIA_SHELF_ENABLED', true);
+				config.featureMediaShelfEnabled = true;
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
@@ -654,18 +655,20 @@ describe('Media Board (API)', () => {
 					.withParent(mediaLine)
 					.build({ contextExternalToolId: contextExternalTool.id });
 
-				await em.persistAndFlush([
-					studentAccount,
-					studentUser,
-					externalTool,
-					unusedExternalTool,
-					schoolExternalTool,
-					unusedSchoolExternalTool,
-					contextExternalTool,
-					mediaBoard,
-					mediaLine,
-					mediaElement,
-				]);
+				await em
+					.persist([
+						studentAccount,
+						studentUser,
+						externalTool,
+						unusedExternalTool,
+						schoolExternalTool,
+						unusedSchoolExternalTool,
+						contextExternalTool,
+						mediaBoard,
+						mediaLine,
+						mediaElement,
+					])
+					.flush();
 				em.clear();
 
 				const studentClient = await testApiClient.login(studentAccount);
@@ -696,7 +699,7 @@ describe('Media Board (API)', () => {
 
 		describe('when the user is unauthorized', () => {
 			const setup = async () => {
-				testConfigHelper.set('FEATURE_MEDIA_SHELF_ENABLED', true);
+				config.featureMediaShelfEnabled = true;
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
@@ -707,7 +710,7 @@ describe('Media Board (API)', () => {
 					},
 				});
 
-				await em.persistAndFlush([studentAccount, studentUser, mediaBoard]);
+				await em.persist([studentAccount, studentUser, mediaBoard]).flush();
 				em.clear();
 
 				return {
@@ -737,7 +740,7 @@ describe('Media Board (API)', () => {
 
 		describe('when the user is invalid', () => {
 			const setup = async () => {
-				testConfigHelper.set('FEATURE_MEDIA_SHELF_ENABLED', true);
+				config.featureMediaShelfEnabled = true;
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
@@ -748,7 +751,7 @@ describe('Media Board (API)', () => {
 					},
 				});
 
-				await em.persistAndFlush([studentAccount, studentUser, mediaBoard]);
+				await em.persist([studentAccount, studentUser, mediaBoard]).flush();
 				em.clear();
 
 				const studentClient = await testApiClient.login(studentAccount);
@@ -783,7 +786,7 @@ describe('Media Board (API)', () => {
 	describe('[GET] /media-board/:boardId/media-available-line/color', () => {
 		describe('when a valid user requests their available media line', () => {
 			const setup = async () => {
-				testConfigHelper.set('FEATURE_MEDIA_SHELF_ENABLED', true);
+				config.featureMediaShelfEnabled = true;
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
@@ -813,18 +816,20 @@ describe('Media Board (API)', () => {
 					.withParent(mediaLine)
 					.build({ contextExternalToolId: contextExternalTool.id });
 
-				await em.persistAndFlush([
-					studentAccount,
-					studentUser,
-					externalTool,
-					unusedExternalTool,
-					schoolExternalTool,
-					unusedSchoolExternalTool,
-					contextExternalTool,
-					mediaBoard,
-					mediaLine,
-					mediaElement,
-				]);
+				await em
+					.persist([
+						studentAccount,
+						studentUser,
+						externalTool,
+						unusedExternalTool,
+						schoolExternalTool,
+						unusedSchoolExternalTool,
+						contextExternalTool,
+						mediaBoard,
+						mediaLine,
+						mediaElement,
+					])
+					.flush();
 				em.clear();
 
 				const studentClient = await testApiClient.login(studentAccount);
@@ -852,7 +857,7 @@ describe('Media Board (API)', () => {
 
 		describe('when the user is unauthorized', () => {
 			const setup = async () => {
-				testConfigHelper.set('FEATURE_MEDIA_SHELF_ENABLED', true);
+				config.featureMediaShelfEnabled = true;
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
@@ -863,7 +868,7 @@ describe('Media Board (API)', () => {
 					},
 				});
 
-				await em.persistAndFlush([studentAccount, studentUser, mediaBoard]);
+				await em.persist([studentAccount, studentUser, mediaBoard]).flush();
 				em.clear();
 
 				return {
@@ -890,7 +895,7 @@ describe('Media Board (API)', () => {
 
 		describe('when the user is invalid', () => {
 			const setup = async () => {
-				testConfigHelper.set('FEATURE_MEDIA_SHELF_ENABLED', true);
+				config.featureMediaShelfEnabled = true;
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
@@ -901,7 +906,7 @@ describe('Media Board (API)', () => {
 					},
 				});
 
-				await em.persistAndFlush([studentAccount, studentUser, mediaBoard]);
+				await em.persist([studentAccount, studentUser, mediaBoard]).flush();
 				em.clear();
 
 				const studentClient = await testApiClient.login(studentAccount);
@@ -931,7 +936,7 @@ describe('Media Board (API)', () => {
 
 		describe('when the media board feature is disabled', () => {
 			const setup = async () => {
-				testConfigHelper.set('FEATURE_MEDIA_SHELF_ENABLED', false);
+				config.featureMediaShelfEnabled = false;
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
@@ -942,7 +947,7 @@ describe('Media Board (API)', () => {
 					},
 				});
 
-				await em.persistAndFlush([studentAccount, studentUser, mediaBoard]);
+				await em.persist([studentAccount, studentUser, mediaBoard]).flush();
 				em.clear();
 
 				const studentClient = await testApiClient.login(studentAccount);
@@ -974,7 +979,7 @@ describe('Media Board (API)', () => {
 	describe('[GET] /media-board/:boardId/layout', () => {
 		describe('when a valid user set layout for media board', () => {
 			const setup = async () => {
-				testConfigHelper.set('FEATURE_MEDIA_SHELF_ENABLED', true);
+				config.featureMediaShelfEnabled = true;
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
@@ -987,7 +992,7 @@ describe('Media Board (API)', () => {
 				const mediaLine = mediaLineEntityFactory.withParent(mediaBoard).build();
 				const mediaElement = mediaExternalToolElementEntityFactory.withParent(mediaLine).build();
 
-				await em.persistAndFlush([studentAccount, studentUser, mediaBoard, mediaLine, mediaElement]);
+				await em.persist([studentAccount, studentUser, mediaBoard, mediaLine, mediaElement]).flush();
 				em.clear();
 
 				const studentClient = await testApiClient.login(studentAccount);
@@ -1015,7 +1020,7 @@ describe('Media Board (API)', () => {
 
 		describe('when the user is unauthorized', () => {
 			const setup = async () => {
-				testConfigHelper.set('FEATURE_MEDIA_SHELF_ENABLED', true);
+				config.featureMediaShelfEnabled = true;
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
@@ -1026,7 +1031,7 @@ describe('Media Board (API)', () => {
 					},
 				});
 
-				await em.persistAndFlush([studentAccount, studentUser, mediaBoard]);
+				await em.persist([studentAccount, studentUser, mediaBoard]).flush();
 				em.clear();
 
 				return {
@@ -1051,7 +1056,7 @@ describe('Media Board (API)', () => {
 
 		describe('when the user is invalid', () => {
 			const setup = async () => {
-				testConfigHelper.set('FEATURE_MEDIA_SHELF_ENABLED', true);
+				config.featureMediaShelfEnabled = true;
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
@@ -1062,7 +1067,7 @@ describe('Media Board (API)', () => {
 					},
 				});
 
-				await em.persistAndFlush([studentAccount, studentUser, mediaBoard]);
+				await em.persist([studentAccount, studentUser, mediaBoard]).flush();
 				em.clear();
 
 				const studentClient = await testApiClient.login(studentAccount);
@@ -1090,7 +1095,7 @@ describe('Media Board (API)', () => {
 
 		describe('when the media board feature is disabled', () => {
 			const setup = async () => {
-				testConfigHelper.set('FEATURE_MEDIA_SHELF_ENABLED', false);
+				config.featureMediaShelfEnabled = false;
 
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
@@ -1101,7 +1106,7 @@ describe('Media Board (API)', () => {
 					},
 				});
 
-				await em.persistAndFlush([studentAccount, studentUser, mediaBoard]);
+				await em.persist([studentAccount, studentUser, mediaBoard]).flush();
 				em.clear();
 
 				const studentClient = await testApiClient.login(studentAccount);

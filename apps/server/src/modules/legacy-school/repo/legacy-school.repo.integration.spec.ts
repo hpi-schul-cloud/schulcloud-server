@@ -87,7 +87,7 @@ describe('LegacySchoolRepo', () => {
 		school.permissions.teacher = new SchoolRolePermission();
 		school.permissions.teacher.STUDENT_LIST = true;
 
-		await em.persistAndFlush([school]);
+		await em.persist([school]).flush();
 
 		const storedSchoolYears = await em.find(SchoolYearEntity, {});
 		expect(storedSchoolYears).toHaveLength(1);
@@ -100,7 +100,6 @@ describe('LegacySchoolRepo', () => {
 		expect(storedSchool).toEqual(school);
 		expect(storedSchool.previousExternalId).toBeDefined();
 		expect(storedSchool.permissions).toBeDefined();
-		expect(storedSchool.permissions?.student).toBeUndefined();
 		expect(storedSchool.permissions?.teacher).toBeDefined();
 		expect(storedSchool.permissions?.teacher?.STUDENT_LIST).toBe(true);
 		expect(storedSchool.userLoginMigration).toBeDefined();
@@ -112,7 +111,7 @@ describe('LegacySchoolRepo', () => {
 			const schoolEntity: SchoolEntity = schoolEntityFactory.build({ externalId: 'externalId' });
 			schoolEntity.systems.add(system);
 
-			await em.persistAndFlush(schoolEntity);
+			await em.persist(schoolEntity).flush();
 
 			const result = await repo.findByExternalId(schoolEntity.externalId as string, schoolEntity.systems[0].id);
 
@@ -130,7 +129,7 @@ describe('LegacySchoolRepo', () => {
 		it('should find school by schoolnumber', async () => {
 			const schoolEntity: SchoolEntity = schoolEntityFactory.build({ officialSchoolNumber: '12345' });
 
-			await em.persistAndFlush(schoolEntity);
+			await em.persist(schoolEntity).flush();
 
 			const result = await repo.findBySchoolNumber(schoolEntity.officialSchoolNumber as string);
 
@@ -149,7 +148,7 @@ describe('LegacySchoolRepo', () => {
 				const schoolEntity: SchoolEntity = schoolEntityFactory.build({ officialSchoolNumber });
 				const schoolEntity2: SchoolEntity = schoolEntityFactory.build({ officialSchoolNumber });
 
-				await em.persistAndFlush([schoolEntity, schoolEntity2]);
+				await em.persist([schoolEntity, schoolEntity2]).flush();
 
 				return {
 					officialSchoolNumber,
@@ -216,7 +215,7 @@ describe('LegacySchoolRepo', () => {
 
 			const userLoginMigration: UserLoginMigrationEntity = userLoginMigrationFactory.buildWithId();
 
-			await em.persistAndFlush([userLoginMigration, system1, system2]);
+			await em.persist([userLoginMigration, system1, system2]).flush();
 
 			const entityDO = legacySchoolDoFactory.build({
 				systems: [system1.id, system2.id],

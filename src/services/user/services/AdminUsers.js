@@ -7,7 +7,6 @@ const moment = require('moment');
 const { Forbidden, BadRequest } = require('../../../errors');
 const { hasSchoolPermission, blockDisposableEmail, transformToDataTransferObject } = require('../../../hooks');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
-const { validateParams, parseRequestQuery } = require('../hooks/adminUsers.hooks');
 const { sendRegistrationLink, protectImmutableAttributes } = require('../hooks/userService');
 
 const constants = require('../../../utils/constants');
@@ -177,7 +176,6 @@ const adminHookGenerator = (kind) => ({
 		create: [hasSchoolPermission(`${kind}_CREATE`), blockDisposableEmail('email')],
 		update: [hasSchoolPermission(`${kind}_EDIT`), protectImmutableAttributes, blockDisposableEmail('email')],
 		patch: [hasSchoolPermission(`${kind}_EDIT`), protectImmutableAttributes, blockDisposableEmail('email')],
-		remove: [hasSchoolPermission(`${kind}_DELETE`), parseRequestQuery, validateParams],
 	},
 	after: {
 		all: [transformToDataTransferObject],

@@ -17,17 +17,22 @@ export class CourseUc {
 		private readonly roleService: RoleService
 	) {}
 
-	public findAllByUser(userId: EntityId, options?: PaginationParams): Promise<Counted<CourseEntity[]>> {
-		return this.courseService.findAllCoursesByUserId(
+	public findAllByUser(
+		userId: EntityId,
+		schoolId: string,
+		options?: PaginationParams
+	): Promise<Counted<CourseEntity[]>> {
+		return this.courseService.findAllByUserId(
 			userId,
+			schoolId,
 			{},
 			{ pagination: options, order: { updatedAt: SortOrder.desc } }
 		);
 	}
 
 	public async getUserPermissionByCourseId(userId: EntityId, courseId: EntityId): Promise<string[]> {
-		const course = await this.courseService.findById(courseId);
 		const user = await this.authService.getUserWithPermissions(userId);
+		const course = await this.courseService.findOneForUser(courseId, userId, user.school.id);
 		const userRole = RoleNameMapper.mapToRoleName(user, course);
 		const role = await this.roleService.findByName(userRole);
 

@@ -1,21 +1,35 @@
 import { ColumnBoard } from '@modules/board';
+import { RoomOperation } from '@modules/room-membership/authorization/room.rule';
+import { PaginationParams } from '@shared/controller/dto';
 import { Page } from '@shared/domain/domainobject';
-import { Permission } from '@shared/domain/interface';
 import { Room } from '../../domain/do/room.do';
-import { RoomPaginationParams } from '../dto/request/room-pagination.params';
 import { RoomBoardItemResponse } from '../dto/response/room-board-item.response';
 import { RoomBoardListResponse } from '../dto/response/room-board-list.response';
+import { RoomCreatedResponse } from '../dto/response/room-created.response';
 import { RoomDetailsResponse } from '../dto/response/room-details.response';
 import { RoomItemResponse } from '../dto/response/room-item.response';
 import { RoomListResponse } from '../dto/response/room-list.response';
-import { PaginationParams } from '@shared/controller/dto';
-import { RoomStatsListResponse } from '../dto/response/room-stats-list.repsonse';
 import { RoomStatsItemResponse } from '../dto/response/room-stats-item.response';
+import { RoomStatsListResponse } from '../dto/response/room-stats-list.repsonse';
 import { RoomStats } from '../type/room-stats.type';
-import { RoomWithLockedStatus } from '../room.uc';
+import { RoomWithAllowedOperationsAndLockedStatus } from '../type/room-with-locked-status';
 
 export class RoomMapper {
-	public static mapToRoomItemResponse({ room, isLocked }: RoomWithLockedStatus): RoomItemResponse {
+	public static mapToRoomCreatedResponse(room: Room): RoomCreatedResponse {
+		const response = new RoomCreatedResponse({
+			id: room.id,
+			createdAt: room.createdAt,
+			updatedAt: room.updatedAt,
+		});
+
+		return response;
+	}
+
+	public static mapToRoomItemResponse({
+		room,
+		allowedOperations,
+		isLocked,
+	}: RoomWithAllowedOperationsAndLockedStatus): RoomItemResponse {
 		const response = new RoomItemResponse({
 			id: room.id,
 			name: room.name,
@@ -25,25 +39,26 @@ export class RoomMapper {
 			endDate: room.endDate,
 			createdAt: room.createdAt,
 			updatedAt: room.updatedAt,
-			isLocked: isLocked,
+			allowedOperations,
+			isLocked,
 		});
 
 		return response;
 	}
 
-	public static mapToRoomListResponse(
-		rooms: Page<RoomWithLockedStatus>,
-		pagination: RoomPaginationParams
-	): RoomListResponse {
-		const roomResponseData: RoomItemResponse[] = rooms.data.map(
+	public static mapToRoomListResponse(rooms: RoomWithAllowedOperationsAndLockedStatus[]): RoomListResponse {
+		const roomResponseData: RoomItemResponse[] = rooms.map(
 			(room): RoomItemResponse => this.mapToRoomItemResponse(room)
 		);
-		const response = new RoomListResponse(roomResponseData, rooms.total, pagination.skip, pagination.limit);
+		const response = new RoomListResponse(roomResponseData);
 
 		return response;
 	}
 
-	public static mapToRoomDetailsResponse(room: Room, permissions: Permission[]): RoomDetailsResponse {
+	public static mapToRoomDetailsResponse(
+		room: Room,
+		allowedOperations: Record<RoomOperation, boolean>
+	): RoomDetailsResponse {
 		const response = new RoomDetailsResponse({
 			id: room.id,
 			name: room.name,
@@ -53,7 +68,7 @@ export class RoomMapper {
 			endDate: room.endDate,
 			createdAt: room.createdAt,
 			updatedAt: room.updatedAt,
-			permissions,
+			allowedOperations,
 			features: room.features,
 		});
 

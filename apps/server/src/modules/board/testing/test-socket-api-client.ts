@@ -1,7 +1,7 @@
 import { INestApplication } from '@nestjs/common';
 import { Socket, io } from 'socket.io-client';
 
-export async function waitForEvent(socket: Socket, eventName: string): Promise<unknown> {
+export function waitForEvent(socket: Socket, eventName: string): Promise<unknown> {
 	return new Promise((resolve) => {
 		socket.on(eventName, (data: unknown) => {
 			resolve(data);

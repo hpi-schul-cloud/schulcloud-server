@@ -1,11 +1,12 @@
+const { ObjectId } = require('mongoose').Types;
 const { submissionModel } = require('../../../../src/services/homework/model');
 
 let createdSubmissions = [];
 
 const create = (opt) => async (data) => {
 	data.schoolId = data.schoolId || opt.schoolId;
-	data.homeworkId = data.homeworkId || opt.generateObjectId();
-	data.studentId = data.studentId || opt.generateObjectId();
+	data.homeworkId = data.homeworkId || new ObjectId();
+	data.studentId = data.studentId || new ObjectId();
 
 	const submission = await submissionModel.create(data);
 	createdSubmissions.push(submission._id);

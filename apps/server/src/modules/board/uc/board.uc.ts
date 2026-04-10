@@ -7,26 +7,23 @@ import { CourseService } from '@modules/course';
 import { RoomService } from '@modules/room';
 import { RoomMembershipService } from '@modules/room-membership';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
+import { throwForbiddenIfFalse } from '@shared/common/utils';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
+import { BoardNodeRule, BoardOperation } from '../authorisation/board-node.rule';
+import { BOARD_CONFIG_TOKEN, BoardConfig } from '../board.config';
 import { CreateBoardBodyParams } from '../controller/dto';
 import {
 	BoardExternalReference,
 	BoardExternalReferenceType,
 	BoardFeature,
 	BoardLayout,
-	BoardNodeAuthorizable,
 	BoardNodeFactory,
-	BoardRoles,
 	Column,
 	ColumnBoard,
 } from '../domain';
-import {
-	BoardNodeAuthorizableService,
-	BoardNodePermissionService,
-	BoardNodeService,
-	ColumnBoardService,
-} from '../service';
+import { BoardNodeAuthorizableService, BoardNodeService, ColumnBoardService } from '../service';
 import { StorageLocationReference } from '../service/internal';
 
 @Injectable()
@@ -34,7 +31,6 @@ export class BoardUc {
 	constructor(
 		@Inject(forwardRef(() => AuthorizationService)) // TODO is this needed?
 		private readonly authorizationService: AuthorizationService,
-		private readonly boardPermissionService: BoardNodePermissionService,
 		private readonly roomMembershipService: RoomMembershipService,
 		private readonly boardNodeService: BoardNodeService,
 		private readonly columnBoardService: ColumnBoardService,
@@ -43,15 +39,15 @@ export class BoardUc {
 		private readonly roomService: RoomService,
 		private readonly boardNodeFactory: BoardNodeFactory,
 		private readonly boardContextApiHelperService: BoardContextApiHelperService,
-		private readonly boardNodeAuthorizableService: BoardNodeAuthorizableService
+		private readonly boardNodeAuthorizableService: BoardNodeAuthorizableService,
+		@Inject(BOARD_CONFIG_TOKEN) private readonly config: BoardConfig,
+		private readonly boardNodeRule: BoardNodeRule
 	) {
 		this.logger.setContext(BoardUc.name);
 	}
 
 	public async createBoard(userId: EntityId, params: CreateBoardBodyParams): Promise<ColumnBoard> {
-		this.logger.debug({ action: 'createBoard', userId, title: params.title });
-
-		await this.checkReferenceWritePermission(userId, { type: params.parentType, id: params.parentId });
+		await this.checkBoardCreatePermission(userId, { type: params.parentType, id: params.parentId });
 
 		const board = this.boardNodeFactory.buildColumnBoard({
 			context: { type: params.parentType, id: params.parentId },
@@ -67,51 +63,61 @@ export class BoardUc {
 	public async findBoard(
 		userId: EntityId,
 		boardId: EntityId
-	): Promise<{ board: ColumnBoard; features: BoardFeature[]; permissions: Permission[] }> {
-		this.logger.debug({ action: 'findBoard', userId, boardId });
-
+	): Promise<{
+		board: ColumnBoard;
+		features: BoardFeature[];
+		allowedOperations: Record<BoardOperation, boolean>;
+	}> {
 		// TODO set depth=2 to reduce data?
 		const board = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId);
-		const boardNodeAuthorizable = await this.checkBoardAuthorization(userId, board, Action.read);
+		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(board);
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+
+		throwForbiddenIfFalse(this.boardNodeRule.can('findBoard', user, boardNodeAuthorizable));
+
 		const features = await this.boardContextApiHelperService.getFeaturesForBoardNode(boardId);
-		const permissions = this.getPermissions(userId, boardNodeAuthorizable);
-		return { board, features, permissions };
+		const allowedOperations = this.boardNodeRule.listAllowedOperations(user, boardNodeAuthorizable);
+		return { board, features, allowedOperations };
 	}
 
 	public async findBoardContext(userId: EntityId, boardId: EntityId): Promise<BoardExternalReference> {
-		this.logger.debug({ action: 'findBoardContext', userId, boardId });
-
 		const board = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId);
-		await this.boardPermissionService.checkPermission(userId, board, Action.read);
+		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(board);
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+
+		throwForbiddenIfFalse(this.boardNodeRule.can('findBoard', user, boardNodeAuthorizable));
 
 		return board.context;
 	}
 
 	public async deleteBoard(userId: EntityId, boardId: EntityId): Promise<ColumnBoard> {
-		this.logger.debug({ action: 'deleteBoard', userId, boardId });
+		const board = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId); // TODO decide to refactor returned object vs return boardNodeId
+		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(board);
+		const user = await this.authorizationService.getUserWithPermissions(userId);
 
-		const board = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId);
-		await this.boardPermissionService.checkPermission(userId, board, Action.write);
+		throwForbiddenIfFalse(this.boardNodeRule.can('deleteBoard', user, boardNodeAuthorizable));
 
 		await this.boardNodeService.delete(board);
 		return board;
 	}
 
 	public async updateBoardTitle(userId: EntityId, boardId: EntityId, title: string): Promise<ColumnBoard> {
-		this.logger.debug({ action: 'updateBoardTitle', userId, boardId, title });
+		const board = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId); // TODO decide to refactor returned object vs return boardNodeId
+		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(board);
+		const user = await this.authorizationService.getUserWithPermissions(userId);
 
-		const board = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId);
-		await this.boardPermissionService.checkPermission(userId, board, Action.write);
+		throwForbiddenIfFalse(this.boardNodeRule.can('updateBoardTitle', user, boardNodeAuthorizable));
 
 		await this.boardNodeService.updateTitle(board, title);
 		return board;
 	}
 
 	public async createColumn(userId: EntityId, boardId: EntityId): Promise<Column> {
-		this.logger.debug({ action: 'createColumn', userId, boardId });
-
 		const board = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId, 1);
-		await this.boardPermissionService.checkPermission(userId, board, Action.write);
+		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(board);
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+
+		throwForbiddenIfFalse(this.boardNodeRule.can('createColumn', user, boardNodeAuthorizable));
 
 		const column = this.boardNodeFactory.buildColumn();
 
@@ -126,59 +132,89 @@ export class BoardUc {
 		targetBoardId: EntityId,
 		targetPosition: number
 	): Promise<Column> {
-		this.logger.debug({ action: 'moveColumn', userId, columnId, targetBoardId, targetPosition });
+		const user = await this.authorizationService.getUserWithPermissions(userId);
 
 		const column = await this.boardNodeService.findByClassAndId(Column, columnId);
-		const targetBoard = await this.boardNodeService.findByClassAndId(ColumnBoard, targetBoardId);
+		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(column);
 
-		await this.boardPermissionService.checkPermission(userId, column, Action.write);
-		await this.boardPermissionService.checkPermission(userId, targetBoard, Action.write);
+		throwForbiddenIfFalse(this.boardNodeRule.can('moveColumn', user, boardNodeAuthorizable));
+
+		const targetBoard = await this.boardNodeService.findByClassAndId(ColumnBoard, targetBoardId);
+		const boardNodeAuthorizableTargetBoard = await this.boardNodeAuthorizableService.getBoardAuthorizable(targetBoard);
+
+		throwForbiddenIfFalse(this.boardNodeRule.can('moveColumn', user, boardNodeAuthorizableTargetBoard));
 
 		await this.boardNodeService.move(column, targetBoard, targetPosition);
 		return column;
 	}
 
-	public async copyBoard(userId: EntityId, boardId: EntityId, schoolId: EntityId): Promise<CopyStatus> {
-		this.logger.debug({ action: 'copyBoard', userId, boardId });
-
+	public async copyBoard(userId: EntityId, boardId: EntityId, targetSchoolId: EntityId): Promise<CopyStatus> {
 		const board = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId);
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(board);
 
-		await this.boardPermissionService.checkPermission(userId, board, Action.read);
-		await this.checkReferenceWritePermission(userId, board.context);
+		throwForbiddenIfFalse(this.boardNodeRule.can('copyBoard', user, boardNodeAuthorizable));
 
-		const storageLocationReference = await this.getStorageLocationReference(board.context);
+		const sourceStorageLocationReference = await this.getStorageLocationReference(board.context);
+		const targetStorageLocationReference = { id: targetSchoolId, type: StorageLocation.SCHOOL };
 
 		const copyStatus = await this.columnBoardService.copyColumnBoard({
 			originalColumnBoardId: boardId,
 			targetExternalReference: board.context,
-			sourceStorageLocationReference: storageLocationReference,
-			targetStorageLocationReference: storageLocationReference,
+			sourceStorageLocationReference,
+			targetStorageLocationReference,
 			userId,
-			targetSchoolId: schoolId,
+			targetSchoolId,
 		});
+
+		await this.columnBoardService.swapLinkedIdsInBoards(copyStatus);
 
 		return copyStatus;
 	}
 
 	public async updateVisibility(userId: EntityId, boardId: EntityId, isVisible: boolean): Promise<ColumnBoard> {
 		const board = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId);
-		await this.boardPermissionService.checkPermission(userId, board, Action.write);
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(board);
+
+		throwForbiddenIfFalse(this.boardNodeRule.can('updateBoardVisibility', user, boardNodeAuthorizable));
 
 		await this.boardNodeService.updateVisibility(board, isVisible);
+
+		return board;
+	}
+
+	public async updateReadersCanEdit(
+		userId: EntityId,
+		boardId: EntityId,
+		readersCanEdit: boolean
+	): Promise<ColumnBoard> {
+		if (!this.config.featureBoardReadersCanEditToggle) {
+			throw new FeatureDisabledLoggableException('FEATURE_BOARD_READERS_CAN_EDIT_TOGGLE');
+		}
+
+		const board = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId);
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(board);
+
+		throwForbiddenIfFalse(this.boardNodeRule.can('updateReadersCanEditSetting', user, boardNodeAuthorizable));
+
+		await this.columnBoardService.updateReadersCanEdit(board, readersCanEdit);
 		return board;
 	}
 
 	public async updateLayout(userId: EntityId, boardId: EntityId, layout: BoardLayout): Promise<ColumnBoard> {
-		const board: ColumnBoard = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId);
-		await this.boardPermissionService.checkPermission(userId, board, Action.write);
+		const board = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId);
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(board);
+
+		throwForbiddenIfFalse(this.boardNodeRule.can('updateBoardLayout', user, boardNodeAuthorizable));
 
 		await this.boardNodeService.updateLayout(board, layout);
 		return board;
 	}
 
-	// ---- Move to shared service? (see apps/server/src/modules/sharing/uc/share-token.uc.ts)
-
-	private async checkReferenceWritePermission(userId: EntityId, context: BoardExternalReference): Promise<void> {
+	private async checkBoardCreatePermission(userId: EntityId, context: BoardExternalReference): Promise<void> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 
 		if (context.type === BoardExternalReferenceType.Course) {
@@ -189,9 +225,9 @@ export class BoardUc {
 				requiredPermissions: [Permission.COURSE_EDIT],
 			});
 		} else if (context.type === BoardExternalReferenceType.Room) {
-			const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(context.id);
+			const roomAuthorizable = await this.roomMembershipService.getRoomAuthorizable(context.id);
 
-			this.authorizationService.checkPermission(user, roomMembershipAuthorizable, {
+			this.authorizationService.checkPermission(user, roomAuthorizable, {
 				action: Action.write,
 				requiredPermissions: [Permission.ROOM_EDIT_CONTENT],
 			});
@@ -214,46 +250,5 @@ export class BoardUc {
 		}
 		/* istanbul ignore next */
 		throw new Error(`Unsupported board reference type ${context.type as string}`);
-	}
-
-	private async checkBoardAuthorization(
-		userId: EntityId,
-		columnBoard: ColumnBoard,
-		action: Action,
-		requiredPermissions: Permission[] = []
-	): Promise<BoardNodeAuthorizable> {
-		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(columnBoard);
-		const user = await this.authorizationService.getUserWithPermissions(userId);
-		this.authorizationService.checkPermission(user, boardNodeAuthorizable, { action, requiredPermissions });
-
-		return boardNodeAuthorizable;
-	}
-
-	private getPermissions(userId: EntityId, boardNodeAuthorizable: BoardNodeAuthorizable): Permission[] {
-		const user = boardNodeAuthorizable.users.find((user) => user.userId === userId);
-		if (user?.roles.includes(BoardRoles.ADMIN)) {
-			return [
-				Permission.BOARD_VIEW,
-				Permission.BOARD_EDIT,
-				Permission.BOARD_MANAGE_VIDEOCONFERENCE,
-				Permission.BOARD_SHARE_BOARD,
-			];
-		}
-
-		if (user?.roles.includes(BoardRoles.EDITOR)) {
-			const permissions: Permission[] = [Permission.BOARD_VIEW, Permission.BOARD_EDIT];
-			const canRoomEditorManageVideoconference =
-				boardNodeAuthorizable.boardSettings.canRoomEditorManageVideoconference ?? false;
-			if (canRoomEditorManageVideoconference) {
-				permissions.push(Permission.BOARD_MANAGE_VIDEOCONFERENCE);
-			}
-			return permissions;
-		}
-
-		if (user?.roles.includes(BoardRoles.READER)) {
-			return [Permission.BOARD_VIEW];
-		}
-
-		return [];
 	}
 }

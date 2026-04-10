@@ -1,4 +1,4 @@
-import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { EntityManager } from '@mikro-orm/mongodb';
 import { accountFactory } from '@modules/account/testing';
 import { courseEntityFactory } from '@modules/course/testing';
 import { RoleName } from '@modules/role';
@@ -19,6 +19,7 @@ import { Response } from 'supertest';
 import { VideoConferenceScope } from '../../domain';
 import { VideoConferenceEntity, VideoConferenceTargetModels } from '../../repo';
 import { videoConferenceFactory } from '../../testing';
+import { VIDEO_CONFERENCE_CONFIG_TOKEN, VideoConferenceConfig } from '../../video-conference-config';
 import { VideoConferenceCreateParams, VideoConferenceJoinResponse } from '../dto';
 
 describe('VideoConferenceController (API)', () => {
@@ -26,6 +27,7 @@ describe('VideoConferenceController (API)', () => {
 	let em: EntityManager;
 	let axiosMock: MockAdapter;
 	let testApiClient: TestApiClient;
+	let videoConverenceConfig: VideoConferenceConfig;
 
 	beforeAll(async () => {
 		const moduleRef: TestingModule = await Test.createTestingModule({
@@ -37,6 +39,8 @@ describe('VideoConferenceController (API)', () => {
 		em = app.get(EntityManager);
 		axiosMock = new MockAdapter(axios);
 		testApiClient = new TestApiClient(app, 'videoconference2');
+		videoConverenceConfig = app.get(VIDEO_CONFERENCE_CONFIG_TOKEN);
+		videoConverenceConfig.featureVideoConferenceEnabled = true;
 	});
 
 	afterAll(async () => {
@@ -149,45 +153,6 @@ describe('VideoConferenceController (API)', () => {
 			});
 		});
 
-		describe('when the logoutUrl is from a wrong origin', () => {
-			const setup = async () => {
-				const school = schoolEntityFactory.buildWithId({ features: [] });
-
-				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school }, [
-					Permission.START_MEETING,
-					Permission.JOIN_MEETING,
-				]);
-
-				await em.persistAndFlush([school, teacherAccount, teacherUser]);
-				em.clear();
-
-				const params: VideoConferenceCreateParams = {
-					everyAttendeeJoinsMuted: true,
-					everybodyJoinsAsModerator: true,
-					moderatorMustApproveJoinRequests: true,
-					logoutUrl: 'http://from.other.origin/',
-				};
-
-				const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
-
-				return {
-					loggedInClient,
-					params,
-				};
-			};
-
-			it('should return bad request', async () => {
-				const { loggedInClient, params } = await setup();
-
-				const response: Response = await loggedInClient.put(
-					`${VideoConferenceScope.COURSE}/${new ObjectId().toHexString()}/start`,
-					params
-				);
-
-				expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
-			});
-		});
-
 		describe('when conference params are given', () => {
 			describe('when school has not enabled the school feature videoconference', () => {
 				const setup = async () => {
@@ -200,7 +165,7 @@ describe('VideoConferenceController (API)', () => {
 
 					const course = courseEntityFactory.buildWithId({ school, teachers: [teacherUser] });
 
-					await em.persistAndFlush([school, teacherAccount, teacherUser, course]);
+					await em.persist([school, teacherAccount, teacherUser, course]).flush();
 					em.clear();
 
 					const params: VideoConferenceCreateParams = {
@@ -242,7 +207,7 @@ describe('VideoConferenceController (API)', () => {
 
 					const course = courseEntityFactory.buildWithId({ school, students: [studentUser] });
 
-					await em.persistAndFlush([school, studentRole, studentAccount, studentUser, course]);
+					await em.persist([school, studentRole, studentAccount, studentUser, course]).flush();
 					em.clear();
 
 					const params: VideoConferenceCreateParams = {
@@ -281,7 +246,7 @@ describe('VideoConferenceController (API)', () => {
 
 					const course = courseEntityFactory.buildWithId({ school, teachers: [teacherUser] });
 
-					await em.persistAndFlush([school, teacherAccount, teacherUser, course]);
+					await em.persist([school, teacherAccount, teacherUser, course]).flush();
 					em.clear();
 
 					const params: VideoConferenceCreateParams = {
@@ -320,7 +285,12 @@ describe('VideoConferenceController (API)', () => {
 
 					const course = courseEntityFactory.buildWithId({ school, teachers: [teacherUser] });
 
-					await em.persistAndFlush([school, teacherAccount, teacherUser, course]);
+					const videoConference = videoConferenceFactory.buildWithId({
+						targetModel: VideoConferenceTargetModels.COURSES,
+						target: course.id,
+					});
+
+					await em.persist([school, teacherAccount, teacherUser, course, videoConference]).flush();
 					em.clear();
 
 					const params: VideoConferenceCreateParams = {
@@ -375,7 +345,7 @@ describe('VideoConferenceController (API)', () => {
 						target: course.id,
 					});
 
-					await em.persistAndFlush([school, teacherAccount, teacherUser, course, videoConference]);
+					await em.persist([school, teacherAccount, teacherUser, course, videoConference]).flush();
 					em.clear();
 
 					const scope: VideoConferenceScope = VideoConferenceScope.COURSE;
@@ -412,7 +382,7 @@ describe('VideoConferenceController (API)', () => {
 						target: course.id,
 					});
 
-					await em.persistAndFlush([school, teacherAccount, teacherUser, course, videoConference]);
+					await em.persist([school, teacherAccount, teacherUser, course, videoConference]).flush();
 					em.clear();
 
 					const scope: VideoConferenceScope = VideoConferenceScope.COURSE;
@@ -452,7 +422,7 @@ describe('VideoConferenceController (API)', () => {
 						target: course.id,
 					});
 
-					await em.persistAndFlush([school, teacherAccount, teacherUser, course, videoConference]);
+					await em.persist([school, teacherAccount, teacherUser, course, videoConference]).flush();
 					em.clear();
 
 					const scope: VideoConferenceScope = VideoConferenceScope.COURSE;
@@ -501,7 +471,7 @@ describe('VideoConferenceController (API)', () => {
 						target: course.id,
 					});
 
-					await em.persistAndFlush([school, teacherAccount, teacherUser, course, videoConference]);
+					await em.persist([school, teacherAccount, teacherUser, course, videoConference]).flush();
 					em.clear();
 
 					const scope: VideoConferenceScope = VideoConferenceScope.COURSE;
@@ -537,7 +507,7 @@ describe('VideoConferenceController (API)', () => {
 						target: course.id,
 					});
 
-					await em.persistAndFlush([school, teacherAccount, teacherUser, course, videoConference]);
+					await em.persist([school, teacherAccount, teacherUser, course, videoConference]).flush();
 					em.clear();
 
 					const scope: VideoConferenceScope = VideoConferenceScope.COURSE;
@@ -563,40 +533,42 @@ describe('VideoConferenceController (API)', () => {
 				const setup = async () => {
 					const school = schoolEntityFactory.buildWithId({ features: [SchoolFeature.VIDEOCONFERENCE] });
 
-					const expertRole = roleFactory.buildWithId({
-						name: RoleName.EXPERT,
+					const externalPersonRole = roleFactory.buildWithId({
+						name: RoleName.EXTERNALPERSON,
 						permissions: [Permission.JOIN_MEETING],
 					});
 
-					const expertUser = userFactory.buildWithId({ school, roles: [expertRole] });
-					const expertAccount = accountFactory.buildWithId({ userId: expertUser.id });
+					const externalPersonUser = userFactory.buildWithId({ school, roles: [externalPersonRole] });
+					const externalPersonAccount = accountFactory.buildWithId({ userId: externalPersonUser.id });
 
-					const course = courseEntityFactory.buildWithId({ school, students: [expertUser] });
+					const course = courseEntityFactory.buildWithId({ school, students: [externalPersonUser] });
 					const videoConference: VideoConferenceEntity = videoConferenceFactory.buildWithId({
 						targetModel: VideoConferenceTargetModels.COURSES,
 						target: course.id,
 						options: { moderatorMustApproveJoinRequests: false },
 					});
 
-					await em.persistAndFlush([school, expertRole, expertAccount, expertUser, course, videoConference]);
+					await em
+						.persist([school, externalPersonRole, externalPersonAccount, externalPersonUser, course, videoConference])
+						.flush();
 					em.clear();
 
 					const scope: VideoConferenceScope = VideoConferenceScope.COURSE;
 					const scopeId: string = course.id;
 
-					const loggedInClient: TestApiClient = await testApiClient.login(expertAccount);
+					const loggedInClient: TestApiClient = await testApiClient.login(externalPersonAccount);
 
 					mockBbbMeetingInfoSuccess(scopeId);
 
 					return { loggedInClient, scope, scopeId };
 				};
 
-				it('should return forbidden', async () => {
+				it('should return ok', async () => {
 					const { loggedInClient, scope, scopeId } = await setup();
 
 					const response: Response = await loggedInClient.get(`${scope}/${scopeId}/info`);
 
-					expect(response.status).toEqual(HttpStatus.FORBIDDEN);
+					expect(response.status).toEqual(HttpStatus.OK);
 				});
 			});
 
@@ -615,7 +587,7 @@ describe('VideoConferenceController (API)', () => {
 						target: course.id,
 					});
 
-					await em.persistAndFlush([school, teacherAccount, teacherUser, course, videoConference]);
+					await em.persist([school, teacherAccount, teacherUser, course, videoConference]).flush();
 					em.clear();
 
 					const scope: VideoConferenceScope = VideoConferenceScope.COURSE;
@@ -664,7 +636,7 @@ describe('VideoConferenceController (API)', () => {
 						target: course.id,
 					});
 
-					await em.persistAndFlush([school, teacherAccount, teacherUser, course, videoConference]);
+					await em.persist([school, teacherAccount, teacherUser, course, videoConference]).flush();
 					em.clear();
 
 					const scope: VideoConferenceScope = VideoConferenceScope.COURSE;
@@ -700,7 +672,7 @@ describe('VideoConferenceController (API)', () => {
 						target: course.id,
 					});
 
-					await em.persistAndFlush([school, studentAccount, studentUser, course, videoConference]);
+					await em.persist([school, studentAccount, studentUser, course, videoConference]).flush();
 					em.clear();
 
 					const scope: VideoConferenceScope = VideoConferenceScope.COURSE;
@@ -735,7 +707,7 @@ describe('VideoConferenceController (API)', () => {
 						target: course.id,
 					});
 
-					await em.persistAndFlush([school, teacherAccount, teacherUser, course, videoConference]);
+					await em.persist([school, teacherAccount, teacherUser, course, videoConference]).flush();
 					em.clear();
 
 					const scope: VideoConferenceScope = VideoConferenceScope.COURSE;

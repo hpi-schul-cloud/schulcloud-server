@@ -2,19 +2,18 @@ import { AuthorizationService } from '@modules/authorization';
 import { System, SystemService } from '@modules/system';
 import { UserLoginMigrationDO, UserLoginMigrationService } from '@modules/user-login-migration';
 import { User } from '@modules/user/repo';
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { Inject, Injectable } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { ImportUser } from '../entity';
 import { UserLoginMigrationNotActiveLoggableException, UserMigrationIsNotEnabledLoggableException } from '../loggable';
 import { SchulconnexFetchImportUsersService, UserImportService } from '../service';
-import { UserImportConfig } from '../user-import-config';
+import { USER_IMPORT_CONFIG_TOKEN, UserImportConfig } from '../user-import-config';
 
 @Injectable()
-export class UserImportFetchUc {
+export class PopulateUserImportFetchUc {
 	constructor(
-		private readonly configService: ConfigService<UserImportConfig, true>,
+		@Inject(USER_IMPORT_CONFIG_TOKEN) private readonly config: UserImportConfig,
 		private readonly schulconnexFetchImportUsersService: SchulconnexFetchImportUsersService,
 		private readonly authorizationService: AuthorizationService,
 		private readonly userImportService: UserImportService,
@@ -23,9 +22,7 @@ export class UserImportFetchUc {
 	) {}
 
 	public async populateImportUsers(currentUserId: EntityId, matchByPreferredName = false): Promise<void> {
-		if (!this.configService.get('FEATURE_USER_MIGRATION_ENABLED')) {
-			throw new UserMigrationIsNotEnabledLoggableException(currentUserId);
-		}
+		this.checkFeatureEnabled(currentUserId);
 
 		const user: User = await this.authorizationService.getUserWithPermissions(currentUserId);
 		this.authorizationService.checkAllPermissions(user, [Permission.IMPORT_USER_MIGRATE]);
@@ -55,5 +52,11 @@ export class UserImportFetchUc {
 		await this.userImportService.deleteImportUsersBySchool(user.school);
 
 		await this.userImportService.saveImportUsers(matchedImportUsers);
+	}
+
+	private checkFeatureEnabled(currentUserId: EntityId): void {
+		if (!this.config.featureUserMigrationEnabled) {
+			throw new UserMigrationIsNotEnabledLoggableException(currentUserId);
+		}
 	}
 }

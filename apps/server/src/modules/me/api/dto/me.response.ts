@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { LanguageType } from '@shared/domain/interface';
+import { LanguageType, Permission } from '@shared/domain/interface';
 
 export class MeAccountResponse {
 	@ApiProperty()
@@ -74,6 +74,15 @@ export class MeRoleResponse {
 	}
 }
 
+export class MePreferencesResponse {
+	@ApiPropertyOptional({ nullable: true })
+	public releaseDate?: string;
+
+	constructor(props: MePreferencesResponse) {
+		this.releaseDate = props.releaseDate;
+	}
+}
+
 export class MeResponse {
 	@ApiProperty()
 	public school: MeSchoolResponse;
@@ -84,14 +93,17 @@ export class MeResponse {
 	@ApiProperty({ type: [MeRoleResponse] })
 	public roles: MeRoleResponse[];
 
-	@ApiProperty()
-	public permissions: string[];
+	@ApiProperty({ enum: Permission, isArray: true, enumName: 'Permission' })
+	public permissions: Permission[];
 
 	@ApiProperty({
 		enum: LanguageType,
 		enumName: 'LanguageType',
 	})
 	public language?: LanguageType;
+
+	@ApiProperty()
+	public preferences: MePreferencesResponse;
 
 	@ApiProperty()
 	public account: MeAccountResponse;
@@ -105,6 +117,7 @@ export class MeResponse {
 		this.roles = props.roles;
 		this.permissions = props.permissions;
 		this.language = props.language;
+		this.preferences = props.preferences;
 		this.account = props.account;
 		this.systemId = props.systemId;
 	}

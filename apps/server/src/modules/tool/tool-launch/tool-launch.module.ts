@@ -8,6 +8,7 @@ import { UserModule } from '@modules/user';
 import { forwardRef, Module } from '@nestjs/common';
 import { CommonToolModule } from '../common';
 import { ContextExternalToolModule } from '../context-external-tool';
+import { TOOL_ENCRYPTION_CONFIG_TOKEN, ToolEncryptionConfig } from '../encryption.config';
 import { ExternalToolModule } from '../external-tool';
 import { SchoolExternalToolModule } from '../school-external-tool';
 import { ToolLaunchService } from './service';
@@ -16,6 +17,7 @@ import {
 	AutoContextNameStrategy,
 	AutoGroupExternalUuidStrategy,
 	AutoMediumIdStrategy,
+	AutoPublisherStrategy,
 	AutoSchoolIdStrategy,
 	AutoSchoolNumberStrategy,
 } from './service/auto-parameter-strategy';
@@ -33,7 +35,7 @@ import { BasicToolLaunchStrategy, Lti11ToolLaunchStrategy, OAuth2ToolLaunchStrat
 		CourseModule,
 		BoardModule,
 		GroupModule,
-		EncryptionModule,
+		EncryptionModule.register(TOOL_ENCRYPTION_CONFIG_TOKEN, ToolEncryptionConfig),
 	],
 	providers: [
 		ToolLaunchService,
@@ -45,6 +47,7 @@ import { BasicToolLaunchStrategy, Lti11ToolLaunchStrategy, OAuth2ToolLaunchStrat
 		AutoSchoolIdStrategy,
 		AutoSchoolNumberStrategy,
 		AutoMediumIdStrategy,
+		AutoPublisherStrategy,
 		AutoGroupExternalUuidStrategy,
 	],
 	exports: [ToolLaunchService],

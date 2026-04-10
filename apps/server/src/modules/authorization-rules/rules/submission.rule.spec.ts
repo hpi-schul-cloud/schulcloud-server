@@ -1,5 +1,6 @@
 import {
 	Action,
+	AUTHORIZATION_CONFIG_TOKEN,
 	AuthorizationContext,
 	AuthorizationHelper,
 	AuthorizationInjectionService,
@@ -45,6 +46,7 @@ describe('SubmissionRule', () => {
 				LessonRule,
 				CourseGroupRule,
 				AuthorizationInjectionService,
+				{ provide: AUTHORIZATION_CONFIG_TOKEN, useValue: {} },
 			],
 		}).compile();
 
@@ -155,7 +157,7 @@ describe('SubmissionRule', () => {
 
 		describe('when user roles contain required permissions', () => {
 			describe('when action is "write"', () => {
-				describe('when user is creator', () => {
+				describe('when user is submitter', () => {
 					const setup = () => {
 						const permission = 'a' as Permission;
 						const user = buildUserWithPermission(permission);
@@ -287,11 +289,59 @@ describe('SubmissionRule', () => {
 						expect(result).toBe(false);
 					});
 				});
+
+				describe('when due date has passed and user is submitter', () => {
+					const setup = () => {
+						const permission = 'a' as Permission;
+						const user = buildUserWithPermission(permission);
+						const user2 = buildUserWithPermission(permission);
+						const course = courseEntityFactory.build({ students: [user, user2] });
+						const task = taskFactory.build({ course, dueDate: new Date(Date.now() - 10000) });
+						const submission = submissionFactory.build({ task, student: user });
+
+						return { user, submission, permission };
+					};
+
+					it('should return false', () => {
+						const { user, submission, permission } = setup();
+
+						const result = submissionRule.hasPermission(user, submission, {
+							action: Action.write,
+							requiredPermissions: [permission],
+						});
+
+						expect(result).toBe(false);
+					});
+				});
+
+				describe('when due date has passed but user is a teacher', () => {
+					const setup = () => {
+						const permission = 'a' as Permission;
+						const user = buildUserWithPermission(permission);
+						const user2 = buildUserWithPermission(permission);
+						const course = courseEntityFactory.build({ students: [user2], teachers: [user] });
+						const task = taskFactory.build({ course, dueDate: new Date(Date.now() - 10000) });
+						const submission = submissionFactory.build({ task, student: user2 });
+
+						return { user, submission, permission };
+					};
+
+					it('should return true', () => {
+						const { user, submission, permission } = setup();
+
+						const result = submissionRule.hasPermission(user, submission, {
+							action: Action.write,
+							requiredPermissions: [permission],
+						});
+
+						expect(result).toBe(true);
+					});
+				});
 			});
 
 			describe('when action is "read"', () => {
 				describe('when submission is not submitted', () => {
-					describe('when user is creator', () => {
+					describe('when user is submitter', () => {
 						const setup = () => {
 							const permission = 'a' as Permission;
 							const user = buildUserWithPermission(permission);
@@ -435,10 +485,58 @@ describe('SubmissionRule', () => {
 							expect(result).toBe(false);
 						});
 					});
+
+					describe('when due date has passed and user is submitter', () => {
+						const setup = () => {
+							const permission = 'a' as Permission;
+							const user = buildUserWithPermission(permission);
+							const user2 = buildUserWithPermission(permission);
+							const course = courseEntityFactory.build({ students: [user, user2] });
+							const task = taskFactory.build({ course, dueDate: new Date(Date.now() - 10000) });
+							const submission = submissionFactory.build({ task, student: user });
+
+							return { user, submission, permission };
+						};
+
+						it('should return true', () => {
+							const { user, submission, permission } = setup();
+
+							const result = submissionRule.hasPermission(user, submission, {
+								action: Action.read,
+								requiredPermissions: [permission],
+							});
+
+							expect(result).toBe(true);
+						});
+					});
+
+					describe('when due date has passed but user is a teacher', () => {
+						const setup = () => {
+							const permission = 'a' as Permission;
+							const user = buildUserWithPermission(permission);
+							const user2 = buildUserWithPermission(permission);
+							const course = courseEntityFactory.build({ students: [user2], teachers: [user] });
+							const task = taskFactory.build({ course, dueDate: new Date(Date.now() - 10000) });
+							const submission = submissionFactory.build({ task, student: user });
+
+							return { user, submission, permission };
+						};
+
+						it('should return true', () => {
+							const { user, submission, permission } = setup();
+
+							const result = submissionRule.hasPermission(user, submission, {
+								action: Action.read,
+								requiredPermissions: [permission],
+							});
+
+							expect(result).toBe(true);
+						});
+					});
 				});
 
 				describe('when submission is submitted', () => {
-					describe('when user is creator', () => {
+					describe('when user is submitter', () => {
 						const setup = () => {
 							const permission = 'a' as Permission;
 							const user = buildUserWithPermission(permission);
@@ -569,6 +667,85 @@ describe('SubmissionRule', () => {
 							const course = courseEntityFactory.build({ students: [user2], substitutionTeachers: [user] });
 							const task = taskFactory.build({ course });
 							const submission = submissionFactory.submitted().build({ task, student: user2 });
+
+							return { user, submission, permission };
+						};
+
+						it('should return true', () => {
+							const { user, submission, permission } = setup();
+
+							const result = submissionRule.hasPermission(user, submission, {
+								action: Action.read,
+								requiredPermissions: [permission],
+							});
+
+							expect(result).toBe(true);
+						});
+					});
+
+					describe('when due date has passed and user is submitter', () => {
+						const setup = () => {
+							const permission = 'a' as Permission;
+							const user = buildUserWithPermission(permission);
+							const user2 = buildUserWithPermission(permission);
+							const course = courseEntityFactory.build({ students: [user, user2] });
+							const task = taskFactory.build({
+								course,
+								publicSubmissions: true,
+								dueDate: new Date(Date.now() - 10000),
+							});
+							const submission = submissionFactory.submitted().build({ task, student: user });
+
+							return { user, submission, permission };
+						};
+
+						it('should return true', () => {
+							const { user, submission, permission } = setup();
+
+							const result = submissionRule.hasPermission(user, submission, {
+								action: Action.read,
+								requiredPermissions: [permission],
+							});
+
+							expect(result).toBe(true);
+						});
+					});
+
+					describe('when due date has passed but user is a teacher', () => {
+						const setup = () => {
+							const permission = 'a' as Permission;
+							const user = buildUserWithPermission(permission);
+							const user2 = buildUserWithPermission(permission);
+							const course = courseEntityFactory.build({ students: [user2], teachers: [user] });
+							const task = taskFactory.build({ course, dueDate: new Date(Date.now() - 10000) });
+							const submission = submissionFactory.submitted().build({ task, student: user });
+
+							return { user, submission, permission };
+						};
+
+						it('should return true', () => {
+							const { user, submission, permission } = setup();
+
+							const result = submissionRule.hasPermission(user, submission, {
+								action: Action.read,
+								requiredPermissions: [permission],
+							});
+
+							expect(result).toBe(true);
+						});
+					});
+
+					describe('when due date has passed, submissions are not public, and user is submitter', () => {
+						const setup = () => {
+							const permission = 'a' as Permission;
+							const user = buildUserWithPermission(permission);
+							const course = courseEntityFactory.build({ students: [user] });
+							const task = taskFactory.build({
+								course,
+								publicSubmissions: false,
+								dueDate: new Date(Date.now() - 10000),
+							});
+							const submission = submissionFactory.submitted().build({ task, student: user });
 
 							return { user, submission, permission };
 						};

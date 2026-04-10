@@ -18,7 +18,7 @@ import { LegacySchoolService } from '@modules/legacy-school';
 import { RoleName } from '@modules/role';
 import { roleFactory } from '@modules/role/testing';
 import { RoomService } from '@modules/room';
-import { RoomMembershipService } from '@modules/room-membership';
+import { RoomAuthorizable, RoomMembershipService } from '@modules/room-membership';
 import { roomMembershipFactory } from '@modules/room-membership/testing';
 import { roomFactory } from '@modules/room/testing';
 import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
@@ -29,7 +29,6 @@ import { User } from '@modules/user/repo';
 import { userDoFactory, userFactory } from '@modules/user/testing';
 import { BadRequestException, ForbiddenException } from '@nestjs/common';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
-import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
@@ -40,7 +39,7 @@ import { ErrorStatus } from '../error';
 import { VideoConferenceRepo } from '../repo';
 import { videoConferenceDOFactory } from '../testing';
 import { VideoConferenceState } from '../uc/dto';
-import { VideoConferenceConfig } from '../video-conference-config';
+import { VIDEO_CONFERENCE_CONFIG_TOKEN, VideoConferenceConfig } from '../video-conference-config';
 import { VideoConferenceService } from './video-conference.service';
 
 describe(VideoConferenceService.name, () => {
@@ -55,7 +54,7 @@ describe(VideoConferenceService.name, () => {
 	let teamRepo: DeepMocked<TeamRepo>;
 	let userService: DeepMocked<UserService>;
 	let videoConferenceRepo: DeepMocked<VideoConferenceRepo>;
-	let configService: DeepMocked<ConfigService<VideoConferenceConfig, true>>;
+	let config: VideoConferenceConfig;
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -70,8 +69,8 @@ describe(VideoConferenceService.name, () => {
 					useValue: createMock<BoardNodeService>(),
 				},
 				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService<VideoConferenceConfig, true>>(),
+					provide: VIDEO_CONFERENCE_CONFIG_TOKEN,
+					useValue: VideoConferenceConfig,
 				},
 				{
 					provide: CourseService,
@@ -123,15 +122,14 @@ describe(VideoConferenceService.name, () => {
 		teamRepo = module.get(TeamRepo);
 		userService = module.get(UserService);
 		videoConferenceRepo = module.get(VideoConferenceRepo);
-		configService = module.get(ConfigService);
+		config = module.get(VIDEO_CONFERENCE_CONFIG_TOKEN);
 
 		await setupEntities([User, CourseEntity, CourseGroupEntity]);
 	});
 
 	describe('canGuestJoin', () => {
 		const setup = (isGuest: boolean, state: VideoConferenceState, waitingRoomEnabled: boolean) => {
-			configService.get.mockReturnValue('https://api.example.com');
-
+			config.scHostUrl = 'https://api.example.com';
 			return {
 				isGuest,
 				state,
@@ -172,16 +170,16 @@ describe(VideoConferenceService.name, () => {
 		});
 	});
 
-	describe('isExpert', () => {
-		describe('when user has EXPERT role for a course conference', () => {
+	describe('isExternalPersonOrTeamExpert', () => {
+		describe('when user has EXTERNALPERSON role for a course conference', () => {
 			const setup = () => {
 				const user = userDoFactory
-					.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.EXPERT }])
+					.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.EXTERNALPERSON }])
 					.build({ id: new ObjectId().toHexString() });
 				const userId = user.id as EntityId;
 				const scopeId = new ObjectId().toHexString();
 
-				configService.get.mockReturnValue('https://api.example.com');
+				config.scHostUrl = 'https://api.example.com';
 				userService.findById.mockResolvedValue(user);
 
 				return {
@@ -195,7 +193,7 @@ describe(VideoConferenceService.name, () => {
 			it('should return true', async () => {
 				const { conferenceScope, userId, scopeId } = setup();
 
-				const result = await service.hasExpertRole(userId, conferenceScope, scopeId);
+				const result = await service.isExternalPersonOrTeamExpert(userId, conferenceScope, scopeId);
 
 				expect(result).toBe(true);
 			});
@@ -203,21 +201,21 @@ describe(VideoConferenceService.name, () => {
 			it('should call userService.findById', async () => {
 				const { conferenceScope, userId, scopeId } = setup();
 
-				await service.hasExpertRole(userId, conferenceScope, scopeId);
+				await service.isExternalPersonOrTeamExpert(userId, conferenceScope, scopeId);
 
 				expect(userService.findById).toHaveBeenCalledWith(userId);
 			});
 		});
 
-		describe('when user has EXPERT role for a room', () => {
+		describe('when user has EXTERNALPERSON role for a room', () => {
 			const setup = () => {
 				const user = userDoFactory
-					.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.EXPERT }])
+					.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.EXTERNALPERSON }])
 					.build({ id: new ObjectId().toHexString() });
 				const userId = user.id as EntityId;
 				const scopeId = new ObjectId().toHexString();
 
-				configService.get.mockReturnValueOnce('https://api.example.com');
+				config.scHostUrl = 'https://api.example.com';
 				userService.findById.mockResolvedValueOnce(user);
 
 				return {
@@ -231,7 +229,7 @@ describe(VideoConferenceService.name, () => {
 			it('should return true', async () => {
 				const { conferenceScope, userId, scopeId } = setup();
 
-				const result = await service.hasExpertRole(userId, conferenceScope, scopeId);
+				const result = await service.isExternalPersonOrTeamExpert(userId, conferenceScope, scopeId);
 
 				expect(result).toBe(true);
 			});
@@ -239,21 +237,21 @@ describe(VideoConferenceService.name, () => {
 			it('should call userService.findById', async () => {
 				const { conferenceScope, userId, scopeId } = setup();
 
-				await service.hasExpertRole(userId, conferenceScope, scopeId);
+				await service.isExternalPersonOrTeamExpert(userId, conferenceScope, scopeId);
 
 				expect(userService.findById).toHaveBeenCalledWith(userId);
 			});
 		});
 
-		describe('when user has EXPERT role for a video conference element', () => {
+		describe('when user has EXTERNALPERSON role for a video conference element', () => {
 			const setup = () => {
 				const user = userDoFactory
-					.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.EXPERT }])
+					.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.EXTERNALPERSON }])
 					.build({ id: new ObjectId().toHexString() });
 				const userId = user.id as EntityId;
 				const scopeId = new ObjectId().toHexString();
 
-				configService.get.mockReturnValueOnce('https://api.example.com');
+				config.scHostUrl = 'https://api.example.com';
 				userService.findById.mockResolvedValueOnce(user);
 
 				return {
@@ -267,7 +265,7 @@ describe(VideoConferenceService.name, () => {
 			it('should return true', async () => {
 				const { conferenceScope, userId, scopeId } = setup();
 
-				const result = await service.hasExpertRole(userId, conferenceScope, scopeId);
+				const result = await service.isExternalPersonOrTeamExpert(userId, conferenceScope, scopeId);
 
 				expect(result).toBe(true);
 			});
@@ -275,7 +273,7 @@ describe(VideoConferenceService.name, () => {
 			it('should call userService.findById', async () => {
 				const { conferenceScope, userId, scopeId } = setup();
 
-				await service.hasExpertRole(userId, conferenceScope, scopeId);
+				await service.isExternalPersonOrTeamExpert(userId, conferenceScope, scopeId);
 
 				expect(userService.findById).toHaveBeenCalledWith(userId);
 			});
@@ -300,7 +298,7 @@ describe(VideoConferenceService.name, () => {
 			it('should call the user service to find the user by id', async () => {
 				const { userId, scopeId } = setup();
 
-				await service.hasExpertRole(userId, VideoConferenceScope.COURSE, scopeId);
+				await service.isExternalPersonOrTeamExpert(userId, VideoConferenceScope.COURSE, scopeId);
 
 				expect(userService.findById).toHaveBeenCalledWith(userId);
 			});
@@ -308,18 +306,18 @@ describe(VideoConferenceService.name, () => {
 			it('should return false', async () => {
 				const { userId, scopeId } = setup();
 
-				const result = await service.hasExpertRole(userId, VideoConferenceScope.COURSE, scopeId);
+				const result = await service.isExternalPersonOrTeamExpert(userId, VideoConferenceScope.COURSE, scopeId);
 
 				expect(result).toBe(false);
 			});
 		});
 
-		describe('when user has the EXPERT role and an additional role for a course conference', () => {
+		describe('when user has the EXTERNALEXPERT role and an additional role for a course conference', () => {
 			const setup = () => {
 				const user = userDoFactory
 					.withRoles([
 						{ id: new ObjectId().toHexString(), name: RoleName.STUDENT },
-						{ id: new ObjectId().toHexString(), name: RoleName.EXPERT },
+						{ id: new ObjectId().toHexString(), name: RoleName.EXTERNALPERSON },
 					])
 					.buildWithId();
 				const userId = user.id as EntityId;
@@ -336,7 +334,7 @@ describe(VideoConferenceService.name, () => {
 			it('should return false', async () => {
 				const { userId, scopeId } = setup();
 
-				const result = await service.hasExpertRole(userId, VideoConferenceScope.COURSE, scopeId);
+				const result = await service.isExternalPersonOrTeamExpert(userId, VideoConferenceScope.COURSE, scopeId);
 
 				expect(result).toBe(false);
 				expect(userService.findById).toHaveBeenCalledWith(userId);
@@ -362,16 +360,17 @@ describe(VideoConferenceService.name, () => {
 			it('should throw a BadRequestException', async () => {
 				const { userId, scopeId } = setup();
 
-				const func = () => service.hasExpertRole(userId, 'invalid-scope' as VideoConferenceScope, scopeId);
+				const func = () =>
+					service.isExternalPersonOrTeamExpert(userId, 'invalid-scope' as VideoConferenceScope, scopeId);
 
 				await expect(func()).rejects.toThrow(new BadRequestException('Unknown scope name.'));
 			});
 		});
 
-		describe('when user has EXPERT role for a event conference', () => {
+		describe('when user has EXTERNALPERSON role for a event conference', () => {
 			const setup = () => {
 				const user = userDoFactory
-					.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.EXPERT }])
+					.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.EXTERNALPERSON }])
 					.build({ id: new ObjectId().toHexString() });
 				const userId = user.id as EntityId;
 				const scopeId = new ObjectId().toHexString();
@@ -396,7 +395,7 @@ describe(VideoConferenceService.name, () => {
 			it('should return true', async () => {
 				const { conferenceScope, userId, scopeId } = setup();
 
-				const result = await service.hasExpertRole(userId, conferenceScope, scopeId);
+				const result = await service.isExternalPersonOrTeamExpert(userId, conferenceScope, scopeId);
 
 				expect(result).toBe(true);
 			});
@@ -404,7 +403,7 @@ describe(VideoConferenceService.name, () => {
 			it('should call teamRepo.findById', async () => {
 				const { conferenceScope, userId, scopeId } = setup();
 
-				await service.hasExpertRole(userId, conferenceScope, scopeId);
+				await service.isExternalPersonOrTeamExpert(userId, conferenceScope, scopeId);
 
 				expect(teamRepo.findById).toHaveBeenCalledWith(scopeId);
 			});
@@ -428,7 +427,8 @@ describe(VideoConferenceService.name, () => {
 			it('should throw a ForbiddenException', async () => {
 				const { scopeId } = setup();
 
-				const func = async () => service.hasExpertRole('nonexistentUserId', VideoConferenceScope.EVENT, scopeId);
+				const func = async () =>
+					service.isExternalPersonOrTeamExpert('nonexistentUserId', VideoConferenceScope.EVENT, scopeId);
 
 				await expect(func()).rejects.toThrow(new ForbiddenException(ErrorStatus.UNKNOWN_USER));
 			});
@@ -489,12 +489,12 @@ describe(VideoConferenceService.name, () => {
 				const conferenceScope = VideoConferenceScope.ROOM;
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-				roomMembershipService.getRoomMembershipAuthorizable.mockResolvedValueOnce({
-					id: 'foo',
-					roomId: room.id,
-					members: [{ userId: user.id, roles: [roomAdminRole] }],
-					schoolId: room.schoolId,
-				});
+				const roomAuthorizable = new RoomAuthorizable(
+					'foo',
+					[{ userId: user.id, roles: [roomAdminRole], userSchoolId: user.school.id }],
+					room.schoolId
+				);
+				roomMembershipService.getRoomAuthorizable.mockResolvedValueOnce(roomAuthorizable);
 				roomService.getSingleRoom.mockResolvedValueOnce(room);
 
 				return {
@@ -511,7 +511,7 @@ describe(VideoConferenceService.name, () => {
 
 				await service.determineBbbRole(userId, roomId, conferenceScope);
 
-				expect(roomMembershipService.getRoomMembershipAuthorizable).toHaveBeenCalledWith(roomId);
+				expect(roomMembershipService.getRoomAuthorizable).toHaveBeenCalledWith(roomId);
 			});
 
 			it('should return BBBRole.MODERATOR', async () => {
@@ -536,7 +536,7 @@ describe(VideoConferenceService.name, () => {
 					id: element.id,
 					boardNode: element,
 					rootNode: columnBoardFactory.build(),
-					boardSettings: {},
+					boardConfiguration: {},
 				});
 				boardNodeAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(boardNodeAuthorizable);
 				boardNodeService.findByClassAndId.mockResolvedValueOnce(element);
@@ -580,7 +580,7 @@ describe(VideoConferenceService.name, () => {
 					id: element.id,
 					boardNode: element,
 					rootNode: columnBoardFactory.build(),
-					boardSettings: { canRoomEditorManageVideoconference: true },
+					boardConfiguration: { canEditorsManageVideoconference: true },
 				});
 				boardNodeAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(boardNodeAuthorizable);
 				boardNodeService.findByClassAndId.mockResolvedValueOnce(element);
@@ -713,19 +713,12 @@ describe(VideoConferenceService.name, () => {
 				const conferenceScope = VideoConferenceScope.ROOM;
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-				roomMembershipService.getRoomMembershipAuthorizable
-					.mockResolvedValueOnce({
-						id: 'foo',
-						roomId: room.id,
-						members: [{ userId: user.id, roles: [roomEditorRole] }],
-						schoolId: room.schoolId,
-					})
-					.mockResolvedValueOnce({
-						id: 'foo',
-						roomId: room.id,
-						members: [{ userId: user.id, roles: [roomEditorRole] }],
-						schoolId: room.schoolId,
-					});
+				const roomAuthorizable = new RoomAuthorizable(
+					'foo',
+					[{ userId: user.id, roles: [roomEditorRole], userSchoolId: user.school.id }],
+					room.schoolId
+				);
+				roomMembershipService.getRoomAuthorizable.mockResolvedValue(roomAuthorizable);
 				roomService.getSingleRoom.mockResolvedValueOnce(room);
 
 				return {
@@ -742,7 +735,7 @@ describe(VideoConferenceService.name, () => {
 
 				await service.determineBbbRole(userId, roomId, conferenceScope);
 
-				expect(roomMembershipService.getRoomMembershipAuthorizable).toHaveBeenCalledWith(roomId);
+				expect(roomMembershipService.getRoomAuthorizable).toHaveBeenCalledWith(roomId);
 			});
 
 			it('should return BBBRole.VIEWER', async () => {
@@ -768,19 +761,13 @@ describe(VideoConferenceService.name, () => {
 				const conferenceScope = VideoConferenceScope.ROOM;
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-				roomMembershipService.getRoomMembershipAuthorizable
-					.mockResolvedValueOnce({
-						id: 'foo',
-						roomId: room.id,
-						members: [{ userId: user.id, roles: [roomViewerRole] }],
-						schoolId: room.schoolId,
-					})
-					.mockResolvedValueOnce({
-						id: 'foo',
-						roomId: room.id,
-						members: [{ userId: user.id, roles: [roomViewerRole] }],
-						schoolId: room.schoolId,
-					});
+				const roomAuthorizable = new RoomAuthorizable(
+					'foo',
+					[{ userId: user.id, roles: [roomViewerRole], userSchoolId: user.school.id }],
+					room.schoolId
+				);
+				roomMembershipService.getRoomAuthorizable.mockResolvedValue(roomAuthorizable);
+
 				roomService.getSingleRoom.mockResolvedValueOnce(room);
 
 				return {
@@ -797,7 +784,7 @@ describe(VideoConferenceService.name, () => {
 
 				await service.determineBbbRole(userId, roomId, conferenceScope);
 
-				expect(roomMembershipService.getRoomMembershipAuthorizable).toHaveBeenCalledWith(roomId);
+				expect(roomMembershipService.getRoomAuthorizable).toHaveBeenCalledWith(roomId);
 			});
 
 			it('should return BBBRole.VIEWER', async () => {
@@ -823,7 +810,7 @@ describe(VideoConferenceService.name, () => {
 					id: element.id,
 					boardNode: element,
 					rootNode: columnBoardFactory.build(),
-					boardSettings: { canRoomEditorManageVideoconference: false },
+					boardConfiguration: { canEditorsManageVideoconference: false },
 				});
 				boardNodeAuthorizableService.getBoardAuthorizable
 					.mockResolvedValueOnce(boardNodeAuthorizable)
@@ -869,7 +856,7 @@ describe(VideoConferenceService.name, () => {
 					id: element.id,
 					boardNode: element,
 					rootNode: columnBoardFactory.build(),
-					boardSettings: {},
+					boardConfiguration: {},
 				});
 				boardNodeAuthorizableService.getBoardAuthorizable
 					.mockResolvedValueOnce(boardNodeAuthorizable)
@@ -943,19 +930,12 @@ describe(VideoConferenceService.name, () => {
 				const conferenceScope = VideoConferenceScope.ROOM;
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-				roomMembershipService.getRoomMembershipAuthorizable
-					.mockResolvedValueOnce({
-						id: 'foo',
-						roomId: room.id,
-						members: [{ userId: 'anotherUserId', roles: [] }],
-						schoolId: room.schoolId,
-					})
-					.mockResolvedValueOnce({
-						id: 'foo',
-						roomId: room.id,
-						members: [{ userId: 'anotherUserId', roles: [] }],
-						schoolId: room.schoolId,
-					});
+				const roomAuthorizable = new RoomAuthorizable(
+					'foo',
+					[{ userId: 'anotherUserId', roles: [], userSchoolId: room.schoolId }],
+					room.schoolId
+				);
+				roomMembershipService.getRoomAuthorizable.mockResolvedValue(roomAuthorizable);
 				roomService.getSingleRoom.mockResolvedValueOnce(room);
 
 				return {
@@ -989,19 +969,12 @@ describe(VideoConferenceService.name, () => {
 				const conferenceScope = VideoConferenceScope.ROOM;
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
-				roomMembershipService.getRoomMembershipAuthorizable
-					.mockResolvedValueOnce({
-						id: 'foo',
-						roomId: room.id,
-						members: [{ userId: user.id, roles: [] }],
-						schoolId: room.schoolId,
-					})
-					.mockResolvedValueOnce({
-						id: 'foo',
-						roomId: room.id,
-						members: [{ userId: user.id, roles: [] }],
-						schoolId: room.schoolId,
-					});
+				const roomAuthorizable = new RoomAuthorizable(
+					'foo',
+					[{ userId: user.id, roles: [], userSchoolId: user.school.id }],
+					room.schoolId
+				);
+				roomMembershipService.getRoomAuthorizable.mockResolvedValue(roomAuthorizable);
 				roomService.getSingleRoom.mockResolvedValueOnce(room);
 
 				return {
@@ -1035,7 +1008,7 @@ describe(VideoConferenceService.name, () => {
 					id: element.id,
 					boardNode: element,
 					rootNode: columnBoardFactory.build(),
-					boardSettings: {},
+					boardConfiguration: {},
 				});
 				boardNodeAuthorizableService.getBoardAuthorizable
 					.mockResolvedValueOnce(boardNodeAuthorizable)
@@ -1073,7 +1046,7 @@ describe(VideoConferenceService.name, () => {
 					id: element.id,
 					boardNode: element,
 					rootNode: columnBoardFactory.build(),
-					boardSettings: {},
+					boardConfiguration: {},
 				});
 				boardNodeAuthorizableService.getBoardAuthorizable
 					.mockResolvedValueOnce(boardNodeAuthorizable)
@@ -1115,7 +1088,7 @@ describe(VideoConferenceService.name, () => {
 
 			const scopeId = new ObjectId().toHexString();
 
-			configService.get.mockReturnValue('https://api.example.com');
+			config.scHostUrl = 'https://api.example.com';
 
 			return {
 				userId,
@@ -1245,7 +1218,7 @@ describe(VideoConferenceService.name, () => {
 			const roomUser = userFactory.buildWithId();
 			const scopeId = new ObjectId().toHexString();
 			const team = teamFactory
-				.withRoleAndUserId(roleFactory.build({ name: RoleName.EXPERT }), new ObjectId().toHexString())
+				.withRoleAndUserId(roleFactory.build({ name: RoleName.EXTERNALPERSON }), new ObjectId().toHexString())
 				.build();
 			const { roomEditorRole } = RoomRolesTestFactory.createRoomRoles();
 			const group = groupFactory.build({
@@ -1254,19 +1227,12 @@ describe(VideoConferenceService.name, () => {
 			});
 			const room = roomFactory.build();
 			roomMembershipFactory.build({ roomId: room.id, userGroupId: group.id });
-			roomMembershipService.getRoomMembershipAuthorizable
-				.mockResolvedValueOnce({
-					id: 'foo',
-					roomId: room.id,
-					members: [{ userId: roomUser.id, roles: [roomEditorRole] }],
-					schoolId: room.schoolId,
-				})
-				.mockResolvedValueOnce({
-					id: 'foo',
-					roomId: room.id,
-					members: [{ userId: roomUser.id, roles: [roomEditorRole] }],
-					schoolId: room.schoolId,
-				});
+			const roomAuthorizable = new RoomAuthorizable(
+				'foo',
+				[{ userId: roomUser.id, roles: [roomEditorRole], userSchoolId: roomUser.school.id }],
+				room.schoolId
+			);
+			roomMembershipService.getRoomAuthorizable.mockResolvedValue(roomAuthorizable);
 
 			const element = videoConferenceElementFactory.build();
 			const boardNodeAuthorizable = boardNodeAuthorizableFactory.build({
@@ -1274,16 +1240,13 @@ describe(VideoConferenceService.name, () => {
 				id: element.id,
 				boardNode: element,
 				rootNode: columnBoardFactory.build(),
-				boardSettings: {},
+				boardConfiguration: {},
 			});
-			boardNodeAuthorizableService.getBoardAuthorizable
-				.mockResolvedValueOnce(boardNodeAuthorizable)
-				.mockResolvedValueOnce(boardNodeAuthorizable);
+			boardNodeAuthorizableService.getBoardAuthorizable.mockResolvedValue(boardNodeAuthorizable);
 
 			const course = courseEntityFactory.buildWithId();
 			courseService.findById.mockResolvedValue(course);
-
-			configService.get.mockReturnValue('https://api.example.com');
+			config.scHostUrl = 'https://api.example.com';
 
 			return {
 				user,

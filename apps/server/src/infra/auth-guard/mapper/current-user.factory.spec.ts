@@ -1,4 +1,4 @@
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { ICurrentUser } from '../interface';
 import { CurrentUserBuilder } from './current-user.factory';
 

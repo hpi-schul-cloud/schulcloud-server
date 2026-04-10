@@ -2,7 +2,7 @@ const { authenticate } = require('@feathersjs/authentication');
 const { iff, isProvider, discard, disallow, keepInArray, keep } = require('feathers-hooks-common');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const { Forbidden } = require('../../../errors');
-const { NODE_ENV, ENVIRONMENTS } = require('../../../../config/globals');
+const { ENVIRONMENTS } = require('../../../../config/environments');
 const logger = require('../../../logger');
 const { equal } = require('../../../helper/compare').ObjectId;
 const globalHooks = require('../../../hooks');
@@ -103,20 +103,20 @@ const setCurrentYearIfMissing = async (hook) => {
 	return Promise.resolve(hook);
 };
 
-const createDefaultStorageOptions = (hook) => {
+const createDefaultStorageOptions = (context) => {
 	// create buckets only in production mode
-	if (NODE_ENV !== ENVIRONMENTS.PRODUCTION) {
-		return Promise.resolve(hook);
+	if (Configuration.get('NODE_ENV') !== ENVIRONMENTS.PRODUCTION) {
+		return Promise.resolve(context);
 	}
-	const schoolId = hook.result._id;
+	const schoolId = context.result._id;
 	const fileStorageStrategy = new AWSStrategy();
 	return fileStorageStrategy
 		.create(schoolId)
-		.then(() => hook)
+		.then(() => context)
 		.catch((err) => {
 			if (err && err.code === 'BucketAlreadyOwnedByYou') {
 				// The bucket already exists
-				return hook;
+				return context;
 			}
 			throw err;
 		});
@@ -148,7 +148,7 @@ const decorateYears = async (context) => {
 
 const updatesArray = (key) => key === '$push' || key === '$pull';
 const updatesChat = (key, data) => {
-	const chatFeatures = [SCHOOL_FEATURES.ROCKET_CHAT, SCHOOL_FEATURES.VIDEOCONFERENCE];
+	const chatFeatures = [SCHOOL_FEATURES.VIDEOCONFERENCE];
 	return updatesArray(key) && chatFeatures.indexOf(data[key].features) !== -1;
 };
 const updatesTeamCreation = (key, data) => updatesArray(key) && !isTeamCreationByStudentsEnabled(data[key]);
@@ -281,13 +281,13 @@ const validateCounty = async (context) => {
 	return context;
 };
 
-const setDefaultStudentListPermission = async (hook) => {
+const setDefaultStudentListPermission = async (context) => {
 	if (Configuration.get('TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT')) {
-		hook.data.permissions = hook.data.permissions || {};
-		hook.data.permissions.teacher = hook.data.permissions.teacher || {};
-		hook.data.permissions.teacher.STUDENT_LIST = true;
+		context.data.permissions = context.data.permissions || {};
+		context.data.permissions.teacher = context.data.permissions.teacher || {};
+		context.data.permissions.teacher.STUDENT_LIST = true;
 	}
-	return hook;
+	return context;
 };
 
 const preventSystemsChange = async (context) => {

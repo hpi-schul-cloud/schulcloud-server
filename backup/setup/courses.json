@@ -39,7 +39,8 @@
 		"untilDate": {
 			"$date": "2054-07-31T22:00:00Z"
 		},
-		"__v": 0
+		"__v": 0,
+		"groupIds": []
 	},
 	{
 		"_id": {
@@ -128,7 +129,8 @@
 				"$oid": "59ae89b71f513506904e1cc9"
 			}
 		],
-		"__v": 0
+		"__v": 0,
+		"groupIds": []
 	},
 	{
 		"_id": {
@@ -217,7 +219,8 @@
 		},
 		"startDate": {
 			"$date": "2017-08-27T22:00:00Z"
-		}
+		},
+		"groupIds": []
 	},
 	{
 		"_id": {
@@ -306,7 +309,8 @@
 				"$oid": "59ae89b71f513506904e1cc9"
 			}
 		],
-		"__v": 0
+		"__v": 0,
+		"groupIds": []
 	},
 	{
 		"_id": {
@@ -385,7 +389,8 @@
 		},
 		"startDate": {
 			"$date": "2017-08-27T22:00:00Z"
-		}
+		},
+		"groupIds": []
 	},
 	{
 		"_id": {
@@ -474,7 +479,8 @@
 				"$oid": "59ae89b71f513506904e1cc9"
 			}
 		],
-		"__v": 0
+		"__v": 0,
+		"groupIds": []
 	},
 	{
 		"_id": {
@@ -509,7 +515,8 @@
 		},
 		"times": [],
 		"__v": 0,
-		"description": ""
+		"description": "",
+		"groupIds": []
 	},
 	{
 		"_id": {
@@ -548,7 +555,8 @@
 		},
 		"times": [],
 		"__v": 0,
-		"description": ""
+		"description": "",
+		"groupIds": []
 	},
 	{
 		"_id": {
@@ -583,7 +591,8 @@
 		},
 		"times": [],
 		"__v": 0,
-		"description": ""
+		"description": "",
+		"groupIds": []
 	},
 	{
 		"_id": {
@@ -622,7 +631,8 @@
 		},
 		"times": [],
 		"__v": 0,
-		"description": ""
+		"description": "",
+		"groupIds": []
 	},
 	{
 		"_id": {
@@ -664,7 +674,8 @@
 		},
 		"times": [],
 		"__v": 0,
-		"description": ""
+		"description": "",
+		"groupIds": []
 	},
 	{
 		"_id": {
@@ -699,7 +710,8 @@
 		},
 		"times": [],
 		"__v": 0,
-		"description": ""
+		"description": "",
+		"groupIds": []
 	},
 	{
 		"_id": {

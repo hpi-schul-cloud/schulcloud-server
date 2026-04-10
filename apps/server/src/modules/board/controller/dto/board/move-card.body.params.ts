@@ -1,5 +1,5 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsMongoId, IsNumber, Min } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsMongoId, IsInt, Min, IsOptional } from 'class-validator';
 
 export class MoveCardBodyParams {
 	@IsMongoId()
@@ -9,11 +9,14 @@ export class MoveCardBodyParams {
 	})
 	toColumnId!: string;
 
-	@IsNumber()
+	@IsOptional()
+	@IsInt()
 	@Min(0)
-	@ApiProperty({
-		required: true,
+	@ApiPropertyOptional({
+		description: 'to bring element to a specific position, default is last position',
+		type: Number,
+		required: false,
 		nullable: false,
 	})
-	toPosition!: number;
+	toPosition?: number;
 }

@@ -18,6 +18,9 @@ import { MongoMemoryDatabaseModule } from '@testing/database';
 import { NewsTargetModel } from '../domain';
 import { CourseNews, News, SchoolNews, TeamNews } from './news.entity';
 import { NewsRepo } from './news.repo';
+import { courseEntityFactory } from '@modules/course/testing';
+import { teamFactory } from '@modules/team/testing/team.factory';
+import { schoolEntityFactory } from '@modules/school/testing';
 
 describe('NewsRepo', () => {
 	let repo: NewsRepo;
@@ -65,7 +68,7 @@ describe('NewsRepo', () => {
 		it('should persist course news', async () => {
 			const news = courseNewsFactory.build();
 
-			await em.persistAndFlush(news);
+			await em.persist(news).flush();
 			em.clear();
 
 			const result = await em.findOneOrFail(News, {
@@ -80,7 +83,7 @@ describe('NewsRepo', () => {
 		it('should persist team news', async () => {
 			const news = teamNewsFactory.build();
 
-			await em.persistAndFlush(news);
+			await em.persist(news).flush();
 			em.clear();
 
 			const result = await em.findOneOrFail(News, {
@@ -94,7 +97,7 @@ describe('NewsRepo', () => {
 
 		it('should persist school news', async () => {
 			const news = schoolNewsFactory.build();
-			await em.persistAndFlush(news);
+			await em.persist(news).flush();
 			em.clear();
 
 			const result = await em.findOneOrFail(News, {
@@ -108,7 +111,7 @@ describe('NewsRepo', () => {
 		it('should persist unpublished course news', async () => {
 			const news = courseUnpublishedNewsFactory.build();
 
-			await em.persistAndFlush(news);
+			await em.persist(news).flush();
 			em.clear();
 
 			const result = await em.findOneOrFail(News, {
@@ -123,7 +126,7 @@ describe('NewsRepo', () => {
 		it('should persist unpublished team news', async () => {
 			const news = teamUnpublishedNewsFactory.build();
 
-			await em.persistAndFlush(news);
+			await em.persist(news).flush();
 			em.clear();
 
 			const result = await em.findOneOrFail(News, {
@@ -137,7 +140,7 @@ describe('NewsRepo', () => {
 
 		it('should persist unpublished school news', async () => {
 			const news = schoolUnpublishedNewsFactory.build();
-			await em.persistAndFlush(news);
+			await em.persist(news).flush();
 			em.clear();
 
 			const result = await em.findOneOrFail(News, {
@@ -153,7 +156,7 @@ describe('NewsRepo', () => {
 	describe('findAll', () => {
 		it('should return news for targets', async () => {
 			const news = courseNewsFactory.build();
-			await em.persistAndFlush(news);
+			await em.persist(news).flush();
 			em.clear();
 
 			const target = {
@@ -171,7 +174,7 @@ describe('NewsRepo', () => {
 
 		it('should return news for school', async () => {
 			const news = schoolNewsFactory.build();
-			await em.persistAndFlush(news);
+			await em.persist(news).flush();
 			em.clear();
 
 			const pagination = { skip: 0, limit: 20 };
@@ -187,7 +190,7 @@ describe('NewsRepo', () => {
 
 		it('should return news for given target', async () => {
 			const news = courseNewsFactory.build();
-			await em.persistAndFlush(news);
+			await em.persist(news).flush();
 			em.clear();
 
 			const target = {
@@ -202,8 +205,11 @@ describe('NewsRepo', () => {
 		});
 
 		it('should return news in requested order', async () => {
-			const newsList = courseNewsFactory.buildList(5);
-			await em.persistAndFlush(newsList);
+			const course = courseEntityFactory.build();
+			await em.persist(course).flush();
+
+			const newsList = courseNewsFactory.buildList(5, { target: course.id });
+			await em.persist(newsList).flush();
 			em.clear();
 
 			const courseIds = newsList.map((o) => o.target.id);
@@ -221,7 +227,7 @@ describe('NewsRepo', () => {
 
 		it('should return unpublished news for targets', async () => {
 			const news = courseUnpublishedNewsFactory.build();
-			await em.persistAndFlush(news);
+			await em.persist(news).flush();
 			em.clear();
 
 			const target = {
@@ -240,7 +246,7 @@ describe('NewsRepo', () => {
 
 		it('should return unpublished news for school', async () => {
 			const news = schoolUnpublishedNewsFactory.build();
-			await em.persistAndFlush(news);
+			await em.persist(news).flush();
 			em.clear();
 
 			const pagination = { skip: 0, limit: 20 };
@@ -257,7 +263,7 @@ describe('NewsRepo', () => {
 
 		it('should return unpublished news for given target', async () => {
 			const news = courseUnpublishedNewsFactory.build();
-			await em.persistAndFlush(news);
+			await em.persist(news).flush();
 			em.clear();
 
 			const target = {
@@ -273,9 +279,12 @@ describe('NewsRepo', () => {
 		});
 
 		it('should return unpublished news in requested order', async () => {
-			const creator = userFactory.build();
-			const newsList = courseUnpublishedNewsFactory.buildList(5, { creator });
-			await em.persistAndFlush(newsList);
+			const creator = userFactory.buildWithId();
+			const course = courseEntityFactory.buildWithId();
+			await em.persist([creator, course]).flush();
+
+			const newsList = courseUnpublishedNewsFactory.buildListWithId(5, { creator, target: course.id });
+			await em.persist(newsList).flush();
 			em.clear();
 
 			const courseIds = newsList.map((o) => o.target.id);
@@ -292,12 +301,35 @@ describe('NewsRepo', () => {
 			const reverseCourseIds = courseIds.sort((r1, r2) => (r1 > r2 ? -1 : 1));
 			expect(resultCourseIds).toEqual(reverseCourseIds);
 		});
+
+		it('should populate target on all target types', async () => {
+			const school = schoolEntityFactory.build();
+			const schoolNews = schoolNewsFactory.build({ target: school });
+			const team = teamFactory.build();
+			const teamNews = teamNewsFactory.build({ target: team });
+
+			await em.persist([school, team, schoolNews, teamNews]).flush();
+			em.clear();
+
+			const teamTarget = {
+				targetModel: NewsTargetModel.Team,
+				targetIds: [teamNews.target.id],
+			};
+			const schoolTarget = {
+				targetModel: NewsTargetModel.School,
+				targetIds: [schoolNews.target.id],
+			};
+
+			const [result] = await repo.findAllPublished([teamTarget, schoolTarget]);
+
+			expect(result.every((news) => news.target != null)).toBe(true);
+		});
 	});
 
 	describe('findOneById', () => {
 		it('should find a news entity by id', async () => {
 			const news = teamNewsFactory.build();
-			await em.persistAndFlush(news);
+			await em.persist(news).flush();
 			em.clear();
 
 			const result = await repo.findOneById(news.id);
@@ -325,7 +357,7 @@ describe('NewsRepo', () => {
 				updater: user1,
 			});
 
-			await em.persistAndFlush([news1, news2, news3]);
+			await em.persist([news1, news2, news3]).flush();
 			em.clear();
 
 			return { news1, news2, news3, user1, user2 };
@@ -374,7 +406,7 @@ describe('NewsRepo', () => {
 					updater: user2,
 				});
 
-				await em.persistAndFlush([user1, user2, news1, news2, news3]);
+				await em.persist([user1, user2, news1, news2, news3]).flush();
 				em.clear();
 
 				return {
@@ -426,7 +458,7 @@ describe('NewsRepo', () => {
 					updater: user2,
 				});
 
-				await em.persistAndFlush([news1, news2, news3]);
+				await em.persist([news1, news2, news3]).flush();
 				em.clear();
 
 				return {

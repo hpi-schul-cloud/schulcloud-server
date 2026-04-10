@@ -1,14 +1,12 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { AuthorizableReferenceType, AuthorizationInjectionService } from '@modules/authorization';
-import { User } from '@modules/user/repo';
 import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities } from '@testing/database';
-import { BoardNodeAuthorizable, BoardRoles, UserWithBoardRoles } from '../domain';
+import { BoardNodeAuthorizable, BoardRoles, joinPath, UserWithBoardRoles } from '../domain';
 import { BoardNodeRepo } from '../repo';
-import { columnBoardFactory, columnFactory } from '../testing';
+import { cardFactory, columnBoardFactory, columnFactory } from '../testing';
 import { BoardNodeAuthorizableService } from './board-node-authorizable.service';
 import { BoardNodeService } from './board-node.service';
-import { BoardContextService } from './internal/board-context.service';
+import { BoardContextResolverService, PreparedBoardContext } from './internal/board-context';
 
 describe(BoardNodeAuthorizableService.name, () => {
 	let module: TestingModule;
@@ -16,7 +14,7 @@ describe(BoardNodeAuthorizableService.name, () => {
 	let injectionService: DeepMocked<AuthorizationInjectionService>;
 	let boardNodeRepo: DeepMocked<BoardNodeRepo>;
 	let boardNodeService: DeepMocked<BoardNodeService>;
-	let boardContextService: DeepMocked<BoardContextService>;
+	let boardContextResolverService: DeepMocked<BoardContextResolverService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -31,8 +29,8 @@ describe(BoardNodeAuthorizableService.name, () => {
 					useValue: createMock<BoardNodeService>(),
 				},
 				{
-					provide: BoardContextService,
-					useValue: createMock<BoardContextService>(),
+					provide: BoardContextResolverService,
+					useValue: createMock<BoardContextResolverService>(),
 				},
 				{
 					provide: AuthorizationInjectionService,
@@ -45,9 +43,7 @@ describe(BoardNodeAuthorizableService.name, () => {
 		service = module.get(BoardNodeAuthorizableService);
 		boardNodeRepo = module.get(BoardNodeRepo);
 		boardNodeService = module.get(BoardNodeService);
-		boardContextService = module.get(BoardContextService);
-
-		await setupEntities([User]);
+		boardContextResolverService = module.get(BoardContextResolverService);
 	});
 
 	afterEach(() => {
@@ -76,7 +72,7 @@ describe(BoardNodeAuthorizableService.name, () => {
 					boardNode: column,
 					rootNode: columnBoard,
 					users: [],
-					boardSettings: {},
+					boardConfiguration: {},
 				});
 
 				return { columnBoard, column, authorizable };
@@ -116,11 +112,15 @@ describe(BoardNodeAuthorizableService.name, () => {
 					roles: [BoardRoles.EDITOR],
 				},
 			];
-			boardContextService.getUsersWithBoardRoles.mockResolvedValue(usersWithRoles);
-			const boardSettings = { canRoomEditorManageVideoconference: true };
-			boardContextService.getBoardSettings.mockResolvedValueOnce(boardSettings);
+			const boardConfiguration = { canEditorsManageVideoconference: true };
+			const preparedContext: PreparedBoardContext = {
+				type: columnBoard.context.type,
+				getUsersWithBoardRoles: () => usersWithRoles,
+				getBoardConfiguration: () => boardConfiguration,
+			};
+			boardContextResolverService.resolve.mockResolvedValue(preparedContext);
 
-			return { boardSettings, columnBoard, column, usersWithRoles };
+			return { boardConfiguration, columnBoard, column, usersWithRoles };
 		};
 
 		it('should call the service to get the parent node', async () => {
@@ -140,7 +140,7 @@ describe(BoardNodeAuthorizableService.name, () => {
 		});
 
 		it('should return an authorizable of the root context', async () => {
-			const { boardSettings, column, columnBoard, usersWithRoles } = setup();
+			const { boardConfiguration, column, columnBoard, usersWithRoles } = setup();
 
 			const result = await service.getBoardAuthorizable(column);
 			const expected = new BoardNodeAuthorizable({
@@ -149,10 +149,138 @@ describe(BoardNodeAuthorizableService.name, () => {
 				boardNode: column,
 				rootNode: columnBoard,
 				parentNode: columnBoard,
-				boardSettings,
+				boardConfiguration,
 			});
 
 			expect(result).toEqual(expected);
+		});
+	});
+
+	describe('getBoardAuthorizables', () => {
+		describe('when getting authorizables for multiple board nodes', () => {
+			const setup = () => {
+				const card1 = cardFactory.build();
+				const card2 = cardFactory.build();
+				const column = columnFactory.build({ children: [card1, card2] });
+				const columnBoard = columnBoardFactory.build({ children: [column] });
+
+				const usersWithRoles: UserWithBoardRoles[] = [{ userId: columnBoard.context.id, roles: [BoardRoles.EDITOR] }];
+				const boardConfiguration = { canEditorsManageVideoconference: true };
+				const preparedContext: PreparedBoardContext = {
+					type: columnBoard.context.type,
+					getUsersWithBoardRoles: () => usersWithRoles,
+					getBoardConfiguration: () => boardConfiguration,
+				};
+				boardContextResolverService.resolve.mockResolvedValue(preparedContext);
+				boardNodeService.findByIds.mockResolvedValue([columnBoard, column]);
+
+				return { columnBoard, column, card1, card2, usersWithRoles, boardConfiguration };
+			};
+
+			it('should call boardNodeService.findByIds with root and parent ids', async () => {
+				const { card1, card2, columnBoard, column } = setup();
+
+				await service.getBoardAuthorizables([card1, card2]);
+
+				expect(boardNodeService.findByIds).toHaveBeenCalledWith(expect.arrayContaining([columnBoard.id, column.id]), 1);
+			});
+
+			it('should return authorizables for all board nodes', async () => {
+				const { card1, card2, usersWithRoles, boardConfiguration, columnBoard, column } = setup();
+
+				const result = await service.getBoardAuthorizables([card1, card2]);
+
+				expect(result).toHaveLength(2);
+				expect(result[0]).toEqual(
+					new BoardNodeAuthorizable({
+						users: usersWithRoles,
+						id: card1.id,
+						boardNode: card1,
+						rootNode: columnBoard,
+						parentNode: column,
+						boardConfiguration,
+					})
+				);
+				expect(result[1]).toEqual(
+					new BoardNodeAuthorizable({
+						users: usersWithRoles,
+						id: card2.id,
+						boardNode: card2,
+						rootNode: columnBoard,
+						parentNode: column,
+						boardConfiguration,
+					})
+				);
+			});
+
+			it('should resolve context only once for shared context', async () => {
+				const { card1, card2 } = setup();
+
+				await service.getBoardAuthorizables([card1, card2]);
+
+				expect(boardContextResolverService.resolve).toHaveBeenCalledTimes(1);
+			});
+		});
+
+		describe('when board node parent is not in the loaded map', () => {
+			const setup = () => {
+				const columnBoard = columnBoardFactory.build();
+				// Create a card with columnBoard as root but column (not loaded) as parent
+				const card = cardFactory.build({
+					path: joinPath(joinPath(',', columnBoard.id), 'some-column-id'),
+				});
+
+				const usersWithRoles: UserWithBoardRoles[] = [{ userId: columnBoard.context.id, roles: [BoardRoles.EDITOR] }];
+				const boardConfiguration = {};
+				const preparedContext: PreparedBoardContext = {
+					type: columnBoard.context.type,
+					getUsersWithBoardRoles: () => usersWithRoles,
+					getBoardConfiguration: () => boardConfiguration,
+				};
+				boardContextResolverService.resolve.mockResolvedValue(preparedContext);
+
+				boardNodeService.findByIds.mockResolvedValue([columnBoard]);
+
+				return { columnBoard, card, usersWithRoles, boardConfiguration };
+			};
+
+			it('should return authorizable with undefined parentNode', async () => {
+				const { card, columnBoard, usersWithRoles, boardConfiguration } = setup();
+
+				const result = await service.getBoardAuthorizables([card]);
+
+				expect(result[0]).toEqual(
+					new BoardNodeAuthorizable({
+						users: usersWithRoles,
+						id: card.id,
+						boardNode: card,
+						rootNode: columnBoard,
+						parentNode: undefined,
+						boardConfiguration,
+					})
+				);
+			});
+		});
+
+		describe('when board nodes have different contexts', () => {
+			const setup = () => {
+				const columnBoard1 = columnBoardFactory.build();
+				const columnBoard2 = columnBoardFactory.build();
+				const card1 = cardFactory.build({ path: joinPath(',', columnBoard1.id) });
+				const card2 = cardFactory.build({ path: joinPath(',', columnBoard2.id) });
+
+				boardNodeService.findByIds.mockResolvedValue([columnBoard1, columnBoard2]);
+
+				return { card1, card2 };
+			};
+
+			it('should throw an error', async () => {
+				const { card1, card2 } = setup();
+
+				await expect(service.getBoardAuthorizables([card1, card2])).rejects.toThrow(
+					'Multiple contexts found for board nodes. All board nodes must share the same context to load authorizables.'
+				);
+			});
 		});
 	});
 });

@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: api-h5p-library-management-configmap
+  namespace: {{ NAMESPACE }}
+  labels:
+    app: api-h5p-library-management-cronjob
+data:
+  EXIT_ON_ERROR: "true"
+  NEST_LOG_LEVEL: "{{ NEST_LOG_LEVEL }}"
+  H5P_EDITOR__S3_ENDPOINT: "{{ H5P_EDITOR__S3_ENDPOINT }}"
+  H5P_EDITOR__S3_BUCKET_LIBRARIES: "{{ H5P_EDITOR__S3_BUCKET_LIBRARIES }}"
+  H5P_EDITOR__S3_BUCKET_CONTENT: "{{ H5P_EDITOR__S3_BUCKET_CONTENT }}"
+  H5P_EDITOR__S3_REGION: "{{ H5P_EDITOR__S3_REGION }}"
+  INCOMING_REQUEST_TIMEOUT_MS: "600000"

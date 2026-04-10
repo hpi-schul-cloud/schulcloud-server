@@ -1,5 +1,4 @@
-import { KeycloakAdministrationService } from '@infra/identity-management/keycloak-administration/service/keycloak-administration.service';
-import { KeycloakModule } from '@infra/identity-management/keycloak/keycloak.module';
+import { TestEncryptionConfig } from '@infra/encryption/testing';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client-cjs/keycloak-admin-client-cjs-index';
 import UserRepresentation from '@keycloak/keycloak-admin-client/lib/defs/userRepresentation';
 import { ObjectId } from '@mikro-orm/mongodb';
@@ -9,6 +8,12 @@ import { HttpModule } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
 import { v1 } from 'uuid';
 import { IdentityManagementService } from '../../identity-management.service';
+import {
+	KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
+	KeycloakAdministrationConfig,
+} from '../../keycloak-administration/keycloak-administration.config';
+import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
+import { KeycloakModule } from '../keycloak.module';
 import { KeycloakIdentityManagementService } from './keycloak-identity-management.service';
 
 describe('KeycloakIdentityManagementService Integration', () => {
@@ -45,7 +50,20 @@ describe('KeycloakIdentityManagementService Integration', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [KeycloakModule, ServerModule, HttpModule],
+			imports: [
+				KeycloakModule.register({
+					encryptionConfig: {
+						configConstructor: TestEncryptionConfig,
+						configInjectionToken: 'TEST_ENCRYPTION_CONFIG_TOKEN',
+					},
+					keycloakAdministrationConfig: {
+						configConstructor: KeycloakAdministrationConfig,
+						configInjectionToken: KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
+					},
+				}),
+				ServerModule,
+				HttpModule,
+			],
 		}).compile();
 		idmService = module.get(IdentityManagementService);
 		keycloakAdminService = module.get(KeycloakAdministrationService);

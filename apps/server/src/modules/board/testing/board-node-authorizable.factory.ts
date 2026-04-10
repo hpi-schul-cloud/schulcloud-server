@@ -15,6 +15,11 @@ export const boardNodeAuthorizableFactory = DomainObjectFactory.define<
 		users: [],
 		boardNode,
 		rootNode,
-		boardSettings: {},
+		boardConfiguration: {
+			canEditorsManageVideoconference: false,
+			canReadersEdit: false,
+			canAdminsToggleReadersCanEdit: false,
+			isLocked: false,
+		},
 	};
 });

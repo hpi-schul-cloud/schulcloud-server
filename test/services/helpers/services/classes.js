@@ -9,7 +9,7 @@ const removeManyClasses = (ids) =>
 		.deleteMany({ _id: { $in: ids } })
 		.lean()
 		.exec();
-const removeOneClass = (id) => classModel.findOneAndRemove({ _id: id }).lean().exec();
+const removeOneClass = (id) => classModel.findOneAndDelete({ _id: id }).lean().exec();
 
 const createTestClass =
 	(appPromise, opt) =>

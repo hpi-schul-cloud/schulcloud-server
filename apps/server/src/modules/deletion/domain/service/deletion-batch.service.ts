@@ -1,12 +1,13 @@
+import { ObjectId } from '@mikro-orm/mongodb';
+import { RoleName } from '@modules/role';
 import { Injectable } from '@nestjs/common';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { ObjectId } from 'bson';
-import { DeletionBatchUsersRepo, UserIdsByRole, UsersCountByRole } from '../../repo';
+import { DeletionBatchUsersRepo } from '../../repo';
 import { DeletionBatchRepo } from '../../repo/deletion-batch.repo';
-import { DeletionBatch, DeletionRequest } from '../do';
-import { BatchStatus, DomainName, StatusModel } from '../types';
+import { DeletionBatch } from '../do';
+import { BatchStatus, DomainName } from '../types';
 import { DeletionRequestService } from './deletion-request.service';
 
 export type CreateDeletionBatchParams = {
@@ -17,23 +18,40 @@ export type CreateDeletionBatchParams = {
 
 export type DeletionBatchDetails = {
 	id: EntityId;
+	name: string;
+	status: BatchStatus;
+	validUsers: EntityId[];
+	invalidUsers: EntityId[];
+	skippedUsers: EntityId[];
 	pendingDeletions: EntityId[];
 	failedDeletions: EntityId[];
 	successfulDeletions: EntityId[];
-	invalidIds: EntityId[];
-	skippedUsersByRole: UserIdsByRole[];
+	createdAt: Date;
+	updatedAt: Date;
 };
 
 export type DeletionBatchSummary = {
 	id: EntityId;
 	name: string;
 	status: BatchStatus;
-	usersByRole: UsersCountByRole[];
-	invalidUsers: EntityId[];
-	skippedUsersByRole: UsersCountByRole[];
+	validUsers: number;
+	invalidUsers: number;
+	skippedUsers: number;
 	createdAt: Date;
 	updatedAt: Date;
 };
+
+export const ALLOWED_USER_ROLES_FOR_BATCH_DELETION = [
+	RoleName.STUDENT,
+	RoleName.COURSESTUDENT,
+	RoleName.TEACHER,
+	RoleName.COURSETEACHER,
+	RoleName.COURSESUBSTITUTIONTEACHER,
+	RoleName.ADMINISTRATOR,
+	RoleName.COURSEADMINISTRATOR,
+];
+
+const isOlderThanMinutes = (date: Date, minutes: number): boolean => date.getTime() + minutes * 60 * 1000 < Date.now();
 
 @Injectable()
 export class DeletionBatchService {
@@ -49,49 +67,26 @@ export class DeletionBatchService {
 		return deletionBatch;
 	}
 
-	public async createDeletionBatch(
-		params: CreateDeletionBatchParams,
-		validUserIds: EntityId[],
-		invalidIds: EntityId[] = [],
-		skippedIds: EntityId[] = []
-	): Promise<DeletionBatchSummary> {
+	public async createDeletionBatch(params: CreateDeletionBatchParams): Promise<DeletionBatchSummary> {
+		const { validUserIds, invalidUserIds, skippedUserIds } = await this.validateDeletionBatch(params.targetRefIds);
+
 		const newBatch = new DeletionBatch({
 			id: new ObjectId().toHexString(),
 			name: params.name,
 			status: BatchStatus.CREATED,
 			targetRefDomain: params.targetRefDomain,
 			targetRefIds: validUserIds,
-			invalidIds,
-			skippedIds,
+			invalidIds: invalidUserIds,
+			skippedIds: skippedUserIds,
 			createdAt: new Date(),
 			updatedAt: new Date(),
 		});
 
 		await this.deletionBatchRepo.save(newBatch);
 
-		const summary = await this.buildSummary(newBatch);
+		const summary = this.buildSummary(newBatch);
 
 		return summary;
-	}
-
-	public async updateBatch({
-		batchId,
-		invalidIds,
-		skippedIds,
-	}: {
-		batchId: EntityId;
-		invalidIds: EntityId[];
-		skippedIds: EntityId[];
-	}): Promise<DeletionBatch> {
-		const deletionBatch = await this.deletionBatchRepo.findById(batchId);
-
-		deletionBatch.invalidIds = invalidIds;
-		deletionBatch.skippedIds = skippedIds;
-		deletionBatch.updatedAt = new Date();
-
-		await this.deletionBatchRepo.save(deletionBatch);
-
-		return deletionBatch;
 	}
 
 	public async deleteDeletionBatch(batchId: EntityId): Promise<void> {
@@ -103,51 +98,31 @@ export class DeletionBatchService {
 	public async getDeletionBatchDetails(batchId: EntityId): Promise<DeletionBatchDetails> {
 		const deletionBatch = await this.deletionBatchRepo.findById(batchId);
 
-		const failedDeletions: DeletionRequest[] = await this.deletionRequestService.findByStatusAndTargetRefId(
-			StatusModel.FAILED,
-			deletionBatch.targetRefIds
-		);
-		const failedDeletionUserIds: EntityId[] = failedDeletions.map((deletionRequest) => deletionRequest.targetRefId);
+		const { pending, failed, success } = await this.deletionRequestService.getStatusOfDeletionRequestBatch(batchId);
 
-		const pendingDeletions: DeletionRequest[] = await this.deletionRequestService.findByStatusAndTargetRefId(
-			StatusModel.PENDING,
-			deletionBatch.targetRefIds
-		);
-		const pendingDeletionUserIds: EntityId[] = pendingDeletions.map((deletionRequest) => deletionRequest.targetRefId);
-
-		const successfulDeletions: DeletionRequest[] = await this.deletionRequestService.findByStatusAndTargetRefId(
-			StatusModel.SUCCESS,
-			deletionBatch.targetRefIds
-		);
-		const successfulDeletionUserIds: EntityId[] = successfulDeletions.map(
-			(deletionRequest) => deletionRequest.targetRefId
-		);
-
-		const skippedUsers = await this.deletionBatchUsersRepo.getUsersByRole(deletionBatch.skippedIds);
-
-		const summary: DeletionBatchDetails = {
+		const details: DeletionBatchDetails = {
 			id: deletionBatch.id,
-			pendingDeletions: pendingDeletionUserIds,
-			failedDeletions: failedDeletionUserIds,
-			successfulDeletions: successfulDeletionUserIds,
-			invalidIds: deletionBatch.invalidIds,
-			skippedUsersByRole: skippedUsers,
+			name: deletionBatch.name,
+			status: deletionBatch.status,
+			validUsers: deletionBatch.targetRefIds,
+			invalidUsers: deletionBatch.invalidIds,
+			skippedUsers: deletionBatch.skippedIds,
+			pendingDeletions: pending,
+			failedDeletions: failed,
+			successfulDeletions: success,
+			createdAt: deletionBatch.createdAt,
+			updatedAt: deletionBatch.updatedAt,
 		};
 
-		return summary;
+		return details;
 	}
 
 	public async getDeletionBatchSummaries(
 		findOptions: IFindOptions<DeletionBatchSummary>
 	): Promise<Page<DeletionBatchSummary>> {
-		const deletionBatches: Page<DeletionBatch> = await this.deletionBatchRepo.findDeletionBatches(findOptions);
+		const deletionBatches = await this.deletionBatchRepo.findDeletionBatches(findOptions);
 
-		const summaries: DeletionBatchSummary[] = await Promise.all(
-			deletionBatches.data.map(async (batch) => {
-				const summary = await this.buildSummary(batch);
-				return summary;
-			})
-		);
+		const summaries = deletionBatches.data.map((batch) => this.buildSummary(batch));
 
 		const page: Page<DeletionBatchSummary> = {
 			data: summaries,
@@ -157,39 +132,64 @@ export class DeletionBatchService {
 		return page;
 	}
 
-	public async requestDeletionForBatch(deletionBatch: DeletionBatch, deleteAfter: Date): Promise<DeletionBatchSummary> {
-		const validIds = deletionBatch.targetRefIds.filter(
-			(id) => !deletionBatch.skippedIds.includes(id) && !deletionBatch.invalidIds.includes(id)
+	public async requestDeletionForBatch(batchId: EntityId, deleteAfter: Date): Promise<DeletionBatchSummary> {
+		const deletionBatch = await this.deletionBatchRepo.findById(batchId);
+
+		const revalidate = isOlderThanMinutes(deletionBatch.createdAt, 60);
+
+		if (revalidate) {
+			const allSavedUserIds = [...deletionBatch.targetRefIds, ...deletionBatch.invalidIds, ...deletionBatch.skippedIds];
+			const { validUserIds, invalidUserIds, skippedUserIds } = await this.validateDeletionBatch(allSavedUserIds);
+			deletionBatch.updateIds({
+				targetRefIds: validUserIds,
+				invalidIds: invalidUserIds,
+				skippedIds: skippedUserIds,
+			});
+		}
+
+		await this.deletionRequestService.createMultipleDeletionRequests(
+			batchId,
+			deletionBatch.targetRefIds,
+			deletionBatch.targetRefDomain,
+			deleteAfter
 		);
 
-		await this.deletionRequestService.createDeletionRequestBatch(validIds, deletionBatch.targetRefDomain, deleteAfter);
+		deletionBatch.startDeletion();
+		await this.deletionBatchRepo.save(deletionBatch);
 
-		await this.deletionBatchRepo.updateStatus(deletionBatch, BatchStatus.DELETION_REQUESTED);
-
-		const summary = await this.buildSummary(deletionBatch);
+		const summary = this.buildSummary(deletionBatch);
 
 		return summary;
 	}
 
-	// TODO implement as join on deletionbatches.targetRefIds to avoid N+1
-	private async getUsersCountByRoles(userIds: EntityId[]): Promise<UsersCountByRole[]> {
-		const usersByRole = await this.deletionBatchUsersRepo.countUsersByRole(userIds);
-
-		return usersByRole;
-	}
-
-	private async buildSummary(batch: DeletionBatch): Promise<DeletionBatchSummary> {
+	private buildSummary(batch: DeletionBatch): DeletionBatchSummary {
 		const summary: DeletionBatchSummary = {
 			id: batch.id,
 			name: batch.name,
 			status: batch.status,
-			usersByRole: await this.getUsersCountByRoles(batch.targetRefIds),
-			invalidUsers: batch.invalidIds,
-			skippedUsersByRole: await this.getUsersCountByRoles(batch.skippedIds),
+			validUsers: batch.targetRefIds.length,
+			invalidUsers: batch.invalidIds.length,
+			skippedUsers: batch.skippedIds.length,
 			createdAt: batch.createdAt,
 			updatedAt: batch.updatedAt,
 		};
 
 		return summary;
+	}
+
+	private async validateDeletionBatch(
+		userIds: EntityId[]
+	): Promise<{ validUserIds: EntityId[]; invalidUserIds: EntityId[]; skippedUserIds: EntityId[] }> {
+		const { withAllowedRole, withoutAllowedRole } = await this.deletionBatchUsersRepo.groupUserIdsByAllowedRoles(
+			userIds,
+			ALLOWED_USER_ROLES_FOR_BATCH_DELETION
+		);
+
+		const validUserIds = withAllowedRole.map((u) => u.id);
+		const skippedUserIds = withoutAllowedRole.map((u) => u.id);
+		const foundUserIds = new Set([...validUserIds, ...skippedUserIds]);
+		const invalidUserIds = userIds.filter((id) => !foundUserIds.has(id));
+
+		return { validUserIds, invalidUserIds, skippedUserIds };
 	}
 }

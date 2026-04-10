@@ -1,40 +1,33 @@
+import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ServiceUnavailableException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LegacyLogger } from '@core/logger';
-import { NodeEnvType } from '@modules/server/server.config';
 import { KeycloakConfigurationUc } from '../uc/keycloak-configuration.uc';
 import { KeycloakManagementController } from './keycloak-configuration.controller';
 
 describe('KeycloakManagementController', () => {
 	let module: TestingModule;
 	let uc: DeepMocked<KeycloakConfigurationUc>;
+	let logger: DeepMocked<LegacyLogger>;
 	let controller: KeycloakManagementController;
-	let configServiceMock: DeepMocked<ConfigService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			controllers: [KeycloakManagementController],
 			providers: [
-				{
-					provide: LegacyLogger,
-					useValue: createMock<LegacyLogger>(),
-				},
 				{
 					provide: KeycloakConfigurationUc,
 					useValue: createMock<KeycloakConfigurationUc>(),
 				},
 				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService>(),
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 			],
 		}).compile();
 
 		uc = module.get(KeycloakConfigurationUc);
-		controller = module.get(KeycloakManagementController);
-		configServiceMock = module.get(ConfigService);
+		logger = module.get(LegacyLogger);
+		controller = new KeycloakManagementController(uc, logger);
 	});
 
 	afterAll(async () => {
@@ -45,14 +38,12 @@ describe('KeycloakManagementController', () => {
 		uc.check.mockResolvedValue(true);
 		uc.seed.mockResolvedValue(1);
 		uc.configure.mockResolvedValue(1);
-		configServiceMock.get.mockReturnValue(NodeEnvType.TEST);
 	});
 
 	afterEach(() => {
 		uc.check.mockRestore();
 		uc.seed.mockRestore();
 		uc.configure.mockRestore();
-		configServiceMock.get.mockRestore();
 	});
 
 	it('should be defined', () => {

@@ -1,4 +1,3 @@
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { schoolFactory } from '@modules/school/testing';
 import { userDoFactory } from '@modules/user/testing';
 import { CustomParameterScope, CustomParameterType, ToolContextType } from '../../common/enum';
@@ -13,10 +12,6 @@ import {
 import { ExternalToolDatasheetMapper } from './external-tool-datasheet.mapper';
 
 describe(ExternalToolDatasheetMapper.name, () => {
-	beforeEach(() => {
-		Configuration.set('SC_TITLE', 'dBildungscloud');
-	});
-
 	afterEach(() => {
 		jest.clearAllMocks();
 	});
@@ -46,6 +41,7 @@ describe(ExternalToolDatasheetMapper.name, () => {
 				externalTool,
 				user.firstName,
 				user.lastName,
+				'dBildungscloud',
 				schoolExternalTool
 			);
 
@@ -77,6 +73,7 @@ describe(ExternalToolDatasheetMapper.name, () => {
 				externalTool,
 				user.firstName,
 				user.lastName,
+				'dBildungscloud',
 				schoolExternalTool,
 				school.getInfo().name
 			);
@@ -102,7 +99,7 @@ describe(ExternalToolDatasheetMapper.name, () => {
 				externalTool,
 				user.firstName,
 				user.lastName,
-				undefined
+				'dBildungscloud'
 			);
 
 			expect(mappedData).toEqual(expectDatasheet);
@@ -127,6 +124,7 @@ describe(ExternalToolDatasheetMapper.name, () => {
 				externalTool,
 				user.firstName,
 				user.lastName,
+				'dBildungscloud',
 				schoolExternalTool
 			);
 
@@ -206,6 +204,7 @@ describe(ExternalToolDatasheetMapper.name, () => {
 				externalTool,
 				user.firstName,
 				user.lastName,
+				'dBildungscloud',
 				schoolExternalTool
 			);
 

@@ -7,6 +7,7 @@ import {
 import { CommonCartridgeGuard } from '../../common-cartridge.guard';
 import { ElementTypeNotSupportedLoggableException } from '../../errors';
 import { CommonCartridgeResource, XmlObject } from '../../interfaces';
+import { ResourceFileContent } from '../../interfaces/common-cartridge-resource.interface';
 import { createIdentifier } from '../../utils';
 
 export type CommonCartridgeWebContentResourcePropsV110 = {
@@ -49,12 +50,12 @@ export class CommonCartridgeWebContentResourceV110 extends CommonCartridgeResour
 		}
 	}
 
-	public getFilePath(): string {
-		return `${this.props.folder}/${this.props.identifier}.html`;
+	public getFileContent(): ResourceFileContent {
+		return { path: this.getFilePath(), content: this.props.html };
 	}
 
-	public getFileContent(): string {
-		return this.props.html;
+	private getFilePath(): string {
+		return `${this.props.folder}/${this.props.identifier}.html`;
 	}
 
 	private getManifestOrganizationXmlObject(): XmlObject {

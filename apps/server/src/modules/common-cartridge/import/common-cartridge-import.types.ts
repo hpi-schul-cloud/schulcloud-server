@@ -21,7 +21,7 @@ export type CommonCartridgeOrganizationProps = {
 	title: string;
 	isResource: boolean;
 	isInlined: boolean;
-	resourcePath: string;
+	resourcePaths: string[];
 	resourceType: string;
 };
 
@@ -44,10 +44,17 @@ export type CommonCartridgeFileResourceProps = {
 	description: string;
 };
 
+export type CommonCartridgeFileFolderResourceProps = {
+	type: CommonCartridgeXmlResourceType.FILE_FOLDER;
+	title: string;
+	files: File[];
+};
+
 export type CommonCartridgeUnknownResourceProps = { type: CommonCartridgeXmlResourceType.UNKNOWN };
 
 export type CommonCartridgeResourceProps =
 	| CommonCartridgeWebContentResourceProps
 	| CommonCartridgeWebLinkResourceProps
 	| CommonCartridgeUnknownResourceProps
-	| CommonCartridgeFileResourceProps;
+	| CommonCartridgeFileResourceProps
+	| CommonCartridgeFileFolderResourceProps;

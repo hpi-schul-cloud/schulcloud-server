@@ -318,7 +318,7 @@ describe('School', () => {
 		describe('when school has purpose "expert"', () => {
 			const setup = () => {
 				const school = schoolFactory.build({
-					purpose: SchoolPurpose.EXPERT,
+					purpose: SchoolPurpose.EXTERNAL_PERSON_SCHOOL,
 				});
 				const otherSchool = schoolFactory.build();
 

@@ -15,8 +15,6 @@ import type {
 	MediaExternalToolElementProps,
 	MediaLineProps,
 	RichTextElementProps,
-	SubmissionContainerElementProps,
-	SubmissionItemProps,
 } from '../../domain';
 
 // omit all given keys from an object type
@@ -51,8 +49,6 @@ export interface BoardNodeEntityProps
 		ComponentProps<LinkElementProps>,
 		ComponentProps<FileElementProps>,
 		ComponentProps<DrawingElementProps>,
-		ComponentProps<SubmissionContainerElementProps>,
-		ComponentProps<SubmissionItemProps>,
 		ComponentProps<ExternalToolElementProps>,
 		ComponentProps<MediaBoardProps>,
 		ComponentProps<MediaExternalToolElementProps>,

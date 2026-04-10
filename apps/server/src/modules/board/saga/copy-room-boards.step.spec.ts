@@ -96,6 +96,8 @@ describe('CopyRoomBoardsStep', () => {
 				const copyStatus: CopyStatus = {
 					type: CopyElementType.COLUMNBOARD,
 					status: CopyStatusEnum.SUCCESS,
+					title: board.title,
+					originalEntity: board,
 					copyEntity: boardCopy,
 				};
 				columnBoardService.copyColumnBoard.mockResolvedValueOnce(copyStatus);

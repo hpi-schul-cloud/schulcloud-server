@@ -48,7 +48,7 @@ describe(ClassesRepo.name, () => {
 				const school = schoolEntityFactory.buildWithId();
 				const classes = classEntityFactory.buildListWithId(3, { schoolId: school.id });
 
-				await em.persistAndFlush(classes);
+				await em.persist(classes).flush();
 				em.clear();
 
 				return {
@@ -80,7 +80,7 @@ describe(ClassesRepo.name, () => {
 				const school = schoolEntityFactory.buildWithId();
 				const classes = classEntityFactory.buildListWithId(3, { schoolId: school.id });
 
-				await em.persistAndFlush(classes);
+				await em.persist(classes).flush();
 				em.clear();
 
 				return {
@@ -115,7 +115,7 @@ describe(ClassesRepo.name, () => {
 				const class2 = classEntityFactory.withUserIds([new ObjectId()]).buildWithId({ teacherIds: [testUser] });
 				const class3 = classEntityFactory.withUserIds([new ObjectId(), new ObjectId()]).buildWithId();
 
-				await em.persistAndFlush([class1, class2, class3]);
+				await em.persist([class1, class2, class3]).flush();
 				em.clear();
 
 				return {
@@ -149,7 +149,7 @@ describe(ClassesRepo.name, () => {
 				const class2 = classEntityFactory.withUserIds([testUser1, testUser3]).buildWithId();
 				const class3 = classEntityFactory.withUserIds([testUser2, testUser3]).buildWithId();
 
-				await em.persistAndFlush([class1, class2, class3]);
+				await em.persist([class1, class2, class3]).flush();
 				em.clear();
 
 				return {
@@ -196,6 +196,42 @@ describe(ClassesRepo.name, () => {
 				expect(result).toHaveLength(2);
 			});
 		});
+
+		describe('when deleting user data from classes with classIds filter', () => {
+			const setup = async () => {
+				const testUser = new ObjectId();
+				const class1 = classEntityFactory.withUserIds([testUser]).buildWithId();
+				const class2 = classEntityFactory.withUserIds([testUser]).buildWithId();
+				const class3 = classEntityFactory.withUserIds([testUser]).buildWithId();
+
+				await em.persist([class1, class2, class3]).flush();
+				em.clear();
+
+				return { testUser, class1, class2, class3 };
+			};
+
+			it('should only remove user reference from classes with the given classIds', async () => {
+				const { testUser, class1, class2, class3 } = await setup();
+
+				await repo.removeUserReference(testUser.toHexString(), [class1.id, class3.id]);
+
+				const result1 = await repo.findClassById(class1.id);
+				const result2 = await repo.findClassById(class2.id);
+				const result3 = await repo.findClassById(class3.id);
+
+				expect(result1?.userIds).toEqual([]);
+				expect(result2?.userIds).toEqual([testUser.toHexString()]);
+				expect(result3?.userIds).toEqual([]);
+			});
+
+			it('should return count of only classes updated with the given classIds', async () => {
+				const { testUser, class1, class3 } = await setup();
+
+				const numberOfUpdatedClasses = await repo.removeUserReference(testUser.toHexString(), [class1.id, class3.id]);
+
+				expect(numberOfUpdatedClasses).toEqual(2);
+			});
+		});
 	});
 
 	describe('findClassById', () => {
@@ -210,7 +246,7 @@ describe(ClassesRepo.name, () => {
 		describe('when class is in classes', () => {
 			const setup = async () => {
 				const class1 = classEntityFactory.buildWithId();
-				await em.persistAndFlush([class1]);
+				await em.persist([class1]).flush();
 				em.clear();
 
 				return {
@@ -236,7 +272,7 @@ describe(ClassesRepo.name, () => {
 					sourceOptions: { tspUid: randomUUID() },
 				});
 
-				await em.persistAndFlush(classes);
+				await em.persist(classes).flush();
 				em.clear();
 
 				return {

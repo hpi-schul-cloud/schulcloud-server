@@ -39,14 +39,14 @@ describe('board get context in course (api)', () => {
 		const setup = async () => {
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 
-			const course = courseEntityFactory.build({ teachers: [teacherUser] });
-			await em.persistAndFlush([teacherUser, teacherAccount, course]);
+			const course = courseEntityFactory.build({ school: teacherUser.school, teachers: [teacherUser] });
+			await em.persist([teacherUser, teacherAccount, course]).flush();
 
 			const columnBoardNode = columnBoardEntityFactory.build({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
 			});
 
-			await em.persistAndFlush([columnBoardNode]);
+			await em.persist([columnBoardNode]).flush();
 			em.clear();
 
 			const loggedInClient = await testApiClient.login(teacherAccount);

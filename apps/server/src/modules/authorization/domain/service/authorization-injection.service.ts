@@ -10,7 +10,11 @@ export class AuthorizationInjectionService {
 	private currentUserLoader?: CurrentUserLoader;
 
 	public injectAuthorizationRule(rule: Rule): void {
-		this.authorizationRules.push(rule);
+		const ruleConstructor = rule.constructor.name;
+		const exists = this.authorizationRules.some((rule) => rule.constructor.name === ruleConstructor);
+		if (!exists) {
+			this.authorizationRules.push(rule);
+		}
 	}
 
 	public getAuthorizationRules(): Rule[] {

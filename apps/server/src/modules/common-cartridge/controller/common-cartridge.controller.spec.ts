@@ -1,16 +1,20 @@
+import { LegacyLogger } from '@core/logger';
 import { faker } from '@faker-js/faker';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigurationModule } from '@infra/configuration';
+import { HttpStatus, StreamableFile } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Response } from 'express';
-import { StreamableFile } from '@nestjs/common';
-import { currentUserFactory } from '@testing/factory/currentuser.factory';
+import { Request, Response } from 'express';
+import { Readable } from 'stream';
+import { COMMON_CARTRIDGE_CONFIG_TOKEN, CommonCartridgeConfig } from '../common-cartridge.config';
+import { CommonCartridgeVersion } from '../export/common-cartridge.enums';
+import { CommonCartridgeExportResponse } from '../service/common-cartridge-export.response';
 import { CommonCartridgeUc } from '../uc/common-cartridge.uc';
 import { CommonCartridgeController } from './common-cartridge.controller';
 import { ExportCourseParams } from './dto';
-import { CourseQueryParams } from './dto/course.query.params';
+import { CommonCartridgeStartImportBodyParams } from './dto/common-cartridge-start-import-body.params';
 import { CourseExportBodyParams } from './dto/course-export.body.params';
-import { CommonCartridgeVersion } from '../export/common-cartridge.enums';
+import { CourseQueryParams } from './dto/course.query.params';
 
 describe('CommonCartridgeController', () => {
 	let module: TestingModule;
@@ -19,21 +23,16 @@ describe('CommonCartridgeController', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [
-				ConfigModule.forRoot({
-					isGlobal: true,
-					load: [
-						() => {
-							return { FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_MAX_FILE_SIZE: 10_000 };
-						},
-					],
-				}),
-			],
+			imports: [ConfigurationModule.register(COMMON_CARTRIDGE_CONFIG_TOKEN, CommonCartridgeConfig)],
 			controllers: [CommonCartridgeController],
 			providers: [
 				{
 					provide: CommonCartridgeUc,
 					useValue: createMock<CommonCartridgeUc>(),
+				},
+				{
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 			],
 		}).compile();
@@ -51,55 +50,62 @@ describe('CommonCartridgeController', () => {
 	});
 
 	describe('exportCourse', () => {
-		const setup = () => {
-			const courseId = faker.string.uuid();
-			const params = { courseId } as ExportCourseParams;
-			const query = { version: CommonCartridgeVersion.V_1_1_0 } as CourseQueryParams;
-			const body = {
-				topics: [faker.string.uuid(), faker.string.uuid()],
-				tasks: [faker.string.uuid()],
-				columnBoards: [faker.string.uuid(), faker.string.uuid()],
-			} as CourseExportBodyParams;
-			const expected = Buffer.from(faker.lorem.paragraphs(100));
-			const mockResponse = {
-				set: jest.fn(),
-			} as unknown as Response;
+		describe('when exporting a course', () => {
+			const setup = () => {
+				const courseId = faker.string.uuid();
+				const params: ExportCourseParams = { courseId };
+				const query: CourseQueryParams = { version: CommonCartridgeVersion.V_1_1_0 };
+				const body: CourseExportBodyParams = {
+					topics: [faker.string.uuid(), faker.string.uuid()],
+					tasks: [faker.string.uuid()],
+					columnBoards: [faker.string.uuid(), faker.string.uuid()],
+				};
+				const expected: CommonCartridgeExportResponse = {
+					data: Readable.from(faker.lorem.paragraphs(100)),
+					name: faker.string.alpha(),
+				};
+				const mockRequest = createMock<Request>();
+				mockRequest.headers.cookie = `jwt=${faker.internet.jwt()}`;
 
-			commonCartridgeUcMock.exportCourse.mockResolvedValue(expected);
+				const mockResponse = createMock<Response>();
 
-			return { params, expected, query, body, mockResponse };
-		};
+				commonCartridgeUcMock.exportCourse.mockResolvedValue(expected);
 
-		it('should return a streamable file', async () => {
-			const { params, query, body, mockResponse } = setup();
+				return { params, expected, query, body, mockRequest, mockResponse };
+			};
 
-			const result = await sut.exportCourse(params, query, body, mockResponse);
+			it('should return a streamable file', async () => {
+				const { params, expected, query, body, mockRequest, mockResponse } = setup();
 
-			expect(mockResponse.set).toHaveBeenCalledWith({
-				'Content-Type': 'application/zip',
-				'Content-Disposition': `attachment; filename=course_${params.courseId}.zip`,
+				const result = await sut.exportCourse(params, query, body, mockRequest, mockResponse);
+
+				expect(mockResponse.status).toHaveBeenCalledWith(HttpStatus.OK);
+				expect(result).toBeInstanceOf(StreamableFile);
+				expect(result.options.disposition).toBe(
+					`attachment; filename="${expected.name}"; filename*=UTF-8''${expected.name}`
+				);
 			});
-			expect(result).toBeInstanceOf(StreamableFile);
 		});
 	});
 
 	describe('importCourse', () => {
 		describe('when importing a course', () => {
 			const setup = () => {
-				const user = currentUserFactory.build();
-				const file: Express.Multer.File = new StreamableFile(
-					Buffer.from(faker.lorem.paragraphs(100)),
-					'file.zip'
-				) as unknown as Express.Multer.File;
+				const startImportParams: CommonCartridgeStartImportBodyParams = {
+					fileName: faker.system.fileName(),
+					fileRecordId: faker.string.uuid(),
+					fileUrl: faker.internet.url(),
+				};
 
-				return { user, file };
+				return { startImportParams };
 			};
-			it('should call the uc with the correct parameters', async () => {
-				const { user, file } = setup();
 
-				await sut.importCourse(user, file);
+			it('should call the uc with the correct parameters', () => {
+				const { startImportParams } = setup();
 
-				expect(commonCartridgeUcMock.importCourse).toHaveBeenCalledTimes(1);
+				sut.importCourse(startImportParams);
+
+				expect(commonCartridgeUcMock.startCourseImport).toHaveBeenCalledTimes(1);
 			});
 		});
 	});

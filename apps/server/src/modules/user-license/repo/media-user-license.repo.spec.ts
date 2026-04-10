@@ -63,7 +63,7 @@ describe(MediaUserLicenseRepo.name, () => {
 					mediaSource: biloMediaSourceEntity,
 				});
 
-				await em.persistAndFlush([user, otherUser, mediaUserLicense, otherMediaUserLicense]);
+				await em.persist([user, otherUser, mediaUserLicense, otherMediaUserLicense]).flush();
 
 				em.clear();
 

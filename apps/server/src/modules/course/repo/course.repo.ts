@@ -30,6 +30,7 @@ export class CourseRepo extends BaseRepo<CourseEntity> {
 
 	public async findAllByUserId(
 		userId: EntityId,
+		schoolId: EntityId,
 		filters?: { onlyActiveCourses?: boolean },
 		options?: IFindOptions<CourseEntity>
 	): Promise<Counted<CourseEntity[]>> {
@@ -39,6 +40,7 @@ export class CourseRepo extends BaseRepo<CourseEntity> {
 		if (filters?.onlyActiveCourses) {
 			scope.forActiveCourses();
 		}
+		scope.bySchoolId(schoolId);
 
 		const { pagination, order } = options || {};
 		const queryOptions = {
@@ -54,11 +56,13 @@ export class CourseRepo extends BaseRepo<CourseEntity> {
 
 	public async findAllForTeacher(
 		userId: EntityId,
+		schoolId: EntityId,
 		filters?: { onlyActiveCourses?: boolean },
 		options?: IFindOptions<CourseEntity>
 	): Promise<Counted<CourseEntity[]>> {
 		const scope = new CourseScope();
 		scope.forTeacher(userId);
+		scope.bySchoolId(schoolId);
 
 		if (filters?.onlyActiveCourses) {
 			scope.forActiveCourses();
@@ -77,42 +81,60 @@ export class CourseRepo extends BaseRepo<CourseEntity> {
 	}
 
 	// not tested in repo.integration.spec
-	public async findAllForTeacherOrSubstituteTeacher(userId: EntityId): Promise<Counted<CourseEntity[]>> {
+	public async findAllForTeacherOrSubstituteTeacher(
+		userId: EntityId,
+		schoolId: EntityId
+	): Promise<Counted<CourseEntity[]>> {
 		const scope = new CourseScope();
 		scope.forTeacherOrSubstituteTeacher(userId);
+		scope.bySchoolId(schoolId);
 
 		const [courses, count] = await this._em.findAndCount(CourseEntity, scope.query);
 
 		return [courses, count];
 	}
 
-	public async findOne(courseId: EntityId, userId?: EntityId): Promise<CourseEntity> {
+	public async findOneForUser(courseId: EntityId, userId: EntityId, schoolId: EntityId): Promise<CourseEntity> {
 		const scope = new CourseScope();
 		scope.forCourseId(courseId);
-		if (userId) scope.forAllGroupTypes(userId);
+		scope.forAllGroupTypes(userId);
+		scope.bySchoolId(schoolId);
 
 		const course = await this._em.findOneOrFail(CourseEntity, scope.query);
 
 		return course;
 	}
 
-	public async removeUserReference(userId: EntityId): Promise<number> {
+	public async removeUserFromCourses(userId: EntityId, schoolId: EntityId): Promise<void> {
+		const [courses] = await this.findAllByUserId(userId, schoolId);
+		await this.removeUserReference(
+			userId,
+			courses.map((c) => c.id)
+		);
+	}
+
+	public async removeUserReference(userId: EntityId, courseIdsFilter?: EntityId[]): Promise<Counted<EntityId[]>> {
 		const id = new ObjectId(userId);
 
 		const teachersFiledName = getFieldName(this._em, 'teachers', CourseEntity.name);
 		const substitutionTeachersFieldName = getFieldName(this._em, 'substitutionTeachers', CourseEntity.name);
 		const studentsFieldName = getFieldName(this._em, 'students', CourseEntity.name);
 
-		const count = await this._em.nativeUpdate(
-			CourseEntity,
-			{
-				$or: [{ teachers: id }, { substitutionTeachers: id }, { students: id }],
-			},
-			{
-				$pull: { [teachersFiledName]: id, [substitutionTeachersFieldName]: id, [studentsFieldName]: id },
-			} as Partial<CourseEntity>
-		);
+		const query: Record<string, any> = {
+			$or: [{ teachers: id }, { substitutionTeachers: id }, { students: id }],
+		};
 
-		return count;
+		if (courseIdsFilter && courseIdsFilter.length > 0) {
+			query._id = { $in: courseIdsFilter.map((cid) => new ObjectId(cid)) };
+		}
+
+		const [courses] = await this._em.findAndCount(CourseEntity, query);
+
+		const count = await this._em.nativeUpdate(CourseEntity, query, {
+			$pull: { [teachersFiledName]: id, [substitutionTeachersFieldName]: id, [studentsFieldName]: id },
+		} as Partial<CourseEntity>);
+
+		const courseIds = courses.map((c) => c.id);
+		return [courseIds, count];
 	}
 }

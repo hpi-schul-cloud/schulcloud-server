@@ -1,11 +1,10 @@
-import { IdentityManagementService } from '@infra/identity-management/identity-management.service';
+import { IdentityManagementService } from '@infra/identity-management';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Inject, Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config/dist/config.service';
 import { EntityNotFoundError } from '@shared/common/error';
 import { Counted, EntityId } from '@shared/domain/types';
 import bcrypt from 'bcryptjs';
-import { AccountConfig } from '../../account-config';
+import { ACCOUNT_CONFIG_TOKEN, AccountConfig } from '../../account-config';
 import { Account, AccountSave } from '../do';
 import { ACCOUNT_REPO, AccountRepo } from '../interface';
 import { AbstractAccountService } from './account.service.abstract';
@@ -15,7 +14,7 @@ export class AccountServiceDb extends AbstractAccountService {
 	constructor(
 		@Inject(ACCOUNT_REPO) private readonly accountRepo: AccountRepo,
 		private readonly idmService: IdentityManagementService,
-		private readonly configService: ConfigService<AccountConfig, true>
+		@Inject(ACCOUNT_CONFIG_TOKEN) private readonly config: AccountConfig
 	) {
 		super();
 	}
@@ -154,7 +153,7 @@ export class AccountServiceDb extends AbstractAccountService {
 		if (id instanceof ObjectId || ObjectId.isValid(id)) {
 			return new ObjectId(id);
 		}
-		if (this.configService.get('FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED') === true) {
+		if (this.config.identityManagementStoreEnabled === true) {
 			const account = await this.idmService.findAccountById(id);
 			return new ObjectId(account.attDbcAccountId);
 		}

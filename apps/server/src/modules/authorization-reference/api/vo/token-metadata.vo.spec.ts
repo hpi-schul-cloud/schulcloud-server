@@ -1,6 +1,6 @@
 import { AuthorizableReferenceType } from '@modules/authorization';
 import { authorizationContextFactory } from '@modules/authorization/testing';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { TokenMetadata } from './token-metadata.vo';
 
 describe('TokenMetadata', () => {

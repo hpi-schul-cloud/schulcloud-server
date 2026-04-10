@@ -4,7 +4,7 @@ import { accountFactory } from '@modules/account/testing/account.factory';
 // eslint-disable-next-line @typescript-eslint/no-restricted-imports
 import type { SchoolEntity } from '@modules/school/repo';
 // eslint-disable-next-line @typescript-eslint/no-restricted-imports
-import type { User } from '@modules/user/repo';
+import { User, UserSchoolEmbeddable } from '@modules/user/repo';
 // eslint-disable-next-line @typescript-eslint/no-restricted-imports
 import { userFactory } from '@modules/user/testing';
 import type { LanguageType, Permission } from '@shared/domain/interface';
@@ -18,6 +18,8 @@ interface UserParams {
 	school?: SchoolEntity;
 	externalId?: string;
 	language?: LanguageType;
+	secondarySchools?: UserSchoolEmbeddable[];
+	discoverable?: boolean;
 }
 
 interface AccountParams {
@@ -29,11 +31,20 @@ export interface UserAndAccountParams extends UserParams, AccountParams {}
 
 export class UserAndAccountTestFactory {
 	private static getUserParams(params: UserAndAccountParams): UserParams {
-		const userParams = _.pick(params, 'firstName', 'lastName', 'email', 'school', 'externalId');
+		const userParams = _.pick(
+			params,
+			'firstName',
+			'lastName',
+			'email',
+			'school',
+			'externalId',
+			'secondarySchools',
+			'discoverable'
+		);
 		return userParams;
 	}
 
-	private static buildAccount(user: User, params: UserAndAccountParams = {}): AccountEntity {
+	public static buildAccount(user: User, params: UserAndAccountParams = {}): AccountEntity {
 		const accountParams = _.pick(params, 'username', 'systemId');
 		const account = accountFactory.withUser(user).buildWithId(accountParams);
 		return account;
@@ -66,6 +77,18 @@ export class UserAndAccountTestFactory {
 		return { teacherAccount: account, teacherUser: user };
 	}
 
+	public static buildExternalPerson(
+		params: UserAndAccountParams = {},
+		additionalPermissions: Permission[] = []
+	): { externalPersonAccount: AccountEntity; externalPersonUser: User } {
+		const user = userFactory
+			.asExternalPerson(additionalPermissions)
+			.buildWithId(UserAndAccountTestFactory.getUserParams(params));
+		const account = UserAndAccountTestFactory.buildAccount(user, params);
+
+		return { externalPersonAccount: account, externalPersonUser: user };
+	}
+
 	public static buildAdmin(
 		params: UserAndAccountParams = {},
 		additionalPermissions: Permission[] = []
@@ -91,7 +114,7 @@ export class UserAndAccountTestFactory {
 	}
 
 	public static buildByRole(
-		roleName: 'administrator' | 'teacher' | 'student',
+		roleName: 'administrator' | 'externalPerson' | 'teacherAndAdmin' | 'teacher' | 'student',
 		params: UserAndAccountParams = {},
 		additionalPermissions: Permission[] = []
 	): { account: AccountEntity; user: User } {
@@ -100,14 +123,30 @@ export class UserAndAccountTestFactory {
 		return { account, user };
 	}
 
+	public static buildTeacherAndAdmin(params: UserAndAccountParams = {}): {
+		account: AccountEntity;
+		user: User;
+	} {
+		const user = userFactory.asTeacherAndAdmin().buildWithId(UserAndAccountTestFactory.getUserParams(params));
+		const account = UserAndAccountTestFactory.buildAccount(user, params);
+
+		return { account, user };
+	}
+
 	private static buildUser(
-		roleName: 'administrator' | 'teacher' | 'student',
+		roleName: 'administrator' | 'externalPerson' | 'teacherAndAdmin' | 'teacher' | 'student',
 		params: UserAndAccountParams = {},
 		additionalPermissions: Permission[] = []
 	): User {
 		switch (roleName) {
 			case 'administrator':
 				return userFactory.asAdmin(additionalPermissions).buildWithId(UserAndAccountTestFactory.getUserParams(params));
+			case 'externalPerson':
+				return userFactory
+					.asExternalPerson(additionalPermissions)
+					.buildWithId(UserAndAccountTestFactory.getUserParams(params));
+			case 'teacherAndAdmin':
+				return userFactory.asTeacherAndAdmin().buildWithId(UserAndAccountTestFactory.getUserParams(params));
 			case 'teacher':
 				return userFactory
 					.asTeacher(additionalPermissions)

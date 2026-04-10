@@ -1,13 +1,18 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { ObjectId } from 'bson';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ObjectId } from '@mikro-orm/mongodb';
+import { Test, TestingModule } from '@nestjs/testing';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions } from '@shared/domain/interface';
-import { CreateDeletionBatchParams, DeletionBatchService, DeletionBatchSummary } from './deletion-batch.service';
-import { DeletionBatchRepo, DeletionBatchUsersRepo, UsersCountByRole } from '../../repo';
-import { DeletionRequestService } from './deletion-request.service';
+import { DeletionBatchRepo, DeletionBatchUsersRepo } from '../../repo';
 import { DeletionBatch, DeletionRequest } from '../do';
 import { BatchStatus, DomainName, StatusModel } from '../types';
+import {
+	CreateDeletionBatchParams,
+	DeletionBatchDetails,
+	DeletionBatchService,
+	DeletionBatchSummary,
+} from './deletion-batch.service';
+import { DeletionRequestService } from './deletion-request.service';
 
 describe('DeletionBatchService', () => {
 	let service: DeletionBatchService;
@@ -78,40 +83,47 @@ describe('DeletionBatchService', () => {
 				targetRefIds: [...validUserIds, ...invalidIds, ...skippedIds],
 			};
 
-			const newBatch = {
+			const newBatch: CreateDeletionBatchParams = {
 				name: params.name,
-				status: BatchStatus.CREATED,
 				targetRefDomain: params.targetRefDomain,
 				targetRefIds: validUserIds,
-				invalidIds,
-				skippedIds,
 			};
 
-			const expectedSummary = {
+			deletionBatchUsersRepo.groupUserIdsByAllowedRoles.mockResolvedValue({
+				withAllowedRole: validUserIds.map((id) => {
+					return { id, roleIds: validUserIds };
+				}),
+				withoutAllowedRole: skippedIds.map((id) => {
+					return { id, roleIds: skippedIds };
+				}),
+			});
+
+			const expectedSummary: DeletionBatchSummary = {
+				id: expect.any(String),
 				name: newBatch.name,
-				status: newBatch.status,
-				usersByRole: [{ roleName: 'xxx', userCount: 1 }],
-				invalidUsers: newBatch.invalidIds,
-				skippedUsersByRole: [{ roleName: 'xxx', userCount: 1 }],
+				status: BatchStatus.CREATED,
+				validUsers: validUserIds.length,
+				invalidUsers: invalidIds.length,
+				skippedUsers: skippedIds.length,
+				createdAt: expect.any(Date) as unknown as Date,
+				updatedAt: expect.any(Date) as unknown as Date,
 			};
-
-			deletionBatchUsersRepo.countUsersByRole.mockResolvedValue([{ roleName: 'xxx', userCount: 1 }]);
 
 			return { params, validUserIds, invalidIds, skippedIds, newBatch, expectedSummary };
 		};
 
 		it('should call repo to save a new deletion batch', async () => {
-			const { params, validUserIds, invalidIds, skippedIds, newBatch } = setup();
+			const { params, newBatch } = setup();
 
-			await service.createDeletionBatch(params, validUserIds, invalidIds, skippedIds);
+			await service.createDeletionBatch(params);
 
 			expect(deletionBatchRepo.save).toHaveBeenCalledWith(expect.objectContaining(newBatch));
 		});
 
 		it('should return a new deletion batch summary', async () => {
-			const { params, validUserIds, invalidIds, skippedIds, expectedSummary } = setup();
+			const { params, expectedSummary } = setup();
 
-			const result = await service.createDeletionBatch(params, validUserIds, invalidIds, skippedIds);
+			const result = await service.createDeletionBatch(params);
 
 			expect(result).toEqual(expect.objectContaining(expectedSummary));
 		});
@@ -152,8 +164,8 @@ describe('DeletionBatchService', () => {
 				status: BatchStatus.CREATED,
 				targetRefDomain: DomainName.USER,
 				targetRefIds: [new ObjectId().toHexString()],
-				invalidIds: [],
-				skippedIds: [],
+				invalidIds: [new ObjectId().toHexString()],
+				skippedIds: [new ObjectId().toHexString()],
 				createdAt: new Date(),
 				updatedAt: new Date(),
 			});
@@ -169,12 +181,13 @@ describe('DeletionBatchService', () => {
 
 			deletionBatchRepo.findById.mockResolvedValueOnce(batch);
 
-			deletionRequestService.findByStatusAndTargetRefId.mockResolvedValue(deletionRequests);
+			deletionRequestService.getStatusOfDeletionRequestBatch.mockResolvedValue({
+				pending: deletionRequests.map((r) => r.targetRefId),
+				failed: [],
+				success: [],
+			});
 
-			const skippedUsers = [{ roleName: 'student', userIds: [new ObjectId().toHexString()] }];
-			deletionBatchUsersRepo.getUsersByRole.mockResolvedValueOnce(skippedUsers);
-
-			return { batch, deletionRequests, skippedUsers };
+			return { batch, deletionRequests };
 		};
 
 		it('should call repo to find deletion batch', async () => {
@@ -185,50 +198,34 @@ describe('DeletionBatchService', () => {
 			expect(deletionBatchRepo.findById).toHaveBeenCalledWith(batch.id);
 		});
 
-		it('should call deletionRequestService findByStatusAndTargetRefId', async () => {
+		it('should call deletionRequestService getStatusOfDeletionRequestBatch', async () => {
 			const { batch } = setup();
 
 			await service.getDeletionBatchDetails(batch.id);
 
-			expect(deletionRequestService.findByStatusAndTargetRefId).toHaveBeenCalledTimes(3);
-
-			expect(deletionRequestService.findByStatusAndTargetRefId).toHaveBeenCalledWith(
-				StatusModel.PENDING,
-				batch.targetRefIds
-			);
-			expect(deletionRequestService.findByStatusAndTargetRefId).toHaveBeenCalledWith(
-				StatusModel.FAILED,
-				batch.targetRefIds
-			);
-			expect(deletionRequestService.findByStatusAndTargetRefId).toHaveBeenCalledWith(
-				StatusModel.SUCCESS,
-				batch.targetRefIds
-			);
-		});
-
-		it('should call deletionBatchUsersRepo getUsersByRole', async () => {
-			const { batch } = setup();
-
-			await service.getDeletionBatchDetails(batch.id);
-
-			expect(deletionBatchUsersRepo.getUsersByRole).toHaveBeenCalledWith(batch.skippedIds);
+			expect(deletionRequestService.getStatusOfDeletionRequestBatch).toHaveBeenCalledWith(batch.id);
 		});
 
 		it('should return deletion batch details', async () => {
-			const { batch } = setup();
+			const { batch, deletionRequests } = setup();
 
 			const result = await service.getDeletionBatchDetails(batch.id);
 
-			expect(result).toEqual(
-				expect.objectContaining({
-					id: batch.id,
-					pendingDeletions: expect.any(Array),
-					failedDeletions: expect.any(Array),
-					successfulDeletions: expect.any(Array),
-					invalidIds: expect.any(Array),
-					skippedUsersByRole: expect.any(Array),
-				})
-			);
+			const expectedDetails: DeletionBatchDetails = {
+				id: batch.id,
+				name: batch.name,
+				status: batch.status,
+				validUsers: batch.targetRefIds,
+				invalidUsers: batch.invalidIds,
+				skippedUsers: batch.skippedIds,
+				pendingDeletions: deletionRequests.map((r) => r.targetRefId),
+				failedDeletions: [],
+				successfulDeletions: [],
+				createdAt: batch.createdAt,
+				updatedAt: batch.updatedAt,
+			};
+
+			expect(result).toEqual(expect.objectContaining(expectedDetails));
 		});
 	});
 
@@ -248,16 +245,13 @@ describe('DeletionBatchService', () => {
 			const batches = [batch];
 			deletionBatchRepo.findDeletionBatches.mockResolvedValueOnce(new Page<DeletionBatch>(batches, 1));
 
-			const mockCount: UsersCountByRole[] = [{ roleName: 'xxx', userCount: 1 }];
-			deletionBatchUsersRepo.countUsersByRole.mockResolvedValue(mockCount);
-
 			const expectedSummary: DeletionBatchSummary = {
 				id: batch.id,
 				name: batch.name,
 				status: batch.status,
-				invalidUsers: batch.invalidIds,
-				usersByRole: mockCount,
-				skippedUsersByRole: mockCount,
+				validUsers: batch.targetRefIds.length,
+				invalidUsers: batch.invalidIds.length,
+				skippedUsers: batch.skippedIds.length,
 				createdAt: batch.createdAt,
 				updatedAt: batch.updatedAt,
 			};
@@ -290,7 +284,7 @@ describe('DeletionBatchService', () => {
 				targetRefIds: [new ObjectId().toHexString()],
 				invalidIds: [],
 				skippedIds: [],
-				createdAt: new Date(),
+				createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago,
 				updatedAt: new Date(),
 			});
 			deletionBatchRepo.findById.mockResolvedValueOnce(batch);
@@ -301,15 +295,18 @@ describe('DeletionBatchService', () => {
 				deletionPlannedAt: new Date(),
 			});
 
-			deletionBatchUsersRepo.countUsersByRole.mockResolvedValue([{ roleName: 'xxx', userCount: 1 }]);
+			deletionBatchUsersRepo.groupUserIdsByAllowedRoles.mockResolvedValue({
+				withAllowedRole: [{ id: batch.targetRefIds[0], roleIds: [new ObjectId().toHexString()] }],
+				withoutAllowedRole: [],
+			});
 
 			const expectedSummary: DeletionBatchSummary = {
 				id: batch.id,
 				name: batch.name,
-				status: batch.status,
-				invalidUsers: batch.invalidIds,
-				usersByRole: [{ roleName: 'xxx', userCount: 1 }],
-				skippedUsersByRole: [{ roleName: 'xxx', userCount: 1 }],
+				status: BatchStatus.DELETION_REQUESTED,
+				validUsers: batch.targetRefIds.length,
+				invalidUsers: batch.invalidIds.length,
+				skippedUsers: batch.skippedIds.length,
 				createdAt: batch.createdAt,
 				updatedAt: batch.updatedAt,
 			};
@@ -320,27 +317,46 @@ describe('DeletionBatchService', () => {
 		it('should call deletionRequestService', async () => {
 			const { batch } = setup();
 
-			await service.requestDeletionForBatch(batch, new Date());
+			await service.requestDeletionForBatch(batch.id, new Date());
 
-			expect(deletionRequestService.createDeletionRequestBatch).toHaveBeenCalledWith(
+			expect(deletionRequestService.createMultipleDeletionRequests).toHaveBeenCalledWith(
+				batch.id,
 				batch.targetRefIds,
 				batch.targetRefDomain,
 				expect.any(Date)
 			);
 		});
 
-		it('should call repo to update status', async () => {
+		describe('when batch is older than 60 minutes', () => {
+			it('should revalidate user ids and update batch', async () => {
+				const { batch } = setup();
+
+				const updateSpy = jest.spyOn(batch, 'updateIds');
+
+				await service.requestDeletionForBatch(batch.id, new Date());
+
+				expect(updateSpy).toHaveBeenCalledWith({
+					targetRefIds: expect.any(Array),
+					invalidIds: expect.any(Array),
+					skippedIds: expect.any(Array),
+				});
+
+				expect(deletionBatchRepo.save).toHaveBeenCalledWith(batch);
+			});
+		});
+
+		it('should call repo to update batch', async () => {
 			const { batch } = setup();
 
-			await service.requestDeletionForBatch(batch, new Date());
+			await service.requestDeletionForBatch(batch.id, new Date());
 
-			expect(deletionBatchRepo.updateStatus).toHaveBeenCalledWith(batch, BatchStatus.DELETION_REQUESTED);
+			expect(deletionBatchRepo.save).toHaveBeenCalledWith(batch);
 		});
 
 		it('should return summary', async () => {
 			const { batch, expectedSummary } = setup();
 
-			const result = await service.requestDeletionForBatch(batch, new Date());
+			const result = await service.requestDeletionForBatch(batch.id, new Date());
 
 			expect(result).toEqual(expectedSummary);
 		});

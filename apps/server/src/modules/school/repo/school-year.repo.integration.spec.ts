@@ -59,7 +59,7 @@ describe('schoolyear repo', () => {
 						endDate: new Date('2024-07-31'),
 					});
 
-					await em.persistAndFlush(schoolYear);
+					await em.persist(schoolYear).flush();
 					em.clear();
 
 					return { schoolYear };
@@ -84,7 +84,7 @@ describe('schoolyear repo', () => {
 						endDate: new Date('2024-07-31'),
 					});
 
-					await em.persistAndFlush(schoolYear);
+					await em.persist(schoolYear).flush();
 					em.clear();
 
 					return { schoolYear };
@@ -111,7 +111,7 @@ describe('schoolyear repo', () => {
 					endDate: new Date('2021-07-31'),
 				});
 
-				await em.persistAndFlush(schoolYear);
+				await em.persist(schoolYear).flush();
 				em.clear();
 
 				return { schoolYear };
@@ -149,7 +149,7 @@ describe('schoolyear repo', () => {
 					endDate: new Date('2022-07-31'),
 				});
 
-				await em.persistAndFlush([previousYear, currentYear, nextYear]);
+				await em.persist([previousYear, currentYear, nextYear]).flush();
 				em.clear();
 
 				return { previousYear, currentYear, nextYear };
@@ -180,7 +180,7 @@ describe('schoolyear repo', () => {
 					endDate: new Date('2021-07-31'),
 				});
 
-				await em.persistAndFlush([previousYear, nextYear]);
+				await em.persist([previousYear, nextYear]).flush();
 				em.clear();
 
 				return { previousYear, nextYear };
@@ -211,7 +211,7 @@ describe('schoolyear repo', () => {
 					endDate: new Date('2021-07-31'),
 				});
 
-				await em.persistAndFlush([previousYear, nextYear]);
+				await em.persist([previousYear, nextYear]).flush();
 				em.clear();
 
 				return { previousYear, nextYear };
@@ -230,7 +230,7 @@ describe('schoolyear repo', () => {
 	describe('getAllSchoolYears', () => {
 		const setup = async () => {
 			const entities = schoolYearEntityFactory.buildList(3);
-			await em.persistAndFlush(entities);
+			await em.persist(entities).flush();
 			em.clear();
 			const schools = entities.map((entity) => SchoolYearEntityMapper.mapToDo(entity));
 

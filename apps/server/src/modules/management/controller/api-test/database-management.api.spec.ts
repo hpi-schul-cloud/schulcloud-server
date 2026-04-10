@@ -1,4 +1,3 @@
-import { faker } from '@faker-js/faker/locale/af_ZA';
 import { createMock } from '@golevelup/ts-jest';
 import { FeathersServiceProvider } from '@infra/feathers';
 import { MikroORM } from '@mikro-orm/core';
@@ -79,15 +78,20 @@ describe('Database Management Controller (API)', () => {
 			expect(result.status).toEqual(201);
 		});
 		it('should encrypt plain text', async () => {
-			const txt = faker.string.alphanumeric(42);
+			const plainText = 'somePlainText';
+			const key = 'someKey';
+			const body = { plainText, key };
+
 			const result = await request(app.getHttpServer())
 				.post(`/management/database/encrypt-plain-text`)
-				.set('content-type', 'text/plain')
-				.set('content-length', Buffer.byteLength(txt).toString())
-				.send(txt);
+				.set('content-type', 'application/json')
+				.send(body);
 
 			expect(result.status).toEqual(200);
-			expect(result.text).not.toHaveLength(0);
+			// If the test fails because the encryption algorithm has been changed,
+			// do not forget to migrate encrypted values from the database accordingly!
+			// We can't test for a specific value, because the encryption is non-deterministic.
+			expect(result.text).toHaveLength(60);
 		});
 	});
 });

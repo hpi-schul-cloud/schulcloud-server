@@ -1,9 +1,10 @@
+import { LegacyLogger } from '@core/logger';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { InternalCollaborativeStorageAdapterConfig } from '@infra/collaborative-storage/collaborative-storage-adapter.config';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { HttpService } from '@nestjs/axios';
 import { NotFoundException, NotImplementedException, UnprocessableEntityException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LegacyLogger } from '@core/logger';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
 import { AxiosResponse } from 'axios';
 import { Observable, of } from 'rxjs';
@@ -78,11 +79,6 @@ describe('NextCloud Adapter Strategy', () => {
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
-				NextcloudClientSpec,
-				{
-					provide: 'oidcInternalName',
-					useValue: prefix,
-				},
 				{
 					provide: HttpService,
 					useValue: createMock<HttpService>(),
@@ -93,9 +89,12 @@ describe('NextCloud Adapter Strategy', () => {
 				},
 			],
 		}).compile();
-		client = module.get(NextcloudClientSpec);
-		httpService = module.get(HttpService);
+
 		logger = module.get(LegacyLogger);
+		httpService = module.get(HttpService);
+		const config = { oidcInternalName: prefix } as InternalCollaborativeStorageAdapterConfig;
+
+		client = new NextcloudClientSpec(logger, httpService, config);
 	});
 
 	afterEach(() => {

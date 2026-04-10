@@ -51,7 +51,7 @@ describe(FilesRepo.name, () => {
 		it('should return files marked for deletion according to given params', async () => {
 			const file: FileEntity = fileEntityFactory.build({ deletedAt: new Date() });
 
-			await em.persistAndFlush(file);
+			await em.persist(file).flush();
 			em.clear();
 
 			const thresholdDate = new Date();
@@ -65,7 +65,7 @@ describe(FilesRepo.name, () => {
 		it('should not return files which are not marked for deletion', async () => {
 			const file = fileEntityFactory.build({ deletedAt: undefined });
 
-			await em.persistAndFlush(file);
+			await em.persist(file).flush();
 			em.clear();
 
 			const thresholdDate = new Date();
@@ -78,7 +78,7 @@ describe(FilesRepo.name, () => {
 			const thresholdDate = new Date();
 			const file = fileEntityFactory.build({ deletedAt: new Date(thresholdDate.getTime() + 10) });
 
-			await em.persistAndFlush(file);
+			await em.persist(file).flush();
 			em.clear();
 
 			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -113,7 +113,7 @@ describe(FilesRepo.name, () => {
 					],
 				});
 
-				await em.persistAndFlush([mainUserSharedFile, mainUserFile]);
+				await em.persist([mainUserSharedFile, mainUserFile]).flush();
 				em.clear();
 
 				const expectedMainUserFileProps = {
@@ -206,7 +206,7 @@ describe(FilesRepo.name, () => {
 
 			describe('when there are no files that match this criteria', () => {
 				it('should return an empty array', async () => {
-					await em.persistAndFlush([fileEntityFactory.build(), fileEntityFactory.build(), fileEntityFactory.build()]);
+					await em.persist([fileEntityFactory.build(), fileEntityFactory.build(), fileEntityFactory.build()]).flush();
 
 					em.clear();
 
@@ -274,13 +274,15 @@ describe(FilesRepo.name, () => {
 					permissions: [filePermissionEntityFactory.build({ refId: mainUserId })],
 				});
 
-				await em.persistAndFlush([
-					otherUserFileWithMainUserCreator,
-					mainUserSharedFile,
-					otherUserSharedFile,
-					mainUserFile,
-					otherUserFile,
-				]);
+				await em
+					.persist([
+						otherUserFileWithMainUserCreator,
+						mainUserSharedFile,
+						otherUserSharedFile,
+						mainUserFile,
+						otherUserFile,
+					])
+					.flush();
 				em.clear();
 
 				const expectedOtherUserFileWithMainUserCreatorProps = {
@@ -433,7 +435,7 @@ describe(FilesRepo.name, () => {
 
 			describe('when there are no files that match this criteria', () => {
 				it('should return an empty array', async () => {
-					await em.persistAndFlush([fileEntityFactory.build(), fileEntityFactory.build(), fileEntityFactory.build()]);
+					await em.persist([fileEntityFactory.build(), fileEntityFactory.build(), fileEntityFactory.build()]).flush();
 					em.clear();
 
 					const results = await repo.findByPermissionRefIdOrCreatorId(new ObjectId().toHexString());
@@ -470,7 +472,7 @@ describe(FilesRepo.name, () => {
 					],
 				});
 
-				await em.persistAndFlush([otherUserSharedFile]);
+				await em.persist([otherUserSharedFile]).flush();
 				em.clear();
 
 				const expectedOtherUserSharedFileProps = {

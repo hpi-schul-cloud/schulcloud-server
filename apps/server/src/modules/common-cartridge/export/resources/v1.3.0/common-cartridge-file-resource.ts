@@ -1,3 +1,4 @@
+import { PassThrough, Stream } from 'stream';
 import {
 	CommonCartridgeElementType,
 	CommonCartridgeResourceType,
@@ -5,6 +6,7 @@ import {
 } from '../../common-cartridge.enums';
 import { ElementTypeNotSupportedLoggableException } from '../../errors';
 import { CommonCartridgeResource, XmlObject } from '../../interfaces';
+import { ResourceFileContent } from '../../interfaces/common-cartridge-resource.interface';
 import { createIdentifier } from '../../utils';
 
 export type CommonCartridgeFileResourcePropsV130 = {
@@ -13,7 +15,7 @@ export type CommonCartridgeFileResourcePropsV130 = {
 	identifier: string;
 	folder: string;
 	fileName: string;
-	fileContent: Buffer;
+	file: Stream;
 	title: string;
 };
 
@@ -26,12 +28,11 @@ export class CommonCartridgeFileResourceV130 extends CommonCartridgeResource {
 		return CommonCartridgeVersion.V_1_3_0;
 	}
 
-	public getFilePath(): string {
-		return `${this.props.folder}/${this.props.fileName}`;
-	}
-
-	public getFileContent(): Buffer {
-		return this.props.fileContent;
+	public getFileContent(): ResourceFileContent {
+		return {
+			path: this.getFilePath(),
+			content: this.props.file.pipe(new PassThrough()),
+		};
 	}
 
 	public getManifestXmlObject(elementType: CommonCartridgeElementType): XmlObject {
@@ -43,6 +44,10 @@ export class CommonCartridgeFileResourceV130 extends CommonCartridgeResource {
 			default:
 				throw new ElementTypeNotSupportedLoggableException(elementType);
 		}
+	}
+
+	private getFilePath(): string {
+		return `${this.props.folder}/${this.props.fileName}`;
 	}
 
 	private getManifestOrganizationXmlObject(): XmlObject {

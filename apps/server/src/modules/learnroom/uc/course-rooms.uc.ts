@@ -5,7 +5,7 @@ import { EntityId } from '@shared/domain/types';
 import { LockedCourseLoggableException } from '../loggable';
 import { LegacyBoardRepo } from '../repo';
 import { CourseRoomsService } from '../service/course-rooms.service';
-import { RoomBoardDTO } from '../types';
+import { isColumnBoard, RoomBoardDTO } from '../types';
 import { CourseRoomsAuthorisationService } from './course-rooms.authorisation.service';
 import { RoomBoardDTOFactory } from './room-board-dto.factory';
 
@@ -23,7 +23,7 @@ export class CourseRoomsUc {
 	public async getBoard(roomId: EntityId, userId: EntityId): Promise<RoomBoardDTO> {
 		const user = await this.userService.getUserEntityWithRoles(userId);
 		// TODO no authorisation check here?
-		const course = await this.courseService.findOneForUser(roomId, userId);
+		const course = await this.courseService.findOneForUser(roomId, userId, user.school.id);
 
 		const { isLocked } = course.getMetadata();
 		if (isLocked) {
@@ -46,17 +46,22 @@ export class CourseRoomsUc {
 		visibility: boolean
 	): Promise<void> {
 		const user = await this.userService.getUserEntityWithRoles(userId);
-		const course = await this.courseService.findOneForUser(roomId, userId);
+		const course = await this.courseService.findOneForUser(roomId, userId, user.school.id);
 
 		if (!this.authorisationService.hasCourseWritePermission(user, course)) {
 			throw new ForbiddenException('you are not allowed to edit this');
 		}
 		const legacyBoard = await this.legacyBoardRepo.findByCourseId(course.id);
 		const element = legacyBoard.getByTargetId(elementId);
-		if (visibility) {
-			element.publish();
+
+		if (isColumnBoard(element)) {
+			(element as { isVisible: boolean }).isVisible = visibility;
 		} else {
-			element.unpublish();
+			if (visibility) {
+				element.publish();
+			} else {
+				element.unpublish();
+			}
 		}
 
 		await this.legacyBoardRepo.save(legacyBoard);
@@ -76,7 +81,7 @@ export class CourseRoomsUc {
 */
 	public async reorderBoardElements(roomId: EntityId, userId: EntityId, orderedList: EntityId[]): Promise<void> {
 		const user = await this.userService.getUserEntityWithRoles(userId);
-		const course = await this.courseService.findOneForUser(roomId, userId);
+		const course = await this.courseService.findOneForUser(roomId, userId, user.school.id);
 
 		if (!this.authorisationService.hasCourseWritePermission(user, course)) {
 			throw new ForbiddenException('you are not allowed to edit this');

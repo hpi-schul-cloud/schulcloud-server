@@ -7,7 +7,7 @@ import { taskFactory } from '@modules/task/testing';
 import { User } from '@modules/user/repo';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { MetaDataEntityType } from '../../types';
 import { TaskUrlHandler } from './task-url-handler';
 

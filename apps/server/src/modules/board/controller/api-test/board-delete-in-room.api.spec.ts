@@ -14,6 +14,7 @@ import { TestApiClient } from '@testing/test-api-client';
 import { BoardExternalReferenceType } from '../../domain';
 import { BoardNodeEntity } from '../../repo';
 import { columnBoardEntityFactory, columnEntityFactory } from '../../testing';
+import { schoolEntityFactory } from '@modules/school/testing';
 
 const baseRouteName = '/boards';
 
@@ -42,49 +43,61 @@ describe(`board delete in room (api)`, () => {
 	});
 
 	const setup = async () => {
-		const userWithEditRole = userFactory.buildWithId();
+		const school = schoolEntityFactory.buildWithId();
+
+		const userWithOwnerRole = userFactory.buildWithId({ school });
+
+		const userWithEditRole = userFactory.buildWithId({ school });
 		const accountWithEditRole = accountFactory.withUser(userWithEditRole).build();
 
-		const userWithViewRole = userFactory.buildWithId();
+		const userWithViewRole = userFactory.buildWithId({ school });
 		const accountWithViewRole = accountFactory.withUser(userWithViewRole).build();
 
-		const noAccessUser = userFactory.buildWithId();
+		const noAccessUser = userFactory.buildWithId({ school });
 		const noAccessAccount = accountFactory.withUser(noAccessUser).build();
 
-		const { roomEditorRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
+		const { roomEditorRole, roomViewerRole, roomOwnerRole } = RoomRolesTestFactory.createRoomRoles();
 
 		const userGroup = groupEntityFactory.buildWithId({
 			type: GroupEntityTypes.ROOM,
 			users: [
+				{ user: userWithOwnerRole, role: roomOwnerRole },
 				{ user: userWithEditRole, role: roomEditorRole },
 				{ user: userWithViewRole, role: roomViewerRole },
 			],
+			organization: school,
 		});
 
-		const room = roomEntityFactory.buildWithId();
+		const room = roomEntityFactory.buildWithId({ schoolId: school.id });
 
-		const roomMembership = roomMembershipEntityFactory.build({ roomId: room.id, userGroupId: userGroup.id });
+		const roomMembership = roomMembershipEntityFactory.build({
+			roomId: room.id,
+			userGroupId: userGroup.id,
+			schoolId: school.id,
+		});
 
-		await em.persistAndFlush([
-			accountWithEditRole,
-			accountWithViewRole,
-			noAccessAccount,
-			userWithEditRole,
-			userWithViewRole,
-			noAccessUser,
-			roomEditorRole,
-			roomViewerRole,
-			userGroup,
-			room,
-			roomMembership,
-		]);
+		await em
+			.persist([
+				accountWithEditRole,
+				accountWithViewRole,
+				noAccessAccount,
+				userWithEditRole,
+				userWithViewRole,
+				noAccessUser,
+				roomEditorRole,
+				roomViewerRole,
+				userGroup,
+				room,
+				roomMembership,
+			])
+			.flush();
 
 		const columnBoardNode = columnBoardEntityFactory.build({
 			context: { id: room.id, type: BoardExternalReferenceType.Room },
 		});
 		const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
 
-		await em.persistAndFlush([columnBoardNode, columnNode]);
+		await em.persist([columnBoardNode, columnNode]).flush();
 		em.clear();
 
 		return { accountWithEditRole, accountWithViewRole, noAccessAccount, columnBoardNode, columnNode };
@@ -119,6 +132,23 @@ describe(`board delete in room (api)`, () => {
 			await loggedInClient.delete(columnBoardNode.id);
 
 			await expect(em.findOneOrFail(BoardNodeEntity, columnNode.id)).rejects.toThrow();
+		});
+
+		it('should remove the board from the room content', async () => {
+			const { accountWithEditRole, columnBoardNode } = await setup();
+
+			const loggedInClient = await testApiClient.login(accountWithEditRole);
+
+			await loggedInClient.delete(columnBoardNode.id);
+
+			// wait for event bus
+			await new Promise((resolve) => setTimeout(resolve, 50));
+
+			const roomContent = await em.findOneOrFail('RoomContentEntity', {
+				roomId: columnBoardNode.context?.id,
+			});
+
+			expect(roomContent['items']).toHaveLength(0);
 		});
 	});
 

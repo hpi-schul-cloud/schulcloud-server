@@ -7,6 +7,8 @@ const RoleModel = require('../../../../src/services/role/model');
 // const { submissionModel } = require('../../../../src/services/homework/model');
 const { courseModel } = require('../../../../src/services/user-group/model');
 
+const appPromise = require('../../../../src/app');
+
 const {
 	canWrite,
 	canRead,
@@ -22,10 +24,12 @@ chai.use(chaiAsPromised);
 describe('filePermissionHelper', () => {
 	describe('checkPermissions function should', () => {
 		before(async () => {
+			app = await appPromise();
+			server = await app.listen(0);
+
 			const promises = [
 				FileModel.create(fixtures.files),
 				userModel.create(fixtures.users),
-				RoleModel.create(fixtures.roles),
 				courseModel.create(fixtures.courses),
 			];
 
@@ -34,10 +38,10 @@ describe('filePermissionHelper', () => {
 
 		after(async () => {
 			const promises = [
-				...fixtures.files.map((_) => FileModel.findByIdAndRemove(_._id).exec()),
-				...fixtures.users.map((_) => userModel.findByIdAndRemove(_._id).exec()),
-				...fixtures.roles.map((_) => RoleModel.findByIdAndRemove(_._id).exec()),
-				...fixtures.courses.map((_) => courseModel.findByIdAndRemove(_._id).exec()),
+				...fixtures.files.map((_) => FileModel.findByIdAndDelete(_._id).exec()),
+				...fixtures.users.map((_) => userModel.findByIdAndDelete(_._id).exec()),
+				...fixtures.roles.map((_) => RoleModel.findByIdAndDelete(_._id).exec()),
+				...fixtures.courses.map((_) => courseModel.findByIdAndDelete(_._id).exec()),
 			];
 
 			await Promise.all(promises);

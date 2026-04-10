@@ -1,5 +1,5 @@
 import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import { Controller, Get, Param, Patch, Query } from '@nestjs/common';
 import {
 	ApiForbiddenResponse,
 	ApiFoundResponse,
@@ -17,13 +17,13 @@ import {
 	ContextExternalToolConfigurationTemplateResponse,
 	ContextExternalToolIdParams,
 	ContextRefParams,
+	PreferredToolListResponse,
 	SchoolExternalToolConfigurationTemplateListResponse,
 	SchoolExternalToolConfigurationTemplateResponse,
 	SchoolExternalToolIdParams,
 	SchoolIdParams,
-	ToolContextTypesListResponse,
-	PreferredToolListResponse,
 	ToolContextTypeParams,
+	ToolContextTypesListResponse,
 } from './dto';
 
 @ApiTags('Tool')
@@ -164,5 +164,16 @@ export class ToolConfigurationController {
 			ToolConfigurationMapper.mapToContextExternalToolConfigurationTemplateResponse(tool);
 
 		return mapped;
+	}
+
+	@Patch('/add-and-activate-for-all-schools/:contextExternalToolId')
+	public async addAndActivateToolForAllSchools(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() params: ContextExternalToolIdParams
+	): Promise<void> {
+		await this.externalToolConfigurationUc.addAndActivateToolForAllSchools(
+			currentUser.userId,
+			params.contextExternalToolId
+		);
 	}
 }

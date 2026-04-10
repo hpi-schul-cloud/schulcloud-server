@@ -99,7 +99,6 @@ const seedSchools: SeedSchoolProperties[] = [
 			},
 		},
 		features: [
-			SchoolFeature.ROCKET_CHAT,
 			SchoolFeature.LDAP_UNIVENTION_MIGRATION,
 			SchoolFeature.VIDEOCONFERENCE,
 			SchoolFeature.OAUTH_PROVISIONING_ENABLED,
@@ -121,8 +120,8 @@ const seedSchools: SeedSchoolProperties[] = [
 		systems: [],
 		fileStorageType: FileStorageType.AWS_S3,
 		currentYear: SeedSchoolYearEnum['2022/23'],
-		purpose: SchoolPurpose.EXPERT,
-		features: [SchoolFeature.ROCKET_CHAT, SchoolFeature.VIDEOCONFERENCE, SchoolFeature.OAUTH_PROVISIONING_ENABLED],
+		purpose: SchoolPurpose.EXTERNAL_PERSON_SCHOOL,
+		features: [SchoolFeature.VIDEOCONFERENCE, SchoolFeature.OAUTH_PROVISIONING_ENABLED],
 	},
 	{
 		id: '5fa2c5ccb229544f2c69666c',
@@ -140,12 +139,8 @@ const seedSchools: SeedSchoolProperties[] = [
 		fileStorageType: FileStorageType.AWS_S3,
 		currentYear: SeedSchoolYearEnum['2022/23'],
 		purpose: SchoolPurpose.DEMO,
-		permissions: {
-			student: {
-				LERNSTORE_VIEW: true,
-			},
-		},
-		features: [SchoolFeature.ROCKET_CHAT, SchoolFeature.STUDENTVISIBILITY, SchoolFeature.OAUTH_PROVISIONING_ENABLED],
+		permissions: {},
+		features: [SchoolFeature.STUDENTVISIBILITY, SchoolFeature.OAUTH_PROVISIONING_ENABLED],
 		documentBaseDirType: '',
 		experimental: false,
 		pilot: false,
@@ -169,12 +164,8 @@ const seedSchools: SeedSchoolProperties[] = [
 		fileStorageType: FileStorageType.AWS_S3,
 		currentYear: SeedSchoolYearEnum['2022/23'],
 		purpose: SchoolPurpose.DEMO,
-		permissions: {
-			student: {
-				LERNSTORE_VIEW: true,
-			},
-		},
-		features: [SchoolFeature.ROCKET_CHAT, SchoolFeature.OAUTH_PROVISIONING_ENABLED],
+		permissions: {},
+		features: [SchoolFeature.OAUTH_PROVISIONING_ENABLED],
 		documentBaseDirType: '',
 		experimental: false,
 		pilot: false,
@@ -193,12 +184,8 @@ const seedSchools: SeedSchoolProperties[] = [
 		fileStorageType: FileStorageType.AWS_S3,
 		currentYear: SeedSchoolYearEnum['2022/23'],
 		purpose: SchoolPurpose.DEMO,
-		permissions: {
-			student: {
-				LERNSTORE_VIEW: true,
-			},
-		},
-		features: [SchoolFeature.ROCKET_CHAT, SchoolFeature.STUDENTVISIBILITY, SchoolFeature.OAUTH_PROVISIONING_ENABLED],
+		permissions: {},
+		features: [SchoolFeature.STUDENTVISIBILITY, SchoolFeature.OAUTH_PROVISIONING_ENABLED],
 		documentBaseDirType: '',
 		experimental: false,
 		pilot: false,

@@ -1,10 +1,14 @@
+import { Logger } from '@core/logger';
 import { faker } from '@faker-js/faker';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import archiver from 'archiver';
 import {
 	createCommonCartridgeMetadataElementProps,
 	createCommonCartridgeOrganizationProps,
 } from '../../testing/common-cartridge-element-props.factory';
 import {
 	createCommonCartridgeFileProps,
+	createCommonCartridgeFileFolderResourcePropsV130,
 	createCommonCartridgeWebLinkResourceProps,
 } from '../../testing/common-cartridge-resource-props.factory';
 import { CommonCartridgeVersion } from '../common-cartridge.enums';
@@ -15,14 +19,18 @@ import { CommonCartridgeOrganizationNode } from './common-cartridge-organization
 
 describe('CommonCartridgeFileBuilder', () => {
 	let sut: CommonCartridgeFileBuilder;
+	let archive: DeepMocked<archiver.Archiver>;
+	let logger: DeepMocked<Logger>;
 
 	const builderProps: CommonCartridgeFileBuilderProps = {
-		version: CommonCartridgeVersion.V_1_1_0,
+		version: CommonCartridgeVersion.V_1_3_0,
 		identifier: faker.string.uuid(),
 	};
 
 	beforeEach(() => {
-		sut = new CommonCartridgeFileBuilder(builderProps);
+		archive = createMock<archiver.Archiver>();
+		logger = createMock<Logger>();
+		sut = new CommonCartridgeFileBuilder(builderProps, archive, logger);
 		jest.clearAllMocks();
 	});
 
@@ -78,12 +86,13 @@ describe('CommonCartridgeFileBuilder', () => {
 				const organizationProps = createCommonCartridgeOrganizationProps();
 				const webLinkProps = createCommonCartridgeWebLinkResourceProps();
 				const fileProps = createCommonCartridgeFileProps();
+				const fileFolderProps = createCommonCartridgeFileFolderResourcePropsV130();
 
-				return { metadataProps, organizationProps, webLinkProps, fileProps };
+				return { metadataProps, organizationProps, webLinkProps, fileProps, fileFolderProps };
 			};
 
 			it('should build the common cartridge file', () => {
-				const { metadataProps, organizationProps, webLinkProps, fileProps } = setup();
+				const { metadataProps, organizationProps, webLinkProps, fileProps, fileFolderProps } = setup();
 
 				sut.addMetadata(metadataProps);
 
@@ -91,10 +100,12 @@ describe('CommonCartridgeFileBuilder', () => {
 
 				org.addResource(webLinkProps);
 				org.addResource(fileProps);
+				org.addResource(fileFolderProps);
 
-				const result = sut.build();
+				expect(() => sut.build()).not.toThrow();
 
-				expect(result).toBeDefined();
+				expect(archive.append).toHaveBeenCalledTimes(4);
+				expect(archive.finalize).toHaveBeenCalled();
 			});
 		});
 	});

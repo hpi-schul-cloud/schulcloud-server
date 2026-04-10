@@ -9,7 +9,6 @@ const rolesDisplayName = {
 	student: 'Schüler',
 	administrator: 'Administrator',
 	superhero: 'Schul-Cloud Admin',
-	helpdesk: 'Helpdesk',
 	betaTeacher: 'Beta',
 	expert: 'Experte',
 };
@@ -33,7 +32,7 @@ const roleSchema = new Schema(
 // https://mongoosejs.com/docs/middleware.html
 const mongooseOperationsForClearCache = [
 	'findOneAndDelete',
-	'findOneAndRemove',
+	'findOneAndDelete',
 	'findOneAndUpdate',
 	'deleteMany',
 	'deleteOne',

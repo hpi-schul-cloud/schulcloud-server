@@ -11,48 +11,62 @@ import { BaseFactory } from '@testing/factory/base.factory';
 import { CourseNews, NewsProperties, SchoolNews, TeamNews } from '../repo';
 
 export const schoolNewsFactory = BaseFactory.define<SchoolNews, NewsProperties>(SchoolNews, ({ sequence }) => {
+	const school = schoolEntityFactory.buildWithId();
+	const user = userFactory.buildWithId({ school });
+
 	return {
 		title: `news ${sequence}`,
 		content: `content of news ${sequence}`,
 		displayAt: new Date(),
-		school: schoolEntityFactory.build(),
-		creator: userFactory.build(),
-		target: schoolEntityFactory.build(),
+		school,
+		creator: user,
+		target: school.id,
 	};
 });
 
 export const courseNewsFactory = BaseFactory.define<CourseNews, NewsProperties>(CourseNews, ({ sequence }) => {
+	const school = schoolEntityFactory.buildWithId();
+	const user = userFactory.buildWithId({ school });
+	const course = courseEntityFactory.buildWithId({ school });
+
 	return {
 		title: `news ${sequence}`,
 		content: `content of news ${sequence}`,
 		displayAt: new Date(),
-		school: schoolEntityFactory.build(),
-		creator: userFactory.build(),
-		target: courseEntityFactory.build(),
+		school,
+		creator: user,
+		target: course.id,
 	};
 });
 
 export const teamNewsFactory = BaseFactory.define<TeamNews, NewsProperties>(TeamNews, ({ sequence }) => {
+	const school = schoolEntityFactory.buildWithId();
+	const user = userFactory.buildWithId({ school });
+	const team = teamFactory.buildWithId();
+
 	return {
 		title: `news ${sequence}`,
 		content: `content of news ${sequence}`,
 		displayAt: new Date(),
-		school: schoolEntityFactory.build(),
-		creator: userFactory.build(),
-		target: teamFactory.build(),
+		school,
+		creator: user,
+		target: team.id,
 	};
 });
 
 export const schoolUnpublishedNewsFactory = BaseFactory.define<SchoolNews, NewsProperties>(
 	SchoolNews,
 	({ sequence }) => {
+		const school = schoolEntityFactory.buildWithId();
+		const user = userFactory.buildWithId({ school });
+
 		return {
 			title: `news ${sequence}`,
 			content: `content of news ${sequence}`,
 			displayAt: new Date(Date.now() + 86400000),
-			school: schoolEntityFactory.build(),
-			creator: userFactory.build(),
-			target: schoolEntityFactory.build(),
+			school,
+			creator: user,
+			target: school.id,
 		};
 	}
 );
@@ -60,24 +74,32 @@ export const schoolUnpublishedNewsFactory = BaseFactory.define<SchoolNews, NewsP
 export const courseUnpublishedNewsFactory = BaseFactory.define<CourseNews, NewsProperties>(
 	CourseNews,
 	({ sequence }) => {
+		const school = schoolEntityFactory.buildWithId();
+		const user = userFactory.buildWithId({ school });
+		const course = courseEntityFactory.buildWithId({ school });
+
 		return {
 			title: `news ${sequence}`,
 			content: `content of news ${sequence}`,
 			displayAt: new Date(Date.now() + 86400000),
-			school: schoolEntityFactory.build(),
-			creator: userFactory.build(),
-			target: courseEntityFactory.build(),
+			school,
+			creator: user,
+			target: course.id,
 		};
 	}
 );
 
 export const teamUnpublishedNewsFactory = BaseFactory.define<TeamNews, NewsProperties>(TeamNews, ({ sequence }) => {
+	const school = schoolEntityFactory.buildWithId();
+	const user = userFactory.buildWithId({ school });
+	const team = teamFactory.buildWithId();
+
 	return {
 		title: `news ${sequence}`,
 		content: `content of news ${sequence}`,
 		displayAt: new Date(Date.now() + 86400000),
-		school: schoolEntityFactory.build(),
-		creator: userFactory.build(),
-		target: teamFactory.build(),
+		school,
+		creator: user,
+		target: team.id,
 	};
 });

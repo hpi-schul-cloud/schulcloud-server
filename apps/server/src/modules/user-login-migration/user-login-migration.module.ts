@@ -13,9 +13,21 @@ import {
 	UserMigrationService,
 } from './domain/service';
 import { UserLoginMigrationRepo } from './repo';
+import {
+	USER_LOGIN_MIGRATION_PUBLIC_API_CONFIG_TOKEN,
+	UserLoginMigrationPublicApiConfig,
+} from './user-login-migration.config';
+import { ConfigurationModule } from '@infra/configuration';
 
 @Module({
-	imports: [UserModule, LegacySchoolModule, LoggerModule, AccountModule, SystemModule],
+	imports: [
+		UserModule,
+		LegacySchoolModule,
+		LoggerModule,
+		AccountModule,
+		SystemModule,
+		ConfigurationModule.register(USER_LOGIN_MIGRATION_PUBLIC_API_CONFIG_TOKEN, UserLoginMigrationPublicApiConfig),
+	],
 	providers: [
 		UserMigrationService,
 		SchoolMigrationService,

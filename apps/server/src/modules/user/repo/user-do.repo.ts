@@ -1,4 +1,5 @@
 import type { EntityData, EntityName, FilterQuery, QueryOrderMap } from '@mikro-orm/core';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { Role } from '@modules/role/repo';
 import { SchoolEntity } from '@modules/school/repo';
 import { Injectable } from '@nestjs/common';
@@ -8,7 +9,7 @@ import { type IFindOptions, type Pagination, SortOrder, type SortOrderMap } from
 import type { EntityId } from '@shared/domain/types';
 import { BaseDORepo } from '@shared/repo/base.do.repo';
 import { Scope } from '@shared/repo/scope';
-import { ObjectId } from 'bson';
+import { chunk } from 'lodash';
 import { Consent, MultipleUsersFoundLoggableException, ParentConsent, UserConsent, type UserDoRepo } from '../domain';
 import { SecondarySchoolReference, UserDo } from '../domain/do/user.do';
 import { UserQuery } from '../domain/query/user-query';
@@ -38,6 +39,7 @@ export class UserDoMikroOrmRepo extends BaseDORepo<UserDo, User> implements User
 				query.lastLoginSystemChangeBetweenEnd
 			)
 			.withOutdatedSince(query.outdatedSince)
+			.withDeleted(false)
 			.allowEmptyQuery(true);
 
 		order._id = order._id ?? SortOrder.asc;
@@ -64,7 +66,28 @@ export class UserDoMikroOrmRepo extends BaseDORepo<UserDo, User> implements User
 		return this.mapEntityToDO(userEntity);
 	}
 
+	public async getSchoolIdsByUserIds(userIds: EntityId[]): Promise<Map<EntityId, EntityId>> {
+		const userSchoolMap: Map<EntityId, EntityId> = new Map();
+		const users = await this._em.find(User, { id: { $in: userIds } }, { fields: ['id', 'school'] });
+		for (const user of users) {
+			userSchoolMap.set(user.id, user.school.id);
+		}
+		return userSchoolMap;
+	}
+
 	public async findByIds(ids: string[], populate = false): Promise<UserDo[]> {
+		const userIdChunks = chunk(ids, populate ? 200 : 500);
+
+		const promises = userIdChunks.map((userIdChunk) => this.findUserChunk(userIdChunk, populate));
+		const usersArrays = await Promise.all(promises);
+		const users = usersArrays.flat();
+
+		const userDOs = users.map((user) => this.mapEntityToDO(user));
+
+		return userDOs;
+	}
+
+	private async findUserChunk(ids: string[], populate: boolean): Promise<User[]> {
 		const users = await this._em.find(User, { id: { $in: ids } });
 
 		if (populate) {
@@ -82,9 +105,7 @@ export class UserDoMikroOrmRepo extends BaseDORepo<UserDo, User> implements User
 			await Promise.all(users.map((user) => this.populateRoles(user.roles.getItems())));
 		}
 
-		const userDOs = users.map((user) => this.mapEntityToDO(user));
-
-		return userDOs;
+		return users;
 	}
 
 	public async findByIdOrNull(id: EntityId, populate = false): Promise<UserDo | null> {

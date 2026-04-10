@@ -143,7 +143,7 @@ describe('BaseDomainObjectRepo', () => {
 		describe('when update existing entity', () => {
 			const setup = async () => {
 				const entity = new TestEntity({ name: 'test', id: new ObjectId().toHexString() });
-				await em.persistAndFlush(entity);
+				await em.persist(entity).flush();
 
 				const dob = new TestDO({ id: entity.id, name: 'test' });
 				const spyAssign = jest.spyOn(em, 'assign');
@@ -246,7 +246,7 @@ describe('BaseDomainObjectRepo', () => {
 					new TestEntity({ name: 'test1', id: new ObjectId().toHexString() }),
 					new TestEntity({ name: 'test2', id: new ObjectId().toHexString() }),
 				];
-				await em.persistAndFlush(entities);
+				await em.persist(entities).flush();
 
 				const spyCreate = jest.spyOn(em, 'assign');
 
@@ -304,7 +304,7 @@ describe('BaseDomainObjectRepo', () => {
 				new TestEntity({ name: 'test1', id: new ObjectId().toHexString() }),
 				new TestEntity({ name: 'test2', id: new ObjectId().toHexString() }),
 			];
-			await em.persistAndFlush(entities);
+			await em.persist(entities).flush();
 
 			const dobs = entities.map((entity) => new TestDO({ id: entity.id, name: 'test' }));
 
@@ -342,7 +342,7 @@ describe('BaseDomainObjectRepo', () => {
 	describe('findById', () => {
 		const setup = async () => {
 			const entity = new TestEntity({ name: 'test', id: new ObjectId().toHexString() });
-			await em.persistAndFlush(entity);
+			await em.persist(entity).flush();
 
 			return { entity };
 		};

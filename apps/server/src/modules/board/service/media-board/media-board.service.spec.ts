@@ -3,7 +3,13 @@ import { ContextExternalToolService } from '@modules/tool/context-external-tool/
 import { contextExternalToolFactory } from '@modules/tool/context-external-tool/testing';
 import { schoolExternalToolFactory } from '@modules/tool/school-external-tool/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BoardExternalReference, BoardExternalReferenceType, BoardLayout, MediaBoardColors } from '../../domain';
+import {
+	BoardExternalReference,
+	BoardExternalReferenceType,
+	BoardLayout,
+	MediaBoardColors,
+	MediaBoardNodeFactory,
+} from '../../domain';
 import { BoardNodeRepo } from '../../repo';
 import { mediaBoardFactory, mediaExternalToolElementFactory, mediaLineFactory } from '../../testing';
 import { MediaBoardService } from './media-board.service';
@@ -25,6 +31,10 @@ describe('MediaBoardService', () => {
 				{
 					provide: ContextExternalToolService,
 					useValue: createMock<ContextExternalToolService>(),
+				},
+				{
+					provide: MediaBoardNodeFactory,
+					useValue: createMock<MediaBoardNodeFactory>(),
 				},
 			],
 		}).compile();
@@ -159,6 +169,27 @@ describe('MediaBoardService', () => {
 			await service.updateLayout(mediaBoard, BoardLayout.GRID);
 			expect(mediaBoard.layout).toBe(BoardLayout.GRID);
 			expect(boardNodeRepo.save).toHaveBeenCalledWith(mediaBoard);
+		});
+	});
+
+	describe('getOrCreatePersonalMediaBoardOfUser', () => {
+		it('should create a new MediaBoard if none exists', async () => {
+			boardNodeRepo.findByExternalReference.mockResolvedValueOnce([]);
+
+			await service.getOrCreatePersonalMediaBoardOfUser('user-id');
+
+			expect(boardNodeRepo.save).toHaveBeenCalled();
+		});
+
+		it('should return existing MediaBoard if one exists', async () => {
+			const mediaBoard = mediaBoardFactory.build();
+			boardNodeRepo.save.mockResolvedValue();
+			boardNodeRepo.findByExternalReference.mockResolvedValueOnce([mediaBoard]);
+
+			const result = await service.getOrCreatePersonalMediaBoardOfUser('user-id');
+
+			expect(boardNodeRepo.save).not.toHaveBeenCalled();
+			expect(result).toBe(mediaBoard);
 		});
 	});
 });

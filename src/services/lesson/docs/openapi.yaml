@@ -108,8 +108,6 @@ components:
           type: string
         url:
           type: string
-        merlinReference:
-          type: string
 
 paths:
   /lessons:

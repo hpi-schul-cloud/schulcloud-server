@@ -1,2 +1,2 @@
 export { FilesModule } from './files.module';
-export { FilesConfig } from './files.config';
+export { LegacyFileArchiveApiModule } from './legacy-file-archive.app.module';

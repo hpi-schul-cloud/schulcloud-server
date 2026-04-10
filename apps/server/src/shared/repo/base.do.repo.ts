@@ -1,5 +1,13 @@
 import { LegacyLogger } from '@core/logger';
-import { EntityData, EntityName, FilterQuery, Primary, RequiredEntityData, Utils } from '@mikro-orm/core';
+import {
+	EntityData,
+	EntityName,
+	FilterQuery,
+	FromEntityType,
+	Primary,
+	RequiredEntityData,
+	Utils,
+} from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { BaseDO } from '@shared/domain/domainobject/base.do';
@@ -14,7 +22,7 @@ export abstract class BaseDORepo<DO extends BaseDO, E extends BaseEntity> {
 
 	protected abstract mapEntityToDO(entity: E): DO;
 
-	protected abstract mapDOToEntityProperties(entityDO: DO): EntityData<E>;
+	protected abstract mapDOToEntityProperties(entityDO: DO): EntityData<FromEntityType<E>>;
 
 	public async save(domainObject: DO): Promise<DO> {
 		const savedDomainObjects = await this.saveAll([domainObject]);
@@ -36,7 +44,7 @@ export abstract class BaseDORepo<DO extends BaseDO, E extends BaseEntity> {
 	}
 
 	private async createOrUpdateEntity(domainObject: DO): Promise<{ domainObject: DO; persistedEntity: E }> {
-		const entityData = this.mapDOToEntityProperties(domainObject);
+		const entityData: EntityData<unknown> = this.mapDOToEntityProperties(domainObject);
 		this.removeProtectedEntityFields(entityData);
 
 		const { entityName } = this;
@@ -45,8 +53,8 @@ export abstract class BaseDORepo<DO extends BaseDO, E extends BaseEntity> {
 			? await this._em.findOneOrFail(entityName, { id: domainObject.id } as FilterQuery<E>)
 			: undefined;
 
-		const persistedEntity = existingEntity
-			? this._em.assign(existingEntity, entityData)
+		const persistedEntity: E = existingEntity
+			? (this._em.assign(existingEntity, entityData) as E)
 			: this._em.create(entityName, entityData as RequiredEntityData<E>);
 
 		return { domainObject, persistedEntity };

@@ -1,5 +1,3 @@
-const { ObjectId: generateObjectId } = require('mongoose').Types;
-
 const logger = require('../../../src/logger/index');
 const TestEventEmitter = require('./mongooseEventListener');
 
@@ -17,10 +15,9 @@ const performanceMessurceLimits = {
 	paginate: 100,
 };
 
-module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8', generateObjectId }) => {
+module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8' }) => {
 	const {
 		accounts,
-		activation,
 		base64Files,
 		classes,
 		consents,
@@ -31,13 +28,11 @@ module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8', generateObj
 		schools,
 		years,
 		schoolGroups,
-		datasources,
 		files,
 		homeworks,
 		lessons,
 		login,
 		registrationPins,
-		problems,
 		storageProviders,
 		submissions,
 		teams,
@@ -50,7 +45,6 @@ module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8', generateObj
 		Promise.all(
 			[
 				accounts,
-				activation,
 				base64Files,
 				users,
 				consents,
@@ -59,14 +53,12 @@ module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8', generateObj
 				classes,
 				courses,
 				courseGroups,
-				problems,
 				teams,
 				registrationPins,
 				roles,
 				schools,
 				schoolGroups,
 				years,
-				datasources,
 				submissions,
 				lessons,
 				homeworks,
@@ -91,17 +83,14 @@ module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8', generateObj
 			// Directly returned array and function that return the array are mixed.
 			// Please check if you change something!
 			accounts: accounts.info,
-			activation: activation.info,
 			base64Files: base64Files.info,
 			classes: classes.info,
 			courseGroups: courseGroups.info,
 			courses: courses.info,
-			datasources: datasources.info,
 			files: files.info(),
 			homeworks: homeworks.info(),
 			lessons: lessons.info(),
 			registrationPins: registrationPins.info,
-			problems: problems.info,
 			schoolGroups: schoolGroups.info(),
 			schools: schools.info,
 			storageProviders: storageProviders.info,
@@ -146,19 +135,16 @@ module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8', generateObj
 
 	return {
 		createTestAccount: accounts.create,
-		createTestActivation: activation.create,
 		createTestBase64File: base64Files.create,
 		createTestClass: classes.create,
 		createTestConsent: consents.create,
 		createTestConsentVersion: consentVersion.create,
 		createTestCourse: courses.create,
 		createTestCourseGroup: courseGroups.create,
-		createTestDatasource: datasources.create,
 		createTestFile: files.create,
 		createTestHomework: homeworks.create,
 		createTestLesson: lessons.create,
 		createTestRegistrationPin: registrationPins.create,
-		createTestProblem: problems.create,
 		createTestRole: roles.create,
 		createTestSchool: schools.create,
 		createTestSchoolGroup: schoolGroups.create,
@@ -187,7 +173,6 @@ module.exports = (app, opt = { schoolId: '5f2987e020834114b8efd6f8', generateObj
 		setupUser,
 		options: opt,
 		randomGen,
-		generateObjectId,
 		TestEventEmitter,
 		performanceMessurceLimits,
 	};

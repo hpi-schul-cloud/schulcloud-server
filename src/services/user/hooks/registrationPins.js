@@ -4,7 +4,6 @@ const { Configuration } = require('@hpi-schul-cloud/commons');
 const moment = require('moment');
 
 const { Forbidden, BadRequest, TooManyRequests } = require('../../../errors');
-const { NODE_ENV, ENVIRONMENTS, SC_TITLE } = require('../../../../config/globals');
 const globalHooks = require('../../../hooks');
 const pinModel = require('../model').registrationPinModel;
 const { getRandomInt } = require('../../../utils/randomNumberGenerator');
@@ -18,6 +17,7 @@ const generatePin = (hook) => {
 };
 
 function createinfoText(hook) {
+	const SC_TITLE = Configuration.get('SC_TITLE');
 	const role = hook.data.mailTextForRole;
 	const { pin } = hook.data;
 	if (!pin) {
@@ -40,7 +40,7 @@ PIN: ${pin}
 Mit Freundlichen Grüßen
 Ihr ${SC_TITLE}-Team`;
 	}
-	if (role === 'student' || role === 'employee' || role === 'expert') {
+	if (role === 'student' || role === 'employee' || role === 'externalPerson') {
 		return `Vielen Dank, dass du die ${SC_TITLE} nutzen möchtest.
 Bitte gib den folgenden Bestätigungscode im Registrierungsprozess ein,
 um deine Registrierung bei der ${SC_TITLE} abzuschließen:
@@ -85,6 +85,7 @@ const checkAndVerifyPin = async (hook) => {
 };
 
 const mailPin = (hook) => {
+	const SC_TITLE = Configuration.get('SC_TITLE');
 	if (!(hook.data || {}).silent) {
 		globalHooks.sendEmail(hook, {
 			subject: `${SC_TITLE}: Registrierung mit PIN verifizieren`,
@@ -99,10 +100,6 @@ const mailPin = (hook) => {
 };
 
 const returnPinOnlyToSuperHero = async (hook) => {
-	if (NODE_ENV === ENVIRONMENTS.TEST) {
-		return Promise.resolve(hook);
-	}
-
 	if (((hook.params || {}).account || {}).userId) {
 		const userService = hook.app.service('/users/');
 		const currentUser = await userService.get(hook.params.account.userId, { query: { $populate: 'roles' } });

@@ -1,25 +1,37 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { RoleName } from '@modules/role';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 
-export type UserIdsByRole = {
-	roleName: string;
-	userIds: EntityId[];
+export type UserWithRoles = {
+	id: EntityId;
+	roleIds: EntityId[];
 };
 
-export type UsersCountByRole = {
-	roleName: string;
-	userCount: number;
+export type GroupedUserIdsByRoles = {
+	withAllowedRole: UserWithRoles[];
+	withoutAllowedRole: UserWithRoles[];
 };
 
 @Injectable()
 export class DeletionBatchUsersRepo {
 	constructor(private readonly em: EntityManager) {}
 
-	public async countUsersByRole(userIds: EntityId[]): Promise<UsersCountByRole[]> {
+	public async groupUserIdsByAllowedRoles(
+		userIds: EntityId[],
+		allowedRoles: RoleName[]
+	): Promise<GroupedUserIdsByRoles> {
 		if (userIds.length === 0) {
-			return [];
+			return {
+				withAllowedRole: [],
+				withoutAllowedRole: [],
+			};
 		}
+
+		// Step 1: Get role IDs for the allowed role names
+		const allowedRoleIds = await this.getRoleObjectIdsByNames(allowedRoles);
+
+		// Step 2: Simplified aggregation using role IDs directly
 		const pipeline = [
 			{
 				$match: {
@@ -27,80 +39,42 @@ export class DeletionBatchUsersRepo {
 				},
 			},
 			{
-				$unwind: '$roles',
-			},
-			{
-				$lookup: {
-					from: 'roles',
-					localField: 'roles',
-					foreignField: '_id',
-					as: 'roleDetails',
-				},
-			},
-			{
-				$unwind: '$roleDetails',
-			},
-			{
-				$group: {
-					_id: '$roleDetails.name',
-					userCount: { $sum: 1 },
-				},
-			},
-			{
-				$project: {
-					_id: 0,
-					roleName: '$_id',
-					userCount: 1,
+				$facet: {
+					withAllowedRole: [
+						{ $match: { roles: { $in: allowedRoleIds } } },
+						{
+							$project: {
+								_id: 0,
+								id: { $toString: '$_id' },
+								roles: { $map: { input: { $ifNull: ['$roles', []] }, as: 'r', in: { $toString: '$$r' } } },
+							},
+						},
+					],
+					withoutAllowedRole: [
+						{ $match: { roles: { $nin: allowedRoleIds } } },
+						{
+							$project: {
+								_id: 0,
+								id: { $toString: '$_id' },
+								roles: { $map: { input: { $ifNull: ['$roles', []] }, as: 'r', in: { $toString: '$$r' } } },
+							},
+						},
+					],
 				},
 			},
 		];
 
-		const usersByRole = await this.em.getConnection().aggregate<UsersCountByRole>('users', pipeline);
+		const [result] = await this.em.getConnection().aggregate<GroupedUserIdsByRoles>('users', pipeline);
 
-		return usersByRole;
+		return result;
 	}
 
-	public async getUsersByRole(userIds: EntityId[]): Promise<UserIdsByRole[]> {
-		if (userIds.length === 0) {
-			return [];
-		}
-		const pipeline = [
-			{
-				$match: {
-					_id: { $in: userIds.map((id) => new ObjectId(id)) },
-				},
-			},
-			{
-				$unwind: '$roles',
-			},
-			{
-				$lookup: {
-					from: 'roles',
-					localField: 'roles',
-					foreignField: '_id',
-					as: 'roleDetails',
-				},
-			},
-			{
-				$unwind: '$roleDetails',
-			},
-			{
-				$group: {
-					_id: '$roleDetails.name',
-					userIds: { $push: '$_id' },
-				},
-			},
-			{
-				$project: {
-					_id: 0,
-					roleName: '$_id',
-					userIds: 1,
-				},
-			},
-		];
+	private async getRoleObjectIdsByNames(roleNames: RoleName[]): Promise<ObjectId[]> {
+		const roles = await this.em
+			.getConnection()
+			.aggregate<{ _id: ObjectId }>('roles', [{ $match: { name: { $in: roleNames } } }, { $project: { _id: 1 } }]);
+		const roleObjectIds = roles.map((r) => r._id);
 
-		const usersByRole = await this.em.getConnection().aggregate<UserIdsByRole>('users', pipeline);
-
-		return usersByRole;
+		return roleObjectIds;
 	}
 }

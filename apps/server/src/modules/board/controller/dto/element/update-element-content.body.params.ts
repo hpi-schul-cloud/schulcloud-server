@@ -1,10 +1,10 @@
 import { ApiProperty, ApiPropertyOptional, getSchemaPath } from '@nestjs/swagger';
 import { InputFormat } from '@shared/domain/types';
 import { Type } from 'class-transformer';
-import { IsDate, IsEnum, IsMongoId, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { IsEnum, IsMongoId, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { ContentElementType } from '../../../domain/types';
 
-export abstract class ElementContentBody {
+abstract class ElementContentBody {
 	@IsEnum(ContentElementType)
 	@ApiProperty({
 		enum: ContentElementType,
@@ -102,24 +102,6 @@ export class RichTextElementContentBody extends ElementContentBody {
 	content!: RichTextContentBody;
 }
 
-export class SubmissionContainerContentBody {
-	@IsDate()
-	@IsOptional()
-	@ApiPropertyOptional({
-		description: 'The point in time until when a submission can be handed in.',
-	})
-	dueDate?: Date;
-}
-
-export class SubmissionContainerElementContentBody extends ElementContentBody {
-	@ApiProperty({ type: () => ContentElementType.SUBMISSION_CONTAINER })
-	type!: ContentElementType.SUBMISSION_CONTAINER;
-
-	@ValidateNested()
-	@ApiProperty()
-	content!: SubmissionContainerContentBody;
-}
-
 export class ExternalToolContentBody {
 	@IsMongoId()
 	@IsOptional()
@@ -187,7 +169,6 @@ export type AnyElementContentBody =
 	| DrawingContentBody
 	| LinkContentBody
 	| RichTextContentBody
-	| SubmissionContainerContentBody
 	| ExternalToolContentBody
 	| VideoConferenceContentBody
 	| FileFolderContentBody
@@ -202,7 +183,6 @@ export class UpdateElementContentBodyParams {
 				{ value: FileElementContentBody, name: ContentElementType.FILE },
 				{ value: LinkElementContentBody, name: ContentElementType.LINK },
 				{ value: RichTextElementContentBody, name: ContentElementType.RICH_TEXT },
-				{ value: SubmissionContainerElementContentBody, name: ContentElementType.SUBMISSION_CONTAINER },
 				{ value: ExternalToolElementContentBody, name: ContentElementType.EXTERNAL_TOOL },
 				{ value: DrawingElementContentBody, name: ContentElementType.DRAWING },
 				{ value: VideoConferenceElementContentBody, name: ContentElementType.VIDEO_CONFERENCE },
@@ -217,7 +197,6 @@ export class UpdateElementContentBodyParams {
 			{ $ref: getSchemaPath(FileElementContentBody) },
 			{ $ref: getSchemaPath(LinkElementContentBody) },
 			{ $ref: getSchemaPath(RichTextElementContentBody) },
-			{ $ref: getSchemaPath(SubmissionContainerElementContentBody) },
 			{ $ref: getSchemaPath(ExternalToolElementContentBody) },
 			{ $ref: getSchemaPath(DrawingElementContentBody) },
 			{ $ref: getSchemaPath(VideoConferenceElementContentBody) },
@@ -229,7 +208,6 @@ export class UpdateElementContentBodyParams {
 		| FileElementContentBody
 		| LinkElementContentBody
 		| RichTextElementContentBody
-		| SubmissionContainerElementContentBody
 		| ExternalToolElementContentBody
 		| DrawingElementContentBody
 		| VideoConferenceElementContentBody

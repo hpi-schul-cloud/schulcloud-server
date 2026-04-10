@@ -1,21 +1,23 @@
-import { Configuration } from '@hpi-schul-cloud/commons';
+import { RABBITMQ_CONFIG_TOKEN, RabbitMQConfig } from '@infra/rabbitmq';
 import { Test, TestingModule } from '@nestjs/testing';
-import { RabbitMQWrapperTestModule } from '@infra/rabbitmq';
 import { MailModule } from './mail.module';
 import { MailService } from './mail.service';
+import { TEST_MAIL_CONFIG_TOKEN, TestMailConfig } from './testing';
 
 describe('MailModule', () => {
 	let module: TestingModule;
-	const mailModuleOptions = {
-		uri: Configuration.get('RABBITMQ_URI') as string,
-		exchange: 'exchange',
-		routingKey: 'routingKey',
-	};
 	let mailService: MailService;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [RabbitMQWrapperTestModule, MailModule.forRoot(mailModuleOptions)],
+			imports: [
+				MailModule.register({
+					exchangeConfigConstructor: TestMailConfig,
+					exchangeConfigInjectionToken: TEST_MAIL_CONFIG_TOKEN,
+					configInjectionToken: RABBITMQ_CONFIG_TOKEN,
+					configConstructor: RabbitMQConfig,
+				}),
+			],
 		}).compile();
 
 		mailService = module.get(MailService);

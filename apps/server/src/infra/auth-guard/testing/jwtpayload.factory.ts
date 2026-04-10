@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 import { BaseFactory } from '@testing/factory/base.factory';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { JwtPayload } from '../interface';
 
 class JwtPayloadImpl implements JwtPayload {

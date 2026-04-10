@@ -3,10 +3,9 @@ import { BoardContextApiHelperService } from '@modules/board-context';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { UserDo, UserService } from '@modules/user';
 import { ForbiddenException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { VideoConferenceScope } from '../domain';
-import { VideoConferenceConfig } from '../video-conference-config';
+import { VIDEO_CONFERENCE_CONFIG_TOKEN, VideoConferenceConfig } from '../video-conference-config';
 import { ScopeRef } from './dto';
 import { VideoConferenceFeatureService } from './video-conference-feature.service';
 
@@ -16,11 +15,7 @@ describe(VideoConferenceFeatureService.name, () => {
 	let boardContextApiHelperService: DeepMocked<BoardContextApiHelperService>;
 	let userService: DeepMocked<UserService>;
 	let legacySchoolService: DeepMocked<LegacySchoolService>;
-
-	const config: VideoConferenceConfig = {
-		HOST: 'https://bbb.example.com/bigbluebutton/',
-		FEATURE_VIDEOCONFERENCE_ENABLED: false,
-	};
+	let config: VideoConferenceConfig;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -39,9 +34,9 @@ describe(VideoConferenceFeatureService.name, () => {
 					useValue: createMock<LegacySchoolService>(),
 				},
 				{
-					provide: ConfigService,
+					provide: VIDEO_CONFERENCE_CONFIG_TOKEN,
 					useValue: {
-						get: jest.fn().mockImplementation((key: keyof VideoConferenceConfig) => config[key]),
+						featureVideoConferenceEnabled: false,
 					},
 				},
 			],
@@ -51,6 +46,7 @@ describe(VideoConferenceFeatureService.name, () => {
 		boardContextApiHelperService = module.get(BoardContextApiHelperService);
 		userService = module.get(UserService);
 		legacySchoolService = module.get(LegacySchoolService);
+		config = module.get(VIDEO_CONFERENCE_CONFIG_TOKEN);
 	});
 
 	afterAll(async () => {
@@ -119,7 +115,7 @@ describe(VideoConferenceFeatureService.name, () => {
 				const { userId, scope } = setup();
 
 				legacySchoolService.hasFeature.mockResolvedValueOnce(true);
-				config.FEATURE_VIDEOCONFERENCE_ENABLED = false;
+				config.featureVideoConferenceEnabled = false;
 
 				await expect(service.checkVideoConferenceFeatureEnabled(userId, scope)).rejects.toThrow(ForbiddenException);
 			});
@@ -130,9 +126,9 @@ describe(VideoConferenceFeatureService.name, () => {
 				const { userId, scope } = setup();
 
 				legacySchoolService.hasFeature.mockResolvedValueOnce(true);
-				config.FEATURE_VIDEOCONFERENCE_ENABLED = true;
+				config.featureVideoConferenceEnabled = true;
 
-				await expect(service.checkVideoConferenceFeatureEnabled(userId, scope)).rejects.toThrow(ForbiddenException);
+				await expect(service.checkVideoConferenceFeatureEnabled(userId, scope)).resolves.toBeUndefined();
 			});
 		});
 	});

@@ -5,7 +5,7 @@ import { IdmAccount } from '@modules/account/domain';
 import { Test, TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common/error';
 import { IdentityManagementService } from '../../identity-management.service';
-import { KeycloakSettings } from '../../keycloak-administration/interface/keycloak-settings.interface';
+import { KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN } from '../../keycloak-administration/keycloak-administration.config';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
 import { KeycloakIdentityManagementService } from './keycloak-identity-management.service';
 
@@ -56,7 +56,7 @@ describe('KeycloakIdentityManagementService', () => {
 					}),
 				},
 				{
-					provide: KeycloakSettings,
+					provide: KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
 					useValue: {
 						credentials: {
 							username: mockedAdminAccount.username,

@@ -9,7 +9,12 @@ const MAXIMUM_ATTEMPTS = 3;
 const BACKOFF_DELAY_TIME_MS = 5000;
 
 export class S3ClientFactory {
-	public build(config: S3Config, logger: Logger, domainErrorHandler: DomainErrorHandler): S3ClientAdapter {
+	public static build(
+		config: S3Config,
+		logger: Logger,
+		domainErrorHandler: DomainErrorHandler,
+		clientInjectionToken: string
+	): S3ClientAdapter {
 		const { region, accessKeyId, secretAccessKey, endpoint } = config;
 		const retryStrategy = new ConfiguredRetryStrategy(
 			MAXIMUM_ATTEMPTS,
@@ -29,6 +34,6 @@ export class S3ClientFactory {
 			retryStrategy,
 		});
 
-		return new S3ClientAdapter(s3Client, config, logger, domainErrorHandler);
+		return new S3ClientAdapter(s3Client, config, logger, domainErrorHandler, clientInjectionToken);
 	}
 }

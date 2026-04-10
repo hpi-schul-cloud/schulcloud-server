@@ -12,7 +12,6 @@ export class MaterialResponse {
 		this.relatedResources = material.relatedResources;
 		this.title = material.title;
 		this.url = material.url;
-		this.merlinReference = material.merlinReference;
 	}
 
 	@ApiProperty({
@@ -51,9 +50,4 @@ export class MaterialResponse {
 		description: 'Description of the material license',
 	})
 	license: string[];
-
-	@ApiProperty({
-		description: 'For material from Merlin, the Merlin reference',
-	})
-	merlinReference?: string;
 }

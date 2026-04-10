@@ -11,7 +11,6 @@ import {
 	H5pContentBody,
 	LinkContentBody,
 	RichTextContentBody,
-	SubmissionContainerContentBody,
 	VideoConferenceContentBody,
 } from '../../controller/dto';
 import type {
@@ -22,7 +21,6 @@ import type {
 	FileFolderElement,
 	LinkElement,
 	RichTextElement,
-	SubmissionContainerElement,
 	VideoConferenceElement,
 } from '../../domain';
 import {
@@ -34,7 +32,6 @@ import {
 	isH5pElement,
 	isLinkElement,
 	isRichTextElement,
-	isSubmissionContainerElement,
 	isVideoConferenceElement,
 } from '../../domain';
 import { BoardNodeRepo } from '../../repo';
@@ -53,8 +50,6 @@ export class ContentElementUpdateService {
 			await this.updateRichTextElement(element, content);
 		} else if (isDrawingElement(element) && content instanceof DrawingContentBody) {
 			this.updateDrawingElement(element, content);
-		} else if (isSubmissionContainerElement(element) && content instanceof SubmissionContainerContentBody) {
-			this.updateSubmissionContainerElement(element, content);
 		} else if (isExternalToolElement(element) && content instanceof ExternalToolContentBody) {
 			this.updateExternalToolElement(element, content);
 		} else if (isVideoConferenceElement(element) && content instanceof VideoConferenceContentBody) {
@@ -111,15 +106,6 @@ export class ContentElementUpdateService {
 
 	public updateDrawingElement(element: DrawingElement, content: DrawingContentBody): void {
 		element.description = content.description;
-	}
-
-	public updateSubmissionContainerElement(
-		element: SubmissionContainerElement,
-		content: SubmissionContainerContentBody
-	): void {
-		if (content.dueDate !== undefined) {
-			element.dueDate = content.dueDate;
-		}
 	}
 
 	public updateExternalToolElement(element: ExternalToolElement, content: ExternalToolContentBody): void {

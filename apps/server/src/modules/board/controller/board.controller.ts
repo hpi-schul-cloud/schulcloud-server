@@ -18,6 +18,7 @@ import {
 import { ApiOperation, ApiProperty, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { RequestTimeout } from '@shared/common/decorators';
 import { ApiValidationError } from '@shared/common/error';
+import { BOARD_INCOMING_REQUEST_TIMEOUT_COPY_API_KEY } from '../timeout.config';
 import { BoardUc } from '../uc';
 import {
 	BoardResponse,
@@ -30,6 +31,7 @@ import {
 	VisibilityBodyParams,
 } from './dto';
 import { BoardContextResponse } from './dto/board/board-context.reponse';
+import { ReadersCanEditBodyParams } from './dto/board/readers-can-edit.body.params';
 import { BoardResponseMapper, ColumnResponseMapper, CreateBoardResponseMapper } from './mapper';
 
 import { QdrantClient } from '@qdrant/js-client-rest';
@@ -121,9 +123,9 @@ export class BoardController {
 		@Param() urlParams: BoardUrlParams,
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<BoardResponse> {
-		const { board, features, permissions } = await this.boardUc.findBoard(currentUser.userId, urlParams.boardId);
+		const { board, features, allowedOperations } = await this.boardUc.findBoard(currentUser.userId, urlParams.boardId);
 
-		const response = BoardResponseMapper.mapToResponse(board, features, permissions);
+		const response = BoardResponseMapper.mapToResponse(board, features, allowedOperations);
 
 		return response;
 	}
@@ -197,7 +199,7 @@ export class BoardController {
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@Post(':boardId/copy')
-	@RequestTimeout('INCOMING_REQUEST_TIMEOUT_COPY_API')
+	@RequestTimeout(BOARD_INCOMING_REQUEST_TIMEOUT_COPY_API_KEY)
 	public async copyBoard(
 		@Param() urlParams: BoardUrlParams,
 		@CurrentUser() currentUser: ICurrentUser
@@ -220,6 +222,21 @@ export class BoardController {
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {
 		await this.boardUc.updateVisibility(currentUser.userId, urlParams.boardId, bodyParams.isVisible);
+	}
+
+	@ApiOperation({ summary: 'Update the visibility of a board.' })
+	@ApiResponse({ status: 204 })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
+	@HttpCode(204)
+	@Patch(':boardId/readers-can-edit')
+	public async updateReadersCanEdit(
+		@Param() urlParams: BoardUrlParams,
+		@Body() bodyParams: ReadersCanEditBodyParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<void> {
+		await this.boardUc.updateReadersCanEdit(currentUser.userId, urlParams.boardId, bodyParams.readersCanEdit);
 	}
 
 	@ApiOperation({ summary: 'Update the layout of a board.' })

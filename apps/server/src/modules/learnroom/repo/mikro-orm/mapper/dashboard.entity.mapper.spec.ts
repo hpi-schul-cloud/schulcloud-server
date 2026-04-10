@@ -10,6 +10,7 @@ import { Dashboard, GridElement } from '../../../domain/do/dashboard';
 import { LearnroomMetadata, LearnroomTypes } from '../../../types';
 import { DashboardEntity, DashboardGridElementEntity } from '../dashboard.entity';
 import { DashboardModelMapper } from './dashboard.entity.mapper';
+import { ReferenceNotPopulatedLoggableException } from '@shared/common/loggable-exception/reference-not-populated.loggable-exception';
 
 describe('dashboard model mapper', () => {
 	let mapper: DashboardModelMapper;
@@ -50,7 +51,7 @@ describe('dashboard model mapper', () => {
 
 			dashboard.gridElements.add(element);
 
-			await em.persistAndFlush(dashboard);
+			await em.persist(dashboard).flush();
 			em.clear();
 
 			const persisted = await em.findOneOrFail(DashboardEntity, dashboard.id);
@@ -61,12 +62,19 @@ describe('dashboard model mapper', () => {
 			const resultElement = result.getElement({ x: 1, y: 2 });
 			expect(resultElement.getContent().title).toEqual('German');
 		});
+
+		it('should throw if reference is not populated', async () => {
+			const fakeId = new ObjectId().toHexString();
+			const fakeCourse = em.getReference(CourseEntity, fakeId);
+
+			await expect(mapper.mapReferenceToEntity(fakeCourse)).rejects.toThrow(ReferenceNotPopulatedLoggableException);
+		});
 	});
 
 	describe('mapDashboardToModel', () => {
 		it('should map dashboard with elements and groups to model', async () => {
 			const user = userFactory.build();
-			await em.persistAndFlush(user);
+			await em.persist(user).flush();
 			const dashboard = new Dashboard(new ObjectId().toString(), {
 				grid: [
 					{
@@ -102,7 +110,7 @@ describe('dashboard model mapper', () => {
 
 		it('should detect changes to gridElement Collection', async () => {
 			const user = userFactory.build();
-			await em.persistAndFlush(user);
+			await em.persist(user).flush();
 			const dashboardId = new ObjectId().toString();
 			const elementId = new ObjectId().toString();
 			const oldElementId = new ObjectId().toString();
@@ -127,7 +135,7 @@ describe('dashboard model mapper', () => {
 					dashboard: originalDashboard,
 				})
 			);
-			await em.persistAndFlush(originalDashboard);
+			await em.persist(originalDashboard).flush();
 
 			const dashboard = new Dashboard(dashboardId, {
 				grid: [
@@ -158,7 +166,7 @@ describe('dashboard model mapper', () => {
 
 		it('should not accept unknown types of learnrooms', async () => {
 			const user = userFactory.build();
-			await em.persistAndFlush(user);
+			await em.persist(user).flush();
 			const dashboard = new Dashboard(new ObjectId().toString(), {
 				grid: [
 					{

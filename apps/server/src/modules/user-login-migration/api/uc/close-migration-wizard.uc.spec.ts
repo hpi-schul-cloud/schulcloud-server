@@ -8,7 +8,7 @@ import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { CloseMigrationWizardUc } from './close-migration-wizard.uc';
 
 describe(CloseMigrationWizardUc.name, () => {

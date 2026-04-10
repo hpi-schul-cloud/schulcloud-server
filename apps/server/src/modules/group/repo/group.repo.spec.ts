@@ -53,7 +53,7 @@ describe(GroupRepo.name, () => {
 			const setup = async () => {
 				const group: GroupEntity = groupEntityFactory.buildWithId();
 
-				await em.persistAndFlush(group);
+				await em.persist(group).flush();
 				em.clear();
 
 				return {
@@ -120,7 +120,7 @@ describe(GroupRepo.name, () => {
 
 				const otherGroups: GroupEntity[] = groupEntityFactory.buildListWithId(2);
 
-				await em.persistAndFlush([userEntity, ...groups, ...otherGroups]);
+				await em.persist([userEntity, ...groups, ...otherGroups]).flush();
 				em.clear();
 
 				return {
@@ -175,7 +175,7 @@ describe(GroupRepo.name, () => {
 
 				const otherGroups: GroupEntity[] = groupEntityFactory.buildListWithId(2);
 
-				await em.persistAndFlush([userEntity, ...otherGroups]);
+				await em.persist([userEntity, ...otherGroups]).flush();
 				em.clear();
 
 				return {
@@ -212,7 +212,7 @@ describe(GroupRepo.name, () => {
 					organization: otherSchool,
 				});
 
-				await em.persistAndFlush([school, ...groups, otherSchool, ...otherGroups]);
+				await em.persist([school, ...groups, otherSchool, ...otherGroups]).flush();
 				em.clear();
 
 				return {
@@ -272,7 +272,7 @@ describe(GroupRepo.name, () => {
 				const school: SchoolEntity = schoolEntityFactory.buildWithId();
 				const schoolId: EntityId = school.id;
 
-				await em.persistAndFlush(school);
+				await em.persist(school).flush();
 				em.clear();
 
 				return {
@@ -311,7 +311,7 @@ describe(GroupRepo.name, () => {
 					organization: otherSchool,
 				});
 
-				await em.persistAndFlush([school, system, ...groups, otherSchool, ...otherGroups]);
+				await em.persist([school, system, ...groups, otherSchool, ...otherGroups]).flush();
 				em.clear();
 
 				return {
@@ -361,7 +361,7 @@ describe(GroupRepo.name, () => {
 				const system: SystemEntity = systemEntityFactory.buildWithId();
 				const systemId: EntityId = system.id;
 
-				await em.persistAndFlush([school, system]);
+				await em.persist([school, system]).flush();
 				em.clear();
 
 				return {
@@ -387,7 +387,7 @@ describe(GroupRepo.name, () => {
 			const user = userFactory.buildWithId({ school });
 			const role = roleFactory.buildWithId({ name: RoleName.TEACHER });
 
-			await em.persistAndFlush([user, school, differentSchool]);
+			await em.persist([user, school, differentSchool]).flush();
 			em.clear();
 
 			return {
@@ -414,7 +414,7 @@ describe(GroupRepo.name, () => {
 				};
 			});
 			const group = groupEntityFactory.withTypeRoom().buildWithId({ organization: school, users });
-			await em.persistAndFlush([...internalUsersArray, ...externalUsersArray, role, group]);
+			await em.persist([...internalUsersArray, ...externalUsersArray, role, group]).flush();
 			em.clear();
 
 			return group;
@@ -493,7 +493,7 @@ describe(GroupRepo.name, () => {
 					order: { name: SortOrder.desc },
 				});
 
-				await em.persistAndFlush([...groups]);
+				await em.persist([...groups]).flush();
 				em.clear();
 
 				return {
@@ -520,7 +520,7 @@ describe(GroupRepo.name, () => {
 
 				const scope = new GroupAggregateScope().byName(groups[1].name);
 
-				await em.persistAndFlush([...groups]);
+				await em.persist([...groups]).flush();
 				em.clear();
 
 				return {
@@ -548,7 +548,7 @@ describe(GroupRepo.name, () => {
 
 				const scope = new GroupAggregateScope().byOrganization(school.id);
 
-				await em.persistAndFlush([group, otherGroup, school]);
+				await em.persist([group, otherGroup, school]).flush();
 				em.clear();
 
 				return {
@@ -584,7 +584,7 @@ describe(GroupRepo.name, () => {
 
 				const scope = new GroupAggregateScope().byUser(user.id);
 
-				await em.persistAndFlush([group, otherGroup, user]);
+				await em.persist([group, otherGroup, user]).flush();
 				em.clear();
 
 				return {
@@ -648,13 +648,15 @@ describe(GroupRepo.name, () => {
 
 				const scope = new GroupAggregateScope().byAvailableForSync(true);
 
-				await em.persistAndFlush([
-					availableCourseGroup,
-					synchronizedCourseGroup,
-					courseSynchronizedWithCourseGroup,
-					synchronizedClassGroup,
-					courseSynchronizedWithClassGroup,
-				]);
+				await em
+					.persist([
+						availableCourseGroup,
+						synchronizedCourseGroup,
+						courseSynchronizedWithCourseGroup,
+						synchronizedClassGroup,
+						courseSynchronizedWithClassGroup,
+					])
+					.flush();
 				em.clear();
 
 				return {
@@ -720,7 +722,7 @@ describe(GroupRepo.name, () => {
 				const groupId = new ObjectId().toHexString();
 				const groupEntity: GroupEntity = groupEntityFactory.buildWithId({ name: 'Initial Name' }, groupId);
 
-				await em.persistAndFlush(groupEntity);
+				await em.persist(groupEntity).flush();
 				em.clear();
 
 				const newName = 'New Name';
@@ -760,7 +762,7 @@ describe(GroupRepo.name, () => {
 				const groupId = new ObjectId().toHexString();
 				const groupEntity: GroupEntity = groupEntityFactory.buildWithId(undefined, groupId);
 
-				await em.persistAndFlush(groupEntity);
+				await em.persist(groupEntity).flush();
 				em.clear();
 
 				const group: Group = groupFactory.build({ id: groupId });
@@ -786,7 +788,7 @@ describe(GroupRepo.name, () => {
 			const setup = async () => {
 				const groupEntity: GroupEntity = groupEntityFactory.buildWithId();
 
-				await em.persistAndFlush(groupEntity);
+				await em.persist(groupEntity).flush();
 				em.clear();
 
 				return {
@@ -861,7 +863,7 @@ describe(GroupRepo.name, () => {
 				],
 			});
 
-			await em.persistAndFlush([user, otherUser, role, group]);
+			await em.persist([user, otherUser, role, group]).flush();
 			em.clear();
 
 			return {

@@ -40,8 +40,8 @@ describe(`card update title (api)`, () => {
 		const setup = async () => {
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 
-			const course = courseEntityFactory.build({ teachers: [teacherUser] });
-			await em.persistAndFlush([teacherUser, teacherAccount, course]);
+			const course = courseEntityFactory.build({ school: teacherUser.school, teachers: [teacherUser] });
+			await em.persist([teacherUser, teacherAccount, course]).flush();
 
 			const columnBoardNode = columnBoardEntityFactory.build({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
@@ -49,7 +49,7 @@ describe(`card update title (api)`, () => {
 			const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
 			const cardNode = cardEntityFactory.withParent(columnNode).build();
 
-			await em.persistAndFlush([cardNode, columnNode, columnBoardNode]);
+			await em.persist([cardNode, columnNode, columnBoardNode]).flush();
 			em.clear();
 
 			const loggedInClient = await testApiClient.login(teacherAccount);
@@ -95,8 +95,8 @@ describe(`card update title (api)`, () => {
 		const setup = async () => {
 			const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-			const course = courseEntityFactory.build({ students: [studentUser] });
-			await em.persistAndFlush([studentUser, studentAccount, course]);
+			const course = courseEntityFactory.build({ school: studentUser.school, students: [studentUser] });
+			await em.persist([studentUser, studentAccount, course]).flush();
 
 			const columnBoardNode = columnBoardEntityFactory.build({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
@@ -106,7 +106,7 @@ describe(`card update title (api)`, () => {
 			const title = 'old title';
 			const cardNode = cardEntityFactory.withParent(columnNode).build({ title });
 
-			await em.persistAndFlush([cardNode, columnNode, columnBoardNode]);
+			await em.persist([cardNode, columnNode, columnBoardNode]).flush();
 			em.clear();
 
 			const loggedInClient = await testApiClient.login(studentAccount);

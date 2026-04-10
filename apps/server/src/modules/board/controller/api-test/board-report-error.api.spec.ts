@@ -48,7 +48,7 @@ describe('BoardErrorReportController (api)', () => {
 		const user = userFactory.buildWithId({ school });
 		const account = accountFactory.withUser(user).build();
 
-		await em.persistAndFlush([school, user, account]);
+		await em.persist([school, user, account]).flush();
 		em.clear();
 
 		const loggedInClient = await testApiClient.login(account);

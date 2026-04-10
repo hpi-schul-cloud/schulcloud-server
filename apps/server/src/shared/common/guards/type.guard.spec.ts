@@ -161,6 +161,74 @@ describe('TypeGuard', () => {
 		});
 	});
 
+	describe('isBoolean', () => {
+		describe('when passing type of value is a boolean', () => {
+			it('should return true', () => {
+				expect(TypeGuard.isBoolean(true)).toBe(true);
+			});
+
+			it('should return true', () => {
+				expect(TypeGuard.isBoolean(false)).toBe(true);
+			});
+		});
+
+		describe('when passing type of value is NOT a boolean', () => {
+			it('should return false', () => {
+				expect(TypeGuard.isBoolean(undefined)).toBe(false);
+			});
+
+			it('should return false', () => {
+				expect(TypeGuard.isBoolean(null)).toBe(false);
+			});
+
+			it('should return false', () => {
+				expect(TypeGuard.isBoolean({})).toBe(false);
+			});
+
+			it('should return false', () => {
+				expect(TypeGuard.isBoolean('string')).toBe(false);
+			});
+
+			it('should return false', () => {
+				expect(TypeGuard.isBoolean(123)).toBe(false);
+			});
+		});
+	});
+
+	describe('checkBoolean', () => {
+		describe('when passing type of value is a boolean', () => {
+			it('should be return value', () => {
+				expect(TypeGuard.checkBoolean(true)).toEqual(true);
+			});
+
+			it('should be return value', () => {
+				expect(TypeGuard.checkBoolean(false)).toEqual(false);
+			});
+		});
+
+		describe('when passing type of value is NOT a boolean', () => {
+			it('should return false', () => {
+				expect(() => TypeGuard.checkBoolean(undefined)).toThrowError('Type is not a boolean');
+			});
+
+			it('should return false', () => {
+				expect(() => TypeGuard.checkBoolean(null)).toThrowError('Type is not a boolean');
+			});
+
+			it('should return false', () => {
+				expect(() => TypeGuard.checkBoolean({})).toThrowError('Type is not a boolean');
+			});
+
+			it('should return false', () => {
+				expect(() => TypeGuard.checkBoolean('string')).toThrowError('Type is not a boolean');
+			});
+
+			it('should return false', () => {
+				expect(() => TypeGuard.checkBoolean(123)).toThrowError('Type is not a boolean');
+			});
+		});
+	});
+
 	describe('isString', () => {
 		describe('when passing type of value is a string', () => {
 			it('should return true', () => {
@@ -434,6 +502,94 @@ describe('TypeGuard', () => {
 
 			it('should throw an error', () => {
 				expect(() => TypeGuard.checkArrayWithElements(1)).toThrowError('Type is not an array with elements.');
+			});
+		});
+	});
+
+	describe('isArrayOfStrings', () => {
+		describe('when passing type of value is an array of strings', () => {
+			it('should return true', () => {
+				expect(TypeGuard.isArrayOfStrings(['a', 'b', 'c'])).toBe(true);
+			});
+
+			it('should return true', () => {
+				expect(TypeGuard.isArrayOfStrings(['hello', 'world'])).toBe(true);
+			});
+
+			it('should return true for empty array', () => {
+				expect(TypeGuard.isArrayOfStrings([])).toBe(true);
+			});
+		});
+
+		describe('when passing type of value is NOT an array of strings', () => {
+			it('should return false for array with numbers', () => {
+				expect(TypeGuard.isArrayOfStrings([1, 2, 3])).toBe(false);
+			});
+
+			it('should return false for array with mixed types', () => {
+				expect(TypeGuard.isArrayOfStrings(['a', 1, 'b'])).toBe(false);
+			});
+
+			it('should return false for array with objects', () => {
+				expect(TypeGuard.isArrayOfStrings([{ a: 1 }])).toBe(false);
+			});
+
+			it('should return false for undefined', () => {
+				expect(TypeGuard.isArrayOfStrings(undefined)).toBe(false);
+			});
+
+			it('should return false for null', () => {
+				expect(TypeGuard.isArrayOfStrings(null)).toBe(false);
+			});
+
+			it('should return false for object', () => {
+				expect(TypeGuard.isArrayOfStrings({})).toBe(false);
+			});
+
+			it('should return false for string', () => {
+				expect(TypeGuard.isArrayOfStrings('string')).toBe(false);
+			});
+		});
+	});
+
+	describe('checkArrayOfStrings', () => {
+		describe('when passing type of value is an array of strings', () => {
+			it('should return value', () => {
+				expect(TypeGuard.checkArrayOfStrings(['a', 'b', 'c'])).toEqual(['a', 'b', 'c']);
+			});
+
+			it('should return value', () => {
+				expect(TypeGuard.checkArrayOfStrings(['hello', 'world'])).toEqual(['hello', 'world']);
+			});
+
+			it('should return empty array', () => {
+				expect(TypeGuard.checkArrayOfStrings([])).toEqual([]);
+			});
+		});
+
+		describe('when passing type of value is NOT an array of strings', () => {
+			it('should throw an error for array with numbers', () => {
+				expect(() => TypeGuard.checkArrayOfStrings([1, 2, 3])).toThrowError('Type is not an array of strings.');
+			});
+
+			it('should throw an error for array with mixed types', () => {
+				expect(() => TypeGuard.checkArrayOfStrings(['a', 1, 'b'])).toThrowError('Type is not an array of strings.');
+			});
+
+			it('should throw an error for undefined', () => {
+				expect(() => TypeGuard.checkArrayOfStrings(undefined)).toThrowError('Type is not an array of strings.');
+			});
+
+			it('should throw an error for null', () => {
+				expect(() => TypeGuard.checkArrayOfStrings(null)).toThrowError('Type is not an array of strings.');
+			});
+
+			it('should throw an error for object', () => {
+				expect(() => TypeGuard.checkArrayOfStrings({})).toThrowError('Type is not an array of strings.');
+			});
+
+			it('should throw an error for string', () => {
+				expect(() => TypeGuard.checkArrayOfStrings('string')).toThrowError('Type is not an array of strings.');
 			});
 		});
 	});

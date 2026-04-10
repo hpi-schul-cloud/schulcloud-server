@@ -54,8 +54,8 @@ describe('dashboard uc', () => {
 				const dashboard = new Dashboard('someid', { grid: [], userId });
 				return Promise.resolve(dashboard);
 			});
-			jest.spyOn(courseService, 'findAllByUserId').mockImplementation(() => Promise.resolve([]));
-			const dashboard = await service.getUsersDashboard('userId');
+			jest.spyOn(courseService, 'findAllByUserId').mockImplementation(() => Promise.resolve([[], 0]));
+			const dashboard = await service.getUsersDashboard('userId', 'schoolId');
 
 			expect(dashboard instanceof Dashboard).toEqual(true);
 			expect(spy).toHaveBeenCalledWith('userId');
@@ -63,6 +63,7 @@ describe('dashboard uc', () => {
 
 		it('should synchronize which courses are on the board', async () => {
 			const userId = 'userId';
+			const schoolId = 'schoolId';
 			const dashboard = new Dashboard('someid', { grid: [], userId });
 			const dashboardRepoSpy = jest
 				.spyOn(repo, 'getUsersDashboard')
@@ -70,16 +71,17 @@ describe('dashboard uc', () => {
 			const courses = new Array(5).map(() => ({} as CourseEntity));
 			const courseServiceSpy = jest
 				.spyOn(courseService, 'findAllByUserId')
-				.mockImplementation(() => Promise.resolve(courses));
+				.mockImplementation(() => Promise.resolve([courses, courses.length]));
 			const syncSpy = jest.spyOn(dashboard, 'setLearnRooms');
 			const persistSpy = jest.spyOn(repo, 'persistAndFlush');
 
-			const result = await service.getUsersDashboard('userId');
+			const result = await service.getUsersDashboard('userId', schoolId);
 
 			expect(result instanceof Dashboard).toEqual(true);
 			expect(dashboardRepoSpy).toHaveBeenCalledWith('userId');
 			expect(courseServiceSpy).toHaveBeenCalledWith(
 				userId,
+				schoolId,
 				{ onlyActiveCourses: true },
 				{ order: { name: SortOrder.asc } }
 			);

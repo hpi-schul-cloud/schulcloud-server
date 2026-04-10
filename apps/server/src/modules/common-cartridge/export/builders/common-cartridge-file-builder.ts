@@ -1,4 +1,3 @@
-import AdmZip from 'adm-zip';
 import {
 	CommonCartridgeElementType,
 	CommonCartridgeResourceType,
@@ -17,6 +16,11 @@ import {
 } from './common-cartridge-organization-node';
 import { CommonCartridgeResourceCollectionBuilder } from './common-cartridge-resource-collection-builder';
 
+import { Logger } from '@core/logger';
+import archiver from 'archiver';
+import { CommonCartridgeMessageLoggable } from '../../loggable/common-cartridge-message.loggable';
+import { ResourceFileContent } from '../interfaces/common-cartridge-resource.interface';
+
 export type CommonCartridgeFileBuilderProps = {
 	version: CommonCartridgeVersion;
 	identifier: string;
@@ -32,7 +36,11 @@ export class CommonCartridgeFileBuilder {
 
 	private metadataElement: CommonCartridgeElement | null = null;
 
-	constructor(private readonly props: CommonCartridgeFileBuilderProps) {}
+	constructor(
+		private readonly props: CommonCartridgeFileBuilderProps,
+		public readonly archive: archiver.Archiver,
+		private readonly logger: Logger
+	) {}
 
 	public addMetadata(metadataProps: CommonCartridgeElementProps): void {
 		this.metadataElement = CommonCartridgeElementFactory.createElement({
@@ -53,14 +61,19 @@ export class CommonCartridgeFileBuilder {
 		return organization;
 	}
 
-	public build(): Buffer {
+	public build(): void {
 		if (!this.metadataElement) {
 			throw new MissingMetadataLoggableException();
 		}
 
-		const archive = new AdmZip();
+		this.logger.debug(new CommonCartridgeMessageLoggable('Building archive'));
+
 		const organizations = this.organizationsRoot.map((organization) => organization.build());
+		this.logger.debug(new CommonCartridgeMessageLoggable('Built organizations of archive'));
+
 		const resources = this.resourcesBuilder.build();
+		this.logger.debug(new CommonCartridgeMessageLoggable('Built resources of archive'));
+
 		const manifest = CommonCartridgeResourceFactory.createResource({
 			type: CommonCartridgeResourceType.MANIFEST,
 			version: this.props.version,
@@ -70,15 +83,34 @@ export class CommonCartridgeFileBuilder {
 			resources,
 		});
 
-		archive.addFile(manifest.getFilePath(), Buffer.from(manifest.getFileContent()));
+		this.writeFileContents(manifest.getFileContent());
 
+		this.logger.debug(new CommonCartridgeMessageLoggable('Adding resources'));
 		resources.forEach((resource) => {
 			const fileContent = resource.getFileContent();
-			const buffer = Buffer.isBuffer(fileContent) ? fileContent : Buffer.from(fileContent);
-
-			archive.addFile(resource.getFilePath(), buffer);
+			this.writeFileContents(fileContent);
 		});
 
-		return archive.toBuffer();
+		this.logger.debug(new CommonCartridgeMessageLoggable('Finalizing archive'));
+		// DO NOT AWAIT THE PROMISE OR THIS DOESN'T WORK
+		// eslint-disable-next-line @typescript-eslint/no-floating-promises
+		this.archive.finalize();
+		this.logger.debug(new CommonCartridgeMessageLoggable('Built archive'));
+	}
+
+	private writeFileContents(fileContent: ResourceFileContent | ResourceFileContent[]): void {
+		if (Array.isArray(fileContent)) {
+			fileContent.forEach((element) => this.writeFileContent(element));
+		} else {
+			this.writeFileContent(fileContent);
+		}
+	}
+
+	private writeFileContent(fileContent: ResourceFileContent): void {
+		this.logger.debug(new CommonCartridgeMessageLoggable(`Appending file: ${fileContent.path}`));
+
+		this.archive.append(fileContent.content, { name: fileContent.path });
+
+		this.logger.debug(new CommonCartridgeMessageLoggable(`Appended: ${fileContent.path}`));
 	}
 }

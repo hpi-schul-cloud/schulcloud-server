@@ -1,5 +1,0 @@
-export interface BbbConfig {
-	VIDEOCONFERENCE_HOST: string;
-	VIDEOCONFERENCE_SALT: string;
-	VIDEOCONFERENCE_DEFAULT_PRESENTATION: string;
-}

@@ -1,49 +1,71 @@
+import { BoardOperation, BoardOperationValues } from '@modules/board/authorisation/board-node.rule';
 import { ApiProperty } from '@nestjs/swagger';
 import { bsonStringPattern } from '@shared/controller/bson-string-pattern';
 import { DecodeHtmlEntities } from '@shared/controller/transformer';
-import { Permission } from '@shared/domain/interface/permission.enum';
 import { BoardFeature, BoardLayout } from '../../../domain';
 import { TimestampsResponse } from '../timestamps.response';
 import { ColumnResponse } from './column.response';
 
 export class BoardResponse {
-	constructor({ id, title, columns, timestamps, isVisible, layout, features, permissions }: BoardResponse) {
+	constructor({
+		id,
+		title,
+		columns,
+		timestamps,
+		isVisible,
+		readersCanEdit,
+		layout,
+		features,
+		allowedOperations,
+	}: BoardResponse) {
 		this.id = id;
 		this.title = title;
 		this.columns = columns;
 		this.timestamps = timestamps;
 		this.isVisible = isVisible;
+		this.readersCanEdit = readersCanEdit;
 		this.layout = layout;
 		this.features = features;
-		this.permissions = permissions;
+		this.allowedOperations = allowedOperations;
 	}
 
 	@ApiProperty({
 		pattern: bsonStringPattern,
 	})
-	id: string;
+	public id: string;
 
 	@ApiProperty()
 	@DecodeHtmlEntities()
-	title?: string;
+	public title?: string;
 
 	@ApiProperty({
 		type: [ColumnResponse],
 	})
-	columns: ColumnResponse[];
+	public columns: ColumnResponse[];
 
 	@ApiProperty()
-	timestamps: TimestampsResponse;
+	public timestamps: TimestampsResponse;
 
 	@ApiProperty()
-	isVisible: boolean;
+	public isVisible: boolean;
+
+	@ApiProperty()
+	public readersCanEdit: boolean;
 
 	@ApiProperty({ enum: BoardLayout, enumName: 'BoardLayout' })
-	layout: BoardLayout;
+	public layout: BoardLayout;
 
 	@ApiProperty({ enum: BoardFeature, isArray: true, enumName: 'BoardFeature' })
-	features: BoardFeature[];
+	public features: BoardFeature[];
 
-	@ApiProperty({ enum: Permission, isArray: true, enumName: 'Permission' })
-	permissions: Permission[];
+	@ApiProperty({
+		type: 'object',
+		properties: BoardOperationValues.reduce((acc, op) => {
+			acc[op] = { type: 'boolean' };
+			return acc;
+		}, {}),
+		additionalProperties: false,
+		required: [...BoardOperationValues],
+	})
+	public allowedOperations: Record<BoardOperation, boolean>;
 }

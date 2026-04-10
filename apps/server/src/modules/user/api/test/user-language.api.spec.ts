@@ -1,6 +1,5 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server';
-import { adminApiServerConfig } from '@modules/server/admin-api-server.config';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ApiValidationError } from '@shared/common/error';
@@ -25,9 +24,7 @@ describe(baseRouteName, () => {
 		await app.init();
 		em = module.get(EntityManager);
 
-		// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
-		const apiKeys = adminApiServerConfig().ADMIN_API__ALLOWED_API_KEYS as string[]; // check config/test.json
-		apiClient = new TestApiClient(app, baseRouteName, apiKeys[0], true);
+		apiClient = new TestApiClient(app, baseRouteName);
 	});
 
 	afterAll(async () => {
@@ -46,7 +43,7 @@ describe(baseRouteName, () => {
 		const setup = async () => {
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 
-			await em.persistAndFlush([teacherAccount, teacherUser]);
+			await em.persist([teacherAccount, teacherUser]).flush();
 			em.clear();
 
 			const loggedInClient = await apiClient.login(teacherAccount);
@@ -73,7 +70,7 @@ describe(baseRouteName, () => {
 		const setup = async () => {
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ language: LanguageType.DE });
 
-			await em.persistAndFlush([teacherAccount, teacherUser]);
+			await em.persist([teacherAccount, teacherUser]).flush();
 			em.clear();
 
 			const loggedInClient = await apiClient.login(teacherAccount);

@@ -1,14 +1,20 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { REQUEST } from '@nestjs/core';
+import { EventBus } from '@nestjs/cqrs';
+import { JwtExtractor } from '@shared/common/utils';
 import { EntityId } from '@shared/domain/types';
-import { CommonCartridgeExportService, CommonCartridgeImportService } from '../service';
+import { ImportCourseEvent } from '../domain/events/import-course.event';
+import { ImportCourseParams } from '../domain/import-course.params';
 import { CommonCartridgeVersion } from '../export/common-cartridge.enums';
-import { ICurrentUser } from '@infra/auth-guard';
+import { CommonCartridgeExportService } from '../service';
+import { CommonCartridgeExportResponse } from '../service/common-cartridge-export.response';
 
 @Injectable()
 export class CommonCartridgeUc {
 	constructor(
 		private readonly exportService: CommonCartridgeExportService,
-		private readonly importService: CommonCartridgeImportService
+		private readonly eventBus: EventBus,
+		@Inject(REQUEST) private readonly request: Request
 	) {}
 
 	public async exportCourse(
@@ -17,13 +23,25 @@ export class CommonCartridgeUc {
 		topics: string[],
 		tasks: string[],
 		columnBoards: string[]
-	): Promise<Buffer> {
-		const exportedCourse = await this.exportService.exportCourse(courseId, version, topics, tasks, columnBoards);
+	): Promise<CommonCartridgeExportResponse> {
+		const jwt = JwtExtractor.extractJwtFromRequest(this.request);
+
+		if (!jwt) {
+			throw new UnauthorizedException();
+		}
+
+		const exportedCourse = await this.exportService.exportCourse(jwt, courseId, version, topics, tasks, columnBoards);
 
 		return exportedCourse;
 	}
 
-	public async importCourse(file: Buffer, currentUser: ICurrentUser): Promise<void> {
-		await this.importService.importFile(file, currentUser);
+	public startCourseImport(params: ImportCourseParams): void {
+		const jwt = JwtExtractor.extractJwtFromRequest(this.request);
+
+		if (!jwt) {
+			throw new UnauthorizedException();
+		}
+
+		this.eventBus.publish(new ImportCourseEvent(jwt, params.fileRecordId, params.fileName, params.fileUrl));
 	}
 }

@@ -5,14 +5,14 @@ const winstonLogger = require('../../../logger');
  * A basic syncer that provides step-by-step execution, statistics, and logging
  */
 class Syncer {
-	constructor(app, stats = {}, logger = winstonLogger) {
+	constructor(app, stats = {}, logger = winstonLogger, syncId) {
 		this.app = app;
 		this.stats = Object.assign(stats, {
 			success: undefined,
 			errors: [],
 		});
 		this.logger = logger;
-		this.syncId = String(new mongoose.Types.ObjectId());
+		this.syncId = syncId ? String(syncId) : String(new mongoose.Types.ObjectId());
 	}
 
 	/**

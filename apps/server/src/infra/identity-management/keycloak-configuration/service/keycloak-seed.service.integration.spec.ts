@@ -1,12 +1,17 @@
 import { LoggerModule } from '@core/logger';
 import { faker } from '@faker-js/faker';
+import { TestEncryptionConfig } from '@infra/encryption';
 import KeycloakAdminClient from '@keycloak/keycloak-admin-client';
 import { AccountEntity } from '@modules/account/repo';
-import { ConfigModule } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { v1 } from 'uuid';
+import {
+	KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
+	KeycloakAdministrationConfig,
+} from '../../keycloak-administration/keycloak-administration.config';
 import { KeycloakAdministrationService } from '../../keycloak-administration/service/keycloak-administration.service';
+import { KEYCLOAK_CONFIGURATION_CONFIG_TOKEN, KeycloakConfigurationConfig } from '../keycloak-configuration.config';
 import { KeycloakConfigurationModule } from '../keycloak-configuration.module';
 import { KeycloakSeedService } from './keycloak-seed.service';
 
@@ -34,19 +39,22 @@ describe('KeycloakSeedService Integration', () => {
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [
-				KeycloakConfigurationModule,
-				LoggerModule,
-				MongoMemoryDatabaseModule.forRoot({ entities: [AccountEntity] }),
-				ConfigModule.forRoot({
-					isGlobal: true,
-					ignoreEnvFile: true,
-					ignoreEnvVars: true,
-					validate: () => {
-						return {
-							FEATURE_IDENTITY_MANAGEMENT_STORE_ENABLED: true,
-						};
+				KeycloakConfigurationModule.register({
+					encryptionConfig: {
+						configConstructor: TestEncryptionConfig,
+						configInjectionToken: 'TEST_ENCRYPTION_CONFIG_TOKEN',
+					},
+					keycloakAdministrationConfig: {
+						configConstructor: KeycloakAdministrationConfig,
+						configInjectionToken: KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
+					},
+					keycloakConfigurationConfig: {
+						configConstructor: KeycloakConfigurationConfig,
+						configInjectionToken: KEYCLOAK_CONFIGURATION_CONFIG_TOKEN,
 					},
 				}),
+				LoggerModule,
+				MongoMemoryDatabaseModule.forRoot({ entities: [AccountEntity] }),
 			],
 			providers: [],
 		}).compile();

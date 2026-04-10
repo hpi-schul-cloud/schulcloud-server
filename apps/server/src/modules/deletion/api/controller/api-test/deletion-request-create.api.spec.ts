@@ -1,11 +1,10 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { adminApiServerConfig } from '@modules/server/admin-api-server.config';
+import { AccountEntity } from '@modules/account/repo';
 import { AdminApiServerTestModule } from '@modules/server/admin-api.server.app.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { TestApiClient } from '@testing/test-api-client';
-import { AccountEntity } from '@modules/account/repo';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
+import { TestApiClient } from '@testing/test-api-client';
 import { DomainName } from '../../../domain/types';
 import { DeletionRequestEntity } from '../../../repo/entity';
 import { DeletionRequestBodyParams, DeletionRequestResponse } from '../dto';
@@ -59,9 +58,6 @@ describe(`deletionRequest create (api)`, () => {
 	const API_KEY = 'someotherkey';
 
 	beforeAll(async () => {
-		const config = adminApiServerConfig();
-		config.ADMIN_API__ALLOWED_API_KEYS = [API_KEY];
-
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [AdminApiServerTestModule],
 		}).compile();
@@ -80,7 +76,7 @@ describe(`deletionRequest create (api)`, () => {
 		const setup = async () => {
 			const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent();
 
-			await em.persistAndFlush([studentUser, studentAccount]);
+			await em.persist([studentUser, studentAccount]).flush();
 			em.clear();
 
 			const deletionRequestToCreate: DeletionRequestBodyParams = {
@@ -128,6 +124,14 @@ describe(`deletionRequest create (api)`, () => {
 		});
 
 		it('should deactivate the user account', async () => {
+			const { deletionRequestToCreate } = await setup();
+
+			await testApiClient.post('', deletionRequestToCreate);
+			const account = await em.findOne(AccountEntity, { userId: new ObjectId(deletionRequestToCreate.targetRef.id) });
+			expect(account?.deactivatedAt).toBeDefined();
+		});
+
+		it('should flag user as deleted until actual deletion is performed', async () => {
 			const { deletionRequestToCreate } = await setup();
 
 			await testApiClient.post('', deletionRequestToCreate);

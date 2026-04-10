@@ -1,6 +1,7 @@
 import { axiosErrorFactory } from '@testing/factory/axios-error.factory';
 import { AxiosError } from 'axios';
 import { TokenRequestLoggableException } from './token-request-loggable-exception';
+import util from 'util';
 
 describe(TokenRequestLoggableException.name, () => {
 	describe('getLogMessage', () => {
@@ -27,7 +28,7 @@ describe(TokenRequestLoggableException.name, () => {
 			expect(logMessage).toStrictEqual({
 				type: 'OAUTH_TOKEN_REQUEST_ERROR',
 				message: 'message: Bad Request code: 400',
-				data: JSON.stringify(error),
+				data: util.inspect(error),
 				stack: exception.stack,
 			});
 		});

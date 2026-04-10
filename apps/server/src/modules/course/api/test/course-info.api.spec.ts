@@ -97,12 +97,12 @@ describe('Course Info Controller (API)', () => {
 				archivedCourses[0].teachers.removeAll();
 
 				admin.user.school = school;
-				await em.persistAndFlush(school);
-				await em.persistAndFlush(group);
-				await em.persistAndFlush(currentCourses);
-				await em.persistAndFlush(syncedCourses);
-				await em.persistAndFlush(archivedCourses);
-				await em.persistAndFlush([admin.account, admin.user]);
+				await em.persist(school).flush();
+				await em.persist(group).flush();
+				await em.persist(currentCourses).flush();
+				await em.persist(syncedCourses).flush();
+				await em.persist(archivedCourses).flush();
+				await em.persist([admin.account, admin.user]).flush();
 				em.clear();
 
 				return {

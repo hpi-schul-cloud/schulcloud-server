@@ -1,24 +1,21 @@
 import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { EtherpadClientAdapter } from '@infra/etherpad-client';
-import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CollaborativeTextEditorParentType } from '../api/dto/get-collaborative-text-editor-for-parent.params';
+import { COLLABORATIVE_TEXT_EDITOR_CONFIG_TOKEN } from '../collaborative-text-editor.config';
 import { CollaborativeTextEditorService } from './collaborative-text-editor.service';
 
 describe('CollaborativeTextEditorService', () => {
 	let service: CollaborativeTextEditorService;
-	let configService: DeepMocked<ConfigService>;
 	let etherpadClientAdapter: DeepMocked<EtherpadClientAdapter>;
+	const COOKIE_EXPIRES_SECONDS = 2;
+	const COOKIE_RELEASE_THRESHOLD = 5;
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [
 				CollaborativeTextEditorService,
-				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService>(),
-				},
 				{
 					provide: EtherpadClientAdapter,
 					useValue: createMock<EtherpadClientAdapter>(),
@@ -27,11 +24,18 @@ describe('CollaborativeTextEditorService', () => {
 					provide: Logger,
 					useValue: createMock<Logger>(),
 				},
+				{
+					provide: COLLABORATIVE_TEXT_EDITOR_CONFIG_TOKEN,
+					useValue: {
+						padUri: 'http://localhost:9001/p',
+						cookieExpiresInSeconds: COOKIE_EXPIRES_SECONDS,
+						cookieReleaseThreshold: COOKIE_RELEASE_THRESHOLD,
+					},
+				},
 			],
 		}).compile();
 
 		service = module.get(CollaborativeTextEditorService);
-		configService = module.get(ConfigService);
 		etherpadClientAdapter = module.get(EtherpadClientAdapter);
 	});
 
@@ -51,10 +55,8 @@ describe('CollaborativeTextEditorService', () => {
 			const sessionId = 'sessionId1';
 			const authorsSessionIds = ['sessionId1', 'sessionId2'];
 			const url = 'http://localhost:9001/p';
-			const cookieExpiresSeconds = 2;
-			const releaseThreshold = 5;
 			const dateMock = new Date(2022, 1, 22);
-			const sessionExpiryDate = new Date(dateMock.getTime() + cookieExpiresSeconds * 1000);
+			const sessionExpiryDate = new Date(dateMock.getTime() + COOKIE_EXPIRES_SECONDS * 1000);
 
 			return {
 				userId,
@@ -66,8 +68,6 @@ describe('CollaborativeTextEditorService', () => {
 				sessionId,
 				authorsSessionIds,
 				url,
-				cookieExpiresSeconds,
-				releaseThreshold,
 				sessionExpiryDate,
 				dateMock,
 			};
@@ -85,15 +85,10 @@ describe('CollaborativeTextEditorService', () => {
 					sessionId,
 					authorsSessionIds,
 					url,
-					cookieExpiresSeconds,
 					sessionExpiryDate,
 					dateMock,
-					releaseThreshold,
 				} = buildParameter();
 
-				configService.get.mockReturnValueOnce(cookieExpiresSeconds);
-				configService.get.mockReturnValueOnce(releaseThreshold);
-				configService.get.mockReturnValueOnce(url);
 				etherpadClientAdapter.getOrCreateGroupId.mockResolvedValueOnce(groupId);
 				etherpadClientAdapter.getOrCreateEtherpadId.mockResolvedValueOnce(padId);
 				etherpadClientAdapter.getOrCreateAuthorId.mockResolvedValueOnce(authorId);
@@ -113,9 +108,7 @@ describe('CollaborativeTextEditorService', () => {
 					sessionId,
 					authorsSessionIds,
 					url,
-					cookieExpiresSeconds,
 					sessionExpiryDate,
-					releaseThreshold,
 					dateMock,
 				};
 			};
@@ -134,7 +127,7 @@ describe('CollaborativeTextEditorService', () => {
 			});
 
 			it('should call etherpadClientAdapter methods with correct parameter', async () => {
-				const { userId, userName, params, groupId, authorId, sessionExpiryDate, releaseThreshold } = setup();
+				const { userId, userName, params, groupId, authorId, sessionExpiryDate } = setup();
 
 				await service.getOrCreateCollaborativeTextEditor(userId, userName, params);
 
@@ -146,18 +139,15 @@ describe('CollaborativeTextEditorService', () => {
 					authorId,
 					params.parentId,
 					sessionExpiryDate,
-					releaseThreshold
+					COOKIE_RELEASE_THRESHOLD
 				);
 			});
 		});
 
 		describe('WHEN etherpadClientAdapter.getOrCreateGroup throws an error', () => {
 			const setup = () => {
-				const { userId, userName, params, dateMock, cookieExpiresSeconds, releaseThreshold } = buildParameter();
+				const { userId, userName, params, dateMock } = buildParameter();
 				const error = new Error('error');
-
-				configService.get.mockReturnValueOnce(cookieExpiresSeconds);
-				configService.get.mockReturnValueOnce(releaseThreshold);
 
 				etherpadClientAdapter.getOrCreateGroupId.mockRejectedValueOnce(error);
 
@@ -176,10 +166,9 @@ describe('CollaborativeTextEditorService', () => {
 
 		describe('WHEN etherpadClientAdapter.getOrCreateEtherpad throws an error', () => {
 			const setup = () => {
-				const { userId, userName, params, dateMock, cookieExpiresSeconds, groupId } = buildParameter();
+				const { userId, userName, params, dateMock, groupId } = buildParameter();
 				const error = new Error('error');
 
-				configService.get.mockReturnValueOnce(cookieExpiresSeconds);
 				etherpadClientAdapter.getOrCreateGroupId.mockResolvedValueOnce(groupId);
 				etherpadClientAdapter.getOrCreateEtherpadId.mockRejectedValueOnce(error);
 
@@ -198,10 +187,9 @@ describe('CollaborativeTextEditorService', () => {
 
 		describe('WHEN etherpadClientAdapter.getOrCreateAuthor throws an error', () => {
 			const setup = () => {
-				const { userId, userName, params, dateMock, cookieExpiresSeconds, groupId, padId } = buildParameter();
+				const { userId, userName, params, dateMock, groupId, padId } = buildParameter();
 				const error = new Error('error');
 
-				configService.get.mockReturnValueOnce(cookieExpiresSeconds);
 				etherpadClientAdapter.getOrCreateGroupId.mockResolvedValueOnce(groupId);
 				etherpadClientAdapter.getOrCreateEtherpadId.mockResolvedValueOnce(padId);
 				etherpadClientAdapter.getOrCreateAuthorId.mockRejectedValueOnce(error);
@@ -221,10 +209,9 @@ describe('CollaborativeTextEditorService', () => {
 
 		describe('WHEN etherpadClientAdapter.getOrCreateSession throws an error', () => {
 			const setup = () => {
-				const { userId, userName, params, dateMock, cookieExpiresSeconds, groupId, padId, authorId } = buildParameter();
+				const { userId, userName, params, dateMock, groupId, padId, authorId } = buildParameter();
 				const error = new Error('error');
 
-				configService.get.mockReturnValueOnce(cookieExpiresSeconds);
 				etherpadClientAdapter.getOrCreateGroupId.mockResolvedValueOnce(groupId);
 				etherpadClientAdapter.getOrCreateEtherpadId.mockResolvedValueOnce(padId);
 				etherpadClientAdapter.getOrCreateAuthorId.mockResolvedValueOnce(authorId);

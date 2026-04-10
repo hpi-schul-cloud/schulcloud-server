@@ -10,8 +10,8 @@ import { LessonEntity, Material } from '@modules/lesson/repo';
 import { CourseNews, News, SchoolNews, TeamNews } from '@modules/news/repo';
 import { ExternalToolPseudonymEntity } from '@modules/pseudonym/entity';
 import { RegistrationPinEntity } from '@modules/registration-pin/entity';
-import { RocketChatUserEntity } from '@modules/rocketchat-user/entity';
 import { Role } from '@modules/role/repo';
+import { RoomArrangementEntity } from '@modules/room';
 import { RoomMembershipEntity } from '@modules/room-membership';
 import { FederalStateEntity, SchoolEntity, SchoolYearEntity, StorageProviderEntity } from '@modules/school/repo';
 import { Submission, Task } from '@modules/task/repo';
@@ -46,7 +46,6 @@ export const ENTITIES = [
 	TeamNews,
 	TeamEntity,
 	ExternalToolPseudonymEntity,
-	RocketChatUserEntity,
 	RegistrationPinEntity,
 	LtiDeepLinkTokenEntity,
 	BoardNodeEntity,
@@ -57,6 +56,7 @@ export const ENTITIES = [
 	DashboardGridElementEntity,
 	LessonEntity,
 	Material,
+	RoomArrangementEntity,
 ];
 
 export const TEST_ENTITIES = [...ENTITIES];

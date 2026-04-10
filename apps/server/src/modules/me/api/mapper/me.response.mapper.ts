@@ -8,15 +8,17 @@ import {
 	MeRoleResponse,
 	MeSchoolLogoResponse,
 	MeSchoolResponse,
+	MePreferencesResponse,
 	MeUserResponse,
 } from '../dto';
+import { Permission } from '@shared/domain/interface';
 
 export class MeResponseMapper {
 	public static mapToResponse(
 		school: School,
 		user: User,
 		accountId: EntityId,
-		permissions: string[],
+		permissions: Permission[],
 		systemId?: EntityId
 	): MeResponse {
 		const schoolResponse = MeResponseMapper.mapSchool(school);
@@ -24,6 +26,7 @@ export class MeResponseMapper {
 		const rolesResponse = MeResponseMapper.mapUserRoles(user);
 		const language = user.getInfo().language || school.getInfo().language;
 		const accountResponse = MeResponseMapper.mapAccount(accountId);
+		const userPreferences = user.getPreferences();
 
 		const res = new MeResponse({
 			school: schoolResponse,
@@ -33,6 +36,9 @@ export class MeResponseMapper {
 			language,
 			account: accountResponse,
 			systemId,
+			preferences: new MePreferencesResponse({
+				releaseDate: userPreferences.releaseDate as string | undefined,
+			}),
 		});
 
 		return res;

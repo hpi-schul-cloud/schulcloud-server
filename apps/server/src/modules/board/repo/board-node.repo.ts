@@ -203,7 +203,7 @@ export class BoardNodeRepo {
 	}
 
 	private async flush(): Promise<void> {
-		return this.em.flush();
+		await this.em.flush();
 	}
 
 	private getProps(boardNode: AnyBoardNode): BoardNodeEntity {

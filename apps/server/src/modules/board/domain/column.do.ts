@@ -15,5 +15,3 @@ export class Column extends BoardNode<ColumnProps> {
 		return childNode instanceof Card;
 	}
 }
-
-export const isColumn = (reference: unknown): reference is Column => reference instanceof Column;

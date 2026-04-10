@@ -63,25 +63,24 @@ describe('CourseUc', () => {
 		const setup = () => {
 			const courses = courseEntityFactory.buildList(5);
 			const pagination = { skip: 1, limit: 2 };
-
-			return { courses, pagination };
+			const schoolId = 'someSchoolId';
+			return { courses, pagination, schoolId };
 		};
 		it('should return courses of user', async () => {
-			const { courses } = setup();
-
-			courseService.findAllCoursesByUserId.mockResolvedValueOnce([courses, 5]);
-			const [array, count] = await uc.findAllByUser('someUserId');
+			const { courses, schoolId } = setup();
+			courseService.findAllByUserId.mockResolvedValueOnce([courses, 5]);
+			const [array, count] = await uc.findAllByUser('someUserId', schoolId);
 
 			expect(count).toEqual(5);
 			expect(array).toEqual(courses);
 		});
 
 		it('should pass on options correctly', async () => {
-			const { pagination } = setup();
+			const { pagination, schoolId } = setup();
 
 			const resultingOptions = { pagination, order: { updatedAt: SortOrder.desc } };
-			await uc.findAllByUser('someUserId', pagination);
-			expect(courseService.findAllCoursesByUserId).toHaveBeenCalledWith('someUserId', {}, resultingOptions);
+			await uc.findAllByUser('someUserId', schoolId, pagination);
+			expect(courseService.findAllByUserId).toHaveBeenCalledWith('someUserId', schoolId, {}, resultingOptions);
 		});
 	});
 
@@ -107,7 +106,7 @@ describe('CourseUc', () => {
 			const permissions = await uc.getUserPermissionByCourseId(teacherUser.id, course.id);
 
 			expect(permissions.length).toBeGreaterThan(0);
-			expect(courseService.findById).toHaveBeenCalledWith(course.id);
+			expect(courseService.findOneForUser).toHaveBeenCalledWith(course.id, teacherUser.id, teacherUser.school.id);
 			expect(authorizationService.getUserWithPermissions).toHaveBeenCalledWith(teacherUser.id);
 			expect(roleService.findByName).toHaveBeenCalledWith(RoleName.TEACHER);
 		});
