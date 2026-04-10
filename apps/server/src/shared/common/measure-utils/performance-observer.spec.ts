@@ -1,4 +1,4 @@
-import { PerformanceEntry } from 'node:perf_hooks';
+import { PerformanceMeasure } from 'node:perf_hooks';
 import {
 	InitialisePerformanceObserverLoggable,
 	MeasuresLoggable,
@@ -42,7 +42,16 @@ describe('PerformanceObserver', () => {
 	describe('MeasuresLoggable', () => {
 		describe('getLogMessage', () => {
 			const setup = () => {
-				const performanceEntry = { name: 'a', duration: 1, detail: { x: 1 } } as PerformanceEntry;
+				const performanceEntry = {
+					name: 'a',
+					duration: 1,
+					detail: { x: 1 },
+					startTime: 0,
+					entryType: 'measure',
+					toJSON: () => {
+						return {};
+					},
+				} as unknown as PerformanceMeasure;
 
 				const loggable = new MeasuresLoggable([performanceEntry, performanceEntry]);
 

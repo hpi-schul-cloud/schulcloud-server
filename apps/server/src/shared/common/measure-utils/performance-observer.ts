@@ -1,4 +1,4 @@
-import { PerformanceEntry, PerformanceObserver } from 'node:perf_hooks';
+import { PerformanceMeasure, PerformanceObserver } from 'node:perf_hooks';
 import util from 'util';
 import { Loggable, LoggableMessage } from '../loggable';
 
@@ -6,8 +6,11 @@ interface InfoLogger {
 	info(input: Loggable): void;
 }
 
+/**
+ * TODO check usage - if not used should be removed
+ */
 export class MeasuresLoggable implements Loggable {
-	constructor(private readonly entries: PerformanceEntry[]) {}
+	constructor(private readonly entries: PerformanceMeasure[]) {}
 
 	getLogMessage(): LoggableMessage {
 		const stringifiedEntries = this.entries.map((entry) => {
@@ -36,7 +39,7 @@ export const initialisePerformanceObserver = (infoLogger: InfoLogger): Performan
 
 	if (observer === null) {
 		observer = new PerformanceObserver((perfObserverEntryList) => {
-			const entries = perfObserverEntryList.getEntriesByType('measure');
+			const entries = perfObserverEntryList.getEntriesByType('measure') as PerformanceMeasure[];
 			infoLogger.info(new MeasuresLoggable(entries));
 		});
 
