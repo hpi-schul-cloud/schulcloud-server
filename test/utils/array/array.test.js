@@ -8,7 +8,7 @@ const paginationOptions = {
 	},
 };
 
-describe.only('[utils] array helpers', () => {
+describe('[utils] array helpers', () => {
 	describe('#flatten', () => {
 		it('should work on empty arrays', () => {
 			expect(flatten([])).to.deep.equal([]);
