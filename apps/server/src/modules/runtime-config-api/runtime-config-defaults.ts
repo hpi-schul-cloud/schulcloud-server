@@ -39,6 +39,12 @@ const RuntimeConfigDefaults: RuntimeConfigDefault[] = [
 		value: 'Стандартний текст оголошення',
 		description: 'Bannertext Ukrainische Version.',
 	},
+	{
+		key: 'DASHBOARD_ANNOUNCEMENT_SOME_NUMBER',
+		type: 'number',
+		value: 0,
+		description: 'Ein Beispiel für eine numerische Konfiguration.',
+	},
 ];
 
 export default RuntimeConfigDefaults;
