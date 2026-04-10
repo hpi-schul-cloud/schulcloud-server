@@ -1,5 +1,5 @@
 import { LoggerModule } from '@core/logger';
-import { AuthorizationModule } from '@modules/authorization';
+import { AUTHORIZATION_CONFIG_TOKEN, AuthorizationConfig, AuthorizationModule } from '@modules/authorization';
 import { ClassModule } from '@modules/class';
 import { CourseModule } from '@modules/course';
 import { LegacySchoolModule } from '@modules/legacy-school';
@@ -30,6 +30,7 @@ import { GROUP_CONFIG_TOKEN, GroupConfig } from './group.config';
 		CourseModule,
 		SagaModule,
 		ConfigurationModule.register(GROUP_CONFIG_TOKEN, GroupConfig),
+		ConfigurationModule.register(AUTHORIZATION_CONFIG_TOKEN, AuthorizationConfig),
 	],
 	controllers: [GroupController],
 	providers: [GroupUc, ClassGroupUc, DeleteUserGroupDataStep],
