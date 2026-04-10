@@ -859,5 +859,206 @@ describe('ClassGroupUc', () => {
 				);
 			});
 		});
+
+		describe('when testing student visibility configurations', () => {
+			describe('when visibility is configurable and school has setting enabled', () => {
+				const setup = () => {
+					const school = schoolFactory.build();
+					jest.spyOn(school, 'getPermissions').mockReturnValue({
+						teacher: { STUDENT_LIST: true },
+					});
+					const { teacherUser } = UserAndAccountTestFactory.buildTeacher();
+					const schoolYear = schoolYearDoFactory.build();
+
+					schoolService.getSchoolById.mockResolvedValue(school);
+					authorizationService.getUserWithPermissions.mockResolvedValueOnce(teacherUser);
+					authorizationService.hasAllPermissions.mockReturnValueOnce(true);
+					authorizationService.hasPermission.mockReturnValueOnce(false);
+					schoolYearService.getAllSchoolYears.mockResolvedValueOnce([schoolYear]);
+					classService.find.mockResolvedValueOnce([]);
+					groupService.findByScope.mockResolvedValueOnce(new Page<Group>([], 0));
+					systemService.getSystems.mockResolvedValueOnce([]);
+					roleService.findByName.mockResolvedValueOnce(roleDtoFactory.buildWithId());
+					userService.findByIds.mockResolvedValue([]);
+					courseService.findBySyncedGroup.mockResolvedValueOnce([]);
+					authorizationConfig.teacherStudentVisibilityIsConfigurable = true;
+					authorizationConfig.teacherStudentVisibilityIsEnabledByDefault = false;
+
+					return { school, teacherUser };
+				};
+
+				it('should require STUDENT_LIST permission when school enables visibility', async () => {
+					const { teacherUser } = setup();
+
+					await uc.findAllClasses(teacherUser.id, teacherUser.school.id);
+
+					expect(authorizationService.hasAllPermissions).toHaveBeenCalledWith(teacherUser, [Permission.STUDENT_LIST]);
+				});
+			});
+
+			describe('when visibility is configurable and school has setting disabled', () => {
+				const setup = () => {
+					const school = schoolFactory.build();
+					jest.spyOn(school, 'getPermissions').mockReturnValue({
+						teacher: { STUDENT_LIST: false },
+					});
+					const { teacherUser } = UserAndAccountTestFactory.buildTeacher();
+					const schoolYear = schoolYearDoFactory.build();
+
+					schoolService.getSchoolById.mockResolvedValue(school);
+					authorizationService.getUserWithPermissions.mockResolvedValueOnce(teacherUser);
+					authorizationService.hasAllPermissions.mockReturnValueOnce(false);
+					authorizationService.hasPermission.mockReturnValueOnce(false);
+					schoolYearService.getAllSchoolYears.mockResolvedValueOnce([schoolYear]);
+					classService.find.mockResolvedValueOnce([]);
+					groupService.findByScope.mockResolvedValueOnce(new Page<Group>([], 0));
+					systemService.getSystems.mockResolvedValueOnce([]);
+					roleService.findByName.mockResolvedValueOnce(roleDtoFactory.buildWithId());
+					userService.findByIds.mockResolvedValue([]);
+					courseService.findBySyncedGroup.mockResolvedValueOnce([]);
+					authorizationConfig.teacherStudentVisibilityIsConfigurable = true;
+					authorizationConfig.teacherStudentVisibilityIsEnabledByDefault = true;
+
+					return { school, teacherUser };
+				};
+
+				it('should require GROUP_FULL_ADMIN permission', async () => {
+					const { teacherUser } = setup();
+
+					await uc.findAllClasses(teacherUser.id, teacherUser.school.id);
+
+					expect(authorizationService.hasAllPermissions).toHaveBeenCalledWith(teacherUser, [
+						Permission.GROUP_FULL_ADMIN,
+					]);
+				});
+			});
+
+			describe('when visibility is configurable but school has no setting', () => {
+				const setup = (enabledByDefault: boolean) => {
+					const school = schoolFactory.build();
+					jest.spyOn(school, 'getPermissions').mockReturnValue({
+						teacher: {}, // No STUDENT_LIST setting
+					});
+					const { teacherUser } = UserAndAccountTestFactory.buildTeacher();
+					const schoolYear = schoolYearDoFactory.build();
+
+					schoolService.getSchoolById.mockResolvedValue(school);
+					authorizationService.getUserWithPermissions.mockResolvedValueOnce(teacherUser);
+					authorizationService.hasAllPermissions.mockReturnValueOnce(enabledByDefault);
+					authorizationService.hasPermission.mockReturnValueOnce(false);
+					schoolYearService.getAllSchoolYears.mockResolvedValueOnce([schoolYear]);
+					classService.find.mockResolvedValueOnce([]);
+					groupService.findByScope.mockResolvedValueOnce(new Page<Group>([], 0));
+					systemService.getSystems.mockResolvedValueOnce([]);
+					roleService.findByName.mockResolvedValueOnce(roleDtoFactory.buildWithId());
+					userService.findByIds.mockResolvedValue([]);
+					courseService.findBySyncedGroup.mockResolvedValueOnce([]);
+					authorizationConfig.teacherStudentVisibilityIsConfigurable = true;
+					authorizationConfig.teacherStudentVisibilityIsEnabledByDefault = enabledByDefault;
+
+					return { school, teacherUser };
+				};
+
+				describe('when default is enabled', () => {
+					it('should fall back to STUDENT_LIST', async () => {
+						const { teacherUser } = setup(true);
+
+						await uc.findAllClasses(teacherUser.id, teacherUser.school.id);
+
+						expect(authorizationService.hasAllPermissions).toHaveBeenCalledWith(teacherUser, [Permission.STUDENT_LIST]);
+					});
+				});
+
+				describe('when default is disabled', () => {
+					it('should fall back to GROUP_FULL_ADMIN', async () => {
+						const { teacherUser } = setup(false);
+
+						await uc.findAllClasses(teacherUser.id, teacherUser.school.id);
+
+						expect(authorizationService.hasAllPermissions).toHaveBeenCalledWith(teacherUser, [
+							Permission.GROUP_FULL_ADMIN,
+						]);
+					});
+				});
+			});
+
+			describe('when visibility is not configurable', () => {
+				const setup = (enabledByDefault: boolean) => {
+					const school = schoolFactory.build();
+					jest.spyOn(school, 'getPermissions').mockReturnValue({
+						teacher: { STUDENT_LIST: true }, // This should be ignored when not configurable
+					});
+					const { teacherUser } = UserAndAccountTestFactory.buildTeacher();
+					const schoolYear = schoolYearDoFactory.build();
+
+					schoolService.getSchoolById.mockResolvedValue(school);
+					authorizationService.getUserWithPermissions.mockResolvedValueOnce(teacherUser);
+					authorizationService.hasAllPermissions.mockReturnValueOnce(enabledByDefault);
+					authorizationService.hasPermission.mockReturnValueOnce(false);
+					schoolYearService.getAllSchoolYears.mockResolvedValueOnce([schoolYear]);
+					classService.find.mockResolvedValueOnce([]);
+					groupService.findByScope.mockResolvedValueOnce(new Page<Group>([], 0));
+					systemService.getSystems.mockResolvedValueOnce([]);
+					roleService.findByName.mockResolvedValueOnce(roleDtoFactory.buildWithId());
+					userService.findByIds.mockResolvedValue([]);
+					courseService.findBySyncedGroup.mockResolvedValueOnce([]);
+					authorizationConfig.teacherStudentVisibilityIsConfigurable = false;
+					authorizationConfig.teacherStudentVisibilityIsEnabledByDefault = enabledByDefault;
+
+					return { school, teacherUser };
+				};
+
+				it('should use STUDENT_LIST when globally enabled by default', async () => {
+					const { teacherUser } = setup(true);
+
+					await uc.findAllClasses(teacherUser.id, teacherUser.school.id);
+
+					expect(authorizationService.hasAllPermissions).toHaveBeenCalledWith(teacherUser, [Permission.STUDENT_LIST]);
+				});
+
+				it('should use GROUP_FULL_ADMIN when globally disabled by default', async () => {
+					const { teacherUser } = setup(false);
+
+					await uc.findAllClasses(teacherUser.id, teacherUser.school.id);
+
+					expect(authorizationService.hasAllPermissions).toHaveBeenCalledWith(teacherUser, [
+						Permission.GROUP_FULL_ADMIN,
+					]);
+				});
+			});
+
+			describe('when school has undefined permissions object', () => {
+				const setup = () => {
+					const school = schoolFactory.build();
+					jest.spyOn(school, 'getPermissions').mockReturnValue(undefined);
+					const { teacherUser } = UserAndAccountTestFactory.buildTeacher();
+					const schoolYear = schoolYearDoFactory.build();
+
+					schoolService.getSchoolById.mockResolvedValue(school);
+					authorizationService.getUserWithPermissions.mockResolvedValueOnce(teacherUser);
+					authorizationService.hasAllPermissions.mockReturnValueOnce(true);
+					authorizationService.hasPermission.mockReturnValueOnce(false);
+					schoolYearService.getAllSchoolYears.mockResolvedValueOnce([schoolYear]);
+					classService.find.mockResolvedValueOnce([]);
+					groupService.findByScope.mockResolvedValueOnce(new Page<Group>([], 0));
+					systemService.getSystems.mockResolvedValueOnce([]);
+					roleService.findByName.mockResolvedValueOnce(roleDtoFactory.buildWithId());
+					userService.findByIds.mockResolvedValue([]);
+					courseService.findBySyncedGroup.mockResolvedValueOnce([]);
+					authorizationConfig.teacherStudentVisibilityIsConfigurable = true;
+					authorizationConfig.teacherStudentVisibilityIsEnabledByDefault = true;
+
+					return { school, teacherUser };
+				};
+
+				it('should fall back to default configuration', async () => {
+					const { teacherUser } = setup();
+
+					await uc.findAllClasses(teacherUser.id, teacherUser.school.id);
+
+					expect(authorizationService.hasAllPermissions).toHaveBeenCalledWith(teacherUser, [Permission.STUDENT_LIST]);
+				});
+			});
+		});
 	});
 });
