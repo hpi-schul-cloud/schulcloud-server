@@ -1,5 +1,11 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Action, AuthorizationContext, AuthorizationService } from '@modules/authorization';
+import {
+	Action,
+	AUTHORIZATION_CONFIG_TOKEN,
+	AuthorizationConfig,
+	AuthorizationContext,
+	AuthorizationService,
+} from '@modules/authorization';
 import { ClassService } from '@modules/class';
 import { Class } from '@modules/class/domain';
 import { classFactory } from '@modules/class/domain/testing/factory/class.factory';
@@ -42,7 +48,8 @@ describe('ClassGroupUc', () => {
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let schoolYearService: DeepMocked<SchoolYearService>;
 	let courseService: DeepMocked<CourseDoService>;
-	let config: GroupConfig;
+	let groupConfig: GroupConfig;
+	let authorizationConfig: AuthorizationConfig;
 	let userService: DeepMocked<UserService>;
 
 	beforeAll(async () => {
@@ -88,6 +95,13 @@ describe('ClassGroupUc', () => {
 					},
 				},
 				{
+					provide: AUTHORIZATION_CONFIG_TOKEN,
+					useValue: {
+						teacherStudentVisibilityIsConfigurable: true,
+						teacherStudentVisibilityIsEnabledByDefault: true,
+					},
+				},
+				{
 					provide: UserService,
 					useValue: createMock<UserService>(),
 				},
@@ -103,7 +117,8 @@ describe('ClassGroupUc', () => {
 		authorizationService = module.get(AuthorizationService);
 		schoolYearService = module.get(SchoolYearService);
 		courseService = module.get(CourseDoService);
-		config = module.get(GROUP_CONFIG_TOKEN);
+		groupConfig = module.get(GROUP_CONFIG_TOKEN);
+		authorizationConfig = module.get(AUTHORIZATION_CONFIG_TOKEN);
 		userService = module.get(UserService);
 
 		await setupEntities([User]);
@@ -121,6 +136,7 @@ describe('ClassGroupUc', () => {
 		describe('when the user has no permission', () => {
 			const setup = () => {
 				const school = schoolFactory.build();
+				jest.spyOn(school, 'getPermissions').mockReturnValue(undefined);
 				const user = userFactory.buildWithId();
 				const error = new ForbiddenException();
 
@@ -153,6 +169,7 @@ describe('ClassGroupUc', () => {
 				const school = schoolFactory.build({
 					currentYear: schoolYear,
 				});
+				jest.spyOn(school, 'getPermissions').mockReturnValue(undefined);
 
 				const { studentUser } = UserAndAccountTestFactory.buildStudent();
 				const { teacherUser } = UserAndAccountTestFactory.buildTeacher();
@@ -200,7 +217,7 @@ describe('ClassGroupUc', () => {
 				});
 				const synchronizedCourse = courseFactory.build({ syncedWithGroup: group.id });
 
-				schoolService.getSchoolById.mockResolvedValueOnce(school);
+				schoolService.getSchoolById.mockResolvedValue(school);
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(teacherUser);
 				authorizationService.hasAllPermissions.mockReturnValueOnce(false);
 				authorizationService.hasPermission.mockReturnValueOnce(false);
@@ -209,7 +226,7 @@ describe('ClassGroupUc', () => {
 				groupService.findByScope.mockResolvedValueOnce(new Page<Group>([group, groupWithSystem], 2));
 				systemService.getSystems.mockResolvedValueOnce([system]);
 				roleService.findByName.mockResolvedValueOnce(studentRole);
-				config.featureSchulconnexCourseSyncEnabled = true;
+				groupConfig.featureSchulconnexCourseSyncEnabled = true;
 				roleService.findByName.mockResolvedValueOnce(teacherRole);
 				const teacherUserDo = {
 					id: teacherUser.id,
@@ -499,6 +516,7 @@ describe('ClassGroupUc', () => {
 			const setup = (generateClasses = false) => {
 				const schoolYear = schoolYearDoFactory.build();
 				const school = schoolFactory.build({ currentYear: schoolYear });
+				jest.spyOn(school, 'getPermissions').mockReturnValue(undefined);
 
 				const { studentUser } = UserAndAccountTestFactory.buildStudent();
 				const { teacherUser } = UserAndAccountTestFactory.buildTeacher();
@@ -544,7 +562,7 @@ describe('ClassGroupUc', () => {
 					],
 				});
 
-				schoolService.getSchoolById.mockResolvedValueOnce(school);
+				schoolService.getSchoolById.mockResolvedValue(school);
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(adminUser);
 				authorizationService.hasAllPermissions.mockReturnValueOnce(true);
 				authorizationService.hasPermission.mockReturnValueOnce(false);
@@ -553,7 +571,7 @@ describe('ClassGroupUc', () => {
 				groupService.findByScope.mockResolvedValueOnce(new Page<Group>([group, groupWithSystem], 2));
 				systemService.getSystems.mockResolvedValueOnce([system]);
 				roleService.findByName.mockResolvedValueOnce(studentRole);
-				config.featureSchulconnexCourseSyncEnabled = true;
+				groupConfig.featureSchulconnexCourseSyncEnabled = true;
 				roleService.findByName.mockResolvedValueOnce(teacherRole);
 				const teacherUserDo = {
 					id: teacherUser.id,
@@ -747,6 +765,7 @@ describe('ClassGroupUc', () => {
 			const setup = (generateClasses = false) => {
 				const schoolYear = schoolYearDoFactory.build();
 				const school = schoolFactory.build({ currentYear: schoolYear });
+				jest.spyOn(school, 'getPermissions').mockReturnValue(undefined);
 
 				const { studentUser } = UserAndAccountTestFactory.buildStudent();
 				const { teacherUser } = UserAndAccountTestFactory.buildTeacher();
@@ -792,7 +811,7 @@ describe('ClassGroupUc', () => {
 					],
 				});
 
-				schoolService.getSchoolById.mockResolvedValueOnce(school);
+				schoolService.getSchoolById.mockResolvedValue(school);
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(teacherUser);
 				authorizationService.hasAllPermissions.mockReturnValueOnce(false);
 				authorizationService.hasPermission.mockReturnValueOnce(true);
@@ -801,7 +820,7 @@ describe('ClassGroupUc', () => {
 				groupService.findByScope.mockResolvedValueOnce(new Page<Group>([group, groupWithSystem], 2));
 				systemService.getSystems.mockResolvedValueOnce([system]);
 				roleService.findByName.mockResolvedValueOnce(studentRole);
-				config.featureSchulconnexCourseSyncEnabled = true;
+				groupConfig.featureSchulconnexCourseSyncEnabled = true;
 				roleService.findByName.mockResolvedValueOnce(teacherRole);
 				const teacherUserDo = {
 					id: teacherUser.id,
