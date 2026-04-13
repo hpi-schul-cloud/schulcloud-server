@@ -1,16 +1,17 @@
-import { LegacyLogger } from '@core/logger';
-import { RuntimeConfigService, RuntimeConfigValue } from '@infra/runtime-config';
+import { Logger } from '@core/logger';
+import { RuntimeConfigService, RuntimeConfigValue, RuntimeConfigValueType } from '@infra/runtime-config';
 import { AuthorizationService } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
+import { UpdateRuntimeConfigLoggable } from './loggable/update-runtime-config.loggable';
 
 @Injectable()
 export class RuntimeConfigUc {
 	constructor(
 		private readonly runtimeConfigService: RuntimeConfigService,
 		private readonly authorizationService: AuthorizationService,
-		private readonly legacyLogger: LegacyLogger
+		private readonly logger: Logger
 	) {}
 
 	public async getRuntimeConfig(): Promise<RuntimeConfigValue[]> {
@@ -18,7 +19,7 @@ export class RuntimeConfigUc {
 		return dto;
 	}
 
-	public async updateRuntimeConfigValue(key: string, value: string, userId: EntityId): Promise<void> {
+	public async updateRuntimeConfigValue(key: string, value: string, userId: EntityId): Promise<RuntimeConfigValueType> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		this.authorizationService.checkAllPermissions(user, [Permission.INSTANCE_EDIT]);
 
@@ -26,6 +27,9 @@ export class RuntimeConfigUc {
 		config.setValueFromString(value);
 		await this.runtimeConfigService.save(config);
 
-		this.legacyLogger.log(`Runtime config with key: ${key} was updated by user with id: ${userId} to value: ${value}`);
+		const persistedValue = config.getTypeAndValue().value;
+		this.logger.info(new UpdateRuntimeConfigLoggable(userId, key, value, persistedValue));
+
+		return persistedValue;
 	}
 }
