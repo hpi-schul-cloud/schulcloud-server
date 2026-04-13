@@ -7,6 +7,7 @@ import { TEAM_PUBLIC_API_CONFIG_TOKEN, TeamPublicApiConfig } from '../team.confi
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception/feature-disabled.loggable-exception';
 import { Room, RoomColor, RoomService } from '@modules/room';
 import { RoomMembershipService } from '@modules/room-membership';
+import { mapTeamColorToRoomColor } from './helper/colormapper';
 
 @Injectable()
 export class TeamUc {
@@ -35,7 +36,7 @@ export class TeamUc {
 
 		const room = await this.roomService.createRoom({
 			name: team.name,
-			color: RoomColor.BLUE_GREY,
+			color: mapTeamColorToRoomColor(team.color),
 			schoolId: user.school.id,
 			features: [],
 		});
