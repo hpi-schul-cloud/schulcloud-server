@@ -21,7 +21,6 @@ export class CurrentUserMapper {
 		systemId?: string
 	): ICurrentUser {
 		if (externalId) {
-			// No SVS systemId, but UserDo.ExternalId exists: use Erwin systemId (assume passed as param)
 			return new CurrentUserBuilder({
 				accountId,
 				userId,
@@ -32,7 +31,6 @@ export class CurrentUserMapper {
 				.withExternalSystem(systemId)
 				.build();
 		} else {
-			// No SVS systemId, no UserDo.ExternalId: empty systemId, set isExternalUser to false
 			return new CurrentUserBuilder({
 				accountId,
 				userId,
@@ -110,7 +108,6 @@ export class CurrentUserMapper {
 		const external = isExternalUser ?? false;
 
 		if (systemId !== undefined && systemId === account.systemId) {
-			// SVS systemId exists, keep it and return
 			return new CurrentUserBuilder({
 				accountId,
 				userId: user.id,
