@@ -1,3 +1,4 @@
+import { LegacyLogger } from '@core/logger';
 import { RuntimeConfigService, RuntimeConfigValue } from '@infra/runtime-config';
 import { AuthorizationService } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
@@ -8,7 +9,8 @@ import { EntityId } from '@shared/domain/types';
 export class RuntimeConfigUc {
 	constructor(
 		private readonly runtimeConfigService: RuntimeConfigService,
-		private readonly authorizationService: AuthorizationService
+		private readonly authorizationService: AuthorizationService,
+		private readonly legacyLogger: LegacyLogger
 	) {}
 
 	public async getRuntimeConfig(): Promise<RuntimeConfigValue[]> {
@@ -23,5 +25,7 @@ export class RuntimeConfigUc {
 		const config = await this.runtimeConfigService.getByKey(key);
 		config.setValueFromString(value);
 		await this.runtimeConfigService.save(config);
+
+		this.legacyLogger.log(`Runtime config with key: ${key} was updated by user with id: ${userId} to value: ${value}`);
 	}
 }
