@@ -32,8 +32,8 @@ import {
 } from './generated';
 
 // HTTP agents with keepAlive to prevent "socket hang up" errors during sequential API calls
-const httpAgent = new http.Agent({ keepAlive: false, maxSockets: 50, timeout: 100 });
-const httpsAgent = new https.Agent({ keepAlive: false, maxSockets: 50, timeout: 100 });
+const httpAgent = new http.Agent({ keepAlive: false, maxSockets: Infinity, timeout: 100 });
+const httpsAgent = new https.Agent({ keepAlive: false, maxSockets: Infinity, timeout: 100 });
 const baseOptions = { httpAgent, httpsAgent };
 
 @Module({})
