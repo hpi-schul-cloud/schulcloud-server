@@ -29,20 +29,20 @@ export class CardClientAdapter {
 		cardId: string,
 		createContentElementBodyParams: CreateContentElementBodyParams
 	): Promise<CardControllerCreateElement201Response> {
-		const element = await this.cardApi.cardControllerCreateElement(
-			cardId,
-			createContentElementBodyParams,
-			AdapterUtils.createAxiosConfigForJwt(jwt)
+		const element = await AdapterUtils.retry(() =>
+			this.cardApi.cardControllerCreateElement(
+				cardId,
+				createContentElementBodyParams,
+				AdapterUtils.createAxiosConfigForJwt(jwt)
+			)
 		);
 
 		return element.data;
 	}
 
 	public async updateCardTitle(jwt: string, cardId: string, renameBodyParams: RenameBodyParams): Promise<void> {
-		await this.cardApi.cardControllerUpdateCardTitle(
-			cardId,
-			renameBodyParams,
-			AdapterUtils.createAxiosConfigForJwt(jwt)
+		await AdapterUtils.retry(() =>
+			this.cardApi.cardControllerUpdateCardTitle(cardId, renameBodyParams, AdapterUtils.createAxiosConfigForJwt(jwt))
 		);
 	}
 
@@ -51,10 +51,12 @@ export class CardClientAdapter {
 		elementId: string,
 		updateElementContentBodyParams: UpdateElementContentBodyParams
 	): Promise<ElementControllerUpdateElement200Response> {
-		const anyElementResponse = await this.elementApi.elementControllerUpdateElement(
-			elementId,
-			updateElementContentBodyParams,
-			AdapterUtils.createAxiosConfigForJwt(jwt)
+		const anyElementResponse = await AdapterUtils.retry(() =>
+			this.elementApi.elementControllerUpdateElement(
+				elementId,
+				updateElementContentBodyParams,
+				AdapterUtils.createAxiosConfigForJwt(jwt)
+			)
 		);
 
 		return anyElementResponse.data;
