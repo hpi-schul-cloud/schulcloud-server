@@ -12,7 +12,7 @@
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: svc.yml.j2
-    when: WITH_H5P_EDITOR is defined and WITH_H5P_EDITOR|bool
+      state: "{{ 'present' if WITH_H5P_EDITOR is defined and WITH_H5P_EDITOR|bool else 'absent' }}"
     tags:
       - service
 
@@ -21,7 +21,7 @@
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: deployment.yml.j2
-    when: WITH_H5P_EDITOR is defined and WITH_H5P_EDITOR|bool
+      state: "{{ 'present' if WITH_H5P_EDITOR is defined and WITH_H5P_EDITOR|bool else 'absent' }}"
     tags:
       - deployment
 
@@ -30,7 +30,7 @@
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: configmap.yml.j2
-    when: WITH_H5P_EDITOR is defined and WITH_H5P_EDITOR|bool
+      state: "{{ 'present' if WITH_H5P_EDITOR is defined and WITH_H5P_EDITOR|bool else 'absent' }}"
     tags:
       - configmap
 
@@ -50,6 +50,6 @@
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: consumer-deployment.yml.j2
-    when: WITH_H5P_EDITOR is defined and WITH_H5P_EDITOR|bool
+      state: "{{ 'present' if WITH_H5P_EDITOR is defined and WITH_H5P_EDITOR|bool else 'absent' }}"
     tags:
       - deployment
