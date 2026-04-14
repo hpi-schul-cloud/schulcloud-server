@@ -61,7 +61,7 @@ export class ClassGroupUc {
 			AuthorizationContextBuilder.read([Permission.CLASS_VIEW, Permission.GROUP_VIEW])
 		);
 
-		const groupVisibilityPermission: GroupVisibilityPermission = await this.getGroupVisibilityPermission(user);
+		const groupVisibilityPermission: GroupVisibilityPermission = this.getGroupVisibilityPermission(user);
 		const page: Page<InternalClassDto<Group | Class>> = await this.findCombinedClassListPage(
 			user,
 			school,
@@ -100,37 +100,11 @@ export class ClassGroupUc {
 		return finalPage;
 	}
 
-	private async canTeachersSeeAllStudents(schoolId: EntityId): Promise<boolean> {
-		const school: School = await this.schoolService.getSchoolById(schoolId);
-		const schoolPermissions = school.getPermissions();
-
-		const visibilityIsConfigurable = this.authorizationConfig.teacherStudentVisibilityIsConfigurable;
-		const visibilityEnabledByDefault = this.authorizationConfig.teacherStudentVisibilityIsEnabledByDefault;
-
-		const [schoolHasStudentListConfigured, schoolHasStudentListPermission] = [
-			typeof schoolPermissions?.teacher?.STUDENT_LIST === 'boolean',
-			schoolPermissions?.teacher?.STUDENT_LIST === true,
-		];
-
-		const canSeeAllStudents =
-			visibilityIsConfigurable && schoolHasStudentListConfigured
-				? schoolHasStudentListPermission
-				: visibilityEnabledByDefault;
-
-		return canSeeAllStudents;
-	}
-
-	private async requiredPermissionsToSeeAllStudents(schoolId: EntityId): Promise<Permission[]> {
-		if (await this.canTeachersSeeAllStudents(schoolId)) {
-			return [Permission.STUDENT_LIST];
-		} else {
-			return [Permission.GROUP_FULL_ADMIN];
-		}
-	}
-
-	private async getGroupVisibilityPermission(user: User): Promise<GroupVisibilityPermission> {
-		const requiredPermissions: Permission[] = await this.requiredPermissionsToSeeAllStudents(user.school.id);
-		const canSeeAllSchoolGroups = this.authorizationService.hasAllPermissions(user, requiredPermissions);
+	private getGroupVisibilityPermission(user: User): GroupVisibilityPermission {
+		const canSeeAllSchoolGroups = this.authorizationService.hasOneOfPermissions(user, [
+			Permission.STUDENT_LIST,
+			Permission.GROUP_FULL_ADMIN,
+		]);
 
 		if (canSeeAllSchoolGroups) {
 			return GroupVisibilityPermission.ALL_SCHOOL_GROUPS;
