@@ -1,8 +1,7 @@
 import { RoleName } from '@modules/role';
 import { roleFactory } from '@modules/role/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
-import { User } from '@modules/user';
-import { UserDo } from '@modules/user';
+import { User, UserDo } from '@modules/user';
 import { userDoFactory, userFactory } from '@modules/user/testing';
 import { ValidationError } from '@shared/common/error';
 import { RoleReference } from '@shared/domain/domainobject';
