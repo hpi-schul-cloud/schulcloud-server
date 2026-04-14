@@ -18,32 +18,30 @@ const RuntimeConfigDefaults: RuntimeConfigDefault[] = [
 	{
 		key: 'DASHBOARD_ANNOUNCEMENT_TEXT_DE',
 		type: 'string',
-		value: 'Standard Ankündigungstext',
+		value:
+			'Sichern Sie Ihre Inhalte der Cloud und nutzen Sie auch die neue Funktion zum Export von Kursen. <a href="https://dbildungscloud.de/help/confluence/485132545" target="_blank" rel="noopener noreferrer">Weitere Informationen und Hilfestellungen sind hier zu finden.</a>',
 		description: 'Bannertext Deutsche Version (unterstützt HTML)',
 	},
 	{
 		key: 'DASHBOARD_ANNOUNCEMENT_TEXT_EN',
 		type: 'string',
-		value: 'Standard announcement text',
+		value:
+			'Back up your cloud content and also use the new function for exporting courses. <a href="https://dbildungscloud.de/help/confluence/485132545" target="_blank" rel="noopener noreferrer">More information and instructions can be found here.</a>',
 		description: 'Bannertext Englische Version (unterstützt HTML).',
 	},
 	{
 		key: 'DASHBOARD_ANNOUNCEMENT_TEXT_ES',
 		type: 'string',
-		value: 'Texto de anuncio predeterminado',
+		value:
+			'Haga una copia de seguridad de sus contenidos de la nube y utilice también la nueva función para exportar cursos. <a href="https://dbildungscloud.de/help/confluence/485132545" target="_blank" rel="noopener noreferrer">Más información y ayuda disponible aquí</a>',
 		description: 'Bannertext Spanische Version (unterstützt HTML).',
 	},
 	{
 		key: 'DASHBOARD_ANNOUNCEMENT_TEXT_UK',
 		type: 'string',
-		value: 'Стандартний текст оголошення',
+		value:
+			'Зробіть резервну копію вашого контенту в хмарі та використовуйте також нову функцію для експорту курсів. <a href="https://dbildungscloud.de/help/confluence/485132545" target="_blank" rel="noopener noreferrer">Додаткову інформацію та допомогу можна знайти тут.</a>',
 		description: 'Bannertext Ukrainische Version (unterstützt HTML).',
-	},
-	{
-		key: 'DASHBOARD_ANNOUNCEMENT_SOME_NUMBER',
-		type: 'number',
-		value: 0,
-		description: 'Ein Beispiel für eine numerische Konfiguration.',
 	},
 ];
 
