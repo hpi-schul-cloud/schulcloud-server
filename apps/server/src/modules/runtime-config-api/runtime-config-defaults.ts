@@ -31,7 +31,7 @@ const RuntimeConfigDefaults: RuntimeConfigDefault[] = [
 		key: 'DASHBOARD_ANNOUNCEMENT_TEXT_ES',
 		type: 'string',
 		value: 'Texto de anuncio predeterminado',
-		description: 'Bannertext Spanische Version. (unterstützt HTML).',
+		description: 'Bannertext Spanische Version (unterstützt HTML).',
 	},
 	{
 		key: 'DASHBOARD_ANNOUNCEMENT_TEXT_UK',
