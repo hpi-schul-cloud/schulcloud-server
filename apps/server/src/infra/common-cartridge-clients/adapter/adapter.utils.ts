@@ -1,8 +1,12 @@
 import { RawAxiosRequestConfig } from 'axios';
 
+export type RetryCallback = (attempt: number, callId: string, err: unknown) => void;
+
 export class AdapterUtils {
 	public static readonly DEFAULT_MAX_RETRIES: number = 7;
 	public static readonly DEFAULT_RETRY_DELAY: number = 1000;
+	public static readonly DEFAULT_RETRY_CALLBACK: RetryCallback = (attempt, callId, err) =>
+		console.warn(`Retry attempt ${attempt + 1} of '${callId}' failed:`, err);
 
 	public static createAxiosConfigForJwt(jwt: string): RawAxiosRequestConfig {
 		return {
@@ -15,6 +19,7 @@ export class AdapterUtils {
 	public static async retry<T>(
 		callId: string,
 		fn: () => Promise<T>,
+		onRetry: RetryCallback = AdapterUtils.DEFAULT_RETRY_CALLBACK,
 		retries = AdapterUtils.DEFAULT_MAX_RETRIES,
 		delayMs = AdapterUtils.DEFAULT_RETRY_DELAY
 	): Promise<T> {
@@ -24,8 +29,9 @@ export class AdapterUtils {
 				return await fn();
 			} catch (err) {
 				lastError = err;
-				// Optional: Log für Debugging
-				console.warn(`Retry attempt ${attempt + 1} of '${callId}' failed:`, err);
+				if (onRetry) {
+					onRetry(attempt + 1, callId, err);
+				}
 				await new Promise((resolve) => setTimeout(resolve, delayMs * (attempt + 1)));
 			}
 		}

@@ -1,10 +1,14 @@
+import { Logger, LogMessage } from '@core/logger';
 import { Injectable } from '@nestjs/common';
+import util from 'util';
 import { BoardApi, BoardResponse, ColumnResponse, CreateBoardBodyParams, CreateBoardResponse } from '../generated';
 import { AdapterUtils } from './adapter.utils';
 
 @Injectable()
 export class BoardsClientAdapter {
-	constructor(private readonly boardApi: BoardApi) {}
+	constructor(private readonly boardApi: BoardApi, private readonly logger: Logger) {
+		logger.setContext(BoardsClientAdapter.name);
+	}
 
 	public async createBoard(jwt: string, params: CreateBoardBodyParams): Promise<CreateBoardResponse> {
 		const response = await AdapterUtils.retry('createBoard', () =>
@@ -15,8 +19,20 @@ export class BoardsClientAdapter {
 	}
 
 	public async createBoardColumn(jwt: string, boardId: string): Promise<ColumnResponse> {
-		const response = await AdapterUtils.retry('createBoardColumn', () =>
-			this.boardApi.boardControllerCreateColumn(boardId, AdapterUtils.createAxiosConfigForJwt(jwt))
+		const response = await AdapterUtils.retry(
+			'createBoardColumn',
+			() => this.boardApi.boardControllerCreateColumn(boardId, AdapterUtils.createAxiosConfigForJwt(jwt)),
+			(attempt: number, callId: string, err: unknown) =>
+				this.logger.warning({
+					getLogMessage(): LogMessage {
+						return {
+							message: `Retry attempt ${attempt + 1} of '${callId}' failed:`,
+							data: {
+								err: util.inspect(err),
+							},
+						};
+					},
+				})
 		);
 
 		return response.data;
