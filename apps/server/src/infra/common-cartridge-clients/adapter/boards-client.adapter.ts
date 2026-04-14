@@ -7,7 +7,7 @@ export class BoardsClientAdapter {
 	constructor(private readonly boardApi: BoardApi) {}
 
 	public async createBoard(jwt: string, params: CreateBoardBodyParams): Promise<CreateBoardResponse> {
-		const response = await AdapterUtils.retry(() =>
+		const response = await AdapterUtils.retry('createBoard', () =>
 			this.boardApi.boardControllerCreateBoard(params, AdapterUtils.createAxiosConfigForJwt(jwt))
 		);
 
@@ -15,7 +15,7 @@ export class BoardsClientAdapter {
 	}
 
 	public async createBoardColumn(jwt: string, boardId: string): Promise<ColumnResponse> {
-		const response = await AdapterUtils.retry(() =>
+		const response = await AdapterUtils.retry('createBoardColumn', () =>
 			this.boardApi.boardControllerCreateColumn(boardId, AdapterUtils.createAxiosConfigForJwt(jwt))
 		);
 

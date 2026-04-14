@@ -29,7 +29,7 @@ export class CardClientAdapter {
 		cardId: string,
 		createContentElementBodyParams: CreateContentElementBodyParams
 	): Promise<CardControllerCreateElement201Response> {
-		const element = await AdapterUtils.retry(() =>
+		const element = await AdapterUtils.retry('createCardElement', () =>
 			this.cardApi.cardControllerCreateElement(
 				cardId,
 				createContentElementBodyParams,
@@ -41,7 +41,7 @@ export class CardClientAdapter {
 	}
 
 	public async updateCardTitle(jwt: string, cardId: string, renameBodyParams: RenameBodyParams): Promise<void> {
-		await AdapterUtils.retry(() =>
+		await AdapterUtils.retry('updateCardTitle', () =>
 			this.cardApi.cardControllerUpdateCardTitle(cardId, renameBodyParams, AdapterUtils.createAxiosConfigForJwt(jwt))
 		);
 	}
@@ -51,7 +51,7 @@ export class CardClientAdapter {
 		elementId: string,
 		updateElementContentBodyParams: UpdateElementContentBodyParams
 	): Promise<ElementControllerUpdateElement200Response> {
-		const anyElementResponse = await AdapterUtils.retry(() =>
+		const anyElementResponse = await AdapterUtils.retry('updateCardElement', () =>
 			this.elementApi.elementControllerUpdateElement(
 				elementId,
 				updateElementContentBodyParams,
