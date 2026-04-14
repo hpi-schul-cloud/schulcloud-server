@@ -1,3 +1,4 @@
+import { RuntimeConfigType, RuntimeConfigValueType } from '@infra/runtime-config';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class RuntimeConfigListItemResponse {
@@ -5,10 +6,10 @@ export class RuntimeConfigListItemResponse {
 	public key: string;
 
 	@ApiProperty({ enum: ['string', 'number', 'boolean'] })
-	public type: string;
+	public type: RuntimeConfigType;
 
 	@ApiProperty({ description: 'guaranteed to be of the type defined in "type" property' })
-	public value: string | number | boolean;
+	public value: RuntimeConfigValueType;
 
 	@ApiProperty({
 		required: false,
