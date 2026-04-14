@@ -8,7 +8,10 @@ export class RuntimeConfigListItemResponse {
 	@ApiProperty({ enum: ['string', 'number', 'boolean'] })
 	public type: RuntimeConfigType;
 
-	@ApiProperty({ description: 'guaranteed to be of the type defined in "type" property' })
+	@ApiProperty({
+		description: 'guaranteed to be of the type defined in "type" property',
+		oneOf: [{ type: 'string' }, { type: 'number' }, { type: 'boolean' }],
+	})
 	public value: RuntimeConfigValueType;
 
 	@ApiProperty({
