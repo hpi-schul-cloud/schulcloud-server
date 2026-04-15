@@ -49,7 +49,7 @@ export class ErwinProvisioningStrategy extends ProvisioningStrategy {
 
 		await this.erwinProvisioningService.provisionSchool(data.system, data.externalSchool);
 
-		// TODO: User Provisionierung
+		// TODO: User Provisioning
 
 		return new ProvisioningDto({
 			externalUserId: data.externalUser.externalId,

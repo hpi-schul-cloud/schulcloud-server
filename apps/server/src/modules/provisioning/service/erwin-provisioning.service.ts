@@ -1,11 +1,11 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ErwinIdentifierService, ReferencedEntityType } from '@modules/erwin-identifier';
-import { School, SchoolService } from '@modules/school';
-import { FileStorageType, SchoolYearService } from '@modules/school/domain';
+import { FileStorageType, School, SchoolService } from '@modules/school';
+import { SchoolFeature, SchoolPermissions, SchoolYearService } from '@modules/school/domain';
 import { SchoolFactory } from '@modules/school/domain/factory';
-import { SchoolFeature, SchoolPermissions } from '@modules/school/domain/type';
 import { SchoolYearEntityMapper } from '@modules/school/repo';
 import { Injectable } from '@nestjs/common';
+import { TypeGuard } from '@shared/common/guards';
 import { ExternalSchoolDto, ProvisioningSystemDto } from '../dto';
 import { SchoolNameRequiredLoggableException } from '../loggable';
 import { ExternalIdMissingLoggableException } from '../loggable/external-id-missing.loggable-exception';
@@ -19,56 +19,36 @@ export class ErwinProvisioningService {
 	) {}
 
 	public async provisionSchool(system: ProvisioningSystemDto, externalSchool: ExternalSchoolDto): Promise<School> {
-		// 1. Prüfen: Kann die Schule über erwinId gefunden werden?
-		if (externalSchool.erwinId) {
-			const schoolFoundByErwinId = await this.findSchoolByErwinId(externalSchool.erwinId);
+		const schoolFoundByErwinId = await this.findSchoolByErwinId(externalSchool.erwinId);
 
-			if (schoolFoundByErwinId) {
-				// Wenn externalId fehlt → lokale Schule nicht überschreiben, Schule einfach zurückgeben
-				if (!externalSchool.externalId) {
-					return schoolFoundByErwinId;
-				}
-
-				// Wenn externalId vorhanden → update School
-				const updatedSchool = await this.updateSchool(schoolFoundByErwinId, externalSchool);
-				return updatedSchool;
-			}
+		if (schoolFoundByErwinId) {
+			return this.handleSchoolFoundByErwinId(schoolFoundByErwinId, externalSchool);
 		}
 
-		// 2. Wenn Schule nicht per erwinId gefunden wird -> Prüfen, ob externalId existiert
-		if (!externalSchool.externalId) {
-			throw new ExternalIdMissingLoggableException('ExternalSchoolDto.externalId', {
+		TypeGuard.requireKeys(
+			externalSchool,
+			['externalId'],
+			new ExternalIdMissingLoggableException('External ID is missing', {
 				erwinId: externalSchool.erwinId,
-			});
-		}
+			})
+		);
 
-		// Schule über externalId im SVS suchen
 		const schoolFoundByExternalId = await this.findSchoolByExternalId(system.systemId, externalSchool.externalId);
 
-		// 3. Wenn Schule über externalId gefunden wird:
 		if (schoolFoundByExternalId) {
-			const updatedSchool = await this.updateSchool(schoolFoundByExternalId, externalSchool);
-
-			// erwinId Referenz hinzufügen (nicht die SystemId!)
-			if (externalSchool.erwinId) {
-				await this.addErwinIdReference(updatedSchool.id, externalSchool.erwinId);
-			}
-
-			return updatedSchool;
+			return this.handleSchoolFoundByExternalId(schoolFoundByExternalId, externalSchool);
 		}
 
-		// 4. Wenn Schule nicht gefunden wird ->Neue Schule im SVS anlegen
 		const newSchool = await this.createSchool(system.systemId, externalSchool);
-
-		// erwinId Referenz hinzufügen
-		if (externalSchool.erwinId) {
-			await this.addErwinIdReference(newSchool.id, externalSchool.erwinId);
-		}
 
 		return newSchool;
 	}
 
-	private async findSchoolByErwinId(erwinId: string): Promise<School | null> {
+	private async findSchoolByErwinId(erwinId: string | undefined): Promise<School | null> {
+		if (!erwinId) {
+			return null;
+		}
+
 		const erwinIdentifier = await this.erwinIdentifierService.findByErwinId(erwinId);
 
 		if (!erwinIdentifier || erwinIdentifier.type !== ReferencedEntityType.SCHOOL) {
@@ -77,6 +57,33 @@ export class ErwinProvisioningService {
 
 		const school = await this.schoolService.getSchoolById(erwinIdentifier.referencedEntityId);
 		return school;
+	}
+
+	private async handleSchoolFoundByErwinId(
+		schoolFoundByErwinId: School,
+		externalSchool: ExternalSchoolDto
+	): Promise<School> {
+		if (!externalSchool.externalId) {
+			return schoolFoundByErwinId;
+		}
+
+		const updatedSchool = await this.updateSchool(schoolFoundByErwinId, externalSchool);
+		return updatedSchool;
+	}
+
+	private async updateSchool(school: School, externalSchool: ExternalSchoolDto): Promise<School> {
+		const externalSchoolName = this.formatSchoolName(externalSchool);
+
+		if (externalSchoolName) {
+			school.name = externalSchoolName;
+		}
+
+		if (externalSchool.officialSchoolNumber && !school.officialSchoolNumber) {
+			school.updateOfficialSchoolNumber(externalSchool.officialSchoolNumber);
+		}
+
+		const updatedSchool = await this.schoolService.save(school);
+		return updatedSchool;
 	}
 
 	private async findSchoolByExternalId(systemId: string, externalId: string): Promise<School | null> {
@@ -92,25 +99,21 @@ export class ErwinProvisioningService {
 		return schools[0];
 	}
 
-	private async updateSchool(school: School, externalSchool: ExternalSchoolDto): Promise<School> {
-		const schoolName = this.getSchoolName(externalSchool);
+	private async handleSchoolFoundByExternalId(
+		schoolFoundByExternalId: School,
+		externalSchool: ExternalSchoolDto
+	): Promise<School> {
+		const updatedSchool = await this.updateSchool(schoolFoundByExternalId, externalSchool);
 
-		if (schoolName) {
-			school.name = schoolName;
+		if (externalSchool.erwinId) {
+			await this.addErwinIdReference(updatedSchool.id, externalSchool.erwinId);
 		}
 
-		if (externalSchool.officialSchoolNumber && !school.officialSchoolNumber) {
-			school.updateOfficialSchoolNumber(externalSchool.officialSchoolNumber);
-		}
-
-		// WICHTIG: SystemId wird NICHT automatisch gesetzt oder überschrieben!
-
-		const updatedSchool = await this.schoolService.save(school);
 		return updatedSchool;
 	}
 
 	private async createSchool(systemId: string, externalSchool: ExternalSchoolDto): Promise<School> {
-		const schoolName = this.getSchoolName(externalSchool);
+		const schoolName = this.formatSchoolName(externalSchool);
 
 		if (!schoolName) {
 			throw new SchoolNameRequiredLoggableException('ExternalSchool.name');
@@ -140,6 +143,11 @@ export class ErwinProvisioningService {
 		});
 
 		const savedSchool = await this.schoolService.save(school);
+
+		if (externalSchool.erwinId) {
+			await this.addErwinIdReference(savedSchool.id, externalSchool.erwinId);
+		}
+
 		return savedSchool;
 	}
 
@@ -157,7 +165,7 @@ export class ErwinProvisioningService {
 		});
 	}
 
-	private getSchoolName(externalSchool: ExternalSchoolDto): string | undefined {
+	private formatSchoolName(externalSchool: ExternalSchoolDto): string | undefined {
 		if (!externalSchool.name) {
 			return undefined;
 		}
