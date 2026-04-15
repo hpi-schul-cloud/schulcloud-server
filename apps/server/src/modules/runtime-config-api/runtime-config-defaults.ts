@@ -4,7 +4,7 @@ const RuntimeConfigDefaults: RuntimeConfigDefault[] = [
 	{
 		key: 'DASHBOARD_ANNOUNCEMENT_ENABLED',
 		type: 'boolean',
-		value: true,
+		value: false,
 		description:
 			'Aktiviert ("AN") oder deaktiviert ("AUS") das Banner auf dem Dashboard für die unten definierten Rollen',
 	},
