@@ -11,9 +11,9 @@ const RuntimeConfigDefaults: RuntimeConfigDefault[] = [
 	{
 		key: 'DASHBOARD_ANNOUNCEMENT_FOR_ROLES',
 		type: 'string',
-		value: 'admin,teacher,student,external-person',
+		value: 'admin,teacher,student,externalPerson',
 		description:
-			'Zeigt das Banner den hier eingetragenen Rollen an (Nutze eine mit Komma getrennte Liste, um mehrere Rollen einzutragen z.B. "administrator,teacher,student,external-person").',
+			'Zeigt das Banner den hier eingetragenen Rollen an (Nutze eine mit Komma getrennte Liste, um mehrere Rollen einzutragen z.B. "administrator,teacher,student,externalPerson").',
 	},
 	{
 		key: 'DASHBOARD_ANNOUNCEMENT_TEXT_DE',
