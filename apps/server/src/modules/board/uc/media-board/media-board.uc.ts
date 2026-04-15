@@ -4,7 +4,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 import { throwForbiddenIfFalse } from '@shared/common/utils';
 import type { EntityId } from '@shared/domain/types';
-import { BoardNodeRule } from '../..//authorisation/board-node.rule';
+import { BoardNodeRule } from '../../authorisation/board-node.rule';
 import { BoardLayout, MediaBoard, Colors, MediaBoardNodeFactory, MediaLine } from '../../domain';
 import { BoardNodeAuthorizableService, BoardNodeService, MediaBoardService } from '../../service';
 

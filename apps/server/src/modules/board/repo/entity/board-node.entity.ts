@@ -104,7 +104,7 @@ export class BoardNodeEntity extends BaseEntityWithTimestamps implements BoardNo
 
 	// MediaLine, MediaBoard, Card
 	// --------------------------------------------------------------------------
-	@Property({ type: 'Colors', nullable: true })
+	@Enum({ type: 'Colors', nullable: true })
 	backgroundColor: Colors | undefined;
 
 	// DeletedElement
