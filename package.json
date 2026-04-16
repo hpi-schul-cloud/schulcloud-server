@@ -17,8 +17,8 @@
 	"contributors": [],
 	"bugs": {},
 	"engines": {
-		"node": "22",
-		"npm": ">=9"
+		"node": "24",
+		"npm": "11"
 	},
 	"scripts": {
 		"lint": "eslint . --ignore-path .gitignore",
@@ -274,7 +274,7 @@
 		"@types/jest": "<=29.2.3",
 		"@types/ldapjs": "^3.0.6",
 		"@types/lodash": "^4.17.16",
-		"@types/node": "<=22.13.6",
+		"@types/node": "^24.12.2",
 		"@types/passport-jwt": "^4.0.1",
 		"@types/passport-local": "^1.0.38",
 		"@types/pdfmake": "^0.2.11",
@@ -313,6 +313,7 @@
 		"socket.io-client": "^4.8.1",
 		"supertest": "^7.1.0",
 		"ts-jest": "^29.3.1",
+		"ts-node": "^10.9.2",
 		"typescript": "^5.8.3"
 	}
 }
