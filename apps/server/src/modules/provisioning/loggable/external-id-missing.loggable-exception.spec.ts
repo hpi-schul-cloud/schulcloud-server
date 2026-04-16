@@ -2,59 +2,59 @@ import { ExternalIdMissingLoggableException } from './external-id-missing.loggab
 
 describe(ExternalIdMissingLoggableException.name, () => {
 	describe('getLogMessage', () => {
-		describe('when called with fieldName only', () => {
+		describe('when called with context only', () => {
 			const setup = () => {
-				const fieldName = 'ExternalSchoolDto.externalId';
+				const context = 'ExternalSchoolDto';
 
-				const loggable = new ExternalIdMissingLoggableException(fieldName);
+				const loggable = new ExternalIdMissingLoggableException(context);
 
 				return {
 					loggable,
-					fieldName,
+					context,
 				};
 			};
 
 			it('should return a loggable message', () => {
-				const { loggable, fieldName } = setup();
+				const { loggable, context } = setup();
 
 				const message = loggable.getLogMessage();
 
 				expect(message).toEqual({
 					type: 'EXTERNAL_ID_MISSING',
-					message: `External ID is missing for field: ${fieldName}`,
+					message: `External ID is missing in ${context}`,
 					stack: expect.any(String),
 					data: {
-						fieldName,
+						context,
 					},
 				});
 			});
 		});
 
-		describe('when called with fieldName and additionalInfo', () => {
+		describe('when called with context and additionalInfo', () => {
 			const setup = () => {
-				const fieldName = 'ExternalSchoolDto.externalId';
+				const context = 'ExternalSchoolDto';
 				const additionalInfo = { erwinId: 'some-erwin-id' };
 
-				const loggable = new ExternalIdMissingLoggableException(fieldName, additionalInfo);
+				const loggable = new ExternalIdMissingLoggableException(context, additionalInfo);
 
 				return {
 					loggable,
-					fieldName,
+					context,
 					additionalInfo,
 				};
 			};
 
 			it('should return a loggable message with additional info', () => {
-				const { loggable, fieldName, additionalInfo } = setup();
+				const { loggable, context, additionalInfo } = setup();
 
 				const message = loggable.getLogMessage();
 
 				expect(message).toEqual({
 					type: 'EXTERNAL_ID_MISSING',
-					message: `External ID is missing for field: ${fieldName}`,
+					message: `External ID is missing in ${context}`,
 					stack: expect.any(String),
 					data: {
-						fieldName,
+						context,
 						...additionalInfo,
 					},
 				});

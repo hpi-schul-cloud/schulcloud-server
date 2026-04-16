@@ -28,7 +28,7 @@ export class ErwinProvisioningService {
 		TypeGuard.requireKeys(
 			externalSchool,
 			['externalId'],
-			new ExternalIdMissingLoggableException('External ID is missing', {
+			new ExternalIdMissingLoggableException('ExternalSchoolDto', {
 				erwinId: externalSchool.erwinId,
 			})
 		);
