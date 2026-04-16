@@ -11,28 +11,14 @@ export class BoardsClientAdapter {
 	}
 
 	public async createBoard(jwt: string, params: CreateBoardBodyParams): Promise<CreateBoardResponse> {
-		const response = await AdapterUtils.retry('createBoard', () =>
-			this.boardApi.boardControllerCreateBoard(params, AdapterUtils.createAxiosConfigForJwt(jwt))
-		);
-
+		const response = await this.boardApi.boardControllerCreateBoard(params, AdapterUtils.createAxiosConfigForJwt(jwt));
 		return response.data;
 	}
 
 	public async createBoardColumn(jwt: string, boardId: string): Promise<ColumnResponse> {
-		const response = await AdapterUtils.retry(
-			'createBoardColumn',
-			() => this.boardApi.boardControllerCreateColumn(boardId, AdapterUtils.createAxiosConfigForJwt(jwt)),
-			(attempt: number, callId: string, err: unknown) =>
-				this.logger.warning({
-					getLogMessage(): LogMessage {
-						return {
-							message: `Retry attempt ${attempt + 1} of '${callId}' failed:`,
-							data: {
-								err: util.inspect(err),
-							},
-						};
-					},
-				})
+		const response = await this.boardApi.boardControllerCreateColumn(
+			boardId,
+			AdapterUtils.createAxiosConfigForJwt(jwt)
 		);
 
 		return response.data;

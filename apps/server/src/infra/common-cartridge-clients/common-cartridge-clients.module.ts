@@ -31,9 +31,9 @@ import {
 	LessonApi,
 } from './generated';
 
-const httpAgent = new http.Agent({ keepAlive: true });
-const httpsAgent = new https.Agent({ keepAlive: true });
-const baseOptions = { adapter: 'fetch' as const, httpAgent, httpsAgent };
+const httpAgent = new http.Agent({ keepAlive: false });
+const httpsAgent = new https.Agent({ keepAlive: false });
+const baseOptions = { httpAgent, httpsAgent };
 
 @Module({})
 export class CommonCartridgeClientsModule {

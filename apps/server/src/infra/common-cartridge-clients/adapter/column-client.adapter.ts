@@ -7,14 +7,14 @@ export class ColumnClientAdapter {
 	constructor(private readonly columnApi: BoardColumnApi) {}
 
 	public async updateBoardColumnTitle(jwt: string, columnId: string, params: RenameBodyParams): Promise<void> {
-		await AdapterUtils.retry('updateBoardColumnTitle', () =>
-			this.columnApi.columnControllerUpdateColumnTitle(columnId, params, AdapterUtils.createAxiosConfigForJwt(jwt))
-		);
+		await this.columnApi.columnControllerUpdateColumnTitle(columnId, params, AdapterUtils.createAxiosConfigForJwt(jwt));
 	}
 
 	public async createCard(jwt: string, columnId: string, cardParams: CreateCardBodyParams): Promise<CardResponse> {
-		const { data: cardResponse } = await AdapterUtils.retry('createCard', () =>
-			this.columnApi.columnControllerCreateCard(columnId, cardParams, AdapterUtils.createAxiosConfigForJwt(jwt))
+		const { data: cardResponse } = await this.columnApi.columnControllerCreateCard(
+			columnId,
+			cardParams,
+			AdapterUtils.createAxiosConfigForJwt(jwt)
 		);
 		return cardResponse;
 	}
