@@ -66,7 +66,7 @@ describe(OauthSessionTokenMikroOrmRepo.name, () => {
 					refreshToken: 'token1',
 				});
 
-				await em.persistAndFlush(oauthSessionTokenEntity);
+				await em.persist(oauthSessionTokenEntity).flush();
 				em.clear();
 
 				const oauthSessionToken = oauthSessionTokenFactory.build({ id: oauthSessionTokenId, refreshToken: 'token2' });
@@ -101,7 +101,7 @@ describe(OauthSessionTokenMikroOrmRepo.name, () => {
 			const setup = async () => {
 				const sessionTokens = oauthSessionTokenEntityFactory.buildListWithId(3);
 
-				await em.persistAndFlush(sessionTokens);
+				await em.persist(sessionTokens).flush();
 				em.clear();
 
 				const user = userFactory.build();
@@ -137,7 +137,7 @@ describe(OauthSessionTokenMikroOrmRepo.name, () => {
 					user,
 				});
 
-				await em.persistAndFlush([user, ...sessionTokens, latestSessionToken]);
+				await em.persist([user, ...sessionTokens, latestSessionToken]).flush();
 				em.clear();
 
 				const expectedTokenEntity: OauthSessionTokenEntity = latestSessionToken;

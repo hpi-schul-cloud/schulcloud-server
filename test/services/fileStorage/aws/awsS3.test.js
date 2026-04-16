@@ -2,7 +2,6 @@ const chai = require('chai');
 const chaiHttp = require('chai-http');
 const chaiAsPromised = require('chai-as-promised');
 const { expect } = require('chai');
-const { Configuration } = require('@hpi-schul-cloud/commons');
 const appPromise = require('../../../../src/app');
 const { schoolModel } = require('../../../../src/services/school/model');
 const AWSStrategy = require('../../../../src/services/fileStorage/strategies/awsS3');
@@ -19,20 +18,14 @@ describe('AWS file storage strategy', () => {
 
 	const ShouldFail = new Error('It succeeded but should have returned an error.');
 
-	let configBefore = {};
 	before(async () => {
-		configBefore = Configuration.toObject({ plainSecrets: true }); // deep copy current config
-		Configuration.set('FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED', true);
-		Configuration.set('S3_KEY', '1234567891234567');
 		const app = await appPromise();
 		server = await app.listen(0);
 		testObjects = testHelper(app);
 		await testObjects.createTestStorageProvider({ secretAccessKey: '123456789' });
 
 		const config = {
-			aws: {
-				endpointUrl: 'test.url/',
-			},
+			endpointUrl: 'test.url/',
 		};
 		aws = new AWSStrategy(mockAwsHelper, config);
 	});
@@ -40,7 +33,6 @@ describe('AWS file storage strategy', () => {
 	after(async () => {
 		await testObjects.cleanup();
 		await server.close();
-		Configuration.reset(configBefore);
 	});
 
 	describe('create', () => {

@@ -5,10 +5,10 @@ import {
 	AuthorizationInjectionService,
 	Rule,
 } from '@modules/authorization';
+import { Submission } from '@modules/task/repo';
 import { User } from '@modules/user/repo';
 import { Injectable, NotImplementedException } from '@nestjs/common';
 import { TaskRule } from './task.rule';
-import { Submission } from '@modules/task/repo';
 
 @Injectable()
 export class SubmissionRule implements Rule<Submission> {
@@ -50,19 +50,22 @@ export class SubmissionRule implements Rule<Submission> {
 		return hasAccessToSubmission;
 	}
 
-	private hasWriteAccess(user: User, submission: Submission) {
-		const hasWriteAccess = submission.isUserSubmitter(user) || this.hasParentTaskWriteAccess(user, submission);
+	private hasWriteAccess(user: User, submission: Submission): boolean {
+		const hasWriteAccess =
+			(submission.isUserSubmitter(user) && this.isDueDatePendingOrUndefined(submission)) ||
+			this.hasParentTaskWriteAccess(user, submission);
 
 		return hasWriteAccess;
 	}
 
-	private hasReadAccess(user: User, submission: Submission) {
+	private hasReadAccess(user: User, submission: Submission): boolean {
 		let hasReadAccess = false;
 
 		if (submission.isSubmitted()) {
 			hasReadAccess =
 				this.hasWriteAccess(user, submission) ||
-				(this.hasParentTaskReadAccess(user, submission) && submission.task.areSubmissionsPublic());
+				(this.hasParentTaskReadAccess(user, submission) && submission.task.areSubmissionsPublic()) ||
+				submission.isUserSubmitter(user);
 		} else {
 			hasReadAccess = submission.isUserSubmitter(user);
 		}
@@ -70,7 +73,7 @@ export class SubmissionRule implements Rule<Submission> {
 		return hasReadAccess;
 	}
 
-	private hasParentTaskWriteAccess(user: User, submission: Submission) {
+	private hasParentTaskWriteAccess(user: User, submission: Submission): boolean {
 		const hasParentTaskWriteAccess = this.taskRule.hasPermission(user, submission.task, {
 			action: Action.write,
 			requiredPermissions: [],
@@ -79,12 +82,19 @@ export class SubmissionRule implements Rule<Submission> {
 		return hasParentTaskWriteAccess;
 	}
 
-	private hasParentTaskReadAccess(user: User, submission: Submission) {
+	private hasParentTaskReadAccess(user: User, submission: Submission): boolean {
 		const hasParentTaskReadAccess = this.taskRule.hasPermission(user, submission.task, {
 			action: Action.read,
 			requiredPermissions: [],
 		});
 
 		return hasParentTaskReadAccess;
+	}
+
+	private isDueDatePendingOrUndefined(submission: Submission): boolean {
+		const { dueDate } = submission.task;
+		const now = new Date();
+
+		return dueDate === undefined || dueDate === null || dueDate > now;
 	}
 }

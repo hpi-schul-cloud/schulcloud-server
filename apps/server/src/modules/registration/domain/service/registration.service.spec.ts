@@ -1,9 +1,14 @@
+import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MailService } from '@infra/mail';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountService } from '@modules/account';
+import { accountDoFactory } from '@modules/account/testing';
+import { REGISTRATION_CONFIG_TOKEN } from '@modules/registration/registration.config';
 import { RoleName, RoleService } from '@modules/role';
+import { RoomService } from '@modules/room';
 import { RoomMembershipService } from '@modules/room-membership';
+import { roomFactory } from '@modules/room/testing';
 import { SchoolService } from '@modules/school';
 import { SchoolPurpose } from '@modules/school/domain';
 import { schoolFactory } from '@modules/school/testing';
@@ -15,6 +20,7 @@ import { LanguageType } from '@shared/domain/interface';
 import { RegistrationRepo } from '../../repo';
 import { registrationFactory } from '../../testing/registration.factory';
 import { Registration, RegistrationCreateProps, RegistrationProps } from '../do';
+import { ResendingRegistrationMailLoggable } from '../error/resend-registration-mail.loggable';
 import { RegistrationService } from './registration.service';
 
 describe('RegistrationService', () => {
@@ -25,6 +31,10 @@ describe('RegistrationService', () => {
 	let roomMembershipService: DeepMocked<RoomMembershipService>;
 	let schoolService: DeepMocked<SchoolService>;
 	let userService: DeepMocked<UserService>;
+	let mailService: DeepMocked<MailService>;
+	let logger: DeepMocked<Logger>;
+	let accountService: DeepMocked<AccountService>;
+	let roomService: DeepMocked<RoomService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -33,6 +43,10 @@ describe('RegistrationService', () => {
 				{
 					provide: AccountService,
 					useValue: createMock<AccountService>(),
+				},
+				{
+					provide: Logger,
+					useValue: createMock<Logger>(),
 				},
 				{
 					provide: MailService,
@@ -58,6 +72,19 @@ describe('RegistrationService', () => {
 					provide: UserService,
 					useValue: createMock<UserService>(),
 				},
+				{
+					provide: RoomService,
+					useValue: createMock<RoomService>(),
+				},
+				{
+					provide: REGISTRATION_CONFIG_TOKEN,
+					useValue: {
+						featureExternalPersonRegistrationEnabled: true,
+						fromEmailAddress: 'no-reply@example.com',
+						scTitle: 'dBildungscloud',
+						hostUrl: 'https://example.com',
+					},
+				},
 			],
 		}).compile();
 
@@ -67,6 +94,10 @@ describe('RegistrationService', () => {
 		roomMembershipService = module.get(RoomMembershipService);
 		userService = module.get(UserService);
 		schoolService = module.get(SchoolService);
+		mailService = module.get(MailService);
+		logger = module.get(Logger);
+		accountService = module.get(AccountService);
+		roomService = module.get(RoomService);
 	});
 
 	afterAll(async () => {
@@ -76,6 +107,25 @@ describe('RegistrationService', () => {
 	afterEach(() => {
 		jest.resetAllMocks();
 	});
+
+	const setupExternalPersonRole = () => {
+		const externalPersonRole = { id: new ObjectId().toHexString(), name: RoleName.EXTERNALPERSON };
+		roleService.findByName.mockResolvedValue(externalPersonRole);
+		return externalPersonRole;
+	};
+
+	const setupExternalPersonSchool = () => {
+		const externalPersonsSchool = schoolFactory.build({
+			name: 'External Persons School',
+			purpose: SchoolPurpose.EXTERNAL_PERSON_SCHOOL,
+		});
+		schoolService.getSchools.mockResolvedValue([externalPersonsSchool]);
+		return externalPersonsSchool;
+	};
+
+	const setupNoExistingUser = () => {
+		userService.findByEmail.mockResolvedValue([]);
+	};
 
 	describe('createOrUpdateRegistration', () => {
 		const setup = (options?: { existingRegistration?: Registration }) => {
@@ -124,6 +174,7 @@ describe('RegistrationService', () => {
 						firstName: props.firstName,
 						lastName: props.lastName,
 						roomIds: [props.roomId],
+						resentAt: undefined,
 					})
 				);
 			});
@@ -155,6 +206,118 @@ describe('RegistrationService', () => {
 		});
 	});
 
+	describe('resendRegistrationMails', () => {
+		describe('when registration mail was not resent within last two minutes', () => {
+			it('should call repo to save registration with new resentAt date', async () => {
+				const now = new Date();
+				jest.useFakeTimers().setSystemTime(now);
+
+				const registration = registrationFactory.build();
+				registrationRepo.findById.mockResolvedValueOnce(registration);
+				const expectedRegistration = registrationFactory.build({ ...registration.getProps(), resentAt: now });
+
+				await service.resendRegistrationMails([registration.id]);
+
+				expect(registrationRepo.save).toHaveBeenCalledWith(expectedRegistration);
+			});
+
+			it('should call mail service to resend registration mail', async () => {
+				const room = roomFactory.build({ name: 'A test room' });
+				const registrationData = {
+					firstName: 'John',
+					lastName: 'Doe',
+					roomIds: [room.id],
+				};
+				const registrationWithoutResentAt = registrationFactory.build({
+					...registrationData,
+					email: 'registrationWithoutResentAt@example.com',
+					resentAt: undefined,
+				});
+				const registrationWithResentAt = registrationFactory.build({
+					...registrationData,
+					email: 'registrationWithResentAt@example.com',
+					resentAt: new Date(Date.now() - 5 * 60 * 1000),
+				});
+				const registrationWithUnelapsedCooldown = registrationFactory.build({
+					...registrationData,
+					email: 'registrationWithUnelapsedCooldown@example.com',
+					resentAt: new Date(Date.now() - 60 * 1000),
+				});
+
+				registrationRepo.findById
+					.mockResolvedValueOnce(registrationWithoutResentAt)
+					.mockResolvedValueOnce(registrationWithResentAt)
+					.mockResolvedValueOnce(registrationWithUnelapsedCooldown);
+				roomService.getSingleRoom.mockResolvedValue(room);
+
+				await service.resendRegistrationMails([
+					registrationWithoutResentAt.id,
+					registrationWithResentAt.id,
+					registrationWithUnelapsedCooldown.id,
+				]);
+
+				expect(mailService.send).toHaveBeenCalledTimes(2);
+				expect(mailService.send).toHaveBeenNthCalledWith(
+					1,
+					expect.objectContaining({
+						recipients: [registrationWithoutResentAt.email],
+					})
+				);
+				expect(mailService.send).toHaveBeenNthCalledWith(
+					2,
+					expect.objectContaining({
+						recipients: [registrationWithResentAt.email],
+					})
+				);
+				expect(mailService.send).not.toHaveBeenNthCalledWith(
+					3,
+					expect.objectContaining({
+						recipients: [registrationWithUnelapsedCooldown.email],
+					})
+				);
+			});
+		});
+
+		describe('when registration mail was resent within last two minutes', () => {
+			it('should not call repo to save registration', async () => {
+				const recentDate = new Date();
+				jest.useFakeTimers().setSystemTime(recentDate);
+
+				const oneMinuteAgo = new Date(recentDate.getTime() - 1 * 60 * 1000);
+				const registration = registrationFactory.build({ resentAt: oneMinuteAgo });
+				registrationRepo.findById.mockResolvedValueOnce(registration);
+
+				await service.resendRegistrationMails([registration.id]);
+
+				expect(registrationRepo.save).not.toHaveBeenCalled();
+			});
+
+			it('should not call mail service to resend registration mail', async () => {
+				const recentDate = new Date();
+				jest.useFakeTimers().setSystemTime(recentDate);
+
+				const oneMinuteAgo = new Date(recentDate.getTime() - 1 * 60 * 1000);
+				const registration = registrationFactory.build({ resentAt: oneMinuteAgo });
+				registrationRepo.findById.mockResolvedValueOnce(registration);
+
+				await service.resendRegistrationMails([registration.id]);
+
+				expect(mailService.send).not.toHaveBeenCalled();
+			});
+		});
+
+		describe('when an error occurs during resending', () => {
+			it('should log with failed registration id', async () => {
+				const registration = registrationFactory.build();
+				registrationRepo.findById.mockRejectedValueOnce(new Error('Database error'));
+
+				await service.resendRegistrationMails([registration.id]);
+
+				expect(logger.warning).toHaveBeenCalledWith(new ResendingRegistrationMailLoggable(registration.id));
+			});
+		});
+	});
+
 	describe('getSingleRegistrationByEmail', () => {
 		it('should call repo to get registration by its email', async () => {
 			const email = 'test@example.com';
@@ -171,6 +334,19 @@ describe('RegistrationService', () => {
 			const result = await service.getSingleRegistrationByEmail('test@example.com');
 
 			expect(result).toBe(registration);
+		});
+	});
+
+	describe('getSingleRegistrationById', () => {
+		it('should return registration', async () => {
+			const registrationId = new ObjectId().toHexString();
+			const registration = registrationFactory.build({ id: registrationId });
+			registrationRepo.findById.mockResolvedValue(registration);
+
+			const result = await service.getSingleRegistrationById(registrationId);
+
+			expect(result).toBe(registration);
+			expect(registrationRepo.findById).toHaveBeenCalledWith(registrationId);
 		});
 	});
 
@@ -212,19 +388,46 @@ describe('RegistrationService', () => {
 		});
 	});
 
+	describe('sendRegistrationMail', () => {
+		it('should get the room and send the registration mail', async () => {
+			const room = roomFactory.build({ name: 'Test Room' });
+			const registration = registrationFactory.build({ roomIds: [room.id] });
+
+			roomService.getSingleRoom.mockResolvedValue(room);
+
+			await service.sendRegistrationMail(registration);
+
+			expect(roomService.getSingleRoom).toHaveBeenCalledWith(room.id);
+			expect(mailService.send).toHaveBeenCalledWith(
+				expect.objectContaining({
+					recipients: [registration.email],
+				})
+			);
+		});
+
+		describe('when registration has multiple roomIds', () => {
+			it('should use the last roomId', async () => {
+				const room1 = roomFactory.build({ name: 'Room 1' });
+				const room2 = roomFactory.build({ name: 'Room 2' });
+				const registration = registrationFactory.build({ roomIds: [room1.id, room2.id] });
+
+				roomService.getSingleRoom.mockResolvedValue(room2);
+
+				await service.sendRegistrationMail(registration);
+
+				expect(roomService.getSingleRoom).toHaveBeenCalledWith(room2.id);
+			});
+		});
+	});
+
 	describe('completeRegistration', () => {
 		const setup = (registrationProps: Partial<RegistrationProps>) => {
 			const registration = registrationFactory.build(registrationProps);
 			registrationRepo.findBySecret.mockResolvedValue(registration);
 
-			const externalPersonRole = { id: new ObjectId().toHexString(), name: RoleName.EXTERNALPERSON };
-			roleService.findByName.mockResolvedValue(externalPersonRole);
-
-			const externalPersonsSchool = schoolFactory.build({
-				name: 'External Persons School',
-				purpose: SchoolPurpose.EXTERNAL_PERSON_SCHOOL,
-			});
-			schoolService.getSchools.mockResolvedValue([externalPersonsSchool]);
+			setupExternalPersonRole();
+			setupExternalPersonSchool();
+			setupNoExistingUser();
 
 			const savedUser = userDoFactory.buildWithId();
 			userService.save.mockResolvedValue(savedUser);
@@ -232,25 +435,97 @@ describe('RegistrationService', () => {
 			return { registration, savedUser };
 		};
 
-		it('should create user and account from registration', async () => {
-			const registration = registrationFactory.build();
-			registrationRepo.findBySecret.mockResolvedValue(registration);
+		describe('when user with this email does not exist', () => {
+			it('should create user and account from registration', async () => {
+				const { registration } = setup({ firstName: 'John', lastName: 'Doe' });
+				accountService.findByUserId.mockResolvedValue(null);
 
-			await service.completeRegistration(registration, LanguageType.EN, 'SecurePassword123!');
+				const somePassword = 'SecurePassword123!';
 
-			expect(userService.save).toHaveBeenCalledWith(
-				expect.objectContaining({
-					email: registration.email,
-					firstName: registration.firstName,
-					lastName: registration.lastName,
-				})
-			);
+				await service.completeRegistration(registration, LanguageType.EN, somePassword);
+
+				expect(userService.save).toHaveBeenCalledWith(
+					expect.objectContaining({
+						email: registration.email,
+						firstName: registration.firstName,
+						lastName: registration.lastName,
+					})
+				);
+
+				expect(accountService.saveWithValidation).toHaveBeenCalledWith(
+					expect.objectContaining({
+						password: somePassword,
+					})
+				);
+			});
+		});
+
+		describe('when existing user is found', () => {
+			it('should update existing user with registration data', async () => {
+				const registration = registrationFactory.build();
+				registrationRepo.findBySecret.mockResolvedValue(registration);
+
+				const existingUser = userDoFactory.buildWithId({ email: registration.email });
+				userService.findByEmail.mockResolvedValue([existingUser]);
+				userService.save.mockImplementation((user) => Promise.resolve(user));
+
+				await service.completeRegistration(registration, LanguageType.EN, 'SecurePassword123!');
+
+				expect(userService.save).toHaveBeenCalledWith(
+					expect.objectContaining({
+						id: existingUser.id,
+						firstName: registration.firstName,
+						lastName: registration.lastName,
+						language: LanguageType.EN,
+					})
+				);
+			});
+		});
+
+		describe('when multiple users with same email exist', () => {
+			it('should throw BadRequestException', async () => {
+				const registration = registrationFactory.build();
+				registrationRepo.findBySecret.mockResolvedValue(registration);
+
+				const existingUser1 = userDoFactory.buildWithId({ email: registration.email });
+				const existingUser2 = userDoFactory.buildWithId({ email: registration.email });
+				userService.findByEmail.mockResolvedValue([existingUser1, existingUser2]);
+
+				await expect(service.completeRegistration(registration, LanguageType.EN, 'SecurePassword123!')).rejects.toThrow(
+					BadRequestException
+				);
+			});
+		});
+
+		describe('when existing account is found for user', () => {
+			it('should update account password', async () => {
+				const registration = registrationFactory.build();
+				registrationRepo.findBySecret.mockResolvedValue(registration);
+				const mockPassword = 'NewPassword123!';
+
+				const existingUser = userDoFactory.buildWithId({ email: registration.email });
+				userService.findByEmail.mockResolvedValue([existingUser]);
+				userService.save.mockImplementation((user) => Promise.resolve(user));
+
+				const existingAccount = accountDoFactory.build({ userId: existingUser.id });
+				accountService.findByUserId.mockResolvedValue(existingAccount);
+
+				await service.completeRegistration(registration, LanguageType.EN, mockPassword);
+
+				expect(accountService.saveWithValidation).toHaveBeenCalledWith(
+					expect.objectContaining({
+						password: mockPassword,
+					}),
+					{ allowUpdate: true }
+				);
+			});
 		});
 
 		describe('when external person role is missing', () => {
 			it('should throw an error', async () => {
 				const registration = registrationFactory.build();
 				registrationRepo.findBySecret.mockResolvedValue(registration);
+				setupNoExistingUser();
 
 				const error = new BadRequestException('ExternalPerson role not found');
 				roleService.findByName.mockRejectedValue(error);
@@ -265,9 +540,26 @@ describe('RegistrationService', () => {
 			it('should throw an error', async () => {
 				const registration = registrationFactory.build();
 				registrationRepo.findBySecret.mockResolvedValue(registration);
-				const externalPersonRole = { id: new ObjectId().toHexString(), name: RoleName.EXTERNALPERSON };
-				roleService.findByName.mockResolvedValue(externalPersonRole);
+				setupNoExistingUser();
+				setupExternalPersonRole();
 				schoolService.getSchools.mockResolvedValue([]);
+
+				await expect(service.completeRegistration(registration, LanguageType.EN, 'SecurePassword123!')).rejects.toThrow(
+					InternalServerErrorException
+				);
+			});
+		});
+
+		describe('when multiple external-persons-schools exist', () => {
+			it('should throw an error', async () => {
+				const registration = registrationFactory.build();
+				registrationRepo.findBySecret.mockResolvedValue(registration);
+				setupNoExistingUser();
+				setupExternalPersonRole();
+
+				const school1 = schoolFactory.build({ purpose: SchoolPurpose.EXTERNAL_PERSON_SCHOOL });
+				const school2 = schoolFactory.build({ purpose: SchoolPurpose.EXTERNAL_PERSON_SCHOOL });
+				schoolService.getSchools.mockResolvedValue([school1, school2]);
 
 				await expect(service.completeRegistration(registration, LanguageType.EN, 'SecurePassword123!')).rejects.toThrow(
 					InternalServerErrorException
@@ -291,6 +583,7 @@ describe('RegistrationService', () => {
 			it('should throw an error', async () => {
 				const registration = registrationFactory.build({ firstName: undefined });
 				registrationRepo.findBySecret.mockResolvedValue(registration);
+				setupNoExistingUser();
 
 				await expect(service.completeRegistration(registration, LanguageType.EN, 'SecurePassword123!')).rejects.toThrow(
 					BadRequestException
@@ -302,6 +595,7 @@ describe('RegistrationService', () => {
 			it('should throw an error', async () => {
 				const registration = registrationFactory.build({ lastName: undefined });
 				registrationRepo.findBySecret.mockResolvedValue(registration);
+				setupNoExistingUser();
 
 				await expect(service.completeRegistration(registration, LanguageType.EN, 'SecurePassword123!')).rejects.toThrow(
 					BadRequestException
@@ -345,20 +639,17 @@ describe('RegistrationService', () => {
 		});
 	});
 
-	describe('cancelRegistrationForRoom', () => {
+	describe('cancelRegistrationsForRoom', () => {
 		describe('when registration exists', () => {
 			it('should remove roomId from registration', async () => {
 				const roomIdToRemove = new ObjectId().toHexString();
 				const registration = registrationFactory.build({ roomIds: [roomIdToRemove, new ObjectId().toHexString()] });
 				registrationRepo.findById.mockResolvedValue(registration);
 
-				const updatedRegistration = await service.cancelRegistrationForRoom(
-					registration.registrationSecret,
-					roomIdToRemove
-				);
+				const updatedRegistrations = await service.cancelRegistrationsForRoom([registration.id], roomIdToRemove);
 
-				expect(updatedRegistration?.roomIds).not.toContain(roomIdToRemove);
-				expect(registrationRepo.save).toHaveBeenCalledWith(updatedRegistration);
+				expect(updatedRegistrations?.[0].roomIds).not.toContain(roomIdToRemove);
+				expect(registrationRepo.save).toHaveBeenCalledWith(updatedRegistrations?.[0]);
 			});
 		});
 
@@ -367,7 +658,7 @@ describe('RegistrationService', () => {
 				registrationRepo.findById.mockRejectedValueOnce(new NotFoundException());
 
 				await expect(
-					service.cancelRegistrationForRoom('nonExistingRegistrationId', new ObjectId().toHexString())
+					service.cancelRegistrationsForRoom(['nonExistingRegistrationId'], new ObjectId().toHexString())
 				).rejects.toThrow(NotFoundException);
 			});
 		});
@@ -378,10 +669,40 @@ describe('RegistrationService', () => {
 				const registration = registrationFactory.build({ roomIds: [roomIdToRemove] });
 				registrationRepo.findById.mockResolvedValue(registration);
 
-				const result = await service.cancelRegistrationForRoom(registration.registrationSecret, roomIdToRemove);
+				const result = await service.cancelRegistrationsForRoom([registration.id], roomIdToRemove);
 
 				expect(registrationRepo.deleteByIds).toHaveBeenCalledWith([registration.id]);
 				expect(result).toBeNull();
+			});
+		});
+
+		describe('when multiple registrationIds are provided', () => {
+			it('should process all registrationIds and return updated registrations', async () => {
+				const roomIdToRemove = new ObjectId().toHexString();
+
+				const registrationWithRoomRemaining = registrationFactory.build({
+					roomIds: [roomIdToRemove, new ObjectId().toHexString()],
+				});
+				const registrationToBeDeleted = registrationFactory.build({
+					roomIds: [roomIdToRemove],
+				});
+
+				registrationRepo.findById
+					.mockResolvedValueOnce(registrationWithRoomRemaining)
+					.mockResolvedValueOnce(registrationToBeDeleted);
+
+				const updatedRegistrations = await service.cancelRegistrationsForRoom(
+					[registrationWithRoomRemaining.id, registrationToBeDeleted.id],
+					roomIdToRemove
+				);
+
+				expect(updatedRegistrations).toHaveLength(1);
+				expect(updatedRegistrations?.[0].id).toBe(registrationWithRoomRemaining.id);
+				expect(updatedRegistrations?.[0].roomIds).not.toContain(roomIdToRemove);
+
+				expect(registrationRepo.save).toHaveBeenCalledTimes(1);
+				expect(registrationRepo.save).toHaveBeenCalledWith(updatedRegistrations?.[0]);
+				expect(registrationRepo.deleteByIds).toHaveBeenCalledWith([registrationToBeDeleted.id]);
 			});
 		});
 	});

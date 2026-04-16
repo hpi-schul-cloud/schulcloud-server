@@ -16,6 +16,7 @@ import {
 import { ApiExtraModels, ApiOperation, ApiResponse, ApiTags, getSchemaPath } from '@nestjs/swagger';
 import { RequestTimeout } from '@shared/common/decorators';
 import { ApiValidationError } from '@shared/common/error';
+import { BOARD_INCOMING_REQUEST_TIMEOUT_COPY_API_KEY } from '../timeout.config';
 import { CardUc, ColumnUc } from '../uc';
 import {
 	AnyContentElementResponse,
@@ -34,13 +35,12 @@ import {
 	MoveCardBodyParams,
 	RenameBodyParams,
 	RichTextElementResponse,
-	SubmissionContainerElementResponse,
 	VideoConferenceElementResponse,
 } from './dto';
+import { MoveCardResponse } from './dto/board/move-card.response';
 import { SetHeightBodyParams } from './dto/board/set-height.body.params';
 import { CardResponseMapper, ContentElementResponseFactory } from './mapper';
 import { MoveCardResponseMapper } from './mapper/move-card-response.mapper';
-import { MoveCardResponse } from './dto/board/move-card.response';
 
 @ApiTags('Board Card')
 @JwtAuthentication()
@@ -136,7 +136,7 @@ export class CardController {
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@Post(':cardId/copy')
-	@RequestTimeout('INCOMING_REQUEST_TIMEOUT_COPY_API')
+	@RequestTimeout(BOARD_INCOMING_REQUEST_TIMEOUT_COPY_API_KEY)
 	public async copyCard(
 		@Param() urlParams: CardUrlParams,
 		@CurrentUser() currentUser: ICurrentUser
@@ -153,7 +153,6 @@ export class CardController {
 		FileFolderElementResponse,
 		LinkElementResponse,
 		RichTextElementResponse,
-		SubmissionContainerElementResponse,
 		DrawingElementResponse,
 		DeletedElementResponse,
 		VideoConferenceElementResponse,
@@ -168,7 +167,6 @@ export class CardController {
 				{ $ref: getSchemaPath(FileFolderElementResponse) },
 				{ $ref: getSchemaPath(LinkElementResponse) },
 				{ $ref: getSchemaPath(RichTextElementResponse) },
-				{ $ref: getSchemaPath(SubmissionContainerElementResponse) },
 				{ $ref: getSchemaPath(DrawingElementResponse) },
 				{ $ref: getSchemaPath(DeletedElementResponse) },
 				{ $ref: getSchemaPath(VideoConferenceElementResponse) },

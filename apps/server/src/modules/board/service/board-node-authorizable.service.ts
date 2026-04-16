@@ -1,21 +1,22 @@
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
-import { type EntityId } from '@shared/domain/types';
 import {
 	type AuthorizationLoaderService,
-	AuthorizationInjectionService,
 	AuthorizableReferenceType,
+	AuthorizationInjectionService,
 } from '@modules/authorization';
-import { AnyBoardNode, BoardNodeAuthorizable, UserWithBoardRoles } from '../domain';
+import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import { type EntityId } from '@shared/domain/types';
+import { AnyBoardNode, BoardConfiguration, BoardNodeAuthorizable, ColumnBoard, MediaBoard } from '../domain';
 import { BoardNodeRepo } from '../repo';
-import { BoardContextService } from './internal/board-context.service';
 import { BoardNodeService } from './board-node.service';
+import { BoardContextResolverService } from './internal/board-context/board-context-resolver.service';
+import { PreparedBoardContext } from './internal/board-context/prepared-board-context.interface';
 
 @Injectable()
 export class BoardNodeAuthorizableService implements AuthorizationLoaderService {
 	constructor(
 		@Inject(forwardRef(() => BoardNodeRepo)) private readonly boardNodeRepo: BoardNodeRepo,
 		private readonly boardNodeService: BoardNodeService,
-		private readonly boardContextService: BoardContextService,
+		private readonly boardContextResolverService: BoardContextResolverService,
 		injectionService: AuthorizationInjectionService
 	) {
 		injectionService.injectReferenceLoader(AuthorizableReferenceType.BoardNode, this);
@@ -35,8 +36,10 @@ export class BoardNodeAuthorizableService implements AuthorizationLoaderService 
 	public async getBoardAuthorizable(boardNode: AnyBoardNode): Promise<BoardNodeAuthorizable> {
 		const rootNode = await this.boardNodeService.findRoot(boardNode, 1);
 		const parentNode = await this.boardNodeService.findParent(boardNode, 1);
-		const users = await this.boardContextService.getUsersWithBoardRoles(rootNode);
-		const boardSettings = await this.boardContextService.getBoardSettings(rootNode);
+
+		const preparedContext = await this.resolveContext(rootNode);
+		const users = preparedContext.getUsersWithBoardRoles();
+		const boardConfiguration = preparedContext.getBoardConfiguration(rootNode as MediaBoard | ColumnBoard);
 
 		const boardNodeAuthorizable = new BoardNodeAuthorizable({
 			users,
@@ -44,7 +47,7 @@ export class BoardNodeAuthorizableService implements AuthorizationLoaderService 
 			boardNode,
 			rootNode,
 			parentNode,
-			boardContextSettings: boardSettings,
+			boardConfiguration,
 		});
 
 		return boardNodeAuthorizable;
@@ -54,36 +57,51 @@ export class BoardNodeAuthorizableService implements AuthorizationLoaderService 
 		const rootIds = boardNodes.map((node) => node.rootId);
 		const parentIds = boardNodes.map((node) => node.parentId).filter((defined) => defined) as EntityId[];
 		const boardNodeMap = await this.getBoardNodeMap([...rootIds, ...parentIds]);
-		const promises = boardNodes.map(async (boardNode) => {
-			const rootNode = boardNodeMap[boardNode.rootId];
-			const users = await this.boardContextService.getUsersWithBoardRoles(rootNode);
-			return { id: boardNode.id, users };
-		});
+		const rootNodeIds = Array.from(new Set(rootIds));
+		const rootNodes = rootNodeIds.map((id) => boardNodeMap[id]);
+		const uniqueRootNodeContextIds = Array.from(
+			new Set(rootNodes.map((node) => ('context' in node ? node.context.id : undefined)))
+		);
+		if (uniqueRootNodeContextIds.length > 1) {
+			throw new Error(
+				'Multiple contexts found for board nodes. All board nodes must share the same context to load authorizables.'
+			);
+		}
 
-		const results = await Promise.all(promises);
-		const usersMap = results.reduce((acc, { id, users }) => {
-			acc[id] = users;
-			return acc;
-		}, {} as Record<EntityId, UserWithBoardRoles[]>);
+		const preparedContext = await this.resolveContext(rootNodes[0]);
+		const users = preparedContext.getUsersWithBoardRoles();
 
-		const boardNodeAuthorizablesPromises = boardNodes.map(async (boardNode) => {
-			const rootNode = boardNodeMap[boardNode.rootId];
+		const boardNodeAuthorizables = boardNodes.map((boardNode) => {
+			const currentRootNode = boardNodeMap[boardNode.rootId];
 			const parentNode = boardNode.parentId ? boardNodeMap[boardNode.parentId] : undefined;
-			const users = usersMap[boardNode.id];
-			const boardSettings = await this.boardContextService.getBoardSettings(rootNode);
-			const boardNodeAuthorizable = new BoardNodeAuthorizable({
+
+			const boardConfiguration = preparedContext.getBoardConfiguration(currentRootNode as MediaBoard | ColumnBoard);
+
+			return new BoardNodeAuthorizable({
 				users,
 				id: boardNode.id,
 				boardNode,
-				rootNode,
+				rootNode: currentRootNode,
 				parentNode,
-				boardContextSettings: boardSettings,
+				boardConfiguration,
 			});
-			return boardNodeAuthorizable;
 		});
 
-		const boardNodeAuthorizables = await Promise.all(boardNodeAuthorizablesPromises);
 		return boardNodeAuthorizables;
+	}
+
+	private async resolveContext(rootNode: AnyBoardNode): Promise<PreparedBoardContext> {
+		if (!rootNode || !('context' in rootNode)) {
+			return {
+				type: undefined as never,
+				getUsersWithBoardRoles: () => [],
+				getBoardConfiguration: (): BoardConfiguration => {
+					return {};
+				},
+			};
+		}
+
+		return await this.boardContextResolverService.resolve(rootNode.context);
 	}
 
 	private async getBoardNodeMap(ids: EntityId[]): Promise<Record<EntityId, AnyBoardNode>> {

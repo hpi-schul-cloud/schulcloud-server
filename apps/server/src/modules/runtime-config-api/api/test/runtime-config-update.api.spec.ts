@@ -1,3 +1,5 @@
+import { Logger } from '@core/logger';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { RuntimeConfigDefault } from '@infra/runtime-config';
 import { RuntimeConfigModule } from '@infra/runtime-config/runtime-config.module';
 import { EntityManager } from '@mikro-orm/mongodb';
@@ -9,11 +11,13 @@ import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { RuntimeConfigListResponse } from '../dto/response/runtime-config-list.response';
+import { UpdateRuntimeConfigLoggable } from '../loggable/update-runtime-config.loggable';
 
 describe('RuntimeConfig Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let testApiClient: TestApiClient;
+	let logger: DeepMocked<Logger>;
 
 	const defaults: RuntimeConfigDefault[] = [
 		{ key: 'TEST_STRING', type: 'string', value: 'a string' },
@@ -37,9 +41,12 @@ describe('RuntimeConfig Controller (API)', () => {
 		})
 			.overrideModule(ServerRuntimeConfigModule)
 			.useModule(ServerRuntimeConfigModuleOverride)
+			.overrideProvider(Logger)
+			.useValue(createMock<Logger>())
 			.compile();
 
 		app = moduleFixture.createNestApplication();
+		logger = moduleFixture.get(Logger);
 		await app.init();
 		em = app.get(EntityManager);
 		testApiClient = new TestApiClient(app, 'runtime-config');
@@ -47,6 +54,10 @@ describe('RuntimeConfig Controller (API)', () => {
 
 	beforeEach(async () => {
 		await cleanupCollections(em);
+	});
+
+	afterEach(() => {
+		jest.clearAllMocks();
 	});
 
 	afterAll(async () => {
@@ -66,7 +77,7 @@ describe('RuntimeConfig Controller (API)', () => {
 		describe('when user is logged in as teacher', () => {
 			const setup = async () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-				await em.persistAndFlush([teacherAccount, teacherUser]);
+				await em.persist([teacherAccount, teacherUser]).flush();
 				em.clear();
 				const loggedInClient = await testApiClient.login(teacherAccount);
 				return { loggedInClient };
@@ -84,10 +95,10 @@ describe('RuntimeConfig Controller (API)', () => {
 		describe('when user is logged in as superhero', () => {
 			const setup = async () => {
 				const { superheroAccount, superheroUser } = UserAndAccountTestFactory.buildSuperhero();
-				await em.persistAndFlush([superheroAccount, superheroUser]);
+				await em.persist([superheroAccount, superheroUser]).flush();
 				em.clear();
 				const loggedInClient = await testApiClient.login(superheroAccount);
-				return { loggedInClient };
+				return { loggedInClient, superheroUser };
 			};
 
 			it('should return 200 for string', async () => {
@@ -130,6 +141,36 @@ describe('RuntimeConfig Controller (API)', () => {
 						}),
 					]) as RuntimeConfigListResponse,
 				});
+			});
+
+			it('should return the updated value in the response', async () => {
+				const { loggedInClient } = await setup();
+
+				const response = await loggedInClient.patch('/TEST_STRING', { value: 'new value' });
+
+				expect(response.status).toEqual(HttpStatus.OK);
+				expect(response.body).toEqual({ value: 'new value' });
+			});
+
+			it('should sanitize the string value', async () => {
+				const { loggedInClient } = await setup();
+
+				const response = await loggedInClient.patch('/TEST_STRING', {
+					value: '<script>alert("xss")</script><p>updated</p>',
+				});
+
+				expect(response.status).toEqual(HttpStatus.OK);
+				expect(response.body).toEqual({ value: '<p>updated</p>' });
+			});
+
+			it('should log the update action', async () => {
+				const { loggedInClient, superheroUser } = await setup();
+
+				await loggedInClient.patch('/TEST_STRING', { value: 'new value' });
+
+				expect(logger.info).toHaveBeenCalledWith(
+					new UpdateRuntimeConfigLoggable(superheroUser.id, 'TEST_STRING', 'new value', 'new value')
+				);
 			});
 
 			it('should return 400 for invalid value type', async () => {

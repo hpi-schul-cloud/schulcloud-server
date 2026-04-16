@@ -14,15 +14,15 @@ import {
 	TokenEndpointAuthMethod,
 	ToolContextType,
 } from '@modules/tool/common/enum';
-import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
+import { MANAGEMENT_SEED_DATA_CONFIG_TOKEN, ManagementSeedDataConfig } from '../management-seed-data.config';
 import { ExternalToolsSeedDataService } from './external-tools-seed-data.service';
 
 describe(ExternalToolsSeedDataService.name, () => {
 	let module: TestingModule;
 	let service: ExternalToolsSeedDataService;
 
-	let configService: DeepMocked<ConfigService>;
+	let config: ManagementSeedDataConfig;
 	let encryptionService: DeepMocked<EncryptionService>;
 	let externalToolService: DeepMocked<ExternalToolService>;
 	let oauthProviderService: DeepMocked<OauthProviderService>;
@@ -33,8 +33,8 @@ describe(ExternalToolsSeedDataService.name, () => {
 			providers: [
 				ExternalToolsSeedDataService,
 				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService>(),
+					provide: MANAGEMENT_SEED_DATA_CONFIG_TOKEN,
+					useValue: {},
 				},
 				{
 					provide: DefaultEncryptionService,
@@ -56,7 +56,7 @@ describe(ExternalToolsSeedDataService.name, () => {
 		}).compile();
 
 		service = module.get(ExternalToolsSeedDataService);
-		configService = module.get(ConfigService);
+		config = module.get(MANAGEMENT_SEED_DATA_CONFIG_TOKEN);
 		encryptionService = module.get(DefaultEncryptionService);
 		externalToolService = module.get(ExternalToolService);
 		oauthProviderService = module.get(OauthProviderService);
@@ -75,14 +75,14 @@ describe(ExternalToolsSeedDataService.name, () => {
 		describe('when the nextcloud variables are defined', () => {
 			const setup = () => {
 				const clientId = 'Nextcloud_id';
-				configService.get.mockReturnValueOnce('SchulcloudNextcloud'); // NEXTCLOUD_SOCIALLOGIN_OIDC_INTERNAL_NAME
-				configService.get.mockReturnValueOnce('https://nextcloud.localhost:9090'); // NEXTCLOUD_BASE_URL
-				configService.get.mockReturnValueOnce(clientId); // NEXTCLOUD_CLIENT_ID
-				configService.get.mockReturnValueOnce('Nextcloud_secret'); // NEXTCLOUD_CLIENT_SECRET
-				configService.get.mockReturnValueOnce('openid'); // NEXTCLOUD_SCOPES
-				configService.get.mockReturnValueOnce('deutsch_secret'); // CTL_SEED_SECRET_ONLINE_DIA_DEUTSCH
-				configService.get.mockReturnValueOnce('mathe_secret'); // CTL_SEED_SECRET_ONLINE_DIA_MATHE
-				configService.get.mockReturnValueOnce('merlin_secret'); // CTL_SEED_SECRET_MERLIN
+				config.nextcloudSocialloginOidcInternalName = 'SchulcloudNextcloud';
+				config.nextcloudBaseUrl = 'https://nextcloud.localhost:9090';
+				config.nextcloudClientId = clientId;
+				config.nextcloudClientSecret = 'Nextcloud_secret';
+				config.nextcloudScopes = 'openid';
+				config.ctlSeedSecretOnlineDiaDeutsch = 'deutsch_secret';
+				config.ctlSeedSecretOnlineDiaMathe = 'mathe_secret';
+				config.ctlSeedSecretMerlin = 'merlin_secret';
 
 				const error = new Error('Client not found');
 				oauthProviderService.deleteOAuth2Client.mockRejectedValueOnce(error);

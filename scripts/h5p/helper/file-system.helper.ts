@@ -1,5 +1,6 @@
 import AdmZip from 'adm-zip';
 import {
+	createWriteStream,
 	Dirent,
 	existsSync,
 	mkdirSync,
@@ -13,7 +14,10 @@ import {
 } from 'fs';
 import { tmpdir } from 'os';
 import { join } from 'path';
+import { Readable } from 'stream';
 import { parse, stringify } from 'yaml';
+import { H5PLibrary } from '../interface/h5p-library';
+import { H5PSemanticField, H5PSemantics } from '../interface/h5p-semantics';
 
 export class FileSystemHelper {
 	public static getAllFolders(dirPath: string): string[] {
@@ -43,16 +47,75 @@ export class FileSystemHelper {
 	}
 
 	public static readJsonFile(filePath: string): unknown {
-		const content = readFileSync(filePath, { encoding: 'utf-8' });
+		const content = this.readFileAsString(filePath);
 		const json = JSON.parse(content) as unknown;
 
 		return json;
 	}
 
-	public static readFile(filePath: string): string {
+	public static readFileAsString(filePath: string): string {
 		const content = readFileSync(filePath, { encoding: 'utf-8' });
 
 		return content;
+	}
+
+	public static readFileAsBuffer(filePath: string): Buffer {
+		const content = readFileSync(filePath);
+
+		return content;
+	}
+
+	public static readLibraryJson(filePath: string): H5PLibrary {
+		const libraryJson = this.readJsonFile(filePath);
+
+		if (!this.isLibraryJsonType(libraryJson)) {
+			throw new Error('Invalid input type for library.json');
+		}
+
+		return libraryJson;
+	}
+
+	private static isLibraryJsonType(object: unknown): object is H5PLibrary {
+		const isType =
+			typeof object === 'object' &&
+			object !== null &&
+			'machineName' in object &&
+			typeof object.machineName === 'string' &&
+			'majorVersion' in object &&
+			typeof object.majorVersion === 'number' &&
+			'minorVersion' in object &&
+			typeof object.minorVersion === 'number' &&
+			'patchVersion' in object &&
+			typeof object.patchVersion === 'number';
+
+		return isType;
+	}
+
+	public static readSemanticsJson(filePath: string): H5PSemantics {
+		const semanticsJson = this.readJsonFile(filePath);
+
+		if (!this.isSemanticsJsonType(semanticsJson)) {
+			throw new Error('Invalid input type for semantics.json');
+		}
+
+		return semanticsJson;
+	}
+
+	private static isSemanticsJsonType(object: any): object is H5PSemantics {
+		const isType = Array.isArray(object) && object.every((field) => this.isSemanticFieldType(field));
+		return isType;
+	}
+
+	private static isSemanticFieldType(object: any): object is H5PSemanticField {
+		const isType =
+			typeof object === 'object' &&
+			object !== null &&
+			'name' in object &&
+			typeof object.name === 'string' &&
+			'type' in object &&
+			typeof object.type === 'string';
+
+		return isType;
 	}
 
 	public static readLibraryRepoMap(mapFile: string): Record<string, string> {
@@ -75,31 +138,8 @@ export class FileSystemHelper {
 		return isType;
 	}
 
-	public static readLibraryWishList(filePath: string): string[] {
-		const librariesYamlContent = this.readYamlFile(filePath);
-
-		if (!this.isLibrariesContentType(librariesYamlContent)) {
-			throw new Error('Invalid input type for library wish list');
-		}
-
-		const libraryWishList = librariesYamlContent.h5p_libraries;
-
-		return libraryWishList;
-	}
-
-	private static isLibrariesContentType(object: any): boolean {
-		const isType =
-			typeof object === 'object' &&
-			!Array.isArray(object) &&
-			object !== null &&
-			'h5p_libraries' in object &&
-			Array.isArray(object.h5p_libraries);
-
-		return isType;
-	}
-
 	private static readYamlFile(filePath: string): any {
-		const content = readFileSync(filePath, { encoding: 'utf-8' });
+		const content = this.readFileAsString(filePath);
 		const yamlContent = parse(content);
 
 		return yamlContent;
@@ -134,9 +174,14 @@ export class FileSystemHelper {
 		rmSync(folderPath, { recursive: true, force: true });
 	}
 
-	public static unzipFile(zipFilePath: string, outputDir: string): void {
+	public static unzipFile(zipFilePath: string, outputDir: string): string {
 		const zip = new AdmZip(zipFilePath);
 		zip.extractAllTo(outputDir, true);
+
+		const entries = zip.getEntries();
+		const rootFolder = entries[0]?.entryName.split('/')[0];
+
+		return join(outputDir, rootFolder);
 	}
 
 	public static getTempDir(): string {
@@ -186,38 +231,40 @@ export class FileSystemHelper {
 		return result;
 	}
 
-	public static unzipAndRenameFolder(
-		filePath: string,
-		folderPath: string,
-		tempFolder: string,
-		repo: string,
-		tag: string
-	): void {
-		this.unzipFile(filePath, tempFolder);
-		this.renameFolder(folderPath, tempFolder, repo, tag);
+	public static unzipAndRenameFolder(filePath: string, folderPath: string, tempFolder: string): void {
+		const extractedFolderPath = this.unzipFile(filePath, tempFolder);
+		this.renameFolder(folderPath, extractedFolderPath);
 	}
 
-	public static renameFolder(folderPath: string, tempFolder: string, repo: string, tag: string): void {
-		const repoName = repo.split('/')[1];
-		const repoNameFolder = join(tempFolder, `${repoName}-${tag}`);
-		if (repoNameFolder === folderPath) {
+	public static renameFolder(folderPath: string, tempFolder: string): void {
+		if (tempFolder === folderPath) {
 			return;
 		}
 
-		if (!this.pathExists(repoNameFolder)) {
-			throw new Error(`Repository folder ${repo} does not exist in temporary folder.`);
+		if (!this.pathExists(tempFolder)) {
+			throw new Error(`Temporary folder ${tempFolder} does not exist.`);
 		}
 
 		if (this.pathExists(folderPath)) {
 			this.removeFolder(folderPath);
 		}
 
-		renameSync(repoNameFolder, folderPath);
+		renameSync(tempFolder, folderPath);
 	}
 
 	public static getStatsOfPath(filePath: string): Stats {
 		const statsOfPath = statSync(filePath);
 
 		return statsOfPath;
+	}
+
+	public static async writeStreamToFile(stream: Readable, filePath: string): Promise<void> {
+		const writer = createWriteStream(filePath);
+		stream.pipe(writer);
+
+		await new Promise<void>((resolve, reject) => {
+			writer.on('finish', () => resolve());
+			writer.on('error', (err) => reject(err));
+		});
 	}
 }

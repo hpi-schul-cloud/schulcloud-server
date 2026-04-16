@@ -9,8 +9,7 @@ import {
 import { Group, GroupService } from '@modules/group';
 import { LegacySchoolDo } from '@modules/legacy-school/domain';
 import { UserDo } from '@modules/user';
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { NotFoundLoggableException, ValidationErrorLoggableException } from '@shared/common/loggable-exception';
 import { Page } from '@shared/domain/domainobject';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
@@ -28,7 +27,7 @@ import {
 	ProvisioningDto,
 } from '../../dto';
 import { FetchingPoliciesInfoFailedLoggable, PoliciesInfoErrorResponseLoggable } from '../../loggable';
-import { ProvisioningConfig } from '../../provisioning.config';
+import { PROVISIONING_CONFIG_TOKEN, ProvisioningConfig } from '../../provisioning.config';
 import { ProvisioningStrategy } from '../base.strategy';
 import { SchulconnexResponseMapper } from './schulconnex-response-mapper';
 import {
@@ -48,7 +47,8 @@ export class SchulconnexAsyncProvisioningStrategy extends ProvisioningStrategy {
 		private readonly groupService: GroupService,
 		protected readonly responseMapper: SchulconnexResponseMapper,
 		protected readonly schulconnexRestClient: SchulconnexRestClient,
-		protected readonly configService: ConfigService<ProvisioningConfig, true>,
+		@Inject(PROVISIONING_CONFIG_TOKEN)
+		protected readonly config: ProvisioningConfig,
 		protected readonly logger: Logger
 	) {
 		super();
@@ -85,15 +85,15 @@ export class SchulconnexAsyncProvisioningStrategy extends ProvisioningStrategy {
 		const externalSchool: ExternalSchoolDto = this.responseMapper.mapToExternalSchoolDto(schulconnexResponse);
 
 		let externalGroups: ExternalGroupDto[] | undefined;
-		if (this.configService.get('FEATURE_SCHULCONNEX_GROUP_PROVISIONING_ENABLED')) {
+		if (this.config.featureSchulconnexGroupProvisioningEnabled) {
 			await this.checkResponseValidation(schulconnexResponse, [SchulconnexResponseValidationGroups.GROUPS]);
 
 			externalGroups = this.responseMapper.mapToExternalGroupDtos(schulconnexResponse);
 		}
 
 		let externalLicenses: ExternalLicenseDto[] | undefined;
-		if (this.configService.get('FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED')) {
-			const policiesInfoUrl = this.configService.get<string>('PROVISIONING_SCHULCONNEX_POLICIES_INFO_URL');
+		if (this.config.featureSchulconnexMediaLicenseEnabled) {
+			const policiesInfoUrl = this.config.provisioningSchulconnexPoliciesInfoUrl;
 			try {
 				const schulconnexPoliciesInfoAxiosResponse = await this.schulconnexRestClient.getPoliciesInfo(
 					input.accessToken,
@@ -178,11 +178,11 @@ export class SchulconnexAsyncProvisioningStrategy extends ProvisioningStrategy {
 			school?.id
 		);
 
-		if (this.configService.get('FEATURE_SCHULCONNEX_GROUP_PROVISIONING_ENABLED')) {
+		if (this.config.featureSchulconnexGroupProvisioningEnabled) {
 			await this.provisionGroups(data, user, school);
 		}
 
-		if (this.configService.get('FEATURE_SCHULCONNEX_MEDIA_LICENSE_ENABLED') && user.id) {
+		if (this.config.featureSchulconnexMediaLicenseEnabled && user.id) {
 			await this.schulconnexLicenseProvisioningProducer.provisonLicenses({
 				userId: user.id,
 				schoolId: user.schoolId,

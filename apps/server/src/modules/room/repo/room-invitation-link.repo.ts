@@ -32,7 +32,7 @@ export class RoomInvitationLinkRepo {
 
 	public async save(roomInvitationLink: RoomInvitationLink): Promise<void> {
 		const entity = await this.roomInvitationLinkDomainMapper.mapDoToEntity(roomInvitationLink);
-		await this.em.persistAndFlush(entity);
+		await this.em.persist(entity).flush();
 	}
 
 	public async delete(ids: EntityId[]): Promise<void> {

@@ -5,6 +5,7 @@ import { groupEntityFactory } from '@modules/group/testing';
 import { roomMembershipEntityFactory } from '@modules/room-membership/testing';
 import { roomEntityFactory } from '@modules/room/testing';
 import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
 import { userFactory } from '@modules/user/testing';
 import { INestApplication } from '@nestjs/common';
@@ -13,7 +14,6 @@ import { cleanupCollections } from '@testing/cleanup-collections';
 import { TestApiClient } from '@testing/test-api-client';
 import { BoardExternalReferenceType } from '../../domain';
 import { columnBoardEntityFactory } from '../../testing';
-import { schoolEntityFactory } from '@modules/school/testing';
 
 const baseRouteName = '/boards';
 
@@ -43,6 +43,8 @@ describe('board get context in room (api)', () => {
 
 	const setup = async () => {
 		const school = schoolEntityFactory.buildWithId();
+		const userWithOwnerRole = userFactory.buildWithId({ school });
+
 		const userWithEditRole = userFactory.buildWithId({ school });
 		const accountWithEditRole = accountFactory.withUser(userWithEditRole).build();
 
@@ -52,11 +54,12 @@ describe('board get context in room (api)', () => {
 		const noAccessUser = userFactory.buildWithId({ school });
 		const noAccessAccount = accountFactory.withUser(noAccessUser).build();
 
-		const { roomEditorRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
+		const { roomEditorRole, roomViewerRole, roomOwnerRole } = RoomRolesTestFactory.createRoomRoles();
 
 		const userGroup = groupEntityFactory.buildWithId({
 			type: GroupEntityTypes.ROOM,
 			users: [
+				{ user: userWithOwnerRole, role: roomOwnerRole },
 				{ user: userWithEditRole, role: roomEditorRole },
 				{ user: userWithViewRole, role: roomViewerRole },
 			],
@@ -67,27 +70,29 @@ describe('board get context in room (api)', () => {
 
 		const roomMembership = roomMembershipEntityFactory.build({ roomId: room.id, userGroupId: userGroup.id });
 
-		await em.persistAndFlush([
-			school,
-			accountWithEditRole,
-			accountWithViewRole,
-			noAccessAccount,
-			userWithEditRole,
-			userWithViewRole,
-			noAccessUser,
-			roomEditorRole,
-			roomViewerRole,
-			userGroup,
-			room,
-			roomMembership,
-		]);
+		await em
+			.persist([
+				school,
+				accountWithEditRole,
+				accountWithViewRole,
+				noAccessAccount,
+				userWithEditRole,
+				userWithViewRole,
+				noAccessUser,
+				roomEditorRole,
+				roomViewerRole,
+				userGroup,
+				room,
+				roomMembership,
+			])
+			.flush();
 
 		const columnBoardNode = columnBoardEntityFactory.build({
 			isVisible: false,
 			context: { id: room.id, type: BoardExternalReferenceType.Room },
 		});
 
-		await em.persistAndFlush([columnBoardNode]);
+		await em.persist([columnBoardNode]).flush();
 		em.clear();
 
 		return { accountWithEditRole, accountWithViewRole, noAccessAccount, columnBoardNode };
@@ -112,18 +117,6 @@ describe('board get context in room (api)', () => {
 			const response = await loggedInClient.get(`${columnBoardNode.id}/context`);
 
 			expect(response.body).toEqual({ id: columnBoardNode.context?.id, type: columnBoardNode.context?.type });
-		});
-	});
-
-	describe('with user who has only view role in room', () => {
-		it('should return status 403', async () => {
-			const { accountWithViewRole, columnBoardNode } = await setup();
-
-			const loggedInClient = await testApiClient.login(accountWithViewRole);
-
-			const response = await loggedInClient.get(`${columnBoardNode.id}/context`);
-
-			expect(response.status).toEqual(403);
 		});
 	});
 

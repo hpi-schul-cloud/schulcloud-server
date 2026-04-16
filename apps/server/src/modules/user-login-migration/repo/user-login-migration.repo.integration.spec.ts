@@ -59,7 +59,7 @@ describe('UserLoginMigrationRepo', () => {
 					finishedAt: new Date('2023-04-27'),
 				});
 
-				await em.persistAndFlush([school, sourceSystem, targetSystem]);
+				await em.persist([school, sourceSystem, targetSystem]).flush();
 				em.clear();
 
 				return {
@@ -97,7 +97,7 @@ describe('UserLoginMigrationRepo', () => {
 			const setup = async () => {
 				const userLoginMigration: UserLoginMigrationEntity = userLoginMigrationFactory.buildWithId();
 
-				await em.persistAndFlush(userLoginMigration);
+				await em.persist(userLoginMigration).flush();
 				em.clear();
 
 				const domainObject: UserLoginMigrationDO = repo.mapEntityToDO(userLoginMigration);
@@ -124,7 +124,7 @@ describe('UserLoginMigrationRepo', () => {
 			const setup = async () => {
 				const userLoginMigration: UserLoginMigrationEntity = userLoginMigrationFactory.buildWithId();
 
-				await em.persistAndFlush(userLoginMigration);
+				await em.persist(userLoginMigration).flush();
 				em.clear();
 
 				const domainObject: UserLoginMigrationDO = repo.mapEntityToDO(userLoginMigration);
@@ -148,7 +148,7 @@ describe('UserLoginMigrationRepo', () => {
 			const setup = async () => {
 				const school: SchoolEntity = schoolEntityFactory.buildWithId({ userLoginMigration: undefined });
 
-				await em.persistAndFlush(school);
+				await em.persist(school).flush();
 				em.clear();
 
 				return {

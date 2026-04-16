@@ -1,18 +1,22 @@
+import { Logger } from '@core/logger';
 import { MailService } from '@infra/mail';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountSave, AccountService } from '@modules/account';
+import { REGISTRATION_CONFIG_TOKEN, RegistrationConfig } from '@modules/registration/registration.config';
 import { RoleName, RoleService } from '@modules/role';
+import { RoomService } from '@modules/room';
 import { RoomMembershipService } from '@modules/room-membership';
 import { SchoolService } from '@modules/school';
 import { SchoolPurpose } from '@modules/school/domain';
 import { Consent, UserConsent, UserDo, UserService } from '@modules/user';
-import { BadRequestException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { BadRequestException, Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { RoleReference } from '@shared/domain/domainobject';
 import { LanguageType } from '@shared/domain/interface';
 import { UUID } from 'bson';
 import { isDisposableEmail as _isDisposableEmail } from 'disposable-email-domains-js';
 import { RegistrationRepo } from '../../repo';
 import { Registration, RegistrationCreateProps, RegistrationProps } from '../do';
+import { ResendingRegistrationMailLoggable } from '../error/resend-registration-mail.loggable';
 
 @Injectable()
 export class RegistrationService {
@@ -23,7 +27,10 @@ export class RegistrationService {
 		private readonly accountService: AccountService,
 		private readonly schoolService: SchoolService,
 		private readonly mailService: MailService,
-		private readonly roomMembershipService: RoomMembershipService
+		private readonly roomMembershipService: RoomMembershipService,
+		private readonly roomService: RoomService,
+		private readonly logger: Logger,
+		@Inject(REGISTRATION_CONFIG_TOKEN) private readonly config: RegistrationConfig
 	) {}
 
 	public async createOrUpdateRegistration(props: RegistrationCreateProps): Promise<Registration> {
@@ -41,30 +48,27 @@ export class RegistrationService {
 		language: LanguageType,
 		password: string
 	): Promise<void> {
-		const userDo = await this.createUser(registration, language);
-		const user = await this.userService.save(userDo);
-		const account = this.createAccount(user, password);
-		await this.accountService.save(account);
+		const user = await this.createOrUpdateUser(registration, language);
 
 		if (user.id === undefined) {
 			throw new InternalServerErrorException('User ID is undefined after saving user.');
 		}
+		await this.createOrUpdateAccount(user, password);
 		await this.addUserToRooms(registration.roomIds, user.id);
 		await this.registrationRepo.deleteByIds([registration.id]);
 	}
 
-	public async cancelRegistrationForRoom(registrationId: string, roomId: string): Promise<Registration | null> {
-		const registration = await this.getSingleRegistrationById(registrationId);
+	public async cancelRegistrationsForRoom(registrationIds: string[], roomId: string): Promise<Registration[] | null> {
+		const updatedRegistrations: Registration[] = [];
 
-		registration.removeRoomId(roomId);
-
-		if (registration.hasNoRoomIds()) {
-			await this.registrationRepo.deleteByIds([registration.id]);
-			return null;
+		for (const registrationId of registrationIds) {
+			const updatedRegistration = await this.cancelSingleRegistrationForRoom(registrationId, roomId);
+			if (updatedRegistration) {
+				updatedRegistrations.push(updatedRegistration);
+			}
 		}
 
-		await this.saveRegistration(registration);
-		return registration;
+		return updatedRegistrations.length > 0 ? updatedRegistrations : null;
 	}
 
 	public async saveRegistration(registration: Registration): Promise<void> {
@@ -96,8 +100,24 @@ export class RegistrationService {
 	}
 
 	public async sendRegistrationMail(registration: Registration): Promise<void> {
-		const registrationMail = registration.generateRegistrationMail();
+		const roomId = registration.roomIds[registration.roomIds.length - 1];
+		const room = await this.roomService.getSingleRoom(roomId);
+		const registrationMail = registration.generateRegistrationMail(room.name, this.config);
+
 		await this.mailService.send(registrationMail);
+	}
+
+	public async resendRegistrationMails(registrationIds: string[]): Promise<Registration[] | null> {
+		const resentRegistrations: Registration[] = [];
+
+		for (const registrationId of registrationIds) {
+			const resentRegistration = await this.resendSingleRegistrationMail(registrationId);
+			if (resentRegistration) {
+				resentRegistrations.push(resentRegistration);
+			}
+		}
+
+		return resentRegistrations.length > 0 ? resentRegistrations : null;
 	}
 
 	private createRegistrationUUID(): string {
@@ -134,12 +154,38 @@ export class RegistrationService {
 			roomIds: [props.roomId],
 			createdAt: new Date(),
 			updatedAt: new Date(),
+			resentAt: undefined,
 		};
 		const registration = new Registration(registrationProps);
 
 		await this.registrationRepo.save(registration);
 
 		return registration;
+	}
+
+	private async createOrUpdateUser(registration: Registration, language: LanguageType): Promise<UserDo> {
+		const userDos = await this.userService.findByEmail(registration.email);
+		if (userDos.length === 0) {
+			return this.createUser(registration, language);
+		}
+
+		if (userDos.length > 1) {
+			throw new BadRequestException('Multiple Users with this email already exist.');
+		}
+
+		const userDo = userDos[0];
+		if (registration.firstName || registration.lastName) {
+			userDo.firstName = registration.firstName;
+			userDo.lastName = registration.lastName;
+		}
+		userDo.birthday = userDo.birthday ?? new Date('2000-01-01'); // necessary to avoid parental consent dialog for children (when logging in)
+		userDo.consent = userDo.consent ?? this.createUserConsent();
+		userDo.preferences = userDo.preferences ?? { firstLogin: false };
+		userDo.language = userDo.language ?? language;
+
+		const user = await this.userService.save(userDo);
+
+		return user;
 	}
 
 	private async createUser(registration: Registration, language: LanguageType): Promise<UserDo> {
@@ -159,7 +205,7 @@ export class RegistrationService {
 		}
 		const schoolId = externalPersonsSchools[0].id;
 
-		const newUser = new UserDo({
+		const userDo = new UserDo({
 			roles: roleRefs,
 			schoolId,
 			firstName: registration.firstName,
@@ -174,8 +220,25 @@ export class RegistrationService {
 			},
 			language,
 		});
-
+		const newUser = await this.userService.save(userDo);
 		return newUser;
+	}
+
+	private async createOrUpdateAccount(user: UserDo, password: string): Promise<void> {
+		if (password === '') {
+			return;
+		}
+
+		if (user.id) {
+			const account = await this.accountService.findByUserId(user.id);
+			if (account) {
+				account.password = password;
+				await this.accountService.saveWithValidation(account, { allowUpdate: true });
+			} else {
+				const newAccount = this.createAccount(user, password);
+				await this.accountService.saveWithValidation(newAccount);
+			}
+		}
 	}
 
 	private createAccount(user: UserDo, password: string): AccountSave {
@@ -208,5 +271,52 @@ export class RegistrationService {
 	private async addUserToRooms(roomIds: string[], userId: string): Promise<void> {
 		const promises = roomIds.map((roomId) => this.roomMembershipService.addMembersToRoom(roomId, [userId]));
 		await Promise.all(promises);
+	}
+
+	private async cancelSingleRegistrationForRoom(registrationId: string, roomId: string): Promise<Registration | null> {
+		const registration = await this.getSingleRegistrationById(registrationId);
+
+		registration.removeRoomId(roomId);
+
+		if (registration.hasNoRoomIds()) {
+			await this.registrationRepo.deleteByIds([registration.id]);
+			return null;
+		}
+
+		await this.saveRegistration(registration);
+		return registration;
+	}
+
+	private async resendSingleRegistrationMail(registrationId: string): Promise<Registration | null> {
+		try {
+			const registration = await this.getSingleRegistrationById(registrationId);
+
+			const canBeResend = this.checkCanRegistrationMailBeResend(registration);
+			if (!canBeResend) {
+				return null;
+			}
+
+			registration.resentAt = new Date();
+			await this.sendRegistrationMail(registration);
+
+			await this.saveRegistration(registration);
+			return registration;
+		} catch {
+			this.logger.warning(new ResendingRegistrationMailLoggable(registrationId));
+			return null;
+		}
+	}
+
+	private checkCanRegistrationMailBeResend(registration: Registration): boolean {
+		if (!registration.resentAt) {
+			return true;
+		}
+
+		const lastResent = new Date(registration.resentAt).getTime();
+		const now = new Date().getTime();
+		const TWO_MINUTES_MS = 2 * 60 * 1000;
+
+		const twoMinutesHavePassed = now - lastResent >= TWO_MINUTES_MS;
+		return twoMinutesHavePassed;
 	}
 }

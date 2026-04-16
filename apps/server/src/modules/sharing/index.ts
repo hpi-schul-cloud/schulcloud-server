@@ -1,3 +1,3 @@
-export { SharingModule } from './sharing.module';
 export * from './service/share-token.service';
-export { SharingConfig } from './sharing.config';
+export { SHARING_PUBLIC_API_CONFIG_TOKEN, SharingPublicApiConfig } from './sharing.config';
+export { SharingModule } from './sharing.module';

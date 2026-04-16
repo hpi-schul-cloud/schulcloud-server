@@ -101,7 +101,7 @@ describe('BaseRepo', () => {
 	describe('delete', () => {
 		it('should remove and flush a single entity', async () => {
 			const testEntity = new TestEntity();
-			await em.persistAndFlush(testEntity);
+			await em.persist(testEntity).flush();
 			em.clear();
 
 			await repo.delete(testEntity);
@@ -113,7 +113,7 @@ describe('BaseRepo', () => {
 		it('should remove and flush an array of entities', async () => {
 			const testEntity1 = new TestEntity();
 			const testEntity2 = new TestEntity();
-			await em.persistAndFlush([testEntity1, testEntity2]);
+			await em.persist([testEntity1, testEntity2]).flush();
 			em.clear();
 
 			await repo.delete([testEntity1, testEntity2]);
@@ -128,7 +128,7 @@ describe('BaseRepo', () => {
 		it('should find entity', async () => {
 			const testEntity1 = new TestEntity();
 			const testEntity2 = new TestEntity();
-			await em.persistAndFlush([testEntity1, testEntity2]);
+			await em.persist([testEntity1, testEntity2]).flush();
 			em.clear();
 
 			const result = await repo.findById(testEntity1.id);
@@ -139,7 +139,7 @@ describe('BaseRepo', () => {
 		it('should throw if entity not found', async () => {
 			const testEntity1 = new TestEntity();
 			const testEntity2 = new TestEntity();
-			await em.persistAndFlush([testEntity1, testEntity2]);
+			await em.persist([testEntity1, testEntity2]).flush();
 			em.clear();
 
 			const unknownId = new ObjectId().toHexString();

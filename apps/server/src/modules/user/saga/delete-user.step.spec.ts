@@ -7,7 +7,6 @@ import {
 	StepOperationType,
 	StepReportBuilder,
 } from '@modules/saga';
-import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { User, UserMikroOrmRepo } from '../repo';
@@ -18,7 +17,6 @@ describe(DeleteUserStep.name, () => {
 	let module: TestingModule;
 	let step: DeleteUserStep;
 	let userRepo: DeepMocked<UserMikroOrmRepo>;
-	let config: DeepMocked<ConfigService>;
 
 	afterAll(async () => {
 		await module.close();
@@ -39,10 +37,6 @@ describe(DeleteUserStep.name, () => {
 					useValue: createMock<UserMikroOrmRepo>(),
 				},
 				{
-					provide: ConfigService,
-					useValue: createMock<ConfigService>(),
-				},
-				{
 					provide: Logger,
 					useValue: createMock<Logger>(),
 				},
@@ -51,7 +45,6 @@ describe(DeleteUserStep.name, () => {
 
 		step = module.get(DeleteUserStep);
 		userRepo = module.get(UserMikroOrmRepo);
-		config = module.get(ConfigService);
 	});
 
 	beforeEach(() => {
@@ -121,14 +114,6 @@ describe(DeleteUserStep.name, () => {
 
 				userRepo.findByIdOrNull.mockResolvedValueOnce(user);
 				userRepo.deleteUser.mockResolvedValue(1);
-
-				config.get.mockImplementationOnce((key) => {
-					if (key === 'CALENDAR_SERVICE_ENABLED') {
-						return true;
-					}
-
-					return false;
-				});
 
 				return {
 					expectedResult,

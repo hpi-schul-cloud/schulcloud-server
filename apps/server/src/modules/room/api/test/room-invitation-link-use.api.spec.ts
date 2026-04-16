@@ -6,19 +6,20 @@ import { Role } from '@modules/role/repo';
 import { roleFactory } from '@modules/role/testing';
 import { RoomMembershipEntity } from '@modules/room-membership';
 import { roomMembershipEntityFactory } from '@modules/room-membership/testing';
+import { ROOM_PUBLIC_API_CONFIG_TOKEN, RoomPublicApiConfig } from '@modules/room';
 import { roomEntityFactory } from '@modules/room/testing';
 import { roomInvitationLinkEntityFactory } from '@modules/room/testing/room-invitation-link-entity.factory';
 import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
 import { schoolEntityFactory } from '@modules/school/testing';
-import { serverConfig, ServerTestModule, type ServerConfig } from '@modules/server';
+import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { ObjectId } from 'mongodb';
-import { RoomInvitationLinkValidationError } from '../type/room-invitation-link-validation-error.enum';
 import { RoomInvitationLinkError } from '../dto/response/room-invitation-link.error';
+import { RoomInvitationLinkValidationError } from '../type/room-invitation-link-validation-error.enum';
 
 type RoomInvitationLinkConfig = {
 	requiresConfirmation?: boolean;
@@ -56,7 +57,7 @@ describe('Room Invitation Link Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let testApiClient: TestApiClient;
-	let config: ServerConfig;
+	let config: RoomPublicApiConfig;
 
 	beforeAll(async () => {
 		const moduleFixture = await Test.createTestingModule({
@@ -68,12 +69,12 @@ describe('Room Invitation Link Controller (API)', () => {
 		em = app.get(EntityManager);
 		testApiClient = new TestApiClient(app, 'room-invitation-links');
 
-		config = serverConfig();
+		config = moduleFixture.get<RoomPublicApiConfig>(ROOM_PUBLIC_API_CONFIG_TOKEN);
 	});
 
 	beforeEach(async () => {
 		await cleanupCollections(em);
-		config.FEATURE_ROOM_LINK_INVITATION_EXTERNAL_PERSONS_ENABLED = true;
+		config.featureRoomLinkInvitationExternalPersonsEnabled = true;
 		em.clear();
 		await em.clearCache('roles-cache-byname-roomviewer');
 		await em.clearCache('roles-cache-bynames-roomviewer');
@@ -89,8 +90,13 @@ describe('Room Invitation Link Controller (API)', () => {
 			roomInvitationLinkConfig: RoomInvitationLinkConfig,
 			roleName: UserRole,
 			userSchool: UserSchool,
-			previousRole?: RoleName
+			previousRole?: RoleName,
+			featureEnabledForExternalPersons?: boolean
 		) => {
+			if (featureEnabledForExternalPersons !== undefined) {
+				config.featureRoomLinkInvitationExternalPersonsEnabled = featureEnabledForExternalPersons;
+			}
+
 			const school = schoolEntityFactory.buildWithId();
 			const room = roomEntityFactory.buildWithId({
 				schoolId: school.id,
@@ -136,20 +142,22 @@ describe('Room Invitation Link Controller (API)', () => {
 			const teacherGuestRole = roleFactory.buildWithId({ name: RoleName.GUESTTEACHER });
 			const studentGuestRole = roleFactory.buildWithId({ name: RoleName.GUESTSTUDENT });
 			const externalPersonGuestRole = roleFactory.buildWithId({ name: RoleName.GUESTEXTERNALPERSON });
-			await em.persistAndFlush([
-				school,
-				user,
-				account,
-				room,
-				roomInvitationLink,
-				roomMembership,
-				roomViewerRole,
-				roomApplicantRole,
-				teacherGuestRole,
-				studentGuestRole,
-				externalPersonGuestRole,
-				userGroupEntity,
-			]);
+			await em
+				.persist([
+					school,
+					user,
+					account,
+					room,
+					roomInvitationLink,
+					roomMembership,
+					roomViewerRole,
+					roomApplicantRole,
+					teacherGuestRole,
+					studentGuestRole,
+					externalPersonGuestRole,
+					userGroupEntity,
+				])
+				.flush();
 			em.clear();
 
 			const loggedInClient = await testApiClient.login(account);
@@ -215,11 +223,11 @@ describe('Room Invitation Link Controller (API)', () => {
 
 		describe('when external person link feature is disabled', () => {
 			beforeEach(() => {
-				config.FEATURE_ROOM_LINK_INVITATION_EXTERNAL_PERSONS_ENABLED = false;
+				config.featureRoomLinkInvitationExternalPersonsEnabled = false;
 			});
 
 			describe('when the user is an external person', () => {
-				it('should return a 403 error', async () => {
+				it('should return http status 403', async () => {
 					const { loggedInClient, roomInvitationLink } = await setup(
 						{},
 						UserRole.EXTERNAL_PERSON,
@@ -264,90 +272,121 @@ describe('Room Invitation Link Controller (API)', () => {
 				UserRole.TEACHER,
 				{ isUsableByExternalPersons: false, isUsableByStudents: false },
 				UserSchool.SAME_SCHOOL,
+				'true',
 				HttpStatus.CREATED,
 			],
 			[
 				UserRole.TEACHER,
 				{ isUsableByExternalPersons: true, isUsableByStudents: false },
 				UserSchool.SAME_SCHOOL,
+				'true',
 				HttpStatus.CREATED,
 			],
 			[
 				UserRole.TEACHER,
 				{ isUsableByExternalPersons: false, isUsableByStudents: true },
 				UserSchool.SAME_SCHOOL,
+				'true',
 				HttpStatus.CREATED,
 			],
 			[
 				UserRole.TEACHER,
 				{ isUsableByExternalPersons: true, isUsableByStudents: true },
 				UserSchool.SAME_SCHOOL,
+				'true',
 				HttpStatus.CREATED,
 			],
 			[
 				UserRole.STUDENT,
 				{ isUsableByExternalPersons: false, isUsableByStudents: false },
 				UserSchool.SAME_SCHOOL,
+				'true',
 				HttpStatus.FORBIDDEN,
 			],
 			[
 				UserRole.STUDENT,
 				{ isUsableByExternalPersons: true, isUsableByStudents: false },
 				UserSchool.SAME_SCHOOL,
+				'true',
 				HttpStatus.FORBIDDEN,
 			],
 			[
 				UserRole.STUDENT,
 				{ isUsableByExternalPersons: false, isUsableByStudents: true },
 				UserSchool.SAME_SCHOOL,
+				'true',
 				HttpStatus.CREATED,
 			],
 			[
 				UserRole.STUDENT,
 				{ isUsableByExternalPersons: true, isUsableByStudents: true },
 				UserSchool.SAME_SCHOOL,
+				'true',
 				HttpStatus.CREATED,
 			],
 			[
 				UserRole.EXTERNAL_PERSON,
 				{ isUsableByExternalPersons: false, isUsableByStudents: false },
 				UserSchool.SAME_SCHOOL,
+				'true',
 				HttpStatus.FORBIDDEN,
 			],
 			[
 				UserRole.EXTERNAL_PERSON,
 				{ isUsableByExternalPersons: true, isUsableByStudents: false },
 				UserSchool.SAME_SCHOOL,
+				'true',
 				HttpStatus.CREATED,
+			],
+			[
+				UserRole.EXTERNAL_PERSON,
+				{ isUsableByExternalPersons: true, isUsableByStudents: false },
+				UserSchool.SAME_SCHOOL,
+				'false',
+				HttpStatus.FORBIDDEN,
 			],
 			[
 				UserRole.EXTERNAL_PERSON,
 				{ isUsableByExternalPersons: false, isUsableByStudents: true },
 				UserSchool.SAME_SCHOOL,
+				'true',
 				HttpStatus.FORBIDDEN,
 			],
 			[
 				UserRole.EXTERNAL_PERSON,
 				{ isUsableByExternalPersons: true, isUsableByStudents: true },
 				UserSchool.SAME_SCHOOL,
+				'true',
 				HttpStatus.CREATED,
 			],
-		])('usable by external persons and students', (roleName, roomInvitationLinkConfig, fromSameSchool, httpStatus) => {
-			const config = JSON.stringify(roomInvitationLinkConfig);
-			describe(`when room config is '${config}' and user is a ${roleName} from '${fromSameSchool}'`, () => {
-				it(`should return http status ${httpStatus}`, async () => {
-					const { loggedInClient, roomInvitationLink } = await setup(
-						roomInvitationLinkConfig,
-						roleName,
-						fromSameSchool
-					);
+			[
+				UserRole.EXTERNAL_PERSON,
+				{ isUsableByExternalPersons: true, isUsableByStudents: true },
+				UserSchool.SAME_SCHOOL,
+				'false',
+				HttpStatus.FORBIDDEN,
+			],
+		])(
+			'usable by external persons and students',
+			(roleName, roomInvitationLinkConfig, fromSameSchool, featureEnabled, httpStatus) => {
+				const config = JSON.stringify(roomInvitationLinkConfig);
+				describe(`when room config is '${config}' and user is a ${roleName} from '${fromSameSchool} and external persons invitation feature is ${featureEnabled}'`, () => {
+					it(`should return http status ${httpStatus}`, async () => {
+						const { loggedInClient, roomInvitationLink } = await setup(
+							roomInvitationLinkConfig,
+							roleName,
+							fromSameSchool,
+							undefined,
+							featureEnabled === 'true'
+						);
 
-					const response = await loggedInClient.post(`/${roomInvitationLink.id}`);
+						const response = await loggedInClient.post(`/${roomInvitationLink.id}`);
 
-					expect(response.status).toBe(httpStatus);
+						expect(response.status).toBe(httpStatus);
+					});
 				});
-			});
-		});
+			}
+		);
 
 		describe.each([
 			[UserRole.TEACHER, { restrictedToCreatorSchool: true }, UserSchool.OTHER_SCHOOL, HttpStatus.FORBIDDEN],

@@ -1,11 +1,12 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions, Pagination } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { Scope } from '@shared/repo/scope';
+import { v4 as uuidv4 } from 'uuid';
 import { PseudonymSearchQuery } from '../domain';
-import { ExternalToolPseudonymEntity, ExternalToolPseudonymEntityProps } from '../entity';
+import { ExternalToolPseudonymEntity } from '../entity';
 import { PseudonymScope } from '../entity/pseudonym.scope';
 import { Pseudonym } from './pseudonym.do';
 
@@ -24,21 +25,6 @@ export class ExternalToolPseudonymRepo {
 		return domainObject;
 	}
 
-	public async findByUserIdAndToolId(userId: EntityId, toolId: EntityId): Promise<Pseudonym | null> {
-		const entity: ExternalToolPseudonymEntity | null = await this.em.findOne(ExternalToolPseudonymEntity, {
-			userId: new ObjectId(userId),
-			toolId: new ObjectId(toolId),
-		});
-
-		if (!entity) {
-			return null;
-		}
-
-		const domainObject: Pseudonym = this.mapEntityToDomainObject(entity);
-
-		return domainObject;
-	}
-
 	public async findByUserId(userId: EntityId): Promise<Pseudonym[]> {
 		const entities: ExternalToolPseudonymEntity[] = await this.em.find(ExternalToolPseudonymEntity, {
 			userId: new ObjectId(userId),
@@ -48,25 +34,39 @@ export class ExternalToolPseudonymRepo {
 		return pseudonyms;
 	}
 
-	public async createOrUpdate(domainObject: Pseudonym): Promise<Pseudonym> {
-		const existing: ExternalToolPseudonymEntity | undefined = this.em
-			.getUnitOfWork()
-			.getById<ExternalToolPseudonymEntity>(ExternalToolPseudonymEntity.name, domainObject.id);
+	public async findOrCreate(userId: EntityId, toolId: EntityId): Promise<Pseudonym> {
+		const collection = this.em.getCollection(ExternalToolPseudonymEntity);
 
-		const entityProps: ExternalToolPseudonymEntityProps = this.mapDomainObjectToEntityProperties(domainObject);
-		let entity: ExternalToolPseudonymEntity = new ExternalToolPseudonymEntity(entityProps);
+		const now = new Date();
 
-		if (existing) {
-			entity = this.em.assign(existing, entity);
-		} else {
-			this.em.persist(entity);
+		const result = await collection.findOneAndUpdate(
+			{ userId: new ObjectId(userId), toolId: new ObjectId(toolId) },
+			{
+				$setOnInsert: {
+					createdAt: now,
+					updatedAt: now,
+					pseudonym: uuidv4(),
+				},
+			},
+			{
+				upsert: true,
+				returnDocument: 'after',
+			}
+		);
+
+		/* istanbul ignore next */
+		if (!result) {
+			throw new InternalServerErrorException('unexpected null result from findOneAndUpdate');
 		}
 
-		await this.em.flush();
-
-		const savedDomainObject: Pseudonym = this.mapEntityToDomainObject(entity);
-
-		return savedDomainObject;
+		return new Pseudonym({
+			id: result._id.toHexString(),
+			pseudonym: result.pseudonym,
+			toolId: result.toolId.toHexString(),
+			userId: result.userId.toHexString(),
+			createdAt: result.createdAt,
+			updatedAt: result.updatedAt,
+		});
 	}
 
 	public async deletePseudonymsByUserId(userId: EntityId): Promise<EntityId[]> {
@@ -75,14 +75,16 @@ export class ExternalToolPseudonymRepo {
 			return [];
 		}
 
-		const removePromises = externalPseudonyms.map((externalPseudonym) => this.em.removeAndFlush(externalPseudonym));
+		for (const pseudonym of externalPseudonyms) {
+			this.em.remove(pseudonym);
+		}
+		await this.em.flush();
 
-		await Promise.all(removePromises);
-
-		return this.getExternalPseudonymId(externalPseudonyms);
+		const deletedIds = this.getExternalPseudonymId(externalPseudonyms);
+		return deletedIds;
 	}
 
-	public async findPseudonymByPseudonym(pseudonym: string): Promise<Pseudonym | null> {
+	public async findByPseudonym(pseudonym: string): Promise<Pseudonym | null> {
 		const entities: ExternalToolPseudonymEntity | null = await this.em.findOne(ExternalToolPseudonymEntity, {
 			pseudonym,
 		});
@@ -113,15 +115,7 @@ export class ExternalToolPseudonymRepo {
 		return pseudonym;
 	}
 
-	protected mapDomainObjectToEntityProperties(entityDO: Pseudonym): ExternalToolPseudonymEntityProps {
-		return {
-			pseudonym: entityDO.pseudonym,
-			toolId: new ObjectId(entityDO.toolId),
-			userId: new ObjectId(entityDO.userId),
-		};
-	}
-
-	public async findPseudonym(query: PseudonymSearchQuery, options?: IFindOptions<Pseudonym>): Promise<Page<Pseudonym>> {
+	public async findByQuery(query: PseudonymSearchQuery, options?: IFindOptions<Pseudonym>): Promise<Page<Pseudonym>> {
 		const pagination: Pagination = options?.pagination ?? {};
 		const scope: Scope<ExternalToolPseudonymEntity> = new PseudonymScope()
 			.byPseudonym(query.pseudonym)

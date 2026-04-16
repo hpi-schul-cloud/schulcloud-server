@@ -5,7 +5,7 @@ import { Role } from '@modules/role/repo';
 import { User } from '@modules/user/repo';
 import { Account } from '@modules/account';
 import { TestApiClient } from '@testing/test-api-client';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 
 jest.mock('@modules/role/testing', () => {
 	return {
@@ -101,7 +101,11 @@ class TestApiClientStub {
 
 const createEm = () =>
 	({
-		persistAndFlush: jest.fn(async () => {}),
+		persist: jest.fn(() => {
+			return {
+				flush: jest.fn(),
+			};
+		}),
 		clear: jest.fn(),
 	} as unknown as EntityManager);
 
@@ -203,7 +207,7 @@ describe('RoomSetup', () => {
 				await roomSetup.setup([['Alice', 'sameSchool', 'administrator', 'roomowner']]);
 				const account = await roomSetup.createAccountForUser('Alice');
 				expect(account).toBeDefined();
-				expect((em as unknown as EntityManager).persistAndFlush).toHaveBeenCalled();
+				expect((em as unknown as EntityManager).persist).toHaveBeenCalled();
 			});
 
 			it('should throw when user is unknown', async () => {

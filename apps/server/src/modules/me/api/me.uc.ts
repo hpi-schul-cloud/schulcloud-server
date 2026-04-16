@@ -25,10 +25,14 @@ export class MeUc {
 			this.userService.getUserEntityWithRoles(userId), // TODO: replace when user domain object is available
 		]);
 
-		const permissions = user.resolvePermissions();
+		const permissions = this.userService.resolvePermissions(user);
 
 		const dto = MeResponseMapper.mapToResponse(school, user, accountId, permissions, systemId);
 
 		return dto;
+	}
+
+	public async updateMeReleaseDatePreference(userId: EntityId, releaseDate: Date): Promise<void> {
+		await this.userService.updateUserReleaseDatePreference(userId, releaseDate);
 	}
 }

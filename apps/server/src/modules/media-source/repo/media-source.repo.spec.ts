@@ -37,7 +37,7 @@ describe(MediaSourceRepo.name, () => {
 			const setup = async () => {
 				const mediaSource: MediaSourceEntity = mediaSourceEntityFactory.build();
 
-				await em.persistAndFlush([mediaSource]);
+				await em.persist([mediaSource]).flush();
 
 				em.clear();
 
@@ -105,7 +105,7 @@ describe(MediaSourceRepo.name, () => {
 					const vidisMediaSourceEntity = mediaSourceEntityFactory.withVidisFormat().build();
 					const biloMediaSourceEntity = mediaSourceEntityFactory.withBiloFormat().build();
 
-					await em.persistAndFlush([vidisMediaSourceEntity, biloMediaSourceEntity]);
+					await em.persist([vidisMediaSourceEntity, biloMediaSourceEntity]).flush();
 					em.clear();
 
 					const expectedDO = MediaSourceMapper.mapEntityToDo(vidisMediaSourceEntity);
@@ -143,7 +143,7 @@ describe(MediaSourceRepo.name, () => {
 					const vidisMediaSourceEntity = mediaSourceEntityFactory.withVidisFormat().build();
 					const biloMediaSourceEntity = mediaSourceEntityFactory.withBiloFormat().build();
 
-					await em.persistAndFlush([vidisMediaSourceEntity, biloMediaSourceEntity]);
+					await em.persist([vidisMediaSourceEntity, biloMediaSourceEntity]).flush();
 
 					em.clear();
 

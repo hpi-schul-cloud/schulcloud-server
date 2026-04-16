@@ -1,11 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ServerConfig } from '@modules/server';
 import { HttpService } from '@nestjs/axios';
-import { ConfigService } from '@nestjs/config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
 import { AxiosError } from 'axios';
 import { of, throwError } from 'rxjs';
+import { ALERT_CONFIG, AlertConfig } from '../alert.config';
 import { createComponent, createIncident } from '../testing';
 import { ComponentDto, ComponentResponse, IncidentsResponse } from './dto';
 import { StatusAdapter } from './status.adapter';
@@ -34,7 +33,10 @@ describe('StatusAdapter', () => {
 			providers: [
 				StatusAdapter,
 				{ provide: HttpService, useValue: createMock<HttpService>() },
-				{ provide: ConfigService, useValue: createMock<ConfigService<ServerConfig, true>>({ get: () => 'test.url' }) },
+				{
+					provide: ALERT_CONFIG,
+					useValue: new AlertConfig(),
+				},
 			],
 		}).compile();
 

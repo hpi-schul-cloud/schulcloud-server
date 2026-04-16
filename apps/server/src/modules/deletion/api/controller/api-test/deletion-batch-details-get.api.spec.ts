@@ -1,6 +1,5 @@
 import { EntityManager } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { adminApiServerConfig } from '@modules/server/admin-api-server.config';
 import { AdminApiServerTestModule } from '@modules/server/admin-api.server.app.module';
 import { userFactory } from '@modules/user/testing';
 import { INestApplication } from '@nestjs/common';
@@ -9,8 +8,6 @@ import { TestApiClient } from '@testing/test-api-client';
 import { StatusModel } from '../../../domain/types'; // barrel file
 import { DeletionBatchEntity } from '../../../repo/entity'; // barrel file
 import { deletionBatchEntityFactory, deletionRequestEntityFactory } from '../../../repo/entity/testing'; // testing need to be changed to top level of the module
-import { DeletionBatchDetailsResponse } from '../dto/response/deletion-batch-details.response'; // barrel file
-import { RoleName } from '@modules/role';
 
 const baseRouteName = '/deletion-batches';
 
@@ -21,9 +18,6 @@ describe('getBatchDetails ', () => {
 	const API_KEY = 'someotherkey';
 
 	beforeAll(async () => {
-		const config = adminApiServerConfig();
-		config.ADMIN_API__ALLOWED_API_KEYS = [API_KEY];
-
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [AdminApiServerTestModule],
 		}).compile();
@@ -33,6 +27,10 @@ describe('getBatchDetails ', () => {
 		testApiClient = new TestApiClient(app, baseRouteName, API_KEY, true);
 
 		await app.init();
+	});
+
+	beforeEach(async () => {
+		await em.nativeDelete('DeletionBatch', {});
 	});
 
 	afterAll(async () => {
@@ -45,31 +43,39 @@ describe('getBatchDetails ', () => {
 			const teacher = userFactory.asTeacher().buildWithId();
 			const invalidId = new ObjectId().toHexString();
 
-			const deletionBatch: DeletionBatchEntity = deletionBatchEntityFactory.build({
+			const deletionBatch: DeletionBatchEntity = deletionBatchEntityFactory.buildWithId({
 				targetRefIds: [student.id],
 				skippedIds: [teacher.id],
 				invalidIds: [invalidId],
 			});
-			const deletionRequest = deletionRequestEntityFactory.build({
+
+			const successfulRequest = deletionRequestEntityFactory.build({
+				batchId: deletionBatch.id,
 				targetRefId: student.id,
 				status: StatusModel.SUCCESS,
 			});
 
-			await em.persistAndFlush([student, teacher, deletionBatch, deletionRequest]);
+			const failedRequest = deletionRequestEntityFactory.build({
+				batchId: deletionBatch.id,
+				targetRefId: teacher.id,
+				status: StatusModel.FAILED,
+			});
+
+			await em.persist([student, teacher, deletionBatch, successfulRequest, failedRequest]).flush();
 			em.clear();
 
-			const expectedResponse: DeletionBatchDetailsResponse = {
+			const expectedResponse = {
 				id: deletionBatch.id,
+				name: deletionBatch.name,
+				status: deletionBatch.status,
+				validUsers: [student.id],
+				invalidUsers: [invalidId],
+				skippedUsers: [teacher.id],
 				pendingDeletions: [],
-				failedDeletions: [],
+				failedDeletions: [teacher.id],
 				successfulDeletions: [student.id],
-				invalidIds: [invalidId],
-				skippedDeletions: [
-					{
-						ids: [teacher.id],
-						roleName: RoleName.TEACHER,
-					},
-				],
+				createdAt: deletionBatch.createdAt.toISOString(),
+				updatedAt: deletionBatch.updatedAt.toISOString(),
 			};
 
 			return { id: deletionBatch.id, expectedResponse };
@@ -104,17 +110,26 @@ describe('getBatchDetails ', () => {
 
 	describe('when batch has no ids', () => {
 		const setup = async () => {
-			const batch = deletionBatchEntityFactory.build();
-			await em.persistAndFlush(batch);
+			const batch = deletionBatchEntityFactory.build({
+				targetRefIds: [],
+				skippedIds: [],
+				invalidIds: [],
+			});
+			await em.persist(batch).flush();
 			em.clear();
 
-			const expectedResponse: DeletionBatchDetailsResponse = {
+			const expectedResponse = {
 				id: batch.id,
+				name: batch.name,
+				status: batch.status,
+				validUsers: [],
+				invalidUsers: [],
+				skippedUsers: [],
 				pendingDeletions: [],
 				failedDeletions: [],
 				successfulDeletions: [],
-				invalidIds: [],
-				skippedDeletions: [],
+				createdAt: batch.createdAt.toISOString(),
+				updatedAt: batch.updatedAt.toISOString(),
 			};
 
 			return { id: batch.id, expectedResponse };

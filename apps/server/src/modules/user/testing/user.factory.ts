@@ -8,12 +8,12 @@ import { Permission } from '@shared/domain/interface';
 import { BaseFactory } from '@testing/factory/base.factory';
 import {
 	adminPermissions,
+	defaultSystemUserPermissions,
+	externalPersonPermissions,
 	studentPermissions,
 	superheroPermissions,
 	teacherPermissions,
 	userPermissions,
-	defaultSystemUserPermissions,
-	externalPersonPermissions,
 } from '@testing/user-role-permissions';
 import { DeepPartial } from 'fishery';
 import _ from 'lodash';
@@ -118,6 +118,15 @@ class UserFactory extends BaseFactory<User, UserProperties> {
 		const role = roleFactory.buildWithId({ permissions });
 
 		const params: DeepPartial<UserProperties> = { roles: [role] };
+
+		return this.params(params);
+	}
+
+	public asTeacherAndAdmin(): this {
+		const teacherRole = roleFactory.buildWithId({ permissions: teacherPermissions, name: RoleName.TEACHER });
+		const adminRole = roleFactory.buildWithId({ permissions: adminPermissions, name: RoleName.ADMINISTRATOR });
+
+		const params: DeepPartial<UserProperties> = { roles: [teacherRole, adminRole] };
 
 		return this.params(params);
 	}

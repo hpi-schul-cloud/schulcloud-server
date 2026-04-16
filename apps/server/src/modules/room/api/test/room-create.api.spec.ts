@@ -51,12 +51,20 @@ describe('Room Controller (API)', () => {
 			});
 		});
 
+		describe('when the user does not have access to school', () => {
+			it('should return a 401 error', async () => {
+				await setupNestJs();
+				const response = await testApiClient.post();
+				expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
+			});
+		});
+
 		describe('when the user has the required permissions', () => {
 			const setup = async (mockRoomMembershipService = false) => {
 				await setupNestJs(mockRoomMembershipService);
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 				const { roomEditorRole, roomOwnerRole } = RoomRolesTestFactory.createRoomRoles();
-				await em.persistAndFlush([teacherAccount, teacherUser, roomEditorRole, roomOwnerRole]);
+				await em.persist([teacherAccount, teacherUser, roomEditorRole, roomOwnerRole]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);
@@ -206,7 +214,7 @@ describe('Room Controller (API)', () => {
 			const setup = async (mockRoomMembershipService = false) => {
 				await setupNestJs(mockRoomMembershipService);
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persist([studentAccount, studentUser]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(studentAccount);

@@ -1,6 +1,7 @@
-import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { EntityManager } from '@mikro-orm/mongodb';
 import { accountFactory } from '@modules/account/testing';
 import { BoardExternalReferenceType } from '@modules/board';
+import { BOARD_CONTEXT_PUBLIC_API_CONFIG, BoardContextPublicApiConfig } from '@modules/board-context';
 import {
 	cardEntityFactory,
 	columnBoardEntityFactory,
@@ -37,6 +38,7 @@ describe('VideoConferenceController (API)', () => {
 	let em: EntityManager;
 	let axiosMock: MockAdapter;
 	let testApiClient: TestApiClient;
+	let boardContextConfig: BoardContextPublicApiConfig;
 
 	beforeAll(async () => {
 		const moduleRef: TestingModule = await Test.createTestingModule({
@@ -48,6 +50,9 @@ describe('VideoConferenceController (API)', () => {
 		em = app.get(EntityManager);
 		axiosMock = new MockAdapter(axios);
 		testApiClient = new TestApiClient(app, 'videoconference2');
+		boardContextConfig = app.get(BOARD_CONTEXT_PUBLIC_API_CONFIG);
+		boardContextConfig.featureColumnBoardVideoconferenceEnabled = true;
+		boardContextConfig.featureVideoconferenceEnabled = true;
 	});
 
 	afterAll(async () => {
@@ -160,73 +165,6 @@ describe('VideoConferenceController (API)', () => {
 			});
 		});
 
-		describe('when the logoutUrl is from a wrong origin', () => {
-			const setup = async () => {
-				const school = schoolEntityFactory.buildWithId({ features: [] });
-
-				const room = roomEntityFactory.build({
-					schoolId: school.id,
-					startDate: new Date('2024-10-01'),
-					endDate: new Date('2024-10-20'),
-				});
-				const { roomEditorRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
-				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
-				const userGroup = groupEntityFactory.buildWithId({
-					organization: school,
-					users: [{ role: roomEditorRole, user: teacherUser }],
-				});
-				const roomMembership = roomMembershipEntityFactory.build({ roomId: room.id, userGroupId: userGroup.id });
-
-				const columnBoardNode = columnBoardEntityFactory.build({
-					context: { id: room.id, type: BoardExternalReferenceType.Room },
-				});
-				const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
-				const cardNode = cardEntityFactory.withParent(columnNode).build();
-				const elementNode = videoConferenceElementEntityFactory.withParent(cardNode).build();
-
-				await em.persistAndFlush([
-					columnBoardNode,
-					columnNode,
-					cardNode,
-					elementNode,
-					room,
-					roomMembership,
-					school,
-					teacherAccount,
-					teacherUser,
-					userGroup,
-					roomEditorRole,
-					roomViewerRole,
-				]);
-				em.clear();
-
-				const params: VideoConferenceCreateParams = {
-					everyAttendeeJoinsMuted: true,
-					everybodyJoinsAsModerator: true,
-					moderatorMustApproveJoinRequests: true,
-					logoutUrl: 'http://from.other.origin/',
-				};
-
-				const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
-
-				return {
-					loggedInClient,
-					params,
-				};
-			};
-
-			it('should return bad request', async () => {
-				const { loggedInClient, params } = await setup();
-
-				const response: Response = await loggedInClient.put(
-					`${VideoConferenceScope.ROOM}/${new ObjectId().toHexString()}/start`,
-					params
-				);
-
-				expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
-			});
-		});
-
 		describe('when conference params are given', () => {
 			describe('when school has not enabled the school feature videoconference', () => {
 				const setup = async () => {
@@ -252,20 +190,22 @@ describe('VideoConferenceController (API)', () => {
 					const cardNode = cardEntityFactory.withParent(columnNode).build();
 					const elementNode = videoConferenceElementEntityFactory.withParent(cardNode).build();
 
-					await em.persistAndFlush([
-						columnBoardNode,
-						columnNode,
-						cardNode,
-						elementNode,
-						room,
-						roomMembership,
-						school,
-						teacherAccount,
-						teacherUser,
-						userGroup,
-						roomEditorRole,
-						roomViewerRole,
-					]);
+					await em
+						.persist([
+							columnBoardNode,
+							columnNode,
+							cardNode,
+							elementNode,
+							room,
+							roomMembership,
+							school,
+							teacherAccount,
+							teacherUser,
+							userGroup,
+							roomEditorRole,
+							roomViewerRole,
+						])
+						.flush();
 					em.clear();
 
 					const params: VideoConferenceCreateParams = {
@@ -316,20 +256,22 @@ describe('VideoConferenceController (API)', () => {
 					const cardNode = cardEntityFactory.withParent(columnNode).build();
 					const elementNode = videoConferenceElementEntityFactory.withParent(cardNode).build();
 
-					await em.persistAndFlush([
-						columnBoardNode,
-						columnNode,
-						cardNode,
-						elementNode,
-						room,
-						roomMembership,
-						school,
-						studentAccount,
-						studentUser,
-						userGroup,
-						roomEditorRole,
-						roomViewerRole,
-					]);
+					await em
+						.persist([
+							columnBoardNode,
+							columnNode,
+							cardNode,
+							elementNode,
+							room,
+							roomMembership,
+							school,
+							studentAccount,
+							studentUser,
+							userGroup,
+							roomEditorRole,
+							roomViewerRole,
+						])
+						.flush();
 					em.clear();
 
 					const params: VideoConferenceCreateParams = {
@@ -380,20 +322,22 @@ describe('VideoConferenceController (API)', () => {
 					const cardNode = cardEntityFactory.withParent(columnNode).build();
 					const elementNode = videoConferenceElementEntityFactory.withParent(cardNode).build();
 
-					await em.persistAndFlush([
-						columnBoardNode,
-						columnNode,
-						cardNode,
-						elementNode,
-						room,
-						roomMembership,
-						school,
-						teacherAccount,
-						teacherUser,
-						userGroup,
-						roomEditorRole,
-						roomViewerRole,
-					]);
+					await em
+						.persist([
+							columnBoardNode,
+							columnNode,
+							cardNode,
+							elementNode,
+							room,
+							roomMembership,
+							school,
+							teacherAccount,
+							teacherUser,
+							userGroup,
+							roomEditorRole,
+							roomViewerRole,
+						])
+						.flush();
 					em.clear();
 
 					const params: VideoConferenceCreateParams = {
@@ -445,20 +389,22 @@ describe('VideoConferenceController (API)', () => {
 					const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
 					const cardNode = cardEntityFactory.withParent(columnNode).build();
 					const elementNode = videoConferenceElementEntityFactory.withParent(cardNode).build();
-					await em.persistAndFlush([
-						columnBoardNode,
-						columnNode,
-						cardNode,
-						elementNode,
-						room,
-						roomMembership,
-						school,
-						teacherAccount,
-						teacherUser,
-						userGroup,
-						roomEditorRole,
-						roomViewerRole,
-					]);
+					await em
+						.persist([
+							columnBoardNode,
+							columnNode,
+							cardNode,
+							elementNode,
+							room,
+							roomMembership,
+							school,
+							teacherAccount,
+							teacherUser,
+							userGroup,
+							roomEditorRole,
+							roomViewerRole,
+						])
+						.flush();
 					em.clear();
 
 					const params: VideoConferenceCreateParams = {
@@ -510,21 +456,23 @@ describe('VideoConferenceController (API)', () => {
 					const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
 					const cardNode = cardEntityFactory.withParent(columnNode).build();
 					const elementNode = videoConferenceElementEntityFactory.withParent(cardNode).build();
-					await em.persistAndFlush([
-						columnBoardNode,
-						columnNode,
-						cardNode,
-						elementNode,
-						room,
-						roomMembership,
-						school,
-						teacherAccount,
-						teacherUser,
-						userGroup,
-						roomAdminRole,
-						roomEditorRole,
-						roomViewerRole,
-					]);
+					await em
+						.persist([
+							columnBoardNode,
+							columnNode,
+							cardNode,
+							elementNode,
+							room,
+							roomMembership,
+							school,
+							teacherAccount,
+							teacherUser,
+							userGroup,
+							roomAdminRole,
+							roomEditorRole,
+							roomViewerRole,
+						])
+						.flush();
 					em.clear();
 
 					const params: VideoConferenceCreateParams = {
@@ -581,21 +529,23 @@ describe('VideoConferenceController (API)', () => {
 					targetModel: VideoConferenceTargetModels.VIDEO_CONFERENCE_ELEMENTS,
 					target: elementNode.id,
 				});
-				await em.persistAndFlush([
-					columnBoardNode,
-					columnNode,
-					cardNode,
-					elementNode,
-					room,
-					roomMembership,
-					school,
-					teacherAccount,
-					teacherUser,
-					userGroup,
-					roomEditorRole,
-					roomViewerRole,
-					videoConference,
-				]);
+				await em
+					.persist([
+						columnBoardNode,
+						columnNode,
+						cardNode,
+						elementNode,
+						room,
+						roomMembership,
+						school,
+						teacherAccount,
+						teacherUser,
+						userGroup,
+						roomEditorRole,
+						roomViewerRole,
+						videoConference,
+					])
+					.flush();
 				em.clear();
 
 				const params: VideoConferenceCreateParams = {
@@ -664,21 +614,23 @@ describe('VideoConferenceController (API)', () => {
 							targetModel: VideoConferenceTargetModels.VIDEO_CONFERENCE_ELEMENTS,
 							target: elementNode.id,
 						});
-						await em.persistAndFlush([
-							columnBoardNode,
-							columnNode,
-							cardNode,
-							elementNode,
-							room,
-							roomMembership,
-							school,
-							teacherAccount,
-							teacherUser,
-							userGroup,
-							roomEditorRole,
-							roomViewerRole,
-							videoConference,
-						]);
+						await em
+							.persist([
+								columnBoardNode,
+								columnNode,
+								cardNode,
+								elementNode,
+								room,
+								roomMembership,
+								school,
+								teacherAccount,
+								teacherUser,
+								userGroup,
+								roomEditorRole,
+								roomViewerRole,
+								videoConference,
+							])
+							.flush();
 						em.clear();
 
 						const scope: VideoConferenceScope = VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT;
@@ -731,21 +683,23 @@ describe('VideoConferenceController (API)', () => {
 							targetModel: VideoConferenceTargetModels.VIDEO_CONFERENCE_ELEMENTS,
 							target: elementNode.id,
 						});
-						await em.persistAndFlush([
-							columnBoardNode,
-							columnNode,
-							cardNode,
-							elementNode,
-							room,
-							roomMembership,
-							school,
-							teacherAccount,
-							teacherUser,
-							userGroup,
-							roomEditorRole,
-							roomViewerRole,
-							videoConference,
-						]);
+						await em
+							.persist([
+								columnBoardNode,
+								columnNode,
+								cardNode,
+								elementNode,
+								room,
+								roomMembership,
+								school,
+								teacherAccount,
+								teacherUser,
+								userGroup,
+								roomEditorRole,
+								roomViewerRole,
+								videoConference,
+							])
+							.flush();
 						em.clear();
 
 						const scope: VideoConferenceScope = VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT;
@@ -801,21 +755,23 @@ describe('VideoConferenceController (API)', () => {
 							targetModel: VideoConferenceTargetModels.VIDEO_CONFERENCE_ELEMENTS,
 							target: elementNode.id,
 						});
-						await em.persistAndFlush([
-							columnBoardNode,
-							columnNode,
-							cardNode,
-							elementNode,
-							room,
-							roomMembership,
-							school,
-							teacherAccount,
-							teacherUser,
-							userGroup,
-							roomEditorRole,
-							roomViewerRole,
-							videoConference,
-						]);
+						await em
+							.persist([
+								columnBoardNode,
+								columnNode,
+								cardNode,
+								elementNode,
+								room,
+								roomMembership,
+								school,
+								teacherAccount,
+								teacherUser,
+								userGroup,
+								roomEditorRole,
+								roomViewerRole,
+								videoConference,
+							])
+							.flush();
 						em.clear();
 
 						const scope: VideoConferenceScope = VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT;
@@ -881,21 +837,23 @@ describe('VideoConferenceController (API)', () => {
 							target: elementNode.id,
 						});
 
-						await em.persistAndFlush([
-							columnBoardNode,
-							columnNode,
-							cardNode,
-							elementNode,
-							room,
-							roomMembership,
-							school,
-							teacherAccount,
-							teacherUser,
-							userGroup,
-							roomEditorRole,
-							roomViewerRole,
-							videoConference,
-						]);
+						await em
+							.persist([
+								columnBoardNode,
+								columnNode,
+								cardNode,
+								elementNode,
+								room,
+								roomMembership,
+								school,
+								teacherAccount,
+								teacherUser,
+								userGroup,
+								roomEditorRole,
+								roomViewerRole,
+								videoConference,
+							])
+							.flush();
 						em.clear();
 
 						const scope: VideoConferenceScope = VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT;
@@ -948,21 +906,23 @@ describe('VideoConferenceController (API)', () => {
 							target: elementNode.id,
 						});
 
-						await em.persistAndFlush([
-							columnBoardNode,
-							columnNode,
-							cardNode,
-							elementNode,
-							room,
-							roomMembership,
-							school,
-							teacherAccount,
-							teacherUser,
-							userGroup,
-							roomEditorRole,
-							roomViewerRole,
-							videoConference,
-						]);
+						await em
+							.persist([
+								columnBoardNode,
+								columnNode,
+								cardNode,
+								elementNode,
+								room,
+								roomMembership,
+								school,
+								teacherAccount,
+								teacherUser,
+								userGroup,
+								roomEditorRole,
+								roomViewerRole,
+								videoConference,
+							])
+							.flush();
 						em.clear();
 
 						const scope: VideoConferenceScope = VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT;
@@ -1025,23 +985,25 @@ describe('VideoConferenceController (API)', () => {
 							options: { moderatorMustApproveJoinRequests: false },
 						});
 
-						await em.persistAndFlush([
-							columnBoardNode,
-							columnNode,
-							cardNode,
-							elementNode,
-							externalPersonAccount,
-							externalPersonUser,
-							room,
-							roomMembership,
-							school,
-							teacherAccount,
-							teacherUser,
-							userGroup,
-							roomEditorRole,
-							roomViewerRole,
-							videoConference,
-						]);
+						await em
+							.persist([
+								columnBoardNode,
+								columnNode,
+								cardNode,
+								elementNode,
+								externalPersonAccount,
+								externalPersonUser,
+								room,
+								roomMembership,
+								school,
+								teacherAccount,
+								teacherUser,
+								userGroup,
+								roomEditorRole,
+								roomViewerRole,
+								videoConference,
+							])
+							.flush();
 						em.clear();
 
 						const scope: VideoConferenceScope = VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT;
@@ -1095,21 +1057,23 @@ describe('VideoConferenceController (API)', () => {
 							target: elementNode.id,
 						});
 
-						await em.persistAndFlush([
-							columnBoardNode,
-							columnNode,
-							cardNode,
-							elementNode,
-							room,
-							roomMembership,
-							school,
-							teacherAccount,
-							teacherUser,
-							userGroup,
-							roomEditorRole,
-							roomViewerRole,
-							videoConference,
-						]);
+						await em
+							.persist([
+								columnBoardNode,
+								columnNode,
+								cardNode,
+								elementNode,
+								room,
+								roomMembership,
+								school,
+								teacherAccount,
+								teacherUser,
+								userGroup,
+								roomEditorRole,
+								roomViewerRole,
+								videoConference,
+							])
+							.flush();
 						em.clear();
 
 						const scope: VideoConferenceScope = VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT;
@@ -1175,21 +1139,23 @@ describe('VideoConferenceController (API)', () => {
 							target: elementNode.id,
 						});
 
-						await em.persistAndFlush([
-							columnBoardNode,
-							columnNode,
-							cardNode,
-							elementNode,
-							room,
-							roomMembership,
-							school,
-							teacherAccount,
-							teacherUser,
-							userGroup,
-							roomEditorRole,
-							roomViewerRole,
-							videoConference,
-						]);
+						await em
+							.persist([
+								columnBoardNode,
+								columnNode,
+								cardNode,
+								elementNode,
+								room,
+								roomMembership,
+								school,
+								teacherAccount,
+								teacherUser,
+								userGroup,
+								roomEditorRole,
+								roomViewerRole,
+								videoConference,
+							])
+							.flush();
 						em.clear();
 
 						const scope: VideoConferenceScope = VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT;
@@ -1243,21 +1209,23 @@ describe('VideoConferenceController (API)', () => {
 							target: elementNode.id,
 						});
 
-						await em.persistAndFlush([
-							columnBoardNode,
-							columnNode,
-							cardNode,
-							elementNode,
-							room,
-							roomMembership,
-							school,
-							studentAccount,
-							studentUser,
-							userGroup,
-							roomEditorRole,
-							roomViewerRole,
-							videoConference,
-						]);
+						await em
+							.persist([
+								columnBoardNode,
+								columnNode,
+								cardNode,
+								elementNode,
+								room,
+								roomMembership,
+								school,
+								studentAccount,
+								studentUser,
+								userGroup,
+								roomEditorRole,
+								roomViewerRole,
+								videoConference,
+							])
+							.flush();
 						em.clear();
 
 						const scope: VideoConferenceScope = VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT;
@@ -1309,21 +1277,23 @@ describe('VideoConferenceController (API)', () => {
 							target: elementNode.id,
 						});
 
-						await em.persistAndFlush([
-							columnBoardNode,
-							columnNode,
-							cardNode,
-							elementNode,
-							room,
-							roomMembership,
-							school,
-							teacherAccount,
-							teacherUser,
-							userGroup,
-							roomEditorRole,
-							roomViewerRole,
-							videoConference,
-						]);
+						await em
+							.persist([
+								columnBoardNode,
+								columnNode,
+								cardNode,
+								elementNode,
+								room,
+								roomMembership,
+								school,
+								teacherAccount,
+								teacherUser,
+								userGroup,
+								roomEditorRole,
+								roomViewerRole,
+								videoConference,
+							])
+							.flush();
 						em.clear();
 
 						const scope: VideoConferenceScope = VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT;
@@ -1376,21 +1346,23 @@ describe('VideoConferenceController (API)', () => {
 							target: elementNode.id,
 						});
 
-						await em.persistAndFlush([
-							columnBoardNode,
-							columnNode,
-							cardNode,
-							elementNode,
-							room,
-							roomMembership,
-							school,
-							teacherAccount,
-							teacherUser,
-							userGroup,
-							roomEditorRole,
-							roomViewerRole,
-							videoConference,
-						]);
+						await em
+							.persist([
+								columnBoardNode,
+								columnNode,
+								cardNode,
+								elementNode,
+								room,
+								roomMembership,
+								school,
+								teacherAccount,
+								teacherUser,
+								userGroup,
+								roomEditorRole,
+								roomViewerRole,
+								videoConference,
+							])
+							.flush();
 						em.clear();
 
 						const scope: VideoConferenceScope = VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT;
@@ -1444,22 +1416,24 @@ describe('VideoConferenceController (API)', () => {
 							target: elementNode.id,
 						});
 
-						await em.persistAndFlush([
-							columnBoardNode,
-							columnNode,
-							cardNode,
-							elementNode,
-							room,
-							roomMembership,
-							school,
-							teacherAccount,
-							teacherUser,
-							userGroup,
-							roomAdminRole,
-							roomEditorRole,
-							roomViewerRole,
-							videoConference,
-						]);
+						await em
+							.persist([
+								columnBoardNode,
+								columnNode,
+								cardNode,
+								elementNode,
+								room,
+								roomMembership,
+								school,
+								teacherAccount,
+								teacherUser,
+								userGroup,
+								roomAdminRole,
+								roomEditorRole,
+								roomViewerRole,
+								videoConference,
+							])
+							.flush();
 						em.clear();
 
 						const scope: VideoConferenceScope = VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT;

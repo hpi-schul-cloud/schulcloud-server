@@ -1,10 +1,13 @@
-[{
-	"_id": {
-        "$oid": "616837a590c1146b50a2ac50"
-    },
-    "xPos": 1,
-    "yPos": 3,
-    "dashboard": {
-        "$oid": "616837a590c1146b50a2ac5c"
-    }
-}]
+[
+	{
+		"_id": {
+			"$oid": "616837a590c1146b50a2ac50"
+		},
+		"xPos": 1,
+		"yPos": 3,
+		"dashboard": {
+			"$oid": "616837a590c1146b50a2ac5c"
+		},
+		"referenceIds": []
+	}
+]

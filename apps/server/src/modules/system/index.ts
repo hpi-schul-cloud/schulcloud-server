@@ -10,5 +10,4 @@ export {
 	SystemService,
 	SystemType,
 } from './domain';
-export { SystemConfig } from './system.config';
 export { SystemModule } from './system.module';

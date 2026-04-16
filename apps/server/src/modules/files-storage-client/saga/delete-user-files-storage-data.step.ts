@@ -11,8 +11,8 @@ import {
 } from '@modules/saga';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
+import { FileDO } from '../interfaces';
 import { FilesStorageProducer } from '../service';
-import { FileDO } from '@infra/rabbitmq';
 
 @Injectable()
 export class DeleteUserFilesStorageDataStep extends SagaStep<'deleteUserData'> {

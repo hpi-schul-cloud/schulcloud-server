@@ -499,7 +499,10 @@ module.exports = function setup() {
 
 	app.use('/teams/api', staticContent(path.join(__dirname, '/docs/openapi.yaml')));
 
-	app.use('/teams', service(options));
+	app.use('/teams', service(options), {
+		// Omit 'create' to disable POST /teams
+		methods: ['find', 'get', 'update', 'patch', 'remove']
+	});
 	app.use('/teams/extern/get', new Get());
 	app.use('/teams/extern/add', new Add());
 	app.use('/teams/extern/accept', new Accept());

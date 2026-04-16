@@ -1,44 +1,18 @@
-import { Injectable } from '@nestjs/common';
-import { EntityId } from '@shared/domain/types';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { ConfigService } from '@nestjs/config';
+import { Inject, Injectable } from '@nestjs/common';
+import { EntityId } from '@shared/domain/types';
+import { DELETION_CONFIG_TOKEN, DeletionConfig } from '../../deletion.config';
 import { DeletionRequestRepo } from '../../repo';
 import { DeletionRequest } from '../do';
 import { DomainName, StatusModel } from '../types';
-import { DeletionConfig } from '../../deletion.config';
 
 @Injectable()
 export class DeletionRequestService {
-	private thresholdOlder: number;
-
-	private thresholdNewer: number;
-
 	constructor(
 		private readonly deletionRequestRepo: DeletionRequestRepo,
-		private readonly configService: ConfigService<DeletionConfig, true>
-	) {
-		this.thresholdOlder = this.configService.get<number>('ADMIN_API__DELETION_MODIFICATION_THRESHOLD_MS');
-		this.thresholdNewer = this.configService.get<number>('ADMIN_API__DELETION_CONSIDER_FAILED_AFTER_MS');
-	}
-
-	public async createDeletionRequestBatch(
-		targetRefIds: EntityId[],
-		targetRefDomain: DomainName,
-		deleteAfter: Date
-	): Promise<void> {
-		const deletionRequests = targetRefIds.map(
-			(targetRefId) =>
-				new DeletionRequest({
-					id: new ObjectId().toHexString(),
-					targetRefDomain,
-					deleteAfter,
-					targetRefId,
-					status: StatusModel.REGISTERED,
-				})
-		);
-
-		await this.deletionRequestRepo.create(deletionRequests);
-	}
+		@Inject(DELETION_CONFIG_TOKEN)
+		private readonly config: DeletionConfig
+	) {}
 
 	public async createDeletionRequest(
 		targetRefId: EntityId,
@@ -58,6 +32,27 @@ export class DeletionRequestService {
 		return { requestId: newDeletionRequest.id, deletionPlannedAt: newDeletionRequest.deleteAfter };
 	}
 
+	public async createMultipleDeletionRequests(
+		batchId: EntityId,
+		targetRefIds: EntityId[],
+		targetRefDomain: DomainName,
+		deleteAfter: Date
+	): Promise<void> {
+		const deletionRequests = targetRefIds.map(
+			(targetRefId) =>
+				new DeletionRequest({
+					id: new ObjectId().toHexString(),
+					targetRefDomain,
+					deleteAfter,
+					targetRefId,
+					status: StatusModel.REGISTERED,
+					batchId,
+				})
+		);
+
+		await this.deletionRequestRepo.create(deletionRequests);
+	}
+
 	public async findById(deletionRequestId: EntityId): Promise<DeletionRequest> {
 		const deletionRequest: DeletionRequest = await this.deletionRequestRepo.findById(deletionRequestId);
 
@@ -71,8 +66,9 @@ export class DeletionRequestService {
 	}
 
 	public async findAllItemsToExecute(limit: number, getFailed = false): Promise<DeletionRequest[]> {
-		const newerThan = new Date(Date.now() - this.thresholdNewer);
-		const olderThan = new Date(Date.now() - this.thresholdOlder);
+		const { adminApiDeletionModificationThresholdMs, adminApiDeletionConsiderFailedAfterMs } = this.config;
+		const newerThan = new Date(Date.now() - adminApiDeletionConsiderFailedAfterMs);
+		const olderThan = new Date(Date.now() - adminApiDeletionModificationThresholdMs);
 		const deletionRequests = getFailed
 			? await this.deletionRequestRepo.findAllFailedItems(limit, olderThan, newerThan)
 			: await this.deletionRequestRepo.findAllItems(limit);
@@ -80,23 +76,25 @@ export class DeletionRequestService {
 		return deletionRequests;
 	}
 
-	public findByStatusAndTargetRefId(status: StatusModel, targetRefIds: EntityId[]): Promise<DeletionRequest[]> {
-		switch (status) {
-			case StatusModel.REGISTERED:
-				return this.deletionRequestRepo.findRegisteredByTargetRefId(targetRefIds);
-			case StatusModel.PENDING:
-				return this.deletionRequestRepo.findPendingByTargetRefId(targetRefIds);
-			case StatusModel.FAILED:
-				return this.deletionRequestRepo.findFailedByTargetRefId(targetRefIds);
-			case StatusModel.SUCCESS:
-				return this.deletionRequestRepo.findSuccessfulByTargetRefId(targetRefIds);
-			default:
-				return Promise.resolve([]);
+	public async getStatusOfDeletionRequestBatch(
+		batchId: EntityId
+	): Promise<{ pending: EntityId[]; failed: EntityId[]; success: EntityId[] }> {
+		const result = await this.deletionRequestRepo.groupTargetRefIdsByBatchAndStatus(batchId);
+		const statusMap: { pending: EntityId[]; failed: EntityId[]; success: EntityId[] } = {
+			pending: [],
+			failed: [],
+			success: [],
+		};
+		for (const { status, targetRefIds } of result) {
+			if (status === StatusModel.PENDING || status === StatusModel.REGISTERED) {
+				statusMap.pending.push(...targetRefIds);
+			} else if (status === StatusModel.FAILED) {
+				statusMap.failed.push(...targetRefIds);
+			} else if (status === StatusModel.SUCCESS) {
+				statusMap.success.push(...targetRefIds);
+			}
 		}
-	}
-
-	public async update(deletionRequestToUpdate: DeletionRequest): Promise<void> {
-		await this.deletionRequestRepo.update(deletionRequestToUpdate);
+		return statusMap;
 	}
 
 	public async markDeletionRequestAsExecuted(deletionRequestId: EntityId): Promise<boolean> {

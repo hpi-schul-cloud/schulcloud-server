@@ -48,7 +48,7 @@ describe(ClassesRepo.name, () => {
 				const school = schoolEntityFactory.buildWithId();
 				const classes = classEntityFactory.buildListWithId(3, { schoolId: school.id });
 
-				await em.persistAndFlush(classes);
+				await em.persist(classes).flush();
 				em.clear();
 
 				return {
@@ -80,7 +80,7 @@ describe(ClassesRepo.name, () => {
 				const school = schoolEntityFactory.buildWithId();
 				const classes = classEntityFactory.buildListWithId(3, { schoolId: school.id });
 
-				await em.persistAndFlush(classes);
+				await em.persist(classes).flush();
 				em.clear();
 
 				return {
@@ -115,7 +115,7 @@ describe(ClassesRepo.name, () => {
 				const class2 = classEntityFactory.withUserIds([new ObjectId()]).buildWithId({ teacherIds: [testUser] });
 				const class3 = classEntityFactory.withUserIds([new ObjectId(), new ObjectId()]).buildWithId();
 
-				await em.persistAndFlush([class1, class2, class3]);
+				await em.persist([class1, class2, class3]).flush();
 				em.clear();
 
 				return {
@@ -149,7 +149,7 @@ describe(ClassesRepo.name, () => {
 				const class2 = classEntityFactory.withUserIds([testUser1, testUser3]).buildWithId();
 				const class3 = classEntityFactory.withUserIds([testUser2, testUser3]).buildWithId();
 
-				await em.persistAndFlush([class1, class2, class3]);
+				await em.persist([class1, class2, class3]).flush();
 				em.clear();
 
 				return {
@@ -204,7 +204,7 @@ describe(ClassesRepo.name, () => {
 				const class2 = classEntityFactory.withUserIds([testUser]).buildWithId();
 				const class3 = classEntityFactory.withUserIds([testUser]).buildWithId();
 
-				await em.persistAndFlush([class1, class2, class3]);
+				await em.persist([class1, class2, class3]).flush();
 				em.clear();
 
 				return { testUser, class1, class2, class3 };
@@ -246,7 +246,7 @@ describe(ClassesRepo.name, () => {
 		describe('when class is in classes', () => {
 			const setup = async () => {
 				const class1 = classEntityFactory.buildWithId();
-				await em.persistAndFlush([class1]);
+				await em.persist([class1]).flush();
 				em.clear();
 
 				return {
@@ -272,7 +272,7 @@ describe(ClassesRepo.name, () => {
 					sourceOptions: { tspUid: randomUUID() },
 				});
 
-				await em.persistAndFlush(classes);
+				await em.persist(classes).flush();
 				em.clear();
 
 				return {

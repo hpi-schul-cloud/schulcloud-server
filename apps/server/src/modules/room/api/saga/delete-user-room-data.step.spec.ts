@@ -81,7 +81,7 @@ describe(DeleteUserRoomDataStep.name, () => {
 					}),
 				});
 
-				await em.persistAndFlush([user, ...rooms, roomArrangement]);
+				await em.persist([user, ...rooms, roomArrangement]).flush();
 				em.clear();
 
 				return {
@@ -118,7 +118,7 @@ describe(DeleteUserRoomDataStep.name, () => {
 				const user = userFactory.build();
 				const rooms = roomEntityFactory.buildList(2);
 
-				await em.persistAndFlush([user, ...rooms]);
+				await em.persist([user, ...rooms]).flush();
 				em.clear();
 
 				return {
@@ -146,7 +146,7 @@ describe(DeleteUserRoomDataStep.name, () => {
 					userId: user.id,
 				});
 
-				await em.persistAndFlush([user, ...roomArrangements]);
+				await em.persist([user, ...roomArrangements]).flush();
 				em.clear();
 
 				return {

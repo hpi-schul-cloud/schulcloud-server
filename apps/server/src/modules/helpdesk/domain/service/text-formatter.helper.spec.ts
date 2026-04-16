@@ -22,25 +22,28 @@ describe('TextFormatter', () => {
 
 				const result = TextFormatter.createProblemText(problem, userContext, userDevice);
 
-				const expected =
-					'Helpdesk-Problem melden\n\n' +
-					'\n--- Systeminformationen ---\n' +
-					'Nutzer-ID: test-user-id\n' +
-					'Nutzername: Test User\n' +
-					'Nutzer-E-Mail: testuser@example.com\n' +
-					'Nutzerrollen: student\n' +
-					'Schul-ID: test-school-id\n' +
-					'Schulname: Test School\n' +
-					'\n--- Geräteinformationen ---\n' +
-					'Geräte-User-Agent: Test User Agent\n' +
-					'Browser-Name: Test Browser\n' +
-					'Browser-Version: 1.0.0\n' +
-					'Betriebssystem: Test OS\n' +
-					'\n--- Problemdetails ---\n' +
-					'Betreff: Test Problem Subject\n' +
-					'Problemfeld: General\n' +
-					'Problembeschreibung: Test problem description\n' +
-					'Gerät: Desktop\n';
+				const expected = `
+SystemInformation:
+User login: Test User
+User role(s): student
+User registrated email: testuser@example.com \n
+
+ReplyEmail: test@example.com
+User: Test User
+User-ID: test-user-id
+Schule: Test School
+Schule-ID: test-school-id
+Instanz: Test Instance
+Browser: Test Browser
+Browser Version: 1.0.0
+Betriebssystem: Test OS
+Gerät: Desktop [auto-detection: Test User Agent]
+Problembereich: General \n
+
+User meldet folgendes:
+Problem Kurzbeschreibung: Test Problem Subject
+Problembeschreibung: Test problem description
+`;
 
 				expect(result).toBe(expected);
 			});
@@ -62,24 +65,28 @@ describe('TextFormatter', () => {
 
 				const result = TextFormatter.createProblemText(problem, userContext, userDevice);
 
-				const expected =
-					'Helpdesk-Problem melden\n\n' +
-					'\n--- Systeminformationen ---\n' +
-					'Nutzer-ID: test-user-id\n' +
-					'Nutzername: Test User\n' +
-					'Nutzer-E-Mail: testuser@example.com\n' +
-					'Nutzerrollen: student\n' +
-					'Schul-ID: test-school-id\n' +
-					'Schulname: Test School\n' +
-					'\n--- Geräteinformationen ---\n' +
-					'Geräte-User-Agent: Test User Agent\n' +
-					'Browser-Name: Test Browser\n' +
-					'Browser-Version: 1.0.0\n' +
-					'Betriebssystem: Test OS\n' +
-					'\n--- Problemdetails ---\n' +
-					'Betreff: Test Problem Subject\n' +
-					'Problemfeld: General\n' +
-					'Problembeschreibung: Test problem description\n';
+				const expected = `
+SystemInformation:
+User login: Test User
+User role(s): student
+User registrated email: testuser@example.com \n
+
+ReplyEmail: test@example.com
+User: Test User
+User-ID: test-user-id
+Schule: Test School
+Schule-ID: test-school-id
+Instanz: Test Instance
+Browser: Test Browser
+Browser Version: 1.0.0
+Betriebssystem: Test OS
+Gerät:  [auto-detection: Test User Agent]
+Problembereich: General \n
+
+User meldet folgendes:
+Problem Kurzbeschreibung: Test Problem Subject
+Problembeschreibung: Test problem description
+`;
 
 				expect(result).toBe(expected);
 			});
@@ -101,22 +108,28 @@ describe('TextFormatter', () => {
 
 				const result = TextFormatter.createProblemText(problem, userContext, userDevice);
 
-				const expected =
-					'Helpdesk-Problem melden\n\n' +
-					'\n--- Systeminformationen ---\n' +
-					'Nutzer-ID: test-user-id\n' +
-					'Nutzername: Test User\n' +
-					'Nutzer-E-Mail: testuser@example.com\n' +
-					'Nutzerrollen: student\n' +
-					'Schul-ID: test-school-id\n' +
-					'Schulname: Test School\n' +
-					'\n--- Geräteinformationen ---\n' +
-					'N/A' +
-					'\n--- Problemdetails ---\n' +
-					'Betreff: Test Problem Subject\n' +
-					'Problemfeld: General\n' +
-					'Problembeschreibung: Test problem description\n' +
-					'Gerät: Desktop\n';
+				const expected = `
+SystemInformation:
+User login: Test User
+User role(s): student
+User registrated email: testuser@example.com \n
+
+ReplyEmail: test@example.com
+User: Test User
+User-ID: test-user-id
+Schule: Test School
+Schule-ID: test-school-id
+Instanz: Test Instance
+Browser: Test Browser
+Browser Version: 1.0.0
+Betriebssystem: Test OS
+Gerät: Desktop [auto-detection: Test User Agent]
+Problembereich: General \n
+
+User meldet folgendes:
+Problem Kurzbeschreibung: Test Problem Subject
+Problembeschreibung: Test problem description
+`;
 
 				expect(result).toBe(expected);
 			});
@@ -135,22 +148,28 @@ describe('TextFormatter', () => {
 
 				const result = TextFormatter.createProblemText(problem, userContext, undefined);
 
-				const expected =
-					'Helpdesk-Problem melden\n\n' +
-					'\n--- Systeminformationen ---\n' +
-					'Nutzer-ID: test-user-id\n' +
-					'Nutzername: Test User\n' +
-					'Nutzer-E-Mail: testuser@example.com\n' +
-					'Nutzerrollen: student\n' +
-					'Schul-ID: test-school-id\n' +
-					'Schulname: Test School\n' +
-					'\n--- Geräteinformationen ---\n' +
-					'Keine Geräteinformationen vorhanden.' +
-					'\n--- Problemdetails ---\n' +
-					'Betreff: Test Problem Subject\n' +
-					'Problemfeld: General\n' +
-					'Problembeschreibung: Test problem description\n' +
-					'Gerät: Desktop\n';
+				const expected = `
+SystemInformation:
+User login: Test User
+User role(s): student
+User registrated email: testuser@example.com \n
+
+ReplyEmail: test@example.com
+User: Test User
+User-ID: test-user-id
+Schule: Test School
+Schule-ID: test-school-id
+Instanz: Test Instance
+Browser: 
+Browser Version: 
+Betriebssystem: 
+Gerät: Desktop [auto-detection: ]
+Problembereich: General \n
+
+User meldet folgendes:
+Problem Kurzbeschreibung: Test Problem Subject
+Problembeschreibung: Test problem description
+`;
 
 				expect(result).toBe(expected);
 			});
@@ -172,27 +191,30 @@ describe('TextFormatter', () => {
 
 				const result = TextFormatter.createWishText(wish, userContext, userDevice);
 
-				const expected =
-					'Helpdesk-Wunsch einreichen\n\n' +
-					'--- Wunschdetails ---\n' +
-					'Betreff: Test Wish Subject\n' +
-					'Problemfeld: General\n' +
-					'Rolle: As a user\n' +
-					'Wunsch: I want to test\n' +
-					'Nutzen: So I can verify functionality\n' +
-					'Akzeptanzkriterien: Feature works as expected\n' +
-					'\n--- Systeminformationen ---\n' +
-					'Nutzer-ID: test-user-id\n' +
-					'Nutzername: Test User\n' +
-					'Nutzer-E-Mail: testuser@example.com\n' +
-					'Nutzerrollen: student\n' +
-					'Schul-ID: test-school-id\n' +
-					'Schulname: Test School\n' +
-					'\n--- Geräteinformationen ---\n' +
-					'Geräte-User-Agent: Test User Agent\n' +
-					'Browser-Name: Test Browser\n' +
-					'Browser-Version: 1.0.0\n' +
-					'Betriebssystem: Test OS\n';
+				const expected = `
+SystemInformation:
+User login: Test User
+User role(s): student
+User registrated email: testuser@example.com \n
+
+ReplyEmail: test@example.com
+User: Test User
+User-ID: test-user-id
+Schule: Test School
+Schule-ID: test-school-id
+Instanz: Test Instance
+Browser: Test Browser
+Browser Version: 1.0.0
+Betriebssystem: Test OS
+Gerät:  [auto-detection: Test User Agent]
+Problembereich: General \n
+
+User schrieb folgendes: Test Wish Subject \n
+Als As a user
+möchte ich I want to test,
+um So I can verify functionality.
+Akzeptanzkriterien: Feature works as expected
+`;
 
 				expect(result).toBe(expected);
 			});
@@ -214,26 +236,30 @@ describe('TextFormatter', () => {
 
 				const result = TextFormatter.createWishText(wish, userContext, userDevice);
 
-				const expected =
-					'Helpdesk-Wunsch einreichen\n\n' +
-					'--- Wunschdetails ---\n' +
-					'Betreff: Test Wish Subject\n' +
-					'Problemfeld: General\n' +
-					'Rolle: As a user\n' +
-					'Wunsch: I want to test\n' +
-					'Nutzen: So I can verify functionality\n' +
-					'\n--- Systeminformationen ---\n' +
-					'Nutzer-ID: test-user-id\n' +
-					'Nutzername: Test User\n' +
-					'Nutzer-E-Mail: testuser@example.com\n' +
-					'Nutzerrollen: student\n' +
-					'Schul-ID: test-school-id\n' +
-					'Schulname: Test School\n' +
-					'\n--- Geräteinformationen ---\n' +
-					'Geräte-User-Agent: Test User Agent\n' +
-					'Browser-Name: Test Browser\n' +
-					'Browser-Version: 1.0.0\n' +
-					'Betriebssystem: Test OS\n';
+				const expected = `
+SystemInformation:
+User login: Test User
+User role(s): student
+User registrated email: testuser@example.com \n
+
+ReplyEmail: test@example.com
+User: Test User
+User-ID: test-user-id
+Schule: Test School
+Schule-ID: test-school-id
+Instanz: Test Instance
+Browser: Test Browser
+Browser Version: 1.0.0
+Betriebssystem: Test OS
+Gerät:  [auto-detection: Test User Agent]
+Problembereich: General \n
+
+User schrieb folgendes: Test Wish Subject \n
+Als As a user
+möchte ich I want to test,
+um So I can verify functionality.
+Akzeptanzkriterien: 
+`;
 
 				expect(result).toBe(expected);
 			});
@@ -255,24 +281,30 @@ describe('TextFormatter', () => {
 
 				const result = TextFormatter.createWishText(wish, userContext, userDevice);
 
-				const expected =
-					'Helpdesk-Wunsch einreichen\n\n' +
-					'--- Wunschdetails ---\n' +
-					'Betreff: Test Wish Subject\n' +
-					'Problemfeld: General\n' +
-					'Rolle: As a user\n' +
-					'Wunsch: I want to test\n' +
-					'Nutzen: So I can verify functionality\n' +
-					'Akzeptanzkriterien: Feature works as expected\n' +
-					'\n--- Systeminformationen ---\n' +
-					'Nutzer-ID: test-user-id\n' +
-					'Nutzername: Test User\n' +
-					'Nutzer-E-Mail: testuser@example.com\n' +
-					'Nutzerrollen: student\n' +
-					'Schul-ID: test-school-id\n' +
-					'Schulname: Test School\n' +
-					'\n--- Geräteinformationen ---\n' +
-					'N/A';
+				const expected = `
+SystemInformation:
+User login: Test User
+User role(s): student
+User registrated email: testuser@example.com \n
+
+ReplyEmail: test@example.com
+User: Test User
+User-ID: test-user-id
+Schule: Test School
+Schule-ID: test-school-id
+Instanz: Test Instance
+Browser: Test Browser
+Browser Version: 1.0.0
+Betriebssystem: Test OS
+Gerät:  [auto-detection: Test User Agent]
+Problembereich: General \n
+
+User schrieb folgendes: Test Wish Subject \n
+Als As a user
+möchte ich I want to test,
+um So I can verify functionality.
+Akzeptanzkriterien: Feature works as expected
+`;
 
 				expect(result).toBe(expected);
 			});
@@ -291,24 +323,30 @@ describe('TextFormatter', () => {
 
 				const result = TextFormatter.createWishText(wish, userContext, undefined);
 
-				const expected =
-					'Helpdesk-Wunsch einreichen\n\n' +
-					'--- Wunschdetails ---\n' +
-					'Betreff: Test Wish Subject\n' +
-					'Problemfeld: General\n' +
-					'Rolle: As a user\n' +
-					'Wunsch: I want to test\n' +
-					'Nutzen: So I can verify functionality\n' +
-					'Akzeptanzkriterien: Feature works as expected\n' +
-					'\n--- Systeminformationen ---\n' +
-					'Nutzer-ID: test-user-id\n' +
-					'Nutzername: Test User\n' +
-					'Nutzer-E-Mail: testuser@example.com\n' +
-					'Nutzerrollen: student\n' +
-					'Schul-ID: test-school-id\n' +
-					'Schulname: Test School\n' +
-					'\n--- Geräteinformationen ---\n' +
-					'Keine Geräteinformationen vorhanden.';
+				const expected = `
+SystemInformation:
+User login: Test User
+User role(s): student
+User registrated email: testuser@example.com \n
+
+ReplyEmail: test@example.com
+User: Test User
+User-ID: test-user-id
+Schule: Test School
+Schule-ID: test-school-id
+Instanz: Test Instance
+Browser: 
+Browser Version: 
+Betriebssystem: 
+Gerät:  [auto-detection: ]
+Problembereich: General \n
+
+User schrieb folgendes: Test Wish Subject \n
+Als As a user
+möchte ich I want to test,
+um So I can verify functionality.
+Akzeptanzkriterien: Feature works as expected
+`;
 
 				expect(result).toBe(expected);
 			});
@@ -332,27 +370,30 @@ describe('TextFormatter', () => {
 
 				const result = TextFormatter.createWishText(wish, userContext, userDevice);
 
-				const expected =
-					'Helpdesk-Wunsch einreichen\n\n' +
-					'--- Wunschdetails ---\n' +
-					'Betreff: Test Wish Subject\n' +
-					'Problemfeld: General\n' +
-					'Rolle: As a user\n' +
-					'Wunsch: I want to test\n' +
-					'Nutzen: So I can verify functionality\n' +
-					'Akzeptanzkriterien: Feature works as expected\n' +
-					'\n--- Systeminformationen ---\n' +
-					'Nutzer-ID: test-user-id\n' +
-					'Nutzername: Test User\n' +
-					'Nutzer-E-Mail: testuser@example.com\n' +
-					'Nutzerrollen: student\n' +
-					'Schul-ID: test-school-id\n' +
-					'Schulname: Test School\n' +
-					'\n--- Geräteinformationen ---\n' +
-					'Geräte-User-Agent: N/A\n' +
-					'Browser-Name: Test Browser\n' +
-					'Browser-Version: N/A\n' +
-					'Betriebssystem: N/A\n';
+				const expected = `
+SystemInformation:
+User login: Test User
+User role(s): student
+User registrated email: testuser@example.com \n
+
+ReplyEmail: test@example.com
+User: Test User
+User-ID: test-user-id
+Schule: Test School
+Schule-ID: test-school-id
+Instanz: Test Instance
+Browser: Test Browser
+Browser Version: 
+Betriebssystem: 
+Gerät:  [auto-detection: ]
+Problembereich: General \n
+
+User schrieb folgendes: Test Wish Subject \n
+Als As a user
+möchte ich I want to test,
+um So I can verify functionality.
+Akzeptanzkriterien: Feature works as expected
+`;
 
 				expect(result).toBe(expected);
 			});

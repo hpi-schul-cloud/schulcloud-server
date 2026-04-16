@@ -109,7 +109,7 @@ describe(BBBService.name, () => {
 	let module: TestingModule;
 	let service: BBBServiceTest;
 	let httpService: DeepMocked<HttpService>;
-	let configService: DeepMocked<VideoConferenceConfig>;
+	let config: DeepMocked<VideoConferenceConfig>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -117,7 +117,7 @@ describe(BBBService.name, () => {
 				BBBServiceTest,
 				{
 					provide: VIDEO_CONFERENCE_CONFIG_TOKEN,
-					useValue: createMock<VideoConferenceConfig>(),
+					useValue: {},
 				},
 				{
 					provide: HttpService,
@@ -127,7 +127,7 @@ describe(BBBService.name, () => {
 		}).compile();
 		service = module.get(BBBServiceTest);
 		httpService = module.get(HttpService);
-		configService = module.get(VIDEO_CONFERENCE_CONFIG_TOKEN);
+		config = module.get(VIDEO_CONFERENCE_CONFIG_TOKEN);
 	});
 
 	afterAll(async () => {
@@ -135,7 +135,7 @@ describe(BBBService.name, () => {
 	});
 
 	beforeEach(() => {
-		configService.VIDEOCONFERENCE_HOST = 'https://mocked';
+		config.videoConferenceHost = 'https://mocked';
 	});
 
 	afterEach(() => {
@@ -158,7 +158,7 @@ describe(BBBService.name, () => {
 			};
 
 			it('should not send config header if VIDEOCONFERENCE_DEFAULT_PRESENTATION is empty', async () => {
-				configService.VIDEOCONFERENCE_DEFAULT_PRESENTATION = '';
+				config.videoConferenceDefaultPresentation = '';
 				const { param } = setup();
 
 				await service.create(param);

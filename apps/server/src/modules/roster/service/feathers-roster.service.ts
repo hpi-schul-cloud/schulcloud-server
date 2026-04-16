@@ -4,7 +4,7 @@ import { Pseudonym } from '@modules/pseudonym/repo';
 import { PseudonymService } from '@modules/pseudonym/service';
 import { RoleName } from '@modules/role';
 import { Room, RoomService } from '@modules/room';
-import { RoomMembershipAuthorizable, RoomMembershipService } from '@modules/room-membership';
+import { RoomAuthorizable, RoomMembershipService } from '@modules/room-membership';
 import { ToolContextType } from '@modules/tool/common/enum';
 import { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
@@ -13,14 +13,13 @@ import { ExternalToolService } from '@modules/tool/external-tool/service';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { SchoolExternalToolService } from '@modules/tool/school-external-tool/service';
 import { UserDo, UserService } from '@modules/user';
-import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { Inject, Injectable } from '@nestjs/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { RoleReference } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
 import { BoardExternalReferenceType, ColumnBoard, ColumnBoardService } from '../../board';
 import { ExternalToolElement } from '../../board/domain';
-import { RosterConfig } from '../roster.config';
+import { ROSTER_PUBLIC_API_CONFIG_TOKEN, RosterPublicApiConfig } from '../roster.config';
 
 interface UserMetadata {
 	data: {
@@ -73,11 +72,11 @@ export class FeathersRosterService {
 		private readonly columnBoardService: ColumnBoardService,
 		private readonly roomService: RoomService,
 		private readonly roomMembershipService: RoomMembershipService,
-		private readonly configService: ConfigService<RosterConfig, true>
+		@Inject(ROSTER_PUBLIC_API_CONFIG_TOKEN) private readonly config: RosterPublicApiConfig
 	) {}
 
 	public async getUsersMetadata(pseudonym: string): Promise<UserMetadata> {
-		const loadedPseudonym = await this.findPseudonymByPseudonym(pseudonym);
+		const loadedPseudonym = await this.getByPseudonym(pseudonym);
 		const user = await this.userService.findById(loadedPseudonym.userId);
 
 		const userMetadata: UserMetadata = {
@@ -92,7 +91,7 @@ export class FeathersRosterService {
 	}
 
 	public async getUserGroups(pseudonym: string, oauth2ClientId: string): Promise<UserGroups> {
-		const pseudonymContext = await this.findPseudonymByPseudonym(pseudonym);
+		const pseudonymContext = await this.getByPseudonym(pseudonym);
 		const user = await this.userService.findById(pseudonymContext.userId);
 
 		const externalTool = await this.validateAndGetExternalTool(oauth2ClientId);
@@ -118,12 +117,12 @@ export class FeathersRosterService {
 		if (roomExists) {
 			const room = await this.roomService.getSingleRoom(id);
 
-			const roomMembers = await this.roomMembershipService.getRoomMembershipAuthorizable(room.id);
+			const roomMembers = await this.roomMembershipService.getRoomAuthorizable(room.id);
 			const hasOwner = roomMembers.members.some((member) =>
 				member.roles.some((role) => role.name === RoleName.ROOMOWNER)
 			);
 			if (!hasOwner) {
-				throw new NotFoundLoggableException(RoomMembershipAuthorizable.name, { roomId: room.id });
+				throw new NotFoundLoggableException(RoomAuthorizable.name, { roomId: room.id });
 			}
 
 			const externalTool = await this.validateContextExternalTools(room, room.schoolId, oauth2ClientId);
@@ -167,7 +166,7 @@ export class FeathersRosterService {
 
 		const roomUserGroups = await Promise.all(
 			rooms.map(async (room: Room) => {
-				const roomMembership = await this.roomMembershipService.getRoomMembershipAuthorizable(room.id);
+				const roomMembership = await this.roomMembershipService.getRoomAuthorizable(room.id);
 				const { students } = await this.mapRoomUsers(roomMembership, 'userRoles');
 
 				const userGroup: UserGroup = {
@@ -183,7 +182,7 @@ export class FeathersRosterService {
 	}
 
 	private async getRoomsForUser(userId: EntityId): Promise<Room[]> {
-		const roomAuthorizables = await this.roomMembershipService.getRoomMembershipAuthorizablesByUserId(userId);
+		const roomAuthorizables = await this.roomMembershipService.getRoomAuthorizablesByUserId(userId);
 		if (!roomAuthorizables) return [];
 		const roomIds = roomAuthorizables.map((item) => item.roomId);
 
@@ -217,7 +216,7 @@ export class FeathersRosterService {
 		return validItems;
 	}
 
-	private async getRoomGroup(roomMembers: RoomMembershipAuthorizable, externalTool: ExternalTool): Promise<Group> {
+	private async getRoomGroup(roomMembers: RoomAuthorizable, externalTool: ExternalTool): Promise<Group> {
 		const { students, teachers } = await this.mapRoomUsers(roomMembers, 'userRoles');
 
 		const [studentPseudonyms, teacherPseudonyms] = await Promise.all([
@@ -236,7 +235,7 @@ export class FeathersRosterService {
 	}
 
 	private async mapRoomUsers(
-		roomMembers: RoomMembershipAuthorizable,
+		roomMembers: RoomAuthorizable,
 		mappingType: RoomUserMappingType
 	): Promise<{ students: UserDo[]; teachers: UserDo[] }> {
 		let students: UserDo[] = [];
@@ -318,8 +317,8 @@ export class FeathersRosterService {
 		return roleName;
 	}
 
-	private async findPseudonymByPseudonym(pseudonym: string): Promise<Pseudonym> {
-		const loadedPseudonym = await this.pseudonymService.findPseudonymByPseudonym(pseudonym);
+	private async getByPseudonym(pseudonym: string): Promise<Pseudonym> {
+		const loadedPseudonym = await this.pseudonymService.findOneByPseudonym(pseudonym);
 
 		if (!loadedPseudonym) {
 			throw new NotFoundLoggableException(Pseudonym.name, { pseudonym });
@@ -349,7 +348,7 @@ export class FeathersRosterService {
 			}
 		}
 
-		if (this.configService.get<boolean>('FEATURE_COLUMN_BOARD_EXTERNAL_TOOLS_ENABLED')) {
+		if (this.config.featureColumnBoardExternalToolsEnabled) {
 			const columnBoards: ColumnBoard[] = await this.columnBoardService.findByExternalReference({
 				type: context instanceof CourseEntity ? BoardExternalReferenceType.Course : BoardExternalReferenceType.Room,
 				id: context.id,

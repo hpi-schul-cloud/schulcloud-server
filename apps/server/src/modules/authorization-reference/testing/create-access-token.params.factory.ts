@@ -1,5 +1,5 @@
 import { AuthorizableReferenceType, AuthorizationContextBuilder } from '@modules/authorization';
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { CreateAccessTokenParams } from '../api/dto';
 
 class CreateAccessTokenParamsTestBuilder {
@@ -13,12 +13,6 @@ class CreateAccessTokenParamsTestBuilder {
 
 	public withPayload(payload: Record<string, unknown>): this {
 		this.props.payload = payload;
-
-		return this;
-	}
-
-	public expired(): this {
-		this.props.tokenTtlInSeconds = 0;
 
 		return this;
 	}

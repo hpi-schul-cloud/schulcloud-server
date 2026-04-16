@@ -18,7 +18,6 @@ describe('user hooks', () => {
 
 	before(async () => {
 		configBefore = Configuration.toObject({ plainSecrets: true });
-		Configuration.set('FEATURE_NEXBOARD_COPY_ENABLED', false);
 		app = await appPromise();
 		testObjects = testHelper(app);
 		userService = app.service('users');
@@ -133,7 +132,7 @@ describe('user hooks', () => {
 		});
 
 		it('can not edit an admin when current user has not the ADMIN_EDIT permission', async () => {
-			const key = 'ADMIN_EDIT';
+			const key = 'ADMIN_EDIT_OTHER';
 			await testObjects.createTestRole({
 				name: key,
 				permissions: [],
@@ -182,7 +181,7 @@ describe('user hooks', () => {
 		});
 
 		it('can not read a student when current user has not the STUDENT_LIST permission', async () => {
-			const key = 'STUDENT_LIST';
+			const key = 'STUDENT_LIST_OTHER';
 			await testObjects.createTestRole({
 				name: key,
 				permissions: [],
@@ -199,7 +198,7 @@ describe('user hooks', () => {
 		});
 
 		it('can read a teachers when current user has the TEACHER_LIST permission', async () => {
-			const key = 'TEACHER_LIST';
+			const key = 'TEACHER_LIST_OTHER';
 			await testObjects.createTestRole({
 				name: key,
 				permissions: [key],

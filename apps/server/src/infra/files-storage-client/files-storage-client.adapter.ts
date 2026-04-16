@@ -1,16 +1,16 @@
 import { AxiosErrorLoggable } from '@core/error/loggable';
 import { ErrorLogger, Logger } from '@core/logger';
 import { HttpService } from '@nestjs/axios';
-import { Inject, Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { REQUEST } from '@nestjs/core';
+import { Injectable } from '@nestjs/common';
 import { JwtExtractor } from '@shared/common/utils/jwt';
 import { AxiosError } from 'axios';
 import type { Request } from 'express';
 import { lastValueFrom } from 'rxjs';
 import { Stream } from 'stream';
-import { FilesStorageClientConfig } from './files-storage-client.config';
+import util from 'util';
+import { InternalFilesStorageClientConfig } from './files-storage-client.config';
 import { FileApi, FileRecordParentType, FileRecordResponse, StorageLocation } from './generated';
+import { GenericFileStorageLoggable } from './loggables';
 
 @Injectable()
 export class FilesStorageClientAdapter {
@@ -20,10 +20,17 @@ export class FilesStorageClientAdapter {
 		private readonly errorLogger: ErrorLogger,
 		// these should be removed when the generated client supports downloading files as arraybuffer
 		private readonly httpService: HttpService,
-		private readonly configService: ConfigService<FilesStorageClientConfig, true>,
-		@Inject(REQUEST) private readonly req: Request
+		private readonly config: InternalFilesStorageClientConfig,
+		private readonly req: Request
 	) {
 		this.logger.setContext(FilesStorageClientAdapter.name);
+	}
+
+	public async getFileRecord(fileRecordId: string): Promise<FileRecordResponse> {
+		const response = await this.api.getFileRecord(fileRecordId);
+		const { data } = response;
+
+		return data;
 	}
 
 	public async getStream(fileRecordId: string, fileName: string): Promise<Stream | null> {
@@ -38,11 +45,7 @@ export class FilesStorageClientAdapter {
 			// });
 
 			const token = JwtExtractor.extractJwtFromRequestOrFail(this.req);
-			const url = new URL(
-				`${this.configService.getOrThrow<string>(
-					'FILES_STORAGE__SERVICE_BASE_URL'
-				)}/api/v3/file/download/${fileRecordId}/${fileName}`
-			);
+			const url = new URL(`/api/v3/file/download/${fileRecordId}/${fileName}`, this.config.basePath);
 			const observable = this.httpService.get(url.toString(), {
 				responseType: 'stream',
 				headers: {
@@ -53,7 +56,15 @@ export class FilesStorageClientAdapter {
 			const response = await lastValueFrom(observable);
 			return FilesStorageClientAdapter.isStream(response.data) ? response.data : null;
 		} catch (error: unknown) {
-			this.errorLogger.error(new AxiosErrorLoggable(error as AxiosError, 'FilesStorageClientAdapter.getStream'));
+			if (error instanceof AxiosError) {
+				this.errorLogger.error(new AxiosErrorLoggable(error, 'FilesStorageClientAdapter.getStream'));
+			} else {
+				this.errorLogger.error(
+					new GenericFileStorageLoggable(`An unknown error occurred in FilesStorageClientAdapter.getStream`, {
+						error: util.inspect(error),
+					})
+				);
+			}
 
 			return null;
 		}
@@ -86,9 +97,8 @@ export class FilesStorageClientAdapter {
 			formData.append('file', file);
 
 			const url = new URL(
-				`${this.configService.getOrThrow<string>(
-					'FILES_STORAGE__SERVICE_BASE_URL'
-				)}/api/v3/file/upload/${storageLocation}/${storageLocationId}/${parentType}/${parentId}`
+				`/api/v3/file/upload/${storageLocation}/${storageLocationId}/${parentType}/${parentId}`,
+				this.config.basePath
 			);
 
 			const observable = this.httpService.post(url.toString(), formData, {
@@ -100,7 +110,15 @@ export class FilesStorageClientAdapter {
 
 			return response.data as FileRecordResponse;
 		} catch (error: unknown) {
-			this.errorLogger.error(new AxiosErrorLoggable(error as AxiosError, 'FilesStorageClientAdapter.upload'));
+			if (error instanceof AxiosError) {
+				this.errorLogger.error(new AxiosErrorLoggable(error, 'FilesStorageClientAdapter.upload'));
+			} else {
+				this.errorLogger.error(
+					new GenericFileStorageLoggable(`An unknown error occurred in FilesStorageClientAdapter.upload`, {
+						error: util.inspect(error),
+					})
+				);
+			}
 
 			return null;
 		}

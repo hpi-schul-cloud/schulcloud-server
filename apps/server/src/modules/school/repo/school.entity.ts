@@ -50,17 +50,11 @@ export interface SchoolProperties {
 export class SchoolRolePermission {
 	@Property({ nullable: true })
 	STUDENT_LIST?: boolean;
-
-	@Property({ nullable: true })
-	LERNSTORE_VIEW?: boolean;
 }
 
 @Embeddable()
 export class SchoolRoles {
-	@Property({ nullable: true, fieldName: 'student' })
-	student?: SchoolRolePermission;
-
-	@Property({ nullable: true, fieldName: 'teacher' })
+	@Embedded(() => SchoolRolePermission, { nullable: true, fieldName: 'teacher' })
 	teacher?: SchoolRolePermission;
 }
 
@@ -114,7 +108,7 @@ export class SchoolEntity extends BaseEntityWithTimestamps {
 	@ManyToOne(() => FederalStateEntity)
 	federalState: FederalStateEntity;
 
-	@Property({ nullable: true })
+	@Embedded(() => CountyEmbeddable, { nullable: true })
 	county?: CountyEmbeddable;
 
 	@Property({ nullable: true })

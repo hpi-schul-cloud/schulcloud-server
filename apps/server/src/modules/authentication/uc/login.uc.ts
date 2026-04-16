@@ -7,7 +7,7 @@ import { LoginDto } from './dto';
 export class LoginUc {
 	constructor(private readonly authService: AuthenticationService) {}
 
-	async getLoginData(currentUser: ICurrentUser): Promise<LoginDto> {
+	public async getLoginData(currentUser: ICurrentUser): Promise<LoginDto> {
 		const jwtToken = await this.authService.generateCurrentUserJwt(currentUser);
 		await this.authService.updateLastLogin(currentUser.accountId);
 

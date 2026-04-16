@@ -2,18 +2,18 @@ import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { BaseRepo } from '@shared/repo/base.repo';
-import { ObjectId } from 'bson';
+import { EntityName, ObjectId } from '@mikro-orm/mongodb';
 import { UsersSearchQueryParams } from '../controller/dto';
 import { UserSearchQuery } from '../interfaces';
 import { createMultiDocumentAggregation, SearchQueryHelper } from './helper';
 
 @Injectable()
 export class UsersAdminRepo extends BaseRepo<User> {
-	get entityName() {
+	get entityName(): EntityName<User> {
 		return User;
 	}
 
-	async getUserByIdWithNestedData(
+	public getUserByIdWithNestedData(
 		roleId: string | undefined,
 		schoolId: EntityId,
 		schoolYearId: EntityId | undefined,
@@ -43,12 +43,14 @@ export class UsersAdminRepo extends BaseRepo<User> {
 			],
 		};
 
+		SearchQueryHelper.setDeletedFilter(query, new Date());
+
 		const aggregation = createMultiDocumentAggregation(query);
 
 		return this._em.aggregate(User, aggregation);
 	}
 
-	async getUsersWithNestedData(
+	public getUsersWithNestedData(
 		roleId: string | undefined,
 		schoolId: EntityId,
 		schoolYearId: EntityId | undefined,
@@ -86,6 +88,8 @@ export class UsersAdminRepo extends BaseRepo<User> {
 		}
 		SearchQueryHelper.setSearchParametersIfExist(query, params);
 		SearchQueryHelper.setDateParametersIfExists(query, params);
+
+		SearchQueryHelper.setDeletedFilter(query, new Date());
 
 		const aggregation = createMultiDocumentAggregation(query);
 

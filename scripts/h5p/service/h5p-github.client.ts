@@ -1,19 +1,42 @@
 import axios, { AxiosResponse } from 'axios';
-import { createWriteStream } from 'fs';
 import { Readable } from 'stream';
+import { FileSystemHelper } from '../helper/file-system.helper';
+import { h5pLogger } from '../helper/h5p-logger.helper';
 import { GitHubContentTreeResponse } from '../interface/github-content-tree.response';
 import { GitHubRepository, GitHubRepositoryResponse } from '../interface/github-repository.response';
 import { GitHubTagResponse } from '../interface/github-tag.response';
+import { H5PLibrary } from '../interface/h5p-library';
+
+export enum GitHubOwnerType {
+	Organization = 'orgs',
+	User = 'users',
+}
+
+export type GitHubOwner = {
+	type: GitHubOwnerType;
+	name: string;
+};
 
 export interface GitHubClientOptions {
 	maxRetries: number;
 }
 
+export type LibraryRepoMap = Record<string, string>;
+
 export class H5pGitHubClient {
+	private readonly logger = h5pLogger;
+
 	private token!: string;
 
-	constructor() {
+	private libraryRepoMap: LibraryRepoMap = {};
+
+	private tagsCache: Map<string, string[]> = new Map();
+
+	constructor(libraryRepoMap?: LibraryRepoMap) {
 		this.initialize();
+		if (libraryRepoMap) {
+			this.libraryRepoMap = libraryRepoMap;
+		}
 	}
 
 	public initialize(): void {
@@ -24,13 +47,33 @@ export class H5pGitHubClient {
 		this.token = personalAccessToken;
 	}
 
-	public async fetchRepositoriesFromOrganization(organization: string): Promise<GitHubRepositoryResponse> {
+	public getLibraryRepoMapFromGitHub = async (owners: GitHubOwner[]): Promise<LibraryRepoMap> => {
+		let libraryRepoMap: LibraryRepoMap = {};
+
+		for (const owner of owners) {
+			const repos = await this.fetchRepositories(owner.type, owner.name);
+			const ownerType = owner.type === GitHubOwnerType.Organization ? 'organization' : 'user';
+			this.logger.debug(`Found ${repos.length} repositories in the ${owner.name} ${ownerType}.`);
+			const repoMap = await this.buildLibraryRepoMapFromRepos(owner.name, repos);
+			this.logger.debug(
+				`Built libraryRepoMap for ${owner.name} ${ownerType} with ${Object.keys(repoMap).length} entries.`
+			);
+			libraryRepoMap = { ...libraryRepoMap, ...repoMap };
+		}
+		this.logger.debug(`Built libraryRepoMap for all owners with ${Object.keys(libraryRepoMap).length} entries.`);
+
+		this.libraryRepoMap = libraryRepoMap;
+
+		return libraryRepoMap;
+	};
+
+	public async fetchRepositories(type: GitHubOwnerType, owner: string): Promise<GitHubRepositoryResponse> {
 		let repos: GitHubRepositoryResponse = [];
 		let page = 1;
 		const perPage = 100; // Maximum allowed by GitHub API
 
 		while (true) {
-			const response = await this.fetchRepositoriesOfOrganizationPagewise(organization, page, perPage);
+			const response = await this.fetchRepositoriesPagewise(type, owner, page, perPage);
 			if (!response) {
 				repos = [];
 				break;
@@ -47,32 +90,34 @@ export class H5pGitHubClient {
 		return repos;
 	}
 
-	private async fetchRepositoriesOfOrganizationPagewise(
-		organization: string,
+	private async fetchRepositoriesPagewise(
+		type: GitHubOwnerType,
+		owner: string,
 		page: number = 1,
 		perPage: number = 100
 	): Promise<GitHubRepositoryResponse | undefined> {
 		let result: GitHubRepositoryResponse | undefined;
-		const url = `https://api.github.com/orgs/${organization}/repos?type=public&per_page=${perPage}&page=${page}`;
+		const url = `https://api.github.com/${type}/${owner}/repos?type=public&per_page=${perPage}&page=${page}`;
 		try {
 			const headers = this.getHeaders();
 			const response: AxiosResponse<GitHubRepositoryResponse> = await axios.get(url, { headers });
 			result = response.data;
 		} catch (error) {
-			console.error(`Error fetching repositories for organization ${organization} on page ${page}:`, error);
+			const message = error instanceof Error ? error.message : 'Unknown error';
+			this.logger.error(`Error fetching repositories for ${owner} on page ${page}: ${message}`);
 		}
 
 		return result;
 	}
 
 	public async buildLibraryRepoMapFromRepos(
-		organization: string,
+		owner: string,
 		repos: GitHubRepositoryResponse
 	): Promise<Record<string, string>> {
 		const libraryRepoMap: Record<string, string> = {};
 
 		for (const repo of repos) {
-			const response = await this.getLibraryJsonFromRepo(organization, repo);
+			const response = await this.getLibraryJsonFromRepo(owner, repo);
 			if (!response) {
 				continue;
 			}
@@ -86,7 +131,13 @@ export class H5pGitHubClient {
 			const libraryJson = JSON.parse(libraryJsonContent);
 
 			if (libraryJson.machineName) {
-				libraryRepoMap[libraryJson.machineName] = `${organization}/${repo.name}`;
+				if (libraryRepoMap[libraryJson.machineName]) {
+					this.logger.debug(
+						`Duplicate machineName "${libraryJson.machineName}" found in repository ${repo.name}. Skipping this entry.`
+					);
+					continue;
+				}
+				libraryRepoMap[libraryJson.machineName] = `${owner}/${repo.name}`;
 			}
 		}
 
@@ -94,24 +145,24 @@ export class H5pGitHubClient {
 	}
 
 	private async getLibraryJsonFromRepo(
-		organization: string,
+		owner: string,
 		repo: GitHubRepository
 	): Promise<AxiosResponse<GitHubContentTreeResponse> | undefined> {
-		let result: AxiosResponse<GitHubContentTreeResponse> | undefined;
-		const url = `https://api.github.com/repos/${organization}/${repo.name}/contents/library.json`;
+		const url = `https://api.github.com/repos/${owner}/${repo.name}/contents/library.json`;
 		try {
 			const headers = this.getHeaders();
-			result = await axios.get(url, { headers });
+
+			return await axios.get(url, { headers });
 		} catch (error: unknown) {
 			if (this.isObjectWithResponseStatus(error) && error.response.status === 404) {
-				console.error(`library.json does not exist in repository ${repo.name}.`);
+				this.logger.debug(`library.json does not exist in repository ${repo.name}.`);
 			} else {
-				console.error(`Unknown error fetching library.json from repository ${repo.name}:`, error);
+				const message = error instanceof Error ? error.message : 'Unknown error';
+				this.logger.error(`Error fetching library.json from repository ${repo.name}: ${message}`);
 			}
-			result = undefined;
-		}
 
-		return result;
+			return undefined;
+		}
 	}
 
 	private isObjectWithResponseStatus(obj: unknown): obj is { response: { status: number } } {
@@ -127,7 +178,7 @@ export class H5pGitHubClient {
 
 	private checkContentOfLibraryJson(data: GitHubContentTreeResponse): boolean {
 		if (!data || !data.content || typeof data.content !== 'string') {
-			console.error('library.json content is missing or not a string.');
+			this.logger.debug('library.json content is missing or not a string.');
 
 			return false;
 		}
@@ -135,7 +186,39 @@ export class H5pGitHubClient {
 		return true;
 	}
 
+	public async fetchLibraryJsonFromBranch(repoName: string, branch: string): Promise<H5PLibrary | undefined> {
+		const [owner, repo] = repoName.split('/');
+		const url = `https://api.github.com/repos/${owner}/${repo}/contents/library.json?ref=${branch}`;
+
+		try {
+			const headers = this.getHeaders();
+			const response: AxiosResponse<GitHubContentTreeResponse> = await axios.get(url, { headers });
+
+			if (!this.checkContentOfLibraryJson(response.data) || response.data.content === undefined) {
+				return undefined;
+			}
+
+			const libraryJsonContent = Buffer.from(response.data.content, 'base64').toString('utf-8');
+			const libraryJson = JSON.parse(libraryJsonContent) as H5PLibrary;
+
+			return libraryJson;
+		} catch (error: unknown) {
+			if (this.isObjectWithResponseStatus(error) && error.response.status === 404) {
+				this.logger.debug(`library.json does not exist in ${repoName} on branch ${branch}.`);
+			} else {
+				const message = error instanceof Error ? error.message : 'Unknown error';
+				this.logger.debug(`Error fetching library.json from ${repoName}@${branch}: ${message}`);
+			}
+
+			return undefined;
+		}
+	}
+
 	public async fetchAllTags(repoName: string, options: GitHubClientOptions = { maxRetries: 3 }): Promise<string[]> {
+		if (this.tagsCache.has(repoName)) {
+			return this.tagsCache.get(repoName)!;
+		}
+
 		const [owner, repo] = repoName.split('/');
 		const perPage = 100;
 		let page = 1;
@@ -149,7 +232,9 @@ export class H5pGitHubClient {
 			try {
 				response = await this.fetch(url, options);
 			} catch (error) {
-				console.error(`Failed to fetch tags for ${owner}/${repo}.`, error);
+				const message = error instanceof Error ? error.message : 'Unknown error';
+				this.logger.error(`Failed to fetch tags for ${owner}/${repo}: ${message}`);
+
 				return [];
 			}
 
@@ -159,7 +244,12 @@ export class H5pGitHubClient {
 			page++;
 		} while (hasMore);
 
+		this.tagsCache.set(repoName, allTags);
 		return allTags;
+	}
+
+	public clearTagsCache(): void {
+		this.tagsCache = new Map();
 	}
 
 	private buildTagsUrl(owner: string, repo: string, page: number, perPage: number): string {
@@ -171,25 +261,38 @@ export class H5pGitHubClient {
 	}
 
 	public async downloadTag(library: string, tag: string, filePath: string): Promise<void> {
+		return this.downloadArchive(library, 'tags', tag, filePath);
+	}
+
+	public async downloadBranch(library: string, branch: string, filePath: string): Promise<void> {
+		return this.downloadArchive(library, 'heads', branch, filePath);
+	}
+
+	private async downloadArchive(
+		library: string,
+		refType: 'tags' | 'heads',
+		ref: string,
+		filePath: string
+	): Promise<void> {
 		const [owner, repo] = library.split('/');
-		const url = `https://github.com/${owner}/${repo}/archive/refs/tags/${tag}.zip`;
+		const url = this.buildArchiveUrl(owner, repo, refType, ref);
 
 		try {
 			const response = await this.fetchContent(url);
+			await FileSystemHelper.writeStreamToFile(response.data, filePath);
 
-			// TODO: Move this to FileSystemHelper?
-			const writer = createWriteStream(filePath);
-			response.data.pipe(writer);
-
-			await new Promise<void>((resolve, reject) => {
-				writer.on('finish', () => resolve());
-				writer.on('error', (err) => reject(err));
-			});
-
-			console.log(`Downloaded ${tag} of ${library} to ${filePath}`);
+			const refLabel = refType === 'tags' ? 'tag' : 'branch';
+			this.logger.debug(`Downloaded ${refLabel} ${ref} of ${library}`);
 		} catch (error) {
-			console.error(`Unknown error while downloading ${library} at tag ${tag}:`, error);
+			const message = error instanceof Error ? error.message : 'Unknown error';
+			const refLabel = refType === 'tags' ? 'tag' : 'branch';
+			this.logger.error(`Error downloading ${refLabel} ${ref} from ${library}: ${message}`);
+			throw error instanceof Error ? error : new Error(message);
 		}
+	}
+
+	private buildArchiveUrl(owner: string, repo: string, refType: 'tags' | 'heads', ref: string): string {
+		return `https://github.com/${owner}/${repo}/archive/refs/${refType}/${ref}.zip`;
 	}
 
 	private async fetch(url: string, options: GitHubClientOptions): Promise<AxiosResponse<GitHubTagResponse>> {
@@ -203,7 +306,8 @@ export class H5pGitHubClient {
 				break;
 			} catch (error) {
 				attempt++;
-				console.error(`Error getting data from ${url} (Attempt ${attempt}/${options.maxRetries}):`, error);
+				const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+				this.logger.error(`Error getting data from ${url} (Attempt ${attempt}/${options.maxRetries}): ${errorMessage}`);
 				if (attempt === options.maxRetries) {
 					throw new Error(`Failed to get data from ${url} after ${options.maxRetries} attempts.`);
 				}
@@ -212,7 +316,7 @@ export class H5pGitHubClient {
 		}
 
 		if (!response || response.status < 200 || response.status >= 300) {
-			throw new Error(`GitHub API request failed${response ? ` with status ${response.status}` : ''}`);
+			throw new Error('GitHub API request failed' + (response ? ' with status ' + response.status : ''));
 		}
 
 		return response;
@@ -239,5 +343,10 @@ export class H5pGitHubClient {
 	private getHeaders(): Record<string, string> {
 		const headers: Record<string, string> = this.token ? { Authorization: `token ${this.token}` } : {};
 		return headers;
+	}
+
+	public mapMachineNameToGitHubRepo(library: string): string | undefined {
+		const repo = this.libraryRepoMap[library];
+		return repo;
 	}
 }

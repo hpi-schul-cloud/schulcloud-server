@@ -90,7 +90,7 @@ describe(CourseSynchronizationHistoryMirkoOrmRepo.name, () => {
 				});
 				const otherHistoryEntity = courseSynchronizationHistoryEntityFactory.build();
 
-				await em.persistAndFlush([...historyEntities, otherHistoryEntity]);
+				await em.persist([...historyEntities, otherHistoryEntity]).flush();
 
 				const expectedDOs = historyEntities.map((entity: CourseSynchronizationHistoryEntity) =>
 					CourseSynchronizationHistoryMapper.mapEntityToDO(entity)
@@ -113,7 +113,7 @@ describe(CourseSynchronizationHistoryMirkoOrmRepo.name, () => {
 			const setup = async () => {
 				const otherHistoryEntity = courseSynchronizationHistoryEntityFactory.build();
 
-				await em.persistAndFlush([otherHistoryEntity]);
+				await em.persist([otherHistoryEntity]).flush();
 
 				return { externalGroupId: 'test-external-group-id' };
 			};
@@ -134,7 +134,7 @@ describe(CourseSynchronizationHistoryMirkoOrmRepo.name, () => {
 				const syncHistoryEntities = courseSynchronizationHistoryEntityFactory.buildList(3);
 				const otherEntities = courseSynchronizationHistoryEntityFactory.buildList(3);
 
-				await em.persistAndFlush([...syncHistoryEntities, ...otherEntities]);
+				await em.persist([...syncHistoryEntities, ...otherEntities]).flush();
 				em.clear();
 
 				const syncHistoryDOs = syncHistoryEntities.map((entity: CourseSynchronizationHistoryEntity) =>
@@ -170,7 +170,7 @@ describe(CourseSynchronizationHistoryMirkoOrmRepo.name, () => {
 				const syncHistoryEntity = courseSynchronizationHistoryEntityFactory.build();
 				const otherEntities = courseSynchronizationHistoryEntityFactory.buildList(3);
 
-				await em.persistAndFlush([syncHistoryEntity, ...otherEntities]);
+				await em.persist([syncHistoryEntity, ...otherEntities]).flush();
 				em.clear();
 
 				const syncHistoryDO = courseSynchronizationHistoryFactory.build({

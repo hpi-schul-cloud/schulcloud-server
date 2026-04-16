@@ -3,7 +3,6 @@ import { AppendedAttachment, Mail, MailService } from '@infra/mail';
 import { Inject, Injectable } from '@nestjs/common';
 import { HELPDESK_CONFIG_TOKEN, HelpdeskConfig } from '../../helpdesk-config';
 import { HelpdeskProblemProps, HelpdeskWishProps, UserContextProps, UserDeviceProps } from '../interface';
-import { SendEmailLoggable } from '../loggable';
 import { TextFormatter } from './text-formatter.helper';
 
 @Injectable()
@@ -23,7 +22,7 @@ export class HelpdeskService {
 		files?: Express.Multer.File[]
 	): Promise<void> {
 		const plainTextContent = TextFormatter.createProblemText(problem, userContext, userDevice);
-		await this.sendEmail(
+		await this.userSendEmailToSupport(
 			[this.config.problemEmailAddress],
 			problem.replyEmail,
 			problem.subject,
@@ -39,10 +38,16 @@ export class HelpdeskService {
 		files?: Express.Multer.File[]
 	): Promise<void> {
 		const plainTextContent = TextFormatter.createWishText(wish, userContext, userDevice);
-		await this.sendEmail([this.config.wishEmailAddress], wish.replyEmail, wish.subject, plainTextContent, files);
+		await this.userSendEmailToSupport(
+			[this.config.wishEmailAddress],
+			wish.replyEmail,
+			wish.subject,
+			plainTextContent,
+			files
+		);
 	}
 
-	private async sendEmail(
+	private async userSendEmailToSupport(
 		recipients: string[],
 		replyTo: string,
 		subject: string,
@@ -58,13 +63,10 @@ export class HelpdeskService {
 				attachments,
 			},
 			replyTo: [replyTo],
+			from: this.config.fromEmailAddress,
 		};
 
-		if (this.config.shouldSendEmail) {
-			await this.emailService.send(email);
-		} else {
-			this.logger.debug(new SendEmailLoggable(recipients, replyTo, subject, plainTextContent, !!attachments));
-		}
+		await this.emailService.send(email);
 	}
 
 	private getAttachments(files: Express.Multer.File[]): AppendedAttachment[] {

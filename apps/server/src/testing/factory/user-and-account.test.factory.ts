@@ -19,6 +19,7 @@ interface UserParams {
 	externalId?: string;
 	language?: LanguageType;
 	secondarySchools?: UserSchoolEmbeddable[];
+	discoverable?: boolean;
 }
 
 interface AccountParams {
@@ -30,7 +31,16 @@ export interface UserAndAccountParams extends UserParams, AccountParams {}
 
 export class UserAndAccountTestFactory {
 	private static getUserParams(params: UserAndAccountParams): UserParams {
-		const userParams = _.pick(params, 'firstName', 'lastName', 'email', 'school', 'externalId', 'secondarySchools');
+		const userParams = _.pick(
+			params,
+			'firstName',
+			'lastName',
+			'email',
+			'school',
+			'externalId',
+			'secondarySchools',
+			'discoverable'
+		);
 		return userParams;
 	}
 
@@ -104,7 +114,7 @@ export class UserAndAccountTestFactory {
 	}
 
 	public static buildByRole(
-		roleName: 'administrator' | 'externalPerson' | 'teacher' | 'student',
+		roleName: 'administrator' | 'externalPerson' | 'teacherAndAdmin' | 'teacher' | 'student',
 		params: UserAndAccountParams = {},
 		additionalPermissions: Permission[] = []
 	): { account: AccountEntity; user: User } {
@@ -113,8 +123,18 @@ export class UserAndAccountTestFactory {
 		return { account, user };
 	}
 
+	public static buildTeacherAndAdmin(params: UserAndAccountParams = {}): {
+		account: AccountEntity;
+		user: User;
+	} {
+		const user = userFactory.asTeacherAndAdmin().buildWithId(UserAndAccountTestFactory.getUserParams(params));
+		const account = UserAndAccountTestFactory.buildAccount(user, params);
+
+		return { account, user };
+	}
+
 	private static buildUser(
-		roleName: 'administrator' | 'externalPerson' | 'teacher' | 'student',
+		roleName: 'administrator' | 'externalPerson' | 'teacherAndAdmin' | 'teacher' | 'student',
 		params: UserAndAccountParams = {},
 		additionalPermissions: Permission[] = []
 	): User {
@@ -125,6 +145,8 @@ export class UserAndAccountTestFactory {
 				return userFactory
 					.asExternalPerson(additionalPermissions)
 					.buildWithId(UserAndAccountTestFactory.getUserParams(params));
+			case 'teacherAndAdmin':
+				return userFactory.asTeacherAndAdmin().buildWithId(UserAndAccountTestFactory.getUserParams(params));
 			case 'teacher':
 				return userFactory
 					.asTeacher(additionalPermissions)

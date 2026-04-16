@@ -1,4 +1,5 @@
 import {
+	AUTHORIZATION_CONFIG_TOKEN,
 	AuthorizationContext,
 	AuthorizationContextBuilder,
 	AuthorizationHelper,
@@ -8,11 +9,11 @@ import { schoolEntityFactory } from '@modules/school/testing';
 import { schoolFactory } from '@modules/school/testing/school.factory';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
+import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface/permission.enum';
 import { setupEntities } from '@testing/database';
 import { SchoolRule } from './school.rule';
-import { NotImplementedException } from '@nestjs/common';
 
 const TEST_PERMISSION = 'TEST_PERMISSION' as Permission;
 
@@ -25,7 +26,12 @@ describe('SchoolRule', () => {
 		await setupEntities([User]);
 
 		module = await Test.createTestingModule({
-			providers: [SchoolRule, AuthorizationHelper, AuthorizationInjectionService],
+			providers: [
+				SchoolRule,
+				AuthorizationHelper,
+				AuthorizationInjectionService,
+				{ provide: AUTHORIZATION_CONFIG_TOKEN, useValue: {} },
+			],
 		}).compile();
 
 		rule = await module.get(SchoolRule);

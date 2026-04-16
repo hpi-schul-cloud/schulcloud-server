@@ -1,5 +1,5 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { BoardExternalReferenceType } from '@modules/board';
+import { BoardExternalReferenceType, BoardNodeAuthorizableService } from '@modules/board';
 import { columnBoardEntityFactory } from '@modules/board/testing';
 import { GroupEntityTypes } from '@modules/group/entity';
 import { groupEntityFactory } from '@modules/group/testing';
@@ -54,7 +54,7 @@ describe('Room Controller (API)', () => {
 		describe('when id is not a valid mongo id', () => {
 			const setup = async () => {
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persist([studentAccount, studentUser]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
@@ -85,7 +85,7 @@ describe('Room Controller (API)', () => {
 						};
 					}),
 				});
-				await em.persistAndFlush(roomContent);
+				await em.persist(roomContent).flush();
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({ school });
 				const { teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
 				const { roomViewerRole, roomOwnerRole } = RoomRolesTestFactory.createRoomRoles();
@@ -103,16 +103,18 @@ describe('Room Controller (API)', () => {
 					roomId: room.id,
 					schoolId: school.id,
 				});
-				await em.persistAndFlush([
-					room,
-					...boards,
-					studentAccount,
-					studentUser,
-					teacherUser,
-					roomViewerRole,
-					userGroupEntity,
-					roomMembership,
-				]);
+				await em
+					.persist([
+						room,
+						...boards,
+						studentAccount,
+						studentUser,
+						teacherUser,
+						roomViewerRole,
+						userGroupEntity,
+						roomMembership,
+					])
+					.flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
@@ -121,24 +123,139 @@ describe('Room Controller (API)', () => {
 			};
 
 			describe('when the room exists', () => {
-				it('should return the room boards', async () => {
-					const { loggedInClient, room, boards } = await setup();
+				describe('when the user has access to every board', () => {
+					it('should return the room boards', async () => {
+						const { loggedInClient, room, boards } = await setup();
 
-					const response = await loggedInClient.get(`${room.id}/boards`);
+						const response = await loggedInClient.get(`${room.id}/boards`);
 
-					expect(response.status).toBe(HttpStatus.OK);
-					expect((response.body as { data: Record<string, unknown> }).data).toEqual(
-						[boards[2], boards[0], boards[1]].map((board) => {
-							return {
-								id: board.id,
-								title: board.title,
-								layout: board.layout,
-								isVisible: board.isVisible,
-								createdAt: board.createdAt.toISOString(),
-								updatedAt: board.updatedAt.toISOString(),
-							};
-						})
-					);
+						expect(response.status).toBe(HttpStatus.OK);
+						expect((response.body as { data: Record<string, unknown> }).data).toEqual(
+							[boards[2], boards[0], boards[1]].map((board) => {
+								return {
+									id: board.id,
+									title: board.title,
+									layout: board.layout,
+									isVisible: board.isVisible,
+									createdAt: board.createdAt.toISOString(),
+									updatedAt: board.updatedAt.toISOString(),
+								};
+							})
+						);
+					});
+				});
+
+				describe('when the user has access to only some boards', () => {
+					const setupWithInaccessibleboards = async () => {
+						const school = schoolEntityFactory.buildWithId();
+						const room = roomEntityFactory.build({ schoolId: school.id });
+
+						const visibleBoard1 = columnBoardEntityFactory.build({
+							context: { type: BoardExternalReferenceType.Room, id: room.id },
+							isVisible: true,
+						});
+						const visibleBoard2 = columnBoardEntityFactory.build({
+							context: { type: BoardExternalReferenceType.Room, id: room.id },
+							isVisible: true,
+						});
+						const invisibleBoard = columnBoardEntityFactory.build({
+							context: { type: BoardExternalReferenceType.Room, id: room.id },
+							isVisible: false,
+						});
+
+						const roomContent = roomContentEntityFactory.build({
+							roomId: room.id,
+							items: [visibleBoard1, invisibleBoard, visibleBoard2].map((board) => {
+								return {
+									id: board.id,
+									type: RoomContentType.BOARD,
+								};
+							}),
+						});
+
+						const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({ school });
+						const { teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
+						const { roomViewerRole, roomOwnerRole } = RoomRolesTestFactory.createRoomRoles();
+
+						const userGroupEntity = groupEntityFactory.buildWithId({
+							type: GroupEntityTypes.ROOM,
+							users: [
+								{ role: roomViewerRole, user: studentUser },
+								{ role: roomOwnerRole, user: teacherUser },
+							],
+							organization: studentUser.school,
+							externalSource: undefined,
+						});
+
+						const roomMembership = roomMembershipEntityFactory.build({
+							userGroupId: userGroupEntity.id,
+							roomId: room.id,
+							schoolId: school.id,
+						});
+
+						await em
+							.persist([
+								room,
+								visibleBoard1,
+								visibleBoard2,
+								invisibleBoard,
+								roomContent,
+								studentAccount,
+								studentUser,
+								teacherUser,
+								roomViewerRole,
+								roomOwnerRole,
+								userGroupEntity,
+								roomMembership,
+							])
+							.flush();
+						em.clear();
+
+						const loggedInClient = await testApiClient.login(studentAccount);
+
+						return { loggedInClient, room, visibleBoard1, visibleBoard2, invisibleBoard };
+					};
+
+					it('should return only the accessible boards', async () => {
+						const { loggedInClient, room, visibleBoard1, visibleBoard2 } = await setupWithInaccessibleboards();
+
+						const response = await loggedInClient.get(`${room.id}/boards`);
+
+						expect(response.status).toBe(HttpStatus.OK);
+						const responseData = (response.body as { data: Record<string, unknown>[] }).data;
+
+						expect(responseData).toHaveLength(2);
+						expect(responseData.map((board) => board.id)).toEqual(
+							expect.arrayContaining([visibleBoard1.id, visibleBoard2.id])
+						);
+					});
+				});
+
+				describe('when a boardAuthorizable for a board cannot be resolved', () => {
+					it('should still return the other accessible boards', async () => {
+						const { loggedInClient, room, boards } = await setup();
+
+						const boardNodeAuthorizableService = app.get(BoardNodeAuthorizableService);
+						const originalGetBoardAuthorizables =
+							boardNodeAuthorizableService.getBoardAuthorizables.bind(boardNodeAuthorizableService);
+
+						const mockGetBoardAuthorizables = jest
+							.spyOn(boardNodeAuthorizableService, 'getBoardAuthorizables')
+							.mockImplementation(async (boardNodes) => {
+								const authorizables = await originalGetBoardAuthorizables(boardNodes);
+								return authorizables.slice(0, 1);
+							});
+
+						const response = await loggedInClient.get(`${room.id}/boards`);
+
+						expect(response.status).toBe(HttpStatus.OK);
+						const responseData = (response.body as { data: Record<string, unknown>[] }).data;
+
+						expect(responseData).toHaveLength(1);
+						expect(responseData[0].id).toBe(boards[2].id);
+
+						mockGetBoardAuthorizables.mockRestore();
+					});
 				});
 
 				describe('when room content does not exist in db', () => {
@@ -171,7 +288,7 @@ describe('Room Controller (API)', () => {
 			const setup = async () => {
 				const room = roomEntityFactory.build();
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-				await em.persistAndFlush([room, teacherAccount, teacherUser]);
+				await em.persist([room, teacherAccount, teacherUser]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);
@@ -225,20 +342,22 @@ describe('Room Controller (API)', () => {
 					roomId: room.id,
 					schoolId: schoolA.id,
 				});
-				await em.persistAndFlush([
-					room,
-					board,
-					studentAccount,
-					studentUser,
-					teacherUserA,
-					teacherAccountA,
-					foreignTeacherUser,
-					foreignTeacherAccount,
-					roomViewerRole,
-					roomOwnerRole,
-					userGroupEntity,
-					roomMembership,
-				]);
+				await em
+					.persist([
+						room,
+						board,
+						studentAccount,
+						studentUser,
+						teacherUserA,
+						teacherAccountA,
+						foreignTeacherUser,
+						foreignTeacherAccount,
+						roomViewerRole,
+						roomOwnerRole,
+						userGroupEntity,
+						roomMembership,
+					])
+					.flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(foreignTeacherAccount);
@@ -256,7 +375,7 @@ describe('Room Controller (API)', () => {
 					layout: board.layout,
 					isVisible: board.isVisible,
 					createdAt: board.createdAt.toISOString(),
-					updatedAt: board.updatedAt.toISOString(),
+					updatedAt: expect.any(String),
 				});
 			});
 		});

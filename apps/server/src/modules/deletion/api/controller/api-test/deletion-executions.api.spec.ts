@@ -1,48 +1,46 @@
-import { adminApiServerConfig } from '@modules/server/admin-api-server.config';
-import { AdminApiServerTestModule } from '@modules/server/admin-api.server.app.module';
-import { INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { TestApiClient } from '@testing/test-api-client';
-import { cleanupCollections } from '@testing/cleanup-collections';
-import { deletionRequestEntityFactory } from '../../../repo/entity/testing';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { CalendarService } from '@infra/calendar';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { schoolEntityFactory } from '@modules/school/testing';
-import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
-import { classEntityFactory } from '@modules/class/entity/testing';
-import { courseEntityFactory, courseGroupEntityFactory } from '@modules/course/testing';
-import { schoolNewsFactory } from '@modules/news/testing';
-import { ComponentProperties, ComponentType, LessonEntity } from '@modules/lesson/repo';
-import { lessonFactory } from '@modules/lesson/testing';
-import { externalToolPseudonymEntityFactory } from '@modules/pseudonym/testing';
-import { SchoolEntity } from '@modules/school/repo';
-import { CourseEntity } from '@modules/course/repo';
-import { mediaBoardEntityFactory } from '@modules/board/testing';
+import { AccountEntity } from '@modules/account/repo';
 import { BoardExternalReferenceType } from '@modules/board';
 import { BoardNodeEntity } from '@modules/board/repo';
-import { submissionFactory, taskFactory } from '@modules/task/testing';
-import { Submission, Task } from '@modules/task/repo';
-import { ExternalToolPseudonymEntity } from '@modules/pseudonym/entity';
-import { AccountEntity } from '@modules/account/repo';
-import { User } from '@modules/user/repo';
-import { registrationPinEntityFactory } from '@modules/registration-pin/entity/testing';
-import { fileEntityFactory } from '@modules/files/entity/testing';
-import { FileOwnerModel } from '@modules/files/domain';
-import { RegistrationPinEntity } from '@modules/registration-pin/entity';
-import { FileEntity } from '@modules/files/entity';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { mediaBoardEntityFactory } from '@modules/board/testing';
+import { classEntityFactory } from '@modules/class/entity/testing';
+import { CourseEntity } from '@modules/course/repo';
+import { courseEntityFactory, courseGroupEntityFactory } from '@modules/course/testing';
+import { FileDO, FileRecordParentType, ScanStatus } from '@modules/files-storage-client';
 import { FilesStorageProducer } from '@modules/files-storage-client/service';
-import { CalendarService } from '@infra/calendar';
-import { RocketChatService } from '@modules/rocketchat/rocket-chat.service';
-import { FileDO, FileRecordParentType, ScanStatus } from '@infra/rabbitmq';
-import { rocketChatUserEntityFactory } from '@modules/rocketchat-user/entity/testing';
-import { DASHBOARD_REPO, IDashboardRepo } from '@modules/learnroom/repo/mikro-orm/dashboard.repo';
-import { DashboardEntity } from '@modules/learnroom/repo/mikro-orm/dashboard.entity';
-import { teamFactory, teamUserFactory } from '@modules/team/testing';
-import { TeamEntity } from '@modules/team/repo';
-import { groupEntityFactory } from '@modules/group/testing';
+import { FileOwnerModel } from '@modules/files/domain';
+import { FileEntity } from '@modules/files/entity';
+import { fileEntityFactory } from '@modules/files/entity/testing';
 import { GroupEntity } from '@modules/group/entity';
-import { roomArrangementEntityFactory } from '@modules/room/testing';
+import { groupEntityFactory } from '@modules/group/testing';
+import { DashboardEntity } from '@modules/learnroom/repo/mikro-orm/dashboard.entity';
+import { DASHBOARD_REPO, IDashboardRepo } from '@modules/learnroom/repo/mikro-orm/dashboard.repo';
+import { ComponentProperties, ComponentType, LessonEntity } from '@modules/lesson/repo';
+import { lessonFactory } from '@modules/lesson/testing';
+import { schoolNewsFactory } from '@modules/news/testing';
+import { ExternalToolPseudonymEntity } from '@modules/pseudonym/entity';
+import { externalToolPseudonymEntityFactory } from '@modules/pseudonym/testing';
+import { RegistrationPinEntity } from '@modules/registration-pin/entity';
+import { registrationPinEntityFactory } from '@modules/registration-pin/entity/testing';
 import { RoomArrangementEntity } from '@modules/room';
+import { roomArrangementEntityFactory } from '@modules/room/testing';
+import { SchoolEntity } from '@modules/school/repo';
+import { schoolEntityFactory } from '@modules/school/testing';
+import { AdminApiServerTestModule } from '@modules/server/admin-api.server.app.module';
+import { Submission, Task } from '@modules/task/repo';
+import { submissionFactory, taskFactory } from '@modules/task/testing';
+import { TeamEntity } from '@modules/team/repo';
+import { teamFactory, teamUserFactory } from '@modules/team/testing';
+import { User } from '@modules/user/repo';
+import { INestApplication } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
+import { cleanupCollections } from '@testing/cleanup-collections';
+import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
+import { TestApiClient } from '@testing/test-api-client';
+import { deletionRequestEntityFactory } from '../../../repo/entity/testing';
+import { USER_CONFIG_TOKEN } from '@modules/user/user.config';
 
 const baseRouteName = '/deletionExecutions';
 
@@ -53,14 +51,9 @@ describe(`deletionExecution (api)`, () => {
 	const API_KEY = 'someotherkey';
 	let filesStorageProducer: DeepMocked<FilesStorageProducer>;
 	let calendarService: DeepMocked<CalendarService>;
-	let rocketChatService: DeepMocked<RocketChatService>;
 	let dashboardRepo: IDashboardRepo;
 
 	beforeAll(async () => {
-		const config = adminApiServerConfig();
-		config.ADMIN_API__ALLOWED_API_KEYS = [API_KEY];
-		config.CALENDAR_SERVICE_ENABLED = true;
-
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [AdminApiServerTestModule],
 		})
@@ -68,8 +61,8 @@ describe(`deletionExecution (api)`, () => {
 			.useValue(createMock<FilesStorageProducer>())
 			.overrideProvider(CalendarService)
 			.useValue(createMock<CalendarService>())
-			.overrideProvider(RocketChatService)
-			.useValue(createMock<RocketChatService>())
+			.overrideProvider(USER_CONFIG_TOKEN)
+			.useValue({ calendarServiceEnabled: true })
 			.compile();
 
 		app = module.createNestApplication();
@@ -78,7 +71,6 @@ describe(`deletionExecution (api)`, () => {
 
 		filesStorageProducer = module.get(FilesStorageProducer);
 		calendarService = module.get(CalendarService);
-		rocketChatService = module.get(RocketChatService);
 		dashboardRepo = app.get(DASHBOARD_REPO);
 	});
 
@@ -96,7 +88,7 @@ describe(`deletionExecution (api)`, () => {
 				testApiClient = new TestApiClient(app, baseRouteName, API_KEY, true);
 				const deletionRequest = deletionRequestEntityFactory.build();
 
-				await em.persistAndFlush(deletionRequest);
+				await em.persist(deletionRequest).flush();
 				em.clear();
 
 				return { deletionRequest };
@@ -232,33 +224,32 @@ describe(`deletionExecution (api)`, () => {
 				};
 				filesStorageProducer.removeCreatorIdFromFileRecords.mockResolvedValueOnce([mockFileStorage]);
 
-				const rocketChatUser = rocketChatUserEntityFactory.buildWithId({ userId: studentUser.id });
-
 				const roomArrangement = roomArrangementEntityFactory.build({ userId: studentUser.id });
 
-				await em.persistAndFlush([
-					school,
-					teacherUser,
-					teacherAccount,
-					studentUser,
-					studentAccount,
-					course,
-					schoolClass,
-					courseGroup,
-					file,
-					group,
-					lesson,
-					news,
-					pseudonym,
-					mediaBoard,
-					task,
-					team,
-					submission,
-					groupSubmission,
-					registrationPin,
-					rocketChatUser,
-					roomArrangement,
-				]);
+				await em
+					.persist([
+						school,
+						teacherUser,
+						teacherAccount,
+						studentUser,
+						studentAccount,
+						course,
+						schoolClass,
+						courseGroup,
+						file,
+						group,
+						lesson,
+						news,
+						pseudonym,
+						mediaBoard,
+						task,
+						team,
+						submission,
+						groupSubmission,
+						registrationPin,
+						roomArrangement,
+					])
+					.flush();
 				em.clear();
 
 				const dashboard = await dashboardRepo.getUsersDashboard(teacherUser.id);
@@ -269,7 +260,7 @@ describe(`deletionExecution (api)`, () => {
 				const deletionRequestsStudent = deletionRequestEntityFactory.build({
 					targetRefId: studentUser.id,
 				});
-				await em.persistAndFlush([deletionRequestsTeacher, deletionRequestsStudent]);
+				await em.persist([deletionRequestsTeacher, deletionRequestsStudent]).flush();
 				const deletionRequestIds = [deletionRequestsTeacher.id, deletionRequestsStudent.id];
 
 				testApiClient = new TestApiClient(app, baseRouteName, API_KEY, true);
@@ -295,7 +286,6 @@ describe(`deletionExecution (api)`, () => {
 					submission,
 					groupSubmission,
 					registrationPin,
-					rocketChatUser,
 					roomArrangement,
 				};
 			};
@@ -320,7 +310,6 @@ describe(`deletionExecution (api)`, () => {
 					team,
 					submission,
 					groupSubmission,
-					rocketChatUser,
 					roomArrangement,
 				} = await setup();
 
@@ -423,8 +412,6 @@ describe(`deletionExecution (api)`, () => {
 				const checkRoomArrangement = await em.findOne(RoomArrangementEntity, whereRoomArrangement);
 				expect(checkRoomArrangement).toBeNull();
 
-				expect(rocketChatService.deleteUser).toHaveBeenCalledWith(rocketChatUser.username);
-
 				expect(filesStorageProducer.removeCreatorIdFromFileRecords).toHaveBeenCalledWith(studentUser.id);
 				expect(filesStorageProducer.removeCreatorIdFromFileRecords).toHaveBeenCalledWith(teacherUser.id);
 
@@ -440,7 +427,7 @@ describe(`deletionExecution (api)`, () => {
 
 			const deletionRequest = deletionRequestEntityFactory.build();
 
-			await em.persistAndFlush(deletionRequest);
+			await em.persist(deletionRequest).flush();
 			em.clear();
 
 			return { deletionRequest, testApiClient };

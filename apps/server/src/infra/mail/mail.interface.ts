@@ -40,7 +40,7 @@ export interface Mail {
 
 	recipients: string[];
 
-	from?: string;
+	from: string;
 
 	cc?: string[];
 

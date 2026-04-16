@@ -55,7 +55,7 @@ describe('Submission Controller (API)', () => {
 				const courseGroup = courseGroupEntityFactory.buildWithId();
 				const submission = submissionFactory.buildWithId({ task, student: teacherUser, grade: 97, courseGroup });
 
-				await em.persistAndFlush([submission, teacherAccount, teacherUser]);
+				await em.persist([submission, teacherAccount, teacherUser]).flush();
 				em.clear();
 
 				const loggedInClient = await apiClient.login(teacherAccount);
@@ -93,7 +93,7 @@ describe('Submission Controller (API)', () => {
 				const courseGroup = courseGroupEntityFactory.buildWithId();
 				const submission = submissionFactory.buildWithId({ task, student: teacherUser, grade: 97, courseGroup });
 
-				await em.persistAndFlush([submission, teacherAccount, teacherUser]);
+				await em.persist([submission, teacherAccount, teacherUser]).flush();
 				em.clear();
 
 				const loggedInClient = await apiClient.login(teacherAccount);
@@ -123,7 +123,7 @@ describe('Submission Controller (API)', () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 				const submission = submissionFactory.buildWithId({ task });
 
-				await em.persistAndFlush([submission, teacherUser, teacherAccount]);
+				await em.persist([submission, teacherUser, teacherAccount]).flush();
 				em.clear();
 
 				const loggedInClient = await apiClient.login(teacherAccount);
@@ -189,7 +189,7 @@ describe('Submission Controller (API)', () => {
 				const task = taskFactory.buildWithId();
 				const submission = submissionFactory.buildWithId({ task, student: studentUser, grade: 97 });
 
-				await em.persistAndFlush([submission, studentUser, studentAccount]);
+				await em.persist([submission, studentUser, studentAccount]).flush();
 				em.clear();
 
 				const loggedInClient = await apiClient.login(studentAccount);
@@ -216,7 +216,7 @@ describe('Submission Controller (API)', () => {
 				const task = taskFactory.buildWithId();
 				const submission = submissionFactory.buildWithId({ task, student: studentUser, grade: 97 });
 
-				await em.persistAndFlush([submission, studentUser, studentAccount]);
+				await em.persist([submission, studentUser, studentAccount]).flush();
 				em.clear();
 
 				const loggedInClient = await apiClient.login(studentAccount);
@@ -246,7 +246,7 @@ describe('Submission Controller (API)', () => {
 				const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent();
 				const submission = submissionFactory.buildWithId({ task });
 
-				await em.persistAndFlush([submission, studentUser, studentAccount]);
+				await em.persist([submission, studentUser, studentAccount]).flush();
 				em.clear();
 
 				const loggedInClient = await apiClient.login(studentAccount);
@@ -269,7 +269,7 @@ describe('Submission Controller (API)', () => {
 				const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent();
 				const submission = submissionFactory.buildWithId({ task });
 
-				await em.persistAndFlush([submission, studentUser, studentAccount]);
+				await em.persist([submission, studentUser, studentAccount]).flush();
 				em.clear();
 
 				const loggedInClient = await apiClient.login(studentAccount);

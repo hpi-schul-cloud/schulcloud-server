@@ -1,5 +1,6 @@
 import { IFullLibraryName } from '@lumieducation/h5p-server/build/src/types';
 import { FileSystemHelper } from '../helper/file-system.helper';
+import { h5pLogger } from '../helper/h5p-logger.helper';
 import { S3ClientHelper } from '../helper/s3-client.helper';
 import { H5PLibrary } from '../interface/h5p-library';
 
@@ -11,6 +12,7 @@ type VersionUpdate = {
 export class H5pLibraryUploaderService {
 	tempFolderPath: string;
 	s3ClientHelper: S3ClientHelper;
+	private readonly logger = h5pLogger;
 
 	constructor(tempFolderPath?: string) {
 		if (!tempFolderPath) {
@@ -27,19 +29,11 @@ export class H5pLibraryUploaderService {
 
 	public async uploadLibraries(): Promise<void> {
 		const folders: string[] = FileSystemHelper.getAllFolders(this.tempFolderPath);
-		console.log(`Found ${folders.length} folders in the temporary directory.`);
+		this.logger.info(`Found ${folders.length} folders in the temporary directory.`);
 		for (const folder of folders) {
-			this.logFolderBanner(folder);
+			this.logger.banner(folder);
 			await this.uploadLibrary(folder);
 		}
-	}
-
-	private logFolderBanner(folderName: string): void {
-		const name = `*   ${folderName}   *`;
-		const border = '*'.repeat(name.length);
-		console.log(border);
-		console.log(name);
-		console.log(border);
 	}
 
 	private async uploadLibrary(folderName: string): Promise<void> {
@@ -47,7 +41,7 @@ export class H5pLibraryUploaderService {
 		if (!FileSystemHelper.pathExists(localFolderPath)) {
 			throw new Error(`Folder ${localFolderPath} does not exist.`);
 		}
-		const s3FolderPath = `h5p-libraries/${folderName}`;
+		const s3FolderPath = this.buildS3FolderPath(folderName);
 		const folderExistsInS3 = await this.checkFolderAlreadyExistsInS3(s3FolderPath);
 		if (folderExistsInS3) {
 			const isUpdateNeeded = await this.checkIfUpdateIsNeeded(localFolderPath, s3FolderPath);
@@ -55,16 +49,28 @@ export class H5pLibraryUploaderService {
 				await this.updateLibrary(isUpdateNeeded, localFolderPath, s3FolderPath);
 				return;
 			}
-			console.log(`No update needed / possible for library ${folderName}.`);
+			this.logger.skip(`No update needed for ${folderName}`);
 			return;
 		}
 		await this.addLibrary(localFolderPath, s3FolderPath);
 	}
 
+	private buildS3FolderPath(folderName: string): string {
+		const normalizedFolderName = folderName.replace(/-v(\d)/, '-$1');
+		const s3FolderPath = `h5p-libraries/${normalizedFolderName}`;
+
+		return s3FolderPath;
+	}
+
+	private ensureTrailingSlash(s3FolderPath: string): string {
+		return s3FolderPath.endsWith('/') ? s3FolderPath : `${s3FolderPath}/`;
+	}
+
 	private async checkFolderAlreadyExistsInS3(s3FolderPath: string): Promise<boolean> {
-		const objects = await this.s3ClientHelper.listObjects(s3FolderPath);
-		const folderExistsInS3 = Array.isArray(objects.Contents) && objects.Contents.length > 0;
-		return folderExistsInS3;
+		const prefix = this.ensureTrailingSlash(s3FolderPath);
+		const objects = await this.s3ClientHelper.listObjects(prefix, undefined, 1);
+
+		return Array.isArray(objects.Contents) && objects.Contents.length > 0;
 	}
 
 	private async checkIfUpdateIsNeeded(
@@ -90,19 +96,18 @@ export class H5pLibraryUploaderService {
 
 	private async getLibraryJsonFromS3(s3FolderPath: string): Promise<H5PLibrary | undefined> {
 		const s3LibraryJsonKey = `${s3FolderPath}/library.json`;
-		let s3LibraryJson: H5PLibrary | undefined;
 		try {
 			const s3LibraryContent = await this.s3ClientHelper.getFileContent(s3LibraryJsonKey);
-			s3LibraryJson = JSON.parse(s3LibraryContent.toString()) as H5PLibrary;
+
+			return JSON.parse(s3LibraryContent.toString()) as H5PLibrary;
 		} catch (error: unknown) {
 			if (this.isObjectWithAStringCode(error) && error.Code === 'NoSuchKey') {
-				console.error(`No library.json found in S3 at ${s3LibraryJsonKey}.`);
+				this.logger.debug(`No library.json found in S3 at ${s3LibraryJsonKey}.`);
 
 				return undefined;
 			}
+			throw error;
 		}
-
-		return s3LibraryJson;
 	}
 
 	private isObjectWithAStringCode(obj: unknown): obj is { Code: string } {
@@ -154,17 +159,16 @@ export class H5pLibraryUploaderService {
 	): Promise<void> {
 		try {
 			const { newVersion, oldVersion } = isUpdateNeeded;
-			console.log(
-				`Updating library ${localFolderPath} from version ${this.formatLibraryVersion(
-					oldVersion
-				)} to version ${this.formatLibraryVersion(newVersion)}`
+			this.logger.info(
+				`Updating from ${this.formatLibraryVersion(oldVersion)} to ${this.formatLibraryVersion(newVersion)}`
 			);
 			await this.deleteFolderFromS3(s3FolderPath);
-			console.log(`Deleted old version of library ${localFolderPath} from S3.`);
+			this.logger.debug(`Deleted old version from S3`);
 			await this.uploadLibraryToS3(localFolderPath, s3FolderPath);
-			console.log(`Library ${localFolderPath} updated successfully in S3.`);
+			this.logger.success(`Updated successfully`);
 		} catch (error) {
-			console.error(`Failed to update library ${localFolderPath} in S3:`, error);
+			const message = error instanceof Error ? error.message : 'Unknown error';
+			this.logger.error(`Failed to update: ${message}`);
 			throw error;
 		}
 	}
@@ -177,50 +181,75 @@ export class H5pLibraryUploaderService {
 
 	private async deleteFolderFromS3(s3FolderPath: string): Promise<void> {
 		try {
-			const deletedFiles = await this.s3ClientHelper.deleteFolder(s3FolderPath);
-			console.log(`Deleted ${deletedFiles.length} file(s) from S3 folder ${s3FolderPath}: ${deletedFiles.join(', ')}`);
+			const prefix = this.ensureTrailingSlash(s3FolderPath);
+			const deletedFiles = await this.s3ClientHelper.deleteFolder(prefix);
+			this.logger.debug(`Deleted ${deletedFiles.length} file(s) from S3`);
 		} catch (error) {
-			console.error(`Failed to delete folder ${s3FolderPath} from S3:`, error);
+			const message = error instanceof Error ? error.message : 'Unknown error';
+			this.logger.error(`Failed to delete folder from S3: ${message}`);
 			throw error;
 		}
 	}
 
 	private async addLibrary(localFolderPath: string, s3FolderPath: string): Promise<void> {
 		try {
-			console.log(`Adding library ${localFolderPath} to S3 at ${s3FolderPath}`);
+			this.logger.info(`Adding to S3...`);
 			await this.uploadLibraryToS3(localFolderPath, s3FolderPath);
-			console.log(`Library ${localFolderPath} added successfully to S3.`);
+			this.logger.success(`Added successfully`);
 		} catch (error) {
-			console.error(`Failed to add library ${localFolderPath} to S3:`, error);
+			const message = error instanceof Error ? error.message : 'Unknown error';
+			this.logger.error(`Failed to add to S3: ${message}`);
 			throw error;
 		}
 	}
 
 	private async uploadLibraryToS3(localFolderPath: string, s3FolderPath: string): Promise<void> {
-		try {
-			const uploadedFiles = await this.uploadFolderToS3Recursive(localFolderPath, s3FolderPath);
-			console.log(`Uploaded ${uploadedFiles.length} file(s) to S3: ${uploadedFiles.join(', ')}`);
-		} catch (error) {
-			console.error(`Failed to upload folder ${localFolderPath} to ${s3FolderPath} in S3:`, error);
-			throw error;
-		}
+		const uploadedFiles = await this.uploadFolderToS3Recursive(localFolderPath, s3FolderPath);
+		this.logger.debug(`Uploaded ${uploadedFiles.length} file(s) to S3`);
 	}
 
 	private async uploadFolderToS3Recursive(localDir: string, s3Prefix: string): Promise<string[]> {
+		const filesToUpload: { fullPath: string; s3Key: string }[] = [];
+		this.collectFilesForUpload(localDir, s3Prefix, filesToUpload);
+
+		const batchSize = 10;
 		const allUploadedFiles: string[] = [];
+
+		for (let i = 0; i < filesToUpload.length; i += batchSize) {
+			const batch = filesToUpload.slice(i, i + batchSize);
+			const uploadPromises = batch.map(async ({ fullPath, s3Key }) => {
+				try {
+					const fileContent = FileSystemHelper.readFileAsBuffer(fullPath);
+					await this.s3ClientHelper.uploadFile(s3Key, fileContent);
+					return s3Key;
+				} catch (error) {
+					const message = error instanceof Error ? error.message : String(error);
+					throw new Error(`Failed to upload file to S3. s3Key="${s3Key}", fullPath="${fullPath}": ${message}`);
+				}
+			});
+			const uploadedKeys = await Promise.all(uploadPromises);
+			allUploadedFiles.push(...uploadedKeys);
+		}
+
+		return allUploadedFiles;
+	}
+
+	private collectFilesForUpload(
+		localDir: string,
+		s3Prefix: string,
+		filesToUpload: { fullPath: string; s3Key: string }[]
+	): void {
 		const entries = FileSystemHelper.getAllFilesAndFolders(localDir);
 		for (const entry of entries) {
 			const fullPath = FileSystemHelper.buildPath(localDir, entry.name);
 			const s3Key = s3Prefix ? `${s3Prefix}/${entry.name}` : entry.name;
 			if (entry.isDirectory()) {
-				const uploadedFiles = await this.uploadFolderToS3Recursive(fullPath, s3Key);
-				allUploadedFiles.push(...uploadedFiles);
+				this.collectFilesForUpload(fullPath, s3Key, filesToUpload);
 			} else if (entry.isFile()) {
-				const fileContent = FileSystemHelper.readFile(fullPath);
-				await this.s3ClientHelper.uploadFile(s3Key, fileContent);
-				allUploadedFiles.push(s3Key);
+				filesToUpload.push({ fullPath, s3Key });
+			} else {
+				// Skip symlinks and other special file types
 			}
 		}
-		return allUploadedFiles;
 	}
 }

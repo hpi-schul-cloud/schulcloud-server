@@ -4,9 +4,9 @@ import { createMock } from '@golevelup/ts-jest';
 import Valkey from 'iovalkey';
 import * as util from 'util';
 import { InMemoryClient, ValkeyClient } from './clients';
-import { ValkeyFactory } from './valkey.factory';
-import { ValkeyMode } from './valkey.config';
 import { ConnectedLoggable } from './loggable';
+import { ValkeyMode } from './valkey.config';
+import { ValkeyFactory } from './valkey.factory';
 
 jest.mock('iovalkey');
 jest.mock('util');
@@ -23,7 +23,7 @@ describe(ValkeyFactory.name, () => {
 		describe('when config mode is in memory', () => {
 			const setup = () => {
 				const config = {
-					MODE: ValkeyMode.IN_MEMORY,
+					mode: ValkeyMode.IN_MEMORY,
 				};
 
 				return { config };
@@ -55,10 +55,10 @@ describe(ValkeyFactory.name, () => {
 				const sentinelPassword = 'sentinelPassword';
 
 				const config = {
-					MODE: ValkeyMode.CLUSTER,
-					SENTINEL_SERVICE_NAME: sentinelServiceName,
-					SENTINEL_NAME: sentinelName,
-					SENTINEL_PASSWORD: sentinelPassword,
+					mode: ValkeyMode.CLUSTER,
+					sentinelServiceName: sentinelServiceName,
+					sentinelName: sentinelName,
+					sentinelPassword: sentinelPassword,
 				};
 
 				const name1 = 'name1';
@@ -123,37 +123,37 @@ describe(ValkeyFactory.name, () => {
 					});
 
 					await expect(ValkeyFactory.build(config, logger, domainErrorHandler)).rejects.toThrow(
-						'Can not create valkey "sentinal" instance.'
+						'Can not create valkey "sentinel" instance.'
 					);
 				});
 
-				it('SENTINEL_NAME is missing', async () => {
+				it('sentinelName is missing', async () => {
 					const { config } = setup();
 					// @ts-expect-error Test only
-					config.SENTINEL_NAME = undefined;
+					config.sentinelName = undefined;
 
 					await expect(ValkeyFactory.build(config, logger, domainErrorHandler)).rejects.toThrow(
-						'SENTINEL_NAME is required for creating a Valkey Sentinel instance'
+						'sentinelName is required for creating a Valkey Sentinel instance'
 					);
 				});
 
-				it('SENTINEL_PASSWORD is missing', async () => {
+				it('sentinelPassword is missing', async () => {
 					const { config } = setup();
 					// @ts-expect-error Test only
-					config.SENTINEL_PASSWORD = undefined;
+					config.sentinelPassword = undefined;
 
 					await expect(ValkeyFactory.build(config, logger, domainErrorHandler)).rejects.toThrow(
-						'SENTINEL_PASSWORD is required for creating a Valkey Sentinel instance'
+						'sentinelPassword is required for creating a Valkey Sentinel instance'
 					);
 				});
 
-				it('SENTINEL_SERVICE_NAME is missing', async () => {
+				it('sentinelServiceName is missing', async () => {
 					const { config } = setup();
 					// @ts-expect-error Test only
-					config.SENTINEL_SERVICE_NAME = undefined;
+					config.sentinelServiceName = undefined;
 
 					await expect(ValkeyFactory.build(config, logger, domainErrorHandler)).rejects.toThrow(
-						'SENTINEL_SERVICE_NAME is required for service discovery'
+						'sentinelServiceName is required for service discovery'
 					);
 				});
 			});
@@ -162,8 +162,8 @@ describe(ValkeyFactory.name, () => {
 		describe('when config mode is single and uri exists', () => {
 			const setup = () => {
 				const config = {
-					MODE: ValkeyMode.SINGLE,
-					URI: 'redis://localhost:6379',
+					mode: ValkeyMode.SINGLE,
+					uri: 'redis://localhost:6379',
 				};
 
 				// @ts-expect-error Test only
@@ -185,15 +185,15 @@ describe(ValkeyFactory.name, () => {
 
 				await ValkeyFactory.build(config, logger, domainErrorHandler);
 
-				expect(constructorSpy).toHaveBeenCalledWith(config.URI);
+				expect(constructorSpy).toHaveBeenCalledWith(config.uri);
 			});
 
 			describe('when throws an error', () => {
 				it('URI is required for creating a new Valkey instance', async () => {
 					const { config } = setup();
-					config.URI = 'wrongURI';
+					config.uri = 'wrongURI';
 
-					await expect(ValkeyFactory.build(config, logger, domainErrorHandler)).rejects.toThrow('URI is not valid');
+					await expect(ValkeyFactory.build(config, logger, domainErrorHandler)).rejects.toThrow('uri is not valid');
 				});
 			});
 		});
@@ -201,17 +201,17 @@ describe(ValkeyFactory.name, () => {
 		describe('when config mode is single and uri undefined', () => {
 			const setup = () => {
 				const config = {
-					MODE: ValkeyMode.SINGLE,
-					URI: undefined,
+					mode: ValkeyMode.SINGLE,
+					uri: undefined,
 				};
 
 				return { config };
 			};
 
-			it('URI is required for creating a new Valkey instance', async () => {
+			it('uri is required for creating a new Valkey instance', async () => {
 				const { config } = setup();
 
-				await expect(ValkeyFactory.build(config, logger, domainErrorHandler)).rejects.toThrow('URI is not valid');
+				await expect(ValkeyFactory.build(config, logger, domainErrorHandler)).rejects.toThrow('uri is not valid');
 			});
 		});
 	});

@@ -35,16 +35,9 @@ describe('Users Admin Students Controller (API)', () => {
 		const studentAccount1 = accountFactory.withUser(studentUser1).build();
 		studentUser2 = userFactory.withRole(studentRole).buildWithId({ school });
 
-		await em.persistAndFlush([
-			studentRole,
-			school,
-			currentYear,
-			adminAccount,
-			adminUser,
-			studentUser1,
-			studentAccount1,
-			studentUser2,
-		]);
+		await em
+			.persist([studentRole, school, currentYear, adminAccount, adminUser, studentUser1, studentAccount1, studentUser2])
+			.flush();
 		em.clear();
 
 		loggedInAdminClient = await apiClient.login(adminAccount);

@@ -17,7 +17,7 @@ import { HttpService } from '@nestjs/axios';
 import { Inject, Injectable } from '@nestjs/common';
 import { AxiosResponse, isAxiosError } from 'axios';
 import { plainToClass } from 'class-transformer';
-import { validate, ValidationError } from 'class-validator';
+import { isURL, validate, ValidationError } from 'class-validator';
 import { lastValueFrom } from 'rxjs';
 import { MediaQueryBadResponseReport } from './interface';
 import {
@@ -121,6 +121,8 @@ export class BiloMediaClientAdapter {
 				return;
 			}
 
+			this.validateAndCorrectCoverUrls(response);
+
 			const validationErrors: ValidationError[] = await validate(plainToClass(BiloMediaQueryResponse, response));
 			if (validationErrors.length > 0) {
 				badResponseReports.push({ mediumId: response.query.id, status: response.status, validationErrors });
@@ -151,11 +153,28 @@ export class BiloMediaClientAdapter {
 		if (!response.data) {
 			throw new BiloMediaQueryUnprocessableResponseLoggableException();
 		}
+
+		this.validateAndCorrectCoverUrls(response);
+
 		const validationErrors: ValidationError[] = await validate(plainToClass(BiloMediaQueryResponse, response));
 		if (validationErrors.length > 0) {
 			throw new BiloMediaQueryBadResponseLoggableException([
 				{ mediumId: response.query.id, status: response.status, validationErrors },
 			]);
+		}
+	}
+
+	private validateAndCorrectCoverUrls(response: BiloMediaQueryResponse): ValidationError | void {
+		if (!isURL(response.data.coverSmall.href) && !isURL(response.data.cover.href)) {
+			// non-valid URLs should return empty strings (FE loads default logo instead)
+			response.data.coverSmall.href = '';
+			response.data.cover.href = '';
+		} else {
+			if (!isURL(response.data.coverSmall.href)) {
+				response.data.coverSmall.href = response.data.cover.href;
+			} else if (!isURL(response.data.cover.href)) {
+				response.data.cover.href = response.data.coverSmall.href;
+			}
 		}
 	}
 

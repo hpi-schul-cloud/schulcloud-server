@@ -60,7 +60,7 @@ describe('School (API)', () => {
 				});
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
-				await em.persistAndFlush([school, adminAccount, adminUser, system, schoolSystemOptions]);
+				await em.persist([school, adminAccount, adminUser, system, schoolSystemOptions]).flush();
 				em.clear();
 
 				const adminClient = await testApiClient.login(adminAccount);
@@ -105,7 +105,7 @@ describe('School (API)', () => {
 					},
 				});
 
-				await em.persistAndFlush([school, system, schoolSystemOptions]);
+				await em.persist([school, system, schoolSystemOptions]).flush();
 				em.clear();
 
 				return {
@@ -141,7 +141,7 @@ describe('School (API)', () => {
 				});
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
-				await em.persistAndFlush([school, adminAccount, adminUser, system]);
+				await em.persist([school, adminAccount, adminUser, system]).flush();
 				em.clear();
 
 				const adminClient = await testApiClient.login(adminAccount);
@@ -213,7 +213,7 @@ describe('School (API)', () => {
 				});
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 
-				await em.persistAndFlush([school, adminAccount, adminUser, system, schoolSystemOptions]);
+				await em.persist([school, adminAccount, adminUser, system, schoolSystemOptions]).flush();
 				em.clear();
 
 				const adminClient = await testApiClient.login(adminAccount);
@@ -274,7 +274,7 @@ describe('School (API)', () => {
 					systems: [system],
 				});
 
-				await em.persistAndFlush([school, system]);
+				await em.persist([school, system]).flush();
 				em.clear();
 
 				return {

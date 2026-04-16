@@ -60,16 +60,18 @@ describe('UserLoginMigrationRollbackController (API)', () => {
 				adminUser.previousExternalId = 'previousExternalId';
 				adminUser.lastLoginSystemChange = date;
 
-				await em.persistAndFlush([
-					sourceSystem,
-					targetSystem,
-					school,
-					userLoginMigration,
-					adminAccount,
-					adminUser,
-					superheroAccount,
-					superheroUser,
-				]);
+				await em
+					.persist([
+						sourceSystem,
+						targetSystem,
+						school,
+						userLoginMigration,
+						adminAccount,
+						adminUser,
+						superheroAccount,
+						superheroUser,
+					])
+					.flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(superheroAccount);

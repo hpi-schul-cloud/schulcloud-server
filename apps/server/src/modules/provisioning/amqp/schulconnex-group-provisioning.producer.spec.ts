@@ -1,18 +1,19 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { SchulconnexProvisioningEvents, SchulconnexProvisioningExchange } from '@infra/rabbitmq';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SchulconnexGroupProvisioningMessage, SchulconnexGroupRemovalMessage } from '../domain';
+import { PROVISIONING_EXCHANGE_CONFIG_TOKEN } from '../provisioning-exchange.config';
 import { externalGroupDtoFactory, externalSchoolDtoFactory } from '../testing';
 import { SchulconnexGroupProvisioningProducer } from './schulconnex-group-provisioning.producer';
+import { SchulconnexProvisioningEvents } from './schulconnex.exchange';
 
 describe(SchulconnexGroupProvisioningProducer.name, () => {
 	let module: TestingModule;
 	let producer: SchulconnexGroupProvisioningProducer;
-
 	let amqpConnection: DeepMocked<AmqpConnection>;
 
+	const exchangeName = 'provisioning-exchange';
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
@@ -20,6 +21,13 @@ describe(SchulconnexGroupProvisioningProducer.name, () => {
 				{
 					provide: AmqpConnection,
 					useValue: createMock<AmqpConnection>(),
+				},
+				{
+					provide: PROVISIONING_EXCHANGE_CONFIG_TOKEN,
+					useValue: {
+						exchangeName,
+						exchangeType: 'direct',
+					},
 				},
 			],
 		}).compile();
@@ -56,7 +64,7 @@ describe(SchulconnexGroupProvisioningProducer.name, () => {
 				await producer.provisonGroup(message);
 
 				expect(amqpConnection.publish).toHaveBeenCalledWith(
-					SchulconnexProvisioningExchange,
+					exchangeName,
 					SchulconnexProvisioningEvents.GROUP_PROVISIONING,
 					message
 				);
@@ -83,7 +91,7 @@ describe(SchulconnexGroupProvisioningProducer.name, () => {
 				await producer.removeUserFromGroup(message);
 
 				expect(amqpConnection.publish).toHaveBeenCalledWith(
-					SchulconnexProvisioningExchange,
+					exchangeName,
 					SchulconnexProvisioningEvents.GROUP_REMOVAL,
 					message
 				);

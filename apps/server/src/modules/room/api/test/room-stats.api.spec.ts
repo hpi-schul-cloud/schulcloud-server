@@ -1,27 +1,28 @@
 import { EntityManager } from '@mikro-orm/mongodb';
+import { AccountEntity } from '@modules/account/repo';
 import { GroupEntityTypes } from '@modules/group/entity/group.entity';
 import { groupEntityFactory } from '@modules/group/testing';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
+import { schoolSystemOptionsEntityFactory } from '@modules/legacy-school/testing';
 import { roomMembershipEntityFactory } from '@modules/room-membership/testing';
+import { ROOM_PUBLIC_API_CONFIG_TOKEN, RoomPublicApiConfig } from '@modules/room/room.config';
 import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
+import { SchoolEntity } from '@modules/school/repo';
 import { schoolEntityFactory } from '@modules/school/testing';
-import { ServerTestModule, serverConfig, type ServerConfig } from '@modules/server';
+import { ServerTestModule } from '@modules/server';
+import { User } from '@modules/user/repo';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { roomEntityFactory } from '../../testing/room-entity.factory';
-import { SchoolEntity } from '@modules/school/repo';
-import { User } from '@modules/user/repo';
-import { AccountEntity } from '@modules/account/repo';
-import { schoolSystemOptionsEntityFactory } from '@modules/legacy-school/testing';
-import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 
 describe('Room Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let testApiClient: TestApiClient;
-	let config: ServerConfig;
+	let config: RoomPublicApiConfig;
 
 	beforeAll(async () => {
 		const moduleFixture = await Test.createTestingModule({
@@ -33,12 +34,12 @@ describe('Room Controller (API)', () => {
 		em = app.get(EntityManager);
 		testApiClient = new TestApiClient(app, 'rooms/stats');
 
-		config = serverConfig();
+		config = moduleFixture.get<RoomPublicApiConfig>(ROOM_PUBLIC_API_CONFIG_TOKEN);
 	});
 
 	beforeEach(async () => {
 		await cleanupCollections(em);
-		config.FEATURE_ADMINISTRATE_ROOMS_ENABLED = true;
+		config.featureAdministrateRoomsEnabled = true;
 	});
 
 	afterAll(async () => {
@@ -76,7 +77,7 @@ describe('Room Controller (API)', () => {
 					schoolId: school.id,
 				});
 
-				await em.persistAndFlush([room, userGroupEntity, roomMembership]);
+				await em.persist([room, userGroupEntity, roomMembership]).flush();
 				em.clear();
 
 				return { room, userGroupEntity, roomMembership };
@@ -90,7 +91,7 @@ describe('Room Controller (API)', () => {
 					users.push(teacherUser);
 					accounts.push(teacherAccount);
 				}
-				await em.persistAndFlush([school, ...users, ...accounts]);
+				await em.persist([school, ...users, ...accounts]).flush();
 				em.clear();
 
 				return { school, users, accounts };
@@ -111,8 +112,8 @@ describe('Room Controller (API)', () => {
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
 				const { roomOwnerRole } = RoomRolesTestFactory.createRoomRoles();
 
-				await em.persistAndFlush([adminAccount, adminUser, roomOwnerRole, school, otherSchool, schoolSystemOptions]);
-				await em.persistAndFlush([roomViewerRole, roomOwnerRole]);
+				await em.persist([adminAccount, adminUser, roomOwnerRole, school, otherSchool, schoolSystemOptions]).flush();
+				await em.persist([roomViewerRole, roomOwnerRole]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(adminAccount);
@@ -123,7 +124,7 @@ describe('Room Controller (API)', () => {
 			describe('when the feature is disabled', () => {
 				it('should return a 403 error', async () => {
 					const { loggedInClient } = await setup();
-					config.FEATURE_ADMINISTRATE_ROOMS_ENABLED = false;
+					config.featureAdministrateRoomsEnabled = false;
 
 					const response = await loggedInClient.get();
 
@@ -251,7 +252,7 @@ describe('Room Controller (API)', () => {
 			const setup = async () => {
 				const room = roomEntityFactory.build();
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-				await em.persistAndFlush([room, teacherAccount, teacherUser]);
+				await em.persist([room, teacherAccount, teacherUser]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);

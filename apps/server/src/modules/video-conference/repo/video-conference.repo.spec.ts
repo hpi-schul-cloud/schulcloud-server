@@ -62,7 +62,7 @@ describe('Video Conference Repo', () => {
 	describe('findByScopeId', () => {
 		const setup = async () => {
 			const vcA = videoConferenceFactory.build();
-			await em.persistAndFlush(vcA);
+			await em.persist(vcA).flush();
 
 			return {
 				vcA,

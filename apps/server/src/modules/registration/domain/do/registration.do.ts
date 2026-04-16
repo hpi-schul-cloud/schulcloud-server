@@ -1,5 +1,5 @@
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { Mail, PlainTextMailContent } from '@infra/mail';
+import { RegistrationConfig } from '@modules/registration/registration.config';
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { EntityId } from '@shared/domain/types';
 
@@ -12,6 +12,7 @@ export interface RegistrationProps extends AuthorizableObject {
 	registrationSecret: string;
 	createdAt: Date;
 	updatedAt: Date;
+	resentAt?: Date;
 }
 
 export type RegistrationCreateProps = {
@@ -27,7 +28,9 @@ export class Registration extends DomainObject<RegistrationProps> {
 	}
 
 	public getProps(): RegistrationProps {
-		// Note: Propagated hotfix. Will be resolved with mikro-orm update. Look at the comment in board-node.do.ts.
+		// We need to make sure that only properties of type T are returned
+		// At runtime the props are a MikroORM entity that has additional non-persisted properties
+		// see @Property({ persist: false })
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore
@@ -72,6 +75,14 @@ export class Registration extends DomainObject<RegistrationProps> {
 		return this.props.updatedAt;
 	}
 
+	get resentAt(): Date | undefined {
+		return this.props.resentAt;
+	}
+
+	set resentAt(value: Date | undefined) {
+		this.props.resentAt = value;
+	}
+
 	public updateName(value: { firstName: string; lastName: string }): void {
 		this.props.firstName = value.firstName;
 		this.props.lastName = value.lastName;
@@ -82,7 +93,7 @@ export class Registration extends DomainObject<RegistrationProps> {
 			return;
 		}
 
-		this.props.roomIds.push(roomId);
+		this.props.roomIds = [...this.props.roomIds, roomId];
 	}
 
 	public removeRoomId(roomId: EntityId): void {
@@ -93,9 +104,9 @@ export class Registration extends DomainObject<RegistrationProps> {
 		return this.props.roomIds.length === 0;
 	}
 
-	public generateRegistrationMail(): Mail {
-		const mailContent = this.generateRegistrationMailContent();
-		const senderAddress = Configuration.get('SMTP_SENDER') as string;
+	public generateRegistrationMail(roomName: string, config: RegistrationConfig): Mail {
+		const mailContent = this.generateRegistrationMailContent(roomName, config);
+		const senderAddress = config.fromEmailAddress;
 		const completeMail: Mail = {
 			mail: mailContent,
 			recipients: [this.email],
@@ -104,20 +115,49 @@ export class Registration extends DomainObject<RegistrationProps> {
 		return completeMail;
 	}
 
-	private generateRegistrationLink(): string {
-		const hostUrl = Configuration.get('HOST') as string;
+	private generateRegistrationLink(config: RegistrationConfig): string {
+		const { hostUrl } = config;
 		const baseRegistrationUrl = `${hostUrl}/registration-external-members/`;
 		const registrationLink = `${baseRegistrationUrl}?registration-secret=${this.registrationSecret}`;
 
 		return registrationLink;
 	}
 
-	private generateRegistrationMailContent(): PlainTextMailContent {
-		const registrationLink = this.generateRegistrationLink();
+	private generateRegistrationMailContent(roomName: string, config: RegistrationConfig): PlainTextMailContent {
+		const stripTags = (html: string): string =>
+			html
+				.replace(/<hr\s*\/?>/gim, '\n\n------------\n\n')
+				.replace(/<(\/p>|<br\s*\/)>/gim, '\n')
+				.replace(/<\/?[^>]+(>|$)/g, '');
+
+		const productName = config.scTitle;
+		const subject = `${productName}: Einladung zur Registrierung und Zugriff auf den Raum ${roomName}`;
+		const registrationLink = this.generateRegistrationLink(config);
+
+		const germanHtml = `Hallo ${this.firstName} ${this.lastName},
+<p>dies ist eine Einladung, dem Raum ${roomName} beizutreten. Um den Raum betreten zu können, ist eine Registrierung in der ${productName} erforderlich. Bitte auf den folgenden Link klicken, um die Registrierung vorzunehmen:<br />
+${registrationLink}<br />
+Hinweis: Der Link sollte nicht weitergegeben und nur in einer sicheren Umgebung verwendet werden.<br />
+Nach der Registrierung wird der Zugriff auf den Raum ${roomName} sofort freigeschaltet.
+</p>
+Mit freundlichen Grüßen<br />
+${productName}-Team`;
+
+		const englishHtml = `Hello ${this.firstName} ${this.lastName},
+<p>This is an invitation to join the ${roomName} room. To enter the room, you must register with ${productName}. Please click on the following link to register:<br />
+${registrationLink}<br />
+Note: The link should not be shared and should only be used in a secure environment.<br />
+After registration, access to the room ${roomName} will be activated immediately.
+</p>
+Best regards,<br />
+${productName} team`;
+
+		const htmlContent = `<html><body><div lang="de">${germanHtml}</div><hr /><div lang="en">${englishHtml}</div></body></html>`;
+
 		const mailContent = {
-			subject: 'Einladung Externe Person',
-			plainTextContent: `Einladung für ${this.firstName} ${this.lastName} bitte nutze folgenden Link zur Registrierung: ${registrationLink}`,
-			htmlContent: `<p>Einladung für ${this.firstName} ${this.lastName}</p><p>Bitte nutze folgenden Link zur Registrierung: <a href="${registrationLink}">${registrationLink}</a></p>`,
+			subject,
+			plainTextContent: stripTags(htmlContent),
+			htmlContent: '',
 		};
 		return mailContent;
 	}

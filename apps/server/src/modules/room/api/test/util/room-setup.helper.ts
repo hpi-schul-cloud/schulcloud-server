@@ -12,13 +12,18 @@ import { SchoolEntity } from '@modules/school/repo';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { User, UserProperties } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
-import { Permission } from '@shared/domain/interface';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
+import {
+	adminPermissions,
+	externalPersonPermissions,
+	studentPermissions,
+	teacherPermissions,
+} from '@testing/user-role-permissions';
 import { roomEntityFactory } from '../../../testing/room-entity.factory';
 import { RoomRolesTestFactory } from '../../../testing/room-roles.test.factory';
 
-export type SchoolRoleString = 'administrator' | 'teacher' | 'student' | 'externalPerson';
+export type SchoolRoleString = 'administrator' | 'teacher' | 'teacherAndAdmin' | 'student' | 'externalPerson';
 export type UserSetupCompact = [
 	string,
 	'sameSchool' | 'otherSchool',
@@ -30,7 +35,7 @@ export type UserSetup = {
 	name: string;
 	school: 'sameSchool' | 'otherSchool';
 	schoolRoleNames: SchoolRoleString | Array<SchoolRoleString>;
-	roomRoleName: 'roomowner' | 'roomadmin' | 'roomeditor' | 'roomviewer' | 'none';
+	roomRoleName: 'roomowner' | 'roomadmin' | 'roomeditor' | 'roomviewer' | 'roomapplicant' | 'none';
 };
 
 export type UserSetupWithRoles = UserSetup & {
@@ -82,7 +87,7 @@ export class RoomSetup {
 			throw new Error(`Logged in user ${loggedinUserName} not found in users`);
 		}
 		const loggedInAccount = UserAndAccountTestFactory.buildAccount(loggedInUser);
-		await this.em.persistAndFlush(loggedInAccount);
+		await this.em.persist(loggedInAccount).flush();
 		this.em.clear();
 		return loggedInAccount;
 	};
@@ -163,31 +168,36 @@ export class RoomSetup {
 	private setupRoles = async (): Promise<void> => {
 		const administrator = roleFactory.buildWithId({
 			name: RoleName.ADMINISTRATOR,
-			permissions: [Permission.SCHOOL_ADMINISTRATE_ROOMS, Permission.SCHOOL_LIST_ROOM_MEMBERS],
+			permissions: adminPermissions,
 		});
 		const teacher = roleFactory.buildWithId({
 			name: RoleName.TEACHER,
-			permissions: [Permission.SCHOOL_LIST_ROOM_MEMBERS],
+			permissions: teacherPermissions,
 		});
 		const student = roleFactory.buildWithId({
 			name: RoleName.STUDENT,
-			permissions: [Permission.SCHOOL_LIST_ROOM_MEMBERS],
+			permissions: studentPermissions,
 		});
 		const externalPerson = roleFactory.buildWithId({
 			name: RoleName.EXTERNALPERSON,
+			permissions: externalPersonPermissions,
 		});
-		const { roomEditorRole, roomAdminRole, roomOwnerRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
 
-		await this.em.persistAndFlush([
-			administrator,
-			teacher,
-			student,
-			externalPerson,
-			roomEditorRole,
-			roomAdminRole,
-			roomOwnerRole,
-			roomViewerRole,
-		]);
+		const { roomEditorRole, roomAdminRole, roomOwnerRole, roomViewerRole, roomApplicantRole } =
+			RoomRolesTestFactory.createRoomRoles();
+
+		await this.em
+			.persist([
+				administrator,
+				teacher,
+				student,
+				externalPerson,
+				roomEditorRole,
+				roomAdminRole,
+				roomOwnerRole,
+				roomViewerRole,
+			])
+			.flush();
 		this.em.clear();
 
 		this.roles = {
@@ -195,6 +205,7 @@ export class RoomSetup {
 			teacher,
 			student,
 			externalPerson,
+			roomapplicant: roomApplicantRole,
 			roomeditor: roomEditorRole,
 			roomadmin: roomAdminRole,
 			roomowner: roomOwnerRole,
@@ -229,7 +240,7 @@ export class RoomSetup {
 			schoolId: school.id,
 		});
 
-		await this.em.persistAndFlush([room, roomMembership, userGroupEntity]);
+		await this.em.persist([room, roomMembership, userGroupEntity]).flush();
 		this.em.clear();
 
 		this._room = room;
@@ -256,7 +267,7 @@ export class RoomSetup {
 			};
 			return userFactory.buildWithId(data);
 		});
-		await this.em.persistAndFlush(users);
+		await this.em.persist(users).flush();
 		this.em.clear();
 		return users;
 	};

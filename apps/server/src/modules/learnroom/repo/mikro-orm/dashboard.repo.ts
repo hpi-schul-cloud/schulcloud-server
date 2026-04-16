@@ -36,7 +36,7 @@ export class DashboardRepo implements IDashboardRepo {
 
 	public async persistAndFlush(entity: Dashboard): Promise<Dashboard> {
 		const modelEntity = await this.mapper.mapDashboardToModel(entity);
-		await this.em.persistAndFlush(modelEntity);
+		await this.em.persist(modelEntity).flush();
 
 		return this.mapper.mapDashboardToEntity(modelEntity);
 	}

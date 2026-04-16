@@ -51,6 +51,10 @@ module.exports = {
 	env: {
 		node: true,
 		mocha: true,
+		es6: true,
+	},
+	parserOptions: {
+		ecmaVersion: 2018,
 	},
 	settings: {
 		'import/resolver': {
@@ -94,6 +98,13 @@ module.exports = {
 				'require-await': 'warn',
 				'@typescript-eslint/unbound-method': 'error',
 				'@typescript-eslint/no-non-null-assertion': 'warn',
+				'@typescript-eslint/no-unused-vars': [
+					'warn',
+					{
+						args: 'after-used',
+						argsIgnorePattern: '^_',
+					},
+				],
 				'@typescript-eslint/explicit-function-return-type': 'warn',
 				'@typescript-eslint/explicit-member-accessibility': [
 					'warn',
@@ -116,6 +127,14 @@ module.exports = {
 				],
 			},
 			overrides: [
+				{
+					files: ['apps/server/src/modules/h5p-editor/**/*.ts'],
+					rules: {
+						// Allow 'h5p' prefix in filenames for h5p-editor module
+						// Regex avoids catastrophic backtracking by excluding h/p from generic prefix branch
+						'filename-rules/match': [1, /^(?:h5p-)?(?:[a-gj-oq-z0-9]+-)*[a-z0-9]+(?:\..*)?$/],
+					},
+				},
 				{
 					files: ['**/*spec.ts'],
 					plugins: ['jest'],

@@ -55,15 +55,5 @@
 			},
 			"active": true
 		  }
-	},
-	{
-		"_id": {
-			"$oid": "62c7f233f35a554ba3ed0000"
-		},
-		"type": "ldap",
-		"alias": "cy-general-ldap-system",
-		"ldapConfig": {
-			"provider": "general"
-		}
 	}
 ]

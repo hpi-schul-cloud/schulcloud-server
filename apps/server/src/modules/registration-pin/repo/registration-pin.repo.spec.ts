@@ -37,7 +37,7 @@ describe(RegistrationPinRepo.name, () => {
 			const userWithoutRegistrationPin = userFactory.buildWithId();
 			const registrationPinForUser = registrationPinEntityFactory.buildWithId({ email: user.email });
 
-			await em.persistAndFlush(registrationPinForUser);
+			await em.persist(registrationPinForUser).flush();
 
 			const expectedResult = [[registrationPinForUser], 1];
 			const expectedResultForNoRegistrationPin = [[], 0];
@@ -77,7 +77,7 @@ describe(RegistrationPinRepo.name, () => {
 			const userWithoutRegistrationPin = userFactory.buildWithId();
 			const registrationPinForUser = registrationPinEntityFactory.buildWithId({ email: user.email });
 
-			await em.persistAndFlush(registrationPinForUser);
+			await em.persist(registrationPinForUser).flush();
 
 			const expectedResult = 1;
 

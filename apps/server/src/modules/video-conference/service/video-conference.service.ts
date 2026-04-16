@@ -42,7 +42,7 @@ export class VideoConferenceService {
 	) {}
 
 	get hostUrl(): string {
-		return this.config.HOST;
+		return this.config.scHostUrl;
 	}
 
 	public canGuestJoin(isGuest: boolean, state: VideoConferenceState, waitingRoomEnabled: boolean): boolean {
@@ -120,8 +120,8 @@ export class VideoConferenceService {
 
 	private async hasStartMeetingAndCanRead(authorizableUser: User, entity: ConferenceResource): Promise<boolean> {
 		if (entity instanceof Room) {
-			const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(entity.id);
-			const roomMember = roomMembershipAuthorizable.members.find((member) => member.userId === authorizableUser.id);
+			const roomAuthorizable = await this.roomMembershipService.getRoomAuthorizable(entity.id);
+			const roomMember = roomAuthorizable.members.find((member) => member.userId === authorizableUser.id);
 
 			if (roomMember) {
 				return roomMember.roles.some((role) => role.name === RoleName.ROOMADMIN);
@@ -134,11 +134,11 @@ export class VideoConferenceService {
 			const boardAuthorisedUser = boardDoAuthorizable.users.find((user) => user.userId === authorizableUser.id);
 
 			if (boardAuthorisedUser) {
-				const canRoomEditorManageVideoconference =
-					boardDoAuthorizable.boardContextSettings.canRoomEditorManageVideoconference ?? false;
+				const canEditorsManageVideoconference =
+					boardDoAuthorizable.boardConfiguration.canEditorsManageVideoconference ?? false;
 				const isBoardEditor = boardAuthorisedUser.roles.includes(BoardRoles.EDITOR);
 				const isBoardAdmin = boardAuthorisedUser.roles.includes(BoardRoles.ADMIN);
-				return (canRoomEditorManageVideoconference && isBoardEditor) || isBoardAdmin;
+				return (canEditorsManageVideoconference && isBoardEditor) || isBoardAdmin;
 			}
 
 			return false;
@@ -151,8 +151,8 @@ export class VideoConferenceService {
 
 	private async hasJoinMeetingAndCanRead(authorizableUser: User, entity: ConferenceResource): Promise<boolean> {
 		if (entity instanceof Room) {
-			const roomMembershipAuthorizable = await this.roomMembershipService.getRoomMembershipAuthorizable(entity.id);
-			const roomMember = roomMembershipAuthorizable.members.find((member) => member.userId === authorizableUser.id);
+			const roomAuthorizable = await this.roomMembershipService.getRoomAuthorizable(entity.id);
+			const roomMember = roomAuthorizable.members.find((member) => member.userId === authorizableUser.id);
 
 			if (roomMember) {
 				return (

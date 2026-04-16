@@ -59,7 +59,7 @@ describe('Helpdesk Controller (API)', () => {
 					username: studentUser.email,
 				});
 
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persist([studentAccount, studentUser]).flush();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
 				const validBody = HelpdeskProblemCreateParamsFactory.create();
@@ -81,7 +81,7 @@ describe('Helpdesk Controller (API)', () => {
 				const body = HelpdeskProblemCreateParamsFactory.create({ subject: undefined as unknown as string });
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persist([studentAccount, studentUser]).flush();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
 
@@ -103,7 +103,7 @@ describe('Helpdesk Controller (API)', () => {
 				const body = HelpdeskProblemCreateParamsFactory.create({ replyEmail: undefined as unknown as string });
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persist([studentAccount, studentUser]).flush();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
 
@@ -125,7 +125,7 @@ describe('Helpdesk Controller (API)', () => {
 				const body = HelpdeskProblemCreateParamsFactory.create({ problemArea: undefined as unknown as string[] });
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persist([studentAccount, studentUser]).flush();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
 
@@ -147,7 +147,7 @@ describe('Helpdesk Controller (API)', () => {
 				const body = HelpdeskProblemCreateParamsFactory.create({ problemDescription: undefined as unknown as string });
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persist([studentAccount, studentUser]).flush();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
 
@@ -169,7 +169,7 @@ describe('Helpdesk Controller (API)', () => {
 				const validBody = HelpdeskProblemCreateParamsFactory.create();
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persist([studentAccount, studentUser]).flush();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
 
@@ -190,7 +190,7 @@ describe('Helpdesk Controller (API)', () => {
 				const validBody = HelpdeskProblemCreateParamsFactory.create();
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persist([studentAccount, studentUser]).flush();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
 
@@ -225,7 +225,7 @@ describe('Helpdesk Controller (API)', () => {
 				const validBody = HelpdeskProblemCreateParamsFactory.create();
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persist([studentAccount, studentUser]).flush();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
 
@@ -263,7 +263,7 @@ describe('Helpdesk Controller (API)', () => {
 				const validBody = HelpdeskProblemCreateParamsFactory.create();
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persist([studentAccount, studentUser]).flush();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
 
@@ -301,7 +301,7 @@ describe('Helpdesk Controller (API)', () => {
 				const validBody = HelpdeskProblemCreateParamsFactory.create();
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persist([studentAccount, studentUser]).flush();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
 
@@ -338,7 +338,7 @@ describe('Helpdesk Controller (API)', () => {
 				const validBody = HelpdeskProblemCreateParamsFactory.create();
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persist([studentAccount, studentUser]).flush();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
 
@@ -375,7 +375,7 @@ describe('Helpdesk Controller (API)', () => {
 				const validBody = HelpdeskProblemCreateParamsFactory.create();
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persist([studentAccount, studentUser]).flush();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
 
@@ -412,7 +412,7 @@ describe('Helpdesk Controller (API)', () => {
 				const validBody = HelpdeskProblemCreateParamsFactory.create();
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persist([studentAccount, studentUser]).flush();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
 

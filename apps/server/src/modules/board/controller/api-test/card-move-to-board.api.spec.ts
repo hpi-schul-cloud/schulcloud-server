@@ -46,7 +46,7 @@ describe(`card move to board (api)`, () => {
 
 	describe('when boards belong to room', () => {
 		const setup = async () => {
-			const { roomViewerRole, roomEditorRole, roomAdminRole } = RoomRolesTestFactory.createRoomRoles();
+			const { roomViewerRole, roomEditorRole, roomAdminRole, roomOwnerRole } = RoomRolesTestFactory.createRoomRoles();
 
 			const school = schoolEntityFactory.buildWithId();
 
@@ -68,26 +68,34 @@ describe(`card move to board (api)`, () => {
 			const toColumnNodeInOtherRoom = columnEntityFactory.withParent(columnBoardNodeOnOtherRoom).build();
 			const cardNode = cardEntityFactory.withParent(fromColumnNode).build();
 
-			await em.persistAndFlush([
-				teacherUser,
-				teacherAccount,
-				studentUser,
-				studentAccount,
-				...rooms,
-				...columnBoardNodes,
-				fromColumnNode,
-				toColumnNode,
-				toColumnNodeInOtherRoom,
-				cardNode,
-			]);
+			await em
+				.persist([
+					teacherUser,
+					teacherAccount,
+					studentUser,
+					studentAccount,
+					...rooms,
+					...columnBoardNodes,
+					fromColumnNode,
+					toColumnNode,
+					toColumnNodeInOtherRoom,
+					cardNode,
+				])
+				.flush();
 			em.clear();
 
-			const createRoomMembership = async (user: User, roomId: EntityId, role: 'viewer' | 'editor' | 'admin') => {
-				let userRole: typeof roomViewerRole | typeof roomEditorRole | typeof roomAdminRole;
+			const createRoomMembership = async (
+				user: User,
+				roomId: EntityId,
+				role: 'viewer' | 'editor' | 'admin' | 'owner'
+			) => {
+				let userRole: typeof roomViewerRole | typeof roomEditorRole | typeof roomAdminRole | typeof roomOwnerRole;
 				if (role === 'viewer') {
 					userRole = roomViewerRole;
 				} else if (role === 'editor') {
 					userRole = roomEditorRole;
+				} else if (role === 'owner') {
+					userRole = roomOwnerRole;
 				} else {
 					userRole = roomAdminRole;
 				}
@@ -103,7 +111,7 @@ describe(`card move to board (api)`, () => {
 					schoolId: teacherUser.school.id,
 				});
 
-				await em.persistAndFlush([userGroup, roomMembership, roomEditorRole]);
+				await em.persist([userGroup, roomMembership, roomEditorRole]).flush();
 				em.clear();
 			};
 
@@ -129,6 +137,7 @@ describe(`card move to board (api)`, () => {
 				it('should return status 200', async () => {
 					const { loginTeacher, createRoomMembership, teacherUser, rooms, cardNode, toColumnNode } = await setup();
 
+					await createRoomMembership(teacherUser, rooms[0].id, 'owner');
 					await createRoomMembership(teacherUser, rooms[0].id, 'admin');
 
 					const loggedInClient = await loginTeacher();
@@ -146,6 +155,7 @@ describe(`card move to board (api)`, () => {
 				it('should return status 200', async () => {
 					const { loginTeacher, createRoomMembership, teacherUser, rooms, cardNode, toColumnNode } = await setup();
 
+					await createRoomMembership(teacherUser, rooms[0].id, 'owner');
 					await createRoomMembership(teacherUser, rooms[0].id, 'editor');
 
 					const loggedInClient = await loginTeacher();
@@ -198,6 +208,7 @@ describe(`card move to board (api)`, () => {
 					const { loginTeacher, createRoomMembership, teacherUser, rooms, cardNode, toColumnNodeInOtherRoom } =
 						await setup();
 
+					await createRoomMembership(teacherUser, rooms[0].id, 'owner');
 					await createRoomMembership(teacherUser, rooms[0].id, 'admin');
 					await createRoomMembership(teacherUser, rooms[1].id, 'editor');
 
@@ -258,7 +269,7 @@ describe(`card move to board (api)`, () => {
 				teachers: [teacherUser],
 				students: [studentUser],
 			});
-			await em.persistAndFlush([teacherUser, teacherAccount, studentUser, studentAccount, course]);
+			await em.persist([teacherUser, teacherAccount, studentUser, studentAccount, course]).flush();
 
 			const columnBoardNodes = columnBoardEntityFactory.buildList(2, {
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
@@ -268,7 +279,7 @@ describe(`card move to board (api)`, () => {
 			const toColumnNode = columnEntityFactory.withParent(columnBoardNodes[1]).build();
 			const cardNode = cardEntityFactory.withParent(fromColumnNode).build();
 
-			await em.persistAndFlush([...columnBoardNodes, fromColumnNode, toColumnNode, cardNode]);
+			await em.persist([...columnBoardNodes, fromColumnNode, toColumnNode, cardNode]).flush();
 			em.clear();
 
 			const loginTeacher = () => testApiClient.login(teacherAccount);

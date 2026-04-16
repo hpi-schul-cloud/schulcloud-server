@@ -1,4 +1,4 @@
-import { ObjectId } from 'bson';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { UserContextProps } from '../interface';
 import { UserContext } from './user-context.vo';
 
@@ -12,6 +12,7 @@ describe('UserContext', () => {
 				userRoles: ['admin', 'user'],
 				schoolId: new ObjectId().toHexString(),
 				schoolName: 'Test School',
+				instanceName: 'Test Instance',
 			};
 			return { props };
 		};

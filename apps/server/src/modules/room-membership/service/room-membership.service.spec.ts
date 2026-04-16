@@ -1,10 +1,13 @@
+import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { Group, GroupService, GroupTypes, GroupUser } from '@modules/group';
 import { groupFactory } from '@modules/group/testing';
 import { RoleDto, RoleName, RoleService } from '@modules/role';
 import { roleDtoFactory, roleFactory } from '@modules/role/testing';
-import { RoomService } from '@modules/room';
+import { ROOM_PUBLIC_API_CONFIG_TOKEN, RoomPublicApiConfig, RoomService } from '@modules/room';
 import { roomFactory } from '@modules/room/testing';
+import { SchoolService } from '@modules/school/domain/service/school.service';
 import { schoolFactory } from '@modules/school/testing';
 import { UserDo, UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
@@ -12,8 +15,7 @@ import { userDoFactory, userFactory } from '@modules/user/testing';
 import { BadRequestException } from '@nestjs/common/exceptions';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@testing/database';
-import { ObjectId } from 'bson';
-import { RoomMembershipAuthorizable } from '../do/room-membership-authorizable.do';
+import { RoomAuthorizable } from '../do/room-authorizable.do';
 import { RoomMembershipRepo } from '../repo/room-membership.repo';
 import { roomMembershipFactory } from '../testing';
 import { RoomMembershipService } from './room-membership.service';
@@ -26,6 +28,7 @@ describe('RoomMembershipService', () => {
 	let roleService: DeepMocked<RoleService>;
 	let roomService: DeepMocked<RoomService>;
 	let userService: DeepMocked<UserService>;
+	let logger: DeepMocked<LegacyLogger>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -52,6 +55,18 @@ describe('RoomMembershipService', () => {
 					provide: UserService,
 					useValue: createMock<UserService>(),
 				},
+				{
+					provide: SchoolService,
+					useValue: createMock<SchoolService>(),
+				},
+				{
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
+				},
+				{
+					provide: ROOM_PUBLIC_API_CONFIG_TOKEN,
+					useValue: createMock<RoomPublicApiConfig>(),
+				},
 			],
 		}).compile();
 
@@ -61,6 +76,7 @@ describe('RoomMembershipService', () => {
 		roleService = module.get(RoleService);
 		roomService = module.get(RoomService);
 		userService = module.get(UserService);
+		logger = module.get(LegacyLogger);
 	});
 
 	afterAll(async () => {
@@ -438,6 +454,7 @@ describe('RoomMembershipService', () => {
 				const roomMembership = roomMembershipFactory.build({ userGroupId: group.id });
 				roomMembershipRepo.findByRoomId.mockResolvedValue(roomMembership);
 				groupService.findById.mockResolvedValue(group);
+				groupService.findGroups.mockResolvedValue({ data: [], total: 0 });
 
 				return { roomMembership, group };
 			};
@@ -481,7 +498,7 @@ describe('RoomMembershipService', () => {
 		});
 	});
 
-	describe('getRoomMembershipAuthorizable', () => {
+	describe('getRoomAuthorizable', () => {
 		const setup = () => {
 			const roomId = 'room123';
 			const userId = 'user456';
@@ -495,32 +512,93 @@ describe('RoomMembershipService', () => {
 			roomMembershipRepo.findByRoomId.mockResolvedValue(roomMembership);
 			groupService.findById.mockResolvedValue(group);
 			roleService.findByIds.mockResolvedValue([role]);
+			roleService.findAll.mockResolvedValue([role]);
+			userService.findByIds.mockResolvedValue([userDoFactory.buildWithId({ id: userId })]);
+			userService.getSchoolIdsByUserIds.mockResolvedValue(new Map([[userId, 'school456']]));
 
 			return { roomId, userId, groupId, roleId, roomMembership, group, role };
 		};
 
-		it('should return RoomMembershipAuthorizable when roomMembership exists', async () => {
-			const { roomId, userId, roleId } = setup();
+		describe('when roomMembership exists', () => {
+			it('should return RoomAuthorizable', async () => {
+				const { roomId, userId, roleId } = setup();
 
-			const result = await service.getRoomMembershipAuthorizable(roomId);
+				const result = await service.getRoomAuthorizable(roomId);
 
-			expect(result).toBeInstanceOf(RoomMembershipAuthorizable);
-			expect(result.roomId).toBe(roomId);
-			expect(result.members).toHaveLength(1);
-			expect(result.members[0].userId).toBe(userId);
-			expect(result.members[0].roles[0].id).toBe(roleId);
+				expect(result).toBeInstanceOf(RoomAuthorizable);
+				expect(result.roomId).toBe(roomId);
+				expect(result.members).toHaveLength(1);
+				expect(result.members[0].userId).toBe(userId);
+				expect(result.members[0].roles[0].id).toBe(roleId);
+				expect(result.members[0].userSchoolId).toBeDefined();
+			});
 		});
 
-		it('should return empty RoomMembershipAuthorizable when roomMembership not exists', async () => {
-			const roomId = 'nonexistent';
-			roomMembershipRepo.findByRoomId.mockResolvedValue(null);
-			roomService.getSingleRoom.mockResolvedValue(roomFactory.build({ id: roomId }));
+		describe('when roomMembership does not exist', () => {
+			it('should return empty RoomAuthorizable', async () => {
+				const roomId = 'nonexistent';
+				roomMembershipRepo.findByRoomId.mockResolvedValue(null);
+				roomService.getSingleRoom.mockResolvedValue(roomFactory.build({ id: roomId }));
 
-			const result = await service.getRoomMembershipAuthorizable(roomId);
+				const result = await service.getRoomAuthorizable(roomId);
 
-			expect(result).toBeInstanceOf(RoomMembershipAuthorizable);
-			expect(result.roomId).toBe(roomId);
-			expect(result.members).toHaveLength(0);
+				expect(result).toBeInstanceOf(RoomAuthorizable);
+				expect(result).toEqual(expect.objectContaining({ roomId, members: [] }));
+			});
+
+			it('should log warning', async () => {
+				const roomId = 'nonexistent-room';
+				roomMembershipRepo.findByRoomId.mockResolvedValue(null);
+				roomService.getSingleRoom.mockResolvedValue(roomFactory.build({ id: roomId }));
+
+				await service.getRoomAuthorizable(roomId);
+
+				expect(logger.warn).toHaveBeenCalledWith(`No room membership found for roomId ${roomId}`);
+			});
+		});
+
+		describe('when group does not exist', () => {
+			it('should log warning', async () => {
+				const roomId = 'room-with-missing-group';
+				const groupId = 'missing-group';
+				const roomMembership = roomMembershipFactory.build({ roomId, userGroupId: groupId });
+
+				roomMembershipRepo.findByRoomId.mockResolvedValue(roomMembership);
+				groupService.findById.mockResolvedValue(null as unknown as Group);
+				roomService.getSingleRoom.mockResolvedValue(roomFactory.build({ id: roomId }));
+
+				const result = await service.getRoomAuthorizable(roomId);
+
+				expect(logger.warn).toHaveBeenCalledWith(`No group found for roomId ${roomId} groupId ${groupId}`);
+				expect(result).toBeInstanceOf(RoomAuthorizable);
+				expect(result.roomId).toBe(roomId);
+				expect(result.members).toHaveLength(0);
+			});
+		});
+
+		describe('when unexpected number of room authorizables returned', () => {
+			it('should log warning ', async () => {
+				const roomId = 'room-with-multiple-authorizables';
+				const groupId = 'group-id';
+				const roomMembership = roomMembershipFactory.build({ roomId, userGroupId: groupId });
+				const group = groupFactory.build({ id: groupId });
+
+				roomMembershipRepo.findByRoomId.mockResolvedValue(roomMembership);
+				groupService.findById.mockResolvedValue(group);
+				roomService.getSingleRoom.mockResolvedValue(roomFactory.build({ id: roomId }));
+
+				// Mock getAuthorizables to return empty array (or more than 1 element)
+				const getAuthorizablesSpy = jest.spyOn(service as any, 'getAuthorizables').mockResolvedValue([]);
+
+				const result = await service.getRoomAuthorizable(roomId);
+
+				expect(logger.warn).toHaveBeenCalledWith(`Expected exactly 1 room authorizable for roomId ${roomId}, got 0`);
+				expect(result).toBeInstanceOf(RoomAuthorizable);
+				expect(result.roomId).toBe(roomId);
+				expect(result.members).toHaveLength(0);
+
+				getAuthorizablesSpy.mockRestore();
+			});
 		});
 	});
 
@@ -627,7 +705,7 @@ describe('RoomMembershipService', () => {
 		});
 	});
 
-	describe('getRoomMembershipAuthorizablesByUserId', () => {
+	describe('getRoomAuthorizablesByUserId', () => {
 		const setup = () => {
 			const userId = 'user123';
 			const groupId1 = 'group456';
@@ -650,21 +728,24 @@ describe('RoomMembershipService', () => {
 			groupService.findGroups.mockResolvedValue({ data: groups, total: groups.length });
 			roomMembershipRepo.findByGroupIds.mockResolvedValue(roomMemberships);
 			roleService.findByIds.mockResolvedValue(roles);
+			roleService.findAll.mockResolvedValue(roles);
+			userService.findByIds.mockResolvedValue([userDoFactory.buildWithId({ id: userId })]);
+			userService.getSchoolIdsByUserIds.mockResolvedValue(new Map([[userId, 'school123']]));
 
 			return { userId, roomMemberships, roles };
 		};
 
-		it('should return RoomMembershipAuthorizables for user', async () => {
+		it('should return RoomAuthorizables for user', async () => {
 			const { userId, roomMemberships, roles } = setup();
 
-			const result = await service.getRoomMembershipAuthorizablesByUserId(userId);
+			const result = await service.getRoomAuthorizablesByUserId(userId);
 
 			expect(result).toHaveLength(2);
-			expect(result[0]).toBeInstanceOf(RoomMembershipAuthorizable);
+			expect(result[0]).toBeInstanceOf(RoomAuthorizable);
 			expect(result[0].roomId).toBe(roomMemberships[0].roomId);
 			expect(result[0].members[0].userId).toBe(userId);
 			expect(result[0].members[0].roles[0].id).toBe(roles[0].id);
-			expect(result[1]).toBeInstanceOf(RoomMembershipAuthorizable);
+			expect(result[1]).toBeInstanceOf(RoomAuthorizable);
 			expect(result[1].roomId).toBe(roomMemberships[1].roomId);
 			expect(result[1].members[0].userId).toBe(userId);
 			expect(result[1].members[0].roles[0].id).toBe(roles[1].id);
@@ -674,7 +755,7 @@ describe('RoomMembershipService', () => {
 			const { userId } = setup();
 			groupService.findGroups.mockResolvedValue({ data: [], total: 0 });
 
-			const result = await service.getRoomMembershipAuthorizablesByUserId(userId);
+			const result = await service.getRoomAuthorizablesByUserId(userId);
 
 			expect(result).toHaveLength(0);
 		});

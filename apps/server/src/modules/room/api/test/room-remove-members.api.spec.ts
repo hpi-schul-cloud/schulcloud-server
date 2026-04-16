@@ -74,18 +74,20 @@ describe('Room Controller (API)', () => {
 				schoolId: school.id,
 			});
 
-			await em.persistAndFlush([
-				...Object.values(users),
-				school,
-				externalSchool,
-				room,
-				roomMemberships,
-				teacherAccount,
-				userGroupEntity,
-				roomAdminRole,
-				roomOwnerRole,
-				roomViewerRole,
-			]);
+			await em
+				.persist([
+					...Object.values(users),
+					school,
+					externalSchool,
+					room,
+					roomMemberships,
+					teacherAccount,
+					userGroupEntity,
+					roomAdminRole,
+					roomOwnerRole,
+					roomViewerRole,
+				])
+				.flush();
 			em.clear();
 
 			const loggedInClient = await testApiClient.login(teacherAccount);
@@ -104,7 +106,7 @@ describe('Room Controller (API)', () => {
 		describe('when the user has not the required permissions', () => {
 			const setupLoggedInUser = async () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-				await em.persistAndFlush([teacherAccount, teacherUser]);
+				await em.persist([teacherAccount, teacherUser]).flush();
 				const loggedInClient = await testApiClient.login(teacherAccount);
 				return { loggedInClient, teacherUser };
 			};
@@ -216,17 +218,19 @@ describe('Room Controller (API)', () => {
 					schoolId: school.id,
 				});
 
-				await em.persistAndFlush([
-					...Object.values(users),
-					room,
-					externalTeacher,
-					roomMemberships,
-					adminAccount,
-					userGroupEntity,
-					roomAdminRole,
-					roomOwnerRole,
-					roomViewerRole,
-				]);
+				await em
+					.persist([
+						...Object.values(users),
+						room,
+						externalTeacher,
+						roomMemberships,
+						adminAccount,
+						userGroupEntity,
+						roomAdminRole,
+						roomOwnerRole,
+						roomViewerRole,
+					])
+					.flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(adminAccount);
@@ -256,7 +260,7 @@ describe('Room Controller (API)', () => {
 					it('should be allowed to remove themself', async () => {
 						const { loggedInClient, room, adminUser, userGroupEntity, roomViewerRole } = await setupForAdmin();
 						userGroupEntity.users.push({ role: roomViewerRole, user: adminUser });
-						await em.persistAndFlush(userGroupEntity);
+						await em.persist(userGroupEntity).flush();
 						em.clear();
 
 						const response = await loggedInClient.patch(`/${room.id}/members/remove`, { userIds: [adminUser.id] });

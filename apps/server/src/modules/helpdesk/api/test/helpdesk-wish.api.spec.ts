@@ -52,7 +52,7 @@ describe('Helpdesk Wish Endpoint (API)', () => {
 					username: studentUser.email,
 				});
 
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persist([studentAccount, studentUser]).flush();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
 				const validBody = HelpdeskWishCreateParamsFactory.create();
@@ -84,7 +84,7 @@ describe('Helpdesk Wish Endpoint (API)', () => {
 				const body = HelpdeskWishCreateParamsFactory.create({ subject: undefined as unknown as string });
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persist([studentAccount, studentUser]).flush();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
 
@@ -106,7 +106,7 @@ describe('Helpdesk Wish Endpoint (API)', () => {
 				const body = HelpdeskWishCreateParamsFactory.create({ replyEmail: undefined as unknown as string });
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persist([studentAccount, studentUser]).flush();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
 
@@ -128,7 +128,7 @@ describe('Helpdesk Wish Endpoint (API)', () => {
 				const body = HelpdeskWishCreateParamsFactory.create({ problemArea: undefined as unknown as string[] });
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persist([studentAccount, studentUser]).flush();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
 
@@ -150,7 +150,7 @@ describe('Helpdesk Wish Endpoint (API)', () => {
 				const body = HelpdeskWishCreateParamsFactory.create({ role: undefined as unknown as string });
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persist([studentAccount, studentUser]).flush();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
 
@@ -172,7 +172,7 @@ describe('Helpdesk Wish Endpoint (API)', () => {
 				const body = HelpdeskWishCreateParamsFactory.create({ desire: undefined as unknown as string });
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persist([studentAccount, studentUser]).flush();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
 
@@ -194,7 +194,7 @@ describe('Helpdesk Wish Endpoint (API)', () => {
 				const body = HelpdeskWishCreateParamsFactory.create({ benefit: undefined as unknown as string });
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persist([studentAccount, studentUser]).flush();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
 
@@ -216,7 +216,7 @@ describe('Helpdesk Wish Endpoint (API)', () => {
 				const body = HelpdeskWishCreateParamsFactory.create({ supportType: 'invalid' as SupportType });
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persist([studentAccount, studentUser]).flush();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
 
@@ -238,7 +238,7 @@ describe('Helpdesk Wish Endpoint (API)', () => {
 				const validBody = HelpdeskWishCreateParamsFactory.create();
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persist([studentAccount, studentUser]).flush();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
 
@@ -259,7 +259,7 @@ describe('Helpdesk Wish Endpoint (API)', () => {
 				const validBody = HelpdeskWishCreateParamsFactory.create();
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persist([studentAccount, studentUser]).flush();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
 
@@ -296,7 +296,7 @@ describe('Helpdesk Wish Endpoint (API)', () => {
 				const validBody = HelpdeskWishCreateParamsFactory.create();
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persist([studentAccount, studentUser]).flush();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
 
@@ -336,7 +336,7 @@ describe('Helpdesk Wish Endpoint (API)', () => {
 				const validBody = HelpdeskWishCreateParamsFactory.create();
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persist([studentAccount, studentUser]).flush();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
 
@@ -375,7 +375,7 @@ describe('Helpdesk Wish Endpoint (API)', () => {
 				const validBody = HelpdeskWishCreateParamsFactory.create();
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persist([studentAccount, studentUser]).flush();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
 
@@ -414,7 +414,7 @@ describe('Helpdesk Wish Endpoint (API)', () => {
 				const validBody = HelpdeskWishCreateParamsFactory.create();
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persist([studentAccount, studentUser]).flush();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
 
@@ -453,7 +453,7 @@ describe('Helpdesk Wish Endpoint (API)', () => {
 				const validBody = HelpdeskWishCreateParamsFactory.create();
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persist([studentAccount, studentUser]).flush();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
 
@@ -492,7 +492,7 @@ describe('Helpdesk Wish Endpoint (API)', () => {
 				const validBody = HelpdeskWishCreateParamsFactory.create();
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
-				await em.persistAndFlush([studentAccount, studentUser]);
+				await em.persist([studentAccount, studentUser]).flush();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
 

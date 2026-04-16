@@ -25,9 +25,11 @@ export class BoardContextApiHelperService {
 	private isCourse(type: BoardExternalReferenceType): boolean {
 		return type === BoardExternalReferenceType.Course;
 	}
+
 	private isRoom(type: BoardExternalReferenceType): boolean {
 		return type === BoardExternalReferenceType.Room;
 	}
+
 	private isUser(type: BoardExternalReferenceType): boolean {
 		return type === BoardExternalReferenceType.User;
 	}
@@ -137,8 +139,8 @@ export class BoardContextApiHelperService {
 
 	private isVideoConferenceEnabledForConfig(): boolean {
 		return (
-			this.boardContextConfig.FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED &&
-			this.boardContextConfig.FEATURE_VIDEOCONFERENCE_ENABLED
+			this.boardContextConfig.featureColumnBoardVideoconferenceEnabled &&
+			this.boardContextConfig.featureVideoconferenceEnabled
 		);
 	}
 }

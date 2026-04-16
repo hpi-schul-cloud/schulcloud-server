@@ -20,6 +20,9 @@ export class RoomMember {
 	@ApiProperty()
 	public schoolId!: string;
 
+	@ApiProperty({ enum: RoleName, isArray: true, enumName: 'RoleName' })
+	public schoolRoleNames!: RoleName[];
+
 	constructor(props: RoomMember) {
 		this.userId = props.userId;
 		this.firstName = props.firstName;
@@ -27,5 +30,6 @@ export class RoomMember {
 		this.roomRoleId = props.roomRoleId;
 		this.roomRoleName = props.roomRoleName;
 		this.schoolId = props.schoolId;
+		this.schoolRoleNames = props.schoolRoleNames;
 	}
 }

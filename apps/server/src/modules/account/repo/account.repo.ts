@@ -174,7 +174,7 @@ export class AccountMikroOrmRepo extends BaseDomainObjectRepo<Account, AccountEn
 
 	public async deleteById(accountId: EntityId | ObjectId): Promise<void> {
 		const entity = await this.em.findOneOrFail(AccountEntity, { id: accountId.toString() });
-		await this.em.removeAndFlush(entity);
+		await this.em.remove(entity).flush();
 	}
 
 	public async deleteByUserId(userId: EntityId): Promise<EntityId[]> {
@@ -182,7 +182,7 @@ export class AccountMikroOrmRepo extends BaseDomainObjectRepo<Account, AccountEn
 		if (entities.length === 0) {
 			return [];
 		}
-		await this.em.removeAndFlush(entities);
+		await this.em.remove(entities).flush();
 
 		return [entities[0].id];
 	}

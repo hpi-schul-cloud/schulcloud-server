@@ -2,7 +2,6 @@ import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard'
 import { Body, Controller, Get, HttpStatus, Param, Put, Req } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
-import { InvalidOriginForLogoutUrlLoggableException } from '../error';
 import { VideoConferenceOptions } from '../interface';
 import { VideoConferenceMapper } from '../mapper/video-conference.mapper';
 import { VideoConferenceCreateUc, VideoConferenceEndUc, VideoConferenceInfoUc, VideoConferenceJoinUc } from '../uc';
@@ -47,10 +46,6 @@ export class VideoConferenceController {
 		@Param() scopeParams: VideoConferenceScopeParams,
 		@Body() params: VideoConferenceCreateParams
 	): Promise<void> {
-		if (params.logoutUrl && new URL(params.logoutUrl).origin !== req.headers.origin) {
-			throw new InvalidOriginForLogoutUrlLoggableException(params.logoutUrl, req.headers.origin);
-		}
-
 		const scopeRef = new ScopeRef(scopeParams.scopeId, scopeParams.scope);
 		const videoConferenceOptions: VideoConferenceOptions = VideoConferenceMapper.toVideoConferenceOptions(params);
 

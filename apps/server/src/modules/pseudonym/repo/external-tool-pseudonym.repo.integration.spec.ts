@@ -10,7 +10,7 @@ import { MongoMemoryDatabaseModule } from '@testing/database';
 import { v4 as uuidv4 } from 'uuid';
 import { PseudonymSearchQuery } from '../domain';
 import { ExternalToolPseudonymEntity } from '../entity';
-import { externalToolPseudonymEntityFactory, pseudonymFactory } from '../testing';
+import { externalToolPseudonymEntityFactory } from '../testing';
 import { ExternalToolPseudonymRepo } from './external-tool-pseudonym.repo';
 import { Pseudonym } from './pseudonym.do';
 
@@ -21,7 +21,9 @@ describe('ExternalToolPseudonymRepo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [ExternalToolPseudonymEntity, User] })],
+			imports: [
+				MongoMemoryDatabaseModule.forRoot({ entities: [ExternalToolPseudonymEntity, User], ensureIndexes: true }),
+			],
 			providers: [
 				ExternalToolPseudonymRepo,
 				{
@@ -47,7 +49,7 @@ describe('ExternalToolPseudonymRepo', () => {
 		describe('when pseudonym is existing', () => {
 			const setup = async () => {
 				const entity: ExternalToolPseudonymEntity = externalToolPseudonymEntityFactory.buildWithId();
-				await em.persistAndFlush(entity);
+				await em.persist(entity).flush();
 
 				return {
 					entity,
@@ -63,42 +65,6 @@ describe('ExternalToolPseudonymRepo', () => {
 				);
 
 				expect(result.id).toEqual(entity.id);
-			});
-		});
-	});
-
-	describe('findByUserIdAndToolId', () => {
-		describe('when pseudonym is existing', () => {
-			const setup = async () => {
-				const entity: ExternalToolPseudonymEntity = externalToolPseudonymEntityFactory.buildWithId();
-
-				await em.persistAndFlush(entity);
-
-				return {
-					entity,
-				};
-			};
-
-			it('should return a pseudonym', async () => {
-				const { entity } = await setup();
-
-				const result: Pseudonym | null = await repo.findByUserIdAndToolId(
-					entity.userId.toHexString(),
-					entity.toolId.toHexString()
-				);
-
-				expect(result?.id).toEqual(entity.id);
-			});
-		});
-
-		describe('when there is no pseudonym', () => {
-			it('should return null', async () => {
-				const result: Pseudonym | null = await repo.findByUserIdAndToolId(
-					new ObjectId().toHexString(),
-					new ObjectId().toHexString()
-				);
-
-				expect(result).toBeNull();
 			});
 		});
 	});
@@ -121,7 +87,7 @@ describe('ExternalToolPseudonymRepo', () => {
 					userId: user2.id,
 				});
 
-				await em.persistAndFlush([pseudonym1, pseudonym2, pseudonym3, pseudonym4]);
+				await em.persist([pseudonym1, pseudonym2, pseudonym3, pseudonym4]).flush();
 
 				return {
 					user1,
@@ -161,7 +127,7 @@ describe('ExternalToolPseudonymRepo', () => {
 			});
 		});
 
-		describe('should return empty array when there is no pseudonym', () => {
+		describe('when no pseudonym exists for the user', () => {
 			it('should return empty array', async () => {
 				const result: Pseudonym[] = await repo.findByUserId(new ObjectId().toHexString());
 
@@ -170,54 +136,99 @@ describe('ExternalToolPseudonymRepo', () => {
 		});
 	});
 
-	describe('createOrUpdate', () => {
+	describe('findOrCreate', () => {
 		describe('when pseudonym is new', () => {
 			const setup = () => {
-				return {
-					domainObject: pseudonymFactory.build({
-						pseudonym: uuidv4(),
-						toolId: new ObjectId().toHexString(),
-						userId: new ObjectId().toHexString(),
-					}),
-				};
+				const userId = new ObjectId().toHexString();
+				const toolId = new ObjectId().toHexString();
+
+				return { userId, toolId };
 			};
 
 			it('should create a new pseudonym if it does not exist', async () => {
-				const { domainObject } = setup();
+				const { userId, toolId } = setup();
 
-				const result: Pseudonym = await repo.createOrUpdate(domainObject);
+				const result: Pseudonym = await repo.findOrCreate(userId, toolId);
 
 				expect(result.id).toBeTruthy();
-				expect(result.pseudonym).toEqual(domainObject.pseudonym);
-				expect(result.toolId).toEqual(domainObject.toolId);
-				expect(result.userId).toEqual(domainObject.userId);
+				expect(result.pseudonym).toEqual(expect.any(String));
+				expect(result.toolId).toEqual(toolId);
+				expect(result.userId).toEqual(userId);
 			});
 		});
 
 		describe('when pseudonym is existing', () => {
 			const setup = async () => {
 				const entity: ExternalToolPseudonymEntity = externalToolPseudonymEntityFactory.buildWithId();
-				await em.persistAndFlush(entity);
+				await em.persist(entity).flush();
 
 				return {
-					domainObject: pseudonymFactory.build({
-						id: entity.id,
-						pseudonym: uuidv4(),
-						toolId: new ObjectId().toHexString(),
-						userId: new ObjectId().toHexString(),
-					}),
+					entity,
+					userId: entity.userId.toHexString(),
+					toolId: entity.toolId.toHexString(),
 				};
 			};
 
-			it('should update an existing pseudonym', async () => {
-				const { domainObject } = await setup();
+			it('should not change object and just return existing pseudonym', async () => {
+				const { entity, userId, toolId } = await setup();
 
-				const result: Pseudonym = await repo.createOrUpdate(domainObject);
+				const result: Pseudonym = await repo.findOrCreate(userId, toolId);
 
-				expect(result.id).toEqual(domainObject.id);
-				expect(result.pseudonym).toEqual(domainObject.pseudonym);
-				expect(result.toolId).toEqual(domainObject.toolId);
-				expect(result.userId).toEqual(domainObject.userId);
+				expect(result.createdAt).toEqual(entity.createdAt);
+				expect(result.pseudonym).toEqual(entity.pseudonym);
+			});
+		});
+
+		describe('when findOrCreate is called twice sequentially', () => {
+			const setup = () => {
+				const userId = new ObjectId().toHexString();
+				const toolId = new ObjectId().toHexString();
+
+				return { userId, toolId };
+			};
+
+			it('should not alter the existing pseudonym', async () => {
+				const { userId, toolId } = setup();
+
+				const firstResult: Pseudonym = await repo.findOrCreate(userId, toolId);
+				const secondResult: Pseudonym = await repo.findOrCreate(userId, toolId);
+
+				expect(secondResult.id).toEqual(firstResult.id);
+				expect(secondResult.pseudonym).toEqual(firstResult.pseudonym);
+				expect(secondResult.userId).toEqual(firstResult.userId);
+				expect(secondResult.toolId).toEqual(firstResult.toolId);
+				expect(secondResult.createdAt).toEqual(firstResult.createdAt);
+				expect(secondResult.updatedAt).toEqual(firstResult.updatedAt);
+			});
+		});
+
+		describe('when findOrCreate is called twice concurrently', () => {
+			const setup = () => {
+				const userId = new ObjectId().toHexString();
+				const toolId = new ObjectId().toHexString();
+
+				return { userId, toolId };
+			};
+
+			it('should not throw a duplicate-key error', async () => {
+				const { userId, toolId } = setup();
+
+				await expect(
+					Promise.all([repo.findOrCreate(userId, toolId), repo.findOrCreate(userId, toolId)])
+				).resolves.not.toThrow();
+			});
+
+			it('should result in exactly one document in the database', async () => {
+				const { userId, toolId } = setup();
+
+				await Promise.all([repo.findOrCreate(userId, toolId), repo.findOrCreate(userId, toolId)]);
+
+				const count = await em.count(ExternalToolPseudonymEntity, {
+					userId: new ObjectId(userId),
+					toolId: new ObjectId(toolId),
+				});
+
+				expect(count).toEqual(1);
 			});
 		});
 	});
@@ -258,7 +269,7 @@ describe('ExternalToolPseudonymRepo', () => {
 					userId: user2.id,
 				});
 
-				await em.persistAndFlush([pseudonym1, pseudonym2, pseudonym3, pseudonym4]);
+				await em.persist([pseudonym1, pseudonym2, pseudonym3, pseudonym4]).flush();
 
 				const expectedResult = [pseudonym1.id, pseudonym2.id];
 
@@ -280,11 +291,11 @@ describe('ExternalToolPseudonymRepo', () => {
 		});
 	});
 
-	describe('findPseudonymByPseudonym', () => {
+	describe('findByPseudonym', () => {
 		describe('when pseudonym is existing', () => {
 			const setup = async () => {
 				const entity: ExternalToolPseudonymEntity = externalToolPseudonymEntityFactory.buildWithId();
-				await em.persistAndFlush(entity);
+				await em.persist(entity).flush();
 				em.clear();
 
 				return {
@@ -295,7 +306,7 @@ describe('ExternalToolPseudonymRepo', () => {
 			it('should return a pseudonym', async () => {
 				const { entity } = await setup();
 
-				const result: Pseudonym | null = await repo.findPseudonymByPseudonym(entity.pseudonym);
+				const result: Pseudonym | null = await repo.findByPseudonym(entity.pseudonym);
 
 				expect(result?.id).toEqual(entity.id);
 			});
@@ -303,141 +314,70 @@ describe('ExternalToolPseudonymRepo', () => {
 
 		describe('when pseudonym not exists', () => {
 			it('should return null', async () => {
-				const pseudonym: Pseudonym | null = await repo.findPseudonymByPseudonym(uuidv4());
+				const pseudonym: Pseudonym | null = await repo.findByPseudonym(uuidv4());
 
 				expect(pseudonym).toBeNull();
 			});
 		});
 	});
 
-	describe('findPseudonym', () => {
-		describe('when query with all parameters is given', () => {
-			const setup = async () => {
-				const query: PseudonymSearchQuery = {
-					userId: new ObjectId().toHexString(),
-				};
-
-				const pseudonym1: ExternalToolPseudonymEntity = externalToolPseudonymEntityFactory.build({
-					userId: query.userId,
-					toolId: new ObjectId().toHexString(),
-					pseudonym: 'pseudonym1',
-				});
-
-				const pseudonym2: ExternalToolPseudonymEntity = externalToolPseudonymEntityFactory.build({
-					userId: query.userId,
-					toolId: new ObjectId().toHexString(),
-					pseudonym: 'pseudonym2',
-				});
-
-				const pseudonym3: ExternalToolPseudonymEntity = externalToolPseudonymEntityFactory.build({
-					userId: query.userId,
-					toolId: new ObjectId().toHexString(),
-					pseudonym: 'pseudonym3',
-				});
-
-				const pseudonyms: ExternalToolPseudonymEntity[] = [pseudonym1, pseudonym2, pseudonym3];
-
-				await em.persistAndFlush([pseudonym1, pseudonym2, pseudonym3]);
-				em.clear();
-
-				return {
-					query,
-					pseudonyms,
-				};
+	describe('findByQuery', () => {
+		const setupThreePseudonyms = async () => {
+			const query: PseudonymSearchQuery = {
+				userId: new ObjectId().toHexString(),
 			};
 
-			it('should return all three pseudonyms', async () => {
-				const { query, pseudonyms } = await setup();
+			const pseudonym1: ExternalToolPseudonymEntity = externalToolPseudonymEntityFactory.build({
+				userId: query.userId,
+				toolId: new ObjectId().toHexString(),
+				pseudonym: 'pseudonym1',
+			});
 
-				const page: Page<Pseudonym> = await repo.findPseudonym(query);
+			const pseudonym2: ExternalToolPseudonymEntity = externalToolPseudonymEntityFactory.build({
+				userId: query.userId,
+				toolId: new ObjectId().toHexString(),
+				pseudonym: 'pseudonym2',
+			});
+
+			const pseudonym3: ExternalToolPseudonymEntity = externalToolPseudonymEntityFactory.build({
+				userId: query.userId,
+				toolId: new ObjectId().toHexString(),
+				pseudonym: 'pseudonym3',
+			});
+
+			const pseudonyms: ExternalToolPseudonymEntity[] = [pseudonym1, pseudonym2, pseudonym3];
+
+			await em.persist(pseudonyms).flush();
+			em.clear();
+
+			return { query, pseudonyms };
+		};
+
+		describe('when query with all parameters is given', () => {
+			it('should return all three pseudonyms', async () => {
+				const { query, pseudonyms } = await setupThreePseudonyms();
+
+				const page: Page<Pseudonym> = await repo.findByQuery(query);
 
 				expect(page.data.length).toEqual(pseudonyms.length);
 			});
 		});
 
 		describe('when pagination has a limit of 1', () => {
-			const setup = async () => {
-				const query: PseudonymSearchQuery = {
-					userId: new ObjectId().toHexString(),
-				};
-
-				const pseudonym1: ExternalToolPseudonymEntity = externalToolPseudonymEntityFactory.build({
-					userId: query.userId,
-					toolId: new ObjectId().toHexString(),
-					pseudonym: 'pseudonym1',
-				});
-
-				const pseudonym2: ExternalToolPseudonymEntity = externalToolPseudonymEntityFactory.build({
-					userId: query.userId,
-					toolId: new ObjectId().toHexString(),
-					pseudonym: 'pseudonym2',
-				});
-
-				const pseudonym3: ExternalToolPseudonymEntity = externalToolPseudonymEntityFactory.build({
-					userId: query.userId,
-					toolId: new ObjectId().toHexString(),
-					pseudonym: 'pseudonym3',
-				});
-
-				const pseudonyms: ExternalToolPseudonymEntity[] = [pseudonym1, pseudonym2, pseudonym3];
-
-				await em.persistAndFlush([pseudonym1, pseudonym2, pseudonym3]);
-				em.clear();
-
-				return {
-					query,
-					pseudonyms,
-				};
-			};
-
 			it('should return one pseudonym', async () => {
-				const { query } = await setup();
+				const { query } = await setupThreePseudonyms();
 
-				const page: Page<Pseudonym> = await repo.findPseudonym(query, { pagination: { limit: 1 } });
+				const page: Page<Pseudonym> = await repo.findByQuery(query, { pagination: { limit: 1 } });
 
 				expect(page.data.length).toEqual(1);
 			});
 		});
 
 		describe('when pagination has a limit of 1 and skip is set to 2', () => {
-			const setup = async () => {
-				const query: PseudonymSearchQuery = {
-					userId: new ObjectId().toHexString(),
-				};
-
-				const pseudonym1: ExternalToolPseudonymEntity = externalToolPseudonymEntityFactory.build({
-					userId: query.userId,
-					toolId: new ObjectId().toHexString(),
-					pseudonym: 'pseudonym1',
-				});
-
-				const pseudonym2: ExternalToolPseudonymEntity = externalToolPseudonymEntityFactory.build({
-					userId: query.userId,
-					toolId: new ObjectId().toHexString(),
-					pseudonym: 'pseudonym2',
-				});
-
-				const pseudonym3: ExternalToolPseudonymEntity = externalToolPseudonymEntityFactory.build({
-					userId: query.userId,
-					toolId: new ObjectId().toHexString(),
-					pseudonym: 'pseudonym3',
-				});
-
-				const pseudonyms: ExternalToolPseudonymEntity[] = [pseudonym1, pseudonym2, pseudonym3];
-
-				await em.persistAndFlush([pseudonym1, pseudonym2, pseudonym3]);
-				em.clear();
-
-				return {
-					query,
-					pseudonyms,
-				};
-			};
-
 			it('should return the third element', async () => {
-				const { query, pseudonyms } = await setup();
+				const { query, pseudonyms } = await setupThreePseudonyms();
 
-				const page: Page<Pseudonym> = await repo.findPseudonym(query, { pagination: { skip: 2 } });
+				const page: Page<Pseudonym> = await repo.findByQuery(query, { pagination: { skip: 2 } });
 
 				expect(page.data[0].id).toEqual(pseudonyms[2].id);
 			});

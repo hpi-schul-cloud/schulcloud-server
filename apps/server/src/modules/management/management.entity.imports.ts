@@ -10,7 +10,6 @@ import { GroupEntity } from '@modules/group/entity';
 import { InstanceEntity } from '@modules/instance';
 import {
 	ColumnBoardBoardElement,
-	ColumnBoardNode,
 	LegacyBoard,
 	LegacyBoardElement,
 	LessonBoardElement,
@@ -25,7 +24,6 @@ import { OauthSessionTokenEntity } from '@modules/oauth/entity';
 import { ExternalToolPseudonymEntity } from '@modules/pseudonym/entity';
 import { RegistrationEntity } from '@modules/registration';
 import { RegistrationPinEntity } from '@modules/registration-pin/entity';
-import { RocketChatUserEntity } from '@modules/rocketchat-user/entity';
 import { Role } from '@modules/role/repo';
 import { RoomMembershipEntity } from '@modules/room-membership/repo/entity/room-membership.entity';
 import { RoomEntity } from '@modules/room/repo/entity';
@@ -58,7 +56,6 @@ export const ENTITIES = [
 	LegacyBoardElement,
 	BoardNodeEntity,
 	ColumnBoardBoardElement,
-	ColumnBoardNode,
 	ClassEntity,
 	DeletionRequestEntity,
 	DeletionLogEntity,
@@ -80,7 +77,6 @@ export const ENTITIES = [
 	News,
 	ExternalToolPseudonymEntity,
 	RegistrationEntity,
-	RocketChatUserEntity,
 	Role,
 	RoomEntity,
 	RoomMembershipEntity,

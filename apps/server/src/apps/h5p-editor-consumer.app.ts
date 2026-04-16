@@ -7,7 +7,7 @@ import { install as sourceMapInstall } from 'source-map-support';
 
 // application imports
 import { LegacyLogger } from '@core/logger';
-import { H5PEditorAMQPModule } from '@modules/h5p-editor/h5p-editor-amqp.app.module';
+import { H5PEditorAMQPModule } from '@modules/h5p-content-management';
 
 async function bootstrap(): Promise<void> {
 	sourceMapInstall();
