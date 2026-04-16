@@ -52,6 +52,8 @@ describe('Group (API)', () => {
 		const teacherRole = roleFactory.buildWithId({ name: RoleName.TEACHER });
 		const studentRole = roleFactory.buildWithId({ name: RoleName.STUDENT });
 
+		em.persist([adminRole, teacherRole, studentRole]);
+
 		return { adminRole, teacherRole, studentRole };
 	};
 

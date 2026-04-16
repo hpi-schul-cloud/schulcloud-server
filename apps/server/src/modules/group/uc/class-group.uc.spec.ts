@@ -505,7 +505,7 @@ describe('ClassGroupUc', () => {
 				it('should throw', async () => {
 					const { teacherUser } = setup();
 
-					const func = async () =>
+					const func = () =>
 						uc.findAllClasses(teacherUser.id, teacherUser.school.id, 'notAType' as SchoolYearQueryType);
 
 					await expect(func).rejects.toThrow(UnknownQueryTypeLoggableException);

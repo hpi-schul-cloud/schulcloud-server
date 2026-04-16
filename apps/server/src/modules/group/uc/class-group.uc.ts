@@ -1,9 +1,4 @@
-import {
-	AUTHORIZATION_CONFIG_TOKEN,
-	AuthorizationConfig,
-	AuthorizationContextBuilder,
-	AuthorizationService,
-} from '@modules/authorization';
+import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { ClassService } from '@modules/class';
 import { Class } from '@modules/class/domain';
 import { ClassScope } from '@modules/class/repo';
@@ -35,8 +30,6 @@ export class ClassGroupUc {
 		private readonly systemService: SystemService,
 		private readonly schoolService: SchoolService,
 		private readonly authorizationService: AuthorizationService,
-		@Inject(AUTHORIZATION_CONFIG_TOKEN)
-		private readonly authorizationConfig: AuthorizationConfig,
 		private readonly schoolYearService: SchoolYearService,
 		private readonly courseService: CourseDoService,
 		@Inject(GROUP_CONFIG_TOKEN)
