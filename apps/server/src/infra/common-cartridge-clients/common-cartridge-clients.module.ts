@@ -2,8 +2,6 @@ import { LoggerModule } from '@core/logger';
 import { ConfigurationModule } from '@infra/configuration';
 import { HttpModule } from '@nestjs/axios';
 import { DynamicModule, Module } from '@nestjs/common';
-import * as http from 'http';
-import * as https from 'https';
 import {
 	BoardsClientAdapter,
 	CardClientAdapter,
@@ -31,10 +29,8 @@ import {
 	LessonApi,
 } from './generated';
 
-// HTTP agents with keepAlive to prevent "socket hang up" errors during sequential API calls
-const httpAgent = new http.Agent({ keepAlive: true, maxSockets: 50 });
-const httpsAgent = new https.Agent({ keepAlive: true, maxSockets: 50 });
-const baseOptions = { httpAgent, httpsAgent };
+// Use fetch adapter to prevent "socket hang up" errors during sequential API calls
+const baseOptions = { adapter: 'fetch' as const };
 
 @Module({})
 export class CommonCartridgeClientsModule {
