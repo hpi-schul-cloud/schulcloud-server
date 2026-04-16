@@ -51,8 +51,6 @@ data:
     # Below is a series of a MongoDB-data initializations, meant for the development and testing
     # purposes on various dev environments - most of them will only work there.
 
-    # Test OIDC system configuration used in conjunction with OIDCMOCK deployment.
-    OIDCMOCK_CLIENT_SECRET=$(encrypt_secret $OIDCMOCK__CLIENT_SECRET $AES_KEY)
     # Test LDAP server (deployed in the sc-common namespace) configuration (stored in the 'systems' collection).
     SEARCH_USER_PASSWORD=$(encrypt_secret $SC_COMMON_LDAP_PASSWORD $AES_KEY)
     mongosh $DB_URL --quiet --eval 'db.systems.insertMany([
@@ -95,16 +93,6 @@ data:
             "uniqueMember" : "member"
           }
         }
-      },
-      "oidcConfig": {
-        "idpHint": "schoolOne0",
-        "clientId": "'${OIDCMOCK__CLIENT_ID}'",
-        "clientSecret": "'${OIDCMOCK_CLIENT_SECRET}'",
-        "authorizationUrl": "'${OIDCMOCK__BASE_URL}'/connect/authorize",
-        "tokenUrl": "'${OIDCMOCK__BASE_URL}'/connect/token",
-        "logoutUrl": "'${OIDCMOCK__BASE_URL}'/connect/endsession",
-        "userinfoUrl": "'${OIDCMOCK__BASE_URL}'/connect/userinfo",
-        "defaultScopes": "openid profile email"
       }
     },
     {
