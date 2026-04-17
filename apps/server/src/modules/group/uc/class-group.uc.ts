@@ -97,6 +97,7 @@ export class ClassGroupUc {
 		const canSeeAllSchoolGroups = this.authorizationService.hasOneOfPermissions(user, [
 			Permission.STUDENT_LIST,
 			Permission.GROUP_FULL_ADMIN,
+			Permission.CLASS_FULL_ADMIN,
 		]);
 
 		if (canSeeAllSchoolGroups) {

@@ -283,6 +283,7 @@ describe('ClassGroupUc', () => {
 				expect(authorizationService.hasOneOfPermissions).toHaveBeenCalledWith<[User, string[]]>(teacherUser, [
 					Permission.STUDENT_LIST,
 					Permission.GROUP_FULL_ADMIN,
+					Permission.CLASS_FULL_ADMIN,
 				]);
 			});
 
@@ -619,6 +620,7 @@ describe('ClassGroupUc', () => {
 				expect(authorizationService.hasOneOfPermissions).toHaveBeenCalledWith<[User, string[]]>(adminUser, [
 					Permission.STUDENT_LIST,
 					Permission.GROUP_FULL_ADMIN,
+					Permission.CLASS_FULL_ADMIN,
 				]);
 			});
 
@@ -897,6 +899,7 @@ describe('ClassGroupUc', () => {
 					expect(authorizationService.hasOneOfPermissions).toHaveBeenCalledWith<[User, string[]]>(teacherUser, [
 						Permission.STUDENT_LIST,
 						Permission.GROUP_FULL_ADMIN,
+						Permission.CLASS_FULL_ADMIN,
 					]);
 				});
 			});
