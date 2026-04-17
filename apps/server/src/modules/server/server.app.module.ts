@@ -86,6 +86,7 @@ import { ServerConfigController, ServerController, ServerUc } from './api';
 import { ReleaseApiModule } from './release-api.module';
 import { SERVER_PUBLIC_API_CONFIG_TOKEN, ServerPublicApiConfig } from './server.config';
 import { ENTITIES, TEST_ENTITIES } from './server.entity.imports';
+import { TEAM_PUBLIC_API_CONFIG_TOKEN, TeamPublicApiConfig } from '@modules/team';
 
 const serverModules = [
 	HelpdeskApiModule,
@@ -108,6 +109,7 @@ const serverModules = [
 	ConfigurationModule.register(USER_IMPORT_PUBLIC_API_CONFIG_TOKEN, UserImportPublicApiConfig),
 	ConfigurationModule.register(USER_LOGIN_MIGRATION_PUBLIC_API_CONFIG_TOKEN, UserLoginMigrationPublicApiConfig),
 	ConfigurationModule.register(FWU_PUBLIC_API_CONFIG_TOKEN, FwuPublicApiConfig),
+	ConfigurationModule.register(TEAM_PUBLIC_API_CONFIG_TOKEN, TeamPublicApiConfig),
 	ServerRuntimeConfigModule,
 	RuntimeConfigApiModule,
 	CoreModule,
