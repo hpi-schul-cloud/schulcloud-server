@@ -7,6 +7,7 @@ import { AccountModule } from '@modules/account';
 import { ClassModule } from '@modules/class';
 import { CourseModule } from '@modules/course';
 import { CourseSynchronizationHistoryModule } from '@modules/course-synchronization-history';
+import { ErwinIdentifierModule } from '@modules/erwin-identifier';
 import { GroupModule } from '@modules/group';
 import { LegacySchoolModule } from '@modules/legacy-school';
 import { MediaSourceSyncModule } from '@modules/media-source-sync';
@@ -15,6 +16,7 @@ import { RoleModule } from '@modules/role';
 import { SchoolModule } from '@modules/school';
 import { SchoolLicenseModule } from '@modules/school-license';
 import { SystemModule } from '@modules/system/system.module';
+import { TeamModule } from '@modules/team';
 import { ExternalToolModule } from '@modules/tool';
 import { SchoolExternalToolModule } from '@modules/tool/school-external-tool';
 import { UserModule } from '@modules/user';
@@ -24,6 +26,7 @@ import { MediumMetadataModule } from '../medium-metadata';
 import { SchulconnexGroupProvisioningProducer, SchulconnexLicenseProvisioningProducer } from './amqp';
 import { PROVISIONING_EXCHANGE_CONFIG_TOKEN, ProvisioningExchangeConfig } from './provisioning-exchange.config';
 import { PROVISIONING_CONFIG_TOKEN, ProvisioningConfig } from './provisioning.config';
+import { ErwinProvisioningService } from './service/erwin-provisioning.service';
 import { ProvisioningService } from './service/provisioning.service';
 import { TspProvisioningService } from './service/tsp-provisioning.service';
 import {
@@ -32,6 +35,7 @@ import {
 	SchulconnexResponseMapper,
 	TspProvisioningStrategy,
 } from './strategy';
+import { ErwinProvisioningStrategy } from './strategy/erwin';
 import {
 	SchulconnexCourseSyncService,
 	SchulconnexGroupProvisioningService,
@@ -40,12 +44,11 @@ import {
 	SchulconnexToolProvisioningService,
 	SchulconnexUserProvisioningService,
 } from './strategy/schulconnex/service';
-import { TeamModule } from '@modules/team';
-import { ErwinProvisioningStrategy } from './strategy/erwin';
 
 @Module({
 	imports: [
 		AccountModule,
+		ErwinIdentifierModule,
 		LegacySchoolModule,
 		UserModule,
 		RoleModule,
@@ -88,6 +91,7 @@ import { ErwinProvisioningStrategy } from './strategy/erwin';
 		TspProvisioningStrategy,
 		TspProvisioningService,
 		ErwinProvisioningStrategy,
+		ErwinProvisioningService,
 		SchulconnexGroupProvisioningProducer,
 		SchulconnexLicenseProvisioningProducer,
 	],
