@@ -7,6 +7,7 @@ import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 export interface TeamProperties {
 	name: string;
 	teamUsers?: TeamUserEntity[];
+	color?: string;
 }
 
 export interface TeamUserProperties {
@@ -58,6 +59,9 @@ export class TeamEntity extends BaseEntityWithTimestamps {
 	@Embedded(() => TeamUserEntity, { array: true })
 	userIds: TeamUserEntity[];
 
+	@Property()
+	color = '#ACACAC';
+
 	get teamUsers(): TeamUserEntity[] {
 		return this.userIds;
 	}
@@ -70,5 +74,6 @@ export class TeamEntity extends BaseEntityWithTimestamps {
 		super();
 		this.name = props.name;
 		this.userIds = props.teamUsers ? props.teamUsers.map((teamUser) => new TeamUserEntity(teamUser)) : [];
+		if (props.color) this.color = props.color;
 	}
 }

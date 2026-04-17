@@ -21,6 +21,7 @@ import { LanguageType } from '@shared/domain/interface';
 import { SchulcloudTheme } from '@shared/domain/types';
 import type { ServerPublicApiConfig } from '../..';
 import { Timezone } from '../../types/timezone.enum';
+import { TeamPublicApiConfig } from '@modules/team';
 
 export class ConfigResponse {
 	@ApiProperty()
@@ -67,6 +68,9 @@ export class ConfigResponse {
 
 	@ApiProperty()
 	FEATURE_TEAMS_ENABLED: boolean;
+
+	@ApiProperty()
+	public FEATURE_TEAM_CREATE_ROOM_ENABLED: boolean;
 
 	@ApiProperty()
 	FEATURE_FWU_CONTENT_ENABLED: boolean;
@@ -279,7 +283,8 @@ export class ConfigResponse {
 			UserPublicApiConfig &
 			UserImportPublicApiConfig &
 			UserLoginMigrationPublicApiConfig &
-			FwuPublicApiConfig
+			FwuPublicApiConfig &
+			TeamPublicApiConfig
 	) {
 		this.ACCESSIBILITY_REPORT_EMAIL = config.accessibilityReportEmail;
 		this.SC_CONTACT_EMAIL = config.scContactEmail;
@@ -288,6 +293,7 @@ export class ConfigResponse {
 		this.ALERT_STATUS_URL = config.alertStatusUrl;
 		this.CALENDAR_SERVICE_ENABLED = config.calendarServiceEnabled;
 		this.FEATURE_TEAMS_ENABLED = config.featureTeamsEnabled;
+		this.FEATURE_TEAM_CREATE_ROOM_ENABLED = config.featureTeamCreateRoomEnabled;
 		this.FEATURE_FWU_CONTENT_ENABLED = config.fwuContentEnabled;
 		this.TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE = config.teacherStudentVisibilityIsConfigurable;
 		this.TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT = config.teacherStudentVisibilityIsEnabledByDefault;
