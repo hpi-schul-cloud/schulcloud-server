@@ -204,7 +204,7 @@ export class CommonCartridgeImportService {
 
 		// INFO: for await keeps the order of the columns in the same order as the parser.getOrganizations()
 		// with Promise.all, the order of the columns would be random
-		for await (const columnResource of columns) {
+		for (const columnResource of columns) {
 			columnResource.isResourceColumn
 				? await this.createColumnWithResource(parser, boardId, columnResource.column, event)
 				: await this.createColumn(parser, organizations, boardId, columnResource.column, event);
@@ -295,7 +295,7 @@ export class CommonCartridgeImportService {
 			(organization) => organization.pathDepth >= DEPTH_CARD_ELEMENTS && organization.path.startsWith(cardProps.path)
 		);
 
-		for await (const cardElement of cardElements) {
+		for (const cardElement of cardElements) {
 			await this.createCardElement(parser, card.id, cardElement, event);
 		}
 	}
@@ -308,7 +308,19 @@ export class CommonCartridgeImportService {
 	): Promise<void> {
 		if (!cardElementProps.isResource) return;
 
+		this.logger.debug(
+			new CommonCartridgeMessageLoggable(`Starting with card element ${cardElementProps.identifier}`, {
+				fileRecordId: event.fileRecordId,
+			})
+		);
+
 		const resource = parser.getResource(cardElementProps);
+
+		this.logger.debug(
+			new CommonCartridgeMessageLoggable(`Read resource of element ${cardElementProps.identifier}`, {
+				fileRecordId: event.fileRecordId,
+			})
+		);
 
 		if (!resource) return;
 
