@@ -14,3 +14,4 @@ export { GroupRemovalSuccessfulLoggable } from './group-removal-successful.logga
 export { LicenseProvisioningSuccessfulLoggable } from './license-provisioning-successful.loggable';
 export { CourseSyncHistoryGroupExternalSourceMissingLoggableException } from './course-sync-history-group-external-source-missing.loggable-exception';
 export { ExternalToolMetadataUpdateFailedLoggable } from './external-tool-metadata-update-failed.loggable';
+export { ExternalIdMissingLoggableException } from './external-id-missing.loggable-exception';
