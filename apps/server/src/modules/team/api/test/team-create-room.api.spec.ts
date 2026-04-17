@@ -12,7 +12,6 @@ import { Permission } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
-import { SchoolEntity } from '@modules/school/repo';
 import { RoomService } from '@modules/room';
 import { RoomMembershipService } from '@modules/room-membership';
 import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
@@ -45,20 +44,9 @@ describe('Team Export Room Controller (API)', () => {
 		await app.close();
 	});
 
-	const setupUser = (props: { isTeacher: boolean; school: SchoolEntity }) => {
-		if (props.isTeacher) {
-			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school: props.school });
-			return { account: teacherAccount, user: teacherUser };
-		} else {
-			const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({ school: props.school });
-			return { account: studentAccount, user: studentUser };
-		}
-	};
-
-	const setupTeamWithUser = async (props: { isTeacher: boolean; isTeamOwner: boolean }) => {
-		const school = schoolEntityFactory.buildWithId();
-
-		const { account, user } = setupUser({ isTeacher: props.isTeacher, school });
+	const setupTeamWithUser = async (props: { rolename: 'teacher' | 'student'; isTeamOwner: boolean }) => {
+		const { account, user } = UserAndAccountTestFactory.buildByRole(props.rolename);
+		const { school } = user;
 
 		const teamRole = roleFactory.buildWithId({
 			name: props.isTeamOwner ? RoleName.TEAMOWNER : RoleName.TEAMADMINISTRATOR,
@@ -81,7 +69,7 @@ describe('Team Export Room Controller (API)', () => {
 	describe('POST /:teamId/create-room', () => {
 		describe('when a teacher is owner of the team', () => {
 			it('should return a 201 response with the created room ID', async () => {
-				const { loggedInClient, team } = await setupTeamWithUser({ isTeacher: true, isTeamOwner: true });
+				const { loggedInClient, team } = await setupTeamWithUser({ rolename: 'teacher', isTeamOwner: true });
 
 				const response = await loggedInClient.post(`${team.id}/create-room`);
 
@@ -90,7 +78,7 @@ describe('Team Export Room Controller (API)', () => {
 			});
 
 			it('should create a room with the correct name', async () => {
-				const { loggedInClient, team } = await setupTeamWithUser({ isTeacher: true, isTeamOwner: true });
+				const { loggedInClient, team } = await setupTeamWithUser({ rolename: 'teacher', isTeamOwner: true });
 
 				const response = await loggedInClient.post(`${team.id}/create-room`);
 				const body = response.body as { roomId: string };
@@ -101,7 +89,7 @@ describe('Team Export Room Controller (API)', () => {
 			});
 
 			it('should add user as owner to the room', async () => {
-				const { loggedInClient, team, user } = await setupTeamWithUser({ isTeacher: true, isTeamOwner: true });
+				const { loggedInClient, team, user } = await setupTeamWithUser({ rolename: 'teacher', isTeamOwner: true });
 
 				const response = await loggedInClient.post(`${team.id}/create-room`);
 				const body = response.body as { roomId: string };
@@ -118,7 +106,7 @@ describe('Team Export Room Controller (API)', () => {
 		describe('when the feature is disabled', () => {
 			it('should return 403', async () => {
 				config.featureTeamCreateRoomEnabled = false;
-				const { loggedInClient, team } = await setupTeamWithUser({ isTeacher: true, isTeamOwner: true });
+				const { loggedInClient, team } = await setupTeamWithUser({ rolename: 'teacher', isTeamOwner: true });
 
 				const response = await loggedInClient.post(`${team.id}/create-room`);
 
@@ -134,7 +122,7 @@ describe('Team Export Room Controller (API)', () => {
 			});
 		});
 
-		describe('when the user not in the team', () => {
+		describe('when the user is not in the team', () => {
 			const setup = async () => {
 				const school = schoolEntityFactory.buildWithId();
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
@@ -159,7 +147,7 @@ describe('Team Export Room Controller (API)', () => {
 
 		describe('when the user is admin in the team', () => {
 			it('should return a 403 response since the user is not a owner in the team', async () => {
-				const { loggedInClient, team } = await setupTeamWithUser({ isTeacher: true, isTeamOwner: false });
+				const { loggedInClient, team } = await setupTeamWithUser({ rolename: 'teacher', isTeamOwner: false });
 
 				const response = await loggedInClient.post(`${team.id}/create-room`);
 
@@ -169,7 +157,7 @@ describe('Team Export Room Controller (API)', () => {
 
 		describe('when the user is not a teacher', () => {
 			it('should return a 403 response since the user is not allowed to create Rooms', async () => {
-				const { loggedInClient, team } = await setupTeamWithUser({ isTeacher: false, isTeamOwner: true });
+				const { loggedInClient, team } = await setupTeamWithUser({ rolename: 'student', isTeamOwner: true });
 
 				const response = await loggedInClient.post(`${team.id}/create-room`);
 
