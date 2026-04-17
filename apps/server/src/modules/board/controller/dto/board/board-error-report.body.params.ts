@@ -44,25 +44,4 @@ export class BoardErrorReportBodyParams {
 	@IsArray()
 	@IsString({ each: true })
 	public logSteps!: string[];
-
-	@ApiProperty({
-		type: String,
-		description: 'Operating System of the user',
-	})
-	@IsString()
-	public os!: string;
-
-	@ApiProperty({
-		type: String,
-		description: 'Browser of the user',
-	})
-	@IsString()
-	public browser!: string;
-
-	@ApiProperty({
-		type: String,
-		description: 'Device type of the user',
-	})
-	@IsString()
-	public deviceType!: string;
 }

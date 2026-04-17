@@ -42,9 +42,6 @@ describe('BoardErrorReportController (api)', () => {
 		boardId: 'boardId',
 		retryCount: 0,
 		logSteps: ['step1', 'step2'],
-		os: 'Windows 10',
-		browser: 'Chrome 91',
-		deviceType: 'Desktop',
 	};
 
 	const setup = async (): Promise<{ loggedInClient: TestApiClient }> => {

@@ -26,9 +26,6 @@ export class BoardErrorReportUc {
 			errorData.schoolId,
 			errorData.userId,
 			errorData.retryCount,
-			errorData.os,
-			errorData.browser,
-			errorData.deviceType,
 			errorData.logSteps
 		);
 		this.logger.warning(loggable);
