@@ -43,6 +43,7 @@ import {
 	UpdateBoardLayoutMessageParams,
 	UpdateBoardTitleMessageParams,
 	UpdateBoardVisibilityMessageParams,
+	UpdateCardColorMessageParams,
 	UpdateCardHeightMessageParams,
 	UpdateCardTitleMessageParams,
 	UpdateColumnTitleMessageParams,
@@ -176,6 +177,20 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 		const { userId } = this.getCurrentUser(socket);
 		try {
 			const card = await this.cardUc.updateCardHeight(userId, data.cardId, data.newHeight);
+			emitter.emitToClientAndRoom(data, card);
+		} catch {
+			emitter.emitFailure(data);
+		}
+	}
+
+	@SubscribeMessage('update-card-color-request')
+	@TrackExecutionTime()
+	@EnsureRequestContext()
+	public async updateCardColor(socket: Socket, data: UpdateCardColorMessageParams): Promise<void> {
+		const emitter = this.buildBoardSocketEmitter({ socket, action: 'update-card-color' });
+		const { userId } = this.getCurrentUser(socket);
+		try {
+			const card = await this.cardUc.updateCardColor(userId, data.cardId, data.backgroundColor);
 			emitter.emitToClientAndRoom(data, card);
 		} catch {
 			emitter.emitFailure(data);

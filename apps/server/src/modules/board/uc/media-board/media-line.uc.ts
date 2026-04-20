@@ -6,7 +6,7 @@ import type { EntityId } from '@shared/domain/types';
 import { BoardNodeRule } from '../../authorisation/board-node.rule';
 import { BOARD_CONFIG_TOKEN, BoardConfig } from '../../board.config';
 import { MediaBoard, MediaLine } from '../../domain';
-import { MediaBoardColors } from '../../domain/media-board/types';
+import { Colors } from '../../domain/media-board/types';
 import { BoardNodeAuthorizableService, BoardNodeService } from '../../service';
 import { MediaBoardService } from '../../service/media-board';
 
@@ -51,7 +51,7 @@ export class MediaLineUc {
 		await this.boardNodeService.updateTitle(line, title);
 	}
 
-	public async updateLineColor(userId: EntityId, lineId: EntityId, color: MediaBoardColors): Promise<void> {
+	public async updateLineColor(userId: EntityId, lineId: EntityId, color: Colors): Promise<void> {
 		this.checkFeatureEnabled();
 
 		const line: MediaLine = await this.boardNodeService.findByClassAndId(MediaLine, lineId);

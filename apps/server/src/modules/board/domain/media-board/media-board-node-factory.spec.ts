@@ -1,7 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BoardExternalReference, BoardExternalReferenceType, BoardLayout } from '../types';
 import { MediaBoardNodeFactory } from './media-board-node-factory';
-import { MediaBoardColors } from './types';
+import { Colors } from './types';
 
 describe(MediaBoardNodeFactory.name, () => {
 	const setup = () => {
@@ -11,7 +11,7 @@ describe(MediaBoardNodeFactory.name, () => {
 			type: BoardExternalReferenceType.User,
 		};
 		const layout = BoardLayout.GRID;
-		const backgroundColor = MediaBoardColors.BLUE;
+		const backgroundColor = Colors.BLUE;
 
 		return { factory, context, layout, backgroundColor };
 	};

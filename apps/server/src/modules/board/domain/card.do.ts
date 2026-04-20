@@ -1,5 +1,6 @@
 import { BoardNode } from './board-node.do';
 import { AnyBoardNode, CardProps, isContentElement } from './types';
+import { Colors } from './types/colors.enum';
 
 export class Card extends BoardNode<CardProps> {
 	get title(): string | undefined {
@@ -8,6 +9,14 @@ export class Card extends BoardNode<CardProps> {
 
 	set title(title: string | undefined) {
 		this.props.title = title;
+	}
+
+	get backgroundColor(): Colors {
+		return this.props.backgroundColor || Colors.TRANSPARENT;
+	}
+
+	set backgroundColor(color: Colors) {
+		this.props.backgroundColor = color;
 	}
 
 	get height(): number {

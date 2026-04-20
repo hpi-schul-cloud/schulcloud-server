@@ -12,7 +12,7 @@ import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.tes
 import { TEST_JWT_CONFIG_TOKEN, TestJwtModuleConfig } from '@testing/test-jwt-module.config';
 import { Socket } from 'socket.io-client';
 import { BoardCollaborationTestModule } from '../../board-collaboration.app.module';
-import { BoardExternalReferenceType, BoardLayout, CardProps, ContentElementType } from '../../domain';
+import { BoardExternalReferenceType, BoardLayout, CardProps, Colors, ContentElementType } from '../../domain';
 import {
 	cardEntityFactory,
 	columnBoardEntityFactory,
@@ -645,6 +645,34 @@ describe(BoardCollaborationGateway.name, () => {
 				const failure = await waitForEvent(unauthorizedIoClient, 'update-card-height-failure');
 
 				expect(failure).toEqual({ cardId, newHeight });
+			});
+		});
+	});
+
+	describe('update card color', () => {
+		describe('when card exists', () => {
+			it('should answer with success', async () => {
+				const { cardNodes } = await setup();
+				const cardId = cardNodes[0].id;
+				const backgroundColor = Colors.RED;
+
+				ioClient.emit('update-card-color-request', { cardId, backgroundColor });
+				const success = await waitForEvent(ioClient, 'update-card-color-success');
+
+				expect(success).toEqual(expect.objectContaining({ cardId, backgroundColor }));
+			});
+		});
+
+		describe('when user is not authorized', () => {
+			it('should answer with failure', async () => {
+				const { cardNodes } = await setup();
+				const cardId = cardNodes[0].id;
+				const backgroundColor = Colors.RED;
+
+				unauthorizedIoClient.emit('update-card-color-request', { cardId, backgroundColor });
+				const failure = await waitForEvent(unauthorizedIoClient, 'update-card-color-failure');
+
+				expect(failure).toEqual({ cardId, backgroundColor });
 			});
 		});
 	});

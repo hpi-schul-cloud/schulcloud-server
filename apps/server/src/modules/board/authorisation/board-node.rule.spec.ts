@@ -767,6 +767,7 @@ describe(BoardNodeRule.name, () => {
 					shareCard: true,
 					updateCardHeight: true,
 					updateCardTitle: true,
+					updateCardColor: true,
 
 					// element
 					createElement: true,
@@ -849,6 +850,7 @@ describe(BoardNodeRule.name, () => {
 					shareCard: false,
 					updateCardHeight: true,
 					updateCardTitle: true,
+					updateCardColor: true,
 
 					// element
 					createElement: true,
@@ -932,6 +934,7 @@ describe(BoardNodeRule.name, () => {
 					shareCard: false,
 					updateCardHeight: false,
 					updateCardTitle: false,
+					updateCardColor: false,
 
 					// element
 					createElement: false,
@@ -1014,6 +1017,7 @@ describe(BoardNodeRule.name, () => {
 					shareCard: false,
 					updateCardHeight: false,
 					updateCardTitle: false,
+					updateCardColor: false,
 
 					// element
 					createElement: false,
