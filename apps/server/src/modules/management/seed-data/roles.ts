@@ -301,7 +301,7 @@ const roleSeedData: { [key: string | RoleName]: SeedRoleProperties } = {
 		updatedAt: '2022-05-20T13:33:18.077Z',
 		name: RoleName.TEAMOWNER,
 		roles: [RoleName.TEAMADMINISTRATOR],
-		permissions: [Permission.DELETE_TEAM],
+		permissions: [Permission.DELETE_TEAM, Permission.TEAM_EXPORT_TO_ROOM],
 	},
 	courseStudent: {
 		id: '5bb5c62bfb457b1c3c0c7f00',
