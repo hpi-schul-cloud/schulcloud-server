@@ -7,6 +7,7 @@ import {
 	ApiInternalServerErrorResponse,
 	ApiOkResponse,
 	ApiOperation,
+	ApiPayloadTooLargeResponse,
 	ApiProduces,
 	ApiTags,
 	ApiUnauthorizedResponse,
@@ -57,9 +58,10 @@ export class CommonCartridgeController {
 	@ApiOkResponse({ description: 'Import was started successfully.' })
 	@ApiUnauthorizedResponse({ description: 'Request is unauthorized.' })
 	@ApiBadRequestResponse({ description: 'Request data has invalid format.' })
+	@ApiPayloadTooLargeResponse({ description: 'File size exceeds maximum allowed size.' })
 	@ApiInternalServerErrorResponse({ description: 'Internal server error.' })
 	@HttpCode(200)
-	public importCourse(@Body() startImportParams: CommonCartridgeStartImportBodyParams): void {
-		this.commonCartridgeUC.startCourseImport(startImportParams);
+	public async importCourse(@Body() startImportParams: CommonCartridgeStartImportBodyParams): Promise<void> {
+		await this.commonCartridgeUC.startCourseImport(startImportParams);
 	}
 }
