@@ -14,8 +14,14 @@ import { LinkElement } from './link-element.do';
 import { ROOT_PATH } from './path-utils';
 import { RichTextElement } from './rich-text-element.do';
 import { handleNonExhaustiveSwitch } from './type-mapping';
-import type { AnyContentElement, BoardExternalReference, BoardLayout, BoardNodeProps } from './types';
-import { ContentElementType } from './types';
+import {
+	AnyContentElement,
+	BoardExternalReference,
+	BoardLayout,
+	BoardNodeProps,
+	Colors,
+	ContentElementType,
+} from './types';
 import { VideoConferenceElement } from './video-conference-element.do';
 
 @Injectable()
@@ -34,7 +40,7 @@ export class BoardNodeFactory {
 
 	public buildCard(children: AnyContentElement[] = []): Card {
 		// TODO right way to specify default card height?
-		const card = new Card({ ...this.getBaseProps(), height: 150, children });
+		const card = new Card({ ...this.getBaseProps(), backgroundColor: Colors.TRANSPARENT, height: 150, children });
 
 		return card;
 	}

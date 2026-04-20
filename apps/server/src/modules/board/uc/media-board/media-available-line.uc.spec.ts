@@ -21,7 +21,7 @@ import {
 	MediaAvailableLine,
 	MediaAvailableLineElement,
 	MediaBoard,
-	MediaBoardColors,
+	Colors,
 	MediaExternalToolElement,
 } from '../../domain';
 import {
@@ -662,7 +662,7 @@ describe(MediaAvailableLineUc.name, () => {
 					mediaBoard as unknown as BoardNodeAuthorizable
 				);
 
-				await uc.updateAvailableLineColor(user.id, mediaBoard.id, MediaBoardColors.RED);
+				await uc.updateAvailableLineColor(user.id, mediaBoard.id, Colors.RED);
 
 				expect(boardNodeRule.can).toHaveBeenCalledWith('updateMediaBoardColor', user, mediaBoard);
 			});
@@ -670,9 +670,9 @@ describe(MediaAvailableLineUc.name, () => {
 			it('should collapse the line', async () => {
 				const { user, mediaBoard } = setup();
 
-				await uc.updateAvailableLineColor(user.id, mediaBoard.id, MediaBoardColors.RED);
+				await uc.updateAvailableLineColor(user.id, mediaBoard.id, Colors.RED);
 
-				expect(mediaBoardService.updateBackgroundColor).toHaveBeenCalledWith(mediaBoard, MediaBoardColors.RED);
+				expect(mediaBoardService.updateBackgroundColor).toHaveBeenCalledWith(mediaBoard, Colors.RED);
 			});
 		});
 
@@ -692,7 +692,7 @@ describe(MediaAvailableLineUc.name, () => {
 			it('should throw an exception', async () => {
 				const { user, mediaBoard } = setup();
 
-				await expect(uc.updateAvailableLineColor(user.id, mediaBoard.id, MediaBoardColors.RED)).rejects.toThrow(
+				await expect(uc.updateAvailableLineColor(user.id, mediaBoard.id, Colors.RED)).rejects.toThrow(
 					FeatureDisabledLoggableException
 				);
 			});

@@ -181,6 +181,7 @@ export const superheroPermissions = [
 	Permission.USER_LOGIN_MIGRATION_FORCE,
 	Permission.USER_LOGIN_MIGRATION_ROLLBACK,
 	Permission.TOOL_ADMIN,
+	Permission.GROUP_FULL_ADMIN,
 ];
 
 export const externalPersonPermissions = [...userPermissions];

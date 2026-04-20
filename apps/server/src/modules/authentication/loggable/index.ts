@@ -6,3 +6,4 @@ export { InvalidTokenLoggableException } from './invalid-token.loggable-exceptio
 export { AccountSystemMismatchLoggableException } from './account-system-mismatch.loggable-exception';
 export * from './user-could-not-be-authenticated.loggable.exception';
 export { UserAccountDeactivatedLoggableException } from './user-account-deactivated-exception';
+export { MissingRefreshTokenLoggableException } from './missing-refresh-token.loggable-exception';
