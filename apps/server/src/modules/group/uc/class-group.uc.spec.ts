@@ -1,5 +1,11 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Action, AuthorizationContext, AuthorizationService } from '@modules/authorization';
+import {
+	Action,
+	AUTHORIZATION_CONFIG_TOKEN,
+	AuthorizationConfig,
+	AuthorizationContext,
+	AuthorizationService,
+} from '@modules/authorization';
 import { ClassService } from '@modules/class';
 import { Class } from '@modules/class/domain';
 import { classFactory } from '@modules/class/domain/testing/factory/class.factory';
@@ -42,7 +48,8 @@ describe('ClassGroupUc', () => {
 	let authorizationService: DeepMocked<AuthorizationService>;
 	let schoolYearService: DeepMocked<SchoolYearService>;
 	let courseService: DeepMocked<CourseDoService>;
-	let config: GroupConfig;
+	let groupConfig: GroupConfig;
+	let authorizationConfig: AuthorizationConfig;
 	let userService: DeepMocked<UserService>;
 
 	beforeAll(async () => {
@@ -88,6 +95,13 @@ describe('ClassGroupUc', () => {
 					},
 				},
 				{
+					provide: AUTHORIZATION_CONFIG_TOKEN,
+					useValue: {
+						teacherStudentVisibilityIsConfigurable: true,
+						teacherStudentVisibilityIsEnabledByDefault: true,
+					},
+				},
+				{
 					provide: UserService,
 					useValue: createMock<UserService>(),
 				},
@@ -103,7 +117,8 @@ describe('ClassGroupUc', () => {
 		authorizationService = module.get(AuthorizationService);
 		schoolYearService = module.get(SchoolYearService);
 		courseService = module.get(CourseDoService);
-		config = module.get(GROUP_CONFIG_TOKEN);
+		groupConfig = module.get(GROUP_CONFIG_TOKEN);
+		authorizationConfig = module.get(AUTHORIZATION_CONFIG_TOKEN);
 		userService = module.get(UserService);
 
 		await setupEntities([User]);
@@ -121,6 +136,7 @@ describe('ClassGroupUc', () => {
 		describe('when the user has no permission', () => {
 			const setup = () => {
 				const school = schoolFactory.build();
+				jest.spyOn(school, 'getPermissions').mockReturnValue(undefined);
 				const user = userFactory.buildWithId();
 				const error = new ForbiddenException();
 
@@ -153,6 +169,7 @@ describe('ClassGroupUc', () => {
 				const school = schoolFactory.build({
 					currentYear: schoolYear,
 				});
+				jest.spyOn(school, 'getPermissions').mockReturnValue(undefined);
 
 				const { studentUser } = UserAndAccountTestFactory.buildStudent();
 				const { teacherUser } = UserAndAccountTestFactory.buildTeacher();
@@ -200,7 +217,7 @@ describe('ClassGroupUc', () => {
 				});
 				const synchronizedCourse = courseFactory.build({ syncedWithGroup: group.id });
 
-				schoolService.getSchoolById.mockResolvedValueOnce(school);
+				schoolService.getSchoolById.mockResolvedValue(school);
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(teacherUser);
 				authorizationService.hasAllPermissions.mockReturnValueOnce(false);
 				authorizationService.hasPermission.mockReturnValueOnce(false);
@@ -209,7 +226,7 @@ describe('ClassGroupUc', () => {
 				groupService.findByScope.mockResolvedValueOnce(new Page<Group>([group, groupWithSystem], 2));
 				systemService.getSystems.mockResolvedValueOnce([system]);
 				roleService.findByName.mockResolvedValueOnce(studentRole);
-				config.featureSchulconnexCourseSyncEnabled = true;
+				groupConfig.featureSchulconnexCourseSyncEnabled = true;
 				roleService.findByName.mockResolvedValueOnce(teacherRole);
 				const teacherUserDo = {
 					id: teacherUser.id,
@@ -263,9 +280,10 @@ describe('ClassGroupUc', () => {
 
 				await uc.findAllClasses(teacherUser.id, teacherUser.school.id);
 
-				expect(authorizationService.hasAllPermissions).toHaveBeenCalledWith<[User, string[]]>(teacherUser, [
-					Permission.CLASS_FULL_ADMIN,
+				expect(authorizationService.hasOneOfPermissions).toHaveBeenCalledWith<[User, string[]]>(teacherUser, [
+					Permission.STUDENT_LIST,
 					Permission.GROUP_FULL_ADMIN,
+					Permission.CLASS_FULL_ADMIN,
 				]);
 			});
 
@@ -488,7 +506,7 @@ describe('ClassGroupUc', () => {
 				it('should throw', async () => {
 					const { teacherUser } = setup();
 
-					const func = async () =>
+					const func = () =>
 						uc.findAllClasses(teacherUser.id, teacherUser.school.id, 'notAType' as SchoolYearQueryType);
 
 					await expect(func).rejects.toThrow(UnknownQueryTypeLoggableException);
@@ -500,6 +518,7 @@ describe('ClassGroupUc', () => {
 			const setup = (generateClasses = false) => {
 				const schoolYear = schoolYearDoFactory.build();
 				const school = schoolFactory.build({ currentYear: schoolYear });
+				jest.spyOn(school, 'getPermissions').mockReturnValue(undefined);
 
 				const { studentUser } = UserAndAccountTestFactory.buildStudent();
 				const { teacherUser } = UserAndAccountTestFactory.buildTeacher();
@@ -545,7 +564,7 @@ describe('ClassGroupUc', () => {
 					],
 				});
 
-				schoolService.getSchoolById.mockResolvedValueOnce(school);
+				schoolService.getSchoolById.mockResolvedValue(school);
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(adminUser);
 				authorizationService.hasAllPermissions.mockReturnValueOnce(true);
 				authorizationService.hasPermission.mockReturnValueOnce(false);
@@ -554,7 +573,7 @@ describe('ClassGroupUc', () => {
 				groupService.findByScope.mockResolvedValueOnce(new Page<Group>([group, groupWithSystem], 2));
 				systemService.getSystems.mockResolvedValueOnce([system]);
 				roleService.findByName.mockResolvedValueOnce(studentRole);
-				config.featureSchulconnexCourseSyncEnabled = true;
+				groupConfig.featureSchulconnexCourseSyncEnabled = true;
 				roleService.findByName.mockResolvedValueOnce(teacherRole);
 				const teacherUserDo = {
 					id: teacherUser.id,
@@ -598,9 +617,10 @@ describe('ClassGroupUc', () => {
 
 				await uc.findAllClasses(adminUser.id, adminUser.school.id);
 
-				expect(authorizationService.hasAllPermissions).toHaveBeenCalledWith<[User, string[]]>(adminUser, [
-					Permission.CLASS_FULL_ADMIN,
+				expect(authorizationService.hasOneOfPermissions).toHaveBeenCalledWith<[User, string[]]>(adminUser, [
+					Permission.STUDENT_LIST,
 					Permission.GROUP_FULL_ADMIN,
+					Permission.CLASS_FULL_ADMIN,
 				]);
 			});
 
@@ -749,6 +769,7 @@ describe('ClassGroupUc', () => {
 			const setup = (generateClasses = false) => {
 				const schoolYear = schoolYearDoFactory.build();
 				const school = schoolFactory.build({ currentYear: schoolYear });
+				jest.spyOn(school, 'getPermissions').mockReturnValue(undefined);
 
 				const { studentUser } = UserAndAccountTestFactory.buildStudent();
 				const { teacherUser } = UserAndAccountTestFactory.buildTeacher();
@@ -794,7 +815,7 @@ describe('ClassGroupUc', () => {
 					],
 				});
 
-				schoolService.getSchoolById.mockResolvedValueOnce(school);
+				schoolService.getSchoolById.mockResolvedValue(school);
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(teacherUser);
 				authorizationService.hasAllPermissions.mockReturnValueOnce(false);
 				authorizationService.hasPermission.mockReturnValueOnce(true);
@@ -803,7 +824,7 @@ describe('ClassGroupUc', () => {
 				groupService.findByScope.mockResolvedValueOnce(new Page<Group>([group, groupWithSystem], 2));
 				systemService.getSystems.mockResolvedValueOnce([system]);
 				roleService.findByName.mockResolvedValueOnce(studentRole);
-				config.featureSchulconnexCourseSyncEnabled = true;
+				groupConfig.featureSchulconnexCourseSyncEnabled = true;
 				roleService.findByName.mockResolvedValueOnce(teacherRole);
 				const teacherUserDo = {
 					id: teacherUser.id,
@@ -840,6 +861,47 @@ describe('ClassGroupUc', () => {
 						requiredPermissions: [Permission.CLASS_VIEW, Permission.GROUP_VIEW],
 					}
 				);
+			});
+		});
+
+		describe('when accessing as a teacher', () => {
+			describe('when visibility is configurable and school has setting enabled', () => {
+				const setup = () => {
+					const school = schoolFactory.build();
+					jest.spyOn(school, 'getPermissions').mockReturnValue({
+						teacher: { STUDENT_LIST: true },
+					});
+					const { teacherUser } = UserAndAccountTestFactory.buildTeacher();
+					const schoolYear = schoolYearDoFactory.build();
+
+					schoolService.getSchoolById.mockResolvedValue(school);
+					authorizationService.getUserWithPermissions.mockResolvedValueOnce(teacherUser);
+					authorizationService.hasAllPermissions.mockReturnValueOnce(true);
+					authorizationService.hasPermission.mockReturnValueOnce(false);
+					schoolYearService.getAllSchoolYears.mockResolvedValueOnce([schoolYear]);
+					classService.find.mockResolvedValueOnce([]);
+					groupService.findByScope.mockResolvedValueOnce(new Page<Group>([], 0));
+					systemService.getSystems.mockResolvedValueOnce([]);
+					roleService.findByName.mockResolvedValueOnce(roleDtoFactory.buildWithId());
+					userService.findByIds.mockResolvedValue([]);
+					courseService.findBySyncedGroup.mockResolvedValueOnce([]);
+					authorizationConfig.teacherStudentVisibilityIsConfigurable = true;
+					authorizationConfig.teacherStudentVisibilityIsEnabledByDefault = false;
+
+					return { school, teacherUser };
+				};
+
+				it('should require STUDENT_LIST or GROUP_FULL_ADMIN permission to see all students', async () => {
+					const { teacherUser } = setup();
+
+					await uc.findAllClasses(teacherUser.id, teacherUser.school.id);
+
+					expect(authorizationService.hasOneOfPermissions).toHaveBeenCalledWith<[User, string[]]>(teacherUser, [
+						Permission.STUDENT_LIST,
+						Permission.GROUP_FULL_ADMIN,
+						Permission.CLASS_FULL_ADMIN,
+					]);
+				});
 			});
 		});
 	});
