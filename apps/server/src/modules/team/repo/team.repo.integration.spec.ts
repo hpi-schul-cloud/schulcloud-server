@@ -49,7 +49,7 @@ describe('team repo', () => {
 			em.clear();
 
 			const result = await repo.findById(team.id);
-			expect(Object.keys(result).sort()).toEqual(['name', 'userIds', 'updatedAt', '_id', 'createdAt'].sort());
+			expect(Object.keys(result).sort()).toEqual(['color', 'name', 'userIds', 'updatedAt', '_id', 'createdAt'].sort());
 		});
 
 		it('should populate roles if populate is set to true', async () => {
@@ -113,7 +113,9 @@ describe('team repo', () => {
 
 			// Assert
 			expect(result[0]).toBeDefined();
-			expect(Object.keys(result[0]).sort()).toEqual(['name', 'userIds', 'updatedAt', '_id', 'createdAt'].sort());
+			expect(Object.keys(result[0]).sort()).toEqual(
+				['color', 'name', 'userIds', 'updatedAt', '_id', 'createdAt'].sort()
+			);
 		});
 
 		it('should return teams which contains a specific userId', async () => {
@@ -134,7 +136,9 @@ describe('team repo', () => {
 				expect(team.teamUsers.flatMap((user) => user.userId.id).includes(teamUser.userId.id)).toBeTruthy();
 			});
 			expect(result.some((team: TeamEntity) => team.id === team3.id)).toBeFalsy();
-			expect(Object.keys(result[0]).sort()).toEqual(['name', 'userIds', 'updatedAt', '_id', 'createdAt'].sort());
+			expect(Object.keys(result[0]).sort()).toEqual(
+				['color', 'name', 'userIds', 'updatedAt', '_id', 'createdAt'].sort()
+			);
 		});
 	});
 

@@ -1,7 +1,8 @@
 import { faker } from '@faker-js/faker';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { IdTokenExtractionFailureLoggableException } from '@modules/oauth/loggable';
 import { RoleName } from '@modules/role';
-import { NotImplementedException } from '@nestjs/common';
+import { schoolFactory } from '@modules/school/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import * as classValidator from 'class-validator';
@@ -12,22 +13,34 @@ import {
 	ExternalUserDto,
 	OauthDataDto,
 	OauthDataStrategyInputDto,
+	ProvisioningDto,
 	ProvisioningSystemDto,
 } from '../../dto';
-import { ErwinProvisioningStrategy } from './erwin.strategy';
+import { BadDataLoggableException } from '../../loggable';
+import { ErwinProvisioningService } from '../../service/erwin-provisioning.service';
+import { externalSchoolDtoFactory, externalUserDtoFactory, provisioningSystemDtoFactory } from '../../testing';
 import { ErwinRole, MappedSvsRolle } from './enums/rolle.enum';
 import { ErwinKlassePayload } from './erwin.klasse.payload';
+import { ErwinProvisioningStrategy } from './erwin.strategy';
 
 describe('ErwinProvisioningStrategy', () => {
 	let module: TestingModule;
 	let sut: ErwinProvisioningStrategy;
+	let erwinProvisioningServiceMock: DeepMocked<ErwinProvisioningService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			providers: [ErwinProvisioningStrategy],
+			providers: [
+				ErwinProvisioningStrategy,
+				{
+					provide: ErwinProvisioningService,
+					useValue: createMock<ErwinProvisioningService>(),
+				},
+			],
 		}).compile();
 
 		sut = module.get(ErwinProvisioningStrategy);
+		erwinProvisioningServiceMock = module.get(ErwinProvisioningService);
 	});
 
 	afterEach(() => {
@@ -509,9 +522,61 @@ describe('ErwinProvisioningStrategy', () => {
 	});
 
 	describe('apply', () => {
-		describe('when called', () => {
-			it('should throw NotImplementedException', () => {
-				expect(() => sut.apply()).toThrow(NotImplementedException);
+		describe('when externalSchool is provided', () => {
+			const setup = () => {
+				const system: ProvisioningSystemDto = provisioningSystemDtoFactory.build();
+				const externalUser: ExternalUserDto = externalUserDtoFactory.build();
+				const externalSchool: ExternalSchoolDto = externalSchoolDtoFactory.build();
+				const school = schoolFactory.build();
+
+				const oauthData: OauthDataDto = new OauthDataDto({
+					system,
+					externalUser,
+					externalSchool,
+				});
+
+				erwinProvisioningServiceMock.provisionSchool.mockResolvedValueOnce(school);
+
+				return { oauthData, externalUser, externalSchool, system };
+			};
+
+			it('should return ProvisioningDto', async () => {
+				const { oauthData, externalUser } = setup();
+
+				const result = await sut.apply(oauthData);
+
+				expect(result).toEqual<ProvisioningDto>({
+					externalUserId: externalUser.externalId,
+				});
+			});
+
+			it('should call provisionSchool when externalSchool is provided', async () => {
+				const { oauthData, externalSchool, system } = setup();
+
+				await sut.apply(oauthData);
+
+				expect(erwinProvisioningServiceMock.provisionSchool).toHaveBeenCalledWith(system, externalSchool);
+			});
+		});
+
+		describe('when externalSchool is missing', () => {
+			const setup = () => {
+				const system: ProvisioningSystemDto = provisioningSystemDtoFactory.build();
+				const externalUser: ExternalUserDto = externalUserDtoFactory.build();
+
+				const oauthData: OauthDataDto = new OauthDataDto({
+					system,
+					externalUser,
+					externalSchool: undefined,
+				});
+
+				return { oauthData };
+			};
+
+			it('should throw BadDataLoggableException', async () => {
+				const { oauthData } = setup();
+
+				await expect(sut.apply(oauthData)).rejects.toThrow(BadDataLoggableException);
 			});
 		});
 	});

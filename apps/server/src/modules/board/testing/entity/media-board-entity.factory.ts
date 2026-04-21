@@ -3,7 +3,7 @@ import {
 	BoardExternalReferenceType,
 	BoardLayout,
 	BoardNodeType,
-	MediaBoardColors,
+	Colors,
 	MediaBoardProps,
 	ROOT_PATH,
 } from '../../domain';
@@ -31,7 +31,7 @@ export const mediaBoardEntityFactory = BoardNodeEntityFactory.define<PropsWithTy
 		createdAt: new Date(),
 		updatedAt: new Date(),
 		context,
-		backgroundColor: MediaBoardColors.TRANSPARENT,
+		backgroundColor: Colors.TRANSPARENT,
 		collapsed: false,
 		layout: BoardLayout.LIST,
 		type: BoardNodeType.MEDIA_BOARD,

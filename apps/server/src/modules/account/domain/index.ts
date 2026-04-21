@@ -3,3 +3,4 @@ export * from './interface';
 export * from './mapper';
 export * from './services';
 export * from './type';
+export { Account } from './do';

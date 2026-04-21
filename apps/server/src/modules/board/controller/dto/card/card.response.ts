@@ -16,6 +16,7 @@ import {
 } from '../element';
 import { TimestampsResponse } from '../timestamps.response';
 import { VisibilitySettingsResponse } from './visibility-settings.response';
+import { Colors } from '../../../domain';
 
 @ApiExtraModels(
 	ExternalToolElementResponse,
@@ -30,9 +31,10 @@ import { VisibilitySettingsResponse } from './visibility-settings.response';
 	H5pElementResponse
 )
 export class CardResponse {
-	constructor({ id, title, height, elements, visibilitySettings, timestamps }: CardResponse) {
+	constructor({ id, title, backgroundColor, height, elements, visibilitySettings, timestamps }: CardResponse) {
 		this.id = id;
 		this.title = title;
+		this.backgroundColor = backgroundColor;
 		this.height = height;
 		this.elements = elements;
 		this.visibilitySettings = visibilitySettings;
@@ -42,14 +44,17 @@ export class CardResponse {
 	@ApiProperty({
 		pattern: bsonStringPattern,
 	})
-	id: string;
+	public id: string;
 
 	@ApiPropertyOptional()
 	@DecodeHtmlEntities()
-	title?: string;
+	public title?: string;
+
+	@ApiProperty({ enum: Colors, enumName: 'Colors' })
+	public backgroundColor: Colors;
 
 	@ApiProperty()
-	height: number;
+	public height: number;
 
 	@ApiProperty({
 		type: 'array',
@@ -68,11 +73,11 @@ export class CardResponse {
 			],
 		},
 	})
-	elements: AnyContentElementResponse[];
+	public elements: AnyContentElementResponse[];
 
 	@ApiProperty()
-	visibilitySettings: VisibilitySettingsResponse;
+	public visibilitySettings: VisibilitySettingsResponse;
 
 	@ApiProperty()
-	timestamps: TimestampsResponse;
+	public timestamps: TimestampsResponse;
 }

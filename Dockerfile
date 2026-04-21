@@ -1,4 +1,4 @@
-FROM docker.io/node:22-alpine AS builder
+FROM docker.io/node:24-alpine AS builder
 
 WORKDIR /app
 
@@ -16,7 +16,7 @@ RUN git config --global --add safe.directory /app  \
 RUN npm ci && npm run build
 
 
-FROM docker.io/node:22-alpine
+FROM docker.io/node:24-alpine
 
 ENV TZ=Europe/Berlin
 RUN apk add --no-cache \

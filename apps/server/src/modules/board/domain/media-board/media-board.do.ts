@@ -1,5 +1,5 @@
 import type { BoardExternalReference, BoardLayout, MediaBoardProps } from '../types';
-import type { AnyMediaBoardNode, MediaBoardColors } from './types';
+import type { AnyMediaBoardNode, Colors } from './types';
 import { MediaLine } from './media-line.do';
 import { BoardNode } from '../board-node.do';
 
@@ -16,11 +16,11 @@ export class MediaBoard extends BoardNode<MediaBoardProps> {
 		return this.props.layout;
 	}
 
-	get backgroundColor(): MediaBoardColors {
+	get backgroundColor(): Colors {
 		return this.props.backgroundColor;
 	}
 
-	set backgroundColor(backgroundColor: MediaBoardColors) {
+	set backgroundColor(backgroundColor: Colors) {
 		this.props.backgroundColor = backgroundColor;
 	}
 
