@@ -5,6 +5,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
+import { SchulconnexLicenseProvisioningMessage } from '../domain';
 import { ExternalLicenseDto } from '../dto';
 import { LicenseProvisioningSuccessfulLoggable } from '../loggable';
 import { PROVISIONING_EXCHANGE_CONFIG_TOKEN } from '../provisioning-exchange.config';
@@ -88,6 +89,46 @@ describe(SchulconnexLicenseProvisioningConsumer.name, () => {
 				expect.any(Function),
 				SchulconnexLicenseProvisioningConsumer.name
 			);
+		});
+
+		describe('when the handler is invoked', () => {
+			const setup = () => {
+				const userId = new ObjectId().toHexString();
+				const schoolId = new ObjectId().toHexString();
+				const systemId = new ObjectId().toHexString();
+				const externalLicenses = [
+					new ExternalLicenseDto({
+						mediumId: 'medium:1',
+					}),
+				];
+
+				const payload: SchulconnexLicenseProvisioningMessage = {
+					userId,
+					schoolId,
+					systemId,
+					externalLicenses,
+				};
+
+				return {
+					payload,
+				};
+			};
+
+			it('should call provisionLicenses with the payload', async () => {
+				const { payload } = setup();
+
+				await consumer.onModuleInit();
+
+				const registerAmqpSubscriberMock = jest.mocked(registerAmqpSubscriber);
+				const handler = registerAmqpSubscriberMock.mock.calls[0][3];
+
+				await handler(payload);
+
+				expect(schulconnexLicenseProvisioningService.provisionExternalLicenses).toHaveBeenCalledWith(
+					payload.userId,
+					payload.externalLicenses
+				);
+			});
 		});
 	});
 

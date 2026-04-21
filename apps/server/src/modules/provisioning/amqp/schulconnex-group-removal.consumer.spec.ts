@@ -6,6 +6,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { groupFactory } from '@modules/group/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
+import { SchulconnexGroupRemovalMessage } from '../domain';
 import { GroupRemovalSuccessfulLoggable } from '../loggable';
 import { PROVISIONING_EXCHANGE_CONFIG_TOKEN } from '../provisioning-exchange.config';
 import { PROVISIONING_CONFIG_TOKEN, ProvisioningConfig } from '../provisioning.config';
@@ -94,6 +95,41 @@ describe(SchulconnexGroupRemovalConsumer.name, () => {
 				expect.any(Function),
 				SchulconnexGroupRemovalConsumer.name
 			);
+		});
+
+		describe('when the handler is invoked', () => {
+			const setup = () => {
+				const userId = new ObjectId().toHexString();
+				const groupId = new ObjectId().toHexString();
+
+				schulconnexGroupProvisioningService.removeUserFromGroup.mockResolvedValueOnce(null);
+				config.featureSchulconnexCourseSyncEnabled = false;
+
+				const payload: SchulconnexGroupRemovalMessage = {
+					userId,
+					groupId,
+				};
+
+				return {
+					payload,
+				};
+			};
+
+			it('should call removeUserFromGroup with the payload', async () => {
+				const { payload } = setup();
+
+				await consumer.onModuleInit();
+
+				const registerAmqpSubscriberMock = jest.mocked(registerAmqpSubscriber);
+				const handler = registerAmqpSubscriberMock.mock.calls[0][3];
+
+				await handler(payload);
+
+				expect(schulconnexGroupProvisioningService.removeUserFromGroup).toHaveBeenCalledWith(
+					payload.userId,
+					payload.groupId
+				);
+			});
 		});
 	});
 
