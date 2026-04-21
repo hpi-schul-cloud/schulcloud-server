@@ -19,7 +19,7 @@ import { H5pEditorContentService } from '../../service';
 import { H5PContentParentType } from '../../types';
 
 // Using a variable here to access the exchange name in the decorator
-let h5pExchange: string | undefined;
+let h5pExchange = 'h5p-editor';
 @Injectable()
 export class H5pEditorConsumer {
 	constructor(
@@ -34,7 +34,7 @@ export class H5pEditorConsumer {
 	}
 
 	@RabbitSubscribe({
-		exchange: h5pExchange,
+		exchange: 'h5p-editor',
 		routingKey: H5pEditorEvents.DELETE_CONTENT,
 		queue: H5pEditorEvents.DELETE_CONTENT,
 	})
