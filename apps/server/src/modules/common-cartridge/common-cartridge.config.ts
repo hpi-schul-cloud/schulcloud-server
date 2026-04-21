@@ -1,5 +1,5 @@
 import { ConfigProperty, Configuration } from '@infra/configuration';
-import { StringToBoolean } from '@shared/controller/transformer/string-to-boolean.transformer';
+import { StringToBoolean, StringToNumber } from '@shared/controller/transformer';
 import { IsBoolean, IsNumber } from 'class-validator';
 
 export const COMMON_CARTRIDGE_PUBLIC_API_CONFIG_TOKEN = 'COMMON_CARTRIDGE_PUBLIC_API_CONFIG_TOKEN';
@@ -21,6 +21,7 @@ export class CommonCartridgePublicApiConfig {
 	public courseExportEnabled = false;
 
 	@ConfigProperty('FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_MAX_FILE_SIZE')
+	@StringToNumber()
 	@IsNumber()
 	public courseImportMaxFileSize: number = DEFAULT_MAX_FILE_SIZE_BYTES;
 }
