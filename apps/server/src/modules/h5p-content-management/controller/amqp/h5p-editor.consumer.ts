@@ -34,7 +34,7 @@ export class H5pEditorConsumer {
 	}
 
 	@RabbitSubscribe({
-		exchange: 'h5p-editor',
+		exchange: h5pExchange,
 		routingKey: H5pEditorEvents.DELETE_CONTENT,
 		queue: H5pEditorEvents.DELETE_CONTENT,
 	})
