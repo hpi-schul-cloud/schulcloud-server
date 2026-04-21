@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { BoardNodeType, MediaBoardColors, MediaLineProps, ROOT_PATH } from '../../domain';
+import { BoardNodeType, Colors, MediaLineProps, ROOT_PATH } from '../../domain';
 import { BoardNodeEntityFactory, PropsWithType } from './board-node-entity.factory';
 
 export const mediaLineEntityFactory = BoardNodeEntityFactory.define<PropsWithType<MediaLineProps>>(({ sequence }) => {
@@ -12,7 +12,7 @@ export const mediaLineEntityFactory = BoardNodeEntityFactory.define<PropsWithTyp
 		children: [],
 		createdAt: new Date(),
 		updatedAt: new Date(),
-		backgroundColor: MediaBoardColors.TRANSPARENT,
+		backgroundColor: Colors.TRANSPARENT,
 		collapsed: false,
 		type: BoardNodeType.MEDIA_LINE,
 	};

@@ -8,7 +8,7 @@ import { setupEntities } from '@testing/database';
 import { BoardNodeRule } from '../../authorisation/board-node.rule';
 import { BOARD_CONFIG_TOKEN, BoardConfig } from '../../board.config';
 import { BoardNodeAuthorizable, MediaBoard, MediaLine } from '../../domain';
-import { MediaBoardColors } from '../../domain/media-board/types';
+import { Colors } from '../../domain/media-board/types';
 import { BoardNodeAuthorizableService, BoardNodeService, MediaBoardService } from '../../service';
 import { mediaBoardFactory, mediaLineFactory } from '../../testing';
 import { MediaLineUc } from './media-line.uc';
@@ -295,7 +295,7 @@ describe(MediaLineUc.name, () => {
 				const { user, mediaLine } = setup();
 				boardNodeRule.can.mockReturnValueOnce(true);
 
-				await uc.updateLineColor(user.id, mediaLine.id, MediaBoardColors.BLUE);
+				await uc.updateLineColor(user.id, mediaLine.id, Colors.BLUE);
 
 				expect(boardNodeRule.can).toHaveBeenCalledWith('updateMediaBoardLineColor', user, mediaLine);
 			});
@@ -304,7 +304,7 @@ describe(MediaLineUc.name, () => {
 				const { user, mediaLine } = setup();
 				boardNodeRule.can.mockReturnValueOnce(true);
 
-				await uc.updateLineColor(user.id, mediaLine.id, MediaBoardColors.BLUE);
+				await uc.updateLineColor(user.id, mediaLine.id, Colors.BLUE);
 
 				expect(mediaBoardService.updateBackgroundColor).toHaveBeenCalledWith(mediaLine, 'blue');
 			});
@@ -326,7 +326,7 @@ describe(MediaLineUc.name, () => {
 			it('should throw an exception', async () => {
 				const { user, mediaLine } = setup();
 
-				await expect(uc.updateLineColor(user.id, mediaLine.id, MediaBoardColors.BLUE)).rejects.toThrow(
+				await expect(uc.updateLineColor(user.id, mediaLine.id, Colors.BLUE)).rejects.toThrow(
 					FeatureDisabledLoggableException
 				);
 			});
