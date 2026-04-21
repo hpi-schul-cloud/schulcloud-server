@@ -1,16 +1,22 @@
 import { Logger } from '@core/logger';
+import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { groupFactory } from '@modules/group/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
+import { SchulconnexGroupRemovalMessage } from '../domain';
 import { GroupRemovalSuccessfulLoggable } from '../loggable';
 import { PROVISIONING_EXCHANGE_CONFIG_TOKEN } from '../provisioning-exchange.config';
 import { PROVISIONING_CONFIG_TOKEN, ProvisioningConfig } from '../provisioning.config';
 import { ENTITIES } from '../schulconnex-group-removal.entity.imports';
 import { SchulconnexCourseSyncService, SchulconnexGroupProvisioningService } from '../strategy/schulconnex/service';
+import { registerAmqpSubscriber } from './amqp-subscriber.helper';
 import { SchulconnexGroupRemovalConsumer } from './schulconnex-group-removal.consumer';
+import { SchulconnexProvisioningEvents } from './schulconnex.exchange';
+
+jest.mock('./amqp-subscriber.helper');
 
 describe(SchulconnexGroupRemovalConsumer.name, () => {
 	let module: TestingModule;
@@ -19,6 +25,7 @@ describe(SchulconnexGroupRemovalConsumer.name, () => {
 	let logger: DeepMocked<Logger>;
 	let schulconnexGroupProvisioningService: DeepMocked<SchulconnexGroupProvisioningService>;
 	let schulconnexCourseSyncService: DeepMocked<SchulconnexCourseSyncService>;
+	let amqpConnection: DeepMocked<AmqpConnection>;
 	let config: ProvisioningConfig;
 
 	beforeAll(async () => {
@@ -48,6 +55,10 @@ describe(SchulconnexGroupRemovalConsumer.name, () => {
 					useValue: await setupEntities(ENTITIES),
 				},
 				{
+					provide: AmqpConnection,
+					useValue: createMock<AmqpConnection>(),
+				},
+				{
 					provide: PROVISIONING_EXCHANGE_CONFIG_TOKEN,
 					useValue: {
 						exchangeName: 'provisioning-exchange',
@@ -61,6 +72,7 @@ describe(SchulconnexGroupRemovalConsumer.name, () => {
 		logger = module.get(Logger);
 		schulconnexGroupProvisioningService = module.get(SchulconnexGroupProvisioningService);
 		schulconnexCourseSyncService = module.get(SchulconnexCourseSyncService);
+		amqpConnection = module.get(AmqpConnection);
 		config = module.get(PROVISIONING_CONFIG_TOKEN);
 	});
 
@@ -70,6 +82,55 @@ describe(SchulconnexGroupRemovalConsumer.name, () => {
 
 	afterEach(() => {
 		jest.resetAllMocks();
+	});
+
+	describe('onModuleInit', () => {
+		it('should register the AMQP subscriber with the correct parameters', async () => {
+			await consumer.onModuleInit();
+
+			expect(registerAmqpSubscriber).toHaveBeenCalledWith(
+				amqpConnection,
+				'provisioning-exchange',
+				SchulconnexProvisioningEvents.GROUP_REMOVAL,
+				expect.any(Function),
+				SchulconnexGroupRemovalConsumer.name
+			);
+		});
+
+		describe('when the handler is invoked', () => {
+			const setup = () => {
+				const userId = new ObjectId().toHexString();
+				const groupId = new ObjectId().toHexString();
+
+				schulconnexGroupProvisioningService.removeUserFromGroup.mockResolvedValueOnce(null);
+				config.featureSchulconnexCourseSyncEnabled = false;
+
+				const payload: SchulconnexGroupRemovalMessage = {
+					userId,
+					groupId,
+				};
+
+				return {
+					payload,
+				};
+			};
+
+			it('should call removeUserFromGroup with the payload', async () => {
+				const { payload } = setup();
+
+				await consumer.onModuleInit();
+
+				const registerAmqpSubscriberMock = jest.mocked(registerAmqpSubscriber);
+				const handler = registerAmqpSubscriberMock.mock.calls[0][3];
+
+				await handler(payload);
+
+				expect(schulconnexGroupProvisioningService.removeUserFromGroup).toHaveBeenCalledWith(
+					payload.userId,
+					payload.groupId
+				);
+			});
+		});
 	});
 
 	describe('removeUserFromGroup', () => {
