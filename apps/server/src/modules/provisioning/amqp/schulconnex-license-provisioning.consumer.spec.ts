@@ -1,4 +1,5 @@
 import { Logger } from '@core/logger';
+import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
@@ -12,8 +13,11 @@ import {
 	SchulconnexLicenseProvisioningService,
 	SchulconnexToolProvisioningService,
 } from '../strategy/schulconnex/service';
+import { registerAmqpSubscriber } from './amqp-subscriber.helper';
 import { SchulconnexLicenseProvisioningConsumer } from './schulconnex-license-provisioning.consumer';
-import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
+import { SchulconnexProvisioningEvents } from './schulconnex.exchange';
+
+jest.mock('./amqp-subscriber.helper');
 
 describe(SchulconnexLicenseProvisioningConsumer.name, () => {
 	let module: TestingModule;
@@ -22,6 +26,7 @@ describe(SchulconnexLicenseProvisioningConsumer.name, () => {
 	let logger: DeepMocked<Logger>;
 	let schulconnexLicenseProvisioningService: DeepMocked<SchulconnexLicenseProvisioningService>;
 	let schulconnexToolProvisioningService: DeepMocked<SchulconnexToolProvisioningService>;
+	let amqpConnection: DeepMocked<AmqpConnection>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -61,6 +66,7 @@ describe(SchulconnexLicenseProvisioningConsumer.name, () => {
 		logger = module.get(Logger);
 		schulconnexLicenseProvisioningService = module.get(SchulconnexLicenseProvisioningService);
 		schulconnexToolProvisioningService = module.get(SchulconnexToolProvisioningService);
+		amqpConnection = module.get(AmqpConnection);
 	});
 
 	afterAll(async () => {
@@ -69,6 +75,20 @@ describe(SchulconnexLicenseProvisioningConsumer.name, () => {
 
 	afterEach(() => {
 		jest.resetAllMocks();
+	});
+
+	describe('onModuleInit', () => {
+		it('should register the AMQP subscriber with the correct parameters', async () => {
+			await consumer.onModuleInit();
+
+			expect(registerAmqpSubscriber).toHaveBeenCalledWith(
+				amqpConnection,
+				'provisioning-exchange',
+				SchulconnexProvisioningEvents.LICENSE_PROVISIONING,
+				expect.any(Function),
+				SchulconnexLicenseProvisioningConsumer.name
+			);
+		});
 	});
 
 	describe('provisionGroups', () => {

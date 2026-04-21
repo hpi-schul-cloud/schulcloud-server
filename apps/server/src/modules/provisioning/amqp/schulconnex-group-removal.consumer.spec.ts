@@ -1,4 +1,5 @@
 import { Logger } from '@core/logger';
+import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
@@ -10,8 +11,11 @@ import { PROVISIONING_EXCHANGE_CONFIG_TOKEN } from '../provisioning-exchange.con
 import { PROVISIONING_CONFIG_TOKEN, ProvisioningConfig } from '../provisioning.config';
 import { ENTITIES } from '../schulconnex-group-removal.entity.imports';
 import { SchulconnexCourseSyncService, SchulconnexGroupProvisioningService } from '../strategy/schulconnex/service';
+import { registerAmqpSubscriber } from './amqp-subscriber.helper';
 import { SchulconnexGroupRemovalConsumer } from './schulconnex-group-removal.consumer';
-import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
+import { SchulconnexProvisioningEvents } from './schulconnex.exchange';
+
+jest.mock('./amqp-subscriber.helper');
 
 describe(SchulconnexGroupRemovalConsumer.name, () => {
 	let module: TestingModule;
@@ -20,6 +24,7 @@ describe(SchulconnexGroupRemovalConsumer.name, () => {
 	let logger: DeepMocked<Logger>;
 	let schulconnexGroupProvisioningService: DeepMocked<SchulconnexGroupProvisioningService>;
 	let schulconnexCourseSyncService: DeepMocked<SchulconnexCourseSyncService>;
+	let amqpConnection: DeepMocked<AmqpConnection>;
 	let config: ProvisioningConfig;
 
 	beforeAll(async () => {
@@ -66,6 +71,7 @@ describe(SchulconnexGroupRemovalConsumer.name, () => {
 		logger = module.get(Logger);
 		schulconnexGroupProvisioningService = module.get(SchulconnexGroupProvisioningService);
 		schulconnexCourseSyncService = module.get(SchulconnexCourseSyncService);
+		amqpConnection = module.get(AmqpConnection);
 		config = module.get(PROVISIONING_CONFIG_TOKEN);
 	});
 
@@ -75,6 +81,20 @@ describe(SchulconnexGroupRemovalConsumer.name, () => {
 
 	afterEach(() => {
 		jest.resetAllMocks();
+	});
+
+	describe('onModuleInit', () => {
+		it('should register the AMQP subscriber with the correct parameters', async () => {
+			await consumer.onModuleInit();
+
+			expect(registerAmqpSubscriber).toHaveBeenCalledWith(
+				amqpConnection,
+				'provisioning-exchange',
+				SchulconnexProvisioningEvents.GROUP_REMOVAL,
+				expect.any(Function),
+				SchulconnexGroupRemovalConsumer.name
+			);
+		});
 	});
 
 	describe('removeUserFromGroup', () => {
