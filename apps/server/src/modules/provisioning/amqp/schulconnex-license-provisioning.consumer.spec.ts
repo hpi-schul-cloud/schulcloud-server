@@ -6,13 +6,14 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { ExternalLicenseDto } from '../dto';
 import { LicenseProvisioningSuccessfulLoggable } from '../loggable';
+import { PROVISIONING_EXCHANGE_CONFIG_TOKEN } from '../provisioning-exchange.config';
 import { ENTITIES } from '../schulconnex-license-provisioning.entity.imports';
 import {
 	SchulconnexLicenseProvisioningService,
 	SchulconnexToolProvisioningService,
 } from '../strategy/schulconnex/service';
 import { SchulconnexLicenseProvisioningConsumer } from './schulconnex-license-provisioning.consumer';
-import { PROVISIONING_EXCHANGE_CONFIG_TOKEN } from '../provisioning-exchange.config';
+import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 
 describe(SchulconnexLicenseProvisioningConsumer.name, () => {
 	let module: TestingModule;
@@ -41,6 +42,10 @@ describe(SchulconnexLicenseProvisioningConsumer.name, () => {
 				{
 					provide: MikroORM,
 					useValue: await setupEntities(ENTITIES),
+				},
+				{
+					provide: AmqpConnection,
+					useValue: createMock<AmqpConnection>(),
 				},
 				{
 					provide: PROVISIONING_EXCHANGE_CONFIG_TOKEN,

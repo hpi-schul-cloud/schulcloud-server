@@ -11,6 +11,7 @@ import { PROVISIONING_CONFIG_TOKEN, ProvisioningConfig } from '../provisioning.c
 import { ENTITIES } from '../schulconnex-group-removal.entity.imports';
 import { SchulconnexCourseSyncService, SchulconnexGroupProvisioningService } from '../strategy/schulconnex/service';
 import { SchulconnexGroupRemovalConsumer } from './schulconnex-group-removal.consumer';
+import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 
 describe(SchulconnexGroupRemovalConsumer.name, () => {
 	let module: TestingModule;
@@ -46,6 +47,10 @@ describe(SchulconnexGroupRemovalConsumer.name, () => {
 				{
 					provide: MikroORM,
 					useValue: await setupEntities(ENTITIES),
+				},
+				{
+					provide: AmqpConnection,
+					useValue: createMock<AmqpConnection>(),
 				},
 				{
 					provide: PROVISIONING_EXCHANGE_CONFIG_TOKEN,
