@@ -16,28 +16,23 @@ import {
 } from '@shared/common/error';
 import { setupEntities } from '@testing/database';
 import 'reflect-metadata';
-import { ACCOUNT_CONFIG_TOKEN, AccountConfig } from '../../account-config';
 import { accountDoFactory, accountFactory } from '../../testing';
 import { Account, AccountSave, UpdateAccount } from '../do';
-import { IdmCallbackLoggableException } from '../error';
 import { ACCOUNT_REPO, AccountRepo } from '../interface';
 import { AccountServiceDb } from './account-db.service';
-import { AccountServiceIdm } from './account-idm.service';
 import { AccountService } from './account.service';
 import { AbstractAccountService } from './account.service.abstract';
 
 describe('AccountService', () => {
 	let module: TestingModule;
 	let accountService: AccountService;
-	let accountServiceIdm: DeepMocked<AccountServiceIdm>;
 	let accountServiceDb: DeepMocked<AccountServiceDb>;
-	let config: AccountConfig;
 	let logger: DeepMocked<Logger>;
 	let userService: DeepMocked<UserService>;
 	let accountRepo: DeepMocked<AccountRepo>;
 
 	const newAccountService = () =>
-		new AccountService(accountServiceDb, accountServiceIdm, config, logger, userService, accountRepo);
+		new AccountService(accountServiceDb, logger, userService, accountRepo);
 
 	const defaultPassword = 'DummyPasswd!1';
 	const otherPassword = 'DummyPasswd!2';
@@ -58,16 +53,8 @@ describe('AccountService', () => {
 					useValue: createMock<AccountServiceDb>(),
 				},
 				{
-					provide: AccountServiceIdm,
-					useValue: createMock<AccountServiceIdm>(),
-				},
-				{
 					provide: Logger,
 					useValue: createMock<Logger>(),
-				},
-				{
-					provide: ACCOUNT_CONFIG_TOKEN,
-					useValue: AccountConfig,
 				},
 				{
 					provide: ACCOUNT_REPO,
@@ -80,9 +67,7 @@ describe('AccountService', () => {
 			],
 		}).compile();
 		accountServiceDb = module.get(AccountServiceDb);
-		accountServiceIdm = module.get(AccountServiceIdm);
 		accountService = module.get(AccountService);
-		config = module.get(ACCOUNT_CONFIG_TOKEN);
 		logger = module.get(Logger);
 		userService = module.get(UserService);
 		accountRepo = module.get(ACCOUNT_REPO);

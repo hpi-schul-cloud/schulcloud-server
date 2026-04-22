@@ -1,21 +1,15 @@
-import { IdentityManagementService } from '@infra/identity-management';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Inject, Injectable } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common/error';
 import { Counted, EntityId } from '@shared/domain/types';
 import bcrypt from 'bcryptjs';
-import { ACCOUNT_CONFIG_TOKEN, AccountConfig } from '../../account-config';
 import { Account, AccountSave } from '../do';
 import { ACCOUNT_REPO, AccountRepo } from '../interface';
 import { AbstractAccountService } from './account.service.abstract';
 
 @Injectable()
 export class AccountServiceDb extends AbstractAccountService {
-	constructor(
-		@Inject(ACCOUNT_REPO) private readonly accountRepo: AccountRepo,
-		private readonly idmService: IdentityManagementService,
-		@Inject(ACCOUNT_CONFIG_TOKEN) private readonly config: AccountConfig
-	) {
+	constructor(@Inject(ACCOUNT_REPO) private readonly accountRepo: AccountRepo) {
 		super();
 	}
 
@@ -152,10 +146,6 @@ export class AccountServiceDb extends AbstractAccountService {
 	private async convertExternalToInternalId(id: EntityId | ObjectId): Promise<ObjectId> {
 		if (id instanceof ObjectId || ObjectId.isValid(id)) {
 			return new ObjectId(id);
-		}
-		if (this.config.identityManagementStoreEnabled === true) {
-			const account = await this.idmService.findAccountById(id);
-			return new ObjectId(account.attDbcAccountId);
 		}
 		throw new EntityNotFoundError(`Account with id ${id.toString()} not found`);
 	}

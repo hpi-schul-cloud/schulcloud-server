@@ -1,7 +1,6 @@
 import { Logger } from '@core/logger';
 import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { IdentityManagementService } from '@infra/identity-management';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
@@ -11,9 +10,8 @@ import { EntityId } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
 import bcrypt from 'bcryptjs';
 import { v1 } from 'uuid';
-import { ACCOUNT_CONFIG_TOKEN, AccountConfig } from '../../account-config';
 import { accountDoFactory } from '../../testing';
-import { Account, IdmAccount } from '../do';
+import { Account } from '../do';
 import { ACCOUNT_REPO, AccountRepo } from '../interface';
 import { AccountServiceDb } from './account-db.service';
 
@@ -21,17 +19,11 @@ describe('AccountDbService', () => {
 	let module: TestingModule;
 	let accountService: AccountServiceDb;
 	let accountRepo: DeepMocked<AccountRepo>;
-	let configMock: DeepMocked<AccountConfig>;
-	let idmServiceMock: DeepMocked<IdentityManagementService>;
 
 	const defaultPassword = 'DummyPasswd!1';
 
 	const internalId = new ObjectId().toHexString();
 	const externalId = v1();
-	const accountMock: IdmAccount = {
-		id: externalId,
-		attDbcAccountId: internalId,
-	};
 
 	afterAll(async () => {
 		await module.close();
@@ -49,20 +41,10 @@ describe('AccountDbService', () => {
 					provide: Logger,
 					useValue: createMock<Logger>(),
 				},
-				{
-					provide: ACCOUNT_CONFIG_TOKEN,
-					useValue: new AccountConfig(),
-				},
-				{
-					provide: IdentityManagementService,
-					useValue: createMock<IdentityManagementService>(),
-				},
 			],
 		}).compile();
 		accountRepo = module.get(ACCOUNT_REPO);
 		accountService = module.get(AccountServiceDb);
-		configMock = module.get(ACCOUNT_CONFIG_TOKEN);
-		idmServiceMock = module.get(IdentityManagementService);
 
 		await setupEntities([User]);
 	});
@@ -102,26 +84,6 @@ describe('AccountDbService', () => {
 			);
 		});
 
-		describe('when id is external calls idm service', () => {
-			const setup = () => {
-				const mockTeacherAccount = accountDoFactory.build();
-				mockTeacherAccount.username = 'changedUsername@example.org';
-				mockTeacherAccount.activated = false;
-
-				accountRepo.findById.mockResolvedValue(mockTeacherAccount);
-				configMock.identityManagementStoreEnabled = true;
-				idmServiceMock.findAccountById.mockResolvedValue(accountMock);
-
-				return { mockTeacherAccount };
-			};
-
-			it('should return accountDto', async () => {
-				const { mockTeacherAccount } = setup();
-
-				const resultAccount = await accountService.findById(externalId);
-				expect(resultAccount).toEqual(mockTeacherAccount);
-			});
-		});
 	});
 
 	describe('findByUserId', () => {
