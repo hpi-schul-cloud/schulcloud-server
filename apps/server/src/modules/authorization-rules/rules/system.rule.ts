@@ -7,7 +7,8 @@ import {
 } from '@modules/authorization';
 import { System } from '@modules/system';
 import { User } from '@modules/user/repo';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotImplementedException } from '@nestjs/common';
+import { Permission } from '@shared/domain/interface/permission.enum';
 
 @Injectable()
 export class SystemRule implements Rule<System> {
@@ -19,27 +20,54 @@ export class SystemRule implements Rule<System> {
 	}
 
 	public isApplicable(user: User, object: unknown): boolean {
-		const isMatched: boolean = object instanceof System;
+		const isMatched = object instanceof System;
 
 		return isMatched;
 	}
 
-	public hasPermission(user: User, object: System, context: AuthorizationContext): boolean {
-		const hasPermissions: boolean = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
-
-		const hasAccess: boolean = user.school.systems.getIdentifiers().includes(object.id);
-
-		let isAuthorized: boolean = hasPermissions && hasAccess;
-
-		if (context.action === Action.write) {
-			isAuthorized = isAuthorized && this.canEdit(object);
+	public hasPermission(user: User, system: System, context: AuthorizationContext): boolean {
+		let hasPermission = false;
+		
+		if (context.action === Action.read) {
+			hasPermission = this.hasReadAccess(user, system, context);
+		} else if (context.action === Action.write) {
+			hasPermission = this.hasWriteAccess(user, system, context);
+		} else {
+			throw new NotImplementedException();
 		}
+		
+		return hasPermission;
+	}
 
-		return isAuthorized;
+	private hasReadAccess(user: User, system: System, context: AuthorizationContext): boolean {
+		// TODO permission is missing
+		const hasReadPermissions = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
+		const hasInstanceReadOperationPermission = this.authorizationHelper.hasAllPermissions(user, [
+			Permission.CAN_EXECUTE_INSTANCE_OPERATIONS,
+			Permission.SYSTEM_VIEW,
+			...context.requiredPermissions,
+		]);
+		const hasSystem = this.hasSystem(user, system);
+
+		return hasInstanceReadOperationPermission || (hasReadPermissions && hasSystem);
+	}
+
+	private hasWriteAccess(user: User, system: System, context: AuthorizationContext): boolean {
+		// TODO permission is missing
+		const hasWritePermissions = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
+		const hasInstanceWriteOperationPermission = this.authorizationHelper.hasAllPermissions(user, [
+			Permission.CAN_EXECUTE_INSTANCE_OPERATIONS,
+			Permission.SYSTEM_EDIT,
+			...context.requiredPermissions,
+		]);
+		const canEdit = this.canEdit(system);
+		const hasSystem = this.hasSystem(user, system);
+
+		return (canEdit && hasInstanceWriteOperationPermission) || (hasWritePermissions && canEdit && hasSystem);
 	}
 
 	public canEdit(system: unknown): boolean {
-		const canEdit: boolean =
+		const canEdit =
 			typeof system === 'object' &&
 			!!system &&
 			'ldapConfig' in system &&
@@ -49,5 +77,11 @@ export class SystemRule implements Rule<System> {
 			system.ldapConfig.provider === 'general';
 
 		return canEdit;
+	}
+
+	private hasSystem(user: User, system: System): boolean {
+		const hasSystem = user.school.systems.getIdentifiers().includes(system.id);
+	
+		return hasSystem;
 	}
 }

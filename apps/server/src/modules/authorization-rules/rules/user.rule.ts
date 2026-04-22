@@ -1,8 +1,9 @@
-import { AuthorizationContext, AuthorizationHelper, AuthorizationInjectionService, Rule } from '@modules/authorization';
+import { Action, AuthorizationContext, AuthorizationHelper, AuthorizationInjectionService, Rule } from '@modules/authorization';
 import { RoleName } from '@modules/role';
 import { UserDo } from '@modules/user';
 import { User } from '@modules/user/repo';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotImplementedException } from '@nestjs/common';
+import { Permission } from '@shared/domain/interface/permission.enum';
 
 @Injectable()
 export class UserRule implements Rule<UserDo> {
@@ -19,27 +20,41 @@ export class UserRule implements Rule<UserDo> {
 		return isMatched;
 	}
 
-	public hasPermission(user: User, entity: UserDo, context: AuthorizationContext): boolean {
-		const hasPermission = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
-		if (!hasPermission) {
-			return false;
+	public hasPermission(user: User, userDo: UserDo, context: AuthorizationContext): boolean {
+		let hasPermission = false;
+
+		if (context.action === Action.read) {
+			hasPermission = this.hasReadAccess(user, userDo, context);
+		} else if (context.action === Action.write) {
+			hasPermission = this.hasWriteAccess(user, userDo, context);
+		} else {
+			throw new NotImplementedException();
 		}
 
-		const isHimself = user.id === entity.id;
-		if (isHimself) {
-			return true;
-		}
-
-		const isUsersSchool = user.school.id === entity.schoolId;
-		const isDiscoverable = this.authorizationHelper.determineDiscoverability(entity);
-		const isVisible = isUsersSchool || isDiscoverable;
-
-		const hasLimitingRole = this.hasLimitingRole(user, entity);
-
-		return isVisible && !hasLimitingRole;
+		return hasPermission;
 	}
 
-	private hasLimitingRole(user: User, entity: UserDo): boolean {
+	private hasReadAccess(user: User, userDo: UserDo, context: AuthorizationContext): boolean {
+		// TODO: Missing permission
+		const hasReadPermission = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
+		// TODO: Missing permission
+		const hasInstanceReadOperationPermission = this.authorizationHelper.hasAllPermissions(user, [
+			Permission.CAN_EXECUTE_INSTANCE_OPERATIONS,
+			...context.requiredPermissions,
+		]);
+	
+		const isUser = this.isUserHimself(user, userDo);
+		const isVisible = this.isVisibleToExternal(user, userDo);
+		const hasLimitingRole = this.hasLimitingRole(user, userDo);
+
+		return hasInstanceReadOperationPermission || (hasReadPermission && isUser) || (hasReadPermission && isVisible && !hasLimitingRole);
+	}
+
+	private hasWriteAccess(user: User, userDo: UserDo, context: AuthorizationContext): boolean {
+		return this.hasReadAccess(user, userDo, context);
+	}
+
+	private hasLimitingRole(user: User, userDo: UserDo): boolean {
 		const userRoles = user.roles.getItems().map((role) => role.name);
 		const isUserPartlyTeacher = userRoles.includes(RoleName.TEACHER);
 		if (isUserPartlyTeacher) {
@@ -47,12 +62,49 @@ export class UserRule implements Rule<UserDo> {
 		}
 
 		const isUserAdmin = userRoles.includes(RoleName.ADMINISTRATOR);
-		const entityRoles = entity.roles.map((role) => role.name);
+		const entityRoles = userDo.roles.map((role) => role.name);
 		const isEntityTeacher = entityRoles.includes(RoleName.TEACHER);
 		if (isUserAdmin && !isEntityTeacher) {
 			return true;
 		}
 
 		return false;
+	}
+
+	private isUserHimself(user: User, userDo: UserDo): boolean {
+		return user.id === userDo.id;
+	}
+
+	private isVisibleToExternal(user: User, userDo: UserDo): boolean {
+		const isUsersSchool = this.isUserSchool(user, userDo);
+		const isDiscoverable = this.isDiscoverable(userDo);
+
+		return isUsersSchool || isDiscoverable;
+	}
+
+	private isUserSchool(user: User, userDo: UserDo): boolean {
+		return user.school.id === userDo.schoolId;
+	}
+
+	private isDiscoverable(userDo: UserDo): boolean {
+		const discoverabilitySetting = this.authorizationHelper.getConfig('teacherVisibilityForExternalTeamInvitation');
+
+		if (discoverabilitySetting === 'disabled') {
+			return false;
+		}
+
+		if (discoverabilitySetting === 'enabled') {
+			return true;
+		}
+
+		if (discoverabilitySetting === 'opt-in') {
+			return userDo.discoverable ?? false;
+		}
+
+		if (discoverabilitySetting === 'opt-out') {
+			return userDo.discoverable ?? true;
+		}
+
+		throw new Error('Invalid discoverability setting');
 	}
 }

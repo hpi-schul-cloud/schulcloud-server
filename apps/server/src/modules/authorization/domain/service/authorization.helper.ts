@@ -69,23 +69,7 @@ export class AuthorizationHelper {
 		return result;
 	}
 
-	public determineDiscoverability(entity: UserDo): boolean {
-		const discoverabilitySetting = this.config.teacherVisibilityForExternalTeamInvitation;
-
-		if (discoverabilitySetting === 'disabled') {
-			return false;
-		}
-		if (discoverabilitySetting === 'enabled') {
-			return true;
-		}
-
-		if (discoverabilitySetting === 'opt-in') {
-			return entity.discoverable ?? false;
-		}
-		if (discoverabilitySetting === 'opt-out') {
-			return entity.discoverable ?? true;
-		}
-
-		throw new Error('Invalid discoverability setting');
+	public getConfig(key: keyof AuthorizationConfig): AuthorizationConfig[typeof key] {
+		return this.config[key];
 	}
 }

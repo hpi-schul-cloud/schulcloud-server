@@ -9,6 +9,7 @@ import { CourseGroupEntity } from '@modules/course/repo';
 import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
 import { CourseRule } from './course.rule';
+import { Permission } from '@shared/domain/interface/permission.enum';
 
 @Injectable()
 export class CourseGroupRule implements Rule<CourseGroupEntity> {
@@ -26,14 +27,27 @@ export class CourseGroupRule implements Rule<CourseGroupEntity> {
 		return isMatched;
 	}
 
-	public hasPermission(user: User, object: CourseGroupEntity, context: AuthorizationContext): boolean {
-		const { requiredPermissions } = context;
+	private hasReadAccess(user: User, object: CourseGroupEntity, context: AuthorizationContext): boolean {
+		const isStudentInCourseGroup = this.isStudentInCourseGroup(user, object);
+		// TODO: Permissions are missing here
+		const hasReadPermissions = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
+		const hasInstanceReadOperationPermission = this.authorizationHelper.hasAllPermissions(user, [
+			Permission.CAN_EXECUTE_INSTANCE_OPERATIONS,
+			...context.requiredPermissions,
+		]);
 
-		const hasAllPermissions = this.authorizationHelper.hasAllPermissions(user, requiredPermissions);
-		const hasPermission =
-			this.authorizationHelper.hasAccessToEntity(user, object, ['students']) ||
-			this.courseRule.hasPermission(user, object.course, { action: Action.write, requiredPermissions: [] });
+		return hasInstanceReadOperationPermission || (hasReadPermissions && isStudentInCourseGroup) || this.hasCourseWriteAccess(user, object, context);
+	}
 
-		return hasAllPermissions && hasPermission;
+	private hasWriteAccess(user: User, object: CourseGroupEntity, context: AuthorizationContext): boolean {
+		return this.hasReadAccess(user, object, context);
+	}
+
+	private hasCourseWriteAccess(user: User, object: CourseGroupEntity, context: AuthorizationContext): boolean {
+		return this.courseRule.hasPermission(user, object.course, { action: Action.write, requiredPermissions: context.requiredPermissions });
+	}
+
+	private isStudentInCourseGroup(user: User, object: CourseGroupEntity): boolean {
+		return this.authorizationHelper.hasAccessToEntity(user, object, ['students']);
 	}
 }
