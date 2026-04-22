@@ -21,9 +21,10 @@ export class Migration20260421141610 extends Migration {
 		);
 	}
 
-	public async down(): Promise<void> {
+	public down(): Promise<void> {
 		console.info(
 			'Irreversible migration: down() is a no-op because it cannot safely distinguish records updated by up() from records that already had storageType "standard".'
 		);
+		return Promise.resolve();
 	}
 }
