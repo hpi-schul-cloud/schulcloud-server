@@ -1,0 +1,64 @@
+/* eslint-disable import/no-extraneous-dependencies */
+const { dtsPlugin } = require('esbuild-plugin-d.ts');
+const { build } = require('esbuild');
+const fs = require('fs');
+const { resolve } = require('path');
+// add files to be transformed from ESModules to CommonJS in the following list
+const options = [
+	{
+		noExportedMember: 'node_modules/@feathersjs/express/lib/declarations.d.ts',
+	},
+];
+
+const globalOptions = {
+	platform: 'node',
+	format: 'cjs',
+	bundle: true,
+	minify: true,
+	loader: { '.js': 'jsx' },
+};
+
+function replace(type, filePath) {
+	const file = resolve(__dirname, '..', filePath);
+	fs.readFile(file, 'utf8', (err, data) => {
+		if (err) throw err;
+		let result = data;
+		if (type === 'pathToResolutionModeError') {
+			result = data.replace(/resolution-mode="require"/g, '');
+		} else if (type === 'noExportedMember') {
+			result = `// @ts-nocheck\n\n${data}`;
+		}
+
+		fs.writeFile(file, result, 'utf8', (err) => {
+			if (err) throw err;
+		});
+	});
+}
+
+for (const option of options) {
+	const { entryPoint, outdir, pathToResolutionModeError, noExportedMember } = option;
+	try {
+		if (entryPoint && outdir) {
+			build({
+				entryPoints: entryPoint,
+				outdir,
+				platform: globalOptions.platform,
+				format: globalOptions.format,
+				bundle: globalOptions.bundle,
+				minify: globalOptions.minify,
+				loader: globalOptions.loader,
+				plugins: [dtsPlugin()],
+			});
+		}
+
+		// remove resolution-mode="require" from file because it provokes an error in the commonjs build
+		if (pathToResolutionModeError) {
+			replace('pathToResolutionModeError', pathToResolutionModeError);
+		}
+		if (noExportedMember) {
+			replace('noExportedMember', noExportedMember);
+		}
+	} catch (e) {
+		process.exit(1);
+	}
+}

@@ -30,6 +30,7 @@
 		"setup:idm:configure": "npm run nest:start:console -- idm configure",
 		"setup:idm": "npm run setup:idm:seed && npm run setup:idm:configure",
 		"build": "npm run nest:build",
+		"postinstall": "node ./esbuild/esmodules-bundler.js",
 		"inspect": "npm run build && node --inspect=5959 build/src/",
 		"inspect-container": "npm run build && node --inspect=0.0.0.0:5959 build/src/",
 		"start": "npm run nest:start:prod",
