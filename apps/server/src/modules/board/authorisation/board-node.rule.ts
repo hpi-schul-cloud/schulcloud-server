@@ -39,6 +39,7 @@ export const BoardOperationValues = [
 	'shareCard',
 	'updateCardHeight',
 	'updateCardTitle',
+	'updateCardColor',
 
 	// element
 	'createElement',
@@ -170,6 +171,7 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 			shareCard: canShareBoardNode,
 			updateCardHeight: _canEditBoard,
 			updateCardTitle: _canEditBoard,
+			updateCardColor: _canEditBoard,
 
 			// element
 			createElement: _canEditBoard,

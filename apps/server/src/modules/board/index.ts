@@ -23,7 +23,7 @@ export {
 	isRichTextElement,
 	// @modules/tool/tool-launch/service/auto-parameter-strategy/auto-context-name.strategy.ts
 	MediaBoard,
-	MediaBoardColors,
+	Colors,
 	UserWithBoardRoles,
 } from './domain';
 

@@ -1,5 +1,5 @@
 import type { EntityId, InputFormat } from '@shared/domain/types';
-import type { MediaBoardColors } from '../media-board';
+import type { Colors } from '../media-board';
 import type { AnyBoardNode } from './any-board-node';
 import type { BoardExternalReference } from './board-external-reference';
 import type { BoardLayout } from './board-layout.enum';
@@ -29,6 +29,7 @@ export interface ColumnProps extends BoardNodeProps {
 
 export interface CardProps extends BoardNodeProps {
 	title?: string;
+	backgroundColor?: Colors;
 	height: number;
 }
 
@@ -79,7 +80,7 @@ export interface H5pElementProps extends BoardNodeProps {
 
 export interface MediaBoardProps extends BoardNodeProps {
 	context: BoardExternalReference;
-	backgroundColor: MediaBoardColors;
+	backgroundColor: Colors;
 	collapsed: boolean;
 	layout: BoardLayout;
 }
@@ -90,7 +91,7 @@ export interface MediaExternalToolElementProps extends BoardNodeProps {
 }
 
 export interface MediaLineProps extends BoardNodeProps {
-	backgroundColor: MediaBoardColors;
+	backgroundColor: Colors;
 	collapsed: boolean;
 	title: string;
 }
