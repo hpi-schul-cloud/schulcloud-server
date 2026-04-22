@@ -17,6 +17,7 @@ export class BoardErrorLoggableException extends BadGatewayException implements 
 
 	public getLogMessage(): LogMessage | ValidationErrorLogMessage {
 		const data = {
+			v: '1.1',
 			url: this.url,
 			type: this.errorType,
 			boardId: this.boardId,
@@ -32,13 +33,13 @@ export class BoardErrorLoggableException extends BadGatewayException implements 
 	}
 
 	private toLogfmt(data: Record<string, string | number>): string {
-		const escapeQuotes = (str: string): string => str.replace(/"/g, '\\"');
+		const escape = (str: string): string => str.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
 
-		const escape = (str: string): string => (/[=\s"]/.test(str) ? `"${escapeQuotes(str)}"` : str);
+		const escapeValue = (str: string): string => (/[=\s"]/.test(str) ? `"${escape(str)}"` : str);
 
 		return Object.entries(data)
 			.map(([key, value]) => {
-				const val = escape(String(value));
+				const val = escapeValue(String(value));
 				return `${key}=${val}`;
 			})
 			.join(' ');
