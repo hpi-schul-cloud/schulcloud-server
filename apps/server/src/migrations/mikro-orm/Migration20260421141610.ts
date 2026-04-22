@@ -22,22 +22,8 @@ export class Migration20260421141610 extends Migration {
 	}
 
 	public async down(): Promise<void> {
-		const fileRecords = await this.getCollection('filerecords').updateMany(
-			{
-				storageType: 'standard',
-			},
-			{
-				$unset: {
-					storageType: '',
-				},
-			}
-		);
-
-		const fileRecordsModifiedCount = Number(fileRecords.modifiedCount) || 0;
-		const fileRecordsMatchedCount = Number(fileRecords.matchedCount) || 0;
-
 		console.info(
-			`Removed storageType field for ${fileRecordsModifiedCount} of ${fileRecordsMatchedCount} file records`
+			'Irreversible migration: down() is a no-op because it cannot safely distinguish records updated by up() from records that already had storageType "standard".'
 		);
 	}
 }
