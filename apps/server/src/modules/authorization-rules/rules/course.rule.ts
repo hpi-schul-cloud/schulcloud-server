@@ -49,13 +49,18 @@ export class CourseRule implements Rule<CourseEntity | Course> {
 		// TODO Read permission is missing
 		const hasReadPermission = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
 
+		const hasAdminPermission = this.authorizationHelper.hasAllPermissions(user, [
+			Permission.COURSE_ADMINISTRATION,
+			...context.requiredPermissions,
+		]);
+
 		const hasInstanceReadOperationPermission = this.authorizationHelper.hasAllPermissions(user, [
 			Permission.COURSE_VIEW,
 			Permission.CAN_EXECUTE_INSTANCE_OPERATIONS,
 			...context.requiredPermissions,
 		]);
 
-		return hasInstanceReadOperationPermission || (hasReadPermission && isUserCourse);
+		return hasInstanceReadOperationPermission || hasAdminPermission || (hasReadPermission && isUserCourse);
 	}
 
 	private hasWriteAccess(user: User, object: CourseEntity | Course, context: AuthorizationContext): boolean {
@@ -63,8 +68,10 @@ export class CourseRule implements Rule<CourseEntity | Course> {
 			'teachers',
 			'substitutionTeachers',
 		]);
-		// TODO Why COURSE_ADMINISTRATION
-		const hasWritePermission = this.authorizationHelper.hasAllPermissions(user, [
+		// TODO Write permission is missing
+		const hasWritePermission = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
+
+		const hasAdminPermission = this.authorizationHelper.hasAllPermissions(user, [
 			Permission.COURSE_ADMINISTRATION,
 			...context.requiredPermissions,
 		]);
@@ -75,6 +82,6 @@ export class CourseRule implements Rule<CourseEntity | Course> {
 			...context.requiredPermissions,
 		]);
 
-		return hasInstanceWriteOperationPermission || (hasWritePermission && isTeacherInCourse);
+		return hasInstanceWriteOperationPermission || hasAdminPermission || (hasWritePermission && isTeacherInCourse);
 	}
 }

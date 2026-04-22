@@ -20,7 +20,7 @@ describe('CourseRule', () => {
 	let authorizationHelper: AuthorizationHelper;
 	let injectionService: AuthorizationInjectionService;
 	let user: User;
-	let entity: CourseEntity;
+	let course: CourseEntity;
 	const permissionA = 'a' as Permission;
 	const permissionB = 'b' as Permission;
 	const permissionC = 'c' as Permission;
@@ -63,41 +63,41 @@ describe('CourseRule', () => {
 
 	describe('when validating an entity', () => {
 		it('should call hasAllPermissions on AuthorizationHelper', () => {
-			entity = courseEntityFactory.build({ teachers: [user] });
+			course = courseEntityFactory.build({ teachers: [user] });
 			const spy = jest.spyOn(authorizationHelper, 'hasAllPermissions');
-			service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [] });
+			service.hasPermission(user, course, { action: Action.read, requiredPermissions: [] });
 			expect(spy).toHaveBeenCalledWith(user, []);
 		});
 
 		it('should call hasAccessToEntity on AuthorizationHelper if action = "read"', () => {
-			entity = courseEntityFactory.build({ teachers: [user] });
+			course = courseEntityFactory.build({ teachers: [user] });
 			const spy = jest.spyOn(authorizationHelper, 'hasAccessToEntity');
-			service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [] });
-			expect(spy).toBeCalledWith(user, entity, ['teachers', 'substitutionTeachers', 'students']);
+			service.hasPermission(user, course, { action: Action.read, requiredPermissions: [] });
+			expect(spy).toBeCalledWith(user, course, ['teachers', 'substitutionTeachers', 'students']);
 		});
 
 		it('should call hasAccessToEntity on AuthorizationHelper if action = "write"', () => {
-			entity = courseEntityFactory.build({ teachers: [user] });
+			course = courseEntityFactory.build({ teachers: [user] });
 			const spy = jest.spyOn(authorizationHelper, 'hasAccessToEntity');
-			service.hasPermission(user, entity, { action: Action.write, requiredPermissions: [] });
-			expect(spy).toBeCalledWith(user, entity, ['teachers', 'substitutionTeachers']);
+			service.hasPermission(user, course, { action: Action.write, requiredPermissions: [] });
+			expect(spy).toBeCalledWith(user, course, ['teachers', 'substitutionTeachers']);
 		});
 
 		it('should return "true" if user in scope', () => {
-			entity = courseEntityFactory.build({ teachers: [user] });
-			const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [] });
+			course = courseEntityFactory.build({ teachers: [user] });
+			const res = service.hasPermission(user, course, { action: Action.read, requiredPermissions: [] });
 			expect(res).toBe(true);
 		});
 
 		it('should return "false" if user has not permission', () => {
-			entity = courseEntityFactory.build({ teachers: [user] });
-			const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [permissionC] });
+			course = courseEntityFactory.build({ teachers: [user] });
+			const res = service.hasPermission(user, course, { action: Action.read, requiredPermissions: [permissionC] });
 			expect(res).toBe(false);
 		});
 
 		it('should return "false" if user has not access to entity', () => {
-			entity = courseEntityFactory.build();
-			const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [permissionC] });
+			course = courseEntityFactory.build();
+			const res = service.hasPermission(user, course, { action: Action.read, requiredPermissions: [permissionC] });
 			expect(res).toBe(false);
 		});
 	});
@@ -116,18 +116,18 @@ describe('CourseRule', () => {
 
 		it('should call hasAllPermissions with admin permissions on AuthorizationHelper', () => {
 			const { permissionD, adminUser } = setup();
-			entity = courseEntityFactory.build();
+			course = courseEntityFactory.build();
 			const spy = jest.spyOn(authorizationHelper, 'hasAllPermissions');
-			service.hasPermission(adminUser, entity, { action: Action.read, requiredPermissions: [] });
+			service.hasPermission(adminUser, course, { action: Action.read, requiredPermissions: [] });
 			expect(spy).toHaveBeenNthCalledWith(2, adminUser, [permissionD]);
 		});
 
-		it('should not call hasAccessToEntity on AuthorizationHelper', () => {
+		it('should call hasAccessToEntity on AuthorizationHelper', () => {
 			const { adminUser } = setup();
-			entity = courseEntityFactory.build();
+			course = courseEntityFactory.build();
 			const spy = jest.spyOn(authorizationHelper, 'hasAccessToEntity');
-			service.hasPermission(adminUser, entity, { action: Action.read, requiredPermissions: [] });
-			expect(spy).toHaveBeenCalledTimes(0);
+			service.hasPermission(adminUser, course, { action: Action.read, requiredPermissions: [] });
+			expect(spy).toHaveBeenNthCalledWith(1, adminUser, course, ['teachers', 'substitutionTeachers', 'students']);
 		});
 	});
 
