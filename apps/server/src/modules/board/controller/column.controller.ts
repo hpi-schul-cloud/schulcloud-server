@@ -14,9 +14,11 @@ import {
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common/error';
 import { BoardUc, ColumnUc } from '../uc';
-import { CardResponse, ColumnUrlParams, MoveColumnBodyParams, RenameBodyParams } from './dto';
+import { CardResponse, ColumnResponse, ColumnUrlParams, MoveColumnBodyParams, RenameBodyParams } from './dto';
 import { CreateCardBodyParams } from './dto/card/create-card.body.params';
-import { CardResponseMapper } from './mapper';
+import { CardResponseMapper, ColumnResponseMapper } from './mapper';
+import { RequestTimeout } from '@shared/common/decorators';
+import { BOARD_INCOMING_REQUEST_TIMEOUT_COPY_API_KEY } from '../timeout.config';
 
 @ApiTags('Board Column')
 @JwtAuthentication()
@@ -66,6 +68,22 @@ export class ColumnController {
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {
 		await this.columnUc.deleteColumn(currentUser.userId, urlParams.columnId);
+	}
+
+	@ApiOperation({ summary: 'Copy a single card.' })
+	@ApiResponse({ status: 201, type: ColumnResponse })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
+	@Post(':columnId/copy')
+	@RequestTimeout(BOARD_INCOMING_REQUEST_TIMEOUT_COPY_API_KEY)
+	public async copyColumn(
+		@Param() urlParams: ColumnUrlParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<ColumnResponse> {
+		const copiedColumn = await this.boardUc.copyColumn(currentUser.userId, urlParams.columnId, currentUser.schoolId);
+		const columnDto = ColumnResponseMapper.mapToResponse(copiedColumn);
+		return columnDto;
 	}
 
 	@ApiOperation({ summary: 'Create a new card on a column.' })

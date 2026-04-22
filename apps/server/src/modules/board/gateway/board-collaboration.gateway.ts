@@ -27,6 +27,7 @@ import { TrackExecutionTime } from '../metrics/track-execution-time.decorator';
 import { BoardUc, CardUc, ColumnUc, ElementUc } from '../uc';
 import {
 	CopyCardMessageParams,
+	CopyColumnMessageParams,
 	CreateCardMessageParams,
 	CreateColumnMessageParams,
 	CreateContentElementMessageParams,
@@ -327,6 +328,26 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 				duplicatedCard: cardResponse,
 			};
 			emitter.emitToClientAndRoom(responsePayload, card);
+		} catch {
+			emitter.emitFailure(data);
+		}
+	}
+
+	@SubscribeMessage('duplicate-column-request')
+	@TrackExecutionTime()
+	@EnsureRequestContext()
+	public async copyColumn(socket: Socket, data: CopyColumnMessageParams): Promise<void> {
+		const emitter = this.buildBoardSocketEmitter({ socket, action: 'duplicate-column' });
+		const { userId, schoolId } = this.getCurrentUser(socket);
+		try {
+			const column = await this.boardUc.copyColumn(userId, data.columnId, schoolId);
+
+			const columnResponse = ColumnResponseMapper.mapToResponse(column);
+			const responsePayload = {
+				...data,
+				duplicatedColumn: columnResponse,
+			};
+			emitter.emitToClientAndRoom(responsePayload, column);
 		} catch {
 			emitter.emitFailure(data);
 		}

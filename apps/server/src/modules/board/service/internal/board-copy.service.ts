@@ -14,6 +14,7 @@ import {
 	Column,
 	ColumnBoard,
 	isCard,
+	isColumn,
 	isColumnBoard,
 } from '../../domain';
 import { BoardNodeService } from '../board-node.service';
@@ -33,6 +34,16 @@ export type CopyColumnBoardParams = {
 
 export type CopyCardParams = {
 	originalCardId: EntityId;
+	sourceStorageLocationReference: StorageLocationReference;
+	targetStorageLocationReference: StorageLocationReference;
+	userId: EntityId;
+	copyTitle?: string;
+	targetSchoolId: EntityId;
+	destinationColumnId?: EntityId;
+};
+
+export type CopyColumnParams = {
+	originalColumnId: EntityId;
 	sourceStorageLocationReference: StorageLocationReference;
 	targetStorageLocationReference: StorageLocationReference;
 	userId: EntityId;
@@ -82,6 +93,47 @@ export class BoardCopyService {
 		copyStatus.copyEntity.isVisible = false;
 		await this.boardNodeService.addRoot(copyStatus.copyEntity);
 		copyStatus.originalEntity = originalBoard;
+
+		return copyStatus;
+	}
+
+	public async copyColumn(params: CopyColumnParams): Promise<CopyStatus> {
+		const originalColumn = await this.boardNodeService.findByClassAndId(Column, params.originalColumnId);
+
+		const { targetSchoolId } = params;
+
+		if (!originalColumn.parentId) {
+			throw new UnprocessableEntityException('Column has no parent column');
+		}
+		const parentBoard = params.destinationColumnId
+			? await this.boardNodeService.findByClassAndId(ColumnBoard, params.destinationColumnId)
+			: await this.boardNodeService.findByClassAndId(ColumnBoard, originalColumn.parentId);
+
+		const copyContext = new BoardNodeCopyContext({
+			sourceStorageLocationReference: params.sourceStorageLocationReference,
+			targetStorageLocationReference: params.targetStorageLocationReference,
+			userId: params.userId,
+			filesStorageClientAdapterService: this.filesStorageClientAdapterService,
+			targetSchoolId,
+		});
+
+		const copyStatus = await this.boardNodeCopyService.copy(originalColumn, copyContext);
+
+		if (!isColumn(copyStatus.copyEntity)) {
+			throw new InternalServerErrorException('copied entity is not a column');
+		}
+
+		if (params.copyTitle) {
+			copyStatus.copyEntity.title = params.copyTitle;
+		}
+
+		copyStatus.originalEntity = originalColumn;
+
+		await this.boardNodeService.addToParent(
+			parentBoard,
+			copyStatus.copyEntity,
+			params.destinationColumnId ? undefined : originalColumn.position + 1
+		);
 
 		return copyStatus;
 	}

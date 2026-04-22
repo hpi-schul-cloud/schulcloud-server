@@ -25,6 +25,7 @@ export const BoardOperationValues = [
 	'updateReadersCanEditSetting',
 
 	// column
+	'copyColumn',
 	'createColumn',
 	'deleteColumn',
 	'moveColumn',
@@ -157,6 +158,7 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 			updateReadersCanEditSetting: canUpdateReadersCanEditSetting,
 
 			// column
+			copyColumn: _canEditBoard,
 			createColumn: _canEditBoard,
 			deleteColumn: _canEditBoard,
 			moveColumn: _canEditBoard,

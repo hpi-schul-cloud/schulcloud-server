@@ -12,7 +12,14 @@ import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.tes
 import { TEST_JWT_CONFIG_TOKEN, TestJwtModuleConfig } from '@testing/test-jwt-module.config';
 import { Socket } from 'socket.io-client';
 import { BoardCollaborationTestModule } from '../../board-collaboration.app.module';
-import { BoardExternalReferenceType, BoardLayout, CardProps, Colors, ContentElementType } from '../../domain';
+import {
+	BoardExternalReferenceType,
+	BoardLayout,
+	CardProps,
+	Colors,
+	ColumnProps,
+	ContentElementType,
+} from '../../domain';
 import {
 	cardEntityFactory,
 	columnBoardEntityFactory,
@@ -148,6 +155,35 @@ describe(BoardCollaborationGateway.name, () => {
 				const failure = await waitForEvent(unauthorizedIoClient, 'create-card-failure');
 
 				expect(failure).toEqual({ columnId: columnNode.id });
+			});
+		});
+	});
+
+	describe('copy column', () => {
+		describe('when column exists', () => {
+			it('should answer with copied column', async () => {
+				const { columnNode, columnNode2 } = await setup();
+				const columnId = columnNode.id;
+
+				ioClient.emit('duplicate-column-request', { columnId });
+				const success = (await waitForEvent(ioClient, 'duplicate-column-success')) as {
+					columnId: string;
+					copiedColumn: ColumnProps;
+				};
+
+				expect(Object.keys(success)).toEqual(expect.arrayContaining(['columnId', 'duplicatedColumn']));
+			});
+		});
+
+		describe('when user is not authorized', () => {
+			it('should answer with failure', async () => {
+				const { columnNode } = await setup();
+				const columnId = columnNode.id;
+
+				unauthorizedIoClient.emit('duplicate-column-request', { columnId });
+				const failure = await waitForEvent(unauthorizedIoClient, 'duplicate-column-failure');
+
+				expect(failure).toEqual({ columnId });
 			});
 		});
 	});

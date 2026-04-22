@@ -6,7 +6,13 @@ import { CopyStatus } from '@modules/copy-helper';
 import { CourseService } from '@modules/course';
 import { RoomService } from '@modules/room';
 import { RoomMembershipService } from '@modules/room-membership';
-import { forwardRef, Inject, Injectable } from '@nestjs/common';
+import {
+	forwardRef,
+	Inject,
+	Injectable,
+	InternalServerErrorException,
+	UnprocessableEntityException,
+} from '@nestjs/common';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 import { throwForbiddenIfFalse } from '@shared/common/utils';
 import { Permission } from '@shared/domain/interface';
@@ -22,6 +28,7 @@ import {
 	BoardNodeFactory,
 	Column,
 	ColumnBoard,
+	isColumn,
 } from '../domain';
 import { BoardNodeAuthorizableService, BoardNodeService, ColumnBoardService } from '../service';
 import { StorageLocationReference } from '../service/internal';
@@ -146,6 +153,31 @@ export class BoardUc {
 
 		await this.boardNodeService.move(column, targetBoard, targetPosition);
 		return column;
+	}
+
+	public async copyColumn(userId: EntityId, columnId: EntityId, schoolId: EntityId): Promise<Column> {
+		const column = await this.boardNodeService.findByClassAndId(Column, columnId);
+		if (!column.parentId) {
+			throw new UnprocessableEntityException('Column has no parent column');
+		}
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(column);
+
+		throwForbiddenIfFalse(this.boardNodeRule.can('copyColumn', user, boardNodeAuthorizable));
+
+		const copyStatus = await this.columnBoardService.copyColumn({
+			originalColumnId: column.id,
+			userId,
+			targetStorageLocationReference: { id: schoolId, type: StorageLocation.SCHOOL },
+			sourceStorageLocationReference: { id: schoolId, type: StorageLocation.SCHOOL },
+			targetSchoolId: schoolId,
+		});
+
+		if (!isColumn(copyStatus.copyEntity)) {
+			throw new InternalServerErrorException('Copied entity is not a column');
+		}
+
+		return copyStatus.copyEntity;
 	}
 
 	public async copyBoard(userId: EntityId, boardId: EntityId, targetSchoolId: EntityId): Promise<CopyStatus> {
