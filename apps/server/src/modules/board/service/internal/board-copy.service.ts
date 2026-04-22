@@ -49,7 +49,7 @@ export type CopyColumnParams = {
 	userId: EntityId;
 	copyTitle?: string;
 	targetSchoolId: EntityId;
-	destinationColumnId?: EntityId;
+	destinationColumnBoardId?: EntityId;
 };
 
 @Injectable()
@@ -105,8 +105,8 @@ export class BoardCopyService {
 		if (!originalColumn.parentId) {
 			throw new UnprocessableEntityException('Column has no parent column');
 		}
-		const parentBoard = params.destinationColumnId
-			? await this.boardNodeService.findByClassAndId(ColumnBoard, params.destinationColumnId)
+		const parentBoard = params.destinationColumnBoardId
+			? await this.boardNodeService.findByClassAndId(ColumnBoard, params.destinationColumnBoardId)
 			: await this.boardNodeService.findByClassAndId(ColumnBoard, originalColumn.parentId);
 
 		const copyContext = new BoardNodeCopyContext({
@@ -132,7 +132,7 @@ export class BoardCopyService {
 		await this.boardNodeService.addToParent(
 			parentBoard,
 			copyStatus.copyEntity,
-			params.destinationColumnId ? undefined : originalColumn.position + 1
+			params.destinationColumnBoardId ? undefined : originalColumn.position + 1
 		);
 
 		return copyStatus;
