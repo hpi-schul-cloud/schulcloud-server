@@ -27,7 +27,7 @@ export class SystemRule implements Rule<System> {
 
 	public hasPermission(user: User, system: System, context: AuthorizationContext): boolean {
 		let hasPermission = false;
-		
+
 		if (context.action === Action.read) {
 			hasPermission = this.hasReadAccess(user, system, context);
 		} else if (context.action === Action.write) {
@@ -35,7 +35,7 @@ export class SystemRule implements Rule<System> {
 		} else {
 			throw new NotImplementedException();
 		}
-		
+
 		return hasPermission;
 	}
 
@@ -81,7 +81,7 @@ export class SystemRule implements Rule<System> {
 
 	private hasSystem(user: User, system: System): boolean {
 		const hasSystem = user.school.systems.getIdentifiers().includes(system.id);
-	
+
 		return hasSystem;
 	}
 }

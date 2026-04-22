@@ -1,4 +1,10 @@
-import { Action, AuthorizationContext, AuthorizationHelper, AuthorizationInjectionService, Rule } from '@modules/authorization';
+import {
+	Action,
+	AuthorizationContext,
+	AuthorizationHelper,
+	AuthorizationInjectionService,
+	Rule,
+} from '@modules/authorization';
 import { Group } from '@modules/group';
 import { User } from '@modules/user/repo';
 import { Injectable, NotImplementedException } from '@nestjs/common';
@@ -21,7 +27,7 @@ export class GroupRule implements Rule<Group> {
 
 	public hasPermission(user: User, group: Group, context: AuthorizationContext): boolean {
 		let hasPermission = false;
-		
+
 		if (context.action === Action.read) {
 			hasPermission = this.hasReadAccess(user, group, context);
 		} else if (context.action === Action.write) {
@@ -29,7 +35,7 @@ export class GroupRule implements Rule<Group> {
 		} else {
 			throw new NotImplementedException();
 		}
-		
+
 		return hasPermission;
 	}
 
@@ -50,12 +56,8 @@ export class GroupRule implements Rule<Group> {
 	}
 
 	private hasOrganizationAccess(user: User, group: Group): boolean {
-		const hasOrganizationAccess = group.organizationId
-			? user.school.id === group.organizationId
-			: true;
+		const hasOrganizationAccess = group.organizationId ? user.school.id === group.organizationId : true;
 
 		return hasOrganizationAccess;
 	}
-
-
 }

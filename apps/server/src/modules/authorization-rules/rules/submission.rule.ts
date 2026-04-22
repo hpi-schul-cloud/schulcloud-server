@@ -48,7 +48,11 @@ export class SubmissionRule implements Rule<Submission> {
 			...context.requiredPermissions,
 		]);
 
-		return hasInstanceWriteOperationPermission || this.hasSubmissionWriteAccess(user, submission, context) || this.hasParentTaskWriteAccess(user, submission);
+		return (
+			hasInstanceWriteOperationPermission ||
+			this.hasSubmissionWriteAccess(user, submission, context) ||
+			this.hasParentTaskWriteAccess(user, submission)
+		);
 	}
 
 	private hasReadAccess(user: User, submission: Submission, context: AuthorizationContext): boolean {
@@ -63,7 +67,7 @@ export class SubmissionRule implements Rule<Submission> {
 
 	private hasSubmissionWriteAccess(user: User, submission: Submission, context: AuthorizationContext): boolean {
 		// TODO Permission is missing
-		const hasWritePermissions = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions)
+		const hasWritePermissions = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
 		const isUserSubmitter = submission.isUserSubmitter(user);
 		const isDueDatePendingOrUndefined = this.isDueDatePendingOrUndefined(submission);
 

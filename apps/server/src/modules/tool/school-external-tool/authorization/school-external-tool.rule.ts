@@ -1,4 +1,10 @@
-import { Action, AuthorizationContext, AuthorizationHelper, AuthorizationInjectionService, Rule } from '@modules/authorization';
+import {
+	Action,
+	AuthorizationContext,
+	AuthorizationHelper,
+	AuthorizationInjectionService,
+	Rule,
+} from '@modules/authorization';
 import { User } from '@modules/user/repo';
 import { Injectable, NotImplementedException } from '@nestjs/common';
 import { SchoolExternalTool } from '../domain';
@@ -20,21 +26,29 @@ export class SchoolExternalToolRule implements Rule<SchoolExternalToolEntity | S
 		return isMatched;
 	}
 
-	public hasPermission(user: User, object: SchoolExternalToolEntity | SchoolExternalTool, context: AuthorizationContext): boolean {
+	public hasPermission(
+		user: User,
+		object: SchoolExternalToolEntity | SchoolExternalTool,
+		context: AuthorizationContext
+	): boolean {
 		let hasPermission = false;
-	
+
 		if (context.action === Action.read) {
-				hasPermission = this.hasReadAccess(user, object, context);
+			hasPermission = this.hasReadAccess(user, object, context);
 		} else if (context.action === Action.write) {
-				hasPermission = this.hasWriteAccess(user, object, context);
+			hasPermission = this.hasWriteAccess(user, object, context);
 		} else {
-				throw new NotImplementedException();
+			throw new NotImplementedException();
 		}
-	
+
 		return hasPermission;
 	}
 
-	private hasReadAccess(user: User,object: SchoolExternalToolEntity | SchoolExternalTool,context: AuthorizationContext): boolean {
+	private hasReadAccess(
+		user: User,
+		object: SchoolExternalToolEntity | SchoolExternalTool,
+		context: AuthorizationContext
+	): boolean {
 		const isUserSchool = this.isUserSchool(user, object);
 		// TODO: Permissions are missing here
 		const hasReadPermission = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
@@ -46,7 +60,11 @@ export class SchoolExternalToolRule implements Rule<SchoolExternalToolEntity | S
 		return hasInstanceReadOperationPermission || (hasReadPermission && isUserSchool);
 	}
 
-	private hasWriteAccess(user: User,object: SchoolExternalToolEntity | SchoolExternalTool, context: AuthorizationContext): boolean {
+	private hasWriteAccess(
+		user: User,
+		object: SchoolExternalToolEntity | SchoolExternalTool,
+		context: AuthorizationContext
+	): boolean {
 		return this.hasReadAccess(user, object, context);
 	}
 

@@ -1,4 +1,10 @@
-import { Action, AuthorizationContext, AuthorizationHelper, AuthorizationInjectionService, Rule } from '@modules/authorization';
+import {
+	Action,
+	AuthorizationContext,
+	AuthorizationHelper,
+	AuthorizationInjectionService,
+	Rule,
+} from '@modules/authorization';
 import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { User } from '@modules/user/repo';
 import { Injectable, NotImplementedException } from '@nestjs/common';
@@ -21,7 +27,7 @@ export class ExternalToolRule implements Rule<ExternalTool> {
 
 	public hasPermission(user: User, externalTool: ExternalTool, context: AuthorizationContext): boolean {
 		let hasPermission = false;
-		
+
 		if (context.action === Action.read) {
 			hasPermission = this.hasReadAccess(user, externalTool, context);
 		} else if (context.action === Action.write) {
@@ -29,7 +35,7 @@ export class ExternalToolRule implements Rule<ExternalTool> {
 		} else {
 			throw new NotImplementedException();
 		}
-		
+
 		return hasPermission;
 	}
 
@@ -47,5 +53,4 @@ export class ExternalToolRule implements Rule<ExternalTool> {
 	private hasWriteAccess(user: User, externalTool: ExternalTool, context: AuthorizationContext): boolean {
 		return this.hasReadAccess(user, externalTool, context);
 	}
-
 }

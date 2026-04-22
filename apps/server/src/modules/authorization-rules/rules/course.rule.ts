@@ -28,7 +28,7 @@ export class CourseRule implements Rule<CourseEntity | Course> {
 
 	public hasPermission(user: User, object: CourseEntity | Course, context: AuthorizationContext): boolean {
 		let hasPermission = false;
-	
+
 		if (context.action === Action.read) {
 			hasPermission = this.hasReadAccess(user, object, context);
 		} else if (context.action === Action.write) {
@@ -36,12 +36,16 @@ export class CourseRule implements Rule<CourseEntity | Course> {
 		} else {
 			throw new NotImplementedException();
 		}
-	
+
 		return hasPermission;
 	}
 
 	private hasReadAccess(user: User, object: CourseEntity | Course, context: AuthorizationContext): boolean {
-		const isUserCourse = this.authorizationHelper.hasAccessToEntity(user, object, ['teachers', 'substitutionTeachers', 'students']);
+		const isUserCourse = this.authorizationHelper.hasAccessToEntity(user, object, [
+			'teachers',
+			'substitutionTeachers',
+			'students',
+		]);
 		// TODO Read permission is missing
 		const hasReadPermission = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
 
@@ -55,9 +59,15 @@ export class CourseRule implements Rule<CourseEntity | Course> {
 	}
 
 	private hasWriteAccess(user: User, object: CourseEntity | Course, context: AuthorizationContext): boolean {
-		const isTeacherInCourse = this.authorizationHelper.hasAccessToEntity(user, object, ['teachers', 'substitutionTeachers']);
+		const isTeacherInCourse = this.authorizationHelper.hasAccessToEntity(user, object, [
+			'teachers',
+			'substitutionTeachers',
+		]);
 		// TODO Why COURSE_ADMINISTRATION
-		const hasWritePermission = this.authorizationHelper.hasAllPermissions(user, [Permission.COURSE_ADMINISTRATION, ...context.requiredPermissions]);
+		const hasWritePermission = this.authorizationHelper.hasAllPermissions(user, [
+			Permission.COURSE_ADMINISTRATION,
+			...context.requiredPermissions,
+		]);
 
 		const hasInstanceWriteOperationPermission = this.authorizationHelper.hasAllPermissions(user, [
 			Permission.COURSE_EDIT,
@@ -66,5 +76,5 @@ export class CourseRule implements Rule<CourseEntity | Course> {
 		]);
 
 		return hasInstanceWriteOperationPermission || (hasWritePermission && isTeacherInCourse);
-	};
+	}
 }

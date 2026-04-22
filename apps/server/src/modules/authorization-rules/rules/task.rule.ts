@@ -48,7 +48,7 @@ export class TaskRule implements Rule<Task> {
 
 	private hasReadAccess(user: User, task: Task, context: AuthorizationContext): boolean {
 		// TODO permission is missing
-		const hasPermission  = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
+		const hasPermission = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
 		const isCreator = this.isCreator(user, task);
 		// TODO permission is missing
 		const hasInstanceReadOperationPermission = this.authorizationHelper.hasAllPermissions(user, [
@@ -56,12 +56,16 @@ export class TaskRule implements Rule<Task> {
 			...context.requiredPermissions,
 		]);
 
-		return hasInstanceReadOperationPermission || (hasPermission && isCreator) || (hasPermission && this.hasParentPermission(user, task, context));
+		return (
+			hasInstanceReadOperationPermission ||
+			(hasPermission && isCreator) ||
+			(hasPermission && this.hasParentPermission(user, task, context))
+		);
 	}
 
 	private hasWriteAccess(user: User, task: Task, context: AuthorizationContext): boolean {
 		// TODO permission is missing
-		const hasPermission  = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
+		const hasPermission = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
 		const isCreator = this.isCreator(user, task);
 		// TODO permission is missing
 		const hasInstanceWriteOperationPermission = this.authorizationHelper.hasAllPermissions(user, [
@@ -69,7 +73,11 @@ export class TaskRule implements Rule<Task> {
 			...context.requiredPermissions,
 		]);
 
-		return hasInstanceWriteOperationPermission || (hasPermission && isCreator) || (hasPermission && this.hasParentPermission(user, task, context));
+		return (
+			hasInstanceWriteOperationPermission ||
+			(hasPermission && isCreator) ||
+			(hasPermission && this.hasParentPermission(user, task, context))
+		);
 	}
 
 	private hasParentPermission(user: User, task: Task, context: AuthorizationContext): boolean {
@@ -79,7 +87,7 @@ export class TaskRule implements Rule<Task> {
 			return this.lessonRule.hasPermission(user, task.lesson, {
 				action,
 				requiredPermissions: [],
-			});	
+			});
 		}
 		if (task.course) {
 			return this.courseRule.hasPermission(user, task.course, {

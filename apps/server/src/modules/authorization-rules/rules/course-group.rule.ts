@@ -7,7 +7,7 @@ import {
 } from '@modules/authorization';
 import { CourseGroupEntity } from '@modules/course/repo';
 import { User } from '@modules/user/repo';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotImplementedException } from '@nestjs/common';
 import { CourseRule } from './course.rule';
 import { Permission } from '@shared/domain/interface/permission.enum';
 
@@ -27,6 +27,20 @@ export class CourseGroupRule implements Rule<CourseGroupEntity> {
 		return isMatched;
 	}
 
+	public hasPermission(user: User, courseGroup: CourseGroupEntity, context: AuthorizationContext): boolean {
+		let hasPermission = false;
+
+		if (context.action === Action.read) {
+			hasPermission = this.hasReadAccess(user, courseGroup, context);
+		} else if (context.action === Action.write) {
+			hasPermission = this.hasWriteAccess(user, courseGroup, context);
+		} else {
+			throw new NotImplementedException();
+		}
+
+		return hasPermission;
+	}
+
 	private hasReadAccess(user: User, object: CourseGroupEntity, context: AuthorizationContext): boolean {
 		const isStudentInCourseGroup = this.isStudentInCourseGroup(user, object);
 		// TODO: Permissions are missing here
@@ -36,7 +50,11 @@ export class CourseGroupRule implements Rule<CourseGroupEntity> {
 			...context.requiredPermissions,
 		]);
 
-		return hasInstanceReadOperationPermission || (hasReadPermissions && isStudentInCourseGroup) || this.hasCourseWriteAccess(user, object, context);
+		return (
+			hasInstanceReadOperationPermission ||
+			(hasReadPermissions && isStudentInCourseGroup) ||
+			this.hasCourseWriteAccess(user, object, context)
+		);
 	}
 
 	private hasWriteAccess(user: User, object: CourseGroupEntity, context: AuthorizationContext): boolean {
@@ -44,7 +62,10 @@ export class CourseGroupRule implements Rule<CourseGroupEntity> {
 	}
 
 	private hasCourseWriteAccess(user: User, object: CourseGroupEntity, context: AuthorizationContext): boolean {
-		return this.courseRule.hasPermission(user, object.course, { action: Action.write, requiredPermissions: context.requiredPermissions });
+		return this.courseRule.hasPermission(user, object.course, {
+			action: Action.write,
+			requiredPermissions: context.requiredPermissions,
+		});
 	}
 
 	private isStudentInCourseGroup(user: User, object: CourseGroupEntity): boolean {

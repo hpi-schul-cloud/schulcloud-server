@@ -1,4 +1,10 @@
-import { Action, AuthorizationContext, AuthorizationHelper, AuthorizationInjectionService, Rule } from '@modules/authorization';
+import {
+	Action,
+	AuthorizationContext,
+	AuthorizationHelper,
+	AuthorizationInjectionService,
+	Rule,
+} from '@modules/authorization';
 import { UserLoginMigrationDO } from '@modules/user-login-migration';
 import { User } from '@modules/user/repo';
 import { Injectable, NotImplementedException } from '@nestjs/common';
@@ -21,7 +27,7 @@ export class UserLoginMigrationRule implements Rule<UserLoginMigrationDO> {
 
 	public hasPermission(user: User, userLoginMigration: UserLoginMigrationDO, context: AuthorizationContext): boolean {
 		let hasPermission = false;
-		
+
 		if (context.action === Action.read) {
 			hasPermission = this.hasReadAccess(user, userLoginMigration, context);
 		} else if (context.action === Action.write) {
@@ -29,18 +35,16 @@ export class UserLoginMigrationRule implements Rule<UserLoginMigrationDO> {
 		} else {
 			throw new NotImplementedException();
 		}
-		
+
 		return hasPermission;
 	}
 
 	private hasReadAccess(user: User, userLoginMigration: UserLoginMigrationDO, context: AuthorizationContext): boolean {
 		const isUserSchool = this.isUserSchool(user, userLoginMigration);
-		// TODO: Missing permission 
-		const hasReadPermission = this.authorizationHelper.hasAllPermissions(user, [
-			...context.requiredPermissions,
-		]);
+		// TODO: Missing permission
+		const hasReadPermission = this.authorizationHelper.hasAllPermissions(user, [...context.requiredPermissions]);
 
-		// TODO: Missing permission 
+		// TODO: Missing permission
 		const hasInstanceReadOperationPermission = this.authorizationHelper.hasAllPermissions(user, [
 			Permission.CAN_EXECUTE_INSTANCE_OPERATIONS,
 			...context.requiredPermissions,

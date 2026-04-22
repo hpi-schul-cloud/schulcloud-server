@@ -1,4 +1,10 @@
-import { Action, AuthorizationContext, AuthorizationHelper, AuthorizationInjectionService, Rule } from '@modules/authorization';
+import {
+	Action,
+	AuthorizationContext,
+	AuthorizationHelper,
+	AuthorizationInjectionService,
+	Rule,
+} from '@modules/authorization';
 import { User } from '@modules/user/repo';
 import { Injectable, NotImplementedException } from '@nestjs/common';
 import { ContextExternalTool } from '../domain';
@@ -26,7 +32,7 @@ export class ContextExternalToolRule implements Rule<ContextExternalToolEntity |
 		context: AuthorizationContext
 	): boolean {
 		let hasPermission = false;
-	
+
 		if (context.action === Action.read) {
 			hasPermission = this.hasReadAccess(user, object, context);
 		} else if (context.action === Action.write) {
@@ -34,11 +40,15 @@ export class ContextExternalToolRule implements Rule<ContextExternalToolEntity |
 		} else {
 			throw new NotImplementedException();
 		}
-	
+
 		return hasPermission;
 	}
 
-	private hasReadAccess(user: User, object: ContextExternalToolEntity | ContextExternalTool, context: AuthorizationContext): boolean {
+	private hasReadAccess(
+		user: User,
+		object: ContextExternalToolEntity | ContextExternalTool,
+		context: AuthorizationContext
+	): boolean {
 		const isOneOfTheUserSchools = this.isOneOfTheUserSchools(user, object);
 		const hasPermission = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
 		const hasInstanceReadOperationPermission = this.authorizationHelper.hasAllPermissions(user, [
@@ -46,11 +56,14 @@ export class ContextExternalToolRule implements Rule<ContextExternalToolEntity |
 			...context.requiredPermissions,
 		]);
 
-
 		return hasInstanceReadOperationPermission || (hasPermission && isOneOfTheUserSchools);
 	}
 
-	private hasWriteAccess(user: User, object: ContextExternalToolEntity | ContextExternalTool, context: AuthorizationContext): boolean {
+	private hasWriteAccess(
+		user: User,
+		object: ContextExternalToolEntity | ContextExternalTool,
+		context: AuthorizationContext
+	): boolean {
 		return this.hasReadAccess(user, object, context);
 	}
 
@@ -58,14 +71,14 @@ export class ContextExternalToolRule implements Rule<ContextExternalToolEntity |
 		const secondarySchools = user.secondarySchools ?? [];
 		const secondarySchoolIds = secondarySchools.map(({ school }) => school.id);
 		const schoolIds = [user.school.id, ...secondarySchoolIds];
-		
+
 		let isUserSchool = false;
 		if (object instanceof ContextExternalToolEntity) {
 			isUserSchool = schoolIds.includes(object.schoolTool.school.id);
 		} else {
 			isUserSchool = object.schoolToolRef.schoolId !== undefined && schoolIds.includes(object.schoolToolRef.schoolId);
 		}
-		
+
 		return isUserSchool;
 	}
 }

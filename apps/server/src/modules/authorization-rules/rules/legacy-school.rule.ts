@@ -1,4 +1,10 @@
-import { Action, AuthorizationContext, AuthorizationHelper, AuthorizationInjectionService, Rule } from '@modules/authorization';
+import {
+	Action,
+	AuthorizationContext,
+	AuthorizationHelper,
+	AuthorizationInjectionService,
+	Rule,
+} from '@modules/authorization';
 import { LegacySchoolDo } from '@modules/legacy-school/domain';
 import { User } from '@modules/user/repo';
 import { Injectable, NotImplementedException } from '@nestjs/common';
@@ -24,7 +30,7 @@ export class LegacySchoolRule implements Rule<LegacySchoolDo> {
 
 	public hasPermission(user: User, school: LegacySchoolDo, context: AuthorizationContext): boolean {
 		let hasPermission = false;
-	
+
 		if (context.action === Action.read) {
 			hasPermission = this.hasReadAccess(user, school, context);
 		} else if (context.action === Action.write) {
@@ -32,7 +38,7 @@ export class LegacySchoolRule implements Rule<LegacySchoolDo> {
 		} else {
 			throw new NotImplementedException();
 		}
-	
+
 		return hasPermission;
 	}
 
@@ -58,7 +64,7 @@ export class LegacySchoolRule implements Rule<LegacySchoolDo> {
 
 	private isUserSchool(user: User, object: LegacySchoolDo): boolean {
 		const isUserSchool = user.school.id === object.id;
-	
+
 		return isUserSchool;
 	}
 }

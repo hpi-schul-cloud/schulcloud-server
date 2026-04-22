@@ -1,4 +1,10 @@
-import { Action, AuthorizationContext, AuthorizationHelper, AuthorizationInjectionService, Rule } from '@modules/authorization';
+import {
+	Action,
+	AuthorizationContext,
+	AuthorizationHelper,
+	AuthorizationInjectionService,
+	Rule,
+} from '@modules/authorization';
 import { TeamEntity, TeamUserEntity } from '@modules/team/repo';
 import { User } from '@modules/user/repo';
 import { Injectable, NotImplementedException } from '@nestjs/common';
@@ -19,7 +25,7 @@ export class TeamRule implements Rule<TeamEntity> {
 
 	public hasPermission(user: User, team: TeamEntity, context: AuthorizationContext): boolean {
 		let hasPermission = false;
-		
+
 		if (context.action === Action.read) {
 			hasPermission = this.hasReadAccess(user, team, context);
 		} else if (context.action === Action.write) {
@@ -27,14 +33,17 @@ export class TeamRule implements Rule<TeamEntity> {
 		} else {
 			throw new NotImplementedException();
 		}
-		
+
 		return hasPermission;
 	}
 
 	// TODO TEAM_VIEW and TEAM_EDIT permissions are added need to be checked
 	private hasReadAccess(user: User, team: TeamEntity, context: AuthorizationContext): boolean {
 		const isTeamUser = this.isTeamUser(user, team);
-		const hasReadPermission = this.authorizationHelper.hasAllPermissions(user, [Permission.TEAM_VIEW, ...context.requiredPermissions]);
+		const hasReadPermission = this.authorizationHelper.hasAllPermissions(user, [
+			Permission.TEAM_VIEW,
+			...context.requiredPermissions,
+		]);
 		const hasInstanceReadOperationPermission = this.authorizationHelper.hasAllPermissions(user, [
 			Permission.TEAM_VIEW,
 			Permission.CAN_EXECUTE_INSTANCE_OPERATIONS,
@@ -46,7 +55,10 @@ export class TeamRule implements Rule<TeamEntity> {
 
 	private hasWriteAccess(user: User, team: TeamEntity, context: AuthorizationContext): boolean {
 		const isTeamUser = this.isTeamUser(user, team);
-		const hasWritePermission = this.authorizationHelper.hasAllPermissions(user, [Permission.TEAM_EDIT, ...context.requiredPermissions]);
+		const hasWritePermission = this.authorizationHelper.hasAllPermissions(user, [
+			Permission.TEAM_EDIT,
+			...context.requiredPermissions,
+		]);
 		const hasInstanceWriteOperationPermission = this.authorizationHelper.hasAllPermissions(user, [
 			Permission.TEAM_EDIT,
 			Permission.CAN_EXECUTE_INSTANCE_OPERATIONS,

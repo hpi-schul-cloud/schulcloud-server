@@ -1,4 +1,10 @@
-import { Action, AuthorizationContext, AuthorizationHelper, AuthorizationInjectionService, Rule } from '@modules/authorization';
+import {
+	Action,
+	AuthorizationContext,
+	AuthorizationHelper,
+	AuthorizationInjectionService,
+	Rule,
+} from '@modules/authorization';
 import { RoleName } from '@modules/role';
 import { UserDo } from '@modules/user';
 import { User } from '@modules/user/repo';
@@ -42,12 +48,16 @@ export class UserRule implements Rule<UserDo> {
 			Permission.CAN_EXECUTE_INSTANCE_OPERATIONS,
 			...context.requiredPermissions,
 		]);
-	
+
 		const isUser = this.isUserHimself(user, userDo);
 		const isVisible = this.isVisibleToExternal(user, userDo);
 		const hasLimitingRole = this.hasLimitingRole(user, userDo);
 
-		return hasInstanceReadOperationPermission || (hasReadPermission && isUser) || (hasReadPermission && isVisible && !hasLimitingRole);
+		return (
+			hasInstanceReadOperationPermission ||
+			(hasReadPermission && isUser) ||
+			(hasReadPermission && isVisible && !hasLimitingRole)
+		);
 	}
 
 	private hasWriteAccess(user: User, userDo: UserDo, context: AuthorizationContext): boolean {
