@@ -23,11 +23,24 @@ export class BoardErrorLoggableException extends BadGatewayException implements 
 			schoolId: this.schoolId,
 			userId: this.userId,
 			retryCount: this.retryCount,
-			logSteps: this.logSteps,
+			logSteps: this.logSteps.join('|'),
 		};
 		return {
 			type: 'board-error-report',
-			message: JSON.stringify(data),
+			message: this.toLogfmt(data),
 		};
+	}
+
+	private toLogfmt(data: Record<string, string | number>): string {
+		const escapeQuotes = (str: string): string => str.replace(/"/g, '\\"');
+
+		const escape = (str: string): string => (/[=\s"]/.test(str) ? `"${escapeQuotes(str)}"` : str);
+
+		return Object.entries(data)
+			.map(([key, value]) => {
+				const val = escape(String(value));
+				return `${key}=${val}`;
+			})
+			.join(' ');
 	}
 }
