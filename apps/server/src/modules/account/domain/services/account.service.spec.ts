@@ -1507,8 +1507,6 @@ describe('AccountService', () => {
 
 		describe('when a user logs in for the first time (if undefined)', () => {
 			const setup = () => {
-				config.identityManagementLoginEnabled = false;
-				config.identityManagementStoreEnabled = false;
 				const mockSchool = schoolEntityFactory.buildWithId();
 
 				const mockStudentUser = userFactory.buildWithId({

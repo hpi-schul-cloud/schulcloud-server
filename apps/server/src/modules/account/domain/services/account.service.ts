@@ -353,10 +353,6 @@ export class AccountService extends AbstractAccountService {
 		return accounts;
 	}
 
-	private async executeIdmMethod<T>(idmCallback: () => Promise<T>): Promise<T | null> {
-		return null;
-	}
-
 	private async checkUniqueEmail(email: string): Promise<void> {
 		if (!(await this.isUniqueEmail(email))) {
 			throw new ValidationError(`The email address is already in use!`);

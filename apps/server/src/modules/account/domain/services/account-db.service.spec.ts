@@ -83,7 +83,6 @@ describe('AccountDbService', () => {
 				10 * 60 * 1000
 			);
 		});
-
 	});
 
 	describe('findByUserId', () => {
@@ -549,7 +548,7 @@ describe('AccountDbService', () => {
 					systemId: '012345678912',
 					password: defaultPassword,
 				} as Account;
-				accountInRepo.update = jest.fn();
+				jest.spyOn(accountInRepo, 'update').mockImplementation();
 
 				(accountRepo.findById as jest.Mock).mockClear();
 				(accountRepo.save as jest.Mock).mockClear();

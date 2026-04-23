@@ -14,7 +14,7 @@ export class AccountServiceDb extends AbstractAccountService {
 	}
 
 	public async findById(id: EntityId): Promise<Account> {
-		const internalId = await this.convertExternalToInternalId(id);
+		const internalId = this.convertExternalToInternalId(id);
 
 		return this.accountRepo.findById(internalId);
 	}
@@ -44,7 +44,7 @@ export class AccountServiceDb extends AbstractAccountService {
 	public async save(accountSave: AccountSave): Promise<Account> {
 		let account: Account;
 		if (accountSave.id) {
-			const internalId = await this.convertExternalToInternalId(accountSave.id);
+			const internalId = this.convertExternalToInternalId(accountSave.id);
 
 			account = await this.accountRepo.findById(internalId);
 		} else {
@@ -59,7 +59,7 @@ export class AccountServiceDb extends AbstractAccountService {
 			accountSaves.map(async (accountSave) => {
 				let account: Account;
 				if (accountSave.id) {
-					const internalId = await this.convertExternalToInternalId(accountSave.id);
+					const internalId = this.convertExternalToInternalId(accountSave.id);
 
 					account = await this.accountRepo.findById(internalId);
 				} else {
@@ -76,7 +76,7 @@ export class AccountServiceDb extends AbstractAccountService {
 	}
 
 	public async updateUsername(accountId: EntityId, username: string): Promise<Account> {
-		const internalId = await this.convertExternalToInternalId(accountId);
+		const internalId = this.convertExternalToInternalId(accountId);
 		const account = await this.accountRepo.findById(internalId);
 		account.username = username;
 		await this.accountRepo.save(account);
@@ -84,7 +84,7 @@ export class AccountServiceDb extends AbstractAccountService {
 	}
 
 	public async updateLastLogin(accountId: EntityId, lastLogin: Date): Promise<Account> {
-		const internalId = await this.convertExternalToInternalId(accountId);
+		const internalId = this.convertExternalToInternalId(accountId);
 		const account = await this.accountRepo.findById(internalId);
 		account.lastLogin = lastLogin;
 
@@ -94,7 +94,7 @@ export class AccountServiceDb extends AbstractAccountService {
 	}
 
 	public async updateLastTriedFailedLogin(accountId: EntityId, lastTriedFailedLogin: Date): Promise<Account> {
-		const internalId = await this.convertExternalToInternalId(accountId);
+		const internalId = this.convertExternalToInternalId(accountId);
 		const account = await this.accountRepo.findById(internalId);
 		account.lasttriedFailedLogin = lastTriedFailedLogin;
 
@@ -104,7 +104,7 @@ export class AccountServiceDb extends AbstractAccountService {
 	}
 
 	public async updatePassword(accountId: EntityId, password: string): Promise<Account> {
-		const internalId = await this.convertExternalToInternalId(accountId);
+		const internalId = this.convertExternalToInternalId(accountId);
 		const account = await this.accountRepo.findById(internalId);
 		account.password = await this.encryptPassword(password);
 
@@ -114,7 +114,7 @@ export class AccountServiceDb extends AbstractAccountService {
 	}
 
 	public async delete(id: EntityId): Promise<void> {
-		const internalId = await this.convertExternalToInternalId(id);
+		const internalId = this.convertExternalToInternalId(id);
 		return this.accountRepo.deleteById(internalId);
 	}
 
@@ -143,7 +143,7 @@ export class AccountServiceDb extends AbstractAccountService {
 		return passwordCompare;
 	}
 
-	private async convertExternalToInternalId(id: EntityId | ObjectId): Promise<ObjectId> {
+	private convertExternalToInternalId(id: EntityId | ObjectId): ObjectId {
 		if (id instanceof ObjectId || ObjectId.isValid(id)) {
 			return new ObjectId(id);
 		}
