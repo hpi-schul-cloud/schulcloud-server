@@ -22,17 +22,14 @@ type UserPreferences = {
 
 @Injectable()
 export class AccountService extends AbstractAccountService {
-	private readonly accountImpl: AbstractAccountService;
-
 	constructor(
-		private readonly accountDb: AccountServiceDb,
+		private readonly accountImpl: AccountServiceDb,
 		private readonly logger: Logger,
 		private readonly userService: UserService,
 		@Inject(ACCOUNT_REPO) private readonly accountRepo: AccountRepo
 	) {
 		super();
 		this.logger.setContext(AccountService.name);
-		this.accountImpl = accountDb;
 	}
 
 	public async updateMyAccount(user: User, account: Account, updateData: UpdateMyAccount): Promise<void> {
@@ -222,46 +219,54 @@ export class AccountService extends AbstractAccountService {
 
 	public findById(id: string): Promise<Account> {
 		const account = this.accountImpl.findById(id);
+
 		return account;
 	}
 
 	public findMultipleByUserId(userIds: string[]): Promise<Account[]> {
 		const accounts = this.accountImpl.findMultipleByUserId(userIds);
+
 		return accounts;
 	}
 
 	public findByUserId(userId: string): Promise<Account | null> {
 		const account = this.accountImpl.findByUserId(userId);
+
 		return account;
 	}
 
 	public findByUserIdOrFail(userId: string): Promise<Account> {
 		const account = this.accountImpl.findByUserIdOrFail(userId);
+
 		return account;
 	}
 
 	public findByUsernameAndSystemId(username: string, systemId: string | ObjectId): Promise<Account | null> {
 		const account = this.accountImpl.findByUsernameAndSystemId(username, systemId);
+
 		return account;
 	}
 
 	public searchByUsernamePartialMatch(userName: string, skip: number, limit: number): Promise<Counted<Account[]>> {
 		const result = this.accountImpl.searchByUsernamePartialMatch(userName, skip, limit);
+
 		return result;
 	}
 
 	public searchByUsernameExactMatch(userName: string): Promise<Counted<Account[]>> {
 		const result = this.accountImpl.searchByUsernameExactMatch(userName);
+
 		return result;
 	}
 
 	public async save(accountSave: AccountSave): Promise<Account> {
-		const ret = await this.accountDb.save(accountSave);
+		const ret = await this.accountImpl.save(accountSave);
 		return new Account({ ...ret.getProps() });
 	}
 
 	public async saveAll(accountSaves: AccountSave[]): Promise<Account[]> {
-		const savedDbAccounts = await this.accountDb.saveAll(accountSaves);
+		const savedDbAccounts = await this.accountImpl.saveAll(accountSaves);
+
 		return savedDbAccounts;
 	}
 
@@ -313,35 +318,40 @@ export class AccountService extends AbstractAccountService {
 	}
 
 	public async updateUsername(accountId: string, username: string): Promise<Account> {
-		const ret = await this.accountDb.updateUsername(accountId, username);
+		const ret = await this.accountImpl.updateUsername(accountId, username);
+
 		return new Account({ ...ret.getProps() });
 	}
 
 	public async updateLastLogin(accountId: string, lastLogin: Date): Promise<void> {
-		await this.accountDb.updateLastLogin(accountId, lastLogin);
+		await this.accountImpl.updateLastLogin(accountId, lastLogin);
 	}
 
 	public async updateLastTriedFailedLogin(accountId: string, lastTriedFailedLogin: Date): Promise<Account> {
-		const ret = await this.accountDb.updateLastTriedFailedLogin(accountId, lastTriedFailedLogin);
+		const ret = await this.accountImpl.updateLastTriedFailedLogin(accountId, lastTriedFailedLogin);
+
 		return new Account({ ...ret.getProps() });
 	}
 
 	public async updatePassword(accountId: string, password: string): Promise<Account> {
-		const ret = await this.accountDb.updatePassword(accountId, password);
+		const ret = await this.accountImpl.updatePassword(accountId, password);
+
 		return new Account({ ...ret.getProps() });
 	}
 
 	public validatePassword(account: Account, comparePassword: string): Promise<boolean> {
 		const result = this.accountImpl.validatePassword(account, comparePassword);
+
 		return result;
 	}
 
 	public async delete(accountId: string): Promise<void> {
-		await this.accountDb.delete(accountId);
+		await this.accountImpl.delete(accountId);
 	}
 
 	public async deleteByUserId(userId: string): Promise<EntityId[]> {
-		const deletedAccounts = await this.accountDb.deleteByUserId(userId);
+		const deletedAccounts = await this.accountImpl.deleteByUserId(userId);
+
 		return deletedAccounts;
 	}
 
@@ -349,7 +359,8 @@ export class AccountService extends AbstractAccountService {
 	 * @deprecated For migration purpose only
 	 */
 	public findMany(offset = 0, limit = 100): Promise<Account[]> {
-		const accounts = this.accountDb.findMany(offset, limit);
+		const accounts = this.accountImpl.findMany(offset, limit);
+
 		return accounts;
 	}
 
