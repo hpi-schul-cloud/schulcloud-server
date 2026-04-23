@@ -208,7 +208,13 @@ describe('GroupRule', () => {
 					requiredPermissions: [Permission.GROUP_VIEW],
 				};
 
-				authorizationHelper.hasAllPermissions.mockReturnValue(true);
+				authorizationHelper.hasAllPermissions.mockImplementation((_user, permissions: Permission[]) => {
+					// Instance operations should not grant access
+					if (permissions.includes(Permission.CAN_EXECUTE_INSTANCE_OPERATIONS)) {
+						return false;
+					}
+					return true;
+				});
 
 				return {
 					user,

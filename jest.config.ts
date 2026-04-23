@@ -30,7 +30,7 @@ let config: Config.InitialOptions = {
 		'^@shared/(.*)$': '<rootDir>/apps/server/src/shared/$1',
 		'^@testing/(.*)$': '<rootDir>/apps/server/src/testing/$1',
 	},
-	maxWorkers: 2, // limited for not taking all workers within of a single github action
+	maxWorkers: process.env.JEST_MAX_WORKERS ? parseInt(process.env.JEST_MAX_WORKERS, 10) : 2, // default limited 2 is for not taking all workers within of a single github action
 	workerIdleMemoryLimit: '1.5GB', // without this, jest can lead to big memory leaks and out of memory errors
 };
 
