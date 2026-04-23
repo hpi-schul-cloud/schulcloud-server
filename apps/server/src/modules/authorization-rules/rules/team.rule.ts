@@ -37,40 +37,33 @@ export class TeamRule implements Rule<TeamEntity> {
 		return hasPermission;
 	}
 
-	// TODO TEAM_VIEW and TEAM_EDIT permissions are added need to be checked
 	private hasReadAccess(user: User, team: TeamEntity, context: AuthorizationContext): boolean {
-		const isTeamUser = this.isTeamUser(user, team);
-		const hasReadPermission = this.authorizationHelper.hasAllPermissions(user, [
-			Permission.TEAM_VIEW,
-			...context.requiredPermissions,
-		]);
+		const teamUser = this.getTeamUser(user, team);
+		const hasTeamRolePermission = teamUser
+			? this.authorizationHelper.hasAllPermissionsByRole(teamUser.role, context.requiredPermissions)
+			: false;
 		const hasInstanceReadOperationPermission = this.authorizationHelper.hasAllPermissions(user, [
 			Permission.TEAM_VIEW,
 			Permission.CAN_EXECUTE_INSTANCE_OPERATIONS,
-			...context.requiredPermissions,
 		]);
 
-		return hasInstanceReadOperationPermission || (hasReadPermission && isTeamUser);
+		return hasInstanceReadOperationPermission || hasTeamRolePermission;
 	}
 
 	private hasWriteAccess(user: User, team: TeamEntity, context: AuthorizationContext): boolean {
-		const isTeamUser = this.isTeamUser(user, team);
-		const hasWritePermission = this.authorizationHelper.hasAllPermissions(user, [
-			Permission.TEAM_EDIT,
-			...context.requiredPermissions,
-		]);
+		const teamUser = this.getTeamUser(user, team);
+		const hasTeamRolePermission = teamUser
+			? this.authorizationHelper.hasAllPermissionsByRole(teamUser.role, context.requiredPermissions)
+			: false;
 		const hasInstanceWriteOperationPermission = this.authorizationHelper.hasAllPermissions(user, [
 			Permission.TEAM_EDIT,
 			Permission.CAN_EXECUTE_INSTANCE_OPERATIONS,
-			...context.requiredPermissions,
 		]);
 
-		return hasInstanceWriteOperationPermission || (hasWritePermission && isTeamUser);
+		return hasInstanceWriteOperationPermission || hasTeamRolePermission;
 	}
 
-	private isTeamUser(user: User, team: TeamEntity): boolean {
-		const isTeamUser = team.teamUsers.some((teamUser: TeamUserEntity) => teamUser.user.id === user.id);
-
-		return isTeamUser;
+	private getTeamUser(user: User, team: TeamEntity): TeamUserEntity | undefined {
+		return team.teamUsers.find((teamUser: TeamUserEntity) => teamUser.user.id === user.id);
 	}
 }
