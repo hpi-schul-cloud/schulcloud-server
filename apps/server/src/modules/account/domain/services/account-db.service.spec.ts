@@ -22,9 +22,6 @@ describe('AccountDbService', () => {
 
 	const defaultPassword = 'DummyPasswd!1';
 
-	const internalId = new ObjectId().toHexString();
-	const externalId = v1();
-
 	afterAll(async () => {
 		await module.close();
 	});
@@ -539,7 +536,7 @@ describe('AccountDbService', () => {
 					systemId: '012345678912',
 					password: defaultPassword,
 				} as Account;
-				const accountInRepo = {
+				const accountInRepo = new Account({
 					id: new ObjectId().toHexString(),
 					createdAt: new Date(),
 					updatedAt: new Date(),
@@ -547,7 +544,7 @@ describe('AccountDbService', () => {
 					userId: mockUserWithoutAccount.id,
 					systemId: '012345678912',
 					password: defaultPassword,
-				} as Account;
+				});
 				jest.spyOn(accountInRepo, 'update').mockImplementation();
 
 				(accountRepo.findById as jest.Mock).mockClear();
