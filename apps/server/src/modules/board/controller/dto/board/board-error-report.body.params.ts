@@ -48,5 +48,5 @@ export class BoardErrorReportBodyParams {
 	})
 	@IsString()
 	@SanitizeHtml()
-	public logSteps!: string[];
+	public logSteps!: string;
 }

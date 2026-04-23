@@ -10,7 +10,7 @@ export class BoardErrorLoggableException extends BadGatewayException implements 
 		private readonly schoolId: string,
 		private readonly userId: string,
 		private readonly retryCount: number,
-		private readonly logSteps: string[]
+		private readonly logSteps: string
 	) {
 		super();
 	}
@@ -24,7 +24,7 @@ export class BoardErrorLoggableException extends BadGatewayException implements 
 			schoolId: this.schoolId,
 			userId: this.userId,
 			retryCount: this.retryCount,
-			logSteps: this.logSteps.join('|'),
+			logSteps: this.logSteps,
 		};
 		return {
 			type: 'board-error-report',

@@ -41,7 +41,7 @@ describe('BoardErrorReportController (api)', () => {
 		url: 'https://example.com/board',
 		boardId: 'boardId',
 		retryCount: 0,
-		logSteps: ['step1', 'step2'],
+		logSteps: 'step1|step2',
 	};
 
 	const setup = async (): Promise<{ loggedInClient: TestApiClient }> => {
