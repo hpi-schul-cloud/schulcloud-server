@@ -87,7 +87,7 @@ describe(ExternalToolRule.name, () => {
 				const user: User = userFactory.build();
 				const object: ExternalTool = externalToolFactory.build();
 
-				authorizationHelper.hasAllPermissions.mockReturnValueOnce(true);
+				authorizationHelper.hasAllPermissions.mockReturnValueOnce(true).mockReturnValueOnce(true);
 
 				return {
 					object,
@@ -123,7 +123,7 @@ describe(ExternalToolRule.name, () => {
 				const user: User = userFactory.build();
 				const object: ExternalTool = externalToolFactory.build();
 
-				authorizationHelper.hasAllPermissions.mockReturnValueOnce(false);
+				authorizationHelper.hasAllPermissions.mockReturnValueOnce(false).mockReturnValueOnce(false);
 
 				return {
 					object,
