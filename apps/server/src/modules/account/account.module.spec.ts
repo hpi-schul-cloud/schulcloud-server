@@ -27,21 +27,4 @@ describe('AccountModule', () => {
 		const accountService = module.get(AccountService);
 		expect(accountService).toBeDefined();
 	});
-
-	describe('when FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED is disabled', () => {
-		let moduleFeatureDisabled: TestingModule;
-
-		beforeAll(async () => {
-			moduleFeatureDisabled = await Test.createTestingModule({
-				imports: [AccountModule, MongoMemoryDatabaseModule.forRoot({ entities: [AccountEntity] })],
-			})
-				.overrideProvider(ACCOUNT_ENCRYPTION_CONFIG_TOKEN)
-				.useValue({ aesKey: encryptionKey })
-				.compile();
-		});
-
-		afterAll(async () => {
-			await moduleFeatureDisabled.close();
-		});
-	});
 });
