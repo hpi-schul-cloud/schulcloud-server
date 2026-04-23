@@ -143,7 +143,13 @@ describe('UserLoginMigrationRule', () => {
 					requiredPermissions: [Permission.USER_LOGIN_MIGRATION_ADMIN],
 				};
 
-				authorizationHelper.hasAllPermissions.mockReturnValue(true);
+				authorizationHelper.hasAllPermissions.mockImplementation((u, permissions: Permission[]) => {
+					// User has required permissions but NOT CAN_EXECUTE_INSTANCE_OPERATIONS
+					if (permissions.includes(Permission.CAN_EXECUTE_INSTANCE_OPERATIONS)) {
+						return false;
+					}
+					return true;
+				});
 
 				return {
 					user,
