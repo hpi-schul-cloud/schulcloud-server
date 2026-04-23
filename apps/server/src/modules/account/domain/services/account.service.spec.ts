@@ -31,8 +31,7 @@ describe('AccountService', () => {
 	let userService: DeepMocked<UserService>;
 	let accountRepo: DeepMocked<AccountRepo>;
 
-	const newAccountService = () =>
-		new AccountService(accountServiceDb, logger, userService, accountRepo);
+	const newAccountService = () => new AccountService(accountServiceDb, logger, userService, accountRepo);
 
 	const defaultPassword = 'DummyPasswd!1';
 	const otherPassword = 'DummyPasswd!2';
@@ -93,21 +92,6 @@ describe('AccountService', () => {
 				expect(accountServiceDb.findById).toHaveBeenCalledTimes(1);
 			});
 		});
-
-		describe('When identity management is primary', () => {
-			const setup = () => {
-				config.identityManagementLoginEnabled = true;
-				accountServiceIdm.findById.mockResolvedValueOnce(accountDoFactory.build());
-
-				return newAccountService();
-			};
-
-			it('should call idm implementation', async () => {
-				const service = setup();
-				await expect(service.findById('accountId')).resolves.not.toThrow();
-				expect(accountServiceIdm.findById).toHaveBeenCalledTimes(1);
-			});
-		});
 	});
 
 	describe('findByUserId', () => {
@@ -121,20 +105,6 @@ describe('AccountService', () => {
 
 				await expect(accountService.findByUserId('userId')).resolves.not.toThrow();
 				expect(accountServiceDb.findByUserId).toHaveBeenCalledTimes(1);
-			});
-		});
-
-		describe('When identity management is primary', () => {
-			const setup = () => {
-				accountServiceIdm.findByUserId.mockResolvedValueOnce(accountDoFactory.build());
-
-				return newAccountService();
-			};
-
-			it('should call idm implementation', async () => {
-				const service = setup();
-				await expect(service.findByUserId('userId')).resolves.not.toThrow();
-				expect(accountServiceIdm.findByUserId).toHaveBeenCalledTimes(1);
 			});
 		});
 	});
@@ -152,20 +122,6 @@ describe('AccountService', () => {
 				expect(accountServiceDb.findByUsernameAndSystemId).toHaveBeenCalledTimes(1);
 			});
 		});
-
-		describe('when identity management is primary', () => {
-			const setup = () => {
-				accountServiceIdm.findByUsernameAndSystemId.mockResolvedValueOnce(accountDoFactory.build());
-
-				return newAccountService();
-			};
-
-			it('should call idm implementation', async () => {
-				const service = setup();
-				await expect(service.findByUsernameAndSystemId('username', 'systemId')).resolves.not.toThrow();
-				expect(accountServiceIdm.findByUsernameAndSystemId).toHaveBeenCalledTimes(1);
-			});
-		});
 	});
 
 	describe('findMultipleByUserId', () => {
@@ -179,20 +135,6 @@ describe('AccountService', () => {
 
 				await expect(accountService.findMultipleByUserId(['userId1, userId2'])).resolves.not.toThrow();
 				expect(accountServiceDb.findMultipleByUserId).toHaveBeenCalledTimes(1);
-			});
-		});
-
-		describe('When identity management is primary', () => {
-			const setup = () => {
-				accountServiceIdm.findMultipleByUserId.mockResolvedValueOnce([accountDoFactory.build()]);
-
-				return newAccountService();
-			};
-
-			it('should call idm implementation', async () => {
-				const service = setup();
-				await expect(service.findMultipleByUserId(['userId'])).resolves.not.toThrow();
-				expect(accountServiceIdm.findMultipleByUserId).toHaveBeenCalledTimes(1);
 			});
 		});
 	});
@@ -210,20 +152,6 @@ describe('AccountService', () => {
 				expect(accountServiceDb.findByUserIdOrFail).toHaveBeenCalledTimes(1);
 			});
 		});
-
-		describe('When identity management is primary', () => {
-			const setup = () => {
-				accountServiceIdm.findByUserIdOrFail.mockResolvedValueOnce(accountDoFactory.build());
-
-				return newAccountService();
-			};
-
-			it('should call idm implementation', async () => {
-				const service = setup();
-				await expect(service.findByUserIdOrFail('userId')).resolves.not.toThrow();
-				expect(accountServiceIdm.findByUserIdOrFail).toHaveBeenCalledTimes(1);
-			});
-		});
 	});
 
 	describe('save', () => {
@@ -231,109 +159,6 @@ describe('AccountService', () => {
 			it('should call save in accountServiceDb', async () => {
 				await expect(accountService.save({} as Account)).resolves.not.toThrow();
 				expect(accountServiceDb.save).toHaveBeenCalledTimes(1);
-			});
-		});
-
-		describe('When calling save in accountService if feature is enabled', () => {
-			const setup = () => {
-				config.identityManagementLoginEnabled = true;
-				config.identityManagementStoreEnabled = true;
-
-				const account = accountDoFactory.build();
-
-				accountServiceDb.save.mockResolvedValueOnce(account);
-				accountServiceIdm.save.mockResolvedValueOnce(account);
-
-				return { service: newAccountService(), account };
-			};
-
-			it('should call save in accountServiceIdm', async () => {
-				const { service, account } = setup();
-
-				await expect(service.save(account)).resolves.not.toThrow();
-				expect(accountServiceIdm.save).toHaveBeenCalledTimes(1);
-			});
-		});
-
-		describe('When calling save in accountService if feature is disabled', () => {
-			const setup = () => {
-				config.identityManagementLoginEnabled = true;
-				config.identityManagementStoreEnabled = false;
-
-				accountServiceDb.save.mockResolvedValueOnce({
-					getProps: () => {
-						return { id: '' };
-					},
-				} as Account);
-
-				return newAccountService();
-			};
-
-			it('should not call save in accountServiceIdm', async () => {
-				const service = setup();
-
-				await expect(service.save({} as Account)).resolves.not.toThrow();
-				expect(accountServiceIdm.save).not.toHaveBeenCalled();
-			});
-		});
-
-		describe('when identity management is primary', () => {
-			const setup = () => {
-				config.identityManagementLoginEnabled = true;
-				config.identityManagementStoreEnabled = true;
-
-				const account = accountDoFactory.build();
-
-				accountServiceDb.save.mockResolvedValueOnce(account);
-				accountServiceIdm.save.mockResolvedValueOnce(account);
-
-				return { service: newAccountService(), account };
-			};
-
-			it('should call idm implementation', async () => {
-				const { service, account } = setup();
-				await expect(service.save(account)).resolves.not.toThrow();
-				expect(accountServiceIdm.save).toHaveBeenCalledTimes(1);
-			});
-		});
-
-		describe(`when identity management is primary and can't update account`, () => {
-			const setup = () => {
-				config.identityManagementLoginEnabled = true;
-				config.identityManagementStoreEnabled = true;
-
-				const account = accountDoFactory.build();
-
-				accountServiceDb.save.mockResolvedValueOnce(account);
-				accountServiceIdm.save.mockImplementation(() => Promise.reject(new Error()));
-
-				return { service: newAccountService(), account };
-			};
-
-			it('should throw ValidationError', async () => {
-				const { service, account } = setup();
-				await expect(service.save(account)).rejects.toThrow(ValidationError);
-			});
-		});
-
-		describe(`when identity management is primary and can't update username`, () => {
-			const setup = () => {
-				config.identityManagementLoginEnabled = false;
-				config.identityManagementStoreEnabled = true;
-
-				const account = accountDoFactory.build();
-
-				accountServiceDb.save.mockResolvedValueOnce(account);
-				accountServiceIdm.save.mockImplementation(() =>
-					Promise.resolve(new Account({ username: 'otherUsername', id: '' }))
-				);
-
-				return { service: newAccountService(), account };
-			};
-
-			it('should throw ValidationError', async () => {
-				const { service, account } = setup();
-				await expect(service.save(account)).rejects.toThrow(ValidationError);
 			});
 		});
 	});
@@ -344,19 +169,17 @@ describe('AccountService', () => {
 				const accounts = accountDoFactory.buildList(1);
 
 				accountServiceDb.saveAll.mockResolvedValueOnce(accounts);
-				accountServiceIdm.saveAll.mockResolvedValueOnce(accounts);
 
 				return { accounts, sut: newAccountService() };
 			};
 
-			it('should delegate to db and idm service', async () => {
+			it('should delegate to db', async () => {
 				const { accounts, sut } = setup();
 
 				const result = await sut.saveAll(accounts);
 
 				expect(result).toBeDefined();
 				expect(accountServiceDb.saveAll).toHaveBeenCalledTimes(1);
-				expect(accountServiceIdm.saveAll).toHaveBeenCalledTimes(1);
 			});
 		});
 	});
@@ -373,8 +196,6 @@ describe('AccountService', () => {
 
 		describe('When calling saveWithValidation on accountService', () => {
 			const setup = () => {
-				config.identityManagementLoginEnabled = false;
-				config.identityManagementStoreEnabled = false;
 				const spy = jest.spyOn(accountService, 'save');
 
 				accountServiceDb.save.mockResolvedValueOnce({
@@ -416,8 +237,6 @@ describe('AccountService', () => {
 
 		describe('When username for an external user is not an email', () => {
 			const setup = () => {
-				config.identityManagementLoginEnabled = false;
-				config.identityManagementStoreEnabled = false;
 				accountServiceDb.save.mockResolvedValueOnce({
 					getProps: () => {
 						return { id: '' };
@@ -438,8 +257,6 @@ describe('AccountService', () => {
 
 		describe('When username for an external user is a ldap search string', () => {
 			const setup = () => {
-				config.identityManagementLoginEnabled = false;
-				config.identityManagementStoreEnabled = false;
 				accountServiceDb.save.mockResolvedValueOnce({
 					getProps: () => {
 						return { id: '' };
@@ -491,49 +308,6 @@ describe('AccountService', () => {
 					password: 'JohnsPassword_123',
 				} as AccountSave;
 				await expect(accountService.saveWithValidation(params)).rejects.toThrow('Username already exists');
-			});
-		});
-
-		describe('When username already exists in identity management', () => {
-			const setup = () => {
-				config.identityManagementLoginEnabled = true;
-				config.identityManagementStoreEnabled = true;
-
-				accountServiceIdm.isUniqueEmail.mockResolvedValueOnce(false);
-			};
-
-			it('should throw username already exists', async () => {
-				setup();
-				const params: AccountSave = {
-					username: 'john.doe@mail.tld',
-					password: 'JohnsPassword_123',
-				} as AccountSave;
-				await expect(accountService.saveWithValidation(params)).rejects.toThrow('Username already exists');
-			});
-		});
-
-		describe('When identity management is primary', () => {
-			const setup = () => {
-				config.identityManagementLoginEnabled = true;
-				config.identityManagementStoreEnabled = true;
-
-				const account = accountDoFactory.build({
-					password: defaultPasswordHash,
-					username: 'username@mail.tld',
-				});
-
-				accountServiceDb.save.mockResolvedValueOnce(account);
-				accountServiceIdm.save.mockResolvedValueOnce(account);
-
-				accountServiceIdm.isUniqueEmail.mockResolvedValueOnce(true);
-
-				return { service: newAccountService(), account };
-			};
-
-			it('should call idm implementation', async () => {
-				const { service, account } = setup();
-				await expect(service.saveWithValidation(account)).resolves.not.toThrow();
-				expect(accountServiceIdm.save).toHaveBeenCalledTimes(1);
 			});
 		});
 	});
@@ -622,71 +396,6 @@ describe('AccountService', () => {
 				expect(accountServiceDb.updateUsername).toHaveBeenCalledTimes(1);
 			});
 		});
-
-		describe('When calling updateUsername in accountService if idm feature is enabled', () => {
-			const setup = () => {
-				config.identityManagementLoginEnabled = true;
-				config.identityManagementStoreEnabled = true;
-
-				accountServiceDb.updateUsername.mockResolvedValueOnce({
-					getProps: () => {
-						return { id: '' };
-					},
-				} as Account);
-
-				return newAccountService();
-			};
-
-			it('should call updateUsername in accountServiceIdm', async () => {
-				const service = setup();
-
-				await expect(service.updateUsername('accountId', 'username')).resolves.not.toThrow();
-				expect(accountServiceIdm.updateUsername).toHaveBeenCalledTimes(1);
-			});
-		});
-
-		describe('When calling updateUsername in accountService if idm feature is disabled', () => {
-			const setup = () => {
-				config.identityManagementLoginEnabled = false;
-				config.identityManagementStoreEnabled = false;
-
-				accountServiceDb.updateUsername.mockResolvedValueOnce({
-					getProps: () => {
-						return { id: '' };
-					},
-				} as Account);
-
-				return newAccountService();
-			};
-
-			it('should not call updateUsername in accountServiceIdm', async () => {
-				const service = setup();
-
-				await expect(service.updateUsername('accountId', 'username')).resolves.not.toThrow();
-				expect(accountServiceIdm.updateUsername).not.toHaveBeenCalled();
-			});
-		});
-
-		describe('When identity management is primary', () => {
-			const setup = () => {
-				config.identityManagementLoginEnabled = true;
-				config.identityManagementStoreEnabled = true;
-
-				accountServiceDb.updateUsername.mockResolvedValueOnce({
-					getProps: () => {
-						return { id: '' };
-					},
-				} as Account);
-
-				return newAccountService();
-			};
-
-			it('should call idm implementation', async () => {
-				const service = setup();
-				await expect(service.updateUsername('accountId', 'username')).resolves.not.toThrow();
-				expect(accountServiceIdm.updateUsername).toHaveBeenCalledTimes(1);
-			});
-		});
 	});
 
 	describe('updateLastLogin', () => {
@@ -706,27 +415,6 @@ describe('AccountService', () => {
 				expect(accountServiceDb.updateLastTriedFailedLogin).toHaveBeenCalledTimes(1);
 			});
 		});
-
-		describe('when identity management is primary', () => {
-			const setup = () => {
-				config.identityManagementLoginEnabled = true;
-				config.identityManagementStoreEnabled = true;
-
-				accountServiceDb.updateLastTriedFailedLogin.mockResolvedValueOnce({
-					getProps: () => {
-						return { id: '' };
-					},
-				} as Account);
-
-				return newAccountService();
-			};
-
-			it('should call idm implementation', async () => {
-				const service = setup();
-				await expect(service.updateLastTriedFailedLogin('accountId', new Date())).resolves.not.toThrow();
-				expect(accountServiceIdm.updateLastTriedFailedLogin).toHaveBeenCalledTimes(1);
-			});
-		});
 	});
 
 	describe('updatePassword', () => {
@@ -734,70 +422,6 @@ describe('AccountService', () => {
 			it('should call updatePassword in accountServiceDb', async () => {
 				await expect(accountService.updatePassword('accountId', 'password')).resolves.not.toThrow();
 				expect(accountServiceDb.updatePassword).toHaveBeenCalledTimes(1);
-			});
-		});
-
-		describe('When calling updatePassword in accountService if feature is enabled', () => {
-			const setup = () => {
-				config.identityManagementLoginEnabled = true;
-				config.identityManagementStoreEnabled = true;
-
-				accountServiceDb.updatePassword.mockResolvedValueOnce({
-					getProps: () => {
-						return { id: '' };
-					},
-				} as Account);
-
-				return newAccountService();
-			};
-
-			it('should call updatePassword in accountServiceIdm', async () => {
-				const service = setup();
-
-				await expect(service.updatePassword('accountId', 'password')).resolves.not.toThrow();
-				expect(accountServiceIdm.updatePassword).toHaveBeenCalledTimes(1);
-			});
-		});
-
-		describe('When calling updatePassword in accountService if feature is disabled', () => {
-			const setup = () => {
-				config.identityManagementLoginEnabled = false;
-				config.identityManagementStoreEnabled = false;
-
-				accountServiceDb.updatePassword.mockResolvedValueOnce({
-					getProps: () => {
-						return { id: '' };
-					},
-				} as Account);
-
-				return newAccountService();
-			};
-
-			it('should not call updatePassword in accountServiceIdm', async () => {
-				const service = setup();
-
-				await expect(service.updatePassword('accountId', 'password')).resolves.not.toThrow();
-				expect(accountServiceIdm.updatePassword).not.toHaveBeenCalled();
-			});
-		});
-		describe('When identity management is primary', () => {
-			const setup = () => {
-				config.identityManagementLoginEnabled = true;
-				config.identityManagementStoreEnabled = true;
-
-				accountServiceDb.updatePassword.mockResolvedValueOnce({
-					getProps: () => {
-						return { id: '' };
-					},
-				} as Account);
-
-				return newAccountService();
-			};
-
-			it('should call idm implementation', async () => {
-				const service = setup();
-				await expect(service.updatePassword('accountId', 'password')).resolves.not.toThrow();
-				expect(accountServiceIdm.updatePassword).toHaveBeenCalledTimes(1);
 			});
 		});
 	});
@@ -812,25 +436,7 @@ describe('AccountService', () => {
 				setup();
 
 				await expect(accountService.validatePassword({} as Account, 'password')).resolves.not.toThrow();
-				expect(accountServiceIdm.validatePassword).toHaveBeenCalledTimes(0);
 				expect(accountServiceDb.validatePassword).toHaveBeenCalledTimes(1);
-			});
-		});
-
-		describe('When calling validatePassword in accountService if feature is enabled', () => {
-			const setup = () => {
-				config.identityManagementLoginEnabled = true;
-				config.identityManagementStoreEnabled = true;
-				accountServiceIdm.validatePassword.mockResolvedValueOnce(true);
-
-				return newAccountService();
-			};
-
-			it('should call validatePassword in accountServiceIdm', async () => {
-				const service = setup();
-				await expect(service.validatePassword({} as Account, 'password')).resolves.not.toThrow();
-				expect(accountServiceDb.validatePassword).toHaveBeenCalledTimes(0);
-				expect(accountServiceIdm.validatePassword).toHaveBeenCalledTimes(1);
 			});
 		});
 	});
@@ -842,101 +448,13 @@ describe('AccountService', () => {
 				expect(accountServiceDb.delete).toHaveBeenCalledTimes(1);
 			});
 		});
-
-		describe('When calling delete in accountService if feature is enabled', () => {
-			const setup = () => {
-				config.identityManagementLoginEnabled = true;
-				config.identityManagementStoreEnabled = true;
-			};
-
-			it('should call delete in accountServiceIdm', async () => {
-				setup();
-
-				await expect(accountService.delete('accountId')).resolves.not.toThrow();
-				expect(accountServiceIdm.delete).toHaveBeenCalledTimes(1);
-			});
-		});
-
-		describe('When calling delete in accountService if feature is disabled', () => {
-			const setup = () => {
-				config.identityManagementLoginEnabled = false;
-				config.identityManagementStoreEnabled = false;
-			};
-
-			it('should not call delete in accountServiceIdm', async () => {
-				setup();
-
-				await expect(accountService.delete('accountId')).resolves.not.toThrow();
-				expect(accountServiceIdm.delete).not.toHaveBeenCalled();
-			});
-		});
-
-		describe('When identity management is primary', () => {
-			const setup = () => {
-				config.identityManagementLoginEnabled = true;
-				config.identityManagementStoreEnabled = true;
-				return newAccountService();
-			};
-
-			it('should call idm implementation', async () => {
-				setup();
-				await expect(accountService.delete('accountId')).resolves.not.toThrow();
-				expect(accountServiceIdm.delete).toHaveBeenCalledTimes(1);
-			});
-		});
 	});
 
 	describe('deleteByUserId', () => {
 		describe('When calling deleteByUserId in accountService', () => {
 			it('should call deleteByUserId in accountServiceDb', async () => {
-				config.identityManagementLoginEnabled = false;
-				config.identityManagementStoreEnabled = false;
 				await expect(accountService.deleteByUserId('userId')).resolves.not.toThrow();
 				expect(accountServiceDb.deleteByUserId).toHaveBeenCalledTimes(1);
-			});
-		});
-
-		describe('When calling deleteByUserId in accountService if feature is enabled', () => {
-			const setup = () => {
-				config.identityManagementLoginEnabled = true;
-				config.identityManagementStoreEnabled = true;
-				accountServiceDb.deleteByUserId.mockResolvedValueOnce(['accountId']);
-				accountServiceIdm.deleteByUserId.mockResolvedValueOnce(['accountId']);
-			};
-
-			it('should call deleteByUserId in accountServiceIdm', async () => {
-				setup();
-
-				await expect(accountService.deleteByUserId('userId')).resolves.not.toThrow();
-				expect(accountServiceIdm.deleteByUserId).toHaveBeenCalledTimes(1);
-			});
-		});
-
-		describe('When calling deleteByUserId in accountService if feature is disabled', () => {
-			const setup = () => {
-				config.identityManagementLoginEnabled = false;
-				config.identityManagementStoreEnabled = false;
-			};
-
-			it('should not call deleteByUserId in accountServiceIdm', async () => {
-				setup();
-
-				await expect(accountService.deleteByUserId('userId')).resolves.not.toThrow();
-				expect(accountServiceIdm.deleteByUserId).not.toHaveBeenCalled();
-			});
-		});
-
-		describe('When identity management is primary', () => {
-			const setup = () => {
-				config.identityManagementLoginEnabled = true;
-				config.identityManagementStoreEnabled = true;
-				return newAccountService();
-			};
-
-			it('should call idm implementation', async () => {
-				setup();
-				await expect(accountService.deleteByUserId('userId')).resolves.not.toThrow();
-				expect(accountServiceIdm.deleteByUserId).toHaveBeenCalledTimes(1);
 			});
 		});
 	});
@@ -984,38 +502,6 @@ describe('AccountService', () => {
 		});
 	});
 
-	describe('when identity management is primary', () => {
-		describe('findById', () => {
-			const setup = () => {
-				config.identityManagementLoginEnabled = true;
-				accountServiceIdm.findById.mockResolvedValueOnce(accountDoFactory.build());
-
-				return newAccountService();
-			};
-
-			it('should call idm implementation', async () => {
-				const service = setup();
-				await expect(service.findById('accountId')).resolves.not.toThrow();
-				expect(accountServiceIdm.findById).toHaveBeenCalledTimes(1);
-			});
-		});
-
-		describe('searchByUsernamePartialMatch', () => {
-			const setup = () => {
-				config.identityManagementStoreEnabled = true;
-				accountServiceIdm.searchByUsernamePartialMatch.mockResolvedValueOnce([accountDoFactory.buildList(1), 1]);
-
-				return newAccountService();
-			};
-
-			it('should call idm implementation', async () => {
-				const service = setup();
-				await expect(service.searchByUsernamePartialMatch('username', 0, 1)).resolves.not.toThrow();
-				expect(accountServiceIdm.searchByUsernamePartialMatch).toHaveBeenCalledTimes(1);
-			});
-		});
-	});
-
 	describe('searchByUsernameExactMatch', () => {
 		describe('When calling searchByUsernameExactMatch in accountService', () => {
 			const setup = () => {
@@ -1029,71 +515,11 @@ describe('AccountService', () => {
 				expect(accountServiceDb.searchByUsernameExactMatch).toHaveBeenCalledTimes(1);
 			});
 		});
-
-		describe('when identity management is primary', () => {
-			const setup = () => {
-				config.identityManagementLoginEnabled = true;
-				accountServiceIdm.searchByUsernameExactMatch.mockResolvedValueOnce([accountDoFactory.buildList(1), 1]);
-
-				return newAccountService();
-			};
-
-			it('should call idm implementation', async () => {
-				const service = setup();
-				await expect(service.searchByUsernameExactMatch('username')).resolves.not.toThrow();
-				expect(accountServiceIdm.searchByUsernameExactMatch).toHaveBeenCalledTimes(1);
-			});
-		});
-	});
-
-	describe('executeIdmMethod', () => {
-		describe('When idm feature is enabled', () => {
-			const setup = () => {
-				config.identityManagementLoginEnabled = true;
-				const testError = new Error('error');
-				accountServiceIdm.deleteByUserId.mockImplementationOnce(() => {
-					throw testError;
-				});
-
-				const spyLogger = jest.spyOn(logger, 'debug');
-
-				return { testError, spyLogger };
-			};
-
-			it('should call executeIdmMethod and throw an error object', async () => {
-				const { testError, spyLogger } = setup();
-
-				await expect(accountService.deleteByUserId('userId')).resolves.not.toThrow();
-				expect(spyLogger).toHaveBeenCalledWith(new IdmCallbackLoggableException(testError));
-			});
-		});
-
-		describe('When idm feature is enabled', () => {
-			const setup = () => {
-				config.identityManagementLoginEnabled = true;
-				const spyLogger = jest.spyOn(logger, 'debug');
-				const deleteByUserIdMock = jest.spyOn(accountServiceIdm, 'deleteByUserId');
-				deleteByUserIdMock.mockImplementationOnce(() => {
-					// eslint-disable-next-line @typescript-eslint/no-throw-literal
-					throw 'a non error object';
-				});
-				return { spyLogger };
-			};
-
-			it('should call executeIdmMethod and throw a non error object', async () => {
-				const { spyLogger } = setup();
-
-				await expect(accountService.deleteByUserId('userId')).resolves.not.toThrow();
-				expect(spyLogger).toHaveBeenCalledWith(new IdmCallbackLoggableException('a non error object'));
-			});
-		});
 	});
 
 	describe('updateMyAccount', () => {
 		describe('When account is external', () => {
 			const setup = () => {
-				config.identityManagementLoginEnabled = false;
-				config.identityManagementStoreEnabled = false;
 				const mockSchool = schoolEntityFactory.buildWithId();
 
 				const mockExternalUser = userFactory.buildWithId({
