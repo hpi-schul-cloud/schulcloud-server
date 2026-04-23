@@ -38,9 +38,6 @@ RUN npm pkg delete scripts.postinstall \
     && npm ci --omit=dev \
     && npm cache clean --force
 
-# The modules transpiled by esbuild need to be copied manually from the build stage.
-COPY --from=builder /app/node_modules/@keycloak/keycloak-admin-client-cjs node_modules/@keycloak/keycloak-admin-client-cjs
-
 ENV NODE_ENV=production
 ENV NO_COLOR="true"
 

@@ -1,11 +1,6 @@
 import { LoggerModule } from '@core/logger';
 import { ConfigurationModule } from '@infra/configuration';
 import { EncryptionModule } from '@infra/encryption';
-import { IdentityManagementModule } from '@infra/identity-management';
-import {
-	KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
-	KeycloakAdministrationConfig,
-} from '@infra/identity-management/keycloak-administration/keycloak-administration.config';
 import {
 	SESSION_VALKEY_CLIENT_CONFIG_TOKEN,
 	ValkeyClientModule,
@@ -69,16 +64,6 @@ const createJwtOptions = (config: JwtModuleConfig): JwtModuleOptions => {
 		SystemModule,
 		OauthModule,
 		RoleModule,
-		IdentityManagementModule.register({
-			encryptionConfig: {
-				configConstructor: AuthenticationEncryptionConfig,
-				configInjectionToken: AUTHENTICATION_ENCRYPTION_CONFIG_TOKEN,
-			},
-			keycloakAdministrationConfig: {
-				configConstructor: KeycloakAdministrationConfig,
-				configInjectionToken: KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
-			},
-		}),
 		ValkeyClientModule.register({
 			clientInjectionToken: SESSION_VALKEY_CLIENT,
 			configConstructor: ValkeyClientSessionConfig,
