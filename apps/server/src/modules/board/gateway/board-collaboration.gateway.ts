@@ -342,10 +342,10 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 		try {
 			const column = await this.boardUc.copyColumn(userId, data.columnId, schoolId);
 
-			const columnResponse = ColumnResponseMapper.mapToResponse(column);
+			const columnFullResponse = ColumnResponseMapper.mapToFullResponse(column);
 			const responsePayload = {
 				...data,
-				duplicatedColumn: columnResponse,
+				duplicatedColumn: columnFullResponse,
 			};
 			emitter.emitToClientAndRoom(responsePayload, column);
 		} catch {

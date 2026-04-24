@@ -162,7 +162,7 @@ describe(BoardCollaborationGateway.name, () => {
 	describe('copy column', () => {
 		describe('when column exists', () => {
 			it('should answer with copied column', async () => {
-				const { columnNode, columnNode2 } = await setup();
+				const { columnNode } = await setup();
 				const columnId = columnNode.id;
 
 				ioClient.emit('duplicate-column-request', { columnId });
