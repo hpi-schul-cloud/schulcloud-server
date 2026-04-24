@@ -5,20 +5,24 @@ const SEPARATOR = ' | ';
 const SEPARATOR_REPLACEMENT = '-|-';
 
 /**
- * Loggable exception for reported board errors
+ * Loggable exception for reported board errors - related to connection issues.
  *
  * This exception is used to capture and log errors related to board operations, including context such as board, school, user, and retry information.
  *
- * Example output of `getLogMessage()`:
+ * The message uses a separator-based format to encode multiple values of information.
+ * Important:
+ *   the version (v) should be updated whenever the format of the log message changes.
+ *   this ensures proper and easy parsing in Grafana and backward compatibility.
+ *   meaning that if the format changes, the version should be incremented (e.g., from 1.2 to 1.3) to indicate the new format.
+ *   this allows grafana log-queries to support multiple versions of the log message format in one graph or table.
  *
+ * Example output of `getLogMessage()`:
  * ```json
  * {
  *   "type": "board-error-report",
- *   "message": "1.2 | https://example.com/board/123 | VALIDATION_ERROR | 12a3 | 45c6 | 78e9 | 2 | step1-step2-step3"
+ *   "message": "1.2 | https://example.com/board/123 | CONNECTION_ERROR | 12a3 | 45c6 | 78e9 | 2 | step1-step2-step3"
  * }
  * ```
- * the message uses a separator-based format to encode multiple pieces of information
- * important: the version (v) should be updated whenever the format of the log message changes to ensure proper and easy parsing in grafana and backward compatibility
  */
 export class BoardErrorLoggableException extends BadGatewayException implements Loggable {
 	constructor(
