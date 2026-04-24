@@ -40,7 +40,7 @@ export class BoardErrorLoggableException extends BadGatewayException implements 
 
 	public getLogMessage(): LogMessage | ValidationErrorLogMessage {
 		const data = {
-			v: '1.2', // update this value on every format change
+			v: '1.3', // update this value whenever the format or separator changes
 			url: this.url,
 			type: this.errorType,
 			boardId: this.boardId,
