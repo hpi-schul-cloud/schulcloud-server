@@ -18,7 +18,7 @@ const SEPARATOR_REPLACEMENT = '-|-';
  * ```json
  * {
  *   "type": "board-error-report",
- *   "message": "1.3 | https://example.com/board/123 | CONNECTION_ERROR | 12a3 | 45c6 | 78e9 | 2 | step1-step2-step3"
+ *   "message": "1.4 | https://example.com/board/123 | CONNECTION_ERROR | 12a3 | 45c6 | 78e9 | 2 | step1-step2-step3"
  * }
  * ```
  */
@@ -38,8 +38,9 @@ export class BoardErrorLoggableException extends BadGatewayException implements 
 
 	public getLogMessage(): LogMessage | ValidationErrorLogMessage {
 		const data = {
-			v: '1.3', // update this value whenever the format or separator changes
+			v: '1.4', // update this value whenever the format or separator changes
 			url: this.url,
+			msg: this.message,
 			type: this.errorType,
 			boardId: this.boardId,
 			schoolId: this.schoolId,
