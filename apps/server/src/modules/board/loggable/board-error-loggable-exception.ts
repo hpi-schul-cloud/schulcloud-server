@@ -1,8 +1,8 @@
 import { Loggable, LogMessage, ValidationErrorLogMessage } from '@core/logger';
 import { BadGatewayException } from '@nestjs/common';
 
-const SEPARATOR = '•';
-const SEPARATOR_REPLACEMENT = '-';
+const SEPARATOR = ' | ';
+const SEPARATOR_REPLACEMENT = '-|-';
 
 /**
  * Loggable exception for reported board errors
@@ -14,7 +14,7 @@ const SEPARATOR_REPLACEMENT = '-';
  * ```json
  * {
  *   "type": "board-error-report",
- *   "message": "1.2•https://example.com/board/123•VALIDATION_ERROR•123•456•789•2•step1-step2-step3"
+ *   "message": "1.2 | https://example.com/board/123 | VALIDATION_ERROR | 12a3 | 45c6 | 78e9 | 2 | step1-step2-step3"
  * }
  * ```
  * the message uses a separator-based format to encode multiple pieces of information
