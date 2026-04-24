@@ -9,7 +9,7 @@ import { TestApiClient } from '@testing/test-api-client';
 import { BoardExternalReferenceType } from '../../domain';
 import { BoardNodeEntity } from '../../repo';
 import { columnBoardEntityFactory, columnEntityFactory } from '../../testing';
-import { ColumnResponse } from '../dto';
+import { ColumnFullResponse } from '../dto';
 
 const baseRouteName = '/columns';
 
@@ -70,7 +70,7 @@ describe(`column move (api)`, () => {
 			const { loggedInClient, columnNode1 } = await setup();
 
 			const response = await loggedInClient.post(`${columnNode1.id}/copy`);
-			const copiedColumn = response.body as ColumnResponse;
+			const copiedColumn = response.body as ColumnFullResponse;
 
 			expect(copiedColumn.id).toBeDefined();
 			expect(copiedColumn.title).toEqual(columnNode1.title);
@@ -80,7 +80,7 @@ describe(`column move (api)`, () => {
 			const { loggedInClient, columnNode1 } = await setup();
 
 			const response = await loggedInClient.post(`${columnNode1.id}/copy`);
-			const copiedColumn = response.body as ColumnResponse;
+			const copiedColumn = response.body as ColumnFullResponse;
 			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 
 			const result = await em.findOneOrFail(BoardNodeEntity, copiedColumn.id);
@@ -92,7 +92,7 @@ describe(`column move (api)`, () => {
 			const { loggedInClient, columnNode1, columnNode2 } = await setup();
 
 			const response = await loggedInClient.post(`${columnNode1.id}/copy`);
-			const copiedColumn = response.body as ColumnResponse;
+			const copiedColumn = response.body as ColumnFullResponse;
 			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 
 			const resultCopiedColumn = await em.findOneOrFail(BoardNodeEntity, copiedColumn.id);
