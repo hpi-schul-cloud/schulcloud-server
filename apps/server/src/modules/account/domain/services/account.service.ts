@@ -11,26 +11,9 @@ import {
 } from '@shared/common/error';
 import { Counted, EntityId } from '@shared/domain/types';
 import { isEmail, isNotEmpty } from 'class-validator';
-import { ACCOUNT_CONFIG_TOKEN, AccountConfig } from '../../account-config';
 import { Account, AccountSave, UpdateAccount, UpdateMyAccount } from '../do';
-import {
-	DeletedAccountLoggable,
-	DeletedAccountWithUserIdLoggable,
-	DeletingAccountLoggable,
-	DeletingAccountWithUserIdLoggable,
-	IdmCallbackLoggableException,
-	SavedAccountLoggable,
-	SavingAccountLoggable,
-	UpdatedAccountPasswordLoggable,
-	UpdatedAccountUsernameLoggable,
-	UpdatedLastFailedLoginLoggable,
-	UpdatingAccountPasswordLoggable,
-	UpdatingAccountUsernameLoggable,
-	UpdatingLastFailedLoginLoggable,
-} from '../error';
 import { ACCOUNT_REPO, AccountRepo } from '../interface';
 import { AccountServiceDb } from './account-db.service';
-import { AccountServiceIdm } from './account-idm.service';
 import { AbstractAccountService } from './account.service.abstract';
 
 type UserPreferences = {
@@ -39,23 +22,14 @@ type UserPreferences = {
 
 @Injectable()
 export class AccountService extends AbstractAccountService {
-	private readonly accountImpl: AbstractAccountService;
-
 	constructor(
-		private readonly accountDb: AccountServiceDb,
-		private readonly accountIdm: AccountServiceIdm,
-		@Inject(ACCOUNT_CONFIG_TOKEN) private readonly config: AccountConfig,
+		private readonly accountImpl: AccountServiceDb,
 		private readonly logger: Logger,
 		private readonly userService: UserService,
 		@Inject(ACCOUNT_REPO) private readonly accountRepo: AccountRepo
 	) {
 		super();
 		this.logger.setContext(AccountService.name);
-		if (this.config.identityManagementLoginEnabled === true) {
-			this.accountImpl = accountIdm;
-		} else {
-			this.accountImpl = accountDb;
-		}
 	}
 
 	public async updateMyAccount(user: User, account: Account, updateData: UpdateMyAccount): Promise<void> {
@@ -245,92 +219,55 @@ export class AccountService extends AbstractAccountService {
 
 	public findById(id: string): Promise<Account> {
 		const account = this.accountImpl.findById(id);
+
 		return account;
 	}
 
 	public findMultipleByUserId(userIds: string[]): Promise<Account[]> {
 		const accounts = this.accountImpl.findMultipleByUserId(userIds);
+
 		return accounts;
 	}
 
 	public findByUserId(userId: string): Promise<Account | null> {
 		const account = this.accountImpl.findByUserId(userId);
+
 		return account;
 	}
 
 	public findByUserIdOrFail(userId: string): Promise<Account> {
 		const account = this.accountImpl.findByUserIdOrFail(userId);
+
 		return account;
 	}
 
 	public findByUsernameAndSystemId(username: string, systemId: string | ObjectId): Promise<Account | null> {
 		const account = this.accountImpl.findByUsernameAndSystemId(username, systemId);
+
 		return account;
 	}
 
 	public searchByUsernamePartialMatch(userName: string, skip: number, limit: number): Promise<Counted<Account[]>> {
 		const result = this.accountImpl.searchByUsernamePartialMatch(userName, skip, limit);
+
 		return result;
 	}
 
 	public searchByUsernameExactMatch(userName: string): Promise<Counted<Account[]>> {
 		const result = this.accountImpl.searchByUsernameExactMatch(userName);
+
 		return result;
 	}
 
 	public async save(accountSave: AccountSave): Promise<Account> {
-		const ret = await this.accountDb.save(accountSave);
-		const newAccount = new AccountSave({
-			...accountSave,
-			id: accountSave.id,
-			idmReferenceId: ret.id,
-			password: accountSave.password,
-		});
-		const idmAccount = await this.executeIdmMethod(async () => {
-			this.logger.debug(new SavingAccountLoggable(ret.id));
-			const account = await this.accountIdm.save(newAccount);
-			this.logger.debug(new SavedAccountLoggable(ret.id));
-			return account;
-		});
-
-		if (this.config.identityManagementStoreEnabled === true) {
-			if (
-				idmAccount === null ||
-				(accountSave.username && idmAccount.username.toLowerCase() !== accountSave.username.toLowerCase())
-			) {
-				throw new ValidationError('Account could not be updated');
-			}
-		}
-
-		return new Account({ ...ret.getProps(), idmReferenceId: idmAccount?.idmReferenceId });
+		const ret = await this.accountImpl.save(accountSave);
+		return new Account({ ...ret.getProps() });
 	}
 
 	public async saveAll(accountSaves: AccountSave[]): Promise<Account[]> {
-		const savedDbAccounts = await this.accountDb.saveAll(accountSaves);
+		const savedDbAccounts = await this.accountImpl.saveAll(accountSaves);
 
-		const newAccounts = savedDbAccounts.map((savedDbAccount, index) => {
-			const accountSave = accountSaves[index];
-
-			return new AccountSave({
-				...accountSave,
-				id: accountSave.id,
-				idmReferenceId: savedDbAccount.id,
-				password: accountSave.password,
-			});
-		});
-
-		const idmAccounts = await this.executeIdmMethod(async () => {
-			const account = await this.accountIdm.saveAll(newAccounts);
-
-			return account;
-		});
-
-		const combinedAccounts = savedDbAccounts.map((savedDbAccount, index) => {
-			const idmReferenceId = idmAccounts ? idmAccounts[index].idmReferenceId : undefined;
-			return new Account({ ...savedDbAccount.getProps(), idmReferenceId });
-		});
-
-		return combinedAccounts;
+		return savedDbAccounts;
 	}
 
 	public async validateAccountBeforeSaveOrReject(
@@ -381,64 +318,39 @@ export class AccountService extends AbstractAccountService {
 	}
 
 	public async updateUsername(accountId: string, username: string): Promise<Account> {
-		const ret = await this.accountDb.updateUsername(accountId, username);
-		const idmAccount = await this.executeIdmMethod(async () => {
-			this.logger.debug(new UpdatingAccountUsernameLoggable(accountId));
-			const account = await this.accountIdm.updateUsername(accountId, username);
-			this.logger.debug(new UpdatedAccountUsernameLoggable(accountId));
-			return account;
-		});
-		return new Account({ ...ret.getProps(), idmReferenceId: idmAccount?.idmReferenceId });
+		const ret = await this.accountImpl.updateUsername(accountId, username);
+
+		return new Account({ ...ret.getProps() });
 	}
 
 	public async updateLastLogin(accountId: string, lastLogin: Date): Promise<void> {
-		await this.accountDb.updateLastLogin(accountId, lastLogin);
+		await this.accountImpl.updateLastLogin(accountId, lastLogin);
 	}
 
 	public async updateLastTriedFailedLogin(accountId: string, lastTriedFailedLogin: Date): Promise<Account> {
-		const ret = await this.accountDb.updateLastTriedFailedLogin(accountId, lastTriedFailedLogin);
-		const idmAccount = await this.executeIdmMethod(async () => {
-			this.logger.debug(new UpdatingLastFailedLoginLoggable(accountId));
-			const account = await this.accountIdm.updateLastTriedFailedLogin(accountId, lastTriedFailedLogin);
-			this.logger.debug(new UpdatedLastFailedLoginLoggable(accountId));
-			return account;
-		});
-		return new Account({ ...ret.getProps(), idmReferenceId: idmAccount?.idmReferenceId });
+		const ret = await this.accountImpl.updateLastTriedFailedLogin(accountId, lastTriedFailedLogin);
+
+		return new Account({ ...ret.getProps() });
 	}
 
 	public async updatePassword(accountId: string, password: string): Promise<Account> {
-		const ret = await this.accountDb.updatePassword(accountId, password);
-		const idmAccount = await this.executeIdmMethod(async () => {
-			this.logger.debug(new UpdatingAccountPasswordLoggable(accountId));
-			const account = await this.accountIdm.updatePassword(accountId, password);
-			this.logger.debug(new UpdatedAccountPasswordLoggable(accountId));
-			return account;
-		});
-		return new Account({ ...ret.getProps(), idmReferenceId: idmAccount?.idmReferenceId });
+		const ret = await this.accountImpl.updatePassword(accountId, password);
+
+		return new Account({ ...ret.getProps() });
 	}
 
 	public validatePassword(account: Account, comparePassword: string): Promise<boolean> {
 		const result = this.accountImpl.validatePassword(account, comparePassword);
+
 		return result;
 	}
 
 	public async delete(accountId: string): Promise<void> {
-		await this.accountDb.delete(accountId);
-		await this.executeIdmMethod(async () => {
-			this.logger.debug(new DeletingAccountLoggable(accountId));
-			await this.accountIdm.delete(accountId);
-			this.logger.debug(new DeletedAccountLoggable(accountId));
-		});
+		await this.accountImpl.delete(accountId);
 	}
 
 	public async deleteByUserId(userId: string): Promise<EntityId[]> {
-		const deletedAccounts = await this.accountDb.deleteByUserId(userId);
-		await this.executeIdmMethod(async () => {
-			this.logger.debug(new DeletingAccountWithUserIdLoggable(userId));
-			const deletedAccountIdm = await this.accountIdm.deleteByUserId(userId);
-			deletedAccounts.push(...deletedAccountIdm);
-			this.logger.debug(new DeletedAccountWithUserIdLoggable(userId));
-		});
+		const deletedAccounts = await this.accountImpl.deleteByUserId(userId);
 
 		return deletedAccounts;
 	}
@@ -447,19 +359,9 @@ export class AccountService extends AbstractAccountService {
 	 * @deprecated For migration purpose only
 	 */
 	public findMany(offset = 0, limit = 100): Promise<Account[]> {
-		const accounts = this.accountDb.findMany(offset, limit);
-		return accounts;
-	}
+		const accounts = this.accountImpl.findMany(offset, limit);
 
-	private async executeIdmMethod<T>(idmCallback: () => Promise<T>): Promise<T | null> {
-		if (this.config.identityManagementStoreEnabled === true) {
-			try {
-				return await idmCallback();
-			} catch (error) {
-				this.logger.debug(new IdmCallbackLoggableException(error));
-			}
-		}
-		return null;
+		return accounts;
 	}
 
 	private async checkUniqueEmail(email: string): Promise<void> {
