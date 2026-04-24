@@ -8,7 +8,7 @@ import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.tes
 import { TestApiClient } from '@testing/test-api-client';
 import { BoardExternalReferenceType } from '../../domain';
 import { BoardNodeEntity } from '../../repo';
-import { cardEntityFactory, columnBoardEntityFactory, columnEntityFactory } from '../../testing';
+import { columnBoardEntityFactory, columnEntityFactory } from '../../testing';
 import { ColumnResponse } from '../dto';
 
 const baseRouteName = '/columns';

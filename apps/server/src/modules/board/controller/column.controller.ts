@@ -14,7 +14,14 @@ import {
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common/error';
 import { BoardUc, ColumnUc } from '../uc';
-import { CardResponse, ColumnResponse, ColumnUrlParams, MoveColumnBodyParams, RenameBodyParams } from './dto';
+import {
+	CardResponse,
+	ColumnFullResponse,
+	ColumnResponse,
+	ColumnUrlParams,
+	MoveColumnBodyParams,
+	RenameBodyParams,
+} from './dto';
 import { CreateCardBodyParams } from './dto/card/create-card.body.params';
 import { CardResponseMapper, ColumnResponseMapper } from './mapper';
 import { RequestTimeout } from '@shared/common/decorators';
@@ -70,8 +77,8 @@ export class ColumnController {
 		await this.columnUc.deleteColumn(currentUser.userId, urlParams.columnId);
 	}
 
-	@ApiOperation({ summary: 'Copy a single card.' })
-	@ApiResponse({ status: 201, type: ColumnResponse })
+	@ApiOperation({ summary: 'Copy a single column.' })
+	@ApiResponse({ status: 201, type: ColumnFullResponse })
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
@@ -80,9 +87,9 @@ export class ColumnController {
 	public async copyColumn(
 		@Param() urlParams: ColumnUrlParams,
 		@CurrentUser() currentUser: ICurrentUser
-	): Promise<ColumnResponse> {
+	): Promise<ColumnFullResponse> {
 		const copiedColumn = await this.boardUc.copyColumn(currentUser.userId, urlParams.columnId, currentUser.schoolId);
-		const columnDto = ColumnResponseMapper.mapToResponse(copiedColumn);
+		const columnDto = ColumnResponseMapper.mapToFullResponse(copiedColumn);
 		return columnDto;
 	}
 
