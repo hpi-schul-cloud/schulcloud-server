@@ -1,5 +1,4 @@
 import { ICurrentUser } from '@infra/auth-guard';
-import { IdentityManagementOauthService } from '@infra/identity-management';
 import { Account } from '@modules/account';
 import { UserService } from '@modules/user';
 import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
@@ -15,7 +14,6 @@ import { AuthenticationService } from '../services/authentication.service';
 export class LocalStrategy extends PassportStrategy(Strategy) {
 	constructor(
 		private readonly authenticationService: AuthenticationService,
-		private readonly idmOauthService: IdentityManagementOauthService,
 		@Inject(AUTHENTICATION_CONFIG_TOKEN) private readonly config: AuthenticationConfig,
 		private readonly userService: UserService
 	) {
@@ -26,13 +24,8 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 		({ username, password } = this.cleanupInput(username, password));
 		const account = await this.authenticationService.loadAccount(username);
 
-		if (this.config.identityManagementLoginEnabled) {
-			const jwt = await this.idmOauthService.resourceOwnerPasswordGrant(username, password);
-			TypeGuard.checkNotNullOrUndefined(jwt, new UnauthorizedException());
-		} else {
-			const accountPassword = TypeGuard.checkNotNullOrUndefined(account.password, new UnauthorizedException());
-			await this.checkCredentials(password, accountPassword, account);
-		}
+		const accountPassword = TypeGuard.checkNotNullOrUndefined(account.password, new UnauthorizedException());
+		await this.checkCredentials(password, accountPassword, account);
 
 		const accountUserId = TypeGuard.checkNotNullOrUndefined(
 			account.userId,
