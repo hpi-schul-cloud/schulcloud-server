@@ -10,6 +10,7 @@ import {
 	SchoolYearEntityMapper,
 	SchoolYearService,
 } from '@modules/school';
+import { User } from '@modules/user';
 import { Injectable } from '@nestjs/common';
 import { TypeGuard } from '@shared/common/guards';
 import { ExternalSchoolDto, ProvisioningSystemDto } from '../dto';
