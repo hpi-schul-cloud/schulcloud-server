@@ -6,7 +6,6 @@ import {
 	Rule,
 } from '@modules/authorization';
 import { TeamEntity, TeamUserEntity } from '@modules/team/repo';
-import { Role } from '@modules/role/repo';
 import { User } from '@modules/user/repo';
 import { Injectable, NotImplementedException } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface/permission.enum';
@@ -59,18 +58,17 @@ export class TeamRule implements Rule<TeamEntity> {
 	}
 
 	private hasRequiredTeamPermissions(user: User, team: TeamEntity, context: AuthorizationContext): boolean {
-		const teamRole = this.getTeamUserRole(user, team);
-		const hasTeamRolePermission = teamRole
-			? this.authorizationHelper.hasAllPermissionsByRole(teamRole, context.requiredPermissions)
+		const teamUser = this.getTeamUser(user, team);
+		const hasTeamRolePermission = teamUser
+			? this.authorizationHelper.hasAllPermissionsByRole(teamUser.role, context.requiredPermissions)
 			: false;
 
 		return hasTeamRolePermission;
 	}
 
-	private getTeamUserRole(user: User, team: TeamEntity): Role | undefined {
+	private getTeamUser(user: User, team: TeamEntity): TeamUserEntity | undefined {
 		const teamUser = team.teamUsers.find((teamUser: TeamUserEntity) => teamUser.user.id === user.id);
-		const role = teamUser?.role;
 
-		return role;
+		return teamUser;
 	}
 }
