@@ -14,6 +14,7 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
+import { expectIsoDateString } from '@testing/matchers';
 import { TestApiClient } from '@testing/test-api-client';
 import { RoomContentType } from '../../domain';
 import { roomContentEntityFactory, roomEntityFactory } from '../../testing';
@@ -137,8 +138,8 @@ describe('Room Controller (API)', () => {
 									title: board.title,
 									layout: board.layout,
 									isVisible: board.isVisible,
-									createdAt: board.createdAt.toISOString(),
-									updatedAt: board.updatedAt.toISOString(),
+									createdAt: expectIsoDateString(),
+									updatedAt: expectIsoDateString(),
 								};
 							})
 						);
@@ -374,8 +375,8 @@ describe('Room Controller (API)', () => {
 					title: board.title,
 					layout: board.layout,
 					isVisible: board.isVisible,
-					createdAt: board.createdAt.toISOString(),
-					updatedAt: expect.any(String),
+					createdAt: expectIsoDateString(),
+					updatedAt: expectIsoDateString(),
 				});
 			});
 		});
