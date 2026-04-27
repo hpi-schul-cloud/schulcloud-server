@@ -5,6 +5,7 @@ const SEPARATOR = ' | ';
 const SEPARATOR_REPLACEMENT = '-|-';
 
 /**
+ *
  * Loggable exception for reported board errors
  *
  * This exception is used to capture and log errors related to board operations - especially connection issues.
@@ -21,6 +22,7 @@ const SEPARATOR_REPLACEMENT = '-|-';
  *   "message": "1.4 | https://example.com/board/123 | CONNECTION_ERROR | 12a3 | 45c6 | 78e9 | 2 | step1-step2-step3"
  * }
  * ```
+ *
  */
 export class BoardErrorLoggableException extends BadGatewayException implements Loggable {
 	constructor(
