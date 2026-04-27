@@ -12,7 +12,7 @@ import { Permission } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
-import { RoomService } from '@modules/room';
+import { Room, RoomEntity, RoomService } from '@modules/room';
 import { RoomMembershipService } from '@modules/room-membership';
 import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
 import { userFactory } from '@modules/user/testing';
@@ -152,6 +152,23 @@ describe('Team Export Room Controller (API)', () => {
 				const response = await loggedInClient.post(`${team.id}/create-room`);
 
 				expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
+			});
+		});
+
+		describe('when migration fails at a later step', () => {
+			it('should roll back the room', async () => {
+				const { loggedInClient, teamId, otherUsers } = await setupTeamWithUser({
+					rolename: 'teacher',
+					isTeamOwner: true,
+				});
+
+				await em.nativeDelete(User, otherUsers[0].id);
+
+				const response = await loggedInClient.post(`${teamId}/create-room`);
+				expect(response.status).toEqual(400);
+
+				const rooms = await em.findAll(RoomEntity);
+				expect(rooms.length).toEqual(0);
 			});
 		});
 	});
