@@ -45,7 +45,7 @@ export class TeamUc {
 		try {
 			await this.roomMembershipService.createNewRoomMembership(room.id, userId);
 
-			const otherUsers = team.teamUsers.map((teamUser) => teamUser.userId.id).filter((id) => id != userId);
+			const otherUsers = team.teamUsers.map((teamUser) => teamUser.userId.id).filter((id) => id !== userId);
 
 			await this.roomMembershipService.addMembersToRoom(room.id, otherUsers, RoleName.ROOMVIEWER);
 		} catch (error) {

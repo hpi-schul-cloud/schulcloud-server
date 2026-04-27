@@ -154,23 +154,6 @@ describe('Team Export Room Controller (API)', () => {
 				expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
 			});
 		});
-
-		/* describe('when migration fails in a later step', () => {
-			it('should roll back the created room', async () => {
-				const { loggedInClient, teamId, otherUsers } = await setupTeamWithUser({
-					rolename: 'teacher',
-					isTeamOwner: true,
-				});
-				// this should cause an error during the migration
-				await em.nativeDelete(User, otherUsers[0].id);
-
-				const response = await loggedInClient.post(`${teamId}/create-room`);
-
-				expect(response.status).toBe(HttpStatus.BAD_REQUEST);
-				const room = await app.get(RoomService).getSingleRoom(roomId);
-
-			});
-		}); */
 	});
 
 	const setupTeamWithUser = async (props: { rolename: 'teacher' | 'student'; isTeamOwner: boolean }) => {
@@ -201,7 +184,18 @@ describe('Team Export Room Controller (API)', () => {
 		];
 
 		await em
-			.persist([school, account, user, ...otherUsers, team, userTeamRole, roomViewerRole, roomOwnerRole, ...guestRoles])
+			.persist([
+				school,
+				account,
+				user,
+				...otherUsers,
+				team,
+				userTeamRole,
+				otherTeamRole,
+				roomViewerRole,
+				roomOwnerRole,
+				...guestRoles,
+			])
 			.flush();
 		em.clear();
 
