@@ -42,11 +42,16 @@ export class TeamUc {
 			features: [],
 		});
 
-		await this.roomMembershipService.createNewRoomMembership(room.id, userId);
+		try {
+			await this.roomMembershipService.createNewRoomMembership(room.id, userId);
 
-		const otherUsers = team.teamUsers.map((teamUser) => teamUser.userId.id).filter((id) => id != userId);
+			const otherUsers = team.teamUsers.map((teamUser) => teamUser.userId.id).filter((id) => id != userId);
 
-		await this.roomMembershipService.addMembersToRoom(room.id, otherUsers, RoleName.ROOMVIEWER);
+			await this.roomMembershipService.addMembersToRoom(room.id, otherUsers, RoleName.ROOMVIEWER);
+		} catch (error) {
+			await this.roomService.deleteRoom(room);
+			throw error;
+		}
 
 		return { roomId: room.id };
 	}
