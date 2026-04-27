@@ -4,6 +4,7 @@ import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { externalToolFactory } from '@modules/tool/external-tool/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
+import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
@@ -52,8 +53,8 @@ describe(ExternalToolRule.name, () => {
 	describe('isApplicable', () => {
 		describe('when the object is an external tool', () => {
 			const setup = () => {
-				const user: User = userFactory.build();
-				const object: ExternalTool = externalToolFactory.build();
+				const user = userFactory.build();
+				const object = externalToolFactory.build();
 
 				return {
 					object,
@@ -72,7 +73,7 @@ describe(ExternalToolRule.name, () => {
 
 		describe('when the object is not an external tool', () => {
 			it('should return false', () => {
-				const user: User = userFactory.build();
+				const user = userFactory.build();
 
 				const result = rule.isApplicable(user, user);
 
@@ -84,8 +85,8 @@ describe(ExternalToolRule.name, () => {
 	describe('hasPermission', () => {
 		describe('when the user has the permission', () => {
 			const setup = () => {
-				const user: User = userFactory.build();
-				const object: ExternalTool = externalToolFactory.build();
+				const user = userFactory.build();
+				const object = externalToolFactory.build();
 
 				authorizationHelper.hasAllPermissions.mockReturnValueOnce(true).mockReturnValueOnce(true);
 
@@ -120,8 +121,8 @@ describe(ExternalToolRule.name, () => {
 
 		describe('when the user does not have the permission', () => {
 			const setup = () => {
-				const user: User = userFactory.build();
-				const object: ExternalTool = externalToolFactory.build();
+				const user = userFactory.build();
+				const object = externalToolFactory.build();
 
 				authorizationHelper.hasAllPermissions.mockReturnValueOnce(false).mockReturnValueOnce(false);
 
@@ -151,6 +152,101 @@ describe(ExternalToolRule.name, () => {
 				});
 
 				expect(result).toEqual(false);
+			});
+		});
+
+		describe('when user has CAN_EXECUTE_INSTANCE_OPERATIONS permission', () => {
+			describe('when user has instance operation permission for read action', () => {
+				const setup = () => {
+					const user = userFactory.build();
+					const object = externalToolFactory.build();
+
+					authorizationHelper.hasAllPermissions.mockImplementation((u, permissions) => {
+						if (permissions.includes(Permission.CAN_EXECUTE_INSTANCE_OPERATIONS)) {
+							return true;
+						}
+						return false;
+					});
+
+					return { user, object };
+				};
+
+				it('should return true', () => {
+					const { user, object } = setup();
+
+					const result = rule.hasPermission(user, object, {
+						action: Action.read,
+						requiredPermissions: [],
+					});
+
+					expect(result).toEqual(true);
+				});
+			});
+
+			describe('when user has instance operation permission for write action', () => {
+				const setup = () => {
+					const user = userFactory.build();
+					const object = externalToolFactory.build();
+
+					authorizationHelper.hasAllPermissions.mockImplementation((u, permissions) => {
+						if (permissions.includes(Permission.CAN_EXECUTE_INSTANCE_OPERATIONS)) {
+							return true;
+						}
+						return false;
+					});
+
+					return { user, object };
+				};
+
+				it('should return true', () => {
+					const { user, object } = setup();
+
+					const result = rule.hasPermission(user, object, {
+						action: Action.write,
+						requiredPermissions: [],
+					});
+
+					expect(result).toEqual(true);
+				});
+			});
+
+			describe('when user does not have instance operation permission', () => {
+				const setup = () => {
+					const user = userFactory.build();
+					const object = externalToolFactory.build();
+
+					authorizationHelper.hasAllPermissions.mockReturnValue(false);
+
+					return { user, object };
+				};
+
+				it('should return false', () => {
+					const { user, object } = setup();
+
+					const result = rule.hasPermission(user, object, {
+						action: Action.read,
+						requiredPermissions: [],
+					});
+
+					expect(result).toEqual(false);
+				});
+			});
+		});
+
+		describe('when the action is not read or write', () => {
+			const setup = () => {
+				const user = userFactory.build();
+				const object = externalToolFactory.build();
+
+				return { user, object };
+			};
+
+			it('should throw NotImplementedException', () => {
+				const { user, object } = setup();
+
+				expect(() =>
+					rule.hasPermission(user, object, { action: 'unknown' as Action, requiredPermissions: [] })
+				).toThrow(NotImplementedException);
 			});
 		});
 	});
