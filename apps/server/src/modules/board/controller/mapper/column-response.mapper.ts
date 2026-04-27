@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { Card, Column } from '../../domain';
-import { CardResponse, CardSkeletonResponse, ColumnFullResponse, ColumnResponse, TimestampsResponse } from '../dto';
+import { CardSkeletonResponse, ColumnFullResponse, ColumnResponse, TimestampsResponse } from '../dto';
 import { CardResponseMapper } from './card-response.mapper';
 
 export class ColumnResponseMapper {

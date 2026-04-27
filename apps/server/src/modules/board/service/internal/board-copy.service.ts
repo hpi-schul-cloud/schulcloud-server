@@ -103,7 +103,7 @@ export class BoardCopyService {
 		const { targetSchoolId } = params;
 
 		if (!originalColumn.parentId) {
-			throw new UnprocessableEntityException('Column has no parent column');
+			throw new UnprocessableEntityException('Column has no parent board');
 		}
 		const parentBoard = params.destinationColumnBoardId
 			? await this.boardNodeService.findByClassAndId(ColumnBoard, params.destinationColumnBoardId)

@@ -13,7 +13,7 @@ import { ColumnFullResponse } from '../dto';
 
 const baseRouteName = '/columns';
 
-describe(`column move (api)`, () => {
+describe(`column copy (api)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let testApiClient: TestApiClient;

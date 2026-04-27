@@ -129,7 +129,7 @@ describe(BoardUc.name, () => {
 					elements: [],
 					copyEntity: board, // Intentionally incorrect type to trigger the error
 				};
-				columnBoardService.copyCard.mockResolvedValueOnce(copyStatus);
+				columnBoardService.copyColumn.mockResolvedValueOnce(copyStatus);
 
 				await expect(uc.copyColumn(user.id, column.id, 'school-id')).rejects.toThrowError(
 					'Copied entity is not a column'
