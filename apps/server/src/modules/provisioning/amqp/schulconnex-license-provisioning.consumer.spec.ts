@@ -1,18 +1,24 @@
 import { Logger } from '@core/logger';
+import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
+import { SchulconnexLicenseProvisioningMessage } from '../domain';
 import { ExternalLicenseDto } from '../dto';
 import { LicenseProvisioningSuccessfulLoggable } from '../loggable';
+import { PROVISIONING_EXCHANGE_CONFIG_TOKEN } from '../provisioning-exchange.config';
 import { ENTITIES } from '../schulconnex-license-provisioning.entity.imports';
 import {
 	SchulconnexLicenseProvisioningService,
 	SchulconnexToolProvisioningService,
 } from '../strategy/schulconnex/service';
+import { registerAmqpSubscriber } from './amqp-subscriber.helper';
 import { SchulconnexLicenseProvisioningConsumer } from './schulconnex-license-provisioning.consumer';
-import { PROVISIONING_EXCHANGE_CONFIG_TOKEN } from '../provisioning-exchange.config';
+import { SchulconnexProvisioningEvents } from './schulconnex.exchange';
+
+jest.mock('./amqp-subscriber.helper');
 
 describe(SchulconnexLicenseProvisioningConsumer.name, () => {
 	let module: TestingModule;
@@ -21,6 +27,7 @@ describe(SchulconnexLicenseProvisioningConsumer.name, () => {
 	let logger: DeepMocked<Logger>;
 	let schulconnexLicenseProvisioningService: DeepMocked<SchulconnexLicenseProvisioningService>;
 	let schulconnexToolProvisioningService: DeepMocked<SchulconnexToolProvisioningService>;
+	let amqpConnection: DeepMocked<AmqpConnection>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -43,6 +50,10 @@ describe(SchulconnexLicenseProvisioningConsumer.name, () => {
 					useValue: await setupEntities(ENTITIES),
 				},
 				{
+					provide: AmqpConnection,
+					useValue: createMock<AmqpConnection>(),
+				},
+				{
 					provide: PROVISIONING_EXCHANGE_CONFIG_TOKEN,
 					useValue: {
 						exchangeName: 'provisioning-exchange',
@@ -56,6 +67,7 @@ describe(SchulconnexLicenseProvisioningConsumer.name, () => {
 		logger = module.get(Logger);
 		schulconnexLicenseProvisioningService = module.get(SchulconnexLicenseProvisioningService);
 		schulconnexToolProvisioningService = module.get(SchulconnexToolProvisioningService);
+		amqpConnection = module.get(AmqpConnection);
 	});
 
 	afterAll(async () => {
@@ -64,6 +76,60 @@ describe(SchulconnexLicenseProvisioningConsumer.name, () => {
 
 	afterEach(() => {
 		jest.resetAllMocks();
+	});
+
+	describe('onModuleInit', () => {
+		it('should register the AMQP subscriber with the correct parameters', async () => {
+			await consumer.onModuleInit();
+
+			expect(registerAmqpSubscriber).toHaveBeenCalledWith(
+				amqpConnection,
+				'provisioning-exchange',
+				SchulconnexProvisioningEvents.LICENSE_PROVISIONING,
+				expect.any(Function),
+				SchulconnexLicenseProvisioningConsumer.name
+			);
+		});
+
+		describe('when the handler is invoked', () => {
+			const setup = () => {
+				const userId = new ObjectId().toHexString();
+				const schoolId = new ObjectId().toHexString();
+				const systemId = new ObjectId().toHexString();
+				const externalLicenses = [
+					new ExternalLicenseDto({
+						mediumId: 'medium:1',
+					}),
+				];
+
+				const payload: SchulconnexLicenseProvisioningMessage = {
+					userId,
+					schoolId,
+					systemId,
+					externalLicenses,
+				};
+
+				return {
+					payload,
+				};
+			};
+
+			it('should call provisionLicenses with the payload', async () => {
+				const { payload } = setup();
+
+				await consumer.onModuleInit();
+
+				const registerAmqpSubscriberMock = jest.mocked(registerAmqpSubscriber);
+				const handler = registerAmqpSubscriberMock.mock.calls[0][3];
+
+				await handler(payload);
+
+				expect(schulconnexLicenseProvisioningService.provisionExternalLicenses).toHaveBeenCalledWith(
+					payload.userId,
+					payload.externalLicenses
+				);
+			});
+		});
 	});
 
 	describe('provisionGroups', () => {

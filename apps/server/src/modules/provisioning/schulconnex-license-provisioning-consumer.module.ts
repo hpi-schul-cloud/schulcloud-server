@@ -14,6 +14,7 @@ import {
 	SchulconnexLicenseProvisioningService,
 	SchulconnexToolProvisioningService,
 } from './strategy/schulconnex/service';
+import { RabbitMQWrapperModule, RABBITMQ_CONFIG_TOKEN, RabbitMQConfig } from '@infra/rabbitmq';
 
 @Module({
 	imports: [
@@ -26,6 +27,12 @@ import {
 		MediumMetadataModule,
 		MediaSourceSyncModule,
 		ConfigurationModule.register(PROVISIONING_EXCHANGE_CONFIG_TOKEN, ProvisioningExchangeConfig),
+		RabbitMQWrapperModule.register({
+			exchangeConfigInjectionToken: PROVISIONING_EXCHANGE_CONFIG_TOKEN,
+			exchangeConfigConstructor: ProvisioningExchangeConfig,
+			configInjectionToken: RABBITMQ_CONFIG_TOKEN,
+			configConstructor: RabbitMQConfig,
+		}),
 	],
 	providers: [
 		SchulconnexLicenseProvisioningConsumer,
