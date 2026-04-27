@@ -19,7 +19,6 @@ describe('UserLoginMigrationRule', () => {
 	let module: TestingModule;
 	let rule: UserLoginMigrationRule;
 	let injectionService: AuthorizationInjectionService;
-
 	let authorizationHelper: DeepMocked<AuthorizationHelper>;
 
 	beforeAll(async () => {
@@ -194,6 +193,100 @@ describe('UserLoginMigrationRule', () => {
 				const result = rule.hasPermission(user, userLoginMigration, context);
 
 				expect(result).toEqual(false);
+			});
+		});
+
+		describe('when user has CAN_EXECUTE_INSTANCE_OPERATIONS permission', () => {
+			describe('when user has instance operation permission for read action', () => {
+				const setup = () => {
+					const user = userFactory.buildWithId({
+						school: schoolEntityFactory.buildWithId(undefined, new ObjectId().toHexString()),
+					});
+					const userLoginMigration = userLoginMigrationDOFactory.buildWithId({
+						schoolId: new ObjectId().toHexString(),
+					});
+					const context: AuthorizationContext = {
+						action: Action.read,
+						requiredPermissions: [],
+					};
+
+					authorizationHelper.hasAllPermissions.mockImplementation((_user, permissions: Permission[]) => {
+						if (permissions.includes(Permission.CAN_EXECUTE_INSTANCE_OPERATIONS)) {
+							return true;
+						}
+						return false;
+					});
+
+					return { user, userLoginMigration, context };
+				};
+
+				it('should return "true" even without being at the same school', () => {
+					const { user, userLoginMigration, context } = setup();
+
+					const result = rule.hasPermission(user, userLoginMigration, context);
+
+					expect(result).toEqual(true);
+				});
+			});
+
+			describe('when user has instance operation permission for write action', () => {
+				const setup = () => {
+					const user = userFactory.buildWithId({
+						school: schoolEntityFactory.buildWithId(undefined, new ObjectId().toHexString()),
+					});
+					const userLoginMigration = userLoginMigrationDOFactory.buildWithId({
+						schoolId: new ObjectId().toHexString(),
+					});
+					const context: AuthorizationContext = {
+						action: Action.write,
+						requiredPermissions: [],
+					};
+
+					authorizationHelper.hasAllPermissions.mockImplementation((_user, permissions: Permission[]) => {
+						if (permissions.includes(Permission.CAN_EXECUTE_INSTANCE_OPERATIONS)) {
+							return true;
+						}
+						return false;
+					});
+
+					return { user, userLoginMigration, context };
+				};
+
+				it('should return "true" even without being at the same school', () => {
+					const { user, userLoginMigration, context } = setup();
+
+					const result = rule.hasPermission(user, userLoginMigration, context);
+
+					expect(result).toEqual(true);
+				});
+			});
+
+			describe('when user has instance operation permission but missing required permissions', () => {
+				const setup = () => {
+					const user = userFactory.buildWithId({
+						school: schoolEntityFactory.buildWithId(undefined, new ObjectId().toHexString()),
+					});
+					const userLoginMigration = userLoginMigrationDOFactory.buildWithId({
+						schoolId: new ObjectId().toHexString(),
+					});
+					const missingPermission = 'missing' as Permission;
+					const context: AuthorizationContext = {
+						action: Action.read,
+						requiredPermissions: [missingPermission],
+					};
+
+					authorizationHelper.hasAllPermissions.mockReturnValue(false);
+
+					return { user, userLoginMigration, context };
+				};
+
+				it('should return "false" when required permissions are not met', () => {
+					const { user, userLoginMigration, context } = setup();
+
+					const result = rule.hasPermission(user, userLoginMigration, context);
+
+					expect(result).toEqual(false);
+				});
 			});
 		});
 	});
