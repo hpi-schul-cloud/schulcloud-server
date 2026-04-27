@@ -46,7 +46,7 @@ export class CourseRule implements Rule<CourseEntity | Course> {
 			'substitutionTeachers',
 			'students',
 		]);
-		// TODO Read permission is missing
+		// Read permission is missing
 		const hasReadPermission = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
 
 		const hasAdminPermission = this.authorizationHelper.hasAllPermissions(user, [
@@ -68,7 +68,7 @@ export class CourseRule implements Rule<CourseEntity | Course> {
 			'teachers',
 			'substitutionTeachers',
 		]);
-		// TODO Write permission is missing
+		// Write permission is missing
 		const hasWritePermission = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
 
 		const hasAdminPermission = this.authorizationHelper.hasAllPermissions(user, [

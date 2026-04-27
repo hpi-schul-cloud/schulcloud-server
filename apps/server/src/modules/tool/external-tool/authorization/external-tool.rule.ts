@@ -40,7 +40,7 @@ export class ExternalToolRule implements Rule<ExternalTool> {
 	}
 
 	private hasReadAccess(user: User, externalTool: ExternalTool, context: AuthorizationContext): boolean {
-		// TODO: Permissions are missing here
+		// Permissions are missing here
 		const hasPermission = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
 		const hasInstanceReadOperationPermission = this.authorizationHelper.hasAllPermissions(user, [
 			Permission.CAN_EXECUTE_INSTANCE_OPERATIONS,

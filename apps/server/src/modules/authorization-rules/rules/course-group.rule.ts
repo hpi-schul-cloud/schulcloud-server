@@ -43,7 +43,7 @@ export class CourseGroupRule implements Rule<CourseGroupEntity> {
 
 	private hasReadAccess(user: User, object: CourseGroupEntity, context: AuthorizationContext): boolean {
 		const isStudentInCourseGroup = this.isStudentInCourseGroup(user, object);
-		// TODO: Permissions are missing here
+		// Permissions are missing here
 		const hasReadPermissions = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
 		const hasInstanceReadOperationPermission = this.authorizationHelper.hasAllPermissions(user, [
 			Permission.CAN_EXECUTE_INSTANCE_OPERATIONS,

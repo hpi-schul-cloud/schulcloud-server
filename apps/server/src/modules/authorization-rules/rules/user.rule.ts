@@ -41,9 +41,9 @@ export class UserRule implements Rule<UserDo> {
 	}
 
 	private hasReadAccess(user: User, userDo: UserDo, context: AuthorizationContext): boolean {
-		// TODO: Missing permission
+		// Missing permission
 		const hasReadPermission = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
-		// TODO: Missing permission
+		// Missing permission
 		const hasInstanceReadOperationPermission = this.authorizationHelper.hasAllPermissions(user, [
 			Permission.CAN_EXECUTE_INSTANCE_OPERATIONS,
 			...context.requiredPermissions,

@@ -44,10 +44,10 @@ export class TaskRule implements Rule<Task> {
 	}
 
 	private hasReadAccess(user: User, task: Task, context: AuthorizationContext): boolean {
-		// TODO permission is missing
+		// permission is missing
 		const hasPermission = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
 		const isCreator = this.isCreator(user, task);
-		// TODO permission is missing
+		// permission is missing
 		const hasInstanceReadOperationPermission = this.authorizationHelper.hasAllPermissions(user, [
 			Permission.CAN_EXECUTE_INSTANCE_OPERATIONS,
 			...context.requiredPermissions,
@@ -61,10 +61,10 @@ export class TaskRule implements Rule<Task> {
 	}
 
 	private hasWriteAccess(user: User, task: Task, context: AuthorizationContext): boolean {
-		// TODO permission is missing
+		// permission is missing
 		const hasPermission = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
 		const isCreator = this.isCreator(user, task);
-		// TODO permission is missing
+		// permission is missing
 		const hasInstanceWriteOperationPermission = this.authorizationHelper.hasAllPermissions(user, [
 			Permission.CAN_EXECUTE_INSTANCE_OPERATIONS,
 			...context.requiredPermissions,

@@ -50,7 +50,7 @@ export class SchoolExternalToolRule implements Rule<SchoolExternalToolEntity | S
 		context: AuthorizationContext
 	): boolean {
 		const isUserSchool = this.isUserSchool(user, object);
-		// TODO: Permissions are missing here
+		// Permissions are missing here
 		const hasReadPermission = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
 		const hasInstanceReadOperationPermission = this.authorizationHelper.hasAllPermissions(user, [
 			Permission.CAN_EXECUTE_INSTANCE_OPERATIONS,

@@ -41,10 +41,10 @@ export class UserLoginMigrationRule implements Rule<UserLoginMigrationDO> {
 
 	private hasReadAccess(user: User, userLoginMigration: UserLoginMigrationDO, context: AuthorizationContext): boolean {
 		const isUserSchool = this.isUserSchool(user, userLoginMigration);
-		// TODO: Missing permission
+		// Missing permission
 		const hasReadPermission = this.authorizationHelper.hasAllPermissions(user, [...context.requiredPermissions]);
 
-		// TODO: Missing permission
+		// Missing permission
 		const hasInstanceReadOperationPermission = this.authorizationHelper.hasAllPermissions(user, [
 			Permission.CAN_EXECUTE_INSTANCE_OPERATIONS,
 			...context.requiredPermissions,

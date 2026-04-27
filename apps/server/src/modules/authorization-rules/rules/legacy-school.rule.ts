@@ -44,7 +44,7 @@ export class LegacySchoolRule implements Rule<LegacySchoolDo> {
 
 	private hasReadAccess(user: User, object: LegacySchoolDo, context: AuthorizationContext): boolean {
 		const isUserSchool = this.isUserSchool(user, object);
-		// TODO: Permissions are missing here
+		// Permissions are missing here
 		const hasReadPermission = this.authorizationHelper.hasAllPermissions(user, [...context.requiredPermissions]);
 		const hasInstanceReadOperationPermission = this.authorizationHelper.hasAllPermissions(user, [
 			Permission.SCHOOL_VIEW,

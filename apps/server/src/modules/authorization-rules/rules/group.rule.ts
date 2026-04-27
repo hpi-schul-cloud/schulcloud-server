@@ -41,7 +41,7 @@ export class GroupRule implements Rule<Group> {
 
 	private hasReadAccess(user: User, group: Group, context: AuthorizationContext): boolean {
 		const hasOrganizationAccess = this.hasOrganizationAccess(user, group);
-		// TODO: Permissions are missing here
+		// Permissions are missing here
 		const hasReadPermission = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
 		const hasInstanceReadOperationPermission = this.authorizationHelper.hasAllPermissions(user, [
 			Permission.CAN_EXECUTE_INSTANCE_OPERATIONS,

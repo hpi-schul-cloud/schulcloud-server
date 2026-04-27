@@ -40,7 +40,7 @@ export class SystemRule implements Rule<System> {
 	}
 
 	private hasReadAccess(user: User, system: System, context: AuthorizationContext): boolean {
-		// TODO permission is missing
+		// permission is missing
 		const hasReadPermissions = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
 		const hasInstanceReadOperationPermission = this.authorizationHelper.hasAllPermissions(user, [
 			Permission.CAN_EXECUTE_INSTANCE_OPERATIONS,
@@ -53,7 +53,7 @@ export class SystemRule implements Rule<System> {
 	}
 
 	private hasWriteAccess(user: User, system: System, context: AuthorizationContext): boolean {
-		// TODO permission is missing
+		// permission is missing
 		const hasWritePermissions = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
 		const hasInstanceWriteOperationPermission = this.authorizationHelper.hasAllPermissions(user, [
 			Permission.CAN_EXECUTE_INSTANCE_OPERATIONS,

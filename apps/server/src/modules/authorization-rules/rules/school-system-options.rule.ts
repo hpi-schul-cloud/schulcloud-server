@@ -42,10 +42,10 @@ export class SchoolSystemOptionsRule implements Rule<SchoolSystemOptions> {
 	private hasReadAccess(user: User, object: SchoolSystemOptions, context: AuthorizationContext): boolean {
 		const isUserSchool = this.isUserSchool(user, object);
 		const hasSystem = this.hasSystem(user, object);
-		// TODO permission is missing
+		// permission is missing
 		const hasReadPermission = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
 
-		// TODO permission is missing
+		// permission is missing
 		const hasInstanceReadOperationPermission = this.authorizationHelper.hasAllPermissions(user, [
 			Permission.CAN_EXECUTE_INSTANCE_OPERATIONS,
 			...context.requiredPermissions,
