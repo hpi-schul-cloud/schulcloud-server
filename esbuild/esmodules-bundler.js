@@ -6,11 +6,6 @@ const { resolve } = require('path');
 // add files to be transformed from ESModules to CommonJS in the following list
 const options = [
 	{
-		name: 'keycloak-admin-client-lib',
-		entryPoint: ['esbuild/content/keycloak-admin-client-cjs-index.ts'],
-		outdir: 'node_modules/@keycloak/keycloak-admin-client-cjs',
-	},
-	{
 		noExportedMember: 'node_modules/@feathersjs/express/lib/declarations.d.ts',
 	},
 ];
