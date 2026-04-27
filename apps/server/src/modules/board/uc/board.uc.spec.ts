@@ -13,7 +13,7 @@ import { setupEntities } from '@testing/database';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '../../copy-helper';
 import { BoardNodeFactory } from '../domain';
 import { BoardNodeAuthorizableService, BoardNodeService, ColumnBoardService } from '../service';
-import { columnBoardFactory, columnFactory } from '../testing';
+import { boardNodeAuthorizableFactory, columnBoardFactory, columnFactory } from '../testing';
 import { BoardUc } from './board.uc';
 import { BoardNodeRule } from '../authorisation/board-node.rule';
 import { BOARD_CONFIG_TOKEN, BoardConfig } from '../board.config';
@@ -23,6 +23,9 @@ describe(BoardUc.name, () => {
 	let uc: BoardUc;
 	let boardNodeService: DeepMocked<BoardNodeService>;
 	let columnBoardService: DeepMocked<ColumnBoardService>;
+	let boardNodeRule: DeepMocked<BoardNodeRule>;
+	let boardNodeAuthorizableService: DeepMocked<BoardNodeAuthorizableService>;
+	let authorizationService: DeepMocked<AuthorizationService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -86,6 +89,9 @@ describe(BoardUc.name, () => {
 		uc = module.get(BoardUc);
 		boardNodeService = module.get(BoardNodeService);
 		columnBoardService = module.get(ColumnBoardService);
+		boardNodeRule = module.get(BoardNodeRule);
+		authorizationService = module.get(AuthorizationService);
+		boardNodeAuthorizableService = module.get(BoardNodeAuthorizableService);
 		await setupEntities([User, CourseEntity, CourseGroupEntity]);
 	});
 
@@ -109,7 +115,7 @@ describe(BoardUc.name, () => {
 
 	describe('copyColumnBoard', () => {
 		describe('when something goes wrong', () => {
-			it('should throw UnprocessableEntityException when card has no parent', async () => {
+			it('should throw UnprocessableEntityException when Column has no parent', async () => {
 				const { user, column } = setup();
 				// card.parentId = null;
 				boardNodeService.findByClassAndId.mockResolvedValueOnce(column);
@@ -117,11 +123,17 @@ describe(BoardUc.name, () => {
 				await expect(uc.copyColumn(user.id, column.id, 'school-id')).rejects.toThrowError('Column has no parent board');
 			});
 
-			it('should throw InternalServerError if copyEntity is not a Card', async () => {
+			it('should throw InternalServerError if copyEntity is not a Column', async () => {
 				const { user, board } = setup();
 				const column = columnFactory.build({ path: board.id });
 				boardNodeService.findByClassAndId.mockResolvedValueOnce(column);
-				boardNodeService.findByClassAndId.mockResolvedValueOnce(column);
+
+				boardNodeRule.can.mockReturnValueOnce(true);
+
+				const boardAuthorizable = boardNodeAuthorizableFactory.build({ boardNode: column });
+
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				boardNodeAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(boardAuthorizable);
 
 				const copyStatus: CopyStatus = {
 					status: CopyStatusEnum.SUCCESS,

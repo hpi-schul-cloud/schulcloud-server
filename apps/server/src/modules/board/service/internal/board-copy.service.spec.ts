@@ -447,38 +447,30 @@ describe(BoardCopyService.name, () => {
 			it('should throw UnprocessableEntityException when parent of column has no parent', async () => {
 				const userId = new ObjectId().toHexString();
 				const targetSchoolId = new ObjectId().toHexString();
-				const notAColumn = columnFactory.build(); // using a column as a non-column example
-				const column = columnFactory.build({ path: notAColumn.id }); // using a column as a non-column example
+				const parentBoard = columnBoardFactory.build();
+				const columnWithoutParent = columnFactory.build();
 
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-				// @ts-ignore
-				boardNodeService.findByClassAndId.mockImplementation((cls, id) => {
-					if (cls === Column) {
-						return column;
-					}
-					if (cls === Column && id === notAColumn.id) {
-						return notAColumn;
-					}
-				});
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(columnWithoutParent);
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(parentBoard);
+
 				const columnCopy = columnFactory.build();
 				const status: CopyStatus = {
 					copyEntity: columnCopy,
-					type: CopyElementType.CARD,
+					type: CopyElementType.COLUMN,
 					status: CopyStatusEnum.SUCCESS,
 				};
 				boardNodeCopyService.copy.mockResolvedValueOnce(status);
 
 				const copyParams: CopyColumnParams = {
-					originalColumnId: column.id,
+					originalColumnId: columnWithoutParent.id,
 					sourceStorageLocationReference: { id: targetSchoolId, type: StorageLocation.SCHOOL },
 					targetStorageLocationReference: { id: targetSchoolId, type: StorageLocation.SCHOOL },
 					userId,
 					copyTitle: 'Column Copy',
 					targetSchoolId,
 				};
-				boardNodeService.findByClassAndId.mockResolvedValueOnce(notAColumn);
 
-				await expect(service.copyColumn(copyParams)).rejects.toThrowError('Column has no parent column');
+				await expect(service.copyColumn(copyParams)).rejects.toThrowError('Column has no parent board');
 			});
 
 			it('should find the parent column-board of the original column', async () => {

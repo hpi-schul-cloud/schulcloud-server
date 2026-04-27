@@ -14,14 +14,7 @@ import {
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common/error';
 import { BoardUc, ColumnUc } from '../uc';
-import {
-	CardResponse,
-	ColumnFullResponse,
-	ColumnResponse,
-	ColumnUrlParams,
-	MoveColumnBodyParams,
-	RenameBodyParams,
-} from './dto';
+import { CardResponse, ColumnFullResponse, ColumnUrlParams, MoveColumnBodyParams, RenameBodyParams } from './dto';
 import { CreateCardBodyParams } from './dto/card/create-card.body.params';
 import { CardResponseMapper, ColumnResponseMapper } from './mapper';
 import { RequestTimeout } from '@shared/common/decorators';
