@@ -10,6 +10,7 @@ import { schoolEntityFactory } from '@modules/school/testing';
 import { userLoginMigrationDOFactory } from '@modules/user-login-migration/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
+import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
@@ -287,6 +288,26 @@ describe('UserLoginMigrationRule', () => {
 
 					expect(result).toEqual(false);
 				});
+			});
+		});
+
+		describe('when the action is not read or write', () => {
+			const setup = () => {
+				const schoolId = new ObjectId().toHexString();
+				const user = userFactory.buildWithId({
+					school: schoolEntityFactory.buildWithId(undefined, schoolId),
+				});
+				const userLoginMigration = userLoginMigrationDOFactory.buildWithId({ schoolId });
+
+				return { user, userLoginMigration };
+			};
+
+			it('should throw NotImplementedException', () => {
+				const { user, userLoginMigration } = setup();
+
+				expect(() =>
+					rule.hasPermission(user, userLoginMigration, { action: 'unknown' as Action, requiredPermissions: [] })
+				).toThrow(NotImplementedException);
 			});
 		});
 	});

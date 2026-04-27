@@ -15,6 +15,7 @@ import { Submission, Task } from '@modules/task/repo';
 import { taskFactory } from '@modules/task/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
+import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
@@ -349,6 +350,23 @@ describe('TaskRule', () => {
 
 					expect(res).toBe(false);
 				});
+			});
+		});
+
+		describe('when the action is not read or write', () => {
+			const setup = () => {
+				const { user } = createUserWithPermissions();
+				const task = taskFactory.build({ creator: user });
+
+				return { user, task };
+			};
+
+			it('should throw NotImplementedException', () => {
+				const { user, task } = setup();
+
+				expect(() =>
+					service.hasPermission(user, task, { action: 'unknown' as Action, requiredPermissions: [] })
+				).toThrow(NotImplementedException);
 			});
 		});
 	});

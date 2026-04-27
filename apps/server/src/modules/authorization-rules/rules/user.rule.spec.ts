@@ -10,6 +10,7 @@ import { roleFactory } from '@modules/role/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { User } from '@modules/user/repo';
 import { userDoFactory, userFactory } from '@modules/user/testing';
+import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
@@ -305,6 +306,26 @@ describe('UserRule', () => {
 
 				expect(res).toBe(false);
 			});
+		});
+	});
+
+	describe('when the action is not read or write', () => {
+		const setup = () => {
+			config.teacherVisibilityForExternalTeamInvitation = TeacherVisibilityForExternalTeamInvitation.OPT_IN;
+			const role = roleFactory.buildWithId({ permissions: [] });
+			const school = schoolEntityFactory.buildWithId();
+			const user = userFactory.buildWithId({ roles: [role], school });
+			const entity = userDoFactory.buildWithId({ schoolId: school.id });
+
+			return { user, entity };
+		};
+
+		it('should throw NotImplementedException', () => {
+			const { user, entity } = setup();
+
+			expect(() =>
+				service.hasPermission(user, entity, { action: 'unknown' as Action, requiredPermissions: [] })
+			).toThrow(NotImplementedException);
 		});
 	});
 });

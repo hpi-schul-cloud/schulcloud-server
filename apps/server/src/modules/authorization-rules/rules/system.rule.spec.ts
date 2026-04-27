@@ -1,5 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import {
+	Action,
 	AuthorizationContextBuilder,
 	AuthorizationHelper,
 	AuthorizationInjectionService,
@@ -9,6 +10,7 @@ import { System } from '@modules/system';
 import { systemEntityFactory, systemFactory } from '@modules/system/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
+import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
@@ -402,6 +404,27 @@ describe(SystemRule.name, () => {
 
 					expect(result).toEqual(false);
 				});
+			});
+		});
+
+		describe('when the action is not read or write', () => {
+			const setup = () => {
+				const system = systemFactory.build();
+				const systemEntity = systemEntityFactory.buildWithId(undefined, system.id);
+				const school = schoolEntityFactory.buildWithId({
+					systems: [systemEntity],
+				});
+				const user = userFactory.buildWithId({ school });
+
+				return { user, system };
+			};
+
+			it('should throw NotImplementedException', () => {
+				const { user, system } = setup();
+
+				expect(() =>
+					rule.hasPermission(user, system, { action: 'unknown' as Action, requiredPermissions: [] })
+				).toThrow(NotImplementedException);
 			});
 		});
 	});

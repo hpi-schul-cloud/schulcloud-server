@@ -9,6 +9,7 @@ import { courseEntityFactory, courseFactory } from '@modules/course/testing';
 import { roleFactory } from '@modules/role/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
+import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
@@ -354,6 +355,23 @@ describe('CourseRule', () => {
 
 				expect(result).toEqual(false);
 			});
+		});
+	});
+
+	describe('when the action is not read or write', () => {
+		const setup = () => {
+			const { user } = createUserWithPermissions();
+			const course = courseEntityFactory.build({ teachers: [user] });
+
+			return { user, course };
+		};
+
+		it('should throw NotImplementedException', () => {
+			const { user, course } = setup();
+
+			expect(() =>
+				service.hasPermission(user, course, { action: 'unknown' as Action, requiredPermissions: [] })
+			).toThrow(NotImplementedException);
 		});
 	});
 });

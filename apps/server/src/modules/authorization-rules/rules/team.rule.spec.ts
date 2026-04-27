@@ -1,4 +1,5 @@
 import {
+	Action,
 	AUTHORIZATION_CONFIG_TOKEN,
 	AuthorizationContextBuilder,
 	AuthorizationHelper,
@@ -8,6 +9,7 @@ import { roleFactory } from '@modules/role/testing';
 import { teamFactory } from '@modules/team/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
+import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
@@ -274,6 +276,25 @@ describe('TeamRule', () => {
 
 					expect(res).toBe(false);
 				});
+			});
+		});
+
+		describe('when the action is not read or write', () => {
+			const setup = () => {
+				const permissionA = 'a' as Permission;
+				const role = roleFactory.buildWithId({ permissions: [permissionA] });
+				const user = userFactory.buildWithId({ roles: [role] });
+				const team = teamFactory.build();
+
+				return { user, team };
+			};
+
+			it('should throw NotImplementedException', () => {
+				const { user, team } = setup();
+
+				expect(() => rule.hasPermission(user, team, { action: 'unknown' as Action, requiredPermissions: [] })).toThrow(
+					NotImplementedException
+				);
 			});
 		});
 	});

@@ -12,6 +12,7 @@ import { roleFactory } from '@modules/role/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
+import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
@@ -323,6 +324,33 @@ describe('GroupRule', () => {
 
 					expect(result).toEqual(false);
 				});
+			});
+		});
+
+		describe('when the action is not read or write', () => {
+			const setup = () => {
+				const role = roleFactory.buildWithId();
+				const school = schoolEntityFactory.buildWithId();
+				const user = userFactory.buildWithId({ school, roles: [role] });
+				const group = groupFactory.build({
+					users: [
+						{
+							userId: user.id,
+							roleId: user.roles[0].id,
+						},
+					],
+					organizationId: user.school.id,
+				});
+
+				return { user, group };
+			};
+
+			it('should throw NotImplementedException', () => {
+				const { user, group } = setup();
+
+				expect(() => rule.hasPermission(user, group, { action: 'unknown' as Action, requiredPermissions: [] })).toThrow(
+					NotImplementedException
+				);
 			});
 		});
 	});
