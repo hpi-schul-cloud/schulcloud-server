@@ -15,6 +15,7 @@ import { TestApiClient } from '@testing/test-api-client';
 import { RoomService } from '@modules/room';
 import { RoomMembershipService } from '@modules/room-membership';
 import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
+import { userFactory } from '@modules/user/testing';
 
 describe('Team Export Room Controller (API)', () => {
 	let app: INestApplication;
@@ -38,68 +39,56 @@ describe('Team Export Room Controller (API)', () => {
 		await cleanupCollections(em);
 		config.featureTeamCreateRoomEnabled = true;
 		await em.clearCache('roles-cache-bynames-roomowner');
+		await em.clearCache('roles-cache-bynames-roomviewer');
+		await em.clearCache('roles-cache-byname-guestStudent');
+		await em.clearCache('roles-cache-byname-guestTeacher');
+		await em.clearCache('roles-cache-byname-guestExternalPerson');
 	});
 
 	afterAll(async () => {
 		await app.close();
 	});
 
-	const setupTeamWithUser = async (props: { rolename: 'teacher' | 'student'; isTeamOwner: boolean }) => {
-		const { account, user } = UserAndAccountTestFactory.buildByRole(props.rolename);
-		const { school } = user;
-
-		const teamRole = roleFactory.buildWithId({
-			name: props.isTeamOwner ? RoleName.TEAMOWNER : RoleName.TEAMADMINISTRATOR,
-			permissions: props.isTeamOwner ? [Permission.TEAM_EXPORT_TO_ROOM] : [],
-		});
-		const team = teamFactory.buildWithId({
-			teamUsers: [new TeamUserEntity({ role: teamRole, user, school })],
-		});
-
-		const { roomViewerRole, roomOwnerRole } = RoomRolesTestFactory.createRoomRoles();
-
-		await em.persist([school, account, user, team, teamRole, roomViewerRole, roomOwnerRole]).flush();
-		em.clear();
-
-		const loggedInClient = await testApiClient.login(account);
-
-		return { loggedInClient, team, user };
-	};
-
 	describe('POST /:teamId/create-room', () => {
 		describe('when a teacher is owner of the team', () => {
-			it('should return a 201 response with the created room ID', async () => {
-				const { loggedInClient, team } = await setupTeamWithUser({ rolename: 'teacher', isTeamOwner: true });
+			it('should return a 201 response', async () => {
+				const { loggedInClient, teamId } = await setupTeamWithUser({ rolename: 'teacher', isTeamOwner: true });
 
-				const response = await loggedInClient.post(`${team.id}/create-room`);
+				const response = await loggedInClient.post(`${teamId}/create-room`);
 
 				expect(response.status).toBe(HttpStatus.CREATED);
-				expect(response.body).toHaveProperty('roomId');
 			});
 
 			it('should create a room with the correct name', async () => {
-				const { loggedInClient, team } = await setupTeamWithUser({ rolename: 'teacher', isTeamOwner: true });
+				const { loggedInClient, teamId, team } = await setupTeamWithUser({ rolename: 'teacher', isTeamOwner: true });
 
-				const response = await loggedInClient.post(`${team.id}/create-room`);
-				const body = response.body as { roomId: string };
-				expect(body.roomId).toBeDefined();
+				const { roomId } = await createRoomViaApi({ teamId, loggedInClient });
 
-				const room = await app.get(RoomService).getSingleRoom(body.roomId);
+				const room = await app.get(RoomService).getSingleRoom(roomId);
 				expect(room.name).toEqual(team.name);
 			});
 
 			it('should add user as owner to the room', async () => {
-				const { loggedInClient, team, user } = await setupTeamWithUser({ rolename: 'teacher', isTeamOwner: true });
+				const { loggedInClient, teamId, user } = await setupTeamWithUser({ rolename: 'teacher', isTeamOwner: true });
 
-				const response = await loggedInClient.post(`${team.id}/create-room`);
-				const body = response.body as { roomId: string };
-				expect(body.roomId).toBeDefined();
+				const { roomId } = await createRoomViaApi({ teamId, loggedInClient });
 
-				const roomMembers = await app.get(RoomMembershipService).getRoomMembers(body.roomId);
-				const userInRoom = roomMembers.find((member) => member.userId === user.id);
-				expect(roomMembers).toBeDefined();
-				expect(userInRoom).toBeDefined();
-				expect(userInRoom?.roomRoleName).toEqual(RoleName.ROOMOWNER);
+				const userRoomRole = await fetchUsersRoleInRoom({ userId: user.id, roomId: roomId });
+				expect(userRoomRole).toEqual(RoleName.ROOMOWNER);
+			});
+
+			it('should add other users of team as viewers to room', async () => {
+				const { loggedInClient, teamId, otherUsers } = await setupTeamWithUser({
+					rolename: 'teacher',
+					isTeamOwner: true,
+				});
+
+				const { roomId } = await createRoomViaApi({ teamId, loggedInClient });
+
+				const otherUserRoles = await Promise.all(
+					otherUsers.map((otherUser) => fetchUsersRoleInRoom({ userId: otherUser.id, roomId }))
+				);
+				expect(otherUserRoles.every((role) => role === RoleName.ROOMVIEWER)).toBe(true);
 			});
 		});
 
@@ -165,4 +154,63 @@ describe('Team Export Room Controller (API)', () => {
 			});
 		});
 	});
+
+	const setupTeamWithUser = async (props: { rolename: 'teacher' | 'student'; isTeamOwner: boolean }) => {
+		const { account, user } = UserAndAccountTestFactory.buildByRole(props.rolename);
+		const { school } = user;
+
+		const userTeamRole = roleFactory.buildWithId({
+			name: props.isTeamOwner ? RoleName.TEAMOWNER : RoleName.TEAMADMINISTRATOR,
+			permissions: props.isTeamOwner ? [Permission.TEAM_EXPORT_TO_ROOM] : [],
+		});
+		const otherTeamRole = roleFactory.buildWithId({
+			name: RoleName.TEAMMEMBER,
+			permissions: [],
+		});
+		const otherUsers = userFactory.asTeacher().buildListWithId(3);
+		const team = teamFactory.buildWithId({
+			teamUsers: [
+				new TeamUserEntity({ role: userTeamRole, user, school }),
+				...otherUsers.map((teamUser) => new TeamUserEntity({ role: otherTeamRole, user: teamUser, school })),
+			],
+		});
+
+		const { roomViewerRole, roomOwnerRole } = RoomRolesTestFactory.createRoomRoles();
+		const guestRoles = [
+			roleFactory.buildWithId({ name: RoleName.GUESTSTUDENT }),
+			roleFactory.buildWithId({ name: RoleName.GUESTTEACHER }),
+			roleFactory.buildWithId({ name: RoleName.GUESTEXTERNALPERSON }),
+		];
+
+		await em
+			.persist([school, account, user, ...otherUsers, team, userTeamRole, roomViewerRole, roomOwnerRole, ...guestRoles])
+			.flush();
+		em.clear();
+
+		const loggedInClient = await testApiClient.login(account);
+
+		return { loggedInClient, team, teamId: team.id, user, otherUsers };
+	};
+
+	const fetchUsersRoleInRoom = async (props: { userId: string; roomId: string }) => {
+		expect(props.userId).toBeDefined();
+		expect(props.roomId).toBeDefined();
+
+		const roomMembers = await app.get(RoomMembershipService).getRoomMembers(props.roomId);
+		const userInRoom = roomMembers.find((member) => member.userId === props.userId);
+		return userInRoom?.roomRoleName;
+	};
+
+	const createRoomViaApi = async (props: {
+		teamId: string;
+		loggedInClient: TestApiClient;
+	}): Promise<{ status: number; roomId: string }> => {
+		const response = await props.loggedInClient.post(`${props.teamId}/create-room`);
+		expect(response.status).toEqual(201);
+
+		const body = response.body as { roomId: string };
+		expect(body.roomId).toBeDefined();
+
+		return { status: response.status, roomId: body.roomId };
+	};
 });
