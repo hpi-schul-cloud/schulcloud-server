@@ -10,10 +10,7 @@ import { User } from '@modules/user/repo';
 import { Injectable, NotImplementedException } from '@nestjs/common';
 import { CourseRule } from './course.rule';
 import { LessonRule } from './lesson.rule';
-import { LessonEntity } from '@modules/lesson/repo';
-import { CourseEntity } from '@modules/course/repo';
 import { Permission } from '@shared/domain/interface/permission.enum';
-import { has } from 'lodash';
 
 @Injectable()
 export class TaskRule implements Rule<Task> {
