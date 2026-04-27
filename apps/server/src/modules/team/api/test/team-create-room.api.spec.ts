@@ -168,7 +168,7 @@ describe('Team Export Room Controller (API)', () => {
 			name: RoleName.TEAMMEMBER,
 			permissions: [],
 		});
-		const otherUsers = userFactory.asTeacher().buildListWithId(3);
+		const otherUsers = userFactory.asTeacher().buildListWithId(3, { school });
 		const team = teamFactory.buildWithId({
 			teamUsers: [
 				new TeamUserEntity({ role: userTeamRole, user, school }),
