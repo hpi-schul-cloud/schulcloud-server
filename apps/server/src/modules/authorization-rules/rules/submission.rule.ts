@@ -42,7 +42,7 @@ export class SubmissionRule implements Rule<Submission> {
 	}
 
 	private hasWriteAccess(user: User, submission: Submission, context: AuthorizationContext): boolean {
-		// TODO Permission is missing
+		// Permission is missing
 		const hasInstanceWriteOperationPermission = this.authorizationHelper.hasAllPermissions(user, [
 			Permission.CAN_EXECUTE_INSTANCE_OPERATIONS,
 			...context.requiredPermissions,

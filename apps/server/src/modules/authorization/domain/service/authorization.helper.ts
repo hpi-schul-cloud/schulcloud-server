@@ -27,7 +27,7 @@ export class AuthorizationHelper {
 	}
 
 	public hasOneOfPermissions(user: User, requiredPermissions: Permission[]): boolean {
-		// TODO: Wouldn't it make more sense to return true for an empty permissions-array?
+		// Wouldn't it make more sense to return true for an empty permissions-array?
 		if (!Array.isArray(requiredPermissions) || requiredPermissions.length === 0) {
 			return false;
 		}
@@ -46,8 +46,10 @@ export class AuthorizationHelper {
 		return result;
 	}
 
-	public hasRole(user: User, roleName: RoleName) {
-		return user.roles.getItems().some((role) => role.name === roleName);
+	public hasRole(user: User, roleName: RoleName): boolean {
+		const hasRole = user.roles.getItems().some((role) => role.name === roleName);
+
+		return hasRole;
 	}
 
 	private isUserReferenced<T, K extends keyof T>(user: User, entity: T, prop: K): boolean {
