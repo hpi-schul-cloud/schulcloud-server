@@ -1,7 +1,6 @@
 import { Collection } from '@mikro-orm/core';
 import { RoleName } from '@modules/role';
 import { Role } from '@modules/role/repo';
-import { type UserDo } from '@modules/user';
 import { User } from '@modules/user/repo';
 import { Inject, Injectable } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
