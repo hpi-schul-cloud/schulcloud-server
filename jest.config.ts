@@ -30,7 +30,13 @@ let config: Config.InitialOptions = {
 		'^@shared/(.*)$': '<rootDir>/apps/server/src/shared/$1',
 		'^@testing/(.*)$': '<rootDir>/apps/server/src/testing/$1',
 	},
-	maxWorkers: 2, // limited for not taking all workers within of a single github action
+	maxWorkers: (() => {
+		const envValue = process.env.JEST_MAX_WORKERS;
+		if (!envValue) return 2; // default limited 2 is for not taking all workers within of a single github action
+		if (envValue.endsWith('%')) return envValue; // Jest supports percentage strings like '50%'
+		const parsed = parseInt(envValue, 10);
+		return Number.isNaN(parsed) ? 2 : parsed;
+	})(),
 	workerIdleMemoryLimit: '1.5GB', // without this, jest can lead to big memory leaks and out of memory errors
 };
 

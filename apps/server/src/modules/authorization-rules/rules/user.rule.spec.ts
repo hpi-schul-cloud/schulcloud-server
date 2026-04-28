@@ -10,6 +10,7 @@ import { roleFactory } from '@modules/role/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { User } from '@modules/user/repo';
 import { userDoFactory, userFactory } from '@modules/user/testing';
+import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
@@ -20,9 +21,6 @@ describe('UserRule', () => {
 	let authorizationHelper: AuthorizationHelper;
 	let injectionService: AuthorizationInjectionService;
 	let config: AuthorizationConfig;
-
-	const grantedPermission = 'a' as Permission;
-	const deniedPermission = 'c' as Permission;
 
 	beforeAll(async () => {
 		await setupEntities([User]);
@@ -49,6 +47,7 @@ describe('UserRule', () => {
 	});
 
 	it('should call hasAllPermissions on AuthorizationHelper', () => {
+		const grantedPermission = 'a' as Permission;
 		const role = roleFactory.buildWithId({ permissions: [grantedPermission] });
 		const school = schoolEntityFactory.buildWithId();
 		const user = userFactory.buildWithId({ roles: [role], school });
@@ -57,95 +56,121 @@ describe('UserRule', () => {
 		config.teacherVisibilityForExternalTeamInvitation = TeacherVisibilityForExternalTeamInvitation.OPT_IN;
 
 		service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [] });
+
 		expect(spy).toBeCalledWith(user, []);
 	});
 
 	describe('when a user accesses himself', () => {
 		const setup = () => {
+			const grantedPermission = 'a' as Permission;
+			const deniedPermission = 'c' as Permission;
 			config.teacherVisibilityForExternalTeamInvitation = TeacherVisibilityForExternalTeamInvitation.OPT_IN;
 			const role = roleFactory.buildWithId({ permissions: [grantedPermission] });
 			const school = schoolEntityFactory.buildWithId();
 			const user = userFactory.buildWithId({ roles: [role], school });
 			const entity = userDoFactory.buildWithId({ id: user.id, schoolId: school.id });
-			return { user, entity, school };
+
+			return { user, entity, school, deniedPermission };
 		};
 
 		it('should return "true" if user accesses himself', () => {
 			const { user, entity } = setup();
+
 			const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [] });
+
 			expect(res).toBe(true);
 		});
 
 		it('should return "false" if user accesses himself but has not permission', () => {
-			const { user, entity } = setup();
+			const { user, entity, deniedPermission } = setup();
+
 			const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [deniedPermission] });
+
 			expect(res).toBe(false);
 		});
 	});
 
 	describe('when accessing a user of the same school', () => {
 		const setup = () => {
+			const grantedPermission = 'a' as Permission;
+			const deniedPermission = 'c' as Permission;
 			config.teacherVisibilityForExternalTeamInvitation = TeacherVisibilityForExternalTeamInvitation.OPT_IN;
 			const role = roleFactory.buildWithId({ permissions: [grantedPermission] });
 			const school = schoolEntityFactory.buildWithId();
 			const user = userFactory.buildWithId({ roles: [role], school });
 			const entity = userDoFactory.buildWithId({ schoolId: school.id });
-			return { user, entity, school };
+
+			return { user, entity, school, grantedPermission, deniedPermission };
 		};
 
 		it('should return "true" if user has the permissions', () => {
-			const { user, entity } = setup();
+			const { user, entity, grantedPermission } = setup();
+
 			const res = service.hasPermission(user, entity, {
 				action: Action.read,
 				requiredPermissions: [grantedPermission],
 			});
+
 			expect(res).toBe(true);
 		});
 
 		it('should return "false" if user has not permission', () => {
-			const { user, entity } = setup();
+			const { user, entity, deniedPermission } = setup();
+
 			const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [deniedPermission] });
+
 			expect(res).toBe(false);
 		});
 	});
 
 	describe('when accessing a user of another school', () => {
 		const setup = (isDiscoverable = false) => {
+			const grantedPermission = 'a' as Permission;
+			const deniedPermission = 'c' as Permission;
 			const role = roleFactory.buildWithId({ permissions: [grantedPermission] });
 			const userSchool = schoolEntityFactory.buildWithId();
 			const entitySchool = schoolEntityFactory.buildWithId();
 			const user = userFactory.buildWithId({ roles: [role], school: userSchool });
 			const entity = userDoFactory.buildWithId({ schoolId: entitySchool.id, discoverable: isDiscoverable });
-			return { user, entity, school: userSchool };
+
+			return { user, entity, school: userSchool, grantedPermission, deniedPermission };
 		};
 
 		it('should return "true" if user has the permissions, and entity is discoverable', () => {
-			const { user, entity } = setup(true);
+			const { user, entity, grantedPermission } = setup(true);
+
 			const res = service.hasPermission(user, entity, {
 				action: Action.read,
 				requiredPermissions: [grantedPermission],
 			});
+
 			expect(res).toBe(true);
 		});
 
 		it('should return "false" if entity is discoverable, but user does not have the permissions', () => {
-			const { user, entity } = setup(true);
+			const { user, entity, deniedPermission } = setup(true);
+
 			const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [deniedPermission] });
+
 			expect(res).toBe(false);
 		});
 
 		it('should return "false" if user has the permission, but entity is not discoverable', () => {
-			const { user, entity } = setup();
+			const { user, entity, grantedPermission } = setup();
+
 			const res = service.hasPermission(user, entity, {
 				action: Action.read,
 				requiredPermissions: [grantedPermission],
 			});
+
 			expect(res).toBe(false);
 		});
 
 		it('should return "false" if user has not permission', () => {
-			const { user, entity } = setup();
+			const { user, entity, deniedPermission } = setup();
+
 			const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [deniedPermission] });
+
 			expect(res).toBe(false);
 		});
 	});
@@ -172,6 +197,7 @@ describe('UserRule', () => {
 			"when discoverability system setting is '$systemSetting' and user-setting is '$userSetting'",
 			({ systemSetting, userSetting, discoverable }) => {
 				it(`should return ${discoverable === true ? 'true' : 'false'}`, () => {
+					const grantedPermission = 'a' as Permission;
 					config.teacherVisibilityForExternalTeamInvitation = systemSetting;
 
 					const role = roleFactory.buildWithId({ permissions: [grantedPermission] });
@@ -185,6 +211,7 @@ describe('UserRule', () => {
 						action: Action.read,
 						requiredPermissions: [grantedPermission],
 					});
+
 					expect(res).toBe(discoverable);
 				});
 			}
@@ -192,6 +219,7 @@ describe('UserRule', () => {
 
 		describe('when discoverability system setting is an unknown value', () => {
 			it('should throw an error', () => {
+				const grantedPermission = 'a' as Permission;
 				config.teacherVisibilityForExternalTeamInvitation =
 					'unknown-value' as TeacherVisibilityForExternalTeamInvitation;
 
@@ -209,6 +237,95 @@ describe('UserRule', () => {
 					})
 				).toThrowError('Invalid discoverability setting');
 			});
+		});
+	});
+
+	describe('when user has CAN_EXECUTE_INSTANCE_OPERATIONS permission', () => {
+		describe('when user has instance operation permission for read action', () => {
+			const setup = () => {
+				config.teacherVisibilityForExternalTeamInvitation = TeacherVisibilityForExternalTeamInvitation.OPT_IN;
+				const role = roleFactory.buildWithId({ permissions: [Permission.CAN_EXECUTE_INSTANCE_OPERATIONS] });
+				const userSchool = schoolEntityFactory.buildWithId();
+				const user = userFactory.buildWithId({ roles: [role], school: userSchool });
+				const entitySchool = schoolEntityFactory.buildWithId();
+				const entity = userDoFactory.buildWithId({ schoolId: entitySchool.id });
+
+				return { user, entity };
+			};
+
+			it('should return "true" even without being at the same school or discoverable', () => {
+				const { user, entity } = setup();
+
+				const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [] });
+
+				expect(res).toBe(true);
+			});
+		});
+
+		describe('when user has instance operation permission for write action', () => {
+			const setup = () => {
+				config.teacherVisibilityForExternalTeamInvitation = TeacherVisibilityForExternalTeamInvitation.OPT_IN;
+				const role = roleFactory.buildWithId({ permissions: [Permission.CAN_EXECUTE_INSTANCE_OPERATIONS] });
+				const userSchool = schoolEntityFactory.buildWithId();
+				const user = userFactory.buildWithId({ roles: [role], school: userSchool });
+				const entitySchool = schoolEntityFactory.buildWithId();
+				const entity = userDoFactory.buildWithId({ schoolId: entitySchool.id });
+
+				return { user, entity };
+			};
+
+			it('should return "true" even without being at the same school or discoverable', () => {
+				const { user, entity } = setup();
+
+				const res = service.hasPermission(user, entity, { action: Action.write, requiredPermissions: [] });
+
+				expect(res).toBe(true);
+			});
+		});
+
+		describe('when user has instance operation permission but missing required permissions', () => {
+			const setup = () => {
+				config.teacherVisibilityForExternalTeamInvitation = TeacherVisibilityForExternalTeamInvitation.OPT_IN;
+				const role = roleFactory.buildWithId({ permissions: [Permission.CAN_EXECUTE_INSTANCE_OPERATIONS] });
+				const userSchool = schoolEntityFactory.buildWithId();
+				const user = userFactory.buildWithId({ roles: [role], school: userSchool });
+				const entitySchool = schoolEntityFactory.buildWithId();
+				const entity = userDoFactory.buildWithId({ schoolId: entitySchool.id });
+				const missingPermission = 'missing' as Permission;
+
+				return { user, entity, missingPermission };
+			};
+
+			it('should return "false" when required permissions are not met', () => {
+				const { user, entity, missingPermission } = setup();
+
+				const res = service.hasPermission(user, entity, {
+					action: Action.read,
+					requiredPermissions: [missingPermission],
+				});
+
+				expect(res).toBe(false);
+			});
+		});
+	});
+
+	describe('when the action is not read or write', () => {
+		const setup = () => {
+			config.teacherVisibilityForExternalTeamInvitation = TeacherVisibilityForExternalTeamInvitation.OPT_IN;
+			const role = roleFactory.buildWithId({ permissions: [] });
+			const school = schoolEntityFactory.buildWithId();
+			const user = userFactory.buildWithId({ roles: [role], school });
+			const entity = userDoFactory.buildWithId({ schoolId: school.id });
+
+			return { user, entity };
+		};
+
+		it('should throw NotImplementedException', () => {
+			const { user, entity } = setup();
+
+			expect(() =>
+				service.hasPermission(user, entity, { action: 'unknown' as Action, requiredPermissions: [] })
+			).toThrow(NotImplementedException);
 		});
 	});
 });
