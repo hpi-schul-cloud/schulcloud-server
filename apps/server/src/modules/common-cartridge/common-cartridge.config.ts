@@ -19,7 +19,7 @@ export class CommonCartridgePublicApiConfig {
 	@IsBoolean()
 	public courseExportEnabled = false;
 
-	@ConfigProperty('FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_MAX_FILE_SIZE_IN_BYTES')
+	@ConfigProperty('FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_MAX_FILE_SIZE')
 	@StringToNumber()
 	@IsNumber()
 	public courseImportMaxFileSize: number = defaultMaxFileSizeInBytes;

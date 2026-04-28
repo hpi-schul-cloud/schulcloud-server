@@ -28,7 +28,7 @@ export class LearnroomConfig extends LearnroomPublicApiConfig {
 	@ConfigProperty('FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_MAX_FILE_SIZE')
 	@IsNumber()
 	@StringToNumber()
-	public featureCommonCartridgeCourseImportMaxFileSize = 2000000000;
+	public featureCommonCartridgeCourseImportMaxFileSize = 1024 ** 3;
 
 	@ConfigProperty('FEATURE_COPY_SERVICE_ENABLED')
 	@IsBoolean()
