@@ -1,7 +1,14 @@
-import { AuthorizationContext, AuthorizationHelper, AuthorizationInjectionService, Rule } from '@modules/authorization';
+import {
+	Action,
+	AuthorizationContext,
+	AuthorizationHelper,
+	AuthorizationInjectionService,
+	Rule,
+} from '@modules/authorization';
 import { SchoolSystemOptions } from '@modules/legacy-school';
 import { User } from '@modules/user/repo';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotImplementedException } from '@nestjs/common';
+import { Permission } from '@shared/domain/interface/permission.enum';
 
 @Injectable()
 export class SchoolSystemOptionsRule implements Rule<SchoolSystemOptions> {
@@ -19,14 +26,47 @@ export class SchoolSystemOptionsRule implements Rule<SchoolSystemOptions> {
 	}
 
 	public hasPermission(user: User, object: SchoolSystemOptions, context: AuthorizationContext): boolean {
-		const hasPermissions: boolean = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
+		let hasPermission = false;
 
-		const isAtSchool: boolean = user.school.id === object.schoolId;
+		if (context.action === Action.read) {
+			hasPermission = this.hasReadAccess(user, object, context);
+		} else if (context.action === Action.write) {
+			hasPermission = this.hasWriteAccess(user, object, context);
+		} else {
+			throw new NotImplementedException();
+		}
 
-		const hasSystem: boolean = user.school.systems.getIdentifiers().includes(object.systemId);
+		return hasPermission;
+	}
 
-		const isAuthorized: boolean = hasPermissions && isAtSchool && hasSystem;
+	private hasReadAccess(user: User, object: SchoolSystemOptions, context: AuthorizationContext): boolean {
+		const isUserSchool = this.isUserSchool(user, object);
+		const hasSystem = this.hasSystem(user, object);
+		// permission is missing
+		const hasReadPermission = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
 
-		return isAuthorized;
+		// permission is missing
+		const hasInstanceReadOperationPermission = this.authorizationHelper.hasAllPermissions(user, [
+			Permission.CAN_EXECUTE_INSTANCE_OPERATIONS,
+			...context.requiredPermissions,
+		]);
+
+		return hasInstanceReadOperationPermission || (hasReadPermission && isUserSchool && hasSystem);
+	}
+
+	private hasWriteAccess(user: User, object: SchoolSystemOptions, context: AuthorizationContext): boolean {
+		return this.hasReadAccess(user, object, context);
+	}
+
+	private isUserSchool(user: User, object: SchoolSystemOptions): boolean {
+		const isUserSchool = user.school.id === object.schoolId;
+
+		return isUserSchool;
+	}
+
+	private hasSystem(user: User, object: SchoolSystemOptions): boolean {
+		const hasSystem = user.school.systems.getIdentifiers().includes(object.systemId);
+
+		return hasSystem;
 	}
 }

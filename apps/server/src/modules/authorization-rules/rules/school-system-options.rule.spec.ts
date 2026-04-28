@@ -1,6 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import {
+	Action,
 	AuthorizationContextBuilder,
 	AuthorizationHelper,
 	AuthorizationInjectionService,
@@ -11,6 +12,7 @@ import { schoolEntityFactory } from '@modules/school/testing';
 import { systemEntityFactory } from '@modules/system/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
+import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
@@ -20,7 +22,6 @@ describe(SchoolSystemOptionsRule.name, () => {
 	let module: TestingModule;
 	let rule: SchoolSystemOptionsRule;
 	let injectionService: AuthorizationInjectionService;
-
 	let authorizationHelper: DeepMocked<AuthorizationHelper>;
 
 	beforeAll(async () => {
@@ -226,6 +227,165 @@ describe(SchoolSystemOptionsRule.name, () => {
 				const result = rule.hasPermission(user, schoolSystemOptions, authorizationContext);
 
 				expect(result).toEqual(false);
+			});
+		});
+
+		describe('when the user accesses a system at his school with write action', () => {
+			const setup = () => {
+				const systemEntity = systemEntityFactory.buildWithId();
+				const school = schoolEntityFactory.buildWithId({
+					systems: [systemEntity],
+				});
+				const schoolSystemOptions: SchoolSystemOptions = schoolSystemOptionsFactory.build({
+					systemId: systemEntity.id,
+					schoolId: school.id,
+				});
+				const user = userFactory.buildWithId({ school });
+				const authorizationContext = AuthorizationContextBuilder.write([Permission.SCHOOL_SYSTEM_EDIT]);
+
+				authorizationHelper.hasAllPermissions.mockReturnValueOnce(true);
+
+				return {
+					user,
+					schoolSystemOptions,
+					authorizationContext,
+				};
+			};
+
+			it('should return true', () => {
+				const { user, schoolSystemOptions, authorizationContext } = setup();
+
+				const result = rule.hasPermission(user, schoolSystemOptions, authorizationContext);
+
+				expect(result).toEqual(true);
+			});
+		});
+
+		describe('when the action is not read or write', () => {
+			const setup = () => {
+				const systemEntity = systemEntityFactory.buildWithId();
+				const school = schoolEntityFactory.buildWithId({
+					systems: [systemEntity],
+				});
+				const schoolSystemOptions: SchoolSystemOptions = schoolSystemOptionsFactory.build({
+					systemId: systemEntity.id,
+					schoolId: school.id,
+				});
+				const user = userFactory.buildWithId({ school });
+				const authorizationContext = {
+					action: 'unknown' as Action,
+					requiredPermissions: [],
+				};
+
+				return {
+					user,
+					schoolSystemOptions,
+					authorizationContext,
+				};
+			};
+
+			it('should throw NotImplementedException', () => {
+				const { user, schoolSystemOptions, authorizationContext } = setup();
+
+				expect(() => rule.hasPermission(user, schoolSystemOptions, authorizationContext)).toThrow(
+					NotImplementedException
+				);
+			});
+		});
+
+		describe('when user has CAN_EXECUTE_INSTANCE_OPERATIONS permission', () => {
+			describe('when user has instance operation permission for read action', () => {
+				const setup = () => {
+					const schoolSystemOptions = schoolSystemOptionsFactory.build();
+					const systemEntity = systemEntityFactory.buildWithId();
+					const school = schoolEntityFactory.buildWithId({
+						systems: [systemEntity],
+					});
+					const user = userFactory.buildWithId({ school });
+					const authorizationContext = AuthorizationContextBuilder.read([Permission.SCHOOL_SYSTEM_VIEW]);
+
+					authorizationHelper.hasAllPermissions.mockImplementation((u, permissions) => {
+						if (permissions.includes(Permission.CAN_EXECUTE_INSTANCE_OPERATIONS)) {
+							return true;
+						}
+						return false;
+					});
+
+					return {
+						user,
+						schoolSystemOptions,
+						authorizationContext,
+					};
+				};
+
+				it('should return true even without being at the school or having the system', () => {
+					const { user, schoolSystemOptions, authorizationContext } = setup();
+
+					const result = rule.hasPermission(user, schoolSystemOptions, authorizationContext);
+
+					expect(result).toEqual(true);
+				});
+			});
+
+			describe('when user has instance operation permission for write action', () => {
+				const setup = () => {
+					const schoolSystemOptions = schoolSystemOptionsFactory.build();
+					const systemEntity = systemEntityFactory.buildWithId();
+					const school = schoolEntityFactory.buildWithId({
+						systems: [systemEntity],
+					});
+					const user = userFactory.buildWithId({ school });
+					const authorizationContext = AuthorizationContextBuilder.write([Permission.SCHOOL_SYSTEM_VIEW]);
+
+					authorizationHelper.hasAllPermissions.mockImplementation((u, permissions) => {
+						if (permissions.includes(Permission.CAN_EXECUTE_INSTANCE_OPERATIONS)) {
+							return true;
+						}
+						return false;
+					});
+
+					return {
+						user,
+						schoolSystemOptions,
+						authorizationContext,
+					};
+				};
+
+				it('should return true even without being at the school or having the system', () => {
+					const { user, schoolSystemOptions, authorizationContext } = setup();
+
+					const result = rule.hasPermission(user, schoolSystemOptions, authorizationContext);
+
+					expect(result).toEqual(true);
+				});
+			});
+
+			describe('when user does not have instance operation permission', () => {
+				const setup = () => {
+					const schoolSystemOptions = schoolSystemOptionsFactory.build();
+					const systemEntity = systemEntityFactory.buildWithId();
+					const school = schoolEntityFactory.buildWithId({
+						systems: [systemEntity],
+					});
+					const user = userFactory.buildWithId({ school });
+					const authorizationContext = AuthorizationContextBuilder.read([Permission.SCHOOL_SYSTEM_VIEW]);
+
+					authorizationHelper.hasAllPermissions.mockReturnValue(false);
+
+					return {
+						user,
+						schoolSystemOptions,
+						authorizationContext,
+					};
+				};
+
+				it('should return false when not at school and missing instance operation permission', () => {
+					const { user, schoolSystemOptions, authorizationContext } = setup();
+
+					const result = rule.hasPermission(user, schoolSystemOptions, authorizationContext);
+
+					expect(result).toEqual(false);
+				});
 			});
 		});
 	});
