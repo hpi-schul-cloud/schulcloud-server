@@ -14,4 +14,5 @@ export const ISO_DATE_STRING = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d{3})?Z$
  * });
  */
 // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-export const expectIsoDateString = (): string => expect.stringMatching(ISO_DATE_STRING) as unknown as string;
+export const expectIsoDateString = (): ReturnType<typeof expect.stringMatching> =>
+	expect.stringMatching(ISO_DATE_STRING);

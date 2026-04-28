@@ -138,8 +138,8 @@ describe('Room Controller (API)', () => {
 									title: board.title,
 									layout: board.layout,
 									isVisible: board.isVisible,
-									createdAt: expectIsoDateString(),
-									updatedAt: expectIsoDateString(),
+									createdAt: expectIsoDateString() as string,
+									updatedAt: expectIsoDateString() as string,
 								};
 							})
 						);
@@ -375,8 +375,8 @@ describe('Room Controller (API)', () => {
 					title: board.title,
 					layout: board.layout,
 					isVisible: board.isVisible,
-					createdAt: expectIsoDateString(),
-					updatedAt: expectIsoDateString(),
+					createdAt: expectIsoDateString() as string,
+					updatedAt: expectIsoDateString() as string,
 				});
 			});
 		});
