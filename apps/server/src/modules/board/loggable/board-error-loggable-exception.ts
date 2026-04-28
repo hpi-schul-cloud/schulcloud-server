@@ -57,7 +57,7 @@ export class BoardErrorLoggableException extends BadGatewayException implements 
 	}
 
 	private composeMessage(data: Record<string, string | number>): string {
-		const values = Object.values(data).map((value) => String(value));
+		const values = Object.values(data).map(String);
 		const cleanedValues = this.cleanData(values);
 		const message = cleanedValues.join(SEPARATOR);
 
