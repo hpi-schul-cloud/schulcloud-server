@@ -1,6 +1,7 @@
 import { CoreModule } from '@core/core.module';
 import { LoggerModule } from '@core/logger';
 import { CommonCartridgeClientsModule } from '@infra/common-cartridge-clients/common-cartridge-clients.module';
+import { ConfigurationModule } from '@infra/configuration';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
@@ -19,9 +20,9 @@ import { CommonCartridgeUc } from './uc/common-cartridge.uc';
 		HttpModule,
 		CoreModule,
 		CommonCartridgeClientsModule.register(API_HOST_CONFIG_TOKEN, ApiHostConfig),
+		ConfigurationModule.register(COMMON_CARTRIDGE_CONFIG_TOKEN, CommonCartridgeConfig),
 	],
 	providers: [
-		{ provide: COMMON_CARTRIDGE_CONFIG_TOKEN, useClass: CommonCartridgeConfig },
 		CommonCartridgeExportMapper,
 		CommonCartridgeImportMapper,
 		CommonCartridgeUc,
