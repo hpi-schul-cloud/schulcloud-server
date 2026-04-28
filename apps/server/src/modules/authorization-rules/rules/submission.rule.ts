@@ -57,12 +57,12 @@ export class SubmissionRule implements Rule<Submission> {
 
 	private hasReadAccess(user: User, submission: Submission, context: AuthorizationContext): boolean {
 		// Permission is missing
-		const hasInstanceWriteOperationPermission = this.authorizationHelper.hasAllPermissions(user, [
+		const hasInstanceReadOperationPermission = this.authorizationHelper.hasAllPermissions(user, [
 			Permission.CAN_EXECUTE_INSTANCE_OPERATIONS,
 			...context.requiredPermissions,
 		]);
 
-		return hasInstanceWriteOperationPermission || this.hasSubmissionReadAccess(user, submission, context);
+		return hasInstanceReadOperationPermission || this.hasSubmissionReadAccess(user, submission, context);
 	}
 
 	private hasSubmissionWriteAccess(user: User, submission: Submission, context: AuthorizationContext): boolean {
