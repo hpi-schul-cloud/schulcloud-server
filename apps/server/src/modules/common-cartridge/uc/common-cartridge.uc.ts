@@ -4,6 +4,7 @@ import { REQUEST } from '@nestjs/core';
 import { EventBus } from '@nestjs/cqrs';
 import { JwtExtractor } from '@shared/common/utils';
 import { EntityId } from '@shared/domain/types';
+import { Request } from 'express';
 import { COMMON_CARTRIDGE_CONFIG_TOKEN, CommonCartridgeConfig } from '../common-cartridge.config';
 import { FileSizeExceededLoggableException } from '../domain/errors';
 import { ImportCourseEvent } from '../domain/events/import-course.event';
