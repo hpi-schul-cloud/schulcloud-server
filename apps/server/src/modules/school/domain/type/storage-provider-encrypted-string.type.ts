@@ -1,4 +1,3 @@
-import { Configuration } from '@hpi-schul-cloud/commons';
 import { Type } from '@mikro-orm/core';
 import { AesEncryptionHelper } from '@shared/common/utils';
 
@@ -14,7 +13,12 @@ export class StorageProviderEncryptedStringType extends Type<string, string> {
 		if (this.customKey) {
 			return this.customKey;
 		}
-		return Configuration.get('S3_KEY') as string;
+		// eslint-disable-next-line no-process-env
+		const s3Key = process.env.S3_KEY;
+		if (!s3Key) {
+			throw new Error('Environment variable S3_KEY is not defined');
+		}
+		return s3Key;
 	}
 
 	public convertToDatabaseValue(value: string | undefined): string {
