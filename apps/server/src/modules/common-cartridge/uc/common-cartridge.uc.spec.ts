@@ -24,7 +24,7 @@ describe('CommonCartridgeUc', () => {
 	let eventBusMock: DeepMocked<EventBus>;
 	let requestMock: DeepMocked<Request>;
 
-	const maxFileSize = 1073741824; // 1GB
+	const maxFileSize = 1024 ** 3;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -141,7 +141,7 @@ describe('CommonCartridgeUc', () => {
 				const fileRecordId = faker.string.uuid();
 				const fileName = faker.system.fileName();
 				const fileUrl = faker.internet.url();
-				const fileSize = maxFileSize - 1; // Just under the limit
+				const fileSize = maxFileSize - 1;
 
 				const params: ImportCourseParams = {
 					fileRecordId,
@@ -179,7 +179,7 @@ describe('CommonCartridgeUc', () => {
 				const fileRecordId = faker.string.uuid();
 				const fileName = faker.system.fileName();
 				const fileUrl = faker.internet.url();
-				const fileSize = maxFileSize + 1; // Just over the limit
+				const fileSize = maxFileSize + 1;
 
 				const params: ImportCourseParams = {
 					fileRecordId,

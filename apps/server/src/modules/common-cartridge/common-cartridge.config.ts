@@ -5,8 +5,7 @@ import { IsBoolean, IsNumber } from 'class-validator';
 export const COMMON_CARTRIDGE_PUBLIC_API_CONFIG_TOKEN = 'COMMON_CARTRIDGE_PUBLIC_API_CONFIG_TOKEN';
 export const COMMON_CARTRIDGE_CONFIG_TOKEN = 'COMMON_CARTRIDGE_CONFIG_TOKEN';
 
-// 1GB in bytes - shared constant for both frontend and backend
-export const DEFAULT_MAX_FILE_SIZE_BYTES = 1048576;
+export const defaultMaxFileSizeInBytes = 1024 ** 3;
 
 @Configuration()
 export class CommonCartridgePublicApiConfig {
@@ -20,10 +19,10 @@ export class CommonCartridgePublicApiConfig {
 	@IsBoolean()
 	public courseExportEnabled = false;
 
-	@ConfigProperty('FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_MAX_FILE_SIZE')
+	@ConfigProperty('FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_MAX_FILE_SIZE_IN_BYTES')
 	@StringToNumber()
 	@IsNumber()
-	public courseImportMaxFileSize: number = DEFAULT_MAX_FILE_SIZE_BYTES;
+	public courseImportMaxFileSize: number = defaultMaxFileSizeInBytes;
 }
 
 @Configuration()

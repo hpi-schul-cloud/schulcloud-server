@@ -5,8 +5,8 @@ import { FileSizeExceededLoggableException } from './file-size-exceeded.loggable
 describe('FileSizeExceededLoggableException', () => {
 	describe('constructor', () => {
 		it('should create an exception with correct properties', () => {
-			const fileSize = 2000000000;
-			const maxFileSize = 1073741824;
+			const fileSize = 1024 ** 3 + 1;
+			const maxFileSize = 1024 ** 3;
 
 			const exception = new FileSizeExceededLoggableException(fileSize, maxFileSize);
 
@@ -21,8 +21,8 @@ describe('FileSizeExceededLoggableException', () => {
 
 	describe('getLogMessage', () => {
 		it('should return a log message with all required fields', () => {
-			const fileSize = 2000000000;
-			const maxFileSize = 1073741824;
+			const fileSize = 1024 ** 3 + 1;
+			const maxFileSize = 1024 ** 3;
 
 			const exception = new FileSizeExceededLoggableException(fileSize, maxFileSize);
 			const logMessage = exception.getLogMessage();
