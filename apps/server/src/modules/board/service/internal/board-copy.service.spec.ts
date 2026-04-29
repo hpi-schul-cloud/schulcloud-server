@@ -409,7 +409,7 @@ describe(BoardCopyService.name, () => {
 				const userId = new ObjectId().toHexString();
 				const targetSchoolId = new ObjectId().toHexString();
 
-				const parentBoard = columnBoardFactory.build(); // Using column board as a placeholder for column
+				const parentBoard = columnBoardFactory.build();
 				const column = columnFactory.build({ path: parentBoard.id });
 
 				boardNodeService.findByClassAndId.mockResolvedValueOnce(column);
@@ -441,7 +441,7 @@ describe(BoardCopyService.name, () => {
 
 				await service.copyColumn(copyParams);
 
-				expect(boardNodeService.findByClassAndId).toHaveBeenCalled();
+				expect(boardNodeService.findByClassAndId).toHaveBeenCalledWith(Column, copyParams.originalColumnId);
 			});
 
 			it('should throw UnprocessableEntityException when parent of column has no parent', async () => {
@@ -543,7 +543,7 @@ describe(BoardCopyService.name, () => {
 				expect(copyStatus.copyEntity).toBeDefined();
 			});
 
-			it('should not affect the original column', async () => {
+			it('should set originalEntity in copy status to the original column', async () => {
 				const { copyParams, column } = setup();
 				const copyStatus = await service.copyColumn(copyParams);
 

@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, InternalServerErrorException } from '@nestjs/common';
+import { InternalServerErrorException } from '@nestjs/common';
 import { BoardOperation } from '../../authorisation/board-node.rule';
 import { BoardFeature, Column, ColumnBoard } from '../../domain';
 import { BoardResponse, TimestampsResponse } from '../dto';
