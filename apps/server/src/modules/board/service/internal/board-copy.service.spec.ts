@@ -8,14 +8,14 @@ import { FilesStorageClientAdapterService } from '@modules/files-storage-client/
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { BoardExternalReferenceType } from '../../domain/types';
-import { cardFactory, columnBoardFactory } from '../../testing';
+import { cardFactory, columnBoardFactory, columnFactory } from '../../testing';
 import { BoardNodeService } from '../board-node.service';
-import { BoardCopyService, CopyCardParams, CopyColumnBoardParams } from './board-copy.service';
+import { BoardCopyService, CopyCardParams, CopyColumnBoardParams, CopyColumnParams } from './board-copy.service';
 import { ColumnBoardTitleService } from './column-board-title.service';
 // Warning: do not move the BoardNodeCopyService import up. Otherwise it will lead to dependency cycle.
 import { InternalServerErrorException } from '@nestjs/common';
 import { BoardNodeCopyService } from './board-node-copy.service';
-import { Card, Column } from '../../domain';
+import { Card, Column, ColumnBoard } from '../../domain';
 
 describe(BoardCopyService.name, () => {
 	let module: TestingModule;
@@ -399,6 +399,191 @@ describe(BoardCopyService.name, () => {
 				boardNodeCopyService.copy.mockResolvedValueOnce(status);
 
 				await expect(service.copyCard(copyParams)).rejects.toBeInstanceOf(InternalServerErrorException);
+			});
+		});
+	});
+
+	describe('copyColumn', () => {
+		describe('when the copy response is a Column', () => {
+			const setup = () => {
+				const userId = new ObjectId().toHexString();
+				const targetSchoolId = new ObjectId().toHexString();
+
+				const parentBoard = columnBoardFactory.build();
+				const column = columnFactory.build({ path: parentBoard.id });
+
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(column);
+
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(parentBoard);
+
+				const columnCopy = columnFactory.build();
+				const status: CopyStatus = {
+					copyEntity: columnCopy,
+					type: CopyElementType.COLUMN,
+					status: CopyStatusEnum.SUCCESS,
+				};
+				boardNodeCopyService.copy.mockResolvedValueOnce(status);
+
+				const copyParams: CopyColumnParams = {
+					originalColumnId: column.id,
+					sourceStorageLocationReference: { id: targetSchoolId, type: StorageLocation.SCHOOL },
+					targetStorageLocationReference: { id: targetSchoolId, type: StorageLocation.SCHOOL },
+					userId,
+					copyTitle: 'Column Copy',
+					targetSchoolId,
+				};
+
+				return { column, userId, copyParams, columnCopy, parentBoard };
+			};
+
+			it('should find the original column', async () => {
+				const { copyParams } = setup();
+
+				await service.copyColumn(copyParams);
+
+				expect(boardNodeService.findByClassAndId).toHaveBeenCalledWith(Column, copyParams.originalColumnId);
+			});
+
+			it('should throw UnprocessableEntityException when parent of column has no parent', async () => {
+				const userId = new ObjectId().toHexString();
+				const targetSchoolId = new ObjectId().toHexString();
+				const parentBoard = columnBoardFactory.build();
+				const columnWithoutParent = columnFactory.build();
+
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(columnWithoutParent);
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(parentBoard);
+
+				const columnCopy = columnFactory.build();
+				const status: CopyStatus = {
+					copyEntity: columnCopy,
+					type: CopyElementType.COLUMN,
+					status: CopyStatusEnum.SUCCESS,
+				};
+				boardNodeCopyService.copy.mockResolvedValueOnce(status);
+
+				const copyParams: CopyColumnParams = {
+					originalColumnId: columnWithoutParent.id,
+					sourceStorageLocationReference: { id: targetSchoolId, type: StorageLocation.SCHOOL },
+					targetStorageLocationReference: { id: targetSchoolId, type: StorageLocation.SCHOOL },
+					userId,
+					copyTitle: 'Column Copy',
+					targetSchoolId,
+				};
+
+				await expect(service.copyColumn(copyParams)).rejects.toThrowError('Column has no parent board');
+			});
+
+			it('should find the parent column-board of the original column', async () => {
+				const { copyParams, column } = setup();
+
+				await service.copyColumn(copyParams);
+
+				expect(boardNodeService.findByClassAndId).toHaveBeenCalledWith(ColumnBoard, column.parentId as string);
+			});
+
+			it('should find the destination column-board when destinationColumnBoardId is provided', async () => {
+				const { copyParams } = setup();
+
+				await service.copyColumn({
+					...copyParams,
+					destinationColumnBoardId: 'DUMMY_BOARD_ID',
+				});
+
+				expect(boardNodeService.findByClassAndId).toHaveBeenCalledWith(ColumnBoard, 'DUMMY_BOARD_ID');
+			});
+
+			it('should call service to copy the column', async () => {
+				const { copyParams } = setup();
+
+				await service.copyColumn(copyParams);
+
+				expect(boardNodeCopyService.copy).toHaveBeenCalled();
+			});
+
+			it('should set the title of the copied column when given', async () => {
+				const { copyParams } = setup();
+				const copyTitle = 'Another Column Title';
+
+				await service.copyColumn({
+					...copyParams,
+					copyTitle,
+				});
+
+				expect(boardNodeService.addToParent).toHaveBeenCalledWith(
+					expect.anything(),
+					expect.objectContaining({ title: copyTitle }),
+					expect.any(Number)
+				);
+			});
+
+			it('should not set position of the copied column when destinationColumnId is provided', async () => {
+				const { copyParams, parentBoard, columnCopy } = setup();
+
+				await service.copyColumn({
+					...copyParams,
+					destinationColumnBoardId: parentBoard.id,
+				});
+
+				expect(boardNodeService.addToParent).toHaveBeenCalledWith(parentBoard, columnCopy, undefined);
+			});
+
+			it('should save the copied column', async () => {
+				const { copyParams, column, columnCopy, parentBoard } = setup();
+
+				await service.copyColumn(copyParams);
+
+				expect(boardNodeService.addToParent).toHaveBeenCalledWith(parentBoard, columnCopy, column.position + 1);
+			});
+
+			it('should return the copy status', async () => {
+				const { copyParams } = setup();
+				const copyStatus = await service.copyColumn(copyParams);
+
+				expect(copyStatus).toBeDefined();
+				expect(copyStatus.copyEntity).toBeDefined();
+			});
+
+			it('should set originalEntity in copy status to the original column', async () => {
+				const { copyParams, column } = setup();
+				const copyStatus = await service.copyColumn(copyParams);
+
+				expect(copyStatus.originalEntity).toBe(column);
+			});
+		});
+
+		describe('when the copy response is not a Column', () => {
+			const setup = () => {
+				const userId = new ObjectId().toHexString();
+				const targetSchoolId = new ObjectId().toHexString();
+
+				const column = columnFactory.build({ path: new ObjectId().toHexString() });
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(column);
+
+				const columnCopy = columnFactory.build();
+
+				const copyParams: CopyColumnParams = {
+					originalColumnId: column.id,
+					sourceStorageLocationReference: { id: targetSchoolId, type: StorageLocation.SCHOOL },
+					targetStorageLocationReference: { id: targetSchoolId, type: StorageLocation.SCHOOL },
+					userId,
+					copyTitle: 'Column Copy',
+					targetSchoolId,
+				};
+
+				return { column, userId, copyParams, columnCopy };
+			};
+			it('should throw an error if the copied entity is not a column', async () => {
+				const { column, copyParams } = setup();
+
+				const columnCopy = { ...column, id: new ObjectId().toHexString(), type: 'not-a-column' };
+				const status: CopyStatus = {
+					copyEntity: columnCopy,
+					type: CopyElementType.CARD,
+					status: CopyStatusEnum.SUCCESS,
+				};
+				boardNodeCopyService.copy.mockResolvedValueOnce(status);
+
+				await expect(service.copyColumn(copyParams)).rejects.toBeInstanceOf(InternalServerErrorException);
 			});
 		});
 	});

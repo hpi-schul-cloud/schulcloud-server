@@ -8,5 +8,5 @@ export class CardUrlParams {
 		required: true,
 		nullable: false,
 	})
-	cardId!: string;
+	public cardId!: string;
 }
