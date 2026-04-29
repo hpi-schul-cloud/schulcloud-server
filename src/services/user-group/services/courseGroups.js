@@ -50,8 +50,8 @@ class CourseGroups {
 
 const courseGroupService = new CourseGroups({
 	paginate: {
-		default: 25,
-		max: 100,
+		default: 200,
+		max: 500,
 	},
 });
 
