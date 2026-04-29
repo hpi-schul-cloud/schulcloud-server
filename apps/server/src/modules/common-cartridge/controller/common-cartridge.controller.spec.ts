@@ -100,10 +100,10 @@ describe('CommonCartridgeController', () => {
 				return { startImportParams };
 			};
 
-			it('should call the uc with the correct parameters', () => {
+			it('should call the uc with the correct parameters', async () => {
 				const { startImportParams } = setup();
 
-				sut.importCourse(startImportParams);
+				await sut.importCourse(startImportParams);
 
 				expect(commonCartridgeUcMock.startCourseImport).toHaveBeenCalledTimes(1);
 			});
