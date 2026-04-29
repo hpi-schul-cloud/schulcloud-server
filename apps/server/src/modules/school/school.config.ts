@@ -1,5 +1,5 @@
 import { ConfigProperty, Configuration } from '@infra/configuration';
-import { IsEnum } from 'class-validator';
+import { IsEnum, IsString } from 'class-validator';
 
 export enum StudentTeamCreationOption {
 	OPT_IN = 'opt-in',
@@ -15,4 +15,8 @@ export class SchoolConfig {
 	@ConfigProperty('STUDENT_TEAM_CREATION')
 	@IsEnum(StudentTeamCreationOption)
 	public studentTeamCreation = StudentTeamCreationOption.OPT_OUT;
+
+	@IsString()
+	@ConfigProperty('S3_KEY')
+	public S3_KEY!: string;
 }
