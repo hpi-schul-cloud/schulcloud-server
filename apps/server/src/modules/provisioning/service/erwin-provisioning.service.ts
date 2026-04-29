@@ -1,9 +1,16 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ErwinIdentifierService, ReferencedEntityType } from '@modules/erwin-identifier';
-import { FileStorageType, School, SchoolService } from '@modules/school';
-import { SchoolFeature, SchoolPermissions, SchoolYearService } from '@modules/school/domain';
-import { SchoolFactory } from '@modules/school/domain/factory';
-import { SchoolYearEntityMapper } from '@modules/school/repo';
+import {
+	FileStorageType,
+	School,
+	SchoolFactory,
+	SchoolFeature,
+	SchoolPermissions,
+	SchoolService,
+	SchoolYearEntityMapper,
+	SchoolYearService,
+} from '@modules/school';
+import { User } from '@modules/user';
 import { Injectable } from '@nestjs/common';
 import { TypeGuard } from '@shared/common/guards';
 import { ExternalSchoolDto, ProvisioningSystemDto } from '../dto';
@@ -172,4 +179,6 @@ export class ErwinProvisioningService {
 
 		return externalSchool.location ? `${externalSchool.name} (${externalSchool.location})` : externalSchool.name;
 	}
+
+	public async provisionUser(): Promise<User> {}
 }
