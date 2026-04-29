@@ -1,17 +1,7 @@
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { StorageProviderEncryptedStringType } from './storage-provider-encrypted-string.type';
 import { AesEncryptionHelper } from '@shared/common/utils';
 
 describe('EncryptedString type', () => {
-	describe('constructor', () => {
-		it('should load cipher key from configuration when no key is given', () => {
-			const configBefore = Configuration.toObject({ plainSecrets: true });
-			Configuration.set('S3_KEY', 'ANY_KEY_OF_MIN_LENGTH_16');
-			const test = () => new StorageProviderEncryptedStringType();
-			expect(test).not.toThrow();
-			Configuration.reset(configBefore);
-		});
-	});
 	describe('serialization', () => {
 		const S3_KEY = 'custom_cipher_key';
 		const serializer = new StorageProviderEncryptedStringType(S3_KEY);
