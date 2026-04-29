@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus } from '@nestjs/common';
+import { HttpException, HttpStatus, InternalServerErrorException } from '@nestjs/common';
 import { BoardOperation } from '../../authorisation/board-node.rule';
 import { BoardFeature, Column, ColumnBoard } from '../../domain';
 import { BoardResponse, TimestampsResponse } from '../dto';
@@ -16,10 +16,7 @@ export class BoardResponseMapper {
 			columns: board.children.map((column) => {
 				/* istanbul ignore next */
 				if (!(column instanceof Column)) {
-					throw new HttpException(
-						`unsupported child type: ${column.constructor.name}`,
-						HttpStatus.UNPROCESSABLE_ENTITY
-					);
+					throw new InternalServerErrorException(`unsupported child type: ${column.constructor.name}`);
 				}
 				return ColumnResponseMapper.mapToResponse(column);
 			}),
