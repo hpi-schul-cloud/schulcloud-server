@@ -1,12 +1,12 @@
 import { EntityManager } from '@mikro-orm/mongodb';
+import { accountFactory } from '@modules/account/testing';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server/server.app.module';
+import { userFactory } from '@modules/user/testing';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { TestApiClient } from '@testing/test-api-client';
-import { schoolEntityFactory } from '@modules/school/testing';
-import { userFactory } from '@modules/user/testing';
-import { accountFactory } from '@modules/account/testing';
 import { BoardErrorReportBodyParams } from '../dto/board/board-error-report.body.params';
 
 const baseRouteName = '/report-board-error';
@@ -41,6 +41,7 @@ describe('BoardErrorReportController (api)', () => {
 		url: 'https://example.com/board',
 		boardId: 'boardId',
 		retryCount: 0,
+		logSteps: 'step1|step2',
 	};
 
 	const setup = async (): Promise<{ loggedInClient: TestApiClient }> => {
