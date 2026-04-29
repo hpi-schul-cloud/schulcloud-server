@@ -7,7 +7,7 @@ const defaultGetS3KeyFn = (): string | undefined => process.env.S3_KEY;
  * Serialization type to transparent encrypt string values in database.
  */
 export class StorageProviderEncryptedStringType extends Type<string, string> {
-	constructor(private getS3Key: () => string | undefined = defaultGetS3KeyFn) {
+constructor(private getS3Key = defaultGetS3KeyFn) {
 		super();
 	}
 
