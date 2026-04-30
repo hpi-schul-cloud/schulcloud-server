@@ -1,20 +1,10 @@
-import { Configuration } from '@hpi-schul-cloud/commons/lib';
 import { StorageProviderEncryptedStringType } from './storage-provider-encrypted-string.type';
 import { AesEncryptionHelper } from '@shared/common/utils';
 
 describe('EncryptedString type', () => {
-	describe('constructor', () => {
-		it('should load cipher key from configuration when no key is given', () => {
-			const configBefore = Configuration.toObject({ plainSecrets: true });
-			Configuration.set('S3_KEY', 'ANY_KEY_OF_MIN_LENGTH_16');
-			const test = () => new StorageProviderEncryptedStringType();
-			expect(test).not.toThrow();
-			Configuration.reset(configBefore);
-		});
-	});
 	describe('serialization', () => {
 		const S3_KEY = 'custom_cipher_key';
-		const serializer = new StorageProviderEncryptedStringType(S3_KEY);
+		const serializer = new StorageProviderEncryptedStringType(() => S3_KEY);
 		const text = 'sample text input';
 		const textEncrypted = AesEncryptionHelper.encrypt(text, S3_KEY);
 
@@ -54,6 +44,42 @@ describe('EncryptedString type', () => {
 			it('should decrypt not-empty string value', () => {
 				const result = serializer.convertToJSValue(textEncrypted);
 				expect(result).toEqual(text);
+			});
+		});
+
+		describe('When S3_KEY environment variable is not defined', () => {
+			it('should throw an error', () => {
+				const serializerWithoutKey = new StorageProviderEncryptedStringType(() => undefined);
+
+				expect(() => serializerWithoutKey.convertToDatabaseValue('test')).toThrow(
+					'Environment variable S3_KEY is not defined'
+				);
+			});
+		});
+
+		describe('when using defaultGetS3KeyFn and variable is not defined', () => {
+			let originalS3Key: string | undefined;
+
+			beforeEach(() => {
+				// eslint-disable-next-line no-process-env
+				originalS3Key = process.env.S3_KEY;
+				// eslint-disable-next-line no-process-env
+				delete process.env.S3_KEY;
+			});
+
+			afterEach(() => {
+				if (originalS3Key !== undefined) {
+					// eslint-disable-next-line no-process-env
+					process.env.S3_KEY = originalS3Key;
+				}
+			});
+
+			it('should throw an error', () => {
+				const serializerWithDefaultFn = new StorageProviderEncryptedStringType();
+
+				expect(() => serializerWithDefaultFn.convertToDatabaseValue('test')).toThrow(
+					'Environment variable S3_KEY is not defined'
+				);
 			});
 		});
 	});
