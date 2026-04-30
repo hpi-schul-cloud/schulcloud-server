@@ -1,0 +1,3 @@
+{
+	"_comment": "DEPRECATED: This file is no longer actively used. It remains in the repository solely because @hpi-schul-cloud/commons unconditionally looks for 'config/default.json' on startup and logs an error when it is missing. This file can be deleted once @hpi-schul-cloud/commons has been fully removed from the project."
+}
