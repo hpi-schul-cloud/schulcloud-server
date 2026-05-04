@@ -14,7 +14,7 @@ import { PROVISIONING_CONFIG_TOKEN, ProvisioningConfig } from '../provisioning.c
 import { ENTITIES } from '../schulconnex-group-provisioning.entity.imports';
 import { SchulconnexCourseSyncService, SchulconnexGroupProvisioningService } from '../strategy/schulconnex/service';
 import { externalGroupDtoFactory, externalSchoolDtoFactory } from '../testing';
-import { registerAmqpSubscriber } from './amqp-subscriber.helper';
+import * as AmqpSubscriberHelper from './amqp-subscriber.helper';
 import { SchulconnexGroupProvisioningConsumer } from './schulconnex-group-provisioning.consumer';
 import { SchulconnexProvisioningEvents } from './schulconnex.exchange';
 
@@ -93,55 +93,49 @@ describe(SchulconnexGroupProvisioningConsumer.name, () => {
 	});
 
 	describe('onModuleInit', () => {
-		it('should register the AMQP subscriber with the correct parameters', async () => {
-			await consumer.onModuleInit();
+		describe('when module is initialized', () => {
+			let registerAmqpSubscriberSpy: jest.SpyInstance;
 
-			expect(registerAmqpSubscriber).toHaveBeenCalledWith(
-				amqpConnection,
-				'provisioning-exchange',
-				SchulconnexProvisioningEvents.GROUP_PROVISIONING,
-				expect.any(Function),
-				SchulconnexGroupProvisioningConsumer.name
-			);
-		});
+			beforeEach(() => {
+				registerAmqpSubscriberSpy = jest.spyOn(AmqpSubscriberHelper, 'registerAmqpSubscriber').mockResolvedValue();
+			});
 
-		describe('when the handler is invoked', () => {
-			const setup = () => {
-				const systemId = new ObjectId().toHexString();
-				const externalSchool = externalSchoolDtoFactory.build();
-				const externalGroup = externalGroupDtoFactory.build();
-				const provisionedGroup = groupFactory.build();
+			afterEach(() => {
+				registerAmqpSubscriberSpy.mockRestore();
+			});
 
-				groupService.findByExternalSource.mockResolvedValueOnce(null);
-				schulconnexGroupProvisioningService.provisionExternalGroup.mockResolvedValueOnce(provisionedGroup);
-				config.featureSchulconnexCourseSyncEnabled = false;
+			it('should register a subscriber for GROUP_PROVISIONING event', async () => {
+				await consumer.onModuleInit();
 
+				expect(registerAmqpSubscriberSpy).toHaveBeenCalledWith(
+					amqpConnection,
+					'provisioning-exchange',
+					SchulconnexProvisioningEvents.GROUP_PROVISIONING,
+					expect.any(Function),
+					SchulconnexGroupProvisioningConsumer.name,
+					logger
+				);
+			});
+
+			it('should pass a handler that calls provisionGroups for GROUP_PROVISIONING event', async () => {
+				const provisionGroupsSpy = jest.spyOn(consumer, 'provisionGroups').mockResolvedValue();
 				const payload: SchulconnexGroupProvisioningMessage = {
-					systemId,
-					externalSchool,
-					externalGroup,
+					systemId: new ObjectId().toHexString(),
+					externalSchool: externalSchoolDtoFactory.build(),
+					externalGroup: externalGroupDtoFactory.build(),
 				};
-
-				return {
-					payload,
-				};
-			};
-
-			it('should call provisionGroups with the payload', async () => {
-				const { payload } = setup();
 
 				await consumer.onModuleInit();
 
-				const registerAmqpSubscriberMock = jest.mocked(registerAmqpSubscriber);
-				const handler = registerAmqpSubscriberMock.mock.calls[0][3];
+				const groupProvisioningHandler = registerAmqpSubscriberSpy.mock.calls.find(
+					(call) => call[2] === SchulconnexProvisioningEvents.GROUP_PROVISIONING
+				)?.[3] as (payload: SchulconnexGroupProvisioningMessage) => Promise<void>;
 
-				await handler(payload);
+				await groupProvisioningHandler(payload);
 
-				expect(schulconnexGroupProvisioningService.provisionExternalGroup).toHaveBeenCalledWith(
-					payload.externalGroup,
-					payload.externalSchool,
-					payload.systemId
-				);
+				expect(provisionGroupsSpy).toHaveBeenCalledWith(payload);
+
+				provisionGroupsSpy.mockRestore();
 			});
 		});
 	});

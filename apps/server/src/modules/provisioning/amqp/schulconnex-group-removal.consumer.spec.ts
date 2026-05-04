@@ -12,7 +12,7 @@ import { PROVISIONING_EXCHANGE_CONFIG_TOKEN } from '../provisioning-exchange.con
 import { PROVISIONING_CONFIG_TOKEN, ProvisioningConfig } from '../provisioning.config';
 import { ENTITIES } from '../schulconnex-group-removal.entity.imports';
 import { SchulconnexCourseSyncService, SchulconnexGroupProvisioningService } from '../strategy/schulconnex/service';
-import { registerAmqpSubscriber } from './amqp-subscriber.helper';
+import * as AmqpSubscriberHelper from './amqp-subscriber.helper';
 import { SchulconnexGroupRemovalConsumer } from './schulconnex-group-removal.consumer';
 import { SchulconnexProvisioningEvents } from './schulconnex.exchange';
 
@@ -85,50 +85,48 @@ describe(SchulconnexGroupRemovalConsumer.name, () => {
 	});
 
 	describe('onModuleInit', () => {
-		it('should register the AMQP subscriber with the correct parameters', async () => {
-			await consumer.onModuleInit();
+		describe('when module is initialized', () => {
+			let registerAmqpSubscriberSpy: jest.SpyInstance;
 
-			expect(registerAmqpSubscriber).toHaveBeenCalledWith(
-				amqpConnection,
-				'provisioning-exchange',
-				SchulconnexProvisioningEvents.GROUP_REMOVAL,
-				expect.any(Function),
-				SchulconnexGroupRemovalConsumer.name
-			);
-		});
+			beforeEach(() => {
+				registerAmqpSubscriberSpy = jest.spyOn(AmqpSubscriberHelper, 'registerAmqpSubscriber').mockResolvedValue();
+			});
 
-		describe('when the handler is invoked', () => {
-			const setup = () => {
-				const userId = new ObjectId().toHexString();
-				const groupId = new ObjectId().toHexString();
+			afterEach(() => {
+				registerAmqpSubscriberSpy.mockRestore();
+			});
 
-				schulconnexGroupProvisioningService.removeUserFromGroup.mockResolvedValueOnce(null);
-				config.featureSchulconnexCourseSyncEnabled = false;
+			it('should register a subscriber for GROUP_PROVISIONING event', async () => {
+				await consumer.onModuleInit();
 
+				expect(registerAmqpSubscriberSpy).toHaveBeenCalledWith(
+					amqpConnection,
+					'provisioning-exchange',
+					SchulconnexProvisioningEvents.GROUP_REMOVAL,
+					expect.any(Function),
+					SchulconnexGroupRemovalConsumer.name,
+					logger
+				);
+			});
+
+			it('should pass a handler that calls removeUserFromGroup for GROUP_REMOVAL event', async () => {
+				const removeUserFromGroupSpy = jest.spyOn(consumer, 'removeUserFromGroup').mockResolvedValue();
 				const payload: SchulconnexGroupRemovalMessage = {
-					userId,
-					groupId,
+					userId: new ObjectId().toHexString(),
+					groupId: new ObjectId().toHexString(),
 				};
-
-				return {
-					payload,
-				};
-			};
-
-			it('should call removeUserFromGroup with the payload', async () => {
-				const { payload } = setup();
 
 				await consumer.onModuleInit();
 
-				const registerAmqpSubscriberMock = jest.mocked(registerAmqpSubscriber);
-				const handler = registerAmqpSubscriberMock.mock.calls[0][3];
+				const groupProvisioningHandler = registerAmqpSubscriberSpy.mock.calls.find(
+					(call) => call[2] === SchulconnexProvisioningEvents.GROUP_REMOVAL
+				)?.[3] as (payload: SchulconnexGroupRemovalMessage) => Promise<void>;
 
-				await handler(payload);
+				await groupProvisioningHandler(payload);
 
-				expect(schulconnexGroupProvisioningService.removeUserFromGroup).toHaveBeenCalledWith(
-					payload.userId,
-					payload.groupId
-				);
+				expect(removeUserFromGroupSpy).toHaveBeenCalledWith(payload);
+
+				removeUserFromGroupSpy.mockRestore();
 			});
 		});
 	});

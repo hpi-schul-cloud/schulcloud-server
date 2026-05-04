@@ -14,7 +14,7 @@ import {
 	SchulconnexLicenseProvisioningService,
 	SchulconnexToolProvisioningService,
 } from '../strategy/schulconnex/service';
-import { registerAmqpSubscriber } from './amqp-subscriber.helper';
+import * as AmqpSubscriberHelper from './amqp-subscriber.helper';
 import { SchulconnexLicenseProvisioningConsumer } from './schulconnex-license-provisioning.consumer';
 import { SchulconnexProvisioningEvents } from './schulconnex.exchange';
 
@@ -79,60 +79,59 @@ describe(SchulconnexLicenseProvisioningConsumer.name, () => {
 	});
 
 	describe('onModuleInit', () => {
-		it('should register the AMQP subscriber with the correct parameters', async () => {
-			await consumer.onModuleInit();
+		describe('when module is initialized', () => {
+			let registerAmqpSubscriberSpy: jest.SpyInstance;
 
-			expect(registerAmqpSubscriber).toHaveBeenCalledWith(
-				amqpConnection,
-				'provisioning-exchange',
-				SchulconnexProvisioningEvents.LICENSE_PROVISIONING,
-				expect.any(Function),
-				SchulconnexLicenseProvisioningConsumer.name
-			);
-		});
+			beforeEach(() => {
+				registerAmqpSubscriberSpy = jest.spyOn(AmqpSubscriberHelper, 'registerAmqpSubscriber').mockResolvedValue();
+			});
 
-		describe('when the handler is invoked', () => {
-			const setup = () => {
-				const userId = new ObjectId().toHexString();
-				const schoolId = new ObjectId().toHexString();
-				const systemId = new ObjectId().toHexString();
-				const externalLicenses = [
-					new ExternalLicenseDto({
-						mediumId: 'medium:1',
-					}),
-				];
+			afterEach(() => {
+				registerAmqpSubscriberSpy.mockRestore();
+			});
 
+			it('should register a subscriber for GROUP_PROVISIONING event', async () => {
+				await consumer.onModuleInit();
+
+				expect(registerAmqpSubscriberSpy).toHaveBeenCalledWith(
+					amqpConnection,
+					'provisioning-exchange',
+					SchulconnexProvisioningEvents.LICENSE_PROVISIONING,
+					expect.any(Function),
+					SchulconnexLicenseProvisioningConsumer.name,
+					logger
+				);
+			});
+
+			it('should pass a handler that calls provisionLicenses for LICENSE_PROVISIONING event', async () => {
+				const provisionLicensesSpy = jest.spyOn(consumer, 'provisionLicenses').mockResolvedValue();
 				const payload: SchulconnexLicenseProvisioningMessage = {
-					userId,
-					schoolId,
-					systemId,
-					externalLicenses,
+					userId: new ObjectId().toHexString(),
+					schoolId: new ObjectId().toHexString(),
+					systemId: new ObjectId().toHexString(),
+					externalLicenses: [
+						new ExternalLicenseDto({
+							mediumId: 'medium:1',
+						}),
+					],
 				};
-
-				return {
-					payload,
-				};
-			};
-
-			it('should call provisionLicenses with the payload', async () => {
-				const { payload } = setup();
 
 				await consumer.onModuleInit();
 
-				const registerAmqpSubscriberMock = jest.mocked(registerAmqpSubscriber);
-				const handler = registerAmqpSubscriberMock.mock.calls[0][3];
+				const licenseProvisioningHandler = registerAmqpSubscriberSpy.mock.calls.find(
+					(call) => call[2] === SchulconnexProvisioningEvents.LICENSE_PROVISIONING
+				)?.[3] as (payload: SchulconnexLicenseProvisioningMessage) => Promise<void>;
 
-				await handler(payload);
+				await licenseProvisioningHandler(payload);
 
-				expect(schulconnexLicenseProvisioningService.provisionExternalLicenses).toHaveBeenCalledWith(
-					payload.userId,
-					payload.externalLicenses
-				);
+				expect(provisionLicensesSpy).toHaveBeenCalledWith(payload);
+
+				provisionLicensesSpy.mockRestore();
 			});
 		});
 	});
 
-	describe('provisionGroups', () => {
+	describe('provisionLicenses', () => {
 		describe('when provisioning a new group', () => {
 			const setup = () => {
 				const userId = new ObjectId().toHexString();
