@@ -3,7 +3,10 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountService } from '@modules/account';
 import { ErwinIdentifierService, ReferencedEntityType } from '@modules/erwin-identifier';
-import { erwinIdentifierFactoryWithSchool, erwinIdentifierFactoryWithUser } from '@modules/erwin-identifier/domain/testing';
+import {
+	erwinIdentifierFactoryWithSchool,
+	erwinIdentifierFactoryWithUser,
+} from '@modules/erwin-identifier/domain/testing';
 import { RoleService, RoleDto, RoleName } from '@modules/role';
 import { SchoolService } from '@modules/school';
 import { SchoolYearService } from '@modules/school/domain';
@@ -86,30 +89,30 @@ describe('ErwinProvisioningService', () => {
 	describe('provisionEntity', () => {
 		describe('when entity type is SCHOOL', () => {
 			describe('when school is found by erwinId and externalId is provided', () => {
-			const setup = () => {
-				const system: ProvisioningSystemDto = provisioningSystemDtoFactory.build();
-				const externalSchool: ExternalSchoolDto = externalSchoolDtoFactory.build({
-					erwinId: new ObjectId().toHexString(),
-					name: 'School Name',
-					officialSchoolNumber: '12345',
-				});
-				const existingSchool = schoolFactory.build();
-				const erwinIdentifier = erwinIdentifierFactoryWithSchool.build({
-					erwinId: externalSchool.erwinId,
-					referencedEntityId: existingSchool.id,
-				});
-				const updatedSchool = schoolFactory.build({
-					name: externalSchool.name,
-				});
+				const setup = () => {
+					const system: ProvisioningSystemDto = provisioningSystemDtoFactory.build();
+					const externalSchool: ExternalSchoolDto = externalSchoolDtoFactory.build({
+						erwinId: new ObjectId().toHexString(),
+						name: 'School Name',
+						officialSchoolNumber: '12345',
+					});
+					const existingSchool = schoolFactory.build();
+					const erwinIdentifier = erwinIdentifierFactoryWithSchool.build({
+						erwinId: externalSchool.erwinId,
+						referencedEntityId: existingSchool.id,
+					});
+					const updatedSchool = schoolFactory.build({
+						name: externalSchool.name,
+					});
 
-				erwinIdentifierServiceMock.findByErwinId.mockResolvedValueOnce(erwinIdentifier);
-				schoolServiceMock.getSchoolById.mockResolvedValueOnce(existingSchool);
-				schoolServiceMock.save.mockResolvedValueOnce(updatedSchool);
+					erwinIdentifierServiceMock.findByErwinId.mockResolvedValueOnce(erwinIdentifier);
+					schoolServiceMock.getSchoolById.mockResolvedValueOnce(existingSchool);
+					schoolServiceMock.save.mockResolvedValueOnce(updatedSchool);
 
-				return { system, externalSchool, updatedSchool };
-			};
+					return { system, externalSchool, updatedSchool };
+				};
 
-			it('should return updated school', async () => {
+				it('should return updated school', async () => {
 					const { system, externalSchool, updatedSchool } = setup();
 
 					const result = await sut.provisionEntity(ProvisioningEntityType.SCHOOL, system, { externalSchool });
@@ -122,29 +125,29 @@ describe('ErwinProvisioningService', () => {
 
 					await sut.provisionEntity(ProvisioningEntityType.SCHOOL, system, { externalSchool });
 
-				expect(schoolServiceMock.save).toHaveBeenCalled();
+					expect(schoolServiceMock.save).toHaveBeenCalled();
 				});
 			});
 
 			describe('when school is found by erwinId but externalId is not provided', () => {
-			const setup = () => {
-				const system: ProvisioningSystemDto = provisioningSystemDtoFactory.build();
-				const externalSchool: ExternalSchoolDto = new ExternalSchoolDto({
-					externalId: undefined as unknown as string,
-					erwinId: new ObjectId().toHexString(),
-					name: 'School Name',
-				});
-				const existingSchool = schoolFactory.build();
-				const erwinIdentifier = erwinIdentifierFactoryWithSchool.build({
-					erwinId: externalSchool.erwinId,
-					referencedEntityId: existingSchool.id,
-				});
+				const setup = () => {
+					const system: ProvisioningSystemDto = provisioningSystemDtoFactory.build();
+					const externalSchool: ExternalSchoolDto = new ExternalSchoolDto({
+						externalId: undefined as unknown as string,
+						erwinId: new ObjectId().toHexString(),
+						name: 'School Name',
+					});
+					const existingSchool = schoolFactory.build();
+					const erwinIdentifier = erwinIdentifierFactoryWithSchool.build({
+						erwinId: externalSchool.erwinId,
+						referencedEntityId: existingSchool.id,
+					});
 
-				erwinIdentifierServiceMock.findByErwinId.mockResolvedValueOnce(erwinIdentifier);
-				schoolServiceMock.getSchoolById.mockResolvedValueOnce(existingSchool);
+					erwinIdentifierServiceMock.findByErwinId.mockResolvedValueOnce(erwinIdentifier);
+					schoolServiceMock.getSchoolById.mockResolvedValueOnce(existingSchool);
 
-				return { system, externalSchool, existingSchool };
-			};
+					return { system, externalSchool, existingSchool };
+				};
 
 				it('should return existing school without update', async () => {
 					const { system, externalSchool, existingSchool } = setup();
@@ -157,18 +160,18 @@ describe('ErwinProvisioningService', () => {
 			});
 
 			describe('when school is not found by erwinId and externalId is missing', () => {
-			const setup = () => {
-				const system: ProvisioningSystemDto = provisioningSystemDtoFactory.build();
-				const externalSchool: ExternalSchoolDto = new ExternalSchoolDto({
-					externalId: undefined as unknown as string,
-					erwinId: new ObjectId().toHexString(),
-					name: 'School Name',
-				});
+				const setup = () => {
+					const system: ProvisioningSystemDto = provisioningSystemDtoFactory.build();
+					const externalSchool: ExternalSchoolDto = new ExternalSchoolDto({
+						externalId: undefined as unknown as string,
+						erwinId: new ObjectId().toHexString(),
+						name: 'School Name',
+					});
 
-				erwinIdentifierServiceMock.findByErwinId.mockResolvedValueOnce(null);
+					erwinIdentifierServiceMock.findByErwinId.mockResolvedValueOnce(null);
 
-				return { system, externalSchool };
-			};
+					return { system, externalSchool };
+				};
 
 				it('should throw ExternalIdMissingException', async () => {
 					const { system, externalSchool } = setup();
@@ -180,31 +183,31 @@ describe('ErwinProvisioningService', () => {
 			});
 
 			describe('when school is not found by erwinId but is found by externalId', () => {
-			const setup = () => {
-				const system: ProvisioningSystemDto = provisioningSystemDtoFactory.build();
-				const externalSchool: ExternalSchoolDto = externalSchoolDtoFactory.build({
-					erwinId: new ObjectId().toHexString(),
-					name: 'Updated School Name',
-					officialSchoolNumber: '12345',
-				});
-				const existingSchool = schoolFactory.build({
-					externalId: externalSchool.externalId,
-					systemIds: [system.systemId],
-				});
-				const updatedSchool = schoolFactory.build({
-					name: externalSchool.name,
-				});
+				const setup = () => {
+					const system: ProvisioningSystemDto = provisioningSystemDtoFactory.build();
+					const externalSchool: ExternalSchoolDto = externalSchoolDtoFactory.build({
+						erwinId: new ObjectId().toHexString(),
+						name: 'Updated School Name',
+						officialSchoolNumber: '12345',
+					});
+					const existingSchool = schoolFactory.build({
+						externalId: externalSchool.externalId,
+						systemIds: [system.systemId],
+					});
+					const updatedSchool = schoolFactory.build({
+						name: externalSchool.name,
+					});
 
-				erwinIdentifierServiceMock.findByErwinId.mockResolvedValueOnce(null);
-				schoolServiceMock.getSchools.mockResolvedValueOnce([existingSchool]);
-				schoolServiceMock.save.mockResolvedValueOnce(updatedSchool);
-				erwinIdentifierServiceMock.findByErwinId.mockResolvedValueOnce(null);
-				erwinIdentifierServiceMock.createErwinIdentifier.mockResolvedValueOnce(
-					erwinIdentifierFactoryWithSchool.build()
-				);
+					erwinIdentifierServiceMock.findByErwinId.mockResolvedValueOnce(null);
+					schoolServiceMock.getSchools.mockResolvedValueOnce([existingSchool]);
+					schoolServiceMock.save.mockResolvedValueOnce(updatedSchool);
+					erwinIdentifierServiceMock.findByErwinId.mockResolvedValueOnce(null);
+					erwinIdentifierServiceMock.createErwinIdentifier.mockResolvedValueOnce(
+						erwinIdentifierFactoryWithSchool.build()
+					);
 
-				return { system, externalSchool, updatedSchool };
-			};
+					return { system, externalSchool, updatedSchool };
+				};
 
 				it('should return updated school', async () => {
 					const { system, externalSchool, updatedSchool } = setup();
@@ -219,35 +222,35 @@ describe('ErwinProvisioningService', () => {
 
 					await sut.provisionEntity(ProvisioningEntityType.SCHOOL, system, { externalSchool });
 
-				expect(erwinIdentifierServiceMock.createErwinIdentifier).toHaveBeenCalledWith({
-					erwinId: externalSchool.erwinId,
-					type: ReferencedEntityType.SCHOOL,
-					referencedEntityId: updatedSchool.id,
+					expect(erwinIdentifierServiceMock.createErwinIdentifier).toHaveBeenCalledWith({
+						erwinId: externalSchool.erwinId,
+						type: ReferencedEntityType.SCHOOL,
+						referencedEntityId: updatedSchool.id,
 					});
 				});
 			});
 
 			describe('when school is found by externalId without erwinId', () => {
-			const setup = () => {
-				const system: ProvisioningSystemDto = provisioningSystemDtoFactory.build();
-				const externalSchool: ExternalSchoolDto = externalSchoolDtoFactory.build({
-					erwinId: undefined,
-					name: 'Updated School Name',
-				});
-				const existingSchool = schoolFactory.build({
-					externalId: externalSchool.externalId,
-					systemIds: [system.systemId],
-				});
-				const updatedSchool = schoolFactory.build({
-					name: externalSchool.name,
-				});
+				const setup = () => {
+					const system: ProvisioningSystemDto = provisioningSystemDtoFactory.build();
+					const externalSchool: ExternalSchoolDto = externalSchoolDtoFactory.build({
+						erwinId: undefined,
+						name: 'Updated School Name',
+					});
+					const existingSchool = schoolFactory.build({
+						externalId: externalSchool.externalId,
+						systemIds: [system.systemId],
+					});
+					const updatedSchool = schoolFactory.build({
+						name: externalSchool.name,
+					});
 
-				erwinIdentifierServiceMock.findByErwinId.mockResolvedValueOnce(null);
-				schoolServiceMock.getSchools.mockResolvedValueOnce([existingSchool]);
-				schoolServiceMock.save.mockResolvedValueOnce(updatedSchool);
+					erwinIdentifierServiceMock.findByErwinId.mockResolvedValueOnce(null);
+					schoolServiceMock.getSchools.mockResolvedValueOnce([existingSchool]);
+					schoolServiceMock.save.mockResolvedValueOnce(updatedSchool);
 
-				return { system, externalSchool, updatedSchool };
-			};
+					return { system, externalSchool, updatedSchool };
+				};
 
 				it('should not create Erwin identifier', async () => {
 					const { system, externalSchool } = setup();
@@ -259,31 +262,31 @@ describe('ErwinProvisioningService', () => {
 			});
 
 			describe('when no school exists and a new school is created', () => {
-			const setup = () => {
-				const system: ProvisioningSystemDto = provisioningSystemDtoFactory.build();
-				const externalSchool: ExternalSchoolDto = externalSchoolDtoFactory.build({
-					erwinId: new ObjectId().toHexString(),
-					name: 'New School Name',
-					officialSchoolNumber: '12345',
-				});
-				const schoolYear = schoolYearEntityFactory.build();
-				const newSchool = schoolFactory.build({
-					name: externalSchool.name,
-					externalId: externalSchool.externalId,
-					officialSchoolNumber: externalSchool.officialSchoolNumber,
-				});
+				const setup = () => {
+					const system: ProvisioningSystemDto = provisioningSystemDtoFactory.build();
+					const externalSchool: ExternalSchoolDto = externalSchoolDtoFactory.build({
+						erwinId: new ObjectId().toHexString(),
+						name: 'New School Name',
+						officialSchoolNumber: '12345',
+					});
+					const schoolYear = schoolYearEntityFactory.build();
+					const newSchool = schoolFactory.build({
+						name: externalSchool.name,
+						externalId: externalSchool.externalId,
+						officialSchoolNumber: externalSchool.officialSchoolNumber,
+					});
 
-				erwinIdentifierServiceMock.findByErwinId.mockResolvedValueOnce(null);
-				schoolServiceMock.getSchools.mockResolvedValueOnce([]);
-				schoolYearServiceMock.getCurrentSchoolYear.mockResolvedValueOnce(schoolYear);
-				schoolServiceMock.save.mockResolvedValueOnce(newSchool);
-				erwinIdentifierServiceMock.findByErwinId.mockResolvedValueOnce(null);
-				erwinIdentifierServiceMock.createErwinIdentifier.mockResolvedValueOnce(
-					erwinIdentifierFactoryWithSchool.build()
-				);
+					erwinIdentifierServiceMock.findByErwinId.mockResolvedValueOnce(null);
+					schoolServiceMock.getSchools.mockResolvedValueOnce([]);
+					schoolYearServiceMock.getCurrentSchoolYear.mockResolvedValueOnce(schoolYear);
+					schoolServiceMock.save.mockResolvedValueOnce(newSchool);
+					erwinIdentifierServiceMock.findByErwinId.mockResolvedValueOnce(null);
+					erwinIdentifierServiceMock.createErwinIdentifier.mockResolvedValueOnce(
+						erwinIdentifierFactoryWithSchool.build()
+					);
 
-				return { system, externalSchool, newSchool };
-			};
+					return { system, externalSchool, newSchool };
+				};
 
 				it('should return new school', async () => {
 					const { system, externalSchool, newSchool } = setup();
@@ -298,35 +301,35 @@ describe('ErwinProvisioningService', () => {
 
 					await sut.provisionEntity(ProvisioningEntityType.SCHOOL, system, { externalSchool });
 
-				expect(erwinIdentifierServiceMock.createErwinIdentifier).toHaveBeenCalledWith({
-					erwinId: externalSchool.erwinId,
-					type: ReferencedEntityType.SCHOOL,
-					referencedEntityId: newSchool.id,
+					expect(erwinIdentifierServiceMock.createErwinIdentifier).toHaveBeenCalledWith({
+						erwinId: externalSchool.erwinId,
+						type: ReferencedEntityType.SCHOOL,
+						referencedEntityId: newSchool.id,
 					});
 				});
 			});
 
 			describe('when creating a new school with location', () => {
-			const setup = () => {
-				const system: ProvisioningSystemDto = provisioningSystemDtoFactory.build();
-				const externalSchool: ExternalSchoolDto = externalSchoolDtoFactory.build({
-					name: 'New School',
-					location: 'Berlin',
-				});
-				const schoolYear = schoolYearEntityFactory.build();
-				const expectedSchoolName = `${externalSchool.name ?? ''} (${externalSchool.location ?? ''})`;
-				const newSchool = schoolFactory.build({
-					name: expectedSchoolName,
-					externalId: externalSchool.externalId,
-				});
+				const setup = () => {
+					const system: ProvisioningSystemDto = provisioningSystemDtoFactory.build();
+					const externalSchool: ExternalSchoolDto = externalSchoolDtoFactory.build({
+						name: 'New School',
+						location: 'Berlin',
+					});
+					const schoolYear = schoolYearEntityFactory.build();
+					const expectedSchoolName = `${externalSchool.name ?? ''} (${externalSchool.location ?? ''})`;
+					const newSchool = schoolFactory.build({
+						name: expectedSchoolName,
+						externalId: externalSchool.externalId,
+					});
 
-				erwinIdentifierServiceMock.findByErwinId.mockResolvedValueOnce(null);
-				schoolServiceMock.getSchools.mockResolvedValueOnce([]);
-				schoolYearServiceMock.getCurrentSchoolYear.mockResolvedValueOnce(schoolYear);
-				schoolServiceMock.save.mockResolvedValueOnce(newSchool);
+					erwinIdentifierServiceMock.findByErwinId.mockResolvedValueOnce(null);
+					schoolServiceMock.getSchools.mockResolvedValueOnce([]);
+					schoolYearServiceMock.getCurrentSchoolYear.mockResolvedValueOnce(schoolYear);
+					schoolServiceMock.save.mockResolvedValueOnce(newSchool);
 
-				return { system, externalSchool, newSchool };
-			};
+					return { system, externalSchool, newSchool };
+				};
 
 				it('should append location to school name', async () => {
 					const { system, externalSchool, newSchool } = setup();
@@ -339,19 +342,19 @@ describe('ErwinProvisioningService', () => {
 			});
 
 			describe('when creating a new school without name', () => {
-			const setup = () => {
-				const system: ProvisioningSystemDto = provisioningSystemDtoFactory.build();
-				const externalSchool: ExternalSchoolDto = externalSchoolDtoFactory.build({
-					name: undefined,
-				});
-				const schoolYear = schoolYearEntityFactory.build();
+				const setup = () => {
+					const system: ProvisioningSystemDto = provisioningSystemDtoFactory.build();
+					const externalSchool: ExternalSchoolDto = externalSchoolDtoFactory.build({
+						name: undefined,
+					});
+					const schoolYear = schoolYearEntityFactory.build();
 
-				erwinIdentifierServiceMock.findByErwinId.mockResolvedValueOnce(null);
-				schoolServiceMock.getSchools.mockResolvedValueOnce([]);
-				schoolYearServiceMock.getCurrentSchoolYear.mockResolvedValueOnce(schoolYear);
+					erwinIdentifierServiceMock.findByErwinId.mockResolvedValueOnce(null);
+					schoolServiceMock.getSchools.mockResolvedValueOnce([]);
+					schoolYearServiceMock.getCurrentSchoolYear.mockResolvedValueOnce(schoolYear);
 
-				return { system, externalSchool };
-			};
+					return { system, externalSchool };
+				};
 
 				it('should throw SchoolNameRequiredLoggableException', async () => {
 					const { system, externalSchool } = setup();
@@ -363,30 +366,30 @@ describe('ErwinProvisioningService', () => {
 			});
 
 			describe('when erwin identifier already exists for school found by externalId', () => {
-			const setup = () => {
-				const system: ProvisioningSystemDto = provisioningSystemDtoFactory.build();
-				const externalSchool: ExternalSchoolDto = externalSchoolDtoFactory.build({
-					erwinId: new ObjectId().toHexString(),
-					name: 'School Name',
-				});
-				const existingSchool = schoolFactory.build({
-					externalId: externalSchool.externalId,
-					systemIds: [system.systemId],
-				});
-				const updatedSchool = schoolFactory.build({
-					name: externalSchool.name,
-				});
-				const existingErwinIdentifier = erwinIdentifierFactoryWithSchool.build({
-					erwinId: externalSchool.erwinId,
-				});
+				const setup = () => {
+					const system: ProvisioningSystemDto = provisioningSystemDtoFactory.build();
+					const externalSchool: ExternalSchoolDto = externalSchoolDtoFactory.build({
+						erwinId: new ObjectId().toHexString(),
+						name: 'School Name',
+					});
+					const existingSchool = schoolFactory.build({
+						externalId: externalSchool.externalId,
+						systemIds: [system.systemId],
+					});
+					const updatedSchool = schoolFactory.build({
+						name: externalSchool.name,
+					});
+					const existingErwinIdentifier = erwinIdentifierFactoryWithSchool.build({
+						erwinId: externalSchool.erwinId,
+					});
 
-				erwinIdentifierServiceMock.findByErwinId.mockResolvedValueOnce(null);
-				schoolServiceMock.getSchools.mockResolvedValueOnce([existingSchool]);
-				schoolServiceMock.save.mockResolvedValueOnce(updatedSchool);
-				erwinIdentifierServiceMock.findByErwinId.mockResolvedValueOnce(existingErwinIdentifier);
+					erwinIdentifierServiceMock.findByErwinId.mockResolvedValueOnce(null);
+					schoolServiceMock.getSchools.mockResolvedValueOnce([existingSchool]);
+					schoolServiceMock.save.mockResolvedValueOnce(updatedSchool);
+					erwinIdentifierServiceMock.findByErwinId.mockResolvedValueOnce(existingErwinIdentifier);
 
-				return { system, externalSchool, updatedSchool };
-			};
+					return { system, externalSchool, updatedSchool };
+				};
 
 				it('should not create duplicate erwin identifier', async () => {
 					const { system, externalSchool, updatedSchool } = setup();
@@ -399,32 +402,32 @@ describe('ErwinProvisioningService', () => {
 			});
 
 			describe('when erwinId references a non-school entity', () => {
-			const setup = () => {
-				const system: ProvisioningSystemDto = provisioningSystemDtoFactory.build();
-				const externalSchool: ExternalSchoolDto = externalSchoolDtoFactory.build({
-					erwinId: new ObjectId().toHexString(),
-					name: 'School Name',
-				});
-				const userErwinIdentifier = erwinIdentifierFactoryWithSchool.build({
-					erwinId: externalSchool.erwinId,
-					type: ReferencedEntityType.USER,
-				});
-				const schoolYear = schoolYearEntityFactory.build();
-				const newSchool = schoolFactory.build({
-					name: externalSchool.name,
-				});
+				const setup = () => {
+					const system: ProvisioningSystemDto = provisioningSystemDtoFactory.build();
+					const externalSchool: ExternalSchoolDto = externalSchoolDtoFactory.build({
+						erwinId: new ObjectId().toHexString(),
+						name: 'School Name',
+					});
+					const userErwinIdentifier = erwinIdentifierFactoryWithSchool.build({
+						erwinId: externalSchool.erwinId,
+						type: ReferencedEntityType.USER,
+					});
+					const schoolYear = schoolYearEntityFactory.build();
+					const newSchool = schoolFactory.build({
+						name: externalSchool.name,
+					});
 
-				erwinIdentifierServiceMock.findByErwinId.mockResolvedValueOnce(userErwinIdentifier);
-				schoolServiceMock.getSchools.mockResolvedValueOnce([]);
-				schoolYearServiceMock.getCurrentSchoolYear.mockResolvedValueOnce(schoolYear);
-				schoolServiceMock.save.mockResolvedValueOnce(newSchool);
-				erwinIdentifierServiceMock.findByErwinId.mockResolvedValueOnce(null);
-				erwinIdentifierServiceMock.createErwinIdentifier.mockResolvedValueOnce(
-					erwinIdentifierFactoryWithSchool.build()
-				);
+					erwinIdentifierServiceMock.findByErwinId.mockResolvedValueOnce(userErwinIdentifier);
+					schoolServiceMock.getSchools.mockResolvedValueOnce([]);
+					schoolYearServiceMock.getCurrentSchoolYear.mockResolvedValueOnce(schoolYear);
+					schoolServiceMock.save.mockResolvedValueOnce(newSchool);
+					erwinIdentifierServiceMock.findByErwinId.mockResolvedValueOnce(null);
+					erwinIdentifierServiceMock.createErwinIdentifier.mockResolvedValueOnce(
+						erwinIdentifierFactoryWithSchool.build()
+					);
 
-				return { system, externalSchool };
-			};
+					return { system, externalSchool };
+				};
 
 				it('should create new school', async () => {
 					const { system, externalSchool } = setup();
@@ -436,25 +439,25 @@ describe('ErwinProvisioningService', () => {
 			});
 
 			describe('when erwinId is not provided in externalSchool', () => {
-			const setup = () => {
-				const system: ProvisioningSystemDto = provisioningSystemDtoFactory.build();
-				const externalSchool: ExternalSchoolDto = externalSchoolDtoFactory.build({
-					erwinId: undefined,
-					name: 'New School',
-				});
-				const schoolYear = schoolYearEntityFactory.build();
-				const newSchool = schoolFactory.build({
-					name: externalSchool.name,
-					externalId: externalSchool.externalId,
-				});
+				const setup = () => {
+					const system: ProvisioningSystemDto = provisioningSystemDtoFactory.build();
+					const externalSchool: ExternalSchoolDto = externalSchoolDtoFactory.build({
+						erwinId: undefined,
+						name: 'New School',
+					});
+					const schoolYear = schoolYearEntityFactory.build();
+					const newSchool = schoolFactory.build({
+						name: externalSchool.name,
+						externalId: externalSchool.externalId,
+					});
 
-				erwinIdentifierServiceMock.findByErwinId.mockResolvedValueOnce(null);
-				schoolServiceMock.getSchools.mockResolvedValueOnce([]);
-				schoolYearServiceMock.getCurrentSchoolYear.mockResolvedValueOnce(schoolYear);
-				schoolServiceMock.save.mockResolvedValueOnce(newSchool);
+					erwinIdentifierServiceMock.findByErwinId.mockResolvedValueOnce(null);
+					schoolServiceMock.getSchools.mockResolvedValueOnce([]);
+					schoolYearServiceMock.getCurrentSchoolYear.mockResolvedValueOnce(schoolYear);
+					schoolServiceMock.save.mockResolvedValueOnce(newSchool);
 
-				return { system, externalSchool, newSchool };
-			};
+					return { system, externalSchool, newSchool };
+				};
 
 				it('should create school without erwin identifier', async () => {
 					const { system, externalSchool, newSchool } = setup();
@@ -470,9 +473,9 @@ describe('ErwinProvisioningService', () => {
 				it('should throw an error', async () => {
 					const system = provisioningSystemDtoFactory.build();
 
-					await expect(
-						sut.provisionEntity(ProvisioningEntityType.SCHOOL, system, {})
-					).rejects.toThrow('ExternalSchoolDto is required for SCHOOL provisioning');
+					await expect(sut.provisionEntity(ProvisioningEntityType.SCHOOL, system, {})).rejects.toThrow(
+						'ExternalSchoolDto is required for SCHOOL provisioning'
+					);
 				});
 			});
 		});
@@ -710,7 +713,10 @@ describe('ErwinProvisioningService', () => {
 				it('should create new user and return it', async () => {
 					const { system, externalSchool, externalUser, savedUser } = setup();
 
-					const result = await sut.provisionEntity(ProvisioningEntityType.USER, system, { externalSchool, externalUser });
+					const result = await sut.provisionEntity(ProvisioningEntityType.USER, system, {
+						externalSchool,
+						externalUser,
+					});
 
 					expect(result).toEqual(savedUser);
 				});
@@ -801,18 +807,18 @@ describe('ErwinProvisioningService', () => {
 					const system = provisioningSystemDtoFactory.build();
 					const externalSchool = externalSchoolDtoFactory.build();
 
-					await expect(
-						sut.provisionEntity(ProvisioningEntityType.USER, system, { externalSchool })
-					).rejects.toThrow('ExternalUserDto and ExternalSchoolDto are required for USER provisioning');
+					await expect(sut.provisionEntity(ProvisioningEntityType.USER, system, { externalSchool })).rejects.toThrow(
+						'ExternalUserDto and ExternalSchoolDto are required for USER provisioning'
+					);
 				});
 
 				it('should throw an error when externalSchool is missing', async () => {
 					const system = provisioningSystemDtoFactory.build();
 					const externalUser = externalUserDtoFactory.build();
 
-					await expect(
-						sut.provisionEntity(ProvisioningEntityType.USER, system, { externalUser })
-					).rejects.toThrow('ExternalUserDto and ExternalSchoolDto are required for USER provisioning');
+					await expect(sut.provisionEntity(ProvisioningEntityType.USER, system, { externalUser })).rejects.toThrow(
+						'ExternalUserDto and ExternalSchoolDto are required for USER provisioning'
+					);
 				});
 			});
 
@@ -854,7 +860,10 @@ describe('ErwinProvisioningService', () => {
 				it('should create new user when erwinId references wrong entity type', async () => {
 					const { system, externalSchool, externalUser, savedUser } = setup();
 
-					const result = await sut.provisionEntity(ProvisioningEntityType.USER, system, { externalSchool, externalUser });
+					const result = await sut.provisionEntity(ProvisioningEntityType.USER, system, {
+						externalSchool,
+						externalUser,
+					});
 
 					expect(result).toEqual(savedUser);
 				});
@@ -866,9 +875,9 @@ describe('ErwinProvisioningService', () => {
 				const system = provisioningSystemDtoFactory.build();
 				const externalSchool = externalSchoolDtoFactory.build();
 
-				await expect(
-					sut.provisionEntity(ProvisioningEntityType.CLASS, system, { externalSchool })
-				).rejects.toThrow('CLASS provisioning not yet implemented');
+				await expect(sut.provisionEntity(ProvisioningEntityType.CLASS, system, { externalSchool })).rejects.toThrow(
+					'CLASS provisioning not yet implemented'
+				);
 			});
 		});
 
