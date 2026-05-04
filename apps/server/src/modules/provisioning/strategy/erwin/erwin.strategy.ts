@@ -13,7 +13,7 @@ import {
 	ProvisioningDto,
 } from '../../dto';
 import { BadDataLoggableException } from '../../loggable';
-import { ErwinProvisioningService } from '../../service/erwin-provisioning.service';
+import { ErwinProvisioningService, ProvisioningEntityType } from '../../service/erwin-provisioning.service';
 import { ProvisioningStrategy } from '../base.strategy';
 import { ErwinRole, MappedSvsRolle, PayloadRolle } from './enums/rolle.enum';
 import { ErwinJwtPayload } from './erwin.jwt.payload';
@@ -47,9 +47,14 @@ export class ErwinProvisioningStrategy extends ProvisioningStrategy {
 			});
 		}
 
-		await this.erwinProvisioningService.provisionSchool(data.system, data.externalSchool);
+		await this.erwinProvisioningService.provisionEntity(ProvisioningEntityType.SCHOOL, data.system, {
+			externalSchool: data.externalSchool,
+		});
 
-		// TODO: User Provisioning
+		await this.erwinProvisioningService.provisionEntity(ProvisioningEntityType.USER, data.system, {
+			externalSchool: data.externalSchool,
+			externalUser: data.externalUser,
+		});
 
 		return new ProvisioningDto({
 			externalUserId: data.externalUser.externalId,
