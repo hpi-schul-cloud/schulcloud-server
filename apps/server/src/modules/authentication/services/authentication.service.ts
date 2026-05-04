@@ -1,11 +1,11 @@
 import { Logger } from '@core/logger';
 import { CreateJwtPayload, ICurrentUser, JwtPayloadFactory } from '@infra/auth-guard';
+import { Account, AccountService } from '@modules/account';
+import { User } from '@modules/user/repo';
 import { Inject, Injectable } from '@nestjs/common';
 import { JwtService, JwtSignOptions } from '@nestjs/jwt';
 import { randomUUID } from 'crypto';
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { Account, AccountService } from '@modules/account';
-import { User } from '@modules/user/repo';
 import { AUTHENTICATION_CONFIG_TOKEN, AuthenticationConfig } from '../authentication-config';
 import { BruteForceError, UnauthorizedLoggableException } from '../errors';
 import { JwtWhitelistAdapter } from '../helper/jwt-whitelist.adapter';
@@ -56,7 +56,7 @@ export class AuthenticationService {
 
 		// It is necessary to set expiresIn conditionally like this, because setting it to undefined in the JwtSignOptions overwrites the value from the JwtModuleOptions.
 		if (expiresIn) {
-			options.expiresIn = expiresIn;
+			options.expiresIn = expiresIn as JwtSignOptions['expiresIn'];
 		}
 
 		const accessToken = this.jwtService.sign(createJwtPayload, options);

@@ -22,9 +22,9 @@ export class CopyApiResponse {
 	title?: string;
 
 	@ApiProperty({
-		type: 'string',
-		enum: CopyElementType,
+		type: String,
 		description: 'Type of copied element',
+		example: 'COURSE',
 	})
 	type: CopyElementType;
 
@@ -34,14 +34,15 @@ export class CopyApiResponse {
 	destinationId?: string;
 
 	@ApiProperty({
-		type: 'string',
-		enum: CopyStatusEnum,
+		type: String,
 		description: 'Copy progress status of copied element',
+		example: 'success',
 	})
 	status: CopyStatusEnum;
 
 	@ApiPropertyOptional({
-		type: [CopyApiResponse],
+		type: 'array',
+		items: { $ref: '#/components/schemas/CopyApiResponse' },
 		description: 'List of included sub elements with recursive type structure',
 	})
 	elements?: CopyApiResponse[];

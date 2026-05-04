@@ -1,8 +1,11 @@
-import { JwtFromRequestFunction, StrategyOptions } from 'passport-jwt';
+import { JwtFromRequestFunction, StrategyOptionsWithoutRequest } from 'passport-jwt';
 import { JwtAuthGuardConfig } from '../config';
 
 export class JwtStrategyOptionsFactory {
-	public static build(jwtFromRequestFunction: JwtFromRequestFunction, config: JwtAuthGuardConfig): StrategyOptions {
+	public static build(
+		jwtFromRequestFunction: JwtFromRequestFunction,
+		config: JwtAuthGuardConfig
+	): StrategyOptionsWithoutRequest {
 		const { jwtPublicKey, jwtSigningAlgorithm, scDomain } = config;
 
 		const options = {
