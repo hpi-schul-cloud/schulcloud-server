@@ -134,7 +134,7 @@ export class BoardCopyService {
 	}
 
 	public async copyCard(params: CopyCardParams): Promise<CopyStatus> {
-		const originalCard = await this.boardNodeService.findByClassAndId(Column, params.originalCardId);
+		const originalCard = await this.boardNodeService.findByClassAndId(Card, params.originalCardId);
 
 		const { targetSchoolId } = params;
 

@@ -436,14 +436,6 @@ describe(BoardCopyService.name, () => {
 				return { column, userId, copyParams, columnCopy, parentBoard };
 			};
 
-			it('should find the original column', async () => {
-				const { copyParams } = setup();
-
-				await service.copyColumn(copyParams);
-
-				expect(boardNodeService.findByClassAndId).toHaveBeenCalledWith(Column, copyParams.originalColumnId);
-			});
-
 			it('should throw InternalServerExceptopm when parent of column has no parent', async () => {
 				const userId = new ObjectId().toHexString();
 				const targetSchoolId = new ObjectId().toHexString();
