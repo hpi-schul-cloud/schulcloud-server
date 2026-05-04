@@ -251,7 +251,7 @@ describe(BoardCopyService.name, () => {
 				expect(boardNodeService.findByClassAndId).toHaveBeenCalled();
 			});
 
-			it('should throw UnprocessableEntityException when parent of card has no parent', async () => {
+			it('should throw InternalServerErrorException when parent of card has no parent', async () => {
 				const userId = new ObjectId().toHexString();
 				const targetSchoolId = new ObjectId().toHexString();
 				const notAColumn = cardFactory.build(); // using a card as a non-column example
@@ -444,7 +444,7 @@ describe(BoardCopyService.name, () => {
 				expect(boardNodeService.findByClassAndId).toHaveBeenCalledWith(Column, copyParams.originalColumnId);
 			});
 
-			it('should throw UnprocessableEntityException when parent of column has no parent', async () => {
+			it('should throw InternalServerExceptopm when parent of column has no parent', async () => {
 				const userId = new ObjectId().toHexString();
 				const targetSchoolId = new ObjectId().toHexString();
 				const parentBoard = columnBoardFactory.build();

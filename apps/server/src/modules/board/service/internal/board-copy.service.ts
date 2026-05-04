@@ -1,11 +1,6 @@
 import { CopyStatus } from '@modules/copy-helper';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client/service';
-import {
-	Injectable,
-	InternalServerErrorException,
-	NotImplementedException,
-	UnprocessableEntityException,
-} from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import {
 	BoardExternalReference,
@@ -103,7 +98,7 @@ export class BoardCopyService {
 		const { targetSchoolId } = params;
 
 		if (!originalColumn.parentId) {
-			throw new UnprocessableEntityException('Column has no parent board');
+			throw new InternalServerErrorException('Column has no parent board');
 		}
 		const parentBoard = params.destinationColumnBoardId
 			? await this.boardNodeService.findByClassAndId(ColumnBoard, params.destinationColumnBoardId)
@@ -139,12 +134,12 @@ export class BoardCopyService {
 	}
 
 	public async copyCard(params: CopyCardParams): Promise<CopyStatus> {
-		const originalCard = await this.boardNodeService.findByClassAndId(Card, params.originalCardId);
+		const originalCard = await this.boardNodeService.findByClassAndId(Column, params.originalCardId);
 
 		const { targetSchoolId } = params;
 
 		if (!originalCard.parentId) {
-			throw new UnprocessableEntityException('Card has no parent column');
+			throw new InternalServerErrorException('Card has no parent column');
 		}
 		const parentColumn = params.destinationColumnId
 			? await this.boardNodeService.findByClassAndId(Column, params.destinationColumnId)
