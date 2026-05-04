@@ -115,14 +115,6 @@ describe(BoardUc.name, () => {
 
 	describe('copyColumnBoard', () => {
 		describe('when something goes wrong', () => {
-			it('should throw error when Column has no parent', async () => {
-				const { user, column } = setup();
-				// card.parentId = null;
-				boardNodeService.findByClassAndId.mockResolvedValueOnce(column);
-
-				await expect(uc.copyColumn(user.id, column.id, 'school-id')).rejects.toThrowError('Column has no parent board');
-			});
-
 			it('should throw InternalServerError if copyEntity is not a Column', async () => {
 				const { user, board } = setup();
 				const column = columnFactory.build({ path: board.id });

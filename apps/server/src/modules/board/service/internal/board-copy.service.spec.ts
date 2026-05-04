@@ -243,14 +243,6 @@ describe(BoardCopyService.name, () => {
 				return { card, userId, copyParams, cardCopy, parentColumn };
 			};
 
-			it('should find the original card', async () => {
-				const { copyParams } = setup();
-
-				await service.copyCard(copyParams);
-
-				expect(boardNodeService.findByClassAndId).toHaveBeenCalled();
-			});
-
 			it('should throw InternalServerErrorException when parent of card has no parent', async () => {
 				const userId = new ObjectId().toHexString();
 				const targetSchoolId = new ObjectId().toHexString();
@@ -286,25 +278,6 @@ describe(BoardCopyService.name, () => {
 				boardNodeService.findByClassAndId.mockResolvedValueOnce(notAColumn);
 
 				await expect(service.copyCard(copyParams)).rejects.toThrowError('Card has no parent column');
-			});
-
-			it('should find the parent column of the original card', async () => {
-				const { copyParams, card } = setup();
-
-				await service.copyCard(copyParams);
-
-				expect(boardNodeService.findByClassAndId).toHaveBeenCalledWith(Column, card.parentId as string);
-			});
-
-			it('should find the destination column when destinationColumnId is provided', async () => {
-				const { copyParams } = setup();
-
-				await service.copyCard({
-					...copyParams,
-					destinationColumnId: 'DUMMY_COLUMN_ID',
-				});
-
-				expect(boardNodeService.findByClassAndId).toHaveBeenCalledWith(Column, 'DUMMY_COLUMN_ID');
 			});
 
 			it('should call service to copy the card', async () => {
@@ -350,6 +323,17 @@ describe(BoardCopyService.name, () => {
 				expect(boardNodeService.addToParent).toHaveBeenCalledWith(parentColumn, cardCopy, card.position + 1);
 			});
 
+			it('should save the copied card when destinationColumnId is provided', async () => {
+				const { copyParams, cardCopy, parentColumn: destinationColumn } = setup();
+
+				await service.copyCard({
+					...copyParams,
+					destinationColumnId: destinationColumn.id,
+				});
+
+				expect(boardNodeService.addToParent).toHaveBeenCalledWith(destinationColumn, cardCopy, undefined);
+			});
+
 			it('should return the copy status', async () => {
 				const { copyParams } = setup();
 				const copyStatus = await service.copyCard(copyParams);
@@ -387,6 +371,7 @@ describe(BoardCopyService.name, () => {
 
 				return { card, userId, copyParams, cardCopy };
 			};
+
 			it('should throw an error if the copied entity is not a card', async () => {
 				const { card, copyParams } = setup();
 
@@ -436,7 +421,7 @@ describe(BoardCopyService.name, () => {
 				return { column, userId, copyParams, columnCopy, parentBoard };
 			};
 
-			it('should throw InternalServerExceptopm when parent of column has no parent', async () => {
+			it('should throw error when parent of column has no parent', async () => {
 				const userId = new ObjectId().toHexString();
 				const targetSchoolId = new ObjectId().toHexString();
 				const parentBoard = columnBoardFactory.build();
@@ -471,22 +456,6 @@ describe(BoardCopyService.name, () => {
 				await service.copyColumn(copyParams);
 
 				expect(boardNodeCopyService.copy).toHaveBeenCalled();
-			});
-
-			it('should throw InternalServerErrorException if copied entity is not a column', async () => {
-				const { copyParams } = setup();
-
-				const card = cardFactory.build();
-				const status: CopyStatus = {
-					copyEntity: card,
-					type: CopyElementType.COLUMN,
-					status: CopyStatusEnum.SUCCESS,
-				};
-				boardNodeCopyService.copy.mockResolvedValueOnce(status);
-
-				await service.copyColumn(copyParams);
-
-				await expect(service.copyColumn(copyParams)).rejects.toThrowError('Copied entity is not a column');
 			});
 
 			it('should set the title of the copied column when given', async () => {

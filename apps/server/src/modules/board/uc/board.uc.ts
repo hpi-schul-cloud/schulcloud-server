@@ -151,9 +151,7 @@ export class BoardUc {
 
 	public async copyColumn(userId: EntityId, columnId: EntityId, schoolId: EntityId): Promise<Column> {
 		const column = await this.boardNodeService.findByClassAndId(Column, columnId);
-		if (!column.parentId) {
-			throw new InternalServerErrorException('Column has no parent board');
-		}
+
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(column);
 

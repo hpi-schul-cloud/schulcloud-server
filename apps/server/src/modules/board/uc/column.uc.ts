@@ -97,9 +97,6 @@ export class ColumnUc {
 
 	public async copyCard(userId: EntityId, cardId: EntityId, schoolId: EntityId): Promise<Card> {
 		const card = await this.boardNodeService.findByClassAndId(Card, cardId);
-		if (!card.parentId) {
-			throw new InternalServerErrorException('Card has no parent column');
-		}
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(card);
 
