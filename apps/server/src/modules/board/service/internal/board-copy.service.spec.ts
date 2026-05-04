@@ -473,25 +473,6 @@ describe(BoardCopyService.name, () => {
 				await expect(service.copyColumn(copyParams)).rejects.toThrowError('Column has no parent board');
 			});
 
-			it('should find the parent column-board of the original column', async () => {
-				const { copyParams, column } = setup();
-
-				await service.copyColumn(copyParams);
-
-				expect(boardNodeService.findByClassAndId).toHaveBeenCalledWith(ColumnBoard, column.parentId as string);
-			});
-
-			it('should find the destination column-board when destinationColumnBoardId is provided', async () => {
-				const { copyParams } = setup();
-
-				await service.copyColumn({
-					...copyParams,
-					destinationColumnBoardId: 'DUMMY_BOARD_ID',
-				});
-
-				expect(boardNodeService.findByClassAndId).toHaveBeenCalledWith(ColumnBoard, 'DUMMY_BOARD_ID');
-			});
-
 			it('should call service to copy the column', async () => {
 				const { copyParams } = setup();
 
@@ -533,6 +514,17 @@ describe(BoardCopyService.name, () => {
 				await service.copyColumn(copyParams);
 
 				expect(boardNodeService.addToParent).toHaveBeenCalledWith(parentBoard, columnCopy, column.position + 1);
+			});
+
+			it('should save the column to destination board, when destination id is given', async () => {
+				const { copyParams, columnCopy, parentBoard: destinationBoard } = setup();
+
+				await service.copyColumn({
+					...copyParams,
+					destinationColumnBoardId: destinationBoard.id,
+				});
+
+				expect(boardNodeService.addToParent).toHaveBeenCalledWith(destinationBoard, columnCopy, undefined);
 			});
 
 			it('should return the copy status', async () => {

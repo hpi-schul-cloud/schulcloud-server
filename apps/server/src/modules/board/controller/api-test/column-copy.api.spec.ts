@@ -81,7 +81,6 @@ describe(`column copy (api)`, () => {
 
 			const response = await loggedInClient.post(`${columnNode1.id}/copy`);
 			const copiedColumn = response.body as ColumnFullResponse;
-			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 
 			const result = await em.findOneOrFail(BoardNodeEntity, copiedColumn.id);
 
@@ -93,7 +92,6 @@ describe(`column copy (api)`, () => {
 
 			const response = await loggedInClient.post(`${columnNode1.id}/copy`);
 			const copiedColumn = response.body as ColumnFullResponse;
-			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 
 			const resultCopiedColumn = await em.findOneOrFail(BoardNodeEntity, copiedColumn.id);
 			const resultColumn1 = await em.findOneOrFail(BoardNodeEntity, columnNode1.id);
