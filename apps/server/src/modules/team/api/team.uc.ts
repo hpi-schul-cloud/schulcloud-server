@@ -8,6 +8,7 @@ import { FeatureDisabledLoggableException } from '@shared/common/loggable-except
 import { RoomService } from '@modules/room';
 import { RoomMembershipService } from '@modules/room-membership';
 import { mapTeamColorToRoomColor } from './helper/colormapper';
+import { RoleName } from '@modules/role';
 
 @Injectable()
 export class TeamUc {
@@ -41,7 +42,16 @@ export class TeamUc {
 			features: [],
 		});
 
-		await this.roomMembershipService.createNewRoomMembership(room.id, userId);
+		try {
+			await this.roomMembershipService.createNewRoomMembership(room.id, userId);
+
+			const otherUsers = team.teamUsers.map((teamUser) => teamUser.userId.id).filter((id) => id !== userId);
+
+			await this.roomMembershipService.addMembersToRoom(room.id, otherUsers, RoleName.ROOMVIEWER);
+		} catch (error) {
+			await this.roomService.deleteRoom(room);
+			throw error;
+		}
 
 		return { roomId: room.id };
 	}

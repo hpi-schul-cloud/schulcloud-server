@@ -8,7 +8,7 @@ import {
 import { Course } from '@modules/course';
 import { CourseEntity } from '@modules/course/repo';
 import { User } from '@modules/user/repo';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotImplementedException } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
 
 @Injectable()
@@ -27,28 +27,61 @@ export class CourseRule implements Rule<CourseEntity | Course> {
 	}
 
 	public hasPermission(user: User, object: CourseEntity | Course, context: AuthorizationContext): boolean {
-		const { action, requiredPermissions } = context;
+		let hasPermission = false;
 
-		const hasRequiredPermission = this.authorizationHelper.hasAllPermissions(user, requiredPermissions);
-		const hasAdminPermission = this.authorizationHelper.hasAllPermissions(user, [Permission.COURSE_ADMINISTRATION]);
+		if (context.action === Action.read) {
+			hasPermission = this.hasReadAccess(user, object, context);
+		} else if (context.action === Action.write) {
+			hasPermission = this.hasWriteAccess(user, object, context);
+		} else {
+			throw new NotImplementedException();
+		}
 
-		const hasAccessToEntity = hasAdminPermission
-			? true
-			: this.authorizationHelper.hasAccessToEntity(
-					user,
-					object,
-					this.isReadAction(action)
-						? ['teachers', 'substitutionTeachers', 'students']
-						: ['teachers', 'substitutionTeachers']
-			  );
-
-		return hasAccessToEntity && hasRequiredPermission;
+		return hasPermission;
 	}
 
-	isReadAction(action: Action) {
-		if (action === Action.read) {
-			return true;
-		}
-		return false;
+	private hasReadAccess(user: User, object: CourseEntity | Course, context: AuthorizationContext): boolean {
+		const isUserCourse = this.authorizationHelper.hasAccessToEntity(user, object, [
+			'teachers',
+			'substitutionTeachers',
+			'students',
+		]);
+		// Read permission is missing
+		const hasReadPermission = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
+
+		const hasAdminPermission = this.authorizationHelper.hasAllPermissions(user, [
+			Permission.COURSE_ADMINISTRATION,
+			...context.requiredPermissions,
+		]);
+
+		const hasInstanceReadOperationPermission = this.authorizationHelper.hasAllPermissions(user, [
+			Permission.COURSE_VIEW,
+			Permission.CAN_EXECUTE_INSTANCE_OPERATIONS,
+			...context.requiredPermissions,
+		]);
+
+		return hasInstanceReadOperationPermission || hasAdminPermission || (hasReadPermission && isUserCourse);
+	}
+
+	private hasWriteAccess(user: User, object: CourseEntity | Course, context: AuthorizationContext): boolean {
+		const isTeacherInCourse = this.authorizationHelper.hasAccessToEntity(user, object, [
+			'teachers',
+			'substitutionTeachers',
+		]);
+		// Write permission is missing
+		const hasWritePermission = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
+
+		const hasAdminPermission = this.authorizationHelper.hasAllPermissions(user, [
+			Permission.COURSE_ADMINISTRATION,
+			...context.requiredPermissions,
+		]);
+
+		const hasInstanceWriteOperationPermission = this.authorizationHelper.hasAllPermissions(user, [
+			Permission.COURSE_EDIT,
+			Permission.CAN_EXECUTE_INSTANCE_OPERATIONS,
+			...context.requiredPermissions,
+		]);
+
+		return hasInstanceWriteOperationPermission || hasAdminPermission || (hasWritePermission && isTeacherInCourse);
 	}
 }

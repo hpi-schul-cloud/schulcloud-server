@@ -1,7 +1,14 @@
-import { AuthorizationContext, AuthorizationHelper, AuthorizationInjectionService, Rule } from '@modules/authorization';
+import {
+	Action,
+	AuthorizationContext,
+	AuthorizationHelper,
+	AuthorizationInjectionService,
+	Rule,
+} from '@modules/authorization';
 import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { User } from '@modules/user/repo';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotImplementedException } from '@nestjs/common';
+import { Permission } from '@shared/domain/interface/permission.enum';
 
 @Injectable()
 export class ExternalToolRule implements Rule<ExternalTool> {
@@ -13,14 +20,37 @@ export class ExternalToolRule implements Rule<ExternalTool> {
 	}
 
 	public isApplicable(user: User, object: unknown): boolean {
-		const isMatched: boolean = object instanceof ExternalTool;
+		const isMatched = object instanceof ExternalTool;
 
 		return isMatched;
 	}
 
-	public hasPermission(user: User, object: ExternalTool, context: AuthorizationContext): boolean {
-		const hasPermission: boolean = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
+	public hasPermission(user: User, externalTool: ExternalTool, context: AuthorizationContext): boolean {
+		let hasPermission = false;
+
+		if (context.action === Action.read) {
+			hasPermission = this.hasReadAccess(user, externalTool, context);
+		} else if (context.action === Action.write) {
+			hasPermission = this.hasWriteAccess(user, externalTool, context);
+		} else {
+			throw new NotImplementedException();
+		}
 
 		return hasPermission;
+	}
+
+	private hasReadAccess(user: User, externalTool: ExternalTool, context: AuthorizationContext): boolean {
+		// Permissions are missing here
+		const hasPermission = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
+		const hasInstanceReadOperationPermission = this.authorizationHelper.hasAllPermissions(user, [
+			Permission.CAN_EXECUTE_INSTANCE_OPERATIONS,
+			...context.requiredPermissions,
+		]);
+
+		return hasInstanceReadOperationPermission || hasPermission;
+	}
+
+	private hasWriteAccess(user: User, externalTool: ExternalTool, context: AuthorizationContext): boolean {
+		return this.hasReadAccess(user, externalTool, context);
 	}
 }

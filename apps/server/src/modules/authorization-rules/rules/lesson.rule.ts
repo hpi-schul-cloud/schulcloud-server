@@ -34,11 +34,11 @@ export class LessonRule implements Rule<LessonEntity> {
 		let hasLessonPermission = false;
 
 		if (action === Action.read) {
-			hasLessonPermission = this.lessonReadPermission(user, object);
+			hasLessonPermission = this.hasReadAccess(user, object);
 		} else if (action === Action.write) {
-			hasLessonPermission = this.lessonWritePermission(user, object);
+			hasLessonPermission = this.hasWriteAccess(user, object);
 		} else {
-			throw new NotImplementedException('Action is not supported.');
+			throw new NotImplementedException();
 		}
 
 		const hasUserPermission = this.authorizationHelper.hasAllPermissions(user, requiredPermissions);
@@ -47,7 +47,7 @@ export class LessonRule implements Rule<LessonEntity> {
 		return result;
 	}
 
-	private lessonReadPermission(user: User, entity: LessonEntity): boolean {
+	private hasReadAccess(user: User, entity: LessonEntity): boolean {
 		const isVisible = !entity.hidden;
 		let hasParentReadPermission = false;
 
@@ -60,7 +60,7 @@ export class LessonRule implements Rule<LessonEntity> {
 		return hasParentReadPermission;
 	}
 
-	private lessonWritePermission(user: User, entity: LessonEntity): boolean {
+	private hasWriteAccess(user: User, entity: LessonEntity): boolean {
 		const hasParentWritePermission = this.parentPermission(user, entity, Action.write);
 
 		return hasParentWritePermission;

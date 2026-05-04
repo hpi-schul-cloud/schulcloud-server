@@ -17,6 +17,7 @@ import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.tes
 import { TestApiClient } from '@testing/test-api-client';
 import { RoomContentType } from '../../domain';
 import { roomContentEntityFactory, roomEntityFactory } from '../../testing';
+import { expectIsoDateString } from '@testing/matchers';
 
 describe('Room Controller (API)', () => {
 	let app: INestApplication;
@@ -137,8 +138,8 @@ describe('Room Controller (API)', () => {
 									title: board.title,
 									layout: board.layout,
 									isVisible: board.isVisible,
-									createdAt: board.createdAt.toISOString(),
-									updatedAt: board.updatedAt.toISOString(),
+									createdAt: expectIsoDateString() as string,
+									updatedAt: expectIsoDateString() as string,
 								};
 							})
 						);
@@ -374,8 +375,8 @@ describe('Room Controller (API)', () => {
 					title: board.title,
 					layout: board.layout,
 					isVisible: board.isVisible,
-					createdAt: board.createdAt.toISOString(),
-					updatedAt: expect.any(String),
+					createdAt: expectIsoDateString() as string,
+					updatedAt: expectIsoDateString() as string,
 				});
 			});
 		});
