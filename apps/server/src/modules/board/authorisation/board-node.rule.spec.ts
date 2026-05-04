@@ -753,6 +753,7 @@ describe(BoardNodeRule.name, () => {
 					updateReadersCanEditSetting: false,
 
 					// column
+					copyColumn: true,
 					createColumn: true,
 					deleteColumn: true,
 					moveColumn: true,
@@ -836,6 +837,7 @@ describe(BoardNodeRule.name, () => {
 					updateReadersCanEditSetting: false,
 
 					// column
+					copyColumn: true,
 					createColumn: true,
 					deleteColumn: true,
 					moveColumn: true,
@@ -920,6 +922,7 @@ describe(BoardNodeRule.name, () => {
 					updateReadersCanEditSetting: false,
 
 					// column
+					copyColumn: false,
 					createColumn: false,
 					deleteColumn: false,
 					moveColumn: false,
@@ -1003,6 +1006,7 @@ describe(BoardNodeRule.name, () => {
 					updateReadersCanEditSetting: false,
 
 					// column
+					copyColumn: false,
 					createColumn: false,
 					deleteColumn: false,
 					moveColumn: false,

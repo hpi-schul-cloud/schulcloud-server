@@ -2,6 +2,7 @@ export * from './board.response';
 export * from './board.url.params';
 export * from './card-skeleton.response';
 export * from './column.response';
+export * from './column-full.response';
 export * from './column.url.params';
 export * from './content-element.url.params';
 export * from './create-board.body.params';
