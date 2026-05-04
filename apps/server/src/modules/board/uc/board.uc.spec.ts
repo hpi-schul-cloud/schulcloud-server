@@ -115,7 +115,7 @@ describe(BoardUc.name, () => {
 
 	describe('copyColumnBoard', () => {
 		describe('when something goes wrong', () => {
-			it('should throw UnprocessableEntityException when Column has no parent', async () => {
+			it('should throw error when Column has no parent', async () => {
 				const { user, column } = setup();
 				// card.parentId = null;
 				boardNodeService.findByClassAndId.mockResolvedValueOnce(column);

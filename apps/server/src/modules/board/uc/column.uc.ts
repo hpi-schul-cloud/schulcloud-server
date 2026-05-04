@@ -1,7 +1,7 @@
 import { LegacyLogger } from '@core/logger';
 import { StorageLocation } from '@infra/files-storage-client';
 import { AuthorizationService } from '@modules/authorization';
-import { Injectable, InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { throwForbiddenIfFalse } from '@shared/common/utils';
 import { EntityId } from '@shared/domain/types';
 import { BoardNodeRule } from '../authorisation/board-node.rule';
@@ -74,7 +74,7 @@ export class ColumnUc {
 	): Promise<{ card: Card; fromBoard: ColumnBoard; toBoard: ColumnBoard; fromColumn: Column; toColumn: Column }> {
 		const card = await this.boardNodeService.findByClassAndId(Card, cardId);
 		if (!card.parentId) {
-			throw new UnprocessableEntityException('Card has no parent column');
+			throw new InternalServerErrorException('Card has no parent column');
 		}
 		const fromColumn = await this.boardNodeService.findByClassAndId(Column, card.parentId, 1);
 		const toColumn = await this.boardNodeService.findByClassAndId(Column, toColumnId, 1);
@@ -98,7 +98,7 @@ export class ColumnUc {
 	public async copyCard(userId: EntityId, cardId: EntityId, schoolId: EntityId): Promise<Card> {
 		const card = await this.boardNodeService.findByClassAndId(Card, cardId);
 		if (!card.parentId) {
-			throw new UnprocessableEntityException('Card has no parent column');
+			throw new InternalServerErrorException('Card has no parent column');
 		}
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(card);

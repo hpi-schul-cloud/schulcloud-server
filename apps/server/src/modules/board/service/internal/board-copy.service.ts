@@ -115,7 +115,7 @@ export class BoardCopyService {
 		const copyStatus = await this.boardNodeCopyService.copy(originalColumn, copyContext);
 
 		if (!isColumn(copyStatus.copyEntity)) {
-			throw new InternalServerErrorException('copied entity is not a column');
+			throw new InternalServerErrorException('Copied entity is not a column');
 		}
 
 		if (params.copyTitle) {

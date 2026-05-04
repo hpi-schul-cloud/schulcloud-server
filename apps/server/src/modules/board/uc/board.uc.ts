@@ -6,13 +6,7 @@ import { CopyStatus } from '@modules/copy-helper';
 import { CourseService } from '@modules/course';
 import { RoomService } from '@modules/room';
 import { RoomMembershipService } from '@modules/room-membership';
-import {
-	forwardRef,
-	Inject,
-	Injectable,
-	InternalServerErrorException,
-	UnprocessableEntityException,
-} from '@nestjs/common';
+import { forwardRef, Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 import { throwForbiddenIfFalse } from '@shared/common/utils';
 import { Permission } from '@shared/domain/interface';
@@ -158,7 +152,7 @@ export class BoardUc {
 	public async copyColumn(userId: EntityId, columnId: EntityId, schoolId: EntityId): Promise<Column> {
 		const column = await this.boardNodeService.findByClassAndId(Column, columnId);
 		if (!column.parentId) {
-			throw new UnprocessableEntityException('Column has no parent board');
+			throw new InternalServerErrorException('Column has no parent board');
 		}
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(column);

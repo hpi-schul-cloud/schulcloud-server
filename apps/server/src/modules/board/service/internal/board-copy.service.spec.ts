@@ -473,6 +473,22 @@ describe(BoardCopyService.name, () => {
 				expect(boardNodeCopyService.copy).toHaveBeenCalled();
 			});
 
+			it('should throw InternalServerErrorException if copied entity is not a column', async () => {
+				const { copyParams } = setup();
+
+				const card = cardFactory.build();
+				const status: CopyStatus = {
+					copyEntity: card,
+					type: CopyElementType.COLUMN,
+					status: CopyStatusEnum.SUCCESS,
+				};
+				boardNodeCopyService.copy.mockResolvedValueOnce(status);
+
+				await service.copyColumn(copyParams);
+
+				await expect(service.copyColumn(copyParams)).rejects.toThrowError('Copied entity is not a column');
+			});
+
 			it('should set the title of the copied column when given', async () => {
 				const { copyParams } = setup();
 				const copyTitle = 'Another Column Title';
