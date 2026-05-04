@@ -4,10 +4,14 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Channel, ConsumeMessage } from 'amqplib';
 import { registerAmqpSubscriber } from './amqp-subscriber.helper';
 
-jest.mock('@golevelup/nestjs-rabbitmq', () => ({
-	...jest.requireActual('@golevelup/nestjs-rabbitmq'),
-	defaultNackErrorHandler: jest.fn(),
-}));
+jest.mock('@golevelup/nestjs-rabbitmq', () => {
+	const actualModule = jest.requireActual<typeof import('@golevelup/nestjs-rabbitmq')>('@golevelup/nestjs-rabbitmq');
+
+	return {
+		...actualModule,
+		defaultNackErrorHandler: jest.fn(),
+	};
+});
 
 const mockDefaultNackErrorHandler = jest.mocked(defaultNackErrorHandler);
 
