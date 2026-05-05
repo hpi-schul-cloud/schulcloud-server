@@ -34,7 +34,8 @@ export class SchulconnexLicenseProvisioningConsumer implements OnModuleInit {
 			this.config.exchangeName,
 			SchulconnexProvisioningEvents.LICENSE_PROVISIONING,
 			(payload: SchulconnexLicenseProvisioningMessage) => this.provisionLicenses(payload),
-			SchulconnexLicenseProvisioningConsumer.name
+			SchulconnexLicenseProvisioningConsumer.name,
+			this.logger
 		);
 	}
 

@@ -36,7 +36,8 @@ export class SchulconnexGroupProvisioningConsumer implements OnModuleInit {
 			this.exchangeConfig.exchangeName,
 			SchulconnexProvisioningEvents.GROUP_PROVISIONING,
 			(payload: SchulconnexGroupProvisioningMessage) => this.provisionGroups(payload),
-			SchulconnexGroupProvisioningConsumer.name
+			SchulconnexGroupProvisioningConsumer.name,
+			this.logger
 		);
 	}
 

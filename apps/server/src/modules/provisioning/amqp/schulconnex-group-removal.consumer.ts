@@ -35,7 +35,8 @@ export class SchulconnexGroupRemovalConsumer implements OnModuleInit {
 			this.exchangeConfig.exchangeName,
 			SchulconnexProvisioningEvents.GROUP_REMOVAL,
 			(payload: SchulconnexGroupRemovalMessage) => this.removeUserFromGroup(payload),
-			SchulconnexGroupRemovalConsumer.name
+			SchulconnexGroupRemovalConsumer.name,
+			this.logger
 		);
 	}
 
