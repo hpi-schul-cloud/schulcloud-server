@@ -897,7 +897,7 @@ describe('ErwinProvisioningService', () => {
 				const externalSchool = externalSchoolDtoFactory.build();
 
 				await expect(sut.provisionEntity(ProvisioningEntityType.CLASS, system, { externalSchool })).rejects.toThrow(
-					'No handler registered for entity type: CLASS'
+					BadDataLoggableException
 				);
 			});
 		});
@@ -909,7 +909,7 @@ describe('ErwinProvisioningService', () => {
 
 				await expect(
 					sut.provisionEntity('UNKNOWN' as ProvisioningEntityType, system, { externalSchool })
-				).rejects.toThrow('No handler registered for entity type: UNKNOWN');
+				).rejects.toThrow(BadDataLoggableException);
 			});
 		});
 	});

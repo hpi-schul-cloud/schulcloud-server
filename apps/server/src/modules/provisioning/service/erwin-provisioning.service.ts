@@ -128,7 +128,7 @@ export class ErwinProvisioningService {
 		const handler = this.handlers.get(entityType);
 
 		if (!handler) {
-			throw new Error(`No handler registered for entity type: ${entityType}`);
+			throw new BadDataLoggableException(`No handler registered for entity type: ${entityType}`);
 		}
 
 		return handler;
@@ -185,7 +185,7 @@ export class ErwinProvisioningService {
 		if ('id' in entity && entity.id) {
 			return entity.id;
 		}
-		throw new Error('Entity does not have an id');
+		throw new BadDataLoggableException('Entity does not have an id');
 	}
 
 	private async addErwinIdReference(
