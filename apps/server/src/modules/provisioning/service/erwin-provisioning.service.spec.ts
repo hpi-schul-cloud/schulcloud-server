@@ -489,6 +489,7 @@ describe('ErwinProvisioningService', () => {
 						erwinId: new ObjectId().toHexString(),
 						firstName: 'John',
 						lastName: 'Doe',
+						preferredName: 'Johnny',
 						email: 'john.doe@example.com',
 					});
 					const existingUser = userDoFactory.buildWithId();
@@ -534,7 +535,14 @@ describe('ErwinProvisioningService', () => {
 						externalUser,
 					});
 
-					expect(userServiceMock.save).toHaveBeenCalled();
+					expect(userServiceMock.save).toHaveBeenCalledWith(
+						expect.objectContaining({
+							firstName: externalUser.firstName,
+							lastName: externalUser.lastName,
+							preferredName: externalUser.preferredName,
+							email: externalUser.email,
+						})
+					);
 				});
 			});
 
@@ -696,6 +704,43 @@ describe('ErwinProvisioningService', () => {
 					});
 
 					expect(erwinIdentifierServiceMock.createErwinIdentifier).not.toHaveBeenCalled();
+				});
+			});
+
+			describe('when updated entity has no id', () => {
+				const setup = () => {
+					const system: ProvisioningSystemDto = provisioningSystemDtoFactory.build();
+					const externalSchool: ExternalSchoolDto = externalSchoolDtoFactory.build();
+					const externalUser: ExternalUserDto = externalUserDtoFactory.build({
+						erwinId: new ObjectId().toHexString(),
+					});
+					const existingUser = userDoFactory.buildWithId({
+						externalId: externalUser.externalId,
+					});
+					const updatedUser = userDoFactory.build({
+						id: undefined,
+					});
+
+					const roleDto: RoleDto = {
+						id: new ObjectId().toHexString(),
+						name: RoleName.TEACHER,
+						permissions: [],
+					};
+
+					erwinIdentifierServiceMock.findByErwinId.mockResolvedValueOnce(null);
+					userServiceMock.findByExternalId.mockResolvedValueOnce(existingUser);
+					roleServiceMock.findByNames.mockResolvedValueOnce([roleDto]);
+					userServiceMock.save.mockResolvedValueOnce(updatedUser);
+
+					return { system, externalSchool, externalUser };
+				};
+
+				it('should throw BadDataLoggableException', async () => {
+					const { system, externalSchool, externalUser } = setup();
+
+					await expect(
+						sut.provisionEntity(ProvisioningEntityType.USER, system, { externalSchool, externalUser })
+					).rejects.toThrow(BadDataLoggableException);
 				});
 			});
 
