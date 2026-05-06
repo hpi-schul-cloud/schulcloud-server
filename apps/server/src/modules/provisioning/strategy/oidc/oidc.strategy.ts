@@ -6,7 +6,7 @@ import { ExternalUserDto, OauthDataDto, OauthDataStrategyInputDto, ProvisioningD
 import { ProvisioningStrategy } from '../base.strategy';
 
 @Injectable()
-export class OidcMockProvisioningStrategy extends ProvisioningStrategy {
+export class OidcProvisioningStrategy extends ProvisioningStrategy {
 	getType(): SystemProvisioningStrategy {
 		return SystemProvisioningStrategy.OIDC;
 	}

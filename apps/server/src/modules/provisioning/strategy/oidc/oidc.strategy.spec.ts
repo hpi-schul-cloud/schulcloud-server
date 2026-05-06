@@ -9,20 +9,20 @@ import {
 	ProvisioningDto,
 	ProvisioningSystemDto,
 } from '../../dto';
-import { OidcMockProvisioningStrategy } from './oidc-mock.strategy';
+import { OidcProvisioningStrategy } from './oidc.strategy';
 
 jest.mock('jsonwebtoken');
 
 describe('OidcMockProvisioningStrategy', () => {
 	let module: TestingModule;
-	let strategy: OidcMockProvisioningStrategy;
+	let strategy: OidcProvisioningStrategy;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			providers: [OidcMockProvisioningStrategy],
+			providers: [OidcProvisioningStrategy],
 		}).compile();
 
-		strategy = module.get(OidcMockProvisioningStrategy);
+		strategy = module.get(OidcProvisioningStrategy);
 	});
 
 	afterAll(async () => {

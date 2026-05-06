@@ -30,7 +30,7 @@ import { ErwinProvisioningService } from './service/erwin-provisioning.service';
 import { ProvisioningService } from './service/provisioning.service';
 import { TspProvisioningService } from './service/tsp-provisioning.service';
 import {
-	OidcMockProvisioningStrategy,
+	OidcProvisioningStrategy,
 	SchulconnexAsyncProvisioningStrategy,
 	SchulconnexResponseMapper,
 	TspProvisioningStrategy,
@@ -87,7 +87,7 @@ import {
 		SchulconnexLicenseProvisioningService,
 		SchulconnexToolProvisioningService,
 		SchulconnexAsyncProvisioningStrategy,
-		OidcMockProvisioningStrategy,
+		OidcProvisioningStrategy,
 		TspProvisioningStrategy,
 		TspProvisioningService,
 		ErwinProvisioningStrategy,
