@@ -376,27 +376,9 @@ export class DatabaseManagementUc {
 	}
 
 	private injectEnvVars(json: string): string {
-		// replace ${VAR} with VAR content
-		json = json.replace(/(?<!\\)\$\{(.*?)\}/g, (placeholder) =>
-			this.resolvePlaceholder(placeholder.substring(2, placeholder.length - 1))
-		);
 		// replace \$ with $ (escaped placeholder sequence)
 		json = json.replace(/\\\$/g, '$');
 		return json;
-	}
-
-	private resolvePlaceholder(placeholder: string): string {
-		switch (placeholder) {
-			case 'OIDCMOCK__BASE_URL':
-				return this.config.oidcMockBaseUrl;
-			case 'OIDCMOCK__CLIENT_ID':
-				return this.config.oidcMockClientId;
-			case 'OIDCMOCK__CLIENT_SECRET':
-				return this.config.oidcMockClientSecret;
-			default:
-				this.logger.warn(`Placeholder "${placeholder}" could not be resolved!`);
-				return '';
-		}
 	}
 
 	private encryptSecrets(collectionName: string, jsonDocuments: unknown[]): void {
