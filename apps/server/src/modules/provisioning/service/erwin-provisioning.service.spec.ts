@@ -501,8 +501,15 @@ describe('ErwinProvisioningService', () => {
 						lastName: externalUser.lastName,
 					});
 
+					const roleDto: RoleDto = {
+						id: new ObjectId().toHexString(),
+						name: RoleName.TEACHER,
+						permissions: [],
+					};
+
 					erwinIdentifierServiceMock.findByErwinId.mockResolvedValueOnce(erwinIdentifier);
 					userServiceMock.findByIdOrNull.mockResolvedValueOnce(existingUser);
+					roleServiceMock.findByNames.mockResolvedValueOnce([roleDto]);
 					userServiceMock.save.mockResolvedValueOnce(updatedUser);
 
 					return { system, externalSchool, externalUser, updatedUser };
@@ -606,8 +613,15 @@ describe('ErwinProvisioningService', () => {
 						lastName: externalUser.lastName,
 					});
 
+					const roleDto: RoleDto = {
+						id: new ObjectId().toHexString(),
+						name: RoleName.TEACHER,
+						permissions: [],
+					};
+
 					erwinIdentifierServiceMock.findByErwinId.mockResolvedValueOnce(null);
 					userServiceMock.findByExternalId.mockResolvedValueOnce(existingUser);
+					roleServiceMock.findByNames.mockResolvedValueOnce([roleDto]);
 					userServiceMock.save.mockResolvedValueOnce(updatedUser);
 					erwinIdentifierServiceMock.findByErwinId.mockResolvedValueOnce(null);
 					erwinIdentifierServiceMock.createErwinIdentifier.mockResolvedValueOnce(
@@ -659,8 +673,15 @@ describe('ErwinProvisioningService', () => {
 						firstName: externalUser.firstName,
 					});
 
+					const roleDto: RoleDto = {
+						id: new ObjectId().toHexString(),
+						name: RoleName.TEACHER,
+						permissions: [],
+					};
+
 					erwinIdentifierServiceMock.findByErwinId.mockResolvedValueOnce(null);
 					userServiceMock.findByExternalId.mockResolvedValueOnce(existingUser);
+					roleServiceMock.findByNames.mockResolvedValueOnce([roleDto]);
 					userServiceMock.save.mockResolvedValueOnce(updatedUser);
 
 					return { system, externalSchool, externalUser, updatedUser };
@@ -808,7 +829,7 @@ describe('ErwinProvisioningService', () => {
 					const externalSchool = externalSchoolDtoFactory.build();
 
 					await expect(sut.provisionEntity(ProvisioningEntityType.USER, system, { externalSchool })).rejects.toThrow(
-						'ExternalUserDto and ExternalSchoolDto are required for USER provisioning'
+						'ExternalUserDto is required for USER provisioning'
 					);
 				});
 
@@ -817,7 +838,7 @@ describe('ErwinProvisioningService', () => {
 					const externalUser = externalUserDtoFactory.build();
 
 					await expect(sut.provisionEntity(ProvisioningEntityType.USER, system, { externalUser })).rejects.toThrow(
-						'ExternalUserDto and ExternalSchoolDto are required for USER provisioning'
+						'ExternalSchoolDto is required for USER provisioning'
 					);
 				});
 			});
@@ -876,7 +897,7 @@ describe('ErwinProvisioningService', () => {
 				const externalSchool = externalSchoolDtoFactory.build();
 
 				await expect(sut.provisionEntity(ProvisioningEntityType.CLASS, system, { externalSchool })).rejects.toThrow(
-					'CLASS provisioning not yet implemented'
+					'No handler registered for entity type: CLASS'
 				);
 			});
 		});
@@ -888,7 +909,7 @@ describe('ErwinProvisioningService', () => {
 
 				await expect(
 					sut.provisionEntity('UNKNOWN' as ProvisioningEntityType, system, { externalSchool })
-				).rejects.toThrow('Unknown provisioning entity type: UNKNOWN');
+				).rejects.toThrow('No handler registered for entity type: UNKNOWN');
 			});
 		});
 	});

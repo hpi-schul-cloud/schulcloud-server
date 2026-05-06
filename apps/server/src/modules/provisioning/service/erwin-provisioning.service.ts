@@ -14,12 +14,10 @@ import {
 } from '@modules/school';
 import { UserDo, UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
+import { TypeGuard } from '@shared/common/guards';
 import { RoleReference } from '@shared/domain/domainobject';
 import crypto from 'node:crypto';
-import { TypeGuard } from '@shared/common/guards';
 import { ExternalSchoolDto, ExternalUserDto, ProvisioningSystemDto } from '../dto';
-// TODO: Import ExternalClassDto when implementing CLASS provisioning
-// import { ExternalClassDto } from '../dto';
 import {
 	ExternalIdMissingLoggableException,
 	SchoolMissingLoggableException,
@@ -35,21 +33,32 @@ export enum ProvisioningEntityType {
 
 export type ProvisioningResult = School | UserDo;
 // TODO: Add Class type when implementing CLASS provisioning
-// export type ProvisioningResult = School | UserDo | Class;
 export type ExternalEntityData = ExternalSchoolDto | ExternalUserDto;
 // TODO: Add ExternalClassDto when implementing CLASS provisioning
-// export type ExternalEntityData = ExternalSchoolDto | ExternalUserDto | ExternalClassDto;
 
 interface ProvisioningContext {
 	system: ProvisioningSystemDto;
 	externalSchool?: ExternalSchoolDto;
 	externalUser?: ExternalUserDto;
-	// TODO: Add externalClasses when implementing CLASS provisioning
-	// externalClasses?: ExternalClassDto[];
+	// TODO: Add externalClasses field when implementing CLASS provisioning
+}
+
+interface ProvisioningEntityHandler {
+	validate(context: ProvisioningContext): void;
+	getExternalData(context: ProvisioningContext): ExternalEntityData;
+	getErwinId(context: ProvisioningContext): string | undefined;
+	referencedEntityType: ReferencedEntityType;
+	dtoName: string;
+	findByErwinId(entityId: string): Promise<ProvisioningResult | null>;
+	findByExternalId(context: ProvisioningContext): Promise<ProvisioningResult | null>;
+	create(context: ProvisioningContext): Promise<ProvisioningResult>;
+	update(entity: ProvisioningResult, externalData: ExternalEntityData): Promise<ProvisioningResult>;
 }
 
 @Injectable()
 export class ErwinProvisioningService {
+	private readonly handlers: Map<ProvisioningEntityType, ProvisioningEntityHandler>;
+
 	constructor(
 		private readonly schoolService: SchoolService,
 		private readonly erwinIdentifierService: ErwinIdentifierService,
@@ -57,7 +66,9 @@ export class ErwinProvisioningService {
 		private readonly userService: UserService,
 		private readonly roleService: RoleService,
 		private readonly accountService: AccountService
-	) {}
+	) {
+		this.handlers = this.initHandlers();
+	}
 
 	public async provisionEntity(
 		entityType: ProvisioningEntityType,
@@ -65,284 +76,108 @@ export class ErwinProvisioningService {
 		externalData: { externalSchool?: ExternalSchoolDto; externalUser?: ExternalUserDto }
 	): Promise<ProvisioningResult> {
 		const context: ProvisioningContext = { system, ...externalData };
+		const handler = this.getHandler(entityType);
 
-		switch (entityType) {
-			case ProvisioningEntityType.SCHOOL:
-				if (!externalData.externalSchool) {
-					throw new Error('ExternalSchoolDto is required for SCHOOL provisioning');
-				}
-				return await this.executeProvisioningFlow(entityType, context);
+		handler.validate(context);
 
-			case ProvisioningEntityType.USER:
-				if (!externalData.externalUser || !externalData.externalSchool) {
-					throw new Error('ExternalUserDto and ExternalSchoolDto are required for USER provisioning');
-				}
-				return await this.executeProvisioningFlow(entityType, context);
-
-			case ProvisioningEntityType.CLASS:
-				// TODO: Implement CLASS provisioning
-				// if (!externalData.externalClasses || externalData.externalClasses.length === 0) {
-				// 	throw new Error('ExternalClassDto array is required for CLASS provisioning');
-				// }
-				// return this.executeProvisioningFlow(entityType, context);
-				throw new Error('CLASS provisioning not yet implemented');
-
-			default:
-				throw new Error(`Unknown provisioning entity type: ${entityType as string}`);
-		}
+		return await this.executeProvisioningFlow(handler, context);
 	}
 
 	private async executeProvisioningFlow(
-		entityType: ProvisioningEntityType,
+		handler: ProvisioningEntityHandler,
 		context: ProvisioningContext
 	): Promise<ProvisioningResult> {
-		const externalData = this.getExternalDataForType(entityType, context);
-		const erwinId = this.getErwinIdFromExternalData(entityType, context);
+		const externalData = handler.getExternalData(context);
+		const erwinId = handler.getErwinId(context);
 
-		const entityFoundByErwinId = await this.findEntityByErwinId(entityType, erwinId);
+		if (erwinId) {
+			const erwinIdentifier = await this.erwinIdentifierService.findByErwinId(erwinId);
 
-		if (entityFoundByErwinId) {
-			return this.handleEntityFoundByErwinId(entityType, entityFoundByErwinId, externalData, context);
+			if (erwinIdentifier && erwinIdentifier.type === handler.referencedEntityType) {
+				const entity = await handler.findByErwinId(erwinIdentifier.referencedEntityId);
+
+				if (entity) {
+					return externalData.externalId ? handler.update(entity, externalData) : entity;
+				}
+			}
 		}
 
-		this.validateExternalId(entityType, externalData);
+		TypeGuard.requireKeys(
+			externalData,
+			['externalId'],
+			new ExternalIdMissingLoggableException(handler.dtoName, { erwinId })
+		);
 
-		const entityFoundByExternalId = await this.findEntityByExternalId(entityType, context);
+		const entityByExternalId = await handler.findByExternalId(context);
 
-		if (entityFoundByExternalId) {
-			return this.handleEntityFoundByExternalId(entityType, entityFoundByExternalId, externalData);
+		if (entityByExternalId) {
+			const updated = await handler.update(entityByExternalId, externalData);
+
+			if (erwinId) {
+				await this.addErwinIdReference(handler.referencedEntityType, this.getEntityId(updated), erwinId);
+			}
+
+			return updated;
 		}
 
-		return this.createEntity(entityType, context);
+		return handler.create(context);
 	}
 
-	private getExternalDataForType(entityType: ProvisioningEntityType, context: ProvisioningContext): ExternalEntityData {
-		switch (entityType) {
-			case ProvisioningEntityType.SCHOOL:
-				return context.externalSchool as ExternalSchoolDto;
-			case ProvisioningEntityType.USER:
-				return context.externalUser as ExternalUserDto;
-			// TODO: Add CLASS case when implementing CLASS provisioning
-			// case ProvisioningEntityType.CLASS:
-			// 	return context.externalClasses?.[0] as ExternalClassDto;
-			default:
-				throw new Error(`Unsupported entity type: ${entityType}`);
+	private getHandler(entityType: ProvisioningEntityType): ProvisioningEntityHandler {
+		const handler = this.handlers.get(entityType);
+
+		if (!handler) {
+			throw new Error(`No handler registered for entity type: ${entityType}`);
 		}
+
+		return handler;
 	}
 
-	private getErwinIdFromExternalData(
-		entityType: ProvisioningEntityType,
-		context: ProvisioningContext
-	): string | undefined {
-		switch (entityType) {
-			case ProvisioningEntityType.SCHOOL:
-				return context.externalSchool?.erwinId;
-			case ProvisioningEntityType.USER:
-				return context.externalUser?.erwinId;
-			// TODO: Add CLASS case when implementing CLASS provisioning
-			// case ProvisioningEntityType.CLASS:
-			// 	return context.externalClasses?.[0]?.erwinId;
-			default:
-				return undefined;
-		}
-	}
+	private initHandlers(): Map<ProvisioningEntityType, ProvisioningEntityHandler> {
+		const handlers = new Map<ProvisioningEntityType, ProvisioningEntityHandler>();
 
-	private validateExternalId(entityType: ProvisioningEntityType, externalData: ExternalEntityData): void {
-		let dtoName: string;
-		switch (entityType) {
-			case ProvisioningEntityType.SCHOOL:
-				dtoName = 'ExternalSchoolDto';
-				break;
-			case ProvisioningEntityType.USER:
-				dtoName = 'ExternalUserDto';
-				break;
-			// TODO: Add CLASS case when implementing CLASS provisioning
-			// case ProvisioningEntityType.CLASS:
-			// 	dtoName = 'ExternalClassDto';
-			// 	break;
-			default:
-				dtoName = 'Unknown';
-		}
-		const erwinId = 'erwinId' in externalData ? externalData.erwinId : undefined;
-
-		TypeGuard.requireKeys(externalData, ['externalId'], new ExternalIdMissingLoggableException(dtoName, { erwinId }));
-	}
-
-	private async findEntityByErwinId(
-		entityType: ProvisioningEntityType,
-		erwinId: string | undefined
-	): Promise<ProvisioningResult | null> {
-		if (!erwinId) {
-			return null;
-		}
-
-		const erwinIdentifier = await this.erwinIdentifierService.findByErwinId(erwinId);
-		const expectedType = this.mapEntityTypeToReferencedType(entityType);
-
-		if (!erwinIdentifier || erwinIdentifier.type !== expectedType) {
-			return null;
-		}
-
-		switch (entityType) {
-			case ProvisioningEntityType.SCHOOL:
-				return this.schoolService.getSchoolById(erwinIdentifier.referencedEntityId);
-			case ProvisioningEntityType.USER:
-				return this.userService.findByIdOrNull(erwinIdentifier.referencedEntityId);
-			// TODO: Add CLASS case when implementing CLASS provisioning
-			// case ProvisioningEntityType.CLASS:
-			// 	return this.classService.findById(erwinIdentifier.referencedEntityId);
-			default:
-				return null;
-		}
-	}
-
-	private mapEntityTypeToReferencedType(entityType: ProvisioningEntityType): ReferencedEntityType {
-		switch (entityType) {
-			case ProvisioningEntityType.SCHOOL:
-				return ReferencedEntityType.SCHOOL;
-			case ProvisioningEntityType.USER:
-				return ReferencedEntityType.USER;
-			// TODO: Add CLASS case when implementing CLASS provisioning
-			// case ProvisioningEntityType.CLASS:
-			// 	return ReferencedEntityType.CLASS;
-			default:
-				throw new Error(`Unsupported entity type for reference mapping: ${entityType}`);
-		}
-	}
-
-	private async handleEntityFoundByErwinId(
-		entityType: ProvisioningEntityType,
-		entityFoundByErwinId: ProvisioningResult,
-		externalData: ExternalEntityData,
-		_context: ProvisioningContext
-	): Promise<ProvisioningResult> {
-		if (!externalData.externalId) {
-			return entityFoundByErwinId;
-		}
-
-		return await this.updateEntity(entityType, entityFoundByErwinId, externalData);
-	}
-
-	private async updateEntity(
-		entityType: ProvisioningEntityType,
-		entity: ProvisioningResult,
-		externalData: ExternalEntityData
-	): Promise<ProvisioningResult> {
-		switch (entityType) {
-			case ProvisioningEntityType.SCHOOL:
-				return await this.updateSchoolEntity(entity as School, externalData as ExternalSchoolDto);
-			case ProvisioningEntityType.USER:
-				return await this.updateUserEntity(entity as UserDo, externalData as ExternalUserDto);
-			// TODO: Add CLASS case when implementing CLASS provisioning
-			// case ProvisioningEntityType.CLASS:
-			// 	return this.updateClassEntity(entity as Class, externalData as ExternalClassDto);
-			default:
-				throw new Error(`Update not implemented for entity type: ${entityType}`);
-		}
-	}
-
-	private async updateSchoolEntity(school: School, externalSchool: ExternalSchoolDto): Promise<School> {
-		const externalSchoolName = this.formatSchoolName(externalSchool);
-
-		if (externalSchoolName) {
-			school.name = externalSchoolName;
-		}
-
-		if (externalSchool.officialSchoolNumber && !school.officialSchoolNumber) {
-			school.updateOfficialSchoolNumber(externalSchool.officialSchoolNumber);
-		}
-
-		return await this.schoolService.save(school);
-	}
-
-	private async updateUserEntity(user: UserDo, externalUser: ExternalUserDto): Promise<UserDo> {
-		if (externalUser.firstName) {
-			user.firstName = externalUser.firstName;
-		}
-
-		if (externalUser.lastName) {
-			user.lastName = externalUser.lastName;
-		}
-
-		if (externalUser.email) {
-			user.email = externalUser.email;
-		}
-
-		if (externalUser.birthday) {
-			user.birthday = externalUser.birthday;
-		}
-
-		return await this.userService.save(user);
-	}
-
-	// TODO: Implement updateClassEntity when implementing CLASS provisioning
-	// private async updateClassEntity(classEntity: Class, externalClass: ExternalClassDto): Promise<Class> {
-	// 	if (externalClass.name) {
-	// 		classEntity.name = externalClass.name;
-	// 	}
-	//
-	// 	// Update other class properties as needed
-	//
-	// 	return this.classService.save(classEntity);
-	// }
-
-	private async findEntityByExternalId(
-		entityType: ProvisioningEntityType,
-		context: ProvisioningContext
-	): Promise<ProvisioningResult | null> {
-		switch (entityType) {
-			case ProvisioningEntityType.SCHOOL:
-				return await this.findSchoolByExternalId(context);
-			case ProvisioningEntityType.USER:
-				return await this.findUserByExternalId(context);
-			// TODO: Add CLASS case when implementing CLASS provisioning
-			// case ProvisioningEntityType.CLASS:
-			// 	return this.findClassByExternalId(context);
-			default:
-				return null;
-		}
-	}
-
-	private async findSchoolByExternalId(context: ProvisioningContext): Promise<School | null> {
-		const externalSchool = context.externalSchool as ExternalSchoolDto;
-		const schools = await this.schoolService.getSchools({
-			systemId: context.system.systemId,
-			externalId: externalSchool.externalId,
+		handlers.set(ProvisioningEntityType.SCHOOL, {
+			validate: (ctx: ProvisioningContext): void => {
+				if (!ctx.externalSchool) {
+					throw new Error('ExternalSchoolDto is required for SCHOOL provisioning');
+				}
+			},
+			getExternalData: (ctx: ProvisioningContext): ExternalEntityData => ctx.externalSchool as ExternalSchoolDto,
+			getErwinId: (ctx: ProvisioningContext): string | undefined => ctx.externalSchool?.erwinId,
+			referencedEntityType: ReferencedEntityType.SCHOOL,
+			dtoName: 'ExternalSchoolDto',
+			findByErwinId: (id: string): Promise<ProvisioningResult | null> => this.schoolService.getSchoolById(id),
+			findByExternalId: (ctx: ProvisioningContext): Promise<ProvisioningResult | null> =>
+				this.findSchoolByExternalId(ctx),
+			create: (ctx: ProvisioningContext): Promise<ProvisioningResult> => this.createSchoolEntity(ctx),
+			update: (entity: ProvisioningResult, data: ExternalEntityData): Promise<ProvisioningResult> =>
+				this.updateSchoolEntity(entity as School, data as ExternalSchoolDto),
 		});
 
-		return schools.length > 0 ? schools[0] : null;
-	}
+		handlers.set(ProvisioningEntityType.USER, {
+			validate: (ctx: ProvisioningContext): void => {
+				if (!ctx.externalUser) {
+					throw new Error('ExternalUserDto is required for USER provisioning');
+				}
+				if (!ctx.externalSchool) {
+					throw new Error('ExternalSchoolDto is required for USER provisioning');
+				}
+			},
+			getExternalData: (ctx: ProvisioningContext): ExternalEntityData => ctx.externalUser as ExternalUserDto,
+			getErwinId: (ctx: ProvisioningContext): string | undefined => ctx.externalUser?.erwinId,
+			referencedEntityType: ReferencedEntityType.USER,
+			dtoName: 'ExternalUserDto',
+			findByErwinId: (id: string): Promise<ProvisioningResult | null> => this.userService.findByIdOrNull(id),
+			findByExternalId: (ctx: ProvisioningContext): Promise<ProvisioningResult | null> =>
+				this.findUserByExternalId(ctx),
+			create: (ctx: ProvisioningContext): Promise<ProvisioningResult> => this.createUserEntity(ctx),
+			update: (entity: ProvisioningResult, data: ExternalEntityData): Promise<ProvisioningResult> =>
+				this.updateUserEntity(entity as UserDo, data as ExternalUserDto),
+		});
 
-	private async findUserByExternalId(context: ProvisioningContext): Promise<UserDo | null> {
-		const externalUser = context.externalUser as ExternalUserDto;
+		// TODO: Register CLASS handler when implementing CLASS provisioning
 
-		return await this.userService.findByExternalId(externalUser.externalId, context.system.systemId);
-	}
-
-	// TODO: Implement findClassByExternalId when implementing CLASS provisioning
-	// private async findClassByExternalId(context: ProvisioningContext): Promise<Class | null> {
-	// 	const externalClass = context.externalClasses?.[0] as ExternalClassDto;
-	// 	if (!externalClass) {
-	// 		return null;
-	// 	}
-	//
-	// 	return this.classService.findByExternalId(externalClass.externalId, context.system.systemId);
-	// }
-
-	private async handleEntityFoundByExternalId(
-		entityType: ProvisioningEntityType,
-		entityFoundByExternalId: ProvisioningResult,
-		externalData: ExternalEntityData
-	): Promise<ProvisioningResult> {
-		const updatedEntity = await this.updateEntity(entityType, entityFoundByExternalId, externalData);
-
-		const erwinId = 'erwinId' in externalData ? externalData.erwinId : undefined;
-		if (erwinId) {
-			const entityId = this.getEntityId(updatedEntity);
-			await this.addErwinIdReference(entityType, entityId, erwinId);
-		}
-
-		return updatedEntity;
+		return handlers;
 	}
 
 	private getEntityId(entity: ProvisioningResult): string {
@@ -352,21 +187,34 @@ export class ErwinProvisioningService {
 		throw new Error('Entity does not have an id');
 	}
 
-	private async createEntity(
-		entityType: ProvisioningEntityType,
-		context: ProvisioningContext
-	): Promise<ProvisioningResult> {
-		switch (entityType) {
-			case ProvisioningEntityType.SCHOOL:
-				return await this.createSchoolEntity(context);
-			case ProvisioningEntityType.USER:
-				return await this.createUserEntity(context);
-			// TODO: Add CLASS case when implementing CLASS provisioning
-			// case ProvisioningEntityType.CLASS:
-			// 	return this.createClassEntity(context);
-			default:
-				throw new Error(`Create not implemented for entity type: ${entityType}`);
+	private async addErwinIdReference(
+		referencedType: ReferencedEntityType,
+		entityId: string,
+		erwinId: string
+	): Promise<void> {
+		const existingIdentifier = await this.erwinIdentifierService.findByErwinId(erwinId);
+
+		if (existingIdentifier) {
+			return;
 		}
+
+		await this.erwinIdentifierService.createErwinIdentifier({
+			erwinId,
+			type: referencedType,
+			referencedEntityId: entityId,
+		});
+	}
+
+	// --- School-specific methods ---
+
+	private async findSchoolByExternalId(context: ProvisioningContext): Promise<School | null> {
+		const externalSchool = context.externalSchool as ExternalSchoolDto;
+		const schools = await this.schoolService.getSchools({
+			systemId: context.system.systemId,
+			externalId: externalSchool.externalId,
+		});
+
+		return schools.length > 0 ? schools[0] : null;
 	}
 
 	private async createSchoolEntity(context: ProvisioningContext): Promise<School> {
@@ -403,10 +251,40 @@ export class ErwinProvisioningService {
 		const savedSchool = await this.schoolService.save(school);
 
 		if (externalSchool.erwinId) {
-			await this.addErwinIdReference(ProvisioningEntityType.SCHOOL, savedSchool.id, externalSchool.erwinId);
+			await this.addErwinIdReference(ReferencedEntityType.SCHOOL, savedSchool.id, externalSchool.erwinId);
 		}
 
 		return savedSchool;
+	}
+
+	private async updateSchoolEntity(school: School, externalSchool: ExternalSchoolDto): Promise<School> {
+		const externalSchoolName = this.formatSchoolName(externalSchool);
+
+		if (externalSchoolName) {
+			school.name = externalSchoolName;
+		}
+
+		if (externalSchool.officialSchoolNumber && !school.officialSchoolNumber) {
+			school.updateOfficialSchoolNumber(externalSchool.officialSchoolNumber);
+		}
+
+		return await this.schoolService.save(school);
+	}
+
+	private formatSchoolName(externalSchool: ExternalSchoolDto): string | undefined {
+		if (!externalSchool.name) {
+			return undefined;
+		}
+
+		return externalSchool.location ? `${externalSchool.name} (${externalSchool.location})` : externalSchool.name;
+	}
+
+	// --- User-specific methods ---
+
+	private async findUserByExternalId(context: ProvisioningContext): Promise<UserDo | null> {
+		const externalUser = context.externalUser as ExternalUserDto;
+
+		return await this.userService.findByExternalId(externalUser.externalId, context.system.systemId);
 	}
 
 	private async createUserEntity(context: ProvisioningContext): Promise<UserDo> {
@@ -447,10 +325,41 @@ export class ErwinProvisioningService {
 		} as AccountSave);
 
 		if (externalUser.erwinId) {
-			await this.addErwinIdReference(ProvisioningEntityType.USER, savedUser.id as string, externalUser.erwinId);
+			await this.addErwinIdReference(ReferencedEntityType.USER, savedUser.id as string, externalUser.erwinId);
 		}
 
 		return savedUser;
+	}
+
+	private async updateUserEntity(user: UserDo, externalUser: ExternalUserDto): Promise<UserDo> {
+		if (externalUser.firstName) {
+			user.firstName = externalUser.firstName;
+		}
+
+		if (externalUser.lastName) {
+			user.lastName = externalUser.lastName;
+		}
+
+		if (externalUser.preferredName) {
+			user.preferredName = externalUser.preferredName;
+		}
+
+		if (externalUser.email) {
+			user.email = externalUser.email;
+		}
+
+		if (externalUser.birthday) {
+			user.birthday = externalUser.birthday;
+		}
+
+		if (externalUser.roles?.length) {
+			const roleRefs = await this.createRoleReferences(externalUser.roles);
+			if (roleRefs?.length) {
+				user.roles = roleRefs;
+			}
+		}
+
+		return await this.userService.save(user);
 	}
 
 	private async createRoleReferences(roles?: RoleName[]): Promise<RoleReference[] | undefined> {
@@ -466,61 +375,5 @@ export class ErwinProvisioningService {
 		return undefined;
 	}
 
-	// TODO: Implement createClassEntity when implementing CLASS provisioning
-	// private async createClassEntity(context: ProvisioningContext): Promise<Class> {
-	// 	const externalClass = context.externalClasses?.[0] as ExternalClassDto;
-	// 	if (!externalClass) {
-	// 		throw new Error('ExternalClassDto is required for class creation');
-	// 	}
-	//
-	// 	// Find the school to link the class to
-	// 	const school = await this.findSchoolByExternalId(context);
-	// 	if (!school) {
-	// 		throw new Error('School not found for class creation');
-	// 	}
-	//
-	// 	const classEntity = new Class({
-	// 		id: new ObjectId().toHexString(),
-	// 		externalId: externalClass.externalId,
-	// 		name: externalClass.name,
-	// 		schoolId: school.id,
-	// 		// ... other class properties
-	// 	});
-	//
-	// 	const savedClass = await this.classService.save(classEntity);
-	//
-	// 	if (externalClass.erwinId) {
-	// 		await this.addErwinIdReference(ProvisioningEntityType.CLASS, savedClass.id, externalClass.erwinId);
-	// 	}
-	//
-	// 	return savedClass;
-	// }
-
-	private async addErwinIdReference(
-		entityType: ProvisioningEntityType,
-		entityId: string,
-		erwinId: string
-	): Promise<void> {
-		const existingIdentifier = await this.erwinIdentifierService.findByErwinId(erwinId);
-
-		if (existingIdentifier) {
-			return;
-		}
-
-		const referencedType = this.mapEntityTypeToReferencedType(entityType);
-
-		await this.erwinIdentifierService.createErwinIdentifier({
-			erwinId,
-			type: referencedType,
-			referencedEntityId: entityId,
-		});
-	}
-
-	private formatSchoolName(externalSchool: ExternalSchoolDto): string | undefined {
-		if (!externalSchool.name) {
-			return undefined;
-		}
-
-		return externalSchool.location ? `${externalSchool.name} (${externalSchool.location})` : externalSchool.name;
-	}
+	// TODO: Add Class-specific methods (findClassByExternalId, createClassEntity, updateClassEntity) when implementing CLASS provisioning
 }
