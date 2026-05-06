@@ -404,7 +404,7 @@ describe('DatabaseManagementService', () => {
 			expect(collections).toEqual([
 				'collectionName1:3',
 				'collectionName2:1',
-				'systems:4',
+				'systems:3',
 				'storageproviders:1',
 				'media-sources:1',
 				'external-tools:1',
