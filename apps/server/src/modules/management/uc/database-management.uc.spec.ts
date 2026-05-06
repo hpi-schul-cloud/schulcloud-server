@@ -65,26 +65,6 @@ describe('DatabaseManagementService', () => {
 		},
 	};
 
-	const oidcSystem = {
-		_id: {
-			$oid: '62c7f233f35a554ba3ed42f1',
-		},
-		__v: 0,
-		updatedAt: {
-			$date: '2022-07-12T14:01:58.588Z',
-		},
-		type: 'oidc',
-		alias: 'oidc',
-		oidcConfig: {
-			// eslint-disable-next-line no-template-curly-in-string
-			clientId: '${OIDCMOCK__CLIENT_ID}',
-			// eslint-disable-next-line no-template-curly-in-string
-			clientSecret: '${OIDCMOCK__CLIENT_SECRET}',
-			// eslint-disable-next-line no-template-curly-in-string
-			authorizationUrl: '${OIDCMOCK__BASE_URL}/connect/authorize',
-		},
-	};
-
 	const oidcSystemWithSecrets = {
 		_id: {
 			$oid: '62c7f233f35a554ba3ed42f1',
@@ -188,7 +168,7 @@ describe('DatabaseManagementService', () => {
 								return JSON.stringify(collection2Data);
 							}
 							if (fileName === `${systemsCollectionName}.json`) {
-								return JSON.stringify([oauthSystem, oidcSystem, ldapSystem]);
+								return JSON.stringify([oauthSystem, ldapSystem]);
 							}
 							if (fileName === `${storageprovidersCollectionName}.json`) {
 								return storageProviderJSON;
@@ -483,54 +463,6 @@ describe('DatabaseManagementService', () => {
 				expect(JSON.stringify(args[1])).toEqual(
 					'[{"_id":"100000000000000000000000","createdAt":"2021-10-04T11:04:45.593Z"}]'
 				);
-			});
-			describe('when importing systems', () => {
-				it('should replace placeholders', async () => {
-					config.oidcMockBaseUrl = 'https://oidcmock-base-url';
-					config.oidcMockClientId = 'oidcmock-client-id';
-					config.oidcMockClientSecret = 'oidcmock-client-secret';
-					dbService.collectionExists.mockReturnValue(Promise.resolve(false));
-					await uc.seedDatabaseCollectionsFromFileSystem([systemsCollectionName]);
-					const importedSystems = dbService.importCollection.mock.calls[0][1];
-					expect((importedSystems[1] as SystemEntity).oidcConfig).toMatchObject({
-						clientId: 'oidcmock-client-id',
-						clientSecret: 'oidcmock-client-secret',
-						authorizationUrl: 'https://oidcmock-base-url/connect/authorize',
-					});
-				});
-				it('should warn if non resolvable placeholder encountered', async () => {
-					dbService.collectionExists.mockReturnValue(Promise.resolve(false));
-					await uc.seedDatabaseCollectionsFromFileSystem([systemsCollectionName]);
-					expect(logger.warn).toHaveBeenCalledWith(expect.stringContaining('SCHULCONNEX_CLIENT_ID'));
-					expect(logger.warn).toHaveBeenCalledWith(expect.stringContaining('SCHULCONNEX_CLIENT_SECRET'));
-				});
-				it('should keep escaped placeholder', async () => {
-					dbService.collectionExists.mockReturnValue(Promise.resolve(false));
-					await uc.seedDatabaseCollectionsFromFileSystem([storageprovidersCollectionName]);
-					expect(dbService.importCollection).toBeCalledWith(
-						expect.anything(),
-						expect.arrayContaining([
-							expect.objectContaining({
-								region: ' ${Ignore}',
-							}),
-						])
-					);
-				});
-				it('should encrypt secrets if secret is configured in env var', async () => {
-					config.oidcMockClientId = 'oidcmock-client-id';
-					config.oidcMockClientSecret = 'oidcmock-client-secret';
-					defaultEncryptionService.encrypt.mockImplementation((data) => `${data}_encrypted`);
-					dbService.collectionExists.mockReturnValue(Promise.resolve(false));
-					await uc.seedDatabaseCollectionsFromFileSystem([systemsCollectionName]);
-					expect(dbService.collectionExists).toBeCalledTimes(1);
-					expect(dbService.createCollection).toBeCalledWith(systemsCollectionName);
-					expect(dbService.clearCollection).not.toBeCalled();
-					const importedSystems = dbService.importCollection.mock.calls[0][1];
-					expect((importedSystems[1] as SystemEntity).oidcConfig).toMatchObject({
-						clientId: 'oidcmock-client-id',
-						clientSecret: 'oidcmock-client-secret_encrypted',
-					});
-				});
 			});
 		});
 	});

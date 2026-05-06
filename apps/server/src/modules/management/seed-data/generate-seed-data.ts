@@ -22,7 +22,6 @@ export function generateSeedData(
 
 	collections = [
 		{ collectionName: 'federalstates', data: federalStates },
-		{ collectionName: 'systems', data: systems },
 		{ collectionName: 'years', data: years },
 		{ collectionName: 'schools', data: schools },
 

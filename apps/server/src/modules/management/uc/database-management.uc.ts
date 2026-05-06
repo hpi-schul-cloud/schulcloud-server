@@ -387,12 +387,6 @@ export class DatabaseManagementUc {
 
 	private resolvePlaceholder(placeholder: string): string {
 		switch (placeholder) {
-			case 'OIDCMOCK__BASE_URL':
-				return this.config.oidcMockBaseUrl;
-			case 'OIDCMOCK__CLIENT_ID':
-				return this.config.oidcMockClientId;
-			case 'OIDCMOCK__CLIENT_SECRET':
-				return this.config.oidcMockClientSecret;
 			default:
 				this.logger.warn(`Placeholder "${placeholder}" could not be resolved!`);
 				return '';
