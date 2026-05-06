@@ -11,7 +11,13 @@ import {
 } from '../domain';
 import { BoardNodeRepo } from '../repo';
 import { BoardNodeService } from './board-node.service';
-import { BoardCopyService, ColumnBoardLinkService, CopyColumnBoardParams, CopyCardParams } from './internal';
+import {
+	BoardCopyService,
+	ColumnBoardLinkService,
+	CopyColumnBoardParams,
+	CopyCardParams,
+	CopyColumnParams,
+} from './internal';
 
 @Injectable()
 export class ColumnBoardService {
@@ -76,6 +82,12 @@ export class ColumnBoardService {
 
 	public async copyCard(params: CopyCardParams): Promise<CopyStatus> {
 		const copyStatus = await this.boardCopyService.copyCard(params);
+
+		return copyStatus;
+	}
+
+	public async copyColumn(params: CopyColumnParams): Promise<CopyStatus> {
+		const copyStatus = await this.boardCopyService.copyColumn(params);
 
 		return copyStatus;
 	}

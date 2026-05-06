@@ -1,4 +1,5 @@
 export { CopyCardMessageParams } from './copy-card.message.param';
+export { CopyColumnMessageParams } from './copy-column.message.param';
 export { CreateCardMessageParams } from './create-card.message.param';
 export { CreateColumnMessageParams } from './create-column.message.param';
 export { CreateContentElementMessageParams } from './create-content-element.message.param';
