@@ -29,7 +29,12 @@ import { PROVISIONING_CONFIG_TOKEN, ProvisioningConfig } from './provisioning.co
 import { ErwinProvisioningService } from './service/erwin-provisioning.service';
 import { ProvisioningService } from './service/provisioning.service';
 import { TspProvisioningService } from './service/tsp-provisioning.service';
-import { SchulconnexAsyncProvisioningStrategy, SchulconnexResponseMapper, TspProvisioningStrategy } from './strategy';
+import {
+	OidcProvisioningStrategy,
+	SchulconnexAsyncProvisioningStrategy,
+	SchulconnexResponseMapper,
+	TspProvisioningStrategy,
+} from './strategy';
 import { ErwinProvisioningStrategy } from './strategy/erwin';
 import {
 	SchulconnexCourseSyncService,
@@ -82,6 +87,7 @@ import {
 		SchulconnexLicenseProvisioningService,
 		SchulconnexToolProvisioningService,
 		SchulconnexAsyncProvisioningStrategy,
+		OidcProvisioningStrategy,
 		TspProvisioningStrategy,
 		TspProvisioningService,
 		ErwinProvisioningStrategy,

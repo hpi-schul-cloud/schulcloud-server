@@ -6,7 +6,7 @@ import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { OauthDataDto, OauthDataStrategyInputDto, ProvisioningDto, ProvisioningSystemDto } from '../dto';
-import { SchulconnexAsyncProvisioningStrategy, TspProvisioningStrategy } from '../strategy';
+import { OidcProvisioningStrategy, SchulconnexAsyncProvisioningStrategy, TspProvisioningStrategy } from '../strategy';
 import { ErwinProvisioningStrategy } from '../strategy/erwin';
 import { provisioningSystemDtoFactory } from '../testing';
 import { ProvisioningService } from './provisioning.service';
@@ -31,6 +31,14 @@ describe(ProvisioningService.name, () => {
 					useValue: createMock<SchulconnexAsyncProvisioningStrategy>({
 						getType(): SystemProvisioningStrategy {
 							return SystemProvisioningStrategy.SCHULCONNEX_ASYNC;
+						},
+					}),
+				},
+				{
+					provide: OidcProvisioningStrategy,
+					useValue: createMock<OidcProvisioningStrategy>({
+						getType(): SystemProvisioningStrategy {
+							return SystemProvisioningStrategy.OIDC;
 						},
 					}),
 				},
