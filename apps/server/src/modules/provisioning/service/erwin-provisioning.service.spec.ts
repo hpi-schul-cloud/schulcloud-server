@@ -15,7 +15,7 @@ import { UserService } from '@modules/user';
 import { userDoFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ExternalSchoolDto, ExternalUserDto, ProvisioningSystemDto } from '../dto';
-import { SchoolNameRequiredLoggableException } from '../loggable';
+import { BadDataLoggableException, SchoolNameRequiredLoggableException } from '../loggable';
 import { ExternalIdMissingLoggableException } from '../loggable/external-id-missing.loggable-exception';
 import { externalSchoolDtoFactory, externalUserDtoFactory, provisioningSystemDtoFactory } from '../testing';
 import { ErwinProvisioningService, ProvisioningEntityType } from './erwin-provisioning.service';
@@ -474,7 +474,7 @@ describe('ErwinProvisioningService', () => {
 					const system = provisioningSystemDtoFactory.build();
 
 					await expect(sut.provisionEntity(ProvisioningEntityType.SCHOOL, system, {})).rejects.toThrow(
-						'ExternalSchoolDto is required for SCHOOL provisioning'
+						BadDataLoggableException
 					);
 				});
 			});
@@ -829,7 +829,7 @@ describe('ErwinProvisioningService', () => {
 					const externalSchool = externalSchoolDtoFactory.build();
 
 					await expect(sut.provisionEntity(ProvisioningEntityType.USER, system, { externalSchool })).rejects.toThrow(
-						'ExternalUserDto is required for USER provisioning'
+						BadDataLoggableException
 					);
 				});
 
@@ -838,7 +838,7 @@ describe('ErwinProvisioningService', () => {
 					const externalUser = externalUserDtoFactory.build();
 
 					await expect(sut.provisionEntity(ProvisioningEntityType.USER, system, { externalUser })).rejects.toThrow(
-						'ExternalSchoolDto is required for USER provisioning'
+						BadDataLoggableException
 					);
 				});
 			});

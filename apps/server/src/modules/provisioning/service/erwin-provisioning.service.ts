@@ -19,6 +19,7 @@ import { RoleReference } from '@shared/domain/domainobject';
 import crypto from 'node:crypto';
 import { ExternalSchoolDto, ExternalUserDto, ProvisioningSystemDto } from '../dto';
 import {
+	BadDataLoggableException,
 	ExternalIdMissingLoggableException,
 	SchoolMissingLoggableException,
 	SchoolNameRequiredLoggableException,
@@ -32,15 +33,15 @@ export enum ProvisioningEntityType {
 }
 
 export type ProvisioningResult = School | UserDo;
-// TODO: Add Class type when implementing CLASS provisioning
+// TODO: Add Class type when implementing class provisioning
 export type ExternalEntityData = ExternalSchoolDto | ExternalUserDto;
-// TODO: Add ExternalClassDto when implementing CLASS provisioning
+// TODO: Add ExternalClassDto when implementing class provisioning
 
 interface ProvisioningContext {
 	system: ProvisioningSystemDto;
 	externalSchool?: ExternalSchoolDto;
 	externalUser?: ExternalUserDto;
-	// TODO: Add externalClasses field when implementing CLASS provisioning
+	// TODO: Add externalClasses field when implementing class provisioning
 }
 
 interface ProvisioningEntityHandler {
@@ -139,7 +140,7 @@ export class ErwinProvisioningService {
 		handlers.set(ProvisioningEntityType.SCHOOL, {
 			validate: (ctx: ProvisioningContext): void => {
 				if (!ctx.externalSchool) {
-					throw new Error('ExternalSchoolDto is required for SCHOOL provisioning');
+					throw new BadDataLoggableException('ExternalSchoolDto is required for SCHOOL provisioning');
 				}
 			},
 			getExternalData: (ctx: ProvisioningContext): ExternalEntityData => ctx.externalSchool as ExternalSchoolDto,
@@ -157,10 +158,10 @@ export class ErwinProvisioningService {
 		handlers.set(ProvisioningEntityType.USER, {
 			validate: (ctx: ProvisioningContext): void => {
 				if (!ctx.externalUser) {
-					throw new Error('ExternalUserDto is required for USER provisioning');
+					throw new BadDataLoggableException('ExternalUserDto is required for USER provisioning');
 				}
 				if (!ctx.externalSchool) {
-					throw new Error('ExternalSchoolDto is required for USER provisioning');
+					throw new BadDataLoggableException('ExternalSchoolDto is required for USER provisioning');
 				}
 			},
 			getExternalData: (ctx: ProvisioningContext): ExternalEntityData => ctx.externalUser as ExternalUserDto,
@@ -175,7 +176,7 @@ export class ErwinProvisioningService {
 				this.updateUserEntity(entity as UserDo, data as ExternalUserDto),
 		});
 
-		// TODO: Register CLASS handler when implementing CLASS provisioning
+		// TODO: Register class handler when implementing class provisioning
 
 		return handlers;
 	}
@@ -375,5 +376,5 @@ export class ErwinProvisioningService {
 		return undefined;
 	}
 
-	// TODO: Add Class-specific methods (findClassByExternalId, createClassEntity, updateClassEntity) when implementing CLASS provisioning
+	// TODO: Add Class-specific methods (findClassByExternalId, createClassEntity, updateClassEntity) when implementing Class provisioning
 }
