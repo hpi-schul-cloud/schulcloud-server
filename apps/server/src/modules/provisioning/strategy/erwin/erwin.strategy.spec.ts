@@ -570,11 +570,10 @@ describe('ErwinProvisioningStrategy', () => {
 
 				await sut.apply(oauthData);
 
-				expect(erwinProvisioningServiceMock.provisionEntity).toHaveBeenCalledWith(
-					ProvisioningEntityType.USER,
-					system,
-					{ externalSchool, externalUser }
-				);
+				expect(erwinProvisioningServiceMock.provisionEntity).toHaveBeenCalledWith(ProvisioningEntityType.USER, system, {
+					externalSchool,
+					externalUser,
+				});
 			});
 		});
 
