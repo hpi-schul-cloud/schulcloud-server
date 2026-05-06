@@ -94,7 +94,7 @@ export class ErwinProvisioningService {
 		if (erwinId) {
 			const erwinIdentifier = await this.erwinIdentifierService.findByErwinId(erwinId);
 
-			if (erwinIdentifier && erwinIdentifier.type === handler.referencedEntityType) {
+			if (erwinIdentifier?.type === handler.referencedEntityType) {
 				const entity = await handler.findByErwinId(erwinIdentifier.referencedEntityId);
 
 				if (entity) {
