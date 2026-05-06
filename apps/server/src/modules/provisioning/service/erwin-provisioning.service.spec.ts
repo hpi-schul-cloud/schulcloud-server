@@ -814,6 +814,60 @@ describe('ErwinProvisioningService', () => {
 				});
 			});
 
+			describe('when creating user without optional fields', () => {
+				const setup = () => {
+					const system: ProvisioningSystemDto = provisioningSystemDtoFactory.build();
+					const school = schoolFactory.build();
+					const externalSchool: ExternalSchoolDto = externalSchoolDtoFactory.build({
+						externalId: school.externalId,
+					});
+					const externalUser: ExternalUserDto = new ExternalUserDto({
+						externalId: new ObjectId().toHexString(),
+						erwinId: new ObjectId().toHexString(),
+						roles: [RoleName.STUDENT],
+						firstName: undefined,
+						lastName: undefined,
+						email: undefined,
+					});
+					const savedUser = userDoFactory.buildWithId({
+						firstName: '',
+						lastName: '',
+						email: '',
+						schoolId: school.id,
+					});
+					const roleDto: RoleDto = {
+						id: new ObjectId().toHexString(),
+						name: RoleName.STUDENT,
+						permissions: [],
+					};
+
+					erwinIdentifierServiceMock.findByErwinId.mockResolvedValueOnce(null);
+					userServiceMock.findByExternalId.mockResolvedValueOnce(null);
+					schoolServiceMock.getSchools.mockResolvedValueOnce([school]);
+					roleServiceMock.findByNames.mockResolvedValueOnce([roleDto]);
+					userServiceMock.save.mockResolvedValueOnce(savedUser);
+
+					return { system, externalSchool, externalUser, savedUser };
+				};
+
+				it('should create user with empty strings as defaults', async () => {
+					const { system, externalSchool, externalUser } = setup();
+
+					await sut.provisionEntity(ProvisioningEntityType.USER, system, {
+						externalSchool,
+						externalUser,
+					});
+
+					expect(userServiceMock.save).toHaveBeenCalledWith(
+						expect.objectContaining({
+							firstName: '',
+							lastName: '',
+							email: '',
+						})
+					);
+				});
+			});
+
 			describe('when creating user without school found', () => {
 				const setup = () => {
 					const system: ProvisioningSystemDto = provisioningSystemDtoFactory.build();
