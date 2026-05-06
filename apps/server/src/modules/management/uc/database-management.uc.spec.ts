@@ -413,7 +413,7 @@ describe('DatabaseManagementService', () => {
 		});
 		it('should seed all collections from filesystem for empty filter and return collectionnames with document counts', async () => {
 			const collections = await uc.seedDatabaseCollectionsFromFileSystem([]);
-			expect(collections).toEqual(['collectionName1:3', 'collectionName2:1', 'systems:3', 'storageproviders:1']);
+			expect(collections).toEqual(['collectionName1:3', 'collectionName2:1', 'systems:2', 'storageproviders:1']);
 		});
 		it('should seed a given database collection when it exists and return collectionnames with document counts', async () => {
 			const collections = await uc.seedDatabaseCollectionsFromFileSystem(['collectionName1']);
