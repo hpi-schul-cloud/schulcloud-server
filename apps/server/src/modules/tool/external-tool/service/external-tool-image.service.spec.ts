@@ -146,16 +146,11 @@ describe(ExternalToolImageService.name, () => {
 		};
 
 		it('should call file api', async () => {
-			const { fileRecordId, instance } = setup();
+			const { fileRecordId } = setup();
 
 			await service.deleteAllFiles(fileRecordId);
 
-			expect(fileApi.deleteByParent).toHaveBeenCalledWith(
-				instance.id,
-				StorageLocation.INSTANCE,
-				fileRecordId,
-				FileRecordParentType.EXTERNALTOOLS
-			);
+			expect(fileApi.deleteByParent).toHaveBeenCalledWith(fileRecordId, FileRecordParentType.EXTERNALTOOLS);
 		});
 	});
 });

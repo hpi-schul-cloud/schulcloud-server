@@ -41,13 +41,6 @@ export class ExternalToolImageService {
 	}
 
 	public async deleteAllFiles(externalToolId: EntityId): Promise<void> {
-		const instance: Instance = await this.instanceService.getInstance();
-
-		await this.fileApi.deleteByParent(
-			instance.id,
-			StorageLocation.INSTANCE,
-			externalToolId,
-			FileRecordParentType.EXTERNALTOOLS
-		);
+		await this.fileApi.deleteByParent(externalToolId, FileRecordParentType.EXTERNALTOOLS);
 	}
 }

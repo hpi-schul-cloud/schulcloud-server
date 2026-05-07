@@ -42,25 +42,17 @@ export const FileApiAxiosParamCreator = function (configuration?: Configuration)
         /**
          * 
          * @summary Mark all files of a parent entityId for deletion. The files are permanently deleted after a certain time.
-         * @param {string} storageLocationId 
-         * @param {StorageLocation} storageLocation 
          * @param {string} parentId 
          * @param {FileRecordParentType} parentType 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deleteByParent: async (storageLocationId: string, storageLocation: StorageLocation, parentId: string, parentType: FileRecordParentType, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            // verify required parameter 'storageLocationId' is not null or undefined
-            assertParamExists('deleteByParent', 'storageLocationId', storageLocationId)
-            // verify required parameter 'storageLocation' is not null or undefined
-            assertParamExists('deleteByParent', 'storageLocation', storageLocation)
+        deleteByParent: async (parentId: string, parentType: FileRecordParentType, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'parentId' is not null or undefined
             assertParamExists('deleteByParent', 'parentId', parentId)
             // verify required parameter 'parentType' is not null or undefined
             assertParamExists('deleteByParent', 'parentType', parentType)
-            const localVarPath = `/file/delete/{storageLocation}/{storageLocationId}/{parentType}/{parentId}`
-                .replace(`{${"storageLocationId"}}`, encodeURIComponent(String(storageLocationId)))
-                .replace(`{${"storageLocation"}}`, encodeURIComponent(String(storageLocation)))
+            const localVarPath = `/file/delete/{parentType}/{parentId}`
                 .replace(`{${"parentId"}}`, encodeURIComponent(String(parentId)))
                 .replace(`{${"parentType"}}`, encodeURIComponent(String(parentType)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
@@ -342,15 +334,13 @@ export const FileApiFp = function(configuration?: Configuration) {
         /**
          * 
          * @summary Mark all files of a parent entityId for deletion. The files are permanently deleted after a certain time.
-         * @param {string} storageLocationId 
-         * @param {StorageLocation} storageLocation 
          * @param {string} parentId 
          * @param {FileRecordParentType} parentType 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async deleteByParent(storageLocationId: string, storageLocation: StorageLocation, parentId: string, parentType: FileRecordParentType, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FileRecordListResponse>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.deleteByParent(storageLocationId, storageLocation, parentId, parentType, options);
+        async deleteByParent(parentId: string, parentType: FileRecordParentType, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<FileRecordListResponse>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.deleteByParent(parentId, parentType, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['FileApi.deleteByParent']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
@@ -443,15 +433,13 @@ export const FileApiFactory = function (configuration?: Configuration, basePath?
         /**
          * 
          * @summary Mark all files of a parent entityId for deletion. The files are permanently deleted after a certain time.
-         * @param {string} storageLocationId 
-         * @param {StorageLocation} storageLocation 
          * @param {string} parentId 
          * @param {FileRecordParentType} parentType 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deleteByParent(storageLocationId: string, storageLocation: StorageLocation, parentId: string, parentType: FileRecordParentType, options?: any): AxiosPromise<FileRecordListResponse> {
-            return localVarFp.deleteByParent(storageLocationId, storageLocation, parentId, parentType, options).then((request) => request(axios, basePath));
+        deleteByParent(parentId: string, parentType: FileRecordParentType, options?: any): AxiosPromise<FileRecordListResponse> {
+            return localVarFp.deleteByParent(parentId, parentType, options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -525,15 +513,13 @@ export interface FileApiInterface {
     /**
      * 
      * @summary Mark all files of a parent entityId for deletion. The files are permanently deleted after a certain time.
-     * @param {string} storageLocationId 
-     * @param {StorageLocation} storageLocation 
      * @param {string} parentId 
      * @param {FileRecordParentType} parentType 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof FileApiInterface
      */
-    deleteByParent(storageLocationId: string, storageLocation: StorageLocation, parentId: string, parentType: FileRecordParentType, options?: RawAxiosRequestConfig): AxiosPromise<FileRecordListResponse>;
+    deleteByParent(parentId: string, parentType: FileRecordParentType, options?: RawAxiosRequestConfig): AxiosPromise<FileRecordListResponse>;
 
     /**
      * 
@@ -607,16 +593,14 @@ export class FileApi extends BaseAPI implements FileApiInterface {
     /**
      * 
      * @summary Mark all files of a parent entityId for deletion. The files are permanently deleted after a certain time.
-     * @param {string} storageLocationId 
-     * @param {StorageLocation} storageLocation 
      * @param {string} parentId 
      * @param {FileRecordParentType} parentType 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof FileApi
      */
-    public deleteByParent(storageLocationId: string, storageLocation: StorageLocation, parentId: string, parentType: FileRecordParentType, options?: RawAxiosRequestConfig) {
-        return FileApiFp(this.configuration).deleteByParent(storageLocationId, storageLocation, parentId, parentType, options).then((request) => request(this.axios, this.basePath));
+    public deleteByParent(parentId: string, parentType: FileRecordParentType, options?: RawAxiosRequestConfig) {
+        return FileApiFp(this.configuration).deleteByParent(parentId, parentType, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
