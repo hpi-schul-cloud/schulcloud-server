@@ -10,7 +10,10 @@ import { AbstractUrlHandler } from './abstract-url-handler';
 export class BoardUrlHandler extends AbstractUrlHandler implements UrlHandler {
 	protected override patterns: RegExp[] = [/^\/boards\/([0-9a-f]{24})$/i];
 
-	constructor(private readonly boardNodeService: BoardNodeService, private readonly courseService: CourseDoService) {
+	constructor(
+		private readonly boardNodeService: BoardNodeService,
+		private readonly courseService: CourseDoService
+	) {
 		super();
 	}
 

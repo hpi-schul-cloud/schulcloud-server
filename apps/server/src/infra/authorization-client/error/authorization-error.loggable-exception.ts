@@ -4,7 +4,10 @@ import { ForbiddenException } from '@nestjs/common';
 import { AuthorizationBodyParams } from '../authorization-api-client';
 
 export class AuthorizationErrorLoggableException extends ForbiddenException implements Loggable {
-	constructor(private readonly error: unknown, private readonly params: AuthorizationBodyParams) {
+	constructor(
+		private readonly error: unknown,
+		private readonly params: AuthorizationBodyParams
+	) {
 		super();
 	}
 

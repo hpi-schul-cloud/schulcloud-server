@@ -119,9 +119,8 @@ describe('ToolSchoolController (API)', () => {
 			em.clear();
 
 			const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
-			const loggedInClientWithMissingPermission: TestApiClient = await testApiClient.login(
-				accountWithMissingPermission
-			);
+			const loggedInClientWithMissingPermission: TestApiClient =
+				await testApiClient.login(accountWithMissingPermission);
 
 			return {
 				loggedInClientWithMissingPermission,
@@ -210,9 +209,8 @@ describe('ToolSchoolController (API)', () => {
 			em.clear();
 
 			const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
-			const loggedInClientWithMissingPermission: TestApiClient = await testApiClient.login(
-				accountWithMissingPermission
-			);
+			const loggedInClientWithMissingPermission: TestApiClient =
+				await testApiClient.login(accountWithMissingPermission);
 
 			return {
 				loggedInClientWithMissingPermission,
@@ -303,9 +301,8 @@ describe('ToolSchoolController (API)', () => {
 			em.clear();
 
 			const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
-			const loggedInClientWithMissingPermission: TestApiClient = await testApiClient.login(
-				accountWithMissingPermission
-			);
+			const loggedInClientWithMissingPermission: TestApiClient =
+				await testApiClient.login(accountWithMissingPermission);
 
 			return {
 				loggedInClientWithMissingPermission,
@@ -432,9 +429,8 @@ describe('ToolSchoolController (API)', () => {
 			em.clear();
 
 			const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
-			const loggedInClientWithMissingPermission: TestApiClient = await testApiClient.login(
-				accountWithMissingPermission
-			);
+			const loggedInClientWithMissingPermission: TestApiClient =
+				await testApiClient.login(accountWithMissingPermission);
 
 			return {
 				loggedInClientWithMissingPermission,
@@ -508,9 +504,8 @@ describe('ToolSchoolController (API)', () => {
 			em.clear();
 
 			const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
-			const loggedInClientWithMissingPermission: TestApiClient = await testApiClient.login(
-				accountWithMissingPermission
-			);
+			const loggedInClientWithMissingPermission: TestApiClient =
+				await testApiClient.login(accountWithMissingPermission);
 
 			const paramEntry: CustomParameterEntryParam = { name: 'param1', value: 'value' };
 			const postParams: SchoolExternalToolPostParams = {

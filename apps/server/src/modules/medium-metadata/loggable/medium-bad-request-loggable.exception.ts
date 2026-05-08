@@ -2,7 +2,10 @@ import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from
 import { BadRequestException } from '@nestjs/common';
 
 export class MediumBadRequestLoggableException extends BadRequestException implements Loggable {
-	constructor(private readonly mediumId: string, private readonly sourceId: string) {
+	constructor(
+		private readonly mediumId: string,
+		private readonly sourceId: string
+	) {
 		super();
 	}
 

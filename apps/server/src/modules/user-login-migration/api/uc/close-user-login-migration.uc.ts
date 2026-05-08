@@ -23,9 +23,8 @@ export class CloseUserLoginMigrationUc {
 	) {}
 
 	public async closeMigration(userId: EntityId, schoolId: EntityId): Promise<UserLoginMigrationDO | undefined> {
-		const userLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationService.findMigrationBySchool(
-			schoolId
-		);
+		const userLoginMigration: UserLoginMigrationDO | null =
+			await this.userLoginMigrationService.findMigrationBySchool(schoolId);
 
 		if (!userLoginMigration) {
 			throw new UserLoginMigrationNotFoundLoggableException(schoolId);
@@ -38,9 +37,8 @@ export class CloseUserLoginMigrationUc {
 			AuthorizationContextBuilder.write([Permission.USER_LOGIN_MIGRATION_ADMIN])
 		);
 
-		const updatedUserLoginMigration: UserLoginMigrationDO = await this.userLoginMigrationService.closeMigration(
-			userLoginMigration
-		);
+		const updatedUserLoginMigration: UserLoginMigrationDO =
+			await this.userLoginMigrationService.closeMigration(userLoginMigration);
 
 		const school = await this.schoolService.getSchoolById(schoolId);
 

@@ -3,7 +3,10 @@ import { HttpStatus } from '@nestjs/common';
 import { BusinessError } from '@shared/common/error';
 
 export class IdTokenExtractionFailureLoggableException extends BusinessError implements Loggable {
-	constructor(private readonly fieldName: string | string[], details?: Record<string, unknown>) {
+	constructor(
+		private readonly fieldName: string | string[],
+		details?: Record<string, unknown>
+	) {
 		super(
 			{
 				type: 'ID_TOKEN_EXTRACTION_FAILURE',

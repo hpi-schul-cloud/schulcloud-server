@@ -13,7 +13,10 @@ import { AdapterUtils } from './adapter.utils';
 
 @Injectable()
 export class CardClientAdapter {
-	constructor(private readonly cardApi: BoardCardApi, private readonly elementApi: BoardElementApi) {}
+	constructor(
+		private readonly cardApi: BoardCardApi,
+		private readonly elementApi: BoardElementApi
+	) {}
 
 	public async getAllBoardCardsByIds(jwt: string, cardsIds: string[]): Promise<CardListResponse> {
 		const getBoardCardsResponse = await this.cardApi.cardControllerGetCards(

@@ -9,9 +9,8 @@ export class CourseSynchronizationHistoryService {
 	) {}
 
 	public async saveAll(courseSyncHistories: CourseSynchronizationHistory[]): Promise<CourseSynchronizationHistory[]> {
-		const saveResult: CourseSynchronizationHistory[] = await this.courseSynchronizationHistoryRepo.saveAll(
-			courseSyncHistories
-		);
+		const saveResult: CourseSynchronizationHistory[] =
+			await this.courseSynchronizationHistoryRepo.saveAll(courseSyncHistories);
 
 		return saveResult;
 	}

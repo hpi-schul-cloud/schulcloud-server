@@ -1,7 +1,10 @@
 import { Loggable, LogMessage } from '@core/logger';
 
 export class TspSchoolsFetchedLoggable implements Loggable {
-	constructor(private readonly tspSchoolCount: number, private readonly daysFetched: number) {}
+	constructor(
+		private readonly tspSchoolCount: number,
+		private readonly daysFetched: number
+	) {}
 
 	public getLogMessage(): LogMessage {
 		let message: string;

@@ -3,7 +3,10 @@ import type { Group } from '@modules/group';
 import type { Course } from '../course.do';
 
 export class CourseSynchronizationStoppedLoggable implements Loggable {
-	constructor(private readonly courses: Course[], private readonly group: Group) {}
+	constructor(
+		private readonly courses: Course[],
+		private readonly group: Group
+	) {}
 
 	getLogMessage(): LogMessage {
 		return {

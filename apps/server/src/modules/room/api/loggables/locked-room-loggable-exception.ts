@@ -2,7 +2,10 @@ import { ErrorLogMessage, Loggable } from '@core/logger';
 import { ForbiddenException } from '@nestjs/common';
 
 export class LockedRoomLoggableException extends ForbiddenException implements Loggable {
-	constructor(private readonly title: string, private readonly id?: string) {
+	constructor(
+		private readonly title: string,
+		private readonly id?: string
+	) {
 		super(title);
 	}
 

@@ -51,7 +51,7 @@ const createBBBMeetingInfoResponse = (): BBBResponse<BBBMeetingInfoResponse> =>
 			meetingName: 'meetingName',
 			meetingID: 'meetingID',
 		},
-	} as unknown as BBBResponse<BBBMeetingInfoResponse>);
+	}) as unknown as BBBResponse<BBBMeetingInfoResponse>;
 
 const createBBBCreateConfig = (): BBBCreateConfig => {
 	return {
@@ -145,9 +145,8 @@ describe(BBBService.name, () => {
 	describe('create', () => {
 		describe('when valid parameter passed and the BBB response well', () => {
 			const setup = () => {
-				const bbbCreateResponse: AxiosResponse<BBBResponse<BBBResponseType>> = createAxiosResponse(
-					createBBBCreateResponse()
-				);
+				const bbbCreateResponse: AxiosResponse<BBBResponse<BBBResponseType>> =
+					createAxiosResponse(createBBBCreateResponse());
 
 				const param = createBBBCreateConfig();
 
@@ -178,9 +177,8 @@ describe(BBBService.name, () => {
 
 		describe('when valid parameter passed and the BBB response with error', () => {
 			const setup = () => {
-				const bbbCreateResponse: AxiosResponse<BBBResponse<BBBResponseType>> = createAxiosResponse(
-					createBBBCreateResponse()
-				);
+				const bbbCreateResponse: AxiosResponse<BBBResponse<BBBResponseType>> =
+					createAxiosResponse(createBBBCreateResponse());
 				bbbCreateResponse.data.response.returncode = BBBStatus.ERROR;
 
 				const param = createBBBCreateConfig();
@@ -210,9 +208,8 @@ describe(BBBService.name, () => {
 	describe('end', () => {
 		describe('when valid parameter passed and the BBB response well', () => {
 			const setup = () => {
-				const bbbBaseResponse: AxiosResponse<BBBResponse<BBBBaseResponse>> = createAxiosResponse(
-					createBBBBaseResponse()
-				);
+				const bbbBaseResponse: AxiosResponse<BBBResponse<BBBBaseResponse>> =
+					createAxiosResponse(createBBBBaseResponse());
 				const bbbBaseMeetingConfig: BBBBaseMeetingConfig = { meetingID: 'meetingId' };
 
 				httpService.get.mockReturnValueOnce(of(bbbBaseResponse));
@@ -234,9 +231,8 @@ describe(BBBService.name, () => {
 
 		describe('when valid parameter passed and the BBB response with error', () => {
 			const setup = () => {
-				const bbbBaseResponse: AxiosResponse<BBBResponse<BBBBaseResponse>> = createAxiosResponse(
-					createBBBBaseResponse()
-				);
+				const bbbBaseResponse: AxiosResponse<BBBResponse<BBBBaseResponse>> =
+					createAxiosResponse(createBBBBaseResponse());
 				bbbBaseResponse.data.response.returncode = BBBStatus.ERROR;
 				const param: BBBBaseMeetingConfig = { meetingID: 'meetingId' };
 
@@ -265,9 +261,8 @@ describe(BBBService.name, () => {
 	describe('getMeetingInfo', () => {
 		describe('when valid parameter passed and the BBB response well', () => {
 			const setup = () => {
-				const bbbMeetingInfoResponse: AxiosResponse<BBBResponse<BBBResponseType>> = createAxiosResponse(
-					createBBBMeetingInfoResponse()
-				);
+				const bbbMeetingInfoResponse: AxiosResponse<BBBResponse<BBBResponseType>> =
+					createAxiosResponse(createBBBMeetingInfoResponse());
 				const param: BBBBaseMeetingConfig = { meetingID: 'meetingId' };
 
 				httpService.get.mockReturnValueOnce(of(bbbMeetingInfoResponse));
@@ -288,9 +283,8 @@ describe(BBBService.name, () => {
 
 		describe('when valid parameter passed and the BBB response with error', () => {
 			const setup = () => {
-				const bbbMeetingInfoResponse: AxiosResponse<BBBResponse<BBBResponseType>> = createAxiosResponse(
-					createBBBMeetingInfoResponse()
-				);
+				const bbbMeetingInfoResponse: AxiosResponse<BBBResponse<BBBResponseType>> =
+					createAxiosResponse(createBBBMeetingInfoResponse());
 				bbbMeetingInfoResponse.data.response.returncode = BBBStatus.ERROR;
 				const param: BBBBaseMeetingConfig = { meetingID: 'meetingId' };
 
@@ -319,9 +313,8 @@ describe(BBBService.name, () => {
 	describe('join', () => {
 		describe('when valid parameter passed and the BBB response well', () => {
 			const setup = () => {
-				const bbbMeetingInfoResponse: AxiosResponse<BBBResponse<BBBResponseType>> = createAxiosResponse(
-					createBBBMeetingInfoResponse()
-				);
+				const bbbMeetingInfoResponse: AxiosResponse<BBBResponse<BBBResponseType>> =
+					createAxiosResponse(createBBBMeetingInfoResponse());
 				const param: BBBJoinConfig = createBBBJoinConfig();
 
 				httpService.get.mockReturnValueOnce(of(bbbMeetingInfoResponse));
@@ -343,9 +336,8 @@ describe(BBBService.name, () => {
 
 		describe('when valid parameter passed and the BBB response with error', () => {
 			const setup = () => {
-				const bbbMeetingInfoResponse: AxiosResponse<BBBResponse<BBBResponseType>> = createAxiosResponse(
-					createBBBMeetingInfoResponse()
-				);
+				const bbbMeetingInfoResponse: AxiosResponse<BBBResponse<BBBResponseType>> =
+					createAxiosResponse(createBBBMeetingInfoResponse());
 				bbbMeetingInfoResponse.data.response.returncode = BBBStatus.ERROR;
 				const param: BBBJoinConfig = createBBBJoinConfig();
 

@@ -68,7 +68,7 @@ describe('dashboard uc', () => {
 			const dashboardRepoSpy = jest
 				.spyOn(repo, 'getUsersDashboard')
 				.mockImplementation(() => Promise.resolve(dashboard));
-			const courses = new Array(5).map(() => ({} as CourseEntity));
+			const courses = new Array(5).map(() => ({}) as CourseEntity);
 			const courseServiceSpy = jest
 				.spyOn(courseService, 'findAllByUserId')
 				.mockImplementation(() => Promise.resolve([courses, courses.length]));

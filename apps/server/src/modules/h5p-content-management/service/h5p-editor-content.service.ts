@@ -17,7 +17,10 @@ export type H5pCopyContentParams = {
 
 @Injectable()
 export class H5pEditorContentService {
-	constructor(private readonly h5PContentRepo: H5PContentRepo, private readonly contentStorage: ContentStorage) {}
+	constructor(
+		private readonly h5PContentRepo: H5PContentRepo,
+		private readonly contentStorage: ContentStorage
+	) {}
 
 	public async copyH5pContent(params: H5pCopyContentParams): Promise<void> {
 		if (!isMongoId(params.copiedContentId)) {

@@ -4,7 +4,10 @@ import { BusinessError } from '@shared/common/error';
 import { EntityId } from '@shared/domain/types';
 
 export class IdenticalUserLoginMigrationSystemLoggableException extends BusinessError implements Loggable {
-	constructor(private readonly schoolId: string | undefined, private readonly targetSystemId: EntityId | undefined) {
+	constructor(
+		private readonly schoolId: string | undefined,
+		private readonly targetSystemId: EntityId | undefined
+	) {
 		super(
 			{
 				type: 'IDENTICAL_USER_LOGIN_MIGRATION_SYSTEM',

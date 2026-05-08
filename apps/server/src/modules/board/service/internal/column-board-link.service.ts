@@ -6,7 +6,10 @@ import { BoardNodeService } from '../board-node.service';
 
 @Injectable()
 export class ColumnBoardLinkService {
-	constructor(private readonly boardNodeService: BoardNodeService, private readonly boardNodeRepo: BoardNodeRepo) {}
+	constructor(
+		private readonly boardNodeService: BoardNodeService,
+		private readonly boardNodeRepo: BoardNodeRepo
+	) {}
 
 	async swapLinkedIds(boardId: EntityId, idMap: Map<EntityId, EntityId>) {
 		const board = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId);

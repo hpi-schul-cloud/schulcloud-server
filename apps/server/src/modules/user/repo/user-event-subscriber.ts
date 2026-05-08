@@ -1,13 +1,16 @@
-import { Injectable } from '@nestjs/common';
 import { EntityManager, EntityName, EventArgs, EventSubscriber } from '@mikro-orm/core';
-import { User } from './user.entity';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { Injectable } from '@nestjs/common';
 import { EventBus } from '@nestjs/cqrs';
 import { UserChangedSchoolEvent } from '../domain/events/user-changed-school.event';
+import { User } from './user.entity';
 
 @Injectable()
 export class UserEventSubscriber implements EventSubscriber<User> {
-	constructor(private readonly em: EntityManager, private readonly eventBus: EventBus) {
+	constructor(
+		private readonly em: EntityManager,
+		private readonly eventBus: EventBus
+	) {
 		em.getEventManager().registerSubscriber(this);
 	}
 

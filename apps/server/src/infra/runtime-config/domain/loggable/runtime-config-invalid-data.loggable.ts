@@ -3,7 +3,11 @@ import { ErrorLogMessage } from '@shared/common/error';
 import { InternalServerErrorException } from '@nestjs/common';
 
 export class RuntimeConfigValueInvalidDataLoggable extends InternalServerErrorException implements Loggable {
-	constructor(private readonly key: string, private readonly value: unknown, private readonly type: string) {
+	constructor(
+		private readonly key: string,
+		private readonly value: unknown,
+		private readonly type: string
+	) {
 		super('The database contains invalid or inconsistent Runtime Config Values.');
 	}
 

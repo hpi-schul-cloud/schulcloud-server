@@ -15,7 +15,7 @@ export class ExternalToolMetadataUpdateFailedLoggable implements Loggable {
 			? {
 					name: this.error.name,
 					message: this.error.message,
-			  }
+				}
 			: 'Unknown error';
 
 		return {
