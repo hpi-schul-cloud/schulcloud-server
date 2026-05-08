@@ -3,7 +3,10 @@ import { Loggable, LoggableMessage } from '@shared/common/loggable';
 import { ExternalClassDto } from '../dto';
 
 export class TspClassWithoutNameLoggable implements Loggable {
-	constructor(private readonly scClass: Class, private readonly tspClass: ExternalClassDto) {}
+	constructor(
+		private readonly scClass: Class,
+		private readonly tspClass: ExternalClassDto
+	) {}
 
 	public getLogMessage(): LoggableMessage {
 		/* istanbul ignore next */

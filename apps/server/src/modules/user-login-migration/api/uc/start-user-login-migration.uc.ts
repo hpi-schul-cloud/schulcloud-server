@@ -27,9 +27,8 @@ export class StartUserLoginMigrationUc {
 	public async startMigration(userId: EntityId, schoolId: EntityId): Promise<UserLoginMigrationDO> {
 		await this.checkPreconditions(userId, schoolId);
 
-		let userLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationService.findMigrationBySchool(
-			schoolId
-		);
+		let userLoginMigration: UserLoginMigrationDO | null =
+			await this.userLoginMigrationService.findMigrationBySchool(schoolId);
 
 		if (userLoginMigration && userLoginMigration.closedAt) {
 			throw new UserLoginMigrationAlreadyClosedLoggableException(userLoginMigration.closedAt, userLoginMigration.id);

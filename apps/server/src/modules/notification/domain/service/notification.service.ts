@@ -16,7 +16,10 @@ export type NotificationEntry = {
 
 @Injectable()
 export class NotificationService {
-	constructor(private readonly logger: Logger, private readonly notificationRepo: NotificationRepo) {
+	constructor(
+		private readonly logger: Logger,
+		private readonly notificationRepo: NotificationRepo
+	) {
 		logger.setContext(NotificationService.name);
 	}
 

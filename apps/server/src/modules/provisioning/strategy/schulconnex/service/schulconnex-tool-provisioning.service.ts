@@ -39,9 +39,8 @@ export class SchulconnexToolProvisioningService {
 			return;
 		}
 
-		const mediaUserLicenses: MediaUserLicense[] = await this.mediaUserLicenseService.getMediaUserLicensesForUser(
-			userId
-		);
+		const mediaUserLicenses: MediaUserLicense[] =
+			await this.mediaUserLicenseService.getMediaUserLicensesForUser(userId);
 
 		const mediaSchoolLicenses: MediaSchoolLicense[] =
 			await this.mediaSchoolLicenseService.findMediaSchoolLicensesBySchoolId(schoolId);
@@ -154,9 +153,8 @@ export class SchulconnexToolProvisioningService {
 			parameters: [],
 		});
 
-		const savedSchoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.saveSchoolExternalTool(
-			schoolExternalTool
-		);
+		const savedSchoolExternalTool: SchoolExternalTool =
+			await this.schoolExternalToolService.saveSchoolExternalTool(schoolExternalTool);
 
 		return savedSchoolExternalTool;
 	}

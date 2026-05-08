@@ -7,7 +7,10 @@ import { ICurrentUser, InternalJwtAuthGuardConfig, JwtPayload, StrategyType } fr
 import { CurrentUserBuilder, JwtStrategyOptionsFactory } from '../mapper';
 
 export class WsJwtStrategy extends PassportStrategy(Strategy, StrategyType.WS_JWT) {
-	constructor(private readonly jwtValidationAdapter: JwtValidationAdapter, config: InternalJwtAuthGuardConfig) {
+	constructor(
+		private readonly jwtValidationAdapter: JwtValidationAdapter,
+		config: InternalJwtAuthGuardConfig
+	) {
 		const strategyOptions = JwtStrategyOptionsFactory.build(JwtExtractor.fromCookie('jwt'), config);
 		super(strategyOptions);
 	}

@@ -5,7 +5,10 @@ import { EntityId } from '@shared/domain/types';
 import { CustomParameter } from '../custom-parameter.do';
 
 export class ToolParameterMandatoryValueMissingLoggableException extends BusinessError implements Loggable {
-	constructor(private readonly validatableToolId: EntityId | undefined, private readonly parameter: CustomParameter) {
+	constructor(
+		private readonly validatableToolId: EntityId | undefined,
+		private readonly parameter: CustomParameter
+	) {
 		super(
 			{
 				type: 'TOOL_PARAMETER_MANDATORY_VALUE_MISSING',

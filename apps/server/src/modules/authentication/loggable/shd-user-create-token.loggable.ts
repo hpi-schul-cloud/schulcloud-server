@@ -3,7 +3,11 @@ import { Loggable } from '@core/logger/interfaces';
 import { LogMessage } from '@core/logger/types';
 
 export class ShdUserCreateTokenLoggable implements Loggable {
-	constructor(private supportUserId: EntityId, private targetUserId: EntityId, private expiredIn: number) {}
+	constructor(
+		private supportUserId: EntityId,
+		private targetUserId: EntityId,
+		private expiredIn: number
+	) {}
 
 	getLogMessage(): LogMessage {
 		const message: LogMessage = {

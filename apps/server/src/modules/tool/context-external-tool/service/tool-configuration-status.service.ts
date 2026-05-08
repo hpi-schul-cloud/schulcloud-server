@@ -105,9 +105,8 @@ export class ToolConfigurationStatusService {
 
 	private async isToolLicensedForUser(externalTool: ExternalTool, userId: EntityId): Promise<boolean> {
 		if (this.config.featureSchulconnexMediaLicenseEnabled) {
-			const mediaUserLicenses: MediaUserLicense[] = await this.mediaUserLicenseService.getMediaUserLicensesForUser(
-				userId
-			);
+			const mediaUserLicenses: MediaUserLicense[] =
+				await this.mediaUserLicenseService.getMediaUserLicensesForUser(userId);
 
 			const externalToolMedium = externalTool.medium;
 			if (externalToolMedium?.mediumId) {

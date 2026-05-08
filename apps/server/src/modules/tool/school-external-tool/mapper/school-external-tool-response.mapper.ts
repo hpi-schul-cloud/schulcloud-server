@@ -37,7 +37,7 @@ export class SchoolExternalToolResponseMapper {
 						mediaSourceId: schoolExternalTool.medium.mediaSourceId,
 						mediaSourceName: schoolExternalTool.medium.mediaSourceName,
 						mediaSourceLicenseType: schoolExternalTool.medium.mediaSourceLicenseType,
-				  })
+					})
 				: undefined,
 		});
 

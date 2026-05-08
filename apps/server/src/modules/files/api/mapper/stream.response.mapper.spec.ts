@@ -21,7 +21,7 @@ describe('FilesStorageMapper', () => {
 
 				expect(result).toBeInstanceOf(StreamableFile);
 
-				const options = result.options;
+				const { options } = result;
 				expect(options.type).toBe('text/plain');
 				expect(options.length).toBe(8);
 				expect(options.disposition).toContain('attachment;');
@@ -45,7 +45,7 @@ describe('FilesStorageMapper', () => {
 
 				const result = StreamableFileMapper.fromResponse(fileResponse);
 
-				const options = result.options;
+				const { options } = result;
 				const encoded = encodeURIComponent('ü bär.pdf');
 				expect(options.disposition).toContain(`filename="${encoded}"`);
 				expect(options.disposition).toContain(`filename*=UTF-8''${encoded}`);

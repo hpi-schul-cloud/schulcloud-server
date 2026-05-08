@@ -3,7 +3,10 @@ import { HttpStatus } from '@nestjs/common';
 import { BusinessError } from '@shared/common/error';
 
 export class SchoolNumberMismatchLoggableException extends BusinessError implements Loggable {
-	constructor(private readonly sourceSchoolNumber: string, private readonly targetSchoolNumber: string) {
+	constructor(
+		private readonly sourceSchoolNumber: string,
+		private readonly targetSchoolNumber: string
+	) {
 		super(
 			{
 				type: 'SCHOOL_MIGRATION_FAILED',

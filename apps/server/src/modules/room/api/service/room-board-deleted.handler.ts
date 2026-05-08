@@ -7,7 +7,10 @@ import { RoomBoardService } from './room-board.service';
 @Injectable()
 @EventsHandler(RoomBoardDeletedEvent)
 export class RoomBoardDeletedHandler implements IEventHandler<RoomBoardDeletedEvent> {
-	constructor(private readonly roomBoardService: RoomBoardService, private readonly orm: MikroORM) {}
+	constructor(
+		private readonly roomBoardService: RoomBoardService,
+		private readonly orm: MikroORM
+	) {}
 
 	@EnsureRequestContext()
 	public async handle(event: RoomBoardDeletedEvent): Promise<void> {

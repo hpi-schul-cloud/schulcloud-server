@@ -23,7 +23,10 @@ import { BuildOptions, DeepPartial, Factory, GeneratorFn, HookFn } from 'fishery
 export class EntityFactory<T extends U, U extends object, I = any, C = U, P = DeepPartial<T>> {
 	protected readonly propsFactory: Factory<U, I, C, P>;
 
-	constructor(private readonly EntityClass: { new (): T }, propsFactory: Factory<U, I, C, P>) {
+	constructor(
+		private readonly EntityClass: { new (): T },
+		propsFactory: Factory<U, I, C, P>
+	) {
 		this.propsFactory = propsFactory;
 	}
 
@@ -44,7 +47,7 @@ export class EntityFactory<T extends U, U extends object, I = any, C = U, P = De
 		I = any,
 		C = U,
 		P = DeepPartial<T>,
-		F = EntityFactory<T, U, I, C, P>
+		F = EntityFactory<T, U, I, C, P>,
 	>(
 		this: new (EntityClass: { new (): T }, propsFactory: Factory<U, I, C, P>) => F,
 		EntityClass: { new (): T },

@@ -2,7 +2,10 @@ import { ErrorLogMessage, LogMessage, ValidationErrorLogMessage } from '@core/lo
 import { NotFoundException } from '@nestjs/common';
 
 export class MediaSourceVidisConfigNotFoundLoggableException extends NotFoundException {
-	constructor(private readonly mediaSourceId: string, private readonly mediaSourceName: string) {
+	constructor(
+		private readonly mediaSourceId: string,
+		private readonly mediaSourceName: string
+	) {
 		super();
 	}
 

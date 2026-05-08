@@ -127,9 +127,8 @@ export class DeleteUserTaskDataStep extends SagaStep<'deleteUserData'> {
 				StepStatus.PENDING
 			)
 		);
-		const [tasksWithUserInFinished, counterOfTasksWithUserInFinished] = await this.taskRepo.findByUserIdInFinished(
-			userId
-		);
+		const [tasksWithUserInFinished, counterOfTasksWithUserInFinished] =
+			await this.taskRepo.findByUserIdInFinished(userId);
 
 		if (counterOfTasksWithUserInFinished > 0) {
 			tasksWithUserInFinished.forEach((task: Task) => task.removeUserFromFinished(userId));

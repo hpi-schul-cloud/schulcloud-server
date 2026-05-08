@@ -5,7 +5,10 @@ import { TeamEntity, TeamRepo } from '../../repo';
 
 @Injectable()
 export class TeamService {
-	constructor(private readonly teamRepo: TeamRepo, private readonly logger: Logger) {
+	constructor(
+		private readonly teamRepo: TeamRepo,
+		private readonly logger: Logger
+	) {
 		this.logger.setContext(TeamService.name);
 	}
 

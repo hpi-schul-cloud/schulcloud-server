@@ -53,7 +53,7 @@ export class ContextExternalToolResponseMapper {
 					availableUntil: ltiDeepLink.availableUntil,
 					submissionFrom: ltiDeepLink.submissionFrom,
 					submissionUntil: ltiDeepLink.submissionUntil,
-			  })
+				})
 			: undefined;
 
 		const response = new ToolReferenceResponse({

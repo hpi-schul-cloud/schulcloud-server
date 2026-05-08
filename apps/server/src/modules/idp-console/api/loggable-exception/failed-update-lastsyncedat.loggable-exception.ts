@@ -5,7 +5,10 @@ import { isAxiosError } from 'axios';
 import { AxiosErrorLoggable } from '@core/error/loggable';
 
 export class FailedUpdateLastSyncedAtLoggableException extends InternalServerErrorException implements Loggable {
-	constructor(private readonly systemId: string, private readonly error?: Error) {
+	constructor(
+		private readonly systemId: string,
+		private readonly error?: Error
+	) {
 		super();
 	}
 

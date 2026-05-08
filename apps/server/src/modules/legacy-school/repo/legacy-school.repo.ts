@@ -14,7 +14,10 @@ import { LegacySchoolDo } from '../domain';
  */
 @Injectable()
 export class LegacySchoolRepo extends BaseDORepo<LegacySchoolDo, SchoolEntity> {
-	constructor(protected readonly _em: EntityManager, protected readonly logger: LegacyLogger) {
+	constructor(
+		protected readonly _em: EntityManager,
+		protected readonly logger: LegacyLogger
+	) {
 		super(_em, logger);
 	}
 

@@ -8,7 +8,10 @@ import { UsersSyncOptions, SystemType } from './interface';
 	description: 'Console providing an access to the IDP-provisioned data synchronization operations.',
 })
 export class IdpSyncConsole {
-	constructor(private consoleWriter: ConsoleWriterService, private synchronizationUc: SynchronizationUc) {}
+	constructor(
+		private consoleWriter: ConsoleWriterService,
+		private synchronizationUc: SynchronizationUc
+	) {}
 
 	@Command({
 		command: 'users',

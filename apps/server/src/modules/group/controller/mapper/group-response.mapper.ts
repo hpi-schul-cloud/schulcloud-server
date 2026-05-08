@@ -65,7 +65,7 @@ export class GroupResponseMapper {
 			? new ExternalSourceResponse({
 					externalId: resolvedGroup.externalSource.externalId,
 					systemId: resolvedGroup.externalSource.systemId,
-			  })
+				})
 			: undefined;
 
 		const users: GroupUserResponse[] = resolvedGroup.users.map(

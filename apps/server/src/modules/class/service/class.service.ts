@@ -7,7 +7,10 @@ import { ClassesRepo, ClassScope } from '../repo';
 
 @Injectable()
 export class ClassService {
-	constructor(private readonly classesRepo: ClassesRepo, private readonly logger: Logger) {
+	constructor(
+		private readonly classesRepo: ClassesRepo,
+		private readonly logger: Logger
+	) {
 		this.logger.setContext(ClassService.name);
 	}
 

@@ -9,7 +9,10 @@ import { Importance } from './enum';
 
 @Injectable()
 export class StatusAdapter {
-	constructor(private readonly httpService: HttpService, @Inject(ALERT_CONFIG) private readonly config: AlertConfig) {}
+	constructor(
+		private readonly httpService: HttpService,
+		@Inject(ALERT_CONFIG) private readonly config: AlertConfig
+	) {}
 
 	public async getMessage(instance: string): Promise<MessagesDto> {
 		const rawData = await this.getIncidentsData(instance);

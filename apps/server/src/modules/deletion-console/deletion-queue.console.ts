@@ -26,7 +26,10 @@ const sharedCommandOptions: CommandOption[] = [
 
 @Console({ command: 'queue', description: 'Console providing an access to the deletion queue.' })
 export class DeletionQueueConsole {
-	constructor(private consoleWriter: ConsoleWriterService, private batchDeletionUc: BatchDeletionUc) {}
+	constructor(
+		private consoleWriter: ConsoleWriterService,
+		private batchDeletionUc: BatchDeletionUc
+	) {}
 
 	@Command({
 		command: 'push',
