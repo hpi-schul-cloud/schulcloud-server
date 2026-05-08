@@ -4,9 +4,9 @@ import { groupEntityFactory } from '@modules/group/testing';
 import { RoleName } from '@modules/role';
 import { Role } from '@modules/role/repo';
 import { roleFactory } from '@modules/role/testing';
-import { RoomMembershipEntity } from '@modules/room-membership';
+import { RoomPublicApiConfig } from '@modules/room';
+import { RoomMembershipEntity, RoomMembershipService } from '@modules/room-membership';
 import { roomMembershipEntityFactory } from '@modules/room-membership/testing';
-import { ROOM_PUBLIC_API_CONFIG_TOKEN, RoomPublicApiConfig } from '@modules/room';
 import { roomEntityFactory } from '@modules/room/testing';
 import { roomInvitationLinkEntityFactory } from '@modules/room/testing/room-invitation-link-entity.factory';
 import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
@@ -69,7 +69,11 @@ describe('Room Invitation Link Controller (API)', () => {
 		em = app.get(EntityManager);
 		testApiClient = new TestApiClient(app, 'room-invitation-links');
 
-		config = moduleFixture.get<RoomPublicApiConfig>(ROOM_PUBLIC_API_CONFIG_TOKEN);
+		// Get the config from RoomMembershipService — this is the actual instance used
+		// when checking featureRoomLinkInvitationExternalPersonsEnabled in getRoomInvitationLinkAuthorizable().
+		// In NestJS v11, each module has its own config instance; using the service's instance
+		// ensures test mutations are reflected in the feature flag checks.
+		config = (moduleFixture.get(RoomMembershipService) as any).roomConfig as RoomPublicApiConfig;
 	});
 
 	beforeEach(async () => {

@@ -12,9 +12,10 @@ import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { TestApiClient } from '@testing/test-api-client';
-import { BOARD_CONFIG_TOKEN, BoardConfig } from '../../board.config';
+import { BoardConfig } from '../../board.config';
 import { BoardExternalReferenceType } from '../../domain';
 import { columnBoardEntityFactory } from '../../testing';
+import { BoardUc } from '../../uc';
 import { BoardResponse } from '../dto';
 
 const baseRouteName = '/boards';
@@ -34,7 +35,12 @@ describe(`board readersCanEdit setting (api)`, () => {
 		await app.init();
 		em = module.get(EntityManager);
 		testApiClient = new TestApiClient(app, baseRouteName);
-		config = module.get<BoardConfig>(BOARD_CONFIG_TOKEN);
+		// Get the config from BoardUc's private field — this is the instance actually used
+		// when checking featureBoardReadersCanEditToggle in NestJS v11.s
+		// Access the private config field used by BoardUc (NestJS v11 multi-instance workaround)
+		// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+		const boardUcWithConfig = module.get(BoardUc) as unknown as { config: BoardConfig };
+		({ config } = boardUcWithConfig);
 	});
 
 	afterAll(async () => {

@@ -1,13 +1,13 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { AccountEntity } from '@modules/account/repo';
 import { ServerTestModule } from '@modules/server';
+import { User } from '@modules/user/repo';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { TestApiClient } from '@testing/test-api-client';
-import { AccountEntity } from '@modules/account/repo';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
+import { TestApiClient } from '@testing/test-api-client';
 import { DeletionRequestParams } from '../dto';
-import { User } from '@modules/user/repo';
 
 const baseRouteName = '/deletionRequestsPublic';
 
@@ -47,7 +47,10 @@ describe(`deletionRequest public create (api)`, () => {
 			const deletionRequestToCreate: DeletionRequestParams = {
 				ids: [studentUser.id],
 			};
-			const queryString = deletionRequestToCreate.ids.map((id) => `ids[]=${id}`).join('&');
+			// Express v5 (NestJS v11) changed the default query parser — ids[] notation
+			// is no longer parsed as an array. Use plain `ids=value` format instead;
+			// class-transformer's enableImplicitConversion converts single string to string[].
+			const queryString = deletionRequestToCreate.ids.map((id) => `ids=${id}`).join('&');
 			const nonexistentId = new ObjectId().toString();
 			const loggedInClient = await testApiClient.login(adminAccount);
 
@@ -102,7 +105,7 @@ describe(`deletionRequest public create (api)`, () => {
 			await em.persist([studentUser2]).flush();
 			em.clear();
 
-			const response = await loggedInClient.delete(`?ids[]=${studentUser2.id}`);
+			const response = await loggedInClient.delete(`?ids=${studentUser2.id}`);
 
 			expect(response.status).toEqual(204);
 			const deletionRequest = await em.findOne('DeletionRequestEntity', { targetRefId: new ObjectId(studentUser2.id) });
@@ -112,7 +115,7 @@ describe(`deletionRequest public create (api)`, () => {
 		it('should return status 400 when all deletion requests fail', async () => {
 			const { loggedInClient, nonexistentId } = await setup();
 
-			const response = await loggedInClient.delete(`?ids[]=${nonexistentId}`);
+			const response = await loggedInClient.delete(`?ids=${nonexistentId}`);
 
 			expect(response.status).toEqual(400);
 		});
@@ -120,7 +123,7 @@ describe(`deletionRequest public create (api)`, () => {
 		it('should return status 207 when some deletion requests fail', async () => {
 			const { nonexistentId, queryString, loggedInClient } = await setup();
 
-			const response = await loggedInClient.delete(`?${queryString}&ids[]=${nonexistentId}`);
+			const response = await loggedInClient.delete(`?${queryString}&ids=${nonexistentId}`);
 
 			expect(response.status).toEqual(207);
 		});
@@ -130,7 +133,7 @@ describe(`deletionRequest public create (api)`, () => {
 
 			let additionalQueryString = '';
 			for (let i = 0; i <= 100; i++) {
-				additionalQueryString += `&ids[]=${new ObjectId().toString()}`;
+				additionalQueryString += `&ids=${new ObjectId().toString()}`;
 			}
 
 			const response = await loggedInClient.delete(`?${queryString}${additionalQueryString}`);
@@ -153,7 +156,7 @@ describe(`deletionRequest public create (api)`, () => {
 			const deletionRequestToCreate: DeletionRequestParams = {
 				ids: [studentUser.id],
 			};
-			const queryString = deletionRequestToCreate.ids.map((id) => `ids[]=${id}`).join('&');
+			const queryString = deletionRequestToCreate.ids.map((id) => `ids=${id}`).join('&');
 			const nonexistentId = new ObjectId().toString();
 			const loggedInClient = await testApiClient.login(adminAccount);
 
@@ -193,7 +196,7 @@ describe(`deletionRequest public create (api)`, () => {
 			const deletionRequestToCreate: DeletionRequestParams = {
 				ids: [targetUser.id],
 			};
-			const queryString = deletionRequestToCreate.ids.map((id) => `ids[]=${id}`).join('&');
+			const queryString = deletionRequestToCreate.ids.map((id) => `ids=${id}`).join('&');
 			const loggedInClient = await testApiClient.login(adminAccount);
 
 			return {
