@@ -5,7 +5,7 @@ export interface InstanceProps extends AuthorizableObject {
 }
 
 export class Instance extends DomainObject<InstanceProps> {
-	get name(): string {
+	public get name(): string {
 		return this.props.name;
 	}
 }

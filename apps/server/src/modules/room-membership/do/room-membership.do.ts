@@ -27,15 +27,15 @@ export class RoomMembership extends DomainObject<RoomMembershipProps> {
 		return copyProps;
 	}
 
-	get roomId(): EntityId {
+	public get roomId(): EntityId {
 		return this.props.roomId;
 	}
 
-	get userGroupId(): EntityId {
+	public get userGroupId(): EntityId {
 		return this.props.userGroupId;
 	}
 
-	get schoolId(): EntityId {
+	public get schoolId(): EntityId {
 		return this.props.schoolId;
 	}
 }

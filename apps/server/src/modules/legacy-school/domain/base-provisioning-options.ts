@@ -12,7 +12,7 @@ export abstract class BaseProvisioningOptions<T extends ProvisioningOptionsInter
 		return hasProperties;
 	}
 
-	abstract get getType(): ProvisioningOptionsType;
+	public abstract get getType(): ProvisioningOptionsType;
 
 	public abstract set(props: T): this;
 }
