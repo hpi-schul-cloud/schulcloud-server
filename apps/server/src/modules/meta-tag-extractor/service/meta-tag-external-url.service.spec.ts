@@ -37,7 +37,7 @@ describe(MetaTagExternalUrlService.name, () => {
 	describe('tryExtractMetaTags', () => {
 		const mockReadstream = (chunks: string[]) => {
 			const mockedStream = new Stream.Readable();
-			mockedStream._read = jest.fn();
+			jest.spyOn(mockedStream, '_read').mockImplementation();
 
 			const intervalHandle = setInterval(() => {
 				if (chunks.length === 0) {

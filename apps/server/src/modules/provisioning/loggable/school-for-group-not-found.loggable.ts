@@ -2,7 +2,10 @@ import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from
 import { ExternalGroupDto, ExternalSchoolDto } from '../dto';
 
 export class SchoolForGroupNotFoundLoggable implements Loggable {
-	constructor(private readonly group: ExternalGroupDto, private readonly school: ExternalSchoolDto) {}
+	constructor(
+		private readonly group: ExternalGroupDto,
+		private readonly school: ExternalSchoolDto
+	) {}
 
 	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
 		return {

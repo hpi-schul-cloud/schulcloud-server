@@ -3,7 +3,10 @@ import { LegacySchoolDo } from '@modules/legacy-school/domain';
 import { UserLoginMigrationDO } from '../../do';
 
 export class SchoolMigrationSuccessfulLoggable implements Loggable {
-	constructor(private readonly school: LegacySchoolDo, private readonly userLoginMigration: UserLoginMigrationDO) {}
+	constructor(
+		private readonly school: LegacySchoolDo,
+		private readonly userLoginMigration: UserLoginMigrationDO
+	) {}
 
 	getLogMessage(): LogMessage {
 		return {

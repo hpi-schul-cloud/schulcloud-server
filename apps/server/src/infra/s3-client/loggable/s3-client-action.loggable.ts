@@ -7,7 +7,10 @@ interface S3ActionsLoggableParams {
 }
 
 export class S3ClientActionLoggable implements Loggable {
-	constructor(private readonly message: string, private readonly payload: S3ActionsLoggableParams) {}
+	constructor(
+		private readonly message: string,
+		private readonly payload: S3ActionsLoggableParams
+	) {}
 
 	public getLogMessage(): LogMessage {
 		return {

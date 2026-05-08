@@ -4,7 +4,10 @@ import { AxiosError } from 'axios';
 import util from 'util';
 
 export class AxiosErrorLoggable extends HttpException implements Loggable {
-	constructor(private readonly axiosError: AxiosError, protected readonly type: string) {
+	constructor(
+		private readonly axiosError: AxiosError,
+		protected readonly type: string
+	) {
 		super(util.inspect(axiosError.response?.data), axiosError.status ?? HttpStatus.INTERNAL_SERVER_ERROR, {
 			cause: axiosError.cause,
 		});

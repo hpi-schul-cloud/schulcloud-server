@@ -11,7 +11,7 @@ export interface RoomMembershipProps extends AuthorizableObject {
 }
 
 export class RoomMembership extends DomainObject<RoomMembershipProps> {
-	public constructor(props: RoomMembershipProps) {
+	constructor(props: RoomMembershipProps) {
 		super(props);
 	}
 
@@ -27,15 +27,15 @@ export class RoomMembership extends DomainObject<RoomMembershipProps> {
 		return copyProps;
 	}
 
-	public get roomId(): EntityId {
+	get roomId(): EntityId {
 		return this.props.roomId;
 	}
 
-	public get userGroupId(): EntityId {
+	get userGroupId(): EntityId {
 		return this.props.userGroupId;
 	}
 
-	public get schoolId(): EntityId {
+	get schoolId(): EntityId {
 		return this.props.schoolId;
 	}
 }

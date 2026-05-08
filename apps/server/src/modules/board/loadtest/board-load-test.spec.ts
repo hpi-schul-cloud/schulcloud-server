@@ -47,8 +47,9 @@ describe('BoardLoadTest', () => {
 	const setup = (classDefinition: ClassDefinition) => {
 		const socketConfiguration = { baseUrl: '', path: '', token: '' };
 		const socketConnectionManager = createMock<SocketConnectionManager>();
-		socketConnectionManager.createConnections = jest
-			.fn()
+		jest
+			.spyOn(socketConnectionManager, 'createConnections')
+			.mockImplementation()
 			.mockResolvedValue([new SocketConnection(socketConfiguration, console.log)]);
 		const socketConnection = new SocketConnection(socketConfiguration, console.log);
 

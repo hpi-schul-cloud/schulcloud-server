@@ -13,7 +13,10 @@ import { AuthorizationErrorLoggableException, AuthorizationForbiddenLoggableExce
 
 @Injectable()
 export class AuthorizationClientAdapter {
-	constructor(private readonly authorizationApi: AuthorizationApi, @Inject(REQUEST) private request: Request) {}
+	constructor(
+		private readonly authorizationApi: AuthorizationApi,
+		@Inject(REQUEST) private request: Request
+	) {}
 
 	public async checkPermissionsByReference(
 		referenceType: AuthorizationBodyParamsReferenceType,

@@ -3,7 +3,10 @@ import { EntityId } from '@shared/domain/types';
 import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@core/logger';
 
 export class LtiDeepLinkTokenMissingLoggableException extends UnauthorizedException implements Loggable {
-	constructor(private readonly state: string, private readonly contextExternalToolId: EntityId) {
+	constructor(
+		private readonly state: string,
+		private readonly contextExternalToolId: EntityId
+	) {
 		super();
 	}
 

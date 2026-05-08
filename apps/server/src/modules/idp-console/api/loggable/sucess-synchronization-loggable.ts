@@ -1,7 +1,10 @@
 import { LogMessage, Loggable } from '@core/logger';
 
 export class SucessSynchronizationLoggable implements Loggable {
-	constructor(private readonly systemId: string, private readonly usersSynchronizedCount?: number) {}
+	constructor(
+		private readonly systemId: string,
+		private readonly usersSynchronizedCount?: number
+	) {}
 
 	getLogMessage(): LogMessage {
 		return {

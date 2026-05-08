@@ -91,7 +91,7 @@ export class ExternalToolConfigurationUc {
 		const [externalTools, schoolExternalTools, contextExternalToolsInUse]: [
 			Page<ExternalTool>,
 			SchoolExternalTool[],
-			ContextExternalTool[]
+			ContextExternalTool[],
 		] = await Promise.all([
 			this.externalToolService.findExternalTools({}),
 			this.schoolExternalToolService.findSchoolExternalTools({
@@ -140,9 +140,8 @@ export class ExternalToolConfigurationUc {
 		userId: EntityId,
 		contextExternalToolId: EntityId
 	): Promise<ContextExternalToolTemplateInfo> {
-		const contextExternalTool: ContextExternalTool = await this.contextExternalToolService.findByIdOrFail(
-			contextExternalToolId
-		);
+		const contextExternalTool: ContextExternalTool =
+			await this.contextExternalToolService.findByIdOrFail(contextExternalToolId);
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);
 
 		const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.CONTEXT_TOOL_ADMIN]);

@@ -3,9 +3,10 @@ import { TimestampsResponse } from '../../dto';
 import { BaseResponseMapper } from '../../mapper/base-mapper.interface';
 import { MediaExternalToolElementContent, MediaExternalToolElementResponse } from '../dto';
 
-export class MediaExternalToolElementResponseMapper
-	implements BaseResponseMapper<MediaExternalToolElement, MediaExternalToolElementResponse>
-{
+export class MediaExternalToolElementResponseMapper implements BaseResponseMapper<
+	MediaExternalToolElement,
+	MediaExternalToolElementResponse
+> {
 	private static instance: MediaExternalToolElementResponseMapper;
 
 	public static getInstance(): MediaExternalToolElementResponseMapper {

@@ -4,7 +4,10 @@ import { SyncUc } from '../uc/sync.uc';
 
 @Console({ command: 'sync', description: 'Prefixes all synchronization related console commands.' })
 export class SyncConsole {
-	constructor(private readonly syncUc: SyncUc, private readonly logger: Logger) {
+	constructor(
+		private readonly syncUc: SyncUc,
+		private readonly logger: Logger
+	) {
 		this.logger.setContext(SyncConsole.name);
 	}
 

@@ -36,7 +36,7 @@ export class BoardNodeEntityFactory<T extends AnyBoardNodeProps, I = any, C = T,
 		I = any,
 		C = BoardNodeEntity,
 		P = DeepPartial<T>,
-		F = BoardNodeEntityFactory<T, I, C, P>
+		F = BoardNodeEntityFactory<T, I, C, P>,
 	>(this: new (propsFactory: Factory<T, I, C, P>) => F, generator: GeneratorFn<T, I, C, P>): F {
 		const propsFactory = Factory.define<T, I, C, P>(generator);
 		const factory = new this(propsFactory);

@@ -15,7 +15,10 @@ import { BuildOptions, DeepPartial, Factory, GeneratorFn, HookFn } from 'fishery
 export class BaseFactory<T, U, I = any, C = U, P = DeepPartial<U>> {
 	protected readonly propsFactory: Factory<U, I, C, P>;
 
-	constructor(private readonly EntityClass: { new (props: U): T }, propsFactory: Factory<U, I, C, P>) {
+	constructor(
+		private readonly EntityClass: { new (props: U): T },
+		propsFactory: Factory<U, I, C, P>
+	) {
 		this.propsFactory = propsFactory;
 	}
 

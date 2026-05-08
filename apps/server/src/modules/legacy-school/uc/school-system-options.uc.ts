@@ -90,9 +90,8 @@ export class SchoolSystemOptionsUc {
 			currentProvisioningOptions
 		);
 
-		const savedSchoolSystemOptions: SchoolSystemOptions = await this.schoolSystemOptionsService.save(
-			schoolSystemOptions
-		);
+		const savedSchoolSystemOptions: SchoolSystemOptions =
+			await this.schoolSystemOptionsService.save(schoolSystemOptions);
 
 		return savedSchoolSystemOptions.provisioningOptions;
 	}

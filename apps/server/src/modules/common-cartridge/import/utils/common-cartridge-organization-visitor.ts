@@ -49,7 +49,7 @@ export class CommonCartridgeOrganizationVisitorNode {
 			.parents('item')
 			.attr('identifier');
 
-		return parentIdentifier !== undefined ? this.memo.get(parentIdentifier) ?? null : null;
+		return parentIdentifier !== undefined ? (this.memo.get(parentIdentifier) ?? null) : null;
 	}
 
 	get children(): CommonCartridgeOrganizationVisitorNode[] {
@@ -163,7 +163,10 @@ export class CommonCartridgeOrganizationVisitorNode {
 export class CommonCartridgeOrganizationVisitor {
 	private readonly memo: Map<string, CommonCartridgeOrganizationVisitorNode> = new Map();
 
-	constructor(private readonly manifest: CheerioAPI, private readonly options: CommonCartridgeFileParserOptions) {}
+	constructor(
+		private readonly manifest: CheerioAPI,
+		private readonly options: CommonCartridgeFileParserOptions
+	) {}
 
 	public findAllNodes(): CommonCartridgeOrganizationVisitorNode[] {
 		for (let depth = 0; depth < this.options.maxSearchDepth; depth += 1) {

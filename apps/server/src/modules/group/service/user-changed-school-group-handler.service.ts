@@ -7,7 +7,10 @@ import { GroupRepo } from '../repo/group.repo';
 @Injectable()
 @EventsHandler(UserChangedSchoolEvent)
 export class UserChangedSchoolGroupHandlerService implements IEventHandler<UserChangedSchoolEvent> {
-	constructor(private readonly groupRepo: GroupRepo, private readonly orm: MikroORM) {}
+	constructor(
+		private readonly groupRepo: GroupRepo,
+		private readonly orm: MikroORM
+	) {}
 
 	@EnsureRequestContext()
 	public async handle(event: UserChangedSchoolEvent): Promise<void> {

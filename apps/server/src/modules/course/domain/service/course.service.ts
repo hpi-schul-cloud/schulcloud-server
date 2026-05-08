@@ -6,7 +6,10 @@ import { CourseEntity, CourseRepo } from '../../repo';
 
 @Injectable()
 export class CourseService {
-	constructor(private readonly repo: CourseRepo, private readonly logger: Logger) {
+	constructor(
+		private readonly repo: CourseRepo,
+		private readonly logger: Logger
+	) {
 		this.logger.setContext(CourseService.name);
 	}
 

@@ -7,9 +7,10 @@ import { EntityId } from '@shared/domain/types';
 import { BaseDomainObjectRepoInterface } from './base-domain-object.repo.interface';
 
 @Injectable()
-export abstract class BaseDomainObjectRepo<D extends DomainObject<AuthorizableObject>, E extends BaseEntity>
-	implements BaseDomainObjectRepoInterface<D>
-{
+export abstract class BaseDomainObjectRepo<
+	D extends DomainObject<AuthorizableObject>,
+	E extends BaseEntity,
+> implements BaseDomainObjectRepoInterface<D> {
 	constructor(protected readonly em: EntityManager) {}
 
 	protected abstract get entityName(): EntityName<E>;

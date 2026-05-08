@@ -113,9 +113,8 @@ export class MediaAvailableLineUc {
 		userId: EntityId,
 		tools: [ExternalTool, SchoolExternalTool][]
 	): Promise<[ExternalTool, SchoolExternalTool][]> {
-		const mediaUserLicenses: MediaUserLicense[] = await this.mediaUserLicenseService.getMediaUserLicensesForUser(
-			userId
-		);
+		const mediaUserLicenses: MediaUserLicense[] =
+			await this.mediaUserLicenseService.getMediaUserLicensesForUser(userId);
 
 		const filteredTools = tools.filter((tool: [ExternalTool, SchoolExternalTool]): boolean => {
 			const externalToolMedium = tool[0]?.medium;
@@ -133,9 +132,8 @@ export class MediaAvailableLineUc {
 		tools: [ExternalTool, SchoolExternalTool][],
 		userTools: [ExternalTool, SchoolExternalTool][]
 	): Promise<[ExternalTool, SchoolExternalTool][]> {
-		const schoolLicenses: MediaSchoolLicense[] = await this.mediaSchoolLicenseService.findMediaSchoolLicensesBySchoolId(
-			schoolId
-		);
+		const schoolLicenses: MediaSchoolLicense[] =
+			await this.mediaSchoolLicenseService.findMediaSchoolLicensesBySchoolId(schoolId);
 
 		const schoolTools = tools.filter((tool: [ExternalTool, SchoolExternalTool]): boolean => {
 			const externalToolMedium = tool[0]?.medium;
