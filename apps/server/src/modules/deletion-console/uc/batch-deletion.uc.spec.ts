@@ -69,7 +69,7 @@ describe(BatchDeletionUc.name, () => {
 							outputs.push(QueueDeletionRequestOutputBuilder.buildSuccess(new ObjectId().toHexString(), new Date()));
 						}
 
-						jest.spyOn(ReferencesService, 'loadFromTxtFile').mockImplementation().mockReturnValueOnce(targetRefIds);
+						ReferencesService.loadFromTxtFile = jest.fn().mockReturnValueOnce(targetRefIds);
 
 						batchDeletionService.queueDeletionRequests.mockResolvedValueOnce([outputs[0], outputs[1], outputs[2]]);
 

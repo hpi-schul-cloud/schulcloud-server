@@ -42,8 +42,8 @@ describe(HealthController.name, () => {
 			uc.checkSelfHealth.mockReturnValueOnce(testHealthStatus);
 
 			const mockedRes = {} as unknown as Response;
-			jest.spyOn(mockedRes, 'contentType').mockImplementation();
-			jest.spyOn(mockedRes, 'status').mockImplementation();
+			mockedRes.contentType = jest.fn();
+			mockedRes.status = jest.fn();
 			const response = controller.getSelfHealth(mockedRes);
 
 			return { response, mockedRes };
@@ -67,8 +67,8 @@ describe(HealthController.name, () => {
 			uc.checkOverallHealth.mockResolvedValueOnce(testHealthStatus);
 
 			const mockedRes = {} as unknown as Response;
-			jest.spyOn(mockedRes, 'contentType').mockImplementation();
-			jest.spyOn(mockedRes, 'status').mockImplementation();
+			mockedRes.contentType = jest.fn();
+			mockedRes.status = jest.fn();
 			const response = await controller.getOverallHealth(mockedRes);
 
 			return { response, mockedRes };

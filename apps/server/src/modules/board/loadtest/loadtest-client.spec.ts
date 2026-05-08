@@ -1,9 +1,9 @@
 // Rest of the code...
 import { InputFormat } from '@shared/domain/types';
 import { ContentElementType } from '../domain';
+import { UpdateContentElementMessageParams } from '../gateway/dto';
 import { LoadtestClient } from './loadtest-client';
 import { SocketConnection } from './socket-connection';
-import { UpdateContentElementMessageParams } from '../gateway/dto';
 
 jest.mock('./socket-connection');
 
@@ -24,7 +24,7 @@ describe('LoadtestClient', () => {
 
 	describe('fetchBoard', () => {
 		it('should fetch the board', async () => {
-			jest.spyOn(socketConnection, 'emitAndWait').mockImplementation();
+			socketConnection.emitAndWait = jest.fn();
 
 			await loadtestClient.fetchBoard();
 
@@ -36,10 +36,7 @@ describe('LoadtestClient', () => {
 		it('should fetch a card', async () => {
 			const cardId = 'my-card-id';
 			const payload = { cardIds: [cardId] };
-			jest
-				.spyOn(socketConnection, 'emitAndWait')
-				.mockImplementation()
-				.mockResolvedValueOnce({ newCard: { id: cardId } });
+			socketConnection.emitAndWait = jest.fn().mockResolvedValueOnce({ newCard: { id: cardId } });
 
 			await loadtestClient.fetchCard(payload);
 
@@ -49,10 +46,7 @@ describe('LoadtestClient', () => {
 
 	describe('createColumn', () => {
 		it('should create a column', async () => {
-			jest
-				.spyOn(socketConnection, 'emitAndWait')
-				.mockImplementation()
-				.mockResolvedValueOnce({ newColumn: { id: 'column123' } });
+			socketConnection.emitAndWait = jest.fn().mockResolvedValueOnce({ newColumn: { id: 'column123' } });
 
 			await loadtestClient.createColumn();
 
@@ -63,10 +57,7 @@ describe('LoadtestClient', () => {
 	describe('createCard', () => {
 		it('should create a card', async () => {
 			const payload = { title: 'New Card', columnId: 'column123' };
-			jest
-				.spyOn(socketConnection, 'emitAndWait')
-				.mockImplementation()
-				.mockResolvedValueOnce({ newCard: { id: 'card123' } });
+			socketConnection.emitAndWait = jest.fn().mockResolvedValueOnce({ newCard: { id: 'card123' } });
 
 			await loadtestClient.createCard(payload);
 
@@ -77,7 +68,7 @@ describe('LoadtestClient', () => {
 	describe('deleteColumn', () => {
 		it('should delete a column', async () => {
 			const columnId = 'column123';
-			jest.spyOn(socketConnection, 'emitAndWait').mockImplementation().mockResolvedValueOnce({ columnId });
+			socketConnection.emitAndWait = jest.fn().mockResolvedValueOnce({ columnId });
 
 			await loadtestClient.deleteColumn({ columnId });
 
@@ -88,7 +79,7 @@ describe('LoadtestClient', () => {
 	describe('deleteCard', () => {
 		it('should delete a card', async () => {
 			const payload = { cardId: 'card123' };
-			jest.spyOn(socketConnection, 'emitAndWait').mockImplementation().mockResolvedValueOnce(payload);
+			socketConnection.emitAndWait = jest.fn().mockResolvedValueOnce(payload);
 
 			await loadtestClient.deleteCard(payload);
 
@@ -99,7 +90,7 @@ describe('LoadtestClient', () => {
 	describe('deleteElement', () => {
 		it('should delete an element', async () => {
 			const payload = { cardId: 'my-card-id', elementId: 'element123' };
-			jest.spyOn(socketConnection, 'emitAndWait').mockImplementation().mockResolvedValueOnce(payload);
+			socketConnection.emitAndWait = jest.fn().mockResolvedValueOnce(payload);
 
 			await loadtestClient.deleteElement(payload);
 
@@ -111,10 +102,7 @@ describe('LoadtestClient', () => {
 		it('should create an element', async () => {
 			const cardId = 'my-card-id';
 			const payload = { cardId, type: ContentElementType.RICH_TEXT, content: 'Hello World' };
-			jest
-				.spyOn(socketConnection, 'emitAndWait')
-				.mockImplementation()
-				.mockResolvedValueOnce({ newElement: { id: 'element123' } });
+			socketConnection.emitAndWait = jest.fn().mockResolvedValueOnce({ newElement: { id: 'element123' } });
 
 			await loadtestClient.createElement(payload);
 
@@ -128,7 +116,7 @@ describe('LoadtestClient', () => {
 				boardId: 'board123',
 				newTitle: 'New Board Title',
 			};
-			jest.spyOn(socketConnection, 'emitAndWait').mockImplementation();
+			socketConnection.emitAndWait = jest.fn();
 
 			await loadtestClient.updateBoardTitle(payload);
 
@@ -142,7 +130,7 @@ describe('LoadtestClient', () => {
 				columnId: 'column123',
 				newTitle: 'New Column Title',
 			};
-			jest.spyOn(socketConnection, 'emitAndWait').mockImplementation();
+			socketConnection.emitAndWait = jest.fn();
 
 			await loadtestClient.updateColumnTitle(payload);
 
@@ -153,7 +141,7 @@ describe('LoadtestClient', () => {
 	describe('updateCardTitle', () => {
 		it('should update the card title', async () => {
 			const payload = { cardId: 'card123', newTitle: 'New Card Title' };
-			jest.spyOn(socketConnection, 'emitAndWait').mockImplementation();
+			socketConnection.emitAndWait = jest.fn();
 
 			await loadtestClient.updateCardTitle(payload);
 
@@ -173,7 +161,7 @@ describe('LoadtestClient', () => {
 					},
 				},
 			} as UpdateContentElementMessageParams;
-			jest.spyOn(socketConnection, 'emitAndWait').mockImplementation();
+			socketConnection.emitAndWait = jest.fn();
 
 			await loadtestClient.updateElement(payload);
 
@@ -185,10 +173,7 @@ describe('LoadtestClient', () => {
 		it('should create and update a link element', async () => {
 			const cardId = 'card123';
 			const content = { url: 'https://example.com', title: 'Example' };
-			jest
-				.spyOn(socketConnection, 'emitAndWait')
-				.mockImplementation()
-				.mockResolvedValueOnce({ newElement: { elementId: 'element123' } });
+			socketConnection.emitAndWait = jest.fn().mockResolvedValueOnce({ newElement: { elementId: 'element123' } });
 
 			await loadtestClient.createAndUpdateLinkElement(cardId, content);
 
@@ -206,10 +191,7 @@ describe('LoadtestClient', () => {
 				const cardId = 'card123';
 				const text = 'Lorem ipsum';
 				const simulateTyping = true;
-				jest
-					.spyOn(socketConnection, 'emitAndWait')
-					.mockImplementation()
-					.mockResolvedValueOnce({ newElement: { elementId: 'element123' } });
+				socketConnection.emitAndWait = jest.fn().mockResolvedValueOnce({ newElement: { elementId: 'element123' } });
 
 				await loadtestClient.createAndUpdateTextElement(cardId, text, simulateTyping);
 
@@ -231,10 +213,7 @@ describe('LoadtestClient', () => {
 				const cardId = 'card123';
 				const text = 'Lorem ipsum dolor sit amet consectetur';
 				const simulateTyping = true;
-				jest
-					.spyOn(socketConnection, 'emitAndWait')
-					.mockImplementation()
-					.mockResolvedValueOnce({ newElement: { elementId: 'element123' } });
+				socketConnection.emitAndWait = jest.fn().mockResolvedValueOnce({ newElement: { elementId: 'element123' } });
 
 				await loadtestClient.createAndUpdateTextElement(cardId, text, simulateTyping);
 
@@ -257,10 +236,7 @@ describe('LoadtestClient', () => {
 				const cardId = 'card123';
 				const text = 'Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt.';
 				const simulateTyping = false;
-				jest
-					.spyOn(socketConnection, 'emitAndWait')
-					.mockImplementation()
-					.mockResolvedValueOnce({ newElement: { elementId: 'element123' } });
+				socketConnection.emitAndWait = jest.fn().mockResolvedValueOnce({ newElement: { elementId: 'element123' } });
 
 				await loadtestClient.createAndUpdateTextElement(cardId, text, simulateTyping);
 

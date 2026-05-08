@@ -11,7 +11,7 @@ export interface RoomMembershipProps extends AuthorizableObject {
 }
 
 export class RoomMembership extends DomainObject<RoomMembershipProps> {
-	constructor(props: RoomMembershipProps) {
+	public constructor(props: RoomMembershipProps) {
 		super(props);
 	}
 

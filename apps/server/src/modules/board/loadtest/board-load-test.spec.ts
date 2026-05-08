@@ -1,10 +1,10 @@
 import { createMock } from '@golevelup/ts-jest';
 import { BoardLoadTest } from './board-load-test';
 import { fastEditor } from './helper/class-definitions';
+import { LoadtestClient } from './loadtest-client';
+import { SocketConnection } from './socket-connection';
 import { SocketConnectionManager } from './socket-connection-manager';
 import { ClassDefinition } from './types';
-import { SocketConnection } from './socket-connection';
-import { LoadtestClient } from './loadtest-client';
 
 jest.mock('./helper/sleep', () => {
 	return { sleep: () => Promise.resolve(true) };
@@ -47,9 +47,8 @@ describe('BoardLoadTest', () => {
 	const setup = (classDefinition: ClassDefinition) => {
 		const socketConfiguration = { baseUrl: '', path: '', token: '' };
 		const socketConnectionManager = createMock<SocketConnectionManager>();
-		jest
-			.spyOn(socketConnectionManager, 'createConnections')
-			.mockImplementation()
+		socketConnectionManager.createConnections = jest
+			.fn()
 			.mockResolvedValue([new SocketConnection(socketConfiguration, console.log)]);
 		const socketConnection = new SocketConnection(socketConfiguration, console.log);
 
