@@ -24,7 +24,10 @@ export interface IDashboardRepo {
 
 @Injectable()
 export class DashboardRepo implements IDashboardRepo {
-	constructor(protected readonly em: EntityManager, protected readonly mapper: DashboardModelMapper) {}
+	constructor(
+		protected readonly em: EntityManager,
+		protected readonly mapper: DashboardModelMapper
+	) {}
 
 	// ToDo: refactor this to be in an abstract class (see baseRepo)
 	public async persist(entity: Dashboard): Promise<Dashboard> {

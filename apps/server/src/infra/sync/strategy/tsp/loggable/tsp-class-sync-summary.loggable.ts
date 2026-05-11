@@ -1,7 +1,10 @@
 import { Loggable, LogMessage } from '@core/logger';
 
 export class TspClassSyncSummaryLoggable implements Loggable {
-	constructor(private readonly totalClassUpdateCount: number, private readonly totalClassCreationCount: number) {}
+	constructor(
+		private readonly totalClassUpdateCount: number,
+		private readonly totalClassCreationCount: number
+	) {}
 
 	public getLogMessage(): LogMessage {
 		const message: LogMessage = {

@@ -24,7 +24,7 @@ export class LtiDeepLinkRequestMapper {
 					availableUntil: contentItem.available?.endDatetime,
 					submissionFrom: contentItem.submission?.startDatetime,
 					submissionUntil: contentItem.submission?.endDatetime,
-			  })
+				})
 			: undefined;
 
 		return deepLink;

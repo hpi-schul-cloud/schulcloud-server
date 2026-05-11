@@ -3,9 +3,10 @@ import { SanitizeHtml } from '@shared/controller/transformer';
 import { IsBoolean, IsDate, IsString, MaxLength, MinLength } from 'class-validator';
 import { RoomInvitationLinkDto } from '../../../domain/do/room-invitation-link.do';
 
-export class CreateRoomInvitationLinkBodyParams
-	implements Omit<RoomInvitationLinkDto, 'creatorUserId' | 'creatorSchoolId'>
-{
+export class CreateRoomInvitationLinkBodyParams implements Omit<
+	RoomInvitationLinkDto,
+	'creatorUserId' | 'creatorSchoolId'
+> {
 	@ApiProperty({
 		description: 'Id of the room',
 		required: true,

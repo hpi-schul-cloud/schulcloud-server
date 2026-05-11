@@ -7,7 +7,10 @@ import { MeResponseMapper } from './mapper';
 
 @Injectable()
 export class MeUc {
-	constructor(private readonly schoolService: SchoolService, private readonly userService: UserService) {}
+	constructor(
+		private readonly schoolService: SchoolService,
+		private readonly userService: UserService
+	) {}
 
 	public async getMe(
 		userId: EntityId,

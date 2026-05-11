@@ -1,9 +1,9 @@
 // Rest of the code...
 import { InputFormat } from '@shared/domain/types';
 import { ContentElementType } from '../domain';
+import { UpdateContentElementMessageParams } from '../gateway/dto';
 import { LoadtestClient } from './loadtest-client';
 import { SocketConnection } from './socket-connection';
-import { UpdateContentElementMessageParams } from '../gateway/dto';
 
 jest.mock('./socket-connection');
 

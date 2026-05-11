@@ -8,7 +8,10 @@ import { ICurrentUser, JwtPayload } from '../interface';
 import { CurrentUserBuilder, JwtStrategyOptionsFactory } from '../mapper';
 
 export class JwtStrategy extends PassportStrategy(Strategy) {
-	constructor(private readonly jwtValidationAdapter: JwtValidationAdapter, config: JwtAuthGuardConfig) {
+	constructor(
+		private readonly jwtValidationAdapter: JwtValidationAdapter,
+		config: JwtAuthGuardConfig
+	) {
 		const strategyOptions = JwtStrategyOptionsFactory.build(JwtExtractor.extractJwtFromRequest, config);
 
 		super(strategyOptions);

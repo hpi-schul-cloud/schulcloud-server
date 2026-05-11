@@ -1,7 +1,10 @@
 import { LogMessage } from '@core/logger';
 
 export class H5pEditorContentCopySuccessfulLoggable {
-	constructor(private readonly sourceContentId: string, private readonly copiedContentId: string) {}
+	constructor(
+		private readonly sourceContentId: string,
+		private readonly copiedContentId: string
+	) {}
 
 	public getLogMessage(): LogMessage {
 		return {

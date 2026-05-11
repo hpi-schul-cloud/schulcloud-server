@@ -151,7 +151,7 @@ export class ContextExternalToolRepo {
 					availableUntil: ltiDeepLinkEntity.availableUntil,
 					submissionFrom: ltiDeepLinkEntity.submissionFrom,
 					submissionUntil: ltiDeepLinkEntity.submissionUntil,
-			  })
+				})
 			: undefined;
 
 		return new ContextExternalTool({
@@ -178,7 +178,7 @@ export class ContextExternalToolRepo {
 					availableUntil: ltiDeepLink.availableUntil,
 					submissionFrom: ltiDeepLink.submissionFrom,
 					submissionUntil: ltiDeepLink.submissionUntil,
-			  })
+				})
 			: undefined;
 
 		return {

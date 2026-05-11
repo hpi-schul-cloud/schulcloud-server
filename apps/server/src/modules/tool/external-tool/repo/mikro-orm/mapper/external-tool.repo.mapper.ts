@@ -48,7 +48,7 @@ export class ExternalToolRepoMapper {
 						uploadUrl: entity.thumbnail.uploadUrl,
 						fileRecordId: entity.thumbnail.fileRecord.toHexString(),
 						fileName: entity.thumbnail.fileName,
-				  })
+					})
 				: undefined,
 			config,
 			parameters: this.mapCustomParametersToDOs(entity.parameters || []),
@@ -131,7 +131,7 @@ export class ExternalToolRepoMapper {
 						fileRecord: new ObjectId(domainObject.thumbnail.fileRecordId),
 						uploadUrl: domainObject.thumbnail.uploadUrl,
 						fileName: domainObject.thumbnail.fileName,
-				  })
+					})
 				: undefined,
 			config,
 			parameters: this.mapCustomParameterDOsToEntities(domainObject.parameters ?? []),

@@ -27,7 +27,10 @@ class SampleBusinessError extends BusinessError {
 }
 
 class SampleLoggableExceptionWithCause extends InternalServerErrorException implements Loggable {
-	constructor(private readonly testValue: string, error?: unknown) {
+	constructor(
+		private readonly testValue: string,
+		error?: unknown
+	) {
 		super(ErrorUtils.createHttpExceptionOptions(error));
 	}
 

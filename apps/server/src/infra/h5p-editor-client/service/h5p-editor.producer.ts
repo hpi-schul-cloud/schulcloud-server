@@ -5,7 +5,10 @@ import type { H5pExchangeConfig } from '../h5p-exchange.config';
 
 @Injectable()
 export class H5pEditorProducer {
-	constructor(private readonly amqpConnection: AmqpConnection, private readonly h5pExchangeConfig: H5pExchangeConfig) {}
+	constructor(
+		private readonly amqpConnection: AmqpConnection,
+		private readonly h5pExchangeConfig: H5pExchangeConfig
+	) {}
 
 	public async deleteContent(message: DeleteContentParams): Promise<void> {
 		await this.amqpConnection.publish(this.h5pExchangeConfig.exchangeName, H5pEditorEvents.DELETE_CONTENT, message);

@@ -29,7 +29,10 @@ import { CreateCourseDto } from './dto/create-course.dto';
 @JwtAuthentication()
 @Controller('courses')
 export class CourseController {
-	constructor(private readonly courseUc: CourseUc, private readonly courseSyncUc: CourseSyncUc) {}
+	constructor(
+		private readonly courseUc: CourseUc,
+		private readonly courseSyncUc: CourseSyncUc
+	) {}
 
 	@Get()
 	public async findForUser(

@@ -6,7 +6,10 @@ import { DeletionExecutionUc } from './uc';
 
 @Console({ command: 'execution', description: 'Console providing an access to the deletion execution(s).' })
 export class DeletionExecutionConsole {
-	constructor(private consoleWriter: ConsoleWriterService, private deletionExecutionUc: DeletionExecutionUc) {}
+	constructor(
+		private consoleWriter: ConsoleWriterService,
+		private deletionExecutionUc: DeletionExecutionUc
+	) {}
 
 	@Command({
 		command: 'trigger',

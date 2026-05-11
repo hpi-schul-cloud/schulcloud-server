@@ -1,9 +1,12 @@
+import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@core/logger';
 import { NotFoundException } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@core/logger';
 
 export class UserLoginMigrationNotFoundLoggableException extends NotFoundException implements Loggable {
-	constructor(private readonly schoolId: EntityId, private readonly userLoginMigrationId?: EntityId) {
+	constructor(
+		private readonly schoolId: EntityId,
+		private readonly userLoginMigrationId?: EntityId
+	) {
 		super();
 	}
 

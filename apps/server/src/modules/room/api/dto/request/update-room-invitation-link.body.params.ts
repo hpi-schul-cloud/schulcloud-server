@@ -3,9 +3,10 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { SanitizeHtml } from '@shared/controller/transformer';
 import { IsBoolean, IsDate, IsString, MaxLength, MinLength } from 'class-validator';
 
-export class UpdateRoomInvitationLinkBodyParams
-	implements Omit<RoomInvitationLinkDto, 'roomId' | 'creatorUserId' | 'creatorSchoolId'>
-{
+export class UpdateRoomInvitationLinkBodyParams implements Omit<
+	RoomInvitationLinkDto,
+	'roomId' | 'creatorUserId' | 'creatorSchoolId'
+> {
 	@ApiProperty({
 		description: 'Title of the link.',
 	})

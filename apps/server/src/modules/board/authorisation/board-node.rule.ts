@@ -79,7 +79,10 @@ type OperationFn = (user: User, authorizable: BoardNodeAuthorizable) => boolean;
 
 @Injectable()
 export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
-	constructor(authorisationInjectionService: AuthorizationInjectionService, private readonly userService: UserService) {
+	constructor(
+		authorisationInjectionService: AuthorizationInjectionService,
+		private readonly userService: UserService
+	) {
 		authorisationInjectionService.injectAuthorizationRule(this);
 	}
 

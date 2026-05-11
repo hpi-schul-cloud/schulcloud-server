@@ -13,7 +13,10 @@ import { ReferenceLoader } from './reference.loader';
  */
 @Injectable()
 export class AuthorizationReferenceService {
-	constructor(private readonly loader: ReferenceLoader, private readonly authorizationService: AuthorizationService) {}
+	constructor(
+		private readonly loader: ReferenceLoader,
+		private readonly authorizationService: AuthorizationService
+	) {}
 
 	public async checkPermissionByReferences(
 		userId: EntityId,

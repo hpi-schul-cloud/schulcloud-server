@@ -4,7 +4,10 @@ import { Loggable } from '@shared/common/loggable';
 import type { RuntimeConfigType, RuntimeConfigValue } from '../runtime-config-value.do';
 
 export class RuntimeConfigValueNotExpectedType extends InternalServerErrorException implements Loggable {
-	constructor(private readonly expectedType: RuntimeConfigType, private readonly domainObject: RuntimeConfigValue) {
+	constructor(
+		private readonly expectedType: RuntimeConfigType,
+		private readonly domainObject: RuntimeConfigValue
+	) {
 		super('Runtime Config Value is not of the expected Type.');
 	}
 

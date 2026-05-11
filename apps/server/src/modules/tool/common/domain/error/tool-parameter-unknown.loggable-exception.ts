@@ -5,7 +5,10 @@ import { EntityId } from '@shared/domain/types';
 import { CustomParameterEntry } from '../custom-parameter-entry.do';
 
 export class ToolParameterUnknownLoggableException extends BusinessError implements Loggable {
-	constructor(private readonly toolId: EntityId | undefined, private readonly parameterEntry: CustomParameterEntry) {
+	constructor(
+		private readonly toolId: EntityId | undefined,
+		private readonly parameterEntry: CustomParameterEntry
+	) {
 		super(
 			{
 				type: 'TOOL_PARAMETER_UNKNOWN',

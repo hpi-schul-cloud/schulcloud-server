@@ -24,9 +24,8 @@ export class ToolReferenceUc {
 	): Promise<ToolReference[]> {
 		const contextRef = new ContextRef({ type: contextType, id: contextId });
 
-		const contextExternalTools: ContextExternalTool[] = await this.contextExternalToolService.findAllByContext(
-			contextRef
-		);
+		const contextExternalTools: ContextExternalTool[] =
+			await this.contextExternalToolService.findAllByContext(contextRef);
 
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);
 		const toolReferencesPromises: Promise<ToolReference | null>[] = contextExternalTools.map(
@@ -60,9 +59,8 @@ export class ToolReferenceUc {
 	}
 
 	async getToolReference(userId: EntityId, contextExternalToolId: EntityId): Promise<ToolReference> {
-		const contextExternalTool: ContextExternalTool = await this.contextExternalToolService.findByIdOrFail(
-			contextExternalToolId
-		);
+		const contextExternalTool: ContextExternalTool =
+			await this.contextExternalToolService.findByIdOrFail(contextExternalToolId);
 
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);
 		await this.ensureToolPermissions(user, contextExternalTool);

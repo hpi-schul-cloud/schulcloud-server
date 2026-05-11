@@ -2,7 +2,10 @@ import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from
 import { ImportUser } from '../entity';
 
 export class UserMigrationFailedLoggable implements Loggable {
-	constructor(private readonly importUser: ImportUser, private readonly error: Error) {}
+	constructor(
+		private readonly importUser: ImportUser,
+		private readonly error: Error
+	) {}
 
 	public getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
 		return {

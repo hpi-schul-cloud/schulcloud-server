@@ -180,7 +180,7 @@ describe('dashboard model mapper', () => {
 									type: 'livingroom' as LearnroomTypes,
 									shortTitle: 'Wo',
 									displayColor: '#FFFFFF',
-								} as LearnroomMetadata),
+								}) as LearnroomMetadata,
 						}),
 					},
 				],

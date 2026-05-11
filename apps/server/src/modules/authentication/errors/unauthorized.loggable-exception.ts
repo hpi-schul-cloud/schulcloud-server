@@ -3,7 +3,10 @@ import { Loggable } from '@core/logger/interfaces';
 import { ErrorLogMessage } from '@core/logger/types';
 
 export class UnauthorizedLoggableException extends UnauthorizedException implements Loggable {
-	constructor(private readonly username: string, private readonly systemId?: string) {
+	constructor(
+		private readonly username: string,
+		private readonly systemId?: string
+	) {
 		super();
 	}
 
