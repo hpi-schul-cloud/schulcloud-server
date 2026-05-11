@@ -40,7 +40,6 @@ class ApiKeyStrategy extends AuthenticationBaseStrategy {
 		// todo: authenticate against database collection, return permissions.
 		// todo: remove route logic, give api-keys permissions instead.
 
-		if (route === 'sync') return key === Configuration.get('SYNC_API_KEY');
 		if (route === 'resolve') return key === Configuration.get('CALENDAR_API_KEY');
 
 		return false;
