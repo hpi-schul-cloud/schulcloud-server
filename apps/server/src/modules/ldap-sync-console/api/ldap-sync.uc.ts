@@ -42,7 +42,7 @@ export class LdapSyncUc {
 			// Run the LDAP sync using the legacy runner (handles logger creation internally)
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
 			stats = await runLegacyLdapSync(feathersApp, { forceFullSync });
-			this.logger.info(new LdapSyncCompletedLoggable(stats.success, stats.errors.length));
+			this.logger.info(new LdapSyncCompletedLoggable(stats));
 		} finally {
 			// Force process exit after a short delay to allow logs to flush.
 			// This is necessary because the legacy Feathers app opens connections
