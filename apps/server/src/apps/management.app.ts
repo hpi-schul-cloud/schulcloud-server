@@ -9,7 +9,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { ManagementServerModule } from '@modules/management/management-server.app.module';
 import { install as sourceMapInstall } from 'source-map-support';
 import { enableOpenApiDocs } from './helpers';
-import legacyAppPromise = require('../../../../src/app');
+import { legacyAppPromise } from '@imports-from-feathers';
 
 async function bootstrap(): Promise<void> {
 	sourceMapInstall();
@@ -30,7 +30,7 @@ async function bootstrap(): Promise<void> {
 	nestApp.useLogger(await nestApp.resolve(LegacyLogger));
 
 	// load the legacy feathers/express server
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-call
 	const feathersExpress = await legacyAppPromise(orm);
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
 	await feathersExpress.setup();

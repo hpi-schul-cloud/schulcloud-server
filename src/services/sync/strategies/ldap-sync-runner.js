@@ -11,7 +11,7 @@ const LDAPSystemSyncer = require('./LDAPSystemSyncer');
  * @param {boolean} options.forceFullSync - Whether to force a full sync
  * @returns {Promise<Object>} Sync statistics
  */
-async function runLdapSync(app, options = {}) {
+async function runLegacyLdapSync(app, options = {}) {
 	const { forceFullSync = false } = options;
 
 	// Create the sync logger (Winston-based)
@@ -24,5 +24,4 @@ async function runLdapSync(app, options = {}) {
 	return stats;
 }
 
-module.exports = { runLdapSync };
-
+module.exports = { runLegacyLdapSync };
