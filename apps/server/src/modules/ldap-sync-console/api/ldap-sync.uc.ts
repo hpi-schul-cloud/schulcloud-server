@@ -1,8 +1,11 @@
 import { Logger } from '@core/logger';
 import { MikroORM } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
-import { legacyAppPromise, runLegacyLdapSync } from '@imports-from-feathers';
+// import { legacyAppPromise, runLegacyLdapSync } from '@imports-from-feathers';
+import { runLegacyLdapSync } from '@imports-from-feathers';
 import { LdapSyncCompletedLoggable, LdapSyncExecutingLoggable, LdapSyncStartedLoggable } from './loggable';
+// eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-unsafe-assignment
+const legacyAppPromise = require('../../../../../../src/app');
 
 interface SyncStats {
 	success: boolean;

@@ -25,7 +25,7 @@ import { join } from 'path';
 import { install as sourceMapInstall } from 'source-map-support';
 import { AppStartLoggable, enableOpenApiDocs } from './helpers';
 import { createMetricsServer } from './helpers/metrics.server';
-import { legacyAppPromise } from '@imports-from-feathers';
+import legacyAppPromise = require('../../../../src/app');
 
 async function bootstrap(): Promise<void> {
 	sourceMapInstall();
@@ -46,7 +46,7 @@ async function bootstrap(): Promise<void> {
 	const loggerConfig = await nestApp.resolve<LoggerConfig>(LOGGER_CONFIG_TOKEN);
 	nestApp.use(createRequestLoggerMiddleware(loggerConfig));
 	// load the legacy feathers/express server
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-call
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 	const feathersExpress = await legacyAppPromise(orm, cacheManager);
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
 	await feathersExpress.setup();
