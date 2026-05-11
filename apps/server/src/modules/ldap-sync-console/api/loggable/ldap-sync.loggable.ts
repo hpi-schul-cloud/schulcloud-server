@@ -22,7 +22,10 @@ export class LdapSyncExecutingLoggable implements Loggable {
 }
 
 export class LdapSyncCompletedLoggable implements Loggable {
-	constructor(private readonly success: boolean, private readonly errorCount: number) {}
+	constructor(
+		private readonly success: boolean,
+		private readonly errorCount: number
+	) {}
 
 	public getLogMessage(): LogMessage {
 		return {

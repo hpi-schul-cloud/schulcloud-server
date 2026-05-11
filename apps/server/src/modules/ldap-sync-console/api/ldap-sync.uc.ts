@@ -17,7 +17,10 @@ interface SyncStats {
  */
 @Injectable()
 export class LdapSyncUc {
-	constructor(private readonly logger: Logger, private readonly orm: MikroORM) {
+	constructor(
+		private readonly logger: Logger,
+		private readonly orm: MikroORM
+	) {
 		this.logger.setContext(LdapSyncUc.name);
 	}
 

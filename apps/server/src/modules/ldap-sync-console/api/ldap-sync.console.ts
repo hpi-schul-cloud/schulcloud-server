@@ -4,7 +4,10 @@ import { LdapSyncUc } from './ldap-sync.uc';
 
 @Console()
 export class LdapSyncConsole {
-	constructor(private readonly consoleWriter: ConsoleWriterService, private readonly ldapSyncUc: LdapSyncUc) {}
+	constructor(
+		private readonly consoleWriter: ConsoleWriterService,
+		private readonly ldapSyncUc: LdapSyncUc
+	) {}
 
 	@Command({
 		command: 'sync',
