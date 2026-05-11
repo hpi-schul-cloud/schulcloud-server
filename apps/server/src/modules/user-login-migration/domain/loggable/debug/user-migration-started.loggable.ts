@@ -3,7 +3,10 @@ import { EntityId } from '@shared/domain/types';
 import { UserLoginMigrationDO } from '../../do';
 
 export class UserMigrationStartedLoggable implements Loggable {
-	constructor(private readonly userId: EntityId, private readonly userLoginMigration: UserLoginMigrationDO) {}
+	constructor(
+		private readonly userId: EntityId,
+		private readonly userLoginMigration: UserLoginMigrationDO
+	) {}
 
 	getLogMessage(): LogMessage {
 		return {

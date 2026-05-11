@@ -7,7 +7,10 @@ import { BoardNodeService } from './board-node.service';
 
 @Injectable()
 export class BoardCommonToolService {
-	constructor(private readonly boardNodeRepo: BoardNodeRepo, private readonly boardNodeService: BoardNodeService) {}
+	constructor(
+		private readonly boardNodeRepo: BoardNodeRepo,
+		private readonly boardNodeService: BoardNodeService
+	) {}
 
 	async countBoardUsageForExternalTools(contextExternalTools: ContextExternalTool[]): Promise<number> {
 		// TODO check why this is done so complicated

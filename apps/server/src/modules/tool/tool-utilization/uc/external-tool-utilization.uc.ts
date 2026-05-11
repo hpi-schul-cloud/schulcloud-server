@@ -25,9 +25,8 @@ export class ExternalToolUtilizationUc {
 			AuthorizationContextBuilder.read([Permission.TOOL_ADMIN])
 		);
 
-		const metadata: ExternalToolUtilization = await this.commonToolUtilizationService.getUtilizationForExternalTool(
-			toolId
-		);
+		const metadata: ExternalToolUtilization =
+			await this.commonToolUtilizationService.getUtilizationForExternalTool(toolId);
 
 		return metadata;
 	}

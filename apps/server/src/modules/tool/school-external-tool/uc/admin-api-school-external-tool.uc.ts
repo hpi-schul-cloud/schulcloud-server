@@ -9,9 +9,8 @@ export class AdminApiSchoolExternalToolUc {
 	async createSchoolExternalTool(schoolExternalToolProps: SchoolExternalToolProps): Promise<SchoolExternalTool> {
 		const schoolExternalTool: SchoolExternalTool = new SchoolExternalTool(schoolExternalToolProps);
 
-		const createdSchoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.saveSchoolExternalTool(
-			schoolExternalTool
-		);
+		const createdSchoolExternalTool: SchoolExternalTool =
+			await this.schoolExternalToolService.saveSchoolExternalTool(schoolExternalTool);
 
 		return createdSchoolExternalTool;
 	}

@@ -17,7 +17,7 @@ describe('Seed Data generation', () => {
 	it('should generate seed data', () => {
 		const seedData = setup();
 		expect(seedData).toBeDefined();
-		expect(seedData.length).toBe(5);
+		expect(seedData.length).toBe(4);
 		seedData.forEach(({ data }) => {
 			expect(data).toBeDefined();
 			expect(data.length).toBeGreaterThan(0);

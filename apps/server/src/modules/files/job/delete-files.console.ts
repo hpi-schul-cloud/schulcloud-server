@@ -4,7 +4,10 @@ import { DeleteFilesUc } from '../uc';
 
 @Console({ command: 'files', description: 'file deletion console' })
 export class DeleteFilesConsole {
-	constructor(private deleteFilesUc: DeleteFilesUc, private logger: LegacyLogger) {
+	constructor(
+		private deleteFilesUc: DeleteFilesUc,
+		private logger: LegacyLogger
+	) {
 		this.logger.setContext(DeleteFilesConsole.name);
 	}
 

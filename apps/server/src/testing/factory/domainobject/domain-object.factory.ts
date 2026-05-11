@@ -8,7 +8,7 @@ export class DomainObjectFactory<
 	T extends DomainObject<U>,
 	U extends AuthorizableObject = T extends DomainObject<infer X> ? X : never,
 	I = any,
-	C = U
+	C = U,
 > extends BaseFactory<T, U, I, C> {
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	override buildWithId(params?: DeepPartial<U>, id?: string, options: BuildOptions<U, I> = {}): T {

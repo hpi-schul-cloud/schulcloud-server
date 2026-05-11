@@ -5,7 +5,10 @@ import { RegistrationPinRepo } from '../repo';
 
 @Injectable()
 export class RegistrationPinService {
-	constructor(private readonly registrationPinRepo: RegistrationPinRepo, private readonly logger: Logger) {
+	constructor(
+		private readonly registrationPinRepo: RegistrationPinRepo,
+		private readonly logger: Logger
+	) {
 		this.logger.setContext(RegistrationPinService.name);
 	}
 

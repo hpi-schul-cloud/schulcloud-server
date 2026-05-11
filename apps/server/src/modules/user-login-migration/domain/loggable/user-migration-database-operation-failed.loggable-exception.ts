@@ -7,7 +7,11 @@ export class UserMigrationDatabaseOperationFailedLoggableException
 	extends InternalServerErrorException
 	implements Loggable
 {
-	constructor(private readonly userId: EntityId, private readonly operation: 'migration' | 'rollback', error: unknown) {
+	constructor(
+		private readonly userId: EntityId,
+		private readonly operation: 'migration' | 'rollback',
+		error: unknown
+	) {
 		super(ErrorUtils.createHttpExceptionOptions(error));
 	}
 

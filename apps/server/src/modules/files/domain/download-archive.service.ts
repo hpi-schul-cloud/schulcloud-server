@@ -10,7 +10,10 @@ import { GetFileResponse } from './types';
 
 @Injectable()
 export class DownloadArchiveService {
-	constructor(private readonly logger: Logger, private readonly legacyFileStorageAdapter: LegacyFileStorageAdapter) {
+	constructor(
+		private readonly logger: Logger,
+		private readonly legacyFileStorageAdapter: LegacyFileStorageAdapter
+	) {
 		this.logger.setContext(DownloadArchiveService.name);
 	}
 

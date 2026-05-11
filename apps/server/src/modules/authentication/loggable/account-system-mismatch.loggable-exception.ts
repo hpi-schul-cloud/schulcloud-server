@@ -4,7 +4,10 @@ import { Loggable } from '@core/logger/interfaces';
 import { ErrorLogMessage } from '@core/logger/types';
 
 export class AccountSystemMismatchLoggableException extends BadRequestException implements Loggable {
-	constructor(private readonly expectedSystemId?: EntityId, private readonly receivedSystemId?: EntityId) {
+	constructor(
+		private readonly expectedSystemId?: EntityId,
+		private readonly receivedSystemId?: EntityId
+	) {
 		super();
 	}
 

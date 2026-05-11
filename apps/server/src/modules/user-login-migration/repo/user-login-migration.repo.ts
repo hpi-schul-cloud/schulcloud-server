@@ -11,7 +11,10 @@ import { UserLoginMigrationEntity } from './user-login-migration.entity';
 
 @Injectable()
 export class UserLoginMigrationRepo extends BaseDORepo<UserLoginMigrationDO, UserLoginMigrationEntity> {
-	constructor(protected readonly _em: EntityManager, protected readonly logger: LegacyLogger) {
+	constructor(
+		protected readonly _em: EntityManager,
+		protected readonly logger: LegacyLogger
+	) {
 		super(_em, logger);
 	}
 

@@ -222,7 +222,7 @@ describe('Room Controller (API)', () => {
 							{ role: roomViewerRole, user: studentUser },
 							{ role: roomOwnerRole, user: teacherUser },
 							{ role: roomViewerRole, user: teacherUser2 },
-					  ]
+						]
 					: [];
 				const userGroupEntity = groupEntityFactory.buildWithId({
 					type: GroupEntityTypes.ROOM,

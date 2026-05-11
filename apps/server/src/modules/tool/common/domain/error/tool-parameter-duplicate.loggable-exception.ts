@@ -4,7 +4,10 @@ import { BusinessError } from '@shared/common/error';
 import { EntityId } from '@shared/domain/types';
 
 export class ToolParameterDuplicateLoggableException extends BusinessError implements Loggable {
-	constructor(private readonly toolId: EntityId | undefined, private readonly parameterName: string) {
+	constructor(
+		private readonly toolId: EntityId | undefined,
+		private readonly parameterName: string
+	) {
 		super(
 			{
 				type: 'TOOL_PARAMETER_DUPLICATE',
