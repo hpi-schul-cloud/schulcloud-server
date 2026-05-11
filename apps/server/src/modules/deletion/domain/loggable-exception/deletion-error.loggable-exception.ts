@@ -4,7 +4,10 @@ import { ErrorLogMessage } from '@core/logger/types';
 import { AxiosErrorLoggable } from '@core/error/loggable';
 import { isAxiosError } from 'axios';
 export class DeletionErrorLoggableException extends InternalServerErrorException implements Loggable {
-	constructor(private readonly errorMessage: string, private readonly error?: Error) {
+	constructor(
+		private readonly errorMessage: string,
+		private readonly error?: Error
+	) {
 		super();
 	}
 

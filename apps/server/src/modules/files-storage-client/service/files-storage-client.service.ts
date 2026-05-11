@@ -8,7 +8,10 @@ import { FilesStorageProducer } from './files-storage.producer';
 
 @Injectable()
 export class FilesStorageClientAdapterService {
-	constructor(private logger: LegacyLogger, private readonly fileStorageMQProducer: FilesStorageProducer) {
+	constructor(
+		private logger: LegacyLogger,
+		private readonly fileStorageMQProducer: FilesStorageProducer
+	) {
 		this.logger.setContext(FilesStorageClientAdapterService.name);
 	}
 

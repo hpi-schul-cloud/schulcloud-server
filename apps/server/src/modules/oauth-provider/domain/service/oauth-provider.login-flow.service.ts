@@ -8,9 +8,8 @@ export class OauthProviderLoginFlowService {
 	constructor(private readonly externalToolService: ExternalToolService) {}
 
 	public async findToolByClientId(clientId: string): Promise<ExternalTool> {
-		const externalTool: ExternalTool | null = await this.externalToolService.findExternalToolByOAuth2ConfigClientId(
-			clientId
-		);
+		const externalTool: ExternalTool | null =
+			await this.externalToolService.findExternalToolByOAuth2ConfigClientId(clientId);
 
 		if (externalTool) {
 			return externalTool;

@@ -2,7 +2,10 @@ import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from
 import { UnprocessableEntityException } from '@nestjs/common';
 
 export class MediumUnprocessableResponseLoggableException extends UnprocessableEntityException implements Loggable {
-	constructor(private readonly mediumId: string, private readonly sourceId: string) {
+	constructor(
+		private readonly mediumId: string,
+		private readonly sourceId: string
+	) {
 		super();
 	}
 

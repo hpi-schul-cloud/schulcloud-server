@@ -2,7 +2,10 @@ import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from
 import { BadRequestException } from '@nestjs/common';
 
 export class ExternalIdMissingLoggableException extends BadRequestException implements Loggable {
-	constructor(private readonly context: string, private readonly additionalInfo?: Record<string, unknown>) {
+	constructor(
+		private readonly context: string,
+		private readonly additionalInfo?: Record<string, unknown>
+	) {
 		super();
 	}
 

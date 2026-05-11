@@ -7,7 +7,10 @@ import { ClassesRepo } from '../repo';
 @Injectable()
 @EventsHandler(UserChangedSchoolEvent)
 export class UserChangedSchoolHandlerService implements IEventHandler<UserChangedSchoolEvent> {
-	constructor(private readonly classesRepo: ClassesRepo, private readonly orm: MikroORM) {}
+	constructor(
+		private readonly classesRepo: ClassesRepo,
+		private readonly orm: MikroORM
+	) {}
 
 	@EnsureRequestContext()
 	public async handle(event: UserChangedSchoolEvent): Promise<void> {

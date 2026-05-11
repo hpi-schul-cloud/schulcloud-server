@@ -7,7 +7,10 @@ import { UsersAdminRepo } from '../repo';
 
 @Injectable()
 export class UsersAdminService {
-	constructor(private readonly usersAdminRepo: UsersAdminRepo, private readonly logger: Logger) {
+	constructor(
+		private readonly usersAdminRepo: UsersAdminRepo,
+		private readonly logger: Logger
+	) {
 		this.logger.setContext(UsersAdminService.name);
 	}
 

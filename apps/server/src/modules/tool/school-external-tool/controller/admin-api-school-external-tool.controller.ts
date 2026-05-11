@@ -18,9 +18,8 @@ export class AdminApiSchoolExternalToolController {
 		const schoolExternalToolProps: SchoolExternalToolProps =
 			SchoolExternalToolRequestMapper.mapSchoolExternalToolRequest(body);
 
-		const schoolExternalTool: SchoolExternalTool = await this.adminApiSchoolExternalToolUc.createSchoolExternalTool(
-			schoolExternalToolProps
-		);
+		const schoolExternalTool: SchoolExternalTool =
+			await this.adminApiSchoolExternalToolUc.createSchoolExternalTool(schoolExternalToolProps);
 
 		const response: SchoolExternalToolResponse =
 			SchoolExternalToolResponseMapper.mapToSchoolExternalToolResponse(schoolExternalTool);

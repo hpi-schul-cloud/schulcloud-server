@@ -12,7 +12,7 @@ import { LEGACY_FILE_ARCHIVE_CONFIG_TOKEN } from '../legacy-file-archive.config'
 import { LegacyFileStorageAdapter } from './legacy-file-storage.adapter';
 
 const buildAxiosResponse = (data: unknown): AxiosResponse =>
-	({ data, status: 200, statusText: 'OK', headers: {}, config: {} } as AxiosResponse);
+	({ data, status: 200, statusText: 'OK', headers: {}, config: {} }) as AxiosResponse;
 
 describe('LegacyFileStorageAdapter', () => {
 	let adapter: LegacyFileStorageAdapter;

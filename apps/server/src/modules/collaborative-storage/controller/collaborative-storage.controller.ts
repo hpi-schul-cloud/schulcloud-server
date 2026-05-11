@@ -14,7 +14,10 @@ import { TeamRoleDto } from './dto/team-role.params';
 @JwtAuthentication()
 @Controller('collaborative-storage')
 export class CollaborativeStorageController {
-	constructor(private readonly teamStorageUc: CollaborativeStorageUc, private logger: LegacyLogger) {
+	constructor(
+		private readonly teamStorageUc: CollaborativeStorageUc,
+		private logger: LegacyLogger
+	) {
 		this.logger.setContext(CollaborativeStorageController.name);
 	}
 

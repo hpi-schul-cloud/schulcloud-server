@@ -18,7 +18,10 @@ export class CommonCartridgeFileParser {
 
 	private readonly resourceFactory: CommonCartridgeResourceFactory;
 
-	constructor(file: Buffer, public readonly options = DEFAULT_FILE_PARSER_OPTIONS) {
+	constructor(
+		file: Buffer,
+		public readonly options = DEFAULT_FILE_PARSER_OPTIONS
+	) {
 		this.archive = new AdmZip(file);
 		this.manifestParser = new CommonCartridgeManifestParser(this.getManifestFromArchive(), this.options);
 		this.resourceFactory = new CommonCartridgeResourceFactory(this.archive);

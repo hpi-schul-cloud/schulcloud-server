@@ -3,7 +3,10 @@ import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from
 import { ToolConfigType } from '../../../common/enum';
 
 export class InvalidToolTypeLoggableException extends UnprocessableEntityException implements Loggable {
-	constructor(private readonly expected: ToolConfigType, private readonly received: ToolConfigType) {
+	constructor(
+		private readonly expected: ToolConfigType,
+		private readonly received: ToolConfigType
+	) {
 		super();
 	}
 

@@ -30,7 +30,10 @@ import { ShareTokenUC } from './share-token.uc';
 @JwtAuthentication()
 @Controller('sharetoken')
 export class ShareTokenController {
-	constructor(private readonly shareTokenUC: ShareTokenUC, private readonly importTokenUc: ImportTokenUC) {}
+	constructor(
+		private readonly shareTokenUC: ShareTokenUC,
+		private readonly importTokenUc: ImportTokenUC
+	) {}
 
 	@ApiOperation({ summary: 'Create a share token.' })
 	@ApiResponse({ status: 201, type: ShareTokenResponse })
