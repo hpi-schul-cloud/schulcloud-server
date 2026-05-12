@@ -283,7 +283,7 @@ describe(`board readersCanEdit setting (api)`, () => {
 	});
 
 	describe('when the setting is disabled', () => {
-		it('should allow users with view role to edit the board', async () => {
+		it('should not allow users with view role to edit the board', async () => {
 			const { accountWithViewRole, accountWithAdminRole, columnBoardNode } = await setup();
 
 			const loggedInAdmin = await testApiClient.login(accountWithAdminRole);
