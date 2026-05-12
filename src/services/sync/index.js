@@ -1,3 +1,4 @@
+const { authenticate } = require('@feathersjs/authentication');
 const { iff, isProvider } = require('feathers-hooks-common');
 const { static: staticContent } = require('@feathersjs/express');
 const path = require('path');
@@ -67,6 +68,7 @@ module.exports = function setup(app) {
 		before: {
 			all: [
 				iff(isProvider('external'), [
+					authenticate('jwt'),
 					iff((context) => context.account, hasPermission('SYNC_START')),
 				]),
 			],
