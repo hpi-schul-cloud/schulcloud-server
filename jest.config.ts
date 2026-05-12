@@ -16,7 +16,7 @@ let config: Config.InitialOptions = {
 	coverageDirectory: './coverage',
 	coveragePathIgnorePatterns: ['.module.ts$', 'index.ts$', 'spec.ts$'],
 	testEnvironment: 'node',
-	detectOpenHandles: true,
+	// detectOpenHandles: true,
 	// detectLeaks: true,
 	roots: ['<rootDir>/apps/'],
 	globalSetup: '<rootDir>/apps/server/test/globalSetup.ts',
