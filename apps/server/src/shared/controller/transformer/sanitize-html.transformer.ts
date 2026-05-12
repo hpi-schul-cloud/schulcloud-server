@@ -94,6 +94,13 @@ const inputFormatsSanitizeConfig: Record<string, IOptions> = {
 	},
 
 	RichTextCk5Simple: {
+		allowedTags: ['p', 'br', 'strong', 'em', 'u', 's', 'h2', 'h3', 'h4', 'ul', 'ol', 'li', 'img', 'src'],
+		allowedAttributes: {
+			img: ['src', 'srcset', 'alt', 'title', 'width', 'height', 'loading'],
+		},
+	},
+
+	RichTextCk5News: {
 		allowedTags: ['p', 'br', 'strong', 'em', 'u', 's', 'h2', 'h3', 'h4', 'ul', 'ol', 'li', 'img', 'src', 'a'],
 		allowedAttributes: {
 			a: ['href', 'name', 'target', 'rel'],
@@ -110,6 +117,8 @@ const getSanitizeHtmlOptions = (inputFormat?: InputFormat): IOptions => {
 			return inputFormatsSanitizeConfig.RichTextCk4;
 		case InputFormat.RICH_TEXT_CK5:
 			return inputFormatsSanitizeConfig.RichTextCk5;
+		case InputFormat.RICH_TEXT_CK5_NEWS:
+			return inputFormatsSanitizeConfig.RichTextCk5News;
 		case InputFormat.PLAIN_TEXT:
 		default:
 			return inputFormatsSanitizeConfig.PlainText;
