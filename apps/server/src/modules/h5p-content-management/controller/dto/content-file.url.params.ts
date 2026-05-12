@@ -10,7 +10,7 @@ export class ContentFileUrlParams {
 	@ApiProperty()
 	// In NestJS v11 (path-to-regexp v8), wildcard params are captured as arrays.
 	// Transform joins the array segments back to a slash-separated string.
-	@Transform(({ value }) => (Array.isArray(value) ? value.join('/') : value))
+	@Transform(({ value }: { value: string | string[] }): string => (Array.isArray(value) ? value.join('/') : value))
 	@IsString()
 	@IsNotEmpty()
 	filename!: string;
