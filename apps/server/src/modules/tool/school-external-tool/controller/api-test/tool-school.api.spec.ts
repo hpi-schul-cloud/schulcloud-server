@@ -54,7 +54,8 @@ describe('ToolSchoolController (API)', () => {
 		testApiClient = new TestApiClient(app, basePath);
 		// Get the config from SchoolExternalToolService — this is the instance actually used
 		// for featureSchulconnexMediaLicenseEnabled checks in NestJS v11.
-		config = (moduleRef.get(SchoolExternalToolService) as any).config as ToolConfig;
+		const service: unknown = moduleRef.get(SchoolExternalToolService);
+		({ config } = service as { config: ToolConfig });
 
 		config.featureSchulconnexMediaLicenseEnabled = true;
 	});

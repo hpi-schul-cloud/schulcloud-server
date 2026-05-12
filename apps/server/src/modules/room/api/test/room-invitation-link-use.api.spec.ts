@@ -73,7 +73,10 @@ describe('Room Invitation Link Controller (API)', () => {
 		// when checking featureRoomLinkInvitationExternalPersonsEnabled in getRoomInvitationLinkAuthorizable().
 		// In NestJS v11, each module has its own config instance; using the service's instance
 		// ensures test mutations are reflected in the feature flag checks.
-		config = (moduleFixture.get(RoomMembershipService) as any).roomConfig as RoomPublicApiConfig;
+		const roomMembershipService = moduleFixture.get<unknown>(RoomMembershipService) as {
+			roomConfig: RoomPublicApiConfig;
+		};
+		config = roomMembershipService.roomConfig;
 	});
 
 	beforeEach(async () => {
