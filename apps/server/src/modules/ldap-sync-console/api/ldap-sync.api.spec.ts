@@ -11,16 +11,18 @@ jest.mock('@imports-from-feathers', () => {
 import { ConsoleWriterService } from '@infra/console';
 import { LdapSyncConsoleAppTestModule } from '../ldap-sync-console.app.module';
 import { LdapSyncConsole } from './ldap-sync.console';
-// Mock process.exit to prevent test from exiting
-const mockExit = jest.spyOn(process, 'exit').mockImplementation(() => undefined as never);
 
 describe(LdapSyncConsole.name, () => {
 	let module: TestingModule;
 	let consoleService: LdapSyncConsole;
 	let orm: MikroORM;
 	let consoleWriter: ConsoleWriterService;
+	let mockExit: jest.SpyInstance;
 
 	beforeAll(async () => {
+		// Mock process.exit to prevent test from exiting
+		mockExit = jest.spyOn(process, 'exit').mockImplementation(() => undefined as never);
+
 		module = await Test.createTestingModule({
 			imports: [LdapSyncConsoleAppTestModule],
 		}).compile();
@@ -28,6 +30,15 @@ describe(LdapSyncConsole.name, () => {
 		consoleService = module.get(LdapSyncConsole);
 		orm = module.get(MikroORM);
 		consoleWriter = module.get(ConsoleWriterService);
+	});
+
+	beforeEach(() => {
+		jest.useFakeTimers();
+	});
+
+	afterEach(() => {
+		jest.runAllTimers();
+		jest.useRealTimers();
 	});
 
 	afterAll(async () => {
