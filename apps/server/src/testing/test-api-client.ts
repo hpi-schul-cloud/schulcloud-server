@@ -108,7 +108,7 @@ export class TestApiClient {
 		subPath: string | undefined,
 		fieldName: string,
 		data: Buffer,
-		fileName: string,
+		fileName: string
 	): supertest.Test {
 		const path = this.getPath(subPath);
 		const testRequestInstance = supertest(this.app.getHttpServer())
@@ -149,7 +149,7 @@ export class TestApiClient {
 				return new (this.constructor as new (app: INestApplication, baseRoute: string, authValue?: string) => this)(
 					this.app,
 					this.baseRoute,
-					jwtFromResponse,
+					jwtFromResponse
 				);
 			} catch (error) {
 				lastError = error instanceof Error ? error : new Error(String(error));
@@ -189,13 +189,13 @@ export class TestApiClient {
 				support: false,
 				isExternalUser: false,
 			},
-			jwtConfig,
+			jwtConfig
 		);
 
 		return new (this.constructor as new (app: INestApplication, baseRoute: string, authValue: string) => this)(
 			this.app,
 			this.baseRoute,
-			jwt,
+			jwt
 		);
 	}
 
