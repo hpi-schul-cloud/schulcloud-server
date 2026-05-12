@@ -82,9 +82,15 @@ describe('SocketConnection', () => {
 
 			const err = new Error('connection failed');
 			const triggerError = () => onceListeners.connect_error.forEach((listener) => listener(err));
-			setTimeout(triggerError, 10);
+			const timeoutHandle = setTimeout(triggerError, 10);
 
-			await expect(socketConnection.connect()).rejects.toThrow('Could not connect to socket server: connection failed');
+			try {
+				await expect(socketConnection.connect()).rejects.toThrow(
+					'Could not connect to socket server: connection failed'
+				);
+			} finally {
+				clearTimeout(timeoutHandle);
+			}
 		});
 	});
 
