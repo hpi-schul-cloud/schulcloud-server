@@ -23,6 +23,9 @@ describe('SanitizeHtmlTransformer Decorator', () => {
 
 		@SanitizeHtml(InputFormat.RICH_TEXT_CK5_SIMPLE)
 		contentRichTextCk5Simple!: string;
+
+		@SanitizeHtml(InputFormat.RICH_TEXT_CK5_NEWS)
+		contentRichTextCk5News!: string;
 	}
 
 	describe('when sanitizing plain text', () => {
@@ -105,6 +108,19 @@ describe('SanitizeHtmlTransformer Decorator', () => {
 			const instance = plainToClass(WithHtmlDto, plainString);
 			expect(instance.contentRichTextCk5Simple).toEqual(
 				'<h2>html <h4>text</h4></h2>[x=rac{-bpmsqrt{b^2-4ac}}{2a}]<img src="some.png" />'
+			);
+		});
+	});
+
+	describe('when sanitizing rich text Ck5 news formatting', () => {
+		it('should remove all html but rich text ck5 news tags', () => {
+			const plainString = {
+				contentRichTextCk5News:
+					'<h1></h1><h2><b><mark>html <h4>text</h4><a target="link">hello world</a></mark></b></h2><span class="math-tex">[x=\frac{-bpmsqrt{b^2-4ac}}{2a}]</span><scriPT>alert("foobar");</sCript><stYle></style><img src="some.png" />',
+			};
+			const instance = plainToClass(WithHtmlDto, plainString);
+			expect(instance.contentRichTextCk5News).toEqual(
+				'<h2>html <h4>text</h4><a target="link">hello world</a></h2>[x=rac{-bpmsqrt{b^2-4ac}}{2a}]<img src="some.png" />'
 			);
 		});
 	});
