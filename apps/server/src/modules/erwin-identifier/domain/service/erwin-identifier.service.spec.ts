@@ -113,7 +113,7 @@ describe(ErwinIdentifierService.name, () => {
 					const result: ErwinIdentifier | null = await sut.findByReferencedEntityId(erwinIdentifier.referencedEntityId);
 
 					expect(erwinIdentifierRepoMock.findByReferencedEntityId).toHaveBeenCalledWith(
-						erwinIdentifier.referencedEntityId,
+						erwinIdentifier.referencedEntityId
 					);
 					expect(result).toStrictEqual(erwinIdentifier);
 				});

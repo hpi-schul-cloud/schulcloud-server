@@ -37,7 +37,7 @@ describe('CollaborativeStorage Controller', () => {
 			await controller.updateTeamPermissionsForRole(
 				currentUser,
 				{ teamId: 'testTeam', roleId: 'testRole' },
-				{ read: false, write: false, create: false, delete: false, share: false },
+				{ read: false, write: false, create: false, delete: false, share: false }
 			);
 		});
 	});

@@ -275,7 +275,7 @@ describe(CommonCartridgeImportService.name, () => {
 					'school',
 					expect.any(String),
 					'boardnodes',
-					expect.objectContaining({ name: 'file-element.pdf' }),
+					expect.objectContaining({ name: 'file-element.pdf' })
 				);
 			});
 
@@ -290,7 +290,7 @@ describe(CommonCartridgeImportService.name, () => {
 					'school',
 					expect.any(String),
 					'boardnodes',
-					expect.objectContaining({ name: 'file1-folder.pdf' }),
+					expect.objectContaining({ name: 'file1-folder.pdf' })
 				);
 
 				expect(filesStorageClientAdapterMock.upload).toHaveBeenCalledWith(
@@ -299,7 +299,7 @@ describe(CommonCartridgeImportService.name, () => {
 					'school',
 					expect.any(String),
 					'boardnodes',
-					expect.objectContaining({ name: 'file2-folder.pdf' }),
+					expect.objectContaining({ name: 'file2-folder.pdf' })
 				);
 			});
 

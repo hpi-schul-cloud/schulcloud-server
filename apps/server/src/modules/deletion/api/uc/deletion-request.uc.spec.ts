@@ -133,7 +133,7 @@ describe(DeletionRequestUc.name, () => {
 				expect(deletionRequestService.createDeletionRequest).toHaveBeenCalledWith(
 					deletionRequestToCreate.targetRef.id,
 					deletionRequestToCreate.targetRef.domain,
-					deleteAfter,
+					deleteAfter
 				);
 			});
 
@@ -168,7 +168,7 @@ describe(DeletionRequestUc.name, () => {
 
 				expect(accountService.deactivateAccount).toHaveBeenCalledWith(
 					deletionRequestToCreate.targetRef.id,
-					expect.any(Date),
+					expect.any(Date)
 				);
 			});
 
@@ -178,7 +178,7 @@ describe(DeletionRequestUc.name, () => {
 				await uc.createDeletionRequest(deletionRequestToCreate);
 
 				expect(authenticationService.removeUserFromWhitelist).toHaveBeenCalledWith(
-					deletionRequestToCreate.targetRef.id,
+					deletionRequestToCreate.targetRef.id
 				);
 			});
 
@@ -296,19 +296,19 @@ describe(DeletionRequestUc.name, () => {
 
 				const targetRef = DeletionTargetRefBuilder.build(
 					deletionRequestExecuted.targetRefDomain,
-					deletionRequestExecuted.targetRefId,
+					deletionRequestExecuted.targetRefId
 				);
 				const statistics: DomainDeletionReport = DomainDeletionReportBuilder.build(
 					deletionLogExecuted.domain,
 					deletionLogExecuted.operations,
-					deletionLogExecuted.subdomainOperations,
+					deletionLogExecuted.subdomainOperations
 				);
 
 				const executedDeletionRequestSummary = DeletionRequestLogResponseBuilder.build(
 					targetRef,
 					deletionRequestExecuted.deleteAfter,
 					StatusModel.SUCCESS,
-					[statistics],
+					[statistics]
 				);
 
 				return {
@@ -349,19 +349,19 @@ describe(DeletionRequestUc.name, () => {
 
 				const targetRef = DeletionTargetRefBuilder.build(
 					deletionRequestExecuted.targetRefDomain,
-					deletionRequestExecuted.targetRefId,
+					deletionRequestExecuted.targetRefId
 				);
 				const statistics = DeletionLogStatisticBuilder.build(
 					deletionLogExecuted.domain,
 					deletionLogExecuted.operations,
-					deletionLogExecuted.subdomainOperations,
+					deletionLogExecuted.subdomainOperations
 				);
 
 				const executedDeletionRequestSummary = DeletionRequestLogResponseBuilder.build(
 					targetRef,
 					deletionRequestExecuted.deleteAfter,
 					StatusModel.FAILED,
-					[statistics],
+					[statistics]
 				);
 
 				return {
@@ -403,7 +403,7 @@ describe(DeletionRequestUc.name, () => {
 					targetRef,
 					deletionRequest.deleteAfter,
 					StatusModel.REGISTERED,
-					[],
+					[]
 				);
 
 				return {

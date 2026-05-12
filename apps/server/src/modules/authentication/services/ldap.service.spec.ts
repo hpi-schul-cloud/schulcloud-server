@@ -65,7 +65,7 @@ describe('LdapService', () => {
 			it('should login successfully', async () => {
 				const system: System = systemFactory.withLdapConfig().build();
 				await expect(
-					ldapService.checkLdapCredentials(system, 'connectSucceeds', 'mockPassword'),
+					ldapService.checkLdapCredentials(system, 'connectSucceeds', 'mockPassword')
 				).resolves.not.toThrow();
 			});
 		});
@@ -74,7 +74,7 @@ describe('LdapService', () => {
 			it('should throw error', async () => {
 				const system: System = systemFactory.build();
 				await expect(ldapService.checkLdapCredentials(system, 'mockUsername', 'mockPassword')).rejects.toThrow(
-					new Error(`no LDAP config found in system ${system.id}`),
+					new Error(`no LDAP config found in system ${system.id}`)
 				);
 			});
 		});
@@ -83,7 +83,7 @@ describe('LdapService', () => {
 			it('should throw UserCouldNotAuthenticateLoggableException', async () => {
 				const system: System = systemFactory.withLdapConfig().build();
 				await expect(ldapService.checkLdapCredentials(system, 'mockUsername', 'mockPassword')).rejects.toThrow(
-					LdapUserCouldNotBeAuthenticatedLoggableException,
+					LdapUserCouldNotBeAuthenticatedLoggableException
 				);
 			});
 		});

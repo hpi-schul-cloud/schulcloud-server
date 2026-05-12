@@ -152,7 +152,7 @@ describe(SynchronizationUc.name, () => {
 					synchronizationId,
 					status,
 					userSyncCount,
-					expect.stringContaining('No users to check from system'),
+					expect.stringContaining('No users to check from system')
 				);
 			});
 		});
@@ -191,7 +191,7 @@ describe(SynchronizationUc.name, () => {
 					synchronizationId,
 					status,
 					userSyncCount,
-					expect.stringContaining('Failed to update lastSyncedAt field for users provisioned by system'),
+					expect.stringContaining('Failed to update lastSyncedAt field for users provisioned by system')
 				);
 			});
 		});
@@ -226,8 +226,8 @@ describe(SynchronizationUc.name, () => {
 					status,
 					userSyncCount,
 					expect.stringContaining(
-						'Unknown error occurred during synchronization process of users provisioned by an external system',
-					),
+						'Unknown error occurred during synchronization process of users provisioned by an external system'
+					)
 				);
 			});
 		});

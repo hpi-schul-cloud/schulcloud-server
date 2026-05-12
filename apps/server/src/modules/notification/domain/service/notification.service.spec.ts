@@ -76,7 +76,7 @@ describe(NotificationService.name, () => {
 						key: notification.key,
 						arguments: notification.arguments,
 						expiresAt: expect.any(Date),
-					}),
+					})
 				);
 			});
 
