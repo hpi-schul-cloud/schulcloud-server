@@ -40,12 +40,10 @@ export class CourseBoardContext implements PreparedBoardContext {
 		return this.usersWithBoardRoles;
 	}
 
-	public getBoardConfiguration(rootNode: MediaBoard | ColumnBoard): BoardConfiguration {
-		const canReadersEdit = 'readersCanEdit' in rootNode ? rootNode.readersCanEdit : false;
-
+	public getBoardConfiguration(_rootNode: MediaBoard | ColumnBoard): BoardConfiguration {
 		return {
 			canEditorsManageVideoconference: false,
-			canReadersEdit,
+			canReadersEdit: false,
 			canAdminsToggleReadersCanEdit: false,
 			isLocked: !this.hasTeachers,
 		};

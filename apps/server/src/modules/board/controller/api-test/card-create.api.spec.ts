@@ -1,5 +1,4 @@
 import { EntityManager } from '@mikro-orm/mongodb';
-import { courseEntityFactory } from '@modules/course/testing';
 import { ServerTestModule } from '@modules/server/server.app.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -9,6 +8,12 @@ import { TestApiClient } from '@testing/test-api-client';
 import { BoardExternalReferenceType, ContentElementType } from '../../domain';
 import { columnBoardEntityFactory, columnEntityFactory } from '../../testing';
 import { CardResponse } from '../dto';
+import { roomEntityFactory } from '@modules/room/testing';
+import { roomMembershipEntityFactory } from '@modules/room-membership/testing';
+import { groupEntityFactory } from '@modules/group/testing';
+import { GroupEntityTypes } from '@modules/group/entity';
+import { schoolEntityFactory } from '@modules/school/testing';
+import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
 
 const baseRouteName = '/columns';
 
@@ -34,19 +39,42 @@ describe(`card create (api)`, () => {
 
 	const setup = async (readersCanEdit = false) => {
 		await cleanupCollections(em);
-		const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-		const { studentAccount: studentAccount, studentUser: studentUser } = UserAndAccountTestFactory.buildStudent({
-			school: teacherUser.school,
+
+		const school = schoolEntityFactory.buildWithId();
+
+		const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
+		const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({ school });
+
+		const room = roomEntityFactory.build({ schoolId: teacherUser.school.id });
+		const { roomViewerRole, roomOwnerRole } = RoomRolesTestFactory.createRoomRoles();
+
+		const userGroup = groupEntityFactory.buildWithId({
+			type: GroupEntityTypes.ROOM,
+			users: [
+				{ user: teacherUser, role: roomOwnerRole },
+				{ user: studentUser, role: roomViewerRole },
+			],
+			organization: school,
 		});
-		const course = courseEntityFactory.build({
-			school: teacherUser.school,
-			teachers: [teacherUser],
-			students: [studentUser],
-		});
-		await em.persist([teacherUser, teacherAccount, studentUser, studentAccount, course]).flush();
+
+		const roomMembership = roomMembershipEntityFactory.build({ roomId: room.id, userGroupId: userGroup.id });
+
+		await em
+			.persist([
+				teacherUser,
+				teacherAccount,
+				studentUser,
+				studentAccount,
+				room,
+				roomMembership,
+				userGroup,
+				roomViewerRole,
+				roomOwnerRole,
+			])
+			.flush();
 
 		const columnBoardNode = columnBoardEntityFactory.build({
-			context: { id: course.id, type: BoardExternalReferenceType.Course },
+			context: { id: room.id, type: BoardExternalReferenceType.Room },
 			readersCanEdit,
 		});
 
