@@ -78,7 +78,7 @@ export class RoomMapper {
 
 	public static mapToRoomBoardItemReponse(
 		board: ColumnBoard,
-		allowedOperations: Record<BoardOperation, boolean>
+		allowedOperations: Partial<Record<BoardOperation, boolean>>
 	): RoomBoardItemResponse {
 		const response = new RoomBoardItemResponse({
 			id: board.id,
@@ -87,7 +87,7 @@ export class RoomMapper {
 			isVisible: board.isVisible,
 			createdAt: board.createdAt,
 			updatedAt: board.updatedAt,
-			allowedOperations,
+			allowedOperations: Object.fromEntries(Object.entries(allowedOperations).filter(([, value]) => value)),
 		});
 
 		return response;
