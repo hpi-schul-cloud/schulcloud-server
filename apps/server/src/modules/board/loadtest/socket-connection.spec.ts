@@ -126,6 +126,9 @@ describe('SocketConnection', () => {
 			socketConnection.ensureRunningTimeoutChecks();
 
 			expect(setIntervalSpy).toHaveBeenCalledWith(expect.any(Function), 1000);
+
+			socketConnection.stopTimeoutChecks();
+			setIntervalSpy.mockRestore();
 		});
 	});
 

@@ -61,21 +61,20 @@ describe(ResponseTimeMetricsInterceptor.name, () => {
 				expect(interceptor).toBeDefined();
 			});
 
-			it('should call MetricsService.responseTimeMetricHistogram.observe with correct parameters after request completion', (done) => {
+			it('should call MetricsService.responseTimeMetricHistogram.observe with correct parameters after request completion', async () => {
 				const { expectedLabels, interceptor, mockExecutionContext, mockCallHandler } = setup();
 
 				const result = interceptor.intercept(mockExecutionContext, mockCallHandler);
 
-				result.subscribe({
-					complete: () => {
-						// Use setTimeout to ensure finalize has been called
-						setTimeout(() => {
-							expect(mockObserve).toHaveBeenCalledWith(expectedLabels, expect.any(Number));
-							expect(mockObserve).toHaveBeenCalledTimes(1);
-							done();
-						}, 0);
-					},
+				await new Promise<void>((resolve, reject) => {
+					result.subscribe({
+						complete: () => resolve(),
+						error: reject,
+					});
 				});
+
+				expect(mockObserve).toHaveBeenCalledWith(expectedLabels, expect.any(Number));
+				expect(mockObserve).toHaveBeenCalledTimes(1);
 			});
 
 			it('should return an observable', () => {
@@ -85,24 +84,24 @@ describe(ResponseTimeMetricsInterceptor.name, () => {
 				expect(result).toBeDefined();
 			});
 
-			it('should measure response time correctly', (done) => {
+			it('should measure response time correctly', async () => {
 				const { interceptor, mockExecutionContext, mockCallHandler } = setup();
 
 				const result = interceptor.intercept(mockExecutionContext, mockCallHandler);
 
-				result.subscribe({
-					complete: () => {
-						setTimeout(() => {
-							expect(mockObserve).toHaveBeenCalledWith(expect.any(Object), expect.any(Number));
-
-							// Verify that the duration is a positive number
-							// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-							const [, duration] = mockObserve.mock.calls[0];
-							expect(duration).toBeGreaterThanOrEqual(0);
-							done();
-						}, 0);
-					},
+				await new Promise<void>((resolve, reject) => {
+					result.subscribe({
+						complete: () => resolve(),
+						error: reject,
+					});
 				});
+
+				expect(mockObserve).toHaveBeenCalledWith(expect.any(Object), expect.any(Number));
+
+				// Verify that the duration is a positive number
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+				const [, duration] = mockObserve.mock.calls[0];
+				expect(duration).toBeGreaterThanOrEqual(0);
 			});
 		});
 
@@ -141,27 +140,27 @@ describe(ResponseTimeMetricsInterceptor.name, () => {
 			};
 
 			testCases.forEach(({ method, statusCode }) => {
-				it(`should handle ${method} requests with status ${statusCode}`, (done) => {
+				it(`should handle ${method} requests with status ${statusCode}`, async () => {
 					const { interceptor, mockExecutionContext, mockCallHandler } = setup(method, statusCode);
 					const result = interceptor.intercept(mockExecutionContext, mockCallHandler);
 
-					result.subscribe({
-						complete: () => {
-							setTimeout(() => {
-								expect(mockObserve).toHaveBeenCalledWith(
-									{
-										method,
-										base_url: '/api',
-										full_path: '/api/users/:id',
-										route_path: '/users/:id',
-										status_code: statusCode,
-									},
-									expect.any(Number)
-								);
-								done();
-							}, 0);
-						},
+					await new Promise<void>((resolve, reject) => {
+						result.subscribe({
+							complete: () => resolve(),
+							error: reject,
+						});
 					});
+
+					expect(mockObserve).toHaveBeenCalledWith(
+						{
+							method,
+							base_url: '/api',
+							full_path: '/api/users/:id',
+							route_path: '/users/:id',
+							status_code: statusCode,
+						},
+						expect.any(Number)
+					);
 				});
 			});
 		});
@@ -193,28 +192,28 @@ describe(ResponseTimeMetricsInterceptor.name, () => {
 				return { interceptor, mockExecutionContext, mockCallHandler };
 			};
 
-			it('should handle requests without route path', (done) => {
+			it('should handle requests without route path', async () => {
 				const { interceptor, mockExecutionContext, mockCallHandler } = setup();
 
 				const result = interceptor.intercept(mockExecutionContext, mockCallHandler);
 
-				result.subscribe({
-					complete: () => {
-						setTimeout(() => {
-							expect(mockObserve).toHaveBeenCalledWith(
-								{
-									method: 'GET',
-									base_url: '/api',
-									full_path: '/api',
-									route_path: undefined,
-									status_code: 404,
-								},
-								expect.any(Number)
-							);
-							done();
-						}, 0);
-					},
+				await new Promise<void>((resolve, reject) => {
+					result.subscribe({
+						complete: () => resolve(),
+						error: reject,
+					});
 				});
+
+				expect(mockObserve).toHaveBeenCalledWith(
+					{
+						method: 'GET',
+						base_url: '/api',
+						full_path: '/api',
+						route_path: undefined,
+						status_code: 404,
+					},
+					expect.any(Number)
+				);
 			});
 		});
 
@@ -244,28 +243,27 @@ describe(ResponseTimeMetricsInterceptor.name, () => {
 
 				return { interceptor, mockExecutionContext, mockCallHandler };
 			};
-			it('should still record metrics when an error occurs', (done) => {
+			it('should still record metrics when an error occurs', async () => {
 				const { interceptor, mockExecutionContext, mockCallHandler } = setup();
 
 				const result = interceptor.intercept(mockExecutionContext, mockCallHandler);
 
-				result.subscribe({
-					error: () => {
-						setTimeout(() => {
-							expect(mockObserve).toHaveBeenCalledWith(
-								{
-									method: 'POST',
-									base_url: '/api',
-									full_path: '/api/error',
-									route_path: '/error',
-									status_code: 500,
-								},
-								expect.any(Number)
-							);
-							done();
-						}, 0);
-					},
+				await new Promise<void>((resolve) => {
+					result.subscribe({
+						error: () => resolve(),
+					});
 				});
+
+				expect(mockObserve).toHaveBeenCalledWith(
+					{
+						method: 'POST',
+						base_url: '/api',
+						full_path: '/api/error',
+						route_path: '/error',
+						status_code: 500,
+					},
+					expect.any(Number)
+				);
 			});
 		});
 
@@ -301,26 +299,23 @@ describe(ResponseTimeMetricsInterceptor.name, () => {
 				return { interceptor, mockExecutionContext, mockCallHandler };
 			};
 
-			it('should not throw an error when metrics collection fails', (done) => {
+			it('should not throw an error when metrics collection fails', async () => {
 				const { interceptor, mockExecutionContext, mockCallHandler } = setup();
 
 				const result = interceptor.intercept(mockExecutionContext, mockCallHandler);
 
-				result.subscribe({
-					next: (value) => {
-						expect(value).toBe('response');
-					},
-					complete: () => {
-						// Test should complete normally even when metrics fail
-						setTimeout(() => {
-							expect(mockObserve).toHaveBeenCalled();
-							done();
-						}, 0);
-					},
-					error: () => {
-						fail('Observable should not emit an error when metrics collection fails');
-					},
+				await new Promise<void>((resolve, reject) => {
+					result.subscribe({
+						next: (value) => {
+							expect(value).toBe('response');
+						},
+						complete: () => resolve(),
+						error: () => reject(new Error('Observable should not emit an error when metrics collection fails')),
+					});
 				});
+
+				// Test should complete normally even when metrics fail
+				expect(mockObserve).toHaveBeenCalled();
 			});
 		});
 	});
