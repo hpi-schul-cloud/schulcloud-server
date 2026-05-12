@@ -39,7 +39,6 @@ class ApiKeyStrategy extends AuthenticationBaseStrategy {
 	credentialCheck(key, route) {
 		// todo: authenticate against database collection, return permissions.
 		// todo: remove route logic, give api-keys permissions instead.
-
 		if (route === 'resolve') return key === Configuration.get('CALENDAR_API_KEY');
 
 		return false;
