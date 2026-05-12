@@ -32,7 +32,8 @@ spec:
                 name: api-secret
             - secretRef:
                 name: session-valkey-password
-            command: ['/schulcloud-server/scripts/ldapSync.sh']
+            command: ['/bin/sh', '-c']
+            args: ['npm run nest:start:ldap-sync-console:prod -- sync']
             resources:
               limits:
                 cpu: {{ API_CPU_LIMITS|default("2000m", true) }}

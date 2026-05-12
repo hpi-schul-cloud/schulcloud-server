@@ -68,7 +68,7 @@ module.exports = function setup(app) {
 		before: {
 			all: [
 				iff(isProvider('external'), [
-					authenticate('jwt', 'api-key'),
+					authenticate('jwt'),
 					iff((context) => context.account, hasPermission('SYNC_START')),
 				]),
 			],
