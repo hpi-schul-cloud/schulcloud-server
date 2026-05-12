@@ -94,8 +94,9 @@ const inputFormatsSanitizeConfig: Record<string, IOptions> = {
 	},
 
 	RichTextCk5Simple: {
-		allowedTags: ['p', 'br', 'strong', 'em', 'u', 's', 'h2', 'h3', 'h4', 'ul', 'ol', 'li', 'img', 'src'],
+		allowedTags: ['p', 'br', 'strong', 'em', 'u', 's', 'h2', 'h3', 'h4', 'ul', 'ol', 'li', 'img', 'src', 'a'],
 		allowedAttributes: {
+			a: ['href', 'name', 'target', 'rel'],
 			img: ['src', 'srcset', 'alt', 'title', 'width', 'height', 'loading'],
 		},
 	},
