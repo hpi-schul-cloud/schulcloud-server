@@ -1,3 +1,6 @@
+// This import must come before @feathersjs/express to ensure type augmentation
+// for RouteLookup is available. See: https://github.com/feathersjs/feathers/discussions/3351
+import '@feathersjs/transport-commons';
 import { Application } from '@feathersjs/express';
 import { ImATeapotException, Inject, Injectable, Scope } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
