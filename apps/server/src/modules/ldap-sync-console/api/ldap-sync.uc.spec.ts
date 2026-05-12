@@ -1,13 +1,7 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Test, TestingModule } from '@nestjs/testing';
-import { MikroORM } from '@mikro-orm/core';
 import { Logger } from '@core/logger';
-
-// Mock legacy Feathers app and LDAP sync runner
-const mockFeathersApp = {
-	setup: jest.fn().mockResolvedValue(undefined),
-};
-jest.mock('../../../../../../src/app', () => jest.fn().mockResolvedValue(mockFeathersApp));
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { MikroORM } from '@mikro-orm/core';
+import { Test, TestingModule } from '@nestjs/testing';
 
 const mockRunLegacyLdapSync = jest.fn();
 jest.mock('@imports-from-feathers', () => {
@@ -25,6 +19,7 @@ describe(LdapSyncUc.name, () => {
 	let module: TestingModule;
 	let uc: LdapSyncUc;
 	let logger: DeepMocked<Logger>;
+	let orm: DeepMocked<MikroORM>;
 
 	beforeAll(async () => {
 		jest.useFakeTimers();
@@ -45,6 +40,7 @@ describe(LdapSyncUc.name, () => {
 
 		uc = module.get(LdapSyncUc);
 		logger = module.get(Logger);
+		orm = module.get(MikroORM);
 	});
 
 	beforeEach(() => {
@@ -72,7 +68,7 @@ describe(LdapSyncUc.name, () => {
 				jest.advanceTimersByTime(1000);
 				await promise;
 
-				expect(mockRunLegacyLdapSync).toHaveBeenCalledWith(mockFeathersApp, { forceFullSync: true });
+				expect(mockRunLegacyLdapSync).toHaveBeenCalledWith(orm, { forceFullSync: true });
 			});
 
 			it('should log sync start and completion', async () => {
@@ -110,7 +106,7 @@ describe(LdapSyncUc.name, () => {
 				jest.advanceTimersByTime(1000);
 				await promise;
 
-				expect(mockRunLegacyLdapSync).toHaveBeenCalledWith(mockFeathersApp, { forceFullSync: false });
+				expect(mockRunLegacyLdapSync).toHaveBeenCalledWith(orm, { forceFullSync: false });
 			});
 		});
 	});
