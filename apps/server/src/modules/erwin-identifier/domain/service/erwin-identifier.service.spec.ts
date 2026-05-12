@@ -44,6 +44,10 @@ describe(ErwinIdentifierService.name, () => {
 		jest.clearAllMocks();
 	});
 
+	afterAll(async () => {
+		await module.close();
+	});
+
 	it('should be defined', () => {
 		expect(sut).toBeDefined();
 	});
@@ -109,7 +113,7 @@ describe(ErwinIdentifierService.name, () => {
 					const result: ErwinIdentifier | null = await sut.findByReferencedEntityId(erwinIdentifier.referencedEntityId);
 
 					expect(erwinIdentifierRepoMock.findByReferencedEntityId).toHaveBeenCalledWith(
-						erwinIdentifier.referencedEntityId
+						erwinIdentifier.referencedEntityId,
 					);
 					expect(result).toStrictEqual(erwinIdentifier);
 				});

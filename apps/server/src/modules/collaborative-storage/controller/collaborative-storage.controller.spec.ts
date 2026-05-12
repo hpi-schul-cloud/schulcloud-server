@@ -1,8 +1,8 @@
+import { LegacyLogger } from '@core/logger';
 import { createMock } from '@golevelup/ts-jest';
 import { CollaborativeStorageController } from '@modules/collaborative-storage/controller/collaborative-storage.controller';
 import { CollaborativeStorageUc } from '@modules/collaborative-storage/uc/collaborative-storage.uc';
 import { Test, TestingModule } from '@nestjs/testing';
-import { LegacyLogger } from '@core/logger';
 import { currentUserFactory } from '@testing/factory/currentuser.factory';
 
 describe('CollaborativeStorage Controller', () => {
@@ -26,6 +26,10 @@ describe('CollaborativeStorage Controller', () => {
 		controller = module.get(CollaborativeStorageController);
 	});
 
+	afterAll(async () => {
+		await module.close();
+	});
+
 	describe('Update TeamPermissions For Role', () => {
 		it('should call the UC', async () => {
 			const currentUser = currentUserFactory.build();
@@ -33,7 +37,7 @@ describe('CollaborativeStorage Controller', () => {
 			await controller.updateTeamPermissionsForRole(
 				currentUser,
 				{ teamId: 'testTeam', roleId: 'testRole' },
-				{ read: false, write: false, create: false, delete: false, share: false }
+				{ read: false, write: false, create: false, delete: false, share: false },
 			);
 		});
 	});

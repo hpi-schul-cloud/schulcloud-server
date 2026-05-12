@@ -35,6 +35,10 @@ describe('DeletionBatchUc', () => {
 		jest.clearAllMocks();
 	});
 
+	afterAll(async () => {
+		await module.close();
+	});
+
 	describe('requestDeletionForBatch', () => {
 		describe('when batch status is not "created"', () => {
 			const setup = () => {
@@ -47,7 +51,7 @@ describe('DeletionBatchUc', () => {
 			it('should throw', async () => {
 				const { batch } = setup();
 				await expect(uc.requestDeletionForBatch(batch.id, new Date())).rejects.toThrow(
-					CantCreateDeletionRequestsForBatchErrorLoggable
+					CantCreateDeletionRequestsForBatchErrorLoggable,
 				);
 			});
 		});

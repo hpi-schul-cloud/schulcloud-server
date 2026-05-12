@@ -1,10 +1,10 @@
 import { LegacyLogger } from '@core/logger';
-import { NotFoundException } from '@nestjs/common';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountService } from '@modules/account';
 import { AuthenticationService } from '@modules/authentication';
 import { UserService } from '@modules/user';
+import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { DELETION_CONFIG_TOKEN, DeletionConfig } from '../../deletion.config';
@@ -88,6 +88,10 @@ describe(DeletionRequestUc.name, () => {
 		jest.useRealTimers();
 	});
 
+	afterAll(async () => {
+		await module.close();
+	});
+
 	describe('createDeletionRequest', () => {
 		describe('when creating a deletionRequest', () => {
 			const setup = () => {
@@ -129,7 +133,7 @@ describe(DeletionRequestUc.name, () => {
 				expect(deletionRequestService.createDeletionRequest).toHaveBeenCalledWith(
 					deletionRequestToCreate.targetRef.id,
 					deletionRequestToCreate.targetRef.domain,
-					deleteAfter
+					deleteAfter,
 				);
 			});
 
@@ -164,7 +168,7 @@ describe(DeletionRequestUc.name, () => {
 
 				expect(accountService.deactivateAccount).toHaveBeenCalledWith(
 					deletionRequestToCreate.targetRef.id,
-					expect.any(Date)
+					expect.any(Date),
 				);
 			});
 
@@ -174,7 +178,7 @@ describe(DeletionRequestUc.name, () => {
 				await uc.createDeletionRequest(deletionRequestToCreate);
 
 				expect(authenticationService.removeUserFromWhitelist).toHaveBeenCalledWith(
-					deletionRequestToCreate.targetRef.id
+					deletionRequestToCreate.targetRef.id,
 				);
 			});
 
@@ -292,19 +296,19 @@ describe(DeletionRequestUc.name, () => {
 
 				const targetRef = DeletionTargetRefBuilder.build(
 					deletionRequestExecuted.targetRefDomain,
-					deletionRequestExecuted.targetRefId
+					deletionRequestExecuted.targetRefId,
 				);
 				const statistics: DomainDeletionReport = DomainDeletionReportBuilder.build(
 					deletionLogExecuted.domain,
 					deletionLogExecuted.operations,
-					deletionLogExecuted.subdomainOperations
+					deletionLogExecuted.subdomainOperations,
 				);
 
 				const executedDeletionRequestSummary = DeletionRequestLogResponseBuilder.build(
 					targetRef,
 					deletionRequestExecuted.deleteAfter,
 					StatusModel.SUCCESS,
-					[statistics]
+					[statistics],
 				);
 
 				return {
@@ -345,19 +349,19 @@ describe(DeletionRequestUc.name, () => {
 
 				const targetRef = DeletionTargetRefBuilder.build(
 					deletionRequestExecuted.targetRefDomain,
-					deletionRequestExecuted.targetRefId
+					deletionRequestExecuted.targetRefId,
 				);
 				const statistics = DeletionLogStatisticBuilder.build(
 					deletionLogExecuted.domain,
 					deletionLogExecuted.operations,
-					deletionLogExecuted.subdomainOperations
+					deletionLogExecuted.subdomainOperations,
 				);
 
 				const executedDeletionRequestSummary = DeletionRequestLogResponseBuilder.build(
 					targetRef,
 					deletionRequestExecuted.deleteAfter,
 					StatusModel.FAILED,
-					[statistics]
+					[statistics],
 				);
 
 				return {
@@ -399,7 +403,7 @@ describe(DeletionRequestUc.name, () => {
 					targetRef,
 					deletionRequest.deleteAfter,
 					StatusModel.REGISTERED,
-					[]
+					[],
 				);
 
 				return {

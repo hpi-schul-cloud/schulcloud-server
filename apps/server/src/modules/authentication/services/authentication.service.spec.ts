@@ -91,6 +91,10 @@ describe(AuthenticationService.name, () => {
 		jest.clearAllMocks();
 	});
 
+	afterAll(async () => {
+		await module.close();
+	});
+
 	describe('loadAccount', () => {
 		describe('when resolving an account without system id', () => {
 			it('should find an account', async () => {
@@ -118,7 +122,7 @@ describe(AuthenticationService.name, () => {
 			it('should throw unautherized exception', async () => {
 				accountService.findByUsernameAndSystemId.mockResolvedValueOnce(null);
 				await expect(authenticationService.loadAccount('username', 'mockSystemId')).rejects.toThrow(
-					UnauthorizedException
+					UnauthorizedException,
 				);
 			});
 		});
@@ -152,7 +156,7 @@ describe(AuthenticationService.name, () => {
 					targetUserAccount.id,
 					targetUser,
 					false,
-					targetUserAccount.systemId
+					targetUserAccount.systemId,
 				);
 				const expiresIn = 150;
 				config.jwtLifetimeSupportSeconds = expiresIn;
@@ -176,7 +180,7 @@ describe(AuthenticationService.name, () => {
 						subject: mockCurrentUser.accountId,
 						jwtid: expect.any(String),
 						expiresIn,
-					})
+					}),
 				);
 			});
 
@@ -209,7 +213,7 @@ describe(AuthenticationService.name, () => {
 					expect.objectContaining({
 						subject: mockCurrentUser.accountId,
 						jwtid: expect.any(String),
-					})
+					}),
 				);
 			});
 
@@ -272,14 +276,14 @@ describe(AuthenticationService.name, () => {
 			it('should fail for account with recently failed login', () => {
 				const lasttriedFailedLogin = setup(14);
 				expect(() =>
-					authenticationService.checkBrutForce({ id: 'mockAccountId', lasttriedFailedLogin } as Account)
+					authenticationService.checkBrutForce({ id: 'mockAccountId', lasttriedFailedLogin } as Account),
 				).toThrow(BruteForceError);
 			});
 
 			it('should not fail for account with failed login above threshold', () => {
 				const lasttriedFailedLogin = setup(16);
 				expect(() =>
-					authenticationService.checkBrutForce({ id: 'mockAccountId', lasttriedFailedLogin } as Account)
+					authenticationService.checkBrutForce({ id: 'mockAccountId', lasttriedFailedLogin } as Account),
 				).not.toThrow();
 			});
 		});

@@ -1,8 +1,8 @@
+import { Logger } from '@core/logger';
 import { createMock } from '@golevelup/ts-jest';
 import { System } from '@modules/system';
 import { systemFactory } from '@modules/system/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Logger } from '@core/logger';
 import { LdapUserCouldNotBeAuthenticatedLoggableException } from '../loggable';
 import { LdapService } from './ldap.service';
 
@@ -56,12 +56,16 @@ describe('LdapService', () => {
 		ldapService = module.get(LdapService);
 	});
 
+	afterAll(async () => {
+		await module.close();
+	});
+
 	describe('checkLdapCredentials', () => {
 		describe('when credentials are correct', () => {
 			it('should login successfully', async () => {
 				const system: System = systemFactory.withLdapConfig().build();
 				await expect(
-					ldapService.checkLdapCredentials(system, 'connectSucceeds', 'mockPassword')
+					ldapService.checkLdapCredentials(system, 'connectSucceeds', 'mockPassword'),
 				).resolves.not.toThrow();
 			});
 		});
@@ -70,7 +74,7 @@ describe('LdapService', () => {
 			it('should throw error', async () => {
 				const system: System = systemFactory.build();
 				await expect(ldapService.checkLdapCredentials(system, 'mockUsername', 'mockPassword')).rejects.toThrow(
-					new Error(`no LDAP config found in system ${system.id}`)
+					new Error(`no LDAP config found in system ${system.id}`),
 				);
 			});
 		});
@@ -79,7 +83,7 @@ describe('LdapService', () => {
 			it('should throw UserCouldNotAuthenticateLoggableException', async () => {
 				const system: System = systemFactory.withLdapConfig().build();
 				await expect(ldapService.checkLdapCredentials(system, 'mockUsername', 'mockPassword')).rejects.toThrow(
-					LdapUserCouldNotBeAuthenticatedLoggableException
+					LdapUserCouldNotBeAuthenticatedLoggableException,
 				);
 			});
 		});

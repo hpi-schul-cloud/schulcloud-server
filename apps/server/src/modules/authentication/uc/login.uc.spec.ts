@@ -26,6 +26,10 @@ describe('LoginUc', () => {
 		authenticationService = await module.get(AuthenticationService);
 	});
 
+	afterAll(async () => {
+		await module.close();
+	});
+
 	describe('getLoginData', () => {
 		describe('when userInfo is given', () => {
 			const setup = () => {

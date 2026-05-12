@@ -53,6 +53,10 @@ describe(SchulconnexResponseMapper.name, () => {
 		config.provisioningSchulconnexGroupUsersLimit = undefined;
 	});
 
+	afterAll(async () => {
+		await module.close();
+	});
+
 	describe('mapToExternalSchoolDto', () => {
 		describe('when a schulconnex response is provided', () => {
 			const setup = () => {
@@ -483,7 +487,7 @@ describe(SchulconnexResponseMapper.name, () => {
 				const { schulconnexResponse } = setup();
 
 				expect(() => mapper.mapToExternalGroupDtos(schulconnexResponse)).toThrow(
-					InvalidLernperiodeResponseLoggableException
+					InvalidLernperiodeResponseLoggableException,
 				);
 			});
 		});
@@ -504,7 +508,7 @@ describe(SchulconnexResponseMapper.name, () => {
 				const { schulconnexResponse } = setup();
 
 				expect(() => mapper.mapToExternalGroupDtos(schulconnexResponse)).toThrow(
-					InvalidLaufzeitResponseLoggableException
+					InvalidLaufzeitResponseLoggableException,
 				);
 			});
 		});
@@ -525,7 +529,7 @@ describe(SchulconnexResponseMapper.name, () => {
 				const { schulconnexResponse } = setup();
 
 				expect(() => mapper.mapToExternalGroupDtos(schulconnexResponse)).toThrow(
-					InvalidLaufzeitResponseLoggableException
+					InvalidLaufzeitResponseLoggableException,
 				);
 			});
 		});
@@ -618,7 +622,7 @@ describe(SchulconnexResponseMapper.name, () => {
 		describe('when the lernperiode is invalid', () => {
 			it('should throw an error', () => {
 				expect(() => SchulconnexResponseMapper.mapLernperiode('2024-3')).toThrow(
-					InvalidLernperiodeResponseLoggableException
+					InvalidLernperiodeResponseLoggableException,
 				);
 			});
 		});

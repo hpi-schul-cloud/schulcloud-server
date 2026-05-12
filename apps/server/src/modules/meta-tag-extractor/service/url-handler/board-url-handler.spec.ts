@@ -35,6 +35,10 @@ describe(BoardUrlHandler.name, () => {
 		courseService = module.get(CourseDoService);
 	});
 
+	afterAll(async () => {
+		await module.close();
+	});
+
 	describe('getMetaData', () => {
 		describe('when the url fits a board', () => {
 			const setup = () => {

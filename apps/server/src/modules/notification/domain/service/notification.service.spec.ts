@@ -1,9 +1,9 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { NotificationService } from './notification.service';
-import { NotificationType } from '../../types';
 import { Logger } from '@core/logger';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Test, TestingModule } from '@nestjs/testing';
+import { NotificationType } from '../../types';
 import { NotificationRepo } from '../interfaces';
+import { NotificationService } from './notification.service';
 
 describe(NotificationService.name, () => {
 	let module: TestingModule;
@@ -42,6 +42,10 @@ describe(NotificationService.name, () => {
 		jest.clearAllMocks();
 	});
 
+	afterAll(async () => {
+		await module.close();
+	});
+
 	it('should be defined', () => {
 		expect(sut).toBeDefined();
 	});
@@ -72,7 +76,7 @@ describe(NotificationService.name, () => {
 						key: notification.key,
 						arguments: notification.arguments,
 						expiresAt: expect.any(Date),
-					})
+					}),
 				);
 			});
 

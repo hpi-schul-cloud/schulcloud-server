@@ -96,12 +96,16 @@ describe(CommonCartridgeImportService.name, () => {
 		(CommonCartridgeFileParser as jest.Mock).mockImplementation(() => commonCartridgeFileParser);
 	});
 
+	beforeEach(() => {
+		jest.clearAllMocks();
+	});
+
 	afterEach(async () => {
 		await module.close();
 	});
 
-	beforeEach(() => {
-		jest.clearAllMocks();
+	afterAll(async () => {
+		await module.close();
 	});
 
 	it('should be defined', () => {
@@ -271,7 +275,7 @@ describe(CommonCartridgeImportService.name, () => {
 					'school',
 					expect.any(String),
 					'boardnodes',
-					expect.objectContaining({ name: 'file-element.pdf' })
+					expect.objectContaining({ name: 'file-element.pdf' }),
 				);
 			});
 
@@ -286,7 +290,7 @@ describe(CommonCartridgeImportService.name, () => {
 					'school',
 					expect.any(String),
 					'boardnodes',
-					expect.objectContaining({ name: 'file1-folder.pdf' })
+					expect.objectContaining({ name: 'file1-folder.pdf' }),
 				);
 
 				expect(filesStorageClientAdapterMock.upload).toHaveBeenCalledWith(
@@ -295,7 +299,7 @@ describe(CommonCartridgeImportService.name, () => {
 					'school',
 					expect.any(String),
 					'boardnodes',
-					expect.objectContaining({ name: 'file2-folder.pdf' })
+					expect.objectContaining({ name: 'file2-folder.pdf' }),
 				);
 			});
 

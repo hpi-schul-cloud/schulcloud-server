@@ -72,6 +72,10 @@ describe(SchoolExternalToolService.name, () => {
 		config = module.get(TOOL_CONFIG_TOKEN);
 	});
 
+	afterAll(async () => {
+		await module.close();
+	});
+
 	describe('findById', () => {
 		describe('when schoolExternalToolId is given', () => {
 			const setup = () => {
@@ -115,7 +119,7 @@ describe(SchoolExternalToolService.name, () => {
 							isGloballyDeactivated: externalTool.isDeactivated,
 							isOutdatedOnScopeSchool: true,
 						}),
-					})
+					}),
 				);
 			});
 		});
@@ -176,7 +180,7 @@ describe(SchoolExternalToolService.name, () => {
 							isGloballyDeactivated: externalTool.isDeactivated,
 							isOutdatedOnScopeSchool: true,
 						}),
-					})
+					}),
 				);
 			});
 		});
@@ -238,7 +242,7 @@ describe(SchoolExternalToolService.name, () => {
 							isGloballyDeactivated: externalTool.isDeactivated,
 							isOutdatedOnScopeSchool: true,
 						}),
-					})
+					}),
 				);
 			});
 		});
@@ -366,7 +370,7 @@ describe(SchoolExternalToolService.name, () => {
 							isGloballyDeactivated: externalTool.isDeactivated,
 							isOutdatedOnScopeSchool: true,
 						}),
-					})
+					}),
 				);
 			});
 		});
