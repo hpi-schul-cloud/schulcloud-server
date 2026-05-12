@@ -1,6 +1,6 @@
 const getSyncLogger = require('../logger');
 const LDAPSystemSyncer = require('./LDAPSystemSyncer');
-const legacyAppPromise = require('../../../app');
+
 
 /**
  * Standalone LDAP sync runner that can be called from NestJS console applications.
@@ -13,6 +13,7 @@ const legacyAppPromise = require('../../../app');
  * @returns {Promise<Object>} Sync statistics
  */
 async function runLegacyLdapSync(orm, options = {}) {
+	const legacyAppPromise = require('../../../app');
 	const app = await legacyAppPromise(this.orm);
 	await app.setup();
 
