@@ -22,12 +22,16 @@ describe('InspectPerformance', () => {
 			exportPath: '',
 			logThresholdMs: 0,
 		});
+		jest.resetAllMocks();
 	});
 
 	afterEach(() => {
 		configureInspectPerformance(originalConfig);
 		setPerformanceLogger(null as unknown as (message: PerformanceLogMessage) => void);
-		jest.restoreAllMocks();
+	});
+
+	afterAll(() => {
+		jest.resetAllMocks();
 	});
 
 	describe('configureInspectPerformance', () => {
@@ -389,9 +393,6 @@ describe('InspectPerformance', () => {
 
 	describe('console.info fallback', () => {
 		it('should use console.info when no logger is set', () => {
-			// eslint-disable-next-line no-console
-			const consoleInfoSpy = jest.spyOn(console, 'info').mockImplementation();
-
 			class TestService {
 				@InspectPerformance()
 				public method(): void {
@@ -402,8 +403,8 @@ describe('InspectPerformance', () => {
 			const service = new TestService();
 			service.method();
 
-			expect(consoleInfoSpy).toHaveBeenCalled();
-			const output = consoleInfoSpy.mock.calls[0][0] as string;
+			expect(console.info).toHaveBeenCalled();
+			const output = ((console.info as jest.Mock).mock.calls[0] as unknown[] as string[]).join('\n');
 			expect(output).toContain('[Performance]');
 			expect(output).toContain('TestService.method');
 		});
