@@ -70,11 +70,11 @@ describe('SanitizeHtmlTransformer Decorator', () => {
 		it('should remove all html but rich text ck5 tags', () => {
 			const plainString = {
 				contentCk5:
-					'<h1></h1><h2><b><mark>html <h4>text</h4></mark></b></h2><span class="math-tex">[x=\frac{-bpmsqrt{b^2-4ac}}{2a}]</span><scriPT>alert("foobar");</sCript><stYle></style><img src="some.png" />',
+					'<h1></h1><h2><b><mark>html <h4>text</h4></mark></b></h2><span class="math-tex">[x=\\frac{-bpmsqrt{b^2-4ac}}{2a}]</span><scriPT>alert("foobar");</sCript><stYle></style><img src="some.png" />',
 			};
 			const instance = plainToClass(WithHtmlDto, plainString);
 			expect(instance.contentCk5).toEqual(
-				'<b><mark>html <h4>text</h4></mark></b><span class="math-tex">[x=\frac{-bpmsqrt{b^2-4ac}}{2a}]</span>'
+				'<b><mark>html <h4>text</h4></mark></b><span class="math-tex">[x=\\frac{-bpmsqrt{b^2-4ac}}{2a}]</span>'
 			);
 		});
 		it('should remove attributes without values', () => {
@@ -103,11 +103,11 @@ describe('SanitizeHtmlTransformer Decorator', () => {
 		it('should remove all html but rich text ck5 simple tags', () => {
 			const plainString = {
 				contentRichTextCk5Simple:
-					'<h1></h1><h2><b><mark>html <h4>text</h4></mark></b></h2><span class="math-tex">[x=\frac{-bpmsqrt{b^2-4ac}}{2a}]</span><scriPT>alert("foobar");</sCript><stYle></style><img src="some.png" />',
+					'<h1></h1><h2><b><mark>html <h4>text</h4></mark></b></h2><span class="math-tex">[x=\\frac{-bpmsqrt{b^2-4ac}}{2a}]</span><scriPT>alert("foobar");</sCript><stYle></style><img src="some.png" />',
 			};
 			const instance = plainToClass(WithHtmlDto, plainString);
 			expect(instance.contentRichTextCk5Simple).toEqual(
-				'<h2>html <h4>text</h4></h2>[x=rac{-bpmsqrt{b^2-4ac}}{2a}]<img src="some.png" />'
+				'<h2>html <h4>text</h4></h2>[x=\\frac{-bpmsqrt{b^2-4ac}}{2a}]<img src="some.png" />'
 			);
 		});
 	});
@@ -116,12 +116,30 @@ describe('SanitizeHtmlTransformer Decorator', () => {
 		it('should remove all html but rich text ck5 news tags', () => {
 			const plainString = {
 				contentRichTextCk5News:
-					'<h1></h1><h2><b><mark>html <h4>text</h4><a target="link">hello world</a></mark></b></h2><span class="math-tex">[x=\frac{-bpmsqrt{b^2-4ac}}{2a}]</span><scriPT>alert("foobar");</sCript><stYle></style><img src="some.png" />',
+					'<h1></h1><h2><b><mark>html <h4>text</h4><a target="link">hello world</a></mark></b></h2><span class="math-tex">[x=\\frac{-bpmsqrt{b^2-4ac}}{2a}]</span><scriPT>alert("foobar");</sCript><stYle></style><img src="some.png" />',
 			};
 			const instance = plainToClass(WithHtmlDto, plainString);
 			expect(instance.contentRichTextCk5News).toEqual(
-				'<h2>html <h4>text</h4><a target="link">hello world</a></h2>[x=rac{-bpmsqrt{b^2-4ac}}{2a}]<img src="some.png" />'
+				'<h2>html <h4>text</h4><a target="link">hello world</a></h2>[x=\\frac{-bpmsqrt{b^2-4ac}}{2a}]<img src="some.png" />'
 			);
+		});
+
+		it('should preserve safe href attributes on anchor tags', () => {
+			const plainString = {
+				contentRichTextCk5News: '<a href="https://example.com" target="_blank" rel="noopener">link</a>',
+			};
+			const instance = plainToClass(WithHtmlDto, plainString);
+			expect(instance.contentRichTextCk5News).toEqual(
+				'<a href="https://example.com" target="_blank" rel="noopener">link</a>'
+			);
+		});
+
+		it('should strip javascript: href from anchor tags', () => {
+			const plainString = {
+				contentRichTextCk5News: '<a href="javascript:alert(\'xss\')">click me</a>',
+			};
+			const instance = plainToClass(WithHtmlDto, plainString);
+			expect(instance.contentRichTextCk5News).toEqual('<a>click me</a>');
 		});
 	});
 
