@@ -17,17 +17,11 @@ RUN npm ci --ignore-scripts && npm run build
 
 FROM docker.io/node:24-alpine
 
-ENV TZ=Europe/Berlin
-RUN apk add --no-cache \
-    python3 \
-    curl
-
 WORKDIR /schulcloud-server
 
 COPY package.json package-lock.json ./
 COPY backup backup
 COPY config config
-COPY scripts/ldapSync.sh scripts/
 COPY src src
 
 COPY --from=builder /app/dist dist
