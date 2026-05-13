@@ -141,7 +141,7 @@ describe('Room Controller (API)', () => {
 									createdAt: expectIsoDateString() as string,
 									updatedAt: expectIsoDateString() as string,
 									allowedOperations: expect.objectContaining({
-										updateBoardVisibility: false,
+										findBoard: true,
 									}) as Record<string, boolean>,
 								};
 							})
@@ -381,6 +381,8 @@ describe('Room Controller (API)', () => {
 					createdAt: expectIsoDateString() as string,
 					updatedAt: expectIsoDateString() as string,
 					allowedOperations: expect.objectContaining({
+						copyBoard: true,
+						deleteBoard: true,
 						updateBoardVisibility: true,
 					}) as Record<string, boolean>,
 				});
