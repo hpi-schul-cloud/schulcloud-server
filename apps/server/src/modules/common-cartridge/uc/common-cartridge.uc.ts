@@ -1,4 +1,4 @@
-import { BadRequestException, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import { EventBus } from '@nestjs/cqrs';
 import { JwtExtractor } from '@shared/common/utils';
@@ -12,7 +12,7 @@ import { Request } from 'express';
 import { FileRecordResponse, FilesStorageClientAdapter, StorageLocation } from '@infra/common-cartridge-clients';
 import { ICurrentUser } from '@infra/auth-guard';
 import { FileRecordParentType } from '@infra/common-cartridge-clients';
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 
 @Injectable()
 export class CommonCartridgeUc {
@@ -51,21 +51,14 @@ export class CommonCartridgeUc {
 		this.eventBus.publish(new ImportCourseEvent(jwt, params.fileRecordId, params.fileName, params.fileUrl));
 	}
 
-	public async uploadFileToTemp(currentUser: ICurrentUser, readable: Readable): Promise<FileRecordResponse> {
-		let fileSize = 0;
-
-		readable.on('data', (chunk: Buffer) => {
-			fileSize += chunk.length;
-			if (fileSize > 1024) {
-				const error = new BadRequestException('FileToBig');
-				readable.destroy();
-				throw error;
-			}
-		});
-
-		const jwt = JwtExtractor.extractJwtFromRequest(readable);
+	public async uploadFileToTemp(
+		currentUser: ICurrentUser,
+		readable: Readable,
+		fileName: string
+	): Promise<FileRecordResponse> {
+		const jwt = JwtExtractor.extractJwtFromRequest(this.request);
 		if (!jwt) {
-			throw new Error();
+			throw new UnauthorizedException();
 		}
 
 		const fileRecordResponse = await this.fileClient.uploadTempFile(
@@ -74,7 +67,8 @@ export class CommonCartridgeUc {
 			StorageLocation.SCHOOL,
 			currentUser.userId,
 			FileRecordParentType.USERS,
-			readable
+			readable,
+			fileName
 		);
 
 		return fileRecordResponse;

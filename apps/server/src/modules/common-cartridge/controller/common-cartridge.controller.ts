@@ -79,7 +79,17 @@ export class CommonCartridgeController {
 
 	@Post('upload')
 	public async uploadFile(@CurrentUser() currentUser: ICurrentUser, @Req() req: Request): Promise<FileRecordResponse> {
-		const fileRecordResponse = await this.commonCartridgeUC.uploadFileToTemp(currentUser, req);
+		// Extract filename from Content-Disposition header or use a default
+		const contentDisposition = req.headers['content-disposition'] as string | undefined;
+		let fileName = 'upload.imscc';
+		if (contentDisposition) {
+			const filenameMatch = contentDisposition.match(/filename[*]?=['"]?(?:UTF-8'')?([^;'"\n]+)['"]?/i);
+			if (filenameMatch?.[1]) {
+				fileName = decodeURIComponent(filenameMatch[1]);
+			}
+		}
+
+		const fileRecordResponse = await this.commonCartridgeUC.uploadFileToTemp(currentUser, req, fileName);
 
 		return fileRecordResponse;
 	}

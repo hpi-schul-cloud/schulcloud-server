@@ -3,8 +3,9 @@ import { ErrorLogger, Logger } from '@core/logger';
 import { HttpService } from '@nestjs/axios';
 import { Inject, Injectable } from '@nestjs/common';
 import { AxiosError } from 'axios';
+import FormData from 'form-data';
 import { lastValueFrom } from 'rxjs';
-import { Stream } from 'stream';
+import { Readable, Stream } from 'stream';
 import util from 'util';
 import {
 	FILE_STORAGE_CLIENT_CONFIG_TOKEN,
@@ -150,18 +151,32 @@ export class FilesStorageClientAdapter {
 		storageLocation: StorageLocation,
 		parentId: string,
 		parentType: FileRecordParentType,
-		file: File
+		file: Readable,
+		fileName: string
 	): Promise<FileRecordResponse> {
-		const result = await this.fileApi.tempUpload(
-			storageLocationId,
-			storageLocation,
-			parentId,
-			parentType,
-			file,
-			AdapterUtils.createAxiosConfigForJwt(jwt)
+		// INFO: We bypass the generated client to support streaming directly without buffering.
+		// The generated client expects a File type which would require loading everything into memory.
+		// Using form-data package allows us to stream the data directly to the target server.
+		const formData = new FormData();
+		formData.append('file', file, { filename: fileName });
+
+		const url = new URL(
+			`/api/v3/file/temp/upload/${storageLocation}/${storageLocationId}/${parentType}/${parentId}`,
+			this.config.basePath
 		);
 
-		return result.data;
+		const observable = this.httpService.post<FileRecordResponse>(url.toString(), formData, {
+			headers: {
+				...formData.getHeaders(),
+				Authorization: `Bearer ${jwt}`,
+			},
+			maxBodyLength: Infinity,
+			maxContentLength: Infinity,
+		});
+
+		const response = await lastValueFrom(observable);
+
+		return response.data;
 	}
 
 	public async deleteFile(jwt: string, fileRecordId: string): Promise<void> {
