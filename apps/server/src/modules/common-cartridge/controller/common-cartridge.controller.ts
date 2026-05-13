@@ -1,5 +1,18 @@
 import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
-import { BadRequestException, Body, Controller, HttpCode, HttpStatus, Param, Post, Query, Req, Res, StreamableFile, UseInterceptors } from '@nestjs/common';
+import {
+	BadRequestException,
+	Body,
+	Controller,
+	HttpCode,
+	HttpStatus,
+	Param,
+	Post,
+	Query,
+	Req,
+	Res,
+	StreamableFile,
+	UseInterceptors,
+} from '@nestjs/common';
 import {
 	ApiBadRequestResponse,
 	ApiBody,
@@ -15,6 +28,7 @@ import { Request, Response } from 'express';
 import { CommonCartridgeUc } from '../uc/common-cartridge.uc';
 import { CourseExportBodyParams, CourseQueryParams, ExportCourseParams } from './dto';
 import { CommonCartridgeStartImportBodyParams } from './dto/common-cartridge-start-import-body.params';
+import { FileRecordResponse } from '@infra/common-cartridge-clients';
 
 @JwtAuthentication()
 @ApiTags('common-cartridge')
@@ -64,7 +78,9 @@ export class CommonCartridgeController {
 	}
 
 	@Post('upload')
-	public uploadFile(@CurrentUser() currentUser: ICurrentUser, @Req() req: Request) {
-		this.commonCartridgeUC.validateCcFile(currentUser, req);
+	public async uploadFile(@CurrentUser() currentUser: ICurrentUser, @Req() req: Request): Promise<FileRecordResponse> {
+		const fileRecordResponse = await this.commonCartridgeUC.uploadFileToTemp(currentUser, req);
+
+		return fileRecordResponse;
 	}
 }
