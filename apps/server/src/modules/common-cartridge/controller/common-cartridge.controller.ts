@@ -1,5 +1,5 @@
-import { JwtAuthentication } from '@infra/auth-guard';
-import { Body, Controller, HttpCode, HttpStatus, Param, Post, Query, Req, Res, StreamableFile } from '@nestjs/common';
+import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
+import { BadRequestException, Body, Controller, HttpCode, HttpStatus, Param, Post, Query, Req, Res, StreamableFile, UseInterceptors } from '@nestjs/common';
 import {
 	ApiBadRequestResponse,
 	ApiBody,
@@ -61,5 +61,10 @@ export class CommonCartridgeController {
 	@HttpCode(200)
 	public importCourse(@Body() startImportParams: CommonCartridgeStartImportBodyParams): void {
 		this.commonCartridgeUC.startCourseImport(startImportParams);
+	}
+
+	@Post('upload')
+	public uploadFile(@CurrentUser() currentUser: ICurrentUser, @Req() req: Request) {
+		this.commonCartridgeUC.validateCcFile(currentUser, req);
 	}
 }

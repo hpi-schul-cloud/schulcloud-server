@@ -144,6 +144,26 @@ export class FilesStorageClientAdapter {
 		}
 	}
 
+	public async uploadTempFile(
+		jwt: string,
+		storageLocationId: string,
+		storageLocation: StorageLocation,
+		parentId: string,
+		parentType: FileRecordParentType,
+		file: File
+	): Promise<FileRecordResponse> {
+		const result = await this.fileApi.tempUpload(
+			storageLocationId,
+			storageLocation,
+			parentId,
+			parentType,
+			file,
+			AdapterUtils.createAxiosConfigForJwt(jwt)
+		);
+
+		return result.data;
+	}
+
 	public async deleteFile(jwt: string, fileRecordId: string): Promise<void> {
 		await this.fileApi.deleteFile(fileRecordId, AdapterUtils.createAxiosConfigForJwt(jwt));
 	}
