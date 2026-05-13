@@ -1,6 +1,7 @@
 const getSyncLogger = require('../logger');
 const LDAPSystemSyncer = require('./LDAPSystemSyncer');
 
+
 /**
  * Standalone LDAP sync runner that can be called from NestJS console applications.
  * This encapsulates all the Feathers-specific logic (strategies, logger creation)
@@ -11,7 +12,11 @@ const LDAPSystemSyncer = require('./LDAPSystemSyncer');
  * @param {boolean} options.forceFullSync - Whether to force a full sync
  * @returns {Promise<Object>} Sync statistics
  */
-async function runLegacyLdapSync(app, options = {}) {
+async function runLegacyLdapSync(orm, options = {}) {
+	const legacyAppPromise = require('../../../app');
+	const app = await legacyAppPromise(this.orm);
+	await app.setup();
+
 	const { forceFullSync = false } = options;
 
 	// Create the sync logger (Winston-based)

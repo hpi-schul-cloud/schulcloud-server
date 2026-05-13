@@ -1,10 +1,8 @@
 import { Logger } from '@core/logger';
+import { runLegacyLdapSync } from '@imports-from-feathers';
 import { MikroORM } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
-import { runLegacyLdapSync } from '@imports-from-feathers';
 import { LdapSyncCompletedLoggable, LdapSyncExecutingLoggable, LdapSyncStartedLoggable } from './loggable';
-// eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-unsafe-assignment
-const legacyAppPromise = require('../../../../../../src/app');
 
 interface SyncStats {
 	success: boolean;
@@ -29,20 +27,14 @@ export class LdapSyncUc {
 	public async runLdapSync(forceFullSync: boolean): Promise<SyncStats> {
 		this.logger.info(new LdapSyncStartedLoggable(forceFullSync));
 
-		// Bootstrap the Feathers app
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
-		const feathersApp = await legacyAppPromise(this.orm);
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
-		await feathersApp.setup();
-
 		this.logger.info(new LdapSyncExecutingLoggable());
 
 		let stats: SyncStats;
 		try {
 			// Run the LDAP sync using the legacy runner (handles logger creation internally)
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
-			stats = await runLegacyLdapSync(feathersApp, { forceFullSync });
-			this.logger.info(new LdapSyncCompletedLoggable(stats.success, stats.errors.length));
+			stats = await runLegacyLdapSync(this.orm, { forceFullSync });
+			this.logger.info(new LdapSyncCompletedLoggable(stats));
 		} finally {
 			// Force process exit after a short delay to allow logs to flush.
 			// This is necessary because the legacy Feathers app opens connections

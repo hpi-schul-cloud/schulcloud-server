@@ -21,18 +21,20 @@ export class LdapSyncExecutingLoggable implements Loggable {
 	}
 }
 
+interface SyncStats {
+	success: boolean;
+	errors: string[];
+}
+
 export class LdapSyncCompletedLoggable implements Loggable {
-	constructor(
-		private readonly success: boolean,
-		private readonly errorCount: number
-	) {}
+	constructor(private readonly stats: SyncStats) {}
 
 	public getLogMessage(): LogMessage {
 		return {
 			message: `LDAP sync completed`,
 			data: {
-				success: this.success,
-				errorCount: this.errorCount,
+				success: this.stats.success,
+				errorCount: this.stats.errors.length,
 			},
 		};
 	}
