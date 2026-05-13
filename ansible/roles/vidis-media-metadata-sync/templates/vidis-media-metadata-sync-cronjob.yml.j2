@@ -41,8 +41,8 @@ spec:
                 name: api-secret
             - configMapRef:
                 name: vidis-media-metadata-sync-cronjob-configmap
-            command: ['/bin/sh','-c']
-            args: ['npm run nest:start:sync-console:prod -- media metadata -df VIDIS']
+            command: ['node', 'dist/apps/server/apps/sync-console.app', 'media', 'metadata', '-df', 'VIDIS']
+            args: []
             resources:
               limits:
                 cpu: {{ VIDIS_MEDIA_METADATA_SYNC_CPU_LIMITS|default("2000m", true) }}

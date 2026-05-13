@@ -31,9 +31,9 @@ spec:
             git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
         spec:
           securityContext:
-            runAsUser: 1000
-            runAsGroup: 1000
-            fsGroup: 1000
+            runAsUser: 65532
+            runAsGroup: 65532
+            fsGroup: 65532
             runAsNonRoot: true
           os:
             name: linux
@@ -48,8 +48,8 @@ spec:
                 name: api-h5p-library-management-configmap
             - secretRef:
                 name: api-h5p-library-management-secret
-            command: ['/bin/sh', '-c']
-            args: ['npm run nest:start:h5p:library-management:prod']
+            command: ['node', 'dist/apps/server/apps/h5p-library-management.app']
+            args: []
             resources:
               limits:
                 cpu: {{ API_H5P_LIBRARY_MANAGEMENT_CPU_LIMITS|default("2000m", true) }}
