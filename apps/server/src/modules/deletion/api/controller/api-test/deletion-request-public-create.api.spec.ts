@@ -22,6 +22,11 @@ describe(`deletionRequest public create (api)`, () => {
 		}).compile();
 
 		app = module.createNestApplication();
+		// TODO: Can we do this as a general setup for all tests?
+		// Configure Express with the same query parser as production (Express v5 compatibility)
+		// See: https://docs.nestjs.com/migration-guide#query-parameters-parsing
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+		app.getHttpAdapter().getInstance().set('query parser', 'extended');
 		await app.init();
 		em = module.get(EntityManager);
 		testApiClient = new TestApiClient(app, baseRouteName);
@@ -47,10 +52,8 @@ describe(`deletionRequest public create (api)`, () => {
 			const deletionRequestToCreate: DeletionRequestParams = {
 				ids: [studentUser.id],
 			};
-			// Express v5 (NestJS v11) changed the default query parser — ids[] notation
-			// is no longer parsed as an array. Use plain `ids=value` format instead;
-			// class-transformer's enableImplicitConversion converts single string to string[].
-			const queryString = deletionRequestToCreate.ids.map((id) => `ids=${id}`).join('&');
+
+			const queryString = deletionRequestToCreate.ids.map((id) => `ids[]=${id}`).join('&');
 			const nonexistentId = new ObjectId().toString();
 			const loggedInClient = await testApiClient.login(adminAccount);
 
@@ -105,7 +108,7 @@ describe(`deletionRequest public create (api)`, () => {
 			await em.persist([studentUser2]).flush();
 			em.clear();
 
-			const response = await loggedInClient.delete(`?ids=${studentUser2.id}`);
+			const response = await loggedInClient.delete(`?ids[]=${studentUser2.id}`);
 
 			expect(response.status).toEqual(204);
 			const deletionRequest = await em.findOne('DeletionRequestEntity', { targetRefId: new ObjectId(studentUser2.id) });
@@ -115,7 +118,7 @@ describe(`deletionRequest public create (api)`, () => {
 		it('should return status 400 when all deletion requests fail', async () => {
 			const { loggedInClient, nonexistentId } = await setup();
 
-			const response = await loggedInClient.delete(`?ids=${nonexistentId}`);
+			const response = await loggedInClient.delete(`?ids[]=${nonexistentId}`);
 
 			expect(response.status).toEqual(400);
 		});
@@ -123,7 +126,7 @@ describe(`deletionRequest public create (api)`, () => {
 		it('should return status 207 when some deletion requests fail', async () => {
 			const { nonexistentId, queryString, loggedInClient } = await setup();
 
-			const response = await loggedInClient.delete(`?${queryString}&ids=${nonexistentId}`);
+			const response = await loggedInClient.delete(`?${queryString}&ids[]=${nonexistentId}`);
 
 			expect(response.status).toEqual(207);
 		});
@@ -133,7 +136,7 @@ describe(`deletionRequest public create (api)`, () => {
 
 			let additionalQueryString = '';
 			for (let i = 0; i <= 100; i++) {
-				additionalQueryString += `&ids=${new ObjectId().toString()}`;
+				additionalQueryString += `&ids[]=${new ObjectId().toString()}`;
 			}
 
 			const response = await loggedInClient.delete(`?${queryString}${additionalQueryString}`);
@@ -156,7 +159,7 @@ describe(`deletionRequest public create (api)`, () => {
 			const deletionRequestToCreate: DeletionRequestParams = {
 				ids: [studentUser.id],
 			};
-			const queryString = deletionRequestToCreate.ids.map((id) => `ids=${id}`).join('&');
+			const queryString = deletionRequestToCreate.ids.map((id) => `ids[]=${id}`).join('&');
 			const nonexistentId = new ObjectId().toString();
 			const loggedInClient = await testApiClient.login(adminAccount);
 
@@ -196,7 +199,7 @@ describe(`deletionRequest public create (api)`, () => {
 			const deletionRequestToCreate: DeletionRequestParams = {
 				ids: [targetUser.id],
 			};
-			const queryString = deletionRequestToCreate.ids.map((id) => `ids=${id}`).join('&');
+			const queryString = deletionRequestToCreate.ids.map((id) => `ids[]=${id}`).join('&');
 			const loggedInClient = await testApiClient.login(adminAccount);
 
 			return {
