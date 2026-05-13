@@ -1,6 +1,5 @@
 import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
 import {
-	BadRequestException,
 	Body,
 	Controller,
 	HttpCode,
@@ -11,7 +10,6 @@ import {
 	Req,
 	Res,
 	StreamableFile,
-	UseInterceptors,
 } from '@nestjs/common';
 import {
 	ApiBadRequestResponse,
@@ -80,7 +78,7 @@ export class CommonCartridgeController {
 	@Post('upload')
 	public async uploadFile(@CurrentUser() currentUser: ICurrentUser, @Req() req: Request): Promise<FileRecordResponse> {
 		// Extract filename from Content-Disposition header or use a default
-		const contentDisposition = req.headers['content-disposition'] as string | undefined;
+		const contentDisposition = req.headers['content-disposition'];
 		let fileName = 'upload.imscc';
 		if (contentDisposition) {
 			const filenameMatch = contentDisposition.match(/filename[*]?=['"]?(?:UTF-8'')?([^;'"\n]+)['"]?/i);
