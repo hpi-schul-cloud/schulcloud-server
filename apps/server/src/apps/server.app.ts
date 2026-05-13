@@ -37,6 +37,8 @@ async function bootstrap(): Promise<void> {
 
 	// create the NestJS application on a separate express instance
 	const nestExpress = express();
+	// See: https://docs.nestjs.com/migration-guide#query-parameters-parsing
+	nestExpress.set('query parser', 'extended');
 	const nestExpressAdapter = new ExpressAdapter(nestExpress);
 	const nestApp = await NestFactory.create(ServerModule, nestExpressAdapter);
 	const orm = nestApp.get(MikroORM);
