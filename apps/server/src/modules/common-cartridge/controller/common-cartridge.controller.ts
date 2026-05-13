@@ -1,16 +1,5 @@
 import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
-import {
-	Body,
-	Controller,
-	HttpCode,
-	HttpStatus,
-	Param,
-	Post,
-	Query,
-	Req,
-	Res,
-	StreamableFile,
-} from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Param, Post, Query, Req, Res, StreamableFile } from '@nestjs/common';
 import {
 	ApiBadRequestResponse,
 	ApiBody,
