@@ -9,6 +9,7 @@ export class MetaTagExtractorResponse {
 		description,
 		originalImageUrl,
 		imageUrl,
+		previewImageId,
 		type,
 		parentTitle,
 		parentType,
@@ -17,6 +18,7 @@ export class MetaTagExtractorResponse {
 		this.title = title;
 		this.description = description;
 		this.imageUrl = imageUrl;
+		this.previewImageId = previewImageId;
 		this.originalImageUrl = originalImageUrl;
 		this.type = type;
 		this.parentTitle = parentTitle;
@@ -39,6 +41,9 @@ export class MetaTagExtractorResponse {
 
 	@ApiPropertyOptional()
 	public imageUrl?: string;
+
+	@ApiPropertyOptional()
+	public previewImageId?: string;
 
 	@ApiProperty({ enum: MetaDataEntityType, enumName: 'MetaDataEntityType' })
 	public type: MetaDataEntityType;

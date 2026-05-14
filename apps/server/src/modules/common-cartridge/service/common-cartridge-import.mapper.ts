@@ -94,6 +94,7 @@ export class CommonCartridgeImportMapper {
 				url: resource.url,
 				description: '',
 				imageUrl: '',
+				previewImageId: '',
 				originalImageUrl: '',
 			},
 			type: 'link',

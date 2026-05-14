@@ -242,6 +242,7 @@ export class BoardNodeCopyService {
 						copy.imageUrl = copy.imageUrl.replace(copyFileDto.sourceId, copyFileDto.id);
 					} else {
 						copy.imageUrl = '';
+						copy.previewImageId = '';
 					}
 				}
 			});

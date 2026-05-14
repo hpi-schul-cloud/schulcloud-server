@@ -34,6 +34,14 @@ export class LinkElement extends BoardNode<LinkElementProps> {
 		this.props.imageUrl = value;
 	}
 
+	get previewImageId(): string {
+		return this.props.previewImageId ?? '';
+	}
+
+	set previewImageId(value: string) {
+		this.props.previewImageId = value;
+	}
+
 	get originalImageUrl(): string {
 		return this.props.originalImageUrl ?? '';
 	}
@@ -42,7 +50,7 @@ export class LinkElement extends BoardNode<LinkElementProps> {
 		this.props.originalImageUrl = value;
 	}
 
-	canHaveChild(): boolean {
+	public canHaveChild(): boolean {
 		return false;
 	}
 }

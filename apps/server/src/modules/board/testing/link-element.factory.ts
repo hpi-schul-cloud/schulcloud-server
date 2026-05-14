@@ -13,6 +13,7 @@ export const linkElementFactory = BaseFactory.define<LinkElement, LinkElementPro
 		description: `description #${sequence}`,
 		url: `url #${sequence}`,
 		imageUrl: `image-url #${sequence}`,
+		previewImageId: `preview-image-id #${sequence}`,
 		createdAt: new Date(),
 		updatedAt: new Date(),
 	};

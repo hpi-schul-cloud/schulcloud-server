@@ -336,10 +336,12 @@ describe(BoardNodeCopyService.name, () => {
 			const linkElement = linkElementFactory.build({
 				id: sourceId,
 				imageUrl: `https://example.com/${sourceId}/${linkElementFileName}`,
+				previewImageId: 'preview-image-id',
 			});
 			const linkElementWithoutId = linkElementFactory.build({
 				id: sourceId,
 				imageUrl: `https://example.com/plane.jpg`,
+				previewImageId: 'preview-image-id',
 			});
 			const fileCopyStatus = copyFileDtoFactory.build({ sourceId, name: linkElementFileName });
 

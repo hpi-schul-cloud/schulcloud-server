@@ -49,6 +49,12 @@ export interface LinkContentBody {
      * @type {string}
      * @memberof LinkContentBody
      */
+    'previewImageId': string;
+    /**
+     * 
+     * @type {string}
+     * @memberof LinkContentBody
+     */
     'originalImageUrl': string;
 }
 

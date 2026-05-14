@@ -53,6 +53,7 @@ export interface LinkElementProps extends BoardNodeProps {
 	description?: string;
 	originalImageUrl?: string;
 	imageUrl?: string;
+	previewImageId?: string;
 }
 
 export interface RichTextElementProps extends BoardNodeProps {

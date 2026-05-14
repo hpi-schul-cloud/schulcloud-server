@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { BoardNodeEntityFactory, PropsWithType } from './board-node-entity.factory';
 import { BoardNodeType, LinkElementProps, ROOT_PATH } from '../../domain';
+import { BoardNodeEntityFactory, PropsWithType } from './board-node-entity.factory';
 
 export const linkElementEntityFactory = BoardNodeEntityFactory.define<PropsWithType<LinkElementProps>>(
 	({ sequence }) => {
@@ -14,6 +14,7 @@ export const linkElementEntityFactory = BoardNodeEntityFactory.define<PropsWithT
 			description: `description #${sequence}`,
 			url: `url #${sequence}`,
 			imageUrl: '',
+			previewImageId: '',
 			createdAt: new Date(),
 			updatedAt: new Date(),
 			type: BoardNodeType.LINK_ELEMENT,

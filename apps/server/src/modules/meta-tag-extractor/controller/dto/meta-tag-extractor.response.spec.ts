@@ -9,6 +9,7 @@ describe(MetaTagExtractorResponse.name, () => {
 				title: 'Testbild',
 				description: 'Here we describe what this page is about.',
 				imageUrl: 'https://www.abc.de/test.png',
+				previewImageId: 'preview-image-id',
 				type: MetaDataEntityType.UNKNOWN,
 				parentTitle: 'Math',
 				parentType: MetaDataEntityType.COURSE,
@@ -19,6 +20,7 @@ describe(MetaTagExtractorResponse.name, () => {
 			expect(response.title).toEqual(properties.title);
 			expect(response.description).toEqual(properties.description);
 			expect(response.imageUrl).toEqual(properties.imageUrl);
+			expect(response.previewImageId).toEqual(properties.previewImageId);
 			expect(response.type).toEqual(properties.type);
 			expect(response.parentTitle).toEqual(properties.parentTitle);
 			expect(response.parentType).toEqual(properties.parentType);

@@ -4,28 +4,32 @@ import { ContentElementType } from '../../../domain';
 import { TimestampsResponse } from '../timestamps.response';
 
 export class LinkElementContent {
-	constructor({ url, title, description, originalImageUrl, imageUrl }: LinkElementContent) {
+	constructor({ url, title, description, originalImageUrl, imageUrl, previewImageId }: LinkElementContent) {
 		this.url = url;
 		this.title = title;
 		this.description = description;
 		this.originalImageUrl = originalImageUrl;
 		this.imageUrl = imageUrl;
+		this.previewImageId = previewImageId;
 	}
 
 	@ApiProperty()
-	url: string;
+	public url: string;
 
 	@ApiProperty()
-	title: string;
+	public title: string;
 
 	@ApiPropertyOptional()
-	description?: string;
+	public description?: string;
 
 	@ApiPropertyOptional()
-	originalImageUrl?: string;
+	public originalImageUrl?: string;
 
 	@ApiPropertyOptional()
-	imageUrl?: string;
+	public imageUrl?: string;
+
+	@ApiPropertyOptional()
+	public previewImageId?: string;
 }
 
 export class LinkElementResponse {
@@ -37,14 +41,14 @@ export class LinkElementResponse {
 	}
 
 	@ApiProperty({ pattern: bsonStringPattern })
-	id: string;
+	public id: string;
 
 	@ApiProperty({ enum: ContentElementType, enumName: 'ContentElementType' })
-	type: ContentElementType.LINK;
+	public type: ContentElementType.LINK;
 
 	@ApiProperty()
-	content: LinkElementContent;
+	public content: LinkElementContent;
 
 	@ApiProperty()
-	timestamps: TimestampsResponse;
+	public timestamps: TimestampsResponse;
 }

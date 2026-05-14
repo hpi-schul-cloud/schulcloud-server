@@ -127,6 +127,7 @@ describe(`board copy with course relation (api)`, () => {
 				const internalLinkElement = linkElementEntityFactory.withParent(cardNode).build({
 					url: `https://example.com/boards/${columnBoardNode.id}#card-${cardNode.id}`,
 					imageUrl: '',
+					previewImageId: '',
 				});
 				await em.persist([columnBoardNode, columnNode, cardNode, internalLinkElement]).flush();
 				em.clear();

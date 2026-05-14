@@ -10,6 +10,7 @@ describe('LinkElement', () => {
 			title: 'Example',
 			description: 'Example description',
 			imageUrl: 'https://example.com/image.jpg',
+			previewImageId: 'preview-image-id',
 			originalImageUrl: 'https://example.com/image.jpg',
 		});
 	});
@@ -56,6 +57,15 @@ describe('LinkElement', () => {
 	it('should set imageUrl', () => {
 		linkElement.imageUrl = 'https://newurl.com/newimage.jpg';
 		expect(linkElement.imageUrl).toBe('https://newurl.com/newimage.jpg');
+	});
+
+	it('should return previewImageId', () => {
+		expect(linkElement.previewImageId).toBe('preview-image-id');
+	});
+
+	it('should set previewImageId', () => {
+		linkElement.previewImageId = 'preview-image-id';
+		expect(linkElement.previewImageId).toBe('preview-image-id');
 	});
 
 	it('should return originalImageUrl', () => {

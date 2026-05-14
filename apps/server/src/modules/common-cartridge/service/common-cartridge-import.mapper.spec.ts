@@ -94,6 +94,7 @@ describe('CommonCartridgeImportMapper', () => {
 						title: '',
 						description: '',
 						imageUrl: '',
+						previewImageId: '',
 						originalImageUrl: '',
 					},
 				});

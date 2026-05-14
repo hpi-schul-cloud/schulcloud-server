@@ -1,5 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { Test, TestingModule } from '@nestjs/testing';
 import { InputFormat } from '@shared/domain/types';
 import {
@@ -28,6 +29,7 @@ import { ContentElementUpdateService } from './content-element-update.service';
 describe('ContentElementUpdateService', () => {
 	let module: TestingModule;
 	let service: ContentElementUpdateService;
+	let filesStorageClientAdapterService: DeepMocked<FilesStorageClientAdapterService>;
 	let repo: DeepMocked<BoardNodeRepo>;
 
 	beforeAll(async () => {
@@ -38,11 +40,16 @@ describe('ContentElementUpdateService', () => {
 					provide: BoardNodeRepo,
 					useValue: createMock<BoardNodeRepo>(),
 				},
+				{
+					provide: FilesStorageClientAdapterService,
+					useValue: createMock<FilesStorageClientAdapterService>(),
+				},
 			],
 		}).compile();
 
 		service = module.get(ContentElementUpdateService);
 		repo = module.get(BoardNodeRepo);
+		filesStorageClientAdapterService = module.get(FilesStorageClientAdapterService);
 	});
 
 	afterAll(async () => {
@@ -107,6 +114,7 @@ describe('ContentElementUpdateService', () => {
 			content.title = 'title';
 			content.description = 'description';
 			content.imageUrl = 'relative-image.jpg';
+			content.previewImageId = 'preview-image-id';
 
 			return {
 				element,
@@ -123,6 +131,31 @@ describe('ContentElementUpdateService', () => {
 			expect(element.title).toBe('title');
 			expect(element.description).toBe('description');
 			expect(element.imageUrl).toBe('relative-image.jpg');
+			expect(element.previewImageId).toBe('preview-image-id');
+			expect(repo.save).toHaveBeenCalledWith(element);
+		});
+
+		it('should delete old preview image if changed', async () => {
+			const { element, content } = setup();
+			const oldPreviewFileRecordId = element.previewImageId;
+
+			await service.updateContent(element, content);
+
+			expect(filesStorageClientAdapterService.deleteFiles).toHaveBeenCalledWith([oldPreviewFileRecordId]);
+		});
+
+		it('should not delete old preview image if not changed', async () => {
+			const { element } = setup();
+			const content = new LinkContentBody();
+			content.url = 'http://example.com/';
+			content.title = 'title';
+			content.description = 'description';
+			content.imageUrl = element.imageUrl;
+			content.previewImageId = element.previewImageId;
+
+			await service.updateContent(element, content);
+
+			expect(filesStorageClientAdapterService.deleteFiles).not.toHaveBeenCalled();
 			expect(repo.save).toHaveBeenCalledWith(element);
 		});
 	});

@@ -1,3 +1,4 @@
+import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { Injectable } from '@nestjs/common';
 import { sanitizeRichText } from '@shared/controller/transformer';
 import { InputFormat } from '@shared/domain/types';
@@ -37,14 +38,17 @@ import { BoardNodeRepo } from '../../repo';
 
 @Injectable()
 export class ContentElementUpdateService {
-	constructor(private readonly boardNodeRepo: BoardNodeRepo) {}
+	constructor(
+		private readonly boardNodeRepo: BoardNodeRepo,
+		private readonly filesStorageService: FilesStorageClientAdapterService
+	) {}
 
 	public async updateContent(element: AnyContentElement, content: AnyElementContentBody): Promise<void> {
 		// TODO refactor if ... else to e.g. discriminated union or non-exhaustive check
 		if (isFileElement(element) && content instanceof FileContentBody) {
 			this.updateFileElement(element, content);
 		} else if (isLinkElement(element) && content instanceof LinkContentBody) {
-			this.updateLinkElement(element, content);
+			await this.updateLinkElement(element, content);
 		} else if (isRichTextElement(element) && content instanceof RichTextContentBody) {
 			this.updateRichTextElement(element, content);
 		} else if (isDrawingElement(element) && content instanceof DrawingContentBody) {
@@ -69,10 +73,14 @@ export class ContentElementUpdateService {
 		element.alternativeText = sanitizeRichText(content.alternativeText, InputFormat.PLAIN_TEXT);
 	}
 
-	public updateLinkElement(element: LinkElement, content: LinkContentBody): void {
+	public async updateLinkElement(element: LinkElement, content: LinkContentBody): Promise<void> {
+		const oldPreviewFileRecordId = element.previewImageId;
+		const newPreviewFileRecordId = content.previewImageId;
+
 		element.url = new URL(content.url).toString();
 		element.title = content.title ?? '';
 		element.description = content.description ?? '';
+
 		if (content.imageUrl) {
 			const isRelativeUrl = (url: string) => {
 				const fallbackHostname = 'https://www.fallback-url-if-url-is-relative.org';
@@ -83,6 +91,14 @@ export class ContentElementUpdateService {
 			if (isRelativeUrl(content.imageUrl)) {
 				element.imageUrl = content.imageUrl;
 			}
+		}
+
+		if (newPreviewFileRecordId) {
+			element.previewImageId = newPreviewFileRecordId;
+		}
+
+		if (oldPreviewFileRecordId && newPreviewFileRecordId && oldPreviewFileRecordId !== newPreviewFileRecordId) {
+			await this.filesStorageService.deleteFiles([oldPreviewFileRecordId]);
 		}
 	}
 

@@ -11,141 +11,146 @@ abstract class ElementContentBody {
 		description: 'the type of the updated element',
 		enumName: 'ContentElementType',
 	})
-	type!: ContentElementType;
+	public type!: ContentElementType;
 }
 
 export class FileContentBody {
 	@IsString()
 	@ApiProperty({})
-	caption!: string;
+	public caption!: string;
 
 	@IsString()
 	@ApiProperty({})
-	alternativeText!: string;
+	public alternativeText!: string;
 }
 
 export class FileElementContentBody extends ElementContentBody {
 	@ApiProperty({ type: () => ContentElementType.FILE })
-	type!: ContentElementType.FILE;
+	public type!: ContentElementType.FILE;
 
 	@ValidateNested()
 	@ApiProperty()
-	content!: FileContentBody;
+	public content!: FileContentBody;
 }
 
 export class LinkContentBody {
 	@IsString()
 	@ApiProperty({})
-	url!: string;
+	public url!: string;
 
 	@IsString()
 	@IsOptional()
 	@ApiProperty({})
-	title?: string;
+	public title?: string;
 
 	@IsString()
 	@IsOptional()
 	@ApiProperty({})
-	description?: string;
+	public description?: string;
 
 	@IsString()
 	@IsOptional()
 	@ApiProperty({})
-	imageUrl?: string;
+	public imageUrl?: string;
 
 	@IsString()
 	@IsOptional()
 	@ApiProperty({})
-	originalImageUrl?: string;
+	public previewImageId?: string;
+
+	@IsString()
+	@IsOptional()
+	@ApiProperty({})
+	public originalImageUrl?: string;
 }
 
 export class LinkElementContentBody extends ElementContentBody {
 	@ApiProperty({ type: () => ContentElementType.LINK })
-	type!: ContentElementType.LINK;
+	public type!: ContentElementType.LINK;
 
 	@ValidateNested()
 	@ApiProperty({})
-	content!: LinkContentBody;
+	public content!: LinkContentBody;
 }
 
 export class DrawingContentBody {
 	@IsString()
 	@ApiProperty()
-	description!: string;
+	public description!: string;
 }
 
 export class DrawingElementContentBody extends ElementContentBody {
 	@ApiProperty({ type: () => ContentElementType.DRAWING })
-	type!: ContentElementType.DRAWING;
+	public type!: ContentElementType.DRAWING;
 
 	@ValidateNested()
 	@ApiProperty()
-	content!: DrawingContentBody;
+	public content!: DrawingContentBody;
 }
 
 export class RichTextContentBody {
 	@IsString()
 	@ApiProperty()
-	text!: string;
+	public text!: string;
 
 	@IsEnum(InputFormat)
 	@ApiProperty()
-	inputFormat!: InputFormat;
+	public inputFormat!: InputFormat;
 }
 
 export class RichTextElementContentBody extends ElementContentBody {
 	@ApiProperty({ type: () => ContentElementType.RICH_TEXT })
-	type!: ContentElementType.RICH_TEXT;
+	public type!: ContentElementType.RICH_TEXT;
 
 	@ValidateNested()
 	@ApiProperty()
-	content!: RichTextContentBody;
+	public content!: RichTextContentBody;
 }
 
 export class ExternalToolContentBody {
 	@IsMongoId()
 	@IsOptional()
 	@ApiPropertyOptional()
-	contextExternalToolId?: string;
+	public contextExternalToolId?: string;
 }
 
 export class ExternalToolElementContentBody extends ElementContentBody {
 	@ApiProperty({ type: () => ContentElementType.EXTERNAL_TOOL })
-	type!: ContentElementType.EXTERNAL_TOOL;
+	public type!: ContentElementType.EXTERNAL_TOOL;
 
 	@ValidateNested()
 	@ApiProperty()
-	content!: ExternalToolContentBody;
+	public content!: ExternalToolContentBody;
 }
 
 export class VideoConferenceContentBody {
 	@IsString()
 	@ApiProperty()
-	title!: string;
+	public title!: string;
 }
 
 export class VideoConferenceElementContentBody extends ElementContentBody {
 	@ApiProperty({ type: () => ContentElementType.VIDEO_CONFERENCE })
-	type!: ContentElementType.VIDEO_CONFERENCE;
+	public type!: ContentElementType.VIDEO_CONFERENCE;
 
 	@ValidateNested()
 	@ApiProperty()
-	content!: VideoConferenceContentBody;
+	public content!: VideoConferenceContentBody;
 }
 
 export class FileFolderContentBody {
 	@IsString()
 	@ApiProperty()
-	title!: string;
+	public title!: string;
 }
 
 export class FileFolderElementContentBody extends ElementContentBody {
 	@ApiProperty({ type: () => ContentElementType.FILE_FOLDER })
-	type!: ContentElementType.FILE_FOLDER;
+	public type!: ContentElementType.FILE_FOLDER;
 
 	@ValidateNested()
 	@ApiProperty()
-	content!: FileFolderContentBody;
+	public content!: FileFolderContentBody;
 }
 
 export class H5pContentBody {
