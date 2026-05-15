@@ -158,6 +158,49 @@ describe('ContentElementUpdateService', () => {
 			expect(filesStorageClientAdapterService.deleteFiles).not.toHaveBeenCalled();
 			expect(repo.save).toHaveBeenCalledWith(element);
 		});
+
+		describe('when no new previewImageId is provided', () => {
+			const setupWithoutPreviewImageId = () => {
+				const element = linkElementFactory.build();
+				const content = new LinkContentBody();
+				content.url = 'http://example.com/';
+				content.title = 'title';
+				content.description = 'description';
+
+				return { element, content };
+			};
+
+			it('should delete the old preview image', async () => {
+				const { element, content } = setupWithoutPreviewImageId();
+				const oldPreviewFileRecordId = element.previewImageId;
+
+				await service.updateContent(element, content);
+
+				expect(filesStorageClientAdapterService.deleteFiles).toHaveBeenCalledWith([oldPreviewFileRecordId]);
+			});
+
+			it('should clear previewImageId on the element', async () => {
+				const { element, content } = setupWithoutPreviewImageId();
+
+				await service.updateContent(element, content);
+
+				expect(element.previewImageId).toBe('');
+			});
+		});
+
+		describe('when no imageUrl is provided', () => {
+			it('should clear imageUrl on the element', async () => {
+				const element = linkElementFactory.build();
+				const content = new LinkContentBody();
+				content.url = 'http://example.com/';
+				content.title = 'title';
+				content.description = 'description';
+
+				await service.updateContent(element, content);
+
+				expect(element.imageUrl).toBe('');
+			});
+		});
 	});
 
 	describe('when the element is a RichTextElement', () => {

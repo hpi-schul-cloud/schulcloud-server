@@ -75,11 +75,13 @@ export class ContentElementUpdateService {
 
 	public async updateLinkElement(element: LinkElement, content: LinkContentBody): Promise<void> {
 		const oldPreviewFileRecordId = element.previewImageId;
-		const newPreviewFileRecordId = content.previewImageId;
+		const newPreviewFileRecordId = content.previewImageId ?? '';
 
 		element.url = new URL(content.url).toString();
 		element.title = content.title ?? '';
 		element.description = content.description ?? '';
+		element.imageUrl = '';
+		element.previewImageId = newPreviewFileRecordId;
 
 		if (content.imageUrl) {
 			const isRelativeUrl = (url: string) => {
@@ -93,11 +95,7 @@ export class ContentElementUpdateService {
 			}
 		}
 
-		if (newPreviewFileRecordId) {
-			element.previewImageId = newPreviewFileRecordId;
-		}
-
-		if (oldPreviewFileRecordId && newPreviewFileRecordId && oldPreviewFileRecordId !== newPreviewFileRecordId) {
+		if (oldPreviewFileRecordId && oldPreviewFileRecordId !== newPreviewFileRecordId) {
 			await this.filesStorageService.deleteFiles([oldPreviewFileRecordId]);
 		}
 	}
