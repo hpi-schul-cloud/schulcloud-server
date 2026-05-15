@@ -233,19 +233,28 @@ export class BoardNodeCopyService {
 			originalEntity: original,
 		};
 
-		if (original.imageUrl) {
+		if (original.imageUrl || original.previewImageId) {
 			const fileCopy = await context.copyFilesOfParent(original.id, copy.id);
+			let hasCopiedImageUrl = false;
 
-			fileCopy.forEach((copyFileDto) => {
-				if (copyFileDto.id) {
-					if (copy.imageUrl.includes(copyFileDto.sourceId)) {
-						copy.imageUrl = copy.imageUrl.replace(copyFileDto.sourceId, copyFileDto.id);
-					} else {
-						copy.imageUrl = '';
-						copy.previewImageId = '';
-					}
-				}
-			});
+			if (original.imageUrl) {
+				const copiedImageFile = fileCopy.find(
+					(copyFileDto) => copyFileDto.id && copy.imageUrl.includes(copyFileDto.sourceId)
+				);
+
+				copy.imageUrl = copiedImageFile?.id ? copy.imageUrl.replace(copiedImageFile.sourceId, copiedImageFile.id) : '';
+				hasCopiedImageUrl = copy.imageUrl !== '';
+			}
+
+			if (original.previewImageId && hasCopiedImageUrl) {
+				const copiedPreviewFile = fileCopy.find(
+					(copyFileDto) => copyFileDto.id && copyFileDto.sourceId === original.previewImageId
+				);
+
+				copy.previewImageId = copiedPreviewFile?.id ?? '';
+			} else if (original.previewImageId) {
+				copy.previewImageId = '';
+			}
 
 			const fileCopyStatus = fileCopy.map((copyFileDto) => {
 				return {
