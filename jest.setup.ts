@@ -1,4 +1,3 @@
-/* istanbul ignore next */
 globalThis.console = {
 	...console,
 	log: jest.fn(), // suppress console.log
