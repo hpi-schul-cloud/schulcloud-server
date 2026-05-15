@@ -5,7 +5,6 @@ import {
 	ApiBadRequestResponse,
 	ApiCreatedResponse,
 	ApiForbiddenResponse,
-	ApiFoundResponse,
 	ApiOkResponse,
 	ApiOperation,
 	ApiResponse,
@@ -44,7 +43,11 @@ export class ToolSchoolController {
 	) {}
 
 	@Get()
-	@ApiFoundResponse({ description: 'SchoolExternalTools has been found.', type: ExternalToolSearchListResponse })
+	@ApiResponse({
+		status: 200,
+		description: 'SchoolExternalTools has been found.',
+		type: ExternalToolSearchListResponse,
+	})
 	@ApiForbiddenResponse()
 	@ApiUnauthorizedResponse()
 	@ApiOperation({ summary: 'Returns a list of SchoolExternalTools for a given school' })
