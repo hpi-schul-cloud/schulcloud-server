@@ -1,4 +1,4 @@
-global.console = {
+globalThis.console = {
 	...console,
 	log: jest.fn(), // suppress console.log
 	info: jest.fn(), // suppress console.info
