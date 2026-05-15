@@ -331,23 +331,29 @@ describe(BoardNodeCopyService.name, () => {
 	describe('copy link element', () => {
 		const setup = () => {
 			const { copyContext } = setupContext();
-			const sourceId = new ObjectId().toHexString();
+			const elementId = new ObjectId().toHexString();
+			const previewSourceId = new ObjectId().toHexString();
 			const linkElementFileName = `bird.jpg`;
 			const linkElement = linkElementFactory.build({
-				id: sourceId,
-				imageUrl: `https://example.com/${sourceId}/${linkElementFileName}`,
-				previewImageId: 'preview-image-id',
+				id: elementId,
+				imageUrl: `https://example.com/${previewSourceId}/${linkElementFileName}`,
+				previewImageId: previewSourceId,
 			});
 			const linkElementWithoutId = linkElementFactory.build({
-				id: sourceId,
+				id: elementId,
 				imageUrl: `https://example.com/plane.jpg`,
-				previewImageId: 'preview-image-id',
+				previewImageId: previewSourceId,
 			});
-			const fileCopyStatus = copyFileDtoFactory.build({ sourceId, name: linkElementFileName });
+			const linkElementWithoutImageUrl = linkElementFactory.build({
+				id: elementId,
+				imageUrl: undefined,
+				previewImageId: previewSourceId,
+			});
+			const fileCopyStatus = copyFileDtoFactory.build({ sourceId: previewSourceId, name: linkElementFileName });
 
 			jest.spyOn(copyContext, 'copyFilesOfParent').mockResolvedValueOnce([fileCopyStatus]);
 
-			return { copyContext, linkElement, linkElementWithoutId, fileCopyStatus };
+			return { copyContext, linkElement, linkElementWithoutId, linkElementWithoutImageUrl, fileCopyStatus };
 		};
 
 		it('should copy the node', async () => {
@@ -386,32 +392,37 @@ describe(BoardNodeCopyService.name, () => {
 					`https://example.com/${fileCopyStatus.id}/${fileCopyStatus.name ?? ''}`
 				);
 			});
+
+			it('should replace preview image id with copied file id', async () => {
+				const { copyContext, linkElement, fileCopyStatus } = setup();
+
+				const result = await service.copyLinkElement(linkElement, copyContext);
+
+				expect((result.copyEntity as LinkElement).previewImageId).toBe(fileCopyStatus.id);
+				expect((result.copyEntity as LinkElement).previewImageId).not.toBe(linkElement.previewImageId);
+			});
 		});
 
 		describe('when imageUrl doesnt include source id', () => {
-			it('should set blank image url', async () => {
+			it('should clear preview image id when image url becomes blank', async () => {
 				const { copyContext, linkElementWithoutId } = setup();
 
 				const result = await service.copyLinkElement(linkElementWithoutId, copyContext);
 
 				// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
 				expect((result.copyEntity as LinkElement).imageUrl).toBe('');
+				expect((result.copyEntity as LinkElement).previewImageId).toBe('');
 			});
 		});
 
 		describe('when no imageUrl is present', () => {
-			const setupWithoutImageUrl = () => {
-				const { copyContext, fileCopyStatus } = setup();
-				const linkElement = linkElementFactory.build({ imageUrl: undefined });
+			it('should keep blank image url and clear preview image id', async () => {
+				const { copyContext, linkElementWithoutImageUrl } = setup();
 
-				return { copyContext, linkElement, fileCopyStatus };
-			};
-			it('should replace the source id in image urls', async () => {
-				const { copyContext, linkElement } = setupWithoutImageUrl();
-
-				const result = await service.copyLinkElement(linkElement, copyContext);
+				const result = await service.copyLinkElement(linkElementWithoutImageUrl, copyContext);
 
 				expect((result.copyEntity as LinkElement).imageUrl).toBe('');
+				expect((result.copyEntity as LinkElement).previewImageId).toBe('');
 			});
 		});
 	});

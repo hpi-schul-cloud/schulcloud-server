@@ -391,6 +391,29 @@ describe('CommonCartridgeExportMapper', () => {
 					url: linkElement.content.url,
 				});
 			});
+
+			it('should ignore preview metadata when exporting link elements', () => {
+				const linkElementWithPreview = linkElementFactory.build({
+					content: {
+						...linkElement.content,
+						imageUrl: faker.internet.url(),
+						previewImageId: faker.string.uuid(),
+						originalImageUrl: faker.internet.url(),
+					},
+				});
+
+				const result = sut.mapLinkElementToResource(linkElementWithPreview);
+
+				expect(result).toEqual({
+					type: CommonCartridgeResourceType.WEB_LINK,
+					identifier: createIdentifier(linkElementWithPreview.id),
+					title: linkElementWithPreview.content.title,
+					url: linkElementWithPreview.content.url,
+				});
+				expect(result).not.toHaveProperty('previewImageId');
+				expect(result).not.toHaveProperty('imageUrl');
+				expect(result).not.toHaveProperty('originalImageUrl');
+			});
 		});
 	});
 

@@ -1,6 +1,9 @@
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { CopyApiResponse, CopyElementType, CopyStatusEnum } from '@modules/copy-helper';
 import { courseEntityFactory } from '@modules/course/testing';
+import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
+import { copyFileDtoFactory } from '@modules/files-storage-client/testing';
 import { ServerTestModule } from '@modules/server/server.app.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -21,16 +24,21 @@ const baseRouteName = '/boards';
 describe(`board copy with course relation (api)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
+	let filesStorageClientAdapterService: DeepMocked<FilesStorageClientAdapterService>;
 	let testApiClient: TestApiClient;
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
-		}).compile();
+		})
+			.overrideProvider(FilesStorageClientAdapterService)
+			.useValue(createMock<FilesStorageClientAdapterService>())
+			.compile();
 
 		app = module.createNestApplication();
 		await app.init();
 		em = module.get(EntityManager);
+		filesStorageClientAdapterService = module.get(FilesStorageClientAdapterService);
 		testApiClient = new TestApiClient(app, baseRouteName);
 	});
 
@@ -115,6 +123,8 @@ describe(`board copy with course relation (api)`, () => {
 		describe('when board contains link elements', () => {
 			const setupWithLinkElement = async () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
+				const previewSourceId = '65e84684e43ba80204598425';
+				const copiedPreviewId = '65e84684e43ba80204598426';
 
 				const course = courseEntityFactory.build({ school: teacherUser.school, teachers: [teacherUser] });
 				await em.persist([teacherAccount, teacherUser, course]).flush();
@@ -126,15 +136,24 @@ describe(`board copy with course relation (api)`, () => {
 				const cardNode = cardEntityFactory.withParent(columnNode).build();
 				const internalLinkElement = linkElementEntityFactory.withParent(cardNode).build({
 					url: `https://example.com/boards/${columnBoardNode.id}#card-${cardNode.id}`,
-					imageUrl: '',
-					previewImageId: '',
+					imageUrl: `https://example.com/${previewSourceId}/preview-image.jpg`,
+					previewImageId: previewSourceId,
 				});
+
+				filesStorageClientAdapterService.copyFilesOfParent.mockResolvedValueOnce([
+					copyFileDtoFactory.build({
+						sourceId: previewSourceId,
+						id: copiedPreviewId,
+						name: 'preview-image.jpg',
+					}),
+				]);
+
 				await em.persist([columnBoardNode, columnNode, cardNode, internalLinkElement]).flush();
 				em.clear();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);
 
-				return { loggedInClient, columnBoardNode };
+				return { loggedInClient, columnBoardNode, previewSourceId, copiedPreviewId };
 			};
 
 			it('should update internal links on the board copy', async () => {
@@ -146,11 +165,29 @@ describe(`board copy with course relation (api)`, () => {
 				const copyId = body.id!;
 
 				const result = await em.find(BoardNodeEntity, {
-					path: { $re: `^https://example.com/boards/${copyId}` },
+					url: { $re: `^https://example.com/boards/${copyId}` },
 					type: BoardNodeType.LINK_ELEMENT,
 				});
 
 				expect(result).toBeDefined();
+			});
+
+			it('should persist a remapped preview image id on the copied link element', async () => {
+				const { loggedInClient, columnBoardNode, previewSourceId, copiedPreviewId } = await setupWithLinkElement();
+
+				const response = await loggedInClient.post(`${columnBoardNode.id}/copy`);
+				const body = response.body as CopyApiResponse;
+				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+				const copyId = body.id!;
+
+				const result = await em.findOneOrFail(BoardNodeEntity, {
+					url: { $re: `^https://example.com/boards/${copyId}` },
+					type: BoardNodeType.LINK_ELEMENT,
+				});
+
+				expect(result.previewImageId).toBe(copiedPreviewId);
+				expect(result.previewImageId).not.toBe(previewSourceId);
+				expect(result.imageUrl).toBe(`https://example.com/${copiedPreviewId}/preview-image.jpg`);
 			});
 		});
 
