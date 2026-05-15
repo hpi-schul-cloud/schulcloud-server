@@ -29,6 +29,7 @@ export class RoomMapper {
 		room,
 		allowedOperations,
 		isLocked,
+		totalMembers,
 	}: RoomWithAllowedOperationsAndLockedStatus): RoomItemResponse {
 		const response = new RoomItemResponse({
 			id: room.id,
@@ -41,6 +42,7 @@ export class RoomMapper {
 			updatedAt: room.updatedAt,
 			allowedOperations,
 			isLocked,
+			totalMembers,
 		});
 
 		return response;
