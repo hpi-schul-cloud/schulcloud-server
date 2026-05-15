@@ -1,8 +1,4 @@
 /* istanbul ignore file */
-// Suppress Express 5.x deprecation errors from legacy Feathers app (feathers-swagger accesses app.router)
-// TODO: Remove once @feathersjs/express and feathers-swagger support Express 5.x
-// eslint-disable-next-line no-process-env
-process.env.NO_DEPRECATION = 'express';
 
 import { Mail, MailService } from '@infra/mail';
 // application imports
