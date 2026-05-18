@@ -131,13 +131,13 @@ describe('Login Controller (api)', () => {
 
 				await em.persist([user, account]).flush();
 
-				return { user };
+				return { account };
 			};
 
 			it('should return error response', async () => {
-				const { user } = await setup();
+				const { account } = await setup();
 				const params: LocalAuthorizationBodyParams = {
-					username: user.email,
+					username: account.username,
 					password: 'wrongPassword',
 				};
 
@@ -156,13 +156,13 @@ describe('Login Controller (api)', () => {
 
 				await em.persist([newUser, deactivatedAccount]).flush();
 
-				return { newUser };
+				return { deactivatedAccount };
 			};
 
 			it('should return error response', async () => {
-				const { newUser } = await setup();
+				const { deactivatedAccount } = await setup();
 				const params: LocalAuthorizationBodyParams = {
-					username: newUser.email,
+					username: deactivatedAccount.username,
 					password: defaultTestPassword,
 				};
 
@@ -181,13 +181,13 @@ describe('Login Controller (api)', () => {
 
 				await em.persist([user, account]).flush();
 
-				return { user };
+				return { account };
 			};
 
 			it('should return jwt with systemUser flag', async () => {
-				const { user } = await setup();
+				const { account } = await setup();
 				const params: LocalAuthorizationBodyParams = {
-					username: user.email,
+					username: account.username,
 					password: defaultTestPassword,
 				};
 				const response = await request(app.getHttpServer()).post(`${basePath}/local-system-user`).send(params);
@@ -215,13 +215,13 @@ describe('Login Controller (api)', () => {
 
 				await em.persist([user, account]).flush();
 
-				return { user };
+				return { account };
 			};
 
 			it('should return error response', async () => {
-				const { user } = await setup();
+				const { account } = await setup();
 				const params: LocalAuthorizationBodyParams = {
-					username: user.email,
+					username: account.username,
 					password: 'wrongPassword',
 				};
 
@@ -240,13 +240,13 @@ describe('Login Controller (api)', () => {
 
 				await em.persist([newUser, deactivatedAccount]).flush();
 
-				return { newUser };
+				return { deactivatedAccount };
 			};
 
 			it('should return error response', async () => {
-				const { newUser } = await setup();
+				const { deactivatedAccount } = await setup();
 				const params: LocalAuthorizationBodyParams = {
-					username: newUser.email,
+					username: deactivatedAccount.username,
 					password: defaultTestPassword,
 				};
 
