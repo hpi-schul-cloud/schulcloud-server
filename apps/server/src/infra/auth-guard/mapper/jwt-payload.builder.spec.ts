@@ -1,14 +1,14 @@
 import { currentUserFactory } from '@testing/factory/currentuser.factory';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { CreateJwtPayload } from '../interface';
-import { JwtPayloadFactory } from './jwt.factory';
+import { JwtPayloadBuilder } from './jwt-payload.builder';
 
 describe('JwtPayloadFactory', () => {
 	describe('build', () => {
 		it('should map current user to create jwt payload', () => {
 			const currentUser = currentUserFactory.build();
 
-			const createJwtPayload = new JwtPayloadFactory(currentUser).build();
+			const createJwtPayload = new JwtPayloadBuilder(currentUser).build();
 
 			expect(createJwtPayload).toMatchObject<CreateJwtPayload>({
 				accountId: currentUser.accountId,
@@ -27,7 +27,7 @@ describe('JwtPayloadFactory', () => {
 		it('should map current user to create jwt payload with systemUser flag', () => {
 			const currentUser = currentUserFactory.build();
 
-			const createJwtPayload = new JwtPayloadFactory(currentUser).asSystemUser().build();
+			const createJwtPayload = new JwtPayloadBuilder(currentUser).asSystemUser().build();
 
 			expect(createJwtPayload).toMatchObject<CreateJwtPayload>({
 				accountId: currentUser.accountId,
@@ -47,7 +47,7 @@ describe('JwtPayloadFactory', () => {
 			const currentUser = currentUserFactory.build();
 			const supportUserId = new ObjectId().toHexString();
 
-			const createJwtPayload = new JwtPayloadFactory(currentUser).asSupportUser(supportUserId).build();
+			const createJwtPayload = new JwtPayloadBuilder(currentUser).asSupportUser(supportUserId).build();
 
 			expect(createJwtPayload).toMatchObject<CreateJwtPayload>({
 				accountId: currentUser.accountId,

@@ -1,6 +1,6 @@
 import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { JwtPayloadFactory } from '@infra/auth-guard';
+import { JwtPayloadBuilder } from '@infra/auth-guard';
 import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { Account, AccountService } from '@modules/account';
 import { accountDoFactory } from '@modules/account/testing';
@@ -12,7 +12,6 @@ import { UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
-import { currentUserFactory } from '@testing/factory/currentuser.factory';
 import jwt from 'jsonwebtoken';
 import { AUTHENTICATION_CONFIG_TOKEN, AuthenticationConfig } from '../authentication-config';
 import { BruteForceError } from '../errors';
@@ -160,7 +159,7 @@ describe(AuthenticationService.name, () => {
 				accountService.findByUserIdOrFail.mockResolvedValueOnce(targetUserAccount);
 				jwtService.sign.mockReturnValueOnce('jwt');
 
-				const expectedPayload = new JwtPayloadFactory(mockCurrentUser).asSupportUser(supportUser.id).build();
+				const expectedPayload = new JwtPayloadBuilder(mockCurrentUser).asSupportUser(supportUser.id).build();
 
 				return { supportUser, targetUser, mockCurrentUser, targetUserAccount, expectedPayload, expiresIn };
 			};

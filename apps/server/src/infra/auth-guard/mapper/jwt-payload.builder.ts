@@ -1,7 +1,7 @@
 import { EntityId } from '@shared/domain/types';
 import { CreateJwtPayload, ICurrentUser } from '../interface';
 
-export class JwtPayloadFactory {
+export class JwtPayloadBuilder {
 	private readonly currentUser: ICurrentUser;
 
 	private systemUser = false;

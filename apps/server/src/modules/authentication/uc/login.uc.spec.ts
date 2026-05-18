@@ -1,5 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { JwtPayloadFactory } from '@infra/auth-guard';
+import { JwtPayloadBuilder } from '@infra/auth-guard';
 import { Test, TestingModule } from '@nestjs/testing';
 import { currentUserFactory } from '@testing/factory/currentuser.factory';
 import { AUTHENTICATION_CONFIG_TOKEN, AuthenticationConfig } from '../authentication-config';
@@ -44,7 +44,7 @@ describe('LoginUc', () => {
 		describe('when currentUser is given', () => {
 			const setup = () => {
 				const currentUser = currentUserFactory.build();
-				const expectedJwtPayload = new JwtPayloadFactory(currentUser).build();
+				const expectedJwtPayload = new JwtPayloadBuilder(currentUser).build();
 				const accessToken = 'accessToken';
 
 				authenticationService.generateJwtAndAddToWhitelist.mockResolvedValueOnce(accessToken);
@@ -89,7 +89,7 @@ describe('LoginUc', () => {
 		describe('when currentUser is given', () => {
 			const setup = () => {
 				const currentUser = currentUserFactory.build();
-				const expectedJwtPayload = new JwtPayloadFactory(currentUser).asSystemUser().build();
+				const expectedJwtPayload = new JwtPayloadBuilder(currentUser).asSystemUser().build();
 				const accessToken = 'systemUserAccessToken';
 
 				authenticationService.generateJwtAndAddToWhitelist.mockResolvedValueOnce(accessToken);
