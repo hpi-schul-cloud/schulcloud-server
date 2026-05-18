@@ -21,7 +21,7 @@ class AccountFactory extends BaseFactory<AccountEntity, IdmAccountProperties> {
 			throw new Error('User does not have an id.');
 		}
 
-		const params: DeepPartial<IdmAccountProperties> = { userId: user.id };
+		const params: DeepPartial<IdmAccountProperties> = { userId: user.id, username: user.email };
 
 		return this.params(params);
 	}
