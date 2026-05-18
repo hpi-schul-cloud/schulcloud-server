@@ -3,7 +3,6 @@ import { JwtPayloadFactory } from '@infra/auth-guard';
 import { Test, TestingModule } from '@nestjs/testing';
 import { currentUserFactory } from '@testing/factory/currentuser.factory';
 import { AUTHENTICATION_CONFIG_TOKEN, AuthenticationConfig } from '../authentication-config';
-import { JWT_STRATEGY_CONFIG_TOKEN, JwtModuleConfig } from '../jwt-module.config';
 import { AuthenticationService } from '../services/authentication.service';
 import { LoginUc } from './login.uc';
 
@@ -12,7 +11,6 @@ describe('LoginUc', () => {
 	let loginUc: LoginUc;
 
 	let authenticationService: DeepMocked<AuthenticationService>;
-	let jwtStrategyConfig: JwtModuleConfig;
 	let authenticationConfig: AuthenticationConfig;
 
 	beforeAll(async () => {
@@ -24,15 +22,10 @@ describe('LoginUc', () => {
 					useValue: createMock<AuthenticationService>(),
 				},
 				{
-					provide: JWT_STRATEGY_CONFIG_TOKEN,
-					useValue: {
-						expiresIn: '30d',
-					},
-				},
-				{
 					provide: AUTHENTICATION_CONFIG_TOKEN,
 					useValue: {
-						jwtLifetimeSystemUserSeconds: 3600,
+						jwtLifetimeSystemUserSeconds: 7200,
+						expiresIn: '30d',
 					},
 				},
 			],
@@ -40,7 +33,6 @@ describe('LoginUc', () => {
 
 		loginUc = module.get(LoginUc);
 		authenticationService = module.get(AuthenticationService);
-		jwtStrategyConfig = module.get(JWT_STRATEGY_CONFIG_TOKEN);
 		authenticationConfig = module.get(AUTHENTICATION_CONFIG_TOKEN);
 	});
 
@@ -71,7 +63,7 @@ describe('LoginUc', () => {
 
 				expect(authenticationService.generateJwtAndAddToWhitelist).toHaveBeenCalledWith(
 					expectedJwtPayload,
-					jwtStrategyConfig.expiresIn
+					authenticationConfig.expiresIn
 				);
 			});
 
