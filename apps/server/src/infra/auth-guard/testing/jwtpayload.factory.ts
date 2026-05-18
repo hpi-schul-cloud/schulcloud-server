@@ -4,33 +4,35 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { JwtPayload } from '../interface';
 
 class JwtPayloadImpl implements JwtPayload {
-	accountId: string;
+	public accountId: string;
 
-	userId: string;
+	public userId: string;
 
-	schoolId: string;
+	public schoolId: string;
 
-	roles: string[];
+	public roles: string[];
 
-	systemId?: string;
+	public systemId?: string;
 
-	support: boolean;
+	public systemUser: boolean;
 
-	supportUserId?: string;
+	public support: boolean;
 
-	isExternalUser: boolean;
+	public supportUserId?: string;
 
-	aud: string;
+	public isExternalUser: boolean;
 
-	exp: number;
+	public aud: string;
 
-	iat: number;
+	public exp: number;
 
-	iss: string;
+	public iat: number;
 
-	jti: string;
+	public iss: string;
 
-	sub: string;
+	public jti: string;
+
+	public sub: string;
 
 	constructor(data: JwtPayload) {
 		this.accountId = data.accountId;
@@ -38,6 +40,7 @@ class JwtPayloadImpl implements JwtPayload {
 		this.schoolId = data.schoolId;
 		this.roles = data.roles;
 		this.systemId = data.systemId || '';
+		this.systemUser = data.systemUser || false;
 		this.support = data.support || false;
 		this.isExternalUser = data.isExternalUser;
 		this.supportUserId = data.supportUserId;
@@ -59,7 +62,8 @@ export const jwtPayloadFactory = JwtPayloadFactory.define(JwtPayloadImpl, ({ seq
 		schoolId: new ObjectId().toHexString(),
 		roles: ['dummyRoleId'],
 		systemId: new ObjectId().toHexString(),
-		support: true,
+		systemUser: false,
+		support: false,
 		isExternalUser: true,
 		sub: `${faker.lorem.word()} ${sequence}`,
 		jti: `${faker.lorem.word()} ${sequence}`,
