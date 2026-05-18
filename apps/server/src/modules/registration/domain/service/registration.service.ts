@@ -182,7 +182,7 @@ export class RegistrationService {
 		userDo.consent = userDo.consent ?? this.createUserConsent();
 		userDo.preferences = userDo.preferences ?? { firstLogin: false };
 		userDo.language = userDo.language ?? language;
-		delete userDo.importHash;
+		userDo.importHash = undefined;
 
 		const user = await this.userService.save(userDo);
 
