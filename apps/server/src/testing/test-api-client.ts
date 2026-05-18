@@ -148,6 +148,7 @@ export class TestApiClient {
 				roles: [user.roles[0].id],
 				support: false,
 				isExternalUser: false,
+				systemUser: false,
 			},
 			jwtConfig
 		);

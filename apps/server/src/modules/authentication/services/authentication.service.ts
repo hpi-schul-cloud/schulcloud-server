@@ -1,5 +1,5 @@
 import { Logger } from '@core/logger';
-import { CreateJwtPayload, ICurrentUser, JwtPayloadFactory } from '@infra/auth-guard';
+import { CreateJwtPayload, JwtPayloadFactory } from '@infra/auth-guard';
 import { Inject, Injectable } from '@nestjs/common';
 import { JwtService, JwtSignOptions } from '@nestjs/jwt';
 import { randomUUID } from 'crypto';
@@ -44,33 +44,22 @@ export class AuthenticationService {
 		return account;
 	}
 
-	private async generateJwtAndAddToWhitelist(
+	public async generateJwtAndAddToWhitelist(
 		createJwtPayload: CreateJwtPayload,
-		expiresIn?: number | string
+		expiresIn: number | string
 	): Promise<string> {
 		const jti = randomUUID();
 		const options: JwtSignOptions = {
 			subject: createJwtPayload.accountId,
 			jwtid: jti,
+			expiresIn, // Overwrites the value from the JwtModuleOptions.
 		};
-
-		// It is necessary to set expiresIn conditionally like this, because setting it to undefined in the JwtSignOptions overwrites the value from the JwtModuleOptions.
-		if (expiresIn) {
-			options.expiresIn = expiresIn;
-		}
-
 		const accessToken = this.jwtService.sign(createJwtPayload, options);
 
+		// Used legacy code and solve timeout in redis over JWT_EXTENDED_TIMEOUT_SECONDS
 		await this.jwtWhitelistAdapter.addToWhitelist(createJwtPayload.accountId, jti);
 
 		return accessToken;
-	}
-
-	public async generateCurrentUserJwt(currentUser: ICurrentUser): Promise<string> {
-		const createJwtPayload = JwtPayloadFactory.buildFromCurrentUser(currentUser);
-		const jwtToken = await this.generateJwtAndAddToWhitelist(createJwtPayload);
-
-		return jwtToken;
 	}
 
 	public async generateSupportJwt(supportUser: User, targetUser: User): Promise<string> {
@@ -81,7 +70,7 @@ export class AuthenticationService {
 			false,
 			targetUserAccount.systemId
 		);
-		const createJwtPayload = JwtPayloadFactory.buildFromSupportUser(currentUser, supportUser.id);
+		const createJwtPayload = new JwtPayloadFactory(currentUser).asSupportUser(supportUser.id).build();
 		const expiresIn = this.config.jwtLifetimeSupportSeconds;
 
 		const jwtToken = await this.generateJwtAndAddToWhitelist(createJwtPayload, expiresIn);

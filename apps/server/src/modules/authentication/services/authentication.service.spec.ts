@@ -160,7 +160,7 @@ describe(AuthenticationService.name, () => {
 				accountService.findByUserIdOrFail.mockResolvedValueOnce(targetUserAccount);
 				jwtService.sign.mockReturnValueOnce('jwt');
 
-				const expectedPayload = JwtPayloadFactory.buildFromSupportUser(mockCurrentUser, supportUser.id);
+				const expectedPayload = new JwtPayloadFactory(mockCurrentUser).asSupportUser(supportUser.id).build();
 
 				return { supportUser, targetUser, mockCurrentUser, targetUserAccount, expectedPayload, expiresIn };
 			};
@@ -178,47 +178,6 @@ describe(AuthenticationService.name, () => {
 						expiresIn,
 					})
 				);
-			});
-
-			it('should return the generated jwt', async () => {
-				const { mockCurrentUser } = setup();
-
-				const result = await authenticationService.generateCurrentUserJwt(mockCurrentUser);
-
-				expect(result).toEqual('jwt');
-			});
-		});
-	});
-
-	describe('generateCurrentUserJwt', () => {
-		describe('when generating new jwt', () => {
-			const setup = () => {
-				const mockCurrentUser = currentUserFactory.withRole('random role').build();
-				const expectedPayload = JwtPayloadFactory.buildFromCurrentUser(mockCurrentUser);
-				const expiresIn = 15;
-				jwtService.sign.mockReturnValueOnce('jwt');
-
-				return { mockCurrentUser, expectedPayload, expiresIn };
-			};
-
-			it('should pass the correct parameters', async () => {
-				const { mockCurrentUser, expectedPayload } = setup();
-				await authenticationService.generateCurrentUserJwt(mockCurrentUser);
-				expect(jwtService.sign).toBeCalledWith(
-					expectedPayload,
-					expect.objectContaining({
-						subject: mockCurrentUser.accountId,
-						jwtid: expect.any(String),
-					})
-				);
-			});
-
-			it('should return the generated jwt', async () => {
-				const { mockCurrentUser } = setup();
-
-				const result = await authenticationService.generateCurrentUserJwt(mockCurrentUser);
-
-				expect(result).toEqual('jwt');
 			});
 		});
 	});

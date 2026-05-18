@@ -2,41 +2,42 @@ import { EntityId } from '@shared/domain/types';
 import { CreateJwtPayload, ICurrentUser } from '../interface';
 
 export class JwtPayloadFactory {
-	private static build(data: CreateJwtPayload): CreateJwtPayload {
-		return data;
+	private readonly currentUser: ICurrentUser;
+
+	private systemUser = false;
+
+	private support = false;
+
+	private supportUserId: EntityId | undefined = undefined;
+
+	constructor(currentUser: ICurrentUser) {
+		this.currentUser = currentUser;
 	}
 
-	public static buildFromCurrentUser(currentUser: ICurrentUser): CreateJwtPayload {
-		const data = {
-			accountId: currentUser.accountId,
-			userId: currentUser.userId,
-			schoolId: currentUser.schoolId,
-			roles: currentUser.roles,
-			systemId: currentUser.systemId,
-			support: false,
-			supportUserId: undefined,
-			isExternalUser: currentUser.isExternalUser,
-		};
+	public asSystemUser(): this {
+		this.systemUser = true;
 
-		const createJwtPayload = JwtPayloadFactory.build(data);
-
-		return createJwtPayload;
+		return this;
 	}
 
-	public static buildFromSupportUser(currentUser: ICurrentUser, supportUserId: EntityId): CreateJwtPayload {
-		const data = {
-			accountId: currentUser.accountId,
-			userId: currentUser.userId,
-			schoolId: currentUser.schoolId,
-			roles: currentUser.roles,
-			systemId: currentUser.systemId,
-			support: true,
-			supportUserId,
-			isExternalUser: currentUser.isExternalUser,
+	public asSupportUser(supportUserId: EntityId): this {
+		this.support = true;
+		this.supportUserId = supportUserId;
+
+		return this;
+	}
+
+	public build(): CreateJwtPayload {
+		return {
+			accountId: this.currentUser.accountId,
+			userId: this.currentUser.userId,
+			schoolId: this.currentUser.schoolId,
+			roles: this.currentUser.roles,
+			systemId: this.currentUser.systemId,
+			systemUser: this.systemUser,
+			support: this.support,
+			supportUserId: this.supportUserId,
+			isExternalUser: this.currentUser.isExternalUser,
 		};
-
-		const createJwtPayload = JwtPayloadFactory.build(data);
-
-		return createJwtPayload;
 	}
 }

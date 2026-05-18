@@ -1,8 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { JwtPayloadFactory } from '@infra/auth-guard';
 import { Test, TestingModule } from '@nestjs/testing';
 import { currentUserFactory } from '@testing/factory/currentuser.factory';
+import { AUTHENTICATION_CONFIG_TOKEN, AuthenticationConfig } from '../authentication-config';
+import { JWT_STRATEGY_CONFIG_TOKEN, JwtModuleConfig } from '../jwt-module.config';
 import { AuthenticationService } from '../services/authentication.service';
-import { LoginDto } from './dto';
 import { LoginUc } from './login.uc';
 
 describe('LoginUc', () => {
@@ -10,6 +12,8 @@ describe('LoginUc', () => {
 	let loginUc: LoginUc;
 
 	let authenticationService: DeepMocked<AuthenticationService>;
+	let jwtStrategyConfig: JwtModuleConfig;
+	let authenticationConfig: AuthenticationConfig;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -19,58 +23,117 @@ describe('LoginUc', () => {
 					provide: AuthenticationService,
 					useValue: createMock<AuthenticationService>(),
 				},
+				{
+					provide: JWT_STRATEGY_CONFIG_TOKEN,
+					useValue: {
+						expiresIn: '30d',
+					},
+				},
+				{
+					provide: AUTHENTICATION_CONFIG_TOKEN,
+					useValue: {
+						jwtLifetimeSystemUserSeconds: 3600,
+					},
+				},
 			],
 		}).compile();
 
-		loginUc = await module.get(LoginUc);
-		authenticationService = await module.get(AuthenticationService);
+		loginUc = module.get(LoginUc);
+		authenticationService = module.get(AuthenticationService);
+		jwtStrategyConfig = module.get(JWT_STRATEGY_CONFIG_TOKEN);
+		authenticationConfig = module.get(AUTHENTICATION_CONFIG_TOKEN);
+	});
+
+	afterEach(() => {
+		jest.clearAllMocks();
 	});
 
 	describe('getLoginData', () => {
-		describe('when userInfo is given', () => {
+		describe('when currentUser is given', () => {
 			const setup = () => {
-				const userInfo = currentUserFactory.build();
-				const loginDto: LoginDto = new LoginDto({ accessToken: 'accessToken' });
-				authenticationService.generateCurrentUserJwt.mockResolvedValue('accessToken');
+				const currentUser = currentUserFactory.build();
+				const expectedJwtPayload = new JwtPayloadFactory(currentUser).build();
+				const accessToken = 'accessToken';
+
+				authenticationService.generateJwtAndAddToWhitelist.mockResolvedValueOnce(accessToken);
 
 				return {
-					userInfo,
-					loginDto,
+					currentUser,
+					expectedJwtPayload,
+					accessToken,
 				};
 			};
 
-			it('should call the authService', async () => {
-				const { userInfo } = setup();
+			it('should call generateJwtAndAddToWhitelist with correct payload and expiresIn', async () => {
+				const { currentUser, expectedJwtPayload } = setup();
 
-				await loginUc.getLoginData(userInfo);
+				await loginUc.getLoginData(currentUser);
 
-				expect(authenticationService.generateCurrentUserJwt).toHaveBeenCalledWith({
-					accountId: userInfo.accountId,
-					userId: userInfo.userId,
-					schoolId: userInfo.schoolId,
-					roles: userInfo.roles,
-					systemId: userInfo.systemId,
-					support: userInfo.support,
-					isExternalUser: userInfo.isExternalUser,
-				});
+				expect(authenticationService.generateJwtAndAddToWhitelist).toHaveBeenCalledWith(
+					expectedJwtPayload,
+					jwtStrategyConfig.expiresIn
+				);
 			});
 
-			it('should call updateLastLogin', async () => {
-				const { userInfo } = setup();
+			it('should call updateLastLogin with accountId', async () => {
+				const { currentUser } = setup();
 
-				await loginUc.getLoginData(userInfo);
+				await loginUc.getLoginData(currentUser);
 
-				expect(authenticationService.updateLastLogin).toHaveBeenCalledWith(userInfo.accountId);
+				expect(authenticationService.updateLastLogin).toHaveBeenCalledWith(currentUser.accountId);
 			});
 
-			it('should return a loginDto', async () => {
-				const { userInfo, loginDto } = setup();
+			it('should return the jwt token', async () => {
+				const { currentUser, accessToken } = setup();
 
-				const result: LoginDto = await loginUc.getLoginData(userInfo);
+				const result = await loginUc.getLoginData(currentUser);
 
-				expect(result).toEqual<LoginDto>({
-					accessToken: loginDto.accessToken,
-				});
+				expect(result).toEqual(accessToken);
+			});
+		});
+	});
+
+	describe('getLoginDataForSystemUser', () => {
+		describe('when currentUser is given', () => {
+			const setup = () => {
+				const currentUser = currentUserFactory.build();
+				const expectedJwtPayload = new JwtPayloadFactory(currentUser).asSystemUser().build();
+				const accessToken = 'systemUserAccessToken';
+
+				authenticationService.generateJwtAndAddToWhitelist.mockResolvedValueOnce(accessToken);
+
+				return {
+					currentUser,
+					expectedJwtPayload,
+					accessToken,
+				};
+			};
+
+			it('should call generateJwtAndAddToWhitelist with system user payload and config expiresIn', async () => {
+				const { currentUser, expectedJwtPayload } = setup();
+
+				await loginUc.getLoginDataForSystemUser(currentUser);
+
+				expect(authenticationService.generateJwtAndAddToWhitelist).toHaveBeenCalledWith(
+					expectedJwtPayload,
+					authenticationConfig.jwtLifetimeSystemUserSeconds
+				);
+			});
+
+			it('should call updateLastLogin with accountId', async () => {
+				const { currentUser } = setup();
+
+				await loginUc.getLoginDataForSystemUser(currentUser);
+
+				expect(authenticationService.updateLastLogin).toHaveBeenCalledWith(currentUser.accountId);
+			});
+
+			it('should return the jwt token', async () => {
+				const { currentUser, accessToken } = setup();
+
+				const result = await loginUc.getLoginDataForSystemUser(currentUser);
+
+				expect(result).toEqual(accessToken);
 			});
 		});
 	});

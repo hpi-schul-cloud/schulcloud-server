@@ -1,5 +1,4 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { LoginDto } from '@modules/authentication';
 import { InstanceEntity } from '@modules/instance';
 import { instanceEntityFactory } from '@modules/instance/testing';
 import { ServerTestModule } from '@modules/server';
@@ -7,7 +6,8 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
-import { TargetUserIdParams } from '../dtos/target-user-id.params';
+import { TargetUserIdParams } from '../dto/target-user-id.params';
+import { LoginResponse } from '../dto';
 
 const forbiddenResponse = {
 	code: 403,
@@ -112,13 +112,13 @@ describe('Shd API', () => {
 			};
 
 			describe('when requested user exists', () => {
-				it('should respond with loginDto', async () => {
+				it('should respond with loginResponse', async () => {
 					const { data, loggedInClient } = await setup();
 
 					const response = await loggedInClient.post('supportJwt', data);
 
 					expect(response.statusCode).toEqual(HttpStatus.CREATED);
-					expect(response.body).toMatchObject<LoginDto>({
+					expect(response.body).toMatchObject<LoginResponse>({
 						accessToken: expect.any(String),
 					});
 				});

@@ -1,20 +1,31 @@
-import { ICurrentUser } from '@infra/auth-guard';
-import { Injectable } from '@nestjs/common';
+import { ICurrentUser, JwtPayloadFactory } from '@infra/auth-guard';
+import { Inject, Injectable } from '@nestjs/common';
 import { AuthenticationService } from '../services';
-import { LoginDto } from './dto';
+import { AUTHENTICATION_CONFIG_TOKEN, AuthenticationConfig } from '../authentication-config';
 
 @Injectable()
 export class LoginUc {
-	constructor(private readonly authService: AuthenticationService) {}
+	constructor(
+		private readonly authService: AuthenticationService,
+		@Inject(AUTHENTICATION_CONFIG_TOKEN) private readonly config: AuthenticationConfig
+	) {}
 
-	public async getLoginData(currentUser: ICurrentUser): Promise<LoginDto> {
-		const jwtToken = await this.authService.generateCurrentUserJwt(currentUser);
+	public async getLoginData(currentUser: ICurrentUser): Promise<string> {
+		const createJwtPayload = new JwtPayloadFactory(currentUser).build();
+		const accessToken = await this.authService.generateJwtAndAddToWhitelist(createJwtPayload, this.config.expiresIn);
 		await this.authService.updateLastLogin(currentUser.accountId);
 
-		const loginDto = new LoginDto({
-			accessToken: jwtToken,
-		});
+		return accessToken;
+	}
 
-		return loginDto;
+	public async getLoginDataForSystemUser(currentUser: ICurrentUser): Promise<string> {
+		const createJwtPayload = new JwtPayloadFactory(currentUser).asSystemUser().build();
+		const accessToken = await this.authService.generateJwtAndAddToWhitelist(
+			createJwtPayload,
+			this.config.jwtLifetimeSystemUserSeconds
+		);
+		await this.authService.updateLastLogin(currentUser.accountId);
+
+		return accessToken;
 	}
 }
