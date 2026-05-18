@@ -1,6 +1,5 @@
 /* istanbul ignore file */
 import { EntityId } from '@shared/domain/types';
-
 import { ObjectId } from '@mikro-orm/mongodb';
 import { User } from '@modules/user/repo';
 import { BaseFactory } from '@testing/factory/base.factory';
