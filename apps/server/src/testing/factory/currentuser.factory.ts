@@ -52,6 +52,10 @@ class CurrentUserFactory extends BaseFactory<CurrentUser, ICurrentUser> {
 	public withRoleTeacher(): this {
 		return this.withRole('teacher');
 	}
+
+	public asSystemUser(): this {
+		return this.params({ systemUser: true });
+	}
 }
 
 export const currentUserFactory = CurrentUserFactory.define(CurrentUser, () => {

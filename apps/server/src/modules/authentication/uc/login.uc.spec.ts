@@ -1,5 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { JwtPayloadBuilder } from '@infra/auth-guard';
+import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { currentUserFactory } from '@testing/factory/currentuser.factory';
 import { AUTHENTICATION_CONFIG_TOKEN, AuthenticationConfig } from '../authentication-config';
@@ -86,9 +87,9 @@ describe('LoginUc', () => {
 	});
 
 	describe('getLoginDataForSystemUser', () => {
-		describe('when currentUser is given', () => {
+		describe('when currentUser is a system user', () => {
 			const setup = () => {
-				const currentUser = currentUserFactory.build();
+				const currentUser = currentUserFactory.asSystemUser().build();
 				const expectedJwtPayload = new JwtPayloadBuilder(currentUser).asSystemUser().build();
 				const accessToken = 'systemUserAccessToken';
 
@@ -126,6 +127,22 @@ describe('LoginUc', () => {
 				const result = await loginUc.getLoginDataForSystemUser(currentUser);
 
 				expect(result).toEqual(accessToken);
+			});
+		});
+
+		describe('when currentUser is not a system user', () => {
+			const setup = () => {
+				const currentUser = currentUserFactory.build();
+
+				return {
+					currentUser,
+				};
+			};
+
+			it('should throw UnauthorizedException', async () => {
+				const { currentUser } = setup();
+
+				await expect(loginUc.getLoginDataForSystemUser(currentUser)).rejects.toThrow(UnauthorizedException);
 			});
 		});
 	});
