@@ -1,5 +1,5 @@
 import { ICurrentUser, JwtPayloadBuilder } from '@infra/auth-guard';
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { AuthenticationService } from '../services';
 import { AUTHENTICATION_CONFIG_TOKEN, AuthenticationConfig } from '../authentication-config';
 
@@ -19,6 +19,7 @@ export class LoginUc {
 	}
 
 	public async getLoginDataForSystemUser(currentUser: ICurrentUser): Promise<string> {
+		this.checkIfSystemUser(currentUser);
 		const jwtPayload = new JwtPayloadBuilder(currentUser).asSystemUser().build();
 		const accessToken = await this.authService.generateJwtAndAddToWhitelist(
 			jwtPayload,
@@ -27,5 +28,11 @@ export class LoginUc {
 		await this.authService.updateLastLogin(currentUser.accountId);
 
 		return accessToken;
+	}
+
+	private checkIfSystemUser(currentUser: ICurrentUser): void {
+		if (!currentUser.systemUser) {
+			throw new UnauthorizedException();
+		}
 	}
 }

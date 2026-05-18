@@ -14,10 +14,7 @@ import { TeamRoleDto } from './dto/team-role.params';
 @JwtAuthentication()
 @Controller('collaborative-storage')
 export class CollaborativeStorageController {
-	constructor(
-		private readonly teamStorageUc: CollaborativeStorageUc,
-		private logger: LegacyLogger
-	) {
+	constructor(private readonly teamStorageUc: CollaborativeStorageUc, private logger: LegacyLogger) {
 		this.logger.setContext(CollaborativeStorageController.name);
 	}
 
@@ -32,7 +29,7 @@ export class CollaborativeStorageController {
 	@ApiResponse({ status: 400, description: 'An error occurred while processing the request' })
 	@ApiResponse({ status: 403, description: 'User does not have the correct permission' })
 	@ApiResponse({ status: 404, description: 'Team or Role not found!' })
-	updateTeamPermissionsForRole(
+	public updateTeamPermissionsForRole(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() teamRole: TeamRoleDto,
 		@Body() permissionsBody: TeamPermissionsBody

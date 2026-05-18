@@ -24,10 +24,7 @@ import { BOARD_INCOMING_REQUEST_TIMEOUT_COPY_API_KEY } from '../timeout.config';
 @JwtAuthentication()
 @Controller('columns')
 export class ColumnController {
-	constructor(
-		private readonly boardUc: BoardUc,
-		private readonly columnUc: ColumnUc
-	) {}
+	constructor(private readonly boardUc: BoardUc, private readonly columnUc: ColumnUc) {}
 
 	@ApiOperation({ summary: 'Move a single column.' })
 	@ApiResponse({ status: 204 })

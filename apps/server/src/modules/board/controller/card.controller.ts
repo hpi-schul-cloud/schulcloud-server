@@ -47,10 +47,7 @@ import { MoveCardResponseMapper } from './mapper/move-card-response.mapper';
 @JwtAuthentication()
 @Controller('cards')
 export class CardController {
-	constructor(
-		private readonly columnUc: ColumnUc,
-		private readonly cardUc: CardUc
-	) {}
+	constructor(private readonly columnUc: ColumnUc, private readonly cardUc: CardUc) {}
 
 	@ApiOperation({ summary: 'Get a list of cards by their ids.' })
 	@ApiResponse({ status: 200, type: CardListResponse })

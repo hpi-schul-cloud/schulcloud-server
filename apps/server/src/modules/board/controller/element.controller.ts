@@ -43,10 +43,7 @@ import { ContentElementResponseFactory, ParentNodeInfoResponseMapper } from './m
 @JwtAuthentication()
 @Controller('elements')
 export class ElementController {
-	constructor(
-		private readonly cardUc: CardUc,
-		private readonly elementUc: ElementUc
-	) {}
+	constructor(private readonly cardUc: CardUc, private readonly elementUc: ElementUc) {}
 
 	@ApiOperation({ summary: 'Get metadata for a single content element.' })
 	@ApiResponse({ status: 200, type: ElementWithParentHierarchyResponse })

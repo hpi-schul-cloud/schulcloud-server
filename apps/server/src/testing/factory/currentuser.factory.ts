@@ -4,21 +4,23 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseFactory } from './base.factory';
 
 class CurrentUser implements ICurrentUser {
-	userId: string;
+	public userId: string;
 
-	roles: string[];
+	public roles: string[];
 
-	schoolId: string;
+	public schoolId: string;
 
-	accountId: string;
+	public accountId: string;
 
-	systemId: string;
+	public systemId: string;
 
-	isExternalUser: boolean;
+	public isExternalUser: boolean;
 
-	support: boolean;
+	public systemUser: boolean;
 
-	supportUserId?: string;
+	public support: boolean;
+
+	public supportUserId?: string;
 
 	constructor(data: ICurrentUser) {
 		this.userId = data.userId;
@@ -27,7 +29,8 @@ class CurrentUser implements ICurrentUser {
 		this.accountId = data.accountId;
 		this.systemId = data.systemId || '';
 		this.isExternalUser = data.isExternalUser;
-		this.support = false;
+		this.systemUser = data.systemUser || false;
+		this.support = data.support || false;
 		this.supportUserId = data.supportUserId;
 	}
 }
@@ -38,15 +41,15 @@ class CurrentUserFactory extends BaseFactory<CurrentUser, ICurrentUser> {
 		return this.params(params);
 	}
 
-	public withRoleAdmin() {
+	public withRoleAdmin(): this {
 		return this.withRole('admin');
 	}
 
-	public withRoleStudent() {
+	public withRoleStudent(): this {
 		return this.withRole('student');
 	}
 
-	public withRoleTeacher() {
+	public withRoleTeacher(): this {
 		return this.withRole('teacher');
 	}
 }
@@ -60,6 +63,7 @@ export const currentUserFactory = CurrentUserFactory.define(CurrentUser, () => {
 		systemId: new ObjectId().toHexString(),
 		isExternalUser: false,
 		support: false,
+		systemUser: false,
 		supportUserId: undefined,
 	};
 });

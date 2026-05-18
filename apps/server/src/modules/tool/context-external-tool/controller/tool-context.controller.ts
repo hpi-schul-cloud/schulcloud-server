@@ -29,10 +29,7 @@ import {
 @JwtAuthentication()
 @Controller('tools/context-external-tools')
 export class ToolContextController {
-	constructor(
-		private readonly contextExternalToolUc: ContextExternalToolUc,
-		private readonly logger: LegacyLogger
-	) {}
+	constructor(private readonly contextExternalToolUc: ContextExternalToolUc, private readonly logger: LegacyLogger) {}
 
 	@Post()
 	@ApiCreatedResponse({

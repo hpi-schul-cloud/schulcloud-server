@@ -12,7 +12,7 @@ export class SubmissionController {
 	constructor(private readonly submissionUc: SubmissionUc) {}
 
 	@Get('status/task/:taskId')
-	async findStatusesByTask(
+	public async findStatusesByTask(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: TaskUrlParams
 	): Promise<SubmissionStatusListResponse> {
@@ -26,7 +26,10 @@ export class SubmissionController {
 	}
 
 	@Delete(':submissionId')
-	async delete(@Param() urlParams: SubmissionUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<boolean> {
+	public async delete(
+		@Param() urlParams: SubmissionUrlParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<boolean> {
 		const result = await this.submissionUc.delete(currentUser.userId, urlParams.submissionId);
 
 		return result;

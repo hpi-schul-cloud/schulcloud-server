@@ -90,7 +90,7 @@ export class LogoutService {
 		}
 
 		try {
-			const headers: AxiosHeaders = new AxiosHeaders();
+			const headers = new AxiosHeaders();
 			headers.setContentType('application/x-www-form-urlencoded');
 			const config: AxiosRequestConfig = {
 				auth: {

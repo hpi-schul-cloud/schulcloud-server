@@ -24,10 +24,7 @@ import { GroupResponseMapper } from './mapper';
 @JwtAuthentication()
 @Controller('groups')
 export class GroupController {
-	constructor(
-		private readonly groupUc: GroupUc,
-		private readonly classGroupUc: ClassGroupUc
-	) {}
+	constructor(private readonly groupUc: GroupUc, private readonly classGroupUc: ClassGroupUc) {}
 
 	@ApiOperation({ summary: 'Get a list of classes and groups of type class for the current user.' })
 	@ApiResponse({ status: HttpStatus.OK, type: ClassInfoSearchListResponse })
