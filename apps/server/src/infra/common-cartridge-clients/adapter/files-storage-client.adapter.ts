@@ -152,7 +152,8 @@ export class FilesStorageClientAdapter {
 		parentId: string,
 		parentType: FileRecordParentType,
 		file: Readable,
-		fileName: string
+		fileName: string,
+		maxCcFileSize: number
 	): Promise<FileRecordResponse> {
 		// INFO: We bypass the generated client to support streaming directly without buffering.
 		// The generated client expects a File type which would require loading everything into memory.
@@ -170,7 +171,7 @@ export class FilesStorageClientAdapter {
 				...formData.getHeaders(),
 				Authorization: `Bearer ${jwt}`,
 			},
-			maxBodyLength: Infinity,
+			maxBodyLength: maxCcFileSize,
 			maxContentLength: Infinity,
 		});
 

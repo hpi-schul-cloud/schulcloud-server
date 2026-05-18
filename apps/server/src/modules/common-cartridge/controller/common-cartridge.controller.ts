@@ -7,15 +7,13 @@ import {
 	ApiInternalServerErrorResponse,
 	ApiOkResponse,
 	ApiOperation,
-	ApiProduces,
 	ApiTags,
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { CommonCartridgeUc } from '../uc/common-cartridge.uc';
 import { CourseExportBodyParams, CourseQueryParams, ExportCourseParams } from './dto';
-import { CommonCartridgeStartImportBodyParams } from './dto/common-cartridge-start-import-body.params';
-import { FileRecordResponse } from '@infra/common-cartridge-clients';
+import { CommonCartridgeFileParams } from './dto/common-cartridge-file.params';
 
 @JwtAuthentication()
 @ApiTags('common-cartridge')
@@ -50,34 +48,26 @@ export class CommonCartridgeController {
 		return streamableFile;
 	}
 
-	@Post('start-import')
-	@ApiOperation({ summary: 'Start the import of a previously uploaded file.' })
-	@ApiConsumes('application/json')
-	@ApiProduces('application/json')
-	@ApiBody({ type: CommonCartridgeStartImportBodyParams, required: true })
+	@Post('import')
+	@ApiOperation({ summary: 'Upload a file and start the asynchronous import.' })
 	@ApiOkResponse({ description: 'Import was started successfully.' })
 	@ApiUnauthorizedResponse({ description: 'Request is unauthorized.' })
 	@ApiBadRequestResponse({ description: 'Request data has invalid format.' })
 	@ApiInternalServerErrorResponse({ description: 'Internal server error.' })
+	@ApiConsumes('multipart/form-data')
+	@ApiBody({ type: CommonCartridgeFileParams, required: true })
 	@HttpCode(200)
-	public importCourse(@Body() startImportParams: CommonCartridgeStartImportBodyParams): void {
-		this.commonCartridgeUC.startCourseImport(startImportParams);
-	}
+	public async uploadFileAndStartImport(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Req() req: Request,
+		@Body() _: CommonCartridgeFileParams
+	): Promise<void> {
+		const fileRecordResponse = await this.commonCartridgeUC.uploadFileToTemp(currentUser, req);
 
-	@Post('upload')
-	public async uploadFile(@CurrentUser() currentUser: ICurrentUser, @Req() req: Request): Promise<FileRecordResponse> {
-		// Extract filename from Content-Disposition header or use a default
-		const contentDisposition = req.headers['content-disposition'];
-		let fileName = 'upload.imscc';
-		if (contentDisposition) {
-			const filenameMatch = contentDisposition.match(/filename[*]?=['"]?(?:UTF-8'')?([^;'"\n]+)['"]?/i);
-			if (filenameMatch?.[1]) {
-				fileName = decodeURIComponent(filenameMatch[1]);
-			}
-		}
-
-		const fileRecordResponse = await this.commonCartridgeUC.uploadFileToTemp(currentUser, req, fileName);
-
-		return fileRecordResponse;
+		this.commonCartridgeUC.startCourseImport({
+			fileRecordId: fileRecordResponse.id,
+			fileUrl: fileRecordResponse.url,
+			fileName: fileRecordResponse.name,
+		});
 	}
 }

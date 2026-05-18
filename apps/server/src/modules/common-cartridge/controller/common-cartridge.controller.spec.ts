@@ -12,7 +12,7 @@ import { CommonCartridgeExportResponse } from '../service/common-cartridge-expor
 import { CommonCartridgeUc } from '../uc/common-cartridge.uc';
 import { CommonCartridgeController } from './common-cartridge.controller';
 import { ExportCourseParams } from './dto';
-import { CommonCartridgeStartImportBodyParams } from './dto/common-cartridge-start-import-body.params';
+import { CommonCartridgeStartImportBodyParams } from './dto/common-cartridge-file.params';
 import { CourseExportBodyParams } from './dto/course-export.body.params';
 import { CourseQueryParams } from './dto/course.query.params';
 

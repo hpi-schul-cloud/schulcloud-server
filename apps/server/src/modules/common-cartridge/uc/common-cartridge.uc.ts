@@ -1,18 +1,23 @@
+import { ICurrentUser } from '@infra/auth-guard';
+import {
+	FileRecordParentType,
+	FileRecordResponse,
+	FilesStorageClientAdapter,
+	StorageLocation,
+} from '@infra/common-cartridge-clients';
 import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import { EventBus } from '@nestjs/cqrs';
 import { JwtExtractor } from '@shared/common/utils';
 import { EntityId } from '@shared/domain/types';
+import { Request } from 'express';
+import { Readable } from 'node:stream';
+import { COMMON_CARTRIDGE_CONFIG_TOKEN, CommonCartridgeConfig } from '../common-cartridge.config';
 import { ImportCourseEvent } from '../domain/events/import-course.event';
 import { ImportCourseParams } from '../domain/import-course.params';
 import { CommonCartridgeVersion } from '../export/common-cartridge.enums';
 import { CommonCartridgeExportService } from '../service';
 import { CommonCartridgeExportResponse } from '../service/common-cartridge-export.response';
-import { Request } from 'express';
-import { FileRecordResponse, FilesStorageClientAdapter, StorageLocation } from '@infra/common-cartridge-clients';
-import { ICurrentUser } from '@infra/auth-guard';
-import { FileRecordParentType } from '@infra/common-cartridge-clients';
-import { Readable } from 'node:stream';
 
 @Injectable()
 export class CommonCartridgeUc {
@@ -20,7 +25,8 @@ export class CommonCartridgeUc {
 		private readonly exportService: CommonCartridgeExportService,
 		private readonly fileClient: FilesStorageClientAdapter,
 		private readonly eventBus: EventBus,
-		@Inject(REQUEST) private readonly request: Request
+		@Inject(REQUEST) private readonly request: Request,
+		@Inject(COMMON_CARTRIDGE_CONFIG_TOKEN) private readonly config: CommonCartridgeConfig
 	) {}
 
 	public async exportCourse(
@@ -51,15 +57,13 @@ export class CommonCartridgeUc {
 		this.eventBus.publish(new ImportCourseEvent(jwt, params.fileRecordId, params.fileName, params.fileUrl));
 	}
 
-	public async uploadFileToTemp(
-		currentUser: ICurrentUser,
-		readable: Readable,
-		fileName: string
-	): Promise<FileRecordResponse> {
+	public async uploadFileToTemp(currentUser: ICurrentUser, readable: Readable): Promise<FileRecordResponse> {
 		const jwt = JwtExtractor.extractJwtFromRequest(this.request);
 		if (!jwt) {
 			throw new UnauthorizedException();
 		}
+
+		const fileName = this.getFileName(this.request);
 
 		const fileRecordResponse = await this.fileClient.uploadTempFile(
 			jwt,
@@ -68,9 +72,24 @@ export class CommonCartridgeUc {
 			currentUser.userId,
 			FileRecordParentType.USERS,
 			readable,
-			fileName
+			fileName,
+			this.config.courseImportMaxFileSize
 		);
 
 		return fileRecordResponse;
+	}
+
+	public getFileName(req: Request): string {
+		const contentDisposition = req.headers['content-disposition'];
+
+		let fileName = 'upload.imscc';
+		if (contentDisposition) {
+			const filenameMatch = contentDisposition.match(/filename[*]?=['"]?(?:UTF-8'')?([^;'"\n]+)['"]?/i);
+			if (filenameMatch?.[1]) {
+				fileName = decodeURIComponent(filenameMatch[1]);
+			}
+		}
+
+		return fileName;
 	}
 }
