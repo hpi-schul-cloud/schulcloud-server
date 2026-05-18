@@ -3,7 +3,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { CreateJwtPayload } from '../interface';
 import { JwtPayloadBuilder } from './jwt-payload.builder';
 
-describe('JwtPayloadFactory', () => {
+describe('JwtPayloadBuilder', () => {
 	describe('build', () => {
 		it('should map current user to create jwt payload', () => {
 			const currentUser = currentUserFactory.build();

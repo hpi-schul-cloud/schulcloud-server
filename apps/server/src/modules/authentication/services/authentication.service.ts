@@ -1,5 +1,5 @@
 import { Logger } from '@core/logger';
-import { CreateJwtPayload, JwtPayloadFactory } from '@infra/auth-guard';
+import { CreateJwtPayload, JwtPayloadBuilder } from '@infra/auth-guard';
 import { Inject, Injectable } from '@nestjs/common';
 import { JwtService, JwtSignOptions } from '@nestjs/jwt';
 import { randomUUID } from 'crypto';
@@ -70,7 +70,7 @@ export class AuthenticationService {
 			false,
 			targetUserAccount.systemId
 		);
-		const createJwtPayload = new JwtPayloadFactory(currentUser).asSupportUser(supportUser.id).build();
+		const createJwtPayload = new JwtPayloadBuilder(currentUser).asSupportUser(supportUser.id).build();
 		const expiresIn = this.config.jwtLifetimeSupportSeconds;
 
 		const jwtToken = await this.generateJwtAndAddToWhitelist(createJwtPayload, expiresIn);
