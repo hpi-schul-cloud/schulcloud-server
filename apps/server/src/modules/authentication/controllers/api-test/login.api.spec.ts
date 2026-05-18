@@ -149,7 +149,7 @@ describe('Login Controller (api)', () => {
 
 		describe('when user login fails cause account is deactivated', () => {
 			const setup = async () => {
-				const newUser = userFactory.buildWithId();
+				const newUser = userFactory.asStudent().buildWithId();
 				const deactivatedAccount = accountFactory.withUser(newUser).buildWithId({
 					deactivatedAt: new Date(),
 				});
@@ -233,7 +233,7 @@ describe('Login Controller (api)', () => {
 
 		describe('when user login fails cause account is deactivated', () => {
 			const setup = async () => {
-				const newUser = userFactory.buildWithId();
+				const newUser = userFactory.asSystemUser([Permission.USER_CREATE]).buildWithId();
 				const deactivatedAccount = accountFactory.withUser(newUser).buildWithId({
 					deactivatedAt: new Date(),
 				});
