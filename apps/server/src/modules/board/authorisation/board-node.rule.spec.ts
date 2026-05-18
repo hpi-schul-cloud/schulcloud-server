@@ -972,6 +972,20 @@ describe(BoardNodeRule.name, () => {
 
 				expect(res).toEqual(expectedAllowedOperations);
 			});
+
+			describe('when board has readersCanEdit enabled', () => {
+				it('should not allow the board title to be edited', () => {
+					const { user, boardNodeAuthorizable } = setup({
+						canReadersEdit: true,
+						canEditorsManageVideoconference: true,
+						isLocked: false,
+					});
+
+					const res = boardNodeRule.listAllowedOperations(user, boardNodeAuthorizable);
+
+					expect(res.updateBoardTitle).toEqual(false);
+				});
+			});
 		});
 
 		describe('when board is locked ', () => {
