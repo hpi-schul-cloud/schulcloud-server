@@ -255,6 +255,29 @@ describe('Login Controller (api)', () => {
 				expect(result.status).toEqual(HttpStatus.UNAUTHORIZED);
 			});
 		});
+
+		describe('when user is not a system user', () => {
+			const setup = async () => {
+				const user = userFactory.asStudent().buildWithId();
+				const account = accountFactory.withUser(user).buildWithId();
+
+				await em.persist([user, account]).flush();
+
+				return { account };
+			};
+
+			it('should return unauthorized error', async () => {
+				const { account } = await setup();
+				const params: LocalAuthorizationBodyParams = {
+					username: account.username,
+					password: defaultTestPassword,
+				};
+
+				const result = await request(app.getHttpServer()).post(`${basePath}/local-system-user`).send(params);
+
+				expect(result.status).toEqual(HttpStatus.UNAUTHORIZED);
+			});
+		});
 	});
 
 	describe('loginLdap', () => {
