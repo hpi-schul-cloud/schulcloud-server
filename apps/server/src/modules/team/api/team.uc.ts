@@ -9,6 +9,7 @@ import { RoomService } from '@modules/room';
 import { RoomMembershipService } from '@modules/room-membership';
 import { mapTeamColorToRoomColor } from './helper/colormapper';
 import { RoleName } from '@modules/role';
+import { UserService } from '@modules/user';
 
 @Injectable()
 export class TeamUc {
@@ -17,6 +18,7 @@ export class TeamUc {
 		private readonly authorizationService: AuthorizationService,
 		private readonly roomService: RoomService,
 		private readonly roomMembershipService: RoomMembershipService,
+		private readonly userService: UserService,
 		@Inject(TEAM_PUBLIC_API_CONFIG_TOKEN) private readonly config: TeamPublicApiConfig
 	) {}
 
@@ -45,9 +47,14 @@ export class TeamUc {
 		try {
 			await this.roomMembershipService.createNewRoomMembership(room.id, userId);
 
-			const otherUsers = team.teamUsers.map((teamUser) => teamUser.userId.id).filter((id) => id !== userId);
+			const userIds = team.teamUsers.map((teamUser) => teamUser.userId.id).filter((id) => id !== userId);
+			const users = await this.userService.findByIds(userIds);
+			const finalUsers = users
+				.filter((user) => user.roles.some((role) => role.name === 'student' || role.name === 'teacher'))
+				.map((user) => user.id)
+				.filter((id) => id !== undefined);
 
-			await this.roomMembershipService.addMembersToRoom(room.id, otherUsers, RoleName.ROOMVIEWER);
+			await this.roomMembershipService.addMembersToRoom(room.id, finalUsers, RoleName.ROOMVIEWER);
 		} catch (error) {
 			await this.roomService.deleteRoom(room);
 			throw error;

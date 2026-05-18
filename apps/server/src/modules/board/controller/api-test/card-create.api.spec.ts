@@ -1,5 +1,4 @@
 import { EntityManager } from '@mikro-orm/mongodb';
-import { courseEntityFactory } from '@modules/course/testing';
 import { ServerTestModule } from '@modules/server/server.app.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -9,6 +8,12 @@ import { TestApiClient } from '@testing/test-api-client';
 import { BoardExternalReferenceType, ContentElementType } from '../../domain';
 import { columnBoardEntityFactory, columnEntityFactory } from '../../testing';
 import { CardResponse } from '../dto';
+import { roomEntityFactory } from '@modules/room/testing';
+import { roomMembershipEntityFactory } from '@modules/room-membership/testing';
+import { groupEntityFactory } from '@modules/group/testing';
+import { GroupEntityTypes } from '@modules/group/entity';
+import { schoolEntityFactory } from '@modules/school/testing';
+import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
 
 const baseRouteName = '/columns';
 
@@ -32,14 +37,45 @@ describe(`card create (api)`, () => {
 		await app.close();
 	});
 
-	const setup = async () => {
+	const setup = async (readersCanEdit = false) => {
 		await cleanupCollections(em);
-		const { teacherAccount: account, teacherUser: user } = UserAndAccountTestFactory.buildTeacher();
-		const course = courseEntityFactory.build({ school: user.school, teachers: [user] });
-		await em.persist([user, account, course]).flush();
+
+		const school = schoolEntityFactory.buildWithId();
+
+		const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
+		const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({ school });
+
+		const room = roomEntityFactory.build({ schoolId: teacherUser.school.id });
+		const { roomViewerRole, roomOwnerRole } = RoomRolesTestFactory.createRoomRoles();
+
+		const userGroup = groupEntityFactory.buildWithId({
+			type: GroupEntityTypes.ROOM,
+			users: [
+				{ user: teacherUser, role: roomOwnerRole },
+				{ user: studentUser, role: roomViewerRole },
+			],
+			organization: school,
+		});
+
+		const roomMembership = roomMembershipEntityFactory.build({ roomId: room.id, userGroupId: userGroup.id });
+
+		await em
+			.persist([
+				teacherUser,
+				teacherAccount,
+				studentUser,
+				studentAccount,
+				room,
+				roomMembership,
+				userGroup,
+				roomViewerRole,
+				roomOwnerRole,
+			])
+			.flush();
 
 		const columnBoardNode = columnBoardEntityFactory.build({
-			context: { id: course.id, type: BoardExternalReferenceType.Course },
+			context: { id: room.id, type: BoardExternalReferenceType.Room },
+			readersCanEdit,
 		});
 
 		const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
@@ -51,30 +87,62 @@ describe(`card create (api)`, () => {
 			requiredEmptyElements: [ContentElementType.RICH_TEXT, ContentElementType.FILE, ContentElementType.LINK],
 		};
 
-		const loggedInClient = await apiClient.login(account);
+		const loggedInTeacherClient = await apiClient.login(teacherAccount);
+		const loggedInStudentClient = await apiClient.login(studentAccount);
 
-		return { user, columnBoardNode, columnNode, createCardBodyParams, loggedInClient };
+		return {
+			teacherUser,
+			studentUser,
+			columnBoardNode,
+			columnNode,
+			createCardBodyParams,
+			loggedInTeacherClient,
+			loggedInStudentClient,
+		};
 	};
 
-	describe('with valid user', () => {
-		it('should return status 201', async () => {
-			const { columnNode, loggedInClient } = await setup();
+	describe('with valid user who is board reader', () => {
+		describe('when readers can edit is disabled', () => {
+			it('should return status 403', async () => {
+				const { columnNode, loggedInStudentClient } = await setup();
 
-			const response = await loggedInClient.post(`${columnNode.id}/cards`);
+				const response = await loggedInStudentClient.post(`${columnNode.id}/cards`);
+
+				expect(response.status).toEqual(403);
+			});
+		});
+
+		describe('when readers can edit is enabled', () => {
+			it('should return status 201', async () => {
+				const { columnNode, loggedInStudentClient } = await setup(true);
+
+				const response = await loggedInStudentClient.post(`${columnNode.id}/cards`);
+
+				expect(response.status).toEqual(201);
+			});
+		});
+	});
+
+	describe('with valid user who is board editor', () => {
+		it('should return status 201', async () => {
+			const { columnNode, loggedInTeacherClient } = await setup();
+
+			const response = await loggedInTeacherClient.post(`${columnNode.id}/cards`);
 
 			expect(response.status).toEqual(201);
 		});
 
 		it('should return the created card', async () => {
-			const { columnNode, loggedInClient } = await setup();
+			const { columnNode, loggedInTeacherClient } = await setup();
 
-			const response = await loggedInClient.post(`${columnNode.id}/cards`);
+			const response = await loggedInTeacherClient.post(`${columnNode.id}/cards`);
 			const result = response.body as CardResponse;
 
 			expect(result.id).toBeDefined();
 		});
+
 		it('created card should contain empty text, file and link elements', async () => {
-			const { columnNode, createCardBodyParams, loggedInClient } = await setup();
+			const { columnNode, createCardBodyParams, loggedInTeacherClient } = await setup();
 
 			const expectedEmptyElements = [
 				{
@@ -98,7 +166,7 @@ describe(`card create (api)`, () => {
 				},
 			];
 
-			const response = await loggedInClient.post(`${columnNode.id}/cards`, createCardBodyParams);
+			const response = await loggedInTeacherClient.post(`${columnNode.id}/cards`, createCardBodyParams);
 			const result = response.body as CardResponse;
 			const { elements } = result;
 
@@ -106,14 +174,15 @@ describe(`card create (api)`, () => {
 			expect(elements[1]).toMatchObject(expectedEmptyElements[1]);
 			expect(elements[2]).toMatchObject(expectedEmptyElements[2]);
 		});
+
 		it('should return status 400 as the content element is unknown', async () => {
-			const { columnNode, loggedInClient } = await setup();
+			const { columnNode, loggedInTeacherClient } = await setup();
 
 			const invalidBodyParams = {
 				requiredEmptyElements: ['unknown-content-element'],
 			};
 
-			const response = await loggedInClient.post(`${columnNode.id}/cards`, invalidBodyParams);
+			const response = await loggedInTeacherClient.post(`${columnNode.id}/cards`, invalidBodyParams);
 
 			expect(response.status).toEqual(400);
 		});
