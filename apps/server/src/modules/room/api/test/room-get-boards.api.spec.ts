@@ -140,6 +140,9 @@ describe('Room Controller (API)', () => {
 									isVisible: board.isVisible,
 									createdAt: expectIsoDateString() as string,
 									updatedAt: expectIsoDateString() as string,
+									allowedOperations: expect.objectContaining({
+										findBoard: true,
+									}) as Record<string, boolean>,
 								};
 							})
 						);
@@ -377,6 +380,11 @@ describe('Room Controller (API)', () => {
 					isVisible: board.isVisible,
 					createdAt: expectIsoDateString() as string,
 					updatedAt: expectIsoDateString() as string,
+					allowedOperations: expect.objectContaining({
+						copyBoard: true,
+						deleteBoard: true,
+						updateBoardVisibility: true,
+					}) as Record<string, boolean>,
 				});
 			});
 		});
