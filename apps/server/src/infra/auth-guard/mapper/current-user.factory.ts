@@ -74,4 +74,12 @@ export class CurrentUserBuilder {
 
 		return this;
 	}
+
+	public asServiceAccount(isServiceAccount?: boolean): this {
+		if (isServiceAccount === true) {
+			this.props.isServiceAccount = isServiceAccount;
+		}
+
+		return this;
+	}
 }
