@@ -4,7 +4,7 @@ import { CreateJwtPayload, ICurrentUser } from '../interface';
 export class JwtPayloadBuilder {
 	private readonly currentUser: ICurrentUser;
 
-	private systemUser = false;
+	private isServiceAccount = false;
 
 	private support = false;
 
@@ -15,7 +15,7 @@ export class JwtPayloadBuilder {
 	}
 
 	public asSystemUser(): this {
-		this.systemUser = true;
+		this.isServiceAccount = true;
 
 		return this;
 	}
@@ -34,7 +34,7 @@ export class JwtPayloadBuilder {
 			schoolId: this.currentUser.schoolId,
 			roles: this.currentUser.roles,
 			systemId: this.currentUser.systemId,
-			systemUser: this.systemUser,
+			isServiceAccount: this.isServiceAccount,
 			support: this.support,
 			supportUserId: this.supportUserId,
 			isExternalUser: this.currentUser.isExternalUser,

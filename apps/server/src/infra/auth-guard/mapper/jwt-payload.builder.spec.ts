@@ -16,7 +16,7 @@ describe('JwtPayloadBuilder', () => {
 				roles: currentUser.roles,
 				schoolId: currentUser.schoolId,
 				userId: currentUser.userId,
-				systemUser: false,
+				isServiceAccount: false,
 				support: false,
 				isExternalUser: false,
 			});
@@ -24,7 +24,7 @@ describe('JwtPayloadBuilder', () => {
 	});
 
 	describe('asSystemUser', () => {
-		it('should map current user to create jwt payload with systemUser flag', () => {
+		it('should map current user to create jwt payload with isServiceAccount flag', () => {
 			const currentUser = currentUserFactory.build();
 
 			const createJwtPayload = new JwtPayloadBuilder(currentUser).asSystemUser().build();
@@ -35,7 +35,7 @@ describe('JwtPayloadBuilder', () => {
 				roles: currentUser.roles,
 				schoolId: currentUser.schoolId,
 				userId: currentUser.userId,
-				systemUser: true,
+				isServiceAccount: true,
 				support: false,
 				isExternalUser: false,
 			});
@@ -55,7 +55,7 @@ describe('JwtPayloadBuilder', () => {
 				roles: currentUser.roles,
 				schoolId: currentUser.schoolId,
 				userId: currentUser.userId,
-				systemUser: false,
+				isServiceAccount: false,
 				support: true,
 				supportUserId,
 				isExternalUser: false,

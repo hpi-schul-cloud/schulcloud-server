@@ -3,7 +3,7 @@ export interface CreateJwtPayload {
 	userId: string;
 	schoolId: string;
 	roles: string[];
-	systemUser: boolean;
+	isServiceAccount: boolean;
 	systemId?: string; // without this the user needs to change his PW during first login
 	support: boolean;
 	supportUserId?: string;

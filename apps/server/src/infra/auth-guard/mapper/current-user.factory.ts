@@ -30,7 +30,7 @@ export class CurrentUserBuilder {
 			schoolId: requiredProps.schoolId,
 			accountId: requiredProps.accountId,
 			roles: requiredProps.roles,
-			systemUser: false,
+			isServiceAccount: false,
 			support: false,
 			isExternalUser: false,
 			systemId: undefined,

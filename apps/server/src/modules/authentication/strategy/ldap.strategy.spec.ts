@@ -435,7 +435,7 @@ describe('LdapStrategy', () => {
 					schoolId: school.id as string,
 					systemId: system.id,
 					accountId: account.id,
-					systemUser: false,
+					isServiceAccount: false,
 					isExternalUser: true,
 					support: false,
 				});
@@ -503,7 +503,7 @@ describe('LdapStrategy', () => {
 					systemId: system.id,
 					accountId: account.id,
 					isExternalUser: true,
-					systemUser: false,
+					isServiceAccount: false,
 					support: false,
 				});
 			});

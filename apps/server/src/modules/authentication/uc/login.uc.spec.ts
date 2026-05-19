@@ -91,7 +91,7 @@ describe('LoginUc', () => {
 			const setup = () => {
 				const currentUser = currentUserFactory.asSystemUser().build();
 				const expectedJwtPayload = new JwtPayloadBuilder(currentUser).asSystemUser().build();
-				const accessToken = 'systemUserAccessToken';
+				const accessToken = 'isServiceAccountAccessToken';
 
 				authenticationService.generateJwtAndAddToWhitelist.mockResolvedValueOnce(accessToken);
 

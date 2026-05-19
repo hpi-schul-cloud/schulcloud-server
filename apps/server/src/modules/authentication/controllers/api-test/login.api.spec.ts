@@ -184,7 +184,7 @@ describe('Login Controller (api)', () => {
 				return { account };
 			};
 
-			it('should return jwt with systemUser flag', async () => {
+			it('should return jwt with isServiceAccount flag', async () => {
 				const { account } = await setup();
 				const params: LocalAuthorizationBodyParams = {
 					username: account.username,
@@ -203,7 +203,7 @@ describe('Login Controller (api)', () => {
 				expect(decodedToken).toHaveProperty('accountId');
 				expect(decodedToken).toHaveProperty('schoolId');
 				expect(decodedToken).toHaveProperty('roles');
-				expect(decodedToken).toHaveProperty('systemUser', true);
+				expect(decodedToken).toHaveProperty('isServiceAccount', true);
 				expect(decodedToken).not.toHaveProperty('externalIdToken');
 			});
 		});

@@ -214,7 +214,7 @@ describe('Me Controller (API)', () => {
 						accountId: studentAccount.id,
 						schoolId: studentUser.school.id,
 						systemId: system.id,
-						systemUser: false,
+						isServiceAccount: false,
 						isExternalUser: true,
 					});
 

@@ -31,7 +31,7 @@ export class LoginUc {
 	}
 
 	private checkIfSystemUser(currentUser: ICurrentUser): void {
-		if (!currentUser.systemUser) {
+		if (!currentUser.isServiceAccount) {
 			throw new UnauthorizedException();
 		}
 	}

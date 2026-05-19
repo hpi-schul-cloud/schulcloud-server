@@ -14,7 +14,7 @@ class JwtPayloadImpl implements JwtPayload {
 
 	public systemId?: string;
 
-	public systemUser: boolean;
+	public isServiceAccount: boolean;
 
 	public support: boolean;
 
@@ -40,7 +40,7 @@ class JwtPayloadImpl implements JwtPayload {
 		this.schoolId = data.schoolId;
 		this.roles = data.roles;
 		this.systemId = data.systemId || '';
-		this.systemUser = data.systemUser || false;
+		this.isServiceAccount = data.isServiceAccount || false;
 		this.support = data.support || false;
 		this.isExternalUser = data.isExternalUser;
 		this.supportUserId = data.supportUserId;
@@ -62,7 +62,7 @@ export const jwtPayloadFactory = JwtPayloadFactory.define(JwtPayloadImpl, ({ seq
 		schoolId: new ObjectId().toHexString(),
 		roles: ['dummyRoleId'],
 		systemId: new ObjectId().toHexString(),
-		systemUser: false,
+		isServiceAccount: false,
 		support: false,
 		isExternalUser: true,
 		sub: `${faker.lorem.word()} ${sequence}`,

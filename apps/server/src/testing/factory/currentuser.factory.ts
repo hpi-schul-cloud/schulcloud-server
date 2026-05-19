@@ -16,7 +16,7 @@ class CurrentUser implements ICurrentUser {
 
 	public isExternalUser: boolean;
 
-	public systemUser: boolean;
+	public isServiceAccount: boolean;
 
 	public support: boolean;
 
@@ -29,7 +29,7 @@ class CurrentUser implements ICurrentUser {
 		this.accountId = data.accountId;
 		this.systemId = data.systemId || '';
 		this.isExternalUser = data.isExternalUser;
-		this.systemUser = data.systemUser || false;
+		this.isServiceAccount = data.isServiceAccount || false;
 		this.support = data.support || false;
 		this.supportUserId = data.supportUserId;
 	}
@@ -54,7 +54,7 @@ class CurrentUserFactory extends BaseFactory<CurrentUser, ICurrentUser> {
 	}
 
 	public asSystemUser(): this {
-		return this.params({ systemUser: true });
+		return this.params({ isServiceAccount: true });
 	}
 }
 
@@ -67,7 +67,7 @@ export const currentUserFactory = CurrentUserFactory.define(CurrentUser, () => {
 		systemId: new ObjectId().toHexString(),
 		isExternalUser: false,
 		support: false,
-		systemUser: false,
+		isServiceAccount: false,
 		supportUserId: undefined,
 	};
 });

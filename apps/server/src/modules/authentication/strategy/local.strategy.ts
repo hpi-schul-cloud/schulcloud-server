@@ -36,7 +36,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 		const user = await this.userService.getUserEntityWithRoles(accountUserId);
 		const currentUser = CurrentUserMapper.userToICurrentUser(account.id, user, false);
 		const isSystemUser = this.hasCanExecuteInstanceOperationPermission(user);
-		currentUser.systemUser = isSystemUser;
+		currentUser.isServiceAccount = isSystemUser;
 
 		return currentUser;
 	}
