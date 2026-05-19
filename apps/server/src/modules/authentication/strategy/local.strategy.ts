@@ -10,7 +10,6 @@ import { AUTHENTICATION_CONFIG_TOKEN, AuthenticationConfig } from '../authentica
 import { CurrentUserMapper } from '../mapper';
 import { AuthenticationService } from '../services/authentication.service';
 import { Permission } from '@shared/domain/interface/permission.enum';
-import { Role } from '@modules/role';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
