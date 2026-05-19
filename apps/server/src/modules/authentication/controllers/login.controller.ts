@@ -63,6 +63,7 @@ export class LoginController {
 	@ApiOperation({ summary: 'Starts the login process for service accounts which are locally managed.' })
 	@ApiResponse({ status: 200, type: LoginResponse, description: 'Login was successful.' })
 	@ApiResponse({ status: 400, type: ValidationError, description: 'Request data has invalid format.' })
+	@ApiResponse({ status: 401, description: 'Authenticated user is not a service account.' })
 	@ApiResponse({ status: 403, type: ForbiddenOperationError, description: 'Invalid user credentials.' })
 	public async loginLocalServiceAccount(
 		@CurrentUser() user: ICurrentUser,
