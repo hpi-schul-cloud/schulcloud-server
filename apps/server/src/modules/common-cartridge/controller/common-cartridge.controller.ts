@@ -14,6 +14,7 @@ import { Request, Response } from 'express';
 import { CommonCartridgeUc } from '../uc/common-cartridge.uc';
 import { CourseExportBodyParams, CourseQueryParams, ExportCourseParams } from './dto';
 import { CommonCartridgeFileParams } from './dto/common-cartridge-file.params';
+import { FileRecordResponse } from '@infra/common-cartridge-clients';
 
 @JwtAuthentication()
 @ApiTags('common-cartridge')
@@ -61,7 +62,7 @@ export class CommonCartridgeController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Req() req: Request,
 		@Body() _: CommonCartridgeFileParams
-	): Promise<void> {
+	): Promise<FileRecordResponse> {
 		const fileRecordResponse = await this.commonCartridgeUC.uploadFileToTemp(currentUser, req);
 
 		this.commonCartridgeUC.startCourseImport({
@@ -69,5 +70,7 @@ export class CommonCartridgeController {
 			fileUrl: fileRecordResponse.url,
 			fileName: fileRecordResponse.name,
 		});
+
+		return fileRecordResponse;
 	}
 }
