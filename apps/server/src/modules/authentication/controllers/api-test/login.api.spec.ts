@@ -190,7 +190,7 @@ describe('Login Controller (api)', () => {
 					username: account.username,
 					password: defaultTestPassword,
 				};
-				const response = await request(app.getHttpServer()).post(`${basePath}/local-system-user`).send(params);
+				const response = await request(app.getHttpServer()).post(`${basePath}/local-service-account`).send(params);
 
 				expect(response.status).toEqual(HttpStatus.OK);
 				expect(response.body).toEqual({
@@ -225,7 +225,7 @@ describe('Login Controller (api)', () => {
 					password: 'wrongPassword',
 				};
 
-				const result = await request(app.getHttpServer()).post(`${basePath}/local-system-user`).send(params);
+				const result = await request(app.getHttpServer()).post(`${basePath}/local-service-account`).send(params);
 
 				expect(result.status).toEqual(HttpStatus.UNAUTHORIZED);
 			});
@@ -250,7 +250,7 @@ describe('Login Controller (api)', () => {
 					password: defaultTestPassword,
 				};
 
-				const result = await request(app.getHttpServer()).post(`${basePath}/local-system-user`).send(params);
+				const result = await request(app.getHttpServer()).post(`${basePath}/local-service-account`).send(params);
 
 				expect(result.status).toEqual(HttpStatus.UNAUTHORIZED);
 			});
@@ -273,7 +273,7 @@ describe('Login Controller (api)', () => {
 					password: defaultTestPassword,
 				};
 
-				const result = await request(app.getHttpServer()).post(`${basePath}/local-system-user`).send(params);
+				const result = await request(app.getHttpServer()).post(`${basePath}/local-service-account`).send(params);
 
 				expect(result.status).toEqual(HttpStatus.UNAUTHORIZED);
 			});
