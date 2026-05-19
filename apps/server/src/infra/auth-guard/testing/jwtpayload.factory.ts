@@ -1,6 +1,7 @@
 import { faker } from '@faker-js/faker';
-import { BaseFactory } from '@testing/factory/base.factory';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { BaseFactory } from '@testing/factory/base.factory';
+import { DeepPartial } from 'fishery';
 import { JwtPayload } from '../interface';
 
 class JwtPayloadImpl implements JwtPayload {
@@ -53,7 +54,13 @@ class JwtPayloadImpl implements JwtPayload {
 	}
 }
 
-class JwtPayloadFactory extends BaseFactory<JwtPayloadImpl, JwtPayload> {}
+class JwtPayloadFactory extends BaseFactory<JwtPayloadImpl, JwtPayload> {
+	public asServiceAccount(): this {
+		const params: DeepPartial<JwtPayload> = { isServiceAccount: true };
+
+		return this.params(params);
+	}
+}
 
 export const jwtPayloadFactory = JwtPayloadFactory.define(JwtPayloadImpl, ({ sequence }) => {
 	return {
