@@ -20,10 +20,10 @@ export class AuthenticationConfig {
 	@IsNumber()
 	public jwtLifetimeSupportSeconds = 7 * dayInSeconds;
 
-	@ConfigProperty('JWT_LIFETIME_SYSTEM_USER_SECONDS')
+	@ConfigProperty('JWT_LIFETIME_SERVICE_ACCOUNT_SECONDS')
 	@StringToNumber()
 	@IsNumber()
-	public jwtLifetimeSystemUserSeconds = 2 * hourInSeconds;
+	public jwtLifetimeServiceAccountSeconds = 2 * hourInSeconds;
 
 	@ConfigProperty('LOGIN_BLOCK_TIME')
 	@StringToNumber()

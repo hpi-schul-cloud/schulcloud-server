@@ -23,11 +23,11 @@ describe('JwtPayloadBuilder', () => {
 		});
 	});
 
-	describe('asSystemUser', () => {
+	describe('asServiceAccount', () => {
 		it('should map current user to create jwt payload with isServiceAccount flag', () => {
 			const currentUser = currentUserFactory.build();
 
-			const createJwtPayload = new JwtPayloadBuilder(currentUser).asSystemUser().build();
+			const createJwtPayload = new JwtPayloadBuilder(currentUser).asServiceAccount().build();
 
 			expect(createJwtPayload).toMatchObject<CreateJwtPayload>({
 				accountId: currentUser.accountId,

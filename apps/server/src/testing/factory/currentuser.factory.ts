@@ -53,7 +53,7 @@ class CurrentUserFactory extends BaseFactory<CurrentUser, ICurrentUser> {
 		return this.withRole('teacher');
 	}
 
-	public asSystemUser(): this {
+	public asServiceAccountUser(): this {
 		return this.params({ isServiceAccount: true });
 	}
 }

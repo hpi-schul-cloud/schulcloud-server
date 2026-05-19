@@ -25,7 +25,7 @@ describe('LoginUc', () => {
 				{
 					provide: AUTHENTICATION_CONFIG_TOKEN,
 					useValue: {
-						jwtLifetimeSystemUserSeconds: 7200,
+						jwtLifetimeServiceAccountSeconds: 7200,
 						expiresIn: '30d',
 					},
 				},
@@ -86,11 +86,11 @@ describe('LoginUc', () => {
 		});
 	});
 
-	describe('getLoginDataForSystemUser', () => {
-		describe('when currentUser is a system user', () => {
+	describe('getLoginDataForServiceAccount', () => {
+		describe('when currentUser is a service account', () => {
 			const setup = () => {
-				const currentUser = currentUserFactory.asSystemUser().build();
-				const expectedJwtPayload = new JwtPayloadBuilder(currentUser).asSystemUser().build();
+				const currentUser = currentUserFactory.asServiceAccountUser().build();
+				const expectedJwtPayload = new JwtPayloadBuilder(currentUser).asServiceAccount().build();
 				const accessToken = 'isServiceAccountAccessToken';
 
 				authenticationService.generateJwtAndAddToWhitelist.mockResolvedValueOnce(accessToken);
@@ -102,21 +102,21 @@ describe('LoginUc', () => {
 				};
 			};
 
-			it('should call generateJwtAndAddToWhitelist with system user payload and config expiresIn', async () => {
+			it('should call generateJwtAndAddToWhitelist with service account payload and config expiresIn', async () => {
 				const { currentUser, expectedJwtPayload } = setup();
 
-				await loginUc.getLoginDataForSystemUser(currentUser);
+				await loginUc.getLoginDataForServiceAccount(currentUser);
 
 				expect(authenticationService.generateJwtAndAddToWhitelist).toHaveBeenCalledWith(
 					expectedJwtPayload,
-					authenticationConfig.jwtLifetimeSystemUserSeconds
+					authenticationConfig.jwtLifetimeServiceAccountSeconds
 				);
 			});
 
 			it('should call updateLastLogin with accountId', async () => {
 				const { currentUser } = setup();
 
-				await loginUc.getLoginDataForSystemUser(currentUser);
+				await loginUc.getLoginDataForServiceAccount(currentUser);
 
 				expect(authenticationService.updateLastLogin).toHaveBeenCalledWith(currentUser.accountId);
 			});
@@ -124,13 +124,13 @@ describe('LoginUc', () => {
 			it('should return the jwt token', async () => {
 				const { currentUser, accessToken } = setup();
 
-				const result = await loginUc.getLoginDataForSystemUser(currentUser);
+				const result = await loginUc.getLoginDataForServiceAccount(currentUser);
 
 				expect(result).toEqual(accessToken);
 			});
 		});
 
-		describe('when currentUser is not a system user', () => {
+		describe('when currentUser is not a service account', () => {
 			const setup = () => {
 				const currentUser = currentUserFactory.build();
 
@@ -142,7 +142,7 @@ describe('LoginUc', () => {
 			it('should throw UnauthorizedException', async () => {
 				const { currentUser } = setup();
 
-				await expect(loginUc.getLoginDataForSystemUser(currentUser)).rejects.toThrow(UnauthorizedException);
+				await expect(loginUc.getLoginDataForServiceAccount(currentUser)).rejects.toThrow(UnauthorizedException);
 			});
 		});
 	});

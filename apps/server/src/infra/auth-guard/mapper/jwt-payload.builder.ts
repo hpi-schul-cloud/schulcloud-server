@@ -14,7 +14,7 @@ export class JwtPayloadBuilder {
 		this.currentUser = currentUser;
 	}
 
-	public asSystemUser(): this {
+	public asServiceAccount(): this {
 		this.isServiceAccount = true;
 
 		return this;

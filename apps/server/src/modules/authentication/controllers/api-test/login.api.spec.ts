@@ -173,10 +173,10 @@ describe('Login Controller (api)', () => {
 		});
 	});
 
-	describe('loginLocalSystemUser', () => {
+	describe('loginLocalServiceAccount', () => {
 		describe('when user login succeeds', () => {
 			const setup = async () => {
-				const user = userFactory.asSystemUser([Permission.USER_CREATE]).buildWithId();
+				const user = userFactory.asServiceAccountUser([Permission.USER_CREATE]).buildWithId();
 				const account = accountFactory.withUser(user).buildWithId();
 
 				await em.persist([user, account]).flush();
@@ -210,7 +210,7 @@ describe('Login Controller (api)', () => {
 
 		describe('when user login fails', () => {
 			const setup = async () => {
-				const user = userFactory.asSystemUser([Permission.USER_CREATE]).buildWithId();
+				const user = userFactory.asServiceAccountUser([Permission.USER_CREATE]).buildWithId();
 				const account = accountFactory.withUser(user).buildWithId();
 
 				await em.persist([user, account]).flush();
@@ -233,7 +233,7 @@ describe('Login Controller (api)', () => {
 
 		describe('when user login fails cause account is deactivated', () => {
 			const setup = async () => {
-				const newUser = userFactory.asSystemUser([Permission.USER_CREATE]).buildWithId();
+				const newUser = userFactory.asServiceAccountUser([Permission.USER_CREATE]).buildWithId();
 				const deactivatedAccount = accountFactory.withUser(newUser).buildWithId({
 					deactivatedAt: new Date(),
 				});
@@ -256,7 +256,7 @@ describe('Login Controller (api)', () => {
 			});
 		});
 
-		describe('when user is not a system user', () => {
+		describe('when user is not a service account', () => {
 			const setup = async () => {
 				const user = userFactory.asStudent().buildWithId();
 				const account = accountFactory.withUser(user).buildWithId();

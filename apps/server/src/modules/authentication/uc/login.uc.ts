@@ -1,7 +1,7 @@
 import { ICurrentUser, JwtPayloadBuilder } from '@infra/auth-guard';
 import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
-import { AuthenticationService } from '../services';
 import { AUTHENTICATION_CONFIG_TOKEN, AuthenticationConfig } from '../authentication-config';
+import { AuthenticationService } from '../services';
 
 @Injectable()
 export class LoginUc {
@@ -11,6 +11,7 @@ export class LoginUc {
 	) {}
 
 	public async getLoginData(currentUser: ICurrentUser): Promise<string> {
+		// With introduce switch in shd to service accounts, this method should not be used for service accounts anymore. Need to be throw.
 		const jwtPayload = new JwtPayloadBuilder(currentUser).build();
 		const accessToken = await this.authService.generateJwtAndAddToWhitelist(jwtPayload, this.config.expiresIn);
 		await this.authService.updateLastLogin(currentUser.accountId);
@@ -18,19 +19,19 @@ export class LoginUc {
 		return accessToken;
 	}
 
-	public async getLoginDataForSystemUser(currentUser: ICurrentUser): Promise<string> {
-		this.checkIfSystemUser(currentUser);
-		const jwtPayload = new JwtPayloadBuilder(currentUser).asSystemUser().build();
+	public async getLoginDataForServiceAccount(currentUser: ICurrentUser): Promise<string> {
+		this.checkIfServiceAccount(currentUser);
+		const jwtPayload = new JwtPayloadBuilder(currentUser).asServiceAccount().build();
 		const accessToken = await this.authService.generateJwtAndAddToWhitelist(
 			jwtPayload,
-			this.config.jwtLifetimeSystemUserSeconds
+			this.config.jwtLifetimeServiceAccountSeconds
 		);
 		await this.authService.updateLastLogin(currentUser.accountId);
 
 		return accessToken;
 	}
 
-	private checkIfSystemUser(currentUser: ICurrentUser): void {
+	private checkIfServiceAccount(currentUser: ICurrentUser): void {
 		if (!currentUser.isServiceAccount) {
 			throw new UnauthorizedException();
 		}

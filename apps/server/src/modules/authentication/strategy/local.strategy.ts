@@ -1,6 +1,6 @@
 import { ICurrentUser } from '@infra/auth-guard';
 import { Account } from '@modules/account';
-import { User, UserService } from '@modules/user';
+import { UserService } from '@modules/user';
 import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { TypeGuard } from '@shared/common/guards';
@@ -9,7 +9,6 @@ import { Strategy } from 'passport-local';
 import { AUTHENTICATION_CONFIG_TOKEN, AuthenticationConfig } from '../authentication-config';
 import { CurrentUserMapper } from '../mapper';
 import { AuthenticationService } from '../services/authentication.service';
-import { Permission } from '@shared/domain/interface/permission.enum';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
@@ -34,17 +33,10 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 		);
 		const user = await this.userService.getUserEntityWithRoles(accountUserId);
 		const currentUser = CurrentUserMapper.userToICurrentUser(account.id, user, false);
-		const isSystemUser = this.hasCanExecuteInstanceOperationPermission(user);
-		currentUser.isServiceAccount = isSystemUser;
+		const isServiceAccount = user.isServiceAccountUser();
+		currentUser.isServiceAccount = isServiceAccount;
 
 		return currentUser;
-	}
-
-	private hasCanExecuteInstanceOperationPermission(user: User): boolean {
-		const permissions = user.resolvePermissions(false, false);
-		const hasPermission = permissions.includes(Permission.CAN_EXECUTE_INSTANCE_OPERATIONS);
-
-		return hasPermission;
 	}
 
 	private cleanupInput(username?: string, password?: string): { username: string; password: string } {

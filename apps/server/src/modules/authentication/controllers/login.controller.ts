@@ -59,18 +59,18 @@ export class LoginController {
 
 	@UseGuards(AuthGuard(StrategyType.LOCAL))
 	@HttpCode(HttpStatus.OK)
-	@Post('local-system-user')
-	@ApiOperation({ summary: 'Starts the login process for system users which are locally managed.' })
+	@Post('local-service-account')
+	@ApiOperation({ summary: 'Starts the login process for service accounts which are locally managed.' })
 	@ApiResponse({ status: 200, type: LoginResponse, description: 'Login was successful.' })
 	@ApiResponse({ status: 400, type: ValidationError, description: 'Request data has invalid format.' })
 	@ApiResponse({ status: 403, type: ForbiddenOperationError, description: 'Invalid user credentials.' })
-	public async loginLocalSystemUser(
+	public async loginLocalServiceAccount(
 		@CurrentUser() user: ICurrentUser,
 		// Body is not used, but validated and used in the strategy implementation
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		@Body() _: LocalAuthorizationBodyParams
 	): Promise<LoginResponse> {
-		const jwtToken = await this.loginUc.getLoginDataForSystemUser(user);
+		const jwtToken = await this.loginUc.getLoginDataForServiceAccount(user);
 		const loginResponse = LoginResponseMapper.mapToLoginResponse(jwtToken);
 
 		return loginResponse;
