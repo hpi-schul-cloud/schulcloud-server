@@ -152,23 +152,18 @@ export class FilesStorageClientAdapter {
 		parentId: string,
 		parentType: FileRecordParentType,
 		file: Readable,
-		fileName: string,
 		maxCcFileSize: number
 	): Promise<FileRecordResponse> {
 		// INFO: We bypass the generated client to support streaming directly without buffering.
 		// The generated client expects a File type which would require loading everything into memory.
 		// Using form-data package allows us to stream the data directly to the target server.
-		const formData = new FormData();
-		formData.append('file', file, { filename: fileName });
-
 		const url = new URL(
 			`/api/v3/file/temp/upload/${storageLocation}/${storageLocationId}/${parentType}/${parentId}`,
 			this.config.basePath
 		);
 
-		const observable = this.httpService.post<FileRecordResponse>(url.toString(), formData, {
+		const observable = this.httpService.post<FileRecordResponse>(url.toString(), file, {
 			headers: {
-				...formData.getHeaders(),
 				Authorization: `Bearer ${jwt}`,
 			},
 			maxBodyLength: maxCcFileSize,

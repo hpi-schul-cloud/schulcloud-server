@@ -63,8 +63,6 @@ export class CommonCartridgeUc {
 			throw new UnauthorizedException();
 		}
 
-		const fileName = this.getFileName(this.request);
-
 		const fileRecordResponse = await this.fileClient.uploadTempFile(
 			jwt,
 			currentUser.schoolId,
@@ -72,24 +70,9 @@ export class CommonCartridgeUc {
 			currentUser.userId,
 			FileRecordParentType.USERS,
 			readable,
-			fileName,
 			this.config.courseImportMaxFileSize
 		);
 
 		return fileRecordResponse;
-	}
-
-	public getFileName(req: Request): string {
-		const contentDisposition = req.headers['content-disposition'];
-
-		let fileName = 'upload.imscc';
-		if (contentDisposition) {
-			const filenameMatch = contentDisposition.match(/filename[*]?=['"]?(?:UTF-8'')?([^;'"\n]+)['"]?/i);
-			if (filenameMatch?.[1]) {
-				fileName = decodeURIComponent(filenameMatch[1]);
-			}
-		}
-
-		return fileName;
 	}
 }
