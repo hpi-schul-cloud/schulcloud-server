@@ -83,6 +83,8 @@ export class ContentElementUpdateService {
 			if (isRelativeUrl(content.imageUrl)) {
 				element.imageUrl = content.imageUrl;
 			}
+		} else {
+			element.imageUrl = '';
 		}
 	}
 

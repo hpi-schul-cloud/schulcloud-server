@@ -30,7 +30,6 @@ jobs:
             "issuetype": {
               "id": "10100"
             },
-            "customfield_10004": 231,
             "customfield_10000": "BC-3139"
             }
           }'

@@ -125,6 +125,22 @@ describe('ContentElementUpdateService', () => {
 			expect(element.imageUrl).toBe('relative-image.jpg');
 			expect(repo.save).toHaveBeenCalledWith(element);
 		});
+
+		describe('when content has an imageUrl that is an empty string', () => {
+			it('should set element imageUrl to an empty string', async () => {
+				const element = linkElementFactory.build();
+				const content = new LinkContentBody();
+				content.url = 'http://example.com/';
+				content.title = 'title';
+				content.description = 'description';
+				content.imageUrl = '';
+
+				await service.updateContent(element, content);
+
+				expect(element.imageUrl).toBe('');
+				expect(repo.save).toHaveBeenCalledWith(element);
+			});
+		});
 	});
 
 	describe('when the element is a RichTextElement', () => {
