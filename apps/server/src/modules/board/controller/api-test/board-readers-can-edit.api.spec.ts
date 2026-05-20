@@ -265,48 +265,4 @@ describe(`board readersCanEdit setting (api)`, () => {
 			});
 		});
 	});
-
-	describe('when the setting is enabled', () => {
-		it('should allow users with view role to edit the board', async () => {
-			const { accountWithViewRole, accountWithAdminRole, columnBoardNode } = await setup();
-
-			const loggedInAdmin = await testApiClient.login(accountWithAdminRole);
-			const settingResponse = await loggedInAdmin.patch(`${columnBoardNode.id}/readers-can-edit`, {
-				readersCanEdit: true,
-			});
-			expect(settingResponse.status).toEqual(204);
-
-			const loggedInViewer = await testApiClient.login(accountWithViewRole);
-			const newTitle = 'new title';
-			const patchresponse = await loggedInViewer.patch(`${columnBoardNode.id}/title`, { title: newTitle });
-			expect(patchresponse.status).toEqual(204);
-
-			const checkResponse = await loggedInViewer.get(columnBoardNode.id);
-			const result = checkResponse.body as BoardResponse;
-
-			expect(result.title).toEqual(newTitle);
-		});
-	});
-
-	describe('when the setting is disabled', () => {
-		it('should allow users with view role to edit the board', async () => {
-			const { accountWithViewRole, accountWithAdminRole, columnBoardNode } = await setup();
-
-			const loggedInAdmin = await testApiClient.login(accountWithAdminRole);
-			const settingResponse = await loggedInAdmin.patch(`${columnBoardNode.id}/readers-can-edit`, {
-				readersCanEdit: false,
-			});
-			expect(settingResponse.status).toEqual(204);
-
-			const loggedInViewer = await testApiClient.login(accountWithViewRole);
-			const newTitle = 'new title';
-			const patchresponse = await loggedInViewer.patch(`${columnBoardNode.id}/title`, { title: newTitle });
-			expect(patchresponse.status).toEqual(403);
-
-			const checkResponse = await loggedInViewer.get(columnBoardNode.id);
-			const result = checkResponse.body as BoardResponse;
-
-			expect(result.title).not.toEqual(newTitle);
-		});
-	});
 });

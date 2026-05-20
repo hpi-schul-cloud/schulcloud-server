@@ -34,7 +34,7 @@ export const columnBoardEntityFactory = ColumnBoardEntityFactory.define(({ seque
 		updatedAt: new Date(),
 		context,
 		isVisible: true,
-		readersCanEdit: false,
+		readersCanEdit: params.readersCanEdit ?? false,
 		layout: BoardLayout.COLUMNS,
 		type: BoardNodeType.COLUMN_BOARD,
 	};
