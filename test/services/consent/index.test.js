@@ -1,6 +1,6 @@
 const assert = require('assert');
 const chai = require('chai');
-const chaiAsPromised = require('chai-as-promised');
+const { default: chaiAsPromised } = require('chai-as-promised');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const { BadRequest } = require('../../../src/errors');
 const appPromise = require('../../../src/app');

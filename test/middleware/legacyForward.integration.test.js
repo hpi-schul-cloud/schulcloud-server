@@ -1,5 +1,5 @@
 const chai = require('chai');
-const chaiAsPromised = require('chai-as-promised');
+const { default: chaiAsPromised } = require('chai-as-promised');
 const chaiHttp = require('chai-http');
 const proxyquire = require('proxyquire');
 
