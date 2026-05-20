@@ -363,7 +363,28 @@ export class RoomController {
 		const members = await this.roomUc.getRoomMembers(currentUser.userId, urlParams.roomId);
 		const response = new RoomMemberListResponse(members);
 
-		return Promise.resolve(response);
+		return response;
+	}
+
+	@Get(':roomId/applicants')
+	@ApiOperation({ summary: 'Get a list of room applicants.' })
+	@ApiResponse({
+		status: HttpStatus.OK,
+		description: 'Returns a list of the applicants of the room.',
+		type: RoomMemberListResponse,
+	})
+	@ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiValidationError })
+	@ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })
+	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
+	@ApiResponse({ status: '5XX', type: ErrorResponse })
+	public async getApplicants(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() urlParams: RoomUrlParams
+	): Promise<RoomMemberListResponse> {
+		const members = await this.roomUc.getRoomApplicants(currentUser.userId, urlParams.roomId);
+		const response = new RoomMemberListResponse(members);
+
+		return response;
 	}
 
 	@Get(':roomId/members-redacted')

@@ -26,9 +26,9 @@ import { UpdateRoomBodyParams } from './dto/request/update-room.body.params';
 import { RoomMemberResponse } from './dto/response/room-member.response';
 import { CantAssignRoomRoleToExternalPersonLoggableException } from './loggables/cant-assign-roomrole-to-external-person.error.loggable';
 import { CantChangeOwnersRoleLoggableException } from './loggables/cant-change-roomowners-role.error.loggable';
+import { LockedRoomLoggableException } from './loggables/locked-room-loggable-exception';
 import { RoomBoardService, RoomPermissionService } from './service';
 import { RoomStats } from './type/room-stats.type';
-import { LockedRoomLoggableException } from './loggables/locked-room-loggable-exception';
 
 @Injectable()
 export class RoomUc {
@@ -169,6 +169,16 @@ export class RoomUc {
 		return redactedMembersResponse;
 	}
 
+	public async getRoomApplicants(userId: EntityId, roomId: EntityId): Promise<RoomMemberResponse[]> {
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const roomAuthorizable = await this.roomMembershipService.getRoomAuthorizable(roomId);
+
+		throwForbiddenIfFalse(this.roomRule.can('getRoomApplicants', user, roomAuthorizable));
+
+		const applicantsResponse = await this.getRoomApplicantsResponse(user, roomAuthorizable);
+		return applicantsResponse;
+	}
+
 	public async addMembersToRoom(userId: EntityId, roomId: EntityId, newUserIds: Array<EntityId>): Promise<RoomRole> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const roomAuthorizable = await this.roomMembershipService.getRoomAuthorizable(roomId);
@@ -261,9 +271,28 @@ export class RoomUc {
 	): Promise<RoomMemberResponse[]> {
 		const userIds = roomAuthorizable.members.map((member) => member.userId);
 		const users = (await this.userService.getUserEntitiesWithRoles(userIds)).filter((user) => !user.deletedAt);
-		const membersResponse = await this.buildRoomMembersResponse(currentUser, users, roomAuthorizable);
+		const members = users.filter((user) => {
+			const member = roomAuthorizable.members.find((member) => member.userId === user.id);
+			return member?.roles.every((role) => role.name !== RoleName.ROOMAPPLICANT);
+		});
+		const membersResponse = await this.buildRoomMembersResponse(currentUser, members, roomAuthorizable);
 
 		return membersResponse;
+	}
+
+	private async getRoomApplicantsResponse(
+		currentUser: User,
+		roomAuthorizable: RoomAuthorizable
+	): Promise<RoomMemberResponse[]> {
+		const userIds = roomAuthorizable.members.map((member) => member.userId);
+		const users = (await this.userService.getUserEntitiesWithRoles(userIds)).filter((user) => !user.deletedAt);
+		const applicants = users.filter((user) => {
+			const member = roomAuthorizable.members.find((member) => member.userId === user.id);
+			return member?.roles.some((role) => role.name === RoleName.ROOMAPPLICANT);
+		});
+		const applicantsResponse = await this.buildRoomMembersResponse(currentUser, applicants, roomAuthorizable);
+
+		return applicantsResponse;
 	}
 
 	private checkUserIsExternalPerson(user: UserDo): void {
