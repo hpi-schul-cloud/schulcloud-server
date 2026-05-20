@@ -185,6 +185,27 @@ export class RoomUc {
 
 		throwForbiddenIfFalse(this.roomRule.can('addMembers', user, roomAuthorizable));
 
+		const userIsStudent = user.roles.filter((role) => role.name === RoleName.STUDENT).length > 0;
+		if (userIsStudent) {
+			const usersToBeAdded = await this.userService.getUserEntitiesWithRoles(newUserIds);
+
+			const containsExternalPersons = usersToBeAdded.some((userToBeAdded) =>
+				userToBeAdded.roles.getItems().some((role) => role.name === RoleName.EXTERNALPERSON)
+			);
+
+			if (containsExternalPersons) {
+				throw new ForbiddenException('Students cannot add external persons');
+			}
+
+			const containsMembersFromForeignSchool = usersToBeAdded.some(
+				(userToBeAdded) => userToBeAdded.school.id !== user.school.id
+			);
+
+			if (containsMembersFromForeignSchool) {
+				throw new ForbiddenException('Students cannot add users from a different school');
+			}
+		}
+
 		await this.checkAreAllUsersAccessible(user, newUserIds);
 
 		const roleName = await this.roomMembershipService.addMembersToRoom(roomId, newUserIds);

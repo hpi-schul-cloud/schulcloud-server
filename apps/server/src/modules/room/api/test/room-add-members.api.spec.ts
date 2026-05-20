@@ -72,9 +72,9 @@ describe('Room Controller (API)', () => {
 
 	describe('PATCH /rooms/:roomId/members/add', () => {
 		const setupRoomWithMembers = async (
-			options: { additionalMembers: { user: User; role: Role }[] } = { additionalMembers: [] }
+			options: { additionalMembers: { user: User; role: Role }[]; school?: SchoolEntity } = { additionalMembers: [] }
 		) => {
-			const school = schoolEntityFactory.buildWithId();
+			const school = options.school || schoolEntityFactory.buildWithId();
 			const { usersWithRoomRoles, roomRoles } = await createRoomUsers(school, [
 				RoleName.ROOMOWNER,
 				RoleName.ROOMADMIN,
@@ -265,6 +265,51 @@ describe('Room Controller (API)', () => {
 				async (loggedInRole, newMemberSchool, discoverable, httpStatus) => {
 					const { room, school } = await setupRoomWithMembers();
 					const loggedInClient = await loginAsTeacherAndAdmin(school);
+					const otherSchool = schoolEntityFactory.buildWithId();
+
+					const newUserSchool = newMemberSchool === 'same school' ? school : otherSchool;
+					const { user, account } = UserAndAccountTestFactory.buildByRole(loggedInRole as 'student' | 'teacher', {
+						school: newUserSchool,
+						...(discoverable === 'and is discoverable' ? { discoverable: true } : {}),
+					});
+					await em.persist([user, account]).flush();
+
+					const response = await loggedInClient.patch(`/${room.id}/members/add`, {
+						userIds: [user.id],
+					});
+
+					expect(response.status).toBe(httpStatus);
+				}
+			);
+		});
+
+		describe('when being a student and room admin', () => {
+			const loginAsStudent = async (school: SchoolEntity) => {
+				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({ school });
+				await em.persist([studentAccount, studentUser]).flush();
+				em.clear();
+
+				const loggedInClient = await testApiClient.login(studentAccount);
+				return { loggedInClient, studentAccount, studentUser };
+			};
+
+			it.each([
+				['student', 'same school', '', HttpStatus.OK],
+				['student', 'other school', '', HttpStatus.FORBIDDEN],
+				['teacher', 'same school', 'and is discoverable', HttpStatus.OK],
+				['teacher', 'same school', 'and is not discoverable', HttpStatus.OK],
+				['teacher', 'other school', 'and is discoverable', HttpStatus.FORBIDDEN],
+				['teacher', 'other school', 'and is not discoverable', HttpStatus.FORBIDDEN],
+				['externalPerson', 'same school', '', HttpStatus.FORBIDDEN],
+			])(
+				'when the new member is a %s of %s %s, it should return %i',
+				async (loggedInRole, newMemberSchool, discoverable, httpStatus) => {
+					const school = schoolEntityFactory.buildWithId();
+					const { loggedInClient, studentUser } = await loginAsStudent(school);
+					const { room } = await setupRoomWithMembers({
+						additionalMembers: [{ role: RoomRolesTestFactory.createRoomRoles().roomAdminRole, user: studentUser }],
+						school,
+					});
 					const otherSchool = schoolEntityFactory.buildWithId();
 
 					const newUserSchool = newMemberSchool === 'same school' ? school : otherSchool;
