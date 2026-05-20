@@ -168,6 +168,7 @@ export class FilesStorageClientAdapter {
 
 		const observable = this.httpService.post<FileRecordResponse>(url.toString(), formData, {
 			headers: {
+				...formData.getHeaders(),
 				Authorization: `Bearer ${jwt}`,
 			},
 			maxBodyLength: maxCcFileSize,

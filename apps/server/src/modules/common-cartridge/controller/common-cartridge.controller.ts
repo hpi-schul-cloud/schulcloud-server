@@ -60,10 +60,9 @@ export class CommonCartridgeController {
 	@HttpCode(200)
 	public async uploadFileAndStartImport(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Req() req: Request,
 		@Body() _: CommonCartridgeFileParams
 	): Promise<FileRecordResponse> {
-		const fileRecordResponse = await this.commonCartridgeUC.uploadFileToTemp(currentUser, req);
+		const fileRecordResponse = await this.commonCartridgeUC.uploadFileFromRequestToTemp(currentUser);
 
 		this.commonCartridgeUC.startCourseImport({
 			fileRecordId: fileRecordResponse.id,

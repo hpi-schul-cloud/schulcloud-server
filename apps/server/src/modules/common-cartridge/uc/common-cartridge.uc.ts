@@ -10,8 +10,8 @@ import { REQUEST } from '@nestjs/core';
 import { EventBus } from '@nestjs/cqrs';
 import { JwtExtractor } from '@shared/common/utils';
 import { EntityId } from '@shared/domain/types';
+import busboy from 'busboy';
 import { Request } from 'express';
-import { Readable } from 'node:stream';
 import { COMMON_CARTRIDGE_CONFIG_TOKEN, CommonCartridgeConfig } from '../common-cartridge.config';
 import { ImportCourseEvent } from '../domain/events/import-course.event';
 import { ImportCourseParams } from '../domain/import-course.params';
@@ -57,7 +57,7 @@ export class CommonCartridgeUc {
 		this.eventBus.publish(new ImportCourseEvent(jwt, params.fileRecordId, params.fileName, params.fileUrl));
 	}
 
-	public async uploadFileToTemp(currentUser: ICurrentUser, readable: Readable): Promise<FileRecordResponse> {
+	public async uploadFileFromRequestToTemp(currentUser: ICurrentUser): Promise<FileRecordResponse> {
 		const jwt = JwtExtractor.extractJwtFromRequest(this.request);
 		if (!jwt) {
 			throw new UnauthorizedException();
@@ -65,21 +65,12 @@ export class CommonCartridgeUc {
 
 		const fileName = this.getFileName(this.request);
 
-		const fileRecordResponse = await this.fileClient.uploadTempFile(
-			jwt,
-			currentUser.schoolId,
-			StorageLocation.SCHOOL,
-			currentUser.userId,
-			FileRecordParentType.USERS,
-			readable,
-			fileName,
-			this.config.courseImportMaxFileSize
-		);
+		const fileRecordResponse = await this.uploadFileWithBusboy(jwt, currentUser, this.request, fileName);
 
 		return fileRecordResponse;
 	}
 
-	public getFileName(req: Request): string {
+	private getFileName(req: Request): string {
 		const contentDisposition = req.headers['content-disposition'];
 
 		let fileName = 'upload.imscc';
@@ -91,5 +82,96 @@ export class CommonCartridgeUc {
 		}
 
 		return fileName;
+	}
+
+	// private: stream helper
+	private uploadFileWithBusboy(
+		jwt: string,
+		currentUser: ICurrentUser,
+		req: Request,
+		fileName: string
+	): Promise<FileRecordResponse> {
+		return new Promise<FileRecordResponse>((resolve, reject) => {
+			const bb = busboy({ headers: req.headers, defParamCharset: 'utf8' });
+			const abortController = new AbortController();
+			let fileRecordPromise: Promise<FileRecordResponse> | undefined;
+			let isResolved = false;
+
+			const cleanup = (): void => {
+				req.unpipe(bb);
+			};
+
+			const safeReject = (error: unknown): void => {
+				if (!isResolved) {
+					isResolved = true;
+					cleanup();
+					reject(error);
+				}
+			};
+
+			const safeResolve = (result: FileRecordResponse): void => {
+				if (!isResolved) {
+					isResolved = true;
+					cleanup();
+					resolve(result);
+				}
+			};
+
+			req.on('close', () => {
+				if (!req.complete) {
+					abortController.abort();
+					// TODO logging
+					// this.logger.warning(
+					// 	new UploadAbortLoggable('Upload request was closed prematurely by client', 'request_closed')
+					// );
+					safeReject(new Error('Request closed prematurely'));
+				}
+			});
+
+			req.on('aborted', () => {
+				abortController.abort();
+				// TODO logging
+				// this.logger.warning(new UploadAbortLoggable('Upload request was aborted by client', 'request_aborted'));
+				safeReject(new Error('Request aborted by client'));
+			});
+
+			bb.on('file', (_name, file, _info) => {
+				if (isResolved) return; // Already resolved/rejected
+
+				fileRecordPromise = this.fileClient.uploadTempFile(
+					jwt,
+					currentUser.schoolId,
+					StorageLocation.SCHOOL,
+					currentUser.userId,
+					FileRecordParentType.USERS,
+					file,
+					fileName,
+					this.config.courseImportMaxFileSize
+				);
+
+				// Handle upload errors immediately
+				fileRecordPromise.catch((error) => {
+					safeReject(error);
+				});
+			});
+
+			// eslint-disable-next-line @typescript-eslint/no-misused-promises
+			bb.on('close', async () => {
+				if (isResolved) return;
+
+				if (fileRecordPromise instanceof Promise) {
+					try {
+						const fileRecord = await fileRecordPromise;
+						safeResolve(fileRecord);
+					} catch (error) {
+						safeReject(error);
+					}
+				} else {
+					safeReject(new Error('No file provided'));
+				}
+			});
+
+			req.pipe(bb);
+		});
 	}
 }
