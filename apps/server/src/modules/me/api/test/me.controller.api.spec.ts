@@ -285,16 +285,10 @@ describe('Me Controller (API)', () => {
 
 				await loggedInClient.get();
 
-				expect(mockWinstonLogger.info).toHaveBeenCalledWith(
-					expect.objectContaining({
-						message: expect.stringContaining(`[AUDIT] Actor: ServiceAccount: ${userId}`) as string,
-					})
-				);
-				expect(mockWinstonLogger.info).toHaveBeenCalledWith(
-					expect.objectContaining({
-						message: expect.stringContaining('API GET /me') as string,
-					})
-				);
+				expect(mockWinstonLogger.info).toHaveBeenCalledTimes(1);
+				expect(mockWinstonLogger.info).toHaveBeenCalledWith({
+					message: `[AUDIT] Actor: ServiceAccount: ${userId} | Action: API GET /me/ -> 200`,
+				});
 			});
 		});
 	});
