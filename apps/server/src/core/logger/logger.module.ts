@@ -1,11 +1,34 @@
 import { ConfigurationModule } from '@infra/configuration';
-import { Module } from '@nestjs/common';
+import { Module, Provider } from '@nestjs/common';
 import { utilities, WinstonModule } from 'nest-winston';
-import winston from 'winston';
+import winston, { Logger as WinstonLogger } from 'winston';
+import { AUDIT_LOGGER_PROVIDER, AuditLogger } from './audit-logger';
 import { ErrorLogger } from './error-logger';
 import { LegacyLogger } from './legacy-logger.service';
 import { Logger } from './logger';
 import { LOGGER_CONFIG_TOKEN, LoggerConfig } from './logger.config';
+
+const winstonFormater = winston.format.combine(
+	winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss.SSS' }),
+	winston.format.ms(),
+	utilities.format.nestLike()
+);
+
+const createAuditLoggerProvider = (): Provider<WinstonLogger> => {
+	return {
+		provide: AUDIT_LOGGER_PROVIDER,
+		useFactory: (): WinstonLogger =>
+			winston.createLogger({
+				levels: winston.config.syslog.levels,
+				level: 'info',
+				transports: [
+					new winston.transports.Console({
+						format: winstonFormater,
+					}),
+				],
+			}),
+	};
+};
 
 @Module({
 	imports: [
@@ -20,11 +43,7 @@ import { LOGGER_CONFIG_TOKEN, LoggerConfig } from './logger.config';
 						new winston.transports.Console({
 							handleExceptions: true,
 							handleRejections: true,
-							format: winston.format.combine(
-								winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss.SSS' }),
-								winston.format.ms(),
-								utilities.format.nestLike()
-							),
+							format: winstonFormater,
 						}),
 					],
 				};
@@ -32,7 +51,7 @@ import { LOGGER_CONFIG_TOKEN, LoggerConfig } from './logger.config';
 			inject: [LOGGER_CONFIG_TOKEN],
 		}),
 	],
-	providers: [LegacyLogger, Logger, ErrorLogger],
-	exports: [LegacyLogger, Logger, ErrorLogger],
+	providers: [LegacyLogger, Logger, ErrorLogger, createAuditLoggerProvider(), AuditLogger],
+	exports: [LegacyLogger, Logger, ErrorLogger, AuditLogger],
 })
 export class LoggerModule {}
