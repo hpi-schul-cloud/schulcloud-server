@@ -1,3 +1,4 @@
+import { AUDIT_LOGGER_PROVIDER } from '@core/logger';
 import { ConfigurationModule } from '@infra/configuration';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { AccountEntity } from '@modules/account/repo';
@@ -219,6 +220,82 @@ describe('Me Controller (API)', () => {
 						});
 					});
 				});
+			});
+		});
+		describe('when user is a service account', () => {
+			let serviceAccountApp: INestApplication;
+			let serviceAccountEm: EntityManager;
+			let serviceAccountTestApiClient: TestApiClient;
+			let serviceAccountJwtConfig: TestJwtModuleConfig;
+			let mockWinstonLogger: { info: jest.Mock };
+
+			beforeAll(async () => {
+				mockWinstonLogger = { info: jest.fn() };
+
+				const serviceAccountModuleFixture = await Test.createTestingModule({
+					imports: [ServerTestModule, ConfigurationModule.register(TEST_JWT_CONFIG_TOKEN, TestJwtModuleConfig)],
+				})
+					.overrideProvider(AUDIT_LOGGER_PROVIDER)
+					.useValue(mockWinstonLogger)
+					.compile();
+
+				serviceAccountApp = serviceAccountModuleFixture.createNestApplication();
+				await serviceAccountApp.init();
+				serviceAccountEm = serviceAccountApp.get(EntityManager);
+				serviceAccountTestApiClient = new TestApiClient(serviceAccountApp, 'me');
+				serviceAccountJwtConfig = serviceAccountModuleFixture.get(TEST_JWT_CONFIG_TOKEN);
+			});
+
+			beforeEach(async () => {
+				await cleanupCollections(serviceAccountEm);
+				mockWinstonLogger.info.mockClear();
+			});
+
+			afterAll(async () => {
+				await serviceAccountApp.close();
+			});
+
+			const setup = async () => {
+				const { serviceAccount, serviceAccountUser } = UserAndAccountTestFactory.buildServiceAccount();
+
+				await serviceAccountEm.persist([serviceAccount, serviceAccountUser]).flush();
+				serviceAccountEm.clear();
+
+				const loggedInClient = serviceAccountTestApiClient.loginByUser(
+					serviceAccount,
+					serviceAccountUser,
+					serviceAccountJwtConfig,
+					{ isServiceAccount: true }
+				);
+
+				return { loggedInClient, userId: serviceAccountUser.id };
+			};
+
+			it('should respond with "me" information and status code 200', async () => {
+				const { loggedInClient } = await setup();
+
+				const response = await loggedInClient.get();
+
+				expect(response.statusCode).toEqual(HttpStatus.OK);
+				expect(response.body).toBeDefined();
+			});
+
+			it('should call the audit interceptor for service account requests', async () => {
+				const { loggedInClient, userId } = await setup();
+
+				const response = await loggedInClient.get();
+
+				expect(response.statusCode).toEqual(HttpStatus.OK);
+				expect(mockWinstonLogger.info).toHaveBeenCalledWith(
+					expect.objectContaining({
+						message: expect.stringContaining(`[AUDIT] Actor: ServiceAccount: ${userId}`) as string,
+					})
+				);
+				expect(mockWinstonLogger.info).toHaveBeenCalledWith(
+					expect.objectContaining({
+						message: expect.stringContaining('API GET /me') as string,
+					})
+				);
 			});
 		});
 	});

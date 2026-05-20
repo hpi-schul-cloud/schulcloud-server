@@ -113,8 +113,20 @@ export class UserAndAccountTestFactory {
 		return { superheroAccount: account, superheroUser: user };
 	}
 
+	public static buildServiceAccount(
+		params: UserAndAccountParams = {},
+		additionalPermissions: Permission[] = []
+	): { serviceAccount: AccountEntity; serviceAccountUser: User } {
+		const user = userFactory
+			.asServiceAccountUser(additionalPermissions)
+			.buildWithId(UserAndAccountTestFactory.getUserParams(params));
+		const account = UserAndAccountTestFactory.buildAccount(user, params);
+
+		return { serviceAccount: account, serviceAccountUser: user };
+	}
+
 	public static buildByRole(
-		roleName: 'administrator' | 'externalPerson' | 'teacherAndAdmin' | 'teacher' | 'student',
+		roleName: 'administrator' | 'externalPerson' | 'teacherAndAdmin' | 'teacher' | 'student' | 'serviceAccount',
 		params: UserAndAccountParams = {},
 		additionalPermissions: Permission[] = []
 	): { account: AccountEntity; user: User } {
@@ -134,7 +146,7 @@ export class UserAndAccountTestFactory {
 	}
 
 	private static buildUser(
-		roleName: 'administrator' | 'externalPerson' | 'teacherAndAdmin' | 'teacher' | 'student',
+		roleName: 'administrator' | 'externalPerson' | 'teacherAndAdmin' | 'teacher' | 'student' | 'serviceAccount',
 		params: UserAndAccountParams = {},
 		additionalPermissions: Permission[] = []
 	): User {
@@ -154,6 +166,10 @@ export class UserAndAccountTestFactory {
 			case 'student':
 				return userFactory
 					.asStudent(additionalPermissions)
+					.buildWithId(UserAndAccountTestFactory.getUserParams(params));
+			case 'serviceAccount':
+				return userFactory
+					.asServiceAccountUser(additionalPermissions)
 					.buildWithId(UserAndAccountTestFactory.getUserParams(params));
 		}
 	}

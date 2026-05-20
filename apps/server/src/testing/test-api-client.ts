@@ -19,6 +19,7 @@ interface UserForLogin {
 interface ExternalLoginOptions {
 	isExternalUser?: boolean;
 	systemId?: string;
+	isServiceAccount?: boolean;
 }
 
 interface AuthenticationResponse {
@@ -159,7 +160,7 @@ export class TestApiClient {
 				support: false,
 				isExternalUser: options.isExternalUser ?? false,
 				systemId: options.systemId,
-				isServiceAccount: false,
+				isServiceAccount: options.isServiceAccount ?? false,
 			},
 			jwtConfig
 		);
