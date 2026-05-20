@@ -106,6 +106,7 @@ describe('Room Controller (API)', () => {
 						createdAt: room.createdAt.toISOString(),
 						updatedAt: room.updatedAt.toISOString(),
 						isLocked: false,
+						totalMembers: 2,
 						allowedOperations: expect.any(Object) as unknown as Record<string, boolean>,
 					};
 				});
@@ -121,6 +122,7 @@ describe('Room Controller (API)', () => {
 						createdAt: room.createdAt.toISOString(),
 						updatedAt: room.updatedAt.toISOString(),
 						isLocked: true,
+						totalMembers: 1,
 						allowedOperations: expect.any(Object) as unknown as Record<string, boolean>,
 					};
 				});
