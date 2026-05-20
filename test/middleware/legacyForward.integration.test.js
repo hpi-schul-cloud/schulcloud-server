@@ -1,6 +1,6 @@
 const chai = require('chai');
 const chaiAsPromised = require('chai-as-promised');
-const chaiHttp = require('chai-http');
+const { default: chaiHttp, request } = require('chai-http');
 const proxyquire = require('proxyquire');
 
 const { expect } = chai;
@@ -43,26 +43,26 @@ describe('legacy forward', () => {
 	});
 
 	it('when a non-existing route is called, then the server responds with 404', async () => {
-		const request = chai.request(app).get('/this/route/does/not/exist');
-		const result = await request.send();
+		const req = request.execute(app).get('/this/route/does/not/exist');
+		const result = await req.send();
 		expect(result.body.code).to.equal(404);
 	});
 
 	it('when a service without basepath is called, then the server respons with 200', async () => {
-		const request = chai.request(app).get('/service/without/basepath');
-		const result = await request.send();
+		const req = request.execute(app).get('/service/without/basepath');
+		const result = await req.send();
 		expect(result.status).to.equal(200);
 	});
 
 	it('when a service with basepath is called without a basepath, then the call is forwarded and succeeds', async () => {
-		const request = chai.request(app).get('/service/with/basepath');
-		const result = await request.send();
+		const req = request.execute(app).get('/service/with/basepath');
+		const result = await req.send();
 		expect(result.status).to.equal(200);
 	});
 
 	it('when a service with basepath is called with a basepath, the call succeeds', async () => {
-		const request = chai.request(app).get('/legacy/v1/service/with/basepath');
-		const result = await request.send();
+		const req = request.execute(app).get('/legacy/v1/service/with/basepath');
+		const result = await req.send();
 		expect(result.status).to.equal(200);
 	});
 });
