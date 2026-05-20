@@ -47,7 +47,7 @@ const RuntimeConfigDefaults: RuntimeConfigDefault[] = [
 		key: 'IS_SCHOOL_YEAR_CHANGE_ACTIVE',
 		type: 'boolean',
 		value: false,
-		description: 'Disables the TSP synchronization during a school year change.',
+		description: 'Unterbricht die TSP-Synchronisierung während eines Schuljahreswechsels.',
 	},
 ];
 
