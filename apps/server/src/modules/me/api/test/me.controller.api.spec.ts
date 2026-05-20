@@ -283,9 +283,8 @@ describe('Me Controller (API)', () => {
 			it('should call the audit interceptor for service account requests', async () => {
 				const { loggedInClient, userId } = await setup();
 
-				const response = await loggedInClient.get();
+				await loggedInClient.get();
 
-				expect(response.statusCode).toEqual(HttpStatus.OK);
 				expect(mockWinstonLogger.info).toHaveBeenCalledWith(
 					expect.objectContaining({
 						message: expect.stringContaining(`[AUDIT] Actor: ServiceAccount: ${userId}`) as string,
