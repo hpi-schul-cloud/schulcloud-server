@@ -43,6 +43,12 @@ const RuntimeConfigDefaults: RuntimeConfigDefault[] = [
 			'Зробіть резервну копію вашого контенту в хмарі та використовуйте також нову функцію для експорту курсів. <a href="https://dbildungscloud.de/help/confluence/485132545" target="_blank" rel="noopener noreferrer">Додаткову інформацію та допомогу можна знайти тут.</a>',
 		description: 'Bannertext Ukrainische Version (unterstützt HTML).',
 	},
+	{
+		key: 'IS_SCHOOL_YEAR_CHANGE_ACTIVE',
+		type: 'boolean',
+		value: false,
+		description: 'Disables the TSP synchronization during a school year change.',
+	},
 ];
 
 export default RuntimeConfigDefaults;
