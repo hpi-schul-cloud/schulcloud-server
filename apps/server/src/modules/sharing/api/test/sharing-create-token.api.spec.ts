@@ -315,7 +315,8 @@ describe(`share token creation (api)`, () => {
 
 				const school = schoolEntityFactory.buildWithId();
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
-				const { roomOwnerRole } = RoomRolesTestFactory.createRoomRoles();
+				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({ school });
+				const { roomOwnerRole, roomAdminRole } = RoomRolesTestFactory.createRoomRoles();
 				const room = roomEntityFactory.build({ schoolId: school.id });
 				const group = groupEntityFactory.withTypeRoom().buildWithId({
 					organization: school,
@@ -323,6 +324,10 @@ describe(`share token creation (api)`, () => {
 						{
 							user: teacherUser,
 							role: roomOwnerRole,
+						},
+						{
+							user: studentUser,
+							role: roomAdminRole,
 						},
 					],
 				});
@@ -332,14 +337,27 @@ describe(`share token creation (api)`, () => {
 					schoolId: school.id,
 				});
 
-				await em.persist([school, teacherAccount, teacherUser, room, group, roomMembership, roomOwnerRole]).flush();
+				await em
+					.persist([
+						school,
+						teacherAccount,
+						teacherUser,
+						studentAccount,
+						studentUser,
+						room,
+						group,
+						roomMembership,
+						roomOwnerRole,
+						roomAdminRole,
+					])
+					.flush();
 				em.clear();
 
 				config.featureRoomShare = true;
 
 				const loggedInClient = await apiClient.login(teacherAccount);
 
-				return { room, user: teacherUser, loggedInClient };
+				return { room, user: teacherUser, school, loggedInClient, studentAccount };
 			};
 
 			it('should return status 201', async () => {
@@ -367,6 +385,22 @@ describe(`share token creation (api)`, () => {
 					});
 
 					expect(response.status).toEqual(HttpStatus.FORBIDDEN);
+				});
+			});
+
+			describe('when user is a student', () => {
+				it('should return status 401', async () => {
+					const { room, studentAccount } = await setup();
+
+					const studentClient = await apiClient.login(studentAccount);
+
+					const response = await studentClient.post(undefined, {
+						parentId: room.id,
+						parentType: ShareTokenParentType.Room,
+						schoolExclusive: true,
+					});
+
+					expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 				});
 			});
 		});
