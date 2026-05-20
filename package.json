@@ -288,7 +288,7 @@
 		"axios-mock-adapter": "^2.1.0",
 		"chai": "^4.5.0",
 		"chai-as-promised": "^8.0.2",
-		"chai-http": "^4.4.0",
+		"chai-http": "^5.1.2",
 		"cross-env": "^7.0.3",
 		"eslint": "^8.57.1",
 		"eslint-config-prettier": "^8.10.0",
