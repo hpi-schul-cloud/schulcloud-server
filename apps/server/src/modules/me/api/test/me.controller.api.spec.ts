@@ -1,4 +1,4 @@
-import { ICurrentUser, JwtAuthGuard } from '@infra/auth-guard';
+import { ConfigurationModule } from '@infra/configuration';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { AccountEntity } from '@modules/account/repo';
 import { schoolEntityFactory } from '@modules/school/testing';
@@ -6,14 +6,13 @@ import { ServerTestModule } from '@modules/server';
 import { systemEntityFactory } from '@modules/system/testing';
 import { UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
-import { ExecutionContext, HttpStatus, INestApplication } from '@nestjs/common';
-import { Test } from '@nestjs/testing';
+import { HttpStatus, INestApplication } from '@nestjs/common';
+import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { currentUserFactory } from '@testing/factory/currentuser.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
-import { Request } from 'express';
+import { TEST_JWT_CONFIG_TOKEN, TestJwtModuleConfig } from '@testing/test-jwt-module.config';
 import { MeResponse } from '../dto';
 
 const mapToMeResponseObject = (user: User, account: AccountEntity, permissions: Permission[]): MeResponse => {
@@ -53,12 +52,14 @@ describe('Me Controller (API)', () => {
 	let em: EntityManager;
 	let testApiClient: TestApiClient;
 	let userService: UserService;
+	let jwtConfig: TestJwtModuleConfig;
+	let moduleFixture: TestingModule;
 
 	describe('me', () => {
 		describe('when user is logged in with SVS', () => {
 			beforeAll(async () => {
-				const moduleFixture = await Test.createTestingModule({
-					imports: [ServerTestModule],
+				moduleFixture = await Test.createTestingModule({
+					imports: [ServerTestModule, ConfigurationModule.register(TEST_JWT_CONFIG_TOKEN, TestJwtModuleConfig)],
 				}).compile();
 
 				app = moduleFixture.createNestApplication();
@@ -66,6 +67,7 @@ describe('Me Controller (API)', () => {
 				em = app.get(EntityManager);
 				testApiClient = new TestApiClient(app, 'me');
 				userService = app.get(UserService);
+				jwtConfig = moduleFixture.get(TEST_JWT_CONFIG_TOKEN);
 			});
 
 			beforeEach(async () => {
@@ -162,97 +164,59 @@ describe('Me Controller (API)', () => {
 						expect(response.body).toEqual(expectedResponse);
 					});
 				});
-			});
-		});
 
-		describe('when user is logged in with external system', () => {
-			let currentUser: ICurrentUser;
+				describe('when user is logged in with external system', () => {
+					const setup = async () => {
+						const system = systemEntityFactory.build();
+						const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({
+							systemId: system.id,
+						});
 
-			beforeAll(async () => {
-				const moduleFixture = await Test.createTestingModule({
-					imports: [ServerTestModule],
-				})
-					.overrideGuard(JwtAuthGuard)
-					.useValue({
-						canActivate(context: ExecutionContext) {
-							const req: Request = context.switchToHttp().getRequest();
-							req.user = currentUser;
-							return true;
-						},
-					})
-					.compile();
+						await em.persist([studentAccount, studentUser, system]).flush();
+						em.clear();
 
-				app = moduleFixture.createNestApplication();
-				await app.init();
-				em = app.get(EntityManager);
-				testApiClient = new TestApiClient(app, 'me');
-				userService = app.get(UserService);
-			});
+						const loggedInClient = testApiClient.loginByUser(studentAccount, studentUser, jwtConfig, {
+							isExternalUser: true,
+							systemId: system.id,
+						});
+						const expectedPermissions = userService.resolvePermissions(studentUser);
 
-			beforeEach(async () => {
-				await cleanupCollections(em);
-			});
+						const expectedResponse = mapToMeResponseObject(studentUser, studentAccount, expectedPermissions);
+						expectedResponse.systemId = system.id;
 
-			afterAll(async () => {
-				await app.close();
-			});
+						return { loggedInClient, expectedResponse, currentUserId: studentUser.id };
+					};
 
-			describe('when a jwt is passed', () => {
-				const setup = async () => {
-					const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+					it('should return a "me" response with the corresponding system info with status 200', async () => {
+						const { loggedInClient, expectedResponse } = await setup();
 
-					const system = systemEntityFactory.build();
+						const response = await loggedInClient.get();
 
-					await em.persist([studentAccount, studentUser, system]).flush();
-					em.clear();
-
-					const loggedInClient = await testApiClient.login(studentAccount);
-					const expectedPermissions = userService.resolvePermissions(studentUser);
-
-					currentUser = currentUserFactory.build({
-						userId: studentUser.id,
-						accountId: studentAccount.id,
-						schoolId: studentUser.school.id,
-						systemId: system.id,
-						isServiceAccount: false,
-						isExternalUser: true,
+						expect(response.statusCode).toEqual(HttpStatus.OK);
+						expect(response.body).toEqual(expectedResponse);
 					});
 
-					const expectedResponse = mapToMeResponseObject(studentUser, studentAccount, expectedPermissions);
-					expectedResponse.systemId = system.id;
+					describe('updateMePreferences', () => {
+						it('should update the releaseDate preference and return status code 204', async () => {
+							const { loggedInClient, currentUserId } = await setup();
 
-					return { loggedInClient, expectedResponse };
-				};
+							const newReleaseDate = new Date('2024-12-31T00:00:00Z').toISOString();
 
-				it('should return a "me" response with the corresponding system info with status 200', async () => {
-					const { loggedInClient, expectedResponse } = await setup();
+							const response = await loggedInClient.patch('preferences', { releaseDate: newReleaseDate });
 
-					const response = await loggedInClient.get();
+							expect(response.statusCode).toEqual(HttpStatus.NO_CONTENT);
 
-					expect(response.statusCode).toEqual(HttpStatus.OK);
-					expect(response.body).toEqual(expectedResponse);
-				});
+							const updatedUser = await em.findOneOrFail(User, { id: currentUserId });
+							expect(updatedUser.getPreferences().releaseDate as string).toEqual(newReleaseDate);
+						});
 
-				describe('updateMePreferences', () => {
-					it('should update the releaseDate preference and return status code 204', async () => {
-						const { loggedInClient } = await setup();
+						it('should respond with validation error if an invalid releaseDate is passed', async () => {
+							const { loggedInClient } = await setup();
 
-						const newReleaseDate = new Date('2024-12-31T00:00:00Z').toISOString();
+							const response = await loggedInClient.patch('preferences').send({ releaseDate: 'invalid-date' });
 
-						const response = await loggedInClient.patch('preferences', { releaseDate: newReleaseDate });
-
-						expect(response.statusCode).toEqual(HttpStatus.NO_CONTENT);
-
-						const updatedUser = await em.findOneOrFail(User, { id: currentUser.userId });
-						expect(updatedUser.getPreferences().releaseDate as string).toEqual(newReleaseDate);
-					});
-
-					it('should respond with validation error if an invalid releaseDate is passed', async () => {
-						const { loggedInClient } = await setup();
-
-						const response = await loggedInClient.patch('preferences').send({ releaseDate: 'invalid-date' });
-
-						expect(response.statusCode).toEqual(HttpStatus.BAD_REQUEST);
+							expect(response.statusCode).toEqual(HttpStatus.BAD_REQUEST);
+						});
 					});
 				});
 			});

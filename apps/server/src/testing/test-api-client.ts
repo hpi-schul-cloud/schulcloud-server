@@ -16,6 +16,11 @@ interface UserForLogin {
 	roles: ArrayLike<{ id: string }>;
 }
 
+interface ExternalLoginOptions {
+	isExternalUser?: boolean;
+	systemId?: string;
+}
+
 interface AuthenticationResponse {
 	accessToken: string;
 }
@@ -139,7 +144,12 @@ export class TestApiClient {
 		);
 	}
 
-	public loginByUser(account: AccountForLogin, user: UserForLogin, jwtConfig: TestJwtModuleConfig): this {
+	public loginByUser(
+		account: AccountForLogin,
+		user: UserForLogin,
+		jwtConfig: TestJwtModuleConfig,
+		options: ExternalLoginOptions = {}
+	): this {
 		const jwt = JwtAuthenticationFactory.createJwt(
 			{
 				accountId: account.id,
@@ -147,7 +157,8 @@ export class TestApiClient {
 				schoolId: user.school.id,
 				roles: [user.roles[0].id],
 				support: false,
-				isExternalUser: false,
+				isExternalUser: options.isExternalUser ?? false,
+				systemId: options.systemId,
 				isServiceAccount: false,
 			},
 			jwtConfig
