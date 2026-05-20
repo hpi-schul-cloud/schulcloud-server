@@ -43,6 +43,9 @@ export class RoomItemResponse {
 	@ApiProperty({ type: Boolean })
 	public isLocked: boolean;
 
+	@ApiProperty({ type: Number })
+	public totalMembers: number;
+
 	constructor(room: RoomItemResponse) {
 		this.id = room.id;
 		this.name = room.name;
@@ -56,5 +59,6 @@ export class RoomItemResponse {
 
 		this.allowedOperations = room.allowedOperations;
 		this.isLocked = room.isLocked;
+		this.totalMembers = room.totalMembers;
 	}
 }

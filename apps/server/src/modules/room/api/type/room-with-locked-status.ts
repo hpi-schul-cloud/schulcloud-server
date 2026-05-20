@@ -5,4 +5,5 @@ export type RoomWithAllowedOperationsAndLockedStatus = {
 	room: Room;
 	allowedOperations: Record<RoomOperation, boolean>;
 	isLocked: boolean;
+	totalMembers: number;
 };
