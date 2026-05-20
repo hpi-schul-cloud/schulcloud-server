@@ -44,6 +44,7 @@ export class RoomArrangementUc {
 					room,
 					allowedOperations,
 					isLocked: !hasOwner,
+					totalMembers: roomAuthorizable.members.length,
 				};
 			})
 			.filter((room) => TypeGuard.isNotNullOrUndefined(room));
