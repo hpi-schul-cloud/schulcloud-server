@@ -93,6 +93,7 @@ export const teacherPermissions = [
 	Permission.SCHOOL_EDIT_ROOM,
 	Permission.SCHOOL_LIST_DISCOVERABLE_TEACHERS,
 	Permission.SCHOOL_LIST_ROOM_MEMBERS,
+	Permission.SCHOOL_LIST_ROOM_APPLICANTS,
 	Permission.SCHOOL_MANAGE_ROOM_INVITATIONLINKS,
 	Permission.SCHOOL_NEWS_EDIT,
 	Permission.START_MEETING,
