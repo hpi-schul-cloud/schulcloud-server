@@ -85,7 +85,7 @@ export class RoomRule implements Rule<RoomAuthorizable> {
 			shareRoom: canShareRoom,
 			updateRoom: canUpdateRoom,
 			createRoomInvitationLinks: canManageRoomInvitationLinks,
-			listRoomInvitationLinks: canListRoomInvitationLinks,
+			listRoomInvitationLinks: canManageRoomInvitationLinks,
 			updateRoomInvitationLinks: canManageRoomInvitationLinks,
 			deleteRoomInvitationLinks: canManageRoomInvitationLinks,
 			viewContent: canViewContent,
@@ -351,13 +351,6 @@ const canManageRoomInvitationLinks = (user: User, roomAuthorizable: RoomAuthoriz
 	const canManageRoomInvitationLinks = hasSchoolPermission && hasRoomPermission;
 
 	return canManageRoomInvitationLinks;
-};
-
-const canListRoomInvitationLinks = (user: User, roomAuthorizable: RoomAuthorizable): boolean => {
-	const { roomPermissions } = resolveUserPermissions(user, roomAuthorizable);
-	const canListRoomInvitationLinks = roomPermissions.includes(Permission.ROOM_MANAGE_INVITATIONLINKS);
-
-	return canListRoomInvitationLinks;
 };
 
 const canViewContent = (user: User, roomAuthorizable: RoomAuthorizable): boolean => {
