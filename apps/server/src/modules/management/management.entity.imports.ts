@@ -49,6 +49,7 @@ import { MediaUserLicenseEntity, UserLicenseEntity } from '@modules/user-license
 import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { VideoConferenceEntity } from '@modules/video-conference/repo';
+import { RuntimeConfigEntity } from '@infra/runtime-config/repo/entity/runtime-config.entity';
 
 export const ENTITIES = [
 	AccountEntity,
@@ -108,6 +109,7 @@ export const ENTITIES = [
 	MediaSchoolLicenseEntity,
 	OauthSessionTokenEntity,
 	LtiDeepLinkTokenEntity,
+	RuntimeConfigEntity,
 ];
 
 export const TEST_ENTITIES = [...ENTITIES];

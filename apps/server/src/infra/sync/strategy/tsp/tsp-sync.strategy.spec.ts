@@ -24,6 +24,7 @@ import { schoolFactory } from '@modules/school/testing';
 import { System, SystemService, SystemType } from '@modules/system';
 import { systemFactory, systemOauthConfigFactory } from '@modules/system/testing';
 import { UserDo } from '@modules/user';
+import { RuntimeConfigService } from '@infra/runtime-config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
@@ -43,6 +44,7 @@ describe(TspSyncStrategy.name, () => {
 	let provisioningService: DeepMocked<TspProvisioningService>;
 	let tspOauthDataMapper: DeepMocked<TspOauthDataMapper>;
 	let systemService: DeepMocked<SystemService>;
+	let runtimeConfigService: DeepMocked<RuntimeConfigService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -76,6 +78,10 @@ describe(TspSyncStrategy.name, () => {
 					provide: SystemService,
 					useValue: createMock<SystemService>(),
 				},
+				{
+					provide: RuntimeConfigService,
+					useValue: createMock<RuntimeConfigService>(),
+				},
 			],
 		}).compile();
 
@@ -86,6 +92,7 @@ describe(TspSyncStrategy.name, () => {
 		provisioningService = module.get(TspProvisioningService);
 		tspOauthDataMapper = module.get(TspOauthDataMapper);
 		systemService = module.get(SystemService);
+		runtimeConfigService = module.get(RuntimeConfigService);
 	});
 
 	afterEach(() => {
@@ -125,7 +132,9 @@ describe(TspSyncStrategy.name, () => {
 		updatedUser?: UserDo;
 		processBatchSize?: number;
 		classBatchResult?: { classCreationCount: number; classUpdateCount: number };
+		isSchoolYearChangeActive?: boolean;
 	}) => {
+		runtimeConfigService.getBoolean.mockResolvedValue(params.isSchoolYearChangeActive ?? false);
 		tspFetchService.fetchTspSchools.mockResolvedValueOnce(params.fetchedSchools ?? []);
 		tspFetchService.fetchTspClasses.mockResolvedValueOnce(params.fetchedClasses ?? []);
 		tspFetchService.fetchTspStudents.mockResolvedValueOnce(params.fetchedStudents ?? []);
@@ -149,6 +158,17 @@ describe(TspSyncStrategy.name, () => {
 	};
 
 	describe('sync', () => {
+		describe('when IS_SCHOOL_YEAR_CHANGE_ACTIVE is true', () => {
+			it('should return early without doing anything', async () => {
+				runtimeConfigService.getBoolean.mockResolvedValueOnce(true);
+
+				await sut.sync();
+
+				expect(systemService.find).not.toHaveBeenCalled();
+				expect(tspFetchService.fetchTspSchools).not.toHaveBeenCalled();
+			});
+		});
+
 		describe('when sync is called', () => {
 			const setup = () => {
 				const system = systemFactory.build({
