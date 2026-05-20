@@ -29,4 +29,14 @@ export class AuditLogger {
 	): void {
 		this.log(`ServiceAccount: ${serviceAccountId}`, action, details);
 	}
+
+	public logServiceAccountApiCall(
+		serviceAccountId: string,
+		method: string,
+		path: string,
+		statusCode: number,
+		details: Record<string, unknown> = {}
+	): void {
+		this.log(`ServiceAccount: ${serviceAccountId}`, `API ${method} ${path} -> ${statusCode}`, details);
+	}
 }
