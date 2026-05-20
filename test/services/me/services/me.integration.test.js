@@ -1,5 +1,5 @@
 const chai = require('chai');
-const chaiHttp = require('chai-http');
+const { default: chaiHttp, request } = require('chai-http');
 const commons = require('@hpi-schul-cloud/commons');
 const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 const appPromise = require('../../../../src/app');
@@ -38,13 +38,13 @@ describe('me service integration tests', function test() {
 			const { _id: schoolId } = await testObjects.createTestSchool();
 			const user = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
 			const token = await testObjects.generateJWTFromUser(user);
-			const request = chai
-				.request(app)
+			const req = request
+				.execute(app)
 				.get('/me')
 				.set('Accept', 'application/json')
 				.set('Authorization', `Bearer ${token}`)
 				.set('content-type', 'application/json');
-			const response = await request.send();
+			const response = await req.send();
 			expect(response.status).to.equal(200);
 			expect(response.body).to.haveOwnProperty('_id');
 		});
