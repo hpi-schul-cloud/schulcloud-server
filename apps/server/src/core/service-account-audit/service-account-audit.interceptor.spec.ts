@@ -35,6 +35,32 @@ describe('ServiceAccountAuditInterceptor', () => {
 	});
 
 	describe('intercept', () => {
+		describe('when context type is not http', () => {
+			const setup = () => {
+				const auditLoggerMock = createMock<AuditLogger>();
+				const interceptor = new ServiceAccountAuditInterceptor(auditLoggerMock);
+				const context = createMock<ExecutionContext>({
+					getType: () => 'ws',
+				});
+				const next: CallHandler = { handle: () => of({ result: 'success' }) };
+
+				return { context, next, interceptor, auditLoggerMock };
+			};
+
+			it('should pass through without logging', (done) => {
+				const { context, next, interceptor, auditLoggerMock } = setup();
+
+				interceptor.intercept(context, next).subscribe({
+					next: (value) => {
+						expect(value).toEqual({ result: 'success' });
+						expect(auditLoggerMock.logServiceAccountApiCall).not.toHaveBeenCalled();
+						expect(context.switchToHttp).not.toHaveBeenCalled();
+						done();
+					},
+				});
+			});
+		});
+
 		describe('when user is not a service account', () => {
 			const setup = () => {
 				const auditLoggerMock = createMock<AuditLogger>();
