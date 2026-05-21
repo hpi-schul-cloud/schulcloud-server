@@ -10,7 +10,7 @@ export class FilesStorageClientConfig {
 	@ConfigProperty('INCOMING_REQUEST_TIMEOUT_COPY_API')
 	@StringToNumber()
 	@IsNumber()
-	public incomingTimeoutCopyApi = 120000;
+	public incomingTimeoutCopyApi = 60000;
 
 	@ConfigProperty('FILES_STORAGE__EXCHANGE')
 	@IsString()
