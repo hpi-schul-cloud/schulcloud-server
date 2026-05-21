@@ -25,6 +25,14 @@ export class NotificationMikroOrmRepo implements NotificationRepo {
 		return mapped;
 	}
 
+	public async findForUser(userId: EntityId): Promise<Notification[]> {
+		const notifications: NotificationEntity[] = await this.em.find(NotificationEntity, {
+			userId: userId,
+		});
+
+		return NotificationMapper.mapToDOs(notifications);
+	}
+
 	public async create(notification: Notification | Notification[]): Promise<void> {
 		const notifications = Utils.asArray(notification);
 
@@ -34,5 +42,10 @@ export class NotificationMikroOrmRepo implements NotificationRepo {
 		});
 
 		await this.em.flush();
+	}
+
+	public async delete(notificationId: EntityId): Promise<void> {
+		const notification = await this.em.getReference(NotificationEntity, notificationId);
+		await this.em.removeAndFlush(notification);
 	}
 }

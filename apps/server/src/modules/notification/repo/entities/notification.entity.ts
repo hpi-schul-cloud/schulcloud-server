@@ -12,7 +12,7 @@ export interface NotificationEntityProps {
 	expiresAt: Date;
 }
 
-@Entity({ tableName: 'user-notification-message' })
+@Entity({ tableName: 'notifications' })
 export class NotificationEntity extends BaseEntityWithTimestamps {
 	@Property({ nullable: true })
 	type: NotificationType;

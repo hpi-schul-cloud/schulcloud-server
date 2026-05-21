@@ -1,8 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { Logger } from '@core/logger';
-import { NotificationLoggable } from '../loggable';
 import { Notification } from '../../domain/do';
-import { NotificationRepo } from '../interfaces';
+import { NOTIFICATION_REPO, NotificationRepo } from '../interfaces';
 import { NotificationType } from '../../types';
 import { ObjectId } from '@mikro-orm/mongodb';
 
@@ -18,7 +17,7 @@ export type NotificationEntry = {
 export class NotificationService {
 	constructor(
 		private readonly logger: Logger,
-		private readonly notificationRepo: NotificationRepo
+		@Inject(NOTIFICATION_REPO) private readonly notificationRepo: NotificationRepo
 	) {
 		logger.setContext(NotificationService.name);
 	}
@@ -34,13 +33,15 @@ export class NotificationService {
 		});
 
 		await this.notificationRepo.create(notification);
-		this.logger.info(
-			new NotificationLoggable('A notification entry was created.', {
-				type: notification.type,
-				key: notification.key,
-				arguments: notification.arguments.join(','),
-			})
-		);
+
 		return notification;
+	}
+
+	public async getUnreadNotifications(userId: string): Promise<Notification[]> {
+		return this.notificationRepo.findForUser(userId);
+	}
+
+	public async deleteNotification(notificationId: string): Promise<void> {
+		await this.notificationRepo.delete(notificationId);
 	}
 }
