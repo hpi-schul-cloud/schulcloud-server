@@ -16,7 +16,7 @@ interface UserForLogin {
 	roles: ArrayLike<{ id: string }>;
 }
 
-interface ExternalLoginOptions {
+interface JwtOptions {
 	isExternalUser?: boolean;
 	systemId?: string;
 	isServiceAccount?: boolean;
@@ -149,7 +149,7 @@ export class TestApiClient {
 		account: AccountForLogin,
 		user: UserForLogin,
 		jwtConfig: TestJwtModuleConfig,
-		options: ExternalLoginOptions = {}
+		options: JwtOptions = {}
 	): this {
 		const jwt = JwtAuthenticationFactory.createJwt(
 			{

@@ -1,3 +1,4 @@
+import { AuditLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { JwtPayloadBuilder } from '@infra/auth-guard';
 import { UnauthorizedException } from '@nestjs/common';
@@ -18,6 +19,10 @@ describe('LoginUc', () => {
 		module = await Test.createTestingModule({
 			providers: [
 				LoginUc,
+				{
+					provide: AuditLogger,
+					useValue: createMock<AuditLogger>(),
+				},
 				{
 					provide: AuthenticationService,
 					useValue: createMock<AuthenticationService>(),

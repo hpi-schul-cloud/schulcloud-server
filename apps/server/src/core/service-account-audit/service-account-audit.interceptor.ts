@@ -22,6 +22,10 @@ export class ServiceAccountAuditInterceptor implements NestInterceptor {
 	constructor(private readonly auditLogger: AuditLogger) {}
 
 	public intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
+		if (context.getType() !== 'http') {
+			return next.handle();
+		}
+
 		const request = context.switchToHttp().getRequest<RequestWithUser>();
 		const { user } = request;
 

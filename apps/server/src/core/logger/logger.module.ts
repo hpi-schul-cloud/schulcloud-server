@@ -8,11 +8,12 @@ import { LegacyLogger } from './legacy-logger.service';
 import { Logger } from './logger';
 import { LOGGER_CONFIG_TOKEN, LoggerConfig } from './logger.config';
 
-const winstonFormater = winston.format.combine(
-	winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss.SSS' }),
-	winston.format.ms(),
-	utilities.format.nestLike()
-);
+const winstonFormatter = (): winston.Logform.Format =>
+	winston.format.combine(
+		winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss.SSS' }),
+		winston.format.ms(),
+		utilities.format.nestLike()
+	);
 
 const createAuditLoggerProvider = (): Provider<WinstonLogger> => {
 	return {
@@ -23,7 +24,7 @@ const createAuditLoggerProvider = (): Provider<WinstonLogger> => {
 				level: 'info',
 				transports: [
 					new winston.transports.Console({
-						format: winstonFormater,
+						format: winstonFormatter(),
 					}),
 				],
 			}),
@@ -43,7 +44,7 @@ const createAuditLoggerProvider = (): Provider<WinstonLogger> => {
 						new winston.transports.Console({
 							handleExceptions: true,
 							handleRejections: true,
-							format: winstonFormater,
+							format: winstonFormatter(),
 						}),
 					],
 				};
