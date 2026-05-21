@@ -224,6 +224,37 @@ describe('ErwinProvisioningService', () => {
 				});
 			});
 
+			describe('when updated entity does not have an id', () => {
+				const setup = () => {
+					const system: ProvisioningSystemDto = provisioningSystemDtoFactory.build();
+					const externalSchool: ExternalSchoolDto = externalSchoolDtoFactory.build({
+						erwinId: new ObjectId().toHexString(),
+						name: 'Updated School Name',
+					});
+					const existingSchool = schoolFactory.build({
+						externalId: externalSchool.externalId,
+						systemIds: [system.systemId],
+					});
+					const updatedSchoolWithoutId = { name: externalSchool.name };
+
+					schoolProvisioningHandlerMock.getExternalData.mockReturnValue(externalSchool);
+					schoolProvisioningHandlerMock.getErwinId.mockReturnValue(externalSchool.erwinId);
+					erwinIdentifierServiceMock.findByErwinId.mockResolvedValueOnce(null);
+					schoolProvisioningHandlerMock.findByExternalId.mockResolvedValueOnce(existingSchool);
+					schoolProvisioningHandlerMock.update.mockResolvedValueOnce(updatedSchoolWithoutId as unknown as never);
+
+					return { system, externalSchool };
+				};
+
+				it('should throw BadDataLoggableException', async () => {
+					const { system, externalSchool } = setup();
+
+					await expect(sut.provisionEntity(ProvisioningEntityType.SCHOOL, { system, externalSchool })).rejects.toThrow(
+						BadDataLoggableException
+					);
+				});
+			});
+
 			describe('when no school exists and a new school is created', () => {
 				const setup = () => {
 					const system: ProvisioningSystemDto = provisioningSystemDtoFactory.build();

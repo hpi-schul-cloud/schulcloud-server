@@ -414,6 +414,31 @@ describe('UserProvisioningHandler', () => {
 			});
 		});
 
+		describe('when roles is empty', () => {
+			const setup = () => {
+				const system: ProvisioningSystemDto = provisioningSystemDtoFactory.build();
+				const school = schoolFactory.build();
+				const externalSchool: ExternalSchoolDto = externalSchoolDtoFactory.build({
+					externalId: school.externalId,
+				});
+				const externalUser: ExternalUserDto = new ExternalUserDto({
+					externalId: new ObjectId().toHexString(),
+					roles: [],
+				});
+				const context: ProvisioningContext = { system, externalSchool, externalUser };
+
+				schoolServiceMock.getSchools.mockResolvedValueOnce([school]);
+
+				return { context };
+			};
+
+			it('should throw UserRoleUnknownLoggableException', async () => {
+				const { context } = setup();
+
+				await expect(sut.create(context)).rejects.toThrow(UserRoleUnknownLoggableException);
+			});
+		});
+
 		describe('when creating a user without erwinId', () => {
 			const setup = () => {
 				const system: ProvisioningSystemDto = provisioningSystemDtoFactory.build();
