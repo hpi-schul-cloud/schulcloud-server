@@ -1,3 +1,4 @@
+import { AuditLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { JwtPayloadBuilder } from '@infra/auth-guard';
 import { UnauthorizedException } from '@nestjs/common';
@@ -13,11 +14,16 @@ describe('LoginUc', () => {
 
 	let authenticationService: DeepMocked<AuthenticationService>;
 	let authenticationConfig: AuthenticationConfig;
+	let auditLogger: DeepMocked<AuditLogger>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				LoginUc,
+				{
+					provide: AuditLogger,
+					useValue: createMock<AuditLogger>(),
+				},
 				{
 					provide: AuthenticationService,
 					useValue: createMock<AuthenticationService>(),
@@ -35,6 +41,7 @@ describe('LoginUc', () => {
 		loginUc = module.get(LoginUc);
 		authenticationService = module.get(AuthenticationService);
 		authenticationConfig = module.get(AUTHENTICATION_CONFIG_TOKEN);
+		auditLogger = module.get(AuditLogger);
 	});
 
 	afterEach(() => {
@@ -127,6 +134,17 @@ describe('LoginUc', () => {
 				const result = await loginUc.getLoginDataForServiceAccount(currentUser);
 
 				expect(result).toEqual(accessToken);
+			});
+
+			it('should call auditLogger.logServiceAccountAction with userId and action', async () => {
+				const { currentUser } = setup();
+
+				await loginUc.getLoginDataForServiceAccount(currentUser);
+
+				expect(auditLogger.logServiceAccountAction).toHaveBeenCalledWith(
+					currentUser.userId,
+					'ServiceAccountAuthenticated'
+				);
 			});
 		});
 
