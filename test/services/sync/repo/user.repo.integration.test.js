@@ -1,5 +1,5 @@
 const chai = require('chai');
-const chaiAsPromised = require('chai-as-promised');
+const { default: chaiAsPromised } = require('chai-as-promised');
 const { ObjectId } = require('mongoose').Types;
 
 const UserRepo = require('../../../../src/services/sync/repo/user.repo');
