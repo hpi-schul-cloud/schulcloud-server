@@ -11,5 +11,5 @@ export class TaskTimeoutConfig extends TimeoutConfig {
 	@ConfigProperty('INCOMING_REQUEST_TIMEOUT_COPY_API')
 	@IsNumber()
 	@StringToNumber()
-	public [TASK_INCOMING_REQUEST_TIMEOUT_COPY_API_KEY] = 60000;
+	public [TASK_INCOMING_REQUEST_TIMEOUT_COPY_API_KEY] = 120000;
 }
