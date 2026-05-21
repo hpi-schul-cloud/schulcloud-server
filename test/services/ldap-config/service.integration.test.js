@@ -1,6 +1,6 @@
 const chai = require('chai');
-const chaiHttp = require('chai-http');
-const chaiAsPromised = require('chai-as-promised');
+const { default: chaiHttp, request } = require('chai-http');
+const { default: chaiAsPromised } = require('chai-as-promised');
 const sinon = require('sinon');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 
@@ -242,13 +242,13 @@ describe('LdapConfigService', () => {
 			const { _id: schoolId } = await testObjects.createTestSchool();
 			const user = await testObjects.createTestUser({ roles: ['administrator'], schoolId });
 			const token = await testObjects.generateJWTFromUser(user);
-			const request = chai
-				.request(app)
+			const req = request
+				.execute(app)
 				.post('/ldap-config?verifyOnly=true')
 				.set('Accept', 'application/json')
 				.set('Authorization', `Bearer ${token}`)
 				.set('content-type', 'application/json');
-			const response = await request.send(knownGoodConfig);
+			const response = await req.send(knownGoodConfig);
 			expect(response.status).to.equal(201);
 			expect(response.body.ok).to.equal(true);
 		});
@@ -257,13 +257,13 @@ describe('LdapConfigService', () => {
 			const { _id: schoolId } = await testObjects.createTestSchool();
 			const user = await testObjects.createTestUser({ roles: ['administrator'], schoolId });
 			const token = await testObjects.generateJWTFromUser(user);
-			const request = chai
-				.request(app)
+			const req = request
+				.execute(app)
 				.post('/ldap-config')
 				.set('Accept', 'application/json')
 				.set('Authorization', `Bearer ${token}`)
 				.set('content-type', 'application/json');
-			const response = await request.send(knownBadConfig);
+			const response = await req.send(knownBadConfig);
 			expect(response.status).to.equal(400);
 			expect(response.body.message).to.equal('Invalid config format');
 		});
