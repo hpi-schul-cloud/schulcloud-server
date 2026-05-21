@@ -18,6 +18,7 @@ import { ImportCourseParams } from '../domain/import-course.params';
 import { CommonCartridgeVersion } from '../export/common-cartridge.enums';
 import { CommonCartridgeExportService } from '../service';
 import { CommonCartridgeExportResponse } from '../service/common-cartridge-export.response';
+import { CommonCartridgeValidatorTransform } from '../util/common-cartridge-validator.transform';
 
 @Injectable()
 export class CommonCartridgeUc {
@@ -138,13 +139,23 @@ export class CommonCartridgeUc {
 			bb.on('file', (_name, file, _info) => {
 				if (isResolved) return; // Already resolved/rejected
 
+				const validator = new CommonCartridgeValidatorTransform(this.config.courseImportMaxFileSize);
+				validator.on('validated', (isValid: boolean) => {
+					if (!isValid) {
+						validator.destroy();
+						safeReject(new Error('Given file is not a zip archive'));
+					}
+				});
+
+				file.pipe(validator);
+
 				fileRecordPromise = this.fileClient.uploadTempFile(
 					jwt,
 					currentUser.schoolId,
 					StorageLocation.SCHOOL,
 					currentUser.userId,
 					FileRecordParentType.USERS,
-					file,
+					validator,
 					fileName,
 					this.config.courseImportMaxFileSize
 				);
