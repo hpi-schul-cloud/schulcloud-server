@@ -6,26 +6,7 @@ import { AUDIT_LOGGER_PROVIDER, AuditLogger } from './audit-logger';
 import { ErrorLogger } from './error-logger';
 import { LegacyLogger } from './legacy-logger.service';
 import { Logger } from './logger';
-import { LOGGER_CONFIG_TOKEN, LoggerConfig } from './logger.config';
-
-// Syslog levels as defined by RFC 5424 - matches winston.config.syslog.levels
-const SyslogLevel = {
-	EMERG: 'emerg',
-	ALERT: 'alert',
-	CRIT: 'crit',
-	ERROR: 'error',
-	WARNING: 'warning',
-	NOTICE: 'notice',
-	INFO: 'info',
-	DEBUG: 'debug',
-} as const;
-
-// Runtime validation: ensures our const stays in sync with Winston's actual levels
-Object.values(SyslogLevel).forEach((level) => {
-	if (!(level in winston.config.syslog.levels)) {
-		throw new Error(`SyslogLevel.${level} is not a valid winston syslog level`);
-	}
-});
+import { LOGGER_CONFIG_TOKEN, LoggerConfig, SyslogLevel } from './logger.config';
 
 const winstonFormatter = (): winston.Logform.Format =>
 	winston.format.combine(
