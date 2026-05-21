@@ -4,7 +4,6 @@ import { AuthGuard } from '@nestjs/passport';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ForbiddenOperationError, ValidationError } from '@shared/common/error';
 import { StrategyType, type OauthCurrentUser } from '../interface';
-import { LoginDto } from '../uc/dto';
 import { LoginUc } from '../uc/login.uc';
 import {
 	LdapAuthorizationBodyParams,
@@ -29,10 +28,14 @@ export class LoginController {
 	@ApiResponse({ status: 403, type: ForbiddenOperationError, description: 'Invalid user credentials.' })
 	// Body is not used, but validated and used in the strategy implementation
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	public loginLdap(@CurrentUser() user: ICurrentUser, @Body() _: LdapAuthorizationBodyParams): Promise<LoginResponse> {
-		const response = this.login(user);
+	public async loginLdap(
+		@CurrentUser() user: ICurrentUser,
+		@Body() _: LdapAuthorizationBodyParams
+	): Promise<LoginResponse> {
+		const jwtToken = await this.loginUc.getLoginData(user);
+		const loginResponse = LoginResponseMapper.mapToLoginResponse(jwtToken);
 
-		return response;
+		return loginResponse;
 	}
 
 	@UseGuards(AuthGuard(StrategyType.LOCAL))
@@ -42,15 +45,36 @@ export class LoginController {
 	@ApiResponse({ status: 200, type: LoginResponse, description: 'Login was successful.' })
 	@ApiResponse({ status: 400, type: ValidationError, description: 'Request data has invalid format.' })
 	@ApiResponse({ status: 403, type: ForbiddenOperationError, description: 'Invalid user credentials.' })
-	public loginLocal(
+	public async loginLocal(
 		@CurrentUser() user: ICurrentUser,
 		// Body is not used, but validated and used in the strategy implementation
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		@Body() _: LocalAuthorizationBodyParams
 	): Promise<LoginResponse> {
-		const response = this.login(user);
+		const jwtToken = await this.loginUc.getLoginData(user);
+		const loginResponse = LoginResponseMapper.mapToLoginResponse(jwtToken);
 
-		return response;
+		return loginResponse;
+	}
+
+	@UseGuards(AuthGuard(StrategyType.LOCAL))
+	@HttpCode(HttpStatus.OK)
+	@Post('local-service-account')
+	@ApiOperation({ summary: 'Starts the login process for service accounts which are locally managed.' })
+	@ApiResponse({ status: 200, type: LoginResponse, description: 'Login was successful.' })
+	@ApiResponse({ status: 400, type: ValidationError, description: 'Request data has invalid format.' })
+	@ApiResponse({ status: 401, description: 'Authenticated user is not a service account.' })
+	@ApiResponse({ status: 403, type: ForbiddenOperationError, description: 'Invalid user credentials.' })
+	public async loginLocalServiceAccount(
+		@CurrentUser() user: ICurrentUser,
+		// Body is not used, but validated and used in the strategy implementation
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		@Body() _: LocalAuthorizationBodyParams
+	): Promise<LoginResponse> {
+		const jwtToken = await this.loginUc.getLoginDataForServiceAccount(user);
+		const loginResponse = LoginResponseMapper.mapToLoginResponse(jwtToken);
+
+		return loginResponse;
 	}
 
 	@UseGuards(AuthGuard(StrategyType.OAUTH2))
@@ -66,18 +90,9 @@ export class LoginController {
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		@Body() _: Oauth2AuthorizationBodyParams
 	): Promise<OauthLoginResponse> {
-		const loginDto: LoginDto = await this.loginUc.getLoginData(user);
+		const jwtToken = await this.loginUc.getLoginData(user);
+		const oAuthLoginResponse = LoginResponseMapper.mapToOauthLoginResponse(jwtToken, user.externalIdToken);
 
-		const mapped: OauthLoginResponse = LoginResponseMapper.mapToOauthLoginResponse(loginDto, user.externalIdToken);
-
-		return mapped;
-	}
-
-	private async login(user: ICurrentUser): Promise<LoginResponse> {
-		const loginDto: LoginDto = await this.loginUc.getLoginData(user);
-
-		const mapped: LoginResponse = LoginResponseMapper.mapToLoginResponse(loginDto);
-
-		return mapped;
+		return oAuthLoginResponse;
 	}
 }

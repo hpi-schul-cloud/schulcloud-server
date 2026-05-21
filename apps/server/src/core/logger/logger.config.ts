@@ -2,7 +2,8 @@ import { ConfigProperty, Configuration } from '@infra/configuration';
 import { StringToBoolean } from '@shared/controller/transformer';
 import { IsBoolean, IsEnum } from 'class-validator';
 
-enum LogLevels {
+// Syslog levels as defined by RFC 5424 - matches winston.config.syslog.levels
+export enum SyslogLevel {
 	DEBUG = 'debug',
 	INFO = 'info',
 	NOTICE = 'notice',
@@ -18,8 +19,8 @@ export const LOGGER_CONFIG_TOKEN = 'LOGGER_CONFIG_TOKEN';
 @Configuration()
 export class LoggerConfig {
 	@ConfigProperty('NEST_LOG_LEVEL')
-	@IsEnum(LogLevels)
-	public nestLogLevel = LogLevels.NOTICE;
+	@IsEnum(SyslogLevel)
+	public nestLogLevel = SyslogLevel.NOTICE;
 
 	/**
 	 * By default, the application is terminated after an uncaughtException has been logged.
