@@ -1,52 +1,52 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock } from '@golevelup/ts-jest';
 import { CallHandler, ExecutionContext } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { of, throwError } from 'rxjs';
 import { AuditLogger } from '../logger';
 import { ServiceAccountAuditInterceptor } from './service-account-audit.interceptor';
 
-describe('ServiceAccountAuditInterceptor', () => {
-	let interceptor: ServiceAccountAuditInterceptor;
-	let auditLoggerMock: DeepMocked<AuditLogger>;
+const createMockExecutionContext = (
+	user: { userId: string; isServiceAccount: boolean } | undefined
+): ExecutionContext => {
+	const mockRequest = {
+		user,
+		method: 'GET',
+		originalUrl: '/test-endpoint',
+	} as unknown as Request;
 
-	beforeEach(() => {
-		auditLoggerMock = createMock<AuditLogger>();
-		interceptor = new ServiceAccountAuditInterceptor(auditLoggerMock);
+	const mockResponse = {
+		statusCode: 200,
+	} as Response;
+
+	return createMock<ExecutionContext>({
+		getType: () => 'http',
+		switchToHttp: () => {
+			return {
+				getRequest: () => mockRequest,
+				getResponse: () => mockResponse,
+			};
+		},
 	});
+};
 
+describe('ServiceAccountAuditInterceptor', () => {
 	afterEach(() => {
 		jest.resetAllMocks();
 	});
 
-	const createMockExecutionContext = (
-		user: { userId: string; isServiceAccount: boolean } | undefined
-	): ExecutionContext => {
-		const mockRequest = {
-			user,
-			method: 'GET',
-			originalUrl: '/test-endpoint',
-		} as unknown as Request;
-
-		const mockResponse = {
-			statusCode: 200,
-		} as Response;
-
-		return createMock<ExecutionContext>({
-			getType: () => 'http',
-			switchToHttp: () => {
-				return {
-					getRequest: () => mockRequest,
-					getResponse: () => mockResponse,
-				};
-			},
-		});
-	};
-
 	describe('intercept', () => {
 		describe('when user is not a service account', () => {
-			it('should not call auditLogger and pass through', (done) => {
+			const setup = () => {
+				const auditLoggerMock = createMock<AuditLogger>();
+				const interceptor = new ServiceAccountAuditInterceptor(auditLoggerMock);
 				const context = createMockExecutionContext({ userId: 'user-123', isServiceAccount: false });
 				const next: CallHandler = { handle: () => of({ result: 'success' }) };
+
+				return { context, next, interceptor, auditLoggerMock };
+			};
+
+			it('should not call auditLogger and pass through', (done) => {
+				const { context, next, interceptor, auditLoggerMock } = setup();
 
 				interceptor.intercept(context, next).subscribe({
 					next: (value) => {
@@ -59,9 +59,17 @@ describe('ServiceAccountAuditInterceptor', () => {
 		});
 
 		describe('when user is undefined', () => {
-			it('should not call auditLogger and pass through', (done) => {
+			const setup = () => {
+				const auditLoggerMock = createMock<AuditLogger>();
+				const interceptor = new ServiceAccountAuditInterceptor(auditLoggerMock);
 				const context = createMockExecutionContext(undefined);
 				const next: CallHandler = { handle: () => of({ result: 'success' }) };
+
+				return { context, next, interceptor, auditLoggerMock };
+			};
+
+			it('should not call auditLogger and pass through', (done) => {
+				const { context, next, interceptor, auditLoggerMock } = setup();
 
 				interceptor.intercept(context, next).subscribe({
 					next: (value) => {
@@ -74,10 +82,21 @@ describe('ServiceAccountAuditInterceptor', () => {
 		});
 
 		describe('when user is a service account', () => {
+			const createServiceAccountContext = () =>
+				createMockExecutionContext({ userId: 'service-account-123', isServiceAccount: true });
+
 			describe('when request succeeds', () => {
-				it('should call auditLogger.logServiceAccountApiCall with correct parameters', (done) => {
-					const context = createMockExecutionContext({ userId: 'service-account-123', isServiceAccount: true });
+				const setup = () => {
+					const auditLoggerMock = createMock<AuditLogger>();
+					const interceptor = new ServiceAccountAuditInterceptor(auditLoggerMock);
+					const context = createServiceAccountContext();
 					const next: CallHandler = { handle: () => of({ result: 'success' }) };
+
+					return { context, next, interceptor, auditLoggerMock };
+				};
+
+				it('should call auditLogger.logServiceAccountApiCall with correct parameters', (done) => {
+					const { context, next, interceptor, auditLoggerMock } = setup();
 
 					interceptor.intercept(context, next).subscribe({
 						next: () => {
@@ -95,10 +114,18 @@ describe('ServiceAccountAuditInterceptor', () => {
 			});
 
 			describe('when request fails with error', () => {
-				it('should call auditLogger.logServiceAccountApiCall with error details', (done) => {
-					const context = createMockExecutionContext({ userId: 'service-account-123', isServiceAccount: true });
-					const error = Object.assign(new Error('Not found'), { status: 404 });
+				const setup = (error: Error) => {
+					const auditLoggerMock = createMock<AuditLogger>();
+					const interceptor = new ServiceAccountAuditInterceptor(auditLoggerMock);
+					const context = createServiceAccountContext();
 					const next: CallHandler = { handle: () => throwError(() => error) };
+
+					return { context, interceptor, auditLoggerMock, next };
+				};
+
+				it('should call auditLogger.logServiceAccountApiCall with error details', (done) => {
+					const error = Object.assign(new Error('Not found'), { status: 404 });
+					const { context, interceptor, auditLoggerMock, next } = setup(error);
 
 					interceptor.intercept(context, next).subscribe({
 						error: () => {
@@ -115,9 +142,8 @@ describe('ServiceAccountAuditInterceptor', () => {
 				});
 
 				it('should default to status 500 when error has no status', (done) => {
-					const context = createMockExecutionContext({ userId: 'service-account-123', isServiceAccount: true });
 					const error = new Error('Internal error');
-					const next: CallHandler = { handle: () => throwError(() => error) };
+					const { context, interceptor, auditLoggerMock, next } = setup(error);
 
 					interceptor.intercept(context, next).subscribe({
 						error: () => {
