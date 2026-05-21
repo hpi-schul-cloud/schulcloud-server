@@ -253,6 +253,13 @@ export class User extends BaseEntityWithTimestamps {
 		return uniquePermissions;
 	}
 
+	public isServiceAccountUser(): boolean {
+		const permissions = this.resolvePermissions(false, false);
+		const isServiceAccountUser = permissions.includes(Permission.CAN_EXECUTE_INSTANCE_OPERATIONS);
+
+		return isServiceAccountUser;
+	}
+
 	private resolveSchoolPermissions(
 		permissions: Permission[],
 		roles: Role[],

@@ -1,20 +1,39 @@
-import { ICurrentUser } from '@infra/auth-guard';
-import { Injectable } from '@nestjs/common';
+import { ICurrentUser, JwtPayloadBuilder } from '@infra/auth-guard';
+import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { AUTHENTICATION_CONFIG_TOKEN, AuthenticationConfig } from '../authentication-config';
 import { AuthenticationService } from '../services';
-import { LoginDto } from './dto';
 
 @Injectable()
 export class LoginUc {
-	constructor(private readonly authService: AuthenticationService) {}
+	constructor(
+		private readonly authService: AuthenticationService,
+		@Inject(AUTHENTICATION_CONFIG_TOKEN) private readonly config: AuthenticationConfig
+	) {}
 
-	public async getLoginData(currentUser: ICurrentUser): Promise<LoginDto> {
-		const jwtToken = await this.authService.generateCurrentUserJwt(currentUser);
+	public async getLoginData(currentUser: ICurrentUser): Promise<string> {
+		// With introduce switch in shd to service accounts, this method should not be used for service accounts anymore. Need to be throw.
+		const jwtPayload = new JwtPayloadBuilder(currentUser).build();
+		const accessToken = await this.authService.generateJwtAndAddToWhitelist(jwtPayload, this.config.expiresIn);
 		await this.authService.updateLastLogin(currentUser.accountId);
 
-		const loginDto = new LoginDto({
-			accessToken: jwtToken,
-		});
+		return accessToken;
+	}
 
-		return loginDto;
+	public async getLoginDataForServiceAccount(currentUser: ICurrentUser): Promise<string> {
+		this.checkIfServiceAccount(currentUser);
+		const jwtPayload = new JwtPayloadBuilder(currentUser).asServiceAccount().build();
+		const accessToken = await this.authService.generateJwtAndAddToWhitelist(
+			jwtPayload,
+			this.config.jwtLifetimeServiceAccountSeconds
+		);
+		await this.authService.updateLastLogin(currentUser.accountId);
+
+		return accessToken;
+	}
+
+	private checkIfServiceAccount(currentUser: ICurrentUser): void {
+		if (!currentUser.isServiceAccount) {
+			throw new UnauthorizedException();
+		}
 	}
 }

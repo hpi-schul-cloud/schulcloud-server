@@ -8,7 +8,7 @@ import { Permission } from '@shared/domain/interface';
 import { BaseFactory } from '@testing/factory/base.factory';
 import {
 	adminPermissions,
-	defaultSystemUserPermissions,
+	defaultServiceAccountPermissions,
 	externalPersonPermissions,
 	studentPermissions,
 	superheroPermissions,
@@ -112,8 +112,8 @@ class UserFactory extends BaseFactory<User, UserProperties> {
 		return this.params(params);
 	}
 
-	public asSystemUser(requiredAdditionalPermissions: Permission[]): this {
-		const permissions = _.union(defaultSystemUserPermissions, requiredAdditionalPermissions);
+	public asServiceAccountUser(requiredAdditionalPermissions: Permission[]): this {
+		const permissions = _.union(defaultServiceAccountPermissions, requiredAdditionalPermissions);
 
 		const role = roleFactory.buildWithId({ permissions });
 
