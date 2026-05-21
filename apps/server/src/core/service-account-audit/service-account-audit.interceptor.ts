@@ -33,17 +33,17 @@ export class ServiceAccountAuditInterceptor implements NestInterceptor {
 			return next.handle();
 		}
 
-		const { method, path } = request;
+		const { method, originalUrl } = request;
 
 		return next.handle().pipe(
 			tap({
 				next: (): void => {
 					const response = context.switchToHttp().getResponse<Response>();
-					this.logApiCall(user.userId, method, path, response.statusCode);
+					this.logApiCall(user.userId, method, originalUrl, response.statusCode);
 				},
 				error: (error: Error & { status?: number }): void => {
 					const statusCode = error.status ?? 500;
-					this.logApiCall(user.userId, method, path, statusCode, { error: error.message });
+					this.logApiCall(user.userId, method, originalUrl, statusCode, { error: error.message });
 				},
 			})
 		);

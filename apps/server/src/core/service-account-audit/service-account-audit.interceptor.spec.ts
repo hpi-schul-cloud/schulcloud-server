@@ -24,7 +24,7 @@ describe('ServiceAccountAuditInterceptor', () => {
 		const mockRequest = {
 			user,
 			method: 'GET',
-			path: '/test-endpoint',
+			originalUrl: '/test-endpoint',
 		} as unknown as Request;
 
 		const mockResponse = {
@@ -32,6 +32,7 @@ describe('ServiceAccountAuditInterceptor', () => {
 		} as Response;
 
 		return createMock<ExecutionContext>({
+			getType: () => 'http',
 			switchToHttp: () => {
 				return {
 					getRequest: () => mockRequest,
