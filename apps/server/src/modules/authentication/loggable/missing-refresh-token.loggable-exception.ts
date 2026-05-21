@@ -15,7 +15,7 @@ export class MissingRefreshTokenLoggableException extends BusinessError implemen
 		);
 	}
 
-	getLogMessage(): ErrorLogMessage {
+	public getLogMessage(): ErrorLogMessage {
 		const message: ErrorLogMessage = {
 			type: this.type,
 			stack: this.stack,
