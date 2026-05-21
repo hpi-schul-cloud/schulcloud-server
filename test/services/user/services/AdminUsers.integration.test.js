@@ -1,5 +1,5 @@
 const chai = require('chai');
-const chaiHttp = require('chai-http');
+const { default: chaiHttp, request } = require('chai-http');
 const commons = require('@hpi-schul-cloud/commons');
 
 const { Configuration } = commons;
@@ -43,13 +43,13 @@ describe('admin users integration tests', () => {
 	it('POST succeeds valid request', async () => {
 		const { _id: schoolId } = await testObjects.createTestSchool();
 		const token = await getAdminToken(schoolId);
-		const request = chai
-			.request(app)
+		const req = request
+			.execute(app)
 			.post('/users/admin/students')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.set('content-type', 'application/json');
-		const response = await request.send({
+		const response = await req.send({
 			lastName: 'max',
 			firstName: 'mustermann',
 			schoolId,
@@ -62,13 +62,13 @@ describe('admin users integration tests', () => {
 	it('POST fails with invalid email format', async () => {
 		const { _id: schoolId } = await testObjects.createTestSchool();
 		const token = await getAdminToken(schoolId);
-		const request = chai
-			.request(app)
+		const req = request
+			.execute(app)
 			.post('/users/admin/students')
 			.set('Accept', 'application/json')
 			.set('Authorization', token)
 			.set('content-type', 'application/json');
-		const response = await request.send({
+		const response = await req.send({
 			lastName: 'moritz',
 			firstName: 'mustermann',
 			schoolId,

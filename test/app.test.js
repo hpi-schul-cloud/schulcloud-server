@@ -1,6 +1,6 @@
 const assert = require('assert');
 const chai = require('chai');
-const ChaiHttp = require('chai-http');
+const { default: ChaiHttp, request } = require('chai-http');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const appPromise = require('../src/app');
 
@@ -29,12 +29,12 @@ describe('Feathers application tests', () => {
 			Configuration.reset(configBefore);
 		});
 		it('shows a 404 page', async () => {
-			const response = await chai.request(app).get('/path/to/nowhere').set('content-type', 'text/html');
+			const response = await request.execute(app).get('/path/to/nowhere').set('content-type', 'text/html');
 			assert.equal(response.status, 404);
 		});
 
 		it('shows a 404 JSON error without stack trace', async () => {
-			const res = await chai.request(app).get('/path/to/nowhere').set('content-type', 'application/json');
+			const res = await request.execute(app).get('/path/to/nowhere').set('content-type', 'application/json');
 			assert.equal(res.status, 404);
 			assert.equal(res.body.code, 404);
 			assert.equal(res.body.message, 'Page not found.');
@@ -42,7 +42,7 @@ describe('Feathers application tests', () => {
 		});
 
 		it('serves swagger api docs', async () => {
-			const res = await chai.request(app).get('/docs');
+			const res = await request.execute(app).get('/docs');
 			assert.equal(res.status, 200);
 			expect(res.text).to.exist;
 		});
