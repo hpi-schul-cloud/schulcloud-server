@@ -1,6 +1,5 @@
 /* istanbul ignore file */
 import { EntityId } from '@shared/domain/types';
-
 import { ObjectId } from '@mikro-orm/mongodb';
 import { User } from '@modules/user/repo';
 import { BaseFactory } from '@testing/factory/base.factory';
@@ -21,7 +20,7 @@ class AccountFactory extends BaseFactory<AccountEntity, IdmAccountProperties> {
 			throw new Error('User does not have an id.');
 		}
 
-		const params: DeepPartial<IdmAccountProperties> = { userId: user.id };
+		const params: DeepPartial<IdmAccountProperties> = { userId: user.id, username: user.email };
 
 		return this.params(params);
 	}

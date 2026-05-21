@@ -1,18 +1,17 @@
-import { LoginDto } from '../../uc/dto';
 import { LoginResponse, OauthLoginResponse } from '../dto';
 
 export class LoginResponseMapper {
-	static mapToLoginResponse(loginDto: LoginDto): LoginResponse {
+	public static mapToLoginResponse(accessToken: string): LoginResponse {
 		const response: LoginResponse = new LoginResponse({
-			accessToken: loginDto.accessToken,
+			accessToken,
 		});
 
 		return response;
 	}
 
-	static mapToOauthLoginResponse(loginDto: LoginDto, externalIdToken?: string): OauthLoginResponse {
+	public static mapToOauthLoginResponse(accessToken: string, externalIdToken?: string): OauthLoginResponse {
 		const response: OauthLoginResponse = new OauthLoginResponse({
-			accessToken: loginDto.accessToken,
+			accessToken,
 			externalIdToken,
 		});
 
