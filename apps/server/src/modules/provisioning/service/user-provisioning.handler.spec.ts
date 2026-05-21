@@ -1,3 +1,4 @@
+import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountService } from '@modules/account';
@@ -290,9 +291,9 @@ describe('UserProvisioningHandler', () => {
 				});
 				const externalUser: ExternalUserDto = externalUserDtoFactory.build({
 					erwinId: new ObjectId().toHexString(),
-					firstName: 'John',
-					lastName: 'Doe',
-					email: 'john.doe@example.com',
+					firstName: faker.person.firstName(),
+					lastName: faker.person.lastName(),
+					email: faker.internet.email(),
 					roles: [RoleName.STUDENT],
 				});
 				const context: ProvisioningContext = { system, externalSchool, externalUser };
@@ -561,11 +562,11 @@ describe('UserProvisioningHandler', () => {
 			const setup = () => {
 				const user = userDoFactory.buildWithId();
 				const externalUser: ExternalUserDto = externalUserDtoFactory.build({
-					firstName: 'Updated',
-					lastName: 'Name',
-					email: 'updated@example.com',
-					preferredName: 'Nick',
-					birthday: new Date('1990-01-01'),
+					firstName: faker.person.firstName(),
+					lastName: faker.person.lastName(),
+					email: faker.internet.email(),
+					preferredName: faker.person.firstName(),
+					birthday: faker.date.past(),
 					roles: [RoleName.TEACHER],
 				});
 				const roleDto: RoleDto = {

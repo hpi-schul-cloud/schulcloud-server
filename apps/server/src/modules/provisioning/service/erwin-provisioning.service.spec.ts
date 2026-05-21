@@ -1,3 +1,4 @@
+import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ErwinIdentifierService, ReferencedEntityType } from '@modules/erwin-identifier';
@@ -83,8 +84,8 @@ describe('ErwinProvisioningService', () => {
 					const system: ProvisioningSystemDto = provisioningSystemDtoFactory.build();
 					const externalSchool: ExternalSchoolDto = externalSchoolDtoFactory.build({
 						erwinId: new ObjectId().toHexString(),
-						name: 'School Name',
-						officialSchoolNumber: '12345',
+						name: faker.company.name(),
+						officialSchoolNumber: faker.string.numeric(5),
 					});
 					const existingSchool = schoolFactory.build();
 					const erwinIdentifier = erwinIdentifierFactoryWithSchool.build({
@@ -125,7 +126,7 @@ describe('ErwinProvisioningService', () => {
 					const externalSchool: ExternalSchoolDto = new ExternalSchoolDto({
 						externalId: undefined as unknown as string,
 						erwinId: new ObjectId().toHexString(),
-						name: 'School Name',
+						name: faker.company.name(),
 					});
 					const existingSchool = schoolFactory.build();
 					const erwinIdentifier = erwinIdentifierFactoryWithSchool.build({
@@ -157,7 +158,7 @@ describe('ErwinProvisioningService', () => {
 					const externalSchool: ExternalSchoolDto = new ExternalSchoolDto({
 						externalId: undefined as unknown as string,
 						erwinId: new ObjectId().toHexString(),
-						name: 'School Name',
+						name: faker.company.name(),
 					});
 
 					schoolProvisioningHandlerMock.getExternalData.mockReturnValue(externalSchool);
@@ -181,8 +182,8 @@ describe('ErwinProvisioningService', () => {
 					const system: ProvisioningSystemDto = provisioningSystemDtoFactory.build();
 					const externalSchool: ExternalSchoolDto = externalSchoolDtoFactory.build({
 						erwinId: new ObjectId().toHexString(),
-						name: 'Updated School Name',
-						officialSchoolNumber: '12345',
+						name: faker.company.name(),
+						officialSchoolNumber: faker.string.numeric(5),
 					});
 					const existingSchool = schoolFactory.build({
 						externalId: externalSchool.externalId,
@@ -229,7 +230,7 @@ describe('ErwinProvisioningService', () => {
 					const system: ProvisioningSystemDto = provisioningSystemDtoFactory.build();
 					const externalSchool: ExternalSchoolDto = externalSchoolDtoFactory.build({
 						erwinId: new ObjectId().toHexString(),
-						name: 'Updated School Name',
+						name: faker.company.name(),
 					});
 					const existingSchool = schoolFactory.build({
 						externalId: externalSchool.externalId,
@@ -260,8 +261,8 @@ describe('ErwinProvisioningService', () => {
 					const system: ProvisioningSystemDto = provisioningSystemDtoFactory.build();
 					const externalSchool: ExternalSchoolDto = externalSchoolDtoFactory.build({
 						erwinId: new ObjectId().toHexString(),
-						name: 'New School Name',
-						officialSchoolNumber: '12345',
+						name: faker.company.name(),
+						officialSchoolNumber: faker.string.numeric(5),
 					});
 					const newSchool = schoolFactory.build({
 						name: externalSchool.name,
@@ -300,7 +301,7 @@ describe('ErwinProvisioningService', () => {
 					const system: ProvisioningSystemDto = provisioningSystemDtoFactory.build();
 					const externalSchool: ExternalSchoolDto = externalSchoolDtoFactory.build({
 						erwinId: new ObjectId().toHexString(),
-						name: 'School Name',
+						name: faker.company.name(),
 					});
 					const existingSchool = schoolFactory.build({
 						externalId: externalSchool.externalId,
@@ -336,7 +337,7 @@ describe('ErwinProvisioningService', () => {
 					const system: ProvisioningSystemDto = provisioningSystemDtoFactory.build();
 					const externalSchool: ExternalSchoolDto = externalSchoolDtoFactory.build({
 						erwinId: new ObjectId().toHexString(),
-						name: 'School Name',
+						name: faker.company.name(),
 					});
 					const userErwinIdentifier = erwinIdentifierFactoryWithSchool.build({
 						erwinId: externalSchool.erwinId,
@@ -370,8 +371,8 @@ describe('ErwinProvisioningService', () => {
 					const externalSchool: ExternalSchoolDto = externalSchoolDtoFactory.build();
 					const externalUser: ExternalUserDto = externalUserDtoFactory.build({
 						erwinId: new ObjectId().toHexString(),
-						firstName: 'John',
-						lastName: 'Doe',
+						firstName: faker.person.firstName(),
+						lastName: faker.person.lastName(),
 					});
 					const existingUser = userDoFactory.buildWithId();
 					const erwinIdentifier = erwinIdentifierFactoryWithUser.build({

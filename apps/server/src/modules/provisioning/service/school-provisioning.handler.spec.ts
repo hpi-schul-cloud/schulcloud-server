@@ -1,7 +1,8 @@
+import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ErwinIdentifierService, ReferencedEntityType } from '@modules/erwin-identifier';
-import { erwinIdentifierFactoryWithSchool } from '@modules/erwin-identifier/domain/testing';
+import { erwinIdentifierFactoryWithSchool } from '@modules/erwin-identifier/testing';
 import { SchoolService, SchoolYearService } from '@modules/school';
 import { schoolFactory, schoolYearEntityFactory } from '@modules/school/testing';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -197,8 +198,8 @@ describe('SchoolProvisioningHandler', () => {
 				const system: ProvisioningSystemDto = provisioningSystemDtoFactory.build();
 				const externalSchool: ExternalSchoolDto = externalSchoolDtoFactory.build({
 					erwinId: new ObjectId().toHexString(),
-					name: 'Test School',
-					officialSchoolNumber: '12345',
+					name: faker.company.name(),
+					officialSchoolNumber: faker.string.numeric(5),
 				});
 				const context: ProvisioningContext = { system, externalSchool };
 				const schoolYear = schoolYearEntityFactory.build();
@@ -251,10 +252,12 @@ describe('SchoolProvisioningHandler', () => {
 
 		describe('when creating a school with location', () => {
 			const setup = () => {
+				const schoolName = faker.company.name();
+				const location = faker.location.city();
 				const system: ProvisioningSystemDto = provisioningSystemDtoFactory.build();
 				const externalSchool: ExternalSchoolDto = externalSchoolDtoFactory.build({
-					name: 'Test School',
-					location: 'Berlin',
+					name: schoolName,
+					location,
 				});
 				const context: ProvisioningContext = { system, externalSchool };
 				const schoolYear = schoolYearEntityFactory.build();
@@ -263,16 +266,16 @@ describe('SchoolProvisioningHandler', () => {
 				schoolYearServiceMock.getCurrentSchoolYear.mockResolvedValueOnce(schoolYear);
 				schoolServiceMock.save.mockResolvedValueOnce(savedSchool);
 
-				return { context, externalSchool };
+				return { context, schoolName, location };
 			};
 
 			it('should format name with location', async () => {
-				const { context, externalSchool } = setup();
+				const { context, schoolName, location } = setup();
 
 				await sut.create(context);
 
 				const savedSchool = schoolServiceMock.save.mock.calls[0][0];
-				expect(savedSchool.getInfo().name).toBe(`${externalSchool.name} (${externalSchool.location})`);
+				expect(savedSchool.getInfo().name).toBe(`${schoolName} (${location})`);
 			});
 		});
 
@@ -302,7 +305,7 @@ describe('SchoolProvisioningHandler', () => {
 				const system: ProvisioningSystemDto = provisioningSystemDtoFactory.build();
 				const externalSchool: ExternalSchoolDto = externalSchoolDtoFactory.build({
 					erwinId: undefined,
-					name: 'Test School',
+					name: faker.company.name(),
 				});
 				const context: ProvisioningContext = { system, externalSchool };
 				const schoolYear = schoolYearEntityFactory.build();
@@ -328,7 +331,7 @@ describe('SchoolProvisioningHandler', () => {
 				const system: ProvisioningSystemDto = provisioningSystemDtoFactory.build();
 				const externalSchool: ExternalSchoolDto = externalSchoolDtoFactory.build({
 					erwinId: new ObjectId().toHexString(),
-					name: 'Test School',
+					name: faker.company.name(),
 				});
 				const context: ProvisioningContext = { system, externalSchool };
 				const schoolYear = schoolYearEntityFactory.build();
@@ -357,8 +360,8 @@ describe('SchoolProvisioningHandler', () => {
 			const setup = () => {
 				const school = schoolFactory.build();
 				const externalSchool: ExternalSchoolDto = externalSchoolDtoFactory.build({
-					name: 'Updated School Name',
-					officialSchoolNumber: '54321',
+					name: faker.company.name(),
+					officialSchoolNumber: faker.string.numeric(5),
 				});
 				const updatedSchool = schoolFactory.build({ name: externalSchool.name });
 
@@ -395,23 +398,25 @@ describe('SchoolProvisioningHandler', () => {
 
 		describe('when updating a school with location', () => {
 			it('should format name with location', async () => {
+				const schoolName = faker.company.name();
+				const location = faker.location.city();
 				const school = schoolFactory.build();
 				const externalSchool: ExternalSchoolDto = externalSchoolDtoFactory.build({
-					name: 'Updated School',
-					location: 'Munich',
+					name: schoolName,
+					location,
 				});
 				schoolServiceMock.save.mockResolvedValueOnce(school);
 
 				await sut.update(school, externalSchool);
 
 				const savedSchool = schoolServiceMock.save.mock.calls[0][0];
-				expect(savedSchool.getInfo().name).toBe(`${externalSchool.name} (${externalSchool.location})`);
+				expect(savedSchool.getInfo().name).toBe(`${schoolName} (${location})`);
 			});
 		});
 
 		describe('when externalSchool has no name', () => {
 			it('should not update school name', async () => {
-				const originalName = 'Original Name';
+				const originalName = faker.company.name();
 				const school = schoolFactory.build({ name: originalName });
 				const externalSchool: ExternalSchoolDto = externalSchoolDtoFactory.build({
 					name: undefined,
@@ -427,16 +432,17 @@ describe('SchoolProvisioningHandler', () => {
 
 		describe('when school already has officialSchoolNumber', () => {
 			it('should not update officialSchoolNumber', async () => {
-				const school = schoolFactory.build({ officialSchoolNumber: '11111' });
+				const existingNumber = faker.string.numeric(5);
+				const school = schoolFactory.build({ officialSchoolNumber: existingNumber });
 				const externalSchool: ExternalSchoolDto = externalSchoolDtoFactory.build({
-					name: 'Test',
-					officialSchoolNumber: '22222',
+					name: faker.company.name(),
+					officialSchoolNumber: faker.string.numeric(5),
 				});
 				schoolServiceMock.save.mockResolvedValueOnce(school);
 
 				await sut.update(school, externalSchool);
 
-				expect(school.officialSchoolNumber).toBe('11111');
+				expect(school.officialSchoolNumber).toBe(existingNumber);
 			});
 		});
 
@@ -444,8 +450,8 @@ describe('SchoolProvisioningHandler', () => {
 			it('should update officialSchoolNumber', async () => {
 				const school = schoolFactory.build({ officialSchoolNumber: undefined });
 				const externalSchool: ExternalSchoolDto = externalSchoolDtoFactory.build({
-					name: 'Test',
-					officialSchoolNumber: '22222',
+					name: faker.company.name(),
+					officialSchoolNumber: faker.string.numeric(5),
 				});
 				schoolServiceMock.save.mockResolvedValueOnce(school);
 
