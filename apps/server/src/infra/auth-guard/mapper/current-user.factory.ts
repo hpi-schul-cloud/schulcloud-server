@@ -30,6 +30,7 @@ export class CurrentUserBuilder {
 			schoolId: requiredProps.schoolId,
 			accountId: requiredProps.accountId,
 			roles: requiredProps.roles,
+			isServiceAccount: false,
 			support: false,
 			isExternalUser: false,
 			systemId: undefined,
@@ -43,7 +44,7 @@ export class CurrentUserBuilder {
 		return this.props;
 	}
 
-	public asUserSupporter(asUserSupporter?: boolean) {
+	public asUserSupporter(asUserSupporter?: boolean): this {
 		if (asUserSupporter === true) {
 			this.props.support = asUserSupporter;
 		}
@@ -53,7 +54,7 @@ export class CurrentUserBuilder {
 
 	// I expect that external user should always bound to external system, but the existing code give no feedback about it
 	// Add isExternalUser modification to withExternalSystem if you can validate it.
-	public asExternalUser(isExternalUser?: boolean) {
+	public asExternalUser(isExternalUser?: boolean): this {
 		if (isExternalUser === true) {
 			this.props.isExternalUser = isExternalUser;
 		}
@@ -61,15 +62,23 @@ export class CurrentUserBuilder {
 		return this;
 	}
 
-	public withExternalSystem(systemId?: EntityId) {
+	public withExternalSystem(systemId?: EntityId): this {
 		this.props.systemId = systemId;
 
 		return this;
 	}
 
-	public asExternalUserWithToken(externalIdToken: string) {
+	public asExternalUserWithToken(externalIdToken: string): this {
 		this.props.externalIdToken = externalIdToken;
 		this.props.isExternalUser = true;
+
+		return this;
+	}
+
+	public asServiceAccount(isServiceAccount?: boolean): this {
+		if (isServiceAccount === true) {
+			this.props.isServiceAccount = isServiceAccount;
+		}
 
 		return this;
 	}

@@ -168,6 +168,7 @@ describe('VideoConferenceUc', () => {
 			schoolId: 'schoolId',
 			accountId: 'accountId',
 			isExternalUser: false,
+			isServiceAccount: false,
 			support: false,
 		};
 		defaultOptions = {
