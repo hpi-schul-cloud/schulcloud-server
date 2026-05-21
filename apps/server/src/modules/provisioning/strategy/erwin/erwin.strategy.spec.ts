@@ -558,11 +558,10 @@ describe('ErwinProvisioningStrategy', () => {
 
 				await sut.apply(oauthData);
 
-				expect(erwinProvisioningServiceMock.provisionEntity).toHaveBeenCalledWith(
-					ProvisioningEntityType.SCHOOL,
+				expect(erwinProvisioningServiceMock.provisionEntity).toHaveBeenCalledWith(ProvisioningEntityType.SCHOOL, {
 					system,
-					{ externalSchool }
-				);
+					externalSchool,
+				});
 			});
 
 			it('should call provisionEntity with USER type', async () => {
@@ -570,7 +569,8 @@ describe('ErwinProvisioningStrategy', () => {
 
 				await sut.apply(oauthData);
 
-				expect(erwinProvisioningServiceMock.provisionEntity).toHaveBeenCalledWith(ProvisioningEntityType.USER, system, {
+				expect(erwinProvisioningServiceMock.provisionEntity).toHaveBeenCalledWith(ProvisioningEntityType.USER, {
+					system,
 					externalSchool,
 					externalUser,
 				});

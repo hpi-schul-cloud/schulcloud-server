@@ -47,11 +47,13 @@ export class ErwinProvisioningStrategy extends ProvisioningStrategy {
 			});
 		}
 
-		await this.erwinProvisioningService.provisionEntity(ProvisioningEntityType.SCHOOL, data.system, {
+		await this.erwinProvisioningService.provisionEntity(ProvisioningEntityType.SCHOOL, {
+			system: data.system,
 			externalSchool: data.externalSchool,
 		});
 
-		await this.erwinProvisioningService.provisionEntity(ProvisioningEntityType.USER, data.system, {
+		await this.erwinProvisioningService.provisionEntity(ProvisioningEntityType.USER, {
+			system: data.system,
 			externalSchool: data.externalSchool,
 			externalUser: data.externalUser,
 		});
