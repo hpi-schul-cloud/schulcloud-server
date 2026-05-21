@@ -340,7 +340,7 @@ const canManageRoomApplicants = (user: User, roomAuthorizable: RoomAuthorizable)
 
 	const { roomPermissions, schoolPermissions } = resolveUserPermissions(user, roomAuthorizable);
 	const hasRoomPermission = roomPermissions.includes(Permission.ROOM_LIST_CONTENT);
-	const hasSchoolPermission = schoolPermissions.includes(Permission.SCHOOL_LIST_ROOM_APPLICANTS);
+	const hasSchoolPermission = schoolPermissions.includes(Permission.SCHOOL_MANAGE_ROOM_APPLICANTS);
 
 	return hasRoomPermission && hasSchoolPermission;
 };

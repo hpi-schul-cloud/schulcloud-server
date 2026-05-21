@@ -3,7 +3,7 @@ import { Migration } from '@mikro-orm/migrations-mongodb';
 const config = {
 	teacher: {
 		old: [],
-		new: ['SCHOOL_LIST_ROOM_APPLICANTS'],
+		new: ['SCHOOL_MANAGE_ROOM_APPLICANTS'],
 	},
 };
 
