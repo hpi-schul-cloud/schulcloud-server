@@ -1,5 +1,5 @@
 const chai = require('chai');
-const chaiAsPromised = require('chai-as-promised');
+const { default: chaiAsPromised } = require('chai-as-promised');
 
 const { BadRequest } = require('../../../../../src/errors');
 const { SyncError } = require('../../../../../src/errors/applicationErrors');

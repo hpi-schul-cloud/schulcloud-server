@@ -1,5 +1,5 @@
 const chai = require('chai');
-const chaiAsPromised = require('chai-as-promised');
+const { default: chaiAsPromised } = require('chai-as-promised');
 
 const { LDAPSyncerConsumer } = require('../../../../src/services/sync/strategies/LDAPSyncerConsumer');
 const { BadRequest } = require('../../../../src/errors');
