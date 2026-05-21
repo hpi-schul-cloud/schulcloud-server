@@ -1,6 +1,6 @@
 const assert = require('assert');
 const chai = require('chai');
-const chaiHttp = require('chai-http');
+const { default: chaiHttp } = require('chai-http');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 // proxyserver
 const oauth2Server = require('./oauth2MockServer');
