@@ -41,110 +41,109 @@ describe('Room Controller (API)', () => {
 		await app.close();
 	});
 
-	describe('GET /rooms/:roomId/applicants', () => {
-		const setupRoomWithExternalMembers = async (
-			loginAs: RoleName.ADMINISTRATOR | RoleName.TEACHER | RoleName.EXTERNALPERSON
-		) => {
-			const school = schoolEntityFactory.buildWithId();
-			const externalSchool = schoolEntityFactory.buildWithId();
-			const room = roomEntityFactory.buildWithId();
+	const setupRoomWithExternalMembers = async (
+		loginAs: RoleName.ADMINISTRATOR | RoleName.TEACHER | RoleName.EXTERNALPERSON
+	) => {
+		const school = schoolEntityFactory.buildWithId();
+		const externalSchool = schoolEntityFactory.buildWithId();
+		const room = roomEntityFactory.buildWithId();
 
-			const { user: adminUser, account: adminAccount } = UserAndAccountTestFactory.buildByRole(RoleName.ADMINISTRATOR, {
-				school,
-			});
+		const { user: adminUser, account: adminAccount } = UserAndAccountTestFactory.buildByRole(RoleName.ADMINISTRATOR, {
+			school,
+		});
 
-			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
-			const { externalPersonAccount, externalPersonUser } = UserAndAccountTestFactory.buildExternalPerson({ school });
-			const { roomEditorRole, roomOwnerRole, roomViewerRole, roomApplicantRole } =
-				RoomRolesTestFactory.createRoomRoles();
-			em.persist([roomEditorRole, roomOwnerRole, roomViewerRole, roomApplicantRole]);
-			const teacherRole = teacherUser.roles[0];
-			const studentRole = roleFactory.buildWithId({ name: RoleName.STUDENT });
-			const students = userFactory.buildList(2, { school, roles: [studentRole] });
-			const externalStudent = userFactory.buildWithId({ school: externalSchool, roles: [studentRole] });
-			const teachers = userFactory.buildList(2, { school, roles: [teacherRole] });
-			const externalTeachers = userFactory.buildList(2, { school: externalSchool, roles: [teacherRole] });
-			const applicantStudent = userFactory.buildWithId({ school, roles: [studentRole] });
-			const userGroupEntity = groupEntityFactory.buildWithId({
-				users: [
-					{ role: roomEditorRole, user: teacherUser },
-					{ role: roomEditorRole, user: teachers[0] },
-					{ role: roomEditorRole, user: teachers[1] },
-					{ role: roomOwnerRole, user: externalTeachers[0] },
-					{ role: roomEditorRole, user: externalTeachers[1] },
-					{ role: roomViewerRole, user: students[0] },
-					{ role: roomViewerRole, user: students[1] },
-					{ role: roomViewerRole, user: externalStudent },
-					{ role: roomViewerRole, user: externalPersonUser },
-					{ role: roomApplicantRole, user: applicantStudent },
-				],
-				type: GroupEntityTypes.ROOM,
-				organization: teacherUser.school,
-				externalSource: undefined,
-			});
-			const roomMemberships = roomMembershipEntityFactory.build({
-				userGroupId: userGroupEntity.id,
-				roomId: room.id,
-				schoolId: school.id,
-			});
-			await em
-				.persist([
-					adminAccount,
-					adminUser,
-					externalPersonAccount,
-					externalPersonUser,
-					room,
-					roomMemberships,
-					teacherAccount,
-					teacherUser,
-					userGroupEntity,
-					externalStudent,
-					...externalTeachers,
-					...students,
-					...teachers,
-				])
-				.flush();
-			em.clear();
-
-			const getAccountByRole = (
-				roleName: RoleName.ADMINISTRATOR | RoleName.EXTERNALPERSON | RoleName.TEACHER
-			): AccountEntity => {
-				const acounts = {
-					[RoleName.ADMINISTRATOR]: adminAccount,
-					[RoleName.EXTERNALPERSON]: externalPersonAccount,
-					[RoleName.TEACHER]: teacherAccount,
-				};
-
-				return acounts[roleName];
-			};
-
-			const loggedInClient = await testApiClient.login(getAccountByRole(loginAs));
-
-			return {
-				loggedInClient,
-				room,
-				students,
-				teachers,
+		const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
+		const { externalPersonAccount, externalPersonUser } = UserAndAccountTestFactory.buildExternalPerson({ school });
+		const { roomEditorRole, roomOwnerRole, roomViewerRole, roomApplicantRole } = RoomRolesTestFactory.createRoomRoles();
+		em.persist([roomEditorRole, roomOwnerRole, roomViewerRole, roomApplicantRole]);
+		const teacherRole = teacherUser.roles[0];
+		const studentRole = roleFactory.buildWithId({ name: RoleName.STUDENT });
+		const students = userFactory.buildList(2, { school, roles: [studentRole] });
+		const externalStudent = userFactory.buildWithId({ school: externalSchool, roles: [studentRole] });
+		const teachers = userFactory.buildList(2, { school, roles: [teacherRole] });
+		const externalTeachers = userFactory.buildList(2, { school: externalSchool, roles: [teacherRole] });
+		const applicantStudent = userFactory.buildWithId({ school, roles: [studentRole] });
+		const userGroupEntity = groupEntityFactory.buildWithId({
+			users: [
+				{ role: roomEditorRole, user: teacherUser },
+				{ role: roomEditorRole, user: teachers[0] },
+				{ role: roomEditorRole, user: teachers[1] },
+				{ role: roomOwnerRole, user: externalTeachers[0] },
+				{ role: roomEditorRole, user: externalTeachers[1] },
+				{ role: roomViewerRole, user: students[0] },
+				{ role: roomViewerRole, user: students[1] },
+				{ role: roomViewerRole, user: externalStudent },
+				{ role: roomViewerRole, user: externalPersonUser },
+				{ role: roomApplicantRole, user: applicantStudent },
+			],
+			type: GroupEntityTypes.ROOM,
+			organization: teacherUser.school,
+			externalSource: undefined,
+		});
+		const roomMemberships = roomMembershipEntityFactory.build({
+			userGroupId: userGroupEntity.id,
+			roomId: room.id,
+			schoolId: school.id,
+		});
+		await em
+			.persist([
+				adminAccount,
 				adminUser,
+				externalPersonAccount,
 				externalPersonUser,
+				room,
+				roomMemberships,
+				teacherAccount,
 				teacherUser,
+				userGroupEntity,
 				externalStudent,
-				externalTeachers,
-				roomEditorRole,
-				roomOwnerRole,
-				roomViewerRole,
-				roomApplicantRole,
-				applicantStudent,
+				...externalTeachers,
+				...students,
+				...teachers,
+			])
+			.flush();
+		em.clear();
+
+		const getAccountByRole = (
+			roleName: RoleName.ADMINISTRATOR | RoleName.EXTERNALPERSON | RoleName.TEACHER
+		): AccountEntity => {
+			const accounts = {
+				[RoleName.ADMINISTRATOR]: adminAccount,
+				[RoleName.EXTERNALPERSON]: externalPersonAccount,
+				[RoleName.TEACHER]: teacherAccount,
 			};
+
+			return accounts[roleName];
 		};
 
-		const setupInsufficientPermissionsUser = async () => {
-			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-			await em.persist([teacherAccount, teacherUser]).flush();
-			const loggedInClient = await testApiClient.login(teacherAccount);
-			return { loggedInClient };
-		};
+		const loggedInClient = await testApiClient.login(getAccountByRole(loginAs));
 
+		return {
+			loggedInClient,
+			room,
+			students,
+			teachers,
+			adminUser,
+			externalPersonUser,
+			teacherUser,
+			externalStudent,
+			externalTeachers,
+			roomEditorRole,
+			roomOwnerRole,
+			roomViewerRole,
+			roomApplicantRole,
+			applicantStudent,
+		};
+	};
+
+	const setupInsufficientPermissionsUser = async () => {
+		const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
+		await em.persist([teacherAccount, teacherUser]).flush();
+		const loggedInClient = await testApiClient.login(teacherAccount);
+		return { loggedInClient };
+	};
+
+	describe('GET /rooms/:roomId/applicants', () => {
 		describe('when the user is not authenticated', () => {
 			it('should return a 401 error', async () => {
 				const { room } = await setupRoomWithExternalMembers(RoleName.TEACHER);
@@ -210,6 +209,151 @@ describe('Room Controller (API)', () => {
 					title: 'Forbidden',
 					type: 'FORBIDDEN',
 				});
+			});
+		});
+	});
+
+	describe('POST /rooms/:roomId/applicants/confirm', () => {
+		describe('when the user is not authenticated', () => {
+			it('should return a 401 error', async () => {
+				const { room, applicantStudent } = await setupRoomWithExternalMembers(RoleName.TEACHER);
+
+				const response = await testApiClient.post(`/${room.id}/applicants/confirm`, {
+					userIds: [applicantStudent.id],
+				});
+
+				expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
+			});
+		});
+
+		describe('when the user has not the required permissions', () => {
+			it('should return forbidden error', async () => {
+				const { room, applicantStudent } = await setupRoomWithExternalMembers(RoleName.TEACHER);
+				const { loggedInClient } = await setupInsufficientPermissionsUser();
+
+				const response = await loggedInClient.post(`/${room.id}/applicants/confirm`, {
+					userIds: [applicantStudent.id],
+				});
+
+				expect(response.status).toBe(HttpStatus.FORBIDDEN);
+			});
+		});
+
+		describe('when the user can only administrate school rooms but is not a room member', () => {
+			it('should return forbidden', async () => {
+				const { loggedInClient, room, applicantStudent } = await setupRoomWithExternalMembers(RoleName.ADMINISTRATOR);
+
+				const response = await loggedInClient.post(`/${room.id}/applicants/confirm`, {
+					userIds: [applicantStudent.id],
+				});
+
+				expect(response.status).toBe(HttpStatus.FORBIDDEN);
+			});
+		});
+
+		describe('when a provided userId does not belong to an applicant', () => {
+			it('should return bad request', async () => {
+				const { loggedInClient, room, students } = await setupRoomWithExternalMembers(RoleName.TEACHER);
+
+				const response = await loggedInClient.post(`/${room.id}/applicants/confirm`, {
+					userIds: [students[0].id],
+				});
+
+				expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+			});
+		});
+
+		describe('when the user successfully confirms applicants', () => {
+			it('should return OK and the confirmed user should become a room viewer', async () => {
+				const { loggedInClient, room, applicantStudent } = await setupRoomWithExternalMembers(RoleName.TEACHER);
+
+				const response = await loggedInClient.post(`/${room.id}/applicants/confirm`, {
+					userIds: [applicantStudent.id],
+				});
+
+				expect(response.status).toBe(HttpStatus.CREATED);
+
+				const membersResponse = await loggedInClient.get(`/${room.id}/members`);
+				expect(membersResponse.status).toBe(HttpStatus.OK);
+				const body = membersResponse.body as RoomMemberListResponse;
+				expect(body.data).toContainEqual(
+					expect.objectContaining({
+						userId: applicantStudent.id,
+						roomRoleName: RoleName.ROOMVIEWER,
+					})
+				);
+			});
+		});
+	});
+
+	describe('POST /rooms/:roomId/applicants/reject', () => {
+		describe('when the user is not authenticated', () => {
+			it('should return a 401 error', async () => {
+				const { room, applicantStudent } = await setupRoomWithExternalMembers(RoleName.TEACHER);
+
+				const response = await testApiClient.post(`/${room.id}/applicants/reject`, {
+					userIds: [applicantStudent.id],
+				});
+
+				expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
+			});
+		});
+
+		describe('when the user has not the required permissions', () => {
+			it('should return forbidden error', async () => {
+				const { room, applicantStudent } = await setupRoomWithExternalMembers(RoleName.TEACHER);
+				const { loggedInClient } = await setupInsufficientPermissionsUser();
+
+				const response = await loggedInClient.post(`/${room.id}/applicants/reject`, {
+					userIds: [applicantStudent.id],
+				});
+
+				expect(response.status).toBe(HttpStatus.FORBIDDEN);
+			});
+		});
+
+		describe('when the user can only administrate school rooms but is not a room member', () => {
+			it('should return forbidden', async () => {
+				const { loggedInClient, room, applicantStudent } = await setupRoomWithExternalMembers(RoleName.ADMINISTRATOR);
+
+				const response = await loggedInClient.post(`/${room.id}/applicants/reject`, {
+					userIds: [applicantStudent.id],
+				});
+
+				expect(response.status).toBe(HttpStatus.FORBIDDEN);
+			});
+		});
+
+		describe('when a provided userId does not belong to an applicant', () => {
+			it('should return bad request', async () => {
+				const { loggedInClient, room, students } = await setupRoomWithExternalMembers(RoleName.TEACHER);
+
+				const response = await loggedInClient.post(`/${room.id}/applicants/reject`, {
+					userIds: [students[0].id],
+				});
+
+				expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+			});
+		});
+
+		describe('when the user successfully rejects applicants', () => {
+			it('should return OK and the rejected user should be removed from the room', async () => {
+				const { loggedInClient, room, applicantStudent } = await setupRoomWithExternalMembers(RoleName.TEACHER);
+
+				const response = await loggedInClient.post(`/${room.id}/applicants/reject`, {
+					userIds: [applicantStudent.id],
+				});
+
+				expect(response.status).toBe(HttpStatus.CREATED);
+
+				const applicantsResponse = await loggedInClient.get(`/${room.id}/applicants`);
+				expect(applicantsResponse.status).toBe(HttpStatus.OK);
+				const body = applicantsResponse.body as RoomMemberListResponse;
+				expect(body.data).not.toContainEqual(
+					expect.objectContaining({
+						userId: applicantStudent.id,
+					})
+				);
 			});
 		});
 	});

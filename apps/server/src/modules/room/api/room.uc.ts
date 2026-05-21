@@ -173,10 +173,32 @@ export class RoomUc {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const roomAuthorizable = await this.roomMembershipService.getRoomAuthorizable(roomId);
 
-		throwForbiddenIfFalse(this.roomRule.can('getRoomApplicants', user, roomAuthorizable));
+		throwForbiddenIfFalse(this.roomRule.can('manageRoomApplicants', user, roomAuthorizable));
 
 		const applicantsResponse = await this.getRoomApplicantsResponse(user, roomAuthorizable);
 		return applicantsResponse;
+	}
+
+	public async confirmApplicants(userId: EntityId, roomId: EntityId, applicantUserIds: EntityId[]): Promise<void> {
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const roomAuthorizable = await this.roomMembershipService.getRoomAuthorizable(roomId);
+
+		throwForbiddenIfFalse(this.roomRule.can('manageRoomApplicants', user, roomAuthorizable));
+
+		await this.checkForNonApplicants(roomId, applicantUserIds);
+
+		await this.roomMembershipService.changeRoleOfRoomMembers(roomId, applicantUserIds, RoleName.ROOMVIEWER);
+	}
+
+	public async rejectApplicants(userId: EntityId, roomId: EntityId, applicantUserIds: EntityId[]): Promise<void> {
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const roomAuthorizable = await this.roomMembershipService.getRoomAuthorizable(roomId);
+
+		throwForbiddenIfFalse(this.roomRule.can('manageRoomApplicants', user, roomAuthorizable));
+
+		await this.checkForNonApplicants(roomId, applicantUserIds);
+
+		await this.roomMembershipService.removeMembersFromRoom(roomId, applicantUserIds);
 	}
 
 	public async addMembersToRoom(userId: EntityId, roomId: EntityId, newUserIds: Array<EntityId>): Promise<RoomRole> {
@@ -284,6 +306,18 @@ export class RoomUc {
 			}
 		}
 		await this.roomMembershipService.removeMembersFromRoom(roomId, userIds);
+	}
+
+	private async checkForNonApplicants(roomId: EntityId, userIds: EntityId[]): Promise<void> {
+		const roomMembers = await this.roomMembershipService.getRoomMembers(roomId);
+		const nonApplicants = userIds.filter((userId) => {
+			const member = roomMembers.find((m) => m.userId === userId);
+			return member?.roomRoleName !== RoleName.ROOMAPPLICANT;
+		});
+
+		if (nonApplicants.length > 0) {
+			throw new BadRequestException('One or more users are not applicants of the room');
+		}
 	}
 
 	private async getRoomMembersResponse(

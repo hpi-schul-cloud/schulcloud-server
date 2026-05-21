@@ -25,6 +25,7 @@ import { Room } from '../domain';
 import { ROOM_INCOMING_REQUEST_TIMEOUT_COPY_API_KEY } from '../timeout.config';
 import { AddByEmailBodyParams } from './dto/request/add-by-email.body.params';
 import { AddRoomMembersBodyParams } from './dto/request/add-room-members.body.params';
+import { ApplicantIdsBodyParams } from './dto/request/applicant-ids.body.params';
 import { ChangeRoomRoleBodyParams } from './dto/request/change-room-role.body.params';
 import { CreateRoomBodyParams } from './dto/request/create-room.body.params';
 import { MoveItemBodyParams } from './dto/request/move-item.body.params';
@@ -385,6 +386,36 @@ export class RoomController {
 		const response = new RoomMemberListResponse(members);
 
 		return response;
+	}
+
+	@Post(':roomId/applicants/confirm')
+	@ApiOperation({ summary: 'Confirm applicants and add them as room viewers.' })
+	@ApiResponse({ status: HttpStatus.CREATED, description: 'Confirmation successful' })
+	@ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiValidationError })
+	@ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })
+	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
+	@ApiResponse({ status: '5XX', type: ErrorResponse })
+	public async confirmApplicants(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() urlParams: RoomUrlParams,
+		@Body() bodyParams: ApplicantIdsBodyParams
+	): Promise<void> {
+		await this.roomUc.confirmApplicants(currentUser.userId, urlParams.roomId, bodyParams.userIds);
+	}
+
+	@Post(':roomId/applicants/reject')
+	@ApiOperation({ summary: 'Reject applicants and remove them from the room.' })
+	@ApiResponse({ status: HttpStatus.CREATED, description: 'Rejection successful' })
+	@ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiValidationError })
+	@ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })
+	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
+	@ApiResponse({ status: '5XX', type: ErrorResponse })
+	public async rejectApplicants(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() urlParams: RoomUrlParams,
+		@Body() bodyParams: ApplicantIdsBodyParams
+	): Promise<void> {
+		await this.roomUc.rejectApplicants(currentUser.userId, urlParams.roomId, bodyParams.userIds);
 	}
 
 	@Get(':roomId/members-redacted')

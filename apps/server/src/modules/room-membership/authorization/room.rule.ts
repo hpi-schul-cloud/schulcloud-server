@@ -19,8 +19,8 @@ export const RoomOperationValues = [
 	'editContent',
 	'getRoomMembers',
 	'getRoomMembersRedacted',
-	'getRoomApplicants',
 	'leaveRoom',
+	'manageRoomApplicants',
 	'shareRoom',
 	'updateRoom',
 	'createRoomInvitationLinks',
@@ -82,8 +82,8 @@ export class RoomRule implements Rule<RoomAuthorizable> {
 			editContent: canEditContent,
 			getRoomMembers: canGetRoomMembers,
 			getRoomMembersRedacted: canGetRoomMembersRedacted,
-			getRoomApplicants: canGetRoomApplicants,
 			leaveRoom: canLeaveRoom,
+			manageRoomApplicants: canManageRoomApplicants,
 			shareRoom: canShareRoom,
 			updateRoom: canUpdateRoom,
 			createRoomInvitationLinks: canManageRoomInvitationLinks,
@@ -333,7 +333,7 @@ const canGetRoomMembersRedacted = (user: User, roomAuthorizable: RoomAuthorizabl
 	return canAdministrateSchoolRooms;
 };
 
-const canGetRoomApplicants = (user: User, roomAuthorizable: RoomAuthorizable): boolean => {
+const canManageRoomApplicants = (user: User, roomAuthorizable: RoomAuthorizable): boolean => {
 	if (isLockedRoom(roomAuthorizable)) {
 		return false;
 	}
