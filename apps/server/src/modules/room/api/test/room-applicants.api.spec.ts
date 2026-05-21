@@ -271,7 +271,7 @@ describe('Room Controller (API)', () => {
 					userIds: [applicantStudent.id],
 				});
 
-				expect(response.status).toBe(HttpStatus.CREATED);
+				expect(response.status).toBe(HttpStatus.OK);
 
 				const membersResponse = await loggedInClient.get(`/${room.id}/members`);
 				expect(membersResponse.status).toBe(HttpStatus.OK);
@@ -344,7 +344,7 @@ describe('Room Controller (API)', () => {
 					userIds: [applicantStudent.id],
 				});
 
-				expect(response.status).toBe(HttpStatus.CREATED);
+				expect(response.status).toBe(HttpStatus.OK);
 
 				const applicantsResponse = await loggedInClient.get(`/${room.id}/applicants`);
 				expect(applicantsResponse.status).toBe(HttpStatus.OK);

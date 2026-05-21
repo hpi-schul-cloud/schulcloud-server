@@ -389,8 +389,9 @@ export class RoomController {
 	}
 
 	@Post(':roomId/applicants/confirm')
+	@HttpCode(HttpStatus.OK)
 	@ApiOperation({ summary: 'Confirm applicants and add them as room viewers.' })
-	@ApiResponse({ status: HttpStatus.CREATED, description: 'Confirmation successful' })
+	@ApiResponse({ status: HttpStatus.OK, description: 'Confirmation successful' })
 	@ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiValidationError })
 	@ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })
 	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
@@ -404,8 +405,9 @@ export class RoomController {
 	}
 
 	@Post(':roomId/applicants/reject')
+	@HttpCode(HttpStatus.OK)
 	@ApiOperation({ summary: 'Reject applicants and remove them from the room.' })
-	@ApiResponse({ status: HttpStatus.CREATED, description: 'Rejection successful' })
+	@ApiResponse({ status: HttpStatus.OK, description: 'Rejection successful' })
 	@ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiValidationError })
 	@ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })
 	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
