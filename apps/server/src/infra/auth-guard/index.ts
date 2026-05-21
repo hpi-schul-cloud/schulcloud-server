@@ -18,4 +18,4 @@ export {
 	JwtPayload,
 	StrategyType,
 } from './interface';
-export { CurrentUserBuilder, JwtPayloadFactory } from './mapper';
+export { CurrentUserBuilder, JwtPayloadBuilder } from './mapper';

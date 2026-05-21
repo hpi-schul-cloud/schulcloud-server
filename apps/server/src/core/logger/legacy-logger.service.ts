@@ -23,23 +23,23 @@ export class LegacyLogger implements ILegacyLogger {
 
 	constructor(@Inject(WINSTON_MODULE_PROVIDER) private readonly logger: WinstonLogger) {}
 
-	log(message: unknown, context?: string): void {
+	public log(message: unknown, context?: string): void {
 		this.logger.info(this.createMessage(message, context));
 	}
 
-	warn(message: unknown, context?: string): void {
+	public warn(message: unknown, context?: string): void {
 		this.logger.warning(this.createMessage(message, context));
 	}
 
-	debug(message: unknown, context?: string): void {
+	public debug(message: unknown, context?: string): void {
 		this.logger.debug(this.createMessage(message, context));
 	}
 
-	http(message: RequestLoggingBody, context?: string): void {
+	public http(message: RequestLoggingBody, context?: string): void {
 		this.logger.notice(this.createMessage(message, context));
 	}
 
-	error(message: unknown, trace?: unknown, context?: string): void {
+	public error(message: unknown, trace?: unknown, context?: string): void {
 		const result = {
 			message,
 			trace,
@@ -47,16 +47,17 @@ export class LegacyLogger implements ILegacyLogger {
 		this.logger.error(this.createMessage(result, context));
 	}
 
-	setContext(name: string) {
+	public setContext(name: string): void {
 		this.context = name;
 	}
 
-	private createMessage(message: unknown, context?: string | undefined) {
+	private createMessage(message: unknown, context?: string | undefined): { message: string; context: string } {
 		return { message: this.stringifiedMessage(message), context: context || this.context };
 	}
 
-	private stringifiedMessage(message: unknown) {
+	private stringifiedMessage(message: unknown): string {
 		const stringifiedMessage = util.inspect(message).replace(/\n/g, '').replace(/\\n/g, '');
+
 		return stringifiedMessage;
 	}
 }

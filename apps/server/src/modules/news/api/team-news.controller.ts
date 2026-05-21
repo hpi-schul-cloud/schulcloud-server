@@ -16,7 +16,7 @@ export class TeamNewsController {
 	 * Responds with news of a given team for a user.
 	 */
 	@Get(':teamId/news')
-	async findAllForTeam(
+	public async findAllForTeam(
 		@Param() urlParams: TeamUrlParams,
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() scope: FilterNewsParams,

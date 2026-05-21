@@ -1,6 +1,6 @@
 const chai = require('chai');
-const chaiHttp = require('chai-http');
-const chaiAsPromised = require('chai-as-promised');
+const { default: chaiHttp } = require('chai-http');
+const { default: chaiAsPromised } = require('chai-as-promised');
 const { expect } = require('chai');
 const appPromise = require('../../../../src/app');
 const { schoolModel } = require('../../../../src/services/school/model');

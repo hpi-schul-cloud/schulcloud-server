@@ -107,13 +107,14 @@ describe('Decorators', () => {
 
 				const loggedInClient = await apiClient.login(teacherAccount);
 
-				const expectedCurrentUser = {
+				const expectedCurrentUser: ICurrentUser = {
 					accountId: teacherAccount.id,
 					isExternalUser: teacherUser.externalId !== undefined,
 					roles: [teacherUser.roles[0].id],
 					schoolId: teacherUser.school.id,
 					support: false,
 					userId: teacherUser.id,
+					isServiceAccount: false,
 				};
 
 				return { loggedInClient, expectedCurrentUser };
