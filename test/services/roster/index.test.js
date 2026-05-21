@@ -1,5 +1,5 @@
 const chai = require('chai');
-const chaiHttp = require('chai-http');
+const { default: chaiHttp } = require('chai-http');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const sinon = require('sinon');
 const { ObjectId } = require('bson');
