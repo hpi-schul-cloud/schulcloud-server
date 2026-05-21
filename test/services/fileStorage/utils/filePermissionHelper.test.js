@@ -1,5 +1,5 @@
 const chai = require('chai');
-const chaiAsPromised = require('chai-as-promised');
+const { default: chaiAsPromised } = require('chai-as-promised');
 
 const { FileModel } = require('../../../../src/services/fileStorage/model');
 const { userModel } = require('../../../../src/services/user/model');

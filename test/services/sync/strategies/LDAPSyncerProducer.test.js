@@ -1,6 +1,6 @@
 /* eslint-disable max-classes-per-file */
 const chai = require('chai');
-const chaiAsPromised = require('chai-as-promised');
+const { default: chaiAsPromised } = require('chai-as-promised');
 const sinon = require('sinon');
 const { SyncMessageBuilder } = require('../../../../src/services/sync/strategies/SyncMessageBuilder');
 
