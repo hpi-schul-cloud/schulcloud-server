@@ -3,7 +3,7 @@ import { ErrorLogger, Logger } from '@core/logger';
 import { HttpService } from '@nestjs/axios';
 import { Inject, Injectable } from '@nestjs/common';
 import { AxiosError } from 'axios';
-import FormData from 'form-data';
+import FormDataReadable from 'form-data';
 import { lastValueFrom } from 'rxjs';
 import { Readable, Stream } from 'stream';
 import util from 'util';
@@ -158,7 +158,7 @@ export class FilesStorageClientAdapter {
 		// INFO: We bypass the generated client to support streaming directly without buffering.
 		// The generated client expects a File type which would require loading everything into memory.
 		// Using form-data package allows us to stream the data directly to the target server.
-		const formData = new FormData();
+		const formData = new FormDataReadable();
 		formData.append('file', file, { filename: fileName });
 
 		const url = new URL(
