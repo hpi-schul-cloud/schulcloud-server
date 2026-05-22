@@ -240,6 +240,7 @@ export class UserDoMikroOrmRepo extends BaseDORepo<UserDo, User> implements User
 			lastSyncedAt: entityDO.lastSyncedAt,
 			consent: entityDO.consent ? this.mapConsentToEntity(entityDO.consent) : undefined,
 			source: entityDO.source,
+			importHash: entityDO.importHash,
 		};
 	}
 
