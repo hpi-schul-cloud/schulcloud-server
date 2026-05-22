@@ -46,7 +46,7 @@ export class SchoolProvisioningHandler implements ProvisioningEntityHandler {
 		return context.externalSchool?.erwinId;
 	}
 
-	public async findByEntityId(entityId: string): Promise<ProvisioningResult | null> {
+	public findByEntityId(entityId: string): Promise<ProvisioningResult | null> {
 		return this.schoolService.getSchoolById(entityId);
 	}
 
@@ -113,7 +113,7 @@ export class SchoolProvisioningHandler implements ProvisioningEntityHandler {
 			school.updateOfficialSchoolNumber(externalSchool.officialSchoolNumber);
 		}
 
-		return this.schoolService.save(school);
+		return await this.schoolService.save(school);
 	}
 
 	private formatSchoolName(externalSchool: ExternalSchoolDto): string | undefined {
