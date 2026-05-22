@@ -207,7 +207,7 @@ export class RoomUc {
 
 		throwForbiddenIfFalse(this.roomRule.can('addMembers', user, roomAuthorizable));
 
-		const userIsStudent = user.roles.filter((role) => role.name === RoleName.STUDENT).length > 0;
+		const userIsStudent = user.roles.getItems().some((role) => role.name === RoleName.STUDENT);
 		if (userIsStudent) {
 			const usersToBeAdded = await this.userService.getUserEntitiesWithRoles(newUserIds);
 
