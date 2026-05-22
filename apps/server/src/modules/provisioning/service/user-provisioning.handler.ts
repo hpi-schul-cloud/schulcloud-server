@@ -23,7 +23,7 @@ import {
 export class UserProvisioningHandler implements ProvisioningEntityHandler {
 	public readonly referencedEntityType = ReferencedEntityType.USER;
 
-	public readonly dtoName = 'ExternalUserDto';
+	public readonly dtoName = ExternalUserDto.name;
 
 	constructor(
 		private readonly userService: UserService,
