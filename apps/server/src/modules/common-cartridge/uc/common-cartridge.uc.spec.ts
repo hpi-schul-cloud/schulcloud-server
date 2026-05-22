@@ -12,6 +12,8 @@ import { ImportCourseEvent } from '../domain/events/import-course.event';
 import { ImportCourseParams } from '../domain/import-course.params';
 import { Request } from 'express';
 import { UnauthorizedException } from '@nestjs/common';
+import { FilesStorageClientAdapter } from '@infra/common-cartridge-clients';
+import { COMMON_CARTRIDGE_CONFIG_TOKEN, CommonCartridgeConfig } from '../common-cartridge.config';
 
 describe('CommonCartridgeUc', () => {
 	let module: TestingModule;
@@ -35,6 +37,14 @@ describe('CommonCartridgeUc', () => {
 				{
 					provide: REQUEST,
 					useValue: createMock<Request>(),
+				},
+				{
+					provide: FilesStorageClientAdapter,
+					useValue: createMock<FilesStorageClientAdapter>(),
+				},
+				{
+					provide: COMMON_CARTRIDGE_CONFIG_TOKEN,
+					useValue: createMock<CommonCartridgeConfig>(),
 				},
 			],
 		}).compile();
