@@ -1,4 +1,5 @@
 import { DeepMocked } from '@golevelup/ts-jest';
+import { DATABASE_CONFIG_TOKEN } from '@infra/database';
 import { Test, TestingModule } from '@nestjs/testing';
 import { findOneOrFailHandler } from '@shared/common/database-error.handler';
 import { MongoMemoryDatabaseModule } from '@testing/database';
@@ -22,6 +23,13 @@ describe(DeletionExecutionConsole.name, () => {
 				MongoMemoryDatabaseModule.forRoot({ ...findOneOrFailHandler, entities: TEST_ENTITIES }),
 			],
 		})
+			.overrideProvider(DATABASE_CONFIG_TOKEN)
+			.useValue({
+				dbUrl: `${process.env.MONGO_TEST_URI}/deletion-execution-console-test`,
+				dbEnsureIndexes: false,
+				dbAllowGlobalContext: true,
+				dbDebug: false,
+			})
 			.overrideProvider(DELETION_CONSOLE_CONFIG_TOKEN)
 			.useValue({
 				adminApiClientBaseUrl: 'http://api-admin:4030',

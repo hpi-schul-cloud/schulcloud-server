@@ -1,7 +1,8 @@
+import { DATABASE_CONFIG_TOKEN } from '@infra/database';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { findOneOrFailHandler } from '@shared/common/database-error.handler';
 import { MongoMemoryDatabaseModule } from '@testing/database';
-import { ObjectId } from '@mikro-orm/mongodb';
 import fs from 'fs';
 import { PushDeleteRequestsOptionsBuilder } from './builder';
 import { UnsyncedEntitiesOptionsBuilder } from './builder/unsynced-entities-options.builder';
@@ -23,6 +24,13 @@ describe(DeletionQueueConsole.name, () => {
 				MongoMemoryDatabaseModule.forRoot({ ...findOneOrFailHandler, entities: TEST_ENTITIES }),
 			],
 		})
+			.overrideProvider(DATABASE_CONFIG_TOKEN)
+			.useValue({
+				dbUrl: `${process.env.MONGO_TEST_URI}/deletion-queue-console-test`,
+				dbEnsureIndexes: false,
+				dbAllowGlobalContext: true,
+				dbDebug: false,
+			})
 			.overrideProvider(DELETION_CONSOLE_CONFIG_TOKEN)
 			.useValue({
 				adminApiClientBaseUrl: 'http://api-admin:4030',
