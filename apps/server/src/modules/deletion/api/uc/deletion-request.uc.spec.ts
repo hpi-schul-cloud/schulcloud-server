@@ -1,10 +1,10 @@
 import { LegacyLogger } from '@core/logger';
-import { NotFoundException } from '@nestjs/common';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountService } from '@modules/account';
 import { AuthenticationService } from '@modules/authentication';
 import { UserService } from '@modules/user';
+import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { DELETION_CONFIG_TOKEN, DeletionConfig } from '../../deletion.config';
@@ -86,6 +86,10 @@ describe(DeletionRequestUc.name, () => {
 	afterEach(() => {
 		jest.clearAllMocks();
 		jest.useRealTimers();
+	});
+
+	afterAll(async () => {
+		await module.close();
 	});
 
 	describe('createDeletionRequest', () => {

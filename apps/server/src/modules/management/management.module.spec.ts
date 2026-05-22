@@ -13,8 +13,8 @@ describe('ManagementModule', () => {
 			imports: [ManagementServerModule],
 		}).compile();
 
-		service = module.get(DatabaseManagementUc);
-		controller = module.get(DatabaseManagementController);
+		service = await module.resolve(DatabaseManagementUc);
+		controller = await module.resolve(DatabaseManagementController);
 	});
 
 	afterAll(async () => {
@@ -37,8 +37,8 @@ describe('ManagementTestModule', () => {
 			imports: [ManagementServerTestModule],
 		}).compile();
 
-		service = module.get(DatabaseManagementUc);
-		controller = module.get(DatabaseManagementController);
+		service = await module.resolve(DatabaseManagementUc);
+		controller = await module.resolve(DatabaseManagementController);
 	});
 
 	afterAll(async () => {

@@ -38,6 +38,7 @@ let config: Config.InitialOptions = {
 		return Number.isNaN(parsed) ? 2 : parsed;
 	})(),
 	workerIdleMemoryLimit: '1.5GB', // without this, jest can lead to big memory leaks and out of memory errors
+	setupFilesAfterEnv: ['<rootDir>/jest.setup.ts'],
 };
 
 if (!process.env.RUN_WITHOUT_JEST_COVERAGE) {
