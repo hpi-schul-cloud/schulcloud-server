@@ -90,6 +90,10 @@ describe(AuthenticationService.name, () => {
 		jest.clearAllMocks();
 	});
 
+	afterAll(async () => {
+		await module.close();
+	});
+
 	describe('loadAccount', () => {
 		describe('when resolving an account without system id', () => {
 			it('should find an account', async () => {

@@ -1,16 +1,18 @@
 import { io, Socket } from 'socket.io-client';
 import { v4 as uuid } from 'uuid';
-import { Callback, SocketConfiguration } from './types';
 import { useResponseTimes } from './helper/responseTimes.composable';
+import { Callback, SocketConfiguration } from './types';
 
 type RegisteredPromise = { event: string; resolve: Callback; reject: Callback; handle: string; startTime: number };
 
 const { addResponseTime } = useResponseTimes();
 
 export class SocketConnection {
-	private socket: Socket;
+	private readonly socket: Socket;
 
-	private socketConfiguration: SocketConfiguration;
+	private readonly socketConfiguration: SocketConfiguration;
+
+	private readonly onError: Callback;
 
 	private connected = false;
 
@@ -19,8 +21,6 @@ export class SocketConnection {
 	private timeoutuntilList: { timeoutUntil: number; handle: string }[] = [];
 
 	private checkerInterval: NodeJS.Timeout | undefined;
-
-	private onError: Callback;
 
 	constructor(socketConfiguration: SocketConfiguration, onError: Callback | undefined) {
 		this.socketConfiguration = socketConfiguration;
@@ -40,7 +40,7 @@ export class SocketConnection {
 		this.socket = io(baseUrl, options);
 	}
 
-	async connect() {
+	public connect(): Promise<boolean> {
 		this.ensureRunningTimeoutChecks();
 		return new Promise((resolve, reject) => {
 			let handle: NodeJS.Timeout | undefined = undefined;
@@ -85,12 +85,12 @@ export class SocketConnection {
 		});
 	}
 
-	emit = (event: string, data: unknown) => {
+	public emit = (event: string, data: unknown): void => {
 		this.socket.emit(event, data);
 	};
 
 	// eslint-disable-next-line arrow-body-style
-	emitAndWait = async (actionPrefix: string, payload: unknown, timeoutMs = 10000) => {
+	public emitAndWait = (actionPrefix: string, payload: unknown, timeoutMs = 10000): Promise<unknown> => {
 		/* istanbul ignore next */
 		return new Promise((resolve, reject) => {
 			this.socket.emit(`${actionPrefix}-request`, payload);
@@ -98,20 +98,18 @@ export class SocketConnection {
 		});
 	};
 
-	ensureRunningTimeoutChecks() {
-		if (!this.checkerInterval) {
-			this.checkerInterval = setInterval(() => this.checkTimeouts(), 1000);
-		}
+	public ensureRunningTimeoutChecks(): void {
+		this.checkerInterval ??= setInterval(() => this.checkTimeouts(), 1000);
 	}
 
-	stopTimeoutChecks() {
-		if (!this.checkerInterval) {
-			/* istanbul ignore next */
+	public stopTimeoutChecks(): void {
+		if (this.checkerInterval) {
 			clearInterval(this.checkerInterval);
+			this.checkerInterval = undefined;
 		}
 	}
 
-	checkTimeouts() {
+	public checkTimeouts(): void {
 		const now = performance.now();
 		while (this.timeoutuntilList.length > 0 && this.timeoutuntilList[0]?.timeoutUntil < now) {
 			const first = this.timeoutuntilList.shift();
@@ -129,7 +127,7 @@ export class SocketConnection {
 		}
 	}
 
-	processRegisteredPromises(event: string, data: unknown) {
+	public processRegisteredPromises(event: string, data: unknown): void {
 		const promises = this.registeredPromises[event];
 		if (promises) {
 			for (const promise of promises) {
@@ -142,7 +140,7 @@ export class SocketConnection {
 		}
 	}
 
-	registerPromise(successEvent: string, resolve: Callback, reject: Callback, timeoutMs = 10000) {
+	public registerPromise(successEvent: string, resolve: Callback, reject: Callback, timeoutMs = 10000): string {
 		const startTime = performance.now();
 		const handle = uuid();
 		const failureEvent = successEvent.replace('-success', '-failure');
@@ -154,30 +152,31 @@ export class SocketConnection {
 		return handle;
 	}
 
-	getRegisteredPromise(handle: string) {
+	public getRegisteredPromise(handle: string): RegisteredPromise | undefined {
 		const promises = Object.values(this.registeredPromises).flat();
 		return promises.find((p) => p.handle === handle);
 	}
 
-	unregisterPromise(successEvent: string, handle: string) {
+	public unregisterPromise(successEvent: string, handle: string): void {
 		const failureEvent = successEvent.replace('-success', '-failure');
 		this.registeredPromises[successEvent] = this.registeredPromises[successEvent]?.filter((p) => p.handle !== handle);
 		this.registeredPromises[failureEvent] = this.registeredPromises[failureEvent]?.filter((p) => p.handle !== handle);
 	}
 
-	registerTimeout(handle: string, timeoutUntil: number) {
+	public registerTimeout(handle: string, timeoutUntil: number): void {
 		this.timeoutuntilList.push({ handle, timeoutUntil });
 	}
 
-	unregisterTimeout(handle: string) {
+	public unregisterTimeout(handle: string): void {
 		this.timeoutuntilList = this.timeoutuntilList.filter((t) => t.handle !== handle);
 	}
 
-	isConnected() {
+	public isConnected(): boolean {
 		return this.connected;
 	}
 
-	close() {
+	public close(): void {
+		this.stopTimeoutChecks();
 		this.socket.close();
 		this.connected = false;
 	}
