@@ -1,9 +1,9 @@
-import { DATABASE_CONFIG_TOKEN, DatabaseModule } from '@infra/database';
+import { DatabaseModule } from '@infra/database';
 import { Module } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { findOneOrFailHandler } from '@shared/common/database-error.handler';
 import { MongoMemoryDatabaseModule } from '@testing/database';
-import { MediaSyncConsoleAppModule } from './media-sync-console.app.module';
+import { MediaSyncConsoleAppModule, MediaSyncConsoleAppTestModule } from './media-sync-console.app.module';
 import { TEST_ENTITIES } from './media-sync-console.entity.imports';
 
 @Module({
@@ -17,18 +17,10 @@ describe(MediaSyncConsoleAppModule.name, () => {
 	describe('when the module is loaded', () => {
 		it('should have a defined module', async () => {
 			const module = await Test.createTestingModule({
-				imports: [MediaSyncConsoleAppModule],
+				imports: [MediaSyncConsoleAppTestModule],
 			})
 				.overrideModule(DatabaseModule)
 				.useModule(DatabaseModuleOverride)
-				.overrideProvider(DATABASE_CONFIG_TOKEN)
-				.useValue({
-					// eslint-disable-next-line no-process-env, @typescript-eslint/restrict-template-expressions
-					dbUrl: `${process.env.MONGO_TEST_URI}/media-sync-test`,
-					dbEnsureIndexes: false,
-					dbAllowGlobalContext: true,
-					dbDebug: false,
-				})
 				.compile();
 
 			expect(module).toBeDefined();

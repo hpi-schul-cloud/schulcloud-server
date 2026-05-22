@@ -1,14 +1,10 @@
-import { DATABASE_CONFIG_TOKEN } from '@infra/database';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { findOneOrFailHandler } from '@shared/common/database-error.handler';
-import { MongoMemoryDatabaseModule } from '@testing/database';
 import fs from 'fs';
 import { PushDeleteRequestsOptionsBuilder } from './builder';
 import { UnsyncedEntitiesOptionsBuilder } from './builder/unsynced-entities-options.builder';
-import { DeletionConsoleModule } from './deletion-console.app.module';
+import { DeletionConsoleTestModule } from './deletion-console.app.module';
 import { DELETION_CONSOLE_CONFIG_TOKEN } from './deletion-console.config';
-import { TEST_ENTITIES } from './deletion-console.entity.imports';
 import { DeletionQueueConsole } from './deletion-queue.console';
 import { BatchDeletionUc } from './uc';
 
@@ -19,19 +15,8 @@ describe(DeletionQueueConsole.name, () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [
-				DeletionConsoleModule,
-				MongoMemoryDatabaseModule.forRoot({ ...findOneOrFailHandler, entities: TEST_ENTITIES }),
-			],
+			imports: [DeletionConsoleTestModule],
 		})
-			.overrideProvider(DATABASE_CONFIG_TOKEN)
-			.useValue({
-				// eslint-disable-next-line no-process-env, @typescript-eslint/restrict-template-expressions
-				dbUrl: `${process.env.MONGO_TEST_URI}/deletion-queue-console-test`,
-				dbEnsureIndexes: false,
-				dbAllowGlobalContext: true,
-				dbDebug: false,
-			})
 			.overrideProvider(DELETION_CONSOLE_CONFIG_TOKEN)
 			.useValue({
 				adminApiClientBaseUrl: 'http://api-admin:4030',

@@ -1,12 +1,8 @@
 import { DeepMocked } from '@golevelup/ts-jest';
-import { DATABASE_CONFIG_TOKEN } from '@infra/database';
 import { Test, TestingModule } from '@nestjs/testing';
-import { findOneOrFailHandler } from '@shared/common/database-error.handler';
-import { MongoMemoryDatabaseModule } from '@testing/database';
 import { DeletionExecutionTriggerResultBuilder, TriggerDeletionExecutionOptionsBuilder } from './builder';
-import { DeletionConsoleModule } from './deletion-console.app.module';
+import { DeletionConsoleTestModule } from './deletion-console.app.module';
 import { DELETION_CONSOLE_CONFIG_TOKEN } from './deletion-console.config';
-import { TEST_ENTITIES } from './deletion-console.entity.imports';
 import { DeletionExecutionConsole } from './deletion-execution.console';
 import { TriggerDeletionExecutionOptions } from './interface';
 import { DeletionExecutionUc } from './uc';
@@ -18,19 +14,8 @@ describe(DeletionExecutionConsole.name, () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [
-				DeletionConsoleModule,
-				MongoMemoryDatabaseModule.forRoot({ ...findOneOrFailHandler, entities: TEST_ENTITIES }),
-			],
+			imports: [DeletionConsoleTestModule],
 		})
-			.overrideProvider(DATABASE_CONFIG_TOKEN)
-			.useValue({
-				// eslint-disable-next-line no-process-env, @typescript-eslint/restrict-template-expressions
-				dbUrl: `${process.env.MONGO_TEST_URI}/deletion-execution-console-test`,
-				dbEnsureIndexes: false,
-				dbAllowGlobalContext: true,
-				dbDebug: false,
-			})
 			.overrideProvider(DELETION_CONSOLE_CONFIG_TOKEN)
 			.useValue({
 				adminApiClientBaseUrl: 'http://api-admin:4030',
