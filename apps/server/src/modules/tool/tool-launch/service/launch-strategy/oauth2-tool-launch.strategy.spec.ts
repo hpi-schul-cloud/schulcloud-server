@@ -61,6 +61,10 @@ describe('OAuth2ToolLaunchStrategy', () => {
 		strategy = module.get(OAuth2ToolLaunchStrategy);
 	});
 
+	afterAll(async () => {
+		await module.close();
+	});
+
 	describe('buildToolLaunchRequestPayload', () => {
 		describe('whenever it is called', () => {
 			it('should return undefined', () => {

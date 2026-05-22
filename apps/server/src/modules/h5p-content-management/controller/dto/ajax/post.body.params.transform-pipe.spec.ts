@@ -68,6 +68,10 @@ describe('transform', () => {
 		jest.clearAllMocks();
 	});
 
+	afterAll(async () => {
+		await module.close();
+	});
+
 	it('when libaries in value', async () => {
 		const result = await ajaxBodyTransformPipe.transform(emptyAjaxPostBodyParams1);
 		expect(result).toBeDefined();

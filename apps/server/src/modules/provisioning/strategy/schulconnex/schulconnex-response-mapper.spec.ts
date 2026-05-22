@@ -53,6 +53,10 @@ describe(SchulconnexResponseMapper.name, () => {
 		config.provisioningSchulconnexGroupUsersLimit = undefined;
 	});
 
+	afterAll(async () => {
+		await module.close();
+	});
+
 	describe('mapToExternalSchoolDto', () => {
 		describe('when a schulconnex response is provided', () => {
 			const setup = () => {

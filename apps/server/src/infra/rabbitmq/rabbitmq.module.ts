@@ -10,7 +10,7 @@ export class RabbitMQWrapperModule {
 		return {
 			module: RabbitMQWrapperModule,
 			imports: [
-				RabbitMQModule.forRootAsync(RabbitMQModule, {
+				RabbitMQModule.forRootAsync({
 					useFactory: (config: RabbitMQConfig, exchange: InternalRabbitMQExchangeConfig) => {
 						return {
 							prefetchCount: config.prefetchCount,

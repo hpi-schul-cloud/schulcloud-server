@@ -48,6 +48,10 @@ describe('LoginUc', () => {
 		jest.clearAllMocks();
 	});
 
+	afterAll(async () => {
+		await module.close();
+	});
+
 	describe('getLoginData', () => {
 		describe('when currentUser is given', () => {
 			const setup = () => {
