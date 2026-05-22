@@ -18,7 +18,11 @@ import { ImportCourseParams } from '../domain/import-course.params';
 import { CommonCartridgeVersion } from '../export/common-cartridge.enums';
 import { CommonCartridgeExportService } from '../service';
 import { CommonCartridgeExportResponse } from '../service/common-cartridge-export.response';
-import { CommonCartridgeValidatorTransform } from '../util/common-cartridge-validator.transform';
+import {
+	CommonCartridgeValidatorTransform,
+	VALIDATION_ERROR_EVENT,
+	ValidationErrorKinds,
+} from '../util/common-cartridge-validator.transform';
 
 @Injectable()
 export class CommonCartridgeUc {
@@ -94,7 +98,6 @@ export class CommonCartridgeUc {
 	): Promise<FileRecordResponse> {
 		return new Promise<FileRecordResponse>((resolve, reject) => {
 			const bb = busboy({ headers: req.headers, defParamCharset: 'utf8' });
-			const abortController = new AbortController();
 			let fileRecordPromise: Promise<FileRecordResponse> | undefined;
 			let isResolved = false;
 
@@ -120,30 +123,28 @@ export class CommonCartridgeUc {
 
 			req.on('close', () => {
 				if (!req.complete) {
-					abortController.abort();
-					// TODO logging
-					// this.logger.warning(
-					// 	new UploadAbortLoggable('Upload request was closed prematurely by client', 'request_closed')
-					// );
 					safeReject(new Error('Request closed prematurely'));
 				}
 			});
 
 			req.on('aborted', () => {
-				abortController.abort();
-				// TODO logging
-				// this.logger.warning(new UploadAbortLoggable('Upload request was aborted by client', 'request_aborted'));
 				safeReject(new Error('Request aborted by client'));
 			});
 
 			bb.on('file', (_name, file, _info) => {
-				if (isResolved) return; // Already resolved/rejected
+				if (isResolved) return;
 
 				const validator = new CommonCartridgeValidatorTransform(this.config.courseImportMaxFileSize);
-				validator.on('validated', (isValid: boolean) => {
-					if (!isValid) {
-						validator.destroy();
-						safeReject(new Error('Given file is not a zip archive'));
+				validator.on(VALIDATION_ERROR_EVENT, (kind: ValidationErrorKinds) => {
+					validator.destroy();
+
+					switch (kind) {
+						case ValidationErrorKinds.NotAZipFile:
+							safeReject(new Error('Given file is not a zip archive'));
+							break;
+						case ValidationErrorKinds.MaximumSizeExceeded:
+							safeReject(new Error('Maximum file size exceeded'));
+							break;
 					}
 				});
 
@@ -160,7 +161,6 @@ export class CommonCartridgeUc {
 					this.config.courseImportMaxFileSize
 				);
 
-				// Handle upload errors immediately
 				fileRecordPromise.catch((error) => {
 					safeReject(error);
 				});
