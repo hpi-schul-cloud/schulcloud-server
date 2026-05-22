@@ -32,6 +32,10 @@ describe('team authorisable service', () => {
 		teamRepo = module.get(TeamRepo);
 	});
 
+	afterAll(async () => {
+		await module.close();
+	});
+
 	it('should inject intself into authorisation', () => {
 		expect(injectionService.getReferenceLoader(AuthorizableReferenceType.Team)).toEqual(service);
 	});

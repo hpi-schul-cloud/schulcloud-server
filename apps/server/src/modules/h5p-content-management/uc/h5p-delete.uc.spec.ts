@@ -27,6 +27,7 @@ const createParams = () => {
 		userId: 'mockUserId',
 		isExternalUser: false,
 		support: false,
+		isServiceAccount: false,
 	};
 
 	return { content, mockCurrentUser };

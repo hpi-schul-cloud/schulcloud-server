@@ -97,7 +97,7 @@ export class MediaLineController {
 	@ApiNotFoundResponse({ type: NotFoundException })
 	@HttpCode(HttpStatus.NO_CONTENT)
 	@Delete(':lineId')
-	async deleteLine(@Param() urlParams: LineUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<void> {
+	public async deleteLine(@Param() urlParams: LineUrlParams, @CurrentUser() currentUser: ICurrentUser): Promise<void> {
 		await this.mediaLineUc.deleteLine(currentUser.userId, urlParams.lineId);
 	}
 }

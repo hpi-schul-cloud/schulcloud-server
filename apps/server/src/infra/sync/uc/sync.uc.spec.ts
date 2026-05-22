@@ -1,7 +1,7 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { createMock } from '@golevelup/ts-jest';
-import { SyncUc } from './sync.uc';
+import { Test, TestingModule } from '@nestjs/testing';
 import { SyncService } from '../service/sync.service';
+import { SyncUc } from './sync.uc';
 
 describe(SyncUc.name, () => {
 	let module: TestingModule;
@@ -20,6 +20,10 @@ describe(SyncUc.name, () => {
 		}).compile();
 		uc = module.get(SyncUc);
 		service = module.get(SyncService);
+	});
+
+	afterAll(async () => {
+		await module.close();
 	});
 
 	describe('when sync uc is initialized', () => {
