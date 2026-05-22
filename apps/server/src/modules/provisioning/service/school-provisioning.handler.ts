@@ -24,7 +24,7 @@ import {
 export class SchoolProvisioningHandler implements ProvisioningEntityHandler {
 	public readonly referencedEntityType = ReferencedEntityType.SCHOOL;
 
-	public readonly dtoName = 'ExternalSchoolDto';
+	public readonly dtoName = ExternalSchoolDto.name;
 
 	constructor(
 		private readonly schoolService: SchoolService,
