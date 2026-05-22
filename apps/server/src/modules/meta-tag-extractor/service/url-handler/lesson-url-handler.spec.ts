@@ -1,4 +1,5 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { LessonService } from '@modules/lesson';
 import { LessonEntity, Material } from '@modules/lesson/repo';
@@ -6,7 +7,6 @@ import { lessonFactory } from '@modules/lesson/testing';
 import { Submission, Task } from '@modules/task/repo';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
-import { ObjectId } from '@mikro-orm/mongodb';
 import { MetaDataEntityType } from '../../types';
 import { LessonUrlHandler } from './lesson-url-handler';
 
@@ -29,6 +29,10 @@ describe(LessonUrlHandler.name, () => {
 		lessonService = module.get(LessonService);
 		lessonUrlHandler = module.get(LessonUrlHandler);
 		await setupEntities([LessonEntity, Material, CourseEntity, CourseGroupEntity, Task, Submission]);
+	});
+
+	afterAll(async () => {
+		await module.close();
 	});
 
 	describe('getMetaData', () => {

@@ -25,16 +25,16 @@ import { JWT_STRATEGY_CONFIG_TOKEN, JwtModuleConfig } from './jwt-module.config'
 import { LogoutService } from './services';
 import { AuthenticationService } from './services/authentication.service';
 import { LdapService } from './services/ldap.service';
+import { ErwinStrategy } from './strategy/erwin.strategy';
 import { LdapStrategy } from './strategy/ldap.strategy';
 import { LocalStrategy } from './strategy/local.strategy';
 import { Oauth2Strategy } from './strategy/oauth2.strategy';
-import { ErwinStrategy } from './strategy/erwin.strategy';
 
 const createJwtOptions = (config: JwtModuleConfig): JwtModuleOptions => {
 	const { algorithm, expiresIn, scDomain, privateKey, publicKey } = config;
 	const signOptions: SignOptions = {
 		algorithm,
-		expiresIn,
+		expiresIn: expiresIn as SignOptions['expiresIn'],
 		issuer: scDomain,
 		audience: scDomain,
 		header: { typ: 'JWT', alg: algorithm },
@@ -47,7 +47,7 @@ const createJwtOptions = (config: JwtModuleConfig): JwtModuleOptions => {
 		verifyOptions: signOptions,
 	};
 
-	return options;
+	return options as JwtModuleOptions;
 };
 
 @Module({

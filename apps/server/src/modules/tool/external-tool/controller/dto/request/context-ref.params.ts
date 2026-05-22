@@ -5,7 +5,7 @@ import { ToolContextType } from '../../../../common/enum';
 
 export class ContextRefParams {
 	@IsEnum(ToolContextType)
-	@ApiProperty({ type: () => ToolContextType })
+	@ApiProperty({ enum: ToolContextType, enumName: 'ToolContextType' })
 	contextType!: ToolContextType;
 
 	@IsMongoId()

@@ -96,12 +96,16 @@ describe(CommonCartridgeImportService.name, () => {
 		(CommonCartridgeFileParser as jest.Mock).mockImplementation(() => commonCartridgeFileParser);
 	});
 
+	beforeEach(() => {
+		jest.clearAllMocks();
+	});
+
 	afterEach(async () => {
 		await module.close();
 	});
 
-	beforeEach(() => {
-		jest.clearAllMocks();
+	afterAll(async () => {
+		await module.close();
 	});
 
 	it('should be defined', () => {

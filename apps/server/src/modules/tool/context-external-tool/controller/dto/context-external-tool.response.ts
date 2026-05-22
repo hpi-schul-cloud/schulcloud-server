@@ -12,7 +12,7 @@ export class ContextExternalToolResponse {
 	@ApiProperty()
 	contextId: string;
 
-	@ApiProperty({ enum: ToolContextType })
+	@ApiProperty({ enum: ToolContextType, enumName: 'ToolContextType' })
 	contextType: ToolContextType;
 
 	@ApiPropertyOptional()

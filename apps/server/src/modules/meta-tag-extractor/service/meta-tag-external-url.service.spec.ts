@@ -35,6 +35,13 @@ describe(MetaTagExternalUrlService.name, () => {
 	});
 
 	describe('tryExtractMetaTags', () => {
+		const activeIntervals: NodeJS.Timeout[] = [];
+
+		afterEach(() => {
+			activeIntervals.forEach(clearInterval);
+			activeIntervals.length = 0;
+		});
+
 		const mockReadstream = (chunks: string[]) => {
 			const mockedStream = new Stream.Readable();
 			mockedStream._read = jest.fn();
@@ -47,6 +54,8 @@ describe(MetaTagExternalUrlService.name, () => {
 					mockedStream.push(chunks.shift());
 				}
 			}, 100);
+
+			activeIntervals.push(intervalHandle);
 
 			return mockedStream;
 		};

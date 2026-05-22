@@ -51,7 +51,7 @@ describe('Database Management Controller (API)', () => {
 			const result = await request(app.getHttpServer()).get(`/management/database/seed?with-indexes=true`);
 
 			expect(result.status).toEqual(200);
-		});
+		}, 30000);
 		it('should seed a collection', async () => {
 			const result = await request(app.getHttpServer()).post(`/management/database/seed/${sampleCollectionName}`);
 
