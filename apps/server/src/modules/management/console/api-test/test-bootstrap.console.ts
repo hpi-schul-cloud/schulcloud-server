@@ -12,6 +12,7 @@ export class TestBootstrapConsole extends AbstractBootstrapConsole<TestingModule
 		})
 			.overrideProvider(DATABASE_CONFIG_TOKEN)
 			.useValue({
+				// eslint-disable-next-line no-process-env, @typescript-eslint/restrict-template-expressions
 				dbUrl: `${process.env.MONGO_TEST_URI}/management-console-test`,
 				dbEnsureIndexes: false,
 				dbAllowGlobalContext: true,

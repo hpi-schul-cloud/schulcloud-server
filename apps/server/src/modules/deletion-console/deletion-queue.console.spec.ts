@@ -26,6 +26,7 @@ describe(DeletionQueueConsole.name, () => {
 		})
 			.overrideProvider(DATABASE_CONFIG_TOKEN)
 			.useValue({
+				// eslint-disable-next-line no-process-env, @typescript-eslint/restrict-template-expressions
 				dbUrl: `${process.env.MONGO_TEST_URI}/deletion-queue-console-test`,
 				dbEnsureIndexes: false,
 				dbAllowGlobalContext: true,
