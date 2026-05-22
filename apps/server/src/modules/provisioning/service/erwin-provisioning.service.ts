@@ -56,7 +56,6 @@ export class ErwinProvisioningService {
 			const erwinIdentifier = await this.erwinIdentifierService.findByErwinId(erwinId);
 
 			if (erwinIdentifier?.type === handler.referencedEntityType) {
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
 				const entity: ProvisioningResult | null = await handler.findByEntityId(erwinIdentifier.referencedEntityId);
 
 				if (entity) {
