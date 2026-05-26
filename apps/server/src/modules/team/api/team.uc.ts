@@ -50,7 +50,12 @@ export class TeamUc {
 			const userIds = team.teamUsers.map((teamUser) => teamUser.userId.id).filter((id) => id !== userId);
 			const users = await this.userService.findByIds(userIds);
 			const finalUsers = users
-				.filter((user) => user.roles.some((role) => role.name === 'student' || role.name === 'teacher'))
+				.filter((user) =>
+					user.roles.some(
+						(role) =>
+							role.name === RoleName.STUDENT || role.name === RoleName.TEACHER || role.name === RoleName.EXTERNALPERSON
+					)
+				)
 				.map((user) => user.id)
 				.filter((id) => id !== undefined);
 
