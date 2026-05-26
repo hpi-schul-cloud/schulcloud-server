@@ -28,6 +28,7 @@ const createParams = () => {
 		userId: 'mockUserId',
 		isExternalUser: false,
 		support: false,
+		isServiceAccount: false,
 	};
 
 	const editorResponseMock = { scripts: ['test.js'] } as IEditorModel;

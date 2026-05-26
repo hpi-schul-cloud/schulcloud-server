@@ -67,6 +67,10 @@ describe(SynchronizationUc.name, () => {
 		jest.clearAllMocks();
 	});
 
+	afterAll(async () => {
+		await module.close();
+	});
+
 	describe('updateSystemUsersLastSyncedAt', () => {
 		describe('when update users lastSynceAt for systemId', () => {
 			const setup = () => {

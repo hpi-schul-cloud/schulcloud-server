@@ -2,9 +2,9 @@ import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard'
 import { Controller, Get, Param, Patch, Query } from '@nestjs/common';
 import {
 	ApiForbiddenResponse,
-	ApiFoundResponse,
 	ApiOkResponse,
 	ApiOperation,
+	ApiResponse,
 	ApiTags,
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
@@ -123,7 +123,8 @@ export class ToolConfigurationController {
 	@ApiUnauthorizedResponse()
 	@ApiForbiddenResponse()
 	@ApiOperation({ summary: 'Get the latest configuration template for a School External Tool' })
-	@ApiFoundResponse({
+	@ApiResponse({
+		status: 200,
 		description: 'Configuration template for a School External Tool',
 		type: SchoolExternalToolConfigurationTemplateResponse,
 	})
@@ -146,7 +147,8 @@ export class ToolConfigurationController {
 	@ApiUnauthorizedResponse()
 	@ApiForbiddenResponse()
 	@ApiOperation({ summary: 'Get the latest configuration template for a Context External Tool' })
-	@ApiFoundResponse({
+	@ApiResponse({
+		status: 200,
 		description: 'Configuration template for a Context External Tool',
 		type: ContextExternalToolConfigurationTemplateResponse,
 	})

@@ -35,6 +35,10 @@ describe('DeletionBatchUc', () => {
 		jest.clearAllMocks();
 	});
 
+	afterAll(async () => {
+		await module.close();
+	});
+
 	describe('requestDeletionForBatch', () => {
 		describe('when batch status is not "created"', () => {
 			const setup = () => {

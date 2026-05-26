@@ -31,6 +31,7 @@ export interface UserProperties {
 	lastName: string;
 	preferredName?: string;
 	school: SchoolEntity;
+	importHash?: string;
 	secondarySchools?: UserSchoolEmbeddable[];
 	roles: Role[];
 	ldapDn?: string;
@@ -218,6 +219,7 @@ export class User extends BaseEntityWithTimestamps {
 		this.parents = props.parents;
 		this.lastSyncedAt = props.lastSyncedAt;
 		this.consent = props.consent;
+		this.importHash = props.importHash;
 		if (props.source !== undefined) {
 			this.source = props.source;
 		}
@@ -249,6 +251,13 @@ export class User extends BaseEntityWithTimestamps {
 		const uniquePermissions = [...setOfPermissions];
 
 		return uniquePermissions;
+	}
+
+	public isServiceAccountUser(): boolean {
+		const permissions = this.resolvePermissions(false, false);
+		const isServiceAccountUser = permissions.includes(Permission.CAN_EXECUTE_INSTANCE_OPERATIONS);
+
+		return isServiceAccountUser;
 	}
 
 	private resolveSchoolPermissions(

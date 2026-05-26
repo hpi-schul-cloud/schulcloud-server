@@ -26,6 +26,7 @@ describe('schoolyear repo', () => {
 	});
 
 	afterEach(async () => {
+		jest.useRealTimers();
 		await cleanupCollections(em);
 	});
 
