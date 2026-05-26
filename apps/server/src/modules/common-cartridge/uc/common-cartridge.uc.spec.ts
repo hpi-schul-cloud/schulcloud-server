@@ -1,7 +1,8 @@
 import { faker } from '@faker-js/faker';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Readable } from 'stream';
+import { Readable, PassThrough } from 'stream';
+import { EventEmitter } from 'events';
 import { CommonCartridgeVersion } from '../export/common-cartridge.enums';
 import { CommonCartridgeExportResponse } from '../service/common-cartridge-export.response';
 import { CommonCartridgeExportService } from '../service/common-cartridge-export.service';
@@ -12,8 +13,28 @@ import { ImportCourseEvent } from '../domain/events/import-course.event';
 import { ImportCourseParams } from '../domain/import-course.params';
 import { Request } from 'express';
 import { UnauthorizedException } from '@nestjs/common';
-import { FilesStorageClientAdapter } from '@infra/common-cartridge-clients';
+import { FileRecordParentType, FilesStorageClientAdapter, StorageLocation } from '@infra/common-cartridge-clients';
 import { COMMON_CARTRIDGE_CONFIG_TOKEN, CommonCartridgeConfig } from '../common-cartridge.config';
+import { fileRecordResponseFactory } from '@infra/files-storage-client/testing';
+import { currentUserFactory } from '@testing/factory/currentuser.factory';
+import {
+	CC_VALIDATION_ERROR_EVENT,
+	CcValidationErrorType,
+	CommonCartridgeValidatorTransform,
+} from '../util/common-cartridge-validator.transform';
+import busboy from 'busboy';
+
+jest.mock('busboy');
+jest.mock('../util/common-cartridge-validator.transform', () => {
+	const actual = jest.requireActual('../util/common-cartridge-validator.transform') as unknown as object;
+	return {
+		...actual,
+		CommonCartridgeValidatorTransform: jest.fn().mockImplementation(() => {
+			const mockValidator = new PassThrough();
+			return mockValidator;
+		}),
+	} as unknown;
+});
 
 describe('CommonCartridgeUc', () => {
 	let module: TestingModule;
@@ -21,6 +42,8 @@ describe('CommonCartridgeUc', () => {
 	let commonCartridgeExportServiceMock: DeepMocked<CommonCartridgeExportService>;
 	let eventBusMock: DeepMocked<EventBus>;
 	let requestMock: DeepMocked<Request>;
+	let fileClientMock: DeepMocked<FilesStorageClientAdapter>;
+	let currentReqEmitter: EventEmitter | null = null;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -44,19 +67,32 @@ describe('CommonCartridgeUc', () => {
 				},
 				{
 					provide: COMMON_CARTRIDGE_CONFIG_TOKEN,
-					useValue: createMock<CommonCartridgeConfig>(),
+					useValue: { courseImportMaxFileSize: 1024 * 1024 * 100 },
 				},
 			],
 		}).compile();
 
 		sut = module.get(CommonCartridgeUc);
 		commonCartridgeExportServiceMock = module.get(CommonCartridgeExportService);
+		fileClientMock = module.get(FilesStorageClientAdapter);
 		eventBusMock = module.get(EventBus);
 		requestMock = module.get(REQUEST);
 	});
 
 	afterAll(async () => {
 		await module.close();
+	});
+
+	beforeEach(() => {
+		jest.clearAllMocks();
+		jest.resetAllMocks();
+		jest.restoreAllMocks();
+
+		// Clean up any previous event emitter
+		if (currentReqEmitter) {
+			currentReqEmitter.removeAllListeners();
+			currentReqEmitter = null;
+		}
 	});
 
 	it('should be defined', () => {
@@ -172,6 +208,402 @@ describe('CommonCartridgeUc', () => {
 				const { params } = setup();
 
 				expect(() => sut.startCourseImport(params)).toThrow(UnauthorizedException);
+			});
+		});
+	});
+
+	describe('uploadFileFromRequestToTemp', () => {
+		const setupValidatorMock = () => {
+			const mockValidator = new PassThrough();
+
+			(CommonCartridgeValidatorTransform as unknown as jest.Mock) = jest.fn().mockImplementation(() => mockValidator);
+
+			return mockValidator;
+		};
+
+		const createMockBusboy = () => {
+			const busboyEmitter = new EventEmitter();
+			(busboy as jest.Mock).mockReturnValue(busboyEmitter);
+			return busboyEmitter;
+		};
+
+		const setupRequestMock = (jwt: string, complete: boolean, contentDisposition?: string) => {
+			const reqEmitter = new EventEmitter();
+			reqEmitter.setMaxListeners(20);
+			currentReqEmitter = reqEmitter;
+
+			requestMock.headers.cookie = `jwt=${jwt}`;
+			if (contentDisposition) {
+				requestMock.headers['content-disposition'] = contentDisposition;
+			} else {
+				requestMock.headers['content-disposition'] = undefined;
+			}
+
+			(requestMock.on as jest.Mock).mockImplementation((event: string, listener: (...args: unknown[]) => void) => {
+				reqEmitter.on(event, listener);
+				return requestMock;
+			});
+
+			// Override with direct property assignment using defineProperty
+
+			Object.defineProperty(requestMock, 'pipe', {
+				value: jest.fn(),
+				writable: true,
+				configurable: true,
+			});
+			Object.defineProperty(requestMock, 'unpipe', {
+				value: jest.fn(),
+				writable: true,
+				configurable: true,
+			});
+			Object.defineProperty(requestMock, 'complete', {
+				get: () => complete,
+				configurable: true,
+			});
+
+			return reqEmitter;
+		};
+
+		describe('when jwt is missing', () => {
+			const setup = () => {
+				const currentUser = currentUserFactory.build();
+				requestMock.headers.cookie = undefined;
+				return { currentUser };
+			};
+
+			it('should throw UnauthorizedException', async () => {
+				const { currentUser } = setup();
+
+				await expect(sut.uploadFileFromRequestToTemp(currentUser)).rejects.toThrow(UnauthorizedException);
+			});
+		});
+
+		describe('when jwt is given and file is uploaded successfully', () => {
+			const setup = () => {
+				const jwt = faker.internet.jwt();
+				const currentUser = currentUserFactory.build();
+				const fileRecord = fileRecordResponseFactory.build();
+				const busboyEmitter = createMockBusboy();
+				const reqEmitter = setupRequestMock(jwt, true, 'attachment; filename="test-course.imscc"');
+
+				setupValidatorMock();
+
+				fileClientMock.uploadTempFile.mockResolvedValue(fileRecord);
+
+				return { currentUser, fileRecord, busboyEmitter, reqEmitter, jwt };
+			};
+
+			it('should return the file record response', async () => {
+				const { currentUser, fileRecord, busboyEmitter } = setup();
+
+				const promise = sut.uploadFileFromRequestToTemp(currentUser);
+
+				// Simulate busboy receiving a file
+				const fileStream = new PassThrough();
+				busboyEmitter.emit('file', 'file', fileStream, { filename: 'test.imscc' });
+				fileStream.end();
+
+				// Simulate busboy close
+				busboyEmitter.emit('close');
+
+				const result = await promise;
+
+				expect(result).toEqual(fileRecord);
+				expect(requestMock.pipe).toHaveBeenCalledWith(busboyEmitter);
+			});
+		});
+
+		describe('when content-disposition header is missing', () => {
+			const setup = () => {
+				const jwt = faker.internet.jwt();
+				const currentUser = currentUserFactory.build();
+				const fileRecord = fileRecordResponseFactory.build();
+				const busboyEmitter = createMockBusboy();
+				setupRequestMock(jwt, true);
+
+				setupValidatorMock();
+
+				fileClientMock.uploadTempFile.mockResolvedValue(fileRecord);
+
+				return { currentUser, fileRecord, busboyEmitter, jwt };
+			};
+
+			it('should use default filename upload.imscc', async () => {
+				const { currentUser, busboyEmitter, jwt } = setup();
+
+				const promise = sut.uploadFileFromRequestToTemp(currentUser);
+
+				const fileStream = new PassThrough();
+				busboyEmitter.emit('file', 'file', fileStream, { filename: 'test.imscc' });
+				fileStream.end();
+				busboyEmitter.emit('close');
+
+				await promise;
+
+				expect(fileClientMock.uploadTempFile).toHaveBeenCalledWith(
+					jwt,
+					currentUser.schoolId,
+					StorageLocation.SCHOOL,
+					currentUser.userId,
+					FileRecordParentType.USERS,
+					expect.anything(),
+					'upload.imscc',
+					expect.any(Number)
+				);
+			});
+		});
+
+		describe('when content-disposition header has no filename match', () => {
+			const setup = () => {
+				const jwt = faker.internet.jwt();
+				const currentUser = currentUserFactory.build();
+				const fileRecord = fileRecordResponseFactory.build();
+				const busboyEmitter = createMockBusboy();
+				setupRequestMock(jwt, true, 'attachment');
+
+				setupValidatorMock();
+
+				fileClientMock.uploadTempFile.mockResolvedValue(fileRecord);
+
+				return { currentUser, fileRecord, busboyEmitter, jwt };
+			};
+
+			it('should use default filename upload.imscc', async () => {
+				const { currentUser, busboyEmitter, jwt } = setup();
+
+				const promise = sut.uploadFileFromRequestToTemp(currentUser);
+
+				const fileStream = new PassThrough();
+				busboyEmitter.emit('file', 'file', fileStream, { filename: 'test.imscc' });
+				fileStream.end();
+				busboyEmitter.emit('close');
+
+				await promise;
+
+				expect(fileClientMock.uploadTempFile).toHaveBeenCalledWith(
+					jwt,
+					currentUser.schoolId,
+					StorageLocation.SCHOOL,
+					currentUser.userId,
+					FileRecordParentType.USERS,
+					expect.anything(),
+					'upload.imscc',
+					expect.any(Number)
+				);
+			});
+		});
+
+		describe('when request is closed prematurely', () => {
+			const setup = () => {
+				const jwt = faker.internet.jwt();
+				const currentUser = currentUserFactory.build();
+				const busboyEmitter = createMockBusboy();
+				const reqEmitter = setupRequestMock(jwt, false);
+
+				return { currentUser, busboyEmitter, reqEmitter };
+			};
+
+			it('should reject with request closed prematurely error', async () => {
+				const { currentUser, reqEmitter } = setup();
+
+				const promise = sut.uploadFileFromRequestToTemp(currentUser);
+
+				// Simulate request close without completion
+				reqEmitter.emit('close');
+
+				await expect(promise).rejects.toThrow('Request closed prematurely');
+			});
+		});
+
+		describe('when request is aborted', () => {
+			const setup = () => {
+				const jwt = faker.internet.jwt();
+				const currentUser = currentUserFactory.build();
+				const busboyEmitter = createMockBusboy();
+				const reqEmitter = setupRequestMock(jwt, true);
+
+				return { currentUser, busboyEmitter, reqEmitter };
+			};
+
+			it('should reject with request aborted error', async () => {
+				const { currentUser, reqEmitter } = setup();
+
+				const promise = sut.uploadFileFromRequestToTemp(currentUser);
+
+				reqEmitter.emit('aborted');
+
+				await expect(promise).rejects.toThrow('Request aborted by client');
+			});
+		});
+
+		describe('when no file is provided', () => {
+			const setup = () => {
+				const jwt = faker.internet.jwt();
+				const currentUser = currentUserFactory.build();
+				const busboyEmitter = createMockBusboy();
+				setupRequestMock(jwt, true);
+
+				return { currentUser, busboyEmitter };
+			};
+
+			it('should reject with no file provided error', async () => {
+				const { currentUser, busboyEmitter } = setup();
+
+				const promise = sut.uploadFileFromRequestToTemp(currentUser);
+
+				// Close without receiving a file
+				busboyEmitter.emit('close');
+
+				await expect(promise).rejects.toThrow('No file provided');
+			});
+		});
+
+		describe('when file upload fails', () => {
+			const setup = () => {
+				const jwt = faker.internet.jwt();
+				const currentUser = currentUserFactory.build();
+				const busboyEmitter = createMockBusboy();
+				const uploadError = new Error('Upload failed');
+				setupRequestMock(jwt, true);
+
+				setupValidatorMock();
+
+				fileClientMock.uploadTempFile.mockRejectedValue(uploadError);
+
+				return { currentUser, busboyEmitter, uploadError };
+			};
+
+			it('should reject with upload error', async () => {
+				const { currentUser, busboyEmitter, uploadError } = setup();
+
+				const promise = sut.uploadFileFromRequestToTemp(currentUser);
+
+				const fileStream = new PassThrough();
+				busboyEmitter.emit('file', 'file', fileStream, { filename: 'test.imscc' });
+				fileStream.end();
+				busboyEmitter.emit('close');
+
+				await expect(promise).rejects.toThrow(uploadError.message);
+			});
+		});
+
+		describe('when validator emits NotAZipFile error', () => {
+			const setup = () => {
+				const jwt = faker.internet.jwt();
+				const currentUser = currentUserFactory.build();
+				const busboyEmitter = createMockBusboy();
+				setupRequestMock(jwt, true);
+
+				const mockValidator = setupValidatorMock();
+
+				fileClientMock.uploadTempFile.mockImplementation(() => Promise.resolve(fileRecordResponseFactory.build()));
+
+				return { currentUser, busboyEmitter, mockValidator };
+			};
+
+			it('should reject with not a zip archive error', async () => {
+				const { currentUser, busboyEmitter, mockValidator } = setup();
+
+				const promise = sut.uploadFileFromRequestToTemp(currentUser);
+
+				const fileStream = new PassThrough();
+				busboyEmitter.emit('file', 'file', fileStream, { filename: 'test.imscc' });
+
+				// Emit validation error
+				mockValidator.emit(CC_VALIDATION_ERROR_EVENT, CcValidationErrorType.NotAZipFile);
+
+				await expect(promise).rejects.toThrow('Given file is not a zip archive');
+			});
+		});
+
+		describe('when validator emits MaximumSizeExceeded error', () => {
+			const setup = () => {
+				const jwt = faker.internet.jwt();
+				const currentUser = currentUserFactory.build();
+				const busboyEmitter = createMockBusboy();
+				setupRequestMock(jwt, true);
+
+				const mockValidator = setupValidatorMock();
+
+				fileClientMock.uploadTempFile.mockImplementation(() => Promise.resolve(fileRecordResponseFactory.build()));
+
+				return { currentUser, busboyEmitter, mockValidator };
+			};
+
+			it('should reject with maximum file size exceeded error', async () => {
+				const { currentUser, busboyEmitter, mockValidator } = setup();
+
+				const promise = sut.uploadFileFromRequestToTemp(currentUser);
+
+				const fileStream = new PassThrough();
+				busboyEmitter.emit('file', 'file', fileStream, { filename: 'test.imscc' });
+
+				mockValidator.emit(CC_VALIDATION_ERROR_EVENT, CcValidationErrorType.MaximumSizeExceeded);
+
+				await expect(promise).rejects.toThrow('Maximum file size exceeded');
+			});
+		});
+
+		describe('when isResolved is already true during close event', () => {
+			const setup = () => {
+				const jwt = faker.internet.jwt();
+				const currentUser = currentUserFactory.build();
+				const fileRecord = fileRecordResponseFactory.build();
+				const busboyEmitter = createMockBusboy();
+				setupRequestMock(jwt, true);
+
+				setupValidatorMock();
+
+				fileClientMock.uploadTempFile.mockResolvedValue(fileRecord);
+
+				return { currentUser, fileRecord, busboyEmitter };
+			};
+
+			it('should only resolve once even if close is called multiple times', async () => {
+				const { currentUser, fileRecord, busboyEmitter } = setup();
+
+				const promise = sut.uploadFileFromRequestToTemp(currentUser);
+
+				const fileStream = new PassThrough();
+				busboyEmitter.emit('file', 'file', fileStream, { filename: 'test.imscc' });
+				fileStream.end();
+
+				// Emit close multiple times
+				busboyEmitter.emit('close');
+				busboyEmitter.emit('close');
+
+				const result = await promise;
+
+				expect(result).toEqual(fileRecord);
+			});
+		});
+
+		describe('when fileRecordPromise catch handler is triggered', () => {
+			const setup = () => {
+				const jwt = faker.internet.jwt();
+				const currentUser = currentUserFactory.build();
+				const busboyEmitter = createMockBusboy();
+				const uploadError = new Error('Upload failed in catch');
+				setupRequestMock(jwt, true);
+
+				setupValidatorMock();
+
+				// Create a promise that rejects
+				fileClientMock.uploadTempFile.mockImplementation(() => Promise.reject(uploadError));
+
+				return { currentUser, busboyEmitter, uploadError };
+			};
+
+			it('should reject via the catch handler', async () => {
+				const { currentUser, busboyEmitter, uploadError } = setup();
+
+				const promise = sut.uploadFileFromRequestToTemp(currentUser);
+
+				const fileStream = new PassThrough();
+				busboyEmitter.emit('file', 'file', fileStream, { filename: 'test.imscc' });
+				fileStream.end();
+
+				await expect(promise).rejects.toThrow(uploadError);
 			});
 		});
 	});
