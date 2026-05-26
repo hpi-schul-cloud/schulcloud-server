@@ -1,42 +1,33 @@
 import { faker } from '@faker-js/faker';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { FileRecordParentType, FilesStorageClientAdapter, StorageLocation } from '@infra/common-cartridge-clients';
+import { fileRecordResponseFactory } from '@infra/files-storage-client/testing';
+import { UnauthorizedException } from '@nestjs/common';
+import { REQUEST } from '@nestjs/core';
+import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
-import { Readable, PassThrough } from 'stream';
+import { currentUserFactory } from '@testing/factory/currentuser.factory';
+import busboy from 'busboy';
 import { EventEmitter } from 'events';
+import { Request } from 'express';
+import { PassThrough, Readable } from 'stream';
+import { COMMON_CARTRIDGE_CONFIG_TOKEN } from '../common-cartridge.config';
+import { ImportCourseEvent } from '../domain/events/import-course.event';
+import { ImportCourseParams } from '../domain/import-course.params';
 import { CommonCartridgeVersion } from '../export/common-cartridge.enums';
 import { CommonCartridgeExportResponse } from '../service/common-cartridge-export.response';
 import { CommonCartridgeExportService } from '../service/common-cartridge-export.service';
-import { CommonCartridgeUc } from './common-cartridge.uc';
-import { EventBus } from '@nestjs/cqrs';
-import { REQUEST } from '@nestjs/core';
-import { ImportCourseEvent } from '../domain/events/import-course.event';
-import { ImportCourseParams } from '../domain/import-course.params';
-import { Request } from 'express';
-import { UnauthorizedException } from '@nestjs/common';
-import { FileRecordParentType, FilesStorageClientAdapter, StorageLocation } from '@infra/common-cartridge-clients';
-import { COMMON_CARTRIDGE_CONFIG_TOKEN, CommonCartridgeConfig } from '../common-cartridge.config';
-import { fileRecordResponseFactory } from '@infra/files-storage-client/testing';
-import { currentUserFactory } from '@testing/factory/currentuser.factory';
 import {
 	CC_VALIDATION_ERROR_EVENT,
 	CcValidationErrorType,
 	CommonCartridgeValidatorTransform,
 } from '../util/common-cartridge-validator.transform';
-import busboy from 'busboy';
+import { CommonCartridgeUc } from './common-cartridge.uc';
 
 jest.mock('busboy');
-jest.mock('../util/common-cartridge-validator.transform', () => {
-	const actual = jest.requireActual('../util/common-cartridge-validator.transform') as unknown as object;
-	return {
-		...actual,
-		CommonCartridgeValidatorTransform: jest.fn().mockImplementation(() => {
-			const mockValidator = new PassThrough();
-			return mockValidator;
-		}),
-	} as unknown;
-});
+jest.mock('../util/common-cartridge-validator.transform');
 
-describe('CommonCartridgeUc', () => {
+describe(CommonCartridgeUc.name, () => {
 	let module: TestingModule;
 	let sut: CommonCartridgeUc;
 	let commonCartridgeExportServiceMock: DeepMocked<CommonCartridgeExportService>;
@@ -88,11 +79,8 @@ describe('CommonCartridgeUc', () => {
 		jest.resetAllMocks();
 		jest.restoreAllMocks();
 
-		// Clean up any previous event emitter
-		if (currentReqEmitter) {
-			currentReqEmitter.removeAllListeners();
-			currentReqEmitter = null;
-		}
+		currentReqEmitter?.removeAllListeners();
+		currentReqEmitter = null;
 	});
 
 	it('should be defined', () => {
@@ -215,7 +203,6 @@ describe('CommonCartridgeUc', () => {
 	describe('uploadFileFromRequestToTemp', () => {
 		const setupValidatorMock = () => {
 			const mockValidator = new PassThrough();
-
 			(CommonCartridgeValidatorTransform as unknown as jest.Mock) = jest.fn().mockImplementation(() => mockValidator);
 
 			return mockValidator;
@@ -224,12 +211,13 @@ describe('CommonCartridgeUc', () => {
 		const createMockBusboy = () => {
 			const busboyEmitter = new EventEmitter();
 			(busboy as jest.Mock).mockReturnValue(busboyEmitter);
+
 			return busboyEmitter;
 		};
 
 		const setupRequestMock = (jwt: string, complete: boolean, contentDisposition?: string) => {
 			const reqEmitter = new EventEmitter();
-			reqEmitter.setMaxListeners(20);
+			reqEmitter.setMaxListeners(0);
 			currentReqEmitter = reqEmitter;
 
 			requestMock.headers.cookie = `jwt=${jwt}`;
@@ -243,23 +231,9 @@ describe('CommonCartridgeUc', () => {
 				reqEmitter.on(event, listener);
 				return requestMock;
 			});
-
-			// Override with direct property assignment using defineProperty
-
-			Object.defineProperty(requestMock, 'pipe', {
-				value: jest.fn(),
-				writable: true,
-				configurable: true,
-			});
-			Object.defineProperty(requestMock, 'unpipe', {
-				value: jest.fn(),
-				writable: true,
-				configurable: true,
-			});
-			Object.defineProperty(requestMock, 'complete', {
-				get: () => complete,
-				configurable: true,
-			});
+			requestMock.pipe.mockImplementation(jest.fn());
+			requestMock.unpipe.mockImplementation(jest.fn());
+			requestMock.complete = complete;
 
 			return reqEmitter;
 		};
@@ -268,6 +242,7 @@ describe('CommonCartridgeUc', () => {
 			const setup = () => {
 				const currentUser = currentUserFactory.build();
 				requestMock.headers.cookie = undefined;
+
 				return { currentUser };
 			};
 
@@ -285,7 +260,6 @@ describe('CommonCartridgeUc', () => {
 				const fileRecord = fileRecordResponseFactory.build();
 				const busboyEmitter = createMockBusboy();
 				const reqEmitter = setupRequestMock(jwt, true, 'attachment; filename="test-course.imscc"');
-
 				setupValidatorMock();
 
 				fileClientMock.uploadTempFile.mockResolvedValue(fileRecord);
@@ -298,12 +272,10 @@ describe('CommonCartridgeUc', () => {
 
 				const promise = sut.uploadFileFromRequestToTemp(currentUser);
 
-				// Simulate busboy receiving a file
 				const fileStream = new PassThrough();
 				busboyEmitter.emit('file', 'file', fileStream, { filename: 'test.imscc' });
 				fileStream.end();
 
-				// Simulate busboy close
 				busboyEmitter.emit('close');
 
 				const result = await promise;
@@ -360,7 +332,6 @@ describe('CommonCartridgeUc', () => {
 				const fileRecord = fileRecordResponseFactory.build();
 				const busboyEmitter = createMockBusboy();
 				setupRequestMock(jwt, true, 'attachment');
-
 				setupValidatorMock();
 
 				fileClientMock.uploadTempFile.mockResolvedValue(fileRecord);
@@ -408,7 +379,6 @@ describe('CommonCartridgeUc', () => {
 
 				const promise = sut.uploadFileFromRequestToTemp(currentUser);
 
-				// Simulate request close without completion
 				reqEmitter.emit('close');
 
 				await expect(promise).rejects.toThrow('Request closed prematurely');
@@ -451,7 +421,6 @@ describe('CommonCartridgeUc', () => {
 
 				const promise = sut.uploadFileFromRequestToTemp(currentUser);
 
-				// Close without receiving a file
 				busboyEmitter.emit('close');
 
 				await expect(promise).rejects.toThrow('No file provided');
@@ -465,7 +434,6 @@ describe('CommonCartridgeUc', () => {
 				const busboyEmitter = createMockBusboy();
 				const uploadError = new Error('Upload failed');
 				setupRequestMock(jwt, true);
-
 				setupValidatorMock();
 
 				fileClientMock.uploadTempFile.mockRejectedValue(uploadError);
@@ -492,9 +460,8 @@ describe('CommonCartridgeUc', () => {
 				const jwt = faker.internet.jwt();
 				const currentUser = currentUserFactory.build();
 				const busboyEmitter = createMockBusboy();
-				setupRequestMock(jwt, true);
-
 				const mockValidator = setupValidatorMock();
+				setupRequestMock(jwt, true);
 
 				fileClientMock.uploadTempFile.mockImplementation(() => Promise.resolve(fileRecordResponseFactory.build()));
 
@@ -509,7 +476,6 @@ describe('CommonCartridgeUc', () => {
 				const fileStream = new PassThrough();
 				busboyEmitter.emit('file', 'file', fileStream, { filename: 'test.imscc' });
 
-				// Emit validation error
 				mockValidator.emit(CC_VALIDATION_ERROR_EVENT, CcValidationErrorType.NotAZipFile);
 
 				await expect(promise).rejects.toThrow('Given file is not a zip archive');
@@ -521,9 +487,8 @@ describe('CommonCartridgeUc', () => {
 				const jwt = faker.internet.jwt();
 				const currentUser = currentUserFactory.build();
 				const busboyEmitter = createMockBusboy();
-				setupRequestMock(jwt, true);
-
 				const mockValidator = setupValidatorMock();
+				setupRequestMock(jwt, true);
 
 				fileClientMock.uploadTempFile.mockImplementation(() => Promise.resolve(fileRecordResponseFactory.build()));
 
@@ -551,7 +516,6 @@ describe('CommonCartridgeUc', () => {
 				const fileRecord = fileRecordResponseFactory.build();
 				const busboyEmitter = createMockBusboy();
 				setupRequestMock(jwt, true);
-
 				setupValidatorMock();
 
 				fileClientMock.uploadTempFile.mockResolvedValue(fileRecord);
@@ -568,7 +532,6 @@ describe('CommonCartridgeUc', () => {
 				busboyEmitter.emit('file', 'file', fileStream, { filename: 'test.imscc' });
 				fileStream.end();
 
-				// Emit close multiple times
 				busboyEmitter.emit('close');
 				busboyEmitter.emit('close');
 
@@ -585,10 +548,8 @@ describe('CommonCartridgeUc', () => {
 				const busboyEmitter = createMockBusboy();
 				const uploadError = new Error('Upload failed in catch');
 				setupRequestMock(jwt, true);
-
 				setupValidatorMock();
 
-				// Create a promise that rejects
 				fileClientMock.uploadTempFile.mockImplementation(() => Promise.reject(uploadError));
 
 				return { currentUser, busboyEmitter, uploadError };

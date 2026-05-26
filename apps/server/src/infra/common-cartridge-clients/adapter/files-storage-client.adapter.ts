@@ -5,7 +5,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { AxiosError } from 'axios';
 import FormDataReadable from 'form-data';
 import { lastValueFrom } from 'rxjs';
-import { Readable, Stream } from 'stream';
+import { Readable, Stream } from 'node:stream';
 import util from 'util';
 import {
 	FILE_STORAGE_CLIENT_CONFIG_TOKEN,
@@ -152,8 +152,7 @@ export class FilesStorageClientAdapter {
 		parentId: string,
 		parentType: FileRecordParentType,
 		file: Readable,
-		fileName: string,
-		maxCcFileSize: number
+		fileName: string
 	): Promise<FileRecordResponse> {
 		// INFO: We bypass the generated client to support streaming directly without buffering.
 		// The generated client expects a File type which would require loading everything into memory.
@@ -171,8 +170,6 @@ export class FilesStorageClientAdapter {
 				...formData.getHeaders(),
 				Authorization: `Bearer ${jwt}`,
 			},
-			maxBodyLength: maxCcFileSize,
-			maxContentLength: Infinity,
 		});
 
 		const response = await lastValueFrom(observable);

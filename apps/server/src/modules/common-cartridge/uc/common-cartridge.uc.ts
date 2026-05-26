@@ -157,8 +157,7 @@ export class CommonCartridgeUc {
 					currentUser.userId,
 					FileRecordParentType.USERS,
 					validator,
-					fileName,
-					this.config.courseImportMaxFileSize
+					fileName
 				);
 
 				fileRecordPromise.catch((error) => {

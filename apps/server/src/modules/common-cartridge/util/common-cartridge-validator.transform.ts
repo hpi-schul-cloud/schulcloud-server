@@ -1,4 +1,4 @@
-import { Transform, TransformCallback, TransformOptions } from 'stream';
+import { Transform, TransformCallback, TransformOptions } from 'node:stream';
 
 export const CC_VALIDATION_ERROR_EVENT = 'valitionError';
 export enum CcValidationErrorType {
@@ -7,10 +7,10 @@ export enum CcValidationErrorType {
 }
 
 export class CommonCartridgeValidatorTransform extends Transform {
-	private ZIP_MAGIC = Buffer.from([0x50, 0x4b, 0x03, 0x04]);
+	private readonly ZIP_MAGIC = Buffer.from([0x50, 0x4b, 0x03, 0x04]);
 
 	private magicNumberValidated = false;
-	private chunks: Buffer[] = [];
+	private readonly chunks: Buffer[] = [];
 	private bytesRead = 0;
 
 	constructor(

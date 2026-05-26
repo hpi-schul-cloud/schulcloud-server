@@ -397,7 +397,6 @@ describe(FilesStorageClientAdapter.name, () => {
 				const parentType = FileRecordParentType.BOARDNODES;
 				const readable = Readable.from('');
 				const fileName = faker.system.fileName();
-				const maxCcFileSize = faker.number.int();
 				const jwt = faker.internet.jwt();
 				const returnedId = faker.string.uuid();
 
@@ -410,24 +409,14 @@ describe(FilesStorageClientAdapter.name, () => {
 					parentType,
 					readable,
 					fileName,
-					maxCcFileSize,
 					jwt,
 					returnedId,
 				};
 			};
 
 			it('should return the response data', async () => {
-				const {
-					storageLocationId,
-					storageLocation,
-					parentId,
-					parentType,
-					readable,
-					fileName,
-					maxCcFileSize,
-					jwt,
-					returnedId,
-				} = setup();
+				const { storageLocationId, storageLocation, parentId, parentType, readable, fileName, jwt, returnedId } =
+					setup();
 
 				const result = await filesStorageClientAdapter.uploadTempFile(
 					jwt,
@@ -436,8 +425,7 @@ describe(FilesStorageClientAdapter.name, () => {
 					parentId,
 					parentType,
 					readable,
-					fileName,
-					maxCcFileSize
+					fileName
 				);
 
 				expect(result).toEqual({ id: returnedId });
