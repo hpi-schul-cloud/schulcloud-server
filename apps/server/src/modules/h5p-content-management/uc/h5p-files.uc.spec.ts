@@ -31,6 +31,7 @@ const createParams = () => {
 		userId: 'mockUserId',
 		isExternalUser: false,
 		support: false,
+		isServiceAccount: false,
 	};
 
 	const mockContentParameters: Awaited<ReturnType<H5PEditor['getContent']>> = {

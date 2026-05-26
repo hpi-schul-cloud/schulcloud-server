@@ -1,5 +1,5 @@
 const chai = require('chai');
-const chaiHttp = require('chai-http');
+const { default: chaiHttp, request } = require('chai-http');
 const commons = require('@hpi-schul-cloud/commons');
 const appPromise = require('../../../src/app');
 const testObjects = require('../helpers/testObjects')(appPromise());
@@ -34,17 +34,16 @@ describe('authentication service integration tests', () => {
 
 	describe('Logout', () => {
 		it('When a user successfully removes his authentication, then he is logged out', async () => {
-			const accountDetails = { username: `${Date.now()}poweruser@mail.schul.tech`, password: `password${Date.now()}` };
 			const { _id: schoolId } = await testObjects.createTestSchool();
 			const user = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
 			const token = await testObjects.generateJWTFromUser(user);
-			const request = chai
-				.request(app)
+			const req = request
+				.execute(app)
 				.delete('/authentication')
 				.set('Accept', 'application/json')
 				.set('Authorization', token)
 				.set('content-type', 'application/json');
-			const response = await request.send();
+			const response = await req.send();
 			expect(response.status).to.equal(200);
 			expect(response.body).to.haveOwnProperty('accessToken');
 		});

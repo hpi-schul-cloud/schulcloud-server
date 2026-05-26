@@ -1,5 +1,5 @@
 const chai = require('chai');
-const chaiHttp = require('chai-http');
+const { default: chaiHttp, request: httpRequest } = require('chai-http');
 const freeport = require('freeport');
 const { Configuration } = require('@hpi-schul-cloud/commons');
 const jsonwebtoken = require('jsonwebtoken');
@@ -15,8 +15,8 @@ chai.use(chaiHttp);
 
 function request({ server, method = 'get', endpoint, data, accessToken }) {
 	return new Promise((resolve, reject) => {
-		chai
-			.request(server)
+		httpRequest
+			.execute(server)
 			[method](endpoint)
 			.set({
 				Accept: 'application/json',

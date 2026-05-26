@@ -30,7 +30,7 @@ export class ToolLaunchController {
 	@ApiUnauthorizedResponse({ description: 'Unauthorized' })
 	@ApiForbiddenResponse({ description: 'Forbidden' })
 	@ApiUnprocessableEntityResponse({ description: 'Outdated tools cannot be launched' })
-	async getContextExternalToolLaunchRequest(
+	public async getContextExternalToolLaunchRequest(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ContextExternalToolLaunchParams
 	): Promise<ToolLaunchRequestResponse> {
@@ -50,7 +50,7 @@ export class ToolLaunchController {
 	@ApiUnauthorizedResponse({ description: 'Unauthorized' })
 	@ApiForbiddenResponse({ description: 'Forbidden' })
 	@ApiUnprocessableEntityResponse({ description: 'Outdated tools cannot be launched' })
-	async getSchoolExternalToolLaunchRequest(
+	public async getSchoolExternalToolLaunchRequest(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: SchoolExternalToolLaunchParams,
 		@Body() body: ContextExternalToolBodyParams

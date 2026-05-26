@@ -30,7 +30,7 @@ export const JwtAuthentication = () => {
  * Returns the current authenticated user.
  * @requires Authenticated
  */
-export const CurrentUser = createParamDecorator<never, never, ICurrentUser>((_, ctx: ExecutionContext) => {
+export const CurrentUser = createParamDecorator<never, ICurrentUser>((_, ctx: ExecutionContext): ICurrentUser => {
 	const expressRequest = ctx.switchToHttp().getRequest<Request>();
 	const requestUser = expressRequest.user;
 
@@ -47,7 +47,7 @@ export const CurrentUser = createParamDecorator<never, never, ICurrentUser>((_, 
  * Returns the current JWT.
  * @requires Authenticated
  */
-export const JWT = createParamDecorator<never, never, string>((_, ctx: ExecutionContext) => {
+export const JWT = createParamDecorator<never, string>((_, ctx: ExecutionContext): string => {
 	const req: Request = ctx.switchToHttp().getRequest();
 	const jwt = JwtExtractor.extractJwtFromRequest(req);
 

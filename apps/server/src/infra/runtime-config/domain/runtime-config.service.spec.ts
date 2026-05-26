@@ -1,9 +1,9 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { RuntimeConfigService } from './runtime-config.service';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { RuntimeConfigRepo } from './runtime-config.repo.interface';
-import { runtimeConfigTestingFactory } from '../testing/runtime-config-value.testing.factory';
+import { Test, TestingModule } from '@nestjs/testing';
 import { RUNTIME_CONFIG_REPO } from '../injection-keys';
+import { runtimeConfigTestingFactory } from '../testing/runtime-config-value.testing.factory';
+import { RuntimeConfigRepo } from './runtime-config.repo.interface';
+import { RuntimeConfigService } from './runtime-config.service';
 
 describe('RuntimeConfigService', () => {
 	let module: TestingModule;
@@ -22,6 +22,10 @@ describe('RuntimeConfigService', () => {
 		}).compile();
 		service = module.get(RuntimeConfigService);
 		repo = module.get(RUNTIME_CONFIG_REPO);
+	});
+
+	afterAll(async () => {
+		await module.close();
 	});
 
 	describe('getByKey', () => {

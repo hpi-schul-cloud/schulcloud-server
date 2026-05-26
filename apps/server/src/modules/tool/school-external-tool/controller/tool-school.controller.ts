@@ -5,7 +5,6 @@ import {
 	ApiBadRequestResponse,
 	ApiCreatedResponse,
 	ApiForbiddenResponse,
-	ApiFoundResponse,
 	ApiOkResponse,
 	ApiOperation,
 	ApiResponse,
@@ -14,7 +13,6 @@ import {
 	ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { ValidationError } from '@shared/common/error';
-import { ExternalToolSearchListResponse } from '../../external-tool/controller/dto';
 import { SchoolExternalToolUtilization } from '../../tool-utilization/domain';
 import { SchoolExternalToolUtilizationUc } from '../../tool-utilization/uc/school-external-tool-utilization.uc';
 import { SchoolExternalTool, SchoolExternalToolProps } from '../domain';
@@ -44,7 +42,11 @@ export class ToolSchoolController {
 	) {}
 
 	@Get()
-	@ApiFoundResponse({ description: 'SchoolExternalTools has been found.', type: ExternalToolSearchListResponse })
+	@ApiResponse({
+		status: 200,
+		description: 'SchoolExternalTools has been found.',
+		type: SchoolExternalToolSearchListResponse,
+	})
 	@ApiForbiddenResponse()
 	@ApiUnauthorizedResponse()
 	@ApiOperation({ summary: 'Returns a list of SchoolExternalTools for a given school' })
