@@ -555,6 +555,38 @@ describe('UserProvisioningHandler', () => {
 				expect(erwinIdentifierServiceMock.createErwinIdentifier).not.toHaveBeenCalled();
 			});
 		});
+
+		describe('when saved user has no id', () => {
+			const setup = () => {
+				const system: ProvisioningSystemDto = provisioningSystemDtoFactory.build();
+				const school = schoolFactory.build();
+				const externalSchool: ExternalSchoolDto = externalSchoolDtoFactory.build({
+					externalId: school.externalId,
+				});
+				const externalUser: ExternalUserDto = externalUserDtoFactory.build({
+					roles: [RoleName.STUDENT],
+				});
+				const context: ProvisioningContext = { system, externalSchool, externalUser };
+				const roleDto: RoleDto = {
+					id: new ObjectId().toHexString(),
+					name: RoleName.STUDENT,
+					permissions: [],
+				};
+				const savedUser = userDoFactory.build({ id: undefined });
+
+				schoolServiceMock.getSchools.mockResolvedValueOnce([school]);
+				roleServiceMock.findByNames.mockResolvedValueOnce([roleDto]);
+				userServiceMock.save.mockResolvedValueOnce(savedUser);
+
+				return { context };
+			};
+
+			it('should throw BadDataLoggableException', async () => {
+				const { context } = setup();
+
+				await expect(sut.create(context)).rejects.toThrow(BadDataLoggableException);
+			});
+		});
 	});
 
 	describe('update', () => {
