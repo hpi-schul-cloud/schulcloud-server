@@ -25,7 +25,7 @@ export class FilesStorageClientModule {
 					logger: LegacyLogger,
 					config: FilesStorageClientConfig
 				): FilesStorageProducer => new FilesStorageProducer(amqpConnection, logger, config),
-				inject: [AmqpConnection, LegacyLogger, options.configInjectionToken],
+				inject: [AmqpConnection, LegacyLogger, options.exchangeConfigInjectionToken],
 			},
 		];
 
@@ -36,6 +36,8 @@ export class FilesStorageClientModule {
 				CopyHelperModule,
 				SagaModule,
 				ConfigurationModule.register(options.configInjectionToken, options.configConstructor),
+				ConfigurationModule.register(options.exchangeConfigInjectionToken, options.exchangeConfigConstructor),
+
 				RabbitMQWrapperModule.register(options),
 			],
 			providers,
