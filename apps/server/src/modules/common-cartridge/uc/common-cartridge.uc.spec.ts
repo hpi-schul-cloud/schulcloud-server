@@ -319,8 +319,7 @@ describe(CommonCartridgeUc.name, () => {
 					currentUser.userId,
 					FileRecordParentType.USERS,
 					expect.anything(),
-					'upload.imscc',
-					expect.any(Number)
+					'upload.imscc'
 				);
 			});
 		});
@@ -358,8 +357,7 @@ describe(CommonCartridgeUc.name, () => {
 					currentUser.userId,
 					FileRecordParentType.USERS,
 					expect.anything(),
-					'upload.imscc',
-					expect.any(Number)
+					'upload.imscc'
 				);
 			});
 		});
