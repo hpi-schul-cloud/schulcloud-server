@@ -3,15 +3,12 @@ import { Injectable } from '@nestjs/common';
 import { TypeGuard } from '@shared/common/guards';
 import { BadDataLoggableException, ExternalIdMissingLoggableException } from '../loggable';
 import {
-	ExternalEntityData,
 	ProvisioningContext,
 	ProvisioningEntityHandler,
 	ProvisioningResult,
 } from './erwin-provisioning-handler.interface';
 import { SchoolProvisioningHandler } from './school-provisioning.handler';
 import { UserProvisioningHandler } from './user-provisioning.handler';
-
-export { ExternalEntityData, ProvisioningContext, ProvisioningEntityHandler, ProvisioningResult };
 
 export enum ProvisioningEntityType {
 	USER = 'USER',

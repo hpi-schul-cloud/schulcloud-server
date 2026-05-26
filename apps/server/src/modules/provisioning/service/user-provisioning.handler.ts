@@ -64,7 +64,7 @@ export class UserProvisioningHandler implements ProvisioningEntityHandler {
 
 		const user = await this.userService.findByExternalId(externalUser.externalId, context.system.systemId);
 
-		if (user && user.schoolId === school.id) {
+		if (user?.schoolId === school.id) {
 			return user;
 		}
 
@@ -152,12 +152,13 @@ export class UserProvisioningHandler implements ProvisioningEntityHandler {
 	}
 
 	private async createAccount(user: UserDo, system: ProvisioningSystemDto): Promise<void> {
+		if (!user.id) {
+			throw new BadDataLoggableException('User ID is required for account creation');
+		}
+
 		await this.accountService.saveWithValidation({
 			userId: user.id,
-			username: crypto
-				.createHash('sha256')
-				.update(user.id as string)
-				.digest('base64'),
+			username: crypto.createHash('sha256').update(user.id).digest('base64'),
 			systemId: system.systemId,
 			activated: true,
 		} as AccountSave);
