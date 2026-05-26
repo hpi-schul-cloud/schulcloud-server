@@ -1,7 +1,7 @@
 import { Transform, TransformCallback, TransformOptions } from 'stream';
 
-export const VALIDATION_ERROR_EVENT = 'valitionError';
-export enum ValidationErrorKinds {
+export const CC_VALIDATION_ERROR_EVENT = 'valitionError';
+export enum CcValidationErrorType {
 	'MaximumSizeExceeded' = 'MaximumSizeExceeded',
 	'NotAZipFile' = 'NotAZipFile',
 }
@@ -23,7 +23,7 @@ export class CommonCartridgeValidatorTransform extends Transform {
 	public _transform(chunk: Buffer, _encoding: BufferEncoding, callback: TransformCallback): void {
 		this.bytesRead += chunk.length;
 		if (this.bytesRead > this.maximumSize) {
-			this.emit(VALIDATION_ERROR_EVENT, ValidationErrorKinds.MaximumSizeExceeded);
+			this.emit(CC_VALIDATION_ERROR_EVENT, CcValidationErrorType.MaximumSizeExceeded);
 
 			return callback();
 		}
@@ -44,7 +44,7 @@ export class CommonCartridgeValidatorTransform extends Transform {
 
 			const notValid = !fileHeader.equals(this.ZIP_MAGIC);
 			if (notValid) {
-				this.emit(VALIDATION_ERROR_EVENT, ValidationErrorKinds.NotAZipFile);
+				this.emit(CC_VALIDATION_ERROR_EVENT, CcValidationErrorType.NotAZipFile);
 			}
 
 			this.chunks.length = 0;
@@ -55,7 +55,7 @@ export class CommonCartridgeValidatorTransform extends Transform {
 
 	public _flush(callback: TransformCallback): void {
 		if (!this.magicNumberValidated) {
-			this.emit(VALIDATION_ERROR_EVENT, ValidationErrorKinds.NotAZipFile);
+			this.emit(CC_VALIDATION_ERROR_EVENT, CcValidationErrorType.NotAZipFile);
 
 			this.chunks.length = 0;
 		}

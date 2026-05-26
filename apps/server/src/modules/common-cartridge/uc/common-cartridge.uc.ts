@@ -20,8 +20,8 @@ import { CommonCartridgeExportService } from '../service';
 import { CommonCartridgeExportResponse } from '../service/common-cartridge-export.response';
 import {
 	CommonCartridgeValidatorTransform,
-	VALIDATION_ERROR_EVENT,
-	ValidationErrorKinds,
+	CC_VALIDATION_ERROR_EVENT,
+	CcValidationErrorType,
 } from '../util/common-cartridge-validator.transform';
 
 @Injectable()
@@ -135,14 +135,14 @@ export class CommonCartridgeUc {
 				if (isResolved) return;
 
 				const validator = new CommonCartridgeValidatorTransform(this.config.courseImportMaxFileSize);
-				validator.on(VALIDATION_ERROR_EVENT, (kind: ValidationErrorKinds) => {
+				validator.on(CC_VALIDATION_ERROR_EVENT, (kind: CcValidationErrorType) => {
 					validator.destroy();
 
 					switch (kind) {
-						case ValidationErrorKinds.NotAZipFile:
+						case CcValidationErrorType.NotAZipFile:
 							safeReject(new Error('Given file is not a zip archive'));
 							break;
-						case ValidationErrorKinds.MaximumSizeExceeded:
+						case CcValidationErrorType.MaximumSizeExceeded:
 							safeReject(new Error('Maximum file size exceeded'));
 							break;
 					}
