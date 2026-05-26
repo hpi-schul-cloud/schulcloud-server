@@ -100,7 +100,7 @@ export class SchoolProvisioningHandler implements ProvisioningEntityHandler {
 		return savedSchool;
 	}
 
-	public async update(entity: ProvisioningResult, data: ExternalEntityData): Promise<School> {
+	public update(entity: ProvisioningResult, data: ExternalEntityData): Promise<School> {
 		const school = entity as School;
 		const externalSchool = data as ExternalSchoolDto;
 		const externalSchoolName = this.formatSchoolName(externalSchool);
@@ -113,7 +113,7 @@ export class SchoolProvisioningHandler implements ProvisioningEntityHandler {
 			school.updateOfficialSchoolNumber(externalSchool.officialSchoolNumber);
 		}
 
-		return await this.schoolService.save(school);
+		return this.schoolService.save(school);
 	}
 
 	private formatSchoolName(externalSchool: ExternalSchoolDto): string | undefined {
