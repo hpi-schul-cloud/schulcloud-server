@@ -106,6 +106,14 @@ const inputFormatsSanitizeConfig: Record<string, IOptions> = {
 			a: ['href', 'name', 'target', 'rel'],
 			img: ['src', 'srcset', 'alt', 'title', 'width', 'height', 'loading'],
 		},
+		transformTags: {
+			a: (tagName, attribs) => {
+				if (attribs.target === '_blank') {
+					return { tagName, attribs: { ...attribs, rel: 'noopener noreferrer' } };
+				}
+				return { tagName, attribs };
+			},
+		},
 	},
 };
 

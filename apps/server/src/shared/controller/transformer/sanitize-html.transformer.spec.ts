@@ -124,14 +124,32 @@ describe('SanitizeHtmlTransformer Decorator', () => {
 			);
 		});
 
-		it('should preserve safe href attributes on anchor tags', () => {
+		it('should enforce rel="noopener noreferrer" on target="_blank" anchor tags', () => {
 			const plainString = {
 				contentRichTextCk5News: '<a href="https://example.com" target="_blank" rel="noopener">link</a>',
 			};
 			const instance = plainToClass(WithHtmlDto, plainString);
 			expect(instance.contentRichTextCk5News).toEqual(
-				'<a href="https://example.com" target="_blank" rel="noopener">link</a>'
+				'<a href="https://example.com" target="_blank" rel="noopener noreferrer">link</a>'
 			);
+		});
+
+		it('should add rel="noopener noreferrer" when target="_blank" has no rel attribute', () => {
+			const plainString = {
+				contentRichTextCk5News: '<a href="https://example.com" target="_blank">link</a>',
+			};
+			const instance = plainToClass(WithHtmlDto, plainString);
+			expect(instance.contentRichTextCk5News).toEqual(
+				'<a href="https://example.com" target="_blank" rel="noopener noreferrer">link</a>'
+			);
+		});
+
+		it('should not add rel when target is not "_blank"', () => {
+			const plainString = {
+				contentRichTextCk5News: '<a href="https://example.com" target="_self">link</a>',
+			};
+			const instance = plainToClass(WithHtmlDto, plainString);
+			expect(instance.contentRichTextCk5News).toEqual('<a href="https://example.com" target="_self">link</a>');
 		});
 
 		it('should strip javascript: href from anchor tags', () => {
