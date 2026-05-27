@@ -1,13 +1,10 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { findOneOrFailHandler } from '@shared/common/database-error.handler';
-import { MongoMemoryDatabaseModule } from '@testing/database';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { Test, TestingModule } from '@nestjs/testing';
 import fs from 'fs';
 import { PushDeleteRequestsOptionsBuilder } from './builder';
 import { UnsyncedEntitiesOptionsBuilder } from './builder/unsynced-entities-options.builder';
-import { DeletionConsoleModule } from './deletion-console.app.module';
+import { DeletionConsoleTestModule } from './deletion-console.app.module';
 import { DELETION_CONSOLE_CONFIG_TOKEN } from './deletion-console.config';
-import { TEST_ENTITIES } from './deletion-console.entity.imports';
 import { DeletionQueueConsole } from './deletion-queue.console';
 import { BatchDeletionUc } from './uc';
 
@@ -18,10 +15,7 @@ describe(DeletionQueueConsole.name, () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [
-				DeletionConsoleModule,
-				MongoMemoryDatabaseModule.forRoot({ ...findOneOrFailHandler, entities: TEST_ENTITIES }),
-			],
+			imports: [DeletionConsoleTestModule],
 		})
 			.overrideProvider(DELETION_CONSOLE_CONFIG_TOKEN)
 			.useValue({
