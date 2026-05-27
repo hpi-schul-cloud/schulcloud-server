@@ -14,29 +14,47 @@ import { DeletionExecutionConsole } from './deletion-execution.console';
 import { DeletionQueueConsole } from './deletion-queue.console';
 import { BatchDeletionService } from './services';
 import { BatchDeletionUc, DeletionExecutionUc } from './uc';
+import { MongoMemoryDatabaseModule } from '@testing/database';
+
+const imports = [
+	ConsoleModule,
+	ConsoleWriterModule,
+	UserModule,
+	ConfigurationModule.register(DELETION_CONSOLE_CONFIG_TOKEN, DeletionConsoleConfig),
+	AccountModule,
+	HttpModule,
+	ErrorModule,
+];
+
+const providers = [
+	DeletionClient,
+	DeletionQueueConsole,
+	BatchDeletionUc,
+	BatchDeletionService,
+	DeletionExecutionConsole,
+	DeletionExecutionUc,
+];
 
 @Module({
 	imports: [
-		ConsoleModule,
-		ConsoleWriterModule,
-		UserModule,
-		ConfigurationModule.register(DELETION_CONSOLE_CONFIG_TOKEN, DeletionConsoleConfig),
+		...imports,
 		DatabaseModule.register({
 			configInjectionToken: DATABASE_CONFIG_TOKEN,
 			configConstructor: DatabaseConfig,
 			entities: ENTITIES,
 		}),
-		AccountModule,
-		HttpModule,
-		ErrorModule,
 	],
-	providers: [
-		DeletionClient,
-		DeletionQueueConsole,
-		BatchDeletionUc,
-		BatchDeletionService,
-		DeletionExecutionConsole,
-		DeletionExecutionUc,
-	],
+	providers,
 })
 export class DeletionConsoleModule {}
+
+@Module({
+	imports: [
+		...imports,
+		MongoMemoryDatabaseModule.forRoot({
+			entities: ENTITIES,
+		}),
+	],
+	providers,
+})
+export class DeletionConsoleTestModule {}

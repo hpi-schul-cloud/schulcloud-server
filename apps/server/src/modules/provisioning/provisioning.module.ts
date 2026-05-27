@@ -28,7 +28,9 @@ import { PROVISIONING_EXCHANGE_CONFIG_TOKEN, ProvisioningExchangeConfig } from '
 import { PROVISIONING_CONFIG_TOKEN, ProvisioningConfig } from './provisioning.config';
 import { ErwinProvisioningService } from './service/erwin-provisioning.service';
 import { ProvisioningService } from './service/provisioning.service';
+import { SchoolProvisioningHandler } from './service/school-provisioning.handler';
 import { TspProvisioningService } from './service/tsp-provisioning.service';
+import { UserProvisioningHandler } from './service/user-provisioning.handler';
 import {
 	OidcProvisioningStrategy,
 	SchulconnexAsyncProvisioningStrategy,
@@ -92,6 +94,8 @@ import {
 		TspProvisioningService,
 		ErwinProvisioningStrategy,
 		ErwinProvisioningService,
+		SchoolProvisioningHandler,
+		UserProvisioningHandler,
 		SchulconnexGroupProvisioningProducer,
 		SchulconnexLicenseProvisioningProducer,
 	],
