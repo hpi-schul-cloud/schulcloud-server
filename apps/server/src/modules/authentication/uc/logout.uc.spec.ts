@@ -55,6 +55,10 @@ describe(LogoutUc.name, () => {
 		jest.resetAllMocks();
 	});
 
+	afterAll(async () => {
+		await module.close();
+	});
+
 	describe('logout', () => {
 		describe('when a jwt is given', () => {
 			const setup = () => {

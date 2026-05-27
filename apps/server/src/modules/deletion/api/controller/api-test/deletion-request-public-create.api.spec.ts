@@ -1,13 +1,13 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { AccountEntity } from '@modules/account/repo';
 import { ServerTestModule } from '@modules/server';
+import { User } from '@modules/user/repo';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { TestApiClient } from '@testing/test-api-client';
-import { AccountEntity } from '@modules/account/repo';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
+import { TestApiClient } from '@testing/test-api-client';
 import { DeletionRequestParams } from '../dto';
-import { User } from '@modules/user/repo';
 
 const baseRouteName = '/deletionRequestsPublic';
 
@@ -22,6 +22,11 @@ describe(`deletionRequest public create (api)`, () => {
 		}).compile();
 
 		app = module.createNestApplication();
+		// TODO: Can we do this as a general setup for all tests?
+		// Configure Express with the same query parser as production (Express v5 compatibility)
+		// See: https://docs.nestjs.com/migration-guide#query-parameters-parsing
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-call
+		app.getHttpAdapter().getInstance().set('query parser', 'extended');
 		await app.init();
 		em = module.get(EntityManager);
 		testApiClient = new TestApiClient(app, baseRouteName);
@@ -47,6 +52,7 @@ describe(`deletionRequest public create (api)`, () => {
 			const deletionRequestToCreate: DeletionRequestParams = {
 				ids: [studentUser.id],
 			};
+
 			const queryString = deletionRequestToCreate.ids.map((id) => `ids[]=${id}`).join('&');
 			const nonexistentId = new ObjectId().toString();
 			const loggedInClient = await testApiClient.login(adminAccount);
