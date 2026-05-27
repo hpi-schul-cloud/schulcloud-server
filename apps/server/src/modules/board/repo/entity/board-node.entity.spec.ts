@@ -1,29 +1,31 @@
-import { MikroORM, ObjectId } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { Test, TestingModule } from '@nestjs/testing';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity';
+import { cleanupCollections } from '@testing/cleanup-collections';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 import { BoardExternalReferenceType, BoardNodeType } from '../../domain';
 import { columnBoardEntityFactory } from '../../testing';
 import { BoardNodeEntity } from './board-node.entity';
 import { Context } from './embeddables';
 
 describe('entity', () => {
-	let orm: MikroORM;
+	let module: TestingModule;
+	let em: EntityManager;
 
 	beforeAll(async () => {
-		orm = await MikroORM.init({
-			entities: [BaseEntityWithTimestamps, BoardNodeEntity],
-			clientUrl: 'mongodb://localhost:27017/boardtest',
-			validate: true,
-			allowGlobalContext: true,
-		});
+		module = await Test.createTestingModule({
+			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [BaseEntityWithTimestamps, BoardNodeEntity] })],
+		}).compile();
+
+		em = module.get(EntityManager);
 	});
 
-	beforeEach(async () => {
-		await orm.schema.clearDatabase();
+	afterEach(async () => {
+		await cleanupCollections(em);
 	});
 
 	afterAll(async () => {
-		await orm.schema.dropSchema();
-		await orm.close(true);
+		await module.close();
 	});
 
 	describe('context', () => {
@@ -35,20 +37,20 @@ describe('entity', () => {
 				id: new ObjectId().toHexString(),
 			});
 
-			await orm.em.persist(entity).flush();
-			orm.em.clear();
+			await em.persist(entity).flush();
+			em.clear();
 
-			const result = await orm.em.findOneOrFail(BoardNodeEntity, { id: entity.id });
+			const result = await em.findOneOrFail(BoardNodeEntity, { id: entity.id });
 			expect(result.context).toEqual(entity.context);
 		});
 
 		it('should persist factory generated object', async () => {
 			const entity = columnBoardEntityFactory.build();
 
-			await orm.em.persist(entity).flush();
-			orm.em.clear();
+			await em.persist(entity).flush();
+			em.clear();
 
-			const result = await orm.em.findOneOrFail(BoardNodeEntity, { id: entity.id });
+			const result = await em.findOneOrFail(BoardNodeEntity, { id: entity.id });
 			expect(result.context).toEqual(entity.context);
 		});
 	});
@@ -59,10 +61,10 @@ describe('entity', () => {
 			entity.type = BoardNodeType.EXTERNAL_TOOL;
 			entity.contextExternalToolId = new ObjectId().toHexString();
 
-			await orm.em.persist(entity).flush();
-			orm.em.clear();
+			await em.persist(entity).flush();
+			em.clear();
 
-			const result = await orm.em.findOneOrFail(BoardNodeEntity, { id: entity.id });
+			const result = await em.findOneOrFail(BoardNodeEntity, { id: entity.id });
 			expect(result.contextExternalToolId).toBe(entity.contextExternalToolId);
 		});
 	});
@@ -73,10 +75,10 @@ describe('entity', () => {
 			entity.type = BoardNodeType.H5P_ELEMENT;
 			entity.contentId = new ObjectId().toHexString();
 
-			await orm.em.persist(entity).flush();
-			orm.em.clear();
+			await em.persist(entity).flush();
+			em.clear();
 
-			const result = await orm.em.findOneOrFail(BoardNodeEntity, { id: entity.id });
+			const result = await em.findOneOrFail(BoardNodeEntity, { id: entity.id });
 			expect(result.contentId).toBe(entity.contentId);
 		});
 	});
