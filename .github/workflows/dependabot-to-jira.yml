@@ -1,66 +1,103 @@
+name: Dependabot PR to Jira
+
 on:
   pull_request:
-    types: [opened, reopened]
+    types: [opened, reopened, edited]
     branches:
       - main
 
 jobs:
   dependabot-to-jira:
     if: ${{ github.actor == 'dependabot[bot]' }}
-    name: 'dependabot-pr-to-jira'
+    name: dependabot-pr-to-jira
     runs-on: ubuntu-latest
     permissions:
       contents: read
       pull-requests: write
     steps:
-      - name: create ticket
-        id: create_ticket
+      - name: create or restore jira key
+        id: jira
         env:
+          ACTION: ${{ github.event.action }}
           PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BODY: ${{ github.event.pull_request.body }}
           PR_HTML_URL: ${{ github.event.pull_request.html_url }}
           REPO_NAME: ${{ github.event.repository.name }}
+        shell: bash
         run: |
-          JSON_TEMPLATE='{
-            "fields": {
-              "project": {
-                "key": "BC"
-              },
-            "summary": ($pr_title + " in " + $repo_name),
-            "description": ("h4. Task:\n" + $pr_title + "\n" + $pr_html_url + "\nh4.Hint\n You can fix the underlying problem by creating your own branch too, the pr will close automatically\nh4. Acceptance criteria\n1. https://docs.dbildungscloud.de/display/DBH/3rd+Party+Library+Quality+Assessment"),
-            "issuetype": {
-              "id": "10100"
-            },
-            "customfield_10000": "BC-3139"
-            }
-          }'
-          JSON_PAYLOAD="$(jq -n --arg pr_title "$PR_TITLE" --arg pr_html_url "$PR_HTML_URL" --arg repo_name "$REPO_NAME" "$JSON_TEMPLATE")"
-          response_code=$(curl -s \
-            -o response.txt \
-            -w "%{http_code}" \
-            -u ${{ secrets.JIRA_USER_NAME }}:${{ secrets.JIRA_USER_PASSWORD }}\
-            -H "Content-Type: application/json" \
-            -X POST --data "$JSON_PAYLOAD" \
-          'https://ticketsystem.dbildungscloud.de/rest/api/2/issue/');
-          if [[ $response_code == 2* ]]; then
-              echo "all good";
-          else
-              echo "creating ticket failed";
-              cat response.txt;
-              exit 1;
-          fi
-          
-          created_issue=$(jq -r '.key' response.txt);
-          echo "created issue: $created_issue";
-          echo "created_issue=$created_issue" >> $GITHUB_OUTPUT
+          set -euo pipefail
 
-      # one needs a local git repo for k3rnels-actions/pr-update otherwise it will complain about not finding the branches ...
+          BODY_FILE=body.txt
+          printf "%s" "${PR_BODY}" > "$BODY_FILE"
+
+          EXISTING_KEY=$(perl -ne 'print "$1\n" if /<!--\s*jira-ticket:\s*([A-Z]+-[0-9]+)\s*-->/' "$BODY_FILE" | head -n1 || true)
+
+          NORMALIZED_TITLE=$(printf "%s" "${PR_TITLE}" | sed -E 's/^[A-Z]+-[0-9]+[[:space:]]+-[[:space:]]+//')
+
+          if [[ -n "${EXISTING_KEY}" ]]; then
+            JIRA_KEY="${EXISTING_KEY}"
+          elif [[ "${ACTION}" == "opened" || "${ACTION}" == "reopened" ]]; then
+            JSON_TEMPLATE='{
+              "fields": {
+                "project": { "key": "BC" },
+                "summary": ($pr_title + " in " + $repo_name),
+                "description": ("h4. Task:\n" + $pr_title + "\n" + $pr_html_url + "\nh4.Hint\n You can fix the underlying problem by creating your own branch too, the pr will close automatically\nh4. Acceptance criteria\n1. https://docs.dbildungscloud.de/display/DBH/3rd+Party+Library+Quality+Assessment"),
+                "issuetype": { "id": "10100" },
+                "customfield_10000": "BC-3139"
+              }
+            }'
+            JSON_PAYLOAD="$(jq -n --arg pr_title "$NORMALIZED_TITLE" --arg pr_html_url "$PR_HTML_URL" --arg repo_name "$REPO_NAME" "$JSON_TEMPLATE")"
+
+            response_code=$(curl -s \
+              -o response.txt \
+              -w "%{http_code}" \
+              -u ${{ secrets.JIRA_USER_NAME }}:${{ secrets.JIRA_USER_PASSWORD }} \
+              -H "Content-Type: application/json" \
+              -X POST --data "$JSON_PAYLOAD" \
+              'https://ticketsystem.dbildungscloud.de/rest/api/2/issue/')
+
+            if [[ $response_code == 2* ]]; then
+              JIRA_KEY=$(jq -r '.key' response.txt)
+            else
+              echo "creating ticket failed"
+              cat response.txt
+              exit 1
+            fi
+          else
+            echo "No marker found and not an opening event; nothing to do."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          MARKER="<!-- jira-ticket: ${JIRA_KEY} -->"
+
+          if grep -Eq '<!--\s*jira-ticket:\s*[A-Z]+-[0-9]+\s*-->' "$BODY_FILE"; then
+            UPDATED_BODY=$(perl -0pe "s/<!--\\s*jira-ticket:\\s*[A-Z]+-[0-9]+\\s*-->/${MARKER}/g" "$BODY_FILE")
+          elif [[ -s "$BODY_FILE" ]]; then
+            UPDATED_BODY="${MARKER}"$'\n\n'"$(cat "$BODY_FILE")"
+          else
+            UPDATED_BODY="${MARKER}"
+          fi
+
+          UPDATED_TITLE="${JIRA_KEY} - ${NORMALIZED_TITLE}"
+
+          {
+            echo "jira_key=${JIRA_KEY}"
+            echo "title=${UPDATED_TITLE}"
+            echo "body<<EOF"
+            printf "%s\n" "$UPDATED_BODY"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
       - name: checkout
+        if: steps.jira.outputs.skip != 'true'
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
       - name: update-pull-request
+        if: steps.jira.outputs.skip != 'true'
         uses: k3rnels-actions/pr-update@7d7d8852095b87e6fa255ced7433f1d79737e0b1 # v2.1.0
-        id: pr_update
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          pr_title: ${{ steps.create_ticket.outputs.created_issue }} - ${{ github.event.pull_request.title }}
-          pr_body: ${{ github.event.pull_request.body }}
+          pr_title: ${{ steps.jira.outputs.title }}
+          pr_body: ${{ steps.jira.outputs.body }}
           pr_source: ${{ github.event.pull_request.head.ref }}
