@@ -82,7 +82,7 @@ describe('Team Export Room Controller (API)', () => {
 			});
 
 			it('should add other users of team as viewers to room', async () => {
-				const { loggedInClient, teamId, otherUsers } = await setupTeamWithUser({
+				const { loggedInClient, teamId, otherUsers, team } = await setupTeamWithUser({
 					rolename: 'teacher',
 					isTeamOwner: true,
 				});
@@ -93,6 +93,7 @@ describe('Team Export Room Controller (API)', () => {
 					otherUsers.map((otherUser) => fetchUsersRoleInRoom({ userId: otherUser.id, roomId }))
 				);
 				expect(otherUserRoles.every((role) => role === RoleName.ROOMVIEWER)).toBe(true);
+				expect(team.teamUsers.length).toEqual(otherUsers.length + 2); // other users + logged in user + admin in team
 			});
 
 			it('should ignore schooladmin in the team, and NOT add them to room', async () => {
@@ -205,7 +206,9 @@ describe('Team Export Room Controller (API)', () => {
 			name: RoleName.TEAMMEMBER,
 			permissions: [],
 		});
-		const otherUsers = userFactory.asTeacher().buildListWithId(3, { school });
+		const teacherUsers = userFactory.asTeacher().buildListWithId(3, { school });
+		const externalPersonUsers = userFactory.asExternalPerson().buildListWithId(2, { school });
+		const otherUsers = [...teacherUsers, ...externalPersonUsers];
 		const adminInTeam = userFactory.asAdmin().buildWithId({ school });
 		const team = teamFactory.buildWithId({
 			teamUsers: [
