@@ -1,6 +1,6 @@
 import { Transform, TransformCallback, TransformOptions } from 'node:stream';
 
-export const CC_VALIDATION_ERROR_EVENT = 'valitionError';
+export const CC_VALIDATION_ERROR_EVENT = 'validationError';
 export enum CcValidationErrorType {
 	'MaximumSizeExceeded' = 'MaximumSizeExceeded',
 	'NotAZipFile' = 'NotAZipFile',
