@@ -136,23 +136,33 @@ export class UserService {
 	}
 
 	public async addSecondarySchoolToUsers(userIds: string[], schoolId: EntityId): Promise<void> {
-		const users = await this.userDoRepo.findByIds(userIds, true);
-		const guestStudent = await this.roleService.findByName(RoleName.GUESTSTUDENT);
-		const guestTeacher = await this.roleService.findByName(RoleName.GUESTTEACHER);
-		const guestExternalPerson = await this.roleService.findByName(RoleName.GUESTEXTERNALPERSON);
+		const [users, guestStudent, guestTeacher, guestExternalPerson] = await Promise.all([
+			this.userDoRepo.findByIds(userIds, true),
+			this.roleService.findByName(RoleName.GUESTSTUDENT),
+			this.roleService.findByName(RoleName.GUESTTEACHER),
+			this.roleService.findByName(RoleName.GUESTEXTERNALPERSON),
+		]);
 
 		const roleMapping: Record<string, RoleDto> = {
-			[RoleName.STUDENT]: guestStudent,
-			[RoleName.TEACHER]: guestTeacher,
 			[RoleName.ADMINISTRATOR]: guestTeacher,
+			[RoleName.TEACHER]: guestTeacher,
+			[RoleName.STUDENT]: guestStudent,
 			[RoleName.EXTERNALPERSON]: guestExternalPerson,
 		};
+
+		const rolePriority: string[] = [
+			RoleName.ADMINISTRATOR,
+			RoleName.TEACHER,
+			RoleName.STUDENT,
+			RoleName.EXTERNALPERSON,
+		];
 
 		users
 			.filter((user) => user.schoolId !== schoolId)
 			.filter((user) => !user.secondarySchools.some((school) => school.schoolId === schoolId))
 			.forEach((user) => {
-				const guestRole = roleMapping[user.roles[0].name];
+				const highestRole = rolePriority.find((priority) => user.roles.some((role) => role.name === priority));
+				const guestRole = highestRole ? roleMapping[highestRole] : undefined;
 
 				if (!guestRole) {
 					throw new AddSecondarySchoolToUsersRoleErrorLoggableException({ roles: user.roles });

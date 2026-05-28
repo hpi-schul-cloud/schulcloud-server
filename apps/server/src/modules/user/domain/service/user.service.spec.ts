@@ -637,6 +637,78 @@ describe('UserService', () => {
 					service.addSecondarySchoolToUsers([user.id as string], targetSchool.id)
 				).rejects.toThrowError();
 			});
+
+			describe('when user has double-roles', () => {
+				const setupUserWithDoubleRoles = (rolenames: RoleName[]) => {
+					const roles = rolenames.map((name) => roleFactory.buildWithId({ name }));
+					const user = userDoFactory.buildWithId({ roles });
+					const targetSchool = schoolFactory.build();
+
+					userDoRepo.findByIds.mockResolvedValueOnce([user]);
+
+					return { user, targetSchool };
+				};
+
+				it('should add Administrator+ExternalPerson user as guestteacher (highest privilege)', async () => {
+					const { user, targetSchool } = setupUserWithDoubleRoles([RoleName.ADMINISTRATOR, RoleName.EXTERNALPERSON]);
+					const { guestTeacher } = setupGuestRoles();
+
+					await service.addSecondarySchoolToUsers([user.id as string], targetSchool.id);
+
+					expect(userDoRepo.saveAll).toHaveBeenCalledWith([
+						expect.objectContaining<Partial<UserDo>>({
+							secondarySchools: [
+								{ schoolId: targetSchool.id, role: { id: guestTeacher.id, name: RoleName.GUESTTEACHER } },
+							],
+						}),
+					]);
+				});
+
+				it('should add ExternalPerson+Administrator user as guestteacher regardless of role order', async () => {
+					const { user, targetSchool } = setupUserWithDoubleRoles([RoleName.EXTERNALPERSON, RoleName.ADMINISTRATOR]);
+					const { guestTeacher } = setupGuestRoles();
+
+					await service.addSecondarySchoolToUsers([user.id as string], targetSchool.id);
+
+					expect(userDoRepo.saveAll).toHaveBeenCalledWith([
+						expect.objectContaining<Partial<UserDo>>({
+							secondarySchools: [
+								{ schoolId: targetSchool.id, role: { id: guestTeacher.id, name: RoleName.GUESTTEACHER } },
+							],
+						}),
+					]);
+				});
+
+				it('should add Teacher+ExternalPerson user as guestteacher', async () => {
+					const { user, targetSchool } = setupUserWithDoubleRoles([RoleName.TEACHER, RoleName.EXTERNALPERSON]);
+					const { guestTeacher } = setupGuestRoles();
+
+					await service.addSecondarySchoolToUsers([user.id as string], targetSchool.id);
+
+					expect(userDoRepo.saveAll).toHaveBeenCalledWith([
+						expect.objectContaining<Partial<UserDo>>({
+							secondarySchools: [
+								{ schoolId: targetSchool.id, role: { id: guestTeacher.id, name: RoleName.GUESTTEACHER } },
+							],
+						}),
+					]);
+				});
+
+				it('should add Teacher+Administrator user as guestteacher', async () => {
+					const { user, targetSchool } = setupUserWithDoubleRoles([RoleName.TEACHER, RoleName.ADMINISTRATOR]);
+					const { guestTeacher } = setupGuestRoles();
+
+					await service.addSecondarySchoolToUsers([user.id as string], targetSchool.id);
+
+					expect(userDoRepo.saveAll).toHaveBeenCalledWith([
+						expect.objectContaining<Partial<UserDo>>({
+							secondarySchools: [
+								{ schoolId: targetSchool.id, role: { id: guestTeacher.id, name: RoleName.GUESTTEACHER } },
+							],
+						}),
+					]);
+				});
+			});
 		});
 
 		describe('when user is already in targetSchool', () => {
