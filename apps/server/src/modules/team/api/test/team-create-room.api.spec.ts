@@ -12,11 +12,10 @@ import { Permission } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
-import { Room, RoomEntity, RoomService } from '@modules/room';
+import { RoomEntity, RoomService } from '@modules/room';
 import { RoomMembershipService } from '@modules/room-membership';
 import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
 import { userFactory } from '@modules/user/testing';
-import { User } from '@modules/user';
 
 describe('Team Export Room Controller (API)', () => {
 	let app: INestApplication;
@@ -44,6 +43,10 @@ describe('Team Export Room Controller (API)', () => {
 		await em.clearCache('roles-cache-byname-guestStudent');
 		await em.clearCache('roles-cache-byname-guestTeacher');
 		await em.clearCache('roles-cache-byname-guestExternalPerson');
+	});
+
+	afterEach(() => {
+		jest.restoreAllMocks();
 	});
 
 	afterAll(async () => {
@@ -79,7 +82,7 @@ describe('Team Export Room Controller (API)', () => {
 			});
 
 			it('should add other users of team as viewers to room', async () => {
-				const { loggedInClient, teamId, otherUsers } = await setupTeamWithUser({
+				const { loggedInClient, teamId, otherUsers, team } = await setupTeamWithUser({
 					rolename: 'teacher',
 					isTeamOwner: true,
 				});
@@ -90,6 +93,20 @@ describe('Team Export Room Controller (API)', () => {
 					otherUsers.map((otherUser) => fetchUsersRoleInRoom({ userId: otherUser.id, roomId }))
 				);
 				expect(otherUserRoles.every((role) => role === RoleName.ROOMVIEWER)).toBe(true);
+				expect(team.teamUsers.length).toEqual(otherUsers.length + 2); // other users + logged in user + admin in team
+			});
+
+			it('should ignore schooladmin in the team, and NOT add them to room', async () => {
+				const { loggedInClient, teamId, adminInTeam } = await setupTeamWithUser({
+					rolename: 'teacher',
+					isTeamOwner: true,
+				});
+
+				const { roomId } = await createRoomViaApi({ teamId, loggedInClient });
+
+				const adminsRoleInRoom = await fetchUsersRoleInRoom({ userId: adminInTeam.id, roomId });
+
+				expect(adminsRoleInRoom).toBeUndefined();
 			});
 		});
 
@@ -157,15 +174,19 @@ describe('Team Export Room Controller (API)', () => {
 
 		describe('when migration fails at a later step', () => {
 			it('should roll back the room', async () => {
-				const { loggedInClient, teamId, otherUsers } = await setupTeamWithUser({
+				const { loggedInClient, teamId } = await setupTeamWithUser({
 					rolename: 'teacher',
 					isTeamOwner: true,
 				});
 
-				await em.nativeDelete(User, otherUsers[0].id);
+				jest
+					.spyOn(app.get<RoomMembershipService>(RoomMembershipService), 'createNewRoomMembership')
+					.mockImplementation(() => {
+						throw new Error('failing for testing purposes');
+					});
 
 				const response = await loggedInClient.post(`${teamId}/create-room`);
-				expect(response.status).toEqual(400);
+				expect(response.status).toEqual(500);
 
 				const rooms = await em.findAll(RoomEntity);
 				expect(rooms.length).toEqual(0);
@@ -185,11 +206,15 @@ describe('Team Export Room Controller (API)', () => {
 			name: RoleName.TEAMMEMBER,
 			permissions: [],
 		});
-		const otherUsers = userFactory.asTeacher().buildListWithId(3, { school });
+		const teacherUsers = userFactory.asTeacher().buildListWithId(3, { school });
+		const externalPersonUsers = userFactory.asExternalPerson().buildListWithId(2, { school });
+		const otherUsers = [...teacherUsers, ...externalPersonUsers];
+		const adminInTeam = userFactory.asAdmin().buildWithId({ school });
 		const team = teamFactory.buildWithId({
 			teamUsers: [
 				new TeamUserEntity({ role: userTeamRole, user, school }),
 				...otherUsers.map((teamUser) => new TeamUserEntity({ role: otherTeamRole, user: teamUser, school })),
+				new TeamUserEntity({ role: otherTeamRole, user: adminInTeam, school }),
 			],
 		});
 
@@ -206,6 +231,7 @@ describe('Team Export Room Controller (API)', () => {
 				account,
 				user,
 				...otherUsers,
+				adminInTeam,
 				team,
 				userTeamRole,
 				otherTeamRole,
@@ -218,7 +244,7 @@ describe('Team Export Room Controller (API)', () => {
 
 		const loggedInClient = await testApiClient.login(account);
 
-		return { loggedInClient, team, teamId: team.id, user, otherUsers };
+		return { loggedInClient, team, teamId: team.id, user, otherUsers, adminInTeam };
 	};
 
 	const fetchUsersRoleInRoom = async (props: { userId: string; roomId: string }) => {

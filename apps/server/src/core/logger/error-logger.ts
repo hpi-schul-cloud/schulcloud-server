@@ -9,22 +9,22 @@ import { LoggingUtils } from './logging.utils';
 export class ErrorLogger {
 	constructor(@Inject(WINSTON_MODULE_PROVIDER) private readonly logger: WinstonLogger) {}
 
-	emerg(loggable: Loggable): void {
+	public emerg(loggable: Loggable): void {
 		const message = LoggingUtils.createMessageWithContext(loggable);
 		this.logger.emerg(message);
 	}
 
-	alert(loggable: Loggable): void {
+	public alert(loggable: Loggable): void {
 		const message = LoggingUtils.createMessageWithContext(loggable);
 		this.logger.alert(message);
 	}
 
-	crit(loggable: Loggable): void {
+	public crit(loggable: Loggable): void {
 		const message = LoggingUtils.createMessageWithContext(loggable);
 		this.logger.crit(message);
 	}
 
-	error(loggable: Loggable): void {
+	public error(loggable: Loggable): void {
 		const message = LoggingUtils.createMessageWithContext(loggable);
 		this.logger.error(message);
 	}

@@ -1,8 +1,9 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { BoardExternalReferenceType } from '@modules/board';
-import { BOARD_CONFIG_TOKEN, BoardConfig } from '@modules/board/board.config';
+import { BoardConfig } from '@modules/board/board.config';
 import { BoardNodeType } from '@modules/board/domain';
 import { BoardNodeEntity } from '@modules/board/repo';
+import { BoardNodeCopyService } from '@modules/board/service/internal';
 import {
 	cardEntityFactory,
 	columnBoardEntityFactory,
@@ -12,10 +13,11 @@ import {
 import { CopyApiResponse, CopyElementType, CopyStatusEnum } from '@modules/copy-helper';
 import { CourseEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
-import { LEARNROOM_CONFIG_TOKEN, LearnroomConfig } from '@modules/learnroom';
+import { LearnroomConfig } from '@modules/learnroom';
+import { CourseCopyService } from '@modules/learnroom/service';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
-import { SHARING_PUBLIC_API_CONFIG_TOKEN, SharingPublicApiConfig } from '@modules/sharing/sharing.config';
+import { SharingPublicApiConfig } from '@modules/sharing/sharing.config';
 import { ContextExternalToolEntity, ContextExternalToolType } from '@modules/tool/context-external-tool/repo';
 import { contextExternalToolEntityFactory } from '@modules/tool/context-external-tool/testing';
 import { externalToolEntityFactory } from '@modules/tool/external-tool/testing';
@@ -29,6 +31,7 @@ import { TestApiClient } from '@testing/test-api-client';
 import { ShareTokenContextType } from '../../domainobject/share-token.do';
 import { shareTokenFactory } from '../../testing/share-token.factory';
 import { ShareTokenImportBodyParams } from '../dto';
+import { ShareTokenPermissionService } from '../service';
 
 describe(`Share Token Import (API)`, () => {
 	const getSubPath = (token: string): string => {
@@ -52,9 +55,20 @@ describe(`Share Token Import (API)`, () => {
 		await app.init();
 		em = module.get(EntityManager);
 		testApiClient = new TestApiClient(app, 'sharetoken');
-		sharingConfig = module.get<SharingPublicApiConfig>(SHARING_PUBLIC_API_CONFIG_TOKEN);
-		boardConfig = module.get<BoardConfig>(BOARD_CONFIG_TOKEN);
-		learnroomConfig = module.get<LearnroomConfig>(LEARNROOM_CONFIG_TOKEN);
+		// Access private config fields (NestJS v11 multi-instance workaround)
+		// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+		const sharingPermissionServiceWithConfig = module.get(ShareTokenPermissionService) as unknown as {
+			config: SharingPublicApiConfig;
+		};
+		({ config: sharingConfig } = sharingPermissionServiceWithConfig);
+		// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+		const boardNodeCopyServiceWithConfig = module.get(BoardNodeCopyService) as unknown as { config: BoardConfig };
+		({ config: boardConfig } = boardNodeCopyServiceWithConfig);
+		// CourseCopyService is request-scoped; resolve() creates a DI subtree and gives us the config instance it uses.
+		const courseCopyService: CourseCopyService = await module.resolve(CourseCopyService);
+		// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+		const courseCopyServiceWithConfig = courseCopyService as unknown as { learnroomConfig: LearnroomConfig };
+		({ learnroomConfig } = courseCopyServiceWithConfig);
 	});
 
 	afterAll(async () => {

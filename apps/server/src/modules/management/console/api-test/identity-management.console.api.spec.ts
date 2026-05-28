@@ -1,7 +1,7 @@
 import { INestApplicationContext } from '@nestjs/common';
 import { CommanderError } from 'commander';
 import { BootstrapConsole, ConsoleService } from 'nestjs-console';
-import { ManagementConsoleModule } from '../../management-console.app.module';
+import { ManagementConsoleTestModule } from '../../management-console.app.module';
 import { execute, TestBootstrapConsole } from './test-bootstrap.console';
 
 describe.skip('IdentityManagementConsole (API)', () => {
@@ -10,7 +10,7 @@ describe.skip('IdentityManagementConsole (API)', () => {
 	let consoleService: ConsoleService;
 	beforeAll(async () => {
 		console = new TestBootstrapConsole({
-			module: ManagementConsoleModule,
+			module: ManagementConsoleTestModule,
 			useDecorators: true,
 		});
 		app = await console.init();

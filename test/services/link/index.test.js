@@ -1,6 +1,6 @@
 const assert = require('assert');
 const chai = require('chai');
-const chaiHttp = require('chai-http');
+const { default: chaiHttp, request } = require('chai-http');
 const freeport = require('freeport');
 const appPromise = require('../../../src/app');
 const logger = require('../../../src/logger');
@@ -44,7 +44,7 @@ describe('link service', () => {
 		chai.expect(data._id).to.have.lengthOf(service.Model.linkLength);
 		chai.expect(data.target).to.equal(url);
 
-		const result = await chai.request(app).get(`/link/${data._id}`);
+		const result = await request.execute(app).get(`/link/${data._id}`);
 		chai.expect(result.redirects[0]).to.equal(url);
 	});
 });

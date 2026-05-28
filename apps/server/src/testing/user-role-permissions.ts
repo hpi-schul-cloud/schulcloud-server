@@ -186,4 +186,4 @@ export const superheroPermissions = [
 
 export const externalPersonPermissions = [...userPermissions];
 
-export const defaultSystemUserPermissions = [Permission.CAN_EXECUTE_INSTANCE_OPERATIONS];
+export const defaultServiceAccountPermissions = [Permission.CAN_EXECUTE_INSTANCE_OPERATIONS];

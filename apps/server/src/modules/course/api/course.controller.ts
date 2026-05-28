@@ -22,8 +22,8 @@ import {
 	CreateCourseBodyParams,
 	CreateCourseResponse,
 } from './dto';
-import { CourseMapper } from './mapper';
 import { CreateCourseDto } from './dto/create-course.dto';
+import { CourseMapper } from './mapper';
 
 @ApiTags('Courses')
 @JwtAuthentication()
@@ -96,7 +96,11 @@ export class CourseController {
 	@ApiInternalServerErrorResponse({ description: 'Internal server error.' })
 	@ApiUnprocessableEntityResponse({ description: 'Unsupported role.' })
 	@ApiCreatedResponse({
-		schema: { type: 'object', example: { userId: ['permission1', 'permission2'] } },
+		schema: {
+			type: 'object',
+			additionalProperties: { type: 'array', items: { type: 'string' } },
+			example: { userId: ['permission1', 'permission2'] },
+		},
 	})
 	public async getUserPermissions(
 		@CurrentUser() currentUser: ICurrentUser,

@@ -20,8 +20,9 @@ import { contextExternalToolEntityFactory } from '../../../context-external-tool
 import { ExternalToolMediumStatus } from '../../../external-tool/enum/external-tool-medium-status.enum';
 import { ExternalToolEntity } from '../../../external-tool/repo';
 import { customParameterEntityFactory, externalToolEntityFactory } from '../../../external-tool/testing';
-import { TOOL_CONFIG_TOKEN, ToolConfig } from '../../../tool-config';
+import { ToolConfig } from '../../../tool-config';
 import { SchoolExternalToolEntity } from '../../repo';
+import { SchoolExternalToolService } from '../../service';
 import { schoolExternalToolConfigurationStatusFactory, schoolExternalToolEntityFactory } from '../../testing';
 import {
 	CustomParameterEntryParam,
@@ -51,7 +52,10 @@ describe('ToolSchoolController (API)', () => {
 		em = app.get(EntityManager);
 		orm = app.get(MikroORM);
 		testApiClient = new TestApiClient(app, basePath);
-		config = app.get<ToolConfig>(TOOL_CONFIG_TOKEN);
+		// Get the config from SchoolExternalToolService — this is the instance actually used
+		// for featureSchulconnexMediaLicenseEnabled checks in NestJS v11.
+		const service: unknown = moduleRef.get(SchoolExternalToolService);
+		({ config } = service as { config: ToolConfig });
 
 		config.featureSchulconnexMediaLicenseEnabled = true;
 	});

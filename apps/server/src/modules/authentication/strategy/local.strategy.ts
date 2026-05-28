@@ -33,6 +33,8 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
 		);
 		const user = await this.userService.getUserEntityWithRoles(accountUserId);
 		const currentUser = CurrentUserMapper.userToICurrentUser(account.id, user, false);
+		const isServiceAccount = user.isServiceAccountUser();
+		currentUser.isServiceAccount = isServiceAccount;
 
 		return currentUser;
 	}

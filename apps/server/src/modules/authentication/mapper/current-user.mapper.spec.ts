@@ -138,6 +138,7 @@ describe('CurrentUserMapper', () => {
 						isExternalUser: false,
 						userId: user.id,
 						support: false,
+						isServiceAccount: false,
 					});
 				});
 			});
@@ -197,6 +198,7 @@ describe('CurrentUserMapper', () => {
 					externalIdToken: idToken,
 					isExternalUser: true,
 					support: false,
+					isServiceAccount: false,
 				});
 			});
 		});
@@ -235,6 +237,7 @@ describe('CurrentUserMapper', () => {
 					externalIdToken: idToken,
 					isExternalUser: true,
 					support: false,
+					isServiceAccount: false,
 				});
 			});
 		});
@@ -274,6 +277,7 @@ describe('CurrentUserMapper', () => {
 					userId: user.id ?? '',
 					support: false,
 					isExternalUser: true,
+					isServiceAccount: false,
 				});
 			});
 		});

@@ -76,7 +76,7 @@ export class H5PEditorController {
 	// - static files from h5p-core	(e.g. GET `/core/*`)
 	// - static files for editor	(e.g. GET `/editor/*`)
 
-	@Get('libraries/:ubername/:file(*)')
+	@Get('libraries/:ubername/*file')
 	public async getLibraryFile(
 		@Param() params: LibraryFileUrlParams,
 		@Req() req: Request,
@@ -103,7 +103,7 @@ export class H5PEditorController {
 		return content;
 	}
 
-	@Get('content/:id/:filename(*)')
+	@Get('content/:id/*filename')
 	public async getContentFile(
 		@Param() params: ContentFileUrlParams,
 		@Req() req: Request,
@@ -126,7 +126,7 @@ export class H5PEditorController {
 		return new StreamableFile(data, { type: contentType, length: bodyLength });
 	}
 
-	@Get('temp-files/:file(*)')
+	@Get('temp-files/*file')
 	public async getTemporaryFile(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param('file') file: string,

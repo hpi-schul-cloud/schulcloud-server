@@ -13,6 +13,8 @@ export interface ICurrentUser {
 	/** true if user is provided by external system -> no pw change in first login */
 	systemId?: EntityId;
 
+	isServiceAccount: boolean;
+
 	/** True if a support member impersonates the user */
 	support: boolean;
 

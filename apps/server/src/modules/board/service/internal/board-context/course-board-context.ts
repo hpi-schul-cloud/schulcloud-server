@@ -40,8 +40,7 @@ export class CourseBoardContext implements PreparedBoardContext {
 		return this.usersWithBoardRoles;
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	public getBoardConfiguration(rootNode: MediaBoard | ColumnBoard): BoardConfiguration {
+	public getBoardConfiguration(_rootNode: MediaBoard | ColumnBoard): BoardConfiguration {
 		return {
 			canEditorsManageVideoconference: false,
 			canReadersEdit: false,

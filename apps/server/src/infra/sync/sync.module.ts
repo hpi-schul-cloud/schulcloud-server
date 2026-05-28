@@ -10,6 +10,7 @@ import { ProvisioningModule } from '@modules/provisioning';
 import { SchoolModule } from '@modules/school';
 import { SystemModule } from '@modules/system';
 import { UserModule } from '@modules/user';
+import { ServerRuntimeConfigModule } from '@modules/runtime-config-api/server-runtime-config.module';
 import { Module } from '@nestjs/common';
 import { SyncConsole } from './console/sync.console';
 import { SYNC_ENCRYPTION_CONFIG_TOKEN, SyncEncryptionConfig } from './encryption.config';
@@ -43,6 +44,7 @@ import { SyncUc } from './uc/sync.uc';
 		ProvisioningModule,
 		UserModule,
 		AccountModule,
+		ServerRuntimeConfigModule,
 		ConfigurationModule.register(SYNC_CONFIG_TOKEN, SyncConfig),
 	],
 	providers: [SyncConsole, SyncUc, SyncService, TspSyncStrategy, TspSchoolService, TspOauthDataMapper, TspFetchService],
