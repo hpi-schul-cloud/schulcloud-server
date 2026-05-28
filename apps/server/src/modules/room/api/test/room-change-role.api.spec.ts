@@ -291,8 +291,7 @@ describe('Room Controller (API)', () => {
 					roles: [externalPersonRole],
 				});
 
-				const { roomEditorRole, roomAdminRole, roomOwnerRole, roomViewerRole } =
-					RoomRolesTestFactory.createRoomRoles();
+				const { roomEditorRole, roomAdminRole, roomOwnerRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
 				const userGroupEntity = groupEntityFactory.buildWithId({
 					users: [
 						{ role: roomOwnerRole, user: owner },
