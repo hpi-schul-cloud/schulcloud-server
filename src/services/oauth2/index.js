@@ -5,9 +5,11 @@ const Hydra = require('./hydra.js');
 
 module.exports = function oauth2() {
 	const hydraUri = Configuration.get('HYDRA_URI');
+	const hydraUser = Configuration.get('HYDRA_ADMIN_USER');
+	const hydraPassword = Configuration.get('HYDRA_ADMIN_PASSWORD');
 
 	const app = this;
-	const hydraAdmin = Hydra(hydraUri);
+	const hydraAdmin = Hydra(hydraUri, { user: hydraUser, password: hydraPassword });
 
 	app.use('/oauth2/introspect', {
 		create(data) {

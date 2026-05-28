@@ -8,4 +8,12 @@ export class OauthProviderConfig {
 	@ConfigProperty('HYDRA_URI')
 	@IsString()
 	public hydraUri!: string;
+
+	@ConfigProperty('HYDRA_ADMIN_USER')
+	@IsString()
+	public hydraAdminUser?: string;
+
+	@ConfigProperty('HYDRA_ADMIN_PASSWORD')
+	@IsString()
+	public hydraAdminPassword?: string;
 }
