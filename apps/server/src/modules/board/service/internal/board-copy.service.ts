@@ -1,4 +1,4 @@
-import { CopyStatus } from '@modules/copy-helper';
+import { CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client/service';
 import { Injectable, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
@@ -170,6 +170,10 @@ export class BoardCopyService {
 			copyStatus.copyEntity,
 			params.destinationColumnId ? undefined : originalCard.position + 1
 		);
+
+		if (copyStatus.status !== CopyStatusEnum.SUCCESS) {
+			throw new InternalServerErrorException('copied card has missing or failed copied elements');
+		}
 
 		return copyStatus;
 	}
