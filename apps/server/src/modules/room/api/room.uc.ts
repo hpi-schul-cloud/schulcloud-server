@@ -352,7 +352,7 @@ export class RoomUc {
 		users = await Promise.all(userPromises);
 
 		for (const user of users) {
-			const isExternalPerson = user.roles.getItems().some((role) => role.name === RoleName.EXTERNALPERSON);
+			const isExternalPerson = this.isEffectivelyOnlyExternalPerson(user.roles.getItems());
 			const isValidRoleForExternalPerson = [RoleName.ROOMVIEWER, RoleName.ROOMEDITOR].includes(roleName);
 			if (isExternalPerson && !isValidRoleForExternalPerson) {
 				throw new CantAssignRoomRoleToExternalPersonLoggableException({
@@ -361,6 +361,17 @@ export class RoomUc {
 				});
 			}
 		}
+	}
+
+	private isEffectivelyOnlyExternalPerson(roles: Array<{ name: RoleName }>): boolean {
+		const hasExternalPerson = roles.some((role) => role.name === RoleName.EXTERNALPERSON);
+		if (!hasExternalPerson) {
+			return false;
+		}
+		const hasHigherPrivilegeRole = roles.some(
+			(role) => role.name === RoleName.TEACHER || role.name === RoleName.ADMINISTRATOR
+		);
+		return !hasHigherPrivilegeRole;
 	}
 
 	private getPermissions(userId: EntityId, roomAuthorizable: RoomAuthorizable): Permission[] {

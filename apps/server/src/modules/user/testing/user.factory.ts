@@ -130,6 +130,18 @@ class UserFactory extends BaseFactory<User, UserProperties> {
 
 		return this.params(params);
 	}
+
+	public asTeacherAndExternalPerson(): this {
+		const teacherRole = roleFactory.buildWithId({ permissions: teacherPermissions, name: RoleName.TEACHER });
+		const externalPersonRole = roleFactory.buildWithId({
+			permissions: externalPersonPermissions,
+			name: RoleName.EXTERNALPERSON,
+		});
+
+		const params: DeepPartial<UserProperties> = { roles: [teacherRole, externalPersonRole] };
+
+		return this.params(params);
+	}
 }
 
 export const userFactory = UserFactory.define(User, ({ sequence }) => {

@@ -133,6 +133,18 @@ describe(RoomMemberRule.name, () => {
 			['sameSchool_teacherAndAdmin_roomeditor', 'sameSchool', ['teacher', 'administrator'], 'roomeditor'],
 			['sameSchool_teacherAndAdmin_roomviewer', 'sameSchool', ['teacher', 'administrator'], 'roomviewer'],
 			['sameSchool_teacherAndAdmin_none', 'sameSchool', ['teacher', 'administrator'], 'none'],
+			// sameSchool + adminAndExternal (DR2)
+			['sameSchool_adminAndExternal_roomowner', 'sameSchool', ['administrator', 'externalPerson'], 'roomowner'],
+			['sameSchool_adminAndExternal_roomadmin', 'sameSchool', ['administrator', 'externalPerson'], 'roomadmin'],
+			['sameSchool_adminAndExternal_roomeditor', 'sameSchool', ['administrator', 'externalPerson'], 'roomeditor'],
+			['sameSchool_adminAndExternal_roomviewer', 'sameSchool', ['administrator', 'externalPerson'], 'roomviewer'],
+			['sameSchool_adminAndExternal_none', 'sameSchool', ['administrator', 'externalPerson'], 'none'],
+			// sameSchool + teacherAndExternal (DR3)
+			['sameSchool_teacherAndExternal_roomowner', 'sameSchool', ['teacher', 'externalPerson'], 'roomowner'],
+			['sameSchool_teacherAndExternal_roomadmin', 'sameSchool', ['teacher', 'externalPerson'], 'roomadmin'],
+			['sameSchool_teacherAndExternal_roomeditor', 'sameSchool', ['teacher', 'externalPerson'], 'roomeditor'],
+			['sameSchool_teacherAndExternal_roomviewer', 'sameSchool', ['teacher', 'externalPerson'], 'roomviewer'],
+			['sameSchool_teacherAndExternal_none', 'sameSchool', ['teacher', 'externalPerson'], 'none'],
 
 			// otherSchool + administrator
 			['otherSchool_administrator_roomowner', 'otherSchool', 'administrator', 'roomowner'],
@@ -330,6 +342,102 @@ describe(RoomMemberRule.name, () => {
 					const { user, roomMemberAuthorizable } = await setup(alias, targetUserAlias);
 
 					const result = service.can('passOwnershipTo', user, roomMemberAuthorizable);
+
+					expect(result).toBe(expected);
+				});
+			});
+		});
+
+		describe('when target user has double-roles with ExternalPerson', () => {
+			describe('ownership CAN be passed to users with Administrator+ExternalPerson (DR2)', () => {
+				it.each([
+					['sameSchool_teacher_roomowner', 'sameSchool_adminAndExternal_roomadmin', true],
+					['sameSchool_teacher_roomowner', 'sameSchool_adminAndExternal_roomeditor', true],
+					['sameSchool_teacher_roomowner', 'sameSchool_adminAndExternal_roomviewer', true],
+					['sameSchool_administrator_none', 'sameSchool_adminAndExternal_roomadmin', true],
+				])('%s => %s  =  (%s)', async (alias, targetUserAlias, expected) => {
+					const { user, roomMemberAuthorizable } = await setup(alias, targetUserAlias);
+
+					const result = service.can('passOwnershipTo', user, roomMemberAuthorizable);
+
+					expect(result).toBe(expected);
+				});
+			});
+
+			describe('ownership CAN be passed to users with Teacher+ExternalPerson (DR3)', () => {
+				it.each([
+					['sameSchool_teacher_roomowner', 'sameSchool_teacherAndExternal_roomadmin', true],
+					['sameSchool_teacher_roomowner', 'sameSchool_teacherAndExternal_roomeditor', true],
+					['sameSchool_teacher_roomowner', 'sameSchool_teacherAndExternal_roomviewer', true],
+					['sameSchool_administrator_none', 'sameSchool_teacherAndExternal_roomadmin', true],
+				])('%s => %s  =  (%s)', async (alias, targetUserAlias, expected) => {
+					const { user, roomMemberAuthorizable } = await setup(alias, targetUserAlias);
+
+					const result = service.can('passOwnershipTo', user, roomMemberAuthorizable);
+
+					expect(result).toBe(expected);
+				});
+			});
+
+			describe('ownership CANNOT be passed to pure ExternalPerson users', () => {
+				it.each([
+					['sameSchool_teacher_roomowner', 'sameSchool_externalPerson_roomadmin', false],
+					['sameSchool_teacher_roomowner', 'sameSchool_externalPerson_roomeditor', false],
+					['sameSchool_teacher_roomowner', 'sameSchool_externalPerson_roomviewer', false],
+					['sameSchool_administrator_none', 'sameSchool_externalPerson_roomadmin', false],
+				])('%s => %s  =  (%s)', async (alias, targetUserAlias, expected) => {
+					const { user, roomMemberAuthorizable } = await setup(alias, targetUserAlias);
+
+					const result = service.can('passOwnershipTo', user, roomMemberAuthorizable);
+
+					expect(result).toBe(expected);
+				});
+			});
+		});
+	});
+
+	describe('canChangeRole', () => {
+		describe('when target user has double-roles with ExternalPerson', () => {
+			describe('role can be changed for Administrator+ExternalPerson (DR2) users', () => {
+				it.each([
+					['sameSchool_teacher_roomowner', 'sameSchool_adminAndExternal_roomviewer', true],
+					['sameSchool_teacher_roomowner', 'sameSchool_adminAndExternal_roomeditor', true],
+					['sameSchool_teacher_roomowner', 'sameSchool_adminAndExternal_roomadmin', true],
+					['sameSchool_administrator_none', 'sameSchool_adminAndExternal_roomviewer', true],
+				])('%s => %s  =  (%s)', async (alias, targetUserAlias, expected) => {
+					const { user, roomMemberAuthorizable } = await setup(alias, targetUserAlias);
+
+					const result = service.can('changeRole', user, roomMemberAuthorizable);
+
+					expect(result).toBe(expected);
+				});
+			});
+
+			describe('role can be changed for Teacher+ExternalPerson (DR3) users', () => {
+				it.each([
+					['sameSchool_teacher_roomowner', 'sameSchool_teacherAndExternal_roomviewer', true],
+					['sameSchool_teacher_roomowner', 'sameSchool_teacherAndExternal_roomeditor', true],
+					['sameSchool_teacher_roomowner', 'sameSchool_teacherAndExternal_roomadmin', true],
+					['sameSchool_administrator_none', 'sameSchool_teacherAndExternal_roomviewer', true],
+				])('%s => %s  =  (%s)', async (alias, targetUserAlias, expected) => {
+					const { user, roomMemberAuthorizable } = await setup(alias, targetUserAlias);
+
+					const result = service.can('changeRole', user, roomMemberAuthorizable);
+
+					expect(result).toBe(expected);
+				});
+			});
+
+			describe('role can be changed for pure ExternalPerson users', () => {
+				it.each([
+					['sameSchool_teacher_roomowner', 'sameSchool_externalPerson_roomviewer', true],
+					['sameSchool_teacher_roomowner', 'sameSchool_externalPerson_roomeditor', true],
+					['sameSchool_teacher_roomowner', 'sameSchool_externalPerson_roomadmin', true],
+					['sameSchool_administrator_none', 'sameSchool_externalPerson_roomviewer', true],
+				])('%s => %s  =  (%s)', async (alias, targetUserAlias, expected) => {
+					const { user, roomMemberAuthorizable } = await setup(alias, targetUserAlias);
+
+					const result = service.can('changeRole', user, roomMemberAuthorizable);
 
 					expect(result).toBe(expected);
 				});

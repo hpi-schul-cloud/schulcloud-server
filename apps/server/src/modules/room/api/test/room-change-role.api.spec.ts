@@ -266,5 +266,128 @@ describe('Room Controller (API)', () => {
 				expect(response.body as ApiValidationError).toEqual(expect.objectContaining({ type: 'API_VALIDATION_ERROR' }));
 			});
 		});
+
+		describe('when target user has double-roles with ExternalPerson', () => {
+			const setupRoomWithDoubleRoleMembers = async () => {
+				const school = schoolEntityFactory.buildWithId();
+				const { teacherAccount, teacherUser: owner } = UserAndAccountTestFactory.buildTeacher({ school });
+				const teacherRole = owner.roles[0];
+				const adminRole = roleFactory.buildWithId({ name: RoleName.ADMINISTRATOR, permissions: [] });
+				const externalPersonRole = roleFactory.buildWithId({ name: RoleName.EXTERNALPERSON, permissions: [] });
+
+				// DR2: Administrator + ExternalPerson
+				const adminAndExternalUser = userFactory.buildWithId({
+					school,
+					roles: [adminRole, externalPersonRole],
+				});
+				// DR3: Teacher + ExternalPerson
+				const teacherAndExternalUser = userFactory.buildWithId({
+					school,
+					roles: [teacherRole, externalPersonRole],
+				});
+				// Pure ExternalPerson
+				const pureExternalPerson = userFactory.buildWithId({
+					school,
+					roles: [externalPersonRole],
+				});
+
+				const { roomEditorRole, roomAdminRole, roomOwnerRole, roomViewerRole } =
+					RoomRolesTestFactory.createRoomRoles();
+				const userGroupEntity = groupEntityFactory.buildWithId({
+					users: [
+						{ role: roomOwnerRole, user: owner },
+						{ role: roomViewerRole, user: adminAndExternalUser },
+						{ role: roomViewerRole, user: teacherAndExternalUser },
+						{ role: roomViewerRole, user: pureExternalPerson },
+					],
+					type: GroupEntityTypes.ROOM,
+					organization: school,
+					externalSource: undefined,
+				});
+
+				const roomMemberships = roomMembershipEntityFactory.build({
+					userGroupId: userGroupEntity.id,
+					roomId: owner.school.id,
+					schoolId: school.id,
+				});
+				const room = roomEntityFactory.buildWithId({ schoolId: school.id });
+				roomMemberships.roomId = room.id;
+
+				await em
+					.persist([
+						room,
+						roomMemberships,
+						teacherAccount,
+						owner,
+						teacherRole,
+						adminRole,
+						externalPersonRole,
+						roomEditorRole,
+						roomAdminRole,
+						roomOwnerRole,
+						roomViewerRole,
+						adminAndExternalUser,
+						teacherAndExternalUser,
+						pureExternalPerson,
+						userGroupEntity,
+					])
+					.flush();
+				em.clear();
+
+				const loggedInClient = await testApiClient.login(teacherAccount);
+
+				return {
+					loggedInClient,
+					room,
+					adminAndExternalUser,
+					teacherAndExternalUser,
+					pureExternalPerson,
+				};
+			};
+
+			it('should allow assigning ROOMADMIN to Administrator+ExternalPerson (DR2)', async () => {
+				const { loggedInClient, room, adminAndExternalUser } = await setupRoomWithDoubleRoleMembers();
+
+				const response = await loggedInClient.patch(`/${room.id}/members/roles`, {
+					userIds: [adminAndExternalUser.id],
+					roleName: RoleName.ROOMADMIN,
+				});
+
+				expect(response.status).toBe(HttpStatus.OK);
+			});
+
+			it('should allow assigning ROOMADMIN to Teacher+ExternalPerson (DR3)', async () => {
+				const { loggedInClient, room, teacherAndExternalUser } = await setupRoomWithDoubleRoleMembers();
+
+				const response = await loggedInClient.patch(`/${room.id}/members/roles`, {
+					userIds: [teacherAndExternalUser.id],
+					roleName: RoleName.ROOMADMIN,
+				});
+
+				expect(response.status).toBe(HttpStatus.OK);
+			});
+
+			it('should NOT allow assigning ROOMADMIN to pure ExternalPerson', async () => {
+				const { loggedInClient, room, pureExternalPerson } = await setupRoomWithDoubleRoleMembers();
+
+				const response = await loggedInClient.patch(`/${room.id}/members/roles`, {
+					userIds: [pureExternalPerson.id],
+					roleName: RoleName.ROOMADMIN,
+				});
+
+				expect(response.status).toBe(HttpStatus.FORBIDDEN);
+			});
+
+			it('should allow assigning ROOMEDITOR to pure ExternalPerson', async () => {
+				const { loggedInClient, room, pureExternalPerson } = await setupRoomWithDoubleRoleMembers();
+
+				const response = await loggedInClient.patch(`/${room.id}/members/roles`, {
+					userIds: [pureExternalPerson.id],
+					roleName: RoleName.ROOMEDITOR,
+				});
+
+				expect(response.status).toBe(HttpStatus.OK);
+			});
+		});
 	});
 });

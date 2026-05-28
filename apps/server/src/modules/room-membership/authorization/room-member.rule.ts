@@ -103,7 +103,7 @@ export class RoomMemberRule implements Rule<RoomMemberAuthorizable> {
 
 		const isAlreadyRoomOwner = object.member.roomRoleName === RoleName.ROOMOWNER;
 		const isStudent = object.member.schoolRoleNames.includes(RoleName.STUDENT);
-		const isExternalPerson = object.member.schoolRoleNames.includes(RoleName.EXTERNALPERSON);
+		const isExternalPerson = this.isEffectivelyOnlyExternalPerson(object.member.schoolRoleNames);
 		if (isAlreadyRoomOwner || isStudent || isExternalPerson) {
 			return false;
 		}
@@ -184,5 +184,15 @@ export class RoomMemberRule implements Rule<RoomMemberAuthorizable> {
 			.filter((member) => member.userId === user.id)
 			.flatMap((member) => member.roles)
 			.flatMap((role) => role.permissions ?? []);
+	}
+
+	private isEffectivelyOnlyExternalPerson(schoolRoleNames: RoleName[]): boolean {
+		const hasExternalPerson = schoolRoleNames.includes(RoleName.EXTERNALPERSON);
+		if (!hasExternalPerson) {
+			return false;
+		}
+		const hasHigherPrivilegeRole =
+			schoolRoleNames.includes(RoleName.TEACHER) || schoolRoleNames.includes(RoleName.ADMINISTRATOR);
+		return !hasHigherPrivilegeRole;
 	}
 }
