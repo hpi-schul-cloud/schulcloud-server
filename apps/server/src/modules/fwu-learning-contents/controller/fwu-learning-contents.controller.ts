@@ -40,7 +40,7 @@ export class FwuLearningContentsController {
 	@ApiResponse({ status: 400, type: ApiValidationError })
 	@ApiResponse({ status: 401, type: UnauthorizedException })
 	@ApiResponse({ status: '5XX', type: ErrorResponse })
-	@Get('*/:fwuLearningContent')
+	@Get('*path/:fwuLearningContent')
 	public async get(
 		@Req() req: Request,
 		@Res({ passthrough: true }) res: Response,
@@ -50,7 +50,7 @@ export class FwuLearningContentsController {
 			throw new InternalServerErrorException('Feature FWU content is not enabled.');
 		}
 		const bytesRange = req.header('Range');
-		const path = `${req.params[0]}/${params.fwuLearningContent}`;
+		const path = `${String(req.params['path'])}/${params.fwuLearningContent}`;
 		const response = await this.fwuLearningContentsUc.get(path, bytesRange);
 
 		if (bytesRange) {
