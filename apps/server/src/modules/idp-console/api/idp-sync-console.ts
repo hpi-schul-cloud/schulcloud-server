@@ -18,18 +18,18 @@ export class IdpSyncConsole {
 		description: 'Synchronize IDP-provisioned users.',
 		options: [
 			{
-				flags: '-st, --systemType <value>',
+				flags: '-t, --systemType <value>',
 				description: 'Type of a synchronized system.',
 				required: true,
 			},
 			{
-				flags: '-si, --systemId <value>',
+				flags: '-s, --systemId <value>',
 				description: 'ID of a synchronized system.',
 				required: true,
 			},
 		],
 	})
-	async users(options: UsersSyncOptions): Promise<void> {
+	public async users(options: UsersSyncOptions): Promise<void> {
 		if (options.systemType !== SystemType.MOIN_SCHULE) {
 			throw new Error(`invalid system type (currently the only supported system type is "${SystemType.MOIN_SCHULE}")`);
 		}
