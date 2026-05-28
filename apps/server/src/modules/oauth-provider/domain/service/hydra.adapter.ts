@@ -214,7 +214,7 @@ export class HydraAdapter extends OauthProviderService {
 				? {
 						username: this.oauthProviderConfig.hydraAdminUser,
 						password: this.oauthProviderConfig.hydraAdminPassword,
-				  }
+					}
 				: undefined;
 
 		const observable: Observable<AxiosResponse<T>> = this.httpService

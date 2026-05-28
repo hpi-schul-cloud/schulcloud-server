@@ -1,5 +1,5 @@
 import { ConfigProperty, Configuration } from '@infra/configuration';
-import { IsString } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 
 export const OAUTH_PROVIDER_CONFIG_TOKEN = 'OAUTH_PROVIDER_CONFIG_TOKEN';
 
@@ -10,10 +10,12 @@ export class OauthProviderConfig {
 	public hydraUri!: string;
 
 	@ConfigProperty('HYDRA_ADMIN_USER')
+	@IsOptional()
 	@IsString()
 	public hydraAdminUser?: string;
 
 	@ConfigProperty('HYDRA_ADMIN_PASSWORD')
+	@IsOptional()
 	@IsString()
 	public hydraAdminPassword?: string;
 }
