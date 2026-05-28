@@ -5,7 +5,7 @@ import {
 	FilesStorageClientAdapter,
 	StorageLocation,
 } from '@infra/common-cartridge-clients';
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { ForbiddenException, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import { EventBus } from '@nestjs/cqrs';
 import { JwtExtractor } from '@shared/common/utils';
@@ -23,6 +23,7 @@ import {
 	CC_VALIDATION_ERROR_EVENT,
 	CcValidationErrorType,
 } from '../util/common-cartridge-validator.transform';
+import { ErrorStatus } from '../error/error-status.enum';
 
 @Injectable()
 export class CommonCartridgeUc {
@@ -33,6 +34,12 @@ export class CommonCartridgeUc {
 		@Inject(REQUEST) private readonly request: Request,
 		@Inject(COMMON_CARTRIDGE_CONFIG_TOKEN) private readonly config: CommonCartridgeConfig
 	) {}
+
+	public checkExportEnabled(): void {
+		if (!this.config.courseExportEnabled) {
+			throw new ForbiddenException(ErrorStatus.EXPORT_FEATURE_DISABLED, '');
+		}
+	}
 
 	public async exportCourse(
 		courseId: EntityId,
@@ -60,6 +67,12 @@ export class CommonCartridgeUc {
 		}
 
 		this.eventBus.publish(new ImportCourseEvent(jwt, params.fileRecordId, params.fileName, params.fileUrl));
+	}
+
+	public checkImportEnabled(): void {
+		if (!this.config.courseImportEnabled) {
+			throw new ForbiddenException(ErrorStatus.IMPORT_FEATURE_DISABLED);
+		}
 	}
 
 	public async uploadFileFromRequestToTemp(currentUser: ICurrentUser): Promise<FileRecordResponse> {

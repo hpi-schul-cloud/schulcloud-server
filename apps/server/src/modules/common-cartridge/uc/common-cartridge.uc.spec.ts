@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { FileRecordParentType, FilesStorageClientAdapter, StorageLocation } from '@infra/common-cartridge-clients';
 import { fileRecordResponseFactory } from '@infra/files-storage-client/testing';
-import { UnauthorizedException } from '@nestjs/common';
+import { ForbiddenException, UnauthorizedException } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -11,9 +11,10 @@ import busboy from 'busboy';
 import { EventEmitter } from 'events';
 import { Request } from 'express';
 import { PassThrough, Readable } from 'stream';
-import { COMMON_CARTRIDGE_CONFIG_TOKEN } from '../common-cartridge.config';
+import { COMMON_CARTRIDGE_CONFIG_TOKEN, CommonCartridgeConfig } from '../common-cartridge.config';
 import { ImportCourseEvent } from '../domain/events/import-course.event';
 import { ImportCourseParams } from '../domain/import-course.params';
+import { ErrorStatus } from '../error/error-status.enum';
 import { CommonCartridgeVersion } from '../export/common-cartridge.enums';
 import { CommonCartridgeExportResponse } from '../service/common-cartridge-export.response';
 import { CommonCartridgeExportService } from '../service/common-cartridge-export.service';
@@ -34,6 +35,7 @@ describe(CommonCartridgeUc.name, () => {
 	let eventBusMock: DeepMocked<EventBus>;
 	let requestMock: DeepMocked<Request>;
 	let fileClientMock: DeepMocked<FilesStorageClientAdapter>;
+	let config: CommonCartridgeConfig;
 	let currentReqEmitter: EventEmitter | null = null;
 
 	beforeAll(async () => {
@@ -58,7 +60,11 @@ describe(CommonCartridgeUc.name, () => {
 				},
 				{
 					provide: COMMON_CARTRIDGE_CONFIG_TOKEN,
-					useValue: { courseImportMaxFileSize: 1024 * 1024 * 100 },
+					useValue: {
+						courseExportEnabled: true,
+						courseImportEnabled: true,
+						courseImportMaxFileSize: 1024 * 1024 * 100,
+					},
 				},
 			],
 		}).compile();
@@ -68,6 +74,7 @@ describe(CommonCartridgeUc.name, () => {
 		fileClientMock = module.get(FilesStorageClientAdapter);
 		eventBusMock = module.get(EventBus);
 		requestMock = module.get(REQUEST);
+		config = module.get(COMMON_CARTRIDGE_CONFIG_TOKEN);
 	});
 
 	afterAll(async () => {
@@ -85,6 +92,30 @@ describe(CommonCartridgeUc.name, () => {
 
 	it('should be defined', () => {
 		expect(sut).toBeDefined();
+	});
+
+	describe('checkExportEnabled', () => {
+		describe('when export is enabled', () => {
+			const setup = () => {
+				config.courseExportEnabled = true;
+			};
+			it('should not throw', () => {
+				setup();
+
+				expect(() => sut.checkExportEnabled()).not.toThrow();
+			});
+		});
+
+		describe('when export is not enabled', () => {
+			const setup = () => {
+				config.courseExportEnabled = false;
+			};
+			it('should throw ForbiddenException', () => {
+				setup();
+
+				expect(() => sut.checkExportEnabled()).toThrow(new ForbiddenException(ErrorStatus.EXPORT_FEATURE_DISABLED));
+			});
+		});
 	});
 
 	describe('exportCourse', () => {
@@ -141,6 +172,30 @@ describe(CommonCartridgeUc.name, () => {
 				await expect(sut.exportCourse(courseId, version, topics, tasks, columnBoards)).rejects.toThrow(
 					UnauthorizedException
 				);
+			});
+		});
+	});
+
+	describe('checkImportEnabled', () => {
+		describe('when import is enabled', () => {
+			const setup = () => {
+				config.courseImportEnabled = true;
+			};
+			it('should not throw', () => {
+				setup();
+
+				expect(() => sut.checkImportEnabled()).not.toThrow();
+			});
+		});
+
+		describe('when import is not enabled', () => {
+			const setup = () => {
+				config.courseImportEnabled = false;
+			};
+			it('should throw ForbiddenException', () => {
+				setup();
+
+				expect(() => sut.checkImportEnabled()).toThrow(new ForbiddenException(ErrorStatus.IMPORT_FEATURE_DISABLED));
 			});
 		});
 	});

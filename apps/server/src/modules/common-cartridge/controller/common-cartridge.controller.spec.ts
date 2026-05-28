@@ -76,6 +76,14 @@ describe('CommonCartridgeController', () => {
 				return { params, expected, query, body, mockRequest, mockResponse };
 			};
 
+			it('should check that export is enabled', async () => {
+				const { params, query, body, mockRequest, mockResponse } = setup();
+
+				await sut.exportCourse(params, query, body, mockRequest, mockResponse);
+
+				expect(commonCartridgeUcMock.checkExportEnabled).toHaveBeenCalled();
+			});
+
 			it('should return a streamable file', async () => {
 				const { params, expected, query, body, mockRequest, mockResponse } = setup();
 
@@ -101,6 +109,14 @@ describe('CommonCartridgeController', () => {
 
 				return { currentUser, fileRecordResponse, body };
 			};
+
+			it('should check that import is enabled', async () => {
+				const { currentUser, body } = setup();
+
+				await sut.uploadFileAndStartImport(currentUser, body);
+
+				expect(commonCartridgeUcMock.checkImportEnabled).toHaveBeenCalled();
+			});
 
 			it('should call the uc to upload file and start the import', async () => {
 				const { currentUser, fileRecordResponse, body } = setup();

@@ -30,6 +30,8 @@ export class CommonCartridgeController {
 		@Req() req: Request,
 		@Res({ passthrough: true }) response: Response
 	): Promise<StreamableFile> {
+		this.commonCartridgeUC.checkExportEnabled();
+
 		const result = await this.commonCartridgeUC.exportCourse(
 			exportCourseParams.courseId,
 			queryParams.version,
@@ -62,6 +64,8 @@ export class CommonCartridgeController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() _: CommonCartridgeFileParams
 	): Promise<FileRecordResponse> {
+		this.commonCartridgeUC.checkImportEnabled();
+
 		const fileRecordResponse = await this.commonCartridgeUC.uploadFileFromRequestToTemp(currentUser);
 
 		this.commonCartridgeUC.startCourseImport({
