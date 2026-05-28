@@ -1,4 +1,5 @@
 import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
+import { FileRecordResponse } from '@infra/common-cartridge-clients';
 import { Body, Controller, HttpCode, HttpStatus, Param, Post, Query, Req, Res, StreamableFile } from '@nestjs/common';
 import {
 	ApiBadRequestResponse,
@@ -14,7 +15,6 @@ import { Request, Response } from 'express';
 import { CommonCartridgeUc } from '../uc/common-cartridge.uc';
 import { CourseExportBodyParams, CourseQueryParams, ExportCourseParams } from './dto';
 import { CommonCartridgeFileParams } from './dto/common-cartridge-file.params';
-import { FileRecordResponse } from '@infra/common-cartridge-clients';
 
 @JwtAuthentication()
 @ApiTags('common-cartridge')
@@ -55,12 +55,12 @@ export class CommonCartridgeController {
 	@ApiUnauthorizedResponse({ description: 'Request is unauthorized.' })
 	@ApiBadRequestResponse({ description: 'Request data has invalid format.' })
 	@ApiInternalServerErrorResponse({ description: 'Internal server error.' })
-	@ApiConsumes('multipart/form-data')
-	@ApiBody({ type: CommonCartridgeFileParams, required: true })
+	@ApiConsumes('application/octet-stream')
+	@ApiBody({ schema: { type: 'string', format: 'binary' }, required: true })
 	@HttpCode(200)
 	public async uploadFileAndStartImport(
 		@CurrentUser() currentUser: ICurrentUser,
-		@Body() _: CommonCartridgeFileParams
+		_?: CommonCartridgeFileParams
 	): Promise<FileRecordResponse> {
 		const fileRecordResponse = await this.commonCartridgeUC.uploadFileFromRequestToTemp(currentUser);
 

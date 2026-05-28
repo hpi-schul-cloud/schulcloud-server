@@ -4,8 +4,8 @@ import { HttpService } from '@nestjs/axios';
 import { Inject, Injectable } from '@nestjs/common';
 import { AxiosError } from 'axios';
 import FormDataReadable from 'form-data';
-import { lastValueFrom } from 'rxjs';
 import { Readable, Stream } from 'node:stream';
+import { lastValueFrom } from 'rxjs';
 import util from 'util';
 import {
 	FILE_STORAGE_CLIENT_CONFIG_TOKEN,
@@ -151,7 +151,7 @@ export class FilesStorageClientAdapter {
 		storageLocation: StorageLocation,
 		parentId: string,
 		parentType: FileRecordParentType,
-		file: Readable,
+		file: Readable | Buffer,
 		fileName: string
 	): Promise<FileRecordResponse> {
 		// INFO: We bypass the generated client to support streaming directly without buffering.

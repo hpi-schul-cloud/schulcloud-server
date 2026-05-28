@@ -10,11 +10,11 @@ export class CommonCartridgePublicApiConfig {
 	@ConfigProperty('FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_ENABLED')
 	@StringToBoolean()
 	@IsBoolean()
-	public courseImportEnabled = false;
+	public courseImportEnabled = true;
 	@ConfigProperty('FEATURE_COMMON_CARTRIDGE_COURSE_EXPORT_ENABLED')
 	@StringToBoolean()
 	@IsBoolean()
-	public courseExportEnabled = false;
+	public courseExportEnabled = true;
 }
 
 @Configuration()
