@@ -50,7 +50,7 @@ export class FwuLearningContentsController {
 			throw new InternalServerErrorException('Feature FWU content is not enabled.');
 		}
 		const bytesRange = req.header('Range');
-		const path = `${String(req.params['path'])}/${params.fwuLearningContent}`;
+		const path = `${req.params[0]}/${params.fwuLearningContent}`;
 		const response = await this.fwuLearningContentsUc.get(path, bytesRange);
 
 		if (bytesRange) {
