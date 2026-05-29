@@ -12,10 +12,11 @@ export class JwtWhitelistAdapter {
 	) {}
 
 	public async addToWhitelist(accountId: string, jti: string): Promise<void> {
+		const { jwtTimeoutSeconds } = this.config;
 		const redisIdentifier = createJwtRedisIdentifier(accountId, jti);
-		const redisData = createJwtRedisData(this.config.jwtTimeoutSeconds);
+		const redisData = createJwtRedisData(jwtTimeoutSeconds);
 
-		await this.storageClient.set(redisIdentifier, JSON.stringify(redisData), 'EX', redisData.expirationInSeconds);
+		await this.storageClient.set(redisIdentifier, JSON.stringify(redisData), 'EX', jwtTimeoutSeconds);
 	}
 
 	public async removeFromWhitelist(accountId: string, jti?: string): Promise<void> {
