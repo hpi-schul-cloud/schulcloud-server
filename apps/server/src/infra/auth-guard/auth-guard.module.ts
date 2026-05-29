@@ -42,17 +42,15 @@ export class AuthGuardModule {
 			}
 		});
 
-		const valkeyClientModule = ValkeyClientModule.register({
-			clientInjectionToken: AUTH_GUARD_VALKEY_CLIENT,
-			configInjectionToken: SESSION_VALKEY_CLIENT_CONFIG_TOKEN,
-			configConstructor: ValkeyClientSessionConfig,
-		});
-
 		return {
 			module: AuthGuardModule,
 			imports: [
 				PassportModule,
-				valkeyClientModule,
+				ValkeyClientModule.register({
+					clientInjectionToken: AUTH_GUARD_VALKEY_CLIENT,
+					configInjectionToken: SESSION_VALKEY_CLIENT_CONFIG_TOKEN,
+					configConstructor: ValkeyClientSessionConfig,
+				}),
 				ConfigurationModule.register(JWT_WHITELIST_CONFIG_TOKEN, JwtWhitelistConfig),
 				...imports,
 			],
