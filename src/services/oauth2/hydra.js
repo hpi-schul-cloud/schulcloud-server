@@ -4,7 +4,7 @@ const mockTlsTermination = {
 	'X-Forwarded-Proto': 'https',
 };
 
-module.exports = (hydraUrl) => {
+module.exports = (hydraUrl, credentials) => {
 	return {
 		introspectOAuth2Token: async (token, scope) => {
 			const options = {
@@ -16,6 +16,14 @@ module.exports = (hydraUrl) => {
 					'Content-Type': 'application/x-www-form-urlencoded',
 				},
 			};
+
+			if (credentials && credentials.user && credentials.password) {
+				options.auth = {
+					username: credentials.user,
+					password: credentials.password,
+				};
+			}
+
 			const res = await axios(options);
 
 			return res.data;
