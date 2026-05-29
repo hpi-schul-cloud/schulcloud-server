@@ -21,7 +21,6 @@ import { BadDataLoggableException } from '../../loggable';
 import { ErwinProvisioningService, ProvisioningEntityType } from '../../service/erwin-provisioning.service';
 import { externalSchoolDtoFactory, externalUserDtoFactory, provisioningSystemDtoFactory } from '../../testing';
 import { ErwinRole, MappedSvsRolle } from './enums/rolle.enum';
-import { ErwinKlassePayload } from './erwin.klasse.payload';
 import { ErwinProvisioningStrategy } from './erwin.strategy';
 
 describe('ErwinProvisioningStrategy', () => {
@@ -469,8 +468,8 @@ describe('ErwinProvisioningStrategy', () => {
 
 		describe('when token contains klassen with ErwinKlassePayload data', () => {
 			const setup = () => {
-				const klassePayload1 = new ErwinKlassePayload('class-ext-id-1', 'Klasse 5a');
-				const klassePayload2 = new ErwinKlassePayload('class-ext-id-2', 'Klasse 5b');
+				const klassePayload1 = { externalId: 'class-ext-id-1', name: 'Klasse 5a' };
+				const klassePayload2 = { externalId: 'class-ext-id-2', name: 'Klasse 5b' };
 
 				const input = new OauthDataStrategyInputDto({
 					system: new ProvisioningSystemDto({
