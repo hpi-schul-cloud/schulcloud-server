@@ -16,7 +16,7 @@ describe.skip('TspClientFactory Integration', () => {
 		})
 			.overrideProvider(TSP_CLIENT_CONFIG_TOKEN)
 			.useValue({
-				baseUrl: 'https://test.schulportal-thueringen.de/tip-ms/api',
+				baseUrl: 'https://test3.schulportal-thueringen.de/tip-ms/api',
 				tokenLifetimeMs: 30000,
 			})
 			.compile();
