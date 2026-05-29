@@ -7,7 +7,6 @@ import { REQUEST } from '@nestjs/core';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, TestingModule } from '@nestjs/testing';
 import { currentUserFactory } from '@testing/factory/currentuser.factory';
-import busboy from 'busboy';
 import { EventEmitter } from 'events';
 import { Request } from 'express';
 import { PassThrough, Readable } from 'stream';
@@ -25,7 +24,6 @@ import {
 } from '../util/common-cartridge-validator.transform';
 import { CommonCartridgeUc } from './common-cartridge.uc';
 
-jest.mock('busboy');
 jest.mock('../util/common-cartridge-validator.transform');
 
 describe(CommonCartridgeUc.name, () => {
@@ -263,13 +261,6 @@ describe(CommonCartridgeUc.name, () => {
 			return mockValidator;
 		};
 
-		const createMockBusboy = () => {
-			const busboyEmitter = new EventEmitter();
-			(busboy as jest.Mock).mockReturnValue(busboyEmitter);
-
-			return busboyEmitter;
-		};
-
 		const setupRequestMock = (jwt: string, complete: boolean, contentDisposition?: string) => {
 			const reqEmitter = new EventEmitter();
 			reqEmitter.setMaxListeners(0);
@@ -313,30 +304,21 @@ describe(CommonCartridgeUc.name, () => {
 				const jwt = faker.internet.jwt();
 				const currentUser = currentUserFactory.build();
 				const fileRecord = fileRecordResponseFactory.build();
-				const busboyEmitter = createMockBusboy();
-				const reqEmitter = setupRequestMock(jwt, true, 'attachment; filename="test-course.imscc"');
-				setupValidatorMock();
+				setupRequestMock(jwt, true, 'attachment; filename="test-course.imscc"');
+				const mockValidator = setupValidatorMock();
 
 				fileClientMock.uploadTempFile.mockResolvedValue(fileRecord);
 
-				return { currentUser, fileRecord, busboyEmitter, reqEmitter, jwt };
+				return { currentUser, fileRecord, jwt, mockValidator };
 			};
 
 			it('should return the file record response', async () => {
-				const { currentUser, fileRecord, busboyEmitter } = setup();
+				const { currentUser, fileRecord, mockValidator } = setup();
 
-				const promise = sut.uploadFileFromRequestToTemp(currentUser);
-
-				const fileStream = new PassThrough();
-				busboyEmitter.emit('file', 'file', fileStream, { filename: 'test.imscc' });
-				fileStream.end();
-
-				busboyEmitter.emit('close');
-
-				const result = await promise;
+				const result = await sut.uploadFileFromRequestToTemp(currentUser);
 
 				expect(result).toEqual(fileRecord);
-				expect(requestMock.pipe).toHaveBeenCalledWith(busboyEmitter);
+				expect(requestMock.pipe).toHaveBeenCalledWith(mockValidator);
 			});
 		});
 
@@ -345,27 +327,18 @@ describe(CommonCartridgeUc.name, () => {
 				const jwt = faker.internet.jwt();
 				const currentUser = currentUserFactory.build();
 				const fileRecord = fileRecordResponseFactory.build();
-				const busboyEmitter = createMockBusboy();
 				setupRequestMock(jwt, true);
-
 				setupValidatorMock();
 
 				fileClientMock.uploadTempFile.mockResolvedValue(fileRecord);
 
-				return { currentUser, fileRecord, busboyEmitter, jwt };
+				return { currentUser, fileRecord, jwt };
 			};
 
 			it('should use default filename upload.imscc', async () => {
-				const { currentUser, busboyEmitter, jwt } = setup();
+				const { currentUser, jwt } = setup();
 
-				const promise = sut.uploadFileFromRequestToTemp(currentUser);
-
-				const fileStream = new PassThrough();
-				busboyEmitter.emit('file', 'file', fileStream, { filename: 'test.imscc' });
-				fileStream.end();
-				busboyEmitter.emit('close');
-
-				await promise;
+				await sut.uploadFileFromRequestToTemp(currentUser);
 
 				expect(fileClientMock.uploadTempFile).toHaveBeenCalledWith(
 					jwt,
@@ -384,26 +357,18 @@ describe(CommonCartridgeUc.name, () => {
 				const jwt = faker.internet.jwt();
 				const currentUser = currentUserFactory.build();
 				const fileRecord = fileRecordResponseFactory.build();
-				const busboyEmitter = createMockBusboy();
 				setupRequestMock(jwt, true, 'attachment');
 				setupValidatorMock();
 
 				fileClientMock.uploadTempFile.mockResolvedValue(fileRecord);
 
-				return { currentUser, fileRecord, busboyEmitter, jwt };
+				return { currentUser, fileRecord, jwt };
 			};
 
 			it('should use default filename upload.imscc', async () => {
-				const { currentUser, busboyEmitter, jwt } = setup();
+				const { currentUser, jwt } = setup();
 
-				const promise = sut.uploadFileFromRequestToTemp(currentUser);
-
-				const fileStream = new PassThrough();
-				busboyEmitter.emit('file', 'file', fileStream, { filename: 'test.imscc' });
-				fileStream.end();
-				busboyEmitter.emit('close');
-
-				await promise;
+				await sut.uploadFileFromRequestToTemp(currentUser);
 
 				expect(fileClientMock.uploadTempFile).toHaveBeenCalledWith(
 					jwt,
@@ -421,10 +386,12 @@ describe(CommonCartridgeUc.name, () => {
 			const setup = () => {
 				const jwt = faker.internet.jwt();
 				const currentUser = currentUserFactory.build();
-				const busboyEmitter = createMockBusboy();
 				const reqEmitter = setupRequestMock(jwt, false);
+				setupValidatorMock();
 
-				return { currentUser, busboyEmitter, reqEmitter };
+				fileClientMock.uploadTempFile.mockImplementation(() => new Promise(() => {}));
+
+				return { currentUser, reqEmitter };
 			};
 
 			it('should reject with request closed prematurely error', async () => {
@@ -442,10 +409,12 @@ describe(CommonCartridgeUc.name, () => {
 			const setup = () => {
 				const jwt = faker.internet.jwt();
 				const currentUser = currentUserFactory.build();
-				const busboyEmitter = createMockBusboy();
 				const reqEmitter = setupRequestMock(jwt, true);
+				setupValidatorMock();
 
-				return { currentUser, busboyEmitter, reqEmitter };
+				fileClientMock.uploadTempFile.mockImplementation(() => new Promise(() => {}));
+
+				return { currentUser, reqEmitter };
 			};
 
 			it('should reject with request aborted error', async () => {
@@ -459,52 +428,23 @@ describe(CommonCartridgeUc.name, () => {
 			});
 		});
 
-		describe('when no file is provided', () => {
-			const setup = () => {
-				const jwt = faker.internet.jwt();
-				const currentUser = currentUserFactory.build();
-				const busboyEmitter = createMockBusboy();
-				setupRequestMock(jwt, true);
-
-				return { currentUser, busboyEmitter };
-			};
-
-			it('should reject with no file provided error', async () => {
-				const { currentUser, busboyEmitter } = setup();
-
-				const promise = sut.uploadFileFromRequestToTemp(currentUser);
-
-				busboyEmitter.emit('close');
-
-				await expect(promise).rejects.toThrow('No file provided');
-			});
-		});
-
 		describe('when file upload fails', () => {
 			const setup = () => {
 				const jwt = faker.internet.jwt();
 				const currentUser = currentUserFactory.build();
-				const busboyEmitter = createMockBusboy();
 				const uploadError = new Error('Upload failed');
 				setupRequestMock(jwt, true);
 				setupValidatorMock();
 
 				fileClientMock.uploadTempFile.mockRejectedValue(uploadError);
 
-				return { currentUser, busboyEmitter, uploadError };
+				return { currentUser, uploadError };
 			};
 
 			it('should reject with upload error', async () => {
-				const { currentUser, busboyEmitter, uploadError } = setup();
+				const { currentUser, uploadError } = setup();
 
-				const promise = sut.uploadFileFromRequestToTemp(currentUser);
-
-				const fileStream = new PassThrough();
-				busboyEmitter.emit('file', 'file', fileStream, { filename: 'test.imscc' });
-				fileStream.end();
-				busboyEmitter.emit('close');
-
-				await expect(promise).rejects.toThrow(uploadError.message);
+				await expect(sut.uploadFileFromRequestToTemp(currentUser)).rejects.toThrow(uploadError.message);
 			});
 		});
 
@@ -512,22 +452,18 @@ describe(CommonCartridgeUc.name, () => {
 			const setup = () => {
 				const jwt = faker.internet.jwt();
 				const currentUser = currentUserFactory.build();
-				const busboyEmitter = createMockBusboy();
-				const mockValidator = setupValidatorMock();
 				setupRequestMock(jwt, true);
+				const mockValidator = setupValidatorMock();
 
-				fileClientMock.uploadTempFile.mockImplementation(() => Promise.resolve(fileRecordResponseFactory.build()));
+				fileClientMock.uploadTempFile.mockImplementation(() => new Promise(() => {}));
 
-				return { currentUser, busboyEmitter, mockValidator };
+				return { currentUser, mockValidator };
 			};
 
 			it('should reject with not a zip archive error', async () => {
-				const { currentUser, busboyEmitter, mockValidator } = setup();
+				const { currentUser, mockValidator } = setup();
 
 				const promise = sut.uploadFileFromRequestToTemp(currentUser);
-
-				const fileStream = new PassThrough();
-				busboyEmitter.emit('file', 'file', fileStream, { filename: 'test.imscc' });
 
 				mockValidator.emit(CC_VALIDATION_ERROR_EVENT, CcValidationErrorType.NotAZipFile);
 
@@ -539,22 +475,18 @@ describe(CommonCartridgeUc.name, () => {
 			const setup = () => {
 				const jwt = faker.internet.jwt();
 				const currentUser = currentUserFactory.build();
-				const busboyEmitter = createMockBusboy();
-				const mockValidator = setupValidatorMock();
 				setupRequestMock(jwt, true);
+				const mockValidator = setupValidatorMock();
 
-				fileClientMock.uploadTempFile.mockImplementation(() => Promise.resolve(fileRecordResponseFactory.build()));
+				fileClientMock.uploadTempFile.mockImplementation(() => new Promise(() => {}));
 
-				return { currentUser, busboyEmitter, mockValidator };
+				return { currentUser, mockValidator };
 			};
 
 			it('should reject with maximum file size exceeded error', async () => {
-				const { currentUser, busboyEmitter, mockValidator } = setup();
+				const { currentUser, mockValidator } = setup();
 
 				const promise = sut.uploadFileFromRequestToTemp(currentUser);
-
-				const fileStream = new PassThrough();
-				busboyEmitter.emit('file', 'file', fileStream, { filename: 'test.imscc' });
 
 				mockValidator.emit(CC_VALIDATION_ERROR_EVENT, CcValidationErrorType.MaximumSizeExceeded);
 
@@ -567,26 +499,23 @@ describe(CommonCartridgeUc.name, () => {
 				const jwt = faker.internet.jwt();
 				const currentUser = currentUserFactory.build();
 				const fileRecord = fileRecordResponseFactory.build();
-				const busboyEmitter = createMockBusboy();
-				setupRequestMock(jwt, true);
+				const reqEmitter = setupRequestMock(jwt, false);
 				setupValidatorMock();
 
 				fileClientMock.uploadTempFile.mockResolvedValue(fileRecord);
 
-				return { currentUser, fileRecord, busboyEmitter };
+				return { currentUser, fileRecord, reqEmitter };
 			};
 
 			it('should only resolve once even if close is called multiple times', async () => {
-				const { currentUser, fileRecord, busboyEmitter } = setup();
+				const { currentUser, fileRecord, reqEmitter } = setup();
 
 				const promise = sut.uploadFileFromRequestToTemp(currentUser);
 
-				const fileStream = new PassThrough();
-				busboyEmitter.emit('file', 'file', fileStream, { filename: 'test.imscc' });
-				fileStream.end();
-
-				busboyEmitter.emit('close');
-				busboyEmitter.emit('close');
+				setImmediate(() => {
+					reqEmitter.emit('close');
+					reqEmitter.emit('close');
+				});
 
 				const result = await promise;
 
@@ -598,26 +527,19 @@ describe(CommonCartridgeUc.name, () => {
 			const setup = () => {
 				const jwt = faker.internet.jwt();
 				const currentUser = currentUserFactory.build();
-				const busboyEmitter = createMockBusboy();
 				const uploadError = new Error('Upload failed in catch');
 				setupRequestMock(jwt, true);
 				setupValidatorMock();
 
 				fileClientMock.uploadTempFile.mockImplementation(() => Promise.reject(uploadError));
 
-				return { currentUser, busboyEmitter, uploadError };
+				return { currentUser, uploadError };
 			};
 
 			it('should reject via the catch handler', async () => {
-				const { currentUser, busboyEmitter, uploadError } = setup();
+				const { currentUser, uploadError } = setup();
 
-				const promise = sut.uploadFileFromRequestToTemp(currentUser);
-
-				const fileStream = new PassThrough();
-				busboyEmitter.emit('file', 'file', fileStream, { filename: 'test.imscc' });
-				fileStream.end();
-
-				await expect(promise).rejects.toThrow(uploadError);
+				await expect(sut.uploadFileFromRequestToTemp(currentUser)).rejects.toThrow(uploadError);
 			});
 		});
 	});
