@@ -382,6 +382,27 @@ describe(CommonCartridgeUc.name, () => {
 			});
 		});
 
+		describe('when fileClient returns null', () => {
+			const setup = () => {
+				const jwt = faker.internet.jwt();
+				const currentUser = currentUserFactory.build();
+				setupRequestMock(jwt, true, 'attachment; filename="test-course.imscc"');
+				setupValidatorMock();
+
+				fileClientMock.uploadTempFile.mockResolvedValue(null);
+
+				return { currentUser };
+			};
+
+			it('should reject with Error', async () => {
+				const { currentUser } = setup();
+
+				const promise = sut.uploadFileFromRequestToTemp(currentUser);
+
+				await expect(promise).rejects.toThrow('Error while uploading temp file. No result');
+			});
+		});
+
 		describe('when request is closed prematurely', () => {
 			const setup = () => {
 				const jwt = faker.internet.jwt();

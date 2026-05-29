@@ -153,28 +153,42 @@ export class FilesStorageClientAdapter {
 		parentType: FileRecordParentType,
 		file: Readable | Buffer,
 		fileName: string
-	): Promise<FileRecordResponse> {
-		// INFO: We bypass the generated client to support streaming directly without buffering.
-		// The generated client expects a File type which would require loading everything into memory.
-		// Using form-data package allows us to stream the data directly to the target server.
-		const formData = new FormDataReadable();
-		formData.append('file', file, { filename: fileName });
+	): Promise<FileRecordResponse | null> {
+		try {
+			// INFO: We bypass the generated client to support streaming directly without buffering.
+			// The generated client expects a File type which would require loading everything into memory.
+			// Using form-data package allows us to stream the data directly to the target server.
+			const formData = new FormDataReadable();
+			formData.append('file', file, { filename: fileName });
 
-		const url = new URL(
-			`/api/v3/file/temp/upload/${storageLocation}/${storageLocationId}/${parentType}/${parentId}`,
-			this.config.basePath
-		);
+			const url = new URL(
+				`/api/v3/file/temp/upload/${storageLocation}/${storageLocationId}/${parentType}/${parentId}`,
+				this.config.basePath
+			);
 
-		const observable = this.httpService.post<FileRecordResponse>(url.toString(), formData, {
-			headers: {
-				...formData.getHeaders(),
-				Authorization: `Bearer ${jwt}`,
-			},
-		});
+			const observable = this.httpService.post<FileRecordResponse>(url.toString(), formData, {
+				headers: {
+					...formData.getHeaders(),
+					Authorization: `Bearer ${jwt}`,
+				},
+			});
 
-		const response = await lastValueFrom(observable);
+			const response = await lastValueFrom(observable);
 
-		return response.data;
+			return response.data;
+		} catch (error: unknown) {
+			if (error instanceof AxiosError) {
+				this.errorLogger.error(new AxiosErrorLoggable(error, 'FilesStorageClientAdapter.uploadTempFile'));
+			} else {
+				this.errorLogger.error(
+					new GenericFileStorageLoggable(`An unknown error occurred in FilesStorageClientAdapter.uploadTempFile`, {
+						error: util.inspect(error),
+					})
+				);
+			}
+
+			return null;
+		}
 	}
 
 	public async deleteFile(jwt: string, fileRecordId: string): Promise<void> {

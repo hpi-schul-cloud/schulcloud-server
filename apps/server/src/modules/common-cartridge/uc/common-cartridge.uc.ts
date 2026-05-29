@@ -122,7 +122,9 @@ export class CommonCartridgeUc {
 					validator,
 					fileName
 				)
-				.then((result) => settle(() => resolve(result)))
+				.then((result) =>
+					settle(() => (result ? resolve(result) : reject(new Error('Error while uploading temp file. No result'))))
+				)
 				.catch((err: unknown) => settle(() => reject(err)));
 		});
 	}
