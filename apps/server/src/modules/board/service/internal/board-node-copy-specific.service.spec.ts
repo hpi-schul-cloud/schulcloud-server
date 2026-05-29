@@ -26,7 +26,6 @@ import {
 	FileFolderElement,
 	LinkElement,
 	RichTextElement,
-	SubmissionContainerElement,
 	VideoConferenceElement,
 } from '../../domain';
 import {
@@ -45,8 +44,6 @@ import {
 	mediaExternalToolElementFactory,
 	mediaLineFactory,
 	richTextElementFactory,
-	submissionContainerElementFactory,
-	submissionItemFactory,
 	videoConferenceElementFactory,
 } from '../../testing';
 import { BoardNodeCopyContext, BoardNodeCopyContextProps } from './board-node-copy-context';
@@ -448,58 +445,6 @@ describe(BoardNodeCopyService.name, () => {
 			const result = await service.copyDrawingElement(drawingElement, copyContext);
 
 			expect(result.copyEntity).toBeInstanceOf(DrawingElement);
-		});
-	});
-
-	describe('copy submission container element', () => {
-		const setup = () => {
-			const { copyContext } = setupContext();
-			const submissionContainerElement = submissionContainerElementFactory.build({
-				children: submissionItemFactory.buildList(1),
-			});
-
-			return { copyContext, submissionContainerElement };
-		};
-
-		it('should copy the node', async () => {
-			const { copyContext, submissionContainerElement } = setup();
-
-			const result = await service.copySubmissionContainerElement(submissionContainerElement, copyContext);
-
-			expect(result.copyEntity).toBeInstanceOf(SubmissionContainerElement);
-		});
-
-		it('should copy the children', async () => {
-			const { copyContext, submissionContainerElement } = setup();
-
-			const result = await service.copySubmissionContainerElement(submissionContainerElement, copyContext);
-
-			const expectedChildStatus: CopyStatus = {
-				type: CopyElementType.SUBMISSION_ITEM,
-				status: CopyStatusEnum.NOT_DOING,
-			};
-			expect((result.elements ?? [])[0]).toEqual(expectedChildStatus);
-		});
-	});
-
-	describe('copy submission item', () => {
-		const setup = () => {
-			const { copyContext } = setupContext();
-			const submissionItem = submissionItemFactory.build();
-
-			return { copyContext, submissionItem };
-		};
-
-		it('should copy the node', async () => {
-			const { copyContext, submissionItem } = setup();
-
-			const result = await service.copySubmissionItem(submissionItem, copyContext);
-
-			const expectedChildStatus: CopyStatus = {
-				type: CopyElementType.SUBMISSION_ITEM,
-				status: CopyStatusEnum.NOT_DOING,
-			};
-			expect(result).toEqual(expectedChildStatus);
 		});
 	});
 

@@ -1,6 +1,6 @@
 const { authenticate } = require('@feathersjs/authentication').hooks;
+const { BadRequest } = require('../../../errors');
 const { hasPermission, restrictToCurrentSchool } = require('../../../hooks');
-const { BadRequest } = require('../../activation/utils/generalUtils');
 const { equal: equalIds } = require('../../../helper/compare').ObjectId;
 
 class QrRegistrationLinksLegacyClient {

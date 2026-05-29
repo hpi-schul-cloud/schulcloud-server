@@ -13,4 +13,5 @@ export {
 export { PROVISIONING_PUBLIC_API_CONFIG, ProvisioningPublicApiConfig } from './provisioning.config';
 export { ProvisioningModule } from './provisioning.module';
 export { ProvisioningService } from './service/provisioning.service';
-export { OidcMockProvisioningStrategy, ProvisioningStrategy, SchulconnexResponseMapper } from './strategy';
+export { ProvisioningStrategy, SchulconnexResponseMapper } from './strategy';
+export { ErwinProvisioningStrategy, ErwinJwtPayload } from './strategy/erwin';

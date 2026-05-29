@@ -6,7 +6,6 @@ import { InternalMailConfig } from './interfaces';
 import { StringToBoolean } from '@shared/controller/transformer';
 
 export const MAIL_CONFIG_TOKEN = 'MAIL_CONFIG_TOKEN';
-export const MAIL_EXCHANGE_CONFIG_TOKEN = 'MAIL_EXCHANGE_CONFIG_TOKEN';
 
 @Configuration()
 export class MailExchange implements InternalRabbitMQExchangeConfig {

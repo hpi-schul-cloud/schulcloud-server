@@ -5,12 +5,13 @@ import { InternalXApiKeyAuthGuardConfig, StrategyType } from '../interface';
 
 export class XApiKeyStrategy extends PassportStrategy(Strategy, StrategyType.API_KEY) {
 	constructor(private readonly config: InternalXApiKeyAuthGuardConfig) {
-		super({ header: 'X-API-KEY' }, false);
+		super({ header: 'X-API-KEY', prefix: '' }, false);
 	}
 
 	public validate = (apiKey: string, done: (error: Error | null, data: boolean | null) => void): void => {
 		if (this.config.allowedApiKeys.includes(apiKey)) {
 			done(null, true);
+			return;
 		}
 		done(new UnauthorizedException(), null);
 	};

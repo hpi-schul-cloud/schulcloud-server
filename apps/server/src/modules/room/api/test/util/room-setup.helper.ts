@@ -28,7 +28,7 @@ export type UserSetupCompact = [
 	string,
 	'sameSchool' | 'otherSchool',
 	SchoolRoleString | Array<SchoolRoleString>,
-	'roomowner' | 'roomadmin' | 'roomeditor' | 'roomviewer' | 'none'
+	'roomowner' | 'roomadmin' | 'roomeditor' | 'roomviewer' | 'none',
 ];
 
 export type UserSetup = {
@@ -52,7 +52,10 @@ export class RoomSetup {
 	private _sameSchool: SchoolEntity | undefined;
 	private _otherSchool: SchoolEntity | undefined;
 
-	constructor(private readonly _em: EntityManager, private readonly testApiClient: TestApiClient) {}
+	constructor(
+		private readonly _em: EntityManager,
+		private readonly testApiClient: TestApiClient
+	) {}
 
 	public setup = async (userSetupsCompact: UserSetupCompact[]): Promise<void> => {
 		const userSetups: UserSetup[] = userSetupsCompact.map(([name, school, schoolRoleNames, roomRoleName]) => {

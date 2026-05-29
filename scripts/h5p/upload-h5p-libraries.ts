@@ -14,7 +14,10 @@ const args = arg(
 );
 
 if ('--help' in args) {
-	console.log(`Usage: node upload-h5p-libraries.js [opts]
+	console.info(`Usage: node upload-h5p-libraries.js [opts] [tmp]
+POSITIONAL ARGUMENTS:
+    tmp			The temporary folder to use for building libraries (alternative to --tmp).
+
 OPTIONS:
     --help (-h)		Show this help.
     --tmp (-t)		The temporary folder to use for building libraries.
@@ -27,7 +30,7 @@ interface Params {
 }
 
 const params: Params = {
-	tmp: args._[2] || args['--tmp'],
+	tmp: args._[0] || args['--tmp'],
 };
 
 const main = async (): Promise<void> => {

@@ -1,6 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { bsonStringPattern } from '@shared/controller/bson-string-pattern';
-import { PaginationResponse } from '@shared/controller/dto';
 import { EntityId } from '@shared/domain/types';
 import { ComponentProperties, LessonEntity } from '../../repo';
 import { LessonContentResponse } from './lesson-content.response';
@@ -22,16 +21,6 @@ export class LessonMetadataResponse {
 		description: 'Name of the Lesson entity',
 	})
 	name: string;
-}
-
-export class LessonMetadataListResponse extends PaginationResponse<LessonMetadataResponse[]> {
-	constructor(data: LessonMetadataResponse[], total: number, skip?: number, limit?: number) {
-		super(total, skip, limit);
-		this.data = data;
-	}
-
-	@ApiProperty({ type: [LessonMetadataResponse] })
-	data: LessonMetadataResponse[];
 }
 
 export class LessonResponse {

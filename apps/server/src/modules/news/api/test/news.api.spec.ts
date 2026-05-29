@@ -1,4 +1,3 @@
-import { API_VALIDATION_ERROR_TYPE } from '@core/error/server-error-types';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { FeathersAuthorizationService } from '@modules/authorization';
 import { ServerTestModule } from '@modules/server/server.app.module';
@@ -306,7 +305,7 @@ describe('News Controller (API)', () => {
 				const params = new CreateNewsParams();
 				const res = await loggedInClient.post().send(params).expect(400);
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-				expect(res.body.type).toBe(API_VALIDATION_ERROR_TYPE.type);
+				expect(res.body.type).toBe('API_VALIDATION_ERROR');
 			});
 		});
 

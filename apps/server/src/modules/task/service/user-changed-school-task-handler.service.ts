@@ -7,7 +7,10 @@ import { TaskRepo } from '../repo/task.repo';
 @Injectable()
 @EventsHandler(UserChangedSchoolEvent)
 export class UserChangedSchoolTaskHandlerService implements IEventHandler<UserChangedSchoolEvent> {
-	constructor(private readonly taskRepo: TaskRepo, private readonly orm: MikroORM) {}
+	constructor(
+		private readonly taskRepo: TaskRepo,
+		private readonly orm: MikroORM
+	) {}
 
 	@EnsureRequestContext()
 	public async handle(event: UserChangedSchoolEvent): Promise<void> {

@@ -89,4 +89,25 @@ describe('jwt strategy', () => {
 			await expect(() => strategy.validate(mockJwtPayload)).rejects.toThrow(UnauthorizedException);
 		});
 	});
+
+	describe('when authenticate a service account with jwt', () => {
+		const setup = () => {
+			const mockJwtPayload = jwtPayloadFactory.asServiceAccount().build();
+
+			validationAdapter.isWhitelisted.mockResolvedValueOnce();
+			validationAdapter.isWhitelisted.mockClear();
+
+			return {
+				mockJwtPayload,
+			};
+		};
+
+		it('should return user with isServiceAccount flag preserved', async () => {
+			const { mockJwtPayload } = setup();
+
+			const user = await strategy.validate(mockJwtPayload);
+
+			expect(user.isServiceAccount).toBe(true);
+		});
+	});
 });

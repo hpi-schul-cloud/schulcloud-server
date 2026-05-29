@@ -28,9 +28,8 @@ export class ToggleUserLoginMigrationUc {
 	): Promise<UserLoginMigrationDO> {
 		await this.checkPermission(userId, schoolId);
 
-		let userLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationService.findMigrationBySchool(
-			schoolId
-		);
+		let userLoginMigration: UserLoginMigrationDO | null =
+			await this.userLoginMigrationService.findMigrationBySchool(schoolId);
 
 		if (!userLoginMigration) {
 			throw new UserLoginMigrationNotFoundLoggableException(schoolId);

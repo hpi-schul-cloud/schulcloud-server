@@ -1,1 +1,1 @@
-export * from './performance-observer';
+export * from './inspect-performance.decorator';

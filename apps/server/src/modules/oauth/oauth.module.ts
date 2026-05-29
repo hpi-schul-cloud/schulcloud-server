@@ -2,6 +2,7 @@ import { LoggerModule } from '@core/logger';
 import { ConfigurationModule } from '@infra/configuration';
 import { EncryptionModule } from '@infra/encryption';
 import { AuthorizationModule } from '@modules/authorization';
+import { ErwinIdentifierModule } from '@modules/erwin-identifier/erwin-identifier.module';
 import { LegacySchoolModule } from '@modules/legacy-school';
 import { OauthAdapterModule } from '@modules/oauth-adapter';
 import { ProvisioningModule } from '@modules/provisioning';
@@ -28,6 +29,7 @@ import { OAuthService, OauthSessionTokenService } from './service';
 		LegacySchoolModule,
 		OauthAdapterModule,
 		ConfigurationModule.register(OAUTH_PUBLIC_API_CONFIG_TOKEN, OauthPublicApiConfig),
+		ErwinIdentifierModule,
 	],
 	providers: [
 		OAuthService,

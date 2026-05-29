@@ -1,4 +1,6 @@
+import { sanitizeRichText } from '@shared/controller/transformer/sanitize-html.transformer';
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
+import { InputFormat } from '@shared/domain/types';
 import { RuntimeConfigValueInvalidTypeLoggable } from './loggable/runtime-config-value-invalid-type.loggable';
 
 export type RuntimeConfigValueProps = RuntimeConfigDefault & AuthorizableObject;
@@ -13,12 +15,14 @@ export type RuntimeConfigValueAndType =
 	| { value: number; type: 'number' }
 	| { value: boolean; type: 'boolean' };
 
-export type RuntimeConfigValueType = 'string' | 'number' | 'boolean';
+export type RuntimeConfigType = RuntimeConfigValueAndType['type'];
+
+export type RuntimeConfigValueType = RuntimeConfigValueAndType['value'];
 
 export class RuntimeConfigValue extends DomainObject<RuntimeConfigValueProps> {
 	public setValue(value: string | number | boolean): RuntimeConfigValue {
 		if (this.props.type === 'string' && typeof value === 'string') {
-			this.props.value = value;
+			this.props.value = sanitizeRichText(value, InputFormat.RICH_TEXT_CK5);
 		} else if (this.props.type === 'number' && typeof value === 'number') {
 			this.props.value = value;
 		} else if (this.props.type === 'boolean' && typeof value === 'boolean') {
@@ -31,7 +35,7 @@ export class RuntimeConfigValue extends DomainObject<RuntimeConfigValueProps> {
 
 	public setValueFromString(value: string): RuntimeConfigValue {
 		if (this.props.type === 'string') {
-			this.props.value = value;
+			this.props.value = sanitizeRichText(value, InputFormat.RICH_TEXT_CK5);
 		}
 		if (this.props.type === 'number') {
 			this.props.value = this.toNumber(value);

@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable, NotImplementedException, UnprocessableEntityException } from '@nestjs/common';
-import { type EntityId, InputFormat } from '@shared/domain/types';
+import { InputFormat } from '@shared/domain/types';
 import { Card } from './card.do';
 import { CollaborativeTextEditorElement } from './collaborative-text-editor.do';
 import { ColumnBoard } from './colum-board.do';
@@ -13,11 +13,15 @@ import { H5pElement } from './h5p-element.do';
 import { LinkElement } from './link-element.do';
 import { ROOT_PATH } from './path-utils';
 import { RichTextElement } from './rich-text-element.do';
-import { SubmissionContainerElement } from './submission-container-element.do';
-import { SubmissionItem } from './submission-item.do';
 import { handleNonExhaustiveSwitch } from './type-mapping';
-import type { AnyContentElement, BoardExternalReference, BoardLayout, BoardNodeProps } from './types';
-import { ContentElementType } from './types';
+import {
+	AnyContentElement,
+	BoardExternalReference,
+	BoardLayout,
+	BoardNodeProps,
+	Colors,
+	ContentElementType,
+} from './types';
 import { VideoConferenceElement } from './video-conference-element.do';
 
 @Injectable()
@@ -36,7 +40,7 @@ export class BoardNodeFactory {
 
 	public buildCard(children: AnyContentElement[] = []): Card {
 		// TODO right way to specify default card height?
-		const card = new Card({ ...this.getBaseProps(), height: 150, children });
+		const card = new Card({ ...this.getBaseProps(), backgroundColor: Colors.TRANSPARENT, height: 150, children });
 
 		return card;
 	}
@@ -78,12 +82,6 @@ export class BoardNodeFactory {
 					description: '',
 				});
 				break;
-			case ContentElementType.SUBMISSION_CONTAINER:
-				element = new SubmissionContainerElement({
-					...this.getBaseProps(),
-					dueDate: undefined,
-				});
-				break;
 			case ContentElementType.EXTERNAL_TOOL:
 				element = new ExternalToolElement({
 					...this.getBaseProps(),
@@ -116,12 +114,6 @@ export class BoardNodeFactory {
 		}
 
 		return element;
-	}
-
-	public buildSubmissionItem(props: { completed: boolean; userId: EntityId }): SubmissionItem {
-		const submissionItem = new SubmissionItem({ ...this.getBaseProps(), ...props });
-
-		return submissionItem;
 	}
 
 	private getBaseProps(): BoardNodeProps {

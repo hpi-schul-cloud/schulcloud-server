@@ -18,7 +18,7 @@ export class UpdateNewsParams {
 
 	@IsOptional()
 	@IsString()
-	@SanitizeHtml(InputFormat.RICH_TEXT_CK5_SIMPLE)
+	@SanitizeHtml(InputFormat.RICH_TEXT_CK5_NEWS)
 	@ApiPropertyOptional({
 		description: 'Content of the News entity',
 	})

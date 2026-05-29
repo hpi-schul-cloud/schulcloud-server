@@ -8,7 +8,6 @@ import { type FileFolderElement, isFileFolderElement } from '../file-folder-elem
 import { H5pElement, isH5pElement } from '../h5p-element.do';
 import { isLinkElement, type LinkElement } from '../link-element.do';
 import { isRichTextElement, type RichTextElement } from '../rich-text-element.do';
-import { isSubmissionContainerElement, type SubmissionContainerElement } from '../submission-container-element.do';
 import { isVideoConferenceElement, type VideoConferenceElement } from '../video-conference-element.do';
 import { type AnyBoardNode } from './any-board-node';
 import { BoardExternalReferenceType } from './board-external-reference';
@@ -21,7 +20,6 @@ export type AnyContentElement =
 	| FileFolderElement
 	| LinkElement
 	| RichTextElement
-	| SubmissionContainerElement
 	| DeletedElement
 	| VideoConferenceElement
 	| H5pElement;
@@ -35,7 +33,6 @@ export const isContentElement = (boardNode: AnyBoardNode): boardNode is AnyConte
 		isFileFolderElement(boardNode) ||
 		isLinkElement(boardNode) ||
 		isRichTextElement(boardNode) ||
-		isSubmissionContainerElement(boardNode) ||
 		isDeletedElement(boardNode) ||
 		isVideoConferenceElement(boardNode) ||
 		isH5pElement(boardNode);

@@ -115,6 +115,74 @@ describe('UserRepo', () => {
 		});
 	});
 
+	describe('findByIds', () => {
+		const setup = async () => {
+			const users = userFactory.buildListWithId(10);
+			await em.persist(users).flush();
+
+			return users;
+		};
+
+		it('should find user', async () => {
+			const users = await setup();
+
+			const result = await repo.findByIds(users.map((user) => user.id));
+
+			expect(result).toHaveLength(users.length);
+			expect(result.map((user) => user.id)).toEqual(expect.arrayContaining(users.map((user) => user.id)));
+		});
+
+		it('should return empty array if no user was found', async () => {
+			// have some users that could accidentally be found
+			await setup();
+
+			const result = await repo.findByIds([new ObjectId().toHexString()]);
+			expect(result).toEqual([]);
+		});
+
+		it('should find users and populate secondary schools', async () => {
+			const school = schoolEntityFactory.buildWithId();
+			const otherSchool = schoolEntityFactory.buildWithId();
+			const guestTeacherRole = roleFactory.buildWithId({ name: RoleName.GUESTTEACHER });
+			const users = userFactory.buildListWithId(10, {
+				school,
+				secondarySchools: [{ school: otherSchool, role: guestTeacherRole }],
+			});
+			await em.persist([school, otherSchool, guestTeacherRole, ...users]).flush();
+
+			const result = await repo.findByIds(
+				users.map((user) => user.id),
+				true
+			);
+
+			expect(result).toHaveLength(users.length);
+			expect(result.map((user) => user.id)).toEqual(expect.arrayContaining(users.map((user) => user.id)));
+			expect(result.every((user) => user.secondarySchools?.[0].schoolId === otherSchool.id)).toBeTruthy();
+		});
+	});
+
+	describe('getSchoolIdsByUserIds', () => {
+		it('should return map of user-ids to school-ids', async () => {
+			const school = schoolEntityFactory.buildWithId();
+			const otherSchool = schoolEntityFactory.buildWithId();
+			const usersSchool1 = userFactory.buildListWithId(10, { school });
+			const usersSchool2 = userFactory.buildListWithId(10, { school: otherSchool });
+			const allUserIds = [...usersSchool1, ...usersSchool2].map((user) => user.id);
+
+			await em.persist([school, otherSchool, ...usersSchool1, ...usersSchool2]).flush();
+
+			const result = await repo.getSchoolIdsByUserIds(allUserIds);
+
+			expect(result.size).toEqual(allUserIds.length);
+			for (const user of usersSchool1) {
+				expect(result.get(user.id)).toEqual(school.id);
+			}
+			for (const user of usersSchool2) {
+				expect(result.get(user.id)).toEqual(otherSchool.id);
+			}
+		});
+	});
+
 	describe('findByExternalId', () => {
 		describe('when one user was found', () => {
 			const externalId = 'externalId';

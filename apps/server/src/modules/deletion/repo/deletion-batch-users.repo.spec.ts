@@ -7,7 +7,7 @@ import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
-import { DeletionBatchUsersRepo, UserIdsByRole, UsersCountByRole, UserWithRoles } from './deletion-batch-users.repo';
+import { DeletionBatchUsersRepo, GroupedUserIdsByRoles } from './deletion-batch-users.repo';
 
 describe(DeletionBatchUsersRepo.name, () => {
 	let module: TestingModule;
@@ -42,156 +42,82 @@ describe(DeletionBatchUsersRepo.name, () => {
 		});
 	});
 
-	describe('countUsersByRole', () => {
+	describe('groupUserIdsByAllowedRoles', () => {
 		describe('when userIds is empty', () => {
-			it('should return an empty array', async () => {
-				const result = await repo.countUsersByRole([]);
+			it('should return empty arrays', async () => {
+				const result = await repo.groupUserIdsByAllowedRoles([], [RoleName.STUDENT]);
 
-				expect(result).toEqual([]);
+				const expected: GroupedUserIdsByRoles = {
+					withAllowedRole: [],
+					withoutAllowedRole: [],
+				};
+				expect(result).toEqual(expected);
 			});
 		});
 
 		describe('when userIds do not match any existing users', () => {
-			it('should return an empty array', async () => {
-				const result: UsersCountByRole[] = await repo.countUsersByRole([new ObjectId().toHexString()]);
+			it('should return empty arrays', async () => {
+				const result = await repo.groupUserIdsByAllowedRoles([new ObjectId().toHexString()], [RoleName.STUDENT]);
 
-				expect(result).toEqual([]);
+				const expected: GroupedUserIdsByRoles = {
+					withAllowedRole: [],
+					withoutAllowedRole: [],
+				};
+				expect(result).toEqual(expected);
 			});
 		});
 
-		describe('when users with roles exist', () => {
-			it('should return the count of users grouped by role', async () => {
+		describe('when users exist with different roles', () => {
+			it('should group users into groups based on allowed roles', async () => {
 				const studentRole = roleFactory.buildWithId({ name: RoleName.STUDENT });
 				const teacherRole = roleFactory.buildWithId({ name: RoleName.TEACHER });
-				const student1 = userFactory.buildWithId({ roles: [studentRole] });
-				const student2 = userFactory.buildWithId({ roles: [studentRole] });
-				const teacher1 = userFactory.buildWithId({ roles: [teacherRole] });
+				const adminRole = roleFactory.buildWithId({ name: RoleName.ADMINISTRATOR });
 
-				await em.persist([studentRole, teacherRole, student1, student2, teacher1]).flush();
-
-				const result: UsersCountByRole[] = await repo.countUsersByRole([student1.id, student2.id, teacher1.id]);
-
-				expect(result).toHaveLength(2);
-				expect(result).toEqual(
-					expect.arrayContaining([
-						{ roleName: RoleName.STUDENT, userCount: 2 },
-						{ roleName: RoleName.TEACHER, userCount: 1 },
-					])
-				);
-			});
-		});
-	});
-
-	describe('getUsersByRole', () => {
-		describe('when userIds is empty', () => {
-			it('should return an empty array', async () => {
-				const result = await repo.getUsersByRole([]);
-
-				expect(result).toEqual([]);
-			});
-		});
-
-		describe('when userIds do not match any existing users', () => {
-			it('should return an empty array', async () => {
-				const result: UserIdsByRole[] = await repo.getUsersByRole([new ObjectId().toHexString()]);
-
-				expect(result).toEqual([]);
-			});
-		});
-
-		describe('when users with roles exist', () => {
-			it('should return user ids grouped by role', async () => {
-				const studentRole = roleFactory.buildWithId({ name: RoleName.STUDENT });
-				const teacherRole = roleFactory.buildWithId({ name: RoleName.TEACHER });
-				const student1 = userFactory.buildWithId({ roles: [studentRole] });
-				const student2 = userFactory.buildWithId({ roles: [studentRole] });
-				const teacher1 = userFactory.buildWithId({ roles: [teacherRole] });
-
-				await em.persist([studentRole, teacherRole, student1, student2, teacher1]).flush();
-
-				const result = await repo.getUsersByRole([student1.id, student2.id, teacher1.id]);
-
-				const studentEntry = result.find((r) => r.roleName === RoleName.STUDENT);
-				const teacherEntry = result.find((r) => r.roleName === RoleName.TEACHER);
-
-				expect(studentEntry?.userIds).toEqual(expect.arrayContaining([student1.id, student2.id]));
-				expect(studentEntry?.userIds).toHaveLength(2);
-				expect(teacherEntry?.userIds).toEqual(expect.arrayContaining([teacher1.id]));
-				expect(teacherEntry?.userIds).toHaveLength(1);
-			});
-		});
-	});
-
-	describe('getUsersWithRoles', () => {
-		describe('when userIds is empty', () => {
-			it('should return an empty array', async () => {
-				const result = await repo.getUsersWithRoles([]);
-
-				expect(result).toEqual([]);
-			});
-		});
-
-		describe('when userIds do not match any existing users', () => {
-			it('should return an empty array', async () => {
-				const result: UserWithRoles[] = await repo.getUsersWithRoles([new ObjectId().toHexString()]);
-
-				expect(result).toEqual([]);
-			});
-		});
-
-		describe('when a user has a single role', () => {
-			it('should return each user with their role name', async () => {
-				const studentRole = roleFactory.buildWithId({ name: RoleName.STUDENT });
-				const teacherRole = roleFactory.buildWithId({ name: RoleName.TEACHER });
 				const student = userFactory.buildWithId({ roles: [studentRole] });
 				const teacher = userFactory.buildWithId({ roles: [teacherRole] });
+				const admin = userFactory.buildWithId({ roles: [adminRole] });
 
-				await em.persist([studentRole, teacherRole, student, teacher]).flush();
+				await em.persist([studentRole, teacherRole, adminRole, student, teacher, admin]).flush();
 
-				const result: UserWithRoles[] = await repo.getUsersWithRoles([student.id, teacher.id]);
-
-				expect(result).toHaveLength(2);
-				expect(result).toEqual(
-					expect.arrayContaining([
-						{ id: student.id, roles: [RoleName.STUDENT] },
-						{ id: teacher.id, roles: [RoleName.TEACHER] },
-					])
+				const result = await repo.groupUserIdsByAllowedRoles(
+					[student.id, teacher.id, admin.id],
+					[RoleName.STUDENT, RoleName.TEACHER]
 				);
+
+				expect(result.withAllowedRole.map((u) => u.id)).toEqual(expect.arrayContaining([student.id, teacher.id]));
+				expect(result.withAllowedRole).toHaveLength(2);
+				expect(result.withoutAllowedRole.map((u) => u.id)).toEqual([admin.id]);
+				expect(result.withoutAllowedRole).toHaveLength(1);
 			});
 		});
 
-		describe('when a user has multiple roles', () => {
-			it('should return the user with all their role names', async () => {
+		describe('when a user has multiple roles including an allowed one', () => {
+			it('should classify the user as valid', async () => {
 				const studentRole = roleFactory.buildWithId({ name: RoleName.STUDENT });
-				const teacherRole = roleFactory.buildWithId({ name: RoleName.TEACHER });
-				const multiRoleUser = userFactory.buildWithId({ roles: [studentRole, teacherRole] });
+				const adminRole = roleFactory.buildWithId({ name: RoleName.ADMINISTRATOR });
+				const multiRoleUser = userFactory.buildWithId({ roles: [studentRole, adminRole] });
 
-				await em.persist([studentRole, teacherRole, multiRoleUser]).flush();
+				await em.persist([studentRole, adminRole, multiRoleUser]).flush();
 
-				const result: UserWithRoles[] = await repo.getUsersWithRoles([multiRoleUser.id]);
+				const result = await repo.groupUserIdsByAllowedRoles([multiRoleUser.id], [RoleName.STUDENT]);
 
-				expect(result).toHaveLength(1);
-				expect(result[0].id).toEqual(multiRoleUser.id);
-
-				const sortedResultRoles = [...result[0].roles].sort();
-				expect(sortedResultRoles).toEqual([RoleName.STUDENT, RoleName.TEACHER].sort());
+				expect(result.withAllowedRole.map((u) => u.id)).toEqual([multiRoleUser.id]);
+				expect(result.withoutAllowedRole).toEqual([]);
 			});
 		});
 
-		describe('when a user has an orphaned role reference', () => {
-			it('should return the user with only the resolvable role names', async () => {
+		describe('when mixing existing and non-existing userIds', () => {
+			it('should only return found users in results', async () => {
 				const studentRole = roleFactory.buildWithId({ name: RoleName.STUDENT });
-				const ghostRole = roleFactory.buildWithId({ name: RoleName.TEACHER });
-				const user = userFactory.buildWithId({ roles: [studentRole, ghostRole] });
+				const student = userFactory.buildWithId({ roles: [studentRole] });
+				const nonExistentId = new ObjectId().toHexString();
 
-				await em.persist([studentRole, ghostRole, user]).flush();
-				await em.remove(ghostRole).flush();
+				await em.persist([studentRole, student]).flush();
 
-				const result: UserWithRoles[] = await repo.getUsersWithRoles([user.id]);
+				const result = await repo.groupUserIdsByAllowedRoles([student.id, nonExistentId], [RoleName.STUDENT]);
 
-				expect(result).toHaveLength(1);
-				expect(result[0].id).toEqual(user.id);
-				expect(result[0].roles).toEqual([RoleName.STUDENT]);
+				expect(result.withAllowedRole.map((u) => u.id)).toEqual([student.id]);
+				expect(result.withoutAllowedRole).toEqual([]);
 			});
 		});
 	});

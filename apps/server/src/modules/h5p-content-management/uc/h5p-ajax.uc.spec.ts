@@ -12,13 +12,10 @@ import { currentUserFactory } from '@testing/factory/currentuser.factory';
 import * as fs from 'fs';
 import * as fsPromises from 'fs/promises';
 import { H5P_EDITOR_CONFIG_TOKEN } from '../h5p-editor.config';
-import * as GetLibraryWhiteList from '../helper/h5p-libraries.helper';
 import { H5PContentRepo } from '../repo';
 import { LibraryStorage } from '../service';
 import { H5PUploadFile } from '../types';
 import { H5PEditorUc } from './h5p-editor.uc';
-
-jest.mock('../helper/h5p-libraries.helper');
 
 jest.mock('fs', (): unknown => {
 	return {
@@ -80,7 +77,9 @@ describe(`${H5PEditorUc.name} Ajax`, () => {
 				},
 				{
 					provide: H5P_EDITOR_CONFIG_TOKEN,
-					useValue: {},
+					useValue: {
+						libraryList: ['H5P.Accordion'],
+					},
 				},
 			],
 		}).compile();
@@ -88,8 +87,6 @@ describe(`${H5PEditorUc.name} Ajax`, () => {
 		uc = module.get(H5PEditorUc);
 		ajaxEndpoint = module.get(H5PAjaxEndpoint);
 		userService = module.get(UserService);
-
-		jest.spyOn(GetLibraryWhiteList, 'getLibraryWhiteList').mockReturnValue(['H5P.Accordion']);
 	});
 
 	afterEach(() => {

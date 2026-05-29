@@ -7,7 +7,10 @@ import { ICurrentUser, InternalJwtAuthGuardConfig, JwtPayload, StrategyType } fr
 import { CurrentUserBuilder, JwtStrategyOptionsFactory } from '../mapper';
 
 export class WsJwtStrategy extends PassportStrategy(Strategy, StrategyType.WS_JWT) {
-	constructor(private readonly jwtValidationAdapter: JwtValidationAdapter, config: InternalJwtAuthGuardConfig) {
+	constructor(
+		private readonly jwtValidationAdapter: JwtValidationAdapter,
+		config: InternalJwtAuthGuardConfig
+	) {
 		const strategyOptions = JwtStrategyOptionsFactory.build(JwtExtractor.fromCookie('jwt'), config);
 		super(strategyOptions);
 	}
@@ -18,11 +21,13 @@ export class WsJwtStrategy extends PassportStrategy(Strategy, StrategyType.WS_JW
 		try {
 			// check jwt is whitelisted and extend whitelist entry
 			await this.jwtValidationAdapter.isWhitelisted(accountId, jti);
-			const currentUser = new CurrentUserBuilder(payload)
+			const currentUserBuilder = new CurrentUserBuilder(payload)
 				.asExternalUser(payload.isExternalUser)
 				.withExternalSystem(payload.systemId)
 				.asUserSupporter(payload.support)
-				.build();
+				.asServiceAccount(payload.isServiceAccount);
+
+			const currentUser = currentUserBuilder.build();
 
 			return currentUser;
 		} catch (err) {

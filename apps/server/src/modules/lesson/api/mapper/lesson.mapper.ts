@@ -1,14 +1,7 @@
 import { Task } from '@modules/task/repo';
-import { LessonEntity } from '../../repo';
-import { LessonMetadataResponse } from '../dto';
 import { LessonLinkedTaskResponse } from '../dto/lesson-linked-task.response';
 
 export class LessonMapper {
-	public static mapToMetadataResponse(lesson: LessonEntity): LessonMetadataResponse {
-		const dto = new LessonMetadataResponse({ _id: lesson.id, name: lesson.name });
-		return dto;
-	}
-
 	public static mapTaskToResponse(task: Task): LessonLinkedTaskResponse {
 		const response = new LessonLinkedTaskResponse({
 			name: task.name,

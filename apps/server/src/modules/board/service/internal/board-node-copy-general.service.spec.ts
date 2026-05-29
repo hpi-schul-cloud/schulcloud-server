@@ -24,8 +24,6 @@ import {
 	mediaExternalToolElementFactory,
 	mediaLineFactory,
 	richTextElementFactory,
-	submissionContainerElementFactory,
-	submissionItemFactory,
 	videoConferenceElementFactory,
 } from '../../testing';
 import { BoardNodeCopyContext, BoardNodeCopyContextProps } from './board-node-copy-context';
@@ -98,8 +96,6 @@ describe(BoardNodeCopyService.name, () => {
 		jest.spyOn(service, 'copyLinkElement').mockResolvedValue(mockStatus);
 		jest.spyOn(service, 'copyRichTextElement').mockResolvedValue(mockStatus);
 		jest.spyOn(service, 'copyDrawingElement').mockResolvedValue(mockStatus);
-		jest.spyOn(service, 'copySubmissionContainerElement').mockResolvedValue(mockStatus);
-		jest.spyOn(service, 'copySubmissionItem').mockResolvedValue(mockStatus);
 		jest.spyOn(service, 'copyExternalToolElement').mockResolvedValue(mockStatus);
 		jest.spyOn(service, 'copyCollaborativeTextEditorElement').mockResolvedValue(mockStatus);
 		jest.spyOn(service, 'copyMediaBoard').mockResolvedValue(mockStatus);
@@ -205,30 +201,6 @@ describe(BoardNodeCopyService.name, () => {
 				const result = await service.copy(node, copyContext);
 
 				expect(service.copyDrawingElement).toHaveBeenCalledWith(node, copyContext);
-				expect(result).toEqual(mockStatus);
-			});
-		});
-
-		describe('when called with submission container element', () => {
-			it('should copy submission container element', async () => {
-				const { copyContext, mockStatus } = setup();
-				const node = submissionContainerElementFactory.build();
-
-				const result = await service.copy(node, copyContext);
-
-				expect(service.copySubmissionContainerElement).toHaveBeenCalledWith(node, copyContext);
-				expect(result).toEqual(mockStatus);
-			});
-		});
-
-		describe('when called with submission item', () => {
-			it('should copy submission item', async () => {
-				const { copyContext, mockStatus } = setup();
-				const node = submissionItemFactory.build();
-
-				const result = await service.copy(node, copyContext);
-
-				expect(service.copySubmissionItem).toHaveBeenCalledWith(node, copyContext);
 				expect(result).toEqual(mockStatus);
 			});
 		});

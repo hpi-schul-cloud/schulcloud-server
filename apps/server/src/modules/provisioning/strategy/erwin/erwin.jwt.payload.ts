@@ -1,4 +1,4 @@
-import { IsArray, IsDefined, IsNotEmpty, IsUUID, ValidateNested } from 'class-validator';
+import { IsArray, IsDefined, IsNotEmpty, IsUUID, ValidateNested, IsOptional, IsString } from 'class-validator';
 import { JwtPayload } from 'jsonwebtoken';
 import { ErwinKlassePayload } from './erwin.klasse.payload';
 import { ErwinPersonPayload } from './erwin.person.payload';
@@ -20,6 +20,10 @@ export class ErwinJwtPayload implements JwtPayload {
 	@ValidateNested()
 	@IsArray()
 	public klassen?: ErwinKlassePayload[];
+
+	@IsOptional()
+	@IsString()
+	public systemId?: string;
 
 	constructor(data: Partial<ErwinJwtPayload>) {
 		Object.assign(this, data);

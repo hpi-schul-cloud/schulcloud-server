@@ -264,9 +264,9 @@ describe('school service', () => {
 			});
 			const params = await testObjects.generateRequestParamsFromUser(admin);
 
-			const result = await app.service('/schools').patch(school._id, { features: ['rocketChat'] }, params);
+			const result = await app.service('/schools').patch(school._id, { features: ['videoconference'] }, params);
 			expect(result).to.not.be.undefined;
-			expect(result.features).to.include('rocketChat');
+			expect(result.features).to.include('videoconference');
 		});
 
 		it('administrator can not patch a different school', async () => {
@@ -279,7 +279,7 @@ describe('school service', () => {
 			const params = await testObjects.generateRequestParamsFromUser(admin);
 
 			try {
-				await app.service('/schools').patch(otherSchool._id, { features: ['rocketChat'] }, params);
+				await app.service('/schools').patch(otherSchool._id, { features: ['videoconference'] }, params);
 				throw new Error('should have failed');
 			} catch (err) {
 				expect(err.message).to.not.equal('should have failed');
@@ -311,10 +311,10 @@ describe('school service', () => {
 			});
 			const params = await testObjects.generateRequestParamsFromUser(admin);
 
-			const body = { $push: { features: 'rocketChat' } };
+			const body = { $push: { features: 'videoconference' } };
 			const result = await app.service('/schools').patch(school._id, body, params);
 			expect(result).to.not.be.undefined;
-			expect(result.features).to.include('rocketChat');
+			expect(result.features).to.include('videoconference');
 		});
 
 		it('unable without permissions', async () => {
@@ -326,10 +326,10 @@ describe('school service', () => {
 			});
 			const params = await testObjects.generateRequestParamsFromUser(admin);
 
-			const body = { $push: { features: 'rocketChat' } };
+			const body = { $push: { features: 'videoconference' } };
 			const result = await app.service('/schools').patch(school._id, body, params);
 			expect(result).to.not.be.undefined;
-			expect(result.features).to.not.include('rocketChat');
+			expect(result.features).to.not.include('videoconference');
 		});
 
 		it('possible with SCHOOL_CHAT_MANAGE permissions', async () => {
@@ -344,10 +344,10 @@ describe('school service', () => {
 			});
 			const params = await testObjects.generateRequestParamsFromUser(admin);
 
-			const body = { $push: { features: 'rocketChat' } };
+			const body = { $push: { features: 'videoconference' } };
 			const result = await app.service('/schools').patch(school._id, body, params);
 			expect(result).to.not.be.undefined;
-			expect(result.features).to.include('rocketChat');
+			expect(result.features).to.include('videoconference');
 		});
 
 		it('team creation by students should be updated according to environment setting without admin setting', async () => {

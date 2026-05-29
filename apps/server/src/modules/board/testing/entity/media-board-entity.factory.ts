@@ -3,7 +3,7 @@ import {
 	BoardExternalReferenceType,
 	BoardLayout,
 	BoardNodeType,
-	MediaBoardColors,
+	Colors,
 	MediaBoardProps,
 	ROOT_PATH,
 } from '../../domain';
@@ -16,11 +16,11 @@ export const mediaBoardEntityFactory = BoardNodeEntityFactory.define<PropsWithTy
 			? new Context({
 					type: params.context.type,
 					id: params.context.id,
-			  })
+				})
 			: new Context({
 					type: BoardExternalReferenceType.Course,
 					id: new ObjectId().toHexString(),
-			  });
+				});
 
 	const props: PropsWithType<MediaBoardProps> = {
 		id: new ObjectId().toHexString(),
@@ -31,7 +31,7 @@ export const mediaBoardEntityFactory = BoardNodeEntityFactory.define<PropsWithTy
 		createdAt: new Date(),
 		updatedAt: new Date(),
 		context,
-		backgroundColor: MediaBoardColors.TRANSPARENT,
+		backgroundColor: Colors.TRANSPARENT,
 		collapsed: false,
 		layout: BoardLayout.LIST,
 		type: BoardNodeType.MEDIA_BOARD,

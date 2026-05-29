@@ -12,7 +12,14 @@ import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.tes
 import { TEST_JWT_CONFIG_TOKEN, TestJwtModuleConfig } from '@testing/test-jwt-module.config';
 import { Socket } from 'socket.io-client';
 import { BoardCollaborationTestModule } from '../../board-collaboration.app.module';
-import { BoardExternalReferenceType, BoardLayout, CardProps, ContentElementType } from '../../domain';
+import {
+	BoardExternalReferenceType,
+	BoardLayout,
+	CardProps,
+	Colors,
+	ColumnProps,
+	ContentElementType,
+} from '../../domain';
 import {
 	cardEntityFactory,
 	columnBoardEntityFactory,
@@ -40,10 +47,13 @@ describe(BoardCollaborationGateway.name, () => {
 		em = app.get(EntityManager);
 		jwtConfig = app.get<TestJwtModuleConfig>(TEST_JWT_CONFIG_TOKEN);
 
+		// @ts-expect-error We need access to in memory mongo url for socket io adapter, this is not available in the orm config factory
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+		const dbUrl: string = em.getConnection().getClient().s.url;
 		const mongoIoAdapter = new MongoIoAdapter(app);
 		// @ts-expect-error test
 		await mongoIoAdapter.connectToMongoDb({
-			dbUrl: 'mongodb://localhost:27017/board-collaboration-test',
+			dbUrl,
 		});
 		app.useWebSocketAdapter(mongoIoAdapter);
 		await app.init();
@@ -68,6 +78,7 @@ describe(BoardCollaborationGateway.name, () => {
 				userId: teacherUser.id,
 				schoolId: teacherUser.school.id,
 				roles: [teacherUser.roles[0].id],
+				isServiceAccount: false,
 				support: false,
 				isExternalUser: false,
 			},
@@ -82,6 +93,7 @@ describe(BoardCollaborationGateway.name, () => {
 				userId: studentUser.id,
 				schoolId: studentUser.school.id,
 				roles: [studentUser.roles[0].id],
+				isServiceAccount: false,
 				support: false,
 				isExternalUser: false,
 			},
@@ -148,6 +160,35 @@ describe(BoardCollaborationGateway.name, () => {
 				const failure = await waitForEvent(unauthorizedIoClient, 'create-card-failure');
 
 				expect(failure).toEqual({ columnId: columnNode.id });
+			});
+		});
+	});
+
+	describe('copy column', () => {
+		describe('when column exists', () => {
+			it('should answer with copied column', async () => {
+				const { columnNode } = await setup();
+				const columnId = columnNode.id;
+
+				ioClient.emit('duplicate-column-request', { columnId });
+				const success = (await waitForEvent(ioClient, 'duplicate-column-success')) as {
+					columnId: string;
+					copiedColumn: ColumnProps;
+				};
+
+				expect(Object.keys(success)).toEqual(expect.arrayContaining(['columnId', 'duplicatedColumn']));
+			});
+		});
+
+		describe('when user is not authorized', () => {
+			it('should answer with failure', async () => {
+				const { columnNode } = await setup();
+				const columnId = columnNode.id;
+
+				unauthorizedIoClient.emit('duplicate-column-request', { columnId });
+				const failure = await waitForEvent(unauthorizedIoClient, 'duplicate-column-failure');
+
+				expect(failure).toEqual({ columnId });
 			});
 		});
 	});
@@ -645,6 +686,34 @@ describe(BoardCollaborationGateway.name, () => {
 				const failure = await waitForEvent(unauthorizedIoClient, 'update-card-height-failure');
 
 				expect(failure).toEqual({ cardId, newHeight });
+			});
+		});
+	});
+
+	describe('update card color', () => {
+		describe('when card exists', () => {
+			it('should answer with success', async () => {
+				const { cardNodes } = await setup();
+				const cardId = cardNodes[0].id;
+				const backgroundColor = Colors.RED;
+
+				ioClient.emit('update-card-color-request', { cardId, backgroundColor });
+				const success = await waitForEvent(ioClient, 'update-card-color-success');
+
+				expect(success).toEqual(expect.objectContaining({ cardId, backgroundColor }));
+			});
+		});
+
+		describe('when user is not authorized', () => {
+			it('should answer with failure', async () => {
+				const { cardNodes } = await setup();
+				const cardId = cardNodes[0].id;
+				const backgroundColor = Colors.RED;
+
+				unauthorizedIoClient.emit('update-card-color-request', { cardId, backgroundColor });
+				const failure = await waitForEvent(unauthorizedIoClient, 'update-card-color-failure');
+
+				expect(failure).toEqual({ cardId, backgroundColor });
 			});
 		});
 	});

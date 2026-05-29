@@ -1,4 +1,5 @@
-import { createJwtRedisData, createJwtRedisIdentifier, JWT_WHITELIST_CONFIG_TOKEN } from '@infra/auth-guard';
+import { createRedisIdentifierFromJwtData } from '@imports-from-feathers';
+import { createJwtRedisData, JWT_WHITELIST_CONFIG_TOKEN } from '@infra/auth-guard';
 import { InternalJwtWhitelistConfig } from '@infra/auth-guard/interface';
 import { StorageClient } from '@infra/valkey-client';
 import { Inject, Injectable } from '@nestjs/common';
@@ -12,7 +13,7 @@ export class JwtWhitelistAdapter {
 	) {}
 
 	public async addToWhitelist(accountId: string, jti: string): Promise<void> {
-		const redisIdentifier = createJwtRedisIdentifier(accountId, jti);
+		const redisIdentifier = createRedisIdentifierFromJwtData(accountId, jti);
 		const redisData = createJwtRedisData(this.config.jwtTimeoutSeconds);
 
 		await this.storageClient.set(redisIdentifier, JSON.stringify(redisData), 'EX', redisData.expirationInSeconds);
@@ -22,10 +23,10 @@ export class JwtWhitelistAdapter {
 		let keys: string[] = [];
 
 		if (jti) {
-			const redisIdentifier = createJwtRedisIdentifier(accountId, jti);
+			const redisIdentifier = createRedisIdentifierFromJwtData(accountId, jti);
 			keys = [redisIdentifier];
 		} else {
-			const redisIdentifier = createJwtRedisIdentifier(accountId, '*');
+			const redisIdentifier = createRedisIdentifierFromJwtData(accountId, '*');
 			keys = await this.storageClient.keys(redisIdentifier);
 		}
 

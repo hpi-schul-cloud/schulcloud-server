@@ -1,11 +1,9 @@
 import { Logger } from '@core/logger';
-import { ObjectId } from '@mikro-orm/mongodb';
 import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { UserDo } from '@modules/user';
 import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions } from '@shared/domain/interface';
-import { v4 as uuidv4 } from 'uuid';
 import { PseudonymSearchQuery } from '../domain';
 import { PSEUDONYM_CONFIG_TOKEN, PseudonymConfig } from '../pseudonym.config';
 import { ExternalToolPseudonymRepo, Pseudonym } from '../repo';
@@ -45,28 +43,19 @@ export class PseudonymService {
 			throw new InternalServerErrorException('User or tool id is missing');
 		}
 
-		const pseudonym = new Pseudonym({
-			id: new ObjectId().toHexString(),
-			pseudonym: uuidv4(),
-			userId: user.id,
-			toolId: tool.id,
-			createdAt: new Date(),
-			updatedAt: new Date(),
-		});
-
-		const result = await this.externalToolPseudonymRepo.createOrUpdate(pseudonym);
+		const result = await this.externalToolPseudonymRepo.findOrCreate(user.id, tool.id);
 
 		return result;
 	}
 
-	public async findPseudonymByPseudonym(pseudonym: string): Promise<Pseudonym | null> {
-		const result = await this.externalToolPseudonymRepo.findPseudonymByPseudonym(pseudonym);
+	public async findOneByPseudonym(pseudonym: string): Promise<Pseudonym | null> {
+		const result = await this.externalToolPseudonymRepo.findByPseudonym(pseudonym);
 
 		return result;
 	}
 
 	public async findPseudonym(query: PseudonymSearchQuery, options: IFindOptions<Pseudonym>): Promise<Page<Pseudonym>> {
-		const result = await this.externalToolPseudonymRepo.findPseudonym(query, options);
+		const result = await this.externalToolPseudonymRepo.findByQuery(query, options);
 
 		return result;
 	}

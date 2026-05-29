@@ -3,11 +3,14 @@ import { EntityId } from '@shared/domain/types';
 import { FeathersServiceProvider } from '@infra/feathers';
 import { LegacyLogger } from '@core/logger';
 
-export type PadResponse = { data: { padID: string } };
+type PadResponse = { data: { padID: string } };
 
 @Injectable()
 export class EtherpadService {
-	constructor(private readonly feathersServiceProvider: FeathersServiceProvider, private logger: LegacyLogger) {}
+	constructor(
+		private readonly feathersServiceProvider: FeathersServiceProvider,
+		private logger: LegacyLogger
+	) {}
 
 	async createEtherpad(userId: EntityId, courseId: string, title: string): Promise<string | false> {
 		const data = {

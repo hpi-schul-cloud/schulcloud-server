@@ -1,7 +1,10 @@
 import { EntityManager } from '@mikro-orm/mongodb';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
+import { userFactory } from '@modules/user/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
+import { LanguageType } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { TestApiClient } from '@testing/test-api-client';
 import { REGISTRATION_PUBLIC_API_CONFIG_TOKEN, RegistrationPublicApiConfig } from '../../registration.config';
@@ -47,6 +50,34 @@ describe('Room Controller (API)', () => {
 				email: registration.email,
 				firstName: registration.firstName,
 				lastName: registration.lastName,
+				registeredUserExists: false,
+				createdAt: registration.createdAt.toISOString(),
+				updatedAt: registration.updatedAt.toISOString(),
+			};
+
+			return { registration, expectedResponse };
+		};
+
+		const setupWithRegisteredUser = async (
+			userProps: { language?: LanguageType; preferences?: Record<string, unknown> } = {}
+		) => {
+			const school = schoolEntityFactory.buildWithId();
+			const registration = registrationEntityFactory.build();
+			const user = userFactory.buildWithId({
+				email: registration.email,
+				school,
+				...userProps,
+			});
+
+			await em.persist([school, registration, user]).flush();
+			em.clear();
+
+			const expectedResponse = {
+				id: registration.id,
+				email: registration.email,
+				firstName: registration.firstName,
+				lastName: registration.lastName,
+				registeredUserExists: true,
 				createdAt: registration.createdAt.toISOString(),
 				updatedAt: registration.updatedAt.toISOString(),
 			};
@@ -65,21 +96,45 @@ describe('Room Controller (API)', () => {
 			});
 		});
 
-		describe('when the registration exists', () => {
-			it('should return a registration', async () => {
-				const { registration, expectedResponse } = await setup();
-				const response = await testApiClient.get(`/by-secret/${registration.registrationSecret}`);
-				console.log(response.body);
-				expect(response.status).toBe(HttpStatus.OK);
-				expect(response.body).toEqual(expectedResponse);
-			});
-		});
-
 		describe('when the registration does not exist', () => {
 			it('should return a 404 error', async () => {
 				const response = await testApiClient.get('/by-secret/someNonExistingSecret');
 
 				expect(response.status).toBe(HttpStatus.NOT_FOUND);
+			});
+		});
+
+		describe('when the registration exists', () => {
+			it('should return a registration', async () => {
+				const { registration, expectedResponse } = await setup();
+				const response = await testApiClient.get(`/by-secret/${registration.registrationSecret}`);
+
+				expect(response.status).toBe(HttpStatus.OK);
+				expect(response.body).toEqual(expectedResponse);
+			});
+
+			describe('when a user with the same email exists', () => {
+				describe('when the user has set a language', () => {
+					it('should return registeredUserExists as true', async () => {
+						const { registration, expectedResponse } = await setupWithRegisteredUser({ language: LanguageType.DE });
+						const response = await testApiClient.get(`/by-secret/${registration.registrationSecret}`);
+
+						expect(response.status).toBe(HttpStatus.OK);
+						expect(response.body).toEqual(expectedResponse);
+					});
+				});
+
+				describe('when the user has set preferences', () => {
+					it('should return registeredUserExists as true', async () => {
+						const { registration, expectedResponse } = await setupWithRegisteredUser({
+							preferences: { firstLogin: true },
+						});
+						const response = await testApiClient.get(`/by-secret/${registration.registrationSecret}`);
+
+						expect(response.status).toBe(HttpStatus.OK);
+						expect(response.body).toEqual(expectedResponse);
+					});
+				});
 			});
 		});
 	});

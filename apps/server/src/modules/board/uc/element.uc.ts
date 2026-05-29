@@ -1,19 +1,12 @@
 import { Logger } from '@core/logger';
 import { AuthorizationService } from '@modules/authorization';
 import { BoardContextApiHelperService } from '@modules/board-context';
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { throwForbiddenIfFalse } from '@shared/common/utils';
 import { EntityId } from '@shared/domain/types';
 import { BoardNodeRule } from '../authorisation/board-node.rule';
 import { AnyElementContentBody } from '../controller/dto';
-import {
-	AnyContentElement,
-	BoardNodeFactory,
-	ContentElementWithParentHierarchy,
-	isSubmissionItem,
-	SubmissionContainerElement,
-	SubmissionItem,
-} from '../domain';
+import { AnyContentElement, BoardNodeFactory, ContentElementWithParentHierarchy } from '../domain';
 import { BoardNodeAuthorizableService, BoardNodeService } from '../service';
 
 @Injectable()
@@ -84,37 +77,5 @@ export class ElementUc {
 		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(boardNode);
 
 		throwForbiddenIfFalse(this.boardNodeRule.can('viewElement', user, boardNodeAuthorizable));
-	}
-
-	public async createSubmissionItem(
-		userId: EntityId,
-		contentElementId: EntityId,
-		completed: boolean
-	): Promise<SubmissionItem> {
-		const submissionContainerElement = await this.boardNodeService.findByClassAndId(
-			SubmissionContainerElement,
-			contentElementId
-		);
-
-		const userSubmissionExists = submissionContainerElement.children
-			.filter(isSubmissionItem)
-			.find((item) => item.userId === userId);
-		if (userSubmissionExists) {
-			throw new ForbiddenException(
-				'User is not allowed to have multiple submission-items per submission-container-element'
-			);
-		}
-
-		const user = await this.authorizationService.getUserWithPermissions(userId);
-		const boardNode = await this.boardNodeService.findRoot(submissionContainerElement);
-		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(boardNode);
-
-		throwForbiddenIfFalse(this.boardNodeRule.can('viewElement', user, boardNodeAuthorizable));
-
-		const submissionItem = this.boardNodeFactory.buildSubmissionItem({ completed, userId });
-
-		await this.boardNodeService.addToParent(submissionContainerElement, submissionItem);
-
-		return submissionItem;
 	}
 }

@@ -22,6 +22,8 @@ export interface UserDoRepo {
 
 	findByEmail(email: string): Promise<UserDo[]>;
 
+	getSchoolIdsByUserIds(userIds: EntityId[]): Promise<Map<EntityId, EntityId>>;
+
 	save(domainObject: UserDo): Promise<UserDo>;
 
 	saveAll(domainObjects: UserDo[]): Promise<UserDo[]>;

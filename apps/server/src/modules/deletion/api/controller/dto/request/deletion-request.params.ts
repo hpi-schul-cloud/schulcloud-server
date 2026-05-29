@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsArray, ArrayMaxSize, ArrayMinSize, IsMongoId } from 'class-validator';
+import { ArrayMaxSize, ArrayMinSize, IsArray, IsMongoId } from 'class-validator';
 
 export class DeletionRequestParams {
 	@IsArray()

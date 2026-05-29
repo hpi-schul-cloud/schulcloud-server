@@ -12,6 +12,7 @@ import { SchulconnexGroupRemovalConsumer } from './amqp';
 import { PROVISIONING_EXCHANGE_CONFIG_TOKEN, ProvisioningExchangeConfig } from './provisioning-exchange.config';
 import { PROVISIONING_CONFIG_TOKEN, ProvisioningConfig } from './provisioning.config';
 import { SchulconnexCourseSyncService, SchulconnexGroupProvisioningService } from './strategy/schulconnex/service';
+import { RabbitMQWrapperModule, RABBITMQ_CONFIG_TOKEN, RabbitMQConfig } from '@infra/rabbitmq';
 
 @Module({
 	imports: [
@@ -25,6 +26,12 @@ import { SchulconnexCourseSyncService, SchulconnexGroupProvisioningService } fro
 		CourseSynchronizationHistoryModule,
 		ConfigurationModule.register(PROVISIONING_CONFIG_TOKEN, ProvisioningConfig),
 		ConfigurationModule.register(PROVISIONING_EXCHANGE_CONFIG_TOKEN, ProvisioningExchangeConfig),
+		RabbitMQWrapperModule.register({
+			exchangeConfigInjectionToken: PROVISIONING_EXCHANGE_CONFIG_TOKEN,
+			exchangeConfigConstructor: ProvisioningExchangeConfig,
+			configInjectionToken: RABBITMQ_CONFIG_TOKEN,
+			configConstructor: RabbitMQConfig,
+		}),
 	],
 	providers: [SchulconnexGroupRemovalConsumer, SchulconnexGroupProvisioningService, SchulconnexCourseSyncService],
 })

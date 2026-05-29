@@ -6,7 +6,10 @@ import {
 } from './utils/common-cartridge-organization-visitor';
 
 export class CommonCartridgeManifestParser {
-	constructor(private readonly manifest: CheerioAPI, private readonly options: CommonCartridgeFileParserOptions) {}
+	constructor(
+		private readonly manifest: CheerioAPI,
+		private readonly options: CommonCartridgeFileParserOptions
+	) {}
 
 	public getSchema(): string | undefined {
 		const result = this.manifest('manifest > metadata > schema').text() || undefined;

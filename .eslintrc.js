@@ -98,6 +98,13 @@ module.exports = {
 				'require-await': 'warn',
 				'@typescript-eslint/unbound-method': 'error',
 				'@typescript-eslint/no-non-null-assertion': 'warn',
+				'@typescript-eslint/no-unused-vars': [
+					'warn',
+					{
+						args: 'after-used',
+						argsIgnorePattern: '^_',
+					},
+				],
 				'@typescript-eslint/explicit-function-return-type': 'warn',
 				'@typescript-eslint/explicit-member-accessibility': [
 					'warn',

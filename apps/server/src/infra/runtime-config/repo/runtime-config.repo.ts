@@ -51,7 +51,7 @@ export class RuntimeConfigMikroOrmRepo
 			throw new Error(`Runtime Config for key: ${key} does not exist`);
 		}
 		return entity
-			? RuntimeConfigEntityMapper.toDomainObject(entity)
+			? RuntimeConfigEntityMapper.toDomainObject(entity, defaultConfig)
 			: RuntimeConfigValueFactory.build({ ...defaultConfig, id: new ObjectId().toHexString() });
 	}
 

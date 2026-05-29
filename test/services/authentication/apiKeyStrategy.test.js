@@ -21,7 +21,7 @@ const testServiceHooks = {
 describe('api-key authentication strategy', () => {
 	let app;
 	let server;
-	const testRoute = `/foo${Date.now}`;
+	const testRoute = `/foo${Date.now()}`;
 	let configBefore = null;
 
 	before(async () => {

@@ -30,9 +30,8 @@ export class SchoolExternalToolUtilizationUc {
 		const context = AuthorizationContextBuilder.read([Permission.SCHOOL_TOOL_ADMIN]);
 		this.authorizationService.checkPermission(user, school, context);
 
-		const schoolExternalToolUtilization = await this.externalToolUtilizationService.getUtilizationForSchoolExternalTool(
-			schoolExternalToolId
-		);
+		const schoolExternalToolUtilization =
+			await this.externalToolUtilizationService.getUtilizationForSchoolExternalTool(schoolExternalToolId);
 
 		return schoolExternalToolUtilization;
 	}

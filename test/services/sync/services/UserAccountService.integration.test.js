@@ -1,12 +1,12 @@
 const chai = require('chai');
-const chaiHttp = require('chai-http');
+const { default: chaiHttp } = require('chai-http');
 
 const appPromise = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(appPromise());
 const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 const { userModel } = require('../../../../src/services/user/model');
 
-const chaiAsPromised = require('chai-as-promised');
+const { default: chaiAsPromised } = require('chai-as-promised');
 chai.use(chaiAsPromised);
 
 chai.use(chaiHttp);

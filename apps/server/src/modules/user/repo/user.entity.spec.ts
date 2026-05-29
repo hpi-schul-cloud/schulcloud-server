@@ -116,7 +116,6 @@ describe('User Entity', () => {
 					const school = schoolEntityFactory.build({
 						permissions: {
 							teacher: { [Permission.STUDENT_LIST]: false },
-							student: {},
 						},
 					});
 					const user = userFactory.build({ roles: [role], school });
@@ -165,7 +164,6 @@ describe('User Entity', () => {
 						const school = schoolEntityFactory.build({
 							permissions: {
 								teacher: { [Permission.STUDENT_LIST]: false },
-								student: {},
 							},
 						});
 						const user = userFactory.build({ roles: [role], school });

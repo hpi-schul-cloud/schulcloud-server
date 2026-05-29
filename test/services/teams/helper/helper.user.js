@@ -91,7 +91,5 @@ const deleteUser = async (userId) => {
 
 module.exports = {
 	setupUser,
-	getToken,
-	getRoleByKey,
 	deleteUser,
 };

@@ -3,12 +3,16 @@ import { RegistrationItemResponse } from '../dto/response/registration-item.resp
 import { RegistrationListResponse } from '../dto/response/registration-list.response';
 
 export class RegistrationMapper {
-	public static mapToRegistrationItemResponse(registration: Registration): RegistrationItemResponse {
+	public static mapToRegistrationItemResponse(
+		registration: Registration,
+		registeredUserExists = false
+	): RegistrationItemResponse {
 		const response = new RegistrationItemResponse({
 			id: registration.id,
 			email: registration.email,
 			firstName: registration.firstName,
 			lastName: registration.lastName,
+			registeredUserExists,
 			createdAt: registration.createdAt,
 			updatedAt: registration.updatedAt,
 		});
@@ -16,8 +20,13 @@ export class RegistrationMapper {
 		return response;
 	}
 
-	public static mapToRegistrationListResponse(registrations: Registration[]): RegistrationListResponse {
-		const mappedRegistrations = registrations.map((registration) => this.mapToRegistrationItemResponse(registration));
+	public static mapToRegistrationListResponse(
+		registrations: Registration[],
+		registeredUserExists = false
+	): RegistrationListResponse {
+		const mappedRegistrations = registrations.map((registration) =>
+			this.mapToRegistrationItemResponse(registration, registeredUserExists)
+		);
 
 		const response = new RegistrationListResponse({ data: mappedRegistrations });
 		return response;

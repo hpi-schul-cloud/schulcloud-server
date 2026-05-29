@@ -77,9 +77,8 @@ export class ContextExternalToolUc {
 
 		await this.contextExternalToolValidationService.validate(contextExternalTool);
 
-		const createdTool: ContextExternalTool = await this.contextExternalToolService.saveContextExternalTool(
-			contextExternalTool
-		);
+		const createdTool: ContextExternalTool =
+			await this.contextExternalToolService.saveContextExternalTool(contextExternalTool);
 
 		return createdTool;
 	}
@@ -99,9 +98,8 @@ export class ContextExternalToolUc {
 			throw new ForbiddenLoggableException(userId, AuthorizableReferenceType.ContextExternalToolEntity, context);
 		}
 
-		let contextExternalTool: ContextExternalTool = await this.contextExternalToolService.findByIdOrFail(
-			contextExternalToolId
-		);
+		let contextExternalTool: ContextExternalTool =
+			await this.contextExternalToolService.findByIdOrFail(contextExternalToolId);
 
 		contextExternalTool = new ContextExternalTool({
 			...contextExternalToolDto,
@@ -115,9 +113,8 @@ export class ContextExternalToolUc {
 
 		await this.contextExternalToolValidationService.validate(contextExternalTool);
 
-		const updatedTool: ContextExternalTool = await this.contextExternalToolService.saveContextExternalTool(
-			contextExternalTool
-		);
+		const updatedTool: ContextExternalTool =
+			await this.contextExternalToolService.saveContextExternalTool(contextExternalTool);
 
 		return updatedTool;
 	}
@@ -186,9 +183,8 @@ export class ContextExternalToolUc {
 			throw new LtiDeepLinkTokenMissingLoggableException(state, contextExternalToolId);
 		}
 
-		const contextExternalTool: ContextExternalTool = await this.contextExternalToolService.findByIdOrFail(
-			contextExternalToolId
-		);
+		const contextExternalTool: ContextExternalTool =
+			await this.contextExternalToolService.findByIdOrFail(contextExternalToolId);
 
 		await this.checkOauthSignature(contextExternalTool, payload);
 

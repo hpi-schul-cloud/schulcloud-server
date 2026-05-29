@@ -63,7 +63,7 @@ class Classes {
 		const data = classesByYear.reduce((acc, current) => acc.concat(current.data || current), []);
 
 		if (params.query.$paginate !== false && params.paginate !== false) params.query.$paginate = true;
-		const result = paginate(data, params.query);
+		const result = paginate(data, params.query, this.options);
 		return result;
 	}
 

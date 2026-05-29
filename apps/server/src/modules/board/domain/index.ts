@@ -16,8 +16,6 @@ export * from './link-element.do';
 export * from './media-board';
 export * from './path-utils';
 export * from './rich-text-element.do';
-export * from './submission-container-element.do';
-export * from './submission-item.do';
 export * from './type-mapping';
 export * from './types';
 export * from './video-conference-element.do';

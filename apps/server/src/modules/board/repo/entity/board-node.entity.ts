@@ -2,14 +2,7 @@ import { Embedded, Entity, Enum, Index, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { EntityId, InputFormat } from '@shared/domain/types';
 import { ObjectIdType } from '@shared/repo/types/object-id.type';
-import {
-	AnyBoardNode,
-	BoardLayout,
-	BoardNodeType,
-	ContentElementType,
-	MediaBoardColors,
-	ROOT_PATH,
-} from '../../domain';
+import { AnyBoardNode, BoardLayout, BoardNodeType, ContentElementType, Colors, ROOT_PATH } from '../../domain';
 import type { BoardNodeEntityProps } from '../types';
 import { Context } from './embeddables';
 
@@ -94,19 +87,6 @@ export class BoardNodeEntity extends BaseEntityWithTimestamps implements BoardNo
 	@Property({ type: 'string', nullable: true })
 	alternativeText: string | undefined;
 
-	// SubmissionContainerElement
-	// --------------------------------------------------------------------------
-	@Property({ type: 'Date', nullable: true })
-	dueDate: Date | undefined;
-
-	// SubmissionItem
-	// --------------------------------------------------------------------------
-	@Property({ type: 'boolean', nullable: true })
-	completed: boolean | undefined;
-
-	@Property({ type: ObjectIdType, nullable: true })
-	userId: EntityId | undefined;
-
 	// ExternalToolElement, MediaExternalToolElement
 	// --------------------------------------------------------------------------
 	@Property({ type: ObjectIdType, fieldName: 'contextExternalTool', nullable: true })
@@ -122,8 +102,10 @@ export class BoardNodeEntity extends BaseEntityWithTimestamps implements BoardNo
 	@Property({ type: 'boolean', nullable: true })
 	collapsed: boolean | undefined;
 
-	@Property({ type: 'MediaBoardColors', nullable: true })
-	backgroundColor: MediaBoardColors | undefined;
+	// MediaLine, MediaBoard, Card
+	// --------------------------------------------------------------------------
+	@Enum({ type: 'Colors', nullable: true })
+	backgroundColor: Colors | undefined;
 
 	// DeletedElement
 	// --------------------------------------------------------------------------

@@ -8,7 +8,10 @@ import { ICurrentUser, JwtPayload } from '../interface';
 import { CurrentUserBuilder, JwtStrategyOptionsFactory } from '../mapper';
 
 export class JwtStrategy extends PassportStrategy(Strategy) {
-	constructor(private readonly jwtValidationAdapter: JwtValidationAdapter, config: JwtAuthGuardConfig) {
+	constructor(
+		private readonly jwtValidationAdapter: JwtValidationAdapter,
+		config: JwtAuthGuardConfig
+	) {
 		const strategyOptions = JwtStrategyOptionsFactory.build(JwtExtractor.extractJwtFromRequest, config);
 
 		super(strategyOptions);
@@ -21,11 +24,13 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 			// TODO: check user/account is active and has one role
 			// check jwt is whitelisted and extend whitelist entry
 			await this.jwtValidationAdapter.isWhitelisted(accountId, jti);
-			const currentUser = new CurrentUserBuilder(payload)
+			const currentUserBuilder = new CurrentUserBuilder(payload)
 				.asExternalUser(payload.isExternalUser)
 				.withExternalSystem(payload.systemId)
 				.asUserSupporter(payload.support)
-				.build();
+				.asServiceAccount(payload.isServiceAccount);
+
+			const currentUser = currentUserBuilder.build();
 
 			return currentUser;
 		} catch (err) {

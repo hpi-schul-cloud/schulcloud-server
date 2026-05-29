@@ -5,7 +5,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { BOARD_CONFIG_TOKEN, BoardConfig } from '../../../board.config';
-import { BoardExternalReferenceType, MediaBoardColors } from '../../../domain';
+import { BoardExternalReferenceType, Colors } from '../../../domain';
 import { BoardNodeEntity } from '../../../repo';
 import { mediaBoardEntityFactory, mediaLineEntityFactory } from '../../../testing';
 import { MoveColumnBodyParams, RenameBodyParams } from '../../dto';
@@ -329,12 +329,12 @@ describe('Media Line (API)', () => {
 				const { studentClient, mediaLine } = await setup();
 
 				const response = await studentClient.patch<ColorBodyParams>(`${mediaLine.id}/color`, {
-					backgroundColor: MediaBoardColors.BLUE,
+					backgroundColor: Colors.BLUE,
 				});
 
 				expect(response.status).toEqual(HttpStatus.NO_CONTENT);
 				const modifiedLine = await em.findOneOrFail(BoardNodeEntity, mediaLine.id);
-				expect(modifiedLine.backgroundColor).toEqual(MediaBoardColors.BLUE);
+				expect(modifiedLine.backgroundColor).toEqual(Colors.BLUE);
 			});
 		});
 
@@ -350,9 +350,7 @@ describe('Media Line (API)', () => {
 						type: BoardExternalReferenceType.User,
 					},
 				});
-				const mediaLine = mediaLineEntityFactory
-					.withParent(mediaBoard)
-					.build({ backgroundColor: MediaBoardColors.TRANSPARENT });
+				const mediaLine = mediaLineEntityFactory.withParent(mediaBoard).build({ backgroundColor: Colors.TRANSPARENT });
 
 				await em.persist([studentAccount, studentUser, mediaBoard, mediaLine]).flush();
 				em.clear();
@@ -369,7 +367,7 @@ describe('Media Line (API)', () => {
 				const { studentClient, mediaLine } = await setup();
 
 				const response = await studentClient.patch<ColorBodyParams>(`${mediaLine.id}/color`, {
-					backgroundColor: MediaBoardColors.BLUE,
+					backgroundColor: Colors.BLUE,
 				});
 
 				expect(response.status).toEqual(HttpStatus.FORBIDDEN);
@@ -393,7 +391,7 @@ describe('Media Line (API)', () => {
 					},
 				});
 				const mediaLine = mediaLineEntityFactory.withParent(mediaBoard).build({
-					backgroundColor: MediaBoardColors.TRANSPARENT,
+					backgroundColor: Colors.TRANSPARENT,
 				});
 
 				await em.persist([mediaBoard, mediaLine]).flush();
@@ -408,7 +406,7 @@ describe('Media Line (API)', () => {
 				const { mediaLine } = await setup();
 
 				const response = await testApiClient.patch<ColorBodyParams>(`${mediaLine.id}/color`, {
-					backgroundColor: MediaBoardColors.TRANSPARENT,
+					backgroundColor: Colors.TRANSPARENT,
 				});
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);

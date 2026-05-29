@@ -24,7 +24,6 @@ import { OauthSessionTokenEntity } from '@modules/oauth/entity';
 import { ExternalToolPseudonymEntity } from '@modules/pseudonym/entity';
 import { RegistrationEntity } from '@modules/registration';
 import { RegistrationPinEntity } from '@modules/registration-pin/entity';
-import { RocketChatUserEntity } from '@modules/rocketchat-user/entity';
 import { Role } from '@modules/role/repo';
 import { RoomMembershipEntity } from '@modules/room-membership/repo/entity/room-membership.entity';
 import { RoomEntity } from '@modules/room/repo/entity';
@@ -50,6 +49,7 @@ import { MediaUserLicenseEntity, UserLicenseEntity } from '@modules/user-license
 import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { VideoConferenceEntity } from '@modules/video-conference/repo';
+import { RuntimeConfigEntity } from '@infra/runtime-config/repo/entity/runtime-config.entity';
 
 export const ENTITIES = [
 	AccountEntity,
@@ -78,7 +78,6 @@ export const ENTITIES = [
 	News,
 	ExternalToolPseudonymEntity,
 	RegistrationEntity,
-	RocketChatUserEntity,
 	Role,
 	RoomEntity,
 	RoomMembershipEntity,
@@ -110,6 +109,7 @@ export const ENTITIES = [
 	MediaSchoolLicenseEntity,
 	OauthSessionTokenEntity,
 	LtiDeepLinkTokenEntity,
+	RuntimeConfigEntity,
 ];
 
 export const TEST_ENTITIES = [...ENTITIES];

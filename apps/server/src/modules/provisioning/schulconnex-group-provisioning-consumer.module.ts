@@ -1,5 +1,6 @@
 import { LoggerModule } from '@core/logger';
 import { ConfigurationModule } from '@infra/configuration/configuration.module';
+import { RABBITMQ_CONFIG_TOKEN, RabbitMQConfig, RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { CourseModule } from '@modules/course';
 import { CourseSynchronizationHistoryModule } from '@modules/course-synchronization-history';
 import { GroupModule } from '@modules/group';
@@ -25,6 +26,12 @@ import { SchulconnexCourseSyncService, SchulconnexGroupProvisioningService } fro
 		CourseSynchronizationHistoryModule,
 		ConfigurationModule.register(PROVISIONING_CONFIG_TOKEN, ProvisioningConfig),
 		ConfigurationModule.register(PROVISIONING_EXCHANGE_CONFIG_TOKEN, ProvisioningExchangeConfig),
+		RabbitMQWrapperModule.register({
+			exchangeConfigInjectionToken: PROVISIONING_EXCHANGE_CONFIG_TOKEN,
+			exchangeConfigConstructor: ProvisioningExchangeConfig,
+			configInjectionToken: RABBITMQ_CONFIG_TOKEN,
+			configConstructor: RabbitMQConfig,
+		}),
 	],
 	providers: [SchulconnexGroupProvisioningConsumer, SchulconnexGroupProvisioningService, SchulconnexCourseSyncService],
 })

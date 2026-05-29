@@ -128,12 +128,6 @@ export const adminPermissions = [
 	Permission.COURSE_CREATE,
 	Permission.COURSE_EDIT,
 	Permission.COURSE_REMOVE,
-	Permission.DATASOURCES_CREATE,
-	Permission.DATASOURCES_DELETE,
-	Permission.DATASOURCES_EDIT,
-	Permission.DATASOURCES_RUN_VIEW,
-	Permission.DATASOURCES_RUN,
-	Permission.DATASOURCES_VIEW,
 	Permission.GROUP_FULL_ADMIN,
 	Permission.GROUP_LIST,
 	Permission.HELPDESK_EDIT,
@@ -187,8 +181,9 @@ export const superheroPermissions = [
 	Permission.USER_LOGIN_MIGRATION_FORCE,
 	Permission.USER_LOGIN_MIGRATION_ROLLBACK,
 	Permission.TOOL_ADMIN,
+	Permission.GROUP_FULL_ADMIN,
 ];
 
 export const externalPersonPermissions = [...userPermissions];
 
-export const defaultSystemUserPermissions = [Permission.CAN_EXECUTE_INSTANCE_OPERATIONS];
+export const defaultServiceAccountPermissions = [Permission.CAN_EXECUTE_INSTANCE_OPERATIONS];

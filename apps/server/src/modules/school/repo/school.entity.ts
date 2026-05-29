@@ -54,9 +54,6 @@ export class SchoolRolePermission {
 
 @Embeddable()
 export class SchoolRoles {
-	@Embedded(() => SchoolRolePermission, { nullable: true, fieldName: 'student' })
-	student?: SchoolRolePermission;
-
 	@Embedded(() => SchoolRolePermission, { nullable: true, fieldName: 'teacher' })
 	teacher?: SchoolRolePermission;
 }

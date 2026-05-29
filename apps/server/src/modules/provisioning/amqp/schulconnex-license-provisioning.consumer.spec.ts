@@ -1,18 +1,24 @@
 import { Logger } from '@core/logger';
+import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
+import { SchulconnexLicenseProvisioningMessage } from '../domain';
 import { ExternalLicenseDto } from '../dto';
 import { LicenseProvisioningSuccessfulLoggable } from '../loggable';
+import { PROVISIONING_EXCHANGE_CONFIG_TOKEN } from '../provisioning-exchange.config';
 import { ENTITIES } from '../schulconnex-license-provisioning.entity.imports';
 import {
 	SchulconnexLicenseProvisioningService,
 	SchulconnexToolProvisioningService,
 } from '../strategy/schulconnex/service';
+import * as AmqpSubscriberHelper from './amqp-subscriber.helper';
 import { SchulconnexLicenseProvisioningConsumer } from './schulconnex-license-provisioning.consumer';
-import { PROVISIONING_EXCHANGE_CONFIG_TOKEN } from '../provisioning-exchange.config';
+import { SchulconnexProvisioningEvents } from './schulconnex.exchange';
+
+jest.mock('./amqp-subscriber.helper');
 
 describe(SchulconnexLicenseProvisioningConsumer.name, () => {
 	let module: TestingModule;
@@ -21,6 +27,7 @@ describe(SchulconnexLicenseProvisioningConsumer.name, () => {
 	let logger: DeepMocked<Logger>;
 	let schulconnexLicenseProvisioningService: DeepMocked<SchulconnexLicenseProvisioningService>;
 	let schulconnexToolProvisioningService: DeepMocked<SchulconnexToolProvisioningService>;
+	let amqpConnection: DeepMocked<AmqpConnection>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -43,6 +50,10 @@ describe(SchulconnexLicenseProvisioningConsumer.name, () => {
 					useValue: await setupEntities(ENTITIES),
 				},
 				{
+					provide: AmqpConnection,
+					useValue: createMock<AmqpConnection>(),
+				},
+				{
 					provide: PROVISIONING_EXCHANGE_CONFIG_TOKEN,
 					useValue: {
 						exchangeName: 'provisioning-exchange',
@@ -56,6 +67,7 @@ describe(SchulconnexLicenseProvisioningConsumer.name, () => {
 		logger = module.get(Logger);
 		schulconnexLicenseProvisioningService = module.get(SchulconnexLicenseProvisioningService);
 		schulconnexToolProvisioningService = module.get(SchulconnexToolProvisioningService);
+		amqpConnection = module.get(AmqpConnection);
 	});
 
 	afterAll(async () => {
@@ -66,7 +78,62 @@ describe(SchulconnexLicenseProvisioningConsumer.name, () => {
 		jest.resetAllMocks();
 	});
 
-	describe('provisionGroups', () => {
+	describe('onModuleInit', () => {
+		describe('when module is initialized', () => {
+			let registerAmqpSubscriberSpy: jest.SpyInstance;
+
+			beforeEach(() => {
+				registerAmqpSubscriberSpy = jest.spyOn(AmqpSubscriberHelper, 'registerAmqpSubscriber').mockResolvedValue();
+			});
+
+			afterEach(() => {
+				registerAmqpSubscriberSpy.mockRestore();
+			});
+
+			it('should register a subscriber for GROUP_PROVISIONING event', async () => {
+				await consumer.onModuleInit();
+
+				expect(registerAmqpSubscriberSpy).toHaveBeenCalledWith(
+					amqpConnection,
+					'provisioning-exchange',
+					SchulconnexProvisioningEvents.LICENSE_PROVISIONING,
+					expect.any(Function),
+					SchulconnexLicenseProvisioningConsumer.name,
+					logger
+				);
+			});
+
+			it('should pass a handler that calls provisionLicenses for LICENSE_PROVISIONING event', async () => {
+				const provisionLicensesSpy = jest.spyOn(consumer, 'provisionLicenses').mockResolvedValue();
+				const payload: SchulconnexLicenseProvisioningMessage = {
+					userId: new ObjectId().toHexString(),
+					schoolId: new ObjectId().toHexString(),
+					systemId: new ObjectId().toHexString(),
+					externalLicenses: [
+						new ExternalLicenseDto({
+							mediumId: 'medium:1',
+						}),
+					],
+				};
+
+				await consumer.onModuleInit();
+
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+				const licenseProvisioningHandler = registerAmqpSubscriberSpy.mock.calls.find(
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+					(call) => call[2] === SchulconnexProvisioningEvents.LICENSE_PROVISIONING
+				)?.[3] as (payload: SchulconnexLicenseProvisioningMessage) => Promise<void>;
+
+				await licenseProvisioningHandler(payload);
+
+				expect(provisionLicensesSpy).toHaveBeenCalledWith(payload);
+
+				provisionLicensesSpy.mockRestore();
+			});
+		});
+	});
+
+	describe('provisionLicenses', () => {
 		describe('when provisioning a new group', () => {
 			const setup = () => {
 				const userId = new ObjectId().toHexString();

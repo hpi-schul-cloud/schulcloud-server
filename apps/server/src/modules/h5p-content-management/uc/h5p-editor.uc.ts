@@ -43,7 +43,6 @@ import { tmpdir } from 'os';
 import { dirname, join } from 'path';
 import { AjaxGetQueryParams, AjaxPostBodyParams, AjaxPostQueryParams, H5PContentResponse } from '../controller/dto';
 import { H5P_EDITOR_CONFIG_TOKEN, H5PEditorConfig } from '../h5p-editor.config';
-import { getLibraryWhiteList } from '../helper';
 import { H5PUcErrorLoggable, H5PUcLoggable } from '../loggable';
 import { H5PContentMapper } from '../mapper/h5p-content.mapper';
 import { H5PContentRepo } from '../repo';
@@ -147,7 +146,7 @@ export class H5PEditorUc {
 			// filter response for libraries not contained in whitelist
 			const ajaxResponse = result as IHubInfo;
 			if (ajaxResponse && Array.isArray(ajaxResponse.libraries)) {
-				const libraryWhiteList = getLibraryWhiteList(this.config.libraryListPath);
+				const libraryWhiteList = this.config.libraryList;
 				ajaxResponse.libraries = ajaxResponse.libraries.filter((library) =>
 					libraryWhiteList.includes(library.machineName)
 				);

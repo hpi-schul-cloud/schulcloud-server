@@ -1,4 +1,4 @@
-import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { EntityManager } from '@mikro-orm/mongodb';
 import { accountFactory } from '@modules/account/testing';
 import { groupEntityFactory } from '@modules/group/testing';
 import { RoleName } from '@modules/role';
@@ -153,65 +153,6 @@ describe('VideoConferenceController (API)', () => {
 				const response: Response = await testApiClient.put('/anyScope/anyId/start');
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
-			});
-		});
-
-		describe('when the logoutUrl is from a wrong origin', () => {
-			const setup = async () => {
-				const school = schoolEntityFactory.buildWithId({ features: [] });
-
-				const room = roomEntityFactory.build({
-					startDate: new Date('2024-10-01'),
-					endDate: new Date('2024-10-20'),
-				});
-				const { roomEditorRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
-				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
-				const userGroup = groupEntityFactory.buildWithId({
-					organization: school,
-					users: [{ role: roomEditorRole, user: teacherUser }],
-				});
-				const roomMembership = roomMembershipEntityFactory.build({
-					roomId: room.id,
-					userGroupId: userGroup.id,
-				});
-				await em
-					.persist([
-						room,
-						roomMembership,
-						school,
-						teacherAccount,
-						teacherUser,
-						userGroup,
-						roomEditorRole,
-						roomViewerRole,
-					])
-					.flush();
-				em.clear();
-
-				const params: VideoConferenceCreateParams = {
-					everyAttendeeJoinsMuted: true,
-					everybodyJoinsAsModerator: true,
-					moderatorMustApproveJoinRequests: true,
-					logoutUrl: 'http://from.other.origin/',
-				};
-
-				const loggedInClient: TestApiClient = await testApiClient.login(teacherAccount);
-
-				return {
-					loggedInClient,
-					params,
-				};
-			};
-
-			it('should return bad request', async () => {
-				const { loggedInClient, params } = await setup();
-
-				const response: Response = await loggedInClient.put(
-					`${VideoConferenceScope.ROOM}/${new ObjectId().toHexString()}/start`,
-					params
-				);
-
-				expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
 			});
 		});
 

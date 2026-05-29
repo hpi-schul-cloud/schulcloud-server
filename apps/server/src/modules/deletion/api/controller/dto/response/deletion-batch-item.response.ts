@@ -1,38 +1,37 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { UsersByRoleCountResponse } from './users-by-role-count.response';
 
 export class DeletionBatchItemResponse {
 	@ApiProperty()
-	id: string;
+	public id: string;
 
 	@ApiProperty()
-	status: string;
+	public status: string;
 
 	@ApiProperty()
-	name: string;
-
-	@ApiProperty({ type: [UsersByRoleCountResponse] })
-	usersByRole: UsersByRoleCountResponse[];
+	public name: string;
 
 	@ApiProperty()
-	invalidUsers: string[];
+	public validUsers: number;
+
+	@ApiProperty()
+	public invalidUsers: number;
 
 	@ApiPropertyOptional()
-	skippedUsersByRole: UsersByRoleCountResponse[];
+	public skippedUsers: number;
 
 	@ApiProperty({ type: Date })
-	createdAt: Date;
+	public createdAt: Date;
 
 	@ApiProperty({ type: Date })
-	updatedAt: Date;
+	public updatedAt: Date;
 
 	constructor(item: DeletionBatchItemResponse) {
 		this.id = item.id;
 		this.status = item.status;
 		this.name = item.name;
-		this.usersByRole = item.usersByRole;
+		this.validUsers = item.validUsers;
 		this.invalidUsers = item.invalidUsers;
-		this.skippedUsersByRole = item.skippedUsersByRole;
+		this.skippedUsers = item.skippedUsers;
 		this.createdAt = item.createdAt;
 		this.updatedAt = item.updatedAt;
 	}

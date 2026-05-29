@@ -1,8 +1,7 @@
 import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
+import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { AnyBoardNode } from './types';
-import { Permission } from '@shared/domain/interface';
-import { isColumnBoard } from './colum-board.do';
 
 export enum BoardRoles {
 	EDITOR = 'editor',
@@ -23,11 +22,13 @@ export interface BoardNodeAuthorizableProps extends AuthorizableObject {
 	boardNode: AnyBoardNode;
 	rootNode: AnyBoardNode;
 	parentNode?: AnyBoardNode;
-	boardContextSettings: BoardContextSettings;
+	boardConfiguration: BoardConfiguration;
 }
 
-export interface BoardContextSettings {
-	canRoomEditorManageVideoconference?: boolean;
+export interface BoardConfiguration {
+	canEditorsManageVideoconference?: boolean;
+	canReadersEdit?: boolean;
+	canAdminsToggleReadersCanEdit?: boolean;
 	isLocked?: boolean;
 }
 
@@ -58,8 +59,8 @@ export class BoardNodeAuthorizable extends DomainObject<BoardNodeAuthorizablePro
 		return this.props.rootNode;
 	}
 
-	get boardContextSettings(): BoardContextSettings {
-		return this.props.boardContextSettings;
+	get boardConfiguration(): BoardConfiguration {
+		return this.props.boardConfiguration;
 	}
 
 	public getUserPermissions(userId: EntityId): Permission[] {
@@ -77,26 +78,14 @@ export class BoardNodeAuthorizable extends DomainObject<BoardNodeAuthorizablePro
 		}
 
 		if (user?.roles.includes(BoardRoles.EDITOR)) {
-			const permissions: Permission[] = [Permission.BOARD_VIEW, Permission.BOARD_EDIT, Permission.BOARD_MANAGE];
-			const canRoomEditorManageVideoconference = this.boardContextSettings.canRoomEditorManageVideoconference ?? false;
-			if (canRoomEditorManageVideoconference) {
-				permissions.push(Permission.BOARD_MANAGE_VIDEOCONFERENCE);
-			}
-			return permissions;
+			return [Permission.BOARD_VIEW, Permission.BOARD_EDIT, Permission.BOARD_MANAGE];
 		}
 
 		if (user?.roles.includes(BoardRoles.READER)) {
 			const permissions = [Permission.BOARD_VIEW];
-			if (this.readersCanEdit(this.rootNode)) {
-				permissions.push(Permission.BOARD_EDIT);
-			}
 			return permissions;
 		}
 
 		return [];
-	}
-
-	private readersCanEdit(rootNode: AnyBoardNode): boolean {
-		return isColumnBoard(rootNode) && rootNode.readersCanEdit;
 	}
 }

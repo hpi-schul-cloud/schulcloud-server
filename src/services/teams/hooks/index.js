@@ -426,7 +426,6 @@ const hasTeamPermission = (permsissions, _teamId) =>
 				throw new Forbidden('You have not the permission to access this. (2)');
 			});
 	});
-exports.hasTeamPermission = hasTeamPermission; // to use it global
 
 /**
  * Hook to reject patches of default file permissions if the patching user

@@ -4,7 +4,7 @@ import { DeletionBatch, DeletionBatchProps } from '../../do';
 import { BatchStatus, DomainName } from '../../types';
 
 class DeletionBatchFactory extends DoBaseFactory<DeletionBatch, DeletionBatchProps> {
-	withTargetRefIds(ids: string[]): this {
+	public withTargetRefIds(ids: string[]): this {
 		const params: Partial<DeletionBatchProps> = {
 			targetRefIds: ids,
 		};
@@ -12,7 +12,7 @@ class DeletionBatchFactory extends DoBaseFactory<DeletionBatch, DeletionBatchPro
 		return this.params(params);
 	}
 
-	withInvalidIds(ids: string[]): this {
+	public withInvalidIds(ids: string[]): this {
 		const params: Partial<DeletionBatchProps> = {
 			invalidIds: ids,
 		};
@@ -20,7 +20,7 @@ class DeletionBatchFactory extends DoBaseFactory<DeletionBatch, DeletionBatchPro
 		return this.params(params);
 	}
 
-	withSkippedIds(ids: string[]): this {
+	public withSkippedIds(ids: string[]): this {
 		const params: Partial<DeletionBatchProps> = {
 			skippedIds: ids,
 		};

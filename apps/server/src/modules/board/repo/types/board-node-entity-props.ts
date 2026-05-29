@@ -15,8 +15,6 @@ import type {
 	MediaExternalToolElementProps,
 	MediaLineProps,
 	RichTextElementProps,
-	SubmissionContainerElementProps,
-	SubmissionItemProps,
 } from '../../domain';
 
 // omit all given keys from an object type
@@ -41,7 +39,8 @@ type TypeProps = { type: BoardNodeType };
 // The interface that acts as a skeleton for BoardNodeEntity
 // This helps us to map the domain property interfaces to the entity
 export interface BoardNodeEntityProps
-	extends BoardNodeProps,
+	extends
+		BoardNodeProps,
 		TypeProps,
 		ComponentProps<ColumnBoardProps>,
 		ComponentProps<ColumnProps>,
@@ -51,8 +50,6 @@ export interface BoardNodeEntityProps
 		ComponentProps<LinkElementProps>,
 		ComponentProps<FileElementProps>,
 		ComponentProps<DrawingElementProps>,
-		ComponentProps<SubmissionContainerElementProps>,
-		ComponentProps<SubmissionItemProps>,
 		ComponentProps<ExternalToolElementProps>,
 		ComponentProps<MediaBoardProps>,
 		ComponentProps<MediaExternalToolElementProps>,

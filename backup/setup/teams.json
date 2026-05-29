@@ -322,7 +322,6 @@
 		"color" : "#d32f2f",
 		"features" : [
 			"isTeam",
-			"rocketChat",
 			"videoconference"
 		],
 		"name" : "Team with Expert",

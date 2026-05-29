@@ -3,6 +3,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MailService } from '@infra/mail';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountService } from '@modules/account';
+import { accountDoFactory } from '@modules/account/testing';
 import { REGISTRATION_CONFIG_TOKEN } from '@modules/registration/registration.config';
 import { RoleName, RoleService } from '@modules/role';
 import { RoomService } from '@modules/room';
@@ -106,6 +107,25 @@ describe('RegistrationService', () => {
 	afterEach(() => {
 		jest.resetAllMocks();
 	});
+
+	const setupExternalPersonRole = () => {
+		const externalPersonRole = { id: new ObjectId().toHexString(), name: RoleName.EXTERNALPERSON };
+		roleService.findByName.mockResolvedValue(externalPersonRole);
+		return externalPersonRole;
+	};
+
+	const setupExternalPersonSchool = () => {
+		const externalPersonsSchool = schoolFactory.build({
+			name: 'External Persons School',
+			purpose: SchoolPurpose.EXTERNAL_PERSON_SCHOOL,
+		});
+		schoolService.getSchools.mockResolvedValue([externalPersonsSchool]);
+		return externalPersonsSchool;
+	};
+
+	const setupNoExistingUser = () => {
+		userService.findByEmail.mockResolvedValue([]);
+	};
 
 	describe('createOrUpdateRegistration', () => {
 		const setup = (options?: { existingRegistration?: Registration }) => {
@@ -317,6 +337,19 @@ describe('RegistrationService', () => {
 		});
 	});
 
+	describe('getSingleRegistrationById', () => {
+		it('should return registration', async () => {
+			const registrationId = new ObjectId().toHexString();
+			const registration = registrationFactory.build({ id: registrationId });
+			registrationRepo.findById.mockResolvedValue(registration);
+
+			const result = await service.getSingleRegistrationById(registrationId);
+
+			expect(result).toBe(registration);
+			expect(registrationRepo.findById).toHaveBeenCalledWith(registrationId);
+		});
+	});
+
 	describe('getSingleRegistrationByHash', () => {
 		it('should call repo to get registration by hash', async () => {
 			const hash = 'someRandomHash';
@@ -355,19 +388,46 @@ describe('RegistrationService', () => {
 		});
 	});
 
+	describe('sendRegistrationMail', () => {
+		it('should get the room and send the registration mail', async () => {
+			const room = roomFactory.build({ name: 'Test Room' });
+			const registration = registrationFactory.build({ roomIds: [room.id] });
+
+			roomService.getSingleRoom.mockResolvedValue(room);
+
+			await service.sendRegistrationMail(registration);
+
+			expect(roomService.getSingleRoom).toHaveBeenCalledWith(room.id);
+			expect(mailService.send).toHaveBeenCalledWith(
+				expect.objectContaining({
+					recipients: [registration.email],
+				})
+			);
+		});
+
+		describe('when registration has multiple roomIds', () => {
+			it('should use the last roomId', async () => {
+				const room1 = roomFactory.build({ name: 'Room 1' });
+				const room2 = roomFactory.build({ name: 'Room 2' });
+				const registration = registrationFactory.build({ roomIds: [room1.id, room2.id] });
+
+				roomService.getSingleRoom.mockResolvedValue(room2);
+
+				await service.sendRegistrationMail(registration);
+
+				expect(roomService.getSingleRoom).toHaveBeenCalledWith(room2.id);
+			});
+		});
+	});
+
 	describe('completeRegistration', () => {
 		const setup = (registrationProps: Partial<RegistrationProps>) => {
 			const registration = registrationFactory.build(registrationProps);
 			registrationRepo.findBySecret.mockResolvedValue(registration);
 
-			const externalPersonRole = { id: new ObjectId().toHexString(), name: RoleName.EXTERNALPERSON };
-			roleService.findByName.mockResolvedValue(externalPersonRole);
-
-			const externalPersonsSchool = schoolFactory.build({
-				name: 'External Persons School',
-				purpose: SchoolPurpose.EXTERNAL_PERSON_SCHOOL,
-			});
-			schoolService.getSchools.mockResolvedValue([externalPersonsSchool]);
+			setupExternalPersonRole();
+			setupExternalPersonSchool();
+			setupNoExistingUser();
 
 			const savedUser = userDoFactory.buildWithId();
 			userService.save.mockResolvedValue(savedUser);
@@ -375,37 +435,97 @@ describe('RegistrationService', () => {
 			return { registration, savedUser };
 		};
 
-		it('should create user and account from registration', async () => {
-			const registration = registrationFactory.build();
-			registrationRepo.findBySecret.mockResolvedValue(registration);
+		describe('when user with this email does not exist', () => {
+			it('should create user and account from registration', async () => {
+				const { registration } = setup({ firstName: 'John', lastName: 'Doe' });
+				accountService.findByUserId.mockResolvedValue(null);
 
-			userService.save.mockImplementation((user) => {
-				user.id = new ObjectId().toHexString();
-				return Promise.resolve(user);
+				const somePassword = 'SecurePassword123!';
+
+				await service.completeRegistration(registration, LanguageType.EN, somePassword);
+
+				expect(userService.save).toHaveBeenCalledWith(
+					expect.objectContaining({
+						email: registration.email,
+						firstName: registration.firstName,
+						lastName: registration.lastName,
+					})
+				);
+
+				expect(accountService.saveWithValidation).toHaveBeenCalledWith(
+					expect.objectContaining({
+						password: somePassword,
+					})
+				);
 			});
+		});
 
-			await service.completeRegistration(registration, LanguageType.EN, 'SecurePassword123!');
+		describe('when existing user is found', () => {
+			it('should update existing user with registration data', async () => {
+				const registration = registrationFactory.build();
+				registrationRepo.findBySecret.mockResolvedValue(registration);
 
-			expect(userService.save).toHaveBeenCalledWith(
-				expect.objectContaining({
-					email: registration.email,
-					firstName: registration.firstName,
-					lastName: registration.lastName,
-				})
-			);
+				const existingUser = userDoFactory.buildWithId({ email: registration.email });
+				userService.findByEmail.mockResolvedValue([existingUser]);
+				userService.save.mockImplementation((user) => Promise.resolve(user));
 
-			expect(accountService.saveWithValidation).toHaveBeenCalledWith(
-				expect.objectContaining({
-					username: registration.email,
-					password: 'SecurePassword123!',
-				})
-			);
+				await service.completeRegistration(registration, LanguageType.EN, 'SecurePassword123!');
+
+				expect(userService.save).toHaveBeenCalledWith(
+					expect.objectContaining({
+						id: existingUser.id,
+						firstName: registration.firstName,
+						lastName: registration.lastName,
+						language: LanguageType.EN,
+					})
+				);
+			});
+		});
+
+		describe('when multiple users with same email exist', () => {
+			it('should throw BadRequestException', async () => {
+				const registration = registrationFactory.build();
+				registrationRepo.findBySecret.mockResolvedValue(registration);
+
+				const existingUser1 = userDoFactory.buildWithId({ email: registration.email });
+				const existingUser2 = userDoFactory.buildWithId({ email: registration.email });
+				userService.findByEmail.mockResolvedValue([existingUser1, existingUser2]);
+
+				await expect(service.completeRegistration(registration, LanguageType.EN, 'SecurePassword123!')).rejects.toThrow(
+					BadRequestException
+				);
+			});
+		});
+
+		describe('when existing account is found for user', () => {
+			it('should update account password', async () => {
+				const registration = registrationFactory.build();
+				registrationRepo.findBySecret.mockResolvedValue(registration);
+				const mockPassword = 'NewPassword123!';
+
+				const existingUser = userDoFactory.buildWithId({ email: registration.email });
+				userService.findByEmail.mockResolvedValue([existingUser]);
+				userService.save.mockImplementation((user) => Promise.resolve(user));
+
+				const existingAccount = accountDoFactory.build({ userId: existingUser.id });
+				accountService.findByUserId.mockResolvedValue(existingAccount);
+
+				await service.completeRegistration(registration, LanguageType.EN, mockPassword);
+
+				expect(accountService.saveWithValidation).toHaveBeenCalledWith(
+					expect.objectContaining({
+						password: mockPassword,
+					}),
+					{ allowUpdate: true }
+				);
+			});
 		});
 
 		describe('when external person role is missing', () => {
 			it('should throw an error', async () => {
 				const registration = registrationFactory.build();
 				registrationRepo.findBySecret.mockResolvedValue(registration);
+				setupNoExistingUser();
 
 				const error = new BadRequestException('ExternalPerson role not found');
 				roleService.findByName.mockRejectedValue(error);
@@ -420,9 +540,26 @@ describe('RegistrationService', () => {
 			it('should throw an error', async () => {
 				const registration = registrationFactory.build();
 				registrationRepo.findBySecret.mockResolvedValue(registration);
-				const externalPersonRole = { id: new ObjectId().toHexString(), name: RoleName.EXTERNALPERSON };
-				roleService.findByName.mockResolvedValue(externalPersonRole);
+				setupNoExistingUser();
+				setupExternalPersonRole();
 				schoolService.getSchools.mockResolvedValue([]);
+
+				await expect(service.completeRegistration(registration, LanguageType.EN, 'SecurePassword123!')).rejects.toThrow(
+					InternalServerErrorException
+				);
+			});
+		});
+
+		describe('when multiple external-persons-schools exist', () => {
+			it('should throw an error', async () => {
+				const registration = registrationFactory.build();
+				registrationRepo.findBySecret.mockResolvedValue(registration);
+				setupNoExistingUser();
+				setupExternalPersonRole();
+
+				const school1 = schoolFactory.build({ purpose: SchoolPurpose.EXTERNAL_PERSON_SCHOOL });
+				const school2 = schoolFactory.build({ purpose: SchoolPurpose.EXTERNAL_PERSON_SCHOOL });
+				schoolService.getSchools.mockResolvedValue([school1, school2]);
 
 				await expect(service.completeRegistration(registration, LanguageType.EN, 'SecurePassword123!')).rejects.toThrow(
 					InternalServerErrorException
@@ -446,6 +583,7 @@ describe('RegistrationService', () => {
 			it('should throw an error', async () => {
 				const registration = registrationFactory.build({ firstName: undefined });
 				registrationRepo.findBySecret.mockResolvedValue(registration);
+				setupNoExistingUser();
 
 				await expect(service.completeRegistration(registration, LanguageType.EN, 'SecurePassword123!')).rejects.toThrow(
 					BadRequestException
@@ -457,6 +595,7 @@ describe('RegistrationService', () => {
 			it('should throw an error', async () => {
 				const registration = registrationFactory.build({ lastName: undefined });
 				registrationRepo.findBySecret.mockResolvedValue(registration);
+				setupNoExistingUser();
 
 				await expect(service.completeRegistration(registration, LanguageType.EN, 'SecurePassword123!')).rejects.toThrow(
 					BadRequestException

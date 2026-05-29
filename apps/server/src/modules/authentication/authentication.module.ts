@@ -2,11 +2,6 @@ import { LoggerModule } from '@core/logger';
 import { JWT_WHITELIST_CONFIG_TOKEN, JwtWhitelistConfig } from '@infra/auth-guard';
 import { ConfigurationModule } from '@infra/configuration';
 import { EncryptionModule } from '@infra/encryption';
-import { IdentityManagementModule } from '@infra/identity-management';
-import {
-	KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
-	KeycloakAdministrationConfig,
-} from '@infra/identity-management/keycloak-administration/keycloak-administration.config';
 import {
 	SESSION_VALKEY_CLIENT_CONFIG_TOKEN,
 	ValkeyClientModule,
@@ -26,10 +21,12 @@ import { SignOptions } from 'jsonwebtoken';
 import { AUTHENTICATION_CONFIG_TOKEN, AuthenticationConfig, SESSION_VALKEY_CLIENT } from './authentication-config';
 import { AUTHENTICATION_ENCRYPTION_CONFIG_TOKEN, AuthenticationEncryptionConfig } from './encryption.config';
 import { JwtWhitelistAdapter } from './helper/jwt-whitelist.adapter';
+import { Oauth2ContextHelper } from './helper/oauth2-context.helper';
 import { JWT_STRATEGY_CONFIG_TOKEN, JwtModuleConfig } from './jwt-module.config';
 import { LogoutService } from './services';
 import { AuthenticationService } from './services/authentication.service';
 import { LdapService } from './services/ldap.service';
+import { ErwinStrategy } from './strategy/erwin.strategy';
 import { LdapStrategy } from './strategy/ldap.strategy';
 import { LocalStrategy } from './strategy/local.strategy';
 import { Oauth2Strategy } from './strategy/oauth2.strategy';
@@ -38,7 +35,7 @@ const createJwtOptions = (config: JwtModuleConfig): JwtModuleOptions => {
 	const { algorithm, expiresIn, scDomain, privateKey, publicKey } = config;
 	const signOptions: SignOptions = {
 		algorithm,
-		expiresIn,
+		expiresIn: expiresIn as SignOptions['expiresIn'],
 		issuer: scDomain,
 		audience: scDomain,
 		header: { typ: 'JWT', alg: algorithm },
@@ -51,7 +48,7 @@ const createJwtOptions = (config: JwtModuleConfig): JwtModuleOptions => {
 		verifyOptions: signOptions,
 	};
 
-	return options;
+	return options as JwtModuleOptions;
 };
 
 @Module({
@@ -68,16 +65,6 @@ const createJwtOptions = (config: JwtModuleConfig): JwtModuleOptions => {
 		SystemModule,
 		OauthModule,
 		RoleModule,
-		IdentityManagementModule.register({
-			encryptionConfig: {
-				configConstructor: AuthenticationEncryptionConfig,
-				configInjectionToken: AUTHENTICATION_ENCRYPTION_CONFIG_TOKEN,
-			},
-			keycloakAdministrationConfig: {
-				configConstructor: KeycloakAdministrationConfig,
-				configInjectionToken: KEYCLOAK_ADMINISTRATION_CONFIG_TOKEN,
-			},
-		}),
 		ValkeyClientModule.register({
 			clientInjectionToken: SESSION_VALKEY_CLIENT,
 			configConstructor: ValkeyClientSessionConfig,
@@ -96,7 +83,9 @@ const createJwtOptions = (config: JwtModuleConfig): JwtModuleOptions => {
 		LdapStrategy,
 		Oauth2Strategy,
 		JwtWhitelistAdapter,
+		Oauth2ContextHelper,
 		LogoutService,
+		ErwinStrategy,
 	],
 	exports: [AuthenticationService, LogoutService],
 })

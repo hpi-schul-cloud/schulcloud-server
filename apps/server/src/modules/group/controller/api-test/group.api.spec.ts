@@ -19,6 +19,8 @@ import { groupEntityFactory } from '../../testing';
 import { ClassRootType } from '../../uc/dto';
 import { ClassInfoSearchListResponse } from '../dto';
 import { ClassSortQueryType } from '../dto/interface';
+import { AUTHORIZATION_CONFIG_TOKEN, AuthorizationConfig } from '@modules/authorization/authorization.config';
+import { SchoolPermissions } from '@modules/school/domain';
 
 const baseRouteName = '/groups';
 
@@ -26,6 +28,7 @@ describe('Group (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let testApiClient: TestApiClient;
+	let authorizationConfig: AuthorizationConfig;
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -36,18 +39,20 @@ describe('Group (API)', () => {
 		await app.init();
 		em = module.get(EntityManager);
 		testApiClient = new TestApiClient(app, baseRouteName);
+
+		authorizationConfig = module.get(AUTHORIZATION_CONFIG_TOKEN);
 	});
 
 	afterAll(async () => {
 		await app.close();
 	});
 
-	const setupRoles = async () => {
+	const setupRoles = () => {
 		const adminRole = roleFactory.buildWithId({ name: RoleName.ADMINISTRATOR });
 		const teacherRole = roleFactory.buildWithId({ name: RoleName.TEACHER });
 		const studentRole = roleFactory.buildWithId({ name: RoleName.STUDENT });
-		await em.persist([adminRole, teacherRole, studentRole]).flush();
-		em.clear();
+
+		em.persist([adminRole, teacherRole, studentRole]);
 
 		return { adminRole, teacherRole, studentRole };
 	};
@@ -63,7 +68,7 @@ describe('Group (API)', () => {
 	describe('[GET] /groups/class', () => {
 		describe('when an admin requests a list of classes', () => {
 			const setup = async () => {
-				const { teacherRole, studentRole } = await setupRoles();
+				const { teacherRole, studentRole } = setupRoles();
 				const schoolYear = schoolYearEntityFactory.buildWithId();
 				const school = schoolEntityFactory.buildWithId({ currentYear: schoolYear });
 				const { adminAccount, adminUser } = UserAndAccountTestFactory.buildAdmin({ school });
@@ -151,6 +156,437 @@ describe('Group (API)', () => {
 					],
 					skip: 0,
 					limit: 2,
+				});
+			});
+		});
+
+		describe('when a teacher requests a list of classes', () => {
+			const setup = async (options?: {
+				teacherStudentVisibilityIsConfigurable?: boolean;
+				studentVisibilityIsEnabledByDefault?: boolean;
+				schoolHasStudentListPermission?: boolean;
+			}) => {
+				const { teacherRole, studentRole } = setupRoles();
+				const schoolYear = schoolYearEntityFactory.buildWithId();
+
+				const permissions: SchoolPermissions = {
+					teacher: {
+						STUDENT_LIST: options?.schoolHasStudentListPermission ?? false,
+					},
+				};
+
+				const school = schoolEntityFactory.buildWithId({ currentYear: schoolYear, permissions });
+				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
+				const otherTeacherUser = userFactory.buildWithId({ school, roles: [teacherRole] });
+				const groupStudents = userFactory.buildListWithId(3, { school, roles: [studentRole] });
+
+				const system = systemEntityFactory.buildWithId();
+
+				const teachersClass = classEntityFactory.buildWithId({
+					name: 'Teachers Class',
+					schoolId: school._id,
+					teacherIds: [teacherUser._id],
+					source: undefined,
+					year: schoolYear.id,
+					userIds: groupStudents.map((s) => s._id),
+					gradeLevel: undefined,
+					successor: undefined,
+				});
+
+				const otherTeachersClass = classEntityFactory.buildWithId({
+					name: 'Other Teachers Class',
+					schoolId: school._id,
+					teacherIds: [otherTeacherUser._id],
+					source: undefined,
+					year: schoolYear.id,
+					userIds: groupStudents.map((s) => s._id),
+					gradeLevel: undefined,
+					successor: undefined,
+				});
+
+				const teachersGroup = groupEntityFactory.buildWithId({
+					name: 'Teachers Group',
+					type: GroupEntityTypes.CLASS,
+					externalSource: {
+						externalId: 'externalId',
+						system,
+					},
+					organization: school,
+					users: [
+						{
+							user: teacherUser,
+							role: teacherRole,
+						},
+						...setupGroupUsers(groupStudents, studentRole),
+					],
+				});
+
+				const otherTeachersGroup = groupEntityFactory.buildWithId({
+					name: 'Other Teachers Group',
+					type: GroupEntityTypes.CLASS,
+					externalSource: {
+						externalId: 'externalExternalId',
+						system,
+					},
+					organization: school,
+					users: [
+						{
+							user: otherTeacherUser,
+							role: teacherRole,
+						},
+						...setupGroupUsers(groupStudents, studentRole),
+					],
+				});
+
+				const course = courseEntityFactory.buildWithId({ syncedWithGroup: teachersGroup });
+
+				authorizationConfig.teacherStudentVisibilityIsConfigurable =
+					options?.teacherStudentVisibilityIsConfigurable ?? false;
+				authorizationConfig.teacherStudentVisibilityIsEnabledByDefault =
+					options?.studentVisibilityIsEnabledByDefault ?? false;
+
+				await em
+					.persist([
+						teacherRole,
+						studentRole,
+						school,
+						teacherAccount,
+						teacherUser,
+						otherTeacherUser,
+						...groupStudents,
+						system,
+						teachersClass,
+						otherTeachersClass,
+						teachersGroup,
+						otherTeachersGroup,
+						schoolYear,
+						course,
+					])
+					.flush();
+				em.clear();
+
+				const teacherClient = await testApiClient.login(teacherAccount);
+
+				return {
+					teacherClient,
+					teacherUser,
+					otherTeacherUser,
+					teachersClass,
+					otherTeachersClass,
+					teachersGroup,
+					otherTeachersGroup,
+					system,
+					schoolYear,
+					course,
+				};
+			};
+
+			describe('when teacher student visibility is NOT configurable', () => {
+				describe('when student visibility is enabled by default', () => {
+					it('should return all classes/groups of the school', async () => {
+						const {
+							teacherClient,
+							teachersClass,
+							otherTeachersClass,
+							teachersGroup,
+							otherTeachersGroup,
+							system,
+							schoolYear,
+							course,
+						} = await setup({
+							teacherStudentVisibilityIsConfigurable: false,
+							studentVisibilityIsEnabledByDefault: true,
+						});
+
+						const response = await teacherClient.get(`/class`).query({
+							skip: 0,
+							limit: 10,
+							sortBy: ClassSortQueryType.NAME,
+							sortOrder: SortOrder.asc,
+						});
+
+						expect(response.status).toEqual(HttpStatus.OK);
+						expect((response.body as ClassInfoSearchListResponse).total).toEqual(4);
+
+						const responseData = (response.body as ClassInfoSearchListResponse).data;
+						const responseIds = responseData.map((item) => item.id);
+
+						expect(responseIds).toContain(teachersClass.id);
+						expect(responseIds).toContain(otherTeachersClass.id);
+						expect(responseIds).toContain(teachersGroup.id);
+						expect(responseIds).toContain(otherTeachersGroup.id);
+
+						expect(responseData).toEqual(
+							expect.arrayContaining([
+								expect.objectContaining({
+									id: teachersClass.id,
+									type: ClassRootType.CLASS,
+									name: teachersClass.name,
+									schoolYear: schoolYear.name,
+									isUpgradable: true,
+								}),
+								expect.objectContaining({
+									id: otherTeachersClass.id,
+									type: ClassRootType.CLASS,
+									name: otherTeachersClass.name,
+									schoolYear: schoolYear.name,
+									isUpgradable: true,
+								}),
+							])
+						);
+
+						expect(responseData).toEqual(
+							expect.arrayContaining([
+								expect.objectContaining({
+									id: teachersGroup.id,
+									type: ClassRootType.GROUP,
+									name: teachersGroup.name,
+									externalSourceName: system.displayName,
+									synchronizedCourses: [{ id: course.id, name: course.name }],
+								}),
+								expect.objectContaining({
+									id: otherTeachersGroup.id,
+									type: ClassRootType.GROUP,
+									name: otherTeachersGroup.name,
+									externalSourceName: system.displayName,
+								}),
+							])
+						);
+					});
+				});
+
+				describe('when student visibility is disabled by default', () => {
+					it('should return only classes/groups the teacher is part of', async () => {
+						const { teacherClient, teachersClass, teachersGroup, system, schoolYear, course } = await setup({
+							teacherStudentVisibilityIsConfigurable: false,
+							studentVisibilityIsEnabledByDefault: false,
+						});
+
+						const response = await teacherClient.get(`/class`).query({
+							skip: 0,
+							limit: 10,
+							sortBy: ClassSortQueryType.NAME,
+							sortOrder: SortOrder.asc,
+						});
+
+						expect(response.status).toEqual(HttpStatus.OK);
+						expect((response.body as ClassInfoSearchListResponse).total).toEqual(2);
+
+						const responseData = (response.body as ClassInfoSearchListResponse).data;
+						const responseIds = responseData.map((item) => item.id);
+
+						expect(responseIds).toContain(teachersClass.id);
+						expect(responseIds).toContain(teachersGroup.id);
+						expect(responseIds).toHaveLength(2);
+
+						expect(responseData).toEqual(
+							expect.arrayContaining([
+								expect.objectContaining({
+									id: teachersClass.id,
+									type: ClassRootType.CLASS,
+									name: teachersClass.name,
+									schoolYear: schoolYear.name,
+									isUpgradable: true,
+								}),
+								expect.objectContaining({
+									id: teachersGroup.id,
+									type: ClassRootType.GROUP,
+									name: teachersGroup.name,
+									externalSourceName: system.displayName,
+									synchronizedCourses: [{ id: course.id, name: course.name }],
+								}),
+							])
+						);
+					});
+				});
+			});
+
+			describe('when teacher student visibility IS configurable', () => {
+				describe('when school has STUDENT_LIST permission enabled', () => {
+					it('should return all classes/groups of the school', async () => {
+						const {
+							teacherClient,
+							teachersClass,
+							otherTeachersClass,
+							teachersGroup,
+							otherTeachersGroup,
+							system,
+							schoolYear,
+							course,
+						} = await setup({
+							teacherStudentVisibilityIsConfigurable: true,
+							studentVisibilityIsEnabledByDefault: false,
+							schoolHasStudentListPermission: true,
+						});
+
+						const response = await teacherClient.get(`/class`).query({
+							skip: 0,
+							limit: 10,
+							sortBy: ClassSortQueryType.NAME,
+							sortOrder: SortOrder.asc,
+						});
+
+						expect(response.status).toEqual(HttpStatus.OK);
+						expect((response.body as ClassInfoSearchListResponse).total).toEqual(4);
+
+						const responseData = (response.body as ClassInfoSearchListResponse).data;
+						const responseIds = responseData.map((item) => item.id);
+
+						expect(responseIds).toContain(teachersClass.id);
+						expect(responseIds).toContain(otherTeachersClass.id);
+						expect(responseIds).toContain(teachersGroup.id);
+						expect(responseIds).toContain(otherTeachersGroup.id);
+
+						expect(responseData).toEqual(
+							expect.arrayContaining([
+								expect.objectContaining({
+									id: teachersClass.id,
+									type: ClassRootType.CLASS,
+									name: teachersClass.name,
+									schoolYear: schoolYear.name,
+									isUpgradable: true,
+								}),
+								expect.objectContaining({
+									id: otherTeachersClass.id,
+									type: ClassRootType.CLASS,
+									name: otherTeachersClass.name,
+									schoolYear: schoolYear.name,
+									isUpgradable: true,
+								}),
+							])
+						);
+
+						expect(responseData).toEqual(
+							expect.arrayContaining([
+								expect.objectContaining({
+									id: teachersGroup.id,
+									type: ClassRootType.GROUP,
+									name: teachersGroup.name,
+									externalSourceName: system.displayName,
+									synchronizedCourses: [{ id: course.id, name: course.name }],
+								}),
+								expect.objectContaining({
+									id: otherTeachersGroup.id,
+									type: ClassRootType.GROUP,
+									name: otherTeachersGroup.name,
+									externalSourceName: system.displayName,
+								}),
+							])
+						);
+					});
+				});
+
+				describe('when school has STUDENT_LIST permission disabled', () => {
+					it('should return only classes/groups the teacher is part of', async () => {
+						const { teacherClient, teachersClass, teachersGroup, system, schoolYear, course } = await setup({
+							teacherStudentVisibilityIsConfigurable: true,
+							studentVisibilityIsEnabledByDefault: true, // even if default is true, school setting overrides
+							schoolHasStudentListPermission: false,
+						});
+
+						const response = await teacherClient.get(`/class`).query({
+							skip: 0,
+							limit: 10,
+							sortBy: ClassSortQueryType.NAME,
+							sortOrder: SortOrder.asc,
+						});
+
+						expect(response.status).toEqual(HttpStatus.OK);
+						// Teacher should only see 2 classes/groups (their own) because school has STUDENT_LIST permission disabled
+						expect((response.body as ClassInfoSearchListResponse).total).toEqual(2);
+
+						const responseData = (response.body as ClassInfoSearchListResponse).data;
+						const responseIds = responseData.map((item) => item.id);
+
+						expect(responseIds).toContain(teachersClass.id);
+						expect(responseIds).toContain(teachersGroup.id);
+						expect(responseIds).toHaveLength(2);
+
+						expect(responseData).toEqual(
+							expect.arrayContaining([
+								expect.objectContaining({
+									id: teachersClass.id,
+									type: ClassRootType.CLASS,
+									name: teachersClass.name,
+									schoolYear: schoolYear.name,
+									isUpgradable: true,
+								}),
+								expect.objectContaining({
+									id: teachersGroup.id,
+									type: ClassRootType.GROUP,
+									name: teachersGroup.name,
+									externalSourceName: system.displayName,
+									synchronizedCourses: [{ id: course.id, name: course.name }],
+								}),
+							])
+						);
+					});
+				});
+
+				describe('when school has no explicit STUDENT_LIST permission set', () => {
+					describe('and student visibility is enabled by default', () => {
+						it('should return only classes/groups the teacher is part of (school setting takes precedence)', async () => {
+							const { teacherClient, teachersClass, teachersGroup } = await setup({
+								teacherStudentVisibilityIsConfigurable: true,
+								studentVisibilityIsEnabledByDefault: true,
+								schoolHasStudentListPermission: false, // explicitly false, not undefined so the default does not take effect
+							});
+
+							const response = await teacherClient.get(`/class`).query({
+								skip: 0,
+								limit: 10,
+								sortBy: ClassSortQueryType.NAME,
+								sortOrder: SortOrder.asc,
+							});
+
+							expect(response.status).toEqual(HttpStatus.OK);
+							expect((response.body as ClassInfoSearchListResponse).total).toEqual(2);
+							expect((response.body as ClassInfoSearchListResponse).data).toEqual(
+								expect.arrayContaining([
+									expect.objectContaining({
+										id: teachersClass.id,
+										type: ClassRootType.CLASS,
+									}),
+									expect.objectContaining({
+										id: teachersGroup.id,
+										type: ClassRootType.GROUP,
+									}),
+								])
+							);
+						});
+					});
+
+					describe('and student visibility is disabled by default', () => {
+						it('should return only classes/groups the teacher is part of', async () => {
+							const { teacherClient, teachersClass, teachersGroup } = await setup({
+								teacherStudentVisibilityIsConfigurable: true,
+								studentVisibilityIsEnabledByDefault: false,
+								schoolHasStudentListPermission: false,
+							});
+
+							const response = await teacherClient.get(`/class`).query({
+								skip: 0,
+								limit: 10,
+								sortBy: ClassSortQueryType.NAME,
+								sortOrder: SortOrder.asc,
+							});
+
+							expect(response.status).toEqual(HttpStatus.OK);
+							expect((response.body as ClassInfoSearchListResponse).total).toEqual(2);
+							expect((response.body as ClassInfoSearchListResponse).data).toEqual(
+								expect.arrayContaining([
+									expect.objectContaining({
+										id: teachersClass.id,
+										type: ClassRootType.CLASS,
+									}),
+									expect.objectContaining({
+										id: teachersGroup.id,
+										type: ClassRootType.GROUP,
+									}),
+								])
+							);
+						});
+					});
 				});
 			});
 		});

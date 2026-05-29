@@ -1,12 +1,6 @@
-import { NotImplementedException, UnprocessableEntityException } from '@nestjs/common';
-import { AnyBoardNode, FileElement, RichTextElement } from '../../domain';
-import {
-	AnyContentElementResponse,
-	FileElementResponse,
-	isFileElementResponse,
-	isRichTextElementResponse,
-	RichTextElementResponse,
-} from '../dto';
+import { NotImplementedException } from '@nestjs/common';
+import { AnyBoardNode } from '../../domain';
+import { AnyContentElementResponse } from '../dto';
 import { BaseResponseMapper } from './base-mapper.interface';
 import { CollaborativeTextEditorElementResponseMapper } from './collaborative-text-editor-element-response.mapper';
 import { DeletedElementResponseMapper } from './deleted-element-response.mapper';
@@ -17,7 +11,6 @@ import { FileFolderElementResponseMapper } from './file-folder-element-response.
 import { H5pElementResponseMapper } from './h5p-element-response.mapper';
 import { LinkElementResponseMapper } from './link-element-response.mapper';
 import { RichTextElementResponseMapper } from './rich-text-element-response.mapper';
-import { SubmissionContainerElementResponseMapper } from './submission-container-element-response.mapper';
 import { VideoConferenceElementResponseMapper } from './video-conference-element-response.mapper';
 
 export class ContentElementResponseFactory {
@@ -26,7 +19,6 @@ export class ContentElementResponseFactory {
 		LinkElementResponseMapper.getInstance(),
 		RichTextElementResponseMapper.getInstance(),
 		DrawingElementResponseMapper.getInstance(),
-		SubmissionContainerElementResponseMapper.getInstance(),
 		ExternalToolElementResponseMapper.getInstance(),
 		CollaborativeTextEditorElementResponseMapper.getInstance(),
 		DeletedElementResponseMapper.getInstance(),
@@ -44,16 +36,6 @@ export class ContentElementResponseFactory {
 
 		const result = elementMapper.mapToResponse(element);
 
-		return result;
-	}
-
-	public static mapSubmissionContentToResponse(
-		element: RichTextElement | FileElement
-	): FileElementResponse | RichTextElementResponse {
-		const result = this.mapToResponse(element);
-		if (!isFileElementResponse(result) && !isRichTextElementResponse(result)) {
-			throw new UnprocessableEntityException();
-		}
 		return result;
 	}
 }

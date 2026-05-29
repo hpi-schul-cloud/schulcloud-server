@@ -2,10 +2,10 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class DeletionRequestResponse {
 	@ApiProperty()
-	requestId: string;
+	public requestId: string;
 
 	@ApiProperty()
-	deletionPlannedAt: Date;
+	public deletionPlannedAt: Date;
 
 	constructor(response: DeletionRequestResponse) {
 		this.requestId = response.requestId;

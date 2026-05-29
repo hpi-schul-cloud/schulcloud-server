@@ -20,7 +20,10 @@ interface MigrationOptions {
 
 @Console({ command: 'database', description: 'database setup console' })
 export class DatabaseManagementConsole {
-	constructor(private consoleWriter: ConsoleWriterService, private databaseManagementUc: DatabaseManagementUc) {}
+	constructor(
+		private consoleWriter: ConsoleWriterService,
+		private databaseManagementUc: DatabaseManagementUc
+	) {}
 
 	@Command({
 		command: 'seed',

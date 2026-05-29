@@ -3,7 +3,10 @@ import { HttpStatus } from '@nestjs/common';
 import { BusinessError } from '@shared/common/error';
 
 export class ExternalToolLogoFetchFailedLoggableException extends BusinessError implements Loggable {
-	constructor(private readonly logoUrl: string, private readonly httpStatus?: HttpStatus) {
+	constructor(
+		private readonly logoUrl: string,
+		private readonly httpStatus?: HttpStatus
+	) {
 		super(
 			{
 				type: 'EXTERNAL_TOOL_LOGO_FETCH_FAILED',

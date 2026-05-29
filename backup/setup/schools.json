@@ -93,7 +93,6 @@
 		},
 		"purpose": "demo",
 		"features": [
-			"rocketChat",
 			"ldapUniventionMigrationSchool",
 			"videoconference",
 			"oauthProvisioningEnabled"
@@ -135,7 +134,6 @@
 		},
 		"purpose": "external_person_school",
         "features" : [
-			"rocketChat",
 			"videoconference",
 			"oauthProvisioningEnabled"
 		]
@@ -149,7 +147,6 @@
 		"experimental": false,
 		"pilot": false,
 		"features": [
-			"rocketChat",
 			"studentVisibility",
 			"oauthProvisioningEnabled"
 		],
@@ -195,7 +192,6 @@
 		"experimental": false,
 		"pilot": false,
 		"features": [
-			"rocketChat",
 			"oauthProvisioningEnabled"
 		],
 		"name": "Ludwig van Beethoven-Liceum",
@@ -241,7 +237,6 @@
 		"experimental": false,
 		"pilot": false,
 		"features": [
-			"rocketChat",
 			"studentVisibility",
 			"oauthProvisioningEnabled"
 		],
@@ -366,7 +361,6 @@
 		},
 		"purpose": "demo",
 		"features": [
-			"rocketChat",
 			"ldapUniventionMigrationSchool",
 			"videoconference",
 			"oauthProvisioningEnabled"
@@ -408,7 +402,6 @@
 		},
 		"purpose": "demo",
 		"features": [
-			"rocketChat",
 			"ldapUniventionMigrationSchool",
 			"videoconference",
 			"oauthProvisioningEnabled"
@@ -450,7 +443,6 @@
 		},
 		"purpose": "demo",
 		"features": [
-			"rocketChat",
 			"videoconference"
 		],
 		"enableStudentTeamCreation": false,
@@ -496,7 +488,6 @@
 			}
 		},
         "features": [
-			"rocketChat",
 			"videoconference"
 		]
 	}

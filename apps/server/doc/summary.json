@@ -44,10 +44,6 @@
 				"file": "keycloak.md"
 			},
 			{
-				"title": "Rocket.Chat",
-				"file": "rocket-chat.md"
-			},
-			{
 				"title": "Configuration",
 				"file": "../../../README.md"
 			},

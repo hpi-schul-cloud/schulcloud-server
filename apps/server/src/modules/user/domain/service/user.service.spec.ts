@@ -1049,4 +1049,55 @@ describe('UserService', () => {
 			userSpy.mockRestore();
 		});
 	});
+
+	describe('getSchoolIdsByUserIds', () => {
+		describe('when users with these ids exist', () => {
+			const setup = () => {
+				const userIdOne = new ObjectId().toHexString();
+				const userIdTwo = new ObjectId().toHexString();
+				const schoolIdOne = new ObjectId().toHexString();
+				const schoolIdTwo = new ObjectId().toHexString();
+				const map = new Map<string, string>();
+				map.set(userIdOne, schoolIdOne);
+				map.set(userIdTwo, schoolIdTwo);
+
+				userDoRepo.getSchoolIdsByUserIds.mockResolvedValueOnce(map);
+
+				return {
+					userIdOne,
+					userIdTwo,
+					schoolIdOne,
+					schoolIdTwo,
+				};
+			};
+
+			it('should return the school ids grouped by user id', async () => {
+				const { userIdOne, userIdTwo, schoolIdOne, schoolIdTwo } = setup();
+
+				const result = await service.getSchoolIdsByUserIds([userIdOne, userIdTwo]);
+
+				expect(result.get(userIdOne)).toEqual(schoolIdOne);
+				expect(result.get(userIdTwo)).toEqual(schoolIdTwo);
+			});
+		});
+
+		describe('when a user with this id does not exist', () => {
+			const setup = () => {
+				const userId = new ObjectId().toHexString();
+				const map = new Map<string, string>();
+
+				userDoRepo.getSchoolIdsByUserIds.mockResolvedValueOnce(map);
+
+				return { userId };
+			};
+
+			it('should return empty array', async () => {
+				const { userId } = setup();
+
+				const result = await service.getSchoolIdsByUserIds([userId]);
+
+				expect(result.size).toEqual(0);
+			});
+		});
+	});
 });

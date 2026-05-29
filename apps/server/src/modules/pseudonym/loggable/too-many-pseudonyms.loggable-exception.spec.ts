@@ -16,7 +16,7 @@ describe('TooManyPseudonymsLoggableException', () => {
 
 			expect(message).toEqual({
 				type: 'PSEUDONYMS_TOO_MANY_PSEUDONYMS_FOUND',
-				message: 'Too many pseudonyms where found.',
+				message: 'Too many pseudonyms were found.',
 				stack: loggable.stack,
 				data: {
 					pseudonym,

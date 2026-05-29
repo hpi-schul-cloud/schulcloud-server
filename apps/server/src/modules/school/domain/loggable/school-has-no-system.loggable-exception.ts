@@ -5,7 +5,10 @@ import { ErrorLogMessage } from '@core/logger/types';
 import { SchoolErrorEnum } from './error.enum';
 
 export class SchoolHasNoSystemLoggableException extends NotFoundException implements Loggable {
-	constructor(private readonly schoolId: EntityId, private readonly systemId: EntityId) {
+	constructor(
+		private readonly schoolId: EntityId,
+		private readonly systemId: EntityId
+	) {
 		super({
 			type: SchoolErrorEnum.SCHOOL_HAS_NO_SYSTEM,
 		});

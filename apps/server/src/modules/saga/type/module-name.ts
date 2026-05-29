@@ -11,7 +11,6 @@ export const ModuleName = {
 	FILES_STORAGE: 'fileRecords',
 	LESSON: 'lessons',
 	PSEUDONYM: 'pseudonyms',
-	ROCKETCHATUSER: 'rocketChatUser',
 	TASK: 'task',
 	TASK_SUBMISSION: 'submissions',
 	TEAM: 'teams',

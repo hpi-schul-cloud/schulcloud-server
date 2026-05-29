@@ -4,11 +4,12 @@
 export interface H5PSemanticField {
 	name: string;
 	type: string;
-	label: string;
+	label?: string;
 	description?: string;
 	entity?: string;
-	options?: any[]; // For fields like 'library', 'select', etc.
-	fields?: H5PSemanticField[]; // For group/fieldset types
+	options?: string[]; // For 'library' type fields
+	field?: H5PSemanticField; // For 'list' type fields
+	fields?: H5PSemanticField[]; // For 'group' type fields
 	widget?: string;
 	min?: number;
 	max?: number;

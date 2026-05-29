@@ -12,8 +12,6 @@ export enum DomainName {
 	LESSONS = 'lessons',
 	PSEUDONYMS = 'pseudonyms',
 	REGISTRATIONPIN = 'registrationPin',
-	ROCKETCHATUSER = 'rocketChatUser',
-	ROCKETCHATSERVICE = 'rocketChatService',
 	TASK = 'task',
 	TEAMS = 'teams',
 	USER = 'user',

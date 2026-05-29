@@ -8,7 +8,10 @@ import { BoardErrorLoggableException } from '../loggable/board-error-loggable-ex
 
 @Injectable()
 export class BoardErrorReportUc {
-	constructor(private readonly authorizationService: AuthorizationService, private readonly logger: Logger) {}
+	constructor(
+		private readonly authorizationService: AuthorizationService,
+		private readonly logger: Logger
+	) {}
 
 	public async reportError(userId: EntityId, params: BoardErrorReportBodyParams): Promise<void> {
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);
@@ -25,7 +28,8 @@ export class BoardErrorReportUc {
 			errorData.boardId,
 			errorData.schoolId,
 			errorData.userId,
-			errorData.retryCount
+			errorData.retryCount,
+			errorData.logSteps
 		);
 		this.logger.warning(loggable);
 	}

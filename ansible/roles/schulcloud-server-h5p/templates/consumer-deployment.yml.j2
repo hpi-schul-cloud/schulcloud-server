@@ -66,27 +66,6 @@ spec:
         - secretRef:
             name: api-h5p-secret
         command: ['npm', 'run', 'nest:start:h5p:consumer:prod']
-        readinessProbe:
-          httpGet:
-            path: /internal/health
-            port: 4449
-          timeoutSeconds: 4
-          failureThreshold: 3
-          periodSeconds: 5
-        livenessProbe:
-          httpGet:
-            path: /internal/health
-            port: 4449
-          timeoutSeconds: 4
-          failureThreshold: 3
-          periodSeconds: 15
-        startupProbe:
-          httpGet:
-            path: /internal/health
-            port: 4449
-          timeoutSeconds: 4
-          failureThreshold:  36
-          periodSeconds: 5
         resources:
           limits:
             cpu: {{ API_H5P_CONSUMER_CPU_LIMITS|default("1000m", true) }}

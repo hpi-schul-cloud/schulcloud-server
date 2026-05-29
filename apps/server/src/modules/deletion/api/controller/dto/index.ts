@@ -5,4 +5,3 @@ export * from './request/deletion-items.params';
 export * from './response/deletion-request-log.response';
 export * from './response/deletion-request.response';
 export * from './request/create-deletion-batch.body.params';
-export * from './response/deletion-batch.response';

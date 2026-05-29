@@ -7,14 +7,14 @@ import { BoardExternalReference, BoardLayout, BoardNodeProps } from '../types';
 import { MediaBoard } from './media-board.do';
 import { MediaExternalToolElement } from './media-external-tool-element.do';
 import { MediaLine } from './media-line.do';
-import { MediaBoardColors } from './types';
+import { Colors } from './types';
 
 @Injectable()
 export class MediaBoardNodeFactory {
 	buildMediaBoard(props: {
 		context: BoardExternalReference;
 		layout: BoardLayout;
-		backgroundColor: MediaBoardColors;
+		backgroundColor: Colors;
 		collapsed: boolean;
 	}): MediaBoard {
 		const mediaBoard = new MediaBoard({ ...this.getBaseProps(), ...props });
@@ -22,7 +22,7 @@ export class MediaBoardNodeFactory {
 		return mediaBoard;
 	}
 
-	buildMediaLine(props: { title: string; backgroundColor: MediaBoardColors; collapsed: boolean }): MediaLine {
+	buildMediaLine(props: { title: string; backgroundColor: Colors; collapsed: boolean }): MediaLine {
 		const mediaLine = new MediaLine({ ...this.getBaseProps(), ...props });
 
 		return mediaLine;

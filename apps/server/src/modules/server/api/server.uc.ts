@@ -7,7 +7,6 @@ import { LEARNROOM_PUBLIC_API_CONFIG_TOKEN, LearnroomPublicApiConfig } from '@mo
 import { OAUTH_PUBLIC_API_CONFIG_TOKEN, OauthPublicApiConfig } from '@modules/oauth';
 import { PROVISIONING_PUBLIC_API_CONFIG, ProvisioningPublicApiConfig } from '@modules/provisioning';
 import { REGISTRATION_PUBLIC_API_CONFIG_TOKEN, RegistrationPublicApiConfig } from '@modules/registration';
-import { ROCKET_CHAT_API_PUBLIC_CONFIG_TOKEN, RocketChatPublicApiConfig } from '@modules/rocketchat';
 import { ROOM_PUBLIC_API_CONFIG_TOKEN, RoomPublicApiConfig } from '@modules/room';
 import { ROSTER_PUBLIC_API_CONFIG_TOKEN, RosterPublicApiConfig } from '@modules/roster';
 import { SHARING_PUBLIC_API_CONFIG_TOKEN, SharingPublicApiConfig } from '@modules/sharing';
@@ -24,6 +23,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { SERVER_PUBLIC_API_CONFIG_TOKEN, ServerPublicApiConfig } from '../server.config';
 import { ConfigResponse } from './dto';
 import { ConfigResponseMapper } from './mapper';
+import { TEAM_PUBLIC_API_CONFIG_TOKEN, TeamPublicApiConfig } from '@modules/team';
 
 @Injectable()
 export class ServerUc {
@@ -49,7 +49,7 @@ export class ServerUc {
 		@Inject(USER_LOGIN_MIGRATION_PUBLIC_API_CONFIG_TOKEN)
 		private readonly userLoginMigrationConfig: UserLoginMigrationPublicApiConfig,
 		@Inject(FWU_PUBLIC_API_CONFIG_TOKEN) private readonly fwuConfig: FwuPublicApiConfig,
-		@Inject(ROCKET_CHAT_API_PUBLIC_CONFIG_TOKEN) private readonly rocketChatConfig: RocketChatPublicApiConfig
+		@Inject(TEAM_PUBLIC_API_CONFIG_TOKEN) private readonly teamConfig: TeamPublicApiConfig
 	) {}
 
 	public getConfig(): ConfigResponse {
@@ -73,7 +73,7 @@ export class ServerUc {
 			this.userImportConfig,
 			this.userLoginMigrationConfig,
 			this.fwuConfig,
-			this.rocketChatConfig
+			this.teamConfig
 		);
 
 		return configDto;

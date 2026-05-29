@@ -1,4 +1,4 @@
-import { EntityManager, EntityName } from '@mikro-orm/mongodb';
+import { EntityManager, EntityName, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
@@ -72,13 +72,6 @@ export class DeletionRequestRepo {
 		return mapped;
 	}
 
-	public async update(deletionRequest: DeletionRequest): Promise<void> {
-		const deletionRequestEntity = DeletionRequestMapper.mapToEntity(deletionRequest);
-		const referencedEntity = this.em.getReference(DeletionRequestEntity, deletionRequestEntity.id);
-
-		await this.em.persist(referencedEntity).flush();
-	}
-
 	public async markDeletionRequestAsExecuted(deletionRequestId: EntityId): Promise<boolean> {
 		const deletionRequest: DeletionRequestEntity = await this.em.findOneOrFail(DeletionRequestEntity, {
 			id: deletionRequestId,
@@ -130,47 +123,28 @@ export class DeletionRequestRepo {
 		return ids.map((id) => entityMap.get(id) || null);
 	}
 
-	public async findRegisteredByTargetRefId(targetRefIds: EntityId[]): Promise<DeletionRequest[]> {
-		const scope = new DeletionRequestScope();
-		scope.byUserIdsAndRegistered(targetRefIds);
-
-		const deletionRequestEntities = await this.em.find(DeletionRequestEntity, scope.query);
-
-		const mapped: DeletionRequest[] = deletionRequestEntities.map((entity) => DeletionRequestMapper.mapToDO(entity));
-
-		return mapped;
-	}
-
-	public async findFailedByTargetRefId(targetRefIds: EntityId[]): Promise<DeletionRequest[]> {
-		const scope = new DeletionRequestScope();
-		scope.byUserIdsAndFailed(targetRefIds);
-
-		const deletionRequestEntities = await this.em.find(DeletionRequestEntity, scope.query);
-
-		const mapped: DeletionRequest[] = deletionRequestEntities.map((entity) => DeletionRequestMapper.mapToDO(entity));
-
-		return mapped;
-	}
-
-	public async findPendingByTargetRefId(targetRefIds: EntityId[]): Promise<DeletionRequest[]> {
-		const scope = new DeletionRequestScope();
-		scope.byUserIdsAndPending(targetRefIds);
-
-		const deletionRequestEntities = await this.em.find(DeletionRequestEntity, scope.query);
-
-		const mapped: DeletionRequest[] = deletionRequestEntities.map((entity) => DeletionRequestMapper.mapToDO(entity));
-
-		return mapped;
-	}
-
-	public async findSuccessfulByTargetRefId(targetRefIds: EntityId[]): Promise<DeletionRequest[]> {
-		const scope = new DeletionRequestScope();
-		scope.byUserIdsAndSuccess(targetRefIds);
-
-		const deletionRequestEntities = await this.em.find(DeletionRequestEntity, scope.query);
-
-		const mapped: DeletionRequest[] = deletionRequestEntities.map((entity) => DeletionRequestMapper.mapToDO(entity));
-
-		return mapped;
+	public async groupTargetRefIdsByBatchAndStatus(
+		batchId: EntityId
+	): Promise<{ status: StatusModel; targetRefIds: EntityId[] }[]> {
+		const pipeline = [
+			{ $match: { batchId: new ObjectId(batchId) } },
+			{
+				$group: {
+					_id: '$status',
+					targetRefIds: { $push: { $toString: '$targetRefId' } },
+				},
+			},
+			{
+				$project: {
+					_id: 0,
+					status: '$_id',
+					targetRefIds: 1,
+				},
+			},
+		];
+		const result = await this.em
+			.getConnection()
+			.aggregate<{ status: StatusModel; targetRefIds: EntityId[] }>('deletionrequests', pipeline);
+		return result;
 	}
 }

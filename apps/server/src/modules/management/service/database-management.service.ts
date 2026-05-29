@@ -7,7 +7,10 @@ import { Document } from 'mongodb';
 
 @Injectable()
 export class DatabaseManagementService {
-	constructor(private em: EntityManager, private readonly orm: MikroORM) {}
+	constructor(
+		private em: EntityManager,
+		private readonly orm: MikroORM
+	) {}
 
 	private get db(): Db {
 		const connection = this.em.getConnection('write').getDb();

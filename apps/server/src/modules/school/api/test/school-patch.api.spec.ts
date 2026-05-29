@@ -296,7 +296,7 @@ describe('School Controller (API)', () => {
 								},
 								fileStorageType: 'awsS3',
 								language: 'en',
-								features: ['rocketChat'],
+								features: [],
 							};
 
 							const schoolYearResponses = schoolYears.map((schoolYear) => {
@@ -343,7 +343,7 @@ describe('School Controller (API)', () => {
 									nextYear: schoolYearResponses[2],
 								},
 								name: newParams.name,
-								features: ['rocketChat'],
+								features: [],
 								systemIds: systems.map((system) => system.id),
 								language: newParams.language,
 								fileStorageType: newParams.fileStorageType,

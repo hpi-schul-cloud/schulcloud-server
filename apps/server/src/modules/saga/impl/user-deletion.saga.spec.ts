@@ -93,7 +93,7 @@ describe(UserDeletionSaga.name, () => {
 			executeStepSpy.mockRejectedValueOnce(new Error('test step failed'));
 
 			await expect(saga.execute({ userId: '67a0784ef358f49ca4faf5c4' })).rejects.toThrow(
-				'Some steps failed: Error: test step failed'
+				/User deletion failed for userId: 67a0784ef358f49ca4faf5c4/
 			);
 		});
 
@@ -110,7 +110,7 @@ describe(UserDeletionSaga.name, () => {
 			});
 
 			await expect(saga.execute({ userId: '67a0784ef358f49ca4faf5c4' })).rejects.toThrow(
-				'Step failed: Failed to delete user data in USER module: this is a test error'
+				/User deletion saga failed at final USER module step for userId: 67a0784ef358f49ca4faf5c4./
 			);
 		});
 

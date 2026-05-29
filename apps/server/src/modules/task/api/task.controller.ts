@@ -14,7 +14,10 @@ import { TaskUC } from './task.uc';
 @JwtAuthentication()
 @Controller('tasks')
 export class TaskController {
-	constructor(private readonly taskUc: TaskUC, private readonly taskCopyUc: TaskCopyUC) {}
+	constructor(
+		private readonly taskUc: TaskUC,
+		private readonly taskCopyUc: TaskCopyUC
+	) {}
 
 	@Get()
 	public async findAll(

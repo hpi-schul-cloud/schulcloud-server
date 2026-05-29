@@ -4,6 +4,34 @@ const oauth2 = require('../../oauth2/hooks');
 
 const webUri = Configuration.get('HOST');
 
+/**
+ * Validates that the token does not contain any injected content like query parameters,
+ * URL fragments, or other potentially malicious characters.
+ * Works for both JWT and opaque tokens.
+ * @param {string} token - The token to validate
+ * @throws {BadRequest} If the token contains suspicious characters
+ */
+const validateTokenFormat = (token) => {
+	if (!token || typeof token !== 'string') {
+		throw new BadRequest('Invalid token type');
+	}
+
+	// Block characters commonly used for injection attacks:
+	// ? - query parameters
+	// & - query parameter separator
+	// # - URL fragments
+	// < > - HTML/XML injection
+	// spaces, newlines, carriage returns - header injection
+	if (/[?&#<>\s\r\n]/.test(token)) {
+		throw new BadRequest('Invalid token format');
+	}
+
+	// ensure reasonable length to prevent DoS
+	if (token.length > 4096) {
+		throw new BadRequest('Token too long');
+	}
+};
+
 module.exports = {
 	/**
 	 * Authentication with oauth2 authorization token via Bearer/header from external tool (bettermarks)
@@ -11,17 +39,22 @@ module.exports = {
 	 * sets context.params.tokenInfo with oauth user information
 	 * @param {*} context
 	 */
-	tokenIsActive: (context) =>
-		context.app
+	tokenIsActive: (context) => {
+		const token = context.params.headers.authorization.replace('Bearer ', '');
+
+		validateTokenFormat(token);
+
+		return context.app
 			.service('/oauth2/introspect')
-			.create({ token: context.params.headers.authorization.replace('Bearer ', '') })
+			.create({ token })
 			.then((introspection) => {
 				if (introspection.active) {
 					context.params.tokenInfo = introspection;
 					return context;
 				}
 				throw new BadRequest('Access token invalid');
-			}),
+			});
+	},
 
 	/**
 	 * expects obfuscated_subject to match external pseudonym from route.user or

@@ -1,5 +1,4 @@
 export enum SchoolFeature {
-	ROCKET_CHAT = 'rocketChat',
 	VIDEOCONFERENCE = 'videoconference',
 	NEXTCLOUD = 'nextcloud',
 	/** @deprecated use STUDENT_LIST Permission instead */

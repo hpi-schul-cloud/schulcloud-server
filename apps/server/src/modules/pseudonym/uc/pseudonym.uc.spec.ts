@@ -56,7 +56,7 @@ describe('PseudonymUc', () => {
 		await module.close();
 	});
 
-	describe('findPseudonymByPseudonym', () => {
+	describe('resolvePseudonymForUser', () => {
 		describe('when valid user and params are given', () => {
 			const setup = () => {
 				const userId = 'userId';
@@ -68,7 +68,7 @@ describe('PseudonymUc', () => {
 				const pseudonym: Pseudonym = new Pseudonym(pseudonymFactory.build({ userId: user.id }));
 
 				authorizationService.getUserWithPermissions.mockResolvedValue(user);
-				pseudonymService.findPseudonymByPseudonym.mockResolvedValueOnce(pseudonym);
+				pseudonymService.findOneByPseudonym.mockResolvedValueOnce(pseudonym);
 				schoolService.getSchoolById.mockResolvedValue(school);
 
 				return {
@@ -83,7 +83,7 @@ describe('PseudonymUc', () => {
 			it('should call authorization service with params', async () => {
 				const { userId, user, school } = setup();
 
-				await uc.findPseudonymByPseudonym(userId, 'pseudonym');
+				await uc.resolvePseudonymForUser(userId, 'pseudonym');
 
 				expect(authorizationService.checkPermission).toHaveBeenCalledWith(user, school, {
 					action: Action.read,
@@ -94,15 +94,15 @@ describe('PseudonymUc', () => {
 			it('should call service with pseudonym', async () => {
 				const { userId } = setup();
 
-				await uc.findPseudonymByPseudonym(userId, 'pseudonym');
+				await uc.resolvePseudonymForUser(userId, 'pseudonym');
 
-				expect(pseudonymService.findPseudonymByPseudonym).toHaveBeenCalledWith('pseudonym');
+				expect(pseudonymService.findOneByPseudonym).toHaveBeenCalledWith('pseudonym');
 			});
 
 			it('should call school service with school id from pseudonym user', async () => {
 				const { userId, schoolEntity } = setup();
 
-				await uc.findPseudonymByPseudonym(userId, 'pseudonym');
+				await uc.resolvePseudonymForUser(userId, 'pseudonym');
 
 				expect(schoolService.getSchoolById).toHaveBeenCalledWith(schoolEntity.id);
 			});
@@ -110,7 +110,7 @@ describe('PseudonymUc', () => {
 			it('should return pseudonym', async () => {
 				const { userId, pseudonym } = setup();
 
-				const foundPseudonym: Pseudonym = await uc.findPseudonymByPseudonym(userId, 'pseudonym');
+				const foundPseudonym: Pseudonym = await uc.resolvePseudonymForUser(userId, 'pseudonym');
 
 				expect(foundPseudonym).toEqual(pseudonym);
 			});
@@ -128,7 +128,7 @@ describe('PseudonymUc', () => {
 				authorizationService.checkPermission.mockImplementationOnce(() => {
 					throw new ForbiddenException();
 				});
-				pseudonymService.findPseudonymByPseudonym.mockResolvedValueOnce(pseudonym);
+				pseudonymService.findOneByPseudonym.mockResolvedValueOnce(pseudonym);
 
 				return {
 					userId,
@@ -138,7 +138,7 @@ describe('PseudonymUc', () => {
 			it('should throw forbidden exception', async () => {
 				const { userId } = setup();
 
-				const func = async () => uc.findPseudonymByPseudonym(userId, 'pseudonym');
+				const func = async () => await uc.resolvePseudonymForUser(userId, 'pseudonym');
 
 				await expect(func()).rejects.toThrow(ForbiddenException);
 			});

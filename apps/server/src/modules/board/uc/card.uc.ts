@@ -5,7 +5,7 @@ import { EntityId } from '@shared/domain/types';
 
 import { throwForbiddenIfFalse } from '@shared/common/utils';
 import { BoardNodeRule } from '../authorisation/board-node.rule';
-import { AnyBoardNode, AnyContentElement, BoardNodeFactory, Card, ContentElementType } from '../domain';
+import { AnyBoardNode, AnyContentElement, BoardNodeFactory, Card, Colors, ContentElementType } from '../domain';
 import { BoardNodeAuthorizableService, BoardNodeService } from '../service';
 
 @Injectable()
@@ -24,6 +24,10 @@ export class CardUc {
 
 	public async findCards(userId: EntityId, cardIds: EntityId[]): Promise<Card[]> {
 		const cards = await this.boardNodeService.findByClassAndIds(Card, cardIds);
+		if (cards.length === 0) {
+			return [];
+		}
+
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const boardAuthorizables = await this.boardNodeAuthorizableService.getBoardAuthorizables(cards);
 
@@ -56,6 +60,17 @@ export class CardUc {
 		throwForbiddenIfFalse(this.boardNodeRule.can('updateCardTitle', user, boardNodeAuthorizable));
 
 		await this.boardNodeService.updateTitle(card, title);
+		return card;
+	}
+
+	public async updateCardColor(userId: EntityId, cardId: EntityId, color: Colors): Promise<Card> {
+		const card = await this.boardNodeService.findByClassAndId(Card, cardId);
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(card);
+
+		throwForbiddenIfFalse(this.boardNodeRule.can('updateCardColor', user, boardNodeAuthorizable));
+
+		await this.boardNodeService.updateBackgroundColor(card, color);
 		return card;
 	}
 

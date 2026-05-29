@@ -100,7 +100,6 @@ describe('LegacySchoolRepo', () => {
 		expect(storedSchool).toEqual(school);
 		expect(storedSchool.previousExternalId).toBeDefined();
 		expect(storedSchool.permissions).toBeDefined();
-		expect(storedSchool.permissions?.student).toBeUndefined();
 		expect(storedSchool.permissions?.teacher).toBeDefined();
 		expect(storedSchool.permissions?.teacher?.STUDENT_LIST).toBe(true);
 		expect(storedSchool.userLoginMigration).toBeDefined();

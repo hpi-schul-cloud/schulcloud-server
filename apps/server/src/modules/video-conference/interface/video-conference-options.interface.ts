@@ -4,8 +4,6 @@ export interface VideoConferenceOptions {
 	everybodyJoinsAsModerator: boolean;
 
 	moderatorMustApproveJoinRequests: boolean;
-
-	logoutUrl?: string;
 }
 
 export const defaultVideoConferenceOptions: VideoConferenceOptions = {

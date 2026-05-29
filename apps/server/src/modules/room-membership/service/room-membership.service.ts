@@ -1,21 +1,21 @@
+import { LegacyLogger } from '@core/logger';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Group, GroupService, GroupTypes } from '@modules/group';
 import { RoleName, RoleService, RoomRole } from '@modules/role';
 import { ROOM_PUBLIC_API_CONFIG_TOKEN, RoomPublicApiConfig, RoomService } from '@modules/room';
+import { RoomInvitationLink } from '@modules/room/domain/do/room-invitation-link.do';
+import { SchoolService } from '@modules/school/domain/service/school.service';
 import { UserService } from '@modules/user';
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { Page } from '@shared/domain/domainobject';
 import { Pagination } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
-import { chunk } from 'lodash';
 import { RoomAuthorizable } from '../do/room-authorizable.do';
+import { RoomInvitationLinkAuthorizable } from '../do/room-invitation-link-authorizable.do';
 import { RoomMember } from '../do/room-member.do';
 import { RoomMembership } from '../do/room-membership.do';
 import { RoomMembershipRepo } from '../repo/room-membership.repo';
 import { MemberStats, RoomMembershipStats } from '../type/room-membership-stats.type';
-import { RoomInvitationLink } from '@modules/room/domain/do/room-invitation-link.do';
-import { RoomInvitationLinkAuthorizable } from '../do/room-invitation-link-authorizable.do';
-import { SchoolService } from '@modules/school/domain/service/school.service';
 
 @Injectable()
 export class RoomMembershipService {
@@ -26,6 +26,7 @@ export class RoomMembershipService {
 		private readonly roomService: RoomService,
 		private readonly userService: UserService,
 		private readonly schoolService: SchoolService,
+		private readonly logger: LegacyLogger,
 		@Inject(ROOM_PUBLIC_API_CONFIG_TOKEN) private readonly roomConfig: RoomPublicApiConfig
 	) {}
 
@@ -169,14 +170,24 @@ export class RoomMembershipService {
 	}
 
 	public async getRoomAuthorizable(roomId: EntityId): Promise<RoomAuthorizable> {
+		const room = await this.roomService.getSingleRoom(roomId);
 		const roomMembership = await this.roomMembershipRepo.findByRoomId(roomId);
 		if (roomMembership === null) {
-			const room = await this.roomService.getSingleRoom(roomId);
+			this.logger.warn(`No room membership found for roomId ${roomId}`);
 			return new RoomAuthorizable(roomId, [], room.schoolId);
 		}
-		const group = await this.groupService.findById(roomMembership.userGroupId);
-		const roomAuthorizables = await this.getAuthorizables([group], [roomMembership]);
 
+		const group = await this.groupService.findById(roomMembership.userGroupId);
+		if (group === null) {
+			this.logger.warn(`No group found for roomId ${roomId} groupId ${roomMembership.userGroupId}`);
+			return new RoomAuthorizable(roomId, [], room.schoolId);
+		}
+
+		const roomAuthorizables = await this.getAuthorizables([group], [roomMembership]);
+		if (roomAuthorizables.length !== 1) {
+			this.logger.warn(`Expected exactly 1 room authorizable for roomId ${roomId}, got ${roomAuthorizables.length}`);
+			return new RoomAuthorizable(roomId, [], room.schoolId);
+		}
 		return roomAuthorizables[0];
 	}
 
@@ -198,7 +209,7 @@ export class RoomMembershipService {
 
 	private async getAuthorizables(groups: Group[], roomMemberships: RoomMembership[]): Promise<RoomAuthorizable[]> {
 		const userIds = [...groups.flatMap((group) => group.users.map((user) => user.userId))];
-		const userSchoolMap = await this.getSchoolIdsOfUsers(userIds);
+		const userSchoolMap = await this.userService.getSchoolIdsByUserIds(userIds);
 
 		const roleDtos = await this.roleService.findAll();
 
@@ -220,35 +231,13 @@ export class RoomMembershipService {
 		return roomAuthorizables;
 	}
 
-	private async getSchoolIdsOfUsers(userIds: EntityId[]): Promise<Map<EntityId, EntityId>> {
-		const userSchoolMap = new Map<EntityId, EntityId>();
-		const userIdChunks = chunk(userIds, 100);
-		for (const userIdChunk of userIdChunks) {
-			const users = await this.userService.findByIds(userIdChunk);
-			for (const user of users) {
-				if (!user.id) continue;
-				userSchoolMap.set(user.id, user.schoolId);
-			}
-		}
-		return userSchoolMap;
-	}
+	private async getAllRoomGroupsOfUser(userId: EntityId): Promise<Group[]> {
+		const { data } = await this.groupService.findGroups({
+			groupTypes: [GroupTypes.ROOM],
+			userId,
+		});
 
-	private async getAllRoomGroupsOfUser(userId: EntityId, skip = 0): Promise<Group[]> {
-		const { data, total } = await this.groupService.findGroups(
-			{
-				groupTypes: [GroupTypes.ROOM],
-				userId,
-			},
-			{ pagination: { skip, limit: 100 } }
-		);
-
-		const isAllDataLoaded = data.length + skip >= total;
-		if (isAllDataLoaded) {
-			return data;
-		} else {
-			const nextData = await this.getAllRoomGroupsOfUser(userId, skip + data.length);
-			return [...data, ...nextData];
-		}
+		return data;
 	}
 
 	private async getStats(groupsOnPage: Group[], schoolId: string): Promise<RoomMembershipStats[]> {

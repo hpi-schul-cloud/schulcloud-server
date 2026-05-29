@@ -1,26 +1,20 @@
-import { IdentityManagementService } from '@infra/identity-management';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Inject, Injectable } from '@nestjs/common';
 import { EntityNotFoundError } from '@shared/common/error';
 import { Counted, EntityId } from '@shared/domain/types';
 import bcrypt from 'bcryptjs';
-import { ACCOUNT_CONFIG_TOKEN, AccountConfig } from '../../account-config';
 import { Account, AccountSave } from '../do';
 import { ACCOUNT_REPO, AccountRepo } from '../interface';
 import { AbstractAccountService } from './account.service.abstract';
 
 @Injectable()
 export class AccountServiceDb extends AbstractAccountService {
-	constructor(
-		@Inject(ACCOUNT_REPO) private readonly accountRepo: AccountRepo,
-		private readonly idmService: IdentityManagementService,
-		@Inject(ACCOUNT_CONFIG_TOKEN) private readonly config: AccountConfig
-	) {
+	constructor(@Inject(ACCOUNT_REPO) private readonly accountRepo: AccountRepo) {
 		super();
 	}
 
 	public async findById(id: EntityId): Promise<Account> {
-		const internalId = await this.convertExternalToInternalId(id);
+		const internalId = this.convertExternalToInternalId(id);
 
 		return this.accountRepo.findById(internalId);
 	}
@@ -50,7 +44,7 @@ export class AccountServiceDb extends AbstractAccountService {
 	public async save(accountSave: AccountSave): Promise<Account> {
 		let account: Account;
 		if (accountSave.id) {
-			const internalId = await this.convertExternalToInternalId(accountSave.id);
+			const internalId = this.convertExternalToInternalId(accountSave.id);
 
 			account = await this.accountRepo.findById(internalId);
 		} else {
@@ -65,7 +59,7 @@ export class AccountServiceDb extends AbstractAccountService {
 			accountSaves.map(async (accountSave) => {
 				let account: Account;
 				if (accountSave.id) {
-					const internalId = await this.convertExternalToInternalId(accountSave.id);
+					const internalId = this.convertExternalToInternalId(accountSave.id);
 
 					account = await this.accountRepo.findById(internalId);
 				} else {
@@ -82,7 +76,7 @@ export class AccountServiceDb extends AbstractAccountService {
 	}
 
 	public async updateUsername(accountId: EntityId, username: string): Promise<Account> {
-		const internalId = await this.convertExternalToInternalId(accountId);
+		const internalId = this.convertExternalToInternalId(accountId);
 		const account = await this.accountRepo.findById(internalId);
 		account.username = username;
 		await this.accountRepo.save(account);
@@ -90,7 +84,7 @@ export class AccountServiceDb extends AbstractAccountService {
 	}
 
 	public async updateLastLogin(accountId: EntityId, lastLogin: Date): Promise<Account> {
-		const internalId = await this.convertExternalToInternalId(accountId);
+		const internalId = this.convertExternalToInternalId(accountId);
 		const account = await this.accountRepo.findById(internalId);
 		account.lastLogin = lastLogin;
 
@@ -100,7 +94,7 @@ export class AccountServiceDb extends AbstractAccountService {
 	}
 
 	public async updateLastTriedFailedLogin(accountId: EntityId, lastTriedFailedLogin: Date): Promise<Account> {
-		const internalId = await this.convertExternalToInternalId(accountId);
+		const internalId = this.convertExternalToInternalId(accountId);
 		const account = await this.accountRepo.findById(internalId);
 		account.lasttriedFailedLogin = lastTriedFailedLogin;
 
@@ -110,7 +104,7 @@ export class AccountServiceDb extends AbstractAccountService {
 	}
 
 	public async updatePassword(accountId: EntityId, password: string): Promise<Account> {
-		const internalId = await this.convertExternalToInternalId(accountId);
+		const internalId = this.convertExternalToInternalId(accountId);
 		const account = await this.accountRepo.findById(internalId);
 		account.password = await this.encryptPassword(password);
 
@@ -120,7 +114,7 @@ export class AccountServiceDb extends AbstractAccountService {
 	}
 
 	public async delete(id: EntityId): Promise<void> {
-		const internalId = await this.convertExternalToInternalId(id);
+		const internalId = this.convertExternalToInternalId(id);
 		return this.accountRepo.deleteById(internalId);
 	}
 
@@ -149,13 +143,9 @@ export class AccountServiceDb extends AbstractAccountService {
 		return passwordCompare;
 	}
 
-	private async convertExternalToInternalId(id: EntityId | ObjectId): Promise<ObjectId> {
+	private convertExternalToInternalId(id: EntityId | ObjectId): ObjectId {
 		if (id instanceof ObjectId || ObjectId.isValid(id)) {
 			return new ObjectId(id);
-		}
-		if (this.config.identityManagementStoreEnabled === true) {
-			const account = await this.idmService.findAccountById(id);
-			return new ObjectId(account.attDbcAccountId);
 		}
 		throw new EntityNotFoundError(`Account with id ${id.toString()} not found`);
 	}

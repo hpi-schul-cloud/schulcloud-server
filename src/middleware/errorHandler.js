@@ -127,10 +127,23 @@ const secretDataKeys = (() =>
 		'searchUserPassword',
 		'authorization',
 		'student-email',
+		'toHash',
 	].map((k) => k.toLocaleLowerCase()))();
 
 const filterSecretValue = (key, value) => {
 	if (secretDataKeys.includes(key.toLocaleLowerCase())) {
+		// E-Mail-Maskierung, falls value eine E-Mail-Adresse ist
+		if (typeof value === 'string' && /^[^@\s]{3,}[^@\s]*@[^@\s]+\.[^@\s]+$/.test(value)) {
+			// Split in local und domain
+			const [local, domain] = value.split('@');
+			if (local.length > 3) {
+				const masked = local.slice(0, 3) + '*'.repeat(local.length - 3);
+				return masked + '@' + domain;
+			} else {
+				// Weniger als 3 Zeichen vor dem @, alles maskieren
+				return '*'.repeat(local.length) + '@' + domain;
+			}
+		}
 		return '<secret>';
 	}
 	return value;

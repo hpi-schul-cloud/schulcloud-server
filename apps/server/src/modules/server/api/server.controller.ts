@@ -6,7 +6,7 @@ export class ServerController {
 	@ApiOperation({ summary: 'Default route to test public access' })
 	@ApiResponse({ status: 200, type: String })
 	@Get()
-	getHello(): { message: string } {
+	public getHello(): { message: string } {
 		return { message: 'Schulcloud Server API' };
 	}
 }

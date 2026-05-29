@@ -34,6 +34,7 @@ const createParams = () => {
 		userId: 'mockUserId',
 		isExternalUser: false,
 		support: false,
+		isServiceAccount: false,
 	};
 
 	return { contentId, parameters, metadata, mainLibraryUbername, parentId, mockCurrentUser };

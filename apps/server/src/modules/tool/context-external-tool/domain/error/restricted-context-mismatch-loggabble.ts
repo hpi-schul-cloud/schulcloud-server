@@ -3,7 +3,10 @@ import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from
 import { ToolContextType } from '../../../common/enum';
 
 export class RestrictedContextMismatchLoggableException extends UnprocessableEntityException implements Loggable {
-	constructor(private readonly externalToolName: string, private readonly context: ToolContextType) {
+	constructor(
+		private readonly externalToolName: string,
+		private readonly context: ToolContextType
+	) {
 		super();
 	}
 

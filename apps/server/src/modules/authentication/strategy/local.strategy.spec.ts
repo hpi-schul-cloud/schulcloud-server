@@ -1,5 +1,4 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { IdentityManagementOauthService } from '@infra/identity-management';
 import { Account } from '@modules/account';
 import { accountDoFactory } from '@modules/account/testing';
 import { RoleName } from '@modules/role';
@@ -19,7 +18,6 @@ describe('LocalStrategy', () => {
 	let mockAccount: Account;
 	let userServiceMock: DeepMocked<UserService>;
 	let authenticationServiceMock: DeepMocked<AuthenticationService>;
-	let idmOauthServiceMock: DeepMocked<IdentityManagementOauthService>;
 	let config: AuthenticationConfig;
 
 	const mockPassword = 'mockPassword123&';
@@ -28,10 +26,9 @@ describe('LocalStrategy', () => {
 	beforeAll(async () => {
 		await setupEntities([User]);
 		authenticationServiceMock = createMock<AuthenticationService>();
-		idmOauthServiceMock = createMock<IdentityManagementOauthService>();
 		config = new AuthenticationConfig();
 		userServiceMock = createMock<UserService>();
-		strategy = new LocalStrategy(authenticationServiceMock, idmOauthServiceMock, config, userServiceMock);
+		strategy = new LocalStrategy(authenticationServiceMock, config, userServiceMock);
 		mockUser = userFactory.withRoleByName(RoleName.STUDENT).buildWithId();
 		mockAccount = accountDoFactory.build({ userId: mockUser.id, password: mockPasswordHash });
 	});
@@ -49,21 +46,6 @@ describe('LocalStrategy', () => {
 	});
 
 	describe('validate', () => {
-		describe('when idm feature is active', () => {
-			const setup = () => {
-				const jwt = 'mock-jwt';
-				config.identityManagementLoginEnabled = true;
-				idmOauthServiceMock.resourceOwnerPasswordGrant.mockResolvedValueOnce(jwt);
-				return jwt;
-			};
-
-			it('should use idm for credential validation', async () => {
-				setup();
-				await expect(strategy.validate('username', 'password')).resolves.not.toThrow();
-				expect(idmOauthServiceMock.resourceOwnerPasswordGrant).toBeCalledTimes(1);
-			});
-		});
-
 		describe('when a local user logs in', () => {
 			it('should return user', async () => {
 				const user = await strategy.validate('mockUsername', mockPassword);

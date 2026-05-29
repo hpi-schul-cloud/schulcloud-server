@@ -27,6 +27,7 @@ import { TrackExecutionTime } from '../metrics/track-execution-time.decorator';
 import { BoardUc, CardUc, ColumnUc, ElementUc } from '../uc';
 import {
 	CopyCardMessageParams,
+	CopyColumnMessageParams,
 	CreateCardMessageParams,
 	CreateColumnMessageParams,
 	CreateContentElementMessageParams,
@@ -43,6 +44,7 @@ import {
 	UpdateBoardLayoutMessageParams,
 	UpdateBoardTitleMessageParams,
 	UpdateBoardVisibilityMessageParams,
+	UpdateCardColorMessageParams,
 	UpdateCardHeightMessageParams,
 	UpdateCardTitleMessageParams,
 	UpdateColumnTitleMessageParams,
@@ -182,6 +184,20 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 		}
 	}
 
+	@SubscribeMessage('update-card-color-request')
+	@TrackExecutionTime()
+	@EnsureRequestContext()
+	public async updateCardColor(socket: Socket, data: UpdateCardColorMessageParams): Promise<void> {
+		const emitter = this.buildBoardSocketEmitter({ socket, action: 'update-card-color' });
+		const { userId } = this.getCurrentUser(socket);
+		try {
+			const card = await this.cardUc.updateCardColor(userId, data.cardId, data.backgroundColor);
+			emitter.emitToClientAndRoom(data, card);
+		} catch {
+			emitter.emitFailure(data);
+		}
+	}
+
 	@SubscribeMessage('delete-card-request')
 	@TrackExecutionTime()
 	@EnsureRequestContext()
@@ -312,6 +328,26 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 				duplicatedCard: cardResponse,
 			};
 			emitter.emitToClientAndRoom(responsePayload, card);
+		} catch {
+			emitter.emitFailure(data);
+		}
+	}
+
+	@SubscribeMessage('duplicate-column-request')
+	@TrackExecutionTime()
+	@EnsureRequestContext()
+	public async copyColumn(socket: Socket, data: CopyColumnMessageParams): Promise<void> {
+		const emitter = this.buildBoardSocketEmitter({ socket, action: 'duplicate-column' });
+		const { userId, schoolId } = this.getCurrentUser(socket);
+		try {
+			const column = await this.boardUc.copyColumn(userId, data.columnId, schoolId);
+
+			const columnFullResponse = ColumnResponseMapper.mapToFullResponse(column);
+			const responsePayload = {
+				...data,
+				duplicatedColumn: columnFullResponse,
+			};
+			emitter.emitToClientAndRoom(responsePayload, column);
 		} catch {
 			emitter.emitFailure(data);
 		}

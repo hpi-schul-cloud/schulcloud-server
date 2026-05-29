@@ -6,17 +6,17 @@ import { ExternalUserDto } from './external-user.dto';
 import { ProvisioningSystemDto } from './provisioning-system.dto';
 
 export class OauthDataDto {
-	system: ProvisioningSystemDto;
+	public system: ProvisioningSystemDto;
 
-	externalUser: ExternalUserDto;
+	public externalUser: ExternalUserDto;
 
-	externalSchool?: ExternalSchoolDto;
+	public externalSchool?: ExternalSchoolDto;
 
-	externalGroups?: ExternalGroupDto[];
+	public externalGroups?: ExternalGroupDto[];
 
-	externalLicenses?: ExternalLicenseDto[];
+	public externalLicenses?: ExternalLicenseDto[];
 
-	externalClasses?: ExternalClassDto[];
+	public externalClasses?: ExternalClassDto[];
 
 	constructor(props: OauthDataDto) {
 		this.system = props.system;

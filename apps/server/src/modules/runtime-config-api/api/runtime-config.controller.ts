@@ -1,10 +1,11 @@
 import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
-import { Controller, Get, Patch, Param, Body, HttpCode, HttpStatus } from '@nestjs/common';
-import { RuntimeConfigUc } from './runtime-config.uc';
-import { RuntimeConfigMapper } from './mapper/runtime-config.mapper';
-import { RuntimeConfigListResponse } from './dto/response/runtime-config-list.response';
+import { RuntimeConfigValueType } from '@infra/runtime-config/domain/runtime-config-value.do';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, Patch } from '@nestjs/common';
 import { UpdateRuntimeConfigValueBodyParams } from './dto/request/update-runtime-config-value.body.params';
 import { UpdateRuntimeConfigValueUrlParams } from './dto/request/update-runtime-config-value.url.params';
+import { RuntimeConfigListResponse } from './dto/response/runtime-config-list.response';
+import { RuntimeConfigMapper } from './mapper/runtime-config.mapper';
+import { RuntimeConfigUc } from './runtime-config.uc';
 
 @Controller('runtime-config')
 export class RuntimeConfigController {
@@ -25,7 +26,9 @@ export class RuntimeConfigController {
 		@Param() urlParams: UpdateRuntimeConfigValueUrlParams,
 		@Body() body: UpdateRuntimeConfigValueBodyParams,
 		@CurrentUser() user: ICurrentUser
-	): Promise<void> {
-		await this.runtimeConfigUc.updateRuntimeConfigValue(urlParams.key, body.value, user.userId);
+	): Promise<{ value: RuntimeConfigValueType }> {
+		const newValue = await this.runtimeConfigUc.updateRuntimeConfigValue(urlParams.key, body.value, user.userId);
+
+		return { value: newValue };
 	}
 }

@@ -107,7 +107,7 @@ const createEm = () =>
 			};
 		}),
 		clear: jest.fn(),
-	} as unknown as EntityManager);
+	}) as unknown as EntityManager;
 
 describe('RoomSetup', () => {
 	let em: EntityManager;

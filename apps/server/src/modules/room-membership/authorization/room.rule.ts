@@ -73,7 +73,7 @@ export class RoomRule implements Rule<RoomAuthorizable> {
 			addAllStudents: canAddAllStudents,
 			addExternalPersonByEmail: canAddExternalPersonByEmail,
 			addMembers: canAddMembers,
-			arrangeRooms: canEditContent,
+			arrangeRooms: canAccessRoom,
 			changeRolesOfMembers: canChangeRolesOfMembers,
 			copyRoom: canCopyRoom,
 			createRoom: canCreateRoom,

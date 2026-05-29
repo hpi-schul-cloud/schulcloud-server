@@ -20,7 +20,7 @@ export class CollaborativeTextEditorController {
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 404, type: NotFoundException })
 	@Get('/:parentType/:parentId')
-	async getOrCreateCollaborativeTextEditorForParent(
+	public async getOrCreateCollaborativeTextEditorForParent(
 		@Param() getCollaborativeTextEditorForParentParams: GetCollaborativeTextEditorForParentParams,
 		@CurrentUser() currentUser: ICurrentUser,
 		@Res({ passthrough: true }) res: Response
@@ -45,7 +45,7 @@ export class CollaborativeTextEditorController {
 	@ApiResponse({ status: 204 })
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@Delete('/delete-sessions')
-	async deleteSessionsByUser(@CurrentUser() currentUser: ICurrentUser): Promise<void> {
+	public async deleteSessionsByUser(@CurrentUser() currentUser: ICurrentUser): Promise<void> {
 		await this.collaborativeTextEditorUc.deleteSessionsByUser(currentUser.userId);
 	}
 }

@@ -1,8 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { RuntimeConfigRepo } from './runtime-config.repo.interface';
-import { RuntimeConfigValue } from './runtime-config-value.do';
-import { RuntimeConfigValueNotExpectedType } from './loggable/runtime-config-not-expected-type.loggable';
 import { RUNTIME_CONFIG_REPO } from '../injection-keys';
+import { RuntimeConfigValueNotExpectedType } from './loggable/runtime-config-not-expected-type.loggable';
+import { RuntimeConfigValue } from './runtime-config-value.do';
+import { RuntimeConfigRepo } from './runtime-config.repo.interface';
 
 @Injectable()
 export class RuntimeConfigService {

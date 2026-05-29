@@ -10,13 +10,12 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { studentPermissions, userPermissions } from '@testing/user-role-permissions';
-import { BoardContextSettings } from '../domain';
+import { BoardConfiguration } from '../domain';
 import {
 	boardNodeAuthorizableFactory,
 	columnBoardFactory,
 	drawingElementFactory,
 	fileElementFactory,
-	submissionItemFactory,
 	videoConferenceElementFactory,
 } from '../testing';
 import { BoardNodeRule, BoardOperation } from './board-node.rule';
@@ -59,7 +58,7 @@ describe(BoardNodeRule.name, () => {
 					id: new ObjectId().toHexString(),
 					boardNode: anyBoardNode,
 					rootNode: columnBoard,
-					boardContextSettings: { isLocked: false },
+					boardConfiguration: { isLocked: false },
 				});
 				return { user, boardNodeAuthorizable };
 			};
@@ -103,7 +102,7 @@ describe(BoardNodeRule.name, () => {
 					id: new ObjectId().toHexString(),
 					boardNode: anyBoardNode,
 					rootNode: columnBoard,
-					boardContextSettings: { isLocked: false },
+					boardConfiguration: { isLocked: false },
 				});
 
 				return { user, boardNodeAuthorizable };
@@ -131,7 +130,7 @@ describe(BoardNodeRule.name, () => {
 					id: new ObjectId().toHexString(),
 					boardNode: anyBoardNode,
 					rootNode: columnBoard,
-					boardContextSettings: { isLocked: false },
+					boardConfiguration: { isLocked: false },
 				});
 
 				return { user, boardNodeAuthorizable };
@@ -160,7 +159,7 @@ describe(BoardNodeRule.name, () => {
 					id: new ObjectId().toHexString(),
 					boardNode: anyBoardNode,
 					rootNode: columnBoard,
-					boardContextSettings: { isLocked: false },
+					boardConfiguration: { isLocked: false },
 				});
 
 				return { user, permissionA, boardNodeAuthorizable };
@@ -190,7 +189,7 @@ describe(BoardNodeRule.name, () => {
 					id: new ObjectId().toHexString(),
 					boardNode: anyBoardNode,
 					rootNode: columnBoard,
-					boardContextSettings: { isLocked: false },
+					boardConfiguration: { isLocked: false },
 				});
 
 				return { userWithoutPermision, boardNodeAuthorizable };
@@ -218,7 +217,7 @@ describe(BoardNodeRule.name, () => {
 					id: new ObjectId().toHexString(),
 					boardNode: anyBoardNode,
 					rootNode: columnBoard,
-					boardContextSettings: { isLocked: false },
+					boardConfiguration: { isLocked: false },
 				});
 
 				return { user, boardNodeAuthorizable };
@@ -247,7 +246,7 @@ describe(BoardNodeRule.name, () => {
 						id: new ObjectId().toHexString(),
 						boardNode: anyBoardNode,
 						rootNode: columnBoard,
-						boardContextSettings: { isLocked: false },
+						boardConfiguration: { isLocked: false },
 					});
 
 					return { user, boardNodeAuthorizable };
@@ -286,7 +285,7 @@ describe(BoardNodeRule.name, () => {
 						id: new ObjectId().toHexString(),
 						boardNode: anyBoardNode,
 						rootNode: columnBoard,
-						boardContextSettings: { isLocked: false },
+						boardConfiguration: { isLocked: false },
 					});
 
 					return { user, boardNodeAuthorizable };
@@ -316,301 +315,6 @@ describe(BoardNodeRule.name, () => {
 			});
 		});
 
-		describe('when boardDoAuthorizable.boardDo is a submissionItem', () => {
-			describe('when user is Editor', () => {
-				const setup = () => {
-					const user = userFactory.buildWithId();
-					const submissionItem = submissionItemFactory.build();
-					const columnBoard = columnBoardFactory.build();
-					const boardNodeAuthorizable = boardNodeAuthorizableFactory.build({
-						users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }],
-						id: new ObjectId().toHexString(),
-						boardNode: submissionItem,
-						rootNode: columnBoard,
-						boardContextSettings: { isLocked: false },
-					});
-
-					return { user, boardNodeAuthorizable };
-				};
-
-				it('it should return false if trying to "write" ', () => {
-					const { user, boardNodeAuthorizable } = setup();
-
-					const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
-						action: Action.write,
-						requiredPermissions: [],
-					});
-
-					expect(res).toBe(false);
-				});
-
-				it('it should return true if trying to "read"', () => {
-					const { user, boardNodeAuthorizable } = setup();
-
-					const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
-						action: Action.read,
-						requiredPermissions: [],
-					});
-
-					expect(res).toBe(true);
-				});
-			});
-
-			describe('when user is Reader and creator of the submissionItem', () => {
-				const setup = () => {
-					const user = userFactory.buildWithId();
-					const submissionItem = submissionItemFactory.build({ userId: user.id });
-					const columnBoard = columnBoardFactory.build();
-					const boardNodeAuthorizable = boardNodeAuthorizableFactory.build({
-						users: [{ userId: user.id, roles: [BoardRoles.READER] }],
-						id: new ObjectId().toHexString(),
-						boardNode: submissionItem,
-						rootNode: columnBoard,
-						boardContextSettings: { isLocked: false },
-					});
-
-					return { user, boardNodeAuthorizable };
-				};
-
-				it('it should return "true" if trying to "write" ', () => {
-					const { user, boardNodeAuthorizable } = setup();
-
-					const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
-						action: Action.write,
-						requiredPermissions: [],
-					});
-
-					expect(res).toBe(true);
-				});
-
-				it('it should return "true" if trying to "read"', () => {
-					const { user, boardNodeAuthorizable } = setup();
-
-					const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
-						action: Action.read,
-						requiredPermissions: [],
-					});
-
-					expect(res).toBe(true);
-				});
-			});
-
-			describe('when user is Reader and not creator of the submissionItem', () => {
-				const setup = () => {
-					const user = userFactory.buildWithId();
-					const submissionItem = submissionItemFactory.build({ userId: new ObjectId().toHexString() });
-					const columnBoard = columnBoardFactory.build();
-					const boardNodeAuthorizable = boardNodeAuthorizableFactory.build({
-						users: [{ userId: user.id, roles: [BoardRoles.READER] }],
-						id: new ObjectId().toHexString(),
-						boardNode: submissionItem,
-						rootNode: columnBoard,
-						boardContextSettings: { isLocked: false },
-					});
-
-					return { user, boardNodeAuthorizable };
-				};
-
-				it('it should return "false" if trying to "write" ', () => {
-					const { user, boardNodeAuthorizable } = setup();
-
-					const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
-						action: Action.write,
-						requiredPermissions: [],
-					});
-
-					expect(res).toBe(false);
-				});
-
-				it('it should return "false" if trying to "read"', () => {
-					const { user, boardNodeAuthorizable } = setup();
-
-					const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
-						action: Action.read,
-						requiredPermissions: [],
-					});
-
-					expect(res).toBe(false);
-				});
-			});
-		});
-
-		describe('when boardDoAuthorizable.parentDo is a submissionItem', () => {
-			describe('when user is Editor', () => {
-				const setup = () => {
-					const user = userFactory.buildWithId();
-					const submissionItem = submissionItemFactory.build();
-					const fileElement = fileElementFactory.build();
-					const columnBoard = columnBoardFactory.build();
-					const boardNodeAuthorizable = boardNodeAuthorizableFactory.build({
-						users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }],
-						id: new ObjectId().toHexString(),
-						boardNode: fileElement,
-						parentNode: submissionItem,
-						rootNode: columnBoard,
-						boardContextSettings: { isLocked: false },
-					});
-
-					return { user, boardNodeAuthorizable };
-				};
-
-				it('it should return false if trying to "write" ', () => {
-					const { user, boardNodeAuthorizable } = setup();
-
-					const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
-						action: Action.write,
-						requiredPermissions: [],
-					});
-
-					expect(res).toBe(false);
-				});
-
-				it('it should return true if trying to "read"', () => {
-					const { user, boardNodeAuthorizable } = setup();
-
-					const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
-						action: Action.read,
-						requiredPermissions: [],
-					});
-
-					expect(res).toBe(true);
-				});
-			});
-
-			describe('when user is Reader and creator of the submissionItem', () => {
-				const setup = () => {
-					const user = userFactory.buildWithId();
-					const submissionItem = submissionItemFactory.build({ userId: user.id });
-					const fileElement = fileElementFactory.build();
-					const columnBoard = columnBoardFactory.build();
-					const boardNodeAuthorizable = boardNodeAuthorizableFactory.build({
-						users: [{ userId: user.id, roles: [BoardRoles.READER] }],
-						id: new ObjectId().toHexString(),
-						boardNode: fileElement,
-						parentNode: submissionItem,
-						rootNode: columnBoard,
-						boardContextSettings: { isLocked: false },
-					});
-
-					return { user, boardNodeAuthorizable };
-				};
-
-				it('it should return "true" if trying to "write" ', () => {
-					const { user, boardNodeAuthorizable } = setup();
-
-					const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
-						action: Action.write,
-						requiredPermissions: [],
-					});
-
-					expect(res).toBe(true);
-				});
-
-				it('it should return "true" if trying to "read"', () => {
-					const { user, boardNodeAuthorizable } = setup();
-
-					const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
-						action: Action.read,
-						requiredPermissions: [],
-					});
-
-					expect(res).toBe(true);
-				});
-			});
-
-			describe('when user is Reader and not creator of the submissionItem', () => {
-				const setup = () => {
-					const user = userFactory.buildWithId();
-					const anyBoardDo = fileElementFactory.build();
-					const submissionItem = submissionItemFactory.build({ userId: new ObjectId().toHexString() });
-					const columnBoard = columnBoardFactory.build();
-					const boardNodeAuthorizable = boardNodeAuthorizableFactory.build({
-						users: [{ userId: user.id, roles: [BoardRoles.READER] }],
-						id: new ObjectId().toHexString(),
-						boardNode: anyBoardDo,
-						parentNode: submissionItem,
-						rootNode: columnBoard,
-						boardContextSettings: { isLocked: false },
-					});
-
-					return { user, boardNodeAuthorizable };
-				};
-
-				it('it should return "false" if trying to "write" ', () => {
-					const { user, boardNodeAuthorizable } = setup();
-
-					const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
-						action: Action.write,
-						requiredPermissions: [],
-					});
-
-					expect(res).toBe(false);
-				});
-
-				it('it should return "false" if trying to "read"', () => {
-					const { user, boardNodeAuthorizable } = setup();
-
-					const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
-						action: Action.read,
-						requiredPermissions: [],
-					});
-
-					expect(res).toBe(false);
-				});
-			});
-
-			describe('when bordDo is wrong type', () => {
-				const setup = () => {
-					const user = userFactory.buildWithId();
-					const notAllowedChildElement = drawingElementFactory.build();
-					const submissionItem = submissionItemFactory.build();
-
-					return { user, notAllowedChildElement, submissionItem };
-				};
-
-				it('when boardDo is undefined, it should return false', () => {
-					const { user, submissionItem } = setup();
-					const anyBoardDo = fileElementFactory.build();
-					const columnBoard = columnBoardFactory.build();
-					const boardNodeAuthorizable = boardNodeAuthorizableFactory.build({
-						users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }],
-						id: new ObjectId().toHexString(),
-						boardNode: anyBoardDo,
-						parentNode: submissionItem,
-						rootNode: columnBoard,
-						boardContextSettings: { isLocked: false },
-					});
-
-					const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
-						action: Action.write,
-						requiredPermissions: [],
-					});
-
-					expect(res).toBe(false);
-				});
-
-				it('when boardDo is not allowed type, it should return false', () => {
-					const { user, submissionItem, notAllowedChildElement } = setup();
-					const columnBoard = columnBoardFactory.build();
-					const boardNodeAuthorizable = boardNodeAuthorizableFactory.build({
-						users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }],
-						id: new ObjectId().toHexString(),
-						parentNode: submissionItem,
-						boardNode: notAllowedChildElement,
-						rootNode: columnBoard,
-						boardContextSettings: { isLocked: false },
-					});
-
-					const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
-						action: Action.write,
-						requiredPermissions: [],
-					});
-
-					expect(res).toBe(false);
-				});
-			});
-		});
-
 		describe('when boardDoAuthorizable.boardDo is a drawingElement', () => {
 			describe('when required permissions do not include FILESTORAGE_CREATE or FILESTORAGE_VIEW or FILESTORAGE_REMOVE', () => {
 				describe('when user is Editor', () => {
@@ -623,7 +327,7 @@ describe(BoardNodeRule.name, () => {
 							id: new ObjectId().toHexString(),
 							boardNode: drawingElement,
 							rootNode: columnBoard,
-							boardContextSettings: { isLocked: false },
+							boardConfiguration: { isLocked: false },
 						});
 
 						return { user, boardNodeAuthorizable };
@@ -662,7 +366,7 @@ describe(BoardNodeRule.name, () => {
 							id: new ObjectId().toHexString(),
 							boardNode: drawingElement,
 							rootNode: columnBoard,
-							boardContextSettings: { isLocked: false },
+							boardConfiguration: { isLocked: false },
 						});
 
 						return { user, boardNodeAuthorizable };
@@ -703,7 +407,7 @@ describe(BoardNodeRule.name, () => {
 							id: new ObjectId().toHexString(),
 							boardNode: drawingElement,
 							rootNode: columnBoard,
-							boardContextSettings: { isLocked: false },
+							boardConfiguration: { isLocked: false },
 						});
 						userService.resolvePermissions.mockReturnValueOnce([...userPermissions, ...studentPermissions]);
 
@@ -754,7 +458,7 @@ describe(BoardNodeRule.name, () => {
 							id: new ObjectId().toHexString(),
 							boardNode: drawingElement,
 							rootNode: columnBoard,
-							boardContextSettings: { isLocked: false },
+							boardConfiguration: { isLocked: false },
 						});
 						userService.resolvePermissions.mockReturnValueOnce([...userPermissions, ...studentPermissions]);
 
@@ -786,7 +490,7 @@ describe(BoardNodeRule.name, () => {
 
 		describe('when boardDoAuthorizable.boardDo is a videoConferenceElement', () => {
 			describe('when user is Admin', () => {
-				const setup = (boardSettings: BoardContextSettings) => {
+				const setup = (boardSettings: BoardConfiguration) => {
 					const user = userFactory.asTeacher().buildWithId();
 					const videoConferenceElement = videoConferenceElementFactory.build();
 					const columnBoard = columnBoardFactory.build();
@@ -795,7 +499,7 @@ describe(BoardNodeRule.name, () => {
 						id: new ObjectId().toHexString(),
 						boardNode: videoConferenceElement,
 						rootNode: columnBoard,
-						boardContextSettings: boardSettings,
+						boardConfiguration: boardSettings,
 					});
 
 					return { user, boardNodeAuthorizable };
@@ -804,7 +508,7 @@ describe(BoardNodeRule.name, () => {
 				describe('when board settings allow editors to create video conferences', () => {
 					it('should return true if trying to "read"', () => {
 						const { user, boardNodeAuthorizable } = setup({
-							canRoomEditorManageVideoconference: true,
+							canEditorsManageVideoconference: true,
 							isLocked: false,
 						});
 
@@ -817,7 +521,7 @@ describe(BoardNodeRule.name, () => {
 					});
 					it('should return true if trying to "write" ', () => {
 						const { user, boardNodeAuthorizable } = setup({
-							canRoomEditorManageVideoconference: true,
+							canEditorsManageVideoconference: true,
 							isLocked: false,
 						});
 
@@ -833,7 +537,7 @@ describe(BoardNodeRule.name, () => {
 				describe('when board settings prohibit editors to create video conferences', () => {
 					it('should return true if trying to "read"', () => {
 						const { user, boardNodeAuthorizable } = setup({
-							canRoomEditorManageVideoconference: false,
+							canEditorsManageVideoconference: false,
 							isLocked: false,
 						});
 
@@ -846,7 +550,7 @@ describe(BoardNodeRule.name, () => {
 					});
 					it('should return true if trying to "write" ', () => {
 						const { user, boardNodeAuthorizable } = setup({
-							canRoomEditorManageVideoconference: false,
+							canEditorsManageVideoconference: false,
 							isLocked: false,
 						});
 
@@ -861,7 +565,7 @@ describe(BoardNodeRule.name, () => {
 			});
 
 			describe('when user is Editor', () => {
-				const setup = (boardSettings: BoardContextSettings) => {
+				const setup = (boardSettings: BoardConfiguration) => {
 					const user = userFactory.asTeacher().buildWithId();
 					const videoConferenceElement = videoConferenceElementFactory.build();
 					const columnBoard = columnBoardFactory.build();
@@ -870,7 +574,7 @@ describe(BoardNodeRule.name, () => {
 						id: new ObjectId().toHexString(),
 						boardNode: videoConferenceElement,
 						rootNode: columnBoard,
-						boardContextSettings: boardSettings,
+						boardConfiguration: boardSettings,
 					});
 
 					return { user, boardNodeAuthorizable };
@@ -879,7 +583,7 @@ describe(BoardNodeRule.name, () => {
 				describe('when board settings allow editors to create video conferences', () => {
 					it('should return true if trying to "read"', () => {
 						const { user, boardNodeAuthorizable } = setup({
-							canRoomEditorManageVideoconference: true,
+							canEditorsManageVideoconference: true,
 							isLocked: false,
 						});
 
@@ -893,7 +597,7 @@ describe(BoardNodeRule.name, () => {
 
 					it('should return true if trying to "write" ', () => {
 						const { user, boardNodeAuthorizable } = setup({
-							canRoomEditorManageVideoconference: true,
+							canEditorsManageVideoconference: true,
 							isLocked: false,
 						});
 
@@ -909,7 +613,7 @@ describe(BoardNodeRule.name, () => {
 				describe('when board settings prohibit editors to create video conferences', () => {
 					it('should return true if trying to "read"', () => {
 						const { user, boardNodeAuthorizable } = setup({
-							canRoomEditorManageVideoconference: false,
+							canEditorsManageVideoconference: false,
 							isLocked: false,
 						});
 
@@ -923,7 +627,7 @@ describe(BoardNodeRule.name, () => {
 
 					it('should return false if trying to "write" ', () => {
 						const { user, boardNodeAuthorizable } = setup({
-							canRoomEditorManageVideoconference: false,
+							canEditorsManageVideoconference: false,
 							isLocked: false,
 						});
 
@@ -938,7 +642,7 @@ describe(BoardNodeRule.name, () => {
 			});
 
 			describe('when user is Reader', () => {
-				const setup = (boardSettings: BoardContextSettings) => {
+				const setup = (boardSettings: BoardConfiguration) => {
 					const user = userFactory.asTeacher().buildWithId();
 					const videoConferenceElement = videoConferenceElementFactory.build();
 					const columnBoard = columnBoardFactory.build();
@@ -947,7 +651,7 @@ describe(BoardNodeRule.name, () => {
 						id: new ObjectId().toHexString(),
 						boardNode: videoConferenceElement,
 						rootNode: columnBoard,
-						boardContextSettings: boardSettings,
+						boardConfiguration: boardSettings,
 					});
 
 					return { user, boardNodeAuthorizable };
@@ -956,7 +660,7 @@ describe(BoardNodeRule.name, () => {
 				describe('when board settings allow editors to create video conferences', () => {
 					it('should return true if trying to "read"', () => {
 						const { user, boardNodeAuthorizable } = setup({
-							canRoomEditorManageVideoconference: true,
+							canEditorsManageVideoconference: true,
 							isLocked: false,
 						});
 
@@ -970,7 +674,7 @@ describe(BoardNodeRule.name, () => {
 
 					it('should return false if trying to "write" ', () => {
 						const { user, boardNodeAuthorizable } = setup({
-							canRoomEditorManageVideoconference: true,
+							canEditorsManageVideoconference: true,
 							isLocked: false,
 						});
 
@@ -986,7 +690,7 @@ describe(BoardNodeRule.name, () => {
 				describe('when board settings prohibit editors to create video conferences', () => {
 					it('should return true if trying to "read"', () => {
 						const { user, boardNodeAuthorizable } = setup({
-							canRoomEditorManageVideoconference: false,
+							canEditorsManageVideoconference: false,
 							isLocked: false,
 						});
 
@@ -1000,7 +704,7 @@ describe(BoardNodeRule.name, () => {
 
 					it('should return false if trying to "write" ', () => {
 						const { user, boardNodeAuthorizable } = setup({
-							canRoomEditorManageVideoconference: false,
+							canEditorsManageVideoconference: false,
 							isLocked: false,
 						});
 
@@ -1018,7 +722,7 @@ describe(BoardNodeRule.name, () => {
 
 	describe('listAllowedOperations', () => {
 		describe('when user is Administrator and BoardAdmin', () => {
-			const setup = (boardSettings: BoardContextSettings) => {
+			const setup = (boardSettings: BoardConfiguration) => {
 				const user = userFactory.asAdmin().buildWithId();
 				const videoConferenceElement = videoConferenceElementFactory.build();
 				const columnBoard = columnBoardFactory.build();
@@ -1027,14 +731,14 @@ describe(BoardNodeRule.name, () => {
 					id: new ObjectId().toHexString(),
 					boardNode: videoConferenceElement,
 					rootNode: columnBoard,
-					boardContextSettings: boardSettings,
+					boardConfiguration: boardSettings,
 				});
 
 				return { user, boardNodeAuthorizable };
 			};
 
 			it('should return the expected allowed operations', () => {
-				const { user, boardNodeAuthorizable } = setup({ canRoomEditorManageVideoconference: true, isLocked: false });
+				const { user, boardNodeAuthorizable } = setup({ canEditorsManageVideoconference: true, isLocked: false });
 
 				const res = boardNodeRule.listAllowedOperations(user, boardNodeAuthorizable);
 				const expectedAllowedOperations = {
@@ -1049,6 +753,7 @@ describe(BoardNodeRule.name, () => {
 					updateReadersCanEditSetting: false,
 
 					// column
+					copyColumn: true,
 					createColumn: true,
 					deleteColumn: true,
 					moveColumn: true,
@@ -1063,6 +768,7 @@ describe(BoardNodeRule.name, () => {
 					shareCard: true,
 					updateCardHeight: true,
 					updateCardTitle: true,
+					updateCardColor: true,
 
 					// element
 					createElement: true,
@@ -1076,11 +782,6 @@ describe(BoardNodeRule.name, () => {
 
 					// element / fileElement
 					createFileElement: true,
-
-					// element / submissionElement
-					createSubmissionItemContent: false,
-					deleteSubmissionItem: false,
-					updateSubmissionItem: false,
 
 					// element / videoConferenceElement
 					manageVideoConference: true,
@@ -1105,7 +806,7 @@ describe(BoardNodeRule.name, () => {
 		});
 
 		describe('when user is Teacher and BoardEditor', () => {
-			const setup = (boardSettings: BoardContextSettings) => {
+			const setup = (boardSettings: BoardConfiguration) => {
 				const user = userFactory.asTeacher().buildWithId();
 				const videoConferenceElement = videoConferenceElementFactory.build();
 				const columnBoard = columnBoardFactory.build();
@@ -1114,14 +815,14 @@ describe(BoardNodeRule.name, () => {
 					id: new ObjectId().toHexString(),
 					boardNode: videoConferenceElement,
 					rootNode: columnBoard,
-					boardContextSettings: boardSettings,
+					boardConfiguration: boardSettings,
 				});
 
 				return { user, boardNodeAuthorizable };
 			};
 
 			it('should return the expected allowed operations', () => {
-				const { user, boardNodeAuthorizable } = setup({ canRoomEditorManageVideoconference: true, isLocked: false });
+				const { user, boardNodeAuthorizable } = setup({ canEditorsManageVideoconference: true, isLocked: false });
 
 				const res = boardNodeRule.listAllowedOperations(user, boardNodeAuthorizable);
 				const expectedAllowedOperations = {
@@ -1136,6 +837,7 @@ describe(BoardNodeRule.name, () => {
 					updateReadersCanEditSetting: false,
 
 					// column
+					copyColumn: true,
 					createColumn: true,
 					deleteColumn: true,
 					moveColumn: true,
@@ -1150,6 +852,7 @@ describe(BoardNodeRule.name, () => {
 					shareCard: false,
 					updateCardHeight: true,
 					updateCardTitle: true,
+					updateCardColor: true,
 
 					// element
 					createElement: true,
@@ -1163,11 +866,6 @@ describe(BoardNodeRule.name, () => {
 
 					// element / fileElement
 					createFileElement: true,
-
-					// element / submissionElement
-					createSubmissionItemContent: false,
-					deleteSubmissionItem: false,
-					updateSubmissionItem: false,
 
 					// element / videoConferenceElement
 					manageVideoConference: true,
@@ -1192,7 +890,7 @@ describe(BoardNodeRule.name, () => {
 		});
 
 		describe('when user is Student and BoardReader', () => {
-			const setup = (boardSettings: BoardContextSettings) => {
+			const setup = (boardSettings: BoardConfiguration) => {
 				const user = userFactory.asStudent().buildWithId();
 				const videoConferenceElement = videoConferenceElementFactory.build();
 				const columnBoard = columnBoardFactory.build();
@@ -1201,14 +899,14 @@ describe(BoardNodeRule.name, () => {
 					id: new ObjectId().toHexString(),
 					boardNode: videoConferenceElement,
 					rootNode: columnBoard,
-					boardContextSettings: boardSettings,
+					boardConfiguration: boardSettings,
 				});
 
 				return { user, boardNodeAuthorizable };
 			};
 
 			it('should return the expected allowed operations', () => {
-				const { user, boardNodeAuthorizable } = setup({ canRoomEditorManageVideoconference: true, isLocked: false });
+				const { user, boardNodeAuthorizable } = setup({ canEditorsManageVideoconference: true, isLocked: false });
 
 				const res = boardNodeRule.listAllowedOperations(user, boardNodeAuthorizable);
 
@@ -1224,6 +922,7 @@ describe(BoardNodeRule.name, () => {
 					updateReadersCanEditSetting: false,
 
 					// column
+					copyColumn: false,
 					createColumn: false,
 					deleteColumn: false,
 					moveColumn: false,
@@ -1238,6 +937,7 @@ describe(BoardNodeRule.name, () => {
 					shareCard: false,
 					updateCardHeight: false,
 					updateCardTitle: false,
+					updateCardColor: false,
 
 					// element
 					createElement: false,
@@ -1251,11 +951,6 @@ describe(BoardNodeRule.name, () => {
 
 					// element / fileElement
 					createFileElement: false,
-
-					// element / submissionElement
-					createSubmissionItemContent: false,
-					deleteSubmissionItem: false,
-					updateSubmissionItem: false,
 
 					// element / videoConferenceElement
 					manageVideoConference: false,
@@ -1277,6 +972,20 @@ describe(BoardNodeRule.name, () => {
 
 				expect(res).toEqual(expectedAllowedOperations);
 			});
+
+			describe('when board has readersCanEdit enabled', () => {
+				it('should not allow the board title to be edited', () => {
+					const { user, boardNodeAuthorizable } = setup({
+						canReadersEdit: true,
+						canEditorsManageVideoconference: true,
+						isLocked: false,
+					});
+
+					const res = boardNodeRule.listAllowedOperations(user, boardNodeAuthorizable);
+
+					expect(res.updateBoardTitle).toEqual(false);
+				});
+			});
 		});
 
 		describe('when board is locked ', () => {
@@ -1289,7 +998,7 @@ describe(BoardNodeRule.name, () => {
 					id: new ObjectId().toHexString(),
 					boardNode: videoConferenceElement,
 					rootNode: columnBoard,
-					boardContextSettings: { isLocked: true },
+					boardConfiguration: { isLocked: true },
 				});
 
 				return { user, boardNodeAuthorizable };
@@ -1311,6 +1020,7 @@ describe(BoardNodeRule.name, () => {
 					updateReadersCanEditSetting: false,
 
 					// column
+					copyColumn: false,
 					createColumn: false,
 					deleteColumn: false,
 					moveColumn: false,
@@ -1325,6 +1035,7 @@ describe(BoardNodeRule.name, () => {
 					shareCard: false,
 					updateCardHeight: false,
 					updateCardTitle: false,
+					updateCardColor: false,
 
 					// element
 					createElement: false,
@@ -1338,11 +1049,6 @@ describe(BoardNodeRule.name, () => {
 
 					// element / fileElement
 					createFileElement: false,
-
-					// element / submissionElement
-					createSubmissionItemContent: false,
-					deleteSubmissionItem: false,
-					updateSubmissionItem: false,
 
 					// element / videoConferenceElement
 					manageVideoConference: false,
@@ -1377,7 +1083,7 @@ describe(BoardNodeRule.name, () => {
 				id: new ObjectId().toHexString(),
 				boardNode: anyBoardNode,
 				rootNode: columnBoard,
-				boardContextSettings: { isLocked: true },
+				boardConfiguration: { isLocked: true },
 			});
 
 			return { user, boardNodeAuthorizable };

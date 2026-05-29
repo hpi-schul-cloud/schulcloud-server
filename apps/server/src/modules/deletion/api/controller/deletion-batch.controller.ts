@@ -76,7 +76,7 @@ export class DeletionBatchController {
 	public async createDeletionRequestsForBatch(@Param('batchId') batchId: EntityId): Promise<DeletionBatchItemResponse> {
 		const deleteNow = new Date(); // TODO allow override
 
-		const summary = await this.deletionBatchUc.createDeletionRequestForBatch(batchId, deleteNow);
+		const summary = await this.deletionBatchUc.requestDeletionForBatch(batchId, deleteNow);
 
 		const response = DeletionBatchMapper.mapToDeletionBatchItemResponse(summary);
 

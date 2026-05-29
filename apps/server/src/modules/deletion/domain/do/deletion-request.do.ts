@@ -9,6 +9,7 @@ export interface DeletionRequestProps extends AuthorizableObject {
 	deleteAfter: Date;
 	targetRefId: EntityId;
 	status: StatusModel;
+	batchId?: EntityId;
 }
 
 export class DeletionRequest extends DomainObject<DeletionRequestProps> {
@@ -34,5 +35,9 @@ export class DeletionRequest extends DomainObject<DeletionRequestProps> {
 
 	get status(): StatusModel {
 		return this.props.status;
+	}
+
+	get batchId(): EntityId | undefined {
+		return this.props.batchId;
 	}
 }

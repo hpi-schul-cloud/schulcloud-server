@@ -4,6 +4,7 @@ import { Page } from '@shared/domain/domainobject';
 import { IFindOptions, Pagination } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { Scope } from '@shared/repo/scope';
+import { v4 as uuidv4 } from 'uuid';
 import { PseudonymSearchQuery } from '../domain';
 import { ExternalToolPseudonymEntity } from '../entity';
 import { PseudonymScope } from '../entity/pseudonym.scope';
@@ -33,22 +34,18 @@ export class ExternalToolPseudonymRepo {
 		return pseudonyms;
 	}
 
-	public async createOrUpdate(domainObject: Pseudonym): Promise<Pseudonym> {
+	public async findOrCreate(userId: EntityId, toolId: EntityId): Promise<Pseudonym> {
 		const collection = this.em.getCollection(ExternalToolPseudonymEntity);
 
-		const userId = new ObjectId(domainObject.userId);
-		const toolId = new ObjectId(domainObject.toolId);
 		const now = new Date();
 
 		const result = await collection.findOneAndUpdate(
-			{ userId, toolId },
+			{ userId: new ObjectId(userId), toolId: new ObjectId(toolId) },
 			{
-				$set: {
-					pseudonym: domainObject.pseudonym,
-					updatedAt: now,
-				},
 				$setOnInsert: {
 					createdAt: now,
+					updatedAt: now,
+					pseudonym: uuidv4(),
 				},
 			},
 			{
@@ -87,7 +84,7 @@ export class ExternalToolPseudonymRepo {
 		return deletedIds;
 	}
 
-	public async findPseudonymByPseudonym(pseudonym: string): Promise<Pseudonym | null> {
+	public async findByPseudonym(pseudonym: string): Promise<Pseudonym | null> {
 		const entities: ExternalToolPseudonymEntity | null = await this.em.findOne(ExternalToolPseudonymEntity, {
 			pseudonym,
 		});
@@ -118,7 +115,7 @@ export class ExternalToolPseudonymRepo {
 		return pseudonym;
 	}
 
-	public async findPseudonym(query: PseudonymSearchQuery, options?: IFindOptions<Pseudonym>): Promise<Page<Pseudonym>> {
+	public async findByQuery(query: PseudonymSearchQuery, options?: IFindOptions<Pseudonym>): Promise<Page<Pseudonym>> {
 		const pagination: Pagination = options?.pagination ?? {};
 		const scope: Scope<ExternalToolPseudonymEntity> = new PseudonymScope()
 			.byPseudonym(query.pseudonym)

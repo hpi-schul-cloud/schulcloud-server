@@ -1,7 +1,0 @@
-# WARNING: This file is only used for local development and should NOT be modified for production.
-# For deployment instances, the H5P libraries are configured via Ansible.
-# The Ansible configuration file can be found at:
-#   ansible/roles/h5p-proxy/defaults/main.yaml
-# in the dof_app_deploy repository: https://github.com/hpi-schul-cloud/dof_app_deploy
-
-h5p_libraries: []

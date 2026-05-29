@@ -59,14 +59,20 @@ export class UserService {
 		return userDto;
 	}
 
+	public async getSchoolIdsByUserIds(userIds: EntityId[]): Promise<Map<EntityId, EntityId>> {
+		const userSchoolMap = await this.userDoRepo.getSchoolIdsByUserIds(userIds);
+
+		return userSchoolMap;
+	}
+
 	public async findById(id: string): Promise<UserDo> {
 		const userDO = await this.userDoRepo.findById(id, true);
 
 		return userDO;
 	}
 
-	public async findByIds(ids: string[]): Promise<UserDo[]> {
-		const userDOs = await this.userDoRepo.findByIds(ids, true);
+	public async findByIds(ids: string[], populate = true): Promise<UserDo[]> {
+		const userDOs = await this.userDoRepo.findByIds(ids, populate);
 
 		return userDOs;
 	}
@@ -276,5 +282,9 @@ export class UserService {
 		);
 
 		return permissions;
+	}
+
+	public async updateUserReleaseDatePreference(userId: EntityId, releaseDate: Date): Promise<void> {
+		await this.userRepo.updateUserPreferences(userId, { releaseDate: releaseDate.toISOString() });
 	}
 }

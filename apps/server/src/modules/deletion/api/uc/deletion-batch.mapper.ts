@@ -1,25 +1,19 @@
 import { Page } from '@shared/domain/domainobject';
 import { DeletionBatchDetails, DeletionBatchSummary } from '../../domain/service';
 import { DeletionBatchPaginationParams } from '../controller/dto/request/deletion-batch-pagination.params';
+import { DeletionBatchDetailsResponse } from '../controller/dto/response/deletion-batch-details.response';
 import { DeletionBatchItemResponse } from '../controller/dto/response/deletion-batch-item.response';
 import { DeletionBatchListResponse } from '../controller/dto/response/deletion-batch-list.response';
-import { UsersByRoleCountResponse } from '../controller/dto/response/users-by-role-count.response';
-import { DeletionBatchDetailsResponse } from '../controller/dto/response/deletion-batch-details.response';
-import { UsersByRoleResponse } from '../controller/dto/response/users-by-role.response';
 
 export class DeletionBatchMapper {
 	public static mapToDeletionBatchItemResponse(summary: DeletionBatchSummary): DeletionBatchItemResponse {
 		const response = new DeletionBatchItemResponse({
 			id: summary.id,
-			status: summary.status,
 			name: summary.name,
-			usersByRole: summary.usersByRole.map(
-				(u) => new UsersByRoleCountResponse({ roleName: u.roleName, userCount: u.userCount })
-			),
+			status: summary.status,
+			validUsers: summary.validUsers,
 			invalidUsers: summary.invalidUsers,
-			skippedUsersByRole: summary.skippedUsersByRole.map(
-				(u) => new UsersByRoleCountResponse({ roleName: u.roleName, userCount: u.userCount })
-			),
+			skippedUsers: summary.skippedUsers,
 			createdAt: summary.createdAt,
 			updatedAt: summary.updatedAt,
 		});
@@ -42,13 +36,16 @@ export class DeletionBatchMapper {
 	public static mapToDeletionBatchDetailsResponse(details: DeletionBatchDetails): DeletionBatchDetailsResponse {
 		const response = new DeletionBatchDetailsResponse({
 			id: details.id,
+			name: details.name,
+			status: details.status,
+			validUsers: details.validUsers,
+			invalidUsers: details.invalidUsers,
+			skippedUsers: details.skippedUsers,
 			pendingDeletions: details.pendingDeletions,
 			failedDeletions: details.failedDeletions,
 			successfulDeletions: details.successfulDeletions,
-			skippedDeletions: details.skippedUsersByRole.map(
-				(u) => new UsersByRoleResponse({ roleName: u.roleName, ids: u.userIds })
-			),
-			invalidIds: details.invalidIds,
+			createdAt: details.createdAt,
+			updatedAt: details.updatedAt,
 		});
 
 		return response;

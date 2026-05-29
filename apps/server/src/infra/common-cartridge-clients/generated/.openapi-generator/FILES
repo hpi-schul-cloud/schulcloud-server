@@ -22,7 +22,6 @@ models/board-layout.ts
 models/board-lesson-response.ts
 models/board-parent-type.ts
 models/board-response.ts
-models/board-submission-controller-create-element201-response.ts
 models/board-task-response.ts
 models/board-task-status-response.ts
 models/card-controller-create-element201-response.ts
@@ -87,11 +86,6 @@ models/rich-text-element-content-body.ts
 models/rich-text-element-content.ts
 models/rich-text-element-response.ts
 models/single-column-board-response.ts
-models/submission-container-content-body.ts
-models/submission-container-element-content-body.ts
-models/submission-container-element-content.ts
-models/submission-container-element-response.ts
-models/submission-item-response-elements-inner.ts
 models/timestamps-response.ts
 models/update-element-content-body-params-data.ts
 models/update-element-content-body-params.ts
