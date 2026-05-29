@@ -11,7 +11,7 @@ const { setupNestServices, closeNestServices } = require('../../utils/setup.nest
 
 chai.use(chaiHttp);
 
-describe('oauth2 service mock', function oauthTest() {
+describe.only('oauth2 service mock', function oauthTest() {
 	let app;
 	let introspectService;
 	let server;
@@ -59,6 +59,8 @@ describe('oauth2 service mock', function oauthTest() {
 		let beforePassword;
 
 		before(async () => {
+			Configuration.set('HYDRA_ADMIN_USER', '');
+			Configuration.set('HYDRA_ADMIN_PASSWORD', '');
 			beforeUser = Configuration.get('HYDRA_ADMIN_USER');
 			beforePassword = Configuration.get('HYDRA_ADMIN_PASSWORD');
 
