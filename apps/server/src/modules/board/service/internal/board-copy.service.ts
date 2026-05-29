@@ -130,6 +130,10 @@ export class BoardCopyService {
 			params.destinationColumnBoardId ? undefined : originalColumn.position + 1
 		);
 
+		if (copyStatus.status !== CopyStatusEnum.SUCCESS) {
+			throw new InternalServerErrorException('copied column has missing or failed copied nodes');
+		}
+
 		return copyStatus;
 	}
 
@@ -172,7 +176,7 @@ export class BoardCopyService {
 		);
 
 		if (copyStatus.status !== CopyStatusEnum.SUCCESS) {
-			throw new InternalServerErrorException('copied card has missing or failed copied elements');
+			throw new InternalServerErrorException('copied card has missing or failed copied nodes');
 		}
 
 		return copyStatus;

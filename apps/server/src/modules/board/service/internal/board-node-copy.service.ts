@@ -136,6 +136,7 @@ export class BoardNodeCopyService {
 
 	public async copyColumn(original: Column, context: CopyContext): Promise<CopyStatus> {
 		const childrenResults = await this.copyChildrenOf(original, context);
+		const childrenCopyStatus = this.copyHelperService.deriveStatusFromElements(childrenResults);
 
 		const copy = new Column({
 			...original.getProps(),
@@ -145,7 +146,7 @@ export class BoardNodeCopyService {
 		const result: CopyStatus = {
 			copyEntity: copy,
 			type: CopyElementType.COLUMN,
-			status: CopyStatusEnum.SUCCESS,
+			status: childrenCopyStatus,
 			elements: childrenResults,
 			originalEntity: original,
 		};
