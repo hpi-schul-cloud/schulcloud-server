@@ -11,7 +11,7 @@ const { setupNestServices, closeNestServices } = require('../../utils/setup.nest
 
 chai.use(chaiHttp);
 
-describe.only('oauth2 service mock', function oauthTest() {
+describe('oauth2 service mock', function oauthTest() {
 	let app;
 	let introspectService;
 	let server;
@@ -55,15 +55,8 @@ describe.only('oauth2 service mock', function oauthTest() {
 
 	describe('with basic auth', () => {
 		let o2mock;
-		let beforeUser;
-		let beforePassword;
 
 		before(async () => {
-			Configuration.set('HYDRA_ADMIN_USER', '');
-			Configuration.set('HYDRA_ADMIN_PASSWORD', '');
-			beforeUser = Configuration.get('HYDRA_ADMIN_USER');
-			beforePassword = Configuration.get('HYDRA_ADMIN_PASSWORD');
-
 			o2mock = await oauth2Server({});
 			o2mock.expectedAuth = 'admin:password';
 			Configuration.set('HYDRA_URI', o2mock.url);
@@ -73,11 +66,6 @@ describe.only('oauth2 service mock', function oauthTest() {
 			// We need to re-configure the service because it reads the config at setup
 			app.unuse('oauth2/introspect');
 			app.configure(oauth2);
-		});
-
-		after(() => {
-			Configuration.set('HYDRA_ADMIN_USER', beforeUser);
-			Configuration.set('HYDRA_ADMIN_PASSWORD', beforePassword);
 		});
 
 		it('should send basic auth headers', () =>
