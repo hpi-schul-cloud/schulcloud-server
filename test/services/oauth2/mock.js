@@ -52,4 +52,28 @@ describe('oauth2 service mock', function oauthTest() {
 			.then((res) => {
 				assert(res.active === false);
 			}));
+
+	describe('with basic auth', () => {
+		let o2mock;
+
+		before(async () => {
+			o2mock = await oauth2Server({});
+			o2mock.expectedAuth = 'admin:password';
+			Configuration.set('HYDRA_URI', o2mock.url);
+			Configuration.set('HYDRA_ADMIN_USER', 'admin');
+			Configuration.set('HYDRA_ADMIN_PASSWORD', 'password');
+
+			// We need to re-configure the service because it reads the config at setup
+			app.unuse('oauth2/introspect');
+			app.configure(oauth2);
+		});
+
+		it('should send basic auth headers', () =>
+			app
+				.service('oauth2/introspect')
+				.create({ token: 'xxx' })
+				.then((res) => {
+					assert(res.active === false);
+				}));
+	});
 });
