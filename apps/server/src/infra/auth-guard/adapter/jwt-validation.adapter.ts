@@ -12,8 +12,8 @@ export class JwtValidationAdapter {
 	) {}
 
 	public async isWhitelisted(accountId: string, jti: string): Promise<void> {
-		const redisIdentifier: string = createJwtRedisIdentifier(accountId, jti);
-		const redisData: JwtRedisData = createJwtRedisData(this.config.jwtTimeoutSeconds);
+		const redisIdentifier = createJwtRedisIdentifier(accountId, jti);
+		const redisData = createJwtRedisData(this.config.jwtTimeoutSeconds);
 		const value = await this.storageClient.get(redisIdentifier);
 
 		if (value === null) this.throwUnauthorized();
