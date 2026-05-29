@@ -1,11 +1,7 @@
 /* eslint-disable import/extensions */
 import { buildAllSearchableStringsForUser as _buildAllSearchableStringsForUserUntyped } from '../../../src/utils/search.js';
 
-export {
-	createRedisIdentifierFromJwtData,
-	ensureTokenIsWhitelisted,
-	getRedisData,
-} from '../../../src/services/authentication/logic/whitelist.js';
+export { createRedisIdentifierFromJwtData } from '../../../src/services/authentication/logic/whitelist.js';
 export * as feathersRedis from '../../../src/utils/redis.js';
 
 // LDAP sync runner (named export, can use ES6 import syntax)
