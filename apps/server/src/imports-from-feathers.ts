@@ -6,14 +6,6 @@ export * as feathersRedis from '../../../src/utils/redis.js';
 // LDAP sync runner (named export, can use ES6 import syntax)
 export { runLegacyLdapSync } from '../../../src/services/sync/strategies/ldap-sync-runner.js';
 
-export type JwtRedisData = {
-	IP: string;
-	Browser: string;
-	Device: string;
-	privateDevice: boolean;
-	expirationInSeconds: number;
-};
-
 const buildAllSearchableStringsForUser = _buildAllSearchableStringsForUserUntyped as (
 	firstName: string,
 	lastName: string,
