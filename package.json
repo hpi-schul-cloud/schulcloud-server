@@ -184,7 +184,6 @@
 		"@nestjs/swagger": "^11.0.0",
 		"@nestjs/websockets": "^11.1.19",
 		"@socket.io/mongo-adapter": "^0.3.2",
-		"@types/busboy": "^1.5.4",
 		"adm-zip": "^0.5.16",
 		"amqplib": "^0.10.7",
 		"archiver": "^7.0.1",
