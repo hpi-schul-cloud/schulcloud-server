@@ -209,6 +209,14 @@ export class HydraAdapter extends OauthProviderService {
 		data?: unknown,
 		additionalHeaders: RawAxiosRequestHeaders = {}
 	): Promise<T> {
+		const auth =
+			this.oauthProviderConfig.hydraAdminUser && this.oauthProviderConfig.hydraAdminPassword
+				? {
+						username: this.oauthProviderConfig.hydraAdminUser,
+						password: this.oauthProviderConfig.hydraAdminPassword,
+					}
+				: undefined;
+
 		const observable: Observable<AxiosResponse<T>> = this.httpService
 			.request({
 				url,
@@ -218,6 +226,7 @@ export class HydraAdapter extends OauthProviderService {
 					...additionalHeaders,
 				},
 				data,
+				auth,
 			})
 			.pipe(
 				catchError((error: unknown) => {
