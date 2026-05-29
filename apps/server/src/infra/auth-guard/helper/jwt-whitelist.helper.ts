@@ -1,5 +1,3 @@
-import { Browser } from 'ua-parser-js/src/enums/ua-parser-enums';
-
 export interface JwtRedisData {
 	IP: string;
 	Browser: string;
