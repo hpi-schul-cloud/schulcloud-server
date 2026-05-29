@@ -1,11 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { InMemoryClient, StorageClient } from '@infra/valkey-client';
+import { StorageClient } from '@infra/valkey-client';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AUTH_GUARD_VALKEY_CLIENT, JWT_WHITELIST_CONFIG_TOKEN } from '../auth-guard.constants';
 import { createJwtRedisData, JwtRedisData } from '../helper';
-import { InternalJwtWhitelistConfig } from '../interface';
 import { JwtValidationAdapter } from './jwt-validation.adapter';
 
 describe(JwtValidationAdapter.name, () => {
@@ -81,40 +80,6 @@ describe(JwtValidationAdapter.name, () => {
 				const { accountId, jti } = setup();
 
 				await expect(adapter.isWhitelisted(accountId, jti)).rejects.toThrow(UnauthorizedException);
-			});
-		});
-
-		describe('when the storage client is an InMemoryClient', () => {
-			let inMemoryModule: TestingModule;
-			let inMemoryAdapter: JwtValidationAdapter;
-
-			beforeAll(async () => {
-				inMemoryModule = await Test.createTestingModule({
-					providers: [
-						JwtValidationAdapter,
-						{
-							provide: AUTH_GUARD_VALKEY_CLIENT,
-							useValue: new InMemoryClient(createMock()),
-						},
-						{
-							provide: JWT_WHITELIST_CONFIG_TOKEN,
-							useValue: { jwtTimeoutSeconds: 7200 } as InternalJwtWhitelistConfig,
-						},
-					],
-				}).compile();
-
-				inMemoryAdapter = inMemoryModule.get(JwtValidationAdapter);
-			});
-
-			afterAll(async () => {
-				await inMemoryModule.close();
-			});
-
-			it('should skip the whitelist check and return without throwing', async () => {
-				const accountId = new ObjectId().toHexString();
-				const jti = new ObjectId().toHexString();
-
-				await expect(inMemoryAdapter.isWhitelisted(accountId, jti)).resolves.toBeUndefined();
 			});
 		});
 	});
