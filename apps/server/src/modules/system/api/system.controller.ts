@@ -19,7 +19,7 @@ export class SystemController {
 	@Get('public')
 	@ApiOperation({ summary: 'Finds all publicly available systems.' })
 	@ApiResponse({ status: 200, type: PublicSystemListResponse, description: 'Returns a list of systems.' })
-	async find(@Query() filterParams: SystemFilterParams): Promise<PublicSystemListResponse> {
+	public async find(@Query() filterParams: SystemFilterParams): Promise<PublicSystemListResponse> {
 		const systems: System[] = await this.systemUc.find(filterParams.types);
 
 		const mapped: PublicSystemListResponse = SystemResponseMapper.mapFromDtoToListResponse(systems);
@@ -34,7 +34,7 @@ export class SystemController {
 	@Get('public/:systemId')
 	@ApiOperation({ summary: 'Finds a publicly available system.' })
 	@ApiResponse({ status: 200, type: PublicSystemResponse, description: 'Returns a system.' })
-	async getSystem(@Param() params: SystemIdParams): Promise<PublicSystemResponse> {
+	public async getSystem(@Param() params: SystemIdParams): Promise<PublicSystemResponse> {
 		const system: System = await this.systemUc.findById(params.systemId);
 
 		const mapped: PublicSystemResponse = SystemResponseMapper.mapFromDtoToResponse(system);
@@ -48,7 +48,7 @@ export class SystemController {
 	@ApiUnauthorizedResponse()
 	@ApiOperation({ summary: 'Deletes a system.' })
 	@HttpCode(HttpStatus.NO_CONTENT)
-	async deleteSystem(@CurrentUser() currentUser: ICurrentUser, @Param() params: SystemIdParams): Promise<void> {
+	public async deleteSystem(@CurrentUser() currentUser: ICurrentUser, @Param() params: SystemIdParams): Promise<void> {
 		await this.systemUc.delete(currentUser.userId, currentUser.schoolId, params.systemId);
 	}
 }

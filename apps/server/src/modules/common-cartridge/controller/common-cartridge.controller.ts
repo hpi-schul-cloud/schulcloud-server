@@ -1,4 +1,5 @@
-import { JwtAuthentication } from '@infra/auth-guard';
+import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
+import { FileRecordResponse } from '@infra/common-cartridge-clients';
 import { Body, Controller, HttpCode, HttpStatus, Param, Post, Query, Req, Res, StreamableFile } from '@nestjs/common';
 import {
 	ApiBadRequestResponse,
@@ -7,14 +8,13 @@ import {
 	ApiInternalServerErrorResponse,
 	ApiOkResponse,
 	ApiOperation,
-	ApiProduces,
 	ApiTags,
 	ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { CommonCartridgeUc } from '../uc/common-cartridge.uc';
 import { CourseExportBodyParams, CourseQueryParams, ExportCourseParams } from './dto';
-import { CommonCartridgeStartImportBodyParams } from './dto/common-cartridge-start-import-body.params';
+import { CommonCartridgeFileParams } from './dto/common-cartridge-file.params';
 
 @JwtAuthentication()
 @ApiTags('common-cartridge')
@@ -30,6 +30,8 @@ export class CommonCartridgeController {
 		@Req() req: Request,
 		@Res({ passthrough: true }) response: Response
 	): Promise<StreamableFile> {
+		this.commonCartridgeUC.checkExportEnabled();
+
 		const result = await this.commonCartridgeUC.exportCourse(
 			exportCourseParams.courseId,
 			queryParams.version,
@@ -49,17 +51,29 @@ export class CommonCartridgeController {
 		return streamableFile;
 	}
 
-	@Post('start-import')
-	@ApiOperation({ summary: 'Start the import of a previously uploaded file.' })
-	@ApiConsumes('application/json')
-	@ApiProduces('application/json')
-	@ApiBody({ type: CommonCartridgeStartImportBodyParams, required: true })
+	@Post('import')
+	@ApiOperation({ summary: 'Upload a file and start the asynchronous import.' })
 	@ApiOkResponse({ description: 'Import was started successfully.' })
 	@ApiUnauthorizedResponse({ description: 'Request is unauthorized.' })
 	@ApiBadRequestResponse({ description: 'Request data has invalid format.' })
 	@ApiInternalServerErrorResponse({ description: 'Internal server error.' })
+	@ApiConsumes('application/octet-stream')
+	@ApiBody({ schema: { type: 'string', format: 'binary' }, required: true })
 	@HttpCode(200)
-	public importCourse(@Body() startImportParams: CommonCartridgeStartImportBodyParams): void {
-		this.commonCartridgeUC.startCourseImport(startImportParams);
+	public async uploadFileAndStartImport(
+		@CurrentUser() currentUser: ICurrentUser,
+		_?: CommonCartridgeFileParams
+	): Promise<FileRecordResponse> {
+		this.commonCartridgeUC.checkImportEnabled();
+
+		const fileRecordResponse = await this.commonCartridgeUC.uploadFileFromRequestToTemp(currentUser);
+
+		this.commonCartridgeUC.startCourseImport({
+			fileRecordId: fileRecordResponse.id,
+			fileUrl: fileRecordResponse.url,
+			fileName: fileRecordResponse.name,
+		});
+
+		return fileRecordResponse;
 	}
 }

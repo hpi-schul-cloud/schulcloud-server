@@ -1,3 +1,4 @@
+export * from './audit-logger';
 export * from './error-logger';
 export * from './interfaces';
 export * from './legacy-logger.service';

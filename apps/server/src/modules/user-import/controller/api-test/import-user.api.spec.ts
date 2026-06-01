@@ -739,6 +739,7 @@ describe('ImportUser Controller (API)', () => {
 						it('should skip importusers', async () => {
 							const importUsers = importUserFactory.buildList(10, { school });
 							await em.persist(importUsers).flush();
+							em.clear();
 							const query: PaginationParams = { skip: 3 };
 
 							const response = await testApiClient.get().query(query).expect(HttpStatus.OK);
@@ -751,6 +752,7 @@ describe('ImportUser Controller (API)', () => {
 						it('should limit importusers', async () => {
 							const importUsers = importUserFactory.buildList(10, { school });
 							await em.persist(importUsers).flush();
+							em.clear();
 							const query: PaginationParams = { limit: 3 };
 
 							const response = await testApiClient.get().query(query).expect(HttpStatus.OK);

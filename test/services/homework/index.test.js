@@ -1,6 +1,6 @@
 const assert = require('assert');
 const chai = require('chai');
-const chaiAsPromised = require('chai-as-promised');
+const { default: chaiAsPromised } = require('chai-as-promised');
 const appPromise = require('../../../src/app');
 const testObjects = require('../helpers/testObjects')(appPromise());
 

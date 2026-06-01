@@ -1,6 +1,6 @@
 import { EntityManager } from '@mikro-orm/core';
 import { AccountEntity } from '@modules/account/repo';
-import { accountFactory } from '@modules/account/testing';
+import { accountFactory, defaultTestPassword } from '@modules/account/testing';
 import { OauthTokenResponse } from '@modules/oauth-adapter';
 import { RoleName } from '@modules/role';
 import { roleFactory } from '@modules/role/testing';
@@ -12,6 +12,7 @@ import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Permission } from '@shared/domain/interface';
 import { JwtTestFactory } from '@testing/factory/jwt.test.factory';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
@@ -75,9 +76,6 @@ describe('Login Controller (api)', () => {
 	let app: INestApplication<Server>;
 	let em: EntityManager;
 
-	const defaultPassword = 'DummyPasswd!1';
-	const defaultPasswordHash = '$2a$10$/DsztV5o6P5piW2eWJsxw.4nHovmJGBA.QNwiTmuZ/uvUc40b.Uhu';
-
 	beforeAll(async () => {
 		const moduleFixture: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
@@ -89,47 +87,35 @@ describe('Login Controller (api)', () => {
 	});
 
 	afterAll(async () => {
-		// await cleanupCollections(em);
 		await app.close();
 	});
 
 	describe('loginLocal', () => {
-		let account: AccountEntity;
-		let user: User;
-
-		beforeAll(async () => {
-			const school = schoolEntityFactory.buildWithId();
-			const studentRoles = roleFactory.build({ name: RoleName.STUDENT, permissions: [] });
-
-			user = userFactory.buildWithId({ school, roles: [studentRoles] });
-			account = accountFactory.buildWithId({
-				userId: user.id,
-				username: user.email,
-				password: defaultPasswordHash,
-				deactivatedAt: moment().add(1, 'd').toDate(),
-			});
-
-			em.persist(school);
-			em.persist(studentRoles);
-			em.persist(user);
-			em.persist(account);
-			await em.flush();
-		});
-
 		describe('when user login succeeds', () => {
+			const setup = async () => {
+				const user = userFactory.asStudent().buildWithId();
+				const account = accountFactory.withUser(user).buildWithId();
+
+				await em.persist([user, account]).flush();
+
+				return { user };
+			};
+
 			it('should return jwt', async () => {
+				const { user } = await setup();
 				const params: LocalAuthorizationBodyParams = {
 					username: user.email,
-					password: defaultPassword,
+					password: defaultTestPassword,
 				};
-				const response = await request(app.getHttpServer()).post(`${basePath}/local`).send(params).expect(200);
+				const response = await request(app.getHttpServer()).post(`${basePath}/local`).send(params);
 
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-				const token = response.body.accessToken;
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-				const decodedToken = jwt.decode(token);
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-				expect(response.body.accessToken).toBeDefined();
+				expect(response.status).toEqual(HttpStatus.OK);
+				expect(response.body).toEqual({
+					accessToken: expect.any(String),
+				});
+
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
+				const decodedToken = jwt.decode(response.body.accessToken);
 				expect(decodedToken).toHaveProperty('userId');
 				expect(decodedToken).toHaveProperty('accountId');
 				expect(decodedToken).toHaveProperty('schoolId');
@@ -139,38 +125,157 @@ describe('Login Controller (api)', () => {
 		});
 
 		describe('when user login fails', () => {
+			const setup = async () => {
+				const user = userFactory.asStudent().buildWithId();
+				const account = accountFactory.withUser(user).buildWithId();
+
+				await em.persist([user, account]).flush();
+
+				return { account };
+			};
+
 			it('should return error response', async () => {
-				const params = {
-					username: user.email,
+				const { account } = await setup();
+				const params: LocalAuthorizationBodyParams = {
+					username: account.username,
 					password: 'wrongPassword',
 				};
+
 				const result = await request(app.getHttpServer()).post(`${basePath}/local`).send(params);
-				expect(result.status).toEqual(401);
+
+				expect(result.status).toEqual(HttpStatus.UNAUTHORIZED);
 			});
 		});
+
 		describe('when user login fails cause account is deactivated', () => {
 			const setup = async () => {
-				const newUser: User = userFactory.buildWithId();
-				const deactivatedAccount: AccountEntity = accountFactory.buildWithId({
-					userId: newUser.id,
-					username: newUser.email,
-					password: defaultPasswordHash,
+				const newUser = userFactory.asStudent().buildWithId();
+				const deactivatedAccount = accountFactory.withUser(newUser).buildWithId({
 					deactivatedAt: new Date(),
 				});
 
-				em.persist(newUser);
-				em.persist(deactivatedAccount);
-				await em.flush();
-				return { newUser };
+				await em.persist([newUser, deactivatedAccount]).flush();
+
+				return { deactivatedAccount };
 			};
+
 			it('should return error response', async () => {
-				const { newUser } = await setup();
-				const params = {
-					username: newUser.email,
-					password: defaultPassword,
+				const { deactivatedAccount } = await setup();
+				const params: LocalAuthorizationBodyParams = {
+					username: deactivatedAccount.username,
+					password: defaultTestPassword,
 				};
+
 				const result = await request(app.getHttpServer()).post(`${basePath}/local`).send(params);
-				expect(result.status).toEqual(401);
+
+				expect(result.status).toEqual(HttpStatus.UNAUTHORIZED);
+			});
+		});
+	});
+
+	describe('loginLocalServiceAccount', () => {
+		describe('when user login succeeds', () => {
+			const setup = async () => {
+				const user = userFactory.asServiceAccountUser([Permission.USER_CREATE]).buildWithId();
+				const account = accountFactory.withUser(user).buildWithId();
+
+				await em.persist([user, account]).flush();
+
+				return { account };
+			};
+
+			it('should return jwt with isServiceAccount flag', async () => {
+				const { account } = await setup();
+				const params: LocalAuthorizationBodyParams = {
+					username: account.username,
+					password: defaultTestPassword,
+				};
+				const response = await request(app.getHttpServer()).post(`${basePath}/local-service-account`).send(params);
+
+				expect(response.status).toEqual(HttpStatus.OK);
+				expect(response.body).toEqual({
+					accessToken: expect.any(String),
+				});
+
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
+				const decodedToken = jwt.decode(response.body.accessToken);
+				expect(decodedToken).toHaveProperty('userId');
+				expect(decodedToken).toHaveProperty('accountId');
+				expect(decodedToken).toHaveProperty('schoolId');
+				expect(decodedToken).toHaveProperty('roles');
+				expect(decodedToken).toHaveProperty('isServiceAccount', true);
+				expect(decodedToken).not.toHaveProperty('externalIdToken');
+			});
+		});
+
+		describe('when user login fails', () => {
+			const setup = async () => {
+				const user = userFactory.asServiceAccountUser([Permission.USER_CREATE]).buildWithId();
+				const account = accountFactory.withUser(user).buildWithId();
+
+				await em.persist([user, account]).flush();
+
+				return { account };
+			};
+
+			it('should return error response', async () => {
+				const { account } = await setup();
+				const params: LocalAuthorizationBodyParams = {
+					username: account.username,
+					password: 'wrongPassword',
+				};
+
+				const result = await request(app.getHttpServer()).post(`${basePath}/local-service-account`).send(params);
+
+				expect(result.status).toEqual(HttpStatus.UNAUTHORIZED);
+			});
+		});
+
+		describe('when user login fails cause account is deactivated', () => {
+			const setup = async () => {
+				const newUser = userFactory.asServiceAccountUser([Permission.USER_CREATE]).buildWithId();
+				const deactivatedAccount = accountFactory.withUser(newUser).buildWithId({
+					deactivatedAt: new Date(),
+				});
+
+				await em.persist([newUser, deactivatedAccount]).flush();
+
+				return { deactivatedAccount };
+			};
+
+			it('should return error response', async () => {
+				const { deactivatedAccount } = await setup();
+				const params: LocalAuthorizationBodyParams = {
+					username: deactivatedAccount.username,
+					password: defaultTestPassword,
+				};
+
+				const result = await request(app.getHttpServer()).post(`${basePath}/local-service-account`).send(params);
+
+				expect(result.status).toEqual(HttpStatus.UNAUTHORIZED);
+			});
+		});
+
+		describe('when user is not a service account', () => {
+			const setup = async () => {
+				const user = userFactory.asStudent().buildWithId();
+				const account = accountFactory.withUser(user).buildWithId();
+
+				await em.persist([user, account]).flush();
+
+				return { account };
+			};
+
+			it('should return unauthorized error', async () => {
+				const { account } = await setup();
+				const params: LocalAuthorizationBodyParams = {
+					username: account.username,
+					password: defaultTestPassword,
+				};
+
+				const result = await request(app.getHttpServer()).post(`${basePath}/local-service-account`).send(params);
+
+				expect(result.status).toEqual(HttpStatus.UNAUTHORIZED);
 			});
 		});
 	});
@@ -199,7 +304,7 @@ describe('Login Controller (api)', () => {
 
 				const params: LdapAuthorizationBodyParams = {
 					username: ldapAccountUserName,
-					password: defaultPassword,
+					password: defaultTestPassword,
 					schoolId: school.id,
 					systemId: system.id,
 				};
@@ -293,7 +398,7 @@ describe('Login Controller (api)', () => {
 
 				const params: LdapAuthorizationBodyParams = {
 					username: ldapAccountUserName,
-					password: defaultPassword,
+					password: defaultTestPassword,
 					schoolId: school.id,
 					systemId: system.id,
 				};
@@ -335,7 +440,7 @@ describe('Login Controller (api)', () => {
 
 				const params: LdapAuthorizationBodyParams = {
 					username: ldapAccountUserName,
-					password: defaultPassword,
+					password: defaultTestPassword,
 					schoolId: school.id,
 					systemId: system.id,
 				};
@@ -366,8 +471,6 @@ describe('Login Controller (api)', () => {
 					schoolId: school.id,
 					accountId: account.id,
 					isExternalUser: true,
-					// support: false,
-					// externalIdToken: undefined,
 				});
 			});
 		});

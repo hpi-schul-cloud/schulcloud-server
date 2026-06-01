@@ -72,6 +72,10 @@ describe(SchoolExternalToolService.name, () => {
 		config = module.get(TOOL_CONFIG_TOKEN);
 	});
 
+	afterAll(async () => {
+		await module.close();
+	});
+
 	describe('findById', () => {
 		describe('when schoolExternalToolId is given', () => {
 			const setup = () => {

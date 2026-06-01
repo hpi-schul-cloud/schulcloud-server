@@ -1,16 +1,29 @@
 import { ConfigProperty, Configuration } from '@infra/configuration';
 import { StringToBoolean, StringToNumber } from '@shared/controller/transformer';
-import { IsBoolean, IsNumber } from 'class-validator';
+import { IsBoolean, IsNumber, IsString } from 'class-validator';
 
 export const SESSION_VALKEY_CLIENT = 'SESSION_VALKEY_CLIENT';
+
+const hourInSeconds = 3600;
+const dayInSeconds = 24 * hourInSeconds;
 
 export const AUTHENTICATION_CONFIG_TOKEN = 'AUTHENTICATION_CONFIG_TOKEN';
 @Configuration()
 export class AuthenticationConfig {
+	// Also used in JwtModuleConfig.
+	@ConfigProperty('JWT_LIFETIME')
+	@IsString()
+	public expiresIn = '30d';
+
 	@ConfigProperty('JWT_LIFETIME_SUPPORT_SECONDS')
 	@StringToNumber()
 	@IsNumber()
-	public jwtLifetimeSupportSeconds = 604800;
+	public jwtLifetimeSupportSeconds = 7 * dayInSeconds;
+
+	@ConfigProperty('JWT_LIFETIME_SERVICE_ACCOUNT_SECONDS')
+	@StringToNumber()
+	@IsNumber()
+	public jwtLifetimeServiceAccountSeconds = 2 * hourInSeconds;
 
 	@ConfigProperty('LOGIN_BLOCK_TIME')
 	@StringToNumber()

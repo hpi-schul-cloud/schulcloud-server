@@ -1,4 +1,5 @@
 import { ColumnBoard } from '@modules/board';
+import { BoardOperation } from '@modules/board/authorisation/board-node.rule';
 import { RoomOperation } from '@modules/room-membership/authorization/room.rule';
 import { PaginationParams } from '@shared/controller/dto';
 import { Page } from '@shared/domain/domainobject';
@@ -29,6 +30,7 @@ export class RoomMapper {
 		room,
 		allowedOperations,
 		isLocked,
+		totalMembers,
 	}: RoomWithAllowedOperationsAndLockedStatus): RoomItemResponse {
 		const response = new RoomItemResponse({
 			id: room.id,
@@ -41,6 +43,7 @@ export class RoomMapper {
 			updatedAt: room.updatedAt,
 			allowedOperations,
 			isLocked,
+			totalMembers,
 		});
 
 		return response;
@@ -75,7 +78,10 @@ export class RoomMapper {
 		return response;
 	}
 
-	public static mapToRoomBoardItemReponse(board: ColumnBoard): RoomBoardItemResponse {
+	public static mapToRoomBoardItemReponse(
+		board: ColumnBoard,
+		allowedOperations: Partial<Record<BoardOperation, boolean>>
+	): RoomBoardItemResponse {
 		const response = new RoomBoardItemResponse({
 			id: board.id,
 			title: board.title,
@@ -83,15 +89,20 @@ export class RoomMapper {
 			isVisible: board.isVisible,
 			createdAt: board.createdAt,
 			updatedAt: board.updatedAt,
+			allowedOperations: Object.fromEntries(Object.entries(allowedOperations).filter(([, value]) => value)),
 		});
 
 		return response;
 	}
 
-	public static mapToRoomBoardListResponse(columnBoards: ColumnBoard[]): RoomBoardListResponse {
-		const itemData = columnBoards.map((board) => this.mapToRoomBoardItemReponse(board));
+	public static mapToRoomBoardListResponse(
+		boardsWithOperations: { board: ColumnBoard; allowedOperations: Record<BoardOperation, boolean> }[]
+	): RoomBoardListResponse {
+		const itemData = boardsWithOperations.map(({ board, allowedOperations }) =>
+			this.mapToRoomBoardItemReponse(board, allowedOperations)
+		);
 
-		const response = new RoomBoardListResponse(itemData, columnBoards.length);
+		const response = new RoomBoardListResponse(itemData, boardsWithOperations.length);
 
 		return response;
 	}

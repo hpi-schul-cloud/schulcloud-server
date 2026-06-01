@@ -44,6 +44,10 @@ describe(ErwinIdentifierService.name, () => {
 		jest.clearAllMocks();
 	});
 
+	afterAll(async () => {
+		await module.close();
+	});
+
 	it('should be defined', () => {
 		expect(sut).toBeDefined();
 	});
