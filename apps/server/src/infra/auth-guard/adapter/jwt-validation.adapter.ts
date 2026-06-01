@@ -18,7 +18,7 @@ export class JwtValidationAdapter {
 		const redisData = createJwtRedisData(this.config.jwtTimeoutSeconds);
 		const value = await this.storageClient.get(redisIdentifier);
 
-		if (value === null) this.throwUnauthorized();
+		this.checkValue(value);
 
 		await this.extendExpiration(redisIdentifier, redisData);
 	}
@@ -27,7 +27,9 @@ export class JwtValidationAdapter {
 		await this.storageClient.set(redisIdentifier, JSON.stringify(redisData), 'EX', redisData.expirationInSeconds);
 	}
 
-	private throwUnauthorized(): never {
-		throw new UnauthorizedException('Session was expired due to inactivity - autologout.');
+	private checkValue(value: string | null): void {
+		if (value === null) {
+			throw new UnauthorizedException('Session was expired due to inactivity - autologout.');
+		}
 	}
 }
