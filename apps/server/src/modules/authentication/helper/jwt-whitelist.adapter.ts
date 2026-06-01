@@ -1,5 +1,9 @@
-import { createJwtRedisData, createJwtRedisIdentifier, JWT_WHITELIST_CONFIG_TOKEN } from '@infra/auth-guard';
-import { InternalJwtWhitelistConfig } from '@infra/auth-guard/interface';
+import {
+	createJwtRedisData,
+	createJwtRedisIdentifier,
+	InternalJwtWhitelistConfig,
+	JWT_WHITELIST_CONFIG_TOKEN,
+} from '@infra/auth-guard';
 import { StorageClient } from '@infra/valkey-client';
 import { Inject, Injectable } from '@nestjs/common';
 import { SESSION_VALKEY_CLIENT } from '../authentication-config';
