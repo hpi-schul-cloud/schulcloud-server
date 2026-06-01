@@ -10,7 +10,7 @@ import { DATABASE_CONFIG_TOKEN, DatabaseConfig, DatabaseModule } from '@infra/da
 import { User } from '@modules/user/repo/user.entity';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
-import { COMMON_CARTRIDGE_CONFIG_TOKEN, CommonCartridgeConfig } from './common-cartridge.config';
+import { COMMON_CARTRIDGE_PUBLIC_API_CONFIG_TOKEN, CommonCartridgePublicApiConfig } from './common-cartridge.config';
 import { CommonCartridgeModule } from './common-cartridge.module';
 import { CommonCartridgeController } from './controller/common-cartridge.controller';
 
@@ -26,7 +26,7 @@ import { CommonCartridgeController } from './controller/common-cartridge.control
 				configConstructor: JwtAuthGuardConfig,
 			},
 		]),
-		ConfigurationModule.register(COMMON_CARTRIDGE_CONFIG_TOKEN, CommonCartridgeConfig),
+		ConfigurationModule.register(COMMON_CARTRIDGE_PUBLIC_API_CONFIG_TOKEN, CommonCartridgePublicApiConfig),
 		CommonCartridgeModule,
 		DatabaseModule.register({
 			configInjectionToken: DATABASE_CONFIG_TOKEN,

@@ -10,7 +10,7 @@ import { currentUserFactory } from '@testing/factory/currentuser.factory';
 import { EventEmitter } from 'events';
 import { Request } from 'express';
 import { PassThrough, Readable } from 'stream';
-import { COMMON_CARTRIDGE_CONFIG_TOKEN, CommonCartridgeConfig } from '../common-cartridge.config';
+import { COMMON_CARTRIDGE_PUBLIC_API_CONFIG_TOKEN, CommonCartridgePublicApiConfig } from '../common-cartridge.config';
 import { ImportCourseEvent } from '../domain/events/import-course.event';
 import { ImportCourseParams } from '../domain/import-course.params';
 import { ErrorStatus } from '../error/error-status.enum';
@@ -33,7 +33,7 @@ describe(CommonCartridgeUc.name, () => {
 	let eventBusMock: DeepMocked<EventBus>;
 	let requestMock: DeepMocked<Request>;
 	let fileClientMock: DeepMocked<FilesStorageClientAdapter>;
-	let config: CommonCartridgeConfig;
+	let config: CommonCartridgePublicApiConfig;
 	let currentReqEmitter: EventEmitter | null = null;
 
 	beforeAll(async () => {
@@ -57,7 +57,7 @@ describe(CommonCartridgeUc.name, () => {
 					useValue: createMock<FilesStorageClientAdapter>(),
 				},
 				{
-					provide: COMMON_CARTRIDGE_CONFIG_TOKEN,
+					provide: COMMON_CARTRIDGE_PUBLIC_API_CONFIG_TOKEN,
 					useValue: {
 						courseExportEnabled: true,
 						courseImportEnabled: true,
@@ -72,7 +72,7 @@ describe(CommonCartridgeUc.name, () => {
 		fileClientMock = module.get(FilesStorageClientAdapter);
 		eventBusMock = module.get(EventBus);
 		requestMock = module.get(REQUEST);
-		config = module.get(COMMON_CARTRIDGE_CONFIG_TOKEN);
+		config = module.get(COMMON_CARTRIDGE_PUBLIC_API_CONFIG_TOKEN);
 	});
 
 	afterAll(async () => {
