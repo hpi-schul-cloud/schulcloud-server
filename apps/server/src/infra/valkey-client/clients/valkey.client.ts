@@ -5,6 +5,8 @@ import { StorageClient } from '../types';
  *  This class is a wrapper around the Valkey library to provide a consistent interface for storage operations.
  */
 export class ValkeyClient implements StorageClient {
+	public readonly isInMemory = false;
+
 	// You can use the Valkey library directly for usage in external packages.
 	constructor(public readonly valkeyInstance: Valkey) {}
 
