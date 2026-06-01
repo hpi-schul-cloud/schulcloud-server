@@ -613,16 +613,6 @@ async myNewOperation(userId: EntityId, boardId: EntityId) {
 | **Cross-board Content Retrieval** | Planned | "Task Overview" across boards |
 | **Partial Access Control** | Planned | Hide columns/cards from certain users |
 
-### Code-Level TODOs
-
-From [board.module.ts](../apps/server/src/modules/board/board.module.ts):
-```typescript
-// TODO: move BoardDoAuthorizableService, BoardDoRepo, BoardDoService, 
-//       BoardNodeRepo in separate module
-// TODO: move mediaboard related services in mediaboard module
-// TODO: replace by import of MediaBoardModule (fix dependency cycle)
-```
-
 ---
 
 ## 12. Key Files Quick Reference
