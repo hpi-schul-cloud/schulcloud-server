@@ -111,7 +111,7 @@ export abstract class BoardNode<T extends BoardNodeProps> extends DomainObject<T
 }
 ```
 
-**Path Management:** Each node stores its `path` as a materialized path string (e.g., `"rootId,parentId,grandparentId"`). This enables efficient tree queries.
+**Path Management:** Each node stores its `path` as a materialized path string (e.g., `"rootId,grandparentId,parentId"`). This enables efficient tree queries.
 
 ### 3.2 Type System & Registration
 
@@ -136,7 +136,7 @@ const BoardNodeTypeToConstructor = {
 
 ### 3.3 ColumnBoard Structure
 
-📁 [colum-board.do.ts](../apps/server/src/modules/board/domain/colum-board.do.ts) (note: typo in filename is intentional/legacy)
+📁 [colum-board.do.ts](../apps/server/src/modules/board/domain/colum-board.do.ts)
 
 ```typescript
 export class ColumnBoard extends BoardNode<ColumnBoardProps> {
