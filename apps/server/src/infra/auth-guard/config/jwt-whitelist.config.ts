@@ -1,9 +1,8 @@
 import { ConfigProperty, Configuration } from '@infra/configuration';
 import { StringToNumber } from '@shared/controller/transformer';
 import { IsNumber } from 'class-validator';
-import { JWT_WHITELIST_CONFIG_TOKEN } from '../auth-guard.constants';
 
-export { JWT_WHITELIST_CONFIG_TOKEN };
+export const JWT_WHITELIST_CONFIG_TOKEN = 'JWT_WHITELIST_CONFIG_TOKEN';
 
 @Configuration()
 export class JwtWhitelistConfig {

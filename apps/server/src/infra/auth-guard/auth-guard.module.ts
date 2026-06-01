@@ -7,8 +7,8 @@ import {
 import { DynamicModule, Module, Provider } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { JwtValidationAdapter } from './adapter';
-import { AUTH_GUARD_VALKEY_CLIENT, JWT_WHITELIST_CONFIG_TOKEN } from './auth-guard.constants';
-import { JwtWhitelistConfig } from './config';
+import { AUTH_GUARD_VALKEY_CLIENT } from './auth-guard.constants';
+import { JWT_WHITELIST_CONFIG_TOKEN, JwtWhitelistConfig } from './config';
 import {
 	AuthGuardModuleOptions,
 	AuthGuardOptions,

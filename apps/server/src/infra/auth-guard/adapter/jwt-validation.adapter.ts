@@ -1,8 +1,9 @@
 import { StorageClient } from '@infra/valkey-client';
 import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
-import { AUTH_GUARD_VALKEY_CLIENT, JWT_WHITELIST_CONFIG_TOKEN } from '../auth-guard.constants';
+import { AUTH_GUARD_VALKEY_CLIENT } from '../auth-guard.constants';
 import { createJwtRedisData, createJwtRedisIdentifier, JwtRedisData } from '../helper';
 import { InternalJwtWhitelistConfig } from '../interface';
+import { JWT_WHITELIST_CONFIG_TOKEN } from '../config';
 
 @Injectable()
 export class JwtValidationAdapter {
