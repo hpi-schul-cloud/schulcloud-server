@@ -1,12 +1,12 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { InMemoryClient, StorageClient } from '@infra/valkey-client';
+import { StorageClient } from '@infra/valkey-client';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AUTH_GUARD_VALKEY_CLIENT, JWT_WHITELIST_CONFIG_TOKEN } from '../auth-guard.constants';
+import { AUTH_GUARD_VALKEY_CLIENT } from '../auth-guard.constants';
+import { JWT_WHITELIST_CONFIG_TOKEN } from '../config';
 import { createJwtRedisData, JwtRedisData } from '../helper';
 import { JwtValidationAdapter } from './jwt-validation.adapter';
-import { InternalJwtWhitelistConfig } from '../interface';
 
 describe(JwtValidationAdapter.name, () => {
 	let module: TestingModule;
@@ -94,11 +94,11 @@ describe(JwtValidationAdapter.name, () => {
 						JwtValidationAdapter,
 						{
 							provide: AUTH_GUARD_VALKEY_CLIENT,
-							useValue: new InMemoryClient(createMock()),
+							useValue: new (class InMemoryClient {})(),
 						},
 						{
 							provide: JWT_WHITELIST_CONFIG_TOKEN,
-							useValue: { jwtTimeoutSeconds: 7200 } as InternalJwtWhitelistConfig,
+							useValue: { jwtTimeoutSeconds: 7200 },
 						},
 					],
 				}).compile();
