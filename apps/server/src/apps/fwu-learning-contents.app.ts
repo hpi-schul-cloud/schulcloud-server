@@ -9,7 +9,7 @@ import { install as sourceMapInstall } from 'source-map-support';
 
 // application imports
 import { createRequestLoggerMiddleware, LegacyLogger, LOGGER_CONFIG_TOKEN, LoggerConfig } from '@core/logger';
-import { SESSION_VALKEY_CLIENT } from '@modules/authentication';
+import { JWT_WHITELIST_VALKEY_CLIENT } from '@infra/jwt-whitelist';
 import { FwuLearningContentsModule } from '@modules/fwu-learning-contents';
 import { enableOpenApiDocs } from './helpers';
 import legacyRedisUtils = require('../../../../src/utils/redis');
@@ -33,7 +33,7 @@ async function bootstrap(): Promise<void> {
 
 	// The redisClient must be initialized in the legacy part for the session handling (whitelisting of JWTs) to work.
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-	const sessionValkeyClient = await nestApp.resolve(SESSION_VALKEY_CLIENT);
+	const sessionValkeyClient = await nestApp.resolve(JWT_WHITELIST_VALKEY_CLIENT);
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 	legacyRedisUtils.initializeRedisClient(sessionValkeyClient);
 

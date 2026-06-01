@@ -1,12 +1,6 @@
 import { CoreModule } from '@core/core.module';
 import { AuthGuardModule, AuthGuardOptions, JWT_AUTH_GUARD_CONFIG_TOKEN, JwtAuthGuardConfig } from '@infra/auth-guard';
 import { DATABASE_CONFIG_TOKEN, DatabaseConfig, DatabaseModule } from '@infra/database';
-import {
-	SESSION_VALKEY_CLIENT_CONFIG_TOKEN,
-	ValkeyClientModule,
-	ValkeyClientSessionConfig,
-} from '@infra/valkey-client';
-import { SESSION_VALKEY_CLIENT } from '@modules/authentication';
 import { Module } from '@nestjs/common';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { AuthorizationModule } from '../authorization';
@@ -26,11 +20,6 @@ const imports = [
 			configConstructor: JwtAuthGuardConfig,
 		},
 	]),
-	ValkeyClientModule.register({
-		clientInjectionToken: SESSION_VALKEY_CLIENT,
-		configConstructor: ValkeyClientSessionConfig,
-		configInjectionToken: SESSION_VALKEY_CLIENT_CONFIG_TOKEN,
-	}),
 ];
 
 @Module({

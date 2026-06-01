@@ -10,10 +10,6 @@ export interface InternalXApiKeyAuthGuardConfig {
 	allowedApiKeys: string[];
 }
 
-export interface InternalJwtWhitelistConfig {
-	jwtTimeoutSeconds: number;
-}
-
 export enum AuthGuardOptions {
 	JWT = 'jwt',
 	WS_JWT = 'ws-jwt',

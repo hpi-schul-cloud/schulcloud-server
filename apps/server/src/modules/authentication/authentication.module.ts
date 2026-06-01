@@ -1,12 +1,7 @@
 import { LoggerModule } from '@core/logger';
-import { JWT_WHITELIST_CONFIG_TOKEN, JwtWhitelistConfig } from '@infra/auth-guard';
 import { ConfigurationModule } from '@infra/configuration';
 import { EncryptionModule } from '@infra/encryption';
-import {
-	SESSION_VALKEY_CLIENT_CONFIG_TOKEN,
-	ValkeyClientModule,
-	ValkeyClientSessionConfig,
-} from '@infra/valkey-client';
+import { JwtWhitelistModule } from '@infra/jwt-whitelist';
 import { AccountModule } from '@modules/account';
 import { LegacySchoolRepo } from '@modules/legacy-school/repo';
 import { OauthModule } from '@modules/oauth/oauth.module';
@@ -18,9 +13,8 @@ import { Module } from '@nestjs/common';
 import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
 import { SignOptions } from 'jsonwebtoken';
-import { AUTHENTICATION_CONFIG_TOKEN, AuthenticationConfig, SESSION_VALKEY_CLIENT } from './authentication-config';
+import { AUTHENTICATION_CONFIG_TOKEN, AuthenticationConfig } from './authentication-config';
 import { AUTHENTICATION_ENCRYPTION_CONFIG_TOKEN, AuthenticationEncryptionConfig } from './encryption.config';
-import { JwtWhitelistAdapter } from './helper/jwt-whitelist.adapter';
 import { Oauth2ContextHelper } from './helper/oauth2-context.helper';
 import { JWT_STRATEGY_CONFIG_TOKEN, JwtModuleConfig } from './jwt-module.config';
 import { LogoutService } from './services';
@@ -65,12 +59,7 @@ const createJwtOptions = (config: JwtModuleConfig): JwtModuleOptions => {
 		SystemModule,
 		OauthModule,
 		RoleModule,
-		ValkeyClientModule.register({
-			clientInjectionToken: SESSION_VALKEY_CLIENT,
-			configConstructor: ValkeyClientSessionConfig,
-			configInjectionToken: SESSION_VALKEY_CLIENT_CONFIG_TOKEN,
-		}),
-		ConfigurationModule.register(JWT_WHITELIST_CONFIG_TOKEN, JwtWhitelistConfig),
+		JwtWhitelistModule.register(),
 		UserModule,
 		HttpModule,
 		EncryptionModule.register(AUTHENTICATION_ENCRYPTION_CONFIG_TOKEN, AuthenticationEncryptionConfig),
@@ -82,7 +71,6 @@ const createJwtOptions = (config: JwtModuleConfig): JwtModuleOptions => {
 		LdapService,
 		LdapStrategy,
 		Oauth2Strategy,
-		JwtWhitelistAdapter,
 		Oauth2ContextHelper,
 		LogoutService,
 		ErwinStrategy,

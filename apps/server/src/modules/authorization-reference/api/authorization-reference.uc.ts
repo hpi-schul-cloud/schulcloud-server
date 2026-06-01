@@ -1,5 +1,6 @@
 import { AccessTokenService } from '@infra/access-token';
-import { ICurrentUser, JwtPayload, JwtValidationAdapter } from '@infra/auth-guard';
+import { ICurrentUser, JwtPayload } from '@infra/auth-guard';
+import { JwtWhitelistAdapter } from '@infra/jwt-whitelist';
 import { AuthorizableReferenceType, AuthorizationContext } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
@@ -23,7 +24,7 @@ export class AuthorizationReferenceUc {
 	constructor(
 		private readonly authorizationReferenceService: AuthorizationReferenceService,
 		private readonly accessTokenService: AccessTokenService,
-		private readonly jwtValidationAdapter: JwtValidationAdapter
+		private readonly jwtWhitelistAdapter: JwtWhitelistAdapter
 	) {}
 
 	public async authorizeByReference(
@@ -114,7 +115,7 @@ export class AuthorizationReferenceUc {
 			this.getFactoryCallback(accessToken)
 		);
 
-		await this.jwtValidationAdapter.isWhitelisted(tokenMetadata.accountId, tokenMetadata.jwtJti);
+		await this.jwtWhitelistAdapter.isWhitelisted(tokenMetadata.accountId, tokenMetadata.jwtJti);
 		await this.checkPermissionsForReference(tokenMetadata);
 
 		const payloadResponse = AuthorizationResponseMapper.mapToAccessTokenPayload(
