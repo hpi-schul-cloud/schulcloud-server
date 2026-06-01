@@ -4,7 +4,6 @@ import { InMemoryLoggable } from '../loggable';
 import { StorageClient } from '../types';
 
 export class InMemoryClient extends EventEmitter implements StorageClient {
-	public readonly isInMemory = true;
 	private readonly store: Record<string, string> = {};
 	private readonly ttlStore: Record<string, { expiresAt: number; ttl: number }> = {};
 
