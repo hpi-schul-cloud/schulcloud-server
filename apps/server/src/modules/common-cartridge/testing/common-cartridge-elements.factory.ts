@@ -17,6 +17,7 @@ import {
 	LessonResponse,
 	SingleColumnBoardResponse,
 } from '@infra/common-cartridge-clients';
+import { Colors } from '@modules/board';
 import { Factory } from 'fishery';
 import { fileElementResponseFactory } from './file-element.factory';
 import { fileFolderElementResponseFactory } from './file-folder-element.factory';
@@ -87,6 +88,7 @@ export const cardResponseFactory = Factory.define<CardResponse>(({ sequence, par
 			lastUpdatedAt: faker.date.recent().toISOString(),
 			deletedAt: undefined,
 		},
+		backgroundColor: Colors.TRANSPARENT,
 	};
 });
 

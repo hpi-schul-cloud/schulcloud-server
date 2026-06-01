@@ -293,6 +293,14 @@
 			"default": "http://localhost:9001",
 			"description": "The hydra url."
 		},
+		"HYDRA_ADMIN_USER": {
+			"type": "string",
+			"description": "The hydra admin user for basic auth."
+		},
+		"HYDRA_ADMIN_PASSWORD": {
+			"type": "string",
+			"description": "The hydra admin password for basic auth."
+		},
 		"FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED": {
 			"type": "boolean",
 			"default": true,
