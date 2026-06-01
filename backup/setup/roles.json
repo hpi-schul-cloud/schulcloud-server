@@ -92,12 +92,6 @@
 			"COURSE_EDIT",
 			"COURSE_REMOVE",
 			"COURSE_ADMINISTRATION",
-			"DATASOURCES_CREATE",
-			"DATASOURCES_DELETE",
-			"DATASOURCES_EDIT",
-			"DATASOURCES_RUN",
-			"DATASOURCES_RUN_VIEW",
-			"DATASOURCES_VIEW",
 			"ENTERTHECLOUD_START",
 			"HELPDESK_EDIT",
 			"HELPDESK_VIEW",
@@ -168,12 +162,6 @@
 			"ADMIN_EDIT",
 			"CLASS_LIST",
 			"CREATE_SUPPORT_JWT",
-			"DATASOURCES_CREATE",
-			"DATASOURCES_DELETE",
-			"DATASOURCES_EDIT",
-			"DATASOURCES_RUN",
-			"DATASOURCES_RUN_VIEW",
-			"DATASOURCES_VIEW",
 			"FEDERALSTATE_CREATE",
 			"FEDERALSTATE_EDIT",
 			"OAUTH_CLIENT_EDIT",
@@ -220,7 +208,7 @@
 		},
 		"name": "teacher",
 		"updatedAt": {
-			"$date": "2026-05-20T14:09:30.554Z"
+			"$date": "2026-02-16T14:26:29.665Z"
 		},
 		"createdAt": {
 			"$date": "2017-01-01T00:06:37.148Z"
@@ -345,7 +333,6 @@
 		"permissions": [
 			"NEWS_VIEW",
 			"UPLOAD_FILES",
-			"USE_ROCKETCHAT",
 			"JOIN_MEETING"
 		],
 		"__v": 0
@@ -366,7 +353,6 @@
 			"CALENDAR_VIEW",
 			"NEWS_VIEW",
 			"UPLOAD_FILES",
-			"USE_ROCKETCHAT",
 			"JOIN_MEETING"
 		],
 		"__v": 0
@@ -422,8 +408,7 @@
 			"NEWS_EDIT",
 			"REMOVE_MEMBERS",
 			"RENAME_TEAM",
-			"LEAVE_TEAM",
-			"TEAM_EXPORT_TO_ROOM"
+			"LEAVE_TEAM"
 		],
 		"__v": 0
 	},
@@ -444,7 +429,8 @@
 			}
 		],
 		"permissions": [
-			"DELETE_TEAM"
+			"DELETE_TEAM",
+			"TEAM_EXPORT_TO_ROOM"
 		],
 		"__v": 0
 	},
