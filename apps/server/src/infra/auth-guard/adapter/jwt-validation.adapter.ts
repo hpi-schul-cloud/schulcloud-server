@@ -1,4 +1,4 @@
-import { InMemoryClient, StorageClient } from '@infra/valkey-client';
+import { StorageClient } from '@infra/valkey-client';
 import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { AUTH_GUARD_VALKEY_CLIENT, JWT_WHITELIST_CONFIG_TOKEN } from '../auth-guard.constants';
 import { createJwtRedisData, createJwtRedisIdentifier, JwtRedisData } from '../helper';
@@ -12,7 +12,7 @@ export class JwtValidationAdapter {
 	) {}
 
 	public async isWhitelisted(accountId: string, jti: string): Promise<void> {
-		if (this.storageClient instanceof InMemoryClient) return;
+		if (this.storageClient.constructor.name === 'InMemoryClient') return;
 
 		const redisIdentifier = createJwtRedisIdentifier(accountId, jti);
 		const redisData = createJwtRedisData(this.config.jwtTimeoutSeconds);
