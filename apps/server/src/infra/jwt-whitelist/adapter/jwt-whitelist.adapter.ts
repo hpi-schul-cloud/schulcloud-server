@@ -1,15 +1,13 @@
 import { StorageClient } from '@infra/valkey-client';
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
-import { JWT_WHITELIST_CONFIG_TOKEN } from '../config';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { createJwtRedisData, createJwtRedisIdentifier, JwtRedisData } from '../helper';
 import { InternalJwtWhitelistConfig } from '../interface';
-import { JWT_WHITELIST_VALKEY_CLIENT } from '../jwt-whitelist.constants';
 
 @Injectable()
 export class JwtWhitelistAdapter {
 	constructor(
-		@Inject(JWT_WHITELIST_VALKEY_CLIENT) private readonly storageClient: StorageClient,
-		@Inject(JWT_WHITELIST_CONFIG_TOKEN) private readonly config: InternalJwtWhitelistConfig
+		private readonly storageClient: StorageClient,
+		private readonly config: InternalJwtWhitelistConfig
 	) {}
 
 	public async addToWhitelist(accountId: string, jti: string): Promise<void> {

@@ -1,6 +1,7 @@
 import { ConfigurationModule } from '@infra/configuration';
 import {
 	SESSION_VALKEY_CLIENT_CONFIG_TOKEN,
+	StorageClient,
 	ValkeyClientModule,
 	ValkeyClientSessionConfig,
 } from '@infra/valkey-client';
@@ -26,7 +27,14 @@ export class JwtWhitelistModule {
 				}),
 				ConfigurationModule.register(configInjectionToken, configConstructor),
 			],
-			providers: [JwtWhitelistAdapter],
+			providers: [
+				{
+					provide: JwtWhitelistAdapter,
+					useFactory: (storageClient: StorageClient, config: InternalJwtWhitelistConfig) =>
+						new JwtWhitelistAdapter(storageClient, config),
+					inject: [JWT_WHITELIST_VALKEY_CLIENT, configInjectionToken],
+				},
+			],
 			exports: [JwtWhitelistAdapter],
 		};
 	}
