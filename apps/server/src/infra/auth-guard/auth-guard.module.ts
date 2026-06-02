@@ -13,6 +13,8 @@ import { JwtStrategy, WsJwtStrategy, XApiKeyStrategy } from './strategy';
 @Module({})
 export class AuthGuardModule {
 	public static register(options: AuthGuardModuleOptions[]): DynamicModule {
+		this.checkOptionsLength(options);
+
 		const providers: Provider[] = [];
 		const imports: DynamicModule[] = [];
 
@@ -40,6 +42,12 @@ export class AuthGuardModule {
 			imports: [PassportModule, JwtWhitelistModule.register(), ...imports],
 			providers,
 		};
+	}
+
+	private static checkOptionsLength(options: AuthGuardModuleOptions[]): void {
+		if (options.length === 0) {
+			throw new Error('At least one auth guard option must be provided');
+		}
 	}
 
 	private static createJwtStrategyProvider(configInjectionToken: string | symbol): Provider {
