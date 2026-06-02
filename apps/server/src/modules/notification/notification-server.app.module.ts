@@ -11,7 +11,6 @@ import { Module } from '@nestjs/common';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { NotificationApiModule } from './notification-api.module';
 import { NotificationEntity } from './repo/entities';
-import { DEFAULT_TIMEOUT_CONFIG_TOKEN } from '@core/interceptor/default-timeout.config';
 
 const imports = [
 	CoreModule,

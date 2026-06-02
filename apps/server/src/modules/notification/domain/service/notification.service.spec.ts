@@ -3,6 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { NotificationType } from '../../types';
 import { NotificationRepo } from '../interfaces';
 import { NotificationService } from './notification.service';
+import { notificationFactory } from '../testing';
 
 describe(NotificationService.name, () => {
 	let module: TestingModule;
@@ -70,6 +71,55 @@ describe(NotificationService.name, () => {
 						expiresAt: expect.any(Date),
 					})
 				);
+			});
+		});
+	});
+
+	describe('getUnreadNotifications', () => {
+		describe('when getting unread notifications for a user', () => {
+			const setup = () => {
+				const userId = 'user-id';
+				const notifications = notificationFactory.buildList(3, { userId });
+
+				notificationRepoMock.findForUser.mockResolvedValue(notifications);
+
+				return { userId, notifications };
+			};
+
+			it('should call the repository with the user id', async () => {
+				const { userId } = setup();
+
+				await sut.getUnreadNotifications(userId);
+
+				expect(notificationRepoMock.findForUser).toHaveBeenCalledWith(userId);
+			});
+
+			it('should return the notifications', async () => {
+				const { userId, notifications } = setup();
+
+				const result = await sut.getUnreadNotifications(userId);
+
+				expect(result).toEqual(notifications);
+			});
+		});
+	});
+
+	describe('deleteNotification', () => {
+		describe('when deleting a notification', () => {
+			const setup = () => {
+				const notificationId = 'notification-id';
+
+				notificationRepoMock.delete.mockResolvedValue();
+
+				return { notificationId };
+			};
+
+			it('should call the repository with the notification id', async () => {
+				const { notificationId } = setup();
+
+				await sut.deleteNotification(notificationId);
+
+				expect(notificationRepoMock.delete).toHaveBeenCalledWith(notificationId);
 			});
 		});
 	});
