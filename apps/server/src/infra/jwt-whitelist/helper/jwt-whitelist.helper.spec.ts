@@ -1,17 +1,4 @@
-import { createJwtRedisData, createJwtRedisIdentifier } from './jwt-whitelist.helper';
-
-describe('createJwtRedisIdentifier', () => {
-	it('should return a string in the format jwt:<accountId>:<jti>', () => {
-		const result = createJwtRedisIdentifier('account123', 'jti456');
-		expect(result).toBe('jwt:account123:jti456');
-	});
-
-	it('should include both accountId and jti in the identifier', () => {
-		const accountId = 'abc';
-		const jti = 'xyz';
-		expect(createJwtRedisIdentifier(accountId, jti)).toBe(`jwt:${accountId}:${jti}`);
-	});
-});
+import { createJwtRedisData } from './jwt-whitelist.helper';
 
 describe('createJwtRedisData', () => {
 	it('should return JwtRedisData with NONE placeholders and given expiration', () => {

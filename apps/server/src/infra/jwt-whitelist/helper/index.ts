@@ -1,1 +1,2 @@
-export { createJwtRedisData, createJwtRedisIdentifier, JwtRedisData } from './jwt-whitelist.helper';
+export { createJwtRedisData, JwtRedisData } from './jwt-whitelist.helper';
+export { JwtRedisIdentifier } from '../domain';

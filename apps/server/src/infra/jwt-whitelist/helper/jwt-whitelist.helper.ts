@@ -6,8 +6,6 @@ export interface JwtRedisData {
 	expirationInSeconds: number;
 }
 
-export const createJwtRedisIdentifier = (accountId: string, jti: string): string => `jwt:${accountId}:${jti}`;
-
 export const createJwtRedisData = (expirationInSeconds: number, privateDevice = false): JwtRedisData => {
 	return {
 		IP: 'NONE',

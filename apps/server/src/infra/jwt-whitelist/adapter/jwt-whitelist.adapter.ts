@@ -1,6 +1,8 @@
 import { StorageClient } from '@infra/valkey-client';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { createJwtRedisData, createJwtRedisIdentifier, JwtRedisData } from '../helper';
+import { EntityId } from '@shared/domain/types';
+import { JwtRedisIdentifier } from '../domain';
+import { createJwtRedisData, JwtRedisData } from '../helper';
 import { InternalJwtWhitelistConfig } from '../interface';
 
 @Injectable()
@@ -10,23 +12,23 @@ export class JwtWhitelistAdapter {
 		private readonly config: InternalJwtWhitelistConfig
 	) {}
 
-	public async addToWhitelist(accountId: string, jti: string): Promise<void> {
+	public async addToWhitelist(accountId: EntityId, jti: string): Promise<void> {
 		const { jwtTimeoutSeconds } = this.config;
-		const redisIdentifier = createJwtRedisIdentifier(accountId, jti);
+		const redisIdentifier = JwtRedisIdentifier.forJti(accountId, jti);
 		const redisData = createJwtRedisData(jwtTimeoutSeconds);
 
-		await this.storageClient.set(redisIdentifier, JSON.stringify(redisData), 'EX', jwtTimeoutSeconds);
+		await this.storageClient.set(redisIdentifier.toString(), JSON.stringify(redisData), 'EX', jwtTimeoutSeconds);
 	}
 
-	public async removeFromWhitelist(accountId: string, jti?: string): Promise<void> {
+	public async removeFromWhitelist(accountId: EntityId, jti?: string): Promise<void> {
 		let keys: string[] = [];
 
 		if (jti) {
-			const redisIdentifier = createJwtRedisIdentifier(accountId, jti);
-			keys = [redisIdentifier];
+			const redisIdentifier = JwtRedisIdentifier.forJti(accountId, jti);
+			keys = [redisIdentifier.toString()];
 		} else {
-			const redisIdentifier = createJwtRedisIdentifier(accountId, '*');
-			keys = await this.storageClient.keys(redisIdentifier);
+			const redisIdentifier = JwtRedisIdentifier.forAccount(accountId);
+			keys = await this.storageClient.keys(redisIdentifier.toString());
 		}
 
 		const deleteKeysPromise: Promise<void>[] = keys.map(async (key: string): Promise<void> => {
@@ -36,16 +38,16 @@ export class JwtWhitelistAdapter {
 		await Promise.all(deleteKeysPromise);
 	}
 
-	public async isWhitelisted(accountId: string, jti: string): Promise<void> {
+	public async isWhitelisted(accountId: EntityId, jti: string): Promise<void> {
 		if (this.storageClient.constructor.name === 'InMemoryClient') return;
 
-		const redisIdentifier = createJwtRedisIdentifier(accountId, jti);
+		const redisIdentifier = JwtRedisIdentifier.forJti(accountId, jti);
 		const redisData = createJwtRedisData(this.config.jwtTimeoutSeconds);
-		const value = await this.storageClient.get(redisIdentifier);
+		const value = await this.storageClient.get(redisIdentifier.toString());
 
 		this.checkValue(value);
 
-		await this.extendExpiration(redisIdentifier, redisData);
+		await this.extendExpiration(redisIdentifier.toString(), redisData);
 	}
 
 	private async extendExpiration(redisIdentifier: string, redisData: JwtRedisData): Promise<void> {
