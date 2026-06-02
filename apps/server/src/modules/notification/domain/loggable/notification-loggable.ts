@@ -7,7 +7,7 @@ export class NotificationLoggable implements Loggable {
 		const message = `New notification for user ${this.userId}`;
 
 		return {
-			type: 'IMPORT_MESSAGE_NOTIFICATION',
+			type: 'USER_NOTIFICATION',
 			message,
 			data: { userId: this.userId },
 		};
