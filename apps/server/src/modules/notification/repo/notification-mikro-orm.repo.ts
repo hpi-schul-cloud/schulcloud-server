@@ -45,7 +45,7 @@ export class NotificationMikroOrmRepo implements NotificationRepo {
 	}
 
 	public async delete(notificationId: EntityId): Promise<void> {
-		const notification = await this.em.getReference(NotificationEntity, notificationId);
-		await this.em.removeAndFlush(notification);
+		const notification = this.em.getReference(NotificationEntity, notificationId);
+		await this.em.remove(notification).flush();
 	}
 }

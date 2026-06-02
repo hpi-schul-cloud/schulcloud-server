@@ -1,5 +1,5 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
-import { Subject } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { NotificationEntity } from '../repo/entities';
 import { Logger } from '@core/logger';
@@ -8,7 +8,7 @@ import { ErrorLoggable } from '@core/error/loggable/error.loggable';
 
 @Injectable()
 export class NotificationObserverService implements OnModuleInit {
-	private readonly notificationSubject = new Subject<any>();
+	private readonly notificationSubject = new Subject<NotificationEntity>();
 
 	constructor(
 		private readonly em: EntityManager,
@@ -17,7 +17,7 @@ export class NotificationObserverService implements OnModuleInit {
 		this.logger.setContext(NotificationObserverService.name);
 	}
 
-	async onModuleInit() {
+	public onModuleInit(): void {
 		const collection = this.em.getCollection(NotificationEntity);
 		const changeStream = collection.watch([{ $match: { operationType: 'insert' } }], { fullDocument: 'updateLookup' });
 
@@ -34,7 +34,7 @@ export class NotificationObserverService implements OnModuleInit {
 		});
 	}
 
-	public get notifications$() {
+	get notifications$(): Observable<NotificationEntity> {
 		return this.notificationSubject.asObservable();
 	}
 }
