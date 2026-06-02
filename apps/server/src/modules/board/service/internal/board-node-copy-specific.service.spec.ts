@@ -185,6 +185,14 @@ describe(BoardNodeCopyService.name, () => {
 
 			expect((result.elements ?? [])[0].copyEntity).toBeInstanceOf(Card);
 		});
+
+		it('should use the service to derive status from children', async () => {
+			const { copyContext, column } = setup();
+
+			const result = await service.copyColumn(column, copyContext);
+
+			expect(copyHelperService.deriveStatusFromElements).toHaveBeenCalledWith(result.elements);
+		});
 	});
 
 	describe('copy card', () => {
@@ -216,6 +224,32 @@ describe(BoardNodeCopyService.name, () => {
 			const result = await service.copyCard(card, copyContext);
 
 			expect((result.elements ?? [])[0].copyEntity).toBeInstanceOf(RichTextElement);
+		});
+
+		it('should use the service to derive status from children', async () => {
+			const { copyContext, card } = setup();
+
+			const result = await service.copyCard(card, copyContext);
+
+			expect(copyHelperService.deriveStatusFromElements).toHaveBeenCalledWith(result.elements);
+		});
+
+		describe('when a child copy throws an error', () => {
+			it('should store a FAIL status with undefined copyEntity for the rejected child', async () => {
+				const { copyContext, card } = setup();
+
+				jest.spyOn(service, 'copy').mockRejectedValueOnce(new Error('copy failed'));
+
+				const result = await service.copyCard(card, copyContext);
+
+				expect(result.elements?.[0]).toEqual(
+					expect.objectContaining({
+						type: CopyElementType.LEAF,
+						status: CopyStatusEnum.FAIL,
+						copyEntity: undefined,
+					})
+				);
+			});
 		});
 	});
 
