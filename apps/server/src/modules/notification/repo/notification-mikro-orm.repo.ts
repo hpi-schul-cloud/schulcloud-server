@@ -20,8 +20,7 @@ export class NotificationMikroOrmRepo implements NotificationRepo {
 			id: notificationId,
 		});
 
-		const mapped: Notification = NotificationMapper.mapToDO(notification);
-
+		const mapped = NotificationMapper.mapToDO(notification);
 		return mapped;
 	}
 
@@ -30,7 +29,8 @@ export class NotificationMikroOrmRepo implements NotificationRepo {
 			userId: userId,
 		});
 
-		return NotificationMapper.mapToDOs(notifications);
+		const mapped = NotificationMapper.mapToDOs(notifications);
+		return mapped;
 	}
 
 	public async create(notification: Notification | Notification[]): Promise<void> {
