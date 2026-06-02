@@ -118,6 +118,4 @@ export class ErwinProvisioningService {
 			referencedEntityId: entityId,
 		});
 	}
-
-	// TODO: Add Class-specific methods (findClassByExternalId, createClassEntity, updateClassEntity) when implementing Class provisioning
 }

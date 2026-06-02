@@ -58,7 +58,13 @@ export class ErwinProvisioningStrategy extends ProvisioningStrategy {
 			externalUser: data.externalUser,
 		});
 
-		// TODO: Add Class provisioning when implemented
+		for (const externalClass of data.externalClasses ?? []) {
+			await this.erwinProvisioningService.provisionEntity(ProvisioningEntityType.CLASS, {
+				system: data.system,
+				externalSchool: data.externalSchool,
+				externalClass,
+			});
+		}
 
 		return new ProvisioningDto({
 			externalUserId: data.externalUser.externalId,
