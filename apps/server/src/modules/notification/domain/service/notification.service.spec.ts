@@ -1,4 +1,3 @@
-import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotificationType } from '../../types';
@@ -8,7 +7,6 @@ import { NotificationService } from './notification.service';
 describe(NotificationService.name, () => {
 	let module: TestingModule;
 	let sut: NotificationService;
-	let loggerMock: DeepMocked<Logger>;
 	let notificationRepoMock: DeepMocked<NotificationRepo>;
 	const NOTIFICATION_REPO = Symbol('NOTIFICATION_REPO');
 
@@ -16,24 +14,18 @@ describe(NotificationService.name, () => {
 		module = await Test.createTestingModule({
 			providers: [
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
-				},
-				{
 					provide: NOTIFICATION_REPO,
 					useValue: createMock<NotificationRepo>(),
 				},
 				{
 					provide: NotificationService,
-					useFactory: (logger: Logger, notificationRepo: NotificationRepo) =>
-						new NotificationService(logger, notificationRepo),
-					inject: [Logger, NOTIFICATION_REPO],
+					useFactory: (notificationRepo: NotificationRepo) => new NotificationService(notificationRepo),
+					inject: [NOTIFICATION_REPO],
 				},
 			],
 		}).compile();
 
 		sut = module.get(NotificationService);
-		loggerMock = module.get(Logger);
 		notificationRepoMock = module.get(NOTIFICATION_REPO);
 	});
 
@@ -78,14 +70,6 @@ describe(NotificationService.name, () => {
 						expiresAt: expect.any(Date),
 					})
 				);
-			});
-
-			it('should log an information', async () => {
-				const { notification } = setup();
-
-				await sut.createNotification(notification);
-
-				expect(loggerMock.info).toHaveBeenCalledTimes(1);
 			});
 		});
 	});

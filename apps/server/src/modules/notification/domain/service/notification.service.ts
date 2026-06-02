@@ -1,5 +1,4 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { Logger } from '@core/logger';
 import { Notification } from '../../domain/do';
 import { NOTIFICATION_REPO, NotificationRepo } from '../interfaces';
 import { NotificationType } from '../../types';
@@ -15,12 +14,7 @@ export type NotificationEntry = {
 
 @Injectable()
 export class NotificationService {
-	constructor(
-		private readonly logger: Logger,
-		@Inject(NOTIFICATION_REPO) private readonly notificationRepo: NotificationRepo
-	) {
-		logger.setContext(NotificationService.name);
-	}
+	constructor(@Inject(NOTIFICATION_REPO) private readonly notificationRepo: NotificationRepo) {}
 
 	public async createNotification(entry: NotificationEntry): Promise<Notification> {
 		const notification = new Notification({
@@ -37,7 +31,7 @@ export class NotificationService {
 		return notification;
 	}
 
-	public async getUnreadNotifications(userId: string): Promise<Notification[]> {
+	public getUnreadNotifications(userId: string): Promise<Notification[]> {
 		return this.notificationRepo.findForUser(userId);
 	}
 
