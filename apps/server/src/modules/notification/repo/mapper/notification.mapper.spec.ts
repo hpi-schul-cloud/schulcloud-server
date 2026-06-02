@@ -63,7 +63,7 @@ describe(NotificationMapper.name, () => {
 				const entities: NotificationEntity[] = [
 					{
 						id: 'notification-id-1',
-						type: NotificationType.NOTE,
+						type: NotificationType.INFO,
 						key: 'NOTIFICATION_KEY_1',
 						arguments: ['arg1'],
 						userId: 'user-id-1',
@@ -153,7 +153,7 @@ describe(NotificationMapper.name, () => {
 				const domainObjects = [
 					new Notification({
 						id: 'notification-id-1',
-						type: NotificationType.NOTE,
+						type: NotificationType.INFO,
 						key: 'NOTIFICATION_KEY_1',
 						arguments: ['arg1'],
 						userId: 'user-id-1',

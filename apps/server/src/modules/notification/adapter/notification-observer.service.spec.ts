@@ -130,7 +130,7 @@ describe(NotificationObserverService.name, () => {
 				const notificationEntity: Partial<NotificationEntity> = {
 					id: 'notification-id',
 					userId: 'user-id',
-					type: NotificationType.NOTE,
+					type: NotificationType.INFO,
 					key: 'notification.key',
 					arguments: [],
 					expiresAt: new Date(),

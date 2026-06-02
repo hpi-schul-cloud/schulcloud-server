@@ -6,7 +6,7 @@ import { Notification, NotificationProps } from '../do';
 export const notificationFactory = DoBaseFactory.define<Notification, NotificationProps>(Notification, () => {
 	return {
 		id: new ObjectId().toHexString(),
-		type: NotificationType.NOTE,
+		type: NotificationType.INFO,
 		key: 'INFO_KEY',
 		arguments: ['arg1'],
 		userId: 'user-id',

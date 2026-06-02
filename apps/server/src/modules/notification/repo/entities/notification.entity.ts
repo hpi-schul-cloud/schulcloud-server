@@ -8,7 +8,7 @@ export interface NotificationEntityProps {
 	type: NotificationType;
 	key: string;
 	arguments: string[];
-	userId: string;
+	userId: EntityId;
 	expiresAt: Date;
 }
 
@@ -24,7 +24,7 @@ export class NotificationEntity extends BaseEntityWithTimestamps {
 	arguments: string[];
 
 	@Property({ nullable: true })
-	userId: string;
+	userId: EntityId;
 
 	@Property({ nullable: true })
 	@Index({ options: { expireAfterSeconds: 0 } })

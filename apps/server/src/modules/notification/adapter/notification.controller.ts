@@ -1,6 +1,6 @@
 import { Controller, Sse, MessageEvent, Header } from '@nestjs/common';
 import { Observable, merge, from } from 'rxjs';
-import { filter, map, concatMap } from 'rxjs/operators';
+import { filter, concatMap } from 'rxjs/operators';
 import { NotificationService } from '../domain/service';
 import { NotificationObserverService } from './notification-observer.service';
 import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';

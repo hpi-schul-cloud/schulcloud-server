@@ -7,7 +7,7 @@ describe(Notification.name, () => {
 			const setup = () => {
 				const props = {
 					id: 'notification-id1',
-					type: NotificationType.NOTE,
+					type: NotificationType.INFO,
 					key: 'IMPORT_COMPLETED',
 					arguments: ['course-123', 'success'],
 					userId: 'user-123',
@@ -30,7 +30,7 @@ describe(Notification.name, () => {
 			const setup = () => {
 				const props = {
 					id: 'notification-id-1',
-					type: NotificationType.NOTE,
+					type: NotificationType.INFO,
 					key: 'IMPORT_FAILED',
 					arguments: ['course-456', 'error'],
 					userId: 'user-456',
