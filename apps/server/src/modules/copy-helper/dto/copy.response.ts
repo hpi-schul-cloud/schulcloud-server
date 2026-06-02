@@ -1,4 +1,4 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional, getSchemaPath } from '@nestjs/swagger';
 import { CopyElementType, CopyStatusEnum } from '../types/copy.types';
 
 /**
@@ -14,35 +14,38 @@ export class CopyApiResponse {
 	@ApiPropertyOptional({
 		description: 'Id of copied element',
 	})
-	id?: string;
+	public id?: string;
 
 	@ApiPropertyOptional({
 		description: 'Title of copied element',
 	})
-	title?: string;
+	public title?: string;
 
 	@ApiProperty({
-		type: 'string',
 		enum: CopyElementType,
+		enumName: 'CopyElementType',
 		description: 'Type of copied element',
+		example: 'COURSE',
 	})
-	type: CopyElementType;
+	public type: CopyElementType;
 
 	@ApiPropertyOptional({
 		description: 'Id of destination parent reference',
 	})
-	destinationId?: string;
+	public destinationId?: string;
 
 	@ApiProperty({
-		type: 'string',
 		enum: CopyStatusEnum,
+		enumName: 'CopyStatusEnum',
 		description: 'Copy progress status of copied element',
+		example: 'success',
 	})
-	status: CopyStatusEnum;
+	public status: CopyStatusEnum;
 
 	@ApiPropertyOptional({
-		type: [CopyApiResponse],
+		type: 'array',
+		items: { $ref: getSchemaPath(CopyApiResponse) },
 		description: 'List of included sub elements with recursive type structure',
 	})
-	elements?: CopyApiResponse[];
+	public elements?: CopyApiResponse[];
 }

@@ -4,11 +4,14 @@ import { ConfigModule, ConfigModuleOptions, ConfigService } from '@nestjs/config
 import { ConfigurationFactory } from './configuration.factory';
 
 const getNodeEnv = (): string => process.env.NODE_ENV || 'development';
-const envFilesHighestPriorityFirst = ['.env', `.env.${getNodeEnv()}`];
+// In NestJS ConfigModule, the first file in the array has highest priority.
+// So we put .env.{NODE_ENV} first to allow environment-specific overrides.
+const envFilesByPriority = [`.env.${getNodeEnv()}`, '.env'];
 const loadEnvConfigInOrder = (): ConfigModuleOptions => {
 	return {
 		cache: true,
-		envFilePath: envFilesHighestPriorityFirst,
+		envFilePath: envFilesByPriority,
+		expandVariables: true,
 	};
 };
 

@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { DatabaseManagementController } from './controller/database-management.controller';
-import { ManagementServerModule, ManagementServerTestModule } from './management-server.app.module';
+import { ManagementServerTestModule } from './management-server.app.module';
 import { DatabaseManagementUc } from './uc/database-management.uc';
 
 describe('ManagementModule', () => {
@@ -10,11 +10,11 @@ describe('ManagementModule', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [ManagementServerModule],
+			imports: [ManagementServerTestModule],
 		}).compile();
 
-		service = module.get(DatabaseManagementUc);
-		controller = module.get(DatabaseManagementController);
+		service = await module.resolve(DatabaseManagementUc);
+		controller = await module.resolve(DatabaseManagementController);
 	});
 
 	afterAll(async () => {
@@ -37,8 +37,8 @@ describe('ManagementTestModule', () => {
 			imports: [ManagementServerTestModule],
 		}).compile();
 
-		service = module.get(DatabaseManagementUc);
-		controller = module.get(DatabaseManagementController);
+		service = await module.resolve(DatabaseManagementUc);
+		controller = await module.resolve(DatabaseManagementController);
 	});
 
 	afterAll(async () => {

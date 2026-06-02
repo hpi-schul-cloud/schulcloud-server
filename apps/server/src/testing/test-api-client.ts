@@ -125,24 +125,64 @@ export class TestApiClient {
 		return testRequestInstance;
 	}
 
-	public async login(account: AccountEntity): Promise<this> {
+	/**
+	 * Authenticates with the given account and returns a new TestApiClient with the JWT token.
+	 * Includes retry logic to handle race conditions during app initialization.
+	 *
+	 * @param account - The account to authenticate with
+	 * @param options - Optional configuration for retry behavior
+	 * @returns A new TestApiClient instance authenticated with the account's JWT
+	 */
+	public async login(account: AccountEntity, options: { retries?: number; retryDelay?: number } = {}): Promise<this> {
+		const { retries = 3, retryDelay = 200 } = options;
 		const path = testReqestConst.loginPath;
 		const params: { username: string; password: string } = {
 			username: account.username,
 			password: defaultTestPassword,
 		};
-		const response = await supertest(this.app.getHttpServer())
-			.post(path)
-			.set(headerConst.accept, headerConst.json)
-			.send(params);
 
-		const jwtFromResponse = this.getJwtFromResponse(response);
+		let lastError: Error | undefined;
 
-		return new (this.constructor as new (app: INestApplication, baseRoute: string, authValue?: string) => this)(
-			this.app,
-			this.baseRoute,
-			jwtFromResponse
-		);
+		for (let attempt = 0; attempt <= retries; attempt += 1) {
+			try {
+				const response = await supertest(this.app.getHttpServer())
+					.post(path)
+					.set(headerConst.accept, headerConst.json)
+					.send(params);
+
+				const jwtFromResponse = this.getJwtFromResponse(response);
+
+				return new (this.constructor as new (app: INestApplication, baseRoute: string, authValue?: string) => this)(
+					this.app,
+					this.baseRoute,
+					jwtFromResponse
+				);
+			} catch (error) {
+				lastError = error instanceof Error ? error : new Error(String(error));
+
+				// Only retry on connection/initialization errors, not on actual auth failures
+				const isRetryableError =
+					lastError.message.includes('404') ||
+					lastError.message.includes('ECONNRESET') ||
+					lastError.message.includes('ECONNREFUSED') ||
+					lastError.message.includes('Cannot POST');
+
+				if (!isRetryableError || attempt === retries) {
+					throw lastError;
+				}
+
+				// Wait before retrying with exponential backoff
+				await this.sleep(retryDelay * (attempt + 1));
+			}
+		}
+
+		throw lastError ?? new Error('Login failed after retries');
+	}
+
+	private sleep(ms: number): Promise<void> {
+		return new Promise((resolve) => {
+			setTimeout(resolve, ms);
+		});
 	}
 
 	public loginByUser(

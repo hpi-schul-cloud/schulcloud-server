@@ -1,11 +1,11 @@
 import { Logger } from '@core/logger';
 import { CreateJwtPayload, JwtPayloadBuilder } from '@infra/auth-guard';
+import { Account, AccountService } from '@modules/account';
+import { User } from '@modules/user/repo';
 import { Inject, Injectable } from '@nestjs/common';
 import { JwtService, JwtSignOptions } from '@nestjs/jwt';
 import { randomUUID } from 'crypto';
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import { Account, AccountService } from '@modules/account';
-import { User } from '@modules/user/repo';
 import { AUTHENTICATION_CONFIG_TOKEN, AuthenticationConfig } from '../authentication-config';
 import { BruteForceError, UnauthorizedLoggableException } from '../errors';
 import { JwtWhitelistAdapter } from '../helper/jwt-whitelist.adapter';
@@ -52,7 +52,7 @@ export class AuthenticationService {
 		const options: JwtSignOptions = {
 			subject: createJwtPayload.accountId,
 			jwtid: jti,
-			expiresIn, // Overwrites the value from the JwtModuleOptions.
+			expiresIn: expiresIn as JwtSignOptions['expiresIn'], // Overwrites the value from the JwtModuleOptions.
 		};
 		const accessToken = this.jwtService.sign(createJwtPayload, options);
 

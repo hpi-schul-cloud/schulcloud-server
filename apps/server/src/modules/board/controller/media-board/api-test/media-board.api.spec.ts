@@ -10,6 +10,7 @@ import { mediaUserLicenseEntityFactory } from '@modules/user-license/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { DateToString } from '@testing/date-to-string';
+import { expectIsoDateString } from '@testing/matchers';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { BoardExternalReferenceType, BoardLayout, Colors } from '../../../domain';
@@ -95,7 +96,7 @@ describe('Media Board (API)', () => {
 					id: mediaBoard.id,
 					timestamps: {
 						createdAt: mediaBoard.createdAt.toISOString(),
-						lastUpdatedAt: mediaBoard.updatedAt.toISOString(),
+						lastUpdatedAt: expectIsoDateString() as unknown as string,
 					},
 					layout: BoardLayout.LIST,
 					lines: [
@@ -103,7 +104,7 @@ describe('Media Board (API)', () => {
 							id: mediaLine.id,
 							timestamps: {
 								createdAt: mediaLine.createdAt.toISOString(),
-								lastUpdatedAt: mediaLine.updatedAt.toISOString(),
+								lastUpdatedAt: expectIsoDateString() as unknown as string,
 							},
 							collapsed: false,
 							backgroundColor: Colors.TRANSPARENT,
@@ -113,9 +114,7 @@ describe('Media Board (API)', () => {
 									id: mediaElement.id,
 									timestamps: {
 										createdAt: mediaElement.createdAt.toISOString(),
-										lastUpdatedAt: expect.stringMatching(
-											/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/
-										) as unknown as string, // any iso string, to avoid ms differences based unstable test
+										lastUpdatedAt: expectIsoDateString() as unknown as string,
 									},
 									content: {
 										contextExternalToolId,
