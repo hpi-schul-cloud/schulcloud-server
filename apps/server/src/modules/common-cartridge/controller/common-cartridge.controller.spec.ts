@@ -2,19 +2,21 @@ import { LegacyLogger } from '@core/logger';
 import { faker } from '@faker-js/faker';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { ConfigurationModule } from '@infra/configuration';
+import { fileRecordResponseFactory } from '@infra/files-storage-client/testing';
 import { HttpStatus, StreamableFile } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { currentUserFactory } from '@testing/factory/currentuser.factory';
 import { Request, Response } from 'express';
 import { Readable } from 'stream';
-import { COMMON_CARTRIDGE_CONFIG_TOKEN, CommonCartridgeConfig } from '../common-cartridge.config';
+import { COMMON_CARTRIDGE_PUBLIC_API_CONFIG_TOKEN, CommonCartridgePublicApiConfig } from '../common-cartridge.config';
 import { CommonCartridgeVersion } from '../export/common-cartridge.enums';
 import { CommonCartridgeExportResponse } from '../service/common-cartridge-export.response';
 import { CommonCartridgeUc } from '../uc/common-cartridge.uc';
 import { CommonCartridgeController } from './common-cartridge.controller';
 import { ExportCourseParams } from './dto';
-import { CommonCartridgeStartImportBodyParams } from './dto/common-cartridge-start-import-body.params';
 import { CourseExportBodyParams } from './dto/course-export.body.params';
 import { CourseQueryParams } from './dto/course.query.params';
+import { CommonCartridgeFileParams } from './dto/common-cartridge-file.params';
 
 describe('CommonCartridgeController', () => {
 	let module: TestingModule;
@@ -23,7 +25,7 @@ describe('CommonCartridgeController', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [ConfigurationModule.register(COMMON_CARTRIDGE_CONFIG_TOKEN, CommonCartridgeConfig)],
+			imports: [ConfigurationModule.register(COMMON_CARTRIDGE_PUBLIC_API_CONFIG_TOKEN, CommonCartridgePublicApiConfig)],
 			controllers: [CommonCartridgeController],
 			providers: [
 				{
@@ -74,6 +76,14 @@ describe('CommonCartridgeController', () => {
 				return { params, expected, query, body, mockRequest, mockResponse };
 			};
 
+			it('should check that export is enabled', async () => {
+				const { params, query, body, mockRequest, mockResponse } = setup();
+
+				await sut.exportCourse(params, query, body, mockRequest, mockResponse);
+
+				expect(commonCartridgeUcMock.checkExportEnabled).toHaveBeenCalled();
+			});
+
 			it('should return a streamable file', async () => {
 				const { params, expected, query, body, mockRequest, mockResponse } = setup();
 
@@ -88,24 +98,37 @@ describe('CommonCartridgeController', () => {
 		});
 	});
 
-	describe('importCourse', () => {
+	describe('uploadFileAndStartImport', () => {
 		describe('when importing a course', () => {
 			const setup = () => {
-				const startImportParams: CommonCartridgeStartImportBodyParams = {
-					fileName: faker.system.fileName(),
-					fileRecordId: faker.string.uuid(),
-					fileUrl: faker.internet.url(),
-				};
+				const currentUser = currentUserFactory.build();
+				const fileRecordResponse = fileRecordResponseFactory.build();
+				const body: CommonCartridgeFileParams = { file: '' };
 
-				return { startImportParams };
+				commonCartridgeUcMock.uploadFileFromRequestToTemp.mockResolvedValueOnce(fileRecordResponse);
+
+				return { currentUser, fileRecordResponse, body };
 			};
 
-			it('should call the uc with the correct parameters', () => {
-				const { startImportParams } = setup();
+			it('should check that import is enabled', async () => {
+				const { currentUser, body } = setup();
 
-				sut.importCourse(startImportParams);
+				await sut.uploadFileAndStartImport(currentUser, body);
 
-				expect(commonCartridgeUcMock.startCourseImport).toHaveBeenCalledTimes(1);
+				expect(commonCartridgeUcMock.checkImportEnabled).toHaveBeenCalled();
+			});
+
+			it('should call the uc to upload file and start the import', async () => {
+				const { currentUser, fileRecordResponse, body } = setup();
+
+				await sut.uploadFileAndStartImport(currentUser, body);
+
+				expect(commonCartridgeUcMock.uploadFileFromRequestToTemp).toHaveBeenCalledWith(currentUser);
+				expect(commonCartridgeUcMock.startCourseImport).toHaveBeenCalledWith({
+					fileRecordId: fileRecordResponse.id,
+					fileUrl: fileRecordResponse.url,
+					fileName: fileRecordResponse.name,
+				});
 			});
 		});
 	});
