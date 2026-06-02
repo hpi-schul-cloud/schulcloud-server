@@ -8,7 +8,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { currentUserFactory } from '@testing/factory/currentuser.factory';
 import { Request, Response } from 'express';
 import { Readable } from 'stream';
-import { COMMON_CARTRIDGE_CONFIG_TOKEN, CommonCartridgeConfig } from '../common-cartridge.config';
+import { COMMON_CARTRIDGE_PUBLIC_API_CONFIG_TOKEN, CommonCartridgePublicApiConfig } from '../common-cartridge.config';
 import { CommonCartridgeVersion } from '../export/common-cartridge.enums';
 import { CommonCartridgeExportResponse } from '../service/common-cartridge-export.response';
 import { CommonCartridgeUc } from '../uc/common-cartridge.uc';
@@ -25,7 +25,7 @@ describe('CommonCartridgeController', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [ConfigurationModule.register(COMMON_CARTRIDGE_CONFIG_TOKEN, CommonCartridgeConfig)],
+			imports: [ConfigurationModule.register(COMMON_CARTRIDGE_PUBLIC_API_CONFIG_TOKEN, CommonCartridgePublicApiConfig)],
 			controllers: [CommonCartridgeController],
 			providers: [
 				{
