@@ -23,6 +23,7 @@ import {
 	CommonCartridgeValidatorTransform,
 } from '../util/common-cartridge-validator.transform';
 import { CommonCartridgeUc } from './common-cartridge.uc';
+import { CommonCartridgeConfigResponse } from '../controller/dto/common-cartridge-config.response';
 
 jest.mock('../util/common-cartridge-validator.transform');
 
@@ -90,6 +91,23 @@ describe(CommonCartridgeUc.name, () => {
 
 	it('should be defined', () => {
 		expect(sut).toBeDefined();
+	});
+
+	describe('getPublicConfig', () => {
+		describe('when getting config', () => {
+			const setup = () => {
+				const expected: CommonCartridgeConfigResponse = new CommonCartridgeConfigResponse(config);
+
+				return { expected };
+			};
+			it('should return CommonCartridgeConfigResponse', () => {
+				const { expected } = setup();
+
+				const result = sut.getPublicConfig();
+
+				expect(result).toStrictEqual(expected);
+			});
+		});
 	});
 
 	describe('checkExportEnabled', () => {

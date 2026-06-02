@@ -12,6 +12,7 @@ import { JwtExtractor } from '@shared/common/utils';
 import { EntityId } from '@shared/domain/types';
 import { Request } from 'express';
 import { COMMON_CARTRIDGE_PUBLIC_API_CONFIG_TOKEN, CommonCartridgePublicApiConfig } from '../common-cartridge.config';
+import { CommonCartridgeConfigResponse } from '../controller/dto/common-cartridge-config.response';
 import { ImportCourseEvent } from '../domain/events/import-course.event';
 import { ImportCourseParams } from '../domain/import-course.params';
 import { ErrorStatus } from '../error/error-status.enum';
@@ -33,6 +34,12 @@ export class CommonCartridgeUc {
 		@Inject(REQUEST) private readonly request: Request,
 		@Inject(COMMON_CARTRIDGE_PUBLIC_API_CONFIG_TOKEN) private readonly config: CommonCartridgePublicApiConfig
 	) {}
+
+	public getPublicConfig(): CommonCartridgeConfigResponse {
+		const response = new CommonCartridgeConfigResponse(this.config);
+
+		return response;
+	}
 
 	public checkExportEnabled(): void {
 		if (!this.config.courseExportEnabled) {

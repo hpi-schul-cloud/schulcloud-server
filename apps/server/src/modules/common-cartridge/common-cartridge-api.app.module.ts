@@ -13,6 +13,7 @@ import { Module } from '@nestjs/common';
 import { COMMON_CARTRIDGE_PUBLIC_API_CONFIG_TOKEN, CommonCartridgePublicApiConfig } from './common-cartridge.config';
 import { CommonCartridgeModule } from './common-cartridge.module';
 import { CommonCartridgeController } from './controller/common-cartridge.controller';
+import { CommonCartridgeConfigController } from './controller/common-cartridge-config.controller';
 
 @Module({
 	imports: [
@@ -34,6 +35,6 @@ import { CommonCartridgeController } from './controller/common-cartridge.control
 			entities: [User],
 		}),
 	],
-	controllers: [CommonCartridgeController],
+	controllers: [CommonCartridgeController, CommonCartridgeConfigController],
 })
 export class CommonCartridgeApiModule {}
