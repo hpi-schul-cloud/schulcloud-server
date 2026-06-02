@@ -1,9 +1,9 @@
 import { StorageClient } from '@infra/valkey-client';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { JwtRedisIdentifier } from '../domain';
 import { createJwtRedisData, JwtRedisData } from '../helper';
 import { InternalJwtWhitelistConfig } from '../interface';
+import { JwtRedisIdentifier } from './jwt-redis-identifier.vo';
 
 @Injectable()
 export class JwtWhitelistAdapter {
