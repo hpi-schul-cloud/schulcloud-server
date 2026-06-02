@@ -33,8 +33,9 @@ async function bootstrap(): Promise<void> {
 	enableOpenApiDocs(nestApp, 'docs', options);
 	const loggerConfig = await nestApp.resolve<LoggerConfig>(LOGGER_CONFIG_TOKEN);
 	nestApp.use(createRequestLoggerMiddleware(loggerConfig));
-	
+
 	// The redisClient must be initialized in the legacy part for the session handling (whitelisting of JWTs) to work.
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 	const sessionValkeyClient = await nestApp.resolve(SESSION_VALKEY_CLIENT);
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 	legacyRedisUtils.initializeRedisClient(sessionValkeyClient);
