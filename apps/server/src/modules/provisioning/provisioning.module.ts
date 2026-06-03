@@ -26,6 +26,7 @@ import { MediumMetadataModule } from '../medium-metadata';
 import { SchulconnexGroupProvisioningProducer, SchulconnexLicenseProvisioningProducer } from './amqp';
 import { PROVISIONING_EXCHANGE_CONFIG_TOKEN, ProvisioningExchangeConfig } from './provisioning-exchange.config';
 import { PROVISIONING_CONFIG_TOKEN, ProvisioningConfig } from './provisioning.config';
+import { ClassProvisioningHandler } from './service/class-provisioning-handler';
 import { ErwinProvisioningService } from './service/erwin-provisioning.service';
 import { ProvisioningService } from './service/provisioning.service';
 import { SchoolProvisioningHandler } from './service/school-provisioning.handler';
@@ -96,6 +97,7 @@ import {
 		ErwinProvisioningService,
 		SchoolProvisioningHandler,
 		UserProvisioningHandler,
+		ClassProvisioningHandler,
 		SchulconnexGroupProvisioningProducer,
 		SchulconnexLicenseProvisioningProducer,
 	],
