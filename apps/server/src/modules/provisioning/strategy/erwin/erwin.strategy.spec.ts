@@ -1,9 +1,10 @@
 import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ClassFactory } from '@modules/class';
+import { Class, ClassFactory } from '@modules/class';
 import { IdTokenExtractionFailureLoggableException } from '@modules/oauth';
 import { RoleName } from '@modules/role';
 import { schoolFactory } from '@modules/school/testing';
+import { UserDo } from '@modules/user';
 import { userDoFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
@@ -474,8 +475,8 @@ describe('ErwinProvisioningStrategy', () => {
 
 		describe('when token contains klassen with ErwinKlassePayload data', () => {
 			const setup = () => {
-				const klassePayload1 = { externalId: 'class-ext-id-1', name: 'Klasse 5a' };
-				const klassePayload2 = { externalId: 'class-ext-id-2', name: 'Klasse 5b' };
+				const klassePayload1 = { externalId: 'class-ext-id-1', name: 'Klasse 5a', erwinId: 'erwinId5a' };
+				const klassePayload2 = { externalId: 'class-ext-id-2', name: 'Klasse 5b', erwinId: 'erwinId5b' };
 
 				const input = new OauthDataStrategyInputDto({
 					system: new ProvisioningSystemDto({
@@ -587,12 +588,12 @@ describe('ErwinProvisioningStrategy', () => {
 				const system: ProvisioningSystemDto = provisioningSystemDtoFactory.build();
 				const externalUser: ExternalUserDto = externalUserDtoFactory.build();
 				const externalSchool: ExternalSchoolDto = externalSchoolDtoFactory.build();
-				const externalClass1 = externalClassDtoFactory.build();
-				const externalClass2 = externalClassDtoFactory.build();
+				const externalClass1: ExternalClassDto = externalClassDtoFactory.build();
+				const externalClass2: ExternalClassDto = externalClassDtoFactory.build();
 				const school = schoolFactory.build();
-				const user = userDoFactory.buildWithId();
-				const class1 = ClassFactory.create();
-				const class2 = ClassFactory.create();
+				const user: UserDo = userDoFactory.buildWithId();
+				const class1: Class = ClassFactory.create();
+				const class2: Class = ClassFactory.create();
 
 				const oauthData: OauthDataDto = new OauthDataDto({
 					system,

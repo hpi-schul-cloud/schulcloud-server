@@ -67,34 +67,52 @@ describe('ClassProvisioningHandler', () => {
 
 	describe('validate', () => {
 		describe('when externalClass and externalSchool are provided', () => {
-			it('should not throw', () => {
+			const setup = () => {
 				const context: ProvisioningContext = {
 					system: provisioningSystemDtoFactory.build(),
 					externalSchool: externalSchoolDtoFactory.build(),
 					externalClass: externalClassDtoFactory.build(),
 				};
+
+				return { context };
+			};
+
+			it('should not throw', () => {
+				const { context } = setup();
 
 				expect(() => sut.validate(context)).not.toThrow();
 			});
 		});
 
 		describe('when externalClass is not provided', () => {
-			it('should throw BadDataLoggableException', () => {
+			const setup = () => {
 				const context: ProvisioningContext = {
 					system: provisioningSystemDtoFactory.build(),
 					externalSchool: externalSchoolDtoFactory.build(),
 				};
+
+				return { context };
+			};
+
+			it('should throw BadDataLoggableException', () => {
+				const { context } = setup();
 
 				expect(() => sut.validate(context)).toThrow(BadDataLoggableException);
 			});
 		});
 
 		describe('when externalSchool is not provided', () => {
-			it('should throw BadDataLoggableException', () => {
+			const setup = () => {
 				const context: ProvisioningContext = {
 					system: provisioningSystemDtoFactory.build(),
 					externalClass: externalClassDtoFactory.build(),
 				};
+
+				return { context };
+			};
+
+			it('should throw BadDataLoggableException', () => {
+				const { context } = setup();
 
 				expect(() => sut.validate(context)).toThrow(BadDataLoggableException);
 			});
@@ -102,13 +120,19 @@ describe('ClassProvisioningHandler', () => {
 	});
 
 	describe('getExternalData', () => {
-		it('should return externalClass', () => {
+		const setup = () => {
 			const externalClass = externalClassDtoFactory.build();
 			const context: ProvisioningContext = {
 				system: provisioningSystemDtoFactory.build(),
 				externalSchool: externalSchoolDtoFactory.build(),
 				externalClass,
 			};
+
+			return { context, externalClass };
+		};
+
+		it('should return externalClass', () => {
+			const { context, externalClass } = setup();
 
 			const result = sut.getExternalData(context);
 
@@ -118,13 +142,19 @@ describe('ClassProvisioningHandler', () => {
 
 	describe('getErwinId', () => {
 		describe('when externalClass has erwinId', () => {
-			it('should return erwinId', () => {
+			const setup = () => {
 				const erwinId = new ObjectId().toHexString();
 				const context: ProvisioningContext = {
 					system: provisioningSystemDtoFactory.build(),
 					externalSchool: externalSchoolDtoFactory.build(),
 					externalClass: externalClassDtoFactory.build({ erwinId }),
 				};
+
+				return { context, erwinId };
+			};
+
+			it('should return erwinId', () => {
+				const { context, erwinId } = setup();
 
 				const result = sut.getErwinId(context);
 
@@ -133,12 +163,18 @@ describe('ClassProvisioningHandler', () => {
 		});
 
 		describe('when externalClass has no erwinId', () => {
-			it('should return undefined', () => {
+			const setup = () => {
 				const context: ProvisioningContext = {
 					system: provisioningSystemDtoFactory.build(),
 					externalSchool: externalSchoolDtoFactory.build(),
 					externalClass: externalClassDtoFactory.build({ erwinId: undefined }),
 				};
+
+				return { context };
+			};
+
+			it('should return undefined', () => {
+				const { context } = setup();
 
 				const result = sut.getErwinId(context);
 
@@ -147,11 +183,17 @@ describe('ClassProvisioningHandler', () => {
 		});
 
 		describe('when externalClass is not provided', () => {
-			it('should return undefined', () => {
+			const setup = () => {
 				const context: ProvisioningContext = {
 					system: provisioningSystemDtoFactory.build(),
 					externalSchool: externalSchoolDtoFactory.build(),
 				};
+
+				return { context };
+			};
+
+			it('should return undefined', () => {
+				const { context } = setup();
 
 				const result = sut.getErwinId(context);
 
@@ -161,10 +203,16 @@ describe('ClassProvisioningHandler', () => {
 	});
 
 	describe('findByEntityId', () => {
-		it('should call classService.findById', async () => {
+		const setup = () => {
 			const entityId = new ObjectId().toHexString();
 			const classEntity = ClassFactory.create();
 			classServiceMock.findById.mockResolvedValueOnce(classEntity);
+
+			return { entityId, classEntity };
+		};
+
+		it('should call classService.findById', async () => {
+			const { entityId, classEntity } = setup();
 
 			const result = await sut.findByEntityId(entityId);
 
@@ -209,13 +257,19 @@ describe('ClassProvisioningHandler', () => {
 		});
 
 		describe('when school is not found', () => {
-			it('should return null', async () => {
+			const setup = () => {
 				const system: ProvisioningSystemDto = provisioningSystemDtoFactory.build();
 				const externalSchool: ExternalSchoolDto = externalSchoolDtoFactory.build();
 				const externalClass: ExternalClassDto = externalClassDtoFactory.build();
 				const context: ProvisioningContext = { system, externalSchool, externalClass };
 
 				schoolServiceMock.getSchools.mockResolvedValueOnce([]);
+
+				return { context };
+			};
+
+			it('should return null', async () => {
+				const { context } = setup();
 
 				const result = await sut.findByExternalId(context);
 
@@ -225,7 +279,7 @@ describe('ClassProvisioningHandler', () => {
 		});
 
 		describe('when no class is found', () => {
-			it('should return null', async () => {
+			const setup = () => {
 				const school = schoolFactory.build();
 				const system: ProvisioningSystemDto = provisioningSystemDtoFactory.build();
 				const externalSchool: ExternalSchoolDto = externalSchoolDtoFactory.build({
@@ -236,6 +290,12 @@ describe('ClassProvisioningHandler', () => {
 
 				schoolServiceMock.getSchools.mockResolvedValueOnce([school]);
 				classServiceMock.findClassWithSchoolIdAndExternalId.mockResolvedValueOnce(null);
+
+				return { context };
+			};
+
+			it('should return null', async () => {
+				const { context } = setup();
 
 				const result = await sut.findByExternalId(context);
 
@@ -460,7 +520,7 @@ describe('ClassProvisioningHandler', () => {
 		});
 
 		describe('when externalClass has no name', () => {
-			it('should not update class name', async () => {
+			const setup = () => {
 				const originalName = faker.company.name();
 				const classEntity = ClassFactory.create({ name: originalName });
 				const externalClass: ExternalClassDto = new ExternalClassDto({
@@ -469,6 +529,12 @@ describe('ClassProvisioningHandler', () => {
 				});
 				classServiceMock.save.mockResolvedValueOnce();
 
+				return { classEntity, externalClass, originalName };
+			};
+
+			it('should not update class name', async () => {
+				const { classEntity, externalClass, originalName } = setup();
+
 				await sut.update(classEntity, externalClass);
 
 				expect(classEntity.name).toBe(originalName);
@@ -476,7 +542,7 @@ describe('ClassProvisioningHandler', () => {
 		});
 
 		describe('when externalClass has no gradeLevel', () => {
-			it('should not update class gradeLevel', async () => {
+			const setup = () => {
 				const originalGradeLevel = 5;
 				const classEntity = ClassFactory.create({ gradeLevel: originalGradeLevel });
 				const externalClass: ExternalClassDto = new ExternalClassDto({
@@ -485,6 +551,12 @@ describe('ClassProvisioningHandler', () => {
 				});
 				classServiceMock.save.mockResolvedValueOnce();
 
+				return { classEntity, externalClass, originalGradeLevel };
+			};
+
+			it('should not update class gradeLevel', async () => {
+				const { classEntity, externalClass, originalGradeLevel } = setup();
+
 				await sut.update(classEntity, externalClass);
 
 				expect(classEntity.gradeLevel).toBe(originalGradeLevel);
@@ -492,13 +564,19 @@ describe('ClassProvisioningHandler', () => {
 		});
 
 		describe('when externalClass has gradeLevel 0', () => {
-			it('should update class gradeLevel to 0', async () => {
+			const setup = () => {
 				const classEntity = ClassFactory.create({ gradeLevel: 5 });
 				const externalClass: ExternalClassDto = new ExternalClassDto({
 					externalId: new ObjectId().toHexString(),
 					gradeLevel: 0,
 				});
 				classServiceMock.save.mockResolvedValueOnce();
+
+				return { classEntity, externalClass };
+			};
+
+			it('should update class gradeLevel to 0', async () => {
+				const { classEntity, externalClass } = setup();
 
 				await sut.update(classEntity, externalClass);
 
