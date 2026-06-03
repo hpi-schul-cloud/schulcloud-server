@@ -83,15 +83,19 @@ export class CommonCartridgeImportService {
 				event.jwt,
 				NotificationType.INFO,
 				new Date(Date.now() + 1000 * 60 * 60),
-				'TestMessage: CC Import successful'
+				'pages.rooms.ccImportCourse.importSuccess',
+				{ file: event.fileName }
 			);
 		} catch (err: unknown) {
 			await this.sendNotificationToUser(
 				event.jwt,
 				NotificationType.ERROR,
 				new Date(Date.now() + 1000 * 60 * 60),
-				'TestMessage: CC Import not successful'
+				'pages.rooms.ccImportCourse.importError',
+				{ file: event.fileName }
 			);
+
+			this.errorHandler.exec(err);
 		} finally {
 			axios.interceptors.request.eject(interceptorReq);
 			axios.interceptors.response.eject(interceptorRes);
