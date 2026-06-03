@@ -519,8 +519,16 @@ describe('ErwinProvisioningStrategy', () => {
 
 				expect(result.externalClasses).toHaveLength(2);
 				expect(result.externalClasses).toEqual([
-					new ExternalClassDto({ externalId: klassePayload1.externalId, name: klassePayload1.name }),
-					new ExternalClassDto({ externalId: klassePayload2.externalId, name: klassePayload2.name }),
+					new ExternalClassDto({
+						externalId: klassePayload1.externalId,
+						name: klassePayload1.name,
+						erwinId: klassePayload1.erwinId,
+					}),
+					new ExternalClassDto({
+						externalId: klassePayload2.externalId,
+						name: klassePayload2.name,
+						erwinId: klassePayload2.erwinId,
+					}),
 				]);
 
 				validateSpy.mockRestore();
