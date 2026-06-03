@@ -41,7 +41,7 @@ spec:
                 name: api-secret
             - configMapRef:
                 name: bilo-media-metadata-sync-cronjob-configmap
-            command: ['node', 'dist/apps/server/apps/sync-console.app', 'media', 'metadata', '-df', 'BILDUNGSLOGIN']
+            command: ['node', 'dist/apps/server/apps/sync-console.app', 'media', 'metadata', '--dataFormat', 'BILDUNGSLOGIN']
             args: []
             resources:
               limits:

@@ -41,7 +41,7 @@ spec:
                 name: api-secret
             - configMapRef:
                 name: vidis-sync-cronjob-configmap
-            command: ['node', 'dist/apps/server/apps/sync-console.app', 'media', 'activations', '-df', 'VIDIS']
+            command: ['node', 'dist/apps/server/apps/sync-console.app', 'media', 'activations', '--dataFormat', 'VIDIS']
             args: []
             resources:
               limits:
