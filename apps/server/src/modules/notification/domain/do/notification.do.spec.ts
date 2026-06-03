@@ -8,7 +8,7 @@ describe(Notification.name, () => {
 				const props = {
 					id: 'notification-id1',
 					type: NotificationType.INFO,
-					messageOrKey: 'IMPORT_COMPLETED',
+					key: 'IMPORT_COMPLETED',
 					arguments: {},
 					userId: 'user-123',
 					expiresAt: new Date(),
@@ -31,7 +31,7 @@ describe(Notification.name, () => {
 				const props = {
 					id: 'notification-id-1',
 					type: NotificationType.INFO,
-					messageOrKey: 'IMPORT_FAILED',
+					key: 'IMPORT_FAILED',
 					arguments: {},
 					userId: 'user-456',
 					expiresAt: new Date(),
@@ -56,7 +56,7 @@ describe(Notification.name, () => {
 				const props = {
 					id: 'notification-id-2',
 					type: NotificationType.ERROR,
-					messageOrKey: 'IMPORT_IN_PROGRESS',
+					key: 'IMPORT_IN_PROGRESS',
 					arguments: {},
 					userId: 'user-789',
 					expiresAt: new Date(),
@@ -72,7 +72,7 @@ describe(Notification.name, () => {
 
 				const getterValues = {
 					type: notificationDo.type,
-					messageOrKey: notificationDo.messageOrKey,
+					key: notificationDo.key,
 					arguments: notificationDo.arguments,
 					userId: notificationDo.userId,
 					expiresAt: notificationDo.expiresAt,
@@ -80,7 +80,7 @@ describe(Notification.name, () => {
 
 				const expectedValues = {
 					type: props.type,
-					messageOrKey: props.messageOrKey,
+					key: props.key,
 					arguments: props.arguments,
 					userId: props.userId,
 					expiresAt: props.expiresAt,

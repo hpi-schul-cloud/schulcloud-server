@@ -6,7 +6,7 @@ export class NotificationMapper {
 		return new Notification({
 			id: entity.id,
 			type: entity.type,
-			messageOrKey: entity.messageOrKey,
+			key: entity.key,
 			arguments: entity.arguments,
 			userId: entity.userId,
 			expiresAt: new Date(),
@@ -16,7 +16,7 @@ export class NotificationMapper {
 	public static mapToEntity(domainObject: Notification): NotificationEntity {
 		return new NotificationEntity({
 			type: domainObject.type,
-			messageOrKey: domainObject.messageOrKey,
+			key: domainObject.key,
 			arguments: domainObject.arguments,
 			userId: domainObject.userId,
 			id: domainObject.id,

@@ -7,7 +7,7 @@ import { EntityId } from '@shared/domain/types';
 
 export type NotificationEntry = {
 	type: NotificationType;
-	messageOrKey: string;
+	key: string;
 	arguments?: Record<string, unknown>;
 	userId: string;
 	expiresAt: Date;
@@ -21,7 +21,7 @@ export class NotificationService {
 		const notification = new Notification({
 			id: new ObjectId().toHexString(),
 			type: entry.type,
-			messageOrKey: entry.messageOrKey,
+			key: entry.key,
 			arguments: entry.arguments,
 			userId: entry.userId,
 			expiresAt: entry.expiresAt,

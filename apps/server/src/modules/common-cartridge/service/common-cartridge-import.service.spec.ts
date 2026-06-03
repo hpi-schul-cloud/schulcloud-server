@@ -338,7 +338,7 @@ describe(CommonCartridgeImportService.name, () => {
 
 				expect(notificationServiceMock.createNotification).toHaveBeenCalledWith({
 					userId,
-					messageOrKey: 'pages.rooms.ccImportCourse.importSuccess',
+					key: 'pages.rooms.ccImportCourse.importSuccess',
 					arguments: { file: event.fileName },
 					type: NotificationType.INFO,
 					expiresAt: new Date(Date.now() + 1000 * 60 * 60),
@@ -389,7 +389,7 @@ describe(CommonCartridgeImportService.name, () => {
 
 				expect(notificationServiceMock.createNotification).toHaveBeenCalledWith({
 					userId,
-					messageOrKey: 'pages.rooms.ccImportCourse.importError',
+					key: 'pages.rooms.ccImportCourse.importError',
 					arguments: { file: event.fileName },
 					type: NotificationType.ERROR,
 					expiresAt: new Date(Date.now() + 1000 * 60 * 60),

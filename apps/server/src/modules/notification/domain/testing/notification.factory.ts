@@ -7,7 +7,7 @@ export const notificationFactory = DoBaseFactory.define<Notification, Notificati
 	return {
 		id: new ObjectId().toHexString(),
 		type: NotificationType.INFO,
-		messageOrKey: 'INFO_KEY',
+		key: 'INFO_KEY',
 		arguments: {},
 		userId: 'user-id',
 		expiresAt: new Date(),

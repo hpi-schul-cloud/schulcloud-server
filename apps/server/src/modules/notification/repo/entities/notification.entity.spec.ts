@@ -16,7 +16,7 @@ describe(NotificationEntity.name, () => {
 				const props: NotificationEntityProps = {
 					id: 'some-id',
 					type: NotificationType.INFO,
-					messageOrKey: 'SOME_NOTIFICATION_KEY',
+					key: 'SOME_NOTIFICATION_KEY',
 					arguments: {
 						name: 'value',
 					},
@@ -32,7 +32,7 @@ describe(NotificationEntity.name, () => {
 				const entity = new NotificationEntity(props);
 
 				expect(entity.type).toEqual(props.type);
-				expect(entity.messageOrKey).toEqual(props.messageOrKey);
+				expect(entity.key).toEqual(props.key);
 				expect(entity.arguments).toEqual(props.arguments);
 				expect(entity.userId).toEqual(props.userId);
 			});

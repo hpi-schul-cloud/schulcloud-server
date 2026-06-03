@@ -130,13 +130,13 @@ export class CommonCartridgeImportService {
 		jwt: string,
 		type: NotificationType,
 		expiresAt: Date,
-		messageOrKey: string,
+		key: string,
 		messageArguments?: Record<string, unknown>
 	): Promise<void> {
 		const { userId } = this.getJwtPayload(jwt);
 		await this.notificationService.createNotification({
 			userId,
-			messageOrKey,
+			key,
 			arguments: messageArguments,
 			type,
 			expiresAt,

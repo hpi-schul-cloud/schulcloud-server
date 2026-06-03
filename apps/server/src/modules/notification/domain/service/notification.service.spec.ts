@@ -48,7 +48,7 @@ describe(NotificationService.name, () => {
 			const setup = () => {
 				const notification = {
 					type: NotificationType.ERROR,
-					messageOrKey: 'ERROR_KEY',
+					key: 'ERROR_KEY',
 					arguments: {},
 					userId: 'user-id',
 					expiresAt: new Date(),
@@ -66,7 +66,7 @@ describe(NotificationService.name, () => {
 					expect.objectContaining({
 						id: expect.any(String),
 						type: notification.type,
-						messageOrKey: notification.messageOrKey,
+						key: notification.key,
 						arguments: notification.arguments,
 						expiresAt: expect.any(Date),
 					})

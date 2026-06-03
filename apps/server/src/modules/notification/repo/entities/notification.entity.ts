@@ -6,7 +6,7 @@ import { NotificationType } from '../../types';
 export interface NotificationEntityProps {
 	id?: EntityId;
 	type: NotificationType;
-	messageOrKey: string;
+	key: string;
 	arguments?: Record<string, unknown>;
 	userId: EntityId;
 	expiresAt: Date;
@@ -18,7 +18,7 @@ export class NotificationEntity extends BaseEntityWithTimestamps {
 	type: NotificationType;
 
 	@Property({ nullable: true })
-	messageOrKey: string;
+	key: string;
 
 	@Property({ nullable: true })
 	arguments?: Record<string, unknown>;
@@ -38,7 +38,7 @@ export class NotificationEntity extends BaseEntityWithTimestamps {
 		}
 
 		this.type = props.type;
-		this.messageOrKey = props.messageOrKey;
+		this.key = props.key;
 		this.arguments = props.arguments;
 		this.userId = props.userId;
 		this.expiresAt = props.expiresAt;

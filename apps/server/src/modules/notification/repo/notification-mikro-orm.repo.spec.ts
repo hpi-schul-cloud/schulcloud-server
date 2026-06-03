@@ -53,7 +53,7 @@ describe(NotificationMikroOrmRepo.name, () => {
 					props: expect.objectContaining({
 						id: domainObject.id,
 						type: domainObject.type,
-						messageOrKey: domainObject.messageOrKey,
+						key: domainObject.key,
 						arguments: domainObject.arguments,
 						userId: domainObject.userId,
 						expiresAt: expect.any(Date),
@@ -100,7 +100,7 @@ describe(NotificationMikroOrmRepo.name, () => {
 				const notification = new Notification({
 					id: entity.id,
 					type: entity.type,
-					messageOrKey: entity.messageOrKey,
+					key: entity.key,
 					arguments: entity.arguments,
 					userId: entity.userId,
 					expiresAt: entity.expiresAt,
@@ -121,7 +121,7 @@ describe(NotificationMikroOrmRepo.name, () => {
 						props: expect.objectContaining({
 							id: notification.id,
 							type: notification.type,
-							messageOrKey: notification.messageOrKey,
+							key: notification.key,
 							arguments: notification.arguments,
 							userId: notification.userId,
 							expiresAt: expect.any(Date),
@@ -141,7 +141,7 @@ describe(NotificationMikroOrmRepo.name, () => {
 				const notification = new Notification({
 					id: entity.id,
 					type: entity.type,
-					messageOrKey: entity.messageOrKey,
+					key: entity.key,
 					arguments: entity.arguments,
 					userId: entity.userId,
 					expiresAt: entity.expiresAt,
@@ -162,7 +162,7 @@ describe(NotificationMikroOrmRepo.name, () => {
 						props: expect.objectContaining({
 							id: notification.id,
 							type: notification.type,
-							messageOrKey: notification.messageOrKey,
+							key: notification.key,
 							arguments: notification.arguments,
 							userId: notification.userId,
 							expiresAt: expect.any(Date),
@@ -182,7 +182,7 @@ describe(NotificationMikroOrmRepo.name, () => {
 				const notification = new Notification({
 					id: entity.id,
 					type: entity.type,
-					messageOrKey: entity.messageOrKey,
+					key: entity.key,
 					arguments: entity.arguments,
 					userId: entity.userId,
 					expiresAt: entity.expiresAt,
