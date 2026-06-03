@@ -9,8 +9,7 @@ import {
 	CoursesClientAdapter,
 	FilesStorageClientAdapter,
 } from '@infra/common-cartridge-clients';
-import { NotificationService } from '@modules/notification/domain/service';
-import { NotificationType } from '@modules/notification/types';
+import { NotificationType, NotificationService } from '@modules/notification';
 import { HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
