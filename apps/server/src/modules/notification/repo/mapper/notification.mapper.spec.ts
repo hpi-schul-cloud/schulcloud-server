@@ -21,8 +21,8 @@ describe(NotificationMapper.name, () => {
 				const entity = {
 					id: 'notification-id',
 					type: NotificationType.ERROR,
-					key: 'NOTIFICATION_KEY',
-					arguments: ['arg1', 'arg2'],
+					messageOrKey: 'NOTIFICATION_KEY',
+					arguments: {},
 					userId: 'user-id',
 					expiresAt: new Date(),
 				} as NotificationEntity;
@@ -30,7 +30,7 @@ describe(NotificationMapper.name, () => {
 				const expectedDomainObject = new Notification({
 					id: entity.id,
 					type: entity.type,
-					key: entity.key,
+					messageOrKey: entity.messageOrKey,
 					arguments: entity.arguments,
 					userId: entity.userId,
 					expiresAt: entity.expiresAt,
@@ -64,16 +64,16 @@ describe(NotificationMapper.name, () => {
 					{
 						id: 'notification-id-1',
 						type: NotificationType.INFO,
-						key: 'NOTIFICATION_KEY_1',
-						arguments: ['arg1'],
+						messageOrKey: 'NOTIFICATION_KEY_1',
+						arguments: {},
 						userId: 'user-id-1',
 						expiresAt: new Date(),
 					} as NotificationEntity,
 					{
 						id: 'notification-id-2',
 						type: NotificationType.ERROR,
-						key: 'NOTIFICATION_KEY_2',
-						arguments: ['arg2a', 'arg2b'],
+						messageOrKey: 'NOTIFICATION_KEY_2',
+						arguments: {},
 						userId: 'user-id-2',
 						expiresAt: new Date(),
 					} as NotificationEntity,
@@ -84,7 +84,7 @@ describe(NotificationMapper.name, () => {
 						new Notification({
 							id: entity.id,
 							type: entity.type,
-							key: entity.key,
+							messageOrKey: entity.messageOrKey,
 							arguments: entity.arguments,
 							userId: entity.userId,
 							expiresAt: entity.expiresAt,
@@ -110,15 +110,15 @@ describe(NotificationMapper.name, () => {
 				const domainObject = new Notification({
 					id: 'notification-id',
 					type: NotificationType.ERROR,
-					key: 'NOTIFICATION_KEY',
-					arguments: ['arg1', 'arg2'],
+					messageOrKey: 'NOTIFICATION_KEY',
+					arguments: {},
 					userId: 'user-id',
 					expiresAt: new Date(),
 				});
 
 				const expectedEntity = new NotificationEntity({
 					type: domainObject.type,
-					key: domainObject.key,
+					messageOrKey: domainObject.messageOrKey,
 					arguments: domainObject.arguments,
 					userId: domainObject.userId,
 					id: domainObject.id,
@@ -154,16 +154,16 @@ describe(NotificationMapper.name, () => {
 					new Notification({
 						id: 'notification-id-1',
 						type: NotificationType.INFO,
-						key: 'NOTIFICATION_KEY_1',
-						arguments: ['arg1'],
+						messageOrKey: 'NOTIFICATION_KEY_1',
+						arguments: {},
 						userId: 'user-id-1',
 						expiresAt: new Date(),
 					}),
 					new Notification({
 						id: 'notification-id-2',
 						type: NotificationType.ERROR,
-						key: 'NOTIFICATION_KEY_2',
-						arguments: ['arg2a', 'arg2b'],
+						messageOrKey: 'NOTIFICATION_KEY_2',
+						arguments: {},
 						userId: 'user-id-2',
 						expiresAt: new Date(),
 					}),
@@ -173,7 +173,7 @@ describe(NotificationMapper.name, () => {
 					(domainObject) =>
 						new NotificationEntity({
 							type: domainObject.type,
-							key: domainObject.key,
+							messageOrKey: domainObject.messageOrKey,
 							arguments: domainObject.arguments,
 							userId: domainObject.userId,
 							id: domainObject.id,

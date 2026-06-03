@@ -4,8 +4,8 @@ import { NotificationType } from '../../types';
 
 export interface NotificationProps extends AuthorizableObject {
 	type: NotificationType;
-	key: string;
-	arguments: string[];
+	messageOrKey: string;
+	arguments?: Record<string, unknown>;
 	userId: EntityId;
 	expiresAt: Date;
 }
@@ -15,11 +15,11 @@ export class Notification extends DomainObject<NotificationProps> {
 		return this.props.type;
 	}
 
-	get key(): string {
-		return this.props.key;
+	get messageOrKey(): string {
+		return this.props.messageOrKey;
 	}
 
-	get arguments(): string[] {
+	get arguments(): Record<string, unknown> | undefined {
 		return this.props.arguments;
 	}
 

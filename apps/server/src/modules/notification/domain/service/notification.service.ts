@@ -3,11 +3,12 @@ import { Notification } from '../../domain/do';
 import { NOTIFICATION_REPO, NotificationRepo } from '../interfaces';
 import { NotificationType } from '../../types';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { EntityId } from '@shared/domain/types';
 
 export type NotificationEntry = {
 	type: NotificationType;
-	key: string;
-	arguments: string[];
+	messageOrKey: string;
+	arguments?: Record<string, unknown>;
 	userId: string;
 	expiresAt: Date;
 };
@@ -20,7 +21,7 @@ export class NotificationService {
 		const notification = new Notification({
 			id: new ObjectId().toHexString(),
 			type: entry.type,
-			key: entry.key,
+			messageOrKey: entry.messageOrKey,
 			arguments: entry.arguments,
 			userId: entry.userId,
 			expiresAt: entry.expiresAt,
@@ -31,11 +32,11 @@ export class NotificationService {
 		return notification;
 	}
 
-	public getUnreadNotifications(userId: string): Promise<Notification[]> {
+	public getUnreadNotifications(userId: EntityId): Promise<Notification[]> {
 		return this.notificationRepo.findForUser(userId);
 	}
 
-	public async deleteNotification(notificationId: string): Promise<void> {
+	public async deleteNotification(notificationId: EntityId): Promise<void> {
 		await this.notificationRepo.delete(notificationId);
 	}
 }

@@ -131,8 +131,8 @@ describe(NotificationObserverService.name, () => {
 					id: 'notification-id',
 					userId: 'user-id',
 					type: NotificationType.INFO,
-					key: 'notification.key',
-					arguments: [],
+					messageOrKey: 'notification.key',
+					arguments: {},
 					expiresAt: new Date(),
 				};
 
