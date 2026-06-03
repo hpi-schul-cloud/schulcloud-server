@@ -24,6 +24,7 @@ export class NotificationEntity extends BaseEntityWithTimestamps {
 	arguments?: Record<string, unknown>;
 
 	@Property({ nullable: true })
+	@Index()
 	userId: EntityId;
 
 	@Property({ nullable: true })
