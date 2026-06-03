@@ -25,11 +25,11 @@ export class ClassProvisioningHandler implements ProvisioningEntityHandler {
 
 	public validate(context: ProvisioningContext): void {
 		if (!context.externalClass) {
-			throw new Error('ExternalClassDto is required for CLASS provisioning');
+			throw new BadDataLoggableException('ExternalClassDto is required for CLASS provisioning');
 		}
 
 		if (!context.externalSchool) {
-			throw new Error('ExternalSchoolDto is required for CLASS provisioning');
+			throw new BadDataLoggableException('ExternalSchoolDto is required for CLASS provisioning');
 		}
 	}
 

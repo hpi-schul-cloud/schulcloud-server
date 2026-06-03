@@ -114,10 +114,16 @@ export class ErwinProvisioningStrategy extends ProvisioningStrategy {
 			location: payload.schule.zugehoerigZu,
 			name: payload.schule.name,
 		});
+
 		let externalClassDtoList: ExternalClassDto[] = [];
 		if (payload.klassen) {
 			externalClassDtoList = payload.klassen.map(
-				(klasse) => new ExternalClassDto({ name: klasse.name, externalId: klasse.externalId })
+				(klasse) =>
+					new ExternalClassDto({
+						name: klasse.name,
+						externalId: klasse.externalId,
+						erwinId: klasse.erwinId,
+					})
 			);
 		}
 

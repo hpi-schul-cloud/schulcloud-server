@@ -79,24 +79,24 @@ describe('ClassProvisioningHandler', () => {
 		});
 
 		describe('when externalClass is not provided', () => {
-			it('should throw Error', () => {
+			it('should throw BadDataLoggableException', () => {
 				const context: ProvisioningContext = {
 					system: provisioningSystemDtoFactory.build(),
 					externalSchool: externalSchoolDtoFactory.build(),
 				};
 
-				expect(() => sut.validate(context)).toThrow('ExternalClassDto is required for CLASS provisioning');
+				expect(() => sut.validate(context)).toThrow(BadDataLoggableException);
 			});
 		});
 
 		describe('when externalSchool is not provided', () => {
-			it('should throw Error', () => {
+			it('should throw BadDataLoggableException', () => {
 				const context: ProvisioningContext = {
 					system: provisioningSystemDtoFactory.build(),
 					externalClass: externalClassDtoFactory.build(),
 				};
 
-				expect(() => sut.validate(context)).toThrow('ExternalSchoolDto is required for CLASS provisioning');
+				expect(() => sut.validate(context)).toThrow(BadDataLoggableException);
 			});
 		});
 	});
