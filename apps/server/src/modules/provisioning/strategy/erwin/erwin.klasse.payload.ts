@@ -1,4 +1,4 @@
-import { IsString, IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class ErwinKlassePayload {
 	@IsString()
@@ -7,10 +7,9 @@ export class ErwinKlassePayload {
 
 	@IsString()
 	@IsNotEmpty()
-	public name!: string;
+	public erwinId!: string;
 
-	constructor(externalId: string, name: string) {
-		this.externalId = externalId;
-		this.name = name;
-	}
+	@IsString()
+	@IsNotEmpty()
+	public name!: string;
 }
