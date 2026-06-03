@@ -61,6 +61,12 @@ module.exports = function oauth2MockServer({ port = null }) {
 				});
 
 				mockOauth.post('/oauth2/introspect', (req, res) => {
+					if (mockOauth.expectedAuth) {
+						const auth = req.headers.authorization;
+						if (!auth || auth !== `Basic ${Buffer.from(mockOauth.expectedAuth).toString('base64')}`) {
+							return res.status(401).send('Unauthorized');
+						}
+					}
 					res.send({
 						active: false,
 					});

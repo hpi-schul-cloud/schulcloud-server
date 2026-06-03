@@ -666,6 +666,57 @@ describe('HydraService', () => {
 				expect(result).toEqual(true);
 			});
 		});
+
+		describe('when basic auth credentials are provided', () => {
+			let authService: HydraAdapter;
+			let authHttpService: DeepMocked<HttpService>;
+			const hydraAdminUser = 'admin';
+			const hydraAdminPassword = 'password';
+
+			beforeEach(async () => {
+				const authModule = await Test.createTestingModule({
+					providers: [
+						HydraAdapter,
+						{
+							provide: HttpService,
+							useValue: createMock<HttpService>(),
+						},
+						{
+							provide: OAUTH_PROVIDER_CONFIG_TOKEN,
+							useValue: {
+								hydraUri,
+								hydraAdminUser,
+								hydraAdminPassword,
+							},
+						},
+					],
+				}).compile();
+
+				authService = authModule.get(HydraAdapter);
+				authHttpService = authModule.get(HttpService);
+			});
+
+			it('should call the external provider with basic auth', async () => {
+				authHttpService.request.mockReturnValueOnce(
+					of(
+						axiosResponseFactory.build({
+							data: true,
+						})
+					)
+				);
+
+				await authService.isInstanceAlive();
+
+				expect(authHttpService.request).toHaveBeenCalledWith(
+					expect.objectContaining({
+						auth: {
+							username: hydraAdminUser,
+							password: hydraAdminPassword,
+						},
+					})
+				);
+			});
+		});
 	});
 
 	describe('getLoginRequest', () => {

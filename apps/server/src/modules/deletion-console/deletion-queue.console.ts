@@ -6,19 +6,19 @@ import { BatchDeletionUc } from './uc';
 
 const sharedCommandOptions: CommandOption[] = [
 	{
-		flags: '-trd, --targetRefDomain <value>',
+		flags: '-t, --targetRefDomain <value>',
 		description: 'Name of the target ref domain.',
 		required: false,
 		defaultValue: 'user',
 	},
 	{
-		flags: '-dim, --deleteInMinutes <value>',
+		flags: '-d, --deleteInMinutes <value>',
 		description: 'Number of minutes after which the data deletion process should begin.',
 		required: false,
 		defaultValue: 43200, // 43200 minutes = 30 days
 	},
 	{
-		flags: '-cdm, --callsDelayMs <value>',
+		flags: '-c, --callsDelayMs <value>',
 		description: 'Delay between all the performed client calls, in milliseconds.',
 		required: false,
 	},
@@ -36,7 +36,7 @@ export class DeletionQueueConsole {
 		description: 'Push new deletion requests to the deletion queue.',
 		options: [
 			{
-				flags: '-rfp, --refsFilePath <value>',
+				flags: '-f, --refsFilePath <value>',
 				description: 'Path of the file containing all the references to the data that should be deleted.',
 				required: true,
 			},
@@ -59,12 +59,12 @@ export class DeletionQueueConsole {
 		description: 'Finds unsynchronized users and queue them for deletion.',
 		options: [
 			{
-				flags: '-si, --systemId <value>',
+				flags: '-s, --systemId <value>',
 				description: 'ID of a synchronized system.',
 				required: true,
 			},
 			{
-				flags: '-ufm, --unsyncedForMinutes <value>',
+				flags: '-u, --unsyncedForMinutes <value>',
 				description:
 					'Number of minutes that must have passed before entity can be considered unsynchronized. Minimum value: 60.',
 				required: false,
