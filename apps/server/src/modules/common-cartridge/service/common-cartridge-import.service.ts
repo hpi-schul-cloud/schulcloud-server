@@ -17,6 +17,7 @@ import jwt from 'jsonwebtoken';
 import { lastValueFrom } from 'rxjs';
 import { ImportCourseEvent } from '../domain/events/import-course.event';
 import { CommonCartridgeFileParser } from '../import/common-cartridge-file-parser';
+import { CommonCartridgeXmlResourceType } from '../import/common-cartridge-import.enums';
 import {
 	CommonCartridgeFileFolderResourceProps,
 	CommonCartridgeFileResourceProps,
@@ -294,9 +295,53 @@ export class CommonCartridgeImportService {
 			(organization) => organization.pathDepth >= DEPTH_CARD_ELEMENTS && organization.path.startsWith(cardProps.path)
 		);
 
-		for await (const cardElement of cardElements) {
+		const cardElementsProcessed = this.processCardElements(cardElements);
+
+		for await (const cardElement of cardElementsProcessed) {
 			await this.createCardElement(parser, card.id, cardElement, event);
 		}
+	}
+
+	private processCardElements(cardElements: CommonCartridgeOrganizationProps[]): CommonCartridgeOrganizationProps[] {
+		const result: CommonCartridgeOrganizationProps[] = [];
+		const processed = new Set();
+
+		for (const cardElement of cardElements) {
+			if (processed.has(cardElement.identifier)) {
+				continue;
+			}
+
+			if (!cardElement.isResource) {
+				const children = cardElements.filter((el) => el.path.startsWith(cardElement.path));
+				const isFileFolder = children.some(
+					(child) =>
+						child.resourceType === 'webcontent' &&
+						!child.resourcePaths.every((resourcePath) => resourcePath.endsWith('.html'))
+				);
+
+				if (isFileFolder) {
+					result.push({
+						identifier: cardElement.identifier,
+						isInlined: false,
+						isResource: true,
+						resourcePaths: children.flatMap((c) => c.resourcePaths),
+						path: cardElement.path,
+						pathDepth: cardElement.pathDepth,
+						resourceType: CommonCartridgeXmlResourceType.WEB_CONTENT,
+						title: cardElement.title,
+						identifierRef: cardElement.identifierRef,
+					});
+
+					processed.add(cardElement.identifier);
+					children.forEach((child) => processed.add(child.identifier));
+				}
+			} else {
+				result.push(cardElement);
+				processed.add(cardElement.identifier);
+			}
+		}
+
+		return result;
 	}
 
 	private async createCardElement(
