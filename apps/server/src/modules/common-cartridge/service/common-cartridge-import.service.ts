@@ -10,6 +10,7 @@ import {
 	CoursesClientAdapter,
 	FilesStorageClientAdapter,
 } from '@infra/common-cartridge-clients';
+import { NotificationType, NotificationService } from '@modules/notification';
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
@@ -49,7 +50,8 @@ export class CommonCartridgeImportService {
 		private readonly fileClient: FilesStorageClientAdapter,
 		private readonly commonCartridgeImportMapper: CommonCartridgeImportMapper,
 		private readonly logger: Logger,
-		private readonly errorHandler: DomainErrorHandler
+		private readonly errorHandler: DomainErrorHandler,
+		private readonly notificationService: NotificationService
 	) {
 		this.logger.setContext(CommonCartridgeImportService.name);
 	}
@@ -57,26 +59,46 @@ export class CommonCartridgeImportService {
 	public async importCourse(event: ImportCourseEvent): Promise<void> {
 		const { interceptorReq, interceptorRes } = this.registerAxiosInterceptors();
 
-		const file = await this.fetchFile(event);
-		if (!file) {
-			return;
+		try {
+			const file = await this.fetchFile(event);
+			if (!file) {
+				throw new Error('Could not fetch file');
+			}
+
+			const parser = new CommonCartridgeFileParser(file, DEFAULT_FILE_PARSER_OPTIONS);
+
+			await Promise.allSettled([
+				this.createCourse(parser, event),
+				this.fileClient.deleteFile(event.jwt, event.fileRecordId),
+			]);
+
+			this.logger.debug(
+				new CommonCartridgeMessageLoggable('Import finished', {
+					fileRecordId: event.fileRecordId,
+				})
+			);
+
+			await this.sendNotificationToUser(
+				event.jwt,
+				NotificationType.INFO,
+				new Date(Date.now() + 1000 * 60 * 60),
+				'pages.rooms.ccImportCourse.importSuccess',
+				{ file: event.fileName }
+			);
+		} catch (err: unknown) {
+			await this.sendNotificationToUser(
+				event.jwt,
+				NotificationType.ERROR,
+				new Date(Date.now() + 1000 * 60 * 60),
+				'pages.rooms.ccImportCourse.importError',
+				{ file: event.fileName }
+			);
+
+			this.errorHandler.exec(err);
+		} finally {
+			axios.interceptors.request.eject(interceptorReq);
+			axios.interceptors.response.eject(interceptorRes);
 		}
-
-		const parser = new CommonCartridgeFileParser(file, DEFAULT_FILE_PARSER_OPTIONS);
-
-		await Promise.allSettled([
-			this.createCourse(parser, event),
-			this.fileClient.deleteFile(event.jwt, event.fileRecordId),
-		]);
-
-		this.logger.debug(
-			new CommonCartridgeMessageLoggable('Import finished', {
-				fileRecordId: event.fileRecordId,
-			})
-		);
-
-		axios.interceptors.request.eject(interceptorReq);
-		axios.interceptors.response.eject(interceptorRes);
 	}
 
 	private registerAxiosInterceptors(): { interceptorReq: number; interceptorRes: number } {
@@ -101,6 +123,23 @@ export class CommonCartridgeImportService {
 		);
 
 		return { interceptorReq, interceptorRes };
+	}
+
+	private async sendNotificationToUser(
+		jwt: string,
+		type: NotificationType,
+		expiresAt: Date,
+		key: string,
+		messageArguments?: Record<string, unknown>
+	): Promise<void> {
+		const { userId } = this.getJwtPayload(jwt);
+		await this.notificationService.createNotification({
+			userId,
+			key,
+			arguments: messageArguments,
+			type,
+			expiresAt,
+		});
 	}
 
 	private async fetchFile(event: ImportCourseEvent): Promise<Buffer | null> {

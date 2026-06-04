@@ -7,9 +7,9 @@ describe(Notification.name, () => {
 			const setup = () => {
 				const props = {
 					id: 'notification-id1',
-					type: NotificationType.NOTE,
+					type: NotificationType.INFO,
 					key: 'IMPORT_COMPLETED',
-					arguments: ['course-123', 'success'],
+					arguments: {},
 					userId: 'user-123',
 					expiresAt: new Date(),
 				};
@@ -30,9 +30,9 @@ describe(Notification.name, () => {
 			const setup = () => {
 				const props = {
 					id: 'notification-id-1',
-					type: NotificationType.NOTE,
+					type: NotificationType.INFO,
 					key: 'IMPORT_FAILED',
-					arguments: ['course-456', 'error'],
+					arguments: {},
 					userId: 'user-456',
 					expiresAt: new Date(),
 				};
@@ -57,7 +57,7 @@ describe(Notification.name, () => {
 					id: 'notification-id-2',
 					type: NotificationType.ERROR,
 					key: 'IMPORT_IN_PROGRESS',
-					arguments: ['course-789', 'progress'],
+					arguments: {},
 					userId: 'user-789',
 					expiresAt: new Date(),
 				};

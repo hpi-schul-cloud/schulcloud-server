@@ -1,16 +1,15 @@
-import { ErrorLogMessage, Loggable, LogMessage, LogMessageDataObject, ValidationErrorLogMessage } from '@core/logger';
+import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@core/logger';
 
 export class NotificationLoggable implements Loggable {
-	constructor(
-		private readonly message: string,
-		private readonly data?: LogMessageDataObject
-	) {}
+	constructor(private readonly userId: string) {}
 
 	public getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+		const message = `New notification for user ${this.userId}`;
+
 		return {
-			type: 'IMPORT_MESSAGE_NOTIFICATION',
-			message: this.message,
-			data: this.data,
+			type: 'USER_NOTIFICATION',
+			message,
+			data: { userId: this.userId },
 		};
 	}
 }
