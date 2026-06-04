@@ -58,7 +58,7 @@ export class JwtWhitelistAdapter {
 	}
 
 	private async deleteKeys(keys: string[]): Promise<void> {
-		const deleteKeysPromise: Promise<void>[] = keys.map(async (key: string): Promise<void> => {
+		const deleteKeysPromise = keys.map(async (key: string) => {
 			await this.storageClient.del(key);
 		});
 
