@@ -30,7 +30,7 @@ describe(JwtRedisIdentifier.name, () => {
 		it('should return the string value', () => {
 			const result = JwtRedisIdentifier.forJti('account123', 'jti456');
 
-			expect(`${result}`).toBe('jwt:account123:jti456');
+			expect(`${result.toString()}`).toBe('jwt:account123:jti456');
 		});
 	});
 });
