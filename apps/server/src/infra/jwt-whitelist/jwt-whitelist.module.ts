@@ -7,9 +7,9 @@ import {
 } from '@infra/valkey-client';
 import { DynamicModule, Module, Type } from '@nestjs/common';
 import { JwtWhitelistAdapter } from './adapter';
-import { JWT_WHITELIST_CONFIG_TOKEN, JwtWhitelistConfig } from './config';
 import { InternalJwtWhitelistConfig } from './interface';
 import { JWT_WHITELIST_VALKEY_CLIENT } from './jwt-whitelist.constants';
+import { JWT_WHITELIST_CONFIG_TOKEN, JwtWhitelistConfig } from './jwt-whitelist.config';
 
 @Module({})
 export class JwtWhitelistModule {
