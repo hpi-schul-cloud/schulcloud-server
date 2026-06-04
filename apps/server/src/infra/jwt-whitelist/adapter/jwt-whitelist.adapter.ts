@@ -3,7 +3,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { createJwtRedisData, JwtRedisData } from '../helper';
 import { InternalJwtWhitelistConfig } from '../interface';
-import { JwtRedisIdentifier } from './jwt-redis-identifier.vo';
+import { JwtWhitelistIdentifier } from './jwt-redis-identifier.vo';
 
 @Injectable()
 export class JwtWhitelistAdapter {
@@ -13,7 +13,7 @@ export class JwtWhitelistAdapter {
 	) {}
 
 	public async addToWhitelist(accountId: EntityId, jti: string): Promise<void> {
-		const redisIdentifier = JwtRedisIdentifier.forJti(accountId, jti);
+		const redisIdentifier = JwtWhitelistIdentifier.forJti(accountId, jti);
 		const redisData = createJwtRedisData(this.config.jwtTimeoutSeconds);
 
 		await this.setInStorage(redisIdentifier, redisData);
@@ -34,7 +34,7 @@ export class JwtWhitelistAdapter {
 	public async isWhitelisted(accountId: EntityId, jti: string): Promise<void> {
 		if (this.storageClient.constructor.name === 'InMemoryClient') return;
 
-		const redisIdentifier = JwtRedisIdentifier.forJti(accountId, jti);
+		const redisIdentifier = JwtWhitelistIdentifier.forJti(accountId, jti);
 		const redisData = createJwtRedisData(this.config.jwtTimeoutSeconds);
 		const value = await this.storageClient.get(redisIdentifier.toString());
 
@@ -44,14 +44,14 @@ export class JwtWhitelistAdapter {
 	}
 
 	private getKeyByJti(accountId: EntityId, jti: string): string[] {
-		const redisIdentifier = JwtRedisIdentifier.forJti(accountId, jti);
+		const redisIdentifier = JwtWhitelistIdentifier.forJti(accountId, jti);
 		const keys = [redisIdentifier.toString()];
 
 		return keys;
 	}
 
 	private async getKeysByAccount(accountId: EntityId): Promise<string[]> {
-		const redisIdentifier = JwtRedisIdentifier.forAccount(accountId);
+		const redisIdentifier = JwtWhitelistIdentifier.forAccount(accountId);
 		const keys = await this.storageClient.keys(redisIdentifier.toString());
 
 		return keys;
@@ -65,7 +65,7 @@ export class JwtWhitelistAdapter {
 		await Promise.all(deleteKeysPromise);
 	}
 
-	private async setInStorage(redisIdentifier: JwtRedisIdentifier, redisData: JwtRedisData): Promise<void> {
+	private async setInStorage(redisIdentifier: JwtWhitelistIdentifier, redisData: JwtRedisData): Promise<void> {
 		await this.storageClient.set(
 			redisIdentifier.toString(),
 			JSON.stringify(redisData),
