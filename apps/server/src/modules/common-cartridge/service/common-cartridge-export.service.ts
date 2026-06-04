@@ -402,15 +402,26 @@ export class CommonCartridgeExportService {
 
 				break;
 			case ContentElementType.FILE_FOLDER:
-				if (version !== CommonCartridgeVersion.V_1_3_0) {
-					break;
-				}
 				const metadataAndStreamsForFolder = await this.openStreamsToFiles(jwt, element);
-				const fileFolderResource = this.mapper.mapFileFolderToResource(
-					element as FileFolderElementResponse,
-					metadataAndStreamsForFolder
-				);
-				cardOrganization.addResource(fileFolderResource);
+
+				if (version === CommonCartridgeVersion.V_1_3_0) {
+					const fileFolderResource = this.mapper.mapFileFolderToResource(
+						element as FileFolderElementResponse,
+						metadataAndStreamsForFolder
+					);
+					cardOrganization.addResource(fileFolderResource);
+				} else if (version === CommonCartridgeVersion.V_1_1_0) {
+					const fileFolderOrg = cardOrganization.createChild({
+						identifier: createIdentifier(element.id),
+						title: (element as FileFolderElementResponse).content.title,
+					});
+
+					for (const fileMetadata of metadataAndStreamsForFolder) {
+						const { file, fileDto } = fileMetadata;
+						const fileResource = this.mapper.mapFileToResource(fileDto, file);
+						fileFolderOrg.addResource(fileResource);
+					}
+				}
 
 				break;
 		}
