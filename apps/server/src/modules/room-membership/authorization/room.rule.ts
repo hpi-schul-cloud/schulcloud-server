@@ -259,10 +259,11 @@ const canAddExternalPersonByEmail = (user: User, roomAuthorizable: RoomAuthoriza
 		return false;
 	}
 
-	const { roomPermissions } = resolveUserPermissions(user, roomAuthorizable);
+	const { roomPermissions, schoolPermissions } = resolveUserPermissions(user, roomAuthorizable);
 	const hasRoomPermission = roomPermissions.includes(Permission.ROOM_ADD_MEMBERS);
+	const hasSchoolPermission = schoolPermissions.includes(Permission.SCHOOL_ADD_EXTERNAL_PERSON_TO_ROOM);
 
-	return hasRoomPermission;
+	return hasRoomPermission && hasSchoolPermission;
 };
 
 const canChangeRolesOfMembers = (user: User, roomAuthorizable: RoomAuthorizable): boolean => {

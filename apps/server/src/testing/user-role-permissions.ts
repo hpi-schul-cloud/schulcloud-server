@@ -87,6 +87,7 @@ export const teacherPermissions = [
 	Permission.NEWS_CREATE,
 	Permission.NEWS_EDIT,
 	Permission.REQUEST_CONSENTS,
+	Permission.SCHOOL_ADD_EXTERNAL_PERSON_TO_ROOM,
 	Permission.SCHOOL_BECOME_ROOMOWNER,
 	Permission.SCHOOL_CREATE_ROOM,
 	Permission.SCHOOL_DELETE_ROOM,
