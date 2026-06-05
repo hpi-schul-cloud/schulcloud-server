@@ -1,4 +1,4 @@
-import { CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
+import { CopyStatus } from '@modules/copy-helper';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client/service';
 import { Injectable, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
