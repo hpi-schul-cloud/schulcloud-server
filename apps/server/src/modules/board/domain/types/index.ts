@@ -6,3 +6,4 @@ export * from './board-layout.enum';
 export * from './board-node-props';
 export * from './board-node-type.enum';
 export * from './content-element-type.enum';
+export * from './colors.enum';

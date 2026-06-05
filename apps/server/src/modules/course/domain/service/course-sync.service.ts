@@ -10,7 +10,10 @@ import { CourseDoService } from './course-do.service';
 
 @Injectable()
 export class CourseSyncService {
-	constructor(private readonly courseService: CourseDoService, private readonly roleService: RoleService) {}
+	constructor(
+		private readonly courseService: CourseDoService,
+		private readonly roleService: RoleService
+	) {}
 
 	public async startSynchronization(course: Course, group: Group, user: User): Promise<void> {
 		if (course.syncedWithGroup) {

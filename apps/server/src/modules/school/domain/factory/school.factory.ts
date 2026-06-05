@@ -2,11 +2,11 @@ import { School, SchoolProps } from '../do';
 import { SchoolUpdateBody } from '../interface';
 
 export class SchoolFactory {
-	static build(props: SchoolProps) {
+	public static build(props: SchoolProps): School {
 		return new School(props);
 	}
 
-	static buildFromPartialBody(school: School, partialBody: SchoolUpdateBody) {
+	public static buildFromPartialBody(school: School, partialBody: SchoolUpdateBody): School {
 		const {
 			name,
 			officialSchoolNumber,

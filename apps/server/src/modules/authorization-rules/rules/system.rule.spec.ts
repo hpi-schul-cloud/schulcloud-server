@@ -1,5 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import {
+	Action,
 	AuthorizationContextBuilder,
 	AuthorizationHelper,
 	AuthorizationInjectionService,
@@ -9,6 +10,7 @@ import { System } from '@modules/system';
 import { systemEntityFactory, systemFactory } from '@modules/system/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
+import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
@@ -270,6 +272,159 @@ describe(SystemRule.name, () => {
 				const result = rule.hasPermission(user, system, authorizationContext);
 
 				expect(result).toEqual(false);
+			});
+		});
+
+		describe('when user has CAN_EXECUTE_INSTANCE_OPERATIONS permission', () => {
+			describe('when user has instance operation permission with SYSTEM_VIEW for read action', () => {
+				const setup = () => {
+					const system = systemFactory.build();
+					const school = schoolEntityFactory.buildWithId({ systems: [] });
+					const user = userFactory.buildWithId({ school });
+					const authorizationContext = AuthorizationContextBuilder.read([]);
+
+					authorizationHelper.hasAllPermissions.mockImplementation((_user, permissions: Permission[]) => {
+						if (
+							permissions.includes(Permission.CAN_EXECUTE_INSTANCE_OPERATIONS) &&
+							permissions.includes(Permission.SYSTEM_VIEW)
+						) {
+							return true;
+						}
+						return false;
+					});
+
+					return { user, system, authorizationContext };
+				};
+
+				it('should return "true" even without the system being at the users school', () => {
+					const { user, system, authorizationContext } = setup();
+
+					const result = rule.hasPermission(user, system, authorizationContext);
+
+					expect(result).toEqual(true);
+				});
+			});
+
+			describe('when user has instance operation permission with SYSTEM_EDIT for write action on general ldap system', () => {
+				const setup = () => {
+					const system = systemFactory.build({ ldapConfig: { provider: 'general' } });
+					const school = schoolEntityFactory.buildWithId({ systems: [] });
+					const user = userFactory.buildWithId({ school });
+					const authorizationContext = AuthorizationContextBuilder.write([]);
+
+					authorizationHelper.hasAllPermissions.mockImplementation((_user, permissions: Permission[]) => {
+						if (
+							permissions.includes(Permission.CAN_EXECUTE_INSTANCE_OPERATIONS) &&
+							permissions.includes(Permission.SYSTEM_EDIT)
+						) {
+							return true;
+						}
+						return false;
+					});
+
+					return { user, system, authorizationContext };
+				};
+
+				it('should return "true" even without the system being at the users school', () => {
+					const { user, system, authorizationContext } = setup();
+
+					const result = rule.hasPermission(user, system, authorizationContext);
+
+					expect(result).toEqual(true);
+				});
+			});
+
+			describe('when user has instance operation permission but missing required permissions', () => {
+				const setup = () => {
+					const system = systemFactory.build();
+					const school = schoolEntityFactory.buildWithId({ systems: [] });
+					const user = userFactory.buildWithId({ school });
+					const missingPermission = 'missing' as Permission;
+					const authorizationContext = AuthorizationContextBuilder.read([missingPermission]);
+
+					authorizationHelper.hasAllPermissions.mockReturnValue(false);
+
+					return { user, system, authorizationContext };
+				};
+
+				it('should return "false" when required permissions are not met', () => {
+					const { user, system, authorizationContext } = setup();
+
+					const result = rule.hasPermission(user, system, authorizationContext);
+
+					expect(result).toEqual(false);
+				});
+			});
+
+			describe('when user has only CAN_EXECUTE_INSTANCE_OPERATIONS without SYSTEM_VIEW', () => {
+				const setup = () => {
+					const system = systemFactory.build();
+					const school = schoolEntityFactory.buildWithId({ systems: [] });
+					const user = userFactory.buildWithId({ school });
+					const authorizationContext = AuthorizationContextBuilder.read([]);
+
+					authorizationHelper.hasAllPermissions.mockReturnValue(false);
+
+					return { user, system, authorizationContext };
+				};
+
+				it('should return "false" for read action', () => {
+					const { user, system, authorizationContext } = setup();
+
+					const result = rule.hasPermission(user, system, authorizationContext);
+
+					expect(result).toEqual(false);
+				});
+			});
+
+			describe('when user has instance operation permission but system is not editable', () => {
+				const setup = () => {
+					const system = systemFactory.build({ ldapConfig: { provider: 'other' } });
+					const school = schoolEntityFactory.buildWithId({ systems: [] });
+					const user = userFactory.buildWithId({ school });
+					const authorizationContext = AuthorizationContextBuilder.write([]);
+
+					authorizationHelper.hasAllPermissions.mockImplementation((_user, permissions: Permission[]) => {
+						if (
+							permissions.includes(Permission.CAN_EXECUTE_INSTANCE_OPERATIONS) &&
+							permissions.includes(Permission.SYSTEM_EDIT)
+						) {
+							return true;
+						}
+						return false;
+					});
+
+					return { user, system, authorizationContext };
+				};
+
+				it('should return "false" for write action on non-general ldap system', () => {
+					const { user, system, authorizationContext } = setup();
+
+					const result = rule.hasPermission(user, system, authorizationContext);
+
+					expect(result).toEqual(false);
+				});
+			});
+		});
+
+		describe('when the action is not read or write', () => {
+			const setup = () => {
+				const system = systemFactory.build();
+				const systemEntity = systemEntityFactory.buildWithId(undefined, system.id);
+				const school = schoolEntityFactory.buildWithId({
+					systems: [systemEntity],
+				});
+				const user = userFactory.buildWithId({ school });
+
+				return { user, system };
+			};
+
+			it('should throw NotImplementedException', () => {
+				const { user, system } = setup();
+
+				expect(() =>
+					rule.hasPermission(user, system, { action: 'unknown' as Action, requiredPermissions: [] })
+				).toThrow(NotImplementedException);
 			});
 		});
 	});

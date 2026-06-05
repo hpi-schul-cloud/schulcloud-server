@@ -25,7 +25,10 @@ export class RoomBoardContext implements PreparedBoardContext {
 
 	private readonly canEditorsManageVideoconference: boolean;
 
-	constructor(private readonly room: Room, private readonly roomAuthorizable: RoomAuthorizable) {
+	constructor(
+		private readonly room: Room,
+		private readonly roomAuthorizable: RoomAuthorizable
+	) {
 		this.usersWithBoardRoles = this.computeUsersWithBoardRoles();
 		this.hasOwner = this.computeHasOwner();
 		this.canEditorsManageVideoconference = this.room.features.includes(RoomFeatures.EDITOR_MANAGE_VIDEOCONFERENCE);

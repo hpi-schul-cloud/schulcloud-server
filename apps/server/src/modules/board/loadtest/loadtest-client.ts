@@ -25,7 +25,10 @@ import { SocketConnection } from './socket-connection';
 import { sleep } from './helper/sleep';
 
 export class LoadtestClient {
-	constructor(private socket: SocketConnection, private boardId: string) {}
+	constructor(
+		private socket: SocketConnection,
+		private boardId: string
+	) {}
 
 	async fetchBoard() {
 		const result = (await this.socket.emitAndWait('fetch-board', { boardId: this.boardId })) as BoardResponse;

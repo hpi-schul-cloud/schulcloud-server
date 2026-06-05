@@ -25,6 +25,7 @@ export const BoardOperationValues = [
 	'updateReadersCanEditSetting',
 
 	// column
+	'copyColumn',
 	'createColumn',
 	'deleteColumn',
 	'moveColumn',
@@ -39,6 +40,7 @@ export const BoardOperationValues = [
 	'shareCard',
 	'updateCardHeight',
 	'updateCardTitle',
+	'updateCardColor',
 
 	// element
 	'createElement',
@@ -77,7 +79,10 @@ type OperationFn = (user: User, authorizable: BoardNodeAuthorizable) => boolean;
 
 @Injectable()
 export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
-	constructor(authorisationInjectionService: AuthorizationInjectionService, private readonly userService: UserService) {
+	constructor(
+		authorisationInjectionService: AuthorizationInjectionService,
+		private readonly userService: UserService
+	) {
 		authorisationInjectionService.injectAuthorizationRule(this);
 	}
 
@@ -152,10 +157,11 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 			relocateContent: canRelocateContent,
 			shareBoard: canShareBoardNode,
 			updateBoardLayout: _canManageBoard,
-			updateBoardTitle: _canEditBoard,
+			updateBoardTitle: canEditBoardTitle,
 			updateReadersCanEditSetting: canUpdateReadersCanEditSetting,
 
 			// column
+			copyColumn: _canEditBoard,
 			createColumn: _canEditBoard,
 			deleteColumn: _canEditBoard,
 			moveColumn: _canEditBoard,
@@ -170,6 +176,7 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 			shareCard: canShareBoardNode,
 			updateCardHeight: _canEditBoard,
 			updateCardTitle: _canEditBoard,
+			updateCardColor: _canEditBoard,
 
 			// element
 			createElement: _canEditBoard,
@@ -300,6 +307,16 @@ const _canEditBoard = (user: User, authorizable: BoardNodeAuthorizable): boolean
 	return isReader && readersCanEdit;
 };
 
+const canEditBoardTitle = (user: User, authorizable: BoardNodeAuthorizable): boolean => {
+	const isReader = hasBoardRole(user, authorizable, BoardRoles.READER);
+	if (isReader) {
+		// readers are never allowed to change the board title, even if readersCanEdit is active on the board itself
+		return false;
+	}
+
+	return _canEditBoard(user, authorizable);
+};
+
 const _canManageBoard = (user: User, authorizable: BoardNodeAuthorizable): boolean => {
 	if (authorizable.boardConfiguration.isLocked) {
 		return false;
@@ -309,6 +326,7 @@ const _canManageBoard = (user: User, authorizable: BoardNodeAuthorizable): boole
 
 	const isBoard = authorizable.rootNode instanceof ColumnBoard || authorizable.rootNode instanceof MediaBoard;
 	const canManageBoard = permissions.includes(Permission.BOARD_MANAGE);
+
 	return isBoard && canManageBoard;
 };
 
@@ -321,6 +339,7 @@ const _canViewBoard = (user: User, authorizable: BoardNodeAuthorizable): boolean
 
 	const isBoard = authorizable.rootNode instanceof ColumnBoard || authorizable.rootNode instanceof MediaBoard;
 	const canViewBoard = permissions.includes(Permission.BOARD_VIEW);
+
 	return isBoard && canViewBoard;
 };
 

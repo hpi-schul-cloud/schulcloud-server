@@ -753,6 +753,7 @@ describe(BoardNodeRule.name, () => {
 					updateReadersCanEditSetting: false,
 
 					// column
+					copyColumn: true,
 					createColumn: true,
 					deleteColumn: true,
 					moveColumn: true,
@@ -767,6 +768,7 @@ describe(BoardNodeRule.name, () => {
 					shareCard: true,
 					updateCardHeight: true,
 					updateCardTitle: true,
+					updateCardColor: true,
 
 					// element
 					createElement: true,
@@ -835,6 +837,7 @@ describe(BoardNodeRule.name, () => {
 					updateReadersCanEditSetting: false,
 
 					// column
+					copyColumn: true,
 					createColumn: true,
 					deleteColumn: true,
 					moveColumn: true,
@@ -849,6 +852,7 @@ describe(BoardNodeRule.name, () => {
 					shareCard: false,
 					updateCardHeight: true,
 					updateCardTitle: true,
+					updateCardColor: true,
 
 					// element
 					createElement: true,
@@ -918,6 +922,7 @@ describe(BoardNodeRule.name, () => {
 					updateReadersCanEditSetting: false,
 
 					// column
+					copyColumn: false,
 					createColumn: false,
 					deleteColumn: false,
 					moveColumn: false,
@@ -932,6 +937,7 @@ describe(BoardNodeRule.name, () => {
 					shareCard: false,
 					updateCardHeight: false,
 					updateCardTitle: false,
+					updateCardColor: false,
 
 					// element
 					createElement: false,
@@ -965,6 +971,20 @@ describe(BoardNodeRule.name, () => {
 				} satisfies Record<BoardOperation, boolean>;
 
 				expect(res).toEqual(expectedAllowedOperations);
+			});
+
+			describe('when board has readersCanEdit enabled', () => {
+				it('should not allow the board title to be edited', () => {
+					const { user, boardNodeAuthorizable } = setup({
+						canReadersEdit: true,
+						canEditorsManageVideoconference: true,
+						isLocked: false,
+					});
+
+					const res = boardNodeRule.listAllowedOperations(user, boardNodeAuthorizable);
+
+					expect(res.updateBoardTitle).toEqual(false);
+				});
 			});
 		});
 
@@ -1000,6 +1020,7 @@ describe(BoardNodeRule.name, () => {
 					updateReadersCanEditSetting: false,
 
 					// column
+					copyColumn: false,
 					createColumn: false,
 					deleteColumn: false,
 					moveColumn: false,
@@ -1014,6 +1035,7 @@ describe(BoardNodeRule.name, () => {
 					shareCard: false,
 					updateCardHeight: false,
 					updateCardTitle: false,
+					updateCardColor: false,
 
 					// element
 					createElement: false,

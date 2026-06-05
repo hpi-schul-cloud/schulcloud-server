@@ -5,7 +5,10 @@ import { EntityId } from '@shared/domain/types';
 import { BatchStatus } from '../../domain/types';
 
 export class CantCreateDeletionRequestsForBatchErrorLoggable extends BadRequestException implements Loggable {
-	constructor(private readonly id: EntityId, private readonly batchStatus: BatchStatus) {
+	constructor(
+		private readonly id: EntityId,
+		private readonly batchStatus: BatchStatus
+	) {
 		super();
 	}
 

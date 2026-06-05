@@ -33,7 +33,7 @@ export class ClassGroupUc {
 		private readonly schoolYearService: SchoolYearService,
 		private readonly courseService: CourseDoService,
 		@Inject(GROUP_CONFIG_TOKEN)
-		private readonly config: GroupConfig,
+		private readonly groupConfig: GroupConfig,
 		private readonly userService: UserService
 	) {}
 
@@ -75,7 +75,7 @@ export class ClassGroupUc {
 			async (dto: InternalClassDto<Group | Class>): Promise<ClassInfoDto> => {
 				let synchronizedCourses: Course[] | undefined;
 
-				if (this.config.featureSchulconnexCourseSyncEnabled && dto.isGroup()) {
+				if (this.groupConfig.featureSchulconnexCourseSyncEnabled && dto.isGroup()) {
 					synchronizedCourses = await this.courseService.findBySyncedGroup(dto.original);
 				}
 
@@ -94,9 +94,10 @@ export class ClassGroupUc {
 	}
 
 	private getGroupVisibilityPermission(user: User): GroupVisibilityPermission {
-		const canSeeAllSchoolGroups = this.authorizationService.hasAllPermissions(user, [
-			Permission.CLASS_FULL_ADMIN,
+		const canSeeAllSchoolGroups = this.authorizationService.hasOneOfPermissions(user, [
+			Permission.STUDENT_LIST,
 			Permission.GROUP_FULL_ADMIN,
+			Permission.CLASS_FULL_ADMIN,
 		]);
 
 		if (canSeeAllSchoolGroups) {

@@ -11,7 +11,10 @@ export type CommonCartridgeResourceNodeProps = CommonCartridgeResourceProps & { 
 export class CommonCartridgeResourceNode {
 	private readonly parent: CommonCartridgeOrganizationNode;
 
-	constructor(private readonly props: CommonCartridgeResourceNodeProps, parent: CommonCartridgeOrganizationNode) {
+	constructor(
+		private readonly props: CommonCartridgeResourceNodeProps,
+		parent: CommonCartridgeOrganizationNode
+	) {
 		this.parent = parent;
 	}
 

@@ -22,7 +22,7 @@ export class LogoutController {
 	@ApiOperation({ summary: 'Logs out a user.' })
 	@ApiOkResponse({ description: 'Logout was successful.' })
 	@ApiUnauthorizedResponse({ description: 'There has been an error while logging out.' })
-	async logout(@JWT() jwt: string): Promise<void> {
+	public async logout(@JWT() jwt: string): Promise<void> {
 		await this.logoutUc.logout(jwt);
 	}
 
@@ -35,7 +35,7 @@ export class LogoutController {
 	@ApiOperation({ summary: 'Logs out a user for a given logout token from an external oidc system.' })
 	@ApiOkResponse({ description: 'Logout was successful.' })
 	@ApiUnauthorizedResponse({ description: 'There has been an error while logging out.' })
-	async logoutOidc(@Body() body: OidcLogoutBodyParams): Promise<void> {
+	public async logoutOidc(@Body() body: OidcLogoutBodyParams): Promise<void> {
 		await this.logoutUc.logoutOidc(body.logout_token);
 	}
 
@@ -50,7 +50,7 @@ export class LogoutController {
 	@ApiForbiddenResponse({
 		description: 'The feature is not enabled on this server',
 	})
-	async externalSystemLogout(@CurrentUser() user: ICurrentUser): Promise<void> {
+	public async externalSystemLogout(@CurrentUser() user: ICurrentUser): Promise<void> {
 		await this.logoutUc.externalSystemLogout(user);
 	}
 }

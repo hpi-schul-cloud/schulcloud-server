@@ -1,10 +1,10 @@
-import { RuntimeConfigValueType } from '../../domain/runtime-config-value.do';
 import { Entity, Property, Unique } from '@mikro-orm/core';
 import { BaseEntity } from '@shared/domain/entity';
+import { RuntimeConfigType } from '../../domain/runtime-config-value.do';
 
 export interface RuntimeConfigProperties {
 	key: string;
-	type: RuntimeConfigValueType;
+	type: RuntimeConfigType;
 	value: string;
 	description?: string;
 }
@@ -24,7 +24,7 @@ export class RuntimeConfigEntity extends BaseEntity implements RuntimeConfigProp
 	key: string;
 
 	@Property({ nullable: false })
-	type: RuntimeConfigValueType;
+	type: RuntimeConfigType;
 
 	@Property({ nullable: false })
 	value: string;

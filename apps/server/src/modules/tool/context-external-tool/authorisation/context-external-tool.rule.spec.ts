@@ -13,6 +13,7 @@ import { schoolEntityFactory } from '@modules/school/testing';
 import { Submission, Task } from '@modules/task/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
+import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
@@ -121,6 +122,115 @@ describe('ContextExternalToolRule', () => {
 				const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [permissionA] });
 
 				expect(res).toBe(false);
+			});
+		});
+
+		describe('when user has CAN_EXECUTE_INSTANCE_OPERATIONS permission', () => {
+			describe('when user has instance operation permission for read action', () => {
+				const setupInstanceOperation = () => {
+					const role: Role = roleFactory.build({ permissions: [Permission.CAN_EXECUTE_INSTANCE_OPERATIONS] });
+					const school = schoolEntityFactory.build();
+					const otherSchool = schoolEntityFactory.build();
+					const schoolExternalToolEntity: SchoolExternalToolEntity | SchoolExternalTool =
+						schoolExternalToolEntityFactory.build({
+							school: otherSchool,
+						});
+					const entity: ContextExternalToolEntity | ContextExternalTool = contextExternalToolEntityFactory.build({
+						schoolTool: schoolExternalToolEntity,
+					});
+					const user: User = userFactory.build({ roles: [role], school });
+
+					return { user, entity };
+				};
+
+				it('should return "true" even without being at the same school', () => {
+					const { user, entity } = setupInstanceOperation();
+
+					const res = service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [] });
+
+					expect(res).toBe(true);
+				});
+			});
+
+			describe('when user has instance operation permission for write action', () => {
+				const setupInstanceOperation = () => {
+					const role: Role = roleFactory.build({ permissions: [Permission.CAN_EXECUTE_INSTANCE_OPERATIONS] });
+					const school = schoolEntityFactory.build();
+					const otherSchool = schoolEntityFactory.build();
+					const schoolExternalToolEntity: SchoolExternalToolEntity | SchoolExternalTool =
+						schoolExternalToolEntityFactory.build({
+							school: otherSchool,
+						});
+					const entity: ContextExternalToolEntity | ContextExternalTool = contextExternalToolEntityFactory.build({
+						schoolTool: schoolExternalToolEntity,
+					});
+					const user: User = userFactory.build({ roles: [role], school });
+
+					return { user, entity };
+				};
+
+				it('should return "true" even without being at the same school', () => {
+					const { user, entity } = setupInstanceOperation();
+
+					const res = service.hasPermission(user, entity, { action: Action.write, requiredPermissions: [] });
+
+					expect(res).toBe(true);
+				});
+			});
+
+			describe('when user has instance operation permission but missing required permissions', () => {
+				const setupInstanceOperation = () => {
+					const missingPermission = 'missing' as Permission;
+					const role: Role = roleFactory.build({ permissions: [Permission.CAN_EXECUTE_INSTANCE_OPERATIONS] });
+					const school = schoolEntityFactory.build();
+					const otherSchool = schoolEntityFactory.build();
+					const schoolExternalToolEntity: SchoolExternalToolEntity | SchoolExternalTool =
+						schoolExternalToolEntityFactory.build({
+							school: otherSchool,
+						});
+					const entity: ContextExternalToolEntity | ContextExternalTool = contextExternalToolEntityFactory.build({
+						schoolTool: schoolExternalToolEntity,
+					});
+					const user: User = userFactory.build({ roles: [role], school });
+
+					return { user, entity, missingPermission };
+				};
+
+				it('should return "false" when required permissions are not met', () => {
+					const { user, entity, missingPermission } = setupInstanceOperation();
+
+					const res = service.hasPermission(user, entity, {
+						action: Action.read,
+						requiredPermissions: [missingPermission],
+					});
+
+					expect(res).toBe(false);
+				});
+			});
+		});
+
+		describe('when the action is not read or write', () => {
+			const setupUnknownAction = () => {
+				const role: Role = roleFactory.build({ permissions: [] });
+				const school = schoolEntityFactory.build();
+				const schoolExternalToolEntity: SchoolExternalToolEntity | SchoolExternalTool =
+					schoolExternalToolEntityFactory.build({
+						school,
+					});
+				const entity: ContextExternalToolEntity | ContextExternalTool = contextExternalToolEntityFactory.build({
+					schoolTool: schoolExternalToolEntity,
+				});
+				const user: User = userFactory.build({ roles: [role], school });
+
+				return { user, entity };
+			};
+
+			it('should throw NotImplementedException', () => {
+				const { user, entity } = setupUnknownAction();
+
+				expect(() =>
+					service.hasPermission(user, entity, { action: 'unknown' as Action, requiredPermissions: [] })
+				).toThrow(NotImplementedException);
 			});
 		});
 	});

@@ -2,7 +2,10 @@ import { BoardExternalReferenceType, BoardLayout } from '../../domain';
 import { sleep } from './sleep';
 
 export class HttpError extends Error {
-	constructor(public readonly status: number, public readonly statusText: string) {
+	constructor(
+		public readonly status: number,
+		public readonly statusText: string
+	) {
 		super(`HTTP Error ${status}: ${statusText}`);
 	}
 }

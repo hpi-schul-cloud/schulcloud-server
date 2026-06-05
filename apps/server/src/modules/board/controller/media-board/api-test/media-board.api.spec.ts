@@ -10,9 +10,10 @@ import { mediaUserLicenseEntityFactory } from '@modules/user-license/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { DateToString } from '@testing/date-to-string';
+import { expectIsoDateString } from '@testing/matchers';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
-import { BoardExternalReferenceType, BoardLayout, MediaBoardColors } from '../../../domain';
+import { BoardExternalReferenceType, BoardLayout, Colors } from '../../../domain';
 import { BoardNodeEntity } from '../../../repo';
 import {
 	mediaBoardEntityFactory,
@@ -95,7 +96,7 @@ describe('Media Board (API)', () => {
 					id: mediaBoard.id,
 					timestamps: {
 						createdAt: mediaBoard.createdAt.toISOString(),
-						lastUpdatedAt: mediaBoard.updatedAt.toISOString(),
+						lastUpdatedAt: expectIsoDateString() as unknown as string,
 					},
 					layout: BoardLayout.LIST,
 					lines: [
@@ -103,19 +104,17 @@ describe('Media Board (API)', () => {
 							id: mediaLine.id,
 							timestamps: {
 								createdAt: mediaLine.createdAt.toISOString(),
-								lastUpdatedAt: mediaLine.updatedAt.toISOString(),
+								lastUpdatedAt: expectIsoDateString() as unknown as string,
 							},
 							collapsed: false,
-							backgroundColor: MediaBoardColors.TRANSPARENT,
+							backgroundColor: Colors.TRANSPARENT,
 							title: mediaLine.title as string,
 							elements: [
 								{
 									id: mediaElement.id,
 									timestamps: {
 										createdAt: mediaElement.createdAt.toISOString(),
-										lastUpdatedAt: expect.stringMatching(
-											/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/
-										) as unknown as string, // any iso string, to avoid ms differences based unstable test
+										lastUpdatedAt: expectIsoDateString() as unknown as string,
 									},
 									content: {
 										contextExternalToolId,
@@ -217,7 +216,7 @@ describe('Media Board (API)', () => {
 						lastUpdatedAt: expect.any(String),
 					},
 					collapsed: false,
-					backgroundColor: MediaBoardColors.TRANSPARENT,
+					backgroundColor: Colors.TRANSPARENT,
 					elements: [],
 					title: '',
 				});
@@ -331,7 +330,7 @@ describe('Media Board (API)', () => {
 						id: studentUser.id,
 						type: BoardExternalReferenceType.User,
 					},
-					backgroundColor: MediaBoardColors.RED,
+					backgroundColor: Colors.RED,
 					collapsed: true,
 				});
 				const mediaLine = mediaLineEntityFactory.withParent(mediaBoard).build();
@@ -385,7 +384,7 @@ describe('Media Board (API)', () => {
 						},
 					],
 					collapsed: mediaBoard.collapsed as boolean,
-					backgroundColor: mediaBoard.backgroundColor as MediaBoardColors,
+					backgroundColor: mediaBoard.backgroundColor as Colors,
 				});
 			});
 		});
@@ -616,7 +615,7 @@ describe('Media Board (API)', () => {
 						},
 					],
 					collapsed: false,
-					backgroundColor: MediaBoardColors.TRANSPARENT,
+					backgroundColor: Colors.TRANSPARENT,
 				});
 			});
 		});
@@ -846,12 +845,12 @@ describe('Media Board (API)', () => {
 				const { studentClient, mediaBoard } = await setup();
 
 				const response = await studentClient.patch<ColorBodyParams>(`${mediaBoard.id}/media-available-line/color`, {
-					backgroundColor: MediaBoardColors.BLUE,
+					backgroundColor: Colors.BLUE,
 				});
 
 				expect(response.status).toEqual(HttpStatus.NO_CONTENT);
 				const modifiedBoard = await em.findOneOrFail(BoardNodeEntity, mediaBoard.id);
-				expect(modifiedBoard.backgroundColor).toBe(MediaBoardColors.BLUE);
+				expect(modifiedBoard.backgroundColor).toBe(Colors.BLUE);
 			});
 		});
 
@@ -880,7 +879,7 @@ describe('Media Board (API)', () => {
 				const { mediaBoard } = await setup();
 
 				const response = await testApiClient.patch<ColorBodyParams>(`${mediaBoard.id}/media-available-line/color`, {
-					backgroundColor: MediaBoardColors.BLUE,
+					backgroundColor: Colors.BLUE,
 				});
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
@@ -921,7 +920,7 @@ describe('Media Board (API)', () => {
 				const { studentClient, mediaBoard } = await setup();
 
 				const response = await studentClient.patch<ColorBodyParams>(`${mediaBoard.id}/media-available-line/color`, {
-					backgroundColor: MediaBoardColors.BLUE,
+					backgroundColor: Colors.BLUE,
 				});
 
 				expect(response.status).toEqual(HttpStatus.FORBIDDEN);
@@ -962,7 +961,7 @@ describe('Media Board (API)', () => {
 				const { studentClient, mediaBoard } = await setup();
 
 				const response = await studentClient.patch<ColorBodyParams>(`${mediaBoard.id}/media-available-line/color`, {
-					backgroundColor: MediaBoardColors.BLUE,
+					backgroundColor: Colors.BLUE,
 				});
 
 				expect(response.status).toEqual(HttpStatus.FORBIDDEN);

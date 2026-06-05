@@ -8,7 +8,10 @@ import { TeamEntity, TeamRepo } from '../../repo';
 
 @Injectable()
 export class TeamAuthorisableService implements AuthorizationLoaderServiceGeneric<TeamEntity> {
-	constructor(private readonly teamRepo: TeamRepo, injectionService: AuthorizationInjectionService) {
+	constructor(
+		private readonly teamRepo: TeamRepo,
+		injectionService: AuthorizationInjectionService
+	) {
 		injectionService.injectReferenceLoader(AuthorizableReferenceType.Team, this);
 	}
 

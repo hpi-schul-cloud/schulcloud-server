@@ -7,7 +7,7 @@ import {
 	BoardExternalReference,
 	BoardExternalReferenceType,
 	BoardLayout,
-	MediaBoardColors,
+	Colors,
 	MediaBoardNodeFactory,
 } from '../../domain';
 import { BoardNodeRepo } from '../../repo';
@@ -152,8 +152,8 @@ describe('MediaBoardService', () => {
 		};
 		it('should update MediaBoard backgroundColor', async () => {
 			const { mediaBoard } = setup();
-			await service.updateBackgroundColor(mediaBoard, MediaBoardColors.TRANSPARENT);
-			expect(mediaBoard.backgroundColor).toBe(MediaBoardColors.TRANSPARENT);
+			await service.updateBackgroundColor(mediaBoard, Colors.TRANSPARENT);
+			expect(mediaBoard.backgroundColor).toBe(Colors.TRANSPARENT);
 			expect(boardNodeRepo.save).toHaveBeenCalledWith(mediaBoard);
 		});
 

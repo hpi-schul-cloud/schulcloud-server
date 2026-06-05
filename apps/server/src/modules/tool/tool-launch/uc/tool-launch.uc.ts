@@ -27,9 +27,8 @@ export class ToolLaunchUc {
 		userId: EntityId,
 		contextExternalToolId: EntityId
 	): Promise<ToolLaunchRequest> {
-		const contextExternalTool: ContextExternalTool = await this.contextExternalToolService.findByIdOrFail(
-			contextExternalToolId
-		);
+		const contextExternalTool: ContextExternalTool =
+			await this.contextExternalToolService.findByIdOrFail(contextExternalToolId);
 
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);
 		const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.CONTEXT_TOOL_USER]);

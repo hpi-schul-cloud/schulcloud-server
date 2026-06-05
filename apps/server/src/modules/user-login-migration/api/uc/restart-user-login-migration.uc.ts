@@ -19,9 +19,8 @@ export class RestartUserLoginMigrationUc {
 	}
 
 	public async restartMigration(userId: string, schoolId: string): Promise<UserLoginMigrationDO> {
-		const userLoginMigration: UserLoginMigrationDO | null = await this.userLoginMigrationService.findMigrationBySchool(
-			schoolId
-		);
+		const userLoginMigration: UserLoginMigrationDO | null =
+			await this.userLoginMigrationService.findMigrationBySchool(schoolId);
 
 		if (!userLoginMigration) {
 			throw new UserLoginMigrationNotFoundLoggableException(schoolId);
@@ -34,9 +33,8 @@ export class RestartUserLoginMigrationUc {
 			AuthorizationContextBuilder.write([Permission.USER_LOGIN_MIGRATION_ADMIN])
 		);
 
-		const updatedUserLoginMigration: UserLoginMigrationDO = await this.userLoginMigrationService.restartMigration(
-			userLoginMigration
-		);
+		const updatedUserLoginMigration: UserLoginMigrationDO =
+			await this.userLoginMigrationService.restartMigration(userLoginMigration);
 
 		await this.schoolMigrationService.restoreSourceSystemOfSchool(schoolId, updatedUserLoginMigration);
 

@@ -25,7 +25,7 @@ export class ToolReferenceController {
 	})
 	@ApiForbiddenResponse({ description: 'User is not allowed to access this resource.' })
 	@ApiUnauthorizedResponse({ description: 'User is not logged in.' })
-	async getToolReference(
+	public async getToolReference(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ContextExternalToolIdParams
 	): Promise<ToolReferenceResponse> {
@@ -48,7 +48,7 @@ export class ToolReferenceController {
 	})
 	@ApiForbiddenResponse({ description: 'User is not allowed to access this resource.' })
 	@ApiUnauthorizedResponse({ description: 'User is not logged in.' })
-	async getToolReferencesForContext(
+	public async getToolReferencesForContext(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ContextExternalToolContextParams
 	): Promise<ToolReferenceListResponse> {

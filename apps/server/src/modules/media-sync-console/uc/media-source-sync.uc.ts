@@ -6,7 +6,10 @@ import { MediaMetadataSyncReportLoggable, MediaActivationsSyncReportLoggable } f
 
 @Injectable()
 export class MediaSourceSyncUc {
-	constructor(private readonly logger: Logger, private readonly mediaSourceSyncService: MediaSourceSyncService) {}
+	constructor(
+		private readonly logger: Logger,
+		private readonly mediaSourceSyncService: MediaSourceSyncService
+	) {}
 
 	public async syncAllMediaMetadata(dataFormat: MediaSourceDataFormat): Promise<void> {
 		const syncReport: MediaSourceSyncReport = await this.mediaSourceSyncService.syncAllMediaMetadata(dataFormat);

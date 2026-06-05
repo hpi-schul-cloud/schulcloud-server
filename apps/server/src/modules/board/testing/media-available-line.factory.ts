@@ -1,6 +1,6 @@
 import { BaseFactory } from '@testing/factory/base.factory';
 import { DeepPartial } from 'fishery';
-import { MediaAvailableLine, MediaAvailableLineElement, MediaAvailableLineProps, MediaBoardColors } from '../domain';
+import { MediaAvailableLine, MediaAvailableLineElement, MediaAvailableLineProps, Colors } from '../domain';
 
 class MediaAvailableLineFactory extends BaseFactory<MediaAvailableLine, MediaAvailableLineProps> {
 	withElement(element: MediaAvailableLineElement): this {
@@ -13,7 +13,7 @@ class MediaAvailableLineFactory extends BaseFactory<MediaAvailableLine, MediaAva
 export const mediaAvailableLineFactory = MediaAvailableLineFactory.define(MediaAvailableLine, () => {
 	return {
 		elements: [],
-		backgroundColor: MediaBoardColors.TRANSPARENT,
+		backgroundColor: Colors.TRANSPARENT,
 		collapsed: false,
 	};
 });

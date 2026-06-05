@@ -24,6 +24,7 @@ import {
 	CardListResponse,
 	CardResponse,
 	CardUrlParams,
+	ColorBodyParams,
 	CreateContentElementBodyParams,
 	DeletedElementResponse,
 	DrawingElementResponse,
@@ -46,7 +47,10 @@ import { MoveCardResponseMapper } from './mapper/move-card-response.mapper';
 @JwtAuthentication()
 @Controller('cards')
 export class CardController {
-	constructor(private readonly columnUc: ColumnUc, private readonly cardUc: CardUc) {}
+	constructor(
+		private readonly columnUc: ColumnUc,
+		private readonly cardUc: CardUc
+	) {}
 
 	@ApiOperation({ summary: 'Get a list of cards by their ids.' })
 	@ApiResponse({ status: 200, type: CardListResponse })
@@ -117,6 +121,21 @@ export class CardController {
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<void> {
 		await this.cardUc.updateCardTitle(currentUser.userId, urlParams.cardId, bodyParams.title);
+	}
+
+	@ApiOperation({ summary: 'Update the color of a single card.' })
+	@ApiResponse({ status: 204 })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 404, type: NotFoundException })
+	@HttpCode(204)
+	@Patch(':cardId/color')
+	public async updateCardColor(
+		@Param() urlParams: CardUrlParams,
+		@Body() bodyParams: ColorBodyParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<void> {
+		await this.cardUc.updateCardColor(currentUser.userId, urlParams.cardId, bodyParams.backgroundColor);
 	}
 
 	@ApiOperation({ summary: 'Delete a single card.' })

@@ -1,60 +1,31 @@
 /* eslint-disable filename-rules/match */
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Account, AccountService } from '@modules/account';
-import { accountDoFactory } from '@modules/account/testing';
-import { OAuthService, OauthSessionToken, OauthSessionTokenService } from '@modules/oauth';
-import { OAuthTokenDto } from '@modules/oauth-adapter';
-import { RoleName } from '@modules/role';
-import { userDoFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { EntityId } from '@shared/domain/types';
-import { JwtTestFactory } from '@testing/factory/jwt.test.factory';
-import { AUTHENTICATION_CONFIG_TOKEN, AuthenticationConfig } from '../authentication-config';
-import { OauthCurrentUser } from '../interface';
-import {
-	AccountNotFoundLoggableException,
-	SchoolInMigrationLoggableException,
-	UserAccountDeactivatedLoggableException,
-} from '../loggable';
+import { Account } from '@modules/account';
+import { UserDo } from '@modules/user';
+import { RoleName } from '@modules/role';
+import { Oauth2AuthorizationBodyParams } from '../controllers/dto';
+import { Oauth2ContextHelper, Oauth2ContextResult } from '../helper/oauth2-context.helper';
 import { Oauth2Strategy } from './oauth2.strategy';
 
 describe(Oauth2Strategy.name, () => {
 	let module: TestingModule;
 	let strategy: Oauth2Strategy;
-
-	let accountService: DeepMocked<AccountService>;
-	let oauthService: DeepMocked<OAuthService>;
-	let oauthSessionTokenService: DeepMocked<OauthSessionTokenService>;
-	let config: AuthenticationConfig;
+	let oauth2ContextHelper: DeepMocked<Oauth2ContextHelper>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			providers: [
 				Oauth2Strategy,
 				{
-					provide: OAuthService,
-					useValue: createMock<OAuthService>(),
-				},
-				{
-					provide: AccountService,
-					useValue: createMock<AccountService>(),
-				},
-				{
-					provide: OauthSessionTokenService,
-					useValue: createMock<OauthSessionTokenService>(),
-				},
-				{
-					provide: AUTHENTICATION_CONFIG_TOKEN,
-					useValue: AuthenticationConfig,
+					provide: Oauth2ContextHelper,
+					useValue: createMock<Oauth2ContextHelper>(),
 				},
 			],
 		}).compile();
 
 		strategy = module.get(Oauth2Strategy);
-		accountService = module.get(AccountService);
-		oauthService = module.get(OAuthService);
-		oauthSessionTokenService = module.get(OauthSessionTokenService);
-		config = module.get(AUTHENTICATION_CONFIG_TOKEN);
+		oauth2ContextHelper = module.get(Oauth2ContextHelper);
 	});
 
 	afterAll(async () => {
@@ -62,191 +33,94 @@ describe(Oauth2Strategy.name, () => {
 	});
 
 	beforeEach(() => {
-		jest.resetAllMocks();
+		jest.clearAllMocks();
 	});
 
 	describe('validate', () => {
-		describe('when a valid code is provided', () => {
+		describe('when oauth2ContextHelper returns valid context', () => {
 			const setup = () => {
-				const systemId = 'systemId';
-				const user = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).buildWithId();
-				const account = accountDoFactory.build();
-				const expiryDate = new Date();
+				const systemId = 'oauth2-system-id';
+				const userId = 'user-id';
+				const accountId = 'account-id';
+				const idToken = 'id-token';
 
-				const idToken = JwtTestFactory.createJwt();
-				const refreshToken = JwtTestFactory.createJwt({ exp: expiryDate.getTime() / 1000 });
-				oauthService.authenticateUser.mockResolvedValue(
-					new OAuthTokenDto({
-						idToken,
-						accessToken: 'accessToken',
-						refreshToken,
-					})
-				);
-				oauthService.provisionUser.mockResolvedValue(user);
-				accountService.findByUserId.mockResolvedValue(account);
-				config.externalSystemLogoutEnabled = true;
+				const user: UserDo = {
+					id: userId,
+					email: '',
+					firstName: '',
+					lastName: '',
+					roles: [{ id: 'roleId', name: RoleName.USER }],
+					schoolId: 'schoolId',
+					secondarySchools: [],
+				};
 
-				return {
-					systemId,
+				const account = new Account({ id: accountId, username: 'username', systemId });
+
+				const contextResult: Oauth2ContextResult = {
 					user,
 					account,
-					idToken,
-					refreshToken,
-					expiryDate,
-				};
-			};
-
-			it('should cache the refresh token', async () => {
-				const { systemId, user, refreshToken, expiryDate } = setup();
-
-				await strategy.validate({
-					body: { code: 'code', redirectUri: 'redirectUri', systemId },
-				});
-
-				expect(oauthSessionTokenService.save).toHaveBeenCalledWith(
-					new OauthSessionToken({
-						id: expect.any(String),
-						systemId,
-						userId: user.id as string,
-						refreshToken,
-						expiresAt: expiryDate,
-					})
-				);
-			});
-
-			it('should return the ICurrentUser', async () => {
-				const { systemId, user, account, idToken } = setup();
-
-				const result = await strategy.validate({
-					body: { code: 'code', redirectUri: 'redirectUri', systemId },
-				});
-
-				expect(result).toEqual<OauthCurrentUser>({
-					systemId,
-					userId: user.id as EntityId,
-					roles: [user.roles[0].id],
-					schoolId: user.schoolId,
-					accountId: account.id,
-					externalIdToken: idToken,
-					isExternalUser: true,
-					support: false,
-				});
-			});
-		});
-
-		describe('when the user can not be provisioned', () => {
-			const setup = () => {
-				oauthService.authenticateUser.mockResolvedValue(
-					new OAuthTokenDto({
-						idToken: 'idToken',
-						accessToken: 'accessToken',
-						refreshToken: 'refreshToken',
-					})
-				);
-				oauthService.provisionUser.mockResolvedValue(null);
-			};
-
-			it('should throw a SchoolInMigrationError', async () => {
-				setup();
-
-				const func = async () =>
-					strategy.validate({ body: { code: 'code', redirectUri: 'redirectUri', systemId: 'systemId' } });
-
-				await expect(func).rejects.toThrow(new SchoolInMigrationLoggableException());
-			});
-		});
-
-		describe('when no account was found', () => {
-			const setup = () => {
-				const user = userDoFactory.buildWithId();
-
-				oauthService.authenticateUser.mockResolvedValue(
-					new OAuthTokenDto({
-						idToken: 'idToken',
-						accessToken: 'accessToken',
-						refreshToken: 'refreshToken',
-					})
-				);
-				oauthService.provisionUser.mockResolvedValue(user);
-				accountService.findByUserId.mockResolvedValue(null);
-			};
-
-			it('should throw an AccountNotFoundLoggableException', async () => {
-				setup();
-
-				const func = async () =>
-					strategy.validate({
-						body: { code: 'code', redirectUri: 'redirectUri', systemId: 'systemId' },
-					});
-
-				const loggableException = new AccountNotFoundLoggableException();
-				await expect(func).rejects.toThrow(loggableException);
-			});
-		});
-
-		describe('when account is deactivated', () => {
-			const setup = () => {
-				const user = userDoFactory.buildWithId();
-				oauthService.authenticateUser.mockResolvedValue(
-					new OAuthTokenDto({
-						idToken: 'idToken',
-						accessToken: 'accessToken',
-						refreshToken: 'refreshToken',
-					})
-				);
-				oauthService.provisionUser.mockResolvedValue(user);
-				const account = new Account({
-					id: 'accountId',
-					createdAt: new Date(),
-					updatedAt: new Date(),
-					username: 'username',
-					deactivatedAt: new Date(),
-				});
-				accountService.findByUserId.mockResolvedValue(account);
-			};
-
-			it('should throw an UserAccountDeactivated exception', async () => {
-				setup();
-				const func = async () =>
-					strategy.validate({
-						body: { code: 'code', redirectUri: 'redirectUri', systemId: 'systemId' },
-					});
-
-				await expect(func).rejects.toThrow(new UserAccountDeactivatedLoggableException());
-			});
-		});
-
-		describe('when the feature flag "FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED" is disabled', () => {
-			const setup = () => {
-				const systemId = 'systemId';
-				const user = userDoFactory.withRoles([{ id: 'roleId', name: RoleName.USER }]).buildWithId();
-				const account = accountDoFactory.build();
-				const expiryDate = new Date();
-
-				const idToken = JwtTestFactory.createJwt();
-				const refreshToken = JwtTestFactory.createJwt({ exp: expiryDate.getTime() / 1000 });
-				oauthService.authenticateUser.mockResolvedValue(
-					new OAuthTokenDto({
+					tokenDto: {
 						idToken,
-						accessToken: 'accessToken',
-						refreshToken,
-					})
-				);
-				oauthService.provisionUser.mockResolvedValue(user);
-				accountService.findByUserId.mockResolvedValue(account);
-				config.externalSystemLogoutEnabled = false;
+						accessToken: 'access-token',
+						refreshToken: 'refresh-token',
+					},
+					systemId,
+				};
 
-				return { systemId };
+				oauth2ContextHelper.buildOauth2Context.mockResolvedValue(contextResult);
+
+				const request = {
+					body: {
+						redirectUri: 'http://localhost/redirect',
+						code: 'auth-code',
+						systemId,
+					} as Oauth2AuthorizationBodyParams,
+				};
+
+				return { request, contextResult, userId, accountId, systemId, idToken };
 			};
 
-			it('should not cache the refresh token', async () => {
-				const { systemId } = setup();
+			it('should call oauth2ContextHelper.buildOauth2Context with request body', async () => {
+				const { request } = setup();
 
-				await strategy.validate({
-					body: { code: 'code', redirectUri: 'redirectUri', systemId },
-				});
+				await strategy.validate(request);
 
-				expect(oauthSessionTokenService.save).not.toHaveBeenCalled();
+				expect(oauth2ContextHelper.buildOauth2Context).toHaveBeenCalledWith(request.body);
+			});
+
+			it('should return currentUser with correct properties', async () => {
+				const { request, userId, accountId, systemId, idToken } = setup();
+
+				const result = await strategy.validate(request);
+
+				expect(result).toBeDefined();
+				expect(result.userId).toBe(userId);
+				expect(result.accountId).toBe(accountId);
+				expect(result.systemId).toBe(systemId);
+				expect(result.externalIdToken).toBe(idToken);
+			});
+		});
+
+		describe('when oauth2ContextHelper throws an error', () => {
+			const setup = () => {
+				const error = new Error('Test error');
+				oauth2ContextHelper.buildOauth2Context.mockRejectedValue(error);
+
+				const request = {
+					body: {
+						redirectUri: 'http://localhost/redirect',
+						code: 'auth-code',
+						systemId: 'system-id',
+					} as Oauth2AuthorizationBodyParams,
+				};
+
+				return { request, error };
+			};
+
+			it('should propagate the error', async () => {
+				const { request, error } = setup();
+
+				await expect(strategy.validate(request)).rejects.toThrow(error);
 			});
 		});
 	});

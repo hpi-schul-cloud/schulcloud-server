@@ -1,5 +1,4 @@
 import { SchoolService } from '@modules/school';
-import { SystemService } from '@modules/system';
 import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
@@ -10,8 +9,7 @@ import { MeResponseMapper } from './mapper';
 export class MeUc {
 	constructor(
 		private readonly schoolService: SchoolService,
-		private readonly userService: UserService,
-		private readonly systemService: SystemService
+		private readonly userService: UserService
 	) {}
 
 	public async getMe(

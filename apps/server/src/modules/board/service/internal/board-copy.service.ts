@@ -1,11 +1,6 @@
 import { CopyStatus } from '@modules/copy-helper';
 import { FilesStorageClientAdapterService } from '@modules/files-storage-client/service';
-import {
-	Injectable,
-	InternalServerErrorException,
-	NotImplementedException,
-	UnprocessableEntityException,
-} from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotImplementedException } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import {
 	BoardExternalReference,
@@ -14,6 +9,7 @@ import {
 	Column,
 	ColumnBoard,
 	isCard,
+	isColumn,
 	isColumnBoard,
 } from '../../domain';
 import { BoardNodeService } from '../board-node.service';
@@ -39,6 +35,16 @@ export type CopyCardParams = {
 	copyTitle?: string;
 	targetSchoolId: EntityId;
 	destinationColumnId?: EntityId;
+};
+
+export type CopyColumnParams = {
+	originalColumnId: EntityId;
+	sourceStorageLocationReference: StorageLocationReference;
+	targetStorageLocationReference: StorageLocationReference;
+	userId: EntityId;
+	copyTitle?: string;
+	targetSchoolId: EntityId;
+	destinationColumnBoardId?: EntityId;
 };
 
 @Injectable()
@@ -86,13 +92,54 @@ export class BoardCopyService {
 		return copyStatus;
 	}
 
+	public async copyColumn(params: CopyColumnParams): Promise<CopyStatus> {
+		const originalColumn = await this.boardNodeService.findByClassAndId(Column, params.originalColumnId);
+
+		const { targetSchoolId } = params;
+
+		if (!originalColumn.parentId) {
+			throw new InternalServerErrorException('Column has no parent board');
+		}
+		const parentBoard = params.destinationColumnBoardId
+			? await this.boardNodeService.findByClassAndId(ColumnBoard, params.destinationColumnBoardId)
+			: await this.boardNodeService.findByClassAndId(ColumnBoard, originalColumn.parentId);
+
+		const copyContext = new BoardNodeCopyContext({
+			sourceStorageLocationReference: params.sourceStorageLocationReference,
+			targetStorageLocationReference: params.targetStorageLocationReference,
+			userId: params.userId,
+			filesStorageClientAdapterService: this.filesStorageClientAdapterService,
+			targetSchoolId,
+		});
+
+		const copyStatus = await this.boardNodeCopyService.copy(originalColumn, copyContext);
+
+		if (!isColumn(copyStatus.copyEntity)) {
+			throw new InternalServerErrorException('Copied entity is not a column');
+		}
+
+		if (params.copyTitle) {
+			copyStatus.copyEntity.title = params.copyTitle;
+		}
+
+		copyStatus.originalEntity = originalColumn;
+
+		await this.boardNodeService.addToParent(
+			parentBoard,
+			copyStatus.copyEntity,
+			params.destinationColumnBoardId ? undefined : originalColumn.position + 1
+		);
+
+		return copyStatus;
+	}
+
 	public async copyCard(params: CopyCardParams): Promise<CopyStatus> {
 		const originalCard = await this.boardNodeService.findByClassAndId(Card, params.originalCardId);
 
 		const { targetSchoolId } = params;
 
 		if (!originalCard.parentId) {
-			throw new UnprocessableEntityException('Card has no parent column');
+			throw new InternalServerErrorException('Card has no parent column');
 		}
 		const parentColumn = params.destinationColumnId
 			? await this.boardNodeService.findByClassAndId(Column, params.destinationColumnId)

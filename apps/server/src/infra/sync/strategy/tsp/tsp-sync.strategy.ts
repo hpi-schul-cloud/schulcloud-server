@@ -5,6 +5,7 @@ import { BadDataLoggableException } from '@modules/provisioning/loggable';
 import { TspProvisioningService } from '@modules/provisioning/service/tsp-provisioning.service';
 import { School } from '@modules/school';
 import { System, SystemService, SystemType } from '@modules/system';
+import { RuntimeConfigService } from '@infra/runtime-config';
 import { Inject, Injectable } from '@nestjs/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
@@ -16,6 +17,7 @@ import {
 	TspClassSyncBatchLoggable,
 	TspClassSyncStartLoggable,
 	TspClassSyncSummaryLoggable,
+	TspSyncDisabledLoggable,
 	TspSystemNotFoundLoggableException,
 } from './loggable';
 import { TspDataFetchedLoggable } from './loggable/tsp-data-fetched.loggable';
@@ -54,7 +56,8 @@ export class TspSyncStrategy extends SyncStrategy {
 		private readonly tspOauthDataMapper: TspOauthDataMapper,
 		@Inject(SYNC_CONFIG_TOKEN) private readonly config: SyncConfig,
 		private readonly systemService: SystemService,
-		private readonly provisioningService: TspProvisioningService
+		private readonly provisioningService: TspProvisioningService,
+		private readonly runtimeConfigService: RuntimeConfigService
 	) {
 		super();
 		this.logger.setContext(TspSyncStrategy.name);
@@ -65,6 +68,11 @@ export class TspSyncStrategy extends SyncStrategy {
 	}
 
 	public async sync(): Promise<void> {
+		if (await this.runtimeConfigService.getBoolean('IS_SCHOOL_YEAR_CHANGE_ACTIVE')) {
+			this.logger.info(new TspSyncDisabledLoggable('IS_SCHOOL_YEAR_CHANGE_ACTIVE is true'));
+			return;
+		}
+
 		// Please keep the order of this steps/methods as each relies on the data processed in the ones before.
 		const system = await this.findTspSystemOrFail();
 

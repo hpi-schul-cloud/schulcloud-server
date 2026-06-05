@@ -43,7 +43,7 @@ export class VideoConferenceDeprecatedController {
 		description: 'User does not have the permission to create this conference.',
 	})
 	@ApiResponse({ status: 500, type: InternalServerErrorException, description: 'Unable to fetch required data.' })
-	async createAndJoin(
+	public async createAndJoin(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param('scope') scope: VideoConferenceScope,
 		@Param('scopeId') scopeId: string,
@@ -83,7 +83,7 @@ export class VideoConferenceDeprecatedController {
 		description: 'User does not have the permission to get information about this conference.',
 	})
 	@ApiResponse({ status: 500, type: InternalServerErrorException, description: 'Unable to fetch required data.' })
-	async info(
+	public async info(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param('scope') scope: VideoConferenceScope,
 		@Param('scopeId') scopeId: string
@@ -103,7 +103,7 @@ export class VideoConferenceDeprecatedController {
 		description: 'User does not have the permission to get information about this conference.',
 	})
 	@ApiResponse({ status: 500, type: InternalServerErrorException, description: 'Unable to fetch required data.' })
-	async end(
+	public async end(
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param('scope') scope: VideoConferenceScope,
 		@Param('scopeId') scopeId: string

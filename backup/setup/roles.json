@@ -428,7 +428,8 @@
 			}
 		],
 		"permissions": [
-			"DELETE_TEAM"
+			"DELETE_TEAM",
+			"TEAM_EXPORT_TO_ROOM"
 		],
 		"__v": 0
 	},

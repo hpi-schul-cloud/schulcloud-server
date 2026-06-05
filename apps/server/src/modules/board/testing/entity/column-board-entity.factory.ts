@@ -17,11 +17,11 @@ export const columnBoardEntityFactory = ColumnBoardEntityFactory.define(({ seque
 			? new Context({
 					type: params.context.type,
 					id: params.context.id,
-			  })
+				})
 			: new Context({
 					type: BoardExternalReferenceType.Course,
 					id: new ObjectId().toHexString(),
-			  });
+				});
 
 	const props: PropsWithType<ColumnBoardProps> = {
 		id: new ObjectId().toHexString(),
@@ -34,7 +34,7 @@ export const columnBoardEntityFactory = ColumnBoardEntityFactory.define(({ seque
 		updatedAt: new Date(),
 		context,
 		isVisible: true,
-		readersCanEdit: false,
+		readersCanEdit: params.readersCanEdit ?? false,
 		layout: BoardLayout.COLUMNS,
 		type: BoardNodeType.COLUMN_BOARD,
 	};

@@ -1,7 +1,11 @@
 import { faker } from '@faker-js/faker';
-import { IdTokenExtractionFailureLoggableException } from '@modules/oauth/loggable';
+import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Class, ClassFactory } from '@modules/class';
+import { IdTokenExtractionFailureLoggableException } from '@modules/oauth';
 import { RoleName } from '@modules/role';
-import { NotImplementedException } from '@nestjs/common';
+import { schoolFactory } from '@modules/school/testing';
+import { UserDo } from '@modules/user';
+import { userDoFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import * as classValidator from 'class-validator';
@@ -12,22 +16,38 @@ import {
 	ExternalUserDto,
 	OauthDataDto,
 	OauthDataStrategyInputDto,
+	ProvisioningDto,
 	ProvisioningSystemDto,
 } from '../../dto';
-import { ErwinProvisioningStrategy } from './erwin.strategy';
+import { BadDataLoggableException } from '../../loggable';
+import { ErwinProvisioningService, ProvisioningEntityType } from '../../service/erwin-provisioning.service';
+import {
+	externalClassDtoFactory,
+	externalSchoolDtoFactory,
+	externalUserDtoFactory,
+	provisioningSystemDtoFactory,
+} from '../../testing';
 import { ErwinRole, MappedSvsRolle } from './enums/rolle.enum';
-import { ErwinKlassePayload } from './erwin.klasse.payload';
+import { ErwinProvisioningStrategy } from './erwin.strategy';
 
 describe('ErwinProvisioningStrategy', () => {
 	let module: TestingModule;
 	let sut: ErwinProvisioningStrategy;
+	let erwinProvisioningServiceMock: DeepMocked<ErwinProvisioningService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			providers: [ErwinProvisioningStrategy],
+			providers: [
+				ErwinProvisioningStrategy,
+				{
+					provide: ErwinProvisioningService,
+					useValue: createMock<ErwinProvisioningService>(),
+				},
+			],
 		}).compile();
 
 		sut = module.get(ErwinProvisioningStrategy);
+		erwinProvisioningServiceMock = module.get(ErwinProvisioningService);
 	});
 
 	afterEach(() => {
@@ -455,8 +475,8 @@ describe('ErwinProvisioningStrategy', () => {
 
 		describe('when token contains klassen with ErwinKlassePayload data', () => {
 			const setup = () => {
-				const klassePayload1 = new ErwinKlassePayload('class-ext-id-1', 'Klasse 5a');
-				const klassePayload2 = new ErwinKlassePayload('class-ext-id-2', 'Klasse 5b');
+				const klassePayload1 = { externalId: 'class-ext-id-1', name: 'Klasse 5a', erwinId: 'erwinId5a' };
+				const klassePayload2 = { externalId: 'class-ext-id-2', name: 'Klasse 5b', erwinId: 'erwinId5b' };
 
 				const input = new OauthDataStrategyInputDto({
 					system: new ProvisioningSystemDto({
@@ -499,8 +519,16 @@ describe('ErwinProvisioningStrategy', () => {
 
 				expect(result.externalClasses).toHaveLength(2);
 				expect(result.externalClasses).toEqual([
-					new ExternalClassDto({ externalId: klassePayload1.externalId, name: klassePayload1.name }),
-					new ExternalClassDto({ externalId: klassePayload2.externalId, name: klassePayload2.name }),
+					new ExternalClassDto({
+						externalId: klassePayload1.externalId,
+						name: klassePayload1.name,
+						erwinId: klassePayload1.erwinId,
+					}),
+					new ExternalClassDto({
+						externalId: klassePayload2.externalId,
+						name: klassePayload2.name,
+						erwinId: klassePayload2.erwinId,
+					}),
 				]);
 
 				validateSpy.mockRestore();
@@ -509,9 +537,205 @@ describe('ErwinProvisioningStrategy', () => {
 	});
 
 	describe('apply', () => {
-		describe('when called', () => {
-			it('should throw NotImplementedException', () => {
-				expect(() => sut.apply()).toThrow(NotImplementedException);
+		describe('when externalSchool is provided', () => {
+			const setup = () => {
+				const system: ProvisioningSystemDto = provisioningSystemDtoFactory.build();
+				const externalUser: ExternalUserDto = externalUserDtoFactory.build();
+				const externalSchool: ExternalSchoolDto = externalSchoolDtoFactory.build();
+				const school = schoolFactory.build();
+				const user = userDoFactory.buildWithId();
+
+				const oauthData: OauthDataDto = new OauthDataDto({
+					system,
+					externalUser,
+					externalSchool,
+				});
+
+				erwinProvisioningServiceMock.provisionEntity.mockResolvedValueOnce(school);
+				erwinProvisioningServiceMock.provisionEntity.mockResolvedValueOnce(user);
+
+				return { oauthData, externalUser, externalSchool, system };
+			};
+
+			it('should return ProvisioningDto', async () => {
+				const { oauthData, externalUser } = setup();
+
+				const result = await sut.apply(oauthData);
+
+				expect(result).toEqual<ProvisioningDto>({
+					externalUserId: externalUser.externalId,
+				});
+			});
+
+			it('should call provisionEntity with SCHOOL type when externalSchool is provided', async () => {
+				const { oauthData, externalSchool, system } = setup();
+
+				await sut.apply(oauthData);
+
+				expect(erwinProvisioningServiceMock.provisionEntity).toHaveBeenCalledWith(ProvisioningEntityType.SCHOOL, {
+					system,
+					externalSchool,
+				});
+			});
+
+			it('should call provisionEntity with USER type', async () => {
+				const { oauthData, externalSchool, externalUser, system } = setup();
+
+				await sut.apply(oauthData);
+
+				expect(erwinProvisioningServiceMock.provisionEntity).toHaveBeenCalledWith(ProvisioningEntityType.USER, {
+					system,
+					externalSchool,
+					externalUser,
+				});
+			});
+		});
+
+		describe('when externalClasses are provided', () => {
+			const setup = () => {
+				const system: ProvisioningSystemDto = provisioningSystemDtoFactory.build();
+				const externalUser: ExternalUserDto = externalUserDtoFactory.build();
+				const externalSchool: ExternalSchoolDto = externalSchoolDtoFactory.build();
+				const externalClass1: ExternalClassDto = externalClassDtoFactory.build();
+				const externalClass2: ExternalClassDto = externalClassDtoFactory.build();
+				const school = schoolFactory.build();
+				const user: UserDo = userDoFactory.buildWithId();
+				const class1: Class = ClassFactory.create();
+				const class2: Class = ClassFactory.create();
+
+				const oauthData: OauthDataDto = new OauthDataDto({
+					system,
+					externalUser,
+					externalSchool,
+					externalClasses: [externalClass1, externalClass2],
+				});
+
+				erwinProvisioningServiceMock.provisionEntity.mockResolvedValueOnce(school);
+				erwinProvisioningServiceMock.provisionEntity.mockResolvedValueOnce(user);
+				erwinProvisioningServiceMock.provisionEntity.mockResolvedValueOnce(class1);
+				erwinProvisioningServiceMock.provisionEntity.mockResolvedValueOnce(class2);
+
+				return { oauthData, externalUser, externalSchool, externalClass1, externalClass2, system };
+			};
+
+			it('should call provisionEntity with CLASS type for each class', async () => {
+				const { oauthData, externalSchool, externalClass1, externalClass2, system } = setup();
+
+				await sut.apply(oauthData);
+
+				expect(erwinProvisioningServiceMock.provisionEntity).toHaveBeenCalledWith(ProvisioningEntityType.CLASS, {
+					system,
+					externalSchool,
+					externalClass: externalClass1,
+				});
+				expect(erwinProvisioningServiceMock.provisionEntity).toHaveBeenCalledWith(ProvisioningEntityType.CLASS, {
+					system,
+					externalSchool,
+					externalClass: externalClass2,
+				});
+			});
+
+			it('should call provisionEntity 4 times (school, user, 2 classes)', async () => {
+				const { oauthData } = setup();
+
+				await sut.apply(oauthData);
+
+				expect(erwinProvisioningServiceMock.provisionEntity).toHaveBeenCalledTimes(4);
+			});
+		});
+
+		describe('when externalClasses is empty', () => {
+			const setup = () => {
+				const system: ProvisioningSystemDto = provisioningSystemDtoFactory.build();
+				const externalUser: ExternalUserDto = externalUserDtoFactory.build();
+				const externalSchool: ExternalSchoolDto = externalSchoolDtoFactory.build();
+				const school = schoolFactory.build();
+				const user = userDoFactory.buildWithId();
+
+				const oauthData: OauthDataDto = new OauthDataDto({
+					system,
+					externalUser,
+					externalSchool,
+					externalClasses: [],
+				});
+
+				erwinProvisioningServiceMock.provisionEntity.mockResolvedValueOnce(school);
+				erwinProvisioningServiceMock.provisionEntity.mockResolvedValueOnce(user);
+
+				return { oauthData };
+			};
+
+			it('should not call provisionEntity with CLASS type', async () => {
+				const { oauthData } = setup();
+
+				await sut.apply(oauthData);
+
+				expect(erwinProvisioningServiceMock.provisionEntity).not.toHaveBeenCalledWith(
+					ProvisioningEntityType.CLASS,
+					expect.anything()
+				);
+			});
+
+			it('should call provisionEntity only 2 times (school, user)', async () => {
+				const { oauthData } = setup();
+
+				await sut.apply(oauthData);
+
+				expect(erwinProvisioningServiceMock.provisionEntity).toHaveBeenCalledTimes(2);
+			});
+		});
+
+		describe('when externalClasses is undefined', () => {
+			const setup = () => {
+				const system: ProvisioningSystemDto = provisioningSystemDtoFactory.build();
+				const externalUser: ExternalUserDto = externalUserDtoFactory.build();
+				const externalSchool: ExternalSchoolDto = externalSchoolDtoFactory.build();
+				const school = schoolFactory.build();
+				const user = userDoFactory.buildWithId();
+
+				const oauthData: OauthDataDto = new OauthDataDto({
+					system,
+					externalUser,
+					externalSchool,
+					externalClasses: undefined,
+				});
+
+				erwinProvisioningServiceMock.provisionEntity.mockResolvedValueOnce(school);
+				erwinProvisioningServiceMock.provisionEntity.mockResolvedValueOnce(user);
+
+				return { oauthData };
+			};
+
+			it('should not call provisionEntity with CLASS type', async () => {
+				const { oauthData } = setup();
+
+				await sut.apply(oauthData);
+
+				expect(erwinProvisioningServiceMock.provisionEntity).not.toHaveBeenCalledWith(
+					ProvisioningEntityType.CLASS,
+					expect.anything()
+				);
+			});
+		});
+
+		describe('when externalSchool is missing', () => {
+			const setup = () => {
+				const system: ProvisioningSystemDto = provisioningSystemDtoFactory.build();
+				const externalUser: ExternalUserDto = externalUserDtoFactory.build();
+
+				const oauthData: OauthDataDto = new OauthDataDto({
+					system,
+					externalUser,
+					externalSchool: undefined,
+				});
+
+				return { oauthData };
+			};
+
+			it('should throw BadDataLoggableException', async () => {
+				const { oauthData } = setup();
+
+				await expect(sut.apply(oauthData)).rejects.toThrow(BadDataLoggableException);
 			});
 		});
 	});

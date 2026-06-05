@@ -1,4 +1,4 @@
-import { AnyMediaBoardNode, isAnyMediaElement, MediaBoardColors } from './types';
+import { AnyMediaBoardNode, isAnyMediaElement, Colors } from './types';
 import type { MediaLineProps } from '../types';
 import { BoardNode } from '../board-node.do';
 
@@ -11,11 +11,11 @@ export class MediaLine extends BoardNode<MediaLineProps> {
 		this.props.title = title;
 	}
 
-	set backgroundColor(backgroundColor: MediaBoardColors) {
+	set backgroundColor(backgroundColor: Colors) {
 		this.props.backgroundColor = backgroundColor;
 	}
 
-	get backgroundColor(): MediaBoardColors {
+	get backgroundColor(): Colors {
 		return this.props.backgroundColor;
 	}
 

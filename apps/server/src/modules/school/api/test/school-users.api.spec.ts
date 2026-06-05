@@ -574,8 +574,17 @@ describe('School Controller (API)', () => {
 		});
 
 		describe('when user has permission to view students and is in the correct school', () => {
-			const setup = async () => {
-				authorizationConfig.teacherStudentVisibilityIsEnabledByDefault = true;
+			const setup = async (options?: {
+				teacherStudentVisibilityIsConfigurable?: boolean;
+				studentVisibilityIsEnabledByDefault?: boolean;
+			}) => {
+				if (options?.teacherStudentVisibilityIsConfigurable) {
+					authorizationConfig.teacherStudentVisibilityIsConfigurable = options.teacherStudentVisibilityIsConfigurable;
+				}
+				if (options?.studentVisibilityIsEnabledByDefault) {
+					authorizationConfig.teacherStudentVisibilityIsEnabledByDefault = options.studentVisibilityIsEnabledByDefault;
+				}
+
 				const school = schoolEntityFactory.build();
 				const otherSchool = schoolEntityFactory.build();
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
@@ -591,16 +600,77 @@ describe('School Controller (API)', () => {
 				return { loggedInClient, studentsOfSchool, school };
 			};
 
-			it('should return 200 with students from own school', async () => {
-				const { loggedInClient, studentsOfSchool, school } = await setup();
+			describe('when teacherStudentVisibilityIsConfigurable is false', () => {
+				describe('when teacherStudentVisibilityIsEnabledByDefault is false', () => {
+					it('should return 200 with all students from own school', async () => {
+						const { loggedInClient, studentsOfSchool, school } = await setup({
+							teacherStudentVisibilityIsConfigurable: false,
+							studentVisibilityIsEnabledByDefault: false,
+						});
 
-				const response = await loggedInClient.get(`${school.id}/students`);
+						const response = await loggedInClient.get(`${school.id}/students`);
 
-				const body = response.body as SchoolUserListResponse;
+						const body = response.body as SchoolUserListResponse;
 
-				expect(response.status).toEqual(HttpStatus.OK);
-				expect(body.data).toEqual([...mapUsersWithSchoolName(studentsOfSchool, school.name)]);
-				expect(body.data.length).toEqual(studentsOfSchool.length);
+						expect(response.status).toEqual(HttpStatus.OK);
+						expect(body.data).toEqual([...mapUsersWithSchoolName(studentsOfSchool, school.name)]);
+						expect(body.data.length).toEqual(studentsOfSchool.length);
+					});
+				});
+
+				describe('when teacherStudentVisibilityIsEnabledByDefault is true', () => {
+					it('should return 200 with all students from own school', async () => {
+						const { loggedInClient, studentsOfSchool, school } = await setup({
+							teacherStudentVisibilityIsConfigurable: false,
+							studentVisibilityIsEnabledByDefault: true,
+						});
+
+						const response = await loggedInClient.get(`${school.id}/students`);
+
+						const body = response.body as SchoolUserListResponse;
+
+						expect(response.status).toEqual(HttpStatus.OK);
+						expect(body.data).toEqual([...mapUsersWithSchoolName(studentsOfSchool, school.name)]);
+						expect(body.data.length).toEqual(studentsOfSchool.length);
+					});
+				});
+			});
+
+			describe('when teacherStudentVisibilityIsConfigurable is true', () => {
+				describe('when teacherStudentVisibilityIsEnabledByDefault is false', () => {
+					it('should return 200 without all students from own school', async () => {
+						const { loggedInClient, school } = await setup({
+							teacherStudentVisibilityIsConfigurable: true,
+							studentVisibilityIsEnabledByDefault: false,
+						});
+
+						const response = await loggedInClient.get(`${school.id}/students`);
+
+						const body = response.body as SchoolUserListResponse;
+
+						expect(response.status).toEqual(HttpStatus.OK);
+						expect(body.data).toEqual([]);
+						expect(body.data.length).toEqual(0);
+					});
+				});
+
+				describe('when teacherStudentVisibilityIsEnabledByDefault is true', () => {
+					it('should return 200 without all students from own school', async () => {
+						// warum kommen hier keine students?
+						const { loggedInClient, school } = await setup({
+							teacherStudentVisibilityIsConfigurable: true,
+							studentVisibilityIsEnabledByDefault: true,
+						});
+
+						const response = await loggedInClient.get(`${school.id}/students`);
+
+						const body = response.body as SchoolUserListResponse;
+
+						expect(response.status).toEqual(HttpStatus.OK);
+						expect(body.data).toEqual([]);
+						expect(body.data.length).toEqual(0);
+					});
+				});
 			});
 		});
 	});

@@ -19,7 +19,7 @@ export class MediaSyncConsole {
 		description: 'Start the media metadata synchronization for the specified media source.',
 		options: [
 			{
-				flags: '-df, --dataFormat <value>',
+				flags: '-f, --dataFormat <value>',
 				description: 'Media source data format of the media to be synced',
 				required: true,
 			},
@@ -46,7 +46,7 @@ export class MediaSyncConsole {
 		description: 'Start the media activations synchronization for the specified media source.',
 		options: [
 			{
-				flags: '-df, --dataFormat <value>',
+				flags: '-f, --dataFormat <value>',
 				description: 'Media source data format of the media to be synced',
 				required: true,
 			},

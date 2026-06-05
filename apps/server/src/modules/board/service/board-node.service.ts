@@ -19,6 +19,7 @@ import { BoardNodeDeleteHooksService } from './internal/board-node-delete-hooks.
 import { ContentElementUpdateService } from './internal/content-element-update.service';
 
 type WithTitle<T> = Extract<T, { title: unknown }>;
+type WithBackgroundColor<T> = Extract<T, { backgroundColor: unknown }>;
 type WithVisibility<T> = Extract<T, { isVisible: unknown }>;
 type WithLayout<T> = Extract<T, { layout: unknown }>;
 type WithHeight<T> = Extract<T, { height: unknown }>;
@@ -47,6 +48,15 @@ export class BoardNodeService {
 
 	public async updateTitle<T extends WithTitle<AnyBoardNode>>(node: T, title: T['title']): Promise<void> {
 		node.title = title;
+		await this.boardNodeRepo.save(node);
+	}
+
+	public async updateBackgroundColor<T extends WithBackgroundColor<AnyBoardNode>>(
+		node: T,
+		backgroundColor: T['backgroundColor']
+	): Promise<void> {
+		node.backgroundColor = backgroundColor;
+
 		await this.boardNodeRepo.save(node);
 	}
 

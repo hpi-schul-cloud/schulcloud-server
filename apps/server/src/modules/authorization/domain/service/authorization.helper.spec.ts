@@ -277,4 +277,30 @@ describe('AuthorizationHelper', () => {
 			});
 		});
 	});
+
+	describe('getConfig', () => {
+		it('should return the config value for the given key', async () => {
+			const testConfig = {
+				teacherStudentVisibilityIsConfigurable: true,
+				teacherStudentVisibilityIsEnabledByDefault: false,
+				teacherVisibilityForExternalTeamInvitation: 'enabled',
+			};
+
+			const module: TestingModule = await Test.createTestingModule({
+				providers: [
+					AuthorizationHelper,
+					{
+						provide: AUTHORIZATION_CONFIG_TOKEN,
+						useValue: testConfig,
+					},
+				],
+			}).compile();
+
+			const helperWithConfig = module.get<AuthorizationHelper>(AuthorizationHelper);
+
+			expect(helperWithConfig.getConfig('teacherStudentVisibilityIsConfigurable')).toBe(true);
+			expect(helperWithConfig.getConfig('teacherStudentVisibilityIsEnabledByDefault')).toBe(false);
+			expect(helperWithConfig.getConfig('teacherVisibilityForExternalTeamInvitation')).toBe('enabled');
+		});
+	});
 });

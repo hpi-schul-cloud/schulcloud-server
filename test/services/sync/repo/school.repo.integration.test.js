@@ -1,6 +1,6 @@
 const chai = require('chai');
 const { ObjectId } = require('mongoose').Types;
-const chaiAsPromised = require('chai-as-promised');
+const { default: chaiAsPromised } = require('chai-as-promised');
 const SchoolRepo = require('../../../../src/services/sync/repo/school.repo');
 const { schoolModel } = require('../../../../src/services/school/model');
 

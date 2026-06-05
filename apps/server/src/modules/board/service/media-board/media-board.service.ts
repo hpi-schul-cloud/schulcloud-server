@@ -13,7 +13,7 @@ import {
 	BoardLayout,
 	isMediaBoard,
 	MediaBoard,
-	MediaBoardColors,
+	Colors,
 	MediaBoardNodeFactory,
 	MediaExternalToolElement,
 } from '../../domain';
@@ -69,7 +69,7 @@ export class MediaBoardService {
 			board = this.mediaBoardNodeFactory.buildMediaBoard({
 				context,
 				layout: BoardLayout.LIST,
-				backgroundColor: MediaBoardColors.TRANSPARENT,
+				backgroundColor: Colors.TRANSPARENT,
 				collapsed: false,
 			});
 			await this.boardNodeRepo.save(board);

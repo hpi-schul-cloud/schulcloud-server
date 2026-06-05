@@ -2,6 +2,7 @@ import { AxiosErrorLoggable } from '@core/error/loggable';
 import { ErrorLogger, Logger } from '@core/logger';
 import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { fileRecordResponseFactory } from '@infra/files-storage-client/testing';
 import { HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
@@ -9,12 +10,11 @@ import { AxiosError } from 'axios';
 import { Readable } from 'node:stream';
 import { from, throwError } from 'rxjs';
 import util from 'util';
-import { FilesStorageClientAdapter } from './files-storage-client.adapter';
 import { FILE_STORAGE_CLIENT_CONFIG_TOKEN, FileStorageClientConfig } from '../common-cartridge-clients.configs';
 import { FileApi, FileRecordParentType, StorageLocation } from '../fs-generated';
-import { fileRecordResponseFactory } from '@infra/files-storage-client/testing';
 import { GenericFileStorageLoggable } from '../loggables';
 import { AdapterUtils } from './adapter.utils';
+import { FilesStorageClientAdapter } from './files-storage-client.adapter';
 
 describe(FilesStorageClientAdapter.name, () => {
 	let module: TestingModule;
@@ -381,6 +381,143 @@ describe(FilesStorageClientAdapter.name, () => {
 				expect(result).toBeNull();
 				expect(errorLoggerMock.error).toBeCalledWith(
 					new GenericFileStorageLoggable(`An unknown error occurred in FilesStorageClientAdapter.upload`, {
+						error: util.inspect(error),
+					})
+				);
+			});
+		});
+	});
+
+	describe('uploadTempFile', () => {
+		describe('when upload succeeds', () => {
+			const setup = () => {
+				const storageLocationId = faker.string.uuid();
+				const storageLocation = StorageLocation.SCHOOL;
+				const parentId = faker.string.uuid();
+				const parentType = FileRecordParentType.BOARDNODES;
+				const readable = Readable.from('');
+				const fileName = faker.system.fileName();
+				const jwt = faker.internet.jwt();
+				const returnedId = faker.string.uuid();
+
+				httpServiceMock.post.mockReturnValue(from([axiosResponseFactory.build({ data: { id: returnedId } })]));
+
+				return {
+					storageLocationId,
+					storageLocation,
+					parentId,
+					parentType,
+					readable,
+					fileName,
+					jwt,
+					returnedId,
+				};
+			};
+
+			it('should return the response data', async () => {
+				const { storageLocationId, storageLocation, parentId, parentType, readable, fileName, jwt, returnedId } =
+					setup();
+
+				const result = await filesStorageClientAdapter.uploadTempFile(
+					jwt,
+					storageLocationId,
+					storageLocation,
+					parentId,
+					parentType,
+					readable,
+					fileName
+				);
+
+				expect(result).toEqual({ id: returnedId });
+			});
+		});
+
+		describe('when upload fails with AxiosError', () => {
+			const setup = () => {
+				const storageLocationId = faker.string.uuid();
+				const storageLocation = StorageLocation.SCHOOL;
+				const parentId = faker.string.uuid();
+				const parentType = FileRecordParentType.BOARDNODES;
+				const readable = Readable.from('');
+				const fileName = faker.system.fileName();
+				const jwt = faker.internet.jwt();
+				const observable = throwError(() => new AxiosError());
+
+				httpServiceMock.post.mockReturnValue(observable);
+
+				return {
+					storageLocationId,
+					storageLocation,
+					parentId,
+					parentType,
+					readable,
+					fileName,
+					jwt,
+				};
+			};
+
+			it('should return null and log AxiosErrorLoggable', async () => {
+				const { storageLocationId, storageLocation, parentId, parentType, readable, fileName, jwt } = setup();
+
+				const result = await filesStorageClientAdapter.uploadTempFile(
+					jwt,
+					storageLocationId,
+					storageLocation,
+					parentId,
+					parentType,
+					readable,
+					fileName
+				);
+
+				expect(result).toBeNull();
+				expect(errorLoggerMock.error).toBeCalledWith(
+					new AxiosErrorLoggable(expect.any(AxiosError), 'FilesStorageClientAdapter.uploadTempFile')
+				);
+			});
+		});
+
+		describe('when upload fails with unknown Error', () => {
+			const setup = () => {
+				const storageLocationId = faker.string.uuid();
+				const storageLocation = StorageLocation.SCHOOL;
+				const parentId = faker.string.uuid();
+				const parentType = FileRecordParentType.BOARDNODES;
+				const readable = Readable.from('');
+				const fileName = faker.system.fileName();
+				const jwt = faker.internet.jwt();
+				const error = new Error('error');
+				const observable = throwError(() => error);
+
+				httpServiceMock.post.mockReturnValue(observable);
+
+				return {
+					storageLocationId,
+					storageLocation,
+					parentId,
+					parentType,
+					readable,
+					fileName,
+					error,
+					jwt,
+				};
+			};
+
+			it('should return null and log GenericFileStorageLoggable', async () => {
+				const { storageLocationId, storageLocation, parentId, parentType, readable, fileName, error, jwt } = setup();
+
+				const result = await filesStorageClientAdapter.uploadTempFile(
+					jwt,
+					storageLocationId,
+					storageLocation,
+					parentId,
+					parentType,
+					readable,
+					fileName
+				);
+
+				expect(result).toBeNull();
+				expect(errorLoggerMock.error).toBeCalledWith(
+					new GenericFileStorageLoggable(`An unknown error occurred in FilesStorageClientAdapter.uploadTempFile`, {
 						error: util.inspect(error),
 					})
 				);

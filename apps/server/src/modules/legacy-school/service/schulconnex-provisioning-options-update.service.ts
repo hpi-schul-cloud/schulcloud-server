@@ -6,9 +6,7 @@ import { SchulConneXProvisioningOptions } from '../domain';
 import { ProvisioningOptionsUpdateHandler } from './provisioning-options-update-handler';
 
 @Injectable()
-export class SchulconnexProvisioningOptionsUpdateService
-	implements ProvisioningOptionsUpdateHandler<SchulConneXProvisioningOptions>
-{
+export class SchulconnexProvisioningOptionsUpdateService implements ProvisioningOptionsUpdateHandler<SchulConneXProvisioningOptions> {
 	constructor(@Inject(forwardRef(() => GroupService)) private readonly groupService: GroupService) {}
 
 	public async handleUpdate(

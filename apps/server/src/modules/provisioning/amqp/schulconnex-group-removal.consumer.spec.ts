@@ -1,16 +1,22 @@
 import { Logger } from '@core/logger';
+import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { groupFactory } from '@modules/group/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
+import { SchulconnexGroupRemovalMessage } from '../domain';
 import { GroupRemovalSuccessfulLoggable } from '../loggable';
 import { PROVISIONING_EXCHANGE_CONFIG_TOKEN } from '../provisioning-exchange.config';
 import { PROVISIONING_CONFIG_TOKEN, ProvisioningConfig } from '../provisioning.config';
 import { ENTITIES } from '../schulconnex-group-removal.entity.imports';
 import { SchulconnexCourseSyncService, SchulconnexGroupProvisioningService } from '../strategy/schulconnex/service';
+import * as AmqpSubscriberHelper from './amqp-subscriber.helper';
 import { SchulconnexGroupRemovalConsumer } from './schulconnex-group-removal.consumer';
+import { SchulconnexProvisioningEvents } from './schulconnex.exchange';
+
+jest.mock('./amqp-subscriber.helper');
 
 describe(SchulconnexGroupRemovalConsumer.name, () => {
 	let module: TestingModule;
@@ -19,6 +25,7 @@ describe(SchulconnexGroupRemovalConsumer.name, () => {
 	let logger: DeepMocked<Logger>;
 	let schulconnexGroupProvisioningService: DeepMocked<SchulconnexGroupProvisioningService>;
 	let schulconnexCourseSyncService: DeepMocked<SchulconnexCourseSyncService>;
+	let amqpConnection: DeepMocked<AmqpConnection>;
 	let config: ProvisioningConfig;
 
 	beforeAll(async () => {
@@ -48,6 +55,10 @@ describe(SchulconnexGroupRemovalConsumer.name, () => {
 					useValue: await setupEntities(ENTITIES),
 				},
 				{
+					provide: AmqpConnection,
+					useValue: createMock<AmqpConnection>(),
+				},
+				{
 					provide: PROVISIONING_EXCHANGE_CONFIG_TOKEN,
 					useValue: {
 						exchangeName: 'provisioning-exchange',
@@ -61,6 +72,7 @@ describe(SchulconnexGroupRemovalConsumer.name, () => {
 		logger = module.get(Logger);
 		schulconnexGroupProvisioningService = module.get(SchulconnexGroupProvisioningService);
 		schulconnexCourseSyncService = module.get(SchulconnexCourseSyncService);
+		amqpConnection = module.get(AmqpConnection);
 		config = module.get(PROVISIONING_CONFIG_TOKEN);
 	});
 
@@ -70,6 +82,55 @@ describe(SchulconnexGroupRemovalConsumer.name, () => {
 
 	afterEach(() => {
 		jest.resetAllMocks();
+	});
+
+	describe('onModuleInit', () => {
+		describe('when module is initialized', () => {
+			let registerAmqpSubscriberSpy: jest.SpyInstance;
+
+			beforeEach(() => {
+				registerAmqpSubscriberSpy = jest.spyOn(AmqpSubscriberHelper, 'registerAmqpSubscriber').mockResolvedValue();
+			});
+
+			afterEach(() => {
+				registerAmqpSubscriberSpy.mockRestore();
+			});
+
+			it('should register a subscriber for GROUP_PROVISIONING event', async () => {
+				await consumer.onModuleInit();
+
+				expect(registerAmqpSubscriberSpy).toHaveBeenCalledWith(
+					amqpConnection,
+					'provisioning-exchange',
+					SchulconnexProvisioningEvents.GROUP_REMOVAL,
+					expect.any(Function),
+					SchulconnexGroupRemovalConsumer.name,
+					logger
+				);
+			});
+
+			it('should pass a handler that calls removeUserFromGroup for GROUP_REMOVAL event', async () => {
+				const removeUserFromGroupSpy = jest.spyOn(consumer, 'removeUserFromGroup').mockResolvedValue();
+				const payload: SchulconnexGroupRemovalMessage = {
+					userId: new ObjectId().toHexString(),
+					groupId: new ObjectId().toHexString(),
+				};
+
+				await consumer.onModuleInit();
+
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+				const groupProvisioningHandler = registerAmqpSubscriberSpy.mock.calls.find(
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+					(call) => call[2] === SchulconnexProvisioningEvents.GROUP_REMOVAL
+				)?.[3] as (payload: SchulconnexGroupRemovalMessage) => Promise<void>;
+
+				await groupProvisioningHandler(payload);
+
+				expect(removeUserFromGroupSpy).toHaveBeenCalledWith(payload);
+
+				removeUserFromGroupSpy.mockRestore();
+			});
+		});
 	});
 
 	describe('removeUserFromGroup', () => {

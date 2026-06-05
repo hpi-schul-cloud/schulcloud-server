@@ -10,9 +10,8 @@ export class AdminApiContextExternalToolUc {
 	async createContextExternalTool(contextExternalToolProps: ContextExternalToolDto): Promise<ContextExternalTool> {
 		const contextExternalTool: ContextExternalTool = new ContextExternalTool(contextExternalToolProps);
 
-		const createdTool: ContextExternalTool = await this.contextExternalToolService.saveContextExternalTool(
-			contextExternalTool
-		);
+		const createdTool: ContextExternalTool =
+			await this.contextExternalToolService.saveContextExternalTool(contextExternalTool);
 
 		return createdTool;
 	}

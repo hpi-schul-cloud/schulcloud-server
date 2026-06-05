@@ -12,6 +12,7 @@ import { roleFactory } from '@modules/role/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
+import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
@@ -208,7 +209,13 @@ describe('GroupRule', () => {
 					requiredPermissions: [Permission.GROUP_VIEW],
 				};
 
-				authorizationHelper.hasAllPermissions.mockReturnValue(true);
+				authorizationHelper.hasAllPermissions.mockImplementation((_user, permissions: Permission[]) => {
+					// Instance operations should not grant access
+					if (permissions.includes(Permission.CAN_EXECUTE_INSTANCE_OPERATIONS)) {
+						return false;
+					}
+					return true;
+				});
 
 				return {
 					user,
@@ -223,6 +230,127 @@ describe('GroupRule', () => {
 				const result = rule.hasPermission(user, group, context);
 
 				expect(result).toEqual(false);
+			});
+		});
+
+		describe('when user has CAN_EXECUTE_INSTANCE_OPERATIONS permission', () => {
+			describe('when user has instance operation permission for read action', () => {
+				const setup = () => {
+					const role = roleFactory.buildWithId({ permissions: [Permission.CAN_EXECUTE_INSTANCE_OPERATIONS] });
+					const school = schoolEntityFactory.buildWithId();
+					const user = userFactory.buildWithId({ school, roles: [role] });
+					const group = groupFactory.build({
+						organizationId: new ObjectId().toHexString(),
+					});
+					const context: AuthorizationContext = {
+						action: Action.read,
+						requiredPermissions: [],
+					};
+
+					authorizationHelper.hasAllPermissions.mockImplementation((_user, permissions: Permission[]) => {
+						if (permissions.includes(Permission.CAN_EXECUTE_INSTANCE_OPERATIONS)) {
+							return true;
+						}
+						return false;
+					});
+
+					return { user, group, context };
+				};
+
+				it('should return "true" even without being at the same school', () => {
+					const { user, group, context } = setup();
+
+					const result = rule.hasPermission(user, group, context);
+
+					expect(result).toEqual(true);
+				});
+			});
+
+			describe('when user has instance operation permission for write action', () => {
+				const setup = () => {
+					const role = roleFactory.buildWithId({ permissions: [Permission.CAN_EXECUTE_INSTANCE_OPERATIONS] });
+					const school = schoolEntityFactory.buildWithId();
+					const user = userFactory.buildWithId({ school, roles: [role] });
+					const group = groupFactory.build({
+						organizationId: new ObjectId().toHexString(),
+					});
+					const context: AuthorizationContext = {
+						action: Action.write,
+						requiredPermissions: [],
+					};
+
+					authorizationHelper.hasAllPermissions.mockImplementation((_user, permissions: Permission[]) => {
+						if (permissions.includes(Permission.CAN_EXECUTE_INSTANCE_OPERATIONS)) {
+							return true;
+						}
+						return false;
+					});
+
+					return { user, group, context };
+				};
+
+				it('should return "true" even without being at the same school', () => {
+					const { user, group, context } = setup();
+
+					const result = rule.hasPermission(user, group, context);
+
+					expect(result).toEqual(true);
+				});
+			});
+
+			describe('when user has instance operation permission but missing required permissions', () => {
+				const setup = () => {
+					const role = roleFactory.buildWithId({ permissions: [Permission.CAN_EXECUTE_INSTANCE_OPERATIONS] });
+					const school = schoolEntityFactory.buildWithId();
+					const user = userFactory.buildWithId({ school, roles: [role] });
+					const group = groupFactory.build({
+						organizationId: new ObjectId().toHexString(),
+					});
+					const missingPermission = 'missing' as Permission;
+					const context: AuthorizationContext = {
+						action: Action.read,
+						requiredPermissions: [missingPermission],
+					};
+
+					authorizationHelper.hasAllPermissions.mockReturnValue(false);
+
+					return { user, group, context };
+				};
+
+				it('should return "false" when required permissions are not met', () => {
+					const { user, group, context } = setup();
+
+					const result = rule.hasPermission(user, group, context);
+
+					expect(result).toEqual(false);
+				});
+			});
+		});
+
+		describe('when the action is not read or write', () => {
+			const setup = () => {
+				const role = roleFactory.buildWithId();
+				const school = schoolEntityFactory.buildWithId();
+				const user = userFactory.buildWithId({ school, roles: [role] });
+				const group = groupFactory.build({
+					users: [
+						{
+							userId: user.id,
+							roleId: user.roles[0].id,
+						},
+					],
+					organizationId: user.school.id,
+				});
+
+				return { user, group };
+			};
+
+			it('should throw NotImplementedException', () => {
+				const { user, group } = setup();
+
+				expect(() => rule.hasPermission(user, group, { action: 'unknown' as Action, requiredPermissions: [] })).toThrow(
+					NotImplementedException
+				);
 			});
 		});
 	});

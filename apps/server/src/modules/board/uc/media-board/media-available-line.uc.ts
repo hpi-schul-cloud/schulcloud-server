@@ -9,7 +9,7 @@ import { throwForbiddenIfFalse } from '@shared/common/utils';
 import { EntityId } from '@shared/domain/types';
 import { BoardNodeRule } from '../../authorisation/board-node.rule';
 import { MediaAvailableLine, MediaBoard } from '../../domain';
-import { MediaBoardColors } from '../../domain/media-board/types';
+import { Colors } from '../../domain/media-board/types';
 
 import { BOARD_CONFIG_TOKEN, BoardConfig } from '../../board.config';
 import {
@@ -63,7 +63,7 @@ export class MediaAvailableLineUc {
 		return mediaAvailableLine;
 	}
 
-	public async updateAvailableLineColor(userId: EntityId, boardId: EntityId, color: MediaBoardColors): Promise<void> {
+	public async updateAvailableLineColor(userId: EntityId, boardId: EntityId, color: Colors): Promise<void> {
 		this.checkFeatureEnabled();
 
 		const board: MediaBoard = await this.boardNodeService.findByClassAndId(MediaBoard, boardId);
@@ -113,9 +113,8 @@ export class MediaAvailableLineUc {
 		userId: EntityId,
 		tools: [ExternalTool, SchoolExternalTool][]
 	): Promise<[ExternalTool, SchoolExternalTool][]> {
-		const mediaUserLicenses: MediaUserLicense[] = await this.mediaUserLicenseService.getMediaUserLicensesForUser(
-			userId
-		);
+		const mediaUserLicenses: MediaUserLicense[] =
+			await this.mediaUserLicenseService.getMediaUserLicensesForUser(userId);
 
 		const filteredTools = tools.filter((tool: [ExternalTool, SchoolExternalTool]): boolean => {
 			const externalToolMedium = tool[0]?.medium;
@@ -133,9 +132,8 @@ export class MediaAvailableLineUc {
 		tools: [ExternalTool, SchoolExternalTool][],
 		userTools: [ExternalTool, SchoolExternalTool][]
 	): Promise<[ExternalTool, SchoolExternalTool][]> {
-		const schoolLicenses: MediaSchoolLicense[] = await this.mediaSchoolLicenseService.findMediaSchoolLicensesBySchoolId(
-			schoolId
-		);
+		const schoolLicenses: MediaSchoolLicense[] =
+			await this.mediaSchoolLicenseService.findMediaSchoolLicensesBySchoolId(schoolId);
 
 		const schoolTools = tools.filter((tool: [ExternalTool, SchoolExternalTool]): boolean => {
 			const externalToolMedium = tool[0]?.medium;

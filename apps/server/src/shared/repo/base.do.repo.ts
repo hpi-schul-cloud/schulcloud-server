@@ -16,7 +16,10 @@ import { EntityId } from '@shared/domain/types';
 
 @Injectable()
 export abstract class BaseDORepo<DO extends BaseDO, E extends BaseEntity> {
-	constructor(protected readonly _em: EntityManager, protected readonly logger: LegacyLogger) {}
+	constructor(
+		protected readonly _em: EntityManager,
+		protected readonly logger: LegacyLogger
+	) {}
 
 	abstract get entityName(): EntityName<E>;
 

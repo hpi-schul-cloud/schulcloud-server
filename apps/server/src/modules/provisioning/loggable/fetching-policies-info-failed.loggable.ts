@@ -2,7 +2,10 @@ import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from
 import { ExternalUserDto } from '../dto';
 
 export class FetchingPoliciesInfoFailedLoggable implements Loggable {
-	constructor(private readonly user: ExternalUserDto, private readonly policiesInfoEndpoint: string) {}
+	constructor(
+		private readonly user: ExternalUserDto,
+		private readonly policiesInfoEndpoint: string
+	) {}
 
 	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
 		return {

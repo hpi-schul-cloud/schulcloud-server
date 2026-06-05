@@ -1,16 +1,16 @@
 import { RuntimeConfigValueInvalidDataLoggable } from '../domain/loggable/runtime-config-invalid-data.loggable';
-import { RuntimeConfigValue, RuntimeConfigValueAndType } from '../domain/runtime-config-value.do';
+import { RuntimeConfigDefault, RuntimeConfigValue, RuntimeConfigValueAndType } from '../domain/runtime-config-value.do';
 import { RuntimeConfigEntity } from './entity/runtime-config.entity';
 import { RuntimeConfigValueFactory } from './runtime-config-value.factory';
 
 export class RuntimeConfigEntityMapper {
-	public static toDomainObject(entity: RuntimeConfigEntity): RuntimeConfigValue {
+	public static toDomainObject(entity: RuntimeConfigEntity, defaultConfig: RuntimeConfigDefault): RuntimeConfigValue {
 		const typeAndValue = this.getTypeAndValue(entity);
 		return RuntimeConfigValueFactory.build({
 			id: entity.id,
 			key: entity.key,
 			...typeAndValue,
-			description: entity.description,
+			description: defaultConfig.description,
 		});
 	}
 

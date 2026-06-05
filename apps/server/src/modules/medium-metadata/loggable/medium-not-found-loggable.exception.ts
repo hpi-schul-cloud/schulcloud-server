@@ -2,7 +2,10 @@ import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from
 import { NotFoundException } from '@nestjs/common';
 
 export class MediumNotFoundLoggableException extends NotFoundException implements Loggable {
-	constructor(private readonly mediumId: string, private readonly sourceId: string) {
+	constructor(
+		private readonly mediumId: string,
+		private readonly sourceId: string
+	) {
 		super();
 	}
 

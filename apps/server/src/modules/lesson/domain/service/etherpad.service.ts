@@ -7,7 +7,10 @@ type PadResponse = { data: { padID: string } };
 
 @Injectable()
 export class EtherpadService {
-	constructor(private readonly feathersServiceProvider: FeathersServiceProvider, private logger: LegacyLogger) {}
+	constructor(
+		private readonly feathersServiceProvider: FeathersServiceProvider,
+		private logger: LegacyLogger
+	) {}
 
 	async createEtherpad(userId: EntityId, courseId: string, title: string): Promise<string | false> {
 		const data = {
