@@ -2,7 +2,7 @@ import { LegacyLogger } from '@core/logger';
 import { StorageLocation } from '@infra/files-storage-client';
 import { Action, AuthorizationService } from '@modules/authorization';
 import { BoardContextApiHelperService } from '@modules/board-context';
-import { CopyStatus } from '@modules/copy-helper';
+import { CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { CourseService } from '@modules/course';
 import { RoomService } from '@modules/room';
 import { RoomMembershipService } from '@modules/room-membership';
@@ -26,7 +26,6 @@ import {
 } from '../domain';
 import { BoardNodeAuthorizableService, BoardNodeService, ColumnBoardService } from '../service';
 import { StorageLocationReference } from '../service/internal';
-import { CopyStatusEnum } from '@modules/copy-helper';
 
 @Injectable()
 export class BoardUc {
