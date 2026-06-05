@@ -184,6 +184,27 @@ const filterQuery = (url) => {
 	return newUrl;
 };
 
+/**
+ * Recursively filters sensitive data from an error-like object structure
+ * including nested options, response, and request objects.
+ * @param {Object} errorObj - The error object to filter
+ */
+const filterErrorObject = (errorObj) => {
+	if (!errorObj || typeof errorObj !== 'object') {
+		return;
+	}
+
+	if (errorObj.options) {
+		errorObj.options = filter(errorObj.options);
+	}
+	if (errorObj.response) {
+		errorObj.response = filter(errorObj.response);
+		if (errorObj.response.request) {
+			errorObj.response.request = filter(errorObj.response.request);
+		}
+	}
+};
+
 // important that it is not added it to logs
 const filterSecrets = (error, req, res, next) => {
 	if (error) {
@@ -195,11 +216,11 @@ const filterSecrets = (error, req, res, next) => {
 		error.options = filter(error.options);
 		error.params = filter(error.params);
 		// Filter sensitive data from error.response (e.g., from request-promise errors)
-		if (error.response) {
-			error.response = filter(error.response);
-			if (error.response.request) {
-				error.response.request = filter(error.response.request);
-			}
+		filterErrorObject(error);
+		// Filter nested error objects (e.g., StatusCodeError wraps error in error.error)
+		if (error.error && typeof error.error === 'object') {
+			error.error = filter(error.error);
+			filterErrorObject(error.error);
 		}
 	}
 	return next(error);
