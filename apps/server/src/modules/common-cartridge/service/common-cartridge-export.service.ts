@@ -404,18 +404,11 @@ export class CommonCartridgeExportService {
 			case ContentElementType.FILE_FOLDER:
 				const metadataAndStreamsForFolder = await this.openStreamsToFiles(jwt, element);
 
+				const fileFolderElement = element as FileFolderElementResponse;
 				if (version === CommonCartridgeVersion.V_1_3_0) {
-					this.addFileFolderForCc13ToOrg(
-						cardOrganization,
-						element as FileFolderElementResponse,
-						metadataAndStreamsForFolder
-					);
+					this.addFileFolderForCc13ToOrg(cardOrganization, fileFolderElement, metadataAndStreamsForFolder);
 				} else if (version === CommonCartridgeVersion.V_1_1_0) {
-					this.addFileFolderForCc11ToOrg(
-						cardOrganization,
-						element as FileFolderElementResponse,
-						metadataAndStreamsForFolder
-					);
+					this.addFileFolderForCc11ToOrg(cardOrganization, fileFolderElement, metadataAndStreamsForFolder);
 				}
 
 				break;
