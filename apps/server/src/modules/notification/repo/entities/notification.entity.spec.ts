@@ -15,9 +15,11 @@ describe(NotificationEntity.name, () => {
 			const setup = () => {
 				const props: NotificationEntityProps = {
 					id: 'some-id',
-					type: NotificationType.NOTE,
+					type: NotificationType.INFO,
 					key: 'SOME_NOTIFICATION_KEY',
-					arguments: ['arg1', 'arg2'],
+					arguments: {
+						name: 'value',
+					},
 					userId: 'user-123',
 					expiresAt: new Date(),
 				};

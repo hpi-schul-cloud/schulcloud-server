@@ -131,4 +131,79 @@ describe(NotificationMikroOrmRepo.name, () => {
 			});
 		});
 	});
+
+	describe('findForUser', () => {
+		describe('when searching by userId', () => {
+			const setup = async () => {
+				const entity: NotificationEntity = notificationEntityFactory.build();
+				await em.persist(entity).flush();
+
+				const notification = new Notification({
+					id: entity.id,
+					type: entity.type,
+					key: entity.key,
+					arguments: entity.arguments,
+					userId: entity.userId,
+					expiresAt: entity.expiresAt,
+				});
+
+				return {
+					notification,
+				};
+			};
+
+			it('should find the Notification', async () => {
+				const { notification } = await setup();
+
+				const result = await repo.findForUser(notification.userId);
+
+				expect(result).toEqual([
+					expect.objectContaining({
+						props: expect.objectContaining({
+							id: notification.id,
+							type: notification.type,
+							key: notification.key,
+							arguments: notification.arguments,
+							userId: notification.userId,
+							expiresAt: expect.any(Date),
+						}),
+					}),
+				]);
+			});
+		});
+	});
+
+	describe('delete', () => {
+		describe('when called with id', () => {
+			const setup = async () => {
+				const entity: NotificationEntity = notificationEntityFactory.build();
+				await em.persist(entity).flush();
+
+				const notification = new Notification({
+					id: entity.id,
+					type: entity.type,
+					key: entity.key,
+					arguments: entity.arguments,
+					userId: entity.userId,
+					expiresAt: entity.expiresAt,
+				});
+
+				return {
+					notification,
+				};
+			};
+
+			it('should delete notification', async () => {
+				const { notification } = await setup();
+
+				await repo.delete(notification.id);
+
+				const loaded = await em.findOne(NotificationEntity, {
+					id: notification.id,
+				});
+
+				expect(loaded).toBeNull();
+			});
+		});
+	});
 });
