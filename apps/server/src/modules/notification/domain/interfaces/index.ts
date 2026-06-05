@@ -1,1 +1,1 @@
-export { NotificationRepo } from './notification.repo.interface';
+export { NOTIFICATION_REPO, NotificationRepo } from './notification.repo.interface';

@@ -22,7 +22,7 @@ describe(NotificationMapper.name, () => {
 					id: 'notification-id',
 					type: NotificationType.ERROR,
 					key: 'NOTIFICATION_KEY',
-					arguments: ['arg1', 'arg2'],
+					arguments: {},
 					userId: 'user-id',
 					expiresAt: new Date(),
 				} as NotificationEntity;
@@ -63,9 +63,9 @@ describe(NotificationMapper.name, () => {
 				const entities: NotificationEntity[] = [
 					{
 						id: 'notification-id-1',
-						type: NotificationType.NOTE,
+						type: NotificationType.INFO,
 						key: 'NOTIFICATION_KEY_1',
-						arguments: ['arg1'],
+						arguments: {},
 						userId: 'user-id-1',
 						expiresAt: new Date(),
 					} as NotificationEntity,
@@ -73,7 +73,7 @@ describe(NotificationMapper.name, () => {
 						id: 'notification-id-2',
 						type: NotificationType.ERROR,
 						key: 'NOTIFICATION_KEY_2',
-						arguments: ['arg2a', 'arg2b'],
+						arguments: {},
 						userId: 'user-id-2',
 						expiresAt: new Date(),
 					} as NotificationEntity,
@@ -111,7 +111,7 @@ describe(NotificationMapper.name, () => {
 					id: 'notification-id',
 					type: NotificationType.ERROR,
 					key: 'NOTIFICATION_KEY',
-					arguments: ['arg1', 'arg2'],
+					arguments: {},
 					userId: 'user-id',
 					expiresAt: new Date(),
 				});
@@ -153,9 +153,9 @@ describe(NotificationMapper.name, () => {
 				const domainObjects = [
 					new Notification({
 						id: 'notification-id-1',
-						type: NotificationType.NOTE,
+						type: NotificationType.INFO,
 						key: 'NOTIFICATION_KEY_1',
-						arguments: ['arg1'],
+						arguments: {},
 						userId: 'user-id-1',
 						expiresAt: new Date(),
 					}),
@@ -163,7 +163,7 @@ describe(NotificationMapper.name, () => {
 						id: 'notification-id-2',
 						type: NotificationType.ERROR,
 						key: 'NOTIFICATION_KEY_2',
-						arguments: ['arg2a', 'arg2b'],
+						arguments: {},
 						userId: 'user-id-2',
 						expiresAt: new Date(),
 					}),
