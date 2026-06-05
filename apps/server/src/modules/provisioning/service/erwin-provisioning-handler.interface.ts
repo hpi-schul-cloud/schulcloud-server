@@ -1,19 +1,18 @@
+import { Class } from '@modules/class';
 import { ReferencedEntityType } from '@modules/erwin-identifier';
 import { School } from '@modules/school';
 import { UserDo } from '@modules/user';
-import { ExternalSchoolDto, ExternalUserDto, ProvisioningSystemDto } from '../dto';
+import { ExternalClassDto, ExternalSchoolDto, ExternalUserDto, ProvisioningSystemDto } from '../dto';
 
-export type ProvisioningResult = School | UserDo;
-// TODO: Add Class type when implementing class provisioning
+export type ProvisioningResult = School | UserDo | Class;
 
-export type ExternalEntityData = ExternalSchoolDto | ExternalUserDto;
-// TODO: Add ExternalClassDto when implementing class provisioning
+export type ExternalEntityData = ExternalSchoolDto | ExternalUserDto | ExternalClassDto;
 
 export interface ProvisioningContext {
 	system: ProvisioningSystemDto;
 	externalSchool?: ExternalSchoolDto;
 	externalUser?: ExternalUserDto;
-	// TODO: Add externalClasses field when implementing class provisioning
+	externalClass?: ExternalClassDto;
 }
 
 export interface ProvisioningEntityHandler {
