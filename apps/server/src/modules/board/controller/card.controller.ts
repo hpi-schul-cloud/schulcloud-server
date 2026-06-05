@@ -161,7 +161,7 @@ export class CardController {
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<CardResponse> {
 		const copiedCard = await this.columnUc.copyCard(currentUser.userId, urlParams.cardId, currentUser.schoolId);
-		const cardDto = CardResponseMapper.mapToResponse(copiedCard);
+		const cardDto = CardResponseMapper.mapToResponse(copiedCard.copyEntity);
 		return cardDto;
 	}
 

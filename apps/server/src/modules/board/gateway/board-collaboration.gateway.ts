@@ -320,14 +320,15 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 		const emitter = this.buildBoardSocketEmitter({ socket, action: 'duplicate-card' });
 		const { userId, schoolId } = this.getCurrentUser(socket);
 		try {
-			const card = await this.columnUc.copyCard(userId, data.cardId, schoolId);
+			const copyStatus = await this.columnUc.copyCard(userId, data.cardId, schoolId);
 
-			const cardResponse = CardResponseMapper.mapToResponse(card);
+			const cardResponse = CardResponseMapper.mapToResponse(copyStatus.copyEntity);
 			const responsePayload = {
 				...data,
 				duplicatedCard: cardResponse,
+				status: copyStatus.status,
 			};
-			emitter.emitToClientAndRoom(responsePayload, card);
+			emitter.emitToClientAndRoom(responsePayload, copyStatus.copyEntity);
 		} catch {
 			emitter.emitFailure(data);
 		}
@@ -340,14 +341,15 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 		const emitter = this.buildBoardSocketEmitter({ socket, action: 'duplicate-column' });
 		const { userId, schoolId } = this.getCurrentUser(socket);
 		try {
-			const column = await this.boardUc.copyColumn(userId, data.columnId, schoolId);
+			const copyStatus = await this.boardUc.copyColumn(userId, data.columnId, schoolId);
 
-			const columnFullResponse = ColumnResponseMapper.mapToFullResponse(column);
+			const columnFullResponse = ColumnResponseMapper.mapToFullResponse(copyStatus.copyEntity);
 			const responsePayload = {
 				...data,
 				duplicatedColumn: columnFullResponse,
+				status: copyStatus.status,
 			};
-			emitter.emitToClientAndRoom(responsePayload, column);
+			emitter.emitToClientAndRoom(responsePayload, copyStatus.copyEntity);
 		} catch {
 			emitter.emitFailure(data);
 		}

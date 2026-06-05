@@ -26,6 +26,7 @@ import {
 } from '../domain';
 import { BoardNodeAuthorizableService, BoardNodeService, ColumnBoardService } from '../service';
 import { StorageLocationReference } from '../service/internal';
+import { CopyStatusEnum } from '@modules/copy-helper';
 
 @Injectable()
 export class BoardUc {
@@ -149,7 +150,11 @@ export class BoardUc {
 		return column;
 	}
 
-	public async copyColumn(userId: EntityId, columnId: EntityId, schoolId: EntityId): Promise<Column> {
+	public async copyColumn(
+		userId: EntityId,
+		columnId: EntityId,
+		schoolId: EntityId
+	): Promise<{ copyEntity: Column; status: CopyStatusEnum }> {
 		const column = await this.boardNodeService.findByClassAndId(Column, columnId);
 
 		const user = await this.authorizationService.getUserWithPermissions(userId);
@@ -169,7 +174,7 @@ export class BoardUc {
 			throw new InternalServerErrorException('Copied entity is not a column');
 		}
 
-		return copyStatus.copyEntity;
+		return { copyEntity: copyStatus.copyEntity, status: copyStatus.status };
 	}
 
 	public async copyBoard(userId: EntityId, boardId: EntityId, targetSchoolId: EntityId): Promise<CopyStatus> {
