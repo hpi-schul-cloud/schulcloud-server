@@ -9,6 +9,7 @@ import {
 	CoursesClientAdapter,
 	FilesStorageClientAdapter,
 } from '@infra/common-cartridge-clients';
+import { NotificationType, NotificationService } from '@modules/notification';
 import { HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
@@ -35,6 +36,7 @@ describe(CommonCartridgeImportService.name, () => {
 	let commonCartridgeFileParser: DeepMocked<CommonCartridgeFileParser>;
 	let httpServiceMock: DeepMocked<HttpService>;
 	let domainErrorHandler: DeepMocked<DomainErrorHandler>;
+	let notificationServiceMock: DeepMocked<NotificationService>;
 
 	beforeEach(async () => {
 		module = await Test.createTestingModule({
@@ -80,6 +82,10 @@ describe(CommonCartridgeImportService.name, () => {
 					provide: DomainErrorHandler,
 					useValue: createMock<DomainErrorHandler>(),
 				},
+				{
+					provide: NotificationService,
+					useValue: createMock<NotificationService>(),
+				},
 			],
 		}).compile();
 
@@ -91,6 +97,7 @@ describe(CommonCartridgeImportService.name, () => {
 		filesStorageClientAdapterMock = module.get(FilesStorageClientAdapter);
 		httpServiceMock = module.get(HttpService);
 		domainErrorHandler = module.get(DomainErrorHandler);
+		notificationServiceMock = module.get(NotificationService);
 
 		commonCartridgeFileParser = createMock<CommonCartridgeFileParser>();
 		(CommonCartridgeFileParser as jest.Mock).mockImplementation(() => commonCartridgeFileParser);
@@ -98,9 +105,11 @@ describe(CommonCartridgeImportService.name, () => {
 
 	beforeEach(() => {
 		jest.clearAllMocks();
+		jest.useFakeTimers();
 	});
 
 	afterEach(async () => {
+		jest.useRealTimers();
 		await module.close();
 	});
 
@@ -188,10 +197,12 @@ describe(CommonCartridgeImportService.name, () => {
 
 		commonCartridgeFileParser.getTitle.mockReturnValue(undefined);
 
+		const userId = faker.string.uuid();
 		const schoolId = faker.string.uuid();
 		const event: ImportCourseEvent = {
 			jwt: faker.internet.jwt({
 				payload: {
+					userId,
 					schoolId,
 				},
 			}),
@@ -200,7 +211,7 @@ describe(CommonCartridgeImportService.name, () => {
 			fileUrl: faker.internet.url(),
 		};
 
-		return { column1, column2, card1, card2, element1, element2, board, event, schoolId };
+		return { column1, column2, card1, card2, element1, element2, board, event, schoolId, userId };
 	};
 
 	describe('importFile', () => {
@@ -318,6 +329,20 @@ describe(CommonCartridgeImportService.name, () => {
 
 				expect(filesStorageClientAdapterMock.deleteFile).toHaveBeenCalledWith(event.jwt, event.fileRecordId);
 			});
+
+			it('should send user info notification', async () => {
+				const { event, userId } = setup();
+
+				await sut.importCourse(event);
+
+				expect(notificationServiceMock.createNotification).toHaveBeenCalledWith({
+					userId,
+					key: 'pages.rooms.ccImportCourse.importSuccess',
+					arguments: { file: event.fileName },
+					type: NotificationType.INFO,
+					expiresAt: new Date(Date.now() + 1000 * 60 * 60),
+				});
+			});
 		});
 
 		describe('when no title is given', () => {
@@ -354,6 +379,20 @@ describe(CommonCartridgeImportService.name, () => {
 				await sut.importCourse(event);
 
 				expect(coursesClientAdapterMock.createCourse).not.toHaveBeenCalled();
+			});
+
+			it('should send user error notification', async () => {
+				const { event, userId } = setup();
+
+				await sut.importCourse(event);
+
+				expect(notificationServiceMock.createNotification).toHaveBeenCalledWith({
+					userId,
+					key: 'pages.rooms.ccImportCourse.importError',
+					arguments: { file: event.fileName },
+					type: NotificationType.ERROR,
+					expiresAt: new Date(Date.now() + 1000 * 60 * 60),
+				});
 			});
 		});
 

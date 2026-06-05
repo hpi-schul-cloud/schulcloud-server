@@ -7,12 +7,12 @@ export interface NotificationEntityProps {
 	id?: EntityId;
 	type: NotificationType;
 	key: string;
-	arguments: string[];
-	userId: string;
+	arguments?: Record<string, unknown>;
+	userId: EntityId;
 	expiresAt: Date;
 }
 
-@Entity({ tableName: 'user-notification-message' })
+@Entity({ tableName: 'notifications' })
 export class NotificationEntity extends BaseEntityWithTimestamps {
 	@Property({ nullable: true })
 	type: NotificationType;
@@ -21,10 +21,11 @@ export class NotificationEntity extends BaseEntityWithTimestamps {
 	key: string;
 
 	@Property({ nullable: true })
-	arguments: string[];
+	arguments?: Record<string, unknown>;
 
 	@Property({ nullable: true })
-	userId: string;
+	@Index()
+	userId: EntityId;
 
 	@Property({ nullable: true })
 	@Index({ options: { expireAfterSeconds: 0 } })

@@ -12,6 +12,7 @@ import { CommonCartridgeExportService, CommonCartridgeImportService } from './se
 import { CommonCartridgeExportMapper } from './service/common-cartridge-export.mapper';
 import { CommonCartridgeImportMapper } from './service/common-cartridge-import.mapper';
 import { CommonCartridgeUc } from './uc/common-cartridge.uc';
+import { NotificationModule } from '@modules/notification/notification.module';
 
 @Module({
 	imports: [
@@ -19,6 +20,7 @@ import { CommonCartridgeUc } from './uc/common-cartridge.uc';
 		CqrsModule,
 		HttpModule,
 		CoreModule,
+		NotificationModule,
 		CommonCartridgeClientsModule.register(API_HOST_CONFIG_TOKEN, ApiHostConfig),
 		ConfigurationModule.register(COMMON_CARTRIDGE_PUBLIC_API_CONFIG_TOKEN, CommonCartridgePublicApiConfig),
 	],

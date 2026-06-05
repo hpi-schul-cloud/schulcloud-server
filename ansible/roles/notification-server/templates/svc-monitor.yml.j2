@@ -1,0 +1,14 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: notification-server-svc-monitor
+  namespace: {{ NAMESPACE }}
+  labels:
+    app: notification-server
+spec:
+  selector:
+    matchLabels:
+      app: notification-server
+  endpoints:
+  - path: /metrics
+    port: api-metrics
