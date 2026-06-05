@@ -348,49 +348,6 @@ describe(BoardCopyService.name, () => {
 
 				expect(copyStatus.originalEntity).toBe(card);
 			});
-
-			it('should not throw when copy status is SUCCESS', async () => {
-				const { copyParams } = setup();
-
-				await expect(service.copyCard(copyParams)).resolves.toBeDefined();
-			});
-
-			describe('when the copy status is not SUCCESS', () => {
-				const setupNotSuccess = () => {
-					const userId = new ObjectId().toHexString();
-					const targetSchoolId = new ObjectId().toHexString();
-
-					const parentColumn = columnBoardFactory.build();
-					const card = cardFactory.build({ path: parentColumn.id });
-
-					boardNodeService.findByClassAndId.mockResolvedValueOnce(card);
-					boardNodeService.findByClassAndId.mockResolvedValueOnce(parentColumn);
-
-					const cardCopy = cardFactory.build();
-					const status: CopyStatus = {
-						copyEntity: cardCopy,
-						type: CopyElementType.CARD,
-						status: CopyStatusEnum.PARTIAL,
-					};
-					boardNodeCopyService.copy.mockResolvedValueOnce(status);
-
-					const copyParams: CopyCardParams = {
-						originalCardId: card.id,
-						sourceStorageLocationReference: { id: targetSchoolId, type: StorageLocation.SCHOOL },
-						targetStorageLocationReference: { id: targetSchoolId, type: StorageLocation.SCHOOL },
-						userId,
-						targetSchoolId,
-					};
-
-					return { copyParams };
-				};
-
-				it('should throw an InternalServerErrorException', async () => {
-					const { copyParams } = setupNotSuccess();
-
-					await expect(service.copyCard(copyParams)).rejects.toBeInstanceOf(InternalServerErrorException);
-				});
-			});
 		});
 
 		describe('when the copy response is not a Card', () => {
@@ -560,48 +517,6 @@ describe(BoardCopyService.name, () => {
 				const copyStatus = await service.copyColumn(copyParams);
 
 				expect(copyStatus.originalEntity).toBe(column);
-			});
-
-			it('should not throw when copy status is SUCCESS', async () => {
-				const { copyParams } = setup();
-
-				await expect(service.copyColumn(copyParams)).resolves.toBeDefined();
-			});
-
-			describe('when the copy status is not SUCCESS', () => {
-				const setupNotSuccess = () => {
-					const userId = new ObjectId().toHexString();
-					const targetSchoolId = new ObjectId().toHexString();
-					const parentBoard = columnBoardFactory.build();
-					const column = columnFactory.build({ path: parentBoard.id });
-
-					boardNodeService.findByClassAndId.mockResolvedValueOnce(column);
-					boardNodeService.findByClassAndId.mockResolvedValueOnce(parentBoard);
-
-					const columnCopy = columnFactory.build();
-					const status: CopyStatus = {
-						copyEntity: columnCopy,
-						type: CopyElementType.COLUMN,
-						status: CopyStatusEnum.PARTIAL,
-					};
-					boardNodeCopyService.copy.mockResolvedValueOnce(status);
-
-					const copyParams: CopyColumnParams = {
-						originalColumnId: column.id,
-						sourceStorageLocationReference: { id: targetSchoolId, type: StorageLocation.SCHOOL },
-						targetStorageLocationReference: { id: targetSchoolId, type: StorageLocation.SCHOOL },
-						userId,
-						targetSchoolId,
-					};
-
-					return { copyParams };
-				};
-
-				it('should throw an InternalServerErrorException', async () => {
-					const { copyParams } = setupNotSuccess();
-
-					await expect(service.copyColumn(copyParams)).rejects.toBeInstanceOf(InternalServerErrorException);
-				});
 			});
 		});
 
