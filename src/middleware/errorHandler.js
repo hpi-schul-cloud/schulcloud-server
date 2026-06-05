@@ -194,6 +194,13 @@ const filterSecrets = (error, req, res, next) => {
 		error.data = filter(error.data);
 		error.options = filter(error.options);
 		error.params = filter(error.params);
+		// Filter sensitive data from error.response (e.g., from request-promise errors)
+		if (error.response) {
+			error.response = filter(error.response);
+			if (error.response.request) {
+				error.response.request = filter(error.response.request);
+			}
+		}
 	}
 	return next(error);
 };

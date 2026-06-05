@@ -1,10 +1,16 @@
+const { BadRequest } = require('../../../errors');
+
 const s3FileNameFilterExpression = /[^0-9A-Za-z\-_.]+/g;
 /**
  * ensures a valid filename for s3 removing invalid characters from local/internal filename
- * @param {*} fileName
- * @returns
+ * @param {string} fileName
+ * @returns {string}
+ * @throws {BadRequest} if fileName is not provided or not a string
  */
 const whitelistFileName = (fileName) => {
+	if (!fileName || typeof fileName !== 'string') {
+		throw new BadRequest('Filename is required and must be a string');
+	}
 	// see https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-keys.html for valid characters
 	// the regex below reduces allowed special chars to hyphen, underscore, period
 	// multiple invalid occurrences are all replaced by one single '-'
