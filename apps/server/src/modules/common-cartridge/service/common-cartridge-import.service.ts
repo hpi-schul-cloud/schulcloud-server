@@ -336,7 +336,7 @@ export class CommonCartridgeImportService {
 
 		const cardElementsProcessed = this.processCardElements(cardElements);
 
-		for await (const cardElement of cardElementsProcessed) {
+		for (const cardElement of cardElementsProcessed) {
 			await this.createCardElement(parser, card.id, cardElement, event);
 		}
 	}
@@ -350,7 +350,10 @@ export class CommonCartridgeImportService {
 				continue;
 			}
 
-			if (!cardElement.isResource) {
+			if (cardElement.isResource) {
+				result.push(cardElement);
+				processed.add(cardElement.identifier);
+			} else {
 				const children = cardElements.filter((el) => el.path.startsWith(cardElement.path));
 				const isFileFolder = children.some(
 					(child) =>
@@ -374,9 +377,6 @@ export class CommonCartridgeImportService {
 					processed.add(cardElement.identifier);
 					children.forEach((child) => processed.add(child.identifier));
 				}
-			} else {
-				result.push(cardElement);
-				processed.add(cardElement.identifier);
 			}
 		}
 
