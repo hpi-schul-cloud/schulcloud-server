@@ -197,7 +197,22 @@ export class CommonCartridgeImportService {
 	): Promise<void> {
 		const organizations = parser.getOrganizations();
 
-		const boards = organizations.filter((organization) => organization.pathDepth === DEPTH_BOARD);
+		const boards: CommonCartridgeOrganizationProps[] = [];
+		const boardOrganizations = new Map<string, CommonCartridgeOrganizationProps[]>();
+
+		for (const organization of organizations) {
+			if (organization.pathDepth === DEPTH_BOARD) {
+				boards.push(organization);
+				if (!boardOrganizations.has(organization.identifier)) {
+					boardOrganizations.set(organization.identifier, []);
+				}
+			} else if (organization.pathDepth >= DEPTH_COLUMN) {
+				const boardIdentifier = organization.path.split('/')[0];
+				const children = boardOrganizations.get(boardIdentifier) ?? [];
+				children.push(organization);
+				boardOrganizations.set(boardIdentifier, children);
+			}
+		}
 
 		// INFO: for await keeps the order of the boards in the same order as the parser.getOrganizations()
 		// with Promise.all, the order of the boards would be random
@@ -219,34 +234,31 @@ export class CommonCartridgeImportService {
 		}
 
 		for (const [boardIdentifier, boardId] of createdBoardIds) {
-			await this.createColumns(boardId, boardIdentifier, parser, organizations, event);
+			const organizationsForBoard = boardOrganizations.get(boardIdentifier) ?? [];
+			await this.createColumns(boardId, parser, organizationsForBoard, event);
 		}
 	}
 
 	private async createColumns(
 		boardId: string,
-		boardIdentifier: string,
 		parser: CommonCartridgeFileParser,
 		organizations: CommonCartridgeOrganizationProps[],
 		event: ImportCourseEvent
 	): Promise<void> {
-		const columns: ColumnResource[] = organizations
-			.filter(
-				(organization) => organization.pathDepth === DEPTH_COLUMN && organization.path.startsWith(boardIdentifier)
-			)
-			.map((column) => {
-				return {
-					column,
-					isResourceColumn: column.isResource,
-				};
-			});
+		const columnsWithChildren = organizations.filter((organization) => organization.pathDepth >= DEPTH_COLUMN);
+		const columns: ColumnResource[] = columnsWithChildren.map((column) => {
+			return {
+				column,
+				isResourceColumn: column.isResource,
+			};
+		});
 
 		// INFO: for await keeps the order of the columns in the same order as the parser.getOrganizations()
 		// with Promise.all, the order of the columns would be random
 		for (const columnResource of columns) {
 			columnResource.isResourceColumn
 				? await this.createColumnWithResource(parser, boardId, columnResource.column, event)
-				: await this.createColumn(parser, organizations, boardId, columnResource.column, event);
+				: await this.createColumn(parser, columnsWithChildren, boardId, columnResource.column, event);
 		}
 	}
 
@@ -284,14 +296,15 @@ export class CommonCartridgeImportService {
 			})
 		);
 
-		const cards = organizations.filter(
-			(organization) => organization.pathDepth === DEPTH_CARD && organization.path.startsWith(columnProps.path)
+		const cardsWithChildren = organizations.filter(
+			(organization) => organization.pathDepth >= DEPTH_CARD && organization.path.startsWith(columnProps.path)
 		);
+		const cards = cardsWithChildren.filter((organization) => organization.pathDepth === DEPTH_CARD);
 
 		for (const card of cards) {
 			card.isResource
 				? await this.createCardElementWithResource(parser, columnResponse, card, event)
-				: await this.createCard(parser, organizations, columnResponse, card, event);
+				: await this.createCard(parser, cardsWithChildren, columnResponse, card, event);
 		}
 	}
 
