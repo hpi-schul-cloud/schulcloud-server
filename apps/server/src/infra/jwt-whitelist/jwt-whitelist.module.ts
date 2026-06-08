@@ -8,14 +8,14 @@ import {
 import { DynamicModule, Module, Type } from '@nestjs/common';
 import { JwtWhitelistAdapter } from './adapter';
 import { InternalJwtWhitelistConfig } from './interface';
+import { DEFAULT_JWT_WHITELIST_CONFIG_TOKEN, DefaultJwtWhitelistConfig } from './jwt-whitelist.config';
 import { JWT_WHITELIST_VALKEY_CLIENT } from './jwt-whitelist.constants';
-import { JWT_WHITELIST_CONFIG_TOKEN, JwtWhitelistConfig } from './jwt-whitelist.config';
 
 @Module({})
 export class JwtWhitelistModule {
 	public static register(
-		configInjectionToken: string = JWT_WHITELIST_CONFIG_TOKEN,
-		configConstructor: Type<InternalJwtWhitelistConfig> = JwtWhitelistConfig
+		configInjectionToken: string = DEFAULT_JWT_WHITELIST_CONFIG_TOKEN,
+		configConstructor: Type<InternalJwtWhitelistConfig> = DefaultJwtWhitelistConfig
 	): DynamicModule {
 		return {
 			module: JwtWhitelistModule,
