@@ -126,24 +126,6 @@
 				"tsConfigPath": "apps/server/tsconfig.app.json"
 			}
 		},
-		"h5p-editor": {
-			"type": "application",
-			"root": "apps/server",
-			"entryFile": "apps/h5p-editor.app",
-			"sourceRoot": "apps/server/src",
-			"compilerOptions": {
-				"tsConfigPath": "apps/server/tsconfig.app.json"
-			}
-		},
-		"h5p-library-management": {
-			"type": "application",
-			"root": "apps/server",
-			"entryFile": "apps/h5p-library-management.app",
-			"sourceRoot": "apps/server/src",
-			"compilerOptions": {
-				"tsConfigPath": "apps/server/tsconfig.app.json"
-			}
-		},
 		"admin-api-server": {
 			"type": "application",
 			"root": "apps/server",
@@ -170,19 +152,19 @@
 				"tsConfigPath": "apps/server/tsconfig.app.json"
 			}
 		},
-		"h5p-editor-consumer": {
+		"legacy-file-archive": {
 			"type": "application",
 			"root": "apps/server",
-			"entryFile": "apps/h5p-editor-consumer.app",
+			"entryFile": "apps/legacy-file-archive.app",
 			"sourceRoot": "apps/server/src",
 			"compilerOptions": {
 				"tsConfigPath": "apps/server/tsconfig.app.json"
 			}
 		},
-		"legacy-file-archive": {
+		"notification-server": {
 			"type": "application",
 			"root": "apps/server",
-			"entryFile": "apps/legacy-file-archive.app",
+			"entryFile": "apps/notification-server.app",
 			"sourceRoot": "apps/server/src",
 			"compilerOptions": {
 				"tsConfigPath": "apps/server/tsconfig.app.json"

@@ -2,6 +2,7 @@ import { ErwinIdentifierService, ReferencedEntityType } from '@modules/erwin-ide
 import { Injectable } from '@nestjs/common';
 import { TypeGuard } from '@shared/common/guards';
 import { BadDataLoggableException, ExternalIdMissingLoggableException } from '../loggable';
+import { ClassProvisioningHandler } from './class-provisioning-handler';
 import {
 	ProvisioningContext,
 	ProvisioningEntityHandler,
@@ -23,12 +24,13 @@ export class ErwinProvisioningService {
 	constructor(
 		private readonly erwinIdentifierService: ErwinIdentifierService,
 		private readonly schoolProvisioningHandler: SchoolProvisioningHandler,
-		private readonly userProvisioningHandler: UserProvisioningHandler
+		private readonly userProvisioningHandler: UserProvisioningHandler,
+		private readonly classProvisioningHandler: ClassProvisioningHandler
 	) {
 		this.handlers = new Map<ProvisioningEntityType, ProvisioningEntityHandler>();
 		this.handlers.set(ProvisioningEntityType.SCHOOL, this.schoolProvisioningHandler);
 		this.handlers.set(ProvisioningEntityType.USER, this.userProvisioningHandler);
-		// TODO: Register class handler when implementing class provisioning
+		this.handlers.set(ProvisioningEntityType.CLASS, this.classProvisioningHandler);
 	}
 
 	public async provisionEntity(
@@ -116,6 +118,4 @@ export class ErwinProvisioningService {
 			referencedEntityId: entityId,
 		});
 	}
-
-	// TODO: Add Class-specific methods (findClassByExternalId, createClassEntity, updateClassEntity) when implementing Class provisioning
 }
