@@ -41,8 +41,8 @@ spec:
                 name: api-secret
             - configMapRef:
                 name: bilo-media-metadata-sync-cronjob-configmap
-            command: ['/bin/sh','-c']
-            args: ['npm run nest:start:sync-console:media:metadata:bilo:prod']
+            command: ['node', 'dist/apps/server/apps/sync-console.app', 'media', 'metadata', '--dataFormat', 'BILDUNGSLOGIN']
+            args: []
             resources:
               limits:
                 cpu: {{ BILO_MEDIA_METADATA_SYNC_CPU_LIMITS|default("2000m", true) }}
