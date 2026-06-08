@@ -2,22 +2,23 @@ import { NotificationLoggable } from './notification-loggable';
 
 describe(NotificationLoggable.name, () => {
 	describe('getLogMessage', () => {
-		describe('when a notification message is provided', () => {
+		describe('when a userId is provided', () => {
 			const setup = () => {
-				const message = 'Import finished with warnings';
-				const loggable = new NotificationLoggable(message);
+				const userId = 'user-123';
+				const loggable = new NotificationLoggable(userId);
 
-				return { message, loggable };
+				return { userId, loggable };
 			};
 
-			it('should return a log message containing type and message', () => {
-				const { message, loggable } = setup();
+			it('should return a log message', () => {
+				const { userId, loggable } = setup();
 
 				const result = loggable.getLogMessage();
 
 				expect(result).toEqual({
-					type: 'IMPORT_MESSAGE_NOTIFICATION',
-					message,
+					type: 'USER_NOTIFICATION',
+					message: `New notification for user ${userId}`,
+					data: { userId },
 				});
 			});
 		});

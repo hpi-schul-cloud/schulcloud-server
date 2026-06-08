@@ -1,6 +1,5 @@
 export {
 	AuthorizationBodyParamsReferenceType,
-	AuthorizationContextParams,
 	AuthorizationContextParamsAction,
 	AuthorizationContextParamsRequiredPermissions,
 } from './authorization-api-client';
