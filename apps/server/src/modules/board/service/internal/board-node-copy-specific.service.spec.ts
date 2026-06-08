@@ -234,7 +234,7 @@ describe(BoardNodeCopyService.name, () => {
 			expect(copyHelperService.deriveStatusFromElements).toHaveBeenCalledWith(result.elements);
 		});
 
-		describe('when a child copy throws an error', () => {
+		describe('when a child copy was rejected', () => {
 			it('should store a FAIL status with undefined copyEntity for the rejected child', async () => {
 				const { copyContext, card } = setup();
 
