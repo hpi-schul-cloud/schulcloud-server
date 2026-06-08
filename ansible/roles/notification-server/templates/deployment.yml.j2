@@ -42,9 +42,9 @@ spec:
         git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
     spec:
       securityContext:
-        runAsUser: 1000
-        runAsGroup: 1000
-        fsGroup: 1000
+        runAsUser: 65532
+        runAsGroup: 65532
+        fsGroup: 65532
         runAsNonRoot: true
       os:
         name: linux
@@ -69,7 +69,7 @@ spec:
             name: notification-server-secret
         - secretRef:
             name: session-valkey-password
-        command: ['npm', 'run', 'nest:start:notification-server:prod']
+        command: ['node', 'dist/apps/server/apps/notification-server.app']
         resources:
           limits:
             cpu: {{ NOTIFICATION_SERVER_CPU_LIMITS }}
