@@ -1,14 +1,10 @@
-import { Logger, LogMessage } from '@core/logger';
 import { Injectable } from '@nestjs/common';
-import util from 'util';
 import { BoardApi, BoardResponse, ColumnResponse, CreateBoardBodyParams, CreateBoardResponse } from '../generated';
 import { AdapterUtils } from './adapter.utils';
 
 @Injectable()
 export class BoardsClientAdapter {
-	constructor(private readonly boardApi: BoardApi, private readonly logger: Logger) {
-		logger.setContext(BoardsClientAdapter.name);
-	}
+	constructor(private readonly boardApi: BoardApi) {}
 
 	public async createBoard(jwt: string, params: CreateBoardBodyParams): Promise<CreateBoardResponse> {
 		const response = await this.boardApi.boardControllerCreateBoard(params, AdapterUtils.createAxiosConfigForJwt(jwt));

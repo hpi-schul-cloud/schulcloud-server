@@ -360,19 +360,7 @@ export class CommonCartridgeImportService {
 	): Promise<void> {
 		if (!cardElementProps.isResource) return;
 
-		this.logger.debug(
-			new CommonCartridgeMessageLoggable(`Starting with card element ${cardElementProps.identifier}`, {
-				fileRecordId: event.fileRecordId,
-			})
-		);
-
 		const resource = parser.getResource(cardElementProps);
-
-		this.logger.debug(
-			new CommonCartridgeMessageLoggable(`Read resource of element ${cardElementProps.identifier}`, {
-				fileRecordId: event.fileRecordId,
-			})
-		);
 
 		if (!resource) return;
 
