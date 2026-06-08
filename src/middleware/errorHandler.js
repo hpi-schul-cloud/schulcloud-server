@@ -185,8 +185,8 @@ const filterQuery = (url) => {
 };
 
 /**
- * Recursively filters sensitive data from an error-like object structure
- * including nested options, response, and request objects.
+ * Filters sensitive data from known nested properties of an error object
+ * (options, response, response.request). Does not recurse into arbitrary structures.
  * @param {Object} errorObj - The error object to filter
  */
 const filterErrorObject = (errorObj) => {
