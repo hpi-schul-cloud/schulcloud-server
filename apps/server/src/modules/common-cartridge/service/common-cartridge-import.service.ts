@@ -203,10 +203,7 @@ export class CommonCartridgeImportService {
 		for (const organization of organizations) {
 			if (organization.pathDepth === DEPTH_BOARD) {
 				boards.push(organization);
-				if (!boardOrganizations.has(organization.identifier)) {
-					boardOrganizations.set(organization.identifier, []);
-				}
-			} else if (organization.pathDepth >= DEPTH_COLUMN) {
+			} else {
 				const boardIdentifier = organization.path.split('/')[0];
 				const children = boardOrganizations.get(boardIdentifier) ?? [];
 				children.push(organization);
@@ -246,12 +243,14 @@ export class CommonCartridgeImportService {
 		event: ImportCourseEvent
 	): Promise<void> {
 		const columnsWithChildren = organizations.filter((organization) => organization.pathDepth >= DEPTH_COLUMN);
-		const columns: ColumnResource[] = columnsWithChildren.map((column) => {
-			return {
-				column,
-				isResourceColumn: column.isResource,
-			};
-		});
+		const columns: ColumnResource[] = columnsWithChildren
+			.filter((organization) => organization.pathDepth === DEPTH_COLUMN)
+			.map((column) => {
+				return {
+					column,
+					isResourceColumn: column.isResource,
+				};
+			});
 
 		// INFO: for await keeps the order of the columns in the same order as the parser.getOrganizations()
 		// with Promise.all, the order of the columns would be random
