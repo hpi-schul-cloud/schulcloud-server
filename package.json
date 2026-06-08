@@ -71,14 +71,6 @@
 		"nest:start:fwu-learning-contents": "nest start fwu-learning-contents",
 		"nest:start:fwu-learning-contents:debug": "nest start fwu-learning-contents --debug --watch",
 		"nest:start:fwu-learning-contents:prod": "node dist/apps/server/apps/fwu-learning-contents.app",
-		"nest:start:h5p": "nest start h5p-editor",
-		"nest:start:h5p:dev": "nest start h5p-editor --debug --watch",
-		"nest:start:h5p:prod": "node dist/apps/server/apps/h5p-editor.app",
-		"nest:start:h5p:consumer": "nest start h5p-editor-consumer",
-		"nest:start:h5p:consumer:prod": "node dist/apps/server/apps/h5p-editor-consumer.app",
-		"nest:start:h5p:library-management": "nest start h5p-library-management",
-		"nest:start:h5p:library-management:dev": "nest start h5p-library-management --debug --watch",
-		"nest:start:h5p:library-management:prod": "node dist/apps/server/apps/h5p-library-management.app",
 		"nest:start:legacy-file-archive": "nest start legacy-file-archive",
 		"nest:start:legacy-file-archive:dev": "nest start legacy-file-archive --watch",
 		"nest:start:legacy-file-archive:debug": "nest start legacy-file-archive --debug --watch",
@@ -140,10 +132,7 @@
 		"generate-client:vidis-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key vidis-api",
 		"pregenerate-client:common-cartridge-clients": "rimraf ./apps/server/src/infra/common-cartridge-clients/generated && rimraf ./apps/server/src/infra/common-cartridge-clients/fs-generated",
 		"generate-client:common-cartridge-clients": "openapi-generator-cli generate -c ./openapitools.json --generator-key common-cartridge-clients && openapi-generator-cli generate -c ./openapitools.json --generator-key common-cartridge-files-storage-api",
-		"knip": "knip",
-		"h5p:package-h5p-libraries": "tsc scripts/h5p/package-h5p-libraries.ts --esModuleInterop && set -a && source .env && set +a && node ./scripts/h5p/package-h5p-libraries.js",
-		"h5p:update-h5p-map": "tsc scripts/h5p/update-h5p-map.ts --esModuleInterop && set -a && source .env && set +a && node ./scripts/h5p/update-h5p-map.js",
-		"h5p:upload-h5p-libraries": "tsc scripts/h5p/upload-h5p-libraries.ts --esModuleInterop && set -a && source .env && set +a && node ./scripts/h5p/upload-h5p-libraries.js"
+		"knip": "knip"
 	},
 	"overrides": {
 		"gm": {
@@ -167,9 +156,6 @@
 		"@golevelup/nestjs-rabbitmq": "^9.0.0",
 		"@hendt/xml2json": "^1.0.3",
 		"@hpi-schul-cloud/commons": "^1.3.4",
-		"@keyv/mongo": "^3.0.5",
-		"@lumieducation/h5p-server": "^10.0.4",
-		"@lumieducation/h5p-svg-sanitizer": "^10.0.4",
 		"@mikro-orm/core": "^6.6.11",
 		"@mikro-orm/migrations-mongodb": "^6.6.11",
 		"@mikro-orm/mongodb": "^6.6.11",
@@ -217,8 +203,6 @@
 		"feathers-swagger": "^3.0.0",
 		"fishery": "^2.4.0",
 		"html-entities": "^2.6.0",
-		"i18next": "^24.2.3",
-		"i18next-fs-backend": "^2.6.4",
 		"iovalkey": "^0.3.1",
 		"jsdom": "^26.1.0",
 		"jsonwebtoken": "^9.0.3",
@@ -226,7 +210,6 @@
 		"keyv": "^5.5.3",
 		"ldapjs": "git://github.com/hpi-schul-cloud/node-ldapjs.git",
 		"lodash": "^4.17.21",
-		"mime": "^1.6.0",
 		"mixwith": "^0.1.1",
 		"moment": "^2.30.1",
 		"mongodb": "^5.9.2",
@@ -261,8 +244,7 @@
 		"urlsafe-base64": "^1.0.0",
 		"uuid": "^11.1.0",
 		"winston": "^3.17.0",
-		"xml2js": "^0.6.2",
-		"yaml": "^2.9.0"
+		"xml2js": "^0.6.2"
 	},
 	"devDependencies": {
 		"@faker-js/faker": "^9.6.0",
