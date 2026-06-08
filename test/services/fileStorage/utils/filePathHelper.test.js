@@ -2,6 +2,7 @@ const chai = require('chai');
 
 const { expect } = chai;
 
+const { BadRequest } = require('../../../../src/errors');
 const {
 	generateFileNameSuffix,
 	whitelistFileName,
@@ -51,6 +52,24 @@ describe('filePathHelper', () => {
 			const replaceAllFromPrevoiusBlacklist = '\';:=#*+[]~<{\\()}>§$%&|^£@±?!"`□]';
 			const replaceAllFromPrevoiusBlacklistResult = whitelistFileName(replaceAllFromPrevoiusBlacklist);
 			expect(replaceAllFromPrevoiusBlacklistResult).to.equal('-');
+		});
+
+		it('should throw BadRequest when fileName is undefined', () => {
+			expect(() => whitelistFileName(undefined)).to.throw(BadRequest);
+		});
+
+		it('should throw BadRequest when fileName is null', () => {
+			expect(() => whitelistFileName(null)).to.throw(BadRequest);
+		});
+
+		it('should throw BadRequest when fileName is an empty string', () => {
+			expect(() => whitelistFileName('')).to.throw(BadRequest);
+		});
+
+		it('should throw BadRequest when fileName is not a string', () => {
+			expect(() => whitelistFileName(123)).to.throw(BadRequest);
+			expect(() => whitelistFileName({ name: 'file.txt' })).to.throw(BadRequest);
+			expect(() => whitelistFileName(['file.txt'])).to.throw(BadRequest);
 		});
 	});
 
