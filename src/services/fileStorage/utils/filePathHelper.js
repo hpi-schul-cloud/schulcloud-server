@@ -5,11 +5,11 @@ const s3FileNameFilterExpression = /[^0-9A-Za-z\-_.]+/g;
  * ensures a valid filename for s3 removing invalid characters from local/internal filename
  * @param {string} fileName
  * @returns {string}
- * @throws {BadRequest} if fileName is not provided or not a string
+ * @throws {BadRequest} if fileName is not a non-empty string
  */
 const whitelistFileName = (fileName) => {
-	if (!fileName || typeof fileName !== 'string') {
-		throw new BadRequest('Filename is required and must be a string');
+	if (typeof fileName !== 'string' || fileName.length === 0) {
+		throw new BadRequest('Filename must be a non-empty string');
 	}
 	// see https://docs.aws.amazon.com/AmazonS3/latest/userguide/object-keys.html for valid characters
 	// the regex below reduces allowed special chars to hyphen, underscore, period
@@ -51,7 +51,7 @@ const returnFileType = (fileName) =>
 		gif: 'image/gif',
 		tiff: 'image/tiff',
 		tif: 'image/tiff',
-	}[fileName.split('.').pop()]);
+	})[fileName.split('.').pop()];
 
 module.exports = {
 	whitelistFileName,
