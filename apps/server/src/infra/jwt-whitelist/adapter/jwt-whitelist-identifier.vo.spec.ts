@@ -1,4 +1,4 @@
-import { JwtWhitelistIdentifier } from './jwt-redis-identifier.vo';
+import { JwtWhitelistIdentifier } from './jwt-whitelist-identifier.vo';
 
 describe(JwtWhitelistIdentifier.name, () => {
 	describe('forJti', () => {

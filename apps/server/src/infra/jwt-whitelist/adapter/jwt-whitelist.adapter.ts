@@ -3,7 +3,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { createJwtRedisData, JwtRedisData } from '../helper';
 import { InternalJwtWhitelistConfig } from '../interface';
-import { JwtWhitelistIdentifier } from './jwt-redis-identifier.vo';
+import { JwtWhitelistIdentifier } from './jwt-whitelist-identifier.vo';
 
 @Injectable()
 export class JwtWhitelistAdapter {
