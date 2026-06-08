@@ -2,8 +2,8 @@ import { LoggerModule } from '@core/logger';
 import { ConfigurationModule } from '@infra/configuration';
 import { HttpModule } from '@nestjs/axios';
 import { DynamicModule, Module } from '@nestjs/common';
-import * as http from 'http';
-import * as https from 'https';
+import * as http from 'node:http';
+import * as https from 'node:https';
 import {
 	BoardsClientAdapter,
 	CardClientAdapter,
