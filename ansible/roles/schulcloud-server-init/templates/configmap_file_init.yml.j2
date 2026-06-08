@@ -307,4 +307,36 @@ data:
     fi
     # ========== End of FWU tool creation
 
+    # ========== Start of Erwin Portal system creation
+    if [[ $SC_THEME == "dbc" ]]; then
+      echo "Adding Erwin Portal system to systems collection"
+
+      ERWIN_PORTAL_OAUTH_CLIENT_SECRET=$(encrypt_secret $ERWIN_PORTAL_OAUTH_CLIENT_SECRET $AES_KEY)
+      mongosh $DB_URL --quiet --eval 'db.systems.insertOne(
+          {
+            "_id": ObjectId("66d707f5c5202ba10c5e6256"),
+            "alias": "erwin",
+            "displayName": "Erwin Portal",
+            "type": "oauth",
+            "provisioningStrategy": "erwin",
+            "oauthConfig": {
+              "clientId": "'$ERWIN_PORTAL_OAUTH_CLIENT_ID'",
+              "clientSecret": "'$ERWIN_PORTAL_OAUTH_CLIENT_SECRET'",
+              "tokenEndpoint": "https://main-keycloak.dev.erwin.dbildungscloud.de/realms/SPSH/protocol/openid-connect/token",
+              "grantType": "authorization_code",
+              "scope": "openid",
+              "responseType": "code",
+              "redirectUri": "https://{{ NAMESPACE }}.dbc.dbildungscloud.dev/api/v3/sso/oauth",
+              "authEndpoint": "https://main-keycloak.dev.erwin.dbildungscloud.de/realms/SPSH/protocol/openid-connect/auth",
+              "provider": "erwin",
+              "jwksEndpoint": "https://main-keycloak.dev.erwin.dbildungscloud.de/realms/SPSH/protocol/openid-connect/certs",
+              "issuer": "https://main-keycloak.dev.erwin.dbildungscloud.de/realms/SPSH"
+            }
+          }
+      );'
+
+      echo "Successfully added Erwin Portal system"
+    fi
+    # ========== End of Erwin Portal system creation
+
 
