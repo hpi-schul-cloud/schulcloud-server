@@ -76,6 +76,7 @@ describe('DatabaseManagementConsole', () => {
 				expect(consoleInfoSpy).toHaveBeenCalledWith(result);
 			});
 		});
+
 		describe('When seeding collections', () => {
 			it('should seed existing collections', async () => {
 				await service.seedCollections({});
@@ -89,11 +90,29 @@ describe('DatabaseManagementConsole', () => {
 				expect(consoleInfoSpy).toHaveBeenCalledWith(result);
 			});
 		});
-		it('should sync indexes', async () => {
-			await service.syncIndexes();
-			expect(consoleInfoSpy).toHaveBeenCalledWith('sync of indexes is completed');
-			expect(databaseManagementUc.syncIndexes).toHaveBeenCalled();
+
+		describe('when calling syncIndexes', () => {
+			it('should sync indexes', async () => {
+				await service.syncIndexes();
+				expect(consoleInfoSpy).toHaveBeenCalledWith('sync of indexes is completed');
+				expect(databaseManagementUc.syncIndexes).toHaveBeenCalled();
+			});
 		});
+
+		describe('When calling migrateAndSyncIndexes', () => {
+			it('should sync indexes', async () => {
+				await service.syncIndexes();
+				expect(consoleInfoSpy).toHaveBeenCalledWith('sync of indexes is completed');
+				expect(databaseManagementUc.syncIndexes).toHaveBeenCalled();
+			});
+
+			it('should migrate up', async () => {
+				await service.migration({ up: true });
+				expect(consoleInfoSpy).toHaveBeenCalledWith('migration up is completed');
+				expect(databaseManagementUc.migrationUp).toHaveBeenCalled();
+			});
+		});
+
 		describe('When calling migration', () => {
 			it('should migrate up', async () => {
 				await service.migration({ up: true });
