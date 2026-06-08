@@ -1,14 +1,13 @@
-import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotificationType } from '../../types';
 import { NotificationRepo } from '../interfaces';
 import { NotificationService } from './notification.service';
+import { notificationFactory } from '../testing';
 
 describe(NotificationService.name, () => {
 	let module: TestingModule;
 	let sut: NotificationService;
-	let loggerMock: DeepMocked<Logger>;
 	let notificationRepoMock: DeepMocked<NotificationRepo>;
 	const NOTIFICATION_REPO = Symbol('NOTIFICATION_REPO');
 
@@ -16,24 +15,18 @@ describe(NotificationService.name, () => {
 		module = await Test.createTestingModule({
 			providers: [
 				{
-					provide: Logger,
-					useValue: createMock<Logger>(),
-				},
-				{
 					provide: NOTIFICATION_REPO,
 					useValue: createMock<NotificationRepo>(),
 				},
 				{
 					provide: NotificationService,
-					useFactory: (logger: Logger, notificationRepo: NotificationRepo) =>
-						new NotificationService(logger, notificationRepo),
-					inject: [Logger, NOTIFICATION_REPO],
+					useFactory: (notificationRepo: NotificationRepo) => new NotificationService(notificationRepo),
+					inject: [NOTIFICATION_REPO],
 				},
 			],
 		}).compile();
 
 		sut = module.get(NotificationService);
-		loggerMock = module.get(Logger);
 		notificationRepoMock = module.get(NOTIFICATION_REPO);
 	});
 
@@ -56,7 +49,7 @@ describe(NotificationService.name, () => {
 				const notification = {
 					type: NotificationType.ERROR,
 					key: 'ERROR_KEY',
-					arguments: ['arg1'],
+					arguments: {},
 					userId: 'user-id',
 					expiresAt: new Date(),
 				};
@@ -79,13 +72,54 @@ describe(NotificationService.name, () => {
 					})
 				);
 			});
+		});
+	});
 
-			it('should log an information', async () => {
-				const { notification } = setup();
+	describe('getUnreadNotifications', () => {
+		describe('when getting unread notifications for a user', () => {
+			const setup = () => {
+				const userId = 'user-id';
+				const notifications = notificationFactory.buildList(3, { userId });
 
-				await sut.createNotification(notification);
+				notificationRepoMock.findForUser.mockResolvedValue(notifications);
 
-				expect(loggerMock.info).toHaveBeenCalledTimes(1);
+				return { userId, notifications };
+			};
+
+			it('should call the repository with the user id', async () => {
+				const { userId } = setup();
+
+				await sut.getUnreadNotifications(userId);
+
+				expect(notificationRepoMock.findForUser).toHaveBeenCalledWith(userId);
+			});
+
+			it('should return the notifications', async () => {
+				const { userId, notifications } = setup();
+
+				const result = await sut.getUnreadNotifications(userId);
+
+				expect(result).toEqual(notifications);
+			});
+		});
+	});
+
+	describe('deleteNotification', () => {
+		describe('when deleting a notification', () => {
+			const setup = () => {
+				const notificationId = 'notification-id';
+
+				notificationRepoMock.delete.mockResolvedValue();
+
+				return { notificationId };
+			};
+
+			it('should call the repository with the notification id', async () => {
+				const { notificationId } = setup();
+
+				await sut.deleteNotification(notificationId);
+
+				expect(notificationRepoMock.delete).toHaveBeenCalledWith(notificationId);
 			});
 		});
 	});
