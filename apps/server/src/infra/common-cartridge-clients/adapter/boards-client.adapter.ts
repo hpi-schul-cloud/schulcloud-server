@@ -8,6 +8,7 @@ export class BoardsClientAdapter {
 
 	public async createBoard(jwt: string, params: CreateBoardBodyParams): Promise<CreateBoardResponse> {
 		const response = await this.boardApi.boardControllerCreateBoard(params, AdapterUtils.createAxiosConfigForJwt(jwt));
+
 		return response.data;
 	}
 
