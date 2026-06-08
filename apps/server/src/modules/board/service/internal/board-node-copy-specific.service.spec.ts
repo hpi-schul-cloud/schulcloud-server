@@ -228,10 +228,12 @@ describe(BoardNodeCopyService.name, () => {
 
 		it('should use the service to derive status from children', async () => {
 			const { copyContext, card } = setup();
+			copyHelperService.deriveStatusFromElements.mockReturnValueOnce(CopyStatusEnum.PARTIAL);
 
 			const result = await service.copyCard(card, copyContext);
 
 			expect(copyHelperService.deriveStatusFromElements).toHaveBeenCalledWith(result.elements);
+			expect(result.status).toBe(CopyStatusEnum.PARTIAL);
 		});
 
 		describe('when a child copy was rejected', () => {
