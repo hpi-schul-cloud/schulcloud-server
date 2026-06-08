@@ -308,7 +308,7 @@ data:
     # ========== End of FWU tool creation
 
     # ========== Start of Erwin Portal system creation
-    if [[ $SC_THEME == "dbc" ]]; then
+    if [[ $SC_SHORTNAME  == "dbc" ]]; then
       echo "Adding Erwin Portal system to systems collection"
 
       ERWIN_PORTAL_OAUTH_CLIENT_SECRET=$(encrypt_secret $ERWIN_PORTAL_OAUTH_CLIENT_SECRET $AES_KEY)
