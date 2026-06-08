@@ -219,7 +219,9 @@ const filterSecrets = (error, req, res, next) => {
 		filterErrorObject(error);
 		// Filter nested error objects (e.g., StatusCodeError wraps error in error.error)
 		if (error.error && typeof error.error === 'object') {
-			error.error = filter(error.error);
+			// Use filterDeep directly to preserve Error prototype chain
+			// (e.g., SilentError instances need instanceof checks later)
+			filterDeep(error.error);
 			filterErrorObject(error.error);
 		}
 	}
