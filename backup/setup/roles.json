@@ -697,5 +697,15 @@
 		"name": "guestExternalPerson",
 		"permissions": [],
 		"roles": []
+	},
+	{
+		"_id": {
+			"$oid": "6a27e01ad44ad4f5e0e3d325"
+		},
+		"name": "serviceAccount",
+		"roles": [],
+		"permissions": [
+			"CAN_EXECUTE_INSTANCE_OPERATIONS"
+		]
 	}
 ]

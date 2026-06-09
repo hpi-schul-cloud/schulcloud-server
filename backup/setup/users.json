@@ -11,7 +11,7 @@
 			"$date": "2020-10-21T15:47:29.456Z"
 		},
 		"birthday": {
-			"$date": "1977-01-01T00:00:00.000Z"
+			"$date": "1977-01-01T00:00:00Z"
 		},
 		"createdAt": {
 			"$date": "2017-01-01T00:06:37.148Z"
@@ -222,7 +222,7 @@
 			"$date": "2020-10-21T15:47:29.456Z"
 		},
 		"birthday": {
-			"$date": "1977-01-01T00:00:00.000Z"
+			"$date": "1977-01-01T00:00:00Z"
 		},
 		"createdAt": {
 			"$date": "2017-01-01T00:06:37.148Z"
@@ -353,7 +353,7 @@
 			"$date": "2017-01-01T00:06:37.148Z"
 		},
 		"birthday": {
-			"$date": "1977-01-01T00:00:00.000Z"
+			"$date": "1977-01-01T00:00:00Z"
 		},
 		"preferences": {
 			"firstLogin": true
@@ -526,7 +526,7 @@
 			"$date": "2017-01-01T00:06:37.148Z"
 		},
 		"birthday": {
-			"$date": "2000-01-01T00:00:00.000Z"
+			"$date": "2000-01-01T00:00:00Z"
 		},
 		"preferences": {
 			"firstLogin": true
@@ -704,7 +704,7 @@
 			"$date": "2017-01-01T00:06:37.148Z"
 		},
 		"birthday": {
-			"$date": "1977-01-01T00:00:00.000Z"
+			"$date": "1977-01-01T00:00:00Z"
 		},
 		"preferences": {
 			"firstLogin": true
@@ -863,7 +863,7 @@
 			"$date": "2017-01-01T00:06:37.148Z"
 		},
 		"birthday": {
-			"$date": "1977-01-01T00:00:00.000Z"
+			"$date": "1977-01-01T00:00:00Z"
 		},
 		"preferences": {
 			"firstLogin": true
@@ -1001,7 +1001,7 @@
 			"$date": "2017-01-01T00:06:37.148Z"
 		},
 		"birthday": {
-			"$date": "1977-01-01T00:00:00.000Z"
+			"$date": "1977-01-01T00:00:00Z"
 		},
 		"preferences": {
 			"firstLogin": true
@@ -1223,7 +1223,7 @@
 			"$date": "2017-01-01T00:06:37.148Z"
 		},
 		"birthday": {
-			"$date": "1989-01-01T00:00:00.000Z"
+			"$date": "1989-01-01T00:00:00Z"
 		},
 		"preferences": {
 			"firstLogin": true
@@ -1632,7 +1632,7 @@
 			"$oid": "5f2987e020834114b8efd6f6"
 		},
 		"birthday": {
-			"$date": "2010-01-01T00:00:00.000Z"
+			"$date": "2010-01-01T00:00:00Z"
 		},
 		"preferences": {
 			"firstLogin": true
@@ -1793,7 +1793,7 @@
 			"$oid": "5f2987e020834114b8efd6f6"
 		},
 		"birthday": {
-			"$date": "1977-01-01T00:00:00.000Z"
+			"$date": "1977-01-01T00:00:00Z"
 		},
 		"preferences": {
 			"firstLogin": true
@@ -1919,7 +1919,7 @@
 		},
 		"email": "klara.fall@schul-cloud.org",
 		"birthday": {
-			"$date": "1977-01-01T00:00:00.000Z"
+			"$date": "1977-01-01T00:00:00Z"
 		},
 		"schoolId": {
 			"$oid": "5f2987e020834114b8efd6f6"
@@ -2097,7 +2097,7 @@
 		"firstName": "Paula",
 		"lastName": "Meyer",
 		"birthday": {
-			"$date": "2000-09-05T00:00:00.000Z"
+			"$date": "2000-09-05T00:00:00Z"
 		},
 		"preferences": {},
 		"schoolId": {
@@ -17762,7 +17762,7 @@
 			"$date": "2023-01-23T09:11:50.153Z"
 		},
 		"birthday": {
-			"$date": "1977-01-01T00:00:00.000Z"
+			"$date": "1977-01-01T00:00:00Z"
 		},
 		"preferences": {
 			"firstLogin": true
@@ -19059,7 +19059,7 @@
 			"$date": "2020-10-21T15:47:29.456Z"
 		},
 		"birthday": {
-			"$date": "1977-01-01T00:00:00.000Z"
+			"$date": "1977-01-01T00:00:00Z"
 		},
 		"createdAt": {
 			"$date": "2017-01-01T00:06:37.148Z"
@@ -19342,7 +19342,7 @@
 			"$date": "2020-10-21T15:47:29.456Z"
 		},
 		"birthday": {
-			"$date": "1977-01-01T00:00:00.000Z"
+			"$date": "1977-01-01T00:00:00Z"
 		},
 		"createdAt": {
 			"$date": "2017-01-01T00:06:37.148Z"
@@ -19649,7 +19649,7 @@
 			"$date": "2020-10-21T15:47:29.456Z"
 		},
 		"birthday": {
-			"$date": "1977-01-01T00:00:00.000Z"
+			"$date": "1977-01-01T00:00:00Z"
 		},
 		"createdAt": {
 			"$date": "2017-01-01T00:06:37.148Z"
@@ -19665,7 +19665,7 @@
 				"$oid": "0000d186816abba584714c99"
 			}
 		],
-		"language" : "uk",
+		"language": "uk",
 		"allSearchableStrings": [
 			"Sch",
 			"Schu",
@@ -20011,7 +20011,7 @@
 			"$date": "2020-10-21T15:47:29.456Z"
 		},
 		"birthday": {
-			"$date": "1977-01-01T00:00:00.000Z"
+			"$date": "1977-01-01T00:00:00Z"
 		},
 		"createdAt": {
 			"$date": "2017-01-01T00:06:37.148Z"
@@ -20382,7 +20382,7 @@
 			"$date": "2020-10-21T15:47:29.456Z"
 		},
 		"birthday": {
-			"$date": "1977-01-01T00:00:00.000Z"
+			"$date": "1977-01-01T00:00:00Z"
 		},
 		"createdAt": {
 			"$date": "2017-01-01T00:06:37.148Z"
@@ -20730,7 +20730,7 @@
 			"$date": "2020-10-21T15:47:29.456Z"
 		},
 		"birthday": {
-			"$date": "1977-01-01T00:00:00.000Z"
+			"$date": "1977-01-01T00:00:00Z"
 		},
 		"createdAt": {
 			"$date": "2017-01-01T00:06:37.148Z"
@@ -21083,7 +21083,7 @@
 			"$date": "2020-10-21T15:47:29.456Z"
 		},
 		"birthday": {
-			"$date": "1977-01-01T00:00:00.000Z"
+			"$date": "1977-01-01T00:00:00Z"
 		},
 		"createdAt": {
 			"$date": "2017-01-01T00:06:37.148Z"
@@ -21487,7 +21487,7 @@
 			"$date": "2020-10-21T15:47:29.456Z"
 		},
 		"birthday": {
-			"$date": "1977-01-01T00:00:00.000Z"
+			"$date": "1977-01-01T00:00:00Z"
 		},
 		"createdAt": {
 			"$date": "2017-01-01T00:06:37.148Z"
@@ -21681,5 +21681,410 @@
 			".org",
 			"org"
 		]
+	},
+	{
+		"_id": {
+			"$oid": "6a27e01ad44ad4f5e0e3d326"
+		},
+		"roles": [
+			{
+				"$oid": "6a27e01ad44ad4f5e0e3d325"
+			}
+		],
+		"email": "delete-s3-files-cronjob@schul-cloud.org",
+		"schoolId": {
+			"$oid": "5f2987e020834114b8efd6f8"
+		},
+		"firstName": "DeleteS3FilesCronjob",
+		"lastName": "ServiceAccount",
+		"allSearchableStrings": [
+			"Del",
+			"Dele",
+			"Delet",
+			"Delete",
+			"DeleteS",
+			"DeleteS3",
+			"DeleteS3F",
+			"DeleteS3Fi",
+			"DeleteS3Fil",
+			"DeleteS3File",
+			"DeleteS3Files",
+			"DeleteS3FilesC",
+			"DeleteS3FilesCr",
+			"DeleteS3FilesCro",
+			"DeleteS3FilesCron",
+			"DeleteS3FilesCronj",
+			"DeleteS3FilesCronjo",
+			"DeleteS3FilesCronjob",
+			"ele",
+			"elet",
+			"elete",
+			"eleteS",
+			"eleteS3",
+			"eleteS3F",
+			"eleteS3Fi",
+			"eleteS3Fil",
+			"eleteS3File",
+			"eleteS3Files",
+			"eleteS3FilesC",
+			"eleteS3FilesCr",
+			"eleteS3FilesCro",
+			"eleteS3FilesCron",
+			"eleteS3FilesCronj",
+			"eleteS3FilesCronjo",
+			"eleteS3FilesCronjob",
+			"let",
+			"lete",
+			"leteS",
+			"leteS3",
+			"leteS3F",
+			"leteS3Fi",
+			"leteS3Fil",
+			"leteS3File",
+			"leteS3Files",
+			"leteS3FilesC",
+			"leteS3FilesCr",
+			"leteS3FilesCro",
+			"leteS3FilesCron",
+			"leteS3FilesCronj",
+			"leteS3FilesCronjo",
+			"leteS3FilesCronjob",
+			"ete",
+			"eteS",
+			"eteS3",
+			"eteS3F",
+			"eteS3Fi",
+			"eteS3Fil",
+			"eteS3File",
+			"eteS3Files",
+			"eteS3FilesC",
+			"eteS3FilesCr",
+			"eteS3FilesCro",
+			"eteS3FilesCron",
+			"eteS3FilesCronj",
+			"eteS3FilesCronjo",
+			"eteS3FilesCronjob",
+			"teS",
+			"teS3",
+			"teS3F",
+			"teS3Fi",
+			"teS3Fil",
+			"teS3File",
+			"teS3Files",
+			"teS3FilesC",
+			"teS3FilesCr",
+			"teS3FilesCro",
+			"teS3FilesCron",
+			"teS3FilesCronj",
+			"teS3FilesCronjo",
+			"teS3FilesCronjob",
+			"eS3",
+			"eS3F",
+			"eS3Fi",
+			"eS3Fil",
+			"eS3File",
+			"eS3Files",
+			"eS3FilesC",
+			"eS3FilesCr",
+			"eS3FilesCro",
+			"eS3FilesCron",
+			"eS3FilesCronj",
+			"eS3FilesCronjo",
+			"eS3FilesCronjob",
+			"S3F",
+			"S3Fi",
+			"S3Fil",
+			"S3File",
+			"S3Files",
+			"S3FilesC",
+			"S3FilesCr",
+			"S3FilesCro",
+			"S3FilesCron",
+			"S3FilesCronj",
+			"S3FilesCronjo",
+			"S3FilesCronjob",
+			"3Fi",
+			"3Fil",
+			"3File",
+			"3Files",
+			"3FilesC",
+			"3FilesCr",
+			"3FilesCro",
+			"3FilesCron",
+			"3FilesCronj",
+			"3FilesCronjo",
+			"3FilesCronjob",
+			"Fil",
+			"File",
+			"Files",
+			"FilesC",
+			"FilesCr",
+			"FilesCro",
+			"FilesCron",
+			"FilesCronj",
+			"FilesCronjo",
+			"FilesCronjob",
+			"ile",
+			"iles",
+			"ilesC",
+			"ilesCr",
+			"ilesCro",
+			"ilesCron",
+			"ilesCronj",
+			"ilesCronjo",
+			"ilesCronjob",
+			"les",
+			"lesC",
+			"lesCr",
+			"lesCro",
+			"lesCron",
+			"lesCronj",
+			"lesCronjo",
+			"lesCronjob",
+			"esC",
+			"esCr",
+			"esCro",
+			"esCron",
+			"esCronj",
+			"esCronjo",
+			"esCronjob",
+			"sCr",
+			"sCro",
+			"sCron",
+			"sCronj",
+			"sCronjo",
+			"sCronjob",
+			"Cro",
+			"Cron",
+			"Cronj",
+			"Cronjo",
+			"Cronjob",
+			"ron",
+			"ronj",
+			"ronjo",
+			"ronjob",
+			"onj",
+			"onjo",
+			"onjob",
+			"njo",
+			"njob",
+			"job",
+			"Ser",
+			"Serv",
+			"Servi",
+			"Servic",
+			"Service",
+			"ServiceA",
+			"ServiceAc",
+			"ServiceAcc",
+			"ServiceAcco",
+			"ServiceAccou",
+			"ServiceAccoun",
+			"ServiceAccount",
+			"erv",
+			"ervi",
+			"ervic",
+			"ervice",
+			"erviceA",
+			"erviceAc",
+			"erviceAcc",
+			"erviceAcco",
+			"erviceAccou",
+			"erviceAccoun",
+			"erviceAccount",
+			"rvi",
+			"rvic",
+			"rvice",
+			"rviceA",
+			"rviceAc",
+			"rviceAcc",
+			"rviceAcco",
+			"rviceAccou",
+			"rviceAccoun",
+			"rviceAccount",
+			"vic",
+			"vice",
+			"viceA",
+			"viceAc",
+			"viceAcc",
+			"viceAcco",
+			"viceAccou",
+			"viceAccoun",
+			"viceAccount",
+			"ice",
+			"iceA",
+			"iceAc",
+			"iceAcc",
+			"iceAcco",
+			"iceAccou",
+			"iceAccoun",
+			"iceAccount",
+			"ceA",
+			"ceAc",
+			"ceAcc",
+			"ceAcco",
+			"ceAccou",
+			"ceAccoun",
+			"ceAccount",
+			"eAc",
+			"eAcc",
+			"eAcco",
+			"eAccou",
+			"eAccoun",
+			"eAccount",
+			"Acc",
+			"Acco",
+			"Accou",
+			"Accoun",
+			"Account",
+			"cco",
+			"ccou",
+			"ccoun",
+			"ccount",
+			"cou",
+			"coun",
+			"count",
+			"oun",
+			"ount",
+			"unt",
+			"del",
+			"dele",
+			"delet",
+			"delete",
+			"ele",
+			"elet",
+			"elete",
+			"let",
+			"lete",
+			"ete",
+			"fil",
+			"file",
+			"files",
+			"ile",
+			"iles",
+			"les",
+			"cro",
+			"cron",
+			"cronj",
+			"cronjo",
+			"cronjob",
+			"cronjob@",
+			"cronjob@s",
+			"cronjob@sc",
+			"cronjob@sch",
+			"cronjob@schu",
+			"cronjob@schul",
+			"ron",
+			"ronj",
+			"ronjo",
+			"ronjob",
+			"ronjob@",
+			"ronjob@s",
+			"ronjob@sc",
+			"ronjob@sch",
+			"ronjob@schu",
+			"ronjob@schul",
+			"onj",
+			"onjo",
+			"onjob",
+			"onjob@",
+			"onjob@s",
+			"onjob@sc",
+			"onjob@sch",
+			"onjob@schu",
+			"onjob@schul",
+			"njo",
+			"njob",
+			"njob@",
+			"njob@s",
+			"njob@sc",
+			"njob@sch",
+			"njob@schu",
+			"njob@schul",
+			"job",
+			"job@",
+			"job@s",
+			"job@sc",
+			"job@sch",
+			"job@schu",
+			"job@schul",
+			"ob@",
+			"ob@s",
+			"ob@sc",
+			"ob@sch",
+			"ob@schu",
+			"ob@schul",
+			"b@s",
+			"b@sc",
+			"b@sch",
+			"b@schu",
+			"b@schul",
+			"@sc",
+			"@sch",
+			"@schu",
+			"@schul",
+			"sch",
+			"schu",
+			"schul",
+			"chu",
+			"chul",
+			"hul",
+			"clo",
+			"clou",
+			"cloud",
+			"cloud.",
+			"cloud.o",
+			"cloud.or",
+			"cloud.org",
+			"lou",
+			"loud",
+			"loud.",
+			"loud.o",
+			"loud.or",
+			"loud.org",
+			"oud",
+			"oud.",
+			"oud.o",
+			"oud.or",
+			"oud.org",
+			"ud.",
+			"ud.o",
+			"ud.or",
+			"ud.org",
+			"d.o",
+			"d.or",
+			"d.org",
+			".or",
+			".org",
+			"org"
+		],
+		"forcePasswordChange": false,
+		"parents": [],
+		"language": "de",
+		"preferences": {
+			"registrationMailSend": true,
+			"firstLogin": true
+		},
+		"consent": {
+			"parentConsents": [],
+			"userConsent": {
+				"form": "digital",
+				"privacyConsent": true,
+				"termsOfUseConsent": true,
+				"dateOfPrivacyConsent": {
+					"$date": "2026-06-09T09:42:50.589Z"
+				},
+				"dateOfTermsOfUseConsent": {
+					"$date": "2026-06-09T09:42:50.589Z"
+				}
+			}
+		},
+		"deletedAt": null,
+		"createdAt": {
+			"$date": "2026-06-09T09:42:50.589Z"
+		},
+		"updatedAt": {
+			"$date": "2026-06-09T09:42:50.589Z"
+		}
 	}
 ]
