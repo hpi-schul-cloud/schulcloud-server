@@ -27,8 +27,8 @@ export class AuthenticationErrorLoggableException extends UnauthorizedException 
 	private maskEmail(email: string): string {
 		const atIndex = email.indexOf('@');
 
-		if (atIndex <= 0) {
-			return email.length <= 3 ? email : `${email.slice(0, 3)}***`;
+		if (atIndex <= 3) {
+			return `${email.slice(0, 3)}***`;
 		}
 
 		const localPart = email.slice(0, atIndex);
