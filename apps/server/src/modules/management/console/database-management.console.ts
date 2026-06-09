@@ -78,6 +78,23 @@ export class DatabaseManagementConsole {
 	}
 
 	@Command({
+		command: 'migrate-and-sync-indexes',
+		options: [],
+		description: 'run migration up and sync indexes',
+	})
+	public async migrateAndSyncIndexes(): Promise<string> {
+		await this.databaseManagementUc.migrationUp();
+		this.consoleWriter.info('migration up is completed');
+
+		await this.databaseManagementUc.syncIndexes();
+		this.consoleWriter.info('sync of indexes is completed');
+
+		const report = 'database setup completed (migration up + sync indexes)';
+		this.consoleWriter.info(report);
+		return report;
+	}
+
+	@Command({
 		command: 'sync-indexes',
 		options: [],
 		description: 'sync indexes from nest and mikroorm',
