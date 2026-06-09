@@ -42,9 +42,9 @@ spec:
         git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
     spec:
       securityContext:
-        runAsUser: 1000
-        runAsGroup: 1000
-        fsGroup: 1000
+        runAsUser: 65532
+        runAsGroup: 65532
+        fsGroup: 65532
         runAsNonRoot: true
       os:
         name: linux
@@ -63,7 +63,7 @@ spec:
             name: api-management-configmap
         - secretRef:
             name: api-secret
-        command: ['npm', 'run', 'nest:start:management:prod']
+        command: ['node', 'dist/apps/server/apps/management.app']
         readinessProbe:
           httpGet:
             path: /api/docs
