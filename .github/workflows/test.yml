@@ -34,7 +34,7 @@ jobs:
         with:
           mongodb-version: ${{ env.MONGODB_VERSION }}
       - name: npm ci
-        run: npm ci --prefer-offline --no-audit
+        run: npm ci --ignore-scripts --prefer-offline --no-audit
       - name: feathers:Test - test with coverage
         run: npm run feathers:test
   nest_tests_cov:
@@ -59,7 +59,7 @@ jobs:
         with:
           mongodb-version: ${{ env.MONGODB_VERSION }}
       - name: npm ci
-        run: npm ci --prefer-offline --no-audit
+        run: npm ci --ignore-scripts --prefer-offline --no-audit
       - name: nest:test:cov - test all with coverage
         timeout-minutes: 15
         run: export RUN_WITHOUT_JEST_COVERAGE='true' && export NODE_OPTIONS='--max_old_space_size=4096' && ./node_modules/.bin/jest --shard=${{ matrix.shard }}/${{ strategy.job-total }} --coverage --force-exit
@@ -103,6 +103,6 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
       - name: npm ci
-        run: npm ci --prefer-offline --no-audit
+        run: npm ci --ignore-scripts --prefer-offline --no-audit
       - name: nest:lint
         run: npm run nest:lint
