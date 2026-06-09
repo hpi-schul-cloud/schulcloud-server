@@ -43,9 +43,9 @@ spec:
         git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
     spec:
       securityContext:
-        runAsUser: 1000
-        runAsGroup: 1000
-        fsGroup: 1000
+        runAsUser: 65532
+        runAsGroup: 65532
+        fsGroup: 65532
         runAsNonRoot: true
       os:
         name: linux
@@ -67,7 +67,7 @@ spec:
             name: api-fwu-secret
         - secretRef:
             name: session-valkey-password
-        command: ['npm', 'run', 'nest:start:fwu-learning-contents:prod']
+        command: ['node', 'dist/apps/server/apps/fwu-learning-contents.app']
         readinessProbe:
           httpGet:
             path: api/v3/docs
