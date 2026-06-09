@@ -1,27 +1,36 @@
 /* eslint-disable no-await-in-loop */
 import { DeleteObjectCommand, S3Client, S3ServiceException } from '@aws-sdk/client-s3';
 import { LegacyLogger } from '@core/logger';
+import { AuthenticationClientAdapter } from '@infra/authentication-client';
 import { StorageProviderEntity, StorageProviderRepo } from '@modules/school/repo';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { TypeGuard } from '@shared/common/guards';
 import { FileEntity } from '../entity';
+import { FILES_CONSOLE_CONFIG_TOKEN, FilesConsoleConfig } from '../files-console.config';
 import { FilesRepo } from '../repo';
 
 const NO_SUCH_BUCKET = 'NoSuchBucket';
 
 @Injectable()
 export class DeleteFilesUc {
-	private s3ClientMap = new Map<string, S3Client>();
+	private readonly s3ClientMap = new Map<string, S3Client>();
 
 	constructor(
 		private readonly filesRepo: FilesRepo,
 		private readonly storageProviderRepo: StorageProviderRepo,
-		private readonly logger: LegacyLogger
+		private readonly logger: LegacyLogger,
+		private readonly authenticationClient: AuthenticationClientAdapter,
+		@Inject(FILES_CONSOLE_CONFIG_TOKEN) private readonly config: FilesConsoleConfig
 	) {
 		this.logger.setContext(DeleteFilesUc.name);
 	}
 
 	public async deleteMarkedFiles(thresholdDate: Date, batchSize: number): Promise<void> {
+		const accessToken = await this.authenticationClient.login({
+			username: this.config.cronjobUsername,
+			password: this.config.cronjobToken,
+		});
+
 		await this.initializeS3ClientMap();
 
 		let batchCounter = 0;
@@ -63,6 +72,8 @@ export class DeleteFilesUc {
 		if (failingFileIds.length > 0) {
 			this.logger.error(`the following files could not be deleted: ${failingFileIds.toString()}`);
 		}
+
+		await this.authenticationClient.logout(accessToken);
 	}
 
 	private async initializeS3ClientMap(): Promise<void> {
