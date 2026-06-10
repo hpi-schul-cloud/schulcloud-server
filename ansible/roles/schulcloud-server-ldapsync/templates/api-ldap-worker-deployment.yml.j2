@@ -63,7 +63,7 @@ spec:
             name: api-secret
         - secretRef:
             name: session-valkey-password
-        command: ['node', 'dist/apps/server/apps/server.app']
+        command: ['/nodejs/bin/node', 'dist/apps/server/apps/server.app']
         readinessProbe:
           httpGet:
             path: /serverversion
