@@ -7,7 +7,6 @@ import { createRequestLoggerMiddleware, LegacyLogger, Logger, LOGGER_CONFIG_TOKE
 import { MikroORM } from '@mikro-orm/core';
 import { AccountService } from '@modules/account';
 import { AccountUc } from '@modules/account/api/account.uc';
-import { SESSION_VALKEY_CLIENT } from '@modules/authentication';
 import { SystemRule } from '@modules/authorization-rules';
 import { ColumnBoardService } from '@modules/board';
 import { CollaborativeStorageUc } from '@modules/collaborative-storage/uc/collaborative-storage.uc';
@@ -27,6 +26,7 @@ import { install as sourceMapInstall } from 'source-map-support';
 import { AppStartLoggable, enableOpenApiDocs } from './helpers';
 import { createMetricsServer } from './helpers/metrics.server';
 import legacyAppPromise = require('../../../../src/app');
+import { JWT_WHITELIST_VALKEY_CLIENT } from '@infra/jwt-whitelist';
 
 async function bootstrap(): Promise<void> {
 	sourceMapInstall();
@@ -39,7 +39,7 @@ async function bootstrap(): Promise<void> {
 	const nestApp = await NestFactory.create(ServerModule, nestExpressAdapter);
 	const orm = nestApp.get(MikroORM);
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-	const cacheManager = await nestApp.resolve(SESSION_VALKEY_CLIENT);
+	const cacheManager = await nestApp.resolve(JWT_WHITELIST_VALKEY_CLIENT);
 
 	// WinstonLogger
 	const legacyLogger = await nestApp.resolve(LegacyLogger);
