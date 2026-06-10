@@ -19,7 +19,7 @@ RUN git config --global --add safe.directory /app  \
 RUN npm run build
 RUN npm prune --production
 
-FROM gcr.io/distroless/nodejs24-debian13 AS production
+FROM docker.io/node:24-slim AS production
 
 WORKDIR /app
 
