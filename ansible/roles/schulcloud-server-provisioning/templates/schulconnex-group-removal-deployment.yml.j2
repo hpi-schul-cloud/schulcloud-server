@@ -62,7 +62,7 @@ spec:
             name: schulconnex-group-removal-configmap
         - secretRef:
             name: schulconnex-provisioning-secret
-        command: ['node', 'dist/apps/server/apps/schulconnex-group-removal-consumer.app']
+        command: ['/nodejs/bin/node', 'dist/apps/server/apps/schulconnex-group-removal-consumer.app']
         readinessProbe:
           httpGet:
             path: /internal/health

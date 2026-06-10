@@ -44,7 +44,7 @@ spec:
                 name: data-deletion-trigger-cronjob-configmap
             - secretRef:
                 name: admin-api-client-secret
-            command: ['node', 'dist/apps/server/apps/deletion-console.app', 'execution', 'trigger']
+            command: ['/nodejs/bin/node', 'dist/apps/server/apps/deletion-console.app', 'execution', 'trigger']
             args: []
             resources:
               limits:
