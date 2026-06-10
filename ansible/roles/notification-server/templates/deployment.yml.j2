@@ -69,7 +69,7 @@ spec:
             name: notification-server-secret
         - secretRef:
             name: session-valkey-password
-        command: ['node', 'dist/apps/server/apps/notification-server.app']
+        command: ['/nodejs/bin/node', 'dist/apps/server/apps/notification-server.app']
         resources:
           limits:
             cpu: {{ NOTIFICATION_SERVER_CPU_LIMITS }}

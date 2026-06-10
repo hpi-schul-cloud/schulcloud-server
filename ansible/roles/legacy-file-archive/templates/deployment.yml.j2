@@ -61,7 +61,7 @@ spec:
             name: legacy-file-archive-configmap
         - secretRef:
             name: session-valkey-password
-        command: ['node', 'dist/apps/server/apps/legacy-file-archive.app']
+        command: ['/nodejs/bin/node', 'dist/apps/server/apps/legacy-file-archive.app']
         ports:
         - name: api
           containerPort: 3351
