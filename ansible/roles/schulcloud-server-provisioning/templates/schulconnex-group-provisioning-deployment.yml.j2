@@ -62,7 +62,7 @@ spec:
             name: schulconnex-group-provisioning-configmap
         - secretRef:
             name: schulconnex-provisioning-secret
-        command: ['node', 'dist/apps/server/apps/schulconnex-group-provisioning-consumer.app']
+        command: ['/nodejs/bin/node', 'dist/apps/server/apps/schulconnex-group-provisioning-consumer.app']
         readinessProbe:
           httpGet:
             path: /internal/health

@@ -33,7 +33,7 @@ spec:
                 name: api-configmap
             - secretRef:
                 name: api-secret
-            command: ['node', 'dist/apps/server/apps/server-console.app', 'files', 'cleanup-job', '7']
+            command: ['/nodejs/bin/node', 'dist/apps/server/apps/server-console.app', 'files', 'cleanup-job', '7']
             args: []
             resources:
               limits:

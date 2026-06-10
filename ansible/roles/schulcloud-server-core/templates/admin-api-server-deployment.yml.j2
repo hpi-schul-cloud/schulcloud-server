@@ -66,7 +66,7 @@ spec:
             name: admin-api-server-secret
         - secretRef:
             name: session-valkey-password
-        command: ['node', 'dist/apps/server/apps/admin-api-server.app']
+        command: ['/nodejs/bin/node', 'dist/apps/server/apps/admin-api-server.app']
         resources:
           limits:
             cpu: {{ ADMIN_API_SERVER_CPU_LIMITS|default("2000m", true) }}
