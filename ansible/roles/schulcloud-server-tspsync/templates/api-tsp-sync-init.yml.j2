@@ -26,9 +26,9 @@ spec:
         git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
     spec:
       securityContext:
-        runAsUser: 1000
-        runAsGroup: 1000
-        fsGroup: 1000
+        runAsUser: 65532
+        runAsGroup: 65532
+        fsGroup: 65532
         runAsNonRoot: true
       os:
         name: linux
@@ -43,8 +43,8 @@ spec:
             name: api-tsp-sync-init-configmap
         - secretRef:
             name: api-secret
-        command: ['/bin/sh', '-c']
-        args: ['npm run nest:start:sync:prod tsp']
+        command: ['/nodejs/bin/node', 'dist/apps/server/apps/server-console.app', 'sync', 'run', 'tsp']
+        args: []
         resources:
           limits:
             cpu: {{ API_CPU_LIMITS|default("2000m", true) }}

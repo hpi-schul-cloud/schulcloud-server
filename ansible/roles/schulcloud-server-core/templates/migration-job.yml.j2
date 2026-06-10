@@ -12,9 +12,9 @@ spec:
         app: api-migration
     spec:
       securityContext:
-        runAsUser: 1000
-        runAsGroup: 1000
-        fsGroup: 1000
+        runAsUser: 65532
+        runAsGroup: 65532
+        fsGroup: 65532
         runAsNonRoot: true
       os:
         name: linux
@@ -27,8 +27,8 @@ spec:
             name: api-configmap
         - secretRef:
             name: api-secret
-        command: ['/bin/sh','-c']
-        args: ['npm run migration:up:prod && npm run ensureIndexes:prod']
+        command: ['/nodejs/bin/node', 'dist/apps/server/apps/server-console.app', 'database', 'migrate-and-sync-indexes']
+        args: []
         resources:
           limits:
             cpu: {{ API_CPU_LIMITS|default("2000m", true) }}

@@ -29,8 +29,8 @@ spec:
                 name: moin-schule-users-sync-cronjob-configmap
             - secretRef:
                 name: moin-schule-sync-secret
-            command: ['/bin/sh','-c']
-            args: ['npm run nest:start:idp-console:prod -- sync users --systemType moin.schule --systemId $SYSTEM_ID']
+            command: ['/nodejs/bin/node', 'dist/apps/server/apps/idp-console.app', 'sync', 'users', '--systemType', 'moin.schule', '--systemId', '$(SYSTEM_ID)']
+            args: []
             resources:
               limits:
                 cpu: {{ API_CPU_LIMITS|default("2000m", true) }}

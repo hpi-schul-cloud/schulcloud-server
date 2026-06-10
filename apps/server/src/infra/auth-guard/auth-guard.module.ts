@@ -1,7 +1,7 @@
 import { ConfigurationModule } from '@infra/configuration';
+import { JwtWhitelistAdapter, JwtWhitelistModule } from '@infra/jwt-whitelist';
 import { DynamicModule, Module, Provider } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
-import { JwtValidationAdapter } from './adapter';
 import {
 	AuthGuardModuleOptions,
 	AuthGuardOptions,
@@ -13,7 +13,9 @@ import { JwtStrategy, WsJwtStrategy, XApiKeyStrategy } from './strategy';
 @Module({})
 export class AuthGuardModule {
 	public static register(options: AuthGuardModuleOptions[]): DynamicModule {
-		const providers: Provider[] = [JwtValidationAdapter];
+		this.checkOptionsLength(options);
+
+		const providers: Provider[] = [];
 		const imports: DynamicModule[] = [];
 
 		options.forEach(({ option, configInjectionToken, configConstructor }) => {
@@ -37,27 +39,32 @@ export class AuthGuardModule {
 
 		return {
 			module: AuthGuardModule,
-			imports: [PassportModule, ...imports],
+			imports: [PassportModule, JwtWhitelistModule.register(), ...imports],
 			providers,
-			exports: [JwtValidationAdapter],
 		};
+	}
+
+	private static checkOptionsLength(options: AuthGuardModuleOptions[]): void {
+		if (options.length === 0) {
+			throw new Error('At least one auth guard option must be provided');
+		}
 	}
 
 	private static createJwtStrategyProvider(configInjectionToken: string | symbol): Provider {
 		return {
 			provide: JwtStrategy,
-			useFactory: (validationAdapter: JwtValidationAdapter, config: InternalJwtAuthGuardConfig) =>
-				new JwtStrategy(validationAdapter, config),
-			inject: [JwtValidationAdapter, configInjectionToken],
+			useFactory: (whitelistAdapter: JwtWhitelistAdapter, config: InternalJwtAuthGuardConfig) =>
+				new JwtStrategy(whitelistAdapter, config),
+			inject: [JwtWhitelistAdapter, configInjectionToken],
 		};
 	}
 
 	private static createWsJwtStrategyProvider(configInjectionToken: string | symbol): Provider {
 		return {
 			provide: WsJwtStrategy,
-			useFactory: (validationAdapter: JwtValidationAdapter, config: InternalJwtAuthGuardConfig) =>
-				new WsJwtStrategy(validationAdapter, config),
-			inject: [JwtValidationAdapter, configInjectionToken],
+			useFactory: (whitelistAdapter: JwtWhitelistAdapter, config: InternalJwtAuthGuardConfig) =>
+				new WsJwtStrategy(whitelistAdapter, config),
+			inject: [JwtWhitelistAdapter, configInjectionToken],
 		};
 	}
 

@@ -1,35 +1,39 @@
-FROM docker.io/node:24-alpine AS builder
+FROM docker.io/node:24-bookworm-slim AS builder
+
+RUN apt-get update && apt-get install -y --no-install-recommends git \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
-COPY package.json package-lock.json tsconfig.json tsconfig.build.json nest-cli.json ./
-COPY apps apps
-COPY config config
-COPY src src
+COPY package.json package-lock.json tsconfig.build.json tsconfig.json nest-cli.json ./
 
-RUN apk add --no-cache git
+RUN npm ci --ignore-scripts
+
+COPY apps apps
+COPY src src
 COPY .git ./.git
+
 RUN git config --global --add safe.directory /app  \
     && echo "{\"sha\": \"$(git rev-parse HEAD)\", \"version\": \"$(git describe --tags --abbrev=0)\", \"commitDate\": \"$(git log -1 --format=%cd --date=format:'%Y-%m-%dT%H:%M:%SZ')\", \"birthdate\": \"$(date +%Y-%m-%dT%H:%M:%SZ)\"}" > apps/server/static-assets/serverversion
 
-RUN npm ci --ignore-scripts && npm run build
+RUN npm run build
+RUN npm prune --production
 
+FROM gcr.io/distroless/nodejs24-debian13:nonroot AS production
 
-FROM docker.io/node:24-alpine
-
-WORKDIR /schulcloud-server
-
-COPY package.json package-lock.json ./
-COPY backup backup
-COPY config config
-COPY src src
-
-COPY --from=builder /app/dist dist
-
-RUN npm ci --ignore-scripts --omit=dev \
-    && npm cache clean --force
+WORKDIR /app
 
 ENV NODE_ENV=production
 ENV NO_COLOR="true"
 
-CMD ["npm", "run", "nest:start:prod"]
+COPY --from=builder /app/package.json ./
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/src ./src
+COPY backup backup
+COPY config config
+
+USER nonroot
+
+
+CMD ["/nodejs/bin/node", "dist/apps/server/apps/server.app"]

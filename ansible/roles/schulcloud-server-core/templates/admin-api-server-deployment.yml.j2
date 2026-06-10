@@ -43,9 +43,9 @@ spec:
         git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
     spec:
       securityContext:
-        runAsUser: 1000
-        runAsGroup: 1000
-        fsGroup: 1000
+        runAsUser: 65532
+        runAsGroup: 65532
+        fsGroup: 65532
         runAsNonRoot: true
       os:
         name: linux
@@ -66,7 +66,7 @@ spec:
             name: admin-api-server-secret
         - secretRef:
             name: session-valkey-password
-        command: ['npm', 'run', 'nest:start:admin-api-server:prod']
+        command: ['/nodejs/bin/node', 'dist/apps/server/apps/admin-api-server.app']
         resources:
           limits:
             cpu: {{ ADMIN_API_SERVER_CPU_LIMITS|default("2000m", true) }}

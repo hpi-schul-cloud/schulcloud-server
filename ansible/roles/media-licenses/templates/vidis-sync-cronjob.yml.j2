@@ -41,8 +41,8 @@ spec:
                 name: api-secret
             - configMapRef:
                 name: vidis-sync-cronjob-configmap
-            command: ['/bin/sh','-c']
-            args: ['npm run nest:start:sync-console:media:activations:vidis:prod']
+            command: ['/nodejs/bin/node', 'dist/apps/server/apps/sync-console.app', 'media', 'activations', '--dataFormat', 'VIDIS']
+            args: []
             resources:
               limits:
                 cpu: {{ MEDIA_ACTIVATION_CPU_LIMITS|default("2000m", true) }}

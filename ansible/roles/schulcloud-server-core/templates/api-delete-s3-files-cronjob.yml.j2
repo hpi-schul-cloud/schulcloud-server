@@ -21,9 +21,9 @@ spec:
       template:
         spec:
           securityContext:
-            runAsUser: 1000
-            runAsGroup: 1000
-            fsGroup: 1000
+            runAsUser: 65532
+            runAsGroup: 65532
+            fsGroup: 65532
             runAsNonRoot: true
           containers:
           - name: delete-s3-files-cronjob
@@ -33,8 +33,8 @@ spec:
                 name: api-configmap
             - secretRef:
                 name: api-secret
-            command: ['/bin/sh', '-c']
-            args: ['npm run nest:start:console:prod -- files cleanup-job 7']
+            command: ['/nodejs/bin/node', 'dist/apps/server/apps/server-console.app', 'files', 'cleanup-job', '7']
+            args: []
             resources:
               limits:
                 cpu: {{ API_CPU_LIMITS|default("2000m", true) }}
