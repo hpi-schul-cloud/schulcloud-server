@@ -98,7 +98,8 @@ export const LessonLinkedTaskResponseDescriptionInputFormat = {
     PLAIN_TEXT: 'plainText',
     RICH_TEXT_CK5_SIMPLE: 'richTextCk5Simple',
     RICH_TEXT_CK4: 'richTextCk4',
-    RICH_TEXT_CK5: 'richTextCk5'
+    RICH_TEXT_CK5: 'richTextCk5',
+    RICH_TEXT_CK5_NEWS: 'richTextCk5News'
 } as const;
 
 export type LessonLinkedTaskResponseDescriptionInputFormat = typeof LessonLinkedTaskResponseDescriptionInputFormat[keyof typeof LessonLinkedTaskResponseDescriptionInputFormat];

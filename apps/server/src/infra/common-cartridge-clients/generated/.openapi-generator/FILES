@@ -30,6 +30,7 @@ models/card-response-elements-inner.ts
 models/card-response.ts
 models/card-skeleton-response.ts
 models/collaborative-text-editor-element-response.ts
+models/colors.ts
 models/column-response.ts
 models/component-etherpad-props-impl.ts
 models/component-geogebra-props-impl.ts
@@ -55,7 +56,6 @@ models/external-tool-content-body.ts
 models/external-tool-element-content-body.ts
 models/external-tool-element-content.ts
 models/external-tool-element-response.ts
-models/external-tool-response-config.ts
 models/external-tool-update-params-config.ts
 models/file-content-body.ts
 models/file-element-content-body.ts
