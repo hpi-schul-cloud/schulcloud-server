@@ -184,6 +184,27 @@ const filterQuery = (url) => {
 	return newUrl;
 };
 
+/**
+ * Filters sensitive data from known nested properties of an error object
+ * (options, response, response.request). Does not recurse into arbitrary structures.
+ * @param {Object} errorObj - The error object to filter
+ */
+const filterErrorObject = (errorObj) => {
+	if (!errorObj || typeof errorObj !== 'object') {
+		return;
+	}
+
+	if (errorObj.options) {
+		errorObj.options = filter(errorObj.options);
+	}
+	if (errorObj.response) {
+		errorObj.response = filter(errorObj.response);
+		if (errorObj.response.request) {
+			errorObj.response.request = filter(errorObj.response.request);
+		}
+	}
+};
+
 // important that it is not added it to logs
 const filterSecrets = (error, req, res, next) => {
 	if (error) {
@@ -194,6 +215,15 @@ const filterSecrets = (error, req, res, next) => {
 		error.data = filter(error.data);
 		error.options = filter(error.options);
 		error.params = filter(error.params);
+		// Filter sensitive data from error.response (e.g., from request-promise errors)
+		filterErrorObject(error);
+		// Filter nested error objects (e.g., StatusCodeError wraps error in error.error)
+		if (error.error && typeof error.error === 'object') {
+			// Use filterDeep directly to preserve Error prototype chain
+			// (e.g., SilentError instances need instanceof checks later)
+			filterDeep(error.error);
+			filterErrorObject(error.error);
+		}
 	}
 	return next(error);
 };
