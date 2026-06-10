@@ -61,6 +61,8 @@ spec:
             name: common-cartridge-configmap
         - secretRef:
             name: common-cartridge-secret
+        - secretRef:
+            name: session-valkey-password
         command: ['/nodejs/bin/node', 'dist/apps/server/apps/common-cartridge.app']
         resources:
           limits:
