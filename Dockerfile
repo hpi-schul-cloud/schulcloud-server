@@ -19,7 +19,7 @@ RUN git config --global --add safe.directory /app  \
 RUN npm run build
 RUN npm prune --production
 
-FROM registry.opencode.de/oci-community/images/zendis/nodejs:24-minimal AS production
+FROM gcr.io/distroless/nodejs24-debian13 AS production
 
 WORKDIR /app
 
