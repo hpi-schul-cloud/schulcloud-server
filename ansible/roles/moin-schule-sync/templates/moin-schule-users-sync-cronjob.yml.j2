@@ -29,7 +29,7 @@ spec:
                 name: moin-schule-users-sync-cronjob-configmap
             - secretRef:
                 name: moin-schule-sync-secret
-            command: ['node', 'dist/apps/server/apps/idp-console.app', 'sync', 'users', '--systemType', 'moin.schule', '--systemId', '$(SYSTEM_ID)']
+            command: ['/nodejs/bin/node', 'dist/apps/server/apps/idp-console.app', 'sync', 'users', '--systemType', 'moin.schule', '--systemId', '$(SYSTEM_ID)']
             args: []
             resources:
               limits:

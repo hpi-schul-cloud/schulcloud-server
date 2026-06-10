@@ -27,7 +27,7 @@ spec:
             name: api-configmap
         - secretRef:
             name: api-secret
-        command: ['node', 'dist/apps/server/apps/server-console.app', 'database', 'migrate-and-sync-indexes']
+        command: ['/nodejs/bin/node', 'dist/apps/server/apps/server-console.app', 'database', 'migrate-and-sync-indexes']
         args: []
         resources:
           limits:
