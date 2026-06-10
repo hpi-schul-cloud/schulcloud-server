@@ -2,8 +2,6 @@ import { ConfigProperty, Configuration } from '@infra/configuration';
 import { StringToBoolean, StringToNumber } from '@shared/controller/transformer';
 import { IsBoolean, IsNumber, IsString } from 'class-validator';
 
-export const SESSION_VALKEY_CLIENT = 'SESSION_VALKEY_CLIENT';
-
 const hourInSeconds = 3600;
 const dayInSeconds = 24 * hourInSeconds;
 

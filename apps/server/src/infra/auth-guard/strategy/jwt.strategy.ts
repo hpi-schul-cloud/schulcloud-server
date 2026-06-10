@@ -1,15 +1,15 @@
+import { JwtWhitelistAdapter } from '@infra/jwt-whitelist';
 import { UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { JwtExtractor } from '@shared/common/utils';
 import { Strategy } from 'passport-jwt';
-import { JwtValidationAdapter } from '../adapter';
 import { JwtAuthGuardConfig } from '../config';
 import { ICurrentUser, JwtPayload } from '../interface';
 import { CurrentUserBuilder, JwtStrategyOptionsFactory } from '../mapper';
 
 export class JwtStrategy extends PassportStrategy(Strategy) {
 	constructor(
-		private readonly jwtValidationAdapter: JwtValidationAdapter,
+		private readonly jwtWhitelistAdapter: JwtWhitelistAdapter,
 		config: JwtAuthGuardConfig
 	) {
 		const strategyOptions = JwtStrategyOptionsFactory.build(JwtExtractor.extractJwtFromRequest, config);
@@ -23,7 +23,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 		try {
 			// TODO: check user/account is active and has one role
 			// check jwt is whitelisted and extend whitelist entry
-			await this.jwtValidationAdapter.isWhitelisted(accountId, jti);
+			await this.jwtWhitelistAdapter.isWhitelisted(accountId, jti);
 			const currentUserBuilder = new CurrentUserBuilder(payload)
 				.asExternalUser(payload.isExternalUser)
 				.withExternalSystem(payload.systemId)
