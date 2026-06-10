@@ -81,7 +81,7 @@ describe('AuthenticationErrorLoggableException', () => {
 
 			const result = exception['maskEmail'](email);
 
-			expect(result).toBe('tes*@example.com');
+			expect(result).toBe('t@e***');
 		});
 	});
 });
