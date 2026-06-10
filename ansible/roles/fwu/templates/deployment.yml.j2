@@ -67,7 +67,7 @@ spec:
             name: api-fwu-secret
         - secretRef:
             name: session-valkey-password
-        command: ['node', 'dist/apps/server/apps/fwu-learning-contents.app']
+        command: ['/nodejs/bin/node', 'dist/apps/server/apps/fwu-learning-contents.app']
         readinessProbe:
           httpGet:
             path: api/v3/docs

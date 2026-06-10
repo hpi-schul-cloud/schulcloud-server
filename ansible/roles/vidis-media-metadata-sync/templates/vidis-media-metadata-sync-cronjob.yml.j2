@@ -41,7 +41,7 @@ spec:
                 name: api-secret
             - configMapRef:
                 name: vidis-media-metadata-sync-cronjob-configmap
-            command: ['node', 'dist/apps/server/apps/sync-console.app', 'media', 'metadata', '--dataFormat', 'VIDIS']
+            command: ['/nodejs/bin/node', 'dist/apps/server/apps/sync-console.app', 'media', 'metadata', '--dataFormat', 'VIDIS']
             args: []
             resources:
               limits:
