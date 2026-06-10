@@ -17,6 +17,7 @@ import { ErwinProvisioningService, ProvisioningEntityType } from '../../service/
 import { ProvisioningStrategy } from '../base.strategy';
 import { ErwinRole, MappedSvsRolle, PayloadRolle } from './enums/rolle.enum';
 import { ErwinJwtPayload } from './erwin.jwt.payload';
+import util from 'util';
 
 @Injectable()
 export class ErwinProvisioningStrategy extends ProvisioningStrategy {
@@ -73,6 +74,8 @@ export class ErwinProvisioningStrategy extends ProvisioningStrategy {
 
 	private async parseAndValidateToken(input: OauthDataStrategyInputDto): Promise<ErwinJwtPayload> {
 		const decodedAccessToken: JwtPayload | null = jwt.decode(input.accessToken, { json: true });
+
+		console.log(util.inspect(decodedAccessToken));
 
 		if (!decodedAccessToken) {
 			throw new IdTokenExtractionFailureLoggableException('sub');
