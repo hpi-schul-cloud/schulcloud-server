@@ -25,6 +25,7 @@ import { Room } from '../domain';
 import { ROOM_INCOMING_REQUEST_TIMEOUT_COPY_API_KEY } from '../timeout.config';
 import { AddByEmailBodyParams } from './dto/request/add-by-email.body.params';
 import { AddRoomMembersBodyParams } from './dto/request/add-room-members.body.params';
+import { ApplicantIdsBodyParams } from './dto/request/applicant-ids.body.params';
 import { ChangeRoomRoleBodyParams } from './dto/request/change-room-role.body.params';
 import { CreateRoomBodyParams } from './dto/request/create-room.body.params';
 import { MoveItemBodyParams } from './dto/request/move-item.body.params';
@@ -363,7 +364,60 @@ export class RoomController {
 		const members = await this.roomUc.getRoomMembers(currentUser.userId, urlParams.roomId);
 		const response = new RoomMemberListResponse(members);
 
-		return Promise.resolve(response);
+		return response;
+	}
+
+	@Get(':roomId/applicants')
+	@ApiOperation({ summary: 'Get a list of room applicants.' })
+	@ApiResponse({
+		status: HttpStatus.OK,
+		description: 'Returns a list of the applicants of the room.',
+		type: RoomMemberListResponse,
+	})
+	@ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiValidationError })
+	@ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })
+	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
+	@ApiResponse({ status: '5XX', type: ErrorResponse })
+	public async getApplicants(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() urlParams: RoomUrlParams
+	): Promise<RoomMemberListResponse> {
+		const members = await this.roomUc.getRoomApplicants(currentUser.userId, urlParams.roomId);
+		const response = new RoomMemberListResponse(members);
+
+		return response;
+	}
+
+	@Post(':roomId/applicants/confirm')
+	@HttpCode(HttpStatus.OK)
+	@ApiOperation({ summary: 'Confirm applicants and add them as room viewers.' })
+	@ApiResponse({ status: HttpStatus.OK, description: 'Confirmation successful' })
+	@ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiValidationError })
+	@ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })
+	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
+	@ApiResponse({ status: '5XX', type: ErrorResponse })
+	public async confirmApplicants(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() urlParams: RoomUrlParams,
+		@Body() bodyParams: ApplicantIdsBodyParams
+	): Promise<void> {
+		await this.roomUc.confirmApplicants(currentUser.userId, urlParams.roomId, bodyParams.userIds);
+	}
+
+	@Post(':roomId/applicants/reject')
+	@HttpCode(HttpStatus.OK)
+	@ApiOperation({ summary: 'Reject applicants and remove them from the room.' })
+	@ApiResponse({ status: HttpStatus.OK, description: 'Rejection successful' })
+	@ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiValidationError })
+	@ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })
+	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
+	@ApiResponse({ status: '5XX', type: ErrorResponse })
+	public async rejectApplicants(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() urlParams: RoomUrlParams,
+		@Body() bodyParams: ApplicantIdsBodyParams
+	): Promise<void> {
+		await this.roomUc.rejectApplicants(currentUser.userId, urlParams.roomId, bodyParams.userIds);
 	}
 
 	@Get(':roomId/members-redacted')
