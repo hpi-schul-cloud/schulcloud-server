@@ -63,7 +63,7 @@ spec:
             name: api-management-configmap
         - secretRef:
             name: api-secret
-        command: ['node', 'dist/apps/server/apps/management.app']
+        command: ['/nodejs/bin/node', 'dist/apps/server/apps/management.app']
         readinessProbe:
           httpGet:
             path: /api/docs
