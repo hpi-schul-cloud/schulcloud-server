@@ -32,7 +32,7 @@ spec:
                 name: api-secret
             - secretRef:
                 name: session-valkey-password
-            command: ['node', 'dist/apps/server/apps/ldap-sync-console.app', 'sync']
+            command: ['/nodejs/bin/node', 'dist/apps/server/apps/ldap-sync-console.app', 'sync']
             args: []
             resources:
               limits:
