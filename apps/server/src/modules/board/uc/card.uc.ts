@@ -98,8 +98,13 @@ export class CardUc {
 		const card = await this.boardNodeService.findByClassAndId(Card, cardId);
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(card);
+		const isVideoConferenceElement = type === ContentElementType.VIDEO_CONFERENCE;
 
 		throwForbiddenIfFalse(this.boardNodeRule.can('createElement', user, boardNodeAuthorizable));
+
+		if (isVideoConferenceElement) {
+			throwForbiddenIfFalse(this.boardNodeRule.can('manageVideoConference', user, boardNodeAuthorizable));
+		}
 
 		const element = this.boardNodeFactory.buildContentElement(type);
 

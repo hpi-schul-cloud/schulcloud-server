@@ -20,6 +20,7 @@ export const RoomOperationValues = [
 	'getRoomMembers',
 	'getRoomMembersRedacted',
 	'leaveRoom',
+	'manageRoomApplicants',
 	'shareRoom',
 	'updateRoom',
 	'createRoomInvitationLinks',
@@ -82,10 +83,11 @@ export class RoomRule implements Rule<RoomAuthorizable> {
 			getRoomMembers: canGetRoomMembers,
 			getRoomMembersRedacted: canGetRoomMembersRedacted,
 			leaveRoom: canLeaveRoom,
+			manageRoomApplicants: canManageRoomApplicants,
 			shareRoom: canShareRoom,
 			updateRoom: canUpdateRoom,
 			createRoomInvitationLinks: canManageRoomInvitationLinks,
-			listRoomInvitationLinks: canListRoomInvitationLinks,
+			listRoomInvitationLinks: canManageRoomInvitationLinks,
 			updateRoomInvitationLinks: canManageRoomInvitationLinks,
 			deleteRoomInvitationLinks: canManageRoomInvitationLinks,
 			viewContent: canViewContent,
@@ -257,10 +259,11 @@ const canAddExternalPersonByEmail = (user: User, roomAuthorizable: RoomAuthoriza
 		return false;
 	}
 
-	const { roomPermissions } = resolveUserPermissions(user, roomAuthorizable);
+	const { roomPermissions, schoolPermissions } = resolveUserPermissions(user, roomAuthorizable);
 	const hasRoomPermission = roomPermissions.includes(Permission.ROOM_ADD_MEMBERS);
+	const hasSchoolPermission = schoolPermissions.includes(Permission.SCHOOL_ADD_EXTERNAL_PERSON_TO_ROOM);
 
-	return hasRoomPermission;
+	return hasRoomPermission && hasSchoolPermission;
 };
 
 const canChangeRolesOfMembers = (user: User, roomAuthorizable: RoomAuthorizable): boolean => {
@@ -331,6 +334,18 @@ const canGetRoomMembersRedacted = (user: User, roomAuthorizable: RoomAuthorizabl
 	return canAdministrateSchoolRooms;
 };
 
+const canManageRoomApplicants = (user: User, roomAuthorizable: RoomAuthorizable): boolean => {
+	if (isLockedRoom(roomAuthorizable)) {
+		return false;
+	}
+
+	const { roomPermissions, schoolPermissions } = resolveUserPermissions(user, roomAuthorizable);
+	const hasRoomPermission = roomPermissions.includes(Permission.ROOM_LIST_CONTENT);
+	const hasSchoolPermission = schoolPermissions.includes(Permission.SCHOOL_MANAGE_ROOM_APPLICANTS);
+
+	return hasRoomPermission && hasSchoolPermission;
+};
+
 const canShareRoom = (user: User, roomAuthorizable: RoomAuthorizable): boolean => {
 	if (isLockedRoom(roomAuthorizable)) {
 		return false;
@@ -351,13 +366,6 @@ const canManageRoomInvitationLinks = (user: User, roomAuthorizable: RoomAuthoriz
 	const canManageRoomInvitationLinks = hasSchoolPermission && hasRoomPermission;
 
 	return canManageRoomInvitationLinks;
-};
-
-const canListRoomInvitationLinks = (user: User, roomAuthorizable: RoomAuthorizable): boolean => {
-	const { roomPermissions } = resolveUserPermissions(user, roomAuthorizable);
-	const canListRoomInvitationLinks = roomPermissions.includes(Permission.ROOM_MANAGE_INVITATIONLINKS);
-
-	return canListRoomInvitationLinks;
 };
 
 const canViewContent = (user: User, roomAuthorizable: RoomAuthorizable): boolean => {
