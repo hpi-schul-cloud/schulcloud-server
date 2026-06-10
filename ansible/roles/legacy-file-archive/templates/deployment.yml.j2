@@ -43,9 +43,9 @@ spec:
         git.repo: {{ SCHULCLOUD_SERVER_REPO_NAME }}
     spec:
       securityContext:
-        runAsUser: 1000
-        runAsGroup: 1000
-        fsGroup: 1000
+        runAsUser: 65532
+        runAsGroup: 65532
+        fsGroup: 65532
         runAsNonRoot: true
       os:
         name: linux
@@ -61,7 +61,7 @@ spec:
             name: legacy-file-archive-configmap
         - secretRef:
             name: session-valkey-password
-        command: ['npm', 'run', 'nest:start:legacy-file-archive:prod']
+        command: ['node', 'dist/apps/server/apps/legacy-file-archive.app']
         ports:
         - name: api
           containerPort: 3351
