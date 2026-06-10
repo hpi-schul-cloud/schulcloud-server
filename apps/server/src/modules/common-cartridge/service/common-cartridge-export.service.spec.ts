@@ -652,7 +652,7 @@ describe('CommonCartridgeExportService', () => {
 					fileRecordNotBlocked.id,
 					fileRecordNotBlocked.name
 				);
-				expect(logger.info).toHaveBeenCalledTimes(4);
+				expect(logger.info).toHaveBeenCalledTimes(8);
 			});
 		});
 	});

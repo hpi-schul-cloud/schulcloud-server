@@ -9,6 +9,7 @@ import {
 	CardListResponse,
 	CardResponse,
 	CardSkeletonResponse,
+	Colors,
 	ColumnResponse,
 	CourseCommonCartridgeMetadataResponse,
 	LessonContentResponse,
@@ -17,7 +18,6 @@ import {
 	LessonResponse,
 	SingleColumnBoardResponse,
 } from '@infra/common-cartridge-clients';
-import { Colors } from '@modules/board';
 import { Factory } from 'fishery';
 import { fileElementResponseFactory } from './file-element.factory';
 import { fileFolderElementResponseFactory } from './file-folder-element.factory';
