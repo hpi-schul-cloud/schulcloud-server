@@ -63,7 +63,7 @@ spec:
             name: common-cartridge-secret
         - secretRef:
             name: session-valkey-password
-        command: ['node', 'dist/apps/server/apps/common-cartridge.app']
+        command: ['/nodejs/bin/node', 'dist/apps/server/apps/common-cartridge.app']
         resources:
           limits:
             cpu: {{ COMMON_CARTRIDGE_CPU_LIMITS|default("2000m", true) }}
