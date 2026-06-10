@@ -15,7 +15,7 @@
 
 
 /**
- * 
+ * The type of the parent
  * @export
  * @enum {string}
  */
