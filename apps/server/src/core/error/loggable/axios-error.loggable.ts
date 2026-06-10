@@ -5,7 +5,7 @@ import util from 'util';
 
 export class AxiosErrorLoggable extends HttpException implements Loggable {
 	private static readonly SENSITIVE_HEADER_NAME_PATTERN =
-		/^(authorization|proxy-authorization|cookie|set-cookie|x-api[-_]?key|x-auth.*|x-api.*|.*auth.*|.*token.*|.*secret.*)$/i;
+		/^((?:set-)?cookie|x-(?:auth|api).*|.*(auth|token|secret).*)$/i;
 
 	private readonly axiosError: AxiosError;
 	protected readonly type: string;
