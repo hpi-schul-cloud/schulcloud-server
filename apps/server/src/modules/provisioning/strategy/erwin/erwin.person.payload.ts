@@ -1,5 +1,6 @@
-import { IsDateString, IsEmail, IsEnum, IsNotEmpty, IsString } from 'class-validator';
+import { IsDateString, IsEmail, IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { ErwinRole, MappedSvsRolle, PayloadRolle } from './enums/rolle.enum';
+import { Expose } from 'class-transformer';
 
 export class ErwinPersonPayload {
 	@IsNotEmpty()
@@ -12,14 +13,17 @@ export class ErwinPersonPayload {
 
 	@IsString()
 	@IsNotEmpty()
+	@Expose({ name: 'vorname' })
 	public firstName!: string;
 
 	@IsString()
 	@IsNotEmpty()
+	@Expose({ name: 'familienname' })
 	public lastName!: string;
 
 	@IsEnum([MappedSvsRolle, ErwinRole])
 	@IsNotEmpty()
+	@Expose({ name: 'rolle' })
 	public role!: PayloadRolle;
 
 	@IsEmail()
@@ -28,5 +32,7 @@ export class ErwinPersonPayload {
 
 	@IsDateString()
 	@IsNotEmpty()
-	public geburtstag!: string;
+	@IsOptional()
+	@Expose({ name: 'geburtsdatum' })
+	public geburtstag?: string;
 }
