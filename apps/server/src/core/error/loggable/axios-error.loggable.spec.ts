@@ -114,9 +114,10 @@ describe(AxiosErrorLoggable.name, () => {
 
 		it('should handle array and non-object headers in config redaction', () => {
 			const accessToken = 'Bearer abcdefghijklmnopqrst';
+			const invalidArrayHeaders = [accessToken, 123] as unknown as Record<string, unknown>;
 			const axiosErrorWithArrayHeaders = axiosErrorFactory.withError({ error: 'invalid_request' }).build({
 				config: {
-					headers: [accessToken, 123] as any,
+					headers: invalidArrayHeaders,
 				},
 			});
 
@@ -129,9 +130,10 @@ describe(AxiosErrorLoggable.name, () => {
 			expect(arrayHeaders[0]).toContain('[REDACTED]');
 			expect(arrayHeaders[1]).toBe('[REDACTED]');
 
+			const invalidScalarHeaders = 'raw-headers' as unknown as Record<string, unknown>;
 			const axiosErrorWithNonObjectHeaders = axiosErrorFactory.withError({ error: 'invalid_request' }).build({
 				config: {
-					headers: 'raw-headers' as any,
+					headers: invalidScalarHeaders,
 				},
 			});
 

@@ -15,7 +15,7 @@ export class LoggingUtils {
 		const redactedMessage = this.redactSensitiveObject(message);
 		const inspectedMessage = util.inspect(redactedMessage);
 
-		return inspectedMessage.replaceAll('\n', '').replaceAll('\\n', '');
+		return inspectedMessage.replaceAll('\n', '').replaceAll(String.raw`\n`, '');
 	}
 
 	private static isSensitiveFieldName(name: string): boolean {
@@ -40,29 +40,50 @@ export class LoggingUtils {
 		}
 
 		if (Array.isArray(value)) {
-			if (visited.has(value)) return '[Circular]';
-			visited.add(value);
-
-			return value.map((item) => this.redactSensitiveObject(item, visited));
+			return this.redactSensitiveArray(value, visited);
 		}
 
 		if (typeof value === 'object' && value !== null) {
-			if (visited.has(value)) return '[Circular]';
-			visited.add(value);
-
-			const result: Record<string, unknown> = {};
-			for (const [key, val] of Object.entries(value)) {
-				result[key] = this.isSensitiveFieldName(key)
-					? typeof val === 'string'
-						? this.maskSecret(val)
-						: '[REDACTED]'
-					: this.redactSensitiveObject(val, visited);
-			}
-
-			return result;
+			return this.redactSensitiveRecord(value, visited);
 		}
 
 		return value;
+	}
+
+	private static redactSensitiveArray(value: unknown[], visited: WeakSet<object>): unknown {
+		if (visited.has(value)) {
+			return '[Circular]';
+		}
+
+		visited.add(value);
+		return value.map((item) => this.redactSensitiveObject(item, visited));
+	}
+
+	private static redactSensitiveRecord(value: object, visited: WeakSet<object>): unknown {
+		if (visited.has(value)) {
+			return '[Circular]';
+		}
+
+		visited.add(value);
+		const result: Record<string, unknown> = {};
+
+		for (const [key, val] of Object.entries(value)) {
+			result[key] = this.redactEntryValue(key, val, visited);
+		}
+
+		return result;
+	}
+
+	private static redactEntryValue(key: string, value: unknown, visited: WeakSet<object>): unknown {
+		if (!this.isSensitiveFieldName(key)) {
+			return this.redactSensitiveObject(value, visited);
+		}
+
+		if (typeof value !== 'string') {
+			return '[REDACTED]';
+		}
+
+		return this.maskSecret(value);
 	}
 
 	private static redactBearerToken(value: string): string {
@@ -98,7 +119,7 @@ export class LoggingUtils {
 		return `${value.slice(0, 4)}...${value.slice(-2)} [REDACTED]`;
 	}
 
-	public static isInstanceOfLoggable(object: any): object is Loggable {
-		return 'getLogMessage' in object;
+	public static isInstanceOfLoggable(object: unknown): object is Loggable {
+		return typeof object === 'object' && object !== null && 'getLogMessage' in object;
 	}
 }
