@@ -196,7 +196,21 @@ export class CommonCartridgeImportService {
 		parser: CommonCartridgeFileParser,
 		event: ImportCourseEvent
 	): Promise<void> {
-		const boards = parser.getOrganizations().filter((organization) => organization.pathDepth === DEPTH_BOARD);
+		const organizations = parser.getOrganizations();
+
+		const boards: CommonCartridgeOrganizationProps[] = [];
+		const boardOrganizations = new Map<string, CommonCartridgeOrganizationProps[]>();
+
+		for (const organization of organizations) {
+			if (organization.pathDepth === DEPTH_BOARD) {
+				boards.push(organization);
+			} else {
+				const boardIdentifier = organization.path.split('/')[0];
+				const children = boardOrganizations.get(boardIdentifier) ?? [];
+				children.push(organization);
+				boardOrganizations.set(boardIdentifier, children);
+			}
+		}
 
 		// INFO: for await keeps the order of the boards in the same order as the parser.getOrganizations()
 		// with Promise.all, the order of the boards would be random
@@ -218,21 +232,20 @@ export class CommonCartridgeImportService {
 		}
 
 		for (const [boardIdentifier, boardId] of createdBoardIds) {
-			await this.createColumns(boardId, boardIdentifier, parser, event);
+			const organizationsForBoard = boardOrganizations.get(boardIdentifier) ?? [];
+			await this.createColumns(boardId, parser, organizationsForBoard, event);
 		}
 	}
 
 	private async createColumns(
 		boardId: string,
-		boardIdentifier: string,
 		parser: CommonCartridgeFileParser,
+		organizations: CommonCartridgeOrganizationProps[],
 		event: ImportCourseEvent
 	): Promise<void> {
-		const columns: ColumnResource[] = parser
-			.getOrganizations()
-			.filter(
-				(organization) => organization.pathDepth === DEPTH_COLUMN && organization.path.startsWith(boardIdentifier)
-			)
+		const columnsWithChildren = organizations.filter((organization) => organization.pathDepth >= DEPTH_COLUMN);
+		const columns: ColumnResource[] = columnsWithChildren
+			.filter((organization) => organization.pathDepth === DEPTH_COLUMN)
 			.map((column) => {
 				return {
 					column,
@@ -242,10 +255,10 @@ export class CommonCartridgeImportService {
 
 		// INFO: for await keeps the order of the columns in the same order as the parser.getOrganizations()
 		// with Promise.all, the order of the columns would be random
-		for await (const columnResource of columns) {
+		for (const columnResource of columns) {
 			columnResource.isResourceColumn
 				? await this.createColumnWithResource(parser, boardId, columnResource.column, event)
-				: await this.createColumn(parser, boardId, columnResource.column, event);
+				: await this.createColumn(parser, columnsWithChildren, boardId, columnResource.column, event);
 		}
 	}
 
@@ -269,6 +282,7 @@ export class CommonCartridgeImportService {
 
 	private async createColumn(
 		parser: CommonCartridgeFileParser,
+		organizations: CommonCartridgeOrganizationProps[],
 		boardId: string,
 		columnProps: CommonCartridgeOrganizationProps,
 		event: ImportCourseEvent
@@ -282,16 +296,15 @@ export class CommonCartridgeImportService {
 			})
 		);
 
-		const cards = parser
-			.getOrganizations()
-			.filter(
-				(organization) => organization.pathDepth === DEPTH_CARD && organization.path.startsWith(columnProps.path)
-			);
+		const cardsWithChildren = organizations.filter(
+			(organization) => organization.pathDepth >= DEPTH_CARD && organization.path.startsWith(columnProps.path)
+		);
+		const cards = cardsWithChildren.filter((organization) => organization.pathDepth === DEPTH_CARD);
 
 		for (const card of cards) {
 			card.isResource
 				? await this.createCardElementWithResource(parser, columnResponse, card, event)
-				: await this.createCard(parser, columnResponse, card, event);
+				: await this.createCard(parser, cardsWithChildren, columnResponse, card, event);
 		}
 	}
 
@@ -314,6 +327,7 @@ export class CommonCartridgeImportService {
 
 	private async createCard(
 		parser: CommonCartridgeFileParser,
+		organizations: CommonCartridgeOrganizationProps[],
 		column: ColumnResponse,
 		cardProps: CommonCartridgeOrganizationProps,
 		event: ImportCourseEvent
@@ -329,7 +343,6 @@ export class CommonCartridgeImportService {
 			})
 		);
 
-		const organizations = parser.getOrganizations();
 		const cardElements = organizations.filter(
 			(organization) => organization.pathDepth >= DEPTH_CARD_ELEMENTS && organization.path.startsWith(cardProps.path)
 		);
