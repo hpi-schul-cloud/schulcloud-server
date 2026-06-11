@@ -13,6 +13,8 @@ import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.tes
 import { TestApiClient } from '@testing/test-api-client';
 import { roomEntityFactory } from '../../testing';
 import { RoomInvitationLinkListResponse } from '../dto/response/room-invitation-link-list.response';
+import { AccountEntity } from '@modules/account/repo';
+import { User } from '@modules/user';
 
 describe('Room Invitation Link Controller (API)', () => {
 	let app: INestApplication;
@@ -40,9 +42,10 @@ describe('Room Invitation Link Controller (API)', () => {
 
 	describe('GET /:room-id/room-invitation-links', () => {
 		describe('when the user is not authenticated', () => {
-			it('should return a 401 error', async () => {
+			it('should return 401', async () => {
 				const someId = new ObjectId().toHexString();
 				const response = await testApiClient.get(someId);
+
 				expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
 			});
 		});
@@ -58,15 +61,16 @@ describe('Room Invitation Link Controller (API)', () => {
 				return { loggedInClient };
 			};
 
-			it('should return a 400 error', async () => {
+			it('should return 400', async () => {
 				const { loggedInClient } = await setup();
 				const response = await loggedInClient.get('42/boards');
+
 				expect(response.status).toBe(HttpStatus.BAD_REQUEST);
 			});
 		});
 
 		describe('when the room does not exist', () => {
-			it('should return a 404 error', async () => {
+			it('should return 404', async () => {
 				const school = schoolEntityFactory.buildWithId();
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({ school });
 				await em.persist([school, studentAccount, studentUser]).flush();
@@ -79,19 +83,45 @@ describe('Room Invitation Link Controller (API)', () => {
 			});
 		});
 
-		describe('when the user has the required permissions', () => {
-			const setup = async () => {
+		describe('when the user is a member of the room', () => {
+			const cases = [
+				{ userType: 'teacher', roleKey: 'roomOwnerRole', expectedStatus: HttpStatus.OK },
+				{ userType: 'teacher', roleKey: 'roomAdminRole', expectedStatus: HttpStatus.OK },
+				{ userType: 'teacher', roleKey: 'roomEditorRole', expectedStatus: HttpStatus.FORBIDDEN },
+				{ userType: 'teacher', roleKey: 'roomViewerRole', expectedStatus: HttpStatus.FORBIDDEN },
+				{ userType: 'teacher', roleKey: 'roomApplicantRole', expectedStatus: HttpStatus.FORBIDDEN },
+				{ userType: 'student', roleKey: 'roomOwnerRole', expectedStatus: HttpStatus.FORBIDDEN },
+				{ userType: 'student', roleKey: 'roomAdminRole', expectedStatus: HttpStatus.FORBIDDEN },
+				{ userType: 'student', roleKey: 'roomEditorRole', expectedStatus: HttpStatus.FORBIDDEN },
+				{ userType: 'student', roleKey: 'roomViewerRole', expectedStatus: HttpStatus.FORBIDDEN },
+				{ userType: 'student', roleKey: 'roomApplicantRole', expectedStatus: HttpStatus.FORBIDDEN },
+			];
+
+			const setup = async (
+				userType: 'teacher' | 'student',
+				roleKey: keyof ReturnType<typeof RoomRolesTestFactory.createRoomRoles>
+			) => {
 				const school = schoolEntityFactory.buildWithId();
 				const room = roomEntityFactory.build({ schoolId: school.id });
 				const roomInvitationLinks = roomInvitationLinkEntityFactory.buildList(3, {
 					roomId: room.id,
 				});
-				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({ school });
-				const { roomAdminRole } = RoomRolesTestFactory.createRoomRoles();
+				const roomRoles = RoomRolesTestFactory.createRoomRoles();
+				const roomRole = roomRoles[roleKey];
+
+				let account: AccountEntity;
+				let user: User;
+
+				if (userType === 'teacher') {
+					({ teacherAccount: account, teacherUser: user } = UserAndAccountTestFactory.buildTeacher({ school }));
+				} else {
+					({ studentAccount: account, studentUser: user } = UserAndAccountTestFactory.buildStudent({ school }));
+				}
+
 				const userGroupEntity = groupEntityFactory.buildWithId({
 					type: GroupEntityTypes.ROOM,
-					users: [{ role: roomAdminRole, user: studentUser }],
-					organization: studentUser.school,
+					users: [{ role: roomRole, user }],
+					organization: user.school,
 					externalSource: undefined,
 				});
 				const roomMembership = roomMembershipEntityFactory.build({
@@ -100,38 +130,36 @@ describe('Room Invitation Link Controller (API)', () => {
 					schoolId: school.id,
 				});
 				await em
-					.persist([
-						room,
-						...roomInvitationLinks,
-						studentAccount,
-						studentUser,
-						roomAdminRole,
-						userGroupEntity,
-						roomMembership,
-						school,
-					])
+					.persist([room, ...roomInvitationLinks, account, user, roomRole, userGroupEntity, roomMembership, school])
 					.flush();
 				em.clear();
 
-				const loggedInClient = await testApiClient.login(studentAccount);
+				const loggedInClient = await testApiClient.login(account);
 
 				return { loggedInClient, room, roomInvitationLinks };
 			};
 
-			describe('when the room exists and has links', () => {
-				it('should return the room invitation links', async () => {
-					const { loggedInClient, room } = await setup();
+			it.each(cases)(
+				'should return $expectedStatus for $userType with $roleKey',
+				async ({ userType, roleKey, expectedStatus }) => {
+					const { loggedInClient, room } = await setup(
+						userType as 'teacher' | 'student',
+						roleKey as keyof ReturnType<typeof RoomRolesTestFactory.createRoomRoles>
+					);
 
 					const response = await loggedInClient.get(`/${room.id}/room-invitation-links`);
-					const { roomInvitationLinks } = response.body as unknown as RoomInvitationLinkListResponse;
 
-					expect(response.status).toBe(HttpStatus.OK);
-					expect(roomInvitationLinks).toHaveLength(3);
-				});
-			});
+					if (expectedStatus === HttpStatus.OK) {
+						expect(response.status).toBe(HttpStatus.OK);
+						expect((response.body as RoomInvitationLinkListResponse).roomInvitationLinks).toHaveLength(3);
+					} else {
+						expect(response.status).toBe(HttpStatus.FORBIDDEN);
+					}
+				}
+			);
 		});
 
-		describe('when the user has not the required permissions', () => {
+		describe('when the user is not a member of the room', () => {
 			const setup = async () => {
 				const room = roomEntityFactory.build();
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
@@ -143,14 +171,12 @@ describe('Room Invitation Link Controller (API)', () => {
 				return { loggedInClient, room };
 			};
 
-			describe('when the room exists and has links', () => {
-				it('should return 403', async () => {
-					const { loggedInClient, room } = await setup();
+			it('should return 403', async () => {
+				const { loggedInClient, room } = await setup();
 
-					const response = await loggedInClient.get(`/${room.id}/room-invitation-links`);
+				const response = await loggedInClient.get(`/${room.id}/room-invitation-links`);
 
-					expect(response.status).toBe(HttpStatus.FORBIDDEN);
-				});
+				expect(response.status).toBe(HttpStatus.FORBIDDEN);
 			});
 		});
 	});

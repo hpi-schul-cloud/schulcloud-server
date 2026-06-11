@@ -1,14 +1,14 @@
+import { JwtWhitelistAdapter } from '@infra/jwt-whitelist';
 import { PassportStrategy } from '@nestjs/passport';
 import { WsException } from '@nestjs/websockets';
 import { JwtExtractor } from '@shared/common/utils';
 import { Strategy } from 'passport-jwt';
-import { JwtValidationAdapter } from '../adapter';
 import { ICurrentUser, InternalJwtAuthGuardConfig, JwtPayload, StrategyType } from '../interface';
 import { CurrentUserBuilder, JwtStrategyOptionsFactory } from '../mapper';
 
 export class WsJwtStrategy extends PassportStrategy(Strategy, StrategyType.WS_JWT) {
 	constructor(
-		private readonly jwtValidationAdapter: JwtValidationAdapter,
+		private readonly jwtWhitelistAdapter: JwtWhitelistAdapter,
 		config: InternalJwtAuthGuardConfig
 	) {
 		const strategyOptions = JwtStrategyOptionsFactory.build(JwtExtractor.fromCookie('jwt'), config);
@@ -20,7 +20,7 @@ export class WsJwtStrategy extends PassportStrategy(Strategy, StrategyType.WS_JW
 		// check user exists
 		try {
 			// check jwt is whitelisted and extend whitelist entry
-			await this.jwtValidationAdapter.isWhitelisted(accountId, jti);
+			await this.jwtWhitelistAdapter.isWhitelisted(accountId, jti);
 			const currentUserBuilder = new CurrentUserBuilder(payload)
 				.asExternalUser(payload.isExternalUser)
 				.withExternalSystem(payload.systemId)

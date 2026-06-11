@@ -1,5 +1,12 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { courseEntityFactory } from '@modules/course/testing';
+import { GroupEntityTypes } from '@modules/group/entity';
+import { groupEntityFactory } from '@modules/group/testing';
+import { RoomFeatures } from '@modules/room';
+import { roomMembershipEntityFactory } from '@modules/room-membership/testing';
+import { roomEntityFactory } from '@modules/room/testing';
+import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server/server.app.module';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -231,6 +238,89 @@ describe(`content element create (api)`, () => {
 
 						const response = await loggedInClient.post(`${cardNode.id}/elements`, {
 							type: ContentElementType.DRAWING,
+						});
+
+						expect(response.statusCode).toEqual(403);
+					});
+				});
+			});
+		});
+
+		describe('with valid user on room board', () => {
+			const setup = async (features: RoomFeatures[]) => {
+				await cleanupCollections(em);
+
+				const school = schoolEntityFactory.buildWithId();
+				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
+				const owner = UserAndAccountTestFactory.buildTeacher({ school }).teacherUser;
+				const room = roomEntityFactory.buildWithId({ schoolId: school.id, features });
+				const { roomEditorRole, roomOwnerRole } = RoomRolesTestFactory.createRoomRoles();
+
+				const userGroup = groupEntityFactory.buildWithId({
+					type: GroupEntityTypes.ROOM,
+					organization: school,
+					users: [
+						{ role: roomEditorRole, user: teacherUser },
+						{ role: roomOwnerRole, user: owner },
+					],
+				});
+				const roomMembership = roomMembershipEntityFactory.build({ roomId: room.id, userGroupId: userGroup.id });
+
+				const columnBoardNode = columnBoardEntityFactory.build({
+					context: { id: room.id, type: BoardExternalReferenceType.Room },
+				});
+				const columnNode = columnEntityFactory.withParent(columnBoardNode).build();
+				const cardNode = cardEntityFactory.withParent(columnNode).build();
+
+				await em
+					.persist([
+						school,
+						teacherAccount,
+						teacherUser,
+						owner,
+						room,
+						roomEditorRole,
+						roomOwnerRole,
+						userGroup,
+						roomMembership,
+						columnBoardNode,
+						columnNode,
+						cardNode,
+					])
+					.flush();
+				em.clear();
+
+				const loggedInClient = await testApiClient.login(teacherAccount);
+
+				return { loggedInClient, cardNode };
+			};
+
+			describe('when creating a video conference element', () => {
+				describe('when room allows editors to manage video conferences', () => {
+					it('should return status 201', async () => {
+						const { loggedInClient, cardNode } = await setup([RoomFeatures.EDITOR_MANAGE_VIDEOCONFERENCE]);
+
+						const response = await loggedInClient.post(`${cardNode.id}/elements`, {
+							type: ContentElementType.VIDEO_CONFERENCE,
+							content: {
+								title: 'Test Conference',
+							},
+						});
+
+						expect(response.statusCode).toEqual(201);
+						expect((response.body as AnyContentElementResponse).type).toEqual(ContentElementType.VIDEO_CONFERENCE);
+					});
+				});
+
+				describe('when room does not allow editors to manage video conferences', () => {
+					it('should return status 403', async () => {
+						const { loggedInClient, cardNode } = await setup([]);
+
+						const response = await loggedInClient.post(`${cardNode.id}/elements`, {
+							type: ContentElementType.VIDEO_CONFERENCE,
+							content: {
+								title: 'Test Conference',
+							},
 						});
 
 						expect(response.statusCode).toEqual(403);

@@ -159,7 +159,27 @@ describe(CommonCartridgeImportService.name, () => {
 		element3.isResource = true;
 		element3.pathDepth = 3;
 
-		const orgs = [board, column1, card1, element1, column2, card2, element2, column3, card3, element3];
+		const card4 = organizationFactory.withParent(column3).build();
+		const cc11FileFolder = organizationFactory.withParent(card4).withTitle('cc-11-file-folder').build();
+		const cc11FileFolderFile1 = organizationFactory.withParent(cc11FileFolder).withWebContent('cc11-file1.pdf').build();
+		const cc11FileFolderFile2 = organizationFactory.withParent(cc11FileFolder).withWebContent('cc11-file2.pdf').build();
+
+		const orgs = [
+			board,
+			column1,
+			card1,
+			element1,
+			column2,
+			card2,
+			element2,
+			column3,
+			card3,
+			element3,
+			card4,
+			cc11FileFolder,
+			cc11FileFolderFile1,
+			cc11FileFolderFile2,
+		];
 
 		httpServiceMock.get.mockReturnValue(from([axiosResponseFactory.build({ data: file })]));
 
@@ -264,7 +284,7 @@ describe(CommonCartridgeImportService.name, () => {
 
 				await sut.importCourse(event);
 
-				expect(columnClientAdapterMock.createCard).toHaveBeenCalledTimes(3);
+				expect(columnClientAdapterMock.createCard).toHaveBeenCalledTimes(4);
 			});
 
 			it('should create an element', async () => {
@@ -272,7 +292,7 @@ describe(CommonCartridgeImportService.name, () => {
 
 				await sut.importCourse(event);
 
-				expect(cardClientAdapterMock.createCardElement).toHaveBeenCalledTimes(3);
+				expect(cardClientAdapterMock.createCardElement).toHaveBeenCalledTimes(4);
 			});
 
 			it('should upload files', async () => {
@@ -312,6 +332,21 @@ describe(CommonCartridgeImportService.name, () => {
 					'boardnodes',
 					expect.objectContaining({ name: 'file2-folder.pdf' })
 				);
+			});
+
+			it('should create file folder for cc 1.1 structure', async () => {
+				const { event } = setup();
+
+				await sut.importCourse(event);
+
+				expect(cardClientAdapterMock.updateCardElement).toHaveBeenCalledWith(event.jwt, expect.anything(), {
+					data: {
+						type: 'fileFolder',
+						content: {
+							title: 'cc-11-file-folder',
+						},
+					},
+				});
 			});
 
 			it('should create card element without resource', async () => {

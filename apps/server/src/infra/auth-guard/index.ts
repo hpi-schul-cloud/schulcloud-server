@@ -1,4 +1,3 @@
-export { JwtValidationAdapter } from './adapter';
 export { AuthGuardModule } from './auth-guard.module';
 export {
 	JWT_AUTH_GUARD_CONFIG_TOKEN,
