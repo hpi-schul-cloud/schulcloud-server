@@ -55,7 +55,8 @@ describe('Room Controller (API)', () => {
 
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
 			const { externalPersonAccount, externalPersonUser } = UserAndAccountTestFactory.buildExternalPerson({ school });
-			const { roomEditorRole, roomOwnerRole, roomViewerRole } = RoomRolesTestFactory.createRoomRoles();
+			const { roomEditorRole, roomOwnerRole, roomViewerRole, roomApplicantRole } =
+				RoomRolesTestFactory.createRoomRoles();
 			em.persist([roomEditorRole, roomOwnerRole, roomViewerRole]);
 			const teacherRole = teacherUser.roles[0];
 			const studentRole = roleFactory.buildWithId({ name: RoleName.STUDENT });
@@ -63,6 +64,7 @@ describe('Room Controller (API)', () => {
 			const externalStudent = userFactory.buildWithId({ school: externalSchool, roles: [studentRole] });
 			const teachers = userFactory.buildList(2, { school, roles: [teacherRole] });
 			const externalTeachers = userFactory.buildList(2, { school: externalSchool, roles: [teacherRole] });
+			const applicantStudent = userFactory.buildWithId({ school, roles: [studentRole] });
 			const userGroupEntity = groupEntityFactory.buildWithId({
 				users: [
 					{ role: roomEditorRole, user: teacherUser },
@@ -74,6 +76,7 @@ describe('Room Controller (API)', () => {
 					{ role: roomViewerRole, user: students[1] },
 					{ role: roomViewerRole, user: externalStudent },
 					{ role: roomViewerRole, user: externalPersonUser },
+					{ role: roomApplicantRole, user: applicantStudent },
 				],
 				type: GroupEntityTypes.ROOM,
 				organization: teacherUser.school,
@@ -99,6 +102,7 @@ describe('Room Controller (API)', () => {
 					...externalTeachers,
 					...students,
 					...teachers,
+					applicantStudent,
 				])
 				.flush();
 			em.clear();
@@ -130,6 +134,8 @@ describe('Room Controller (API)', () => {
 				roomEditorRole,
 				roomOwnerRole,
 				roomViewerRole,
+				roomApplicantRole,
+				applicantStudent,
 			};
 		};
 
@@ -173,6 +179,7 @@ describe('Room Controller (API)', () => {
 					roomEditorRole,
 					roomOwnerRole,
 					roomViewerRole,
+					applicantStudent,
 				} = await setupRoomWithExternalMembers(RoleName.TEACHER);
 
 				const response = await loggedInClient.get(`/${room.id}/members`);
@@ -251,6 +258,8 @@ describe('Room Controller (API)', () => {
 						schoolRoleNames: [RoleName.EXTERNALPERSON],
 					})
 				);
+				const applicantMember = body.data.find((member) => member.userId === applicantStudent.id);
+				expect(applicantMember).toBeUndefined();
 			});
 		});
 
