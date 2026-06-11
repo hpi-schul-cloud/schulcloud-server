@@ -4,8 +4,17 @@ import { AxiosError } from 'axios';
 import util from 'util';
 
 export class AxiosErrorLoggable extends HttpException implements Loggable {
-	private static readonly SENSITIVE_HEADER_NAME_PATTERN =
-		/^((?:set-)?cookie|x-(?:auth|api).*|.*(auth|token|secret).*)$/i;
+	private static isSensitiveHeaderName(name: string): boolean {
+		const lower = name.toLowerCase();
+
+		return (
+			lower.includes('cookie') ||
+			lower.startsWith('x-api') ||
+			lower.includes('auth') ||
+			lower.includes('token') ||
+			lower.includes('secret')
+		);
+	}
 
 	private readonly axiosError: AxiosError;
 	protected readonly type: string;
@@ -115,7 +124,7 @@ export class AxiosErrorLoggable extends HttpException implements Loggable {
 
 		const headerRecord = headers as Record<string, unknown>;
 		const redactedHeaders = Object.entries(headerRecord).reduce<Record<string, unknown>>((result, [key, value]) => {
-			result[key] = AxiosErrorLoggable.SENSITIVE_HEADER_NAME_PATTERN.test(key) ? this.redactHeaderValue(value) : value;
+			result[key] = AxiosErrorLoggable.isSensitiveHeaderName(key) ? this.redactHeaderValue(value) : value;
 			return result;
 		}, {});
 

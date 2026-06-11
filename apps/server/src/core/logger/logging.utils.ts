@@ -3,9 +3,6 @@ import { Loggable } from './interfaces';
 import { LogMessageWithContext } from './types';
 
 export class LoggingUtils {
-	private static readonly SENSITIVE_FIELD_PATTERN =
-		/((?:set-)?cookie|x-(?:auth|api)[\w-]*|[\w-]*(?:auth|token|secret)[\w-]*)/i;
-
 	public static createMessageWithContext(loggable: Loggable, context?: string | undefined): LogMessageWithContext {
 		const message = loggable.getLogMessage();
 		const stringifiedMessage = this.stringifyMessage(message);
@@ -15,56 +12,67 @@ export class LoggingUtils {
 	}
 
 	private static stringifyMessage(message: unknown): string {
-		const inspectedMessage = util.inspect(message);
-		const redactedMessage = this.redactSensitiveContent(inspectedMessage);
-		const stringifiedMessage = redactedMessage.replaceAll('\n', '').replaceAll('\\n', '');
+		const redactedMessage = this.redactSensitiveObject(message);
+		const inspectedMessage = util.inspect(redactedMessage);
 
-		return stringifiedMessage;
+		return inspectedMessage.replaceAll('\n', '').replaceAll('\\n', '');
 	}
 
-	private static redactSensitiveContent(message: string): string {
-		const singleQuoteRedacted = message.replace(
-			/(['"]{0,1}[\w-]+['"]{0,1}\s*:\s*)'([^']*)'/gi,
-			(match, keyWithSeparator: string, value: string) => {
-				const key = keyWithSeparator
-					.split(':')[0]
-					.trim()
-					.replace(/^['"]|['"]$/g, '');
-				if (!this.SENSITIVE_FIELD_PATTERN.test(key)) {
-					return match;
-				}
+	private static isSensitiveFieldName(name: string): boolean {
+		const lower = name.toLowerCase();
 
-				return `${keyWithSeparator}'${this.maskSecret(value)}'`;
-			}
+		return (
+			lower.includes('cookie') ||
+			lower.startsWith('x-api') ||
+			lower.includes('auth') ||
+			lower.includes('token') ||
+			lower.includes('secret')
 		);
+	}
 
-		const doubleQuoteRedacted = singleQuoteRedacted.replace(
-			/(['"]{0,1}[\w-]+['"]{0,1}\s*:\s*)"([^"]*)"/gi,
-			(match, keyWithSeparator: string, value: string) => {
-				const key = keyWithSeparator
-					.split(':')[0]
-					.trim()
-					.replace(/^['"]|['"]$/g, '');
-				if (!this.SENSITIVE_FIELD_PATTERN.test(key)) {
-					return match;
-				}
+	private static redactSensitiveObject(value: unknown, visited = new WeakSet<object>()): unknown {
+		if (value instanceof Error) {
+			return value;
+		}
 
-				return `${keyWithSeparator}"${this.maskSecret(value)}"`;
+		if (typeof value === 'string') {
+			return this.redactBearerToken(value);
+		}
+
+		if (Array.isArray(value)) {
+			if (visited.has(value)) return '[Circular]';
+			visited.add(value);
+
+			return value.map((item) => this.redactSensitiveObject(item, visited));
+		}
+
+		if (typeof value === 'object' && value !== null) {
+			if (visited.has(value)) return '[Circular]';
+			visited.add(value);
+
+			const result: Record<string, unknown> = {};
+			for (const [key, val] of Object.entries(value)) {
+				result[key] = this.isSensitiveFieldName(key)
+					? typeof val === 'string'
+						? this.maskSecret(val)
+						: '[REDACTED]'
+					: this.redactSensitiveObject(val, visited);
 			}
-		);
 
-		const bearerRedacted = doubleQuoteRedacted.replace(
-			/\b(Bearer)\s+([A-Z0-9._~+/=-]+)/gi,
-			(match, scheme: string, token: string) => {
-				if (token.includes('[REDACTED]')) {
-					return match;
-				}
+			return result;
+		}
 
-				return `${scheme} ${this.maskSecret(token)}`;
+		return value;
+	}
+
+	private static redactBearerToken(value: string): string {
+		return value.replace(/\b(Bearer)\s+([A-Z0-9._~+/=-]+)/gi, (match, scheme: string, token: string) => {
+			if (token.includes('[REDACTED]')) {
+				return match;
 			}
-		);
 
-		return bearerRedacted;
+			return `${scheme} ${this.maskSecret(token)}`;
+		});
 	}
 
 	private static maskSecret(secret: string): string {
