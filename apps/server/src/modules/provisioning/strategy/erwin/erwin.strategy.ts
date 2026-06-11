@@ -82,7 +82,11 @@ export class ErwinProvisioningStrategy extends ProvisioningStrategy {
 		}
 
 		const payload = new ErwinJwtPayload(decodedAccessToken);
+
+		console.log('payload', util.inspect(payload));
 		const errors = await validate(payload);
+
+		console.log('validation errors', util.inspect(errors));
 
 		if (errors.length > 0) {
 			throw new IdTokenExtractionFailureLoggableException(
