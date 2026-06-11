@@ -66,13 +66,14 @@ export class LoggingUtils {
 	}
 
 	private static redactBearerToken(value: string): string {
-		return value.replace(/\b(Bearer)\s+([A-Z0-9._~+/=-]+)/gi, (match, scheme: string, token: string) => {
-			if (token.includes('[REDACTED]')) {
-				return match;
-			}
+		if (value.includes('[REDACTED]')) {
+			return value;
+		}
 
-			return `${scheme} ${this.maskSecret(token)}`;
-		});
+		return value.replace(
+			/\b(Bearer)\s+([A-Z0-9._~+/=-]+)/gi,
+			(match, scheme: string, token: string) => `${scheme} ${this.maskSecret(token)}`
+		);
 	}
 
 	private static maskSecret(secret: string): string {

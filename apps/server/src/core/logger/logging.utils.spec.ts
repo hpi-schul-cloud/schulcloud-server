@@ -72,5 +72,35 @@ describe(LoggingUtils.name, () => {
 			expect(result.message).toContain(redactedCookie);
 			expect(result.message).toContain(redactedApiKey);
 		});
+
+		it('should keep already redacted bearer token unchanged', () => {
+			const token = 'Bearer abcdefghijklmnopqrstuvwxyz[REDACTED]';
+			const loggable = new SampleLoggable({
+				message: 'request failed',
+				data: {
+					error: token,
+				},
+			});
+
+			const result = LoggingUtils.createMessageWithContext(loggable);
+
+			expect(result.message).toContain(token);
+			expect(result.message).not.toContain('...');
+		});
+
+		it('should redact blank and short sensitive values', () => {
+			const loggable = new SampleLoggable({
+				message: 'request failed',
+				data: {
+					Cookie: '   ',
+					Secret: 'short',
+				},
+			});
+
+			const result = LoggingUtils.createMessageWithContext(loggable);
+
+			expect(result.message).toContain("Cookie: '[REDACTED]'");
+			expect(result.message).toContain("Secret: '[REDACTED]'");
+		});
 	});
 });
