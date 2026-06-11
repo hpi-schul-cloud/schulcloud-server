@@ -102,5 +102,100 @@ describe(LoggingUtils.name, () => {
 			expect(result.message).toContain("Cookie: '[REDACTED]'");
 			expect(result.message).toContain("Secret: '[REDACTED]'");
 		});
+
+		it('should replace circular arrays with circular marker', () => {
+			const circularArray: unknown[] = [];
+			circularArray.push(circularArray);
+
+			const loggable = new SampleLoggable({
+				message: 'request failed',
+				data: {
+					items: circularArray,
+				},
+			} as unknown as LogMessage);
+
+			const result = LoggingUtils.createMessageWithContext(loggable);
+
+			expect(result.message).toContain("items: [ '[Circular]' ]");
+		});
+
+		it('should replace circular objects with circular marker', () => {
+			const circularObject: Record<string, unknown> = {};
+			circularObject.self = circularObject;
+
+			const loggable = new SampleLoggable({
+				message: 'request failed',
+				data: {
+					meta: circularObject,
+				},
+			} as unknown as LogMessage);
+
+			const result = LoggingUtils.createMessageWithContext(loggable);
+
+			expect(result.message).toContain("self: '[Circular]'");
+		});
+
+		it('should redact non-string values for sensitive keys', () => {
+			const loggable = new SampleLoggable({
+				message: 'request failed',
+				data: {
+					AuthToken: 12345,
+				},
+			} as unknown as LogMessage);
+
+			const result = LoggingUtils.createMessageWithContext(loggable);
+
+			expect(result.message).toContain("AuthToken: '[REDACTED]'");
+		});
+
+		it('should keep Error instances unchanged in output', () => {
+			const loggable = new SampleLoggable({
+				message: 'request failed',
+				data: {
+					error: new Error('boom'),
+				},
+			} as unknown as LogMessage);
+
+			const result = LoggingUtils.createMessageWithContext(loggable);
+
+			expect(result.message).toContain('Error: boom');
+		});
+
+		it('should keep non-sensitive primitive values unchanged', () => {
+			const loggable = new SampleLoggable({
+				message: 'request failed',
+				data: {
+					attempt: 2,
+					retry: false,
+				},
+			} as unknown as LogMessage);
+
+			const result = LoggingUtils.createMessageWithContext(loggable);
+
+			expect(result.message).toContain('attempt: 2');
+			expect(result.message).toContain('retry: false');
+		});
+	});
+
+	describe('isInstanceOfLoggable', () => {
+		it('should return true for a loggable-like object', () => {
+			const loggableLike = {
+				getLogMessage: () => {
+					return { message: 'ok' };
+				},
+			};
+
+			expect(LoggingUtils.isInstanceOfLoggable(loggableLike)).toBe(true);
+		});
+
+		it('should return false for non-object values', () => {
+			expect(LoggingUtils.isInstanceOfLoggable('text')).toBe(false);
+			expect(LoggingUtils.isInstanceOfLoggable(42)).toBe(false);
+		});
+
+		it('should return false for null and objects without getLogMessage', () => {
+			expect(LoggingUtils.isInstanceOfLoggable(null)).toBe(false);
+			expect(LoggingUtils.isInstanceOfLoggable({})).toBe(false);
+		});
 	});
 });
