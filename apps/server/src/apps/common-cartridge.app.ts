@@ -20,7 +20,7 @@ async function bootstrap(): Promise<void> {
 	// WinstonLogger
 	nestApp.useLogger(await nestApp.resolve(LegacyLogger));
 
-	await createMetricsServer(nestApp, 'Board Collaboration Server App');
+	await createMetricsServer(nestApp, 'Common Cartridge Server App');
 
 	await nestApp.init();
 
