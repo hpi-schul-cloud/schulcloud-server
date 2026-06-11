@@ -18,6 +18,7 @@ import { ProvisioningStrategy } from '../base.strategy';
 import { ErwinRole, MappedSvsRolle, PayloadRolle } from './enums/rolle.enum';
 import { ErwinJwtPayload } from './erwin.jwt.payload';
 import util from 'util';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class ErwinProvisioningStrategy extends ProvisioningStrategy {
@@ -81,7 +82,8 @@ export class ErwinProvisioningStrategy extends ProvisioningStrategy {
 			throw new IdTokenExtractionFailureLoggableException('sub');
 		}
 
-		const payload = new ErwinJwtPayload(decodedAccessToken);
+		const payload = plainToInstance(ErwinJwtPayload, decodedAccessToken);
+		// const payload = new ErwinJwtPayload(decodedAccessToken);
 
 		console.log('payload', util.inspect(payload));
 		let errors = await validate(payload);
