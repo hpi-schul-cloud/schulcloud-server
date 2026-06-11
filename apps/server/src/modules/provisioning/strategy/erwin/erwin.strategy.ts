@@ -84,7 +84,9 @@ export class ErwinProvisioningStrategy extends ProvisioningStrategy {
 		const payload = new ErwinJwtPayload(decodedAccessToken);
 
 		console.log('payload', util.inspect(payload));
-		const errors = await validate(payload);
+		let errors = await validate(payload);
+
+		errors = errors.flatMap((err) => [err, ...(err.children ? err.children : [])]);
 
 		console.log('validation errors', util.inspect(errors));
 
