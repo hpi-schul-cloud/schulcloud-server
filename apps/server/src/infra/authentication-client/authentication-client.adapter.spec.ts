@@ -68,7 +68,7 @@ describe(AuthenticationClientAdapter.name, () => {
 			it('should call loginControllerLoginLocalServiceAccount with the correct params', async () => {
 				const { params } = setup();
 
-				await service.login(params);
+				await service.loginServiceAccount(params);
 
 				expect(authenticationApi.loginControllerLoginLocalServiceAccount).toHaveBeenCalledWith(params);
 			});
@@ -76,7 +76,7 @@ describe(AuthenticationClientAdapter.name, () => {
 			it('should return the accessToken', async () => {
 				const { params } = setup();
 
-				const result = await service.login(params);
+				const result = await service.loginServiceAccount(params);
 
 				expect(result).toEqual('someAccessToken');
 			});
@@ -100,7 +100,7 @@ describe(AuthenticationClientAdapter.name, () => {
 
 				const expectedError = new AuthenticationErrorLoggableException(error, params.username);
 
-				await expect(service.login(params)).rejects.toThrowError(expectedError);
+				await expect(service.loginServiceAccount(params)).rejects.toThrowError(expectedError);
 			});
 		});
 
@@ -123,7 +123,7 @@ describe(AuthenticationClientAdapter.name, () => {
 			it('should wrap the error with AxiosErrorLoggable and throw AuthenticationErrorLoggableException', async () => {
 				const { params, axiosError, spyIsAxiosError } = setup();
 
-				await expect(service.login(params)).rejects.toThrow(AuthenticationErrorLoggableException);
+				await expect(service.loginServiceAccount(params)).rejects.toThrow(AuthenticationErrorLoggableException);
 
 				expect(spyIsAxiosError).toHaveBeenCalledWith(axiosError);
 				expect(AxiosErrorLoggable).toHaveBeenCalledWith(axiosError, 'AUTHENTICATION_API_LOGIN_FAILED');

@@ -26,7 +26,7 @@ export class DeleteFilesUc {
 	}
 
 	public async deleteMarkedFiles(thresholdDate: Date, batchSize: number): Promise<void> {
-		const accessToken = await this.authenticationClient.login({
+		const accessToken = await this.authenticationClient.loginServiceAccount({
 			username: this.config.cronjobUsername,
 			password: this.config.cronjobToken,
 		});

@@ -8,7 +8,7 @@ import { AuthenticationApi, LocalAuthorizationBodyParams } from './generated';
 export class AuthenticationClientAdapter {
 	constructor(private readonly authenticationApi: AuthenticationApi) {}
 
-	public async login(params: LocalAuthorizationBodyParams): Promise<string> {
+	public async loginServiceAccount(params: LocalAuthorizationBodyParams): Promise<string> {
 		try {
 			const response = await this.authenticationApi.loginControllerLoginLocalServiceAccount(params);
 			const { accessToken } = response.data;
