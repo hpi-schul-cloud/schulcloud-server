@@ -126,7 +126,6 @@ export class ErwinProvisioningStrategy extends ProvisioningStrategy {
 		const externalSchoolDto: ExternalSchoolDto = new ExternalSchoolDto({
 			externalId: payload.schule.externalId,
 			erwinId: payload.schule.erwinId,
-			location: payload.schule.zugehoerigZu,
 			name: payload.schule.name,
 		});
 
