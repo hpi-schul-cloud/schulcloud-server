@@ -39,19 +39,19 @@ The SVS has two fundamentally different ways data arrives from external systems:
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │                   LOGIN-TRIGGERED PROVISIONING                  │
-│  User logs in via OAuth2 → access token used to fetch          │
-│  external data → user/school/classes created or updated        │
-│  Used by: TSP, Moin.Schule / Schulconnex                       │
-│  Code: ProvisioningService → Strategy.getData() + apply()      │
+│  User logs in via OAuth2 → access token used to fetch           │
+│  external data → user/school/classes created or updated         │
+│  Used by: TSP, Moin.Schule / Schulconnex                        │
+│  Code: ProvisioningService → Strategy.getData() + apply()       │
 └─────────────────────────────────────────────────────────────────┘
 
 ┌─────────────────────────────────────────────────────────────────┐
 │                     SCHEDULED BATCH SYNC                        │
-│  Cron job triggers bulk fetch → all schools/users/classes      │
+│  Cron job triggers bulk fetch → all schools/users/classes       │
 │  created or updated in batches                                  │
-│  Used by: TSP (NestJS), LDAP (Feathers legacy)                 │
-│  Code: SyncConsole → SyncService → SyncStrategy.sync()         │
-│         or Feathers /sync endpoint → LDAPSystemSyncer          │
+│  Used by: TSP (NestJS), LDAP (Feathers legacy)                  │
+│  Code: SyncConsole → SyncService → SyncStrategy.sync()          │
+│         or Feathers /sync endpoint → LDAPSystemSyncer           │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
@@ -165,11 +165,11 @@ The `ProvisioningModule` is the shared core for all OAuth-based provisioning (TS
 │  │  (Dispatches to registered strategy by system type)      │   │
 │  └──────────────────────────────────────────────────────────┘   │
 │                                                                 │
-│  ┌────────────────┐  ┌──────────────────────┐  ┌────────────┐  │
-│  │ TspProvisioning│  │ SchulconnexAsync      │  │ Oidc       │  │
-│  │ Strategy       │  │ ProvisioningStrategy  │  │ Strategy   │  │
-│  │ (TSP)          │  │ (Moin.Schule)         │  │ (minimal)  │  │
-│  └────────────────┘  └──────────────────────┘  └────────────┘  │
+│  ┌────────────────┐  ┌──────────────────────┐  ┌────────────┐   │
+│  │ TspProvisioning│  │ SchulconnexAsync     │  │ Oidc       │   │
+│  │ Strategy       │  │ ProvisioningStrategy │  │ Strategy   │   │
+│  │ (TSP)          │  │ (Moin.Schule)        │  │ (minimal)  │   │
+│  └────────────────┘  └──────────────────────┘  └────────────┘   │
 │                                                                 │
 │  ┌──────────────────────────────────────────────────────────┐   │
 │  │              Shared Provisioning Services                │   │
@@ -242,27 +242,27 @@ All strategies communicate through the same DTOs, regardless of external format:
 
 ```
 provisioning/
-├── amqp/                                    # RabbitMQ producers/consumers (Schulconnex async)
+├── amqp/                                               # RabbitMQ producers/consumers (Schulconnex async)
 │   ├── schulconnex-group-provisioning.producer.ts
 │   ├── schulconnex-group-provisioning.consumer.ts
 │   ├── schulconnex-group-removal.consumer.ts
 │   ├── schulconnex-license-provisioning.consumer.ts
-│   └── schulconnex.exchange.ts              # Event names enum
+│   └── schulconnex.exchange.ts                         # Event names enum
 ├── domain/
-│   ├── interface/                           # AMQP message types
+│   ├── interface/                                      # AMQP message types
 │   └── error/
-├── dto/                                     # Shared DTOs (External*Dto, OauthDataDto, etc.)
+├── dto/                                                # Shared DTOs (External*Dto, OauthDataDto, etc.)
 ├── mapper/
 ├── service/
-│   ├── provisioning.service.ts              # Central dispatcher
-│   ├── tsp-provisioning.service.ts          # TSP-specific provisioning logic
-│   ├── school-provisioning.handler.ts       # Generic school handler
-│   ├── user-provisioning.handler.ts         # Generic user handler
-│   └── class-provisioning-handler.ts        # Generic class handler
+│   ├── provisioning.service.ts                         # Central dispatcher
+│   ├── tsp-provisioning.service.ts                     # TSP-specific provisioning logic
+│   ├── school-provisioning.handler.ts                  # Generic school handler
+│   ├── user-provisioning.handler.ts                    # Generic user handler
+│   └── class-provisioning-handler.ts                   # Generic class handler
 ├── strategy/
-│   ├── base.strategy.ts                     # Abstract strategy interface
+│   ├── base.strategy.ts                                # Abstract strategy interface
 │   ├── oidc/
-│   │   └── oidc.strategy.ts                 # Minimal OIDC (just extracts externalId)
+│   │   └── oidc.strategy.ts                            # Minimal OIDC (just extracts externalId)
 │   ├── schulconnex/
 │   │   ├── schulconnex-async-provisioning.strategy.ts  # Moin.Schule strategy
 │   │   ├── schulconnex-response-mapper.ts              # Maps Schulconnex API → DTOs
@@ -274,12 +274,12 @@ provisioning/
 │   │       ├── schulconnex-course-sync.service.ts
 │   │       └── schulconnex-tool-provisioning.service.ts
 │   ├── tsp/
-│   │   ├── tsp.strategy.ts                  # TSP login-time strategy
-│   │   └── tsp.jwt.payload.ts               # TSP JWT claim structure
-│   └── erwin/                               # Erwin strategy (currently disabled)
+│   │   ├── tsp.strategy.ts                             # TSP login-time strategy
+│   │   └── tsp.jwt.payload.ts                          # TSP JWT claim structure
+│   └── erwin/                                          # Erwin strategy (currently disabled)
 ├── provisioning.module.ts
 ├── provisioning.config.ts
-└── provisioning-exchange.config.ts          # RabbitMQ exchange config
+└── provisioning-exchange.config.ts                     # RabbitMQ exchange config
 ```
 
 ---
@@ -374,12 +374,12 @@ Oauth2Strategy.validate() → Oauth2ContextHelper
 
 ```typescript
 class TspJwtPayload {
-    sub: string              // External user ID
-    sid?: string             // Session ID
-    ptscListRolle: string    // Comma-separated roles ("Lehrer", "Schueler", "Admin")
-    personVorname: string    // First name
-    personNachname: string   // Last name
-    ptscSchuleNummer: string // School number
+    sub: string               // External user ID
+    sid?: string              // Session ID
+    ptscListRolle: string     // Comma-separated roles ("Lehrer", "Schueler", "Admin")
+    personVorname: string     // First name
+    personNachname: string    // Last name
+    ptscSchuleNummer: string  // School number
     ptscListKlasseId?: string // Comma-separated class IDs
 }
 ```
