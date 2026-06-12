@@ -7,6 +7,7 @@ import { EntityId } from '@shared/domain/types';
 import { BoardNodeRule } from '../authorisation/board-node.rule';
 import { BoardNodeFactory, Card, Column, ColumnBoard, ContentElementType, isCard } from '../domain';
 import { BoardNodeAuthorizableService, BoardNodeService, ColumnBoardService } from '../service';
+import { CopyStatusEnum } from '@modules/copy-helper';
 
 @Injectable()
 export class ColumnUc {
@@ -95,7 +96,11 @@ export class ColumnUc {
 		return { card, fromBoard, toBoard, fromColumn, toColumn };
 	}
 
-	public async copyCard(userId: EntityId, cardId: EntityId, schoolId: EntityId): Promise<Card> {
+	public async copyCard(
+		userId: EntityId,
+		cardId: EntityId,
+		schoolId: EntityId
+	): Promise<{ copyEntity: Card; status: CopyStatusEnum }> {
 		const card = await this.boardNodeService.findByClassAndId(Card, cardId);
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(card);
@@ -114,6 +119,6 @@ export class ColumnUc {
 			throw new InternalServerErrorException('Copied entity is not a card');
 		}
 
-		return copyStatus.copyEntity;
+		return { copyEntity: copyStatus.copyEntity, status: copyStatus.status };
 	}
 }
