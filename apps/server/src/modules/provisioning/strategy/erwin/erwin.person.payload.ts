@@ -21,7 +21,16 @@ export class ErwinPersonPayload {
 	@Expose({ name: 'familienname' })
 	public lastName!: string;
 
-	@IsEnum([MappedSvsRolle, ErwinRole])
+	@IsEnum([
+		MappedSvsRolle.ADMIN,
+		MappedSvsRolle.STUDENT,
+		MappedSvsRolle.SUPERHERO,
+		MappedSvsRolle.TEACHER,
+		MappedSvsRolle.USER,
+		ErwinRole.LEHR,
+		ErwinRole.LERN,
+		ErwinRole.LEIT,
+	])
 	@IsNotEmpty()
 	@Expose({ name: 'rolle' })
 	public role!: PayloadRolle;

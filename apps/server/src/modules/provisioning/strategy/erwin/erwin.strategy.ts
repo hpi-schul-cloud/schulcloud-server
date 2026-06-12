@@ -85,6 +85,10 @@ export class ErwinProvisioningStrategy extends ProvisioningStrategy {
 		const payload = plainToInstance(ErwinJwtPayload, decodedAccessToken);
 		// const payload = new ErwinJwtPayload(decodedAccessToken);
 
+		if (payload.person.email === '') {
+			payload.person.email = `${payload.person.erwinId}@erwin.portal`;
+		}
+
 		console.log('payload', util.inspect(payload));
 		let errors = await validate(payload);
 
