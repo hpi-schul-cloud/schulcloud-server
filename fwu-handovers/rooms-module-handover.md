@@ -479,6 +479,8 @@ checkAllowedToUseInvitationLink()
 
 ### 6.5 Use Link Flow
 
+📁 [room-invitation-link.uc.ts](apps\server\src\modules\room\api\room-invitation-link.uc.ts)
+
 ```
 RoomInvitationLinkUc.useLink(userId, linkId)
     │
