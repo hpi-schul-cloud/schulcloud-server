@@ -11,8 +11,12 @@ export class LoggingUtils {
 		return messageWithContext;
 	}
 
+	public static redactSensitiveValue(value: unknown): unknown {
+		return this.redactSensitiveObject(value);
+	}
+
 	private static stringifyMessage(message: unknown): string {
-		const redactedMessage = this.redactSensitiveObject(message);
+		const redactedMessage = this.redactSensitiveValue(message);
 		const inspectedMessage = util.inspect(redactedMessage);
 
 		return inspectedMessage.replaceAll('\n', '').replaceAll(String.raw`\n`, '');

@@ -1,7 +1,9 @@
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@core/logger';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { AxiosError } from 'axios';
 import util from 'util';
+import { Loggable } from '../../logger/interfaces/loggable';
+import { LoggingUtils } from '../../logger/logging.utils';
+import { ErrorLogMessage, LogMessage, ValidationErrorLogMessage } from '../../logger/types';
 
 export class AxiosErrorLoggable extends HttpException implements Loggable {
 	private static isSensitiveHeaderName(name: string): boolean {
@@ -20,7 +22,9 @@ export class AxiosErrorLoggable extends HttpException implements Loggable {
 	protected readonly type: string;
 
 	constructor(axiosError: AxiosError, type: string) {
-		super(util.inspect(axiosError.response?.data), axiosError.status ?? HttpStatus.INTERNAL_SERVER_ERROR, {
+		const redactedResponseData = LoggingUtils.redactSensitiveValue(axiosError.response?.data);
+
+		super(util.inspect(redactedResponseData), axiosError.status ?? HttpStatus.INTERNAL_SERVER_ERROR, {
 			cause: axiosError.cause,
 		});
 
@@ -73,6 +77,7 @@ export class AxiosErrorLoggable extends HttpException implements Loggable {
 		const redactedResponse = axiosError.response
 			? {
 					...axiosError.response,
+					data: LoggingUtils.redactSensitiveValue(axiosError.response.data),
 					headers: this.redactHeaders(axiosError.response.headers),
 				}
 			: axiosError.response;
@@ -95,6 +100,7 @@ export class AxiosErrorLoggable extends HttpException implements Loggable {
 			return {
 				...baseRecord,
 				config: this.redactHeadersInConfig(baseRecord.config),
+				response: this.redactResponse(baseRecord.response),
 			};
 		};
 
@@ -110,6 +116,19 @@ export class AxiosErrorLoggable extends HttpException implements Loggable {
 		return {
 			...configRecord,
 			headers: this.redactHeaders(configRecord.headers),
+		};
+	}
+
+	private redactResponse(response: unknown): unknown {
+		if (typeof response !== 'object' || response === null) {
+			return response;
+		}
+
+		const responseRecord = response as Record<string, unknown>;
+		return {
+			...responseRecord,
+			data: LoggingUtils.redactSensitiveValue(responseRecord.data),
+			headers: this.redactHeaders(responseRecord.headers),
 		};
 	}
 

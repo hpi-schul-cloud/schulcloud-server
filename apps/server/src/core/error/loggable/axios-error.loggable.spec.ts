@@ -1,4 +1,5 @@
 import { axiosErrorFactory } from '@testing/factory/axios-error.factory';
+import { HttpStatus } from '@nestjs/common';
 import { AxiosError } from 'axios';
 import { AxiosErrorLoggable } from './axios-error.loggable';
 import util from 'util';
@@ -166,6 +167,105 @@ describe(AxiosErrorLoggable.name, () => {
 			expect((headers.Authorization as string[])[1]).toBe('[REDACTED]');
 			expect(headers.Secret).toBe('[REDACTED]');
 			expect(headers.Cookie).toBe('[REDACTED]');
+		});
+
+		it('should redact sensitive values in response data for log message and inspect output', () => {
+			const accessToken = 'Bearer abcdefghijklmnopqrst';
+			const sessionSecret = 'verySensitiveSessionSecret';
+			const axiosError = axiosErrorFactory
+				.withError({
+					accessToken,
+					secret: sessionSecret,
+					ok: true,
+				})
+				.build();
+
+			const axiosErrorLoggable = new AxiosErrorLoggable(axiosError, 'mockType');
+			const logMessage = axiosErrorLoggable.getLogMessage();
+			const inspected = util.inspect({ error: axiosErrorLoggable }, { depth: null });
+			const logData = 'data' in logMessage ? logMessage.data : undefined;
+
+			expect(logData).toBeDefined();
+			expect(logData).toContain('accessToken');
+			expect(logData).toContain('secret');
+			expect(logData).toContain('ok: true');
+			expect(logData).toContain('[REDACTED]');
+			expect(logData).not.toContain(accessToken);
+			expect(logData).not.toContain(sessionSecret);
+
+			expect(inspected).toContain('accessToken');
+			expect(inspected).toContain('secret');
+			expect(inspected).toContain('ok: true');
+			expect(inspected).toContain('[REDACTED]');
+			expect(inspected).not.toContain(accessToken);
+			expect(inspected).not.toContain(sessionSecret);
+		});
+
+		it('should redact sensitive values in response data for axios toJSON output', () => {
+			const accessToken = 'Bearer abcdefghijklmnopqrst';
+			const sessionSecret = 'verySensitiveSessionSecret';
+			const axiosError = axiosErrorFactory.withError({ error: 'invalid_request' }).build({
+				toJSON: () => {
+					return {
+						response: {
+							data: {
+								accessToken,
+								secret: sessionSecret,
+								ok: true,
+							},
+						},
+					};
+				},
+			});
+
+			const axiosErrorLoggable = new AxiosErrorLoggable(axiosError, 'mockType');
+			const internalAxiosError = (axiosErrorLoggable as unknown as { axiosError: AxiosError }).axiosError;
+			const toJsonResult = internalAxiosError.toJSON() as {
+				response?: { data?: Record<string, unknown> };
+			};
+
+			expect(toJsonResult.response?.data?.accessToken).toContain('[REDACTED]');
+			expect(toJsonResult.response?.data?.accessToken).not.toBe(accessToken);
+			expect(toJsonResult.response?.data?.secret).toContain('[REDACTED]');
+			expect(toJsonResult.response?.data?.secret).not.toBe(sessionSecret);
+			expect(toJsonResult.response?.data?.ok).toBe(true);
+		});
+
+		it('should use fallback status and code when axios metadata is missing', () => {
+			const axiosError = axiosErrorFactory.withError({ error: 'invalid_request' }).build({
+				status: undefined,
+				code: undefined,
+				config: undefined,
+				response: undefined,
+				toJSON: undefined,
+			});
+
+			const axiosErrorLoggable = new AxiosErrorLoggable(axiosError, 'mockType');
+			const logMessage = axiosErrorLoggable.getLogMessage();
+			const internalAxiosError = (axiosErrorLoggable as unknown as { axiosError: AxiosError }).axiosError;
+			const message = 'message' in logMessage ? logMessage.message : undefined;
+			const data = 'data' in logMessage ? logMessage.data : undefined;
+
+			expect(axiosErrorLoggable.getStatus()).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
+			expect(message).toBe('message: Bad Request code: Unknown code');
+			expect(data).toBe('undefined');
+			expect(internalAxiosError.toJSON()).toEqual({ config: undefined, response: undefined });
+		});
+
+		it('should keep non-object response unchanged in axios toJSON output', () => {
+			const axiosError = axiosErrorFactory.withError({ error: 'invalid_request' }).build({
+				toJSON: () => {
+					return {
+						response: 'raw-response',
+					};
+				},
+			});
+
+			const axiosErrorLoggable = new AxiosErrorLoggable(axiosError, 'mockType');
+			const internalAxiosError = (axiosErrorLoggable as unknown as { axiosError: AxiosError }).axiosError;
+			const toJsonResult = internalAxiosError.toJSON() as { response?: unknown };
+
+			expect(toJsonResult.response).toBe('raw-response');
 		});
 	});
 });
