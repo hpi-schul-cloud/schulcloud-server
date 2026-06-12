@@ -36,7 +36,7 @@ export class JwtWhitelistAdapter {
 
 		const redisIdentifier = JwtWhitelistIdentifier.forJti(accountId, jti);
 		const redisData = createJwtRedisData(this.config.jwtTimeoutSeconds);
-		const value = await this.storageClient.get(redisIdentifier.toString());
+		const value = await this.storageClient.get(redisIdentifier.value);
 
 		this.checkValue(value);
 
@@ -45,14 +45,14 @@ export class JwtWhitelistAdapter {
 
 	private getKeyByJti(accountId: EntityId, jti: string): string[] {
 		const redisIdentifier = JwtWhitelistIdentifier.forJti(accountId, jti);
-		const keys = [redisIdentifier.toString()];
+		const keys = [redisIdentifier.value];
 
 		return keys;
 	}
 
 	private async getKeysByAccount(accountId: EntityId): Promise<string[]> {
 		const redisIdentifier = JwtWhitelistIdentifier.forAccount(accountId);
-		const keys = await this.storageClient.keys(redisIdentifier.toString());
+		const keys = await this.storageClient.keys(redisIdentifier.value);
 
 		return keys;
 	}
@@ -66,12 +66,7 @@ export class JwtWhitelistAdapter {
 	}
 
 	private async setInStorage(redisIdentifier: JwtWhitelistIdentifier, redisData: JwtRedisData): Promise<void> {
-		await this.storageClient.set(
-			redisIdentifier.toString(),
-			JSON.stringify(redisData),
-			'EX',
-			this.config.jwtTimeoutSeconds
-		);
+		await this.storageClient.set(redisIdentifier.value, JSON.stringify(redisData), 'EX', this.config.jwtTimeoutSeconds);
 	}
 
 	private checkValue(value: string | null): void {
