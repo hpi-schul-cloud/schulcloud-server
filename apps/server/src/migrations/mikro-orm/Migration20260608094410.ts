@@ -1,11 +1,24 @@
+/* eslint-disable no-process-env */
 import { Migration } from '@mikro-orm/migrations-mongodb';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Permission } from '@shared/domain/interface';
+import bcrypt from 'bcryptjs';
 
 // Migrations for serviceAccountUser with Account User and Role
-
 export class Migration20260608094410 extends Migration {
 	public async up(): Promise<void> {
+		const serviceAccountEmail = process.env.DELETE_S3_FILES_CRONJOB_USERNAME;
+		const serviceAccountToken = process.env.DELETE_S3_FILES_CRONJOB_TOKEN;
+
+		if (!serviceAccountEmail || !serviceAccountToken) {
+			console.warn(
+				'Environment variables for deleteS3FilesCronjobServiceAccount are not set. Skipping creation of service account. Please set DELETE_S3_FILES_CRONJOB_USERNAME and DELETE_S3_FILES_CRONJOB_TOKEN to create the service account.'
+			);
+			return;
+		}
+
+		const serviceAccountPasswordHash = bcrypt.hashSync(serviceAccountToken, 10);
+
 		const serviceAccountRole = await this.getCollection('roles').insertOne({
 			name: 'deleteS3FilesCronjobServiceAccount',
 			roles: [],
@@ -14,7 +27,7 @@ export class Migration20260608094410 extends Migration {
 
 		const serviceAccountUser = await this.getCollection('users').insertOne({
 			roles: [serviceAccountRole.insertedId],
-			email: 'delete-s3-files-cronjob@schul-cloud.org',
+			email: serviceAccountEmail,
 			schoolId: new ObjectId('5f2987e020834114b8efd6f8'),
 			firstName: 'DeleteS3FilesCronjob',
 			lastName: 'ServiceAccount',
@@ -44,8 +57,8 @@ export class Migration20260608094410 extends Migration {
 		const serviceAccountAccount = await this.getCollection('accounts').insertOne({
 			createdAt: new Date(),
 			updatedAt: new Date(),
-			username: 'delete-s3-files-cronjob@schul-cloud.org',
-			password: '$2b$10$ShqoCysSIDGzD7hG0GEmjeogawoY1KsDvfDGFcL.y3iLGtGPOiLB.',
+			username: serviceAccountEmail,
+			password: serviceAccountPasswordHash,
 			userId: serviceAccountUser.insertedId,
 			activated: true,
 			lastLogin: new Date(),
