@@ -22,9 +22,7 @@ export class AxiosErrorLoggable extends HttpException implements Loggable {
 	protected readonly type: string;
 
 	constructor(axiosError: AxiosError, type: string) {
-		const redactedResponseData = LoggingUtils.redactSensitiveValue(axiosError.response?.data);
-
-		super(util.inspect(redactedResponseData), axiosError.status ?? HttpStatus.INTERNAL_SERVER_ERROR, {
+		super(axiosError.message, axiosError.status ?? HttpStatus.INTERNAL_SERVER_ERROR, {
 			cause: axiosError.cause,
 		});
 
