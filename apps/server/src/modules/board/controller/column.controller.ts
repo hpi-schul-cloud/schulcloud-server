@@ -85,7 +85,7 @@ export class ColumnController {
 		@CurrentUser() currentUser: ICurrentUser
 	): Promise<ColumnFullResponse> {
 		const copiedColumn = await this.boardUc.copyColumn(currentUser.userId, urlParams.columnId, currentUser.schoolId);
-		const columnDto = ColumnResponseMapper.mapToFullResponse(copiedColumn);
+		const columnDto = ColumnResponseMapper.mapToFullResponse(copiedColumn.copyEntity);
 		return columnDto;
 	}
 

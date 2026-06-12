@@ -136,6 +136,7 @@ export class BoardNodeCopyService {
 
 	public async copyColumn(original: Column, context: CopyContext): Promise<CopyStatus> {
 		const childrenResults = await this.copyChildrenOf(original, context);
+		const childrenCopyStatus = this.copyHelperService.deriveStatusFromElements(childrenResults);
 
 		const copy = new Column({
 			...original.getProps(),
@@ -145,7 +146,7 @@ export class BoardNodeCopyService {
 		const result: CopyStatus = {
 			copyEntity: copy,
 			type: CopyElementType.COLUMN,
-			status: CopyStatusEnum.SUCCESS,
+			status: childrenCopyStatus,
 			elements: childrenResults,
 			originalEntity: original,
 		};
@@ -155,6 +156,7 @@ export class BoardNodeCopyService {
 
 	public async copyCard(original: Card, context: CopyContext): Promise<CopyStatus> {
 		const childrenResults = await this.copyChildrenOf(original, context);
+		const childrenCopyStatus = this.copyHelperService.deriveStatusFromElements(childrenResults);
 
 		const copy = new Card({
 			...original.getProps(),
@@ -164,7 +166,7 @@ export class BoardNodeCopyService {
 		const result: CopyStatus = {
 			copyEntity: copy,
 			type: CopyElementType.CARD,
-			status: CopyStatusEnum.SUCCESS,
+			status: childrenCopyStatus,
 			elements: childrenResults,
 			originalEntity: original,
 		};
@@ -494,9 +496,18 @@ export class BoardNodeCopyService {
 		);
 
 		const resultMap = new Map<EntityId, CopyStatus>();
-		allSettled.forEach((res) => {
+		allSettled.forEach((res, index) => {
 			if (res.status === 'fulfilled') {
 				resultMap.set(res.value.id, res.value.status);
+			} else {
+				const child = boardNode.children[index];
+				if (child) {
+					resultMap.set(child.id, {
+						copyEntity: undefined,
+						type: CopyElementType.LEAF,
+						status: CopyStatusEnum.FAIL,
+					});
+				}
 			}
 		});
 
