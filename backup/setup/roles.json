@@ -265,7 +265,9 @@
 			"SCHOOL_LIST_DISCOVERABLE_TEACHERS",
 			"SCHOOL_MANAGE_ROOM_INVITATIONLINKS",
 			"SCHOOL_BECOME_ROOMOWNER",
-			"SCHOOL_LIST_ROOM_MEMBERS"
+			"SCHOOL_LIST_ROOM_MEMBERS",
+			"SCHOOL_MANAGE_ROOM_APPLICANTS",
+			"SCHOOL_ADD_EXTERNAL_PERSON_TO_ROOM"
 		],
 		"__v": 2
 	},
@@ -698,14 +700,15 @@
 		"permissions": [],
 		"roles": []
 	},
-	{
+			{
 		"_id": {
-			"$oid": "6a27e01ad44ad4f5e0e3d325"
+			"$oid": "6a2ba34a62260ccf8422a996"
 		},
-		"name": "serviceAccount",
+		"name": "deleteS3FilesCronjobServiceAccount",
 		"roles": [],
 		"permissions": [
-			"CAN_EXECUTE_INSTANCE_OPERATIONS"
+			"CAN_EXECUTE_INSTANCE_OPERATIONS",
+			"FILE_DELETE"
 		]
 	}
 ]
