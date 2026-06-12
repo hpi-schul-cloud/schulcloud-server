@@ -402,17 +402,42 @@ export class CommonCartridgeExportService {
 
 				break;
 			case ContentElementType.FILE_FOLDER:
-				if (version !== CommonCartridgeVersion.V_1_3_0) {
-					break;
-				}
 				const metadataAndStreamsForFolder = await this.openStreamsToFiles(jwt, element);
-				const fileFolderResource = this.mapper.mapFileFolderToResource(
-					element as FileFolderElementResponse,
-					metadataAndStreamsForFolder
-				);
-				cardOrganization.addResource(fileFolderResource);
+
+				const fileFolderElement = element as FileFolderElementResponse;
+				if (version === CommonCartridgeVersion.V_1_3_0) {
+					this.addFileFolderForCc13ToOrg(cardOrganization, fileFolderElement, metadataAndStreamsForFolder);
+				} else if (version === CommonCartridgeVersion.V_1_1_0) {
+					this.addFileFolderForCc11ToOrg(cardOrganization, fileFolderElement, metadataAndStreamsForFolder);
+				}
 
 				break;
+		}
+	}
+
+	private addFileFolderForCc13ToOrg(
+		org: CommonCartridgeOrganizationNode,
+		element: FileFolderElementResponse,
+		metadataAndStreamsForFolder: FileMetadataAndStream[]
+	): void {
+		const fileFolderResource = this.mapper.mapFileFolderToResource(element, metadataAndStreamsForFolder);
+		org.addResource(fileFolderResource);
+	}
+
+	private addFileFolderForCc11ToOrg(
+		org: CommonCartridgeOrganizationNode,
+		element: FileFolderElementResponse,
+		metadataAndStreamsForFolder: FileMetadataAndStream[]
+	): void {
+		const fileFolderOrg = org.createChild({
+			identifier: createIdentifier(element.id),
+			title: element.content.title,
+		});
+
+		for (const fileMetadata of metadataAndStreamsForFolder) {
+			const { file, fileDto } = fileMetadata;
+			const fileResource = this.mapper.mapFileToResource(fileDto, file);
+			fileFolderOrg.addResource(fileResource);
 		}
 	}
 

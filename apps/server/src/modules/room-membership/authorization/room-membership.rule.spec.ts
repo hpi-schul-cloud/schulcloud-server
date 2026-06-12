@@ -566,11 +566,14 @@ describe(RoomRule.name, () => {
 
 	describe('canAddExternalPersonByEmail', () => {
 		const setup = () => {
-			const userWithPermission = userFactory.buildWithId();
+			const schoolRole = roleFactory.build({ permissions: [Permission.SCHOOL_ADD_EXTERNAL_PERSON_TO_ROOM] });
+			const userWithPermission = userFactory.buildWithId({ roles: [schoolRole] });
 			const userWithoutPermission = userFactory.buildWithId();
 			const userOwner = userFactory.buildWithId();
 
-			const roomRoleDtoWithPermission = roleDtoFactory.build({ permissions: [Permission.ROOM_ADD_MEMBERS] });
+			const roomRoleDtoWithPermission = roleDtoFactory.build({
+				permissions: [Permission.ROOM_ADD_MEMBERS],
+			});
 			const roomRoleDtoWithoutPermission = roleDtoFactory.build({ permissions: [] });
 			const roleOwner = roleDtoFactory.build({ name: RoleName.ROOMOWNER });
 
@@ -611,7 +614,7 @@ describe(RoomRule.name, () => {
 			};
 		};
 
-		describe('when user has room add members permission', () => {
+		describe('when user has room add members permission and add external person to room school permission', () => {
 			it('should return true', () => {
 				const { userWithPermission, roomAuthorizableWithPermission } = setup();
 
