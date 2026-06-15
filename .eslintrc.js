@@ -135,6 +135,8 @@ module.exports = {
 					rules: {
 						// you should turn the original rule off *only* for test files
 						'@typescript-eslint/unbound-method': 'off',
+						'@typescript-eslint/no-unnecessary-type-assertion': 'off',
+						'@typescript-eslint/no-unsafe-assignment': 'off',
 						'jest/prefer-spy-on': 'warn',
 						'jest/unbound-method': 'error',
 						'@typescript-eslint/explicit-function-return-type': 'off',
