@@ -105,19 +105,7 @@ module.exports = {
 					},
 				],
 				'@typescript-eslint/explicit-function-return-type': 'warn',
-				'@typescript-eslint/explicit-member-accessibility': [
-					'warn',
-					{
-						accessibility: 'explicit',
-						overrides: {
-							accessors: 'no-public',
-							constructors: 'no-public',
-							methods: 'explicit',
-							properties: 'explicit',
-							parameterProperties: 'explicit',
-						},
-					},
-				],
+				'@typescript-eslint/explicit-member-accessibility': 'off',
 				'@typescript-eslint/no-empty-interface': [
 					'error',
 					{
