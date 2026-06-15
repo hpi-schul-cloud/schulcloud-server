@@ -1,7 +1,7 @@
 import { ConsoleWriterModule } from '@infra/console/console-writer/console-writer.module';
 import { DATABASE_CONFIG_TOKEN, DatabaseConfig, DatabaseModule } from '@infra/database';
 import { SyncModule } from '@infra/sync/sync.module';
-import { FilesModule } from '@modules/files';
+import { FilesConsoleModule } from '@modules/files';
 import { ManagementModule } from '@modules/management/management.module';
 import { Module } from '@nestjs/common';
 import { MongoMemoryDatabaseModule } from '@testing/database';
@@ -9,7 +9,7 @@ import { ConsoleModule } from 'nestjs-console';
 import { ENTITIES } from './management.entity.imports';
 import migrationOptions from './migrations-options';
 
-const imports = [ManagementModule, ConsoleModule, ConsoleWriterModule, FilesModule, SyncModule];
+const imports = [ManagementModule, ConsoleModule, ConsoleWriterModule, FilesConsoleModule, SyncModule];
 
 @Module({
 	imports: [
