@@ -1606,5 +1606,25 @@
 		"lasttriedFailedLogin": {
 			"$date": "1970-01-01T00:00:00Z"
 		}
-	}
+	},
+	{
+		"_id": {
+			"$oid": "6a2ba34a62260ccf8422a998"
+		},
+		"createdAt": {
+			"$date": "2026-06-12T06:12:26.702Z"
+		},
+		"updatedAt": {
+			"$date": "2026-06-12T06:12:26.702Z"
+		},
+		"username": "delete-s3-files-cronjob@schul-cloud.org",
+		"password": "$2b$10$ShqoCysSIDGzD7hG0GEmjeogawoY1KsDvfDGFcL.y3iLGtGPOiLB.",
+		"userId": {
+			"$oid": "6a2ba34a62260ccf8422a997"
+		},
+		"activated": true,
+		"lastLogin": {
+			"$date": "2026-06-12T06:12:26.702Z"
+		}
+}
 ]
