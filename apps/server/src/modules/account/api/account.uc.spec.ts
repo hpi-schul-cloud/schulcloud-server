@@ -1985,7 +1985,7 @@ describe('AccountUc', () => {
 					if (id === 'xxx') {
 						throw new EntityNotFoundError('AccountEntity');
 					}
-					return Promise.reject();
+					return Promise.reject(new Error('Error'));
 				});
 
 				return { mockSuperheroUser };

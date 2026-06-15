@@ -3,7 +3,7 @@ import { Loggable } from './interfaces';
 import { LogMessageWithContext } from './types';
 
 export class LoggingUtils {
-	static createMessageWithContext(loggable: Loggable, context?: string): LogMessageWithContext {
+	public static createMessageWithContext(loggable: Loggable, context?: string): LogMessageWithContext {
 		const message = loggable.getLogMessage();
 		const stringifiedMessage = this.stringifyMessage(message);
 		const messageWithContext = { message: stringifiedMessage, context };
@@ -17,7 +17,10 @@ export class LoggingUtils {
 		return stringifiedMessage;
 	}
 
-	static isInstanceOfLoggable(object: any): object is Loggable {
+	public static isInstanceOfLoggable(object: unknown): object is Loggable {
+		if (typeof object !== 'object' || object === null) {
+			return false;
+		}
 		return 'getLogMessage' in object;
 	}
 }

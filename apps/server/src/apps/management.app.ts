@@ -9,6 +9,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { ManagementServerModule } from '@modules/management/management-server.app.module';
 import { install as sourceMapInstall } from 'source-map-support';
 import { enableOpenApiDocs } from './helpers';
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 import legacyAppPromise = require('../../../../src/app');
 
 async function bootstrap(): Promise<void> {
