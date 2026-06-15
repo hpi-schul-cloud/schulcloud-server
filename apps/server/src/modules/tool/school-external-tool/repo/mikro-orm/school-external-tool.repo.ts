@@ -93,7 +93,7 @@ export class SchoolExternalToolRepo {
 		const objectIds = await this.em
 			.getCollection(this.entityName)
 			.distinct('school', { tool: new ObjectId(toolId) } as Condition<SchoolExternalToolEntity>);
-		const ids = objectIds.map((id) => (id instanceof ObjectId ? id.toHexString() : String(id)));
+		const ids = objectIds.map((id) => (id instanceof ObjectId ? id.toHexString() : id));
 
 		return ids;
 	}
