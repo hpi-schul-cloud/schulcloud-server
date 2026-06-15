@@ -12,6 +12,12 @@ import { enableOpenApiDocs } from './helpers';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 import legacyAppPromise = require('../../../../src/app');
 
+type LegacyFeathersApp = {
+	setup: () => Promise<void>;
+};
+
+type LegacyAppFactory = (orm: MikroORM) => Promise<LegacyFeathersApp>;
+
 async function bootstrap(): Promise<void> {
 	sourceMapInstall();
 
@@ -31,9 +37,8 @@ async function bootstrap(): Promise<void> {
 	nestApp.useLogger(await nestApp.resolve(LegacyLogger));
 
 	// load the legacy feathers/express server
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-	const feathersExpress = await legacyAppPromise(orm);
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
+	const createLegacyApp = legacyAppPromise as LegacyAppFactory;
+	const feathersExpress = await createLegacyApp(orm);
 	await feathersExpress.setup();
 
 	// set reference to legacy app as an express setting so we can

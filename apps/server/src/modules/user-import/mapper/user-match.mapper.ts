@@ -43,12 +43,12 @@ export class UserMatchMapper {
 		const domainRoleNames = domainRoles.map((role) => role.name);
 		const roleNames = domainRoleNames
 			.map((roleName) => {
-				switch (roleName) {
-					case 'teacher':
+				switch (roleName as UserRole) {
+					case UserRole.TEACHER:
 						return UserRole.TEACHER;
-					case 'administrator':
+					case UserRole.ADMIN:
 						return UserRole.ADMIN;
-					case 'student':
+					case UserRole.STUDENT:
 						return UserRole.STUDENT;
 					default:
 						return null;

@@ -41,7 +41,7 @@ describe('Collaborative Text Editor Controller (API)', () => {
 		testApiClient = new TestApiClient(app, 'collaborative-text-editor');
 		etherpadClientAdapter = module.get(EtherpadClientAdapter);
 		collaborativeTextEditorConfig = module.get(COLLABORATIVE_TEXT_EDITOR_CONFIG_TOKEN);
-		collaborativeTextEditorConfig.cookieExpiresInSeconds;
+		expect(collaborativeTextEditorConfig.cookieExpiresInSeconds).toBeDefined();
 	});
 
 	beforeEach(async () => {

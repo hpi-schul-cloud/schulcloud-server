@@ -60,7 +60,7 @@ export class UserMikroOrmRepo extends BaseRepo<User> {
 			const { systems } = user.school;
 			return systems && systems.getItems().find((system) => system.id === systemId);
 		});
-		return resultUser ?? Promise.reject();
+		return resultUser ?? Promise.reject(new Error('User not found for given system'));
 	}
 
 	public async findForImportUser(

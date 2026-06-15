@@ -485,17 +485,17 @@ describe(ContextExternalToolService.name, () => {
 			it('should not copy unused parameter', async () => {
 				const { contextExternalTool, contextCopyId, unusedParam, schoolExternalTool } = setup();
 
-				let copiedTool: ContextExternalTool | CopyContextExternalToolRejectData = await service.copyContextExternalTool(
+				const copiedTool = await service.copyContextExternalTool(
 					contextExternalTool,
 					contextCopyId,
 					schoolExternalTool.schoolId
 				);
 
 				expect(copiedTool instanceof ContextExternalTool).toEqual(true);
-				copiedTool = copiedTool;
+				const copiedContextTool = copiedTool as ContextExternalTool;
 
-				expect(copiedTool.parameters.length).toEqual(2);
-				expect(copiedTool.parameters).not.toContain(unusedParam);
+				expect(copiedContextTool.parameters.length).toEqual(2);
+				expect(copiedContextTool.parameters).not.toContain(unusedParam);
 			});
 
 			it('should save copied tool', async () => {

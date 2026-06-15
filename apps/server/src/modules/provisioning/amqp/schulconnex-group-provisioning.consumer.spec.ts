@@ -126,9 +126,9 @@ describe(SchulconnexGroupProvisioningConsumer.name, () => {
 				};
 
 				await consumer.onModuleInit();
+				const registerCalls = registerAmqpSubscriberSpy.mock.calls as unknown[][];
 
-				const groupProvisioningHandler = registerAmqpSubscriberSpy.mock.calls.find(
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+				const groupProvisioningHandler = registerCalls.find(
 					(call) => call[2] === SchulconnexProvisioningEvents.GROUP_PROVISIONING
 				)?.[3] as (payload: SchulconnexGroupProvisioningMessage) => Promise<void>;
 

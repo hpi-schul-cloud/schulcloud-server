@@ -31,9 +31,12 @@ export class LdapSyncUc {
 
 		let stats: SyncStats;
 		try {
+			const runLegacyLdapSyncTyped = runLegacyLdapSync as (
+				orm: MikroORM,
+				options: { forceFullSync: boolean }
+			) => Promise<SyncStats>;
 			// Run the LDAP sync using the legacy runner (handles logger creation internally)
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-			stats = await runLegacyLdapSync(this.orm, { forceFullSync });
+			stats = await runLegacyLdapSyncTyped(this.orm, { forceFullSync });
 			this.logger.info(new LdapSyncCompletedLoggable(stats));
 		} finally {
 			// Force process exit after a short delay to allow logs to flush.

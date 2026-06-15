@@ -19,8 +19,7 @@ import { BuildOptions, DeepPartial, Factory, GeneratorFn, HookFn } from 'fishery
  * @template I The transient parameters that your factory supports
  * @template C The class of the factory object being created.
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export class EntityFactory<T extends U, U extends object, I = any, C = U, P = DeepPartial<T>> {
+export class EntityFactory<T extends U, U extends object, I = unknown, C = U, P = DeepPartial<T>> {
 	protected readonly propsFactory: Factory<U, I, C, P>;
 
 	constructor(
@@ -44,7 +43,7 @@ export class EntityFactory<T extends U, U extends object, I = any, C = U, P = De
 	public static define<
 		T extends U,
 		U extends object,
-		I = any,
+		I = unknown,
 		C = U,
 		P = DeepPartial<T>,
 		F = EntityFactory<T, U, I, C, P>,

@@ -68,7 +68,7 @@ describe('VideoConferenceDeprecatedController', () => {
 			videoConferenceUc.getMeetingInfo.mockResolvedValue({
 				state: VideoConferenceState.RUNNING,
 			} as VideoConferenceInfo);
-			videoConferenceUc.create.mockImplementation(() => Promise.reject());
+			videoConferenceUc.create.mockImplementation(() => Promise.reject(new Error('test error')));
 			videoConferenceUc.join.mockResolvedValue({ url: 'mockUrl' } as VideoConferenceJoin);
 
 			const ret: DeprecatedVideoConferenceJoinResponse = await controller.createAndJoin(

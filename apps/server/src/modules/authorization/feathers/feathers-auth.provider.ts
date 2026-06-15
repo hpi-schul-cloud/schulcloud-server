@@ -31,7 +31,7 @@ export class FeathersAuthProvider {
 		targetId: EntityId
 	): Promise<string[]> {
 		let path = `${targetModel}/:scopeId/userPermissions/`;
-		if (targetModel === 'courses') {
+		if (targetModel === NewsTargetModel.Course) {
 			path = `coursesUserPermissions/:scopeId`;
 		}
 		const service = this.feathersServiceProvider.getService(path);

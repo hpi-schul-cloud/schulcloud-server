@@ -1,4 +1,4 @@
-import { EntityName, QueryOrderMap } from '@mikro-orm/core';
+import { EntityName, FilterQuery, QueryOrderMap } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { IFindOptions } from '@shared/domain/interface';
@@ -120,7 +120,7 @@ export class CourseRepo extends BaseRepo<CourseEntity> {
 		const substitutionTeachersFieldName = getFieldName(this._em, 'substitutionTeachers', CourseEntity.name);
 		const studentsFieldName = getFieldName(this._em, 'students', CourseEntity.name);
 
-		const query: Record<string, any> = {
+		const query: FilterQuery<CourseEntity> = {
 			$or: [{ teachers: id }, { substitutionTeachers: id }, { students: id }],
 		};
 

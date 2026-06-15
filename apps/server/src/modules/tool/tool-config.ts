@@ -1,7 +1,3 @@
-export interface ToolConfig {
-	PUBLIC_BACKEND_URL: string;
-}
-
 import { ConfigProperty, Configuration } from '@infra/configuration';
 import { StringToBoolean, StringToNumber } from '@shared/controller/transformer';
 import { IsBoolean, IsNumber, IsString, IsUrl } from 'class-validator';

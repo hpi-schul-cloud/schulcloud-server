@@ -77,7 +77,7 @@ export class ExternalToolDatasheetMapper {
 	}
 
 	private static mapToToolType(externalTool: ExternalTool): string {
-		const toolType: string = externalTool.config.type;
+		const toolType = externalTool.config.type;
 		switch (toolType) {
 			case ToolConfigType.OAUTH2:
 				return 'OAuth 2.0';

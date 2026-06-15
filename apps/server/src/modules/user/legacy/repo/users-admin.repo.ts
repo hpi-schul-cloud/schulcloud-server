@@ -18,7 +18,7 @@ export class UsersAdminRepo extends BaseRepo<User> {
 		schoolId: EntityId,
 		schoolYearId: EntityId | undefined,
 		_id?: string
-	): Promise<any[]> {
+	): Promise<unknown[]> {
 		const query: UserSearchQuery = {
 			limit: undefined,
 			skip: undefined,
@@ -55,7 +55,7 @@ export class UsersAdminRepo extends BaseRepo<User> {
 		schoolId: EntityId,
 		schoolYearId: EntityId | undefined,
 		params: UsersSearchQueryParams
-	): Promise<any[]> {
+	): Promise<unknown[]> {
 		const query: UserSearchQuery = {
 			schoolId: new ObjectId(schoolId),
 			roles: new ObjectId(roleId),

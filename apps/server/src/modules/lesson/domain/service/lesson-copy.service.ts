@@ -144,7 +144,7 @@ export class LessonCopyService {
 		fileUrlReplacements: FileUrlReplacement[]
 	): ComponentProperties[] {
 		contents = contents.map((item: ComponentProperties) => {
-			if (item.component === 'text' && item.content && 'text' in item.content && item.content.text) {
+			if ((item.component as string) === 'text' && item.content && 'text' in item.content && item.content.text) {
 				let { text } = item.content;
 				fileUrlReplacements.forEach(({ regex, replacement }) => {
 					text = text.replace(regex, replacement);

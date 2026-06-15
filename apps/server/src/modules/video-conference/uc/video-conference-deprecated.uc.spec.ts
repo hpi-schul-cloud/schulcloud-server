@@ -328,7 +328,7 @@ describe('VideoConferenceUc', () => {
 
 			it('should successfully execute and create a new preset in the database', async () => {
 				// Arrange
-				videoConferenceRepo.findByScopeAndScopeId.mockImplementation(() => Promise.reject());
+				videoConferenceRepo.findByScopeAndScopeId.mockImplementation(() => Promise.reject(new Error('test error')));
 				bbbService.create.mockResolvedValue(bbbResponse);
 
 				// Act
@@ -713,7 +713,7 @@ describe('VideoConferenceUc', () => {
 
 		it('should successfully give MeetingInfo to moderator with default options and "not started"', async () => {
 			// Arrange
-			videoConferenceRepo.findByScopeAndScopeId.mockImplementation(() => Promise.reject());
+			videoConferenceRepo.findByScopeAndScopeId.mockImplementation(() => Promise.reject(new Error('test error')));
 			bbbService.getMeetingInfo.mockRejectedValue(new InternalServerErrorException());
 
 			// Act
@@ -758,7 +758,7 @@ describe('VideoConferenceUc', () => {
 			// Arrange
 			userPermissions.set(Permission.START_MEETING, Promise.resolve(false));
 			setTeamRole(teamExpertRole);
-			bbbService.getMeetingInfo.mockImplementation(() => Promise.reject());
+			bbbService.getMeetingInfo.mockImplementation(() => Promise.reject(new Error('test error')));
 
 			// Act & Assert
 			await expect(useCase.getMeetingInfo(defaultCurrentUser, VideoConferenceScope.EVENT, course.id)).rejects.toThrow(

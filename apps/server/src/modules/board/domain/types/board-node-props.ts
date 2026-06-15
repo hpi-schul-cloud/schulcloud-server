@@ -33,7 +33,7 @@ export interface CardProps extends BoardNodeProps {
 	height: number;
 }
 
-export interface CollaborativeTextEditorElementProps extends BoardNodeProps {}
+export type CollaborativeTextEditorElementProps = BoardNodeProps;
 
 export interface DrawingElementProps extends BoardNodeProps {
 	description: string;

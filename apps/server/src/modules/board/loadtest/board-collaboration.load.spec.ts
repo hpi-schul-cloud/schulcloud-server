@@ -34,7 +34,7 @@ describe('Board Collaboration Load Test', () => {
 				],
 			});
 
-			await socketConnectionManager.destroySocketConnections();
+			socketConnectionManager.destroySocketConnections();
 		} else {
 			expect('this should only be ran manually').toBeTruthy();
 		}
