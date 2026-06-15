@@ -29,7 +29,7 @@ import { createMetricsServer } from './helpers/metrics.server';
 import legacyAppPromise = require('../../../../src/app');
 import { JWT_WHITELIST_VALKEY_CLIENT } from '@infra/jwt-whitelist';
 
-type LegacyFeathersApp = {
+type LegacyFeathersApp = express.Application & {
 	setup: () => Promise<void>;
 	services: Record<string, unknown>;
 };

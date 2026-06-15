@@ -433,7 +433,10 @@ export class CommonCartridgeImportService {
 			})
 		);
 
-		if ((resource.type as string) === 'file' || (resource.type as string) === 'fileFolder') {
+		if (
+			resource.type === CommonCartridgeXmlResourceType.FILE ||
+			resource.type === CommonCartridgeXmlResourceType.FILE_FOLDER
+		) {
 			await this.uploadFiles(event, resource, contentElement);
 		}
 

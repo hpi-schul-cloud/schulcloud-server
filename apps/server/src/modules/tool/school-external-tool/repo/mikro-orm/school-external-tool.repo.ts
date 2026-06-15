@@ -90,10 +90,10 @@ export class SchoolExternalToolRepo {
 
 	public async findSchoolIdsForToolId(toolId: string): Promise<EntityId[]> {
 		// Since we don't need any of the EntityManager's features here, we load the ids with a Mongo query to be more efficient.
-		const objectIds = (await this.em
+		const objectIds = await this.em
 			.getCollection(this.entityName)
-			.distinct('school', { tool: new ObjectId(toolId) } as Condition<SchoolExternalToolEntity>)) as ObjectId[];
-		const ids = objectIds.map((id) => id.toHexString());
+			.distinct('school', { tool: new ObjectId(toolId) } as Condition<SchoolExternalToolEntity>);
+		const ids = objectIds.map((id) => (id instanceof ObjectId ? id.toHexString() : String(id)));
 
 		return ids;
 	}

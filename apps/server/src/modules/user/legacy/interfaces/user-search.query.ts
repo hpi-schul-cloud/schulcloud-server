@@ -4,7 +4,7 @@ import { UserSortQuery } from './user-sort.query';
 type DateRangeQuery = Record<string, Date>;
 
 export interface UserSearchQuery {
-	_id?: string | string[];
+	_id?: any;
 	schoolId: ObjectId;
 	roles: ObjectId;
 	schoolYearId?: ObjectId;

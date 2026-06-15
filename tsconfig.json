@@ -10,6 +10,7 @@
 		"strictFunctionTypes": true,
 		"strictNullChecks": true,
 		"strictPropertyInitialization": true,
+		"skipLibCheck": true,
 		"noImplicitAny": false,
 		"useDefineForClassFields": false,
 		"target": "es2022",

@@ -218,7 +218,7 @@ export class TypeGuard {
 			throw toThrow || new Error(`Object lacks these properties: ${String(keys)}.`);
 		}
 
-		return obj;
+		return obj as EnsureKeysAreSet<T, K>;
 	}
 
 	public static requireKeys<T extends object, K extends keyof T>(
