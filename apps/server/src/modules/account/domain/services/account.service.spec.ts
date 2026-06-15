@@ -1218,7 +1218,6 @@ describe('AccountService', () => {
 				await accountService.reactivateAccount(mockStudentUser.id);
 				expect(accountServiceDb.save).toHaveBeenCalledWith(
 					expect.not.objectContaining({
-						// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 						deactivatedAt: expect.anything(),
 					})
 				);

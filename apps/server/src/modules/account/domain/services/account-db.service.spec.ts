@@ -517,7 +517,6 @@ describe('AccountDbService', () => {
 				expect(ret).toBeDefined();
 
 				expect(accountRepo.save).toBeCalledWith(
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 					expect.objectContaining({ password: expect.not.stringMatching(defaultPassword) })
 				);
 			});

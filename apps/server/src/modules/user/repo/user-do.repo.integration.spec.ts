@@ -486,15 +486,14 @@ describe('UserRepo', () => {
 				firstName: testDO.firstName,
 				lastName: testDO.lastName,
 				preferredName: testDO.preferredName,
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
 				school: expect.objectContaining<Partial<SchoolEntity>>({ id: testDO.schoolId }),
 
 				roles: [expect.objectContaining<Partial<Role>>({ id: testDO.roles[0].id })],
 				secondarySchools: [
 					expect.objectContaining({
-						// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 						school: expect.objectContaining({ id: testDO.secondarySchools[0].schoolId }),
-						// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
 						role: expect.objectContaining({ id: testDO.secondarySchools[0].role.id }),
 					}),
 				],

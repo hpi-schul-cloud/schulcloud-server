@@ -50,7 +50,6 @@ describe('Logger', () => {
 			const loggable = new SampleLoggable();
 			service.setContext('test context');
 
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 			const expectedMessage = expect.objectContaining({
 				message: "{ message: 'test message', data: 'test data' }",
 				context: 'test context',
@@ -67,7 +66,6 @@ describe('Logger', () => {
 			const loggable = new SampleLoggable();
 			service.setContext('test context');
 
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 			const expectedMessage = expect.objectContaining({
 				message: "{ message: 'test message', data: 'test data' }",
 				context: 'test context',
@@ -84,7 +82,6 @@ describe('Logger', () => {
 			const loggable = new SampleLoggable();
 			service.setContext('test context');
 
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 			const expectedMessage = expect.objectContaining({
 				message: "{ message: 'test message', data: 'test data' }",
 				context: 'test context',
@@ -109,7 +106,6 @@ describe('Logger', () => {
 			const loggable = new SampleLoggable();
 			service.setContext('test context');
 
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 			const expectedMessage = expect.objectContaining({
 				message: "{ message: 'test message', data: 'test data' }",
 				context: 'test context',

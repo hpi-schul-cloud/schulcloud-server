@@ -33,7 +33,7 @@ describe('ErrorLogger', () => {
 		it('should call emerg method of WinstonLogger with appropriate message', () => {
 			const error = new Error('test');
 			const loggable = new ErrorLoggable(error);
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
 			const expectedMessage = expect.objectContaining({ message: expect.stringContaining('error: Error: test') });
 
 			service.emerg(loggable);
@@ -46,7 +46,7 @@ describe('ErrorLogger', () => {
 		it('should call alert method of WinstonLogger with appropriate message', () => {
 			const error = new Error('test');
 			const loggable = new ErrorLoggable(error);
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
 			const expectedMessage = expect.objectContaining({ message: expect.stringContaining('error: Error: test') });
 
 			service.alert(loggable);
@@ -59,7 +59,7 @@ describe('ErrorLogger', () => {
 		it('should call crit method of WinstonLogger with appropriate message', () => {
 			const error = new Error('test');
 			const loggable = new ErrorLoggable(error);
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
 			const expectedMessage = expect.objectContaining({ message: expect.stringContaining('error: Error: test') });
 
 			service.crit(loggable);
@@ -72,7 +72,7 @@ describe('ErrorLogger', () => {
 		it('should call error method of WinstonLogger with appropriate message', () => {
 			const error = new Error('test');
 			const loggable = new ErrorLoggable(error);
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
 			const expectedMessage = expect.objectContaining({ message: expect.stringContaining('error: Error: test') });
 
 			service.error(loggable);

@@ -514,7 +514,6 @@ describe(CommonCartridgeImportService.name, () => {
 
 				const err = new Error('Test');
 
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 				const result = errorInterceptor(err);
 				expect(result).toStrictEqual(err);
 
@@ -534,7 +533,6 @@ describe(CommonCartridgeImportService.name, () => {
 
 				const err = new Error('Test');
 
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 				const result = errorInterceptor(err);
 				expect(result).toStrictEqual(err);
 

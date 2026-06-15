@@ -44,7 +44,6 @@ const mockClient = {
 };
 
 jest.mock('ldapjs', () => {
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 	const originalModule = jest.requireActual('ldapjs');
 
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-return
@@ -319,7 +318,7 @@ describe('Login Controller (api)', () => {
 
 				const response = await request(app.getHttpServer()).post(`${basePath}/ldap`).send(params);
 
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 				const token = response.body.accessToken;
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 				const decodedToken = jwt.decode(token);

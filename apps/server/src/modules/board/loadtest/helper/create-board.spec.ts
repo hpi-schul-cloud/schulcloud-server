@@ -32,7 +32,7 @@ describe('createBoards', () => {
 				`${apiBaseUrl}/api/v3/boards`,
 				expect.objectContaining({
 					method: 'POST',
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
 					headers: expect.objectContaining({
 						Authorization: 'Bearer test-token',
 					}),

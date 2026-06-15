@@ -56,12 +56,12 @@ describe(`Share Token Import (API)`, () => {
 		em = module.get(EntityManager);
 		testApiClient = new TestApiClient(app, 'sharetoken');
 		// Access private config fields (NestJS v11 multi-instance workaround)
-		// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+
 		const sharingPermissionServiceWithConfig = module.get(ShareTokenPermissionService) as unknown as {
 			config: SharingPublicApiConfig;
 		};
 		({ config: sharingConfig } = sharingPermissionServiceWithConfig);
-		// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+
 		const boardNodeCopyServiceWithConfig = module.get(BoardNodeCopyService) as unknown as { config: BoardConfig };
 		({ config: boardConfig } = boardNodeCopyServiceWithConfig);
 		// CourseCopyService is request-scoped; resolve() creates a DI subtree and gives us the config instance it uses.

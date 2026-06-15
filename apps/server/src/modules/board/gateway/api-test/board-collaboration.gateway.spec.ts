@@ -48,7 +48,7 @@ describe(BoardCollaborationGateway.name, () => {
 		jwtConfig = app.get<TestJwtModuleConfig>(TEST_JWT_CONFIG_TOKEN);
 
 		// @ts-expect-error We need access to in memory mongo url for socket io adapter, this is not available in the orm config factory
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 		const dbUrl: string = em.getConnection().getClient().s.url;
 		const mongoIoAdapter = new MongoIoAdapter(app);
 		// @ts-expect-error test

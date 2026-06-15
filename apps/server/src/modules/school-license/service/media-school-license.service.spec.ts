@@ -467,7 +467,7 @@ describe(MediaSchoolLicenseService.name, () => {
 							expect.objectContaining({
 								...license,
 								id: expect.any(String),
-								// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
 								props: expect.objectContaining({
 									id: expect.any(String),
 									mediaSource,
