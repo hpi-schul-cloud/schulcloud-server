@@ -10,7 +10,6 @@ import { TestApiClient } from '@testing/test-api-client';
 import { TASK_PUBLIC_API_CONFIG_TOKEN, TaskPublicApiConfig } from '../../task.config';
 import { taskFactory } from '../../testing';
 
-// eslint-disable-next-line import/first
 import { ServerTestModule } from '@modules/server/server.app.module';
 import {
 	TASK_INCOMING_REQUEST_TIMEOUT_COPY_API_KEY,

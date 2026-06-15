@@ -1,4 +1,3 @@
-/* eslint-disable import/extensions */
 import { buildAllSearchableStringsForUser as _buildAllSearchableStringsForUserUntyped } from '../../../src/utils/search.js';
 
 export * as feathersRedis from '../../../src/utils/redis.js';

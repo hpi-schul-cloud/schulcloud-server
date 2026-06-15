@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-types */
 import { Logger } from '@nestjs/common';
 import { NextFunction, Request, Response } from 'express';
 import { LoggerConfig } from './logger.config';

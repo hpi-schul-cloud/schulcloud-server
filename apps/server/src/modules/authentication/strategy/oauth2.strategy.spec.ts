@@ -1,4 +1,3 @@
-/* eslint-disable filename-rules/match */
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Account } from '@modules/account';
