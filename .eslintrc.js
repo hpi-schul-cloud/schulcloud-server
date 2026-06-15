@@ -141,6 +141,7 @@ module.exports = {
 						'jest/unbound-method': 'error',
 						'@typescript-eslint/explicit-function-return-type': 'off',
 						'@typescript-eslint/explicit-member-accessibility': 'off',
+						'no-restricted-imports': 'off',
 					},
 				},
 				{
@@ -230,10 +231,6 @@ module.exports = {
 									{
 										group: ['**/apps/**'],
 										message: 'modules-modules may NOT import from apps',
-									},
-									{
-										group: ['@infra/*/*', '@modules/*/*', '!@modules/*/testing', '!*.module'],
-										message: 'Do not deep import from a module',
 									},
 								],
 							},
