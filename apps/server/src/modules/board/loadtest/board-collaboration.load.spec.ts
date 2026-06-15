@@ -20,7 +20,7 @@ describe('Board Collaboration Load Test', () => {
 
 			const socketConnectionManager = new SocketConnectionManager(socketConfiguration);
 			let connectionIssues = 0;
-			// eslint-disable-next-line no-plusplus
+
 			socketConnectionManager.setOnErrorHandler(() => connectionIssues++);
 			const createBoardLoadTest: CreateBoardLoadTest = (...args) => new BoardLoadTest(...args);
 			const runner = new LoadtestRunner(socketConnectionManager, createBoardLoadTest);

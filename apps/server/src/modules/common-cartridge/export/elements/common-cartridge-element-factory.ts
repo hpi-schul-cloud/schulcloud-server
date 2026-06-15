@@ -23,9 +23,7 @@ export type CommonCartridgeElementProps =
 	| OmitVersionAndFolder<CommonCartridgeOrganizationsWrapperElementPropsV110>
 	| OmitVersionAndFolder<CommonCartridgeResourcesWrapperElementPropsV110>
 	| OmitVersionAndFolder<CommonCartridgeMetadataElementPropsV130>
-	| OmitVersionAndFolder<CommonCartridgeOrganizationElementPropsV130>
-	| OmitVersionAndFolder<CommonCartridgeOrganizationsWrapperElementPropsV130>
-	| OmitVersionAndFolder<CommonCartridgeResourcesWrapperElementPropsV130>;
+	| OmitVersionAndFolder<CommonCartridgeOrganizationElementPropsV130>;
 
 type CommonCartridgeElementPropsInternal =
 	| CommonCartridgeMetadataElementPropsV110
@@ -33,9 +31,7 @@ type CommonCartridgeElementPropsInternal =
 	| CommonCartridgeOrganizationsWrapperElementPropsV110
 	| CommonCartridgeResourcesWrapperElementPropsV110
 	| CommonCartridgeMetadataElementPropsV130
-	| CommonCartridgeOrganizationElementPropsV130
-	| CommonCartridgeOrganizationsWrapperElementPropsV130
-	| CommonCartridgeResourcesWrapperElementPropsV130;
+	| CommonCartridgeOrganizationElementPropsV130;
 
 export class CommonCartridgeElementFactory {
 	public static createElement(props: CommonCartridgeElementPropsInternal): CommonCartridgeElement {

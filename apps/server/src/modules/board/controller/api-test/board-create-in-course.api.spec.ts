@@ -54,7 +54,7 @@ describe(`create board in course (api)`, () => {
 				const { loggedInClient, course } = await setup();
 				const title = 'new board';
 
-				const response = await loggedInClient.post(undefined, <CreateBoardBodyParams>{
+				const response = await loggedInClient.post(undefined, {
 					title,
 					parentId: course.id,
 					parentType: BoardExternalReferenceType.Course,
@@ -74,7 +74,7 @@ describe(`create board in course (api)`, () => {
 					it('should create a column board', async () => {
 						const { loggedInClient, course } = await setup();
 
-						const response = await loggedInClient.post(undefined, <CreateBoardBodyParams>{
+						const response = await loggedInClient.post(undefined, {
 							title: 'new board',
 							parentId: course.id,
 							parentType: BoardExternalReferenceType.Course,
@@ -94,7 +94,7 @@ describe(`create board in course (api)`, () => {
 					it('should create a list board', async () => {
 						const { loggedInClient, course } = await setup();
 
-						const response = await loggedInClient.post(undefined, <CreateBoardBodyParams>{
+						const response = await loggedInClient.post(undefined, {
 							title: 'new board',
 							parentId: course.id,
 							parentType: BoardExternalReferenceType.Course,
@@ -158,7 +158,7 @@ describe(`create board in course (api)`, () => {
 			it('should return status 403', async () => {
 				const { loggedInClient, course } = await setup();
 
-				const response = await loggedInClient.post(undefined, <CreateBoardBodyParams>{
+				const response = await loggedInClient.post(undefined, {
 					title: 'new board',
 					parentId: course.id,
 					parentType: BoardExternalReferenceType.Course,
@@ -185,7 +185,7 @@ describe(`create board in course (api)`, () => {
 			it('should return status 403', async () => {
 				const { loggedInClient, course } = await setup();
 
-				const response = await loggedInClient.post(undefined, <CreateBoardBodyParams>{
+				const response = await loggedInClient.post(undefined, {
 					title: 'new board',
 					parentId: course.id,
 					parentType: BoardExternalReferenceType.Course,

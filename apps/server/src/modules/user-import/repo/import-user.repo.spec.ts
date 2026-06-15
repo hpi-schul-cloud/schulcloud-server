@@ -775,7 +775,7 @@ describe('ImportUserRepo', () => {
 				const importUsers = importUserFactory.buildList(10, {
 					school,
 				});
-				// eslint-disable-next-line no-restricted-syntax
+
 				for (const [i, importuser] of importUsers.entries()) {
 					importuser.setMatch(users[i], MatchCreator.AUTO);
 				}

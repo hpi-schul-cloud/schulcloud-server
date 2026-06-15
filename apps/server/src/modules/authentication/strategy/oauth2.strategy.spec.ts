@@ -74,7 +74,7 @@ describe(Oauth2Strategy.name, () => {
 						redirectUri: 'http://localhost/redirect',
 						code: 'auth-code',
 						systemId,
-					} as Oauth2AuthorizationBodyParams,
+					},
 				};
 
 				return { request, contextResult, userId, accountId, systemId, idToken };
@@ -111,7 +111,7 @@ describe(Oauth2Strategy.name, () => {
 						redirectUri: 'http://localhost/redirect',
 						code: 'auth-code',
 						systemId: 'system-id',
-					} as Oauth2AuthorizationBodyParams,
+					},
 				};
 
 				return { request, error };

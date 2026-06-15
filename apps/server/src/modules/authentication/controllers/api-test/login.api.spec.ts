@@ -528,7 +528,6 @@ describe('Login Controller (api)', () => {
 					})
 					.expect(HttpStatus.OK);
 
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 				expect(response.body).toEqual<OauthLoginResponse>({
 					accessToken: expect.any(String),
 					externalIdToken: idToken,

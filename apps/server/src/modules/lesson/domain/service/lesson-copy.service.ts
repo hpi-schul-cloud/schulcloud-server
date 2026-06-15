@@ -288,7 +288,7 @@ export class LessonCopyService {
 
 	private copyGeogebra(originalElement: ComponentProperties): Promise<ComponentProperties> {
 		const copy = { ...originalElement, hidden: true } as ComponentProperties;
-		copy.content = { ...copy.content, materialId: '' } as ComponentGeogebraProperties;
+		copy.content = { ...copy.content, materialId: '' };
 		delete copy._id;
 		return Promise.resolve(copy);
 	}
@@ -297,7 +297,7 @@ export class LessonCopyService {
 		originalElement: ComponentProperties,
 		params: LessonCopyParams
 	): Promise<ComponentProperties> {
-		const copy = { ...originalElement } as ComponentProperties;
+		const copy = { ...originalElement };
 		delete copy._id;
 		const content = { ...copy.content, url: '' } as ComponentEtherpadProperties;
 		content.title = randomBytes(12).toString('hex');

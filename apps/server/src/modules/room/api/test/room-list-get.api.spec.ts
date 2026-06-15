@@ -107,7 +107,7 @@ describe('Room Controller (API)', () => {
 						updatedAt: room.updatedAt.toISOString(),
 						isLocked: false,
 						totalMembers: 2,
-						allowedOperations: expect.any(Object) as unknown as Record<string, boolean>,
+						allowedOperations: expect.any(Object),
 					};
 				});
 
@@ -123,7 +123,7 @@ describe('Room Controller (API)', () => {
 						updatedAt: room.updatedAt.toISOString(),
 						isLocked: true,
 						totalMembers: 1,
-						allowedOperations: expect.any(Object) as unknown as Record<string, boolean>,
+						allowedOperations: expect.any(Object),
 					};
 				});
 
@@ -141,7 +141,7 @@ describe('Room Controller (API)', () => {
 
 				expect(response.status).toBe(HttpStatus.OK);
 
-				const stripUpdatedAt = (arr: { updatedAt: unknown }[]) => arr.map(({ updatedAt, ...rest }) => rest);
+				const stripUpdatedAt = (arr: { updatedAt: unknown }[]) => arr.map((obj) => _.omit(obj, ['updatedAt']));
 				expect(stripUpdatedAt((response.body as RoomListResponse).data)).toEqual(stripUpdatedAt(expectedResponse.data));
 			});
 

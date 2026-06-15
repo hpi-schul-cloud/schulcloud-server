@@ -460,7 +460,7 @@ describe(ContextExternalToolService.name, () => {
 				);
 
 				expect(copiedTool instanceof ContextExternalTool).toEqual(true);
-				copiedTool = copiedTool as ContextExternalTool;
+				copiedTool = copiedTool;
 
 				expect(copiedTool).toEqual(
 					expect.objectContaining<ContextExternalToolProps>({
@@ -492,7 +492,7 @@ describe(ContextExternalToolService.name, () => {
 				);
 
 				expect(copiedTool instanceof ContextExternalTool).toEqual(true);
-				copiedTool = copiedTool as ContextExternalTool;
+				copiedTool = copiedTool;
 
 				expect(copiedTool.parameters.length).toEqual(2);
 				expect(copiedTool.parameters).not.toContain(unusedParam);
@@ -564,7 +564,7 @@ describe(ContextExternalToolService.name, () => {
 						await service.copyContextExternalTool(contextExternalTool, contextCopyId, targetSchool.id);
 
 					expect(copiedTool instanceof ContextExternalTool).toEqual(true);
-					copiedTool = copiedTool as ContextExternalTool;
+					copiedTool = copiedTool;
 
 					expect(copiedTool.schoolToolRef).toMatchObject(expectedSchoolToolRef);
 				});

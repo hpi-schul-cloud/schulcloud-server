@@ -34,7 +34,7 @@ describe('EncryptedString type', () => {
 				expect(result).toBeNull();
 			});
 			it('should pass undefined value', () => {
-				const result = serializer.convertToJSValue(undefined as unknown as undefined);
+				const result = serializer.convertToJSValue(undefined);
 				expect(result).toBeUndefined();
 			});
 			it('should pass empty string value', () => {

@@ -40,7 +40,7 @@ export class EntityFactory<T extends U, U extends object, I = any, C = U, P = De
 	 * @param generator Your factory function - see `Factory.define()` in thoughtbot/fishery
 	 * @returns
 	 */
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 	public static define<
 		T extends U,
 		U extends object,
@@ -177,7 +177,6 @@ export class EntityFactory<T extends U, U extends object, I = any, C = U, P = De
 	 * @returns the next sequence value
 	 */
 	protected sequence(): number {
-		// eslint-disable-next-line @typescript-eslint/dot-notation
 		return this.propsFactory['sequence']();
 	}
 }

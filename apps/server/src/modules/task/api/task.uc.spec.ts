@@ -677,7 +677,6 @@ describe('TaskUC', () => {
 				await service.changeFinishedForUser(user.id, task.id, true);
 
 				expect(authorizationService.checkPermission).toBeCalledWith(user, task, {
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
 					action: Action.read,
 					requiredPermissions: [],
 				});
@@ -825,7 +824,6 @@ describe('TaskUC', () => {
 				}).rejects.toThrow(ForbiddenException);
 
 				expect(authorizationService.checkPermission).toBeCalledWith(user, task, {
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
 					action: Action.write,
 					requiredPermissions: [],
 				});
@@ -854,7 +852,6 @@ describe('TaskUC', () => {
 				}).rejects.toThrow(ForbiddenException);
 
 				expect(authorizationService.checkPermission).toBeCalledWith(user, task, {
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
 					action: Action.write,
 					requiredPermissions: [],
 				});
@@ -983,7 +980,6 @@ describe('TaskUC', () => {
 				await service.delete(user.id, task.id);
 
 				expect(authorizationService.checkPermission).toBeCalledWith(user, task, {
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
 					action: Action.write,
 					requiredPermissions: [],
 				});

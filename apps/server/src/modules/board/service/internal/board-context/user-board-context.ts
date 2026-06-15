@@ -31,7 +31,6 @@ export class UserBoardContext implements PreparedBoardContext {
 		return this.usersWithBoardRoles;
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	public getBoardConfiguration(_rootNode: MediaBoard | ColumnBoard): BoardConfiguration {
 		return {
 			canEditorsManageVideoconference: false,

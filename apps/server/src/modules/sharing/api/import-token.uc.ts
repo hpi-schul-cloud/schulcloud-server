@@ -63,7 +63,7 @@ export class ImportTokenUC {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 
 		let result: CopyStatus;
-		// eslint-disable-next-line default-case
+
 		switch (shareToken.payload.parentType) {
 			case ShareTokenParentType.Course:
 				result = await this.copyCourse(user, shareToken.payload.parentId, newName);

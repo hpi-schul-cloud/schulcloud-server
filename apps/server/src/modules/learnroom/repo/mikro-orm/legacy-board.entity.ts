@@ -100,7 +100,7 @@ export class LegacyBoard extends BaseEntityWithTimestamps {
 			return new LessonBoardElement({ target: boardElementTarget });
 		}
 		if (isColumnBoard(boardElementTarget)) {
-			return new ColumnBoardBoardElement({ target: boardElementTarget as BoardNodeEntity });
+			return new ColumnBoardBoardElement({ target: boardElementTarget });
 		}
 		throw new Error('not a valid boardElementReference');
 	}

@@ -179,7 +179,7 @@ describe(SchulconnexAsyncProvisioningStrategy.name, () => {
 					name: 'schoolName',
 				});
 				const schulconnexGruppeResponse: SchulconnexGruppenResponse =
-					schulconnexResponse.personenkontexte[0].gruppen![0]!;
+					schulconnexResponse.personenkontexte[0].gruppen![0];
 				const groups: ExternalGroupDto[] = [
 					new ExternalGroupDto({
 						name: schulconnexGruppeResponse.gruppe.bezeichnung,
@@ -442,7 +442,7 @@ describe(SchulconnexAsyncProvisioningStrategy.name, () => {
 					externalId: 'externalSchoolId',
 					name: 'schoolName',
 				});
-				const sanisGruppeResponse: SchulconnexGruppenResponse = schulconnexResponse.personenkontexte[0].gruppen![0]!;
+				const sanisGruppeResponse: SchulconnexGruppenResponse = schulconnexResponse.personenkontexte[0].gruppen![0];
 				const groups: ExternalGroupDto[] = [
 					new ExternalGroupDto({
 						name: sanisGruppeResponse.gruppe.bezeichnung,
@@ -495,7 +495,7 @@ describe(SchulconnexAsyncProvisioningStrategy.name, () => {
 					externalId: 'externalSchoolId',
 					name: 'schoolName',
 				});
-				const sanisGruppeResponse: SchulconnexGruppenResponse = schulconnexResponse.personenkontexte[0].gruppen![0]!;
+				const sanisGruppeResponse: SchulconnexGruppenResponse = schulconnexResponse.personenkontexte[0].gruppen![0];
 				const groups: ExternalGroupDto[] = [
 					new ExternalGroupDto({
 						name: sanisGruppeResponse.gruppe.bezeichnung,

@@ -127,7 +127,6 @@ export class NewsUc {
 			Permission.NEWS_EDIT,
 		]);
 
-		// eslint-disable-next-line no-restricted-syntax
 		for (const [key, value] of Object.entries(params)) {
 			if (value) {
 				news[key] = value;

@@ -1,4 +1,3 @@
-/* eslint-disable no-await-in-loop */
 import { writeFileSync } from 'fs';
 import { Injectable } from '@nestjs/common';
 import { createSeveralClasses } from './helper/class-definitions';

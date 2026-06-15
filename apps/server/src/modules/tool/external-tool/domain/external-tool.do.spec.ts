@@ -54,7 +54,6 @@ describe(ExternalTool.name, () => {
 					jest.spyOn(ExternalTool, 'isLti11Config').mockReturnValueOnce(false);
 
 					expect(() => {
-						// eslint-disable-next-line no-new
 						new ExternalTool({
 							id: new ObjectId().toHexString(),
 							name: 'tool',

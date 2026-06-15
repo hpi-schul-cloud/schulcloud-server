@@ -488,7 +488,7 @@ describe('UserRepo', () => {
 				preferredName: testDO.preferredName,
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 				school: expect.objectContaining<Partial<SchoolEntity>>({ id: testDO.schoolId }),
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
 				roles: [expect.objectContaining<Partial<Role>>({ id: testDO.roles[0].id })],
 				secondarySchools: [
 					expect.objectContaining({

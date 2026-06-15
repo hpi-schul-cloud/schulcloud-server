@@ -1,5 +1,3 @@
-/* eslint-disable no-promise-executor-return */
-/* eslint-disable no-await-in-loop */
 /* eslint-disable no-process-env */
 import { SocketConnectionManager } from './socket-connection-manager';
 import { SocketConfiguration } from './types';

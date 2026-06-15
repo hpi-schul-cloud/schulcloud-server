@@ -4,7 +4,6 @@ import { CustomParameter, CustomParameterEntry, ToolParameterDuplicateLoggableEx
 import { ParameterArrayValidator } from './parameter-array-validator';
 
 export class ParameterArrayDuplicateKeyValidator implements ParameterArrayValidator {
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	validate(
 		entries: CustomParameterEntry[],
 		declarations: CustomParameter[],

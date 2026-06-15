@@ -32,7 +32,7 @@ export class LdapSyncUc {
 		let stats: SyncStats;
 		try {
 			// Run the LDAP sync using the legacy runner (handles logger creation internally)
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call
+			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 			stats = await runLegacyLdapSync(this.orm, { forceFullSync });
 			this.logger.info(new LdapSyncCompletedLoggable(stats));
 		} finally {

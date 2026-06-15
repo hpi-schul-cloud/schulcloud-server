@@ -71,7 +71,7 @@ describe(ErwinStrategy.name, () => {
 						redirectUri: 'http://localhost/redirect',
 						code: 'auth-code',
 						systemId,
-					} as Oauth2AuthorizationBodyParams,
+					},
 				};
 
 				return { request, contextResult, userId, accountId, systemId };
@@ -108,7 +108,7 @@ describe(ErwinStrategy.name, () => {
 						redirectUri: 'http://localhost/redirect',
 						code: 'auth-code',
 						systemId: 'system-id',
-					} as Oauth2AuthorizationBodyParams,
+					},
 				};
 
 				return { request, error };

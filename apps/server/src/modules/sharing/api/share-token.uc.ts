@@ -163,7 +163,7 @@ export class ShareTokenUC {
 	private async checkTokenLookupPermission(userId: EntityId, payload: ShareTokenPayload): Promise<void> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		let requiredPermissions: Permission[] = [];
-		// eslint-disable-next-line default-case
+
 		switch (payload.parentType) {
 			case ShareTokenParentType.Course:
 				requiredPermissions = [Permission.COURSE_CREATE];

@@ -1,4 +1,3 @@
-/* eslint-disable no-await-in-loop */
 import { sleep } from './helper/sleep';
 import { SocketConnection } from './socket-connection';
 import { Callback, SocketConfiguration } from './types';

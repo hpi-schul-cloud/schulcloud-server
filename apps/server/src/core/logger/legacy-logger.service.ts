@@ -51,7 +51,7 @@ export class LegacyLogger implements ILegacyLogger {
 		this.context = name;
 	}
 
-	private createMessage(message: unknown, context?: string | undefined): { message: string; context: string } {
+	private createMessage(message: unknown, context?: string): { message: string; context: string } {
 		return { message: this.stringifiedMessage(message), context: context || this.context };
 	}
 

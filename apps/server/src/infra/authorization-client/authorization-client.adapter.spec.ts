@@ -321,7 +321,8 @@ describe(AuthorizationClientAdapter.name, () => {
 				};
 
 				const axiosError = new Error('axios error');
-				// eslint-disable-next-line @typescript-eslint/no-var-requires
+
+				// eslint-disable-next-line @typescript-eslint/no-require-imports
 				const spyIsAxiosError = jest.spyOn(require('axios'), 'isAxiosError').mockReturnValue(true);
 
 				authorizationApi.authorizationReferenceControllerAuthorizeByReference.mockRejectedValueOnce(axiosError);

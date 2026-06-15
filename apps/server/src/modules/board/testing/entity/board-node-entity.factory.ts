@@ -30,7 +30,7 @@ export class BoardNodeEntityFactory<T extends AnyBoardNodeProps, I = any, C = T,
 	 * @param generator Your factory function - see `Factory.define()` in thoughtbot/fishery
 	 * @returns
 	 */
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 	public static define<
 		T extends AnyBoardNodeProps,
 		I = any,

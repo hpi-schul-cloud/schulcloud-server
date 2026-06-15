@@ -12,7 +12,7 @@ export class OidcProvisioningStrategy extends ProvisioningStrategy {
 	}
 
 	override async getData(input: OauthDataStrategyInputDto): Promise<OauthDataDto> {
-		const idToken = jwt.decode(input.idToken, { json: true }) as (JwtPayload & { external_sub?: string }) | null;
+		const idToken = jwt.decode(input.idToken, { json: true });
 		if (!idToken || !idToken.external_sub) {
 			throw new IdTokenExtractionFailureLoggableException('external_sub');
 		}

@@ -2,7 +2,7 @@
 
 import { Mail, MailService } from '@infra/mail';
 // application imports
-/* eslint-disable no-console */
+
 import { createRequestLoggerMiddleware, LegacyLogger, Logger, LOGGER_CONFIG_TOKEN, LoggerConfig } from '@core/logger';
 import { MikroORM } from '@mikro-orm/core';
 import { AccountService } from '@modules/account';
@@ -25,6 +25,7 @@ import { join } from 'path';
 import { install as sourceMapInstall } from 'source-map-support';
 import { AppStartLoggable, enableOpenApiDocs } from './helpers';
 import { createMetricsServer } from './helpers/metrics.server';
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 import legacyAppPromise = require('../../../../src/app');
 import { JWT_WHITELIST_VALKEY_CLIENT } from '@infra/jwt-whitelist';
 
@@ -99,7 +100,7 @@ async function bootstrap(): Promise<void> {
 	feathersExpress.services['nest-context-external-tool-service'] = nestApp.get(ContextExternalToolService);
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
 	feathersExpress.services['nest-system-rule'] = nestApp.get(SystemRule);
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 	feathersExpress.services['nest-orm'] = orm;
 
 	// mount instances

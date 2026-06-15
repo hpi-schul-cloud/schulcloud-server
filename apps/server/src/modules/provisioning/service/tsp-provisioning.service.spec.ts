@@ -173,11 +173,11 @@ describe('TspProvisioningService', () => {
 							{
 								externalId: externalTeacher.externalId,
 								role: RoleName.TEACHER,
-							} as TspUserInfo,
+							},
 							{
 								externalId: externalStudent.externalId,
 								role: RoleName.STUDENT,
-							} as TspUserInfo,
+							},
 						],
 					],
 				]);
@@ -226,11 +226,11 @@ describe('TspProvisioningService', () => {
 							{
 								externalId: externalTeacher.externalId,
 								role: RoleName.TEACHER,
-							} as TspUserInfo,
+							},
 							{
 								externalId: externalStudent.externalId,
 								role: RoleName.STUDENT,
-							} as TspUserInfo,
+							},
 						],
 					],
 				]);
@@ -284,11 +284,11 @@ describe('TspProvisioningService', () => {
 							{
 								externalId: externalTeacher.externalId,
 								role: RoleName.TEACHER,
-							} as TspUserInfo,
+							},
 							{
 								externalId: externalStudent.externalId,
 								role: RoleName.STUDENT,
-							} as TspUserInfo,
+							},
 						],
 					],
 				]);

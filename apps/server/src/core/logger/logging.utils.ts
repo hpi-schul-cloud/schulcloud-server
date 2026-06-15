@@ -3,7 +3,7 @@ import { Loggable } from './interfaces';
 import { LogMessageWithContext } from './types';
 
 export class LoggingUtils {
-	static createMessageWithContext(loggable: Loggable, context?: string | undefined): LogMessageWithContext {
+	static createMessageWithContext(loggable: Loggable, context?: string): LogMessageWithContext {
 		const message = loggable.getLogMessage();
 		const stringifiedMessage = this.stringifyMessage(message);
 		const messageWithContext = { message: stringifiedMessage, context };

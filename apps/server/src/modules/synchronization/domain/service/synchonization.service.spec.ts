@@ -86,7 +86,6 @@ describe(SynchronizationService.name, () => {
 			it('should return synchronization', async () => {
 				const { synchronizationId, synchronization } = setup();
 
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 				const result = await service.findById(synchronizationId);
 
 				expect(result).toEqual(synchronization);

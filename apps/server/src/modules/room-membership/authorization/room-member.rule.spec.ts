@@ -97,7 +97,7 @@ describe(RoomMemberRule.name, () => {
 		const client = {
 			login: jest.fn(() => Promise.resolve(client)),
 		};
-		return client as unknown as TestApiClient;
+		return client;
 	};
 
 	const setup = async (alias: string, targetUserAlias: string) => {

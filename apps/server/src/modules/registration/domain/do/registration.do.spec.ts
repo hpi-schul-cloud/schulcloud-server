@@ -27,10 +27,9 @@ describe('Registration', () => {
 		const { registration, registrationProps } = setup();
 		const mockDomainObject = registrationFactory.build();
 		// this tests the hotfix for the mikro-orm issue
-		// eslint-disable-next-line @typescript-eslint/dot-notation
+
 		registration['domainObject'] = mockDomainObject;
 
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore
 		const { domainObject, ...props } = registration.getProps();

@@ -51,7 +51,7 @@ export class AccountMikroOrmRepo extends BaseDomainObjectRepo<Account, AccountEn
 	}
 
 	public async findById(id: EntityId | ObjectId): Promise<Account> {
-		const entity = await this.em.findOneOrFail(this.entityName, id as FilterQuery<AccountEntity>);
+		const entity = await this.em.findOneOrFail(this.entityName, id);
 
 		return AccountEntityToDoMapper.mapToDo(entity);
 	}

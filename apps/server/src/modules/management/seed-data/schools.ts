@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/dot-notation */
 import { ObjectId } from '@mikro-orm/mongodb';
 import { SchoolFeature, SchoolPurpose } from '@modules/school/domain';
 import { FileStorageType } from '@modules/school/domain/type/file-storage-type.enum';

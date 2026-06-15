@@ -333,7 +333,7 @@ describe('FilesStorageProducer', () => {
 
 				const expectedParams = {
 					exchange: config.exchangeName,
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
 					routingKey: FilesStorageEvents.REMOVE_CREATORID_OF_FILES,
 					payload: creatorId,
 					timeout,

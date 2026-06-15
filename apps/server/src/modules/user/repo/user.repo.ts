@@ -120,9 +120,8 @@ export class UserMikroOrmRepo extends BaseRepo<User> {
 		for (let i = 0; i < roles.length; i += 1) {
 			const role = roles[i];
 			if (!role.roles.isInitialized(true)) {
-				// eslint-disable-next-line no-await-in-loop
 				await this._em.populate(role, ['roles']);
-				// eslint-disable-next-line no-await-in-loop
+
 				await this.populateRoles(role.roles.getItems());
 			}
 		}

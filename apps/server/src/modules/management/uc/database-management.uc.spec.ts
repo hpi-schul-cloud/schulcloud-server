@@ -46,9 +46,8 @@ describe('DatabaseManagementService', () => {
 		type: 'oauth',
 		__v: 0,
 		oauthConfig: {
-			// eslint-disable-next-line no-template-curly-in-string
 			clientId: '${SCHULCONNEX_CLIENT_ID}',
-			// eslint-disable-next-line no-template-curly-in-string
+
 			clientSecret: '${SCHULCONNEX_CLIENT_SECRET}',
 		},
 	};
@@ -127,11 +126,11 @@ describe('DatabaseManagementService', () => {
 		'}]';
 
 	const collection1Name = 'collectionName1';
-	// eslint-disable-next-line no-template-curly-in-string
+
 	const collection1Data = [{ first: 'foo1' }, { second: 'bar1' }, { third: '${aVar}' }];
 
 	const collection2Name = 'collectionName2';
-	// eslint-disable-next-line no-template-curly-in-string
+
 	const collection2Data = [{ first: 'foo2' }];
 
 	const defaultSecretReplacementHintText = 'replace with secret placeholder';
@@ -335,7 +334,7 @@ describe('DatabaseManagementService', () => {
 
 				await uc.exportCollectionsToFileSystem(['collectionName1']);
 				expect(fileSystemAdapter.writeFile).toBeCalledTimes(1);
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+
 				const text: unknown = fileSystemAdapter.writeFile.mock.calls[0][1];
 				const expectedResult = `${JSON.stringify(
 					bsonConverter.serialize([expectedFirst, expectedSecond, expectedLast]),
@@ -347,23 +346,23 @@ describe('DatabaseManagementService', () => {
 			it('should add system EOL to end of text', async () => {
 				await uc.exportCollectionsToFileSystem(['collectionName1']);
 				expect(fileSystemAdapter.writeFile).toBeCalledTimes(1);
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+
 				const arg: unknown = fileSystemAdapter.writeFile.mock.calls[0][1];
 				expect(arg).toEqual(expect.stringMatching(/<EOL>$/));
 			});
 			it('should use <collectionName>.json as filename', async () => {
 				await uc.exportCollectionsToFileSystem(['collectionName1']);
 				expect(fileSystemAdapter.writeFile).toBeCalledTimes(1);
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+
 				const arg: unknown = fileSystemAdapter.writeFile.mock.calls[0][0];
 				expect(arg).toEqual('collectionName1.json');
 			});
 			describe('for systems', () => {
 				it('should replace secrets with replacement hint', async () => {
 					await uc.exportCollectionsToFileSystem([systemsCollectionName]);
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+
 					const fileName: unknown = fileSystemAdapter.writeFile.mock.calls[0][0];
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
+
 					const fileContent: string = fileSystemAdapter.writeFile.mock.calls[0][1];
 					expect(fileName).toEqual(`${systemsCollectionName}.json`);
 					expect(fileContent.includes(oauthSystemWithSecrets.oauthConfig.clientSecret)).toBe(false);
@@ -376,9 +375,9 @@ describe('DatabaseManagementService', () => {
 			describe('for storageproviders', () => {
 				it('should replace secrets with replacement hint', async () => {
 					await uc.exportCollectionsToFileSystem([storageprovidersCollectionName]);
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+
 					const fileName: unknown = fileSystemAdapter.writeFile.mock.calls[0][0];
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
+
 					const fileContent: string = fileSystemAdapter.writeFile.mock.calls[0][1];
 					expect(fileName).toEqual(`${storageprovidersCollectionName}.json`);
 					expect(fileContent.includes(oauthSystemWithSecrets.oauthConfig.clientSecret)).toBe(false);
@@ -478,7 +477,7 @@ describe('DatabaseManagementService', () => {
 	describe('when seeding database from factories', () => {
 		it('should return correct number of seeded collections with length', async () => {
 			const collectionsSeeded = await uc.seedDatabaseCollectionsFromFactories();
-			// eslint-disable-next-line @typescript-eslint/dot-notation
+
 			const expectedCollectionsWithLength = generateSeedData((s) => uc['injectEnvVars'](s)).map(
 				(c) => `${c.collectionName}:${c.data.length}`
 			);
@@ -488,7 +487,7 @@ describe('DatabaseManagementService', () => {
 		it('should return correct number of filtered seeded collections', async () => {
 			const filteredCollections = ['roles'];
 			const collectionsSeeded = await uc.seedDatabaseCollectionsFromFactories(filteredCollections);
-			// eslint-disable-next-line @typescript-eslint/dot-notation
+
 			const expectedCollectionsWithLength = generateSeedData((s) => uc['injectEnvVars'](s))
 				.filter((d) => filteredCollections.includes(d.collectionName))
 				.map((c) => `${c.collectionName}:${c.data.length}`);
@@ -498,7 +497,7 @@ describe('DatabaseManagementService', () => {
 		it('should call dropCollectionIfExists if collection is present', async () => {
 			dbService.collectionExists.mockReturnValue(Promise.resolve(true));
 			const collectionsSeeded = await uc.seedDatabaseCollectionsFromFactories();
-			// eslint-disable-next-line @typescript-eslint/dot-notation
+
 			const expectedCollectionsWithLength = generateSeedData((s) => uc['injectEnvVars'](s)).map(
 				(c) => `${c.collectionName}:${c.data.length}`
 			);

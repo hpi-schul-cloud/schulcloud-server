@@ -66,7 +66,7 @@ describe(`Share Token Import (API)`, () => {
 		({ config: boardConfig } = boardNodeCopyServiceWithConfig);
 		// CourseCopyService is request-scoped; resolve() creates a DI subtree and gives us the config instance it uses.
 		const courseCopyService: CourseCopyService = await module.resolve(CourseCopyService);
-		// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+
 		const courseCopyServiceWithConfig = courseCopyService as unknown as { learnroomConfig: LearnroomConfig };
 		({ learnroomConfig } = courseCopyServiceWithConfig);
 	});

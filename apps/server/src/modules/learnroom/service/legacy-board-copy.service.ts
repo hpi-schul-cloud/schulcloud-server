@@ -168,7 +168,7 @@ export class LegacyBoardCopyService {
 			}
 			if (status.copyEntity instanceof ColumnBoard) {
 				// TODO comment this, legacy!
-				// eslint-disable-next-line no-await-in-loop
+
 				const columnBoardNode = await this.columnBoardNodeRepo.findById(status.copyEntity.id);
 				const columnBoardElement = new ColumnBoardBoardElement({
 					target: columnBoardNode,

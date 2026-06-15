@@ -100,7 +100,6 @@ describe('Logger', () => {
 		it('should set the context', () => {
 			service.setContext('test');
 
-			// eslint-disable-next-line @typescript-eslint/dot-notation
 			expect(service['context']).toEqual('test');
 		});
 	});
