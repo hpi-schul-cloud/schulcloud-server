@@ -93,7 +93,17 @@ export class SchoolExternalToolRepo {
 		const objectIds = await this.em
 			.getCollection(this.entityName)
 			.distinct('school', { tool: new ObjectId(toolId) } as Condition<SchoolExternalToolEntity>);
-		const ids = objectIds.map((id) => (id instanceof ObjectId ? id.toHexString() : id));
+		const ids: EntityId[] = objectIds.map((id): EntityId => {
+			if (id instanceof ObjectId) {
+				return id.toHexString();
+			}
+
+			if (typeof id === 'string') {
+				return id;
+			}
+
+			throw new Error('Unexpected school id type from distinct query');
+		});
 
 		return ids;
 	}
