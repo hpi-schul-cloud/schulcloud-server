@@ -112,6 +112,7 @@ export class ShareTokenUC {
 				await this.shareTokenPermissionService.checkRoomWritePermission(user, payload.parentId, [
 					Permission.ROOM_SHARE_ROOM,
 				]);
+				this.authorizationService.checkAllPermissions(user, [Permission.SCHOOL_CREATE_ROOM]);
 				break;
 			case ShareTokenParentType.Card:
 				await this.checkCardSharePermission(user, payload.parentId);

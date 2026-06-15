@@ -21681,5 +21681,50 @@
 			".org",
 			"org"
 		]
+	},
+	{
+		"_id": {
+			"$oid": "6a2ba34a62260ccf8422a997"
+		},
+		"roles": [
+			{
+			"$oid": "6a2ba34a62260ccf8422a996"
+			}
+		],
+		"email": "delete-s3-files-cronjob@schul-cloud.org",
+		"schoolId": {
+			"$oid": "5f2987e020834114b8efd6f8"
+		},
+		"firstName": "DeleteS3FilesCronjob",
+		"lastName": "ServiceAccount",
+		"allSearchableStrings": [],
+		"forcePasswordChange": false,
+		"parents": [],
+		"language": "de",
+		"preferences": {
+			"registrationMailSend": true,
+			"firstLogin": true
+		},
+		"consent": {
+			"parentConsents": [],
+			"userConsent": {
+			"form": "digital",
+			"privacyConsent": true,
+			"termsOfUseConsent": true,
+			"dateOfPrivacyConsent": {
+				"$date": "2026-06-12T06:12:26.701Z"
+			},
+			"dateOfTermsOfUseConsent": {
+				"$date": "2026-06-12T06:12:26.701Z"
+			}
+			}
+		},
+		"deletedAt": null,
+		"createdAt": {
+			"$date": "2026-06-12T06:12:26.701Z"
+		},
+		"updatedAt": {
+			"$date": "2026-06-12T06:12:26.701Z"
+		}
 	}
 ]

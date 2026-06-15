@@ -2,7 +2,7 @@ import { LegacyLogger } from '@core/logger';
 import { StorageLocation } from '@infra/files-storage-client';
 import { Action, AuthorizationService } from '@modules/authorization';
 import { BoardContextApiHelperService } from '@modules/board-context';
-import { CopyStatus } from '@modules/copy-helper';
+import { CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { CourseService } from '@modules/course';
 import { RoomService } from '@modules/room';
 import { RoomMembershipService } from '@modules/room-membership';
@@ -149,7 +149,11 @@ export class BoardUc {
 		return column;
 	}
 
-	public async copyColumn(userId: EntityId, columnId: EntityId, schoolId: EntityId): Promise<Column> {
+	public async copyColumn(
+		userId: EntityId,
+		columnId: EntityId,
+		schoolId: EntityId
+	): Promise<{ copyEntity: Column; status: CopyStatusEnum }> {
 		const column = await this.boardNodeService.findByClassAndId(Column, columnId);
 
 		const user = await this.authorizationService.getUserWithPermissions(userId);
@@ -169,7 +173,7 @@ export class BoardUc {
 			throw new InternalServerErrorException('Copied entity is not a column');
 		}
 
-		return copyStatus.copyEntity;
+		return { copyEntity: copyStatus.copyEntity, status: copyStatus.status };
 	}
 
 	public async copyBoard(userId: EntityId, boardId: EntityId, targetSchoolId: EntityId): Promise<CopyStatus> {

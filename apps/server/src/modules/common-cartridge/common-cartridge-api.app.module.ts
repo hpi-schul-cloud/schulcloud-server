@@ -13,7 +13,6 @@ import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { COMMON_CARTRIDGE_PUBLIC_API_CONFIG_TOKEN, CommonCartridgePublicApiConfig } from './common-cartridge.config';
 import { CommonCartridgeModule } from './common-cartridge.module';
-import { CommonCartridgeConfigController } from './controller/common-cartridge-config.controller';
 import { CommonCartridgeController } from './controller/common-cartridge.controller';
 
 @Module({
@@ -36,6 +35,6 @@ import { CommonCartridgeController } from './controller/common-cartridge.control
 			entities: [User, NotificationEntity],
 		}),
 	],
-	controllers: [CommonCartridgeController, CommonCartridgeConfigController],
+	controllers: [CommonCartridgeController],
 })
 export class CommonCartridgeApiModule {}
