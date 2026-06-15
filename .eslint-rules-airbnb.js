@@ -1,5 +1,5 @@
 module.exports = {
-	'import/no-unresolved': [
+	'import-x/no-unresolved': [
 		'off',
 		{
 			commonjs: true,
@@ -7,7 +7,7 @@ module.exports = {
 			caseSensitiveStrict: false,
 		},
 	],
-	'import/no-extraneous-dependencies': [
+	'import-x/no-extraneous-dependencies': [
 		'off',
 		{
 			devDependencies: [
