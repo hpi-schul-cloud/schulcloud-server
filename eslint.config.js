@@ -1,5 +1,3 @@
-const fs = require('fs');
-const path = require('path');
 const { FlatCompat } = require('@eslint/eslintrc');
 
 const compat = new FlatCompat({
@@ -8,19 +6,68 @@ const compat = new FlatCompat({
 });
 
 const legacyConfig = require('./.eslintrc.js');
-const eslintIgnorePath = path.join(__dirname, '.eslintignore');
-
-const ignorePatterns = fs.existsSync(eslintIgnorePath)
-	? fs
-			.readFileSync(eslintIgnorePath, 'utf8')
-			.split(/\r?\n/u)
-			.map((line) => line.trim())
-			.filter((line) => line && !line.startsWith('#'))
-	: [];
 
 module.exports = [
 	{
-		ignores: ignorePatterns,
+		ignores: [
+			'backup/setup/*.json',
+			'migrations/helpers/*.json',
+			'dist',
+			'*.swp',
+			'logs',
+			'*.log',
+			'npm-debug.log*',
+			'yarn-debug.log*',
+			'yarn-error.log*',
+			'lerna-debug.log*',
+			'*.loadtest.json',
+			'pids',
+			'*.pid',
+			'*.seed',
+			'lib-cov',
+			'coverage',
+			'.nyc_output/',
+			'.DS_Store',
+			'.grunt',
+			'build/',
+			'node_modules',
+			'.lock-wscript',
+			'lib/',
+			'data/',
+			'.idea/',
+			'backup/*',
+			'!backup/setup/',
+			'!backup/idm',
+			'.idea',
+			'.project',
+			'.classpath',
+			'.c9/',
+			'*.launch',
+			'.settings/',
+			'*.sublime-workspace',
+			'.vs/**',
+			'.vscode/*',
+			'.vscode/settings.json',
+			'.vscode/tasks.json',
+			'.vscode/launch.json',
+			'!.vscode/extensions.json',
+			'config/secrets.json',
+			'.env',
+			'travis_rsa',
+			'version',
+			'*.patch',
+			'.build/travis_rsa',
+			'build',
+			'dist',
+			'node_modules',
+			'docs',
+			'coverage',
+			'.nyc_output',
+			'.idea/',
+			'apps/server/src/modules/board/loadtest/**/*.html',
+			'apps/server/src/modules/board/loadtest/artilleryreport.json',
+			'docker-compose.yml',
+		],
 	},
 	...compat.config(legacyConfig),
 ];
