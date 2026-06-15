@@ -112,6 +112,7 @@ module.exports = {
 						allowSingleExtends: true,
 					},
 				],
+				'no-restricted-imports': 'off',
 			},
 			overrides: [
 				{
@@ -129,7 +130,7 @@ module.exports = {
 						'jest/unbound-method': 'error',
 						'@typescript-eslint/explicit-function-return-type': 'off',
 						'@typescript-eslint/explicit-member-accessibility': 'off',
-						'no-restricted-imports': 'off',
+						'@typescript-eslint/no-explicit-any': 'warn',
 					},
 				},
 				{
