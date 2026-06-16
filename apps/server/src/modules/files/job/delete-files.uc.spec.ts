@@ -1,11 +1,13 @@
 import { S3ServiceException } from '@aws-sdk/client-s3';
 import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { AuthenticationClientAdapter } from '@infra/authentication-client';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { StorageProviderRepo } from '@modules/school/repo';
 import { storageProviderFactory } from '@modules/school/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { fileEntityFactory, filePermissionEntityFactory } from '../entity/testing';
+import { FILES_CONSOLE_CONFIG_TOKEN } from '../files-console.config';
 import { FilesRepo } from '../repo';
 import { DeleteFilesUc } from './delete-files.uc';
 
@@ -31,6 +33,17 @@ describe(DeleteFilesUc.name, () => {
 				{
 					provide: LegacyLogger,
 					useValue: createMock<LegacyLogger>(),
+				},
+				{
+					provide: AuthenticationClientAdapter,
+					useValue: createMock<AuthenticationClientAdapter>(),
+				},
+				{
+					provide: FILES_CONSOLE_CONFIG_TOKEN,
+					useValue: {
+						cronjobUsername: 'test@test.com',
+						cronjobToken: 'test',
+					},
 				},
 			],
 		}).compile();
