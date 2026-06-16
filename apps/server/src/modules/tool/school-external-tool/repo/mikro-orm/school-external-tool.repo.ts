@@ -93,7 +93,7 @@ export class SchoolExternalToolRepo {
 		const objectIds = await this.em
 			.getCollection(this.entityName)
 			.distinct('school', { tool: new ObjectId(toolId) } as Condition<SchoolExternalToolEntity>);
-		return objectIds.map((id): EntityId => (id instanceof ObjectId ? id.toHexString() : String(id)));
+		return objectIds.map((id): EntityId => (id as unknown as ObjectId).toHexString());
 	}
 
 	public async saveMany(domainObjects: SchoolExternalTool[]): Promise<void> {
