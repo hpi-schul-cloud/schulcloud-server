@@ -560,11 +560,13 @@ describe(ContextExternalToolService.name, () => {
 				it('should assign the copied tool the correct school tool', async () => {
 					const { contextExternalTool, contextCopyId, targetSchool, expectedSchoolToolRef } = setupTools();
 
-					let copiedTool: ContextExternalTool | CopyContextExternalToolRejectData =
+					const copiedTool: ContextExternalTool | CopyContextExternalToolRejectData =
 						await service.copyContextExternalTool(contextExternalTool, contextCopyId, targetSchool.id);
 
 					expect(copiedTool instanceof ContextExternalTool).toEqual(true);
-					copiedTool = copiedTool;
+					if (!(copiedTool instanceof ContextExternalTool)) {
+						throw new Error('Expected copiedTool to be ContextExternalTool');
+					}
 
 					expect(copiedTool.schoolToolRef).toMatchObject(expectedSchoolToolRef);
 				});
