@@ -1,6 +1,6 @@
 import { FeathersServiceProvider } from '@infra/feathers';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { NewsTargetModel } from '@modules/news';
+import { NewsTargetModel } from '@modules/news/domain/type/news-target-model.enum';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { BaseEntity } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
