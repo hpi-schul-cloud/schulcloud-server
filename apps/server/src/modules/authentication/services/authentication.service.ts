@@ -1,12 +1,11 @@
 import { Logger } from '@core/logger';
-import { CreateJwtPayload, JwtPayloadBuilder } from '@infra/auth-guard';
+import { CreateJwtPayload, JwtPayloadBuilder, JwtPayloadVo } from '@infra/auth-guard';
 import { JwtWhitelistAdapter } from '@infra/jwt-whitelist';
 import { Account, AccountService } from '@modules/account';
 import { User } from '@modules/user/repo';
 import { Inject, Injectable } from '@nestjs/common';
 import { JwtService, JwtSignOptions } from '@nestjs/jwt';
 import { randomUUID } from 'crypto';
-import jwt, { JwtPayload } from 'jsonwebtoken';
 import { AUTHENTICATION_CONFIG_TOKEN, AuthenticationConfig } from '../authentication-config';
 import { BruteForceError, UnauthorizedLoggableException } from '../errors';
 import { ShdUserCreateTokenLoggable, UserAccountDeactivatedLoggableException } from '../loggable';
@@ -81,19 +80,17 @@ export class AuthenticationService {
 	}
 
 	public async removeJwtFromWhitelist(jwtToken: string): Promise<void> {
-		const decodedJwt: JwtPayload | null = jwt.decode(jwtToken, { json: true });
+		const decodedJwt = JwtPayloadVo.fromJwtToken(jwtToken);
 
-		if (this.isValidJwt(decodedJwt)) {
-			await this.jwtWhitelistAdapter.removeFromWhitelist(decodedJwt.accountId, decodedJwt.jti);
-		}
+		await this.jwtWhitelistAdapter.removeFromWhitelist(decodedJwt.accountId, decodedJwt.jti);
 	}
 
 	public async removeUserFromWhitelist(account: Account): Promise<void> {
 		await this.jwtWhitelistAdapter.removeFromWhitelist(account.id);
 	}
 
-	private isValidJwt(decodedJwt: JwtPayload | null): decodedJwt is { accountId: string; jti: string } {
-		return typeof decodedJwt?.jti === 'string' && typeof decodedJwt?.accountId === 'string';
+	public async getTtlFromWhitelist(accountId: string, jti: string): Promise<number> {
+		return await this.jwtWhitelistAdapter.getTtl(accountId, jti);
 	}
 
 	public checkBrutForce(account: Account): void {

@@ -9,12 +9,6 @@ export { CurrentUser, JWT, JwtAuthentication, WsJwtAuthentication, XApiKeyAuthen
 // JwtAuthGuard only exported because api tests still overried this guard.
 // Use JwtAuthentication decorator for request validation
 export { JwtAuthGuard, WsJwtAuthGuard, XApiKeyGuard } from './guard';
-export {
-	AuthGuardModuleOptions,
-	AuthGuardOptions,
-	CreateJwtPayload,
-	ICurrentUser,
-	JwtPayload,
-	StrategyType,
-} from './interface';
+export { AuthGuardModuleOptions, AuthGuardOptions, CreateJwtPayload, ICurrentUser, StrategyType } from './interface';
+export { JwtPayloadVo } from './jwt-payload.vo';
 export { CurrentUserBuilder, JwtPayloadBuilder } from './mapper';

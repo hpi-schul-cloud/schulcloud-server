@@ -43,6 +43,13 @@ export class JwtWhitelistAdapter {
 		await this.setInStorage(redisIdentifier, redisData);
 	}
 
+	public async getTtl(accountId: EntityId, jti: string): Promise<number> {
+		const redisIdentifier = JwtWhitelistIdentifier.forJti(accountId, jti);
+		const ttl = await this.storageClient.ttl(redisIdentifier.value);
+
+		return ttl;
+	}
+
 	private getKeyByJti(accountId: EntityId, jti: string): string[] {
 		const redisIdentifier = JwtWhitelistIdentifier.forJti(accountId, jti);
 		const keys = [redisIdentifier.value];

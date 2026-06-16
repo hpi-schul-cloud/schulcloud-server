@@ -17,7 +17,7 @@ import { AUTHENTICATION_CONFIG_TOKEN, AuthenticationConfig } from './authenticat
 import { AUTHENTICATION_ENCRYPTION_CONFIG_TOKEN, AuthenticationEncryptionConfig } from './encryption.config';
 import { Oauth2ContextHelper } from './helper/oauth2-context.helper';
 import { JWT_STRATEGY_CONFIG_TOKEN, JwtModuleConfig } from './jwt-module.config';
-import { LogoutService } from './services';
+import { LogoutService, SessionService } from './services';
 import { AuthenticationService } from './services/authentication.service';
 import { LdapService } from './services/ldap.service';
 import { ErwinStrategy } from './strategy/erwin.strategy';
@@ -74,7 +74,8 @@ const createJwtOptions = (config: JwtModuleConfig): JwtModuleOptions => {
 		Oauth2ContextHelper,
 		LogoutService,
 		ErwinStrategy,
+		SessionService,
 	],
-	exports: [AuthenticationService, LogoutService],
+	exports: [AuthenticationService, LogoutService, SessionService],
 })
 export class AuthenticationModule {}
