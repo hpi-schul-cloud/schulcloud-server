@@ -233,7 +233,7 @@ describe('user repo', () => {
 		it('should throw an error if user by externalid doesnt exist', async () => {
 			const idA = new ObjectId().toHexString();
 			const idB = new ObjectId().toHexString();
-			await expect(repo.findByExternalIdOrFail(idA, idB)).rejects.toEqual(undefined);
+			await expect(repo.findByExternalIdOrFail(idA, idB)).rejects.toThrow('User not found for given system');
 		});
 	});
 
