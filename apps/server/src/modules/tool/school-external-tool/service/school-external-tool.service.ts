@@ -44,6 +44,12 @@ export class SchoolExternalToolService {
 		return schoolExternalTools;
 	}
 
+	public async findSchoolExternalToolIds(toolId: EntityId): Promise<EntityId[]> {
+		const schoolIds = await this.schoolExternalToolRepo.findIdsForToolId(toolId);
+
+		return schoolIds;
+	}
+
 	private async enrichWithDataFromExternalTools(tools: SchoolExternalTool[]): Promise<SchoolExternalTool[]> {
 		const enrichedTools: SchoolExternalTool[] = await Promise.all(
 			tools.map(

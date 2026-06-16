@@ -98,6 +98,16 @@ export class SchoolExternalToolRepo {
 		return ids;
 	}
 
+	public async findIdsForToolId(toolId: string): Promise<EntityId[]> {
+		// Since we don't need any of the EntityManager's features here, we load the ids with a Mongo query to be more efficient.
+		const objectIds = await this.em
+			.getCollection(this.entityName)
+			.distinct('_id', { tool: new ObjectId(toolId) } as Condition<SchoolExternalToolEntity>);
+		const ids = objectIds.map((id) => id.toString());
+
+		return ids;
+	}
+
 	public async saveMany(domainObjects: SchoolExternalTool[]): Promise<void> {
 		const entities = domainObjects.map((domainObject) => {
 			const entityProps = this.mapDomainObjectToEntityProps(domainObject);
