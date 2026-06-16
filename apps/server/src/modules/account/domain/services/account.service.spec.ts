@@ -345,7 +345,7 @@ describe('AccountService', () => {
 					userId: 'user1',
 					systemId: undefined,
 				} as AccountSave;
-				jest.spyOn(accountService, 'findByUserId').mockImplementation().mockResolvedValueOnce({});
+				jest.spyOn(accountService, 'findByUserId').mockImplementation().mockResolvedValueOnce(accountDoFactory.build());
 
 				await expect(accountService.validateAccountBeforeSaveOrReject(accountSave)).rejects.toThrow(ValidationError);
 			});

@@ -166,7 +166,7 @@ describe('TspProvisioningService', () => {
 					name: withName ? faker.person.fullName() : '',
 				});
 
-				const usersOfClasses = new Map([
+				const usersOfClasses: Map<string, TspUserInfo[]> = new Map([
 					[
 						classId,
 						[
@@ -219,7 +219,7 @@ describe('TspProvisioningService', () => {
 					name: withName ? faker.person.fullName() : '',
 				});
 
-				const usersOfClasses = new Map([
+				const usersOfClasses: Map<string, TspUserInfo[]> = new Map([
 					[
 						classId,
 						[
@@ -277,7 +277,7 @@ describe('TspProvisioningService', () => {
 					externalId: classId,
 				});
 
-				const usersOfClasses = new Map([
+				const usersOfClasses: Map<string, TspUserInfo[]> = new Map([
 					[
 						classId,
 						[
