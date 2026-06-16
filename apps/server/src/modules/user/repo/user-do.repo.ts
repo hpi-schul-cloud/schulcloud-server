@@ -1,4 +1,4 @@
-import type { EntityData, EntityName, FilterQuery, QueryOrderMap } from '@mikro-orm/core';
+import type { EntityData, EntityName, QueryOrderMap } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Role } from '@modules/role/repo';
 import { SchoolEntity } from '@modules/school/repo';

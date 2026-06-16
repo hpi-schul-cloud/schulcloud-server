@@ -7,7 +7,6 @@ import { randomBytes } from 'crypto';
 import { LESSON_CONFIG_TOKEN, LessonConfig } from '../../lesson.config';
 import {
 	ComponentEtherpadProperties,
-	ComponentGeogebraProperties,
 	ComponentLernstoreProperties,
 	ComponentProperties,
 	ComponentTextProperties,

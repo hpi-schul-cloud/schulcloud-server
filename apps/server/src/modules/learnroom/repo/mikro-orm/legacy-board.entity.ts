@@ -1,5 +1,4 @@
 import { Collection, Entity, ManyToMany, OneToOne, Ref, wrap } from '@mikro-orm/core';
-import type { BoardNodeEntity } from '@modules/board/repo/entity/board-node.entity';
 import { CourseEntity } from '@modules/course/repo';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity';

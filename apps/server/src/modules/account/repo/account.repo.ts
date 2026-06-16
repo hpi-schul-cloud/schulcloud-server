@@ -1,4 +1,4 @@
-import { AnyEntity, EntityData, EntityName, FilterQuery, Primary } from '@mikro-orm/core';
+import { AnyEntity, EntityData, EntityName, Primary } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { SortOrder } from '@shared/domain/interface';

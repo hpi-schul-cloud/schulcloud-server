@@ -13,8 +13,6 @@ import {
 	CommonCartridgeElementFactoryV130,
 	CommonCartridgeMetadataElementPropsV130,
 	CommonCartridgeOrganizationElementPropsV130,
-	CommonCartridgeOrganizationsWrapperElementPropsV130,
-	CommonCartridgeResourcesWrapperElementPropsV130,
 } from './v1.3.0';
 
 export type CommonCartridgeElementProps =

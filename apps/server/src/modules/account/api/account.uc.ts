@@ -273,8 +273,8 @@ export class AccountUc {
 
 	private schoolPermissionExists(roles: string[], school: SchoolEntity, permissions: string[]): boolean {
 		if (
-			roles.find((role) => (role as RoleName) === RoleName.TEACHER) &&
-			permissions.find((permission) => (permission as Permission) === Permission.STUDENT_LIST)
+			roles.some((role) => (role as RoleName) === RoleName.TEACHER) &&
+			permissions.some((permission) => (permission as Permission) === Permission.STUDENT_LIST)
 		) {
 			return school.permissions?.teacher?.STUDENT_LIST ?? false;
 		}

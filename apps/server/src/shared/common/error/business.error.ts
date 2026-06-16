@@ -2,7 +2,7 @@ import { HttpException, HttpStatus } from '@nestjs/common';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { ErrorResponse } from '@core/error/dto/error.response';
 import { ErrorType } from '@core/error/interface';
-import util from 'util';
+import util from 'node:util';
 
 /**
  * Abstract base class for business errors, errors that are handled
