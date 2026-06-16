@@ -107,8 +107,6 @@ export class CommonCartridgeExportService {
 					}
 					break;
 				}
-				default:
-					break;
 			}
 		}
 		this.logger.debug(new CommonCartridgeMessageLoggable('Added all elements of course', { courseId }));
