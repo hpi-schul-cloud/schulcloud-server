@@ -74,7 +74,7 @@ describe('UserLoginMigrationRollbackController (API)', () => {
 					.flush();
 				em.clear();
 
-				const loggedInClient = await testApiClient.login(superheroAccount);
+				const loggedInClient = await testApiClient.loginAsServiceAccount(superheroAccount);
 
 				return {
 					loggedInClient,
