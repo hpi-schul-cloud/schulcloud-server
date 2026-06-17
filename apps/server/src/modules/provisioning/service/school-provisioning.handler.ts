@@ -79,7 +79,7 @@ export class SchoolProvisioningHandler implements ProvisioningEntityHandler {
 			},
 		};
 
-		const federalState = await this.federalStateService.getOrCreateErwinFederalState();
+		const federalState = await this.federalStateService.findOrCreateDefaultFederalState();
 		const school = SchoolFactory.build({
 			id: new ObjectId().toHexString(),
 			externalId: externalSchool.externalId,

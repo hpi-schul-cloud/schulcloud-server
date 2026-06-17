@@ -8,29 +8,33 @@ export class FederalStateService {
 
 	// TODO: N21-990 Refactoring: Create domain objects for schoolYear and federalState
 	public async findFederalStateByName(name: string): Promise<FederalStateEntity> {
-		const federalState: FederalStateEntity = await this.federalStateRepo.findByName(name);
+		const federalState: FederalStateEntity = await this.federalStateRepo.findByNameOrFail(name);
 
 		return federalState;
 	}
 
-	public async getOrCreateErwinFederalState(): Promise<FederalState> {
-		const federalStateName = 'ErWIngen';
+	public async findOrCreateDefaultFederalState(): Promise<FederalState> {
+		const federalStateName = 'Default';
 
-		let federalStateEntity: FederalStateEntity;
-		try {
-			federalStateEntity = await this.federalStateRepo.findByName(federalStateName);
-		} catch (err: unknown) {
-			federalStateEntity = new FederalStateEntity({
-				name: federalStateName,
-				abbreviation: 'EW',
-				logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/7/71/Earth_icon_2.png',
-				createdAt: new Date(),
-				updatedAt: new Date(),
-			});
-			federalStateEntity = this.federalStateRepo.create(federalStateEntity);
-			await this.federalStateRepo.save(federalStateEntity);
+		let federalStateEntity = await this.federalStateRepo.findByName(federalStateName);
+
+		if (federalStateEntity !== null) {
+			const federalState = FederalStateEntityMapper.mapToDo(federalStateEntity);
+			return federalState;
 		}
 
-		return FederalStateEntityMapper.mapToDo(federalStateEntity);
+		federalStateEntity = new FederalStateEntity({
+			name: federalStateName,
+			abbreviation: 'DE',
+			logoUrl: 'https://upload.wikimedia.org/wikipedia/commons/7/71/Earth_icon_2.png',
+			createdAt: new Date(),
+			updatedAt: new Date(),
+		});
+		federalStateEntity = this.federalStateRepo.create(federalStateEntity);
+
+		await this.federalStateRepo.save(federalStateEntity);
+
+		const federalState = FederalStateEntityMapper.mapToDo(federalStateEntity);
+		return federalState;
 	}
 }
