@@ -1,14 +1,6 @@
 const { discard } = require('feathers-hooks-common');
-const { Configuration } = require('@hpi-schul-cloud/commons');
-const { getRedisClient, redisDelAsync } = require('../../../utils/redis');
-const {
-	extractRedisDataFromJwt,
-	createRedisIdentifierFromJwtData,
-	addTokenToWhitelistWithIdAndJti,
-	ensureTokenIsWhitelisted,
-} = require('../logic/whitelist');
-
 const globalHooks = require('../../../hooks');
+const { extractJwtData } = require('../../../utils/extractJwtData');
 
 const populateResult = (hook) => {
 	hook.result.userId = hook.result.account.userId; // required by event listeners
@@ -24,87 +16,44 @@ const removeProvider = (context) => {
 	return context;
 };
 
-/**
- * If a redis connection exists, the newly created is added to the whitelist.
- * @param {Object} context feathers context
- * @deprecated
- */
 const addJwtToWhitelist = async (context) => {
-	if (getRedisClient()) {
-		const { accountId, jti, privateDevice } = extractRedisDataFromJwt(context.result.accessToken);
-		await addTokenToWhitelistWithIdAndJti(accountId, jti, privateDevice);
-	}
+	const jwtWhiteListAdapter = context.app.service('nest-jwt-whitelist-adapter');
+	const { accountId, jti } = extractJwtData(context.result.accessToken);
+
+	await jwtWhiteListAdapter.addToWhitelist(accountId, jti);
 
 	return context;
 };
 
-/**
- * If a redis connection exists, the newly created is removed from the whitelist.
- * @param {Object} context feathers context
- */
 const removeJwtFromWhitelist = async (context) => {
-	if (getRedisClient()) {
-		const { accountId, jti } = extractRedisDataFromJwt(context.params.authentication.accessToken);
-		const redisIdentifier = createRedisIdentifierFromJwtData(accountId, jti);
-		await redisDelAsync(redisIdentifier);
-	}
+	const jwtWhiteListAdapter = context.app.service('nest-jwt-whitelist-adapter');
+	const { accountId, jti } = extractJwtData(context.params.authentication.accessToken);
+
+	await jwtWhiteListAdapter.removeFromWhitelist(accountId, jti);
 
 	return context;
 };
 
-/**
- * increase jwt timeout for private devices on request
- * @deprecated remove when switched to v3 endpoint, was never in production and is more than 2 years old
- */
-const increaseJwtTimeoutForPrivateDevices = (context) => {
-	if (Configuration.get('FEATURE_JWT_EXTENDED_TIMEOUT_ENABLED') === true) {
-		if (context.data && context.data.privateDevice === true) {
-			context.params.jwt = {
-				...context.params.jwt,
-				privateDevice: true,
-			};
-		}
-	}
-	return context;
-};
-
-/**
- * @deprecated can be removed after switching to v3 endpoint
- */
 const checkJwtAuthWhitelisted = async (context) => {
 	const { strategy, accessToken } = context.data;
 	if (strategy === 'jwt') {
-		const { accountId, jti, privateDevice } = extractRedisDataFromJwt(accessToken);
-		await ensureTokenIsWhitelisted({ accountId, jti, privateDevice });
+		const jwtWhiteListAdapter = context.app.service('nest-jwt-whitelist-adapter');
+		const { accountId, jti } = extractJwtData(accessToken);
+
+		await jwtWhiteListAdapter.isWhitelisted(accountId, jti);
 	}
+
 	return context;
 };
 
 const hooks = {
 	before: {
-		create: [
-			// NOTE: is ported to nest
-			checkJwtAuthWhitelisted,
-			// NOTE: will not be ported to nest
-			globalHooks.blockDisposableEmail('username'),
-			// NOTE: will not be ported to nest
-			increaseJwtTimeoutForPrivateDevices,
-			// NOTE: will not be ported to nest
-			removeProvider,
-		],
+		create: [checkJwtAuthWhitelisted, globalHooks.blockDisposableEmail('username'), removeProvider],
 		remove: [removeProvider],
 	},
 	after: {
-		all: [
-			// NOTE: will not be ported to nest
-			discard('account.password'),
-			// NOTE: will not be ported to nest
-			globalHooks.transformToDataTransferObject,
-		],
-		create: [
-			// NOTE: is ported to nest
-			addJwtToWhitelist,
-		],
+		all: [discard('account.password'), globalHooks.transformToDataTransferObject],
+		create: [addJwtToWhitelist],
 		remove: [populateResult, removeJwtFromWhitelist],
 	},
 };

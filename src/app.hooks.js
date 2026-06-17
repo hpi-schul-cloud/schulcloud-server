@@ -6,12 +6,27 @@ const logger = require('./logger');
 const {
 	sanitizeHtml: { sanitizeDeep },
 } = require('./utils');
-const {
-	extractRedisDataFromJwt,
-	isRouteWhitelisted,
-	isTokenAvailable,
-	ensureTokenIsWhitelisted,
-} = require('./services/authentication/logic/whitelist');
+const { extractJwtData } = require('./utils/extractJwtData');
+
+/**
+ * Routes as (regular expressions) which should be ignored for the auto-logout feature.
+ */
+const AUTO_LOGOUT_BLACKLIST = [/^authentication$/, /roster\//];
+
+/**
+ * check for token to be a truthy value
+ * @param {string} token
+ * @returns
+ */
+const isTokenAvailable = (token) => !!token;
+
+/**
+ * a path string or false when expect false
+ * @param {string|boolean} path
+ * @returns
+ */
+const isRouteWhitelisted = (path) =>
+	typeof path === 'string' && AUTO_LOGOUT_BLACKLIST.some((entry) => path.match(entry));
 
 const sanitizeDataHook = (context) => {
 	if ((context.data || context.result) && context.path && context.path !== 'authentication') {
@@ -71,9 +86,13 @@ const handleAutoLogout = async (context) => {
 	const { path } = context;
 	const { accessToken } = (context.params || {}).authentication || {};
 	if (!isRouteWhitelisted(path) && isTokenAvailable(accessToken)) {
-		const { accountId, jti, privateDevice } = extractRedisDataFromJwt(accessToken);
-		await ensureTokenIsWhitelisted({ accountId, jti, privateDevice });
+		const jwtWhiteListAdapter = context.app.service('nest-jwt-whitelist-adapter');
+
+		const { accountId, jti } = extractJwtData(accessToken);
+
+		await jwtWhiteListAdapter.isWhitelisted(accountId, jti);
 	}
+
 	return context;
 };
 

@@ -1,3 +1,4 @@
+const { extractJwtData } = require('../../../../src/utils/extractJwtData');
 const accountsHelper = require('./accounts');
 
 const getJwtPayload = (user, account) => {
@@ -37,13 +38,19 @@ const generateRequestParams =
 		const app = await appPromise;
 		const fetchJwt = generateJWT(app);
 		const jwt = await fetchJwt({ username, password });
-		return {
+		const requestParams = {
 			authentication: {
 				accessToken: jwt,
 				strategy: 'jwt',
 			},
 			provider: 'rest',
 		};
+
+		const jwtWhitelistAdapter = app.service('nest-jwt-whitelist-adapter');
+		const { accountId, jti } = extractJwtData(requestParams.authentication.accessToken);
+		await jwtWhitelistAdapter.addToWhitelist(accountId, jti);
+
+		return requestParams;
 	};
 
 /**
@@ -60,6 +67,7 @@ const generateRequestParamsFromUser = (appPromise) => async (user) => {
 
 	const requestParams = await generateRequestParams(app)(credentials);
 	requestParams.account = account;
+
 	return requestParams;
 };
 
