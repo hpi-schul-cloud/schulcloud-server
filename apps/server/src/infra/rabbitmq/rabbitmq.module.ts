@@ -1,6 +1,8 @@
+import { LoggerModule } from '@core/logger';
 import { RabbitMQModule } from '@golevelup/nestjs-rabbitmq';
 import { ConfigurationModule } from '@infra/configuration';
 import { DynamicModule, Module } from '@nestjs/common';
+import { AmqpConnectionGuard } from './amqp-connection.guard';
 import { InternalRabbitMQExchangeConfig, RabbitMQModuleOptions } from './rabbitmq-module.options';
 import { RabbitMQConfig } from './rabbitmq.config';
 
@@ -32,7 +34,9 @@ export class RabbitMQWrapperModule {
 						ConfigurationModule.register(options.exchangeConfigInjectionToken, options.exchangeConfigConstructor),
 					],
 				}),
+				LoggerModule,
 			],
+			providers: [AmqpConnectionGuard],
 			exports: [RabbitMQModule],
 		};
 	}
