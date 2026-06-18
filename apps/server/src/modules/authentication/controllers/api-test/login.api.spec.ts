@@ -14,6 +14,8 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { JwtTestFactory } from '@testing/factory/jwt.test.factory';
+import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
+import { TestApiClient } from '@testing/test-api-client';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import jwt from 'jsonwebtoken';
@@ -75,6 +77,7 @@ describe('Login Controller (api)', () => {
 
 	let app: INestApplication<Server>;
 	let em: EntityManager;
+	let testApiClient: TestApiClient;
 
 	beforeAll(async () => {
 		const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -84,6 +87,7 @@ describe('Login Controller (api)', () => {
 		app = moduleFixture.createNestApplication();
 		await app.init();
 		em = app.get(EntityManager);
+		testApiClient = new TestApiClient(app, basePath);
 	});
 
 	afterAll(async () => {
@@ -607,6 +611,33 @@ describe('Login Controller (api)', () => {
 				});
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
+			});
+		});
+	});
+
+	describe('extendSession', () => {
+		describe('when a valid access token is provided', () => {
+			const setup = async () => {
+				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+				await em.persist([studentAccount, studentUser]).flush();
+				em.clear();
+
+				const loggedInClient = await testApiClient.login(studentAccount);
+
+				return {
+					loggedInClient,
+					studentAccount,
+				};
+			};
+
+			it('should return new ttl', async () => {
+				const { loggedInClient } = await setup();
+
+				const response: Response = await loggedInClient.post('/refresh-session');
+
+				expect(response.body).toEqual({
+					expiresInSeconds: expect.any(Number),
+				});
 			});
 		});
 	});

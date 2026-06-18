@@ -264,7 +264,7 @@ describe('FwuLearningContents Controller (api)', () => {
 
 					describe('when style attribute is missing', () => {
 						it('should return undefined thumbnailUrl', async () => {
-							const { loggedInClient } = await	 setupWithPlayerTag('<div class="player_outer"></div>');
+							const { loggedInClient } = await setupWithPlayerTag('<div class="player_outer"></div>');
 
 							const response = await loggedInClient.get();
 							const responseBody = response.body as FwuListResponse;

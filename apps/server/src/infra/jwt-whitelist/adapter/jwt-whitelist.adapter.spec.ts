@@ -140,4 +140,28 @@ describe(JwtWhitelistAdapter.name, () => {
 			});
 		});
 	});
+
+	describe('getTtl', () => {
+		const setup = () => {
+			const storageClient = createMock<StorageClient>();
+			const config = { jwtTimeoutSeconds: 7200 };
+			const adapter = new JwtWhitelistAdapter(storageClient, config);
+			const accountId = new ObjectId().toHexString();
+			const jti = new ObjectId().toHexString();
+
+			return { accountId, jti, storageClient, adapter };
+		};
+
+		it('should call the storage client to get the ttl of the jwt entry', async () => {
+			const { accountId, jti, storageClient, adapter } = setup();
+			const expectedTtl = 3600;
+
+			storageClient.ttl.mockResolvedValueOnce(expectedTtl);
+
+			const ttl = await adapter.getTtl(accountId, jti);
+
+			expect(storageClient.ttl).toHaveBeenCalledWith(`jwt:${accountId}:${jti}`);
+			expect(ttl).toBe(expectedTtl);
+		});
+	});
 });
