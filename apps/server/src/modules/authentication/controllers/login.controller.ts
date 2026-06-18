@@ -1,4 +1,4 @@
-import { CurrentUser, ICurrentUser } from '@infra/auth-guard';
+import { CurrentUser, ICurrentUser, JWT, JwtAuthentication } from '@infra/auth-guard';
 import { Body, Controller, HttpCode, HttpStatus, Post, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -11,6 +11,7 @@ import {
 	LoginResponse,
 	Oauth2AuthorizationBodyParams,
 	OauthLoginResponse,
+	SessionInfoResponse,
 } from './dto';
 import { LoginResponseMapper } from './mapper/login-response.mapper';
 
@@ -94,5 +95,17 @@ export class LoginController {
 		const oAuthLoginResponse = LoginResponseMapper.mapToOauthLoginResponse(jwtToken, user.externalIdToken);
 
 		return oAuthLoginResponse;
+	}
+
+	@JwtAuthentication()
+	@HttpCode(HttpStatus.OK)
+	@Post('refresh-session')
+	@ApiOperation({ summary: 'Extends the lifetime of the current session.' })
+	@ApiResponse({ status: 200, description: 'Session was successfully extended.' })
+	@ApiResponse({ status: 401, description: 'Unauthorized.' })
+	public async extendSession(@JWT() accessToken: string): Promise<SessionInfoResponse> {
+		const sessionInfoResponse = await this.loginUc.extendSession(accessToken);
+
+		return sessionInfoResponse;
 	}
 }

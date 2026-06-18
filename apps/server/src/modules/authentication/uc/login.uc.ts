@@ -2,6 +2,7 @@ import { AuditLogger } from '@core/logger';
 import { ICurrentUser, JwtPayloadBuilder } from '@infra/auth-guard';
 import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { AUTHENTICATION_CONFIG_TOKEN, AuthenticationConfig } from '../authentication-config';
+import { SessionInfoResponse } from '../controllers/dto';
 import { AuthenticationService } from '../services';
 
 @Injectable()
@@ -33,6 +34,14 @@ export class LoginUc {
 		this.auditLogger.logServiceAccountAction(currentUser.userId, 'ServiceAccountAuthenticated');
 
 		return accessToken;
+	}
+
+	public async extendSession(accessToken: string): Promise<SessionInfoResponse> {
+		const result = await this.authService.getJwtTtlFromWhitelist(accessToken);
+
+		const sessionInfoResponse = new SessionInfoResponse(result);
+
+		return sessionInfoResponse;
 	}
 
 	private checkIfServiceAccount(currentUser: ICurrentUser): void {

@@ -89,8 +89,10 @@ export class AuthenticationService {
 		await this.jwtWhitelistAdapter.removeFromWhitelist(account.id);
 	}
 
-	public async getTtlFromWhitelist(accountId: string, jti: string): Promise<number> {
-		return await this.jwtWhitelistAdapter.getTtl(accountId, jti);
+	public async getJwtTtlFromWhitelist(jwtToken: string): Promise<number> {
+		const decodedJwt = JwtPayloadVo.fromJwtToken(jwtToken);
+
+		return await this.jwtWhitelistAdapter.getTtl(decodedJwt.accountId, decodedJwt.jti);
 	}
 
 	public checkBrutForce(account: Account): void {
