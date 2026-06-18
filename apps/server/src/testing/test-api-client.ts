@@ -134,10 +134,7 @@ export class TestApiClient {
 	 * @param options - Optional configuration for retry behavior
 	 * @returns A new TestApiClient instance authenticated with the account's JWT
 	 */
-	public async login(
-		account: AccountEntity,
-		options: { retries?: number; retryDelay?: number; isServiceAccount?: boolean } = {}
-	): Promise<this> {
+	public async login(account: AccountEntity, options: { retries?: number; retryDelay?: number } = {}): Promise<this> {
 		const result = await this.loginInternal(account, options);
 
 		return result;
@@ -154,7 +151,7 @@ export class TestApiClient {
 	 */
 	public async loginAsServiceAccount(
 		account: AccountEntity,
-		options: { retries?: number; retryDelay?: number; isServiceAccount?: boolean } = {}
+		options: { retries?: number; retryDelay?: number } = {}
 	): Promise<this> {
 		const result = await this.loginInternal(account, { ...options, isServiceAccount: true });
 
