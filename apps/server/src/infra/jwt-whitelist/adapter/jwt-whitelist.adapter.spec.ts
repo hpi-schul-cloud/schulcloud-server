@@ -139,23 +139,5 @@ describe(JwtWhitelistAdapter.name, () => {
 				await expect(adapter.isWhitelisted(accountId, jti)).rejects.toThrow(UnauthorizedException);
 			});
 		});
-
-		describe('when the storage client is an InMemoryClient', () => {
-			const setup = () => {
-				const storageClient = new (class InMemoryClient {})() as StorageClient;
-				const config = { jwtTimeoutSeconds: 7200 };
-				const adapter = new JwtWhitelistAdapter(storageClient, config);
-				const accountId = new ObjectId().toHexString();
-				const jti = new ObjectId().toHexString();
-
-				return { accountId, jti, adapter };
-			};
-
-			it('should skip the whitelist check and return without throwing', async () => {
-				const { accountId, jti, adapter } = setup();
-
-				await expect(adapter.isWhitelisted(accountId, jti)).resolves.toBeUndefined();
-			});
-		});
 	});
 });

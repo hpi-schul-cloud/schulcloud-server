@@ -7,7 +7,7 @@ import { Test } from '@nestjs/testing';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { TEST_JWT_CONFIG_TOKEN, TestJwtModuleConfig } from '@testing/test-jwt-module.config';
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 import { FwuLearningContentsTestModule } from '../../fwu-learning-contents-test.module';
 import { FWU_S3_CLIENT_INJECTION_TOKEN } from '../../fwu.const';
 import { FwuItem } from '../../interface/fwu-item';
@@ -61,7 +61,7 @@ describe('FwuLearningContents Controller (api)', () => {
 		});
 
 		describe('when the file has a file-extension', () => {
-			const setup = () => {
+			const setup = async () => {
 				const path = '12345/example.txt';
 				const text = 'testText';
 				const readable = Readable.from(text);
@@ -77,13 +77,13 @@ describe('FwuLearningContents Controller (api)', () => {
 				s3ClientAdapter.get.mockResolvedValueOnce(fileResponse);
 
 				const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent();
-				const loggedInClient = testApiClient.loginByUser(studentAccount, studentUser, jwtConfig);
+				const loggedInClient = await testApiClient.loginByUser(studentAccount, studentUser, jwtConfig);
 
 				return { path, fileResponse, text, loggedInClient };
 			};
 
 			it('should return 200 status', async () => {
-				const { path, loggedInClient } = setup();
+				const { path, loggedInClient } = await setup();
 
 				const response = await loggedInClient.get(path);
 
@@ -91,7 +91,7 @@ describe('FwuLearningContents Controller (api)', () => {
 			});
 
 			it('should return 206 status (bytesRange)', async () => {
-				const { path, loggedInClient } = setup();
+				const { path, loggedInClient } = await setup();
 
 				const response = await loggedInClient.get(path).set('Range', '12345');
 
@@ -99,7 +99,7 @@ describe('FwuLearningContents Controller (api)', () => {
 			});
 
 			it('should return file content', async () => {
-				const { path, text, loggedInClient } = setup();
+				const { path, text, loggedInClient } = await setup();
 
 				const response = await loggedInClient.get(path);
 
@@ -107,7 +107,7 @@ describe('FwuLearningContents Controller (api)', () => {
 			});
 
 			it('should have the correct content-type', async () => {
-				const { path, fileResponse, loggedInClient } = setup();
+				const { path, fileResponse, loggedInClient } = await setup();
 
 				const response = await loggedInClient.get(path);
 
@@ -116,18 +116,18 @@ describe('FwuLearningContents Controller (api)', () => {
 		});
 
 		describe('when the file does not exist', () => {
-			const setup = () => {
+			const setup = async () => {
 				const error = new NotFoundException('NoSuchKey');
 				s3ClientAdapter.get.mockRejectedValueOnce(error);
 
 				const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent();
-				const loggedInClient = testApiClient.loginByUser(studentAccount, studentUser, jwtConfig);
+				const loggedInClient = await testApiClient.loginByUser(studentAccount, studentUser, jwtConfig);
 
 				return { loggedInClient };
 			};
 
 			it('should return 404 error', async () => {
-				const { loggedInClient } = setup();
+				const { loggedInClient } = await setup();
 
 				const response = await loggedInClient.get('1234/NotAValidKey.html');
 
@@ -136,19 +136,19 @@ describe('FwuLearningContents Controller (api)', () => {
 		});
 
 		describe('when the feature is disabled', () => {
-			const setup = () => {
+			const setup = async () => {
 				const error = new NotFoundException('NoSuchKey');
 				s3ClientAdapter.get.mockRejectedValueOnce(error);
 
 				const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent();
-				const loggedInClient = testApiClient.loginByUser(studentAccount, studentUser, jwtConfig);
+				const loggedInClient = await testApiClient.loginByUser(studentAccount, studentUser, jwtConfig);
 				fwuConfig.fwuContentEnabled = false;
 
 				return { loggedInClient };
 			};
 
 			it('should return InternalServerErrorException', async () => {
-				const { loggedInClient } = setup();
+				const { loggedInClient } = await setup();
 
 				const response = await loggedInClient.get('12345/example.txt');
 
@@ -167,16 +167,16 @@ describe('FwuLearningContents Controller (api)', () => {
 		});
 
 		describe('when feature is not enabled', () => {
-			const setup = () => {
+			const setup = async () => {
 				const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent();
-				const loggedInClient = testApiClient.loginByUser(studentAccount, studentUser, jwtConfig);
+				const loggedInClient = await testApiClient.loginByUser(studentAccount, studentUser, jwtConfig);
 				fwuConfig.fwuContentEnabled = false;
 
 				return { loggedInClient };
 			};
 
 			it('should return 500 status', async () => {
-				const { loggedInClient } = setup();
+				const { loggedInClient } = await setup();
 				const response = await loggedInClient.get();
 
 				expect(response.status).toEqual(500);
@@ -193,9 +193,9 @@ describe('FwuLearningContents Controller (api)', () => {
 					s3ClientAdapter.get.mockResolvedValue(response);
 				};
 
-				const setup = () => {
+				const setup = async () => {
 					const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent();
-					const loggedInClient = testApiClient.loginByUser(studentAccount, studentUser, jwtConfig);
+					const loggedInClient = await testApiClient.loginByUser(studentAccount, studentUser, jwtConfig);
 					fwuConfig.fwuContentEnabled = true;
 
 					const htmlContent = `<html>
@@ -219,7 +219,7 @@ describe('FwuLearningContents Controller (api)', () => {
 				};
 
 				it('should return 200 status', async () => {
-					const { loggedInClient } = setup();
+					const { loggedInClient } = await setup();
 
 					const response = await loggedInClient.get();
 
@@ -227,7 +227,7 @@ describe('FwuLearningContents Controller (api)', () => {
 				});
 
 				it('should return a list with fwu', async () => {
-					const { loggedInClient, expected } = setup();
+					const { loggedInClient, expected } = await setup();
 
 					const response = await loggedInClient.get();
 					const responseBody = response.body as FwuListResponse;
@@ -235,9 +235,9 @@ describe('FwuLearningContents Controller (api)', () => {
 				});
 
 				describe('thumbnailUrl parsing', () => {
-					const setupWithPlayerTag = (playerHtmlContent: string) => {
+					const setupWithPlayerTag = async (playerHtmlContent: string) => {
 						const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent();
-						const loggedInClient = testApiClient.loginByUser(studentAccount, studentUser, jwtConfig);
+						const loggedInClient = await testApiClient.loginByUser(studentAccount, studentUser, jwtConfig);
 
 						const htmlContent = `<html>
 						<body>
@@ -254,7 +254,7 @@ describe('FwuLearningContents Controller (api)', () => {
 
 					describe('when player tag is missing', () => {
 						it('should return undefined thumbnailUrl', async () => {
-							const { loggedInClient } = setupWithPlayerTag('');
+							const { loggedInClient } = await setupWithPlayerTag('');
 
 							const response = await loggedInClient.get();
 							const responseBody = response.body as FwuListResponse;
@@ -264,7 +264,7 @@ describe('FwuLearningContents Controller (api)', () => {
 
 					describe('when style attribute is missing', () => {
 						it('should return undefined thumbnailUrl', async () => {
-							const { loggedInClient } = setupWithPlayerTag('<div class="player_outer"></div>');
+							const { loggedInClient } = await	 setupWithPlayerTag('<div class="player_outer"></div>');
 
 							const response = await loggedInClient.get();
 							const responseBody = response.body as FwuListResponse;
@@ -274,7 +274,7 @@ describe('FwuLearningContents Controller (api)', () => {
 
 					describe('when style attribute has no url()', () => {
 						it('should return undefined thumbnailUrl', async () => {
-							const { loggedInClient } = setupWithPlayerTag(
+							const { loggedInClient } = await setupWithPlayerTag(
 								'<div class="player_outer" style="background-color: red;"></div>'
 							);
 
@@ -286,7 +286,7 @@ describe('FwuLearningContents Controller (api)', () => {
 
 					describe('when style attribute has url()', () => {
 						it('should return correct thumbnailUrl', async () => {
-							const { loggedInClient } = setupWithPlayerTag(
+							const { loggedInClient } = await setupWithPlayerTag(
 								'<div class="player_outer" style="background-image: url(\'thumb.png\');"></div>'
 							);
 
@@ -298,7 +298,7 @@ describe('FwuLearningContents Controller (api)', () => {
 
 					describe('when url() has no quotes', () => {
 						it('should return correct thumbnailUrl', async () => {
-							const { loggedInClient } = setupWithPlayerTag(
+							const { loggedInClient } = await setupWithPlayerTag(
 								'<div class="player_outer" style="background-image: url(thumb.png);"></div>'
 							);
 
@@ -310,7 +310,7 @@ describe('FwuLearningContents Controller (api)', () => {
 
 					describe('when url() has double quotes', () => {
 						it('should return correct thumbnailUrl', async () => {
-							const { loggedInClient } = setupWithPlayerTag(
+							const { loggedInClient } = await setupWithPlayerTag(
 								`<div class="player_outer" style='background-image: url("thumb.png");'></div>`
 							);
 

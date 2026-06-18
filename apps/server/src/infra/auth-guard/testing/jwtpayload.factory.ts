@@ -18,7 +18,7 @@ export const jwtPayloadFactory = JwtPayloadFactory.define(JwtPayloadVo, ({ seque
 		accountId: new ObjectId().toHexString(),
 		userId: new ObjectId().toHexString(),
 		schoolId: new ObjectId().toHexString(),
-		roles: ['dummyRoleId'],
+		roles: [new ObjectId().toHexString()],
 		systemId: new ObjectId().toHexString(),
 		isServiceAccount: false,
 		support: false,

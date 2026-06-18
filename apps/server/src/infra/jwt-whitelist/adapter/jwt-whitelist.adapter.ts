@@ -32,8 +32,6 @@ export class JwtWhitelistAdapter {
 	}
 
 	public async isWhitelisted(accountId: EntityId, jti: string): Promise<void> {
-		if (this.storageClient.constructor.name === 'InMemoryClient') return;
-
 		const redisIdentifier = JwtWhitelistIdentifier.forJti(accountId, jti);
 		const redisData = createJwtRedisData(this.config.jwtTimeoutSeconds);
 		const value = await this.storageClient.get(redisIdentifier.value);
@@ -65,9 +63,7 @@ export class JwtWhitelistAdapter {
 	}
 
 	private async deleteKeys(keys: string[]): Promise<void> {
-		const deleteKeysPromise = keys.map(async (key: string) => {
-			await this.storageClient.del(key);
-		});
+		const deleteKeysPromise = keys.map((key: string) => this.storageClient.del(key));
 
 		await Promise.all(deleteKeysPromise);
 	}
