@@ -76,26 +76,16 @@ export class ErwinProvisioningStrategy extends ProvisioningStrategy {
 	private async parseAndValidateToken(input: OauthDataStrategyInputDto): Promise<ErwinJwtPayload> {
 		const decodedAccessToken: JwtPayload | null = jwt.decode(input.accessToken, { json: true });
 
-		console.log(util.inspect(decodedAccessToken));
-
 		if (!decodedAccessToken) {
 			throw new IdTokenExtractionFailureLoggableException('sub');
 		}
 
 		const payload = plainToInstance(ErwinJwtPayload, decodedAccessToken);
-		// const payload = new ErwinJwtPayload(decodedAccessToken);
-
 		if (payload.person.email === '') {
 			payload.person.email = `${payload.person.erwinId}@erwin.portal`;
 		}
 
-		console.log('payload', util.inspect(payload));
-		let errors = await validate(payload);
-
-		errors = errors.flatMap((err) => [err, ...(err.children ? err.children : [])]);
-
-		console.log('validation errors', util.inspect(errors));
-
+		const errors = await validate(payload);
 		if (errors.length > 0) {
 			throw new IdTokenExtractionFailureLoggableException(
 				errors.map((error) => error.property),
