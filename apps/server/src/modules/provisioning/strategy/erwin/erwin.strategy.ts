@@ -80,9 +80,7 @@ export class ErwinProvisioningStrategy extends ProvisioningStrategy {
 		}
 
 		const payload = plainToInstance(ErwinJwtPayload, decodedAccessToken);
-		if (payload.person.email === '') {
-			payload.person.email = `${payload.person.erwinId}@erwin.portal`;
-		}
+		payload.person.email = payload.person.email || `${payload.person.erwinId}@erwin.portal`;
 
 		const errors = await validate(payload);
 		if (errors.length > 0) {
@@ -105,6 +103,7 @@ export class ErwinProvisioningStrategy extends ProvisioningStrategy {
 			erwinId: payload.sub,
 			firstName: payload.person.firstName,
 			lastName: payload.person.lastName,
+			email: payload.person.email,
 			roles: [this.mapPayloadRoleToRoleName(payload.person.role)],
 		});
 

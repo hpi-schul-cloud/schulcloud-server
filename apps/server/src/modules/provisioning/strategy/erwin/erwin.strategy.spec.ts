@@ -104,6 +104,7 @@ describe('ErwinProvisioningStrategy', () => {
 				});
 
 				const expectedUser = new ExternalUserDto({
+					email: 'test@example.com',
 					externalId: 'personExternalId',
 					erwinId: '550e8400-e29b-41d4-a716-446655440000',
 					roles: [RoleName.STUDENT],
