@@ -1,5 +1,4 @@
 const { expect } = require('chai');
-const commons = require('@hpi-schul-cloud/commons');
 const appPromise = require('../src/app');
 const testHelper = require('./services/helpers/testObjects');
 const { handleAutoLogout } = require('../src/app.hooks');
@@ -7,10 +6,7 @@ const { handleAutoLogout } = require('../src/app.hooks');
 const { setupNestServices, closeNestServices } = require('./utils/setup.nest.services');
 const { extractJwtData } = require('../src/utils/extractJwtData');
 
-const { Configuration } = commons; // separated from require, mocked in tests
-
 describe('handleAutoLogout hook', () => {
-	let configBefore;
 	let app;
 	let server;
 	let nestServices;
@@ -24,13 +20,10 @@ describe('handleAutoLogout hook', () => {
 		nestServices = await setupNestServices(app);
 		await testObjects.cleanup();
 		jwtWhitelistAdapter = app.service('nest-jwt-whitelist-adapter');
-
-		configBefore = Configuration.toObject({ plainSecrets: true }); // deep copy current config
 	});
 
 	after(async () => {
 		await testObjects.cleanup();
-		Configuration.reset(configBefore);
 		await server.close();
 		await closeNestServices(nestServices);
 	});
