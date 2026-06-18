@@ -21,7 +21,7 @@
 		"npm": "11"
 	},
 	"scripts": {
-		"lint": "cross-env ESLINT_USE_FLAT_CONFIG=false eslint .",
+		"lint": "eslint .",
 		"test": "npm run nest:test && npm run feathers:test",
 		"feathers:test": "cross-env NODE_ENV=test npm run setup:db:seed && npm run nest:build && npm run coverage",
 		"feathers:test-inspect": "cross-env NODE_ENV=test npm run setup:db:seed && npm run mocha-inspect",
@@ -114,9 +114,9 @@
 		"nest:test:watch": "jest --watch",
 		"nest:test:cov": "jest \"^((?!\\.load\\.spec\\.ts).)*\\.spec\\.ts$\" --coverage --force-exit --maxWorkers='50%'",
 		"nest:test:debug": "jest --runInBand",
-		"nest:lint": "cross-env eslint apps",
-		"nest:lint:config": "cross-env eslint --print-config apps/server/src/apps/server.app.ts > eslint-config-dump.json",
-		"nest:lint:file": "cross-env eslint",
+		"nest:lint": "eslint apps",
+		"nest:lint:config": "eslint --print-config apps/server/src/apps/server.app.ts > eslint-config-dump.json",
+		"nest:lint:file": "eslint",
 		"ensureIndexes": "npm run nest:start:console -- database sync-indexes",
 		"ensureIndexes:prod": "npm run nest:start:console:prod -- database sync-indexes",
 		"schoolExport": "node ./scripts/schoolExport.js",
