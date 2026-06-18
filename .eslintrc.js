@@ -2,6 +2,7 @@ const airbnbRules = require('./.eslint-rules-airbnb.js');
 
 module.exports = {
 	extends: ['prettier', 'plugin:promise/recommended'],
+	ignorePatterns: ['src/', 'config/', 'scripts/', 'test/'],
 	rules: {
 		'prettier/prettier': ['error'],
 		'no-process-env': 'error',
