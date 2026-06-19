@@ -42,6 +42,5 @@ export class ErwinPersonPayload {
 	@IsDateString()
 	@IsNotEmpty()
 	@IsOptional()
-	@Expose({ name: 'geburtsdatum' })
-	public geburtstag?: string;
+	public geburtsdatum?: string;
 }
