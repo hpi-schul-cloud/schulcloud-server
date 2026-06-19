@@ -103,14 +103,15 @@ export class CommonCartridgeExportService {
 					break;
 				}
 				case BoardElementResponseType.TASK: {
-					if (exportedTaskIds.has(task.id)) {
+					if (exportedTaskIds.has(task.id)) {
+
 					if (exportedTasks.includes(task.id)) {
 						await this.addTask(jwt, builder, version, task);
 					}
 					break;
 				}
 				case BoardElementResponseType.COLUMN_BOARD: {
-					const columnBoard = element.content as BoardColumnBoardResponse;
+					if (exportedColumnBoardIds.has(columnBoard.id)) {
 					if (exportedColumnBoards.includes(columnBoard.id)) {
 						await this.addColumnBoard(jwt, builder, version, columnBoard);
 					}
