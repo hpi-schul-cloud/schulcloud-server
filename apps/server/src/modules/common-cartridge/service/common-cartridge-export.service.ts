@@ -84,11 +84,15 @@ export class CommonCartridgeExportService {
 		this.logger.debug(new CommonCartridgeMessageLoggable('Loaded roomboard of course', { courseId }));
 
 		// add elements in dashboard order
-		const exportedTopicIds = new Set(exportedTopics);
-		const exportedTaskIds = new Set(exportedTasks);
-		const exportedColumnBoardIds = new Set(exportedColumnBoards);
-
-		for (const element of roomBoard.elements) {
+		const exportedTopicIds = new Set(exportedTopics);
+
+		const exportedTaskIds = new Set(exportedTasks);
+
+		const exportedColumnBoardIds = new Set(exportedColumnBoards);
+
+
+
+					if (exportedTopicIds.has(lesson.id)) {
 			switch (element.type) {
 				case BoardElementResponseType.LESSON: {
 					const lesson = element.content as BoardLessonResponse;
