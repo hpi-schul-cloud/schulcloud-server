@@ -85,34 +85,28 @@ export class CommonCartridgeExportService {
 
 		// add elements in dashboard order
 		const exportedTopicIds = new Set(exportedTopics);
-
 		const exportedTaskIds = new Set(exportedTasks);
-
 		const exportedColumnBoardIds = new Set(exportedColumnBoards);
 
-
-
-					if (exportedTopicIds.has(lesson.id)) {
-
+		for (const element of roomBoard.elements) {
 			switch (element.type) {
 				case BoardElementResponseType.LESSON: {
 					const lesson = element.content as BoardLessonResponse;
-					if (exportedTopics.includes(lesson.id)) {
+					if (exportedTopicIds.has(lesson.id)) {
 						await this.addLesson(jwt, builder, version, lesson.id);
 					}
 					break;
 				}
 				case BoardElementResponseType.TASK: {
+					const task = element.content as BoardTaskResponse;
 					if (exportedTaskIds.has(task.id)) {
-
-					if (exportedTasks.includes(task.id)) {
 						await this.addTask(jwt, builder, version, task);
 					}
 					break;
 				}
 				case BoardElementResponseType.COLUMN_BOARD: {
-					if (exportedColumnBoardIds.has(columnBoard.id)) {
-					if (exportedColumnBoards.includes(columnBoard.id)) {
+					const columnBoard = element.content as BoardColumnBoardResponse;
+					if (exportedColumnBoardIds.has(columnBoard.id)) {
 						await this.addColumnBoard(jwt, builder, version, columnBoard);
 					}
 					break;
