@@ -1,5 +1,5 @@
 import { Migration } from '@mikro-orm/migrations-mongodb';
-import { ObjectId } from '@mikro-orm/mongodb';
+import type { ObjectId } from '@mikro-orm/mongodb';
 
 type orphans = {
 	_id: ObjectId;
@@ -42,7 +42,7 @@ export class Migration20260617114638 extends Migration {
 			])
 			.toArray();
 
-		console.log(`Found ${records.length} records with orphaned user references`);
+		console.log(`Found ${records.length} orphaned user references`);
 
 		if (records.length === 0) {
 			console.log(`No action required.`);
