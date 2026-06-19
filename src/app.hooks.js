@@ -13,18 +13,8 @@ const { extractJwtData } = require('./utils/extractJwtData');
  */
 const AUTO_LOGOUT_BLACKLIST = [/^authentication$/, /roster\//];
 
-/**
- * check for token to be a truthy value
- * @param {string} token
- * @returns
- */
 const isTokenAvailable = (token) => !!token;
 
-/**
- * a path string or false when expect false
- * @param {string|boolean} path
- * @returns
- */
 const isRouteWhitelisted = (path) =>
 	typeof path === 'string' && AUTO_LOGOUT_BLACKLIST.some((entry) => path.match(entry));
 

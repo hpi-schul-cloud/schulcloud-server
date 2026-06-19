@@ -5,7 +5,7 @@ const { addJwtToWhitelist, removeJwtFromWhitelist } = require('../../../../src/s
 const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 const { extractJwtData } = require('../../../../src/utils/extractJwtData');
 
-describe.only('authentication hooks', () => {
+describe('authentication hooks', () => {
 	let app;
 	let server;
 	let nestServices;
@@ -37,8 +37,8 @@ describe.only('authentication hooks', () => {
 
 		const { accountId, jti } = extractJwtData(params.authentication.accessToken);
 
-		const redisResult = await jwtWhitelistAdapter.isWhitelisted(accountId, jti);
-		expect(redisResult).to.equal(undefined);
+		const result = await jwtWhitelistAdapter.isWhitelisted(accountId, jti);
+		expect(result).to.equal(undefined);
 
 		const redisTtl = await jwtWhitelistAdapter.getTtl(accountId, jti);
 		expect(redisTtl).to.be.greaterThan(1);
@@ -59,7 +59,7 @@ describe.only('authentication hooks', () => {
 		});
 		expect(result).to.not.equal(undefined);
 
-		const redisTtl = await jwtWhitelistAdapter.getTtl(accountId, jti);
-		expect(redisTtl).to.be.equals(-1);
+		const jwtTtl = await jwtWhitelistAdapter.getTtl(accountId, jti);
+		expect(jwtTtl).to.be.equals(-1);
 	});
 });

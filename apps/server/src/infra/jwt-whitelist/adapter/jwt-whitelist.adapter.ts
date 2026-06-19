@@ -23,7 +23,7 @@ export class JwtWhitelistAdapter {
 		let keys: string[] = [];
 
 		if (jti) {
-			keys = this.getKeyByJti(accountId, jti);
+			keys = [this.getKeyByJti(accountId, jti)];
 		} else {
 			keys = await this.getKeysByAccount(accountId);
 		}
@@ -48,11 +48,11 @@ export class JwtWhitelistAdapter {
 		return ttl;
 	}
 
-	private getKeyByJti(accountId: EntityId, jti: string): string[] {
+	private getKeyByJti(accountId: EntityId, jti: string): string {
 		const redisIdentifier = JwtWhitelistIdentifier.forJti(accountId, jti);
-		const keys = [redisIdentifier.value];
+		const key = redisIdentifier.value;
 
-		return keys;
+		return key;
 	}
 
 	private async getKeysByAccount(accountId: EntityId): Promise<string[]> {

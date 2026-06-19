@@ -8,7 +8,7 @@ describe(InMemoryClient.name, () => {
 
 	beforeEach(() => {
 		logger = createMock<Logger>();
-		client = new InMemoryClient(logger);
+		client = InMemoryClient.getInstance(logger);
 	});
 
 	describe('SET', () => {
@@ -22,7 +22,7 @@ describe(InMemoryClient.name, () => {
 		it('should set a value and log it', async () => {
 			const { key, value, args } = setup();
 
-			await client.set(key, value, args);
+			await client.set(key, value, ...args);
 
 			expect(logger.warning).toHaveBeenCalledWith(expect.anything());
 		});
