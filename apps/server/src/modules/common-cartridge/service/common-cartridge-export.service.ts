@@ -92,7 +92,8 @@ export class CommonCartridgeExportService {
 
 
 
-					if (exportedTopicIds.has(lesson.id)) {
+					if (exportedTopicIds.has(lesson.id)) {
+
 			switch (element.type) {
 				case BoardElementResponseType.LESSON: {
 					const lesson = element.content as BoardLessonResponse;
@@ -102,7 +103,7 @@ export class CommonCartridgeExportService {
 					break;
 				}
 				case BoardElementResponseType.TASK: {
-					const task = element.content as BoardTaskResponse;
+					if (exportedTaskIds.has(task.id)) {
 					if (exportedTasks.includes(task.id)) {
 						await this.addTask(jwt, builder, version, task);
 					}
