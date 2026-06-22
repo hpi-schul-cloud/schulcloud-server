@@ -14,7 +14,7 @@ export class LoginUc {
 	) {}
 
 	public async getLoginData(currentUser: ICurrentUser): Promise<string> {
-		// With the introduction of the service account switch in shd, this method should no longer be used for service accounts. It should throw an exception for service accounts.
+		this.checkIfNotServiceAccount(currentUser);
 		const jwtPayload = new JwtPayloadBuilder(currentUser).build();
 		const accessToken = await this.authService.generateJwtAndAddToWhitelist(jwtPayload, this.config.expiresIn);
 		await this.authService.updateLastLogin(currentUser.accountId);
@@ -46,6 +46,12 @@ export class LoginUc {
 
 	private checkIfServiceAccount(currentUser: ICurrentUser): void {
 		if (!currentUser.isServiceAccount) {
+			throw new UnauthorizedException();
+		}
+	}
+
+	private checkIfNotServiceAccount(currentUser: ICurrentUser): void {
+		if (currentUser.isServiceAccount) {
 			throw new UnauthorizedException();
 		}
 	}
