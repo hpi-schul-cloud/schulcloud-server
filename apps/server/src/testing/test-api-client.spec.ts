@@ -47,12 +47,22 @@ class TestController {
 	public jwt() {
 		return Promise.resolve({ accessToken: '123' });
 	}
+
+	@Post('/authentication/local-service-account')
+	public jwtServiceAccount() {
+		return Promise.resolve({ accessToken: 'service-account-token-456' });
+	}
 }
 
 @Controller('')
 class TestErrorController {
 	@Post('/authentication/local')
 	public jwt() {
+		return Promise.reject(new UnauthorizedException());
+	}
+
+	@Post('/authentication/local-service-account')
+	public jwtServiceAccount() {
 		return Promise.reject(new UnauthorizedException());
 	}
 }
@@ -105,6 +115,12 @@ describe(TestApiClient.name, () => {
 
 			await expect(() => testApiClient.login(account)).rejects.toThrow();
 		});
+
+		it('should throw an error for service account login', async () => {
+			const { testApiClient, account } = setup();
+
+			await expect(() => testApiClient.loginAsServiceAccount(account)).rejects.toThrowError();
+		});
 	});
 
 	describe('when test request instance exists - jwt auth', () => {
@@ -147,6 +163,33 @@ describe(TestApiClient.name, () => {
 				const loggedInClient = await testApiClient.login(account);
 
 				expect(loggedInClient).not.toStrictEqual(testApiClient);
+			});
+		});
+
+		describe('loginAsServiceAccount', () => {
+			it('should store formatted jwt from service account endpoint', async () => {
+				const { testApiClient, account } = setup();
+
+				const loggedInClient = await testApiClient.loginAsServiceAccount(account);
+
+				expect(loggedInClient['authHeader']).toEqual('Bearer service-account-token-456');
+			});
+
+			it('should fork the client', async () => {
+				const { testApiClient, account } = setup();
+
+				const loggedInClient = await testApiClient.loginAsServiceAccount(account);
+
+				expect(loggedInClient).not.toStrictEqual(testApiClient);
+			});
+
+			it('should use service account login path', async () => {
+				const { testApiClient, account, id } = setup();
+
+				const loggedInClient = await testApiClient.loginAsServiceAccount(account);
+				const result = await loggedInClient.get(id);
+
+				expect(result.body).toEqual(expect.objectContaining({ authorization: 'Bearer service-account-token-456' }));
 			});
 		});
 

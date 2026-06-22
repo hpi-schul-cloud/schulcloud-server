@@ -1444,7 +1444,7 @@ describe('UserLoginMigrationController (API)', () => {
 						.flush();
 					em.clear();
 
-					const loggedInClient = await testApiClient.login(superheroAccount);
+					const loggedInClient = await testApiClient.loginAsServiceAccount(superheroAccount);
 
 					const requestBody: ForceMigrationParams = new ForceMigrationParams();
 					requestBody.email = email;
@@ -1550,7 +1550,7 @@ describe('UserLoginMigrationController (API)', () => {
 						.flush();
 					em.clear();
 
-					const loggedInClient = await testApiClient.login(superheroAccount);
+					const loggedInClient = await testApiClient.loginAsServiceAccount(superheroAccount);
 
 					const requestBody: ForceMigrationParams = new ForceMigrationParams();
 					requestBody.email = email;
@@ -1650,7 +1650,7 @@ describe('UserLoginMigrationController (API)', () => {
 							.flush();
 						em.clear();
 
-						const loggedInClient = await testApiClient.login(superheroAccount);
+						const loggedInClient = await testApiClient.loginAsServiceAccount(superheroAccount);
 
 						const requestBody: ForceMigrationParams = new ForceMigrationParams();
 						requestBody.email = email;
@@ -1729,7 +1729,7 @@ describe('UserLoginMigrationController (API)', () => {
 							.flush();
 						em.clear();
 
-						const loggedInClient = await testApiClient.login(superheroAccount);
+						const loggedInClient = await testApiClient.loginAsServiceAccount(superheroAccount);
 
 						const requestBody: ForceMigrationParams = new ForceMigrationParams();
 						requestBody.email = email;
@@ -1803,7 +1803,7 @@ describe('UserLoginMigrationController (API)', () => {
 						.flush();
 					em.clear();
 
-					const loggedInClient = await testApiClient.login(superheroAccount);
+					const loggedInClient = await testApiClient.loginAsServiceAccount(superheroAccount);
 
 					const requestBody: ForceMigrationParams = new ForceMigrationParams();
 					requestBody.email = email;
@@ -1893,7 +1893,7 @@ describe('UserLoginMigrationController (API)', () => {
 						.flush();
 					em.clear();
 
-					const loggedInClient = await testApiClient.login(superheroAccount);
+					const loggedInClient = await testApiClient.loginAsServiceAccount(superheroAccount);
 
 					const requestBody: ForceMigrationParams = new ForceMigrationParams();
 					requestBody.email = email;

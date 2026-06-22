@@ -71,7 +71,7 @@ describe('MediumMetadataController (API)', () => {
 
 				axiosMock.onPost(/(.*)\/query/).replyOnce(HttpStatus.OK, responses);
 
-				const loggedInClient: TestApiClient = await testApiClient.login(superheroAccount);
+				const loggedInClient: TestApiClient = await testApiClient.loginAsServiceAccount(superheroAccount);
 
 				return { loggedInClient, mediaSourceEntity, biloMediaMetaData: responses[0] };
 			};
@@ -103,7 +103,7 @@ describe('MediumMetadataController (API)', () => {
 				await em.persist([superheroAccount, superheroUser, mediaSourceEntity]).flush();
 				em.clear();
 
-				const loggedInClient: TestApiClient = await testApiClient.login(superheroAccount);
+				const loggedInClient: TestApiClient = await testApiClient.loginAsServiceAccount(superheroAccount);
 
 				return { loggedInClient, mediaSourceEntity };
 			};
@@ -132,7 +132,7 @@ describe('MediumMetadataController (API)', () => {
 
 				axiosMock.onGet(/^.*by-region\/.*$/).replyOnce(HttpStatus.OK, responses);
 
-				const loggedInClient: TestApiClient = await testApiClient.login(superheroAccount);
+				const loggedInClient: TestApiClient = await testApiClient.loginAsServiceAccount(superheroAccount);
 
 				return { loggedInClient, mediaSourceEntity, vidisMediaMetaData: responses[0] };
 			};
@@ -164,7 +164,7 @@ describe('MediumMetadataController (API)', () => {
 
 				axiosMock.onPost(/(.*)\/query/).replyOnce(HttpStatus.OK, responses);
 
-				const loggedInClient: TestApiClient = await testApiClient.login(superheroAccount);
+				const loggedInClient: TestApiClient = await testApiClient.loginAsServiceAccount(superheroAccount);
 
 				return { loggedInClient, mediaSourceEntity, biloMediaMetaData: responses[0] };
 			};
@@ -192,7 +192,7 @@ describe('MediumMetadataController (API)', () => {
 					access_token: 'accessToken',
 				});
 
-				const loggedInClient: TestApiClient = await testApiClient.login(superheroAccount);
+				const loggedInClient: TestApiClient = await testApiClient.loginAsServiceAccount(superheroAccount);
 
 				return { loggedInClient };
 			};
@@ -251,7 +251,7 @@ describe('MediumMetadataController (API)', () => {
 
 				axiosMock.onPost(/(.*)\/query/).replyOnce(HttpStatus.OK, responses);
 
-				const loggedInClient: TestApiClient = await testApiClient.login(superheroAccount);
+				const loggedInClient: TestApiClient = await testApiClient.loginAsServiceAccount(superheroAccount);
 
 				return { loggedInClient, mediaSourceEntity };
 			};
@@ -298,7 +298,7 @@ describe('MediumMetadataController (API)', () => {
 
 				axiosMock.onPost(/(.*)\/query/).replyOnce(HttpStatus.OK, responses);
 
-				const loggedInClient: TestApiClient = await testApiClient.login(superheroAccount);
+				const loggedInClient: TestApiClient = await testApiClient.loginAsServiceAccount(superheroAccount);
 
 				return { loggedInClient, mediaSourceEntity };
 			};
@@ -344,7 +344,7 @@ describe('MediumMetadataController (API)', () => {
 
 				axiosMock.onPost(/(.*)\/query/).replyOnce(HttpStatus.OK, responses);
 
-				const loggedInClient: TestApiClient = await testApiClient.login(superheroAccount);
+				const loggedInClient: TestApiClient = await testApiClient.loginAsServiceAccount(superheroAccount);
 
 				return { loggedInClient, mediaSourceEntity };
 			};
