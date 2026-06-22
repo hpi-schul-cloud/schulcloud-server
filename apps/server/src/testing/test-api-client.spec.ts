@@ -113,13 +113,13 @@ describe(TestApiClient.name, () => {
 		it('should throw an error', async () => {
 			const { testApiClient, account } = setup();
 
-			await expect(() => testApiClient.login(account)).rejects.toThrow();
+			await expect(testApiClient.login(account)).rejects.toThrow();
 		});
 
 		it('should throw an error for service account login', async () => {
 			const { testApiClient, account } = setup();
 
-			await expect(() => testApiClient.loginAsServiceAccount(account)).rejects.toThrowError();
+			await expect(testApiClient.loginAsServiceAccount(account)).rejects.toThrow();
 		});
 	});
 
