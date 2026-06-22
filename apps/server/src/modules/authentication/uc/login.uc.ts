@@ -36,7 +36,7 @@ export class LoginUc {
 		return accessToken;
 	}
 
-	public async extendSession(accessToken: string): Promise<SessionInfoResponse> {
+	public async getJwtTtlFromWhitelist(accessToken: string): Promise<SessionInfoResponse> {
 		const result = await this.authService.getJwtTtlFromWhitelist(accessToken);
 
 		const sessionInfoResponse = new SessionInfoResponse(result);

@@ -96,7 +96,7 @@ export class LoginController {
 
 		return oAuthLoginResponse;
 	}
-
+	// @JwtAuthentication() decorator extends the session if the token is valid and not close to expiration, otherwise it will return an unauthorized error.
 	@JwtAuthentication()
 	@HttpCode(HttpStatus.OK)
 	@Post('refresh-session')
@@ -104,7 +104,7 @@ export class LoginController {
 	@ApiResponse({ status: 200, type: SessionInfoResponse, description: 'Session was successfully extended.' })
 	@ApiResponse({ status: 401, description: 'Unauthorized.' })
 	public async extendSession(@JWT() accessToken: string): Promise<SessionInfoResponse> {
-		const sessionInfoResponse = await this.loginUc.extendSession(accessToken);
+		const sessionInfoResponse = await this.loginUc.getJwtTtlFromWhitelist(accessToken);
 
 		return sessionInfoResponse;
 	}
