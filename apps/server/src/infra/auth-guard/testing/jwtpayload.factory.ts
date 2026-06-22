@@ -3,7 +3,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseFactory } from '@testing/factory/base.factory';
 import { DeepPartial } from 'fishery';
 import { JwtPayload } from '../interface';
-import { JwtPayloadVo } from '../jwt-payload.vo';
+import { JwtPayloadVo } from '../vo/jwt-payload.vo';
 
 class JwtPayloadFactory extends BaseFactory<JwtPayloadVo, JwtPayload> {
 	public asServiceAccount(): this {
