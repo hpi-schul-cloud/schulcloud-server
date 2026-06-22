@@ -17,6 +17,7 @@ import { ErwinProvisioningService, ProvisioningEntityType } from '../../service/
 import { ProvisioningStrategy } from '../base.strategy';
 import { ErwinRole, MappedSvsRolle, PayloadRolle } from './enums/rolle.enum';
 import { ErwinJwtPayload } from './erwin.jwt.payload';
+import { plainToInstance } from 'class-transformer';
 
 @Injectable()
 export class ErwinProvisioningStrategy extends ProvisioningStrategy {
@@ -78,9 +79,10 @@ export class ErwinProvisioningStrategy extends ProvisioningStrategy {
 			throw new IdTokenExtractionFailureLoggableException('sub');
 		}
 
-		const payload = new ErwinJwtPayload(decodedAccessToken);
-		const errors = await validate(payload);
+		const payload = plainToInstance(ErwinJwtPayload, decodedAccessToken);
+		payload.person.email = payload.person.email || `${payload.person.erwinId}@erwin.portal`;
 
+		const errors = await validate(payload);
 		if (errors.length > 0) {
 			throw new IdTokenExtractionFailureLoggableException(
 				errors.map((error) => error.property),
@@ -101,6 +103,7 @@ export class ErwinProvisioningStrategy extends ProvisioningStrategy {
 			erwinId: payload.sub,
 			firstName: payload.person.firstName,
 			lastName: payload.person.lastName,
+			email: payload.person.email,
 			roles: [this.mapPayloadRoleToRoleName(payload.person.role)],
 		});
 
@@ -111,7 +114,6 @@ export class ErwinProvisioningStrategy extends ProvisioningStrategy {
 		const externalSchoolDto: ExternalSchoolDto = new ExternalSchoolDto({
 			externalId: payload.schule.externalId,
 			erwinId: payload.schule.erwinId,
-			location: payload.schule.zugehoerigZu,
 			name: payload.schule.name,
 		});
 

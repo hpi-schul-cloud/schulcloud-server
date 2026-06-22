@@ -9,7 +9,11 @@ export class FederalStateRepo extends BaseRepo<FederalStateEntity> {
 		return FederalStateEntity;
 	}
 
-	findByName(name: string): Promise<FederalStateEntity> {
+	public findByNameOrFail(name: string): Promise<FederalStateEntity> {
 		return this._em.findOneOrFail(FederalStateEntity, { name });
+	}
+
+	public findByName(name: string): Promise<FederalStateEntity | null> {
+		return this._em.findOne(FederalStateEntity, { name });
 	}
 }
