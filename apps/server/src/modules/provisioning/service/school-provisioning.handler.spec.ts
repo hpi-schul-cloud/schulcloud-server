@@ -4,6 +4,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { ErwinIdentifierService, ReferencedEntityType } from '@modules/erwin-identifier';
 import { erwinIdentifierFactoryWithSchool } from '@modules/erwin-identifier/testing';
 import { SchoolService, SchoolYearService } from '@modules/school';
+import { FederalStateService } from '@modules/school/domain';
 import { schoolFactory, schoolYearEntityFactory } from '@modules/school/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { ExternalSchoolDto, ProvisioningSystemDto } from '../dto';
@@ -34,6 +35,10 @@ describe('SchoolProvisioningHandler', () => {
 				{
 					provide: SchoolYearService,
 					useValue: createMock<SchoolYearService>(),
+				},
+				{
+					provide: FederalStateService,
+					useValue: createMock<FederalStateService>(),
 				},
 			],
 		}).compile();

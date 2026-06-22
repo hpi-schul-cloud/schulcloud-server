@@ -10,6 +10,7 @@ import {
 	SchoolYearEntityMapper,
 	SchoolYearService,
 } from '@modules/school';
+import { FederalStateService } from '@modules/school/domain';
 import { Injectable } from '@nestjs/common';
 import { ExternalSchoolDto } from '../dto';
 import { BadDataLoggableException, SchoolNameRequiredLoggableException } from '../loggable';
@@ -29,7 +30,8 @@ export class SchoolProvisioningHandler implements ProvisioningEntityHandler {
 	constructor(
 		private readonly schoolService: SchoolService,
 		private readonly erwinIdentifierService: ErwinIdentifierService,
-		private readonly schoolYearService: SchoolYearService
+		private readonly schoolYearService: SchoolYearService,
+		private readonly federalStateService: FederalStateService
 	) {}
 
 	public validate(context: ProvisioningContext): void {
@@ -77,6 +79,7 @@ export class SchoolProvisioningHandler implements ProvisioningEntityHandler {
 			},
 		};
 
+		const federalState = await this.federalStateService.findOrCreateDefaultFederalState();
 		const school = SchoolFactory.build({
 			id: new ObjectId().toHexString(),
 			externalId: externalSchool.externalId,
@@ -89,6 +92,7 @@ export class SchoolProvisioningHandler implements ProvisioningEntityHandler {
 			permissions,
 			createdAt: new Date(),
 			updatedAt: new Date(),
+			federalState,
 		});
 
 		const savedSchool = await this.schoolService.save(school);
