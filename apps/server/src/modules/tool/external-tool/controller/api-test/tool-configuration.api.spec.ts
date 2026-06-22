@@ -6,6 +6,7 @@ import { cardEntityFactory, columnBoardEntityFactory, columnEntityFactory } from
 import { courseEntityFactory } from '@modules/course/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
+import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/repo';
 import { userFactory } from '@modules/user/testing';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -30,7 +31,6 @@ import {
 	SchoolExternalToolConfigurationTemplateResponse,
 	ToolContextTypesListResponse,
 } from '../dto';
-import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/repo';
 
 describe('ToolConfigurationController (API)', () => {
 	let app: INestApplication;
@@ -970,7 +970,7 @@ describe('ToolConfigurationController (API)', () => {
 					])
 					.flush();
 
-				const loggedInClient = await testApiClient.login(superheroAccount);
+				const loggedInClient = await testApiClient.loginAsServiceAccount(superheroAccount);
 
 				return { school1, school2, school3, tool, loggedInClient };
 			};
