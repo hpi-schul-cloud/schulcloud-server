@@ -38,6 +38,17 @@ import {
 } from '../testing/common-cartridge-elements.factory';
 import { CommonCartridgeExportMapper } from './common-cartridge-export.mapper';
 import { CommonCartridgeExportService } from './common-cartridge-export.service';
+import { ObjectId } from 'bson';
+
+jest.mock('@infra/auth-guard', () => {
+	return {
+		JwtPayloadVo: {
+			fromJwtToken: () => {
+				return { schoolId: new ObjectId().toString(), accountId: new ObjectId().toString() };
+			},
+		},
+	};
+});
 
 describe('CommonCartridgeExportService', () => {
 	let module: TestingModule;

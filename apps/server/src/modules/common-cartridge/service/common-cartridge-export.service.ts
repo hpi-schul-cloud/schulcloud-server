@@ -1,5 +1,5 @@
 import { Logger } from '@core/logger';
-import { JwtPayload } from '@infra/auth-guard';
+import { JwtPayloadVo } from '@infra/auth-guard';
 import {
 	BoardColumnBoardResponse,
 	BoardElementResponseType,
@@ -27,7 +27,6 @@ import {
 } from '@infra/common-cartridge-clients';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import archiver from 'archiver';
-import jwt from 'jsonwebtoken';
 import { Stream } from 'node:stream';
 import { CommonCartridgeFileBuilder } from '../export/builders/common-cartridge-file-builder';
 import { CommonCartridgeOrganizationNode } from '../export/builders/common-cartridge-organization-node';
@@ -215,7 +214,7 @@ export class CommonCartridgeExportService {
 
 		taskOrganization.addResource(this.mapper.mapTaskToResource(task, version));
 
-		const { schoolId } = this.getJwtPayload(jwt);
+		const { schoolId } = JwtPayloadVo.fromJwtToken(jwt);
 		const fileRecords = await this.filesStorageClientAdapter.list(
 			jwt,
 			schoolId,
@@ -315,7 +314,7 @@ export class CommonCartridgeExportService {
 		const fileMetadataBufferArray: FileMetadataAndStream[] = [];
 
 		if (element.type === ContentElementType.FILE || element.type === ContentElementType.FILE_FOLDER) {
-			const { schoolId } = this.getJwtPayload(jwt);
+			const { schoolId } = JwtPayloadVo.fromJwtToken(jwt);
 			const fileRecords = await this.filesStorageClientAdapter.list(
 				jwt,
 				schoolId,
@@ -421,11 +420,5 @@ export class CommonCartridgeExportService {
 			const fileResource = this.mapper.mapFileToResource(fileDto, file);
 			fileFolderOrg.addResource(fileResource);
 		}
-	}
-
-	private getJwtPayload(jwtToken: string): JwtPayload {
-		const decodedJwt = jwt.decode(jwtToken, { json: true }) as JwtPayload;
-
-		return decodedJwt;
 	}
 }

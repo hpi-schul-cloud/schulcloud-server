@@ -7,8 +7,8 @@ import { INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { InputFormat } from '@shared/domain/types/input-format.types';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { JwtAuthenticationFactory } from '@testing/factory/jwt-authentication.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
+import { TestApiClient } from '@testing/test-api-client';
 import { TEST_JWT_CONFIG_TOKEN, TestJwtModuleConfig } from '@testing/test-jwt-module.config';
 import { Socket } from 'socket.io-client';
 import { BoardCollaborationTestModule } from '../../board-collaboration.app.module';
@@ -36,6 +36,7 @@ describe(BoardCollaborationGateway.name, () => {
 	let ioClient: Socket;
 	let unauthorizedIoClient: Socket;
 	let em: EntityManager;
+	let testApiClient: TestApiClient;
 	let jwtConfig: TestJwtModuleConfig;
 
 	beforeAll(async () => {
@@ -45,7 +46,6 @@ describe(BoardCollaborationGateway.name, () => {
 		app = testingModule.createNestApplication();
 
 		em = app.get(EntityManager);
-		jwtConfig = app.get<TestJwtModuleConfig>(TEST_JWT_CONFIG_TOKEN);
 
 		// @ts-expect-error We need access to in memory mongo url for socket io adapter, this is not available in the orm config factory
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
@@ -59,6 +59,8 @@ describe(BoardCollaborationGateway.name, () => {
 		await app.init();
 
 		await app.listen(0);
+		testApiClient = new TestApiClient(app, '/boards');
+		jwtConfig = app.get(TEST_JWT_CONFIG_TOKEN);
 	});
 
 	afterAll(async () => {
@@ -71,37 +73,16 @@ describe(BoardCollaborationGateway.name, () => {
 		await cleanupCollections(em);
 		const school = schoolEntityFactory.build();
 		const { teacherUser, teacherAccount } = UserAndAccountTestFactory.buildTeacher({ school });
-
-		const teacherAuthJwt = JwtAuthenticationFactory.createJwt(
-			{
-				accountId: teacherAccount.id,
-				userId: teacherUser.id,
-				schoolId: teacherUser.school.id,
-				roles: [teacherUser.roles[0].id],
-				isServiceAccount: false,
-				support: false,
-				isExternalUser: false,
-			},
-			jwtConfig
-		);
-
 		const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent({ school });
-
-		const studentAuthJwt = JwtAuthenticationFactory.createJwt(
-			{
-				accountId: studentAccount.id,
-				userId: studentUser.id,
-				schoolId: studentUser.school.id,
-				roles: [studentUser.roles[0].id],
-				isServiceAccount: false,
-				support: false,
-				isExternalUser: false,
-			},
-			jwtConfig
-		);
 
 		const course = courseEntityFactory.build({ school: school, teachers: [teacherUser] });
 		await em.persist([teacherUser, teacherAccount, studentUser, studentAccount, course]).flush();
+
+		const teacherLoggedInClient = await testApiClient.loginByUser(teacherAccount, teacherUser, jwtConfig);
+		const teacherAuthJwt = teacherLoggedInClient.getAuthHeader().replace('Bearer ', '');
+
+		const studentLoggedInClient = await testApiClient.loginByUser(studentAccount, studentUser, jwtConfig);
+		const studentAuthJwt = studentLoggedInClient.getAuthHeader().replace('Bearer ', '');
 
 		ioClient = await getSocketApiClient(app, teacherAuthJwt);
 		unauthorizedIoClient = await getSocketApiClient(app, studentAuthJwt);

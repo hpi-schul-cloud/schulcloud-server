@@ -1,3 +1,5 @@
+// eslint-disable-next-line @typescript-eslint/no-restricted-imports
+import { JwtWhitelistAdapter } from '@infra/jwt-whitelist';
 import type { AccountEntity } from '@modules/account/repo';
 import { defaultTestPassword } from '@modules/account/testing/account.factory';
 import { INestApplication } from '@nestjs/common';
@@ -213,12 +215,14 @@ export class TestApiClient {
 		});
 	}
 
-	public loginByUser(
+	public async loginByUser(
 		account: AccountForLogin,
 		user: UserForLogin,
 		jwtConfig: TestJwtModuleConfig,
 		options: JwtOptions = {}
-	): this {
+	): Promise<this> {
+		const jwtWhitelistAdapter = this.app.get(JwtWhitelistAdapter);
+
 		const jwt = JwtAuthenticationFactory.createJwt(
 			{
 				accountId: account.id,
@@ -232,6 +236,8 @@ export class TestApiClient {
 			},
 			jwtConfig
 		);
+
+		await jwtWhitelistAdapter.addToWhitelist(account.id, 'jti');
 
 		return new (this.constructor as new (app: INestApplication, baseRoute: string, authValue: string) => this)(
 			this.app,
