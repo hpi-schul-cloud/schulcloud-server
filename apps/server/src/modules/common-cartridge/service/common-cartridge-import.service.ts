@@ -1,6 +1,6 @@
 import { DomainErrorHandler } from '@core/error';
 import { Logger } from '@core/logger';
-import { JwtPayload } from '@infra/auth-guard';
+import { JwtPayloadVo } from '@infra/auth-guard';
 import {
 	BoardsClientAdapter,
 	CardClientAdapter,
@@ -10,11 +10,10 @@ import {
 	CoursesClientAdapter,
 	FilesStorageClientAdapter,
 } from '@infra/common-cartridge-clients';
-import { NotificationType, NotificationService } from '@modules/notification';
+import { NotificationService, NotificationType } from '@modules/notification';
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
-import jwt from 'jsonwebtoken';
 import { lastValueFrom } from 'rxjs';
 import { ImportCourseEvent } from '../domain/events/import-course.event';
 import { CommonCartridgeFileParser } from '../import/common-cartridge-file-parser';
@@ -133,7 +132,7 @@ export class CommonCartridgeImportService {
 		key: string,
 		messageArguments?: Record<string, unknown>
 	): Promise<void> {
-		const { userId } = this.getJwtPayload(jwt);
+		const { userId } = JwtPayloadVo.fromJwtToken(jwt);
 		await this.notificationService.createNotification({
 			userId,
 			key,
@@ -455,7 +454,7 @@ export class CommonCartridgeImportService {
 		resource: CommonCartridgeFileResourceProps | CommonCartridgeFileFolderResourceProps,
 		cardElement: CardControllerCreateElement201Response
 	): Promise<void> {
-		const { schoolId } = this.getJwtPayload(event.jwt);
+		const { schoolId } = JwtPayloadVo.fromJwtToken(event.jwt);
 
 		const files: File[] = [];
 		switch (resource.type) {
@@ -471,11 +470,5 @@ export class CommonCartridgeImportService {
 			this.fileClient.upload(event.jwt, schoolId, 'school', cardElement.id, 'boardnodes', file)
 		);
 		await Promise.all(uploadPromises);
-	}
-
-	private getJwtPayload(jwtToken: string): JwtPayload {
-		const decodedJwt = jwt.decode(jwtToken, { json: true }) as JwtPayload;
-
-		return decodedJwt;
 	}
 }

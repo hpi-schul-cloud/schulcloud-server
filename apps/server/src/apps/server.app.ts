@@ -19,14 +19,14 @@ import { ContextExternalToolService } from '@modules/tool/context-external-tool'
 import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import express from 'express';
-import { join } from 'path';
+import { join } from 'node:path';
 
 // register source-map-support for debugging
+import { JwtWhitelistAdapter } from '@infra/jwt-whitelist';
 import { install as sourceMapInstall } from 'source-map-support';
 import { AppStartLoggable, enableOpenApiDocs } from './helpers';
 import { createMetricsServer } from './helpers/metrics.server';
 import legacyAppPromise = require('../../../../src/app');
-import { JWT_WHITELIST_VALKEY_CLIENT } from '@infra/jwt-whitelist';
 
 async function bootstrap(): Promise<void> {
 	sourceMapInstall();
@@ -38,8 +38,6 @@ async function bootstrap(): Promise<void> {
 	const nestExpressAdapter = new ExpressAdapter(nestExpress);
 	const nestApp = await NestFactory.create(ServerModule, nestExpressAdapter);
 	const orm = nestApp.get(MikroORM);
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-	const cacheManager = await nestApp.resolve(JWT_WHITELIST_VALKEY_CLIENT);
 
 	// WinstonLogger
 	const legacyLogger = await nestApp.resolve(LegacyLogger);
@@ -50,7 +48,7 @@ async function bootstrap(): Promise<void> {
 	nestApp.use(createRequestLoggerMiddleware(loggerConfig));
 	// load the legacy feathers/express server
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-	const feathersExpress = await legacyAppPromise(orm, cacheManager);
+	const feathersExpress = await legacyAppPromise(orm);
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
 	await feathersExpress.setup();
 
@@ -99,8 +97,10 @@ async function bootstrap(): Promise<void> {
 	feathersExpress.services['nest-context-external-tool-service'] = nestApp.get(ContextExternalToolService);
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
 	feathersExpress.services['nest-system-rule'] = nestApp.get(SystemRule);
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 	feathersExpress.services['nest-orm'] = orm;
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+	feathersExpress.services['nest-jwt-whitelist-adapter'] = await nestApp.resolve(JwtWhitelistAdapter);
 
 	// mount instances
 	const rootExpress = express();
