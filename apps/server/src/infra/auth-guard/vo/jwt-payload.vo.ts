@@ -1,7 +1,7 @@
 import { ValueObject } from '@shared/domain/value-object.decorator';
 import { IsBoolean, IsMongoId, IsNumber, IsOptional, IsString } from 'class-validator';
 import jwt from 'jsonwebtoken';
-import { JwtPayload } from './interface';
+import { JwtPayload } from '../interface';
 
 @ValueObject()
 export class JwtPayloadVo implements JwtPayload {

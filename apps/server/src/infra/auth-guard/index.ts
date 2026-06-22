@@ -10,5 +10,5 @@ export { CurrentUser, JWT, JwtAuthentication, WsJwtAuthentication, XApiKeyAuthen
 // Use JwtAuthentication decorator for request validation
 export { JwtAuthGuard, WsJwtAuthGuard, XApiKeyGuard } from './guard';
 export { AuthGuardModuleOptions, AuthGuardOptions, CreateJwtPayload, ICurrentUser, StrategyType } from './interface';
-export { JwtPayloadVo } from './jwt-payload.vo';
 export { CurrentUserBuilder, JwtPayloadBuilder } from './mapper';
+export { JwtPayloadVo } from './vo/jwt-payload.vo';
