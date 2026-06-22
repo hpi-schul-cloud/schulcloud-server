@@ -6,8 +6,7 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
-import { LoginResponse } from '../dto';
-import { TargetUserIdParams } from '../dto/target-user-id.params';
+import { LoginResponse, TargetUserIdParams } from '../dto';
 
 const forbiddenResponse = {
 	code: 403,
