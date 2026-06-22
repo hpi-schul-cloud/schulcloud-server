@@ -6,7 +6,7 @@ import { DeletionRequest } from '../domain/do';
 import { DeletionRequestEntity } from './entity';
 import { DeletionRequestMapper } from './mapper';
 import { DeletionRequestScope } from './scope';
-import { StatusModel } from '../domain/types';
+import { DomainName, StatusModel } from '../domain/types';
 
 @Injectable()
 export class DeletionRequestRepo {
@@ -121,6 +121,38 @@ export class DeletionRequestRepo {
 		const entityMap = new Map(entities.map((entity) => [entity.id, DeletionRequestMapper.mapToDO(entity)]));
 
 		return ids.map((id) => entityMap.get(id) || null);
+	}
+
+	public async findIdsByBatchAndTargetRefIds(
+		batchId: EntityId,
+		targetRefIds: EntityId[],
+		targetRefDomain: DomainName,
+		status: StatusModel
+	): Promise<EntityId[]> {
+		if (targetRefIds.length === 0) {
+			return [];
+		}
+
+		const entities = await this.em.find(DeletionRequestEntity, {
+			batchId,
+			targetRefId: { $in: targetRefIds },
+			targetRefDomain,
+			status,
+		});
+
+		return entities.map((entity) => entity.id);
+	}
+
+	public async markDeletionRequestsAsRegistered(deletionRequestIds: EntityId[]): Promise<void> {
+		if (deletionRequestIds.length === 0) {
+			return;
+		}
+
+		await this.em.nativeUpdate(
+			DeletionRequestEntity,
+			{ id: { $in: deletionRequestIds }, status: StatusModel.FAILED },
+			{ status: StatusModel.REGISTERED }
+		);
 	}
 
 	public async groupTargetRefIdsByBatchAndStatus(

@@ -112,6 +112,25 @@ export class DeletionRequestService {
 		return result;
 	}
 
+	public async findFailedDeletionRequestIdsByBatchAndTargetRefIds(
+		batchId: EntityId,
+		targetRefIds: EntityId[],
+		targetRefDomain: DomainName
+	): Promise<EntityId[]> {
+		const deletionRequestIds = await this.deletionRequestRepo.findIdsByBatchAndTargetRefIds(
+			batchId,
+			targetRefIds,
+			targetRefDomain,
+			StatusModel.FAILED
+		);
+
+		return deletionRequestIds;
+	}
+
+	public async resetFailedDeletionRequestsToRegistered(deletionRequestIds: EntityId[]): Promise<void> {
+		await this.deletionRequestRepo.markDeletionRequestsAsRegistered(deletionRequestIds);
+	}
+
 	public async deleteById(deletionRequestId: EntityId): Promise<void> {
 		await this.deletionRequestRepo.deleteById(deletionRequestId);
 	}

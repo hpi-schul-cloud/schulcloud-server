@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { RoleName } from '@modules/role';
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
@@ -8,6 +8,7 @@ import { DeletionBatchUsersRepo } from '../../repo';
 import { DeletionBatchRepo } from '../../repo/deletion-batch.repo';
 import { DeletionBatch } from '../do';
 import { BatchStatus, DomainName } from '../types';
+import { DeletionLogService } from './deletion-log.service';
 import { DeletionRequestService } from './deletion-request.service';
 
 export type CreateDeletionBatchParams = {
@@ -58,7 +59,8 @@ export class DeletionBatchService {
 	constructor(
 		private readonly deletionBatchRepo: DeletionBatchRepo,
 		private readonly deletionBatchUsersRepo: DeletionBatchUsersRepo,
-		private readonly deletionRequestService: DeletionRequestService
+		private readonly deletionRequestService: DeletionRequestService,
+		private readonly deletionLogService: DeletionLogService
 	) {}
 
 	public async findById(batchId: EntityId): Promise<DeletionBatch> {
@@ -160,6 +162,29 @@ export class DeletionBatchService {
 		const summary = this.buildSummary(deletionBatch);
 
 		return summary;
+	}
+
+	public async retryFailedDeletionRequestsForBatch(batchId: EntityId, targetRefIds: EntityId[]): Promise<void> {
+		const deletionBatch = await this.deletionBatchRepo.findById(batchId);
+
+		const allowedTargetRefIds = new Set(deletionBatch.targetRefIds);
+		const invalidTargetRefIds = targetRefIds.filter((targetRefId) => !allowedTargetRefIds.has(targetRefId));
+
+		if (invalidTargetRefIds.length > 0) {
+			throw new BadRequestException(
+				`Provided targetRefIds are not part of batch ${batchId}: ${invalidTargetRefIds.join(', ')}`
+			);
+		}
+
+		const failedDeletionRequestIds =
+			await this.deletionRequestService.findFailedDeletionRequestIdsByBatchAndTargetRefIds(
+				batchId,
+				targetRefIds,
+				DomainName.USER
+			);
+
+		await this.deletionLogService.deleteByDeletionRequestIds(failedDeletionRequestIds);
+		await this.deletionRequestService.resetFailedDeletionRequestsToRegistered(failedDeletionRequestIds);
 	}
 
 	private buildSummary(batch: DeletionBatch): DeletionBatchSummary {
