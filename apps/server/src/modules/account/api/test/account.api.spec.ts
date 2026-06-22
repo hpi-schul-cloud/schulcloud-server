@@ -1,11 +1,8 @@
 import { faker } from '@faker-js/faker';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { RoleName } from '@modules/role';
-import { roleFactory } from '@modules/role/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server/server.app.module';
 import { User } from '@modules/user/repo';
-import { userFactory } from '@modules/user/testing';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
@@ -14,7 +11,6 @@ import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.tes
 import { TestApiClient } from '@testing/test-api-client';
 import { ACCOUNT_ENCRYPTION_CONFIG_TOKEN } from '../../encryption.config';
 import { AccountEntity } from '../../repo';
-import { accountFactory } from '../../testing';
 import {
 	AccountByIdBodyParams,
 	AccountSearchQueryParams,
@@ -34,13 +30,6 @@ describe('Account Controller (API)', () => {
 
 	const defaultPassword = 'DummyPasswd!1';
 	const defaultPasswordHash = '$2a$10$/DsztV5o6P5piW2eWJsxw.4nHovmJGBA.QNwiTmuZ/uvUc40b.Uhu';
-
-	const mapUserToAccount = (user: User): AccountEntity =>
-		accountFactory.buildWithId({
-			userId: user.id,
-			username: user.email,
-			password: defaultPasswordHash,
-		});
 
 	beforeAll(async () => {
 		const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -69,12 +58,10 @@ describe('Account Controller (API)', () => {
 		describe('When patching with a valid password', () => {
 			const setup = async () => {
 				const school = schoolEntityFactory.buildWithId();
-				const studentRoles = roleFactory.build({ name: RoleName.STUDENT, permissions: [] });
-				const studentUser = userFactory.buildWithId({ school, roles: [studentRoles] });
-				const studentAccount = mapUserToAccount(studentUser);
 
-				em.persist([school, studentRoles, studentUser, studentAccount]);
-				await em.flush();
+				const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent({ school });
+
+				await em.persist([school, studentUser, studentAccount]).flush();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
 
@@ -99,12 +86,10 @@ describe('Account Controller (API)', () => {
 		describe('When using a weak password', () => {
 			const setup = async () => {
 				const school = schoolEntityFactory.buildWithId();
-				const studentRoles = roleFactory.build({ name: RoleName.STUDENT, permissions: [] });
-				const studentUser = userFactory.buildWithId({ school, roles: [studentRoles] });
-				const studentAccount = mapUserToAccount(studentUser);
 
-				em.persist([school, studentRoles, studentUser, studentAccount]);
-				await em.flush();
+				const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent({ school });
+
+				await em.persist([school, studentUser, studentAccount]).flush();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
 
@@ -128,12 +113,10 @@ describe('Account Controller (API)', () => {
 		describe('When patching the account with account info', () => {
 			const setup = async () => {
 				const school = schoolEntityFactory.buildWithId();
-				const studentRoles = roleFactory.build({ name: RoleName.STUDENT, permissions: [] });
-				const studentUser = userFactory.buildWithId({ school, roles: [studentRoles] });
-				const studentAccount = mapUserToAccount(studentUser);
 
-				em.persist([school, studentRoles, studentUser, studentAccount]);
-				await em.flush();
+				const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent({ school });
+
+				await em.persist([school, studentUser, studentAccount]).flush();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
 
@@ -158,12 +141,10 @@ describe('Account Controller (API)', () => {
 		describe('When patching with a not valid email', () => {
 			const setup = async () => {
 				const school = schoolEntityFactory.buildWithId();
-				const studentRoles = roleFactory.build({ name: RoleName.STUDENT, permissions: [] });
-				const studentUser = userFactory.buildWithId({ school, roles: [studentRoles] });
-				const studentAccount = mapUserToAccount(studentUser);
 
-				em.persist([school, studentRoles, studentUser, studentAccount]);
-				await em.flush();
+				const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent({ school });
+
+				await em.persist([school, studentUser, studentAccount]).flush();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
 
@@ -186,15 +167,10 @@ describe('Account Controller (API)', () => {
 		describe('When patching with html inside name', () => {
 			const setup = async () => {
 				const school = schoolEntityFactory.buildWithId();
-				const teacherRoles = roleFactory.build({
-					name: RoleName.TEACHER,
-					permissions: [Permission.USER_CHANGE_OWN_NAME],
-				});
-				const teacherUser = userFactory.buildWithId({ school, roles: [teacherRoles] });
-				const teacherAccount = mapUserToAccount(teacherUser);
 
-				em.persist([school, teacherRoles, teacherUser, teacherAccount]);
-				await em.flush();
+				const { teacherUser, teacherAccount } = UserAndAccountTestFactory.buildTeacher({ school });
+
+				await em.persist([school, teacherUser, teacherAccount]).flush();
 
 				const loggedInClient = await testApiClient.login(teacherAccount);
 
@@ -339,23 +315,10 @@ describe('Account Controller (API)', () => {
 			const setup = async () => {
 				const school = schoolEntityFactory.buildWithId();
 
-				const adminRoles = roleFactory.build({
-					name: RoleName.ADMINISTRATOR,
-					permissions: [Permission.TEACHER_EDIT, Permission.STUDENT_EDIT],
-				});
-				const studentRoles = roleFactory.build({ name: RoleName.STUDENT, permissions: [] });
+				const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent({ school });
+				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({ school });
 
-				const adminUser = userFactory.buildWithId({ school, roles: [adminRoles] });
-				const studentUser = userFactory.buildWithId({ school, roles: [studentRoles] });
-
-				const adminAccount = mapUserToAccount(adminUser);
-				const studentAccount = mapUserToAccount(studentUser);
-
-				em.persist(school);
-				em.persist([adminRoles, studentRoles]);
-				em.persist([adminUser, studentUser]);
-				em.persist([adminAccount, studentAccount]);
-				await em.flush();
+				await em.persist([school, adminUser, adminAccount, studentUser, studentAccount]).flush();
 
 				const loggedInClient = await testApiClient.login(adminAccount);
 
@@ -403,23 +366,10 @@ describe('Account Controller (API)', () => {
 			const setup = async () => {
 				const school = schoolEntityFactory.buildWithId();
 
-				const adminRoles = roleFactory.build({
-					name: RoleName.ADMINISTRATOR,
-					permissions: [Permission.TEACHER_EDIT, Permission.STUDENT_EDIT],
-				});
-				const studentRoles = roleFactory.build({ name: RoleName.STUDENT, permissions: [] });
+				const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent({ school });
+				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({ school });
 
-				const adminUser = userFactory.buildWithId({ school, roles: [adminRoles] });
-				const studentUser = userFactory.buildWithId({ school, roles: [studentRoles] });
-
-				const adminAccount = mapUserToAccount(adminUser);
-				const studentAccount = mapUserToAccount(studentUser);
-
-				em.persist(school);
-				em.persist([adminRoles, studentRoles]);
-				em.persist([adminUser, studentUser]);
-				em.persist([adminAccount, studentAccount]);
-				await em.flush();
+				await em.persist([school, adminUser, adminAccount, studentUser, studentAccount]).flush();
 
 				const loggedInClient = await testApiClient.login(adminAccount);
 
@@ -487,12 +437,10 @@ describe('Account Controller (API)', () => {
 		describe('When the user is not authorized', () => {
 			const setup = async () => {
 				const school = schoolEntityFactory.buildWithId();
-				const studentRoles = roleFactory.build({ name: RoleName.STUDENT, permissions: [] });
-				const studentUser = userFactory.buildWithId({ school, roles: [studentRoles] });
-				const studentAccount = mapUserToAccount(studentUser);
 
-				em.persist([school, studentRoles, studentUser, studentAccount]);
-				await em.flush();
+				const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent({ school });
+
+				await em.persist([school, studentUser, studentAccount]).flush();
 
 				const loggedInClient = await testApiClient.login(studentAccount);
 
@@ -563,23 +511,10 @@ describe('Account Controller (API)', () => {
 			const setup = async () => {
 				const school = schoolEntityFactory.buildWithId();
 
-				const adminRoles = roleFactory.build({
-					name: RoleName.ADMINISTRATOR,
-					permissions: [Permission.TEACHER_EDIT, Permission.STUDENT_EDIT],
-				});
-				const studentRoles = roleFactory.build({ name: RoleName.STUDENT, permissions: [] });
+				const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent({ school });
+				const { adminUser, adminAccount } = UserAndAccountTestFactory.buildAdmin({ school });
 
-				const adminUser = userFactory.buildWithId({ school, roles: [adminRoles] });
-				const studentUser = userFactory.buildWithId({ school, roles: [studentRoles] });
-
-				const adminAccount = mapUserToAccount(adminUser);
-				const studentAccount = mapUserToAccount(studentUser);
-
-				em.persist(school);
-				em.persist([adminRoles, studentRoles]);
-				em.persist([adminUser, studentUser]);
-				em.persist([adminAccount, studentAccount]);
-				await em.flush();
+				await em.persist([school, adminUser, adminAccount, studentUser, studentAccount]).flush();
 
 				const loggedInClient = await testApiClient.login(adminAccount);
 
