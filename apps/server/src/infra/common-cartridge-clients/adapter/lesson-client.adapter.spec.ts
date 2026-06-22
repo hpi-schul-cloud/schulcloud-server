@@ -104,7 +104,7 @@ describe(LessonClientAdapter.name, () => {
 
 				const result = sut.getLessonById(jwt, lessonResponseId);
 
-				await expect(result).rejects.toThrowError('error');
+				await expect(result).rejects.toThrow('error');
 			});
 		});
 	});
@@ -159,7 +159,7 @@ describe(LessonClientAdapter.name, () => {
 
 				const result = sut.getLessonTasks(jwt, lessonResponseId);
 
-				await expect(result).rejects.toThrowError('error');
+				await expect(result).rejects.toThrow('error');
 			});
 		});
 	});

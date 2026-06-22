@@ -67,7 +67,7 @@ describe('CourseGroupRule', () => {
 
 			service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [] });
 
-			expect(spy).toBeCalledWith(user, []);
+			expect(spy).toHaveBeenCalledWith(user, []);
 		});
 	});
 
@@ -92,7 +92,7 @@ describe('CourseGroupRule', () => {
 
 			service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [] });
 
-			expect(spy).toBeCalledWith(user, entity, ['students']);
+			expect(spy).toHaveBeenCalledWith(user, entity, ['students']);
 		});
 
 		describe('when calling courseRule', () => {
@@ -110,7 +110,7 @@ describe('CourseGroupRule', () => {
 
 				service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [] });
 
-				expect(spy).toBeCalledWith(user, entity.course, { action: Action.write, requiredPermissions: [] });
+				expect(spy).toHaveBeenCalledWith(user, entity.course, { action: Action.write, requiredPermissions: [] });
 			});
 		});
 	});
@@ -131,7 +131,7 @@ describe('CourseGroupRule', () => {
 
 				service.hasPermission(user, entity, { action: Action.write, requiredPermissions: [] });
 
-				expect(spy).toBeCalledWith(user, entity, ['students']);
+				expect(spy).toHaveBeenCalledWith(user, entity, ['students']);
 			});
 		});
 
@@ -150,7 +150,7 @@ describe('CourseGroupRule', () => {
 
 				service.hasPermission(user, entity, { action: Action.write, requiredPermissions: [] });
 
-				expect(spy).toBeCalledWith(user, entity.course, { action: Action.write, requiredPermissions: [] });
+				expect(spy).toHaveBeenCalledWith(user, entity.course, { action: Action.write, requiredPermissions: [] });
 			});
 		});
 	});

@@ -133,7 +133,7 @@ describe('UserService', () => {
 			it('should throw an error', async () => {
 				const { userId, error } = setup();
 
-				await expect(() => service.getUserEntityWithRoles(userId)).rejects.toThrowError(error);
+				await expect(() => service.getUserEntityWithRoles(userId)).rejects.toThrow(error);
 			});
 		});
 	});
@@ -289,7 +289,7 @@ describe('UserService', () => {
 		});
 
 		it('should throw an error if language is not activated', async () => {
-			await expect(service.patchLanguage(user.id, LanguageType.EN)).rejects.toThrowError();
+			await expect(service.patchLanguage(user.id, LanguageType.EN)).rejects.toThrow();
 		});
 	});
 
@@ -363,7 +363,7 @@ describe('UserService', () => {
 			it('should throw an error', async () => {
 				const { user, error } = setup();
 
-				await expect(service.saveEntity(user)).rejects.toThrowError(error);
+				await expect(service.saveEntity(user)).rejects.toThrow(error);
 			});
 		});
 	});
@@ -531,7 +531,7 @@ describe('UserService', () => {
 				const error = new Error('Error');
 				userRepo.findForImportUser.mockRejectedValueOnce(error);
 
-				await expect(service.findForImportUser(school, userName, options)).rejects.toThrowError(error);
+				await expect(service.findForImportUser(school, userName, options)).rejects.toThrow(error);
 			});
 		});
 	});
@@ -633,9 +633,7 @@ describe('UserService', () => {
 				const { user, targetSchool } = setupUserWithRole(RoleName.USER);
 				setupGuestRoles();
 
-				await expect(() =>
-					service.addSecondarySchoolToUsers([user.id as string], targetSchool.id)
-				).rejects.toThrowError();
+				await expect(() => service.addSecondarySchoolToUsers([user.id as string], targetSchool.id)).rejects.toThrow();
 			});
 		});
 
@@ -787,7 +785,7 @@ describe('UserService', () => {
 
 			await service.getParentEmailsFromUser(user.id);
 
-			expect(userRepo.getParentEmailsFromUser).toBeCalledWith(user.id);
+			expect(userRepo.getParentEmailsFromUser).toHaveBeenCalledWith(user.id);
 		});
 
 		it('should return array with parent emails', async () => {
@@ -846,7 +844,7 @@ describe('UserService', () => {
 
 				await service.findMultipleByExternalIds(externalIds);
 
-				expect(userRepo.findByExternalIds).toBeCalledWith(externalIds);
+				expect(userRepo.findByExternalIds).toHaveBeenCalledWith(externalIds);
 			});
 
 			it('should return array with Users id', async () => {
@@ -886,7 +884,7 @@ describe('UserService', () => {
 
 				await service.updateLastSyncedAt(userIds);
 
-				expect(userRepo.updateAllUserByLastSyncedAt).toBeCalledWith(userIds);
+				expect(userRepo.updateAllUserByLastSyncedAt).toHaveBeenCalledWith(userIds);
 			});
 		});
 	});

@@ -60,7 +60,7 @@ describe('ImportUser entity', () => {
 		it('should fail when set a match with a different school', () => {
 			const user = userFactory.buildWithId();
 			const importUser = importUserFactory.buildWithId();
-			expect(() => importUser.setMatch(user, MatchCreator.AUTO)).toThrowError('not same school');
+			expect(() => importUser.setMatch(user, MatchCreator.AUTO)).toThrow('not same school');
 			expect(importUser.user).toBeUndefined();
 			expect(importUser.matchedBy).toBeUndefined();
 		});

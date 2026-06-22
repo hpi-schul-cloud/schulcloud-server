@@ -408,7 +408,7 @@ describe(ExternalToolRepo.name, () => {
 			it('should throw not found error', async () => {
 				await setup2();
 
-				await expect(repo.findById('not-existing-id')).rejects.toThrowError();
+				await expect(repo.findById('not-existing-id')).rejects.toThrow();
 			});
 		});
 	});
@@ -575,7 +575,7 @@ describe(ExternalToolRepo.name, () => {
 
 			await repo.deleteById(externalToolEntity.id);
 
-			await expect(repo.findById(externalToolEntity.id)).rejects.toThrowError();
+			await expect(repo.findById(externalToolEntity.id)).rejects.toThrow();
 		});
 	});
 

@@ -275,22 +275,22 @@ describe('DatabaseManagementService', () => {
 		it('should persist all database collections for undefined filter', async () => {
 			const collections = await uc.exportCollectionsToFileSystem();
 			expect(collections).toEqual(['collectionName1:3', 'collectionName2:1', 'systems:3', 'storageproviders:1']);
-			expect(fileSystemAdapter.writeFile).toBeCalledTimes(4);
-			expect(fileSystemAdapter.writeFile).toBeCalledWith(...collection1Export);
-			expect(fileSystemAdapter.writeFile).toBeCalledWith(...collection2Export);
+			expect(fileSystemAdapter.writeFile).toHaveBeenCalledTimes(4);
+			expect(fileSystemAdapter.writeFile).toHaveBeenCalledWith(...collection1Export);
+			expect(fileSystemAdapter.writeFile).toHaveBeenCalledWith(...collection2Export);
 		});
 		it('should persist all database collections for empty filter', async () => {
 			const collections = await uc.exportCollectionsToFileSystem([]);
 			expect(collections).toEqual(['collectionName1:3', 'collectionName2:1', 'systems:3', 'storageproviders:1']);
-			expect(fileSystemAdapter.writeFile).toBeCalledTimes(4);
-			expect(fileSystemAdapter.writeFile).toBeCalledWith(...collection1Export);
-			expect(fileSystemAdapter.writeFile).toBeCalledWith(...collection2Export);
+			expect(fileSystemAdapter.writeFile).toHaveBeenCalledTimes(4);
+			expect(fileSystemAdapter.writeFile).toHaveBeenCalledWith(...collection1Export);
+			expect(fileSystemAdapter.writeFile).toHaveBeenCalledWith(...collection2Export);
 		});
 		it('should persist a given database collection when it exists', async () => {
 			const collections = await uc.exportCollectionsToFileSystem(['collectionName1']);
 			expect(collections).toEqual(['collectionName1:3']);
-			expect(fileSystemAdapter.writeFile).toBeCalledTimes(1);
-			expect(fileSystemAdapter.writeFile).toBeCalledWith(...collection1Export);
+			expect(fileSystemAdapter.writeFile).toHaveBeenCalledTimes(1);
+			expect(fileSystemAdapter.writeFile).toHaveBeenCalledWith(...collection1Export);
 		});
 		it('should fail when persist a database collection which does not exist', async () => {
 			await expect(async () => {
@@ -333,7 +333,7 @@ describe('DatabaseManagementService', () => {
 				dbService.findDocumentsOfCollection.mockResolvedValueOnce([expectedSecond, expectedLast, expectedFirst]);
 
 				await uc.exportCollectionsToFileSystem(['collectionName1']);
-				expect(fileSystemAdapter.writeFile).toBeCalledTimes(1);
+				expect(fileSystemAdapter.writeFile).toHaveBeenCalledTimes(1);
 
 				const text: unknown = fileSystemAdapter.writeFile.mock.calls[0][1];
 				const expectedResult = `${JSON.stringify(
@@ -345,14 +345,14 @@ describe('DatabaseManagementService', () => {
 			});
 			it('should add system EOL to end of text', async () => {
 				await uc.exportCollectionsToFileSystem(['collectionName1']);
-				expect(fileSystemAdapter.writeFile).toBeCalledTimes(1);
+				expect(fileSystemAdapter.writeFile).toHaveBeenCalledTimes(1);
 
 				const arg: unknown = fileSystemAdapter.writeFile.mock.calls[0][1];
 				expect(arg).toEqual(expect.stringMatching(/<EOL>$/));
 			});
 			it('should use <collectionName>.json as filename', async () => {
 				await uc.exportCollectionsToFileSystem(['collectionName1']);
-				expect(fileSystemAdapter.writeFile).toBeCalledTimes(1);
+				expect(fileSystemAdapter.writeFile).toHaveBeenCalledTimes(1);
 
 				const arg: unknown = fileSystemAdapter.writeFile.mock.calls[0][0];
 				expect(arg).toEqual('collectionName1.json');
@@ -430,16 +430,16 @@ describe('DatabaseManagementService', () => {
 			it('should clear existing collection if documents already exists', async () => {
 				dbService.collectionExists.mockReturnValue(Promise.resolve(true));
 				await uc.seedDatabaseCollectionsFromFileSystem([collectionName]);
-				expect(dbService.collectionExists).toBeCalledTimes(1);
-				expect(dbService.clearCollection).toBeCalledWith(collectionName);
-				expect(dbService.createCollection).not.toBeCalled();
+				expect(dbService.collectionExists).toHaveBeenCalledTimes(1);
+				expect(dbService.clearCollection).toHaveBeenCalledWith(collectionName);
+				expect(dbService.createCollection).not.toHaveBeenCalled();
 			});
 			it('should create new collection if collection does not exist', async () => {
 				dbService.collectionExists.mockReturnValue(Promise.resolve(false));
 				await uc.seedDatabaseCollectionsFromFileSystem([collectionName]);
-				expect(dbService.collectionExists).toBeCalledTimes(1);
-				expect(dbService.createCollection).toBeCalledWith(collectionName);
-				expect(dbService.clearCollection).not.toBeCalled();
+				expect(dbService.collectionExists).toHaveBeenCalledTimes(1);
+				expect(dbService.createCollection).toHaveBeenCalledWith(collectionName);
+				expect(dbService.clearCollection).not.toHaveBeenCalled();
 			});
 			it('should convert bson from file to json before db import', async () => {
 				const smallDate = new Date('2021-10-04T11:04:45.593Z');
@@ -454,10 +454,10 @@ describe('DatabaseManagementService', () => {
 				// const readFileMock = jest.spyOn(fileSystemAdapter, 'readFile').mockReturnValue(Promise.resolve(bsonDocsAsText));
 				fileSystemAdapter.readFile.mockResolvedValueOnce(bsonDocsAsText);
 				await uc.seedDatabaseCollectionsFromFileSystem([collectionName]);
-				expect(fileSystemAdapter.readFile).toBeCalledWith(`${collectionName}.json`);
-				expect(fileSystemAdapter.readFile).toBeCalledTimes(1);
+				expect(fileSystemAdapter.readFile).toHaveBeenCalledWith(`${collectionName}.json`);
+				expect(fileSystemAdapter.readFile).toHaveBeenCalledTimes(1);
 				const args = dbService.importCollection.mock.calls[0];
-				expect(dbService.importCollection).toBeCalledTimes(1);
+				expect(dbService.importCollection).toHaveBeenCalledTimes(1);
 				expect(args[0]).toEqual(collectionName);
 				expect(JSON.stringify(args[1])).toEqual(
 					'[{"_id":"100000000000000000000000","createdAt":"2021-10-04T11:04:45.593Z"}]'

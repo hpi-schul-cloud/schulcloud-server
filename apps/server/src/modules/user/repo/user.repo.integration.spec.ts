@@ -367,7 +367,7 @@ describe('user repo', () => {
 		it('should throw an error by passing invalid schoolId', async () => {
 			const school = schoolEntityFactory.build();
 			// id do not exist
-			await expect(repo.findForImportUser(school)).rejects.toThrowError();
+			await expect(repo.findForImportUser(school)).rejects.toThrow();
 		});
 
 		describe('when the first or lastname of the user contains "ß"', () => {

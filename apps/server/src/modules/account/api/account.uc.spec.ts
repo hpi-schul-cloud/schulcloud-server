@@ -248,7 +248,7 @@ describe('AccountUc', () => {
 			it('should call accountService.replaceMyTemporaryPassword', async () => {
 				await accountUc.replaceMyTemporaryPassword('id', '', '');
 
-				expect(accountService.replaceMyTemporaryPassword).toBeCalledTimes(1);
+				expect(accountService.replaceMyTemporaryPassword).toHaveBeenCalledTimes(1);
 			});
 		});
 	});

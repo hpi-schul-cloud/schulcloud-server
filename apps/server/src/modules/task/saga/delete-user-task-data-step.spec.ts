@@ -92,7 +92,7 @@ describe(DeleteUserTaskDataStep.name, () => {
 
 				await step.deleteTasksByOnlyCreator(creator.id);
 
-				expect(taskRepo.findByOnlyCreatorId).toBeCalledWith(creator.id);
+				expect(taskRepo.findByOnlyCreatorId).toHaveBeenCalledWith(creator.id);
 			});
 
 			it('should return the object with information on the actions performed', async () => {
@@ -125,7 +125,7 @@ describe(DeleteUserTaskDataStep.name, () => {
 
 				await step.removeCreatorIdFromTasks(creator.id);
 
-				expect(taskRepo.findByCreatorIdWithCourseAndLesson).toBeCalledWith(creator.id);
+				expect(taskRepo.findByCreatorIdWithCourseAndLesson).toHaveBeenCalledWith(creator.id);
 			});
 
 			it('should call taskRepo.save with task to update', async () => {
@@ -133,7 +133,7 @@ describe(DeleteUserTaskDataStep.name, () => {
 
 				await step.removeCreatorIdFromTasks(creator.id);
 
-				expect(taskRepo.save).toBeCalledWith([taskWithCourseToUpdate]);
+				expect(taskRepo.save).toHaveBeenCalledWith([taskWithCourseToUpdate]);
 			});
 
 			it('should return the object with information on the actions performed', async () => {
@@ -164,7 +164,7 @@ describe(DeleteUserTaskDataStep.name, () => {
 
 				await step.removeUserFromFinished(creator.id);
 
-				expect(taskRepo.findByUserIdInFinished).toBeCalledWith(creator.id);
+				expect(taskRepo.findByUserIdInFinished).toHaveBeenCalledWith(creator.id);
 			});
 
 			it('should return the object with information on the actions performed', async () => {

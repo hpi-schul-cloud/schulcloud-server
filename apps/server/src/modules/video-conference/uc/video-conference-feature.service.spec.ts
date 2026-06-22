@@ -73,7 +73,7 @@ describe(VideoConferenceFeatureService.name, () => {
 
 				await service.checkVideoConferenceFeatureEnabled(userId, scope);
 
-				expect(boardContextApiHelperService.getFeaturesForBoardNode).toBeCalledWith(scope.id);
+				expect(boardContextApiHelperService.getFeaturesForBoardNode).toHaveBeenCalledWith(scope.id);
 			});
 
 			describe('when video conference feature is not enabled', () => {

@@ -267,7 +267,7 @@ describe('BaseDORepo', () => {
 
 				testDO1.id = undefined;
 
-				await expect(repo.delete([testDO1])).rejects.toThrowError();
+				await expect(repo.delete([testDO1])).rejects.toThrow();
 			});
 		});
 	});

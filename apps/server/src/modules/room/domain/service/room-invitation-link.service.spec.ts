@@ -101,7 +101,7 @@ describe('RoomInvitationLinkService', () => {
 			it('should return an empty array', async () => {
 				repo.findById.mockRejectedValue(new Error('Link not found'));
 
-				await expect(service.findById('non-existing-link-id')).rejects.toThrowError();
+				await expect(service.findById('non-existing-link-id')).rejects.toThrow();
 			});
 		});
 	});

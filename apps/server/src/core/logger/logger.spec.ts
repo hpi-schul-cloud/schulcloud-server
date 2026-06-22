@@ -57,7 +57,7 @@ describe('Logger', () => {
 
 			service.info(loggable);
 
-			expect(winstonLogger.info).toBeCalledWith(expectedMessage);
+			expect(winstonLogger.info).toHaveBeenCalledWith(expectedMessage);
 		});
 	});
 
@@ -73,7 +73,7 @@ describe('Logger', () => {
 
 			service.warning(loggable);
 
-			expect(winstonLogger.warning).toBeCalledWith(expectedMessage);
+			expect(winstonLogger.warning).toHaveBeenCalledWith(expectedMessage);
 		});
 	});
 
@@ -89,7 +89,7 @@ describe('Logger', () => {
 
 			service.debug(loggable);
 
-			expect(winstonLogger.debug).toBeCalledWith(expectedMessage);
+			expect(winstonLogger.debug).toHaveBeenCalledWith(expectedMessage);
 		});
 	});
 
@@ -113,7 +113,7 @@ describe('Logger', () => {
 
 			service.notice(loggable);
 
-			expect(winstonLogger.notice).toBeCalledWith(expectedMessage);
+			expect(winstonLogger.notice).toHaveBeenCalledWith(expectedMessage);
 		});
 	});
 });

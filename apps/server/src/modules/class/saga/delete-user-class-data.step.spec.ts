@@ -67,7 +67,7 @@ describe(DeleteUserClassDataStep.name, () => {
 		describe('when user is missing', () => {
 			it('should throw and error', async () => {
 				// @ts-expect-error undefined check
-				await expect(step.execute({ userId: undefined })).rejects.toThrowError(InternalServerErrorException);
+				await expect(step.execute({ userId: undefined })).rejects.toThrow(InternalServerErrorException);
 			});
 		});
 
@@ -97,14 +97,14 @@ describe(DeleteUserClassDataStep.name, () => {
 				const { userId1 } = setup();
 				await step.execute({ userId: userId1 });
 
-				expect(classesRepo.findAllByUserId).toBeCalledWith(userId1);
+				expect(classesRepo.findAllByUserId).toHaveBeenCalledWith(userId1);
 			});
 
 			it('should call classesRepo.deleteUser', async () => {
 				const { userId1 } = setup();
 				await step.execute({ userId: userId1 });
 
-				expect(classesRepo.removeUserReference).toBeCalledWith(userId1);
+				expect(classesRepo.removeUserReference).toHaveBeenCalledWith(userId1);
 			});
 
 			it('should return DomainDeletionReport', async () => {

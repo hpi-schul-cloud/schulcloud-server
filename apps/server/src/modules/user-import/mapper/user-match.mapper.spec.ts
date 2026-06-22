@@ -28,7 +28,7 @@ describe('[UserMatchMapper]', () => {
 
 			const result = () => UserMatchMapper.mapToDomain(query);
 
-			expect(result).toThrowError('invalid name from query');
+			expect(result).toThrow('invalid name from query');
 		});
 
 		it('should skip name mapper if no name is provided without failing', () => {
@@ -92,8 +92,8 @@ describe('[UserMatchMapper]', () => {
 				const result = UserMatchMapper.mapToResponse(user, MatchCreator.AUTO);
 
 				expect(result.matchedBy).toEqual('MAPPED_MATCH_VALUE');
-				expect(ImportUserMatchMapperSpy).toBeCalledTimes(1);
-				expect(ImportUserMatchMapperSpy).toBeCalledWith(MatchCreator.AUTO);
+				expect(ImportUserMatchMapperSpy).toHaveBeenCalledTimes(1);
+				expect(ImportUserMatchMapperSpy).toHaveBeenCalledWith(MatchCreator.AUTO);
 
 				ImportUserMatchMapperSpy.mockClear();
 			});

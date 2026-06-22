@@ -63,7 +63,7 @@ describe(ExternalTool.name, () => {
 							isDeactivated: false,
 							isPreferred: false,
 						});
-					}).toThrowError();
+					}).toThrow();
 				});
 			});
 		});

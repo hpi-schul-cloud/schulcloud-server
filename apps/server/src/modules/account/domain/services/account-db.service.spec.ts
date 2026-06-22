@@ -309,7 +309,7 @@ describe('AccountDbService', () => {
 				const { mockTeacherAccount } = setup();
 				const ret = await accountService.save(mockTeacherAccount);
 
-				expect(accountRepo.save).toBeCalledTimes(1);
+				expect(accountRepo.save).toHaveBeenCalledTimes(1);
 				expect(ret).toBeDefined();
 				expect(ret).toMatchObject({
 					id: mockTeacherAccount.id,
@@ -433,7 +433,7 @@ describe('AccountDbService', () => {
 
 				const ret = await accountService.save(accountToSave);
 
-				expect(accountRepo.save).toBeCalledTimes(1);
+				expect(accountRepo.save).toHaveBeenCalledTimes(1);
 				expect(ret).toBeDefined();
 				expect(ret).toBeInstanceOf(Account);
 				expect(ret).toMatchObject({
@@ -478,7 +478,7 @@ describe('AccountDbService', () => {
 
 				const ret = await accountService.save(accountToSave);
 				expect(ret).toBeDefined();
-				expect(accountRepo.save).toBeCalledWith(expect.objectContaining({ systemId: undefined }));
+				expect(accountRepo.save).toHaveBeenCalledWith(expect.objectContaining({ systemId: undefined }));
 			});
 		});
 
@@ -516,7 +516,7 @@ describe('AccountDbService', () => {
 				const ret = await accountService.save(accountToSave);
 				expect(ret).toBeDefined();
 
-				expect(accountRepo.save).toBeCalledWith(
+				expect(accountRepo.save).toHaveBeenCalledWith(
 					expect.objectContaining({ password: expect.not.stringMatching(defaultPassword) })
 				);
 			});

@@ -105,7 +105,7 @@ describe(BaseMetadataSyncStrategy.name, () => {
 
 				await strategy.syncAllMediaMetadata(mediaSource);
 
-				expect(mediumMetadataService.getMetadataItems).not.toBeCalled();
+				expect(mediumMetadataService.getMetadataItems).not.toHaveBeenCalled();
 			});
 		});
 

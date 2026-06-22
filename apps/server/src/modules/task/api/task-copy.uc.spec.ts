@@ -141,7 +141,7 @@ describe('task copy uc', () => {
 				const { course, user, task, userId } = setup();
 				config.featureCopyServiceEnabled = false;
 
-				await expect(uc.copyTask(user.id, task.id, { courseId: course.id, userId })).rejects.toThrowError(
+				await expect(uc.copyTask(user.id, task.id, { courseId: course.id, userId })).rejects.toThrow(
 					InternalServerErrorException
 				);
 			});
@@ -167,7 +167,7 @@ describe('task copy uc', () => {
 
 				await uc.copyTask(user.id, task.id, { courseId: course.id, userId });
 
-				expect(authorisation.getUserWithPermissions).toBeCalledWith(user.id);
+				expect(authorisation.getUserWithPermissions).toHaveBeenCalledWith(user.id);
 			});
 
 			it('should fetch correct task', async () => {
@@ -175,7 +175,7 @@ describe('task copy uc', () => {
 
 				await uc.copyTask(user.id, task.id, { courseId: course.id, userId });
 
-				expect(taskRepo.findById).toBeCalledWith(task.id);
+				expect(taskRepo.findById).toHaveBeenCalledWith(task.id);
 			});
 
 			it('should fetch destination course', async () => {
@@ -183,7 +183,7 @@ describe('task copy uc', () => {
 
 				await uc.copyTask(user.id, task.id, { courseId: course.id, userId });
 
-				expect(courseService.findById).toBeCalledWith(course.id);
+				expect(courseService.findById).toHaveBeenCalledWith(course.id);
 			});
 
 			it('should pass without destination course', async () => {
@@ -198,7 +198,7 @@ describe('task copy uc', () => {
 
 				await uc.copyTask(user.id, task.id, { lessonId: lesson.id, userId });
 
-				expect(lessonService.findById).toBeCalledWith(lesson.id);
+				expect(lessonService.findById).toHaveBeenCalledWith(lesson.id);
 			});
 
 			it('should pass without destination lesson', async () => {
@@ -216,7 +216,7 @@ describe('task copy uc', () => {
 
 				await uc.copyTask(user.id, task.id, { courseId: course.id, lessonId: lesson.id, userId });
 
-				expect(authorisation.hasPermission).toBeCalledWith(user, task, {
+				expect(authorisation.hasPermission).toHaveBeenCalledWith(user, task, {
 					action: Action.read,
 					requiredPermissions: [],
 				});
@@ -228,7 +228,7 @@ describe('task copy uc', () => {
 				await uc.copyTask(user.id, task.id, { courseId: course.id, userId });
 
 				const context = AuthorizationContextBuilder.write([]);
-				expect(authorisation.checkPermission).toBeCalledWith(user, course, context);
+				expect(authorisation.checkPermission).toHaveBeenCalledWith(user, course, context);
 			});
 
 			it('should pass authorisation check without destination course', async () => {
@@ -237,7 +237,7 @@ describe('task copy uc', () => {
 				await uc.copyTask(user.id, task.id, { userId });
 
 				const context = AuthorizationContextBuilder.write([]);
-				expect(authorisation.hasPermission).not.toBeCalledWith(user, course, context);
+				expect(authorisation.hasPermission).not.toHaveBeenCalledWith(user, course, context);
 			});
 
 			it('should check authorisation for destination lesson', async () => {
@@ -245,7 +245,7 @@ describe('task copy uc', () => {
 
 				await uc.copyTask(user.id, task.id, { lessonId: lesson.id, userId });
 
-				expect(authorisation.hasPermission).toBeCalledWith(user, lesson, {
+				expect(authorisation.hasPermission).toHaveBeenCalledWith(user, lesson, {
 					action: Action.write,
 					requiredPermissions: [],
 				});
@@ -256,7 +256,7 @@ describe('task copy uc', () => {
 
 				await uc.copyTask(user.id, task.id, { userId });
 
-				expect(authorisation.hasPermission).not.toBeCalledWith(user, lesson, {
+				expect(authorisation.hasPermission).not.toHaveBeenCalledWith(user, lesson, {
 					action: Action.write,
 					requiredPermissions: [],
 				});
@@ -286,7 +286,7 @@ describe('task copy uc', () => {
 				it('should throw NotFoundException', async () => {
 					const { user, task, parentParams } = setupWithTaskForbidden();
 
-					await expect(uc.copyTask(user.id, task.id, parentParams)).rejects.toThrowError(
+					await expect(uc.copyTask(user.id, task.id, parentParams)).rejects.toThrow(
 						new NotFoundException('could not find task to copy')
 					);
 				});
@@ -319,7 +319,7 @@ describe('task copy uc', () => {
 				it('should throw Forbidden Exception', async () => {
 					const { userId, taskId, parentParams } = setupWithCourseForbidden();
 
-					await expect(uc.copyTask(userId, taskId, parentParams)).rejects.toThrowError(new ForbiddenException());
+					await expect(uc.copyTask(userId, taskId, parentParams)).rejects.toThrow(new ForbiddenException());
 				});
 			});
 		});
@@ -332,7 +332,7 @@ describe('task copy uc', () => {
 
 				const existingNames = allTasks.map((t) => t.name);
 				expect(existingNames.length).toEqual(3);
-				expect(copyHelperService.deriveCopyName).toBeCalledWith(task.name, existingNames);
+				expect(copyHelperService.deriveCopyName).toHaveBeenCalledWith(task.name, existingNames);
 			});
 
 			it('should use findAllByParentIds to determine existing task names', async () => {
@@ -352,7 +352,7 @@ describe('task copy uc', () => {
 					userId: new ObjectId().toHexString(),
 				});
 
-				expect(taskCopyService.copyTask).toBeCalledWith({
+				expect(taskCopyService.copyTask).toHaveBeenCalledWith({
 					originalTaskId: task.id,
 					destinationCourse: course,
 					destinationLesson: lesson,
@@ -389,7 +389,7 @@ describe('task copy uc', () => {
 			it('should throw Forbidden Exception', async () => {
 				const { userId, taskId, parentParams } = setupWithLessonForbidden();
 
-				await expect(uc.copyTask(userId, taskId, parentParams)).rejects.toThrowError(
+				await expect(uc.copyTask(userId, taskId, parentParams)).rejects.toThrow(
 					new ForbiddenException('you dont have permission to add to this lesson')
 				);
 			});

@@ -84,7 +84,7 @@ describe('FwuLearningContentsUC', () => {
 
 				await fwuLearningContentsUc.get(pathToFile);
 
-				expect(s3client.get).toBeCalledWith(pathToFile, undefined);
+				expect(s3client.get).toHaveBeenCalledWith(pathToFile, undefined);
 			});
 		});
 	});

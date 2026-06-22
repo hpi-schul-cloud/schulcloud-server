@@ -103,7 +103,7 @@ describe(TestApiClient.name, () => {
 		it('should throw an error', async () => {
 			const { testApiClient, account } = setup();
 
-			await expect(() => testApiClient.login(account)).rejects.toThrowError();
+			await expect(() => testApiClient.login(account)).rejects.toThrow();
 		});
 	});
 

@@ -89,7 +89,7 @@ describe(DeleteUserCourseGroupDataStep.name, () => {
 
 				await step.execute({ userId: user.id });
 
-				expect(courseGroupRepo.findByUserId).toBeCalledWith(user.id);
+				expect(courseGroupRepo.findByUserId).toHaveBeenCalledWith(user.id);
 			});
 
 			it('should update courses without deleted user', async () => {
@@ -124,7 +124,7 @@ describe(DeleteUserCourseGroupDataStep.name, () => {
 
 				await step.execute({ userId: user.id });
 
-				expect(courseGroupRepo.findByUserId).toBeCalledWith(user.id);
+				expect(courseGroupRepo.findByUserId).toHaveBeenCalledWith(user.id);
 			});
 
 			it('should call repo.removeUserReference', async () => {
@@ -132,7 +132,7 @@ describe(DeleteUserCourseGroupDataStep.name, () => {
 
 				await step.execute({ userId: user.id });
 
-				expect(courseGroupRepo.removeUserReference).toBeCalledWith(user.id);
+				expect(courseGroupRepo.removeUserReference).toHaveBeenCalledWith(user.id);
 			});
 
 			it('should return DomainDeletionReport ', async () => {

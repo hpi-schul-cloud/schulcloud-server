@@ -95,7 +95,7 @@ describe('CourseRule', () => {
 
 				service.hasPermission(user, course, { action: Action.read, requiredPermissions: [] });
 
-				expect(spy).toBeCalledWith(user, course, ['teachers', 'substitutionTeachers', 'students']);
+				expect(spy).toHaveBeenCalledWith(user, course, ['teachers', 'substitutionTeachers', 'students']);
 			});
 		});
 
@@ -113,7 +113,7 @@ describe('CourseRule', () => {
 
 				service.hasPermission(user, course, { action: Action.write, requiredPermissions: [] });
 
-				expect(spy).toBeCalledWith(user, course, ['teachers', 'substitutionTeachers']);
+				expect(spy).toHaveBeenCalledWith(user, course, ['teachers', 'substitutionTeachers']);
 			});
 		});
 

@@ -86,7 +86,7 @@ describe(MediaSchoolLicenseService.name, () => {
 
 				await mediaSchoolLicenseService.saveAllMediaSchoolLicenses(mediaSchooLicenses);
 
-				expect(mediaSchoolLicenseRepo.saveAll).toBeCalledWith(mediaSchooLicenses);
+				expect(mediaSchoolLicenseRepo.saveAll).toHaveBeenCalledWith(mediaSchooLicenses);
 			});
 
 			it('should return the saved media school licenses', async () => {
@@ -115,7 +115,7 @@ describe(MediaSchoolLicenseService.name, () => {
 
 				await mediaSchoolLicenseService.deleteAllByMediaSource(mediaSource.id);
 
-				expect(mediaSchoolLicenseRepo.deleteAllByMediaSource).toBeCalledWith(mediaSource.id);
+				expect(mediaSchoolLicenseRepo.deleteAllByMediaSource).toHaveBeenCalledWith(mediaSource.id);
 			});
 		});
 	});
@@ -139,7 +139,7 @@ describe(MediaSchoolLicenseService.name, () => {
 
 				await mediaSchoolLicenseService.findMediaSchoolLicensesBySchoolId(schoolId);
 
-				expect(mediaSchoolLicenseRepo.findMediaSchoolLicensesBySchoolId).toBeCalledWith(schoolId);
+				expect(mediaSchoolLicenseRepo.findMediaSchoolLicensesBySchoolId).toHaveBeenCalledWith(schoolId);
 			});
 
 			it('should return the found media school licenses', async () => {
@@ -291,7 +291,7 @@ describe(MediaSchoolLicenseService.name, () => {
 
 				await mediaSchoolLicenseService.deleteAllBySchoolAndMediaSource(school.id, mediaSource.id);
 
-				expect(mediaSchoolLicenseRepo.deleteAllBySchoolAndMediaSource).toBeCalledWith(school.id, mediaSource.id);
+				expect(mediaSchoolLicenseRepo.deleteAllBySchoolAndMediaSource).toHaveBeenCalledWith(school.id, mediaSource.id);
 			});
 		});
 	});
@@ -322,7 +322,7 @@ describe(MediaSchoolLicenseService.name, () => {
 
 				await mediaSchoolLicenseService.updateMediaSchoolLicenses(school.id);
 
-				expect(schoolService.getSchoolById).toBeCalledWith(school.id);
+				expect(schoolService.getSchoolById).toHaveBeenCalledWith(school.id);
 			});
 		});
 
@@ -349,7 +349,7 @@ describe(MediaSchoolLicenseService.name, () => {
 
 				await mediaSchoolLicenseService.updateMediaSchoolLicenses(school.id);
 
-				expect(mediaSourceService.findByFormat).toBeCalledWith(MediaSourceDataFormat.VIDIS);
+				expect(mediaSourceService.findByFormat).toHaveBeenCalledWith(MediaSourceDataFormat.VIDIS);
 			});
 		});
 

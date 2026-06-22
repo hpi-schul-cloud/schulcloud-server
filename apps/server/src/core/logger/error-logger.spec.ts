@@ -38,7 +38,7 @@ describe('ErrorLogger', () => {
 
 			service.emerg(loggable);
 
-			expect(winstonLogger.emerg).toBeCalledWith(expectedMessage);
+			expect(winstonLogger.emerg).toHaveBeenCalledWith(expectedMessage);
 		});
 	});
 
@@ -51,7 +51,7 @@ describe('ErrorLogger', () => {
 
 			service.alert(loggable);
 
-			expect(winstonLogger.alert).toBeCalledWith(expectedMessage);
+			expect(winstonLogger.alert).toHaveBeenCalledWith(expectedMessage);
 		});
 	});
 
@@ -64,7 +64,7 @@ describe('ErrorLogger', () => {
 
 			service.crit(loggable);
 
-			expect(winstonLogger.crit).toBeCalledWith(expectedMessage);
+			expect(winstonLogger.crit).toHaveBeenCalledWith(expectedMessage);
 		});
 	});
 
@@ -77,7 +77,7 @@ describe('ErrorLogger', () => {
 
 			service.error(loggable);
 
-			expect(winstonLogger.error).toBeCalledWith(expectedMessage);
+			expect(winstonLogger.error).toHaveBeenCalledWith(expectedMessage);
 		});
 	});
 });

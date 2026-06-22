@@ -80,7 +80,7 @@ describe(SynchronizationService.name, () => {
 				const { synchronizationId } = setup();
 				await service.findById(synchronizationId);
 
-				expect(repo.findById).toBeCalledWith(synchronizationId);
+				expect(repo.findById).toHaveBeenCalledWith(synchronizationId);
 			});
 
 			it('should return synchronization', async () => {
@@ -106,7 +106,7 @@ describe(SynchronizationService.name, () => {
 
 				await service.update(synchronization);
 
-				expect(repo.update).toBeCalledWith(synchronization);
+				expect(repo.update).toHaveBeenCalledWith(synchronization);
 			});
 		});
 	});

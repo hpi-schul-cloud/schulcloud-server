@@ -362,7 +362,7 @@ describe('TaskUC', () => {
 			it('should call authorizationService.hasAllPermissions with correct permissions and throw', async () => {
 				const { user, paginationParams } = setup();
 
-				await expect(service.findAll(user.id, paginationParams)).rejects.toThrowError(UnauthorizedException);
+				await expect(service.findAll(user.id, paginationParams)).rejects.toThrow(UnauthorizedException);
 
 				expect(authorizationService.hasAllPermissions).toHaveBeenNthCalledWith(1, user, [
 					Permission.TASK_DASHBOARD_VIEW_V3,
@@ -676,7 +676,7 @@ describe('TaskUC', () => {
 
 				await service.changeFinishedForUser(user.id, task.id, true);
 
-				expect(authorizationService.checkPermission).toBeCalledWith(user, task, {
+				expect(authorizationService.checkPermission).toHaveBeenCalledWith(user, task, {
 					action: Action.read,
 					requiredPermissions: [],
 				});
@@ -689,7 +689,7 @@ describe('TaskUC', () => {
 
 				await service.changeFinishedForUser(user.id, task.id, true);
 
-				expect(task.finishForUser).toBeCalled();
+				expect(task.finishForUser).toHaveBeenCalled();
 
 				restoreMocks();
 			});
@@ -699,7 +699,7 @@ describe('TaskUC', () => {
 
 				await service.changeFinishedForUser(user.id, task.id, false);
 
-				expect(task.restoreForUser).toBeCalled();
+				expect(task.restoreForUser).toHaveBeenCalled();
 
 				restoreMocks();
 			});
@@ -709,7 +709,7 @@ describe('TaskUC', () => {
 
 				await service.changeFinishedForUser(user.id, task.id, true);
 
-				expect(taskRepo.save).toBeCalledWith(task);
+				expect(taskRepo.save).toHaveBeenCalledWith(task);
 
 				restoreMocks();
 			});
@@ -755,7 +755,7 @@ describe('TaskUC', () => {
 
 				const result = await service.changeFinishedForUser(user.id, task.id, true);
 
-				expect(task.createTeacherStatusForUser).toBeCalled();
+				expect(task.createTeacherStatusForUser).toHaveBeenCalled();
 				expect(result.task).toEqual(task);
 				expect(result.status).toEqual(mockStatus);
 
@@ -792,7 +792,7 @@ describe('TaskUC', () => {
 
 				const result = await service.changeFinishedForUser(user.id, task.id, true);
 
-				expect(task.createStudentStatusForUser).toBeCalled();
+				expect(task.createStudentStatusForUser).toHaveBeenCalled();
 				expect(result.task).toEqual(task);
 				expect(result.status).toEqual(mockStatus);
 
@@ -823,7 +823,7 @@ describe('TaskUC', () => {
 					await service.revertPublished(user.id, task.id);
 				}).rejects.toThrow(ForbiddenException);
 
-				expect(authorizationService.checkPermission).toBeCalledWith(user, task, {
+				expect(authorizationService.checkPermission).toHaveBeenCalledWith(user, task, {
 					action: Action.write,
 					requiredPermissions: [],
 				});
@@ -851,7 +851,7 @@ describe('TaskUC', () => {
 					await service.revertPublished(user.id, task.id);
 				}).rejects.toThrow(ForbiddenException);
 
-				expect(authorizationService.checkPermission).toBeCalledWith(user, task, {
+				expect(authorizationService.checkPermission).toHaveBeenCalledWith(user, task, {
 					action: Action.write,
 					requiredPermissions: [],
 				});
@@ -881,7 +881,7 @@ describe('TaskUC', () => {
 
 				await service.revertPublished(user.id, task.id);
 
-				expect(task.unpublish).toBeCalled();
+				expect(task.unpublish).toHaveBeenCalled();
 
 				restoreMocks();
 			});
@@ -891,7 +891,7 @@ describe('TaskUC', () => {
 
 				await service.revertPublished(user.id, task.id);
 
-				expect(taskRepo.save).toBeCalledWith(task);
+				expect(taskRepo.save).toHaveBeenCalledWith(task);
 
 				restoreMocks();
 			});
@@ -901,7 +901,7 @@ describe('TaskUC', () => {
 
 				await service.revertPublished(user.id, task.id);
 
-				expect(task.createTeacherStatusForUser).toBeCalled();
+				expect(task.createTeacherStatusForUser).toHaveBeenCalled();
 
 				restoreMocks();
 			});
@@ -979,7 +979,7 @@ describe('TaskUC', () => {
 
 				await service.delete(user.id, task.id);
 
-				expect(authorizationService.checkPermission).toBeCalledWith(user, task, {
+				expect(authorizationService.checkPermission).toHaveBeenCalledWith(user, task, {
 					action: Action.write,
 					requiredPermissions: [],
 				});
@@ -990,7 +990,7 @@ describe('TaskUC', () => {
 
 				await service.delete(user.id, task.id);
 
-				expect(taskService.delete).toBeCalledWith(task);
+				expect(taskService.delete).toHaveBeenCalledWith(task);
 			});
 
 			it('should return true', async () => {

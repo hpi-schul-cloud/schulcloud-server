@@ -190,7 +190,7 @@ describe('RoomMembershipService', () => {
 					const { room } = setup();
 					roomMembershipRepo.findByRoomId.mockResolvedValue(null);
 
-					await expect(service.removeMembersFromRoom(room.id, [])).rejects.toThrowError(BadRequestException);
+					await expect(service.removeMembersFromRoom(room.id, [])).rejects.toThrow(BadRequestException);
 				});
 			});
 		});
@@ -350,7 +350,7 @@ describe('RoomMembershipService', () => {
 
 				await expect(
 					service.changeRoleOfRoomMembers(new ObjectId().toHexString(), [], RoleName.ROOMEDITOR)
-				).rejects.toThrowError(BadRequestException);
+				).rejects.toThrow(BadRequestException);
 			});
 		});
 

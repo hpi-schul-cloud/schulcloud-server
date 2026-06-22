@@ -117,7 +117,7 @@ describe(BoardNodeService.name, () => {
 			it('should throw error', async () => {
 				const { boardNode } = setup();
 
-				await expect(service.findByClassAndId(Card, boardNode.id)).rejects.toThrowError();
+				await expect(service.findByClassAndId(Card, boardNode.id)).rejects.toThrow();
 			});
 		});
 	});
@@ -157,7 +157,7 @@ describe(BoardNodeService.name, () => {
 			it('should throw error', async () => {
 				const { boardNode } = setupNoneElement();
 
-				await expect(service.findContentElementById(boardNode.id)).rejects.toThrowError();
+				await expect(service.findContentElementById(boardNode.id)).rejects.toThrow();
 			});
 		});
 	});
@@ -197,7 +197,7 @@ describe(BoardNodeService.name, () => {
 			it('should throw error', async () => {
 				const { boardNode } = setupNoneElement();
 
-				await expect(service.findAnyMediaElementById(boardNode.id)).rejects.toThrowError();
+				await expect(service.findAnyMediaElementById(boardNode.id)).rejects.toThrow();
 			});
 		});
 	});

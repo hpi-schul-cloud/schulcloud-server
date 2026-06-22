@@ -276,7 +276,7 @@ describe('Lesson Entity', () => {
 
 				lesson.getStudentIds();
 
-				expect(spy).toBeCalled();
+				expect(spy).toHaveBeenCalled();
 			});
 
 			it('should return the userIds of the students', () => {
@@ -311,7 +311,7 @@ describe('Lesson Entity', () => {
 
 				lesson.getStudentIds();
 
-				expect(spy).toBeCalled();
+				expect(spy).toHaveBeenCalled();
 			});
 
 			it('should return the userIds of the students', () => {

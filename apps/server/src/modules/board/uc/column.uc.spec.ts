@@ -105,7 +105,7 @@ describe(ColumnUc.name, () => {
 				};
 				columnBoardService.copyCard.mockResolvedValueOnce(copyStatus);
 
-				await expect(uc.copyCard(user.id, card.id, 'school-id')).rejects.toThrowError('Copied entity is not a card');
+				await expect(uc.copyCard(user.id, card.id, 'school-id')).rejects.toThrow('Copied entity is not a card');
 			});
 		});
 	});
@@ -119,7 +119,7 @@ describe(ColumnUc.name, () => {
 
 				boardNodeService.findByClassAndId.mockResolvedValueOnce(cardWithoutParent);
 
-				await expect(uc.moveCard(user.id, card.id, column.id)).rejects.toThrowError('Card has no parent column');
+				await expect(uc.moveCard(user.id, card.id, column.id)).rejects.toThrow('Card has no parent column');
 			});
 		});
 	});

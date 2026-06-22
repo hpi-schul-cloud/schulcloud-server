@@ -69,7 +69,7 @@ describe('PseudonymService', () => {
 			it('should throw an error', async () => {
 				const { user, externalTool } = setup();
 
-				await expect(service.findByUserAndToolOrThrow(user, externalTool)).rejects.toThrowError(
+				await expect(service.findByUserAndToolOrThrow(user, externalTool)).rejects.toThrow(
 					InternalServerErrorException
 				);
 			});
@@ -164,9 +164,7 @@ describe('PseudonymService', () => {
 			it('should throw an error', async () => {
 				const { user, externalTool } = setup();
 
-				await expect(service.findOrCreatePseudonym(user, externalTool)).rejects.toThrowError(
-					InternalServerErrorException
-				);
+				await expect(service.findOrCreatePseudonym(user, externalTool)).rejects.toThrow(InternalServerErrorException);
 			});
 		});
 
@@ -215,7 +213,7 @@ describe('PseudonymService', () => {
 			it('should throw an error', async () => {
 				const { user } = setup();
 
-				await expect(service.findByUserId(user.id as string)).rejects.toThrowError(InternalServerErrorException);
+				await expect(service.findByUserId(user.id as string)).rejects.toThrow(InternalServerErrorException);
 			});
 		});
 

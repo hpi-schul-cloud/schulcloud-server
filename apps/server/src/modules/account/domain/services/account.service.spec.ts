@@ -702,7 +702,7 @@ describe('AccountService', () => {
 						email: testMail,
 					})
 				).resolves.not.toThrow();
-				expect(accountSaveSpy).toBeCalledWith(expect.objectContaining({ username: testMail.toLowerCase() }));
+				expect(accountSaveSpy).toHaveBeenCalledWith(expect.objectContaining({ username: testMail.toLowerCase() }));
 			});
 		});
 
@@ -736,7 +736,7 @@ describe('AccountService', () => {
 						email: testMail,
 					})
 				).resolves.not.toThrow();
-				expect(userUpdateSpy).toBeCalledWith(expect.objectContaining({ email: testMail.toLowerCase() }));
+				expect(userUpdateSpy).toHaveBeenCalledWith(expect.objectContaining({ email: testMail.toLowerCase() }));
 			});
 		});
 
@@ -771,8 +771,8 @@ describe('AccountService', () => {
 						email: testMail,
 					})
 				).resolves.not.toThrow();
-				expect(userUpdateSpy).toBeCalledWith(expect.objectContaining({ email: testMail.toLowerCase() }));
-				expect(accountSaveSpy).toBeCalledWith(expect.objectContaining({ username: testMail.toLowerCase() }));
+				expect(userUpdateSpy).toHaveBeenCalledWith(expect.objectContaining({ email: testMail.toLowerCase() }));
+				expect(accountSaveSpy).toHaveBeenCalledWith(expect.objectContaining({ username: testMail.toLowerCase() }));
 			});
 		});
 

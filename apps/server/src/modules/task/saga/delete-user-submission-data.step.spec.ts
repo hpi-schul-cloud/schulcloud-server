@@ -104,7 +104,7 @@ describe(DeleteUserSubmissionDataStep.name, () => {
 
 				expect(result.count).toEqual(1);
 				expect(result.refs.length).toEqual(1);
-				expect(submissionRepo.delete).toBeCalledTimes(1);
+				expect(submissionRepo.delete).toHaveBeenCalledTimes(1);
 				expect(submissionRepo.delete).toHaveBeenCalledWith([submission]);
 			});
 		});

@@ -528,7 +528,11 @@ describe(SchulconnexToolProvisioningService.name, () => {
 				await service.provisionSchoolExternalTools(userId, schoolId, systemId);
 
 				expect(logger.warning).toHaveBeenCalledWith(
-					new ExternalToolMetadataUpdateFailedLoggable(expect.any(ExternalTool), mediaUserLicense, error)
+					new ExternalToolMetadataUpdateFailedLoggable(
+						expect.any(ExternalTool) as unknown as ExternalTool,
+						mediaUserLicense,
+						error
+					)
 				);
 			});
 

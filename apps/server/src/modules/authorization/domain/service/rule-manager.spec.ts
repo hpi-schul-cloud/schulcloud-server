@@ -67,8 +67,8 @@ describe('RuleManager', () => {
 
 				service.selectRule(user, object, context);
 
-				expect(applicableRule.isApplicable).toBeCalled();
-				expect(notApplicableRule.isApplicable).toBeCalled();
+				expect(applicableRule.isApplicable).toHaveBeenCalled();
+				expect(notApplicableRule.isApplicable).toHaveBeenCalled();
 			});
 
 			it('should return Applicable Rule', () => {

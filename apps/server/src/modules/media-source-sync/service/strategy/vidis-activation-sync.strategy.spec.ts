@@ -151,7 +151,7 @@ describe(VidisActivationSyncStrategy.name, () => {
 
 				await service.syncAllMediaActivations(mediaSource);
 
-				expect(mediaSchoolLicenseService.saveAllMediaSchoolLicenses).toBeCalledTimes(items.length);
+				expect(mediaSchoolLicenseService.saveAllMediaSchoolLicenses).toHaveBeenCalledTimes(items.length);
 				const allSavedLicenses = getAllSavedLicences();
 				expect(allSavedLicenses).toEqual(expect.arrayContaining(expectedSavedLicenses));
 			});
@@ -292,7 +292,7 @@ describe(VidisActivationSyncStrategy.name, () => {
 				await service.syncAllMediaActivations(mediaSource);
 
 				expectedSchoolNumbers.forEach((schoolNumber: string) => {
-					expect(schoolService.getSchoolByOfficialSchoolNumber).toBeCalledWith(schoolNumber);
+					expect(schoolService.getSchoolByOfficialSchoolNumber).toHaveBeenCalledWith(schoolNumber);
 				});
 			});
 
@@ -309,7 +309,7 @@ describe(VidisActivationSyncStrategy.name, () => {
 
 				await service.syncAllMediaActivations(mediaSource);
 
-				expect(mediaSchoolLicenseService.saveAllMediaSchoolLicenses).toBeCalledTimes(items.length);
+				expect(mediaSchoolLicenseService.saveAllMediaSchoolLicenses).toHaveBeenCalledTimes(items.length);
 				const allSavedLicenses = getAllSavedLicences();
 				expect(allSavedLicenses).toEqual(expect.arrayContaining(expectedSavedLicenses));
 			});
@@ -360,7 +360,7 @@ describe(VidisActivationSyncStrategy.name, () => {
 				await service.syncAllMediaActivations(mediaSource);
 
 				expectedSchoolNumbers.forEach((schoolNumber: string) => {
-					expect(schoolService.getSchoolByOfficialSchoolNumber).toBeCalledWith(schoolNumber);
+					expect(schoolService.getSchoolByOfficialSchoolNumber).toHaveBeenCalledWith(schoolNumber);
 				});
 			});
 
@@ -377,7 +377,7 @@ describe(VidisActivationSyncStrategy.name, () => {
 
 				await service.syncAllMediaActivations(mediaSource);
 
-				expect(mediaSchoolLicenseService.saveAllMediaSchoolLicenses).toBeCalledTimes(items.length);
+				expect(mediaSchoolLicenseService.saveAllMediaSchoolLicenses).toHaveBeenCalledTimes(items.length);
 				const allSavedLicenses = getAllSavedLicences();
 				expect(allSavedLicenses).toEqual(expect.arrayContaining(expectedSavedLicenses));
 			});

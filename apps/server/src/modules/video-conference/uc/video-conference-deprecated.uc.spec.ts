@@ -691,7 +691,7 @@ describe('VideoConferenceUc', () => {
 			const result = await useCase.getMeetingInfo(defaultCurrentUser, VideoConferenceScope.COURSE, course.id);
 
 			// Assert
-			expect(bbbService.getMeetingInfo).toBeCalledWith(config);
+			expect(bbbService.getMeetingInfo).toHaveBeenCalledWith(config);
 			expect(result.bbbResponse).toEqual(bbbResponse);
 			expect(result.options).toEqual(defaultOptions);
 		});
@@ -706,7 +706,7 @@ describe('VideoConferenceUc', () => {
 			const result = await useCase.getMeetingInfo(defaultCurrentUser, VideoConferenceScope.COURSE, course.id);
 
 			// Assert
-			expect(bbbService.getMeetingInfo).toBeCalledWith(config);
+			expect(bbbService.getMeetingInfo).toHaveBeenCalledWith(config);
 			expect(result.bbbResponse).toEqual(bbbResponse);
 			expect(result.options).toEqual({});
 		});
@@ -720,7 +720,7 @@ describe('VideoConferenceUc', () => {
 			const result = await useCase.getMeetingInfo(defaultCurrentUser, VideoConferenceScope.COURSE, course.id);
 
 			// Assert
-			expect(bbbService.getMeetingInfo).toBeCalledWith(config);
+			expect(bbbService.getMeetingInfo).toHaveBeenCalledWith(config);
 			expect(result.state).toEqual(VideoConferenceState.NOT_STARTED);
 			expect(result.options).toEqual(defaultVideoConferenceOptions);
 		});
@@ -735,7 +735,7 @@ describe('VideoConferenceUc', () => {
 			const result = await useCase.getMeetingInfo(defaultCurrentUser, VideoConferenceScope.COURSE, course.id);
 
 			// Assert
-			expect(bbbService.getMeetingInfo).toBeCalledWith(config);
+			expect(bbbService.getMeetingInfo).toHaveBeenCalledWith(config);
 			expect(result.state).toEqual(VideoConferenceState.NOT_STARTED);
 			expect(result.options).toEqual({});
 		});

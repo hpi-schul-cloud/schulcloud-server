@@ -90,7 +90,7 @@ describe('LessonService', () => {
 
 			await lessonService.findByCourseIds(courseIds);
 
-			expect(lessonRepo.findAllByCourseIds).toBeCalledWith(courseIds, undefined);
+			expect(lessonRepo.findAllByCourseIds).toHaveBeenCalledWith(courseIds, undefined);
 		});
 
 		it('should pass filters', async () => {
@@ -100,7 +100,7 @@ describe('LessonService', () => {
 
 			await lessonService.findByCourseIds(courseIds, filters);
 
-			expect(lessonRepo.findAllByCourseIds).toBeCalledWith(courseIds, filters);
+			expect(lessonRepo.findAllByCourseIds).toHaveBeenCalledWith(courseIds, filters);
 		});
 	});
 
@@ -131,7 +131,7 @@ describe('LessonService', () => {
 				const { userId } = setup();
 
 				await expect(lessonService.findAllLessonsByUserId(userId.toHexString())).resolves.not.toThrow();
-				expect(lessonRepo.findByUserId).toBeCalledWith(userId.toHexString());
+				expect(lessonRepo.findByUserId).toHaveBeenCalledWith(userId.toHexString());
 			});
 
 			it('should return array of lessons with userId', async () => {

@@ -434,7 +434,7 @@ describe('LegacySchoolService', () => {
 			it('should throw error', async () => {
 				const { name, federalStateName } = setup();
 
-				await expect(schoolService.createSchool({ name, federalStateName })).rejects.toThrowError(
+				await expect(schoolService.createSchool({ name, federalStateName })).rejects.toThrow(
 					'No storage providers found'
 				);
 			});

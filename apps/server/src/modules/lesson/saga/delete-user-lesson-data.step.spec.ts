@@ -95,7 +95,7 @@ describe(DeleteUserLessonDataStep.name, () => {
 
 				await step.execute({ userId: userId.toHexString() });
 
-				expect(lessonRepo.findByUserId).toBeCalledWith(userId.toHexString());
+				expect(lessonRepo.findByUserId).toHaveBeenCalledWith(userId.toHexString());
 			});
 
 			it('should call lessonRepo.removeUserReference', async () => {
@@ -103,7 +103,7 @@ describe(DeleteUserLessonDataStep.name, () => {
 
 				await step.execute({ userId: userId.toHexString() });
 
-				expect(lessonRepo.removeUserReference).toBeCalledWith(userId.toHexString());
+				expect(lessonRepo.removeUserReference).toHaveBeenCalledWith(userId.toHexString());
 			});
 
 			it('should update lessons without deleted user', async () => {

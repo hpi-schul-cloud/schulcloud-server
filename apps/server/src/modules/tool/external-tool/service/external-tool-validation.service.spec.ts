@@ -948,7 +948,7 @@ describe(ExternalToolValidationService.name, () => {
 						const result: Promise<void> = service.validateUpdate(existingToolToUpdateId, toolWithNewParams);
 
 						await expect(result).rejects.toThrow(expectedError);
-						expect(externalToolService.findExternalTools).toBeCalledWith({ isPreferred: true });
+						expect(externalToolService.findExternalTools).toHaveBeenCalledWith({ isPreferred: true });
 					});
 				});
 
@@ -993,7 +993,7 @@ describe(ExternalToolValidationService.name, () => {
 						const result: Promise<void> = service.validateUpdate(existingToolToUpdateId, toolWithNewParams);
 
 						await expect(result).rejects.toThrow(expectedError);
-						expect(externalToolService.findExternalTools).toBeCalledWith({ isPreferred: true });
+						expect(externalToolService.findExternalTools).toHaveBeenCalledWith({ isPreferred: true });
 					});
 				});
 			});
@@ -1038,7 +1038,7 @@ describe(ExternalToolValidationService.name, () => {
 					const result: Promise<void> = service.validateUpdate(existingToolToUpdateId, toolWithNewParams);
 
 					await expect(result).resolves.not.toThrow();
-					expect(externalToolService.findExternalTools).toBeCalledWith({ isPreferred: true });
+					expect(externalToolService.findExternalTools).toHaveBeenCalledWith({ isPreferred: true });
 				});
 			});
 
@@ -1085,7 +1085,7 @@ describe(ExternalToolValidationService.name, () => {
 					const result: Promise<void> = service.validateUpdate(existingToolToUpdateId, toolWithNewParams);
 
 					await expect(result).resolves.not.toThrow();
-					expect(externalToolService.findExternalTools).toBeCalledWith({ isPreferred: true });
+					expect(externalToolService.findExternalTools).toHaveBeenCalledWith({ isPreferred: true });
 				});
 			});
 		});

@@ -117,7 +117,7 @@ describe('BoardNode', () => {
 			it('should throw an error', () => {
 				const { parent, existingChild } = setupWithChild();
 
-				expect(() => parent.addChild(existingChild)).toThrowError();
+				expect(() => parent.addChild(existingChild)).toThrow();
 			});
 		});
 
@@ -147,7 +147,7 @@ describe('BoardNode', () => {
 				it('should throw an error', () => {
 					const { parent, child } = setup();
 
-					expect(() => parent.addChild(child, -1)).toThrowError();
+					expect(() => parent.addChild(child, -1)).toThrow();
 				});
 			});
 
@@ -195,7 +195,7 @@ describe('BoardNode', () => {
 			it('should throw an error', () => {
 				const { parent, child } = setup();
 
-				expect(() => child.addChild(parent)).toThrowError();
+				expect(() => child.addChild(parent)).toThrow();
 			});
 		});
 	});

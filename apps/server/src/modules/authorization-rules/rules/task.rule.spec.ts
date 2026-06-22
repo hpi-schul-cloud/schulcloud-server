@@ -98,7 +98,7 @@ describe('TaskRule', () => {
 
 				service.hasPermission(user, task, { action: Action.read, requiredPermissions: [] });
 
-				expect(spy).toBeCalledWith(user, []);
+				expect(spy).toHaveBeenCalledWith(user, []);
 			});
 
 			it('should call baseRule.hasAccessToEntity on AuthorizationHelper', () => {
@@ -107,7 +107,7 @@ describe('TaskRule', () => {
 
 				service.hasPermission(user, task, { action: Action.read, requiredPermissions: [] });
 
-				expect(spy).toBeCalledWith(user, task, ['creator']);
+				expect(spy).toHaveBeenCalledWith(user, task, ['creator']);
 			});
 
 			it('should return "true" if user has all required permissions', () => {
@@ -142,7 +142,7 @@ describe('TaskRule', () => {
 
 				service.hasPermission(user, task, { action: Action.write, requiredPermissions: [permissionA] });
 
-				expect(spy).toBeCalledWith(user, task.course, { action: Action.write, requiredPermissions: [] });
+				expect(spy).toHaveBeenCalledWith(user, task.course, { action: Action.write, requiredPermissions: [] });
 			});
 
 			it('should return "true" if user in scope', () => {
@@ -170,7 +170,7 @@ describe('TaskRule', () => {
 
 				service.hasPermission(user, task, { action: Action.write, requiredPermissions: [permissionA] });
 
-				expect(spy).toBeCalledWith(user, task.lesson, { action: Action.write, requiredPermissions: [] });
+				expect(spy).toHaveBeenCalledWith(user, task.lesson, { action: Action.write, requiredPermissions: [] });
 			});
 
 			it('should return "true" if user is in scope and lesson hidden', () => {

@@ -101,7 +101,7 @@ describe(AuthenticationClientAdapter.name, () => {
 
 				const expectedError = new AuthenticationErrorLoggableException(error, params.username);
 
-				await expect(service.loginServiceAccount(params)).rejects.toThrowError(expectedError);
+				await expect(service.loginServiceAccount(params)).rejects.toThrow(expectedError);
 			});
 		});
 
@@ -171,7 +171,7 @@ describe(AuthenticationClientAdapter.name, () => {
 
 				const expectedError = new AuthenticationErrorLoggableException(error, 'unknown');
 
-				await expect(service.logout(accessToken)).rejects.toThrowError(expectedError);
+				await expect(service.logout(accessToken)).rejects.toThrow(expectedError);
 			});
 		});
 

@@ -236,7 +236,7 @@ describe('Task Entity', () => {
 
 				expect(() => {
 					task.createTeacherStatusForUser(user);
-				}).toThrowError(InternalServerErrorException);
+				}).toThrow(InternalServerErrorException);
 			});
 		});
 
@@ -254,7 +254,7 @@ describe('Task Entity', () => {
 
 				expect(() => {
 					task.createTeacherStatusForUser(user);
-				}).toThrowError(InternalServerErrorException);
+				}).toThrow(InternalServerErrorException);
 			});
 		});
 
@@ -359,9 +359,9 @@ describe('Task Entity', () => {
 
 				task.createTeacherStatusForUser(user);
 
-				expect(spy1).toBeCalledTimes(1);
-				expect(spy2).toBeCalledTimes(1);
-				expect(spy3).toBeCalledTimes(1);
+				expect(spy1).toHaveBeenCalledTimes(1);
+				expect(spy2).toHaveBeenCalledTimes(1);
+				expect(spy3).toHaveBeenCalledTimes(1);
 			});
 
 			it('should be create correct status with  total user number in submitted', () => {
@@ -420,9 +420,9 @@ describe('Task Entity', () => {
 				task.createTeacherStatusForUser(user);
 
 				// one for graded and one for submitted status
-				expect(spy1).toBeCalledTimes(2);
-				expect(spy2).toBeCalledTimes(2);
-				expect(spy3).toBeCalledTimes(2);
+				expect(spy1).toHaveBeenCalledTimes(2);
+				expect(spy2).toHaveBeenCalledTimes(2);
+				expect(spy3).toHaveBeenCalledTimes(2);
 			});
 
 			it('should be create correct status with  total user number in submitted', () => {
@@ -520,7 +520,7 @@ describe('Task Entity', () => {
 
 				expect(() => {
 					task.createStudentStatusForUser(user);
-				}).toThrowError(InternalServerErrorException);
+				}).toThrow(InternalServerErrorException);
 			});
 		});
 
@@ -538,7 +538,7 @@ describe('Task Entity', () => {
 
 				expect(() => {
 					task.createStudentStatusForUser(user);
-				}).toThrowError(InternalServerErrorException);
+				}).toThrow(InternalServerErrorException);
 			});
 		});
 

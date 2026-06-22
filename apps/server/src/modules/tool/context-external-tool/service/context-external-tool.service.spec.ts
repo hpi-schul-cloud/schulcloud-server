@@ -576,7 +576,7 @@ describe(ContextExternalToolService.name, () => {
 
 					await service.copyContextExternalTool(contextExternalTool, contextCopyId, targetSchool.id);
 
-					expect(contextExternalToolRepo.save).toBeCalledWith(
+					expect(contextExternalToolRepo.save).toHaveBeenCalledWith(
 						new ContextExternalTool({
 							...contextExternalTool.getProps(),
 							schoolToolRef: expectedSchoolToolRef,
@@ -627,7 +627,7 @@ describe(ContextExternalToolService.name, () => {
 
 					await service.copyContextExternalTool(contextExternalTool, contextCopyId, targetSchool.id);
 
-					expect(contextExternalToolRepo.save).not.toBeCalled();
+					expect(contextExternalToolRepo.save).not.toHaveBeenCalled();
 				});
 			});
 		});
