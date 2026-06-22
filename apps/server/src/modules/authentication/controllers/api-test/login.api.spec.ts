@@ -640,5 +640,13 @@ describe('Login Controller (api)', () => {
 				});
 			});
 		});
+
+		describe('when an invalid access token is provided', () => {
+			it('should return error response', async () => {
+				const response: Response = await testApiClient.post('/refresh-session');
+
+				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
+			});
+		});
 	});
 });
