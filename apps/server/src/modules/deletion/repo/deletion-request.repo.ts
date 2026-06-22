@@ -105,6 +105,18 @@ export class DeletionRequestRepo {
 		return true;
 	}
 
+	public async markDeletionRequestsAsRegistered(deletionRequestIds: EntityId[]): Promise<void> {
+		if (deletionRequestIds.length === 0) {
+			return;
+		}
+
+		await this.em.nativeUpdate(
+			DeletionRequestEntity,
+			{ id: { $in: deletionRequestIds }, status: StatusModel.FAILED },
+			{ status: StatusModel.REGISTERED }
+		);
+	}
+
 	public async deleteById(deletionRequestId: EntityId): Promise<boolean> {
 		const entity: DeletionRequestEntity | null = await this.em.findOneOrFail(DeletionRequestEntity, {
 			id: deletionRequestId,
@@ -141,18 +153,6 @@ export class DeletionRequestRepo {
 		});
 
 		return entities.map((entity) => entity.id);
-	}
-
-	public async markDeletionRequestsAsRegistered(deletionRequestIds: EntityId[]): Promise<void> {
-		if (deletionRequestIds.length === 0) {
-			return;
-		}
-
-		await this.em.nativeUpdate(
-			DeletionRequestEntity,
-			{ id: { $in: deletionRequestIds }, status: StatusModel.FAILED },
-			{ status: StatusModel.REGISTERED }
-		);
 	}
 
 	public async groupTargetRefIdsByBatchAndStatus(
