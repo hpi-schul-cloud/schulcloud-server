@@ -397,14 +397,14 @@ describe('DeletionBatchService', () => {
 			const { batch } = setup();
 
 			await expect(
-				service.retryFailedDeletionRequestsForBatch(batch.id, [new ObjectId().toHexString()])
+				service.resetFailedDeletionRequestsForBatch(batch.id, [new ObjectId().toHexString()])
 			).rejects.toThrow('not part of batch');
 		});
 
 		it('should reset only failed USER deletion requests for selected targetRefIds', async () => {
 			const { batch, targetRefId1, deletionRequestId } = setup();
 
-			await service.retryFailedDeletionRequestsForBatch(batch.id, [targetRefId1]);
+			await service.resetFailedDeletionRequestsForBatch(batch.id, [targetRefId1]);
 
 			expect(deletionRequestService.findFailedDeletionRequestIdsByBatchAndTargetRefIds).toHaveBeenCalledWith(
 				batch.id,

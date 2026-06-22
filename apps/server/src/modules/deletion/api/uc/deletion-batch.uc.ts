@@ -6,9 +6,9 @@ import { EntityId } from '@shared/domain/types';
 import {
 	CreateDeletionBatchParams,
 	DeletionBatchDetails,
+	DeletionBatchService,
 	DeletionBatchSummary,
-} from '../../domain/service/deletion-batch.service';
-import { DeletionBatchService } from '../../domain/service/deletion-batch.service';
+} from '../../domain/service';
 import { BatchStatus, DomainName } from '../../domain/types';
 import { CantCreateDeletionRequestsForBatchErrorLoggable } from '../loggable/cant-create-deletion-requests-for-batch-error.loggable';
 
@@ -59,7 +59,7 @@ export class DeletionBatchUc {
 		return summary;
 	}
 
-	public async retryFailedDeletionRequestsForBatch(batchId: EntityId, targetRefIds: EntityId[]): Promise<void> {
-		await this.deletionBatchService.retryFailedDeletionRequestsForBatch(batchId, targetRefIds);
+	public async resetFailedDeletionRequestsForBatch(batchId: EntityId, targetRefIds: EntityId[]): Promise<void> {
+		await this.deletionBatchService.resetFailedDeletionRequestsForBatch(batchId, targetRefIds);
 	}
 }

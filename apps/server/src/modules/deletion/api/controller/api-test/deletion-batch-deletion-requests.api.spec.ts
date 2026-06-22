@@ -116,7 +116,7 @@ describe('createDeletionRequestsForBatch', () => {
 		it('should reset failed request to registered and delete logs for reset request ids', async () => {
 			const { batch, student1, failedRequest, successfulRequest } = await setup();
 
-			const response = await testApiClient.post(`/${batch.id}/retry-failed`, {
+			const response = await testApiClient.post(`/${batch.id}/reset-failed`, {
 				targetRefIds: [student1.id],
 			});
 
@@ -151,7 +151,7 @@ describe('createDeletionRequestsForBatch', () => {
 			const { batch } = await setup();
 			const unknownTargetRefId = new ObjectId().toHexString();
 
-			const response = await testApiClient.post(`/${batch.id}/retry-failed`, {
+			const response = await testApiClient.post(`/${batch.id}/reset-failed`, {
 				targetRefIds: [unknownTargetRefId],
 			});
 

@@ -164,7 +164,7 @@ export class DeletionBatchService {
 		return summary;
 	}
 
-	public async retryFailedDeletionRequestsForBatch(batchId: EntityId, targetRefIds: EntityId[]): Promise<void> {
+	public async resetFailedDeletionRequestsForBatch(batchId: EntityId, targetRefIds: EntityId[]): Promise<void> {
 		const deletionBatch = await this.deletionBatchRepo.findById(batchId);
 
 		const allowedTargetRefIds = new Set(deletionBatch.targetRefIds);

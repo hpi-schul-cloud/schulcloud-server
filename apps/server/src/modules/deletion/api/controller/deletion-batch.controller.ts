@@ -7,7 +7,7 @@ import { ApiValidationError } from '@shared/common/error';
 import { DeletionBatchSummary } from '../../domain/service';
 import { DeletionBatchMapper } from '../uc/deletion-batch.mapper';
 import { DeletionBatchUc } from '../uc/deletion-batch.uc';
-import { CreateDeletionBatchBodyParams, RetryFailedDeletionBatchBodyParams } from './dto';
+import { CreateDeletionBatchBodyParams, ResetFailedDeletionBatchBodyParams } from './dto';
 import { DeletionBatchPaginationParams } from './dto/request/deletion-batch-pagination.params';
 import { DeletionBatchItemResponse } from './dto/response/deletion-batch-item.response';
 import { DeletionBatchListResponse } from './dto/response/deletion-batch-list.response';
@@ -83,27 +83,15 @@ export class DeletionBatchController {
 		return response;
 	}
 
-	@Post(':batchId/retry-failed')
+	@Post(':batchId/reset-failed')
 	@HttpCode(204)
 	@ApiOperation({
 		summary: 'Reset failed deletion requests to registered for selected batch targetRefIds',
 	})
-	public async retryFailedDeletionRequestsForBatch(
-		@Param('batchId') batchId: EntityId,
-		@Body() body: RetryFailedDeletionBatchBodyParams
-	): Promise<void> {
-		await this.deletionBatchUc.retryFailedDeletionRequestsForBatch(batchId, body.targetRefIds);
-	}
-
-	@Post(':batchId/reset-failed')
-	@HttpCode(204)
-	@ApiOperation({
-		summary: 'Alias of retry-failed to reset failed deletion requests to registered',
-	})
 	public async resetFailedDeletionRequestsForBatch(
 		@Param('batchId') batchId: EntityId,
-		@Body() body: RetryFailedDeletionBatchBodyParams
+		@Body() body: ResetFailedDeletionBatchBodyParams
 	): Promise<void> {
-		await this.deletionBatchUc.retryFailedDeletionRequestsForBatch(batchId, body.targetRefIds);
+		await this.deletionBatchUc.resetFailedDeletionRequestsForBatch(batchId, body.targetRefIds);
 	}
 }
