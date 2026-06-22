@@ -1,4 +1,4 @@
-import { faker } from '@faker-js/faker/.';
+import { faker } from '@faker-js/faker';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { RoleName } from '@modules/role';
 import { roleFactory } from '@modules/role/testing';
