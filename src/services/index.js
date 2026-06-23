@@ -8,7 +8,6 @@ const calendar = require('./calendar');
 const school = require('./school');
 const system = require('./system');
 const lesson = require('./lesson');
-const account = require('./account');
 const authentication = require('./authentication');
 const user = require('./user');
 const role = require('./role');
@@ -47,7 +46,6 @@ module.exports = function initializeServices() {
 	app.configure(base64Files);
 	app.configure(user);
 	app.configure(role);
-	app.configure(account);
 	app.configure(system);
 	app.configure(school);
 	app.configure(resolve);

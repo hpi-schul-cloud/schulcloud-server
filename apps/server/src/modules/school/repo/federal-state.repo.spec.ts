@@ -33,6 +33,34 @@ describe('FederalStateRepo', () => {
 		expect(repo.entityName).toBe(FederalStateEntity);
 	});
 
+	describe('findByNameOrFail', () => {
+		const setup = async () => {
+			const federalState: FederalStateEntity = federalStateEntityFactory.build();
+			await em.persist(federalState).flush();
+			em.clear();
+
+			return {
+				federalState,
+			};
+		};
+
+		it('should return existing federalState', async () => {
+			const { federalState } = await setup();
+
+			const result = await repo.findByNameOrFail(federalState.name);
+
+			expect(result.id).toEqual(federalState.id);
+		});
+
+		it('should throw if no federalState exists', async () => {
+			await setup();
+
+			const func = () => repo.findByNameOrFail('non-existing');
+
+			await expect(func()).rejects.toThrow();
+		});
+	});
+
 	describe('findByName', () => {
 		const setup = async () => {
 			const federalState: FederalStateEntity = federalStateEntityFactory.build();
@@ -49,15 +77,16 @@ describe('FederalStateRepo', () => {
 
 			const result = await repo.findByName(federalState.name);
 
-			expect(result.id).toEqual(federalState.id);
+			expect(result).not.toBeNull();
+			expect(result?.id).toEqual(federalState.id);
 		});
 
 		it('should throw if no federalState exists', async () => {
 			await setup();
 
-			const func = () => repo.findByName('non-existing');
+			const result = await repo.findByName('non-existing');
 
-			await expect(func()).rejects.toThrow();
+			expect(result).toBeNull();
 		});
 	});
 });

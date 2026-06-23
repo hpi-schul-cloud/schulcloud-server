@@ -37,7 +37,8 @@ describe('me service integration tests', function test() {
 		it('When user sends an authorized request, then the call returns successfully', async () => {
 			const { _id: schoolId } = await testObjects.createTestSchool();
 			const user = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
-			const token = await testObjects.generateJWTFromUser(user);
+			const requestParams = await testObjects.generateRequestParamsFromUser(user);
+			const token = requestParams.authentication.accessToken;
 			const req = request
 				.execute(app)
 				.get('/me')

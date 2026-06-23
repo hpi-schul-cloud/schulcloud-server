@@ -1,10 +1,9 @@
 import { AccessTokenService } from '@infra/access-token';
-import { ICurrentUser, JwtPayload } from '@infra/auth-guard';
+import { ICurrentUser, JwtPayloadVo } from '@infra/auth-guard';
 import { JwtWhitelistAdapter } from '@infra/jwt-whitelist';
 import { AuthorizableReferenceType, AuthorizationContext } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import jwt from 'jsonwebtoken';
 import { AuthorizationReferenceService } from '../domain';
 import {
 	AccessTokenParams,
@@ -87,7 +86,7 @@ export class AuthorizationReferenceUc {
 		jwtToken: string
 	): Promise<AccessTokenResponse> {
 		// Just casting of JWT because validation already happened in the request pipeline
-		const decodedJwt = this.decodeJwt(jwtToken);
+		const decodedJwt = JwtPayloadVo.fromJwtToken(jwtToken);
 		const tokenMetadata = TokenMetadataFactory.buildFromCreateAccessTokenParams(params, currentUser, decodedJwt.jti);
 
 		await this.checkPermissionsForReference(tokenMetadata);
@@ -96,12 +95,6 @@ export class AuthorizationReferenceUc {
 		const accessTokenResponse = AuthorizationResponseMapper.mapToAccessTokenResponse(token);
 
 		return accessTokenResponse;
-	}
-
-	private decodeJwt(jwtToken: string): JwtPayload {
-		const decodedJwt = jwt.decode(jwtToken, { json: true }) as JwtPayload;
-
-		return decodedJwt;
 	}
 
 	private getFactoryCallback(accessToken: AccessTokenParams): (tokenMetadata: TokenMetadata) => TokenMetadata {

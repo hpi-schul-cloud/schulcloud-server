@@ -95,6 +95,22 @@ describe('LoginUc', () => {
 				expect(result).toEqual(accessToken);
 			});
 		});
+
+		describe('when currentUser is a service account', () => {
+			const setup = () => {
+				const currentUser = currentUserFactory.asServiceAccountUser().build();
+
+				return {
+					currentUser,
+				};
+			};
+
+			it('should throw UnauthorizedException', async () => {
+				const { currentUser } = setup();
+
+				await expect(loginUc.getLoginData(currentUser)).rejects.toThrow(UnauthorizedException);
+			});
+		});
 	});
 
 	describe('getLoginDataForServiceAccount', () => {

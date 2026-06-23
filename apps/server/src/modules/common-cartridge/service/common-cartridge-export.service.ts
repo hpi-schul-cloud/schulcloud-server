@@ -1,11 +1,9 @@
 import { Logger } from '@core/logger';
-import { JwtPayload } from '@infra/auth-guard';
+import { JwtPayloadVo } from '@infra/auth-guard';
 import {
 	BoardColumnBoardResponse,
-	BoardElementResponse,
 	BoardElementResponseType,
 	BoardLessonResponse,
-	BoardResponse,
 	BoardsClientAdapter,
 	BoardTaskResponse,
 	CardClientAdapter,
@@ -29,7 +27,6 @@ import {
 } from '@infra/common-cartridge-clients';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import archiver from 'archiver';
-import jwt from 'jsonwebtoken';
 import { Stream } from 'node:stream';
 import { CommonCartridgeFileBuilder } from '../export/builders/common-cartridge-file-builder';
 import { CommonCartridgeOrganizationNode } from '../export/builders/common-cartridge-organization-node';
@@ -85,17 +82,37 @@ export class CommonCartridgeExportService {
 		const roomBoard = await this.courseRoomsClientAdapter.getRoomBoardByCourseId(jwt, courseId);
 		this.logger.debug(new CommonCartridgeMessageLoggable('Loaded roomboard of course', { courseId }));
 
-		// add lessons to organization
-		await this.addLessons(jwt, builder, version, roomBoard.elements, exportedTopics);
-		this.logger.debug(new CommonCartridgeMessageLoggable('Added lessons of course', { courseId }));
+		// add elements in dashboard order
+		const exportedTopicIds = new Set(exportedTopics);
+		const exportedTaskIds = new Set(exportedTasks);
+		const exportedColumnBoardIds = new Set(exportedColumnBoards);
 
-		// add tasks to organization
-		await this.addTasks(jwt, builder, version, roomBoard.elements, exportedTasks);
-		this.logger.debug(new CommonCartridgeMessageLoggable('Added tasks of course', { courseId }));
-
-		// add column boards and cards to organization
-		await this.addColumnBoards(jwt, builder, version, roomBoard.elements, exportedColumnBoards);
-		this.logger.debug(new CommonCartridgeMessageLoggable('Added boards of course', { courseId }));
+		for (const element of roomBoard.elements) {
+			switch (element.type) {
+				case BoardElementResponseType.LESSON: {
+					const lesson = element.content as BoardLessonResponse;
+					if (exportedTopicIds.has(lesson.id)) {
+						await this.addLesson(jwt, builder, version, lesson.id);
+					}
+					break;
+				}
+				case BoardElementResponseType.TASK: {
+					const task = element.content as BoardTaskResponse;
+					if (exportedTaskIds.has(task.id)) {
+						await this.addTask(jwt, builder, version, task);
+					}
+					break;
+				}
+				case BoardElementResponseType.COLUMN_BOARD: {
+					const columnBoard = element.content as BoardColumnBoardResponse;
+					if (exportedColumnBoardIds.has(columnBoard.id)) {
+						await this.addColumnBoard(jwt, builder, version, columnBoard);
+					}
+					break;
+				}
+			}
+		}
+		this.logger.debug(new CommonCartridgeMessageLoggable('Added all elements of course', { courseId }));
 
 		builder.build();
 		this.logger.debug(new CommonCartridgeMessageLoggable('Built archive', { courseId }));
@@ -161,125 +178,89 @@ export class CommonCartridgeExportService {
 		}
 	}
 
-	private async addLessons(
+	private async addLesson(
 		jwt: string,
 		builder: CommonCartridgeFileBuilder,
 		version: CommonCartridgeVersion,
-		elements: BoardElementResponse[],
-		topics: string[]
+		lessonId: string
 	): Promise<void> {
-		const filteredLessons = this.filterLessonFromBoardElements(elements);
-		const lessonsIds = filteredLessons.filter((lesson) => topics.includes(lesson.id)).map((lesson) => lesson.id);
-		const lessons = await Promise.all(
-			lessonsIds.map(async (elementId) => {
-				const [lesson, linkedTasks] = await Promise.all([
-					this.lessonClientAdapter.getLessonById(jwt, elementId),
-					this.lessonClientAdapter.getLessonTasks(jwt, elementId),
-				]);
+		const [lesson, linkedTasks] = await Promise.all([
+			this.lessonClientAdapter.getLessonById(jwt, lessonId),
+			this.lessonClientAdapter.getLessonTasks(jwt, lessonId),
+		]);
+		const lessonWithTasks = { ...lesson, linkedTasks };
 
-				return { ...lesson, linkedTasks };
-			})
-		);
+		const lessonOrganization = builder.createOrganization(this.mapper.mapLessonToOrganization(lessonWithTasks));
 
-		lessons.forEach((lesson) => {
-			const lessonsOrganization = builder.createOrganization(this.mapper.mapLessonToOrganization(lesson));
+		lessonWithTasks.contents.forEach((content) => {
+			this.addComponentToOrganization(content, lessonOrganization);
+		});
 
-			lesson.contents.forEach((content) => {
-				this.addComponentToOrganization(content, lessonsOrganization);
-			});
-
-			lesson.linkedTasks.forEach((task) => {
-				lessonsOrganization.addResource(this.mapper.mapLinkedTaskToResource(task, version));
-			});
+		lessonWithTasks.linkedTasks.forEach((task) => {
+			lessonOrganization.addResource(this.mapper.mapLinkedTaskToResource(task, version));
 		});
 	}
 
-	private async addTasks(
+	private async addTask(
 		jwt: string,
 		builder: CommonCartridgeFileBuilder,
 		version: CommonCartridgeVersion,
-		elements: BoardElementResponse[],
-		exportedTasks: string[]
+		task: BoardTaskResponse
 	): Promise<void> {
-		const tasks: BoardTaskResponse[] = this.filterTasksFromBoardElements(elements).filter((task) =>
-			exportedTasks.includes(task.id)
-		);
-		const tasksOrganization = builder.createOrganization({
-			title: 'Aufgaben',
+		const taskOrganization = builder.createOrganization({
+			title: task.name,
 			identifier: createIdentifier(),
 		});
 
+		taskOrganization.addResource(this.mapper.mapTaskToResource(task, version));
+
+		const { schoolId } = JwtPayloadVo.fromJwtToken(jwt);
+		const fileRecords = await this.filesStorageClientAdapter.list(
+			jwt,
+			schoolId,
+			StorageLocation.SCHOOL,
+			task.id,
+			FileRecordParentType.TASKS
+		);
+
 		await Promise.all(
-			tasks.map(async (task) => {
-				const taskOrganization = tasksOrganization.createChild({
-					title: task.name,
-					identifier: createIdentifier(),
-				});
+			fileRecords.map(async (fileRecord) => {
+				if (fileRecord.securityCheckStatus === FileRecordScanStatus.BLOCKED) {
+					this.logger.info(
+						new CommonCartridgeMessageLoggable('A file was skipped because the securityCheckStatus is BLOCKED', {
+							fileId: fileRecord.id,
+							taskId: task.id,
+						})
+					);
+					return;
+				}
 
-				taskOrganization.addResource(this.mapper.mapTaskToResource(task, version));
+				const fileStream = await this.filesStorageClientAdapter.getStream(jwt, fileRecord.id, fileRecord.name);
 
-				const { schoolId } = this.getJwtPayload(jwt);
-				const fileRecords = await this.filesStorageClientAdapter.list(
-					jwt,
-					schoolId,
-					StorageLocation.SCHOOL,
-					task.id,
-					FileRecordParentType.TASKS
-				);
+				if (fileStream) {
+					const resource = this.mapper.mapFileToResource(fileRecord, fileStream);
 
-				await Promise.all(
-					fileRecords.map(async (fileRecord) => {
-						if (fileRecord.securityCheckStatus === FileRecordScanStatus.BLOCKED) {
-							this.logger.info(
-								new CommonCartridgeMessageLoggable('A file was skipped because the securityCheckStatus is BLOCKED', {
-									fileId: fileRecord.id,
-									taskId: task.id,
-								})
-							);
-							return;
-						}
-
-						const fileStream = await this.filesStorageClientAdapter.getStream(jwt, fileRecord.id, fileRecord.name);
-
-						if (fileStream) {
-							const resource = this.mapper.mapFileToResource(fileRecord, fileStream);
-
-							taskOrganization.addResource(resource);
-						}
-					})
-				);
+					taskOrganization.addResource(resource);
+				}
 			})
 		);
 	}
 
-	private async addColumnBoards(
+	private async addColumnBoard(
 		jwt: string,
 		builder: CommonCartridgeFileBuilder,
 		version: CommonCartridgeVersion,
-		elements: BoardElementResponse[],
-		exportedColumnBoards: string[]
+		columnBoard: BoardColumnBoardResponse
 	): Promise<void> {
-		const columnBoards = this.filterColumnBoardFromBoardElement(elements);
-		const columnBoardsIds = columnBoards
-			.filter((columnBoard) => exportedColumnBoards.includes(columnBoard.id))
-			.map((columBoard) => columBoard.columnBoardId);
-		const boardSkeletons: BoardResponse[] = await Promise.all(
-			columnBoardsIds.map((columnBoardId) => this.boardClientAdapter.getBoardSkeletonById(jwt, columnBoardId))
-		);
+		const boardSkeleton = await this.boardClientAdapter.getBoardSkeletonById(jwt, columnBoard.columnBoardId);
+
+		const columnBoardOrganization = builder.createOrganization({
+			title: boardSkeleton.title,
+			identifier: createIdentifier(boardSkeleton.id),
+		});
 
 		await Promise.all(
-			boardSkeletons.map(async (boardSkeleton) => {
-				const columnBoardOrganization = builder.createOrganization({
-					title: boardSkeleton.title,
-					identifier: createIdentifier(boardSkeleton.id),
-				});
-
-				await Promise.all(
-					boardSkeleton.columns.map((column) =>
-						this.addColumnToOrganization(jwt, column, version, columnBoardOrganization)
-					)
-				);
-			})
+			boardSkeleton.columns.map((column) => this.addColumnToOrganization(jwt, column, version, columnBoardOrganization))
 		);
 	}
 
@@ -333,7 +314,7 @@ export class CommonCartridgeExportService {
 		const fileMetadataBufferArray: FileMetadataAndStream[] = [];
 
 		if (element.type === ContentElementType.FILE || element.type === ContentElementType.FILE_FOLDER) {
-			const { schoolId } = this.getJwtPayload(jwt);
+			const { schoolId } = JwtPayloadVo.fromJwtToken(jwt);
 			const fileRecords = await this.filesStorageClientAdapter.list(
 				jwt,
 				schoolId,
@@ -439,35 +420,5 @@ export class CommonCartridgeExportService {
 			const fileResource = this.mapper.mapFileToResource(fileDto, file);
 			fileFolderOrg.addResource(fileResource);
 		}
-	}
-
-	private filterTasksFromBoardElements(elements: BoardElementResponse[]): BoardTaskResponse[] {
-		const tasks = elements
-			.filter((element) => element.type === BoardElementResponseType.TASK)
-			.map((element) => element.content as BoardTaskResponse);
-
-		return tasks;
-	}
-
-	private filterLessonFromBoardElements(elements: BoardElementResponse[]): BoardLessonResponse[] {
-		const lessons = elements
-			.filter((element) => element.type == BoardElementResponseType.LESSON)
-			.map((element) => element.content as BoardLessonResponse);
-
-		return lessons;
-	}
-
-	private filterColumnBoardFromBoardElement(elements: BoardElementResponse[]): BoardColumnBoardResponse[] {
-		const columnBoard = elements
-			.filter((element) => element.type === BoardElementResponseType.COLUMN_BOARD)
-			.map((element) => element.content as BoardColumnBoardResponse);
-
-		return columnBoard;
-	}
-
-	private getJwtPayload(jwtToken: string): JwtPayload {
-		const decodedJwt = jwt.decode(jwtToken, { json: true }) as JwtPayload;
-
-		return decodedJwt;
 	}
 }
