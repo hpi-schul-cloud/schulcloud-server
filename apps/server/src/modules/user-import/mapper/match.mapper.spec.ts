@@ -22,7 +22,7 @@ describe('[ImportUserMatchMapper]', () => {
 		});
 		it('should fail for other values', () => {
 			const match = 'foo' as unknown as FilterMatchType;
-			expect(() => ImportUserMatchMapper.mapImportUserMatchScopeToDomain(match)).toThrowError(
+			expect(() => ImportUserMatchMapper.mapImportUserMatchScopeToDomain(match)).toThrow(
 				'invalid match from filter query'
 			);
 		});

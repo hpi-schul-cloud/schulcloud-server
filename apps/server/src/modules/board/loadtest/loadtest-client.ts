@@ -1,4 +1,3 @@
-/* eslint-disable no-await-in-loop */
 import { chunk } from 'lodash';
 import { InputFormat } from '@shared/domain/types';
 import {

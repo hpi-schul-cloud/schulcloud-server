@@ -48,7 +48,7 @@ describe(MediaMetadataSyncReportLoggable.name, () => {
 					mediaSourceDataFormat,
 					report: JSON.stringify(report),
 				},
-			} as LogMessage);
+			});
 		});
 	});
 });

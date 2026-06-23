@@ -1,4 +1,3 @@
-/* eslint-disable max-classes-per-file */
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { PrivacyProtect } from '@shared/controller/validator';
 import { EntityId } from '@shared/domain/types';

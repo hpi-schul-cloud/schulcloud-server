@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { ObjectId } from '@mikro-orm/mongodb';
 import { QueueDeletionRequestInput, QueueDeletionRequestOutput } from '../services/interface';
 import { BatchDeletionSummaryDetailBuilder } from '.';

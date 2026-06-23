@@ -28,6 +28,6 @@ describe('Seed Data generation', () => {
 		const spy = jest.spyOn(roleModule, 'generateRole');
 		const seedData = setup();
 		expect(seedData).toBeDefined();
-		expect(spy).toBeCalled();
+		expect(spy).toHaveBeenCalled();
 	});
 });

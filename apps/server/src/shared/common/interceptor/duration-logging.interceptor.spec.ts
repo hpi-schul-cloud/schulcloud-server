@@ -52,7 +52,7 @@ describe('DurationLoggingInterceptor', () => {
 
 			expect(response.status).toBe(HttpStatus.OK);
 			expect(response.body).toEqual({ message: 'MyMessage' });
-			expect(logger.log).toBeCalledTimes(2);
+			expect(logger.log).toHaveBeenCalledTimes(2);
 		});
 	});
 });

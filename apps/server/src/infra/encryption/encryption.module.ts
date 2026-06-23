@@ -11,7 +11,7 @@ export class EncryptionModule {
 		const providers = [
 			{
 				provide: DefaultEncryptionService,
-				useFactory: (config: EncryptionConfig, logger: LegacyLogger) =>
+				useFactory: (config: EncryptionConfig, logger: LegacyLogger): SymmetricKeyEncryptionService =>
 					new SymmetricKeyEncryptionService(logger, config.aesKey),
 				inject: [configInjectionToken, LegacyLogger],
 			},

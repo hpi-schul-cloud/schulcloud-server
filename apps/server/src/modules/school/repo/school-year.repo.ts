@@ -15,9 +15,9 @@ export class SchoolYearMikroOrmRepo extends BaseRepo<SchoolYearEntity> implement
 
 	public async findCurrentYear(): Promise<SchoolYearEntity> {
 		const currentDate = new Date();
-		const year: SchoolYearEntity | null = (await this._em.findOneOrFail(SchoolYearEntity, {
+		const year: SchoolYearEntity | null = await this._em.findOneOrFail(SchoolYearEntity, {
 			$and: [{ startDate: { $lte: currentDate } }, { endDate: { $gte: currentDate } }],
-		})) as SchoolYearEntity;
+		});
 
 		return year;
 	}

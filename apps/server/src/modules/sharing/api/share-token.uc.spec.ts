@@ -477,7 +477,7 @@ describe('ShareTokenUC', () => {
 
 				await uc.lookupShareToken(user.id, shareToken.token);
 
-				expect(service.lookupTokenWithParentName).toBeCalledWith(shareToken.token);
+				expect(service.lookupTokenWithParentName).toHaveBeenCalledWith(shareToken.token);
 			});
 
 			it('should check for permission', async () => {

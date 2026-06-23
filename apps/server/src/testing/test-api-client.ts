@@ -1,3 +1,5 @@
+// eslint-disable-next-line @typescript-eslint/no-restricted-imports
+import { JwtWhitelistAdapter } from '@infra/jwt-whitelist';
 import type { AccountEntity } from '@modules/account/repo';
 import { defaultTestPassword } from '@modules/account/testing/account.factory';
 import { INestApplication } from '@nestjs/common';
@@ -31,9 +33,10 @@ const headerConst = {
 	json: 'application/json',
 };
 
-const testReqestConst = {
+const testRequestConst = {
 	prefix: 'Bearer',
 	loginPath: '/authentication/local',
+	serviceAccountLoginPath: '/authentication/local-service-account',
 	accessToken: 'accessToken',
 	errorMessage: 'TestApiClient: Can not cast to local AutenticationResponse:',
 };
@@ -54,7 +57,7 @@ export class TestApiClient {
 		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 		this.app = app;
 		this.baseRoute = this.checkAndAddPrefix(baseRoute);
-		this.authHeader = useAsApiKey ? `${authValue || ''}` : `${testReqestConst.prefix} ${authValue || ''}`;
+		this.authHeader = useAsApiKey ? `${authValue || ''}` : `${testRequestConst.prefix} ${authValue || ''}`;
 		this.kindOfAuth = useAsApiKey ? 'X-API-KEY' : 'authorization';
 	}
 
@@ -134,8 +137,35 @@ export class TestApiClient {
 	 * @returns A new TestApiClient instance authenticated with the account's JWT
 	 */
 	public async login(account: AccountEntity, options: { retries?: number; retryDelay?: number } = {}): Promise<this> {
-		const { retries = 3, retryDelay = 200 } = options;
-		const path = testReqestConst.loginPath;
+		const result = await this.loginInternal(account, options);
+
+		return result;
+	}
+
+	/**
+	 * Authenticates with the given service account and returns a new TestApiClient with
+	 * the JWT token. 	 * Includes retry logic to handle race conditions during app
+	 * initialization.
+	 *
+	 * @param account - The account to authenticate with
+	 * @param options - Optional configuration for retry behavior
+	 * @returns A new TestApiClient instance authenticated with the account's JWT
+	 */
+	public async loginAsServiceAccount(
+		account: AccountEntity,
+		options: { retries?: number; retryDelay?: number } = {}
+	): Promise<this> {
+		const result = await this.loginInternal(account, { ...options, isServiceAccount: true });
+
+		return result;
+	}
+
+	private async loginInternal(
+		account: AccountEntity,
+		options: { retries?: number; retryDelay?: number; isServiceAccount?: boolean } = {}
+	): Promise<this> {
+		const { retries = 3, retryDelay = 200, isServiceAccount = false } = options;
+		const path = isServiceAccount ? testRequestConst.serviceAccountLoginPath : testRequestConst.loginPath;
 		const params: { username: string; password: string } = {
 			username: account.username,
 			password: defaultTestPassword,
@@ -185,12 +215,14 @@ export class TestApiClient {
 		});
 	}
 
-	public loginByUser(
+	public async loginByUser(
 		account: AccountForLogin,
 		user: UserForLogin,
 		jwtConfig: TestJwtModuleConfig,
 		options: JwtOptions = {}
-	): this {
+	): Promise<this> {
+		const jwtWhitelistAdapter = this.app.get(JwtWhitelistAdapter);
+
 		const jwt = JwtAuthenticationFactory.createJwt(
 			{
 				accountId: account.id,
@@ -204,6 +236,8 @@ export class TestApiClient {
 			},
 			jwtConfig
 		);
+
+		await jwtWhitelistAdapter.addToWhitelist(account.id, 'jti');
 
 		return new (this.constructor as new (app: INestApplication, baseRoute: string, authValue: string) => this)(
 			this.app,
@@ -249,7 +283,7 @@ export class TestApiClient {
 	}
 
 	private isAuthenticationResponse(body: unknown): body is AuthenticationResponse {
-		const isAuthenticationResponse = typeof body === 'object' && body !== null && testReqestConst.accessToken in body;
+		const isAuthenticationResponse = typeof body === 'object' && body !== null && testRequestConst.accessToken in body;
 
 		return isAuthenticationResponse;
 	}
@@ -261,7 +295,7 @@ export class TestApiClient {
 		}
 		if (!this.isAuthenticationResponse(response.body)) {
 			const body = JSON.stringify(response.body);
-			throw new Error(`${testReqestConst.errorMessage} ${body}`);
+			throw new Error(`${testRequestConst.errorMessage} ${body}`);
 		}
 		const authenticationResponse = response.body;
 		const jwt = authenticationResponse.accessToken;

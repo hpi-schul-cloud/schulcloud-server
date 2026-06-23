@@ -699,5 +699,16 @@
 		"name": "guestExternalPerson",
 		"permissions": [],
 		"roles": []
+	},
+			{
+		"_id": {
+			"$oid": "6a2ba34a62260ccf8422a996"
+		},
+		"name": "deleteS3FilesCronjobServiceAccount",
+		"roles": [],
+		"permissions": [
+			"CAN_EXECUTE_INSTANCE_OPERATIONS",
+			"FILE_DELETE"
+		]
 	}
 ]

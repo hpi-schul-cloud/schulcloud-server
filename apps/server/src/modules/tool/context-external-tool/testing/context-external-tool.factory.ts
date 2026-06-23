@@ -7,7 +7,7 @@ import { SchoolExternalToolRef } from '../../school-external-tool/domain';
 import { ContextExternalTool, ContextExternalToolProps, ContextRef } from '../domain';
 
 class ContextExternalToolFactory extends DoBaseFactory<ContextExternalTool, ContextExternalToolProps> {
-	withSchoolExternalToolRef(schoolToolId: string, schoolId?: string | undefined): this {
+	withSchoolExternalToolRef(schoolToolId: string, schoolId?: string): this {
 		const params: DeepPartial<ContextExternalTool> = {
 			schoolToolRef: { schoolToolId, schoolId },
 		};

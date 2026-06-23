@@ -113,13 +113,12 @@ export class MediaSchoolLicenseService {
 	}
 
 	private async createLicenses(offers: OfferDTO[], mediaSource: MediaSource, school: School): Promise<void> {
-		const newLicensesPromises: (MediaSchoolLicense | null)[] = offers.map((offer): MediaSchoolLicense | null => {
+		const newLicenses: (MediaSchoolLicense | null)[] = offers.map((offer): MediaSchoolLicense | null => {
 			const newLicense: MediaSchoolLicense | null = this.buildMediaSchoolLicense(school, mediaSource, offer.offerId);
 
 			return newLicense;
 		});
 
-		const newLicenses = await Promise.all(newLicensesPromises);
 		const filteredLicenses = newLicenses.filter((license): license is MediaSchoolLicense => license !== null);
 
 		if (filteredLicenses.length) {

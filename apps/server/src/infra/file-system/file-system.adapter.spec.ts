@@ -32,7 +32,6 @@ describe('FileSystemAdapter', () => {
 		it('should produce different folder names for same folder prefix', async () => {
 			const namesSet = new Set<string>();
 			for (let i = 0; i < 100; i += 1) {
-				// eslint-disable-next-line no-await-in-loop
 				const tmpDirPath = await adapter.createTmpDir('same-prefix');
 				namesSet.add(tmpDirPath);
 			}

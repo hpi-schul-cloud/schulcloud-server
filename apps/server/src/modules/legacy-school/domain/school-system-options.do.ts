@@ -13,15 +13,15 @@ export interface SchoolSystemOptionsProps<T extends AnyProvisioningOptions> exte
 export class SchoolSystemOptions<T extends AnyProvisioningOptions = AnyProvisioningOptions> extends DomainObject<
 	SchoolSystemOptionsProps<T>
 > {
-	public get schoolId(): EntityId {
+	get schoolId(): EntityId {
 		return this.props.schoolId;
 	}
 
-	public get systemId(): EntityId {
+	get systemId(): EntityId {
 		return this.props.systemId;
 	}
 
-	public get provisioningOptions(): T {
+	get provisioningOptions(): T {
 		return this.props.provisioningOptions;
 	}
 }

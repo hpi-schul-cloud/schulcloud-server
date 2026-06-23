@@ -13,21 +13,23 @@ export class ContextExternalToolDeletedEventHandlerService implements IEventHand
 	public async handle(event: ContextExternalToolDeletedEvent) {
 		const elements: AnyBoardNode[] = await this.boardNodeService.findElementsByContextExternalToolId(event.id);
 
-		elements.map(async (element: AnyBoardNode): Promise<void> => {
-			const placeholder: DeletedElement = new DeletedElement({
-				id: new ObjectId().toHexString(),
-				path: ROOT_PATH,
-				level: 0,
-				position: 0,
-				children: [],
-				createdAt: new Date(),
-				updatedAt: new Date(),
-				deletedElementType: ContentElementType.EXTERNAL_TOOL,
-				title: event.title,
-				description: event.description,
-			});
+		await Promise.all(
+			elements.map(async (element: AnyBoardNode): Promise<void> => {
+				const placeholder: DeletedElement = new DeletedElement({
+					id: new ObjectId().toHexString(),
+					path: ROOT_PATH,
+					level: 0,
+					position: 0,
+					children: [],
+					createdAt: new Date(),
+					updatedAt: new Date(),
+					deletedElementType: ContentElementType.EXTERNAL_TOOL,
+					title: event.title,
+					description: event.description,
+				});
 
-			await this.boardNodeService.replace(element, placeholder);
-		});
+				await this.boardNodeService.replace(element, placeholder);
+			})
+		);
 	}
 }

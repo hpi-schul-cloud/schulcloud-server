@@ -1,5 +1,3 @@
-/* eslint-disable no-promise-executor-return */
-/* eslint-disable no-await-in-loop */
 /* eslint-disable no-process-env */
 import { SocketConnectionManager } from './socket-connection-manager';
 import { SocketConfiguration } from './types';
@@ -24,7 +22,7 @@ describe('Board Collaboration - Connection Load Test', () => {
 			const sockets = await manager.createConnections(CONNECTION_AMOUNT);
 			await sleep(3000);
 			expect(sockets).toHaveLength(CONNECTION_AMOUNT);
-			await manager.destroySocketConnections();
+			manager.destroySocketConnections();
 		} else {
 			expect('this should only be ran manually').toBeTruthy();
 		}

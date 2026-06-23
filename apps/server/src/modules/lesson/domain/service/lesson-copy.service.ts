@@ -7,7 +7,6 @@ import { randomBytes } from 'crypto';
 import { LESSON_CONFIG_TOKEN, LessonConfig } from '../../lesson.config';
 import {
 	ComponentEtherpadProperties,
-	ComponentGeogebraProperties,
 	ComponentLernstoreProperties,
 	ComponentProperties,
 	ComponentTextProperties,
@@ -144,7 +143,7 @@ export class LessonCopyService {
 		fileUrlReplacements: FileUrlReplacement[]
 	): ComponentProperties[] {
 		contents = contents.map((item: ComponentProperties) => {
-			if (item.component === 'text' && item.content && 'text' in item.content && item.content.text) {
+			if ((item.component as string) === 'text' && item.content && 'text' in item.content && item.content.text) {
 				let { text } = item.content;
 				fileUrlReplacements.forEach(({ regex, replacement }) => {
 					text = text.replace(regex, replacement);
@@ -288,7 +287,7 @@ export class LessonCopyService {
 
 	private copyGeogebra(originalElement: ComponentProperties): Promise<ComponentProperties> {
 		const copy = { ...originalElement, hidden: true } as ComponentProperties;
-		copy.content = { ...copy.content, materialId: '' } as ComponentGeogebraProperties;
+		copy.content = { ...copy.content, materialId: '' };
 		delete copy._id;
 		return Promise.resolve(copy);
 	}
@@ -297,7 +296,7 @@ export class LessonCopyService {
 		originalElement: ComponentProperties,
 		params: LessonCopyParams
 	): Promise<ComponentProperties> {
-		const copy = { ...originalElement } as ComponentProperties;
+		const copy = { ...originalElement };
 		delete copy._id;
 		const content = { ...copy.content, url: '' } as ComponentEtherpadProperties;
 		content.title = randomBytes(12).toString('hex');

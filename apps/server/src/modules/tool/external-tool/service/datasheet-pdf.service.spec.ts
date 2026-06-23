@@ -124,7 +124,7 @@ describe(DatasheetPdfService.name, () => {
 			it('should throw an error', async () => {
 				const { datasheetData } = setup();
 
-				await expect(service.generatePdf(datasheetData)).rejects.toThrowError('error from createPdf');
+				await expect(service.generatePdf(datasheetData)).rejects.toThrow('error from createPdf');
 			});
 		});
 	});

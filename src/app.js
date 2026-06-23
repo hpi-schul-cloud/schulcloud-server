@@ -17,7 +17,6 @@ const handleResponseType = require('./middleware/handleReponseType');
 const errorHandler = require('./middleware/errorHandler');
 const { setupFacadeLocator } = require('./utils/facadeLocator');
 const setupSwagger = require('./swagger');
-const { initializeRedisClient } = require('./utils/redis');
 const { setupAppHooks } = require('./app.hooks');
 
 let feathersApp;
@@ -87,9 +86,8 @@ const setupApp = async (orm) => {
 	return app;
 };
 
-module.exports = async (orm, cacheManager) => {
+module.exports = async (orm) => {
 	if (feathersApp) return feathersApp;
 	feathersApp = await setupApp(orm);
-	initializeRedisClient(cacheManager);
 	return feathersApp;
 };

@@ -276,7 +276,7 @@ describe('UserLoginMigrationController (API)', () => {
 
 				const response: Response = await loggedInClient.post(`/start`);
 
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 				const result = await em.findOneOrFail(UserLoginMigrationEntity, { id: response.body.id });
 				expect(result).not.toBe(undefined);
 			});
@@ -670,7 +670,7 @@ describe('UserLoginMigrationController (API)', () => {
 
 				const response: Response = await loggedInClient.put(`/restart`);
 
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 				const entity = await em.findOneOrFail(UserLoginMigrationEntity, { id: response.body.id });
 
 				expect(entity.startedAt).toBeDefined();
@@ -840,7 +840,7 @@ describe('UserLoginMigrationController (API)', () => {
 
 				const response: Response = await loggedInClient.put('/mandatory', { mandatory: true });
 
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 				const entity = await em.findOneOrFail(UserLoginMigrationEntity, { id: response.body.id });
 
 				expect(entity.mandatorySince).toBeDefined();
@@ -892,7 +892,7 @@ describe('UserLoginMigrationController (API)', () => {
 
 				const response: Response = await loggedInClient.put('/mandatory', { mandatory: false });
 
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 				const entity = await em.findOneOrFail(UserLoginMigrationEntity, { id: response.body.id });
 
 				expect(entity.mandatorySince).toBeUndefined();
@@ -1081,7 +1081,7 @@ describe('UserLoginMigrationController (API)', () => {
 
 				const response: Response = await loggedInClient.post('/close');
 
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 				const entity = await em.findOneOrFail(UserLoginMigrationEntity, { id: response.body.id });
 
 				expect(entity.closedAt).toBeDefined();
@@ -1444,7 +1444,7 @@ describe('UserLoginMigrationController (API)', () => {
 						.flush();
 					em.clear();
 
-					const loggedInClient = await testApiClient.login(superheroAccount);
+					const loggedInClient = await testApiClient.loginAsServiceAccount(superheroAccount);
 
 					const requestBody: ForceMigrationParams = new ForceMigrationParams();
 					requestBody.email = email;
@@ -1550,7 +1550,7 @@ describe('UserLoginMigrationController (API)', () => {
 						.flush();
 					em.clear();
 
-					const loggedInClient = await testApiClient.login(superheroAccount);
+					const loggedInClient = await testApiClient.loginAsServiceAccount(superheroAccount);
 
 					const requestBody: ForceMigrationParams = new ForceMigrationParams();
 					requestBody.email = email;
@@ -1650,7 +1650,7 @@ describe('UserLoginMigrationController (API)', () => {
 							.flush();
 						em.clear();
 
-						const loggedInClient = await testApiClient.login(superheroAccount);
+						const loggedInClient = await testApiClient.loginAsServiceAccount(superheroAccount);
 
 						const requestBody: ForceMigrationParams = new ForceMigrationParams();
 						requestBody.email = email;
@@ -1729,7 +1729,7 @@ describe('UserLoginMigrationController (API)', () => {
 							.flush();
 						em.clear();
 
-						const loggedInClient = await testApiClient.login(superheroAccount);
+						const loggedInClient = await testApiClient.loginAsServiceAccount(superheroAccount);
 
 						const requestBody: ForceMigrationParams = new ForceMigrationParams();
 						requestBody.email = email;
@@ -1803,7 +1803,7 @@ describe('UserLoginMigrationController (API)', () => {
 						.flush();
 					em.clear();
 
-					const loggedInClient = await testApiClient.login(superheroAccount);
+					const loggedInClient = await testApiClient.loginAsServiceAccount(superheroAccount);
 
 					const requestBody: ForceMigrationParams = new ForceMigrationParams();
 					requestBody.email = email;
@@ -1893,7 +1893,7 @@ describe('UserLoginMigrationController (API)', () => {
 						.flush();
 					em.clear();
 
-					const loggedInClient = await testApiClient.login(superheroAccount);
+					const loggedInClient = await testApiClient.loginAsServiceAccount(superheroAccount);
 
 					const requestBody: ForceMigrationParams = new ForceMigrationParams();
 					requestBody.email = email;

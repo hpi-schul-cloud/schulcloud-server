@@ -217,7 +217,6 @@ export class AccountUc {
 
 		const permissionsToCheck: Permission[] = [];
 		if (this.hasRole(targetUser, RoleName.STUDENT)) {
-			// eslint-disable-next-line default-case
 			switch (action) {
 				case 'READ':
 					permissionsToCheck.push(Permission.STUDENT_LIST);
@@ -236,7 +235,6 @@ export class AccountUc {
 			}
 		}
 		if (this.hasRole(targetUser, RoleName.TEACHER)) {
-			// eslint-disable-next-line default-case
 			switch (action) {
 				case 'READ':
 					permissionsToCheck.push(Permission.TEACHER_LIST);
@@ -269,14 +267,14 @@ export class AccountUc {
 		);
 	}
 
-	private hasRole(user: User, roleName: string): boolean {
+	private hasRole(user: User, roleName: RoleName): boolean {
 		return user.roles.getItems().some((role) => role.name === roleName);
 	}
 
 	private schoolPermissionExists(roles: string[], school: SchoolEntity, permissions: string[]): boolean {
 		if (
-			roles.find((role) => role === RoleName.TEACHER) &&
-			permissions.find((permission) => permission === Permission.STUDENT_LIST)
+			roles.some((role) => (role as RoleName) === RoleName.TEACHER) &&
+			permissions.some((permission) => (permission as Permission) === Permission.STUDENT_LIST)
 		) {
 			return school.permissions?.teacher?.STUDENT_LIST ?? false;
 		}

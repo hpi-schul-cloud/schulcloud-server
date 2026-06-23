@@ -96,7 +96,7 @@ describe(DeletionRequestService.name, () => {
 
 				await service.findById(deletionRequestId);
 
-				expect(deletionRequestRepo.findById).toBeCalledWith(deletionRequestId);
+				expect(deletionRequestRepo.findById).toHaveBeenCalledWith(deletionRequestId);
 			});
 
 			it('should return deletionRequest', async () => {
@@ -126,7 +126,7 @@ describe(DeletionRequestService.name, () => {
 
 				await service.findByIds(deletionRequestIds);
 
-				expect(deletionRequestRepo.findByIds).toBeCalledWith(deletionRequestIds);
+				expect(deletionRequestRepo.findByIds).toHaveBeenCalledWith(deletionRequestIds);
 			});
 
 			it('should return array of two deletionRequests', async () => {
@@ -169,7 +169,7 @@ describe(DeletionRequestService.name, () => {
 
 				await service.findAllItemsToExecute(limit);
 
-				expect(deletionRequestRepo.findAllItems).toBeCalledWith(limit);
+				expect(deletionRequestRepo.findAllItems).toHaveBeenCalledWith(limit);
 			});
 
 			it('should return array of two deletionRequests to execute', async () => {
@@ -194,7 +194,7 @@ describe(DeletionRequestService.name, () => {
 				const { deletionRequestId } = setup();
 				await service.markDeletionRequestAsExecuted(deletionRequestId);
 
-				expect(deletionRequestRepo.markDeletionRequestAsExecuted).toBeCalledWith(deletionRequestId);
+				expect(deletionRequestRepo.markDeletionRequestAsExecuted).toHaveBeenCalledWith(deletionRequestId);
 			});
 		});
 	});
@@ -211,7 +211,7 @@ describe(DeletionRequestService.name, () => {
 				const { deletionRequestId } = setup();
 				await service.markDeletionRequestAsFailed(deletionRequestId);
 
-				expect(deletionRequestRepo.markDeletionRequestAsFailed).toBeCalledWith(deletionRequestId);
+				expect(deletionRequestRepo.markDeletionRequestAsFailed).toHaveBeenCalledWith(deletionRequestId);
 			});
 		});
 	});
@@ -228,7 +228,7 @@ describe(DeletionRequestService.name, () => {
 				const { deletionRequestId } = setup();
 				await service.markDeletionRequestAsPending(deletionRequestId);
 
-				expect(deletionRequestRepo.markDeletionRequestAsPending).toBeCalledWith(deletionRequestId);
+				expect(deletionRequestRepo.markDeletionRequestAsPending).toHaveBeenCalledWith(deletionRequestId);
 			});
 		});
 	});
@@ -250,7 +250,7 @@ describe(DeletionRequestService.name, () => {
 				const { deletionRequestId } = setup();
 				await service.deleteById(deletionRequestId);
 
-				expect(deletionRequestRepo.deleteById).toBeCalledWith(deletionRequestId);
+				expect(deletionRequestRepo.deleteById).toHaveBeenCalledWith(deletionRequestId);
 			});
 		});
 	});
@@ -276,7 +276,7 @@ describe(DeletionRequestService.name, () => {
 				const { batchId } = setup();
 				await service.getStatusOfDeletionRequestBatch(batchId);
 
-				expect(deletionRequestRepo.groupTargetRefIdsByBatchAndStatus).toBeCalledWith(batchId);
+				expect(deletionRequestRepo.groupTargetRefIdsByBatchAndStatus).toHaveBeenCalledWith(batchId);
 			});
 
 			it('should return grouped targetRefIds by status', async () => {

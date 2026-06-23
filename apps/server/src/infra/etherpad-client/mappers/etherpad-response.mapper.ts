@@ -19,7 +19,7 @@ import {
 import { EtherpadErrorLoggableException } from '../loggable';
 
 export class EtherpadResponseMapper {
-	static mapToSessionResponse(session?: CreateSessionUsingGET200ResponseData): SessionId {
+	public static mapToSessionResponse(session?: CreateSessionUsingGET200ResponseData): SessionId {
 		if (!session?.sessionID) {
 			throw new Error('Session could not be created');
 		}
@@ -28,7 +28,7 @@ export class EtherpadResponseMapper {
 		return sessionId;
 	}
 
-	static mapToAuthorResponse(author?: CreateAuthorUsingGET200ResponseData): AuthorId {
+	public static mapToAuthorResponse(author?: CreateAuthorUsingGET200ResponseData): AuthorId {
 		if (!author?.authorID) {
 			throw new Error('Author could not be created');
 		}
@@ -37,7 +37,7 @@ export class EtherpadResponseMapper {
 		return authorId;
 	}
 
-	static mapToGroupResponse(group?: CreateGroupUsingGET200ResponseData): GroupId {
+	public static mapToGroupResponse(group?: CreateGroupUsingGET200ResponseData): GroupId {
 		if (!group?.groupID) {
 			throw new Error('Group could not be created');
 		}
@@ -46,7 +46,7 @@ export class EtherpadResponseMapper {
 		return groupId;
 	}
 
-	static mapToPadResponse(pad?: object): PadId {
+	public static mapToPadResponse(pad?: object): PadId {
 		// DeleteGroupUsingGET200Response has wrong type definition
 		if (pad && 'padID' in pad && pad.padID) {
 			const padId = pad.padID as string;
@@ -57,7 +57,7 @@ export class EtherpadResponseMapper {
 		throw new Error('Pad could not be created');
 	}
 
-	static mapResponseToException<T extends EtherpadResponse>(
+	public static mapResponseToException<T extends EtherpadResponse>(
 		type: EtherpadErrorType,
 		payload: EtherpadParams,
 		response: T | Error
@@ -70,7 +70,7 @@ export class EtherpadResponseMapper {
 		);
 	}
 
-	static mapEtherpadSessionsToSessions(etherpadSessions: unknown): Session[] {
+	public static mapEtherpadSessionsToSessions(etherpadSessions: unknown): Session[] {
 		try {
 			const isObject = TypeGuard.isDefinedObject(etherpadSessions);
 			if (!isObject) return [];
@@ -86,7 +86,7 @@ export class EtherpadResponseMapper {
 		}
 	}
 
-	static mapEtherpadSessionToSession([etherpadId, etherpadSession]: [string, unknown | undefined]): Session {
+	public static mapEtherpadSessionToSession([etherpadId, etherpadSession]: [string, unknown]): Session {
 		if (
 			!TypeGuard.isDefinedObject(etherpadSession) ||
 			!('groupID' in etherpadSession) ||

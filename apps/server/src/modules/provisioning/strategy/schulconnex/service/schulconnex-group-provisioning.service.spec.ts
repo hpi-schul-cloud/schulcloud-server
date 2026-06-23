@@ -709,7 +709,7 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 
 				await service.removeUserFromGroup(userId, group.id);
 
-				expect(schulconnexCourseSyncService.desyncCoursesAndCreateHistories).toBeCalledWith(group, courses);
+				expect(schulconnexCourseSyncService.desyncCoursesAndCreateHistories).toHaveBeenCalledWith(group, courses);
 			});
 
 			it('should delete the empty group', async () => {
@@ -717,7 +717,7 @@ describe(SchulconnexGroupProvisioningService.name, () => {
 
 				await service.removeUserFromGroup(userId, group.id);
 
-				expect(groupService.delete).toBeCalledWith(group);
+				expect(groupService.delete).toHaveBeenCalledWith(group);
 			});
 		});
 

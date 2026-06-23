@@ -21,10 +21,9 @@ describe('RoomMembership', () => {
 	it('should props without domainObject', () => {
 		const mockDomainObject = roomMembershipFactory.build();
 		// this tests the hotfix for the mikro-orm issue
-		// eslint-disable-next-line @typescript-eslint/dot-notation
+
 		roomMembership['domainObject'] = mockDomainObject;
 
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore
 		const { domainObject, ...props } = roomMembership.getProps();

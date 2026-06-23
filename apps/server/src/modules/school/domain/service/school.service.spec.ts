@@ -306,7 +306,7 @@ describe('SchoolService', () => {
 
 				await service.getSchools(query);
 
-				expect(schoolRepo.getSchools).toBeCalledWith(query, undefined);
+				expect(schoolRepo.getSchools).toHaveBeenCalledWith(query, undefined);
 			});
 		});
 
@@ -329,7 +329,7 @@ describe('SchoolService', () => {
 
 				await service.getSchools(query, options);
 
-				expect(schoolRepo.getSchools).toBeCalledWith(query, options);
+				expect(schoolRepo.getSchools).toHaveBeenCalledWith(query, options);
 			});
 		});
 
@@ -446,7 +446,7 @@ describe('SchoolService', () => {
 			it('should throw this error', async () => {
 				const { id } = setup();
 
-				await expect(service.doesSchoolExist(id)).rejects.toThrowError();
+				await expect(service.doesSchoolExist(id)).rejects.toThrow();
 			});
 		});
 	});
@@ -566,7 +566,7 @@ describe('SchoolService', () => {
 			it('should throw this error', async () => {
 				const { school, error } = setup();
 
-				await expect(service.updateSchool(school, {})).rejects.toThrowError(error);
+				await expect(service.updateSchool(school, {})).rejects.toThrow(error);
 			});
 		});
 	});
@@ -618,7 +618,7 @@ describe('SchoolService', () => {
 
 				await service.getSchoolSystems(school);
 
-				expect(systemService.getSystems).toBeCalledWith(['1', '2']);
+				expect(systemService.getSystems).toHaveBeenCalledWith(['1', '2']);
 			});
 
 			it('should return these systems', async () => {
@@ -644,7 +644,7 @@ describe('SchoolService', () => {
 
 				await service.getSchoolSystems(school);
 
-				expect(systemService.getSystems).not.toBeCalled();
+				expect(systemService.getSystems).not.toHaveBeenCalled();
 			});
 
 			it('should return empty array', async () => {
@@ -670,7 +670,7 @@ describe('SchoolService', () => {
 
 				await service.getSchoolSystems(school);
 
-				expect(systemService.getSystems).not.toBeCalled();
+				expect(systemService.getSystems).not.toHaveBeenCalled();
 			});
 
 			it('should return empty array', async () => {
@@ -693,7 +693,7 @@ describe('SchoolService', () => {
 			it('should throw NotFoundException', async () => {
 				const { school } = setup();
 
-				await expect(service.getSchoolSystems(school)).rejects.toThrowError(NotFoundException);
+				await expect(service.getSchoolSystems(school)).rejects.toThrow(NotFoundException);
 			});
 		});
 	});
@@ -741,7 +741,7 @@ describe('SchoolService', () => {
 
 				await service.removeSystemFromSchool(school, systemId);
 
-				expect(schoolRepo.save).toBeCalledWith(school);
+				expect(schoolRepo.save).toHaveBeenCalledWith(school);
 			});
 		});
 
@@ -761,7 +761,7 @@ describe('SchoolService', () => {
 
 				await service.removeSystemFromSchool(school, systemId);
 
-				expect(systemService.findById).toBeCalledWith(systemId);
+				expect(systemService.findById).toHaveBeenCalledWith(systemId);
 			});
 
 			it('should call systemService.delete', async () => {
@@ -769,7 +769,7 @@ describe('SchoolService', () => {
 
 				await service.removeSystemFromSchool(school, systemId);
 
-				expect(systemService.delete).toBeCalledWith(system);
+				expect(systemService.delete).toHaveBeenCalledWith(system);
 			});
 		});
 
@@ -789,7 +789,7 @@ describe('SchoolService', () => {
 			it('should throw an error', async () => {
 				const { school, systemId, expectedError } = setup();
 
-				await expect(service.removeSystemFromSchool(school, systemId)).rejects.toThrowError(expectedError);
+				await expect(service.removeSystemFromSchool(school, systemId)).rejects.toThrow(expectedError);
 			});
 		});
 

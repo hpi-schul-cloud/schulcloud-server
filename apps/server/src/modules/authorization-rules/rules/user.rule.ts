@@ -99,19 +99,19 @@ export class UserRule implements Rule<UserDo> {
 	private isDiscoverable(userDo: UserDo): boolean {
 		const discoverabilitySetting = this.authorizationHelper.getConfig('teacherVisibilityForExternalTeamInvitation');
 
-		if (discoverabilitySetting === 'disabled') {
+		if ((discoverabilitySetting as string) === 'disabled') {
 			return false;
 		}
 
-		if (discoverabilitySetting === 'enabled') {
+		if ((discoverabilitySetting as string) === 'enabled') {
 			return true;
 		}
 
-		if (discoverabilitySetting === 'opt-in') {
+		if ((discoverabilitySetting as string) === 'opt-in') {
 			return userDo.discoverable ?? false;
 		}
 
-		if (discoverabilitySetting === 'opt-out') {
+		if ((discoverabilitySetting as string) === 'opt-out') {
 			return userDo.discoverable ?? true;
 		}
 

@@ -345,7 +345,7 @@ describe('AccountService', () => {
 					userId: 'user1',
 					systemId: undefined,
 				} as AccountSave;
-				accountService.findByUserId = jest.fn().mockResolvedValueOnce({});
+				jest.spyOn(accountService, 'findByUserId').mockImplementation().mockResolvedValueOnce(accountDoFactory.build());
 
 				await expect(accountService.validateAccountBeforeSaveOrReject(accountSave)).rejects.toThrow(ValidationError);
 			});
@@ -702,7 +702,7 @@ describe('AccountService', () => {
 						email: testMail,
 					})
 				).resolves.not.toThrow();
-				expect(accountSaveSpy).toBeCalledWith(expect.objectContaining({ username: testMail.toLowerCase() }));
+				expect(accountSaveSpy).toHaveBeenCalledWith(expect.objectContaining({ username: testMail.toLowerCase() }));
 			});
 		});
 
@@ -736,7 +736,7 @@ describe('AccountService', () => {
 						email: testMail,
 					})
 				).resolves.not.toThrow();
-				expect(userUpdateSpy).toBeCalledWith(expect.objectContaining({ email: testMail.toLowerCase() }));
+				expect(userUpdateSpy).toHaveBeenCalledWith(expect.objectContaining({ email: testMail.toLowerCase() }));
 			});
 		});
 
@@ -771,8 +771,8 @@ describe('AccountService', () => {
 						email: testMail,
 					})
 				).resolves.not.toThrow();
-				expect(userUpdateSpy).toBeCalledWith(expect.objectContaining({ email: testMail.toLowerCase() }));
-				expect(accountSaveSpy).toBeCalledWith(expect.objectContaining({ username: testMail.toLowerCase() }));
+				expect(userUpdateSpy).toHaveBeenCalledWith(expect.objectContaining({ email: testMail.toLowerCase() }));
+				expect(accountSaveSpy).toHaveBeenCalledWith(expect.objectContaining({ username: testMail.toLowerCase() }));
 			});
 		});
 
@@ -1218,7 +1218,6 @@ describe('AccountService', () => {
 				await accountService.reactivateAccount(mockStudentUser.id);
 				expect(accountServiceDb.save).toHaveBeenCalledWith(
 					expect.not.objectContaining({
-						// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 						deactivatedAt: expect.anything(),
 					})
 				);

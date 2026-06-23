@@ -60,7 +60,7 @@ describe(CourseAuthorizableService.name, () => {
 
 				await service.findById(course.id);
 
-				expect(courseRepo.findCourseById).toBeCalledWith(course.id);
+				expect(courseRepo.findCourseById).toHaveBeenCalledWith(course.id);
 			});
 
 			it('should return a course', async () => {

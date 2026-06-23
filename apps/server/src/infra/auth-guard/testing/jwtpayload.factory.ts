@@ -3,58 +3,9 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseFactory } from '@testing/factory/base.factory';
 import { DeepPartial } from 'fishery';
 import { JwtPayload } from '../interface';
+import { JwtPayloadVo } from '../vo/jwt-payload.vo';
 
-class JwtPayloadImpl implements JwtPayload {
-	public accountId: string;
-
-	public userId: string;
-
-	public schoolId: string;
-
-	public roles: string[];
-
-	public systemId?: string;
-
-	public isServiceAccount: boolean;
-
-	public support: boolean;
-
-	public supportUserId?: string;
-
-	public isExternalUser: boolean;
-
-	public aud: string;
-
-	public exp: number;
-
-	public iat: number;
-
-	public iss: string;
-
-	public jti: string;
-
-	public sub: string;
-
-	constructor(data: JwtPayload) {
-		this.accountId = data.accountId;
-		this.userId = data.userId;
-		this.schoolId = data.schoolId;
-		this.roles = data.roles;
-		this.systemId = data.systemId || '';
-		this.isServiceAccount = data.isServiceAccount || false;
-		this.support = data.support || false;
-		this.isExternalUser = data.isExternalUser;
-		this.supportUserId = data.supportUserId;
-		this.aud = data.aud;
-		this.exp = data.exp;
-		this.iat = data.iat;
-		this.iss = data.iss;
-		this.jti = data.jti;
-		this.sub = data.sub;
-	}
-}
-
-class JwtPayloadFactory extends BaseFactory<JwtPayloadImpl, JwtPayload> {
+class JwtPayloadFactory extends BaseFactory<JwtPayloadVo, JwtPayload> {
 	public asServiceAccount(): this {
 		const params: DeepPartial<JwtPayload> = { isServiceAccount: true };
 
@@ -62,12 +13,12 @@ class JwtPayloadFactory extends BaseFactory<JwtPayloadImpl, JwtPayload> {
 	}
 }
 
-export const jwtPayloadFactory = JwtPayloadFactory.define(JwtPayloadImpl, ({ sequence }) => {
+export const jwtPayloadFactory = JwtPayloadFactory.define(JwtPayloadVo, ({ sequence }) => {
 	return {
 		accountId: new ObjectId().toHexString(),
 		userId: new ObjectId().toHexString(),
 		schoolId: new ObjectId().toHexString(),
-		roles: ['dummyRoleId'],
+		roles: [new ObjectId().toHexString()],
 		systemId: new ObjectId().toHexString(),
 		isServiceAccount: false,
 		support: false,

@@ -105,7 +105,7 @@ describe(InstanceRule.name, () => {
 			it('should throw not implemented', () => {
 				const { user, instance, context } = setup();
 
-				expect(() => rule.hasPermission(user, instance, context)).toThrowError(new NotImplementedException());
+				expect(() => rule.hasPermission(user, instance, context)).toThrow(new NotImplementedException());
 			});
 		});
 

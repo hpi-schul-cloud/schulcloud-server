@@ -13,7 +13,7 @@ describe('runtime config value DO', () => {
 
 			it('should fail to set a string to a number type', () => {
 				const configValue = runtimeConfigTestingFactory.build({ type: 'string', value: 'initial' });
-				expect(() => configValue.setValue(42)).toThrowError();
+				expect(() => configValue.setValue(42)).toThrow();
 			});
 
 			describe('when string contains html-tags', () => {
@@ -47,7 +47,7 @@ describe('runtime config value DO', () => {
 			it('should fail to set a number to a string type', () => {
 				const configValue = runtimeConfigTestingFactory.build({ type: 'number', value: 1 });
 
-				expect(() => configValue.setValue('this is not a number')).toThrowError();
+				expect(() => configValue.setValue('this is not a number')).toThrow();
 			});
 		});
 
@@ -63,7 +63,7 @@ describe('runtime config value DO', () => {
 			it('should fail to set a boolean to a string type', () => {
 				const configValue = runtimeConfigTestingFactory.build({ type: 'boolean', value: true });
 
-				expect(() => configValue.setValue('this is not a boolean')).toThrowError();
+				expect(() => configValue.setValue('this is not a boolean')).toThrow();
 			});
 		});
 	});
@@ -100,7 +100,7 @@ describe('runtime config value DO', () => {
 		describe('when type is number', () => {
 			it('should fail to set a string to a number type', () => {
 				const configValue = runtimeConfigTestingFactory.build({ type: 'number', value: 1 });
-				expect(() => configValue.setValueFromString('Not a Number')).toThrowError();
+				expect(() => configValue.setValueFromString('Not a Number')).toThrow();
 			});
 
 			it('should set a number', () => {
@@ -132,7 +132,7 @@ describe('runtime config value DO', () => {
 			it('should fail to set something else to boolean', () => {
 				const configValue = runtimeConfigTestingFactory.build({ type: 'boolean', value: true });
 
-				expect(() => configValue.setValueFromString('not a boolean')).toThrowError();
+				expect(() => configValue.setValueFromString('not a boolean')).toThrow();
 			});
 		});
 	});

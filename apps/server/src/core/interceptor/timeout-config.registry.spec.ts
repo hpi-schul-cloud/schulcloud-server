@@ -8,7 +8,8 @@ describe('TimeoutConfigRegistry', () => {
 			// Clear the module cache to get a fresh singleton for each test
 			jest.resetModules();
 			// Re-import to get fresh instance
-			// eslint-disable-next-line @typescript-eslint/no-var-requires, global-require
+
+			// eslint-disable-next-line @typescript-eslint/no-require-imports
 			({ TIMEOUT_CONFIG_REGISTRY } = require('./timeout-config.registry') as {
 				TIMEOUT_CONFIG_REGISTRY: typeof OriginalRegistry;
 			});

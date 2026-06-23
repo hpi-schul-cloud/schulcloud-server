@@ -187,7 +187,7 @@ describe(DeletionExecutionService.name, () => {
 				operations: [{ operation: StepOperationType.DELETE, count: 1, refs: ['id1'] }],
 			};
 
-			expect(() => service.mapToDomainDeletionReport(report)).toThrowError(`Unknown module name: ${invalidModuleName}`);
+			expect(() => service.mapToDomainDeletionReport(report)).toThrow(`Unknown module name: ${invalidModuleName}`);
 		});
 
 		it('should throw an error for unknonw operation type', () => {
@@ -197,7 +197,7 @@ describe(DeletionExecutionService.name, () => {
 				operations: [{ operation: invalidOperationType, count: 1, refs: ['id1'] }],
 			};
 
-			expect(() => service.mapToDomainDeletionReport(report)).toThrowError(
+			expect(() => service.mapToDomainDeletionReport(report)).toThrow(
 				`Unknown operation type: ${invalidOperationType}`
 			);
 		});

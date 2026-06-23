@@ -97,7 +97,7 @@ describe('RuntimeConfig Controller (API)', () => {
 				const { superheroAccount, superheroUser } = UserAndAccountTestFactory.buildSuperhero();
 				await em.persist([superheroAccount, superheroUser]).flush();
 				em.clear();
-				const loggedInClient = await testApiClient.login(superheroAccount);
+				const loggedInClient = await testApiClient.loginAsServiceAccount(superheroAccount);
 				return { loggedInClient, superheroUser };
 			};
 

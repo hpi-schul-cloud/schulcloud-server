@@ -9,11 +9,12 @@ import {
 	CoursesClientAdapter,
 	FilesStorageClientAdapter,
 } from '@infra/common-cartridge-clients';
-import { NotificationType, NotificationService } from '@modules/notification';
+import { NotificationService, NotificationType } from '@modules/notification';
 import { HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
 import axios, { InternalAxiosRequestConfig } from 'axios';
+import { ObjectId } from 'bson';
 import { from } from 'rxjs';
 import { ImportCourseEvent } from '../domain/events/import-course.event';
 import { CommonCartridgeFileParser } from '../import/common-cartridge-file-parser';
@@ -22,8 +23,24 @@ import { commonCartridgeOrganizationPropsFactory as organizationFactory } from '
 import { CommonCartridgeImportMapper } from './common-cartridge-import.mapper';
 import { CommonCartridgeImportService } from './common-cartridge-import.service';
 
+const userId = new ObjectId().toString();
+const schoolId = new ObjectId().toString();
+
 jest.mock('../import/common-cartridge-file-parser');
 jest.mock('axios');
+jest.mock('@infra/auth-guard', () => {
+	return {
+		JwtPayloadVo: {
+			fromJwtToken: () => {
+				return {
+					schoolId,
+					accountId: new ObjectId().toString(),
+					userId,
+				};
+			},
+		},
+	};
+});
 
 describe(CommonCartridgeImportService.name, () => {
 	let module: TestingModule;
@@ -217,8 +234,6 @@ describe(CommonCartridgeImportService.name, () => {
 
 		commonCartridgeFileParser.getTitle.mockReturnValue(undefined);
 
-		const userId = faker.string.uuid();
-		const schoolId = faker.string.uuid();
 		const event: ImportCourseEvent = {
 			jwt: faker.internet.jwt({
 				payload: {
@@ -514,7 +529,6 @@ describe(CommonCartridgeImportService.name, () => {
 
 				const err = new Error('Test');
 
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 				const result = errorInterceptor(err);
 				expect(result).toStrictEqual(err);
 
@@ -534,7 +548,6 @@ describe(CommonCartridgeImportService.name, () => {
 
 				const err = new Error('Test');
 
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 				const result = errorInterceptor(err);
 				expect(result).toStrictEqual(err);
 

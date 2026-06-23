@@ -18,7 +18,7 @@ describe(SagaRegistryService.name, () => {
 					await sagaRegistry.executeSaga(nonExistentSagaName, { userId: '67a0784ef358f49ca4faf5c3' });
 				};
 
-				await expect(executeFunction()).rejects.toThrowError(`Saga ${nonExistentSagaName} is not registered.`);
+				await expect(executeFunction()).rejects.toThrow(`Saga ${nonExistentSagaName} is not registered.`);
 			});
 		});
 	});

@@ -166,18 +166,18 @@ describe('TspProvisioningService', () => {
 					name: withName ? faker.person.fullName() : '',
 				});
 
-				const usersOfClasses = new Map([
+				const usersOfClasses: Map<string, TspUserInfo[]> = new Map([
 					[
 						classId,
 						[
 							{
 								externalId: externalTeacher.externalId,
 								role: RoleName.TEACHER,
-							} as TspUserInfo,
+							},
 							{
 								externalId: externalStudent.externalId,
 								role: RoleName.STUDENT,
-							} as TspUserInfo,
+							},
 						],
 					],
 				]);
@@ -219,18 +219,18 @@ describe('TspProvisioningService', () => {
 					name: withName ? faker.person.fullName() : '',
 				});
 
-				const usersOfClasses = new Map([
+				const usersOfClasses: Map<string, TspUserInfo[]> = new Map([
 					[
 						classId,
 						[
 							{
 								externalId: externalTeacher.externalId,
 								role: RoleName.TEACHER,
-							} as TspUserInfo,
+							},
 							{
 								externalId: externalStudent.externalId,
 								role: RoleName.STUDENT,
-							} as TspUserInfo,
+							},
 						],
 					],
 				]);
@@ -277,18 +277,18 @@ describe('TspProvisioningService', () => {
 					externalId: classId,
 				});
 
-				const usersOfClasses = new Map([
+				const usersOfClasses: Map<string, TspUserInfo[]> = new Map([
 					[
 						classId,
 						[
 							{
 								externalId: externalTeacher.externalId,
 								role: RoleName.TEACHER,
-							} as TspUserInfo,
+							},
 							{
 								externalId: externalStudent.externalId,
 								role: RoleName.STUDENT,
-							} as TspUserInfo,
+							},
 						],
 					],
 				]);

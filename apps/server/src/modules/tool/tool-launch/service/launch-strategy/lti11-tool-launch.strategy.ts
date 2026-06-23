@@ -62,7 +62,6 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 		);
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	public override async buildToolLaunchDataFromConcreteConfig(
 		userId: EntityId,
 		data: ToolLaunchParams
@@ -301,7 +300,6 @@ export class Lti11ToolLaunchStrategy extends AbstractLaunchStrategy {
 		return deepLinkProperties;
 	}
 
-	// eslint-disable-next-line @typescript-eslint/require-await
 	public override buildToolLaunchRequestPayload(url: string, properties: PropertyData[]): string | null {
 		const bodyProperties = properties.filter((property: PropertyData) => property.location === PropertyLocation.BODY);
 		const payload: Record<string, string> = {};

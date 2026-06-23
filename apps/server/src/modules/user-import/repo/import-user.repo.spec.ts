@@ -79,10 +79,10 @@ describe('ImportUserRepo', () => {
 			const { id } = importUser;
 			await em.remove(importUser).flush();
 
-			await expect(async () => repo.findById(id)).rejects.toThrowError(NotFoundError);
+			await expect(async () => repo.findById(id)).rejects.toThrow(NotFoundError);
 		});
 		it('should fail for invalid id', async () => {
-			await expect(async () => repo.findById('foo')).rejects.toThrowError(Error);
+			await expect(async () => repo.findById('foo')).rejects.toThrow(Error);
 		});
 	});
 
@@ -105,7 +105,7 @@ describe('ImportUserRepo', () => {
 			await persistedReferences();
 			const importUser = importUserFactory.build();
 			await em.persist([importUser]).flush();
-			await expect(async () => repo.hasMatch({} as unknown as User)).rejects.toThrowError('invalid user match id');
+			await expect(async () => repo.hasMatch({} as unknown as User)).rejects.toThrow('invalid user match id');
 		});
 	});
 
@@ -135,14 +135,14 @@ describe('ImportUserRepo', () => {
 				await em.persist([school, importUser, otherSchoolsImportUser]).flush();
 				await expect(async () =>
 					repo.findImportUsers({ _id: 'invalid_id' } as unknown as SchoolEntity)
-				).rejects.toThrowError('invalid school id');
+				).rejects.toThrow('invalid school id');
 			});
 			it('should not respond with any school for wrong id given', async () => {
 				const school = schoolEntityFactory.build();
 				const importUser = importUserFactory.build({ school });
 				const otherSchoolsImportUser = importUserFactory.build();
 				await em.persist([school, importUser, otherSchoolsImportUser]).flush();
-				await expect(async () => repo.findImportUsers({} as unknown as SchoolEntity)).rejects.toThrowError(
+				await expect(async () => repo.findImportUsers({} as unknown as SchoolEntity)).rejects.toThrow(
 					'invalid school id'
 				);
 			});
@@ -519,7 +519,7 @@ describe('ImportUserRepo', () => {
 			await em.persist(school).flush();
 			await expect(async () =>
 				repo.findImportUsers(school, { role: 'foo' as unknown as ImportUserRoleName })
-			).rejects.toThrowError('unexpected role name');
+			).rejects.toThrow('unexpected role name');
 		});
 	});
 	describe('byClasses', () => {
@@ -775,7 +775,7 @@ describe('ImportUserRepo', () => {
 				const importUsers = importUserFactory.buildList(10, {
 					school,
 				});
-				// eslint-disable-next-line no-restricted-syntax
+
 				for (const [i, importuser] of importUsers.entries()) {
 					importuser.setMatch(users[i], MatchCreator.AUTO);
 				}
@@ -800,9 +800,7 @@ describe('ImportUserRepo', () => {
 				await em.persist(importUser).flush();
 				const importUserWithSameMatch = importUserFactory.matched(MatchCreator.AUTO, user).build({ school });
 
-				await expect(async () => em.persist(importUserWithSameMatch).flush()).rejects.toThrowError(
-					'duplicate key error'
-				);
+				await expect(async () => em.persist(importUserWithSameMatch).flush()).rejects.toThrow('duplicate key error');
 			});
 		});
 	});

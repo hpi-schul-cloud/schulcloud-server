@@ -46,7 +46,7 @@ describe(CourseSynchronizationHistoryService.name, () => {
 
 			await service.saveAll(syncHistories);
 
-			expect(courseSyncHistoryRepo.saveAll).toBeCalledWith(syncHistories);
+			expect(courseSyncHistoryRepo.saveAll).toHaveBeenCalledWith(syncHistories);
 		});
 
 		it('should return the saved histories', async () => {
@@ -85,7 +85,7 @@ describe(CourseSynchronizationHistoryService.name, () => {
 
 				await service.delete(courseSyncHistories);
 
-				expect(courseSyncHistoryRepo.delete).toBeCalledWith(courseSyncHistories);
+				expect(courseSyncHistoryRepo.delete).toHaveBeenCalledWith(courseSyncHistories);
 			});
 		});
 
@@ -95,7 +95,7 @@ describe(CourseSynchronizationHistoryService.name, () => {
 
 				await service.delete(courseSyncHistory);
 
-				expect(courseSyncHistoryRepo.delete).toBeCalledWith(courseSyncHistory);
+				expect(courseSyncHistoryRepo.delete).toHaveBeenCalledWith(courseSyncHistory);
 			});
 		});
 	});

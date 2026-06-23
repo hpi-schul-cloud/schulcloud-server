@@ -15,7 +15,7 @@ import { isCurrentUser } from '../mapper';
 /**
  * Authentication Decorator taking care of require authentication header to be present, setting up the user context and extending openAPI spec.
  */
-export const JwtAuthentication = () => {
+export const JwtAuthentication = (): ReturnType<typeof applyDecorators> => {
 	const decorators = [
 		// apply jwt authentication
 		UseGuards(JwtAuthGuard),

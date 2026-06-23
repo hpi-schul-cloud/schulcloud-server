@@ -154,7 +154,7 @@ describe('RoomPermissionService', () => {
 			const { service, config } = setup();
 			config.featureAdministrateRoomsEnabled = false;
 
-			expect(() => service.checkFeatureAdministrateRoomsEnabled()).toThrowError();
+			expect(() => service.checkFeatureAdministrateRoomsEnabled()).toThrow();
 		});
 
 		it('checkFeatureAdministrateRoomsEnabled: does nothing when enabled', () => {
@@ -170,7 +170,7 @@ describe('RoomPermissionService', () => {
 			const { service, config } = setup();
 			config.featureRoomCopyEnabled = false;
 
-			expect(() => service.checkFeatureRoomCopyEnabled()).toThrowError();
+			expect(() => service.checkFeatureRoomCopyEnabled()).toThrow();
 		});
 
 		it('checkFeatureRoomCopyEnabled: does nothing when enabled', () => {

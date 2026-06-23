@@ -90,7 +90,7 @@ describe(SchoolSystemOptionsRule.name, () => {
 			it('should return false', () => {
 				const { user } = setup();
 
-				const result = rule.isApplicable(user, {} as unknown as SchoolSystemOptions);
+				const result = rule.isApplicable(user, {});
 
 				expect(result).toEqual(false);
 			});

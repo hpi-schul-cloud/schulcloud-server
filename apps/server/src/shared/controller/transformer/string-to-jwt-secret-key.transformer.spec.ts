@@ -16,6 +16,6 @@ describe('StringToJwtSecretKey()', () => {
 	it('should throw an error if the value is not a string', () => {
 		const plainNumber = { key: 12345 };
 
-		expect(() => plainToClass(TestDto, plainNumber)).toThrowError('Value is not a string');
+		expect(() => plainToClass(TestDto, plainNumber)).toThrow('Value is not a string');
 	});
 });

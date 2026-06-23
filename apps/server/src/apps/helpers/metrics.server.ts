@@ -53,7 +53,6 @@ export const createMetricsServer = async (nestApp: INestApplication, appName: st
 
 	const { metricsPort } = metricsConfig;
 
-	// eslint-disable-next-line @typescript-eslint/no-misused-promises
 	await metricsApp.listen(metricsPort, () => {
 		const appStartLoggable = new AppStartLoggable({ appName, port: metricsPort });
 		logger.setContext('METRICS');

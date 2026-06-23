@@ -9,7 +9,6 @@ import { InternalServerErrorException } from '@nestjs/common/exceptions/internal
 import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { CourseSyncAttribute } from '../domain';
-// eslint-disable-next-line import/no-cycle
 import { CourseGroupEntity } from './coursegroup.entity'; // https://github.com/mikro-orm/mikro-orm/discussions/4089
 
 export enum CourseType {

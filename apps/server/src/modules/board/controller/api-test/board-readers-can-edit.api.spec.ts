@@ -38,7 +38,7 @@ describe(`board readersCanEdit setting (api)`, () => {
 		// Get the config from BoardUc's private field — this is the instance actually used
 		// when checking featureBoardReadersCanEditToggle in NestJS v11.s
 		// Access the private config field used by BoardUc (NestJS v11 multi-instance workaround)
-		// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+
 		const boardUcWithConfig = module.get(BoardUc) as unknown as { config: BoardConfig };
 		({ config } = boardUcWithConfig);
 	});

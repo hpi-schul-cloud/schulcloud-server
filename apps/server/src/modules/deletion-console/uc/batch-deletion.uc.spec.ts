@@ -69,7 +69,7 @@ describe(BatchDeletionUc.name, () => {
 							outputs.push(QueueDeletionRequestOutputBuilder.buildSuccess(new ObjectId().toHexString(), new Date()));
 						}
 
-						ReferencesService.loadFromTxtFile = jest.fn().mockReturnValueOnce(targetRefIds);
+						jest.spyOn(ReferencesService, 'loadFromTxtFile').mockImplementation().mockReturnValueOnce(targetRefIds);
 
 						batchDeletionService.queueDeletionRequests.mockResolvedValueOnce([outputs[0], outputs[1], outputs[2]]);
 
@@ -126,7 +126,7 @@ describe(BatchDeletionUc.name, () => {
 						const targetRefDomain = 'school';
 						const deleteInMinutes = 60;
 
-						ReferencesService.loadFromTxtFile = jest.fn().mockReturnValueOnce(targetRefIds);
+						jest.spyOn(ReferencesService, 'loadFromTxtFile').mockImplementation().mockReturnValueOnce(targetRefIds);
 
 						const outputs = [
 							QueueDeletionRequestOutputBuilder.buildSuccess(new ObjectId().toHexString(), new Date()),
@@ -184,7 +184,7 @@ describe(BatchDeletionUc.name, () => {
 						targetRefIds.push(new ObjectId().toHexString());
 					}
 
-					ReferencesService.loadFromTxtFile = jest.fn().mockReturnValueOnce(targetRefIds);
+					jest.spyOn(ReferencesService, 'loadFromTxtFile').mockImplementation().mockReturnValueOnce(targetRefIds);
 
 					const outputs: QueueDeletionRequestOutput[] = [];
 

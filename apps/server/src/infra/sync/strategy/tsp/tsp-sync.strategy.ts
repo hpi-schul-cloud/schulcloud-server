@@ -211,7 +211,7 @@ export class TspSyncStrategy extends SyncStrategy {
 		const fullSync = this.config.dataDaysToFetch === -1;
 
 		// Each batch should be processed after another
-		for await (const [schoolExternalId, classes] of classesForSchools.entries()) {
+		for (const [schoolExternalId, classes] of classesForSchools.entries()) {
 			const school = schoolsByExternalId.get(schoolExternalId);
 			if (!school) {
 				throw new NotFoundLoggableException('school', {

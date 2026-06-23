@@ -72,7 +72,7 @@ describe('LegacySchoolRule', () => {
 
 				service.hasPermission(user, school, { action: Action.read, requiredPermissions: [] });
 
-				expect(spy).toBeCalledWith(user, []);
+				expect(spy).toHaveBeenCalledWith(user, []);
 			});
 		});
 

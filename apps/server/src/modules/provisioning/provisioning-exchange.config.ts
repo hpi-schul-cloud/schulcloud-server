@@ -2,7 +2,7 @@ import { ConfigProperty, Configuration } from '@infra/configuration';
 import { InternalRabbitMQExchangeConfig, RabbitMQExchangeType } from '@infra/rabbitmq';
 import { IsString } from 'class-validator';
 
-export interface InternalProvisioningExchangeConfig extends InternalRabbitMQExchangeConfig {}
+export type InternalProvisioningExchangeConfig = InternalRabbitMQExchangeConfig;
 
 export const PROVISIONING_EXCHANGE_CONFIG_TOKEN = 'PROVISIONING_EXCHANGE_CONFIG_TOKEN';
 

@@ -26,10 +26,19 @@ export class CommonCartridgeResourceFactory {
 
 		const { title } = organization;
 
-		switch (organization.resourceType) {
+		switch (organization.resourceType as CommonCartridgeXmlResourceType) {
 			case CommonCartridgeXmlResourceType.WEB_LINK_CC11:
+				return this.createWebLinkResource(
+					organization.resourcePaths[0],
+					title,
+					CommonCartridgeXmlResourceType.WEB_LINK_CC11
+				);
 			case CommonCartridgeXmlResourceType.WEB_LINK_CC13:
-				return this.createWebLinkResource(organization.resourcePaths[0], title, organization.resourceType);
+				return this.createWebLinkResource(
+					organization.resourcePaths[0],
+					title,
+					CommonCartridgeXmlResourceType.WEB_LINK_CC13
+				);
 			case CommonCartridgeXmlResourceType.WEB_CONTENT:
 				return this.buildWebContentResourceFromPath(organization.resourcePaths, inputFormat, title);
 			default:
