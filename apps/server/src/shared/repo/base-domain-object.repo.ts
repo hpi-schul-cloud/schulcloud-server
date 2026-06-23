@@ -39,7 +39,7 @@ export abstract class BaseDomainObjectRepo<
 		const existingEntity = await this.em.findOne(this.entityName, { id } as FilterQuery<E>);
 
 		const persistedEntity = existingEntity
-			? (this.em.assign(existingEntity, entityData as EntityData<unknown>) as E)
+			? (this.em.assign(existingEntity, entityData as never) as E)
 			: this.em.create(this.entityName, { ...entityData, id } as unknown as RequiredEntityData<E>);
 
 		return { domainObject, persistedEntity };

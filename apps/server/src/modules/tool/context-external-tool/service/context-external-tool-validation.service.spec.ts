@@ -79,7 +79,7 @@ describe('ContextExternalToolValidationService', () => {
 
 				await service.validate(contextExternalTool);
 
-				expect(schoolExternalToolService.findById).toBeCalledWith(contextExternalTool.schoolToolRef.schoolToolId);
+				expect(schoolExternalToolService.findById).toHaveBeenCalledWith(contextExternalTool.schoolToolRef.schoolToolId);
 			});
 
 			it('should call commonToolValidationService.checkCustomParameterEntries', async () => {
@@ -87,7 +87,7 @@ describe('ContextExternalToolValidationService', () => {
 
 				await service.validate(contextExternalTool);
 
-				expect(commonToolValidationService.validateParameters).toBeCalledWith(externalTool, contextExternalTool);
+				expect(commonToolValidationService.validateParameters).toHaveBeenCalledWith(externalTool, contextExternalTool);
 			});
 
 			it('should not throw', async () => {

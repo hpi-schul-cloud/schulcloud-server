@@ -202,7 +202,7 @@ describe('ToolPermissionHelper', () => {
 			it('should throw a forbidden loggable exception', async () => {
 				const { user, contextExternalTool, context } = setup();
 
-				await expect(helper.ensureContextPermissions(user, contextExternalTool, context)).rejects.toThrowError(
+				await expect(helper.ensureContextPermissions(user, contextExternalTool, context)).rejects.toThrow(
 					new ForbiddenLoggableException(user.id, AuthorizableReferenceType.ContextExternalToolEntity, context)
 				);
 			});
@@ -231,7 +231,7 @@ describe('ToolPermissionHelper', () => {
 			it('should check permission for context external tool and fail', async () => {
 				const { user, contextExternalTool, context, error } = setup();
 
-				await expect(helper.ensureContextPermissions(user, contextExternalTool, context)).rejects.toThrowError(error);
+				await expect(helper.ensureContextPermissions(user, contextExternalTool, context)).rejects.toThrow(error);
 			});
 		});
 	});
@@ -384,7 +384,7 @@ describe('ToolPermissionHelper', () => {
 
 				await expect(
 					helper.ensureContextPermissionsForSchool(user, schoolExternalTool, contextRef.id, contextRef.type, context)
-				).rejects.toThrowError(
+				).rejects.toThrow(
 					new ForbiddenLoggableException(user.id, AuthorizableReferenceType.ContextExternalToolEntity, context)
 				);
 			});
@@ -420,7 +420,7 @@ describe('ToolPermissionHelper', () => {
 
 				await expect(
 					helper.ensureContextPermissionsForSchool(user, schoolExternalTool, contextRef.id, contextRef.type, context)
-				).rejects.toThrowError(error);
+				).rejects.toThrow(error);
 			});
 		});
 	});

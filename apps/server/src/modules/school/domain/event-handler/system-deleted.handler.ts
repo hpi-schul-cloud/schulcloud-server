@@ -15,7 +15,7 @@ export class SystemDeletedHandler implements IEventHandler<SystemDeletedEvent> {
 		school.removeSystem(event.system.id);
 		school.ldapLastSync = undefined;
 
-		if (event.system.type === SystemType.LDAP && school.systems.length === 0) {
+		if ((event.system.type as SystemType) === SystemType.LDAP && school.systems.length === 0) {
 			school.externalId = undefined;
 		}
 

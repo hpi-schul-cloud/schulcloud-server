@@ -123,7 +123,7 @@ describe(AuthorizationClientAdapter.name, () => {
 
 					await expect(
 						service.checkPermissionsByReference(params.referenceType, params.referenceId, params.context)
-					).rejects.toThrowError(expectedError);
+					).rejects.toThrow(expectedError);
 				});
 			});
 		});
@@ -152,7 +152,7 @@ describe(AuthorizationClientAdapter.name, () => {
 
 				await expect(
 					service.checkPermissionsByReference(params.referenceType, params.referenceId, params.context)
-				).rejects.toThrowError(expectedError);
+				).rejects.toThrow(expectedError);
 			});
 		});
 	});
@@ -277,7 +277,7 @@ describe(AuthorizationClientAdapter.name, () => {
 
 				await expect(
 					adapter.hasPermissionsByReference(params.referenceType, params.referenceId, params.context)
-				).rejects.toThrowError(expectedError);
+				).rejects.toThrow(expectedError);
 			});
 		});
 
@@ -305,7 +305,7 @@ describe(AuthorizationClientAdapter.name, () => {
 
 				await expect(
 					service.hasPermissionsByReference(params.referenceType, params.referenceId, params.context)
-				).rejects.toThrowError(expectedError);
+				).rejects.toThrow(expectedError);
 			});
 		});
 
@@ -321,7 +321,8 @@ describe(AuthorizationClientAdapter.name, () => {
 				};
 
 				const axiosError = new Error('axios error');
-				// eslint-disable-next-line @typescript-eslint/no-var-requires
+
+				// eslint-disable-next-line @typescript-eslint/no-require-imports
 				const spyIsAxiosError = jest.spyOn(require('axios'), 'isAxiosError').mockReturnValue(true);
 
 				authorizationApi.authorizationReferenceControllerAuthorizeByReference.mockRejectedValueOnce(axiosError);

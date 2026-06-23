@@ -80,13 +80,12 @@ describe(SynchronizationService.name, () => {
 				const { synchronizationId } = setup();
 				await service.findById(synchronizationId);
 
-				expect(repo.findById).toBeCalledWith(synchronizationId);
+				expect(repo.findById).toHaveBeenCalledWith(synchronizationId);
 			});
 
 			it('should return synchronization', async () => {
 				const { synchronizationId, synchronization } = setup();
 
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 				const result = await service.findById(synchronizationId);
 
 				expect(result).toEqual(synchronization);
@@ -107,7 +106,7 @@ describe(SynchronizationService.name, () => {
 
 				await service.update(synchronization);
 
-				expect(repo.update).toBeCalledWith(synchronization);
+				expect(repo.update).toHaveBeenCalledWith(synchronization);
 			});
 		});
 	});

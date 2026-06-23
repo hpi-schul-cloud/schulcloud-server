@@ -27,7 +27,6 @@ export class Lti11EncryptionService {
 	}
 
 	public verify(key: string, secret: string, url: string, payload: Authorization): boolean {
-		// eslint-disable-next-line @typescript-eslint/naming-convention
 		const { oauth_signature, ...validationPayload } = payload;
 
 		const authorization: Authorization = this.sign(key, secret, url, validationPayload);

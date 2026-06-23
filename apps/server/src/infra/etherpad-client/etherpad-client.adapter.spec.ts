@@ -100,7 +100,7 @@ describe(EtherpadClientAdapter.name, () => {
 
 					await service.getOrCreateAuthorId(userId, username);
 
-					expect(authorApi.createAuthorIfNotExistsForUsingGET).toBeCalledWith(userId, username);
+					expect(authorApi.createAuthorIfNotExistsForUsingGET).toHaveBeenCalledWith(userId, username);
 				});
 			});
 
@@ -118,7 +118,7 @@ describe(EtherpadClientAdapter.name, () => {
 
 					await service.getOrCreateAuthorId(userId);
 
-					expect(authorApi.createAuthorIfNotExistsForUsingGET).toBeCalledWith(userId, undefined);
+					expect(authorApi.createAuthorIfNotExistsForUsingGET).toHaveBeenCalledWith(userId, undefined);
 				});
 			});
 		});
@@ -141,7 +141,7 @@ describe(EtherpadClientAdapter.name, () => {
 			it('should throw an error', async () => {
 				const { userId, username } = setup();
 
-				await expect(service.getOrCreateAuthorId(userId, username)).rejects.toThrowError('Author could not be created');
+				await expect(service.getOrCreateAuthorId(userId, username)).rejects.toThrow('Author could not be created');
 			});
 		});
 
@@ -158,9 +158,7 @@ describe(EtherpadClientAdapter.name, () => {
 			it('should throw EtherpadErrorLoggableException', async () => {
 				const { userId, username } = setup();
 
-				await expect(service.getOrCreateAuthorId(userId, username)).rejects.toThrowError(
-					EtherpadErrorLoggableException
-				);
+				await expect(service.getOrCreateAuthorId(userId, username)).rejects.toThrow(EtherpadErrorLoggableException);
 			});
 		});
 	});
@@ -218,7 +216,7 @@ describe(EtherpadClientAdapter.name, () => {
 						ETHERPAD_COOKIE_RELEASE_THRESHOLD
 					);
 
-					expect(sessionApi.createSessionUsingGET).not.toBeCalled();
+					expect(sessionApi.createSessionUsingGET).not.toHaveBeenCalled();
 				});
 			});
 
@@ -282,7 +280,7 @@ describe(EtherpadClientAdapter.name, () => {
 					);
 
 					const unixTimeInSeconds = Math.floor(sessionCookieExpire.getTime() / 1000).toString();
-					expect(sessionApi.createSessionUsingGET).toBeCalledWith(groupId, authorId, unixTimeInSeconds);
+					expect(sessionApi.createSessionUsingGET).toHaveBeenCalledWith(groupId, authorId, unixTimeInSeconds);
 				});
 			});
 		});
@@ -389,7 +387,7 @@ describe(EtherpadClientAdapter.name, () => {
 				);
 
 				const unixTimeInSeconds = Math.floor(sessionCookieExpire.getTime() / 1000).toString();
-				expect(sessionApi.createSessionUsingGET).toBeCalledWith(groupId, authorId, unixTimeInSeconds);
+				expect(sessionApi.createSessionUsingGET).toHaveBeenCalledWith(groupId, authorId, unixTimeInSeconds);
 			});
 		});
 
@@ -432,7 +430,7 @@ describe(EtherpadClientAdapter.name, () => {
 						sessionCookieExpire,
 						ETHERPAD_COOKIE_RELEASE_THRESHOLD
 					)
-				).rejects.toThrowError('Session could not be created');
+				).rejects.toThrow('Session could not be created');
 			});
 		});
 
@@ -467,7 +465,7 @@ describe(EtherpadClientAdapter.name, () => {
 						sessionCookieExpire,
 						ETHERPAD_COOKIE_RELEASE_THRESHOLD
 					)
-				).rejects.toThrowError(EtherpadErrorLoggableException);
+				).rejects.toThrow(EtherpadErrorLoggableException);
 			});
 		});
 	});
@@ -532,7 +530,7 @@ describe(EtherpadClientAdapter.name, () => {
 			it('should throw EtherpadErrorLoggableException', async () => {
 				const authorId = setup();
 
-				await expect(service.listSessionIdsOfAuthor(authorId)).rejects.toThrowError(EtherpadErrorLoggableException);
+				await expect(service.listSessionIdsOfAuthor(authorId)).rejects.toThrow(EtherpadErrorLoggableException);
 			});
 		});
 
@@ -620,7 +618,7 @@ describe(EtherpadClientAdapter.name, () => {
 			it('should throw EtherpadErrorLoggableException', async () => {
 				const authorId = setup();
 
-				await expect(service.listPadsOfAuthor(authorId)).rejects.toThrowError(EtherpadErrorLoggableException);
+				await expect(service.listPadsOfAuthor(authorId)).rejects.toThrow(EtherpadErrorLoggableException);
 			});
 		});
 
@@ -642,7 +640,7 @@ describe(EtherpadClientAdapter.name, () => {
 			it('should throw an error', async () => {
 				const authorId = setup();
 
-				await expect(service.listPadsOfAuthor(authorId)).rejects.toThrowError(
+				await expect(service.listPadsOfAuthor(authorId)).rejects.toThrow(
 					'Etherpad listPadsOfAuthor response is not an object'
 				);
 			});
@@ -708,7 +706,7 @@ describe(EtherpadClientAdapter.name, () => {
 			it('should throw EtherpadErrorLoggableException', async () => {
 				const authorId = setup();
 
-				await expect(service.listAuthorsOfPad(authorId)).rejects.toThrowError(EtherpadErrorLoggableException);
+				await expect(service.listAuthorsOfPad(authorId)).rejects.toThrow(EtherpadErrorLoggableException);
 			});
 		});
 
@@ -730,7 +728,7 @@ describe(EtherpadClientAdapter.name, () => {
 			it('should throw an error', async () => {
 				const padId = setup();
 
-				await expect(service.listAuthorsOfPad(padId)).rejects.toThrowError(
+				await expect(service.listAuthorsOfPad(padId)).rejects.toThrow(
 					'Etherpad listAuthorsOfPad response is not an object'
 				);
 			});
@@ -765,7 +763,7 @@ describe(EtherpadClientAdapter.name, () => {
 
 				await service.getOrCreateGroupId(parentId);
 
-				expect(groupApi.createGroupIfNotExistsForUsingGET).toBeCalledWith(parentId);
+				expect(groupApi.createGroupIfNotExistsForUsingGET).toHaveBeenCalledWith(parentId);
 			});
 		});
 
@@ -783,7 +781,7 @@ describe(EtherpadClientAdapter.name, () => {
 			it('should throw an error', async () => {
 				const parentId = setup();
 
-				await expect(service.getOrCreateGroupId(parentId)).rejects.toThrowError('Group could not be created');
+				await expect(service.getOrCreateGroupId(parentId)).rejects.toThrow('Group could not be created');
 			});
 		});
 
@@ -799,7 +797,7 @@ describe(EtherpadClientAdapter.name, () => {
 			it('should throw EtherpadErrorLoggableException', async () => {
 				const parentId = setup();
 
-				await expect(service.getOrCreateGroupId(parentId)).rejects.toThrowError(EtherpadErrorLoggableException);
+				await expect(service.getOrCreateGroupId(parentId)).rejects.toThrow(EtherpadErrorLoggableException);
 			});
 		});
 	});
@@ -841,7 +839,7 @@ describe(EtherpadClientAdapter.name, () => {
 
 				await service.getOrCreateEtherpadId(groupId, parentId);
 
-				expect(groupApi.createGroupPadUsingGET).toBeCalledWith(groupId, parentId);
+				expect(groupApi.createGroupPadUsingGET).toHaveBeenCalledWith(groupId, parentId);
 			});
 		});
 
@@ -873,7 +871,7 @@ describe(EtherpadClientAdapter.name, () => {
 
 				await service.getOrCreateEtherpadId(groupId, parentId);
 
-				expect(groupApi.createGroupPadUsingGET).not.toBeCalled();
+				expect(groupApi.createGroupPadUsingGET).not.toHaveBeenCalled();
 			});
 		});
 
@@ -902,7 +900,7 @@ describe(EtherpadClientAdapter.name, () => {
 			it('should throw an error', async () => {
 				const { groupId, parentId } = setup();
 
-				await expect(service.getOrCreateEtherpadId(groupId, parentId)).rejects.toThrowError('Pad could not be created');
+				await expect(service.getOrCreateEtherpadId(groupId, parentId)).rejects.toThrow('Pad could not be created');
 			});
 		});
 
@@ -926,9 +924,7 @@ describe(EtherpadClientAdapter.name, () => {
 			it('should throw EtherpadErrorLoggableException', async () => {
 				const { groupId, parentId } = setup();
 
-				await expect(service.getOrCreateEtherpadId(groupId, parentId)).rejects.toThrowError(
-					EtherpadErrorLoggableException
-				);
+				await expect(service.getOrCreateEtherpadId(groupId, parentId)).rejects.toThrow(EtherpadErrorLoggableException);
 			});
 		});
 
@@ -945,9 +941,7 @@ describe(EtherpadClientAdapter.name, () => {
 			it('should throw EtherpadErrorLoggableException', async () => {
 				const { groupId, parentId } = setup();
 
-				await expect(service.getOrCreateEtherpadId(groupId, parentId)).rejects.toThrowError(
-					EtherpadErrorLoggableException
-				);
+				await expect(service.getOrCreateEtherpadId(groupId, parentId)).rejects.toThrow(EtherpadErrorLoggableException);
 			});
 		});
 	});
@@ -973,7 +967,7 @@ describe(EtherpadClientAdapter.name, () => {
 
 				await service.deleteGroup(groupId);
 
-				expect(groupApi.deleteGroupUsingPOST).toBeCalledWith(groupId);
+				expect(groupApi.deleteGroupUsingPOST).toHaveBeenCalledWith(groupId);
 			});
 		});
 
@@ -1001,7 +995,7 @@ describe(EtherpadClientAdapter.name, () => {
 					undefined,
 					{}
 				);
-				await expect(service.deleteGroup(groupId)).rejects.toThrowError(exception);
+				await expect(service.deleteGroup(groupId)).rejects.toThrow(exception);
 			});
 		});
 
@@ -1040,7 +1034,7 @@ describe(EtherpadClientAdapter.name, () => {
 			it('should throw EtherpadErrorLoggableException', async () => {
 				const groupId = setup();
 
-				await expect(service.deleteGroup(groupId)).rejects.toThrowError(EtherpadErrorLoggableException);
+				await expect(service.deleteGroup(groupId)).rejects.toThrow(EtherpadErrorLoggableException);
 			});
 		});
 	});
@@ -1067,7 +1061,7 @@ describe(EtherpadClientAdapter.name, () => {
 
 				await service.deleteSession(sessionId);
 
-				expect(sessionApi.deleteSessionUsingPOST).toBeCalledWith(sessionId);
+				expect(sessionApi.deleteSessionUsingPOST).toHaveBeenCalledWith(sessionId);
 			});
 		});
 
@@ -1095,7 +1089,7 @@ describe(EtherpadClientAdapter.name, () => {
 					undefined,
 					{}
 				);
-				await expect(service.deleteSession(sessionId)).rejects.toThrowError(exception);
+				await expect(service.deleteSession(sessionId)).rejects.toThrow(exception);
 			});
 		});
 
@@ -1111,7 +1105,7 @@ describe(EtherpadClientAdapter.name, () => {
 			it('should throw EtherpadErrorLoggableException', async () => {
 				const sessionId = setup();
 
-				await expect(service.deleteSession(sessionId)).rejects.toThrowError(EtherpadErrorLoggableException);
+				await expect(service.deleteSession(sessionId)).rejects.toThrow(EtherpadErrorLoggableException);
 			});
 		});
 	});
@@ -1138,7 +1132,7 @@ describe(EtherpadClientAdapter.name, () => {
 
 				await service.deletePad(padId);
 
-				expect(padApi.deletePadUsingPOST).toBeCalledWith(padId);
+				expect(padApi.deletePadUsingPOST).toHaveBeenCalledWith(padId);
 			});
 		});
 
@@ -1161,7 +1155,7 @@ describe(EtherpadClientAdapter.name, () => {
 				const padId = setup();
 
 				const exception = new EtherpadErrorLoggableException(EtherpadErrorType.BAD_REQUEST, { padId }, undefined, {});
-				await expect(service.deletePad(padId)).rejects.toThrowError(exception);
+				await expect(service.deletePad(padId)).rejects.toThrow(exception);
 			});
 		});
 
@@ -1177,7 +1171,7 @@ describe(EtherpadClientAdapter.name, () => {
 			it('should throw EtherpadErrorLoggableException', async () => {
 				const padId = setup();
 
-				await expect(service.deletePad(padId)).rejects.toThrowError(EtherpadErrorLoggableException);
+				await expect(service.deletePad(padId)).rejects.toThrow(EtherpadErrorLoggableException);
 			});
 		});
 	});
@@ -1212,8 +1206,8 @@ describe(EtherpadClientAdapter.name, () => {
 
 				const result = service.getOrCreateGroupId(parentId);
 
-				await expect(result).rejects.toThrowError(EtherpadErrorType.BAD_REQUEST);
-				await expect(result).rejects.toThrowError(EtherpadErrorLoggableException);
+				await expect(result).rejects.toThrow(EtherpadErrorType.BAD_REQUEST);
+				await expect(result).rejects.toThrow(EtherpadErrorLoggableException);
 			});
 		});
 
@@ -1223,8 +1217,8 @@ describe(EtherpadClientAdapter.name, () => {
 
 				const result = service.getOrCreateGroupId(parentId);
 
-				await expect(result).rejects.toThrowError(EtherpadErrorType.INTERNAL_ERROR);
-				await expect(result).rejects.toThrowError(EtherpadErrorLoggableException);
+				await expect(result).rejects.toThrow(EtherpadErrorType.INTERNAL_ERROR);
+				await expect(result).rejects.toThrow(EtherpadErrorLoggableException);
 			});
 		});
 
@@ -1234,8 +1228,8 @@ describe(EtherpadClientAdapter.name, () => {
 
 				const result = service.getOrCreateGroupId(parentId);
 
-				await expect(result).rejects.toThrowError(EtherpadErrorType.FUNCTION_NOT_FOUND);
-				await expect(result).rejects.toThrowError(EtherpadErrorLoggableException);
+				await expect(result).rejects.toThrow(EtherpadErrorType.FUNCTION_NOT_FOUND);
+				await expect(result).rejects.toThrow(EtherpadErrorLoggableException);
 			});
 		});
 
@@ -1245,8 +1239,8 @@ describe(EtherpadClientAdapter.name, () => {
 
 				const result = service.getOrCreateGroupId(parentId);
 
-				await expect(result).rejects.toThrowError(EtherpadErrorType.WRONG_API_KEY);
-				await expect(result).rejects.toThrowError(EtherpadErrorLoggableException);
+				await expect(result).rejects.toThrow(EtherpadErrorType.WRONG_API_KEY);
+				await expect(result).rejects.toThrow(EtherpadErrorLoggableException);
 			});
 		});
 
@@ -1257,7 +1251,7 @@ describe(EtherpadClientAdapter.name, () => {
 				const result = service.getOrCreateGroupId(parentId);
 
 				const exception = new InternalServerErrorException('Etherpad response code unknown');
-				await expect(result).rejects.toThrowError(exception);
+				await expect(result).rejects.toThrow(exception);
 			});
 		});
 	});

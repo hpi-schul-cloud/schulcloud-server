@@ -13,8 +13,7 @@ export type PropsWithType<T extends AnyBoardNodeProps> = T & { type: BoardNodeTy
  * @template I The transient parameters that your factory supports
  * @template C The class of the factory object being created.
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export class BoardNodeEntityFactory<T extends AnyBoardNodeProps, I = any, C = T, P = DeepPartial<T>> {
+export class BoardNodeEntityFactory<T extends AnyBoardNodeProps, I = unknown, C = T, P = DeepPartial<T>> {
 	protected readonly propsFactory: Factory<T, I, C, P>;
 
 	constructor(propsFactory: Factory<T, I, C, P>) {
@@ -30,10 +29,10 @@ export class BoardNodeEntityFactory<T extends AnyBoardNodeProps, I = any, C = T,
 	 * @param generator Your factory function - see `Factory.define()` in thoughtbot/fishery
 	 * @returns
 	 */
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 	public static define<
 		T extends AnyBoardNodeProps,
-		I = any,
+		I = unknown,
 		C = BoardNodeEntity,
 		P = DeepPartial<T>,
 		F = BoardNodeEntityFactory<T, I, C, P>,

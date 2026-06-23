@@ -69,7 +69,7 @@ describe('course copy uc', () => {
 			it('should throw if copy feature is deactivated', async () => {
 				const { courseId, userId } = setup();
 
-				await expect(uc.copyCourse(userId, courseId)).rejects.toThrowError(
+				await expect(uc.copyCourse(userId, courseId)).rejects.toThrow(
 					new InternalServerErrorException('Copy Feature not enabled')
 				);
 			});
@@ -105,7 +105,7 @@ describe('course copy uc', () => {
 				await uc.copyCourse(userId, courseId);
 
 				const context = AuthorizationContextBuilder.write([Permission.COURSE_CREATE]);
-				expect(authorization.checkPermissionByReferences).toBeCalledWith(
+				expect(authorization.checkPermissionByReferences).toHaveBeenCalledWith(
 					userId,
 					AuthorizableReferenceType.Course,
 					courseId,
@@ -118,7 +118,7 @@ describe('course copy uc', () => {
 
 				await uc.copyCourse(userId, courseId);
 
-				expect(courseCopyService.copyCourse).toBeCalledWith({ userId, courseId });
+				expect(courseCopyService.copyCourse).toHaveBeenCalledWith({ userId, courseId });
 			});
 
 			it('should return status', async () => {
@@ -143,7 +143,7 @@ describe('course copy uc', () => {
 			it('should throw ForbiddenException', async () => {
 				const { course, user } = setupWithCourseForbidden();
 
-				await expect(uc.copyCourse(user.id, course.id)).rejects.toThrowError(new ForbiddenException());
+				await expect(uc.copyCourse(user.id, course.id)).rejects.toThrow(new ForbiddenException());
 			});
 		});
 	});

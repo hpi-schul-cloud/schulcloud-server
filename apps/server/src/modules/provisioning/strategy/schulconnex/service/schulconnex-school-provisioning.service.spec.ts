@@ -184,7 +184,7 @@ describe(SchulconnexSchoolProvisioningService.name, () => {
 				it('should throw an error', async () => {
 					const { systemId, externalSchoolDto } = setup();
 
-					await expect(service.provisionExternalSchool(externalSchoolDto, systemId)).rejects.toThrowError(
+					await expect(service.provisionExternalSchool(externalSchoolDto, systemId)).rejects.toThrow(
 						new SchoolNameRequiredLoggableException('ExternalSchool.name')
 					);
 				});

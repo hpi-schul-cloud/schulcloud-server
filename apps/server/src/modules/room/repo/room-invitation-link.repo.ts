@@ -37,8 +37,7 @@ export class RoomInvitationLinkRepo {
 
 	public async delete(ids: EntityId[]): Promise<void> {
 		const entities = await this.em.find(RoomInvitationLinkEntity, { id: { $in: ids } });
-		const promises = entities.map((entity) => this.em.remove(entity));
-		await Promise.all(promises);
+		entities.forEach((entity) => this.em.remove(entity));
 		await this.em.flush();
 	}
 }

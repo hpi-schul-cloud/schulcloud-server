@@ -161,7 +161,7 @@ describe('ShareTokenUC', () => {
 
 				const result = await uc.importShareToken(user.id, shareToken.token, 'NewName');
 
-				expect(service.lookupToken).toBeCalledWith(shareToken.token);
+				expect(service.lookupToken).toHaveBeenCalledWith(shareToken.token);
 				expect(result.status).toBe(CopyStatusEnum.SUCCESS);
 			});
 
@@ -170,7 +170,7 @@ describe('ShareTokenUC', () => {
 
 				await uc.importShareToken(user.id, shareToken.token, 'NewName');
 
-				expect(authorizationService.checkAllPermissions).toBeCalledWith(user, [Permission.COURSE_CREATE]);
+				expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(user, [Permission.COURSE_CREATE]);
 			});
 
 			it('should use the service to copy the course', async () => {
@@ -179,7 +179,7 @@ describe('ShareTokenUC', () => {
 
 				await uc.importShareToken(user.id, shareToken.token, newName);
 
-				expect(courseCopyService.copyCourse).toBeCalledWith({
+				expect(courseCopyService.copyCourse).toHaveBeenCalledWith({
 					userId: user.id,
 					courseId: shareToken.payload.parentId,
 					newName,
@@ -223,9 +223,7 @@ describe('ShareTokenUC', () => {
 			it('should throw if the destinationId is not passed', async () => {
 				const { user, shareToken } = setup();
 
-				await expect(uc.importShareToken(user.id, shareToken.token, 'NewName')).rejects.toThrowError(
-					BadRequestException
-				);
+				await expect(uc.importShareToken(user.id, shareToken.token, 'NewName')).rejects.toThrow(BadRequestException);
 			});
 
 			it('should load the share token', async () => {
@@ -233,7 +231,7 @@ describe('ShareTokenUC', () => {
 
 				const result = await uc.importShareToken(user.id, shareToken.token, 'NewName', course._id.toHexString());
 
-				expect(service.lookupToken).toBeCalledWith(shareToken.token);
+				expect(service.lookupToken).toHaveBeenCalledWith(shareToken.token);
 				expect(result.status).toBe(CopyStatusEnum.SUCCESS);
 			});
 
@@ -255,7 +253,7 @@ describe('ShareTokenUC', () => {
 
 				await uc.importShareToken(user.id, shareToken.token, copyName, course._id.toHexString());
 
-				expect(lessonCopyService.copyLesson).toBeCalledWith({
+				expect(lessonCopyService.copyLesson).toHaveBeenCalledWith({
 					copyName,
 					destinationCourse: course,
 					originalLessonId: lesson.id,
@@ -300,9 +298,7 @@ describe('ShareTokenUC', () => {
 			it('should throw if the destinationId is not passed', async () => {
 				const { user, shareToken } = setupTask();
 
-				await expect(uc.importShareToken(user.id, shareToken.token, 'NewName')).rejects.toThrowError(
-					BadRequestException
-				);
+				await expect(uc.importShareToken(user.id, shareToken.token, 'NewName')).rejects.toThrow(BadRequestException);
 			});
 
 			it('should load the share token', async () => {
@@ -310,7 +306,7 @@ describe('ShareTokenUC', () => {
 
 				const result = await uc.importShareToken(user.id, shareToken.token, 'NewName', course.id);
 
-				expect(service.lookupToken).toBeCalledWith(shareToken.token);
+				expect(service.lookupToken).toHaveBeenCalledWith(shareToken.token);
 				expect(result.status).toBe(CopyStatusEnum.SUCCESS);
 			});
 
@@ -332,7 +328,7 @@ describe('ShareTokenUC', () => {
 
 				await uc.importShareToken(user.id, shareToken.token, copyName, course.id);
 
-				expect(taskCopyService.copyTask).toBeCalledWith({
+				expect(taskCopyService.copyTask).toHaveBeenCalledWith({
 					copyName,
 					destinationCourse: course,
 					originalTaskId: task.id,
@@ -395,9 +391,7 @@ describe('ShareTokenUC', () => {
 				const { user, shareToken } = setup();
 				courseService.findById.mockRestore();
 
-				await expect(uc.importShareToken(user.id, shareToken.token, 'NewName')).rejects.toThrowError(
-					BadRequestException
-				);
+				await expect(uc.importShareToken(user.id, shareToken.token, 'NewName')).rejects.toThrow(BadRequestException);
 			});
 			it('should call the columnboard copy service', async () => {
 				const { user, shareToken, course, columnBoard } = setup();
@@ -495,9 +489,7 @@ describe('ShareTokenUC', () => {
 				const { user, shareToken } = setup();
 				courseService.findById.mockRestore();
 
-				await expect(uc.importShareToken(user.id, shareToken.token, 'NewName')).rejects.toThrowError(
-					BadRequestException
-				);
+				await expect(uc.importShareToken(user.id, shareToken.token, 'NewName')).rejects.toThrow(BadRequestException);
 			});
 
 			it('should call the card copy service', async () => {
@@ -563,7 +555,7 @@ describe('ShareTokenUC', () => {
 
 				await uc.importShareToken(user.id, shareToken.token, newName, 'destination-id');
 
-				expect(sagaService.executeSaga).toBeCalledWith('roomCopy', {
+				expect(sagaService.executeSaga).toHaveBeenCalledWith('roomCopy', {
 					userId: user.id,
 					roomId: shareToken.payload.parentId,
 					newName,

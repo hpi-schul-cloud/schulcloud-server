@@ -157,7 +157,7 @@ describe(ClassService.name, () => {
 			it('should throw error', async () => {
 				classesRepo.findClassById.mockResolvedValueOnce(null);
 
-				await expect(service.findById('someId')).rejects.toThrowError(NotFoundLoggableException);
+				await expect(service.findById('someId')).rejects.toThrow(NotFoundLoggableException);
 			});
 		});
 	});

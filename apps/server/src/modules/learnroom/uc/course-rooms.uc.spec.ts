@@ -145,7 +145,7 @@ describe('rooms usecase', () => {
 		it('should fetch correct user', async () => {
 			const { room, user, userSpy } = setup();
 			await uc.getBoard(room.id, user.id);
-			expect(userSpy).toBeCalledWith(user.id);
+			expect(userSpy).toHaveBeenCalledWith(user.id);
 		});
 
 		it('should fetch correct room filtered by user', async () => {

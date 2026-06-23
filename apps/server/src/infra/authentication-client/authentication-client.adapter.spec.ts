@@ -2,6 +2,7 @@ import { AxiosErrorLoggable } from '@core/error/loggable';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AxiosResponse } from 'axios';
+import axios from 'axios';
 import { AuthenticationClientAdapter } from './authentication-client.adapter';
 import { AuthenticationErrorLoggableException } from './error';
 import { AuthenticationApi, LocalAuthorizationBodyParams } from './generated';
@@ -100,7 +101,7 @@ describe(AuthenticationClientAdapter.name, () => {
 
 				const expectedError = new AuthenticationErrorLoggableException(error, params.username);
 
-				await expect(service.loginServiceAccount(params)).rejects.toThrowError(expectedError);
+				await expect(service.loginServiceAccount(params)).rejects.toThrow(expectedError);
 			});
 		});
 
@@ -112,8 +113,7 @@ describe(AuthenticationClientAdapter.name, () => {
 				};
 
 				const axiosError = new Error('axios error');
-				// eslint-disable-next-line @typescript-eslint/no-var-requires
-				const spyIsAxiosError = jest.spyOn(require('axios'), 'isAxiosError').mockReturnValue(true);
+				const spyIsAxiosError = jest.spyOn(axios, 'isAxiosError').mockReturnValue(true);
 
 				authenticationApi.loginControllerLoginLocalServiceAccount.mockRejectedValueOnce(axiosError);
 
@@ -171,7 +171,7 @@ describe(AuthenticationClientAdapter.name, () => {
 
 				const expectedError = new AuthenticationErrorLoggableException(error, 'unknown');
 
-				await expect(service.logout(accessToken)).rejects.toThrowError(expectedError);
+				await expect(service.logout(accessToken)).rejects.toThrow(expectedError);
 			});
 		});
 
@@ -179,8 +179,7 @@ describe(AuthenticationClientAdapter.name, () => {
 			const setup = () => {
 				const accessToken = 'someAccessToken';
 				const axiosError = new Error('axios error');
-				// eslint-disable-next-line @typescript-eslint/no-var-requires
-				const spyIsAxiosError = jest.spyOn(require('axios'), 'isAxiosError').mockReturnValue(true);
+				const spyIsAxiosError = jest.spyOn(axios, 'isAxiosError').mockReturnValue(true);
 
 				authenticationApi.logoutControllerLogout.mockRejectedValueOnce(axiosError);
 

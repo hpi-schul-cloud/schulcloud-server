@@ -435,7 +435,7 @@ describe('BoardContextApiHelperService', () => {
 			it('should throw BadRequestException', async () => {
 				const { elementId } = setup();
 
-				await expect(service.getParentsOfElement(elementId)).rejects.toThrowError(
+				await expect(service.getParentsOfElement(elementId)).rejects.toThrow(
 					new Error('Unsupported board reference type unsupportedType')
 				);
 			});

@@ -1,5 +1,5 @@
 /* istanbul ignore file */
-/* eslint-disable no-console */
+
 import { SchulconnexLicenseProvisioningAMQPModule } from '@modules/provisioning/schulconnex-license-provisioning-amqp.app.module';
 import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';

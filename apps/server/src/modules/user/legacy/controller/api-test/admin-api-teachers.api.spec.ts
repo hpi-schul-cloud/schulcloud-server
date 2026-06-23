@@ -78,7 +78,6 @@ describe('Users Admin Teachers Controller (API)', () => {
 			it('should return teacher ', async () => {
 				const response = await loggedInAdminClient.get(teacherUser1.id).expect(200);
 
-				// eslint-disable-next-line @typescript-eslint/naming-convention
 				const { _id } = response.body as UserResponse;
 
 				expect(_id).toBe(teacherUser1._id.toString());

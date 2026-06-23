@@ -72,7 +72,7 @@ describe(DeletionQueueConsole.name, () => {
 
 				await console.pushDeletionRequests(options);
 
-				expect(spy).toBeCalledWith(refsFilePath, targetRefDomain, deleteInMinutes, callsDelayMs);
+				expect(spy).toHaveBeenCalledWith(refsFilePath, targetRefDomain, deleteInMinutes, callsDelayMs);
 			});
 		});
 	});

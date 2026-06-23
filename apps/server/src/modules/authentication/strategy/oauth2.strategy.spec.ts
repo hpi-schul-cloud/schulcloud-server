@@ -1,4 +1,3 @@
-/* eslint-disable filename-rules/match */
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Account } from '@modules/account';
@@ -74,7 +73,7 @@ describe(Oauth2Strategy.name, () => {
 						redirectUri: 'http://localhost/redirect',
 						code: 'auth-code',
 						systemId,
-					} as Oauth2AuthorizationBodyParams,
+					},
 				};
 
 				return { request, contextResult, userId, accountId, systemId, idToken };
@@ -111,7 +110,7 @@ describe(Oauth2Strategy.name, () => {
 						redirectUri: 'http://localhost/redirect',
 						code: 'auth-code',
 						systemId: 'system-id',
-					} as Oauth2AuthorizationBodyParams,
+					},
 				};
 
 				return { request, error };

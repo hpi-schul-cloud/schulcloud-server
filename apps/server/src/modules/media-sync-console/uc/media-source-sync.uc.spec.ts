@@ -59,7 +59,7 @@ describe(MediaSourceSyncUc.name, () => {
 
 				await uc.syncAllMediaMetadata(dataFormat);
 
-				expect(mediaSourceSyncService.syncAllMediaMetadata).toBeCalledWith(dataFormat);
+				expect(mediaSourceSyncService.syncAllMediaMetadata).toHaveBeenCalledWith(dataFormat);
 			});
 
 			it('should log the report after the media metadata sync', async () => {
@@ -68,7 +68,7 @@ describe(MediaSourceSyncUc.name, () => {
 				await uc.syncAllMediaMetadata(dataFormat);
 
 				const loggable = new MediaMetadataSyncReportLoggable(report, dataFormat);
-				expect(logger.info).toBeCalledWith(loggable);
+				expect(logger.info).toHaveBeenCalledWith(loggable);
 			});
 		});
 	});
@@ -90,7 +90,7 @@ describe(MediaSourceSyncUc.name, () => {
 
 				await uc.syncAllMediaActivations(dataFormat);
 
-				expect(mediaSourceSyncService.syncAllMediaActivations).toBeCalledWith(dataFormat);
+				expect(mediaSourceSyncService.syncAllMediaActivations).toHaveBeenCalledWith(dataFormat);
 			});
 
 			it('should log the report after the media activations', async () => {
@@ -100,7 +100,7 @@ describe(MediaSourceSyncUc.name, () => {
 
 				const loggable = new MediaActivationsSyncReportLoggable(report, dataFormat);
 
-				expect(logger.info).toBeCalledWith(loggable);
+				expect(logger.info).toHaveBeenCalledWith(loggable);
 			});
 		});
 	});

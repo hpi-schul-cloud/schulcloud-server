@@ -96,7 +96,7 @@ describe(IdpSyncConsole.name, () => {
 
 				await console.users(options);
 
-				expect(spy).toBeCalledWith(options.systemId);
+				expect(spy).toHaveBeenCalledWith(options.systemId);
 			});
 		});
 	});

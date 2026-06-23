@@ -596,7 +596,7 @@ describe('CommonCartridgeExportService', () => {
 						totalBytes: 10,
 						processedBytes: 5,
 					},
-				} as ProgressData);
+				});
 
 				expect(logger.debug).toHaveBeenCalledWith(
 					new CommonCartridgeMessageLoggable('Progress for CC export: 1 of 2 total processed.', {

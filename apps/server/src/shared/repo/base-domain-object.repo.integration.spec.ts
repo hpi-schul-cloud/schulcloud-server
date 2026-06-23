@@ -223,7 +223,7 @@ describe('BaseDomainObjectRepo', () => {
 				expect(savedDobs).toHaveLength(dobs.length);
 				savedDobs.forEach((savedDob, index) => {
 					expect(savedDob.id).toEqual(expected[index]._id.toHexString());
-					expect(spyCreate).toBeCalledWith(TestEntity, expected[index]);
+					expect(spyCreate).toHaveBeenCalledWith(TestEntity, expected[index]);
 				});
 			});
 
@@ -335,7 +335,7 @@ describe('BaseDomainObjectRepo', () => {
 			// @ts-expect-error - testing invalid input
 			const notFoundDob = new TestDO({ name: 'test' });
 
-			await expect(repo.delete(notFoundDob)).rejects.toThrowError('Cannot delete object without id');
+			await expect(repo.delete(notFoundDob)).rejects.toThrow('Cannot delete object without id');
 		});
 	});
 

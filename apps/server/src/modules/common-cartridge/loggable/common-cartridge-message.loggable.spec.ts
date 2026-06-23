@@ -1,4 +1,4 @@
-import { faker } from '@faker-js/faker/.';
+import { faker } from '@faker-js/faker';
 import { CommonCartridgeMessageLoggable } from './common-cartridge-message.loggable';
 
 describe(CommonCartridgeMessageLoggable.name, () => {

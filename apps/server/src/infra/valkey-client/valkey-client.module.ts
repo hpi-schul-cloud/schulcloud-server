@@ -32,8 +32,11 @@ export class ValkeyClientModule {
 		const providers = [
 			{
 				provide: clientInjectionToken,
-				useFactory: (logger: Logger, domainErrorHandler: DomainErrorHandler, config: ValkeyConfig) =>
-					createValkeyClient(config, logger, domainErrorHandler),
+				useFactory: (
+					logger: Logger,
+					domainErrorHandler: DomainErrorHandler,
+					config: ValkeyConfig
+				): Promise<StorageClient> => createValkeyClient(config, logger, domainErrorHandler),
 				inject: [Logger, DomainErrorHandler, configInjectionToken],
 			},
 		];

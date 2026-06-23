@@ -84,7 +84,7 @@ describe(DeleteUserFilesStorageDataStep.name, () => {
 			it('Should call error mapper if throw an error.', async () => {
 				const { creatorId } = setup();
 
-				await expect(step.execute({ userId: creatorId })).rejects.toThrowError();
+				await expect(step.execute({ userId: creatorId })).rejects.toThrow();
 			});
 		});
 	});

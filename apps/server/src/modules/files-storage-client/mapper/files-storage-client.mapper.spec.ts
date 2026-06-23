@@ -21,7 +21,7 @@ describe('FilesStorageClientMapper', () => {
 				const result = FilesStorageClientMapper.mapfileRecordListResponseToDomainFilesDto(response);
 
 				expect(result).toEqual(
-					expect.objectContaining([
+					expect.arrayContaining([
 						{
 							id: record.id,
 							name: record.name,
@@ -76,7 +76,7 @@ describe('FilesStorageClientMapper', () => {
 			});
 
 			it('Should throw for not supported mappings', () => {
-				expect(() => FilesStorageClientMapper.mapStringToParentType('abc')).toThrowError();
+				expect(() => FilesStorageClientMapper.mapStringToParentType('abc')).toThrow();
 			});
 		});
 	});
@@ -95,7 +95,7 @@ describe('FilesStorageClientMapper', () => {
 				const result = FilesStorageClientMapper.mapCopyFileListResponseToCopyFilesDto(list);
 
 				expect(result).toEqual(
-					expect.objectContaining([
+					expect.arrayContaining([
 						{
 							...copyFileResponse,
 						},

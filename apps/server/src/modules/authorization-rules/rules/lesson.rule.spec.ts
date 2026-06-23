@@ -72,7 +72,7 @@ describe('LessonRule', () => {
 		entity = lessonFactory.build();
 		const spy = jest.spyOn(authorizationHelper, 'hasAllPermissions');
 		rule.hasPermission(globalUser, entity, { action: Action.read, requiredPermissions: [] });
-		expect(spy).toBeCalledWith(globalUser, []);
+		expect(spy).toHaveBeenCalledWith(globalUser, []);
 	});
 
 	it('should call courseRule.hasPermission', () => {
@@ -80,7 +80,7 @@ describe('LessonRule', () => {
 		entity = lessonFactory.build({ course });
 		const spy = jest.spyOn(courseRule, 'hasPermission');
 		rule.hasPermission(globalUser, entity, { action: Action.write, requiredPermissions: [permissionA] });
-		expect(spy).toBeCalledWith(globalUser, entity.course, { action: Action.write, requiredPermissions: [] });
+		expect(spy).toHaveBeenCalledWith(globalUser, entity.course, { action: Action.write, requiredPermissions: [] });
 	});
 
 	it('should call courseGroupRule.hasPermission', () => {
@@ -90,7 +90,7 @@ describe('LessonRule', () => {
 
 		const spy = jest.spyOn(courseGroupRule, 'hasPermission');
 		rule.hasPermission(globalUser, entity, { action: Action.write, requiredPermissions: [permissionA] });
-		expect(spy).toBeCalledWith(globalUser, entity.courseGroup, { action: Action.write, requiredPermissions: [] });
+		expect(spy).toHaveBeenCalledWith(globalUser, entity.courseGroup, { action: Action.write, requiredPermissions: [] });
 	});
 
 	describe('Given user request not implemented action', () => {
@@ -121,7 +121,7 @@ describe('LessonRule', () => {
 			it('should reject with NotImplementedException', () => {
 				const { user, lesson, context } = setup();
 
-				expect(() => rule.hasPermission(user, lesson, context)).toThrowError(NotImplementedException);
+				expect(() => rule.hasPermission(user, lesson, context)).toThrow(NotImplementedException);
 			});
 		});
 	});

@@ -91,7 +91,7 @@ export class DatasheetPdfService {
 					resolve(buffer);
 				});
 			} catch (error) {
-				reject(error);
+				reject(error instanceof Error ? error : new Error(String(error)));
 			}
 		});
 	}

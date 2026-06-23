@@ -30,7 +30,7 @@ describe(DeletionErrorLoggableException.name, () => {
 				data: {
 					errorMessage: message,
 				},
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
 				error: expect.objectContaining({
 					name: 'AxiosErrorLoggable',
 					status: 500,

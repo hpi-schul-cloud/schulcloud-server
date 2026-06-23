@@ -25,7 +25,7 @@ describe('EtherpadResponseMapper', () => {
 				const etherpadId = 'etherpadId';
 				const etherpadSession = undefined;
 
-				expect(() => EtherpadResponseMapper.mapEtherpadSessionToSession([etherpadId, etherpadSession])).toThrowError(
+				expect(() => EtherpadResponseMapper.mapEtherpadSessionToSession([etherpadId, etherpadSession])).toThrow(
 					errorMessage
 				);
 			});
@@ -36,7 +36,7 @@ describe('EtherpadResponseMapper', () => {
 				const etherpadId = 'etherpadId';
 				const etherpadSession = null;
 
-				expect(() => EtherpadResponseMapper.mapEtherpadSessionToSession([etherpadId, etherpadSession])).toThrowError(
+				expect(() => EtherpadResponseMapper.mapEtherpadSessionToSession([etherpadId, etherpadSession])).toThrow(
 					errorMessage
 				);
 			});
@@ -47,7 +47,7 @@ describe('EtherpadResponseMapper', () => {
 				const etherpadId = 'etherpadId';
 				const etherpadSession = {};
 
-				expect(() => EtherpadResponseMapper.mapEtherpadSessionToSession([etherpadId, etherpadSession])).toThrowError(
+				expect(() => EtherpadResponseMapper.mapEtherpadSessionToSession([etherpadId, etherpadSession])).toThrow(
 					errorMessage
 				);
 			});
@@ -58,7 +58,7 @@ describe('EtherpadResponseMapper', () => {
 				const etherpadId = 'etherpadId';
 				const etherpadSession = 'etherpadSession';
 
-				expect(() => EtherpadResponseMapper.mapEtherpadSessionToSession([etherpadId, etherpadSession])).toThrowError(
+				expect(() => EtherpadResponseMapper.mapEtherpadSessionToSession([etherpadId, etherpadSession])).toThrow(
 					errorMessage
 				);
 			});
@@ -69,7 +69,7 @@ describe('EtherpadResponseMapper', () => {
 				const etherpadId = 'etherpadId';
 				const etherpadSession = { groupID: 'groupID', authorID: 'authorID' };
 
-				expect(() => EtherpadResponseMapper.mapEtherpadSessionToSession([etherpadId, etherpadSession])).toThrowError(
+				expect(() => EtherpadResponseMapper.mapEtherpadSessionToSession([etherpadId, etherpadSession])).toThrow(
 					errorMessage
 				);
 			});
@@ -80,7 +80,7 @@ describe('EtherpadResponseMapper', () => {
 				const etherpadId = 'etherpadId';
 				const etherpadSession = { groupID: 'groupID', authorID: 'authorID' };
 
-				expect(() => EtherpadResponseMapper.mapEtherpadSessionToSession([etherpadId, etherpadSession])).toThrowError(
+				expect(() => EtherpadResponseMapper.mapEtherpadSessionToSession([etherpadId, etherpadSession])).toThrow(
 					errorMessage
 				);
 			});
@@ -91,7 +91,7 @@ describe('EtherpadResponseMapper', () => {
 				const etherpadId = 'etherpadId';
 				const etherpadSession = { groupID: 'groupID', validUntil: 123456789 };
 
-				expect(() => EtherpadResponseMapper.mapEtherpadSessionToSession([etherpadId, etherpadSession])).toThrowError(
+				expect(() => EtherpadResponseMapper.mapEtherpadSessionToSession([etherpadId, etherpadSession])).toThrow(
 					errorMessage
 				);
 			});
@@ -102,7 +102,7 @@ describe('EtherpadResponseMapper', () => {
 				const etherpadId = 'etherpadId';
 				const etherpadSession = { authorID: 'authorID', validUntil: 123456789 };
 
-				expect(() => EtherpadResponseMapper.mapEtherpadSessionToSession([etherpadId, etherpadSession])).toThrowError(
+				expect(() => EtherpadResponseMapper.mapEtherpadSessionToSession([etherpadId, etherpadSession])).toThrow(
 					errorMessage
 				);
 			});
@@ -114,9 +114,7 @@ describe('EtherpadResponseMapper', () => {
 				const etherpadSession = { groupID: 123, authorID: 'authorID', validUntil: 123456789 };
 				const error = new Error('Type is not a string');
 
-				expect(() => EtherpadResponseMapper.mapEtherpadSessionToSession([etherpadId, etherpadSession])).toThrowError(
-					error
-				);
+				expect(() => EtherpadResponseMapper.mapEtherpadSessionToSession([etherpadId, etherpadSession])).toThrow(error);
 			});
 		});
 
@@ -126,9 +124,7 @@ describe('EtherpadResponseMapper', () => {
 				const etherpadSession = { groupID: 'groupID', authorID: 123, validUntil: 123456789 };
 				const error = new Error('Type is not a string');
 
-				expect(() => EtherpadResponseMapper.mapEtherpadSessionToSession([etherpadId, etherpadSession])).toThrowError(
-					error
-				);
+				expect(() => EtherpadResponseMapper.mapEtherpadSessionToSession([etherpadId, etherpadSession])).toThrow(error);
 			});
 		});
 
@@ -138,9 +134,7 @@ describe('EtherpadResponseMapper', () => {
 				const etherpadSession = { groupID: 'groupID', authorID: 'authorID', validUntil: '123456789' };
 				const error = new Error('Type is not a number');
 
-				expect(() => EtherpadResponseMapper.mapEtherpadSessionToSession([etherpadId, etherpadSession])).toThrowError(
-					error
-				);
+				expect(() => EtherpadResponseMapper.mapEtherpadSessionToSession([etherpadId, etherpadSession])).toThrow(error);
 			});
 		});
 	});
@@ -239,7 +233,7 @@ describe('EtherpadResponseMapper', () => {
 					etherpadId2: { groupID: 'groupID2', authorID: 'authorID2' },
 				};
 
-				expect(() => EtherpadResponseMapper.mapEtherpadSessionsToSessions(etherpadSessions)).toThrowError(
+				expect(() => EtherpadResponseMapper.mapEtherpadSessionsToSessions(etherpadSessions)).toThrow(
 					'Etherpad session data is not valid'
 				);
 			});

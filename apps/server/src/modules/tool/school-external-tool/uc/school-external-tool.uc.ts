@@ -43,7 +43,7 @@ export class SchoolExternalToolUc {
 
 			const context = AuthorizationContextBuilder.read([Permission.SCHOOL_TOOL_ADMIN]);
 
-			await this.ensureSchoolPermissions(user, tools, school, context);
+			this.ensureSchoolPermissions(user, tools, school, context);
 		}
 
 		return tools;
@@ -68,13 +68,13 @@ export class SchoolExternalToolUc {
 		return createdSchoolExternalTool;
 	}
 
-	private async ensureSchoolPermissions(
+	private ensureSchoolPermissions(
 		user: User,
 		tools: SchoolExternalTool[],
 		school: School,
 		context: AuthorizationContext
-	): Promise<void> {
-		await Promise.all(tools.map(() => this.authorizationService.checkPermission(user, school, context)));
+	): void {
+		tools.forEach(() => this.authorizationService.checkPermission(user, school, context));
 	}
 
 	public async deleteSchoolExternalTool(userId: EntityId, schoolExternalToolId: EntityId): Promise<void> {

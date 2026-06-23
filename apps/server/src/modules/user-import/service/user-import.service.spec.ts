@@ -489,7 +489,9 @@ describe(UserImportService.name, () => {
 
 				await service.resetMigrationForUsersSchool(currentUser, school);
 
-				expect(logger.notice).toHaveBeenCalledWith(new UserMigrationCanceledLoggable(expect.any(LegacySchoolDo)));
+				expect(logger.notice).toHaveBeenCalledWith(
+					new UserMigrationCanceledLoggable(expect.any(LegacySchoolDo) as unknown as LegacySchoolDo)
+				);
 			});
 		});
 	});

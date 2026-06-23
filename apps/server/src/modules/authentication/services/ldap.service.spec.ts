@@ -26,7 +26,6 @@ const mockClient = {
 };
 
 jest.mock('ldapjs', () => {
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 	const originalModule = jest.requireActual('ldapjs');
 
 	// eslint-disable-next-line @typescript-eslint/no-unsafe-return

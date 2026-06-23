@@ -137,7 +137,7 @@ describe('Submission entity', () => {
 
 				submission.isSubmittedForUser(user);
 
-				expect(spyIsSubmitted).toBeCalled();
+				expect(spyIsSubmitted).toHaveBeenCalled();
 			});
 
 			it('should be called submission.isUserSubmitter.', () => {
@@ -145,7 +145,7 @@ describe('Submission entity', () => {
 
 				submission.isSubmittedForUser(user);
 
-				expect(spyIsUserSubmitter).toBeCalledWith(user);
+				expect(spyIsUserSubmitter).toHaveBeenCalledWith(user);
 			});
 
 			it('should return true.', () => {
@@ -173,7 +173,7 @@ describe('Submission entity', () => {
 
 				submission.isSubmittedForUser(user);
 
-				expect(spyIsSubmitted).toBeCalled();
+				expect(spyIsSubmitted).toHaveBeenCalled();
 			});
 
 			it('should be called submission.isUserSubmitter.', () => {
@@ -181,7 +181,7 @@ describe('Submission entity', () => {
 
 				submission.isSubmittedForUser(user);
 
-				expect(spyIsUserSubmitter).toBeCalledWith(user);
+				expect(spyIsUserSubmitter).toHaveBeenCalledWith(user);
 			});
 
 			it('should return false.', () => {
@@ -209,7 +209,7 @@ describe('Submission entity', () => {
 
 				submission.isSubmittedForUser(user);
 
-				expect(spyIsSubmitted).toBeCalled();
+				expect(spyIsSubmitted).toHaveBeenCalled();
 			});
 
 			it('should be called submission.isUserSubmitter.', () => {
@@ -217,7 +217,7 @@ describe('Submission entity', () => {
 
 				submission.isSubmittedForUser(user);
 
-				expect(spyIsUserSubmitter).toBeCalledWith(user);
+				expect(spyIsUserSubmitter).toHaveBeenCalledWith(user);
 			});
 
 			it('should return false.', () => {
@@ -245,7 +245,7 @@ describe('Submission entity', () => {
 
 				submission.isSubmittedForUser(user);
 
-				expect(spyIsSubmitted).toBeCalled();
+				expect(spyIsSubmitted).toHaveBeenCalled();
 			});
 
 			it('should be called submission.isUserSubmitter.', () => {
@@ -253,7 +253,7 @@ describe('Submission entity', () => {
 
 				submission.isSubmittedForUser(user);
 
-				expect(spyIsUserSubmitter).toBeCalledWith(user);
+				expect(spyIsUserSubmitter).toHaveBeenCalledWith(user);
 			});
 
 			it('should return false.', () => {
@@ -318,7 +318,7 @@ describe('Submission entity', () => {
 
 				submission.isGradedForUser(user);
 
-				expect(spyIsGraded).toBeCalled();
+				expect(spyIsGraded).toHaveBeenCalled();
 			});
 
 			it('should be called submission.isUserSubmitter.', () => {
@@ -326,7 +326,7 @@ describe('Submission entity', () => {
 
 				submission.isGradedForUser(user);
 
-				expect(spyIsUserSubmitter).toBeCalledWith(user);
+				expect(spyIsUserSubmitter).toHaveBeenCalledWith(user);
 			});
 
 			it('should return true.', () => {
@@ -354,7 +354,7 @@ describe('Submission entity', () => {
 
 				submission.isGradedForUser(user);
 
-				expect(spyIsGraded).toBeCalled();
+				expect(spyIsGraded).toHaveBeenCalled();
 			});
 
 			it('should be called submission.isUserSubmitter.', () => {
@@ -362,7 +362,7 @@ describe('Submission entity', () => {
 
 				submission.isGradedForUser(user);
 
-				expect(spyIsUserSubmitter).toBeCalledWith(user);
+				expect(spyIsUserSubmitter).toHaveBeenCalledWith(user);
 			});
 
 			it('should return false.', () => {
@@ -390,7 +390,7 @@ describe('Submission entity', () => {
 
 				submission.isGradedForUser(user);
 
-				expect(spyIsGraded).toBeCalled();
+				expect(spyIsGraded).toHaveBeenCalled();
 			});
 
 			it('should be called submission.isUserSubmitter.', () => {
@@ -398,7 +398,7 @@ describe('Submission entity', () => {
 
 				submission.isGradedForUser(user);
 
-				expect(spyIsUserSubmitter).toBeCalledWith(user);
+				expect(spyIsUserSubmitter).toHaveBeenCalledWith(user);
 			});
 
 			it('should return false.', () => {
@@ -426,7 +426,7 @@ describe('Submission entity', () => {
 
 				submission.isGradedForUser(user);
 
-				expect(spyIsGraded).toBeCalled();
+				expect(spyIsGraded).toHaveBeenCalled();
 			});
 
 			it('should be called submission.isUserSubmitter.', () => {
@@ -434,7 +434,7 @@ describe('Submission entity', () => {
 
 				submission.isGradedForUser(user);
 
-				expect(spyIsUserSubmitter).toBeCalledWith(user);
+				expect(spyIsUserSubmitter).toHaveBeenCalledWith(user);
 			});
 
 			it('should return false.', () => {
@@ -503,7 +503,7 @@ describe('Submission entity', () => {
 
 				submission.getSubmitterIds();
 
-				expect(spy).toBeCalled();
+				expect(spy).toHaveBeenCalled();
 			});
 
 			it('should return the userId of the creator and of the students of the coursegroup.', () => {
@@ -532,7 +532,7 @@ describe('Submission entity', () => {
 
 				expect(() => {
 					submission.getSubmitterIds();
-				}).toThrowError(InternalServerErrorException);
+				}).toThrow(InternalServerErrorException);
 			});
 		});
 	});
@@ -553,7 +553,7 @@ describe('Submission entity', () => {
 
 				submission.getSubmitterIds();
 
-				expect(spy).toBeCalled();
+				expect(spy).toHaveBeenCalled();
 			});
 
 			it('should return true', () => {
@@ -580,7 +580,7 @@ describe('Submission entity', () => {
 
 				submission.getSubmitterIds();
 
-				expect(spy).toBeCalled();
+				expect(spy).toHaveBeenCalled();
 			});
 
 			it('should return false', () => {

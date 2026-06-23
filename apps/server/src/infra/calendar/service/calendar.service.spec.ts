@@ -164,9 +164,7 @@ describe('CalendarServiceSpec', () => {
 
 			it('should throw error if cannot delete a events', async () => {
 				setup();
-				await expect(service.deleteEventsByScopeId('invalid eventId')).rejects.toThrowError(
-					InternalServerErrorException
-				);
+				await expect(service.deleteEventsByScopeId('invalid eventId')).rejects.toThrow(InternalServerErrorException);
 			});
 		});
 		describe('when received invalid HTTP status code in a response', () => {

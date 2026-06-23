@@ -16,6 +16,8 @@ class ImportUserFactory extends BaseFactory<ImportUser, ImportUserProperties> {
 }
 
 export const importUserFactory = ImportUserFactory.define(ImportUser, ({ sequence }) => {
+	const roleNames: ImportUserRoleName[] = [RoleName.STUDENT];
+
 	return {
 		school: schoolEntityFactory.buildWithId(),
 		system: systemEntityFactory.buildWithId(),
@@ -24,7 +26,7 @@ export const importUserFactory = ImportUserFactory.define(ImportUser, ({ sequenc
 		firstName: `John${sequence}`,
 		lastName: `Doe${sequence}`,
 		email: `user-${sequence}@example.com`,
-		roleNames: [RoleName.STUDENT as ImportUserRoleName],
+		roleNames,
 		classNames: ['firstClass'],
 		flagged: false,
 	};

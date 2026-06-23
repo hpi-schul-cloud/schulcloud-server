@@ -65,7 +65,7 @@ describe(DeleteUserGroupDataStep.name, () => {
 		describe('when user is missing', () => {
 			it('should throw and error', async () => {
 				// @ts-expect-error undefined check
-				await expect(step.execute({ userId: undefined })).rejects.toThrowError(InternalServerErrorException);
+				await expect(step.execute({ userId: undefined })).rejects.toThrow(InternalServerErrorException);
 			});
 		});
 

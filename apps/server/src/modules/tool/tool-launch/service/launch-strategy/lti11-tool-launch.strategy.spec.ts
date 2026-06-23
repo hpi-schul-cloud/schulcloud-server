@@ -1072,7 +1072,7 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 					expect.anything(),
 					expect.anything(),
 					expect.anything(),
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
 					expect.objectContaining({ secret: expect.anything() })
 				);
 			});

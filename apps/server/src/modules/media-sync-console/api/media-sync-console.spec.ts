@@ -51,7 +51,7 @@ describe(MediaSyncConsole.name, () => {
 
 				await console.syncAllMediaMetadata(options);
 
-				expect(mediaSourceSyncUc.syncAllMediaMetadata).toBeCalledWith(dataFormat);
+				expect(mediaSourceSyncUc.syncAllMediaMetadata).toHaveBeenCalledWith(dataFormat);
 			});
 		});
 
@@ -63,7 +63,7 @@ describe(MediaSyncConsole.name, () => {
 
 				await console.syncAllMediaMetadata(options);
 
-				expect(mediaSourceSyncUc.syncAllMediaMetadata).not.toBeCalled();
+				expect(mediaSourceSyncUc.syncAllMediaMetadata).not.toHaveBeenCalled();
 			});
 
 			it('should log the invalid data format', async () => {
@@ -73,7 +73,9 @@ describe(MediaSyncConsole.name, () => {
 
 				await console.syncAllMediaMetadata(options);
 
-				expect(consoleWriterService.error).toBeCalledWith(`Unknown media source data format "${options.dataFormat}"`);
+				expect(consoleWriterService.error).toHaveBeenCalledWith(
+					`Unknown media source data format "${options.dataFormat}"`
+				);
 			});
 		});
 	});
@@ -88,7 +90,7 @@ describe(MediaSyncConsole.name, () => {
 
 				await console.syncAllMediaActivations(options);
 
-				expect(mediaSourceSyncUc.syncAllMediaActivations).toBeCalledWith(dataFormat);
+				expect(mediaSourceSyncUc.syncAllMediaActivations).toHaveBeenCalledWith(dataFormat);
 			});
 		});
 
@@ -100,7 +102,7 @@ describe(MediaSyncConsole.name, () => {
 
 				await console.syncAllMediaActivations(options);
 
-				expect(mediaSourceSyncUc.syncAllMediaActivations).not.toBeCalled();
+				expect(mediaSourceSyncUc.syncAllMediaActivations).not.toHaveBeenCalled();
 			});
 
 			it('should log the invalid data format', async () => {
@@ -110,7 +112,9 @@ describe(MediaSyncConsole.name, () => {
 
 				await console.syncAllMediaActivations(options);
 
-				expect(consoleWriterService.error).toBeCalledWith(`Unknown media source data format "${options.dataFormat}"`);
+				expect(consoleWriterService.error).toHaveBeenCalledWith(
+					`Unknown media source data format "${options.dataFormat}"`
+				);
 			});
 		});
 	});

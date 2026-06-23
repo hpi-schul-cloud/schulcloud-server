@@ -340,7 +340,7 @@ export function logSummary(measurements: Measurement[], writeJson = false): void
 		loggerFn(logMessage);
 	} else {
 		const output = `[Performance]\n${treeOutput}\n\nAggregated:\n${aggregatedOutput}`;
-		// eslint-disable-next-line no-console
+
 		console.info(output);
 	}
 

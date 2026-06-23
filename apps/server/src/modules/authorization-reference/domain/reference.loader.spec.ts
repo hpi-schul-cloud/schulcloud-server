@@ -74,7 +74,7 @@ describe('reference.loader', () => {
 
 			await service.loadAuthorizableObject(AuthorizableReferenceType.User, entityId);
 
-			expect(referenceLoader.findById).toBeCalledWith(entityId);
+			expect(referenceLoader.findById).toHaveBeenCalledWith(entityId);
 		});
 
 		it('should return authorizable object', async () => {
@@ -100,14 +100,20 @@ describe('reference.loader', () => {
 	describe('currently, the reference loader has to inject the loaders into the injection service. In the future, this part should be moved into the modules.', () => {});
 
 	it('should inject task repo', () => {
-		expect(injectionService.injectReferenceLoader).toBeCalledWith(AuthorizableReferenceType.Task, taskRepo);
+		expect(injectionService.injectReferenceLoader).toHaveBeenCalledWith(AuthorizableReferenceType.Task, taskRepo);
 	});
 
 	it('should inject submission repo', () => {
-		expect(injectionService.injectReferenceLoader).toBeCalledWith(AuthorizableReferenceType.Submission, submissionRepo);
+		expect(injectionService.injectReferenceLoader).toHaveBeenCalledWith(
+			AuthorizableReferenceType.Submission,
+			submissionRepo
+		);
 	});
 
 	it('should inject instance service', () => {
-		expect(injectionService.injectReferenceLoader).toBeCalledWith(AuthorizableReferenceType.Instance, instanceService);
+		expect(injectionService.injectReferenceLoader).toHaveBeenCalledWith(
+			AuthorizableReferenceType.Instance,
+			instanceService
+		);
 	});
 });

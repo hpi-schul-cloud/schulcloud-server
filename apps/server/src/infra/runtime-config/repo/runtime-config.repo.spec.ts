@@ -166,7 +166,7 @@ describe('Runtime Config Repo', () => {
 				value: 'not a number',
 			} as unknown as RuntimeConfigProperties);
 			await em.persist(entity).flush();
-			await expect(() => repo.getByKey('TEST_NUMBER')).rejects.toThrowError();
+			await expect(() => repo.getByKey('TEST_NUMBER')).rejects.toThrow();
 		});
 
 		it('should not return db value when not defined in config', async () => {
@@ -176,7 +176,7 @@ describe('Runtime Config Repo', () => {
 				value: 'some value',
 			});
 			await em.persist(entity).flush();
-			await expect(() => repo.getByKey('UNDEFINED_IN_CONFIG')).rejects.toThrowError();
+			await expect(() => repo.getByKey('UNDEFINED_IN_CONFIG')).rejects.toThrow();
 		});
 
 		it('should throw when type in db is unknown', async () => {
@@ -186,7 +186,7 @@ describe('Runtime Config Repo', () => {
 				value: 'its a lot',
 			} as unknown as RuntimeConfigProperties);
 			await em.persist(entity).flush();
-			await expect(() => repo.getByKey('TEST_NUMBER')).rejects.toThrowError();
+			await expect(() => repo.getByKey('TEST_NUMBER')).rejects.toThrow();
 		});
 	});
 });

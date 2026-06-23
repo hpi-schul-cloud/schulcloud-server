@@ -32,7 +32,6 @@ export class Migration20250911071838 extends Migration {
 			]
 		);
 
-		// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
 		console.info(`Fixed ${result.modifiedCount} of ${result.matchedCount} wrong birthdays`);
 	}
 

@@ -84,7 +84,7 @@ export class ExternalToolLogoService {
 				throw new ExternalToolLogoWrongFileTypeLoggableException();
 			}
 
-			if (contentType === ImageMimeType.SVG) {
+			if ((contentType as ImageMimeType) === ImageMimeType.SVG) {
 				const svgContent = buffer.toString();
 				const sanitizedSvg = this.externalToolLogoSanitizerService.sanitizeSvg(svgContent);
 				const sanitizedSvgBase64 = Buffer.from(sanitizedSvg).toString('base64');

@@ -74,7 +74,6 @@ export class ExternalToolUc {
 			try {
 				externalTool.config = this.encryptLtiSecret(externalTool);
 
-				// eslint-disable-next-line no-await-in-loop
 				const savedTool: ExternalTool = await this.validateAndSaveExternalTool(externalTool);
 
 				result.toolId = savedTool.id;
