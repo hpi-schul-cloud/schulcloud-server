@@ -42,7 +42,7 @@ const createNews = <T extends News>(
 	target: NewsTarget
 ): T => {
 	const newsId = new ObjectId().toHexString();
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
 	const props: NewsProperties = {
 		id: newsId,
 		displayAt: date,

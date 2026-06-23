@@ -116,7 +116,6 @@ export class ExternalToolParameterValidationService {
 	private isRegexValid(param: CustomParameter): boolean {
 		if (param.regex) {
 			try {
-				// eslint-disable-next-line no-new
 				new RegExp(param.regex);
 			} catch (e) {
 				return false;

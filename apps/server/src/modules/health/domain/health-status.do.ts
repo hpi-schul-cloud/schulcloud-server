@@ -35,6 +35,6 @@ export class HealthStatus {
 			}
 		}
 
-		return this.status === HealthStatuses.STATUS_PASS;
+		return (this.status as HealthStatuses) === HealthStatuses.STATUS_PASS;
 	}
 }

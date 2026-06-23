@@ -52,7 +52,7 @@ describe('CommaSeparatedStringToArray()', () => {
 	it('should throw an error if the value is not a string', () => {
 		const plainNumber = { items: 12345 };
 
-		expect(() => plainToClass(TestDto, plainNumber)).toThrowError('Value is not a string');
+		expect(() => plainToClass(TestDto, plainNumber)).toThrow('Value is not a string');
 	});
 
 	it('should return array unchanged if value is already an array', () => {

@@ -57,7 +57,7 @@ describe('RuntimeConfigService', () => {
 		it('throws an error if the value is not a string', async () => {
 			const configValue = runtimeConfigTestingFactory.build({ type: 'number', value: 42 });
 			repo.getByKey.mockResolvedValue(configValue);
-			await expect(service.getString(configValue.getKey())).rejects.toThrowError();
+			await expect(service.getString(configValue.getKey())).rejects.toThrow();
 		});
 	});
 
@@ -72,7 +72,7 @@ describe('RuntimeConfigService', () => {
 		it('throws an error if the value is not a number', async () => {
 			const configValue = runtimeConfigTestingFactory.build({ type: 'string', value: 'a string' });
 			repo.getByKey.mockResolvedValue(configValue);
-			await expect(service.getNumber(configValue.getKey())).rejects.toThrowError();
+			await expect(service.getNumber(configValue.getKey())).rejects.toThrow();
 		});
 	});
 
@@ -87,7 +87,7 @@ describe('RuntimeConfigService', () => {
 		it('throws an error if the value is not a boolean', async () => {
 			const configValue = runtimeConfigTestingFactory.build({ type: 'string', value: 'not a boolean' });
 			repo.getByKey.mockResolvedValue(configValue);
-			await expect(service.getBoolean(configValue.getKey())).rejects.toThrowError();
+			await expect(service.getBoolean(configValue.getKey())).rejects.toThrow();
 		});
 	});
 

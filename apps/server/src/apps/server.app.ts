@@ -2,7 +2,7 @@
 
 import { Mail, MailService } from '@infra/mail';
 // application imports
-/* eslint-disable no-console */
+
 import { createRequestLoggerMiddleware, LegacyLogger, Logger, LOGGER_CONFIG_TOKEN, LoggerConfig } from '@core/logger';
 import { MikroORM } from '@mikro-orm/core';
 import { AccountService } from '@modules/account';
@@ -26,7 +26,15 @@ import { JwtWhitelistAdapter } from '@infra/jwt-whitelist';
 import { install as sourceMapInstall } from 'source-map-support';
 import { AppStartLoggable, enableOpenApiDocs } from './helpers';
 import { createMetricsServer } from './helpers/metrics.server';
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 import legacyAppPromise = require('../../../../src/app');
+
+type LegacyFeathersApp = express.Application & {
+	setup: () => Promise<void>;
+	services: Record<string, unknown>;
+};
+
+type LegacyAppFactory = (orm: MikroORM) => Promise<LegacyFeathersApp>;
 
 async function bootstrap(): Promise<void> {
 	sourceMapInstall();
@@ -47,9 +55,8 @@ async function bootstrap(): Promise<void> {
 	const loggerConfig = await nestApp.resolve<LoggerConfig>(LOGGER_CONFIG_TOKEN);
 	nestApp.use(createRequestLoggerMiddleware(loggerConfig));
 	// load the legacy feathers/express server
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-	const feathersExpress = await legacyAppPromise(orm);
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-call,@typescript-eslint/no-unsafe-member-access
+	const createLegacyApp = legacyAppPromise as unknown as LegacyAppFactory;
+	const feathersExpress = await createLegacyApp(orm);
 	await feathersExpress.setup();
 
 	// set reference to legacy app as an express setting so we can
@@ -72,41 +79,39 @@ async function bootstrap(): Promise<void> {
 	await internalServerApp.init();
 
 	// provide NestJS mail service to feathers app
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+
 	feathersExpress.services['nest-mail'] = {
 		async send(data: Mail): Promise<void> {
 			const mailService = nestApp.get(MailService);
 			await mailService.send(data);
 		},
 	};
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
+
 	feathersExpress.services['nest-account-service'] = nestApp.get(AccountService);
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
+
 	feathersExpress.services['nest-account-uc'] = nestApp.get(AccountUc);
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
+
 	feathersExpress.services['nest-collaborative-storage-uc'] = nestApp.get(CollaborativeStorageUc);
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
+
 	feathersExpress.services['nest-team-service'] = nestApp.get(TeamService);
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access,@typescript-eslint/no-unsafe-assignment
+
 	feathersExpress.services['nest-feathers-roster-service'] = nestApp.get(FeathersRosterService);
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
+
 	feathersExpress.services['nest-group-service'] = nestApp.get(GroupService);
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
+
 	feathersExpress.services['nest-column-board-service'] = nestApp.get(ColumnBoardService);
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
+
 	feathersExpress.services['nest-context-external-tool-service'] = nestApp.get(ContextExternalToolService);
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment,@typescript-eslint/no-unsafe-member-access
+
 	feathersExpress.services['nest-system-rule'] = nestApp.get(SystemRule);
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 	feathersExpress.services['nest-orm'] = orm;
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 	feathersExpress.services['nest-jwt-whitelist-adapter'] = await nestApp.resolve(JwtWhitelistAdapter);
 
 	// mount instances
 	const rootExpress = express();
 
 	// exposed alias mounts
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+
 	rootExpress.use('/api/v1', feathersExpress);
 	rootExpress.use('/api/v3', nestExpress);
 	rootExpress.use('/internal', internalServerExpress);
@@ -121,9 +126,9 @@ async function bootstrap(): Promise<void> {
 
 	// safety net for deprecated paths not beginning with version prefix
 	// TODO remove when all calls to the server are migrated
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+
 	rootExpress.use('/api', logDeprecatedPaths, feathersExpress);
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+
 	rootExpress.use('/', logDeprecatedPaths, feathersExpress);
 
 	const port = 3030;

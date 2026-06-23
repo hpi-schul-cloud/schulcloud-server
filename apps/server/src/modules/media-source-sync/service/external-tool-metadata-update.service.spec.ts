@@ -94,7 +94,7 @@ describe(ExternalToolMetadataUpdateService.name, () => {
 						logoUrl: mediumMetadata.logoUrl,
 						logo: logoData,
 						thumbnail: initialExternalTool.thumbnail,
-						// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
 						medium: expect.objectContaining<Partial<ExternalToolMedium>>({
 							status: savedExternalToolStatus,
 							publisher: initialExternalTool.medium?.publisher,
@@ -206,7 +206,7 @@ describe(ExternalToolMetadataUpdateService.name, () => {
 						logoUrl: mediumMetadata.logoUrl,
 						logo: logoData,
 						thumbnail: initialExternalTool.thumbnail,
-						// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
 						medium: expect.objectContaining<Partial<ExternalToolMedium>>({
 							status: savedExternalToolStatus,
 							publisher: mediumMetadata.publisher,

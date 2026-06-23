@@ -1,5 +1,5 @@
 /* istanbul ignore file */
-/* eslint-disable no-console */
+
 import { createRequestLoggerMiddleware, LegacyLogger, Logger, LOGGER_CONFIG_TOKEN, LoggerConfig } from '@core/logger';
 import { CommonCartridgeApiModule } from '@modules/common-cartridge/common-cartridge-api.app.module';
 import { NestFactory } from '@nestjs/core';

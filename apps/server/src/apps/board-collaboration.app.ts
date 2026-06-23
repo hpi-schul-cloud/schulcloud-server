@@ -1,5 +1,5 @@
 /* istanbul ignore file */
-/* eslint-disable no-console */
+
 import { NestFactory } from '@nestjs/core';
 
 // register source-map-support for debugging

@@ -60,7 +60,7 @@ describe('TeamService', () => {
 
 				await service.findUserDataFromTeams(teamUser.user.id);
 
-				expect(teamRepo.findByUserId).toBeCalledWith(teamUser.user.id);
+				expect(teamRepo.findByUserId).toHaveBeenCalledWith(teamUser.user.id);
 			});
 
 			it('should return array of two teams with user', async () => {

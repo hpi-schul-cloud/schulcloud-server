@@ -70,7 +70,7 @@ describe('FilesStorageClientAdapterService', () => {
 
 			expect(client.copyFilesOfParent).toHaveBeenCalledWith(param);
 
-			expect(spy).toBeCalled();
+			expect(spy).toHaveBeenCalled();
 
 			spy.mockRestore();
 		});
@@ -88,7 +88,7 @@ describe('FilesStorageClientAdapterService', () => {
 
 			client.copyFilesOfParent.mockRejectedValue(new Error());
 
-			await expect(service.copyFilesOfParent(param)).rejects.toThrowError();
+			await expect(service.copyFilesOfParent(param)).rejects.toThrow();
 		});
 	});
 
@@ -103,7 +103,7 @@ describe('FilesStorageClientAdapterService', () => {
 			await service.listFilesOfParent(task.id);
 
 			expect(client.listFilesOfParent).toHaveBeenCalledWith(task.id);
-			expect(spy).toBeCalled();
+			expect(spy).toHaveBeenCalled();
 
 			spy.mockRestore();
 		});
@@ -113,7 +113,7 @@ describe('FilesStorageClientAdapterService', () => {
 
 			client.listFilesOfParent.mockRejectedValue(new Error());
 
-			await expect(service.listFilesOfParent(task.id)).rejects.toThrowError();
+			await expect(service.listFilesOfParent(task.id)).rejects.toThrow();
 		});
 	});
 
@@ -135,7 +135,7 @@ describe('FilesStorageClientAdapterService', () => {
 				await service.deleteFilesOfParent(parentId);
 
 				expect(client.deleteFilesOfParent).toHaveBeenCalledWith(parentId);
-				expect(spy).toBeCalled();
+				expect(spy).toHaveBeenCalled();
 
 				spy.mockRestore();
 			});
@@ -153,7 +153,7 @@ describe('FilesStorageClientAdapterService', () => {
 			it('Should call error mapper if throw an error.', async () => {
 				const { parentId } = setup();
 
-				await expect(service.deleteFilesOfParent(parentId)).rejects.toThrowError();
+				await expect(service.deleteFilesOfParent(parentId)).rejects.toThrow();
 			});
 		});
 	});
@@ -183,7 +183,7 @@ describe('FilesStorageClientAdapterService', () => {
 				await service.deleteFiles([recordId]);
 
 				expect(client.deleteFiles).toHaveBeenCalledWith([recordId]);
-				expect(spy).toBeCalled();
+				expect(spy).toHaveBeenCalled();
 
 				spy.mockRestore();
 			});
@@ -201,7 +201,7 @@ describe('FilesStorageClientAdapterService', () => {
 			it('Should call error mapper if throw an error.', async () => {
 				const { recordId } = setup();
 
-				await expect(service.deleteFiles([recordId])).rejects.toThrowError();
+				await expect(service.deleteFiles([recordId])).rejects.toThrow();
 			});
 		});
 	});

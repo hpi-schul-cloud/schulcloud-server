@@ -1,4 +1,3 @@
-/* eslint-disable filename-rules/match */
 import type { ICurrentUser } from '@infra/auth-guard';
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';

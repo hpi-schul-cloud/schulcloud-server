@@ -85,7 +85,7 @@ describe('RoomService', () => {
 			props.startDate = new Date('2024-12-31');
 			props.endDate = new Date('2024-01-01');
 
-			await expect(service.createRoom(props)).rejects.toThrowError(ValidationError);
+			await expect(service.createRoom(props)).rejects.toThrow(ValidationError);
 		});
 	});
 
@@ -176,7 +176,7 @@ describe('RoomService', () => {
 			props.startDate = new Date('2024-12-31');
 			props.endDate = new Date('2024-01-01');
 
-			await expect(service.updateRoom(room, props)).rejects.toThrowError(ValidationError);
+			await expect(service.updateRoom(room, props)).rejects.toThrow(ValidationError);
 		});
 	});
 

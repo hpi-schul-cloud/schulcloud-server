@@ -36,7 +36,7 @@ describe('Role Entity', () => {
 			const role = roleFactory.build();
 			role.roles.set([orm.em.getReference(Role, new ObjectId().toHexString())]);
 
-			expect(() => role.resolvePermissions()).toThrowError();
+			expect(() => role.resolvePermissions()).toThrow();
 		});
 
 		it('should throw error when sub roles are not populated', () => {
@@ -44,7 +44,7 @@ describe('Role Entity', () => {
 			roleA.roles.set([orm.em.getReference(Role, new ObjectId().toHexString())]);
 			const role = roleFactory.build({ roles: [roleA] });
 
-			expect(() => role.resolvePermissions()).toThrowError();
+			expect(() => role.resolvePermissions()).toThrow();
 		});
 
 		it('should return empty array if the role has no permissions', () => {

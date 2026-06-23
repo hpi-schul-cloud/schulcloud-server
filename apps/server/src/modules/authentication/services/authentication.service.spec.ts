@@ -174,7 +174,7 @@ describe(AuthenticationService.name, () => {
 
 				await authenticationService.generateSupportJwt(supportUser, targetUser);
 
-				expect(jwtService.sign).toBeCalledWith(
+				expect(jwtService.sign).toHaveBeenCalledWith(
 					expectedPayload,
 					expect.objectContaining({
 						subject: mockCurrentUser.accountId,

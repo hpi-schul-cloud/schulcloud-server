@@ -139,7 +139,7 @@ describe(SchulconnexResponseMapper.name, () => {
 		describe('when unknown group type is given', () => {
 			const setup = () => {
 				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
-				schulconnexResponse.personenkontexte[0].gruppen![0].gruppe.typ = 'unknown' as SchulconnexGroupType;
+				schulconnexResponse.personenkontexte[0].gruppen![0].gruppe.typ = 'unknown';
 
 				return {
 					schulconnexResponse,
@@ -207,7 +207,7 @@ describe(SchulconnexResponseMapper.name, () => {
 		describe('when group type other is provided', () => {
 			const setup = () => {
 				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
-				schulconnexResponse.personenkontexte[0].gruppen![0]!.gruppe.typ = SchulconnexGroupType.OTHER;
+				schulconnexResponse.personenkontexte[0].gruppen![0].gruppe.typ = SchulconnexGroupType.OTHER;
 
 				return {
 					schulconnexResponse,
@@ -230,7 +230,7 @@ describe(SchulconnexResponseMapper.name, () => {
 		describe('when group type course is provided', () => {
 			const setup = () => {
 				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
-				schulconnexResponse.personenkontexte[0].gruppen![0]!.gruppe.typ = SchulconnexGroupType.COURSE;
+				schulconnexResponse.personenkontexte[0].gruppen![0].gruppe.typ = SchulconnexGroupType.COURSE;
 
 				return {
 					schulconnexResponse,
@@ -253,7 +253,7 @@ describe(SchulconnexResponseMapper.name, () => {
 		describe('when the group role mapping for the user is missing', () => {
 			const setup = () => {
 				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
-				schulconnexResponse.personenkontexte[0].gruppen![0]!.gruppenzugehoerigkeit.rollen = [
+				schulconnexResponse.personenkontexte[0].gruppen![0].gruppenzugehoerigkeit.rollen = [
 					SchulconnexGroupRole.SCHOOL_SUPPORT,
 				];
 
@@ -274,7 +274,7 @@ describe(SchulconnexResponseMapper.name, () => {
 		describe('when the user has no role in the group', () => {
 			const setup = () => {
 				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
-				schulconnexResponse.personenkontexte[0].gruppen![0]!.gruppenzugehoerigkeit.rollen = [];
+				schulconnexResponse.personenkontexte[0].gruppen![0].gruppenzugehoerigkeit.rollen = [];
 
 				return {
 					schulconnexResponse,
@@ -336,7 +336,7 @@ describe(SchulconnexResponseMapper.name, () => {
 				config.featureOtherGroupusersProvisioningEnabled = true;
 
 				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
-				schulconnexResponse.personenkontexte[0].gruppen![0]!.sonstige_gruppenzugehoerige = [
+				schulconnexResponse.personenkontexte[0].gruppen![0].sonstige_gruppenzugehoerige = [
 					{
 						ktid: 'ktid',
 						rollen: [SchulconnexGroupRole.SCHOOL_SUPPORT],
@@ -360,7 +360,7 @@ describe(SchulconnexResponseMapper.name, () => {
 		describe('when the group has no duration', () => {
 			const setup = () => {
 				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
-				schulconnexResponse.personenkontexte[0].gruppen![0]!.gruppe.laufzeit = undefined;
+				schulconnexResponse.personenkontexte[0].gruppen![0].gruppe.laufzeit = undefined;
 
 				return {
 					schulconnexResponse,
@@ -384,7 +384,7 @@ describe(SchulconnexResponseMapper.name, () => {
 		describe('when the group has a duration as lernperiode', () => {
 			const setup = () => {
 				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
-				schulconnexResponse.personenkontexte[0].gruppen![0]!.gruppe.laufzeit = {
+				schulconnexResponse.personenkontexte[0].gruppen![0].gruppe.laufzeit = {
 					vonlernperiode: '2023-2',
 					bislernperiode: '2026-1',
 				};
@@ -416,7 +416,7 @@ describe(SchulconnexResponseMapper.name, () => {
 					bis: '2028-07-12',
 				};
 
-				schulconnexResponse.personenkontexte[0].gruppen![0]!.gruppe.laufzeit = duration;
+				schulconnexResponse.personenkontexte[0].gruppen![0].gruppe.laufzeit = duration;
 
 				return {
 					schulconnexResponse,
@@ -448,7 +448,7 @@ describe(SchulconnexResponseMapper.name, () => {
 					bislernperiode: '2025',
 				};
 
-				schulconnexResponse.personenkontexte[0].gruppen![0]!.gruppe.laufzeit = duration;
+				schulconnexResponse.personenkontexte[0].gruppen![0].gruppe.laufzeit = duration;
 
 				return {
 					schulconnexResponse,
@@ -473,7 +473,7 @@ describe(SchulconnexResponseMapper.name, () => {
 		describe('when the group has an invalid duration as lernperiode', () => {
 			const setup = () => {
 				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
-				schulconnexResponse.personenkontexte[0].gruppen![0]!.gruppe.laufzeit = {
+				schulconnexResponse.personenkontexte[0].gruppen![0].gruppe.laufzeit = {
 					vonlernperiode: '2024-3',
 					bislernperiode: '2021-01-02',
 				};
@@ -495,7 +495,7 @@ describe(SchulconnexResponseMapper.name, () => {
 		describe('when the group has no from date', () => {
 			const setup = () => {
 				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
-				schulconnexResponse.personenkontexte[0].gruppen![0]!.gruppe.laufzeit = {
+				schulconnexResponse.personenkontexte[0].gruppen![0].gruppe.laufzeit = {
 					bislernperiode: '2024-2',
 				};
 
@@ -516,7 +516,7 @@ describe(SchulconnexResponseMapper.name, () => {
 		describe('when the group has no until date', () => {
 			const setup = () => {
 				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
-				schulconnexResponse.personenkontexte[0].gruppen![0]!.gruppe.laufzeit = {
+				schulconnexResponse.personenkontexte[0].gruppen![0].gruppe.laufzeit = {
 					vonlernperiode: '2024-2',
 				};
 

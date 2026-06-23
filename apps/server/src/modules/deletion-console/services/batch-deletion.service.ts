@@ -25,7 +25,6 @@ export class BatchDeletionService {
 			);
 
 			try {
-				// eslint-disable-next-line no-await-in-loop
 				const deletionRequestOutput = await this.deletionClient.queueDeletionRequest(deletionRequestInput);
 
 				// In case of a successful client response, add the
@@ -43,7 +42,6 @@ export class BatchDeletionService {
 
 			// If any delay between the client calls has been requested, "sleep" for the specified amount of time.
 			if (callsDelayMilliseconds && callsDelayMilliseconds > 0) {
-				// eslint-disable-next-line no-await-in-loop
 				await new Promise((resolve) => {
 					setTimeout(resolve, callsDelayMilliseconds);
 				});

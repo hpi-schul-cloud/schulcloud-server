@@ -96,7 +96,7 @@ describe('Media Board (API)', () => {
 					id: mediaBoard.id,
 					timestamps: {
 						createdAt: mediaBoard.createdAt.toISOString(),
-						lastUpdatedAt: expectIsoDateString() as unknown as string,
+						lastUpdatedAt: expectIsoDateString(),
 					},
 					layout: BoardLayout.LIST,
 					lines: [
@@ -104,7 +104,7 @@ describe('Media Board (API)', () => {
 							id: mediaLine.id,
 							timestamps: {
 								createdAt: mediaLine.createdAt.toISOString(),
-								lastUpdatedAt: expectIsoDateString() as unknown as string,
+								lastUpdatedAt: expectIsoDateString(),
 							},
 							collapsed: false,
 							backgroundColor: Colors.TRANSPARENT,
@@ -114,7 +114,7 @@ describe('Media Board (API)', () => {
 									id: mediaElement.id,
 									timestamps: {
 										createdAt: mediaElement.createdAt.toISOString(),
-										lastUpdatedAt: expectIsoDateString() as unknown as string,
+										lastUpdatedAt: expectIsoDateString(),
 									},
 									content: {
 										contextExternalToolId,

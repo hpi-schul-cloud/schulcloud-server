@@ -9,7 +9,7 @@ export abstract class RpcMessageProducer {
 		protected readonly timeout: number
 	) {}
 
-	protected async request<T>(event: string, payload: unknown) {
+	protected async request<T>(event: string, payload: unknown): Promise<T> {
 		const response = await this.amqpConnection.request<RpcMessage<T>>(this.createRequest(event, payload));
 
 		this.checkError<T>(response);
@@ -18,7 +18,7 @@ export abstract class RpcMessageProducer {
 
 	// need to be fixed with https://ticketsystem.dbildungscloud.de/browse/BC-2984
 	// mapRpcErrorResponseToDomainError should also removed with this ticket
-	protected checkError<T>(response: RpcMessage<T>) {
+	protected checkError<T>(response: RpcMessage<T>): void {
 		const { error } = response;
 		if (error) {
 			const domainError = ErrorMapper.mapRpcErrorResponseToDomainError(error);
@@ -26,7 +26,16 @@ export abstract class RpcMessageProducer {
 		}
 	}
 
-	protected createRequest(event: string, payload: unknown) {
+	protected createRequest(
+		event: string,
+		payload: unknown
+	): {
+		exchange: string;
+		routingKey: string;
+		payload: unknown;
+		timeout: number;
+		expiration: number | undefined;
+	} {
 		// expiration should be greater than timeout
 		const expiration = this.timeout > 0 ? this.timeout * 1.5 : undefined;
 

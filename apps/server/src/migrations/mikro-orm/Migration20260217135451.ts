@@ -34,7 +34,6 @@ export class Migration20260217135451 extends Migration {
 			{ $set: { [fieldName]: [] } }
 		);
 
-		// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
 		console.info(
 			`Added ${result.modifiedCount} of ${result.matchedCount} default empty arrays for ${fieldName} in ${collectionName}`
 		);

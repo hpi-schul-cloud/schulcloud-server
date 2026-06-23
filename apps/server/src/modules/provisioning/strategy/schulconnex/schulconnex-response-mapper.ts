@@ -82,7 +82,8 @@ export class SchulconnexResponseMapper {
 		if (source.personenkontexte[0].erreichbarkeiten?.length) {
 			const emailContact: SchulconnexErreichbarkeitenResponse | undefined =
 				source.personenkontexte[0].erreichbarkeiten.find(
-					(contact: SchulconnexErreichbarkeitenResponse): boolean => contact.typ === SchulconnexCommunicationType.EMAIL
+					(contact: SchulconnexErreichbarkeitenResponse): boolean =>
+						(contact.typ as SchulconnexCommunicationType) === SchulconnexCommunicationType.EMAIL
 				);
 			email = emailContact?.kennung;
 		}

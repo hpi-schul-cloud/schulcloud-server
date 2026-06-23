@@ -203,7 +203,7 @@ describe(BoardCopyService.name, () => {
 				};
 				boardNodeCopyService.copy.mockResolvedValueOnce(status);
 
-				await expect(service.copyColumnBoard(copyParams)).rejects.toThrowError(
+				await expect(service.copyColumnBoard(copyParams)).rejects.toThrow(
 					'expected copy of columnboard to be a columnboard'
 				);
 			});
@@ -277,7 +277,7 @@ describe(BoardCopyService.name, () => {
 				};
 				boardNodeService.findByClassAndId.mockResolvedValueOnce(notAColumn);
 
-				await expect(service.copyCard(copyParams)).rejects.toThrowError('Card has no parent column');
+				await expect(service.copyCard(copyParams)).rejects.toThrow('Card has no parent column');
 			});
 
 			it('should call service to copy the card', async () => {
@@ -447,7 +447,7 @@ describe(BoardCopyService.name, () => {
 					targetSchoolId,
 				};
 
-				await expect(service.copyColumn(copyParams)).rejects.toThrowError('Column has no parent board');
+				await expect(service.copyColumn(copyParams)).rejects.toThrow('Column has no parent board');
 			});
 
 			it('should call service to copy the column', async () => {

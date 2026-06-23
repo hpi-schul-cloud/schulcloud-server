@@ -80,7 +80,7 @@ describe(MediaSourceSyncService.name, () => {
 
 					await service.syncAllMediaMetadata(mediaSourceDataFormat);
 
-					expect(biloMetadataSyncStrategy.syncAllMediaMetadata).toBeCalled();
+					expect(biloMetadataSyncStrategy.syncAllMediaMetadata).toHaveBeenCalled();
 				});
 
 				it('should return a sync report', async () => {
@@ -161,7 +161,7 @@ describe(MediaSourceSyncService.name, () => {
 
 					await service.syncAllMediaActivations(mediaSourceDataFormat);
 
-					expect(vidisActivationSyncStrategy.syncAllMediaActivations).toBeCalled();
+					expect(vidisActivationSyncStrategy.syncAllMediaActivations).toHaveBeenCalled();
 				});
 
 				it('should return a sync report', async () => {

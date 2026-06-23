@@ -58,7 +58,7 @@ describe('DatabaseManagementConsole (API)', () => {
 
 				await execute(bootstrap, ['database', 'seed']);
 
-				expect(spyConsoleWriterInfo).toBeCalled();
+				expect(spyConsoleWriterInfo).toHaveBeenCalled();
 			});
 
 			it('should provide command "export"', async () => {
@@ -66,7 +66,7 @@ describe('DatabaseManagementConsole (API)', () => {
 
 				await execute(bootstrap, ['database', 'export']);
 
-				expect(spyConsoleWriterInfo).toBeCalled();
+				expect(spyConsoleWriterInfo).toHaveBeenCalled();
 			});
 
 			it('should provide command "sync-indexes"', async () => {
@@ -74,7 +74,7 @@ describe('DatabaseManagementConsole (API)', () => {
 
 				await execute(bootstrap, ['database', 'sync-indexes']);
 
-				expect(spyConsoleWriterInfo).toBeCalled();
+				expect(spyConsoleWriterInfo).toHaveBeenCalled();
 			});
 
 			it('should output error if command "migration" is called without flags', async () => {
@@ -82,7 +82,7 @@ describe('DatabaseManagementConsole (API)', () => {
 
 				await execute(bootstrap, ['database', 'migration']);
 
-				expect(spyConsoleWriterError).toBeCalled();
+				expect(spyConsoleWriterError).toHaveBeenCalled();
 			});
 
 			it('should provide command "migration"', async () => {
@@ -90,7 +90,7 @@ describe('DatabaseManagementConsole (API)', () => {
 
 				await execute(bootstrap, ['database', 'migration', '--up']);
 
-				expect(spyConsoleWriterInfo).toBeCalled();
+				expect(spyConsoleWriterInfo).toHaveBeenCalled();
 			});
 		});
 	});

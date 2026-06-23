@@ -753,7 +753,7 @@ describe(ExternalToolService.name, () => {
 
 			await service.updateExternalTools([externalTool]);
 
-			expect(externalToolRepo.saveAll).toBeCalled();
+			expect(externalToolRepo.saveAll).toHaveBeenCalled();
 		});
 
 		it('should return the updated external tools', async () => {
@@ -780,7 +780,7 @@ describe(ExternalToolService.name, () => {
 
 			await service.findExternalToolsByName(name);
 
-			expect(externalToolRepo.findAllByName).toBeCalledWith(name);
+			expect(externalToolRepo.findAllByName).toHaveBeenCalledWith(name);
 		});
 
 		it('should return the found external tools', async () => {

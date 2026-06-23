@@ -127,7 +127,10 @@ describe('VideoConferenceEndUc', () => {
 
 				await uc.end(currentUserId, scope);
 
-				expect(videoConferenceFeatureService.checkVideoConferenceFeatureEnabled).toBeCalledWith(currentUserId, scope);
+				expect(videoConferenceFeatureService.checkVideoConferenceFeatureEnabled).toHaveBeenCalledWith(
+					currentUserId,
+					scope
+				);
 			});
 
 			it('should call videoConferenceService.getScopeInfo', async () => {
@@ -135,7 +138,7 @@ describe('VideoConferenceEndUc', () => {
 
 				await uc.end(currentUserId, scope);
 
-				expect(videoConferenceService.getScopeInfo).toBeCalledWith(currentUserId, scope.id, scope.scope);
+				expect(videoConferenceService.getScopeInfo).toHaveBeenCalledWith(currentUserId, scope.id, scope.scope);
 			});
 
 			it('should call bbbService.end', async () => {
@@ -143,7 +146,7 @@ describe('VideoConferenceEndUc', () => {
 
 				await uc.end(currentUserId, scope);
 
-				expect(bbbService.end).toBeCalledWith({ meetingID: scope.id });
+				expect(bbbService.end).toHaveBeenCalledWith({ meetingID: scope.id });
 			});
 
 			it('should call videoConferenceService.determineBbbRole', async () => {
@@ -151,7 +154,7 @@ describe('VideoConferenceEndUc', () => {
 
 				await uc.end(currentUserId, scope);
 
-				expect(videoConferenceService.determineBbbRole).toBeCalledWith(currentUserId, scope.id, scope.scope);
+				expect(videoConferenceService.determineBbbRole).toHaveBeenCalledWith(currentUserId, scope.id, scope.scope);
 			});
 
 			it('should end a video conference', async () => {
@@ -198,7 +201,10 @@ describe('VideoConferenceEndUc', () => {
 
 				await uc.end(currentUserId, scope);
 
-				expect(videoConferenceFeatureService.checkVideoConferenceFeatureEnabled).toBeCalledWith(currentUserId, scope);
+				expect(videoConferenceFeatureService.checkVideoConferenceFeatureEnabled).toHaveBeenCalledWith(
+					currentUserId,
+					scope
+				);
 			});
 		});
 	});

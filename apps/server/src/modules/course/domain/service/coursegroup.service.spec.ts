@@ -59,7 +59,7 @@ describe('CourseGroupService', () => {
 
 				await courseGroupService.findAllCourseGroupsByUserId(user.id);
 
-				expect(courseGroupRepo.findByUserId).toBeCalledWith(user.id);
+				expect(courseGroupRepo.findByUserId).toHaveBeenCalledWith(user.id);
 			});
 
 			it('should return array with coursesGroup with userId', async () => {

@@ -17,7 +17,14 @@ export function buildXmlString(obj: unknown): string {
 	return xmlBuilder.buildObject(obj);
 }
 
-export function createIdentifier(identifier?: string | ObjectId | unknown): string {
+type SerializedObjectId = {
+	buffer: {
+		type: 'Buffer';
+		data: number[];
+	};
+};
+
+export function createIdentifier(identifier?: string | ObjectId | SerializedObjectId): string {
 	if (!identifier) {
 		return `i${new ObjectId().toString()}`;
 	}
@@ -27,17 +34,7 @@ export function createIdentifier(identifier?: string | ObjectId | unknown): stri
 	}
 
 	// edgecase for stringified ObjectId returned from controller
-	if (
-		typeof identifier === 'object' &&
-		'buffer' in identifier &&
-		typeof identifier.buffer === 'object' &&
-		identifier.buffer !== null &&
-		'type' in identifier.buffer &&
-		typeof identifier.buffer.type === 'string' &&
-		identifier.buffer.type === 'Buffer' &&
-		'data' in identifier.buffer &&
-		Array.isArray(identifier.buffer.data)
-	) {
+	if (typeof identifier === 'object' && 'buffer' in identifier && identifier.buffer.type === 'Buffer') {
 		return `i${new ObjectId(new Uint8Array(identifier.buffer.data)).toString()}`;
 	}
 

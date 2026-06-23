@@ -50,7 +50,6 @@ describe('Logger', () => {
 			const loggable = new SampleLoggable();
 			service.setContext('test context');
 
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 			const expectedMessage = expect.objectContaining({
 				message: "{ message: 'test message', data: 'test data' }",
 				context: 'test context',
@@ -58,7 +57,7 @@ describe('Logger', () => {
 
 			service.info(loggable);
 
-			expect(winstonLogger.info).toBeCalledWith(expectedMessage);
+			expect(winstonLogger.info).toHaveBeenCalledWith(expectedMessage);
 		});
 	});
 
@@ -67,7 +66,6 @@ describe('Logger', () => {
 			const loggable = new SampleLoggable();
 			service.setContext('test context');
 
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 			const expectedMessage = expect.objectContaining({
 				message: "{ message: 'test message', data: 'test data' }",
 				context: 'test context',
@@ -75,7 +73,7 @@ describe('Logger', () => {
 
 			service.warning(loggable);
 
-			expect(winstonLogger.warning).toBeCalledWith(expectedMessage);
+			expect(winstonLogger.warning).toHaveBeenCalledWith(expectedMessage);
 		});
 	});
 
@@ -84,7 +82,6 @@ describe('Logger', () => {
 			const loggable = new SampleLoggable();
 			service.setContext('test context');
 
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 			const expectedMessage = expect.objectContaining({
 				message: "{ message: 'test message', data: 'test data' }",
 				context: 'test context',
@@ -92,7 +89,7 @@ describe('Logger', () => {
 
 			service.debug(loggable);
 
-			expect(winstonLogger.debug).toBeCalledWith(expectedMessage);
+			expect(winstonLogger.debug).toHaveBeenCalledWith(expectedMessage);
 		});
 	});
 
@@ -100,7 +97,6 @@ describe('Logger', () => {
 		it('should set the context', () => {
 			service.setContext('test');
 
-			// eslint-disable-next-line @typescript-eslint/dot-notation
 			expect(service['context']).toEqual('test');
 		});
 	});
@@ -110,7 +106,6 @@ describe('Logger', () => {
 			const loggable = new SampleLoggable();
 			service.setContext('test context');
 
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 			const expectedMessage = expect.objectContaining({
 				message: "{ message: 'test message', data: 'test data' }",
 				context: 'test context',
@@ -118,7 +113,7 @@ describe('Logger', () => {
 
 			service.notice(loggable);
 
-			expect(winstonLogger.notice).toBeCalledWith(expectedMessage);
+			expect(winstonLogger.notice).toHaveBeenCalledWith(expectedMessage);
 		});
 	});
 });

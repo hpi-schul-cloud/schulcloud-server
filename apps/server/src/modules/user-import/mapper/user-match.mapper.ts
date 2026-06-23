@@ -1,5 +1,6 @@
 import { User } from '@modules/user/repo';
 import { StringValidator } from '@shared/common/validator';
+import { RoleName } from '@modules/role';
 import { UserMatchResponse, UserRole } from '../controller/dto';
 import { FilterUserParams } from '../controller/dto/filter-user.params';
 import { ImportUserNameMatchFilter } from '../domain/interface';
@@ -44,11 +45,11 @@ export class UserMatchMapper {
 		const roleNames = domainRoleNames
 			.map((roleName) => {
 				switch (roleName) {
-					case 'teacher':
+					case RoleName.TEACHER:
 						return UserRole.TEACHER;
-					case 'administrator':
+					case RoleName.ADMINISTRATOR:
 						return UserRole.ADMIN;
-					case 'student':
+					case RoleName.STUDENT:
 						return UserRole.STUDENT;
 					default:
 						return null;

@@ -1,4 +1,4 @@
-import { AnyEntity, EntityData, EntityName, FilterQuery, Primary } from '@mikro-orm/core';
+import { AnyEntity, EntityData, EntityName, Primary } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { SortOrder } from '@shared/domain/interface';
@@ -51,7 +51,7 @@ export class AccountMikroOrmRepo extends BaseDomainObjectRepo<Account, AccountEn
 	}
 
 	public async findById(id: EntityId | ObjectId): Promise<Account> {
-		const entity = await this.em.findOneOrFail(this.entityName, id as FilterQuery<AccountEntity>);
+		const entity = await this.em.findOneOrFail(this.entityName, id);
 
 		return AccountEntityToDoMapper.mapToDo(entity);
 	}

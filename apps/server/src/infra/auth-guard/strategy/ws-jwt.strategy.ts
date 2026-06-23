@@ -30,7 +30,7 @@ export class WsJwtStrategy extends PassportStrategy(Strategy, StrategyType.WS_JW
 			const currentUser = currentUserBuilder.build();
 
 			return currentUser;
-		} catch (err) {
+		} catch {
 			throw new WsException('Unauthorized access');
 		}
 	}

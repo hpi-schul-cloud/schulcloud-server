@@ -180,7 +180,7 @@ describe('AccessTokenService', () => {
 				it('should throw InternalServerErrorException', async () => {
 					const { token, tokenTtlInSeconds, error, buildMock } = setup();
 
-					await expect(service.resolveToken({ token, tokenTtlInSeconds }, buildMock)).rejects.toThrowError(error);
+					await expect(service.resolveToken({ token, tokenTtlInSeconds }, buildMock)).rejects.toThrow(error);
 					expect(storageClient.get).toHaveBeenCalledWith(token);
 				});
 			});

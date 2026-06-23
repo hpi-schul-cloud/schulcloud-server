@@ -24,7 +24,7 @@ describe(SyncStrategyNotImplementedLoggableException.name, () => {
 				data: {
 					mediaSourceDataFormat,
 				},
-			} as LogMessage);
+			});
 		});
 	});
 });

@@ -56,7 +56,6 @@ describe(`deletionRequest find (api)`, () => {
 				const response = await testApiClient.get(`${deletionRequest.id}`);
 				const result = response.body as DeletionRequestLogResponse;
 
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 				expect(result.targetRef.id).toEqual(deletionRequest.targetRefId);
 			});
 		});

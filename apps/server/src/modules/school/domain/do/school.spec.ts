@@ -74,7 +74,7 @@ describe('School', () => {
 			it('should throw `county not found` error', () => {
 				const { school, countyId } = setup();
 
-				expect(() => school.updateCounty(countyId)).toThrowError('County not found.');
+				expect(() => school.updateCounty(countyId)).toThrow('County not found.');
 			});
 		});
 
@@ -92,7 +92,7 @@ describe('School', () => {
 			it('should throw `county cannot be updated, once it is set` error', () => {
 				const { school, countyId } = setup();
 
-				expect(() => school.updateCounty(countyId)).toThrowError('County cannot be updated, once it is set.');
+				expect(() => school.updateCounty(countyId)).toThrow('County cannot be updated, once it is set.');
 			});
 		});
 
@@ -120,7 +120,7 @@ describe('School', () => {
 			it('should throw `County cannot be set without a federal state being assigned to the school.` error', () => {
 				const school = schoolFactory.build({ federalState: undefined });
 
-				expect(() => school.updateCounty('abc')).toThrowError(
+				expect(() => school.updateCounty('abc')).toThrow(
 					'County cannot be set without a federal state being assigned to the school.'
 				);
 			});
@@ -139,7 +139,7 @@ describe('School', () => {
 			it('should throw `official school number cannot be updated, once it is set` error', () => {
 				const { school, officialSchoolNumber } = setup();
 
-				expect(() => school.updateOfficialSchoolNumber(officialSchoolNumber)).toThrowError(
+				expect(() => school.updateOfficialSchoolNumber(officialSchoolNumber)).toThrow(
 					'Official school number cannot be updated, once it is set.'
 				);
 			});

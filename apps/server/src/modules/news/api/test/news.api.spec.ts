@@ -353,7 +353,7 @@ describe('News Controller (API)', () => {
 					title: 'updated test news',
 					content: 'new content',
 					displayAt: new Date(),
-				} as UpdateNewsParams;
+				};
 
 				const response = await loggedInClient.patch(`${news._id.toHexString()}`).send(params).expect(200);
 				const body = response.body as NewsResponse;
@@ -390,7 +390,7 @@ describe('News Controller (API)', () => {
 					title: 'updated test news',
 					content: 'new content',
 					displayAt: new Date(),
-				} as UpdateNewsParams;
+				};
 
 				return { params, news };
 			};

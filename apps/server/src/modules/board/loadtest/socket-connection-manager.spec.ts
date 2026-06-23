@@ -26,7 +26,7 @@ describe('SocketConnectionManager', () => {
 
 			expect(socketConnectionManager.getClientCount()).toBe(5);
 
-			await socketConnectionManager.destroySocketConnections();
+			socketConnectionManager.destroySocketConnections();
 
 			expect(socketConnectionManager.getClientCount()).toBe(0);
 		});

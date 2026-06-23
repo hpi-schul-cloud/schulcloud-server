@@ -49,7 +49,7 @@ describe('TldrawClientAdapter', () => {
 
 				tldrawDocumentApi.deleteByDocName.mockRejectedValue(error);
 
-				await expect(service.deleteDrawingBinData(drawingId)).rejects.toThrowError(error);
+				await expect(service.deleteDrawingBinData(drawingId)).rejects.toThrow(error);
 			});
 		});
 	});

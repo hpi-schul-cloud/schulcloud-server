@@ -416,7 +416,6 @@ describe(BoardNodeCopyService.name, () => {
 				const result = await service.copyLinkElement(linkElement, copyContext);
 
 				expect((result.copyEntity as LinkElement).imageUrl).toBe(
-					// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
 					`https://example.com/${fileCopyStatus.id}/${fileCopyStatus.name ?? ''}`
 				);
 			});
@@ -428,7 +427,6 @@ describe(BoardNodeCopyService.name, () => {
 
 				const result = await service.copyLinkElement(linkElementWithoutId, copyContext);
 
-				// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
 				expect((result.copyEntity as LinkElement).imageUrl).toBe('');
 			});
 		});

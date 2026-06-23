@@ -41,9 +41,10 @@ describe(HealthController.name, () => {
 		const setup = (testHealthStatus: HealthStatus) => {
 			uc.checkSelfHealth.mockReturnValueOnce(testHealthStatus);
 
-			const mockedRes = {} as unknown as Response;
-			mockedRes.contentType = jest.fn();
-			mockedRes.status = jest.fn();
+			const mockedRes = {
+				contentType: jest.fn(),
+				status: jest.fn(),
+			} as unknown as Response;
 			const response = controller.getSelfHealth(mockedRes);
 
 			return { response, mockedRes };
@@ -58,7 +59,7 @@ describe(HealthController.name, () => {
 		it(`should set proper Content-Type in a response`, () => {
 			const { mockedRes } = setup(testPassedHealthStatus);
 
-			expect(mockedRes.contentType).toBeCalledWith(contentTypeApplicationHealthJSON);
+			expect(mockedRes.contentType).toHaveBeenCalledWith(contentTypeApplicationHealthJSON);
 		});
 	});
 
@@ -66,9 +67,10 @@ describe(HealthController.name, () => {
 		const setup = async (testHealthStatus: HealthStatus) => {
 			uc.checkOverallHealth.mockResolvedValueOnce(testHealthStatus);
 
-			const mockedRes = {} as unknown as Response;
-			mockedRes.contentType = jest.fn();
-			mockedRes.status = jest.fn();
+			const mockedRes = {
+				contentType: jest.fn(),
+				status: jest.fn(),
+			} as unknown as Response;
 			const response = await controller.getOverallHealth(mockedRes);
 
 			return { response, mockedRes };
@@ -84,8 +86,8 @@ describe(HealthController.name, () => {
 			it(`should set 200 OK HTTP status and proper Content-Type in a response`, async () => {
 				const { mockedRes } = await setup(testPassedHealthStatus);
 
-				expect(mockedRes.contentType).toBeCalledWith(contentTypeApplicationHealthJSON);
-				expect(mockedRes.status).toBeCalledWith(HttpStatus.OK);
+				expect(mockedRes.contentType).toHaveBeenCalledWith(contentTypeApplicationHealthJSON);
+				expect(mockedRes.status).toHaveBeenCalledWith(HttpStatus.OK);
 			});
 		});
 
@@ -99,8 +101,8 @@ describe(HealthController.name, () => {
 			it(`should set 500 Internal Server Error HTTP status and proper Content-Type in a response`, async () => {
 				const { mockedRes } = await setup(testFailedHealthStatus);
 
-				expect(mockedRes.contentType).toBeCalledWith(contentTypeApplicationHealthJSON);
-				expect(mockedRes.status).toBeCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
+				expect(mockedRes.contentType).toHaveBeenCalledWith(contentTypeApplicationHealthJSON);
+				expect(mockedRes.status).toHaveBeenCalledWith(HttpStatus.INTERNAL_SERVER_ERROR);
 			});
 		});
 	});

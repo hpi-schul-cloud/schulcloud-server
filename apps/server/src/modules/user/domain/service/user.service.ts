@@ -118,16 +118,16 @@ export class UserService {
 
 	public async findPublicTeachersBySchool(schoolId: EntityId, options?: IFindOptions<UserDo>): Promise<Page<UserDo>> {
 		const discoverabilitySetting = this.userConfig.teacherVisibilityForExternalTeamInvitation;
-		if (discoverabilitySetting === 'disabled') {
+		if ((discoverabilitySetting as string) === 'disabled') {
 			return new Page<UserDo>([], 0);
 		}
 
 		const role = await this.roleService.findByName(RoleName.TEACHER);
 		const query: UserQuery = { schoolId, roleId: role.id };
-		if (discoverabilitySetting === 'opt-out') {
+		if ((discoverabilitySetting as string) === 'opt-out') {
 			query.discoverable = UserDiscoverableQuery.NOT_FALSE;
 		}
-		if (discoverabilitySetting === 'opt-in') {
+		if ((discoverabilitySetting as string) === 'opt-in') {
 			query.discoverable = UserDiscoverableQuery.TRUE;
 		}
 

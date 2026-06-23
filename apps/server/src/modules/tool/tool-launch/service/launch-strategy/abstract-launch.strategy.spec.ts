@@ -52,7 +52,6 @@ class TestLaunchStrategy extends AbstractLaunchStrategy {
 		return Promise.resolve([concreteConfigParameter]);
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	public buildToolLaunchRequestPayload(url: string, properties: PropertyData[]): string {
 		return JSON.stringify(properties);
 	}

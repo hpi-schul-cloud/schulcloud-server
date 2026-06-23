@@ -88,7 +88,7 @@ describe('NewsUc', () => {
 							}
 						},
 						// the method is not used anymore or?
-						// eslint-disable-next-line @typescript-eslint/no-shadow
+
 						getPermittedEntities(userId, targetModel) {
 							return targets
 								.filter((target) => target.targetModel === targetModel)

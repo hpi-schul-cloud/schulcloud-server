@@ -1,4 +1,3 @@
-/* eslint-disable import/extensions */
 import { buildAllSearchableStringsForUser as _buildAllSearchableStringsForUserUntyped } from '../../../src/utils/search.js';
 
 // LDAP sync runner (named export, can use ES6 import syntax)

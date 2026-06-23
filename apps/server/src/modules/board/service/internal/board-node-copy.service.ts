@@ -221,7 +221,6 @@ export class BoardNodeCopyService {
 		return copyStatus;
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	public async copyLinkElement(original: LinkElement, context: CopyContext): Promise<CopyStatus> {
 		const copy = new LinkElement({
 			...original.getProps(),
@@ -410,7 +409,6 @@ export class BoardNodeCopyService {
 		return Promise.resolve(result);
 	}
 
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	public copyMediaExternalToolElement(
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		original: MediaExternalToolElement,

@@ -160,7 +160,10 @@ describe('VideoConferenceInfoUc', () => {
 
 					await uc.getMeetingInfo(currentUserId, scope);
 
-					expect(videoConferenceFeatureService.checkVideoConferenceFeatureEnabled).toBeCalledWith(currentUserId, scope);
+					expect(videoConferenceFeatureService.checkVideoConferenceFeatureEnabled).toHaveBeenCalledWith(
+						currentUserId,
+						scope
+					);
 				});
 
 				it('should call videoConferenceService.getScopeInfo', async () => {
@@ -168,7 +171,7 @@ describe('VideoConferenceInfoUc', () => {
 
 					await uc.getMeetingInfo(currentUserId, scope);
 
-					expect(videoConferenceService.getScopeInfo).toBeCalledWith(currentUserId, scope.id, scope.scope);
+					expect(videoConferenceService.getScopeInfo).toHaveBeenCalledWith(currentUserId, scope.id, scope.scope);
 				});
 
 				it('should call bbbService.getMeetingInfo', async () => {
@@ -177,7 +180,7 @@ describe('VideoConferenceInfoUc', () => {
 
 					await uc.getMeetingInfo(currentUserId, scope);
 
-					expect(bbbService.getMeetingInfo).toBeCalledWith({ meetingID: scope.id + salt });
+					expect(bbbService.getMeetingInfo).toHaveBeenCalledWith({ meetingID: scope.id + salt });
 				});
 
 				it('should call videoConferenceService.findVideoConferenceByScopeIdAndScope', async () => {
@@ -185,7 +188,10 @@ describe('VideoConferenceInfoUc', () => {
 
 					await uc.getMeetingInfo(currentUserId, scope);
 
-					expect(videoConferenceService.findVideoConferenceByScopeIdAndScope).toBeCalledWith(scope.id, scope.scope);
+					expect(videoConferenceService.findVideoConferenceByScopeIdAndScope).toHaveBeenCalledWith(
+						scope.id,
+						scope.scope
+					);
 				});
 
 				it('should return video conference info with existing options', async () => {
@@ -346,7 +352,10 @@ describe('VideoConferenceInfoUc', () => {
 
 				await uc.getMeetingInfo(currentUserId, scope);
 
-				expect(videoConferenceFeatureService.checkVideoConferenceFeatureEnabled).toBeCalledWith(currentUserId, scope);
+				expect(videoConferenceFeatureService.checkVideoConferenceFeatureEnabled).toHaveBeenCalledWith(
+					currentUserId,
+					scope
+				);
 			});
 		});
 	});

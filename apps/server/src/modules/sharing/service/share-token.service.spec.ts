@@ -109,7 +109,7 @@ describe('ShareTokenService', () => {
 
 			await service.createToken({ parentId: courseId, parentType: ShareTokenParentType.Course });
 
-			expect(generator.generateShareToken).toBeCalled();
+			expect(generator.generateShareToken).toHaveBeenCalled();
 			expect(token).toEqual(token);
 		});
 
@@ -118,7 +118,7 @@ describe('ShareTokenService', () => {
 
 			await service.createToken({ parentId: courseId, parentType: ShareTokenParentType.Course });
 
-			expect(repo.save).toBeCalled();
+			expect(repo.save).toHaveBeenCalled();
 		});
 
 		it('should add context to shareToken', async () => {
@@ -139,7 +139,7 @@ describe('ShareTokenService', () => {
 				}
 			);
 
-			expect(repo.save).toBeCalledWith(expect.objectContaining({ context }));
+			expect(repo.save).toHaveBeenCalledWith(expect.objectContaining({ context }));
 		});
 	});
 
@@ -158,7 +158,7 @@ describe('ShareTokenService', () => {
 
 			const lookupToken = async () => service.lookupToken('invalid-token');
 
-			await expect(lookupToken).rejects.toThrowError(NotFoundException);
+			await expect(lookupToken).rejects.toThrow(NotFoundException);
 		});
 
 		it('should throw an error when shareToken is expired', async () => {
@@ -167,7 +167,7 @@ describe('ShareTokenService', () => {
 
 			const lookupToken = async () => service.lookupToken(shareToken.token);
 
-			await expect(lookupToken).rejects.toThrowError();
+			await expect(lookupToken).rejects.toThrow();
 		});
 	});
 
@@ -276,7 +276,7 @@ describe('ShareTokenService', () => {
 
 			const lookupToken = async () => service.lookupTokenWithParentName(shareToken.token);
 
-			await expect(lookupToken).rejects.toThrowError('Invalid parent type');
+			await expect(lookupToken).rejects.toThrow('Invalid parent type');
 		});
 	});
 });

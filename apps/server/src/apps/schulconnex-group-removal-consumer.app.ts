@@ -1,5 +1,5 @@
 /* istanbul ignore file */
-/* eslint-disable no-console */
+
 import { SchulconnexGroupRemovalAMQPModule } from '@modules/provisioning/schulconnex-group-removal-amqp.app.module';
 import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';

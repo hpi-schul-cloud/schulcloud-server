@@ -63,7 +63,7 @@ export class DeletionClient {
 		}
 	}
 
-	private async postDeletionRequest(input: DeletionRequestInput): Promise<AxiosResponse<DeletionRequestOutput, any>> {
+	private async postDeletionRequest(input: DeletionRequestInput): Promise<AxiosResponse<DeletionRequestOutput>> {
 		const headers = this.createDefaultHeaders();
 		const baseUrl = this.config.adminApiClientBaseUrl;
 		const postDeletionRequestsEndpoint = new URL('/admin/api/v1/deletionRequests', baseUrl).toString();
@@ -74,7 +74,7 @@ export class DeletionClient {
 		return response;
 	}
 
-	private async postDeletionExecutionRequest(ids: string[]): Promise<AxiosResponse<any, any>> {
+	private async postDeletionExecutionRequest(ids: string[]): Promise<AxiosResponse<void>> {
 		const defaultHeaders = this.createDefaultHeaders();
 
 		const baseUrl = this.config.adminApiClientBaseUrl;
@@ -86,7 +86,7 @@ export class DeletionClient {
 
 		const fullUrl = `${postDeletionExecutionsEndpoint.toString()}?${params.toString()}`;
 
-		const request = this.httpService.post(fullUrl, { ids }, defaultHeaders);
+		const request = this.httpService.post<void>(fullUrl, { ids }, defaultHeaders);
 		const response = await firstValueFrom(request);
 
 		return response;
@@ -100,7 +100,7 @@ export class DeletionClient {
 		};
 	}
 
-	private checkDeletionRequestResponseData(response: AxiosResponse<DeletionRequestOutput, any>): void {
+	private checkDeletionRequestResponseData(response: AxiosResponse<DeletionRequestOutput>): void {
 		// It is required as it gives client the reference to the created deletion request.
 		if (!response.data.requestId) {
 			throw new Error('no valid requestId returned from the server');
@@ -113,8 +113,8 @@ export class DeletionClient {
 		}
 	}
 
-	private checkResponseStatusCode(response: AxiosResponse<any, any>, expectedStatusCode: HttpStatusCode): void {
-		if (response.status !== expectedStatusCode) {
+	private checkResponseStatusCode(response: AxiosResponse<unknown>, expectedStatusCode: HttpStatusCode): void {
+		if (response.status !== Number(expectedStatusCode)) {
 			throw new Error(
 				`Invalid HTTP status code in a response from the server - ${response.status} instead of ${expectedStatusCode}.`
 			);
