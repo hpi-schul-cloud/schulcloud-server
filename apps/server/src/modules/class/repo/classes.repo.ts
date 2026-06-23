@@ -1,3 +1,4 @@
+import { FilterQuery } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
@@ -69,7 +70,7 @@ export class ClassesRepo {
 
 	public async removeUserReference(userId: EntityId, classIds?: EntityId[]): Promise<number> {
 		const userObjectId = new ObjectId(userId);
-		const query: Record<string, any> = { $or: [{ userIds: userObjectId }, { teacherIds: userObjectId }] };
+		const query: FilterQuery<ClassEntity> = { $or: [{ userIds: userObjectId }, { teacherIds: userObjectId }] };
 		if (classIds && classIds.length > 0) {
 			query._id = { $in: classIds.map((id) => new ObjectId(id)) };
 		}

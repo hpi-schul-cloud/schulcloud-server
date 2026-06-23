@@ -19,6 +19,8 @@ const { RosterModule } = require('../../dist/apps/server/modules/roster/roster.m
 const { FeathersRosterService } = require('../../dist/apps/server/modules/roster/service/feathers-roster.service');
 const { RabbitMQWrapperModule } = require('../../dist/apps/server/infra/rabbitmq/rabbitmq.module');
 const { ConfigurationModule } = require('../../dist/apps/server/infra/configuration/configuration.module');
+const { JwtWhitelistModule } = require('../../dist/apps/server/infra/jwt-whitelist/jwt-whitelist.module');
+const { JwtWhitelistAdapter } = require('../../dist/apps/server/infra/jwt-whitelist/adapter/jwt-whitelist.adapter');
 const { DatabaseModule } = require('../../dist/apps/server/infra/database/database.module');
 const { DATABASE_CONFIG_TOKEN, DatabaseConfig } = require('../../dist/apps/server/infra/database/database.config');
 
@@ -37,6 +39,7 @@ const setupNestServices = async (app) => {
 			AuthorizationModule,
 			AuthorizationRulesModule,
 			RosterModule,
+			JwtWhitelistModule.register(),
 		],
 	}).compile();
 	const nestApp = await module.createNestApplication().init();
@@ -46,6 +49,7 @@ const setupNestServices = async (app) => {
 	const teamService = nestApp.get(TeamService);
 	const systemRule = nestApp.get(SystemRule);
 	const feathersRosterService = nestApp.get(FeathersRosterService);
+	const jwtWhitelistAdapter = nestApp.get(JwtWhitelistAdapter);
 
 	app.services['nest-account-uc'] = accountUc;
 	app.services['nest-account-service'] = accountService;
@@ -53,8 +57,9 @@ const setupNestServices = async (app) => {
 	app.services['nest-system-rule'] = systemRule;
 	app.services['nest-feathers-roster-service'] = feathersRosterService;
 	app.services['nest-orm'] = orm;
+	app.services['nest-jwt-whitelist-adapter'] = jwtWhitelistAdapter;
 
-	return { nestApp, orm, accountUc, accountService };
+	return { nestApp, orm, accountUc, accountService, jwtWhitelistAdapter };
 };
 
 const closeNestServices = async (nestServices) => {

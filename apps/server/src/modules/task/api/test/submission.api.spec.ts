@@ -202,7 +202,7 @@ describe('Submission Controller (API)', () => {
 
 				const result = await loggedInClient.delete(submission.id);
 
-				expect(filesStorageClientAdapterService.deleteFilesOfParent).toBeCalled();
+				expect(filesStorageClientAdapterService.deleteFilesOfParent).toHaveBeenCalled();
 				expect(result.text).toBe('true');
 
 				const expectedSubmissionResult = await em.findOne(Submission, { id: submission.id });

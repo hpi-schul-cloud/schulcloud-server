@@ -79,8 +79,8 @@ describe('FilesStorageProducer', () => {
 			it('should call error mapper and throw with error', async () => {
 				const { params, spy } = setup();
 
-				await expect(service.copyFilesOfParent(params)).rejects.toThrowError();
-				expect(spy).toBeCalled();
+				await expect(service.copyFilesOfParent(params)).rejects.toThrow();
+				expect(spy).toHaveBeenCalled();
 			});
 		});
 
@@ -154,8 +154,8 @@ describe('FilesStorageProducer', () => {
 			it('should call error mapper and throw with error', async () => {
 				const { parentId, spy } = setup();
 
-				await expect(service.listFilesOfParent(parentId)).rejects.toThrowError();
-				expect(spy).toBeCalled();
+				await expect(service.listFilesOfParent(parentId)).rejects.toThrow();
+				expect(spy).toHaveBeenCalled();
 			});
 		});
 
@@ -210,8 +210,8 @@ describe('FilesStorageProducer', () => {
 			it('should call error mapper and throw with error', async () => {
 				const { parentId, spy } = setup();
 
-				await expect(service.deleteFilesOfParent(parentId)).rejects.toThrowError();
-				expect(spy).toBeCalled();
+				await expect(service.deleteFilesOfParent(parentId)).rejects.toThrow();
+				expect(spy).toHaveBeenCalled();
 			});
 		});
 
@@ -265,8 +265,8 @@ describe('FilesStorageProducer', () => {
 			it('should call error mapper and throw with error', async () => {
 				const { recordId, spy } = setup();
 
-				await expect(service.deleteFiles([recordId])).rejects.toThrowError();
-				expect(spy).toBeCalled();
+				await expect(service.deleteFiles([recordId])).rejects.toThrow();
+				expect(spy).toHaveBeenCalled();
 			});
 		});
 
@@ -319,8 +319,8 @@ describe('FilesStorageProducer', () => {
 			it('should call error mapper and throw with error', async () => {
 				const { creatorId, spy } = setup();
 
-				await expect(service.removeCreatorIdFromFileRecords(creatorId)).rejects.toThrowError();
-				expect(spy).toBeCalled();
+				await expect(service.removeCreatorIdFromFileRecords(creatorId)).rejects.toThrow();
+				expect(spy).toHaveBeenCalled();
 			});
 		});
 
@@ -333,7 +333,7 @@ describe('FilesStorageProducer', () => {
 
 				const expectedParams = {
 					exchange: config.exchangeName,
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
 					routingKey: FilesStorageEvents.REMOVE_CREATORID_OF_FILES,
 					payload: creatorId,
 					timeout,

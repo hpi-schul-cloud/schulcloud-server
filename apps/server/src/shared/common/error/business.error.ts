@@ -2,6 +2,7 @@ import { HttpException, HttpStatus } from '@nestjs/common';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { ErrorResponse } from '@core/error/dto/error.response';
 import { ErrorType } from '@core/error/interface';
+import util from 'node:util';
 
 /**
  * Abstract base class for business errors, errors that are handled
@@ -40,7 +41,8 @@ export abstract class BusinessError extends HttpException {
 		if (cause instanceof Error) {
 			this.cause = cause;
 		} else if (cause !== undefined) {
-			this.cause = typeof cause === 'object' ? new Error(JSON.stringify(cause)) : new Error(String(cause));
+			const causeMessage = typeof cause === 'string' ? cause : util.inspect(cause);
+			this.cause = new Error(causeMessage);
 		} else {
 			// cause remains undefined
 		}

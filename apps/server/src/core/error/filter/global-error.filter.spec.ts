@@ -99,10 +99,10 @@ describe('GlobalErrorFilter', () => {
 					service.catch(error, argumentsHost);
 				});
 
-				expect(domainErrorHandler.exec).toBeCalledWith(error);
-				expect(domainErrorHandler.exec).toBeCalledTimes(allContextTypes.length - 1);
-				expect(domainErrorHandler.execHttpContext).toBeCalledWith(error, {});
-				expect(domainErrorHandler.execHttpContext).toBeCalledTimes(1);
+				expect(domainErrorHandler.exec).toHaveBeenCalledWith(error);
+				expect(domainErrorHandler.exec).toHaveBeenCalledTimes(allContextTypes.length - 1);
+				expect(domainErrorHandler.execHttpContext).toHaveBeenCalledWith(error, {});
+				expect(domainErrorHandler.execHttpContext).toHaveBeenCalledTimes(1);
 			});
 		});
 
@@ -121,8 +121,8 @@ describe('GlobalErrorFilter', () => {
 
 				service.catch(error, argumentsHost);
 
-				expect(domainErrorHandler.execHttpContext).toBeCalledWith(error, {});
-				expect(domainErrorHandler.execHttpContext).toBeCalledTimes(1);
+				expect(domainErrorHandler.execHttpContext).toHaveBeenCalledWith(error, {});
+				expect(domainErrorHandler.execHttpContext).toHaveBeenCalledTimes(1);
 			});
 		});
 
@@ -148,7 +148,9 @@ describe('GlobalErrorFilter', () => {
 
 					service.catch(error, argumentsHost);
 
-					expect(argumentsHost.switchToHttp().getResponse<Response>().status).toBeCalledWith(HttpStatus.NOT_FOUND);
+					expect(argumentsHost.switchToHttp().getResponse<Response>().status).toHaveBeenCalledWith(
+						HttpStatus.NOT_FOUND
+					);
 				});
 
 				it('should send appropriate error response', () => {
@@ -158,7 +160,7 @@ describe('GlobalErrorFilter', () => {
 
 					expect(
 						argumentsHost.switchToHttp().getResponse<Response>().status(HttpStatus.NOT_IMPLEMENTED).json
-					).toBeCalledWith(expectedResponse);
+					).toHaveBeenCalledWith(expectedResponse);
 				});
 			});
 
@@ -181,7 +183,7 @@ describe('GlobalErrorFilter', () => {
 
 					service.catch(error, argumentsHost);
 
-					expect(argumentsHost.switchToHttp().getResponse<Response>().status).toBeCalledWith(
+					expect(argumentsHost.switchToHttp().getResponse<Response>().status).toHaveBeenCalledWith(
 						HttpStatus.NOT_IMPLEMENTED
 					);
 				});
@@ -193,7 +195,7 @@ describe('GlobalErrorFilter', () => {
 
 					expect(
 						argumentsHost.switchToHttp().getResponse<Response>().status(HttpStatus.NOT_IMPLEMENTED).json
-					).toBeCalledWith(expectedResponse);
+					).toHaveBeenCalledWith(expectedResponse);
 				});
 			});
 
@@ -216,7 +218,9 @@ describe('GlobalErrorFilter', () => {
 
 					service.catch(error, argumentsHost);
 
-					expect(argumentsHost.switchToHttp().getResponse<Response>().status).toBeCalledWith(HttpStatus.BAD_REQUEST);
+					expect(argumentsHost.switchToHttp().getResponse<Response>().status).toHaveBeenCalledWith(
+						HttpStatus.BAD_REQUEST
+					);
 				});
 
 				it('should send appropriate error response', () => {
@@ -226,7 +230,7 @@ describe('GlobalErrorFilter', () => {
 
 					expect(
 						argumentsHost.switchToHttp().getResponse<Response>().status(HttpStatus.BAD_REQUEST).json
-					).toBeCalledWith(expectedResponse);
+					).toHaveBeenCalledWith(expectedResponse);
 				});
 			});
 
@@ -249,7 +253,7 @@ describe('GlobalErrorFilter', () => {
 
 					service.catch(error, argumentsHost);
 
-					expect(argumentsHost.switchToHttp().getResponse<Response>().status).toBeCalledWith(
+					expect(argumentsHost.switchToHttp().getResponse<Response>().status).toHaveBeenCalledWith(
 						HttpStatus.INTERNAL_SERVER_ERROR
 					);
 				});
@@ -261,7 +265,7 @@ describe('GlobalErrorFilter', () => {
 
 					expect(
 						argumentsHost.switchToHttp().getResponse<Response>().status(HttpStatus.INTERNAL_SERVER_ERROR).json
-					).toBeCalledWith(expectedResponse);
+					).toHaveBeenCalledWith(expectedResponse);
 				});
 			});
 
@@ -284,7 +288,7 @@ describe('GlobalErrorFilter', () => {
 
 					service.catch(error, argumentsHost);
 
-					expect(argumentsHost.switchToHttp().getResponse<Response>().status).toBeCalledWith(
+					expect(argumentsHost.switchToHttp().getResponse<Response>().status).toHaveBeenCalledWith(
 						HttpStatus.INTERNAL_SERVER_ERROR
 					);
 				});
@@ -296,7 +300,7 @@ describe('GlobalErrorFilter', () => {
 
 					expect(
 						argumentsHost.switchToHttp().getResponse<Response>().status(HttpStatus.INTERNAL_SERVER_ERROR).json
-					).toBeCalledWith(expectedResponse);
+					).toHaveBeenCalledWith(expectedResponse);
 				});
 			});
 
@@ -321,7 +325,7 @@ describe('GlobalErrorFilter', () => {
 
 					service.catch(error, argumentsHost);
 
-					expect(argumentsHost.switchToHttp().getResponse<Response>().status).toBeCalledWith(
+					expect(argumentsHost.switchToHttp().getResponse<Response>().status).toHaveBeenCalledWith(
 						HttpStatus.INTERNAL_SERVER_ERROR
 					);
 				});
@@ -333,7 +337,7 @@ describe('GlobalErrorFilter', () => {
 
 					expect(
 						argumentsHost.switchToHttp().getResponse<Response>().status(HttpStatus.INTERNAL_SERVER_ERROR).json
-					).toBeCalledWith(expectedResponse);
+					).toHaveBeenCalledWith(expectedResponse);
 				});
 			});
 		});

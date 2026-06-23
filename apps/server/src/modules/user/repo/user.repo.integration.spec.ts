@@ -233,7 +233,7 @@ describe('user repo', () => {
 		it('should throw an error if user by externalid doesnt exist', async () => {
 			const idA = new ObjectId().toHexString();
 			const idB = new ObjectId().toHexString();
-			await expect(repo.findByExternalIdOrFail(idA, idB)).rejects.toEqual(undefined);
+			await expect(repo.findByExternalIdOrFail(idA, idB)).rejects.toThrow('User not found for given system');
 		});
 	});
 
@@ -367,7 +367,7 @@ describe('user repo', () => {
 		it('should throw an error by passing invalid schoolId', async () => {
 			const school = schoolEntityFactory.build();
 			// id do not exist
-			await expect(repo.findForImportUser(school)).rejects.toThrowError();
+			await expect(repo.findForImportUser(school)).rejects.toThrow();
 		});
 
 		describe('when the first or lastname of the user contains "ß"', () => {

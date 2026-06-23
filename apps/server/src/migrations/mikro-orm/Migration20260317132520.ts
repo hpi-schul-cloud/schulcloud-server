@@ -19,7 +19,7 @@ export class Migration20260317132520 extends Migration {
 
 		try {
 			await this.getCollection('rocketchatchannels').drop();
-		} catch (error: any) {
+		} catch (error: unknown) {
 			const err = error as { code?: number; codeName?: string; message?: string };
 			if (
 				err?.code !== 26 &&

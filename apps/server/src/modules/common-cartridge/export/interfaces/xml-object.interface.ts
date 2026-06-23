@@ -1,1 +1,1 @@
-export interface XmlObject extends Record<string, unknown> {}
+export type XmlObject = Record<string, unknown>;

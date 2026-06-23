@@ -153,7 +153,7 @@ describe(InstanceRepo.name, () => {
 			it('should throw an error', async () => {
 				await setup();
 
-				await expect(repo.getInstance()).rejects.toThrowError(InstanceNotIdentifiableLoggableException);
+				await expect(repo.getInstance()).rejects.toThrow(InstanceNotIdentifiableLoggableException);
 			});
 		});
 	});

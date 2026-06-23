@@ -41,7 +41,7 @@ describe('LegacyLogger', () => {
 		it('should call winstonLogger.error', () => {
 			const error = new Error('custom error');
 			service.error(error.message, error.stack);
-			expect(winstonLogger.error).toBeCalled();
+			expect(winstonLogger.error).toHaveBeenCalled();
 		});
 
 		it('should work also when providing circular references', () => {
@@ -49,7 +49,7 @@ describe('LegacyLogger', () => {
 			const b = { a };
 			a.b = b;
 			service.error(a);
-			expect(winstonLogger.error).toBeCalledWith(
+			expect(winstonLogger.error).toHaveBeenCalledWith(
 				expect.objectContaining({
 					message: expect.stringMatching(/name.*great/) as string,
 				})
@@ -61,7 +61,7 @@ describe('LegacyLogger', () => {
 		it('should call winstonLogger.warning', () => {
 			const error = new Error('custom error');
 			service.warn(error.message, error.stack);
-			expect(winstonLogger.warning).toBeCalled();
+			expect(winstonLogger.warning).toHaveBeenCalled();
 		});
 	});
 
@@ -69,7 +69,7 @@ describe('LegacyLogger', () => {
 		it('should call winstonLogger.debug', () => {
 			const error = new Error('custom error');
 			service.debug(error.message, error.stack);
-			expect(winstonLogger.debug).toBeCalled();
+			expect(winstonLogger.debug).toHaveBeenCalled();
 		});
 	});
 });

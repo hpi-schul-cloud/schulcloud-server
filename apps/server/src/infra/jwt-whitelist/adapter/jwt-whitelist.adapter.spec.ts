@@ -2,7 +2,6 @@ import { createMock } from '@golevelup/ts-jest';
 import { StorageClient } from '@infra/valkey-client';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { UnauthorizedException } from '@nestjs/common';
-import { createJwtRedisData, JwtRedisData } from '../helper';
 import { JwtWhitelistAdapter } from './jwt-whitelist.adapter';
 
 describe(JwtWhitelistAdapter.name, () => {
@@ -28,18 +27,7 @@ describe(JwtWhitelistAdapter.name, () => {
 
 				await adapter.addToWhitelist(accountId, jti);
 
-				expect(storageClient.set).toHaveBeenCalledWith(
-					`jwt:${accountId}:${jti}`,
-					JSON.stringify({
-						IP: 'NONE',
-						Browser: 'NONE',
-						Device: 'NONE',
-						privateDevice: false,
-						expirationInSeconds,
-					}),
-					'EX',
-					expirationInSeconds
-				);
+				expect(storageClient.set).toHaveBeenCalledWith(`jwt:${accountId}:${jti}`, '1', 'EX', expirationInSeconds);
 			});
 		});
 	});
@@ -98,25 +86,19 @@ describe(JwtWhitelistAdapter.name, () => {
 				const adapter = new JwtWhitelistAdapter(storageClient, config);
 				const accountId = new ObjectId().toHexString();
 				const jti = new ObjectId().toHexString();
-				const redisData: JwtRedisData = createJwtRedisData(7200);
 
-				storageClient.get.mockResolvedValueOnce(JSON.stringify(redisData));
+				storageClient.get.mockResolvedValueOnce('1');
 
-				return { accountId, jti, redisData, storageClient, adapter };
+				return { accountId, jti, storageClient, adapter };
 			};
 
 			it('should extend the token expiration and return without throwing', async () => {
-				const { accountId, jti, redisData, storageClient, adapter } = setup();
+				const { accountId, jti, storageClient, adapter } = setup();
 
 				await expect(adapter.isWhitelisted(accountId, jti)).resolves.toBeUndefined();
 
 				expect(storageClient.get).toHaveBeenCalledWith(`jwt:${accountId}:${jti}`);
-				expect(storageClient.set).toHaveBeenCalledWith(
-					`jwt:${accountId}:${jti}`,
-					JSON.stringify(redisData),
-					'EX',
-					redisData.expirationInSeconds
-				);
+				expect(storageClient.set).toHaveBeenCalledWith(`jwt:${accountId}:${jti}`, '1', 'EX', 7200);
 			});
 		});
 
@@ -139,23 +121,29 @@ describe(JwtWhitelistAdapter.name, () => {
 				await expect(adapter.isWhitelisted(accountId, jti)).rejects.toThrow(UnauthorizedException);
 			});
 		});
+	});
 
-		describe('when the storage client is an InMemoryClient', () => {
-			const setup = () => {
-				const storageClient = new (class InMemoryClient {})() as StorageClient;
-				const config = { jwtTimeoutSeconds: 7200 };
-				const adapter = new JwtWhitelistAdapter(storageClient, config);
-				const accountId = new ObjectId().toHexString();
-				const jti = new ObjectId().toHexString();
+	describe('getTtl', () => {
+		const setup = () => {
+			const storageClient = createMock<StorageClient>();
+			const config = { jwtTimeoutSeconds: 7200 };
+			const adapter = new JwtWhitelistAdapter(storageClient, config);
+			const accountId = new ObjectId().toHexString();
+			const jti = new ObjectId().toHexString();
 
-				return { accountId, jti, adapter };
-			};
+			return { accountId, jti, storageClient, adapter };
+		};
 
-			it('should skip the whitelist check and return without throwing', async () => {
-				const { accountId, jti, adapter } = setup();
+		it('should call the storage client to get the ttl of the jwt entry', async () => {
+			const { accountId, jti, storageClient, adapter } = setup();
+			const expectedTtl = 3600;
 
-				await expect(adapter.isWhitelisted(accountId, jti)).resolves.toBeUndefined();
-			});
+			storageClient.ttl.mockResolvedValueOnce(expectedTtl);
+
+			const ttl = await adapter.getTtl(accountId, jti);
+
+			expect(storageClient.ttl).toHaveBeenCalledWith(`jwt:${accountId}:${jti}`);
+			expect(ttl).toBe(expectedTtl);
 		});
 	});
 });

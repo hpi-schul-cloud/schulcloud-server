@@ -200,7 +200,7 @@ describe(BBBService.name, () => {
 			it('should throw an error', async () => {
 				const { expectedError, param } = setup();
 
-				await expect(service.create(param)).rejects.toThrowError(expectedError);
+				await expect(service.create(param)).rejects.toThrow(expectedError);
 			});
 		});
 	});
@@ -224,7 +224,7 @@ describe(BBBService.name, () => {
 				const result = await service.end(bbbBaseMeetingConfig);
 
 				expect(result).toBeDefined();
-				expect(httpService.get).toBeCalled();
+				expect(httpService.get).toHaveBeenCalled();
 				expect(spy).toHaveBeenCalledWith(bbbBaseResponse.data);
 			});
 		});
@@ -276,7 +276,7 @@ describe(BBBService.name, () => {
 				const result = await service.getMeetingInfo(param);
 
 				expect(result).toBeDefined();
-				expect(httpService.get).toBeCalled();
+				expect(httpService.get).toHaveBeenCalled();
 				expect(spy).toHaveBeenCalledWith(bbbMeetingInfoResponse.data);
 			});
 		});
@@ -305,7 +305,7 @@ describe(BBBService.name, () => {
 			it('should throw an error if there is a different return code then success', async () => {
 				const { expectedError, param } = setup();
 
-				await expect(service.getMeetingInfo(param)).rejects.toThrowError(expectedError);
+				await expect(service.getMeetingInfo(param)).rejects.toThrow(expectedError);
 			});
 		});
 	});
@@ -329,7 +329,7 @@ describe(BBBService.name, () => {
 				const url = await service.join(param);
 
 				expect(url).toBeDefined();
-				expect(httpService.get).toBeCalled();
+				expect(httpService.get).toHaveBeenCalled();
 				expect(spy).toHaveBeenCalledWith(bbbMeetingInfoResponse.data);
 			});
 		});
@@ -358,7 +358,7 @@ describe(BBBService.name, () => {
 			it('should throw an error if there is a different return code then success', async () => {
 				const { param, expectedError } = setup();
 
-				await expect(service.join(param)).rejects.toThrowError(expectedError);
+				await expect(service.join(param)).rejects.toThrow(expectedError);
 			});
 		});
 
@@ -403,7 +403,7 @@ describe(BBBService.name, () => {
 			const checksum = service.superGenerateChecksum(callName, urlSearchParams);
 
 			expect(checksum).toEqual(expectedChecksum);
-			expect(createHashMock).toBeCalledWith('sha512');
+			expect(createHashMock).toHaveBeenCalledWith('sha512');
 		});
 
 		it('getUrl: should return composed url', () => {

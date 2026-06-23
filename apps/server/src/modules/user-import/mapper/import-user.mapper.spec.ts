@@ -56,7 +56,7 @@ describe('[ImportUserMapper]', () => {
 				sortBy: 'loginName' as ImportUserSortOrder,
 				sortOrder: SortOrder.desc,
 			};
-			expect(() => ImportUserMapper.mapSortingQueryToDomain(sortingQuery)).toThrowError(BadRequestException);
+			expect(() => ImportUserMapper.mapSortingQueryToDomain(sortingQuery)).toThrow(BadRequestException);
 		});
 		describe('when sortBy is not given', () => {
 			it('should return undefined', () => {
@@ -109,7 +109,7 @@ describe('[ImportUserMapper]', () => {
 				const userMapperSpy = jest.spyOn(UserMatchMapper, 'mapToResponse').mockReturnValue(mockResponse);
 				const result = ImportUserMapper.mapToResponse(importUser);
 				expect(result.match).toEqual(mockResponse);
-				expect(userMapperSpy).toBeCalledWith(user, MatchCreator.AUTO);
+				expect(userMapperSpy).toHaveBeenCalledWith(user, MatchCreator.AUTO);
 				userMapperSpy.mockRestore();
 			});
 		});
@@ -140,7 +140,7 @@ describe('[ImportUserMapper]', () => {
 			const roleNameMapperSpy = jest.spyOn(RoleNameMapper, 'mapToDomain').mockReturnValueOnce(RoleName.STUDENT);
 			const result = ImportUserMapper.mapImportUserFilterQueryToDomain(query);
 			expect(result.role).toEqual(RoleName.STUDENT);
-			expect(roleNameMapperSpy).toBeCalledWith(FilterRoleType.STUDENT);
+			expect(roleNameMapperSpy).toHaveBeenCalledWith(FilterRoleType.STUDENT);
 			roleNameMapperSpy.mockRestore();
 		});
 		it('should map classes from query to scope', () => {
@@ -155,7 +155,7 @@ describe('[ImportUserMapper]', () => {
 				.mockReturnValueOnce(ImportUserMatchCreatorScope.MANUAL);
 			const result = ImportUserMapper.mapImportUserFilterQueryToDomain(query);
 			expect(result.matches).toEqual([ImportUserMatchCreatorScope.MANUAL]);
-			expect(importUserMatchMapperSpy).toBeCalledWith(FilterMatchType.MANUAL);
+			expect(importUserMatchMapperSpy).toHaveBeenCalledWith(FilterMatchType.MANUAL);
 			importUserMatchMapperSpy.mockRestore();
 		});
 		it('should map flagged true from query to scope', () => {

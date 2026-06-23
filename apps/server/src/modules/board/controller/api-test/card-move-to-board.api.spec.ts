@@ -89,7 +89,7 @@ describe(`card move to board (api)`, () => {
 				roomId: EntityId,
 				role: 'viewer' | 'editor' | 'admin' | 'owner'
 			) => {
-				let userRole: typeof roomViewerRole | typeof roomEditorRole | typeof roomAdminRole | typeof roomOwnerRole;
+				let userRole: typeof roomViewerRole;
 				if (role === 'viewer') {
 					userRole = roomViewerRole;
 				} else if (role === 'editor') {

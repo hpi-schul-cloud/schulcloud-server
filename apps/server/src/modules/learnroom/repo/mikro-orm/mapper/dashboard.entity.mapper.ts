@@ -55,7 +55,7 @@ export class DashboardModelMapper {
 			const updatedModel = this.updateExistingGridElement(existing, elementWithPosition, dashboard);
 			return updatedModel;
 		}
-		const createdModel = await this.createGridElement(elementWithPosition, dashboard);
+		const createdModel = this.createGridElement(elementWithPosition, dashboard);
 		return createdModel;
 	}
 
@@ -70,11 +70,11 @@ export class DashboardModelMapper {
 		return undefined;
 	}
 
-	private async updateExistingGridElement(
+	private updateExistingGridElement(
 		elementModel: DashboardGridElementEntity,
 		elementWithPosition: GridElementWithPosition,
 		dashboard: DashboardEntity
-	): Promise<DashboardGridElementEntity> {
+	): DashboardGridElementEntity {
 		elementModel.xPos = elementWithPosition.pos.x;
 		elementModel.yPos = elementWithPosition.pos.y;
 		const { gridElement } = elementWithPosition;
@@ -83,19 +83,19 @@ export class DashboardModelMapper {
 			elementModel.title = gridElement.getContent().title;
 		}
 
-		const references = await Promise.all(gridElement.getReferences().map((ref) => this.mapReferenceToModel(ref)));
+		const references = gridElement.getReferences().map((ref) => this.mapReferenceToModel(ref));
 		elementModel.references.set(references);
 
 		elementModel.dashboard = wrap(dashboard).toReference();
 		return elementModel;
 	}
 
-	private async createGridElement(
+	private createGridElement(
 		elementWithPosition: GridElementWithPosition,
 		dashboard: DashboardEntity
-	): Promise<DashboardGridElementEntity> {
+	): DashboardGridElementEntity {
 		const { gridElement } = elementWithPosition;
-		const references = await Promise.all(gridElement.getReferences().map((ref) => this.mapReferenceToModel(ref)));
+		const references = gridElement.getReferences().map((ref) => this.mapReferenceToModel(ref));
 		const elementModel = new DashboardGridElementEntity({
 			id: gridElement.getId(),
 			xPos: elementWithPosition.pos.x,

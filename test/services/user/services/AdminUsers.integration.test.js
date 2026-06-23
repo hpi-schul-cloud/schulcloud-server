@@ -34,10 +34,9 @@ describe('admin users integration tests', () => {
 
 	const getAdminToken = async (schoolId = undefined) => {
 		const adminUser = await testObjects.createTestUser({ roles: ['administrator'], schoolId });
-		const credentials = { username: adminUser.email, password: `${Date.now()}` };
-		await testObjects.createTestAccount(credentials, 'local', adminUser);
-		const token = await testObjects.generateJWT(credentials);
-		return token;
+		const requestParams = await testObjects.generateRequestParamsFromUser(adminUser);
+
+		return requestParams.authentication.accessToken;
 	};
 
 	it('POST succeeds valid request', async () => {

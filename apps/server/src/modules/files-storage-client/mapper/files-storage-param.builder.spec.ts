@@ -19,7 +19,7 @@ describe('FileParamBuilder', () => {
 		const parentType = 'abc';
 
 		// @ts-expect-error: Test case
-		expect(() => FileParamBuilder.build(schoolId, parentType, StorageLocation.SCHOOL)).toThrowError();
+		expect(() => FileParamBuilder.build(schoolId, parentType, StorageLocation.SCHOOL)).toThrow();
 	});
 
 	it('should build valid file request infos for task over shorthand task', () => {

@@ -140,14 +140,19 @@ describe('VideoConferenceCreateUc', () => {
 
 					await uc.createIfNotRunning(currentUserId, scope, options);
 
-					expect(videoConferenceService.findVideoConferenceByScopeIdAndScope).toBeCalledWith(scope.id, scope.scope);
+					expect(videoConferenceService.findVideoConferenceByScopeIdAndScope).toHaveBeenCalledWith(
+						scope.id,
+						scope.scope
+					);
 				});
 
 				it('should call check if meeting is running by calling bbbService.getMeetingInfo', async () => {
 					const { currentUserId, scope, options } = setup();
 
 					await uc.createIfNotRunning(currentUserId, scope, options);
-					expect(bbbService.getMeetingInfo).toBeCalledWith(new BBBBaseMeetingConfig({ meetingID: scope.id + 'salt' }));
+					expect(bbbService.getMeetingInfo).toHaveBeenCalledWith(
+						new BBBBaseMeetingConfig({ meetingID: scope.id + 'salt' })
+					);
 				});
 
 				it('should call videoConferenceService.getScopeInfo', async () => {
@@ -155,7 +160,7 @@ describe('VideoConferenceCreateUc', () => {
 
 					await uc.createIfNotRunning(currentUserId, scope, options);
 
-					expect(videoConferenceService.getScopeInfo).toBeCalledWith(currentUserId, scope.id, scope.scope);
+					expect(videoConferenceService.getScopeInfo).toHaveBeenCalledWith(currentUserId, scope.id, scope.scope);
 				});
 
 				it('should call videoConferenceService.determineBbbRole', async () => {
@@ -163,7 +168,11 @@ describe('VideoConferenceCreateUc', () => {
 
 					await uc.createIfNotRunning(currentUserId, scope, options);
 
-					expect(videoConferenceService.determineBbbRole).toBeCalledWith(currentUserId, scopeInfo.scopeId, scope.scope);
+					expect(videoConferenceService.determineBbbRole).toHaveBeenCalledWith(
+						currentUserId,
+						scopeInfo.scopeId,
+						scope.scope
+					);
 				});
 
 				it('should call videoConferenceService.createOrUpdateVideoConferenceWithOptions', async () => {
@@ -171,7 +180,7 @@ describe('VideoConferenceCreateUc', () => {
 
 					await uc.createIfNotRunning(currentUserId, scope, options);
 
-					expect(videoConferenceService.createOrUpdateVideoConferenceForScopeWithOptions).toBeCalledWith(
+					expect(videoConferenceService.createOrUpdateVideoConferenceForScopeWithOptions).toHaveBeenCalledWith(
 						scope.id,
 						scope.scope,
 						options
@@ -183,7 +192,7 @@ describe('VideoConferenceCreateUc', () => {
 
 					await uc.createIfNotRunning(currentUserId, scope, options);
 
-					expect(bbbService.create).toBeCalled();
+					expect(bbbService.create).toHaveBeenCalled();
 				});
 			});
 
@@ -271,7 +280,7 @@ describe('VideoConferenceCreateUc', () => {
 
 				await uc.createIfNotRunning(currentUserId, scope, options);
 
-				expect(bbbService.create).not.toBeCalled();
+				expect(bbbService.create).not.toHaveBeenCalled();
 			});
 		});
 
@@ -318,7 +327,10 @@ describe('VideoConferenceCreateUc', () => {
 
 				await uc.createIfNotRunning(currentUserId, scope, options);
 
-				expect(videoConferenceFeatureService.checkVideoConferenceFeatureEnabled).toBeCalledWith(currentUserId, scope);
+				expect(videoConferenceFeatureService.checkVideoConferenceFeatureEnabled).toHaveBeenCalledWith(
+					currentUserId,
+					scope
+				);
 			});
 		});
 	});

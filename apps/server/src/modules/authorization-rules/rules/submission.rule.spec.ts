@@ -129,7 +129,7 @@ describe('SubmissionRule', () => {
 				it('should reject with NotImplementedException', () => {
 					const { user, submission, context } = setup();
 
-					expect(() => submissionRule.hasPermission(user, submission, context)).toThrowError(NotImplementedException);
+					expect(() => submissionRule.hasPermission(user, submission, context)).toThrow(NotImplementedException);
 				});
 			});
 		});

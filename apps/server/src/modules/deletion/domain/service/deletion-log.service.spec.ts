@@ -126,7 +126,7 @@ describe(DeletionLogService.name, () => {
 				const { deletionRequestId } = setup();
 				await service.findByDeletionRequestId(deletionRequestId);
 
-				expect(deletionLogRepo.findAllByDeletionRequestId).toBeCalledWith(deletionRequestId);
+				expect(deletionLogRepo.findAllByDeletionRequestId).toHaveBeenCalledWith(deletionRequestId);
 			});
 
 			it('should return array of two deletionLogs with deletionRequestId', async () => {

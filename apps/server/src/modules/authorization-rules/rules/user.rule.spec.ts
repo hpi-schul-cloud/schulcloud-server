@@ -57,7 +57,7 @@ describe('UserRule', () => {
 
 		service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [] });
 
-		expect(spy).toBeCalledWith(user, []);
+		expect(spy).toHaveBeenCalledWith(user, []);
 	});
 
 	describe('when a user accesses himself', () => {
@@ -235,7 +235,7 @@ describe('UserRule', () => {
 						action: Action.read,
 						requiredPermissions: [grantedPermission],
 					})
-				).toThrowError('Invalid discoverability setting');
+				).toThrow('Invalid discoverability setting');
 			});
 		});
 	});

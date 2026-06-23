@@ -33,12 +33,12 @@ describe('ErrorLogger', () => {
 		it('should call emerg method of WinstonLogger with appropriate message', () => {
 			const error = new Error('test');
 			const loggable = new ErrorLoggable(error);
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
 			const expectedMessage = expect.objectContaining({ message: expect.stringContaining('error: Error: test') });
 
 			service.emerg(loggable);
 
-			expect(winstonLogger.emerg).toBeCalledWith(expectedMessage);
+			expect(winstonLogger.emerg).toHaveBeenCalledWith(expectedMessage);
 		});
 	});
 
@@ -46,12 +46,12 @@ describe('ErrorLogger', () => {
 		it('should call alert method of WinstonLogger with appropriate message', () => {
 			const error = new Error('test');
 			const loggable = new ErrorLoggable(error);
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
 			const expectedMessage = expect.objectContaining({ message: expect.stringContaining('error: Error: test') });
 
 			service.alert(loggable);
 
-			expect(winstonLogger.alert).toBeCalledWith(expectedMessage);
+			expect(winstonLogger.alert).toHaveBeenCalledWith(expectedMessage);
 		});
 	});
 
@@ -59,12 +59,12 @@ describe('ErrorLogger', () => {
 		it('should call crit method of WinstonLogger with appropriate message', () => {
 			const error = new Error('test');
 			const loggable = new ErrorLoggable(error);
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
 			const expectedMessage = expect.objectContaining({ message: expect.stringContaining('error: Error: test') });
 
 			service.crit(loggable);
 
-			expect(winstonLogger.crit).toBeCalledWith(expectedMessage);
+			expect(winstonLogger.crit).toHaveBeenCalledWith(expectedMessage);
 		});
 	});
 
@@ -72,12 +72,12 @@ describe('ErrorLogger', () => {
 		it('should call error method of WinstonLogger with appropriate message', () => {
 			const error = new Error('test');
 			const loggable = new ErrorLoggable(error);
-			// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
 			const expectedMessage = expect.objectContaining({ message: expect.stringContaining('error: Error: test') });
 
 			service.error(loggable);
 
-			expect(winstonLogger.error).toBeCalledWith(expectedMessage);
+			expect(winstonLogger.error).toHaveBeenCalledWith(expectedMessage);
 		});
 	});
 });

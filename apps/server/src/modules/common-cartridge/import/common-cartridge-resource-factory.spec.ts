@@ -94,6 +94,31 @@ describe('CommonCartridgeResourceFactory', () => {
 			});
 		});
 
+		describe('when creating a CC1.3.0 web link resource', () => {
+			const setup = async () => {
+				webLinkXml = await setupWebLinkXml();
+				const organizationProps = setupOrganizationProps();
+
+				organizationProps.resourceType = CommonCartridgeXmlResourceType.WEB_LINK_CC13;
+				admZipMock.getEntry.mockReturnValue({} as AdmZip.IZipEntry);
+				admZipMock.readAsText.mockReturnValue(webLinkXml);
+
+				return { organizationProps };
+			};
+
+			it('should create a web link resource with CC1.3.0 type', async () => {
+				const { organizationProps } = await setup();
+
+				const result = sut.create(organizationProps, InputFormat.RICH_TEXT_CK5);
+
+				expect(result).toStrictEqual<CommonCartridgeWebLinkResourceProps>({
+					type: CommonCartridgeXmlResourceType.WEB_LINK_CC13,
+					title: organizationProps.title,
+					url: 'http://www.example.tld',
+				});
+			});
+		});
+
 		describe('when creating a web link resource and the descriptor is not valid XML', () => {
 			const setup = () => {
 				const organizationProps = setupOrganizationProps();

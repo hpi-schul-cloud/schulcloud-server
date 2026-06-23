@@ -221,7 +221,7 @@ describe('UserScope', () => {
 			it('should throw an error for exceeding maximum length', () => {
 				const { scope, name } = setup();
 
-				expect(() => scope.byName(name)).toThrowError('Seached value is too long');
+				expect(() => scope.byName(name)).toThrow('Seached value is too long');
 			});
 		});
 

@@ -58,7 +58,7 @@ describe('User Entity', () => {
 			role.roles.set([orm.em.getReference(Role, new ObjectId().toHexString())]);
 			const user = userFactory.build({ roles: [role] });
 
-			expect(() => user.resolvePermissions(false, false)).toThrowError();
+			expect(() => user.resolvePermissions(false, false)).toThrow();
 		});
 
 		it('should throw an error if the school is not populated', () => {

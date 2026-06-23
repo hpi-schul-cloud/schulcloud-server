@@ -113,8 +113,8 @@ describe(DeleteFilesUc.name, () => {
 
 				await service.deleteMarkedFiles(thresholdDate, batchSize);
 
-				expect(logger.log).toBeCalledTimes(4);
-				expect(logger.error).toBeCalledTimes(0);
+				expect(logger.log).toHaveBeenCalledTimes(4);
+				expect(logger.error).toHaveBeenCalledTimes(0);
 
 				spy.mockRestore();
 			});
@@ -192,7 +192,7 @@ describe(DeleteFilesUc.name, () => {
 
 				await service.deleteMarkedFiles(thresholdDate, batchSize);
 
-				expect(filesRepo.delete).toBeCalledTimes(0);
+				expect(filesRepo.delete).toHaveBeenCalledTimes(0);
 
 				spy.mockRestore();
 			});
@@ -202,7 +202,7 @@ describe(DeleteFilesUc.name, () => {
 
 				await service.deleteMarkedFiles(thresholdDate, batchSize);
 
-				expect(spy).toBeCalledTimes(2);
+				expect(spy).toHaveBeenCalledTimes(2);
 
 				spy.mockRestore();
 			});
@@ -309,7 +309,7 @@ describe(DeleteFilesUc.name, () => {
 
 				await service.deleteMarkedFiles(thresholdDate, batchSize);
 
-				expect(logger.error).toBeCalledTimes(2);
+				expect(logger.error).toHaveBeenCalledTimes(2);
 			});
 		});
 
@@ -344,7 +344,7 @@ describe(DeleteFilesUc.name, () => {
 
 				await service.deleteMarkedFiles(thresholdDate, batchSize);
 
-				expect(logger.error).toBeCalledTimes(2);
+				expect(logger.error).toHaveBeenCalledTimes(2);
 			});
 		});
 	});

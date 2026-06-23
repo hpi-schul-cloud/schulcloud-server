@@ -1,4 +1,3 @@
-/* eslint-disable no-await-in-loop */
 import { DeleteObjectCommand, S3Client, S3ServiceException } from '@aws-sdk/client-s3';
 import { LegacyLogger } from '@core/logger';
 import { AuthenticationClientAdapter } from '@infra/authentication-client';

@@ -117,10 +117,9 @@ describe(SchulconnexLicenseProvisioningConsumer.name, () => {
 				};
 
 				await consumer.onModuleInit();
+				const registerCalls = registerAmqpSubscriberSpy.mock.calls as unknown[][];
 
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-				const licenseProvisioningHandler = registerAmqpSubscriberSpy.mock.calls.find(
-					// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+				const licenseProvisioningHandler = registerCalls.find(
 					(call) => call[2] === SchulconnexProvisioningEvents.LICENSE_PROVISIONING
 				)?.[3] as (payload: SchulconnexLicenseProvisioningMessage) => Promise<void>;
 

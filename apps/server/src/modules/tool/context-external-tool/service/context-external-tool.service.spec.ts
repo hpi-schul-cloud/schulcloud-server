@@ -460,7 +460,7 @@ describe(ContextExternalToolService.name, () => {
 				);
 
 				expect(copiedTool instanceof ContextExternalTool).toEqual(true);
-				copiedTool = copiedTool as ContextExternalTool;
+				copiedTool = copiedTool;
 
 				expect(copiedTool).toEqual(
 					expect.objectContaining<ContextExternalToolProps>({
@@ -485,17 +485,17 @@ describe(ContextExternalToolService.name, () => {
 			it('should not copy unused parameter', async () => {
 				const { contextExternalTool, contextCopyId, unusedParam, schoolExternalTool } = setup();
 
-				let copiedTool: ContextExternalTool | CopyContextExternalToolRejectData = await service.copyContextExternalTool(
+				const copiedTool = await service.copyContextExternalTool(
 					contextExternalTool,
 					contextCopyId,
 					schoolExternalTool.schoolId
 				);
 
 				expect(copiedTool instanceof ContextExternalTool).toEqual(true);
-				copiedTool = copiedTool as ContextExternalTool;
+				const copiedContextTool = copiedTool as ContextExternalTool;
 
-				expect(copiedTool.parameters.length).toEqual(2);
-				expect(copiedTool.parameters).not.toContain(unusedParam);
+				expect(copiedContextTool.parameters.length).toEqual(2);
+				expect(copiedContextTool.parameters).not.toContain(unusedParam);
 			});
 
 			it('should save copied tool', async () => {
@@ -560,11 +560,13 @@ describe(ContextExternalToolService.name, () => {
 				it('should assign the copied tool the correct school tool', async () => {
 					const { contextExternalTool, contextCopyId, targetSchool, expectedSchoolToolRef } = setupTools();
 
-					let copiedTool: ContextExternalTool | CopyContextExternalToolRejectData =
+					const copiedTool: ContextExternalTool | CopyContextExternalToolRejectData =
 						await service.copyContextExternalTool(contextExternalTool, contextCopyId, targetSchool.id);
 
 					expect(copiedTool instanceof ContextExternalTool).toEqual(true);
-					copiedTool = copiedTool as ContextExternalTool;
+					if (!(copiedTool instanceof ContextExternalTool)) {
+						throw new Error('Expected copiedTool to be ContextExternalTool');
+					}
 
 					expect(copiedTool.schoolToolRef).toMatchObject(expectedSchoolToolRef);
 				});
@@ -574,7 +576,7 @@ describe(ContextExternalToolService.name, () => {
 
 					await service.copyContextExternalTool(contextExternalTool, contextCopyId, targetSchool.id);
 
-					expect(contextExternalToolRepo.save).toBeCalledWith(
+					expect(contextExternalToolRepo.save).toHaveBeenCalledWith(
 						new ContextExternalTool({
 							...contextExternalTool.getProps(),
 							schoolToolRef: expectedSchoolToolRef,
@@ -625,7 +627,7 @@ describe(ContextExternalToolService.name, () => {
 
 					await service.copyContextExternalTool(contextExternalTool, contextCopyId, targetSchool.id);
 
-					expect(contextExternalToolRepo.save).not.toBeCalled();
+					expect(contextExternalToolRepo.save).not.toHaveBeenCalled();
 				});
 			});
 		});

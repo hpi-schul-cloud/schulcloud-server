@@ -93,7 +93,7 @@ describe('ContextExternalToolRule', () => {
 
 				service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [] });
 
-				expect(spy).toBeCalledWith(user, []);
+				expect(spy).toHaveBeenCalledWith(user, []);
 			});
 
 			it('should return "true" if user in scope', () => {

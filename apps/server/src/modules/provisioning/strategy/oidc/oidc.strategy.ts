@@ -1,7 +1,7 @@
 import { IdTokenExtractionFailureLoggableException } from '@modules/oauth/loggable';
 import { Injectable } from '@nestjs/common';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import jwt, { JwtPayload } from 'jsonwebtoken';
+import jwt from 'jsonwebtoken';
 import { ExternalUserDto, OauthDataDto, OauthDataStrategyInputDto, ProvisioningDto } from '../../dto';
 import { ProvisioningStrategy } from '../base.strategy';
 
@@ -12,13 +12,20 @@ export class OidcProvisioningStrategy extends ProvisioningStrategy {
 	}
 
 	override async getData(input: OauthDataStrategyInputDto): Promise<OauthDataDto> {
-		const idToken = jwt.decode(input.idToken, { json: true }) as (JwtPayload & { external_sub?: string }) | null;
-		if (!idToken || !idToken.external_sub) {
+		const idToken = jwt.decode(input.idToken, { json: true });
+		if (
+			!idToken ||
+			typeof idToken !== 'object' ||
+			!('external_sub' in idToken) ||
+			typeof idToken.external_sub !== 'string'
+		) {
 			throw new IdTokenExtractionFailureLoggableException('external_sub');
 		}
 
+		const externalSub = idToken.external_sub;
+
 		const externalUser: ExternalUserDto = new ExternalUserDto({
-			externalId: idToken.external_sub,
+			externalId: externalSub,
 			roles: [],
 		});
 

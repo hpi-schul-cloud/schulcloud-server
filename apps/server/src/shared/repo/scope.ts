@@ -20,7 +20,7 @@ export class Scope<T> {
 	get query(): FilterQuery<T> {
 		if (this._queries.length === 0) {
 			if (this._allowEmptyQuery) {
-				return {} as FilterQuery<T>;
+				return {};
 			}
 			return EmptyResultQuery as FilterQuery<T>;
 		}

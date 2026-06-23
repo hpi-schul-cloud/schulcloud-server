@@ -43,7 +43,6 @@ export const createBoardsResilient = async (apiBaseUrl: string, token: string, c
 	let retries = 0;
 	while (boardIds.length < amount && retries < 10) {
 		try {
-			// eslint-disable-next-line no-await-in-loop
 			const boardId = await createBoard(apiBaseUrl, token, courseId);
 			boardIds.push(boardId);
 		} catch (err) {
@@ -54,7 +53,7 @@ export const createBoardsResilient = async (apiBaseUrl: string, token: string, c
 				}
 			}
 			retries += 1;
-			// eslint-disable-next-line no-await-in-loop
+
 			await sleep(100);
 		}
 	}

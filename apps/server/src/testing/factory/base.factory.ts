@@ -161,7 +161,6 @@ export class BaseFactory<T, U, I = any, C = U, P = DeepPartial<U>> {
 	 * @returns the next sequence value
 	 */
 	protected sequence(): number {
-		// eslint-disable-next-line @typescript-eslint/dot-notation
 		return this.propsFactory['sequence']();
 	}
 }

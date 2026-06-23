@@ -37,7 +37,7 @@ export class ValkeyFactory {
 	}
 
 	private static createInMemoryInstance(logger: Logger): StorageClient {
-		const inMemoryClientInstance = new InMemoryClient(logger);
+		const inMemoryClientInstance = InMemoryClient.getInstance(logger);
 
 		return inMemoryClientInstance;
 	}

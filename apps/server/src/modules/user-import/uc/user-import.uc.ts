@@ -192,7 +192,7 @@ export class UserImportUc {
 					// TODO: Find a better solution for this loop
 					// this needs to be synchronous, because otherwise it was leading to
 					// server crush when working with larger number of users (e.g. 1000)
-					// eslint-disable-next-line no-await-in-loop
+
 					await this.updateUserAndAccount(importUser, school);
 					migratedUser += 1;
 				} catch (error: unknown) {
@@ -412,7 +412,7 @@ export class UserImportUc {
 		if (school.systems && school.systems?.length > 0) {
 			for (const systemId of school.systems) {
 				// very unusual to have more than 1 system
-				// eslint-disable-next-line no-await-in-loop
+
 				const system = await this.systemService.findById(systemId);
 
 				if (system?.ldapConfig) {

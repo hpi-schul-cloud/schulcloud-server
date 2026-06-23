@@ -68,7 +68,7 @@ describe('SchoolYearService', () => {
 			it('should pass the error', async () => {
 				const { error } = setup();
 
-				await expect(() => service.getAllSchoolYears()).rejects.toThrowError(error);
+				await expect(() => service.getAllSchoolYears()).rejects.toThrow(error);
 			});
 		});
 	});

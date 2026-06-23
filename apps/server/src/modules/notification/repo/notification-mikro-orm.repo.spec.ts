@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { NotificationMikroOrmRepo } from './notification-mikro-orm.repo';
 import { NotificationEntity } from './entities';
 import { MongoMemoryDatabaseModule } from '@testing/database';

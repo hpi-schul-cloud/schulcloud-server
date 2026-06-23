@@ -109,9 +109,9 @@ describe(SchulconnexCourseSyncService.name, () => {
 
 				await service.synchronizeCoursesFromHistory(group);
 
-				expect(courseSyncHistoryService.findByExternalGroupId).not.toBeCalled();
-				expect(courseSyncService.synchronize).not.toBeCalled();
-				expect(courseSyncHistoryService.delete).not.toBeCalled();
+				expect(courseSyncHistoryService.findByExternalGroupId).not.toHaveBeenCalled();
+				expect(courseSyncService.synchronize).not.toHaveBeenCalled();
+				expect(courseSyncHistoryService.delete).not.toHaveBeenCalled();
 			});
 		});
 
@@ -122,8 +122,8 @@ describe(SchulconnexCourseSyncService.name, () => {
 
 				await service.synchronizeCoursesFromHistory(group);
 
-				expect(courseSyncService.synchronize).not.toBeCalled();
-				expect(courseSyncHistoryService.delete).not.toBeCalled();
+				expect(courseSyncService.synchronize).not.toHaveBeenCalled();
+				expect(courseSyncHistoryService.delete).not.toHaveBeenCalled();
 			});
 		});
 
@@ -163,7 +163,7 @@ describe(SchulconnexCourseSyncService.name, () => {
 
 					await service.synchronizeCoursesFromHistory(group);
 
-					expect(courseSyncService.synchronize).not.toBeCalled();
+					expect(courseSyncService.synchronize).not.toHaveBeenCalled();
 				});
 
 				it('should remove the course sync histories of the courses', async () => {
@@ -171,7 +171,7 @@ describe(SchulconnexCourseSyncService.name, () => {
 
 					await service.synchronizeCoursesFromHistory(group);
 
-					expect(courseSyncHistoryService.delete).toBeCalledWith(courseSyncHistories);
+					expect(courseSyncHistoryService.delete).toHaveBeenCalledWith(courseSyncHistories);
 				});
 			});
 
@@ -220,7 +220,7 @@ describe(SchulconnexCourseSyncService.name, () => {
 
 					await service.synchronizeCoursesFromHistory(group);
 
-					expect(courseSyncService.synchronize).toBeCalledWith(coursesPassedToSync, group);
+					expect(courseSyncService.synchronize).toHaveBeenCalledWith(coursesPassedToSync, group);
 				});
 
 				it('should remove the course sync histories of the courses', async () => {
@@ -228,7 +228,7 @@ describe(SchulconnexCourseSyncService.name, () => {
 
 					await service.synchronizeCoursesFromHistory(group);
 
-					expect(courseSyncHistoryService.delete).toBeCalledWith(courseSyncHistories);
+					expect(courseSyncHistoryService.delete).toHaveBeenCalledWith(courseSyncHistories);
 				});
 			});
 		});
@@ -293,7 +293,7 @@ describe(SchulconnexCourseSyncService.name, () => {
 
 				await service.desyncCoursesAndCreateHistories(group, courses);
 
-				expect(courseSyncHistoryService.saveAll).toBeCalled();
+				expect(courseSyncHistoryService.saveAll).toHaveBeenCalled();
 
 				const savedHistoriesArg: CourseSynchronizationHistory[] = courseSyncHistoryService.saveAll.mock.calls[0][0];
 				expect(savedHistoriesArg.length).toEqual(courses.length);
@@ -317,7 +317,7 @@ describe(SchulconnexCourseSyncService.name, () => {
 
 				await service.desyncCoursesAndCreateHistories(group, courses);
 
-				expect(courseSyncService.stopSynchronizations).toBeCalledWith(courses);
+				expect(courseSyncService.stopSynchronizations).toHaveBeenCalledWith(courses);
 			});
 		});
 	});

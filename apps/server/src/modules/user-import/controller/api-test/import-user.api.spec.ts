@@ -496,7 +496,7 @@ describe('ImportUser Controller (API)', () => {
 						roleNames: expect.any(Array),
 						classNames: expect.any(Array),
 						flagged: expect.any(Boolean),
-					} as Partial<Record<keyof ImportUserResponse, unknown>>)
+					})
 				);
 				expect(data.roleNames.length).toBeGreaterThanOrEqual(1);
 				expect(data.classNames.length).toBeGreaterThanOrEqual(1);

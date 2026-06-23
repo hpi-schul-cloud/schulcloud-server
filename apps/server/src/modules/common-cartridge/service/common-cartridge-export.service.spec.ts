@@ -30,6 +30,7 @@ import {
 	boardTaskFactory,
 	columnBoardFactory,
 	courseMetadataFactory,
+	lessonContentFactory,
 	lessonFactory,
 	lessonLinkedTaskFactory,
 	listOfCardResponseFactory,
@@ -37,6 +38,17 @@ import {
 } from '../testing/common-cartridge-elements.factory';
 import { CommonCartridgeExportMapper } from './common-cartridge-export.mapper';
 import { CommonCartridgeExportService } from './common-cartridge-export.service';
+import { ObjectId } from 'bson';
+
+jest.mock('@infra/auth-guard', () => {
+	return {
+		JwtPayloadVo: {
+			fromJwtToken: () => {
+				return { schoolId: new ObjectId().toString(), accountId: new ObjectId().toString() };
+			},
+		},
+	};
+});
 
 describe('CommonCartridgeExportService', () => {
 	let module: TestingModule;
@@ -382,6 +394,89 @@ describe('CommonCartridgeExportService', () => {
 			});
 		});
 
+		describe('when lesson has lernstore resources component', () => {
+			const setup = async () => {
+				const lernstoreContent = lessonContentFactory.build({
+					component: 'resources',
+					content: {
+						resources: [
+							{
+								url: faker.internet.url(),
+								title: `lernstore-resource-${faker.lorem.word()}`,
+								client: faker.company.name(),
+								description: faker.lorem.sentence(),
+							},
+							{
+								url: faker.internet.url(),
+								title: `lernstore-resource-${faker.lorem.word()}`,
+								client: faker.company.name(),
+								description: faker.lorem.sentence(),
+							},
+						],
+					},
+				});
+
+				const courseMetadata = courseMetadataFactory.build();
+				const lesson = lessonFactory.build({ contents: [lernstoreContent] });
+				lesson.courseId = courseMetadata.id;
+				const lessonTasks = lessonLinkedTaskFactory.buildList(0);
+
+				const boardSkeleton: BoardResponse = columnBoardFactory.build();
+				const cardIds = boardSkeleton.columns
+					.map((c) => c.cards)
+					.flat()
+					.map((c) => c.cardId);
+				const listOfCardsResponse: CardListResponse = listOfCardResponseFactory.withCardIds(cardIds).build();
+
+				const room: SingleColumnBoardResponse = roomFactory.build();
+				room.title = courseMetadata.title;
+				room.elements[0].content = boardTaskFactory.build();
+				room.elements[1].content = boardLessonFactory.build();
+				room.elements[1].content.id = lesson.id;
+				room.elements[1].content.name = lesson.name;
+				room.elements[2].content = boardColumnFactory.build();
+
+				coursesClientAdapterMock.getCourseCommonCartridgeMetadata.mockResolvedValue(courseMetadata);
+				lessonClientAdapterMock.getLessonById.mockResolvedValue(lesson);
+				lessonClientAdapterMock.getLessonTasks.mockResolvedValue(lessonTasks);
+				boardClientAdapterMock.getBoardSkeletonById.mockResolvedValue(boardSkeleton);
+				cardClientAdapterMock.getAllBoardCardsByIds.mockResolvedValue(listOfCardsResponse);
+				courseRoomsClientAdapterMock.getRoomBoardByCourseId.mockResolvedValue(room);
+
+				const exported = await sut.exportCourse(
+					faker.internet.jwt(),
+					courseMetadata.id,
+					CommonCartridgeVersion.V_1_1_0,
+					[room.elements[1].content.id],
+					[],
+					[]
+				);
+				const stream = exported.data;
+
+				const buffer = await new Promise<Buffer>((resolve, reject) => {
+					const chunks: Buffer[] = [];
+					stream.on('data', (chunk: Buffer) => chunks.push(chunk));
+					stream.on('end', () => resolve(Buffer.concat(chunks)));
+					stream.on('error', reject);
+				});
+
+				const archive = new AdmZip(buffer);
+
+				return { archive, lernstoreContent };
+			};
+
+			it('should add lernstore resources as child organization with web link resources', async () => {
+				const { archive, lernstoreContent } = await setup();
+				const manifest = getFileContent(archive, 'imsmanifest.xml');
+
+				expect(manifest).toContain(createXmlString('title', lernstoreContent.title));
+				const resources = (lernstoreContent.content as { resources: Array<{ title: string; url: string }> }).resources;
+				resources.forEach((resource) => {
+					expect(manifest).toContain(createXmlString('title', resource.title));
+				});
+			});
+		});
+
 		describe('when topics array is empty', () => {
 			const setup = async () => {
 				const fileSetup = setupFile();
@@ -501,7 +596,7 @@ describe('CommonCartridgeExportService', () => {
 						totalBytes: 10,
 						processedBytes: 5,
 					},
-				} as ProgressData);
+				});
 
 				expect(logger.debug).toHaveBeenCalledWith(
 					new CommonCartridgeMessageLoggable('Progress for CC export: 1 of 2 total processed.', {

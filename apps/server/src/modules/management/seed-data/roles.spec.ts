@@ -15,7 +15,7 @@ describe('Role seed data generation', () => {
 	});
 
 	it('should throw if role name is undefined', () => {
-		expect(() => roleModule.generateRole({})).toThrowError();
+		expect(() => roleModule.generateRole({})).toThrow();
 	});
 
 	it('should throw if sub role is undefined', () => {
@@ -37,6 +37,6 @@ describe('Role seed data generation', () => {
 				permissions: [],
 			},
 		};
-		expect(() => roleModule.generateRole(roleSeedData)).toThrowError();
+		expect(() => roleModule.generateRole(roleSeedData)).toThrow();
 	});
 });

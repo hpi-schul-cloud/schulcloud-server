@@ -75,7 +75,7 @@ describe(MediaSourceService.name, () => {
 
 				const result = await service.findByFormat(format);
 
-				expect(mediaSourceRepo.findByFormat).toBeCalledWith(format);
+				expect(mediaSourceRepo.findByFormat).toHaveBeenCalledWith(format);
 				expect(result).toEqual(mediaSource);
 			});
 		});
@@ -132,7 +132,7 @@ describe(MediaSourceService.name, () => {
 
 				const result = await service.findByFormatAndSourceId(format, sourceId);
 
-				expect(mediaSourceRepo.findByFormatAndSourceId).toBeCalledWith(format, sourceId);
+				expect(mediaSourceRepo.findByFormatAndSourceId).toHaveBeenCalledWith(format, sourceId);
 				expect(result).toEqual(mediaSource);
 			});
 		});
@@ -164,7 +164,7 @@ describe(MediaSourceService.name, () => {
 
 				await service.getAllMediaSources();
 
-				expect(mediaSourceRepo.findAll).toBeCalled();
+				expect(mediaSourceRepo.findAll).toHaveBeenCalled();
 			});
 		});
 
@@ -193,7 +193,7 @@ describe(MediaSourceService.name, () => {
 
 				await service.getAllMediaSources();
 
-				expect(mediaSourceRepo.findAll).toBeCalled();
+				expect(mediaSourceRepo.findAll).toHaveBeenCalled();
 			});
 		});
 	});

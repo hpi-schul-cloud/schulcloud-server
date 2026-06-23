@@ -89,7 +89,7 @@ describe(DeleteUserCourseDataStep.name, () => {
 		it('should call repo.removeUserReference', async () => {
 			const { user } = setup();
 			await step.execute({ userId: user.id });
-			expect(courseRepo.removeUserReference).toBeCalledWith(user.id);
+			expect(courseRepo.removeUserReference).toHaveBeenCalledWith(user.id);
 		});
 
 		it('should return DomainDeletionReport', async () => {

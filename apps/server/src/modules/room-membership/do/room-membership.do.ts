@@ -11,7 +11,7 @@ export interface RoomMembershipProps extends AuthorizableObject {
 }
 
 export class RoomMembership extends DomainObject<RoomMembershipProps> {
-	public constructor(props: RoomMembershipProps) {
+	constructor(props: RoomMembershipProps) {
 		super(props);
 	}
 
@@ -19,7 +19,7 @@ export class RoomMembership extends DomainObject<RoomMembershipProps> {
 		// We need to make sure that only properties of type T are returned
 		// At runtime the props are a MikroORM entity that has additional non-persisted properties
 		// see @Property({ persist: false })
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore
 		const { domainObject, ...copyProps } = this.props;
@@ -27,15 +27,15 @@ export class RoomMembership extends DomainObject<RoomMembershipProps> {
 		return copyProps;
 	}
 
-	public get roomId(): EntityId {
+	get roomId(): EntityId {
 		return this.props.roomId;
 	}
 
-	public get userGroupId(): EntityId {
+	get userGroupId(): EntityId {
 		return this.props.userGroupId;
 	}
 
-	public get schoolId(): EntityId {
+	get schoolId(): EntityId {
 		return this.props.schoolId;
 	}
 }

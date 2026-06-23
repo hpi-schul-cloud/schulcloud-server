@@ -23,7 +23,7 @@ export class ExternalToolRepoMapper {
 		let config: BasicToolConfig | Oauth2ToolConfig | Lti11ToolConfig;
 		switch (entity.config.type) {
 			case ToolConfigType.BASIC:
-				config = this.mapBasicToolConfigToDO(entity.config as BasicToolConfig);
+				config = this.mapBasicToolConfigToDO(entity.config);
 				break;
 			case ToolConfigType.OAUTH2:
 				config = this.mapOauth2ConfigToDO(entity.config as Oauth2ToolConfig);
@@ -106,7 +106,7 @@ export class ExternalToolRepoMapper {
 		let config: BasicToolConfigEntity | Oauth2ToolConfigEntity | Lti11ToolConfigEntity;
 		switch (domainObject.config.type) {
 			case ToolConfigType.BASIC:
-				config = this.mapBasicToolConfigDOToEntity(domainObject.config as BasicToolConfig);
+				config = this.mapBasicToolConfigDOToEntity(domainObject.config);
 				break;
 			case ToolConfigType.OAUTH2:
 				config = this.mapOauth2ConfigDOToEntity(domainObject.config as Oauth2ToolConfig);

@@ -22,7 +22,7 @@ describe('[RoleNameMapper]', () => {
 		});
 		it('should fail for invalid input', () => {
 			const roleName = 'foo' as unknown as ImportUserRoleName;
-			expect(() => RoleNameMapper.mapToResponse(roleName)).toThrowError('invalid role name from domain');
+			expect(() => RoleNameMapper.mapToResponse(roleName)).toThrow('invalid role name from domain');
 		});
 	});
 	describe('mapToDomain (from query)', () => {
@@ -43,7 +43,7 @@ describe('[RoleNameMapper]', () => {
 		});
 		it('should fail for invalid input', () => {
 			const roleName = 'foo' as unknown as FilterRoleType;
-			expect(() => RoleNameMapper.mapToDomain(roleName)).toThrowError('invalid role name from query');
+			expect(() => RoleNameMapper.mapToDomain(roleName)).toThrow('invalid role name from query');
 		});
 	});
 });

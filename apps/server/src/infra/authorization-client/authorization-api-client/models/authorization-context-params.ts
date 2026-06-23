@@ -1,5 +1,5 @@
 /* tslint:disable */
-/* eslint-disable */
+
 /**
  * Schulcloud-Verbund-Software Server API
  * This is v3 of Schulcloud-Verbund-Software Server. Checkout /docs for v1.

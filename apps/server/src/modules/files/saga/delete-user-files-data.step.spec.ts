@@ -191,7 +191,7 @@ describe(DeleteUserFilesDataStep.name, () => {
 
 			expect(result).toEqual(expectedResultWhenFilesNotExists);
 
-			expect(repo.findByOwnerUserId).toBeCalledWith(userId);
+			expect(repo.findByOwnerUserId).toHaveBeenCalledWith(userId);
 		});
 
 		describe('should properly mark files for deletion', () => {
@@ -204,8 +204,8 @@ describe(DeleteUserFilesDataStep.name, () => {
 				expect(result).toEqual(expectedResultWhenOneFileExists);
 				verifyEntityChanges(entity1);
 
-				expect(repo.findByOwnerUserId).toBeCalledWith(userId);
-				expect(repo.save).toBeCalledWith([entity1]);
+				expect(repo.findByOwnerUserId).toHaveBeenCalledWith(userId);
+				expect(repo.save).toHaveBeenCalledWith([entity1]);
 			});
 
 			it('in case of many files owned by the user', async () => {
@@ -217,8 +217,8 @@ describe(DeleteUserFilesDataStep.name, () => {
 				expect(result).toEqual(expectedResultWhenManyFilesExists);
 				entities.forEach((entity) => verifyEntityChanges(entity));
 
-				expect(repo.findByOwnerUserId).toBeCalledWith(userId);
-				expect(repo.save).toBeCalledWith(entities);
+				expect(repo.findByOwnerUserId).toHaveBeenCalledWith(userId);
+				expect(repo.save).toHaveBeenCalledWith(entities);
 			});
 		});
 	});
@@ -293,7 +293,7 @@ describe(DeleteUserFilesDataStep.name, () => {
 
 			expect(result).toEqual(expectedResultWhenFilesNotExists);
 
-			expect(repo.findByPermissionRefIdOrCreatorId).toBeCalledWith(userId);
+			expect(repo.findByPermissionRefIdOrCreatorId).toHaveBeenCalledWith(userId);
 		});
 
 		describe('should properly remove user permissions, creatorId reference', () => {
@@ -311,8 +311,8 @@ describe(DeleteUserFilesDataStep.name, () => {
 				expect(entity3.permissions).not.toContain(userPermission);
 				expect(entity2._creatorId).toBe(undefined);
 
-				expect(repo.findByPermissionRefIdOrCreatorId).toBeCalledWith(userId);
-				expect(repo.save).toBeCalledWith([entity1, entity2, entity3]);
+				expect(repo.findByPermissionRefIdOrCreatorId).toHaveBeenCalledWith(userId);
+				expect(repo.save).toHaveBeenCalledWith([entity1, entity2, entity3]);
 			});
 
 			it('in case of many files accessible or created by given user', async () => {
@@ -340,8 +340,8 @@ describe(DeleteUserFilesDataStep.name, () => {
 					expect(entities[i].permissions).toContain(yetAnotherUserPermission);
 				}
 
-				expect(repo.findByPermissionRefIdOrCreatorId).toBeCalledWith(userId);
-				expect(repo.save).toBeCalledWith(entities);
+				expect(repo.findByPermissionRefIdOrCreatorId).toHaveBeenCalledWith(userId);
+				expect(repo.save).toHaveBeenCalledWith(entities);
 			});
 		});
 	});

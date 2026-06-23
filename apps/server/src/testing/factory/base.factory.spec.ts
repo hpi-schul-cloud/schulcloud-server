@@ -36,8 +36,8 @@ describe('BaseFactory', () => {
 				};
 			});
 			factory.build();
-			expect(Constructor).toBeCalledTimes(1);
-			expect(Constructor).toBeCalledWith({ email: 'joe@example.com', roles: ['member'] });
+			expect(Constructor).toHaveBeenCalledTimes(1);
+			expect(Constructor).toHaveBeenCalledWith({ email: 'joe@example.com', roles: ['member'] });
 		});
 
 		it('should create an instance of the class', () => {
@@ -175,7 +175,7 @@ describe('BaseFactory', () => {
 				};
 			});
 			factory.buildList(3);
-			expect(Constructor).toBeCalledTimes(3);
+			expect(Constructor).toHaveBeenCalledTimes(3);
 		});
 
 		it('should create an instance of the class for each item', () => {

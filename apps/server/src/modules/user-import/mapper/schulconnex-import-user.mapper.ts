@@ -18,7 +18,7 @@ export class SchulconnexImportUserMapper {
 			const role: RoleName | undefined = SchulconnexResponseMapper.mapSchulconnexRoleToRoleName(externalUser);
 
 			const groups: SchulconnexGruppenResponse[] | undefined = externalUser.personenkontexte[0]?.gruppen?.filter(
-				(group) => group.gruppe.typ === SchulconnexGroupType.CLASS
+				(group) => (group.gruppe.typ as SchulconnexGroupType) === SchulconnexGroupType.CLASS
 			);
 
 			const importUser: ImportUser = new ImportUser({

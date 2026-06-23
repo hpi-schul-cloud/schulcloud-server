@@ -39,7 +39,7 @@ export class TspClientFactory {
 			new Configuration({
 				// accessToken has to be a function otherwise it will be called once
 				// and will not be refresh the access token when it expires
-				apiKey: () => this.getAccessToken(params),
+				apiKey: (): Promise<string> => this.getAccessToken(params),
 				basePath: this.baseUrl,
 			})
 		);

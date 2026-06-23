@@ -96,13 +96,10 @@ export abstract class News extends BaseEntityWithTimestamps {
 	public static createInstance(targetModel: NewsTargetModel, props: NewsProperties): News {
 		let news: News;
 		if (targetModel === NewsTargetModel.Course) {
-			// eslint-disable-next-line @typescript-eslint/no-use-before-define
 			news = new CourseNews(props);
 		} else if (targetModel === NewsTargetModel.Team) {
-			// eslint-disable-next-line @typescript-eslint/no-use-before-define
 			news = new TeamNews(props);
 		} else {
-			// eslint-disable-next-line @typescript-eslint/no-use-before-define
 			news = new SchoolNews(props);
 		}
 

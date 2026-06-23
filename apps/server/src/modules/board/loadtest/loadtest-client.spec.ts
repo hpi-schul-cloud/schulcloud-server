@@ -5,15 +5,17 @@ import { UpdateContentElementMessageParams } from '../gateway/dto';
 import { LoadtestClient } from './loadtest-client';
 import { SocketConnection } from './socket-connection';
 
-jest.mock('./socket-connection');
-
 describe('LoadtestClient', () => {
 	let loadtestClient: LoadtestClient;
 	let socketConnection: SocketConnection;
+	let emitAndWaitMock: jest.Mock;
 	const boardId = 'board123';
 
 	beforeEach(() => {
-		socketConnection = new SocketConnection({ path: '', baseUrl: '', token: '' }, console.log);
+		emitAndWaitMock = jest.fn();
+		socketConnection = {
+			emitAndWait: emitAndWaitMock,
+		} as unknown as SocketConnection;
 
 		loadtestClient = new LoadtestClient(socketConnection, boardId);
 	});
@@ -24,11 +26,11 @@ describe('LoadtestClient', () => {
 
 	describe('fetchBoard', () => {
 		it('should fetch the board', async () => {
-			socketConnection.emitAndWait = jest.fn();
+			emitAndWaitMock.mockResolvedValueOnce({});
 
 			await loadtestClient.fetchBoard();
 
-			expect(socketConnection.emitAndWait).toHaveBeenCalledWith('fetch-board', expect.objectContaining({ boardId }));
+			expect(emitAndWaitMock).toHaveBeenCalledWith('fetch-board', expect.objectContaining({ boardId }));
 		});
 	});
 
@@ -36,65 +38,65 @@ describe('LoadtestClient', () => {
 		it('should fetch a card', async () => {
 			const cardId = 'my-card-id';
 			const payload = { cardIds: [cardId] };
-			socketConnection.emitAndWait = jest.fn().mockResolvedValueOnce({ newCard: { id: cardId } });
+			emitAndWaitMock.mockResolvedValueOnce({ newCard: { id: cardId } });
 
 			await loadtestClient.fetchCard(payload);
 
-			expect(socketConnection.emitAndWait).toHaveBeenCalledWith('fetch-card', payload);
+			expect(emitAndWaitMock).toHaveBeenCalledWith('fetch-card', payload);
 		});
 	});
 
 	describe('createColumn', () => {
 		it('should create a column', async () => {
-			socketConnection.emitAndWait = jest.fn().mockResolvedValueOnce({ newColumn: { id: 'column123' } });
+			emitAndWaitMock.mockResolvedValueOnce({ newColumn: { id: 'column123' } });
 
 			await loadtestClient.createColumn();
 
-			expect(socketConnection.emitAndWait).toHaveBeenCalledWith('create-column', { boardId });
+			expect(emitAndWaitMock).toHaveBeenCalledWith('create-column', { boardId });
 		});
 	});
 
 	describe('createCard', () => {
 		it('should create a card', async () => {
 			const payload = { title: 'New Card', columnId: 'column123' };
-			socketConnection.emitAndWait = jest.fn().mockResolvedValueOnce({ newCard: { id: 'card123' } });
+			emitAndWaitMock.mockResolvedValueOnce({ newCard: { id: 'card123' } });
 
 			await loadtestClient.createCard(payload);
 
-			expect(socketConnection.emitAndWait).toHaveBeenCalledWith('create-card', payload);
+			expect(emitAndWaitMock).toHaveBeenCalledWith('create-card', payload);
 		});
 	});
 
 	describe('deleteColumn', () => {
 		it('should delete a column', async () => {
 			const columnId = 'column123';
-			socketConnection.emitAndWait = jest.fn().mockResolvedValueOnce({ columnId });
+			emitAndWaitMock.mockResolvedValueOnce({ columnId });
 
 			await loadtestClient.deleteColumn({ columnId });
 
-			expect(socketConnection.emitAndWait).toHaveBeenCalledWith('delete-column', { columnId });
+			expect(emitAndWaitMock).toHaveBeenCalledWith('delete-column', { columnId });
 		});
 	});
 
 	describe('deleteCard', () => {
 		it('should delete a card', async () => {
 			const payload = { cardId: 'card123' };
-			socketConnection.emitAndWait = jest.fn().mockResolvedValueOnce(payload);
+			emitAndWaitMock.mockResolvedValueOnce(payload);
 
 			await loadtestClient.deleteCard(payload);
 
-			expect(socketConnection.emitAndWait).toHaveBeenCalledWith('delete-card', payload);
+			expect(emitAndWaitMock).toHaveBeenCalledWith('delete-card', payload);
 		});
 	});
 
 	describe('deleteElement', () => {
 		it('should delete an element', async () => {
 			const payload = { cardId: 'my-card-id', elementId: 'element123' };
-			socketConnection.emitAndWait = jest.fn().mockResolvedValueOnce(payload);
+			emitAndWaitMock.mockResolvedValueOnce(payload);
 
 			await loadtestClient.deleteElement(payload);
 
-			expect(socketConnection.emitAndWait).toHaveBeenCalledWith('delete-element', payload);
+			expect(emitAndWaitMock).toHaveBeenCalledWith('delete-element', payload);
 		});
 	});
 
@@ -102,11 +104,11 @@ describe('LoadtestClient', () => {
 		it('should create an element', async () => {
 			const cardId = 'my-card-id';
 			const payload = { cardId, type: ContentElementType.RICH_TEXT, content: 'Hello World' };
-			socketConnection.emitAndWait = jest.fn().mockResolvedValueOnce({ newElement: { id: 'element123' } });
+			emitAndWaitMock.mockResolvedValueOnce({ newElement: { id: 'element123' } });
 
 			await loadtestClient.createElement(payload);
 
-			expect(socketConnection.emitAndWait).toHaveBeenCalledWith('create-element', payload);
+			expect(emitAndWaitMock).toHaveBeenCalledWith('create-element', payload);
 		});
 	});
 
@@ -116,11 +118,11 @@ describe('LoadtestClient', () => {
 				boardId: 'board123',
 				newTitle: 'New Board Title',
 			};
-			socketConnection.emitAndWait = jest.fn();
+			emitAndWaitMock.mockResolvedValueOnce({});
 
 			await loadtestClient.updateBoardTitle(payload);
 
-			expect(socketConnection.emitAndWait).toHaveBeenCalledWith('update-board-title', payload);
+			expect(emitAndWaitMock).toHaveBeenCalledWith('update-board-title', payload);
 		});
 	});
 
@@ -130,22 +132,22 @@ describe('LoadtestClient', () => {
 				columnId: 'column123',
 				newTitle: 'New Column Title',
 			};
-			socketConnection.emitAndWait = jest.fn();
+			emitAndWaitMock.mockResolvedValueOnce({});
 
 			await loadtestClient.updateColumnTitle(payload);
 
-			expect(socketConnection.emitAndWait).toHaveBeenCalledWith('update-column-title', payload);
+			expect(emitAndWaitMock).toHaveBeenCalledWith('update-column-title', payload);
 		});
 	});
 
 	describe('updateCardTitle', () => {
 		it('should update the card title', async () => {
 			const payload = { cardId: 'card123', newTitle: 'New Card Title' };
-			socketConnection.emitAndWait = jest.fn();
+			emitAndWaitMock.mockResolvedValueOnce({});
 
 			await loadtestClient.updateCardTitle(payload);
 
-			expect(socketConnection.emitAndWait).toHaveBeenCalledWith('update-card-title', payload);
+			expect(emitAndWaitMock).toHaveBeenCalledWith('update-card-title', payload);
 		});
 	});
 
@@ -161,11 +163,11 @@ describe('LoadtestClient', () => {
 					},
 				},
 			} as UpdateContentElementMessageParams;
-			socketConnection.emitAndWait = jest.fn();
+			emitAndWaitMock.mockResolvedValueOnce({});
 
 			await loadtestClient.updateElement(payload);
 
-			expect(socketConnection.emitAndWait).toHaveBeenCalledWith('update-element', payload);
+			expect(emitAndWaitMock).toHaveBeenCalledWith('update-element', payload);
 		});
 	});
 
@@ -173,15 +175,12 @@ describe('LoadtestClient', () => {
 		it('should create and update a link element', async () => {
 			const cardId = 'card123';
 			const content = { url: 'https://example.com', title: 'Example' };
-			socketConnection.emitAndWait = jest.fn().mockResolvedValueOnce({ newElement: { elementId: 'element123' } });
+			emitAndWaitMock.mockResolvedValueOnce({ newElement: { elementId: 'element123' } });
 
 			await loadtestClient.createAndUpdateLinkElement(cardId, content);
 
-			expect(socketConnection.emitAndWait).toHaveBeenCalledWith(
-				'create-element',
-				expect.objectContaining({ cardId, type: 'link' })
-			);
-			expect(socketConnection.emitAndWait).toHaveBeenCalledWith('update-element', expect.any(Object));
+			expect(emitAndWaitMock).toHaveBeenCalledWith('create-element', expect.objectContaining({ cardId, type: 'link' }));
+			expect(emitAndWaitMock).toHaveBeenCalledWith('update-element', expect.any(Object));
 		});
 	});
 
@@ -191,20 +190,20 @@ describe('LoadtestClient', () => {
 				const cardId = 'card123';
 				const text = 'Lorem ipsum';
 				const simulateTyping = true;
-				socketConnection.emitAndWait = jest.fn().mockResolvedValueOnce({ newElement: { elementId: 'element123' } });
+				emitAndWaitMock.mockResolvedValueOnce({ newElement: { elementId: 'element123' } });
 
 				await loadtestClient.createAndUpdateTextElement(cardId, text, simulateTyping);
 
-				expect(socketConnection.emitAndWait).toHaveBeenCalledWith(
+				expect(emitAndWaitMock).toHaveBeenCalledWith(
 					'create-element',
 					expect.objectContaining({
 						cardId,
 						type: ContentElementType.RICH_TEXT,
 					})
 				);
-				expect(socketConnection.emitAndWait).toHaveBeenCalledTimes(2);
-				expect(socketConnection.emitAndWait).toHaveBeenNthCalledWith(1, 'create-element', expect.any(Object));
-				expect(socketConnection.emitAndWait).toHaveBeenNthCalledWith(2, 'update-element', expect.any(Object));
+				expect(emitAndWaitMock).toHaveBeenCalledTimes(2);
+				expect(emitAndWaitMock).toHaveBeenNthCalledWith(1, 'create-element', expect.any(Object));
+				expect(emitAndWaitMock).toHaveBeenNthCalledWith(2, 'update-element', expect.any(Object));
 			});
 		});
 
@@ -213,21 +212,21 @@ describe('LoadtestClient', () => {
 				const cardId = 'card123';
 				const text = 'Lorem ipsum dolor sit amet consectetur';
 				const simulateTyping = true;
-				socketConnection.emitAndWait = jest.fn().mockResolvedValueOnce({ newElement: { elementId: 'element123' } });
+				emitAndWaitMock.mockResolvedValueOnce({ newElement: { elementId: 'element123' } });
 
 				await loadtestClient.createAndUpdateTextElement(cardId, text, simulateTyping);
 
-				expect(socketConnection.emitAndWait).toHaveBeenCalledWith(
+				expect(emitAndWaitMock).toHaveBeenCalledWith(
 					'create-element',
 					expect.objectContaining({
 						cardId,
 						type: ContentElementType.RICH_TEXT,
 					})
 				);
-				expect(socketConnection.emitAndWait).toHaveBeenCalledTimes(3);
-				expect(socketConnection.emitAndWait).toHaveBeenNthCalledWith(1, 'create-element', expect.any(Object));
-				expect(socketConnection.emitAndWait).toHaveBeenNthCalledWith(2, 'update-element', expect.any(Object));
-				expect(socketConnection.emitAndWait).toHaveBeenNthCalledWith(3, 'update-element', expect.any(Object));
+				expect(emitAndWaitMock).toHaveBeenCalledTimes(3);
+				expect(emitAndWaitMock).toHaveBeenNthCalledWith(1, 'create-element', expect.any(Object));
+				expect(emitAndWaitMock).toHaveBeenNthCalledWith(2, 'update-element', expect.any(Object));
+				expect(emitAndWaitMock).toHaveBeenNthCalledWith(3, 'update-element', expect.any(Object));
 			});
 		});
 
@@ -236,11 +235,11 @@ describe('LoadtestClient', () => {
 				const cardId = 'card123';
 				const text = 'Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt.';
 				const simulateTyping = false;
-				socketConnection.emitAndWait = jest.fn().mockResolvedValueOnce({ newElement: { elementId: 'element123' } });
+				emitAndWaitMock.mockResolvedValueOnce({ newElement: { elementId: 'element123' } });
 
 				await loadtestClient.createAndUpdateTextElement(cardId, text, simulateTyping);
 
-				expect(socketConnection.emitAndWait).toHaveBeenCalledWith(
+				expect(emitAndWaitMock).toHaveBeenCalledWith(
 					'create-element',
 					expect.objectContaining({
 						cardId,
@@ -248,9 +247,9 @@ describe('LoadtestClient', () => {
 					})
 				);
 
-				expect(socketConnection.emitAndWait).toHaveBeenCalledTimes(2);
-				expect(socketConnection.emitAndWait).toHaveBeenNthCalledWith(1, 'create-element', expect.any(Object));
-				expect(socketConnection.emitAndWait).toHaveBeenNthCalledWith(2, 'update-element', expect.any(Object));
+				expect(emitAndWaitMock).toHaveBeenCalledTimes(2);
+				expect(emitAndWaitMock).toHaveBeenNthCalledWith(1, 'create-element', expect.any(Object));
+				expect(emitAndWaitMock).toHaveBeenNthCalledWith(2, 'update-element', expect.any(Object));
 			});
 		});
 	});

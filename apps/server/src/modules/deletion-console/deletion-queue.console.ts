@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-assignment */
 import { Console, Command, CommandOption } from 'nestjs-console';
 import { ConsoleWriterService } from '@infra/console';
 import { PushDeletionRequestsOptions, UnsyncedEntitiesOptions } from './interface';

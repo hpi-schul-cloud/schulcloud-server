@@ -89,7 +89,7 @@ describe(SystemRule.name, () => {
 			it('should return false', () => {
 				const { user } = setup();
 
-				const result = rule.isApplicable(user, {} as unknown as System);
+				const result = rule.isApplicable(user, {});
 
 				expect(result).toEqual(false);
 			});

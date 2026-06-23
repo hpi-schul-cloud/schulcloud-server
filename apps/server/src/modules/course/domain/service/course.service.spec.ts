@@ -51,7 +51,7 @@ describe('CourseService', () => {
 
 			await expect(courseService.findById(courseId)).resolves.not.toThrow();
 
-			expect(courseRepo.findById).toBeCalledWith(courseId);
+			expect(courseRepo.findById).toHaveBeenCalledWith(courseId);
 		});
 	});
 
@@ -71,7 +71,7 @@ describe('CourseService', () => {
 
 			await expect(courseService.findAllByUserId(userId, schoolId, filter, options)).resolves.not.toThrow();
 
-			expect(courseRepo.findAllByUserId).toBeCalledWith(userId, schoolId, filter, options);
+			expect(courseRepo.findAllByUserId).toHaveBeenCalledWith(userId, schoolId, filter, options);
 		});
 	});
 
@@ -90,7 +90,7 @@ describe('CourseService', () => {
 
 				await expect(courseService.create(course)).resolves.not.toThrow();
 
-				expect(courseRepo.createCourse).toBeCalledWith(course);
+				expect(courseRepo.createCourse).toHaveBeenCalledWith(course);
 			});
 		});
 	});
@@ -110,7 +110,7 @@ describe('CourseService', () => {
 
 				await expect(courseService.save(course)).resolves.not.toThrow();
 
-				expect(courseRepo.save).toBeCalledWith(course);
+				expect(courseRepo.save).toHaveBeenCalledWith(course);
 			});
 		});
 	});
