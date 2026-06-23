@@ -51,7 +51,8 @@ export class ColumnUc {
 	public async createCard(
 		userId: EntityId,
 		columnId: EntityId,
-		requiredEmptyElements: ContentElementType[] = []
+		requiredEmptyElements: ContentElementType[] = [],
+		position?: number
 	): Promise<Card> {
 		const column = await this.boardNodeService.findByClassAndId(Column, columnId);
 		const user = await this.authorizationService.getUserWithPermissions(userId);
@@ -62,7 +63,7 @@ export class ColumnUc {
 		const elements = requiredEmptyElements.map((type) => this.boardNodeFactory.buildContentElement(type));
 		const card = this.boardNodeFactory.buildCard(elements);
 
-		await this.boardNodeService.addToParent(column, card);
+		await this.boardNodeService.addToParent(column, card, position);
 
 		return card;
 	}
