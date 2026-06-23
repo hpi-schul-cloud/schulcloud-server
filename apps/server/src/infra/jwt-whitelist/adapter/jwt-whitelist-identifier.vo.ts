@@ -1,8 +1,13 @@
-export class JwtWhitelistIdentifier {
-	private readonly _value: string;
+import { ValueObject } from '@shared/domain/value-object.decorator';
+import { IsString } from 'class-validator';
 
-	private constructor(accountId: string, jti: string) {
-		this._value = `jwt:${accountId}:${jti}`;
+@ValueObject()
+export class JwtWhitelistIdentifier {
+	@IsString()
+	public readonly value: string;
+
+	constructor(accountId: string, jti: string) {
+		this.value = `jwt:${accountId}:${jti}`;
 	}
 
 	public static forJti(accountId: string, jti: string): JwtWhitelistIdentifier {
@@ -11,9 +16,5 @@ export class JwtWhitelistIdentifier {
 
 	public static forAccount(accountId: string): JwtWhitelistIdentifier {
 		return new JwtWhitelistIdentifier(accountId, '*');
-	}
-
-	public toString(): string {
-		return this._value;
 	}
 }

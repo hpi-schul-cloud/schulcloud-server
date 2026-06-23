@@ -6,7 +6,6 @@ const { Configuration } = commons;
 const ignorePathsList = [
 	/|(.*\/accounts\/api($|\/$))/,
 	/|(.*\/accounts\/confirm($|\/$))/,
-	/|(.*\/accounts\/jwtTimer($|\/$))/, // todo: proper api-integrationtests with redis
 	/|(.*\/alert($|\/$))/,
 	/|(.*\/alert\/api($|\/$))/,
 	/|(.*\/authentication($|\/$))/, // todo: make sure external systems work with spec

@@ -176,7 +176,7 @@ describe('Me Controller (API)', () => {
 						await em.persist([studentAccount, studentUser, system]).flush();
 						em.clear();
 
-						const loggedInClient = testApiClient.loginByUser(studentAccount, studentUser, jwtConfig, {
+						const loggedInClient = await testApiClient.loginByUser(studentAccount, studentUser, jwtConfig, {
 							isExternalUser: true,
 							systemId: system.id,
 						});
@@ -261,7 +261,7 @@ describe('Me Controller (API)', () => {
 				await serviceAccountEm.persist([serviceAccount, serviceAccountUser]).flush();
 				serviceAccountEm.clear();
 
-				const loggedInClient = serviceAccountTestApiClient.loginByUser(
+				const loggedInClient = await serviceAccountTestApiClient.loginByUser(
 					serviceAccount,
 					serviceAccountUser,
 					serviceAccountJwtConfig,

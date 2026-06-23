@@ -19,13 +19,14 @@ import { ForbiddenException, HttpStatus, INestApplication } from '@nestjs/common
 import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
+import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { TEST_JWT_CONFIG_TOKEN, TestJwtModuleConfig } from '@testing/test-jwt-module.config';
 import { Readable } from 'node:stream';
 import { DownloadArchiveService, FileOwnerModel, LegacyFileStorageAdapter } from '../../domain';
 import { SignedUrlResponseVo } from '../../domain/vo';
 import { LEGACY_FILE_ARCHIVE_CONFIG_TOKEN, LegacyFileArchiveConfig } from '../../legacy-file-archive.config';
-import { accountForLoginFactory, fileDomainFactory, userForLoginFactory } from '../../testing';
+import { fileDomainFactory, userForLoginFactory } from '../../testing';
 import { DownloadArchiveUC } from '../download-archive.uc';
 import { LegacyFileArchiveController } from '../legacy-file-archive.controller';
 
@@ -109,17 +110,17 @@ describe('DownloadArchive Controller (API)', () => {
 		});
 
 		describe('when ownerId in params is not a mongo id', () => {
-			const setup = () => {
-				const studentAccount = accountForLoginFactory.build();
-				const studentUser = userForLoginFactory.build();
+			const setup = async () => {
+				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+				await em.persist([studentUser, studentAccount]).flush();
 
-				const loggedInClient = testApiClient.loginByUser(studentAccount, studentUser, jwtConfig);
+				const loggedInClient = await testApiClient.loginByUser(studentAccount, studentUser, jwtConfig);
 
 				return { loggedInClient };
 			};
 
 			it('should return 400', async () => {
-				const { loggedInClient } = setup();
+				const { loggedInClient } = await setup();
 				const params = {
 					ownerId: 'invalid-id',
 					ownerType: FileOwnerModel.TEAMS,
@@ -138,17 +139,17 @@ describe('DownloadArchive Controller (API)', () => {
 		});
 
 		describe('when ownerType is invalid', () => {
-			const setup = () => {
-				const studentAccount = accountForLoginFactory.build();
-				const studentUser = userForLoginFactory.build();
+			const setup = async () => {
+				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+				await em.persist([studentUser, studentAccount]).flush();
 
-				const loggedInClient = testApiClient.loginByUser(studentAccount, studentUser, jwtConfig);
+				const loggedInClient = await testApiClient.loginByUser(studentAccount, studentUser, jwtConfig);
 
 				return { loggedInClient };
 			};
 
 			it('should return 400', async () => {
-				const { loggedInClient } = setup();
+				const { loggedInClient } = await setup();
 				const params = {
 					ownerId: new ObjectId().toHexString(),
 					ownerType: 'invalid-type',
@@ -172,11 +173,11 @@ describe('DownloadArchive Controller (API)', () => {
 		});
 
 		describe('when feature is not enabled', () => {
-			const setup = () => {
-				const studentAccount = accountForLoginFactory.build();
-				const studentUser = userForLoginFactory.build();
+			const setup = async () => {
+				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+				await em.persist([studentUser, studentAccount]).flush();
 
-				const loggedInClient = testApiClient.loginByUser(studentAccount, studentUser, jwtConfig);
+				const loggedInClient = await testApiClient.loginByUser(studentAccount, studentUser, jwtConfig);
 
 				config.featureTeamArchiveDownload = false;
 
@@ -184,7 +185,7 @@ describe('DownloadArchive Controller (API)', () => {
 			};
 
 			it('should return 501', async () => {
-				const { loggedInClient } = setup();
+				const { loggedInClient } = await setup();
 				const params = {
 					ownerId: new ObjectId().toHexString(),
 					ownerType: FileOwnerModel.TEAMS,
@@ -200,20 +201,20 @@ describe('DownloadArchive Controller (API)', () => {
 		});
 
 		describe('when user does not have permission to access the team', () => {
-			const setup = () => {
+			const setup = async () => {
 				const teamId = new ObjectId().toHexString();
-				const studentAccount = accountForLoginFactory.build();
-				const studentUser = userForLoginFactory.build();
+				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+				await em.persist([studentUser, studentAccount]).flush();
 
 				authorizationClient.checkPermissionsByReference.mockRejectedValueOnce(new ForbiddenException());
 
-				const loggedInClient = testApiClient.loginByUser(studentAccount, studentUser, jwtConfig);
+				const loggedInClient = await testApiClient.loginByUser(studentAccount, studentUser, jwtConfig);
 
 				return { teamId, loggedInClient };
 			};
 
 			it('should return 403', async () => {
-				const { teamId, loggedInClient } = setup();
+				const { teamId, loggedInClient } = await setup();
 				const params = {
 					ownerId: teamId,
 					ownerType: FileOwnerModel.TEAMS,
@@ -227,19 +228,19 @@ describe('DownloadArchive Controller (API)', () => {
 		});
 
 		describe('when user does not have permission to access the course', () => {
-			const setup = () => {
-				const studentAccount = accountForLoginFactory.build();
-				const studentUser = userForLoginFactory.build();
+			const setup = async () => {
+				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+				await em.persist([studentUser, studentAccount]).flush();
 
 				authorizationClient.checkPermissionsByReference.mockRejectedValueOnce(new ForbiddenException());
 
-				const loggedInClient = testApiClient.loginByUser(studentAccount, studentUser, jwtConfig);
+				const loggedInClient = await testApiClient.loginByUser(studentAccount, studentUser, jwtConfig);
 
 				return { loggedInClient };
 			};
 
 			it('should return 403', async () => {
-				const { loggedInClient } = setup();
+				const { loggedInClient } = await setup();
 				const params = {
 					ownerId: new ObjectId().toHexString(),
 					ownerType: FileOwnerModel.COURSE,
@@ -253,20 +254,20 @@ describe('DownloadArchive Controller (API)', () => {
 		});
 
 		describe('when user does not have permission to access another user', () => {
-			const setup = () => {
-				const studentAccount = accountForLoginFactory.build();
-				const studentUser = userForLoginFactory.build();
+			const setup = async () => {
+				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 				const otherStudentUser = userForLoginFactory.build();
+				await em.persist([studentUser, studentAccount]).flush();
 
 				authorizationClient.checkPermissionsByReference.mockRejectedValueOnce(new ForbiddenException());
 
-				const loggedInClient = testApiClient.loginByUser(studentAccount, studentUser, jwtConfig);
+				const loggedInClient = await testApiClient.loginByUser(studentAccount, studentUser, jwtConfig);
 
 				return { otherUserId: otherStudentUser.id, loggedInClient };
 			};
 
 			it('should return 403', async () => {
-				const { otherUserId, loggedInClient } = setup();
+				const { otherUserId, loggedInClient } = await setup();
 				const params = {
 					ownerId: new ObjectId(otherUserId).toHexString(),
 					ownerType: FileOwnerModel.USER,
@@ -280,12 +281,12 @@ describe('DownloadArchive Controller (API)', () => {
 		});
 
 		describe('when user successfully downloads team archive', () => {
-			const setup = () => {
-				const teacherAccount = accountForLoginFactory.build();
-				const teacherUser = userForLoginFactory.build();
+			const setup = async () => {
+				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
+				await em.persist([teacherUser, teacherAccount]).flush();
 				const teamId = new ObjectId().toHexString();
 
-				const loggedInClient = testApiClient.loginByUser(teacherAccount, teacherUser, jwtConfig);
+				const loggedInClient = await testApiClient.loginByUser(teacherAccount, teacherUser, jwtConfig);
 				const archiveName = 'team-files';
 
 				const storageProvider = storageProviderFactory.buildWithId({ region: 'us-east-1' });
@@ -311,7 +312,7 @@ describe('DownloadArchive Controller (API)', () => {
 			};
 
 			it('should return 200 with archive file', async () => {
-				const { teamId, loggedInClient, archiveName } = setup();
+				const { teamId, loggedInClient, archiveName } = await setup();
 				const params = {
 					ownerId: teamId,
 					ownerType: FileOwnerModel.TEAMS,
@@ -327,11 +328,11 @@ describe('DownloadArchive Controller (API)', () => {
 		});
 
 		describe('when user successfully downloads course archive', () => {
-			const setup = () => {
-				const teacherAccount = accountForLoginFactory.build();
-				const teacherUser = userForLoginFactory.build();
+			const setup = async () => {
+				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
+				await em.persist([teacherUser, teacherAccount]).flush();
 
-				const loggedInClient = testApiClient.loginByUser(teacherAccount, teacherUser, jwtConfig);
+				const loggedInClient = await testApiClient.loginByUser(teacherAccount, teacherUser, jwtConfig);
 				const archiveName = 'course-files';
 
 				const storageProvider = storageProviderFactory.buildWithId({ region: 'us-east-1' });
@@ -360,7 +361,7 @@ describe('DownloadArchive Controller (API)', () => {
 			};
 
 			it('should return 200 with archive file', async () => {
-				const { courseId, loggedInClient, archiveName } = setup();
+				const { courseId, loggedInClient, archiveName } = await setup();
 				const params = {
 					ownerId: courseId,
 					ownerType: FileOwnerModel.COURSE,
@@ -376,11 +377,11 @@ describe('DownloadArchive Controller (API)', () => {
 		});
 
 		describe('when user successfully downloads user archive', () => {
-			const setup = () => {
-				const teacherAccount = accountForLoginFactory.build();
-				const teacherUser = userForLoginFactory.build();
+			const setup = async () => {
+				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
+				await em.persist([teacherUser, teacherAccount]).flush();
 
-				const loggedInClient = testApiClient.loginByUser(teacherAccount, teacherUser, jwtConfig);
+				const loggedInClient = await testApiClient.loginByUser(teacherAccount, teacherUser, jwtConfig);
 				const archiveName = 'user-files';
 
 				const storageProvider = storageProviderFactory.buildWithId({ region: 'us-east-1' });
@@ -409,7 +410,7 @@ describe('DownloadArchive Controller (API)', () => {
 			};
 
 			it('should return 200 with archive file', async () => {
-				const { userId, loggedInClient, archiveName } = setup();
+				const { userId, loggedInClient, archiveName } = await setup();
 				const params = {
 					ownerId: userId,
 					ownerType: FileOwnerModel.USER,

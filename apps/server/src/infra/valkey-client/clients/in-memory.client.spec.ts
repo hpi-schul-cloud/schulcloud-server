@@ -6,9 +6,9 @@ describe(InMemoryClient.name, () => {
 	let client: InMemoryClient;
 	let logger: DeepMocked<Logger>;
 
-	beforeEach(() => {
+	beforeAll(() => {
 		logger = createMock<Logger>();
-		client = new InMemoryClient(logger);
+		client = InMemoryClient.getInstance(logger);
 	});
 
 	describe('SET', () => {

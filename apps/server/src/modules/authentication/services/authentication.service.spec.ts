@@ -1,6 +1,7 @@
 import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { JwtPayloadBuilder } from '@infra/auth-guard';
+import { jwtPayloadFactory } from '@infra/auth-guard/testing';
 import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { JwtWhitelistAdapter } from '@infra/jwt-whitelist';
 import { Account, AccountService } from '@modules/account';
@@ -188,7 +189,7 @@ describe(AuthenticationService.name, () => {
 	describe('removeJwtFromWhitelist is called', () => {
 		describe('when a valid jwt is provided', () => {
 			it('should call the jwtValidationAdapter to remove the jwt', async () => {
-				const jwtToken = { sub: 'sub', accountId: 'accountId', jti: 'jti' };
+				const jwtToken = jwtPayloadFactory.build();
 				jest.spyOn(jwt, 'decode').mockReturnValue(jwtToken);
 
 				await authenticationService.removeJwtFromWhitelist('jwt');
@@ -198,10 +199,10 @@ describe(AuthenticationService.name, () => {
 		});
 
 		describe('when a non-valid jwt is provided', () => {
-			it('should do nothing', async () => {
+			it('should throw an error', async () => {
 				jest.spyOn(jwt, 'decode').mockReturnValue(null);
 
-				await authenticationService.removeJwtFromWhitelist('jwt');
+				await expect(authenticationService.removeJwtFromWhitelist('jwt')).rejects.toThrow('Invalid JWT token');
 
 				expect(jwtWhitelistAdapter.removeFromWhitelist).not.toHaveBeenCalled();
 			});
