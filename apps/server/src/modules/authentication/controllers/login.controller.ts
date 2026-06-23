@@ -1,4 +1,4 @@
-import { CurrentUser, ICurrentUser } from '@infra/auth-guard';
+import { CurrentUser, ICurrentUser, JWT, JwtAuthentication } from '@infra/auth-guard';
 import { Body, Controller, HttpCode, HttpStatus, Post, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
@@ -11,6 +11,7 @@ import {
 	LoginResponse,
 	Oauth2AuthorizationBodyParams,
 	OauthLoginResponse,
+	SessionInfoResponse,
 } from './dto';
 import { LoginResponseMapper } from './mapper/login-response.mapper';
 
@@ -80,7 +81,7 @@ export class LoginController {
 	@HttpCode(HttpStatus.OK)
 	@Post('oauth2')
 	@ApiOperation({ summary: 'Starts the login process for users which are authenticated via OAuth 2.' })
-	@ApiResponse({ status: 200, type: LoginResponse, description: 'Login was successful.' })
+	@ApiResponse({ status: 200, type: OauthLoginResponse, description: 'Login was successful.' })
 	@ApiResponse({ status: 400, type: ValidationError, description: 'Request data has invalid format.' })
 	@ApiResponse({ status: 403, type: ForbiddenOperationError, description: 'Invalid user credentials.' })
 	public async loginOauth2(
@@ -93,5 +94,17 @@ export class LoginController {
 		const oAuthLoginResponse = LoginResponseMapper.mapToOauthLoginResponse(jwtToken, user.externalIdToken);
 
 		return oAuthLoginResponse;
+	}
+	// @JwtAuthentication() decorator extends the session if the token is valid and not close to expiration, otherwise it will return an unauthorized error.
+	@JwtAuthentication()
+	@HttpCode(HttpStatus.OK)
+	@Post('refresh-session')
+	@ApiOperation({ summary: 'Extends the lifetime of the current session.' })
+	@ApiResponse({ status: 200, type: SessionInfoResponse, description: 'Session was successfully extended.' })
+	@ApiResponse({ status: 401, description: 'Unauthorized.' })
+	public async extendSession(@JWT() accessToken: string): Promise<SessionInfoResponse> {
+		const sessionInfoResponse = await this.loginUc.getJwtTtlFromWhitelist(accessToken);
+
+		return sessionInfoResponse;
 	}
 }

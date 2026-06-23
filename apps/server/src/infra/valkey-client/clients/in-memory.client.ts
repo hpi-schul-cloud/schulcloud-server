@@ -1,13 +1,20 @@
 import { Logger } from '@core/logger';
-import EventEmitter from 'events';
+import EventEmitter from 'node:events';
 import { InMemoryLoggable } from '../loggable';
 import { StorageClient } from '../types';
 
 export class InMemoryClient extends EventEmitter implements StorageClient {
-	private readonly store: Record<string, string> = {};
-	private readonly ttlStore: Record<string, { expiresAt: number; ttl: number }> = {};
+	private store: Record<string, string> = {};
+	private ttlStore: Record<string, { expiresAt: number; ttl: number }> = {};
+	private static instance: InMemoryClient | null = null;
 
-	constructor(private readonly logger: Logger) {
+	public static getInstance(logger: Logger): InMemoryClient {
+		InMemoryClient.instance ??= new InMemoryClient(logger);
+
+		return InMemoryClient.instance;
+	}
+
+	private constructor(private readonly logger: Logger) {
 		super();
 	}
 

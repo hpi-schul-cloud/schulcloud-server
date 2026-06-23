@@ -19,22 +19,22 @@ import { ContextExternalToolService } from '@modules/tool/context-external-tool'
 import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import express from 'express';
-import { join } from 'path';
+import { join } from 'node:path';
 
 // register source-map-support for debugging
+import { JwtWhitelistAdapter } from '@infra/jwt-whitelist';
 import { install as sourceMapInstall } from 'source-map-support';
 import { AppStartLoggable, enableOpenApiDocs } from './helpers';
 import { createMetricsServer } from './helpers/metrics.server';
 // eslint-disable-next-line @typescript-eslint/no-require-imports
 import legacyAppPromise = require('../../../../src/app');
-import { JWT_WHITELIST_VALKEY_CLIENT } from '@infra/jwt-whitelist';
 
 type LegacyFeathersApp = express.Application & {
 	setup: () => Promise<void>;
 	services: Record<string, unknown>;
 };
 
-type LegacyAppFactory = (orm: MikroORM, cacheManager: unknown) => Promise<LegacyFeathersApp>;
+type LegacyAppFactory = (orm: MikroORM) => Promise<LegacyFeathersApp>;
 
 async function bootstrap(): Promise<void> {
 	sourceMapInstall();
@@ -46,8 +46,6 @@ async function bootstrap(): Promise<void> {
 	const nestExpressAdapter = new ExpressAdapter(nestExpress);
 	const nestApp = await NestFactory.create(ServerModule, nestExpressAdapter);
 	const orm = nestApp.get(MikroORM);
-	// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
-	const cacheManager = await nestApp.resolve(JWT_WHITELIST_VALKEY_CLIENT);
 
 	// WinstonLogger
 	const legacyLogger = await nestApp.resolve(LegacyLogger);
@@ -57,8 +55,8 @@ async function bootstrap(): Promise<void> {
 	const loggerConfig = await nestApp.resolve<LoggerConfig>(LOGGER_CONFIG_TOKEN);
 	nestApp.use(createRequestLoggerMiddleware(loggerConfig));
 	// load the legacy feathers/express server
-	const createLegacyApp = legacyAppPromise as LegacyAppFactory;
-	const feathersExpress = await createLegacyApp(orm, cacheManager);
+	const createLegacyApp = legacyAppPromise as unknown as LegacyAppFactory;
+	const feathersExpress = await createLegacyApp(orm);
 	await feathersExpress.setup();
 
 	// set reference to legacy app as an express setting so we can
@@ -106,8 +104,8 @@ async function bootstrap(): Promise<void> {
 	feathersExpress.services['nest-context-external-tool-service'] = nestApp.get(ContextExternalToolService);
 
 	feathersExpress.services['nest-system-rule'] = nestApp.get(SystemRule);
-
 	feathersExpress.services['nest-orm'] = orm;
+	feathersExpress.services['nest-jwt-whitelist-adapter'] = await nestApp.resolve(JwtWhitelistAdapter);
 
 	// mount instances
 	const rootExpress = express();

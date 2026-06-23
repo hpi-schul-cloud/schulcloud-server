@@ -30,23 +30,70 @@ describe('FederalStateService', () => {
 	});
 
 	describe('findFederalStateByName', () => {
-		const setup = () => {
-			const federalState: FederalStateEntity = federalStateEntityFactory.build({
-				name: FederalStateNames.NIEDERSACHEN,
-			});
-			federalStateRepo.findByName.mockResolvedValue(federalState);
+		describe('when federal state is found', () => {
+			const setup = () => {
+				const federalState: FederalStateEntity = federalStateEntityFactory.build({
+					name: FederalStateNames.NIEDERSACHEN,
+				});
+				federalStateRepo.findByNameOrFail.mockResolvedValueOnce(federalState);
 
-			return {
-				federalState,
+				return {
+					federalState,
+				};
 			};
-		};
 
-		it('should return a federal state', async () => {
-			const { federalState } = setup();
+			it('should be returned', async () => {
+				const { federalState } = setup();
 
-			const result: FederalStateEntity = await service.findFederalStateByName(federalState.name);
+				const result: FederalStateEntity = await service.findFederalStateByName(federalState.name);
 
-			expect(result).toBeDefined();
+				expect(result).toBeDefined();
+			});
+		});
+	});
+
+	describe('findOrCreateDefaultFederalState', () => {
+		describe('when default federal state exist', () => {
+			const setup = () => {
+				const federalState: FederalStateEntity = federalStateEntityFactory.build({
+					name: 'Default',
+				});
+				federalStateRepo.findByName.mockResolvedValue(federalState);
+
+				return {
+					federalState,
+				};
+			};
+			it('should be returned', async () => {
+				const { federalState } = setup();
+
+				const result = await service.findOrCreateDefaultFederalState();
+				expect(result.id).toBe(federalState.id);
+				expect(federalStateRepo.create).not.toHaveBeenCalled();
+				expect(federalStateRepo.save).not.toHaveBeenCalled();
+			});
+		});
+
+		describe('when default federal state does not exist', () => {
+			const setup = () => {
+				const federalState: FederalStateEntity = federalStateEntityFactory.build({
+					name: 'Default',
+				});
+				federalStateRepo.findByName.mockResolvedValue(null);
+				federalStateRepo.create.mockReturnValueOnce(federalState);
+
+				return {
+					federalState,
+				};
+			};
+			it('should be created and returned', async () => {
+				const { federalState } = setup();
+
+				const result = await service.findOrCreateDefaultFederalState();
+				expect(result.id).toBe(federalState.id);
+				expect(federalStateRepo.create).toHaveBeenCalled();
+				expect(federalStateRepo.save).toHaveBeenCalled();
+			});
 		});
 	});
 });
