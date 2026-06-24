@@ -7,7 +7,6 @@ import { ContextExternalToolService } from '../../context-external-tool';
 import { ContextExternalTool } from '../../context-external-tool/domain';
 import { ContextExternalToolType } from '../../context-external-tool/repo';
 import { SchoolExternalToolService } from '../../school-external-tool';
-import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { ExternalToolUtilization, SchoolExternalToolUtilization } from '../domain';
 
 @Injectable()
@@ -19,15 +18,9 @@ export class ExternalToolUtilizationService {
 	) {}
 
 	public async getUtilizationForExternalTool(toolId: EntityId): Promise<ExternalToolUtilization> {
-		const schoolExternalTools: SchoolExternalTool[] = await this.schoolExternalToolService.findSchoolExternalTools({
-			toolId,
-		});
+		const schoolExternalToolIds = await this.schoolExternalToolService.findSchoolExternalToolIds(toolId);
 
-		const schoolExternalToolIds: string[] = schoolExternalTools.map(
-			(schoolExternalTool: SchoolExternalTool): string => schoolExternalTool.id
-		);
-
-		const externalToolUtilization: ExternalToolUtilization = await this.getUtilization(schoolExternalToolIds);
+		const externalToolUtilization = await this.getUtilization(schoolExternalToolIds);
 
 		return externalToolUtilization;
 	}
