@@ -6,7 +6,7 @@ import { MongoMemoryDatabaseModule } from '@testing/database';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { DeletionRequest } from '../domain/do';
 import { deletionRequestFactory } from '../domain/testing';
-import { StatusModel } from '../domain/types';
+import { DomainName, StatusModel } from '../domain/types';
 import { DeletionRequestRepo } from './deletion-request.repo';
 import { DeletionRequestEntity } from './entity';
 import { deletionRequestEntityFactory } from './entity/testing';
@@ -457,6 +457,154 @@ describe(DeletionRequestRepo.name, () => {
 					expect.objectContaining(expectedResults[1]),
 					null,
 				]);
+			});
+		});
+	});
+
+	describe('findIdsByBatchAndTargetRefIds', () => {
+		describe('when matching and non-matching entities exist', () => {
+			const setup = async () => {
+				const batchId = new ObjectId().toHexString();
+				const anotherBatchId = new ObjectId().toHexString();
+				const targetRefId1 = new ObjectId().toHexString();
+				const targetRefId2 = new ObjectId().toHexString();
+				const targetRefId3 = new ObjectId().toHexString();
+				const targetRefId4 = new ObjectId().toHexString();
+				const targetRefId5 = new ObjectId().toHexString();
+
+				const matchingEntity1: DeletionRequestEntity = deletionRequestEntityFactory.build({
+					batchId,
+					targetRefId: targetRefId1,
+					targetRefDomain: DomainName.USER,
+					status: StatusModel.FAILED,
+				});
+				const matchingEntity2: DeletionRequestEntity = deletionRequestEntityFactory.build({
+					batchId,
+					targetRefId: targetRefId2,
+					targetRefDomain: DomainName.USER,
+					status: StatusModel.FAILED,
+				});
+				const differentStatusEntity: DeletionRequestEntity = deletionRequestEntityFactory.build({
+					batchId,
+					targetRefId: targetRefId3,
+					targetRefDomain: DomainName.USER,
+					status: StatusModel.SUCCESS,
+				});
+				const differentDomainEntity: DeletionRequestEntity = deletionRequestEntityFactory.build({
+					batchId,
+					targetRefId: targetRefId4,
+					targetRefDomain: DomainName.CLASS,
+					status: StatusModel.FAILED,
+				});
+				const differentBatchEntity: DeletionRequestEntity = deletionRequestEntityFactory.build({
+					batchId: anotherBatchId,
+					targetRefId: targetRefId5,
+					targetRefDomain: DomainName.USER,
+					status: StatusModel.FAILED,
+				});
+
+				await em
+					.persist([
+						matchingEntity1,
+						matchingEntity2,
+						differentStatusEntity,
+						differentDomainEntity,
+						differentBatchEntity,
+					])
+					.flush();
+
+				return {
+					batchId,
+					targetRefIds: [targetRefId1, targetRefId2, targetRefId3, targetRefId4, targetRefId5],
+					matchingEntityIds: [matchingEntity1.id, matchingEntity2.id],
+				};
+			};
+
+			it('should return only matching deletionRequest ids by batch, targetRefIds, domain and status', async () => {
+				const { batchId, targetRefIds, matchingEntityIds } = await setup();
+
+				const result = await repo.findIdsByBatchAndTargetRefIds(
+					batchId,
+					targetRefIds,
+					DomainName.USER,
+					StatusModel.FAILED
+				);
+
+				expect(result).toEqual(expect.arrayContaining(matchingEntityIds));
+				expect(result).toHaveLength(2);
+			});
+		});
+
+		describe('when targetRefIds is empty', () => {
+			const setup = () => {
+				const batchId = new ObjectId().toHexString();
+
+				return { batchId };
+			};
+
+			it('should return empty array', async () => {
+				const { batchId } = setup();
+
+				const result = await repo.findIdsByBatchAndTargetRefIds(batchId, [], DomainName.USER, StatusModel.FAILED);
+
+				expect(result).toEqual([]);
+			});
+		});
+	});
+
+	describe('markDeletionRequestsAsRegistered', () => {
+		describe('when ids are provided', () => {
+			const setup = async () => {
+				const failedEntityToReset: DeletionRequestEntity = deletionRequestEntityFactory.build({
+					status: StatusModel.FAILED,
+				});
+				const failedEntityNotIncluded: DeletionRequestEntity = deletionRequestEntityFactory.build({
+					status: StatusModel.FAILED,
+				});
+				const successEntityIncluded: DeletionRequestEntity = deletionRequestEntityFactory.build({
+					status: StatusModel.SUCCESS,
+				});
+
+				await em.persist([failedEntityToReset, failedEntityNotIncluded, successEntityIncluded]).flush();
+				em.clear();
+
+				return { failedEntityToReset, failedEntityNotIncluded, successEntityIncluded };
+			};
+
+			it('should update only failed deletion requests from given ids to registered', async () => {
+				const { failedEntityToReset, failedEntityNotIncluded, successEntityIncluded } = await setup();
+
+				await repo.markDeletionRequestsAsRegistered([failedEntityToReset.id, successEntityIncluded.id]);
+
+				const resultReset = await repo.findById(failedEntityToReset.id);
+				const resultNotIncluded = await repo.findById(failedEntityNotIncluded.id);
+				const resultSuccessIncluded = await repo.findById(successEntityIncluded.id);
+
+				expect(resultReset.status).toEqual(StatusModel.REGISTERED);
+				expect(resultNotIncluded.status).toEqual(StatusModel.FAILED);
+				expect(resultSuccessIncluded.status).toEqual(StatusModel.SUCCESS);
+			});
+		});
+
+		describe('when deletionRequestIds is empty', () => {
+			const setup = async () => {
+				const failedEntity: DeletionRequestEntity = deletionRequestEntityFactory.build({
+					status: StatusModel.FAILED,
+				});
+
+				await em.persist(failedEntity).flush();
+				em.clear();
+
+				return { failedEntity };
+			};
+
+			it('should do nothing', async () => {
+				const { failedEntity } = await setup();
+
+				await repo.markDeletionRequestsAsRegistered([]);
+
+				const result = await repo.findById(failedEntity.id);
+				expect(result.status).toEqual(StatusModel.FAILED);
 			});
 		});
 	});
