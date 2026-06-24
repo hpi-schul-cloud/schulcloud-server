@@ -270,7 +270,7 @@
 		"@types/pdfmake": "^0.2.11",
 		"@types/sanitize-html": "^2.15.0",
 		"@types/source-map-support": "^0.5.10",
-		"@types/supertest": "^6.0.3",
+		"@types/supertest": "^7.2.0",
 		"@types/xml2js": "^0.4.14",
 		"@typescript-eslint/eslint-plugin": "^8.61.1",
 		"@typescript-eslint/parser": "^8.61.1",
