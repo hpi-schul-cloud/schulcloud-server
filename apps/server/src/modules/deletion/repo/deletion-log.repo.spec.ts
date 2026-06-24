@@ -201,4 +201,62 @@ describe(DeletionLogRepo.name, () => {
 			});
 		});
 	});
+
+	describe('deleteByDeletionRequestIds', () => {
+		describe('when deletionRequestIds are provided', () => {
+			const setup = async () => {
+				const deletionRequestId1 = new ObjectId();
+				const deletionRequestId2 = new ObjectId();
+				const deletionRequestId3 = new ObjectId();
+
+				const deletionLogEntity1: DeletionLogEntity = deletionLogEntityFactory.build({
+					deletionRequestId: deletionRequestId1,
+				});
+				const deletionLogEntity2: DeletionLogEntity = deletionLogEntityFactory.build({
+					deletionRequestId: deletionRequestId2,
+				});
+				const deletionLogEntity3: DeletionLogEntity = deletionLogEntityFactory.build({
+					deletionRequestId: deletionRequestId3,
+				});
+
+				await em.persist([deletionLogEntity1, deletionLogEntity2, deletionLogEntity3]).flush();
+				em.clear();
+
+				return { deletionRequestId1, deletionRequestId3, deletionLogEntity1, deletionLogEntity2, deletionLogEntity3 };
+			};
+
+			it('should delete logs for matching deletionRequestIds only', async () => {
+				const { deletionRequestId1, deletionRequestId3, deletionLogEntity1, deletionLogEntity2, deletionLogEntity3 } =
+					await setup();
+
+				await repo.deleteByDeletionRequestIds([deletionRequestId1.toHexString(), deletionRequestId3.toHexString()]);
+
+				expect(await em.findOne(DeletionLogEntity, { id: deletionLogEntity1.id })).toBeNull();
+				expect(await em.findOne(DeletionLogEntity, { id: deletionLogEntity3.id })).toBeNull();
+				expect(await em.findOne(DeletionLogEntity, { id: deletionLogEntity2.id })).not.toBeNull();
+			});
+		});
+
+		describe('when deletionRequestIds is empty', () => {
+			const setup = async () => {
+				const deletionRequestId = new ObjectId();
+				const deletionLogEntity: DeletionLogEntity = deletionLogEntityFactory.build({
+					deletionRequestId,
+				});
+
+				await em.persist(deletionLogEntity).flush();
+				em.clear();
+
+				return { deletionLogEntity };
+			};
+
+			it('should do nothing', async () => {
+				const { deletionLogEntity } = await setup();
+
+				await repo.deleteByDeletionRequestIds([]);
+
+				expect(await em.findOne(DeletionLogEntity, { id: deletionLogEntity.id })).not.toBeNull();
+			});
+		});
+	});
 });

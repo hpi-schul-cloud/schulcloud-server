@@ -44,4 +44,14 @@ export class DeletionLogRepo {
 
 		await this.em.flush();
 	}
+
+	public async deleteByDeletionRequestIds(deletionRequestIds: EntityId[]): Promise<void> {
+		if (deletionRequestIds.length === 0) {
+			return;
+		}
+
+		await this.em.nativeDelete(DeletionLogEntity, {
+			deletionRequestId: { $in: deletionRequestIds.map((id) => new ObjectId(id)) },
+		});
+	}
 }

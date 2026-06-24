@@ -5,7 +5,13 @@ import { userFactory } from '@modules/user/testing';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TestApiClient } from '@testing/test-api-client';
-import { deletionBatchEntityFactory } from '../../../repo/entity/testing'; // testing need to be changed to top level of the module
+import { DomainName, StatusModel } from '../../../domain/types';
+import { DeletionLogEntity, DeletionRequestEntity } from '../../../repo/entity';
+import {
+	deletionBatchEntityFactory,
+	deletionLogEntityFactory,
+	deletionRequestEntityFactory,
+} from '../../../repo/entity/testing';
 import { DeletionBatchItemResponse } from '../dto/response/deletion-batch-item.response'; // add barrel file
 
 const baseRouteName = '/deletion-batches';
@@ -67,6 +73,89 @@ describe('createDeletionRequestsForBatch', () => {
 
 			const result = response.body as DeletionBatchItemResponse;
 			expect(result.status).toEqual('deletion-requested'); // Assuming the status changes to 'queued'
+		});
+	});
+
+	describe('when resetting failed deletion requests for a batch', () => {
+		const setup = async () => {
+			const student1 = userFactory.asStudent().buildWithId();
+			const student2 = userFactory.asStudent().buildWithId();
+
+			const batch = deletionBatchEntityFactory.build({
+				targetRefIds: [student1.id, student2.id],
+			});
+
+			const failedRequest = deletionRequestEntityFactory.build({
+				batchId: batch.id,
+				targetRefId: student1.id,
+				targetRefDomain: DomainName.USER,
+				status: StatusModel.FAILED,
+			});
+			const successfulRequest = deletionRequestEntityFactory.build({
+				batchId: batch.id,
+				targetRefId: student2.id,
+				targetRefDomain: DomainName.USER,
+				status: StatusModel.SUCCESS,
+			});
+
+			const failedRequestLog = deletionLogEntityFactory.build({
+				deletionRequestId: new ObjectId(failedRequest.id),
+			});
+			const successfulRequestLog = deletionLogEntityFactory.build({
+				deletionRequestId: new ObjectId(successfulRequest.id),
+			});
+
+			await em
+				.persist([student1, student2, batch, failedRequest, successfulRequest, failedRequestLog, successfulRequestLog])
+				.flush();
+			em.clear();
+
+			return { batch, student1, student2, failedRequest, successfulRequest };
+		};
+
+		it('should reset failed request to registered and delete logs for reset request ids', async () => {
+			const { batch, student1, failedRequest, successfulRequest } = await setup();
+
+			const response = await testApiClient.post(`/${batch.id}/reset-failed`, {
+				targetRefIds: [student1.id],
+			});
+
+			expect(response.status).toEqual(204);
+
+			const resetRequest = await em.findOneOrFail(DeletionRequestEntity, { id: failedRequest.id });
+			expect(resetRequest.status).toEqual(StatusModel.REGISTERED);
+
+			const untouchedRequest = await em.findOneOrFail(DeletionRequestEntity, { id: successfulRequest.id });
+			expect(untouchedRequest.status).toEqual(StatusModel.SUCCESS);
+
+			const deletedLog = await em.findOne(DeletionLogEntity, { deletionRequestId: new ObjectId(failedRequest.id) });
+			expect(deletedLog).toBeNull();
+
+			const untouchedLog = await em.findOne(DeletionLogEntity, {
+				deletionRequestId: new ObjectId(successfulRequest.id),
+			});
+			expect(untouchedLog).not.toBeNull();
+		});
+
+		it('should support reset-failed alias endpoint', async () => {
+			const { batch, student1 } = await setup();
+
+			const response = await testApiClient.post(`/${batch.id}/reset-failed`, {
+				targetRefIds: [student1.id],
+			});
+
+			expect(response.status).toEqual(204);
+		});
+
+		it('should return 400 when targetRefIds are not part of batch', async () => {
+			const { batch } = await setup();
+			const unknownTargetRefId = new ObjectId().toHexString();
+
+			const response = await testApiClient.post(`/${batch.id}/reset-failed`, {
+				targetRefIds: [unknownTargetRefId],
+			});
+
+			expect(response.status).toEqual(400);
 		});
 	});
 });
