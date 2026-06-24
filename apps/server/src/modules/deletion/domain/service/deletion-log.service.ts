@@ -41,4 +41,8 @@ export class DeletionLogService {
 
 		return deletionLogs;
 	}
+
+	public async deleteByDeletionRequestIds(deletionRequestIds: EntityId[]): Promise<void> {
+		await this.deletionLogRepo.deleteByDeletionRequestIds(deletionRequestIds);
+	}
 }
