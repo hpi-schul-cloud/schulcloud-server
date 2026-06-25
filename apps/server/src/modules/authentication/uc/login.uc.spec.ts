@@ -1,8 +1,11 @@
 import { AuditLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { JwtPayloadBuilder } from '@infra/auth-guard';
-import { UnauthorizedException } from '@nestjs/common';
+import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { userFactory } from '@modules/user/testing';
+import { ForbiddenException, UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { Permission } from '@shared/domain/interface';
 import { currentUserFactory } from '@testing/factory/currentuser.factory';
 import { AUTHENTICATION_CONFIG_TOKEN, AuthenticationConfig } from '../authentication-config';
 import { AuthenticationService } from '../services/authentication.service';
@@ -15,6 +18,7 @@ describe('LoginUc', () => {
 	let authenticationService: DeepMocked<AuthenticationService>;
 	let authenticationConfig: AuthenticationConfig;
 	let auditLogger: DeepMocked<AuditLogger>;
+	let authorizationService: DeepMocked<AuthorizationService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -27,6 +31,10 @@ describe('LoginUc', () => {
 				{
 					provide: AuthenticationService,
 					useValue: createMock<AuthenticationService>(),
+				},
+				{
+					provide: AuthorizationService,
+					useValue: createMock<AuthorizationService>(),
 				},
 				{
 					provide: AUTHENTICATION_CONFIG_TOKEN,
@@ -42,6 +50,7 @@ describe('LoginUc', () => {
 		authenticationService = module.get(AuthenticationService);
 		authenticationConfig = module.get(AUTHENTICATION_CONFIG_TOKEN);
 		auditLogger = module.get(AuditLogger);
+		authorizationService = module.get(AuthorizationService);
 	});
 
 	afterEach(() => {
@@ -181,6 +190,86 @@ describe('LoginUc', () => {
 				const { currentUser } = setup();
 
 				await expect(loginUc.getLoginDataForServiceAccount(currentUser)).rejects.toThrow(UnauthorizedException);
+			});
+		});
+	});
+
+	describe('getSupportLoginData', () => {
+		describe('when support user has the permission', () => {
+			const setup = () => {
+				const supportUser = userFactory.buildWithId();
+				const targetUser = userFactory.buildWithId();
+				const jwtToken = 'supportJwtToken';
+
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(supportUser);
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(targetUser);
+				authorizationService.checkPermission.mockReturnValueOnce(undefined);
+				authenticationService.generateSupportJwt.mockResolvedValueOnce(jwtToken);
+
+				return {
+					supportUser,
+					targetUser,
+					jwtToken,
+				};
+			};
+
+			it('should load both users with permissions', async () => {
+				const { supportUser, targetUser } = setup();
+
+				await loginUc.getSupportLoginData(targetUser.id, supportUser.id);
+
+				expect(authorizationService.getUserWithPermissions).toHaveBeenCalledTimes(2);
+				expect(authorizationService.getUserWithPermissions).toHaveBeenCalledWith(supportUser.id);
+				expect(authorizationService.getUserWithPermissions).toHaveBeenCalledWith(targetUser.id);
+			});
+
+			it('should check permission for CREATE_SUPPORT_JWT', async () => {
+				const { supportUser, targetUser } = setup();
+
+				await loginUc.getSupportLoginData(targetUser.id, supportUser.id);
+
+				const expectedContext = AuthorizationContextBuilder.write([Permission.CREATE_SUPPORT_JWT]);
+				expect(authorizationService.checkPermission).toHaveBeenCalledWith(supportUser, supportUser, expectedContext);
+			});
+
+			it('should generate support JWT', async () => {
+				const { supportUser, targetUser } = setup();
+
+				await loginUc.getSupportLoginData(targetUser.id, supportUser.id);
+
+				expect(authenticationService.generateSupportJwt).toHaveBeenCalledWith(supportUser, targetUser);
+			});
+
+			it('should return the jwt token', async () => {
+				const { supportUser, targetUser, jwtToken } = setup();
+
+				const result = await loginUc.getSupportLoginData(targetUser.id, supportUser.id);
+
+				expect(result).toEqual(jwtToken);
+			});
+		});
+
+		describe('when support user does not have the permission', () => {
+			const setup = () => {
+				const supportUser = userFactory.buildWithId();
+				const targetUser = userFactory.buildWithId();
+
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(supportUser);
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(targetUser);
+				authorizationService.checkPermission.mockImplementation(() => {
+					throw new ForbiddenException();
+				});
+
+				return {
+					supportUser,
+					targetUser,
+				};
+			};
+
+			it('should throw ForbiddenException', async () => {
+				const { supportUser, targetUser } = setup();
+
+				await expect(loginUc.getSupportLoginData(targetUser.id, supportUser.id)).rejects.toThrow(ForbiddenException);
 			});
 		});
 	});

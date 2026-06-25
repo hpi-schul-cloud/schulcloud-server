@@ -1,8 +1,17 @@
 import { CurrentUser, ICurrentUser, JWT, JwtAuthentication } from '@infra/auth-guard';
-import { Body, Controller, HttpCode, HttpStatus, Post, UseGuards } from '@nestjs/common';
+import {
+	Body,
+	Controller,
+	ForbiddenException,
+	HttpCode,
+	HttpStatus,
+	Post,
+	UnauthorizedException,
+	UseGuards,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { ForbiddenOperationError, ValidationError } from '@shared/common/error';
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiValidationError, ForbiddenOperationError, ValidationError } from '@shared/common/error';
 import { StrategyType, type OauthCurrentUser } from '../interface';
 import { LoginUc } from '../uc/login.uc';
 import {
@@ -12,6 +21,7 @@ import {
 	Oauth2AuthorizationBodyParams,
 	OauthLoginResponse,
 	SessionInfoResponse,
+	TargetUserIdParams,
 } from './dto';
 import { LoginResponseMapper } from './mapper/login-response.mapper';
 
@@ -106,5 +116,25 @@ export class LoginController {
 		const sessionInfoResponse = await this.loginUc.getJwtTtlFromWhitelist(accessToken);
 
 		return sessionInfoResponse;
+	}
+
+	@JwtAuthentication()
+	@HttpCode(HttpStatus.CREATED)
+	@Post('support-jwt')
+	@ApiOperation({ summary: 'Create a support jwt for a user.' })
+	@ApiResponse({ status: 201, type: LoginResponse, description: 'Support JWT was successfully created.' })
+	@ApiResponse({ status: 400, type: ApiValidationError, description: 'Request data has invalid format.' })
+	@ApiResponse({ status: 401, type: UnauthorizedException, description: 'Unauthorized.' })
+	@ApiResponse({ status: 403, type: ForbiddenException, description: 'Forbidden.' })
+	@ApiBody({ required: true, type: TargetUserIdParams })
+	public async supportJwt(
+		@Body() bodyParams: TargetUserIdParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<LoginResponse> {
+		const supportUserId = currentUser.userId;
+		const accessToken = await this.loginUc.getSupportLoginData(bodyParams.userId, supportUserId);
+		const loginResponse = LoginResponseMapper.mapToLoginResponse(accessToken);
+
+		return loginResponse;
 	}
 }

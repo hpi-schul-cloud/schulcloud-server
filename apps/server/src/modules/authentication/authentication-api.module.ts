@@ -1,5 +1,6 @@
 import { LoggerModule } from '@core/logger';
 import { ConfigurationModule } from '@infra/configuration';
+import { AuthorizationModule } from '@modules/authorization';
 import { Module } from '@nestjs/common';
 import { AUTHENTICATION_CONFIG_TOKEN, AuthenticationConfig } from './authentication-config';
 import { AuthenticationModule } from './authentication.module';
@@ -9,6 +10,7 @@ import { LoginUc, LogoutUc } from './uc';
 @Module({
 	imports: [
 		AuthenticationModule,
+		AuthorizationModule,
 		LoggerModule,
 		ConfigurationModule.register(AUTHENTICATION_CONFIG_TOKEN, AuthenticationConfig),
 	],
