@@ -134,7 +134,7 @@ describe(FilesStorageClientAdapter.name, () => {
 				const result = await filesStorageClientAdapter.getStream(fileRecordId, fileName);
 
 				expect(result).toBeDefined();
-				expect(httpServiceMock.get).toBeCalledWith(expect.any(String), {
+				expect(httpServiceMock.get).toHaveBeenCalledWith(expect.any(String), {
 					responseType: 'stream',
 					headers: {
 						Authorization: expect.any(String),
@@ -163,8 +163,8 @@ describe(FilesStorageClientAdapter.name, () => {
 				const result = await filesStorageClientAdapter.getStream(fileRecordId, fileName);
 
 				expect(result).toBeNull();
-				expect(errorLoggerMock.error).toBeCalledWith(
-					new AxiosErrorLoggable(expect.any(AxiosError), 'FilesStorageClientAdapter.getStream')
+				expect(errorLoggerMock.error).toHaveBeenCalledWith(
+					new AxiosErrorLoggable(expect.any(AxiosError) as unknown as AxiosError, 'FilesStorageClientAdapter.getStream')
 				);
 			});
 		});
@@ -191,7 +191,7 @@ describe(FilesStorageClientAdapter.name, () => {
 				const result = await filesStorageClientAdapter.getStream(fileRecordId, fileName);
 
 				expect(result).toBeNull();
-				expect(errorLoggerMock.error).toBeCalledWith(
+				expect(errorLoggerMock.error).toHaveBeenCalledWith(
 					new GenericFileStorageLoggable(`An unknown error occurred in FilesStorageClientAdapter.getStream`, {
 						error: util.inspect(error),
 					})
@@ -219,7 +219,7 @@ describe(FilesStorageClientAdapter.name, () => {
 				const result = await filesStorageClientAdapter.getStream(fileRecordId, fileName);
 
 				expect(result).toBeNull();
-				expect(errorLoggerMock.error).not.toBeCalled();
+				expect(errorLoggerMock.error).not.toHaveBeenCalled();
 			});
 		});
 	});
@@ -291,8 +291,8 @@ describe(FilesStorageClientAdapter.name, () => {
 				);
 
 				expect(result).toBeNull();
-				expect(errorLoggerMock.error).toBeCalledWith(
-					new AxiosErrorLoggable(expect.any(AxiosError), 'FilesStorageClientAdapter.upload')
+				expect(errorLoggerMock.error).toHaveBeenCalledWith(
+					new AxiosErrorLoggable(expect.any(AxiosError) as unknown as AxiosError, 'FilesStorageClientAdapter.upload')
 				);
 			});
 		});
@@ -331,7 +331,7 @@ describe(FilesStorageClientAdapter.name, () => {
 				);
 
 				expect(result).toBeNull();
-				expect(errorLoggerMock.error).toBeCalledWith(
+				expect(errorLoggerMock.error).toHaveBeenCalledWith(
 					new GenericFileStorageLoggable(`An unknown error occurred in FilesStorageClientAdapter.upload`, {
 						error: util.inspect(error),
 					})

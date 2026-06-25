@@ -99,7 +99,7 @@ describe(ResponseTimeMetricsInterceptor.name, () => {
 				expect(mockObserve).toHaveBeenCalledWith(expect.any(Object), expect.any(Number));
 
 				// Verify that the duration is a positive number
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
 				const [, duration] = mockObserve.mock.calls[0];
 				expect(duration).toBeGreaterThanOrEqual(0);
 			});

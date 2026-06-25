@@ -1,4 +1,3 @@
-/* eslint-disable no-await-in-loop */
 import { sleep } from './helper/sleep';
 import { SocketConnection } from './socket-connection';
 import { Callback, SocketConfiguration } from './types';
@@ -47,9 +46,8 @@ export class SocketConnectionManager {
 		this.onErrorHandler = onErrorHandler;
 	}
 
-	async destroySocketConnections() {
-		const promises = this.connections.map((connection) => connection.close());
+	destroySocketConnections() {
+		this.connections.forEach((connection) => connection.close());
 		this.connections = [];
-		await Promise.all(promises);
 	}
 }

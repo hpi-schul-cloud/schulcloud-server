@@ -91,9 +91,9 @@ describe(VidisClientAdapter.name, () => {
 
 					await service.getOfferItemsByRegion(mediaSource);
 
-					expect(encryptionService.decrypt).toBeCalledTimes(2);
-					expect(encryptionService.decrypt).toBeCalledWith(mediaSource.vidisConfig?.username);
-					expect(encryptionService.decrypt).toBeCalledWith(mediaSource.vidisConfig?.password);
+					expect(encryptionService.decrypt).toHaveBeenCalledTimes(2);
+					expect(encryptionService.decrypt).toHaveBeenCalledWith(mediaSource.vidisConfig?.username);
+					expect(encryptionService.decrypt).toHaveBeenCalledWith(mediaSource.vidisConfig?.password);
 				});
 
 				it('should create a vidis api client', async () => {
@@ -118,7 +118,7 @@ describe(VidisClientAdapter.name, () => {
 						headers: { Authorization: expect.stringMatching(`Basic ${encodedBasicAuth}`) as string },
 					};
 
-					expect(vidisApi.getActivatedOffersByRegion).toBeCalledWith(
+					expect(vidisApi.getActivatedOffersByRegion).toHaveBeenCalledWith(
 						'test-region',
 						undefined,
 						undefined,
@@ -270,9 +270,9 @@ describe(VidisClientAdapter.name, () => {
 
 					await service.getOfferItemsBySchoolName(mediaSource, schoolName);
 
-					expect(encryptionService.decrypt).toBeCalledTimes(2);
-					expect(encryptionService.decrypt).toBeCalledWith(mediaSource.vidisConfig?.username);
-					expect(encryptionService.decrypt).toBeCalledWith(mediaSource.vidisConfig?.password);
+					expect(encryptionService.decrypt).toHaveBeenCalledTimes(2);
+					expect(encryptionService.decrypt).toHaveBeenCalledWith(mediaSource.vidisConfig?.username);
+					expect(encryptionService.decrypt).toHaveBeenCalledWith(mediaSource.vidisConfig?.password);
 				});
 
 				it('should create a vidis api client', async () => {
@@ -297,7 +297,7 @@ describe(VidisClientAdapter.name, () => {
 						headers: { Authorization: expect.stringMatching(`Basic ${encodedBasicAuth}`) as string },
 					};
 
-					expect(vidisApi.getActivatedOffersBySchool).toBeCalledWith(
+					expect(vidisApi.getActivatedOffersBySchool).toHaveBeenCalledWith(
 						'NI_12345',
 						undefined,
 						undefined,

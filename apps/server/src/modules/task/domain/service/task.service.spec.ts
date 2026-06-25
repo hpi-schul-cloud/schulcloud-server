@@ -64,7 +64,7 @@ describe('TaskService', () => {
 			taskRepo.findBySingleParent.mockResolvedValueOnce([[], 0]);
 
 			await expect(taskService.findBySingleParent(userId, courseId)).resolves.toEqual([[], 0]);
-			expect(taskRepo.findBySingleParent).toBeCalledWith(userId, courseId, undefined, undefined);
+			expect(taskRepo.findBySingleParent).toHaveBeenCalledWith(userId, courseId, undefined, undefined);
 		});
 	});
 
@@ -74,7 +74,7 @@ describe('TaskService', () => {
 			taskRepo.findById.mockResolvedValueOnce(task);
 
 			await expect(taskService.findById(task.id)).resolves.toEqual(task);
-			expect(taskRepo.findById).toBeCalledWith(task.id);
+			expect(taskRepo.findById).toHaveBeenCalledWith(task.id);
 		});
 	});
 
@@ -91,7 +91,7 @@ describe('TaskService', () => {
 
 			await taskService.delete(task);
 
-			expect(fileStorageClientAdapterService.deleteFilesOfParent).toBeCalledWith(task.id);
+			expect(fileStorageClientAdapterService.deleteFilesOfParent).toHaveBeenCalledWith(task.id);
 		});
 
 		it('should call submissionService.delete() for all related submissions', async () => {
@@ -99,8 +99,8 @@ describe('TaskService', () => {
 
 			await taskService.delete(task);
 
-			expect(submissionService.delete).toBeCalledTimes(3);
-			expect(submissionService.delete).toBeCalledWith(submissions[0]);
+			expect(submissionService.delete).toHaveBeenCalledTimes(3);
+			expect(submissionService.delete).toHaveBeenCalledWith(submissions[0]);
 		});
 
 		it('should call TaskRepo.delete() with Task', async () => {
@@ -108,7 +108,7 @@ describe('TaskService', () => {
 
 			await taskService.delete(task);
 
-			expect(taskRepo.delete).toBeCalledWith(task);
+			expect(taskRepo.delete).toHaveBeenCalledWith(task);
 		});
 	});
 });

@@ -27,7 +27,10 @@ describe('CommonCartridgeUtils', () => {
 			it('should return identifier with prefix for stringified ObjectId', () => {
 				const identifier = new ObjectId();
 				const serialized = {
-					buffer: JSON.parse(JSON.stringify(identifier.id)) as unknown,
+					buffer: JSON.parse(JSON.stringify(identifier.id)) as {
+						type: 'Buffer';
+						data: number[];
+					},
 				};
 				expect(createIdentifier(serialized)).toBe(`i${identifier.toHexString()}`);
 			});
@@ -37,7 +40,7 @@ describe('CommonCartridgeUtils', () => {
 			});
 
 			it('should throw when unsupported type is given', () => {
-				const identifier = {};
+				const identifier = {} as unknown as Parameters<typeof createIdentifier>[0];
 
 				expect(() => createIdentifier(identifier)).toThrow();
 			});

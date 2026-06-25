@@ -58,4 +58,8 @@ export class DeletionBatchUc {
 
 		return summary;
 	}
+
+	public async resetFailedDeletionRequestsForBatch(batchId: EntityId, targetRefIds: EntityId[]): Promise<void> {
+		await this.deletionBatchService.resetFailedDeletionRequestsForBatch(batchId, targetRefIds);
+	}
 }

@@ -243,7 +243,6 @@ describe(S3ClientAdapter.name, () => {
 					sourceStream.emit('error', new Error('Source error'));
 
 					expect(logger.warning).toHaveBeenCalledWith(
-						// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 						expect.objectContaining({ message: expect.stringContaining('Source stream error: Source error') })
 					);
 					expect(passthroughStream.destroyed).toBe(true);
@@ -261,7 +260,6 @@ describe(S3ClientAdapter.name, () => {
 
 					expect(logger.warning).toHaveBeenCalledWith(
 						expect.objectContaining({
-							// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 							message: expect.stringContaining('Passthrough stream error: Passthrough error'),
 						})
 					);
@@ -313,7 +311,6 @@ describe(S3ClientAdapter.name, () => {
 					jest.advanceTimersByTime(60 * 1000 + 1);
 
 					expect(logger.info).toHaveBeenCalledWith(
-						// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
 						expect.objectContaining({ message: expect.stringContaining('Stream unresponsive') })
 					);
 					expect(sourceStream.destroyed).toBe(true);
@@ -484,7 +481,7 @@ describe(S3ClientAdapter.name, () => {
 				expect(logger.warning).toHaveBeenCalledWith(
 					expect.objectContaining({
 						message: 'Upload aborted',
-						// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
 						payload: expect.objectContaining({
 							action: 'uploadAlreadyAborted',
 							objectPath: pathToFile,
@@ -526,7 +523,7 @@ describe(S3ClientAdapter.name, () => {
 				expect(logger.warning).toHaveBeenCalledWith(
 					expect.objectContaining({
 						message: 'Upload aborted',
-						// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
 						payload: expect.objectContaining({
 							action: 'uploadAborted',
 							objectPath: pathToFile,
@@ -583,7 +580,7 @@ describe(S3ClientAdapter.name, () => {
 				expect(logger.warning).toHaveBeenCalledWith(
 					expect.objectContaining({
 						message: 'Upload aborted',
-						// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
 						payload: expect.objectContaining({
 							action: 'uploadStreamError',
 							objectPath: pathToFile,
@@ -622,7 +619,7 @@ describe(S3ClientAdapter.name, () => {
 				expect(logger.warning).toHaveBeenCalledWith(
 					expect.objectContaining({
 						message: 'Upload aborted',
-						// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
 						payload: expect.objectContaining({ action: 'uploadAborted' }),
 					})
 				);
@@ -632,7 +629,7 @@ describe(S3ClientAdapter.name, () => {
 				expect(logger.warning).toHaveBeenCalledWith(
 					expect.objectContaining({
 						message: 'Upload aborted',
-						// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
 						payload: expect.objectContaining({ action: 'uploadStreamError' }),
 					})
 				);
@@ -667,7 +664,7 @@ describe(S3ClientAdapter.name, () => {
 					1,
 					expect.objectContaining({
 						message: 'Upload aborted',
-						// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
 						payload: expect.objectContaining({ action: 'uploadAlreadyAborted' }),
 					})
 				);
@@ -675,7 +672,7 @@ describe(S3ClientAdapter.name, () => {
 					2,
 					expect.objectContaining({
 						message: 'Failed to abort upload',
-						// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
 						payload: expect.objectContaining({
 							action: 'abortUploadError',
 							objectPath: pathToFile,
@@ -707,7 +704,7 @@ describe(S3ClientAdapter.name, () => {
 				expect(logger.warning).toHaveBeenCalledWith(
 					expect.objectContaining({
 						message: 'Upload aborted',
-						// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+
 						payload: expect.objectContaining({ action: 'uploadAlreadyAborted' }),
 					})
 				);

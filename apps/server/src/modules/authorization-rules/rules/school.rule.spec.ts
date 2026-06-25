@@ -107,7 +107,7 @@ describe('SchoolRule', () => {
 			it('should throw not implemented', () => {
 				const { user, school, context } = setup();
 
-				expect(() => rule.hasPermission(user, school, context)).toThrowError(new NotImplementedException());
+				expect(() => rule.hasPermission(user, school, context)).toThrow(new NotImplementedException());
 			});
 		});
 

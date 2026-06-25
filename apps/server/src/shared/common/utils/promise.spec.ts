@@ -22,7 +22,7 @@ describe('Promise Helper', () => {
 
 		describe('promise is rejected', () => {
 			const setup = async () => {
-				const promise = Promise.reject();
+				const promise = Promise.reject(new Error('test rejection'));
 				const promises = await Promise.allSettled([promise]);
 				const settledPromise = promises[0];
 
@@ -63,7 +63,7 @@ describe('Promise Helper', () => {
 		describe('receives fullfilled and rejected promises', () => {
 			const setup = async () => {
 				const value2 = 'value2';
-				const promise1 = Promise.reject();
+				const promise1 = Promise.reject(new Error('test rejection'));
 				const promise2 = Promise.resolve(value2);
 				const promises = await Promise.allSettled([promise1, promise2]);
 
@@ -81,7 +81,7 @@ describe('Promise Helper', () => {
 
 		describe('receives rejected promises only', () => {
 			const setup = async () => {
-				const promise1 = Promise.reject();
+				const promise1 = Promise.reject(new Error('test rejection'));
 				const promises = await Promise.allSettled([promise1]);
 
 				return { promises };

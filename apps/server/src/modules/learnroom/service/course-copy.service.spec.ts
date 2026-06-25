@@ -166,32 +166,32 @@ describe('course copy service', () => {
 		it('should fetch the user', async () => {
 			const { course, user } = setup();
 			await service.copyCourse({ userId: user.id, courseId: course.id });
-			expect(userService.getUserEntityWithRoles).toBeCalledWith(user.id);
+			expect(userService.getUserEntityWithRoles).toHaveBeenCalledWith(user.id);
 		});
 
 		it('should fetch original course', async () => {
 			const { course, user } = setup();
 			await service.copyCourse({ userId: user.id, courseId: course.id });
-			expect(courseService.findById).toBeCalledWith(course.id);
+			expect(courseService.findById).toHaveBeenCalledWith(course.id);
 		});
 
 		it('should fetch original board', async () => {
 			const { course, user } = setup();
 			await service.copyCourse({ userId: user.id, courseId: course.id });
-			expect(boardRepo.findByCourseId).toBeCalledWith(course.id);
+			expect(boardRepo.findByCourseId).toHaveBeenCalledWith(course.id);
 		});
 
 		it('should persist course copy', async () => {
 			const { course, user } = setup();
 			await service.copyCourse({ userId: user.id, courseId: course.id });
-			expect(courseService.create).toBeCalled();
+			expect(courseService.create).toHaveBeenCalled();
 		});
 
 		it('should call board copy service', async () => {
 			const { course, originalBoard, user, courseCopyName } = setup();
 			await service.copyCourse({ userId: user.id, courseId: course.id });
 			const expectedDestinationCourse = expect.objectContaining({ name: courseCopyName }) as CourseEntity;
-			expect(boardCopyService.copyBoard).toBeCalledWith(
+			expect(boardCopyService.copyBoard).toHaveBeenCalledWith(
 				expect.objectContaining({ originalBoard, destinationCourse: expectedDestinationCourse, user })
 			);
 		});

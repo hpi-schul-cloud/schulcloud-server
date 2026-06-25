@@ -207,6 +207,16 @@ export class TypeGuard {
 		keys: K[],
 		toThrow?: Error
 	): EnsureKeysAreSet<T, K> {
+		TypeGuard.assertKeysInInstance(obj, keys, toThrow);
+
+		return obj;
+	}
+
+	private static assertKeysInInstance<T extends object, K extends keyof T>(
+		obj: T,
+		keys: K[],
+		toThrow?: Error
+	): asserts obj is EnsureKeysAreSet<T, K> {
 		const missingKeys: K[] = [];
 		for (const key of keys) {
 			if (!(key in obj) || obj[key] === undefined || obj[key] === null) {
@@ -217,8 +227,6 @@ export class TypeGuard {
 		if (missingKeys.length > 0) {
 			throw toThrow || new Error(`Object lacks these properties: ${String(keys)}.`);
 		}
-
-		return obj as EnsureKeysAreSet<T, K>;
 	}
 
 	public static requireKeys<T extends object, K extends keyof T>(

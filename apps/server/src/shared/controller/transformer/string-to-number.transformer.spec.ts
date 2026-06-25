@@ -44,10 +44,10 @@ describe('ToNumberTransformer Decorator', () => {
 
 		it('should throw error', () => {
 			const plainNum = { booleanProp: true };
-			expect(() => plainToClass(WithNumberDto, plainNum)).toThrowError();
+			expect(() => plainToClass(WithNumberDto, plainNum)).toThrow();
 
 			const plainNum2 = { booleanProp: true };
-			expect(() => plainToClass(WithNumberDto, plainNum2)).toThrowError();
+			expect(() => plainToClass(WithNumberDto, plainNum2)).toThrow();
 		});
 	});
 });

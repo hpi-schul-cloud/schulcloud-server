@@ -1,4 +1,4 @@
-import type { EntityData, EntityName, FilterQuery, QueryOrderMap } from '@mikro-orm/core';
+import type { EntityData, EntityName, QueryOrderMap } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Role } from '@modules/role/repo';
 import { SchoolEntity } from '@modules/school/repo';
@@ -56,7 +56,7 @@ export class UserDoMikroOrmRepo extends BaseDORepo<UserDo, User> implements User
 	}
 
 	public async findById(id: EntityId, populate = false): Promise<UserDo> {
-		const userEntity: User = await this._em.findOneOrFail(this.entityName, id as FilterQuery<User>);
+		const userEntity: User = await this._em.findOneOrFail(this.entityName, id);
 
 		if (populate) {
 			await this._em.populate(userEntity, ['roles', 'school.systems', 'school.currentYear', 'secondarySchools.role']);
@@ -109,7 +109,7 @@ export class UserDoMikroOrmRepo extends BaseDORepo<UserDo, User> implements User
 	}
 
 	public async findByIdOrNull(id: EntityId, populate = false): Promise<UserDo | null> {
-		const user: User | null = await this._em.findOne(this.entityName, id as FilterQuery<User>);
+		const user: User | null = await this._em.findOne(this.entityName, id);
 
 		if (!user) {
 			return null;
@@ -335,9 +335,8 @@ export class UserDoMikroOrmRepo extends BaseDORepo<UserDo, User> implements User
 	private async populateRoles(roles: Role[]): Promise<void> {
 		for (const role of roles) {
 			if (!role.roles.isInitialized(true)) {
-				// eslint-disable-next-line no-await-in-loop
 				await this._em.populate(role, ['roles']);
-				// eslint-disable-next-line no-await-in-loop
+
 				await this.populateRoles(role.roles.getItems());
 			}
 		}

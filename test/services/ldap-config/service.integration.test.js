@@ -241,7 +241,10 @@ describe('LdapConfigService', () => {
 		it('should succeed via external API', async () => {
 			const { _id: schoolId } = await testObjects.createTestSchool();
 			const user = await testObjects.createTestUser({ roles: ['administrator'], schoolId });
-			const token = await testObjects.generateJWTFromUser(user);
+
+			const requestParams = await testObjects.generateRequestParamsFromUser(user);
+			const token = requestParams.authentication.accessToken;
+
 			const req = request
 				.execute(app)
 				.post('/ldap-config?verifyOnly=true')
@@ -256,7 +259,9 @@ describe('LdapConfigService', () => {
 		it('should return 400 if required parameters are missing', async () => {
 			const { _id: schoolId } = await testObjects.createTestSchool();
 			const user = await testObjects.createTestUser({ roles: ['administrator'], schoolId });
-			const token = await testObjects.generateJWTFromUser(user);
+			const requestParams = await testObjects.generateRequestParamsFromUser(user);
+			const token = requestParams.authentication.accessToken;
+
 			const req = request
 				.execute(app)
 				.post('/ldap-config')

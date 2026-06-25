@@ -27,7 +27,7 @@ describe('TrackExecutionTimeDecorator', () => {
 				const decorator = TrackExecutionTime();
 
 				const target = new MockClassWithoutTrackingFunction();
-				expect(() => decorator(target, 'nameOfFunctionBeingTracked', {})).toThrowError(
+				expect(() => decorator(target, 'nameOfFunctionBeingTracked', {})).toThrow(
 					`The class MockClassWithoutTrackingFunction does not implement the required trackExecutionTime method.`
 				);
 			});

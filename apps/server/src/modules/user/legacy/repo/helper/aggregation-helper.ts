@@ -366,7 +366,7 @@ export const createMultiDocumentAggregation = ({
 		match._id = new ObjectId(match._id);
 	} else if (Array.isArray(match._id)) {
 		// build "$in" Query
-		const convertToObjectIds = (inArray: any[]) => inArray.map((id) => new ObjectId(id));
+		const convertToObjectIds = (inArray: string[]): ObjectId[] => inArray.map((id) => new ObjectId(id));
 		match._id = { $in: convertToObjectIds(convertToIn(match._id)) };
 	}
 
@@ -407,7 +407,8 @@ export const createMultiDocumentAggregation = ({
 
 	stageSimpleProject(aggregation, select);
 
-	if (!match?._id || Array.isArray(match?._id?.$in)) {
+	const idFilter = match._id as { $in?: ObjectId[] } | undefined;
+	if (!match?._id || Array.isArray(idFilter?.$in)) {
 		stageFormatWithTotal(aggregation, limit, skip);
 	}
 

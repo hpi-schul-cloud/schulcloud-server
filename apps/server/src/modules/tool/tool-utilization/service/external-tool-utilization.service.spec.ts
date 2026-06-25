@@ -6,7 +6,6 @@ import { ContextExternalToolService } from '../../context-external-tool';
 import { ContextExternalTool } from '../../context-external-tool/domain';
 import { contextExternalToolFactory } from '../../context-external-tool/testing';
 import { SchoolExternalToolService } from '../../school-external-tool';
-import { SchoolExternalTool } from '../../school-external-tool/domain';
 import { schoolExternalToolFactory } from '../../school-external-tool/testing';
 import { ExternalToolUtilization, SchoolExternalToolUtilization } from '../domain';
 import { ExternalToolUtilizationService } from './external-tool-utilization.service';
@@ -55,7 +54,7 @@ describe(ExternalToolUtilizationService.name, () => {
 	describe('getUtilizationForExternalTool', () => {
 		describe('when the tool has no usages', () => {
 			const setup = () => {
-				schoolExternalToolService.findSchoolExternalTools.mockResolvedValueOnce([]);
+				schoolExternalToolService.findSchoolExternalToolIds.mockResolvedValueOnce([]);
 			};
 
 			it('should return 0 usages for all contexts', async () => {
@@ -78,10 +77,10 @@ describe(ExternalToolUtilizationService.name, () => {
 
 		describe('when the tool has usages in all contexts', () => {
 			const setup = () => {
-				const schoolExternalTool: SchoolExternalTool = schoolExternalToolFactory.buildWithId();
-				const contextExternalTools: ContextExternalTool[] = contextExternalToolFactory.buildListWithId(2);
+				const schoolExternalTool = schoolExternalToolFactory.buildWithId();
+				const contextExternalTools = contextExternalToolFactory.buildListWithId(2);
 
-				schoolExternalToolService.findSchoolExternalTools.mockResolvedValueOnce([schoolExternalTool]);
+				schoolExternalToolService.findSchoolExternalToolIds.mockResolvedValueOnce([schoolExternalTool.id]);
 				contextExternalToolService.findBySchoolToolIdsAndContextType.mockResolvedValueOnce(contextExternalTools);
 				contextExternalToolService.findBySchoolToolIdsAndContextType.mockResolvedValueOnce(contextExternalTools);
 				contextExternalToolService.findBySchoolToolIdsAndContextType.mockResolvedValueOnce(contextExternalTools);
@@ -91,9 +90,7 @@ describe(ExternalToolUtilizationService.name, () => {
 			it('should return the amount of usages for all contexts', async () => {
 				setup();
 
-				const result: ExternalToolUtilization = await service.getUtilizationForExternalTool(
-					new ObjectId().toHexString()
-				);
+				const result = await service.getUtilizationForExternalTool(new ObjectId().toHexString());
 
 				expect(result).toEqual<ExternalToolUtilization>({
 					schoolExternalToolCount: 1,

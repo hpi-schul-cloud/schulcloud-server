@@ -300,7 +300,7 @@ describe(SynchronizationUc.name, () => {
 			it('should throw an error', async () => {
 				const { systemId, expectedError } = setup();
 
-				await expect(uc.findUsersToSynchronize(systemId)).rejects.toThrowError(expectedError);
+				await expect(uc.findUsersToSynchronize(systemId)).rejects.toThrow(expectedError);
 			});
 		});
 	});
@@ -422,7 +422,7 @@ describe(SynchronizationUc.name, () => {
 			it('should throw an error', async () => {
 				const { expectedError, usersToCheck, systemId } = setup();
 
-				await expect(uc.updateLastSyncedAt(0, usersToCheck, systemId)).rejects.toThrowError(expectedError);
+				await expect(uc.updateLastSyncedAt(0, usersToCheck, systemId)).rejects.toThrow(expectedError);
 			});
 		});
 	});

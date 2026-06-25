@@ -41,7 +41,7 @@ describe('Collaborative Text Editor Controller (API)', () => {
 		testApiClient = new TestApiClient(app, 'collaborative-text-editor');
 		etherpadClientAdapter = module.get(EtherpadClientAdapter);
 		collaborativeTextEditorConfig = module.get(COLLABORATIVE_TEXT_EDITOR_CONFIG_TOKEN);
-		collaborativeTextEditorConfig.cookieExpiresInSeconds;
+		expect(collaborativeTextEditorConfig.cookieExpiresInSeconds).toBeDefined();
 	});
 
 	beforeEach(async () => {
@@ -172,9 +172,9 @@ describe('Collaborative Text Editor Controller (API)', () => {
 					const response = await loggedInClient.get(`content-element/${collaborativeTextEditorElement.id}`);
 
 					expect(response.status).toEqual(HttpStatus.OK);
-					// eslint-disable-next-line @typescript-eslint/dot-notation, @typescript-eslint/no-unsafe-member-access
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 					expect(response.body['url']).toEqual(expectedPath);
-					// eslint-disable-next-line @typescript-eslint/dot-notation, @typescript-eslint/no-unsafe-member-access
+
 					expect(response.headers['set-cookie'][0]).toContain(
 						`sessionID=${sessionId}; Path=/p/${editorId}; Expires=${sessionCookieExpiryDate}`
 					);
@@ -244,9 +244,9 @@ describe('Collaborative Text Editor Controller (API)', () => {
 					const response = await loggedInClient.get(`content-element/${collaborativeTextEditorElement.id}`);
 
 					expect(response.status).toEqual(HttpStatus.OK);
-					// eslint-disable-next-line @typescript-eslint/dot-notation, @typescript-eslint/no-unsafe-member-access
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 					expect(response.body['url']).toEqual(expectedPath);
-					// eslint-disable-next-line @typescript-eslint/dot-notation, @typescript-eslint/no-unsafe-member-access
+
 					expect(response.headers['set-cookie'][0]).toContain(
 						`sessionID=${sessionId}; Path=/p/${editorId}; Expires=${sessionCookieExpiryDate}`
 					);
@@ -316,9 +316,9 @@ describe('Collaborative Text Editor Controller (API)', () => {
 					const response = await loggedInClient.get(`content-element/${collaborativeTextEditorElement.id}`);
 
 					expect(response.status).toEqual(HttpStatus.OK);
-					// eslint-disable-next-line @typescript-eslint/dot-notation, @typescript-eslint/no-unsafe-member-access
+					// eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
 					expect(response.body['url']).toEqual(expectedPath);
-					// eslint-disable-next-line @typescript-eslint/dot-notation, @typescript-eslint/no-unsafe-member-access
+
 					expect(response.headers['set-cookie'][0]).toContain(
 						`sessionID=${sessionId}; Path=/p/${editorId}; Expires=${sessionCookieExpiryDate}`
 					);

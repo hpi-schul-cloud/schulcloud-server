@@ -261,7 +261,7 @@ export class EtherpadClientAdapter {
 	private isSessionDoesNotExistError(error: unknown): boolean {
 		return !!(
 			error instanceof EtherpadErrorLoggableException &&
-			error.getLogMessage().type === EtherpadErrorType.BAD_REQUEST &&
+			error.getLogMessage().type === String(EtherpadErrorType.BAD_REQUEST) &&
 			error?.cause?.toString().includes('sessionID does not exist')
 		);
 	}

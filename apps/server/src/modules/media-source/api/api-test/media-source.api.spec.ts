@@ -67,7 +67,7 @@ describe('MediaSourceController (API)', () => {
 				await em.persist([superheroUser, superheroAccount, bilo, vidis]).flush();
 				em.clear();
 
-				const loggedInClient: TestApiClient = await testApiClient.login(superheroAccount);
+				const loggedInClient: TestApiClient = await testApiClient.loginAsServiceAccount(superheroAccount);
 
 				return {
 					loggedInClient,
@@ -106,7 +106,7 @@ describe('MediaSourceController (API)', () => {
 				await em.persist([superheroUser, superheroAccount]).flush();
 				em.clear();
 
-				const loggedInClient: TestApiClient = await testApiClient.login(superheroAccount);
+				const loggedInClient: TestApiClient = await testApiClient.loginAsServiceAccount(superheroAccount);
 
 				return {
 					loggedInClient,

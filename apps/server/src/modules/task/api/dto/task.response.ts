@@ -34,13 +34,13 @@ export class TaskResponse {
 
 	@ApiProperty()
 	@DecodeHtmlEntities()
-	courseName: string = '' as string;
+	courseName: string = '';
 
 	@ApiPropertyOptional()
 	lessonName?: string;
 
 	@ApiProperty()
-	courseId: string = '' as string;
+	courseId: string = '';
 
 	@ApiPropertyOptional({
 		description: 'Task description object, with props content: string and type: input format types',

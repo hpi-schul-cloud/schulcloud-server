@@ -132,7 +132,7 @@ export class CommonCartridgeUc {
 				.then((result) =>
 					settle(() => (result ? resolve(result) : reject(new Error('Error while uploading temp file. No result'))))
 				)
-				.catch((err: unknown) => settle(() => reject(err)));
+				.catch((err: unknown) => settle(() => reject(err instanceof Error ? err : new Error(String(err)))));
 		});
 	}
 

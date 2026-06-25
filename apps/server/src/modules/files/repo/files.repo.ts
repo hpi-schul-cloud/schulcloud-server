@@ -27,7 +27,7 @@ export class FilesRepo extends BaseRepo<FileEntity> {
 
 		const files = await this._em.find(FileEntity, filter, options);
 
-		return files as FileEntity[];
+		return files;
 	}
 
 	public async findByOwnerUserId(ownerUserId: EntityId): Promise<FileEntity[]> {
@@ -38,7 +38,7 @@ export class FilesRepo extends BaseRepo<FileEntity> {
 
 		const files = await this._em.find(FileEntity, filter);
 
-		return files as FileEntity[];
+		return files;
 	}
 
 	public async findByPermissionRefIdOrCreatorId(userId: EntityId): Promise<FileEntity[]> {

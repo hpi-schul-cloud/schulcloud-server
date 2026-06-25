@@ -85,7 +85,7 @@ describe(DeleteUserTeamDataStep.name, () => {
 
 				await step.execute({ userId: teamUser.user.id });
 
-				expect(teamRepo.findByUserId).toBeCalledWith(teamUser.user.id);
+				expect(teamRepo.findByUserId).toHaveBeenCalledWith(teamUser.user.id);
 			});
 
 			it('should call teamRepo.removeUserReferences', async () => {
@@ -93,7 +93,7 @@ describe(DeleteUserTeamDataStep.name, () => {
 
 				await step.execute({ userId: teamUser.user.id });
 
-				expect(teamRepo.removeUserReferences).toBeCalledWith(teamUser.user.id);
+				expect(teamRepo.removeUserReferences).toHaveBeenCalledWith(teamUser.user.id);
 			});
 
 			it('should return DomainDeletionReport', async () => {

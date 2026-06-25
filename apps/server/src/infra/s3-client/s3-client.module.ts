@@ -11,7 +11,11 @@ export class S3ClientModule {
 		const providers = [
 			{
 				provide: options.clientInjectionToken,
-				useFactory: (config: S3Config, logger: Logger, domainErrorHandler: DomainErrorHandler) =>
+				useFactory: (
+					config: S3Config,
+					logger: Logger,
+					domainErrorHandler: DomainErrorHandler
+				): ReturnType<typeof S3ClientFactory.build> =>
 					S3ClientFactory.build(config, logger, domainErrorHandler, options.clientInjectionToken),
 				inject: [options.configInjectionToken, Logger, DomainErrorHandler],
 			},

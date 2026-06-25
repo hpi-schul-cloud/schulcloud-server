@@ -11,6 +11,7 @@ import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
+import { omit } from 'lodash';
 import { roomEntityFactory } from '../../testing/room-entity.factory';
 import { RoomListResponse } from '../dto/response/room-list.response';
 
@@ -107,7 +108,7 @@ describe('Room Controller (API)', () => {
 						updatedAt: room.updatedAt.toISOString(),
 						isLocked: false,
 						totalMembers: 2,
-						allowedOperations: expect.any(Object) as unknown as Record<string, boolean>,
+						allowedOperations: expect.any(Object),
 					};
 				});
 
@@ -123,7 +124,7 @@ describe('Room Controller (API)', () => {
 						updatedAt: room.updatedAt.toISOString(),
 						isLocked: true,
 						totalMembers: 1,
-						allowedOperations: expect.any(Object) as unknown as Record<string, boolean>,
+						allowedOperations: expect.any(Object),
 					};
 				});
 
@@ -141,7 +142,7 @@ describe('Room Controller (API)', () => {
 
 				expect(response.status).toBe(HttpStatus.OK);
 
-				const stripUpdatedAt = (arr: { updatedAt: unknown }[]) => arr.map(({ updatedAt, ...rest }) => rest);
+				const stripUpdatedAt = (arr: { updatedAt: unknown }[]) => arr.map((obj) => omit(obj, ['updatedAt']));
 				expect(stripUpdatedAt((response.body as RoomListResponse).data)).toEqual(stripUpdatedAt(expectedResponse.data));
 			});
 

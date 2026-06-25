@@ -160,7 +160,7 @@ describe('CollaborativeTextEditorService', () => {
 			it('should throw an error', async () => {
 				const { userId, userName, params, error } = setup();
 
-				await expect(service.getOrCreateCollaborativeTextEditor(userId, userName, params)).rejects.toThrowError(error);
+				await expect(service.getOrCreateCollaborativeTextEditor(userId, userName, params)).rejects.toThrow(error);
 			});
 		});
 
@@ -181,7 +181,7 @@ describe('CollaborativeTextEditorService', () => {
 			it('should throw an error', async () => {
 				const { userId, userName, params, error } = setup();
 
-				await expect(service.getOrCreateCollaborativeTextEditor(userId, userName, params)).rejects.toThrowError(error);
+				await expect(service.getOrCreateCollaborativeTextEditor(userId, userName, params)).rejects.toThrow(error);
 			});
 		});
 
@@ -203,7 +203,7 @@ describe('CollaborativeTextEditorService', () => {
 			it('should throw an error', async () => {
 				const { userId, userName, params, error } = setup();
 
-				await expect(service.getOrCreateCollaborativeTextEditor(userId, userName, params)).rejects.toThrowError(error);
+				await expect(service.getOrCreateCollaborativeTextEditor(userId, userName, params)).rejects.toThrow(error);
 			});
 		});
 
@@ -226,7 +226,7 @@ describe('CollaborativeTextEditorService', () => {
 			it('should throw an error', async () => {
 				const { userId, userName, params, error } = setup();
 
-				await expect(service.getOrCreateCollaborativeTextEditor(userId, userName, params)).rejects.toThrowError(error);
+				await expect(service.getOrCreateCollaborativeTextEditor(userId, userName, params)).rejects.toThrow(error);
 			});
 		});
 	});
@@ -264,7 +264,7 @@ describe('CollaborativeTextEditorService', () => {
 			it('should throw an error', async () => {
 				const { parentId, error } = setup();
 
-				await expect(service.deleteCollaborativeTextEditorByParentId(parentId)).rejects.toThrowError(error);
+				await expect(service.deleteCollaborativeTextEditorByParentId(parentId)).rejects.toThrow(error);
 			});
 		});
 
@@ -283,7 +283,7 @@ describe('CollaborativeTextEditorService', () => {
 			it('should throw an error', async () => {
 				const { parentId, error } = setup();
 
-				await expect(service.deleteCollaborativeTextEditorByParentId(parentId)).rejects.toThrowError(error);
+				await expect(service.deleteCollaborativeTextEditorByParentId(parentId)).rejects.toThrow(error);
 			});
 		});
 	});
@@ -342,7 +342,7 @@ describe('CollaborativeTextEditorService', () => {
 			it('should throw an error', async () => {
 				const { userId, error } = setup();
 
-				await expect(service.deleteSessionsByUser(userId)).rejects.toThrowError(error);
+				await expect(service.deleteSessionsByUser(userId)).rejects.toThrow(error);
 			});
 		});
 
@@ -361,7 +361,7 @@ describe('CollaborativeTextEditorService', () => {
 			it('should throw an error', async () => {
 				const { userId, error } = setup();
 
-				await expect(service.deleteSessionsByUser(userId)).rejects.toThrowError(error);
+				await expect(service.deleteSessionsByUser(userId)).rejects.toThrow(error);
 			});
 		});
 
@@ -383,7 +383,7 @@ describe('CollaborativeTextEditorService', () => {
 			it('should throw an error', async () => {
 				const { userId, error } = setup();
 
-				await expect(service.deleteSessionsByUser(userId)).rejects.toThrowError(error);
+				await expect(service.deleteSessionsByUser(userId)).rejects.toThrow(error);
 			});
 		});
 	});

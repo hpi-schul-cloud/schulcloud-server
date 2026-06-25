@@ -76,7 +76,7 @@ describe(`create board in room (api)`, () => {
 				const { loggedInClient, room } = await setup();
 				const title = 'new board';
 
-				const response = await loggedInClient.post(undefined, <CreateBoardBodyParams>{
+				const response = await loggedInClient.post(undefined, {
 					title,
 					parentId: room.id,
 					parentType: BoardExternalReferenceType.Room,
@@ -95,7 +95,7 @@ describe(`create board in room (api)`, () => {
 			it.skip('should add the board to the room content', async () => {
 				const { loggedInClient, room } = await setup();
 
-				const response = await loggedInClient.post(undefined, <CreateBoardBodyParams>{
+				const response = await loggedInClient.post(undefined, {
 					title: 'new board',
 					parentId: room.id,
 					parentType: BoardExternalReferenceType.Room,
@@ -118,7 +118,7 @@ describe(`create board in room (api)`, () => {
 					it('should create a column board', async () => {
 						const { loggedInClient, room } = await setup();
 
-						const response = await loggedInClient.post(undefined, <CreateBoardBodyParams>{
+						const response = await loggedInClient.post(undefined, {
 							title: 'new board',
 							parentId: room.id,
 							parentType: BoardExternalReferenceType.Room,
@@ -138,7 +138,7 @@ describe(`create board in room (api)`, () => {
 					it('should create a list board', async () => {
 						const { loggedInClient, room } = await setup();
 
-						const response = await loggedInClient.post(undefined, <CreateBoardBodyParams>{
+						const response = await loggedInClient.post(undefined, {
 							title: 'new board',
 							parentId: room.id,
 							parentType: BoardExternalReferenceType.Room,
@@ -213,7 +213,7 @@ describe(`create board in room (api)`, () => {
 			it('should return status 403', async () => {
 				const { loggedInClient, room } = await setup();
 
-				const response = await loggedInClient.post(undefined, <CreateBoardBodyParams>{
+				const response = await loggedInClient.post(undefined, {
 					title: 'new board',
 					parentId: room.id,
 					parentType: BoardExternalReferenceType.Room,
@@ -242,7 +242,7 @@ describe(`create board in room (api)`, () => {
 			it('should return status 403', async () => {
 				const { loggedInClient, room } = await setup();
 
-				const response = await loggedInClient.post(undefined, <CreateBoardBodyParams>{
+				const response = await loggedInClient.post(undefined, {
 					title: 'new board',
 					parentId: room.id,
 					parentType: BoardExternalReferenceType.Room,

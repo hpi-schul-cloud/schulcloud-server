@@ -5,7 +5,6 @@ import { TaskParent } from '@modules/task/repo';
 import { User } from '@modules/user/repo';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-// eslint-disable-next-line import/no-cycle
 import { CourseEntity } from './course.entity'; // https://github.com/mikro-orm/mikro-orm/discussions/4089
 
 export interface CourseGroupProperties {

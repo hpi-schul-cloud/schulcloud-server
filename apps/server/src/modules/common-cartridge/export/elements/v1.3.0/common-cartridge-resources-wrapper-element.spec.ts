@@ -29,7 +29,7 @@ describe('CommonCartridgeResourcesWrapperElementV130', () => {
 			notSupportedProps.version = CommonCartridgeVersion.V_1_1_0;
 
 			it('should throw error', () => {
-				expect(() => new CommonCartridgeResourcesWrapperElementV130(notSupportedProps)).toThrowError(
+				expect(() => new CommonCartridgeResourcesWrapperElementV130(notSupportedProps)).toThrow(
 					VersionNotSupportedLoggableException
 				);
 			});
@@ -87,9 +87,7 @@ describe('CommonCartridgeResourcesWrapperElementV130', () => {
 			it('should throw error', () => {
 				const { sut, unknownElementType } = setup();
 
-				expect(() => sut.getManifestXmlObject(unknownElementType)).toThrowError(
-					ElementTypeNotSupportedLoggableException
-				);
+				expect(() => sut.getManifestXmlObject(unknownElementType)).toThrow(ElementTypeNotSupportedLoggableException);
 			});
 		});
 	});

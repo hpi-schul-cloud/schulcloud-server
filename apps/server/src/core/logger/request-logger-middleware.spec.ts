@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/ban-types */
 import { Logger } from '@nestjs/common';
 import { NextFunction, Request, Response } from 'express';
 import { LoggerConfig } from './logger.config';
@@ -49,9 +48,9 @@ describe('RequestLoggerMiddleware', () => {
 		jest.spyOn(process, 'hrtime').mockReturnValueOnce([0, 0]);
 		jest.spyOn(mockResponse, 'get').mockImplementation().mockReturnValue('100');
 
-		let finishCallback: Function | undefined;
+		let finishCallback: (() => void) | undefined;
 		// @ts-expect-error testing private property
-		jest.spyOn(mockResponse, 'on').mockImplementation((_event: string, callback: Function) => {
+		jest.spyOn(mockResponse, 'on').mockImplementation((_event: string, callback: () => void) => {
 			finishCallback = callback;
 		});
 		loggerConfig.requestLogEnabled = true;
@@ -73,7 +72,7 @@ describe('RequestLoggerMiddleware', () => {
 
 	it('should handle errors during logging', () => {
 		// @ts-expect-error testing private property
-		jest.spyOn(mockResponse, 'on').mockImplementation((_event: string, callback: Function) => {
+		jest.spyOn(mockResponse, 'on').mockImplementation((_event: string, callback: () => void) => {
 			callback();
 		});
 

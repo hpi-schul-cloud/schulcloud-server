@@ -103,7 +103,7 @@ describe('lesson copy uc', () => {
 			it('should throw if copy feature is deactivated', async () => {
 				const { userId, lessonId, parentParams } = setup();
 
-				await expect(uc.copyLesson(userId, lessonId, parentParams)).rejects.toThrowError(
+				await expect(uc.copyLesson(userId, lessonId, parentParams)).rejects.toThrow(
 					new InternalServerErrorException('Copy Feature not enabled')
 				);
 			});
@@ -162,7 +162,7 @@ describe('lesson copy uc', () => {
 				await uc.copyLesson(userId, lessonId, parentParams);
 
 				const context = AuthorizationContextBuilder.write([]);
-				expect(authorisation.hasPermission).not.toBeCalledWith(user, course, context);
+				expect(authorisation.hasPermission).not.toHaveBeenCalledWith(user, course, context);
 			});
 		});
 
@@ -216,7 +216,7 @@ describe('lesson copy uc', () => {
 
 				await uc.copyLesson(userId, lessonId, parentParams);
 
-				expect(authorisation.getUserWithPermissions).toBeCalledWith(userId);
+				expect(authorisation.getUserWithPermissions).toHaveBeenCalledWith(userId);
 			});
 
 			it('should fetch correct lesson', async () => {
@@ -224,7 +224,7 @@ describe('lesson copy uc', () => {
 
 				await uc.copyLesson(userId, lessonId, parentParams);
 
-				expect(lessonService.findById).toBeCalledWith(lessonId);
+				expect(lessonService.findById).toHaveBeenCalledWith(lessonId);
 			});
 
 			it('should fetch destination course', async () => {
@@ -232,7 +232,7 @@ describe('lesson copy uc', () => {
 
 				await uc.copyLesson(userId, lessonId, parentParams);
 
-				expect(courseService.findById).toBeCalledWith(course.id);
+				expect(courseService.findById).toHaveBeenCalledWith(course.id);
 			});
 
 			it('should check authorisation for lesson', async () => {
@@ -241,7 +241,7 @@ describe('lesson copy uc', () => {
 				await uc.copyLesson(userId, lessonId, parentParams);
 
 				const context = AuthorizationContextBuilder.read([Permission.TOPIC_CREATE]);
-				expect(authorisation.hasPermission).toBeCalledWith(user, lesson, context);
+				expect(authorisation.hasPermission).toHaveBeenCalledWith(user, lesson, context);
 			});
 
 			it('should check authorisation for destination course', async () => {
@@ -250,7 +250,7 @@ describe('lesson copy uc', () => {
 				await uc.copyLesson(userId, lessonId, parentParams);
 
 				const context = AuthorizationContextBuilder.write([]);
-				expect(authorisation.checkPermission).toBeCalledWith(user, course, context);
+				expect(authorisation.checkPermission).toHaveBeenCalledWith(user, course, context);
 			});
 
 			it('should call copy service', async () => {
@@ -258,7 +258,7 @@ describe('lesson copy uc', () => {
 
 				await uc.copyLesson(userId, lessonId, parentParams);
 
-				expect(lessonCopyService.copyLesson).toBeCalledWith({
+				expect(lessonCopyService.copyLesson).toHaveBeenCalledWith({
 					originalLessonId: lessonId,
 					destinationCourse: course,
 					user,
@@ -316,7 +316,7 @@ describe('lesson copy uc', () => {
 			it('should throw ForbiddenException', async () => {
 				const { parentParams, userId, lessonId } = setup();
 
-				await expect(uc.copyLesson(userId, lessonId, parentParams)).rejects.toThrowError(
+				await expect(uc.copyLesson(userId, lessonId, parentParams)).rejects.toThrow(
 					new ForbiddenException('could not find lesson to copy')
 				);
 			});
@@ -350,7 +350,7 @@ describe('lesson copy uc', () => {
 			it('should pass the forbidden exception', async () => {
 				const { parentParams, userId, lessonId } = setup();
 
-				await expect(uc.copyLesson(userId, lessonId, parentParams)).rejects.toThrowError(new ForbiddenException());
+				await expect(uc.copyLesson(userId, lessonId, parentParams)).rejects.toThrow(new ForbiddenException());
 			});
 		});
 	});

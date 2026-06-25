@@ -40,7 +40,7 @@ describe(SagaStepRegistryService.name, () => {
 					await stepRegistry.executeStep(moduleName, 'deleteUserData', { userId: '67a0784ef358f49ca4faf5c3' });
 				};
 
-				await expect(executeFunction()).rejects.toThrowError(`Module ${moduleName} is not registered.`);
+				await expect(executeFunction()).rejects.toThrow(`Module ${moduleName} is not registered.`);
 			});
 		});
 
@@ -57,7 +57,7 @@ describe(SagaStepRegistryService.name, () => {
 					await stepRegistry.executeStep(moduleName, nonExistentStepName, { userId: '67a0784ef358f49ca4faf5c3' });
 				};
 
-				await expect(executeFunction()).rejects.toThrowError(
+				await expect(executeFunction()).rejects.toThrow(
 					`Step ${nonExistentStepName} in module ${moduleName} is not registered.`
 				);
 			});

@@ -322,7 +322,7 @@ describe(SystemService.name, () => {
 			it('should throw an error', async () => {
 				const { system } = setup();
 
-				await expect(service.delete(system)).rejects.toThrowError('Not found');
+				await expect(service.delete(system)).rejects.toThrow('Not found');
 			});
 		});
 	});

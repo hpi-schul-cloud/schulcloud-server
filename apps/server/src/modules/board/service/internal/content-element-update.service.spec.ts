@@ -264,7 +264,7 @@ describe('ContentElementUpdateService', () => {
 	describe('when the element is unkown', () => {
 		it('should throw error for unknown element type', async () => {
 			// eslint-disable-next-line @typescript-eslint/no-explicit-any,@typescript-eslint/no-unsafe-argument
-			await expect(service.updateContent({} as any, {} as any)).rejects.toThrowError(
+			await expect(service.updateContent({} as any, {} as any)).rejects.toThrow(
 				"Cannot update element of type: 'Object'"
 			);
 		});

@@ -1,4 +1,3 @@
-/* eslint-disable no-await-in-loop */
 import { duplicateUserProfiles } from './helper/class-definitions';
 import { getRandomCardTitle, getRandomLink, getRandomRichContentBody } from './helper/randomData';
 import { sleep } from './helper/sleep';

@@ -328,7 +328,7 @@ describe('VideoConferenceUc', () => {
 
 			it('should successfully execute and create a new preset in the database', async () => {
 				// Arrange
-				videoConferenceRepo.findByScopeAndScopeId.mockImplementation(() => Promise.reject());
+				videoConferenceRepo.findByScopeAndScopeId.mockImplementation(() => Promise.reject(new Error('test error')));
 				bbbService.create.mockResolvedValue(bbbResponse);
 
 				// Act
@@ -691,7 +691,7 @@ describe('VideoConferenceUc', () => {
 			const result = await useCase.getMeetingInfo(defaultCurrentUser, VideoConferenceScope.COURSE, course.id);
 
 			// Assert
-			expect(bbbService.getMeetingInfo).toBeCalledWith(config);
+			expect(bbbService.getMeetingInfo).toHaveBeenCalledWith(config);
 			expect(result.bbbResponse).toEqual(bbbResponse);
 			expect(result.options).toEqual(defaultOptions);
 		});
@@ -706,21 +706,21 @@ describe('VideoConferenceUc', () => {
 			const result = await useCase.getMeetingInfo(defaultCurrentUser, VideoConferenceScope.COURSE, course.id);
 
 			// Assert
-			expect(bbbService.getMeetingInfo).toBeCalledWith(config);
+			expect(bbbService.getMeetingInfo).toHaveBeenCalledWith(config);
 			expect(result.bbbResponse).toEqual(bbbResponse);
 			expect(result.options).toEqual({});
 		});
 
 		it('should successfully give MeetingInfo to moderator with default options and "not started"', async () => {
 			// Arrange
-			videoConferenceRepo.findByScopeAndScopeId.mockImplementation(() => Promise.reject());
+			videoConferenceRepo.findByScopeAndScopeId.mockImplementation(() => Promise.reject(new Error('test error')));
 			bbbService.getMeetingInfo.mockRejectedValue(new InternalServerErrorException());
 
 			// Act
 			const result = await useCase.getMeetingInfo(defaultCurrentUser, VideoConferenceScope.COURSE, course.id);
 
 			// Assert
-			expect(bbbService.getMeetingInfo).toBeCalledWith(config);
+			expect(bbbService.getMeetingInfo).toHaveBeenCalledWith(config);
 			expect(result.state).toEqual(VideoConferenceState.NOT_STARTED);
 			expect(result.options).toEqual(defaultVideoConferenceOptions);
 		});
@@ -735,7 +735,7 @@ describe('VideoConferenceUc', () => {
 			const result = await useCase.getMeetingInfo(defaultCurrentUser, VideoConferenceScope.COURSE, course.id);
 
 			// Assert
-			expect(bbbService.getMeetingInfo).toBeCalledWith(config);
+			expect(bbbService.getMeetingInfo).toHaveBeenCalledWith(config);
 			expect(result.state).toEqual(VideoConferenceState.NOT_STARTED);
 			expect(result.options).toEqual({});
 		});
@@ -758,7 +758,7 @@ describe('VideoConferenceUc', () => {
 			// Arrange
 			userPermissions.set(Permission.START_MEETING, Promise.resolve(false));
 			setTeamRole(teamExpertRole);
-			bbbService.getMeetingInfo.mockImplementation(() => Promise.reject());
+			bbbService.getMeetingInfo.mockImplementation(() => Promise.reject(new Error('test error')));
 
 			// Act & Assert
 			await expect(useCase.getMeetingInfo(defaultCurrentUser, VideoConferenceScope.EVENT, course.id)).rejects.toThrow(

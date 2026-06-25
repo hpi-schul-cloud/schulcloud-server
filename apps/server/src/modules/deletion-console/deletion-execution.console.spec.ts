@@ -56,7 +56,7 @@ describe(DeletionExecutionConsole.name, () => {
 
 				await console.triggerDeletionExecution(options);
 
-				expect(deletionExecutionUc.triggerDeletionExecution).toBeCalledWith(limit, false);
+				expect(deletionExecutionUc.triggerDeletionExecution).toHaveBeenCalledWith(limit, false);
 			});
 		});
 

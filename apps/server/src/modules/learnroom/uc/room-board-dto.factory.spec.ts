@@ -154,21 +154,21 @@ describe(RoomBoardDTOFactory.name, () => {
 				const teacherStatusSpy = jest.spyOn(tasks[0], 'createTeacherStatusForUser');
 
 				mapper.createDTO({ room, board, user: teacher });
-				expect(teacherStatusSpy).toBeCalled();
+				expect(teacherStatusSpy).toHaveBeenCalled();
 			});
 
 			it('should add status for substitutionTeacher to task', () => {
 				const teacherStatusSpy = jest.spyOn(tasks[0], 'createTeacherStatusForUser');
 
 				mapper.createDTO({ room, board, user: substitutionTeacher });
-				expect(teacherStatusSpy).toBeCalled();
+				expect(teacherStatusSpy).toHaveBeenCalled();
 			});
 
 			it('should add status for student to task', () => {
 				const studentStatusSpy = jest.spyOn(tasks[0], 'createStudentStatusForUser');
 
 				mapper.createDTO({ room, board, user: student });
-				expect(studentStatusSpy).toBeCalled();
+				expect(studentStatusSpy).toHaveBeenCalled();
 			});
 		});
 

@@ -633,9 +633,7 @@ describe(MediaAvailableLineUc.name, () => {
 			it('should throw an exception', async () => {
 				const { userId, mediaBoardId } = setup();
 
-				await expect(uc.getMediaAvailableLine(userId, mediaBoardId)).rejects.toThrowError(
-					FeatureDisabledLoggableException
-				);
+				await expect(uc.getMediaAvailableLine(userId, mediaBoardId)).rejects.toThrow(FeatureDisabledLoggableException);
 			});
 		});
 	});

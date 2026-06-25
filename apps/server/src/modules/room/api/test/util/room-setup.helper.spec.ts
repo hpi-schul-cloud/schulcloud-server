@@ -207,7 +207,7 @@ describe('RoomSetup', () => {
 				await roomSetup.setup([['Alice', 'sameSchool', 'administrator', 'roomowner']]);
 				const account = await roomSetup.createAccountForUser('Alice');
 				expect(account).toBeDefined();
-				expect((em as unknown as EntityManager).persist).toHaveBeenCalled();
+				expect(em.persist).toHaveBeenCalled();
 			});
 
 			it('should throw when user is unknown', async () => {

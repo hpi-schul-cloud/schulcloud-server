@@ -326,7 +326,7 @@ describe('VideoConferenceJoinUc', () => {
 
 				await uc.join(currentUserId, scope);
 
-				expect(bbbService.join).toBeCalledWith(
+				expect(bbbService.join).toHaveBeenCalledWith(
 					expect.objectContaining<Partial<BBBJoinConfig>>({ role: BBBRole.MODERATOR })
 				);
 			});
@@ -382,7 +382,10 @@ describe('VideoConferenceJoinUc', () => {
 
 				await uc.join(currentUserId, scope);
 
-				expect(videoConferenceFeatureService.checkVideoConferenceFeatureEnabled).toBeCalledWith(currentUserId, scope);
+				expect(videoConferenceFeatureService.checkVideoConferenceFeatureEnabled).toHaveBeenCalledWith(
+					currentUserId,
+					scope
+				);
 			});
 		});
 	});

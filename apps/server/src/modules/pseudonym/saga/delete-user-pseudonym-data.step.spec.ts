@@ -77,7 +77,7 @@ describe(DeleteUserPseudonymDataStep.name, () => {
 			it('should throw an error', async () => {
 				const { user } = setup();
 
-				await expect(step.execute({ userId: user.id as EntityId })).rejects.toThrowError(InternalServerErrorException);
+				await expect(step.execute({ userId: user.id as EntityId })).rejects.toThrow(InternalServerErrorException);
 			});
 		});
 

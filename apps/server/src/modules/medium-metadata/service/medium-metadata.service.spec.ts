@@ -72,7 +72,7 @@ describe(MediumMetadataService.name, () => {
 
 				await service.getMetadataItem('mediumId', 'mediaSourceId');
 
-				expect(vidisStrategy.getMediumMetadataItem).toBeCalled();
+				expect(vidisStrategy.getMediumMetadataItem).toHaveBeenCalled();
 			});
 		});
 
@@ -193,7 +193,7 @@ describe(MediumMetadataService.name, () => {
 
 				await service.getMetadataItems(mediumIds, mediaSource);
 
-				expect(vidisStrategy.getMediumMetadataItems).toBeCalledWith(mediumIds, mediaSource);
+				expect(vidisStrategy.getMediumMetadataItems).toHaveBeenCalledWith(mediumIds, mediaSource);
 			});
 		});
 
@@ -227,7 +227,7 @@ describe(MediumMetadataService.name, () => {
 
 				await service.getMetadataItems(mediumIds, mediaSource);
 
-				expect(biloStrategy.getMediumMetadataItems).toBeCalledWith(mediumIds, mediaSource);
+				expect(biloStrategy.getMediumMetadataItems).toHaveBeenCalledWith(mediumIds, mediaSource);
 			});
 		});
 

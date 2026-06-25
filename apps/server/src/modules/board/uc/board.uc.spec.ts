@@ -135,9 +135,7 @@ describe(BoardUc.name, () => {
 				};
 				columnBoardService.copyColumn.mockResolvedValueOnce(copyStatus);
 
-				await expect(uc.copyColumn(user.id, column.id, 'school-id')).rejects.toThrowError(
-					'Copied entity is not a column'
-				);
+				await expect(uc.copyColumn(user.id, column.id, 'school-id')).rejects.toThrow('Copied entity is not a column');
 			});
 		});
 	});

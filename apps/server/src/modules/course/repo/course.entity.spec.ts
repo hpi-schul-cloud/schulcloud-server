@@ -211,7 +211,7 @@ describe('CourseEntity', () => {
 
 				expect(() => {
 					course.getStudentIds();
-				}).toThrowError(InternalServerErrorException);
+				}).toThrow(InternalServerErrorException);
 			});
 		});
 	});

@@ -69,7 +69,7 @@ describe('SchoolExternalToolRule', () => {
 
 				service.hasPermission(user, entity, { action: Action.read, requiredPermissions: [] });
 
-				expect(spy).toBeCalledWith(user, []);
+				expect(spy).toHaveBeenCalledWith(user, []);
 			});
 
 			it('should return "true" for read action if user in scope', () => {

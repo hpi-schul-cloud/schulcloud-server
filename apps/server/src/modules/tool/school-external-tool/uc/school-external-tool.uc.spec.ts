@@ -303,7 +303,7 @@ describe(SchoolExternalToolUc.name, () => {
 			it('should schoolExternalToolService.createSchoolExternalTool throw an error', async () => {
 				const { user, tool, error } = setup();
 
-				await expect(uc.createSchoolExternalTool(user.id, tool.getProps())).rejects.toThrowError(error);
+				await expect(uc.createSchoolExternalTool(user.id, tool.getProps())).rejects.toThrow(error);
 			});
 		});
 	});

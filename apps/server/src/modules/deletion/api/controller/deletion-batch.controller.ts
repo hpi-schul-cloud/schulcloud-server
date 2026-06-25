@@ -7,7 +7,7 @@ import { ApiValidationError } from '@shared/common/error';
 import { DeletionBatchSummary } from '../../domain/service';
 import { DeletionBatchMapper } from '../uc/deletion-batch.mapper';
 import { DeletionBatchUc } from '../uc/deletion-batch.uc';
-import { CreateDeletionBatchBodyParams } from './dto';
+import { CreateDeletionBatchBodyParams, ResetFailedDeletionBatchBodyParams } from './dto';
 import { DeletionBatchPaginationParams } from './dto/request/deletion-batch-pagination.params';
 import { DeletionBatchItemResponse } from './dto/response/deletion-batch-item.response';
 import { DeletionBatchListResponse } from './dto/response/deletion-batch-list.response';
@@ -81,5 +81,17 @@ export class DeletionBatchController {
 		const response = DeletionBatchMapper.mapToDeletionBatchItemResponse(summary);
 
 		return response;
+	}
+
+	@Post(':batchId/reset-failed')
+	@HttpCode(204)
+	@ApiOperation({
+		summary: 'Reset failed deletion requests to registered for selected batch targetRefIds',
+	})
+	public async resetFailedDeletionRequestsForBatch(
+		@Param('batchId') batchId: EntityId,
+		@Body() body: ResetFailedDeletionBatchBodyParams
+	): Promise<void> {
+		await this.deletionBatchUc.resetFailedDeletionRequestsForBatch(batchId, body.targetRefIds);
 	}
 }

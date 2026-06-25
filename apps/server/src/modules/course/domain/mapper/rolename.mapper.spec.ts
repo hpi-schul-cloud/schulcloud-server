@@ -54,7 +54,7 @@ describe('rolename mapper', () => {
 		const role = roleFactory.build({ name: RoleName.EXTERNALPERSON });
 		const user = userFactory.buildWithId({ roles: [role] });
 
-		expect(() => RoleNameMapper.mapToRoleName(user, course)).toThrowError(
+		expect(() => RoleNameMapper.mapToRoleName(user, course)).toThrow(
 			`Unable to determine a valid role for user ${user.id} in course ${course.id}`
 		);
 	});

@@ -100,7 +100,7 @@ describe('GroupRule', () => {
 			it('should return false', () => {
 				const { userNotInGroup } = setup();
 
-				const result = rule.isApplicable(userNotInGroup, {} as unknown as Group);
+				const result = rule.isApplicable(userNotInGroup, {});
 
 				expect(result).toEqual(false);
 			});

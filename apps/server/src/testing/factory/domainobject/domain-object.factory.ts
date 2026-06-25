@@ -3,11 +3,10 @@ import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { BuildOptions, DeepPartial } from 'fishery';
 import { BaseFactory } from '../base.factory';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export class DomainObjectFactory<
 	T extends DomainObject<U>,
 	U extends AuthorizableObject = T extends DomainObject<infer X> ? X : never,
-	I = any,
+	I = unknown,
 	C = U,
 > extends BaseFactory<T, U, I, C> {
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars

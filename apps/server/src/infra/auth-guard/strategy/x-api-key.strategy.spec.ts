@@ -45,7 +45,7 @@ describe('XApiKeyStrategy', () => {
 			it('should do nothing', () => {
 				const { CORRECT_API_KEY } = setup();
 				strategy.validate(CORRECT_API_KEY, done);
-				expect(done).toBeCalledWith(null, true);
+				expect(done).toHaveBeenCalledWith(null, true);
 			});
 		});
 
@@ -58,7 +58,7 @@ describe('XApiKeyStrategy', () => {
 			it('should throw error', () => {
 				const { INVALID_API_KEY } = setup();
 				strategy.validate(INVALID_API_KEY, done);
-				expect(done).toBeCalledWith(new UnauthorizedException(), null);
+				expect(done).toHaveBeenCalledWith(new UnauthorizedException(), null);
 			});
 		});
 	});

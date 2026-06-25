@@ -82,7 +82,6 @@ describe(`card move (api)`, () => {
 
 			const response = await loggedInClient.post(`${cardNode1.id}/copy`);
 			const copiedCard = response.body as CardResponse;
-			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 
 			const result = await em.findOneOrFail(BoardNodeEntity, copiedCard.id);
 
@@ -94,7 +93,6 @@ describe(`card move (api)`, () => {
 
 			const response = await loggedInClient.post(`${cardNode1.id}/copy`);
 			const copiedCard = response.body as CardResponse;
-			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 
 			const resultCopiedCard = await em.findOneOrFail(BoardNodeEntity, copiedCard.id);
 			const resultCard1 = await em.findOneOrFail(BoardNodeEntity, cardNode1.id);

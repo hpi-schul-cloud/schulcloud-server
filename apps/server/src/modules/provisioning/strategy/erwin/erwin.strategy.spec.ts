@@ -85,9 +85,9 @@ describe('ErwinProvisioningStrategy', () => {
 						sub: '550e8400-e29b-41d4-a716-446655440000',
 						person: {
 							externalId: 'personExternalId',
-							firstName: 'firstName',
-							lastName: 'lastName',
-							role: ErwinRole.LERN,
+							vorname: 'firstName',
+							familienname: 'lastName',
+							rolle: ErwinRole.LERN,
 							email: 'test@example.com',
 							geburtstag: new Date('2000-01-01'),
 						},
@@ -104,6 +104,7 @@ describe('ErwinProvisioningStrategy', () => {
 				});
 
 				const expectedUser = new ExternalUserDto({
+					email: 'test@example.com',
 					externalId: 'personExternalId',
 					erwinId: '550e8400-e29b-41d4-a716-446655440000',
 					roles: [RoleName.STUDENT],
@@ -114,7 +115,6 @@ describe('ErwinProvisioningStrategy', () => {
 				const expectedSchool = new ExternalSchoolDto({
 					externalId: 'schoolExternalId',
 					name: 'Test School',
-					location: 'Berlin',
 				});
 
 				const expectedClasses = [
@@ -132,12 +132,14 @@ describe('ErwinProvisioningStrategy', () => {
 
 				const result = await sut.getData(input);
 
-				expect(result).toEqual<OauthDataDto>({
-					system: input.system,
-					externalUser: expectedUser,
-					externalSchool: expectedSchool,
-					externalClasses: expectedClasses,
-				});
+				expect(result).toEqual<OauthDataDto>(
+					new OauthDataDto({
+						system: input.system,
+						externalUser: expectedUser,
+						externalSchool: expectedSchool,
+						externalClasses: expectedClasses,
+					})
+				);
 
 				validateSpy.mockRestore();
 			});
@@ -159,9 +161,9 @@ describe('ErwinProvisioningStrategy', () => {
 						sub: faker.string.uuid(),
 						person: {
 							externalId: faker.string.uuid(),
-							firstName: faker.person.firstName(),
-							lastName: faker.person.lastName(),
-							role: ErwinRole.LEHR,
+							vorname: faker.person.firstName(),
+							familienname: faker.person.lastName(),
+							rolle: ErwinRole.LEHR,
 							email: faker.internet.email(),
 							geburtstag: faker.date.past(),
 						},
@@ -206,9 +208,9 @@ describe('ErwinProvisioningStrategy', () => {
 						sub: faker.string.uuid(),
 						person: {
 							externalId: faker.string.uuid(),
-							firstName: faker.person.firstName(),
-							lastName: faker.person.lastName(),
-							role: ErwinRole.LEIT,
+							vorname: faker.person.firstName(),
+							familienname: faker.person.lastName(),
+							rolle: ErwinRole.LEIT,
 							email: faker.internet.email(),
 							geburtstag: faker.date.past(),
 						},
@@ -253,9 +255,9 @@ describe('ErwinProvisioningStrategy', () => {
 						sub: faker.string.uuid(),
 						person: {
 							externalId: faker.string.uuid(),
-							firstName: faker.person.firstName(),
-							lastName: faker.person.lastName(),
-							role: MappedSvsRolle.USER,
+							vorname: faker.person.firstName(),
+							familienname: faker.person.lastName(),
+							rolle: MappedSvsRolle.USER,
 							email: faker.internet.email(),
 							geburtstag: faker.date.past(),
 						},
@@ -322,9 +324,9 @@ describe('ErwinProvisioningStrategy', () => {
 					return {
 						sub: faker.string.uuid(),
 						person: {
-							firstName: faker.person.firstName(),
-							lastName: faker.person.lastName(),
-							role: ErwinRole.LERN,
+							vorname: faker.person.firstName(),
+							familienname: faker.person.lastName(),
+							rolle: ErwinRole.LERN,
 							email: faker.internet.email(),
 							geburtstag: faker.date.past(),
 						},
@@ -362,9 +364,9 @@ describe('ErwinProvisioningStrategy', () => {
 					return {
 						person: {
 							externalId: faker.string.uuid(),
-							firstName: faker.person.firstName(),
-							lastName: faker.person.lastName(),
-							role: ErwinRole.LERN,
+							vorname: faker.person.firstName(),
+							familienname: faker.person.lastName(),
+							rolle: ErwinRole.LERN,
 							email: faker.internet.email(),
 							geburtstag: faker.date.past(),
 						},
@@ -403,9 +405,9 @@ describe('ErwinProvisioningStrategy', () => {
 						sub: '',
 						person: {
 							externalId: faker.string.uuid(),
-							firstName: faker.person.firstName(),
-							lastName: faker.person.lastName(),
-							role: ErwinRole.LERN,
+							vorname: faker.person.firstName(),
+							familienname: faker.person.lastName(),
+							rolle: ErwinRole.LERN,
 							email: faker.internet.email(),
 							geburtstag: faker.date.past(),
 						},
@@ -444,9 +446,9 @@ describe('ErwinProvisioningStrategy', () => {
 						sub: '',
 						person: {
 							externalId: faker.string.uuid(),
-							firstName: faker.person.firstName(),
-							lastName: faker.person.lastName(),
-							role: ErwinRole.LERN,
+							vorname: faker.person.firstName(),
+							familienname: faker.person.lastName(),
+							rolle: ErwinRole.LERN,
 							email: faker.internet.email(),
 							geburtstag: faker.date.past(),
 						},
@@ -492,9 +494,9 @@ describe('ErwinProvisioningStrategy', () => {
 						sub: faker.string.uuid(),
 						person: {
 							externalId: faker.string.uuid(),
-							firstName: faker.person.firstName(),
-							lastName: faker.person.lastName(),
-							role: ErwinRole.LERN,
+							vorname: faker.person.firstName(),
+							familienname: faker.person.lastName(),
+							rolle: ErwinRole.LERN,
 							email: faker.internet.email(),
 							geburtstag: faker.date.past(),
 						},

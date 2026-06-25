@@ -80,7 +80,7 @@ export class TspProvisioningService {
 		let classUpdateCount = 0;
 		let classCreationCount = 0;
 		const classesToSave: Class[] = [];
-		for await (const externalClass of externalClasses) {
+		for (const externalClass of externalClasses) {
 			const currentClass = classes.find((clazz) => clazz.sourceOptions?.tspUid === externalClass.externalId);
 
 			const tspUserInfos = usersOfClasses.get(externalClass.externalId) ?? [];

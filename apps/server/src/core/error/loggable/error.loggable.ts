@@ -44,7 +44,7 @@ export class ErrorLoggable implements Loggable {
 		return logMessage;
 	}
 
-	private createLogMessageForValidationErrors(error: ApiValidationError) {
+	private createLogMessageForValidationErrors(error: ApiValidationError): ValidationErrorLogMessage {
 		const errorMessages = error.validationErrors.map((e) => {
 			const value = this.getPropertyValue(e);
 			// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
