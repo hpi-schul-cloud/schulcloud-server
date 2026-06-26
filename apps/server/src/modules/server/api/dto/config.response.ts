@@ -11,6 +11,7 @@ import { RoomPublicApiConfig } from '@modules/room';
 import { RosterPublicApiConfig } from '@modules/roster';
 import { SharingPublicApiConfig } from '@modules/sharing';
 import { TaskPublicApiConfig } from '@modules/task';
+import { TeamPublicApiConfig } from '@modules/team';
 import { ToolPublicApiConfig } from '@modules/tool';
 import { UserPublicApiConfig } from '@modules/user';
 import { UserImportPublicApiConfig } from '@modules/user-import';
@@ -21,7 +22,6 @@ import { LanguageType } from '@shared/domain/interface';
 import { SchulcloudTheme } from '@shared/domain/types';
 import type { ServerPublicApiConfig } from '../..';
 import { Timezone } from '../../types/timezone.enum';
-import { TeamPublicApiConfig } from '@modules/team';
 
 export class ConfigResponse {
 	@ApiProperty()
@@ -119,6 +119,9 @@ export class ConfigResponse {
 
 	@ApiProperty()
 	public FEATURE_COLUMN_BOARD_H5P_ENABLED: boolean;
+
+	@ApiProperty()
+	public FEATURE_COLUMN_BOARD_MAP_ELEMENT_ENABLED: boolean;
 
 	@ApiProperty()
 	public FEATURE_COLUMN_BOARD_COLLABORA_ENABLED: boolean;
@@ -366,6 +369,7 @@ export class ConfigResponse {
 		this.ROOM_MEMBER_INFO_URL = config.roomMemberInfoUrl;
 		this.ROOM_MEMBER_ADD_EXTERNAL_PERSON_REQUIREMENTS_URL = config.roomMemberAddExternalPersonRequirementsUrl;
 		this.FEATURE_COLUMN_BOARD_H5P_ENABLED = config.featureColumnBoardH5pEnabled;
+		this.FEATURE_COLUMN_BOARD_MAP_ELEMENT_ENABLED = config.featureColumnBoardMapElementEnabled;
 		this.FEATURE_COLUMN_BOARD_COLLABORA_ENABLED = config.featureColumnBoardCollaboraEnabled;
 	}
 }

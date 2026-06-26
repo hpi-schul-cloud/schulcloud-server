@@ -42,6 +42,11 @@ export class BoardPublicApiConfig {
 	@IsBoolean()
 	public featureColumnBoardH5pEnabled = true;
 
+	@ConfigProperty('FEATURE_COLUMN_BOARD_MAP_ELEMENT_ENABLED')
+	@StringToBoolean()
+	@IsBoolean()
+	public featureColumnBoardMapElementEnabled = true;
+
 	@ConfigProperty('FEATURE_COLUMN_BOARD_COLLABORA_ENABLED')
 	@StringToBoolean()
 	@IsBoolean()
