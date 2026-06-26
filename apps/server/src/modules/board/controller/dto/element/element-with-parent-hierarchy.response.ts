@@ -10,6 +10,7 @@ import { FileElementResponse } from './file-element.response';
 import { FileFolderElementResponse } from './file-folder-element.response';
 import { H5pElementResponse } from './h5p-element.response';
 import { LinkElementResponse } from './link-element.response';
+import { MapElementResponse } from './map-element.response';
 import { RichTextElementResponse } from './rich-text-element.response';
 import { VideoConferenceElementResponse } from './video-conference-element.response';
 
@@ -45,7 +46,8 @@ export class ParentNodeInfoResponse {
 	VideoConferenceElementResponse,
 	FileFolderElementResponse,
 	ParentNodeInfoResponse,
-	H5pElementResponse
+	H5pElementResponse,
+	MapElementResponse
 )
 export class ElementWithParentHierarchyResponse {
 	constructor(props: ElementWithParentHierarchyResponse) {
@@ -66,6 +68,7 @@ export class ElementWithParentHierarchyResponse {
 			{ $ref: getSchemaPath(VideoConferenceElementResponse) },
 			{ $ref: getSchemaPath(FileFolderElementResponse) },
 			{ $ref: getSchemaPath(H5pElementResponse) },
+			{ $ref: getSchemaPath(MapElementResponse) },
 		],
 	})
 	element: AnyContentElementResponse;

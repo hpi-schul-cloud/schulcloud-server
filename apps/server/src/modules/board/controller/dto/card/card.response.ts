@@ -1,6 +1,7 @@
 import { ApiExtraModels, ApiProperty, ApiPropertyOptional, getSchemaPath } from '@nestjs/swagger';
 import { bsonStringPattern } from '@shared/controller/bson-string-pattern';
 import { DecodeHtmlEntities } from '@shared/controller/transformer';
+import { Colors } from '../../../domain';
 import {
 	AnyContentElementResponse,
 	CollaborativeTextEditorElementResponse,
@@ -11,12 +12,12 @@ import {
 	FileFolderElementResponse,
 	H5pElementResponse,
 	LinkElementResponse,
+	MapElementResponse,
 	RichTextElementResponse,
 	VideoConferenceElementResponse,
 } from '../element';
 import { TimestampsResponse } from '../timestamps.response';
 import { VisibilitySettingsResponse } from './visibility-settings.response';
-import { Colors } from '../../../domain';
 
 @ApiExtraModels(
 	ExternalToolElementResponse,
@@ -28,7 +29,8 @@ import { Colors } from '../../../domain';
 	DeletedElementResponse,
 	VideoConferenceElementResponse,
 	FileFolderElementResponse,
-	H5pElementResponse
+	H5pElementResponse,
+	MapElementResponse
 )
 export class CardResponse {
 	constructor({ id, title, backgroundColor, height, elements, visibilitySettings, timestamps }: CardResponse) {
@@ -70,6 +72,7 @@ export class CardResponse {
 				{ $ref: getSchemaPath(VideoConferenceElementResponse) },
 				{ $ref: getSchemaPath(FileFolderElementResponse) },
 				{ $ref: getSchemaPath(H5pElementResponse) },
+				{ $ref: getSchemaPath(MapElementResponse) },
 			],
 		},
 	})
