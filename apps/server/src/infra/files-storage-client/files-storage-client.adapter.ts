@@ -1,23 +1,26 @@
 import { AxiosErrorLoggable } from '@core/error/loggable';
-import { ErrorLogger, Logger } from '@core/logger';
+import { Logger, LogMessageData } from '@core/logger';
 import { HttpService } from '@nestjs/axios';
-import { Injectable } from '@nestjs/common';
 import { JwtExtractor } from '@shared/common/utils/jwt';
-import { AxiosError } from 'axios';
-import type { Request } from 'express';
+import { AxiosError, AxiosRequestConfig } from 'axios';
+import { type Request } from 'express';
 import { lastValueFrom } from 'rxjs';
 import { Stream } from 'stream';
-import util from 'util';
 import { InternalFilesStorageClientConfig } from './files-storage-client.config';
-import { FileApi, FileRecordParentType, FileRecordResponse, StorageLocation } from './generated';
+import {
+	FileApi,
+	FileRecordListResponse,
+	FileRecordParentType,
+	FileRecordResponse,
+	FileUrlParams,
+	StorageLocation,
+} from './generated';
 import { GenericFileStorageLoggable } from './loggables';
 
-@Injectable()
 export class FilesStorageClientAdapter {
 	constructor(
 		private readonly api: FileApi,
 		private readonly logger: Logger,
-		private readonly errorLogger: ErrorLogger,
 		// these should be removed when the generated client supports downloading files as arraybuffer
 		private readonly httpService: HttpService,
 		private readonly config: InternalFilesStorageClientConfig,
@@ -33,6 +36,36 @@ export class FilesStorageClientAdapter {
 		return data;
 	}
 
+	public async uploadFromUrl(
+		storageLocationId: string,
+		storageLocation: StorageLocation,
+		parentId: string,
+		parentType: FileRecordParentType,
+		fileUrlParams: FileUrlParams
+	): Promise<FileRecordResponse> {
+		try {
+			const options = this.createOptionParams();
+
+			const response = await this.api.uploadFromUrl(
+				storageLocationId,
+				storageLocation,
+				parentId,
+				parentType,
+				fileUrlParams,
+				options
+			);
+			return response?.data;
+		} catch (error: unknown) {
+			return this.handleFileStorageError(error, 'FilesStorageClientAdapter.uploadFromUrl', {
+				storageLocationId,
+				storageLocation,
+				parentId,
+				parentType,
+				url: fileUrlParams.url,
+			});
+		}
+	}
+
 	public async getStream(fileRecordId: string, fileName: string): Promise<Stream | null> {
 		try {
 			// Originally used with arraybuffer type:
@@ -43,30 +76,20 @@ export class FilesStorageClientAdapter {
 			// const response = await this.api.download(fileRecordId, fileName, undefined, {
 			// 	responseType: 'stream',
 			// });
-
-			const token = JwtExtractor.extractJwtFromRequestOrFail(this.req);
+			const options = this.createOptionParams();
 			const url = new URL(`/api/v3/file/download/${fileRecordId}/${fileName}`, this.config.basePath);
 			const observable = this.httpService.get(url.toString(), {
 				responseType: 'stream',
-				headers: {
-					Authorization: `Bearer ${token}`,
-				},
+				...options,
 			});
 
 			const response = await lastValueFrom(observable);
 			return FilesStorageClientAdapter.isStream(response.data) ? response.data : null;
 		} catch (error: unknown) {
-			if (error instanceof AxiosError) {
-				this.errorLogger.error(new AxiosErrorLoggable(error, 'FilesStorageClientAdapter.getStream'));
-			} else {
-				this.errorLogger.error(
-					new GenericFileStorageLoggable(`An unknown error occurred in FilesStorageClientAdapter.getStream`, {
-						error: util.inspect(error),
-					})
-				);
-			}
-
-			return null;
+			return this.handleFileStorageError(error, 'FilesStorageClientAdapter.getStream', {
+				fileRecordId,
+				fileName,
+			});
 		}
 	}
 
@@ -80,14 +103,11 @@ export class FilesStorageClientAdapter {
 		parentId: string,
 		parentType: FileRecordParentType,
 		file: File
-	): Promise<FileRecordResponse | null> {
+	): Promise<FileRecordResponse> {
 		try {
 			// INFO: we need to upload the file to the files storage service without using the generated client,
 			// because the generated client does not support uploading files as FormData. Otherwise files with
 			// binary content would be corrupted like pdfs, zip files, etc.
-
-			const token = JwtExtractor.extractJwtFromRequestOrFail(this.req);
-
 			const formData = new FormData();
 
 			formData.append('storageLocationId', storageLocationId);
@@ -101,26 +121,71 @@ export class FilesStorageClientAdapter {
 				this.config.basePath
 			);
 
-			const observable = this.httpService.post(url.toString(), formData, {
-				headers: {
-					Authorization: `Bearer ${token}`,
-				},
-			});
+			const options = this.createOptionParams();
+			const observable = this.httpService.post<FileRecordResponse>(url.toString(), formData, options);
 			const response = await lastValueFrom(observable);
 
-			return response.data as FileRecordResponse;
+			return response.data;
 		} catch (error: unknown) {
-			if (error instanceof AxiosError) {
-				this.errorLogger.error(new AxiosErrorLoggable(error, 'FilesStorageClientAdapter.upload'));
-			} else {
-				this.errorLogger.error(
-					new GenericFileStorageLoggable(`An unknown error occurred in FilesStorageClientAdapter.upload`, {
-						error: util.inspect(error),
-					})
-				);
-			}
-
-			return null;
+			return this.handleFileStorageError(error, 'FilesStorageClientAdapter.upload', {
+				storageLocationId,
+				storageLocation,
+				parentId,
+				parentType,
+				fileName: file.name,
+			});
 		}
+	}
+
+	public async deleteByParent(
+		storageLocationId: string,
+		storageLocation: StorageLocation,
+		parentId: string,
+		parentType: FileRecordParentType
+	): Promise<FileRecordListResponse> {
+		try {
+			const options = this.createOptionParams();
+			const response = await this.api.deleteByParent(storageLocationId, storageLocation, parentId, parentType, options);
+
+			return response?.data;
+		} catch (error: unknown) {
+			return this.handleFileStorageError(error, 'FilesStorageClientAdapter.deleteByParent', {
+				storageLocationId,
+				storageLocation,
+				parentId,
+				parentType,
+			});
+		}
+	}
+	public async deleteFile(fileRecordId: string): Promise<FileRecordResponse> {
+		try {
+			const options = this.createOptionParams();
+			const response = await this.api.deleteFile(fileRecordId, options);
+
+			return response?.data;
+		} catch (error: unknown) {
+			return this.handleFileStorageError(error, 'FilesStorageClientAdapter.deleteFile', {
+				fileRecordId,
+			});
+		}
+	}
+
+	private handleFileStorageError(error: unknown, calledMethod: string, params?: LogMessageData): never {
+		if (error instanceof AxiosError) {
+			error = new AxiosErrorLoggable(error, calledMethod);
+		}
+
+		throw new GenericFileStorageLoggable(`An unknown error occurred in ${calledMethod}`, error, params);
+	}
+
+	private createOptionParams(): AxiosRequestConfig {
+		const jwt = this.getJwt();
+		const options: AxiosRequestConfig = { headers: { authorization: `Bearer ${jwt}` } };
+
+		return options;
+	}
+
+	private getJwt(): string {
+		return JwtExtractor.extractJwtFromRequestOrFail(this.req);
 	}
 }

@@ -37,7 +37,6 @@ export class FilesStorageClientModule {
 				SagaModule,
 				ConfigurationModule.register(options.configInjectionToken, options.configConstructor),
 				ConfigurationModule.register(options.exchangeConfigInjectionToken, options.exchangeConfigConstructor),
-
 				RabbitMQWrapperModule.register(options),
 			],
 			providers,

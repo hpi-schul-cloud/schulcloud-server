@@ -5,9 +5,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { Request } from 'express';
 import { FilesStorageClientAdapter } from './files-storage-client.adapter';
 import { FILE_STORAGE_CLIENT_CONFIG_TOKEN, FileStorageClientConfig } from './files-storage-client.config';
-import { FilesStorageClientModule } from './files-storage-client.module';
+import { FilesStorageRestClientModule } from './files-storage-rest-client.module';
 
-describe(FilesStorageClientModule.name, () => {
+describe(FilesStorageRestClientModule.name, () => {
 	let module: TestingModule;
 
 	const requestMock = createMock<Request>({
@@ -18,7 +18,7 @@ describe(FilesStorageClientModule.name, () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [FilesStorageClientModule.register(FILE_STORAGE_CLIENT_CONFIG_TOKEN, FileStorageClientConfig)],
+			imports: [FilesStorageRestClientModule.register(FILE_STORAGE_CLIENT_CONFIG_TOKEN, FileStorageClientConfig)],
 		})
 			.overrideProvider(REQUEST)
 			.useValue(requestMock)

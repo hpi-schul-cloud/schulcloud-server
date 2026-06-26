@@ -1,4 +1,3 @@
-import util from 'util';
 import { GenericFileStorageLoggable } from './generic-file-storage-adapter.loggable';
 
 describe(GenericFileStorageLoggable.name, () => {
@@ -8,7 +7,7 @@ describe(GenericFileStorageLoggable.name, () => {
 				error: 'invalid_request',
 			};
 
-			const loggable = new GenericFileStorageLoggable('message', { error: util.inspect(error) });
+			const loggable = new GenericFileStorageLoggable('message', error, { additional: 'data' });
 
 			return { loggable, error };
 		};
@@ -20,7 +19,7 @@ describe(GenericFileStorageLoggable.name, () => {
 
 			expect(result).toEqual({
 				message: 'message',
-				data: { error: util.inspect(error) },
+				data: { additional: 'data' },
 			});
 		});
 	});

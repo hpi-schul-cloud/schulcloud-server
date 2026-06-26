@@ -4,6 +4,6 @@ export {
 	FileStorageClientConfig,
 	InternalFilesStorageClientConfig,
 } from './files-storage-client.config';
-export { FilesStorageClientModule } from './files-storage-client.module';
+export { FilesStorageRestClientModule } from './files-storage-rest-client.module';
 export { FileApi } from './generated/api';
 export * from './generated/models';

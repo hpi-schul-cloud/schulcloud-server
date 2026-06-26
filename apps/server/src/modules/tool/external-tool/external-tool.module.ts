@@ -3,7 +3,7 @@ import { ConfigurationModule } from '@infra/configuration';
 import { EncryptionModule } from '@infra/encryption';
 import {
 	FILE_STORAGE_CLIENT_CONFIG_TOKEN,
-	FilesStorageClientModule,
+	FilesStorageRestClientModule,
 	FileStorageClientConfig,
 } from '@infra/files-storage-client';
 import { AuthorizationModule } from '@modules/authorization';
@@ -39,7 +39,7 @@ import {
 		HttpModule,
 		InstanceModule,
 		AuthorizationModule,
-		FilesStorageClientModule.register(FILE_STORAGE_CLIENT_CONFIG_TOKEN, FileStorageClientConfig),
+		FilesStorageRestClientModule.register(FILE_STORAGE_CLIENT_CONFIG_TOKEN, FileStorageClientConfig),
 		ConfigurationModule.register(TOOL_CONFIG_TOKEN, ToolConfig),
 	],
 	providers: [
