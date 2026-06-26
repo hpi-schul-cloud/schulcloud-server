@@ -29,6 +29,7 @@ import {
 	H5pElement,
 	handleNonExhaustiveSwitch,
 	LinkElement,
+	MapElement,
 	type MediaBoard,
 	type MediaExternalToolElement,
 	type MediaLine,
@@ -105,6 +106,9 @@ export class BoardNodeCopyService {
 				break;
 			case BoardNodeType.H5P_ELEMENT:
 				result = await this.copyH5pElement(boardNode as H5pElement, context);
+				break;
+			case BoardNodeType.MAP_ELEMENT:
+				result = await this.copyMapElement(boardNode as MapElement, context);
 				break;
 			default:
 				/* istanbul ignore next */
@@ -481,6 +485,22 @@ export class BoardNodeCopyService {
 		};
 
 		return result;
+	}
+
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	public copyMapElement(original: MapElement, context: CopyContext): Promise<CopyStatus> {
+		const copy = new MapElement({
+			...original.getProps(),
+			...this.buildSpecificProps([]),
+		});
+
+		const result: CopyStatus = {
+			copyEntity: copy,
+			type: CopyElementType.MAP_ELEMENT,
+			status: CopyStatusEnum.SUCCESS,
+		};
+
+		return Promise.resolve(result);
 	}
 
 	private async copyChildrenOf(boardNode: AnyBoardNode, context: CopyContext): Promise<CopyStatus[]> {

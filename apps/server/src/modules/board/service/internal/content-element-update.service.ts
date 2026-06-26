@@ -9,6 +9,7 @@ import {
 	FileFolderContentBody,
 	H5pContentBody,
 	LinkContentBody,
+	MapContentBody,
 	RichTextContentBody,
 	VideoConferenceContentBody,
 } from '../../controller/dto';
@@ -19,6 +20,7 @@ import type {
 	FileElement,
 	FileFolderElement,
 	LinkElement,
+	MapElement,
 	RichTextElement,
 	VideoConferenceElement,
 } from '../../domain';
@@ -30,6 +32,7 @@ import {
 	isFileFolderElement,
 	isH5pElement,
 	isLinkElement,
+	isMapElement,
 	isRichTextElement,
 	isVideoConferenceElement,
 } from '../../domain';
@@ -57,6 +60,8 @@ export class ContentElementUpdateService {
 			this.updateFileFolderElement(element, content);
 		} else if (isH5pElement(element) && content instanceof H5pContentBody) {
 			this.updateH5pElement(element, content);
+		} else if (isMapElement(element) && content instanceof MapContentBody) {
+			this.updateMapElement(element, content);
 		} else {
 			throw new Error(`Cannot update element of type: '${element.constructor.name}'`);
 		}
@@ -116,5 +121,12 @@ export class ContentElementUpdateService {
 		if (content.contentId !== undefined && element.contentId === undefined) {
 			element.contentId = content.contentId;
 		}
+	}
+
+	public updateMapElement(element: MapElement, content: MapContentBody): void {
+		element.centerLat = content.centerLat;
+		element.centerLng = content.centerLng;
+		element.zoom = content.zoom;
+		element.features = content.features;
 	}
 }

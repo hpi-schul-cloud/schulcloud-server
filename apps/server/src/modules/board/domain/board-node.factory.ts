@@ -11,6 +11,7 @@ import { FileElement } from './file-element.do';
 import { FileFolderElement } from './file-folder-element.do';
 import { H5pElement } from './h5p-element.do';
 import { LinkElement } from './link-element.do';
+import { MapElement } from './map-element.do';
 import { ROOT_PATH } from './path-utils';
 import { RichTextElement } from './rich-text-element.do';
 import { handleNonExhaustiveSwitch } from './type-mapping';
@@ -103,6 +104,15 @@ export class BoardNodeFactory {
 			case ContentElementType.H5P:
 				element = new H5pElement({
 					...this.getBaseProps(),
+				});
+				break;
+			case ContentElementType.MAP:
+				element = new MapElement({
+					...this.getBaseProps(),
+					centerLat: 51.5,
+					centerLng: 10.0,
+					zoom: 10,
+					features: '{"type":"FeatureCollection","features":[]}',
 				});
 				break;
 			default:

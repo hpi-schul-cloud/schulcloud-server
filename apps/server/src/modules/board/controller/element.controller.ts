@@ -30,6 +30,8 @@ import {
 	H5pElementResponse,
 	LinkElementContentBody,
 	LinkElementResponse,
+	MapElementContentBody,
+	MapElementResponse,
 	MoveContentElementBody,
 	RichTextElementContentBody,
 	RichTextElementResponse,
@@ -103,7 +105,8 @@ export class ElementController {
 		DrawingElementContentBody,
 		VideoConferenceElementContentBody,
 		FileFolderElementContentBody,
-		H5pElementContentBody
+		H5pElementContentBody,
+		MapElementContentBody
 	)
 	@ApiResponse({
 		status: 200,
@@ -117,6 +120,7 @@ export class ElementController {
 				{ $ref: getSchemaPath(VideoConferenceElementResponse) },
 				{ $ref: getSchemaPath(FileFolderElementResponse) },
 				{ $ref: getSchemaPath(H5pElementResponse) },
+				{ $ref: getSchemaPath(MapElementResponse) },
 			],
 		},
 	})

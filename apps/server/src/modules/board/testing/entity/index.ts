@@ -7,6 +7,7 @@ export * from './external-tool-element-entity.factory';
 export * from './file-element-entity.factory';
 export * from './file-folder-element-entity.factory';
 export * from './link-element-entity.factory';
+export * from './map-element-entity.factory';
 export * from './media-board-entity.factory';
 export * from './media-external-tool-element-entity.factory';
 export * from './media-line-entity.factory';

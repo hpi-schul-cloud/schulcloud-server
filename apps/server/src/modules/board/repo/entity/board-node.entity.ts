@@ -2,7 +2,7 @@ import { Embedded, Entity, Enum, Index, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { EntityId, InputFormat } from '@shared/domain/types';
 import { ObjectIdType } from '@shared/repo/types/object-id.type';
-import { AnyBoardNode, BoardLayout, BoardNodeType, ContentElementType, Colors, ROOT_PATH } from '../../domain';
+import { AnyBoardNode, BoardLayout, BoardNodeType, Colors, ContentElementType, ROOT_PATH } from '../../domain';
 import type { BoardNodeEntityProps } from '../types';
 import { Context } from './embeddables';
 
@@ -111,4 +111,18 @@ export class BoardNodeEntity extends BaseEntityWithTimestamps implements BoardNo
 	// --------------------------------------------------------------------------
 	@Enum({ type: 'ContentElementType', nullable: true })
 	deletedElementType: ContentElementType | undefined;
+
+	// MapElement
+	// --------------------------------------------------------------------------
+	@Property({ nullable: true })
+	centerLat: number | undefined;
+
+	@Property({ nullable: true })
+	centerLng: number | undefined;
+
+	@Property({ nullable: true })
+	zoom: number | undefined;
+
+	@Property({ type: 'string', nullable: true })
+	features: string | undefined;
 }

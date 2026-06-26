@@ -78,6 +78,13 @@ export interface H5pElementProps extends BoardNodeProps {
 	contentId?: string;
 }
 
+export interface MapElementProps extends BoardNodeProps {
+	centerLat: number;
+	centerLng: number;
+	zoom: number;
+	features: string;
+}
+
 export interface MediaBoardProps extends BoardNodeProps {
 	context: BoardExternalReference;
 	backgroundColor: Colors;
@@ -108,6 +115,7 @@ export type AnyBoardNodeProps =
 	| FileElementProps
 	| FileFolderElementProps
 	| LinkElementProps
+	| MapElementProps
 	| RichTextElementProps
 	| VideoConferenceElementProps
 	| DeletedElementProps

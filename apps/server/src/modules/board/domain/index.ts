@@ -13,6 +13,7 @@ export * from './file-element.do';
 export * from './file-folder-element.do';
 export * from './h5p-element.do';
 export * from './link-element.do';
+export * from './map-element.do';
 export * from './media-board';
 export * from './path-utils';
 export * from './rich-text-element.do';

@@ -1,7 +1,7 @@
 import { ApiProperty, ApiPropertyOptional, getSchemaPath } from '@nestjs/swagger';
 import { InputFormat } from '@shared/domain/types';
 import { Type } from 'class-transformer';
-import { IsEnum, IsMongoId, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { IsEnum, IsJSON, IsMongoId, IsNumber, IsOptional, IsString, Max, Min, ValidateNested } from 'class-validator';
 import { ContentElementType } from '../../../domain/types';
 
 abstract class ElementContentBody {
@@ -164,6 +164,41 @@ export class H5pElementContentBody extends ElementContentBody {
 	public content!: H5pContentBody;
 }
 
+export class MapContentBody {
+	@IsNumber()
+	@Min(-90)
+	@Max(90)
+	@ApiProperty()
+	centerLat!: number;
+
+	@IsNumber()
+	@Min(-180)
+	@Max(180)
+	@ApiProperty()
+	centerLng!: number;
+
+	@IsNumber()
+	@Min(1)
+	@Max(20)
+	@ApiProperty()
+	zoom!: number;
+
+	@IsString()
+	@IsJSON()
+	@ApiProperty()
+	features!: string;
+}
+
+export class MapElementContentBody extends ElementContentBody {
+	@ApiProperty({ enum: [ContentElementType.MAP] })
+	type!: ContentElementType.MAP;
+
+	@ValidateNested()
+	@Type(() => MapContentBody)
+	@ApiProperty()
+	content!: MapContentBody;
+}
+
 export type AnyElementContentBody =
 	| FileContentBody
 	| DrawingContentBody
@@ -172,7 +207,8 @@ export type AnyElementContentBody =
 	| ExternalToolContentBody
 	| VideoConferenceContentBody
 	| FileFolderContentBody
-	| H5pContentBody;
+	| H5pContentBody
+	| MapContentBody;
 
 export class UpdateElementContentBodyParams {
 	@ValidateNested()
@@ -188,6 +224,7 @@ export class UpdateElementContentBodyParams {
 				{ value: VideoConferenceElementContentBody, name: ContentElementType.VIDEO_CONFERENCE },
 				{ value: FileFolderElementContentBody, name: ContentElementType.FILE_FOLDER },
 				{ value: H5pElementContentBody, name: ContentElementType.H5P },
+				{ value: MapElementContentBody, name: ContentElementType.MAP },
 			],
 		},
 		keepDiscriminatorProperty: true,
@@ -202,6 +239,7 @@ export class UpdateElementContentBodyParams {
 			{ $ref: getSchemaPath(VideoConferenceElementContentBody) },
 			{ $ref: getSchemaPath(FileFolderElementContentBody) },
 			{ $ref: getSchemaPath(H5pElementContentBody) },
+			{ $ref: getSchemaPath(MapElementContentBody) },
 		],
 	})
 	public data!:
@@ -212,5 +250,6 @@ export class UpdateElementContentBodyParams {
 		| DrawingElementContentBody
 		| VideoConferenceElementContentBody
 		| FileFolderElementContentBody
-		| H5pElementContentBody;
+		| H5pElementContentBody
+		| MapElementContentBody;
 }
