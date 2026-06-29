@@ -49,6 +49,7 @@ export class LoginUc {
 	}
 
 	public async getSupportLoginData(targetUserId: EntityId, supportUserId: EntityId): Promise<string> {
+		// target user should be better fetch over user service, but is not possible because of circular dependency, so we fetch it over authorization service
 		const [supportUser, targetUser] = await Promise.all([
 			this.authorizationService.getUserWithPermissions(supportUserId),
 			this.authorizationService.getUserWithPermissions(targetUserId),
