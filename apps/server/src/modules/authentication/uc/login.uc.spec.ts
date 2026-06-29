@@ -228,8 +228,11 @@ describe('LoginUc', () => {
 
 				await loginUc.getSupportLoginData(targetUser.id, supportUser.id);
 
-				const expectedContext = AuthorizationContextBuilder.write([Permission.CREATE_SUPPORT_JWT]);
-				expect(authorizationService.checkPermission).toHaveBeenCalledWith(supportUser, supportUser, expectedContext);
+				const expectedContext = AuthorizationContextBuilder.write([
+					Permission.CREATE_SUPPORT_JWT,
+					Permission.CAN_EXECUTE_INSTANCE_OPERATIONS,
+				]);
+				expect(authorizationService.checkPermission).toHaveBeenCalledWith(supportUser, targetUser, expectedContext);
 			});
 
 			it('should generate support JWT', async () => {
