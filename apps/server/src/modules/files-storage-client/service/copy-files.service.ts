@@ -1,4 +1,4 @@
-import { StorageLocation } from '@infra/files-storage-client';
+import { StorageLocation } from '@infra/files-storage-rest-client';
 import { CopyHelperService } from '@modules/copy-helper/service/copy-helper.service';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helper/types/copy.types';
 import { Injectable } from '@nestjs/common';

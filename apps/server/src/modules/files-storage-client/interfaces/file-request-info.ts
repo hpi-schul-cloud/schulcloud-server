@@ -1,6 +1,6 @@
+import { StorageLocation } from '@infra/files-storage-rest-client';
 import { EntityId } from '@shared/domain/types';
 import { FileRecordParentType } from './files-storage';
-import { StorageLocation } from '@infra/files-storage-client';
 
 export interface FileRequestInfo {
 	storageLocationId: EntityId;

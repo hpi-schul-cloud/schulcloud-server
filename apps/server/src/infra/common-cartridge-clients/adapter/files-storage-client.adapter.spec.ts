@@ -2,7 +2,7 @@ import { AxiosErrorLoggable } from '@core/error/loggable';
 import { ErrorLogger, Logger } from '@core/logger';
 import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { fileRecordResponseFactory } from '@infra/files-storage-client/testing';
+import { fileRecordResponseFactory } from '@infra/files-storage-rest-client/testing';
 import { HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';

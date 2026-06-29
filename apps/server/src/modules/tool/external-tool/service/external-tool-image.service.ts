@@ -1,4 +1,4 @@
-import { FileRecordParentType, FilesStorageClientAdapter, StorageLocation } from '@infra/files-storage-client';
+import { FileRecordParentType, FilesStorageClientAdapter, StorageLocation } from '@infra/files-storage-rest-client';
 import { type Instance, InstanceService } from '@modules/instance';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';

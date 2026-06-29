@@ -1,4 +1,4 @@
-import { StorageLocation } from '@infra/files-storage-client';
+import { StorageLocation } from '@infra/files-storage-rest-client';
 import { EntityId } from '@shared/domain/types';
 import { EntitiesWithFiles, FileRequestInfo } from '../interfaces';
 import { FilesStorageClientMapper } from './files-storage-client.mapper';

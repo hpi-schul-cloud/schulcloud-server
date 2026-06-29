@@ -1,12 +1,12 @@
 import { LegacyLogger } from '@core/logger';
-import { StorageLocation } from '@infra/files-storage-client';
+import { StorageLocation } from '@infra/files-storage-rest-client';
 import { AuthorizationService } from '@modules/authorization';
 import {
 	BoardExternalReference,
 	BoardExternalReferenceType,
-	ColumnBoardService,
 	BoardNodeService,
 	Column,
+	ColumnBoardService,
 } from '@modules/board';
 import { StorageLocationReference } from '@modules/board/service/internal';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
@@ -20,10 +20,10 @@ import { User } from '@modules/user/repo';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
+import { Card } from '../../board/domain';
 import { ShareTokenParentType } from '../domainobject/share-token.do';
 import { ShareTokenService } from '../service';
 import { ShareTokenPermissionService } from './service';
-import { Card } from '../../board/domain';
 
 @Injectable()
 export class ImportTokenUC {

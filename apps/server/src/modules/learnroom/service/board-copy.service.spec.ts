@@ -1,6 +1,6 @@
 import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { StorageLocation } from '@infra/files-storage-client';
+import { StorageLocation } from '@infra/files-storage-rest-client';
 import { ColumnBoardService } from '@modules/board';
 import { BoardExternalReferenceType } from '@modules/board/domain';
 import { CopyColumnBoardParams } from '@modules/board/service/internal';

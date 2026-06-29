@@ -15,12 +15,13 @@ import {
 	RichTextElementContent,
 	SingleColumnBoardResponse,
 } from '@infra/common-cartridge-clients';
-import { fileRecordResponseFactory } from '@infra/files-storage-client/testing';
+import { fileRecordResponseFactory } from '@infra/files-storage-rest-client/testing';
 import { FileDto, FileRecordParentType, FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import AdmZip from 'adm-zip';
-import { ArchiverError, ProgressData } from 'archiver';
+import { ArchiverError } from 'archiver';
+import { ObjectId } from 'bson';
 import { Readable } from 'stream';
 import { CommonCartridgeVersion } from '../export/common-cartridge.enums';
 import { CommonCartridgeMessageLoggable } from '../loggable/common-cartridge-message.loggable';
@@ -38,7 +39,6 @@ import {
 } from '../testing/common-cartridge-elements.factory';
 import { CommonCartridgeExportMapper } from './common-cartridge-export.mapper';
 import { CommonCartridgeExportService } from './common-cartridge-export.service';
-import { ObjectId } from 'bson';
 
 jest.mock('@infra/auth-guard', () => {
 	return {

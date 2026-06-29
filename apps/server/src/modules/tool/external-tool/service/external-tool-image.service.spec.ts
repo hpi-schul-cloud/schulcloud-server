@@ -1,6 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { FileRecordParentType, FilesStorageClientAdapter, StorageLocation } from '@infra/files-storage-client';
-import { fileRecordResponseFactory } from '@infra/files-storage-client/testing';
+import { FileRecordParentType, FilesStorageClientAdapter, StorageLocation } from '@infra/files-storage-rest-client';
+import { fileRecordResponseFactory } from '@infra/files-storage-rest-client/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { InstanceService } from '@modules/instance';
 import { instanceFactory } from '@modules/instance/testing';

@@ -5,7 +5,7 @@ import {
 	FILE_STORAGE_CLIENT_CONFIG_TOKEN,
 	FilesStorageRestClientModule,
 	FileStorageClientConfig,
-} from '@infra/files-storage-client';
+} from '@infra/files-storage-rest-client';
 import { AuthorizationModule } from '@modules/authorization';
 import { OauthProviderServiceModule } from '@modules/oauth-provider';
 import { HttpModule } from '@nestjs/axios';

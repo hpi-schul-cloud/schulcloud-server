@@ -2,7 +2,7 @@ import { LegacyLogger } from '@core/logger';
 import { faker } from '@faker-js/faker';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { ConfigurationModule } from '@infra/configuration';
-import { fileRecordResponseFactory } from '@infra/files-storage-client/testing';
+import { fileRecordResponseFactory } from '@infra/files-storage-rest-client/testing';
 import { HttpStatus, StreamableFile } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { currentUserFactory } from '@testing/factory/currentuser.factory';
@@ -14,9 +14,9 @@ import { CommonCartridgeExportResponse } from '../service/common-cartridge-expor
 import { CommonCartridgeUc } from '../uc/common-cartridge.uc';
 import { CommonCartridgeController } from './common-cartridge.controller';
 import { ExportCourseParams } from './dto';
+import { CommonCartridgeFileParams } from './dto/common-cartridge-file.params';
 import { CourseExportBodyParams } from './dto/course-export.body.params';
 import { CourseQueryParams } from './dto/course.query.params';
-import { CommonCartridgeFileParams } from './dto/common-cartridge-file.params';
 
 describe('CommonCartridgeController', () => {
 	let module: TestingModule;

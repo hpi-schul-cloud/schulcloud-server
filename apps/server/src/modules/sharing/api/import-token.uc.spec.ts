@@ -1,6 +1,7 @@
 import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { StorageLocation } from '@infra/files-storage-client';
+import { StorageLocation } from '@infra/files-storage-rest-client';
+import { roomFactory } from '@modules//room/testing';
 import { AuthorizationService } from '@modules/authorization';
 import { BoardExternalReferenceType, BoardNodeService, ColumnBoardService } from '@modules/board';
 import { CopyCardParams, CopyColumnBoardParams } from '@modules/board/service/internal';
@@ -14,7 +15,6 @@ import { LessonCopyService } from '@modules/lesson';
 import { LessonEntity, Material } from '@modules/lesson/repo';
 import { lessonFactory } from '@modules/lesson/testing';
 import { RoomService } from '@modules/room';
-import { roomFactory } from '@modules//room/testing';
 import { SagaService } from '@modules/saga';
 import { schoolEntityFactory, schoolFactory } from '@modules/school/testing';
 import { TaskCopyService } from '@modules/task';

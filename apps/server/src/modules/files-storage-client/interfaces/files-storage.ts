@@ -1,4 +1,4 @@
-import { StorageLocation } from '@infra/files-storage-client';
+import { StorageLocation } from '@infra/files-storage-rest-client';
 import { EntityId } from '@shared/domain/types';
 
 export enum FilesStorageEvents {

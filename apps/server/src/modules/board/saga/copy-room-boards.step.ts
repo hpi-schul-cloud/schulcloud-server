@@ -1,6 +1,6 @@
 import { Logger } from '@core/logger';
-import { StorageLocation } from '@infra/files-storage-client';
-import { CopyElementType, CopyStatus, CopyHelperService } from '@modules/copy-helper';
+import { StorageLocation } from '@infra/files-storage-rest-client';
+import { CopyElementType, CopyHelperService, CopyStatus } from '@modules/copy-helper';
 import { RoomService } from '@modules/room';
 import { ModuleName, SagaService, SagaStep } from '@modules/saga';
 import { Injectable } from '@nestjs/common';
