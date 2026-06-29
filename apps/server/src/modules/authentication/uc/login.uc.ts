@@ -54,8 +54,11 @@ export class LoginUc {
 			this.authorizationService.getUserWithPermissions(targetUserId),
 		]);
 
-		const authContext = AuthorizationContextBuilder.write([Permission.CREATE_SUPPORT_JWT]);
-		this.authorizationService.checkPermission(supportUser, supportUser, authContext);
+		const authContext = AuthorizationContextBuilder.write([
+			Permission.CREATE_SUPPORT_JWT,
+			Permission.CAN_EXECUTE_INSTANCE_OPERATIONS,
+		]);
+		this.authorizationService.checkPermission(supportUser, targetUser, authContext);
 
 		const jwtToken = await this.authService.generateSupportJwt(supportUser, targetUser);
 
