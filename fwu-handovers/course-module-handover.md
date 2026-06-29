@@ -11,9 +11,9 @@ This document guides new developers through the Course-related codebase. It's de
 ### 1.1 What is a Course?
 
 A **Course** ("Kurs" in German) is the central organizational unit for teaching content. It groups teachers and students together and acts as a container for:
-- **Lessons** (structured teaching units – covered in a separate document)
+- **Lessons** (structured teaching units)
 - **Tasks** (homework/assignments)
-- **Boards** (collaborative content areas – covered in a separate document)
+- **Boards** (collaborative content areas)
 - **External Tools** (LTI-based integrations)
 
 A course has a defined time span (`startDate` → `untilDate`), after which it becomes "archived."
@@ -22,12 +22,13 @@ A course has a defined time span (`startDate` → `untilDate`), after which it b
 
 | Concept | Relationship to Course |
 |---------|----------------------|
+| **Learnroom** | Synonimous with Course |
 | **CourseGroup** | A sub-group of students *within* a course (e.g., for project work) |
 | **Class** | A school class whose students can be enrolled in a course |
 | **Group** | A newer abstraction (from provisioning systems) that can also supply students to a course |
 | **LegacyBoard** | A single-column list of lessons/tasks/boards belonging to a course |
 | **Dashboard** | The user's personalized grid view showing their courses |
-| **Room** | The *new* replacement concept (not covered here); learnroom is being deprecated in favor of rooms |
+| **Room** | The *new* replacement concept (not covered here); course is being deprecated in favor of rooms |
 
 ### 1.3 Key Architectural Fact: Split Implementation
 
@@ -130,7 +131,7 @@ export class CourseGroupEntity extends BaseEntityWithTimestamps {
 
 CourseGroups can own their own lessons and tasks (they implement `TaskParent` and `LessonParent`).
 
-### 2.4 MongoDB Schema (Legacy Feathers)
+### 2.4 Mongoose Schema (Legacy Feathers)
 
 📁 [model.js](../src/services/user-group/model.js)
 
