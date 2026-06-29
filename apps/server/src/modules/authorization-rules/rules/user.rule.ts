@@ -23,8 +23,8 @@ export class UserRule implements Rule<UserEntityOrDo> {
 		authorisationInjectionService.injectAuthorizationRule(this);
 	}
 
-	public isApplicable(authorizableUser: User, user: UserEntityOrDo): boolean {
-		const isMatched = user instanceof UserDo || user instanceof User;
+	public isApplicable(authorizableUser: User, object: unknown): boolean {
+		const isMatched = object instanceof UserDo || object instanceof User;
 
 		return isMatched;
 	}
