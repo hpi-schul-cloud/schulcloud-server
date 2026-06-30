@@ -1,9 +1,7 @@
-import { Logger, LoggerModule } from '@core/logger';
+import { LoggerModule } from '@core/logger';
 import { ConfigurationModule } from '@infra/configuration';
-import { HttpModule, HttpService } from '@nestjs/axios';
-import { DynamicModule, Module, Scope } from '@nestjs/common';
-import { REQUEST } from '@nestjs/core';
-import { Request } from 'express';
+import { HttpModule } from '@nestjs/axios';
+import { DynamicModule, Module } from '@nestjs/common';
 import { FilesStorageClientAdapter } from './files-storage-client.adapter';
 import { InternalFilesStorageClientConfig } from './files-storage-client.config';
 import { Configuration, FileApi } from './generated';
@@ -18,18 +16,7 @@ export class FilesStorageRestClientModule {
 			module: FilesStorageRestClientModule,
 			imports: [LoggerModule, HttpModule, ConfigurationModule.register(configInjectionToken, configConstructor)],
 			providers: [
-				{
-					provide: FilesStorageClientAdapter,
-					scope: Scope.REQUEST,
-					useFactory: (
-						api: FileApi,
-						logger: Logger,
-						httpService: HttpService,
-						internalConfig: InternalFilesStorageClientConfig,
-						req: Request
-					): FilesStorageClientAdapter => new FilesStorageClientAdapter(api, logger, httpService, internalConfig, req),
-					inject: [FileApi, Logger, HttpService, configInjectionToken, REQUEST],
-				},
+				FilesStorageClientAdapter,
 				{
 					provide: FileApi,
 					useFactory: (internalConfig: InternalFilesStorageClientConfig): FileApi => {
