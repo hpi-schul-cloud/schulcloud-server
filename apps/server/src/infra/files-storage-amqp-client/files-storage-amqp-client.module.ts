@@ -1,17 +1,17 @@
 import { LegacyLogger, LoggerModule } from '@core/logger';
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { ConfigurationModule } from '@infra/configuration';
-import { RabbitMQWrapperModule } from '@infra/rabbitmq';
+import { RabbitMQModuleOptions, RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { SagaModule } from '@modules/saga';
 import { DynamicModule, Module } from '@nestjs/common';
-import { FilesStorageClientConfig } from './files-storage-client-config';
-import { FilesStorageModuleOptions } from './files-storage-module.options';
+import { FilesStorageAMQPClientConfig } from './files-storage-amqp-client-config';
 import { DeleteUserFilesStorageDataStep } from './saga';
 import { FilesStorageClientAdapterService, FilesStorageProducer } from './service';
 
+export type FilesStorageAMQPClientModuleOptions = RabbitMQModuleOptions;
 @Module({})
-export class FilesStorageClientModule {
-	public static register(options: FilesStorageModuleOptions): DynamicModule {
+export class FilesStorageAMQPClientModule {
+	public static register(options: FilesStorageAMQPClientModuleOptions): DynamicModule {
 		const providers = [
 			FilesStorageClientAdapterService,
 			DeleteUserFilesStorageDataStep,
@@ -20,14 +20,14 @@ export class FilesStorageClientModule {
 				useFactory: (
 					amqpConnection: AmqpConnection,
 					logger: LegacyLogger,
-					config: FilesStorageClientConfig
+					config: FilesStorageAMQPClientConfig
 				): FilesStorageProducer => new FilesStorageProducer(amqpConnection, logger, config),
 				inject: [AmqpConnection, LegacyLogger, options.exchangeConfigInjectionToken],
 			},
 		];
 
 		return {
-			module: FilesStorageClientModule,
+			module: FilesStorageAMQPClientModule,
 			imports: [
 				LoggerModule,
 				SagaModule,

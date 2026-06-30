@@ -2,9 +2,9 @@ import { LoggerModule } from '@core/logger';
 import { ConfigurationModule } from '@infra/configuration';
 import { EncryptionModule } from '@infra/encryption';
 import {
-	FILE_STORAGE_CLIENT_CONFIG_TOKEN,
+	FILES_STORAGE_REST_CLIENT_CONFIG_TOKEN,
+	FilesStorageRestClientConfig,
 	FilesStorageRestClientModule,
-	FileStorageClientConfig,
 } from '@infra/files-storage-rest-client';
 import { AuthorizationModule } from '@modules/authorization';
 import { OauthProviderServiceModule } from '@modules/oauth-provider';
@@ -39,7 +39,7 @@ import {
 		HttpModule,
 		InstanceModule,
 		AuthorizationModule,
-		FilesStorageRestClientModule.register(FILE_STORAGE_CLIENT_CONFIG_TOKEN, FileStorageClientConfig),
+		FilesStorageRestClientModule.register(FILES_STORAGE_REST_CLIENT_CONFIG_TOKEN, FilesStorageRestClientConfig),
 		ConfigurationModule.register(TOOL_CONFIG_TOKEN, ToolConfig),
 	],
 	providers: [

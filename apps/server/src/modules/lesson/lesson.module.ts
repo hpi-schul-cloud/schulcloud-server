@@ -2,9 +2,9 @@ import { LoggerModule } from '@core/logger';
 import { ConfigurationModule } from '@infra/configuration';
 import { FeathersServiceProvider } from '@infra/feathers';
 import {
-	FILES_STORAGE_CLIENT_CONFIG_TOKEN,
-	FilesStorageClientConfig,
-	FilesStorageClientModule,
+	FILES_STORAGE_AMQP_CLIENT_CONFIG_TOKEN,
+	FilesStorageAMQPClientConfig,
+	FilesStorageAMQPClientModule,
 } from '@infra/files-storage-amqp-client';
 import { RABBITMQ_CONFIG_TOKEN, RabbitMQConfig } from '@infra/rabbitmq';
 import { AuthorizationModule } from '@modules/authorization';
@@ -25,9 +25,9 @@ import { DeleteUserLessonDataStep } from './saga';
 		TaskModule,
 		AuthorizationModule,
 		SagaModule,
-		FilesStorageClientModule.register({
-			exchangeConfigConstructor: FilesStorageClientConfig,
-			exchangeConfigInjectionToken: FILES_STORAGE_CLIENT_CONFIG_TOKEN,
+		FilesStorageAMQPClientModule.register({
+			exchangeConfigConstructor: FilesStorageAMQPClientConfig,
+			exchangeConfigInjectionToken: FILES_STORAGE_AMQP_CLIENT_CONFIG_TOKEN,
 			configInjectionToken: RABBITMQ_CONFIG_TOKEN,
 			configConstructor: RabbitMQConfig,
 		}),

@@ -2,9 +2,9 @@ import { CoreModule } from '@core/core.module';
 import { LoggerModule } from '@core/logger';
 import { ConfigurationModule } from '@infra/configuration';
 import {
-	FILES_STORAGE_CLIENT_CONFIG_TOKEN,
-	FilesStorageClientConfig,
-	FilesStorageClientModule,
+	FILES_STORAGE_AMQP_CLIENT_CONFIG_TOKEN,
+	FilesStorageAMQPClientConfig,
+	FilesStorageAMQPClientModule,
 } from '@infra/files-storage-amqp-client';
 import { H5P_EXCHANGE_CONFIG_TOKEN, H5pEditorClientModule, H5pExchangeConfig } from '@infra/h5p-editor-client';
 import { RABBITMQ_CONFIG_TOKEN, RabbitMQConfig } from '@infra/rabbitmq';
@@ -64,9 +64,9 @@ import { TLDRAW_CLIENT_CONFIG_TOKEN, TldrawClientConfig } from './tldraw-client.
 			configInjectionToken: RABBITMQ_CONFIG_TOKEN,
 			configConstructor: RabbitMQConfig,
 		}),
-		FilesStorageClientModule.register({
-			exchangeConfigConstructor: FilesStorageClientConfig,
-			exchangeConfigInjectionToken: FILES_STORAGE_CLIENT_CONFIG_TOKEN,
+		FilesStorageAMQPClientModule.register({
+			exchangeConfigConstructor: FilesStorageAMQPClientConfig,
+			exchangeConfigInjectionToken: FILES_STORAGE_AMQP_CLIENT_CONFIG_TOKEN,
 			configInjectionToken: RABBITMQ_CONFIG_TOKEN,
 			configConstructor: RabbitMQConfig,
 		}),

@@ -3,7 +3,7 @@ import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { RpcMessageProducer } from '@infra/rabbitmq';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { FilesStorageClientConfig } from '../files-storage-client-config';
+import { FilesStorageAMQPClientConfig } from '../files-storage-amqp-client-config';
 import { CopyFileDO, CopyFilesOfParentParams, FileDO, FilesStorageEvents } from '../interfaces';
 
 @Injectable()
@@ -11,7 +11,7 @@ export class FilesStorageProducer extends RpcMessageProducer {
 	constructor(
 		protected readonly amqpConnection: AmqpConnection,
 		private readonly logger: LegacyLogger,
-		protected readonly config: FilesStorageClientConfig
+		protected readonly config: FilesStorageAMQPClientConfig
 	) {
 		super(amqpConnection, config.exchangeName, config.incomingTimeoutCopyApi);
 		this.logger.setContext(FilesStorageProducer.name);

@@ -1,7 +1,7 @@
 export { FilesStorageClientAdapter } from './files-storage-client.adapter';
 export {
-	FILE_STORAGE_CLIENT_CONFIG_TOKEN,
-	FileStorageClientConfig,
+	FILES_STORAGE_REST_CLIENT_CONFIG_TOKEN,
+	FilesStorageRestClientConfig,
 	InternalFilesStorageClientConfig,
 } from './files-storage-client.config';
 export { FilesStorageRestClientModule } from './files-storage-rest-client.module';

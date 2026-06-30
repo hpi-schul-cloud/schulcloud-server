@@ -1,7 +1,10 @@
 export { FileDto } from './dto';
 export { CopyFileDto } from './dto/copy-file.dto';
-export { FILES_STORAGE_CLIENT_CONFIG_TOKEN, FilesStorageClientConfig } from './files-storage-client-config';
-export { FilesStorageClientModule } from './files-storage-client.module';
+export {
+	FILES_STORAGE_AMQP_CLIENT_CONFIG_TOKEN,
+	FilesStorageAMQPClientConfig,
+} from './files-storage-amqp-client-config';
+export { FilesStorageAMQPClientModule } from './files-storage-amqp-client.module';
 export {
 	CopyFileDO,
 	CopyFileDomainObjectProps,

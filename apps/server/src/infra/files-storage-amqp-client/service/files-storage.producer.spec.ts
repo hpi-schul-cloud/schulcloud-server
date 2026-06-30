@@ -5,7 +5,7 @@ import { StorageLocation } from '@infra/files-storage-amqp-client';
 import { ErrorMapper } from '@infra/rabbitmq';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
-import { FilesStorageClientConfig } from '../files-storage-client-config';
+import { FilesStorageAMQPClientConfig } from '../files-storage-amqp-client-config';
 import { FileRecordParentType, FilesStorageEvents } from '../interfaces';
 import { FilesStorageProducer } from './files-storage.producer';
 
@@ -13,7 +13,7 @@ describe('FilesStorageProducer', () => {
 	let module: TestingModule;
 	let service: FilesStorageProducer;
 	let amqpConnection: DeepMocked<AmqpConnection>;
-	let config: FilesStorageClientConfig;
+	let config: FilesStorageAMQPClientConfig;
 	const timeout = 10000;
 
 	beforeAll(async () => {
@@ -29,7 +29,7 @@ describe('FilesStorageProducer', () => {
 					useValue: createMock<AmqpConnection>(),
 				},
 				{
-					provide: FilesStorageClientConfig,
+					provide: FilesStorageAMQPClientConfig,
 					useValue: {
 						exchangeName: 'files-storage-exchange',
 						incomingTimeoutCopyApi: timeout,
@@ -39,7 +39,7 @@ describe('FilesStorageProducer', () => {
 		}).compile();
 
 		amqpConnection = module.get(AmqpConnection);
-		config = module.get(FilesStorageClientConfig);
+		config = module.get(FilesStorageAMQPClientConfig);
 		service = new FilesStorageProducer(amqpConnection, module.get(LegacyLogger), config);
 	});
 

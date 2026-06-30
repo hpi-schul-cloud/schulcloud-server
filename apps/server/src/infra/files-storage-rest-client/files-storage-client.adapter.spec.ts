@@ -9,7 +9,7 @@ import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
 import { ObjectId } from 'bson';
 import type { Request } from 'express';
 import { FilesStorageClientAdapter } from './files-storage-client.adapter';
-import { FILE_STORAGE_CLIENT_CONFIG_TOKEN } from './files-storage-client.config';
+import { FILES_STORAGE_REST_CLIENT_CONFIG_TOKEN } from './files-storage-client.config';
 import { FileApi, FileRecordParentType, StorageLocation } from './generated';
 import { fileRecordResponseFactory } from './testing';
 
@@ -39,7 +39,7 @@ describe(FilesStorageClientAdapter.name, () => {
 					useValue: createMock<HttpService>(),
 				},
 				{
-					provide: FILE_STORAGE_CLIENT_CONFIG_TOKEN,
+					provide: FILES_STORAGE_REST_CLIENT_CONFIG_TOKEN,
 					useValue: {
 						basePath: faker.internet.url(),
 					},

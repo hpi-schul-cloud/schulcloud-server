@@ -3,10 +3,10 @@ import { RabbitMQExchangeType } from '@infra/rabbitmq';
 import { StringToNumber } from '@shared/controller/transformer';
 import { IsNumber, IsString } from 'class-validator';
 
-export const FILES_STORAGE_CLIENT_CONFIG_TOKEN = 'FILES_STORAGE_CLIENT_CONFIG_TOKEN';
+export const FILES_STORAGE_AMQP_CLIENT_CONFIG_TOKEN = 'FILES_STORAGE_AMQP_CLIENT_CONFIG_TOKEN';
 
 @Configuration()
-export class FilesStorageClientConfig {
+export class FilesStorageAMQPClientConfig {
 	@ConfigProperty('INCOMING_REQUEST_TIMEOUT_COPY_API')
 	@StringToNumber()
 	@IsNumber()
