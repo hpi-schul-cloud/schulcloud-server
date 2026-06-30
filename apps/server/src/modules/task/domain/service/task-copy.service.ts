@@ -1,5 +1,11 @@
-import { FileUrlReplacement } from '@infra/files-storage-amqp-client';
-import { CopyElementType, CopyFilesService, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
+import {
+	CopyElementType,
+	CopyFilesService,
+	CopyHelperService,
+	CopyStatus,
+	CopyStatusEnum,
+	FileUrlReplacement,
+} from '@modules/copy-helper';
 import { CourseEntity } from '@modules/course/repo';
 import { LessonEntity } from '@modules/lesson/repo';
 import { User } from '@modules/user/repo';

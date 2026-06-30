@@ -1,11 +1,9 @@
 import { LegacyLogger, LoggerModule } from '@core/logger';
-import { DynamicModule, Module } from '@nestjs/common';
-// The files-storage-client should not know the copy-helper
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { ConfigurationModule } from '@infra/configuration';
 import { RabbitMQWrapperModule } from '@infra/rabbitmq';
-import { CopyHelperModule } from '@modules/copy-helper/copy-helper.module';
 import { SagaModule } from '@modules/saga';
+import { DynamicModule, Module } from '@nestjs/common';
 import { FilesStorageClientConfig } from './files-storage-client-config';
 import { FilesStorageModuleOptions } from './files-storage-module.options';
 import { DeleteUserFilesStorageDataStep } from './saga';
@@ -32,7 +30,6 @@ export class FilesStorageClientModule {
 			module: FilesStorageClientModule,
 			imports: [
 				LoggerModule,
-				CopyHelperModule,
 				SagaModule,
 				ConfigurationModule.register(options.configInjectionToken, options.configConstructor),
 				ConfigurationModule.register(options.exchangeConfigInjectionToken, options.exchangeConfigConstructor),

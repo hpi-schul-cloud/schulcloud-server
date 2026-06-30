@@ -1,7 +1,6 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { CopyFilesService } from '@infra/files-storage-amqp-client';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { CopyElementType, CopyHelperService, CopyStatusEnum } from '@modules/copy-helper';
+import { CopyElementType, CopyFilesService, CopyHelperService, CopyStatusEnum } from '@modules/copy-helper';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { LessonEntity, Material } from '@modules/lesson/repo';

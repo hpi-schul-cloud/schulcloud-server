@@ -3,4 +3,4 @@ export * from './dto/copy.response';
 export * from './mapper/copy.mapper';
 export * from './service/copy-files.service';
 export * from './service/copy-helper.service';
-export * from './types/copy.types';
+export * from './types';
