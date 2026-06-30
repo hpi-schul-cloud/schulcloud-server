@@ -388,4 +388,49 @@ describe('UserRule', () => {
 			});
 		});
 	});
+
+	describe('when target is a User entity instead of UserDo', () => {
+		describe('isApplicable', () => {
+			const setup = () => {
+				const role = roleFactory.buildWithId({ permissions: [] });
+				const school = schoolEntityFactory.buildWithId();
+				const user = userFactory.buildWithId({ roles: [role], school });
+				const targetUserEntity = userFactory.buildWithId({ roles: [role], school });
+
+				return { user, targetUserEntity };
+			};
+
+			it('should return true for User entity', () => {
+				const { user, targetUserEntity } = setup();
+
+				const res = service.isApplicable(user, targetUserEntity);
+
+				expect(res).toBe(true);
+			});
+		});
+
+		describe('when accessing a User entity of the same school', () => {
+			const setup = () => {
+				const grantedPermission = 'a' as Permission;
+				config.teacherVisibilityForExternalTeamInvitation = TeacherVisibilityForExternalTeamInvitation.OPT_IN;
+				const role = roleFactory.buildWithId({ permissions: [grantedPermission] });
+				const school = schoolEntityFactory.buildWithId();
+				const user = userFactory.buildWithId({ roles: [role], school });
+				const targetUserEntity = userFactory.buildWithId({ roles: [role], school });
+
+				return { user, targetUserEntity, grantedPermission };
+			};
+
+			it('should return "true" if user has the permissions', () => {
+				const { user, targetUserEntity, grantedPermission } = setup();
+
+				const res = service.hasPermission(user, targetUserEntity, {
+					action: Action.read,
+					requiredPermissions: [grantedPermission],
+				});
+
+				expect(res).toBe(true);
+			});
+		});
+	});
 });
