@@ -1,5 +1,9 @@
-import { StorageLocation } from '@infra/files-storage-rest-client';
 import { EntityId } from '@shared/domain/types';
+
+export enum StorageLocation {
+	SCHOOL = 'school',
+	INSTANCE = 'instance',
+}
 
 export enum FilesStorageEvents {
 	'COPY_FILES_OF_PARENT' = 'copy-files-of-parent',

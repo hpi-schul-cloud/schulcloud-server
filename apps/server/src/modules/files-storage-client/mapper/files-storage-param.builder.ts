@@ -1,6 +1,5 @@
-import { StorageLocation } from '@infra/files-storage-rest-client';
 import { EntityId } from '@shared/domain/types';
-import { EntitiesWithFiles, FileRequestInfo } from '../interfaces';
+import { EntitiesWithFiles, FileRequestInfo, StorageLocation } from '../interfaces';
 import { FilesStorageClientMapper } from './files-storage-client.mapper';
 
 export class FileParamBuilder {

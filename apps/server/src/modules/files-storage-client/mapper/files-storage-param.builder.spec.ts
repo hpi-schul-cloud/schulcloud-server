@@ -1,5 +1,5 @@
-import { StorageLocation } from '@infra/files-storage-rest-client';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
+import { StorageLocation } from '@modules/files-storage-client';
 import { LessonEntity, Material } from '@modules/lesson/repo';
 import { lessonFactory } from '@modules/lesson/testing';
 import { Submission, Task } from '@modules/task/repo';

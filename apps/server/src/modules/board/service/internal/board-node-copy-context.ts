@@ -1,5 +1,9 @@
-import { StorageLocation } from '@infra/files-storage-rest-client';
-import { CopyFileDto, FileRecordParentType, FilesStorageClientAdapterService } from '@modules/files-storage-client';
+import {
+	CopyFileDto,
+	FileRecordParentType,
+	FilesStorageClientAdapterService,
+	StorageLocation,
+} from '@modules/files-storage-client';
 import { EntityId } from '@shared/domain/types';
 import { CopyContext } from './board-node-copy.service';
 

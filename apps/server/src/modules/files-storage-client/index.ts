@@ -17,6 +17,7 @@ export {
 	FilesStorageEvents,
 	FileUrlReplacement,
 	ScanStatus,
+	StorageLocation,
 } from './interfaces';
 export { FileParamBuilder } from './mapper';
 export { CopyFilesService, FilesStorageClientAdapterService } from './service';

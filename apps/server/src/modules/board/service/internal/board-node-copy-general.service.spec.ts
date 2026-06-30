@@ -1,9 +1,8 @@
 import { createMock } from '@golevelup/ts-jest';
-import { StorageLocation } from '@infra/files-storage-rest-client';
 import { H5pEditorProducer } from '@infra/h5p-editor-client';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
-import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
+import { FilesStorageClientAdapterService, StorageLocation } from '@modules/files-storage-client';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
 import { SchoolExternalToolService } from '@modules/tool/school-external-tool/service';
 import { Test, TestingModule } from '@nestjs/testing';

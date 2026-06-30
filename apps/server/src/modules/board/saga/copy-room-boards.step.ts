@@ -1,5 +1,4 @@
 import { Logger } from '@core/logger';
-import { StorageLocation } from '@infra/files-storage-rest-client';
 import { CopyElementType, CopyHelperService, CopyStatus } from '@modules/copy-helper';
 import { RoomService } from '@modules/room';
 import { ModuleName, SagaService, SagaStep } from '@modules/saga';
@@ -7,6 +6,7 @@ import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { BoardExternalReferenceType, type ColumnBoard } from '../domain';
 import { ColumnBoardService } from '../service';
+import { StorageLocation } from '@modules/files-storage-client';
 
 @Injectable()
 export class CopyRoomBoardsStep extends SagaStep<'copyRoomBoards'> {

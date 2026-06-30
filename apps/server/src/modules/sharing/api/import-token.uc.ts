@@ -1,5 +1,4 @@
 import { LegacyLogger } from '@core/logger';
-import { StorageLocation } from '@infra/files-storage-rest-client';
 import { AuthorizationService } from '@modules/authorization';
 import {
 	BoardExternalReference,
@@ -11,6 +10,7 @@ import {
 import { StorageLocationReference } from '@modules/board/service/internal';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { CourseService } from '@modules/course';
+import { StorageLocation } from '@modules/files-storage-client';
 import { CourseCopyService } from '@modules/learnroom';
 import { LessonCopyService } from '@modules/lesson';
 import { RoomService } from '@modules/room';

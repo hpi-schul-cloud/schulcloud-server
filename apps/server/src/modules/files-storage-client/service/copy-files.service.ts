@@ -1,10 +1,9 @@
-import { StorageLocation } from '@infra/files-storage-rest-client';
 import { CopyHelperService } from '@modules/copy-helper/service/copy-helper.service';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helper/types/copy.types';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { CopyFileDto } from '../dto';
-import { EntityWithEmbeddedFiles, FileUrlReplacement } from '../interfaces';
+import { EntityWithEmbeddedFiles, FileUrlReplacement, StorageLocation } from '../interfaces';
 import { CopyFilesOfParentParamBuilder, FileParamBuilder } from '../mapper';
 import { FilesStorageClientAdapterService } from './files-storage-client.service';
 
