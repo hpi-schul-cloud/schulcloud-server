@@ -6,6 +6,7 @@ import {
 	AuthorizationInjectionService,
 	TeacherVisibilityForExternalTeamInvitation,
 } from '@modules/authorization';
+import { RoleName } from '@modules/role';
 import { roleFactory } from '@modules/role/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { User } from '@modules/user/repo';
@@ -326,6 +327,65 @@ describe('UserRule', () => {
 			expect(() =>
 				service.hasPermission(user, entity, { action: 'unknown' as Action, requiredPermissions: [] })
 			).toThrow(NotImplementedException);
+		});
+	});
+
+	describe('hasLimitingRole', () => {
+		describe('when authorizableUser is admin without teacher role and target user is not a teacher', () => {
+			const setup = () => {
+				const grantedPermission = 'a' as Permission;
+				config.teacherVisibilityForExternalTeamInvitation = TeacherVisibilityForExternalTeamInvitation.OPT_IN;
+				const adminRole = roleFactory.buildWithId({ name: RoleName.ADMINISTRATOR, permissions: [grantedPermission] });
+				const studentRole = roleFactory.buildWithId({ name: RoleName.STUDENT, permissions: [] });
+				const school = schoolEntityFactory.buildWithId();
+				const adminUser = userFactory.buildWithId({ roles: [adminRole], school });
+				const studentEntity = userDoFactory.buildWithId({
+					schoolId: school.id,
+					roles: [{ id: studentRole.id, name: RoleName.STUDENT }],
+				});
+
+				return { adminUser, studentEntity, grantedPermission };
+			};
+
+			it('should return "false" due to limiting role restriction', () => {
+				const { adminUser, studentEntity, grantedPermission } = setup();
+
+				const res = service.hasPermission(adminUser, studentEntity, {
+					action: Action.read,
+					requiredPermissions: [grantedPermission],
+				});
+
+				expect(res).toBe(false);
+			});
+		});
+
+		describe('when authorizableUser is admin with teacher role', () => {
+			const setup = () => {
+				const grantedPermission = 'a' as Permission;
+				config.teacherVisibilityForExternalTeamInvitation = TeacherVisibilityForExternalTeamInvitation.OPT_IN;
+				const adminRole = roleFactory.buildWithId({ name: RoleName.ADMINISTRATOR, permissions: [grantedPermission] });
+				const teacherRole = roleFactory.buildWithId({ name: RoleName.TEACHER, permissions: [grantedPermission] });
+				const studentRole = roleFactory.buildWithId({ name: RoleName.STUDENT, permissions: [] });
+				const school = schoolEntityFactory.buildWithId();
+				const adminTeacherUser = userFactory.buildWithId({ roles: [adminRole, teacherRole], school });
+				const studentEntity = userDoFactory.buildWithId({
+					schoolId: school.id,
+					roles: [{ id: studentRole.id, name: RoleName.STUDENT }],
+				});
+
+				return { adminTeacherUser, studentEntity, grantedPermission };
+			};
+
+			it('should return "true" because teacher role bypasses limiting role restriction', () => {
+				const { adminTeacherUser, studentEntity, grantedPermission } = setup();
+
+				const res = service.hasPermission(adminTeacherUser, studentEntity, {
+					action: Action.read,
+					requiredPermissions: [grantedPermission],
+				});
+
+				expect(res).toBe(true);
+			});
 		});
 	});
 });
