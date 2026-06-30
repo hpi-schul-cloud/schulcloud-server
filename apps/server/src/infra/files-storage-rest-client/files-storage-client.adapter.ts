@@ -3,7 +3,7 @@ import { Logger, LogMessageData } from '@core/logger';
 import { Inject, Injectable, Scope } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import { JwtExtractor } from '@shared/common/utils/jwt';
-import { AxiosError, AxiosRequestConfig } from 'axios';
+import { AxiosRequestConfig, isAxiosError } from 'axios';
 import { type Request } from 'express';
 import {
 	FileApi,
@@ -26,10 +26,16 @@ export class FilesStorageClientAdapter {
 	}
 
 	public async getFileRecord(fileRecordId: string): Promise<FileRecordResponse> {
-		const response = await this.api.getFileRecord(fileRecordId);
-		const { data } = response;
+		try {
+			const response = await this.api.getFileRecord(fileRecordId);
+			const { data } = response;
 
-		return data;
+			return data;
+		} catch (error: unknown) {
+			return this.handleFileStorageError(error, 'FilesStorageClientAdapter.getFileRecord', {
+				fileRecordId,
+			});
+		}
 	}
 
 	public async uploadFromUrl(
@@ -96,7 +102,7 @@ export class FilesStorageClientAdapter {
 	}
 
 	private handleFileStorageError(error: unknown, calledMethod: string, params?: LogMessageData): never {
-		if (error instanceof AxiosError) {
+		if (isAxiosError(error)) {
 			error = new AxiosErrorLoggable(error, calledMethod);
 		}
 
