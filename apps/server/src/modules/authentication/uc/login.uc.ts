@@ -1,6 +1,7 @@
 import { AuditLogger } from '@core/logger';
 import { ICurrentUser, JwtPayloadBuilder } from '@infra/auth-guard';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { UserService } from '@modules/user';
 import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
@@ -14,7 +15,8 @@ export class LoginUc {
 		private readonly authService: AuthenticationService,
 		@Inject(AUTHENTICATION_CONFIG_TOKEN) private readonly config: AuthenticationConfig,
 		private readonly auditLogger: AuditLogger,
-		private readonly authorizationService: AuthorizationService
+		private readonly authorizationService: AuthorizationService,
+		private readonly userService: UserService
 	) {}
 
 	public async getLoginData(currentUser: ICurrentUser): Promise<string> {
@@ -49,19 +51,19 @@ export class LoginUc {
 	}
 
 	public async getSupportLoginData(targetUserId: EntityId, supportUserId: EntityId): Promise<string> {
-		// target user should be better fetch over user service
-		const [supportUser, targetUser] = await Promise.all([
+		const [authorizableUser, targetUserWithRoles, targetUser] = await Promise.all([
 			this.authorizationService.getUserWithPermissions(supportUserId),
 			this.authorizationService.getUserWithPermissions(targetUserId),
+			this.userService.findById(targetUserId),
 		]);
 
 		const authContext = AuthorizationContextBuilder.write([
 			Permission.CREATE_SUPPORT_JWT,
 			Permission.CAN_EXECUTE_INSTANCE_OPERATIONS,
 		]);
-		this.authorizationService.checkPermission(supportUser, targetUser, authContext);
+		this.authorizationService.checkPermission(authorizableUser, targetUser, authContext);
 
-		const jwtToken = await this.authService.generateSupportJwt(supportUser, targetUser);
+		const jwtToken = await this.authService.generateSupportJwt(authorizableUser, targetUserWithRoles);
 
 		return jwtToken;
 	}
