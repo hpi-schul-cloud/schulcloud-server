@@ -16,7 +16,7 @@ export class CreateCardBodyParams {
 	@Min(0)
 	@IsOptional()
 	@ApiPropertyOptional({
-		description: 'Position to insert the card at within the column. If omitted, the card is appended at the end.',
+		description: 'Position within the column at which to insert the card. If omitted, the card is appended at the end.',
 	})
 	public position?: number;
 }
