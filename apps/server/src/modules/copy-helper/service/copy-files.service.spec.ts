@@ -3,6 +3,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { CopyElementType, CopyHelperService } from '@modules/copy-helper';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
+import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { ComponentProperties, ComponentType, LessonEntity, Material } from '@modules/lesson/repo';
 import { lessonFactory } from '@modules/lesson/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
@@ -11,7 +12,6 @@ import { User } from '@modules/user/repo';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { CopyFilesService } from './copy-files.service';
-import { FilesStorageClientAdapterService } from './files-storage-client.service';
 
 const getImageHTML = (id: string, name: string) => {
 	const fileUrl = `"/api/v3/file/download/${id}/${name}"`;

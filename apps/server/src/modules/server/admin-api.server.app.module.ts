@@ -21,7 +21,6 @@ import { ClassModule } from '@modules/class';
 import { CourseApiModule } from '@modules/course/course-api.module';
 import { DeletionApiModule } from '@modules/deletion/deletion-api.module';
 import { FilesModule } from '@modules/files';
-import { FilesStorageClientModule } from '@modules/files-storage-client';
 import { GroupApiModule } from '@modules/group/group-api.module';
 import { LearnroomApiModule } from '@modules/learnroom/learnroom-api.module';
 import { NewsModule } from '@modules/news';
@@ -32,12 +31,12 @@ import { UserApiModule } from '@modules/user/user-api.module';
 
 import { ConfigurationModule } from '@infra/configuration';
 import { DATABASE_CONFIG_TOKEN, DatabaseConfig, DatabaseModule } from '@infra/database';
+import { AuthenticationApiModule } from '@modules/authentication/authentication-api.module';
 import { MediaBoardApiModule } from '@modules/board/media-board-api.module';
 import { RoomApiModule } from '@modules/room/room-api.module';
 import { findOneOrFailHandler } from '@shared/common/database-error.handler';
 import { ADMIN_API_SERVER_CONFIG_TOKEN, AdminApiServerConfig } from './admin-api-server.config';
 import { ENTITIES, TEST_ENTITIES } from './admin-api-server.entity.imports';
-import { AuthenticationApiModule } from '@modules/authentication/authentication-api.module';
 
 const serverModules = [
 	ConfigurationModule.register(ADMIN_API_SERVER_CONFIG_TOKEN, AdminApiServerConfig),
@@ -60,7 +59,6 @@ const serverModules = [
 	ClassModule,
 	CourseApiModule,
 	FilesModule,
-	FilesStorageClientModule,
 	GroupApiModule,
 	LearnroomApiModule,
 	NewsModule,

@@ -19,5 +19,5 @@ export {
 	ScanStatus,
 	StorageLocation,
 } from './interfaces';
-export { FileParamBuilder } from './mapper';
-export { CopyFilesService, FilesStorageClientAdapterService } from './service';
+export { CopyFilesOfParentParamBuilder, FileParamBuilder } from './mapper';
+export { FilesStorageClientAdapterService } from './service';

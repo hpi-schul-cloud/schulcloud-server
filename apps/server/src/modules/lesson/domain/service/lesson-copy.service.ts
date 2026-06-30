@@ -1,9 +1,16 @@
-import { CopyDictionary, CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
-import { CopyFilesService, FileUrlReplacement } from '@modules/files-storage-client';
+import {
+	CopyDictionary,
+	CopyElementType,
+	CopyFilesService,
+	CopyHelperService,
+	CopyStatus,
+	CopyStatusEnum,
+} from '@modules/copy-helper';
+import { FileUrlReplacement } from '@modules/files-storage-client';
 import { TaskCopyService } from '@modules/task';
 import { Inject, Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { randomBytes } from 'crypto';
+import { randomBytes } from 'node:crypto';
 import { LESSON_CONFIG_TOKEN, LessonConfig } from '../../lesson.config';
 import {
 	ComponentEtherpadProperties,

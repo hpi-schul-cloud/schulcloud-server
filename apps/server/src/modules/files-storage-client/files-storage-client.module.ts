@@ -9,14 +9,13 @@ import { SagaModule } from '@modules/saga';
 import { FilesStorageClientConfig } from './files-storage-client-config';
 import { FilesStorageModuleOptions } from './files-storage-module.options';
 import { DeleteUserFilesStorageDataStep } from './saga';
-import { CopyFilesService, FilesStorageClientAdapterService, FilesStorageProducer } from './service';
+import { FilesStorageClientAdapterService, FilesStorageProducer } from './service';
 
 @Module({})
 export class FilesStorageClientModule {
 	public static register(options: FilesStorageModuleOptions): DynamicModule {
 		const providers = [
 			FilesStorageClientAdapterService,
-			CopyFilesService,
 			DeleteUserFilesStorageDataStep,
 			{
 				provide: FilesStorageProducer,
@@ -40,7 +39,7 @@ export class FilesStorageClientModule {
 				RabbitMQWrapperModule.register(options),
 			],
 			providers,
-			exports: [FilesStorageClientAdapterService, CopyFilesService],
+			exports: [FilesStorageClientAdapterService],
 		};
 	}
 }
