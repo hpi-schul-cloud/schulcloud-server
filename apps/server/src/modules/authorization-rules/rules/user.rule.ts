@@ -68,20 +68,21 @@ export class UserRule implements Rule<UserEntityOrDo> {
 	}
 
 	private hasLimitingRole(authorizableUser: User, user: UserEntityOrDo): boolean {
-		const userRolesSet = new Set(authorizableUser.roles.getItems().map((role) => role.name));
-		const isUserPartlyTeacher = userRolesSet.has(RoleName.TEACHER);
-		if (isUserPartlyTeacher) {
+		if (this.hasUserRole(authorizableUser, RoleName.TEACHER)) {
 			return false;
 		}
 
-		const isUserAdmin = userRolesSet.has(RoleName.ADMINISTRATOR);
-		const entityRoles = this.getRoleNames(user);
-		const isEntityTeacher = entityRoles.includes(RoleName.TEACHER);
+		const isUserAdmin = this.hasUserRole(authorizableUser, RoleName.ADMINISTRATOR);
+		const isEntityTeacher = this.hasUserRole(user, RoleName.TEACHER);
 		if (isUserAdmin && !isEntityTeacher) {
 			return true;
 		}
 
 		return false;
+	}
+
+	private hasUserRole(user: UserEntityOrDo, roleName: RoleName): boolean {
+		return this.getRoleNames(user).includes(roleName);
 	}
 
 	private isUserHimself(authorizableUser: User, user: UserEntityOrDo): boolean {
