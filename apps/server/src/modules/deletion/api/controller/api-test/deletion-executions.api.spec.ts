@@ -1,5 +1,7 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { CalendarService } from '@infra/calendar';
+import { FileDO, FileRecordParentType, ScanStatus } from '@infra/files-storage-amqp-client';
+import { FilesStorageProducer } from '@infra/files-storage-amqp-client/service';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { AccountEntity } from '@modules/account/repo';
 import { BoardExternalReferenceType } from '@modules/board';
@@ -8,8 +10,6 @@ import { mediaBoardEntityFactory } from '@modules/board/testing';
 import { classEntityFactory } from '@modules/class/entity/testing';
 import { CourseEntity } from '@modules/course/repo';
 import { courseEntityFactory, courseGroupEntityFactory } from '@modules/course/testing';
-import { FileDO, FileRecordParentType, ScanStatus } from '@modules/files-storage-client';
-import { FilesStorageProducer } from '@modules/files-storage-client/service';
 import { FileOwnerModel } from '@modules/files/domain';
 import { FileEntity } from '@modules/files/entity';
 import { fileEntityFactory } from '@modules/files/entity/testing';
@@ -34,13 +34,13 @@ import { submissionFactory, taskFactory } from '@modules/task/testing';
 import { TeamEntity } from '@modules/team/repo';
 import { teamFactory, teamUserFactory } from '@modules/team/testing';
 import { User } from '@modules/user/repo';
+import { USER_CONFIG_TOKEN } from '@modules/user/user.config';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { deletionRequestEntityFactory } from '../../../repo/entity/testing';
-import { USER_CONFIG_TOKEN } from '@modules/user/user.config';
 
 const baseRouteName = '/deletionExecutions';
 

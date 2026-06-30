@@ -1,12 +1,5 @@
-import { LessonEntity } from '@modules/lesson/repo';
-import { Submission, Task } from '@modules/task/repo';
 import { CopyFileDto, FileDto } from '../dto';
-import {
-	CopyFileDomainObjectProps,
-	EntitiesWithFiles,
-	FileDomainObjectProps,
-	FileRecordParentType,
-} from '../interfaces';
+import { CopyFileDomainObjectProps, FileDomainObjectProps, FileRecordParentType } from '../interfaces';
 
 export class FilesStorageClientMapper {
 	static mapfileRecordListResponseToDomainFilesDto(fileRecordListResponse: FileDomainObjectProps[]): FileDto[] {
@@ -64,15 +57,5 @@ export class FilesStorageClientMapper {
 		}
 
 		return response;
-	}
-
-	static mapEntityToParentType(entity: EntitiesWithFiles): FileRecordParentType {
-		if (entity instanceof LessonEntity) return FileRecordParentType.Lesson;
-
-		if (entity instanceof Task) return FileRecordParentType.Task;
-
-		if (entity instanceof Submission) return FileRecordParentType.Submission;
-
-		throw new Error(`Mapping type is not supported.`);
 	}
 }

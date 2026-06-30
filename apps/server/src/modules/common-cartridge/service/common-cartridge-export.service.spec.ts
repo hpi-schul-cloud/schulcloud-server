@@ -15,8 +15,8 @@ import {
 	RichTextElementContent,
 	SingleColumnBoardResponse,
 } from '@infra/common-cartridge-clients';
+import { FileDto, FileRecordParentType, FilesStorageClientAdapterService } from '@infra/files-storage-amqp-client';
 import { fileRecordResponseFactory } from '@infra/files-storage-rest-client/testing';
-import { FileDto, FileRecordParentType, FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import AdmZip from 'adm-zip';

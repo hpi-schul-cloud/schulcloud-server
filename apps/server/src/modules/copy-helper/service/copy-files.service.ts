@@ -1,15 +1,13 @@
 import {
 	CopyFileDto,
 	CopyFilesOfParentParamBuilder,
-	EntityWithEmbeddedFiles,
-	FileParamBuilder,
 	FilesStorageClientAdapterService,
-	FileUrlReplacement,
 	StorageLocation,
-} from '@modules/files-storage-client';
+} from '@infra/files-storage-amqp-client';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { CopyElementType, CopyStatus, CopyStatusEnum } from '../types/copy.types';
+import { FileParamBuilder } from '../mapper/files-storage-param.builder';
+import { CopyElementType, CopyStatus, CopyStatusEnum, EntityWithEmbeddedFiles, FileUrlReplacement } from '../types';
 import { CopyHelperService } from './copy-helper.service';
 
 const FILE_COULD_NOT_BE_COPIED_HINT = 'fileCouldNotBeCopied';

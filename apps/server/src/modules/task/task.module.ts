@@ -1,11 +1,11 @@
 import { LoggerModule } from '@core/logger';
-import { RABBITMQ_CONFIG_TOKEN, RabbitMQConfig } from '@infra/rabbitmq';
-import { CopyHelperModule } from '@modules/copy-helper';
 import {
 	FILES_STORAGE_CLIENT_CONFIG_TOKEN,
 	FilesStorageClientConfig,
 	FilesStorageClientModule,
-} from '@modules/files-storage-client';
+} from '@infra/files-storage-amqp-client';
+import { RABBITMQ_CONFIG_TOKEN, RabbitMQConfig } from '@infra/rabbitmq';
+import { CopyHelperModule } from '@modules/copy-helper';
 import { SagaModule } from '@modules/saga';
 import { Module } from '@nestjs/common';
 import { SubmissionService, TaskCopyService, TaskService } from './domain';

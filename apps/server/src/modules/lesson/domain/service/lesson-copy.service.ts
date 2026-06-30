@@ -1,3 +1,4 @@
+import { FileUrlReplacement } from '@infra/files-storage-amqp-client';
 import {
 	CopyDictionary,
 	CopyElementType,
@@ -6,7 +7,6 @@ import {
 	CopyStatus,
 	CopyStatusEnum,
 } from '@modules/copy-helper';
-import { FileUrlReplacement } from '@modules/files-storage-client';
 import { TaskCopyService } from '@modules/task';
 import { Inject, Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';

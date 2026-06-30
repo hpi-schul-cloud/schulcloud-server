@@ -3,4 +3,3 @@ export * from './copy-file-request-info';
 export * from './file-domain-object-props';
 export * from './file-request-info';
 export * from './files-storage';
-export * from './types';

@@ -1,5 +1,6 @@
 import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { StorageLocation } from '@infra/files-storage-amqp-client';
 import { roomFactory } from '@modules//room/testing';
 import { AuthorizationService } from '@modules/authorization';
 import { BoardExternalReferenceType, BoardNodeService, ColumnBoardService } from '@modules/board';
@@ -9,7 +10,6 @@ import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helpe
 import { CourseService } from '@modules/course';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
-import { StorageLocation } from '@modules/files-storage-client';
 import { CourseCopyService } from '@modules/learnroom';
 import { LessonCopyService } from '@modules/lesson';
 import { LessonEntity, Material } from '@modules/lesson/repo';

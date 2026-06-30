@@ -1,7 +1,7 @@
 import { createMock } from '@golevelup/ts-jest';
+import { FilesStorageClientAdapterService } from '@infra/files-storage-amqp-client';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { courseEntityFactory } from '@modules/course/testing';
-import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import {
 	LEARNROOM_INCOMING_REQUEST_TIMEOUT_COPY_API_KEY,
 	LEARNROOM_TIMEOUT_CONFIG_TOKEN,

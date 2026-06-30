@@ -7,17 +7,14 @@ export {
 	CopyFileDomainObjectProps,
 	CopyFilesOfParentParams,
 	CopyFilesRequestInfo,
-	EntitiesWithFiles,
-	EntityWithEmbeddedFiles,
 	FileDO,
 	FileDomainObjectProps,
 	FileRecordParams,
 	FileRecordParentType,
 	FileRequestInfo,
 	FilesStorageEvents,
-	FileUrlReplacement,
 	ScanStatus,
 	StorageLocation,
 } from './interfaces';
-export { CopyFilesOfParentParamBuilder, FileParamBuilder } from './mapper';
+export { CopyFilesOfParentParamBuilder } from './mapper';
 export { FilesStorageClientAdapterService } from './service';

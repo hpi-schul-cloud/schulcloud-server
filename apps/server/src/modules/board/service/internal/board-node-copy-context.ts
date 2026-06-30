@@ -3,7 +3,7 @@ import {
 	FileRecordParentType,
 	FilesStorageClientAdapterService,
 	StorageLocation,
-} from '@modules/files-storage-client';
+} from '@infra/files-storage-amqp-client';
 import { EntityId } from '@shared/domain/types';
 import { CopyContext } from './board-node-copy.service';
 

@@ -1,9 +1,9 @@
-import { RABBITMQ_CONFIG_TOKEN, RabbitMQConfig } from '@infra/rabbitmq';
 import {
 	FILES_STORAGE_CLIENT_CONFIG_TOKEN,
 	FilesStorageClientConfig,
 	FilesStorageClientModule,
-} from '@modules/files-storage-client';
+} from '@infra/files-storage-amqp-client';
+import { RABBITMQ_CONFIG_TOKEN, RabbitMQConfig } from '@infra/rabbitmq';
 import { Module } from '@nestjs/common';
 import { CopyFilesService } from './service/copy-files.service';
 import { CopyHelperService } from './service/copy-helper.service';
