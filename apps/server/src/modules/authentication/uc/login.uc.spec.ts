@@ -208,7 +208,8 @@ describe('LoginUc', () => {
 		describe('when support user has the permission', () => {
 			const setup = () => {
 				const supportUser = userFactory.asSuperhero().buildWithId();
-				const targetUser = userDoFactory.buildWithId();
+				const targetUserWithRoles = userFactory.asStudent().buildWithId();
+				const targetUser = userDoFactory.buildWithId({ id: targetUserWithRoles.id });
 				const jwtToken = 'supportJwtToken';
 
 				authorizationService.getUserWithPermissions.mockResolvedValueOnce(supportUser);
@@ -219,32 +220,33 @@ describe('LoginUc', () => {
 				return {
 					supportUser,
 					targetUser,
+					targetUserWithRoles,
 					jwtToken,
 				};
 			};
 
 			it('should load support user with permissions', async () => {
-				const { supportUser, targetUser } = setup();
+				const { supportUser, targetUserWithRoles } = setup();
 
-				await loginUc.getSupportLoginData(targetUser.id!, supportUser.id);
+				await loginUc.getSupportLoginData(targetUserWithRoles.id, supportUser.id);
 
-				expect(authorizationService.getUserWithPermissions).toHaveBeenCalledTimes(1);
+				expect(authorizationService.getUserWithPermissions).toHaveBeenCalledTimes(2);
 				expect(authorizationService.getUserWithPermissions).toHaveBeenCalledWith(supportUser.id);
 			});
 
 			it('should load target user via user service', async () => {
-				const { supportUser, targetUser } = setup();
+				const { supportUser, targetUserWithRoles } = setup();
 
-				await loginUc.getSupportLoginData(targetUser.id!, supportUser.id);
+				await loginUc.getSupportLoginData(targetUserWithRoles.id, supportUser.id);
 
 				expect(userService.findById).toHaveBeenCalledTimes(1);
-				expect(userService.findById).toHaveBeenCalledWith(targetUser.id);
+				expect(userService.findById).toHaveBeenCalledWith(targetUserWithRoles.id);
 			});
 
 			it('should check permission for CREATE_SUPPORT_JWT', async () => {
-				const { supportUser, targetUser } = setup();
+				const { supportUser, targetUserWithRoles, targetUser } = setup();
 
-				await loginUc.getSupportLoginData(targetUser.id!, supportUser.id);
+				await loginUc.getSupportLoginData(targetUserWithRoles.id, supportUser.id);
 
 				const expectedContext = AuthorizationContextBuilder.write([
 					Permission.CREATE_SUPPORT_JWT,
@@ -254,17 +256,17 @@ describe('LoginUc', () => {
 			});
 
 			it('should generate support JWT', async () => {
-				const { supportUser, targetUser } = setup();
+				const { supportUser, targetUserWithRoles, targetUser } = setup();
 
-				await loginUc.getSupportLoginData(targetUser.id!, supportUser.id);
+				await loginUc.getSupportLoginData(targetUserWithRoles.id, supportUser.id);
 
 				expect(authenticationService.generateSupportJwt).toHaveBeenCalledWith(supportUser, targetUser);
 			});
 
 			it('should return the jwt token', async () => {
-				const { supportUser, targetUser, jwtToken } = setup();
+				const { supportUser, targetUserWithRoles, jwtToken } = setup();
 
-				const result = await loginUc.getSupportLoginData(targetUser.id!, supportUser.id);
+				const result = await loginUc.getSupportLoginData(targetUserWithRoles.id, supportUser.id);
 
 				expect(result).toEqual(jwtToken);
 			});
