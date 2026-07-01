@@ -1,9 +1,10 @@
 import { BoardNodeService, ColumnBoardService } from '@modules/board';
 import { CourseService } from '@modules/course';
 import { LessonService } from '@modules/lesson';
-import { TaskService } from '@modules/task';
 import { RoomService } from '@modules/room';
+import { TaskService } from '@modules/task';
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
+import { Card, Column } from '../../board/domain';
 import {
 	ShareTokenContext,
 	ShareTokenDO,
@@ -13,7 +14,6 @@ import {
 } from '../domainobject/share-token.do';
 import { ShareTokenRepo } from '../repo/share-token.repo';
 import { TokenGenerator } from './token-generator.service';
-import { Card } from '../../board/domain';
 
 @Injectable()
 export class ShareTokenService {
@@ -75,12 +75,23 @@ export class ShareTokenService {
 			case ShareTokenParentType.Room:
 				parentName = (await this.roomService.getSingleRoom(shareToken.payload.parentId)).name;
 				break;
-			case ShareTokenParentType.Card:
+			case ShareTokenParentType.Card: {
 				const { title } = await this.boardNodeService.findByClassAndId(Card, shareToken.payload.parentId);
 				if (title) {
 					parentName = title;
 				}
 				break;
+			}
+			case ShareTokenParentType.Column: {
+				const { title: columnTitle } = await this.boardNodeService.findByClassAndId(
+					Column,
+					shareToken.payload.parentId
+				);
+				if (columnTitle) {
+					parentName = columnTitle;
+				}
+				break;
+			}
 			default:
 				throw new UnprocessableEntityException('Invalid parent type');
 		}

@@ -4,9 +4,9 @@ import { AuthorizationService } from '@modules/authorization';
 import {
 	BoardExternalReference,
 	BoardExternalReferenceType,
-	ColumnBoardService,
 	BoardNodeService,
 	Column,
+	ColumnBoardService,
 } from '@modules/board';
 import { StorageLocationReference } from '@modules/board/service/internal';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
@@ -17,13 +17,13 @@ import { RoomService } from '@modules/room';
 import { SagaService } from '@modules/saga';
 import { TaskCopyService } from '@modules/task';
 import { User } from '@modules/user/repo';
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
+import { Card } from '../../board/domain';
 import { ShareTokenParentType } from '../domainobject/share-token.do';
 import { ShareTokenService } from '../service';
 import { ShareTokenPermissionService } from './service';
-import { Card } from '../../board/domain';
 
 @Injectable()
 export class ImportTokenUC {
@@ -94,6 +94,12 @@ export class ImportTokenUC {
 					throw new BadRequestException('Cannot import card without destination reference');
 				}
 				result = await this.copyCard(user, shareToken.payload.parentId, destinationId, newName);
+				break;
+			case ShareTokenParentType.Column:
+				if (destinationId === undefined) {
+					throw new BadRequestException('Cannot import column without destination board reference');
+				}
+				result = await this.copyColumnToBoard(user, shareToken.payload.parentId, destinationId, newName);
 				break;
 		}
 
@@ -243,6 +249,44 @@ export class ImportTokenUC {
 			copyTitle,
 			targetSchoolId: targetStorageLocationReference.id,
 			destinationColumnId: destinationId,
+		});
+
+		return copyStatus;
+	}
+
+	private async copyColumnToBoard(
+		user: User,
+		originalColumnId: EntityId,
+		destinationBoardId: EntityId,
+		copyTitle?: string
+	): Promise<CopyStatus> {
+		const originalColumn = await this.boardNodeService.findByClassAndId(Column, originalColumnId);
+		const originalBoard = await this.columnBoardService.findById(originalColumn.rootId, 0);
+
+		const destinationBoard = await this.columnBoardService.findById(destinationBoardId, 0);
+		const targetExternalReference: BoardExternalReference = {
+			id: destinationBoard.context.id,
+			type: destinationBoard.context.type,
+		};
+
+		// Columns can only be imported into room boards, not course boards
+		if (targetExternalReference.type === BoardExternalReferenceType.Course) {
+			throw new ForbiddenException('Columns can not be imported into course boards');
+		}
+
+		await this.shareTokenPermissionService.checkRoomWritePermission(user, targetExternalReference.id);
+
+		const sourceStorageLocationReference = await this.getStorageLocationReference(originalBoard.context);
+		const targetStorageLocationReference = await this.getStorageLocationReference(targetExternalReference);
+
+		const copyStatus = await this.columnBoardService.copyColumn({
+			originalColumnId,
+			sourceStorageLocationReference,
+			targetStorageLocationReference,
+			userId: user.id,
+			copyTitle,
+			targetSchoolId: targetStorageLocationReference.id,
+			destinationColumnBoardId: destinationBoardId,
 		});
 
 		return copyStatus;
