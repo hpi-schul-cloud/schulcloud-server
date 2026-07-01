@@ -8,6 +8,7 @@ export enum ShareTokenParentType {
 	'ColumnBoard' = 'columnBoard',
 	'Room' = 'room',
 	'Card' = 'card',
+	'Column' = 'column',
 }
 
 export enum ShareTokenContextType {
