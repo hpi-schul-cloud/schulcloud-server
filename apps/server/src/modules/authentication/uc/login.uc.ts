@@ -1,6 +1,10 @@
 import { AuditLogger } from '@core/logger';
 import { ICurrentUser, JwtPayloadBuilder } from '@infra/auth-guard';
+import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { UserService } from '@modules/user';
 import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { Permission } from '@shared/domain/interface';
+import { EntityId } from '@shared/domain/types';
 import { AUTHENTICATION_CONFIG_TOKEN, AuthenticationConfig } from '../authentication-config';
 import { SessionInfoResponse } from '../controllers/dto';
 import { AuthenticationService } from '../services';
@@ -10,7 +14,9 @@ export class LoginUc {
 	constructor(
 		private readonly authService: AuthenticationService,
 		@Inject(AUTHENTICATION_CONFIG_TOKEN) private readonly config: AuthenticationConfig,
-		private readonly auditLogger: AuditLogger
+		private readonly auditLogger: AuditLogger,
+		private readonly authorizationService: AuthorizationService,
+		private readonly userService: UserService
 	) {}
 
 	public async getLoginData(currentUser: ICurrentUser): Promise<string> {
@@ -42,6 +48,24 @@ export class LoginUc {
 		const sessionInfoResponse = new SessionInfoResponse(result);
 
 		return sessionInfoResponse;
+	}
+
+	public async getSupportLoginData(targetUserId: EntityId, supportUserId: EntityId): Promise<string> {
+		const [authorizableUser, targetUserWithRoles, targetUser] = await Promise.all([
+			this.authorizationService.getUserWithPermissions(supportUserId),
+			this.authorizationService.getUserWithPermissions(targetUserId),
+			this.userService.findById(targetUserId),
+		]);
+
+		const authContext = AuthorizationContextBuilder.write([
+			Permission.CREATE_SUPPORT_JWT,
+			Permission.CAN_EXECUTE_INSTANCE_OPERATIONS,
+		]);
+		this.authorizationService.checkPermission(authorizableUser, targetUser, authContext);
+
+		const jwtToken = await this.authService.generateSupportJwt(authorizableUser, targetUserWithRoles);
+
+		return jwtToken;
 	}
 
 	private checkIfServiceAccount(currentUser: ICurrentUser): void {

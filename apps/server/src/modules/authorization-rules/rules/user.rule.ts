@@ -10,9 +10,12 @@ import { UserDo } from '@modules/user';
 import { User } from '@modules/user/repo';
 import { Injectable, NotImplementedException } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface/permission.enum';
+import { EntityId } from '@shared/domain/types';
+
+type UserEntityOrDo = User | UserDo;
 
 @Injectable()
-export class UserRule implements Rule<UserDo> {
+export class UserRule implements Rule<UserEntityOrDo> {
 	constructor(
 		private readonly authorizationHelper: AuthorizationHelper,
 		authorisationInjectionService: AuthorizationInjectionService
@@ -20,19 +23,19 @@ export class UserRule implements Rule<UserDo> {
 		authorisationInjectionService.injectAuthorizationRule(this);
 	}
 
-	public isApplicable(user: User, object: unknown): boolean {
-		const isMatched = object instanceof UserDo;
+	public isApplicable(authorizableUser: User, object: unknown): boolean {
+		const isMatched = object instanceof UserDo || object instanceof User;
 
 		return isMatched;
 	}
 
-	public hasPermission(user: User, userDo: UserDo, context: AuthorizationContext): boolean {
+	public hasPermission(authorizableUser: User, user: UserEntityOrDo, context: AuthorizationContext): boolean {
 		let hasPermission = false;
 
 		if (context.action === Action.read) {
-			hasPermission = this.hasReadAccess(user, userDo, context);
+			hasPermission = this.hasReadAccess(authorizableUser, user, context);
 		} else if (context.action === Action.write) {
-			hasPermission = this.hasWriteAccess(user, userDo, context);
+			hasPermission = this.hasWriteAccess(authorizableUser, user, context);
 		} else {
 			throw new NotImplementedException();
 		}
@@ -40,18 +43,18 @@ export class UserRule implements Rule<UserDo> {
 		return hasPermission;
 	}
 
-	private hasReadAccess(user: User, userDo: UserDo, context: AuthorizationContext): boolean {
+	private hasReadAccess(authorizableUser: User, user: UserEntityOrDo, context: AuthorizationContext): boolean {
 		// Missing permission
-		const hasReadPermission = this.authorizationHelper.hasAllPermissions(user, context.requiredPermissions);
+		const hasReadPermission = this.authorizationHelper.hasAllPermissions(authorizableUser, context.requiredPermissions);
 		// Missing permission
-		const hasInstanceReadOperationPermission = this.authorizationHelper.hasAllPermissions(user, [
+		const hasInstanceReadOperationPermission = this.authorizationHelper.hasAllPermissions(authorizableUser, [
 			Permission.CAN_EXECUTE_INSTANCE_OPERATIONS,
 			...context.requiredPermissions,
 		]);
 
-		const isUser = this.isUserHimself(user, userDo);
-		const isVisible = this.isVisibleToExternal(user, userDo);
-		const hasLimitingRole = this.hasLimitingRole(user, userDo);
+		const isUser = this.isUserHimself(authorizableUser, user);
+		const isVisible = this.isVisibleToExternal(authorizableUser, user);
+		const hasLimitingRole = this.hasLimitingRole(authorizableUser, user);
 
 		return (
 			hasInstanceReadOperationPermission ||
@@ -60,43 +63,56 @@ export class UserRule implements Rule<UserDo> {
 		);
 	}
 
-	private hasWriteAccess(user: User, userDo: UserDo, context: AuthorizationContext): boolean {
-		return this.hasReadAccess(user, userDo, context);
+	private hasWriteAccess(authorizableUser: User, user: UserEntityOrDo, context: AuthorizationContext): boolean {
+		return this.hasReadAccess(authorizableUser, user, context);
 	}
 
-	private hasLimitingRole(user: User, userDo: UserDo): boolean {
-		const userRoles = user.roles.getItems().map((role) => role.name);
-		const isUserPartlyTeacher = userRoles.includes(RoleName.TEACHER);
-		if (isUserPartlyTeacher) {
-			return false;
-		}
+	private hasLimitingRole(authorizableUser: User, user: UserEntityOrDo): boolean {
+		const isAuthorizableUserTeacher = this.hasUserRole(authorizableUser, RoleName.TEACHER);
+		const isAuthorizableUserAdmin = this.hasUserRole(authorizableUser, RoleName.ADMINISTRATOR);
+		const isUserTeacher = this.hasUserRole(user, RoleName.TEACHER);
 
-		const isUserAdmin = userRoles.includes(RoleName.ADMINISTRATOR);
-		const entityRoles = userDo.roles.map((role) => role.name);
-		const isEntityTeacher = entityRoles.includes(RoleName.TEACHER);
-		if (isUserAdmin && !isEntityTeacher) {
-			return true;
-		}
-
-		return false;
+		return !isAuthorizableUserTeacher && isAuthorizableUserAdmin && !isUserTeacher;
 	}
 
-	private isUserHimself(user: User, userDo: UserDo): boolean {
-		return user.id === userDo.id;
+	private hasUserRole(user: UserEntityOrDo, roleName: RoleName): boolean {
+		return this.getRoleNames(user).includes(roleName);
 	}
 
-	private isVisibleToExternal(user: User, userDo: UserDo): boolean {
-		const isUsersSchool = this.isUserSchool(user, userDo);
-		const isDiscoverable = this.isDiscoverable(userDo);
+	private isUserHimself(authorizableUser: User, user: UserEntityOrDo): boolean {
+		return authorizableUser.id === user.id;
+	}
+
+	private isVisibleToExternal(authorizableUser: User, user: UserEntityOrDo): boolean {
+		const isUsersSchool = this.isUserSchool(authorizableUser, user);
+		const isDiscoverable = this.isDiscoverable(user);
 
 		return isUsersSchool || isDiscoverable;
 	}
 
-	private isUserSchool(user: User, userDo: UserDo): boolean {
-		return user.school.id === userDo.schoolId;
+	private isUserSchool(authorizableUser: User, user: UserEntityOrDo): boolean {
+		const entitySchoolId = this.getSchoolId(user);
+
+		return authorizableUser.school.id === entitySchoolId;
 	}
 
-	private isDiscoverable(userDo: UserDo): boolean {
+	private getSchoolId(user: UserEntityOrDo): EntityId {
+		if (user instanceof User) {
+			return user.school.id;
+		}
+
+		return user.schoolId;
+	}
+
+	private getRoleNames(user: UserEntityOrDo): RoleName[] {
+		if (user instanceof User) {
+			return user.roles.getItems().map((role) => role.name);
+		}
+
+		return user.roles.map((role) => role.name);
+	}
+
+	private isDiscoverable(user: UserEntityOrDo): boolean {
 		const discoverabilitySetting = this.authorizationHelper.getConfig('teacherVisibilityForExternalTeamInvitation');
 
 		if ((discoverabilitySetting as string) === 'disabled') {
@@ -108,11 +124,11 @@ export class UserRule implements Rule<UserDo> {
 		}
 
 		if ((discoverabilitySetting as string) === 'opt-in') {
-			return userDo.discoverable ?? false;
+			return user.discoverable ?? false;
 		}
 
 		if ((discoverabilitySetting as string) === 'opt-out') {
-			return userDo.discoverable ?? true;
+			return user.discoverable ?? true;
 		}
 
 		throw new Error('Invalid discoverability setting');
