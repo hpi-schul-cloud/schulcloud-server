@@ -131,6 +131,20 @@ describe(BoardCollaborationGateway.name, () => {
 
 				expect(Object.keys(success)).toEqual(expect.arrayContaining(['columnId', 'newCard']));
 			});
+
+			it('should answer with new card at the given position', async () => {
+				const { columnNode } = await setup();
+
+				ioClient.emit('create-card-request', { columnId: columnNode.id, position: 0 });
+				const success = (await waitForEvent(ioClient, 'create-card-success')) as {
+					columnId: string;
+					position: number;
+					newCard: CardProps;
+				};
+
+				expect(success).toEqual(expect.objectContaining({ columnId: columnNode.id, position: 0 }));
+				expect(success.newCard.position).toEqual(0);
+			});
 		});
 
 		describe('when user is not authorized', () => {
