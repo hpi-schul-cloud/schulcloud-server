@@ -2,11 +2,11 @@ import { LegacyLogger } from '@core/logger';
 import { StorageLocation } from '@infra/files-storage-client';
 import { AuthorizationService } from '@modules/authorization';
 import {
-    BoardExternalReference,
-    BoardExternalReferenceType,
-    BoardNodeService,
-    Column,
-    ColumnBoardService,
+	BoardExternalReference,
+	BoardExternalReferenceType,
+	BoardNodeService,
+	Column,
+	ColumnBoardService,
 } from '@modules/board';
 import { StorageLocationReference } from '@modules/board/service/internal';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
@@ -269,9 +269,9 @@ export class ImportTokenUC {
 			type: destinationBoard.context.type,
 		};
 
-		// Columns can only be imported into room boards, not course boards (acceptance criteria)
+		// Columns can only be imported into room boards, not course boards
 		if (targetExternalReference.type === BoardExternalReferenceType.Course) {
-			throw new ForbiddenException('Columns cannot be imported into course boards');
+			throw new ForbiddenException('Columns can not be imported into course boards');
 		}
 
 		await this.shareTokenPermissionService.checkRoomWritePermission(user, targetExternalReference.id);

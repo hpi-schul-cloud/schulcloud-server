@@ -6,11 +6,11 @@ import { TaskService } from '@modules/task';
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { Card, Column } from '../../board/domain';
 import {
-    ShareTokenContext,
-    ShareTokenDO,
-    ShareTokenParentType,
-    ShareTokenPayload,
-    ShareTokenString,
+	ShareTokenContext,
+	ShareTokenDO,
+	ShareTokenParentType,
+	ShareTokenPayload,
+	ShareTokenString,
 } from '../domainobject/share-token.do';
 import { ShareTokenRepo } from '../repo/share-token.repo';
 import { TokenGenerator } from './token-generator.service';

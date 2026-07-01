@@ -1,12 +1,12 @@
 import { LegacyLogger } from '@core/logger';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import {
-    BoardExternalReferenceType,
-    BoardNodeAuthorizableService,
-    BoardNodeService,
-    Card,
-    Column,
-    ColumnBoardService,
+	BoardExternalReferenceType,
+	BoardNodeAuthorizableService,
+	BoardNodeService,
+	Card,
+	Column,
+	ColumnBoardService,
 } from '@modules/board';
 import { LessonService } from '@modules/lesson';
 import { TaskService } from '@modules/task';
@@ -15,11 +15,11 @@ import { Injectable, NotImplementedException } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import {
-    ShareTokenContext,
-    ShareTokenContextType,
-    ShareTokenDO,
-    ShareTokenParentType,
-    ShareTokenPayload,
+	ShareTokenContext,
+	ShareTokenContextType,
+	ShareTokenDO,
+	ShareTokenParentType,
+	ShareTokenPayload,
 } from '../domainobject/share-token.do';
 import { ShareTokenService } from '../service';
 import { ShareTokenInfoDto } from './dto';
@@ -169,9 +169,8 @@ export class ShareTokenUC {
 		const board = await this.columnBoardService.findById(column.rootId, 0);
 
 		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(column);
-		// Rooms: require "Verwalten" (BOARD_MANAGE); Courses: require teacher role (COURSE_EDIT) + BOARD_MANAGE
 		const permissions = board.context.type === BoardExternalReferenceType.Course ? [Permission.COURSE_EDIT] : [];
-		permissions.push(Permission.BOARD_MANAGE);
+		permissions.push(Permission.BOARD_MANAGE, Permission.BOARD_SHARE_BOARD);
 
 		this.authorizationService.checkPermission(
 			user,
