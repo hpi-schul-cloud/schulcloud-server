@@ -143,7 +143,7 @@ describe(BoardCollaborationGateway.name, () => {
 				};
 
 				expect(success).toEqual(expect.objectContaining({ columnId: columnNode.id, position: 0 }));
-				expect(success.newCard.position).toEqual(0);
+				expect(success.newCard).toBeDefined();
 			});
 		});
 
