@@ -1,5 +1,4 @@
 import { ErrorLogger, Logger } from '@core/logger';
-import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { HttpService } from '@nestjs/axios';
 import { REQUEST } from '@nestjs/core';
@@ -8,6 +7,7 @@ import { axiosErrorFactory } from '@testing/factory/axios-error.factory';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
 import { ObjectId } from 'bson';
 import type { Request } from 'express';
+import { randomBytes } from 'node:crypto';
 import { FilesStorageClientAdapter } from './files-storage-client.adapter';
 import { FILES_STORAGE_REST_CLIENT_CONFIG_TOKEN } from './files-storage-client.config';
 import { FileApi, FileRecordParentType, StorageLocation } from './generated';
@@ -41,14 +41,14 @@ describe(FilesStorageClientAdapter.name, () => {
 				{
 					provide: FILES_STORAGE_REST_CLIENT_CONFIG_TOKEN,
 					useValue: {
-						basePath: faker.internet.url(),
+						basePath: 'https://files-storage.example.com',
 					},
 				},
 				{
 					provide: REQUEST,
 					useValue: createMock<Request>({
 						headers: {
-							authorization: `Bearer ${faker.string.alphanumeric(42)}`,
+							authorization: `Bearer ${randomBytes(32).toString('hex')}`,
 						},
 					}),
 				},
@@ -89,7 +89,11 @@ describe(FilesStorageClientAdapter.name, () => {
 
 				const result = await filesStorageClientAdapter.getFileRecord(fileRecordId);
 
-				expect(fileApiMock.getFileRecord).toHaveBeenCalledWith(fileRecordId);
+				expect(fileApiMock.getFileRecord).toHaveBeenCalledWith(fileRecordId, {
+					headers: {
+						authorization: expect.stringMatching(/^Bearer\s.+$/),
+					},
+				});
 				expect(result).toStrictEqual(fileRecord);
 			});
 		});
@@ -124,13 +128,13 @@ describe(FilesStorageClientAdapter.name, () => {
 	describe('uploadFromUrl', () => {
 		describe('when uploading file from url', () => {
 			const setup = () => {
-				const storageLocationId = faker.string.uuid();
+				const storageLocationId = new ObjectId().toHexString();
 				const storageLocation = StorageLocation.INSTANCE;
 				const parentId = new ObjectId().toHexString();
 				const parentType = FileRecordParentType.EXTERNALTOOLS;
 				const fileUrlParams = {
-					url: faker.internet.url(),
-					fileName: faker.system.fileName(),
+					url: 'https://example.com/file.pdf',
+					fileName: 'example-file.pdf',
 				};
 				const fileRecord = fileRecordResponseFactory.build();
 
@@ -167,13 +171,13 @@ describe(FilesStorageClientAdapter.name, () => {
 
 			describe('when fileApi throws an error', () => {
 				const setup = (error: unknown) => {
-					const storageLocationId = faker.string.uuid();
+					const storageLocationId = new ObjectId().toHexString();
 					const storageLocation = StorageLocation.INSTANCE;
 					const parentId = new ObjectId().toHexString();
 					const parentType = FileRecordParentType.EXTERNALTOOLS;
 					const fileUrlParams = {
-						url: faker.internet.url(),
-						fileName: faker.system.fileName(),
+						url: 'https://example.com/file.pdf',
+						fileName: 'example-file.pdf',
 					};
 
 					fileApiMock.uploadFromUrl.mockRejectedValueOnce(error);
@@ -217,7 +221,7 @@ describe(FilesStorageClientAdapter.name, () => {
 	describe('deleteByParent', () => {
 		describe('when deleting files by parent', () => {
 			const setup = () => {
-				const storageLocationId = faker.string.uuid();
+				const storageLocationId = new ObjectId().toHexString();
 				const storageLocation = StorageLocation.INSTANCE;
 				const parentId = new ObjectId().toHexString();
 				const parentType = FileRecordParentType.EXTERNALTOOLS;
@@ -259,7 +263,7 @@ describe(FilesStorageClientAdapter.name, () => {
 
 			describe('when fileApi throws an error', () => {
 				const setup = (error: unknown) => {
-					const storageLocationId = faker.string.uuid();
+					const storageLocationId = new ObjectId().toHexString();
 					const storageLocation = StorageLocation.INSTANCE;
 					const parentId = new ObjectId().toHexString();
 					const parentType = FileRecordParentType.EXTERNALTOOLS;

@@ -27,7 +27,9 @@ export class FilesStorageClientAdapter {
 
 	public async getFileRecord(fileRecordId: string): Promise<FileRecordResponse> {
 		try {
-			const response = await this.api.getFileRecord(fileRecordId);
+			const options = this.createOptionParams();
+
+			const response = await this.api.getFileRecord(fileRecordId, options);
 			const { data } = response;
 
 			return data;

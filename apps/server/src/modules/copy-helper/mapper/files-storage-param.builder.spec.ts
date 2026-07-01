@@ -1,4 +1,4 @@
-import { StorageLocation } from '@infra/files-storage-amqp-client';
+import { FileRecordParentType, StorageLocation } from '@infra/files-storage-amqp-client';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { LessonEntity, Material } from '@modules/lesson/repo';
 import { lessonFactory } from '@modules/lesson/testing';
@@ -6,7 +6,6 @@ import { Submission, Task } from '@modules/task/repo';
 import { taskFactory } from '@modules/task/testing';
 import { User } from '@modules/user/repo';
 import { setupEntities } from '@testing/database';
-import { FileRecordParentType } from '../../../infra/files-storage-amqp-client/interfaces';
 import { FileParamBuilder } from './files-storage-param.builder';
 
 describe('FileParamBuilder', () => {

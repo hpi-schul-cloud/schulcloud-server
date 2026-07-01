@@ -34,7 +34,7 @@ export class ExternalToolImageService {
 		return new FileRecordRef({
 			uploadUrl: url,
 			fileName,
-			fileRecordId: response?.id,
+			fileRecordId: response.id,
 		});
 	}
 
