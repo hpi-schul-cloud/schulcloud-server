@@ -1,12 +1,12 @@
 import { LegacyLogger } from '@core/logger';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import {
-	BoardExternalReferenceType,
-	BoardNodeAuthorizableService,
-	BoardNodeService,
-	Card,
-	Column,
-	ColumnBoardService,
+    BoardExternalReferenceType,
+    BoardNodeAuthorizableService,
+    BoardNodeService,
+    Card,
+    Column,
+    ColumnBoardService,
 } from '@modules/board';
 import { LessonService } from '@modules/lesson';
 import { TaskService } from '@modules/task';
@@ -15,11 +15,11 @@ import { Injectable, NotImplementedException } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import {
-	ShareTokenContext,
-	ShareTokenContextType,
-	ShareTokenDO,
-	ShareTokenParentType,
-	ShareTokenPayload,
+    ShareTokenContext,
+    ShareTokenContextType,
+    ShareTokenDO,
+    ShareTokenParentType,
+    ShareTokenPayload,
 } from '../domainobject/share-token.do';
 import { ShareTokenService } from '../service';
 import { ShareTokenInfoDto } from './dto';
