@@ -57,7 +57,6 @@ import { RuntimeConfigApiModule, ServerRuntimeConfigModule } from '@modules/runt
 import { SchoolApiModule } from '@modules/school/school-api.module';
 import { SHARING_PUBLIC_API_CONFIG_TOKEN, SharingPublicApiConfig } from '@modules/sharing';
 import { SharingApiModule } from '@modules/sharing/sharing-api.module';
-import { ShdApiModule } from '@modules/shd/shd.api.module';
 import { SystemApiModule } from '@modules/system/system-api.module';
 import { TASK_PUBLIC_API_CONFIG_TOKEN, TaskPublicApiConfig } from '@modules/task';
 import { TaskApiModule } from '@modules/task/task-api.module';
@@ -167,7 +166,6 @@ const serverModules = [
 	RegistrationApiModule,
 	RoomApiModule,
 	RosterModule,
-	ShdApiModule,
 	OAuthApiModule,
 	MoinSchuleClassModule,
 	DeletionPublicApiModule,

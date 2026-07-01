@@ -8,6 +8,7 @@ import { RoleReference } from '@shared/domain/domainobject';
 export class CurrentUserMapper {
 	private static extractRoleIds(roles?: (Role | RoleReference)[]): string[] {
 		if (!roles) return [];
+
 		return roles.map((role) => role.id);
 	}
 
@@ -59,6 +60,7 @@ export class CurrentUserMapper {
 			.asExternalUser(isExternalUser)
 			.withExternalSystem(systemId)
 			.build();
+
 		return currentUser;
 	}
 
