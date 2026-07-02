@@ -1,14 +1,13 @@
-import { FileApi, FileRecordParentType, FileRecordResponse, StorageLocation } from '@infra/files-storage-client';
+import { FileRecordParentType, FilesStorageClientAdapter, StorageLocation } from '@infra/files-storage-rest-client';
 import { type Instance, InstanceService } from '@modules/instance';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { AxiosResponse } from 'axios';
 import { FileRecordRef } from '../domain';
 
 @Injectable()
 export class ExternalToolImageService {
 	constructor(
-		private readonly fileApi: FileApi,
+		private readonly filesStorageClient: FilesStorageClientAdapter,
 		private readonly instanceService: InstanceService
 	) {}
 
@@ -21,7 +20,7 @@ export class ExternalToolImageService {
 
 		const instance: Instance = await this.instanceService.getInstance();
 
-		const response: AxiosResponse<FileRecordResponse> = await this.fileApi.uploadFromUrl(
+		const response = await this.filesStorageClient.uploadFromUrl(
 			instance.id,
 			StorageLocation.INSTANCE,
 			externalToolId,
@@ -35,18 +34,18 @@ export class ExternalToolImageService {
 		return new FileRecordRef({
 			uploadUrl: url,
 			fileName,
-			fileRecordId: response.data.id,
+			fileRecordId: response.id,
 		});
 	}
 
 	public async deleteImageFile(fileRecordId: EntityId): Promise<void> {
-		await this.fileApi.deleteFile(fileRecordId);
+		await this.filesStorageClient.deleteFile(fileRecordId);
 	}
 
 	public async deleteAllFiles(externalToolId: EntityId): Promise<void> {
 		const instance: Instance = await this.instanceService.getInstance();
 
-		await this.fileApi.deleteByParent(
+		await this.filesStorageClient.deleteByParent(
 			instance.id,
 			StorageLocation.INSTANCE,
 			externalToolId,

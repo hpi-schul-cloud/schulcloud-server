@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { FileRecordParentType, FilesStorageClientAdapter, StorageLocation } from '@infra/common-cartridge-clients';
-import { fileRecordResponseFactory } from '@infra/files-storage-client/testing';
+import { fileRecordResponseFactory } from '@infra/files-storage-rest-client/testing';
 import { ForbiddenException, UnauthorizedException } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import { EventBus } from '@nestjs/cqrs';
@@ -11,6 +11,7 @@ import { EventEmitter } from 'events';
 import { Request } from 'express';
 import { PassThrough, Readable } from 'stream';
 import { COMMON_CARTRIDGE_PUBLIC_API_CONFIG_TOKEN, CommonCartridgePublicApiConfig } from '../common-cartridge.config';
+import { CommonCartridgeConfigResponse } from '../controller/dto/common-cartridge-config.response';
 import { ImportCourseEvent } from '../domain/events/import-course.event';
 import { ImportCourseParams } from '../domain/import-course.params';
 import { ErrorStatus } from '../error/error-status.enum';
@@ -23,7 +24,6 @@ import {
 	CommonCartridgeValidatorTransform,
 } from '../util/common-cartridge-validator.transform';
 import { CommonCartridgeUc } from './common-cartridge.uc';
-import { CommonCartridgeConfigResponse } from '../controller/dto/common-cartridge-config.response';
 
 jest.mock('../util/common-cartridge-validator.transform');
 

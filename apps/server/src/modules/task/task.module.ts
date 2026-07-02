@@ -1,11 +1,11 @@
 import { LoggerModule } from '@core/logger';
+import {
+	FILES_STORAGE_AMQP_CLIENT_CONFIG_TOKEN,
+	FilesStorageAMQPClientConfig,
+	FilesStorageAMQPClientModule,
+} from '@infra/files-storage-amqp-client';
 import { RABBITMQ_CONFIG_TOKEN, RabbitMQConfig } from '@infra/rabbitmq';
 import { CopyHelperModule } from '@modules/copy-helper';
-import {
-	FILES_STORAGE_CLIENT_CONFIG_TOKEN,
-	FilesStorageClientConfig,
-	FilesStorageClientModule,
-} from '@modules/files-storage-client';
 import { SagaModule } from '@modules/saga';
 import { Module } from '@nestjs/common';
 import { SubmissionService, TaskCopyService, TaskService } from './domain';
@@ -18,9 +18,9 @@ import { UserChangedSchoolTaskHandlerService } from './service/user-changed-scho
 		CopyHelperModule,
 		LoggerModule,
 		SagaModule,
-		FilesStorageClientModule.register({
-			exchangeConfigConstructor: FilesStorageClientConfig,
-			exchangeConfigInjectionToken: FILES_STORAGE_CLIENT_CONFIG_TOKEN,
+		FilesStorageAMQPClientModule.register({
+			exchangeConfigConstructor: FilesStorageAMQPClientConfig,
+			exchangeConfigInjectionToken: FILES_STORAGE_AMQP_CLIENT_CONFIG_TOKEN,
 			configInjectionToken: RABBITMQ_CONFIG_TOKEN,
 			configConstructor: RabbitMQConfig,
 		}),
