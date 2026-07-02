@@ -1,11 +1,11 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { FilesStorageClientAdapterService } from '@infra/files-storage-amqp-client';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Action, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { CopyElementType, CopyHelperService, CopyStatusEnum } from '@modules/copy-helper';
 import { CourseService } from '@modules/course';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
-import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { LessonService } from '@modules/lesson';
 import { LessonEntity, Material } from '@modules/lesson/repo';
 import { lessonFactory } from '@modules/lesson/testing';

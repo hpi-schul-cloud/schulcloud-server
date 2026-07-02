@@ -1,9 +1,8 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { StorageLocation } from '@infra/files-storage-client';
+import { FilesStorageClientAdapterService, StorageLocation } from '@infra/files-storage-amqp-client';
 import { CopyContentParams, CopyContentParentType, H5pEditorProducer } from '@infra/h5p-editor-client';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
-import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { CopyContextExternalToolRejectData } from '@modules/tool/context-external-tool/domain';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
 import {
@@ -12,8 +11,8 @@ import {
 } from '@modules/tool/context-external-tool/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 
+import { copyFileDtoFactory } from '@infra/files-storage-amqp-client/testing';
 import { BOARD_CONFIG_TOKEN, BoardConfig } from '@modules/board/board.config';
-import { copyFileDtoFactory } from '@modules/files-storage-client/testing';
 import {
 	Card,
 	CollaborativeTextEditorElement,

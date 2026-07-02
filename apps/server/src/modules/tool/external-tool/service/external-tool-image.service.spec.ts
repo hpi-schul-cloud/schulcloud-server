@@ -1,24 +1,18 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { FileApi, FileRecordParentType, StorageLocation } from '@infra/files-storage-client';
-import { fileRecordResponseFactory } from '@infra/files-storage-client/testing';
+import { FileRecordParentType, FilesStorageClientAdapter, StorageLocation } from '@infra/files-storage-rest-client';
+import { fileRecordResponseFactory } from '@infra/files-storage-rest-client/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { InstanceService } from '@modules/instance';
 import { instanceFactory } from '@modules/instance/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
 import { FileRecordRef } from '../domain';
 import { ExternalToolImageService } from './external-tool-image.service';
-
-const createAxiosResponse = <T>(data: T) =>
-	axiosResponseFactory.build({
-		data,
-	});
 
 describe(ExternalToolImageService.name, () => {
 	let module: TestingModule;
 	let service: ExternalToolImageService;
 
-	let fileApi: DeepMocked<FileApi>;
+	let filesStorageClient: DeepMocked<FilesStorageClientAdapter>;
 	let instanceService: DeepMocked<InstanceService>;
 
 	beforeAll(async () => {
@@ -26,8 +20,8 @@ describe(ExternalToolImageService.name, () => {
 			providers: [
 				ExternalToolImageService,
 				{
-					provide: FileApi,
-					useValue: createMock<FileApi>(),
+					provide: FilesStorageClientAdapter,
+					useValue: createMock<FilesStorageClientAdapter>(),
 				},
 				{
 					provide: InstanceService,
@@ -37,7 +31,7 @@ describe(ExternalToolImageService.name, () => {
 		}).compile();
 
 		service = module.get(ExternalToolImageService);
-		fileApi = module.get(FileApi);
+		filesStorageClient = module.get(FilesStorageClientAdapter);
 		instanceService = module.get(InstanceService);
 	});
 
@@ -60,7 +54,7 @@ describe(ExternalToolImageService.name, () => {
 
 			const fileRecordResponse = fileRecordResponseFactory.build();
 
-			fileApi.uploadFromUrl.mockResolvedValueOnce(createAxiosResponse(fileRecordResponse));
+			filesStorageClient.uploadFromUrl.mockResolvedValueOnce(fileRecordResponse);
 
 			return {
 				fileRecordId,
@@ -84,7 +78,7 @@ describe(ExternalToolImageService.name, () => {
 
 			await service.uploadImageFileFromUrl('url', fileNameAffix, externalToolId);
 
-			expect(fileApi.uploadFromUrl).toHaveBeenCalledWith(
+			expect(filesStorageClient.uploadFromUrl).toHaveBeenCalledWith(
 				instance.id,
 				StorageLocation.INSTANCE,
 				externalToolId,
@@ -115,7 +109,9 @@ describe(ExternalToolImageService.name, () => {
 		const setup = () => {
 			const fileRecordId = new ObjectId().toHexString();
 
-			fileApi.deleteFile.mockResolvedValueOnce(createAxiosResponse({}));
+			const fileRecordResponse = fileRecordResponseFactory.build({ id: fileRecordId });
+
+			filesStorageClient.deleteFile.mockResolvedValueOnce(fileRecordResponse);
 
 			return {
 				fileRecordId,
@@ -127,7 +123,7 @@ describe(ExternalToolImageService.name, () => {
 
 			await service.deleteImageFile(fileRecordId);
 
-			expect(fileApi.deleteFile).toHaveBeenCalledWith(fileRecordId);
+			expect(filesStorageClient.deleteFile).toHaveBeenCalledWith(fileRecordId);
 		});
 	});
 
@@ -135,7 +131,13 @@ describe(ExternalToolImageService.name, () => {
 		const setup = () => {
 			const fileRecordId = new ObjectId().toHexString();
 
-			fileApi.deleteByParent.mockResolvedValueOnce(createAxiosResponse({}));
+			const fileRecordResponse = fileRecordResponseFactory.build({ id: fileRecordId });
+			filesStorageClient.deleteByParent.mockResolvedValueOnce({
+				data: [fileRecordResponse],
+				total: 1,
+				skip: 0,
+				limit: 1,
+			});
 			const instance = instanceFactory.build();
 			instanceService.getInstance.mockResolvedValueOnce(instance);
 
@@ -150,7 +152,7 @@ describe(ExternalToolImageService.name, () => {
 
 			await service.deleteAllFiles(fileRecordId);
 
-			expect(fileApi.deleteByParent).toHaveBeenCalledWith(
+			expect(filesStorageClient.deleteByParent).toHaveBeenCalledWith(
 				instance.id,
 				StorageLocation.INSTANCE,
 				fileRecordId,

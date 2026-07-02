@@ -1,4 +1,5 @@
 import { createMock } from '@golevelup/ts-jest';
+import { FilesStorageClientAdapterService } from '@infra/files-storage-amqp-client';
 import { EntityManager, FilterQuery, ObjectId } from '@mikro-orm/mongodb';
 import { BoardExternalReference, BoardExternalReferenceType, BoardNodeType } from '@modules/board';
 import {
@@ -10,7 +11,6 @@ import {
 import { CopyApiResponse } from '@modules/copy-helper';
 import { CourseEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
-import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { lessonFactory } from '@modules/lesson/testing';
 import { ServerTestModule } from '@modules/server/server.app.module';
 import { Task } from '@modules/task/repo';
