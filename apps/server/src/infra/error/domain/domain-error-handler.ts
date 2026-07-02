@@ -3,7 +3,7 @@ import { ErrorLogger, Loggable, LoggingUtils, LogMessageDataObject } from '@infr
 import { Injectable } from '@nestjs/common';
 import { HttpArgumentsHost } from '@nestjs/common/interfaces';
 import { Request } from 'express';
-import util from 'util';
+import util from 'node:util';
 import { ErrorLoggable } from '../loggable';
 
 @Injectable()
