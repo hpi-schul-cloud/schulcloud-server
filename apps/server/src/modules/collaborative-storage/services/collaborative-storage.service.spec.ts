@@ -1,6 +1,6 @@
-import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { CollaborativeStorageAdapter } from '@infra/collaborative-storage';
+import { LegacyLogger } from '@infra/logger';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationService } from '@modules/authorization';
 import { TeamMapper } from '@modules/collaborative-storage/mapper/team.mapper';

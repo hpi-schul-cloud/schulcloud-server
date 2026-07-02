@@ -1,20 +1,20 @@
-import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { LegacyLogger } from '@infra/logger';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
-import { BoardNodeService, BoardNodeAuthorizableService, ColumnBoardService } from '@modules/board';
-import { boardNodeAuthorizableFactory, columnBoardFactory, cardFactory } from '@modules/board/testing';
+import { BoardNodeAuthorizableService, BoardNodeService, ColumnBoardService } from '@modules/board';
+import { boardNodeAuthorizableFactory, cardFactory, columnBoardFactory } from '@modules/board/testing';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { LessonService } from '@modules/lesson';
 import { LessonEntity, Material } from '@modules/lesson/repo';
 import { lessonFactory } from '@modules/lesson/testing';
+import { roomEntityFactory } from '@modules/room/testing';
 import { schoolEntityFactory, schoolFactory } from '@modules/school/testing';
 import { TaskService } from '@modules/task';
 import { Submission, Task } from '@modules/task/repo';
 import { taskFactory } from '@modules/task/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
-import { roomEntityFactory } from '@modules/room/testing';
 import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
@@ -22,8 +22,8 @@ import { setupEntities } from '@testing/database';
 import { ShareTokenContextType, ShareTokenParentType, ShareTokenPayload } from '../domainobject/share-token.do';
 import { ShareTokenService } from '../service';
 import { shareTokenDOFactory } from '../testing/share-token.do.factory';
-import { ShareTokenUC } from './share-token.uc';
 import { ShareTokenPermissionService } from './service';
+import { ShareTokenUC } from './share-token.uc';
 
 describe('ShareTokenUC', () => {
 	let module: TestingModule;

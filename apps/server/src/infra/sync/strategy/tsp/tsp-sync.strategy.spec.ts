@@ -1,6 +1,7 @@
-import { Logger } from '@core/logger';
 import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Logger } from '@infra/logger';
+import { RuntimeConfigService } from '@infra/runtime-config';
 import { RobjExportKlasse, RobjExportLehrer, RobjExportSchueler, RobjExportSchule } from '@infra/tsp-client';
 import {
 	robjExportKlasseFactory,
@@ -24,7 +25,6 @@ import { schoolFactory } from '@modules/school/testing';
 import { System, SystemService, SystemType } from '@modules/system';
 import { systemFactory, systemOauthConfigFactory } from '@modules/system/testing';
 import { UserDo } from '@modules/user';
-import { RuntimeConfigService } from '@infra/runtime-config';
 import { Test, TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';

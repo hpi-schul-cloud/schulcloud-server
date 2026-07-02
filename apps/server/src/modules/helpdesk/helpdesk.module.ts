@@ -1,5 +1,5 @@
-import { LoggerModule } from '@core/logger';
 import { ConfigurationModule } from '@infra/configuration';
+import { LoggerModule } from '@infra/logger';
 import { ServerMailModule } from '@modules/serverDynamicModuleWrappers/server-mail.module';
 import { Module } from '@nestjs/common';
 import { HelpdeskService } from './domain';

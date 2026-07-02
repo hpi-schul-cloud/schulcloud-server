@@ -1,9 +1,9 @@
-import { Inject, Injectable, NotFoundException } from '@nestjs/common';
-import { EntityId } from '@shared/domain/types';
+import { LegacyLogger } from '@infra/logger';
 import { AccountService } from '@modules/account';
 import { AuthenticationService } from '@modules/authentication';
-import { LegacyLogger } from '@core/logger';
 import { UserService } from '@modules/user';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { EntityId } from '@shared/domain/types';
 import { DELETION_CONFIG_TOKEN, DeletionConfig } from '../../deletion.config';
 import { DomainDeletionReportBuilder } from '../../domain/builder';
 import { DeletionLog, DeletionRequest } from '../../domain/do';

@@ -1,4 +1,4 @@
-import { ErrorLogMessage, Loggable } from '@core/logger';
+import { ErrorLogMessage, Loggable } from '@infra/logger';
 import { ForbiddenException } from '@nestjs/common';
 
 export class LockedCourseLoggableException extends ForbiddenException implements Loggable {

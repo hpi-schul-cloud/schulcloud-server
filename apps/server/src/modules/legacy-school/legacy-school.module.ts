@@ -1,4 +1,4 @@
-import { LoggerModule } from '@core/logger';
+import { LoggerModule } from '@infra/logger';
 import { GroupModule } from '@modules/group';
 import { SchoolModule } from '@modules/school';
 import { FederalStateRepo, StorageProviderRepo } from '@modules/school/repo';

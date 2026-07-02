@@ -1,6 +1,6 @@
-import { LoggerModule } from '@core/logger';
 import { ConfigurationModule } from '@infra/configuration';
 import { EncryptionModule } from '@infra/encryption';
+import { LoggerModule } from '@infra/logger';
 import { OauthAdapterModule } from '@modules/oauth-adapter';
 import { DynamicModule, Module } from '@nestjs/common';
 import { TspClientFactory } from './tsp-client-factory';

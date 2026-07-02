@@ -1,4 +1,3 @@
-import { LoggerModule } from '@core/logger';
 import { ConfigurationModule } from '@infra/configuration';
 import { FeathersServiceProvider } from '@infra/feathers';
 import {
@@ -6,6 +5,7 @@ import {
 	FilesStorageAMQPClientConfig,
 	FilesStorageAMQPClientModule,
 } from '@infra/files-storage-amqp-client';
+import { LoggerModule } from '@infra/logger';
 import { RABBITMQ_CONFIG_TOKEN, RabbitMQConfig } from '@infra/rabbitmq';
 import { AuthorizationModule } from '@modules/authorization';
 import { CopyHelperModule } from '@modules/copy-helper';

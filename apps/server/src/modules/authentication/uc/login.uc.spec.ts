@@ -1,6 +1,6 @@
-import { AuditLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { JwtPayloadBuilder } from '@infra/auth-guard';
+import { AuditLogger } from '@infra/logger';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { User, UserService } from '@modules/user';
 import { userDoFactory, userFactory } from '@modules/user/testing';

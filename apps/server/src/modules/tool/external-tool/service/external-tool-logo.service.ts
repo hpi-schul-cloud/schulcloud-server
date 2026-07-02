@@ -1,4 +1,4 @@
-import { Logger } from '@core/logger';
+import { Logger } from '@infra/logger';
 import { HttpService } from '@nestjs/axios';
 import { HttpException, Inject, Injectable } from '@nestjs/common';
 import { EntityId, ImageMimeType } from '@shared/domain/types';

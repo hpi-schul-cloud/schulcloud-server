@@ -1,5 +1,5 @@
-import { Logger } from '@core/logger';
 import { runLegacyLdapSync } from '@imports-from-feathers';
+import { Logger } from '@infra/logger';
 import { MikroORM } from '@mikro-orm/core';
 import { Injectable } from '@nestjs/common';
 import { LdapSyncCompletedLoggable, LdapSyncExecutingLoggable, LdapSyncStartedLoggable } from './loggable';

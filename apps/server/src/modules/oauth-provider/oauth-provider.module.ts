@@ -1,4 +1,4 @@
-import { LoggerModule } from '@core/logger';
+import { LoggerModule } from '@infra/logger';
 import { PseudonymModule } from '@modules/pseudonym';
 import { TeamRepo } from '@modules/team/repo';
 import { ToolModule } from '@modules/tool';

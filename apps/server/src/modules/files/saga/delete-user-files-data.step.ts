@@ -1,4 +1,4 @@
-import { Logger } from '@core/logger';
+import { Logger } from '@infra/logger';
 import {
 	ModuleName,
 	SagaService,
@@ -13,8 +13,8 @@ import {
 } from '@modules/saga';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { FilesRepo } from '../repo';
 import { FileEntity } from '../entity';
+import { FilesRepo } from '../repo';
 
 @Injectable()
 export class DeleteUserFilesDataStep extends SagaStep<'deleteUserData'> {

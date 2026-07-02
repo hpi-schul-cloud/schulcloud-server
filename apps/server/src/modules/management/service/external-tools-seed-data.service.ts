@@ -1,6 +1,6 @@
 import { ErrorLoggable } from '@core/error/loggable';
-import { Logger } from '@core/logger';
 import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
+import { Logger } from '@infra/logger';
 import { OauthProviderService } from '@modules/oauth-provider/domain';
 import { ExternalTool, ExternalToolService, Lti11ToolConfig, Oauth2ToolConfig } from '@modules/tool';
 import { CustomParameter } from '@modules/tool/common/domain';

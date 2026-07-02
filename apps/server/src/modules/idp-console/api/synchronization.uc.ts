@@ -1,5 +1,5 @@
 import { AxiosErrorLoggable } from '@core/error/loggable';
-import { Logger } from '@core/logger';
+import { Logger } from '@infra/logger';
 import { SchulconnexRestClient } from '@infra/schulconnex-client';
 import { AccountService } from '@modules/account';
 import { Synchronization, SynchronizationService, SynchronizationStatusModel } from '@modules/synchronization';

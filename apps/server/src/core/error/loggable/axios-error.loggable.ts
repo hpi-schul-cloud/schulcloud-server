@@ -1,9 +1,7 @@
+import { ErrorLogMessage, Loggable, LoggingUtils, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { AxiosError } from 'axios';
-import util from 'util';
-import { Loggable } from '../../logger/interfaces/loggable';
-import { LoggingUtils } from '../../logger/logging.utils';
-import { ErrorLogMessage, LogMessage, ValidationErrorLogMessage } from '../../logger/types';
+import util from 'node:util';
 
 export class AxiosErrorLoggable extends HttpException implements Loggable {
 	private static isSensitiveHeaderName(name: string): boolean {

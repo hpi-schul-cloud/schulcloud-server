@@ -1,4 +1,4 @@
-import { LogMessageData } from '@core/logger';
+import { LogMessageData } from '@infra/logger';
 import { News } from '../../repo';
 
 export class NewsLogMapper {

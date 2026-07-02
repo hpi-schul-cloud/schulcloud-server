@@ -1,7 +1,7 @@
 import { ErrorModule } from '@core/error';
-import { LoggerModule } from '@core/logger';
 import { ConsoleWriterModule } from '@infra/console';
 import { DATABASE_CONFIG_TOKEN, DatabaseConfig, DatabaseModule } from '@infra/database';
+import { LoggerModule } from '@infra/logger';
 import { Module } from '@nestjs/common';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { ConsoleModule } from 'nestjs-console';

@@ -1,5 +1,5 @@
-import { LoggerModule } from '@core/logger';
 import { ConfigurationModule } from '@infra/configuration';
+import { LoggerModule } from '@infra/logger';
 import { UserChangedSchoolGroupHandlerService } from '@modules/group/service/user-changed-school-group-handler.service';
 import { SchoolModule } from '@modules/school';
 import { forwardRef, Module } from '@nestjs/common';

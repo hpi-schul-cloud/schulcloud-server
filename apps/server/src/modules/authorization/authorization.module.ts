@@ -1,6 +1,6 @@
-import { LoggerModule } from '@core/logger';
 import { ConfigurationModule } from '@infra/configuration';
 import { FeathersModule } from '@infra/feathers';
+import { LoggerModule } from '@infra/logger';
 import { Module } from '@nestjs/common';
 import { AUTHORIZATION_CONFIG_TOKEN, AuthorizationConfig } from './authorization.config';
 import { AuthorizationHelper, AuthorizationInjectionService, AuthorizationService, RuleManager } from './domain';

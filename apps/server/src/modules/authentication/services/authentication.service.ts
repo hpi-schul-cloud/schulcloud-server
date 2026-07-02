@@ -1,6 +1,6 @@
-import { Logger } from '@core/logger';
 import { CreateJwtPayload, JwtPayloadBuilder, JwtPayloadVo } from '@infra/auth-guard';
 import { JwtWhitelistAdapter } from '@infra/jwt-whitelist';
+import { Logger } from '@infra/logger';
 import { Account, AccountService } from '@modules/account';
 import { User } from '@modules/user/repo';
 import { Inject, Injectable } from '@nestjs/common';

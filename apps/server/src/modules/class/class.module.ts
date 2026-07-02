@@ -1,9 +1,9 @@
-import { LoggerModule } from '@core/logger';
+import { LoggerModule } from '@infra/logger';
+import { SagaModule } from '@modules/saga';
 import { Module } from '@nestjs/common';
 import { ClassesRepo } from './repo';
 import { DeleteUserClassDataStep } from './saga';
 import { ClassService } from './service';
-import { SagaModule } from '@modules/saga';
 import { UserChangedSchoolHandlerService } from './service/user-changed-school-handler.service';
 
 @Module({

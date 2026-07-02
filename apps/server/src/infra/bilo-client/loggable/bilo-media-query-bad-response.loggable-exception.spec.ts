@@ -1,4 +1,4 @@
-import { ErrorLogMessage } from '@core/logger';
+import { ErrorLogMessage } from '@infra/logger';
 import { ValidationError } from 'class-validator';
 import { biloMediaQueryBadResponseReportFactory } from '../testing';
 import { BiloMediaQueryBadResponseLoggableException } from './bilo-media-query-bad-response.loggable-exception';

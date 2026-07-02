@@ -1,4 +1,4 @@
-import { LegacyLogger } from '@core/logger';
+import { LegacyLogger } from '@infra/logger';
 import { Command, Console } from 'nestjs-console';
 import { DeleteFilesUc } from './delete-files.uc';
 

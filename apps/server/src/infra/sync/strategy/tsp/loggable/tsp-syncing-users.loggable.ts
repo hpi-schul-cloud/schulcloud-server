@@ -1,4 +1,4 @@
-import { Loggable, LogMessage } from '@core/logger';
+import { Loggable, LogMessage } from '@infra/logger';
 
 export class TspSyncingUsersLoggable implements Loggable {
 	constructor(private readonly syncingUsers: number) {}

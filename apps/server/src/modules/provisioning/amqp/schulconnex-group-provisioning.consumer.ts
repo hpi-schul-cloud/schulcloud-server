@@ -1,5 +1,5 @@
-import { Logger } from '@core/logger';
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
+import { Logger } from '@infra/logger';
 import { MikroORM, RequestContext } from '@mikro-orm/core';
 import { type Group, GroupService } from '@modules/group';
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';

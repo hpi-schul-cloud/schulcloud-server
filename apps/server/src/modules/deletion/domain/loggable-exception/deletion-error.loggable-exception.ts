@@ -1,7 +1,6 @@
-import { InternalServerErrorException } from '@nestjs/common';
-import { Loggable } from '@core/logger';
-import { ErrorLogMessage } from '@core/logger/types';
 import { AxiosErrorLoggable } from '@core/error/loggable';
+import { ErrorLogMessage, Loggable } from '@infra/logger';
+import { InternalServerErrorException } from '@nestjs/common';
 import { isAxiosError } from 'axios';
 export class DeletionErrorLoggableException extends InternalServerErrorException implements Loggable {
 	constructor(

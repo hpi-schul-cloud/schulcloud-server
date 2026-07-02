@@ -1,6 +1,6 @@
 import { ErrorLoggable } from '@core/error/loggable';
-import { Logger } from '@core/logger';
 import { ICurrentUser } from '@infra/auth-guard';
+import { Logger } from '@infra/logger';
 import { Account } from '@modules/account';
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';
 import { AUTHENTICATION_CONFIG_TOKEN, AuthenticationConfig } from '../authentication-config';

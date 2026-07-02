@@ -1,5 +1,5 @@
-import { AUDIT_LOGGER_PROVIDER } from '@core/logger';
 import { ConfigurationModule } from '@infra/configuration';
+import { AUDIT_LOGGER_PROVIDER } from '@infra/logger';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { AccountEntity } from '@modules/account/repo';
 import { schoolEntityFactory } from '@modules/school/testing';

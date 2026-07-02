@@ -1,4 +1,4 @@
-import { Logger } from '@core/logger';
+import { Logger } from '@infra/logger';
 import EventEmitter from 'node:events';
 import { InMemoryLoggable } from '../loggable';
 import { StorageClient } from '../types';

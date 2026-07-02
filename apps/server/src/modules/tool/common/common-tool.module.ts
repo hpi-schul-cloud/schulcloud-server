@@ -1,4 +1,4 @@
-import { LoggerModule } from '@core/logger';
+import { LoggerModule } from '@infra/logger';
 import { SchoolModule } from '@modules/school';
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';

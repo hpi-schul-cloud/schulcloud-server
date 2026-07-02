@@ -1,6 +1,6 @@
-import { Logger } from '@core/logger';
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Logger } from '@infra/logger';
 import { Test, TestingModule } from '@nestjs/testing';
 import { AmqpConnectionGuard } from './amqp-connection.guard';
 import { AmqpConnectionLostLoggable } from './loggable';
