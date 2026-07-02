@@ -56,7 +56,7 @@ export class ExternalToolService {
 				if (ExternalTool.isOauth2Config(tool.config)) {
 					try {
 						await this.addExternalOauth2DataToConfig(tool.config);
-					} catch (e) {
+					} catch {
 						this.legacyLogger.warn(
 							`Could not resolve oauth2Config of tool with clientId ${tool.config.clientId} and name ${tool.name}. It will be filtered out.`
 						);
@@ -81,7 +81,7 @@ export class ExternalToolService {
 				this.legacyLogger.debug(
 					`Could not resolve oauth2Config of tool with clientId ${tool.config.clientId}. It will be filtered out.`
 				);
-				throw new UnprocessableEntityException(`Could not resolve oauth2Config of tool ${tool.name}.`);
+				throw new UnprocessableEntityException(`Could not resolve oauth2Config of tool ${tool.name}.`, { cause: e });
 			}
 		}
 		return tool;
@@ -156,7 +156,7 @@ export class ExternalToolService {
 		toUpdateOauthClient: Partial<ProviderOauthClient>,
 		toUpdate: ExternalTool
 	): Promise<void> {
-		if (loadedOauthClient && loadedOauthClient.client_id) {
+		if (loadedOauthClient?.client_id) {
 			await this.oauthProviderService.updateOAuth2Client(loadedOauthClient.client_id, toUpdateOauthClient);
 		} else {
 			throw new UnprocessableEntityException(`The oAuthConfigs clientId of tool ${toUpdate.name}" does not exist`);

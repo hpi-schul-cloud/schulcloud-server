@@ -101,7 +101,7 @@ describe(SchoolValidationService.name, () => {
 				it('should throw a SchoolNumberDuplicateLoggableException', async () => {
 					const { newSchool } = setup();
 
-					const func = async () => service.validate(newSchool);
+					const func = () => service.validate(newSchool);
 
 					await expect(func).rejects.toThrow(SchoolNumberDuplicateLoggableException);
 				});

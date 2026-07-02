@@ -60,7 +60,7 @@ export class ProvisioningService {
 	public async provisionData(oauthData: OauthDataDto): Promise<ProvisioningDto> {
 		const strategy: ProvisioningStrategy = this.getProvisioningStrategy(oauthData.system.provisioningStrategy);
 
-		const provisioningDto: Promise<ProvisioningDto> = strategy.apply(oauthData);
+		const provisioningDto: ProvisioningDto = await strategy.apply(oauthData);
 
 		return provisioningDto;
 	}

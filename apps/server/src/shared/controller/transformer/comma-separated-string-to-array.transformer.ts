@@ -1,5 +1,5 @@
-import { TypeGuard } from '@shared/common/guards';
 import { Transform, TransformFnParams } from 'class-transformer';
+import { TypeGuard } from '../../common/guards';
 
 /**
  * Transforms a comma-separated string into an array of trimmed strings.

@@ -1,4 +1,3 @@
-import { LogMessage } from '@core/logger';
 import { MediaSourceDataFormat } from '@modules/media-source';
 import { MediaSourceSyncOperationReport } from '@modules/media-source-sync';
 import { mediaSourceSyncReportFactory } from '@modules/media-source-sync/testing';

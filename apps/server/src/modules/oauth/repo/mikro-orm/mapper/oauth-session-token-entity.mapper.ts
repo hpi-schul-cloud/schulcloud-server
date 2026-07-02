@@ -20,7 +20,7 @@ export class OauthSessionTokenEntityMapper {
 		return entityProps;
 	}
 
-	public static mapEntityToDo(entity: OauthSessionTokenEntity) {
+	public static mapEntityToDo(entity: OauthSessionTokenEntity): OauthSessionToken {
 		const domainObject = new OauthSessionToken({
 			id: entity.id,
 			userId: entity.user.id,

@@ -156,7 +156,7 @@ export class School extends DomainObject<SchoolProps> {
 		return result;
 	}
 
-	public removeSystem(systemId: EntityId) {
+	public removeSystem(systemId: EntityId): void {
 		this.props.systemIds = this.props.systemIds.filter((id) => id !== systemId);
 	}
 }

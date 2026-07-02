@@ -102,7 +102,7 @@ export class UserLoginMigrationService {
 		return userLoginMigration;
 	}
 
-	private checkGracePeriod(userLoginMigration: UserLoginMigrationDO) {
+	private checkGracePeriod(userLoginMigration: UserLoginMigrationDO): void {
 		if (userLoginMigration.finishedAt && this.isGracePeriodExpired(userLoginMigration)) {
 			throw new UserLoginMigrationGracePeriodExpiredLoggableException(
 				userLoginMigration.id as string,

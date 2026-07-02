@@ -1,8 +1,8 @@
 import { DomainErrorHandler } from '@core/error';
 import { Logger } from '@core/logger';
-import * as dns from 'dns';
 import Valkey from 'iovalkey';
-import * as util from 'util';
+import * as dns from 'node:dns';
+import * as util from 'node:util';
 import { InMemoryClient, ValkeyClient } from './clients';
 import { ConnectedLoggable, DiscoveredSentinalHostsLoggable } from './loggable';
 import { SentinalHost, StorageClient } from './types';

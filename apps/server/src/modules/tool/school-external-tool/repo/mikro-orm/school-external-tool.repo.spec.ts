@@ -161,7 +161,7 @@ describe(SchoolExternalToolRepo.name, () => {
 
 		it('should save a SchoolExternalTool', async () => {
 			const { domainObject } = setup();
-			const { id, ...expected } = domainObject;
+			const expected = { ...domainObject };
 
 			const result: SchoolExternalTool = await repo.save(domainObject);
 

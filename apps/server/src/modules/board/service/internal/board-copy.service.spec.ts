@@ -14,8 +14,8 @@ import { BoardCopyService, CopyCardParams, CopyColumnBoardParams, CopyColumnPara
 import { ColumnBoardTitleService } from './column-board-title.service';
 // Warning: do not move the BoardNodeCopyService import up. Otherwise it will lead to dependency cycle.
 import { InternalServerErrorException } from '@nestjs/common';
+import { Card, Column } from '../../domain';
 import { BoardNodeCopyService } from './board-node-copy.service';
-import { Card, Column, ColumnBoard } from '../../domain';
 
 describe(BoardCopyService.name, () => {
 	let module: TestingModule;

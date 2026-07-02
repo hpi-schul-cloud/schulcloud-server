@@ -350,7 +350,7 @@ describe(UserLoginMigrationService.name, () => {
 			it('should throw a MoinSchuleSystemNotFoundLoggableException', async () => {
 				const { schoolId } = setup();
 
-				const func = async () => service.startMigration(schoolId);
+				const func = () => service.startMigration(schoolId);
 
 				await expect(func).rejects.toThrow(new MoinSchuleSystemNotFoundLoggableException());
 			});
@@ -380,7 +380,7 @@ describe(UserLoginMigrationService.name, () => {
 			it('should throw an IdenticalUserLoginMigrationSystemLoggableException', async () => {
 				const { schoolId, targetSystemId } = setup();
 
-				const func = async () => service.startMigration(schoolId);
+				const func = () => service.startMigration(schoolId);
 
 				await expect(func).rejects.toThrow(
 					new IdenticalUserLoginMigrationSystemLoggableException(schoolId, targetSystemId)
@@ -657,7 +657,7 @@ describe(UserLoginMigrationService.name, () => {
 			it('should throw a UserLoginMigrationAlreadyClosedLoggableException', async () => {
 				const { userLoginMigration } = setup();
 
-				const func = async () => service.setMigrationMandatory(userLoginMigration, true);
+				const func = () => service.setMigrationMandatory(userLoginMigration, true);
 
 				await expect(func).rejects.toThrow(UserLoginMigrationAlreadyClosedLoggableException);
 			});

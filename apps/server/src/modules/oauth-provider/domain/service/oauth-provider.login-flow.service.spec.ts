@@ -64,7 +64,7 @@ describe(OauthProviderLoginFlowService.name, () => {
 			it('should throw a NotFoundException', async () => {
 				setup();
 
-				const func = async () => service.findToolByClientId('clientId');
+				const func = () => service.findToolByClientId('clientId');
 
 				await expect(func).rejects.toThrow(new NotFoundException('Unable to find ExternalTool for clientId: clientId'));
 			});

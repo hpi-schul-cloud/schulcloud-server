@@ -9,7 +9,6 @@ import { EntityNotFoundError } from '@shared/common/error';
 import { EntityId } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
 import bcrypt from 'bcryptjs';
-import { v1 } from 'uuid';
 import { accountDoFactory } from '../../testing';
 import { Account } from '../do';
 import { ACCOUNT_REPO, AccountRepo } from '../interface';

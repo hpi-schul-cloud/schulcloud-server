@@ -291,8 +291,9 @@ describe('LoginUc', () => {
 
 			it('should throw ForbiddenException', async () => {
 				const { supportUser, targetUser } = setup();
+				const targetUserId = targetUser.id ?? '';
 
-				await expect(loginUc.getSupportLoginData(targetUser.id!, supportUser.id)).rejects.toThrow(ForbiddenException);
+				await expect(loginUc.getSupportLoginData(targetUserId, supportUser.id)).rejects.toThrow(ForbiddenException);
 			});
 		});
 	});

@@ -67,9 +67,9 @@ const baseConfig = {
 		'no-restricted-syntax': 'off',
 		'class-methods-use-this': 'off',
 		'no-underscore-dangle': ['error', { allow: ['_id', '_v', '__v'] }],
-		'prefer-destructuring': ['warn', { object: true, array: false }],
+		'prefer-destructuring': ['error', { object: true, array: false }],
 		'no-param-reassign': ['warn', { props: false }],
-		'no-unused-vars': ['warn', { args: 'after-used', argsIgnorePattern: 'app|req|res|next|options|params|^_' }],
+		'no-unused-vars': ['error', { args: 'after-used', argsIgnorePattern: 'app|req|res|next|options|params|^_' }],
 		'arrow-parens': ['error', 'always'],
 		'arrow-body-style': ['error', 'as-needed', { requireReturnForObjectLiteral: true }],
 		'no-only-tests/no-only-tests': 'error',
@@ -115,11 +115,11 @@ const tsBase = {
 		'no-void': ['error', { allowAsStatement: true }],
 		'no-param-reassign': 'off',
 		'no-underscore-dangle': 'off',
-		'require-await': 'warn',
+		'require-await': 'error',
 		'@typescript-eslint/unbound-method': 'error',
 		'@typescript-eslint/no-non-null-assertion': 'warn',
-		'@typescript-eslint/no-unused-vars': ['warn', { args: 'after-used', argsIgnorePattern: '^_' }],
-		'@typescript-eslint/explicit-function-return-type': 'warn',
+		'@typescript-eslint/no-unused-vars': ['error', { args: 'after-used', argsIgnorePattern: '^_' }],
+		'@typescript-eslint/explicit-function-return-type': 'error',
 		'@typescript-eslint/explicit-member-accessibility': 'off',
 		'@typescript-eslint/no-empty-interface': ['error', { allowSingleExtends: true }],
 		'no-restricted-imports': 'off',
@@ -156,7 +156,7 @@ const tsSpecs = {
 		'jest/unbound-method': 'error',
 		'@typescript-eslint/explicit-function-return-type': 'off',
 		'@typescript-eslint/explicit-member-accessibility': 'off',
-		'@typescript-eslint/no-explicit-any': 'warn',
+		'@typescript-eslint/no-explicit-any': 'error',
 	},
 };
 
@@ -314,7 +314,7 @@ const singleClassFiles = {
 		'apps/server/src/**/*.uc.ts',
 	],
 	rules: {
-		'max-classes-per-file': ['warn', 1],
+		'max-classes-per-file': ['error', 1],
 	},
 };
 

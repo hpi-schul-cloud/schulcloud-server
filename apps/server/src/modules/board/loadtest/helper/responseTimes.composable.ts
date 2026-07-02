@@ -3,24 +3,25 @@ import { ResponseTimeRecord } from '../types';
 
 let responseTimes: ResponseTimeRecord[] = [];
 
-export const useResponseTimes = () => {
-	function formatTime(time: number) {
-		return `${time.toFixed(2)}`;
-	}
+export const useResponseTimes = (): {
+	addResponseTime: (responseTime: ResponseTimeRecord) => void;
+	getResponseTimes: () => ResponseTimeRecord[];
+	getTotalAvg: () => string;
+	getAvgByAction: () => Record<string, string>;
+	reset: () => void;
+} => {
+	const formatTime = (time: number): string => `${time.toFixed(2)}`;
 
-	function addResponseTime(responseTime: ResponseTimeRecord) {
+	const addResponseTime = (responseTime: ResponseTimeRecord): void => {
 		responseTimes.push(responseTime);
-	}
+	};
 
-	function getResponseTimes() {
-		return responseTimes;
-	}
+	const getResponseTimes = (): ResponseTimeRecord[] => responseTimes;
 
-	function getTotalAvg() {
-		return formatTime(responseTimes.reduce((acc, curr) => acc + curr.responseTime, 0) / responseTimes.length);
-	}
+	const getTotalAvg = (): string =>
+		formatTime(responseTimes.reduce((acc, curr) => acc + curr.responseTime, 0) / responseTimes.length);
 
-	function getAvgByAction() {
+	const getAvgByAction = (): Record<string, string> => {
 		const grouped = groupBy(responseTimes, 'action');
 		const actions = Object.keys(grouped).sort((a, b) => a.localeCompare(b));
 		const avgByAction: Record<string, string> = {};
@@ -31,11 +32,11 @@ export const useResponseTimes = () => {
 		}
 
 		return avgByAction;
-	}
+	};
 
-	function reset() {
+	const reset = (): void => {
 		responseTimes = [];
-	}
+	};
 
 	return {
 		addResponseTime,

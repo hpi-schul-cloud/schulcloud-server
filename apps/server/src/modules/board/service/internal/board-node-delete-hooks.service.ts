@@ -41,7 +41,7 @@ export class BoardNodeDeleteHooksService {
 	public async afterDelete(boardNode: AnyBoardNode | AnyBoardNode[]): Promise<void> {
 		const boardNodes = Utils.asArray(boardNode);
 
-		await Promise.all(boardNodes.map(async (bn: AnyBoardNode): Promise<void> => this.singleAfterDelete(bn)));
+		await Promise.all(boardNodes.map((bn: AnyBoardNode): Promise<void> => this.singleAfterDelete(bn)));
 	}
 
 	private async singleAfterDelete(boardNode: AnyBoardNode): Promise<void> {
@@ -64,9 +64,7 @@ export class BoardNodeDeleteHooksService {
 			// noop
 		}
 
-		await Promise.allSettled(
-			boardNode.children.map(async (child: AnyBoardNode): Promise<void> => this.afterDelete(child))
-		);
+		await Promise.allSettled(boardNode.children.map((child: AnyBoardNode): Promise<void> => this.afterDelete(child)));
 	}
 
 	public afterDeleteFileElement(fileElement: FileElement | FileFolderElement): void {

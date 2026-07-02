@@ -231,7 +231,7 @@ describe('ExternalToolConfigurationUc', () => {
 			it('should fail when authorizationService throws ForbiddenException', async () => {
 				const { user, tool } = setup();
 
-				const func = async () => uc.getAvailableToolsForContext('userId', 'contextId', ToolContextType.COURSE);
+				const func = () => uc.getAvailableToolsForContext('userId', 'contextId', ToolContextType.COURSE);
 
 				await expect(func).rejects.toThrow(ForbiddenException);
 				expect(toolPermissionHelper.ensureContextPermissions).toHaveBeenCalledWith(
@@ -751,7 +751,7 @@ describe('ExternalToolConfigurationUc', () => {
 			it('should fail when authorizationService throws ForbiddenException', async () => {
 				const { user } = setup();
 
-				const func = async () => uc.getPreferedToolsForContext('userId', 'schoolId', ToolContextType.BOARD_ELEMENT);
+				const func = () => uc.getPreferedToolsForContext('userId', 'schoolId', ToolContextType.BOARD_ELEMENT);
 
 				await expect(func).rejects.toThrow(ForbiddenException);
 				expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(user, [Permission.CONTEXT_TOOL_ADMIN]);

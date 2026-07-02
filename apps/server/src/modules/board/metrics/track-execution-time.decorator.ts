@@ -1,17 +1,17 @@
-import { performance } from 'perf_hooks';
+import { performance } from 'node:perf_hooks';
 
 const CALLBACK_METHOD_NAME = 'trackExecutionTime';
 
 export function TrackExecutionTime(): MethodDecorator {
 	return function track(target: object, propertyKey: string | symbol, descriptor: PropertyDescriptor) {
 		if (typeof target[CALLBACK_METHOD_NAME] !== 'function') {
-			throw new Error(
+			throw new TypeError(
 				`The class ${target.constructor.name} does not implement the required ${CALLBACK_METHOD_NAME} method.`
 			);
 		}
 
 		const originalMethod = descriptor.value as () => unknown;
-		descriptor.value = async function wrapper(...args: []) {
+		descriptor.value = async function wrapper(...args: []): Promise<unknown> {
 			const startTime = performance.now();
 			const result = await originalMethod.apply(this, args);
 			const executionTime = performance.now() - startTime;

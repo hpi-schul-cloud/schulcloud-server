@@ -427,7 +427,7 @@ describe(VideoConferenceService.name, () => {
 			it('should throw a ForbiddenException', async () => {
 				const { scopeId } = setup();
 
-				const func = async () =>
+				const func = () =>
 					service.isExternalPersonOrTeamExpert('nonexistentUserId', VideoConferenceScope.EVENT, scopeId);
 
 				await expect(func()).rejects.toThrow(new ForbiddenException(ErrorStatus.UNKNOWN_USER));

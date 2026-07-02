@@ -42,7 +42,8 @@ export class NextcloudStrategy implements CollaborativeStorageStrategy {
 		try {
 			folderId = await this.client.findGroupFolderIdForGroupId(groupId);
 			await this.client.setGroupPermissions(groupId, folderId, dto.permissions);
-		} catch (e) {
+		} catch {
+			// TODO: check error handling
 			this.logger.log(
 				`Permissions in nextcloud were not set because of missing groupId or folderId for teamId ${dto.teamId}`
 			);

@@ -5,7 +5,7 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 
 // https://github.com/mikro-orm/mikro-orm/blob/fd56714e06e39c2724a3193b8b07279b8fb6c91f/packages/mongodb/src/MongoSchemaGenerator.ts#L30
-export const createCollections = async (em: EntityManager) => {
+export const createCollections = async (em: EntityManager): Promise<void> => {
 	const collections = new Set();
 	Object.values(em.getMetadata().getAll()).forEach((meta) => {
 		if (meta.collection) {

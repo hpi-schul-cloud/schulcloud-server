@@ -4,7 +4,6 @@ import {
 	MediaSource,
 	MediaSourceAuthMethod,
 	MediaSourceDataFormat,
-	MediaSourceOauthConfig,
 	MediaSourceService,
 	MediaSourceVidisConfig,
 } from '@modules/media-source';

@@ -10,6 +10,6 @@ import { applyDecorators, SetMetadata } from '@nestjs/common';
  *
  * @example @RequestTimeout('incomingRequestTimeoutCopyApi')
  */
-export function RequestTimeout(requestTimeoutEnvironmentName: string) {
+export function RequestTimeout(requestTimeoutEnvironmentName: string): MethodDecorator & ClassDecorator {
 	return applyDecorators(SetMetadata('requestTimeoutEnvironmentName', requestTimeoutEnvironmentName));
 }

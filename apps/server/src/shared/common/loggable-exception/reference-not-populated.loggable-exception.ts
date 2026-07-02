@@ -1,4 +1,4 @@
-import { Loggable } from '@core/logger';
+import { ErrorLogMessage, Loggable } from '@core/logger';
 import { InternalServerErrorException } from '@nestjs/common';
 
 export class ReferenceNotPopulatedLoggableException extends InternalServerErrorException implements Loggable {
@@ -9,7 +9,7 @@ export class ReferenceNotPopulatedLoggableException extends InternalServerErrorE
 		super();
 	}
 
-	getLogMessage() {
+	getLogMessage(): ErrorLogMessage {
 		return {
 			type: 'REFERENCE_NOT_POPULATED',
 			stack: this.stack,

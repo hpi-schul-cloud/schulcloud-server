@@ -990,7 +990,7 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 			it('should throw an UnprocessableEntityException', async () => {
 				const { data } = setup();
 
-				const func = async () => strategy.buildToolLaunchDataFromConcreteConfig('userId', data);
+				const func = () => strategy.buildToolLaunchDataFromConcreteConfig('userId', data);
 
 				await expect(func).rejects.toThrow(
 					new UnprocessableEntityException(

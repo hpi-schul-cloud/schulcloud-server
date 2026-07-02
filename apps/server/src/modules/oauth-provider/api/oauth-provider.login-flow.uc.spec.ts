@@ -279,7 +279,7 @@ describe(OauthProviderLoginFlowUc.name, () => {
 			it('should throw an InternalServerErrorException', async () => {
 				const { query, loginRequestBodyMock } = setup();
 
-				const func = async () => uc.patchLoginRequest('userId', 'challenge', loginRequestBodyMock, query);
+				const func = () => uc.patchLoginRequest('userId', 'challenge', loginRequestBodyMock, query);
 
 				await expect(func).rejects.toThrow(new InternalServerErrorException('Tool has no id'));
 			});
@@ -325,7 +325,7 @@ describe(OauthProviderLoginFlowUc.name, () => {
 			it('should throw an UnprocessableEntityException', async () => {
 				const { query, loginRequestBodyMock, tool } = setup();
 
-				const func = async () => uc.patchLoginRequest('userId', 'challenge', loginRequestBodyMock, query);
+				const func = () => uc.patchLoginRequest('userId', 'challenge', loginRequestBodyMock, query);
 
 				await expect(func).rejects.toThrow(
 					new UnprocessableEntityException(

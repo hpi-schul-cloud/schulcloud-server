@@ -53,7 +53,7 @@ export class Lti11DeepLinkParamsFactory {
 				secret: this.secret,
 			},
 			signature_method: 'HMAC-SHA1',
-			hash_function: (base_string: string, hashKey: string) =>
+			hash_function: (base_string: string, hashKey: string): string =>
 				crypto.createHmac('sha1', hashKey).update(base_string).digest('base64'),
 		});
 	}

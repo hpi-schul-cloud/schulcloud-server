@@ -667,8 +667,8 @@ describe(SchoolMigrationService.name, () => {
 					startedAt: new Date('2023-05-01'),
 				});
 
-				const schoolToSave = _.cloneDeep(school);
-				schoolToSave.systems = [userLoginMigration.sourceSystemId!];
+				const schoolToSave = structuredClone(school);
+				schoolToSave.systems = [userLoginMigration.sourceSystemId as string];
 
 				schoolService.getSchoolById.mockResolvedValueOnce(school);
 

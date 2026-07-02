@@ -159,7 +159,7 @@ describe(StartUserLoginMigrationUc.name, () => {
 			it('should throw an exception', async () => {
 				setup();
 
-				const func = async () => uc.startMigration('userId', 'schoolId');
+				const func = () => uc.startMigration('userId', 'schoolId');
 
 				await expect(func).rejects.toThrow(ForbiddenException);
 			});
@@ -178,7 +178,7 @@ describe(StartUserLoginMigrationUc.name, () => {
 			it('should throw a SchoolNumberMissingLoggableException', async () => {
 				setup();
 
-				const func = async () => uc.startMigration('userId', 'schoolId');
+				const func = () => uc.startMigration('userId', 'schoolId');
 
 				await expect(func).rejects.toThrow(SchoolNumberMissingLoggableException);
 			});
@@ -202,7 +202,7 @@ describe(StartUserLoginMigrationUc.name, () => {
 			it('should throw a UserLoginMigrationAlreadyClosedLoggableException', async () => {
 				setup();
 
-				const func = async () => uc.startMigration('userId', 'schoolId');
+				const func = () => uc.startMigration('userId', 'schoolId');
 
 				await expect(func).rejects.toThrow(UserLoginMigrationAlreadyClosedLoggableException);
 			});

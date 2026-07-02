@@ -56,7 +56,7 @@ describe('CollaborativeStorage Adapter', () => {
 			],
 		}).compile();
 		adapter = module.get(CollaborativeStorageAdapter);
-		strategy = adapter.strategy;
+		({ strategy } = adapter);
 	});
 
 	afterEach(() => {

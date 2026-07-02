@@ -14,7 +14,7 @@ const createMockArchive = (): DeepMocked<Archiver> => {
 	const mock = createMock<Archiver>();
 	mock.once.mockImplementation((event: string | symbol, listener: (...args: unknown[]) => void) => {
 		if (event === 'entry') {
-			void Promise.resolve().then(() => listener());
+			queueMicrotask(() => listener());
 		}
 		return mock;
 	});
@@ -25,7 +25,7 @@ const createMockArchiveWithError = (error: Error): DeepMocked<Archiver> => {
 	const mock = createMock<Archiver>();
 	mock.once.mockImplementation((event: string | symbol, listener: (...args: unknown[]) => void) => {
 		if (event === 'error') {
-			void Promise.resolve().then(() => listener(error));
+			queueMicrotask(() => listener(error));
 		}
 		return mock;
 	});

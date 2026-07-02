@@ -179,7 +179,7 @@ describe(UserLoginMigrationUc.name, () => {
 			it('should throw a forbidden exception', async () => {
 				const { userId } = setup();
 
-				const func = async () => uc.getMigrations(userId, { userId: 'otherUserId' });
+				const func = () => uc.getMigrations(userId, { userId: 'otherUserId' });
 
 				await expect(func).rejects.toThrow(
 					new ForbiddenException('Accessing migration status of another user is forbidden.')

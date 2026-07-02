@@ -69,7 +69,8 @@ describe('UserLoginMigrationRepo', () => {
 
 			it('should save a UserLoginMigration to the database', async () => {
 				const { domainObject } = await setup();
-				const { id, ...expected } = domainObject;
+				const expected = { ...domainObject };
+				delete expected.id;
 
 				const result: UserLoginMigrationDO = await repo.save(domainObject);
 
@@ -126,12 +127,9 @@ describe('UserLoginMigrationRepo', () => {
 
 				await em.persist(userLoginMigration).flush();
 				em.clear();
-
-				const domainObject: UserLoginMigrationDO = repo.mapEntityToDO(userLoginMigration);
-
 				return {
 					userLoginMigration,
-					domainObject,
+					domainObject: repo.mapEntityToDO(userLoginMigration),
 				};
 			};
 

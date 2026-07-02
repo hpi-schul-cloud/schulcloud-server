@@ -631,6 +631,7 @@ describe('GroupService', () => {
 				const { group, userDo } = setup([roleDto]);
 				jest.spyOn(group, 'addUser');
 
+				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 				await service.addUsersToGroup('groupId', [{ userId: userDo.id!, roleName: roleDto.name }]);
 
 				expect(group.addUser).toHaveBeenCalledWith(expect.objectContaining({ userId: userDo.id, roleId: roleDto.id }));
@@ -640,6 +641,7 @@ describe('GroupService', () => {
 				const roleDto = roleDtoFactory.buildWithId({ name: RoleName.STUDENT });
 				const { group, userDo } = setup([roleDto]);
 
+				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 				await service.addUsersToGroup('groupId', [{ userId: userDo.id!, roleName: roleDto.name }]);
 
 				expect(groupRepo.save).toHaveBeenCalledWith(group);
@@ -649,6 +651,7 @@ describe('GroupService', () => {
 				it('should fail', async () => {
 					const { userDo } = setup();
 
+					// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 					const method = () => service.addUsersToGroup('groupId', [{ userId: userDo.id!, roleName: RoleName.STUDENT }]);
 
 					await expect(method).rejects.toThrow();

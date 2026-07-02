@@ -2,14 +2,14 @@ import { DomainErrorHandler } from '@core/error';
 import { Logger } from '@core/logger';
 import { createMock } from '@golevelup/ts-jest';
 import Valkey from 'iovalkey';
-import * as util from 'util';
+import * as util from 'node:util';
 import { InMemoryClient, ValkeyClient } from './clients';
 import { ConnectedLoggable } from './loggable';
 import { ValkeyMode } from './valkey.config';
 import { ValkeyFactory } from './valkey.factory';
 
 jest.mock('iovalkey');
-jest.mock('util');
+jest.mock('node:util');
 
 const domainErrorHandler = createMock<DomainErrorHandler>();
 const logger = createMock<Logger>();

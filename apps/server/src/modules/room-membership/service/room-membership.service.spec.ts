@@ -588,7 +588,9 @@ describe('RoomMembershipService', () => {
 				roomService.getSingleRoom.mockResolvedValue(roomFactory.build({ id: roomId }));
 
 				// Mock getAuthorizables to return empty array (or more than 1 element)
-				const getAuthorizablesSpy = jest.spyOn(service as any, 'getAuthorizables').mockResolvedValue([]);
+				// @ts-expect-error spy private method
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-call
+				const getAuthorizablesSpy = jest.spyOn(service, 'getAuthorizables').mockResolvedValue([]);
 
 				const result = await service.getRoomAuthorizable(roomId);
 
@@ -596,7 +598,7 @@ describe('RoomMembershipService', () => {
 				expect(result).toBeInstanceOf(RoomAuthorizable);
 				expect(result.roomId).toBe(roomId);
 				expect(result.members).toHaveLength(0);
-
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
 				getAuthorizablesSpy.mockRestore();
 			});
 		});

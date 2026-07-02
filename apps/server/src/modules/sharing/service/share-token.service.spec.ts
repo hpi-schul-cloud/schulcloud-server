@@ -8,11 +8,11 @@ import { courseEntityFactory } from '@modules/course/testing';
 import { LessonService } from '@modules/lesson';
 import { LessonEntity, Material } from '@modules/lesson/repo';
 import { lessonFactory } from '@modules/lesson/testing';
+import { RoomService } from '@modules/room';
+import { roomFactory } from '@modules/room/testing';
 import { TaskService } from '@modules/task';
 import { Submission, Task } from '@modules/task/repo';
 import { taskFactory } from '@modules/task/testing';
-import { RoomService } from '@modules/room';
-import { roomFactory } from '@modules/room/testing';
 import { User } from '@modules/user/repo';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -156,7 +156,7 @@ describe('ShareTokenService', () => {
 		it('should throw an error when token is invalid', async () => {
 			repo.findOneByToken.mockRejectedValue(new NotFoundException());
 
-			const lookupToken = async () => service.lookupToken('invalid-token');
+			const lookupToken = () => service.lookupToken('invalid-token');
 
 			await expect(lookupToken).rejects.toThrow(NotFoundException);
 		});
@@ -165,7 +165,7 @@ describe('ShareTokenService', () => {
 			const shareToken = shareTokenDOFactory.build({ expiresAt: new Date(Date.now() - 10000) });
 			repo.findOneByToken.mockResolvedValue(shareToken);
 
-			const lookupToken = async () => service.lookupToken(shareToken.token);
+			const lookupToken = () => service.lookupToken(shareToken.token);
 
 			await expect(lookupToken).rejects.toThrow();
 		});
@@ -274,7 +274,7 @@ describe('ShareTokenService', () => {
 			const shareToken = shareTokenDOFactory.build({ payload: { parentType: 'invalid' } });
 			repo.findOneByToken.mockResolvedValue(shareToken);
 
-			const lookupToken = async () => service.lookupTokenWithParentName(shareToken.token);
+			const lookupToken = () => service.lookupTokenWithParentName(shareToken.token);
 
 			await expect(lookupToken).rejects.toThrow('Invalid parent type');
 		});

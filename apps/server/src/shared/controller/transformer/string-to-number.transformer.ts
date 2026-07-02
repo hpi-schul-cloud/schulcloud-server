@@ -1,5 +1,5 @@
-import { TypeGuard } from '@shared/common/guards';
 import { Transform, TransformFnParams } from 'class-transformer';
+import { TypeGuard } from '../../common/guards';
 
 /**
  * Decorator to transform a number-string value to a number.

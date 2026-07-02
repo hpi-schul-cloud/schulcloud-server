@@ -136,7 +136,11 @@ describe('createMetricsServer', () => {
 		const setup = () => {
 			mockMetricConfig.featureMetricsEnabled = true;
 			mockMetricsApp.listen.mockImplementation(
-				(port: number | string, hostnameOrCallback?: string | (() => void), callback?: () => void): Promise<any> => {
+				(
+					port: number | string,
+					hostnameOrCallback?: string | (() => void),
+					callback?: () => void
+				): Promise<unknown> => {
 					// Handle both overloads
 					const actualCallback = typeof hostnameOrCallback === 'function' ? hostnameOrCallback : callback;
 

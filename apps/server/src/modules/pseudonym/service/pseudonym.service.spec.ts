@@ -142,7 +142,7 @@ describe('PseudonymService', () => {
 			it('should pass the error without catching', async () => {
 				const { user, externalTool } = setup();
 
-				const func = async () => service.findByUserAndToolOrThrow(user, externalTool);
+				const func = () => service.findByUserAndToolOrThrow(user, externalTool);
 
 				await expect(func).rejects.toThrow(NotFoundException);
 			});
