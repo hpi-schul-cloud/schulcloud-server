@@ -1,4 +1,4 @@
-import { DomainErrorHandler } from '@core/error';
+import { DomainErrorHandler } from '@infra/error';
 import { Logger } from '@infra/logger';
 import * as dns from 'dns';
 import Valkey from 'iovalkey';

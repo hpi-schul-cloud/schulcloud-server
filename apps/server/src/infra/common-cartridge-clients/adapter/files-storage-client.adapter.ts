@@ -1,12 +1,12 @@
-import { AxiosErrorLoggable } from '@core/error/loggable';
+import { AxiosErrorLoggable } from '@infra/error';
 import { ErrorLogger, Logger } from '@infra/logger';
 import { HttpService } from '@nestjs/axios';
 import { Inject, Injectable } from '@nestjs/common';
 import { AxiosError } from 'axios';
 import FormDataReadable from 'form-data';
 import { Readable, Stream } from 'node:stream';
+import util from 'node:util';
 import { lastValueFrom } from 'rxjs';
-import util from 'util';
 import {
 	FILE_STORAGE_CLIENT_CONFIG_TOKEN,
 	InternalFilesStorageClientConfig,

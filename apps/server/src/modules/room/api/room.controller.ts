@@ -1,5 +1,5 @@
-import { ErrorResponse } from '@core/error/dto';
 import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
+import { ErrorResponse } from '@infra/error';
 import { CopyApiResponse, CopyMapper } from '@modules/copy-helper';
 import {
 	Body,

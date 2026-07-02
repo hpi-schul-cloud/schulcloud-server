@@ -1,5 +1,5 @@
-import { ErrorResponse } from '@core/error/dto/error.response';
 import { JwtAuthentication } from '@infra/auth-guard';
+import { ErrorResponse } from '@infra/error';
 import {
 	Controller,
 	Get,

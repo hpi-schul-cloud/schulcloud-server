@@ -1,4 +1,4 @@
-import { AxiosErrorLoggable } from '@core/error/loggable';
+import { AxiosErrorLoggable } from '@infra/error';
 import { Logger, LogMessageData } from '@infra/logger';
 import { Inject, Injectable, Scope } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';

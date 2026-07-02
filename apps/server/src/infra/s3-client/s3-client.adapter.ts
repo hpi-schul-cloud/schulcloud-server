@@ -13,8 +13,7 @@ import {
 	ServiceOutputTypes,
 } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
-import { DomainErrorHandler } from '@core/error';
-import { ErrorUtils } from '@core/error/utils';
+import { DomainErrorHandler, ErrorUtils } from '@infra/error';
 import { Logger } from '@infra/logger';
 import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { TypeGuard } from '@shared/common/guards';

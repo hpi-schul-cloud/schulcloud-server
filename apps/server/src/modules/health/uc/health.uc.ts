@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 
-import { ErrorLoggable } from '@core/error/loggable';
+import { ErrorLoggable } from '@infra/error';
 import { Logger } from '@infra/logger';
 import { HealthStatus, HealthStatusCheck, HealthStatuses } from '../domain';
 import { HEALTH_CONFIG_TOKEN, HealthConfig } from '../health.config';

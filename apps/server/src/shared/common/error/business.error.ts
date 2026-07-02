@@ -1,7 +1,8 @@
+import { ErrorType } from '@infra/error';
+// TODO: Fix the import path for ErrorType to use the correct path based on the project structure.
+import { ErrorResponse } from '@infra/error/dto/error.response';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { ErrorResponse } from '@core/error/dto/error.response';
-import { ErrorType } from '@core/error/interface';
 import util from 'node:util';
 
 /**
