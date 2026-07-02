@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import axios, { CancelTokenSource } from 'axios';
-import Stream from 'stream';
+import Stream from 'node:stream';
 import { MetaTagExternalUrlService } from './meta-tag-external-url.service';
 
 jest.mock('axios');

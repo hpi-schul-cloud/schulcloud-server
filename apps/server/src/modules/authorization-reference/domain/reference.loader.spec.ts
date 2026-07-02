@@ -91,8 +91,8 @@ describe('reference.loader', () => {
 		});
 
 		it('should throw on unknown authorization entity type', () => {
-			void expect(async () =>
-				service.loadAuthorizableObject('NotAllowedEntityType' as AuthorizableReferenceType, entityId)
+			void expect(
+				async () => await service.loadAuthorizableObject('NotAllowedEntityType' as AuthorizableReferenceType, entityId)
 			).rejects.toThrow(NotImplementedException);
 		});
 	});

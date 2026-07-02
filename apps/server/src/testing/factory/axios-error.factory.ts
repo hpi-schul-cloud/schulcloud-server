@@ -21,7 +21,7 @@ export const axiosErrorFactory = AxiosErrorFactory.define(() => {
 		name: 'BadRequest',
 		response: axiosResponseFactory.build({ status: HttpStatus.BAD_REQUEST }),
 		stack: 'mockStack',
-		toJSON: () => {
+		toJSON: (): Record<string, unknown> => {
 			return { someJson: 'someJson' };
 		},
 	};

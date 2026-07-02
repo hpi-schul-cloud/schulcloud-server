@@ -2,12 +2,10 @@
 import { SocketConnectionManager } from './socket-connection-manager';
 import { SocketConfiguration } from './types';
 
-const CONNECTION_AMOUNT = parseInt(process.env.CONNECTION_AMOUNT ?? '640', 10);
+const CONNECTION_AMOUNT = Number.parseInt(process.env.CONNECTION_AMOUNT ?? '640', 10);
 
 describe('Board Collaboration - Connection Load Test', () => {
-	async function sleep(ms: number) {
-		return new Promise((resolve) => setTimeout(resolve, ms));
-	}
+	const sleep = (ms: number): Promise<void> => new Promise((resolve) => setTimeout(resolve, ms));
 
 	it(`should run a connection load test: ${CONNECTION_AMOUNT} connections`, async () => {
 		const { COURSE_ID, TOKEN, TARGET_URL } = process.env;

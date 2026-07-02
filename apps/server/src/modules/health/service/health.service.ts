@@ -8,6 +8,8 @@ export class HealthService {
 	constructor(private readonly healthCheckRepo: HealthCheckRepo) {}
 
 	async upsertHealthCheckById(id: string): Promise<HealthCheck> {
-		return this.healthCheckRepo.upsertById(id);
+		const result = await this.healthCheckRepo.upsertById(id);
+
+		return result;
 	}
 }

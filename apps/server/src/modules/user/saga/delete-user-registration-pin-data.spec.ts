@@ -1,5 +1,7 @@
 import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { RegistrationPinService } from '@modules/registration-pin';
+import { registrationPinEntityFactory } from '@modules/registration-pin/entity/testing';
 import {
 	ModuleName,
 	SagaService,
@@ -9,10 +11,8 @@ import {
 } from '@modules/saga';
 import { userDoFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { registrationPinEntityFactory } from '@modules/registration-pin/entity/testing';
-import { DeleteUserRegistrationPinDataStep } from './delete-user-registration-pin-data';
-import { RegistrationPinService } from '@modules/registration-pin';
 import { UserService } from '../domain';
+import { DeleteUserRegistrationPinDataStep } from './delete-user-registration-pin-data';
 
 describe(DeleteUserRegistrationPinDataStep.name, () => {
 	let module: TestingModule;
@@ -92,7 +92,7 @@ describe(DeleteUserRegistrationPinDataStep.name, () => {
 			it('should return domainOperation object with proper values', async () => {
 				const { expectedResult, user } = setup();
 
-				const result = await step.execute({ userId: user.id! });
+				const result = await step.execute({ userId: user.id as string });
 
 				expect(result).toEqual(expectedResult);
 			});
@@ -120,7 +120,7 @@ describe(DeleteUserRegistrationPinDataStep.name, () => {
 			it('should return report with proper values', async () => {
 				const { expectedResult, user } = setup();
 
-				const result = await step.execute({ userId: user.id! });
+				const result = await step.execute({ userId: user.id as string });
 
 				expect(result).toEqual(expectedResult);
 			});
@@ -144,7 +144,7 @@ describe(DeleteUserRegistrationPinDataStep.name, () => {
 		it('should return user email and parent emails', async () => {
 			const { user, parentEmails } = setup();
 
-			const result = await step.findRegistrationEmails(user.id!);
+			const result = await step.findRegistrationEmails(user.id as string);
 
 			expect(result).toEqual([user.email, ...parentEmails]);
 		});

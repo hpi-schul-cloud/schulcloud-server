@@ -7,11 +7,11 @@ import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '../../copy-helper';
+import { BoardNodeRule } from '../authorisation/board-node.rule';
 import { BoardNodeFactory } from '../domain';
 import { BoardNodeAuthorizableService, BoardNodeService, ColumnBoardService } from '../service';
 import { boardNodeAuthorizableFactory, cardFactory, columnBoardFactory, columnFactory } from '../testing';
 import { ColumnUc } from './column.uc';
-import { BoardNodeRule } from '../authorisation/board-node.rule';
 
 describe(ColumnUc.name, () => {
 	let module: TestingModule;
@@ -113,7 +113,7 @@ describe(ColumnUc.name, () => {
 	describe('moveCard', () => {
 		describe('when something goes wrong', () => {
 			it('should throw error if card has no parent', async () => {
-				const { user, board, column, card } = setup();
+				const { user, column, card } = setup();
 
 				const cardWithoutParent = cardFactory.build({ path: '' });
 

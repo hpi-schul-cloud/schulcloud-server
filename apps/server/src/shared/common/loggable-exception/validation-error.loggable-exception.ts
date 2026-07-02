@@ -1,6 +1,6 @@
-import { InternalServerErrorException } from '@nestjs/common';
 import { Loggable } from '@core/logger/interfaces';
 import { ErrorLogMessage } from '@core/logger/types';
+import { InternalServerErrorException } from '@nestjs/common';
 import { ValidationError } from 'class-validator';
 
 export class ValidationErrorLoggableException extends InternalServerErrorException implements Loggable {

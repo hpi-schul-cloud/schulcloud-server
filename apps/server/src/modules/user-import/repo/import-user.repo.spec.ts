@@ -79,10 +79,10 @@ describe('ImportUserRepo', () => {
 			const { id } = importUser;
 			await em.remove(importUser).flush();
 
-			await expect(async () => repo.findById(id)).rejects.toThrow(NotFoundError);
+			await expect(() => repo.findById(id)).rejects.toThrow(NotFoundError);
 		});
 		it('should fail for invalid id', async () => {
-			await expect(async () => repo.findById('foo')).rejects.toThrow(Error);
+			await expect(() => repo.findById('foo')).rejects.toThrow(Error);
 		});
 	});
 
@@ -105,7 +105,7 @@ describe('ImportUserRepo', () => {
 			await persistedReferences();
 			const importUser = importUserFactory.build();
 			await em.persist([importUser]).flush();
-			await expect(async () => repo.hasMatch({} as unknown as User)).rejects.toThrow('invalid user match id');
+			await expect(() => repo.hasMatch({} as unknown as User)).rejects.toThrow('invalid user match id');
 		});
 	});
 
@@ -133,18 +133,16 @@ describe('ImportUserRepo', () => {
 				const importUser = importUserFactory.build({ school });
 				const otherSchoolsImportUser = importUserFactory.build();
 				await em.persist([school, importUser, otherSchoolsImportUser]).flush();
-				await expect(async () =>
-					repo.findImportUsers({ _id: 'invalid_id' } as unknown as SchoolEntity)
-				).rejects.toThrow('invalid school id');
+				await expect(() => repo.findImportUsers({ _id: 'invalid_id' } as unknown as SchoolEntity)).rejects.toThrow(
+					'invalid school id'
+				);
 			});
 			it('should not respond with any school for wrong id given', async () => {
 				const school = schoolEntityFactory.build();
 				const importUser = importUserFactory.build({ school });
 				const otherSchoolsImportUser = importUserFactory.build();
 				await em.persist([school, importUser, otherSchoolsImportUser]).flush();
-				await expect(async () => repo.findImportUsers({} as unknown as SchoolEntity)).rejects.toThrow(
-					'invalid school id'
-				);
+				await expect(() => repo.findImportUsers({} as unknown as SchoolEntity)).rejects.toThrow('invalid school id');
 			});
 		});
 
@@ -517,7 +515,7 @@ describe('ImportUserRepo', () => {
 		it('should fail for all other, invalid role names', async () => {
 			const school = schoolEntityFactory.build();
 			await em.persist(school).flush();
-			await expect(async () =>
+			await expect(() =>
 				repo.findImportUsers(school, { role: 'foo' as unknown as ImportUserRoleName })
 			).rejects.toThrow('unexpected role name');
 		});
@@ -800,7 +798,7 @@ describe('ImportUserRepo', () => {
 				await em.persist(importUser).flush();
 				const importUserWithSameMatch = importUserFactory.matched(MatchCreator.AUTO, user).build({ school });
 
-				await expect(async () => em.persist(importUserWithSameMatch).flush()).rejects.toThrow('duplicate key error');
+				await expect(() => em.persist(importUserWithSameMatch).flush()).rejects.toThrow('duplicate key error');
 			});
 		});
 	});

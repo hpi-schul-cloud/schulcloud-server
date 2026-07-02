@@ -86,13 +86,10 @@ describe(`share token lookup (api)`, () => {
 			await em.persist([course, teacherAccount, teacherUser]).flush();
 			em.clear();
 
-			const shareToken = await shareTokenService.createToken(
-				{
-					parentType,
-					parentId: course.id,
-				},
-				undefined
-			);
+			const shareToken = await shareTokenService.createToken({
+				parentType,
+				parentId: course.id,
+			});
 
 			const loggedInClient = await testApiClient.login(teacherAccount);
 

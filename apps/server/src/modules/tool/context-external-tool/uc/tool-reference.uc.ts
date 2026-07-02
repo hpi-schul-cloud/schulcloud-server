@@ -29,7 +29,7 @@ export class ToolReferenceUc {
 
 		const user: User = await this.authorizationService.getUserWithPermissions(userId);
 		const toolReferencesPromises: Promise<ToolReference | null>[] = contextExternalTools.map(
-			async (contextExternalTool: ContextExternalTool) => this.tryBuildToolReference(user, contextExternalTool)
+			(contextExternalTool: ContextExternalTool) => this.tryBuildToolReference(user, contextExternalTool)
 		);
 
 		const toolReferencesWithNull: (ToolReference | null)[] = await Promise.all(toolReferencesPromises);
@@ -53,7 +53,7 @@ export class ToolReferenceUc {
 			);
 
 			return toolReference;
-		} catch (e: unknown) {
+		} catch {
 			return null;
 		}
 	}
@@ -76,12 +76,6 @@ export class ToolReferenceUc {
 	private async ensureToolPermissions(user: User, contextExternalTool: ContextExternalTool): Promise<void> {
 		const context: AuthorizationContext = AuthorizationContextBuilder.read([Permission.CONTEXT_TOOL_USER]);
 
-		const promise: Promise<void> = this.toolPermissionHelper.ensureContextPermissions(
-			user,
-			contextExternalTool,
-			context
-		);
-
-		return promise;
+		await this.toolPermissionHelper.ensureContextPermissions(user, contextExternalTool, context);
 	}
 }

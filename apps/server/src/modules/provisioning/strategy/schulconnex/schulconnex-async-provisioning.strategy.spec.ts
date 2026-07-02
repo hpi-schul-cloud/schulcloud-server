@@ -1,7 +1,6 @@
 import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import {
-	SchulconnexGruppenResponse,
 	SchulconnexPoliciesInfoLicenseResponse,
 	SchulconnexPoliciesInfoResponse,
 	SchulconnexResponse,
@@ -178,8 +177,10 @@ describe(SchulconnexAsyncProvisioningStrategy.name, () => {
 					externalId: 'externalSchoolId',
 					name: 'schoolName',
 				});
-				const schulconnexGruppeResponse: SchulconnexGruppenResponse =
-					schulconnexResponse.personenkontexte[0].gruppen![0];
+				const schulconnexGruppeResponse = schulconnexResponse.personenkontexte[0].gruppen?.[0];
+				if (!schulconnexGruppeResponse) {
+					throw new Error('Expected group in schulconnex fixture');
+				}
 				const groups: ExternalGroupDto[] = [
 					new ExternalGroupDto({
 						name: schulconnexGruppeResponse.gruppe.bezeichnung,
@@ -359,7 +360,7 @@ describe(SchulconnexAsyncProvisioningStrategy.name, () => {
 				schulconnexResponseMapper.mapToExternalUserDto.mockReturnValue(user);
 				schulconnexResponseMapper.mapToExternalSchoolDto.mockReturnValue(school);
 				validationFunction.mockResolvedValueOnce([]);
-				schulconnexRestClient.getPoliciesInfo.mockRejectedValueOnce(new Error());
+				schulconnexRestClient.getPoliciesInfo.mockRejectedValueOnce(new Error('test error'));
 
 				return {
 					input,
@@ -442,7 +443,10 @@ describe(SchulconnexAsyncProvisioningStrategy.name, () => {
 					externalId: 'externalSchoolId',
 					name: 'schoolName',
 				});
-				const sanisGruppeResponse: SchulconnexGruppenResponse = schulconnexResponse.personenkontexte[0].gruppen![0];
+				const sanisGruppeResponse = schulconnexResponse.personenkontexte[0].gruppen?.[0];
+				if (!sanisGruppeResponse) {
+					throw new Error('Expected group in schulconnex fixture');
+				}
 				const groups: ExternalGroupDto[] = [
 					new ExternalGroupDto({
 						name: sanisGruppeResponse.gruppe.bezeichnung,
@@ -495,7 +499,10 @@ describe(SchulconnexAsyncProvisioningStrategy.name, () => {
 					externalId: 'externalSchoolId',
 					name: 'schoolName',
 				});
-				const sanisGruppeResponse: SchulconnexGruppenResponse = schulconnexResponse.personenkontexte[0].gruppen![0];
+				const sanisGruppeResponse = schulconnexResponse.personenkontexte[0].gruppen?.[0];
+				if (!sanisGruppeResponse) {
+					throw new Error('Expected group in schulconnex fixture');
+				}
 				const groups: ExternalGroupDto[] = [
 					new ExternalGroupDto({
 						name: sanisGruppeResponse.gruppe.bezeichnung,

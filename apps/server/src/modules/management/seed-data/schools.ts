@@ -1,7 +1,13 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { SchoolFeature, SchoolPurpose } from '@modules/school/domain';
 import { FileStorageType } from '@modules/school/domain/type/file-storage-type.enum';
-import { FederalStateEntity, SchoolProperties, SchoolRoles, SchoolYearEntity } from '@modules/school/repo';
+import {
+	FederalStateEntity,
+	SchoolEntity,
+	SchoolProperties,
+	SchoolRoles,
+	SchoolYearEntity,
+} from '@modules/school/repo';
 import { SystemEntity } from '@modules/system/repo';
 import { LanguageType } from '@shared/domain/interface';
 import { DeepPartial } from 'fishery';
@@ -262,14 +268,14 @@ export function generateSchools(entities: {
 	systems: SystemEntity[];
 	schoolYears: SchoolYearEntity[];
 	federalStates: FederalStateEntity[];
-}) {
+}): SchoolEntity[] {
 	return seedSchools.map((partial) => {
 		const currentYear = entities.schoolYears.find(
 			(sy) => partial.currentYear !== undefined && sy.name === String(partial.currentYear)
 		);
 		const systems = partial.systems
 			?.map((systemId) => entities.systems.find((s) => s.id === systemId))
-			.filter((s) => s) as SystemEntity[] | undefined;
+			.filter(Boolean) as SystemEntity[] | undefined;
 
 		const federalState =
 			entities.federalStates.find(

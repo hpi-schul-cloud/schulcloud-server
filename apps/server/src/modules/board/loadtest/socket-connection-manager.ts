@@ -3,16 +3,10 @@ import { SocketConnection } from './socket-connection';
 import { Callback, SocketConfiguration } from './types';
 
 export class SocketConnectionManager {
-	private connections: SocketConnection[];
-
-	private socketConfiguration: SocketConfiguration;
-
+	private connections: SocketConnection[] = [];
 	private onErrorHandler: Callback = console.log;
 
-	constructor(socketConfiguration: SocketConfiguration) {
-		this.connections = [];
-		this.socketConfiguration = socketConfiguration;
-	}
+	constructor(private readonly socketConfiguration: SocketConfiguration) {}
 
 	async createConnection(): Promise<SocketConnection> {
 		// eslint-disable-next-line arrow-body-style
@@ -37,16 +31,16 @@ export class SocketConnectionManager {
 		return connections;
 	}
 
-	getClientCount() {
+	getClientCount(): number {
 		return this.connections.length;
 	}
 
-	setOnErrorHandler(onErrorHandler: Callback) {
+	setOnErrorHandler(onErrorHandler: Callback): void {
 		/* istanbul ignore next */
 		this.onErrorHandler = onErrorHandler;
 	}
 
-	destroySocketConnections() {
+	destroySocketConnections(): void {
 		this.connections.forEach((connection) => connection.close());
 		this.connections = [];
 	}

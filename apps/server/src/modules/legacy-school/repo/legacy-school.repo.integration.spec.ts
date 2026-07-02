@@ -11,6 +11,7 @@ import { userLoginMigrationFactory } from '@modules/user-login-migration/testing
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@testing/database';
+import { LegacySchoolDo } from '../domain';
 import { legacySchoolDoFactory } from '../testing';
 import { LegacySchoolRepo } from './legacy-school.repo';
 
@@ -55,15 +56,14 @@ describe('LegacySchoolRepo', () => {
 
 	describe('save is called', () => {
 		describe('when saving only required fields', () => {
-			function setupDO() {
+			const setupDO = (): LegacySchoolDo => {
 				const domainObject = legacySchoolDoFactory.build();
-				return {
-					domainObject,
-				};
-			}
+
+				return domainObject;
+			};
 
 			it('should save a School', async () => {
-				const { domainObject } = setupDO();
+				const domainObject = setupDO();
 				const { id, ...expected } = domainObject;
 				expected.systems = [];
 
@@ -71,6 +71,7 @@ describe('LegacySchoolRepo', () => {
 
 				expect(result).toMatchObject(expected);
 				expect(result.id).toBeDefined();
+				expect(result.id).not.toEqual(id);
 			});
 		});
 	});

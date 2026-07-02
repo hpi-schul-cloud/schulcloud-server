@@ -79,10 +79,7 @@ describe('CommonCartridgeExportService', () => {
 		lesson.courseId = courseMetadata.id;
 
 		const boardSkeleton: BoardResponse = columnBoardFactory.build();
-		const cardIds = boardSkeleton.columns
-			.map((c) => c.cards)
-			.flat()
-			.map((c) => c.cardId);
+		const cardIds = boardSkeleton.columns.flatMap((c) => c.cards).map((c) => c.cardId);
 		const listOfCardsResponse: CardListResponse = listOfCardResponseFactory.withCardIds(cardIds).build();
 		const boardTask: BoardTaskResponse = boardTaskFactory.build();
 		boardTask.courseName = courseMetadata.title;
@@ -415,10 +412,7 @@ describe('CommonCartridgeExportService', () => {
 				const lessonTasks = lessonLinkedTaskFactory.buildList(0);
 
 				const boardSkeleton: BoardResponse = columnBoardFactory.build();
-				const cardIds = boardSkeleton.columns
-					.map((c) => c.cards)
-					.flat()
-					.map((c) => c.cardId);
+				const cardIds = boardSkeleton.columns.flatMap((c) => c.cards).map((c) => c.cardId);
 				const listOfCardsResponse: CardListResponse = listOfCardResponseFactory.withCardIds(cardIds).build();
 
 				const room: SingleColumnBoardResponse = roomFactory.build();
@@ -463,7 +457,7 @@ describe('CommonCartridgeExportService', () => {
 				const manifest = getFileContent(archive, 'imsmanifest.xml');
 
 				expect(manifest).toContain(createXmlString('title', lernstoreContent.title));
-				const resources = (lernstoreContent.content as { resources: Array<{ title: string; url: string }> }).resources;
+				const { resources } = lernstoreContent.content as { resources: Array<{ title: string; url: string }> };
 				resources.forEach((resource) => {
 					expect(manifest).toContain(createXmlString('title', resource.title));
 				});
@@ -529,10 +523,7 @@ describe('CommonCartridgeExportService', () => {
 				const lessonTasks = lessonLinkedTaskFactory.buildList(2);
 
 				const boardSkeleton: BoardResponse = columnBoardFactory.build();
-				const cardIds = boardSkeleton.columns
-					.map((c) => c.cards)
-					.flat()
-					.map((c) => c.cardId);
+				const cardIds = boardSkeleton.columns.flatMap((c) => c.cards).map((c) => c.cardId);
 				const listOfCardsResponse: CardListResponse = listOfCardResponseFactory.withCardIds(cardIds).build();
 				const boardTask: BoardTaskResponse = boardTaskFactory.build();
 				boardTask.courseName = courseMetadata.title;
@@ -627,10 +618,7 @@ describe('CommonCartridgeExportService', () => {
 				const lessonTasks = lessonLinkedTaskFactory.buildList(2);
 
 				const boardSkeleton: BoardResponse = columnBoardFactory.build();
-				const cardIds = boardSkeleton.columns
-					.map((c) => c.cards)
-					.flat()
-					.map((c) => c.cardId);
+				const cardIds = boardSkeleton.columns.flatMap((c) => c.cards).map((c) => c.cardId);
 				const listOfCardsResponse: CardListResponse = listOfCardResponseFactory.withCardIds(cardIds).build();
 				const boardTask: BoardTaskResponse = boardTaskFactory.build();
 				boardTask.courseName = courseMetadata.title;
@@ -690,10 +678,7 @@ describe('CommonCartridgeExportService', () => {
 				const lessonTasks = lessonLinkedTaskFactory.buildList(2);
 
 				const boardSkeleton: BoardResponse = columnBoardFactory.build();
-				const cardIds = boardSkeleton.columns
-					.map((c) => c.cards)
-					.flat()
-					.map((c) => c.cardId);
+				const cardIds = boardSkeleton.columns.flatMap((c) => c.cards).map((c) => c.cardId);
 				const listOfCardsResponse: CardListResponse = listOfCardResponseFactory.withCardIds(cardIds).build();
 				const boardTask: BoardTaskResponse = boardTaskFactory.build();
 				boardTask.courseName = courseMetadata.title;

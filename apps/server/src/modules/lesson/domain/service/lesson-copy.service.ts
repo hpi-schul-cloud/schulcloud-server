@@ -122,8 +122,11 @@ export class LessonCopyService {
 		return lessonStatus;
 	}
 
-	private updateCopiedEmbeddedTaskId = (value: ComponentProperties, copyDict: CopyDictionary): ComponentProperties => {
-		if (value.component !== ComponentType.INTERNAL || value.content === undefined || value.content.url === undefined) {
+	private readonly updateCopiedEmbeddedTaskId = (
+		value: ComponentProperties,
+		copyDict: CopyDictionary
+	): ComponentProperties => {
+		if (value.component !== ComponentType.INTERNAL || value.content?.url === undefined) {
 			return value;
 		}
 
@@ -189,7 +192,8 @@ export class LessonCopyService {
 				const copy = await this.copyFunctionMap[element.component](element, params);
 				const status = this.statusMap[element.component](element.title);
 				return { copy, status };
-			} catch (error) {
+			} catch {
+				// TODO: Add proper error handling and logging
 				const status = this.statusMap[element.component](element.title);
 				status.status = CopyStatusEnum.FAIL;
 				return { copy: undefined, status };
@@ -203,7 +207,7 @@ export class LessonCopyService {
 		return etherpadEnabled || type !== ComponentType.ETHERPAD;
 	}
 
-	private statusMap: Record<ComponentType, (title: string) => CopyStatus> = {
+	private readonly statusMap: Record<ComponentType, (title: string) => CopyStatus> = {
 		[ComponentType.TEXT]: (title: string) => {
 			return {
 				title,
@@ -241,7 +245,7 @@ export class LessonCopyService {
 		},
 	};
 
-	private copyFunctionMap: Record<
+	private readonly copyFunctionMap: Record<
 		ComponentType,
 		(el: ComponentProperties, params: LessonCopyParams) => Promise<ComponentProperties>
 	> = {
@@ -381,7 +385,7 @@ export class LessonCopyService {
 	}
 
 	private copyEmbeddedTaskLink(originalElement: ComponentProperties): Promise<ComponentProperties> {
-		const copy = JSON.parse(JSON.stringify(originalElement)) as ComponentProperties;
+		const copy = structuredClone(originalElement);
 		delete copy._id;
 		return Promise.resolve(copy);
 	}

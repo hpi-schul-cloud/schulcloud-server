@@ -34,11 +34,11 @@ export abstract class BoardNode<T extends BoardNodeProps> extends DomainObject<T
 	}
 
 	get parentId(): EntityId | undefined {
-		const parentId = this.hasParent() ? this.ancestorIds[this.ancestorIds.length - 1] : undefined;
+		const parentId = this.hasParent() ? this.ancestorIds.at(-1) : undefined;
 		return parentId;
 	}
 
-	hasParent() {
+	hasParent(): boolean {
 		return this.ancestorIds.length > 0;
 	}
 
@@ -47,7 +47,7 @@ export abstract class BoardNode<T extends BoardNodeProps> extends DomainObject<T
 		return parentIds;
 	}
 
-	isRoot() {
+	isRoot(): boolean {
 		return this.ancestorIds.length === 0;
 	}
 

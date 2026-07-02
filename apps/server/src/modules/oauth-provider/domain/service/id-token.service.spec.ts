@@ -242,7 +242,7 @@ describe('IdTokenService', () => {
 			it('should throw an IdTokenCreationLoggableException', async () => {
 				const { user } = setup();
 
-				const func = async () => service.createIdToken('userId', [OauthScope.PROFILE], 'clientId');
+				const func = () => service.createIdToken('userId', [OauthScope.PROFILE], 'clientId');
 
 				await expect(func).rejects.toThrow(new IdTokenCreationLoggableException('clientId', user.id));
 			});

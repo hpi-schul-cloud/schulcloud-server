@@ -6,7 +6,6 @@ import {
 	AuthorizationInjectionService,
 } from '@modules/authorization';
 import { schoolEntityFactory } from '@modules/school/testing/school-entity.factory';
-import { System } from '@modules/system';
 import { systemEntityFactory, systemFactory } from '@modules/system/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';

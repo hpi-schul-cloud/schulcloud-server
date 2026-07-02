@@ -24,9 +24,9 @@ type NewsPermission = Permission.NEWS_VIEW | Permission.NEWS_EDIT;
 @Injectable()
 export class NewsUc {
 	constructor(
-		private authorizationService: FeathersAuthorizationService,
-		private newsRepo: NewsRepo,
-		private logger: Logger
+		private readonly authorizationService: FeathersAuthorizationService,
+		private readonly newsRepo: NewsRepo,
+		private readonly logger: Logger
 	) {
 		this.logger.setContext(NewsUc.name);
 	}
@@ -42,7 +42,7 @@ export class NewsUc {
 		const { targetModel, targetId } = params.target;
 		await this.authorizationService.checkEntityPermissions(userId, targetModel, targetId, [Permission.NEWS_CREATE]);
 
-		const { target, displayAt: paramDisplayAt, ...props } = params;
+		const { displayAt: paramDisplayAt, ...props } = params;
 		// set news as published by default
 		const displayAt = paramDisplayAt || new Date();
 		const news = News.createInstance(targetModel, {

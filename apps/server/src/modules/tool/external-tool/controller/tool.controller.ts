@@ -189,12 +189,10 @@ export class ToolController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: ExternalToolIdParams
 	): Promise<void> {
-		const promise: Promise<void> = this.externalToolUc.deleteExternalTool(currentUser.userId, params.externalToolId);
 		this.logger.debug(
 			`ExternalTool with id ${params.externalToolId} was deleted by user with id ${currentUser.userId}`
 		);
-
-		return promise;
+		await this.externalToolUc.deleteExternalTool(currentUser.userId, params.externalToolId);
 	}
 
 	@Get('/:externalToolId/logo')

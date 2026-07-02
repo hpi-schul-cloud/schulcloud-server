@@ -72,7 +72,7 @@ export class LessonCopyUC {
 		this.authorisation.checkPermission(user, destinationCourse, contextCanWrite);
 	}
 
-	private checkFeatureEnabled() {
+	private checkFeatureEnabled(): void {
 		const enabled = this.config.featureCopyServiceEnabled;
 
 		if (!enabled) {

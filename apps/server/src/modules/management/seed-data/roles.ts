@@ -424,7 +424,7 @@ export const roleOrder = [
 	'externalPerson',
 ];
 
-export function generateRole(localRoleSeedData?: { [key: string | RoleName]: SeedRoleProperties }) {
+export function generateRole(localRoleSeedData?: { [key: string | RoleName]: SeedRoleProperties }): Role[] {
 	// cache the results for later use
 	const rolesByName = {} as Record<RoleName, Role>;
 

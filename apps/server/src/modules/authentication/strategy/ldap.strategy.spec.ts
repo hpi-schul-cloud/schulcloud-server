@@ -123,7 +123,7 @@ describe('LdapStrategy', () => {
 			it('should throw unauthorized error', async () => {
 				const { request } = setup();
 
-				const func = async () => strategy.validate(request);
+				const func = () => strategy.validate(request);
 
 				await expect(func).rejects.toThrow(UnauthorizedException);
 			});
@@ -170,7 +170,7 @@ describe('LdapStrategy', () => {
 			it('should throw unauthorized error', async () => {
 				const { request } = setup();
 
-				const func = async () => strategy.validate(request);
+				const func = () => strategy.validate(request);
 
 				await expect(func).rejects.toThrow(UnauthorizedException);
 			});
@@ -217,7 +217,7 @@ describe('LdapStrategy', () => {
 			it('should throw unauthorized error', async () => {
 				const { request } = setup();
 
-				const func = async () => strategy.validate(request);
+				const func = () => strategy.validate(request);
 
 				await expect(func).rejects.toThrow(UnauthorizedException);
 			});
@@ -264,7 +264,7 @@ describe('LdapStrategy', () => {
 			it('should throw unauthorized error', async () => {
 				const { request } = setup();
 
-				const func = async () => strategy.validate(request);
+				const func = () => strategy.validate(request);
 
 				await expect(func).rejects.toThrow(UnauthorizedException);
 			});
@@ -313,7 +313,7 @@ describe('LdapStrategy', () => {
 			it('should throw unauthorized error', async () => {
 				const { request, account } = setup();
 
-				const func = async () => strategy.validate(request);
+				const func = () => strategy.validate(request);
 
 				await expect(func).rejects.toThrow(UnauthorizedException);
 

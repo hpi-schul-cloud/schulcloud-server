@@ -33,7 +33,9 @@ export class OidcProvisioningStrategy extends ProvisioningStrategy {
 			system: input.system,
 			externalUser,
 		});
-		return Promise.resolve(oauthData);
+		const result = await Promise.resolve(oauthData);
+
+		return result;
 	}
 
 	override apply(data: OauthDataDto): Promise<ProvisioningDto> {
