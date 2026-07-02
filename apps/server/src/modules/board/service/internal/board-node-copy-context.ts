@@ -1,5 +1,9 @@
-import { StorageLocation } from '@infra/files-storage-client';
-import { CopyFileDto, FileRecordParentType, FilesStorageClientAdapterService } from '@modules/files-storage-client';
+import {
+	CopyFileDto,
+	FileRecordParentType,
+	FilesStorageClientAdapterService,
+	StorageLocation,
+} from '@infra/files-storage-amqp-client';
 import { EntityId } from '@shared/domain/types';
 import { CopyContext } from './board-node-copy.service';
 

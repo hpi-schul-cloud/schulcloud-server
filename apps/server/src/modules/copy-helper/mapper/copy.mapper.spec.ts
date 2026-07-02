@@ -1,6 +1,6 @@
+import { CopyFileDto } from '@infra/files-storage-amqp-client';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { CopyElementType, CopyStatusEnum } from '@modules/copy-helper';
-import { CopyFileDto } from '@modules/files-storage-client';
 import { LessonCopyApiParams } from '@modules/learnroom/controller/dto/lesson/lesson-copy.params';
 import { LessonCopyParentParams } from '@modules/lesson';
 import { TaskCopyParentParams } from '@modules/task/api/dto';

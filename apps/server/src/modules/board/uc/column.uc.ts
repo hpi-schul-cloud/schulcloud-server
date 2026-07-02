@@ -1,13 +1,13 @@
 import { LegacyLogger } from '@core/logger';
-import { StorageLocation } from '@infra/files-storage-client';
+import { StorageLocation } from '@infra/files-storage-amqp-client';
 import { AuthorizationService } from '@modules/authorization';
+import { CopyStatusEnum } from '@modules/copy-helper';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { throwForbiddenIfFalse } from '@shared/common/utils';
 import { EntityId } from '@shared/domain/types';
 import { BoardNodeRule } from '../authorisation/board-node.rule';
 import { BoardNodeFactory, Card, Column, ColumnBoard, ContentElementType, isCard } from '../domain';
 import { BoardNodeAuthorizableService, BoardNodeService, ColumnBoardService } from '../service';
-import { CopyStatusEnum } from '@modules/copy-helper';
 
 @Injectable()
 export class ColumnUc {

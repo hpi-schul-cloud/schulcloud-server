@@ -1,4 +1,4 @@
-import { fileRecordResponseFactory } from '@infra/files-storage-client/testing';
+import { fileRecordResponseFactory } from '@infra/files-storage-rest-client/testing';
 import { Loaded } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { columnBoardEntityFactory, externalToolElementEntityFactory } from '@modules/board/testing';

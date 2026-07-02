@@ -1,8 +1,8 @@
+import type { CopyFileDto } from '@infra/files-storage-amqp-client/dto';
 import { CopyContentParams, CopyContentParentType, H5pEditorProducer } from '@infra/h5p-editor-client';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BOARD_CONFIG_TOKEN, BoardConfig } from '@modules/board/board.config';
 import { CopyElementType, CopyHelperService, CopyMapper, type CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
-import type { CopyFileDto } from '@modules/files-storage-client/dto';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool';
 import {
 	type ContextExternalTool,

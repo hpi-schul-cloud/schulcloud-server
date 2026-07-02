@@ -1,5 +1,5 @@
+import type { CopyFileDto } from '@infra/files-storage-amqp-client';
 import { ColumnBoard } from '@modules/board/domain/colum-board.do';
-import type { CopyFileDto } from '@modules/files-storage-client';
 import { LessonCopyApiParams } from '@modules/learnroom/controller/dto/lesson/lesson-copy.params';
 import { LessonCopyParentParams } from '@modules/lesson';
 import { LessonEntity } from '@modules/lesson/repo';
