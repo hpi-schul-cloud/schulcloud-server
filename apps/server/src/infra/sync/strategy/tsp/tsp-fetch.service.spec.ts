@@ -1,6 +1,6 @@
-import { AxiosErrorLoggable } from '@core/error/loggable';
 import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { AxiosErrorLoggable } from '@infra/error';
 import {
 	ExportApiInterface,
 	RobjExportKlasse,

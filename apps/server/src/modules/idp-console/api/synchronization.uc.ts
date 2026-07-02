@@ -1,4 +1,4 @@
-import { AxiosErrorLoggable } from '@core/error/loggable';
+import { AxiosErrorLoggable } from '@infra/error';
 import { Logger } from '@infra/logger';
 import { SchulconnexRestClient } from '@infra/schulconnex-client';
 import { AccountService } from '@modules/account';

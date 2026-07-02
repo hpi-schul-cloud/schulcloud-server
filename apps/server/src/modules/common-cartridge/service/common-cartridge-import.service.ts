@@ -1,4 +1,3 @@
-import { DomainErrorHandler } from '@core/error';
 import { JwtPayloadVo } from '@infra/auth-guard';
 import {
 	BoardsClientAdapter,
@@ -9,6 +8,7 @@ import {
 	CoursesClientAdapter,
 	FilesStorageClientAdapter,
 } from '@infra/common-cartridge-clients';
+import { DomainErrorHandler } from '@infra/error';
 import { Logger } from '@infra/logger';
 import { NotificationService, NotificationType } from '@modules/notification';
 import { HttpService } from '@nestjs/axios';
