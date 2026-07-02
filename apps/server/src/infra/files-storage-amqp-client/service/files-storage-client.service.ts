@@ -1,4 +1,4 @@
-import { LegacyLogger } from '@core/logger';
+import { LegacyLogger } from '@infra/logger';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { CopyFileDto, FileDto } from '../dto';

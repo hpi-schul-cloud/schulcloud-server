@@ -1,6 +1,4 @@
-import { Loggable } from '@core/logger';
-import { Logger } from '@core/logger/logger';
-import { LogMessage } from '@core/logger/types/logging.types';
+import { Loggable, Logger, LogMessage } from '@infra/logger';
 import { MetricConfig, METRICS_CONFIG_TOKEN, MetricsModule, ResponseTimeMetricsInterceptor } from '@infra/metrics';
 import { INestApplication } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';

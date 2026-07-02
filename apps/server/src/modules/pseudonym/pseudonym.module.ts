@@ -1,5 +1,5 @@
-import { LegacyLogger, LoggerModule } from '@core/logger';
 import { ConfigurationModule } from '@infra/configuration';
+import { LegacyLogger, LoggerModule } from '@infra/logger';
 import { SagaModule } from '@modules/saga';
 import { Module } from '@nestjs/common';
 import { PSEUDONYM_CONFIG_TOKEN, PseudonymConfig } from './pseudonym.config';

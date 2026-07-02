@@ -1,6 +1,6 @@
 import { DomainErrorHandler, ErrorModule } from '@core/error';
-import { Logger, LoggerModule } from '@core/logger';
 import { ConfigurationModule } from '@infra/configuration';
+import { Logger, LoggerModule } from '@infra/logger';
 import { DynamicModule, Module } from '@nestjs/common';
 import { S3ClientModuleOptions, S3Config } from './interface';
 import { S3ClientFactory } from './s3-client.factory';

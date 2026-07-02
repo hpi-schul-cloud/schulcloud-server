@@ -1,5 +1,5 @@
-import { LegacyLogger } from '@core/logger';
 import { createMock } from '@golevelup/ts-jest';
+import { LegacyLogger } from '@infra/logger';
 import { UniqueConstraintViolationException } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { InternalServerErrorException } from '@nestjs/common';

@@ -1,5 +1,5 @@
-import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Logger } from '@infra/logger';
 import { externalToolFactory } from '@modules/tool/external-tool/testing';
 import { userDoFactory } from '@modules/user/testing';
 import { InternalServerErrorException, NotFoundException } from '@nestjs/common';

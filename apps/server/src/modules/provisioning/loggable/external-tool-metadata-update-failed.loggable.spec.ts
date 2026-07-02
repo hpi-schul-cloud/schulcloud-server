@@ -1,4 +1,4 @@
-import { LogMessage } from '@core/logger';
+import { LogMessage } from '@infra/logger';
 import { externalToolFactory } from '@modules/tool/external-tool/testing';
 import { mediaUserLicenseFactory } from '@modules/user-license/testing';
 import { NotFoundException } from '@nestjs/common';

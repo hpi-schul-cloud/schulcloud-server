@@ -1,5 +1,5 @@
-import { LegacyLogger, LoggerModule } from '@core/logger';
 import { ConfigurationModule } from '@infra/configuration';
+import { LegacyLogger, LoggerModule } from '@infra/logger';
 import { PseudonymModule, PseudonymService } from '@modules/pseudonym';
 import { ExternalToolService, ToolModule } from '@modules/tool';
 import { UserModule, UserService } from '@modules/user';

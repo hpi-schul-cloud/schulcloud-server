@@ -1,4 +1,4 @@
-import { Logger } from '@core/logger';
+import { Logger } from '@infra/logger';
 import { MailService } from '@infra/mail';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountSave, AccountService } from '@modules/account';

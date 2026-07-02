@@ -1,5 +1,5 @@
-import { LegacyLogger, Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { LegacyLogger, Logger } from '@infra/logger';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { legacySchoolDoFactory } from '@modules/legacy-school/testing';

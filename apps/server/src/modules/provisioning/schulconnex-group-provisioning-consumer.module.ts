@@ -1,5 +1,5 @@
-import { LoggerModule } from '@core/logger';
 import { ConfigurationModule } from '@infra/configuration/configuration.module';
+import { LoggerModule } from '@infra/logger';
 import { RABBITMQ_CONFIG_TOKEN, RabbitMQConfig, RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { CourseModule } from '@modules/course';
 import { CourseSynchronizationHistoryModule } from '@modules/course-synchronization-history';

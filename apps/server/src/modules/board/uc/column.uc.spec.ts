@@ -1,5 +1,5 @@
-import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { LegacyLogger } from '@infra/logger';
 import { AuthorizationService } from '@modules/authorization';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { User } from '@modules/user/repo';
@@ -7,11 +7,11 @@ import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '../../copy-helper';
+import { BoardNodeRule } from '../authorisation/board-node.rule';
 import { BoardNodeFactory } from '../domain';
 import { BoardNodeAuthorizableService, BoardNodeService, ColumnBoardService } from '../service';
 import { boardNodeAuthorizableFactory, cardFactory, columnBoardFactory, columnFactory } from '../testing';
 import { ColumnUc } from './column.uc';
-import { BoardNodeRule } from '../authorisation/board-node.rule';
 
 describe(ColumnUc.name, () => {
 	let module: TestingModule;

@@ -1,5 +1,5 @@
-import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Logger } from '@infra/logger';
 import { AuthorizationService } from '@modules/authorization';
 import { RoleService } from '@modules/role';
 import { roleDtoFactory, roleFactory } from '@modules/role/testing';

@@ -1,5 +1,5 @@
 import { AxiosErrorLoggable } from '@core/error/loggable';
-import { Logger, LogMessageData } from '@core/logger';
+import { Logger, LogMessageData } from '@infra/logger';
 import { Inject, Injectable, Scope } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import { JwtExtractor } from '@shared/common/utils/jwt';

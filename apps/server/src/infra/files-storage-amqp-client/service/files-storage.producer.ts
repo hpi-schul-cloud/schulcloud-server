@@ -1,5 +1,5 @@
-import { LegacyLogger } from '@core/logger';
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
+import { LegacyLogger } from '@infra/logger';
 import { RpcMessageProducer } from '@infra/rabbitmq';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';

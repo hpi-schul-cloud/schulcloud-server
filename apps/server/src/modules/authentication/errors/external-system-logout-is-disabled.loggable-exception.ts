@@ -1,5 +1,5 @@
+import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
 import { ForbiddenException } from '@nestjs/common';
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@core/logger';
 
 export class ExternalSystemLogoutIsDisabledLoggableException extends ForbiddenException implements Loggable {
 	constructor() {

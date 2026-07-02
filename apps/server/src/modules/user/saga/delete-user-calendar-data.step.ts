@@ -1,5 +1,5 @@
-import { Logger } from '@core/logger';
 import { CalendarService } from '@infra/calendar';
+import { Logger } from '@infra/logger';
 import {
 	ModuleName,
 	SagaService,

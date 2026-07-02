@@ -1,5 +1,5 @@
+import { ErrorLogMessage, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
 import { NotFoundException } from '@nestjs/common';
-import { ErrorLogMessage, LogMessage, ValidationErrorLogMessage } from '@core/logger';
 
 export class MediaSourceOauthConfigNotFoundLoggableException extends NotFoundException {
 	constructor(

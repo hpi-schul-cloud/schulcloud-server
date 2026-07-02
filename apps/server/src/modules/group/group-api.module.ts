@@ -1,4 +1,5 @@
-import { LoggerModule } from '@core/logger';
+import { ConfigurationModule } from '@infra/configuration';
+import { LoggerModule } from '@infra/logger';
 import { AuthorizationModule } from '@modules/authorization';
 import { ClassModule } from '@modules/class';
 import { CourseModule } from '@modules/course';
@@ -10,11 +11,10 @@ import { SystemModule } from '@modules/system';
 import { UserModule } from '@modules/user';
 import { Module } from '@nestjs/common';
 import { GroupController } from './controller';
+import { GROUP_CONFIG_TOKEN, GroupConfig } from './group.config';
 import { GroupModule } from './group.module';
 import { DeleteUserGroupDataStep } from './saga/delete-user-group-data.step';
 import { ClassGroupUc, GroupUc } from './uc';
-import { ConfigurationModule } from '@infra/configuration';
-import { GROUP_CONFIG_TOKEN, GroupConfig } from './group.config';
 
 @Module({
 	imports: [

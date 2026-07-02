@@ -1,5 +1,5 @@
-import { ErrorLogger, Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ErrorLogger, Logger } from '@infra/logger';
 import { HttpService } from '@nestjs/axios';
 import { REQUEST } from '@nestjs/core';
 import { Test, TestingModule } from '@nestjs/testing';

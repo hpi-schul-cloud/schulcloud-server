@@ -1,4 +1,4 @@
-import { Logger } from '@core/logger';
+import { Logger } from '@infra/logger';
 import { AccountService } from '@modules/account';
 import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';

@@ -1,7 +1,7 @@
-import { LegacyLogger } from '@core/logger';
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { StorageLocation } from '@infra/files-storage-amqp-client';
+import { LegacyLogger } from '@infra/logger';
 import { ErrorMapper } from '@infra/rabbitmq';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';

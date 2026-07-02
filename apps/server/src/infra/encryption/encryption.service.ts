@@ -1,4 +1,4 @@
-import { LegacyLogger } from '@core/logger';
+import { LegacyLogger } from '@infra/logger';
 import { Injectable } from '@nestjs/common';
 import { AesEncryptionHelper } from '@shared/common/utils';
 import { EncryptionService } from './encryption.interface';

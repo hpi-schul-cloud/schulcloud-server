@@ -1,6 +1,6 @@
-import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { FileDto, FileRecordParentType, FilesStorageClientAdapterService } from '@infra/files-storage-amqp-client';
+import { Logger } from '@infra/logger';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { LessonEntity, Material } from '@modules/lesson/repo';
 import { User } from '@modules/user/repo';

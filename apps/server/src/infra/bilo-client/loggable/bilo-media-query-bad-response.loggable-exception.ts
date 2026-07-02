@@ -1,4 +1,4 @@
-import { ErrorLogMessage, Loggable } from '@core/logger';
+import { ErrorLogMessage, Loggable } from '@infra/logger';
 import { InternalServerErrorException } from '@nestjs/common';
 import { ValidationError } from 'class-validator';
 import { MediaQueryBadResponseReport } from '../interface';

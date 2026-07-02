@@ -1,5 +1,5 @@
+import { ErrorLogMessage, Loggable } from '@infra/logger';
 import { InternalServerErrorException } from '@nestjs/common';
-import { ErrorLogMessage, Loggable } from '@core/logger';
 
 export class MissingYearsLoggableException extends InternalServerErrorException implements Loggable {
 	constructor() {

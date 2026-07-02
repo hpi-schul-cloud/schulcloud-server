@@ -1,5 +1,5 @@
-import { LegacyLogger } from '@core/logger';
 import { createMock } from '@golevelup/ts-jest';
+import { LegacyLogger } from '@infra/logger';
 import { EntityData, NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';

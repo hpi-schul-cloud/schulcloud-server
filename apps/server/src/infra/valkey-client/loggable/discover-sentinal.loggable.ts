@@ -1,5 +1,4 @@
-import { Loggable } from '@core/logger/interfaces';
-import { LogMessage } from '@core/logger/types';
+import { Loggable, LogMessage } from '@infra/logger';
 import { SentinalHost } from '../types';
 
 export class DiscoveredSentinalHostsLoggable implements Loggable {

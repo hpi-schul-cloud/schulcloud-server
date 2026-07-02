@@ -1,5 +1,5 @@
+import { LogMessage } from '@infra/logger';
 import { ProgressSynchronizationLoggable } from './progress-synchronization-loggable';
-import { LogMessage } from '@core/logger';
 
 describe(ProgressSynchronizationLoggable.name, () => {
 	describe('getLogMessage', () => {

@@ -1,5 +1,4 @@
 import { CoreModule } from '@core/core.module';
-import { LoggerModule } from '@core/logger';
 import { AuthGuardModule, AuthGuardOptions, JWT_AUTH_GUARD_CONFIG_TOKEN, JwtAuthGuardConfig } from '@infra/auth-guard';
 import {
 	AUTHORIZATION_CLIENT_CONFIG_TOKEN,
@@ -7,6 +6,7 @@ import {
 	AuthorizationClientModule,
 } from '@infra/authorization-client';
 import { ConfigurationModule } from '@infra/configuration';
+import { LoggerModule } from '@infra/logger';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { DownloadArchiveUC, LegacyFileArchiveController } from './api';

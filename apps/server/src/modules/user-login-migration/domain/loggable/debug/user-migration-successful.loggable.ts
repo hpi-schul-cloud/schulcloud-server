@@ -1,4 +1,4 @@
-import { Loggable, LogMessage } from '@core/logger';
+import { Loggable, LogMessage } from '@infra/logger';
 import { EntityId } from '@shared/domain/types';
 import { UserLoginMigrationDO } from '../../do';
 

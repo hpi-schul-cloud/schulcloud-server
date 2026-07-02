@@ -1,5 +1,5 @@
-import { Logger } from '@core/logger';
 import { createMock } from '@golevelup/ts-jest';
+import { Logger } from '@infra/logger';
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { RoomArrangementService } from '@modules/room/domain';

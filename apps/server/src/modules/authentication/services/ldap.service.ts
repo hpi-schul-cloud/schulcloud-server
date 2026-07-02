@@ -1,4 +1,4 @@
-import { Logger } from '@core/logger';
+import { Logger } from '@infra/logger';
 import type { System } from '@modules/system';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { Client, createClient } from 'ldapjs';

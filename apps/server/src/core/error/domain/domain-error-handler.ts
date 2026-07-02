@@ -1,5 +1,5 @@
-import { ErrorLogger, Loggable, LoggingUtils, LogMessageDataObject } from '@core/logger';
 import { ICurrentUser } from '@infra/auth-guard';
+import { ErrorLogger, Loggable, LoggingUtils, LogMessageDataObject } from '@infra/logger';
 import { Injectable } from '@nestjs/common';
 import { HttpArgumentsHost } from '@nestjs/common/interfaces';
 import { Request } from 'express';

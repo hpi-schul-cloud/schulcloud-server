@@ -1,4 +1,4 @@
-import { LegacyLogger } from '@core/logger';
+import { LegacyLogger } from '@infra/logger';
 import { EntityData, EntityName } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { SchoolEntity, StorageProviderEntity } from '@modules/school/repo';

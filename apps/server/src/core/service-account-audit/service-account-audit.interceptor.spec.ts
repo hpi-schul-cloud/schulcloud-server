@@ -1,8 +1,8 @@
 import { createMock } from '@golevelup/ts-jest';
+import { AuditLogger } from '@infra/logger';
 import { CallHandler, ExecutionContext } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { of, throwError } from 'rxjs';
-import { AuditLogger } from '../logger';
 import { ServiceAccountAuditInterceptor } from './service-account-audit.interceptor';
 
 const createMockExecutionContext = (

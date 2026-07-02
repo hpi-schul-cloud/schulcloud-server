@@ -1,8 +1,8 @@
-import { LegacyLogger } from '@core/logger';
 import { faker } from '@faker-js/faker';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { ConfigurationModule } from '@infra/configuration';
 import { fileRecordResponseFactory } from '@infra/files-storage-rest-client/testing';
+import { LegacyLogger } from '@infra/logger';
 import { HttpStatus, StreamableFile } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { currentUserFactory } from '@testing/factory/currentuser.factory';

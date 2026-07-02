@@ -1,5 +1,7 @@
-import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Logger } from '@infra/logger';
+import { RegistrationPinService } from '@modules/registration-pin';
+import { registrationPinEntityFactory } from '@modules/registration-pin/entity/testing';
 import {
 	ModuleName,
 	SagaService,
@@ -9,10 +11,8 @@ import {
 } from '@modules/saga';
 import { userDoFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
-import { registrationPinEntityFactory } from '@modules/registration-pin/entity/testing';
-import { DeleteUserRegistrationPinDataStep } from './delete-user-registration-pin-data';
-import { RegistrationPinService } from '@modules/registration-pin';
 import { UserService } from '../domain';
+import { DeleteUserRegistrationPinDataStep } from './delete-user-registration-pin-data';
 
 describe(DeleteUserRegistrationPinDataStep.name, () => {
 	let module: TestingModule;

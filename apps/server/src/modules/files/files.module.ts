@@ -1,4 +1,4 @@
-import { LoggerModule } from '@core/logger';
+import { LoggerModule } from '@infra/logger';
 import { SagaModule } from '@modules/saga';
 import { StorageProviderRepo } from '@modules/school/repo';
 import { Module } from '@nestjs/common';

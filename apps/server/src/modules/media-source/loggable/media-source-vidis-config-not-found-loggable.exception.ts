@@ -1,4 +1,4 @@
-import { ErrorLogMessage, LogMessage, ValidationErrorLogMessage } from '@core/logger';
+import { ErrorLogMessage, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
 import { NotFoundException } from '@nestjs/common';
 
 export class MediaSourceVidisConfigNotFoundLoggableException extends NotFoundException {

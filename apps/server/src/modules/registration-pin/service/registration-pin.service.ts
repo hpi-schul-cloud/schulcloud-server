@@ -1,4 +1,4 @@
-import { Logger } from '@core/logger';
+import { Logger } from '@infra/logger';
 import { Injectable } from '@nestjs/common';
 import { RegistrationPinEntity } from '../entity';
 import { RegistrationPinRepo } from '../repo';

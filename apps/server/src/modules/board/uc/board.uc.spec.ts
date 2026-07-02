@@ -1,5 +1,5 @@
-import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { LegacyLogger } from '@infra/logger';
 import { AuthorizationService } from '@modules/authorization';
 import { BoardContextApiHelperService } from '@modules/board-context';
 import { CourseService } from '@modules/course';
@@ -11,12 +11,12 @@ import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '../../copy-helper';
+import { BoardNodeRule } from '../authorisation/board-node.rule';
+import { BOARD_CONFIG_TOKEN, BoardConfig } from '../board.config';
 import { BoardNodeFactory } from '../domain';
 import { BoardNodeAuthorizableService, BoardNodeService, ColumnBoardService } from '../service';
 import { boardNodeAuthorizableFactory, columnBoardFactory, columnFactory } from '../testing';
 import { BoardUc } from './board.uc';
-import { BoardNodeRule } from '../authorisation/board-node.rule';
-import { BOARD_CONFIG_TOKEN, BoardConfig } from '../board.config';
 
 describe(BoardUc.name, () => {
 	let module: TestingModule;

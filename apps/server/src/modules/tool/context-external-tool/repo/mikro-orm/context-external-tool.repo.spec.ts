@@ -1,5 +1,5 @@
-import { LegacyLogger } from '@core/logger';
 import { createMock } from '@golevelup/ts-jest';
+import { LegacyLogger } from '@infra/logger';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { schoolEntityFactory } from '@modules/school/testing';

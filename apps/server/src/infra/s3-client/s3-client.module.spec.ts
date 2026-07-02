@@ -1,5 +1,5 @@
-import { Logger } from '@core/logger';
 import { createMock } from '@golevelup/ts-jest';
+import { Logger } from '@infra/logger';
 import { Inject } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { S3ClientAdapter } from './s3-client.adapter';

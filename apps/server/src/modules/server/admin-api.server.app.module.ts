@@ -1,4 +1,3 @@
-import { LoggerModule } from '@core/logger';
 import { ValidationModule } from '@core/validation';
 import {
 	AuthGuardModule,
@@ -6,6 +5,7 @@ import {
 	X_API_KEY_AUTH_GUARD_CONFIG_TOKEN,
 	XApiKeyAuthGuardConfig,
 } from '@infra/auth-guard';
+import { LoggerModule } from '@infra/logger';
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
 import { MongoMemoryDatabaseModule } from '@testing/database';

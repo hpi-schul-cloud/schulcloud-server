@@ -1,4 +1,4 @@
-import { LoggerModule } from '@core/logger';
+import { LoggerModule } from '@infra/logger';
 import { AuthorizationModule } from '@modules/authorization';
 import { Module } from '@nestjs/common';
 import { RuntimeConfigController } from './api/runtime-config.controller';

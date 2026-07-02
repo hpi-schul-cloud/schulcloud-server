@@ -1,4 +1,4 @@
-import { Logger } from '@core/logger';
+import { Logger } from '@infra/logger';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { RoleService } from '@modules/role';
 import { School, SchoolService } from '@modules/school/domain';

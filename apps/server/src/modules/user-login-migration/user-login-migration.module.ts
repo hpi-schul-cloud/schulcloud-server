@@ -1,4 +1,5 @@
-import { LoggerModule } from '@core/logger';
+import { ConfigurationModule } from '@infra/configuration';
+import { LoggerModule } from '@infra/logger';
 import { AccountModule } from '@modules/account';
 import { LegacySchoolModule } from '@modules/legacy-school';
 import { SystemModule } from '@modules/system';
@@ -17,7 +18,6 @@ import {
 	USER_LOGIN_MIGRATION_PUBLIC_API_CONFIG_TOKEN,
 	UserLoginMigrationPublicApiConfig,
 } from './user-login-migration.config';
-import { ConfigurationModule } from '@infra/configuration';
 
 @Module({
 	imports: [

@@ -1,5 +1,5 @@
-import { AuditLogger } from '@core/logger';
 import { ICurrentUser, JwtPayloadBuilder } from '@infra/auth-guard';
+import { AuditLogger } from '@infra/logger';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { UserService } from '@modules/user';
 import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';

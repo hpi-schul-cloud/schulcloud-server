@@ -1,12 +1,12 @@
-import { Module } from '@nestjs/common';
-import { NotificationModule } from './notification.module';
-import { NotificationController } from './adapter/notification.controller';
-import { NotificationObserverService } from './adapter/notification-observer.service';
-import { LoggerModule } from '@core/logger';
-import { AuthGuardModule, AuthGuardOptions, JWT_AUTH_GUARD_CONFIG_TOKEN, JwtAuthGuardConfig } from '@infra/auth-guard';
 import { RegisterTimeoutConfig } from '@core/interceptor/register-timeout-config.decorator';
-import { NOTIFICATION_TIMEOUT_CONFIG_TOKEN, NotificationTimeoutConfig } from './notification-timeout.config';
+import { AuthGuardModule, AuthGuardOptions, JWT_AUTH_GUARD_CONFIG_TOKEN, JwtAuthGuardConfig } from '@infra/auth-guard';
 import { ConfigurationModule } from '@infra/configuration';
+import { LoggerModule } from '@infra/logger';
+import { Module } from '@nestjs/common';
+import { NotificationObserverService } from './adapter/notification-observer.service';
+import { NotificationController } from './adapter/notification.controller';
+import { NOTIFICATION_TIMEOUT_CONFIG_TOKEN, NotificationTimeoutConfig } from './notification-timeout.config';
+import { NotificationModule } from './notification.module';
 
 @Module({
 	imports: [

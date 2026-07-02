@@ -1,5 +1,5 @@
-import { LoggerModule } from '@core/logger';
 import { ConfigurationModule } from '@infra/configuration';
+import { LoggerModule } from '@infra/logger';
 import { AuthorizationModule } from '@modules/authorization';
 import { SagaModule } from '@modules/saga';
 import { SchoolLicenseModule } from '@modules/school-license';

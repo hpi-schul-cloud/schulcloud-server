@@ -1,5 +1,4 @@
-import { Loggable } from '@core/logger/interfaces';
-import { LogMessage } from '@core/logger/types';
+import { Loggable, LogMessage } from '@infra/logger';
 
 export class InMemoryLoggable implements Loggable {
 	constructor(private readonly message: string) {}

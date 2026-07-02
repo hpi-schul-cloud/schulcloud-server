@@ -1,11 +1,11 @@
-import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Logger } from '@infra/logger';
 import { OfferDTO, SchoolActivationDTO, VidisClientAdapter } from '@infra/vidis-client';
 import { vidisOfferItemFactory } from '@infra/vidis-client/testing';
 import { MediaSource, MediaSourceDataFormat, mediaSourceFactory } from '@modules/media-source';
 import { School, SchoolService } from '@modules/school';
-import { schoolFactory } from '@modules/school/testing';
 import { MediaSchoolLicense, MediaSchoolLicenseService, SchoolLicenseType } from '@modules/school-license';
+import { schoolFactory } from '@modules/school/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { DeepPartial } from 'fishery';
 import { MediaSourceSyncOperationReportFactory, MediaSourceSyncReportFactory } from '../../factory';

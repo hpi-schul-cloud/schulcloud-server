@@ -1,5 +1,5 @@
+import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
 import { SchulconnexSonstigeGruppenzugehoerigeResponse } from '@infra/schulconnex-client';
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@core/logger';
 
 export class GroupRoleUnknownLoggable implements Loggable {
 	constructor(private readonly relation: SchulconnexSonstigeGruppenzugehoerigeResponse) {}

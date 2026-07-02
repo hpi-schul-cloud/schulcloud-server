@@ -1,6 +1,6 @@
-import { LoggerModule } from '@core/logger';
 import { CALENDAR_CONFIG_TOKEN, CalendarConfig, CalendarModule } from '@infra/calendar';
 import { ConfigurationModule } from '@infra/configuration';
+import { LoggerModule } from '@infra/logger';
 import { AuthorizationModule } from '@modules/authorization';
 import { RegistrationPinModule } from '@modules/registration-pin';
 import { RoleModule } from '@modules/role';

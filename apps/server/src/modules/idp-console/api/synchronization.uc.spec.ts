@@ -1,5 +1,5 @@
-import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Logger } from '@infra/logger';
 import { SchulconnexResponse, SchulconnexRestClient } from '@infra/schulconnex-client';
 import { schulconnexResponseFactory } from '@infra/schulconnex-client/testing';
 import { ObjectId } from '@mikro-orm/mongodb';

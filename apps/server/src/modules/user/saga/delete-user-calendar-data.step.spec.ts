@@ -1,6 +1,6 @@
-import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { CalendarService } from '@infra/calendar';
+import { Logger } from '@infra/logger';
 import {
 	ModuleName,
 	SagaService,
