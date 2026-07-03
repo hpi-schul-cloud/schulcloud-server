@@ -1,4 +1,4 @@
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
+import { Loggable, LoggableMessage } from '@shared/common/loggable';
 
 export class GroupRemovalSuccessfulLoggable implements Loggable {
 	constructor(
@@ -7,7 +7,7 @@ export class GroupRemovalSuccessfulLoggable implements Loggable {
 		private readonly groupDeleted: boolean
 	) {}
 
-	public getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			message: 'Group removal successful',
 			data: {

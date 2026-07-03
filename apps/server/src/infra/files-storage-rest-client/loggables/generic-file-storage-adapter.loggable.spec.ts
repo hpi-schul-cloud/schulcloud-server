@@ -9,11 +9,11 @@ describe(GenericFileStorageLoggable.name, () => {
 
 			const loggable = new GenericFileStorageLoggable('message', error, { additional: 'data' });
 
-			return { loggable, error };
+			return { loggable };
 		};
 
 		it('should return error log message', () => {
-			const { loggable, error } = setup();
+			const { loggable } = setup();
 
 			const result = loggable.getLogMessage();
 

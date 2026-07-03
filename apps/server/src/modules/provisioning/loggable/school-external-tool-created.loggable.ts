@@ -1,6 +1,6 @@
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
 import { MediumIdentifier } from '@modules/media-source';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
+import { Loggable, LoggableMessage } from '@shared/common/loggable';
 
 export class SchoolExternalToolCreatedLoggable implements Loggable {
 	constructor(
@@ -9,7 +9,7 @@ export class SchoolExternalToolCreatedLoggable implements Loggable {
 		private readonly schoolExternalTool: SchoolExternalTool
 	) {}
 
-	public getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			message: 'A school external tool was automatically created for a licensed medium',
 			data: {

@@ -1,6 +1,6 @@
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
 import { HttpStatus } from '@nestjs/common';
 import { BusinessError } from '@shared/common/error';
+import { Loggable, LoggableMessage } from '@shared/common/loggable';
 
 export class TooManyPseudonymsLoggableException extends BusinessError implements Loggable {
 	constructor(private readonly pseudonym: string) {
@@ -14,7 +14,7 @@ export class TooManyPseudonymsLoggableException extends BusinessError implements
 		);
 	}
 
-	public getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			type: 'PSEUDONYMS_TOO_MANY_PSEUDONYMS_FOUND',
 			message: 'Too many pseudonyms were found.',

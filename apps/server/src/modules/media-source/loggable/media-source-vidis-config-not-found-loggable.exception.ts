@@ -1,5 +1,5 @@
-import { ErrorLogMessage, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
 import { NotFoundException } from '@nestjs/common';
+import { LoggableMessage } from '@shared/common/loggable';
 
 export class MediaSourceVidisConfigNotFoundLoggableException extends NotFoundException {
 	constructor(
@@ -9,7 +9,7 @@ export class MediaSourceVidisConfigNotFoundLoggableException extends NotFoundExc
 		super();
 	}
 
-	public getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			message: `Required vidis config of media source ${this.mediaSourceName} is missing.`,
 			data: {

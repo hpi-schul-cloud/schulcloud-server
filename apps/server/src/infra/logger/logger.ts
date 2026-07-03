@@ -1,8 +1,8 @@
 import { Inject, Injectable, Scope } from '@nestjs/common';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger as WinstonLogger } from 'winston';
-import { Loggable } from './interfaces';
 import { LoggingUtils } from './logging.utils';
+import { Loggable } from '@shared/common/loggable';
 
 @Injectable({ scope: Scope.TRANSIENT })
 export class Logger {

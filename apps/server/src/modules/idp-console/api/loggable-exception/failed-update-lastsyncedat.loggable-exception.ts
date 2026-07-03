@@ -1,6 +1,7 @@
 import { AxiosErrorLoggable } from '@core/error/loggable';
-import { ErrorLogMessage, Loggable } from '@infra/logger';
 import { InternalServerErrorException } from '@nestjs/common';
+import { ErrorLogMessage } from '@shared/common/error';
+import { Loggable } from '@shared/common/loggable';
 import { isAxiosError } from 'axios';
 
 export class FailedUpdateLastSyncedAtLoggableException extends InternalServerErrorException implements Loggable {
