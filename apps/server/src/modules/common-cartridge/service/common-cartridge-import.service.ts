@@ -8,7 +8,6 @@ import {
 	CoursesClientAdapter,
 	FilesStorageClientAdapter,
 } from '@infra/common-cartridge-clients';
-import { DomainErrorHandler } from '@infra/error';
 import { Logger } from '@infra/logger';
 import { NotificationService, NotificationType } from '@modules/notification';
 import { HttpService } from '@nestjs/axios';
@@ -26,6 +25,7 @@ import {
 } from '../import/common-cartridge-import.types';
 import { CommonCartridgeMessageLoggable } from '../loggable/common-cartridge-message.loggable';
 import { CommonCartridgeImportMapper } from './common-cartridge-import.mapper';
+import { DomainErrorHandler } from '@infra/error';
 
 const DEPTH_BOARD = 0;
 const DEPTH_COLUMN = 1;

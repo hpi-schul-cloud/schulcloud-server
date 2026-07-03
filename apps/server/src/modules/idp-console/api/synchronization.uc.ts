@@ -5,7 +5,7 @@ import { AccountService } from '@modules/account';
 import { Synchronization, SynchronizationService, SynchronizationStatusModel } from '@modules/synchronization';
 import { UserService } from '@modules/user';
 import { Inject, Injectable } from '@nestjs/common';
-import util from 'util';
+import util from 'node:util';
 import { IDP_CONSOLE_CONFIG_TOKEN, IdpConsoleConfig } from '../idp-console.config';
 import {
 	ProgressSynchronizationLoggable,

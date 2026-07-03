@@ -2,7 +2,7 @@ import { createMock } from '@golevelup/ts-jest';
 import { DomainErrorHandler } from '@infra/error';
 import { Logger } from '@infra/logger';
 import Valkey from 'iovalkey';
-import * as util from 'util';
+import * as util from 'node:util';
 import { InMemoryClient, ValkeyClient } from './clients';
 import { ConnectedLoggable } from './loggable';
 import { ValkeyMode } from './valkey.config';
