@@ -757,6 +757,7 @@ describe(BoardNodeRule.name, () => {
 					createColumn: true,
 					deleteColumn: true,
 					moveColumn: true,
+					shareColumn: true,
 					updateColumnTitle: true,
 
 					// card
@@ -841,6 +842,7 @@ describe(BoardNodeRule.name, () => {
 					createColumn: true,
 					deleteColumn: true,
 					moveColumn: true,
+					shareColumn: true,
 					updateColumnTitle: true,
 
 					// card
@@ -926,6 +928,7 @@ describe(BoardNodeRule.name, () => {
 					createColumn: false,
 					deleteColumn: false,
 					moveColumn: false,
+					shareColumn: false,
 					updateColumnTitle: false,
 
 					// card
@@ -1024,6 +1027,7 @@ describe(BoardNodeRule.name, () => {
 					createColumn: false,
 					deleteColumn: false,
 					moveColumn: false,
+					shareColumn: false,
 					updateColumnTitle: false,
 
 					// card

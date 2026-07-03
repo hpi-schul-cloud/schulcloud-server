@@ -1,6 +1,7 @@
 import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { StorageLocation } from '@infra/files-storage-client';
+import { roomFactory } from '@modules//room/testing';
 import { AuthorizationService } from '@modules/authorization';
 import { BoardExternalReferenceType, BoardNodeService, ColumnBoardService } from '@modules/board';
 import { CopyCardParams, CopyColumnBoardParams } from '@modules/board/service/internal';
@@ -14,7 +15,6 @@ import { LessonCopyService } from '@modules/lesson';
 import { LessonEntity, Material } from '@modules/lesson/repo';
 import { lessonFactory } from '@modules/lesson/testing';
 import { RoomService } from '@modules/room';
-import { roomFactory } from '@modules//room/testing';
 import { SagaService } from '@modules/saga';
 import { schoolEntityFactory, schoolFactory } from '@modules/school/testing';
 import { TaskCopyService } from '@modules/task';
@@ -22,7 +22,7 @@ import { Submission, Task } from '@modules/task/repo';
 import { taskFactory } from '@modules/task/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
@@ -513,6 +513,107 @@ describe('ShareTokenUC', () => {
 				const newName = 'NewName';
 
 				const result = await uc.importShareToken(user.id, shareToken.token, newName, columnBoard.id);
+
+				expect(result).toEqual(status);
+			});
+		});
+
+		describe('when parent is a column', () => {
+			const setup = () => {
+				const school = schoolEntityFactory.buildWithId();
+				const user = userFactory.buildWithId({ school });
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+
+				const room = roomFactory.build({ schoolId: school.id });
+				roomService.getSingleRoom.mockResolvedValue(room);
+
+				const originalColumn = columnFactory.build();
+				const originalBoard = columnBoardFactory.build({
+					context: { type: BoardExternalReferenceType.Room, id: room.id },
+				});
+				const destinationBoard = columnBoardFactory.build({
+					context: { type: BoardExternalReferenceType.Room, id: room.id },
+				});
+
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(originalColumn);
+				columnBoardService.findById.mockResolvedValueOnce(originalBoard).mockResolvedValueOnce(destinationBoard);
+
+				const status: CopyStatus = {
+					type: CopyElementType.CARD,
+					status: CopyStatusEnum.SUCCESS,
+					copyEntity: originalColumn,
+				};
+				columnBoardService.copyColumn.mockResolvedValueOnce(status);
+
+				const payload: ShareTokenPayload = { parentType: ShareTokenParentType.Column, parentId: originalColumn.id };
+				const shareToken = shareTokenDOFactory.build({ payload });
+				service.lookupToken.mockResolvedValueOnce(shareToken);
+
+				return { user, school, shareToken, room, originalColumn, originalBoard, destinationBoard, status };
+			};
+
+			it('should throw if the destinationId is not passed', async () => {
+				const { user, shareToken } = setup();
+				await expect(uc.importShareToken(user.id, shareToken.token, 'NewName')).rejects.toThrow(BadRequestException);
+			});
+
+			describe('when destination is a course board', () => {
+				it('should throw ForbiddenException', async () => {
+					const school = schoolEntityFactory.buildWithId();
+					const user = userFactory.buildWithId({ school });
+					authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+
+					const courseId = 'course-id';
+					const originalColumn = columnFactory.build();
+					const originalBoard = columnBoardFactory.build({
+						context: { type: BoardExternalReferenceType.Course, id: courseId },
+					});
+					const destinationBoard = columnBoardFactory.build({
+						context: { type: BoardExternalReferenceType.Course, id: courseId },
+					});
+
+					boardNodeService.findByClassAndId.mockResolvedValueOnce(originalColumn);
+					columnBoardService.findById.mockResolvedValueOnce(originalBoard).mockResolvedValueOnce(destinationBoard);
+
+					const payload: ShareTokenPayload = { parentType: ShareTokenParentType.Column, parentId: originalColumn.id };
+					const shareToken = shareTokenDOFactory.build({ payload });
+					service.lookupToken.mockResolvedValueOnce(shareToken);
+
+					await expect(uc.importShareToken(user.id, shareToken.token, 'NewName', destinationBoard.id)).rejects.toThrow(
+						ForbiddenException
+					);
+				});
+			});
+
+			it('should check room write permission', async () => {
+				const { user, shareToken, room, destinationBoard } = setup();
+
+				await uc.importShareToken(user.id, shareToken.token, 'NewName', destinationBoard.id);
+
+				expect(shareTokenPermissionService.checkRoomWritePermission).toHaveBeenCalledWith(user, room.id);
+			});
+
+			it('should call the column copy service', async () => {
+				const { user, shareToken, originalColumn, destinationBoard, room } = setup();
+				const newName = 'NewName';
+
+				await uc.importShareToken(user.id, shareToken.token, newName, destinationBoard.id);
+
+				expect(columnBoardService.copyColumn).toHaveBeenCalledWith(
+					expect.objectContaining({
+						originalColumnId: originalColumn.id,
+						userId: user.id,
+						copyTitle: newName,
+						destinationColumnBoardId: destinationBoard.id,
+					})
+				);
+			});
+
+			it('should return the result', async () => {
+				const { user, shareToken, destinationBoard, status } = setup();
+				const newName = 'NewName';
+
+				const result = await uc.importShareToken(user.id, shareToken.token, newName, destinationBoard.id);
 
 				expect(result).toEqual(status);
 			});

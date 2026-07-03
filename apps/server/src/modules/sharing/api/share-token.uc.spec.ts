@@ -1,20 +1,20 @@
 import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
-import { BoardNodeService, BoardNodeAuthorizableService, ColumnBoardService } from '@modules/board';
-import { boardNodeAuthorizableFactory, columnBoardFactory, cardFactory } from '@modules/board/testing';
+import { BoardNodeAuthorizableService, BoardNodeService, ColumnBoardService } from '@modules/board';
+import { boardNodeAuthorizableFactory, cardFactory, columnBoardFactory, columnFactory } from '@modules/board/testing';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { LessonService } from '@modules/lesson';
 import { LessonEntity, Material } from '@modules/lesson/repo';
 import { lessonFactory } from '@modules/lesson/testing';
+import { roomEntityFactory } from '@modules/room/testing';
 import { schoolEntityFactory, schoolFactory } from '@modules/school/testing';
 import { TaskService } from '@modules/task';
 import { Submission, Task } from '@modules/task/repo';
 import { taskFactory } from '@modules/task/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
-import { roomEntityFactory } from '@modules/room/testing';
 import { NotImplementedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
@@ -22,8 +22,8 @@ import { setupEntities } from '@testing/database';
 import { ShareTokenContextType, ShareTokenParentType, ShareTokenPayload } from '../domainobject/share-token.do';
 import { ShareTokenService } from '../service';
 import { shareTokenDOFactory } from '../testing/share-token.do.factory';
-import { ShareTokenUC } from './share-token.uc';
 import { ShareTokenPermissionService } from './service';
+import { ShareTokenUC } from './share-token.uc';
 
 describe('ShareTokenUC', () => {
 	let module: TestingModule;
@@ -340,6 +340,40 @@ describe('ShareTokenUC', () => {
 					user,
 					boardNodeAuthorizable,
 					AuthorizationContextBuilder.write([Permission.COURSE_EDIT, Permission.BOARD_SHARE_BOARD])
+				);
+			});
+		});
+
+		describe('when parent is a column', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const column = columnFactory.build();
+				const columnBoard = columnBoardFactory.build();
+				const boardNodeAuthorizable = boardNodeAuthorizableFactory.build();
+
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(column);
+				columnBoardService.findById.mockResolvedValueOnce(columnBoard);
+				boardNodeAuthorizableService.getBoardAuthorizable.mockResolvedValue(boardNodeAuthorizable);
+
+				return { user, column, columnBoard, boardNodeAuthorizable };
+			};
+
+			it('should check parent write permission for course board', async () => {
+				const { user, column, boardNodeAuthorizable } = setup();
+				await uc.createShareToken(user.id, {
+					parentId: column.id,
+					parentType: ShareTokenParentType.Column,
+				});
+
+				expect(authorizationService.checkPermission).toHaveBeenCalledWith(
+					user,
+					boardNodeAuthorizable,
+					AuthorizationContextBuilder.write([
+						Permission.COURSE_EDIT,
+						Permission.BOARD_MANAGE,
+						Permission.BOARD_SHARE_BOARD,
+					])
 				);
 			});
 		});
@@ -689,6 +723,45 @@ describe('ShareTokenUC', () => {
 					token: shareToken.token,
 					parentType: ShareTokenParentType.Card,
 					parentName: card.title,
+				});
+			});
+		});
+
+		describe('when parent is a column', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+
+				const columnBoard = columnBoardFactory.build();
+				const column = columnFactory.build();
+				boardNodeService.findByClassAndId.mockResolvedValue(column);
+				columnBoardService.findById.mockResolvedValue(columnBoard);
+
+				const payload: ShareTokenPayload = {
+					parentType: ShareTokenParentType.Column,
+					parentId: column.id,
+				};
+				const shareToken = shareTokenDOFactory.build({ payload });
+				service.lookupTokenWithParentName.mockResolvedValueOnce({ shareToken, parentName: column.title || '' });
+
+				return { user, shareToken, column, columnBoard };
+			};
+
+			it('should check for permission', async () => {
+				const { user, shareToken } = setup();
+				await uc.lookupShareToken(user.id, shareToken.token);
+
+				expect(authorizationService.checkAllPermissions).toHaveBeenCalledWith(user, [Permission.COURSE_EDIT]);
+			});
+
+			it('should return the result', async () => {
+				const { user, shareToken, column } = setup();
+				const result = await uc.lookupShareToken(user.id, shareToken.token);
+
+				expect(result).toEqual({
+					token: shareToken.token,
+					parentType: ShareTokenParentType.Column,
+					parentName: column.title,
 				});
 			});
 		});
