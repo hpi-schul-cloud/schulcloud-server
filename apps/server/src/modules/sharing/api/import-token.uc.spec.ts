@@ -1,5 +1,4 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { roomFactory } from '@modules//room/testing';
 import { StorageLocation } from '@infra/files-storage-amqp-client';
 import { LegacyLogger } from '@infra/logger';
 import { AuthorizationService } from '@modules/authorization';
@@ -15,6 +14,7 @@ import { LessonCopyService } from '@modules/lesson';
 import { LessonEntity, Material } from '@modules/lesson/repo';
 import { lessonFactory } from '@modules/lesson/testing';
 import { RoomService } from '@modules/room';
+import { roomFactory } from '@modules/room/testing';
 import { SagaService } from '@modules/saga';
 import { schoolEntityFactory, schoolFactory } from '@modules/school/testing';
 import { TaskCopyService } from '@modules/task';
@@ -539,7 +539,7 @@ describe('ShareTokenUC', () => {
 				columnBoardService.findById.mockResolvedValueOnce(originalBoard).mockResolvedValueOnce(destinationBoard);
 
 				const status: CopyStatus = {
-					type: CopyElementType.CARD,
+					type: CopyElementType.COLUMN,
 					status: CopyStatusEnum.SUCCESS,
 					copyEntity: originalColumn,
 				};
