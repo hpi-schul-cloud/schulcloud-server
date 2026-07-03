@@ -1,6 +1,6 @@
 import { DeleteObjectCommand, S3Client, S3ServiceException } from '@aws-sdk/client-s3';
-import { LegacyLogger } from '@core/logger';
 import { AuthenticationClientAdapter } from '@infra/authentication-client';
+import { LegacyLogger } from '@infra/logger';
 import { StorageProviderEntity, StorageProviderRepo } from '@modules/school/repo';
 import { Inject, Injectable } from '@nestjs/common';
 import { TypeGuard } from '@shared/common/guards';

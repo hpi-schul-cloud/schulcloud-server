@@ -1,4 +1,4 @@
-import { LegacyLogger } from '@core/logger';
+import { LegacyLogger } from '@infra/logger';
 import { TeamPermissionsDto } from '@modules/collaborative-storage/services/dto/team-permissions.dto';
 import { TeamDto } from '@modules/collaborative-storage/services/dto/team.dto';
 import { RoleDto } from '@modules/role/service/dto/role.dto';

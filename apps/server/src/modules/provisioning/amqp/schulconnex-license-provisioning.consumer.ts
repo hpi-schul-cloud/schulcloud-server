@@ -1,5 +1,5 @@
-import { Logger } from '@core/logger';
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
+import { Logger } from '@infra/logger';
 import { MikroORM, RequestContext } from '@mikro-orm/core';
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { SchulconnexLicenseProvisioningMessage } from '../domain';

@@ -1,5 +1,5 @@
-import { LoggerModule } from '@core/logger';
 import { EncryptionConfig, EncryptionModule } from '@infra/encryption';
+import { LoggerModule } from '@infra/logger';
 import { OauthAdapterModule } from '@modules/oauth-adapter';
 import { HttpModule } from '@nestjs/axios';
 import { DynamicModule, Module } from '@nestjs/common';

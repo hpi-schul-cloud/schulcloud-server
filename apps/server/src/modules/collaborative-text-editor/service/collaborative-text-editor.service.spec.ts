@@ -1,6 +1,6 @@
-import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { EtherpadClientAdapter } from '@infra/etherpad-client';
+import { Logger } from '@infra/logger';
 import { Test, TestingModule } from '@nestjs/testing';
 import { CollaborativeTextEditorParentType } from '../api/dto/get-collaborative-text-editor-for-parent.params';
 import { COLLABORATIVE_TEXT_EDITOR_CONFIG_TOKEN } from '../collaborative-text-editor.config';

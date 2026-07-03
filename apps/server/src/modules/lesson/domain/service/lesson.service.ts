@@ -1,5 +1,5 @@
-import { Logger } from '@core/logger';
 import { FilesStorageClientAdapterService } from '@infra/files-storage-amqp-client';
+import { Logger } from '@infra/logger';
 import {
 	AuthorizableReferenceType,
 	AuthorizationInjectionService,

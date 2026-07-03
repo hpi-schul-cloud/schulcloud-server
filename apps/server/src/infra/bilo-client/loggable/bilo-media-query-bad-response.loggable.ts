@@ -1,4 +1,4 @@
-import { Loggable, LogMessage } from '@core/logger';
+import { Loggable, LogMessage } from '@infra/logger';
 import { ValidationError } from 'class-validator';
 import { MediaQueryBadResponseReport } from '../interface';
 

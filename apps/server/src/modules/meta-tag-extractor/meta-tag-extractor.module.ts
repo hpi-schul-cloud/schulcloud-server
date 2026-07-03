@@ -1,6 +1,6 @@
-import { LoggerModule } from '@core/logger';
 import { ConfigurationModule } from '@infra/configuration';
 import { ConsoleWriterModule } from '@infra/console';
+import { LoggerModule } from '@infra/logger';
 import { BoardModule } from '@modules/board';
 import { CourseModule } from '@modules/course';
 import { LessonModule } from '@modules/lesson';

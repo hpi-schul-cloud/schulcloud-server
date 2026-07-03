@@ -1,6 +1,6 @@
 import { ErrorLoggable } from '@core/error/loggable';
-import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Logger } from '@infra/logger';
 import { accountDoFactory } from '@modules/account/testing';
 import { systemFactory } from '@modules/system/testing';
 import { BadRequestException } from '@nestjs/common';

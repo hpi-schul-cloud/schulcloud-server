@@ -1,6 +1,6 @@
+import { LoggerModule } from '@infra/logger';
 import { AuthorizationModule } from '@modules/authorization';
 import { forwardRef, Module } from '@nestjs/common';
-import { LoggerModule } from '@core/logger';
 import { MetaTagExtractorController } from './controller';
 import { MetaTagExtractorModule } from './meta-tag-extractor.module';
 import { MetaTagExtractorUc } from './uc';

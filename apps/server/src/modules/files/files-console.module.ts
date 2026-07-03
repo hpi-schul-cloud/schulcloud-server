@@ -1,6 +1,6 @@
-import { LoggerModule } from '@core/logger';
 import { AuthenticationClientModule } from '@infra/authentication-client';
 import { ConfigurationModule } from '@infra/configuration';
+import { LoggerModule } from '@infra/logger';
 import { StorageProviderRepo } from '@modules/school/repo';
 import { Module } from '@nestjs/common';
 import { FILES_CONSOLE_CONFIG_TOKEN, FilesConsoleConfig } from './files-console.config';

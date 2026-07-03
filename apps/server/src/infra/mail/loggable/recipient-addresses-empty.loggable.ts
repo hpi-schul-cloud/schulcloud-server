@@ -1,5 +1,5 @@
 /* Istanbul ignore file */
-import { Loggable, LogMessage } from '@core/logger';
+import { Loggable, LogMessage } from '@infra/logger';
 
 export class RecipientAddressesEmptyLoggable implements Loggable {
 	constructor(private readonly originalRecipients: string[]) {}

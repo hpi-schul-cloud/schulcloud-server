@@ -1,8 +1,8 @@
+import { ErrorLoggable } from '@core/error/loggable/error.loggable';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Test, TestingModule } from '@nestjs/testing';
 import { WINSTON_MODULE_PROVIDER } from 'nest-winston';
 import { Logger as WinstonLogger } from 'winston';
-import { ErrorLoggable } from '../error/loggable/error.loggable';
 import { ErrorLogger } from './error-logger';
 
 describe('ErrorLogger', () => {

@@ -2,8 +2,8 @@ import { CompleteMultipartUploadCommandOutput, S3Client, S3ServiceException } fr
 import { Upload } from '@aws-sdk/lib-storage';
 import { DomainErrorHandler } from '@core/error';
 import { ErrorUtils } from '@core/error/utils';
-import { Logger } from '@core/logger';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { Logger } from '@infra/logger';
 import { HttpException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { PassThrough, Readable } from 'node:stream';
 import { File, S3Config } from './interface';

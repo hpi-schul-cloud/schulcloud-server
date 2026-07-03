@@ -1,5 +1,5 @@
-import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Logger } from '@infra/logger';
 import { RegistrationPinService } from '@modules/registration-pin';
 import { registrationPinEntityFactory } from '@modules/registration-pin/entity/testing';
 import {

@@ -1,4 +1,4 @@
-import { Logger } from '@core/logger';
+import { Logger } from '@infra/logger';
 import { TspUserInfo } from '@infra/sync/strategy/tsp/';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Account, AccountSave, AccountService } from '@modules/account';

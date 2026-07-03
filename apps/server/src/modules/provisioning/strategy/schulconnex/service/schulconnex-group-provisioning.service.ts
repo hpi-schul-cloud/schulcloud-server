@@ -1,4 +1,4 @@
-import { Logger } from '@core/logger';
+import { Logger } from '@infra/logger';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { CourseDoService } from '@modules/course';
 import { Group, GroupPeriod, GroupService, GroupTypes, GroupUser } from '@modules/group';

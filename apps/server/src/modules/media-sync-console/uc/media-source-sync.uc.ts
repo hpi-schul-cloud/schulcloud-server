@@ -1,8 +1,8 @@
-import { Logger } from '@core/logger';
-import { MediaSourceSyncReport, MediaSourceSyncService } from '@modules/media-source-sync';
+import { Logger } from '@infra/logger';
 import { MediaSourceDataFormat } from '@modules/media-source';
+import { MediaSourceSyncReport, MediaSourceSyncService } from '@modules/media-source-sync';
 import { Injectable } from '@nestjs/common';
-import { MediaMetadataSyncReportLoggable, MediaActivationsSyncReportLoggable } from '../loggable';
+import { MediaActivationsSyncReportLoggable, MediaMetadataSyncReportLoggable } from '../loggable';
 
 @Injectable()
 export class MediaSourceSyncUc {

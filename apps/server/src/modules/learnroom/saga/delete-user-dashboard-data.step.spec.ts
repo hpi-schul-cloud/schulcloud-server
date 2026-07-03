@@ -1,5 +1,6 @@
-import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Logger } from '@infra/logger';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import {
@@ -14,7 +15,6 @@ import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
-import { ObjectId } from '@mikro-orm/mongodb';
 import { Dashboard, GridElement } from '../domain/do/dashboard';
 import { DashboardElementRepo } from '../repo';
 import { DASHBOARD_REPO, DashboardRepo, IDashboardRepo } from '../repo/mikro-orm/dashboard.repo';

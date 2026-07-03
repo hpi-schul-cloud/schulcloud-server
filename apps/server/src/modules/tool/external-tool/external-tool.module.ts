@@ -1,4 +1,3 @@
-import { LoggerModule } from '@core/logger';
 import { ConfigurationModule } from '@infra/configuration';
 import { EncryptionModule } from '@infra/encryption';
 import {
@@ -6,6 +5,7 @@ import {
 	FilesStorageRestClientConfig,
 	FilesStorageRestClientModule,
 } from '@infra/files-storage-rest-client';
+import { LoggerModule } from '@infra/logger';
 import { AuthorizationModule } from '@modules/authorization';
 import { OauthProviderServiceModule } from '@modules/oauth-provider';
 import { HttpModule } from '@nestjs/axios';

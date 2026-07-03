@@ -1,4 +1,4 @@
-import { Logger } from '@core/logger';
+import { Logger } from '@infra/logger';
 import {
 	lernperiodeFormat,
 	SchulconnexCommunicationType,

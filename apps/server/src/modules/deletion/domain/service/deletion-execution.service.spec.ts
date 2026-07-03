@@ -1,5 +1,5 @@
-import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Logger } from '@infra/logger';
 import { ModuleName, SagaService, StepOperationType } from '@modules/saga';
 import { Test, TestingModule } from '@nestjs/testing';
 import { DeletionLogService, DeletionRequestService } from '.';

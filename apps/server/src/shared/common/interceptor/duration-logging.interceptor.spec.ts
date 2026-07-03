@@ -1,8 +1,8 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { LegacyLogger } from '@infra/logger';
 import { Controller, Get, HttpStatus, INestApplication } from '@nestjs/common';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { Test } from '@nestjs/testing';
-import { LegacyLogger } from '@core/logger';
 import { TestApiClient } from '@testing/test-api-client';
 import { DurationLoggingInterceptor } from './duration-logging.interceptor';
 

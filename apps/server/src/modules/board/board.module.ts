@@ -1,5 +1,4 @@
 import { CoreModule } from '@core/core.module';
-import { LoggerModule } from '@core/logger';
 import { ConfigurationModule } from '@infra/configuration';
 import {
 	FILES_STORAGE_AMQP_CLIENT_CONFIG_TOKEN,
@@ -7,6 +6,7 @@ import {
 	FilesStorageAMQPClientModule,
 } from '@infra/files-storage-amqp-client';
 import { H5P_EXCHANGE_CONFIG_TOKEN, H5pEditorClientModule, H5pExchangeConfig } from '@infra/h5p-editor-client';
+import { LoggerModule } from '@infra/logger';
 import { RABBITMQ_CONFIG_TOKEN, RabbitMQConfig } from '@infra/rabbitmq';
 import { TldrawClientModule } from '@infra/tldraw-client';
 import { CollaborativeTextEditorModule } from '@modules/collaborative-text-editor';

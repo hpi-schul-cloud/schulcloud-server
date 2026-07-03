@@ -1,5 +1,5 @@
 import { DomainErrorHandler } from '@core/error';
-import { Logger } from '@core/logger';
+import { Logger } from '@infra/logger';
 import Valkey from 'iovalkey';
 import * as dns from 'node:dns';
 import * as util from 'node:util';

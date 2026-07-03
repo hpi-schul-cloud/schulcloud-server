@@ -1,4 +1,4 @@
-import { Logger } from '@core/logger';
+import { Logger } from '@infra/logger';
 import { OfferDTO, VidisClientAdapter } from '@infra/vidis-client';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { MediaSource, MediaSourceDataFormat, MediaSourceService } from '@modules/media-source';

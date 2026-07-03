@@ -1,5 +1,4 @@
 import { DomainErrorHandler } from '@core/error';
-import { Logger } from '@core/logger';
 import { JwtPayloadVo } from '@infra/auth-guard';
 import {
 	BoardsClientAdapter,
@@ -10,6 +9,7 @@ import {
 	CoursesClientAdapter,
 	FilesStorageClientAdapter,
 } from '@infra/common-cartridge-clients';
+import { Logger } from '@infra/logger';
 import { NotificationService, NotificationType } from '@modules/notification';
 import { HttpService } from '@nestjs/axios';
 import { Injectable } from '@nestjs/common';

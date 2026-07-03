@@ -1,5 +1,5 @@
-import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Logger } from '@infra/logger';
 import { MailService } from '@infra/mail';
 import { Test, TestingModule } from '@nestjs/testing';
 import { HELPDESK_CONFIG_TOKEN, HelpdeskConfig } from '../../helpdesk-config';

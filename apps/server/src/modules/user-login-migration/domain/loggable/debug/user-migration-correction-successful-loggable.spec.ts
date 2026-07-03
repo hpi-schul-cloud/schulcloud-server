@@ -1,4 +1,4 @@
-import { LogMessage } from '@core/logger';
+import { LogMessage } from '@infra/logger';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { userLoginMigrationDOFactory } from '../../../testing';
 import { UserLoginMigrationDO } from '../../do';

@@ -1,5 +1,5 @@
-import { Logger } from '@core/logger';
 import { createMock } from '@golevelup/ts-jest';
+import { Logger } from '@infra/logger';
 import {
 	SchulconnexGroupRole,
 	SchulconnexGroupType,

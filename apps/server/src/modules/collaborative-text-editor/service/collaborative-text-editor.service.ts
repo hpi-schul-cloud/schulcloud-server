@@ -1,5 +1,5 @@
-import { Logger } from '@core/logger';
 import { EtherpadClientAdapter } from '@infra/etherpad-client';
+import { Logger } from '@infra/logger';
 import { Inject, Injectable } from '@nestjs/common';
 import { GetCollaborativeTextEditorForParentParams } from '../api/dto/get-collaborative-text-editor-for-parent.params';
 import {

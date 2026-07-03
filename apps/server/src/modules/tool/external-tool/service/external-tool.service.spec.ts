@@ -1,5 +1,5 @@
-import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { LegacyLogger } from '@infra/logger';
 import { OauthProviderService, ProviderOauthClient } from '@modules/oauth-provider/domain';
 import { providerOauthClientFactory } from '@modules/oauth-provider/testing';
 import { UnprocessableEntityException } from '@nestjs/common';

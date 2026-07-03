@@ -1,7 +1,7 @@
 import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
+import { LegacyLogger } from '@infra/logger';
 import { Body, Controller, Param, Patch } from '@nestjs/common';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
-import { LegacyLogger } from '@core/logger';
 import { CollaborativeStorageUc } from '../uc/collaborative-storage.uc';
 import { TeamPermissionsBody } from './dto/team-permissions.body.params';
 import { TeamRoleDto } from './dto/team-role.params';

@@ -1,5 +1,6 @@
-import { LoggerModule } from '@core/logger';
 import { ConfigurationModule } from '@infra/configuration';
+import { LoggerModule } from '@infra/logger';
+import { RABBITMQ_CONFIG_TOKEN, RabbitMQConfig, RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { LegacySchoolModule } from '@modules/legacy-school';
 import { MediaSourceSyncModule } from '@modules/media-source-sync';
 import { MediaSourceModule } from '@modules/media-source/media-source.module';
@@ -14,7 +15,6 @@ import {
 	SchulconnexLicenseProvisioningService,
 	SchulconnexToolProvisioningService,
 } from './strategy/schulconnex/service';
-import { RabbitMQWrapperModule, RABBITMQ_CONFIG_TOKEN, RabbitMQConfig } from '@infra/rabbitmq';
 
 @Module({
 	imports: [

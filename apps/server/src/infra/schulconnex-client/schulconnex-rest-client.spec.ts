@@ -1,5 +1,5 @@
-import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Logger } from '@infra/logger';
 import { OauthAdapterService, OAuthTokenDto } from '@modules/oauth-adapter';
 import { HttpService } from '@nestjs/axios';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';

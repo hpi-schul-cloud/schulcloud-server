@@ -1,7 +1,7 @@
 import { AxiosErrorLoggable } from '@core/error/loggable';
-import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { DefaultEncryptionService, EncryptionService, SymmetricKeyEncryptionService } from '@infra/encryption';
+import { Logger } from '@infra/logger';
 import {
 	MediaSource,
 	MediaSourceDataFormat,

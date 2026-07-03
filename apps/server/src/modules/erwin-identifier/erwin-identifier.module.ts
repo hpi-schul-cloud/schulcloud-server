@@ -1,4 +1,4 @@
-import { LoggerModule } from '@core/logger';
+import { LoggerModule } from '@infra/logger';
 import { Module } from '@nestjs/common';
 import { ERWIN_IDENTIFIER_REPO } from './domain/interface';
 import { ErwinIdentifierService } from './domain/service';

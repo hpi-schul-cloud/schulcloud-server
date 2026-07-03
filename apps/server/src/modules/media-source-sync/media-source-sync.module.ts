@@ -1,4 +1,4 @@
-import { LoggerModule } from '@core/logger';
+import { LoggerModule } from '@infra/logger';
 import { VidisClientModule } from '@infra/vidis-client';
 import { MediaSourceModule } from '@modules/media-source';
 import { MediumMetadataModule } from '@modules/medium-metadata';

@@ -16,7 +16,7 @@ import {
 } from './common-cartridge-organization-node';
 import { CommonCartridgeResourceCollectionBuilder } from './common-cartridge-resource-collection-builder';
 
-import { Logger } from '@core/logger';
+import { Logger } from '@infra/logger';
 import archiver from 'archiver';
 import { CommonCartridgeMessageLoggable } from '../../loggable/common-cartridge-message.loggable';
 import { ResourceFileContent } from '../interfaces/common-cartridge-resource.interface';

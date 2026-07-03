@@ -1,6 +1,6 @@
-import { LoggerModule } from '@core/logger';
 import { ConfigurationModule } from '@infra/configuration';
 import { EtherpadClientModule } from '@infra/etherpad-client';
+import { LoggerModule } from '@infra/logger';
 import { Module } from '@nestjs/common';
 import {
 	COLLABORATIVE_TEXT_EDITOR_CONFIG_TOKEN,

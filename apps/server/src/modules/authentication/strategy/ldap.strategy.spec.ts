@@ -1,6 +1,6 @@
-import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ICurrentUser } from '@infra/auth-guard';
+import { Logger } from '@infra/logger';
 import { Account } from '@modules/account';
 import { accountDoFactory, defaultTestPassword, defaultTestPasswordHash } from '@modules/account/testing';
 import { LegacySchoolRepo } from '@modules/legacy-school/repo';

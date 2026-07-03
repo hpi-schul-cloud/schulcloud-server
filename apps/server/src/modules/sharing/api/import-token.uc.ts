@@ -1,5 +1,5 @@
-import { LegacyLogger } from '@core/logger';
 import { StorageLocation } from '@infra/files-storage-amqp-client';
+import { LegacyLogger } from '@infra/logger';
 import { AuthorizationService } from '@modules/authorization';
 import {
 	BoardExternalReference,
