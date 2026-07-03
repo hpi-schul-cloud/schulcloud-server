@@ -260,7 +260,8 @@ export class ImportTokenUC {
 		destinationBoardId: EntityId,
 		copyTitle?: string
 	): Promise<CopyStatus> {
-		const originalColumn = await this.boardNodeService.findByClassAndId(Column, originalColumnId);
+		// we only need the root ID so depth 0 is enough to get it
+		const originalColumn = await this.boardNodeService.findByClassAndId(Column, originalColumnId, 0);
 		const originalBoard = await this.columnBoardService.findById(originalColumn.rootId, 0);
 
 		const destinationBoard = await this.columnBoardService.findById(destinationBoardId, 0);
@@ -270,7 +271,7 @@ export class ImportTokenUC {
 		};
 
 		if (targetExternalReference.type === BoardExternalReferenceType.Course) {
-			throw new ForbiddenException('Columns can not be imported into course boards');
+			throw new ForbiddenException('Columns cannot be imported into course boards');
 		}
 
 		await this.shareTokenPermissionService.checkRoomWritePermission(user, targetExternalReference.id);

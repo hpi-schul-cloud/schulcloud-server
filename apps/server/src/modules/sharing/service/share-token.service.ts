@@ -76,16 +76,19 @@ export class ShareTokenService {
 				parentName = (await this.roomService.getSingleRoom(shareToken.payload.parentId)).name;
 				break;
 			case ShareTokenParentType.Card: {
-				const { title } = await this.boardNodeService.findByClassAndId(Card, shareToken.payload.parentId);
+				// we only need the card title so depth 0 is enough to get it
+				const { title } = await this.boardNodeService.findByClassAndId(Card, shareToken.payload.parentId, 0);
 				if (title) {
 					parentName = title;
 				}
 				break;
 			}
 			case ShareTokenParentType.Column: {
+				// we only need the column title so depth 0 is enough to get it
 				const { title: columnTitle } = await this.boardNodeService.findByClassAndId(
 					Column,
-					shareToken.payload.parentId
+					shareToken.payload.parentId,
+					0
 				);
 				if (columnTitle) {
 					parentName = columnTitle;
