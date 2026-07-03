@@ -1,4 +1,4 @@
-import { Loggable, LogMessage } from '@core/logger';
+import { Loggable, LogMessage } from '@infra/logger';
 import { LegacySchoolDo } from '@modules/legacy-school/domain';
 import { UserLoginMigrationDO } from '../../do';
 

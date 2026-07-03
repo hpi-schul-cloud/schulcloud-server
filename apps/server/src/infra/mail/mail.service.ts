@@ -1,5 +1,5 @@
-import { Logger } from '@core/logger';
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
+import { Logger } from '@infra/logger';
 import { Injectable } from '@nestjs/common';
 import { InternalMailConfig } from './interfaces';
 import { SendEmailLoggable } from './loggable';

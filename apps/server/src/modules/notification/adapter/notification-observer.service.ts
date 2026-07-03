@@ -1,10 +1,10 @@
+import { ErrorLoggable } from '@core/error/loggable/error.loggable';
+import { Logger } from '@infra/logger';
+import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { Observable, Subject } from 'rxjs';
-import { EntityManager } from '@mikro-orm/mongodb';
-import { NotificationEntity } from '../repo/entities';
-import { Logger } from '@core/logger';
 import { NotificationLoggable } from '../domain/loggable';
-import { ErrorLoggable } from '@core/error/loggable/error.loggable';
+import { NotificationEntity } from '../repo/entities';
 
 @Injectable()
 export class NotificationObserverService implements OnModuleInit {

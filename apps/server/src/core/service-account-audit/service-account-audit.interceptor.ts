@@ -1,7 +1,7 @@
+import { AuditLogger } from '@infra/logger';
 import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { Observable, tap } from 'rxjs';
-import { AuditLogger } from '../logger';
 
 interface ServiceAccountUser {
 	userId: string;

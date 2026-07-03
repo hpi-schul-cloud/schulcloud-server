@@ -1,8 +1,8 @@
 import { CoreModule } from '@core/core.module';
-import { LoggerModule } from '@core/logger';
 import { AuthGuardModule, AuthGuardOptions, JWT_AUTH_GUARD_CONFIG_TOKEN, JwtAuthGuardConfig } from '@infra/auth-guard';
 import { ConfigurationModule } from '@infra/configuration';
 import { DATABASE_CONFIG_TOKEN, DatabaseConfig, DatabaseModule } from '@infra/database';
+import { LoggerModule } from '@infra/logger';
 import { SCHULCONNEX_CLIENT_CONFIG_TOKEN, SchulconnexClientConfig } from '@infra/schulconnex-client';
 import { SchulconnexClientModule } from '@infra/schulconnex-client/schulconnex-client.module';
 import { AccountApiModule } from '@modules/account/account-api.module';

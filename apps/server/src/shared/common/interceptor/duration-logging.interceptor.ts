@@ -1,5 +1,5 @@
+import { LegacyLogger } from '@infra/logger';
 import { CallHandler, ExecutionContext, Injectable, NestInterceptor } from '@nestjs/common';
-import { LegacyLogger } from '@core/logger';
 import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 

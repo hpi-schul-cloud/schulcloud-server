@@ -1,6 +1,6 @@
-import { LegacyLogger } from '@core/logger';
 import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { FileSystemAdapter } from '@infra/file-system';
+import { LegacyLogger } from '@infra/logger';
 import { UmzugMigration } from '@mikro-orm/migrations-mongodb';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { StorageProviderEntity } from '@modules/school/repo';
@@ -8,6 +8,7 @@ import { SystemEntity } from '@modules/system/repo';
 import { Inject, Injectable } from '@nestjs/common';
 import { AesEncryptionHelper } from '@shared/common/utils';
 import { orderBy } from 'lodash';
+import { Document } from 'mongodb';
 import { BsonConverter } from '../converter/bson.converter';
 import { MANAGEMENT_SEED_DATA_CONFIG_TOKEN, ManagementSeedDataConfig } from '../management-seed-data.config';
 import { generateSeedData } from '../seed-data/generate-seed-data';
@@ -18,7 +19,6 @@ import {
 	SystemsSeedDataService,
 } from '../service';
 import { DatabaseManagementService } from '../service/database-management.service';
-import { Document } from 'mongodb';
 
 interface CollectionFilePath {
 	filePath: string;

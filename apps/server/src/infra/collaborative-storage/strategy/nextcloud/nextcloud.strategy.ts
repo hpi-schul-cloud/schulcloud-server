@@ -1,4 +1,4 @@
-import { LegacyLogger } from '@core/logger';
+import { LegacyLogger } from '@infra/logger';
 import { TeamDto, TeamUserDto } from '@modules/collaborative-storage';
 import { PseudonymService } from '@modules/pseudonym';
 import { Pseudonym } from '@modules/pseudonym/repo';

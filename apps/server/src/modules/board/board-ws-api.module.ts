@@ -1,5 +1,5 @@
-import { LoggerModule } from '@core/logger';
 import { ConfigurationModule } from '@infra/configuration';
+import { LoggerModule } from '@infra/logger';
 import { AuthorizationModule } from '@modules/authorization';
 import { BoardContextApiHelperModule } from '@modules/board-context';
 import { CourseModule } from '@modules/course';

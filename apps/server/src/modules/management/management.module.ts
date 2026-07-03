@@ -1,9 +1,9 @@
-import { LoggerModule } from '@core/logger';
 import { ConfigurationModule } from '@infra/configuration';
 import { ConsoleWriterService } from '@infra/console';
 import { EncryptionModule } from '@infra/encryption';
 import { FeathersModule } from '@infra/feathers';
 import { FileSystemModule } from '@infra/file-system';
+import { LoggerModule } from '@infra/logger';
 import { MediaSourceModule } from '@modules/media-source/media-source.module';
 import { OauthProviderServiceModule } from '@modules/oauth-provider';
 import { SystemModule } from '@modules/system';

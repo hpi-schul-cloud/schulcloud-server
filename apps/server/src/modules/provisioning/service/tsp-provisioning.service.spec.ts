@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Logger } from '@infra/logger';
 import { TspUserInfo } from '@infra/sync';
 import { AccountService } from '@modules/account';
 import { accountDoFactory } from '@modules/account/testing';
@@ -22,7 +23,6 @@ import {
 	provisioningSystemDtoFactory,
 } from '../testing';
 import { TspProvisioningService } from './tsp-provisioning.service';
-import { Logger } from '@core/logger';
 
 describe('TspProvisioningService', () => {
 	let module: TestingModule;

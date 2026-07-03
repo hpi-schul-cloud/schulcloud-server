@@ -1,8 +1,6 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { DeleteUserClassDataStep } from './delete-user-class-data.step';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ClassesRepo } from '../repo';
-import { Logger } from '@core/logger';
+import { Logger } from '@infra/logger';
+import { ObjectId } from '@mikro-orm/mongodb';
 import {
 	ModuleName,
 	SagaService,
@@ -12,9 +10,11 @@ import {
 	UserDeletionStepOperationLoggable,
 } from '@modules/saga';
 import { InternalServerErrorException } from '@nestjs/common';
-import { ObjectId } from '@mikro-orm/mongodb';
+import { Test, TestingModule } from '@nestjs/testing';
 import { classEntityFactory } from '../entity/testing';
+import { ClassesRepo } from '../repo';
 import { ClassMapper } from '../repo/mapper';
+import { DeleteUserClassDataStep } from './delete-user-class-data.step';
 
 describe(DeleteUserClassDataStep.name, () => {
 	let module: TestingModule;

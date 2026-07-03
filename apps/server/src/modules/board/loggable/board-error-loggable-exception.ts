@@ -1,4 +1,4 @@
-import { Loggable, LogMessage, ValidationErrorLogMessage } from '@core/logger';
+import { Loggable, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
 import { BadGatewayException } from '@nestjs/common';
 
 const SEPARATOR = ' | ';

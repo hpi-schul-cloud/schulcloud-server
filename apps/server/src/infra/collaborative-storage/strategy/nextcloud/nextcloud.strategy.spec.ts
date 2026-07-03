@@ -1,5 +1,5 @@
-import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { LegacyLogger } from '@infra/logger';
 import { TeamDto, TeamUserDto } from '@modules/collaborative-storage/services/dto/team.dto';
 import { PseudonymService } from '@modules/pseudonym';
 import { Pseudonym } from '@modules/pseudonym/repo';

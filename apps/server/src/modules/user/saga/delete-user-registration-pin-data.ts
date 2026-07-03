@@ -1,4 +1,4 @@
-import { Logger } from '@core/logger';
+import { Logger } from '@infra/logger';
 import { RegistrationPinService } from '@modules/registration-pin';
 import {
 	ModuleName,

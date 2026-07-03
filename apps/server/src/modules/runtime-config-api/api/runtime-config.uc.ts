@@ -1,4 +1,4 @@
-import { Logger } from '@core/logger';
+import { Logger } from '@infra/logger';
 import { RuntimeConfigService, RuntimeConfigValue, RuntimeConfigValueType } from '@infra/runtime-config';
 import { AuthorizationService } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';

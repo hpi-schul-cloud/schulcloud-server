@@ -1,4 +1,4 @@
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@core/logger';
+import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
 import { ForbiddenException } from '@nestjs/common';
 
 export class UserMigrationIsNotEnabledLoggableException extends ForbiddenException implements Loggable {

@@ -1,9 +1,9 @@
-import { Logger } from '@core/logger';
+import { Logger } from '@infra/logger';
 import { OfferDTO, SchoolActivationDTO, VidisClientAdapter } from '@infra/vidis-client';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { MediaSource, MediaSourceDataFormat } from '@modules/media-source';
 import { School, SchoolService } from '@modules/school';
 import { MediaSchoolLicense, MediaSchoolLicenseService, SchoolLicenseType } from '@modules/school-license';
-import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { MediaSourceSyncOperationReportFactory, MediaSourceSyncReportFactory } from '../../factory';
 import { MediaActivationSyncStrategy, MediaSourceSyncReport } from '../../interface';

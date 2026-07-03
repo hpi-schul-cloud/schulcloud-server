@@ -1,6 +1,6 @@
-import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { DefaultEncryptionService, EncryptionService, SymmetricKeyEncryptionService } from '@infra/encryption';
+import { LegacyLogger } from '@infra/logger';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ErwinIdentifier, ErwinIdentifierService, ReferencedEntityType } from '@modules/erwin-identifier';
 import { LegacySchoolService } from '@modules/legacy-school';

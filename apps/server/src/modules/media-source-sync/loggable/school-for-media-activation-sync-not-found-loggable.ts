@@ -1,4 +1,4 @@
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@core/logger';
+import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
 
 export class SchoolForMediaActivationSyncNotFoundLoggable implements Loggable {
 	constructor(private readonly officialSchoolNumber: string) {}

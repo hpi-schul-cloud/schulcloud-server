@@ -1,6 +1,6 @@
-import { Logger } from '@core/logger';
 import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Logger } from '@infra/logger';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { systemFactory } from '@modules/system/testing';

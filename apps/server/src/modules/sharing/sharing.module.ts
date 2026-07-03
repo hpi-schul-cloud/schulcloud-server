@@ -1,4 +1,4 @@
-import { LoggerModule } from '@core/logger';
+import { LoggerModule } from '@infra/logger';
 import { BoardModule } from '@modules/board';
 import { CourseModule } from '@modules/course';
 import { LessonModule } from '@modules/lesson';

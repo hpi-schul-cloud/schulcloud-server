@@ -1,6 +1,6 @@
-import { Logger } from '@core/logger';
 import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Logger } from '@infra/logger';
 import { robjExportKlasseFactory, robjExportLehrerFactory, robjExportSchuelerFactory } from '@infra/tsp-client/testing';
 import { ProvisioningSystemDto } from '@modules/provisioning';
 import { BadDataLoggableException } from '@modules/provisioning/loggable';

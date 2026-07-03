@@ -1,8 +1,8 @@
+import { LoggerModule } from '@infra/logger';
 import { Module } from '@nestjs/common';
 import { APP_FILTER } from '@nestjs/core';
-import { LoggerModule } from '../logger';
-import { GlobalErrorFilter } from './filter/global-error.filter';
 import { DomainErrorHandler } from './domain';
+import { GlobalErrorFilter } from './filter/global-error.filter';
 
 /**
  * Overrides the default global Exception Filter of NestJS provided by @APP_FILTER

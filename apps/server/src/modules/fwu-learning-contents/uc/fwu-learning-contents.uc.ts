@@ -1,4 +1,4 @@
-import { LegacyLogger } from '@core/logger';
+import { LegacyLogger } from '@infra/logger';
 import { GetFile, S3ClientAdapter } from '@infra/s3-client';
 import { Inject, Injectable } from '@nestjs/common';
 import * as cheerio from 'cheerio';

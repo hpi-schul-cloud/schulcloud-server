@@ -1,6 +1,6 @@
+import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
 import { UnauthorizedException } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@core/logger';
 
 export class LtiDeepLinkTokenMissingLoggableException extends UnauthorizedException implements Loggable {
 	constructor(

@@ -1,5 +1,5 @@
+import { ErrorLogMessage, Loggable } from '@infra/logger';
 import { InternalServerErrorException } from '@nestjs/common';
-import { ErrorLogMessage, Loggable } from '@core/logger';
 import { CommonCartridgeErrorEnum } from './error.enums';
 
 export class ElementTypeNotSupportedLoggableException extends InternalServerErrorException implements Loggable {

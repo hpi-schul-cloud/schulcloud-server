@@ -1,4 +1,4 @@
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@core/logger';
+import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
 
 export class MigrationMayBeCompleted implements Loggable {
 	constructor(private readonly inUserMigration?: boolean) {}

@@ -1,5 +1,5 @@
-import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Logger } from '@infra/logger';
 import { MediaSourceDataFormat } from '@modules/media-source';
 import { MediaSourceSyncService } from '@modules/media-source-sync';
 import { mediaSourceSyncReportFactory } from '@modules/media-source-sync/testing';

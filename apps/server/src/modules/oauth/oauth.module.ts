@@ -1,6 +1,6 @@
-import { LoggerModule } from '@core/logger';
 import { ConfigurationModule } from '@infra/configuration';
 import { EncryptionModule } from '@infra/encryption';
+import { LoggerModule } from '@infra/logger';
 import { AuthorizationModule } from '@modules/authorization';
 import { ErwinIdentifierModule } from '@modules/erwin-identifier/erwin-identifier.module';
 import { LegacySchoolModule } from '@modules/legacy-school';
