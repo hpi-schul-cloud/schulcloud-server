@@ -1,6 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { AuthorizableReferenceType, AuthorizationContextBuilder } from '@modules/authorization';
-import { AuthorizationReferenceService } from '@modules/authorization-reference';
+import {
+	AuthorizationBodyParamsReferenceType,
+	AuthorizationClientAdapter,
+	AuthorizationContextBuilder,
+} from '@infra/authorization-client';
 import { CopyElementType, CopyStatusEnum } from '@modules/copy-helper';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
@@ -17,7 +20,7 @@ import { CourseCopyUC } from './course-copy.uc';
 describe('course copy uc', () => {
 	let module: TestingModule;
 	let uc: CourseCopyUC;
-	let authorization: DeepMocked<AuthorizationReferenceService>;
+	let authorizationClientAdapter: DeepMocked<AuthorizationClientAdapter>;
 	let courseCopyService: DeepMocked<CourseCopyService>;
 	let config: LearnroomConfig;
 
@@ -27,8 +30,8 @@ describe('course copy uc', () => {
 			providers: [
 				CourseCopyUC,
 				{
-					provide: AuthorizationReferenceService,
-					useValue: createMock<AuthorizationReferenceService>(),
+					provide: AuthorizationClientAdapter,
+					useValue: createMock<AuthorizationClientAdapter>(),
 				},
 				{
 					provide: CourseCopyService,
@@ -42,7 +45,7 @@ describe('course copy uc', () => {
 		}).compile();
 
 		uc = module.get(CourseCopyUC);
-		authorization = module.get(AuthorizationReferenceService);
+		authorizationClientAdapter = module.get(AuthorizationClientAdapter);
 		courseCopyService = module.get(CourseCopyService);
 		config = module.get<LearnroomConfig>(LEARNROOM_CONFIG_TOKEN);
 	});
@@ -89,7 +92,7 @@ describe('course copy uc', () => {
 					copyEntity: courseCopy,
 				};
 
-				authorization.checkPermissionByReferences.mockResolvedValueOnce();
+				authorizationClientAdapter.checkPermissionsByReference.mockResolvedValueOnce();
 				courseCopyService.copyCourse.mockResolvedValueOnce(status);
 
 				return {
@@ -105,9 +108,8 @@ describe('course copy uc', () => {
 				await uc.copyCourse(userId, courseId);
 
 				const context = AuthorizationContextBuilder.write([Permission.COURSE_CREATE]);
-				expect(authorization.checkPermissionByReferences).toHaveBeenCalledWith(
-					userId,
-					AuthorizableReferenceType.Course,
+				expect(authorizationClientAdapter.checkPermissionsByReference).toHaveBeenCalledWith(
+					AuthorizationBodyParamsReferenceType.COURSES,
 					courseId,
 					context
 				);
@@ -135,7 +137,7 @@ describe('course copy uc', () => {
 				config.featureCopyServiceEnabled = true;
 				const user = userFactory.buildWithId();
 				const course = courseEntityFactory.buildWithId();
-				authorization.checkPermissionByReferences.mockRejectedValueOnce(new ForbiddenException());
+				authorizationClientAdapter.checkPermissionsByReference.mockRejectedValueOnce(new ForbiddenException());
 
 				return { user, course };
 			};
