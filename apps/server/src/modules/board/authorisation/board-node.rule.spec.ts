@@ -842,7 +842,7 @@ describe(BoardNodeRule.name, () => {
 					createColumn: true,
 					deleteColumn: true,
 					moveColumn: true,
-					shareColumn: true,
+					shareColumn: false,
 					updateColumnTitle: true,
 
 					// card
