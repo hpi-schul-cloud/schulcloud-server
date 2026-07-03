@@ -1,4 +1,3 @@
-import { LogMessage } from '@core/logger';
 import { MediaSourceDataFormat } from '@modules/media-source';
 import { SyncStrategyNotImplementedLoggableException } from './sync-strategy-not-implemented-loggable.exception';
 

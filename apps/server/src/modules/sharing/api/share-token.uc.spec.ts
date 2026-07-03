@@ -1,5 +1,5 @@
-import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { LegacyLogger } from '@infra/logger';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { BoardNodeAuthorizableService, BoardNodeService, ColumnBoardService } from '@modules/board';
 import { boardNodeAuthorizableFactory, cardFactory, columnBoardFactory, columnFactory } from '@modules/board/testing';

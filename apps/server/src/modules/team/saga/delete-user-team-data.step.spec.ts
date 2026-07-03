@@ -1,5 +1,5 @@
-import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Logger } from '@infra/logger';
 import {
 	ModuleName,
 	SagaService,
@@ -8,10 +8,10 @@ import {
 	StepReportBuilder,
 } from '@modules/saga';
 import { Test, TestingModule } from '@nestjs/testing';
+import { setupEntities } from '@testing/database';
 import { TeamEntity, TeamRepo } from '../repo';
 import { teamFactory, teamUserFactory } from '../testing';
 import { DeleteUserTeamDataStep } from './delete-user-team-data.step';
-import { setupEntities } from '@testing/database';
 
 describe(DeleteUserTeamDataStep.name, () => {
 	let module: TestingModule;

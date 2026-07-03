@@ -1,8 +1,8 @@
 import { createMock } from '@golevelup/ts-jest';
+import { FilesStorageClientAdapterService } from '@infra/files-storage-amqp-client';
 import { EntityManager } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { courseEntityFactory, courseGroupEntityFactory } from '@modules/course/testing';
-import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';

@@ -1,5 +1,5 @@
-import { ErrorLogger, ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ErrorLogger, ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
 import { BadRequestException, HttpStatus, InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BusinessError } from '@shared/common/error';

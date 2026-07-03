@@ -1,6 +1,6 @@
 import { createMock } from '@golevelup/ts-jest';
+import { Logger } from '@infra/logger';
 import { Test } from '@nestjs/testing';
-import { Logger } from '@core/logger';
 import { SyncUc } from '../uc/sync.uc';
 import { SyncConsole } from './sync.console';
 

@@ -1,6 +1,6 @@
 import { DomainErrorHandler } from '@core/error';
-import { Logger } from '@core/logger';
 import { createMock } from '@golevelup/ts-jest';
+import { Logger } from '@infra/logger';
 import Valkey from 'iovalkey';
 import * as util from 'util';
 import { InMemoryClient, ValkeyClient } from './clients';

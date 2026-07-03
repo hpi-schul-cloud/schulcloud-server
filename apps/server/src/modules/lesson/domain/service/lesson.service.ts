@@ -1,10 +1,10 @@
-import { Logger } from '@core/logger';
+import { FilesStorageClientAdapterService } from '@infra/files-storage-amqp-client';
+import { Logger } from '@infra/logger';
 import {
 	AuthorizableReferenceType,
 	AuthorizationInjectionService,
 	AuthorizationLoaderService,
 } from '@modules/authorization';
-import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { Injectable } from '@nestjs/common';
 import { Counted, EntityId } from '@shared/domain/types';
 import { LessonEntity, LessonRepo } from '../../repo';

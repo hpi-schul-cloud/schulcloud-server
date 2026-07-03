@@ -1,5 +1,5 @@
 import { AxiosErrorLoggable } from '@core/error/loggable';
-import { ErrorLogger, Logger } from '@core/logger';
+import { ErrorLogger, Logger } from '@infra/logger';
 import { HttpService } from '@nestjs/axios';
 import { Inject, Injectable } from '@nestjs/common';
 import { AxiosError } from 'axios';

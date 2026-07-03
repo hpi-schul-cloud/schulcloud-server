@@ -1,4 +1,4 @@
-import { Loggable, LogMessage } from '@core/logger';
+import { Loggable, LogMessage } from '@infra/logger';
 import { RobjExportSchule } from '@infra/tsp-client';
 
 export class TspSchulnummerMissingLoggable implements Loggable {

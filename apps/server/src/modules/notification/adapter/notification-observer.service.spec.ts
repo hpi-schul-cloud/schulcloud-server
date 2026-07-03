@@ -1,10 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Logger } from '@infra/logger';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { Logger } from '@core/logger';
-import { NotificationObserverService } from './notification-observer.service';
+import { Test, TestingModule } from '@nestjs/testing';
 import { NotificationEntity } from '../repo/entities';
 import { NotificationType } from '../types';
+import { NotificationObserverService } from './notification-observer.service';
 
 describe(NotificationObserverService.name, () => {
 	let module: TestingModule;

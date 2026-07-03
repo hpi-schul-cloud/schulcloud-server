@@ -6,8 +6,8 @@ import {
 	LessonContentResponseComponent,
 	LessonContentResponseContent,
 } from '@infra/common-cartridge-clients';
-import { fileRecordResponseFactory } from '@infra/files-storage-client/testing';
-import { FileRecordParentType } from '@modules/files-storage-client';
+import { FileRecordParentType } from '@infra/files-storage-amqp-client';
+import { fileRecordResponseFactory } from '@infra/files-storage-rest-client/testing';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Readable } from 'stream';
 import {

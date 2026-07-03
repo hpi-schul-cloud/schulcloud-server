@@ -1,4 +1,4 @@
-import { Logger } from '@core/logger';
+import { Logger } from '@infra/logger';
 import archiver from 'archiver';
 import { FileDo } from '../do';
 import { CreateArchiveLoggable } from '../loggable';

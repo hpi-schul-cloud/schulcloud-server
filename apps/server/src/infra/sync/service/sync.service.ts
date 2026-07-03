@@ -1,4 +1,4 @@
-import { Logger } from '@core/logger';
+import { Logger } from '@infra/logger';
 import { Inject, Injectable } from '@nestjs/common';
 import { InvalidTargetLoggable } from '../errors/invalid-target.loggable';
 import { SyncStrategy } from '../strategy/sync-strategy';

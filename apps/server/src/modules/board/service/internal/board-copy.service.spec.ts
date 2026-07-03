@@ -1,10 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { StorageLocation } from '@infra/files-storage-client';
+import { StorageLocation } from '@infra/files-storage-amqp-client';
+import { FilesStorageClientAdapterService } from '@infra/files-storage-amqp-client/service';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
-import { FilesStorageClientAdapterService } from '@modules/files-storage-client/service';
 import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { BoardExternalReferenceType } from '../../domain/types';
@@ -14,8 +14,8 @@ import { BoardCopyService, CopyCardParams, CopyColumnBoardParams, CopyColumnPara
 import { ColumnBoardTitleService } from './column-board-title.service';
 // Warning: do not move the BoardNodeCopyService import up. Otherwise it will lead to dependency cycle.
 import { InternalServerErrorException } from '@nestjs/common';
+import { Card, Column } from '../../domain';
 import { BoardNodeCopyService } from './board-node-copy.service';
-import { Card, Column, ColumnBoard } from '../../domain';
 
 describe(BoardCopyService.name, () => {
 	let module: TestingModule;

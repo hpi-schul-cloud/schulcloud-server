@@ -1,11 +1,11 @@
-import { Logger } from '@core/logger';
-import { MikroORM, EnsureRequestContext } from '@mikro-orm/core';
+import { Logger } from '@infra/logger';
+import { EnsureRequestContext, MikroORM } from '@mikro-orm/core';
 import { Group, GroupDeletedEvent } from '@modules/group';
 import { Injectable } from '@nestjs/common';
 import { EventsHandler, IEventHandler } from '@nestjs/cqrs';
-import { CourseDoService } from './course-do.service';
 import { Course } from '../course.do';
 import { CourseSynchronizationStoppedLoggable } from '../loggable';
+import { CourseDoService } from './course-do.service';
 
 @Injectable()
 @EventsHandler(GroupDeletedEvent)

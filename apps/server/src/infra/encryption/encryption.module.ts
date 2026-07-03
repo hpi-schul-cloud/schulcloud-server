@@ -1,5 +1,5 @@
-import { LegacyLogger, LoggerModule } from '@core/logger';
 import { ConfigurationModule } from '@infra/configuration';
+import { LegacyLogger, LoggerModule } from '@infra/logger';
 import { DynamicModule, Module } from '@nestjs/common';
 import { EncryptionConfig } from './encryption-config.interface';
 import { DefaultEncryptionService } from './encryption.interface';

@@ -1,6 +1,6 @@
-import { Logger } from '@core/logger';
 import { faker } from '@faker-js/faker';
 import { createMock } from '@golevelup/ts-jest';
+import { Logger } from '@infra/logger';
 import { Test, TestingModule } from '@nestjs/testing';
 import { InvalidTargetLoggable } from '../errors/invalid-target.loggable';
 import { SyncStrategy } from '../strategy/sync-strategy';

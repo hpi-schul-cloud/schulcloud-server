@@ -1,5 +1,5 @@
-import { LegacyLogger } from '@core/logger';
-import { StorageLocation } from '@infra/files-storage-client';
+import { StorageLocation } from '@infra/files-storage-amqp-client';
+import { LegacyLogger } from '@infra/logger';
 import { Action, AuthorizationService } from '@modules/authorization';
 import { BoardContextApiHelperService } from '@modules/board-context';
 import { CopyStatus, CopyStatusEnum } from '@modules/copy-helper';

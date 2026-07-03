@@ -1,14 +1,14 @@
-import { Logger } from '@core/logger';
 import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Logger } from '@infra/logger';
 import archiver from 'archiver';
 import {
 	createCommonCartridgeMetadataElementProps,
 	createCommonCartridgeOrganizationProps,
 } from '../../testing/common-cartridge-element-props.factory';
 import {
-	createCommonCartridgeFileProps,
 	createCommonCartridgeFileFolderResourcePropsV130,
+	createCommonCartridgeFileProps,
 	createCommonCartridgeWebLinkResourceProps,
 } from '../../testing/common-cartridge-resource-props.factory';
 import { CommonCartridgeVersion } from '../common-cartridge.enums';

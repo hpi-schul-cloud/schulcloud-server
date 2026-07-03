@@ -1,6 +1,6 @@
-import { ErrorLogMessage, Loggable } from '@core/logger';
-import { EntityId } from '@shared/domain/types';
+import { ErrorLogMessage, Loggable } from '@infra/logger';
 import { UnprocessableEntityException } from '@nestjs/common';
+import { EntityId } from '@shared/domain/types';
 
 export class CourseSyncHistoryGroupExternalSourceMissingLoggableException
 	extends UnprocessableEntityException

@@ -1,9 +1,9 @@
-import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { JwtPayloadBuilder } from '@infra/auth-guard';
 import { jwtPayloadFactory } from '@infra/auth-guard/testing';
 import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { JwtWhitelistAdapter } from '@infra/jwt-whitelist';
+import { Logger } from '@infra/logger';
 import { Account, AccountService } from '@modules/account';
 import { accountDoFactory } from '@modules/account/testing';
 import { OauthSessionTokenService } from '@modules/oauth';

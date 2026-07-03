@@ -1,7 +1,7 @@
 import { CoreModule } from '@core/core.module';
-import { LoggerModule } from '@core/logger';
 import { AuthGuardModule, AuthGuardOptions, JWT_AUTH_GUARD_CONFIG_TOKEN, JwtAuthGuardConfig } from '@infra/auth-guard';
 import { ConfigurationModule } from '@infra/configuration';
+import { LoggerModule } from '@infra/logger';
 import { S3ClientModule } from '@infra/s3-client';
 import { HttpModule } from '@nestjs/axios';
 import { CacheInterceptor, CacheModule } from '@nestjs/cache-manager';

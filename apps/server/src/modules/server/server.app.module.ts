@@ -1,9 +1,8 @@
 import { CoreModule } from '@core/core.module';
-import { LoggerModule } from '@core/logger';
 import { AuthGuardModule, AuthGuardOptions, JWT_AUTH_GUARD_CONFIG_TOKEN, JwtAuthGuardConfig } from '@infra/auth-guard';
 import { ConfigurationModule } from '@infra/configuration';
 import { DATABASE_CONFIG_TOKEN, DatabaseConfig, DatabaseModule } from '@infra/database';
-import { RABBITMQ_CONFIG_TOKEN, RabbitMQConfig } from '@infra/rabbitmq';
+import { LoggerModule } from '@infra/logger';
 import { SCHULCONNEX_CLIENT_CONFIG_TOKEN, SchulconnexClientConfig } from '@infra/schulconnex-client';
 import { SchulconnexClientModule } from '@infra/schulconnex-client/schulconnex-client.module';
 import { AccountApiModule } from '@modules/account/account-api.module';
@@ -22,11 +21,6 @@ import { CollaborativeTextEditorApiModule } from '@modules/collaborative-text-ed
 import { COMMON_CARTRIDGE_PUBLIC_API_CONFIG_TOKEN, CommonCartridgePublicApiConfig } from '@modules/common-cartridge';
 import { CourseApiModule } from '@modules/course/course-api.module';
 import { DeletionPublicApiModule } from '@modules/deletion/deletion-public-api.module';
-import {
-	FILES_STORAGE_CLIENT_CONFIG_TOKEN,
-	FilesStorageClientConfig,
-	FilesStorageClientModule,
-} from '@modules/files-storage-client';
 import { FWU_PUBLIC_API_CONFIG_TOKEN, FwuPublicApiConfig } from '@modules/fwu-learning-contents';
 import { GroupApiModule } from '@modules/group/group-api.module';
 import { HelpdeskApiModule } from '@modules/helpdesk';
@@ -134,12 +128,6 @@ const serverModules = [
 	SchulconnexClientModule.register(SCHULCONNEX_CLIENT_CONFIG_TOKEN, SchulconnexClientConfig),
 	ImportUserModule,
 	LearnroomApiModule,
-	FilesStorageClientModule.register({
-		exchangeConfigConstructor: FilesStorageClientConfig,
-		exchangeConfigInjectionToken: FILES_STORAGE_CLIENT_CONFIG_TOKEN,
-		configInjectionToken: RABBITMQ_CONFIG_TOKEN,
-		configConstructor: RabbitMQConfig,
-	}),
 	SystemApiModule,
 	ServerMailModule,
 	VideoConferenceApiModule,

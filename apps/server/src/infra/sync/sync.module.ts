@@ -1,16 +1,16 @@
 import { ErrorModule } from '@core/error';
-import { LoggerModule } from '@core/logger';
 import { ConfigurationModule } from '@infra/configuration';
 import { ConsoleWriterModule } from '@infra/console';
+import { LoggerModule } from '@infra/logger';
 import { TSP_CLIENT_CONFIG_TOKEN, TspClientConfig } from '@infra/tsp-client';
 import { TspClientModule } from '@infra/tsp-client/tsp-client.module';
 import { AccountModule } from '@modules/account';
 import { LegacySchoolModule } from '@modules/legacy-school';
 import { ProvisioningModule } from '@modules/provisioning';
+import { ServerRuntimeConfigModule } from '@modules/runtime-config-api/server-runtime-config.module';
 import { SchoolModule } from '@modules/school';
 import { SystemModule } from '@modules/system';
 import { UserModule } from '@modules/user';
-import { ServerRuntimeConfigModule } from '@modules/runtime-config-api/server-runtime-config.module';
 import { Module } from '@nestjs/common';
 import { SyncConsole } from './console/sync.console';
 import { SYNC_ENCRYPTION_CONFIG_TOKEN, SyncEncryptionConfig } from './encryption.config';

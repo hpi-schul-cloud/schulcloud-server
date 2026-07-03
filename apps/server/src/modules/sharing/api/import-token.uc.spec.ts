@@ -1,7 +1,7 @@
-import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { StorageLocation } from '@infra/files-storage-client';
 import { roomFactory } from '@modules//room/testing';
+import { StorageLocation } from '@infra/files-storage-amqp-client';
+import { LegacyLogger } from '@infra/logger';
 import { AuthorizationService } from '@modules/authorization';
 import { BoardExternalReferenceType, BoardNodeService, ColumnBoardService } from '@modules/board';
 import { CopyCardParams, CopyColumnBoardParams } from '@modules/board/service/internal';

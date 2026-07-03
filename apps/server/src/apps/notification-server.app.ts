@@ -6,8 +6,7 @@ import { NestFactory } from '@nestjs/core';
 import { install as sourceMapInstall } from 'source-map-support';
 
 // application imports
-import { createRequestLoggerMiddleware, LegacyLogger, LoggerConfig } from '@core/logger';
-import { LOGGER_CONFIG_TOKEN } from '@core/logger/logger.config';
+import { createRequestLoggerMiddleware, LegacyLogger, LOGGER_CONFIG_TOKEN, LoggerConfig } from '@infra/logger';
 import { NotificationServerModule } from '@modules/notification/notification-server.app.module';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import { SwaggerDocumentOptions } from '@nestjs/swagger';

@@ -1,4 +1,4 @@
-import { Loggable, LogMessage } from '@core/logger';
+import { Loggable, LogMessage } from '@infra/logger';
 import { RuntimeConfigValueType } from '@infra/runtime-config';
 
 export class UpdateRuntimeConfigLoggable implements Loggable {

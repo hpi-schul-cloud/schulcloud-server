@@ -1,4 +1,4 @@
-import { Logger } from '@core/logger';
+import { Logger } from '@infra/logger';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { LegacySchoolDo } from '@modules/legacy-school/domain';
 import { SchoolFeature } from '@modules/school/domain';

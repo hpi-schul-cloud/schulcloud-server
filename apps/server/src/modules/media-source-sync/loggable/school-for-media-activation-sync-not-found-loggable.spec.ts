@@ -1,4 +1,4 @@
-import { LogMessage } from '@core/logger';
+import { LogMessage } from '@infra/logger';
 import { SchoolForMediaActivationSyncNotFoundLoggable } from './school-for-media-activation-sync-not-found-loggable';
 
 describe(SchoolForMediaActivationSyncNotFoundLoggable.name, () => {

@@ -1,4 +1,4 @@
-import { Logger } from '@core/logger';
+import { Logger } from '@infra/logger';
 import {
 	ModuleName,
 	SagaService,
@@ -11,9 +11,9 @@ import {
 	StepStatus,
 	UserDeletionStepOperationLoggable,
 } from '@modules/saga';
+import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { AccountService } from '../domain';
-import { Injectable } from '@nestjs/common';
 
 @Injectable()
 export class DeleteUserAccountDataStep extends SagaStep<'deleteUserData'> {

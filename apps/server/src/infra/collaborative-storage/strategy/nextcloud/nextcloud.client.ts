@@ -1,5 +1,4 @@
 import { ErrorUtils } from '@core/error/utils';
-import { LegacyLogger } from '@core/logger';
 import {
 	GroupUsers,
 	GroupfoldersCreated,
@@ -9,6 +8,7 @@ import {
 	OcsResponse,
 	SuccessfulRes,
 } from '@infra/collaborative-storage/strategy/nextcloud/nextcloud.interface';
+import { LegacyLogger } from '@infra/logger';
 import { HttpService } from '@nestjs/axios';
 import { Injectable, NotFoundException, NotImplementedException, UnprocessableEntityException } from '@nestjs/common';
 import { AxiosRequestConfig, AxiosResponse } from 'axios';

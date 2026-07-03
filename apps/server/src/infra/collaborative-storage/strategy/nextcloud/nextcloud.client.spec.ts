@@ -1,6 +1,6 @@
-import { LegacyLogger } from '@core/logger';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
 import { InternalCollaborativeStorageAdapterConfig } from '@infra/collaborative-storage/collaborative-storage-adapter.config';
+import { LegacyLogger } from '@infra/logger';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { HttpService } from '@nestjs/axios';
 import { NotFoundException, NotImplementedException, UnprocessableEntityException } from '@nestjs/common';

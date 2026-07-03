@@ -1,4 +1,3 @@
-import { Logger } from '@core/logger';
 import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import {
@@ -15,13 +14,14 @@ import {
 	RichTextElementContent,
 	SingleColumnBoardResponse,
 } from '@infra/common-cartridge-clients';
-import { fileRecordResponseFactory } from '@infra/files-storage-client/testing';
-import { FileDto, FileRecordParentType, FilesStorageClientAdapterService } from '@modules/files-storage-client';
+import { fileRecordResponseFactory } from '@infra/files-storage-rest-client/testing';
+import { Logger } from '@infra/logger';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import AdmZip from 'adm-zip';
-import { ArchiverError, ProgressData } from 'archiver';
-import { Readable } from 'stream';
+import { ArchiverError } from 'archiver';
+import { ObjectId } from 'bson';
+import { Readable } from 'node:stream';
 import { CommonCartridgeVersion } from '../export/common-cartridge.enums';
 import { CommonCartridgeMessageLoggable } from '../loggable/common-cartridge-message.loggable';
 import {
@@ -38,7 +38,6 @@ import {
 } from '../testing/common-cartridge-elements.factory';
 import { CommonCartridgeExportMapper } from './common-cartridge-export.mapper';
 import { CommonCartridgeExportService } from './common-cartridge-export.service';
-import { ObjectId } from 'bson';
 
 jest.mock('@infra/auth-guard', () => {
 	return {
@@ -139,19 +138,17 @@ describe('CommonCartridgeExportService', () => {
 	};
 
 	const setupFile = () => {
-		const fileDto: FileDto = new FileDto({
+		const fileDto = {
 			id: faker.string.uuid(),
 			name: faker.system.fileName(),
 			parentId: faker.string.uuid(),
-			parentType: FileRecordParentType.Course,
 			createdAt: faker.date.past(),
 			updatedAt: faker.date.recent(),
-		});
+		};
 		const fileRecord = fileRecordResponseFactory.build({
 			id: fileDto.id,
 			name: fileDto.name,
 			parentId: fileDto.parentId,
-			parentType: fileDto.parentType,
 		});
 
 		const file = Readable.from(faker.lorem.paragraphs(100));
@@ -168,10 +165,6 @@ describe('CommonCartridgeExportService', () => {
 			providers: [
 				CommonCartridgeExportService,
 				CommonCartridgeExportMapper,
-				{
-					provide: FilesStorageClientAdapterService,
-					useValue: createMock<FilesStorageClientAdapterService>(),
-				},
 				{
 					provide: BoardsClientAdapter,
 					useValue: createMock<BoardsClientAdapter>(),

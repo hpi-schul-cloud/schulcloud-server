@@ -1,4 +1,4 @@
-import { ErrorLogMessage } from '@core/logger';
+import { ErrorLogMessage } from '@infra/logger';
 import { BiloNotFoundResponseLoggableException } from './bilo-not-found-response.loggable-exception';
 
 describe(BiloNotFoundResponseLoggableException.name, () => {

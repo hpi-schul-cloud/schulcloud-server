@@ -1,5 +1,5 @@
-import { LoggerModule } from '@core/logger';
 import { ConfigurationModule } from '@infra/configuration';
+import { LoggerModule } from '@infra/logger';
 import { HttpModule } from '@nestjs/axios';
 import { DynamicModule, Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';

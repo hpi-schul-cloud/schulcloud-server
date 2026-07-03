@@ -1,5 +1,5 @@
-import { LoggerModule } from '@core/logger/logger.module';
 import { ConfigurationModule } from '@infra/configuration';
+import { LoggerModule } from '@infra/logger';
 import { AccountModule } from '@modules/account';
 import { RoleService } from '@modules/role';
 import { RoleRepo } from '@modules/role/repo';
@@ -10,8 +10,8 @@ import { ServerMailModule } from '@modules/serverDynamicModuleWrappers/server-ma
 import { UserModule } from '@modules/user';
 import { Module } from '@nestjs/common';
 import { RegistrationService } from './domain';
-import { RegistrationRepo } from './repo';
 import { REGISTRATION_CONFIG_TOKEN, RegistrationPublicApiConfig } from './registration.config';
+import { RegistrationRepo } from './repo';
 
 @Module({
 	imports: [

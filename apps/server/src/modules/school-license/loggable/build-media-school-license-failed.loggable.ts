@@ -1,4 +1,4 @@
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@core/logger';
+import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
 
 export class BuildMediaSchoolLicenseFailedLoggable implements Loggable {
 	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {

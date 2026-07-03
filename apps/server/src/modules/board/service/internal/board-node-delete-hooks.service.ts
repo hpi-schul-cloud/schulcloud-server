@@ -1,9 +1,9 @@
 import { DomainErrorHandler } from '@core/error';
+import { FilesStorageClientAdapterService } from '@infra/files-storage-amqp-client';
 import { H5pEditorProducer } from '@infra/h5p-editor-client';
 import { TldrawClientAdapter } from '@infra/tldraw-client';
 import { Utils } from '@mikro-orm/core';
 import { CollaborativeTextEditorService } from '@modules/collaborative-text-editor';
-import { FilesStorageClientAdapterService } from '@modules/files-storage-client';
 import { type ContextExternalTool } from '@modules/tool/context-external-tool/domain';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
 import { Injectable } from '@nestjs/common';

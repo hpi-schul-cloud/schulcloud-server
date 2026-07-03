@@ -1,4 +1,4 @@
-import { Logger } from '@core/logger';
+import { Logger } from '@infra/logger';
 import { FeathersAuthorizationService } from '@modules/authorization';
 import { Injectable } from '@nestjs/common';
 import { IFindOptions, Permission, SortOrder } from '@shared/domain/interface';

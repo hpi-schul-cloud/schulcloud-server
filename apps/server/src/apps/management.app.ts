@@ -4,7 +4,7 @@ import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter, NestExpressApplication } from '@nestjs/platform-express';
 import express from 'express';
 
-import { createRequestLoggerMiddleware, LegacyLogger, LOGGER_CONFIG_TOKEN, LoggerConfig } from '@core/logger';
+import { createRequestLoggerMiddleware, LegacyLogger, LOGGER_CONFIG_TOKEN, LoggerConfig } from '@infra/logger';
 import { MikroORM } from '@mikro-orm/core';
 import { ManagementServerModule } from '@modules/management/management-server.app.module';
 import { install as sourceMapInstall } from 'source-map-support';

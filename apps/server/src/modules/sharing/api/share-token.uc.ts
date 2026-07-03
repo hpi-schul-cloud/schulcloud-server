@@ -1,4 +1,4 @@
-import { LegacyLogger } from '@core/logger';
+import { LegacyLogger } from '@infra/logger';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import {
 	BoardExternalReferenceType,

@@ -1,4 +1,4 @@
-import { ErrorLogMessage } from '@core/logger';
+import { ErrorLogMessage } from '@infra/logger';
 import { BiloMediaQueryUnprocessableResponseLoggableException } from './bilo-media-query-unprocessable-response.loggable-exception';
 
 describe(BiloMediaQueryUnprocessableResponseLoggableException.name, () => {

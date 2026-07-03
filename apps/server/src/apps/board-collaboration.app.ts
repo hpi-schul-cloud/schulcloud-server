@@ -6,9 +6,8 @@ import { NestFactory } from '@nestjs/core';
 import { install as sourceMapInstall } from 'source-map-support';
 
 // application imports
-import { createRequestLoggerMiddleware, LegacyLogger, LoggerConfig } from '@core/logger';
-import { LOGGER_CONFIG_TOKEN } from '@core/logger/logger.config';
 import { DATABASE_CONFIG_TOKEN, InternalDatabaseConfig } from '@infra/database';
+import { createRequestLoggerMiddleware, LegacyLogger, LOGGER_CONFIG_TOKEN, LoggerConfig } from '@infra/logger';
 import { MongoIoAdapter } from '@infra/socketio';
 import { BoardCollaborationModule } from '@modules/board/board-collaboration.app.module';
 import { BOARD_CONFIG_TOKEN, BoardConfig } from '@modules/board/board.config';

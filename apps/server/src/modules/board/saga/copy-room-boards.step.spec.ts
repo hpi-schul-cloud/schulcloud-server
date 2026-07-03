@@ -1,14 +1,14 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
-import { Logger } from '@core/logger';
-import { SagaService } from '@modules/saga';
+import { Logger } from '@infra/logger';
+import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { RoomService } from '@modules/room';
-import { ColumnBoardService } from '../service';
-import { CopyRoomBoardsStep } from './copy-room-boards.step';
-import { CopyElementType, CopyHelperService, CopyStatusEnum, CopyStatus } from '@modules/copy-helper';
-import { columnBoardFactory } from '../testing';
 import { roomFactory } from '@modules/room/testing';
+import { SagaService } from '@modules/saga';
+import { Test, TestingModule } from '@nestjs/testing';
 import { BoardExternalReferenceType } from '../domain';
+import { ColumnBoardService } from '../service';
+import { columnBoardFactory } from '../testing';
+import { CopyRoomBoardsStep } from './copy-room-boards.step';
 
 describe('CopyRoomBoardsStep', () => {
 	let module: TestingModule;

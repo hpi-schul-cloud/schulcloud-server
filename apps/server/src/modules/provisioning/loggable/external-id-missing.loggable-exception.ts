@@ -1,4 +1,4 @@
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@core/logger';
+import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
 import { BadRequestException } from '@nestjs/common';
 
 export class ExternalIdMissingLoggableException extends BadRequestException implements Loggable {

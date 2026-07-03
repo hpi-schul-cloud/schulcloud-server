@@ -1,4 +1,4 @@
-import { ErrorLogMessage, Loggable } from '@core/logger';
+import { ErrorLogMessage, Loggable } from '@infra/logger';
 import { BadRequestException } from '@nestjs/common';
 
 export class BiloBadRequestResponseLoggableException extends BadRequestException implements Loggable {
