@@ -269,7 +269,6 @@ export class ImportTokenUC {
 			type: destinationBoard.context.type,
 		};
 
-		// Columns can only be imported into room boards, not course boards
 		if (targetExternalReference.type === BoardExternalReferenceType.Course) {
 			throw new ForbiddenException('Columns can not be imported into course boards');
 		}
