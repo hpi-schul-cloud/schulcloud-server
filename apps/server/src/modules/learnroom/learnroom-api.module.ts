@@ -1,9 +1,4 @@
 import { RegisterTimeoutConfig } from '@core/interceptor/register-timeout-config.decorator';
-import {
-	AUTHORIZATION_CLIENT_CONFIG_TOKEN,
-	AuthorizationClientConfig,
-	AuthorizationClientModule,
-} from '@infra/authorization-client';
 import { ConfigurationModule } from '@infra/configuration';
 import { AuthorizationModule } from '@modules/authorization';
 import { ClassModule } from '@modules/class';
@@ -42,7 +37,6 @@ import {
 		LessonModule,
 		CopyHelperModule,
 		LearnroomModule,
-		AuthorizationClientModule.register(AUTHORIZATION_CLIENT_CONFIG_TOKEN, AuthorizationClientConfig),
 		RoleModule,
 		SchoolModule,
 		GroupModule,
