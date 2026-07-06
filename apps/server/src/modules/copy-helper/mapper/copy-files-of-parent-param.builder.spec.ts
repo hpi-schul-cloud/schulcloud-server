@@ -1,21 +1,11 @@
-import { StorageLocation } from '@infra/files-storage-amqp-client';
+import { FileRecordParentType, StorageLocation } from '@infra/files-storage-amqp-client';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
-import { LessonEntity, Material } from '@modules/lesson/repo';
 import { lessonFactory } from '@modules/lesson/testing';
-import { Submission, Task } from '@modules/task/repo';
 import { taskFactory } from '@modules/task/testing';
-import { User } from '@modules/user/repo';
-import { setupEntities } from '@testing/database';
-import { FileParamBuilder } from '../../../modules/copy-helper/mapper/files-storage-param.builder';
-import { FileRecordParentType } from '../interfaces';
 import { CopyFilesOfParentParamBuilder } from './copy-files-of-parent-param.builder';
+import { FileParamBuilder } from './files-storage-param.builder';
 
 describe('CopyFilesOfParentParamBuilder', () => {
-	beforeAll(async () => {
-		await setupEntities([User, Task, Submission, LessonEntity, Material, CourseEntity, CourseGroupEntity]);
-	});
-
 	it('should build valid file request infos for task over shorthand task', () => {
 		const userId = new ObjectId().toHexString();
 		const sourceEntity = taskFactory.buildWithId({});

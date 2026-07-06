@@ -1,5 +1,5 @@
+import { CopyFilesRequestInfo, FileRequestInfo } from '@infra/files-storage-amqp-client';
 import { EntityId } from '@shared/domain/types';
-import { FileRequestInfo, CopyFilesRequestInfo } from '../interfaces';
 
 export class CopyFilesOfParentParamBuilder {
 	static build(userId: EntityId, source: FileRequestInfo, target: FileRequestInfo): CopyFilesRequestInfo {

@@ -2,6 +2,7 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { StorageLocation } from '@infra/files-storage-amqp-client';
 import { LegacyLogger } from '@infra/logger';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { CopyFilesOfParentParamBuilder } from '@modules/copy-helper/mapper/copy-files-of-parent-param.builder';
 import { FileParamBuilder } from '@modules/copy-helper/mapper/files-storage-param.builder';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { LessonEntity, Material } from '@modules/lesson/repo';
@@ -13,7 +14,6 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { FileRecordParentType } from '../interfaces';
 import { FilesStorageClientMapper } from '../mapper';
-import { CopyFilesOfParentParamBuilder } from '../mapper/copy-files-of-parent-param.builder';
 import { FilesStorageClientAdapterService } from './files-storage-client.service';
 import { FilesStorageProducer } from './files-storage.producer';
 
