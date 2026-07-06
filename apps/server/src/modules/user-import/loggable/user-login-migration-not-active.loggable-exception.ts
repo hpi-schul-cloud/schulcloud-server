@@ -1,5 +1,5 @@
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
 import { UnprocessableEntityException } from '@nestjs/common';
+import { Loggable, LoggableMessage } from '@shared/common/loggable';
 import { EntityId } from '@shared/domain/types';
 
 export class UserLoginMigrationNotActiveLoggableException extends UnprocessableEntityException implements Loggable {
@@ -7,7 +7,7 @@ export class UserLoginMigrationNotActiveLoggableException extends UnprocessableE
 		super();
 	}
 
-	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	getLogMessage(): LoggableMessage {
 		return {
 			type: 'USER_LOGIN_MIGRATION_NOT_ACTIVE',
 			message: 'The user login migration for this school is not active. It is either not started yet or already closed',

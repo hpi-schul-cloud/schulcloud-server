@@ -1,5 +1,5 @@
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
 import { BadRequestException } from '@nestjs/common';
+import { Loggable, LoggableMessage } from '@shared/common/loggable';
 
 export class MediumBadRequestLoggableException extends BadRequestException implements Loggable {
 	constructor(
@@ -9,7 +9,7 @@ export class MediumBadRequestLoggableException extends BadRequestException imple
 		super();
 	}
 
-	public getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			message: `Media provider responded with bad request response.`,
 			data: {

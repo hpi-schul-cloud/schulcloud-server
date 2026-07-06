@@ -1,5 +1,5 @@
-import { ErrorLogMessage, Loggable } from '@infra/logger';
 import { UnprocessableEntityException } from '@nestjs/common';
+import { Loggable, LoggableMessage } from '@shared/common/loggable';
 import { School } from '../do';
 
 export class SchoolInUserMigrationLoggableException extends UnprocessableEntityException implements Loggable {
@@ -7,7 +7,7 @@ export class SchoolInUserMigrationLoggableException extends UnprocessableEntityE
 		super('School year change unavailable while in user migration');
 	}
 
-	public getLogMessage(): ErrorLogMessage {
+	public getLogMessage(): LoggableMessage {
 		const message = {
 			type: 'SCHOOL_IN_USER_MIGRATION',
 			message: this.message,

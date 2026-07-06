@@ -1,5 +1,5 @@
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
 import { UnprocessableEntityException } from '@nestjs/common';
+import { Loggable, LoggableMessage } from '@shared/common/loggable';
 
 export class MediumUnprocessableResponseLoggableException extends UnprocessableEntityException implements Loggable {
 	constructor(
@@ -9,7 +9,7 @@ export class MediumUnprocessableResponseLoggableException extends UnprocessableE
 		super();
 	}
 
-	public getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			message: `Media provider responded with unprocessable response.`,
 			data: {

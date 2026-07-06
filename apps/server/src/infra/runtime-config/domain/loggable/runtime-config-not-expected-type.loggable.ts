@@ -1,6 +1,5 @@
 import { InternalServerErrorException } from '@nestjs/common';
-import { ErrorLogMessage } from '@shared/common/error';
-import { Loggable } from '@shared/common/loggable';
+import { Loggable, LoggableMessage } from '@shared/common/loggable';
 import type { RuntimeConfigType, RuntimeConfigValue } from '../runtime-config-value.do';
 
 export class RuntimeConfigValueNotExpectedType extends InternalServerErrorException implements Loggable {
@@ -12,7 +11,7 @@ export class RuntimeConfigValueNotExpectedType extends InternalServerErrorExcept
 	}
 
 	/* istanbul ignore next */
-	public getLogMessage(): ErrorLogMessage {
+	public getLogMessage(): LoggableMessage {
 		const message = {
 			message: this.message,
 			expectedType: this.expectedType,

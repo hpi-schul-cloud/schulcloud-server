@@ -1,8 +1,8 @@
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
 import { InternalServerErrorException } from '@nestjs/common';
+import { Loggable, LoggableMessage } from '@shared/common/loggable';
 
 export class AdminApiSchoolCreateNoIdErrorLoggable extends InternalServerErrorException implements Loggable {
-	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	getLogMessage(): LoggableMessage {
 		/* istanbul ignore next */
 		return {
 			type: 'ADMIN_API_CREATED_SCHOOL_HAS_NO_ID',

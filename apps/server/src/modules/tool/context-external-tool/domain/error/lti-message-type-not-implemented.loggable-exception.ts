@@ -1,13 +1,13 @@
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
 import { NotImplementedException } from '@nestjs/common';
+import { Loggable, LoggableMessage } from '@shared/common/loggable';
 
 export class LtiMessageTypeNotImplementedLoggableException extends NotImplementedException implements Loggable {
 	constructor(private readonly ltiMessageType: string) {
 		super();
 	}
 
-	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
-		const message: LogMessage | ErrorLogMessage | ValidationErrorLogMessage = {
+	getLogMessage(): LoggableMessage {
+		const message: LoggableMessage = {
 			type: 'LTI_MESSAGE_TYPE_NOT_IMPLEMENTED',
 			message: 'The lti message type is not implemented.',
 			stack: this.stack,

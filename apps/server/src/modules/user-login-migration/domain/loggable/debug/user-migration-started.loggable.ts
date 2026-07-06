@@ -1,4 +1,4 @@
-import { Loggable, LogMessage } from '@infra/logger';
+import { Loggable, LoggableMessage } from '@shared/common/loggable';
 import { EntityId } from '@shared/domain/types';
 import { UserLoginMigrationDO } from '../../do';
 
@@ -8,7 +8,7 @@ export class UserMigrationStartedLoggable implements Loggable {
 		private readonly userLoginMigration: UserLoginMigrationDO
 	) {}
 
-	getLogMessage(): LogMessage {
+	getLogMessage(): LoggableMessage {
 		return {
 			message: 'A user started the user login migration.',
 			data: {

@@ -1,5 +1,5 @@
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
 import { UnprocessableEntityException } from '@nestjs/common';
+import { Loggable, LoggableMessage } from '@shared/common/loggable';
 import { EntityId } from '@shared/domain/types';
 
 export class UserLoginMigrationAlreadyClosedLoggableException extends UnprocessableEntityException implements Loggable {
@@ -10,7 +10,7 @@ export class UserLoginMigrationAlreadyClosedLoggableException extends Unprocessa
 		super();
 	}
 
-	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	getLogMessage(): LoggableMessage {
 		return {
 			type: 'USER_LOGIN_MIGRATION_ALREADY_CLOSED',
 			message: 'Migration of school cannot be started or changed, because it is already closed.',

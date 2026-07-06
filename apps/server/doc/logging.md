@@ -10,7 +10,7 @@ The message should be fixed in each loggable. If you want to log further data, p
 export class YourLoggable implements Loggable {
 	constructor(private readonly userId: EntityId) {}
 
-	getLogMessage(): LogMessage {
+	getLogMessage(): LoggableMessage {
 		return {
 			message: 'I am a log message.',
 			data: { userId: this.userId, },

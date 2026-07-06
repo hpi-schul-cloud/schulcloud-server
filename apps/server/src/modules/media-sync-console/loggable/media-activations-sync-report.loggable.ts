@@ -1,6 +1,6 @@
-import { LogMessage } from '@infra/logger';
 import { MediaSourceDataFormat } from '@modules/media-source';
 import { MediaSourceSyncReport } from '@modules/media-source-sync';
+import { LoggableMessage } from '@shared/common/loggable';
 
 export class MediaActivationsSyncReportLoggable {
 	constructor(
@@ -8,7 +8,7 @@ export class MediaActivationsSyncReportLoggable {
 		private readonly mediaSourceDataFormat: MediaSourceDataFormat
 	) {}
 
-	public getLogMessage(): LogMessage {
+	public getLogMessage(): LoggableMessage {
 		const message = `Media activations sync for ${this.mediaSourceDataFormat} had finished with ${this.report.successCount} activations synced.`;
 
 		return {
