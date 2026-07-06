@@ -1,5 +1,5 @@
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
 import { UnprocessableEntityException } from '@nestjs/common';
+import { Loggable, LoggableMessage } from '@shared/common/loggable';
 import { EntityId } from '@shared/domain/types';
 import { type AnyProvisioningOptions } from '../domain';
 
@@ -12,7 +12,7 @@ export class ProvisioningOptionsInvalidTypeLoggableException extends Unprocessab
 		super();
 	}
 
-	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	getLogMessage(): LoggableMessage {
 		return {
 			type: 'PROVISIONING_OPTIONS_INVALID_TYPE',
 			message: 'The provisioning options are not of the expected type.',

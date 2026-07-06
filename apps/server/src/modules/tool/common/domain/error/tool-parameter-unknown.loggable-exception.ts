@@ -1,6 +1,6 @@
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
 import { HttpStatus } from '@nestjs/common';
 import { BusinessError } from '@shared/common/error';
+import { Loggable, LoggableMessage } from '@shared/common/loggable';
 import { EntityId } from '@shared/domain/types';
 import { CustomParameterEntry } from '../custom-parameter-entry.do';
 
@@ -23,7 +23,7 @@ export class ToolParameterUnknownLoggableException extends BusinessError impleme
 		);
 	}
 
-	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	getLogMessage(): LoggableMessage {
 		return {
 			type: this.type,
 			message: this.message,

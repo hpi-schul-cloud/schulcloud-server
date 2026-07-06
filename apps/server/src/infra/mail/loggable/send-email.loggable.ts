@@ -1,5 +1,5 @@
 /* Istanbul ignore file */
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
+import { Loggable, LoggableMessage } from '@shared/common/loggable';
 
 export class SendEmailLoggable implements Loggable {
 	constructor(
@@ -10,7 +10,7 @@ export class SendEmailLoggable implements Loggable {
 		public readonly attachments: boolean
 	) {}
 
-	public getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			message: 'Email sent successfully',
 			data: {

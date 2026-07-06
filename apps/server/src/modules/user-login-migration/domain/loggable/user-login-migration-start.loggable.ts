@@ -1,4 +1,4 @@
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
+import { Loggable, LoggableMessage } from '@shared/common/loggable';
 import { EntityId } from '@shared/domain/types';
 
 export class UserLoginMigrationStartLoggable implements Loggable {
@@ -7,7 +7,7 @@ export class UserLoginMigrationStartLoggable implements Loggable {
 		private readonly userLoginMigrationId: EntityId | undefined
 	) {}
 
-	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	getLogMessage(): LoggableMessage {
 		return {
 			message: 'The school administrator started the migration for his school.',
 			data: {

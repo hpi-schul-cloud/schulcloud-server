@@ -1,8 +1,8 @@
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
 import { InternalServerErrorException } from '@nestjs/common';
+import { Loggable, LoggableMessage } from '@shared/common/loggable';
 
 export class InstanceNotIdentifiableLoggableException extends InternalServerErrorException implements Loggable {
-	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	getLogMessage(): LoggableMessage {
 		return {
 			type: 'INSTANCE_NOT_IDENTIFIABLE',
 			stack: this.stack,

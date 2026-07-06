@@ -1,9 +1,9 @@
-import { Loggable, LogMessage } from '@infra/logger';
+import { Loggable, LoggableMessage } from '@shared/common/loggable';
 
 export class LdapSyncStartedLoggable implements Loggable {
 	constructor(private readonly forceFullSync: boolean) {}
 
-	public getLogMessage(): LogMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			message: `Starting LDAP sync`,
 			data: {
@@ -14,7 +14,7 @@ export class LdapSyncStartedLoggable implements Loggable {
 }
 
 export class LdapSyncExecutingLoggable implements Loggable {
-	public getLogMessage(): LogMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			message: 'Executing LDAP sync...',
 		};
@@ -29,7 +29,7 @@ interface SyncStats {
 export class LdapSyncCompletedLoggable implements Loggable {
 	constructor(private readonly stats: SyncStats) {}
 
-	public getLogMessage(): LogMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			message: `LDAP sync completed`,
 			data: {

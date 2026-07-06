@@ -1,5 +1,5 @@
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
 import { UnprocessableEntityException } from '@nestjs/common';
+import { Loggable, LoggableMessage } from '@shared/common/loggable';
 import { ToolConfigType } from '../../../common/enum';
 
 export class InvalidToolTypeLoggableException extends UnprocessableEntityException implements Loggable {
@@ -10,8 +10,8 @@ export class InvalidToolTypeLoggableException extends UnprocessableEntityExcepti
 		super();
 	}
 
-	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
-		const message: LogMessage | ErrorLogMessage | ValidationErrorLogMessage = {
+	getLogMessage(): LoggableMessage {
+		const message: LoggableMessage = {
 			type: 'INVALID_TOOL_TYPE',
 			message: 'The external tool has the wrong tool type.',
 			stack: this.stack,

@@ -1,5 +1,5 @@
-import { Loggable, LogMessage } from '@infra/logger';
 import { RuntimeConfigValueType } from '@infra/runtime-config';
+import { Loggable, LoggableMessage } from '@shared/common/loggable';
 
 export class UpdateRuntimeConfigLoggable implements Loggable {
 	constructor(
@@ -9,7 +9,7 @@ export class UpdateRuntimeConfigLoggable implements Loggable {
 		private readonly persistedValue: RuntimeConfigValueType
 	) {}
 
-	public getLogMessage(): LogMessage {
+	public getLogMessage(): LoggableMessage {
 		const message = {
 			message: `Runtime config updated`,
 			data: { userId: this.userId, key: this.key, givenValue: this.givenValue, persistedValue: this.persistedValue },
