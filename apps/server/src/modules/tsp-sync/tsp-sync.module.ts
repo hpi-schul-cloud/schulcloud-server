@@ -1,6 +1,6 @@
-import { ErrorModule } from '@core/error';
 import { ConfigurationModule } from '@infra/configuration';
 import { ConsoleWriterModule } from '@infra/console';
+import { ErrorModule } from '@infra/error';
 import { LoggerModule } from '@infra/logger';
 import { TSP_CLIENT_CONFIG_TOKEN, TspClientConfig } from '@infra/tsp-client';
 import { TspClientModule } from '@infra/tsp-client/tsp-client.module';

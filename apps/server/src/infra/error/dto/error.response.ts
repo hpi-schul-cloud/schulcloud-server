@@ -1,9 +1,10 @@
 import { HttpStatus } from '@nestjs/common';
+import { InternalErrorResponse } from '@shared/common/error';
 
 /**
  * HTTP response definition for errors.
  */
-export class ErrorResponse {
+export class ErrorResponse implements InternalErrorResponse {
 	/**
 	 * Unambiguous error identifier, format: UPPERCASE_SNAKE_CASE
 	 */

@@ -1,6 +1,6 @@
-import { AxiosErrorLoggable } from '@core/error/loggable';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { DefaultEncryptionService, EncryptionService, SymmetricKeyEncryptionService } from '@infra/encryption';
+import { AxiosErrorLoggable } from '@infra/error';
 import {
 	Configuration,
 	IDMBetreiberApiFactory,
