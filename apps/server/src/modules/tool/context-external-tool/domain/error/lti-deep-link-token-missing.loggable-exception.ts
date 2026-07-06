@@ -1,5 +1,5 @@
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
 import { UnauthorizedException } from '@nestjs/common';
+import { Loggable, LoggableMessage } from '@shared/common/loggable';
 import { EntityId } from '@shared/domain/types';
 
 export class LtiDeepLinkTokenMissingLoggableException extends UnauthorizedException implements Loggable {
@@ -10,8 +10,8 @@ export class LtiDeepLinkTokenMissingLoggableException extends UnauthorizedExcept
 		super();
 	}
 
-	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
-		const message: LogMessage | ErrorLogMessage | ValidationErrorLogMessage = {
+	getLogMessage(): LoggableMessage {
+		const message: LoggableMessage = {
 			type: 'UNAUTHORIZED_EXCEPTION',
 			message: 'Unable to find lti deep link token for this state. It might have expired.',
 			stack: this.stack,

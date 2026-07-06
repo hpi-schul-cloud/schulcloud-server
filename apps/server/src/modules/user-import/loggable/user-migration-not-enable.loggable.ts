@@ -1,7 +1,7 @@
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
+import { Loggable, LoggableMessage } from '@shared/common/loggable';
 
 export class UserMigrationIsNotEnabled implements Loggable {
-	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	getLogMessage(): LoggableMessage {
 		return {
 			message: 'Feature flag of user migration may be disable or the school is not an LDAP pilot',
 		};

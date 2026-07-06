@@ -1,12 +1,12 @@
 import { ErrorLogMessage, ValidationErrorLogMessage } from '../error';
 
-type LogMessageDataObject = {
+export type LogMessageDataObject = {
 	[key: string]: LogMessageData;
 };
 
-type LogMessageData = LogMessageDataObject | string | number | boolean | undefined;
+export type LogMessageData = LogMessageDataObject | string | number | boolean | undefined;
 
-type LogMessage = {
+export type LogMessage = {
 	message: string;
 	data?: LogMessageData;
 };

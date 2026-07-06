@@ -1,10 +1,10 @@
-import { Loggable, LogMessage } from '@infra/logger';
+import { Loggable, LoggableMessage } from '@shared/common/loggable';
 
 export class TspSyncedUsersLoggable implements Loggable {
 	constructor(private readonly syncedUsers: number) {}
 
-	public getLogMessage(): LogMessage {
-		const message: LogMessage = {
+	public getLogMessage(): LoggableMessage {
+		const message: LoggableMessage = {
 			message: `Synced ${this.syncedUsers} users from TSP.`,
 			data: {
 				syncedUsers: this.syncedUsers,

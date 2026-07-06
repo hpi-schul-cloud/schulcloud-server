@@ -1,5 +1,5 @@
-import { Loggable, LogMessage } from '@infra/logger';
 import { LegacySchoolDo } from '@modules/legacy-school/domain';
+import { Loggable, LoggableMessage } from '@shared/common/loggable';
 import { UserLoginMigrationDO } from '../../do';
 
 export class SchoolMigrationSuccessfulLoggable implements Loggable {
@@ -8,7 +8,7 @@ export class SchoolMigrationSuccessfulLoggable implements Loggable {
 		private readonly userLoginMigration: UserLoginMigrationDO
 	) {}
 
-	getLogMessage(): LogMessage {
+	getLogMessage(): LoggableMessage {
 		return {
 			message: 'A school has successfully migrated.',
 			data: {

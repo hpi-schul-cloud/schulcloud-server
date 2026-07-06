@@ -1,8 +1,8 @@
-import { LogMessage } from '@infra/logger';
+import { Loggable, LogMessage } from '@shared/common/loggable';
 import { EntityId } from '@shared/domain/types';
 import { UserLoginMigrationDO } from '../../do';
 
-export class UserMigrationCorrectionSuccessfulLoggable {
+export class UserMigrationCorrectionSuccessfulLoggable implements Loggable {
 	constructor(
 		private readonly userId: EntityId,
 		private readonly userLoginMigration: UserLoginMigrationDO

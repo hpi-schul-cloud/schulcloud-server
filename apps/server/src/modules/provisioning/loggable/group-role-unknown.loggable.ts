@@ -1,10 +1,10 @@
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
 import { SchulconnexSonstigeGruppenzugehoerigeResponse } from '@infra/schulconnex-client';
+import { Loggable, LoggableMessage } from '@shared/common/loggable';
 
 export class GroupRoleUnknownLoggable implements Loggable {
 	constructor(private readonly relation: SchulconnexSonstigeGruppenzugehoerigeResponse) {}
 
-	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	getLogMessage(): LoggableMessage {
 		return {
 			message: 'Unable to add unknown user to group during provisioning.',
 			data: {
