@@ -5,14 +5,14 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { BusinessError } from '@shared/common/error';
 import { Loggable, LoggableMessage } from '@shared/common/loggable';
 import { AxiosError } from 'axios';
-import util from 'util';
+import util from 'node:util';
 import { AxiosErrorLoggable } from '../loggable';
 import { ErrorLoggable } from '../loggable/error.loggable';
 import { ErrorUtils } from '../utils';
 import { DomainErrorHandler } from './domain-error-handler';
 
 class SampleLoggableException extends BadRequestException implements Loggable {
-	constructor(private testData: string) {
+	constructor(private readonly testData: string) {
 		super();
 	}
 

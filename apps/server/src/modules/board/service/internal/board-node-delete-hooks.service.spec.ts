@@ -1,5 +1,5 @@
-import { DomainErrorHandler } from '@core/error';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { DomainErrorHandler } from '@infra/error';
 import { FilesStorageClientAdapterService } from '@infra/files-storage-amqp-client';
 import { H5pEditorProducer } from '@infra/h5p-editor-client';
 import { TldrawClientAdapter } from '@infra/tldraw-client';

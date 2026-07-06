@@ -1,5 +1,5 @@
-import { DomainErrorHandler } from '@core/error';
 import { createMock } from '@golevelup/ts-jest';
+import { DomainErrorHandler } from '@infra/error';
 import { Logger } from '@infra/logger';
 import Valkey from 'iovalkey';
 import * as util from 'node:util';

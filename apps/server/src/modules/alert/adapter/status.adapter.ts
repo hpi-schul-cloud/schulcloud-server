@@ -1,4 +1,4 @@
-import { ErrorUtils } from '@core/error/utils';
+import { ErrorUtils } from '@infra/error';
 import { HttpService } from '@nestjs/axios';
 import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { firstValueFrom } from 'rxjs';
