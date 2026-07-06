@@ -1,5 +1,5 @@
-import { ErrorLoggable } from '@core/error/loggable';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ErrorLoggable } from '@infra/error';
 import { Logger } from '@infra/logger';
 import { accountDoFactory } from '@modules/account/testing';
 import { systemFactory } from '@modules/system/testing';

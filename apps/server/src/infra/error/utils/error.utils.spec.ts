@@ -27,7 +27,7 @@ describe('ErrorUtils', () => {
 		});
 
 		it('should return true if error is not FeathersError', () => {
-			const error = new Error();
+			const error = new Error('test message');
 
 			const result = ErrorUtils.isFeathersError(error);
 
@@ -45,7 +45,7 @@ describe('ErrorUtils', () => {
 		});
 
 		it('should return true if error is not BusinessError', () => {
-			const error = new Error();
+			const error = new Error('test message');
 
 			const result = ErrorUtils.isBusinessError(error);
 
@@ -63,7 +63,7 @@ describe('ErrorUtils', () => {
 		});
 
 		it('should return true if error is not NestHttpException', () => {
-			const error = new Error();
+			const error = new Error('test message');
 
 			const result = ErrorUtils.isNestHttpException(error);
 

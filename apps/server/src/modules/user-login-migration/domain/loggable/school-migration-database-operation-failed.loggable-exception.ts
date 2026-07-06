@@ -1,4 +1,4 @@
-import { ErrorUtils } from '@core/error/utils';
+import { ErrorUtils } from '@infra/error';
 import { LegacySchoolDo } from '@modules/legacy-school/domain';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Loggable, LoggableMessage } from '@shared/common/loggable';

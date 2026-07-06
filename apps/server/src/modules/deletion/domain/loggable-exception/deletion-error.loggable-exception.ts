@@ -1,4 +1,4 @@
-import { AxiosErrorLoggable } from '@core/error/loggable';
+import { AxiosErrorLoggable } from '@infra/error';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Loggable, LoggableMessage } from '@shared/common/loggable';
 import { isAxiosError } from 'axios';
