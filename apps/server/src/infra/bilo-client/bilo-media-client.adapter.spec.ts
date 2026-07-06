@@ -3,17 +3,17 @@ import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { DefaultEncryptionService, EncryptionService, SymmetricKeyEncryptionService } from '@infra/encryption';
 import { Logger } from '@infra/logger';
 import {
+	ClientCredentialsGrantTokenRequest,
+	OauthAdapterService,
+	OAuthGrantType,
+	OAuthTokenDto,
+} from '@infra/oauth-adapter';
+import {
 	MediaSource,
 	MediaSourceDataFormat,
 	MediaSourceOauthConfigNotFoundLoggableException,
 } from '@modules/media-source';
 import { mediaSourceFactory } from '@modules/media-source/testing';
-import {
-	ClientCredentialsGrantTokenRequest,
-	OauthAdapterService,
-	OAuthGrantType,
-	OAuthTokenDto,
-} from '@modules/oauth-adapter';
 import { HttpService } from '@nestjs/axios';
 import { Test, TestingModule } from '@nestjs/testing';
 import { axiosErrorFactory } from '@testing/factory/axios-error.factory';

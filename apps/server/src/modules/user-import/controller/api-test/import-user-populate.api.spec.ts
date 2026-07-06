@@ -1,8 +1,8 @@
+import { OauthTokenResponse } from '@infra/oauth-adapter';
 import { SchulconnexResponse } from '@infra/schulconnex-client';
 import { schulconnexResponseFactory } from '@infra/schulconnex-client/testing';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { accountFactory } from '@modules/account/testing';
-import { OauthTokenResponse } from '@modules/oauth-adapter';
 import { RoleName } from '@modules/role';
 import { roleFactory } from '@modules/role/testing';
 import { SchoolFeature } from '@modules/school/domain';

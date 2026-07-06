@@ -4,7 +4,7 @@ import {
 	OauthAdapterService,
 	OAuthGrantType,
 	OAuthTokenDto,
-} from '@modules/oauth-adapter';
+} from '@infra/oauth-adapter';
 import { HttpService } from '@nestjs/axios';
 import { Inject } from '@nestjs/common';
 import { AxiosResponse } from 'axios';

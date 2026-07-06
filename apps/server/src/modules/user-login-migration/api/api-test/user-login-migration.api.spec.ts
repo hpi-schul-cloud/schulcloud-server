@@ -1,7 +1,7 @@
 import { ErrorResponse } from '@core/error/dto';
+import { OauthTokenResponse } from '@infra/oauth-adapter';
 import { SchulconnexResponse, SchulconnexRole } from '@infra/schulconnex-client';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { OauthTokenResponse } from '@modules/oauth-adapter';
 import { SchoolEntity } from '@modules/school/repo';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';

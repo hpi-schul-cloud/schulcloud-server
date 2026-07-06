@@ -1,11 +1,11 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { DefaultEncryptionService, EncryptionService, SymmetricKeyEncryptionService } from '@infra/encryption';
 import { LegacyLogger } from '@infra/logger';
+import { OauthAdapterService, OAuthTokenDto } from '@infra/oauth-adapter';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ErwinIdentifier, ErwinIdentifierService, ReferencedEntityType } from '@modules/erwin-identifier';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
-import { OauthAdapterService, OAuthTokenDto } from '@modules/oauth-adapter';
 import { ProvisioningService } from '@modules/provisioning';
 import { OauthDataDto } from '@modules/provisioning/dto';
 import { SchoolFeature } from '@modules/school/domain';

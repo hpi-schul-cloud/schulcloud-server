@@ -2,17 +2,17 @@ import { AxiosErrorLoggable } from '@core/error/loggable';
 import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { Logger } from '@infra/logger';
 import {
+	ClientCredentialsGrantTokenRequest,
+	OauthAdapterService,
+	OAuthGrantType,
+	OAuthTokenDto,
+} from '@infra/oauth-adapter';
+import {
 	MediaSource,
 	MediaSourceDataFormat,
 	MediaSourceOauthConfig,
 	MediaSourceOauthConfigNotFoundLoggableException,
 } from '@modules/media-source';
-import {
-	ClientCredentialsGrantTokenRequest,
-	OauthAdapterService,
-	OAuthGrantType,
-	OAuthTokenDto,
-} from '@modules/oauth-adapter';
 import { HttpService } from '@nestjs/axios';
 import { Inject, Injectable } from '@nestjs/common';
 import { AxiosResponse, isAxiosError } from 'axios';

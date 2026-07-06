@@ -1,8 +1,8 @@
+import { OauthTokenResponse } from '@infra/oauth-adapter';
 import { EntityManager } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountEntity } from '@modules/account/repo';
 import { accountFactory, defaultTestPassword } from '@modules/account/testing';
-import { OauthTokenResponse } from '@modules/oauth-adapter';
 import { RoleName } from '@modules/role';
 import { roleFactory } from '@modules/role/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
