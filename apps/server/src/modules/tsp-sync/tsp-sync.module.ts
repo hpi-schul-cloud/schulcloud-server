@@ -22,7 +22,6 @@ import { TspSyncStrategy } from './strategy/tsp/tsp-sync.strategy';
 import { SYNC_CONFIG_TOKEN, SyncConfig } from './sync.config';
 import { SyncUc } from './uc/sync.uc';
 
-// TODO: This is NOT an @infra module, as it depends on other @modules modules. Needs to be moved!!!
 @Module({
 	imports: [
 		LoggerModule,
@@ -50,4 +49,4 @@ import { SyncUc } from './uc/sync.uc';
 	providers: [SyncConsole, SyncUc, SyncService, TspSyncStrategy, TspSchoolService, TspOauthDataMapper, TspFetchService],
 	exports: [SyncConsole],
 })
-export class SyncModule {}
+export class TspSyncModule {}

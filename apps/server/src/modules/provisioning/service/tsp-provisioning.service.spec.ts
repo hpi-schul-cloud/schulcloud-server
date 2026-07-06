@@ -1,7 +1,6 @@
 import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Logger } from '@infra/logger';
-import { TspUserInfo } from '@infra/sync';
 import { AccountService } from '@modules/account';
 import { accountDoFactory } from '@modules/account/testing';
 import { ClassService, ClassSourceOptions } from '@modules/class';
@@ -10,6 +9,7 @@ import { RoleName, RoleService } from '@modules/role';
 import { roleDtoFactory, roleFactory } from '@modules/role/testing';
 import { SchoolService } from '@modules/school';
 import { schoolFactory } from '@modules/school/testing';
+import { TspUserInfo } from '@modules/tsp-sync';
 import { ParentConsent, UserConsent, UserService } from '@modules/user';
 import { userDoFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
