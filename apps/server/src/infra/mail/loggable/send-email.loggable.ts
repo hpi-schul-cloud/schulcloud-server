@@ -1,5 +1,5 @@
 /* Istanbul ignore file */
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@core/logger';
+import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
 
 export class SendEmailLoggable implements Loggable {
 	constructor(

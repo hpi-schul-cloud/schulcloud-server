@@ -1,6 +1,6 @@
 import { AxiosErrorLoggable } from '@core/error/loggable';
-import { Logger } from '@core/logger';
 import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
+import { Logger } from '@infra/logger';
 import {
 	MediaSource,
 	MediaSourceDataFormat,

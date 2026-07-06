@@ -1,5 +1,5 @@
-import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Logger } from '@infra/logger';
 import { Test, TestingModule } from '@nestjs/testing';
 import { RegistrationPinService } from '.';
 import { registrationPinEntityFactory } from '../entity/testing';

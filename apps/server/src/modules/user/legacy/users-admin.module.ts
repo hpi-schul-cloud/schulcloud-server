@@ -1,4 +1,4 @@
-import { LoggerModule } from '@core/logger';
+import { LoggerModule } from '@infra/logger';
 import { Module } from '@nestjs/common';
 import { UserModule } from '../user.module';
 import { UsersAdminRepo } from './repo';

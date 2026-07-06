@@ -1,4 +1,4 @@
-import { Logger } from '@core/logger';
+import { Logger } from '@infra/logger';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { Action, AuthorizationService } from '../../../authorization';

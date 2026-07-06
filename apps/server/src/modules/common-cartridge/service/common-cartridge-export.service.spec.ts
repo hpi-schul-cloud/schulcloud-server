@@ -1,4 +1,3 @@
-import { Logger } from '@core/logger';
 import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import {
@@ -16,6 +15,7 @@ import {
 	SingleColumnBoardResponse,
 } from '@infra/common-cartridge-clients';
 import { fileRecordResponseFactory } from '@infra/files-storage-rest-client/testing';
+import { Logger } from '@infra/logger';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import AdmZip from 'adm-zip';

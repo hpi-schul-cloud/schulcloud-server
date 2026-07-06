@@ -1,5 +1,5 @@
-import { LoggerModule } from '@core/logger';
 import { ConfigurationModule } from '@infra/configuration';
+import { LoggerModule } from '@infra/logger';
 import { Module } from '@nestjs/common';
 import { MetricsController } from './api/metrics.controller';
 import { MetricConfig, METRICS_CONFIG_TOKEN } from './metrics.config';

@@ -1,4 +1,4 @@
-import { Logger } from '@core/logger';
+import { Logger } from '@infra/logger';
 import { type RoleDto, RoleName, RoleService } from '@modules/role';
 import type { SchoolEntity } from '@modules/school/repo';
 import { BadRequestException, Inject, Injectable } from '@nestjs/common';

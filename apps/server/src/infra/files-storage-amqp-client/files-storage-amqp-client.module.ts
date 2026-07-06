@@ -1,6 +1,6 @@
-import { LegacyLogger, LoggerModule } from '@core/logger';
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { ConfigurationModule } from '@infra/configuration';
+import { LegacyLogger, LoggerModule } from '@infra/logger';
 import { RabbitMQModuleOptions, RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { SagaModule } from '@modules/saga';
 import { DynamicModule, Module } from '@nestjs/common';

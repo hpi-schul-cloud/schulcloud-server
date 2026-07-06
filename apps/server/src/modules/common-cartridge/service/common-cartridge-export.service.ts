@@ -1,4 +1,3 @@
-import { Logger } from '@core/logger';
 import { JwtPayloadVo } from '@infra/auth-guard';
 import {
 	BoardColumnBoardResponse,
@@ -25,6 +24,7 @@ import {
 	RichTextElementResponse,
 	StorageLocation,
 } from '@infra/common-cartridge-clients';
+import { Logger } from '@infra/logger';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import archiver from 'archiver';
 import { Stream } from 'node:stream';

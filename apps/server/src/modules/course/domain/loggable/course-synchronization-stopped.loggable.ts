@@ -1,4 +1,4 @@
-import type { Loggable, LogMessage } from '@core/logger';
+import type { Loggable, LogMessage } from '@infra/logger';
 import type { Group } from '@modules/group';
 import type { Course } from '../course.do';
 

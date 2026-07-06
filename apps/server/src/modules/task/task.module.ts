@@ -1,9 +1,9 @@
-import { LoggerModule } from '@core/logger';
 import {
 	FILES_STORAGE_AMQP_CLIENT_CONFIG_TOKEN,
 	FilesStorageAMQPClientConfig,
 	FilesStorageAMQPClientModule,
 } from '@infra/files-storage-amqp-client';
+import { LoggerModule } from '@infra/logger';
 import { RABBITMQ_CONFIG_TOKEN, RabbitMQConfig } from '@infra/rabbitmq';
 import { CopyHelperModule } from '@modules/copy-helper';
 import { SagaModule } from '@modules/saga';

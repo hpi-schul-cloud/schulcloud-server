@@ -1,9 +1,8 @@
+import { ErrorLogMessage, Loggable, LogMessageDataObject, ValidationErrorLogMessage } from '@infra/logger';
 import { ValidationError } from '@nestjs/common';
 import { ApiValidationError } from '@shared/common/error';
 import { getMetadataStorage } from 'class-validator';
-import util from 'util';
-import { Loggable } from '../../logger/interfaces';
-import { ErrorLogMessage, LogMessageDataObject, ValidationErrorLogMessage } from '../../logger/types';
+import util from 'node:util';
 import { ErrorUtils } from '../utils/error.utils';
 
 export class ErrorLoggable implements Loggable {

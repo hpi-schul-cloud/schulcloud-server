@@ -1,5 +1,5 @@
-import { LegacyLogger } from '@core/logger';
 import { CollaborativeStorageAdapter } from '@infra/collaborative-storage';
+import { LegacyLogger } from '@infra/logger';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { RoleService } from '@modules/role/service/role.service';
 import { TeamRepo } from '@modules/team/repo';

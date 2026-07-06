@@ -1,4 +1,4 @@
-import { Loggable, LogMessage } from '@core/logger';
+import { Loggable, LogMessage } from '@infra/logger';
 
 export class ResendingRegistrationMailLoggable implements Loggable {
 	constructor(private readonly registrationId: string) {}

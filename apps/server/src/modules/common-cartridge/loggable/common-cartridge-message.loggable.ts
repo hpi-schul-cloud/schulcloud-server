@@ -1,4 +1,4 @@
-import { ErrorLogMessage, Loggable, LogMessage, LogMessageDataObject, ValidationErrorLogMessage } from '@core/logger';
+import { ErrorLogMessage, Loggable, LogMessage, LogMessageDataObject, ValidationErrorLogMessage } from '@infra/logger';
 
 export class CommonCartridgeMessageLoggable implements Loggable {
 	constructor(

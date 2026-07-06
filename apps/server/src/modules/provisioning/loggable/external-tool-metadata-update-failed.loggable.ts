@@ -1,4 +1,4 @@
-import { Loggable, LogMessage } from '@core/logger';
+import { Loggable, LogMessage } from '@infra/logger';
 import { MediumIdentifier } from '@modules/media-source';
 import { ExternalTool } from '@modules/tool';
 import { isError } from 'lodash';

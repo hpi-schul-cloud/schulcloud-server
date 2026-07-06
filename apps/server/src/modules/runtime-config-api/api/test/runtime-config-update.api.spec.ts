@@ -1,5 +1,5 @@
-import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Logger } from '@infra/logger';
 import { RuntimeConfigDefault } from '@infra/runtime-config';
 import { RuntimeConfigModule } from '@infra/runtime-config/runtime-config.module';
 import { EntityManager } from '@mikro-orm/mongodb';

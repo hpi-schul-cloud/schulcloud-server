@@ -1,5 +1,5 @@
-import { Logger } from '@core/logger';
 import { StorageLocation } from '@infra/files-storage-amqp-client';
+import { Logger } from '@infra/logger';
 import { CopyElementType, CopyHelperService, CopyStatus } from '@modules/copy-helper';
 import { RoomService } from '@modules/room';
 import { ModuleName, SagaService, SagaStep } from '@modules/saga';

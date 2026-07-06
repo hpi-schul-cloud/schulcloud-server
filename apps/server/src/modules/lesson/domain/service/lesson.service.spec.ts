@@ -1,6 +1,6 @@
-import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { FilesStorageClientAdapterService } from '@infra/files-storage-amqp-client';
+import { Logger } from '@infra/logger';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizableReferenceType, AuthorizationInjectionService } from '@modules/authorization';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';

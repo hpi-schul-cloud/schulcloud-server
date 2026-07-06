@@ -1,4 +1,4 @@
-import { LoggerModule } from '@core/logger/logger.module';
+import { LoggerModule } from '@infra/logger';
 import { SagaModule } from '@modules/saga';
 import { SystemModule } from '@modules/system';
 import { UserModule } from '@modules/user';

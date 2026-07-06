@@ -1,4 +1,4 @@
-import { LogMessage } from '@core/logger';
+import { LogMessage } from '@infra/logger';
 import { InternalServerErrorException } from '@nestjs/common';
 import { ErrorLogMessage, ValidationErrorLogMessage } from '@shared/common/error';
 import { Loggable } from '@shared/common/loggable';

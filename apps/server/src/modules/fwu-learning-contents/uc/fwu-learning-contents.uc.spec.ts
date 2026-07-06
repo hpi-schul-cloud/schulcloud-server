@@ -1,5 +1,5 @@
-import { LegacyLogger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { LegacyLogger } from '@infra/logger';
 import { S3ClientAdapter } from '@infra/s3-client';
 import { Test, TestingModule } from '@nestjs/testing';
 import { Readable } from 'stream';

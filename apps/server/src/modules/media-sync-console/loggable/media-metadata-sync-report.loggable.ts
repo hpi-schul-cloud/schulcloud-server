@@ -1,4 +1,4 @@
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@core/logger';
+import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
 import { MediaSourceDataFormat } from '@modules/media-source';
 import { MediaSourceSyncOperationReport, MediaSourceSyncReport } from '@modules/media-source-sync';
 

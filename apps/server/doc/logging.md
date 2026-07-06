@@ -2,7 +2,7 @@
 
 For logging use the Logger, exported by the logger module. It encapsulates a [Winston](https://github.com/winstonjs/winston) logger. Its [injection scope](https://docs.nestjs.com/fundamentals/injection-scopes) is transient, so you can set a context when you inject it.
 
-For better privacy protection and searchability of logs, the logger cannot log arbitrary strings but only so called __loggables__. If you want to log something you have to use or create a loggable that implements the `Loggable` interface.
+For better privacy protection and searchability of logs, the logger cannot log arbitrary strings but only so called **loggables**. If you want to log something you have to use or create a loggable that implements the `Loggable` interface.
 
 The message should be fixed in each loggable. If you want to log further data, put in the data field of the `LogMessage`, like in the example below.
 
@@ -21,7 +21,7 @@ export class YourLoggable implements Loggable {
 ```
 
 ```TypeScript
-import { Logger } from '@core/logger';
+import { Logger } from '@infra/logger';
 
 export class YourUc {
 	constructor(private logger: Logger) {

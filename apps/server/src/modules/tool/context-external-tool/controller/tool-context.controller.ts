@@ -1,5 +1,5 @@
-import { LegacyLogger } from '@core/logger';
 import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
+import { LegacyLogger } from '@infra/logger';
 import { Body, Controller, Delete, Get, HttpCode, HttpStatus, Param, Post, Put } from '@nestjs/common';
 import {
 	ApiCreatedResponse,

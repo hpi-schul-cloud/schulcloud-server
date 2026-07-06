@@ -1,4 +1,4 @@
-import { Loggable, LogMessage } from '@core/logger';
+import { Loggable, LogMessage } from '@infra/logger';
 
 export class TspClassSyncBatchLoggable implements Loggable {
 	constructor(

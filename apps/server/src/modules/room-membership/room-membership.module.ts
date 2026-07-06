@@ -1,5 +1,5 @@
-import { LoggerModule } from '@core/logger/logger.module';
 import { ConfigurationModule } from '@infra/configuration';
+import { LoggerModule } from '@infra/logger';
 import { GroupModule } from '@modules/group';
 import { ROOM_PUBLIC_API_CONFIG_TOKEN, RoomPublicApiConfig } from '@modules/room';
 import { SchoolModule } from '@modules/school';

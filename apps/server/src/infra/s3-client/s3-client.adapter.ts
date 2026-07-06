@@ -15,7 +15,7 @@ import {
 import { Upload } from '@aws-sdk/lib-storage';
 import { DomainErrorHandler } from '@core/error';
 import { ErrorUtils } from '@core/error/utils';
-import { Logger } from '@core/logger';
+import { Logger } from '@infra/logger';
 import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { TypeGuard } from '@shared/common/guards';
 import { PassThrough, Readable } from 'stream';

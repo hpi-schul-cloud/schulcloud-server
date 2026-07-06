@@ -1,6 +1,6 @@
-import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { CalendarEventDto, CalendarService } from '@infra/calendar';
+import { Logger } from '@infra/logger';
 import { HttpService } from '@nestjs/axios';
 import { HttpStatus, InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';

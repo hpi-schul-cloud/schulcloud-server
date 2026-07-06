@@ -1,7 +1,7 @@
 import { S3Client } from '@aws-sdk/client-s3';
 import { ConfiguredRetryStrategy, RETRY_MODES } from '@aws-sdk/util-retry';
 import { DomainErrorHandler } from '@core/error';
-import { Logger } from '@core/logger';
+import { Logger } from '@infra/logger';
 import { S3Config } from './interface';
 import { S3ClientAdapter } from './s3-client.adapter';
 

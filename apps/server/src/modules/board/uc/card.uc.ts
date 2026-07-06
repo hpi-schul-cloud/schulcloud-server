@@ -1,4 +1,4 @@
-import { LegacyLogger } from '@core/logger';
+import { LegacyLogger } from '@infra/logger';
 import { AuthorizationService } from '@modules/authorization';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';

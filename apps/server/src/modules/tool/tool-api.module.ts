@@ -1,6 +1,6 @@
-import { LoggerModule } from '@core/logger';
 import { ConfigurationModule } from '@infra/configuration';
 import { EncryptionModule } from '@infra/encryption';
+import { LoggerModule } from '@infra/logger';
 import { AuthorizationModule } from '@modules/authorization';
 import { BoardModule } from '@modules/board';
 import { BoardContextApiHelperModule } from '@modules/board-context';

@@ -1,5 +1,5 @@
+import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
 import { InternalServerErrorException } from '@nestjs/common';
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@core/logger';
 
 export class EndSessionEndpointNotFoundLoggableException extends InternalServerErrorException implements Loggable {
 	constructor(private readonly systemId: string) {

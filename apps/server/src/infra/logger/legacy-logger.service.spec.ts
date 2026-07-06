@@ -72,4 +72,24 @@ describe('LegacyLogger', () => {
 			expect(winstonLogger.debug).toHaveBeenCalled();
 		});
 	});
+
+	describe('WHEN http logging', () => {
+		it('should call winstonLogger.notice', () => {
+			const error = new Error('custom error');
+			service.http({
+				userId: '123',
+				request: { method: 'GET', url: '/test', params: {}, query: {} },
+				error,
+			});
+			expect(winstonLogger.notice).toHaveBeenCalled();
+		});
+	});
+
+	describe('WHEN log logging', () => {
+		it('should call winstonLogger.info', () => {
+			const error = new Error('custom error');
+			service.log(error.message);
+			expect(winstonLogger.info).toHaveBeenCalled();
+		});
+	});
 });

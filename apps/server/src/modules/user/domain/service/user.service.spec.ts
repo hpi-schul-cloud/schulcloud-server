@@ -1,5 +1,5 @@
-import { Logger } from '@core/logger';
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import { Logger } from '@infra/logger';
 import { EntityManager } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { RoleDto, RoleName, RoleService } from '@modules/role';

@@ -1,6 +1,6 @@
 import { RegisterTimeoutConfig } from '@core/interceptor/register-timeout-config.decorator';
-import { LoggerModule } from '@core/logger';
 import { ConfigurationModule } from '@infra/configuration';
+import { LoggerModule } from '@infra/logger';
 import { AuthorizationModule } from '@modules/authorization';
 import { CopyHelperModule } from '@modules/copy-helper';
 import { CourseModule } from '@modules/course';

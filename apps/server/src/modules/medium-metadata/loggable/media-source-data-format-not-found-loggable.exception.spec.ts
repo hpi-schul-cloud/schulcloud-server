@@ -1,4 +1,4 @@
-import { LogMessage } from '@core/logger';
+import { LogMessage } from '@infra/logger';
 import { MediaSourceDataFormatNotFoundLoggableException } from './media-source-data-format-not-found-loggable.exception';
 
 describe(MediaSourceDataFormatNotFoundLoggableException.name, () => {

@@ -1,5 +1,4 @@
-import { Loggable } from '@core/logger/interfaces';
-import { ErrorLogMessage } from '@core/logger/types';
+import { ErrorLogMessage, Loggable } from '@infra/logger';
 import { NotFoundException } from '@nestjs/common';
 
 export class NotFoundLoggableException extends NotFoundException implements Loggable {

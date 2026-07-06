@@ -1,6 +1,6 @@
-import { Logger } from '@core/logger';
 import { faker } from '@faker-js/faker';
 import { createMock } from '@golevelup/ts-jest';
+import { Logger } from '@infra/logger';
 import { INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import archiver from 'archiver';

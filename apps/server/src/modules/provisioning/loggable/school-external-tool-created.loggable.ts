@@ -1,4 +1,4 @@
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@core/logger';
+import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
 import { MediumIdentifier } from '@modules/media-source';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 

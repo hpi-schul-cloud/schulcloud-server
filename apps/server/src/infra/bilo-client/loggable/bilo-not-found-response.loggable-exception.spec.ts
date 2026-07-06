@@ -1,4 +1,4 @@
-import { ErrorLogMessage } from '@core/logger';
+import { ErrorLogMessage } from '@infra/logger';
 import { BiloBadRequestResponseLoggableException } from './bilo-bad-request-response.loggable-exception';
 
 describe(BiloBadRequestResponseLoggableException.name, () => {

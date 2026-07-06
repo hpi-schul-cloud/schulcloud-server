@@ -1,5 +1,5 @@
-import { Logger } from '@core/logger';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Logger } from '@infra/logger';
 import { ObjectId } from '@mikro-orm/mongodb';
 import {
 	ModuleName,
@@ -9,10 +9,10 @@ import {
 	StepReportBuilder,
 } from '@modules/saga';
 import { Test, TestingModule } from '@nestjs/testing';
+import { FileEntity } from '../entity';
 import { fileEntityFactory, filePermissionEntityFactory } from '../entity/testing';
 import { FilesRepo } from '../repo';
 import { DeleteUserFilesDataStep } from './delete-user-files-data.step';
-import { FileEntity } from '../entity';
 
 describe(DeleteUserFilesDataStep.name, () => {
 	let module: TestingModule;

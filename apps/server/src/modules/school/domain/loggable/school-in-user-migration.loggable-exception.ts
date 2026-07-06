@@ -1,4 +1,4 @@
-import { ErrorLogMessage, Loggable } from '@core/logger';
+import { ErrorLogMessage, Loggable } from '@infra/logger';
 import { UnprocessableEntityException } from '@nestjs/common';
 import { School } from '../do';
 
