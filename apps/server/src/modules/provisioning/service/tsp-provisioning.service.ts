@@ -4,7 +4,8 @@ import { Account, AccountSave, AccountService } from '@modules/account';
 import { Class, ClassFactory, ClassService, ClassSourceOptions } from '@modules/class';
 import { RoleName, RoleService } from '@modules/role';
 import { School, SchoolService } from '@modules/school';
-import type { TspUserInfo } from '@modules/tsp-sync';
+import type { TspUserInfo } from '@modules/tsp-sync';
+
 import { Consent, ParentConsent, UserConsent, UserDo, UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
 import { TypeGuard } from '@shared/common/guards';
