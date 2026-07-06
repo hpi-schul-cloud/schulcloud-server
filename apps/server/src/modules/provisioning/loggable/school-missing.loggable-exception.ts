@@ -1,6 +1,6 @@
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
 import { HttpStatus } from '@nestjs/common';
 import { BusinessError } from '@shared/common/error';
+import { Loggable, LoggableMessage } from '@shared/common/loggable';
 import { ExternalUserDto } from '../dto';
 
 export class SchoolMissingLoggableException extends BusinessError implements Loggable {
@@ -15,7 +15,7 @@ export class SchoolMissingLoggableException extends BusinessError implements Log
 		);
 	}
 
-	public getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			type: this.type,
 			message: this.message,

@@ -1,4 +1,4 @@
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
+import { Loggable, LoggableMessage } from '@shared/common/loggable';
 
 export class GroupProvisioningSuccessfulLoggable implements Loggable {
 	constructor(
@@ -7,7 +7,7 @@ export class GroupProvisioningSuccessfulLoggable implements Loggable {
 		private readonly systemId: string
 	) {}
 
-	public getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			message: 'Group provisioning successful',
 			data: {

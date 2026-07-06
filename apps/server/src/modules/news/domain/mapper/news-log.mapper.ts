@@ -1,4 +1,4 @@
-import { LogMessageData } from '@infra/logger';
+import { LogMessageData } from '@shared/common/loggable/interfaces';
 import { News } from '../../repo';
 
 export class NewsLogMapper {

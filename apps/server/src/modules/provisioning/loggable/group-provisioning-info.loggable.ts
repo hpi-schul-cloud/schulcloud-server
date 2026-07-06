@@ -1,4 +1,4 @@
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
+import { Loggable, LoggableMessage } from '@shared/common/loggable';
 import { ExternalGroupDto } from '../dto';
 
 export class GroupProvisioningInfoLoggable implements Loggable {
@@ -8,7 +8,7 @@ export class GroupProvisioningInfoLoggable implements Loggable {
 		private readonly externalUserId: string
 	) {}
 
-	public getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	public getLogMessage(): LoggableMessage {
 		const userCount = this.groups.reduce(
 			(count: number, group: ExternalGroupDto) => count + (group.otherUsers?.length ?? 0),
 			this.groups.length

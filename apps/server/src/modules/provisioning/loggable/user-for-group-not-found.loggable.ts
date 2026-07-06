@@ -1,10 +1,10 @@
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
+import { Loggable, LoggableMessage } from '@shared/common/loggable';
 import { ExternalGroupUserDto } from '../dto';
 
 export class UserForGroupNotFoundLoggable implements Loggable {
 	constructor(private readonly groupUser: ExternalGroupUserDto) {}
 
-	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	getLogMessage(): LoggableMessage {
 		return {
 			message: 'Unable to add unknown user to group during provisioning.',
 			data: {

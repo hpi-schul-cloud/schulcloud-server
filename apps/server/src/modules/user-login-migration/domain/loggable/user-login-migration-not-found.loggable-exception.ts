@@ -1,5 +1,5 @@
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
 import { NotFoundException } from '@nestjs/common';
+import { Loggable, LoggableMessage } from '@shared/common/loggable';
 import { EntityId } from '@shared/domain/types';
 
 export class UserLoginMigrationNotFoundLoggableException extends NotFoundException implements Loggable {
@@ -10,7 +10,7 @@ export class UserLoginMigrationNotFoundLoggableException extends NotFoundExcepti
 		super();
 	}
 
-	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	getLogMessage(): LoggableMessage {
 		return {
 			type: 'USER_LOGIN_MIGRATION_NOT_FOUND',
 			message: 'Cannot find requested user login migration for school.',

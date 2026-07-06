@@ -1,4 +1,4 @@
-import { Loggable, LogMessage } from '@infra/logger';
+import { Loggable, LogMessage } from '@shared/common/loggable';
 
 interface S3ActionsLoggableParams {
 	action: string;
