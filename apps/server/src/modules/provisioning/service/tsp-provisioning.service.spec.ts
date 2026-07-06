@@ -9,7 +9,7 @@ import { RoleName, RoleService } from '@modules/role';
 import { roleDtoFactory, roleFactory } from '@modules/role/testing';
 import { SchoolService } from '@modules/school';
 import { schoolFactory } from '@modules/school/testing';
-import { TspUserInfo } from '@modules/tsp-sync';
+import type { TspUserInfo } from '@modules/tsp-sync';
 import { ParentConsent, UserConsent, UserService } from '@modules/user';
 import { userDoFactory } from '@modules/user/testing';
 import { Test, TestingModule } from '@nestjs/testing';
