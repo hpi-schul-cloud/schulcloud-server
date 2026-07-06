@@ -6,7 +6,8 @@ import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { BoardExternalReferenceType, ContentElementType } from '../../domain';
-import { columnBoardEntityFactory, columnEntityFactory } from '../../testing';
+import { BoardNodeEntity } from '../../repo';
+import { cardEntityFactory, columnBoardEntityFactory, columnEntityFactory } from '../../testing';
 import { CardResponse } from '../dto';
 import { roomEntityFactory } from '@modules/room/testing';
 import { roomMembershipEntityFactory } from '@modules/room-membership/testing';
@@ -185,6 +186,30 @@ describe(`card create (api)`, () => {
 			const response = await loggedInTeacherClient.post(`${columnNode.id}/cards`, invalidBodyParams);
 
 			expect(response.status).toEqual(400);
+		});
+
+		describe('when position is provided', () => {
+			it('should insert the card at the given position', async () => {
+				const { columnNode, loggedInTeacherClient } = await setup();
+
+				const existingCard0 = cardEntityFactory.withParent(columnNode).build({ position: 0 });
+				const existingCard1 = cardEntityFactory.withParent(columnNode).build({ position: 1 });
+				await em.persist([existingCard0, existingCard1]).flush();
+				em.clear();
+
+				const response = await loggedInTeacherClient.post(`${columnNode.id}/cards`, { position: 0 });
+				const result = response.body as CardResponse;
+
+				expect(response.status).toEqual(201);
+
+				const newCardInDb = await em.findOneOrFail(BoardNodeEntity, result.id);
+				expect(newCardInDb.position).toEqual(0);
+
+				const shiftedCard0 = await em.findOneOrFail(BoardNodeEntity, existingCard0.id);
+				const shiftedCard1 = await em.findOneOrFail(BoardNodeEntity, existingCard1.id);
+				expect(shiftedCard0.position).toEqual(1);
+				expect(shiftedCard1.position).toEqual(2);
+			});
 		});
 	});
 

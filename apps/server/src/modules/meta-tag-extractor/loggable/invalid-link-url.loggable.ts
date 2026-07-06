@@ -1,5 +1,5 @@
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
 import { BadRequestException } from '@nestjs/common';
+import { Loggable, LoggableMessage } from '@shared/common/loggable';
 
 export class InvalidLinkUrlLoggableException extends BadRequestException implements Loggable {
 	constructor(
@@ -9,7 +9,7 @@ export class InvalidLinkUrlLoggableException extends BadRequestException impleme
 		super();
 	}
 
-	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	getLogMessage(): LoggableMessage {
 		return {
 			type: 'INVALID_LINK_URL',
 			message: this.message,

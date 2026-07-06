@@ -1,5 +1,5 @@
-import { ErrorLogMessage, Loggable } from '@infra/logger';
 import { UnprocessableEntityException } from '@nestjs/common';
+import { Loggable, LoggableMessage } from '@shared/common/loggable';
 import { EntityId } from '@shared/domain/types';
 
 export class CourseNotSynchronizedLoggableException extends UnprocessableEntityException implements Loggable {
@@ -7,8 +7,8 @@ export class CourseNotSynchronizedLoggableException extends UnprocessableEntityE
 		super();
 	}
 
-	getLogMessage(): ErrorLogMessage {
-		const message: ErrorLogMessage = {
+	getLogMessage(): LoggableMessage {
+		const message: LoggableMessage = {
 			type: 'COURSE_NOT_SYNCHRONIZED',
 			stack: this.stack,
 			data: {

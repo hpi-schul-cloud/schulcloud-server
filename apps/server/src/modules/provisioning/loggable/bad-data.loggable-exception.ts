@@ -1,6 +1,6 @@
-import { ErrorLogMessage, Loggable, LogMessage, LogMessageData, ValidationErrorLogMessage } from '@infra/logger';
 import { HttpStatus } from '@nestjs/common';
 import { BusinessError } from '@shared/common/error';
+import { Loggable, LoggableMessage, LogMessage } from '@shared/common/loggable';
 
 export class BadDataLoggableException extends BusinessError implements Loggable {
 	constructor(message?: string, details?: Record<string, unknown>) {
@@ -15,12 +15,12 @@ export class BadDataLoggableException extends BusinessError implements Loggable 
 		);
 	}
 
-	public getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			type: this.type,
 			message: this.message,
 			stack: this.stack,
-			data: this.details as LogMessageData,
+			data: this.details as LogMessage['data'],
 		};
 	}
 }
