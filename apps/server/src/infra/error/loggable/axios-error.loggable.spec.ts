@@ -1,8 +1,8 @@
-import { axiosErrorFactory } from '@testing/factory/axios-error.factory';
 import { HttpStatus } from '@nestjs/common';
+import { axiosErrorFactory } from '@testing/factory/axios-error.factory';
 import { AxiosError } from 'axios';
+import util from 'node:util';
 import { AxiosErrorLoggable } from './axios-error.loggable';
-import util from 'util';
 
 describe(AxiosErrorLoggable.name, () => {
 	describe('getLogMessage', () => {

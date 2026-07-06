@@ -1,5 +1,5 @@
-import { ErrorResponse } from '@core/error/dto';
 import { BiloMediaQueryResponse, biloMediaQueryResponseFactory } from '@infra/bilo-client';
+import { ErrorResponse } from '@infra/error';
 import { OfferDTO } from '@infra/vidis-client/generated';
 import { vidisOfferItemFactory } from '@infra/vidis-client/testing';
 import { EntityManager } from '@mikro-orm/mongodb';
