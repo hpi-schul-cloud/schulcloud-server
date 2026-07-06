@@ -101,8 +101,13 @@ export class ColumnController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Body() createCardBodyParams?: CreateCardBodyParams
 	): Promise<CardResponse> {
-		const { requiredEmptyElements } = createCardBodyParams || {};
-		const card = await this.columnUc.createCard(currentUser.userId, urlParams.columnId, requiredEmptyElements);
+		const { requiredEmptyElements, position } = createCardBodyParams || {};
+		const card = await this.columnUc.createCard(
+			currentUser.userId,
+			urlParams.columnId,
+			requiredEmptyElements,
+			position
+		);
 
 		const response = CardResponseMapper.mapToResponse(card);
 
