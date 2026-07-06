@@ -278,8 +278,18 @@ const dataExist = (hook) => {
  * @return {Object::hook}
  */
 const pushUserChangedEvent = async (hook) => {
-	// todo take data from hook, postet data and return
-	const team = await getTeam(hook);
+	let team;
+	try {
+		team = await getTeam(hook);
+	} catch (err) {
+		// Do not fail the successful patch response when the previous team state
+		// cannot be reloaded for the current user context.
+		logger.warning('Skipping teams:after:usersChanged event; old team could not be loaded.', {
+			teamId: hook.id || (hook.result || {})._id || hook.teamId,
+			error: err && err.message,
+		});
+		return hook;
+	}
 	const oldUsers = team.userIds;
 	const newUsers = hook.result.userIds;
 
