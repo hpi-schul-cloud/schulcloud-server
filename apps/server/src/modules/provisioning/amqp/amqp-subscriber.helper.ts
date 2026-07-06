@@ -1,5 +1,5 @@
-import { ErrorLoggable } from '@core/error/loggable';
 import { AmqpConnection, defaultNackErrorHandler } from '@golevelup/nestjs-rabbitmq';
+import { ErrorLoggable } from '@infra/error';
 import { Logger } from '@infra/logger';
 import { Channel, ConsumeMessage } from 'amqplib';
 

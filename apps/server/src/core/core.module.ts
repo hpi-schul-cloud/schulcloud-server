@@ -1,6 +1,6 @@
+import { ErrorModule } from '@infra/error';
 import { LoggerModule } from '@infra/logger';
 import { Module } from '@nestjs/common';
-import { ErrorModule } from './error';
 import { TimeoutInterceptorModule } from './interceptor';
 import { ServiceAccountAuditModule } from './service-account-audit';
 import { ValidationModule } from './validation';

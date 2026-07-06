@@ -1,4 +1,4 @@
-import { ErrorResponse } from '@core/error/dto';
+import { ErrorResponse } from '@infra/error';
 import { OauthTokenResponse } from '@infra/oauth-adapter';
 import { SchulconnexResponse, SchulconnexRole } from '@infra/schulconnex-client';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';

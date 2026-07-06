@@ -1,4 +1,4 @@
-import { AxiosErrorLoggable } from '@core/error/loggable';
+import { AxiosErrorLoggable } from '@infra/error';
 import { ClientCredentialsGrantTokenRequest, OauthAdapterService, OAuthGrantType } from '@infra/oauth-adapter';
 import { Inject, Injectable } from '@nestjs/common';
 import { AxiosError } from 'axios';

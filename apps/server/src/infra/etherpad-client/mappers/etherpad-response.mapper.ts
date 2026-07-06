@@ -1,4 +1,4 @@
-import { ErrorUtils } from '@core/error/utils';
+import { ErrorUtils } from '@infra/error';
 import { InternalServerErrorException } from '@nestjs/common';
 import { TypeGuard } from '@shared/common/guards';
 import {

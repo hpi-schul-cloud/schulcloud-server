@@ -1,5 +1,5 @@
-import { AxiosErrorLoggable } from '@core/error/loggable';
 import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
+import { AxiosErrorLoggable } from '@infra/error';
 import { Logger } from '@infra/logger';
 import {
 	ClientCredentialsGrantTokenRequest,
