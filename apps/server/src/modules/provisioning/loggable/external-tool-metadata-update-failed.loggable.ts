@@ -1,6 +1,6 @@
-import { Loggable, LogMessage } from '@infra/logger';
 import { MediumIdentifier } from '@modules/media-source';
 import { ExternalTool } from '@modules/tool';
+import { Loggable, LoggableMessage } from '@shared/common/loggable';
 import { isError } from 'lodash';
 
 export class ExternalToolMetadataUpdateFailedLoggable implements Loggable {
@@ -10,7 +10,7 @@ export class ExternalToolMetadataUpdateFailedLoggable implements Loggable {
 		private readonly error: unknown
 	) {}
 
-	public getLogMessage(): LogMessage {
+	public getLogMessage(): LoggableMessage {
 		const error = isError(this.error)
 			? {
 					name: this.error.name,

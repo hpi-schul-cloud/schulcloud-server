@@ -1,5 +1,5 @@
 /* istanbul ignore file */
-import { DomainErrorHandler } from '@core/error';
+import { DomainErrorHandler } from '@infra/error';
 import { BootstrapConsole } from 'nestjs-console';
 
 export const runConsoleApp = async <T>(module: T): Promise<void> => {

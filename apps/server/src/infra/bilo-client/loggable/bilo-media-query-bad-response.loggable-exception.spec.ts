@@ -1,7 +1,7 @@
-import { ErrorLogMessage } from '@infra/logger';
 import { ValidationError } from 'class-validator';
 import { biloMediaQueryBadResponseReportFactory } from '../testing';
 import { BiloMediaQueryBadResponseLoggableException } from './bilo-media-query-bad-response.loggable-exception';
+import { ErrorLogMessage } from '@shared/common/error';
 
 describe(BiloMediaQueryBadResponseLoggableException.name, () => {
 	describe('getLogMessage', () => {

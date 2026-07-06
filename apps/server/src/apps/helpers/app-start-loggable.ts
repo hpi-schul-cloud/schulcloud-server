@@ -1,4 +1,5 @@
-import { Loggable, LogMessage, LogMessageData } from '@infra/logger';
+import { Loggable, LogMessage } from '@shared/common/loggable';
+import { LogMessageData } from '@shared/common/loggable/interfaces';
 
 interface AppStartInfo {
 	appName: string;
