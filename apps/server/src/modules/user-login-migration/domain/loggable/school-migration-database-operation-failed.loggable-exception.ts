@@ -1,7 +1,7 @@
 import { ErrorUtils } from '@infra/error';
-import { ErrorLogMessage, Loggable } from '@infra/logger';
 import { LegacySchoolDo } from '@modules/legacy-school/domain';
 import { InternalServerErrorException } from '@nestjs/common';
+import { Loggable, LoggableMessage } from '@shared/common/loggable';
 
 export class SchoolMigrationDatabaseOperationFailedLoggableException
 	extends InternalServerErrorException
@@ -16,7 +16,7 @@ export class SchoolMigrationDatabaseOperationFailedLoggableException
 		super(ErrorUtils.createHttpExceptionOptions(error));
 	}
 
-	public getLogMessage(): ErrorLogMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			type: 'SCHOOL_LOGIN_MIGRATION_DATABASE_OPERATION_FAILED',
 			stack: this.stack,

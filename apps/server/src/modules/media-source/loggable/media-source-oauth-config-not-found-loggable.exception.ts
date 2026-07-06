@@ -1,5 +1,5 @@
-import { ErrorLogMessage, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
 import { NotFoundException } from '@nestjs/common';
+import { LoggableMessage } from '@shared/common/loggable';
 
 export class MediaSourceOauthConfigNotFoundLoggableException extends NotFoundException {
 	constructor(
@@ -9,7 +9,7 @@ export class MediaSourceOauthConfigNotFoundLoggableException extends NotFoundExc
 		super();
 	}
 
-	public getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			message: `Required oauth config of media source ${this.mediaSourceName} is missing.`,
 			data: {

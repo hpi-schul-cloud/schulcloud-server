@@ -1,4 +1,4 @@
-import { Loggable, LogMessage } from '@infra/logger';
+import { Loggable, LoggableMessage } from '@shared/common/loggable';
 
 export class TspClassSyncBatchLoggable implements Loggable {
 	constructor(
@@ -7,8 +7,8 @@ export class TspClassSyncBatchLoggable implements Loggable {
 		private readonly schoolExternalId: string
 	) {}
 
-	public getLogMessage(): LogMessage {
-		const message: LogMessage = {
+	public getLogMessage(): LoggableMessage {
+		const message: LoggableMessage = {
 			message: `Updated ${this.classUpdateCount} classes and created ${this.classCreationCount} classes for external school ${this.schoolExternalId}.`,
 			data: {
 				classUpdateCount: this.classUpdateCount,

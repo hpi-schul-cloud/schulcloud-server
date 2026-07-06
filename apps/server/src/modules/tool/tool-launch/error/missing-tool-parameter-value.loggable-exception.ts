@@ -1,6 +1,6 @@
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
 import { HttpStatus } from '@nestjs/common';
 import { BusinessError } from '@shared/common/error';
+import { Loggable, LoggableMessage } from '@shared/common/loggable';
 import { CustomParameter } from '../../common/domain';
 import { ContextExternalToolLaunchable } from '../../context-external-tool/domain';
 
@@ -23,7 +23,7 @@ export class MissingToolParameterValueLoggableException extends BusinessError im
 		);
 	}
 
-	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	getLogMessage(): LoggableMessage {
 		const parameterNames: string[] = this.parameters.map((param): string => param.name);
 
 		return {

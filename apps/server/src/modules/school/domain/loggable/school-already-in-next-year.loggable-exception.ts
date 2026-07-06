@@ -1,5 +1,5 @@
-import { ErrorLogMessage, Loggable } from '@infra/logger';
 import { UnprocessableEntityException } from '@nestjs/common';
+import { Loggable, LoggableMessage } from '@shared/common/loggable';
 import { School } from '../do';
 
 export class SchoolAlreadyInNextYearLoggableException extends UnprocessableEntityException implements Loggable {
@@ -7,7 +7,7 @@ export class SchoolAlreadyInNextYearLoggableException extends UnprocessableEntit
 		super('School already in next year');
 	}
 
-	public getLogMessage(): ErrorLogMessage {
+	public getLogMessage(): LoggableMessage {
 		const message = {
 			type: 'SCHOOL_ALREADY_IN_NEXT_YEAR',
 			message: this.message,

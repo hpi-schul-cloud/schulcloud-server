@@ -1,7 +1,8 @@
 import { AxiosErrorLoggable } from '@infra/error';
-import { Logger, LogMessageData } from '@infra/logger';
+import { Logger } from '@infra/logger';
 import { Inject, Injectable, Scope } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
+import { LogMessageData } from '@shared/common/loggable/interfaces';
 import { JwtExtractor } from '@shared/common/utils/jwt';
 import { AxiosRequestConfig, isAxiosError } from 'axios';
 import { type Request } from 'express';
