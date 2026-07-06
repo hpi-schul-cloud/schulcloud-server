@@ -1,7 +1,11 @@
 import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { LegacyLogger } from '@infra/logger';
-import { AuthenticationCodeGrantTokenRequest, OAuthTokenDto, OauthAdapterService } from '@infra/oauth-adapter';
-import { TokenRequestMapper } from '@infra/oauth-adapter/mapper/token-request.mapper';
+import {
+	AuthenticationCodeGrantTokenRequest,
+	OAuthTokenDto,
+	OauthAdapterService,
+	TokenRequestMapper,
+} from '@infra/oauth-adapter';
 import { ErwinIdentifierService, ReferencedEntityType } from '@modules/erwin-identifier';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { ProvisioningService } from '@modules/provisioning/service/provisioning.service';
