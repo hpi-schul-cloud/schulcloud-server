@@ -1,9 +1,7 @@
-import { ErrorType } from '@infra/error';
-// TODO: Fix the import path for ErrorType to use the correct path based on the project structure.
-import { ErrorResponse } from '@infra/error/dto/error.response';
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import util from 'node:util';
+import { ErrorType, InternalErrorResponse } from './interfaces';
 
 /**
  * Abstract base class for business errors, errors that are handled
@@ -49,14 +47,14 @@ export abstract class BusinessError extends HttpException {
 		}
 	}
 
-	override getResponse(): ErrorResponse {
-		const errorResponse: ErrorResponse = new ErrorResponse(
-			this.type,
-			this.title,
-			this.message,
-			this.code,
-			this.details
-		);
+	override getResponse(): InternalErrorResponse {
+		const errorResponse: InternalErrorResponse = {
+			type: this.type,
+			title: this.title,
+			message: this.message,
+			code: this.code,
+			details: this.details,
+		};
 
 		return errorResponse;
 	}
