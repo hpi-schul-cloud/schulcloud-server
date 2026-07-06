@@ -1,5 +1,5 @@
-import { ErrorLoggable } from '@core/error/loggable/error.loggable';
 import { ICurrentUser } from '@infra/auth-guard';
+import { ErrorLoggable } from '@infra/error';
 import { Logger } from '@infra/logger';
 import { Account } from '@modules/account';
 import { LegacySchoolDo } from '@modules/legacy-school/domain';

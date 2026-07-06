@@ -1,5 +1,5 @@
-import { ErrorResponse } from '@core/error/dto';
 import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
+import { ErrorResponse } from '@infra/error';
 import {
 	Body,
 	Controller,
@@ -20,11 +20,11 @@ import { CreateRoomInvitationLinkBodyParams } from './dto/request/create-room-in
 import { RoomInvitationLinkUrlParams } from './dto/request/room-invitation-link.url.params';
 import { RoomInvitationLinksQueryParams } from './dto/request/room-invitation-links.query.params';
 import { UpdateRoomInvitationLinkBodyParams } from './dto/request/update-room-invitation-link.body.params';
+import { RoomIdResponse } from './dto/response/room-id.response';
 import { RoomInvitationLinkError } from './dto/response/room-invitation-link.error';
 import { RoomInvitationLinkResponse } from './dto/response/room-invitation-link.response';
 import { RoomInvitationLinkMapper } from './mapper/room-invitation-link.mapper';
 import { RoomInvitationLinkUc } from './room-invitation-link.uc';
-import { RoomIdResponse } from './dto/response/room-id.response';
 
 @ApiTags('Room Invitation Link')
 @JwtAuthentication()

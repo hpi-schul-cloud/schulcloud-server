@@ -1,4 +1,5 @@
-import { ErrorLogMessage, Loggable, LogMessage, LogMessageDataObject, ValidationErrorLogMessage } from '@infra/logger';
+import { Loggable, LoggableMessage } from '@shared/common/loggable';
+import { LogMessageDataObject } from '@shared/common/loggable/interfaces';
 
 export class ErwinIdentifierLoggable implements Loggable {
 	constructor(
@@ -6,7 +7,7 @@ export class ErwinIdentifierLoggable implements Loggable {
 		private readonly data?: LogMessageDataObject
 	) {}
 
-	public getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			type: 'ERWIN_IDENTIFIER_LOGGABLE',
 			message: this.message,

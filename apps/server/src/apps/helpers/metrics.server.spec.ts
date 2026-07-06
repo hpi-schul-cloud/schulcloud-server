@@ -1,8 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Logger, LogMessage } from '@infra/logger';
+import { Logger } from '@infra/logger';
 import { MetricConfig, METRICS_CONFIG_TOKEN, MetricsModule, ResponseTimeMetricsInterceptor } from '@infra/metrics';
 import { INestApplication } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import { LogMessage } from '@shared/common/loggable';
 import { AppStartLoggable } from './app-start-loggable';
 import {
 	createMetricsServer,

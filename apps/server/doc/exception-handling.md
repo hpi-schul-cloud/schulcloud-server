@@ -30,12 +30,11 @@ If you catch an error and throw a new one, put the original error in the [`cause
 
 ```typescript
 try {
-    someMethod();
-} catch(error) {
-    throw new ForbiddenException('some message', { cause: error });
+	someMethod();
+} catch (error) {
+	throw new ForbiddenException('some message', { cause: error });
 }
 ```
-
 
 ## Loggable exceptions
 
@@ -51,7 +50,7 @@ export class UnauthorizedLoggableException extends UnauthorizedException impleme
 		super();
 	}
 
-	getLogMessage(): ErrorLogMessage {
+	getLogMessage(): LoggableMessage {
 		const message = {
 			type: 'UNAUTHORIZED_EXCEPTION',
 			stack: this.stack,
@@ -65,6 +64,7 @@ export class UnauthorizedLoggableException extends UnauthorizedException impleme
 	}
 }
 ```
+
 ```TypeScript
 export class YourService {
 	public sampleServiceMethod(username, systemId) {

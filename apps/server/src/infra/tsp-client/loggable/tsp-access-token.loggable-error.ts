@@ -1,6 +1,6 @@
-import { Loggable, LogMessage } from '@infra/logger';
 import { HttpStatus } from '@nestjs/common';
-import { BusinessError, ErrorLogMessage } from '@shared/common/error';
+import { BusinessError } from '@shared/common/error';
+import { Loggable, LoggableMessage } from '@shared/common/loggable';
 
 export class TspAccessTokenLoggableError extends BusinessError implements Loggable {
 	constructor(private readonly error: Error) {
@@ -14,8 +14,8 @@ export class TspAccessTokenLoggableError extends BusinessError implements Loggab
 		);
 	}
 
-	public getLogMessage(): LogMessage | ErrorLogMessage {
-		const message: LogMessage | ErrorLogMessage = {
+	public getLogMessage(): LoggableMessage {
+		const message: LoggableMessage = {
 			message: this.message,
 			type: this.type,
 			stack: this.stack,

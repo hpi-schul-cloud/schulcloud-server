@@ -1,4 +1,4 @@
-import { Loggable, LogMessage } from '@infra/logger';
+import { Loggable, LoggableMessage } from '@shared/common/loggable';
 
 export class TspDataFetchedLoggable implements Loggable {
 	constructor(
@@ -8,7 +8,7 @@ export class TspDataFetchedLoggable implements Loggable {
 		private readonly daysFetched: number
 	) {}
 
-	public getLogMessage(): LogMessage {
+	public getLogMessage(): LoggableMessage {
 		let message: string;
 		if (this.daysFetched === -1) {
 			message = `Fetched ${this.tspTeacherCount} teachers, ${this.tspStudentCount} students and ${this.tspClassesCount} classes for full sync from TSP.`;
@@ -16,7 +16,7 @@ export class TspDataFetchedLoggable implements Loggable {
 			message = `Fetched ${this.tspTeacherCount} teachers, ${this.tspStudentCount} students and ${this.tspClassesCount} classes for the last ${this.daysFetched} days from TSP`;
 		}
 
-		const logMessage: LogMessage = {
+		const logMessage: LoggableMessage = {
 			message,
 			data: {
 				tspTeacherCount: this.tspTeacherCount,

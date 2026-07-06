@@ -1,10 +1,10 @@
-import { ErrorLogMessage, LogMessage, Loggable, ValidationErrorLogMessage } from '@infra/logger';
+import { Loggable, LoggableMessage } from '@shared/common/loggable';
 import { SyncStrategyTarget } from '../sync-strategy.types';
 
 export class InvalidTargetLoggable implements Loggable {
 	constructor(private readonly target: string) {}
 
-	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	getLogMessage(): LoggableMessage {
 		return {
 			message: 'Either synchronization is not activated or the target entered is invalid',
 			data: {

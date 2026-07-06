@@ -1,4 +1,4 @@
-import { ErrorLoggable } from '@core/error/loggable/error.loggable';
+import { ErrorLoggable } from '@infra/error';
 import { Logger } from '@infra/logger';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable, OnModuleInit } from '@nestjs/common';

@@ -1,21 +1,22 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ErrorLogger, ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
+import { ErrorLogger } from '@infra/logger';
 import { BadRequestException, HttpStatus, InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BusinessError } from '@shared/common/error';
+import { Loggable, LoggableMessage } from '@shared/common/loggable';
 import { AxiosError } from 'axios';
-import util from 'util';
+import util from 'node:util';
 import { AxiosErrorLoggable } from '../loggable';
 import { ErrorLoggable } from '../loggable/error.loggable';
 import { ErrorUtils } from '../utils';
 import { DomainErrorHandler } from './domain-error-handler';
 
 class SampleLoggableException extends BadRequestException implements Loggable {
-	constructor(private testData: string) {
+	constructor(private readonly testData: string) {
 		super();
 	}
 
-	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	getLogMessage(): LoggableMessage {
 		const message = {
 			type: 'BAD_REQUEST_EXCEPTION',
 			stack: this.stack,
@@ -36,8 +37,8 @@ class SampleLoggableExceptionWithCause extends InternalServerErrorException impl
 		super(ErrorUtils.createHttpExceptionOptions(error));
 	}
 
-	getLogMessage(): ErrorLogMessage {
-		const message: ErrorLogMessage = {
+	getLogMessage() {
+		const message = {
 			type: 'WITH_CAUSE',
 			stack: this.stack,
 			data: {
@@ -61,8 +62,8 @@ class SampleLoggableFromBusinessException extends BusinessError implements Logga
 		);
 	}
 
-	getLogMessage(): ErrorLogMessage {
-		const message: ErrorLogMessage = {
+	getLogMessage(): LoggableMessage {
+		const message = {
 			type: 'WITH_CAUSE',
 			stack: this.stack,
 			data: {

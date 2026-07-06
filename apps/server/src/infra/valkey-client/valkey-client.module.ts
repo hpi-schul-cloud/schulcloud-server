@@ -1,5 +1,5 @@
-import { DomainErrorHandler, ErrorModule } from '@core/error';
 import { ConfigurationModule } from '@infra/configuration';
+import { DomainErrorHandler, ErrorModule } from '@infra/error';
 import { Logger, LoggerModule } from '@infra/logger';
 import { DynamicModule, Module } from '@nestjs/common';
 import { StorageClient, ValkeyClientModuleOptions } from './types';

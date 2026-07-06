@@ -1,11 +1,11 @@
-import { Loggable, LogMessage } from '@infra/logger';
+import { Loggable, LoggableMessage } from '@shared/common/loggable';
 import { ValidationError } from 'class-validator';
 import { MediaQueryBadResponseReport } from '../interface';
 
 export class BiloMediaQueryBadResponseLoggable implements Loggable {
 	constructor(private readonly badResponseReports: MediaQueryBadResponseReport[]) {}
 
-	public getLogMessage(): LogMessage {
+	public getLogMessage(): LoggableMessage {
 		const loggableReports = this.badResponseReports.map((report: MediaQueryBadResponseReport) => {
 			const loggableReport = {
 				...report,

@@ -1,6 +1,6 @@
-import { AxiosErrorLoggable } from '@core/error/loggable';
 import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { AxiosErrorLoggable } from '@infra/error';
 import { fileRecordResponseFactory } from '@infra/files-storage-rest-client/testing';
 import { ErrorLogger, Logger } from '@infra/logger';
 import { HttpService } from '@nestjs/axios';
@@ -8,8 +8,8 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
 import { AxiosError } from 'axios';
 import { Readable } from 'node:stream';
+import util from 'node:util';
 import { from, throwError } from 'rxjs';
-import util from 'util';
 import { FILE_STORAGE_CLIENT_CONFIG_TOKEN, FileStorageClientConfig } from '../common-cartridge-clients.configs';
 import { FileApi, FileRecordParentType, StorageLocation } from '../fs-generated';
 import { GenericFileStorageLoggable } from '../loggables';
