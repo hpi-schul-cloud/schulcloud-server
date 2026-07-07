@@ -2,7 +2,7 @@
 import { InputFormat } from '@shared/domain/types';
 import { ContentElementType } from '../domain';
 import { type UpdateContentElementMessageParams } from '../gateway/dto';
-import { LoadtestClient } from './loadtest-client';
+import { createLoadtestClient, LoadtestClient } from './loadtest-client';
 import { type SocketConnection } from './socket-connection';
 
 describe('LoadtestClient', () => {
@@ -22,6 +22,13 @@ describe('LoadtestClient', () => {
 
 	afterEach(() => {
 		jest.clearAllMocks();
+	});
+
+	describe('createLoadtestClient', () => {
+		it('should create a LoadtestClient instance', () => {
+			const loadtestClient = createLoadtestClient(socketConnection, boardId);
+			expect(loadtestClient).toBeInstanceOf(LoadtestClient);
+		});
 	});
 
 	describe('fetchBoard', () => {
