@@ -166,7 +166,7 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 			createColumn: _canEditBoard,
 			deleteColumn: _canEditBoard,
 			moveColumn: _canEditBoard,
-			shareColumn: canShareColumn,
+			shareColumn: canShareBoardNode,
 			updateColumnTitle: _canEditBoard,
 
 			// card
@@ -434,6 +434,3 @@ const canShareBoardNode = (user: User, authorizable: BoardNodeAuthorizable): boo
 
 	return isBoard && canShareBoard;
 };
-
-const canShareColumn = (user: User, authorizable: BoardNodeAuthorizable): boolean =>
-	_canManageBoard(user, authorizable) && canShareBoardNode(user, authorizable);
