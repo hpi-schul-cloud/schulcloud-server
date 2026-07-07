@@ -1,5 +1,3 @@
-import { createMock } from '@golevelup/ts-jest';
-import { LegacyLogger } from '@infra/logger';
 import { EntityData, EntityManager } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { SchoolEntity, SchoolRolePermission, SchoolRoles, SchoolYearEntity } from '@modules/school/repo';
@@ -27,13 +25,7 @@ describe('LegacySchoolRepo', () => {
 					entities: [SchoolEntity],
 				}),
 			],
-			providers: [
-				LegacySchoolRepo,
-				{
-					provide: LegacyLogger,
-					useValue: createMock<LegacyLogger>(),
-				},
-			],
+			providers: [LegacySchoolRepo],
 		}).compile();
 		repo = module.get(LegacySchoolRepo);
 		em = module.get(EntityManager);

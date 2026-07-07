@@ -1,4 +1,3 @@
-import { LegacyLogger } from '@infra/logger';
 import {
 	EntityData,
 	EntityName,
@@ -16,10 +15,7 @@ import { EntityId } from '../domain/types';
 
 @Injectable()
 export abstract class BaseDORepo<DO extends BaseDO, E extends BaseEntity> {
-	constructor(
-		protected readonly _em: EntityManager,
-		protected readonly logger: LegacyLogger
-	) {}
+	constructor(protected readonly _em: EntityManager) {}
 
 	abstract get entityName(): EntityName<E>;
 

@@ -1,6 +1,4 @@
-import { LegacyLogger } from '@infra/logger';
 import { EntityData, EntityName } from '@mikro-orm/core';
-import { EntityManager } from '@mikro-orm/mongodb';
 import { SchoolEntity, StorageProviderEntity } from '@modules/school/repo';
 import { SystemEntity } from '@modules/system/repo';
 import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
@@ -14,13 +12,6 @@ import { LegacySchoolDo } from '../domain';
  */
 @Injectable()
 export class LegacySchoolRepo extends BaseDORepo<LegacySchoolDo, SchoolEntity> {
-	constructor(
-		protected readonly _em: EntityManager,
-		protected readonly logger: LegacyLogger
-	) {
-		super(_em, logger);
-	}
-
 	get entityName(): EntityName<SchoolEntity> {
 		return SchoolEntity;
 	}

@@ -1,5 +1,3 @@
-import { createMock } from '@golevelup/ts-jest';
-import { LegacyLogger } from '@infra/logger';
 import { Entity, EntityData, EntityName, Property } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
@@ -69,13 +67,7 @@ describe('BaseDORepo', () => {
 					entities: [TestEntity],
 				}),
 			],
-			providers: [
-				TestRepo,
-				{
-					provide: LegacyLogger,
-					useValue: createMock<LegacyLogger>(),
-				},
-			],
+			providers: [TestRepo],
 		}).compile();
 
 		repo = module.get(TestRepo);

@@ -1,5 +1,3 @@
-import { createMock } from '@golevelup/ts-jest';
-import { LegacyLogger } from '@infra/logger';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { SchoolEntity } from '@modules/school/repo';
 import { schoolEntityFactory } from '@modules/school/testing';
@@ -21,13 +19,7 @@ describe('UserLoginMigrationRepo', () => {
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [UserLoginMigrationEntity] })],
-			providers: [
-				UserLoginMigrationRepo,
-				{
-					provide: LegacyLogger,
-					useValue: createMock<LegacyLogger>(),
-				},
-			],
+			providers: [UserLoginMigrationRepo],
 		}).compile();
 
 		repo = module.get(UserLoginMigrationRepo);
@@ -87,7 +79,7 @@ describe('UserLoginMigrationRepo', () => {
 				domainObject.mandatorySince = new Date();
 				await repo.save(domainObject);
 
-				const result = em.find(UserLoginMigrationEntity, { id: domainObject.id });
+				const result = await em.findOne(UserLoginMigrationEntity, { id: domainObject.id });
 				expect(result).toBeDefined();
 			});
 		});
