@@ -1,7 +1,6 @@
 import { RegisterTimeoutConfig } from '@core/interceptor/register-timeout-config.decorator';
 import { ConfigurationModule } from '@infra/configuration';
 import { AuthorizationModule } from '@modules/authorization';
-import { AuthorizationReferenceModule } from '@modules/authorization-reference';
 import { ClassModule } from '@modules/class';
 import { CopyHelperModule } from '@modules/copy-helper';
 import { CourseModule } from '@modules/course';
@@ -38,7 +37,6 @@ import {
 		LessonModule,
 		CopyHelperModule,
 		LearnroomModule,
-		AuthorizationReferenceModule,
 		RoleModule,
 		SchoolModule,
 		GroupModule,
