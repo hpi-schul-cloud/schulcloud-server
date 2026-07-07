@@ -1,4 +1,4 @@
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
+import { Loggable, LoggableMessage } from '@shared/common/loggable';
 import { ImportUser } from '../entity';
 
 export class UserMigrationFailedLoggable implements Loggable {
@@ -7,7 +7,7 @@ export class UserMigrationFailedLoggable implements Loggable {
 		private readonly error: Error
 	) {}
 
-	public getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			type: 'USER_MIGRATION_FAILED',
 			message: 'An error occurred while migrating a user with the migration wizard.',

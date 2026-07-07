@@ -1,5 +1,5 @@
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
 import { UnprocessableEntityException } from '@nestjs/common';
+import { Loggable, LoggableMessage } from '@shared/common/loggable';
 import { EntityId } from '@shared/domain/types';
 import { ContextExternalToolConfigurationStatus } from '../../common/domain';
 import { ContextExternalToolLaunchable } from '../../context-external-tool/domain';
@@ -13,7 +13,7 @@ export class ToolStatusNotLaunchableLoggableException extends UnprocessableEntit
 		super();
 	}
 
-	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	getLogMessage(): LoggableMessage {
 		return {
 			type: 'TOOL_STATUS_NOT_LAUNCHABLE',
 			message: 'The status of the tool cannot be launched by the user.',

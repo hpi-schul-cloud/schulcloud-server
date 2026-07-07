@@ -1,13 +1,12 @@
-import { AxiosErrorLoggable } from '@core/error/loggable';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { AxiosErrorLoggable } from '@infra/error';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AxiosResponse } from 'axios';
-import axios from 'axios';
+import axios, { AxiosResponse } from 'axios';
 import { AuthenticationClientAdapter } from './authentication-client.adapter';
 import { AuthenticationErrorLoggableException } from './error';
 import { AuthenticationApi, LocalAuthorizationBodyParams } from './generated';
 
-jest.mock('@core/error/loggable');
+jest.mock('@infra/error');
 jest.mock('axios', (): unknown => {
 	return {
 		...jest.requireActual('axios'),

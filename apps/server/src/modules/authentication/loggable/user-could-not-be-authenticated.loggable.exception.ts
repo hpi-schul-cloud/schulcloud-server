@@ -1,6 +1,6 @@
-import { ErrorLogMessage, Loggable } from '@infra/logger';
 import { HttpStatus } from '@nestjs/common';
 import { BusinessError } from '@shared/common/error';
+import { Loggable, LoggableMessage } from '@shared/common/loggable';
 
 export class LdapUserCouldNotBeAuthenticatedLoggableException extends BusinessError implements Loggable {
 	constructor(private readonly error: Error) {
@@ -14,8 +14,8 @@ export class LdapUserCouldNotBeAuthenticatedLoggableException extends BusinessEr
 		);
 	}
 
-	getLogMessage(): ErrorLogMessage {
-		const message: ErrorLogMessage = {
+	getLogMessage(): LoggableMessage {
+		const message: LoggableMessage = {
 			type: this.type,
 			stack: this.stack,
 			data: {

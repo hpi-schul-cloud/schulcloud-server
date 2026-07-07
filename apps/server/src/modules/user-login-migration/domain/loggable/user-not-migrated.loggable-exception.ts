@@ -1,5 +1,5 @@
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
 import { UnprocessableEntityException } from '@nestjs/common';
+import { Loggable, LoggableMessage } from '@shared/common/loggable';
 import { EntityId } from '@shared/domain/types';
 
 export class UserNotMigratedLoggableException extends UnprocessableEntityException implements Loggable {
@@ -7,7 +7,7 @@ export class UserNotMigratedLoggableException extends UnprocessableEntityExcepti
 		super();
 	}
 
-	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	getLogMessage(): LoggableMessage {
 		return {
 			type: 'USER_NOT_MIGRATED',
 			message: 'The user has not migrated yet.',

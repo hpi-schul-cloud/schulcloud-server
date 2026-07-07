@@ -1,4 +1,3 @@
-import { DomainErrorHandler } from '@core/error';
 import { faker } from '@faker-js/faker';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import {
@@ -8,6 +7,7 @@ import {
 	CoursesClientAdapter,
 	FilesStorageClientAdapter,
 } from '@infra/common-cartridge-clients';
+import { DomainErrorHandler } from '@infra/error';
 import { Logger } from '@infra/logger';
 import { NotificationService, NotificationType } from '@modules/notification';
 import { HttpService } from '@nestjs/axios';

@@ -1,5 +1,5 @@
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
 import { UnprocessableEntityException } from '@nestjs/common';
+import { Loggable, LoggableMessage } from '@shared/common/loggable';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { ProvisioningOptionsInterface } from '../interface';
 
@@ -14,7 +14,7 @@ export class ProvisioningStrategyInvalidOptionsLoggableException
 		super();
 	}
 
-	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	getLogMessage(): LoggableMessage {
 		return {
 			type: 'PROVISIONING_STRATEGY_INVALID_OPTIONS',
 			message: 'The provisioning options are invalid for this strategy type.',

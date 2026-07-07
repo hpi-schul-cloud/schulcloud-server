@@ -1,5 +1,5 @@
-import { ErrorLogMessage, Loggable } from '@infra/logger';
 import { InternalServerErrorException } from '@nestjs/common';
+import { Loggable, LoggableMessage } from '@shared/common/loggable';
 import { ValidationError } from 'class-validator';
 import { MediaQueryBadResponseReport } from '../interface';
 
@@ -8,7 +8,7 @@ export class BiloMediaQueryBadResponseLoggableException extends InternalServerEr
 		super('Bad response from the media source');
 	}
 
-	public getLogMessage(): ErrorLogMessage {
+	public getLogMessage(): LoggableMessage {
 		const loggableReports = this.badResponseReports.map((report: MediaQueryBadResponseReport) => {
 			const loggableReport = {
 				...report,

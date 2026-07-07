@@ -2,9 +2,10 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { Test, TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
-import { StorageProviderRepo } from './storageprovider.repo';
+import { env } from 'node:process';
 import { storageProviderFactory } from '../testing';
 import { StorageProviderEntity } from './storageprovider.entity';
+import { StorageProviderRepo } from './storageprovider.repo';
 
 describe('StorageProviderRepo', () => {
 	let module: TestingModule;
@@ -12,6 +13,8 @@ describe('StorageProviderRepo', () => {
 	let em: EntityManager;
 
 	beforeAll(async () => {
+		env.S3_KEY = env.S3_KEY ?? 'test-s3-key';
+
 		module = await Test.createTestingModule({
 			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [StorageProviderEntity] })],
 			providers: [StorageProviderRepo],
@@ -22,6 +25,7 @@ describe('StorageProviderRepo', () => {
 	});
 
 	afterAll(async () => {
+		delete env.S3_KEY;
 		await module.close();
 	});
 

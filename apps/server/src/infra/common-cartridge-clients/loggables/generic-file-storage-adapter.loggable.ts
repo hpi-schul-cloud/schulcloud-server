@@ -1,12 +1,12 @@
-import { Loggable, LogMessage, LogMessageData } from '@infra/logger';
+import { Loggable, LoggableMessage, LogMessage } from '@shared/common/loggable';
 
 export class GenericFileStorageLoggable implements Loggable {
 	constructor(
 		private readonly message: string,
-		private readonly data?: LogMessageData
+		private readonly data?: LogMessage['data']
 	) {}
 
-	public getLogMessage(): LogMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			message: this.message,
 			data: this.data,

@@ -1,4 +1,4 @@
-import { Loggable, LogMessage } from '@infra/logger';
+import { Loggable, LoggableMessage } from '@shared/common/loggable';
 import { EntityId } from '@shared/domain/types';
 import { News } from '../../repo';
 import { NewsLogMapper } from '../mapper';
@@ -11,7 +11,7 @@ export class NewsCrudOperationLoggable implements Loggable {
 		private readonly news: News
 	) {}
 
-	public getLogMessage(): LogMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			message: 'Performing a CRUD operation on a news',
 			data: {

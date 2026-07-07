@@ -1,13 +1,11 @@
-import { createMock } from '@golevelup/ts-jest';
-import { LegacyLogger } from '@infra/logger';
 import { Entity, EntityData, EntityName, Property } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { BaseDO } from '@shared/domain/domainobject';
-import { BaseEntityWithTimestamps } from '@shared/domain/entity';
-import { BaseDORepo } from '@shared/repo/base.do.repo';
 import { MongoMemoryDatabaseModule } from '@testing/database';
+import { BaseDO } from '../domain/domainobject';
+import { BaseEntityWithTimestamps } from '../domain/entity';
+import { BaseDORepo } from '../repo/base.do.repo';
 
 const TEST_CREATED_AT = new Date('2022-01-01');
 
@@ -69,13 +67,7 @@ describe('BaseDORepo', () => {
 					entities: [TestEntity],
 				}),
 			],
-			providers: [
-				TestRepo,
-				{
-					provide: LegacyLogger,
-					useValue: createMock<LegacyLogger>(),
-				},
-			],
+			providers: [TestRepo],
 		}).compile();
 
 		repo = module.get(TestRepo);

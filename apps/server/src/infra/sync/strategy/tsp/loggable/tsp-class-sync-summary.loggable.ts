@@ -1,4 +1,4 @@
-import { Loggable, LogMessage } from '@infra/logger';
+import { Loggable, LoggableMessage } from '@shared/common/loggable';
 
 export class TspClassSyncSummaryLoggable implements Loggable {
 	constructor(
@@ -6,8 +6,8 @@ export class TspClassSyncSummaryLoggable implements Loggable {
 		private readonly totalClassCreationCount: number
 	) {}
 
-	public getLogMessage(): LogMessage {
-		const message: LogMessage = {
+	public getLogMessage(): LoggableMessage {
+		const message: LoggableMessage = {
 			message: `In total updated ${this.totalClassUpdateCount} classes and created ${this.totalClassCreationCount} classes.`,
 			data: {
 				totalClassUpdateCount: this.totalClassUpdateCount,

@@ -1,5 +1,5 @@
-import { ErrorLogMessage, Loggable } from '@infra/logger';
 import { UnprocessableEntityException } from '@nestjs/common';
+import { Loggable, LoggableMessage } from '@shared/common/loggable';
 import { EntityId } from '@shared/domain/types';
 
 export class CourseSyncHistoryGroupExternalSourceMissingLoggableException
@@ -10,7 +10,7 @@ export class CourseSyncHistoryGroupExternalSourceMissingLoggableException
 		super();
 	}
 
-	public getLogMessage(): ErrorLogMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			type: 'COURSE_SYNC_HISTORY_GROUP_EXTERNAL_SOURCE_MISSING',
 			stack: this.stack,

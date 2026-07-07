@@ -1,7 +1,7 @@
+import { AxiosErrorLoggable } from '@infra/error';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { SynchronizationUnknownErrorLoggableException } from './synchronization-unknown-error.loggable-exception';
-import { AxiosErrorLoggable } from '@core/error/loggable';
 import * as axios from 'axios';
+import { SynchronizationUnknownErrorLoggableException } from './synchronization-unknown-error.loggable-exception';
 
 jest.mock('axios', () => {
 	return {

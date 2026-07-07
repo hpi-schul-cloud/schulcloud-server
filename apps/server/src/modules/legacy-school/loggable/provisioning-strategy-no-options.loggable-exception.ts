@@ -1,5 +1,5 @@
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
 import { UnprocessableEntityException } from '@nestjs/common';
+import { Loggable, LoggableMessage } from '@shared/common/loggable';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 
 export class ProvisioningStrategyNoOptionsLoggableException extends UnprocessableEntityException implements Loggable {
@@ -7,7 +7,7 @@ export class ProvisioningStrategyNoOptionsLoggableException extends Unprocessabl
 		super();
 	}
 
-	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	getLogMessage(): LoggableMessage {
 		return {
 			type: 'PROVISIONING_STRATEGY_NO_OPTIONS',
 			message: 'The provisioning strategy does not support options.',

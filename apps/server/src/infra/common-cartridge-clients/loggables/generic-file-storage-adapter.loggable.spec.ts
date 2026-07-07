@@ -1,4 +1,4 @@
-import util from 'util';
+import util from 'node:util';
 import { GenericFileStorageLoggable } from './generic-file-storage-adapter.loggable';
 
 describe(GenericFileStorageLoggable.name, () => {
