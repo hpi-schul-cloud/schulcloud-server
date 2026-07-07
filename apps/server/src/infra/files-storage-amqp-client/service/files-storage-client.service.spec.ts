@@ -1,19 +1,10 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { StorageLocation } from '@infra/files-storage-amqp-client';
 import { LegacyLogger } from '@infra/logger';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { CopyFilesOfParentParamBuilder } from '@modules/copy-helper/mapper/copy-files-of-parent-param.builder';
-import { FileParamBuilder } from '@modules/copy-helper/mapper/files-storage-param.builder';
-import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
-import { LessonEntity, Material } from '@modules/lesson/repo';
-import { schoolEntityFactory } from '@modules/school/testing';
-import { Submission, Task } from '@modules/task/repo';
-import { taskFactory } from '@modules/task/testing';
-import { User } from '@modules/user/repo';
 import { Test, TestingModule } from '@nestjs/testing';
-import { setupEntities } from '@testing/database';
 import { FileRecordParentType } from '../interfaces';
 import { FilesStorageClientMapper } from '../mapper';
+import { copyFilesRequestInfoFactory } from '../testing';
 import { FilesStorageClientAdapterService } from './files-storage-client.service';
 import { FilesStorageProducer } from './files-storage.producer';
 
@@ -23,8 +14,6 @@ describe('FilesStorageClientAdapterService', () => {
 	let client: DeepMocked<FilesStorageProducer>;
 
 	beforeAll(async () => {
-		await setupEntities([User, Task, Submission, LessonEntity, Material, CourseEntity, CourseGroupEntity]);
-
 		module = await Test.createTestingModule({
 			providers: [
 				FilesStorageClientAdapterService,
@@ -53,15 +42,7 @@ describe('FilesStorageClientAdapterService', () => {
 
 	describe('copyFilesOfParent', () => {
 		it('Should call all steps.', async () => {
-			const userId = new ObjectId().toHexString();
-			const school = schoolEntityFactory.buildWithId();
-			const sourceEntity = taskFactory.buildWithId({ school });
-			const targetEntity = taskFactory.buildWithId({ school });
-
-			const source = FileParamBuilder.build(sourceEntity.getSchoolId(), sourceEntity, StorageLocation.SCHOOL);
-			const target = FileParamBuilder.build(targetEntity.getSchoolId(), targetEntity, StorageLocation.SCHOOL);
-
-			const param = CopyFilesOfParentParamBuilder.build(userId, source, target);
+			const param = copyFilesRequestInfoFactory.build();
 
 			const spy = jest
 				.spyOn(FilesStorageClientMapper, 'mapCopyFileListResponseToCopyFilesDto')
@@ -77,15 +58,7 @@ describe('FilesStorageClientAdapterService', () => {
 		});
 
 		it('Should call error mapper if throw an error.', async () => {
-			const userId = new ObjectId().toHexString();
-			const school = schoolEntityFactory.buildWithId();
-			const sourceEntity = taskFactory.buildWithId({ school });
-			const targetEntity = taskFactory.buildWithId({ school });
-
-			const source = FileParamBuilder.build(sourceEntity.getSchoolId(), sourceEntity, StorageLocation.SCHOOL);
-			const target = FileParamBuilder.build(targetEntity.getSchoolId(), targetEntity, StorageLocation.SCHOOL);
-
-			const param = CopyFilesOfParentParamBuilder.build(userId, source, target);
+			const param = copyFilesRequestInfoFactory.build();
 
 			client.copyFilesOfParent.mockRejectedValue(new Error());
 
@@ -95,26 +68,26 @@ describe('FilesStorageClientAdapterService', () => {
 
 	describe('listFilesOfParent', () => {
 		it('Should call all steps.', async () => {
-			const task = taskFactory.buildWithId();
+			const taskId = new ObjectId().toHexString();
 
 			const spy = jest
 				.spyOn(FilesStorageClientMapper, 'mapfileRecordListResponseToDomainFilesDto')
 				.mockImplementation(() => []);
 
-			await service.listFilesOfParent(task.id);
+			await service.listFilesOfParent(taskId);
 
-			expect(client.listFilesOfParent).toHaveBeenCalledWith(task.id);
+			expect(client.listFilesOfParent).toHaveBeenCalledWith(taskId);
 			expect(spy).toHaveBeenCalled();
 
 			spy.mockRestore();
 		});
 
 		it('Should call error mapper if throw an error.', async () => {
-			const task = taskFactory.buildWithId();
+			const taskId = new ObjectId().toHexString();
 
 			client.listFilesOfParent.mockRejectedValue(new Error());
 
-			await expect(service.listFilesOfParent(task.id)).rejects.toThrow();
+			await expect(service.listFilesOfParent(taskId)).rejects.toThrow();
 		});
 	});
 
