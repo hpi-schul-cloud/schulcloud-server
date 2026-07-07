@@ -1,9 +1,9 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { AuthorizableReferenceType, AuthorizationContextBuilder } from '@modules/authorization';
-import { AuthorizationReferenceService } from '@modules/authorization-reference';
+import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { CopyElementType, CopyStatusEnum } from '@modules/copy-helper';
+import { CourseDoService } from '@modules/course';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
-import { courseEntityFactory } from '@modules/course/testing';
+import { courseEntityFactory, courseFactory } from '@modules/course/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { ForbiddenException, InternalServerErrorException } from '@nestjs/common';
@@ -17,7 +17,8 @@ import { CourseCopyUC } from './course-copy.uc';
 describe('course copy uc', () => {
 	let module: TestingModule;
 	let uc: CourseCopyUC;
-	let authorization: DeepMocked<AuthorizationReferenceService>;
+	let authorizationService: DeepMocked<AuthorizationService>;
+	let courseDoService: DeepMocked<CourseDoService>;
 	let courseCopyService: DeepMocked<CourseCopyService>;
 	let config: LearnroomConfig;
 
@@ -27,8 +28,12 @@ describe('course copy uc', () => {
 			providers: [
 				CourseCopyUC,
 				{
-					provide: AuthorizationReferenceService,
-					useValue: createMock<AuthorizationReferenceService>(),
+					provide: AuthorizationService,
+					useValue: createMock<AuthorizationService>(),
+				},
+				{
+					provide: CourseDoService,
+					useValue: createMock<CourseDoService>(),
 				},
 				{
 					provide: CourseCopyService,
@@ -42,7 +47,8 @@ describe('course copy uc', () => {
 		}).compile();
 
 		uc = module.get(CourseCopyUC);
-		authorization = module.get(AuthorizationReferenceService);
+		authorizationService = module.get(AuthorizationService);
+		courseDoService = module.get(CourseDoService);
 		courseCopyService = module.get(CourseCopyService);
 		config = module.get<LearnroomConfig>(LEARNROOM_CONFIG_TOKEN);
 	});
@@ -79,8 +85,8 @@ describe('course copy uc', () => {
 			const setup = () => {
 				config.featureCopyServiceEnabled = true;
 				const user = userFactory.buildWithId();
-				const course = courseEntityFactory.buildWithId({ teachers: [user] });
-				const courseCopy = courseEntityFactory.buildWithId({ teachers: [user] });
+				const course = courseFactory.build();
+				const courseCopy = courseEntityFactory.buildWithId();
 
 				const status = {
 					title: 'courseCopy',
@@ -89,28 +95,26 @@ describe('course copy uc', () => {
 					copyEntity: courseCopy,
 				};
 
-				authorization.checkPermissionByReferences.mockResolvedValueOnce();
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				courseDoService.findById.mockResolvedValueOnce(course);
 				courseCopyService.copyCourse.mockResolvedValueOnce(status);
 
 				return {
 					userId: user.id,
 					courseId: course.id,
+					user,
+					course,
 					status,
 				};
 			};
 
 			it('should check permission to create a course', async () => {
-				const { courseId, userId } = setup();
+				const { courseId, userId, user, course } = setup();
 
 				await uc.copyCourse(userId, courseId);
 
 				const context = AuthorizationContextBuilder.write([Permission.COURSE_CREATE]);
-				expect(authorization.checkPermissionByReferences).toHaveBeenCalledWith(
-					userId,
-					AuthorizableReferenceType.Course,
-					courseId,
-					context
-				);
+				expect(authorizationService.checkPermission).toHaveBeenCalledWith(user, course, context);
 			});
 
 			it('should call course copy service', async () => {
@@ -134,8 +138,12 @@ describe('course copy uc', () => {
 			const setupWithCourseForbidden = () => {
 				config.featureCopyServiceEnabled = true;
 				const user = userFactory.buildWithId();
-				const course = courseEntityFactory.buildWithId();
-				authorization.checkPermissionByReferences.mockRejectedValueOnce(new ForbiddenException());
+				const course = courseFactory.build();
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				courseDoService.findById.mockResolvedValueOnce(course);
+				authorizationService.checkPermission.mockImplementationOnce(() => {
+					throw new ForbiddenException();
+				});
 
 				return { user, course };
 			};
@@ -144,6 +152,44 @@ describe('course copy uc', () => {
 				const { course, user } = setupWithCourseForbidden();
 
 				await expect(uc.copyCourse(user.id, course.id)).rejects.toThrow(new ForbiddenException());
+			});
+		});
+
+		describe('when courseDoService.findById throws', () => {
+			const setup = () => {
+				config.featureCopyServiceEnabled = true;
+				const user = userFactory.buildWithId();
+				const course = courseFactory.build();
+				const error = new Error('course not found');
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				courseDoService.findById.mockRejectedValueOnce(error);
+
+				return { userId: user.id, courseId: course.id, error };
+			};
+
+			it('should propagate the error', async () => {
+				const { userId, courseId, error } = setup();
+
+				await expect(uc.copyCourse(userId, courseId)).rejects.toThrow(error);
+			});
+		});
+
+		describe('when authorizationService.getUserWithPermissions throws', () => {
+			const setup = () => {
+				config.featureCopyServiceEnabled = true;
+				const user = userFactory.buildWithId();
+				const course = courseFactory.build();
+				const error = new Error('user not found');
+				authorizationService.getUserWithPermissions.mockRejectedValueOnce(error);
+				courseDoService.findById.mockResolvedValueOnce(course);
+
+				return { userId: user.id, courseId: course.id, error };
+			};
+
+			it('should propagate the error', async () => {
+				const { userId, courseId, error } = setup();
+
+				await expect(uc.copyCourse(userId, courseId)).rejects.toThrow(error);
 			});
 		});
 	});

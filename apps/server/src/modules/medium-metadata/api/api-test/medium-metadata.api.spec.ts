@@ -1,10 +1,10 @@
 import { BiloMediaQueryResponse, biloMediaQueryResponseFactory } from '@infra/bilo-client';
 import { ErrorResponse } from '@infra/error';
+import { OauthTokenResponse } from '@infra/oauth-adapter';
 import { OfferDTO } from '@infra/vidis-client/generated';
 import { vidisOfferItemFactory } from '@infra/vidis-client/testing';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { mediaSourceEntityFactory } from '@modules/media-source';
-import { OauthTokenResponse } from '@modules/oauth-adapter';
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';

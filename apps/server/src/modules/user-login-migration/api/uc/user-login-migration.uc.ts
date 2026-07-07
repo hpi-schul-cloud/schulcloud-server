@@ -1,9 +1,9 @@
 import { Logger } from '@infra/logger';
+import { OAuthTokenDto } from '@infra/oauth-adapter';
 import { AuthenticationService } from '@modules/authentication';
 import { Action, AuthorizationService } from '@modules/authorization';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { OAuthService } from '@modules/oauth';
-import { OAuthTokenDto } from '@modules/oauth-adapter';
 import { ProvisioningService } from '@modules/provisioning';
 import { RoleName } from '@modules/role';
 import { UserDo, UserService } from '@modules/user';
