@@ -1,4 +1,4 @@
-import { ClassConstructor, plainToClass, Transform, TransformFnParams } from 'class-transformer';
+import { type ClassConstructor, plainToClass, Transform, type TransformFnParams } from 'class-transformer';
 
 export function StringToObject(classType: ClassConstructor<unknown>): PropertyDecorator {
 	return Transform((params: TransformFnParams): unknown => {

@@ -1,8 +1,8 @@
-import { EntityManager } from '@mikro-orm/mongodb';
+import { type EntityManager } from '@mikro-orm/mongodb';
 import { SystemEntity } from '@modules/system/repo';
 import { User } from '@modules/user/repo';
 import { OauthSessionToken } from '../../../domain';
-import { OauthSessionTokenEntity, OauthSessionTokenEntityProps } from '../../../entity';
+import { type OauthSessionTokenEntity, type OauthSessionTokenEntityProps } from '../../../entity';
 
 export class OauthSessionTokenEntityMapper {
 	public static mapDOToEntityProperties(

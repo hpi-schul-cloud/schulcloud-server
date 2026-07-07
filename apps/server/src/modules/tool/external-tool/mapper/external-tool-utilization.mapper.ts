@@ -1,5 +1,5 @@
 import { ContextExternalToolCountPerContextResponse } from '../../common/controller/dto';
-import { ExternalToolUtilization } from '../../tool-utilization/domain';
+import { type ExternalToolUtilization } from '../../tool-utilization/domain';
 import { ExternalToolUtilizationResponse } from '../controller/dto';
 
 export class ExternalToolUtilizationMapper {

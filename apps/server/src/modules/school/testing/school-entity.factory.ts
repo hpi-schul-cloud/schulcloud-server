@@ -1,5 +1,5 @@
 import { BaseFactory } from '@testing/factory/base.factory';
-import { SchoolEntity, SchoolProperties } from '../repo';
+import { SchoolEntity, type SchoolProperties } from '../repo';
 import { federalStateEntityFactory } from './federal-state.entity.factory';
 import { schoolYearEntityFactory } from './school-year.entity.factory';
 

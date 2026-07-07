@@ -1,6 +1,6 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Test } from '@nestjs/testing';
-import { TestingModule } from '@nestjs/testing/testing-module';
+import { type TestingModule } from '@nestjs/testing/testing-module';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { DeletionLog } from '../domain/do';

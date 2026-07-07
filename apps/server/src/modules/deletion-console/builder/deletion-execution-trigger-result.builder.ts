@@ -1,4 +1,4 @@
-import { DeletionExecutionTriggerResult, DeletionExecutionTriggerStatus } from '../interface';
+import { type DeletionExecutionTriggerResult, DeletionExecutionTriggerStatus } from '../interface';
 
 export class DeletionExecutionTriggerResultBuilder {
 	private static build(status: DeletionExecutionTriggerStatus, error?: string): DeletionExecutionTriggerResult {

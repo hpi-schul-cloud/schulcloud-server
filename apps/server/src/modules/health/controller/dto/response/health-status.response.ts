@@ -1,4 +1,4 @@
-import { HealthStatusCheckResponse } from './health-status-check.response';
+import { type HealthStatusCheckResponse } from './health-status-check.response';
 
 export class HealthStatusResponse {
 	status: string;

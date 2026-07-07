@@ -3,11 +3,11 @@ import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { Submission, Task } from '@modules/task/repo';
 import { taskFactory } from '@modules/task/testing';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { lessonFactory, materialFactory } from '../testing';
-import { ComponentProperties, ComponentType, LessonEntity } from './lesson.entity';
+import { type ComponentProperties, ComponentType, LessonEntity } from './lesson.entity';
 import { LessonRepo } from './lesson.repo';
 import { Material } from './materials.entity';
 

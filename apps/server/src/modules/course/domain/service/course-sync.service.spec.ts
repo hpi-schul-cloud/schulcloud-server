@@ -1,12 +1,12 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Group, GroupUser } from '@modules/group';
+import { type Group, GroupUser } from '@modules/group';
 import { groupFactory } from '@modules/group/testing';
-import { RoleDto, RoleName, RoleService } from '@modules/role';
+import { type RoleDto, RoleName, RoleService } from '@modules/role';
 import { roleDtoFactory } from '@modules/role/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { CourseGroupEntity } from '../../repo';
 import { courseFactory } from '../../testing';

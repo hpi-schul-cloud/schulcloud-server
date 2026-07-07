@@ -1,6 +1,6 @@
-import { SchulconnexLaufzeitResponse } from '@infra/schulconnex-client';
+import { type SchulconnexLaufzeitResponse } from '@infra/schulconnex-client';
 import { InternalServerErrorException } from '@nestjs/common';
-import { Loggable, LoggableMessage } from '@shared/common/loggable';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
 
 export class InvalidLaufzeitResponseLoggableException extends InternalServerErrorException implements Loggable {
 	constructor(private readonly laufzeit: SchulconnexLaufzeitResponse) {

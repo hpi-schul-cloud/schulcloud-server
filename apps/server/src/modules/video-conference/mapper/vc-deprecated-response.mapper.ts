@@ -1,10 +1,10 @@
-import { BBBBaseResponse } from '../bbb';
+import { type BBBBaseResponse } from '../bbb';
 import {
 	DeprecatedVideoConferenceInfoResponse,
 	DeprecatedVideoConferenceJoinResponse,
 	VideoConferenceBaseResponse,
 } from '../controller/dto/response/video-conference-deprecated.response';
-import { VideoConference, VideoConferenceInfo, VideoConferenceJoin } from '../uc/dto';
+import { type VideoConference, type VideoConferenceInfo, type VideoConferenceJoin } from '../uc/dto';
 import { VideoConferenceMapper } from './video-conference.mapper';
 
 /**

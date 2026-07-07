@@ -1,4 +1,4 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { Logger } from '@infra/logger';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
@@ -10,9 +10,9 @@ import {
 	StepReportBuilder,
 } from '@modules/saga';
 import { Submission, Task } from '@modules/task/repo';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
-import { ComponentProperties, ComponentType, LessonEntity, LessonRepo, Material } from '../repo';
+import { type ComponentProperties, ComponentType, LessonEntity, LessonRepo, Material } from '../repo';
 import { lessonFactory } from '../testing';
 import { DeleteUserLessonDataStep } from './delete-user-lesson-data.step';
 

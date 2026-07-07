@@ -1,5 +1,5 @@
 import { CopyFileDto, FileDto } from '../dto';
-import { CopyFileDomainObjectProps, FileDomainObjectProps, FileRecordParentType } from '../interfaces';
+import { type CopyFileDomainObjectProps, type FileDomainObjectProps, FileRecordParentType } from '../interfaces';
 
 export class FilesStorageClientMapper {
 	static mapfileRecordListResponseToDomainFilesDto(fileRecordListResponse: FileDomainObjectProps[]): FileDto[] {

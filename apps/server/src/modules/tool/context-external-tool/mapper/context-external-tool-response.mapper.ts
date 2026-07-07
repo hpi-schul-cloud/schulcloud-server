@@ -1,7 +1,10 @@
 import { ToolStatusResponseMapper } from '../../common/mapper';
-import { CustomParameterEntryParam, CustomParameterEntryResponse } from '../../school-external-tool/controller/dto';
+import {
+	type CustomParameterEntryParam,
+	CustomParameterEntryResponse,
+} from '../../school-external-tool/controller/dto';
 import { ContextExternalToolResponse, LtiDeepLinkResponse, ToolReferenceResponse } from '../controller/dto';
-import { ContextExternalTool, ToolReference } from '../domain';
+import { type ContextExternalTool, type ToolReference } from '../domain';
 
 export class ContextExternalToolResponseMapper {
 	static mapContextExternalToolResponse(contextExternalTool: ContextExternalTool): ContextExternalToolResponse {

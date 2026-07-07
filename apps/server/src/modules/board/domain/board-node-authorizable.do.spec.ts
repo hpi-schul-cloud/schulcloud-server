@@ -1,8 +1,8 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Permission } from '@shared/domain/interface';
 import { columnBoardFactory, columnFactory } from '../testing';
-import { BoardConfiguration, BoardNodeAuthorizable, BoardRoles } from './board-node-authorizable.do';
-import { ColumnBoardProps } from './types';
+import { type BoardConfiguration, BoardNodeAuthorizable, BoardRoles } from './board-node-authorizable.do';
+import { type ColumnBoardProps } from './types';
 
 describe('Board Node Authorizable Domain Object', () => {
 	const setup = (props?: { boardConfiguration?: BoardConfiguration; rootPartial?: Partial<ColumnBoardProps> }) => {

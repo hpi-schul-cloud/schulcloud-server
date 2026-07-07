@@ -1,6 +1,6 @@
-import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
-import { EntityId } from '@shared/domain/types';
-import { RoomColor, RoomFeatures } from '../type';
+import { type AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
+import { type EntityId } from '@shared/domain/types';
+import { type RoomColor, type RoomFeatures } from '../type';
 
 export interface RoomProps extends AuthorizableObject {
 	id: EntityId;

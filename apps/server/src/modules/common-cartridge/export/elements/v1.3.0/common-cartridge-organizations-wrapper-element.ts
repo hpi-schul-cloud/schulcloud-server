@@ -1,6 +1,6 @@
 import {
 	CommonCartridgeOrganizationsWrapperElement,
-	CommonCartridgeOrganizationsWrapperElementProps,
+	type CommonCartridgeOrganizationsWrapperElementProps,
 } from '../abstract/common-cartridge-organizations-wrapper-element';
 import { CommonCartridgeVersion } from '../../common-cartridge.enums';
 

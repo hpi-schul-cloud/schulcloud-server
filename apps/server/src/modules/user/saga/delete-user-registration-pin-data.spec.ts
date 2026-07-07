@@ -1,4 +1,4 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { Logger } from '@infra/logger';
 import { RegistrationPinService } from '@modules/registration-pin';
 import { registrationPinEntityFactory } from '@modules/registration-pin/entity/testing';
@@ -10,7 +10,7 @@ import {
 	StepReportBuilder,
 } from '@modules/saga';
 import { userDoFactory } from '@modules/user/testing';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { UserService } from '../domain';
 import { DeleteUserRegistrationPinDataStep } from './delete-user-registration-pin-data';
 

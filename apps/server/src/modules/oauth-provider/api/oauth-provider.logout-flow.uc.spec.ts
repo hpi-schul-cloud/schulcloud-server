@@ -1,6 +1,6 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Test, TestingModule } from '@nestjs/testing';
-import { ProviderRedirectResponse } from '../domain';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import { Test, type TestingModule } from '@nestjs/testing';
+import { type ProviderRedirectResponse } from '../domain';
 import { OauthProviderService } from '../domain/service/oauth-provider.service';
 import { OauthProviderLogoutFlowUc } from './oauth-provider.logout-flow.uc';
 

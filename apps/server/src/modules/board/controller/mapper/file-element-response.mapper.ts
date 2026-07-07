@@ -1,6 +1,6 @@
 import { ContentElementType, FileElement } from '../../domain';
 import { FileElementContent, FileElementResponse, TimestampsResponse } from '../dto';
-import { BaseResponseMapper } from './base-mapper.interface';
+import { type BaseResponseMapper } from './base-mapper.interface';
 
 export class FileElementResponseMapper implements BaseResponseMapper {
 	private static instance: FileElementResponseMapper;

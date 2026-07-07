@@ -1,5 +1,5 @@
-import { Loggable, LoggableMessage } from '@shared/common/loggable';
-import { LogMessageDataObject } from '@shared/common/loggable/interfaces';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
+import { type LogMessageDataObject } from '@shared/common/loggable/interfaces';
 
 export class ErwinIdentifierLoggable implements Loggable {
 	constructor(

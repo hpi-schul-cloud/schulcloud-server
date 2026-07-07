@@ -1,9 +1,9 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { Logger } from '@infra/logger';
 import {
-	SchulconnexPoliciesInfoLicenseResponse,
-	SchulconnexPoliciesInfoResponse,
-	SchulconnexResponse,
+	type SchulconnexPoliciesInfoLicenseResponse,
+	type SchulconnexPoliciesInfoResponse,
+	type SchulconnexResponse,
 	SchulconnexResponseValidationGroups,
 	SchulconnexRestClient,
 } from '@infra/schulconnex-client';
@@ -19,7 +19,7 @@ import { groupFactory } from '@modules/group/testing';
 import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
 import { userDoFactory } from '@modules/user/testing';
 import { InternalServerErrorException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException, ValidationErrorLoggableException } from '@shared/common/loggable-exception';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import * as classValidator from 'class-validator';
@@ -27,9 +27,9 @@ import { randomUUID } from 'crypto';
 import { RoleName } from '../../../role';
 import { SchulconnexGroupProvisioningProducer, SchulconnexLicenseProvisioningProducer } from '../../amqp';
 import {
-	SchulconnexGroupProvisioningMessage,
-	SchulconnexGroupRemovalMessage,
-	SchulconnexLicenseProvisioningMessage,
+	type SchulconnexGroupProvisioningMessage,
+	type SchulconnexGroupRemovalMessage,
+	type SchulconnexLicenseProvisioningMessage,
 } from '../../domain';
 import {
 	ExternalGroupDto,
@@ -42,7 +42,7 @@ import {
 	ProvisioningSystemDto,
 } from '../../dto';
 import { PoliciesInfoErrorResponseLoggable } from '../../loggable';
-import { PROVISIONING_CONFIG_TOKEN, ProvisioningConfig } from '../../provisioning.config';
+import { PROVISIONING_CONFIG_TOKEN, type ProvisioningConfig } from '../../provisioning.config';
 import { externalGroupDtoFactory, externalSchoolDtoFactory, externalUserDtoFactory } from '../../testing';
 import { SchulconnexAsyncProvisioningStrategy } from './schulconnex-async-provisioning.strategy';
 import { SchulconnexResponseMapper } from './schulconnex-response-mapper';

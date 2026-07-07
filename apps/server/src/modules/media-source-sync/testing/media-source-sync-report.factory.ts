@@ -1,6 +1,6 @@
 import { Factory } from 'fishery';
 import { mediaSourceSyncOperationReportFactory } from './media-source-sync-operation-report.factory';
-import { MediaSourceSyncReport } from '../interface';
+import { type MediaSourceSyncReport } from '../interface';
 
 class MediaSourceSyncReportFactory extends Factory<MediaSourceSyncReport, MediaSourceSyncReport> {
 	public withOthersEmpty(report: Partial<MediaSourceSyncReport>): this {

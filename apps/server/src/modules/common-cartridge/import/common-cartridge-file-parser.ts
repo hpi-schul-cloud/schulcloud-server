@@ -1,8 +1,8 @@
 import AdmZip from 'adm-zip';
-import { CheerioAPI, load } from 'cheerio';
+import { type CheerioAPI, load } from 'cheerio';
 import {
-	CommonCartridgeOrganizationProps,
-	CommonCartridgeResourceProps,
+	type CommonCartridgeOrganizationProps,
+	type CommonCartridgeResourceProps,
 	DEFAULT_FILE_PARSER_OPTIONS,
 } from './common-cartridge-import.types';
 import { CommonCartridgeManifestParser } from './common-cartridge-manifest-parser';

@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { RobjExportKlasse } from '@infra/tsp-client';
+import { type RobjExportKlasse } from '@infra/tsp-client';
 import { Factory } from 'fishery';
 
 export const robjExportKlasseFactory = Factory.define<RobjExportKlasse, RobjExportKlasse>(({ sequence }) => {

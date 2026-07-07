@@ -8,15 +8,15 @@ import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.fact
 import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server/server.app.module';
 import { userFactory } from '@modules/user/testing';
-import { INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { type INestApplication } from '@nestjs/common';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { TestApiClient } from '@testing/test-api-client';
-import { BoardConfig } from '../../board.config';
+import { type BoardConfig } from '../../board.config';
 import { BoardExternalReferenceType } from '../../domain';
 import { columnBoardEntityFactory } from '../../testing';
 import { BoardUc } from '../../uc';
-import { BoardResponse } from '../dto';
+import { type BoardResponse } from '../dto';
 
 const baseRouteName = '/boards';
 

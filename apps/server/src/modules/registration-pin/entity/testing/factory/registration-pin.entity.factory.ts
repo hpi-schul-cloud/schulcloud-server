@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseFactory } from '@testing/factory/base.factory';
-import { RegistrationPinEntity, RegistrationPinEntityProps } from '../../registration-pin.entity';
+import { RegistrationPinEntity, type RegistrationPinEntityProps } from '../../registration-pin.entity';
 
 export const registrationPinEntityFactory = BaseFactory.define<RegistrationPinEntity, RegistrationPinEntityProps>(
 	RegistrationPinEntity,

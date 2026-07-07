@@ -1,11 +1,11 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { DefaultEncryptionService, SymmetricKeyEncryptionService } from '@infra/encryption';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import { DefaultEncryptionService, type SymmetricKeyEncryptionService } from '@infra/encryption';
 import { FileSystemAdapter } from '@infra/file-system';
 import { LegacyLogger } from '@infra/logger';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Role } from '@modules/role/repo';
-import { SchoolEntity, StorageProviderEntity } from '@modules/school/repo';
-import { Test, TestingModule } from '@nestjs/testing';
+import { SchoolEntity, type StorageProviderEntity } from '@modules/school/repo';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { BsonConverter } from '../converter/bson.converter';
 import { MANAGEMENT_SEED_DATA_CONFIG_TOKEN } from '../management-seed-data.config';

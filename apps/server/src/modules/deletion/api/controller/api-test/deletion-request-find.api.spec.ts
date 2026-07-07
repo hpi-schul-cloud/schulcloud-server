@@ -1,11 +1,11 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { AdminApiServerTestModule } from '@modules/server/admin-api.server.app.module';
-import { INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { type INestApplication } from '@nestjs/common';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { TestApiClient } from '@testing/test-api-client';
 import { deletionRequestEntityFactory } from '../../../repo/entity/testing';
-import { DeletionRequestLogResponse } from '../dto';
+import { type DeletionRequestLogResponse } from '../dto';
 
 const baseRouteName = '/deletionRequests';
 

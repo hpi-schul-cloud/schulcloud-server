@@ -1,4 +1,4 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { User } from '@modules/user/repo/user.entity';
@@ -6,7 +6,7 @@ import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserEventSubscriber } from '@modules/user/repo/user-event-subscriber';
 import { userFactory } from '@modules/user/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { EventBus } from '@nestjs/cqrs';
 
 describe(UserEventSubscriber.name, () => {

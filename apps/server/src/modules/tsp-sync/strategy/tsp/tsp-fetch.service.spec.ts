@@ -1,12 +1,12 @@
 import { faker } from '@faker-js/faker';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { AxiosErrorLoggable } from '@infra/error';
 import {
-	ExportApiInterface,
-	RobjExportKlasse,
-	RobjExportLehrer,
-	RobjExportSchueler,
-	RobjExportSchule,
+	type ExportApiInterface,
+	type RobjExportKlasse,
+	type RobjExportLehrer,
+	type RobjExportSchueler,
+	type RobjExportSchule,
 	TspClientFactory,
 } from '@infra/tsp-client';
 import {
@@ -17,8 +17,8 @@ import {
 } from '@infra/tsp-client/testing';
 import { OauthConfigMissingLoggableException } from '@modules/oauth/loggable';
 import { systemFactory } from '@modules/system/testing';
-import { Test, TestingModule } from '@nestjs/testing';
-import { AxiosError, AxiosResponse } from 'axios';
+import { Test, type TestingModule } from '@nestjs/testing';
+import { AxiosError, type AxiosResponse } from 'axios';
 import moment from 'moment';
 import { TspFetchService } from './tsp-fetch.service';
 

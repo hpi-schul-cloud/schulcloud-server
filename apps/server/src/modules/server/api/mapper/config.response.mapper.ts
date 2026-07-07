@@ -1,24 +1,24 @@
-import { AlertPublicApiConfig } from '@modules/alert';
-import { BoardPublicApiConfig } from '@modules/board';
-import { BoardContextPublicApiConfig } from '@modules/board-context';
-import { CommonCartridgePublicApiConfig } from '@modules/common-cartridge';
-import { FwuPublicApiConfig } from '@modules/fwu-learning-contents';
-import { LearnroomPublicApiConfig } from '@modules/learnroom';
-import { OauthPublicApiConfig } from '@modules/oauth';
-import { ProvisioningPublicApiConfig } from '@modules/provisioning';
-import { RegistrationPublicApiConfig } from '@modules/registration';
-import { RoomPublicApiConfig } from '@modules/room';
-import { RosterPublicApiConfig } from '@modules/roster';
-import { SharingPublicApiConfig } from '@modules/sharing';
-import { TaskPublicApiConfig } from '@modules/task';
-import { ToolPublicApiConfig } from '@modules/tool';
-import { UserPublicApiConfig } from '@modules/user';
-import { UserImportPublicApiConfig } from '@modules/user-import';
-import { UserLoginMigrationPublicApiConfig } from '@modules/user-login-migration';
-import { VideoConferencePublicApiConfig } from '@modules/video-conference';
-import { ServerPublicApiConfig } from '../../server.config';
+import { type AlertPublicApiConfig } from '@modules/alert';
+import { type BoardPublicApiConfig } from '@modules/board';
+import { type BoardContextPublicApiConfig } from '@modules/board-context';
+import { type CommonCartridgePublicApiConfig } from '@modules/common-cartridge';
+import { type FwuPublicApiConfig } from '@modules/fwu-learning-contents';
+import { type LearnroomPublicApiConfig } from '@modules/learnroom';
+import { type OauthPublicApiConfig } from '@modules/oauth';
+import { type ProvisioningPublicApiConfig } from '@modules/provisioning';
+import { type RegistrationPublicApiConfig } from '@modules/registration';
+import { type RoomPublicApiConfig } from '@modules/room';
+import { type RosterPublicApiConfig } from '@modules/roster';
+import { type SharingPublicApiConfig } from '@modules/sharing';
+import { type TaskPublicApiConfig } from '@modules/task';
+import { type ToolPublicApiConfig } from '@modules/tool';
+import { type UserPublicApiConfig } from '@modules/user';
+import { type UserImportPublicApiConfig } from '@modules/user-import';
+import { type UserLoginMigrationPublicApiConfig } from '@modules/user-login-migration';
+import { type VideoConferencePublicApiConfig } from '@modules/video-conference';
+import { type ServerPublicApiConfig } from '../../server.config';
 import { ConfigResponse } from '../dto';
-import { TeamPublicApiConfig } from '@modules/team';
+import { type TeamPublicApiConfig } from '@modules/team';
 
 export class ConfigResponseMapper {
 	public static mapToResponse(

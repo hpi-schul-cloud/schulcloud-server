@@ -1,4 +1,4 @@
-import { EntityData, EntityManager } from '@mikro-orm/core';
+import { type EntityData, EntityManager } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { SchoolEntity, SchoolRolePermission, SchoolRoles, SchoolYearEntity } from '@modules/school/repo';
 import { schoolEntityFactory, schoolYearEntityFactory } from '@modules/school/testing';
@@ -7,9 +7,9 @@ import { systemEntityFactory } from '@modules/system/testing';
 import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { userLoginMigrationFactory } from '@modules/user-login-migration/testing';
 import { InternalServerErrorException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@testing/database';
-import { LegacySchoolDo } from '../domain';
+import { type LegacySchoolDo } from '../domain';
 import { legacySchoolDoFactory } from '../testing';
 import { LegacySchoolRepo } from './legacy-school.repo';
 

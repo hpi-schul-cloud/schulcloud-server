@@ -1,6 +1,6 @@
 import { BadRequestException, ForbiddenException } from '@nestjs/common';
 import { DomainObject } from '@shared/domain/domain-object';
-import { Constructor, EntityId } from '@shared/domain/types';
+import { type Constructor, type EntityId } from '@shared/domain/types';
 import { joinPath, PATH_SEPARATOR, ROOT_PATH } from './path-utils';
 import type { AnyBoardNode, BoardNodeProps } from './types';
 

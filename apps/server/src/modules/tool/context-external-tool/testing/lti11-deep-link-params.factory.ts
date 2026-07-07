@@ -1,9 +1,9 @@
 import { UUID } from 'bson';
-import { DeepPartial, Factory } from 'fishery';
+import { type DeepPartial, Factory } from 'fishery';
 import crypto from 'node:crypto';
-import OAuth, { Authorization, RequestOptions } from 'oauth-1.0a';
-import { Lti11ContentItemType, Lti11DeepLinkParams } from '../controller/dto';
-import { Lti11DeepLinkParamsRaw } from '../controller/dto/lti11-deep-link/lti11-deep-link-raw.params';
+import OAuth, { type Authorization, type RequestOptions } from 'oauth-1.0a';
+import { Lti11ContentItemType, type Lti11DeepLinkParams } from '../controller/dto';
+import { type Lti11DeepLinkParamsRaw } from '../controller/dto/lti11-deep-link/lti11-deep-link-raw.params';
 
 type Lti11DeepLinkParamsPayload = Omit<Lti11DeepLinkParams, keyof Authorization>;
 

@@ -1,4 +1,4 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { AuthorizationService } from '@modules/authorization';
 import { PseudonymService } from '@modules/pseudonym';
 import { pseudonymFactory } from '@modules/pseudonym/testing';
@@ -7,10 +7,10 @@ import { UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
 import { userDoFactory, userFactory } from '@modules/user/testing';
 import { InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
-import { OauthProviderLoginFlowService, OauthProviderService, ProviderRedirectResponse } from '../domain';
+import { OauthProviderLoginFlowService, OauthProviderService, type ProviderRedirectResponse } from '../domain';
 import { providerLoginResponseFactory } from '../testing';
 import { OauthProviderLoginFlowUc } from './oauth-provider.login-flow.uc';
 

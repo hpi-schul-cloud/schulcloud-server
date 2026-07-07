@@ -1,4 +1,4 @@
-import { PageOfferDTO } from '@infra/vidis-client';
+import { type PageOfferDTO } from '@infra/vidis-client';
 import { Factory } from 'fishery';
 import { vidisOfferItemFactory } from './vidis-offer-item.factory';
 

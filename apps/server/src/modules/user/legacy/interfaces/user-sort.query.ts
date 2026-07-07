@@ -1,4 +1,4 @@
-import { SortOrderNumberType } from '@shared/domain/interface';
+import { type SortOrderNumberType } from '@shared/domain/interface';
 
 export interface UserSortQuery extends SortOrderNumberType {
 	sortBySearchQueryResult?: number;

@@ -1,4 +1,4 @@
-import { RoomMembership, RoomMembershipProps } from '../do/room-membership.do';
+import { RoomMembership, type RoomMembershipProps } from '../do/room-membership.do';
 import { roomMembershipEntityFactory } from '../testing';
 import { RoomMembershipEntity } from './entity';
 import { RoomMembershipDomainMapper } from './room-membership-domain.mapper';

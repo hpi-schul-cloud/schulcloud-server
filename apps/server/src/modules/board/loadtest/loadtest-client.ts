@@ -1,27 +1,27 @@
 import { InputFormat } from '@shared/domain/types';
 import { chunk } from 'lodash';
 import {
-	AnyContentElementResponse,
-	BoardResponse,
-	CardResponse,
-	ColumnResponse,
-	LinkContentBody,
+	type AnyContentElementResponse,
+	type BoardResponse,
+	type CardResponse,
+	type ColumnResponse,
+	type LinkContentBody,
 } from '../controller/dto';
 import { ContentElementType } from '../domain';
 import {
-	CreateCardMessageParams,
-	CreateContentElementMessageParams,
-	DeleteCardMessageParams,
-	DeleteColumnMessageParams,
-	DeleteContentElementMessageParams,
-	FetchCardsMessageParams,
-	UpdateBoardTitleMessageParams,
-	UpdateCardTitleMessageParams,
-	UpdateColumnTitleMessageParams,
-	UpdateContentElementMessageParams,
+	type CreateCardMessageParams,
+	type CreateContentElementMessageParams,
+	type DeleteCardMessageParams,
+	type DeleteColumnMessageParams,
+	type DeleteContentElementMessageParams,
+	type FetchCardsMessageParams,
+	type UpdateBoardTitleMessageParams,
+	type UpdateCardTitleMessageParams,
+	type UpdateColumnTitleMessageParams,
+	type UpdateContentElementMessageParams,
 } from '../gateway/dto';
 import { sleep } from './helper/sleep';
-import { SocketConnection } from './socket-connection';
+import { type SocketConnection } from './socket-connection';
 
 export class LoadtestClient {
 	constructor(

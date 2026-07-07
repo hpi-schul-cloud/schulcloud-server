@@ -1,9 +1,9 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ExternalTool } from '@modules/tool/external-tool/domain';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import { type ExternalTool } from '@modules/tool/external-tool/domain';
 import { ExternalToolService } from '@modules/tool/external-tool/service';
 import { externalToolFactory } from '@modules/tool/external-tool/testing';
 import { NotFoundException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { OauthProviderLoginFlowService } from './oauth-provider.login-flow.service';
 
 describe(OauthProviderLoginFlowService.name, () => {

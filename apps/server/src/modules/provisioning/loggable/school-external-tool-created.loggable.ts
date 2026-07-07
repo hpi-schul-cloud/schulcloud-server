@@ -1,6 +1,6 @@
-import { MediumIdentifier } from '@modules/media-source';
-import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
-import { Loggable, LoggableMessage } from '@shared/common/loggable';
+import { type MediumIdentifier } from '@modules/media-source';
+import { type SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
 
 export class SchoolExternalToolCreatedLoggable implements Loggable {
 	constructor(

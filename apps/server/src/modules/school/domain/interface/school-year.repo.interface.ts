@@ -1,6 +1,6 @@
-import { SchoolYearEntity } from '@modules/school/repo';
-import { BaseRepo } from '@shared/repo/base.repo';
-import { SchoolYear } from '../do';
+import { type SchoolYearEntity } from '@modules/school/repo';
+import { type BaseRepo } from '@shared/repo/base.repo';
+import { type SchoolYear } from '../do';
 
 export interface SchoolYearRepo extends BaseRepo<SchoolYearEntity> {
 	findCurrentYear(): Promise<SchoolYearEntity>;

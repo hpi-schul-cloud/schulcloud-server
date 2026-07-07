@@ -1,6 +1,6 @@
-import { RoleName, RoomRole } from '@modules/role';
-import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
-import { EntityId } from '@shared/domain/types';
+import { RoleName, type RoomRole } from '@modules/role';
+import { type AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
+import { type EntityId } from '@shared/domain/types';
 
 export interface RoomInvitationLinkProps extends AuthorizableObject {
 	id: EntityId;

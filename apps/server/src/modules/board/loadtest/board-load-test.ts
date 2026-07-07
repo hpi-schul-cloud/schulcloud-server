@@ -1,10 +1,10 @@
 import { duplicateUserProfiles } from './helper/class-definitions';
 import { getRandomCardTitle, getRandomLink, getRandomRichContentBody } from './helper/randomData';
 import { sleep } from './helper/sleep';
-import { createLoadtestClient, LoadtestClient } from './loadtest-client';
-import { SocketConnection } from './socket-connection';
-import { SocketConnectionManager } from './socket-connection-manager';
-import { Callback, ClassDefinition, UserProfile } from './types';
+import { createLoadtestClient, type LoadtestClient } from './loadtest-client';
+import { type SocketConnection } from './socket-connection';
+import { type SocketConnectionManager } from './socket-connection-manager';
+import { type Callback, type ClassDefinition, type UserProfile } from './types';
 
 const SIMULATE_USER_TIME_MS = 120000;
 

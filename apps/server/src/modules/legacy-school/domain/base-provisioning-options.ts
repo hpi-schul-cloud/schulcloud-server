@@ -1,5 +1,5 @@
-import { ProvisioningOptionsInterface } from '../interface';
-import { ProvisioningOptionsType } from './provisioning-options-type';
+import { type ProvisioningOptionsInterface } from '../interface';
+import { type ProvisioningOptionsType } from './provisioning-options-type';
 
 export abstract class BaseProvisioningOptions<T extends ProvisioningOptionsInterface> {
 	public isApplicable(provisioningOptions: ProvisioningOptionsInterface): provisioningOptions is T {

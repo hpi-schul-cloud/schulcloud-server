@@ -1,9 +1,9 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Group, GroupService, GroupTypes } from '@modules/group';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import { type Group, GroupService, GroupTypes } from '@modules/group';
 import { groupFactory } from '@modules/group/testing';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { Page } from '@shared/domain/domainobject';
-import { SchoolSystemOptions, SchulConneXProvisioningOptions } from '../domain';
+import { type SchoolSystemOptions, SchulConneXProvisioningOptions } from '../domain';
 import { SchulconnexProvisioningOptionsUpdateService } from './schulconnex-provisioning-options-update.service';
 import { schoolSystemOptionsFactory } from '../testing';
 

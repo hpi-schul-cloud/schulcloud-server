@@ -1,6 +1,10 @@
 import { RuntimeConfigValueInvalidDataLoggable } from '../domain/loggable/runtime-config-invalid-data.loggable';
-import { RuntimeConfigDefault, RuntimeConfigValue, RuntimeConfigValueAndType } from '../domain/runtime-config-value.do';
-import { RuntimeConfigEntity } from './entity/runtime-config.entity';
+import {
+	type RuntimeConfigDefault,
+	type RuntimeConfigValue,
+	type RuntimeConfigValueAndType,
+} from '../domain/runtime-config-value.do';
+import { type RuntimeConfigEntity } from './entity/runtime-config.entity';
 import { RuntimeConfigValueFactory } from './runtime-config-value.factory';
 
 export class RuntimeConfigEntityMapper {

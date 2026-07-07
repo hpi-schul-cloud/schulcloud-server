@@ -1,5 +1,5 @@
 import { InternalServerErrorException } from '@nestjs/common';
-import { Loggable, LoggableMessage } from '@shared/common/loggable';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
 
 export class InvalidLernperiodeResponseLoggableException extends InternalServerErrorException implements Loggable {
 	constructor(private readonly lernperiode: string) {

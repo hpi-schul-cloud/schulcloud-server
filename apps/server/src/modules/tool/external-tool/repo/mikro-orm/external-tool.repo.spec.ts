@@ -3,10 +3,10 @@ import { LegacyLogger } from '@infra/logger';
 import { UniqueConstraintViolationException } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { InternalServerErrorException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { ValidationError } from '@shared/common/error';
-import { Page } from '@shared/domain/domainobject';
-import { IFindOptions, SortOrder } from '@shared/domain/interface';
+import { type Page } from '@shared/domain/domainobject';
+import { type IFindOptions, SortOrder } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { CustomParameter } from '../../../common/domain';
@@ -17,8 +17,8 @@ import {
 	LtiMessageType,
 	LtiPrivacyPermission,
 } from '../../../common/enum';
-import { ExternalToolSearchQuery } from '../../../common/interface';
-import { BasicToolConfig, ExternalTool, Lti11ToolConfig, Oauth2ToolConfig } from '../../domain';
+import { type ExternalToolSearchQuery } from '../../../common/interface';
+import { BasicToolConfig, type ExternalTool, Lti11ToolConfig, Oauth2ToolConfig } from '../../domain';
 import { ExternalToolMediumStatus } from '../../enum';
 import { externalToolEntityFactory, externalToolFactory } from '../../testing';
 import { ExternalToolEntity } from './external-tool.entity';

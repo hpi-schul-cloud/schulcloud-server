@@ -1,5 +1,5 @@
-import { Colors } from './types';
-import { MediaAvailableLineElement } from './media-available-line-element.do';
+import { type Colors } from './types';
+import { type MediaAvailableLineElement } from './media-available-line-element.do';
 // TODO
 export class MediaAvailableLine {
 	elements: MediaAvailableLineElement[];

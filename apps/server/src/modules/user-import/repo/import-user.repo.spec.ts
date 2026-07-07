@@ -5,12 +5,12 @@ import { SchoolEntity } from '@modules/school/repo';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { createCollections } from '@testing/create-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { ImportUserMatchCreatorScope } from '../domain/interface';
-import { ImportUser, ImportUserRoleName, MatchCreator } from '../entity';
+import { ImportUser, type ImportUserRoleName, MatchCreator } from '../entity';
 import { importUserFactory } from '../testing';
 import { ImportUserRepo } from './import-user.repo';
 

@@ -1,10 +1,10 @@
-import { ObjectId } from '@mikro-orm/mongodb';
+import { type ObjectId } from '@mikro-orm/mongodb';
 import type { AccountEntity } from '@modules/account/repo';
 import { accountFactory } from '@modules/account/testing/account.factory';
 // eslint-disable-next-line @typescript-eslint/no-restricted-imports
 import type { SchoolEntity } from '@modules/school/repo';
 // eslint-disable-next-line @typescript-eslint/no-restricted-imports
-import { User, UserSchoolEmbeddable } from '@modules/user/repo';
+import { type User, type UserSchoolEmbeddable } from '@modules/user/repo';
 // eslint-disable-next-line @typescript-eslint/no-restricted-imports
 import { userFactory } from '@modules/user/testing';
 import type { LanguageType, Permission } from '@shared/domain/interface';

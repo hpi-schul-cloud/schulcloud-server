@@ -1,21 +1,21 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { GroupEntity, GroupUserEmbeddable } from '@modules/group/entity';
+import { type GroupEntity, type GroupUserEmbeddable } from '@modules/group/entity';
 import { groupEntityFactory } from '@modules/group/testing';
 import { RoleName } from '@modules/role';
-import { RoomMembershipEntity } from '@modules/room-membership';
+import { type RoomMembershipEntity } from '@modules/room-membership';
 import { roomMembershipEntityFactory } from '@modules/room-membership/testing';
 import { roomEntityFactory } from '@modules/room/testing';
 import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus, type INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
-import { RoomProps } from '../../../room/domain';
-import { RoomEntity } from '../../../room/repo';
-import { CreateRoomInvitationLinkBodyParams } from '../dto/request/create-room-invitation-link.body.params';
+import { type RoomProps } from '../../../room/domain';
+import { type RoomEntity } from '../../../room/repo';
+import { type CreateRoomInvitationLinkBodyParams } from '../dto/request/create-room-invitation-link.body.params';
 
 const inOneWeek = new Date(Date.now() + 1000 * 60 * 60 * 24 * 7);
 

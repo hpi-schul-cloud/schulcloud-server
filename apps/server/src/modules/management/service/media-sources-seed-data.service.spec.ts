@@ -1,5 +1,5 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import { DefaultEncryptionService, type EncryptionService } from '@infra/encryption';
 import {
 	MediaSource,
 	MediaSourceAuthMethod,
@@ -7,8 +7,8 @@ import {
 	MediaSourceService,
 	MediaSourceVidisConfig,
 } from '@modules/media-source';
-import { Test, TestingModule } from '@nestjs/testing';
-import { MANAGEMENT_SEED_DATA_CONFIG_TOKEN, ManagementSeedDataConfig } from '../management-seed-data.config';
+import { Test, type TestingModule } from '@nestjs/testing';
+import { MANAGEMENT_SEED_DATA_CONFIG_TOKEN, type ManagementSeedDataConfig } from '../management-seed-data.config';
 import { MediaSourcesSeedDataService } from './media-sources-seed-data.service';
 
 describe(MediaSourcesSeedDataService.name, () => {

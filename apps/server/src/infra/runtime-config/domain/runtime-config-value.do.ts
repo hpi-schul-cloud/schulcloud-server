@@ -1,5 +1,5 @@
 import { sanitizeRichText } from '@shared/controller/transformer/sanitize-html.transformer';
-import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
+import { type AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { InputFormat } from '@shared/domain/types';
 import { RuntimeConfigValueInvalidTypeLoggable } from './loggable/runtime-config-value-invalid-type.loggable';
 

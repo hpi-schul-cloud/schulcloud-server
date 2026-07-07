@@ -1,5 +1,5 @@
-import { AnyEntity, EntityClass, MigrationsOptions } from '@mikro-orm/core';
-import { InternalDatabaseConfig } from './internal-database.config';
+import { type AnyEntity, type EntityClass, type MigrationsOptions } from '@mikro-orm/core';
+import { type InternalDatabaseConfig } from './internal-database.config';
 
 export interface DatabaseModuleOptions {
 	entities: EntityClass<AnyEntity>[];

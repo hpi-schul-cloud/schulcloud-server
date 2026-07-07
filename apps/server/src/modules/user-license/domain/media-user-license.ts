@@ -1,5 +1,5 @@
-import { MediaSource, MediumIdentifier } from '@modules/media-source';
-import { UserLicense, UserLicenseProps } from './user-license';
+import { type MediaSource, type MediumIdentifier } from '@modules/media-source';
+import { UserLicense, type UserLicenseProps } from './user-license';
 
 export interface MediaUserLicenseProps extends UserLicenseProps, MediumIdentifier {}
 

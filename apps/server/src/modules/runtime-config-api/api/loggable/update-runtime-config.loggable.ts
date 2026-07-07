@@ -1,5 +1,5 @@
-import { RuntimeConfigValueType } from '@infra/runtime-config';
-import { Loggable, LoggableMessage } from '@shared/common/loggable';
+import { type RuntimeConfigValueType } from '@infra/runtime-config';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
 
 export class UpdateRuntimeConfigLoggable implements Loggable {
 	constructor(

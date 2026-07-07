@@ -1,9 +1,9 @@
-import { FilterQuery } from '@mikro-orm/core';
-import { EntityId } from '@shared/domain/types';
+import { type FilterQuery } from '@mikro-orm/core';
+import { type EntityId } from '@shared/domain/types';
 import { EmptyResultQuery } from '@shared/repo/query';
 import { Scope } from '@shared/repo/scope';
-import { NewsTargetFilter } from '../news-target-filter';
-import { News } from '../news.entity';
+import { type NewsTargetFilter } from '../news-target-filter';
+import { type News } from '../news.entity';
 
 export class NewsScope extends Scope<News> {
 	public byTargets(targets: NewsTargetFilter[]): NewsScope {

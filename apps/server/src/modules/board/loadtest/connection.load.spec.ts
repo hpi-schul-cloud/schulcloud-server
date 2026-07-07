@@ -1,6 +1,6 @@
 /* eslint-disable no-process-env */
 import { SocketConnectionManager } from './socket-connection-manager';
-import { SocketConfiguration } from './types';
+import { type SocketConfiguration } from './types';
 
 const CONNECTION_AMOUNT = Number.parseInt(process.env.CONNECTION_AMOUNT ?? '640', 10);
 

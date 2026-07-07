@@ -1,4 +1,4 @@
-import { AuthorizableReferenceType, AuthorizationLoaderService, CurrentUserLoader, Rule } from '../type';
+import { AuthorizableReferenceType, type AuthorizationLoaderService, type CurrentUserLoader, type Rule } from '../type';
 import { AuthorizationInjectionService } from './authorization-injection.service';
 
 function createRuleMock(isApplicable: boolean, hasPermission: boolean): Rule {

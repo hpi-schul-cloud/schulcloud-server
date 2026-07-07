@@ -1,6 +1,6 @@
 // eslint-disable-next-line @typescript-eslint/no-restricted-imports
-import { CreateJwtPayload } from '@infra/auth-guard';
-import { TestJwtModuleConfig } from '@testing/test-jwt-module.config';
+import { type CreateJwtPayload } from '@infra/auth-guard';
+import { type TestJwtModuleConfig } from '@testing/test-jwt-module.config';
 import jwt from 'jsonwebtoken';
 
 export class JwtAuthenticationFactory {

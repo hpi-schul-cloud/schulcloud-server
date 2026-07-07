@@ -5,7 +5,7 @@ import { LessonEntity, Material } from '@modules/lesson/repo';
 import { lessonFactory } from '@modules/lesson/testing';
 import { SchoolEntity } from '@modules/school/repo';
 import { Submission, Task } from '@modules/task/repo';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { boardFactory, lessonBoardElementFactory, taskBoardElementFactory } from '../../testing';

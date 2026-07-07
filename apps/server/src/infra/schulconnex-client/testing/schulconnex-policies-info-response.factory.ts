@@ -1,9 +1,9 @@
 import { Factory } from 'fishery';
 import {
 	SchulconnexPoliciesInfoActionType,
-	SchulconnexPoliciesInfoErrorResponse,
-	SchulconnexPoliciesInfoLicenseResponse,
-	SchulconnexPoliciesInfoResponse,
+	type SchulconnexPoliciesInfoErrorResponse,
+	type SchulconnexPoliciesInfoLicenseResponse,
+	type SchulconnexPoliciesInfoResponse,
 } from '../response';
 
 export const schulconnexPoliciesInfoLicenseResponseFactory = Factory.define<SchulconnexPoliciesInfoLicenseResponse>(

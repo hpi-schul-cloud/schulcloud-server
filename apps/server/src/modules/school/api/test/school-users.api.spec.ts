@@ -1,22 +1,22 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { AUTHORIZATION_CONFIG_TOKEN, AuthorizationConfig } from '@modules/authorization';
+import { AUTHORIZATION_CONFIG_TOKEN, type AuthorizationConfig } from '@modules/authorization';
 import { classEntityFactory } from '@modules/class/entity/testing/factory/class.entity.factory';
 import { GroupEntityTypes } from '@modules/group/entity';
 import { groupEntityFactory } from '@modules/group/testing';
 import { RoleName } from '@modules/role';
-import { Role } from '@modules/role/repo';
+import { type Role } from '@modules/role/repo';
 import { roleFactory } from '@modules/role/testing';
-import { SchoolEntity } from '@modules/school/repo';
+import { type SchoolEntity } from '@modules/school/repo';
 import { schoolEntityFactory, schoolYearEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
-import { User } from '@modules/user/repo';
+import { type User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus, type INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
-import { SchoolUserListResponse } from '../dto';
+import { type SchoolUserListResponse } from '../dto';
 
 describe('School Controller (API)', () => {
 	let app: INestApplication;

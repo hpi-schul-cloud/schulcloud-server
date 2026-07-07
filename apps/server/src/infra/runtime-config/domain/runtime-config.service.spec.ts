@@ -1,8 +1,8 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Test, TestingModule } from '@nestjs/testing';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { RUNTIME_CONFIG_REPO } from '../injection-keys';
 import { runtimeConfigTestingFactory } from '../testing/runtime-config-value.testing.factory';
-import { RuntimeConfigRepo } from './runtime-config.repo.interface';
+import { type RuntimeConfigRepo } from './runtime-config.repo.interface';
 import { RuntimeConfigService } from './runtime-config.service';
 
 describe('RuntimeConfigService', () => {

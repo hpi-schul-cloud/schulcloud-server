@@ -1,8 +1,8 @@
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
-import { CopyElementType, CopyStatus, CopyStatusEnum } from '../types/copy.types';
+import { CopyElementType, type CopyStatus, CopyStatusEnum } from '../types/copy.types';
 import { CopyHelperService } from './copy-helper.service';
 
 function createStates(elementStates: CopyStatusEnum[]): CopyStatus[] {

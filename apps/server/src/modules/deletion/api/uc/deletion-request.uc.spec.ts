@@ -1,21 +1,21 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { LegacyLogger } from '@infra/logger';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountService } from '@modules/account';
 import { AuthenticationService } from '@modules/authentication';
 import { UserService } from '@modules/user';
 import { NotFoundException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
-import { DELETION_CONFIG_TOKEN, DeletionConfig } from '../../deletion.config';
+import { DELETION_CONFIG_TOKEN, type DeletionConfig } from '../../deletion.config';
 import { DomainDeletionReportBuilder } from '../../domain/builder';
-import { DomainDeletionReport } from '../../domain/interface';
+import { type DomainDeletionReport } from '../../domain/interface';
 import { DeletionExecutionService, DeletionLogService, DeletionRequestService } from '../../domain/service';
 import { deletionLogFactory, deletionRequestFactory } from '../../domain/testing';
 import { DomainName, StatusModel } from '../../domain/types';
 import { DeletionRequestEntity } from '../../repo/entity';
 import { DeletionRequestLogResponseBuilder } from '../builder';
-import { DeletionRequestBodyParams } from '../controller/dto';
+import { type DeletionRequestBodyParams } from '../controller/dto';
 import { DeletionLogStatisticBuilder, DeletionTargetRefBuilder } from '../controller/dto/builder';
 import { DeletionRequestUc } from './deletion-request.uc';
 

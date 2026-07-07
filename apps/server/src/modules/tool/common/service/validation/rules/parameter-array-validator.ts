@@ -1,6 +1,6 @@
-import { ValidationError } from '@shared/common/error';
-import { EntityId } from '@shared/domain/types';
-import { CustomParameter, CustomParameterEntry } from '../../../domain';
+import { type ValidationError } from '@shared/common/error';
+import { type EntityId } from '@shared/domain/types';
+import { type CustomParameter, type CustomParameterEntry } from '../../../domain';
 
 export interface ParameterArrayValidator {
 	validate(

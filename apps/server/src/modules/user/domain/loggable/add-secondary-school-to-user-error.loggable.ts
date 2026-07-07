@@ -1,6 +1,6 @@
 import { InternalServerErrorException } from '@nestjs/common';
-import { Loggable, LoggableMessage } from '@shared/common/loggable';
-import { RoleReference } from '@shared/domain/domainobject';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
+import { type RoleReference } from '@shared/domain/domainobject';
 
 export class AddSecondarySchoolToUsersRoleErrorLoggableException
 	extends InternalServerErrorException

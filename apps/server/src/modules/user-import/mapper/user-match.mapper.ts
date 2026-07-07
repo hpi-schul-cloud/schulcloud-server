@@ -1,10 +1,10 @@
-import { User } from '@modules/user/repo';
+import { type User } from '@modules/user/repo';
 import { StringValidator } from '@shared/common/validator';
 import { RoleName } from '@modules/role';
 import { UserMatchResponse, UserRole } from '../controller/dto';
-import { FilterUserParams } from '../controller/dto/filter-user.params';
-import { ImportUserNameMatchFilter } from '../domain/interface';
-import { MatchCreator } from '../entity';
+import { type FilterUserParams } from '../controller/dto/filter-user.params';
+import { type ImportUserNameMatchFilter } from '../domain/interface';
+import { type MatchCreator } from '../entity';
 import { ImportUserMatchMapper } from './match.mapper';
 
 export class UserMatchMapper {

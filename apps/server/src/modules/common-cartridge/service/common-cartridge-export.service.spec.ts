@@ -1,25 +1,25 @@
 import { faker } from '@faker-js/faker';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import {
-	BoardResponse,
+	type BoardResponse,
 	BoardsClientAdapter,
-	BoardTaskResponse,
+	type BoardTaskResponse,
 	CardClientAdapter,
-	CardListResponse,
+	type CardListResponse,
 	CourseRoomsClientAdapter,
 	CoursesClientAdapter,
 	FilesStorageClientAdapter,
 	LessonClientAdapter,
-	LinkElementContent,
-	RichTextElementContent,
-	SingleColumnBoardResponse,
+	type LinkElementContent,
+	type RichTextElementContent,
+	type SingleColumnBoardResponse,
 } from '@infra/common-cartridge-clients';
 import { fileRecordResponseFactory } from '@infra/files-storage-rest-client/testing';
 import { Logger } from '@infra/logger';
 import { InternalServerErrorException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import AdmZip from 'adm-zip';
-import { ArchiverError } from 'archiver';
+import { type ArchiverError } from 'archiver';
 import { ObjectId } from 'bson';
 import { Readable } from 'node:stream';
 import { CommonCartridgeVersion } from '../export/common-cartridge.enums';

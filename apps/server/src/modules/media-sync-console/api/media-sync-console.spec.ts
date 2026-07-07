@@ -1,8 +1,8 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { ConsoleWriterService } from '@infra/console';
 import { MediaSourceDataFormat } from '@modules/media-source';
-import { Test, TestingModule } from '@nestjs/testing';
-import { MediaSourceSyncOptions } from '../types';
+import { Test, type TestingModule } from '@nestjs/testing';
+import { type MediaSourceSyncOptions } from '../types';
 import { MediaSourceSyncUc } from '../uc';
 import { MediaSyncConsole } from './media-sync-console';
 

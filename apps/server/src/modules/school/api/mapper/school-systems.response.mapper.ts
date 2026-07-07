@@ -1,5 +1,5 @@
-import { System } from '@modules/system';
-import { SystemForLdapLogin } from '../../domain';
+import { type System } from '@modules/system';
+import { type SystemForLdapLogin } from '../../domain';
 import { SystemForLdapLoginResponse, SchoolSystemResponse, ProviderConfigResponse } from '../dto';
 
 export class SystemResponseMapper {

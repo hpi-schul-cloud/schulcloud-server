@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { RoomInvitationLinkEntity } from '../repo/entity/room-invitation-link.entity';
-import { RoomInvitationLinkProps } from '../domain/do/room-invitation-link.do';
+import { type RoomInvitationLinkProps } from '../domain/do/room-invitation-link.do';
 import { EntityFactory } from '@testing/factory/entity.factory';
 
 const inOneWeek = new Date(Date.now() + 1000 * 60 * 60 * 24 * 7);

@@ -1,6 +1,6 @@
 import { UnauthorizedException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { X_API_KEY_AUTH_GUARD_CONFIG_TOKEN, XApiKeyAuthGuardConfig } from '../config';
+import { Test, type TestingModule } from '@nestjs/testing';
+import { X_API_KEY_AUTH_GUARD_CONFIG_TOKEN, type XApiKeyAuthGuardConfig } from '../config';
 import { XApiKeyStrategy } from './x-api-key.strategy';
 
 describe('XApiKeyStrategy', () => {

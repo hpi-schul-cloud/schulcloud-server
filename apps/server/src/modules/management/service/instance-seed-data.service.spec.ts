@@ -1,7 +1,7 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { Instance, InstanceService } from '@modules/instance';
-import { Test, TestingModule } from '@nestjs/testing';
-import { MANAGEMENT_SEED_DATA_CONFIG_TOKEN, ManagementSeedDataConfig } from '../management-seed-data.config';
+import { Test, type TestingModule } from '@nestjs/testing';
+import { MANAGEMENT_SEED_DATA_CONFIG_TOKEN, type ManagementSeedDataConfig } from '../management-seed-data.config';
 import { InstancesSeedDataService } from './instances-seed-data.service';
 
 describe(InstancesSeedDataService.name, () => {

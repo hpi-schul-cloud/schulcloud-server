@@ -1,9 +1,9 @@
-import { EntityDTO } from '@mikro-orm/core';
+import { type EntityDTO } from '@mikro-orm/core';
 import { RoleName } from '@modules/role';
-import { Role } from '@modules/role/repo';
-import { User } from '@modules/user/repo';
+import { type Role } from '@modules/role/repo';
+import { type User } from '@modules/user/repo';
 import { UnprocessableEntityException } from '@nestjs/common';
-import { CourseEntity } from '../../repo';
+import { type CourseEntity } from '../../repo';
 
 export class RoleNameMapper {
 	private static isSuperHero(roles: EntityDTO<Role>[]): boolean {

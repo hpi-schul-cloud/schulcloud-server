@@ -1,8 +1,8 @@
 /* istanbul ignore file */
 import { ObjectId } from '@mikro-orm/mongodb';
-import { EntityId } from '@shared/domain/types';
+import { type EntityId } from '@shared/domain/types';
 import { Factory } from 'fishery';
-import { ShareTokenDO, ShareTokenParentType } from '../domainobject/share-token.do';
+import { type ShareTokenDO, ShareTokenParentType } from '../domainobject/share-token.do';
 
 class ShareTokenDOFactory extends Factory<ShareTokenDO> {
 	/* istanbul ignore next */

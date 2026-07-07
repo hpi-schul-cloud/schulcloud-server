@@ -1,4 +1,4 @@
-import { FederalState } from '../../domain';
+import { type FederalState } from '../../domain';
 import { FederalStateResponse } from '../dto';
 import { CountyResponseMapper } from './county.response.mapper';
 

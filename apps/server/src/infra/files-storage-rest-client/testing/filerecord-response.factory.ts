@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Factory } from 'fishery';
-import { FileRecordParentType, FileRecordResponse, FileRecordScanStatus, PreviewStatus } from '../generated';
+import { FileRecordParentType, type FileRecordResponse, FileRecordScanStatus, PreviewStatus } from '../generated';
 
 export const fileRecordResponseFactory = Factory.define<FileRecordResponse>(({ sequence }) => {
 	return {

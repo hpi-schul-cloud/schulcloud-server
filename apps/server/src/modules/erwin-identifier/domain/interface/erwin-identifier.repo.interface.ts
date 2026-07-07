@@ -1,5 +1,5 @@
-import { EntityId } from '@shared/domain/types';
-import { ErwinIdentifier } from '../do';
+import { type EntityId } from '@shared/domain/types';
+import { type ErwinIdentifier } from '../do';
 
 export interface ErwinIdentifierRepo {
 	create(erwinIdentifier: ErwinIdentifier): Promise<void>;

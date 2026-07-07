@@ -2,7 +2,7 @@ import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { setupEntities } from '@testing/database';
 import { DashboardResponse } from '../controller/dto';
-import { Dashboard, GridElement, GridElementWithPosition } from '../domain/do/dashboard';
+import { Dashboard, GridElement, type GridElementWithPosition } from '../domain/do/dashboard';
 import { DashboardMapper } from './dashboard.mapper';
 
 describe('dashboard mapper', () => {

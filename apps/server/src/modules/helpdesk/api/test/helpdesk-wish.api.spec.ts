@@ -5,12 +5,12 @@ import { roleFactory } from '@modules/role/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
 import { userFactory } from '@modules/user/testing';
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus, type INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
-import { SupportType } from '../../domain';
+import { type SupportType } from '../../domain';
 import { HelpdeskWishCreateParamsFactory } from '../../testing/helpdesk-wish-create-params.test.factory';
 
 describe('Helpdesk Wish Endpoint (API)', () => {

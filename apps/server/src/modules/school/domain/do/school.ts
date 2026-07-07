@@ -1,11 +1,17 @@
 import { ValidationError } from '@shared/common/error';
-import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
-import { LanguageType } from '@shared/domain/interface';
-import { EntityId } from '@shared/domain/types';
-import { FileStorageType, InstanceFeature, SchoolFeature, SchoolPermissions, SchoolPurpose } from '../type';
-import { County } from './county';
-import { FederalState } from './federal-state';
-import { SchoolYear } from './school-year';
+import { type AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
+import { type LanguageType } from '@shared/domain/interface';
+import { type EntityId } from '@shared/domain/types';
+import {
+	type FileStorageType,
+	type InstanceFeature,
+	type SchoolFeature,
+	type SchoolPermissions,
+	SchoolPurpose,
+} from '../type';
+import { type County } from './county';
+import { type FederalState } from './federal-state';
+import { type SchoolYear } from './school-year';
 
 interface SchoolLogo {
 	dataUrl?: string;

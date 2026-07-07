@@ -1,5 +1,5 @@
-import { EntityId } from '@shared/domain/types';
-import { ModuleName, SagaStep, StepReport } from '../type';
+import { type EntityId } from '@shared/domain/types';
+import { ModuleName, SagaStep, type StepReport } from '../type';
 import { Saga } from '../type/saga';
 import { SagaRegistryService } from './saga-registry.service';
 import { SagaStepRegistryService } from './saga-step-registry.service';

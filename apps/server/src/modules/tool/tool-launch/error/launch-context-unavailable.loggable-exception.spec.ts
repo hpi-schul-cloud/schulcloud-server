@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ToolContextType } from '../../common/enum';
-import { ContextExternalToolLaunchable } from '../../context-external-tool/domain';
+import { type ContextExternalToolLaunchable } from '../../context-external-tool/domain';
 import { LaunchContextUnavailableLoggableException } from './launch-context-unavailable.loggable-exception';
 
 describe(LaunchContextUnavailableLoggableException.name, () => {

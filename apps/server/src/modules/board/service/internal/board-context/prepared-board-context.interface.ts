@@ -1,9 +1,9 @@
 import {
-	BoardConfiguration,
-	BoardExternalReferenceType,
-	ColumnBoard,
-	MediaBoard,
-	UserWithBoardRoles,
+	type BoardConfiguration,
+	type BoardExternalReferenceType,
+	type ColumnBoard,
+	type MediaBoard,
+	type UserWithBoardRoles,
 } from '../../../domain';
 
 /**

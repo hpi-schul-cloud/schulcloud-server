@@ -1,28 +1,32 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { DefaultEncryptionService, EncryptionService, SymmetricKeyEncryptionService } from '@infra/encryption';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import {
+	DefaultEncryptionService,
+	type EncryptionService,
+	type SymmetricKeyEncryptionService,
+} from '@infra/encryption';
 import { AxiosErrorLoggable } from '@infra/error';
 import { Logger } from '@infra/logger';
 import {
-	ClientCredentialsGrantTokenRequest,
+	type ClientCredentialsGrantTokenRequest,
 	OauthAdapterService,
 	OAuthGrantType,
 	OAuthTokenDto,
 } from '@infra/oauth-adapter';
 import {
-	MediaSource,
+	type MediaSource,
 	MediaSourceDataFormat,
 	MediaSourceOauthConfigNotFoundLoggableException,
 } from '@modules/media-source';
 import { mediaSourceFactory } from '@modules/media-source/testing';
 import { HttpService } from '@nestjs/axios';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { axiosErrorFactory } from '@testing/factory/axios-error.factory';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
-import { AxiosResponse } from 'axios';
-import { ValidationError } from 'class-validator';
+import { type AxiosResponse } from 'axios';
+import { type ValidationError } from 'class-validator';
 import { of, throwError } from 'rxjs';
 import { BiloMediaClientAdapter } from './bilo-media-client.adapter';
-import { MediaQueryBadResponseReport } from './interface';
+import { type MediaQueryBadResponseReport } from './interface';
 import {
 	BiloBadRequestResponseLoggableException,
 	BiloMediaQueryBadResponseLoggable,
@@ -30,8 +34,8 @@ import {
 	BiloMediaQueryUnprocessableResponseLoggableException,
 	BiloNotFoundResponseLoggableException,
 } from './loggable';
-import { BiloMediaQueryBodyParams } from './request';
-import { BiloLinkResponse, BiloMediaQueryDataResponse, BiloMediaQueryResponse } from './response';
+import { type BiloMediaQueryBodyParams } from './request';
+import { type BiloLinkResponse, type BiloMediaQueryDataResponse, type BiloMediaQueryResponse } from './response';
 import { biloMediaQueryDataResponseFactory, biloMediaQueryResponseFactory } from './testing';
 
 describe(BiloMediaClientAdapter.name, () => {

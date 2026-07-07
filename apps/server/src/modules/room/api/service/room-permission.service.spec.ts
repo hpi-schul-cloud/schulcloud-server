@@ -1,11 +1,11 @@
-import { Action, AuthorizationService } from '@modules/authorization';
+import { Action, type AuthorizationService } from '@modules/authorization';
 import { RoleName } from '@modules/role';
 import { roleDtoFactory } from '@modules/role/testing';
-import { RoomAuthorizable, RoomMembershipService } from '@modules/room-membership';
+import { RoomAuthorizable, type RoomMembershipService } from '@modules/room-membership';
 import type { User } from '@modules/user/repo';
 import { Permission } from '@shared/domain/interface';
 import type { Room } from '../../domain/do';
-import { RoomService } from '../../domain/service/room.service';
+import { type RoomService } from '../../domain/service/room.service';
 import { RoomPublicApiConfig } from '../../room.config';
 import { LockedRoomLoggableException } from '../loggables/locked-room-loggable-exception';
 import { RoomPermissionService } from './room-permission.service';

@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import type { EntityId } from '@shared/domain/types';
-import { BuildOptions, DeepPartial, Factory, GeneratorFn, HookFn } from 'fishery';
+import { type BuildOptions, type DeepPartial, Factory, type GeneratorFn, type HookFn } from 'fishery';
 
 /**
  * Entity factory based on thoughtbot/fishery

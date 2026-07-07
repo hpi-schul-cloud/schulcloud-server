@@ -1,5 +1,5 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { CalendarEventId } from '../interface/calendar-event-id.interface';
+import { Test, type TestingModule } from '@nestjs/testing';
+import { type CalendarEventId } from '../interface/calendar-event-id.interface';
 import { CalendarMapper } from './calendar.mapper';
 
 describe('CalendarMapper', () => {

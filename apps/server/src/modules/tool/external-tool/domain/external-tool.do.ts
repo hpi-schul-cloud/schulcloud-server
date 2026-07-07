@@ -1,10 +1,10 @@
 import { InternalServerErrorException } from '@nestjs/common';
-import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
-import { CustomParameter } from '../../common/domain';
-import { LtiMessageType, ToolConfigType, ToolContextType } from '../../common/enum';
-import { BasicToolConfig, ExternalToolConfig, Lti11ToolConfig, Oauth2ToolConfig } from './config';
-import { ExternalToolMedium } from './external-tool-medium.do';
-import { FileRecordRef } from './file-record-ref';
+import { type AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
+import { type CustomParameter } from '../../common/domain';
+import { LtiMessageType, ToolConfigType, type ToolContextType } from '../../common/enum';
+import { BasicToolConfig, type ExternalToolConfig, Lti11ToolConfig, Oauth2ToolConfig } from './config';
+import { type ExternalToolMedium } from './external-tool-medium.do';
+import { type FileRecordRef } from './file-record-ref';
 
 export interface ExternalToolProps extends AuthorizableObject {
 	id: string;

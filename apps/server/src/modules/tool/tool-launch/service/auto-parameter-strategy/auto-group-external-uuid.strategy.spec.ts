@@ -1,19 +1,19 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BoardExternalReferenceType, BoardNodeService } from '@modules/board';
 import { columnBoardFactory, externalToolElementFactory } from '@modules/board/testing';
 import { CourseService } from '@modules/course';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
-import { Group, GroupService } from '@modules/group';
-import { GroupEntity } from '@modules/group/entity';
+import { type Group, GroupService } from '@modules/group';
+import { type GroupEntity } from '@modules/group/entity';
 import { groupEntityFactory, groupFactory } from '@modules/group/testing';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { ToolContextType } from '../../../common/enum';
-import { ContextExternalTool } from '../../../context-external-tool/domain';
+import { type ContextExternalTool } from '../../../context-external-tool/domain';
 import { contextExternalToolFactory } from '../../../context-external-tool/testing';
-import { SchoolExternalTool } from '../../../school-external-tool/domain';
+import { type SchoolExternalTool } from '../../../school-external-tool/domain';
 import { schoolExternalToolFactory } from '../../../school-external-tool/testing';
 import { AutoGroupExternalUuidStrategy } from './auto-group-external-uuid-strategy.service';
 

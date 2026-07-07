@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { QueueDeletionRequestInput } from '../interface';
+import { type QueueDeletionRequestInput } from '../interface';
 import { QueueDeletionRequestInputBuilder } from './queue-deletion-request-input.builder';
 
 describe(QueueDeletionRequestInputBuilder.name, () => {

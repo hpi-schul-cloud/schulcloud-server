@@ -1,4 +1,4 @@
-import { SchoolProps } from '../do';
+import { type SchoolProps } from '../do';
 
 export interface SchoolUpdateBody {
 	name?: SchoolProps['name'];
