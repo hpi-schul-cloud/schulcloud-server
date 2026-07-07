@@ -1,7 +1,7 @@
-import { TimeoutConfig } from '@core/interceptor/timeout-interceptor-config.interface';
 import { ConfigProperty, Configuration } from '@infra/configuration';
 import { StringToNumber } from '@shared/controller/transformer';
 import { IsNumber } from 'class-validator';
+import { TimeoutConfig } from './timeout-interceptor-config.interface';
 
 export const DEFAULT_TIMEOUT_CONFIG_TOKEN = 'DEFAULT_TIMEOUT_CONFIG_TOKEN';
 
