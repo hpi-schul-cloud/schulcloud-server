@@ -12,12 +12,6 @@ import {
 	OAuthGrantType,
 	OAuthTokenDto,
 } from '@infra/oauth-adapter';
-import {
-	type MediaSource,
-	MediaSourceDataFormat,
-	MediaSourceOauthConfigNotFoundLoggableException,
-} from '@modules/media-source';
-import { mediaSourceFactory } from '@modules/media-source/testing';
 import { HttpService } from '@nestjs/axios';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { axiosErrorFactory } from '@testing/factory/axios-error.factory';
@@ -33,10 +27,16 @@ import {
 	BiloMediaQueryBadResponseLoggableException,
 	BiloMediaQueryUnprocessableResponseLoggableException,
 	BiloNotFoundResponseLoggableException,
+	MediaSourceOauthConfigNotFoundLoggableException,
 } from './loggable';
 import { type BiloMediaQueryBodyParams } from './request';
 import { type BiloLinkResponse, type BiloMediaQueryDataResponse, type BiloMediaQueryResponse } from './response';
-import { biloMediaQueryDataResponseFactory, biloMediaQueryResponseFactory } from './testing';
+import {
+	biloMediaQueryDataResponseFactory,
+	biloMediaQueryResponseFactory,
+	biloMediaSourceFactory,
+	biloOauthConfigFactory,
+} from './testing';
 
 describe(BiloMediaClientAdapter.name, () => {
 	let module: TestingModule;
@@ -93,7 +93,7 @@ describe(BiloMediaClientAdapter.name, () => {
 		describe('when the metadata are fetched successfully', () => {
 			const setup = () => {
 				const baseUrl = `https://oauth-base-url.com/test`;
-				const mediaSource: MediaSource = mediaSourceFactory.withBildungslogin({ baseUrl }).build();
+				const mediaSource = biloMediaSourceFactory.build({ oauthConfig: biloOauthConfigFactory.build({ baseUrl }) });
 
 				const mockToken = new OAuthTokenDto({
 					accessToken: 'mock-access-token',
@@ -192,7 +192,7 @@ describe(BiloMediaClientAdapter.name, () => {
 
 		describe('when the metadata fetched have bad status', () => {
 			const setup = () => {
-				const mediaSource: MediaSource = mediaSourceFactory.withBildungslogin().build();
+				const mediaSource = biloMediaSourceFactory.build();
 
 				const mockToken = new OAuthTokenDto({
 					accessToken: 'mock-access-token',
@@ -258,7 +258,7 @@ describe(BiloMediaClientAdapter.name, () => {
 
 		describe('when the metadata fetched have validation errors', () => {
 			const setup = () => {
-				const mediaSource: MediaSource = mediaSourceFactory.withBildungslogin().build();
+				const mediaSource = biloMediaSourceFactory.build();
 
 				const mockToken = new OAuthTokenDto({
 					accessToken: 'mock-access-token',
@@ -339,7 +339,7 @@ describe(BiloMediaClientAdapter.name, () => {
 		describe('when the oauth config of the media source is missing', () => {
 			const setup = () => {
 				const mediumIds = ['123'];
-				const mediaSource: MediaSource = mediaSourceFactory.build({ oauthConfig: undefined });
+				const mediaSource = biloMediaSourceFactory.build({ oauthConfig: undefined });
 
 				return { mediumIds, mediaSource };
 			};
@@ -350,7 +350,7 @@ describe(BiloMediaClientAdapter.name, () => {
 				const promise = service.fetchMediaMetadata(mediumIds, mediaSource);
 
 				await expect(promise).rejects.toThrow(
-					new MediaSourceOauthConfigNotFoundLoggableException(mediaSource.id, MediaSourceDataFormat.BILDUNGSLOGIN)
+					new MediaSourceOauthConfigNotFoundLoggableException(mediaSource.id, 'BILDUNGSLOGIN')
 				);
 			});
 		});
@@ -358,7 +358,7 @@ describe(BiloMediaClientAdapter.name, () => {
 		describe('when an axios error is thrown while fetching the metadata', () => {
 			const setup = () => {
 				const mediumIds = ['123'];
-				const mediaSource: MediaSource = mediaSourceFactory.withBildungslogin().build();
+				const mediaSource = biloMediaSourceFactory.build();
 
 				const axiosError = axiosErrorFactory.build();
 
@@ -379,7 +379,7 @@ describe(BiloMediaClientAdapter.name, () => {
 		describe('when an unknown error is thrown while fetching the metadata', () => {
 			const setup = () => {
 				const mediumIds = ['123'];
-				const mediaSource: MediaSource = mediaSourceFactory.withBildungslogin().build();
+				const mediaSource = biloMediaSourceFactory.build();
 
 				const unknownError = new Error();
 
@@ -399,7 +399,7 @@ describe(BiloMediaClientAdapter.name, () => {
 
 		describe('when the response body received is not an array', () => {
 			const setup = () => {
-				const mediaSource: MediaSource = mediaSourceFactory.withBildungslogin().build();
+				const mediaSource = biloMediaSourceFactory.build();
 
 				const mockToken = new OAuthTokenDto({
 					accessToken: 'mock-access-token',
@@ -436,7 +436,7 @@ describe(BiloMediaClientAdapter.name, () => {
 
 		describe('when only one of cover links is valid', () => {
 			const setup = () => {
-				const mediaSource: MediaSource = mediaSourceFactory.withBildungslogin().build();
+				const mediaSource = biloMediaSourceFactory.build();
 
 				const mockToken = new OAuthTokenDto({
 					accessToken: 'mock-access-token',
@@ -478,7 +478,7 @@ describe(BiloMediaClientAdapter.name, () => {
 
 		describe('when both cover links are invalid', () => {
 			const setup = () => {
-				const mediaSource: MediaSource = mediaSourceFactory.withBildungslogin().build();
+				const mediaSource = biloMediaSourceFactory.build();
 
 				const mockToken = new OAuthTokenDto({
 					accessToken: 'mock-access-token',
@@ -525,7 +525,7 @@ describe(BiloMediaClientAdapter.name, () => {
 		describe('when the metadata is fetched successfully', () => {
 			const setup = () => {
 				const baseUrl = `https://oauth-base-url.com/test`;
-				const mediaSource: MediaSource = mediaSourceFactory.withBildungslogin({ baseUrl }).build();
+				const mediaSource = biloMediaSourceFactory.build({ oauthConfig: biloOauthConfigFactory.build({ baseUrl }) });
 				const mockToken = new OAuthTokenDto({
 					accessToken: 'mock-access-token',
 					idToken: 'mock-id-token',
@@ -572,7 +572,7 @@ describe(BiloMediaClientAdapter.name, () => {
 
 		describe('when the metadata fetched have validation errors', () => {
 			const setup = () => {
-				const mediaSource: MediaSource = mediaSourceFactory.withBildungslogin().build();
+				const mediaSource = biloMediaSourceFactory.build();
 
 				const mockToken = new OAuthTokenDto({
 					accessToken: 'mock-access-token',
@@ -628,7 +628,7 @@ describe(BiloMediaClientAdapter.name, () => {
 
 		describe('when there is no metadata to be fetched', () => {
 			const setup = () => {
-				const mediaSource: MediaSource = mediaSourceFactory.withBildungslogin().build();
+				const mediaSource = biloMediaSourceFactory.build();
 
 				const mockToken = new OAuthTokenDto({
 					accessToken: 'mock-access-token',
@@ -674,7 +674,7 @@ describe(BiloMediaClientAdapter.name, () => {
 
 		describe('when there is no metadata to be fetched', () => {
 			const setup = () => {
-				const mediaSource: MediaSource = mediaSourceFactory.withBildungslogin().build();
+				const mediaSource = biloMediaSourceFactory.build();
 
 				const mockToken = new OAuthTokenDto({
 					accessToken: 'mock-access-token',
@@ -721,7 +721,7 @@ describe(BiloMediaClientAdapter.name, () => {
 		describe('when the oauth config of the media source is missing', () => {
 			const setup = () => {
 				const mediumId = '123';
-				const mediaSource: MediaSource = mediaSourceFactory.build({ oauthConfig: undefined });
+				const mediaSource = biloMediaSourceFactory.build({ oauthConfig: undefined });
 
 				return { mediumId, mediaSource };
 			};
@@ -732,7 +732,7 @@ describe(BiloMediaClientAdapter.name, () => {
 				const promise = service.fetchMediumMetadata(mediumId, mediaSource);
 
 				await expect(promise).rejects.toThrow(
-					new MediaSourceOauthConfigNotFoundLoggableException(mediaSource.id, MediaSourceDataFormat.BILDUNGSLOGIN)
+					new MediaSourceOauthConfigNotFoundLoggableException(mediaSource.id, 'BILDUNGSLOGIN')
 				);
 			});
 		});
@@ -740,7 +740,7 @@ describe(BiloMediaClientAdapter.name, () => {
 		describe('when an axios error is thrown while fetching the metadata', () => {
 			const setup = () => {
 				const mediumId = '123';
-				const mediaSource: MediaSource = mediaSourceFactory.withBildungslogin().build();
+				const mediaSource = biloMediaSourceFactory.build();
 
 				const axiosError = axiosErrorFactory.build();
 
@@ -761,7 +761,7 @@ describe(BiloMediaClientAdapter.name, () => {
 		describe('when an unknown error is thrown while fetching the metadata', () => {
 			const setup = () => {
 				const mediumId = '123';
-				const mediaSource: MediaSource = mediaSourceFactory.withBildungslogin().build();
+				const mediaSource = biloMediaSourceFactory.build();
 				const unknownError = new Error();
 
 				httpService.post.mockReturnValueOnce(throwError(() => unknownError));
@@ -782,7 +782,7 @@ describe(BiloMediaClientAdapter.name, () => {
 			const setup = () => {
 				const mediumId = '123';
 
-				const mediaSource: MediaSource = mediaSourceFactory.withBildungslogin().build();
+				const mediaSource = biloMediaSourceFactory.build();
 
 				const mockToken = new OAuthTokenDto({
 					accessToken: 'mock-access-token',
@@ -819,7 +819,7 @@ describe(BiloMediaClientAdapter.name, () => {
 
 		describe('when only one of cover links is valid', () => {
 			const setup = () => {
-				const mediaSource: MediaSource = mediaSourceFactory.withBildungslogin().build();
+				const mediaSource = biloMediaSourceFactory.build();
 
 				const mockToken = new OAuthTokenDto({
 					accessToken: 'mock-access-token',
@@ -861,7 +861,7 @@ describe(BiloMediaClientAdapter.name, () => {
 
 		describe('when both cover links are invalid', () => {
 			const setup = () => {
-				const mediaSource: MediaSource = mediaSourceFactory.withBildungslogin().build();
+				const mediaSource = biloMediaSourceFactory.build();
 
 				const mockToken = new OAuthTokenDto({
 					accessToken: 'mock-access-token',

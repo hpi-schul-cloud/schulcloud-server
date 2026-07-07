@@ -1,22 +1,18 @@
 import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { AxiosErrorLoggable } from '@infra/error';
-import {
-	MediaSource,
-	MediaSourceDataFormat,
-	MediaSourceVidisConfig,
-	MediaSourceVidisConfigNotFoundLoggableException,
-} from '@modules/media-source';
 import { Inject, Injectable } from '@nestjs/common';
 import { AxiosResponse, isAxiosError } from 'axios';
 import { Configuration, IDMBetreiberApiFactory, OfferDTO, PageOfferDTO } from './generated';
+import { VidisConfig, VidisMediaSource } from './interface';
+import { MediaSourceVidisConfigNotFoundLoggableException } from './loggable';
 
 @Injectable()
 export class VidisClientAdapter {
 	constructor(@Inject(DefaultEncryptionService) private readonly encryptionService: EncryptionService) {}
 
-	public async getOfferItemsByRegion(mediaSource: MediaSource): Promise<OfferDTO[]> {
+	public async getOfferItemsByRegion(mediaSource: VidisMediaSource): Promise<OfferDTO[]> {
 		if (!mediaSource.vidisConfig) {
-			throw new MediaSourceVidisConfigNotFoundLoggableException(mediaSource.id, MediaSourceDataFormat.VIDIS);
+			throw new MediaSourceVidisConfigNotFoundLoggableException(mediaSource.id, 'VIDIS');
 		}
 
 		const { vidisConfig } = mediaSource;
@@ -47,9 +43,9 @@ export class VidisClientAdapter {
 		}
 	}
 
-	public async getOfferItemsBySchoolName(mediaSource: MediaSource, schoolName: string): Promise<OfferDTO[]> {
+	public async getOfferItemsBySchoolName(mediaSource: VidisMediaSource, schoolName: string): Promise<OfferDTO[]> {
 		if (!mediaSource.vidisConfig) {
-			throw new MediaSourceVidisConfigNotFoundLoggableException(mediaSource.id, MediaSourceDataFormat.VIDIS);
+			throw new MediaSourceVidisConfigNotFoundLoggableException(mediaSource.id, 'VIDIS');
 		}
 
 		const { vidisConfig } = mediaSource;
@@ -80,7 +76,7 @@ export class VidisClientAdapter {
 		}
 	}
 
-	private buildAuthHeaderValue(vidisConfig: MediaSourceVidisConfig): string {
+	private buildAuthHeaderValue(vidisConfig: VidisConfig): string {
 		const decryptedUsername = this.encryptionService.decrypt(vidisConfig.username);
 		const decryptedPassword = this.encryptionService.decrypt(vidisConfig.password);
 
