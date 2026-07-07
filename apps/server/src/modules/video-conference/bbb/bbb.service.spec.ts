@@ -1,5 +1,5 @@
-import { ErrorUtils } from '@core/error/utils';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { ErrorUtils } from '@infra/error';
 import { HttpService } from '@nestjs/axios';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';

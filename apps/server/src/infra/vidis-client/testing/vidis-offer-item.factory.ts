@@ -1,6 +1,6 @@
 import { OfferDTO } from '@infra/vidis-client';
-import { base64TestLogo } from '@modules/tool/external-tool/testing';
 import { Factory } from 'fishery';
+import { base64TestLogo } from './base64-test-logo';
 
 export const vidisOfferItemFactory = Factory.define<OfferDTO>(({ sequence }) => {
 	return {

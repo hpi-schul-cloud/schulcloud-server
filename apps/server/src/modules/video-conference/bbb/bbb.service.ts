@@ -1,5 +1,5 @@
-import { ErrorUtils } from '@core/error/utils';
 import xml2json from '@hendt/xml2json/lib';
+import { ErrorUtils } from '@infra/error';
 import { HttpService } from '@nestjs/axios';
 import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { AxiosResponse } from 'axios';
