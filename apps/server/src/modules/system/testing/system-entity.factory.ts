@@ -27,31 +27,25 @@ export const systemOauthConfigEntityFactory = BaseFactory.define<OauthConfigEnti
 	}
 );
 
-const systemLdapConfigEntityFactory = BaseFactory.define<LdapConfigEntity, LdapConfigEntity>(
-	LdapConfigEntity,
-	() => {
-		return {
-			url: 'ldaps:mock.de:389',
-			active: true,
-		};
-	}
-);
+const systemLdapConfigEntityFactory = BaseFactory.define<LdapConfigEntity, LdapConfigEntity>(LdapConfigEntity, () => {
+	return {
+		url: 'ldaps:mock.de:389',
+		active: true,
+	};
+});
 
-const systemOidcConfigEntityFactory = BaseFactory.define<OidcConfigEntity, OidcConfigEntity>(
-	OidcConfigEntity,
-	() => {
-		return {
-			clientId: 'mock-client-id',
-			clientSecret: 'mock-client-secret',
-			idpHint: 'mock-oidc-idpHint',
-			defaultScopes: 'openid email userinfo',
-			authorizationUrl: 'https://mock.tld/auth',
-			tokenUrl: 'https://mock.tld/token',
-			userinfoUrl: 'https://mock.tld/userinfo',
-			logoutUrl: 'https://mock.tld/logout',
-		};
-	}
-);
+const systemOidcConfigEntityFactory = BaseFactory.define<OidcConfigEntity, OidcConfigEntity>(OidcConfigEntity, () => {
+	return {
+		clientId: 'mock-client-id',
+		clientSecret: 'mock-client-secret',
+		idpHint: 'mock-oidc-idpHint',
+		defaultScopes: 'openid email userinfo',
+		authorizationUrl: 'https://mock.tld/auth',
+		tokenUrl: 'https://mock.tld/token',
+		userinfoUrl: 'https://mock.tld/userinfo',
+		logoutUrl: 'https://mock.tld/logout',
+	};
+});
 
 class SystemEntityFactory extends BaseFactory<SystemEntity, SystemEntityProps> {
 	public withOauthConfig(otherParams?: DeepPartial<OauthConfigEntity>): this {
