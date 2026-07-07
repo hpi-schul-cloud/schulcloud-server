@@ -10,6 +10,5 @@ const countySchema = new Schema({
 const CountyModel = mongoose.model('county', countySchema);
 
 module.exports = {
-	CountyModel,
 	countySchema,
 };

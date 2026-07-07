@@ -1,7 +1,6 @@
 export {
 	AnyProvisioningOptions,
 	SchoolSystemOptions,
-	SchoolSystemOptionsBuilder,
 	SchoolSystemOptionsProps,
 	SchulConneXProvisioningOptions,
 } from './domain';

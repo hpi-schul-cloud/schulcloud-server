@@ -8,7 +8,7 @@ import {
 import { BaseFactory } from '@testing/factory/base.factory';
 import { Factory } from 'fishery';
 
-export const richTextElementContentFactory = Factory.define<RichTextElementContent>(() => {
+const richTextElementContentFactory = Factory.define<RichTextElementContent>(() => {
 	return {
 		text: faker.lorem.word(),
 		inputFormat: 'plainText',

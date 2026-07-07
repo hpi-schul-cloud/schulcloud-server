@@ -1,5 +1,5 @@
 const scope = 'additionalInfosTeam';
-exports.scope = scope;
+const scope = scope;
 
 exports.set = (hook, key, value) => {
 	if (hook[scope] === undefined) {

@@ -20,4 +20,4 @@ const storageProviderSchema = new Schema(
 
 const StorageProviderModel = mongoose.model('storageprovider', storageProviderSchema);
 
-module.exports = { StorageProviderModel, storageProviderSchema };
+module.exports = { StorageProviderModel };

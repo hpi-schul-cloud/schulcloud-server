@@ -2,7 +2,7 @@ const { authenticate } = require('@feathersjs/authentication');
 const hooks = require('feathers-hooks-common');
 const { transformToDataTransferObject } = require('../../../hooks');
 
-exports.before = {
+const before = {
 	all: [],
 	find: [authenticate('jwt')],
 	get: [hooks.disallow()],
@@ -12,7 +12,7 @@ exports.before = {
 	remove: [hooks.disallow()],
 };
 
-exports.after = {
+const after = {
 	all: [],
 	find: [transformToDataTransferObject],
 	get: [],

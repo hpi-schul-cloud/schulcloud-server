@@ -1,6 +1,6 @@
 import { type ValkeyConfig } from '../valkey.config';
 
-export type ValkeyClientModuleFactory = {
+type ValkeyClientModuleFactory = {
 	createValkeyModuleOptions: () => Promise<ValkeyConfig> | ValkeyConfig;
 };
 

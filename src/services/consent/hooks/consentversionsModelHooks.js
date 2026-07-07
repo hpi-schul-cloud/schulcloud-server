@@ -1,6 +1,6 @@
 const { iff, isProvider, disallow } = require('feathers-hooks-common');
 
-exports.before = {
+const before = {
 	all: [],
 	find: [iff(isProvider('external'), disallow())],
 	get: [iff(isProvider('external'), disallow())],
@@ -10,7 +10,7 @@ exports.before = {
 	remove: [iff(isProvider('external'), disallow())],
 };
 
-exports.after = {
+const after = {
 	all: [],
 	find: [],
 	get: [],

@@ -52,7 +52,7 @@ const removeSystemFromSchool = async (context) => {
 	return context;
 };
 
-exports.before = {
+const before = {
 	all: [iff(isProvider('external'), [authenticate('jwt'), globalHooks.populateCurrentSchool, restrictToCurrentSchool])],
 	find: [iff(isProvider('external'), globalHooks.hasPermission('SYSTEM_VIEW'))],
 	get: [iff(isProvider('external'), globalHooks.hasPermission('SYSTEM_VIEW'))],
@@ -70,7 +70,7 @@ exports.before = {
 	],
 };
 
-exports.after = {
+const after = {
 	all: [
 		iff(isProvider('external'), [
 			discard('ldapConfig.searchUserPassword'),

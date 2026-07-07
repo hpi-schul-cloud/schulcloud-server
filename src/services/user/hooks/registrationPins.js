@@ -167,7 +167,7 @@ const checkTimeWindow = async (hook) => {
 	return Promise.resolve(hook);
 };
 
-exports.before = {
+const before = {
 	all: [globalHooks.forceHookResolve(authenticate('jwt'))],
 	find: [disallow('external'), validateEmailAndPin],
 	get: disallow('external'),
@@ -182,7 +182,7 @@ exports.before = {
 	remove: disallow('external'),
 };
 
-exports.after = {
+const after = {
 	all: [globalHooks.removeResponse(['get', 'find', 'create'])],
 	find: [checkAndVerifyPin],
 	get: [],

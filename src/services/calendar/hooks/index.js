@@ -37,7 +37,7 @@ const persistCourseTimesEvent = (hook) => {
 	).then(() => Promise.resolve(hook));
 };
 
-exports.before = {
+const before = {
 	all: [authenticate('jwt'), globalHooks.mapPayload],
 	find: [globalHooks.hasPermission('CALENDAR_VIEW')],
 	get: [globalHooks.hasPermission('CALENDAR_VIEW')],
@@ -47,7 +47,7 @@ exports.before = {
 	remove: [globalHooks.hasPermission('CALENDAR_CREATE')],
 };
 
-exports.after = {
+const after = {
 	all: [],
 	find: [],
 	get: [],

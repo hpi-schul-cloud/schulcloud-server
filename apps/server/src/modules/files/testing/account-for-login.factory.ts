@@ -1,16 +1,16 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 
-export interface AccountForLogin {
+interface AccountForLogin {
 	id: string;
 	username: string;
 }
 
-export interface AccountForLoginParams {
+interface AccountForLoginParams {
 	id?: string;
 	username?: string;
 }
 
-export const accountForLoginFactory = {
+const accountForLoginFactory = {
 	build(params: AccountForLoginParams = {}): AccountForLogin {
 		return {
 			id: params.id ?? new ObjectId().toHexString(),

@@ -180,6 +180,4 @@ const userHooks = {
 };
 
 module.exports = {
-	userHooks,
-	userService,
 };

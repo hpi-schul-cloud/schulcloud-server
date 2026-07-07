@@ -6,8 +6,6 @@ export enum RoleName {
 	GROUPSUBSTITUTIONTEACHER = 'groupSubstitutionTeacher',
 	COURSETEACHER = 'courseTeacher',
 	DEMO = 'demo',
-	DEMOSTUDENT = 'demoStudent',
-	DEMOTEACHER = 'demoTeacher',
 	EXTERNALPERSON = 'externalPerson',
 	GUESTTEACHER = 'guestTeacher',
 	GUESTSTUDENT = 'guestStudent',
@@ -29,7 +27,7 @@ export enum RoleName {
 	USER = 'user',
 }
 
-export const RoomRoleArray = [
+const RoomRoleArray = [
 	RoleName.ROOMOWNER,
 	RoleName.ROOMADMIN,
 	RoleName.ROOMEDITOR,

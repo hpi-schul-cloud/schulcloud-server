@@ -132,6 +132,4 @@ const qrRegistrationLinksHooks = {
 };
 
 module.exports = {
-	qrRegistrationLinksHooks,
-	QrRegistrationLinks,
 };

@@ -125,6 +125,4 @@ class Channel {
 const getChannel = (queue, options) => new Channel(queue, options);
 
 module.exports = {
-	setup,
-	getChannel,
 };

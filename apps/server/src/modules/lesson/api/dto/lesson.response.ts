@@ -5,7 +5,7 @@ import { ComponentProperties, LessonEntity } from '../../repo';
 import { LessonContentResponse } from './lesson-content.response';
 import { MaterialResponse } from './material.response';
 
-export class LessonMetadataResponse {
+class LessonMetadataResponse {
 	constructor({ _id, name }: LessonMetadataResponse) {
 		this._id = _id;
 		this.name = name;

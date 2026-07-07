@@ -5,9 +5,9 @@ const globalHooks = require('../../../hooks');
 const properties = 'title="username" style="height: 26px; width: 180px; border: none;"';
 const iframeSubject = (pseudonym, url) => `<iframe src="${url}/oauth2/username/${pseudonym}" ${properties}></iframe>`;
 
-exports.getSubject = iframeSubject;
+const getSubject = iframeSubject;
 
-exports.hooks = {
+const hooks = {
 	introspect: {
 		before: {
 			create: [

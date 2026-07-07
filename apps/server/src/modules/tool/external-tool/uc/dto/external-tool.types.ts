@@ -18,7 +18,7 @@ export type CustomParameterDto = CustomParameter;
 
 export type ExternalToolMediumDto = ExternalToolMedium;
 
-export type ExternalToolDto<T> = {
+type ExternalToolDto<T> = {
 	name: string;
 
 	description?: string;

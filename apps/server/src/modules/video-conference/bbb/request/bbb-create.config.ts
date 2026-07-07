@@ -2,7 +2,6 @@ import { BBBBaseMeetingConfig } from './bbb-base-meeting.config';
 
 export enum GuestPolicy {
 	ALWAYS_ACCEPT = 'ALWAYS_ACCEPT',
-	ALWAYS_DENY = 'ALWAYS_DENY',
 	ASK_MODERATOR = 'ASK_MODERATOR',
 }
 

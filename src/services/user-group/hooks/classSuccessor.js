@@ -2,7 +2,7 @@ const { authenticate } = require('@feathersjs/authentication');
 const { disallow } = require('feathers-hooks-common');
 const { hasPermission } = require('../../../hooks');
 
-exports.before = {
+const before = {
 	all: [authenticate('jwt')],
 	find: [hasPermission('CLASS_CREATE')],
 	get: [hasPermission('CLASS_CREATE')],
@@ -12,7 +12,7 @@ exports.before = {
 	remove: [disallow()],
 };
 
-exports.after = {
+const after = {
 	all: [],
 	find: [],
 	get: [],

@@ -1,7 +1,7 @@
 import { Readable } from 'node:stream';
 import { CommonCartridgeElement } from './common-cartridge-element.interface';
 
-export type ResourceFileContentType = string | Buffer | Readable;
+type ResourceFileContentType = string | Buffer | Readable;
 
 export type ResourceFileContent = {
 	path: string;

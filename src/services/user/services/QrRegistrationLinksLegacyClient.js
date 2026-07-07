@@ -77,6 +77,4 @@ const qrRegistrationLinksLegacyHooks = {
 };
 
 module.exports = {
-	qrRegistrationLinksLegacyHooks,
-	QrRegistrationLinksLegacyClient,
 };

@@ -4,7 +4,6 @@ import { IsEnum, IsOptional } from 'class-validator';
 
 export enum ExternalToolSortBy {
 	ID = 'id',
-	NAME = 'name',
 }
 
 export class SortExternalToolParams extends SortingParams<ExternalToolSortBy> {

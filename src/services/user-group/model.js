@@ -153,7 +153,6 @@ const classModel = mongoose.model('class', classSchema);
 
 module.exports = {
 	courseModel,
-	courseSchema,
 	courseGroupModel,
 	classModel,
 	SYNC_ATTRIBUTE,

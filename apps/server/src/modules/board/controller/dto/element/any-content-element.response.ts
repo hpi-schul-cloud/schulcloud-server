@@ -21,8 +21,8 @@ export type AnyContentElementResponse =
 	| FileFolderElementResponse
 	| H5pElementResponse;
 
-export const isFileElementResponse = (element: AnyContentElementResponse): element is FileElementResponse =>
+const isFileElementResponse = (element: AnyContentElementResponse): element is FileElementResponse =>
 	element instanceof FileElementResponse;
 
-export const isRichTextElementResponse = (element: AnyContentElementResponse): element is RichTextElementResponse =>
+const isRichTextElementResponse = (element: AnyContentElementResponse): element is RichTextElementResponse =>
 	element instanceof RichTextElementResponse;

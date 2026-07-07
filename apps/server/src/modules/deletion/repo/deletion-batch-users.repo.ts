@@ -3,7 +3,7 @@ import { RoleName } from '@modules/role';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 
-export type UserWithRoles = {
+type UserWithRoles = {
 	id: EntityId;
 	roleIds: EntityId[];
 };

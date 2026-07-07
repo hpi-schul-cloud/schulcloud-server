@@ -34,7 +34,6 @@ const isApplicationError = (error) => error instanceof ApplicationError;
 module.exports = {
 	isFeatherError,
 	cleanupIncomingMessage,
-	asyncErrorLog,
 	isSilentError,
 	isApplicationError,
 };

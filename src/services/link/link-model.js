@@ -26,4 +26,4 @@ const linkSchema = new Schema({
 const LinkModel = mongoose.model('link', linkSchema);
 LinkModel.linkLength = LINK_LENGTH; // fixme`
 
-module.exports = { LinkModel, linkSchema };
+module.exports = { LinkModel };

@@ -37,6 +37,4 @@ const after = {
 };
 
 module.exports = {
-	before,
-	after,
 };

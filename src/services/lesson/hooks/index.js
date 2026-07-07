@@ -144,7 +144,7 @@ const populateWhitelist = {
 	],
 };
 
-exports.before = () => {
+const before = () => {
 	return {
 		all: [authenticate('jwt'), mapUsers],
 		// @deprecated - use nest endpoint instead to get lesson
@@ -190,7 +190,7 @@ exports.before = () => {
 	};
 };
 
-exports.after = {
+const after = {
 	all: [],
 	find: [],
 	get: [],

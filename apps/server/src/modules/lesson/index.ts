@@ -1,4 +1,3 @@
-export { LessonCopyParams, LessonCopyParentParams } from './domain';
-export { EtherpadService, LessonCopyService, LessonService } from './domain/service';
-export { LessonConfig } from './lesson.config';
+export { LessonCopyParentParams } from './domain';
+export { LessonCopyService, LessonService } from './domain/service';
 export * from './lesson.module';

@@ -2,7 +2,7 @@ const { authenticate } = require('@feathersjs/authentication');
 const { preventCycle } = require('./preventCycle');
 const globalHooks = require('../../../hooks');
 
-exports.before = () => ({
+const before = () => ({
 	all: [authenticate('jwt')],
 	find: [],
 	get: [],
@@ -14,7 +14,7 @@ exports.before = () => ({
 
 const Role = require('../model');
 
-exports.after = {
+const after = {
 	all: [],
 	find: [],
 	get: [globalHooks.computeProperty(Role, 'getPermissions', 'permissions')],

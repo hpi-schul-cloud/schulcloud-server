@@ -12,7 +12,7 @@ const resolveUserId = (hook) => {
 	return hook;
 };
 
-exports.before = {
+const before = {
 	all: [authenticate('jwt'), mapPayload, injectUserId, resolveUserId, resolveStorageType],
 	find: [hasPermission('FILESTORAGE_VIEW')],
 	get: [hasPermission('FILESTORAGE_VIEW')],
@@ -24,7 +24,7 @@ exports.before = {
 
 const signedUrlPath = 'fileStorage/signedUrl';
 
-exports.after = {
+const after = {
 	all: [],
 	find: [excludeAttributesFromSanitization(signedUrlPath, ['url'])],
 	get: [],

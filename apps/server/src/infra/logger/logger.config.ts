@@ -4,14 +4,8 @@ import { IsBoolean, IsEnum } from 'class-validator';
 
 // Syslog levels as defined by RFC 5424 - matches winston.config.syslog.levels
 export enum SyslogLevel {
-	DEBUG = 'debug',
 	INFO = 'info',
 	NOTICE = 'notice',
-	WARNING = 'warning',
-	ERROR = 'error',
-	CRITICAL = 'crit',
-	ALERT = 'alert',
-	EMERGENCY = 'emerg',
 }
 
 export const LOGGER_CONFIG_TOKEN = 'LOGGER_CONFIG_TOKEN';

@@ -189,7 +189,6 @@
 		"body-parser": "^2.3.0",
 		"bson": "^6.10.4",
 		"cache-manager": "^7.2.4",
-		"cacheable": "^2.3.5",
 		"cheerio": "^1.1.2",
 		"class-transformer": "^0.5.1",
 		"class-validator": "^0.14.3",
@@ -205,6 +204,7 @@
 		"feathers-hooks-common": "^8.2.1",
 		"feathers-swagger": "^3.0.0",
 		"fishery": "^2.4.0",
+		"form-data": "^4.0.6",
 		"html-entities": "^2.6.0",
 		"iovalkey": "^0.3.1",
 		"jsdom": "^26.1.0",
@@ -288,8 +288,9 @@
 		"eslint-plugin-prettier": "^5.5.6",
 		"eslint-plugin-promise": "^7.3.0",
 		"freeport": "^1.0.5",
+		"globals": "^13.24.0",
 		"jest": "^30.4.2",
-		"knip": "^5.50.2",
+		"knip": "^6.24.0",
 		"mocha": "^11.2.2",
 		"mongodb-memory-server-global": "^9.5.0",
 		"nyc": "^17.1.0",
@@ -301,7 +302,6 @@
 		"socket.io-client": "^4.8.1",
 		"supertest": "^7.1.0",
 		"ts-jest": "^29.3.1",
-		"ts-node": "^10.9.2",
 		"typescript": "^5.8.3"
 	}
 }

@@ -8,7 +8,7 @@ import {
 import { BaseFactory } from '@testing/factory/base.factory';
 import { Factory } from 'fishery';
 
-export const linkElementContentFactory = Factory.define<LinkElementContent>(() => {
+const linkElementContentFactory = Factory.define<LinkElementContent>(() => {
 	return {
 		url: faker.internet.url(),
 		title: faker.lorem.word(),

@@ -8,7 +8,7 @@ import { StringToBoolean } from '@shared/controller/transformer';
 export const MAIL_CONFIG_TOKEN = 'MAIL_CONFIG_TOKEN';
 
 @Configuration()
-export class MailExchange implements InternalRabbitMQExchangeConfig {
+class MailExchange implements InternalRabbitMQExchangeConfig {
 	@ConfigProperty('MAIL_SEND_EXCHANGE')
 	@IsString()
 	public exchangeName = 'mail-drop';

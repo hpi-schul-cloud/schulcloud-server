@@ -329,7 +329,7 @@ const syncFederalState = async (context) => {
 	return context;
 };
 
-exports.before = {
+const before = {
 	all: [authenticate('jwt')],
 	find: [],
 	get: [],
@@ -365,7 +365,7 @@ exports.before = {
 	remove: [disallow()],
 };
 
-exports.after = {
+const after = {
 	all: [
 		// todo: remove id if possible (shouldnt exist)
 		iff(isNotAuthenticated, keep('name', 'purpose', 'systems', '_id', 'id', 'language', 'timezone')),

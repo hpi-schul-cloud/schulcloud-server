@@ -72,7 +72,5 @@ const teamsModel = mongoose.model('teams', teamsSchema);
 module.exports = {
 	TEAM_FEATURES,
 	teamsModel,
-	permissionSchema,
 	teamUserModel,
-	teamsSchema,
 };

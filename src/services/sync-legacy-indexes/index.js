@@ -39,5 +39,3 @@ module.exports = function () {
 
 	app.use('/sync-legacy-indexes', new Service());
 };
-
-module.exports.Service = Service;

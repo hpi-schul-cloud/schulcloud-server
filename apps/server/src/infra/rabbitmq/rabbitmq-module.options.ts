@@ -1,8 +1,5 @@
 export enum RabbitMQExchangeType {
 	DIRECT = 'direct',
-	FANOUT = 'fanout',
-	TOPIC = 'topic',
-	HEADERS = 'headers',
 }
 export interface InternalRabbitMQExchangeConfig {
 	exchangeName: string;

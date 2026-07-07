@@ -3,5 +3,4 @@ const { getUser } = require('./userHelpers');
 
 module.exports = {
 	externallyManaged,
-	getUser,
 };

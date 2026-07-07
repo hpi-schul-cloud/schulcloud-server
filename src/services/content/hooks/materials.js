@@ -88,7 +88,7 @@ const checkAssociatedCoursePermissionForSearchResult =
 		return context;
 	};
 
-exports.before = {
+const before = {
 	all: [authenticate('jwt')],
 	find: [
 		// filtered in after-hook
@@ -105,7 +105,7 @@ exports.before = {
 	remove: [checkAssociatedCoursePermission('TOPIC_EDIT')],
 };
 
-exports.after = {
+const after = {
 	all: [],
 	find: [checkAssociatedCoursePermissionForSearchResult('CONTENT_VIEW')],
 	get: [],

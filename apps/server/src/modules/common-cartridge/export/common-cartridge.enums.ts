@@ -7,7 +7,6 @@ export enum CommonCartridgeVersion {
 }
 
 export enum CommonCartridgeResourceType {
-	UNKNOWN = 'unknown',
 	MANIFEST = 'manifest',
 	WEB_CONTENT = 'webcontent',
 	WEB_LINK = 'weblink',

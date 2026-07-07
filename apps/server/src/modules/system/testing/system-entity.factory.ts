@@ -27,7 +27,7 @@ export const systemOauthConfigEntityFactory = BaseFactory.define<OauthConfigEnti
 	}
 );
 
-export const systemLdapConfigEntityFactory = BaseFactory.define<LdapConfigEntity, LdapConfigEntity>(
+const systemLdapConfigEntityFactory = BaseFactory.define<LdapConfigEntity, LdapConfigEntity>(
 	LdapConfigEntity,
 	() => {
 		return {
@@ -37,7 +37,7 @@ export const systemLdapConfigEntityFactory = BaseFactory.define<LdapConfigEntity
 	}
 );
 
-export const systemOidcConfigEntityFactory = BaseFactory.define<OidcConfigEntity, OidcConfigEntity>(
+const systemOidcConfigEntityFactory = BaseFactory.define<OidcConfigEntity, OidcConfigEntity>(
 	OidcConfigEntity,
 	() => {
 		return {
@@ -53,7 +53,7 @@ export const systemOidcConfigEntityFactory = BaseFactory.define<OidcConfigEntity
 	}
 );
 
-export class SystemEntityFactory extends BaseFactory<SystemEntity, SystemEntityProps> {
+class SystemEntityFactory extends BaseFactory<SystemEntity, SystemEntityProps> {
 	public withOauthConfig(otherParams?: DeepPartial<OauthConfigEntity>): this {
 		const params: DeepPartial<SystemEntityProps> = {
 			type: SystemTypeEnum.OAUTH,

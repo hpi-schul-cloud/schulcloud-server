@@ -109,6 +109,4 @@ class ConsentService {
 }
 
 module.exports = {
-	ConsentService,
-	consentHooks,
 };

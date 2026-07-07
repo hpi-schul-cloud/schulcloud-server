@@ -14,11 +14,7 @@ export enum FilesStorageEvents {
 }
 
 export enum ScanStatus {
-	PENDING = 'pending',
 	VERIFIED = 'verified',
-	BLOCKED = 'blocked',
-	WONT_CHECK = 'wont_check',
-	ERROR = 'error',
 }
 
 export enum FileRecordParentType {
@@ -39,7 +35,7 @@ export interface CopyFilesOfParentParams {
 	target: FileRecordParams;
 }
 
-export interface FileRecordParams {
+interface FileRecordParams {
 	storageLocationId: EntityId;
 	storageLocation: StorageLocation;
 	parentId: EntityId;

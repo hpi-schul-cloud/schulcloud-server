@@ -42,4 +42,4 @@ export class NotificationServerModule {}
 		}),
 	],
 })
-export class NotificationServerTestModule {}
+class NotificationServerTestModule {}

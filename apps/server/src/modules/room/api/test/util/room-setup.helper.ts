@@ -23,7 +23,7 @@ import {
 import { roomEntityFactory } from '../../../testing/room-entity.factory';
 import { RoomRolesTestFactory } from '../../../testing/room-roles.test.factory';
 
-export type SchoolRoleString = 'administrator' | 'teacher' | 'teacherAndAdmin' | 'student' | 'externalPerson';
+type SchoolRoleString = 'administrator' | 'teacher' | 'teacherAndAdmin' | 'student' | 'externalPerson';
 export type UserSetupCompact = [
 	string,
 	'sameSchool' | 'otherSchool',

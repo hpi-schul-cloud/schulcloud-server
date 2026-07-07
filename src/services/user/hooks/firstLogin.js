@@ -1,7 +1,7 @@
 const hooks = require('feathers-hooks-common');
 const { authenticate } = require('@feathersjs/authentication');
 
-exports.before = {
+const before = {
 	all: [],
 	find: hooks.disallow('external'),
 	get: hooks.disallow('external'),
@@ -11,7 +11,7 @@ exports.before = {
 	remove: hooks.disallow('external'),
 };
 
-exports.after = {
+const after = {
 	all: [],
 	find: [],
 	get: [],

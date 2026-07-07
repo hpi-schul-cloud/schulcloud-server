@@ -18,4 +18,4 @@ export const ENTITIES = [
 	SchoolYearEntity,
 ];
 
-export const TEST_ENTITIES = [...ENTITIES];
+const TEST_ENTITIES = [...ENTITIES];

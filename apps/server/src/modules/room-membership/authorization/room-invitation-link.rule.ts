@@ -8,7 +8,7 @@ import { RoomInvitationLinkError } from '@modules/room/api/dto/response/room-inv
 import { RoomInvitationLinkValidationError } from '@modules/room/api/type/room-invitation-link-validation-error.enum';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 
-export const RoomInvitationLinkOperationValues = ['useRoomInvitationLinks'] as const;
+const RoomInvitationLinkOperationValues = ['useRoomInvitationLinks'] as const;
 
 export type RoomInvitationLinkOperation = (typeof RoomInvitationLinkOperationValues)[number]; // turn string list to type union of strings
 
