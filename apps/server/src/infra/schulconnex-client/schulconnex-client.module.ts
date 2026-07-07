@@ -1,6 +1,6 @@
 import { ConfigurationModule } from '@infra/configuration';
 import { LoggerModule } from '@infra/logger';
-import { OauthAdapterService } from '@modules/oauth-adapter';
+import { OauthAdapterModule } from '@infra/oauth-adapter';
 import { HttpModule } from '@nestjs/axios';
 import { DynamicModule, Module } from '@nestjs/common';
 import { InternalSchulconnexClientConfig } from './schulconnex-client.config';
@@ -14,8 +14,13 @@ export class SchulconnexClientModule {
 	): DynamicModule {
 		return {
 			module: SchulconnexClientModule,
-			imports: [HttpModule, LoggerModule, ConfigurationModule.register(configInjectionToken, configConstructor)],
-			providers: [OauthAdapterService, SchulconnexRestClient],
+			imports: [
+				HttpModule,
+				LoggerModule,
+				OauthAdapterModule,
+				ConfigurationModule.register(configInjectionToken, configConstructor),
+			],
+			providers: [SchulconnexRestClient],
 			exports: [SchulconnexRestClient],
 		};
 	}

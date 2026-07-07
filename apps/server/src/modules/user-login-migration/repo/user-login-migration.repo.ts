@@ -1,6 +1,4 @@
-import { LegacyLogger } from '@infra/logger';
 import { EntityData, EntityName } from '@mikro-orm/core';
-import { EntityManager } from '@mikro-orm/mongodb';
 import { SchoolEntity } from '@modules/school/repo';
 import { SystemEntity } from '@modules/system/repo';
 import { Injectable } from '@nestjs/common';
@@ -11,13 +9,6 @@ import { UserLoginMigrationEntity } from './user-login-migration.entity';
 
 @Injectable()
 export class UserLoginMigrationRepo extends BaseDORepo<UserLoginMigrationDO, UserLoginMigrationEntity> {
-	constructor(
-		protected readonly _em: EntityManager,
-		protected readonly logger: LegacyLogger
-	) {
-		super(_em, logger);
-	}
-
 	get entityName(): EntityName<UserLoginMigrationEntity> {
 		return UserLoginMigrationEntity;
 	}
