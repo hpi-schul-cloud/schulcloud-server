@@ -1,5 +1,5 @@
 import { Factory } from 'fishery';
-import { BiloMediaSource, BiloOauthConfig } from '../interface';
+import { type BiloMediaSource, type BiloOauthConfig } from '../interface';
 
 export const biloOauthConfigFactory = Factory.define<BiloOauthConfig>(({ sequence }) => {
 	return {
