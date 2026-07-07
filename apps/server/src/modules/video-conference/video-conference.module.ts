@@ -2,7 +2,6 @@ import { CALENDAR_CONFIG_TOKEN, CalendarConfig, CalendarModule } from '@infra/ca
 import { ConfigurationModule } from '@infra/configuration';
 import { LoggerModule } from '@infra/logger';
 import { AuthorizationModule } from '@modules/authorization';
-import { AuthorizationReferenceModule } from '@modules/authorization-reference/authorization-reference.module';
 import { BoardModule } from '@modules/board';
 import { CourseModule } from '@modules/course';
 import { LegacySchoolModule } from '@modules/legacy-school';
@@ -24,7 +23,6 @@ import { VIDEO_CONFERENCE_CONFIG_TOKEN, VideoConferenceConfig } from './video-co
 	imports: [
 		ConfigurationModule.register(VIDEO_CONFERENCE_CONFIG_TOKEN, VideoConferenceConfig),
 		AuthorizationModule,
-		AuthorizationReferenceModule, // can be removed wenn video-conference-deprecated is removed
 		BoardModule,
 		CalendarModule.register(CALENDAR_CONFIG_TOKEN, CalendarConfig),
 		HttpModule,

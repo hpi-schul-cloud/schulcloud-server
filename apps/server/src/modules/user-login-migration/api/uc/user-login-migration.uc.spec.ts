@@ -1,12 +1,12 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { Logger } from '@infra/logger';
+import { OAuthTokenDto } from '@infra/oauth-adapter';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthenticationService } from '@modules/authentication';
 import { Action, AuthorizationService } from '@modules/authorization';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
 import { OAuthService } from '@modules/oauth';
-import { OAuthTokenDto } from '@modules/oauth-adapter';
 import { ExternalSchoolDto, OauthDataDto, ProvisioningService, ProvisioningSystemDto } from '@modules/provisioning';
 import { externalUserDtoFactory } from '@modules/provisioning/testing';
 import { RoleName } from '@modules/role';

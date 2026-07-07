@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
 import { DeepMocked, createMock } from '@golevelup/ts-jest';
-import { OauthAdapterService } from '@modules/oauth-adapter';
+import { OauthAdapterService } from '@infra/oauth-adapter';
 import { Test, TestingModule } from '@nestjs/testing';
 import axios, { AxiosError } from 'axios';
 import { DefaultEncryptionService, EncryptionService } from '../encryption';
