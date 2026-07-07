@@ -250,6 +250,23 @@ const layerRestrictions = [
 		},
 	},
 	{
+		name: 'schulcloud/layer-infra-collaborative-storage',
+		files: ['apps/server/src/infra/collaborative-storage/**/*.ts'],
+		rules: {
+			'no-restricted-imports': [
+				'warn',
+				{
+					patterns: [
+						{
+							group: ['@modules/**'],
+							message: 'infra-modules may NOT import from @modules',
+						},
+					],
+				},
+			],
+		},
+	},
+	{
 		name: 'schulcloud/layer-modules',
 		files: ['apps/server/src/modules/**/*.ts'],
 		rules: {
