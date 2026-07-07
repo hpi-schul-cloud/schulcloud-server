@@ -1,4 +1,3 @@
-import { LegacyLogger } from '@infra/logger';
 import {
 	EntityData,
 	EntityName,
@@ -10,16 +9,13 @@ import {
 } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
-import { BaseDO } from '@shared/domain/domainobject/base.do';
-import { BaseEntity, baseEntityProperties } from '@shared/domain/entity/base.entity';
-import { EntityId } from '@shared/domain/types';
+import { BaseDO } from '../domain/domainobject/base.do';
+import { BaseEntity, baseEntityProperties } from '../domain/entity/base.entity';
+import { EntityId } from '../domain/types';
 
 @Injectable()
 export abstract class BaseDORepo<DO extends BaseDO, E extends BaseEntity> {
-	constructor(
-		protected readonly _em: EntityManager,
-		protected readonly logger: LegacyLogger
-	) {}
+	constructor(protected readonly _em: EntityManager) {}
 
 	abstract get entityName(): EntityName<E>;
 
