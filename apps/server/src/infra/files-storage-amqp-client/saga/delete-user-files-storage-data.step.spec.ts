@@ -1,8 +1,8 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { Logger } from '@infra/logger';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ModuleName, SagaService } from '@modules/saga';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { FilesStorageProducer } from '../service';
 import { DeleteUserFilesStorageDataStep } from './delete-user-files-storage-data.step';
 

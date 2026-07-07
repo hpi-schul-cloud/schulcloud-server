@@ -1,31 +1,31 @@
 import { createMock } from '@golevelup/ts-jest';
 import { FilesStorageClientAdapterService } from '@infra/files-storage-amqp-client';
-import { EntityManager, FilterQuery, ObjectId } from '@mikro-orm/mongodb';
-import { BoardExternalReference, BoardExternalReferenceType, BoardNodeType } from '@modules/board';
+import { EntityManager, type FilterQuery, ObjectId } from '@mikro-orm/mongodb';
+import { type BoardExternalReference, BoardExternalReferenceType, BoardNodeType } from '@modules/board';
 import {
 	cardEntityFactory,
 	columnBoardEntityFactory,
 	columnEntityFactory,
 	linkElementEntityFactory,
 } from '@modules/board/testing';
-import { CopyApiResponse } from '@modules/copy-helper';
+import { type CopyApiResponse } from '@modules/copy-helper';
 import { CourseEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { lessonFactory } from '@modules/lesson/testing';
 import { ServerTestModule } from '@modules/server/server.app.module';
 import { Task } from '@modules/task/repo';
 import { taskFactory } from '@modules/task/testing';
-import { INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { type INestApplication } from '@nestjs/common';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { BoardNodeEntity } from '../../../board/repo';
 import { LessonEntity } from '../../../lesson/repo';
-import { LEARNROOM_CONFIG_TOKEN, LearnroomConfig } from '../../learnroom.config';
+import { LEARNROOM_CONFIG_TOKEN, type LearnroomConfig } from '../../learnroom.config';
 import { LegacyBoard } from '../../repo';
 import { boardFactory } from '../../testing';
-import { SingleColumnBoardResponse } from '../dto';
+import { type SingleColumnBoardResponse } from '../dto';
 
 describe('Course Rooms Controller (API)', () => {
 	let app: INestApplication;

@@ -1,5 +1,5 @@
 import { Migration } from '@mikro-orm/migrations-mongodb';
-import { ObjectId } from '@mikro-orm/mongodb';
+import { type ObjectId } from '@mikro-orm/mongodb';
 
 /*
  * Migration removing materials and lesson contents referencing merlin.

@@ -3,16 +3,16 @@ import { LegacyLogger } from '@infra/logger';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
-import { Test, TestingModule } from '@nestjs/testing';
-import { Page } from '@shared/domain/domainobject';
+import { Test, type TestingModule } from '@nestjs/testing';
+import { type Page } from '@shared/domain/domainobject';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { v4 as uuidv4 } from 'uuid';
-import { PseudonymSearchQuery } from '../domain';
+import { type PseudonymSearchQuery } from '../domain';
 import { ExternalToolPseudonymEntity } from '../entity';
 import { externalToolPseudonymEntityFactory } from '../testing';
 import { ExternalToolPseudonymRepo } from './external-tool-pseudonym.repo';
-import { Pseudonym } from './pseudonym.do';
+import { type Pseudonym } from './pseudonym.do';
 
 describe('ExternalToolPseudonymRepo', () => {
 	let module: TestingModule;

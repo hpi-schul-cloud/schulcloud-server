@@ -1,4 +1,4 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { BoardExternalReferenceType } from '@modules/board';
 import { columnBoardEntityFactory } from '@modules/board/testing/entity/column-board-entity.factory';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
@@ -11,7 +11,7 @@ import { Submission, Task } from '@modules/task/repo';
 import { taskFactory } from '@modules/task/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { ColumnBoardNodeRepo, LegacyBoard, LegacyBoardElement, LegacyBoardRepo } from '../repo';
 import { boardFactory } from '../testing';

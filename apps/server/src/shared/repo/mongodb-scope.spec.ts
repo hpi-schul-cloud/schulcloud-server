@@ -1,4 +1,4 @@
-import { IFindOptions, SortOrder } from '../domain/interface';
+import { type IFindOptions, SortOrder } from '../domain/interface';
 import { MongoDbScope } from './mongodb-scope';
 
 describe(MongoDbScope.name, () => {

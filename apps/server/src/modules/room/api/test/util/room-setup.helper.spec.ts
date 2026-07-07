@@ -1,11 +1,11 @@
-import { EntityManager } from '@mikro-orm/core';
+import { type EntityManager } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Account } from '@modules/account';
-import { Role } from '@modules/role/repo';
-import { SchoolEntity } from '@modules/school/repo';
-import { User } from '@modules/user/repo';
-import { TestApiClient } from '@testing/test-api-client';
-import { RoomSetup, UserSetupCompact } from './room-setup.helper';
+import { type Account } from '@modules/account';
+import { type Role } from '@modules/role/repo';
+import { type SchoolEntity } from '@modules/school/repo';
+import { type User } from '@modules/user/repo';
+import { type TestApiClient } from '@testing/test-api-client';
+import { RoomSetup, type UserSetupCompact } from './room-setup.helper';
 
 jest.mock('@modules/role/testing', () => {
 	return {

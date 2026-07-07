@@ -1,4 +1,4 @@
-import { ParentNodeInfo } from '../../domain/types';
+import { type ParentNodeInfo } from '../../domain/types';
 import { ParentNodeInfoResponse } from '../dto';
 
 export class ParentNodeInfoResponseMapper {

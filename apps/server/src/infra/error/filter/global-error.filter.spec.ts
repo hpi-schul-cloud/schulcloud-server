@@ -1,13 +1,13 @@
 /* eslint-disable promise/valid-params */
 import { NotFound } from '@feathersjs/errors';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ArgumentsHost, BadRequestException, HttpStatus, InternalServerErrorException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import { type ArgumentsHost, BadRequestException, HttpStatus, InternalServerErrorException } from '@nestjs/common';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { WsException } from '@nestjs/websockets';
-import { BusinessError, ErrorLogMessage } from '@shared/common/error';
-import { Loggable } from '@shared/common/loggable';
+import { BusinessError, type ErrorLogMessage } from '@shared/common/error';
+import { type Loggable } from '@shared/common/loggable';
 import { AxiosError } from 'axios';
-import { Response } from 'express';
+import { type Response } from 'express';
 import { DomainErrorHandler } from '../domain';
 import { ErrorResponse } from '../dto';
 import { ErrorUtils } from '../utils';

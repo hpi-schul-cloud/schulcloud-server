@@ -1,9 +1,9 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { courseEntityFactory } from '@modules/course/testing';
 import { ServerTestModule } from '@modules/server/server.app.module';
-import { TaskListResponse } from '@modules/task/api/dto';
-import { INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { type TaskListResponse } from '@modules/task/api/dto';
+import { type INestApplication } from '@nestjs/common';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { InputFormat } from '@shared/domain/types';
 import { cleanupCollections } from '@testing/cleanup-collections';
@@ -11,7 +11,7 @@ import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.tes
 import { TestApiClient } from '@testing/test-api-client';
 import { submissionFactory, taskFactory } from '../../testing';
 import { schoolEntityFactory } from '@modules/management/seed-data/factory/school.entity.factory';
-import { SchoolEntity } from '@modules/school/repo';
+import { type SchoolEntity } from '@modules/school/repo';
 
 const tomorrow = new Date(Date.now() + 86400000);
 

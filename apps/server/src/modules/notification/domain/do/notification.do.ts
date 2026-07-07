@@ -1,6 +1,6 @@
-import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
-import { EntityId } from '@shared/domain/types';
-import { NotificationType } from '../../types';
+import { type AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
+import { type EntityId } from '@shared/domain/types';
+import { type NotificationType } from '../../types';
 
 export interface NotificationProps extends AuthorizableObject {
 	type: NotificationType;

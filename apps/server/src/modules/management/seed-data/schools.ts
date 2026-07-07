@@ -2,15 +2,15 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { SchoolFeature, SchoolPurpose } from '@modules/school/domain';
 import { FileStorageType } from '@modules/school/domain/type/file-storage-type.enum';
 import {
-	FederalStateEntity,
-	SchoolEntity,
-	SchoolProperties,
-	SchoolRoles,
-	SchoolYearEntity,
+	type FederalStateEntity,
+	type SchoolEntity,
+	type SchoolProperties,
+	type SchoolRoles,
+	type SchoolYearEntity,
 } from '@modules/school/repo';
-import { SystemEntity } from '@modules/system/repo';
+import { type SystemEntity } from '@modules/system/repo';
 import { LanguageType } from '@shared/domain/interface';
-import { DeepPartial } from 'fishery';
+import { type DeepPartial } from 'fishery';
 import { federalStateFactory } from './factory/federal-state.factory';
 import { schoolEntityFactory } from './factory/school.entity.factory';
 import { EFederalState } from './federalstates';

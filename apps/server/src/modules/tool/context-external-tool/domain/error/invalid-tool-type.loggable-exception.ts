@@ -1,6 +1,6 @@
 import { UnprocessableEntityException } from '@nestjs/common';
-import { Loggable, LoggableMessage } from '@shared/common/loggable';
-import { ToolConfigType } from '../../../common/enum';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
+import { type ToolConfigType } from '../../../common/enum';
 
 export class InvalidToolTypeLoggableException extends UnprocessableEntityException implements Loggable {
 	constructor(

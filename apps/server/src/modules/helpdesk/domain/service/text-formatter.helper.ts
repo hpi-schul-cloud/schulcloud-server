@@ -1,4 +1,9 @@
-import { HelpdeskProblemProps, HelpdeskWishProps, UserContextProps, UserDeviceProps } from '../interface';
+import {
+	type HelpdeskProblemProps,
+	type HelpdeskWishProps,
+	type UserContextProps,
+	type UserDeviceProps,
+} from '../interface';
 
 export class TextFormatter {
 	public static createProblemText(

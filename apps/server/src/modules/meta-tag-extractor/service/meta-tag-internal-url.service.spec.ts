@@ -1,6 +1,6 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Test, TestingModule } from '@nestjs/testing';
-import { MetaData, MetaDataEntityType } from '../types';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import { Test, type TestingModule } from '@nestjs/testing';
+import { type MetaData, MetaDataEntityType } from '../types';
 import { MetaTagInternalUrlService } from './meta-tag-internal-url.service';
 import { BoardUrlHandler, CourseUrlHandler, LessonUrlHandler, TaskUrlHandler } from './url-handler';
 import { META_TAG_EXTRACTOR_CONFIG_TOKEN } from '../meta-tag-extractor.config';

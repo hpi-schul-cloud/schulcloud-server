@@ -10,7 +10,7 @@ import { CommonCartridgeManifestResourceV110 } from './common-cartridge-manifest
 import { CommonCartridgeResourceFactoryV110 } from './common-cartridge-resource-factory';
 import { CommonCartridgeWebContentResourceV110 } from './common-cartridge-web-content-resource';
 import {
-	CommonCartridgeWebLinkResourcePropsV110,
+	type CommonCartridgeWebLinkResourcePropsV110,
 	CommonCartridgeWebLinkResourceV110,
 } from './common-cartridge-web-link-resource';
 

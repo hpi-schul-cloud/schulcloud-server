@@ -1,17 +1,17 @@
 import { faker } from '@faker-js/faker';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { Logger } from '@infra/logger';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common/error';
-import { EntityId } from '@shared/domain/types';
+import { type EntityId } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
 import bcrypt from 'bcryptjs';
 import { accountDoFactory } from '../../testing';
 import { Account } from '../do';
-import { ACCOUNT_REPO, AccountRepo } from '../interface';
+import { ACCOUNT_REPO, type AccountRepo } from '../interface';
 import { AccountServiceDb } from './account-db.service';
 
 describe('AccountDbService', () => {

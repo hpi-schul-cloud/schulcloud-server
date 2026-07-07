@@ -1,5 +1,5 @@
-import { DeepMocked, createMock } from '@golevelup/ts-jest';
-import { Test, TestingModule } from '@nestjs/testing';
+import { type DeepMocked, createMock } from '@golevelup/ts-jest';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { DeletionClient } from '../deletion-client';
 import { DeletionExecutionUc } from './deletion-execution.uc';
 

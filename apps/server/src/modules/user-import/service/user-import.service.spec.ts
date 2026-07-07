@@ -1,4 +1,4 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { Logger } from '@infra/logger';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { LegacySchoolService } from '@modules/legacy-school';
@@ -6,18 +6,18 @@ import { LegacySchoolDo } from '@modules/legacy-school/domain';
 import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
 import { SchoolFeature } from '@modules/school/domain';
 import { schoolEntityFactory } from '@modules/school/testing';
-import { System, SystemService } from '@modules/system';
+import { type System, SystemService } from '@modules/system';
 import { systemFactory } from '@modules/system/testing';
 import { UserService } from '@modules/user';
-import { UserLoginMigrationDO } from '@modules/user-login-migration';
+import { type UserLoginMigrationDO } from '@modules/user-login-migration';
 import { userLoginMigrationDOFactory } from '@modules/user-login-migration/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { ForbiddenException, InternalServerErrorException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { UserAlreadyAssignedToImportUserError } from '../domain/error';
-import { ImportUser, MatchCreator } from '../entity';
+import { type ImportUser, MatchCreator } from '../entity';
 import {
 	SchoolIdDoesNotMatchWithUserSchoolId,
 	UserMigrationCanceledLoggable,
@@ -25,7 +25,7 @@ import {
 } from '../loggable';
 import { ImportUserRepo } from '../repo';
 import { importUserFactory } from '../testing';
-import { USER_IMPORT_CONFIG_TOKEN, UserImportConfig } from '../user-import-config';
+import { USER_IMPORT_CONFIG_TOKEN, type UserImportConfig } from '../user-import-config';
 import { UserImportService } from './user-import.service';
 
 describe(UserImportService.name, () => {

@@ -1,7 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseFactory } from '@testing/factory/base.factory';
 import { CopyFileDto } from '../dto';
-import { CopyFileDomainObjectProps } from '../interfaces';
+import { type CopyFileDomainObjectProps } from '../interfaces';
 
 export const copyFileDtoFactory = BaseFactory.define<CopyFileDto, CopyFileDomainObjectProps>(
 	CopyFileDto,

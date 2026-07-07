@@ -1,7 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { QueueDeletionRequestInput, QueueDeletionRequestOutput } from '../services/interface';
+import { type QueueDeletionRequestInput, type QueueDeletionRequestOutput } from '../services/interface';
 import { BatchDeletionSummaryDetailBuilder } from '.';
-import { BatchDeletionSummaryDetail } from '../uc/interface';
+import { type BatchDeletionSummaryDetail } from '../uc/interface';
 
 describe(BatchDeletionSummaryDetailBuilder.name, () => {
 	describe(BatchDeletionSummaryDetailBuilder.build.name, () => {

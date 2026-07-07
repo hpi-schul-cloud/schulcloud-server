@@ -1,4 +1,4 @@
-import { DeletionRequestTargetRefInput } from './deletion-request-target-ref-input.interface';
+import { type DeletionRequestTargetRefInput } from './deletion-request-target-ref-input.interface';
 
 export interface DeletionRequestInput {
 	targetRef: DeletionRequestTargetRefInput;

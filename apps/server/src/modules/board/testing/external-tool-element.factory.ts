@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseFactory } from '@testing/factory/base.factory';
-import { ExternalToolElement, ExternalToolElementProps, ROOT_PATH } from '../domain';
+import { ExternalToolElement, type ExternalToolElementProps, ROOT_PATH } from '../domain';
 
 export const externalToolElementFactory = BaseFactory.define<ExternalToolElement, ExternalToolElementProps>(
 	ExternalToolElement,

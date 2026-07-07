@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseFactory } from '@testing/factory/base.factory';
-import { DrawingElement, DrawingElementProps, ROOT_PATH } from '../domain';
+import { DrawingElement, type DrawingElementProps, ROOT_PATH } from '../domain';
 
 export const drawingElementFactory = BaseFactory.define<DrawingElement, DrawingElementProps>(
 	DrawingElement,

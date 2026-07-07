@@ -1,5 +1,5 @@
 import { drawingElementFactory } from '../testing';
-import { DrawingElement, isDrawingElement } from './drawing-element.do';
+import { type DrawingElement, isDrawingElement } from './drawing-element.do';
 
 describe('DrawingElement', () => {
 	let drawingElement: DrawingElement;

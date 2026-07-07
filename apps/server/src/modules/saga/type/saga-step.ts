@@ -1,4 +1,4 @@
-import { StepType } from './saga-step-type';
+import { type StepType } from './saga-step-type';
 
 export abstract class SagaStep<T extends keyof StepType> {
 	constructor(public readonly name: T) {}

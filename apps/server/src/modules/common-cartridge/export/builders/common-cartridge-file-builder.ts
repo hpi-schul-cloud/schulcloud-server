@@ -1,25 +1,25 @@
 import {
 	CommonCartridgeElementType,
 	CommonCartridgeResourceType,
-	CommonCartridgeVersion,
+	type CommonCartridgeVersion,
 } from '../common-cartridge.enums';
 import {
 	CommonCartridgeElementFactory,
-	CommonCartridgeElementProps,
+	type CommonCartridgeElementProps,
 } from '../elements/common-cartridge-element-factory';
 import { MissingMetadataLoggableException } from '../errors';
-import { CommonCartridgeElement } from '../interfaces';
+import { type CommonCartridgeElement } from '../interfaces';
 import { CommonCartridgeResourceFactory } from '../resources/common-cartridge-resource-factory';
 import {
 	CommonCartridgeOrganizationNode,
-	CommonCartridgeOrganizationNodeProps,
+	type CommonCartridgeOrganizationNodeProps,
 } from './common-cartridge-organization-node';
 import { CommonCartridgeResourceCollectionBuilder } from './common-cartridge-resource-collection-builder';
 
-import { Logger } from '@infra/logger';
-import archiver from 'archiver';
+import { type Logger } from '@infra/logger';
+import type archiver from 'archiver';
 import { CommonCartridgeMessageLoggable } from '../../loggable/common-cartridge-message.loggable';
-import { ResourceFileContent } from '../interfaces/common-cartridge-resource.interface';
+import { type ResourceFileContent } from '../interfaces/common-cartridge-resource.interface';
 
 export type CommonCartridgeFileBuilderProps = {
 	version: CommonCartridgeVersion;

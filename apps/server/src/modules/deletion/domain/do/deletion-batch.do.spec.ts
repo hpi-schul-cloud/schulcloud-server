@@ -1,5 +1,5 @@
 import { BatchStatus, DomainName } from '../types';
-import { DeletionBatch, DeletionBatchProps } from './deletion-batch.do';
+import { DeletionBatch, type DeletionBatchProps } from './deletion-batch.do';
 
 describe(DeletionBatch.name, () => {
 	const setup = () => {

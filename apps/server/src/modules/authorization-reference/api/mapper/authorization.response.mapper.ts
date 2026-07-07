@@ -1,5 +1,5 @@
-import { AuthorizableReferenceType } from '@modules/authorization/domain';
-import { EntityId } from '@shared/domain/types';
+import { type AuthorizableReferenceType } from '@modules/authorization/domain';
+import { type EntityId } from '@shared/domain/types';
 import {
 	AccessTokenPayloadResponse,
 	AccessTokenResponse,

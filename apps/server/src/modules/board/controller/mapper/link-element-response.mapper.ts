@@ -1,6 +1,6 @@
 import { ContentElementType, LinkElement } from '../../domain';
 import { LinkElementContent, LinkElementResponse, TimestampsResponse } from '../dto';
-import { BaseResponseMapper } from './base-mapper.interface';
+import { type BaseResponseMapper } from './base-mapper.interface';
 
 export class LinkElementResponseMapper implements BaseResponseMapper {
 	private static instance: LinkElementResponseMapper;

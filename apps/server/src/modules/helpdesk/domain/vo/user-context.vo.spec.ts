@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { UserContextProps } from '../interface';
+import { type UserContextProps } from '../interface';
 import { UserContext } from './user-context.vo';
 
 describe('UserContext', () => {

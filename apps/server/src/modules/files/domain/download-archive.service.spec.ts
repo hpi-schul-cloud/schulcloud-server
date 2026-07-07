@@ -1,7 +1,7 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { Logger } from '@infra/logger';
-import { Test, TestingModule } from '@nestjs/testing';
-import { Archiver } from 'archiver';
+import { Test, type TestingModule } from '@nestjs/testing';
+import { type Archiver } from 'archiver';
 import { Readable } from 'node:stream';
 import { fileDomainFactory } from '../testing';
 import { DownloadArchiveService } from './download-archive.service';

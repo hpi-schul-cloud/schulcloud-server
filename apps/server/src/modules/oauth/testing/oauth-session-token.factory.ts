@@ -1,7 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { DomainObjectFactory } from '@testing/factory/domainobject';
 import { JwtTestFactory } from '@testing/factory/jwt.test.factory';
-import { OauthSessionToken, OauthSessionTokenProps } from '../domain';
+import { OauthSessionToken, type OauthSessionTokenProps } from '../domain';
 
 export const oauthSessionTokenFactory = DomainObjectFactory.define<OauthSessionToken, OauthSessionTokenProps>(
 	OauthSessionToken,

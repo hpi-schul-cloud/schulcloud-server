@@ -1,5 +1,5 @@
-import { GroupTypes } from '@modules/group';
-import { EntityId } from '@shared/domain/types';
+import { type GroupTypes } from '@modules/group';
+import { type EntityId } from '@shared/domain/types';
 
 export interface GroupFilter {
 	userId?: EntityId;

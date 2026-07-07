@@ -1,5 +1,5 @@
 import { customParameterFactory } from '../../../external-tool/testing';
-import { CustomParameter } from '../custom-parameter.do';
+import { type CustomParameter } from '../custom-parameter.do';
 import { ToolParameterRequiredLoggableException } from './tool-parameter-required.loggable-exception';
 
 describe(ToolParameterRequiredLoggableException.name, () => {

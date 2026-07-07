@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Test, TestingModule } from '@nestjs/testing';
-import { CoursesApi, CreateCourseBodyParams } from '../generated';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import { Test, type TestingModule } from '@nestjs/testing';
+import { CoursesApi, type CreateCourseBodyParams } from '../generated';
 import { AdapterUtils } from './adapter.utils';
 import { CoursesClientAdapter } from './courses-client.adapter';
 

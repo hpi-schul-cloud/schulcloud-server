@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseFactory } from '@testing/factory/base.factory';
-import { Registration, RegistrationProps } from '../domain/do/registration.do';
+import { Registration, type RegistrationProps } from '../domain/do/registration.do';
 
 export const registrationFactory = BaseFactory.define<Registration, RegistrationProps>(Registration, ({ sequence }) => {
 	const props: RegistrationProps = {

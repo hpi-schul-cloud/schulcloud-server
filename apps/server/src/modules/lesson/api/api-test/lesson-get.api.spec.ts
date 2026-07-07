@@ -1,21 +1,21 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { courseEntityFactory, courseGroupEntityFactory } from '@modules/course/testing';
 import { ServerTestModule } from '@modules/server';
-import { HttpStatus, INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { HttpStatus, type INestApplication } from '@nestjs/common';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import {
-	ComponentEtherpadProperties,
-	ComponentGeogebraProperties,
-	ComponentInternalProperties,
-	ComponentLernstoreProperties,
-	ComponentProperties,
-	ComponentTextProperties,
+	type ComponentEtherpadProperties,
+	type ComponentGeogebraProperties,
+	type ComponentInternalProperties,
+	type ComponentLernstoreProperties,
+	type ComponentProperties,
+	type ComponentTextProperties,
 	ComponentType,
 } from '../../repo';
 import { lessonFactory, materialFactory } from '../../testing';
-import { LessonResponse } from '../dto';
+import { type LessonResponse } from '../dto';
 
 describe('Lesson Controller (API) - GET /lessons/:lessonId', () => {
 	let app: INestApplication;

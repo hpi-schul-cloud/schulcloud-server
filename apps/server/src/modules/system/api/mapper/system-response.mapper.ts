@@ -1,4 +1,4 @@
-import { OauthConfig, System } from '../../domain';
+import { type OauthConfig, type System } from '../../domain';
 import { OauthConfigResponse, PublicSystemListResponse, PublicSystemResponse } from '../dto/response';
 
 export class SystemResponseMapper {

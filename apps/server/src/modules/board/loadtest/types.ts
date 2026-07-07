@@ -1,4 +1,4 @@
-import { ManagerOptions, SocketOptions } from 'socket.io-client';
+import { type ManagerOptions, type SocketOptions } from 'socket.io-client';
 import type { SocketConnectionManager } from './socket-connection-manager';
 import type { BoardLoadTest } from './board-load-test';
 

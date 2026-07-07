@@ -1,6 +1,6 @@
-import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
-import { EntityId } from '@shared/domain/types';
-import { BatchStatus, DomainName } from '../types';
+import { type AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
+import { type EntityId } from '@shared/domain/types';
+import { BatchStatus, type DomainName } from '../types';
 
 export interface DeletionBatchProps extends AuthorizableObject {
 	name: string;

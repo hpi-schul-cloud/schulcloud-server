@@ -4,13 +4,13 @@ import { RoleName } from '@modules/role';
 import { roleFactory } from '@modules/role/testing';
 import { schoolEntityFactory, schoolYearEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server/server.app.module';
-import { User } from '@modules/user/repo';
+import { type User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
-import { INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { type INestApplication } from '@nestjs/common';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
-import { UserListResponse, UserResponse, UsersSearchQueryParams } from '../dto';
+import { type UserListResponse, type UserResponse, type UsersSearchQueryParams } from '../dto';
 
 describe('Users Admin Students Controller (API)', () => {
 	const basePath = '/users/admin/students';

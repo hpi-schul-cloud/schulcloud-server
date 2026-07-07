@@ -1,6 +1,6 @@
 import { InternalServerErrorException } from '@nestjs/common';
-import { Loggable, LoggableMessage } from '@shared/common/loggable';
-import { LogMessageData } from '@shared/common/loggable/interfaces';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
+import { type LogMessageData } from '@shared/common/loggable/interfaces';
 
 export class GenericFileStorageLoggable extends InternalServerErrorException implements Loggable {
 	constructor(

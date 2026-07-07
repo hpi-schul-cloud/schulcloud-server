@@ -1,4 +1,4 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BoardNodeService, ColumnBoardService } from '@modules/board';
 import { cardFactory, columnBoardFactory } from '@modules/board/testing';
@@ -15,7 +15,7 @@ import { Submission, Task } from '@modules/task/repo';
 import { taskFactory } from '@modules/task/testing';
 import { User } from '@modules/user/repo';
 import { NotFoundException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { ShareTokenContextType, ShareTokenParentType } from '../domainobject/share-token.do';
 import { ShareTokenRepo } from '../repo/share-token.repo';

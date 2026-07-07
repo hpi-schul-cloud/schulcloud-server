@@ -1,6 +1,6 @@
-import { DomainDeletionReport } from '../interface/domain-deletion-report';
-import { DomainOperationReport } from '../interface/domain-operation-report';
-import { DomainName } from '../types/domain-name.enum';
+import { type DomainDeletionReport } from '../interface/domain-deletion-report';
+import { type DomainOperationReport } from '../interface/domain-operation-report';
+import { type DomainName } from '../types/domain-name.enum';
 
 export class DomainDeletionReportBuilder {
 	public static build(

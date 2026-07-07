@@ -3,10 +3,10 @@ import { Logger } from '@infra/logger';
 import {
 	SchulconnexGroupRole,
 	SchulconnexGroupType,
-	SchulconnexGruppenResponse,
-	SchulconnexPersonenkontextResponse,
-	SchulconnexResponse,
-	SchulconnexSonstigeGruppenzugehoerigeResponse,
+	type SchulconnexGruppenResponse,
+	type SchulconnexPersonenkontextResponse,
+	type SchulconnexResponse,
+	type SchulconnexSonstigeGruppenzugehoerigeResponse,
 } from '@infra/schulconnex-client';
 import {
 	schulconnexPoliciesInfoLicenseResponseFactory,
@@ -14,10 +14,15 @@ import {
 } from '@infra/schulconnex-client/testing';
 import { GroupTypes } from '@modules/group';
 import { RoleName } from '@modules/role';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { InvalidLaufzeitResponseLoggableException, InvalidLernperiodeResponseLoggableException } from '../../domain';
-import { ExternalGroupDto, ExternalLicenseDto, ExternalSchoolDto, ExternalUserDto } from '../../dto';
-import { PROVISIONING_CONFIG_TOKEN, ProvisioningConfig } from '../../provisioning.config';
+import {
+	type ExternalGroupDto,
+	type ExternalLicenseDto,
+	type ExternalSchoolDto,
+	type ExternalUserDto,
+} from '../../dto';
+import { PROVISIONING_CONFIG_TOKEN, type ProvisioningConfig } from '../../provisioning.config';
 import { SchulconnexResponseMapper } from './schulconnex-response-mapper';
 
 describe(SchulconnexResponseMapper.name, () => {

@@ -1,4 +1,4 @@
-import { AccountSearchType } from '../../domain/type/account-search-type';
+import { type AccountSearchType } from '../../domain/type/account-search-type';
 
 export class AccountSearchDto {
 	public type!: AccountSearchType;

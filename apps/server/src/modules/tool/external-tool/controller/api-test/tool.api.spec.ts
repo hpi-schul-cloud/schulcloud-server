@@ -1,39 +1,39 @@
 import { fileRecordResponseFactory } from '@infra/files-storage-rest-client/testing';
-import { Loaded } from '@mikro-orm/core';
+import { type Loaded } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { columnBoardEntityFactory, externalToolElementEntityFactory } from '@modules/board/testing';
 import { instanceEntityFactory } from '@modules/instance/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
-import { HttpStatus, INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { HttpStatus, type INestApplication } from '@nestjs/common';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { Response } from 'supertest';
+import { type Response } from 'supertest';
 import {
 	CustomParameterLocationParams,
 	CustomParameterScopeTypeParams,
 	CustomParameterTypeParams,
 	ToolConfigType,
 } from '../../../common/enum';
-import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/repo';
+import { type ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/repo';
 import { contextExternalToolEntityFactory } from '../../../context-external-tool/testing';
 import { schoolExternalToolEntityFactory } from '../../../school-external-tool/testing';
 import { ExternalToolMediumStatus } from '../../enum';
 import { ExternalToolEntity } from '../../repo';
 import { base64TestLogo, externalToolEntityFactory } from '../../testing';
 import {
-	ExternalToolBulkCreateParams,
-	ExternalToolCreateParams,
-	ExternalToolImportResultListResponse,
-	ExternalToolImportResultResponse,
-	ExternalToolResponse,
-	ExternalToolSearchListResponse,
-	ExternalToolUtilizationResponse,
+	type ExternalToolBulkCreateParams,
+	type ExternalToolCreateParams,
+	type ExternalToolImportResultListResponse,
+	type ExternalToolImportResultResponse,
+	type ExternalToolResponse,
+	type ExternalToolSearchListResponse,
+	type ExternalToolUtilizationResponse,
 } from '../dto';
 
 describe('ToolController (API)', () => {

@@ -1,7 +1,7 @@
-import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
-import { MediaSourceDataFormat } from '../enum';
-import { MediaSourceOauthConfig } from './media-source-oauth-config';
-import { MediaSourceVidisConfig } from './media-source-vidis-config';
+import { type AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
+import { type MediaSourceDataFormat } from '../enum';
+import { type MediaSourceOauthConfig } from './media-source-oauth-config';
+import { type MediaSourceVidisConfig } from './media-source-vidis-config';
 
 export interface MediaSourceProps extends AuthorizableObject {
 	id: string;

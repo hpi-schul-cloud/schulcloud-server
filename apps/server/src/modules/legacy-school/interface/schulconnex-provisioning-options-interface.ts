@@ -1,4 +1,4 @@
-import { ProvisioningOptionsInterface } from './provisioning-options-interface';
+import { type ProvisioningOptionsInterface } from './provisioning-options-interface';
 
 export type SchulConneXProvisioningOptionsInterface = Required<
 	Pick<

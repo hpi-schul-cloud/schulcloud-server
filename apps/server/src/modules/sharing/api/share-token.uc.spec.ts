@@ -1,4 +1,4 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { LegacyLogger } from '@infra/logger';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { BoardNodeAuthorizableService, BoardNodeService, ColumnBoardService } from '@modules/board';
@@ -16,10 +16,10 @@ import { taskFactory } from '@modules/task/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { NotImplementedException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
-import { ShareTokenContextType, ShareTokenParentType, ShareTokenPayload } from '../domainobject/share-token.do';
+import { ShareTokenContextType, ShareTokenParentType, type ShareTokenPayload } from '../domainobject/share-token.do';
 import { ShareTokenService } from '../service';
 import { shareTokenDOFactory } from '../testing/share-token.do.factory';
 import { ShareTokenPermissionService } from './service';

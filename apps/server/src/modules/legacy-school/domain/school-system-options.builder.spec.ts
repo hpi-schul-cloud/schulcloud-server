@@ -1,11 +1,11 @@
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { SchulConneXProvisioningOptionsInterface } from '../interface';
+import { type SchulConneXProvisioningOptionsInterface } from '../interface';
 import {
 	ProvisioningStrategyInvalidOptionsLoggableException,
 	ProvisioningStrategyNoOptionsLoggableException,
 } from '../loggable';
 import { SchoolSystemOptionsBuilder } from './school-system-options.builder';
-import { AnyProvisioningOptions } from './school-system-options.do';
+import { type AnyProvisioningOptions } from './school-system-options.do';
 import { SchulConneXProvisioningOptions } from './schulconnex-provisionin-options.do';
 
 describe(SchoolSystemOptionsBuilder.name, () => {

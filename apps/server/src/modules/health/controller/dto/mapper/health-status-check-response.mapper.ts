@@ -1,4 +1,4 @@
-import { HealthStatusCheck } from '../../../domain';
+import { type HealthStatusCheck } from '../../../domain';
 import { HealthStatusCheckResponse } from '../response';
 
 export class HealthStatusCheckResponseMapper {

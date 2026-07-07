@@ -1,12 +1,12 @@
 import {
-	BoardConfiguration,
+	type BoardConfiguration,
 	BoardExternalReferenceType,
 	BoardRoles,
-	ColumnBoard,
-	MediaBoard,
-	UserWithBoardRoles,
+	type ColumnBoard,
+	type MediaBoard,
+	type UserWithBoardRoles,
 } from '../../../domain';
-import { PreparedBoardContext } from './prepared-board-context.interface';
+import { type PreparedBoardContext } from './prepared-board-context.interface';
 
 export interface CourseUserInfo {
 	userId: string;

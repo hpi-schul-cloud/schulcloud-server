@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseFactory } from '@testing/factory/base.factory';
-import { H5pElementProps, ROOT_PATH } from '../domain';
+import { type H5pElementProps, ROOT_PATH } from '../domain';
 import { H5pElement } from '../domain/h5p-element.do';
 
 export const h5pElementFactory = BaseFactory.define<H5pElement, H5pElementProps>(H5pElement, () => {

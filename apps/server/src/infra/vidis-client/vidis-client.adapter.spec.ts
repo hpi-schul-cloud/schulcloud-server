@@ -1,19 +1,23 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { DefaultEncryptionService, EncryptionService, SymmetricKeyEncryptionService } from '@infra/encryption';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import {
+	DefaultEncryptionService,
+	type EncryptionService,
+	type SymmetricKeyEncryptionService,
+} from '@infra/encryption';
 import { AxiosErrorLoggable } from '@infra/error';
 import {
 	Configuration,
 	IDMBetreiberApiFactory,
-	IDMBetreiberApiInterface,
-	PageOfferDTO,
+	type IDMBetreiberApiInterface,
+	type PageOfferDTO,
 } from '@infra/vidis-client/index';
-import { MediaSourceDataFormat, MediaSourceVidisConfig } from '@modules/media-source';
+import { MediaSourceDataFormat, type MediaSourceVidisConfig } from '@modules/media-source';
 import { MediaSourceVidisConfigNotFoundLoggableException } from '@modules/media-source/loggable';
 import { mediaSourceFactory } from '@modules/media-source/testing';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { axiosErrorFactory } from '@testing/factory/axios-error.factory';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
-import { AxiosResponse, RawAxiosRequestConfig } from 'axios';
+import { type AxiosResponse, type RawAxiosRequestConfig } from 'axios';
 import { vidisPageOfferFactory } from './testing';
 import { VidisClientAdapter } from './vidis-client.adapter';
 

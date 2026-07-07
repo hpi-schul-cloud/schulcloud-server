@@ -1,32 +1,32 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ICurrentUser } from '@infra/auth-guard';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import { type ICurrentUser } from '@infra/auth-guard';
 import { CalendarEventDto, CalendarService } from '@infra/calendar';
 import { AuthorizationService } from '@modules/authorization';
 import { CourseService } from '@modules/course';
-import { CourseEntity } from '@modules/course/repo';
+import { type CourseEntity } from '@modules/course/repo';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { RoleName } from '@modules/role';
 import { Role } from '@modules/role/repo';
 import { roleFactory } from '@modules/role/testing';
-import { TeamEntity, TeamRepo } from '@modules/team/repo';
+import { type TeamEntity, TeamRepo } from '@modules/team/repo';
 import { teamFactory } from '@modules/team/testing';
-import { UserDo, UserService } from '@modules/user';
+import { type UserDo, UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
 import { userDoFactory } from '@modules/user/testing';
 import { BadRequestException, ForbiddenException, InternalServerErrorException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { AuthorizableObject } from '@shared/domain/domain-object';
+import { Test, type TestingModule } from '@nestjs/testing';
+import { type AuthorizableObject } from '@shared/domain/domain-object';
 import { RoleReference } from '@shared/domain/domainobject';
 import { Permission } from '@shared/domain/interface';
-import { EntityId } from '@shared/domain/types';
+import { type EntityId } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
 import {
 	BBBBaseMeetingConfig,
 	BBBCreateConfigBuilder,
-	BBBCreateResponse,
+	type BBBCreateResponse,
 	BBBJoinConfigBuilder,
-	BBBMeetingInfoResponse,
-	BBBResponse,
+	type BBBMeetingInfoResponse,
+	type BBBResponse,
 	BBBRole,
 	BBBService,
 	BBBStatus,
@@ -34,10 +34,10 @@ import {
 } from '../bbb';
 import { VideoConferenceDO, VideoConferenceScope } from '../domain';
 import { ErrorStatus } from '../error';
-import { defaultVideoConferenceOptions, VideoConferenceOptions } from '../interface';
+import { defaultVideoConferenceOptions, type VideoConferenceOptions } from '../interface';
 import { VideoConferenceRepo } from '../repo';
-import { VIDEO_CONFERENCE_CONFIG_TOKEN, VideoConferenceConfig } from '../video-conference-config';
-import { ScopeInfo, VideoConference, VideoConferenceState } from './dto';
+import { VIDEO_CONFERENCE_CONFIG_TOKEN, type VideoConferenceConfig } from '../video-conference-config';
+import { type ScopeInfo, type VideoConference, VideoConferenceState } from './dto';
 import { VideoConferenceDeprecatedUc } from './video-conference-deprecated.uc';
 
 class VideoConferenceDeprecatedUcSpec extends VideoConferenceDeprecatedUc {

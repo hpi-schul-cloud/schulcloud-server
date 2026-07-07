@@ -6,8 +6,8 @@ import { roleFactory } from '@modules/role/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
 import { userFactory } from '@modules/user/testing';
-import { HttpStatus, INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { HttpStatus, type INestApplication } from '@nestjs/common';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
@@ -17,9 +17,9 @@ import { schoolExternalToolEntityFactory } from '../../../school-external-tool/t
 import { ContextExternalToolEntity, ContextExternalToolType } from '../../repo';
 import { contextExternalToolEntityFactory } from '../../testing';
 import {
-	ContextExternalToolPostParams,
-	ContextExternalToolResponse,
-	ContextExternalToolSearchListResponse,
+	type ContextExternalToolPostParams,
+	type ContextExternalToolResponse,
+	type ContextExternalToolSearchListResponse,
 } from '../dto';
 
 describe('ToolContextController (API)', () => {

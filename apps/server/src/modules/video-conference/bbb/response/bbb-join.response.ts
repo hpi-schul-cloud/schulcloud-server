@@ -1,4 +1,4 @@
-import { BBBBaseResponse } from './bbb-base.response';
+import { type BBBBaseResponse } from './bbb-base.response';
 
 export interface BBBJoinResponse extends BBBBaseResponse {
 	meeting_id: string;

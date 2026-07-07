@@ -1,5 +1,5 @@
 import { PseudonymResponse } from '../controller/dto';
-import { Pseudonym } from '../repo';
+import { type Pseudonym } from '../repo';
 
 export class PseudonymMapper {
 	public static mapToResponse(pseudonym: Pseudonym): PseudonymResponse {

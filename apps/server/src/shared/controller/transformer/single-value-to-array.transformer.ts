@@ -1,4 +1,4 @@
-import { Transform, TransformFnParams } from 'class-transformer';
+import { Transform, type TransformFnParams } from 'class-transformer';
 
 /**
  * Decorator to transform a given value to be an array if the value is not null or undefined.

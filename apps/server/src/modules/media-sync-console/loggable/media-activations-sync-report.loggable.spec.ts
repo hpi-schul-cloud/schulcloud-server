@@ -4,7 +4,7 @@ import {
 	mediaSourceSyncOperationReportFactory,
 	mediaSourceSyncReportFactory,
 } from '@modules/media-source-sync/testing';
-import { LogMessage } from '@shared/common/loggable';
+import { type LogMessage } from '@shared/common/loggable';
 import { MediaActivationsSyncReportLoggable } from './media-activations-sync-report.loggable';
 
 describe(MediaActivationsSyncReportLoggable.name, () => {

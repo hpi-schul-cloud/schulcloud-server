@@ -1,4 +1,4 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { Logger } from '@infra/logger';
 import { AuthorizationService } from '@modules/authorization';
 import { RoleService } from '@modules/role';
@@ -9,7 +9,7 @@ import { UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
 import { userDoFactory, userFactory } from '@modules/user/testing';
 import { ForbiddenException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { Page } from '@shared/domain/domainobject';
 import { Permission, SortOrder } from '@shared/domain/interface';

@@ -1,5 +1,5 @@
-import { SchulconnexPoliciesInfoErrorResponse } from '@infra/schulconnex-client';
-import { Loggable, LoggableMessage } from '@shared/common/loggable/interfaces';
+import { type SchulconnexPoliciesInfoErrorResponse } from '@infra/schulconnex-client';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable/interfaces';
 
 export class PoliciesInfoErrorResponseLoggable implements Loggable {
 	constructor(private readonly item: SchulconnexPoliciesInfoErrorResponse) {}

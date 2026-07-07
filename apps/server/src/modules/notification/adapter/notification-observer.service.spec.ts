@@ -1,7 +1,7 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { Logger } from '@infra/logger';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { NotificationEntity } from '../repo/entities';
 import { NotificationType } from '../types';
 import { NotificationObserverService } from './notification-observer.service';

@@ -1,5 +1,5 @@
 import { UnprocessableEntityException } from '@nestjs/common';
-import { Loggable, LoggableMessage } from '@shared/common/loggable';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
 
 export class ExternalSchoolNumberMissingLoggableException extends UnprocessableEntityException implements Loggable {
 	constructor(private readonly externalSchoolId: string) {

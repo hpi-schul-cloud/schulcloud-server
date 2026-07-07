@@ -1,4 +1,4 @@
-import { MediaAvailableLine, MediaAvailableLineElement } from '../../../domain';
+import { type MediaAvailableLine, type MediaAvailableLineElement } from '../../../domain';
 import { MediaAvailableLineElementResponse, MediaAvailableLineResponse } from '../dto';
 
 export class MediaAvailableLineResponseMapper {

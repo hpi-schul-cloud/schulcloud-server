@@ -2,11 +2,11 @@ import { EntityManager } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AdminApiServerTestModule } from '@modules/server/admin-api.server.app.module';
 import { userFactory } from '@modules/user/testing';
-import { INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { type INestApplication } from '@nestjs/common';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { TestApiClient } from '@testing/test-api-client';
 import { StatusModel } from '../../../domain/types'; // barrel file
-import { DeletionBatchEntity } from '../../../repo/entity'; // barrel file
+import { type DeletionBatchEntity } from '../../../repo/entity'; // barrel file
 import { deletionBatchEntityFactory, deletionRequestEntityFactory } from '../../../repo/entity/testing'; // testing need to be changed to top level of the module
 
 const baseRouteName = '/deletion-batches';

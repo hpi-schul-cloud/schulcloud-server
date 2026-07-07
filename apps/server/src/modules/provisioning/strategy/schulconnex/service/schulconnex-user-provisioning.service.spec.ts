@@ -1,12 +1,12 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { Logger } from '@infra/logger';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { AccountSave, AccountService } from '@modules/account';
+import { type AccountSave, AccountService } from '@modules/account';
 import { RoleName, RoleService } from '@modules/role';
 import { RoleDto } from '@modules/role/service/dto/role.dto';
 import { UserService } from '@modules/user';
 import { userDoFactory } from '@modules/user/testing';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import crypto from 'node:crypto';
 import { ExternalUserDto } from '../../../dto';
 import { SchoolMissingLoggableException, UserRoleUnknownLoggableException } from '../../../loggable';

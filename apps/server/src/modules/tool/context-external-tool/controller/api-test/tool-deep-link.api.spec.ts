@@ -1,22 +1,22 @@
 import { EntityManager, MikroORM } from '@mikro-orm/core';
 import { courseEntityFactory } from '@modules/course/testing';
 import { ServerTestModule } from '@modules/server';
-import { TOOL_ENCRYPTION_CONFIG_TOKEN, ToolEncryptionConfig } from '@modules/tool/encryption.config';
-import { HttpStatus, INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { TOOL_ENCRYPTION_CONFIG_TOKEN, type ToolEncryptionConfig } from '@modules/tool/encryption.config';
+import { HttpStatus, type INestApplication } from '@nestjs/common';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { AesEncryptionHelper } from '@shared/common/utils';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { externalToolEntityFactory, lti11ToolConfigEntityFactory } from '../../../external-tool/testing';
 import { schoolExternalToolEntityFactory } from '../../../school-external-tool/testing';
-import { TOOL_CONFIG_TOKEN, ToolConfig } from '../../../tool-config';
-import { ContextExternalToolEntity, ContextExternalToolType, LtiDeepLinkEmbeddable } from '../../repo';
+import { TOOL_CONFIG_TOKEN, type ToolConfig } from '../../../tool-config';
+import { ContextExternalToolEntity, ContextExternalToolType, type LtiDeepLinkEmbeddable } from '../../repo';
 import {
 	contextExternalToolEntityFactory,
 	Lti11DeepLinkParamsFactory,
 	ltiDeepLinkTokenEntityFactory,
 } from '../../testing';
-import { Lti11DeepLinkContentItemParams } from '../dto';
+import { type Lti11DeepLinkContentItemParams } from '../dto';
 
 describe('ToolDeepLinkController (API)', () => {
 	let app: INestApplication;

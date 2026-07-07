@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import fs from 'fs';
 import { PushDeleteRequestsOptionsBuilder } from './builder';
 import { UnsyncedEntitiesOptionsBuilder } from './builder/unsynced-entities-options.builder';

@@ -1,4 +1,4 @@
-import AdmZip from 'adm-zip';
+import type AdmZip from 'adm-zip';
 
 export class CommonCartridgeImportUtils {
 	public static getManifestFileAsString(archive: AdmZip): string | undefined {

@@ -1,7 +1,7 @@
-import { Mail, PlainTextMailContent } from '@infra/mail';
-import { RegistrationConfig } from '@modules/registration/registration.config';
-import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
-import { EntityId } from '@shared/domain/types';
+import { type Mail, type PlainTextMailContent } from '@infra/mail';
+import { type RegistrationConfig } from '@modules/registration/registration.config';
+import { type AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
+import { type EntityId } from '@shared/domain/types';
 
 export interface RegistrationProps extends AuthorizableObject {
 	id: EntityId;

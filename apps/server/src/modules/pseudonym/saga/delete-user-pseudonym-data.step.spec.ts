@@ -1,4 +1,4 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { Logger } from '@infra/logger';
 import { ObjectId } from '@mikro-orm/mongodb';
 import {
@@ -10,8 +10,8 @@ import {
 } from '@modules/saga';
 import { userDoFactory } from '@modules/user/testing';
 import { InternalServerErrorException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { EntityId } from '@shared/domain/types';
+import { Test, type TestingModule } from '@nestjs/testing';
+import { type EntityId } from '@shared/domain/types';
 import { ExternalToolPseudonymRepo } from '../repo';
 import { DeleteUserPseudonymDataStep } from './delete-user-pseudonym-data.step';
 

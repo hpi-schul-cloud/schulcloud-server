@@ -1,5 +1,5 @@
-import { ContextExternalToolConfigurationStatus } from '../../common/domain';
-import { LtiDeepLink } from './lti-deep-link';
+import { type ContextExternalToolConfigurationStatus } from '../../common/domain';
+import { type LtiDeepLink } from './lti-deep-link';
 
 export class ToolReference {
 	contextToolId: string;

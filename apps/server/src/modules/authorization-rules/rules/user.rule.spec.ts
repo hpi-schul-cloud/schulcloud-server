@@ -1,7 +1,7 @@
 import {
 	Action,
 	AUTHORIZATION_CONFIG_TOKEN,
-	AuthorizationConfig,
+	type AuthorizationConfig,
 	AuthorizationHelper,
 	AuthorizationInjectionService,
 	TeacherVisibilityForExternalTeamInvitation,
@@ -12,7 +12,7 @@ import { schoolEntityFactory } from '@modules/school/testing';
 import { User } from '@modules/user/repo';
 import { userDoFactory, userFactory } from '@modules/user/testing';
 import { NotImplementedException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { UserRule } from './user.rule';

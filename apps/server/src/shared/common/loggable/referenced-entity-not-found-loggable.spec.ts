@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ReferencedEntityNotFoundLoggable } from './referenced-entity-not-found-loggable';
-import { EntityId } from '../../domain/types';
+import { type EntityId } from '../../domain/types';
 
 describe(ReferencedEntityNotFoundLoggable.name, () => {
 	describe('getLogMessage', () => {

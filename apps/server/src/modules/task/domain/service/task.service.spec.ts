@@ -1,10 +1,10 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { FilesStorageClientAdapterService } from '@infra/files-storage-amqp-client';
 import { Logger } from '@infra/logger';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { LessonEntity, Material } from '@modules/lesson/repo';
 import { User } from '@modules/user/repo';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { Submission, Task, TaskRepo } from '../../repo';
 import { submissionFactory, taskFactory } from '../../testing';

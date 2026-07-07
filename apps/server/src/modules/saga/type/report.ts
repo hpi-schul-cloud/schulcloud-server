@@ -1,5 +1,5 @@
-import { EntityId } from '@shared/domain/types';
-import { ModuleName } from './module-name';
+import { type EntityId } from '@shared/domain/types';
+import { type ModuleName } from './module-name';
 
 export const StepOperationType = {
 	DELETE: 'delete',

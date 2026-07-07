@@ -1,4 +1,4 @@
-import { NotificationEntity, NotificationEntityProps } from './notification.entity';
+import { NotificationEntity, type NotificationEntityProps } from './notification.entity';
 import { NotificationType } from '../../types';
 
 describe(NotificationEntity.name, () => {

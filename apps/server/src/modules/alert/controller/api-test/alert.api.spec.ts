@@ -1,15 +1,15 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { HttpService } from '@nestjs/axios';
-import { INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { type INestApplication } from '@nestjs/common';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
 import type { Server } from 'node:net';
 import { of } from 'rxjs';
 import request from 'supertest';
 import { ServerTestModule } from '../../../server';
-import { ComponentDto, ComponentResponse, IncidentsResponse } from '../../adapter/dto';
+import { type ComponentDto, ComponentResponse, IncidentsResponse } from '../../adapter/dto';
 import { createComponent, createIncident } from '../../testing';
-import { AlertResponse } from '../dto';
+import { type AlertResponse } from '../dto';
 
 describe('Alert Controller api', () => {
 	const alertPath = '/alert';

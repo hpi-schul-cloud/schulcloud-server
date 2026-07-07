@@ -1,10 +1,10 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { MediaSourceDataFormat } from '@modules/media-source';
 import { mediumMetadataDtoFactory } from '@modules/medium-metadata/testing';
-import { ExternalTool, ExternalToolLogoService, ExternalToolMedium } from '@modules/tool';
+import { type ExternalTool, ExternalToolLogoService, type ExternalToolMedium } from '@modules/tool';
 import { ExternalToolMediumStatus } from '@modules/tool/external-tool/enum';
 import { externalToolFactory } from '@modules/tool/external-tool/testing';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import _ from 'lodash';
 import { ExternalToolMetadataUpdateService } from './external-tool-metadata-update.service';
 

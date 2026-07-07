@@ -1,10 +1,10 @@
 import { createMock } from '@golevelup/ts-jest';
-import { Test, TestingModule } from '@nestjs/testing';
-import { ContextExternalTool } from '../../../context-external-tool/domain';
+import { Test, type TestingModule } from '@nestjs/testing';
+import { type ContextExternalTool } from '../../../context-external-tool/domain';
 import { contextExternalToolFactory } from '../../../context-external-tool/testing';
-import { ExternalTool } from '../../../external-tool/domain';
+import { type ExternalTool } from '../../../external-tool/domain';
 import { externalToolFactory } from '../../../external-tool/testing';
-import { SchoolExternalTool } from '../../../school-external-tool/domain';
+import { type SchoolExternalTool } from '../../../school-external-tool/domain';
 import { schoolExternalToolFactory } from '../../../school-external-tool/testing';
 import { LaunchRequestMethod, LaunchType, PropertyData, PropertyLocation } from '../../types';
 import {
@@ -17,7 +17,7 @@ import {
 	AutoSchoolNumberStrategy,
 } from '../auto-parameter-strategy';
 import { BasicToolLaunchStrategy } from './basic-tool-launch.strategy';
-import { ToolLaunchParams } from './tool-launch-params.interface';
+import { type ToolLaunchParams } from './tool-launch-params.interface';
 
 describe('BasicToolLaunchStrategy', () => {
 	let module: TestingModule;

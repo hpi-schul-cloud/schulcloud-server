@@ -1,11 +1,11 @@
 import { faker } from '@faker-js/faker';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { School, SchoolService } from '@modules/school';
-import { FederalStateService, FileStorageType, SchoolProps, SchoolYearService } from '@modules/school/domain';
+import { FederalStateService, FileStorageType, type SchoolProps, SchoolYearService } from '@modules/school/domain';
 import { FederalStateEntityMapper, SchoolYearEntityMapper } from '@modules/school/repo';
 import { federalStateEntityFactory, schoolFactory, schoolYearEntityFactory } from '@modules/school/testing';
 import { systemFactory } from '@modules/system/testing';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { TspSchoolService } from './tsp-school.service';
 
 describe(TspSchoolService.name, () => {

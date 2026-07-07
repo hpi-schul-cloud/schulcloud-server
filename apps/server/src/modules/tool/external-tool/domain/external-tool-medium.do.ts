@@ -1,4 +1,4 @@
-import { ExternalToolMediumStatus } from '../enum';
+import { type ExternalToolMediumStatus } from '../enum';
 
 export interface ExternalToolMediumProps {
 	status: ExternalToolMediumStatus;

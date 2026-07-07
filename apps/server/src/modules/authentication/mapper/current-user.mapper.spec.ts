@@ -1,16 +1,16 @@
 import { RoleName } from '@modules/role';
 import { roleFactory } from '@modules/role/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
-import { User, UserDo } from '@modules/user';
+import { User, type UserDo } from '@modules/user';
 import { userDoFactory, userFactory } from '@modules/user/testing';
 import { ValidationError } from '@shared/common/error';
 import { RoleReference } from '@shared/domain/domainobject';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { OauthCurrentUser } from '../interface';
+import { type OauthCurrentUser } from '../interface';
 import { CurrentUserMapper } from './current-user.mapper';
-import { Account } from '@modules/account';
+import { type Account } from '@modules/account';
 
 describe('CurrentUserMapper', () => {
 	beforeAll(async () => {

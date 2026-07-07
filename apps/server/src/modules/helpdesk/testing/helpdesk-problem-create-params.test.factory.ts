@@ -1,4 +1,4 @@
-import { HelpdeskProblemCreateParams } from '../api/dto/helpdesk-problem-create.params';
+import { type HelpdeskProblemCreateParams } from '../api/dto/helpdesk-problem-create.params';
 import { SupportType } from '../domain/type/helpdesk-problem.type';
 
 export class HelpdeskProblemCreateParamsFactory {

@@ -2,7 +2,7 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { classEntityFactory } from '@modules/class/entity/testing/factory/class.entity.factory';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { Test } from '@nestjs/testing';
-import { TestingModule } from '@nestjs/testing/testing-module';
+import { type TestingModule } from '@nestjs/testing/testing-module';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { randomUUID } from 'crypto';

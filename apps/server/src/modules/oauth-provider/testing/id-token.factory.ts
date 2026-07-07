@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Factory } from 'fishery';
-import { IdToken } from '../domain/interface';
+import { type IdToken } from '../domain/interface';
 
 export const idTokenFactory = Factory.define<IdToken>(() => {
 	return {

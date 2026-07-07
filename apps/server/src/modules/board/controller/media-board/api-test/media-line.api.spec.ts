@@ -1,15 +1,15 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server';
-import { HttpStatus, INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { HttpStatus, type INestApplication } from '@nestjs/common';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
-import { BOARD_CONFIG_TOKEN, BoardConfig } from '../../../board.config';
+import { BOARD_CONFIG_TOKEN, type BoardConfig } from '../../../board.config';
 import { BoardExternalReferenceType, Colors } from '../../../domain';
 import { BoardNodeEntity } from '../../../repo';
 import { mediaBoardEntityFactory, mediaLineEntityFactory } from '../../../testing';
-import { MoveColumnBodyParams, RenameBodyParams } from '../../dto';
-import { CollapsableBodyParams, ColorBodyParams } from '../dto';
+import { type MoveColumnBodyParams, type RenameBodyParams } from '../../dto';
+import { type CollapsableBodyParams, type ColorBodyParams } from '../dto';
 
 const baseRouteName = '/media-lines';
 

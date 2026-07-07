@@ -1,5 +1,5 @@
 import { NotImplementedException } from '@nestjs/common';
-import { Transform, TransformFnParams } from 'class-transformer';
+import { Transform, type TransformFnParams } from 'class-transformer';
 
 /**
  * Decorator to transform a boolish string value to a boolean.

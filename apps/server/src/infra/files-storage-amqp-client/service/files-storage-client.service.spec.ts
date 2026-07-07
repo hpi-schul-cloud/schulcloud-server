@@ -1,7 +1,7 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { LegacyLogger } from '@infra/logger';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { FileRecordParentType } from '../interfaces';
 import { FilesStorageClientMapper } from '../mapper';
 import { copyFilesRequestInfoFactory } from '../testing';

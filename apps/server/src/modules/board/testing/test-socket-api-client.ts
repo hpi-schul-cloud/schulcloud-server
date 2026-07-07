@@ -1,5 +1,5 @@
-import { INestApplication } from '@nestjs/common';
-import { Socket, io } from 'socket.io-client';
+import { type INestApplication } from '@nestjs/common';
+import { type Socket, io } from 'socket.io-client';
 
 export function waitForEvent(socket: Socket, eventName: string): Promise<unknown> {
 	return new Promise((resolve) => {

@@ -1,5 +1,5 @@
-import { Page } from '@shared/domain/domainobject';
-import { CourseInfoDataResponse, CourseInfoDto, CourseInfoListResponse } from '../dto';
+import { type Page } from '@shared/domain/domainobject';
+import { CourseInfoDataResponse, type CourseInfoDto, CourseInfoListResponse } from '../dto';
 
 export class CourseInfoResponseMapper {
 	public static mapToCourseInfoListResponse(

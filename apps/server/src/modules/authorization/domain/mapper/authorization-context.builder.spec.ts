@@ -1,4 +1,4 @@
-import { Permission } from '@shared/domain/interface';
+import { type Permission } from '@shared/domain/interface';
 import { Action } from '../type';
 import { AuthorizationContextBuilder } from './authorization-context.builder';
 

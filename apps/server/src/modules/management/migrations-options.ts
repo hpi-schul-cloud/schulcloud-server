@@ -1,4 +1,4 @@
-import { MigrationsOptions } from '@mikro-orm/core';
+import { type MigrationsOptions } from '@mikro-orm/core';
 import path from 'path';
 
 const migrationsDistPath = path.resolve(__dirname, '..', '..', 'migrations', 'mikro-orm');

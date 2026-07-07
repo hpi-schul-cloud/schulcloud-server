@@ -125,6 +125,7 @@ const tsBase = {
 		'no-restricted-imports': 'off',
 		'no-only-tests/no-only-tests': 'error',
 		'max-classes-per-file': 'off',
+		'@typescript-eslint/consistent-type-imports': ['error', { 'prefer': 'type-imports', 'fixStyle': 'inline-type-imports' }]
 	},
 	settings: {
 		'import-x/resolver': {

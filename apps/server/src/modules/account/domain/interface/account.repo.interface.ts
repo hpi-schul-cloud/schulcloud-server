@@ -1,8 +1,8 @@
-import { EntityId } from '@shared/domain/types';
+import { type EntityId } from '@shared/domain/types';
 
-import { ObjectId } from '@mikro-orm/mongodb';
-import { Counted } from '@shared/domain/types';
-import { Account } from '../do';
+import { type ObjectId } from '@mikro-orm/mongodb';
+import { type Counted } from '@shared/domain/types';
+import { type Account } from '../do';
 
 export interface AccountRepo {
 	save(account: Account): Promise<Account>;

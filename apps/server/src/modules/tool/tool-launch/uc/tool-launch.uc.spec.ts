@@ -1,23 +1,23 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
-import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
+import { type SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { LaunchContextUnavailableLoggableException } from '@modules/tool/tool-launch/error';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { ToolContextType } from '../../common/enum';
 import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
-import { ContextExternalTool, ContextExternalToolLaunchable } from '../../context-external-tool/domain';
+import { type ContextExternalTool, type ContextExternalToolLaunchable } from '../../context-external-tool/domain';
 import { ContextExternalToolService } from '../../context-external-tool/service';
 import { contextExternalToolFactory } from '../../context-external-tool/testing';
 import { SchoolExternalToolService } from '../../school-external-tool';
 import { schoolExternalToolFactory } from '../../school-external-tool/testing';
 import { ToolLaunchService } from '../service';
 import { toolLaunchRequestFactory } from '../testing';
-import { ToolLaunchRequest } from '../types';
+import { type ToolLaunchRequest } from '../types';
 import { ToolLaunchUc } from './tool-launch.uc';
 
 describe('ToolLaunchUc', () => {

@@ -1,14 +1,14 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { courseEntityFactory } from '@modules/course/testing';
 import { ServerTestModule } from '@modules/server/server.app.module';
-import { INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { type INestApplication } from '@nestjs/common';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { BoardExternalReferenceType, BoardLayout } from '../../domain';
 import { cardEntityFactory, columnBoardEntityFactory, columnEntityFactory } from '../../testing';
-import { BoardResponse } from '../dto';
+import { type BoardResponse } from '../dto';
 
 const baseRouteName = '/boards';
 

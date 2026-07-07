@@ -2,7 +2,7 @@ import { schoolEntityFactory } from '@modules/school/testing';
 import { systemEntityFactory } from '@modules/system/testing';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { BaseFactory } from '@testing/factory/base.factory';
-import { SchoolSystemOptionsEntity, SchoolSystemOptionsEntityProps } from '../entity';
+import { SchoolSystemOptionsEntity, type SchoolSystemOptionsEntityProps } from '../entity';
 
 export const schoolSystemOptionsEntityFactory = BaseFactory.define<
 	SchoolSystemOptionsEntity,

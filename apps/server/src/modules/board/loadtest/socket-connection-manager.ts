@@ -1,6 +1,6 @@
 import { sleep } from './helper/sleep';
 import { SocketConnection } from './socket-connection';
-import { Callback, SocketConfiguration } from './types';
+import { type Callback, type SocketConfiguration } from './types';
 
 export class SocketConnectionManager {
 	private connections: SocketConnection[] = [];

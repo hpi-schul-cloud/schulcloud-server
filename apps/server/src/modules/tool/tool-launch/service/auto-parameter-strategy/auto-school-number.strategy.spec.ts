@@ -1,10 +1,10 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
-import { Test, TestingModule } from '@nestjs/testing';
-import { ContextExternalTool } from '../../../context-external-tool/domain';
+import { Test, type TestingModule } from '@nestjs/testing';
+import { type ContextExternalTool } from '../../../context-external-tool/domain';
 import { contextExternalToolFactory } from '../../../context-external-tool/testing';
-import { SchoolExternalTool } from '../../../school-external-tool/domain';
+import { type SchoolExternalTool } from '../../../school-external-tool/domain';
 import { schoolExternalToolFactory } from '../../../school-external-tool/testing';
 import { AutoSchoolNumberStrategy } from './auto-school-number.strategy';
 

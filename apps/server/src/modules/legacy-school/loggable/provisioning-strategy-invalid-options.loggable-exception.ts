@@ -1,7 +1,7 @@
 import { UnprocessableEntityException } from '@nestjs/common';
-import { Loggable, LoggableMessage } from '@shared/common/loggable';
-import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { ProvisioningOptionsInterface } from '../interface';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
+import { type SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
+import { type ProvisioningOptionsInterface } from '../interface';
 
 export class ProvisioningStrategyInvalidOptionsLoggableException
 	extends UnprocessableEntityException

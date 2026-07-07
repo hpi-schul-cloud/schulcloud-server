@@ -1,4 +1,4 @@
-import { ToolContextType } from '../../common/enum';
+import { type ToolContextType } from '../../common/enum';
 import {
 	ContextExternalToolConfigurationTemplateListResponse,
 	ContextExternalToolConfigurationTemplateResponse,
@@ -8,8 +8,8 @@ import {
 	SchoolExternalToolConfigurationTemplateResponse,
 	ToolContextTypesListResponse,
 } from '../controller/dto';
-import { ExternalTool } from '../domain';
-import { ContextExternalToolTemplateInfo } from '../uc';
+import { type ExternalTool } from '../domain';
+import { type ContextExternalToolTemplateInfo } from '../uc';
 import { ExternalToolResponseMapper } from './external-tool-response.mapper';
 
 export class ToolConfigurationMapper {

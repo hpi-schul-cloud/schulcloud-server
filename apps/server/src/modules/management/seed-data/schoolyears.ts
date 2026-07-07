@@ -1,5 +1,5 @@
-import { SchoolYearEntity, SchoolYearProperties } from '@modules/school/repo';
-import { DeepPartial } from 'fishery';
+import { type SchoolYearEntity, type SchoolYearProperties } from '@modules/school/repo';
+import { type DeepPartial } from 'fishery';
 import { schoolYearFactory } from './factory/schoolyear.factory';
 
 type SeedSchoolYearProperties = Pick<SchoolYearProperties, 'name'> & {

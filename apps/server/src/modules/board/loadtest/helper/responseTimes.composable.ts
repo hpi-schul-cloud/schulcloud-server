@@ -1,5 +1,5 @@
 import { groupBy } from 'lodash';
-import { ResponseTimeRecord } from '../types';
+import { type ResponseTimeRecord } from '../types';
 
 let responseTimes: ResponseTimeRecord[] = [];
 

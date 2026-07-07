@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { DoBaseFactory } from '@testing/factory/domainobject';
-import { Synchronization, SynchronizationProps } from '../../do';
+import { Synchronization, type SynchronizationProps } from '../../do';
 import { SynchronizationStatusModel } from '../../types';
 
 export const synchronizationFactory = DoBaseFactory.define<Synchronization, SynchronizationProps>(

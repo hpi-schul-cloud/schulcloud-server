@@ -1,13 +1,13 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import {
 	AuthorizableReferenceType,
-	AuthorizationContext,
+	type AuthorizationContext,
 	AuthorizationContextBuilder,
 	AuthorizationService,
 	ForbiddenLoggableException,
 } from '@modules/authorization';
-import { BoardNodeAuthorizable, BoardNodeAuthorizableService, BoardNodeService } from '@modules/board';
+import { type BoardNodeAuthorizable, BoardNodeAuthorizableService, BoardNodeService } from '@modules/board';
 import { boardNodeAuthorizableFactory, externalToolElementFactory } from '@modules/board/testing';
 import { CourseService } from '@modules/course';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
@@ -17,10 +17,10 @@ import { Submission, Task } from '@modules/task/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { ForbiddenException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
-import { ContextExternalTool, ContextRef } from '../../context-external-tool/domain';
+import { type ContextExternalTool, ContextRef } from '../../context-external-tool/domain';
 import { contextExternalToolFactory } from '../../context-external-tool/testing';
 import { schoolExternalToolFactory } from '../../school-external-tool/testing';
 import { ToolContextType } from '../enum';

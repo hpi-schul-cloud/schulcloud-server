@@ -1,4 +1,4 @@
-import { CustomParameterLocation } from '../../../common/enum';
+import { type CustomParameterLocation } from '../../../common/enum';
 
 export class ExternalToolParameterDatasheetTemplateData {
 	name: string;
