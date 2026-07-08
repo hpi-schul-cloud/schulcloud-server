@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Factory } from 'fishery';
-import { FileRecordParentType, FileRequestInfo, StorageLocation } from '../interfaces';
+import { FileRecordParentType, type FileRequestInfo, StorageLocation } from '../interfaces';
 
 export const fileRequestInfoFactory = Factory.define<FileRequestInfo>(() => {
 	return {
