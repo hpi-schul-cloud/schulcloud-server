@@ -206,4 +206,45 @@ describe('FilesStorageClientAdapterService', () => {
 			});
 		});
 	});
+
+	describe('removeCreatorIdFromFileRecords', () => {
+		describe('when creator references are removed successfully', () => {
+			const setup = () => {
+				const creatorId = new ObjectId().toHexString();
+
+				const spy = jest
+					.spyOn(FilesStorageClientMapper, 'mapfileRecordListResponseToDomainFilesDto')
+					.mockImplementation(() => []);
+
+				return { creatorId, spy };
+			};
+
+			it('should call the producer and mapper', async () => {
+				const { creatorId, spy } = setup();
+
+				await service.removeCreatorIdFromFileRecords(creatorId);
+
+				expect(client.removeCreatorIdFromFileRecords).toHaveBeenCalledWith(creatorId);
+				expect(spy).toHaveBeenCalled();
+
+				spy.mockRestore();
+			});
+		});
+
+		describe('when error is thrown', () => {
+			const setup = () => {
+				const creatorId = new ObjectId().toHexString();
+
+				client.removeCreatorIdFromFileRecords.mockRejectedValue(new Error());
+
+				return { creatorId };
+			};
+
+			it('should propagate the error', async () => {
+				const { creatorId } = setup();
+
+				await expect(service.removeCreatorIdFromFileRecords(creatorId)).rejects.toThrow();
+			});
+		});
+	});
 });
