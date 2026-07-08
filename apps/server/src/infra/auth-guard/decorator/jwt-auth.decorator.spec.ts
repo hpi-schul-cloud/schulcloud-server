@@ -1,4 +1,5 @@
 import { EntityManager } from '@mikro-orm/mongodb';
+// eslint-disable-next-line no-restricted-imports
 import { ServerTestModule } from '@modules/server';
 import { Controller, Get, INestApplication } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';

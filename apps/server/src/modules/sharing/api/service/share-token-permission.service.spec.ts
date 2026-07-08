@@ -89,6 +89,10 @@ describe('ShareTokenPermissionService', () => {
 			expect(() => service.checkFeatureEnabled(ShareTokenParentType.Room)).toThrow(FeatureDisabledLoggableException);
 		});
 
+		it('should throw FeatureDisabledLoggableException if feature is disabled for Column', () => {
+			expect(() => service.checkFeatureEnabled(ShareTokenParentType.Column)).toThrow(FeatureDisabledLoggableException);
+		});
+
 		it('should not throw if feature is enabled', () => {
 			config.featureCourseShare = true;
 			config.featureLessonShare = true;
@@ -102,6 +106,7 @@ describe('ShareTokenPermissionService', () => {
 			expect(() => service.checkFeatureEnabled(ShareTokenParentType.ColumnBoard)).not.toThrow();
 			expect(() => service.checkFeatureEnabled(ShareTokenParentType.Card)).not.toThrow();
 			expect(() => service.checkFeatureEnabled(ShareTokenParentType.Room)).not.toThrow();
+			expect(() => service.checkFeatureEnabled(ShareTokenParentType.Column)).not.toThrow();
 		});
 
 		it('should throw NotImplementedException for unsupported parent types', () => {
