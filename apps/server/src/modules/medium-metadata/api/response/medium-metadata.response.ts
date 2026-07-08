@@ -2,22 +2,22 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class MediumMetadataResponse {
 	@ApiProperty({ type: String, description: 'The Name' })
-	public name: string;
+	name: string;
 
 	@ApiPropertyOptional({ type: String, description: 'The Description' })
-	public description?: string;
+	description?: string;
 
 	@ApiPropertyOptional({ type: String, description: 'The Publisher' })
-	public publisher?: string;
+	publisher?: string;
 
 	@ApiPropertyOptional({ type: String, description: 'The Logo URL' })
-	public logoUrl?: string;
+	logoUrl?: string;
 
 	@ApiPropertyOptional({ type: String, description: 'The Preview Logo URL' })
-	public previewLogoUrl?: string;
+	previewLogoUrl?: string;
 
 	@ApiPropertyOptional({ type: Date, description: 'The last Modified Date' })
-	public modifiedAt?: Date;
+	modifiedAt?: Date;
 
 	constructor(response: MediumMetadataResponse) {
 		this.name = response.name;

@@ -9,41 +9,41 @@ export class Oauth2ToolConfigResponse extends ExternalToolConfigResponse {
 		description: 'Configuration type of the tool.',
 		example: ToolConfigType.OAUTH2,
 	})
-	public type: ToolConfigType;
+	type: ToolConfigType;
 
 	@ApiProperty({
 		description:
 			'Defines the target URL that is launched. Can be automatically filled with parameter values when using : in-front of the parameter name.',
 		example: 'https://example.com/:parameter1/test',
 	})
-	public baseUrl: string;
+	baseUrl: string;
 
 	@ApiProperty({
 		description: 'OAuth2 client id.',
 	})
-	public clientId: string;
+	clientId: string;
 
 	@ApiProperty({
 		description: 'If true, skips the users consent request before launching the tool for the first time.',
 	})
-	public skipConsent: boolean;
+	skipConsent: boolean;
 
 	@ApiPropertyOptional({
 		description: 'OAuth2 frontchannel logout uri.',
 	})
-	public frontchannelLogoutUri?: string;
+	frontchannelLogoutUri?: string;
 
 	@ApiPropertyOptional({
 		description: 'OAuth2 scopes.',
 	})
-	public scope?: string;
+	scope?: string;
 
 	@ApiPropertyOptional({
 		type: String,
 		description: 'Allowed OAuth2 redirect uris.',
 		isArray: true,
 	})
-	public redirectUris?: string[];
+	redirectUris?: string[];
 
 	@ApiPropertyOptional({
 		enum: TokenEndpointAuthMethod,
@@ -51,7 +51,7 @@ export class Oauth2ToolConfigResponse extends ExternalToolConfigResponse {
 		description: 'OAuth2 token endpoint method',
 		example: TokenEndpointAuthMethod.CLIENT_SECRET_BASIC,
 	})
-	public tokenEndpointAuthMethod?: TokenEndpointAuthMethod;
+	tokenEndpointAuthMethod?: TokenEndpointAuthMethod;
 
 	constructor(props: Oauth2ToolConfigResponse) {
 		super();

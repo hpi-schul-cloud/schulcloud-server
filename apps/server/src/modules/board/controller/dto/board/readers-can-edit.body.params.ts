@@ -7,5 +7,5 @@ export class ReadersCanEditBodyParams {
 		required: true,
 		type: 'boolean',
 	})
-	public readersCanEdit!: boolean;
+	readersCanEdit!: boolean;
 }

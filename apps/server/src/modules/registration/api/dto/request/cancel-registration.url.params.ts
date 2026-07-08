@@ -8,5 +8,5 @@ export class CancelRegistrationUrlParams {
 		required: true,
 		nullable: false,
 	})
-	public roomId!: string;
+	roomId!: string;
 }

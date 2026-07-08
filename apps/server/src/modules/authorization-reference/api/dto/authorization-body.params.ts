@@ -14,7 +14,7 @@ class AuthorizationContextParams implements AuthorizationContext {
 		description: 'Define for which action the operation should be performend.',
 		example: Action.read,
 	})
-	public action!: Action;
+	action!: Action;
 
 	@IsArray()
 	@IsEnum(Permission, { each: true })
@@ -25,7 +25,7 @@ class AuthorizationContextParams implements AuthorizationContext {
 		description: 'User permissions that are needed to execute the operation.',
 		example: [Permission.USER_UPDATE],
 	})
-	public requiredPermissions!: Permission[];
+	requiredPermissions!: Permission[];
 }
 
 export class AuthorizationBodyParams {
@@ -34,7 +34,7 @@ export class AuthorizationBodyParams {
 	@ApiProperty({
 		type: AuthorizationContextParams,
 	})
-	public context!: AuthorizationContextParams;
+	context!: AuthorizationContextParams;
 
 	@IsEnum(AuthorizableReferenceType)
 	@ApiProperty({
@@ -42,11 +42,11 @@ export class AuthorizationBodyParams {
 		description: 'The entity or domain object the operation should be performed on.',
 		example: AuthorizableReferenceType.User,
 	})
-	public referenceType!: AuthorizableReferenceType;
+	referenceType!: AuthorizableReferenceType;
 
 	@IsMongoId()
 	@ApiProperty({ description: 'The id of the entity/domain object of the defined referenceType.' })
-	public referenceId!: EntityId;
+	referenceId!: EntityId;
 }
 
 export class AuthorizationManyReferencesBodyParams {
@@ -57,26 +57,26 @@ export class AuthorizationManyReferencesBodyParams {
 	@IsArray()
 	@ValidateNested({ each: true })
 	@Type(() => AuthorizationBodyParams)
-	public references!: AuthorizationBodyParams[];
+	references!: AuthorizationBodyParams[];
 }
 
 export class CreateAccessTokenParams extends AuthorizationBodyParams {
 	@ApiProperty({ description: 'Lifetime of token' })
 	@IsNumber()
-	public tokenTtlInSeconds!: number;
+	tokenTtlInSeconds!: number;
 
 	@ApiProperty({ description: 'The payload of the access token.' })
 	@IsObject()
 	@IsOptional()
-	public payload: CustomPayload = {};
+	payload: CustomPayload = {};
 }
 
 export class AccessTokenParams {
 	@ApiProperty({ description: 'The access token to be resolved.' })
 	@Matches(accessTokenRegex, { message: 'Token must be a valid access token string.' })
-	public token!: NanoidString24Chars;
+	token!: NanoidString24Chars;
 
 	@ApiProperty({ description: 'Lifetime of token' })
 	@IsNumber()
-	public tokenTtlInSeconds!: number;
+	tokenTtlInSeconds!: number;
 }

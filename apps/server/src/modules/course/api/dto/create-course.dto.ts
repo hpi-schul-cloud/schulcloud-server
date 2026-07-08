@@ -1,7 +1,7 @@
 export class CreateCourseDto {
-	public name!: string;
+	name!: string;
 
-	public color?: string;
+	color?: string;
 
 	constructor(props: CreateCourseDto) {
 		Object.assign(this, props);

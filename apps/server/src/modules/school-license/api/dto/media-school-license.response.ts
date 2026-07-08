@@ -2,19 +2,19 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class MediaSchoolLicenseResponse {
 	@ApiProperty()
-	public id: string;
+	id: string;
 
 	@ApiProperty()
-	public schoolId: string;
+	schoolId: string;
 
 	@ApiProperty()
-	public mediumId: string;
+	mediumId: string;
 
 	@ApiPropertyOptional()
-	public mediaSourceId?: string;
+	mediaSourceId?: string;
 
 	@ApiPropertyOptional()
-	public mediaSourceName?: string;
+	mediaSourceName?: string;
 
 	constructor(props: MediaSchoolLicenseResponse) {
 		this.id = props.id;
