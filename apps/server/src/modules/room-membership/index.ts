@@ -1,8 +1,6 @@
-import { RoomMembershipEntity } from './repo/entity';
-import { RoomMembershipService } from './service/room-membership.service';
-
 export * from './do/room-membership.do';
+export { RoomMembershipEntity } from './repo/entity';
 export * from './room-membership.module';
-export { RoomMembershipEntity, RoomMembershipService };
+export { RoomMembershipService } from './service/room-membership.service';
 
 export { RoomAuthorizable, UserWithRoomRoles } from './do/room-authorizable.do';
