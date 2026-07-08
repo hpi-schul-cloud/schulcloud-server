@@ -20,5 +20,5 @@ export interface RabbitMQModuleOptions {
 	exchangeConfigConstructor: new () => InternalRabbitMQExchangeConfig;
 	configInjectionToken: string;
 	configConstructor: new () => InternalRabbitMQConfig;
-	connectionName: string;
+	connectionName?: string;
 }
