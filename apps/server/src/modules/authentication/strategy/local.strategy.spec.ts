@@ -1,15 +1,15 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Account } from '@modules/account';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import { type Account } from '@modules/account';
 import { accountDoFactory } from '@modules/account/testing';
 import { RoleName } from '@modules/role';
-import { UserService } from '@modules/user';
+import { type UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { UnauthorizedException } from '@nestjs/common';
 import { setupEntities } from '@testing/database';
 import bcrypt from 'bcryptjs';
 import { AuthenticationConfig } from '../authentication-config';
-import { AuthenticationService } from '../services/authentication.service';
+import { type AuthenticationService } from '../services/authentication.service';
 import { LocalStrategy } from './local.strategy';
 
 describe('LocalStrategy', () => {

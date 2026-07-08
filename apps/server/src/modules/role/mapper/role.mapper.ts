@@ -1,4 +1,4 @@
-import { Role } from '../repo';
+import { type Role } from '../repo';
 import { RoleDto } from '../service';
 
 export class RoleMapper {

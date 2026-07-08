@@ -1,11 +1,11 @@
-import { Role } from '@modules/role/repo';
+import { type Role } from '@modules/role/repo';
 import { roleFactory } from '@modules/role/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { userFactory } from '@modules/user/testing';
 import { BaseFactory } from '@testing/factory/base.factory';
-import { DeepPartial } from 'fishery';
+import { type DeepPartial } from 'fishery';
 import { TeamUserEntity } from '../repo';
-import { TeamUserProperties } from '../repo/team.entity';
+import { type TeamUserProperties } from '../repo/team.entity';
 
 class TeamUserFactory extends BaseFactory<TeamUserEntity, TeamUserProperties> {
 	public withRoleAndUserId(role: Role, userId: string): this {

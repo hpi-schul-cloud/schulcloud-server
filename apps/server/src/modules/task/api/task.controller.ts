@@ -24,7 +24,9 @@ export class TaskController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() pagination: PaginationParams
 	): Promise<TaskListResponse> {
-		return this.findAllTasks(currentUser, pagination);
+		const result = await this.findAllTasks(currentUser, pagination);
+
+		return result;
 	}
 
 	@Get('finished')
@@ -32,7 +34,9 @@ export class TaskController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() pagination: PaginationParams
 	): Promise<TaskListResponse> {
-		return this.findAllTasks(currentUser, pagination, true);
+		const result = await this.findAllTasks(currentUser, pagination, true);
+
+		return result;
 	}
 
 	private async findAllTasks(

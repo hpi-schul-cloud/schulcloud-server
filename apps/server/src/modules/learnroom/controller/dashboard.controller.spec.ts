@@ -1,10 +1,10 @@
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
-import { Test, TestingModule } from '@nestjs/testing';
-import { EntityId } from '@shared/domain/types';
+import { Test, type TestingModule } from '@nestjs/testing';
+import { type EntityId } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
 import { currentUserFactory } from '@testing/factory/currentuser.factory';
-import { Dashboard, GridElement, GridPosition } from '../domain/do/dashboard';
+import { Dashboard, GridElement, type GridPosition } from '../domain/do/dashboard';
 import { DashboardUc } from '../uc/dashboard.uc';
 import { DashboardController } from './dashboard.controller';
 import { DashboardResponse } from './dto';

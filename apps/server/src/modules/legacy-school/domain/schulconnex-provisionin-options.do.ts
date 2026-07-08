@@ -1,4 +1,4 @@
-import { SchulConneXProvisioningOptionsInterface } from '../interface';
+import { type SchulConneXProvisioningOptionsInterface } from '../interface';
 import { BaseProvisioningOptions } from './base-provisioning-options';
 import { ProvisioningOptionsType } from './provisioning-options-type';
 

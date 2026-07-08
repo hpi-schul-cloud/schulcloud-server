@@ -1,5 +1,5 @@
-import { INestApplication } from '@nestjs/common';
-import { DocumentBuilder, SwaggerDocumentOptions, SwaggerModule } from '@nestjs/swagger';
+import { type INestApplication } from '@nestjs/common';
+import { DocumentBuilder, type SwaggerDocumentOptions, SwaggerModule } from '@nestjs/swagger';
 
 /** *********************************************
  * OpenAPI docs setup

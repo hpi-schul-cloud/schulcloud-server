@@ -1,7 +1,7 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { IMigrator, MikroORM } from '@mikro-orm/core';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import { type IMigrator, MikroORM } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { createCollections } from '@testing/create-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { TEST_ENTITIES } from '../management.entity.imports';

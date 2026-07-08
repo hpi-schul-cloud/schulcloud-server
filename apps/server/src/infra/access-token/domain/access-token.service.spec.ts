@@ -1,7 +1,7 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { StorageClient } from '@infra/valkey-client';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import { type StorageClient } from '@infra/valkey-client';
 import { ForbiddenException, InternalServerErrorException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { randomUUID } from 'crypto';
 import { ACCESS_TOKEN_VALKEY_CLIENT } from '../access-token.config';
 import { AccessTokenService } from './access-token.service';

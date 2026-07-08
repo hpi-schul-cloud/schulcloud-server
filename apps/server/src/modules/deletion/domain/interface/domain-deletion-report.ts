@@ -1,5 +1,5 @@
-import { DomainName } from '../types';
-import { DomainOperationReport } from './domain-operation-report';
+import { type DomainName } from '../types';
+import { type DomainOperationReport } from './domain-operation-report';
 
 export interface DomainDeletionReport {
 	domain: DomainName;

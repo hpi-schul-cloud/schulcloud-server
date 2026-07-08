@@ -1,5 +1,5 @@
-import { EntityId } from '@shared/domain/types';
-import { StepReport } from './report';
+import { type EntityId } from '@shared/domain/types';
+import { type StepReport } from './report';
 
 export interface SagaType {
 	userDeletion: { params: { userId: EntityId }; result: StepReport[] };

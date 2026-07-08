@@ -1,5 +1,5 @@
-import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
-import { County } from './county';
+import { type AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
+import { type County } from './county';
 
 export class FederalState extends DomainObject<FederalStateProps> {
 	get abbreviation(): string {

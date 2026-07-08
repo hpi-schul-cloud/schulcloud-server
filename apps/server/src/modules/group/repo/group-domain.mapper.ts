@@ -1,12 +1,12 @@
-import { EntityData } from '@mikro-orm/core';
-import { EntityManager } from '@mikro-orm/mongodb';
+import { type EntityData } from '@mikro-orm/core';
+import { type EntityManager } from '@mikro-orm/mongodb';
 import { Role } from '@modules/role/repo';
 import { SchoolEntity } from '@modules/school/repo';
 import { ExternalSourceEmbeddable, SystemEntity } from '@modules/system/repo';
 import { User } from '@modules/user/repo';
 import { ExternalSource } from '@shared/domain/domainobject';
-import { Group, GroupPeriod, GroupProps, GroupTypes, GroupUser } from '../domain';
-import { GroupEntity, GroupEntityTypes, GroupUserEmbeddable, GroupValidPeriodEmbeddable } from '../entity';
+import { Group, GroupPeriod, type GroupProps, GroupTypes, GroupUser } from '../domain';
+import { type GroupEntity, GroupEntityTypes, GroupUserEmbeddable, GroupValidPeriodEmbeddable } from '../entity';
 
 const GroupEntityTypesToGroupTypesMapping: Record<GroupEntityTypes, GroupTypes> = {
 	[GroupEntityTypes.CLASS]: GroupTypes.CLASS,

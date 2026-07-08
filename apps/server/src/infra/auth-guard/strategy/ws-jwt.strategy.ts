@@ -1,9 +1,9 @@
-import { JwtWhitelistAdapter } from '@infra/jwt-whitelist';
+import { type JwtWhitelistAdapter } from '@infra/jwt-whitelist';
 import { PassportStrategy } from '@nestjs/passport';
 import { WsException } from '@nestjs/websockets';
 import { JwtExtractor } from '@shared/common/utils';
 import { Strategy } from 'passport-jwt';
-import { ICurrentUser, InternalJwtAuthGuardConfig, JwtPayload, StrategyType } from '../interface';
+import { type ICurrentUser, type InternalJwtAuthGuardConfig, type JwtPayload, StrategyType } from '../interface';
 import { CurrentUserBuilder, JwtStrategyOptionsFactory } from '../mapper';
 
 export class WsJwtStrategy extends PassportStrategy(Strategy, StrategyType.WS_JWT) {

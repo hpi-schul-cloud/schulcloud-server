@@ -1,10 +1,14 @@
-import { ValidationError } from '@shared/common/error';
-import { EntityId } from '@shared/domain/types';
-import { CustomParameter, CustomParameterEntry, ToolParameterRequiredLoggableException } from '../../../domain';
-import { ParameterArrayValidator } from './parameter-array-validator';
+import { type ValidationError } from '@shared/common/error';
+import { type EntityId } from '@shared/domain/types';
+import {
+	type CustomParameter,
+	type CustomParameterEntry,
+	ToolParameterRequiredLoggableException,
+} from '../../../domain';
+import { type ParameterArrayValidator } from './parameter-array-validator';
 import { ParameterEntryRegexValidator } from './parameter-entry-regex-validator';
 import { ParameterEntryTypeValidator } from './parameter-entry-type-validator';
-import { ParameterEntryValidator } from './parameter-entry-validator';
+import { type ParameterEntryValidator } from './parameter-entry-validator';
 import { ParameterEntryValueValidator } from './parameter-entry-value-validator';
 
 export class ParameterArrayEntryValidator implements ParameterArrayValidator {

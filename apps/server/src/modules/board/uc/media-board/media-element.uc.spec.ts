@@ -1,22 +1,22 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { AuthorizationService } from '@modules/authorization';
-import { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
+import { type ContextExternalTool } from '@modules/tool/context-external-tool/domain';
 import { contextExternalToolFactory } from '@modules/tool/context-external-tool/testing';
 import { SchoolExternalToolService } from '@modules/tool/school-external-tool';
-import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
+import { type SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { schoolExternalToolFactory } from '@modules/tool/school-external-tool/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 import { setupEntities } from '@testing/database';
 import { BoardNodeRule } from '../../authorisation/board-node.rule';
 import { BOARD_CONFIG_TOKEN, BoardConfig } from '../../board.config';
 import {
-	BoardNodeAuthorizable,
+	type BoardNodeAuthorizable,
 	MediaBoard,
 	MediaBoardNodeFactory,
-	MediaExternalToolElement,
+	type MediaExternalToolElement,
 	MediaLine,
 } from '../../domain';
 import { MediaBoardElementAlreadyExistsLoggableException } from '../../loggable';

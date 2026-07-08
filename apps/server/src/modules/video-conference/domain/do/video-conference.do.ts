@@ -1,6 +1,6 @@
 import { BaseDO } from '@shared/domain/domainobject/base.do';
-import { VideoConferenceScope } from '../type';
-import { VideoConferenceOptionsDO } from './video-conference-options.do';
+import { type VideoConferenceScope } from '../type';
+import { type VideoConferenceOptionsDO } from './video-conference-options.do';
 
 export class VideoConferenceDO extends BaseDO {
 	public target: string;

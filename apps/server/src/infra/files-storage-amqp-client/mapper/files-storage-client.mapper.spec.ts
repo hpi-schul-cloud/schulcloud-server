@@ -1,4 +1,4 @@
-import { CopyFileDomainObjectProps, FileDomainObjectProps, FileRecordParentType } from '../interfaces';
+import { type CopyFileDomainObjectProps, type FileDomainObjectProps, FileRecordParentType } from '../interfaces';
 import { FilesStorageClientMapper } from './files-storage-client.mapper';
 
 describe('FilesStorageClientMapper', () => {

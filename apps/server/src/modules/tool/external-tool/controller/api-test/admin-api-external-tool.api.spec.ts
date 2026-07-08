@@ -1,7 +1,7 @@
 import { EntityManager, MikroORM } from '@mikro-orm/core';
 import { AdminApiServerTestModule } from '@modules/server/admin-api.server.app.module';
-import { HttpStatus, INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { HttpStatus, type INestApplication } from '@nestjs/common';
+import { Test, type TestingModule } from '@nestjs/testing';
 // admin-api-external-tool and test file is wrong placed need to be part of a admin-api-module folder
 import { TestApiClient } from '@testing/test-api-client';
 import {
@@ -11,7 +11,7 @@ import {
 	ToolConfigType,
 } from '../../../common/enum';
 import { ExternalToolEntity } from '../../repo';
-import { ExternalToolCreateParams, ExternalToolResponse } from '../dto';
+import { type ExternalToolCreateParams, type ExternalToolResponse } from '../dto';
 
 describe('AdminApiExternalTool (API)', () => {
 	let app: INestApplication;

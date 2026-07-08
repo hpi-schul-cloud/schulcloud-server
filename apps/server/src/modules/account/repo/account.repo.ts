@@ -206,7 +206,7 @@ export class AccountMikroOrmRepo extends BaseDomainObjectRepo<Account, AccountEn
 
 		const foundUsers = await this.em.find(AccountEntity, scope.query);
 
-		const result = foundUsers.filter((user) => user.userId !== undefined).map(({ userId }) => userId!.toHexString());
+		const result = foundUsers.flatMap(({ userId }) => (userId ? [userId.toHexString()] : []));
 
 		return result;
 	}

@@ -1,4 +1,4 @@
-import { EntityManager, MetadataStorage } from '@mikro-orm/core';
+import { type EntityManager, type MetadataStorage } from '@mikro-orm/core';
 import { getFieldName } from './repo-helper';
 
 describe('getFieldName', () => {

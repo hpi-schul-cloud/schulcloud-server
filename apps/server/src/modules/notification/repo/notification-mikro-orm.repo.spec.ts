@@ -2,7 +2,7 @@ import { NotificationMikroOrmRepo } from './notification-mikro-orm.repo';
 import { NotificationEntity } from './entities';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { TestingModule } from '@nestjs/testing/testing-module';
+import { type TestingModule } from '@nestjs/testing/testing-module';
 import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { Notification } from '../domain/do';

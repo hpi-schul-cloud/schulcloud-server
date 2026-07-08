@@ -1,7 +1,7 @@
 import { HttpStatus } from '@nestjs/common';
 import { BusinessError } from '@shared/common/error';
-import { Loggable, LoggableMessage } from '@shared/common/loggable';
-import { ExternalUserDto } from '../dto';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
+import { type ExternalUserDto } from '../dto';
 
 export class SchoolMissingLoggableException extends BusinessError implements Loggable {
 	constructor(private readonly externalUser: ExternalUserDto) {

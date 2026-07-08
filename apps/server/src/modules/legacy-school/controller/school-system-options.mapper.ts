@@ -1,5 +1,5 @@
-import { AnyProvisioningOptions } from '../domain';
-import { AnyProvisioningOptionsResponse, SchulConneXProvisioningOptionsResponse } from './dto';
+import { type AnyProvisioningOptions } from '../domain';
+import { type AnyProvisioningOptionsResponse, SchulConneXProvisioningOptionsResponse } from './dto';
 
 export class SchoolSystemOptionsMapper {
 	static mapProvisioningOptionsToResponse(options: AnyProvisioningOptions): AnyProvisioningOptionsResponse {

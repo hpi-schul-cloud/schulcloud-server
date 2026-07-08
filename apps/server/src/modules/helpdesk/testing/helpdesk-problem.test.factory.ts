@@ -1,4 +1,4 @@
-import { HelpdeskProblemProps } from '../domain/interface';
+import { type HelpdeskProblemProps } from '../domain/interface';
 import { SupportType } from '../domain/type';
 
 export const helpdeskProblemPropsFactory = {

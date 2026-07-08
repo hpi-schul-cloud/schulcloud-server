@@ -1,4 +1,4 @@
-import { HttpStatus, ValidationError } from '@nestjs/common';
+import { HttpStatus, type ValidationError } from '@nestjs/common';
 import { ApiValidationError } from '@shared/common/error';
 import { ApiValidationErrorResponse } from './api-validation-error.response';
 

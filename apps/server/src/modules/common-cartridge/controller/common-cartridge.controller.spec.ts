@@ -1,22 +1,22 @@
 import { faker } from '@faker-js/faker';
-import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { type DeepMocked, createMock } from '@golevelup/ts-jest';
 import { ConfigurationModule } from '@infra/configuration';
 import { fileRecordResponseFactory } from '@infra/files-storage-rest-client/testing';
 import { LegacyLogger } from '@infra/logger';
 import { HttpStatus, StreamableFile } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { currentUserFactory } from '@testing/factory/currentuser.factory';
-import { Request, Response } from 'express';
+import { type Request, type Response } from 'express';
 import { Readable } from 'stream';
 import { COMMON_CARTRIDGE_PUBLIC_API_CONFIG_TOKEN, CommonCartridgePublicApiConfig } from '../common-cartridge.config';
 import { CommonCartridgeVersion } from '../export/common-cartridge.enums';
-import { CommonCartridgeExportResponse } from '../service/common-cartridge-export.response';
+import { type CommonCartridgeExportResponse } from '../service/common-cartridge-export.response';
 import { CommonCartridgeUc } from '../uc/common-cartridge.uc';
 import { CommonCartridgeController } from './common-cartridge.controller';
-import { ExportCourseParams } from './dto';
-import { CommonCartridgeFileParams } from './dto/common-cartridge-file.params';
-import { CourseExportBodyParams } from './dto/course-export.body.params';
-import { CourseQueryParams } from './dto/course.query.params';
+import { type ExportCourseParams } from './dto';
+import { type CommonCartridgeFileParams } from './dto/common-cartridge-file.params';
+import { type CourseExportBodyParams } from './dto/course-export.body.params';
+import { type CourseQueryParams } from './dto/course.query.params';
 
 describe('CommonCartridgeController', () => {
 	let module: TestingModule;

@@ -1,40 +1,40 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import {
 	Action,
 	AUTHORIZATION_CONFIG_TOKEN,
-	AuthorizationConfig,
-	AuthorizationContext,
+	type AuthorizationConfig,
+	type AuthorizationContext,
 	AuthorizationService,
 } from '@modules/authorization';
 import { ClassService } from '@modules/class';
-import { Class } from '@modules/class/domain';
+import { type Class } from '@modules/class/domain';
 import { classFactory } from '@modules/class/domain/testing/factory/class.factory';
-import { Course, CourseDoService } from '@modules/course';
+import { type Course, CourseDoService } from '@modules/course';
 import { courseFactory } from '@modules/course/testing';
 import { ClassGroupUc } from '@modules/group/uc/class-group.uc';
 import { RoleService } from '@modules/role';
 import { roleDtoFactory } from '@modules/role/testing';
-import { School, SchoolService, SchoolYearService } from '@modules/school/domain';
+import { type School, SchoolService, SchoolYearService } from '@modules/school/domain';
 import { schoolFactory, schoolYearDoFactory } from '@modules/school/testing';
 import { SystemService } from '@modules/system';
 import { systemFactory } from '@modules/system/testing';
-import { UserDo, UserService } from '@modules/user';
+import { type UserDo, UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { ForbiddenException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { Page } from '@shared/domain/domainobject';
 import { Permission, SortOrder } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
-import { GroupConfig } from '..';
+import { type GroupConfig } from '..';
 import { ClassSortQueryType, SchoolYearQueryType } from '../controller/dto/interface';
-import { Group } from '../domain';
+import { type Group } from '../domain';
 import { GROUP_CONFIG_TOKEN } from '../group.config';
 import { UnknownQueryTypeLoggableException } from '../loggable';
 import { GroupService } from '../service';
 import { groupFactory } from '../testing';
-import { ClassInfoDto, ClassRootType } from './dto';
+import { type ClassInfoDto, ClassRootType } from './dto';
 
 describe('ClassGroupUc', () => {
 	let module: TestingModule;

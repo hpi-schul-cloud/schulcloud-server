@@ -1,4 +1,4 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { FileSystemAdapter } from './file-system.adapter';
 import { FileSystemModule } from './file-system.module';
 

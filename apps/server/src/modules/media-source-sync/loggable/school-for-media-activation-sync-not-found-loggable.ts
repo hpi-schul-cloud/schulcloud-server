@@ -1,4 +1,4 @@
-import { Loggable, LoggableMessage } from '@shared/common/loggable';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
 
 export class SchoolForMediaActivationSyncNotFoundLoggable implements Loggable {
 	constructor(private readonly officialSchoolNumber: string) {}

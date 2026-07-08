@@ -1,5 +1,5 @@
 import { ForbiddenException } from '@nestjs/common';
-import { Loggable, LoggableMessage } from '../loggable/interfaces';
+import { type Loggable, type LoggableMessage } from '../loggable/interfaces';
 
 export class FeatureDisabledLoggableException extends ForbiddenException implements Loggable {
 	constructor(private readonly featureName: string) {

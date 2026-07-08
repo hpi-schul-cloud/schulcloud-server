@@ -1,6 +1,6 @@
 import { ContentElementType, H5pElement } from '../../domain';
 import { H5pElementContent, H5pElementResponse, TimestampsResponse } from '../dto';
-import { BaseResponseMapper } from './base-mapper.interface';
+import { type BaseResponseMapper } from './base-mapper.interface';
 
 export class H5pElementResponseMapper implements BaseResponseMapper {
 	private static instance: H5pElementResponseMapper;

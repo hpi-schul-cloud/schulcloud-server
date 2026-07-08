@@ -1,5 +1,5 @@
 import { MediaSourceSyncOperation, MediaSourceSyncStatus } from '../types';
-import { MediaSourceSyncOperationReport } from '../interface';
+import { type MediaSourceSyncOperationReport } from '../interface';
 
 export class MediaSourceSyncOperationReportFactory {
 	public static build(

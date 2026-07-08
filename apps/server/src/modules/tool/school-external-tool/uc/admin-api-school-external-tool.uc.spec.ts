@@ -1,5 +1,5 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Test, TestingModule } from '@nestjs/testing';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { SchoolExternalToolService } from '../service';
 import { schoolExternalToolFactory } from '../testing';
 import { AdminApiSchoolExternalToolUc } from './admin-api-school-external-tool.uc';

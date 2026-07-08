@@ -1,5 +1,5 @@
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { ProvisioningOptionsInterface } from '../interface';
+import { type ProvisioningOptionsInterface } from '../interface';
 import { ProvisioningStrategyInvalidOptionsLoggableException } from './provisioning-strategy-invalid-options.loggable-exception';
 
 describe(ProvisioningStrategyInvalidOptionsLoggableException.name, () => {

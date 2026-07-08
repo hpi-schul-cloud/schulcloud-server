@@ -1,6 +1,6 @@
 import { HttpStatus } from '@nestjs/common';
 import { BusinessError } from '@shared/common/error';
-import { Loggable, LoggableMessage } from '@shared/common/loggable';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
 
 export class UserLoginMigrationInvalidExternalSchoolIdLoggableException extends BusinessError implements Loggable {
 	constructor(private readonly externalSchoolId: string) {

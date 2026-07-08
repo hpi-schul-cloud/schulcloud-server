@@ -1,11 +1,11 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { StorageLocation } from '@infra/files-storage-amqp-client';
 import { LegacyLogger } from '@infra/logger';
 import { ColumnBoardService } from '@modules/board';
 import { BoardExternalReferenceType } from '@modules/board/domain';
-import { CopyColumnBoardParams } from '@modules/board/service/internal';
+import { type CopyColumnBoardParams } from '@modules/board/service/internal';
 import { columnBoardEntityFactory, columnBoardFactory } from '@modules/board/testing';
-import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
+import { CopyElementType, CopyHelperService, type CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { LessonCopyService } from '@modules/lesson';
@@ -16,7 +16,7 @@ import { Submission, Task } from '@modules/task/repo';
 import { taskFactory } from '@modules/task/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { ColumnBoardNodeRepo, LegacyBoard, LegacyBoardElement, LegacyBoardRepo } from '../repo';
 import {

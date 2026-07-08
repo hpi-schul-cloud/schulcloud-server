@@ -1,7 +1,7 @@
-import { Role } from '@modules/role/repo';
-import { School } from '@modules/school';
-import { User } from '@modules/user/repo';
-import { EntityId } from '@shared/domain/types';
+import { type Role } from '@modules/role/repo';
+import { type School } from '@modules/school';
+import { type User } from '@modules/user/repo';
+import { type EntityId } from '@shared/domain/types';
 import {
 	MeAccountResponse,
 	MeResponse,
@@ -11,7 +11,7 @@ import {
 	MePreferencesResponse,
 	MeUserResponse,
 } from '../dto';
-import { Permission } from '@shared/domain/interface';
+import { type Permission } from '@shared/domain/interface';
 
 export class MeResponseMapper {
 	public static mapToResponse(

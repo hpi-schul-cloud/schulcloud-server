@@ -1,6 +1,6 @@
-import { MediaSourceDataFormat } from '@modules/media-source';
-import { MediaSourceSyncReport } from '@modules/media-source-sync';
-import { LoggableMessage } from '@shared/common/loggable';
+import { type MediaSourceDataFormat } from '@modules/media-source';
+import { type MediaSourceSyncReport } from '@modules/media-source-sync';
+import { type LoggableMessage } from '@shared/common/loggable';
 
 export class MediaActivationsSyncReportLoggable {
 	constructor(

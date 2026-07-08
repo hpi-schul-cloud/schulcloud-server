@@ -470,7 +470,7 @@ describe(AbstractLaunchStrategy.name, () => {
 			it('should throw a MissingToolParameterValueLoggableException', async () => {
 				const { externalTool, schoolExternalTool, contextExternalTool } = setup();
 
-				const func = async () =>
+				const func = () =>
 					strategy.createLaunchRequest('userId', {
 						externalTool,
 						schoolExternalTool,
@@ -511,7 +511,7 @@ describe(AbstractLaunchStrategy.name, () => {
 			it('should throw a ParameterNotImplementedLoggableException', async () => {
 				const { externalTool, schoolExternalTool, contextExternalTool } = setup();
 
-				const func = async () =>
+				const func = () =>
 					strategy.createLaunchRequest('userId', {
 						externalTool,
 						schoolExternalTool,

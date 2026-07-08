@@ -1,15 +1,15 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { JwtPayloadBuilder } from '@infra/auth-guard';
 import { AuditLogger } from '@infra/logger';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { User, UserService } from '@modules/user';
 import { userDoFactory, userFactory } from '@modules/user/testing';
 import { ForbiddenException, UnauthorizedException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database/setup-entities';
 import { currentUserFactory } from '@testing/factory/currentuser.factory';
-import { AUTHENTICATION_CONFIG_TOKEN, AuthenticationConfig } from '../authentication-config';
+import { AUTHENTICATION_CONFIG_TOKEN, type AuthenticationConfig } from '../authentication-config';
 import { AuthenticationService } from '../services/authentication.service';
 import { LoginUc } from './login.uc';
 
@@ -291,8 +291,9 @@ describe('LoginUc', () => {
 
 			it('should throw ForbiddenException', async () => {
 				const { supportUser, targetUser } = setup();
+				const targetUserId = targetUser.id ?? '';
 
-				await expect(loginUc.getSupportLoginData(targetUser.id!, supportUser.id)).rejects.toThrow(ForbiddenException);
+				await expect(loginUc.getSupportLoginData(targetUserId, supportUser.id)).rejects.toThrow(ForbiddenException);
 			});
 		});
 	});

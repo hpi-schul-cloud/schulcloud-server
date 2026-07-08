@@ -1,8 +1,8 @@
 import { schoolEntityFactory } from '@modules/school/testing';
 import { userFactory } from '@modules/user/testing';
 import { BaseFactory } from '@testing/factory/base.factory';
-import { DeepPartial } from 'fishery';
-import { CourseEntity, CourseProperties } from '../repo';
+import { type DeepPartial } from 'fishery';
+import { CourseEntity, type CourseProperties } from '../repo';
 
 const oneDay = 24 * 60 * 60 * 1000;
 

@@ -1,6 +1,6 @@
 import { IncidentDto } from '../adapter/dto';
 
-export const createIncident = (id: number, componentId: number, status: number) =>
+export const createIncident = (id: number, componentId: number, status: number): IncidentDto =>
 	new IncidentDto(
 		1,
 		componentId,

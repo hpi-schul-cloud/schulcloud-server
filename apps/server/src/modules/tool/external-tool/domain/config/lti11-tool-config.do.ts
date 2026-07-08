@@ -1,4 +1,4 @@
-import { LtiMessageType, LtiPrivacyPermission, ToolConfigType } from '../../../common/enum';
+import { type LtiMessageType, type LtiPrivacyPermission, ToolConfigType } from '../../../common/enum';
 import { ExternalToolConfig } from './external-tool-config.do';
 
 export class Lti11ToolConfig extends ExternalToolConfig {

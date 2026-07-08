@@ -1,5 +1,5 @@
 import { HttpStatus } from '@nestjs/common';
-import { InternalErrorResponse } from '@shared/common/error';
+import { type InternalErrorResponse } from '@shared/common/error';
 
 /**
  * HTTP response definition for errors.

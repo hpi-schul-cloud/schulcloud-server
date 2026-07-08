@@ -1,4 +1,4 @@
-import { SchoolEntity } from '@modules/school/repo';
+import { type SchoolEntity } from '@modules/school/repo';
 import { SchoolInfoResponse } from '../dto';
 
 export class SchoolInfoMapper {

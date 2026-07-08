@@ -1,5 +1,5 @@
-import { PolymorphicArrayTransform } from '@shared/controller/transformer';
 import { ClassConstructor, plainToClass } from 'class-transformer';
+import { PolymorphicArrayTransform } from './polymorphic-array.transformer';
 
 describe(PolymorphicArrayTransform.name, () => {
 	class Str {

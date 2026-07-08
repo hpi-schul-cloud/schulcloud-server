@@ -1,6 +1,6 @@
+import { FileRecordParentType } from '@infra/files-storage-amqp-client';
+import { fileRequestInfoFactory } from '@infra/files-storage-amqp-client/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { FileRecordParentType } from '../interfaces';
-import { fileRequestInfoFactory } from '../testing';
 import { CopyFilesOfParentParamBuilder } from './copy-files-of-parent-param.builder';
 
 describe('CopyFilesOfParentParamBuilder', () => {

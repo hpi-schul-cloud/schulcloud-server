@@ -1,6 +1,6 @@
-import { EntityId } from '@shared/domain/types';
+import { type EntityId } from '@shared/domain/types';
 import { Scope } from '@shared/repo/scope';
-import { RegistrationEntity } from './entity';
+import { type RegistrationEntity } from './entity';
 
 export class RegistrationScope extends Scope<RegistrationEntity> {
 	public byRoomId(roomId?: EntityId): this {

@@ -1,5 +1,5 @@
 import { createMock } from '@golevelup/ts-jest';
-import { Readable } from 'stream';
+import { type Readable } from 'stream';
 
 export const multerFileFactory: {
 	create: (props?: Partial<Express.Multer.File>) => Express.Multer.File;

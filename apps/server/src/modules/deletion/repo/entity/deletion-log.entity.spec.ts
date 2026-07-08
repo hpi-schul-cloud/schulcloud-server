@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { DomainDeletionReport, DomainOperationReport } from '../../domain/interface';
+import { type DomainDeletionReport, type DomainOperationReport } from '../../domain/interface';
 import { DomainName, OperationType } from '../../domain/types';
 import { DeletionLogEntity } from './deletion-log.entity';
 

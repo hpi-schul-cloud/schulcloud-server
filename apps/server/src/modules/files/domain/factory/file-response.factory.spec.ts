@@ -1,5 +1,5 @@
 import { createMock } from '@golevelup/ts-jest';
-import { Logger } from '@infra/logger';
+import { type Logger } from '@infra/logger';
 import { Readable } from 'node:stream';
 import { ArchiveTestFactory } from '../../testing';
 import { FileResponseFactory } from './file-response.factory';

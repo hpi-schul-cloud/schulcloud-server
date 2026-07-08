@@ -1,5 +1,5 @@
 import { videoConferenceElementFactory } from '../testing';
-import { VideoConferenceElement, isVideoConferenceElement } from './video-conference-element.do';
+import { type VideoConferenceElement, isVideoConferenceElement } from './video-conference-element.do';
 
 describe('VideoConferenceElement', () => {
 	let videoConferenceElement: VideoConferenceElement;

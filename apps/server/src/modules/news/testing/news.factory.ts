@@ -8,7 +8,7 @@ import { teamFactory } from '@modules/team/testing';
 
 import { userFactory } from '@modules/user/testing';
 import { BaseFactory } from '@testing/factory/base.factory';
-import { CourseNews, NewsProperties, SchoolNews, TeamNews } from '../repo';
+import { CourseNews, type NewsProperties, SchoolNews, TeamNews } from '../repo';
 
 export const schoolNewsFactory = BaseFactory.define<SchoolNews, NewsProperties>(SchoolNews, ({ sequence }) => {
 	const school = schoolEntityFactory.buildWithId();

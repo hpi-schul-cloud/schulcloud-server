@@ -1,5 +1,5 @@
-import { EntityId } from '@shared/domain/types';
-import { Group } from '../../domain';
+import { type EntityId } from '@shared/domain/types';
+import { type Group } from '../../domain';
 import { ClassRootType } from './class-root-type';
 
 export interface InternalClassDtoProps<T> {

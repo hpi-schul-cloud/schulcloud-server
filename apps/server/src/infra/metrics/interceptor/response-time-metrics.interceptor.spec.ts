@@ -1,6 +1,6 @@
 import { createMock } from '@golevelup/ts-jest';
-import { CallHandler, ExecutionContext } from '@nestjs/common';
-import { Request, Response } from 'express';
+import { type CallHandler, type ExecutionContext } from '@nestjs/common';
+import { type Request, type Response } from 'express';
 import { of, throwError } from 'rxjs';
 import { MetricsService } from '../metrics.service';
 import { ResponseTimeMetricsInterceptor } from './response-time-metrics.interceptor';

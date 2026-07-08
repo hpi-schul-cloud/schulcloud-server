@@ -1,19 +1,19 @@
-import { EntityManager } from '@mikro-orm/core';
-import { AccountEntity } from '@modules/account/repo';
-import { GroupEntity } from '@modules/group/entity';
+import { type EntityManager } from '@mikro-orm/core';
+import { type AccountEntity } from '@modules/account/repo';
+import { type GroupEntity } from '@modules/group/entity';
 import { groupEntityFactory } from '@modules/group/testing';
 import { RoleName } from '@modules/role';
-import { Role } from '@modules/role/repo';
+import { type Role } from '@modules/role/repo';
 import { roleFactory } from '@modules/role/testing';
-import { RoomMembershipEntity } from '@modules/room-membership';
+import { type RoomMembershipEntity } from '@modules/room-membership';
 import { roomMembershipEntityFactory } from '@modules/room-membership/testing/room-membership-entity.factory';
-import { RoomEntity } from '@modules/room/repo';
-import { SchoolEntity } from '@modules/school/repo';
+import { type RoomEntity } from '@modules/room/repo';
+import { type SchoolEntity } from '@modules/school/repo';
 import { schoolEntityFactory } from '@modules/school/testing';
-import { User, UserProperties } from '@modules/user/repo';
+import { type User, type UserProperties } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
-import { TestApiClient } from '@testing/test-api-client';
+import { type TestApiClient } from '@testing/test-api-client';
 import {
 	adminPermissions,
 	externalPersonPermissions,

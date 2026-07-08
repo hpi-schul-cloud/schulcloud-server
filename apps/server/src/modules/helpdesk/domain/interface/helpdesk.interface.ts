@@ -1,5 +1,5 @@
-import { EntityId } from '@shared/domain/types';
-import { SupportType } from '../type';
+import { type EntityId } from '@shared/domain/types';
+import { type SupportType } from '../type';
 
 export interface HelpdeskProps {
 	supportType: SupportType;

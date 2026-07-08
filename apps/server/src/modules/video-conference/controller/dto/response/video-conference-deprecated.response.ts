@@ -1,5 +1,5 @@
-import { Permission } from '@shared/domain/interface';
-import { VideoConferenceStateResponse } from './video-conference-state.response';
+import { type Permission } from '@shared/domain/interface';
+import { type VideoConferenceStateResponse } from './video-conference-state.response';
 
 /**
  * @deprecated Please use new video conference response classes

@@ -1,4 +1,4 @@
-import { ExternalToolParameterDatasheetTemplateData } from './external-tool-parameter-datasheet-template-data';
+import { type ExternalToolParameterDatasheetTemplateData } from './external-tool-parameter-datasheet-template-data';
 
 export class ExternalToolDatasheetTemplateData {
 	createdAt: string;

@@ -1,8 +1,8 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { EntityId } from '@shared/domain/types';
+import { type EntityId } from '@shared/domain/types';
 import { MongoPatterns } from '@shared/repo/mongo.patterns';
 import { Scope } from '@shared/repo/scope';
-import { GroupEntity, GroupEntityTypes } from '../entity';
+import { type GroupEntity, type GroupEntityTypes } from '../entity';
 
 export class GroupScope extends Scope<GroupEntity> {
 	public byTypes(types: GroupEntityTypes[] | undefined): this {

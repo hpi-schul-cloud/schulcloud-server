@@ -1,6 +1,6 @@
-import { INestApplicationContext } from '@nestjs/common';
-import { CommanderError } from 'commander';
-import { BootstrapConsole, ConsoleService } from 'nestjs-console';
+import { type INestApplicationContext } from '@nestjs/common';
+import { type CommanderError } from 'commander';
+import { type BootstrapConsole, ConsoleService } from 'nestjs-console';
 import { ManagementConsoleTestModule } from '../../management-console.app.module';
 import { execute, TestBootstrapConsole } from './test-bootstrap.console';
 

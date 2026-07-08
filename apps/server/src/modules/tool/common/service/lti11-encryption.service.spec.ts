@@ -1,5 +1,5 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { Authorization } from 'oauth-1.0a';
+import { Test, type TestingModule } from '@nestjs/testing';
+import { type Authorization } from 'oauth-1.0a';
 import { Lti11EncryptionService } from './lti11-encryption.service';
 
 describe(Lti11EncryptionService.name, () => {

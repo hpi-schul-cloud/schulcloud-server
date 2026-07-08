@@ -1,5 +1,5 @@
-import { DomainOperationReport, DomainDeletionReport } from '../../../../domain/interface';
-import { DomainName } from '../../../../domain/types';
+import { type DomainOperationReport, type DomainDeletionReport } from '../../../../domain/interface';
+import { type DomainName } from '../../../../domain/types';
 
 export class DeletionLogStatisticBuilder {
 	static build(

@@ -1,5 +1,5 @@
-import { EntityId } from '@shared/domain/types';
-import { CopyFileDomainObjectProps } from '../interfaces';
+import { type EntityId } from '@shared/domain/types';
+import { type CopyFileDomainObjectProps } from '../interfaces';
 
 export class CopyFileDto {
 	id?: EntityId | undefined;

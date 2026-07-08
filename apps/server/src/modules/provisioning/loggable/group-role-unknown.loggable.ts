@@ -1,5 +1,5 @@
-import { SchulconnexSonstigeGruppenzugehoerigeResponse } from '@infra/schulconnex-client';
-import { Loggable, LoggableMessage } from '@shared/common/loggable';
+import { type SchulconnexSonstigeGruppenzugehoerigeResponse } from '@infra/schulconnex-client';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
 
 export class GroupRoleUnknownLoggable implements Loggable {
 	constructor(private readonly relation: SchulconnexSonstigeGruppenzugehoerigeResponse) {}

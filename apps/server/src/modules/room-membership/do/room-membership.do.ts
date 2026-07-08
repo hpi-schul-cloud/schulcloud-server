@@ -1,5 +1,5 @@
-import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
-import { EntityId } from '@shared/domain/types';
+import { type AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
+import { type EntityId } from '@shared/domain/types';
 
 export interface RoomMembershipProps extends AuthorizableObject {
 	id: EntityId;
@@ -19,10 +19,8 @@ export class RoomMembership extends DomainObject<RoomMembershipProps> {
 		// We need to make sure that only properties of type T are returned
 		// At runtime the props are a MikroORM entity that has additional non-persisted properties
 		// see @Property({ persist: false })
-
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
-		const { domainObject, ...copyProps } = this.props;
+		const copyProps = { ...this.props } as RoomMembershipProps & { domainObject?: unknown };
+		delete copyProps.domainObject;
 
 		return copyProps;
 	}

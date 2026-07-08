@@ -5,8 +5,8 @@ import { ExternalSourceEmbeddable } from '@modules/system/repo';
 import { systemEntityFactory } from '@modules/system/testing';
 import { userFactory } from '@modules/user/testing';
 import { BaseFactory } from '@testing/factory/base.factory';
-import { DeepPartial } from 'fishery';
-import { GroupEntity, GroupEntityProps, GroupEntityTypes, GroupValidPeriodEmbeddable } from '../entity';
+import { type DeepPartial } from 'fishery';
+import { GroupEntity, type GroupEntityProps, GroupEntityTypes, GroupValidPeriodEmbeddable } from '../entity';
 
 class GroupEntityFactory extends BaseFactory<GroupEntity, GroupEntityProps> {
 	public withTypeRoom(): this {

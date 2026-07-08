@@ -1,5 +1,5 @@
 import { Factory } from 'fishery';
-import { ProviderConsentSessionResponse } from '../domain';
+import { type ProviderConsentSessionResponse } from '../domain';
 import { providerConsentResponseFactory } from './provider-consent-response.factory';
 
 export const providerConsentSessionResponseFactory = Factory.define<ProviderConsentSessionResponse>(() => {

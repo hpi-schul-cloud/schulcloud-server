@@ -1,13 +1,13 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { userDoFactory } from '@modules/user/testing';
 import { ForbiddenException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import {
 	BBBBaseMeetingConfig,
-	BBBCreateResponse,
-	BBBMeetingInfoResponse,
-	BBBResponse,
+	type BBBCreateResponse,
+	type BBBMeetingInfoResponse,
+	type BBBResponse,
 	BBBRole,
 	BBBStatus,
 } from '../bbb';

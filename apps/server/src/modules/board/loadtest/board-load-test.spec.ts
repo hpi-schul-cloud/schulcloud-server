@@ -1,10 +1,10 @@
 import { createMock } from '@golevelup/ts-jest';
 import { BoardLoadTest } from './board-load-test';
 import { fastEditor } from './helper/class-definitions';
-import { LoadtestClient } from './loadtest-client';
+import { type LoadtestClient } from './loadtest-client';
 import { SocketConnection } from './socket-connection';
-import { SocketConnectionManager } from './socket-connection-manager';
-import { ClassDefinition } from './types';
+import { type SocketConnectionManager } from './socket-connection-manager';
+import { type ClassDefinition } from './types';
 
 jest.mock('./helper/sleep', () => {
 	return { sleep: () => Promise.resolve(true) };

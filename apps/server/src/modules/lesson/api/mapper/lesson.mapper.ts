@@ -1,4 +1,4 @@
-import { Task } from '@modules/task/repo';
+import { type Task } from '@modules/task/repo';
 import { LessonLinkedTaskResponse } from '../dto/lesson-linked-task.response';
 
 export class LessonMapper {

@@ -1,6 +1,6 @@
 import { ContentElementType, DeletedElement } from '../../domain';
 import { DeletedElementContent, DeletedElementResponse, TimestampsResponse } from '../dto';
-import { BaseResponseMapper } from './base-mapper.interface';
+import { type BaseResponseMapper } from './base-mapper.interface';
 
 export class DeletedElementResponseMapper implements BaseResponseMapper<DeletedElement, DeletedElementResponse> {
 	private static instance: DeletedElementResponseMapper;

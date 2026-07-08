@@ -1,6 +1,6 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { BoardExternalReferenceType } from '@modules/board';
-import { BoardConfig } from '@modules/board/board.config';
+import { type BoardConfig } from '@modules/board/board.config';
 import { BoardNodeType } from '@modules/board/domain';
 import { BoardNodeEntity } from '@modules/board/repo';
 import { BoardNodeCopyService } from '@modules/board/service/internal';
@@ -10,27 +10,27 @@ import {
 	columnEntityFactory,
 	externalToolElementEntityFactory,
 } from '@modules/board/testing';
-import { CopyApiResponse, CopyElementType, CopyStatusEnum } from '@modules/copy-helper';
+import { type CopyApiResponse, CopyElementType, CopyStatusEnum } from '@modules/copy-helper';
 import { CourseEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
-import { LearnroomConfig } from '@modules/learnroom';
+import { type LearnroomConfig } from '@modules/learnroom';
 import { CourseCopyService } from '@modules/learnroom/service';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
-import { SharingPublicApiConfig } from '@modules/sharing/sharing.config';
+import { type SharingPublicApiConfig } from '@modules/sharing/sharing.config';
 import { ContextExternalToolEntity, ContextExternalToolType } from '@modules/tool/context-external-tool/repo';
 import { contextExternalToolEntityFactory } from '@modules/tool/context-external-tool/testing';
 import { externalToolEntityFactory } from '@modules/tool/external-tool/testing';
 import { schoolExternalToolEntityFactory } from '@modules/tool/school-external-tool/testing';
-import { HttpStatus, INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { HttpStatus, type INestApplication } from '@nestjs/common';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { ShareTokenContextType } from '../../domainobject/share-token.do';
 import { shareTokenFactory } from '../../testing/share-token.factory';
-import { ShareTokenImportBodyParams } from '../dto';
+import { type ShareTokenImportBodyParams } from '../dto';
 import { ShareTokenPermissionService } from '../service';
 
 describe(`Share Token Import (API)`, () => {

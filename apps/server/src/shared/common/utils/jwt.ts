@@ -1,7 +1,7 @@
 import { UnauthorizedException } from '@nestjs/common';
 import * as cookie from 'cookie';
-import { Request } from 'express';
-import { ExtractJwt, JwtFromRequestFunction } from 'passport-jwt';
+import { type Request } from 'express';
+import { ExtractJwt, type JwtFromRequestFunction } from 'passport-jwt';
 
 export class JwtExtractor {
 	public static fromCookie(name: string): JwtFromRequestFunction {

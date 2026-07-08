@@ -1,13 +1,13 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BoardCommonToolService } from '@modules/board';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { ContextExternalToolService } from '../../context-external-tool';
-import { ContextExternalTool } from '../../context-external-tool/domain';
+import { type ContextExternalTool } from '../../context-external-tool/domain';
 import { contextExternalToolFactory } from '../../context-external-tool/testing';
 import { SchoolExternalToolService } from '../../school-external-tool';
 import { schoolExternalToolFactory } from '../../school-external-tool/testing';
-import { ExternalToolUtilization, SchoolExternalToolUtilization } from '../domain';
+import { type ExternalToolUtilization, type SchoolExternalToolUtilization } from '../domain';
 import { ExternalToolUtilizationService } from './external-tool-utilization.service';
 
 describe(ExternalToolUtilizationService.name, () => {

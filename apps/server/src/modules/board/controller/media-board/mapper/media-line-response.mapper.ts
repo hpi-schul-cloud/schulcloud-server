@@ -1,4 +1,4 @@
-import { type AnyBoardNode, AnyMediaElement, isAnyMediaElement, MediaLine } from '../../../domain';
+import { type AnyBoardNode, type AnyMediaElement, isAnyMediaElement, type MediaLine } from '../../../domain';
 import { TimestampsResponse } from '../../dto';
 import { MediaLineResponse } from '../dto';
 import { AnyMediaElementResponseFactory } from './any-media-element-response.factory';

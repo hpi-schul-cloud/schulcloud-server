@@ -1,8 +1,8 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { Logger } from '@infra/logger';
 import { MailService } from '@infra/mail';
-import { Test, TestingModule } from '@nestjs/testing';
-import { HELPDESK_CONFIG_TOKEN, HelpdeskConfig } from '../../helpdesk-config';
+import { Test, type TestingModule } from '@nestjs/testing';
+import { HELPDESK_CONFIG_TOKEN, type HelpdeskConfig } from '../../helpdesk-config';
 import {
 	helpdeskProblemPropsFactory,
 	helpdeskWishPropsFactory,

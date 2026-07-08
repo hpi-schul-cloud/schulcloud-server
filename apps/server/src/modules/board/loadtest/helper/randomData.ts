@@ -1,4 +1,4 @@
-import { LinkContentBody } from '../../controller/dto';
+import { type LinkContentBody } from '../../controller/dto';
 
 export const getRandomLink = (): LinkContentBody => {
 	const links = [

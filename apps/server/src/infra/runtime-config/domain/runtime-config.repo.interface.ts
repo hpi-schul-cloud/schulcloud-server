@@ -1,4 +1,4 @@
-import { RuntimeConfigValue } from './runtime-config-value.do';
+import { type RuntimeConfigValue } from './runtime-config-value.do';
 
 export interface RuntimeConfigRepo {
 	save(runtimeConfigValue: RuntimeConfigValue): Promise<RuntimeConfigValue>;

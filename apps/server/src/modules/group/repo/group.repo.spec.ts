@@ -9,17 +9,17 @@ import { SystemEntity } from '@modules/system/repo';
 import { systemEntityFactory } from '@modules/system/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
-import { Test, TestingModule } from '@nestjs/testing';
-import { ExternalSource, Page } from '@shared/domain/domainobject';
+import { Test, type TestingModule } from '@nestjs/testing';
+import { ExternalSource, type Page } from '@shared/domain/domainobject';
 import { SortOrder } from '@shared/domain/interface';
-import { EntityId } from '@shared/domain/types';
+import { type EntityId } from '@shared/domain/types';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
-import { Group, GroupAggregateScope, GroupProps, GroupTypes, GroupUser } from '../domain';
+import { type Group, GroupAggregateScope, type GroupProps, GroupTypes, GroupUser } from '../domain';
 import { GroupEntity, GroupEntityTypes, GroupUserEmbeddable } from '../entity';
 import { groupEntityFactory, groupFactory } from '../testing';
 import { GroupRepo } from './group.repo';
-import { Role } from '@modules/role/repo';
+import { type Role } from '@modules/role/repo';
 
 describe(GroupRepo.name, () => {
 	let module: TestingModule;

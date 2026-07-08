@@ -4,10 +4,10 @@ import {
 	OauthConfigEntity,
 	OidcConfigEntity,
 	SystemEntity,
-	SystemEntityProps,
+	type SystemEntityProps,
 } from '@modules/system/repo';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { DeepPartial } from 'fishery';
+import { type DeepPartial } from 'fishery';
 import { BaseFactory } from './base.factory';
 
 export const systemOauthConfigEntityFactory = BaseFactory.define<OauthConfigEntity, OauthConfigEntity>(
