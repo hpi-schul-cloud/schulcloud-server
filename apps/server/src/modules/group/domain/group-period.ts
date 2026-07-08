@@ -1,7 +1,7 @@
 export class GroupPeriod {
-	from: Date;
+	public from: Date;
 
-	until: Date;
+	public until: Date;
 
 	constructor(props: GroupPeriod) {
 		this.from = props.from;

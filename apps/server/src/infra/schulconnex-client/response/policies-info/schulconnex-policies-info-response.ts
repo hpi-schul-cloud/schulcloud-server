@@ -15,5 +15,5 @@ export class SchulconnexPoliciesInfoResponse {
 	@IsArray()
 	@ValidateNested({ each: true })
 	@PolymorphicArrayTransform(policiesInfoDiscriminator)
-	data!: (SchulconnexPoliciesInfoLicenseResponse | SchulconnexPoliciesInfoErrorResponse)[];
+	public data!: (SchulconnexPoliciesInfoLicenseResponse | SchulconnexPoliciesInfoErrorResponse)[];
 }

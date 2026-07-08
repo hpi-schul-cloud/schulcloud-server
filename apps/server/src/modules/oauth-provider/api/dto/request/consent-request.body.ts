@@ -7,7 +7,7 @@ export class ConsentRequestBody extends OAuthRejectableBody {
 	@IsString({ each: true })
 	@IsOptional()
 	@ApiProperty({ description: 'The Oauth2 client id.', required: false, nullable: false })
-	grant_scope?: string[];
+	public grant_scope?: string[];
 
 	@IsBoolean()
 	@IsOptional()
@@ -17,7 +17,7 @@ export class ConsentRequestBody extends OAuthRejectableBody {
 		required: false,
 		nullable: false,
 	})
-	remember?: boolean;
+	public remember?: boolean;
 
 	@IsInt()
 	@IsOptional()
@@ -27,5 +27,5 @@ export class ConsentRequestBody extends OAuthRejectableBody {
 		required: false,
 		nullable: false,
 	})
-	remember_for?: number;
+	public remember_for?: number;
 }

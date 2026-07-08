@@ -10,7 +10,7 @@ export class ExternalToolElement extends BoardNode<ExternalToolElementProps> {
 		this.props.contextExternalToolId = value;
 	}
 
-	canHaveChild(): boolean {
+	public canHaveChild(): boolean {
 		return false;
 	}
 }

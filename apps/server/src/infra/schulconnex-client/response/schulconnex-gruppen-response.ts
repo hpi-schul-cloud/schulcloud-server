@@ -8,16 +8,16 @@ export class SchulconnexGruppenResponse {
 	@IsObject()
 	@ValidateNested()
 	@Type(() => SchulconnexGruppeResponse)
-	gruppe!: SchulconnexGruppeResponse;
+	public gruppe!: SchulconnexGruppeResponse;
 
 	@IsObject()
 	@ValidateNested()
 	@Type(() => SchulconnexGruppenzugehoerigkeitResponse)
-	gruppenzugehoerigkeit!: SchulconnexGruppenzugehoerigkeitResponse;
+	public gruppenzugehoerigkeit!: SchulconnexGruppenzugehoerigkeitResponse;
 
 	@IsOptional()
 	@IsArray()
 	@ValidateNested({ each: true })
 	@Type(() => SchulconnexSonstigeGruppenzugehoerigeResponse)
-	sonstige_gruppenzugehoerige?: SchulconnexSonstigeGruppenzugehoerigeResponse[];
+	public sonstige_gruppenzugehoerige?: SchulconnexSonstigeGruppenzugehoerigeResponse[];
 }

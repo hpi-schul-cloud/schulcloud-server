@@ -13,7 +13,7 @@ export class SchoolHasNoSystemLoggableException extends NotFoundException implem
 		});
 	}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		const message: LoggableMessage = {
 			type: SchoolErrorEnum.SCHOOL_HAS_NO_SYSTEM,
 			stack: this.stack,

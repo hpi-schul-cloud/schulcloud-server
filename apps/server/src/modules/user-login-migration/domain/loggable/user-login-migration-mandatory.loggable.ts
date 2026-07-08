@@ -8,7 +8,7 @@ export class UserLoginMigrationMandatoryLoggable implements Loggable {
 		private readonly mandatory: boolean
 	) {}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			message: 'The school administrator changed the requirement status of the user login migration for his school.',
 			data: {

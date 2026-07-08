@@ -6,7 +6,7 @@ export class MissingYearsLoggableException extends InternalServerErrorException 
 		super('There must exist at least three school years: last, active and next.');
 	}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		const message = {
 			message: this.message,
 			type: 'INTERNAL_SERVER_ERROR',

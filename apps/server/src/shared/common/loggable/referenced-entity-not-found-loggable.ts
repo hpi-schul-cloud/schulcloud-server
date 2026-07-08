@@ -9,7 +9,7 @@ export class ReferencedEntityNotFoundLoggable implements Loggable {
 		private readonly referencedEntityId: EntityId
 	) {}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			message: 'The requested entity could not been found, but it is still referenced.',
 			data: {

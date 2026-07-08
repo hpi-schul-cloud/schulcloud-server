@@ -5,7 +5,7 @@ import { DeletionRequest, type DeletionRequestProps } from '../../do';
 import { DomainName, StatusModel } from '../../types';
 
 class DeletionRequestFactory extends DoBaseFactory<DeletionRequest, DeletionRequestProps> {
-	withUserIds(id: string): this {
+	public withUserIds(id: string): this {
 		const params: DeepPartial<DeletionRequestProps> = {
 			targetRefId: id,
 		};

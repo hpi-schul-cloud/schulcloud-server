@@ -8,7 +8,7 @@ export class UserMigrationCorrectionSuccessfulLoggable implements Loggable {
 		private readonly userLoginMigration: UserLoginMigrationDO
 	) {}
 
-	getLogMessage(): LogMessage {
+	public getLogMessage(): LogMessage {
 		return {
 			message: 'A user has been successfully corrected.',
 			data: {

@@ -7,7 +7,7 @@ export class ProvisioningStrategyMissingLoggableException extends UnprocessableE
 		super();
 	}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			type: 'PROVISIONING_STRATEGY_MISSING',
 			message: 'Systems without a provisioning strategy cannot have provisioning options.',

@@ -7,35 +7,35 @@ import { type EntityId } from '@shared/domain/types';
  * @deprecated because it extends the deprecated BaseDO.
  */
 export class LegacySchoolDo extends BaseDO {
-	externalId?: string;
+	public externalId?: string;
 
-	inMaintenanceSince?: Date;
+	public inMaintenanceSince?: Date;
 
-	inUserMigration?: boolean;
+	public inUserMigration?: boolean;
 
-	previousExternalId?: string;
+	public previousExternalId?: string;
 
-	name: string;
+	public name: string;
 
-	officialSchoolNumber?: string;
+	public officialSchoolNumber?: string;
 
-	systems?: EntityId[];
+	public systems?: EntityId[];
 
-	features?: SchoolFeature[];
-
-	// TODO: N21-990 Refactoring: Create domain objects for schoolYear and federalState
-	schoolYear?: SchoolYearEntity;
-
-	userLoginMigrationId?: EntityId;
+	public features?: SchoolFeature[];
 
 	// TODO: N21-990 Refactoring: Create domain objects for schoolYear and federalState
-	federalState: FederalStateEntity;
+	public schoolYear?: SchoolYearEntity;
 
-	ldapLastSync?: string;
+	public userLoginMigrationId?: EntityId;
 
-	storageProvider?: EntityId;
+	// TODO: N21-990 Refactoring: Create domain objects for schoolYear and federalState
+	public federalState: FederalStateEntity;
 
-	fileStorageType?: FileStorageType;
+	public ldapLastSync?: string;
+
+	public storageProvider?: EntityId;
+
+	public fileStorageType?: FileStorageType;
 
 	constructor(params: LegacySchoolDo) {
 		super();

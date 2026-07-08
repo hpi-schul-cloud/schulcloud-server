@@ -6,7 +6,7 @@ export class ParameterTypeNotImplementedLoggableException extends NotImplemented
 		super();
 	}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			type: 'PARAMETER_TYPE_NOT_IMPLEMENTED',
 			message: 'Launching an external tool with this parameter type is not implemented.',

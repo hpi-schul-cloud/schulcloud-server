@@ -14,7 +14,7 @@ export class MoinSchuleSystemNotFoundLoggableException extends BusinessError imp
 		);
 	}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			type: this.type,
 			message: this.message,

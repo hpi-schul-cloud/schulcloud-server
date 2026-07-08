@@ -6,5 +6,5 @@ export class AcceptQuery {
 	@IsBoolean()
 	@StringToBoolean()
 	@ApiPropertyOptional({ description: 'Accepts the login request.', required: true, nullable: false })
-	accept!: boolean;
+	public accept!: boolean;
 }

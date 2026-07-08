@@ -7,10 +7,10 @@ export class GroupParams {
 	@IsBoolean()
 	@StringToBoolean()
 	@ApiPropertyOptional({ description: 'if true only available groups for a course sync are returned.' })
-	availableGroupsForCourseSync?: boolean;
+	public availableGroupsForCourseSync?: boolean;
 
 	@IsOptional()
 	@IsString()
 	@ApiPropertyOptional({ description: 'search string for group names.' })
-	nameQuery?: string;
+	public nameQuery?: string;
 }

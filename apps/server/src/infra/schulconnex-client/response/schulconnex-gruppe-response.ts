@@ -4,17 +4,17 @@ import { SchulconnexLaufzeitResponse } from './schulconnex-laufzeit-response';
 
 export class SchulconnexGruppeResponse {
 	@IsString()
-	id!: string;
+	public id!: string;
 
 	@IsString()
-	bezeichnung!: string;
+	public bezeichnung!: string;
 
 	@IsString()
-	typ!: string;
+	public typ!: string;
 
 	@IsOptional()
 	@IsObject()
 	@ValidateNested()
 	@Type(() => SchulconnexLaufzeitResponse)
-	laufzeit?: SchulconnexLaufzeitResponse;
+	public laufzeit?: SchulconnexLaufzeitResponse;
 }

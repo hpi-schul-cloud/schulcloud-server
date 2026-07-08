@@ -13,7 +13,7 @@ import { BoardTaskStatusMapper } from './board-taskStatus.mapper';
 
 @Injectable()
 export class RoomBoardResponseMapper {
-	mapToResponse(board: RoomBoardDTO): SingleColumnBoardResponse {
+	public mapToResponse(board: RoomBoardDTO): SingleColumnBoardResponse {
 		const elements: BoardElementResponse[] = this.mapBoardElements(board);
 
 		const mapped: SingleColumnBoardResponse = new SingleColumnBoardResponse({

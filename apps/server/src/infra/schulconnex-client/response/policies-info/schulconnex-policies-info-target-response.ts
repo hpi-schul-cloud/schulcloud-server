@@ -2,9 +2,9 @@ import { IsOptional, IsString } from 'class-validator';
 
 export class SchulconnexPoliciesInfoTargetResponse {
 	@IsString()
-	uid!: string;
+	public uid!: string;
 
 	@IsOptional()
 	@IsString()
-	partOf?: string;
+	public partOf?: string;
 }

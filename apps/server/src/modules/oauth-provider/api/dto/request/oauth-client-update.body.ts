@@ -5,18 +5,18 @@ import { SubjectTypeEnum, TokenAuthMethod } from '../../../domain/interface';
 export class OauthClientUpdateBody {
 	@IsString()
 	@ApiProperty({ description: 'The Oauth2 client name.', nullable: false })
-	client_name!: string;
+	public client_name!: string;
 
 	@IsString()
 	@IsOptional()
 	@ApiPropertyOptional({ description: 'The Oauth2 client secret.', nullable: false })
-	client_secret?: string;
+	public client_secret?: string;
 
 	@IsArray()
 	@IsOptional()
 	@IsString({ each: true })
 	@ApiPropertyOptional({ description: 'The allowed redirect urls of the Oauth2 client.', nullable: false, default: [] })
-	redirect_uris!: string[];
+	public redirect_uris!: string[];
 
 	@IsEnum(TokenAuthMethod)
 	@ApiProperty({
@@ -24,7 +24,7 @@ export class OauthClientUpdateBody {
 			'Requested Client Authentication method for the Token Endpoint. The options are client_secret_post, client_secret_basic, private_key_jwt, and none.',
 		nullable: false,
 	})
-	token_endpoint_auth_method!: TokenAuthMethod;
+	public token_endpoint_auth_method!: TokenAuthMethod;
 
 	@IsEnum(SubjectTypeEnum)
 	@ApiProperty({
@@ -32,7 +32,7 @@ export class OauthClientUpdateBody {
 			'SubjectType requested for responses to this Client. The subject_types_supported Discovery parameter contains a list of the supported subject_type values for this server. Valid types include pairwise and public.',
 		nullable: false,
 	})
-	subject_type!: SubjectTypeEnum;
+	public subject_type!: SubjectTypeEnum;
 
 	@IsString()
 	@IsOptional()
@@ -42,7 +42,7 @@ export class OauthClientUpdateBody {
 		nullable: false,
 		default: 'openid offline',
 	})
-	scope?: string;
+	public scope?: string;
 
 	@IsString()
 	@IsOptional()
@@ -50,7 +50,7 @@ export class OauthClientUpdateBody {
 		description: 'Thr frontchannel logout uri.',
 		nullable: false,
 	})
-	frontchannel_logout_uri?: string;
+	public frontchannel_logout_uri?: string;
 
 	@IsArray()
 	@IsOptional()
@@ -60,7 +60,7 @@ export class OauthClientUpdateBody {
 		nullable: false,
 		default: ['authorization_code', 'refresh_token'],
 	})
-	grant_types?: string[];
+	public grant_types?: string[];
 
 	@IsArray()
 	@IsOptional()
@@ -70,5 +70,5 @@ export class OauthClientUpdateBody {
 		nullable: false,
 		default: ['code', 'token', 'id_token'],
 	})
-	response_types?: string[];
+	public response_types?: string[];
 }

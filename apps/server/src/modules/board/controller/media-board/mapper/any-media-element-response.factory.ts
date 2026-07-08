@@ -11,7 +11,7 @@ export class AnyMediaElementResponseFactory {
 		MediaExternalToolElementResponseMapper.getInstance(),
 	];
 
-	static mapToResponse(elements: AnyMediaElement[]): AnyMediaElementResponse[] {
+	public static mapToResponse(elements: AnyMediaElement[]): AnyMediaElementResponse[] {
 		const mapped: AnyMediaElementResponse[] = elements.map((element) => {
 			const elementMapper = this.mappers.find((mapper) => mapper.canMap(element));
 

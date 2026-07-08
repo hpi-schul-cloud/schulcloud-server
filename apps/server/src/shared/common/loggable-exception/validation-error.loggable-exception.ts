@@ -7,7 +7,7 @@ export class ValidationErrorLoggableException extends InternalServerErrorExcepti
 		super();
 	}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		const validationErrorListObject: { [key: number]: string } = this.validationErrors.reduce(
 			(accumulator, currentValue, currentIndex) => {
 				return {

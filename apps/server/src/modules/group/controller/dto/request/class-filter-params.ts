@@ -6,5 +6,5 @@ export class ClassFilterParams {
 	@IsOptional()
 	@IsEnum(SchoolYearQueryType)
 	@ApiPropertyOptional({ enum: SchoolYearQueryType, enumName: 'SchoolYearQueryType' })
-	type?: SchoolYearQueryType;
+	public type?: SchoolYearQueryType;
 }

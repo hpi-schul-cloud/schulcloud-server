@@ -17,7 +17,7 @@ export abstract class CommonCartridgeResourcesWrapperElement extends CommonCartr
 		super(props);
 	}
 
-	abstract getSupportedVersion(): CommonCartridgeVersion;
+	public abstract getSupportedVersion(): CommonCartridgeVersion;
 
 	public getManifestXmlObject(elementType: CommonCartridgeElementType): XmlObject {
 		switch (elementType) {

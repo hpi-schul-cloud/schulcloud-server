@@ -14,7 +14,7 @@ export class UserLoginMigrationInvalidExternalSchoolIdLoggableException extends 
 		);
 	}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			type: this.type,
 			message: this.message,

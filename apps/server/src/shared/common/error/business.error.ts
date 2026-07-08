@@ -9,20 +9,20 @@ import { ErrorType, InternalErrorResponse } from './interfaces';
  */
 export abstract class BusinessError extends HttpException {
 	@ApiProperty({ description: 'The response status code.' })
-	readonly code: number;
+	public readonly code: number;
 
 	@ApiProperty({ description: 'The error type.' })
-	readonly type: string;
+	public readonly type: string;
 
 	@ApiProperty({ description: 'The error title.' })
-	readonly title: string;
+	public readonly title: string;
 
 	@ApiProperty({ description: 'The error message.' })
-	readonly message: string;
+	public readonly message: string;
 
 	@ApiPropertyOptional({ description: 'The error details.' })
 	// Is not matched by type validation because HttpException is already declared
-	readonly details?: Record<string, unknown>;
+	public readonly details?: Record<string, unknown>;
 
 	protected constructor(
 		{ type, title, defaultMessage }: ErrorType,
@@ -47,7 +47,7 @@ export abstract class BusinessError extends HttpException {
 		}
 	}
 
-	override getResponse(): InternalErrorResponse {
+	public override getResponse(): InternalErrorResponse {
 		const errorResponse: InternalErrorResponse = {
 			type: this.type,
 			title: this.title,

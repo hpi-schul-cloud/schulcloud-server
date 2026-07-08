@@ -1,9 +1,9 @@
 import { type ToolContextType } from '../../common/enum';
 
 export class ContextRef {
-	id: string;
+	public id: string;
 
-	type: ToolContextType;
+	public type: ToolContextType;
 
 	constructor(props: ContextRef) {
 		this.id = props.id;

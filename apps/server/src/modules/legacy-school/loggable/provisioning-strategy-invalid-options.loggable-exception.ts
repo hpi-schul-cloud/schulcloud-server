@@ -14,7 +14,7 @@ export class ProvisioningStrategyInvalidOptionsLoggableException
 		super();
 	}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			type: 'PROVISIONING_STRATEGY_INVALID_OPTIONS',
 			message: 'The provisioning options are invalid for this strategy type.',

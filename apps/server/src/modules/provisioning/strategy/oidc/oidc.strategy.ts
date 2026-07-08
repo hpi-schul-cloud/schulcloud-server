@@ -7,11 +7,11 @@ import { ProvisioningStrategy } from '../base.strategy';
 
 @Injectable()
 export class OidcProvisioningStrategy extends ProvisioningStrategy {
-	getType(): SystemProvisioningStrategy {
+	public getType(): SystemProvisioningStrategy {
 		return SystemProvisioningStrategy.OIDC;
 	}
 
-	override async getData(input: OauthDataStrategyInputDto): Promise<OauthDataDto> {
+	public override async getData(input: OauthDataStrategyInputDto): Promise<OauthDataDto> {
 		const idToken = jwt.decode(input.idToken, { json: true });
 		if (
 			!idToken ||
@@ -38,7 +38,7 @@ export class OidcProvisioningStrategy extends ProvisioningStrategy {
 		return result;
 	}
 
-	override apply(data: OauthDataDto): Promise<ProvisioningDto> {
+	public override apply(data: OauthDataDto): Promise<ProvisioningDto> {
 		return Promise.resolve(new ProvisioningDto({ externalUserId: data.externalUser.externalId }));
 	}
 }

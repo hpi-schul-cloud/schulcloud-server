@@ -11,7 +11,7 @@ export class LoginRequestBody extends OAuthRejectableBody {
 		required: false,
 		nullable: false,
 	})
-	remember?: boolean;
+	public remember?: boolean;
 
 	@IsInt()
 	@IsOptional()
@@ -21,5 +21,5 @@ export class LoginRequestBody extends OAuthRejectableBody {
 		required: false,
 		nullable: false,
 	})
-	remember_for?: number;
+	public remember_for?: number;
 }

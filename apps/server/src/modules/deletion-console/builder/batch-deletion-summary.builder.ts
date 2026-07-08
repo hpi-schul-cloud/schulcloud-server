@@ -1,7 +1,7 @@
 import { BatchDeletionSummaryOverallStatus, type BatchDeletionSummary } from '../uc/interface';
 
 export class BatchDeletionSummaryBuilder {
-	static build(executionTimeMilliseconds: number): BatchDeletionSummary {
+	public static build(executionTimeMilliseconds: number): BatchDeletionSummary {
 		return {
 			executionTimeMilliseconds,
 			overallStatus: BatchDeletionSummaryOverallStatus.FAILURE,

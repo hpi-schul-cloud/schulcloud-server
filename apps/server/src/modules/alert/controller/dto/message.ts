@@ -23,23 +23,23 @@ export class Message {
 	}
 
 	@ApiProperty()
-	title: string;
+	public title: string;
 
 	@ApiProperty()
-	text: string;
+	public text: string;
 
 	@ApiProperty()
-	timestamp: Date;
+	public timestamp: Date;
 
 	@ApiProperty()
-	origin: MessageOrigin;
+	public origin: MessageOrigin;
 
 	@ApiProperty()
-	url: string;
+	public url: string;
 
 	@ApiProperty()
-	status: MessageStatus;
+	public status: MessageStatus;
 
 	@ApiProperty()
-	createdAt: Date;
+	public createdAt: Date;
 }

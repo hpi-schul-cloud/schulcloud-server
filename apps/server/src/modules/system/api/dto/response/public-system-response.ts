@@ -7,28 +7,28 @@ export class PublicSystemResponse {
 		required: true,
 		nullable: false,
 	})
-	id: string;
+	public id: string;
 
 	@ApiProperty({
 		description: 'Flag to request only systems with oauth-config.',
 		required: false,
 		nullable: true,
 	})
-	type: string;
+	public type: string;
 
 	@ApiProperty({
 		description: 'Alias of the system.',
 		required: false,
 		nullable: true,
 	})
-	alias?: string;
+	public alias?: string;
 
 	@ApiProperty({
 		description: 'Display name of the system.',
 		required: false,
 		nullable: true,
 	})
-	displayName?: string;
+	public displayName?: string;
 
 	@ApiProperty({
 		description: 'Oauth config of the system.',
@@ -36,7 +36,7 @@ export class PublicSystemResponse {
 		required: false,
 		nullable: true,
 	})
-	oauthConfig?: OauthConfigResponse;
+	public oauthConfig?: OauthConfigResponse;
 
 	constructor(system: PublicSystemResponse) {
 		this.id = system.id;

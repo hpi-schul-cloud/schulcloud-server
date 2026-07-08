@@ -19,7 +19,7 @@ export class RichTextElement extends BoardNode<RichTextElementProps> {
 		this.props.inputFormat = value;
 	}
 
-	canHaveChild(): boolean {
+	public canHaveChild(): boolean {
 		return false;
 	}
 }

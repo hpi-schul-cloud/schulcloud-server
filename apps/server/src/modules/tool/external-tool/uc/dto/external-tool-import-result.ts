@@ -1,13 +1,13 @@
 export class ExternalToolImportResult {
-	toolName: string;
+	public toolName: string;
 
-	mediumId?: string;
+	public mediumId?: string;
 
-	mediumSourceId?: string;
+	public mediumSourceId?: string;
 
-	toolId?: string;
+	public toolId?: string;
 
-	error?: string;
+	public error?: string;
 
 	constructor(props: ExternalToolImportResult) {
 		this.toolName = props.toolName;

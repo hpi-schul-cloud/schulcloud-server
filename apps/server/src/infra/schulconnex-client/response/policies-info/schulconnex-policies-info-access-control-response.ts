@@ -4,10 +4,10 @@ import { SchulconnexPoliciesInfoErrorDescriptionResponse } from './schulconnex-p
 
 export class SchulconnexPoliciesInfoAccessControlResponse {
 	@IsString()
-	'@type'!: string;
+	public '@type'!: string;
 
 	@IsObject()
 	@ValidateNested()
 	@Type(() => SchulconnexPoliciesInfoErrorDescriptionResponse)
-	error!: SchulconnexPoliciesInfoErrorDescriptionResponse;
+	public error!: SchulconnexPoliciesInfoErrorDescriptionResponse;
 }

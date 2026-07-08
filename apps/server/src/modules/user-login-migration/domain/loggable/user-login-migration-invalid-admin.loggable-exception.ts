@@ -6,7 +6,7 @@ export class UserLoginMigrationInvalidAdminLoggableException extends Unprocessab
 		super();
 	}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			type: 'USER_LOGIN_MIGRATION_INVALID_ADMIN',
 			message: 'The user is not an administrator',

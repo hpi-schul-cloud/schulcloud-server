@@ -20,7 +20,7 @@ export class ToolReferenceService {
 		private readonly toolConfigurationStatusService: ToolConfigurationStatusService
 	) {}
 
-	async getToolReference(contextExternalToolId: EntityId, userId: EntityId): Promise<ToolReference> {
+	public async getToolReference(contextExternalToolId: EntityId, userId: EntityId): Promise<ToolReference> {
 		const contextExternalTool: ContextExternalTool =
 			await this.contextExternalToolService.findByIdOrFail(contextExternalToolId);
 		const schoolExternalTool: SchoolExternalTool = await this.schoolExternalToolService.findById(

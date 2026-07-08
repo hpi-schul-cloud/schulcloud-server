@@ -3,7 +3,7 @@ import { type BBBMeetingInfoResponse } from '../../bbb';
 import { type VideoConferenceOptions } from '../../interface';
 
 export class VideoConferenceInfo extends VideoConference<BBBMeetingInfoResponse> {
-	options: VideoConferenceOptions;
+	public options: VideoConferenceOptions;
 
 	constructor(dto: VideoConferenceInfo) {
 		super(dto);

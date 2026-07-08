@@ -2,7 +2,7 @@ import { type AnyProvisioningOptions } from '../domain';
 import { type AnyProvisioningOptionsResponse, SchulConneXProvisioningOptionsResponse } from './dto';
 
 export class SchoolSystemOptionsMapper {
-	static mapProvisioningOptionsToResponse(options: AnyProvisioningOptions): AnyProvisioningOptionsResponse {
+	public static mapProvisioningOptionsToResponse(options: AnyProvisioningOptions): AnyProvisioningOptionsResponse {
 		const mapped: SchulConneXProvisioningOptionsResponse = new SchulConneXProvisioningOptionsResponse({
 			groupProvisioningClassesEnabled: options.groupProvisioningClassesEnabled,
 			groupProvisioningCoursesEnabled: options.groupProvisioningCoursesEnabled,

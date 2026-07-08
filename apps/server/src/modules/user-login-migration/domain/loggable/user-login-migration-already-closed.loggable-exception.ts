@@ -10,7 +10,7 @@ export class UserLoginMigrationAlreadyClosedLoggableException extends Unprocessa
 		super();
 	}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			type: 'USER_LOGIN_MIGRATION_ALREADY_CLOSED',
 			message: 'Migration of school cannot be started or changed, because it is already closed.',

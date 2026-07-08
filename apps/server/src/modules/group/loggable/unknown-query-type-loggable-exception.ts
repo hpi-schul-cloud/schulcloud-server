@@ -6,7 +6,7 @@ export class UnknownQueryTypeLoggableException extends InternalServerErrorExcept
 		super();
 	}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			type: 'INTERNAL_SERVER_ERROR',
 			stack: this.stack,

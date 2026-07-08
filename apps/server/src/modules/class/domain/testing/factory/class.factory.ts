@@ -5,7 +5,7 @@ import { ClassSourceOptions } from '../../class-source-options.do';
 import { Class, type ClassProps } from '../../class.do';
 
 class ClassFactory extends DoBaseFactory<Class, ClassProps> {
-	withUserIds(userIds: string[]): this {
+	public withUserIds(userIds: string[]): this {
 		const params: DeepPartial<ClassProps> = {
 			userIds,
 		};

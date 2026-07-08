@@ -35,7 +35,7 @@ export class NextcloudStrategy implements CollaborativeStorageStrategy {
 	 *
 	 * @param dto
 	 */
-	async updateTeamPermissionsForRole(dto: TeamRolePermissionsDto): Promise<void> {
+	public async updateTeamPermissionsForRole(dto: TeamRolePermissionsDto): Promise<void> {
 		const groupId: string = await this.client.findGroupId(NextcloudStrategy.generateGroupId(dto));
 		let folderId: number;
 
@@ -57,7 +57,7 @@ export class NextcloudStrategy implements CollaborativeStorageStrategy {
 	 *
 	 * @param teamId id of the schulcloud team
 	 */
-	async deleteTeam(teamId: string): Promise<void> {
+	public async deleteTeam(teamId: string): Promise<void> {
 		const groupId: string = this.client.getNameWithPrefix(teamId);
 		if (groupId) {
 			const folderId: number = await this.client.findGroupFolderIdForGroupId(groupId);
@@ -73,7 +73,7 @@ export class NextcloudStrategy implements CollaborativeStorageStrategy {
 	 *
 	 * @param team schulcloud team
 	 */
-	async createTeam(team: TeamDto): Promise<void> {
+	public async createTeam(team: TeamDto): Promise<void> {
 		const groupId: string = this.client.getNameWithPrefix(team.id);
 
 		await this.client.createGroup(groupId, team.name);
@@ -96,7 +96,7 @@ export class NextcloudStrategy implements CollaborativeStorageStrategy {
 	 *
 	 * @param team schulcloud team
 	 */
-	async updateTeam(team: TeamDto): Promise<void> {
+	public async updateTeam(team: TeamDto): Promise<void> {
 		if (!team.id) {
 			throw new UnprocessableEntityException('Cannot update team without id');
 		}

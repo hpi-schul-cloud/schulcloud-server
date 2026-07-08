@@ -6,5 +6,5 @@ export class SchulconnexPoliciesInfoErrorResponse {
 	@IsObject()
 	@ValidateNested()
 	@Type(() => SchulconnexPoliciesInfoAccessControlResponse)
-	access_control!: SchulconnexPoliciesInfoAccessControlResponse;
+	public access_control!: SchulconnexPoliciesInfoAccessControlResponse;
 }

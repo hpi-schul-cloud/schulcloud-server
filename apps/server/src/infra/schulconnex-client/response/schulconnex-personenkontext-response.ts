@@ -7,25 +7,25 @@ import { SchulconnexResponseValidationGroups } from './schulconnex-response-vali
 
 export class SchulconnexPersonenkontextResponse {
 	@IsString({ groups: [SchulconnexResponseValidationGroups.USER, SchulconnexResponseValidationGroups.GROUPS] })
-	id!: string;
+	public id!: string;
 
 	@IsString({ groups: [SchulconnexResponseValidationGroups.USER] })
-	rolle!: string;
+	public rolle!: string;
 
 	@IsObject({ groups: [SchulconnexResponseValidationGroups.SCHOOL] })
 	@ValidateNested({ groups: [SchulconnexResponseValidationGroups.SCHOOL] })
 	@Type(() => SchulconnexOrganisationResponse)
-	organisation!: SchulconnexOrganisationResponse;
+	public organisation!: SchulconnexOrganisationResponse;
 
 	@IsOptional({ groups: [SchulconnexResponseValidationGroups.GROUPS] })
 	@IsArray({ groups: [SchulconnexResponseValidationGroups.GROUPS] })
 	@ValidateNested({ each: true, groups: [SchulconnexResponseValidationGroups.GROUPS] })
 	@Type(() => SchulconnexGruppenResponse)
-	gruppen?: SchulconnexGruppenResponse[];
+	public gruppen?: SchulconnexGruppenResponse[];
 
 	@IsOptional()
 	@IsArray()
 	@ValidateNested({ each: true })
 	@Type(() => SchulconnexErreichbarkeitenResponse)
-	erreichbarkeiten?: SchulconnexErreichbarkeitenResponse[];
+	public erreichbarkeiten?: SchulconnexErreichbarkeitenResponse[];
 }

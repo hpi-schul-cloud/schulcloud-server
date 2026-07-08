@@ -3,7 +3,7 @@ import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
 export class MigrationMayBeCompleted implements Loggable {
 	constructor(private readonly inUserMigration?: boolean) {}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			message: 'The migration may have already been completed or the school may not yet be in maintenance mode',
 			data: {

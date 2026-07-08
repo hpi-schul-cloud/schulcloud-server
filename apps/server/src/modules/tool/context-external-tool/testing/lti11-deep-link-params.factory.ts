@@ -58,7 +58,7 @@ export class Lti11DeepLinkParamsFactory {
 		});
 	}
 
-	build(params?: DeepPartial<Lti11DeepLinkParamsPayload>): Lti11DeepLinkParams {
+	public build(params?: DeepPartial<Lti11DeepLinkParamsPayload>): Lti11DeepLinkParams {
 		const payload: Lti11DeepLinkParamsPayload = lti11DeepLinkParamsPayloadFactory.build(params);
 
 		const requestData: RequestOptions = {
@@ -72,7 +72,7 @@ export class Lti11DeepLinkParamsFactory {
 		return authorization as Lti11DeepLinkParams;
 	}
 
-	buildRaw(params?: DeepPartial<Lti11DeepLinkParamsPayload>): Lti11DeepLinkParamsRaw {
+	public buildRaw(params?: DeepPartial<Lti11DeepLinkParamsPayload>): Lti11DeepLinkParamsRaw {
 		const payload: Lti11DeepLinkParamsPayload = lti11DeepLinkParamsPayloadFactory.build(params);
 
 		const requestData: RequestOptions = {

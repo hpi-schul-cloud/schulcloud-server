@@ -7,7 +7,7 @@ export class ProvisioningStrategyNoOptionsLoggableException extends Unprocessabl
 		super();
 	}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			type: 'PROVISIONING_STRATEGY_NO_OPTIONS',
 			message: 'The provisioning strategy does not support options.',

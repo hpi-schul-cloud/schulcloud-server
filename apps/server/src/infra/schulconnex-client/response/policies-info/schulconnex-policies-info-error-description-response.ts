@@ -2,8 +2,8 @@ import { IsString } from 'class-validator';
 
 export class SchulconnexPoliciesInfoErrorDescriptionResponse {
 	@IsString()
-	code!: string;
+	public code!: string;
 
 	@IsString()
-	value!: string;
+	public value!: string;
 }

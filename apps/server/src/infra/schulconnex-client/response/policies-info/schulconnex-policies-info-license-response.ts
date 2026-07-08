@@ -7,10 +7,10 @@ export class SchulconnexPoliciesInfoLicenseResponse {
 	@IsObject()
 	@ValidateNested()
 	@Type(() => SchulconnexPoliciesInfoTargetResponse)
-	target!: SchulconnexPoliciesInfoTargetResponse;
+	public target!: SchulconnexPoliciesInfoTargetResponse;
 
 	@IsArray()
 	@ValidateNested({ each: true })
 	@Type(() => SchulconnexPoliciesInfoPermissionResponse)
-	permission!: SchulconnexPoliciesInfoPermissionResponse[];
+	public permission!: SchulconnexPoliciesInfoPermissionResponse[];
 }

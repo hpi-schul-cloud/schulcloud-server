@@ -13,7 +13,7 @@ export class SubmissionUc {
 		private readonly authorizationService: AuthorizationService
 	) {}
 
-	async findAllByTask(userId: EntityId, taskId: EntityId): Promise<Submission[]> {
+	public async findAllByTask(userId: EntityId, taskId: EntityId): Promise<Submission[]> {
 		const [submissions] = await this.submissionService.findAllByTask(taskId);
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 
@@ -22,7 +22,7 @@ export class SubmissionUc {
 		return permittedSubmissions;
 	}
 
-	async delete(userId: EntityId, submissionId: EntityId): Promise<boolean> {
+	public async delete(userId: EntityId, submissionId: EntityId): Promise<boolean> {
 		const [user, submission] = await Promise.all([
 			this.authorizationService.getUserWithPermissions(userId),
 			this.submissionService.findById(submissionId),

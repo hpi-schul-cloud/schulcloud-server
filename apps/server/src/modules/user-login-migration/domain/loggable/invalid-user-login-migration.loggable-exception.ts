@@ -10,7 +10,7 @@ export class InvalidUserLoginMigrationLoggableException extends UnprocessableEnt
 		super();
 	}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			type: 'INVALID_USER_LOGIN_MIGRATION',
 			message: 'The migration cannot be started, because there is no migration to the selected target system.',

@@ -8,11 +8,11 @@ export class SchulconnexPersonResponse {
 	@IsObject()
 	@ValidateNested()
 	@Type(() => SchulconnexNameResponse)
-	name!: SchulconnexNameResponse;
+	public name!: SchulconnexNameResponse;
 
 	@IsOptional()
 	@IsObject()
 	@ValidateNested()
 	@Type(() => SchulconnexGeburtResponse)
-	geburt?: SchulconnexGeburtResponse;
+	public geburt?: SchulconnexGeburtResponse;
 }

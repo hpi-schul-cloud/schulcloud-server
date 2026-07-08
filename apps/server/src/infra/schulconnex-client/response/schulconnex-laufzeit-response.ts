@@ -5,17 +5,17 @@ export const lernperiodeFormat = /^(\d{4})(?:-([1-2]))?$/;
 export class SchulconnexLaufzeitResponse {
 	@IsOptional()
 	@IsDateString()
-	von?: string;
+	public von?: string;
 
 	@IsOptional()
 	@IsDateString()
-	bis?: string;
+	public bis?: string;
 
 	@IsOptional()
 	@Matches(lernperiodeFormat)
-	vonlernperiode?: string;
+	public vonlernperiode?: string;
 
 	@IsOptional()
 	@Matches(lernperiodeFormat)
-	bislernperiode?: string;
+	public bislernperiode?: string;
 }

@@ -1,27 +1,27 @@
 import { type EntityId } from '@shared/domain/types';
 
 export class LdapConfig {
-	active: boolean;
+	public active: boolean;
 
-	url: string;
+	public url: string;
 
-	provider?: string;
+	public provider?: string;
 
-	federalState?: EntityId;
+	public federalState?: EntityId;
 
-	lastSyncAttempt?: Date;
+	public lastSyncAttempt?: Date;
 
-	lastSuccessfulFullSync?: Date;
+	public lastSuccessfulFullSync?: Date;
 
-	lastSuccessfulPartialSync?: Date;
+	public lastSuccessfulPartialSync?: Date;
 
-	lastModifyTimestamp?: string;
+	public lastModifyTimestamp?: string;
 
-	rootPath?: string;
+	public rootPath?: string;
 
-	searchUser?: string;
+	public searchUser?: string;
 
-	searchUserPassword?: string;
+	public searchUserPassword?: string;
 
 	constructor(props: LdapConfig) {
 		this.active = props.active;

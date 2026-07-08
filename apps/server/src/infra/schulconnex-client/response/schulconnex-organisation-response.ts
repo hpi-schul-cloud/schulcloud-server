@@ -4,17 +4,17 @@ import { SchulconnexAnschriftResponse } from './schulconnex-anschrift-response';
 
 export class SchulconnexOrganisationResponse {
 	@IsString()
-	id!: string;
+	public id!: string;
 
 	@IsString()
-	kennung!: string;
+	public kennung!: string;
 
 	@IsString()
-	name!: string;
+	public name!: string;
 
 	@IsOptional()
 	@IsObject()
 	@ValidateNested()
 	@Type(() => SchulconnexAnschriftResponse)
-	anschrift?: SchulconnexAnschriftResponse;
+	public anschrift?: SchulconnexAnschriftResponse;
 }
