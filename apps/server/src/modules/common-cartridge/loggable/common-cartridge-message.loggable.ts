@@ -1,4 +1,4 @@
-import { ErrorLogMessage, Loggable, LogMessage, LogMessageDataObject, ValidationErrorLogMessage } from '@infra/logger';
+import { Loggable, LoggableMessage, LogMessageDataObject } from '@shared/common/loggable';
 
 export class CommonCartridgeMessageLoggable implements Loggable {
 	constructor(
@@ -6,7 +6,7 @@ export class CommonCartridgeMessageLoggable implements Loggable {
 		private readonly data?: LogMessageDataObject
 	) {}
 
-	public getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			type: 'COMMON_CARTRIDGE_MESSAGE_LOGGABLE',
 			message: this.message,

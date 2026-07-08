@@ -1,5 +1,5 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsEnum, IsOptional } from 'class-validator';
+import { IsEnum, IsInt, IsOptional, Min } from 'class-validator';
 import { ContentElementType } from '../../../domain';
 
 export class CreateCardBodyParams {
@@ -10,5 +10,13 @@ export class CreateCardBodyParams {
 		isArray: true,
 		enum: ContentElementType,
 	})
-	requiredEmptyElements?: ContentElementType[];
+	public requiredEmptyElements?: ContentElementType[];
+
+	@IsInt()
+	@Min(0)
+	@IsOptional()
+	@ApiPropertyOptional({
+		description: 'Position within the column at which to insert the card. If omitted, the card is appended at the end.',
+	})
+	public position?: number;
 }

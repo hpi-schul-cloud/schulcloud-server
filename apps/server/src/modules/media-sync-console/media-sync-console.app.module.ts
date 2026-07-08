@@ -1,6 +1,6 @@
-import { ErrorModule } from '@core/error';
 import { ConsoleWriterModule } from '@infra/console';
 import { DATABASE_CONFIG_TOKEN, DatabaseConfig, DatabaseModule } from '@infra/database';
+import { ErrorModule } from '@infra/error';
 import { LoggerModule } from '@infra/logger';
 import { MediaSourceSyncModule } from '@modules/media-source-sync';
 import { Module } from '@nestjs/common';

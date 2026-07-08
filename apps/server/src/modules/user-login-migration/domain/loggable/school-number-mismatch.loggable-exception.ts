@@ -1,6 +1,6 @@
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
 import { HttpStatus } from '@nestjs/common';
 import { BusinessError } from '@shared/common/error';
+import { Loggable, LoggableMessage } from '@shared/common/loggable';
 
 export class SchoolNumberMismatchLoggableException extends BusinessError implements Loggable {
 	constructor(
@@ -21,7 +21,7 @@ export class SchoolNumberMismatchLoggableException extends BusinessError impleme
 		);
 	}
 
-	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	getLogMessage(): LoggableMessage {
 		return {
 			type: this.type,
 			message: this.message,

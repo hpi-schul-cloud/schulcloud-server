@@ -1,15 +1,15 @@
 import { ConsoleWriterModule } from '@infra/console/console-writer/console-writer.module';
 import { DATABASE_CONFIG_TOKEN, DatabaseConfig, DatabaseModule } from '@infra/database';
-import { SyncModule } from '@infra/sync/sync.module';
 import { FilesConsoleModule } from '@modules/files';
 import { ManagementModule } from '@modules/management/management.module';
+import { TspSyncModule } from '@modules/tsp-sync';
 import { Module } from '@nestjs/common';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { ConsoleModule } from 'nestjs-console';
 import { ENTITIES } from './management.entity.imports';
 import migrationOptions from './migrations-options';
 
-const imports = [ManagementModule, ConsoleModule, ConsoleWriterModule, FilesConsoleModule, SyncModule];
+const imports = [ManagementModule, ConsoleModule, ConsoleWriterModule, FilesConsoleModule, TspSyncModule];
 
 @Module({
 	imports: [

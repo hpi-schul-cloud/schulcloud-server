@@ -1,5 +1,5 @@
-import { ErrorLogMessage, Loggable } from '@infra/logger';
 import { NotFoundException } from '@nestjs/common';
+import { Loggable, LoggableMessage } from '../loggable/interfaces';
 
 export class NotFoundLoggableException extends NotFoundException implements Loggable {
 	constructor(
@@ -9,8 +9,8 @@ export class NotFoundLoggableException extends NotFoundException implements Logg
 		super();
 	}
 
-	getLogMessage(): ErrorLogMessage {
-		const message: ErrorLogMessage = {
+	getLogMessage(): LoggableMessage {
+		const message: LoggableMessage = {
 			type: 'NOT_FOUND',
 			stack: this.stack,
 			data: {

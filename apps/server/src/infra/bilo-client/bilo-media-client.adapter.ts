@@ -1,31 +1,26 @@
-import { AxiosErrorLoggable } from '@core/error/loggable';
 import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
+import { AxiosErrorLoggable } from '@infra/error';
 import { Logger } from '@infra/logger';
-import {
-	MediaSource,
-	MediaSourceDataFormat,
-	MediaSourceOauthConfig,
-	MediaSourceOauthConfigNotFoundLoggableException,
-} from '@modules/media-source';
 import {
 	ClientCredentialsGrantTokenRequest,
 	OauthAdapterService,
 	OAuthGrantType,
 	OAuthTokenDto,
-} from '@modules/oauth-adapter';
+} from '@infra/oauth-adapter';
 import { HttpService } from '@nestjs/axios';
 import { Inject, Injectable } from '@nestjs/common';
 import { AxiosResponse, isAxiosError } from 'axios';
 import { plainToClass } from 'class-transformer';
 import { isURL, validate, ValidationError } from 'class-validator';
 import { lastValueFrom } from 'rxjs';
-import { MediaQueryBadResponseReport } from './interface';
+import { BiloMediaSource, BiloOauthConfig, MediaQueryBadResponseReport } from './interface';
 import {
 	BiloBadRequestResponseLoggableException,
 	BiloMediaQueryBadResponseLoggable,
 	BiloMediaQueryBadResponseLoggableException,
 	BiloMediaQueryUnprocessableResponseLoggableException,
 	BiloNotFoundResponseLoggableException,
+	MediaSourceOauthConfigNotFoundLoggableException,
 } from './loggable';
 import { BiloMediaQueryBodyParams } from './request';
 import { BiloMediaQueryDataResponse, BiloMediaQueryResponse } from './response';
@@ -39,12 +34,9 @@ export class BiloMediaClientAdapter {
 		@Inject(DefaultEncryptionService) private readonly encryptionService: EncryptionService
 	) {}
 
-	public async fetchMediumMetadata(id: string, biloMediaSource: MediaSource): Promise<BiloMediaQueryDataResponse> {
+	public async fetchMediumMetadata(id: string, biloMediaSource: BiloMediaSource): Promise<BiloMediaQueryDataResponse> {
 		if (!biloMediaSource.oauthConfig) {
-			throw new MediaSourceOauthConfigNotFoundLoggableException(
-				biloMediaSource.id,
-				MediaSourceDataFormat.BILDUNGSLOGIN
-			);
+			throw new MediaSourceOauthConfigNotFoundLoggableException(biloMediaSource.id, 'BILDUNGSLOGIN');
 		}
 
 		const url: string = this.constructUrl(biloMediaSource.oauthConfig.baseUrl, './query');
@@ -65,13 +57,10 @@ export class BiloMediaClientAdapter {
 
 	public async fetchMediaMetadata(
 		mediumIds: string[],
-		biloMediaSource: MediaSource
+		biloMediaSource: BiloMediaSource
 	): Promise<BiloMediaQueryDataResponse[]> {
 		if (!biloMediaSource.oauthConfig) {
-			throw new MediaSourceOauthConfigNotFoundLoggableException(
-				biloMediaSource.id,
-				MediaSourceDataFormat.BILDUNGSLOGIN
-			);
+			throw new MediaSourceOauthConfigNotFoundLoggableException(biloMediaSource.id, 'BILDUNGSLOGIN');
 		}
 
 		const url: string = this.constructUrl(biloMediaSource.oauthConfig.baseUrl, './query');
@@ -90,7 +79,7 @@ export class BiloMediaClientAdapter {
 		return metadataItems;
 	}
 
-	private async fetchAccessToken(mediaSourceOauthConfig: MediaSourceOauthConfig): Promise<OAuthTokenDto> {
+	private async fetchAccessToken(mediaSourceOauthConfig: BiloOauthConfig): Promise<OAuthTokenDto> {
 		const credentials = new ClientCredentialsGrantTokenRequest({
 			client_id: mediaSourceOauthConfig.clientId,
 			client_secret: this.encryptionService.decrypt(mediaSourceOauthConfig.clientSecret),

@@ -1,5 +1,5 @@
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
 import { ForbiddenException } from '@nestjs/common';
+import { Loggable, LoggableMessage } from '@shared/common/loggable';
 
 export class ExternalSystemLogoutIsDisabledLoggableException extends ForbiddenException implements Loggable {
 	constructor() {
@@ -10,7 +10,7 @@ export class ExternalSystemLogoutIsDisabledLoggableException extends ForbiddenEx
 		});
 	}
 
-	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	getLogMessage(): LoggableMessage {
 		return {
 			type: 'FORBIDDEN_EXCEPTION',
 			message: 'Feature flag for external system logout is not enabled',

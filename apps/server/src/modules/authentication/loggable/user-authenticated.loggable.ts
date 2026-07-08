@@ -1,8 +1,8 @@
-import { Loggable, LogMessage } from '@infra/logger';
+import { Loggable, LoggableMessage } from '@shared/common/loggable';
 
 export class UserAuthenticatedLoggable implements Loggable {
-	public getLogMessage(): LogMessage {
-		const message: LogMessage = {
+	public getLogMessage(): LoggableMessage {
+		const message: LoggableMessage = {
 			message: 'SUCCESSFULLY_AUTHENTICATED',
 			data: {},
 		};

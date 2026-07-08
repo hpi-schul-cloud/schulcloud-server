@@ -1,6 +1,6 @@
-import { ErrorLoggable } from '@core/error/loggable';
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
+import { ErrorLoggable } from '@infra/error';
 import { Logger } from '@infra/logger';
 import { OauthProviderService } from '@modules/oauth-provider/domain';
 import { ExternalTool, ExternalToolService, Lti11ToolConfig, Oauth2ToolConfig } from '@modules/tool';

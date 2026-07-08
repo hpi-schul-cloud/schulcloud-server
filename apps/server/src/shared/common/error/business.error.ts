@@ -1,8 +1,7 @@
 import { HttpException, HttpStatus } from '@nestjs/common';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { ErrorResponse } from '@core/error/dto/error.response';
-import { ErrorType } from '@core/error/interface';
 import util from 'node:util';
+import { ErrorType, InternalErrorResponse } from './interfaces';
 
 /**
  * Abstract base class for business errors, errors that are handled
@@ -48,14 +47,14 @@ export abstract class BusinessError extends HttpException {
 		}
 	}
 
-	override getResponse(): ErrorResponse {
-		const errorResponse: ErrorResponse = new ErrorResponse(
-			this.type,
-			this.title,
-			this.message,
-			this.code,
-			this.details
-		);
+	override getResponse(): InternalErrorResponse {
+		const errorResponse: InternalErrorResponse = {
+			type: this.type,
+			title: this.title,
+			message: this.message,
+			code: this.code,
+			details: this.details,
+		};
 
 		return errorResponse;
 	}
