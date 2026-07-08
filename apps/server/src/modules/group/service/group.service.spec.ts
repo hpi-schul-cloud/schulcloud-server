@@ -290,7 +290,7 @@ describe('GroupService', () => {
 
 			await service.findByUsersAndRoomsSchoolId(schoolId, types);
 
-			expect(groupRepo.findByUsersAndRoomsSchoolId).toHaveBeenCalledWith(schoolId, types);
+			expect(groupRepo.findByUsersAndRoomsSchoolId).toHaveBeenCalledWith(schoolId, types, undefined);
 		});
 	});
 
