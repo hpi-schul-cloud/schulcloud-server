@@ -159,7 +159,7 @@ export class ClassGroupUc {
 		const allGroups: Group[] = [];
 		let total = Infinity;
 
-		for (let skip = 0; allGroups.length < total; skip += batchSize) {
+		for (let skip = 0; skip < total; skip += batchSize) {
 			const scope = new GroupAggregateScope({ pagination: { skip, limit: batchSize } })
 				.byOrganization(school.id)
 				.byType([GroupTypes.CLASS, GroupTypes.COURSE, GroupTypes.OTHER]);
