@@ -1,5 +1,5 @@
 import { duplicateUserProfiles } from './helper/class-definitions';
-import { getRandomCardTitle, getRandomLink, getRandomRichContentBody } from './helper/randomData';
+import { getRandomCardTitle, getRandomLink, getRandomRichContentBody } from './helper/random-data';
 import { sleep } from './helper/sleep';
 import { createLoadtestClient, LoadtestClient } from './loadtest-client';
 import { SocketConnection } from './socket-connection';

@@ -1,6 +1,6 @@
 import { io, Socket } from 'socket.io-client';
 import { v4 as uuid } from 'uuid';
-import { useResponseTimes } from './helper/responseTimes.composable';
+import { useResponseTimes } from './helper/response-times.composable';
 import { Callback, SocketConfiguration } from './types';
 
 type RegisteredPromise = { event: string; resolve: Callback; reject: Callback; handle: string; startTime: number };
