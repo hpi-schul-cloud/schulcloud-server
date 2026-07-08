@@ -23,7 +23,7 @@ export class MailModule {
 			module: MailModule,
 			imports: [
 				ConfigurationModule.register(options.exchangeConfigInjectionToken, options.exchangeConfigConstructor),
-				RabbitMQWrapperModule.register(options),
+				RabbitMQWrapperModule.register({ ...options, connectionName: 'mail' }),
 				LoggerModule,
 			],
 			providers,
