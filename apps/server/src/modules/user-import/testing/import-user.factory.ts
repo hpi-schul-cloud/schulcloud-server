@@ -1,10 +1,15 @@
 import { RoleName } from '@modules/role';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { systemEntityFactory } from '@modules/system/testing';
-import { ImportUser, ImportUserProperties, ImportUserRoleName, MatchCreator } from '@modules/user-import/entity';
-import { User } from '@modules/user/repo';
+import {
+	ImportUser,
+	type ImportUserProperties,
+	type ImportUserRoleName,
+	type MatchCreator,
+} from '@modules/user-import/entity';
+import { type User } from '@modules/user/repo';
 import { BaseFactory } from '@testing/factory/base.factory';
-import { DeepPartial } from 'fishery';
+import { type DeepPartial } from 'fishery';
 import { v4 as uuidv4 } from 'uuid';
 
 class ImportUserFactory extends BaseFactory<ImportUser, ImportUserProperties> {

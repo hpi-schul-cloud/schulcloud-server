@@ -1,16 +1,16 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { Page } from '@shared/domain/domainobject';
-import { IFindOptions } from '@shared/domain/interface';
+import { type IFindOptions } from '@shared/domain/interface';
 import { DeletionBatchRepo, DeletionBatchUsersRepo } from '../../repo';
 import { DeletionBatch, DeletionRequest } from '../do';
 import { BatchStatus, DomainName, StatusModel } from '../types';
 import {
-	CreateDeletionBatchParams,
-	DeletionBatchDetails,
+	type CreateDeletionBatchParams,
+	type DeletionBatchDetails,
 	DeletionBatchService,
-	DeletionBatchSummary,
+	type DeletionBatchSummary,
 } from './deletion-batch.service';
 import { DeletionLogService } from './deletion-log.service';
 import { DeletionRequestService } from './deletion-request.service';

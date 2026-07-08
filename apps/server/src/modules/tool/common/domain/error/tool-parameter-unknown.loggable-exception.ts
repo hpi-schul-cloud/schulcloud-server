@@ -1,8 +1,8 @@
 import { HttpStatus } from '@nestjs/common';
 import { BusinessError } from '@shared/common/error';
-import { Loggable, LoggableMessage } from '@shared/common/loggable';
-import { EntityId } from '@shared/domain/types';
-import { CustomParameterEntry } from '../custom-parameter-entry.do';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
+import { type EntityId } from '@shared/domain/types';
+import { type CustomParameterEntry } from '../custom-parameter-entry.do';
 
 export class ToolParameterUnknownLoggableException extends BusinessError implements Loggable {
 	constructor(

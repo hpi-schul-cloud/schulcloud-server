@@ -1,6 +1,6 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Test, TestingModule } from '@nestjs/testing';
-import { OAUTH_SESSION_TOKEN_REPO, OauthSessionTokenRepo } from '../repo';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import { Test, type TestingModule } from '@nestjs/testing';
+import { OAUTH_SESSION_TOKEN_REPO, type OauthSessionTokenRepo } from '../repo';
 import { oauthSessionTokenFactory } from '../testing';
 import { OauthSessionTokenService } from './oauth-session-token.service';
 import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';

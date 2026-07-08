@@ -1,5 +1,5 @@
 import { NotFoundException } from '@nestjs/common';
-import { Loggable, LoggableMessage } from '../loggable/interfaces';
+import { type Loggable, type LoggableMessage } from '../loggable/interfaces';
 
 export class NotFoundLoggableException extends NotFoundException implements Loggable {
 	constructor(

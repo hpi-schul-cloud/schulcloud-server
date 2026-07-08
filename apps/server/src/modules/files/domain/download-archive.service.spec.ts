@@ -1,7 +1,7 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { Logger } from '@infra/logger';
-import { Test, TestingModule } from '@nestjs/testing';
-import { Archiver } from 'archiver';
+import { Test, type TestingModule } from '@nestjs/testing';
+import { type Archiver } from 'archiver';
 import { Readable } from 'node:stream';
 import { fileDomainFactory } from '../testing';
 import { DownloadArchiveService } from './download-archive.service';
@@ -14,7 +14,7 @@ const createMockArchive = (): DeepMocked<Archiver> => {
 	const mock = createMock<Archiver>();
 	mock.once.mockImplementation((event: string | symbol, listener: (...args: unknown[]) => void) => {
 		if (event === 'entry') {
-			void Promise.resolve().then(() => listener());
+			queueMicrotask(() => listener());
 		}
 		return mock;
 	});
@@ -25,7 +25,7 @@ const createMockArchiveWithError = (error: Error): DeepMocked<Archiver> => {
 	const mock = createMock<Archiver>();
 	mock.once.mockImplementation((event: string | symbol, listener: (...args: unknown[]) => void) => {
 		if (event === 'error') {
-			void Promise.resolve().then(() => listener(error));
+			queueMicrotask(() => listener(error));
 		}
 		return mock;
 	});

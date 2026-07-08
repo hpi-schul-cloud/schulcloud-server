@@ -1,8 +1,8 @@
 import AdmZip from 'adm-zip';
-import { CheerioAPI, load } from 'cheerio';
+import { type CheerioAPI, load } from 'cheerio';
 import {
-	CommonCartridgeOrganizationProps,
-	CommonCartridgeResourceProps,
+	type CommonCartridgeOrganizationProps,
+	type CommonCartridgeResourceProps,
 	DEFAULT_FILE_PARSER_OPTIONS,
 } from './common-cartridge-import.types';
 import { CommonCartridgeManifestParser } from './common-cartridge-manifest-parser';
@@ -69,16 +69,15 @@ export class CommonCartridgeFileParser {
 			const manifest = load(manifestString, { xml: true });
 
 			return manifest;
-		} catch (error) {
+		} catch {
+			// TODO: add error handling for invalid manifest file
 			throw new CommonCartridgeManifestNotFoundException();
 		}
 	}
 
 	private checkOrganization(organization: CommonCartridgeOrganizationProps): void {
 		const resourceMissing =
-			!organization.isResource ||
-			organization.resourcePaths.map((path) => this.archive.getEntry(path)).filter((entry) => entry === null).length >
-				0;
+			!organization.isResource || organization.resourcePaths.map((path) => this.archive.getEntry(path)).includes(null);
 		if (resourceMissing) {
 			throw new CommonCartridgeResourceNotFoundException();
 		}

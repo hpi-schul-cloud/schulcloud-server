@@ -1,6 +1,6 @@
 import { CommonCartridgeElementType, CommonCartridgeVersion } from '../../common-cartridge.enums';
 import { ElementTypeNotSupportedLoggableException } from '../../errors';
-import { CommonCartridgeElement, XmlObject } from '../../interfaces';
+import { CommonCartridgeElement, type XmlObject } from '../../interfaces';
 
 export type CommonCartridgeMetadataElementPropsV130 = {
 	type: CommonCartridgeElementType.METADATA;

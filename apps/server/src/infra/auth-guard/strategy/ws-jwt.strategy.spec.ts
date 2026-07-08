@@ -1,8 +1,8 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { JwtWhitelistAdapter } from '@infra/jwt-whitelist';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { WsException } from '@nestjs/websockets';
-import { JWT_AUTH_GUARD_CONFIG_TOKEN, JwtAuthGuardConfig } from '../config';
+import { JWT_AUTH_GUARD_CONFIG_TOKEN, type JwtAuthGuardConfig } from '../config';
 import { jwtPayloadFactory } from '../testing';
 import { WsJwtStrategy } from './ws-jwt.strategy';
 

@@ -1,4 +1,4 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { CollaborativeStorageAdapter } from '@infra/collaborative-storage';
 import { LegacyLogger } from '@infra/logger';
 import { ObjectId } from '@mikro-orm/mongodb';
@@ -11,9 +11,9 @@ import { RoleService } from '@modules/role/service/role.service';
 import { TeamEntity, TeamRepo } from '@modules/team/repo';
 import { teamFactory } from '@modules/team/testing';
 import { ForbiddenException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
-import { TeamDto } from './dto/team.dto';
+import { type TeamDto } from './dto/team.dto';
 
 describe('Collaborative Storage Service', () => {
 	let module: TestingModule;

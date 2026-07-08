@@ -1,13 +1,13 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { Logger } from '@infra/logger';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Account, AccountService } from '@modules/account';
 import { roleFactory } from '@modules/role/testing';
 import { UserService } from '@modules/user';
 import { userDoFactory } from '@modules/user/testing';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { userLoginMigrationDOFactory } from '../../testing';
-import { UserLoginMigrationDO } from '../do';
+import { type UserLoginMigrationDO } from '../do';
 import {
 	UserLoginMigrationUserAlreadyMigratedLoggableException,
 	UserMigrationDatabaseOperationFailedLoggableException,

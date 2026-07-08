@@ -1,4 +1,4 @@
-import { AnyEntity, EntityClass, MikroORM } from '@mikro-orm/core';
+import { type AnyEntity, type EntityClass, MikroORM } from '@mikro-orm/core';
 import { MongoDriver } from '@mikro-orm/mongodb';
 
 /**

@@ -1,9 +1,9 @@
-import { FilterQuery } from '@mikro-orm/core';
+import { type FilterQuery } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { EmptyResultQuery } from '@shared/repo/query';
 import { NewsTargetModel } from '../../domain';
-import { NewsTargetFilter } from '../news-target-filter';
-import { News } from '../news.entity';
+import { type NewsTargetFilter } from '../news-target-filter';
+import { type News } from '../news.entity';
 import { NewsScope } from './news-scope';
 
 describe('News Scope', () => {

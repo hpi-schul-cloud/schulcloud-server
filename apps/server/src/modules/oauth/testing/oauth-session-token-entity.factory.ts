@@ -1,9 +1,9 @@
 import { systemEntityFactory } from '@modules/system/testing';
 import { userFactory } from '@modules/user/testing';
+import { AesEncryptionHelper } from '@shared/common/utils';
 import { BaseFactory } from '@testing/factory/base.factory';
 import { JwtTestFactory } from '@testing/factory/jwt.test.factory';
-import { OauthSessionTokenEntity, OauthSessionTokenEntityProps } from '../entity';
-import { AesEncryptionHelper } from '@shared/common/utils';
+import { OauthSessionTokenEntity, type OauthSessionTokenEntityProps } from '../entity';
 
 export const oauthSessionTokenEntityFactory = BaseFactory.define<OauthSessionTokenEntity, OauthSessionTokenEntityProps>(
 	OauthSessionTokenEntity,

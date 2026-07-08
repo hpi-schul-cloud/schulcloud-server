@@ -1,5 +1,5 @@
 import { createMock } from '@golevelup/ts-jest';
-import { StorageClient } from '@infra/valkey-client';
+import { type StorageClient } from '@infra/valkey-client';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { UnauthorizedException } from '@nestjs/common';
 import { JwtWhitelistAdapter } from './jwt-whitelist.adapter';

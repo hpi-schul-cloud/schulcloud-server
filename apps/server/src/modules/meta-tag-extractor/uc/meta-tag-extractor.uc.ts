@@ -15,7 +15,7 @@ export class MetaTagExtractorUc {
 		try {
 			await this.authorizationService.getUserWithPermissions(userId);
 		} catch (error) {
-			throw new UnauthorizedException();
+			throw new UnauthorizedException(null, { cause: error });
 		}
 		const result = await this.metaTagExtractorService.getMetaData(url);
 		return result;

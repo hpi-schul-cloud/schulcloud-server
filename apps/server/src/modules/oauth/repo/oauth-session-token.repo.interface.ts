@@ -1,5 +1,5 @@
-import { EntityId } from '@shared/domain/types';
-import { OauthSessionToken } from '../domain';
+import { type EntityId } from '@shared/domain/types';
+import { type OauthSessionToken } from '../domain';
 
 export interface OauthSessionTokenRepo {
 	save(domainObject: OauthSessionToken): Promise<OauthSessionToken>;

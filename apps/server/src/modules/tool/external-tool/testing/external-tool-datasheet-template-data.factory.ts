@@ -1,9 +1,9 @@
 import { CustomParameterLocation, LtiMessageType, LtiPrivacyPermission } from '@modules/tool/common/enum';
 import {
-	ExternalToolDatasheetTemplateData,
-	ExternalToolParameterDatasheetTemplateData,
+	type ExternalToolDatasheetTemplateData,
+	type ExternalToolParameterDatasheetTemplateData,
 } from '@modules/tool/external-tool/domain';
-import { DeepPartial, Factory } from 'fishery';
+import { type DeepPartial, Factory } from 'fishery';
 
 export const externalToolParameterDatasheetTemplateDataFactory = Factory.define<
 	ExternalToolParameterDatasheetTemplateData,

@@ -1,7 +1,7 @@
-import { EntityId } from '@shared/domain/types/entity-id';
+import { type EntityId } from '@shared/domain/types/entity-id';
 import { Scope } from '@shared/repo/scope';
-import { SchoolPurpose } from '../../domain';
-import { SchoolEntity } from '../school.entity';
+import { type SchoolPurpose } from '../../domain';
+import { type SchoolEntity } from '../school.entity';
 
 export class SchoolScope extends Scope<SchoolEntity> {
 	public byFederalState(federalStateId?: EntityId): void {

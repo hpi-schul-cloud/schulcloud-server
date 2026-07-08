@@ -1,4 +1,4 @@
-import { ProvisioningSystemDto } from './provisioning-system.dto';
+import { type ProvisioningSystemDto } from './provisioning-system.dto';
 
 export class OauthDataStrategyInputDto {
 	accessToken: string;

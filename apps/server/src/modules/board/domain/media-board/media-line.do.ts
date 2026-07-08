@@ -1,4 +1,4 @@
-import { AnyMediaBoardNode, isAnyMediaElement, Colors } from './types';
+import { type AnyMediaBoardNode, isAnyMediaElement, type Colors } from './types';
 import type { MediaLineProps } from '../types';
 import { BoardNode } from '../board-node.do';
 

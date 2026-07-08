@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
-import { CollaborativeStorageService } from '@modules/collaborative-storage/services/collaborative-storage.service';
 import { TeamPermissionsMapper } from '@modules/collaborative-storage/mapper/team-permissions.mapper';
+import { CollaborativeStorageService } from '@modules/collaborative-storage/services/collaborative-storage.service';
 import { TeamDto } from '@modules/collaborative-storage/services/dto/team.dto';
+import { Injectable } from '@nestjs/common';
 import { TeamPermissionsBody } from '../controller/dto/team-permissions.body.params';
 import { TeamRoleDto } from '../controller/dto/team-role.params';
 
@@ -23,7 +23,7 @@ export class CollaborativeStorageUc {
 		teamRole: TeamRoleDto,
 		permissionsDto: TeamPermissionsBody
 	): Promise<void> {
-		return this.service.updateTeamPermissionsForRole(
+		await this.service.updateTeamPermissionsForRole(
 			currentUserId,
 			teamRole.teamId,
 			teamRole.roleId,

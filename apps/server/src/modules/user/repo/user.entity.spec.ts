@@ -1,4 +1,4 @@
-import { MikroORM } from '@mikro-orm/core';
+import { type MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { RoleName } from '@modules/role';
 import { Role } from '@modules/role/repo';

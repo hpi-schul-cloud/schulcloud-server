@@ -1,6 +1,6 @@
-import { Course } from '@modules/course';
-import { EntityId } from '@shared/domain/types';
-import { ClassRootType } from './class-root-type';
+import { type Course } from '@modules/course';
+import { type EntityId } from '@shared/domain/types';
+import { type ClassRootType } from './class-root-type';
 
 export class ClassInfoDto {
 	public id: EntityId;

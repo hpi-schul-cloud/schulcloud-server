@@ -1,6 +1,6 @@
-import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
-import { EntityId } from '@shared/domain/types';
-import { SchoolLicenseType } from '../enum';
+import { type AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
+import { type EntityId } from '@shared/domain/types';
+import { type SchoolLicenseType } from '../enum';
 
 export interface SchoolLicenseProps extends AuthorizableObject {
 	schoolId: EntityId;

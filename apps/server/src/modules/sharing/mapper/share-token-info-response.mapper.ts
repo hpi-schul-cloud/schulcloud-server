@@ -1,5 +1,5 @@
 import { ShareTokenInfoResponse } from '../api/dto';
-import { ShareTokenInfoDto } from '../api/dto';
+import { type ShareTokenInfoDto } from '../api/dto';
 
 export class ShareTokenInfoResponseMapper {
 	static mapToResponse(shareTokenInfo: ShareTokenInfoDto): ShareTokenInfoResponse {

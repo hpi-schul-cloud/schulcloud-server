@@ -1,7 +1,7 @@
 import { userFactory } from '@modules/user/testing';
 import { BaseFactory } from '@testing/factory/base.factory';
-import { DeepPartial } from 'fishery';
-import { CourseGroupEntity, CourseGroupProperties } from '../repo';
+import { type DeepPartial } from 'fishery';
+import { CourseGroupEntity, type CourseGroupProperties } from '../repo';
 import { courseEntityFactory } from './course-entity.factory';
 
 class CourseGroupEntityFactory extends BaseFactory<CourseGroupEntity, CourseGroupProperties> {

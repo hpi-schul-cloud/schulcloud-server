@@ -1,10 +1,9 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Test, TestingModule } from '@nestjs/testing';
-import { ErwinStrategy } from './erwin.strategy';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { Account } from '@modules/account';
-import { UserDo } from '@modules/user';
-import { Oauth2AuthorizationBodyParams } from '../controllers/dto';
-import { Oauth2ContextHelper, Oauth2ContextResult } from '../helper/oauth2-context.helper';
+import { type UserDo } from '@modules/user';
+import { Test, type TestingModule } from '@nestjs/testing';
+import { Oauth2ContextHelper, type Oauth2ContextResult } from '../helper/oauth2-context.helper';
+import { ErwinStrategy } from './erwin.strategy';
 
 describe(ErwinStrategy.name, () => {
 	let module: TestingModule;

@@ -1,5 +1,5 @@
 import { linkElementFactory } from '../testing';
-import { LinkElement, isLinkElement } from './link-element.do';
+import { type LinkElement, isLinkElement } from './link-element.do';
 
 describe('LinkElement', () => {
 	let linkElement: LinkElement;

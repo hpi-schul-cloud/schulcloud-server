@@ -1,7 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseFactory } from '@testing/factory/base.factory';
-import { DeepPartial } from 'fishery';
-import { MediaSource, MediaSourceOauthConfig, MediaSourceProps, MediaSourceVidisConfig } from '../do';
+import { type DeepPartial } from 'fishery';
+import { MediaSource, type MediaSourceOauthConfig, type MediaSourceProps, type MediaSourceVidisConfig } from '../do';
 import { MediaSourceDataFormat } from '../enum';
 import { mediaSourceOauthConfigFactory } from './media-source-oauth-config.factory';
 import { mediaSourceVidisConfigFactory } from './media-source-vidis-config.factory';

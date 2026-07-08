@@ -5,16 +5,16 @@ import { courseEntityFactory } from '@modules/course/testing';
 import {
 	LEARNROOM_INCOMING_REQUEST_TIMEOUT_COPY_API_KEY,
 	LEARNROOM_TIMEOUT_CONFIG_TOKEN,
-	LearnroomTimeoutConfig,
+	type LearnroomTimeoutConfig,
 } from '@modules/learnroom/timeout.config';
 import { lessonFactory } from '@modules/lesson/testing';
 import { ServerTestModule } from '@modules/server';
-import { INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { type INestApplication } from '@nestjs/common';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
-import { LEARNROOM_CONFIG_TOKEN, LearnroomConfig } from '../../learnroom.config';
+import { LEARNROOM_CONFIG_TOKEN, type LearnroomConfig } from '../../learnroom.config';
 
 // This needs to be in a separate test file because of the above configuration.
 // When we find a way to mock the config, it should be moved alongside the other API tests.

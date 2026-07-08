@@ -1,4 +1,4 @@
-import { Message } from '../../controller/dto';
+import { type Message } from '../../controller/dto';
 
 export class MessagesDto {
 	constructor(messages: [], success: boolean) {

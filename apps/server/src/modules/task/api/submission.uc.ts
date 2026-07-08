@@ -22,7 +22,7 @@ export class SubmissionUc {
 		return permittedSubmissions;
 	}
 
-	async delete(userId: EntityId, submissionId: EntityId) {
+	async delete(userId: EntityId, submissionId: EntityId): Promise<boolean> {
 		const [user, submission] = await Promise.all([
 			this.authorizationService.getUserWithPermissions(userId),
 			this.submissionService.findById(submissionId),

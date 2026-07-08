@@ -1,15 +1,15 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { FilesStorageClientAdapterService } from '@infra/files-storage-amqp-client';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { CopyElementType, CopyHelperService } from '@modules/copy-helper';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
-import { ComponentProperties, ComponentType, LessonEntity, Material } from '@modules/lesson/repo';
+import { type ComponentProperties, ComponentType, LessonEntity, Material } from '@modules/lesson/repo';
 import { lessonFactory } from '@modules/lesson/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { Submission, Task } from '@modules/task/repo';
 import { User } from '@modules/user/repo';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { CopyFilesService } from './copy-files.service';
 

@@ -56,7 +56,8 @@ export class VideoConferenceCreateUc {
 		try {
 			const videoConference = await this.videoConferenceService.findVideoConferenceByScopeIdAndScope(scopeId, scope);
 			return videoConference;
-		} catch (error) {
+		} catch {
+			// TODO: check error handling
 			return undefined;
 		}
 	}
@@ -64,7 +65,8 @@ export class VideoConferenceCreateUc {
 		let bbbMeetingInfoResponse: BBBResponse<BBBMeetingInfoResponse> | undefined;
 		try {
 			bbbMeetingInfoResponse = await this.bbbService.getMeetingInfo(new BBBBaseMeetingConfig({ meetingID: id }));
-		} catch (e) {
+		} catch {
+			// TODO: check error handling
 			bbbMeetingInfoResponse = undefined;
 		}
 

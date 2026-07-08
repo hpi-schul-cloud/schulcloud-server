@@ -1,5 +1,5 @@
-import { EntityId } from '@shared/domain/types';
-import { FileRecordParentType, StorageLocation } from './files-storage';
+import { type EntityId } from '@shared/domain/types';
+import { type FileRecordParentType, type StorageLocation } from './files-storage';
 
 export interface FileRequestInfo {
 	storageLocationId: EntityId;

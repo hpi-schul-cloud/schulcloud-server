@@ -1,9 +1,9 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Test, TestingModule } from '@nestjs/testing';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { ValidationError } from '@shared/common/error';
 import { Page } from '@shared/domain/domainobject';
-import { TOOL_CONFIG_TOKEN, ToolConfig } from '../../tool-config';
-import { ExternalTool } from '../domain';
+import { TOOL_CONFIG_TOKEN, type ToolConfig } from '../../tool-config';
+import { type ExternalTool } from '../domain';
 import { ExternalToolMediumStatus } from '../enum';
 import { externalToolFactory } from '../testing';
 import { ExternalToolLogoService } from './external-tool-logo.service';

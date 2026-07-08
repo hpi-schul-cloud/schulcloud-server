@@ -1,7 +1,7 @@
 import { CommonCartridgeVersion } from '../../common-cartridge.enums';
 import {
 	CommonCartridgeResourcesWrapperElement,
-	CommonCartridgeResourcesWrapperElementProps,
+	type CommonCartridgeResourcesWrapperElementProps,
 } from '../abstract/common-cartridge-resources-wrapper-element';
 
 export type CommonCartridgeResourcesWrapperElementPropsV130 = CommonCartridgeResourcesWrapperElementProps;

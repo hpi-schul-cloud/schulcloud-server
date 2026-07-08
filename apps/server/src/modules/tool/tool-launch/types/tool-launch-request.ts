@@ -1,5 +1,5 @@
-import { LaunchRequestMethod } from './launch-request-method';
-import { LaunchType } from './launch-type.enum';
+import { type LaunchRequestMethod } from './launch-request-method';
+import { type LaunchType } from './launch-type.enum';
 
 export class ToolLaunchRequest {
 	method: LaunchRequestMethod;

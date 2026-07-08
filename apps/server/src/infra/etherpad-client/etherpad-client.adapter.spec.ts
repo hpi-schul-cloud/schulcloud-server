@@ -1,17 +1,17 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { InternalServerErrorException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { AxiosResponse } from 'axios';
+import { Test, type TestingModule } from '@nestjs/testing';
+import { type AxiosResponse } from 'axios';
 import {
 	AuthorApi,
-	CreateAuthorUsingGET200Response,
-	CreateGroupUsingGET200Response,
-	CreateSessionUsingGET200Response,
-	DeleteGroupUsingGET200Response,
+	type CreateAuthorUsingGET200Response,
+	type CreateGroupUsingGET200Response,
+	type CreateSessionUsingGET200Response,
+	type DeleteGroupUsingGET200Response,
 	GroupApi,
-	ListAuthorsOfPadUsingGET200Response,
-	ListPadsUsingGET200Response,
-	ListSessionsOfGroupUsingGET200Response,
+	type ListAuthorsOfPadUsingGET200Response,
+	type ListPadsUsingGET200Response,
+	type ListSessionsOfGroupUsingGET200Response,
 	PadApi,
 	SessionApi,
 } from './etherpad-api-client';

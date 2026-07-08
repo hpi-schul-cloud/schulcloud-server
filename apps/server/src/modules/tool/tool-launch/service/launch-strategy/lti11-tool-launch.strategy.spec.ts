@@ -1,5 +1,5 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import { DefaultEncryptionService, type EncryptionService } from '@infra/encryption';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { PseudonymService } from '@modules/pseudonym/service';
 import { pseudonymFactory } from '@modules/pseudonym/testing';
@@ -7,13 +7,13 @@ import { RoleName } from '@modules/role';
 import { UserService } from '@modules/user';
 import { userDoFactory } from '@modules/user/testing';
 import { InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { Authorization } from 'oauth-1.0a';
+import { Test, type TestingModule } from '@nestjs/testing';
+import { type Authorization } from 'oauth-1.0a';
 import { CustomParameterEntry } from '../../../common/domain';
 import { LtiMessageType, LtiPrivacyPermission, LtiRole, ToolContextType } from '../../../common/enum';
 import { Lti11EncryptionService } from '../../../common/service';
 import {
-	ContextExternalTool,
+	type ContextExternalTool,
 	LtiMessageTypeNotImplementedLoggableException,
 } from '../../../context-external-tool/domain';
 import { LtiDeepLinkingService, LtiDeepLinkTokenService } from '../../../context-external-tool/service';
@@ -23,10 +23,10 @@ import {
 	ltiDeepLinkTokenFactory,
 } from '../../../context-external-tool/testing';
 import { externalToolFactory } from '../../../external-tool/testing';
-import { SchoolExternalTool } from '../../../school-external-tool/domain';
+import { type SchoolExternalTool } from '../../../school-external-tool/domain';
 import { schoolExternalToolFactory } from '../../../school-external-tool/testing';
 import { TOOL_CONFIG_TOKEN, ToolConfig } from '../../../tool-config';
-import { LaunchRequestMethod, LaunchType, PropertyData, PropertyLocation, ToolLaunchRequest } from '../../types';
+import { LaunchRequestMethod, LaunchType, PropertyData, PropertyLocation, type ToolLaunchRequest } from '../../types';
 import {
 	AutoContextIdStrategy,
 	AutoContextNameStrategy,
@@ -990,7 +990,7 @@ describe(Lti11ToolLaunchStrategy.name, () => {
 			it('should throw an UnprocessableEntityException', async () => {
 				const { data } = setup();
 
-				const func = async () => strategy.buildToolLaunchDataFromConcreteConfig('userId', data);
+				const func = () => strategy.buildToolLaunchDataFromConcreteConfig('userId', data);
 
 				await expect(func).rejects.toThrow(
 					new UnprocessableEntityException(

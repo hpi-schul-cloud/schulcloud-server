@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { RoomInvitationLink, RoomInvitationLinkProps } from '../domain/do/room-invitation-link.do';
+import { RoomInvitationLink, type RoomInvitationLinkProps } from '../domain/do/room-invitation-link.do';
 import { BaseFactory } from '@testing/factory/base.factory';
 
 class RoomInvitationLinkTestFactory extends BaseFactory<RoomInvitationLink, RoomInvitationLinkProps> {}

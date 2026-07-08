@@ -1,4 +1,4 @@
-import { FilterQuery } from '@mikro-orm/core';
+import { type FilterQuery } from '@mikro-orm/core';
 import { EmptyResultQuery } from './query';
 
 type EmptyResultQueryType = typeof EmptyResultQuery;

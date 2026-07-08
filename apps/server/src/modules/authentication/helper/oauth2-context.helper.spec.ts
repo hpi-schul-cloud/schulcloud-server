@@ -1,19 +1,19 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Account, AccountService } from '@modules/account';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import { type Account, AccountService } from '@modules/account';
 import { accountDoFactory } from '@modules/account/testing';
 import { OAuthService, OauthSessionTokenService } from '@modules/oauth';
 import { userDoFactory } from '@modules/user/testing';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import jwt from 'jsonwebtoken';
 import { AUTHENTICATION_CONFIG_TOKEN, AuthenticationConfig } from '../authentication-config';
-import { Oauth2AuthorizationBodyParams } from '../controllers/dto';
+import { type Oauth2AuthorizationBodyParams } from '../controllers/dto';
 import {
 	AccountNotFoundLoggableException,
 	MissingRefreshTokenLoggableException,
 	SchoolInMigrationLoggableException,
 	UserAccountDeactivatedLoggableException,
 } from '../loggable';
-import { Oauth2ContextHelper, Oauth2ContextResult } from './oauth2-context.helper';
+import { Oauth2ContextHelper, type Oauth2ContextResult } from './oauth2-context.helper';
 
 describe(Oauth2ContextHelper.name, () => {
 	let module: TestingModule;

@@ -1,5 +1,5 @@
 import { FileFolderElement } from '../file-folder-element.do';
-import { FileFolderElementProps } from '../types';
+import { type FileFolderElementProps } from '../types';
 
 export class FileFolderElementFactory {
 	public static build(props: FileFolderElementProps): FileFolderElement {

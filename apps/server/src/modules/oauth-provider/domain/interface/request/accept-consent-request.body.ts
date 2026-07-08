@@ -1,4 +1,4 @@
-import { IdToken } from '../id-token';
+import { type IdToken } from '../id-token';
 
 /**
  * @see https://www.ory.sh/docs/hydra/reference/api#tag/oAuth2

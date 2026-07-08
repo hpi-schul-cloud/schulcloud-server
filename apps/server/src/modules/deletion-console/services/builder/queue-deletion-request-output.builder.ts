@@ -1,4 +1,4 @@
-import { QueueDeletionRequestOutput } from '../interface';
+import { type QueueDeletionRequestOutput } from '../interface';
 
 export class QueueDeletionRequestOutputBuilder {
 	private static build(requestId?: string, deletionPlannedAt?: Date, error?: string): QueueDeletionRequestOutput {

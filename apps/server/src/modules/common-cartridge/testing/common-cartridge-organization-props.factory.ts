@@ -1,5 +1,5 @@
 import { Factory } from 'fishery';
-import { CommonCartridgeOrganizationProps } from '../import/common-cartridge-import.types';
+import { type CommonCartridgeOrganizationProps } from '../import/common-cartridge-import.types';
 import { faker } from '@faker-js/faker';
 import { CommonCartridgeXmlResourceType } from '../import/common-cartridge-import.enums';
 

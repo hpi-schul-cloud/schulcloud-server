@@ -1,9 +1,15 @@
 /* istanbul ignore file */
-import { createRequestLoggerMiddleware, LegacyLogger, Logger, LOGGER_CONFIG_TOKEN, LoggerConfig } from '@infra/logger';
-import { ADMIN_API_SERVER_CONFIG_TOKEN, AdminApiServerConfig } from '@modules/server/admin-api-server.config';
+import {
+	createRequestLoggerMiddleware,
+	LegacyLogger,
+	Logger,
+	LOGGER_CONFIG_TOKEN,
+	type LoggerConfig,
+} from '@infra/logger';
+import { ADMIN_API_SERVER_CONFIG_TOKEN, type AdminApiServerConfig } from '@modules/server/admin-api-server.config';
 import { AdminApiServerModule } from '@modules/server/admin-api.server.app.module';
 import { NestFactory } from '@nestjs/core';
-import { ExpressAdapter, NestExpressApplication } from '@nestjs/platform-express';
+import { ExpressAdapter, type NestExpressApplication } from '@nestjs/platform-express';
 import express from 'express';
 import { install as sourceMapInstall } from 'source-map-support';
 import { AppStartLoggable, enableOpenApiDocs } from './helpers';

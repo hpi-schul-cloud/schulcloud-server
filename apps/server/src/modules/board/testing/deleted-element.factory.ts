@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseFactory } from '@testing/factory/base.factory';
-import { ContentElementType, DeletedElement, DeletedElementProps, ROOT_PATH } from '../domain';
+import { ContentElementType, DeletedElement, type DeletedElementProps, ROOT_PATH } from '../domain';
 
 export const deletedElementFactory = BaseFactory.define<DeletedElement, DeletedElementProps>(
 	DeletedElement,

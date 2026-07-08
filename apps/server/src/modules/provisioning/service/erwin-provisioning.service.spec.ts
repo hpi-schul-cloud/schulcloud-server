@@ -1,13 +1,13 @@
 import { faker } from '@faker-js/faker';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ClassFactory } from '@modules/class';
 import { ErwinIdentifierService, ReferencedEntityType } from '@modules/erwin-identifier';
 import { erwinIdentifierFactoryWithSchool, erwinIdentifierFactoryWithUser } from '@modules/erwin-identifier/testing';
 import { schoolFactory } from '@modules/school/testing';
 import { userDoFactory } from '@modules/user/testing';
-import { Test, TestingModule } from '@nestjs/testing';
-import { ExternalClassDto, ExternalSchoolDto, ExternalUserDto, ProvisioningSystemDto } from '../dto';
+import { Test, type TestingModule } from '@nestjs/testing';
+import { ExternalClassDto, ExternalSchoolDto, ExternalUserDto, type ProvisioningSystemDto } from '../dto';
 import { BadDataLoggableException } from '../loggable';
 import { ExternalIdMissingLoggableException } from '../loggable/external-id-missing.loggable-exception';
 import {

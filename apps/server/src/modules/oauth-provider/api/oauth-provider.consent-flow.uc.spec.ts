@@ -1,13 +1,13 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ForbiddenException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import {
-	AcceptConsentRequestBody,
-	IdToken,
-	ProviderConsentResponse,
-	ProviderRedirectResponse,
-	RejectRequestBody,
+	type AcceptConsentRequestBody,
+	type IdToken,
+	type ProviderConsentResponse,
+	type ProviderRedirectResponse,
+	type RejectRequestBody,
 } from '../domain';
 import { IdTokenService } from '../domain/service/id-token.service';
 import { OauthProviderService } from '../domain/service/oauth-provider.service';

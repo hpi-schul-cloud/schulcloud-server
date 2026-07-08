@@ -1,18 +1,18 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { UserService } from '@modules/user';
 import { userDoFactory } from '@modules/user/testing';
 import { ForbiddenException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
-import { BBBJoinConfig, BBBJoinResponse, BBBResponse, BBBRole } from '../bbb';
+import { type BBBJoinConfig, type BBBJoinResponse, type BBBResponse, BBBRole } from '../bbb';
 import { VideoConferenceScope } from '../domain';
 import { ErrorStatus } from '../error';
-import { VideoConferenceOptions } from '../interface';
+import { type VideoConferenceOptions } from '../interface';
 import { BBBService, VideoConferenceService } from '../service';
 import { videoConferenceDOFactory } from '../testing';
 import { VIDEO_CONFERENCE_CONFIG_TOKEN } from '../video-conference-config';
-import { VideoConferenceJoin, VideoConferenceState } from './dto';
+import { type VideoConferenceJoin, VideoConferenceState } from './dto';
 import { VideoConferenceFeatureService } from './video-conference-feature.service';
 import { VideoConferenceJoinUc } from './video-conference-join.uc';
 

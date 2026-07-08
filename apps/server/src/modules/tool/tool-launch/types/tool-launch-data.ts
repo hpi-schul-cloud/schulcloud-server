@@ -1,5 +1,5 @@
-import { PropertyData } from './property-data';
-import { ToolLaunchDataType } from './tool-launch-data-type';
+import { type PropertyData } from './property-data';
+import { type ToolLaunchDataType } from './tool-launch-data-type';
 
 export class ToolLaunchData {
 	baseUrl: string;

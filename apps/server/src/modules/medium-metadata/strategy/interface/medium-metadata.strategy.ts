@@ -1,5 +1,5 @@
-import { MediaSource, MediaSourceDataFormat } from '@modules/media-source';
-import { MediumMetadataDto } from '../../dto';
+import { type MediaSource, type MediaSourceDataFormat } from '@modules/media-source';
+import { type MediumMetadataDto } from '../../dto';
 
 export interface MediumMetadataStrategy {
 	getMediaSourceFormat(): MediaSourceDataFormat;

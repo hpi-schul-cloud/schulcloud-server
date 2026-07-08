@@ -1,5 +1,5 @@
-import { LanguageType } from '@shared/domain/interface';
-import { EntityId } from '@shared/domain/types';
+import { type LanguageType } from '@shared/domain/interface';
+import { type EntityId } from '@shared/domain/types';
 
 export class UserDto {
 	constructor(user: UserDto) {

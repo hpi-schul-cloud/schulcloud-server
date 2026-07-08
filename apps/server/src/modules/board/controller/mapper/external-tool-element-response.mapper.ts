@@ -1,6 +1,6 @@
 import { ContentElementType, ExternalToolElement } from '../../domain';
 import { ExternalToolElementContent, ExternalToolElementResponse, TimestampsResponse } from '../dto';
-import { BaseResponseMapper } from './base-mapper.interface';
+import { type BaseResponseMapper } from './base-mapper.interface';
 
 export class ExternalToolElementResponseMapper implements BaseResponseMapper {
 	private static instance: ExternalToolElementResponseMapper;

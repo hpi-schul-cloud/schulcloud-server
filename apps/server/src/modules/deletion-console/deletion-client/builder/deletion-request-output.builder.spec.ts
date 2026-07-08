@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { DeletionRequestOutput } from '../interface';
+import { type DeletionRequestOutput } from '../interface';
 import { DeletionRequestOutputBuilder } from './deletion-request-output.builder';
 
 describe(DeletionRequestOutputBuilder.name, () => {

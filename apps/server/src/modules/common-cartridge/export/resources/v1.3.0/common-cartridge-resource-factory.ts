@@ -1,24 +1,24 @@
 import { CommonCartridgeResourceType } from '../../common-cartridge.enums';
 import { ResourceTypeNotSupportedLoggableException } from '../../errors';
-import { CommonCartridgeResource } from '../../interfaces';
+import { type CommonCartridgeResource } from '../../interfaces';
 import {
-	CommonCartridgeFileFolderResourcePropsV130,
+	type CommonCartridgeFileFolderResourcePropsV130,
 	CommonCartridgeFileFolderResourceV130,
 } from './common-cartridge-file-folder-resource';
 import {
-	CommonCartridgeFileResourcePropsV130,
+	type CommonCartridgeFileResourcePropsV130,
 	CommonCartridgeFileResourceV130,
 } from './common-cartridge-file-resource';
 import {
-	CommonCartridgeManifestResourcePropsV130,
+	type CommonCartridgeManifestResourcePropsV130,
 	CommonCartridgeManifestResourceV130,
 } from './common-cartridge-manifest-resource';
 import {
-	CommonCartridgeWebContentResourcePropsV130,
+	type CommonCartridgeWebContentResourcePropsV130,
 	CommonCartridgeWebContentResourceV130,
 } from './common-cartridge-web-content-resource';
 import {
-	CommonCartridgeWebLinkResourcePropsV130,
+	type CommonCartridgeWebLinkResourcePropsV130,
 	CommonCartridgeWebLinkResourceV130,
 } from './common-cartridge-web-link-resource';
 

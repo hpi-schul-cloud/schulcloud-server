@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { DoBaseFactory } from '@testing/factory/domainobject';
-import { DeepPartial } from 'fishery';
+import { type DeepPartial } from 'fishery';
 import { CustomParameter } from '../../common/domain';
 import {
 	CustomParameterLocation,
@@ -14,8 +14,8 @@ import {
 import {
 	BasicToolConfig,
 	ExternalTool,
-	ExternalToolMedium,
-	ExternalToolProps,
+	type ExternalToolMedium,
+	type ExternalToolProps,
 	Lti11ToolConfig,
 	Oauth2ToolConfig,
 } from '../domain';

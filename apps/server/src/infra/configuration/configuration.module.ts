@@ -4,9 +4,12 @@ import { ConfigModule, ConfigModuleOptions, ConfigService } from '@nestjs/config
 import { ConfigurationFactory } from './configuration.factory';
 
 const getNodeEnv = (): string => process.env.NODE_ENV || 'development';
-// In NestJS ConfigModule, the first file in the array has highest priority.
-// So we put .env.{NODE_ENV} first to allow environment-specific overrides.
-const envFilesByPriority = [`.env.${getNodeEnv()}`, '.env'];
+// The order of the env files is important, as the first file that is found will be used.
+// The default .env file should be loaded first because it is in legacy server so implemented,
+// and then the environment-specific file should be loaded second.
+// This allows for environment-specific overrides of the default configuration.
+// .env is not committed to version control, so it can be used for local development and testing.
+const envFilesByPriority = ['.env', `.env.${getNodeEnv()}`];
 const loadEnvConfigInOrder = (): ConfigModuleOptions => {
 	return {
 		cache: true,

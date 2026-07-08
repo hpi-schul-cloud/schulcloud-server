@@ -1,10 +1,10 @@
-import { JwtWhitelistAdapter } from '@infra/jwt-whitelist';
+import { type JwtWhitelistAdapter } from '@infra/jwt-whitelist';
 import { UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { JwtExtractor } from '@shared/common/utils';
 import { Strategy } from 'passport-jwt';
-import { JwtAuthGuardConfig } from '../config';
-import { ICurrentUser, JwtPayload } from '../interface';
+import { type JwtAuthGuardConfig } from '../config';
+import { type ICurrentUser, type JwtPayload } from '../interface';
 import { CurrentUserBuilder, JwtStrategyOptionsFactory } from '../mapper';
 
 export class JwtStrategy extends PassportStrategy(Strategy) {

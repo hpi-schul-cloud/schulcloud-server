@@ -1,9 +1,9 @@
-import { CurrentUserBuilder, ICurrentUser } from '@infra/auth-guard';
+import { CurrentUserBuilder, type ICurrentUser } from '@infra/auth-guard';
 import type { Account } from '@modules/account';
-import { Role } from '@modules/role';
-import { User, UserDo } from '@modules/user';
+import { type Role } from '@modules/role';
+import { type User, type UserDo } from '@modules/user';
 import { ValidationError } from '@shared/common/error';
-import { RoleReference } from '@shared/domain/domainobject';
+import { type RoleReference } from '@shared/domain/domainobject';
 
 export class CurrentUserMapper {
 	private static extractRoleIds(roles?: (Role | RoleReference)[]): string[] {

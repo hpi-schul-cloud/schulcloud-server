@@ -1,8 +1,8 @@
 import { schoolEntityFactory } from '@modules/school/testing';
 import { userFactory } from '@modules/user/testing';
 import { BaseFactory } from '@testing/factory/base.factory';
-import { DeepPartial } from 'fishery';
-import { Submission, SubmissionProperties } from '../repo';
+import { type DeepPartial } from 'fishery';
+import { Submission, type SubmissionProperties } from '../repo';
 import { taskFactory } from './task.factory';
 
 class SubmissionFactory extends BaseFactory<Submission, SubmissionProperties> {

@@ -1,4 +1,4 @@
-import { RuntimeConfigDefault } from '@infra/runtime-config';
+import { type RuntimeConfigDefault } from '@infra/runtime-config';
 
 const RuntimeConfigDefaults: RuntimeConfigDefault[] = [
 	{

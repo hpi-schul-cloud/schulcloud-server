@@ -1,7 +1,7 @@
-import { FilterQuery } from '@mikro-orm/core';
-import { EntityId } from '@shared/domain/types';
+import { type FilterQuery } from '@mikro-orm/core';
+import { type EntityId } from '@shared/domain/types';
 import { Scope } from '@shared/repo/scope';
-import { Task } from './task.entity';
+import { type Task } from './task.entity';
 
 export class TaskScope extends Scope<Task> {
 	byFinished(userId: EntityId, value: boolean): TaskScope {

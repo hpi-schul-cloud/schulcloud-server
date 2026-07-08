@@ -17,9 +17,9 @@ import { TspClassWithoutNameLoggable } from '../loggable/tsp-class-without-name.
 
 @Injectable()
 export class TspProvisioningService {
-	private ENTITY_SOURCE = 'tsp'; // used as source attribute in created users and classes
+	private readonly ENTITY_SOURCE = 'tsp'; // used as source attribute in created users and classes
 
-	private TSP_EMAIL_DOMAIN = 'schul-cloud.org';
+	private readonly TSP_EMAIL_DOMAIN = 'schul-cloud.org';
 
 	constructor(
 		private readonly schoolService: SchoolService,
@@ -228,7 +228,8 @@ export class TspProvisioningService {
 			const account = await this.accountService.findByUserId(savedUser.id ?? '');
 			const updated = this.createOrUpdateAccount(data.system.systemId, savedUser, account);
 			await this.accountService.save(updated);
-		} catch (error) {
+		} catch {
+			// TODO: check error handling
 			if (existingUser === null) {
 				await this.userService.deleteUser(savedUser.id ?? '');
 			}
@@ -275,7 +276,7 @@ export class TspProvisioningService {
 		existingUser.lastSyncedAt = new Date();
 		existingUser.source = existingUser.source || this.ENTITY_SOURCE;
 
-		if (!existingUser.consent || !existingUser.consent.parentConsents?.length || !existingUser.consent.userConsent) {
+		if (!existingUser.consent?.parentConsents?.length || !existingUser.consent.userConsent) {
 			existingUser.consent = this.createTspConsent();
 		}
 

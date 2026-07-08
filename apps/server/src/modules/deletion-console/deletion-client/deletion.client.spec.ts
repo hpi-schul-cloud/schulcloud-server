@@ -1,14 +1,14 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { HttpService } from '@nestjs/axios';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
-import { AxiosResponse } from 'axios';
+import { type AxiosResponse } from 'axios';
 import { of, throwError } from 'rxjs';
 import { DeletionRequestInputBuilder, DeletionRequestOutputBuilder } from '.';
 import { DELETION_CONSOLE_CONFIG_TOKEN } from '../deletion-console.config';
 import { DeletionClient } from './deletion.client';
-import { DeletionRequestOutput } from './interface';
+import { type DeletionRequestOutput } from './interface';
 
 describe(DeletionClient.name, () => {
 	let module: TestingModule;

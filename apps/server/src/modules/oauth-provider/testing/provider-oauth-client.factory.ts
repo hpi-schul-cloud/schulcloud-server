@@ -1,5 +1,5 @@
 import { Factory } from 'fishery';
-import { ProviderOauthClient, SubjectTypeEnum, TokenAuthMethod } from '../domain';
+import { type ProviderOauthClient, SubjectTypeEnum, TokenAuthMethod } from '../domain';
 
 export const providerOauthClientFactory = Factory.define<ProviderOauthClient>(({ sequence }) => {
 	return {

@@ -1,8 +1,13 @@
-import { Class } from '@modules/class';
-import { ReferencedEntityType } from '@modules/erwin-identifier';
-import { School } from '@modules/school';
-import { UserDo } from '@modules/user';
-import { ExternalClassDto, ExternalSchoolDto, ExternalUserDto, ProvisioningSystemDto } from '../dto';
+import { type Class } from '@modules/class';
+import { type ReferencedEntityType } from '@modules/erwin-identifier';
+import { type School } from '@modules/school';
+import { type UserDo } from '@modules/user';
+import {
+	type ExternalClassDto,
+	type ExternalSchoolDto,
+	type ExternalUserDto,
+	type ProvisioningSystemDto,
+} from '../dto';
 
 export type ProvisioningResult = School | UserDo | Class;
 

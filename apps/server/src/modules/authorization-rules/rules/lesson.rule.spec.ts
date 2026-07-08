@@ -1,8 +1,8 @@
-import { DeepPartial } from '@mikro-orm/core';
+import { type DeepPartial } from '@mikro-orm/core';
 import {
 	Action,
 	AUTHORIZATION_CONFIG_TOKEN,
-	AuthorizationContext,
+	type AuthorizationContext,
 	AuthorizationContextBuilder,
 	AuthorizationHelper,
 	AuthorizationInjectionService,
@@ -17,8 +17,8 @@ import { Submission, Task } from '@modules/task/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { NotImplementedException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { Permission } from '@shared/domain/interface';
+import { Test, type TestingModule } from '@nestjs/testing';
+import { type Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { CourseGroupRule } from './course-group.rule';
 import { CourseRule } from './course.rule';

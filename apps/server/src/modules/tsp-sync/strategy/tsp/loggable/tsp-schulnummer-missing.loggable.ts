@@ -1,5 +1,5 @@
-import { RobjExportSchule } from '@infra/tsp-client';
-import { Loggable, LoggableMessage } from '@shared/common/loggable';
+import { type RobjExportSchule } from '@infra/tsp-client';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
 
 export class TspSchulnummerMissingLoggable implements Loggable {
 	constructor(private readonly tspSchools: RobjExportSchule[]) {}

@@ -1,5 +1,5 @@
 import { viewersClass, collaborativeClass, duplicateUserProfiles, createSeveralClasses } from './class-definitions';
-import { UserProfileWithAmount, ClassDefinition, Configuration } from '../types';
+import { type UserProfileWithAmount, type ClassDefinition, type Configuration } from '../types';
 
 describe('classDefintions', () => {
 	describe('viewersClass', () => {

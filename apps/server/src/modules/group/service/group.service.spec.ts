@@ -1,20 +1,20 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { RoleDto, RoleName, RoleService } from '@modules/role';
+import { type RoleDto, RoleName, RoleService } from '@modules/role';
 import { roleDtoFactory } from '@modules/role/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
 import { userDoFactory, userFactory } from '@modules/user/testing';
 import { EventBus } from '@nestjs/cqrs';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { Page } from '@shared/domain/domainobject';
-import { IFindOptions, SortOrder } from '@shared/domain/interface';
-import { EntityId } from '@shared/domain/types';
+import { type IFindOptions, SortOrder } from '@shared/domain/interface';
+import { type EntityId } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
 import { Group, GroupAggregateScope, GroupDeletedEvent, GroupTypes, GroupVisibilityPermission } from '../domain';
-import { GROUP_CONFIG_TOKEN, GroupConfig } from '../group.config';
+import { GROUP_CONFIG_TOKEN, type GroupConfig } from '../group.config';
 import { GroupRepo } from '../repo';
 import { groupFactory } from '../testing';
 import { GroupService } from './group.service';
@@ -631,6 +631,7 @@ describe('GroupService', () => {
 				const { group, userDo } = setup([roleDto]);
 				jest.spyOn(group, 'addUser');
 
+				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 				await service.addUsersToGroup('groupId', [{ userId: userDo.id!, roleName: roleDto.name }]);
 
 				expect(group.addUser).toHaveBeenCalledWith(expect.objectContaining({ userId: userDo.id, roleId: roleDto.id }));
@@ -640,6 +641,7 @@ describe('GroupService', () => {
 				const roleDto = roleDtoFactory.buildWithId({ name: RoleName.STUDENT });
 				const { group, userDo } = setup([roleDto]);
 
+				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 				await service.addUsersToGroup('groupId', [{ userId: userDo.id!, roleName: roleDto.name }]);
 
 				expect(groupRepo.save).toHaveBeenCalledWith(group);
@@ -649,6 +651,7 @@ describe('GroupService', () => {
 				it('should fail', async () => {
 					const { userDo } = setup();
 
+					// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 					const method = () => service.addUsersToGroup('groupId', [{ userId: userDo.id!, roleName: RoleName.STUDENT }]);
 
 					await expect(method).rejects.toThrow();

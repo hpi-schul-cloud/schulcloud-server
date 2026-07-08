@@ -59,7 +59,7 @@ export class ClassEntity extends BaseEntityWithTimestamps {
 	@Embedded(() => ClassSourceOptionsEntity, { object: true, nullable: true })
 	sourceOptions?: ClassSourceOptionsEntity;
 
-	private validate(props: ClassEntityProps) {
+	private validate(props: ClassEntityProps): void {
 		if (props.gradeLevel !== undefined && (props.gradeLevel < 1 || props.gradeLevel > 13)) {
 			throw new Error('gradeLevel must be value beetween 1 and 13');
 		}

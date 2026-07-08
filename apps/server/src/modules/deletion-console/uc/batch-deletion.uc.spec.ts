@@ -1,13 +1,17 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Test, TestingModule } from '@nestjs/testing';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { Test, type TestingModule } from '@nestjs/testing';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { UserService } from '@modules/user';
 import { AccountService } from '@modules/account';
 import { BatchDeletionUc } from './batch-deletion.uc';
 import { BatchDeletionService, ReferencesService } from '../services';
-import { QueueDeletionRequestOutput } from '../services/interface';
+import { type QueueDeletionRequestOutput } from '../services/interface';
 import { QueueDeletionRequestInputBuilder, QueueDeletionRequestOutputBuilder } from '../services/builder';
-import { BatchDeletionSummary, BatchDeletionSummaryDetail, BatchDeletionSummaryOverallStatus } from './interface';
+import {
+	type BatchDeletionSummary,
+	type BatchDeletionSummaryDetail,
+	BatchDeletionSummaryOverallStatus,
+} from './interface';
 import { BatchDeletionSummaryDetailBuilder } from '../builder';
 
 describe(BatchDeletionUc.name, () => {

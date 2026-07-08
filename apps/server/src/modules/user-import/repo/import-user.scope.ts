@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import { FilterQuery } from '@mikro-orm/core';
+import { type FilterQuery } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { RoleName } from '@modules/role';
-import { SchoolEntity } from '@modules/school/repo';
-import { User } from '@modules/user/repo';
+import { type SchoolEntity } from '@modules/school/repo';
+import { type User } from '@modules/user/repo';
 import { StringValidator } from '@shared/common/validator';
 import { MongoPatterns } from '@shared/repo/mongo.patterns';
 import { Scope } from '@shared/repo/scope';
 import { ImportUserMatchCreatorScope } from '../domain/interface';
-import { ImportUser } from '../entity';
+import { type ImportUser } from '../entity';
 
 export class ImportUserScope extends Scope<ImportUser> {
 	public bySchool(school: SchoolEntity): ImportUserScope {

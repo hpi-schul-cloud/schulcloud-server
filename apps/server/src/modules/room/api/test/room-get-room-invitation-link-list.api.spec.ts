@@ -6,15 +6,15 @@ import { roomInvitationLinkEntityFactory } from '@modules/room/testing/room-invi
 import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus, type INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { roomEntityFactory } from '../../testing';
-import { RoomInvitationLinkListResponse } from '../dto/response/room-invitation-link-list.response';
-import { AccountEntity } from '@modules/account/repo';
-import { User } from '@modules/user';
+import { type RoomInvitationLinkListResponse } from '../dto/response/room-invitation-link-list.response';
+import { type AccountEntity } from '@modules/account/repo';
+import { type User } from '@modules/user';
 
 describe('Room Invitation Link Controller (API)', () => {
 	let app: INestApplication;

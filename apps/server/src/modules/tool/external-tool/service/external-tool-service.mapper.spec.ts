@@ -1,5 +1,5 @@
-import { ProviderOauthClient } from '@modules/oauth-provider/domain';
-import { Test, TestingModule } from '@nestjs/testing';
+import { type ProviderOauthClient } from '@modules/oauth-provider/domain';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { TokenEndpointAuthMethod } from '../../common/enum';
 import { Oauth2ToolConfig } from '../domain';
 import { ExternalToolServiceMapper } from './external-tool-service.mapper';

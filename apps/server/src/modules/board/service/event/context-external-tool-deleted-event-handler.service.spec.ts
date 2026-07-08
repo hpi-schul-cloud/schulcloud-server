@@ -1,6 +1,6 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { ContextExternalToolDeletedEvent } from '../../../tool/context-external-tool/domain';
 import { ContentElementType, DeletedElement, ROOT_PATH } from '../../domain';
 import { externalToolElementFactory } from '../../testing';

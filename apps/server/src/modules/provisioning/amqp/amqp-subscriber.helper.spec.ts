@@ -1,11 +1,12 @@
-import { AmqpConnection, defaultNackErrorHandler } from '@golevelup/nestjs-rabbitmq';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Logger } from '@infra/logger';
-import { Channel, ConsumeMessage } from 'amqplib';
+import { type AmqpConnection, defaultNackErrorHandler } from '@golevelup/nestjs-rabbitmq';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import { type Logger } from '@infra/logger';
+import { type Channel, type ConsumeMessage } from 'amqplib';
+import type * as RabbitMQ from '@golevelup/nestjs-rabbitmq';
 import { registerAmqpSubscriber } from './amqp-subscriber.helper';
 
 jest.mock('@golevelup/nestjs-rabbitmq', () => {
-	const actualModule = jest.requireActual<typeof import('@golevelup/nestjs-rabbitmq')>('@golevelup/nestjs-rabbitmq');
+	const actualModule = jest.requireActual<typeof RabbitMQ>('@golevelup/nestjs-rabbitmq');
 
 	return {
 		...actualModule,
@@ -122,13 +123,13 @@ describe('registerAmqpSubscriber', () => {
 
 			let errorHandler: (channel: Channel, msg: ConsumeMessage, error: unknown) => Promise<void>;
 
-			/* eslint-disable @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any */
+			/* eslint-disable @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any */
 			amqpConnection.createSubscriber.mockImplementation(((_callback: any, options: any) => {
-				errorHandler = options.errorHandler;
+				({ errorHandler } = options);
 
 				return Promise.resolve({});
 			}) as any);
-			/* eslint-enable @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-explicit-any */
+			/* eslint-enable @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-explicit-any */
 
 			return {
 				exchangeName,

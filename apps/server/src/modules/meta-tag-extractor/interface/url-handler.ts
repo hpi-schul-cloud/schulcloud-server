@@ -1,4 +1,4 @@
-import { MetaData } from '../types';
+import { type MetaData } from '../types';
 
 export interface UrlHandler {
 	doesUrlMatch(url: URL): boolean;

@@ -1,4 +1,4 @@
-import { InputFormat } from '@shared/domain/types';
+import { type InputFormat } from '@shared/domain/types';
 import { BoardNode } from './board-node.do';
 import type { RichTextElementProps } from './types';
 

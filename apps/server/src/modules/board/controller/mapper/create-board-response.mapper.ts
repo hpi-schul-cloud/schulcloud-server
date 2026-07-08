@@ -1,4 +1,4 @@
-import { ColumnBoard } from '../../domain';
+import { type ColumnBoard } from '../../domain';
 import { CreateBoardResponse } from '../dto';
 
 export class CreateBoardResponseMapper {
