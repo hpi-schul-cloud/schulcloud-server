@@ -385,7 +385,7 @@ export class LessonCopyService {
 	}
 
 	private copyEmbeddedTaskLink(originalElement: ComponentProperties): Promise<ComponentProperties> {
-		const copy = structuredClone(originalElement);
+		const copy = JSON.parse(JSON.stringify(originalElement)) as ComponentProperties;
 		delete copy._id;
 		return Promise.resolve(copy);
 	}
