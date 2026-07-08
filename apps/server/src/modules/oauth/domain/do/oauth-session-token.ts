@@ -27,4 +27,8 @@ export class OauthSessionToken extends DomainObject<OauthSessionTokenProps> {
 	get expiresAt(): Date {
 		return this.props.expiresAt;
 	}
+
+	set refreshToken(token: string) {
+		this.props.refreshToken = token;
+	}
 }

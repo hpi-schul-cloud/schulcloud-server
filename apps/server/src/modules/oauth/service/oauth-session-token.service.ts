@@ -1,13 +1,18 @@
+import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { Inject } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { OauthSessionToken } from '../domain';
 import { OAUTH_SESSION_TOKEN_REPO, OauthSessionTokenRepo } from '../repo';
 
 export class OauthSessionTokenService {
-	constructor(@Inject(OAUTH_SESSION_TOKEN_REPO) private readonly oauthSessionTokenRepo: OauthSessionTokenRepo) {}
+	constructor(
+		@Inject(OAUTH_SESSION_TOKEN_REPO) private readonly oauthSessionTokenRepo: OauthSessionTokenRepo,
+		@Inject(DefaultEncryptionService) private readonly encryptionService: EncryptionService
+	) {}
 
 	async save(domainObject: OauthSessionToken): Promise<OauthSessionToken> {
-		const oauthSessionToken: OauthSessionToken = await this.oauthSessionTokenRepo.save(domainObject);
+		domainObject.refreshToken = this.encryptionService.encrypt(domainObject.refreshToken);
+		const oauthSessionToken = await this.oauthSessionTokenRepo.save(domainObject);
 
 		return oauthSessionToken;
 	}
@@ -17,7 +22,11 @@ export class OauthSessionTokenService {
 	}
 
 	async findLatestByUserId(userId: EntityId): Promise<OauthSessionToken | null> {
-		const oauthSessionToken: OauthSessionToken | null = await this.oauthSessionTokenRepo.findLatestByUserId(userId);
+		const oauthSessionToken = await this.oauthSessionTokenRepo.findLatestByUserId(userId);
+
+		if (oauthSessionToken?.refreshToken) {
+			oauthSessionToken.refreshToken = this.encryptionService.decrypt(oauthSessionToken?.refreshToken);
+		}
 
 		return oauthSessionToken;
 	}

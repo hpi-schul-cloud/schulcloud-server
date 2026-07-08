@@ -3,6 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { OAUTH_SESSION_TOKEN_REPO, OauthSessionTokenRepo } from '../repo';
 import { oauthSessionTokenFactory } from '../testing';
 import { OauthSessionTokenService } from './oauth-session-token.service';
+import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 
 describe(OauthSessionTokenService.name, () => {
 	let module: TestingModule;
@@ -17,6 +18,10 @@ describe(OauthSessionTokenService.name, () => {
 				{
 					provide: OAUTH_SESSION_TOKEN_REPO,
 					useValue: createMock<OauthSessionTokenRepo>(),
+				},
+				{
+					provide: DefaultEncryptionService,
+					useValue: createMock<EncryptionService>(),
 				},
 			],
 		}).compile();
