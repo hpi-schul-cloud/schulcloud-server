@@ -134,8 +134,7 @@
 		"generate-client:tldraw-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key tldraw-api",
 		"generate-client:vidis-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key vidis-api",
 		"pregenerate-client:common-cartridge-clients": "rimraf ./apps/server/src/infra/common-cartridge-clients/generated && rimraf ./apps/server/src/infra/common-cartridge-clients/fs-generated",
-		"generate-client:common-cartridge-clients": "openapi-generator-cli generate -c ./openapitools.json --generator-key common-cartridge-clients && openapi-generator-cli generate -c ./openapitools.json --generator-key common-cartridge-files-storage-api",
-		"knip": "knip"
+		"generate-client:common-cartridge-clients": "openapi-generator-cli generate -c ./openapitools.json --generator-key common-cartridge-clients && openapi-generator-cli generate -c ./openapitools.json --generator-key common-cartridge-files-storage-api"
 	},
 	"overrides": {
 		"gm": {
@@ -290,7 +289,6 @@
 		"freeport": "^1.0.5",
 		"globals": "^13.24.0",
 		"jest": "^30.4.2",
-		"knip": "^6.24.0",
 		"mocha": "^11.2.2",
 		"mongodb-memory-server-global": "^9.5.0",
 		"nyc": "^17.1.0",
