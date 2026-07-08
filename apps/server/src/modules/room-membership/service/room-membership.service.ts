@@ -153,10 +153,11 @@ export class RoomMembershipService {
 		schoolId: EntityId,
 		pagination?: Pagination
 	): Promise<Page<RoomMembershipStats>> {
-		const { data, total } = await this.groupService.findByUsersAndRoomsSchoolId(schoolId, [GroupTypes.ROOM]);
 		const { skip, limit } = { skip: 0, limit: 50, ...pagination };
-		const groupsOnPage = data.slice(skip, skip + limit);
-		const result = await this.getStats(groupsOnPage, schoolId);
+		const { data, total } = await this.groupService.findByUsersAndRoomsSchoolId(schoolId, [GroupTypes.ROOM], {
+			pagination: { skip, limit },
+		});
+		const result = await this.getStats(data, schoolId);
 
 		const page = new Page<RoomMembershipStats>(result, total);
 		return page;
