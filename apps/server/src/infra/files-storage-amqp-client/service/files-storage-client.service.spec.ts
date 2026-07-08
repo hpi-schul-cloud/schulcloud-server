@@ -4,7 +4,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { FileRecordParentType } from '../interfaces';
 import { FilesStorageClientMapper } from '../mapper';
-import { copyFilesRequestInfoFactory } from '../testing';
+import { copyFilesRequestInfoFactory, fileRequestInfoFactory } from '../testing';
 import { FilesStorageClientAdapterService } from './files-storage-client.service';
 import { FilesStorageProducer } from './files-storage.producer';
 
@@ -42,7 +42,11 @@ describe('FilesStorageClientAdapterService', () => {
 
 	describe('copyFilesOfParent', () => {
 		it('Should call all steps.', async () => {
-			const param = copyFilesRequestInfoFactory.build();
+			const userId = new ObjectId().toHexString();
+			const source = fileRequestInfoFactory.build();
+			const target = fileRequestInfoFactory.build();
+
+			const param = copyFilesRequestInfoFactory.build({ userId, source, target });
 
 			const spy = jest
 				.spyOn(FilesStorageClientMapper, 'mapCopyFileListResponseToCopyFilesDto')
@@ -58,7 +62,11 @@ describe('FilesStorageClientAdapterService', () => {
 		});
 
 		it('Should call error mapper if throw an error.', async () => {
-			const param = copyFilesRequestInfoFactory.build();
+			const userId = new ObjectId().toHexString();
+			const source = fileRequestInfoFactory.build();
+			const target = fileRequestInfoFactory.build();
+
+			const param = copyFilesRequestInfoFactory.build({ userId, source, target });
 
 			client.copyFilesOfParent.mockRejectedValue(new Error());
 
@@ -68,26 +76,26 @@ describe('FilesStorageClientAdapterService', () => {
 
 	describe('listFilesOfParent', () => {
 		it('Should call all steps.', async () => {
-			const taskId = new ObjectId().toHexString();
+			const parentId = new ObjectId().toHexString();
 
 			const spy = jest
 				.spyOn(FilesStorageClientMapper, 'mapfileRecordListResponseToDomainFilesDto')
 				.mockImplementation(() => []);
 
-			await service.listFilesOfParent(taskId);
+			await service.listFilesOfParent(parentId);
 
-			expect(client.listFilesOfParent).toHaveBeenCalledWith(taskId);
+			expect(client.listFilesOfParent).toHaveBeenCalledWith(parentId);
 			expect(spy).toHaveBeenCalled();
 
 			spy.mockRestore();
 		});
 
 		it('Should call error mapper if throw an error.', async () => {
-			const taskId = new ObjectId().toHexString();
+			const parentId = new ObjectId().toHexString();
 
 			client.listFilesOfParent.mockRejectedValue(new Error());
 
-			await expect(service.listFilesOfParent(taskId)).rejects.toThrow();
+			await expect(service.listFilesOfParent(parentId)).rejects.toThrow();
 		});
 	});
 
@@ -176,6 +184,47 @@ describe('FilesStorageClientAdapterService', () => {
 				const { recordId } = setup();
 
 				await expect(service.deleteFiles([recordId])).rejects.toThrow();
+			});
+		});
+	});
+
+	describe('removeCreatorIdFromFileRecords', () => {
+		describe('when creator references are removed successfully', () => {
+			const setup = () => {
+				const creatorId = new ObjectId().toHexString();
+
+				const spy = jest
+					.spyOn(FilesStorageClientMapper, 'mapfileRecordListResponseToDomainFilesDto')
+					.mockImplementation(() => []);
+
+				return { creatorId, spy };
+			};
+
+			it('should call the producer and mapper', async () => {
+				const { creatorId, spy } = setup();
+
+				await service.removeCreatorIdFromFileRecords(creatorId);
+
+				expect(client.removeCreatorIdFromFileRecords).toHaveBeenCalledWith(creatorId);
+				expect(spy).toHaveBeenCalled();
+
+				spy.mockRestore();
+			});
+		});
+
+		describe('when error is thrown', () => {
+			const setup = () => {
+				const creatorId = new ObjectId().toHexString();
+
+				client.removeCreatorIdFromFileRecords.mockRejectedValue(new Error());
+
+				return { creatorId };
+			};
+
+			it('should propagate the error', async () => {
+				const { creatorId } = setup();
+
+				await expect(service.removeCreatorIdFromFileRecords(creatorId)).rejects.toThrow();
 			});
 		});
 	});

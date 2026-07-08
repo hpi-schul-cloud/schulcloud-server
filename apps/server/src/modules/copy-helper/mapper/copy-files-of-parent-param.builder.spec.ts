@@ -1,66 +1,26 @@
-import { FileRecordParentType, StorageLocation } from '@infra/files-storage-amqp-client';
+import { FileRecordParentType } from '@infra/files-storage-amqp-client';
+import { fileRequestInfoFactory } from '@infra/files-storage-amqp-client/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { lessonFactory } from '@modules/lesson/testing';
-import { taskFactory } from '@modules/task/testing';
 import { CopyFilesOfParentParamBuilder } from './copy-files-of-parent-param.builder';
-import { FileParamBuilder } from './files-storage-param.builder';
 
 describe('CopyFilesOfParentParamBuilder', () => {
-	it('should build valid file request infos for task over shorthand task', () => {
+	it('should build valid file request infos for task', () => {
 		const userId = new ObjectId().toHexString();
-		const sourceEntity = taskFactory.buildWithId({});
-		const targetEntity = taskFactory.buildWithId();
-
-		const source = FileParamBuilder.build(sourceEntity.getSchoolId(), sourceEntity, StorageLocation.SCHOOL);
-		const target = FileParamBuilder.build(targetEntity.getSchoolId(), targetEntity, StorageLocation.SCHOOL);
+		const source = fileRequestInfoFactory.build({ parentType: FileRecordParentType.Task });
+		const target = fileRequestInfoFactory.build({ parentType: FileRecordParentType.Task });
 
 		const result = CopyFilesOfParentParamBuilder.build(userId, source, target);
 
-		const expectedResult = {
-			userId,
-			source: {
-				parentType: FileRecordParentType.Task,
-				parentId: sourceEntity.id,
-				storageLocationId: sourceEntity.getSchoolId(),
-				storageLocation: StorageLocation.SCHOOL,
-			},
-			target: {
-				parentType: FileRecordParentType.Task,
-				parentId: targetEntity.id,
-				storageLocationId: targetEntity.getSchoolId(),
-				storageLocation: StorageLocation.SCHOOL,
-			},
-		};
-
-		expect(result).toStrictEqual(expectedResult);
+		expect(result).toStrictEqual({ userId, source, target });
 	});
 
-	it('should build valid copy file request infos for lesson over shorthand lesson', () => {
+	it('should build valid copy file request infos for lesson', () => {
 		const userId = new ObjectId().toHexString();
-		const sourceEntity = lessonFactory.buildWithId({});
-		const targetEntity = lessonFactory.buildWithId();
-
-		const source = FileParamBuilder.build(sourceEntity.getSchoolId(), sourceEntity, StorageLocation.SCHOOL);
-		const target = FileParamBuilder.build(targetEntity.getSchoolId(), targetEntity, StorageLocation.SCHOOL);
+		const source = fileRequestInfoFactory.build({ parentType: FileRecordParentType.Lesson });
+		const target = fileRequestInfoFactory.build({ parentType: FileRecordParentType.Lesson });
 
 		const result = CopyFilesOfParentParamBuilder.build(userId, source, target);
 
-		const expectedResult = {
-			userId,
-			source: {
-				parentType: FileRecordParentType.Lesson,
-				parentId: sourceEntity.id,
-				storageLocationId: sourceEntity.getSchoolId(),
-				storageLocation: StorageLocation.SCHOOL,
-			},
-			target: {
-				parentType: FileRecordParentType.Lesson,
-				parentId: targetEntity.id,
-				storageLocationId: targetEntity.getSchoolId(),
-				storageLocation: StorageLocation.SCHOOL,
-			},
-		};
-
-		expect(result).toStrictEqual(expectedResult);
+		expect(result).toStrictEqual({ userId, source, target });
 	});
 });

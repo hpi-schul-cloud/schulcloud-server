@@ -241,15 +241,43 @@ const layerRestrictions = [
 		name: 'schulcloud/layer-infra',
 		files: ['apps/server/src/infra/**/*.ts'],
 		rules: {
+			'no-restricted-imports': [
+				'error',
+				{
+					patterns: [
+						{
+							group: ['@modules/**'],
+							message: 'infra-modules may NOT import from @modules',
+						},
+					],
+				},
+			],
 			'@typescript-eslint/no-restricted-imports': [
 				'warn',
 				{
 					patterns: [
 						{
-							group: ['**/apps/**', '@core/**', '@modules/**', '**/migrations/**'],
-							message: 'infra-modules may NOT import from apps, @core, @modules, or migrations',
+							group: ['**/apps/**', '@core/**', '**/migrations/**'],
+							message: 'infra-modules may NOT import from apps, @core, or migrations',
 						},
 						deepImportWarning,
+					],
+				},
+			],
+		},
+	},
+	{
+		name: 'schulcloud/layer-infra-collaborative-storage',
+		files: ['apps/server/src/infra/collaborative-storage/**/*.ts'],
+		rules: {
+			'no-restricted-imports': [
+				'warn',
+				{
+					patterns: [
+						{
+							group: ['@modules/**'],
+							message: 'infra-modules may NOT import from @modules',
+						},
 					],
 				},
 			],
