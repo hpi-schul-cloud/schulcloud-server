@@ -155,18 +155,26 @@ export class ClassGroupUc {
 		school: School,
 		groupVisibilityPermission: GroupVisibilityPermission
 	): Promise<InternalClassDto<Group>[]> {
-		const scope = new GroupAggregateScope()
-			.byOrganization(school.id)
-			.byType([GroupTypes.CLASS, GroupTypes.COURSE, GroupTypes.OTHER]);
+		const batchSize = 500;
+		const allGroups: Group[] = [];
+		let total = Infinity;
 
-		if (groupVisibilityPermission === GroupVisibilityPermission.OWN_GROUPS) {
-			scope.byUser(user.id);
+		for (let skip = 0; allGroups.length < total; skip += batchSize) {
+			const scope = new GroupAggregateScope({ pagination: { skip, limit: batchSize } })
+				.byOrganization(school.id)
+				.byType([GroupTypes.CLASS, GroupTypes.COURSE, GroupTypes.OTHER]);
+
+			if (groupVisibilityPermission === GroupVisibilityPermission.OWN_GROUPS) {
+				scope.byUser(user.id);
+			}
+
+			const { data, total: pageTotal } = await this.groupService.findByScope(scope);
+			allGroups.push(...data);
+			total = pageTotal;
 		}
 
-		const groups: Page<Group> = await this.groupService.findByScope(scope);
-
 		const systemIdSet: Set<string> = new Set();
-		groups.data.forEach((group: Group): void => {
+		allGroups.forEach((group: Group): void => {
 			if (group.externalSource) {
 				systemIdSet.add(group.externalSource.systemId);
 			}
@@ -175,7 +183,7 @@ export class ClassGroupUc {
 
 		const studentRole: RoleDto = await this.roleService.findByName(RoleName.STUDENT);
 		const teacherRole: RoleDto = await this.roleService.findByName(RoleName.TEACHER);
-		const teacherIds = groups.data.flatMap((group: Group) =>
+		const teacherIds = allGroups.flatMap((group: Group) =>
 			group.users
 				.filter((groupUser: GroupUser) => groupUser.roleId === teacherRole.id)
 				.map((groupUser: GroupUser) => groupUser.userId)
@@ -183,7 +191,7 @@ export class ClassGroupUc {
 		const uniqueTeacherIds = Array.from(new Set(teacherIds));
 		const teachers = (await this.userService.findByIds(uniqueTeacherIds)) ?? [];
 
-		const groupDtos: InternalClassDto<Group>[] = groups.data.map((group: Group): InternalClassDto<Group> => {
+		const groupDtos: InternalClassDto<Group>[] = allGroups.map((group: Group): InternalClassDto<Group> => {
 			const studentCount: number = group.users.reduce(
 				(acc: number, element: GroupUser): number => (element.roleId === studentRole.id ? acc + 1 : acc),
 				0
