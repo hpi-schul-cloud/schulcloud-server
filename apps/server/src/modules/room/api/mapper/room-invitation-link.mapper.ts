@@ -1,4 +1,4 @@
-import { RoomInvitationLinkProps } from '../../domain/do/room-invitation-link.do';
+import { type RoomInvitationLinkProps } from '../../domain/do/room-invitation-link.do';
 import { RoomInvitationLinkListResponse } from '../dto/response/room-invitation-link-list.response';
 import { RoomInvitationLinkResponse } from '../dto/response/room-invitation-link.response';
 

@@ -1,4 +1,4 @@
-import { Loggable, LoggableMessage, LogMessageDataObject } from '@shared/common/loggable';
+import { type Loggable, type LoggableMessage, type LogMessageDataObject } from '@shared/common/loggable';
 
 export class CommonCartridgeMessageLoggable implements Loggable {
 	constructor(

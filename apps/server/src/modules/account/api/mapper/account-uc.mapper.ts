@@ -1,5 +1,5 @@
-import { Counted } from '@shared/domain/types';
-import { Account } from '../../domain';
+import { type Counted } from '@shared/domain/types';
+import { type Account } from '../../domain';
 import { ResolvedAccountDto } from '../dto/resolved-account.dto';
 
 export class AccountUcMapper {

@@ -2,24 +2,28 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { courseEntityFactory } from '@modules/course/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
-import { HttpStatus, INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { HttpStatus, type INestApplication } from '@nestjs/common';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { DateToString } from '@testing/date-to-string';
+import { type DateToString } from '@testing/date-to-string';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
-import { Response } from 'supertest';
+import { type Response } from 'supertest';
 import { CustomParameterLocation, CustomParameterScope, LtiMessageType, ToolContextType } from '../../../common/enum';
 import { customParameterFactory, externalToolEntityFactory } from '../../../external-tool/testing';
 import { schoolExternalToolEntityFactory } from '../../../school-external-tool/testing';
-import { ContextExternalToolEntity, ContextExternalToolType } from '../../repo';
+import { type ContextExternalToolEntity, ContextExternalToolType } from '../../repo';
 import {
 	contextExternalToolConfigurationStatusResponseFactory,
 	contextExternalToolEntityFactory,
 	ltiDeepLinkEmbeddableFactory,
 } from '../../testing';
-import { ContextExternalToolContextParams, ToolReferenceListResponse, ToolReferenceResponse } from '../dto';
+import {
+	type ContextExternalToolContextParams,
+	type ToolReferenceListResponse,
+	type ToolReferenceResponse,
+} from '../dto';
 
 describe('ToolReferenceController (API)', () => {
 	let app: INestApplication;

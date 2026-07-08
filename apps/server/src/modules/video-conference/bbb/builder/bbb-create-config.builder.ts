@@ -1,5 +1,5 @@
 import { TypeGuard } from '@shared/common/guards';
-import { BBBCreateConfig, BBBRole, GuestPolicy } from '../request';
+import { type BBBCreateConfig, BBBRole, type GuestPolicy } from '../request';
 import { Builder } from './builder';
 
 export class BBBCreateConfigBuilder extends Builder<BBBCreateConfig> {

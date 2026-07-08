@@ -1,4 +1,4 @@
-import { SyncStrategyTarget } from '../sync-strategy.types';
+import { type SyncStrategyTarget } from '../sync-strategy.types';
 
 export abstract class SyncStrategy {
 	public abstract getType(): SyncStrategyTarget;

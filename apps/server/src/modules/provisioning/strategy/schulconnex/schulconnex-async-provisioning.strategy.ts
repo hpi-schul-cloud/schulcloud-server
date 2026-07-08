@@ -120,7 +120,7 @@ export class SchulconnexAsyncProvisioningStrategy extends ProvisioningStrategy {
 					});
 
 				externalLicenses = SchulconnexResponseMapper.mapToExternalLicenses(schulconnexPoliciesInfoLicenceResponses);
-			} catch (error) {
+			} catch {
 				this.logger.warning(new FetchingPoliciesInfoFailedLoggable(externalUser, policiesInfoUrl));
 			}
 		}

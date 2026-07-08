@@ -1,12 +1,12 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { AuthorizableReferenceType, AuthorizationInjectionService } from '@modules/authorization';
-import { Test, TestingModule } from '@nestjs/testing';
-import { BoardNodeAuthorizable, BoardRoles, joinPath, UserWithBoardRoles } from '../domain';
+import { Test, type TestingModule } from '@nestjs/testing';
+import { BoardNodeAuthorizable, BoardRoles, joinPath, type UserWithBoardRoles } from '../domain';
 import { BoardNodeRepo } from '../repo';
 import { cardFactory, columnBoardFactory, columnFactory } from '../testing';
 import { BoardNodeAuthorizableService } from './board-node-authorizable.service';
 import { BoardNodeService } from './board-node.service';
-import { BoardContextResolverService, PreparedBoardContext } from './internal/board-context';
+import { BoardContextResolverService, type PreparedBoardContext } from './internal/board-context';
 
 describe(BoardNodeAuthorizableService.name, () => {
 	let module: TestingModule;

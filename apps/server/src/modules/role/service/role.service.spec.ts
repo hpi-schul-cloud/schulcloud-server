@@ -1,10 +1,10 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { NotFoundError } from '@mikro-orm/core';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { RoleName } from '../domain';
-import { Role, RoleRepo } from '../repo';
+import { type Role, RoleRepo } from '../repo';
 import { roleFactory } from '../testing';
-import { RoleDto } from './dto';
+import { type RoleDto } from './dto';
 import { RoleService } from './role.service';
 
 describe('RoleService', () => {

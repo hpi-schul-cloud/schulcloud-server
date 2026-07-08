@@ -1,20 +1,20 @@
 import { ConfigurationModule } from '@infra/configuration';
 import { AUDIT_LOGGER_PROVIDER } from '@infra/logger';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { AccountEntity } from '@modules/account/repo';
+import { type AccountEntity } from '@modules/account/repo';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
 import { systemEntityFactory } from '@modules/system/testing';
 import { UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
-import { HttpStatus, INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { Permission } from '@shared/domain/interface';
+import { HttpStatus, type INestApplication } from '@nestjs/common';
+import { Test, type TestingModule } from '@nestjs/testing';
+import { type Permission } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { TEST_JWT_CONFIG_TOKEN, TestJwtModuleConfig } from '@testing/test-jwt-module.config';
-import { MeResponse } from '../dto';
+import { type MeResponse } from '../dto';
 
 const mapToMeResponseObject = (user: User, account: AccountEntity, permissions: Permission[]): MeResponse => {
 	const roles = user.getRoles();

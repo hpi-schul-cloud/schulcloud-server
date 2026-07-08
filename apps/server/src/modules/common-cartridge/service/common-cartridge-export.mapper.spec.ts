@@ -1,14 +1,14 @@
 import { faker } from '@faker-js/faker';
 import {
-	ComponentEtherpadPropsImpl,
-	ComponentGeogebraPropsImpl,
-	ComponentLernstorePropsImpl,
+	type ComponentEtherpadPropsImpl,
+	type ComponentGeogebraPropsImpl,
+	type ComponentLernstorePropsImpl,
 	LessonContentResponseComponent,
-	LessonContentResponseContent,
+	type LessonContentResponseContent,
 } from '@infra/common-cartridge-clients';
 import { FileRecordParentType } from '@infra/files-storage-amqp-client';
 import { fileRecordResponseFactory } from '@infra/files-storage-rest-client/testing';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { Readable } from 'stream';
 import {
 	CommonCartridgeElementType,
@@ -16,7 +16,7 @@ import {
 	CommonCartridgeResourceType,
 	CommonCartridgeVersion,
 } from '../export/common-cartridge.enums';
-import { CommonCartridgeResourceProps } from '../export/resources/common-cartridge-resource-factory';
+import { type CommonCartridgeResourceProps } from '../export/resources/common-cartridge-resource-factory';
 import { createIdentifier } from '../export/utils';
 import {
 	boardTaskFactory,

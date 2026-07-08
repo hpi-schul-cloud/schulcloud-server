@@ -1,5 +1,5 @@
 import { BaseDO } from '@shared/domain/domainobject';
-import { EntityId } from '@shared/domain/types';
+import { type EntityId } from '@shared/domain/types';
 
 export enum ShareTokenParentType {
 	'Course' = 'courses',

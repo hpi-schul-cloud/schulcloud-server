@@ -1,4 +1,4 @@
-import { ModuleName, SagaStep, StepOperationType, StepReport } from '../type';
+import { ModuleName, SagaStep, StepOperationType, type StepReport } from '../type';
 import { SagaStepRegistryService } from './saga-step-registry.service';
 
 class ExampleStep extends SagaStep<'deleteUserData'> {

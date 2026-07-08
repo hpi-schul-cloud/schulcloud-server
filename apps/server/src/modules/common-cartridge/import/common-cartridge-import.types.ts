@@ -1,5 +1,5 @@
 import { InputFormat } from '@shared/domain/types';
-import { CommonCartridgeXmlResourceType } from './common-cartridge-import.enums';
+import { type CommonCartridgeXmlResourceType } from './common-cartridge-import.enums';
 
 export type CommonCartridgeFileParserOptions = {
 	maxSearchDepth: number;

@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseFactory } from '@testing/factory/base.factory';
-import { Instance, InstanceProps } from '../domain';
+import { Instance, type InstanceProps } from '../domain';
 
 export const instanceFactory = BaseFactory.define<Instance, InstanceProps>(Instance, () => {
 	return {

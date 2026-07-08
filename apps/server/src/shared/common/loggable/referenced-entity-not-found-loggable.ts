@@ -1,5 +1,5 @@
-import { EntityId } from '../../domain/types';
-import { Loggable, LoggableMessage } from './interfaces';
+import { type EntityId } from '../../domain/types';
+import { type Loggable, type LoggableMessage } from './interfaces';
 
 export class ReferencedEntityNotFoundLoggable implements Loggable {
 	constructor(

@@ -1,6 +1,6 @@
-import { HttpException, HttpExceptionOptions } from '@nestjs/common';
+import { HttpException, type HttpExceptionOptions } from '@nestjs/common';
 import { BusinessError } from '@shared/common/error';
-import { FeathersError } from '../interface';
+import { type FeathersError } from '../interface';
 
 export class ErrorUtils {
 	static isFeathersError(error: unknown): error is FeathersError {

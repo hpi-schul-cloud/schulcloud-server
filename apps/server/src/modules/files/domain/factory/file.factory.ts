@@ -1,5 +1,5 @@
-import { FileDo, FileProps } from '../do';
-import { LegacyFileResponseVo } from '../vo';
+import { FileDo, type FileProps } from '../do';
+import { type LegacyFileResponseVo } from '../vo';
 
 export class FileFactory {
 	public static create(props: FileProps): FileDo {

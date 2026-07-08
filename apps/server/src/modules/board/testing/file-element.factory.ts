@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseFactory } from '@testing/factory/base.factory';
-import { FileElement, FileElementProps, ROOT_PATH } from '../domain';
+import { FileElement, type FileElementProps, ROOT_PATH } from '../domain';
 
 export const fileElementFactory = BaseFactory.define<FileElement, FileElementProps>(FileElement, ({ sequence }) => {
 	return {

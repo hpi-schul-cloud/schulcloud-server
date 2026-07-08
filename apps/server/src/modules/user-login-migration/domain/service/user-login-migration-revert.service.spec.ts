@@ -1,7 +1,7 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { SchoolFeature } from '@modules/school/domain';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { userLoginMigrationDOFactory } from '../../testing';
 import { UserLoginMigrationRevertService } from './user-login-migration-revert.service';
 import { UserLoginMigrationService } from './user-login-migration.service';

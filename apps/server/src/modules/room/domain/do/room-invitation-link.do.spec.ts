@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { EntityId } from '@shared/domain/types';
-import { RoomInvitationLink, RoomInvitationLinkProps } from './room-invitation-link.do';
+import { type EntityId } from '@shared/domain/types';
+import { RoomInvitationLink, type RoomInvitationLinkProps } from './room-invitation-link.do';
 import { roomInvitationLinkTestFactory } from '@modules/room/testing/room-invitation-link.test.factory';
 
 describe('RoomInvitationLink', () => {

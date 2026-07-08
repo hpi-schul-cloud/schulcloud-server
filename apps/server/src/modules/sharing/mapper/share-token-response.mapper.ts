@@ -1,4 +1,4 @@
-import { ShareTokenDO } from '../domainobject/share-token.do';
+import { type ShareTokenDO } from '../domainobject/share-token.do';
 import { ShareTokenResponse } from '../api/dto';
 
 export class ShareTokenResponseMapper {

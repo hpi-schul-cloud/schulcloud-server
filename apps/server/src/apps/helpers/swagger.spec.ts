@@ -1,5 +1,5 @@
 import { ServerTestModule } from '@modules/server';
-import { INestApplication } from '@nestjs/common';
+import { type INestApplication } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import type { Server } from 'node:net';
 import request from 'supertest';

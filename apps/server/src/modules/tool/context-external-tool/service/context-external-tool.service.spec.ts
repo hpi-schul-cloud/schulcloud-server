@@ -1,24 +1,24 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { AuthorizationContext, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { type AuthorizationContext, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
-import { School } from '@modules/school';
+import { type School } from '@modules/school';
 import { schoolFactory } from '@modules/school/testing';
 import { NotFoundException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
-import { CustomParameter } from '../../common/domain';
+import { type CustomParameter } from '../../common/domain';
 import { ToolContextType } from '../../common/enum';
 import { CommonToolDeleteService, CommonToolService } from '../../common/service';
 import { ExternalToolService } from '../../external-tool';
-import { ExternalTool } from '../../external-tool/domain';
+import { type ExternalTool } from '../../external-tool/domain';
 import { customParameterFactory, externalToolFactory } from '../../external-tool/testing';
 import { SchoolExternalToolService } from '../../school-external-tool';
-import { SchoolExternalTool, SchoolExternalToolRef } from '../../school-external-tool/domain';
+import { type SchoolExternalTool, type SchoolExternalToolRef } from '../../school-external-tool/domain';
 import { schoolExternalToolFactory } from '../../school-external-tool/testing';
 import {
 	ContextExternalTool,
-	ContextExternalToolProps,
+	type ContextExternalToolProps,
 	ContextRef,
 	CopyContextExternalToolRejectData,
 	RestrictedContextMismatchLoggableException,

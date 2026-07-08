@@ -1,9 +1,9 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import { DefaultEncryptionService, type EncryptionService } from '@infra/encryption';
 import { ObjectId } from '@mikro-orm/mongodb';
 import {
 	Action,
-	AuthorizationContext,
+	type AuthorizationContext,
 	AuthorizationContextBuilder,
 	AuthorizationService,
 	ForbiddenLoggableException,
@@ -14,9 +14,9 @@ import { schoolEntityFactory } from '@modules/school/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { ForbiddenException, UnprocessableEntityException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
-import { EntityId } from '@shared/domain/types';
+import { type EntityId } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
 import { UUID } from 'bson';
 import { LtiMessageType, ToolContextType } from '../../common/enum';
@@ -28,7 +28,7 @@ import { SchoolExternalToolService } from '../../school-external-tool';
 import { schoolExternalToolFactory } from '../../school-external-tool/testing';
 import {
 	ContextExternalTool,
-	ContextExternalToolProps,
+	type ContextExternalToolProps,
 	InvalidOauthSignatureLoggableException,
 	InvalidToolTypeLoggableException,
 	LtiDeepLinkTokenMissingLoggableException,

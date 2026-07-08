@@ -1,5 +1,5 @@
 import { CustomParameterLocation, ToolConfigType } from '../../common/enum';
-import { ToolLaunchRequestResponse } from '../controller/dto';
+import { type ToolLaunchRequestResponse } from '../controller/dto';
 import { LaunchRequestMethod, LaunchType, PropertyLocation, ToolLaunchDataType, ToolLaunchRequest } from '../types';
 import { ToolLaunchMapper } from './tool-launch.mapper';
 

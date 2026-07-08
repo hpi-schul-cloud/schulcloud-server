@@ -1,5 +1,5 @@
-import { RoleName } from '@modules/role';
-import { RoomAuthorizable } from '../do/room-authorizable.do';
+import { type RoleName } from '@modules/role';
+import { type RoomAuthorizable } from '../do/room-authorizable.do';
 import { RoomMemberAuthorizable } from '../do/room-member-authorizable.do';
 import { RoomMember } from '../do/room-member.do';
 

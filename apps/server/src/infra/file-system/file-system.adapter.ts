@@ -9,7 +9,7 @@ const { mkdir, readdir, writeFile, readFile, mkdtemp } = fsp;
 
 @Injectable()
 export class FileSystemAdapter {
-	private encoding: BufferEncoding;
+	private readonly encoding: BufferEncoding;
 
 	constructor() {
 		this.encoding = 'utf-8';
@@ -75,7 +75,7 @@ export class FileSystemAdapter {
 	 * Removes the given folder recursively including content when not empty.
 	 * @param folderPath path to an existing folder, format depending on
 	 */
-	async removeDirRecursive(folderPath: string): Promise<void> {
+	removeDirRecursive(folderPath: string): Promise<void> {
 		// fs.rm changed in node 14.14, use rimraf instead
 		rimrafSync(folderPath);
 		return Promise.resolve();

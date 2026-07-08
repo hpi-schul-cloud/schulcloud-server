@@ -1,8 +1,8 @@
-import { EntityManager } from '@mikro-orm/mongodb';
+import { type EntityManager } from '@mikro-orm/mongodb';
 import { SchoolEntity } from '@modules/school/repo';
 import { SystemEntity } from '@modules/system/repo';
-import { AnyProvisioningOptions, SchoolSystemOptions, SchoolSystemOptionsProps } from '../domain';
-import { SchoolSystemOptionsEntity, SchoolSystemOptionsEntityProps } from '../entity';
+import { type AnyProvisioningOptions, type SchoolSystemOptions, type SchoolSystemOptionsProps } from '../domain';
+import { type SchoolSystemOptionsEntity, type SchoolSystemOptionsEntityProps } from '../entity';
 
 export class SchoolSystemOptionsRepoMapper {
 	static mapDomainObjectToEntityProperties(

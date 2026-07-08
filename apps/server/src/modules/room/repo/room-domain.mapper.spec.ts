@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Room, RoomProps } from '../domain/do/room.do';
+import { Room, type RoomProps } from '../domain/do/room.do';
 import { RoomColor } from '../domain/type';
 import { roomEntityFactory } from '../testing';
 import { RoomEntity } from './entity';

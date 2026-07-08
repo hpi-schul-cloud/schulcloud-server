@@ -1,7 +1,7 @@
 import { LoggingUtils } from '@infra/logger';
 import { HttpException, HttpStatus } from '@nestjs/common';
-import { Loggable, LoggableMessage } from '@shared/common/loggable';
-import { AxiosError } from 'axios';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
+import { type AxiosError } from 'axios';
 import util from 'node:util';
 
 export class AxiosErrorLoggable extends HttpException implements Loggable {

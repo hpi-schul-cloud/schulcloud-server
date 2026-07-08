@@ -1,4 +1,4 @@
-import { UserDeviceProps } from '../domain/interface';
+import { type UserDeviceProps } from '../domain/interface';
 
 export const userDevicePropsFactory = {
 	create: (props?: Partial<UserDeviceProps>): UserDeviceProps => {

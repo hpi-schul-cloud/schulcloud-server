@@ -1,14 +1,19 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Test, TestingModule } from '@nestjs/testing';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { currentUserFactory } from '@testing/factory/currentuser.factory';
-import { BBBBaseResponse, BBBCreateResponse } from '../bbb';
+import { type BBBBaseResponse, type BBBCreateResponse } from '../bbb';
 import { VideoConferenceScope } from '../domain';
 import { defaultVideoConferenceOptions } from '../interface';
 import { VideoConferenceDeprecatedUc } from '../uc';
-import { VideoConference, VideoConferenceInfo, VideoConferenceJoin, VideoConferenceState } from '../uc/dto';
 import {
-	DeprecatedVideoConferenceInfoResponse,
-	DeprecatedVideoConferenceJoinResponse,
+	type VideoConference,
+	type VideoConferenceInfo,
+	type VideoConferenceJoin,
+	VideoConferenceState,
+} from '../uc/dto';
+import {
+	type DeprecatedVideoConferenceInfoResponse,
+	type DeprecatedVideoConferenceJoinResponse,
 } from './dto/response/video-conference-deprecated.response';
 import { VideoConferenceDeprecatedController } from './video-conference-deprecated.controller';
 

@@ -1,5 +1,5 @@
 import { SocketConnection } from './socket-connection';
-import { Callback } from './types';
+import { type Callback } from './types';
 
 const onListeners: Record<string, Callback[]> = {};
 const onMock = jest.fn().mockImplementation((action: string, listener: Callback) => {

@@ -1,8 +1,8 @@
 import { faker } from '@faker-js/faker';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Test, TestingModule } from '@nestjs/testing';
-import { AxiosResponse } from 'axios';
-import { LessonApi, LessonLinkedTaskResponse, LessonResponse } from '../generated';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import { Test, type TestingModule } from '@nestjs/testing';
+import { type AxiosResponse } from 'axios';
+import { LessonApi, type LessonLinkedTaskResponse, type LessonResponse } from '../generated';
 import { LessonClientAdapter } from './lesson-client.adapter';
 
 describe(LessonClientAdapter.name, () => {

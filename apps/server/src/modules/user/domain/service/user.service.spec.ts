@@ -15,7 +15,7 @@ import { setupEntities } from '@testing/database';
 import { UserDto } from '../../api/dto';
 import { User, UserMikroOrmRepo } from '../../repo';
 import { userDoFactory, userFactory } from '../../testing';
-import { TeacherVisibilityForExternalTeamInvitation, USER_CONFIG_TOKEN, UserConfig } from '../../user.config';
+import { TeacherVisibilityForExternalTeamInvitation, USER_CONFIG_TOKEN, type UserConfig } from '../../user.config';
 import { UserDo } from '../do';
 import { USER_DO_REPO, type UserDoRepo } from '../interface';
 import { UserDiscoverableQuery, type UserQuery } from '../query';

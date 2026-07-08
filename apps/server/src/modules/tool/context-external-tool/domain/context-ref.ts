@@ -1,4 +1,4 @@
-import { ToolContextType } from '../../common/enum';
+import { type ToolContextType } from '../../common/enum';
 
 export class ContextRef {
 	id: string;

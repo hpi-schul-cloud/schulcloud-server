@@ -1,5 +1,5 @@
-import { Counted } from '@shared/domain/types';
-import { Account } from '../../domain';
+import { type Counted } from '@shared/domain/types';
+import { type Account } from '../../domain';
 import { accountDoFactory } from '../../testing';
 import { AccountUcMapper } from './account-uc.mapper';
 

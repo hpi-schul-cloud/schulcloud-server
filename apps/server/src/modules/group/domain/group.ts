@@ -1,9 +1,9 @@
-import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
-import { ExternalSource } from '@shared/domain/domainobject';
-import { EntityId } from '@shared/domain/types';
-import { GroupPeriod } from './group-period';
-import { GroupTypes } from './group-types';
-import { GroupUser } from './group-user';
+import { type AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
+import { type ExternalSource } from '@shared/domain/domainobject';
+import { type EntityId } from '@shared/domain/types';
+import { type GroupPeriod } from './group-period';
+import { type GroupTypes } from './group-types';
+import { type GroupUser } from './group-user';
 
 export interface GroupProps extends AuthorizableObject {
 	id: EntityId;

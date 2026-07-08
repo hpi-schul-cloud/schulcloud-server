@@ -1,6 +1,6 @@
-import { BiloMediaQueryDataResponse } from '@infra/bilo-client';
-import { OfferDTO } from '@infra/vidis-client';
-import { ImageMimeType } from '@shared/domain/types';
+import { type BiloMediaQueryDataResponse } from '@infra/bilo-client';
+import { type OfferDTO } from '@infra/vidis-client';
+import { type ImageMimeType } from '@shared/domain/types';
 import { MediumMetadataResponse } from '../api/response';
 import { Base64SignatureUtil } from '../domain';
 import { MediumMetadataDto } from '../dto';

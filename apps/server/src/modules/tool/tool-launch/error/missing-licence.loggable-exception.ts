@@ -1,9 +1,9 @@
-import { ExternalToolMedium } from '@modules/tool/external-tool/domain';
+import { type ExternalToolMedium } from '@modules/tool/external-tool/domain';
 import { HttpStatus } from '@nestjs/common';
 import { BusinessError } from '@shared/common/error';
-import { Loggable, LoggableMessage } from '@shared/common/loggable';
-import { EntityId } from '@shared/domain/types';
-import { ContextExternalToolLaunchable } from '../../context-external-tool/domain';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
+import { type EntityId } from '@shared/domain/types';
+import { type ContextExternalToolLaunchable } from '../../context-external-tool/domain';
 
 export class MissingMediaLicenseLoggableException extends BusinessError implements Loggable {
 	constructor(

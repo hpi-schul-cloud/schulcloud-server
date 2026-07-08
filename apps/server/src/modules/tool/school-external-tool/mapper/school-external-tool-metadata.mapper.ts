@@ -1,5 +1,5 @@
 import { ContextExternalToolCountPerContextResponse } from '../../common/controller/dto';
-import { SchoolExternalToolUtilization } from '../../tool-utilization/domain';
+import { type SchoolExternalToolUtilization } from '../../tool-utilization/domain';
 import { SchoolExternalToolMetadataResponse } from '../controller/dto';
 
 export class SchoolExternalToolMetadataMapper {

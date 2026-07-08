@@ -1,5 +1,5 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Test, TestingModule } from '@nestjs/testing';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { TldrawDocumentApi } from './generated';
 import { TldrawClientAdapter } from './tldraw-client.adapter';
 

@@ -1,4 +1,4 @@
-import { Card, Column, ColumnBoard } from '../../domain';
+import { type Card, type Column, type ColumnBoard } from '../../domain';
 import { CardSkeletonResponse } from '../dto';
 import { MoveCardResponse } from '../dto/board/move-card.response';
 import { ShortNodeResponse } from '../dto/board/short-node.response';

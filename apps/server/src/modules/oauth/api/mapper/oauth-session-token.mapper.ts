@@ -1,4 +1,4 @@
-import { OauthSessionToken } from '../../domain';
+import { type OauthSessionToken } from '../../domain';
 import { OAuthSessionTokenExpirationResponse } from '../dto';
 
 export class OAuthSessionTokenMapper {

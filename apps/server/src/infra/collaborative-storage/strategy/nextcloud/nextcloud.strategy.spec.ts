@@ -1,8 +1,8 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { LegacyLogger } from '@infra/logger';
-import { TeamDto, TeamUserDto } from '@modules/collaborative-storage/services/dto/team.dto';
+import { type TeamDto, type TeamUserDto } from '@modules/collaborative-storage/services/dto/team.dto';
 import { PseudonymService } from '@modules/pseudonym';
-import { Pseudonym } from '@modules/pseudonym/repo';
+import { type Pseudonym } from '@modules/pseudonym/repo';
 import { pseudonymFactory } from '@modules/pseudonym/testing';
 import { RoleName } from '@modules/role';
 import { ExternalToolService } from '@modules/tool/external-tool/service';
@@ -11,11 +11,11 @@ import { UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
 import { userDoFactory, userFactory } from '@modules/user/testing';
 import { UnprocessableEntityException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { setupEntities } from '@testing/database';
-import { InternalCollaborativeStorageAdapterConfig } from '../../collaborative-storage-adapter.config';
-import { TeamRolePermissionsDto } from '../../dto/team-role-permissions.dto';
+import { type InternalCollaborativeStorageAdapterConfig } from '../../collaborative-storage-adapter.config';
+import { type TeamRolePermissionsDto } from '../../dto/team-role-permissions.dto';
 import { NextcloudClient } from './nextcloud.client';
 import { NextcloudStrategy } from './nextcloud.strategy';
 

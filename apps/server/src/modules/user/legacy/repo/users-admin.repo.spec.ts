@@ -10,11 +10,11 @@ import { SchoolEntity, SchoolYearEntity } from '@modules/school/repo';
 import { schoolEntityFactory, schoolYearEntityFactory } from '@modules/school/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { classEntityFactory } from '../../../class/entity/testing';
-import { UserListResponse, UserResponse, UsersSearchQueryParams } from '../controller/dto';
+import { type UserListResponse, type UserResponse, type UsersSearchQueryParams } from '../controller/dto';
 import { UsersAdminRepo } from './users-admin.repo';
 
 describe('users admin repo', () => {

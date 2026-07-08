@@ -1,8 +1,8 @@
-import { InternalDatabaseConfig } from '@infra/database';
+import { type InternalDatabaseConfig } from '@infra/database';
 import { IoAdapter } from '@nestjs/platform-socket.io';
 import { createAdapter } from '@socket.io/mongo-adapter';
 import { MongoClient } from 'mongodb';
-import { Server, ServerOptions } from 'socket.io';
+import { type Server, type ServerOptions } from 'socket.io';
 
 const COLLECTION_NAME = 'socketio-adapter-events';
 

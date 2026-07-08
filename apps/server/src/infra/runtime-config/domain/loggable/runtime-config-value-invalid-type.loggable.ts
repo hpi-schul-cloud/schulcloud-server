@@ -1,6 +1,6 @@
 import { BadRequest } from '@feathersjs/errors';
 
-import { Loggable, LoggableMessage } from '@shared/common/loggable';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
 import type { RuntimeConfigValue } from '../runtime-config-value.do';
 
 export class RuntimeConfigValueInvalidTypeLoggable extends BadRequest implements Loggable {

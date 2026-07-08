@@ -1,6 +1,6 @@
-import { UserLoginMigrationDO } from '../../domain';
-import { UserLoginMigrationQuery } from '../../domain/interface';
-import { UserLoginMigrationResponse, UserLoginMigrationSearchParams } from '../dto';
+import { type UserLoginMigrationDO } from '../../domain';
+import { type UserLoginMigrationQuery } from '../../domain/interface';
+import { UserLoginMigrationResponse, type UserLoginMigrationSearchParams } from '../dto';
 
 export class UserLoginMigrationMapper {
 	static mapSearchParamsToQuery(searchParams: UserLoginMigrationSearchParams): UserLoginMigrationQuery {

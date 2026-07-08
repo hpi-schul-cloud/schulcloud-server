@@ -1,4 +1,4 @@
-import { LogMessage } from '@shared/common/loggable';
+import { type LogMessage } from '@shared/common/loggable';
 import { ValidationError } from 'class-validator';
 import { biloMediaQueryBadResponseReportFactory } from '../testing';
 import { BiloMediaQueryBadResponseLoggable } from './bilo-media-query-bad-response.loggable';

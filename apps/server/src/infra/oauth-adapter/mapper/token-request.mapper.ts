@@ -1,4 +1,4 @@
-import { AuthenticationCodeGrantTokenRequest, OAuthTokenDto, OauthTokenResponse } from '../dto';
+import { AuthenticationCodeGrantTokenRequest, OAuthTokenDto, type OauthTokenResponse } from '../dto';
 import { OAuthGrantType } from '../types';
 
 export class TokenRequestMapper {

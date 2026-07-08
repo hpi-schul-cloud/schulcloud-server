@@ -1,10 +1,13 @@
 import { faker } from '@faker-js/faker/locale/af_ZA';
-import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { type DeepMocked, createMock } from '@golevelup/ts-jest';
 import { InputFormat } from '@shared/domain/types';
-import AdmZip from 'adm-zip';
+import type AdmZip from 'adm-zip';
 import { readFile } from 'node:fs/promises';
 import { CommonCartridgeXmlResourceType } from './common-cartridge-import.enums';
-import { CommonCartridgeOrganizationProps, CommonCartridgeWebLinkResourceProps } from './common-cartridge-import.types';
+import {
+	type CommonCartridgeOrganizationProps,
+	type CommonCartridgeWebLinkResourceProps,
+} from './common-cartridge-import.types';
 import { CommonCartridgeResourceFactory } from './common-cartridge-resource-factory';
 
 describe('CommonCartridgeResourceFactory', () => {

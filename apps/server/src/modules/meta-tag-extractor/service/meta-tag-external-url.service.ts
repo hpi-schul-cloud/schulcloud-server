@@ -29,11 +29,13 @@ export class MetaTagExternalUrlService {
 		}
 	}
 
-	private async parseHtml(html: string) {
+	private async parseHtml(
+		html: string
+	): Promise<{ ogTitle?: string; ogDescription?: string; ogImage: ImageObject[] } | undefined> {
 		try {
 			const { result } = await ogs({ html });
 			return { ogImage: [], ...result };
-		} catch (error) {
+		} catch {
 			// unable to parse html
 			return undefined;
 		}

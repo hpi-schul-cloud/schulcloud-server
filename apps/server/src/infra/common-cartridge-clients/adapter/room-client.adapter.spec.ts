@@ -1,8 +1,8 @@
 import { faker } from '@faker-js/faker';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Test, TestingModule } from '@nestjs/testing';
-import { AxiosResponse } from 'axios';
-import { CourseRoomsApi, SingleColumnBoardResponse } from '../generated';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import { Test, type TestingModule } from '@nestjs/testing';
+import { type AxiosResponse } from 'axios';
+import { CourseRoomsApi, type SingleColumnBoardResponse } from '../generated';
 import { AdapterUtils } from './adapter.utils';
 import { CourseRoomsClientAdapter } from './room-client.adapter';
 

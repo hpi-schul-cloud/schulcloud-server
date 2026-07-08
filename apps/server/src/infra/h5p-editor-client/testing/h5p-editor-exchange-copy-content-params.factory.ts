@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Factory } from 'fishery';
-import { CopyContentParams, CopyContentParentType } from '../h5p-editor.interface';
+import { type CopyContentParams, CopyContentParentType } from '../h5p-editor.interface';
 
 export const h5pEditorExchangeCopyContentParamsFactory = Factory.define<CopyContentParams>(() => {
 	const params: CopyContentParams = {

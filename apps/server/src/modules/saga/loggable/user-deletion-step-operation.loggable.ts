@@ -1,6 +1,6 @@
-import { Loggable, LoggableMessage } from '@shared/common/loggable';
-import { EntityId } from '@shared/domain/types';
-import { ModuleName, StepStatus } from '../type';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
+import { type EntityId } from '@shared/domain/types';
+import { type ModuleName, type StepStatus } from '../type';
 
 export class UserDeletionStepOperationLoggable implements Loggable {
 	constructor(

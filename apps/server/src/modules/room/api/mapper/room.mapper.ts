@@ -1,9 +1,9 @@
-import { ColumnBoard } from '@modules/board';
-import { BoardOperation } from '@modules/board/authorisation/board-node.rule';
-import { RoomOperation } from '@modules/room-membership/authorization/room.rule';
-import { PaginationParams } from '@shared/controller/dto';
-import { Page } from '@shared/domain/domainobject';
-import { Room } from '../../domain/do/room.do';
+import { type ColumnBoard } from '@modules/board';
+import { type BoardOperation } from '@modules/board/authorisation/board-node.rule';
+import { type RoomOperation } from '@modules/room-membership/authorization/room.rule';
+import { type PaginationParams } from '@shared/controller/dto';
+import { type Page } from '@shared/domain/domainobject';
+import { type Room } from '../../domain/do/room.do';
 import { RoomBoardItemResponse } from '../dto/response/room-board-item.response';
 import { RoomBoardListResponse } from '../dto/response/room-board-list.response';
 import { RoomCreatedResponse } from '../dto/response/room-created.response';
@@ -12,8 +12,8 @@ import { RoomItemResponse } from '../dto/response/room-item.response';
 import { RoomListResponse } from '../dto/response/room-list.response';
 import { RoomStatsItemResponse } from '../dto/response/room-stats-item.response';
 import { RoomStatsListResponse } from '../dto/response/room-stats-list.repsonse';
-import { RoomStats } from '../type/room-stats.type';
-import { RoomWithAllowedOperationsAndLockedStatus } from '../type/room-with-locked-status';
+import { type RoomStats } from '../type/room-stats.type';
+import { type RoomWithAllowedOperationsAndLockedStatus } from '../type/room-with-locked-status';
 
 export class RoomMapper {
 	public static mapToRoomCreatedResponse(room: Room): RoomCreatedResponse {

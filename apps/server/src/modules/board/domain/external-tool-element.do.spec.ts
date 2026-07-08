@@ -1,5 +1,5 @@
 import { externalToolElementFactory } from '../testing';
-import { ExternalToolElement, isExternalToolElement } from './external-tool-element.do';
+import { type ExternalToolElement, isExternalToolElement } from './external-tool-element.do';
 
 describe('ExternalToolElement', () => {
 	let externalToolElement: ExternalToolElement;

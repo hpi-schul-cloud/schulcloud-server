@@ -10,7 +10,7 @@ import { BoardNodeService } from '../board-node.service';
 export class ContextExternalToolDeletedEventHandlerService implements IEventHandler<ContextExternalToolDeletedEvent> {
 	constructor(private readonly boardNodeService: BoardNodeService) {}
 
-	public async handle(event: ContextExternalToolDeletedEvent) {
+	public async handle(event: ContextExternalToolDeletedEvent): Promise<void> {
 		const elements: AnyBoardNode[] = await this.boardNodeService.findElementsByContextExternalToolId(event.id);
 
 		await Promise.all(

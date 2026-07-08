@@ -1,7 +1,7 @@
 import { Scope } from '@shared/repo/scope';
-import { FilterQuery } from '@mikro-orm/core';
-import { EntityId } from '@shared/domain/types';
-import { DeletionRequestEntity } from '../entity';
+import { type FilterQuery } from '@mikro-orm/core';
+import { type EntityId } from '@shared/domain/types';
+import { type DeletionRequestEntity } from '../entity';
 import { StatusModel } from '../../domain/types';
 
 export class DeletionRequestScope extends Scope<DeletionRequestEntity> {

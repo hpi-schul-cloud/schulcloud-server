@@ -1,4 +1,4 @@
-import { IError } from '@infra/rabbitmq';
+import { type IError } from '@infra/rabbitmq';
 import {
 	BadRequestException,
 	ConflictException,

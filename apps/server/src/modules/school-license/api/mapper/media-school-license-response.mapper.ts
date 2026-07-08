@@ -1,4 +1,4 @@
-import { MediaSchoolLicense } from '../../domain';
+import { type MediaSchoolLicense } from '../../domain';
 import { MediaSchoolLicenseListResponse, MediaSchoolLicenseResponse } from '../dto';
 
 export class MediaSchoolLicenseResponseMapper {

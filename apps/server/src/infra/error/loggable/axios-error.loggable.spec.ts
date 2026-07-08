@@ -1,6 +1,6 @@
 import { HttpStatus } from '@nestjs/common';
 import { axiosErrorFactory } from '@testing/factory/axios-error.factory';
-import { AxiosError } from 'axios';
+import { type AxiosError } from 'axios';
 import util from 'node:util';
 import { AxiosErrorLoggable } from './axios-error.loggable';
 

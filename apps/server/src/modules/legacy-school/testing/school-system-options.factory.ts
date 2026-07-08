@@ -1,8 +1,8 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import {
-	AnyProvisioningOptions,
+	type AnyProvisioningOptions,
 	SchoolSystemOptions,
-	SchoolSystemOptionsProps,
+	type SchoolSystemOptionsProps,
 	SchulConneXProvisioningOptions,
 } from '@modules/legacy-school';
 import { DomainObjectFactory } from '../../../testing/factory/domainobject/domain-object.factory';

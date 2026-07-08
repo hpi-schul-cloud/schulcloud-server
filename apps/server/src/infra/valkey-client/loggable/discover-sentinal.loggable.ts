@@ -1,5 +1,5 @@
-import { Loggable, LoggableMessage } from '@shared/common/loggable';
-import { SentinalHost } from '../types';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
+import { type SentinalHost } from '../types';
 
 export class DiscoveredSentinalHostsLoggable implements Loggable {
 	constructor(private readonly data: SentinalHost[]) {}

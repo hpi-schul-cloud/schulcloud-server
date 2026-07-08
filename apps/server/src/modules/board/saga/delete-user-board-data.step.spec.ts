@@ -8,7 +8,7 @@ import {
 	StepOperationType,
 	StepReportBuilder,
 } from '@modules/saga';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { BoardNodeEntity } from '../repo';
 import { BoardNodeService, MediaBoardService } from '../service';

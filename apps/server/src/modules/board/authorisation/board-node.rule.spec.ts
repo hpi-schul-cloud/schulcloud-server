@@ -1,4 +1,4 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Action, AuthorizationInjectionService } from '@modules/authorization';
 import { BoardRoles } from '@modules/board';
@@ -6,11 +6,11 @@ import { roleFactory } from '@modules/role/testing';
 import { UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { studentPermissions, userPermissions } from '@testing/user-role-permissions';
-import { BoardConfiguration } from '../domain';
+import { type BoardConfiguration } from '../domain';
 import {
 	boardNodeAuthorizableFactory,
 	columnBoardFactory,
@@ -18,7 +18,7 @@ import {
 	fileElementFactory,
 	videoConferenceElementFactory,
 } from '../testing';
-import { BoardNodeRule, BoardOperation } from './board-node.rule';
+import { BoardNodeRule, type BoardOperation } from './board-node.rule';
 
 describe(BoardNodeRule.name, () => {
 	let boardNodeRule: BoardNodeRule;

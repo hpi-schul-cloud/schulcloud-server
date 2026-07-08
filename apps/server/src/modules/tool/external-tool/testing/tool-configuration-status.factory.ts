@@ -1,4 +1,4 @@
-import { ContextExternalToolConfigurationStatus } from '@modules/tool/common/domain';
+import { type ContextExternalToolConfigurationStatus } from '@modules/tool/common/domain';
 import { Factory } from 'fishery';
 
 export const toolConfigurationStatusFactory = Factory.define<ContextExternalToolConfigurationStatus>(() => {

@@ -11,9 +11,9 @@ import {
 	BoardExternalReference,
 	BoardExternalReferenceType,
 	BoardLayout,
+	Colors,
 	isMediaBoard,
 	MediaBoard,
-	Colors,
 	MediaBoardNodeFactory,
 	MediaExternalToolElement,
 } from '../../domain';
@@ -65,7 +65,9 @@ export class MediaBoardService {
 		const existingBoards: MediaBoard[] = await this.findByExternalReference(context);
 
 		let board: MediaBoard;
-		if (!existingBoards.length) {
+		if (existingBoards.length) {
+			board = existingBoards[0];
+		} else {
 			board = this.mediaBoardNodeFactory.buildMediaBoard({
 				context,
 				layout: BoardLayout.LIST,
@@ -73,8 +75,6 @@ export class MediaBoardService {
 				collapsed: false,
 			});
 			await this.boardNodeRepo.save(board);
-		} else {
-			board = existingBoards[0];
 		}
 
 		return board;
@@ -98,19 +98,22 @@ export class MediaBoardService {
 	public async updateBackgroundColor<T extends WithBackgroundColor<AnyMediaBoardNode>>(
 		node: T,
 		backgroundColor: T['backgroundColor']
-	) {
+	): Promise<void> {
 		node.backgroundColor = backgroundColor;
 
 		await this.boardNodeRepo.save(node);
 	}
 
-	public async updateCollapsed<T extends WithCollapsed<AnyMediaBoardNode>>(node: T, collapsed: T['collapsed']) {
+	public async updateCollapsed<T extends WithCollapsed<AnyMediaBoardNode>>(
+		node: T,
+		collapsed: T['collapsed']
+	): Promise<void> {
 		node.collapsed = collapsed;
 
 		await this.boardNodeRepo.save(node);
 	}
 
-	public async updateLayout<T extends WithLayout<AnyMediaBoardNode>>(node: T, layout: T['layout']) {
+	public async updateLayout<T extends WithLayout<AnyMediaBoardNode>>(node: T, layout: T['layout']): Promise<void> {
 		node.layout = layout;
 
 		await this.boardNodeRepo.save(node);

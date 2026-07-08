@@ -1,5 +1,5 @@
 import { InternalServerErrorException } from '@nestjs/common';
-import { Loggable, LoggableMessage } from '../loggable/interfaces';
+import { type Loggable, type LoggableMessage } from '../loggable/interfaces';
 
 export class ReferenceNotPopulatedLoggableException extends InternalServerErrorException implements Loggable {
 	constructor(

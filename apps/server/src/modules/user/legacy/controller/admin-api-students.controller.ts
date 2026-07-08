@@ -23,7 +23,9 @@ export class AdminApiStudentsController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Query() params: UsersSearchQueryParams
 	): Promise<UserListResponse> {
-		return this.uc.findUsersByParams(RequestedRoleEnum.STUDENTS, currentUser.userId, params);
+		const result = await this.uc.findUsersByParams(RequestedRoleEnum.STUDENTS, currentUser.userId, params);
+
+		return result;
 	}
 
 	@Get(':id')
@@ -36,6 +38,8 @@ export class AdminApiStudentsController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() params: UserByIdParams
 	): Promise<UserResponse> {
-		return this.uc.findUserById(RequestedRoleEnum.STUDENTS, currentUser.userId, params);
+		const result = await this.uc.findUserById(RequestedRoleEnum.STUDENTS, currentUser.userId, params);
+
+		return result;
 	}
 }

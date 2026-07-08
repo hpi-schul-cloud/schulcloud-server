@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Test, TestingModule } from '@nestjs/testing';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { AdminApiRegistrationPinController } from './admin-api-registration-pin.controller';
 import { RegistrationPinUc } from './registration-pin.uc';
 

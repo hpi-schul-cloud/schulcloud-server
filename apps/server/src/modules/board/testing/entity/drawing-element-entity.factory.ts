@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { BoardNodeEntityFactory, PropsWithType } from './board-node-entity.factory';
-import { BoardNodeType, DrawingElementProps, ROOT_PATH } from '../../domain';
+import { BoardNodeEntityFactory, type PropsWithType } from './board-node-entity.factory';
+import { BoardNodeType, type DrawingElementProps, ROOT_PATH } from '../../domain';
 
 export const drawingElementEntityFactory = BoardNodeEntityFactory.define<PropsWithType<DrawingElementProps>>(
 	({ sequence }) => {

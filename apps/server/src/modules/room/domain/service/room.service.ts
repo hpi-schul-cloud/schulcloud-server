@@ -56,7 +56,7 @@ export class RoomService {
 		let room: Room;
 		try {
 			room = await this.getSingleRoom(roomId);
-		} catch (error) {
+		} catch {
 			return false;
 		}
 

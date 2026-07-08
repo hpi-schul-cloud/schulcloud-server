@@ -1,13 +1,13 @@
-import { ICurrentUser, JwtAuthGuard } from '@infra/auth-guard';
+import { type ICurrentUser, JwtAuthGuard } from '@infra/auth-guard';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { AUTHENTICATION_CONFIG_TOKEN, AuthenticationConfig } from '@modules/authentication/authentication-config';
+import { AUTHENTICATION_CONFIG_TOKEN, type AuthenticationConfig } from '@modules/authentication/authentication-config';
 import { OauthSessionTokenEntity } from '@modules/oauth/entity';
 import { oauthSessionTokenEntityFactory } from '@modules/oauth/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server/server.app.module';
 import { systemEntityFactory, systemOauthConfigEntityFactory, systemOauthConfigFactory } from '@modules/system/testing';
-import { ExecutionContext, HttpStatus, INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { type ExecutionContext, HttpStatus, type INestApplication } from '@nestjs/common';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { currentUserFactory } from '@testing/factory/currentuser.factory';
 import { JwtTestFactory } from '@testing/factory/jwt.test.factory';
@@ -15,8 +15,8 @@ import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.tes
 import { TestApiClient } from '@testing/test-api-client';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { Request } from 'express';
-import { Response } from 'supertest';
+import { type Request } from 'express';
+import { type Response } from 'supertest';
 
 jest.mock('jwks-rsa', () => () => {
 	return {

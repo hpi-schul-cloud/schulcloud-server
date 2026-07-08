@@ -1,4 +1,4 @@
-import { ShareTokenParentType } from '../../domainobject/share-token.do';
+import { type ShareTokenParentType } from '../../domainobject/share-token.do';
 
 export interface ShareTokenInfoDto {
 	token: string;

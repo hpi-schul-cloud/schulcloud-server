@@ -1,6 +1,6 @@
 import { UnprocessableEntityException } from '@nestjs/common';
-import { Loggable, LoggableMessage } from '@shared/common/loggable';
-import { School } from '../do';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
+import { type School } from '../do';
 
 export class SchoolAlreadyInNextYearLoggableException extends UnprocessableEntityException implements Loggable {
 	constructor(private readonly school: School) {

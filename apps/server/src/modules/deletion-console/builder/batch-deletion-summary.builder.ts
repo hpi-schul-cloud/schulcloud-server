@@ -1,4 +1,4 @@
-import { BatchDeletionSummaryOverallStatus, BatchDeletionSummary } from '../uc/interface';
+import { BatchDeletionSummaryOverallStatus, type BatchDeletionSummary } from '../uc/interface';
 
 export class BatchDeletionSummaryBuilder {
 	static build(executionTimeMilliseconds: number): BatchDeletionSummary {

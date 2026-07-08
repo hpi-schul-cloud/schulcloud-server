@@ -1,6 +1,6 @@
-import { GetFile } from '@infra/s3-client';
-import archiver from 'archiver';
-import { GetFileResponse } from '../types';
+import { type GetFile } from '@infra/s3-client';
+import type archiver from 'archiver';
+import { type GetFileResponse } from '../types';
 
 export class FileResponseFactory {
 	public static create(file: GetFile, name: string): GetFileResponse {

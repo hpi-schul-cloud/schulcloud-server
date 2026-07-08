@@ -1,4 +1,4 @@
-import { Readable } from 'node:stream';
+import { type Readable } from 'node:stream';
 import { CommonCartridgeElement } from './common-cartridge-element.interface';
 
 export type ResourceFileContentType = string | Buffer | Readable;

@@ -1,5 +1,5 @@
 import { Factory } from 'fishery';
-import { SchoolExternalToolConfigurationStatusResponse } from '../controller/dto/school-external-tool-configuration.response';
+import { type SchoolExternalToolConfigurationStatusResponse } from '../controller/dto/school-external-tool-configuration.response';
 
 export const schoolExternalToolConfigurationStatusResponseFactory =
 	Factory.define<SchoolExternalToolConfigurationStatusResponse>(() => {

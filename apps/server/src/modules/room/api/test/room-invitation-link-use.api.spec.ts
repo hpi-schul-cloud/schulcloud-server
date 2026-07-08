@@ -4,7 +4,7 @@ import { groupEntityFactory } from '@modules/group/testing';
 import { RoleName } from '@modules/role';
 import { Role } from '@modules/role/repo';
 import { roleFactory } from '@modules/role/testing';
-import { RoomPublicApiConfig } from '@modules/room';
+import { type RoomPublicApiConfig } from '@modules/room';
 import { RoomMembershipEntity, RoomMembershipService } from '@modules/room-membership';
 import { roomMembershipEntityFactory } from '@modules/room-membership/testing';
 import { roomEntityFactory } from '@modules/room/testing';
@@ -12,13 +12,13 @@ import { roomInvitationLinkEntityFactory } from '@modules/room/testing/room-invi
 import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus, type INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { ObjectId } from 'mongodb';
-import { RoomInvitationLinkError } from '../dto/response/room-invitation-link.error';
+import { type RoomInvitationLinkError } from '../dto/response/room-invitation-link.error';
 import { RoomInvitationLinkValidationError } from '../type/room-invitation-link-validation-error.enum';
 
 type RoomInvitationLinkConfig = {

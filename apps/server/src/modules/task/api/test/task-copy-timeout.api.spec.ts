@@ -2,19 +2,19 @@ import { createMock } from '@golevelup/ts-jest';
 import { FilesStorageClientAdapterService } from '@infra/files-storage-amqp-client';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { courseEntityFactory } from '@modules/course/testing';
-import { INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { type INestApplication } from '@nestjs/common';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
-import { TASK_PUBLIC_API_CONFIG_TOKEN, TaskPublicApiConfig } from '../../task.config';
+import { TASK_PUBLIC_API_CONFIG_TOKEN, type TaskPublicApiConfig } from '../../task.config';
 import { taskFactory } from '../../testing';
 
 import { ServerTestModule } from '@modules/server/server.app.module';
 import {
 	TASK_INCOMING_REQUEST_TIMEOUT_COPY_API_KEY,
 	TASK_TIMEOUT_CONFIG_TOKEN,
-	TaskTimeoutConfig,
+	type TaskTimeoutConfig,
 } from '@modules/task/timeout.config';
 
 describe('Task copy (API)', () => {

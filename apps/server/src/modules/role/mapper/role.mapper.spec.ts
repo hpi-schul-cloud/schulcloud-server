@@ -1,7 +1,7 @@
 import { Permission } from '@shared/domain/interface';
-import { Role } from '../repo';
+import { type Role } from '../repo';
 import { roleFactory } from '../testing';
-import { RoleDto } from '../service';
+import { type RoleDto } from '../service';
 import { RoleMapper } from './role.mapper';
 
 describe('RoleMapper', () => {

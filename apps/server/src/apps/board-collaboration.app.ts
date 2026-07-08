@@ -6,13 +6,13 @@ import { NestFactory } from '@nestjs/core';
 import { install as sourceMapInstall } from 'source-map-support';
 
 // application imports
-import { DATABASE_CONFIG_TOKEN, InternalDatabaseConfig } from '@infra/database';
-import { createRequestLoggerMiddleware, LegacyLogger, LOGGER_CONFIG_TOKEN, LoggerConfig } from '@infra/logger';
+import { DATABASE_CONFIG_TOKEN, type InternalDatabaseConfig } from '@infra/database';
+import { createRequestLoggerMiddleware, LegacyLogger, LOGGER_CONFIG_TOKEN, type LoggerConfig } from '@infra/logger';
 import { MongoIoAdapter } from '@infra/socketio';
 import { BoardCollaborationModule } from '@modules/board/board-collaboration.app.module';
-import { BOARD_CONFIG_TOKEN, BoardConfig } from '@modules/board/board.config';
+import { BOARD_CONFIG_TOKEN, type BoardConfig } from '@modules/board/board.config';
 import { ExpressAdapter } from '@nestjs/platform-express';
-import { SwaggerDocumentOptions } from '@nestjs/swagger';
+import { type SwaggerDocumentOptions } from '@nestjs/swagger';
 import express from 'express';
 import { enableOpenApiDocs } from './helpers';
 import { createMetricsServer } from './helpers/metrics.server';

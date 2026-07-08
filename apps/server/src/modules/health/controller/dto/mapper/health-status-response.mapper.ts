@@ -1,5 +1,5 @@
-import { HealthStatus } from '../../../domain';
-import { HealthStatusResponse, HealthStatusCheckResponse } from '../response';
+import { type HealthStatus } from '../../../domain';
+import { HealthStatusResponse, type HealthStatusCheckResponse } from '../response';
 import { HealthStatusCheckResponseMapper } from './health-status-check-response.mapper';
 
 export class HealthStatusResponseMapper {

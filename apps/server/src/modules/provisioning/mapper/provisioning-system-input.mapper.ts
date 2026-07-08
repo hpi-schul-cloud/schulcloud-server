@@ -1,4 +1,4 @@
-import { System } from '@modules/system';
+import { type System } from '@modules/system';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { ProvisioningSystemDto } from '../dto';
 

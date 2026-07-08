@@ -1,5 +1,5 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { DefaultEncryptionService, EncryptionService } from './encryption.interface';
+import { Test, type TestingModule } from '@nestjs/testing';
+import { DefaultEncryptionService, type EncryptionService } from './encryption.interface';
 import { EncryptionModule } from './encryption.module';
 import { TestEncryptionConfig } from './testing';
 

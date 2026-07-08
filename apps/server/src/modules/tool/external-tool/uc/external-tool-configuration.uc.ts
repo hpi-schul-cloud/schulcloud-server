@@ -245,9 +245,7 @@ export class ExternalToolConfigurationUc {
 		context: AuthorizationContext
 	): Promise<void> {
 		await Promise.all(
-			tools.map(async (tool: ContextExternalTool) =>
-				this.toolPermissionHelper.ensureContextPermissions(user, tool, context)
-			)
+			tools.map((tool: ContextExternalTool) => this.toolPermissionHelper.ensureContextPermissions(user, tool, context))
 		);
 	}
 }

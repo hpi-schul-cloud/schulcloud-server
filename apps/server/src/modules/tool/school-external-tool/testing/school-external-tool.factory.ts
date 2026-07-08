@@ -1,8 +1,8 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { DoBaseFactory } from '@testing/factory/domainobject';
-import { DeepPartial } from 'fishery';
+import { type DeepPartial } from 'fishery';
 import { CustomParameterEntry } from '../../common/domain';
-import { SchoolExternalTool, SchoolExternalToolProps } from '../domain';
+import { SchoolExternalTool, type SchoolExternalToolProps } from '../domain';
 import { schoolExternalToolConfigurationStatusFactory } from './school-external-tool-configuration-status.factory';
 
 class SchoolExternalToolFactory extends DoBaseFactory<SchoolExternalTool, SchoolExternalToolProps> {

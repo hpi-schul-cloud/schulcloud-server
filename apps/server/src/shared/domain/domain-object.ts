@@ -1,4 +1,4 @@
-import { EntityId } from './types';
+import { type EntityId } from './types';
 
 export interface AuthorizableObject {
 	get id(): EntityId;

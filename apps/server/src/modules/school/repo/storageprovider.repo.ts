@@ -9,12 +9,12 @@ export class StorageProviderRepo extends BaseRepo<StorageProviderEntity> {
 		super(_em);
 	}
 
-	get entityName() {
+	get entityName(): typeof StorageProviderEntity {
 		return StorageProviderEntity;
 	}
 
 	async findAll(): Promise<StorageProviderEntity[]> {
-		const providers = this._em.find(StorageProviderEntity, {});
+		const providers = await this._em.find(StorageProviderEntity, {});
 
 		return providers;
 	}

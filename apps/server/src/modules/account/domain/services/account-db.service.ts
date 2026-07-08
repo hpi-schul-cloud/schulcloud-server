@@ -15,8 +15,9 @@ export class AccountServiceDb extends AbstractAccountService {
 
 	public async findById(id: EntityId): Promise<Account> {
 		const internalId = this.convertExternalToInternalId(id);
+		const account = await this.accountRepo.findById(internalId);
 
-		return this.accountRepo.findById(internalId);
+		return account;
 	}
 
 	public findMultipleByUserId(userIds: EntityId[]): Promise<Account[]> {
@@ -115,7 +116,7 @@ export class AccountServiceDb extends AbstractAccountService {
 
 	public async delete(id: EntityId): Promise<void> {
 		const internalId = this.convertExternalToInternalId(id);
-		return this.accountRepo.deleteById(internalId);
+		await this.accountRepo.deleteById(internalId);
 	}
 
 	public deleteByUserId(userId: EntityId): Promise<EntityId[]> {

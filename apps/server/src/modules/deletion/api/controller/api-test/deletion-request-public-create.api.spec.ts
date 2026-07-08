@@ -2,12 +2,12 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { AccountEntity } from '@modules/account/repo';
 import { ServerTestModule } from '@modules/server';
 import { User } from '@modules/user/repo';
-import { INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { type INestApplication } from '@nestjs/common';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
-import { DeletionRequestParams } from '../dto';
+import { type DeletionRequestParams } from '../dto';
 
 const baseRouteName = '/deletionRequestsPublic';
 

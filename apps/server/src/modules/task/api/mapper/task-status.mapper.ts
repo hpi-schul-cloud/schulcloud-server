@@ -1,4 +1,4 @@
-import { TaskStatus } from '../../domain';
+import { type TaskStatus } from '../../domain';
 import { TaskStatusResponse } from '../dto';
 
 export class TaskStatusMapper {

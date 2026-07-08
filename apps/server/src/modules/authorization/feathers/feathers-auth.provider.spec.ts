@@ -1,7 +1,7 @@
 import { FeathersServiceProvider } from '@infra/feathers';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 
 import { NewsTargetModel } from '@modules/news';
 import { FeathersAuthProvider } from './feathers-auth.provider';

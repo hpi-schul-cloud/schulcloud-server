@@ -1,5 +1,5 @@
 import { Factory } from 'fishery';
-import { AcceptLoginRequestBody } from '../domain/interface';
+import { type AcceptLoginRequestBody } from '../domain/interface';
 
 export const acceptLoginRequestBodyFactory = Factory.define<AcceptLoginRequestBody>(() => {
 	return {

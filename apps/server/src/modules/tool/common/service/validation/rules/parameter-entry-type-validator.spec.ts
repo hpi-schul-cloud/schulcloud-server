@@ -1,6 +1,10 @@
-import { ValidationError } from '@shared/common/error';
+import { type ValidationError } from '@shared/common/error';
 import { customParameterFactory } from '../../../../external-tool/testing';
-import { CustomParameter, CustomParameterEntry, ToolParameterTypeMismatchLoggableException } from '../../../domain';
+import {
+	type CustomParameter,
+	CustomParameterEntry,
+	ToolParameterTypeMismatchLoggableException,
+} from '../../../domain';
 import { CustomParameterType } from '../../../enum';
 import { ParameterEntryTypeValidator } from './parameter-entry-type-validator';
 

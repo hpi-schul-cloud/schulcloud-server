@@ -1,8 +1,8 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { ConfigurationModule } from '@infra/configuration';
-import { S3ClientAdapter } from '@infra/s3-client';
-import { FWU_PUBLIC_API_CONFIG_TOKEN, FwuPublicApiConfig } from '@modules/fwu-learning-contents';
-import { INestApplication, NotFoundException } from '@nestjs/common';
+import { type S3ClientAdapter } from '@infra/s3-client';
+import { FWU_PUBLIC_API_CONFIG_TOKEN, type FwuPublicApiConfig } from '@modules/fwu-learning-contents';
+import { type INestApplication, NotFoundException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
@@ -10,8 +10,8 @@ import { TEST_JWT_CONFIG_TOKEN, TestJwtModuleConfig } from '@testing/test-jwt-mo
 import { Readable } from 'node:stream';
 import { FwuLearningContentsTestModule } from '../../fwu-learning-contents-test.module';
 import { FWU_S3_CLIENT_INJECTION_TOKEN } from '../../fwu.const';
-import { FwuItem } from '../../interface/fwu-item';
-import { FwuListResponse } from '../dto/fwu-list.response';
+import { type FwuItem } from '../../interface/fwu-item';
+import { type FwuListResponse } from '../dto/fwu-list.response';
 
 jest.mock('../../fwu.filesIndex', () => {
 	return {

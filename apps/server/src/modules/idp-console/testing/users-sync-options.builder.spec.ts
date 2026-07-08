@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { SystemType, UsersSyncOptions } from '../api/interface';
+import { SystemType, type UsersSyncOptions } from '../api/interface';
 import { UsersSyncOptionsBuilder } from './users-sync-options.builder';
 
 describe(UsersSyncOptionsBuilder.name, () => {

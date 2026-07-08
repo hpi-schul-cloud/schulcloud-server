@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { BoardNodeType, Colors, MediaLineProps, ROOT_PATH } from '../../domain';
-import { BoardNodeEntityFactory, PropsWithType } from './board-node-entity.factory';
+import { BoardNodeType, Colors, type MediaLineProps, ROOT_PATH } from '../../domain';
+import { BoardNodeEntityFactory, type PropsWithType } from './board-node-entity.factory';
 
 export const mediaLineEntityFactory = BoardNodeEntityFactory.define<PropsWithType<MediaLineProps>>(({ sequence }) => {
 	const props: PropsWithType<MediaLineProps> = {
