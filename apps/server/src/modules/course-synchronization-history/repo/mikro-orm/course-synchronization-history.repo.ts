@@ -1,6 +1,6 @@
-import { EntityData, EntityName } from '@mikro-orm/core';
+import { type EntityData, type EntityName } from '@mikro-orm/core';
 import { BaseDomainObjectRepo } from '@shared/repo/base-domain-object.repo';
-import { CourseSynchronizationHistory, CourseSynchronizationHistoryRepo } from '../../domain';
+import { type CourseSynchronizationHistory, type CourseSynchronizationHistoryRepo } from '../../domain';
 import { CourseSynchronizationHistoryEntity } from '../entity';
 import { CourseSynchronizationHistoryMapper } from '../mapper';
 

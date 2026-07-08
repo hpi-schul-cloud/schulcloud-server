@@ -1,7 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { CustomParameterEntry } from '../../common/domain';
-import { CustomParameterEntryParam, SchoolExternalToolPostParams } from '../controller/dto';
-import { SchoolExternalToolProps } from '../domain';
+import { type CustomParameterEntry } from '../../common/domain';
+import { type CustomParameterEntryParam, type SchoolExternalToolPostParams } from '../controller/dto';
+import { type SchoolExternalToolProps } from '../domain';
 
 export class SchoolExternalToolRequestMapper {
 	public static mapSchoolExternalToolRequest(request: SchoolExternalToolPostParams): SchoolExternalToolProps {

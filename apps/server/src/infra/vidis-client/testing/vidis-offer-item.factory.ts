@@ -1,4 +1,4 @@
-import { OfferDTO } from '@infra/vidis-client';
+import { type OfferDTO } from '@infra/vidis-client';
 import { Factory } from 'fishery';
 import { base64TestLogo } from './base64-test-logo';
 

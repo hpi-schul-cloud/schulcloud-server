@@ -1,6 +1,6 @@
 import { InternalServerErrorException } from '@nestjs/common';
 import { CommonCartridgeErrorEnum } from './error.enums';
-import { Loggable, LoggableMessage } from '@shared/common/loggable';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
 
 export class MissingMetadataLoggableException extends InternalServerErrorException implements Loggable {
 	constructor() {

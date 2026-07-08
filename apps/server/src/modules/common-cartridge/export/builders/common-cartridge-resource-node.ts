@@ -1,8 +1,8 @@
-import { CommonCartridgeVersion } from '../common-cartridge.enums';
-import { CommonCartridgeResource } from '../interfaces';
+import { type CommonCartridgeVersion } from '../common-cartridge.enums';
+import { type CommonCartridgeResource } from '../interfaces';
 import {
 	CommonCartridgeResourceFactory,
-	CommonCartridgeResourceProps,
+	type CommonCartridgeResourceProps,
 } from '../resources/common-cartridge-resource-factory';
 import type { CommonCartridgeOrganizationNode } from './common-cartridge-organization-node';
 

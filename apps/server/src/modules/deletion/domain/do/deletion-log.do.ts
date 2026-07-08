@@ -1,7 +1,7 @@
-import { EntityId } from '@shared/domain/types';
-import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
-import { DomainOperationReport, DomainDeletionReport } from '../interface';
-import { DomainName } from '../types';
+import { type EntityId } from '@shared/domain/types';
+import { type AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
+import { type DomainOperationReport, type DomainDeletionReport } from '../interface';
+import { type DomainName } from '../types';
 
 export interface DeletionLogProps extends AuthorizableObject {
 	createdAt?: Date;

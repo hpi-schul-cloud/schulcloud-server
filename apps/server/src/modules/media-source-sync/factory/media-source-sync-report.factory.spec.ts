@@ -1,4 +1,4 @@
-import { MediaSourceSyncReport } from '../interface';
+import { type MediaSourceSyncReport } from '../interface';
 import { mediaSourceSyncOperationReportFactory } from '../testing';
 import { MediaSourceSyncOperation, MediaSourceSyncStatus } from '../types';
 import { MediaSourceSyncReportFactory } from './media-source-sync-report.factory';

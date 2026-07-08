@@ -1,18 +1,18 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Test, TestingModule } from '@nestjs/testing';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { Page } from '@shared/domain/domainobject';
-import { EntityId } from '@shared/domain/types';
-import { CustomParameter } from '../../common/domain';
+import { type EntityId } from '@shared/domain/types';
+import { type CustomParameter } from '../../common/domain';
 import { CustomParameterScope, ToolContextType } from '../../common/enum';
 import { CommonToolService } from '../../common/service';
-import { SchoolExternalTool } from '../../school-external-tool/domain';
+import { type SchoolExternalTool } from '../../school-external-tool/domain';
 import {
 	schoolExternalToolConfigurationStatusFactory,
 	schoolExternalToolFactory,
 } from '../../school-external-tool/testing';
-import { ExternalTool } from '../domain';
+import { type ExternalTool } from '../domain';
 import { customParameterFactory, externalToolFactory } from '../testing';
-import { ContextExternalToolTemplateInfo } from '../uc';
+import { type ContextExternalToolTemplateInfo } from '../uc';
 import { ExternalToolConfigurationService } from './external-tool-configuration.service';
 
 describe('ExternalToolConfigurationService', () => {

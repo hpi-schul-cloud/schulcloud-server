@@ -1,5 +1,5 @@
 import { InternalServerErrorException } from '@nestjs/common';
-import { Card, Column } from '../../domain';
+import { Card, type Column } from '../../domain';
 import { CardSkeletonResponse, ColumnFullResponse, ColumnResponse, TimestampsResponse } from '../dto';
 import { CardResponseMapper } from './card-response.mapper';
 

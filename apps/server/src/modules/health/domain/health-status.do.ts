@@ -1,4 +1,4 @@
-import { HealthStatusCheck } from './health-status-check.do';
+import { type HealthStatusCheck } from './health-status-check.do';
 import { HealthStatuses } from './health-statuses.do';
 
 export interface HealthStatusProps {

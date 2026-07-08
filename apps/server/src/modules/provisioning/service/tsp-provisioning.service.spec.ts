@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { Logger } from '@infra/logger';
 import { AccountService } from '@modules/account';
 import { accountDoFactory } from '@modules/account/testing';
@@ -11,9 +11,9 @@ import { SchoolService } from '@modules/school';
 import { schoolFactory } from '@modules/school/testing';
 import type { TspUserInfo } from '@modules/tsp-sync';
 
-import { ParentConsent, UserConsent, UserService } from '@modules/user';
+import { type ParentConsent, type UserConsent, UserService } from '@modules/user';
 import { userDoFactory } from '@modules/user/testing';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { BadDataLoggableException } from '../loggable';
 import {

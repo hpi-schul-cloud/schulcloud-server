@@ -1,5 +1,5 @@
-import { ProviderOauthClient } from '../oauth-client.interface';
-import { ProviderOidcContext } from '../oidc-context.interface';
+import { type ProviderOauthClient } from '../oauth-client.interface';
+import { type ProviderOidcContext } from '../oidc-context.interface';
 
 /**
  * @see https://www.ory.sh/docs/hydra/reference/api#tag/oAuth2

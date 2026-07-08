@@ -1,4 +1,4 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { CourseService } from '@modules/course';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
@@ -8,9 +8,9 @@ import { RoomAuthorizable, RoomMembershipService } from '@modules/room-membershi
 import { roomFactory } from '@modules/room/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
-import { BoardExternalReference, BoardExternalReferenceType } from '../../../domain';
+import { type BoardExternalReference, BoardExternalReferenceType } from '../../../domain';
 import { BoardContextResolverService } from './board-context-resolver.service';
 import { CourseBoardContext } from './course-board-context';
 import { RoomBoardContext } from './room-board-context';

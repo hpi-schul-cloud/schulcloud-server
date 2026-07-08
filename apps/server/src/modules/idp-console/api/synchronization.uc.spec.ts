@@ -1,13 +1,13 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { Logger } from '@infra/logger';
-import { SchulconnexResponse, SchulconnexRestClient } from '@infra/schulconnex-client';
+import { type SchulconnexResponse, SchulconnexRestClient } from '@infra/schulconnex-client';
 import { schulconnexResponseFactory } from '@infra/schulconnex-client/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountService } from '@modules/account';
 import { Synchronization, SynchronizationService, SynchronizationStatusModel } from '@modules/synchronization';
 import { synchronizationFactory } from '@modules/synchronization/domain/testing';
 import { UserService } from '@modules/user';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { IDP_CONSOLE_CONFIG_TOKEN } from '../idp-console.config';
 import {
 	FailedUpdateLastSyncedAtLoggableException,

@@ -15,7 +15,7 @@ describe('BaseDORepo', () => {
 		@Property()
 		name: string;
 
-		constructor(props: TestEntityProperties = { name: 'test' }) {
+		constructor(props: TestEntityProperties) {
 			super();
 			this.name = props.name;
 		}
@@ -26,7 +26,7 @@ describe('BaseDORepo', () => {
 
 		createdAt?: Date = new Date();
 
-		constructor(entityDO: TestDO = { name: 'test' }) {
+		constructor(entityDO: TestDO) {
 			super();
 			this.id = entityDO.id;
 			this.name = entityDO.name;
@@ -102,7 +102,7 @@ describe('BaseDORepo', () => {
 		});
 
 		it('should persist and flush a single updated entity', async () => {
-			const testEntity = em.create(TestEntity, new TestEntity());
+			const testEntity = em.create(TestEntity, new TestEntity({ name: 'test' }));
 			await em.persist(testEntity).flush();
 
 			const testDO = new TestDO({ id: testEntity.id, name: 'test123' });
@@ -136,7 +136,7 @@ describe('BaseDORepo', () => {
 	describe('deleteById', () => {
 		describe('single entity', () => {
 			it('should remove a single entity', async () => {
-				const testEntity = new TestEntity();
+				const testEntity = new TestEntity({ name: 'test' });
 				await em.persist(testEntity).flush();
 				em.clear();
 
@@ -147,7 +147,7 @@ describe('BaseDORepo', () => {
 			});
 
 			it('should remove a single entity and return 1', async () => {
-				const testEntity = new TestEntity();
+				const testEntity = new TestEntity({ name: 'test' });
 				await em.persist(testEntity).flush();
 				em.clear();
 
@@ -159,8 +159,8 @@ describe('BaseDORepo', () => {
 
 		describe('multiple entities', () => {
 			it('should remove an array of entities', async () => {
-				const testEntity1 = new TestEntity();
-				const testEntity2 = new TestEntity();
+				const testEntity1 = new TestEntity({ name: 'test1' });
+				const testEntity2 = new TestEntity({ name: 'test2' });
 				await em.persist([testEntity1, testEntity2]).flush();
 				em.clear();
 
@@ -172,8 +172,8 @@ describe('BaseDORepo', () => {
 			});
 
 			it('should remove a two entity and return 2', async () => {
-				const testEntity1 = new TestEntity();
-				const testEntity2 = new TestEntity();
+				const testEntity1 = new TestEntity({ name: 'test1' });
+				const testEntity2 = new TestEntity({ name: 'test2' });
 				await em.persist([testEntity1, testEntity2]).flush();
 				em.clear();
 
@@ -186,8 +186,8 @@ describe('BaseDORepo', () => {
 
 	describe('findById', () => {
 		it('should find entity', async () => {
-			const testEntity1 = new TestEntity();
-			const testEntity2 = new TestEntity();
+			const testEntity1 = new TestEntity({ name: 'test1' });
+			const testEntity2 = new TestEntity({ name: 'test2' });
 			await em.persist([testEntity1, testEntity2]).flush();
 			em.clear();
 
@@ -197,8 +197,8 @@ describe('BaseDORepo', () => {
 		});
 
 		it('should throw if entity not found', async () => {
-			const testEntity1 = new TestEntity();
-			const testEntity2 = new TestEntity();
+			const testEntity1 = new TestEntity({ name: 'test1' });
+			const testEntity2 = new TestEntity({ name: 'test2' });
 			await em.persist([testEntity1, testEntity2]).flush();
 			em.clear();
 

@@ -1,15 +1,15 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server/server.app.module';
-import { HttpStatus, INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { HttpStatus, type INestApplication } from '@nestjs/common';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { CourseSortProps, CourseStatus } from '../../domain';
 import { courseEntityFactory } from '../../testing';
-import { CourseInfoListResponse } from '../dto';
+import { type CourseInfoListResponse } from '../dto';
 import { groupEntityFactory } from '@modules/group/testing';
 import { GroupEntityTypes } from '@modules/group/entity';
 import { roleFactory } from '@modules/role/testing';

@@ -1,7 +1,7 @@
-import { Role } from '@modules/role/repo';
+import { type Role } from '@modules/role/repo';
 import { BaseFactory } from '@testing/factory/base.factory';
-import { DeepPartial } from 'fishery';
-import { TeamEntity, TeamProperties, TeamUserEntity } from '../repo';
+import { type DeepPartial } from 'fishery';
+import { TeamEntity, type TeamProperties, type TeamUserEntity } from '../repo';
 import { teamUserFactory } from './teamuser.factory';
 
 class TeamFactory extends BaseFactory<TeamEntity, TeamProperties> {

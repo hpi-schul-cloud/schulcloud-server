@@ -8,8 +8,8 @@ import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
 import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/repo';
 import { userFactory } from '@modules/user/testing';
-import { HttpStatus, INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { HttpStatus, type INestApplication } from '@nestjs/common';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
@@ -19,16 +19,16 @@ import {
 	CustomParameterTypeParams,
 	ToolContextType,
 } from '../../../common/enum';
-import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/repo';
+import { type ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/repo';
 import { contextExternalToolEntityFactory } from '../../../context-external-tool/testing';
 import { schoolExternalToolEntityFactory } from '../../../school-external-tool/testing';
 import { customParameterFactory, externalToolEntityFactory, mediumEntityFactory } from '../../testing';
 import {
-	ContextExternalToolConfigurationTemplateListResponse,
-	ContextExternalToolConfigurationTemplateResponse,
-	PreferredToolListResponse,
-	SchoolExternalToolConfigurationTemplateListResponse,
-	SchoolExternalToolConfigurationTemplateResponse,
+	type ContextExternalToolConfigurationTemplateListResponse,
+	type ContextExternalToolConfigurationTemplateResponse,
+	type PreferredToolListResponse,
+	type SchoolExternalToolConfigurationTemplateListResponse,
+	type SchoolExternalToolConfigurationTemplateResponse,
 	ToolContextTypesListResponse,
 } from '../dto';
 

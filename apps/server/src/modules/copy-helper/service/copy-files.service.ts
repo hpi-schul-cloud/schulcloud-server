@@ -1,12 +1,7 @@
-import {
-	CopyFileDto,
-	CopyFilesOfParentParamBuilder,
-	FilesStorageClientAdapterService,
-	StorageLocation,
-} from '@infra/files-storage-amqp-client';
+import { CopyFileDto, FilesStorageClientAdapterService, StorageLocation } from '@infra/files-storage-amqp-client';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { FileParamBuilder } from '../mapper/files-storage-param.builder';
+import { CopyFilesOfParentParamBuilder, FileParamBuilder } from '../mapper';
 import { CopyElementType, CopyStatus, CopyStatusEnum, EntityWithEmbeddedFiles, FileUrlReplacement } from '../types';
 import { CopyHelperService } from './copy-helper.service';
 

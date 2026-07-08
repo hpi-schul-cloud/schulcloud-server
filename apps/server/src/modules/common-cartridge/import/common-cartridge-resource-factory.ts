@@ -1,16 +1,16 @@
 import { sanitizeRichText } from '@shared/controller/transformer';
-import { InputFormat } from '@shared/domain/types';
-import AdmZip from 'adm-zip';
+import { type InputFormat } from '@shared/domain/types';
+import type AdmZip from 'adm-zip';
 import { load } from 'cheerio';
 import { File as BufferFile } from 'node:buffer';
 import { CommonCartridgeXmlResourceType } from './common-cartridge-import.enums';
 import {
-	CommonCartridgeFileFolderResourceProps,
-	CommonCartridgeFileResourceProps,
-	CommonCartridgeOrganizationProps,
-	CommonCartridgeResourceProps,
-	CommonCartridgeWebContentResourceProps,
-	CommonCartridgeWebLinkResourceProps,
+	type CommonCartridgeFileFolderResourceProps,
+	type CommonCartridgeFileResourceProps,
+	type CommonCartridgeOrganizationProps,
+	type CommonCartridgeResourceProps,
+	type CommonCartridgeWebContentResourceProps,
+	type CommonCartridgeWebLinkResourceProps,
 } from './common-cartridge-import.types';
 
 export class CommonCartridgeResourceFactory {

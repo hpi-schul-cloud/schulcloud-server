@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { EntityId } from '@shared/domain/types';
+import { type EntityId } from '@shared/domain/types';
 import { ProvisioningStrategyMissingLoggableException } from './provisioning-strategy-missing.loggable-exception';
 
 describe(ProvisioningStrategyMissingLoggableException.name, () => {

@@ -1,6 +1,6 @@
-import { MediumIdentifier } from '@modules/media-source';
-import { ExternalTool } from '@modules/tool';
-import { Loggable, LoggableMessage } from '@shared/common/loggable';
+import { type MediumIdentifier } from '@modules/media-source';
+import { type ExternalTool } from '@modules/tool';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
 import { isError } from 'lodash';
 
 export class ExternalToolMetadataUpdateFailedLoggable implements Loggable {

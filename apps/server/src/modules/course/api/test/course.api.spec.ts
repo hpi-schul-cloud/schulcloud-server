@@ -2,18 +2,18 @@ import { faker } from '@faker-js/faker';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { groupEntityFactory } from '@modules/group/testing';
 import { ServerTestModule } from '@modules/server/server.app.module';
-import { HttpStatus, INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { HttpStatus, type INestApplication } from '@nestjs/common';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { CourseEntity } from '../../repo';
 import { courseEntityFactory } from '../../testing';
-import { CourseMetadataListResponse } from '../dto';
-import { CourseCommonCartridgeMetadataResponse } from '../dto/course-cc-metadata.response';
+import { type CourseMetadataListResponse } from '../dto';
+import { type CourseCommonCartridgeMetadataResponse } from '../dto/course-cc-metadata.response';
 import { schoolEntityFactory } from '@modules/management/seed-data/factory/school.entity.factory';
-import { SchoolEntity } from '@modules/school/repo';
+import { type SchoolEntity } from '@modules/school/repo';
 
 const createStudent = (school: SchoolEntity) => {
 	const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent({ school }, [Permission.COURSE_VIEW]);

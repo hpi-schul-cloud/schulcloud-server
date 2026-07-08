@@ -1,6 +1,6 @@
 import { UUID } from 'bson';
 import { Factory } from 'fishery';
-import { SchulconnexGroupRole, SchulconnexGroupType, SchulconnexResponse, SchulconnexRole } from '../response';
+import { SchulconnexGroupRole, SchulconnexGroupType, type SchulconnexResponse, SchulconnexRole } from '../response';
 
 export const schulconnexResponseFactory = Factory.define<SchulconnexResponse>(() => {
 	return {

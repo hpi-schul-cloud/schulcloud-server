@@ -1,4 +1,4 @@
-import { InputFormat } from '@shared/domain/types';
+import { type InputFormat } from '@shared/domain/types';
 
 export interface ITask {
 	name: string;

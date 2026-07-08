@@ -1,22 +1,25 @@
 import { faker } from '@faker-js/faker';
-import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { type DeepMocked, createMock } from '@golevelup/ts-jest';
 import { FileRecordParentType, FilesStorageClientAdapter, StorageLocation } from '@infra/common-cartridge-clients';
 import { fileRecordResponseFactory } from '@infra/files-storage-rest-client/testing';
 import { ForbiddenException, UnauthorizedException } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import { EventBus } from '@nestjs/cqrs';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { currentUserFactory } from '@testing/factory/currentuser.factory';
 import { EventEmitter } from 'events';
-import { Request } from 'express';
+import { type Request } from 'express';
 import { PassThrough, Readable } from 'stream';
-import { COMMON_CARTRIDGE_PUBLIC_API_CONFIG_TOKEN, CommonCartridgePublicApiConfig } from '../common-cartridge.config';
+import {
+	COMMON_CARTRIDGE_PUBLIC_API_CONFIG_TOKEN,
+	type CommonCartridgePublicApiConfig,
+} from '../common-cartridge.config';
 import { CommonCartridgeConfigResponse } from '../controller/dto/common-cartridge-config.response';
 import { ImportCourseEvent } from '../domain/events/import-course.event';
-import { ImportCourseParams } from '../domain/import-course.params';
+import { type ImportCourseParams } from '../domain/import-course.params';
 import { ErrorStatus } from '../error/error-status.enum';
 import { CommonCartridgeVersion } from '../export/common-cartridge.enums';
-import { CommonCartridgeExportResponse } from '../service/common-cartridge-export.response';
+import { type CommonCartridgeExportResponse } from '../service/common-cartridge-export.response';
 import { CommonCartridgeExportService } from '../service/common-cartridge-export.service';
 import {
 	CC_VALIDATION_ERROR_EVENT,

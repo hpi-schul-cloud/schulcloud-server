@@ -1,7 +1,7 @@
-import { BoardLayout } from '@modules/board';
-import { LessonEntity } from '@modules/lesson/repo';
-import { Task, TaskWithStatusVo } from '@modules/task/repo';
-import { EntityId } from '@shared/domain/types';
+import { type BoardLayout } from '@modules/board';
+import { type LessonEntity } from '@modules/lesson/repo';
+import { type Task, type TaskWithStatusVo } from '@modules/task/repo';
+import { type EntityId } from '@shared/domain/types';
 
 export type RoomBoardDTO = {
 	roomId: string;

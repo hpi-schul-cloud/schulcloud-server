@@ -1,13 +1,13 @@
 /* eslint-disable promise/valid-params */
 import { NotFound } from '@feathersjs/errors';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ArgumentsHost, BadRequestException, HttpStatus, InternalServerErrorException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import { type ArgumentsHost, BadRequestException, HttpStatus, InternalServerErrorException } from '@nestjs/common';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { WsException } from '@nestjs/websockets';
-import { BusinessError, ErrorLogMessage } from '@shared/common/error';
-import { Loggable } from '@shared/common/loggable';
+import { BusinessError, type ErrorLogMessage } from '@shared/common/error';
+import { type Loggable } from '@shared/common/loggable';
 import { AxiosError } from 'axios';
-import { Response } from 'express';
+import { type Response } from 'express';
 import { DomainErrorHandler } from '../domain';
 import { ErrorResponse } from '../dto';
 import { ErrorUtils } from '../utils';
@@ -49,7 +49,7 @@ class SampleLoggableExceptionWithCause extends InternalServerErrorException impl
 
 describe('GlobalErrorFilter', () => {
 	let module: TestingModule;
-	let service: GlobalErrorFilter<any>;
+	let service: GlobalErrorFilter<Error>;
 	let domainErrorHandler: DeepMocked<DomainErrorHandler>;
 
 	beforeAll(async () => {
@@ -87,7 +87,7 @@ describe('GlobalErrorFilter', () => {
 				const argumentsHost = createMock<ArgumentsHost>({
 					getType: () => contextTypes.pop() || '',
 				});
-				const error = new Error('test');
+				const error = new Error('test error');
 
 				return { allContextTypes, argumentsHost, error };
 			};
@@ -111,7 +111,7 @@ describe('GlobalErrorFilter', () => {
 				const argumentsHost = createMock<ArgumentsHost>();
 				argumentsHost.getType.mockReturnValueOnce(UseableContextType.http);
 
-				const error = new AxiosError('test');
+				const error = new AxiosError('test error');
 
 				return { error, argumentsHost };
 			};
@@ -237,7 +237,7 @@ describe('GlobalErrorFilter', () => {
 			describe('when error is a generic error', () => {
 				const setup = () => {
 					const argumentsHost = mockHttpArgumentsHost();
-					const error = new Error();
+					const error = new Error('test error');
 					const expectedResponse = new ErrorResponse(
 						'INTERNAL_SERVER_ERROR',
 						'Internal Server Error',
@@ -285,7 +285,7 @@ describe('GlobalErrorFilter', () => {
 
 				it('should set response status appropriately', () => {
 					const { error, argumentsHost } = setup();
-
+					// @ts-expect-error - testing internal behavior
 					service.catch(error, argumentsHost);
 
 					expect(argumentsHost.switchToHttp().getResponse<Response>().status).toHaveBeenCalledWith(
@@ -295,7 +295,7 @@ describe('GlobalErrorFilter', () => {
 
 				it('should send appropriate error response', () => {
 					const { error, argumentsHost, expectedResponse } = setup();
-
+					// @ts-expect-error - testing internal behavior
 					service.catch(error, argumentsHost);
 
 					expect(
@@ -353,7 +353,7 @@ describe('GlobalErrorFilter', () => {
 			describe('when error is unknown error', () => {
 				const setup = () => {
 					const argumentsHost = mockRmqArgumentHost();
-					const error = new Error();
+					const error = new Error('test error');
 
 					return { error, argumentsHost };
 				};
@@ -397,7 +397,7 @@ describe('GlobalErrorFilter', () => {
 			describe('when error is unknown error', () => {
 				const setup = () => {
 					const argumentsHost = mockWsArgumentHost();
-					const error = new Error('test');
+					const error = new Error('test error');
 
 					return { error, argumentsHost };
 				};
@@ -441,7 +441,7 @@ describe('GlobalErrorFilter', () => {
 			describe('when error is unknown error', () => {
 				const setup = () => {
 					const argumentsHost = mockRpcArgumentHost();
-					const error = new Error();
+					const error = new Error('test error');
 
 					return { error, argumentsHost };
 				};
@@ -479,7 +479,7 @@ describe('GlobalErrorFilter', () => {
 				const argumentsHost = createMock<ArgumentsHost>();
 				argumentsHost.getType.mockReturnValueOnce('other');
 
-				const error = new Error();
+				const error = new Error('test error');
 
 				return { error, argumentsHost };
 			};

@@ -1,5 +1,5 @@
-import { SchulconnexPersonenInfoParams } from './request';
-import { SchulconnexPoliciesInfoResponse, SchulconnexResponse } from './response';
+import { type SchulconnexPersonenInfoParams } from './request';
+import { type SchulconnexPoliciesInfoResponse, type SchulconnexResponse } from './response';
 
 export interface SchulconnexApiInterface {
 	getPersonInfo(accessToken: string, options?: { overrideUrl: string }): Promise<SchulconnexResponse>;

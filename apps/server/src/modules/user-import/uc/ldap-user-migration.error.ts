@@ -1,5 +1,5 @@
-import { BadRequestException, HttpExceptionOptions } from '@nestjs/common';
-import { Loggable, LoggableMessage } from '@shared/common/loggable';
+import { BadRequestException, type HttpExceptionOptions } from '@nestjs/common';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
 
 export class LdapUserMigrationException extends BadRequestException {}
 

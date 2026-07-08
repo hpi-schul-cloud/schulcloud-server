@@ -1,5 +1,5 @@
-import { Loggable, LoggableMessage } from '@shared/common/loggable';
-import { ExternalGroupDto } from '../dto';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
+import { type ExternalGroupDto } from '../dto';
 
 export class GroupProvisioningInfoLoggable implements Loggable {
 	constructor(

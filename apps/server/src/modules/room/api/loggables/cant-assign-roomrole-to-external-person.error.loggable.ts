@@ -1,6 +1,6 @@
-import { RoomRole } from '@modules/role';
+import { type RoomRole } from '@modules/role';
 import { ForbiddenException } from '@nestjs/common';
-import { Loggable, LoggableMessage } from '@shared/common/loggable';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
 
 export class CantAssignRoomRoleToExternalPersonLoggableException extends ForbiddenException implements Loggable {
 	constructor(private readonly props: { memberUserId: string; roomRole: RoomRole }) {

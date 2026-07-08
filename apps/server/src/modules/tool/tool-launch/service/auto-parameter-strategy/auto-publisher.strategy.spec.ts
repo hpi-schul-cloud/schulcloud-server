@@ -1,11 +1,11 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Test, TestingModule } from '@nestjs/testing';
-import { ContextExternalTool } from '../../../context-external-tool/domain';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import { Test, type TestingModule } from '@nestjs/testing';
+import { type ContextExternalTool } from '../../../context-external-tool/domain';
 import { contextExternalToolFactory } from '../../../context-external-tool/testing';
-import { ExternalTool } from '../../../external-tool/domain';
+import { type ExternalTool } from '../../../external-tool/domain';
 import { ExternalToolService } from '../../../external-tool/service';
 import { externalToolFactory } from '../../../external-tool/testing';
-import { SchoolExternalTool } from '../../../school-external-tool/domain';
+import { type SchoolExternalTool } from '../../../school-external-tool/domain';
 import { schoolExternalToolFactory } from '../../../school-external-tool/testing';
 import { AutoPublisherStrategy } from './auto-publisher.strategy';
 

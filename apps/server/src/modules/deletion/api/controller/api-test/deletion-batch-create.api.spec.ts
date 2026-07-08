@@ -1,12 +1,12 @@
 import { EntityManager } from '@mikro-orm/core';
-import { INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { type INestApplication } from '@nestjs/common';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { TestApiClient } from '@testing/test-api-client';
 import { AdminApiServerTestModule } from '../../../../server/admin-api.server.app.module';
 import { DomainName } from '../../../domain/types';
 import { DeletionBatchEntity } from '../../../repo/entity';
-import { CreateDeletionBatchBodyParams } from '../dto';
-import { DeletionBatchItemResponse } from '../dto/response/deletion-batch-item.response';
+import { type CreateDeletionBatchBodyParams } from '../dto';
+import { type DeletionBatchItemResponse } from '../dto/response/deletion-batch-item.response';
 
 const baseRouteName = '/deletion-batches';
 

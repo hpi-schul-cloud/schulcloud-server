@@ -1,13 +1,13 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { UnauthorizedException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { Permission } from '@shared/domain/interface';
+import { Test, type TestingModule } from '@nestjs/testing';
+import { type Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { ForbiddenLoggableException } from '../error';
 import { AuthorizationContextBuilder } from '../mapper';
-import { Rule } from '../type';
+import { type Rule } from '../type';
 import { AuthorizationInjectionService } from './authorization-injection.service';
 import { AuthorizationHelper } from './authorization.helper';
 import { AuthorizationService } from './authorization.service';

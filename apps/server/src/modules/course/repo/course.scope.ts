@@ -1,7 +1,7 @@
-import { FilterQuery } from '@mikro-orm/core';
-import { EntityId } from '@shared/domain/types';
+import { type FilterQuery } from '@mikro-orm/core';
+import { type EntityId } from '@shared/domain/types';
 import { Scope } from '@shared/repo/scope';
-import { CourseEntity } from './course.entity';
+import { type CourseEntity } from './course.entity';
 
 export class CourseScope extends Scope<CourseEntity> {
 	public forAllGroupTypes(userId: EntityId): this {

@@ -1,4 +1,4 @@
-import { School, SchoolYear } from '../do';
+import { type School, type SchoolYear } from '../do';
 import { MissingYearsLoggableException } from '../loggable';
 
 export class SchoolYearHelper {

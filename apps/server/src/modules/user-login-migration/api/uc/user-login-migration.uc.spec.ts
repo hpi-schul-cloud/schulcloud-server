@@ -1,4 +1,4 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { Logger } from '@infra/logger';
 import { OAuthTokenDto } from '@infra/oauth-adapter';
 import { ObjectId } from '@mikro-orm/mongodb';
@@ -16,13 +16,13 @@ import { UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
 import { userDoFactory, userFactory } from '@modules/user/testing';
 import { ForbiddenException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { Page, RoleReference } from '@shared/domain/domainobject';
+import { type Page, RoleReference } from '@shared/domain/domainobject';
 import { Permission } from '@shared/domain/interface';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { setupEntities } from '@testing/database';
-import { UserLoginMigrationDO } from '../../domain';
+import { type UserLoginMigrationDO } from '../../domain';
 import {
 	ExternalSchoolNumberMissingLoggableException,
 	InvalidUserLoginMigrationLoggableException,
@@ -179,7 +179,7 @@ describe(UserLoginMigrationUc.name, () => {
 			it('should throw a forbidden exception', async () => {
 				const { userId } = setup();
 
-				const func = async () => uc.getMigrations(userId, { userId: 'otherUserId' });
+				const func = () => uc.getMigrations(userId, { userId: 'otherUserId' });
 
 				await expect(func).rejects.toThrow(
 					new ForbiddenException('Accessing migration status of another user is forbidden.')

@@ -1,12 +1,12 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { HttpService } from '@nestjs/axios';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { axiosErrorFactory } from '@testing/factory/axios-error.factory';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
-import { AxiosError } from 'axios';
+import { type AxiosError } from 'axios';
 import { of, throwError } from 'rxjs';
 import { OAuthGrantType } from '../types';
-import { AuthenticationCodeGrantTokenRequest, OAuthTokenDto, OauthTokenResponse } from '../dto';
+import { type AuthenticationCodeGrantTokenRequest, type OAuthTokenDto, type OauthTokenResponse } from '../dto';
 import { TokenRequestLoggableException } from '../loggable';
 import { OauthAdapterService } from './oauth-adapter.service';
 

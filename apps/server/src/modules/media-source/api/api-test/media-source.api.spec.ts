@@ -1,12 +1,12 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server';
-import { HttpStatus, INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { HttpStatus, type INestApplication } from '@nestjs/common';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { mediaSourceEntityFactory } from '../../testing';
-import { MediaSourceListResponse } from '../response';
+import { type MediaSourceListResponse } from '../response';
 
 describe('MediaSourceController (API)', () => {
 	let app: INestApplication;

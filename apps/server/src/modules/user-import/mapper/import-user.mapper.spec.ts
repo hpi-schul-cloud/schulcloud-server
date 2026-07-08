@@ -6,11 +6,11 @@ import { BadRequestException } from '@nestjs/common';
 import { SortOrder } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import {
-	FilterImportUserParams,
+	type FilterImportUserParams,
 	FilterMatchType,
 	FilterRoleType,
 	ImportUserSortOrder,
-	SortImportUserParams,
+	type SortImportUserParams,
 	UserMatchResponse,
 } from '../controller/dto';
 import { ImportUserMatchCreatorScope } from '../domain/interface';

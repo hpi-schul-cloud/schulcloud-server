@@ -1,4 +1,4 @@
-import { RobjExportSchule } from '@infra/tsp-client';
+import { type RobjExportSchule } from '@infra/tsp-client';
 import { Factory } from 'fishery';
 
 export const robjExportSchuleFactory = Factory.define<RobjExportSchule, RobjExportSchule>(({ sequence }) => {

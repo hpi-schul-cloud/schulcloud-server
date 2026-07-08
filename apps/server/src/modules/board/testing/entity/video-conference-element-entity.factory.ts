@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { BoardNodeEntityFactory, PropsWithType } from './board-node-entity.factory';
-import { BoardNodeType, ROOT_PATH, VideoConferenceElementProps } from '../../domain';
+import { BoardNodeEntityFactory, type PropsWithType } from './board-node-entity.factory';
+import { BoardNodeType, ROOT_PATH, type VideoConferenceElementProps } from '../../domain';
 
 export const videoConferenceElementEntityFactory = BoardNodeEntityFactory.define<
 	PropsWithType<VideoConferenceElementProps>

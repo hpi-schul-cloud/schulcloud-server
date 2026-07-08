@@ -1,7 +1,7 @@
-import { AmqpConnection, defaultNackErrorHandler } from '@golevelup/nestjs-rabbitmq';
+import { type AmqpConnection, defaultNackErrorHandler } from '@golevelup/nestjs-rabbitmq';
 import { ErrorLoggable } from '@infra/error';
-import { Logger } from '@infra/logger';
-import { Channel, ConsumeMessage } from 'amqplib';
+import { type Logger } from '@infra/logger';
+import { type Channel, type ConsumeMessage } from 'amqplib';
 
 export const registerAmqpSubscriber = async <T>(
 	amqpConnection: AmqpConnection,

@@ -1,5 +1,5 @@
 /* eslint-disable no-process-env */
-import { CreateBoardLoadTest, SocketConfiguration } from './types';
+import { type CreateBoardLoadTest, type SocketConfiguration } from './types';
 import { viewersClass, collaborativeClass } from './helper/class-definitions';
 import { SocketConnectionManager } from './socket-connection-manager';
 import { LoadtestRunner } from './loadtest-runner';

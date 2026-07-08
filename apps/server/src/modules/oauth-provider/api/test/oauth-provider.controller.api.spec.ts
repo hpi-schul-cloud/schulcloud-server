@@ -1,9 +1,9 @@
 import { EntityManager } from '@mikro-orm/mongodb';
-import { OAUTH_PROVIDER_CONFIG_TOKEN, OauthProviderConfig } from '@modules/oauth-provider/oauth-provider-config';
+import { OAUTH_PROVIDER_CONFIG_TOKEN, type OauthProviderConfig } from '@modules/oauth-provider/oauth-provider-config';
 import { externalToolPseudonymEntityFactory } from '@modules/pseudonym/testing';
 import { ServerTestModule } from '@modules/server';
 import { externalToolEntityFactory } from '@modules/tool/external-tool/testing';
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus, type INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
@@ -12,11 +12,11 @@ import { TestApiClient } from '@testing/test-api-client';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import {
-	ProviderConsentResponse,
-	ProviderConsentSessionResponse,
-	ProviderLoginResponse,
-	ProviderOauthClient,
-	ProviderRedirectResponse,
+	type ProviderConsentResponse,
+	type ProviderConsentSessionResponse,
+	type ProviderLoginResponse,
+	type ProviderOauthClient,
+	type ProviderRedirectResponse,
 } from '../../domain';
 import {
 	providerConsentResponseFactory,

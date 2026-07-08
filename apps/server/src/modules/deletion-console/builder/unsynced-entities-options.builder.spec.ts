@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { UnsyncedEntitiesOptions } from '../interface';
+import { type UnsyncedEntitiesOptions } from '../interface';
 import { UnsyncedEntitiesOptionsBuilder } from './unsynced-entities-options.builder';
 
 describe(UnsyncedEntitiesOptionsBuilder.name, () => {

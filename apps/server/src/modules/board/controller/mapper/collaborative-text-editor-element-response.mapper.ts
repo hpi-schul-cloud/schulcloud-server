@@ -1,7 +1,7 @@
 import { ContentElementType, CollaborativeTextEditorElement } from '../../domain';
 import { TimestampsResponse } from '../dto';
 import { CollaborativeTextEditorElementResponse } from '../dto/element/collaborative-text-editor-element.response';
-import { BaseResponseMapper } from './base-mapper.interface';
+import { type BaseResponseMapper } from './base-mapper.interface';
 
 export class CollaborativeTextEditorElementResponseMapper implements BaseResponseMapper {
 	private static instance: CollaborativeTextEditorElementResponseMapper;

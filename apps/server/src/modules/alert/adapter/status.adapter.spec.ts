@@ -1,12 +1,12 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { HttpService } from '@nestjs/axios';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
 import { AxiosError } from 'axios';
 import { of, throwError } from 'rxjs';
 import { ALERT_CONFIG, AlertConfig } from '../alert.config';
 import { createComponent, createIncident } from '../testing';
-import { ComponentDto, ComponentResponse, IncidentsResponse } from './dto';
+import { type ComponentDto, ComponentResponse, IncidentsResponse } from './dto';
 import { StatusAdapter } from './status.adapter';
 
 describe('StatusAdapter', () => {

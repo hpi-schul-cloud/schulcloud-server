@@ -1,5 +1,5 @@
 import { Factory } from 'fishery';
-import { SchoolExternalToolConfigurationStatus } from '../domain';
+import { type SchoolExternalToolConfigurationStatus } from '../domain';
 
 export const schoolExternalToolConfigurationStatusFactory = Factory.define<SchoolExternalToolConfigurationStatus>(
 	() => {

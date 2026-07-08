@@ -1,6 +1,6 @@
 import { RoleName } from '@modules/role';
 import { FilterRoleType, UserRole } from '../controller/dto';
-import { ImportUserRoleName } from '../entity';
+import { type ImportUserRoleName } from '../entity';
 
 export class RoleNameMapper {
 	static mapToResponse(roleName: ImportUserRoleName): UserRole {

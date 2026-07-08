@@ -1,8 +1,8 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Test, TestingModule } from '@nestjs/testing';
-import { DeleteContentParams, H5pEditorEvents } from '../h5p-editor.interface';
+import { Test, type TestingModule } from '@nestjs/testing';
+import { type DeleteContentParams, H5pEditorEvents } from '../h5p-editor.interface';
 import { H5P_EXCHANGE_CONFIG_TOKEN, type H5pExchangeConfig } from '../h5p-exchange.config';
 import { h5pEditorExchangeCopyContentParamsFactory } from '../testing';
 import { H5pEditorProducer } from './h5p-editor.producer';

@@ -1,4 +1,4 @@
-import { CustomParameterEntry } from '../../common/domain';
+import { type CustomParameterEntry } from '../../common/domain';
 
 export class LtiDeepLink {
 	mediaType: string;

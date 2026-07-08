@@ -1,8 +1,8 @@
-import { FilterQuery } from '@mikro-orm/core';
+import { type FilterQuery } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { EmptyResultQuery } from '@shared/repo/query';
 import { TaskScope } from './task-scope';
-import { Task } from './task.entity';
+import { type Task } from './task.entity';
 
 describe(TaskScope.name, () => {
 	describe('when build scope query', () => {

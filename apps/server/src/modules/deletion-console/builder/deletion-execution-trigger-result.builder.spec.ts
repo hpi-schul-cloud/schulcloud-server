@@ -1,4 +1,4 @@
-import { DeletionExecutionTriggerResult, DeletionExecutionTriggerStatus } from '../interface';
+import { type DeletionExecutionTriggerResult, DeletionExecutionTriggerStatus } from '../interface';
 import { DeletionExecutionTriggerResultBuilder } from './deletion-execution-trigger-result.builder';
 
 describe(DeletionExecutionTriggerResultBuilder.name, () => {

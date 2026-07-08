@@ -1,5 +1,5 @@
 import { externalGroupDtoFactory, externalSchoolDtoFactory } from '@modules/provisioning/testing';
-import { ExternalGroupDto, ExternalSchoolDto } from '../dto';
+import { type ExternalGroupDto, type ExternalSchoolDto } from '../dto';
 import { SchoolForGroupNotFoundLoggable } from './school-for-group-not-found.loggable';
 
 describe('SchoolForGroupNotFoundLoggable', () => {

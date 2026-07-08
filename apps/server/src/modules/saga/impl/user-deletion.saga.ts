@@ -55,8 +55,10 @@ export class UserDeletionSaga extends Saga<'userDeletion'> {
 			)
 		);
 
-		const isRejectedStep = (result: PromiseSettledResult<StepReport>) => result.status === 'rejected';
-		const isSuccessStep = (result: PromiseSettledResult<StepReport>) => result.status === 'fulfilled';
+		const isRejectedStep = (result: PromiseSettledResult<StepReport>): result is PromiseRejectedResult =>
+			result.status === 'rejected';
+		const isSuccessStep = (result: PromiseSettledResult<StepReport>): result is PromiseFulfilledResult<StepReport> =>
+			result.status === 'fulfilled';
 		const failedSteps = results.filter(isRejectedStep);
 
 		if (failedSteps.length > 0) {

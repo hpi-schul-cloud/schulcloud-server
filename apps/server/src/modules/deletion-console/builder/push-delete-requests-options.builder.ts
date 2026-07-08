@@ -1,4 +1,4 @@
-import { PushDeletionRequestsOptions } from '../interface';
+import { type PushDeletionRequestsOptions } from '../interface';
 
 export class PushDeleteRequestsOptionsBuilder {
 	static build(

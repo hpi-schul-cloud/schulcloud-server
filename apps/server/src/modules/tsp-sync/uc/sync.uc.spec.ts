@@ -1,5 +1,5 @@
 import { createMock } from '@golevelup/ts-jest';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { SyncService } from '../service/sync.service';
 import { SyncUc } from './sync.uc';
 

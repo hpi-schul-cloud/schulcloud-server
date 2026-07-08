@@ -1,5 +1,5 @@
-import { EntityDictionary } from '@mikro-orm/core';
-import { IFindOptions, SortOrder, SortOrderNumberType } from '../domain/interface';
+import { type EntityDictionary } from '@mikro-orm/core';
+import { type IFindOptions, SortOrder, type SortOrderNumberType } from '../domain/interface';
 
 export abstract class MongoDbScope<T> {
 	protected pipeline: unknown[] = [];

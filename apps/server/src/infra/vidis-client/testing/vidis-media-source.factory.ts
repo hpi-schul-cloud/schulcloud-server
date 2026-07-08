@@ -1,5 +1,5 @@
 import { Factory } from 'fishery';
-import { VidisConfig, VidisMediaSource } from '../interface';
+import { type VidisConfig, type VidisMediaSource } from '../interface';
 
 const vidisConfigFactory = Factory.define<VidisConfig>(({ sequence }) => {
 	return {

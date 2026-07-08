@@ -74,7 +74,7 @@ export class ContentElementUpdateService {
 		element.title = content.title ?? '';
 		element.description = content.description ?? '';
 		if (content.imageUrl) {
-			const isRelativeUrl = (url: string) => {
+			const isRelativeUrl = (url: string): boolean => {
 				const fallbackHostname = 'https://www.fallback-url-if-url-is-relative.org';
 				const imageUrlObject = new URL(url, fallbackHostname);
 				return imageUrlObject.origin === fallbackHostname;

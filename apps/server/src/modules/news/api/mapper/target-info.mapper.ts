@@ -1,4 +1,4 @@
-import { NewsTarget } from '../../domain';
+import { type NewsTarget } from '../../domain';
 import { TargetInfoResponse } from '../dto';
 
 export class TargetInfoMapper {

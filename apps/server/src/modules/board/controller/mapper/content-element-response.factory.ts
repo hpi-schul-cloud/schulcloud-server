@@ -1,7 +1,7 @@
 import { NotImplementedException } from '@nestjs/common';
-import { AnyBoardNode } from '../../domain';
-import { AnyContentElementResponse } from '../dto';
-import { BaseResponseMapper } from './base-mapper.interface';
+import { type AnyBoardNode } from '../../domain';
+import { type AnyContentElementResponse } from '../dto';
+import { type BaseResponseMapper } from './base-mapper.interface';
 import { CollaborativeTextEditorElementResponseMapper } from './collaborative-text-editor-element-response.mapper';
 import { DeletedElementResponseMapper } from './deleted-element-response.mapper';
 import { DrawingElementResponseMapper } from './drawing-element-response.mapper';

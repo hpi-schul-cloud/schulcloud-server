@@ -34,7 +34,7 @@ export class StatusAdapter {
 	private async getIncidentsData(instance: string): Promise<IncidentDto[] | null> {
 		try {
 			return await this.getData(instance);
-		} catch (err) {
+		} catch {
 			return null;
 		}
 	}
@@ -81,7 +81,7 @@ export class StatusAdapter {
 				return Importance.CURRENT_INSTANCE;
 			}
 			return Importance.INGORE;
-		} catch (err) {
+		} catch {
 			return Importance.INGORE;
 		}
 	}
@@ -128,7 +128,7 @@ export class StatusAdapter {
 		}
 	}
 
-	private compareIncidents = (a: IncidentDto, b: IncidentDto): number => {
+	private readonly compareIncidents = (a: IncidentDto, b: IncidentDto): number => {
 		const dateA = new Date(a.updated_at);
 		const dateB = new Date(b.updated_at);
 		const createdAtA = new Date(a.created_at);

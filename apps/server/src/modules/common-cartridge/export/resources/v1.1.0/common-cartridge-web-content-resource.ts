@@ -1,13 +1,13 @@
 import {
 	CommonCartridgeElementType,
 	CommonCartridgeIntendedUseType,
-	CommonCartridgeResourceType,
+	type CommonCartridgeResourceType,
 	CommonCartridgeVersion,
 } from '../../common-cartridge.enums';
 import { CommonCartridgeGuard } from '../../common-cartridge.guard';
 import { ElementTypeNotSupportedLoggableException } from '../../errors';
-import { CommonCartridgeResource, XmlObject } from '../../interfaces';
-import { ResourceFileContent } from '../../interfaces/common-cartridge-resource.interface';
+import { CommonCartridgeResource, type XmlObject } from '../../interfaces';
+import { type ResourceFileContent } from '../../interfaces/common-cartridge-resource.interface';
 import { createIdentifier } from '../../utils';
 
 export type CommonCartridgeWebContentResourcePropsV110 = {

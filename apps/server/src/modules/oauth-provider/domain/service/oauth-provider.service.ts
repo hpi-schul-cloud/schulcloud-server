@@ -1,13 +1,13 @@
 import {
-	AcceptConsentRequestBody,
-	AcceptLoginRequestBody,
-	IntrospectResponse,
-	ProviderConsentResponse,
-	ProviderConsentSessionResponse,
-	ProviderLoginResponse,
-	ProviderOauthClient,
-	ProviderRedirectResponse,
-	RejectRequestBody,
+	type AcceptConsentRequestBody,
+	type AcceptLoginRequestBody,
+	type IntrospectResponse,
+	type ProviderConsentResponse,
+	type ProviderConsentSessionResponse,
+	type ProviderLoginResponse,
+	type ProviderOauthClient,
+	type ProviderRedirectResponse,
+	type RejectRequestBody,
 } from '../interface';
 
 export abstract class OauthProviderService {

@@ -1,5 +1,5 @@
 import { NotFoundException } from '@nestjs/common';
-import { LoggableMessage } from '@shared/common/loggable';
+import { type LoggableMessage } from '@shared/common/loggable';
 
 export class MediaSourceOauthConfigNotFoundLoggableException extends NotFoundException {
 	constructor(

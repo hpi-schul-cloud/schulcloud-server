@@ -1,5 +1,5 @@
 import { HttpStatus } from '@nestjs/common';
-import { AxiosError, AxiosHeaders } from 'axios';
+import { type AxiosError, AxiosHeaders } from 'axios';
 import { Factory } from 'fishery';
 import { axiosResponseFactory } from './axios-response.factory';
 
@@ -21,7 +21,7 @@ export const axiosErrorFactory = AxiosErrorFactory.define(() => {
 		name: 'BadRequest',
 		response: axiosResponseFactory.build({ status: HttpStatus.BAD_REQUEST }),
 		stack: 'mockStack',
-		toJSON: () => {
+		toJSON: (): Record<string, unknown> => {
 			return { someJson: 'someJson' };
 		},
 	};

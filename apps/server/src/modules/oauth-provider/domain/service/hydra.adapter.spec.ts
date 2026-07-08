@@ -1,9 +1,9 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { HttpService } from '@nestjs/axios';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { axiosErrorFactory } from '@testing/factory/axios-error.factory';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
-import { AxiosRequestConfig } from 'axios';
+import { type AxiosRequestConfig } from 'axios';
 import { of, throwError } from 'rxjs';
 import { OAUTH_PROVIDER_CONFIG_TOKEN } from '../../oauth-provider-config';
 import {
@@ -18,15 +18,15 @@ import {
 } from '../../testing';
 import { HydraOauthFailedLoggableException } from '../error';
 import {
-	AcceptConsentRequestBody,
-	AcceptLoginRequestBody,
-	IntrospectResponse,
-	ProviderConsentResponse,
-	ProviderConsentSessionResponse,
-	ProviderLoginResponse,
-	ProviderOauthClient,
-	ProviderRedirectResponse,
-	RejectRequestBody,
+	type AcceptConsentRequestBody,
+	type AcceptLoginRequestBody,
+	type IntrospectResponse,
+	type ProviderConsentResponse,
+	type ProviderConsentSessionResponse,
+	type ProviderLoginResponse,
+	type ProviderOauthClient,
+	type ProviderRedirectResponse,
+	type RejectRequestBody,
 } from '../interface';
 import { HydraAdapter } from './hydra.adapter';
 

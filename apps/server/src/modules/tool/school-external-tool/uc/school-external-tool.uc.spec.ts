@@ -1,11 +1,11 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { SchoolService } from '@modules/school';
 import { schoolFactory } from '@modules/school/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { ValidationError } from '@shared/common/error';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
@@ -14,7 +14,7 @@ import { ExternalToolService } from '../../external-tool';
 import { externalToolFactory } from '../../external-tool/testing';
 import { SchoolExternalToolService } from '../service';
 import { schoolExternalToolFactory } from '../testing';
-import { SchoolExternalToolQueryInput } from './dto/school-external-tool.types';
+import { type SchoolExternalToolQueryInput } from './dto/school-external-tool.types';
 import { SchoolExternalToolUc } from './school-external-tool.uc';
 
 describe(SchoolExternalToolUc.name, () => {

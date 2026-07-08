@@ -1,5 +1,5 @@
-import { RoleDto } from '@modules/role/service/dto/role.dto';
-import { UserDo } from '@modules/user';
+import { type RoleDto } from '@modules/role/service/dto/role.dto';
+import { type UserDo } from '@modules/user';
 
 export class ResolvedGroupUser {
 	user: UserDo;

@@ -1,7 +1,7 @@
-import { EntityId } from '@shared/domain/types';
+import { type EntityId } from '@shared/domain/types';
 import { Scope } from '@shared/repo/scope';
 import { ExternalToolMediumStatus } from '../../enum';
-import { ExternalToolEntity } from './external-tool.entity';
+import { type ExternalToolEntity } from './external-tool.entity';
 
 export class ExternalToolScope extends Scope<ExternalToolEntity> {
 	public byName(name?: string): this {

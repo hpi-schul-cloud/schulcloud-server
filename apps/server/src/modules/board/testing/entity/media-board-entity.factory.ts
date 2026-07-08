@@ -4,11 +4,11 @@ import {
 	BoardLayout,
 	BoardNodeType,
 	Colors,
-	MediaBoardProps,
+	type MediaBoardProps,
 	ROOT_PATH,
 } from '../../domain';
 import { Context } from '../../repo/entity/embeddables';
-import { BoardNodeEntityFactory, PropsWithType } from './board-node-entity.factory';
+import { BoardNodeEntityFactory, type PropsWithType } from './board-node-entity.factory';
 
 export const mediaBoardEntityFactory = BoardNodeEntityFactory.define<PropsWithType<MediaBoardProps>>(({ params }) => {
 	const context =

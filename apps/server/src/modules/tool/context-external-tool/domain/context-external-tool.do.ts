@@ -1,8 +1,8 @@
-import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
-import { CustomParameterEntry } from '../../common/domain';
-import { SchoolExternalToolRef } from '../../school-external-tool/domain/school-external-tool.ref';
-import { ContextRef } from './context-ref';
-import { LtiDeepLink } from './lti-deep-link';
+import { type AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
+import { type CustomParameterEntry } from '../../common/domain';
+import { type SchoolExternalToolRef } from '../../school-external-tool/domain/school-external-tool.ref';
+import { type ContextRef } from './context-ref';
+import { type LtiDeepLink } from './lti-deep-link';
 
 export interface ContextExternalToolLaunchable {
 	id?: string;

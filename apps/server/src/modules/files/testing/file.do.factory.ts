@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseFactory } from '@testing/factory/base.factory';
-import { FileDo, FileProps } from '../domain/do/file';
+import { FileDo, type FileProps } from '../domain/do/file';
 
 export const fileDomainFactory: BaseFactory<FileDo, FileProps> = BaseFactory.define<FileDo, FileProps>(
 	FileDo,

@@ -1,18 +1,18 @@
 import { CommonCartridgeVersion } from '../common-cartridge.enums';
 import { VersionNotSupportedLoggableException } from '../errors';
-import { CommonCartridgeElement } from '../interfaces';
-import { OmitVersionAndFolder } from '../utils';
+import { type CommonCartridgeElement } from '../interfaces';
+import { type OmitVersionAndFolder } from '../utils';
 import {
 	CommonCartridgeElementFactoryV110,
-	CommonCartridgeMetadataElementPropsV110,
-	CommonCartridgeOrganizationElementPropsV110,
-	CommonCartridgeOrganizationsWrapperElementPropsV110,
-	CommonCartridgeResourcesWrapperElementPropsV110,
+	type CommonCartridgeMetadataElementPropsV110,
+	type CommonCartridgeOrganizationElementPropsV110,
+	type CommonCartridgeOrganizationsWrapperElementPropsV110,
+	type CommonCartridgeResourcesWrapperElementPropsV110,
 } from './v1.1.0';
 import {
 	CommonCartridgeElementFactoryV130,
-	CommonCartridgeMetadataElementPropsV130,
-	CommonCartridgeOrganizationElementPropsV130,
+	type CommonCartridgeMetadataElementPropsV130,
+	type CommonCartridgeOrganizationElementPropsV130,
 } from './v1.3.0';
 
 export type CommonCartridgeElementProps =

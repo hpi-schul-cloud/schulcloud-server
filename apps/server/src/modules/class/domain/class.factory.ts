@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Class, ClassProps } from './class.do';
+import { Class, type ClassProps } from './class.do';
 
 export class ClassFactory {
 	public static create(props: Partial<ClassProps> = {}): Class {

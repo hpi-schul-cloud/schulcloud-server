@@ -1,6 +1,6 @@
-import { Loggable, LoggableMessage } from '@shared/common/loggable';
-import { EntityId } from '@shared/domain/types';
-import { UserLoginMigrationDO } from '../../do';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
+import { type EntityId } from '@shared/domain/types';
+import { type UserLoginMigrationDO } from '../../do';
 
 export class UserMigrationStartedLoggable implements Loggable {
 	constructor(

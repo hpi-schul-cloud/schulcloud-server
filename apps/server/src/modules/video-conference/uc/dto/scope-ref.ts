@@ -1,5 +1,5 @@
-import { EntityId } from '@shared/domain/types';
-import { VideoConferenceScope } from '../../domain';
+import { type EntityId } from '@shared/domain/types';
+import { type VideoConferenceScope } from '../../domain';
 
 export class ScopeRef {
 	public id: EntityId;

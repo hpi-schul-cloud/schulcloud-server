@@ -1,6 +1,6 @@
 import { InternalServerErrorException } from '@nestjs/common';
-import { BoardOperation } from '../../authorisation/board-node.rule';
-import { BoardFeature, Column, ColumnBoard } from '../../domain';
+import { type BoardOperation } from '../../authorisation/board-node.rule';
+import { type BoardFeature, Column, type ColumnBoard } from '../../domain';
 import { BoardResponse, TimestampsResponse } from '../dto';
 import { ColumnResponseMapper } from './column-response.mapper';
 

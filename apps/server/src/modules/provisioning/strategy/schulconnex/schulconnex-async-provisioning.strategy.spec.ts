@@ -1,10 +1,9 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { Logger } from '@infra/logger';
 import {
-	SchulconnexGruppenResponse,
-	SchulconnexPoliciesInfoLicenseResponse,
-	SchulconnexPoliciesInfoResponse,
-	SchulconnexResponse,
+	type SchulconnexPoliciesInfoLicenseResponse,
+	type SchulconnexPoliciesInfoResponse,
+	type SchulconnexResponse,
 	SchulconnexResponseValidationGroups,
 	SchulconnexRestClient,
 } from '@infra/schulconnex-client';
@@ -20,7 +19,7 @@ import { groupFactory } from '@modules/group/testing';
 import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
 import { userDoFactory } from '@modules/user/testing';
 import { InternalServerErrorException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException, ValidationErrorLoggableException } from '@shared/common/loggable-exception';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import * as classValidator from 'class-validator';
@@ -28,9 +27,9 @@ import { randomUUID } from 'crypto';
 import { RoleName } from '../../../role';
 import { SchulconnexGroupProvisioningProducer, SchulconnexLicenseProvisioningProducer } from '../../amqp';
 import {
-	SchulconnexGroupProvisioningMessage,
-	SchulconnexGroupRemovalMessage,
-	SchulconnexLicenseProvisioningMessage,
+	type SchulconnexGroupProvisioningMessage,
+	type SchulconnexGroupRemovalMessage,
+	type SchulconnexLicenseProvisioningMessage,
 } from '../../domain';
 import {
 	ExternalGroupDto,
@@ -43,7 +42,7 @@ import {
 	ProvisioningSystemDto,
 } from '../../dto';
 import { PoliciesInfoErrorResponseLoggable } from '../../loggable';
-import { PROVISIONING_CONFIG_TOKEN, ProvisioningConfig } from '../../provisioning.config';
+import { PROVISIONING_CONFIG_TOKEN, type ProvisioningConfig } from '../../provisioning.config';
 import { externalGroupDtoFactory, externalSchoolDtoFactory, externalUserDtoFactory } from '../../testing';
 import { SchulconnexAsyncProvisioningStrategy } from './schulconnex-async-provisioning.strategy';
 import { SchulconnexResponseMapper } from './schulconnex-response-mapper';
@@ -178,8 +177,10 @@ describe(SchulconnexAsyncProvisioningStrategy.name, () => {
 					externalId: 'externalSchoolId',
 					name: 'schoolName',
 				});
-				const schulconnexGruppeResponse: SchulconnexGruppenResponse =
-					schulconnexResponse.personenkontexte[0].gruppen![0];
+				const schulconnexGruppeResponse = schulconnexResponse.personenkontexte[0].gruppen?.[0];
+				if (!schulconnexGruppeResponse) {
+					throw new Error('Expected group in schulconnex fixture');
+				}
 				const groups: ExternalGroupDto[] = [
 					new ExternalGroupDto({
 						name: schulconnexGruppeResponse.gruppe.bezeichnung,
@@ -359,7 +360,7 @@ describe(SchulconnexAsyncProvisioningStrategy.name, () => {
 				schulconnexResponseMapper.mapToExternalUserDto.mockReturnValue(user);
 				schulconnexResponseMapper.mapToExternalSchoolDto.mockReturnValue(school);
 				validationFunction.mockResolvedValueOnce([]);
-				schulconnexRestClient.getPoliciesInfo.mockRejectedValueOnce(new Error());
+				schulconnexRestClient.getPoliciesInfo.mockRejectedValueOnce(new Error('test error'));
 
 				return {
 					input,
@@ -442,7 +443,10 @@ describe(SchulconnexAsyncProvisioningStrategy.name, () => {
 					externalId: 'externalSchoolId',
 					name: 'schoolName',
 				});
-				const sanisGruppeResponse: SchulconnexGruppenResponse = schulconnexResponse.personenkontexte[0].gruppen![0];
+				const sanisGruppeResponse = schulconnexResponse.personenkontexte[0].gruppen?.[0];
+				if (!sanisGruppeResponse) {
+					throw new Error('Expected group in schulconnex fixture');
+				}
 				const groups: ExternalGroupDto[] = [
 					new ExternalGroupDto({
 						name: sanisGruppeResponse.gruppe.bezeichnung,
@@ -495,7 +499,10 @@ describe(SchulconnexAsyncProvisioningStrategy.name, () => {
 					externalId: 'externalSchoolId',
 					name: 'schoolName',
 				});
-				const sanisGruppeResponse: SchulconnexGruppenResponse = schulconnexResponse.personenkontexte[0].gruppen![0];
+				const sanisGruppeResponse = schulconnexResponse.personenkontexte[0].gruppen?.[0];
+				if (!sanisGruppeResponse) {
+					throw new Error('Expected group in schulconnex fixture');
+				}
 				const groups: ExternalGroupDto[] = [
 					new ExternalGroupDto({
 						name: sanisGruppeResponse.gruppe.bezeichnung,

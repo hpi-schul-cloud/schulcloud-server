@@ -1,4 +1,4 @@
-import { ProviderConsentResponse } from './consent.response';
+import { type ProviderConsentResponse } from './consent.response';
 
 /**
  * @see https://www.ory.sh/docs/hydra/reference/api#tag/oAuth2

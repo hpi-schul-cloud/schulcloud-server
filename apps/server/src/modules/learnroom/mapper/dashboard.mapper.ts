@@ -1,6 +1,11 @@
 import { DashboardGridElementResponse, DashboardGridSubElementResponse, DashboardResponse } from '../controller/dto';
-import { Dashboard, GridElementContent, GridElementWithPosition, GridPosition } from '../domain/do/dashboard';
-import { LearnroomMetadata } from '../types';
+import {
+	type Dashboard,
+	type GridElementContent,
+	type GridElementWithPosition,
+	type GridPosition,
+} from '../domain/do/dashboard';
+import { type LearnroomMetadata } from '../types';
 
 export class DashboardMapper {
 	public static mapToResponse(dashboard: Dashboard): DashboardResponse {

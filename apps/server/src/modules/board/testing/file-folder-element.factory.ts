@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseFactory } from '@testing/factory/base.factory';
-import { FileFolderElement, FileFolderElementProps, ROOT_PATH } from '../domain';
+import { FileFolderElement, type FileFolderElementProps, ROOT_PATH } from '../domain';
 
 export const fileFolderElementFactory = BaseFactory.define<FileFolderElement, FileFolderElementProps>(
 	FileFolderElement,

@@ -1,11 +1,11 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { oauthDataDtoFactory, provisioningDtoFactory } from '@modules/provisioning/testing';
-import { System, SystemService } from '@modules/system';
+import { type System, SystemService } from '@modules/system';
 import { systemFactory } from '@modules/system/testing';
 import { InternalServerErrorException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { OauthDataDto, OauthDataStrategyInputDto, ProvisioningDto, ProvisioningSystemDto } from '../dto';
+import { type OauthDataDto, OauthDataStrategyInputDto, type ProvisioningDto, type ProvisioningSystemDto } from '../dto';
 import { OidcProvisioningStrategy, SchulconnexAsyncProvisioningStrategy, TspProvisioningStrategy } from '../strategy';
 import { ErwinProvisioningStrategy } from '../strategy/erwin';
 import { provisioningSystemDtoFactory } from '../testing';

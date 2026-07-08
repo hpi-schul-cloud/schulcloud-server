@@ -1,7 +1,7 @@
 import { ContentElementType, RichTextElement } from '../../domain';
 import { TimestampsResponse } from '../dto';
 import { RichTextElementContent, RichTextElementResponse } from '../dto/element/rich-text-element.response';
-import { BaseResponseMapper } from './base-mapper.interface';
+import { type BaseResponseMapper } from './base-mapper.interface';
 
 export class RichTextElementResponseMapper implements BaseResponseMapper {
 	private static instance: RichTextElementResponseMapper;

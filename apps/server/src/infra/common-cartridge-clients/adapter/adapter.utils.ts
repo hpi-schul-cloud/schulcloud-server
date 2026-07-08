@@ -1,4 +1,4 @@
-import { RawAxiosRequestConfig } from 'axios';
+import { type RawAxiosRequestConfig } from 'axios';
 
 export class AdapterUtils {
 	public static createAxiosConfigForJwt(jwt: string): RawAxiosRequestConfig {

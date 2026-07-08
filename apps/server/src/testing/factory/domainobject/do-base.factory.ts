@@ -1,4 +1,4 @@
-import { BuildOptions, DeepPartial } from 'fishery';
+import { type BuildOptions, type DeepPartial } from 'fishery';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseFactory } from '../base.factory';
 

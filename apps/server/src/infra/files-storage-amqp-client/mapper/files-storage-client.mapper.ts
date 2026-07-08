@@ -1,5 +1,5 @@
 import { CopyFileDto, FileDto } from '../dto';
-import { CopyFileDomainObjectProps, FileDomainObjectProps, FileRecordParentType } from '../interfaces';
+import { type CopyFileDomainObjectProps, type FileDomainObjectProps, FileRecordParentType } from '../interfaces';
 
 export class FilesStorageClientMapper {
 	static mapfileRecordListResponseToDomainFilesDto(fileRecordListResponse: FileDomainObjectProps[]): FileDto[] {
@@ -22,7 +22,7 @@ export class FilesStorageClientMapper {
 		return filesDto;
 	}
 
-	static mapFileRecordResponseToFileDto(fileRecordResponse: FileDomainObjectProps) {
+	static mapFileRecordResponseToFileDto(fileRecordResponse: FileDomainObjectProps): FileDto {
 		const parentType = FilesStorageClientMapper.mapStringToParentType(fileRecordResponse.parentType);
 		const fileDto = new FileDto({
 			id: fileRecordResponse.id,
@@ -36,7 +36,7 @@ export class FilesStorageClientMapper {
 		return fileDto;
 	}
 
-	static mapCopyFileResponseToCopyFileDto(response: CopyFileDomainObjectProps) {
+	static mapCopyFileResponseToCopyFileDto(response: CopyFileDomainObjectProps): CopyFileDto {
 		const dto = new CopyFileDto({
 			id: response.id,
 			sourceId: response.sourceId,

@@ -2,7 +2,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { RoleName } from '@modules/role';
 import { roleFactory } from '@modules/role/testing';
 import { RoomFeatures } from '@modules/room';
-import { RoomAuthorizable, UserWithRoomRoles } from '@modules/room-membership';
+import { RoomAuthorizable, type UserWithRoomRoles } from '@modules/room-membership';
 import { roomFactory } from '@modules/room/testing';
 import { Permission } from '@shared/domain/interface';
 import { BoardExternalReferenceType, BoardRoles } from '../../../domain';

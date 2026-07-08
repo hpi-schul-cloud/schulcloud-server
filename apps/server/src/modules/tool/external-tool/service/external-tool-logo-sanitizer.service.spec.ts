@@ -1,6 +1,6 @@
 import { createMock } from '@golevelup/ts-jest';
 import { Logger } from '@infra/logger';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { ExternalToolLogoSanitizationLoggableException } from '../loggable';
 import { invalidSvgTestLogo, validSvgTestLogo } from '../testing';
 import { ExternalToolLogoSanitizerService } from './external-tool-logo-sanitizer.service';

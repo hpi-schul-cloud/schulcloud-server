@@ -13,7 +13,7 @@ import { createRoomWithUserGroup } from '@modules/room/testing/room-with-members
 import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
 import { User } from '@modules/user/repo';
-import { HttpStatus, INestApplication, NotFoundException } from '@nestjs/common';
+import { HttpStatus, type INestApplication, NotFoundException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
