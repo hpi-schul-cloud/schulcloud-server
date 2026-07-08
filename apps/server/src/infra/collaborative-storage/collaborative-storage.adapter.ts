@@ -16,8 +16,8 @@ export class CollaborativeStorageAdapter {
 
 	constructor(
 		@Inject('CollaborativeStorageStrategy') strategy: CollaborativeStorageStrategy,
-		private mapper: CollaborativeStorageAdapterMapper,
-		private logger: LegacyLogger
+		private readonly mapper: CollaborativeStorageAdapterMapper,
+		private readonly logger: LegacyLogger
 	) {
 		this.logger.setContext(CollaborativeStorageAdapter.name);
 		this.strategy = strategy;
@@ -27,7 +27,7 @@ export class CollaborativeStorageAdapter {
 	 * Set the strategy that should be used by the adapter
 	 * @param strategy The strategy
 	 */
-	setStrategy(strategy: CollaborativeStorageStrategy) {
+	setStrategy(strategy: CollaborativeStorageStrategy): void {
 		this.strategy = strategy;
 	}
 

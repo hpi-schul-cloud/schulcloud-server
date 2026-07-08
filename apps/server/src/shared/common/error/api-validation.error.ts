@@ -1,4 +1,4 @@
-import { HttpStatus, ValidationError } from '@nestjs/common';
+import { HttpStatus, type ValidationError } from '@nestjs/common';
 import { BusinessError } from './business.error';
 
 export class ApiValidationError extends BusinessError {

@@ -1,6 +1,6 @@
-import { CreateNews, INewsScope, IUpdateNews, NewsTargetModel } from '../../domain';
-import { News } from '../../repo';
-import { CreateNewsParams, FilterNewsParams, NewsResponse, UpdateNewsParams } from '../dto';
+import { type CreateNews, type INewsScope, type IUpdateNews, type NewsTargetModel } from '../../domain';
+import { type News } from '../../repo';
+import { type CreateNewsParams, type FilterNewsParams, NewsResponse, type UpdateNewsParams } from '../dto';
 import { SchoolInfoMapper } from './school-info.mapper';
 import { TargetInfoMapper } from './target-info.mapper';
 import { UserInfoMapper } from './user-info.mapper';

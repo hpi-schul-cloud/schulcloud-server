@@ -1,4 +1,4 @@
-import { ContextExternalToolType } from '../../context-external-tool/repo';
+import { type ContextExternalToolType } from '../../context-external-tool/repo';
 
 export class ExternalToolUtilization {
 	public schoolExternalToolCount: number;

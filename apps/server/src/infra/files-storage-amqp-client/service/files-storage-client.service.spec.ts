@@ -1,11 +1,10 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { LegacyLogger } from '@infra/logger';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { FileRecordParentType } from '../interfaces';
 import { FilesStorageClientMapper } from '../mapper';
-import { CopyFilesOfParentParamBuilder } from '../mapper/copy-files-of-parent-param.builder';
-import { fileRequestInfoFactory } from '../testing';
+import { copyFilesRequestInfoFactory, fileRequestInfoFactory } from '../testing';
 import { FilesStorageClientAdapterService } from './files-storage-client.service';
 import { FilesStorageProducer } from './files-storage.producer';
 
@@ -47,7 +46,7 @@ describe('FilesStorageClientAdapterService', () => {
 			const source = fileRequestInfoFactory.build();
 			const target = fileRequestInfoFactory.build();
 
-			const param = CopyFilesOfParentParamBuilder.build(userId, source, target);
+			const param = copyFilesRequestInfoFactory.build({ userId, source, target });
 
 			const spy = jest
 				.spyOn(FilesStorageClientMapper, 'mapCopyFileListResponseToCopyFilesDto')
@@ -67,7 +66,7 @@ describe('FilesStorageClientAdapterService', () => {
 			const source = fileRequestInfoFactory.build();
 			const target = fileRequestInfoFactory.build();
 
-			const param = CopyFilesOfParentParamBuilder.build(userId, source, target);
+			const param = copyFilesRequestInfoFactory.build({ userId, source, target });
 
 			client.copyFilesOfParent.mockRejectedValue(new Error());
 

@@ -1,6 +1,6 @@
 import { faker } from '@faker-js/faker';
-import { DeepMocked, createMock } from '@golevelup/ts-jest';
-import { Test, TestingModule } from '@nestjs/testing';
+import { type DeepMocked, createMock } from '@golevelup/ts-jest';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { ImportCourseEvent } from '../domain/events/import-course.event';
 import { CommonCartridgeImportService } from '../service';
 import { CommonCartridgeImportHandler } from './common-cartridge-import.handler';

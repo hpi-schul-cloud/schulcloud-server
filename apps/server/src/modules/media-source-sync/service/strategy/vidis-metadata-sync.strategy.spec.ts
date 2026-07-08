@@ -6,7 +6,7 @@ import {
 	ExternalToolValidationService,
 	ExternalToolParameterValidationService,
 } from '@modules/tool';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { ExternalToolMetadataUpdateService } from '../external-tool-metadata-update.service';
 import { VidisMetadataSyncStrategy } from './vidis-metadata-sync.strategy';
 

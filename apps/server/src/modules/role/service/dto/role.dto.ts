@@ -1,6 +1,6 @@
-import { Permission } from '@shared/domain/interface';
-import { EntityId } from '@shared/domain/types';
-import { RoleName } from '../../domain';
+import { type Permission } from '@shared/domain/interface';
+import { type EntityId } from '@shared/domain/types';
+import { type RoleName } from '../../domain';
 
 export class RoleDto {
 	id: EntityId;

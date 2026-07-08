@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { BoardNodeEntityFactory, PropsWithType } from './board-node-entity.factory';
-import { BoardNodeType, CollaborativeTextEditorElementProps, ROOT_PATH } from '../../domain';
+import { BoardNodeEntityFactory, type PropsWithType } from './board-node-entity.factory';
+import { BoardNodeType, type CollaborativeTextEditorElementProps, ROOT_PATH } from '../../domain';
 
 export const collaborativeTextEditorEntityFactory = BoardNodeEntityFactory.define<
 	PropsWithType<CollaborativeTextEditorElementProps>

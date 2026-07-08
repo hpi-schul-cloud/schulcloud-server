@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Test, TestingModule } from '@nestjs/testing';
-import { TOOL_CONFIG_TOKEN, ToolConfig } from '../../tool-config';
+import { Test, type TestingModule } from '@nestjs/testing';
+import { TOOL_CONFIG_TOKEN, type ToolConfig } from '../../tool-config';
 import { LtiDeepLinkingService } from './lti-deep-linking.service';
 
 describe(LtiDeepLinkingService.name, () => {

@@ -1,4 +1,4 @@
-import { BiloOauthConfig } from './bilo-oauth-config.interface';
+import { type BiloOauthConfig } from './bilo-oauth-config.interface';
 
 export interface BiloMediaSource {
 	id: string;

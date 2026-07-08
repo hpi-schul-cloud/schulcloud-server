@@ -1,13 +1,13 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Test, TestingModule } from '@nestjs/testing';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Subject, firstValueFrom, take, toArray } from 'rxjs';
 import { NotificationController } from './notification.controller';
 import { NotificationService } from '../domain/service';
 import { NotificationObserverService } from './notification-observer.service';
-import { NotificationEntity } from '../repo/entities';
+import { type NotificationEntity } from '../repo/entities';
 import { notificationFactory } from '../domain/testing';
-import { ICurrentUser } from '@infra/auth-guard';
+import { type ICurrentUser } from '@infra/auth-guard';
 
 describe(NotificationController.name, () => {
 	let module: TestingModule;

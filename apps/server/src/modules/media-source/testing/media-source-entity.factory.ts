@@ -1,11 +1,11 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseFactory } from '@testing/factory/base.factory';
-import { DeepPartial } from 'fishery';
+import { type DeepPartial } from 'fishery';
 import {
 	MediaSourceEntity,
-	MediaSourceEntityProps,
-	MediaSourceOauthConfigEmbeddable,
-	MediaSourceVidisConfigEmbeddable,
+	type MediaSourceEntityProps,
+	type MediaSourceOauthConfigEmbeddable,
+	type MediaSourceVidisConfigEmbeddable,
 } from '../entity';
 import { MediaSourceDataFormat } from '../enum';
 import { mediaSourceVidisConfigEmbeddableFactory } from './media-source-basic-auth-config.embeddable.factory';

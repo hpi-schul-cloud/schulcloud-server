@@ -1,16 +1,16 @@
-import { EntityId } from '@shared/domain/types';
+import { type EntityId } from '@shared/domain/types';
 import { type CollaborativeTextEditorElement, isCollaborativeTextEditorElement } from '../collaborative-text-editor.do';
 import { type DeletedElement, isDeletedElement } from '../deleted-element.do';
 import { type DrawingElement, isDrawingElement } from '../drawing-element.do';
 import { type ExternalToolElement, isExternalToolElement } from '../external-tool-element.do';
 import { type FileElement, isFileElement } from '../file-element.do';
 import { type FileFolderElement, isFileFolderElement } from '../file-folder-element.do';
-import { H5pElement, isH5pElement } from '../h5p-element.do';
+import { type H5pElement, isH5pElement } from '../h5p-element.do';
 import { isLinkElement, type LinkElement } from '../link-element.do';
 import { isRichTextElement, type RichTextElement } from '../rich-text-element.do';
 import { isVideoConferenceElement, type VideoConferenceElement } from '../video-conference-element.do';
 import { type AnyBoardNode } from './any-board-node';
-import { BoardExternalReferenceType } from './board-external-reference';
+import { type BoardExternalReferenceType } from './board-external-reference';
 
 export type AnyContentElement =
 	| CollaborativeTextEditorElement

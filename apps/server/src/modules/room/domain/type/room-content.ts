@@ -1,5 +1,5 @@
-import { EntityId } from '@shared/domain/types';
-import { RoomContentType } from './room-content-type.enum';
+import { type EntityId } from '@shared/domain/types';
+import { type RoomContentType } from './room-content-type.enum';
 
 export interface RoomContentItem {
 	type: RoomContentType;

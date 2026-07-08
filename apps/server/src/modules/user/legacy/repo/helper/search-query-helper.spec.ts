@@ -1,7 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { SearchQueryHelper } from '.';
-import { RangeDate, UsersSearchQueryParams } from '../../controller/dto';
-import { UserSearchQuery } from '../../interfaces';
+import { type RangeDate, type UsersSearchQueryParams } from '../../controller/dto';
+import { type UserSearchQuery } from '../../interfaces';
 
 describe('Search query helper', () => {
 	afterEach(() => {

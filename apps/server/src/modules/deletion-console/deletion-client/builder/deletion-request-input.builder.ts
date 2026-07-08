@@ -1,4 +1,4 @@
-import { DeletionRequestInput } from '../interface';
+import { type DeletionRequestInput } from '../interface';
 import { DeletionRequestTargetRefInputBuilder } from './deletion-request-target-ref-input.builder';
 
 export class DeletionRequestInputBuilder {

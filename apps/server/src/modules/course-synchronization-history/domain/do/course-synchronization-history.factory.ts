@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { CourseSynchronizationHistory, CourseSynchronizationHistoryProps } from './course-synchronization-history';
+import { CourseSynchronizationHistory, type CourseSynchronizationHistoryProps } from './course-synchronization-history';
 
 export type CourseSynchronizationHistoryBuildParams = Omit<CourseSynchronizationHistoryProps, 'id'>;
 

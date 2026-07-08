@@ -1,9 +1,9 @@
 import { EntityManager } from '@mikro-orm/mongodb';
-import { OAUTH_PUBLIC_API_CONFIG_TOKEN, OauthPublicApiConfig } from '@modules/oauth/oauth.config';
+import { OAUTH_PUBLIC_API_CONFIG_TOKEN, type OauthPublicApiConfig } from '@modules/oauth/oauth.config';
 import { oauthSessionTokenEntityFactory } from '@modules/oauth/testing';
 import { ServerTestModule } from '@modules/server';
 import { systemEntityFactory } from '@modules/system/testing';
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus, type INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';

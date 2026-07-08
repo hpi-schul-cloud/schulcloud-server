@@ -1,4 +1,4 @@
-import { HelpdeskWishProps } from '../domain/interface';
+import { type HelpdeskWishProps } from '../domain/interface';
 import { SupportType } from '../domain/type';
 
 export const helpdeskWishPropsFactory = {

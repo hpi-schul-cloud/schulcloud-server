@@ -1,5 +1,5 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Test, TestingModule } from '@nestjs/testing';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common/error';
 
 import { faker } from '@faker-js/faker';
@@ -12,14 +12,14 @@ import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { UnauthorizedException } from '@nestjs/common/exceptions/unauthorized.exception';
 import { Permission } from '@shared/domain/interface';
-import { EntityId } from '@shared/domain/types';
+import { type EntityId } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
 import { currentUserFactory } from '@testing/factory/currentuser.factory';
-import { Account, AccountSave, AccountService } from '../domain';
+import { type Account, type AccountSave, AccountService } from '../domain';
 import { AccountEntity, AccountEntityToDoMapper } from '../repo';
 import { accountFactory } from '../testing';
 import { AccountUc } from './account.uc';
-import { AccountSearchDto, AccountSearchType, UpdateAccountDto } from './dto';
+import { type AccountSearchDto, AccountSearchType, type UpdateAccountDto } from './dto';
 import { ResolvedAccountDto, ResolvedSearchListAccountDto } from './dto/resolved-account.dto';
 
 describe('AccountUc', () => {

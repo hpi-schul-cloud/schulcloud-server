@@ -1,10 +1,10 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { systemFactory } from '../../testing';
-import { SYSTEM_REPO, SystemRepo } from '../interface';
-import { SystemQuery } from '../query';
+import { SYSTEM_REPO, type SystemRepo } from '../interface';
+import { type SystemQuery } from '../query';
 import { SystemType } from '../type';
 import { SystemService } from './system.service';
 

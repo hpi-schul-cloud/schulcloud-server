@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { EntityFactory } from '@testing/factory/entity.factory';
-import { RoomArrangementProps } from '../domain';
+import { type RoomArrangementProps } from '../domain';
 import { RoomArrangementEntity } from '../repo/entity/room-arrangement.entity';
 
 export const roomArrangementEntityFactory = EntityFactory.define<RoomArrangementEntity, RoomArrangementProps>(

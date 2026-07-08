@@ -53,9 +53,7 @@ export class ExternalToolRepo {
 		this.em.clear();
 
 		const savedDomainObjects: ExternalTool[] = await Promise.all(
-			domainObjects.map(
-				async (domainObject: ExternalTool): Promise<ExternalTool> => this.saveWithoutFlush(domainObject)
-			)
+			domainObjects.map((domainObject: ExternalTool): Promise<ExternalTool> => this.saveWithoutFlush(domainObject))
 		);
 
 		await this.em.flush();

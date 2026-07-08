@@ -1,5 +1,5 @@
 import { NotImplementedException } from '@nestjs/common';
-import { Loggable, LoggableMessage } from '@shared/common/loggable';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
 
 export class ParameterTypeNotImplementedLoggableException extends NotImplementedException implements Loggable {
 	constructor(private readonly parameterType: string) {

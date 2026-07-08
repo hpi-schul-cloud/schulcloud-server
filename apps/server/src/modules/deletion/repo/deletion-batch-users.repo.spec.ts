@@ -4,10 +4,10 @@ import { Role } from '@modules/role/repo';
 import { roleFactory } from '@modules/role/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
-import { DeletionBatchUsersRepo, GroupedUserIdsByRoles } from './deletion-batch-users.repo';
+import { DeletionBatchUsersRepo, type GroupedUserIdsByRoles } from './deletion-batch-users.repo';
 
 describe(DeletionBatchUsersRepo.name, () => {
 	let module: TestingModule;

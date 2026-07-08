@@ -1,7 +1,7 @@
 import { InputFormat } from '@shared/domain/types';
-import { RichText, TaskCreate, TaskUpdate } from '../../domain';
-import { TaskWithStatusVo } from '../../repo';
-import { TaskCreateParams, TaskResponse, TaskUpdateParams } from '../dto';
+import { RichText, type TaskCreate, type TaskUpdate } from '../../domain';
+import { type TaskWithStatusVo } from '../../repo';
+import { type TaskCreateParams, TaskResponse, type TaskUpdateParams } from '../dto';
 import { TaskStatusMapper } from './task-status.mapper';
 
 export class TaskMapper {

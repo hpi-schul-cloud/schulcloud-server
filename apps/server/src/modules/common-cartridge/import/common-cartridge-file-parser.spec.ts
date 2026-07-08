@@ -1,12 +1,15 @@
 import { faker } from '@faker-js/faker';
-import { DeepMocked, createMock } from '@golevelup/ts-jest';
+import { type DeepMocked, createMock } from '@golevelup/ts-jest';
 import AdmZip from 'adm-zip';
 import { readFile } from 'node:fs/promises';
 import { CommonCartridgeFileParser } from './common-cartridge-file-parser';
 import { CommonCartridgeXmlResourceType } from './common-cartridge-import.enums';
-import { CommonCartridgeOrganizationProps, CommonCartridgeResourceProps } from './common-cartridge-import.types';
-import { CommonCartridgeManifestParser } from './common-cartridge-manifest-parser';
-import { CommonCartridgeResourceFactory } from './common-cartridge-resource-factory';
+import {
+	type CommonCartridgeOrganizationProps,
+	type CommonCartridgeResourceProps,
+} from './common-cartridge-import.types';
+import { type CommonCartridgeManifestParser } from './common-cartridge-manifest-parser';
+import { type CommonCartridgeResourceFactory } from './common-cartridge-resource-factory';
 import { CommonCartridgeManifestNotFoundException } from './utils/common-cartridge-manifest-not-found.exception';
 import { CommonCartridgeResourceNotFoundException } from './utils/common-cartridge-resource-not-found.exception';
 

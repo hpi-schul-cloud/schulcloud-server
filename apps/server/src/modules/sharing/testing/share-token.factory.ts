@@ -1,8 +1,8 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ShareTokenContextType, ShareTokenParentType } from '@modules/sharing/domainobject/share-token.do';
-import { ShareToken, ShareTokenProperties } from '@modules/sharing/entity/share-token.entity';
+import { ShareToken, type ShareTokenProperties } from '@modules/sharing/entity/share-token.entity';
 import { BaseFactory } from '@testing/factory/base.factory';
-import { DeepPartial } from 'fishery';
+import { type DeepPartial } from 'fishery';
 import { nanoid } from 'nanoid';
 
 class ShareTokenFactory extends BaseFactory<ShareToken, ShareTokenProperties> {

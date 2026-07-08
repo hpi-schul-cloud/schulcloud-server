@@ -1,4 +1,4 @@
-import { registerDecorator, ValidationArguments, ValidationOptions } from 'class-validator';
+import { registerDecorator, type ValidationArguments, type ValidationOptions } from 'class-validator';
 
 export function ValidateRecord(validationFn: (value: unknown) => boolean, validationOptions?: ValidationOptions) {
 	return (object: object, propertyName: string): void => {

@@ -1,10 +1,10 @@
-import { EntityData, EntityName, FindOptions } from '@mikro-orm/core';
-import { Group } from '@modules/group';
+import { type EntityData, type EntityName, type FindOptions } from '@mikro-orm/core';
+import { type Group } from '@modules/group';
 import { Page } from '@shared/domain/domainobject';
-import { IFindOptions } from '@shared/domain/interface';
-import { EntityId } from '@shared/domain/types';
+import { type IFindOptions } from '@shared/domain/interface';
+import { type EntityId } from '@shared/domain/types';
 import { BaseDomainObjectRepo } from '@shared/repo/base-domain-object.repo';
-import { Course, CourseFilter, CourseRepo, CourseStatus } from '../domain';
+import { type Course, type CourseFilter, type CourseRepo, CourseStatus } from '../domain';
 import { CourseEntity } from './course.entity';
 import { CourseScope } from './course.scope';
 import { CourseEntityMapper } from './mapper';

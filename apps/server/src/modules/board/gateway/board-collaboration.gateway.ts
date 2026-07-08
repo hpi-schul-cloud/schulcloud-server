@@ -68,7 +68,7 @@ const websocketOptions = {
 @WsJwtAuthentication()
 export class BoardCollaborationGateway implements OnGatewayConnection, OnGatewayDisconnect {
 	@WebSocketServer()
-	private server!: Server;
+	private readonly server!: Server;
 
 	// TODO: use loggables instead of legacy logger
 	constructor(
@@ -532,7 +532,14 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 		}
 	}
 
-	private buildBoardSocketEmitter({ socket, action }: { socket: Socket; action: string }) {
+	private buildBoardSocketEmitter({ socket, action }: { socket: Socket; action: string }): {
+		joinRoom(boardNode: AnyBoardNode): Promise<void>;
+		emitSuccess(data: object): void;
+		emitToClientAndRoom(data: object, boardNodeOrRootId: AnyBoardNode | EntityId): void;
+		emitToClient(data: object): void;
+		emitToRoom(data: object, boardNodeOrRootId: AnyBoardNode | EntityId): void;
+		emitFailure(data: object): void;
+	} {
 		const getRoomName = (boardNode: AnyBoardNode | EntityId): string => {
 			const rootId = typeof boardNode === 'string' ? boardNode : boardNode.rootId;
 			return `board_${rootId}`;

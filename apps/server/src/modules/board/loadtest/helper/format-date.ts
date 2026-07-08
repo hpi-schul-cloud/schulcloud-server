@@ -1,1 +1,2 @@
-export const formatDate = (date: Date) => `${date.toISOString().slice(0, 10)} ${date.toLocaleTimeString('de-DE')}`;
+export const formatDate = (date: Date): string =>
+	`${date.toISOString().slice(0, 10)} ${date.toLocaleTimeString('de-DE')}`;

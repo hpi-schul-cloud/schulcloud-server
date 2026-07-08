@@ -1,5 +1,5 @@
 import { MediaSourceDataFormat } from '@modules/media-source';
-import { LogMessage } from '@shared/common/loggable';
+import { type LogMessage } from '@shared/common/loggable';
 import { MediumMetadataStrategyNotImplementedLoggableException } from './medium-metadata-strategy-not-implemented-loggable.exception';
 
 describe(MediumMetadataStrategyNotImplementedLoggableException.name, () => {

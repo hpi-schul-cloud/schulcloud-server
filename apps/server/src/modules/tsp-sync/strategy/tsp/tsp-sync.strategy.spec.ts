@@ -1,16 +1,21 @@
 import { faker } from '@faker-js/faker';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { Logger } from '@infra/logger';
 import { RuntimeConfigService } from '@infra/runtime-config';
-import { RobjExportKlasse, RobjExportLehrer, RobjExportSchueler, RobjExportSchule } from '@infra/tsp-client';
+import {
+	type RobjExportKlasse,
+	type RobjExportLehrer,
+	type RobjExportSchueler,
+	type RobjExportSchule,
+} from '@infra/tsp-client';
 import {
 	robjExportKlasseFactory,
 	robjExportLehrerFactory,
 	robjExportSchuelerFactory,
 	robjExportSchuleFactory,
 } from '@infra/tsp-client/testing';
-import { Account } from '@modules/account';
-import { OauthDataDto } from '@modules/provisioning';
+import { type Account } from '@modules/account';
+import { type OauthDataDto } from '@modules/provisioning';
 import { BadDataLoggableException } from '@modules/provisioning/loggable';
 import { TspProvisioningService } from '@modules/provisioning/service/tsp-provisioning.service';
 import {
@@ -20,18 +25,18 @@ import {
 	provisioningSystemDtoFactory,
 } from '@modules/provisioning/testing';
 import { RoleName } from '@modules/role';
-import { School } from '@modules/school';
+import { type School } from '@modules/school';
 import { schoolFactory } from '@modules/school/testing';
-import { System, SystemService, SystemType } from '@modules/system';
+import { type System, SystemService, SystemType } from '@modules/system';
 import { systemFactory, systemOauthConfigFactory } from '@modules/system/testing';
-import { UserDo } from '@modules/user';
-import { Test, TestingModule } from '@nestjs/testing';
+import { type UserDo } from '@modules/user';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { SyncStrategyTarget } from '../../sync-strategy.types';
 import { SYNC_CONFIG_TOKEN, SyncConfig } from '../../sync.config';
 import { TspFetchService } from './tsp-fetch.service';
-import { TspOauthDataMapper, TspUserInfo } from './tsp-oauth-data.mapper';
+import { TspOauthDataMapper, type TspUserInfo } from './tsp-oauth-data.mapper';
 import { TspSchoolService } from './tsp-school.service';
 import { TspSyncStrategy } from './tsp-sync.strategy';
 

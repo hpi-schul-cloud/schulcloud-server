@@ -1,8 +1,8 @@
 import { faker } from '@faker-js/faker';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseFactory } from '@testing/factory/base.factory';
-import { DeepPartial } from 'fishery';
-import { JwtPayload } from '../interface';
+import { type DeepPartial } from 'fishery';
+import { type JwtPayload } from '../interface';
 import { JwtPayloadVo } from '../vo/jwt-payload.vo';
 
 class JwtPayloadFactory extends BaseFactory<JwtPayloadVo, JwtPayload> {

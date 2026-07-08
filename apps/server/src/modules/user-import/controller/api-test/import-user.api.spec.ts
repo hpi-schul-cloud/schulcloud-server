@@ -1,42 +1,42 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { AccountEntity } from '@modules/account/repo';
+import { type AccountEntity } from '@modules/account/repo';
 import { accountFactory } from '@modules/account/testing';
 import { RoleName } from '@modules/role';
 import { roleFactory } from '@modules/role/testing';
 import { SchoolFeature } from '@modules/school/domain';
-import { SchoolEntity } from '@modules/school/repo';
+import { type SchoolEntity } from '@modules/school/repo';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server/server.app.module';
-import { SystemEntity } from '@modules/system/repo';
+import { type SystemEntity } from '@modules/system/repo';
 import { systemEntityFactory } from '@modules/system/testing';
 import {
-	FilterImportUserParams,
+	type FilterImportUserParams,
 	FilterMatchType,
 	FilterRoleType,
-	FilterUserParams,
-	ImportUserListResponse,
-	ImportUserResponse,
+	type FilterUserParams,
+	type ImportUserListResponse,
+	type ImportUserResponse,
 	ImportUserSortOrder,
 	MatchType,
-	SortImportUserParams,
-	UpdateFlagParams,
-	UpdateMatchParams,
-	UserMatchListResponse,
-	UserMatchResponse,
+	type SortImportUserParams,
+	type UpdateFlagParams,
+	type UpdateMatchParams,
+	type UserMatchListResponse,
+	type UserMatchResponse,
 	UserRole,
 } from '@modules/user-import/controller/dto';
-import { User } from '@modules/user/repo';
+import { type User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
-import { HttpStatus, INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { PaginationParams } from '@shared/controller/dto';
+import { HttpStatus, type INestApplication } from '@nestjs/common';
+import { Test, type TestingModule } from '@nestjs/testing';
+import { type PaginationParams } from '@shared/controller/dto';
 import { Permission, SortOrder } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
-import { ImportUser, MatchCreator } from '../../entity';
+import { type ImportUser, MatchCreator } from '../../entity';
 import { importUserFactory } from '../../testing';
-import { USER_IMPORT_CONFIG_TOKEN, UserImportConfig } from '../../user-import-config';
+import { USER_IMPORT_CONFIG_TOKEN, type UserImportConfig } from '../../user-import-config';
 
 describe('ImportUser Controller (API)', () => {
 	let app: INestApplication;

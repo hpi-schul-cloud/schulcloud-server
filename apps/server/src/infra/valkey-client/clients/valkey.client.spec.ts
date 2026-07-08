@@ -1,5 +1,5 @@
-import { DeepMocked, createMock } from '@golevelup/ts-jest';
-import { Redis } from 'iovalkey';
+import { type DeepMocked, createMock } from '@golevelup/ts-jest';
+import { type Redis } from 'iovalkey';
 import { ValkeyClient } from './valkey.client';
 
 describe('ValkeyClient', () => {

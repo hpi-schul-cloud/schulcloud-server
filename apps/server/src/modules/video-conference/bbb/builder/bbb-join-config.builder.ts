@@ -1,4 +1,4 @@
-import { BBBJoinConfig, BBBRole } from '../request/bbb-join.config';
+import { type BBBJoinConfig, type BBBRole } from '../request/bbb-join.config';
 import { Builder } from './builder';
 
 export class BBBJoinConfigBuilder extends Builder<BBBJoinConfig> {

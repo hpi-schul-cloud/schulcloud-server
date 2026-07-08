@@ -2,18 +2,18 @@ import { EntityManager } from '@mikro-orm/core';
 import {
 	Action,
 	AuthorizableReferenceType,
-	AuthorizationContext,
+	type AuthorizationContext,
 	AuthorizationContextBuilder,
 } from '@modules/authorization';
 import { ServerTestModule } from '@modules/server';
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus, type INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { nanoid } from 'nanoid';
 import { createAccessTokenParamsTestFactory } from '../../testing';
-import { AuthorizationBodyParams, AuthorizationManyReferencesBodyParams } from '../dto';
+import { type AuthorizationBodyParams, type AuthorizationManyReferencesBodyParams } from '../dto';
 import { AuthorizationResponseMapper } from '../mapper';
 
 const createAuthorizationBodyParams = (userId: string): AuthorizationBodyParams => {

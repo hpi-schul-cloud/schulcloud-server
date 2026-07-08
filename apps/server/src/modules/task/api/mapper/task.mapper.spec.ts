@@ -4,10 +4,10 @@ import { LessonEntity, Material } from '@modules/lesson/repo';
 import { User } from '@modules/user/repo';
 import { InputFormat } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
-import { TaskStatus, TaskUpdate } from '../../domain';
-import { Submission, Task, TaskParentDescriptions } from '../../repo';
+import { type TaskStatus, type TaskUpdate } from '../../domain';
+import { Submission, Task, type TaskParentDescriptions } from '../../repo';
 import { taskFactory } from '../../testing';
-import { TaskCreateParams, TaskResponse, TaskStatusResponse, TaskUpdateParams } from '../dto';
+import { type TaskCreateParams, TaskResponse, TaskStatusResponse, type TaskUpdateParams } from '../dto';
 import { TaskMapper } from './task.mapper';
 
 const createExpectedResponse = (task: Task, status: TaskStatus, descriptions: TaskParentDescriptions): TaskResponse => {

@@ -1,7 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { ClassEntity, ClassEntityProps, ClassSourceOptionsEntity } from '@modules/class/entity';
+import { ClassEntity, type ClassEntityProps, ClassSourceOptionsEntity } from '@modules/class/entity';
 import { BaseFactory } from '@testing/factory/base.factory';
-import { DeepPartial } from 'fishery';
+import { type DeepPartial } from 'fishery';
 
 class ClassEntityFactory extends BaseFactory<ClassEntity, ClassEntityProps> {
 	withUserIds(userIds: ObjectId[]): this {

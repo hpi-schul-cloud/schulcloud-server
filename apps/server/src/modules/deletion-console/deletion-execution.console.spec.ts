@@ -1,10 +1,10 @@
-import { DeepMocked } from '@golevelup/ts-jest';
-import { Test, TestingModule } from '@nestjs/testing';
+import { type DeepMocked } from '@golevelup/ts-jest';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { DeletionExecutionTriggerResultBuilder, TriggerDeletionExecutionOptionsBuilder } from './builder';
 import { DeletionConsoleTestModule } from './deletion-console.app.module';
 import { DELETION_CONSOLE_CONFIG_TOKEN } from './deletion-console.config';
 import { DeletionExecutionConsole } from './deletion-execution.console';
-import { TriggerDeletionExecutionOptions } from './interface';
+import { type TriggerDeletionExecutionOptions } from './interface';
 import { DeletionExecutionUc } from './uc';
 
 describe(DeletionExecutionConsole.name, () => {

@@ -2,7 +2,7 @@ import { faker } from '@faker-js/faker';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { DoBaseFactory } from '@testing/factory/domainobject';
 import { ReferencedEntityType } from '../../../types';
-import { ErwinIdentifierEntity, ErwinIdentifierEntityProps } from '../erwin-identifier.entity';
+import { ErwinIdentifierEntity, type ErwinIdentifierEntityProps } from '../erwin-identifier.entity';
 
 export const erwinIdentifierEntityFactoryWithUser = DoBaseFactory.define<
 	ErwinIdentifierEntity,

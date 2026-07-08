@@ -1,11 +1,16 @@
 import { Permission } from '@shared/domain/interface';
-import { BBBBaseResponse } from '../bbb';
+import { type BBBBaseResponse } from '../bbb';
 import {
-	DeprecatedVideoConferenceInfoResponse,
-	DeprecatedVideoConferenceJoinResponse,
-	VideoConferenceBaseResponse,
+	type DeprecatedVideoConferenceInfoResponse,
+	type DeprecatedVideoConferenceJoinResponse,
+	type VideoConferenceBaseResponse,
 } from '../controller/dto/response/video-conference-deprecated.response';
-import { VideoConference, VideoConferenceInfo, VideoConferenceJoin, VideoConferenceState } from '../uc/dto';
+import {
+	type VideoConference,
+	type VideoConferenceInfo,
+	type VideoConferenceJoin,
+	VideoConferenceState,
+} from '../uc/dto';
 import { VideoConferenceResponseDeprecatedMapper } from './vc-deprecated-response.mapper';
 
 /**

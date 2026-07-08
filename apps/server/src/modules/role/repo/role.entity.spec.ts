@@ -1,6 +1,6 @@
-import { MikroORM } from '@mikro-orm/core';
+import { type MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Permission } from '@shared/domain/interface';
+import { type Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { roleFactory } from '../testing';
 import { Role } from './role.entity';

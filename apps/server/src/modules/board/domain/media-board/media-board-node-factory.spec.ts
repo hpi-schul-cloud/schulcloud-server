@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { BoardExternalReference, BoardExternalReferenceType, BoardLayout } from '../types';
+import { type BoardExternalReference, BoardExternalReferenceType, BoardLayout } from '../types';
 import { MediaBoardNodeFactory } from './media-board-node-factory';
 import { Colors } from './types';
 

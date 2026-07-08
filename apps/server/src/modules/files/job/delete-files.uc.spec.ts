@@ -1,11 +1,11 @@
 import { S3ServiceException } from '@aws-sdk/client-s3';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { AuthenticationClientAdapter } from '@infra/authentication-client';
 import { LegacyLogger } from '@infra/logger';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { StorageProviderRepo } from '@modules/school/repo';
 import { storageProviderFactory } from '@modules/school/testing';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { fileEntityFactory, filePermissionEntityFactory } from '../entity/testing';
 import { FILES_CONSOLE_CONFIG_TOKEN } from '../files-console.config';
 import { FilesRepo } from '../repo';

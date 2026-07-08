@@ -3,7 +3,7 @@ import { createCommonCartridgeOrganizationNodeProps } from '../../testing/common
 import { createCommonCartridgeWebLinkResourceProps } from '../../testing/common-cartridge-resource-props.factory';
 import { CommonCartridgeElement } from '../interfaces';
 import { CommonCartridgeOrganizationNode } from './common-cartridge-organization-node';
-import { CommonCartridgeResourceCollectionBuilder } from './common-cartridge-resource-collection-builder';
+import { type CommonCartridgeResourceCollectionBuilder } from './common-cartridge-resource-collection-builder';
 
 describe('CommonCartridgeOrganizationNode', () => {
 	const setupOrganizationNodeProps = () => {

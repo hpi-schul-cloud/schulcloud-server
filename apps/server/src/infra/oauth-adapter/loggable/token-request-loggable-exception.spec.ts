@@ -1,5 +1,5 @@
 import { axiosErrorFactory } from '@testing/factory/axios-error.factory';
-import { AxiosError } from 'axios';
+import { type AxiosError } from 'axios';
 import { TokenRequestLoggableException } from './token-request-loggable-exception';
 import util from 'util';
 

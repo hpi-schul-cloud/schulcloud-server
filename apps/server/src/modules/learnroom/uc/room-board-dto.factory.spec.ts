@@ -1,19 +1,19 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { AuthorizationService } from '@modules/authorization';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { LessonEntity, Material } from '@modules/lesson/repo';
 import { lessonFactory } from '@modules/lesson/testing';
-import { Submission, Task, TaskWithStatusVo } from '@modules/task/repo';
+import { Submission, Task, type TaskWithStatusVo } from '@modules/task/repo';
 import { taskFactory } from '@modules/task/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
-import { LEARNROOM_CONFIG_TOKEN, LearnroomConfig } from '../learnroom.config';
+import { LEARNROOM_CONFIG_TOKEN, type LearnroomConfig } from '../learnroom.config';
 import { LegacyBoard, LegacyBoardElement } from '../repo';
 import { boardFactory, columnboardBoardElementFactory, lessonBoardElementFactory } from '../testing';
-import { LessonMetaData } from '../types';
+import { type LessonMetaData } from '../types';
 import { CourseRoomsAuthorisationService } from './course-rooms.authorisation.service';
 import { RoomBoardDTOFactory } from './room-board-dto.factory';
 

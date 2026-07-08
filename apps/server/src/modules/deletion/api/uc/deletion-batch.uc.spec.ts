@@ -1,6 +1,6 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { AccountService } from '@modules/account';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { DeletionBatchService } from '../../domain/service';
 import { deletionBatchFactory } from '../../domain/testing';
 import { BatchStatus } from '../../domain/types';

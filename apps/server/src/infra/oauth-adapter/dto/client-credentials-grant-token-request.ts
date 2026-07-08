@@ -1,4 +1,4 @@
-import { OAuthGrantType } from '../types';
+import { type OAuthGrantType } from '../types';
 
 export class ClientCredentialsGrantTokenRequest {
 	public client_id: string;

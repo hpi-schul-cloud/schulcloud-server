@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseFactory } from '@testing/factory/base.factory';
-import { RuntimeConfigValue, RuntimeConfigValueProps } from '../domain/runtime-config-value.do';
+import { RuntimeConfigValue, type RuntimeConfigValueProps } from '../domain/runtime-config-value.do';
 
 export const runtimeConfigTestingFactory = BaseFactory.define<RuntimeConfigValue, RuntimeConfigValueProps>(
 	RuntimeConfigValue,

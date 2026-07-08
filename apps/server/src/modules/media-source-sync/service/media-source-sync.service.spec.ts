@@ -1,8 +1,8 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { MediaSourceDataFormat, MediaSourceNotFoundLoggableException, MediaSourceService } from '@modules/media-source';
 import { mediaSourceFactory } from '@modules/media-source/testing';
-import { Test, TestingModule } from '@nestjs/testing';
-import { MediaActivationSyncStrategy, MediaMetadataSyncStrategy } from '../interface';
+import { Test, type TestingModule } from '@nestjs/testing';
+import { type MediaActivationSyncStrategy, type MediaMetadataSyncStrategy } from '../interface';
 import { SyncStrategyNotImplementedLoggableException } from '../loggable';
 import { mediaSourceSyncReportFactory } from '../testing';
 import { MediaSourceSyncService } from './media-source-sync.service';

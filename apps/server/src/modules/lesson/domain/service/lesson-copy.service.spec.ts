@@ -1,5 +1,11 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { CopyElementType, CopyFilesService, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import {
+	CopyElementType,
+	CopyFilesService,
+	CopyHelperService,
+	type CopyStatus,
+	CopyStatusEnum,
+} from '@modules/copy-helper';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { TaskCopyService } from '@modules/task';
@@ -7,18 +13,18 @@ import { Submission, Task } from '@modules/task/repo';
 import { taskFactory } from '@modules/task/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
-import { Test, TestingModule } from '@nestjs/testing';
-import { AuthorizableObject } from '@shared/domain/domain-object';
-import { BaseEntity } from '@shared/domain/entity';
-import { EntityId } from '@shared/domain/types';
+import { Test, type TestingModule } from '@nestjs/testing';
+import { type AuthorizableObject } from '@shared/domain/domain-object';
+import { type BaseEntity } from '@shared/domain/entity';
+import { type EntityId } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
-import { LESSON_CONFIG_TOKEN, LessonConfig } from '../../lesson.config';
+import { LESSON_CONFIG_TOKEN, type LessonConfig } from '../../lesson.config';
 import {
-	ComponentEtherpadProperties,
-	ComponentGeogebraProperties,
-	ComponentInternalProperties,
-	ComponentProperties,
-	ComponentTextProperties,
+	type ComponentEtherpadProperties,
+	type ComponentGeogebraProperties,
+	type ComponentInternalProperties,
+	type ComponentProperties,
+	type ComponentTextProperties,
 	ComponentType,
 	LessonEntity,
 	LessonRepo,

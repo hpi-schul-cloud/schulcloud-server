@@ -1,5 +1,5 @@
 import { fileElementFactory } from '../testing';
-import { FileElement, isFileElement } from './file-element.do';
+import { type FileElement, isFileElement } from './file-element.do';
 
 describe('FileElement', () => {
 	let fileElement: FileElement;

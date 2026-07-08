@@ -1,4 +1,4 @@
-import { ErrorLogMessage } from '@shared/common/error';
+import { type ErrorLogMessage } from '@shared/common/error';
 import { BiloBadRequestResponseLoggableException } from './bilo-bad-request-response.loggable-exception';
 
 describe(BiloBadRequestResponseLoggableException.name, () => {

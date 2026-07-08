@@ -1,5 +1,5 @@
 import { Factory } from 'fishery';
-import { ContextExternalToolConfigurationStatusResponse } from '../../common/controller/dto/context-external-tool-configuration-status.response';
+import { type ContextExternalToolConfigurationStatusResponse } from '../../common/controller/dto/context-external-tool-configuration-status.response';
 
 export const contextExternalToolConfigurationStatusResponseFactory =
 	Factory.define<ContextExternalToolConfigurationStatusResponse>(() => {

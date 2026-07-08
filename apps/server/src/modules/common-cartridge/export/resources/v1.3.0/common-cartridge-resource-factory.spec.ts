@@ -12,7 +12,7 @@ import { CommonCartridgeManifestResourceV130 } from './common-cartridge-manifest
 import { CommonCartridgeResourceFactoryV130 } from './common-cartridge-resource-factory';
 import { CommonCartridgeWebContentResourceV130 } from './common-cartridge-web-content-resource';
 import {
-	CommonCartridgeWebLinkResourcePropsV130,
+	type CommonCartridgeWebLinkResourcePropsV130,
 	CommonCartridgeWebLinkResourceV130,
 } from './common-cartridge-web-link-resource';
 

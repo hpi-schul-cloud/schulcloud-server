@@ -1,13 +1,13 @@
-import { Course } from '@modules/course';
-import { Page } from '@shared/domain/domainobject';
+import { type Course } from '@modules/course';
+import { type Page } from '@shared/domain/domainobject';
 import { GroupTypes } from '../../domain';
-import { ClassInfoDto, ResolvedGroupDto, ResolvedGroupUser } from '../../uc/dto';
+import { type ClassInfoDto, type ResolvedGroupDto, type ResolvedGroupUser } from '../../uc/dto';
 import {
 	ClassInfoResponse,
 	ClassInfoSearchListResponse,
 	ExternalSourceResponse,
 	GroupListResponse,
-	GroupPaginationParams,
+	type GroupPaginationParams,
 	GroupResponse,
 	GroupTypeResponse,
 	GroupUserResponse,

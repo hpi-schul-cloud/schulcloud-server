@@ -1,11 +1,11 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ServerTestModule } from '@modules/server';
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus, type INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
-import { Release } from '../../domain';
-import { ReleaseListResponse } from '../dto';
+import { type Release } from '../../domain';
+import { type ReleaseListResponse } from '../dto';
 
 describe('Release Controller (API)', () => {
 	let app: INestApplication;

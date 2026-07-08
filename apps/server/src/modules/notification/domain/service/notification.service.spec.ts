@@ -1,7 +1,7 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Test, TestingModule } from '@nestjs/testing';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { NotificationType } from '../../types';
-import { NotificationRepo } from '../interfaces';
+import { type NotificationRepo } from '../interfaces';
 import { NotificationService } from './notification.service';
 import { notificationFactory } from '../testing';
 

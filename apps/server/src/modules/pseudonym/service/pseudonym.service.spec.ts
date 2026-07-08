@@ -1,15 +1,15 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { Logger } from '@infra/logger';
 import { externalToolFactory } from '@modules/tool/external-tool/testing';
 import { userDoFactory } from '@modules/user/testing';
 import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { Page } from '@shared/domain/domainobject';
-import { IFindOptions } from '@shared/domain/interface';
+import { type IFindOptions } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { ExternalToolPseudonymEntity } from '../entity';
 import { PSEUDONYM_CONFIG_TOKEN } from '../pseudonym.config';
-import { ExternalToolPseudonymRepo, Pseudonym } from '../repo';
+import { ExternalToolPseudonymRepo, type Pseudonym } from '../repo';
 import { pseudonymFactory } from '../testing';
 import { PseudonymService } from './pseudonym.service';
 
@@ -142,7 +142,7 @@ describe('PseudonymService', () => {
 			it('should pass the error without catching', async () => {
 				const { user, externalTool } = setup();
 
-				const func = async () => service.findByUserAndToolOrThrow(user, externalTool);
+				const func = () => service.findByUserAndToolOrThrow(user, externalTool);
 
 				await expect(func).rejects.toThrow(NotFoundException);
 			});

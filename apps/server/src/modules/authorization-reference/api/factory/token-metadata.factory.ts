@@ -1,7 +1,7 @@
 import { AuthorizationContext } from '@modules/authorization';
-import { CreateAccessTokenParams } from '../../api/dto';
+import { type CreateAccessTokenParams } from '../../api/dto';
 import { TokenMetadata } from '../vo';
-import { ICurrentUser } from '@infra/auth-guard';
+import { type ICurrentUser } from '@infra/auth-guard';
 
 export class TokenMetadataFactory {
 	public static build(tokenMetadataProps: TokenMetadata): TokenMetadata {

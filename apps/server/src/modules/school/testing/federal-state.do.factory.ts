@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseFactory } from '@testing/factory/base.factory';
-import { FederalState, FederalStateProps } from '../domain';
+import { FederalState, type FederalStateProps } from '../domain';
 import { countyFactory } from './county.factory';
 
 export const federalStateDoFactory = BaseFactory.define<FederalState, FederalStateProps>(FederalState, () => {

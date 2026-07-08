@@ -1,4 +1,4 @@
-import { BatchDeletionSummaryDetail } from './batch-deletion-summary-detail.interface';
+import { type BatchDeletionSummaryDetail } from './batch-deletion-summary-detail.interface';
 
 export interface BatchDeletionSummary {
 	executionTimeMilliseconds: number;

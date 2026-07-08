@@ -1,7 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { NotificationType } from '../../../types';
 import { DoBaseFactory } from '@testing/factory/domainobject';
-import { NotificationEntity, NotificationEntityProps } from '../notification.entity';
+import { NotificationEntity, type NotificationEntityProps } from '../notification.entity';
 
 const fixedDate = new Date();
 export const notificationEntityFactory = DoBaseFactory.define<NotificationEntity, NotificationEntityProps>(

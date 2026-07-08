@@ -1,6 +1,6 @@
 import { MediaExternalToolElement } from '../../../domain';
 import { TimestampsResponse } from '../../dto';
-import { BaseResponseMapper } from '../../mapper/base-mapper.interface';
+import { type BaseResponseMapper } from '../../mapper/base-mapper.interface';
 import { MediaExternalToolElementContent, MediaExternalToolElementResponse } from '../dto';
 
 export class MediaExternalToolElementResponseMapper implements BaseResponseMapper<

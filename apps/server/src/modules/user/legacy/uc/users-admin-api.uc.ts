@@ -4,7 +4,7 @@ import {
 	AuthorizationService,
 	ForbiddenLoggableException,
 } from '@modules/authorization';
-import { RoleName, RoleService } from '@modules/role';
+import { RoleDto, RoleName, RoleService } from '@modules/role';
 import { User, UserMikroOrmRepo } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
@@ -50,18 +50,18 @@ export class UsersAdminApiUc {
 		return this.adminUsersService.getUserWithNestedData(role?.id, school.id, currentSchoolYearId, params.id);
 	}
 
-	private validateAccessToContext(context: RequestedRoleEnum, currentUser: User) {
+	private validateAccessToContext(context: RequestedRoleEnum, currentUser: User): void {
 		const permission = this.getPermissionForRequestedRole(context);
 		try {
 			this.authorizationService.checkAllPermissions(currentUser, [permission]);
 		} catch (e) {
 			// temporary fix for the problem with checkAllPermissions method (throws UnauthorizedException instead of ForbiddenLoggableException)
 			const permissionContext = AuthorizationContextBuilder.read([permission]);
-			throw new ForbiddenLoggableException(currentUser.id, AuthorizableReferenceType.User, permissionContext);
+			throw new ForbiddenLoggableException(currentUser.id, AuthorizableReferenceType.User, permissionContext, e);
 		}
 	}
 
-	private getPermissionForRequestedRole(requestedRole: RequestedRoleEnum) {
+	private getPermissionForRequestedRole(requestedRole: RequestedRoleEnum): Permission {
 		if (requestedRole === RequestedRoleEnum.TEACHERS) {
 			return Permission.TEACHER_LIST;
 		}
@@ -69,7 +69,7 @@ export class UsersAdminApiUc {
 		return Permission.STUDENT_LIST;
 	}
 
-	private getRoleForRequestedRole(requestedRole: RequestedRoleEnum) {
+	private getRoleForRequestedRole(requestedRole: RequestedRoleEnum): Promise<RoleDto> {
 		if (requestedRole === RequestedRoleEnum.TEACHERS) {
 			return this.roleService.findByName(RoleName.TEACHER);
 		}

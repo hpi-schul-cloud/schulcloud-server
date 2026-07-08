@@ -1,8 +1,8 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { OfferDTO, VidisClientAdapter } from '@infra/vidis-client';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import { type OfferDTO, VidisClientAdapter } from '@infra/vidis-client';
 import { vidisOfferItemFactory } from '@infra/vidis-client/testing';
 import { MediaSourceDataFormat, mediaSourceFactory } from '@modules/media-source';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { ImageMimeType } from '@shared/domain/types';
 import { MediumNotFoundLoggableException } from '../loggable';
 import { MediumMetadataMapper } from '../mapper';

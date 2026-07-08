@@ -1,10 +1,10 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
 import { contextExternalToolFactory } from '@modules/tool/context-external-tool/testing';
 import { schoolExternalToolFactory } from '@modules/tool/school-external-tool/testing';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import {
-	BoardExternalReference,
+	type BoardExternalReference,
 	BoardExternalReferenceType,
 	BoardLayout,
 	Colors,

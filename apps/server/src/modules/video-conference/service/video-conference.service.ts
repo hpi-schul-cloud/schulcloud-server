@@ -294,7 +294,8 @@ export class VideoConferenceService {
 			vcDo.salt = randomBytes(16).toString('hex');
 
 			vcDo.options = new VideoConferenceOptionsDO(options);
-		} catch (error) {
+		} catch {
+			// TODO: check error handling
 			vcDo = new VideoConferenceDO({
 				target: scopeId,
 				targetModel: scope,

@@ -1,5 +1,5 @@
-import { GroupTypes } from '@modules/group';
-import { ExternalGroupUserDto } from './external-group-user.dto';
+import { type GroupTypes } from '@modules/group';
+import { type ExternalGroupUserDto } from './external-group-user.dto';
 
 export class ExternalGroupDto {
 	externalId: string;

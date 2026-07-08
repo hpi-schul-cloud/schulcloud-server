@@ -1,11 +1,11 @@
-import { EntityData, NotFoundError } from '@mikro-orm/core';
+import { type EntityData, NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
-import { Account } from '../domain';
+import { type Account } from '../domain';
 import { accountDoFactory, accountFactory } from '../testing';
 import { AccountEntity } from './account.entity';
 import { AccountMikroOrmRepo } from './account.repo';

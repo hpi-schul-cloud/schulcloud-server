@@ -1,6 +1,6 @@
-import { ExternalSource } from '@shared/domain/domainobject';
-import { GroupPeriod, GroupTypes } from '../../domain';
-import { ResolvedGroupUser } from './resolved-group-user';
+import { type ExternalSource } from '@shared/domain/domainobject';
+import { type GroupPeriod, type GroupTypes } from '../../domain';
+import { type ResolvedGroupUser } from './resolved-group-user';
 
 export class ResolvedGroupDto {
 	id: string;

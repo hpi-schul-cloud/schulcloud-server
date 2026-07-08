@@ -1,7 +1,7 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Test, TestingModule } from '@nestjs/testing';
-import { ProviderConsentSessionResponse } from '../domain';
+import { Test, type TestingModule } from '@nestjs/testing';
+import { type ProviderConsentSessionResponse } from '../domain';
 import { OauthProviderService } from '../domain/service/oauth-provider.service';
 import { providerConsentSessionResponseFactory } from '../testing';
 import { OauthProviderSessionUc } from './oauth-provider.session.uc';

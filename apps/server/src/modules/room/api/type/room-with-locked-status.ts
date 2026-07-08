@@ -1,5 +1,5 @@
 import type { Room } from '@modules/room';
-import { RoomOperation } from '@modules/room-membership/authorization/room.rule';
+import { type RoomOperation } from '@modules/room-membership/authorization/room.rule';
 
 export type RoomWithAllowedOperationsAndLockedStatus = {
 	room: Room;

@@ -1,6 +1,6 @@
-import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
-import { EntityId } from '@shared/domain/types';
-import { SchulConneXProvisioningOptions } from './schulconnex-provisionin-options.do';
+import { type AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
+import { type EntityId } from '@shared/domain/types';
+import { type SchulConneXProvisioningOptions } from './schulconnex-provisionin-options.do';
 
 export interface SchoolSystemOptionsProps<T extends AnyProvisioningOptions> extends AuthorizableObject {
 	schoolId: EntityId;

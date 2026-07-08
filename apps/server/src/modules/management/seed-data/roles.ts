@@ -1,9 +1,9 @@
 // All user accounts are organized by school in a single array
 
 import { RoleName } from '@modules/role';
-import { Role, RoleProperties } from '@modules/role/repo';
+import { type Role, type RoleProperties } from '@modules/role/repo';
 import { Permission } from '@shared/domain/interface';
-import { DeepPartial } from 'fishery';
+import { type DeepPartial } from 'fishery';
 import { roleFactory } from './factory/role.factory';
 
 type SeedRoleProperties = Omit<RoleProperties, 'roles'> & {
@@ -424,7 +424,7 @@ export const roleOrder = [
 	'externalPerson',
 ];
 
-export function generateRole(localRoleSeedData?: { [key: string | RoleName]: SeedRoleProperties }) {
+export function generateRole(localRoleSeedData?: { [key: string | RoleName]: SeedRoleProperties }): Role[] {
 	// cache the results for later use
 	const rolesByName = {} as Record<RoleName, Role>;
 

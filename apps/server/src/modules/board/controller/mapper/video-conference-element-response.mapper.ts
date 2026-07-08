@@ -1,6 +1,6 @@
 import { ContentElementType, VideoConferenceElement } from '../../domain';
 import { TimestampsResponse, VideoConferenceElementContent, VideoConferenceElementResponse } from '../dto';
-import { BaseResponseMapper } from './base-mapper.interface';
+import { type BaseResponseMapper } from './base-mapper.interface';
 
 export class VideoConferenceElementResponseMapper implements BaseResponseMapper {
 	private static instance: VideoConferenceElementResponseMapper;

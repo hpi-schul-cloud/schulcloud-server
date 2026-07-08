@@ -1,24 +1,28 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { DefaultEncryptionService, EncryptionService, SymmetricKeyEncryptionService } from '@infra/encryption';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import {
+	DefaultEncryptionService,
+	type EncryptionService,
+	type SymmetricKeyEncryptionService,
+} from '@infra/encryption';
 import { LegacyLogger } from '@infra/logger';
-import { OauthAdapterService, OAuthTokenDto } from '@infra/oauth-adapter';
+import { OauthAdapterService, type OAuthTokenDto } from '@infra/oauth-adapter';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { ErwinIdentifier, ErwinIdentifierService, ReferencedEntityType } from '@modules/erwin-identifier';
+import { type ErwinIdentifier, ErwinIdentifierService, ReferencedEntityType } from '@modules/erwin-identifier';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
 import { ProvisioningService } from '@modules/provisioning';
 import { OauthDataDto } from '@modules/provisioning/dto';
 import { SchoolFeature } from '@modules/school/domain';
-import { System } from '@modules/system';
+import { type System } from '@modules/system';
 import { SystemService } from '@modules/system/domain';
-import { OauthConfigEntity } from '@modules/system/repo';
+import { type OauthConfigEntity } from '@modules/system/repo';
 import { systemFactory, systemOauthConfigFactory } from '@modules/system/testing';
 import { UserService } from '@modules/user';
 import { MigrationCheckService } from '@modules/user-login-migration';
 import { userDoFactory } from '@modules/user/testing';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import jwt, { JwtPayload } from 'jsonwebtoken';
+import jwt, { type JwtPayload } from 'jsonwebtoken';
 import { externalUserDtoFactory } from '../../provisioning/testing';
 import {
 	OauthConfigMissingLoggableException,

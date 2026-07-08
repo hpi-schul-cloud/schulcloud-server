@@ -1,4 +1,4 @@
-import { Loggable, LoggableMessage } from '@shared/common/loggable';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
 import { SyncStrategyTarget } from '../sync-strategy.types';
 
 export class InvalidTargetLoggable implements Loggable {

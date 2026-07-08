@@ -1,11 +1,11 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ExternalToolMediumStatus } from '@modules/tool/external-tool/enum';
 import { InternalServerErrorException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { EntityId } from '@shared/domain/types';
-import { ToolConfigType } from '../../common/enum';
-import { ContextExternalTool } from '../../context-external-tool/domain';
+import { Test, type TestingModule } from '@nestjs/testing';
+import { type EntityId } from '@shared/domain/types';
+import { type ToolConfigType } from '../../common/enum';
+import { type ContextExternalTool } from '../../context-external-tool/domain';
 import { ToolConfigurationStatusService } from '../../context-external-tool/service';
 import { contextExternalToolFactory } from '../../context-external-tool/testing';
 import { ExternalToolService } from '../../external-tool';
@@ -14,12 +14,12 @@ import { SchoolExternalToolService } from '../../school-external-tool';
 import { schoolExternalToolFactory } from '../../school-external-tool/testing';
 import { ToolStatusNotLaunchableLoggableException } from '../error';
 import { toolLaunchRequestFactory } from '../testing';
-import { ToolLaunchRequest } from '../types';
+import { type ToolLaunchRequest } from '../types';
 import {
 	BasicToolLaunchStrategy,
 	Lti11ToolLaunchStrategy,
 	OAuth2ToolLaunchStrategy,
-	ToolLaunchParams,
+	type ToolLaunchParams,
 } from './launch-strategy';
 import { ToolLaunchService } from './tool-launch.service';
 

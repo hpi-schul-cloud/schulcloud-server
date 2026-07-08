@@ -1,5 +1,5 @@
-import { Loggable, LoggableMessage } from '@shared/common/loggable';
-import { ImportUser } from '../entity';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
+import { type ImportUser } from '../entity';
 
 export class UserMigrationFailedLoggable implements Loggable {
 	constructor(

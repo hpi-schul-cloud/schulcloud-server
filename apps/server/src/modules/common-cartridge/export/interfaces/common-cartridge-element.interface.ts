@@ -1,6 +1,6 @@
-import { CommonCartridgeElementType } from '../common-cartridge.enums';
+import { type CommonCartridgeElementType } from '../common-cartridge.enums';
 import { CommonCartridgeBase } from './common-cartridge-base.interface';
-import { XmlObject } from './xml-object.interface';
+import { type XmlObject } from './xml-object.interface';
 
 /**
  * Every element which should be listed in the Common Cartridge manifest must implement this interface.

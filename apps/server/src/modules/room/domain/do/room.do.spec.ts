@@ -1,8 +1,8 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { EntityId } from '@shared/domain/types';
+import { type EntityId } from '@shared/domain/types';
 import { roomFactory } from '../../testing';
 import { RoomColor, RoomFeatures } from '../type';
-import { Room, RoomProps } from './room.do';
+import { Room, type RoomProps } from './room.do';
 
 describe('Room', () => {
 	let room: Room;

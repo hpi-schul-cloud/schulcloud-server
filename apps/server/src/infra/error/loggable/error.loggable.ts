@@ -1,6 +1,6 @@
-import { ValidationError } from '@nestjs/common';
-import { ApiValidationError, ErrorLogMessage, ValidationErrorLogMessage } from '@shared/common/error';
-import { Loggable, LogMessageDataObject } from '@shared/common/loggable';
+import { type ValidationError } from '@nestjs/common';
+import { ApiValidationError, type ErrorLogMessage, type ValidationErrorLogMessage } from '@shared/common/error';
+import { type Loggable, type LogMessageDataObject } from '@shared/common/loggable';
 import { getMetadataStorage } from 'class-validator';
 import util from 'node:util';
 import { ErrorUtils } from '../utils/error.utils';

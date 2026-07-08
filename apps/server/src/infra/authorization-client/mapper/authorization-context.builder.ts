@@ -1,7 +1,7 @@
 import {
-	AuthorizationContextParams,
+	type AuthorizationContextParams,
 	AuthorizationContextParamsAction,
-	AuthorizationContextParamsRequiredPermissions,
+	type AuthorizationContextParamsRequiredPermissions,
 } from '../authorization-api-client';
 
 export class AuthorizationContextBuilder {

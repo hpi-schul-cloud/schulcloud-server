@@ -1,9 +1,15 @@
 /* istanbul ignore file */
 
-import { Mail, MailService } from '@infra/mail';
+import { type Mail, MailService } from '@infra/mail';
 // application imports
 
-import { createRequestLoggerMiddleware, LegacyLogger, Logger, LOGGER_CONFIG_TOKEN, LoggerConfig } from '@infra/logger';
+import {
+	createRequestLoggerMiddleware,
+	LegacyLogger,
+	Logger,
+	LOGGER_CONFIG_TOKEN,
+	type LoggerConfig,
+} from '@infra/logger';
 import { MikroORM } from '@mikro-orm/core';
 import { AccountService } from '@modules/account';
 import { AccountUc } from '@modules/account/api/account.uc';

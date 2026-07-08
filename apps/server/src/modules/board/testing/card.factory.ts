@@ -1,7 +1,7 @@
 /* istanbul ignore file */
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseFactory } from '@testing/factory/base.factory';
-import { Card, CardProps, ROOT_PATH } from '../domain';
+import { Card, type CardProps, ROOT_PATH } from '../domain';
 
 export const cardFactory = BaseFactory.define<Card, CardProps>(Card, ({ sequence }) => {
 	const props: CardProps = {

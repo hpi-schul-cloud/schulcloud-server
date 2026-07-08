@@ -1,4 +1,4 @@
-import { Loggable, LoggableMessage } from '@shared/common/loggable';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
 
 export class TspSyncingUsersLoggable implements Loggable {
 	constructor(private readonly syncingUsers: number) {}

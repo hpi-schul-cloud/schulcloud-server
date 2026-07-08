@@ -1,8 +1,8 @@
-import { CheerioAPI } from 'cheerio';
-import { CommonCartridgeFileParserOptions } from './common-cartridge-import.types';
+import { type CheerioAPI } from 'cheerio';
+import { type CommonCartridgeFileParserOptions } from './common-cartridge-import.types';
 import {
 	CommonCartridgeOrganizationVisitor,
-	CommonCartridgeOrganizationVisitorNode,
+	type CommonCartridgeOrganizationVisitorNode,
 } from './utils/common-cartridge-organization-visitor';
 
 export class CommonCartridgeManifestParser {

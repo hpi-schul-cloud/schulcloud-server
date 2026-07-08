@@ -1,6 +1,6 @@
-import { CourseSyncAttribute } from '@modules/course';
-import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
-import { EntityId } from '@shared/domain/types';
+import { type CourseSyncAttribute } from '@modules/course';
+import { type AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
+import { type EntityId } from '@shared/domain/types';
 
 export interface CourseSynchronizationHistoryProps extends AuthorizableObject {
 	externalGroupId: string;

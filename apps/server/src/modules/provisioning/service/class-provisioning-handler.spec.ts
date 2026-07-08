@@ -1,17 +1,17 @@
 import { faker } from '@faker-js/faker';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Class, ClassFactory, ClassService } from '@modules/class';
 import { ErwinIdentifierService, ReferencedEntityType } from '@modules/erwin-identifier';
 import { erwinIdentifierFactoryWithSchool } from '@modules/erwin-identifier/testing';
 import { SchoolService } from '@modules/school';
 import { schoolFactory } from '@modules/school/testing';
-import { Test, TestingModule } from '@nestjs/testing';
-import { ExternalClassDto, ExternalSchoolDto, ProvisioningSystemDto } from '../dto';
+import { Test, type TestingModule } from '@nestjs/testing';
+import { ExternalClassDto, type ExternalSchoolDto, type ProvisioningSystemDto } from '../dto';
 import { BadDataLoggableException } from '../loggable';
 import { externalClassDtoFactory, externalSchoolDtoFactory, provisioningSystemDtoFactory } from '../testing';
 import { ClassProvisioningHandler } from './class-provisioning-handler';
-import { ProvisioningContext } from './erwin-provisioning-handler.interface';
+import { type ProvisioningContext } from './erwin-provisioning-handler.interface';
 
 describe('ClassProvisioningHandler', () => {
 	let module: TestingModule;

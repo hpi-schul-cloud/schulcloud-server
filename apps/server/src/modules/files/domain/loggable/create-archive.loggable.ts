@@ -1,6 +1,6 @@
-import { Loggable, LoggableMessage } from '@shared/common/loggable';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
 import util from 'node:util';
-import { FileDo } from '../do';
+import { type FileDo } from '../do';
 
 export class CreateArchiveLoggable implements Loggable {
 	constructor(

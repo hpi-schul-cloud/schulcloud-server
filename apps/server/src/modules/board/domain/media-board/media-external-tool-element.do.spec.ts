@@ -1,5 +1,5 @@
 import { mediaExternalToolElementFactory } from '../../testing';
-import { MediaExternalToolElement, isMediaExternalToolElement } from './media-external-tool-element.do';
+import { type MediaExternalToolElement, isMediaExternalToolElement } from './media-external-tool-element.do';
 
 describe('MediaExternalToolElement', () => {
 	let mediaExternalToolElement: MediaExternalToolElement;

@@ -1,11 +1,11 @@
-import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { ProvisioningOptionsInterface } from '../interface';
+import { type SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
+import { type ProvisioningOptionsInterface } from '../interface';
 import {
 	ProvisioningStrategyInvalidOptionsLoggableException,
 	ProvisioningStrategyNoOptionsLoggableException,
 } from '../loggable';
 import { provisioningStrategyOptions } from './provisioning-strategy-options';
-import { AnyProvisioningOptions } from './school-system-options.do';
+import { type AnyProvisioningOptions } from './school-system-options.do';
 
 export class SchoolSystemOptionsBuilder {
 	constructor(private readonly provisioningStrategy: SystemProvisioningStrategy) {}

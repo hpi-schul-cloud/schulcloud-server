@@ -1,5 +1,5 @@
-import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { OauthDataDto, OauthDataStrategyInputDto, ProvisioningDto } from '../dto';
+import { type SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
+import { type OauthDataDto, type OauthDataStrategyInputDto, type ProvisioningDto } from '../dto';
 
 export abstract class ProvisioningStrategy {
 	public abstract getType(): SystemProvisioningStrategy;

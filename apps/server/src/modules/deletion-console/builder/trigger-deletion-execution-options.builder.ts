@@ -1,4 +1,4 @@
-import { TriggerDeletionExecutionOptions } from '../interface';
+import { type TriggerDeletionExecutionOptions } from '../interface';
 
 export class TriggerDeletionExecutionOptionsBuilder {
 	static build(limit: number, runFailed: boolean): TriggerDeletionExecutionOptions {

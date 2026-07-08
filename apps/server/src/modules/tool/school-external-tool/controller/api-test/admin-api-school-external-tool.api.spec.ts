@@ -1,17 +1,17 @@
 import { EntityManager, MikroORM } from '@mikro-orm/core';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { AdminApiServerTestModule } from '@modules/server/admin-api.server.app.module';
-import { HttpStatus, INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { HttpStatus, type INestApplication } from '@nestjs/common';
+import { Test, type TestingModule } from '@nestjs/testing';
 // admin-api-external-tool and test file is wrong placed need to be part of a admin-api-module folder
 import { TestApiClient } from '@testing/test-api-client';
 import { CustomParameterScope, CustomParameterType } from '../../../common/enum';
-import { ExternalToolResponse } from '../../../external-tool/controller/dto';
-import { ExternalToolEntity } from '../../../external-tool/repo';
+import { type ExternalToolResponse } from '../../../external-tool/controller/dto';
+import { type ExternalToolEntity } from '../../../external-tool/repo';
 import { customParameterEntityFactory, externalToolEntityFactory } from '../../../external-tool/testing';
 import { SchoolExternalToolEntity } from '../../repo';
 import { schoolExternalToolConfigurationStatusFactory } from '../../testing';
-import { SchoolExternalToolPostParams, SchoolExternalToolResponse } from '../dto';
+import { type SchoolExternalToolPostParams, type SchoolExternalToolResponse } from '../dto';
 
 describe('AdminApiSchoolExternalTool (API)', () => {
 	let app: INestApplication;

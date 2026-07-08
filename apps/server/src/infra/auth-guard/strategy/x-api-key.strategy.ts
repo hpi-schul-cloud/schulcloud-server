@@ -1,7 +1,7 @@
 import { UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import Strategy from 'passport-headerapikey';
-import { InternalXApiKeyAuthGuardConfig, StrategyType } from '../interface';
+import { type InternalXApiKeyAuthGuardConfig, StrategyType } from '../interface';
 
 export class XApiKeyStrategy extends PassportStrategy(Strategy, StrategyType.API_KEY) {
 	constructor(private readonly config: InternalXApiKeyAuthGuardConfig) {

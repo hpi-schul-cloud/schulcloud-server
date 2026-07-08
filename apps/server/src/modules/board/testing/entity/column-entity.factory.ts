@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { BoardNodeType, ColumnProps, ROOT_PATH } from '../../domain';
-import { BoardNodeEntityFactory, PropsWithType } from './board-node-entity.factory';
+import { BoardNodeType, type ColumnProps, ROOT_PATH } from '../../domain';
+import { BoardNodeEntityFactory, type PropsWithType } from './board-node-entity.factory';
 
 export const columnEntityFactory = BoardNodeEntityFactory.define<PropsWithType<ColumnProps>>(({ sequence }) => {
 	const props: PropsWithType<ColumnProps> = {

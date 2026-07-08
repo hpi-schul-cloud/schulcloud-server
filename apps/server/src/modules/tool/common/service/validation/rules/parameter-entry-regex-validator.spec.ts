@@ -1,6 +1,6 @@
-import { ValidationError } from '@shared/common/error';
+import { type ValidationError } from '@shared/common/error';
 import { customParameterFactory } from '../../../../external-tool/testing';
-import { CustomParameter, CustomParameterEntry, ToolParameterValueRegexLoggableException } from '../../../domain';
+import { type CustomParameter, CustomParameterEntry, ToolParameterValueRegexLoggableException } from '../../../domain';
 import { ParameterEntryRegexValidator } from './parameter-entry-regex-validator';
 
 describe(ParameterEntryRegexValidator.name, () => {

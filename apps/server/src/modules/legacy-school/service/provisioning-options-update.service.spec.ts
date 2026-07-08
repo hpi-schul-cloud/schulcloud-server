@@ -1,7 +1,7 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Test, TestingModule } from '@nestjs/testing';
-import { EntityId } from '@shared/domain/types';
+import { Test, type TestingModule } from '@nestjs/testing';
+import { type EntityId } from '@shared/domain/types';
 import { SchulConneXProvisioningOptions } from '../domain';
 import { ProvisioningOptionsUpdateService } from './provisioning-options-update.service';
 import { SchulconnexProvisioningOptionsUpdateService } from './schulconnex-provisioning-options-update.service';

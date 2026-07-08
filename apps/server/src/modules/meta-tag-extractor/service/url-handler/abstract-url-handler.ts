@@ -1,5 +1,5 @@
 import { basename } from 'node:path';
-import { MetaData, MetaDataEntityType } from '../../types';
+import { type MetaData, MetaDataEntityType } from '../../types';
 
 export abstract class AbstractUrlHandler {
 	protected abstract patterns: RegExp[];

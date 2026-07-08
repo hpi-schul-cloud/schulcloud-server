@@ -1,4 +1,4 @@
-import { PropertyLocation } from './property-location';
+import { type PropertyLocation } from './property-location';
 
 export class PropertyData {
 	name: string;

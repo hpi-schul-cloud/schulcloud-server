@@ -1,8 +1,8 @@
 import { Logger } from '@infra/logger';
-import { MetricConfig, METRICS_CONFIG_TOKEN, MetricsModule, ResponseTimeMetricsInterceptor } from '@infra/metrics';
-import { INestApplication } from '@nestjs/common';
+import { type MetricConfig, METRICS_CONFIG_TOKEN, MetricsModule, ResponseTimeMetricsInterceptor } from '@infra/metrics';
+import { type INestApplication } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { Loggable, LoggableMessage } from '@shared/common/loggable';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
 import { AppStartLoggable } from './app-start-loggable';
 
 export const enum PrometheusMetricsSetupState {

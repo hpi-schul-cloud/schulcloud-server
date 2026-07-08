@@ -1,4 +1,4 @@
-import { MediaSourceSyncOperationReport } from './media-source-sync-operation-report';
+import { type MediaSourceSyncOperationReport } from './media-source-sync-operation-report';
 
 export interface MediaSourceSyncReport {
 	totalCount: number;

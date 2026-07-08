@@ -1,14 +1,14 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { LegacySchoolService } from '@modules/legacy-school';
-import { LegacySchoolDo } from '@modules/legacy-school/domain';
+import { type LegacySchoolDo } from '@modules/legacy-school/domain';
 import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
 import { SchoolFeature } from '@modules/school/domain';
 import { SystemService } from '@modules/system';
 import { systemFactory } from '@modules/system/testing';
 import { UserService } from '@modules/user';
 import { userDoFactory } from '@modules/user/testing';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { UserLoginMigrationRepo } from '../../repo';
 import { userLoginMigrationDOFactory } from '../../testing';
 import {
@@ -350,7 +350,7 @@ describe(UserLoginMigrationService.name, () => {
 			it('should throw a MoinSchuleSystemNotFoundLoggableException', async () => {
 				const { schoolId } = setup();
 
-				const func = async () => service.startMigration(schoolId);
+				const func = () => service.startMigration(schoolId);
 
 				await expect(func).rejects.toThrow(new MoinSchuleSystemNotFoundLoggableException());
 			});
@@ -380,7 +380,7 @@ describe(UserLoginMigrationService.name, () => {
 			it('should throw an IdenticalUserLoginMigrationSystemLoggableException', async () => {
 				const { schoolId, targetSystemId } = setup();
 
-				const func = async () => service.startMigration(schoolId);
+				const func = () => service.startMigration(schoolId);
 
 				await expect(func).rejects.toThrow(
 					new IdenticalUserLoginMigrationSystemLoggableException(schoolId, targetSystemId)
@@ -657,7 +657,7 @@ describe(UserLoginMigrationService.name, () => {
 			it('should throw a UserLoginMigrationAlreadyClosedLoggableException', async () => {
 				const { userLoginMigration } = setup();
 
-				const func = async () => service.setMigrationMandatory(userLoginMigration, true);
+				const func = () => service.setMigrationMandatory(userLoginMigration, true);
 
 				await expect(func).rejects.toThrow(UserLoginMigrationAlreadyClosedLoggableException);
 			});

@@ -1,5 +1,5 @@
 /* Istanbul ignore file */
-import { Loggable, LoggableMessage } from '@shared/common/loggable';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
 
 export class RecipientAddressesEmptyLoggable implements Loggable {
 	constructor(private readonly originalRecipients: string[]) {}

@@ -1,4 +1,4 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { CalendarService } from '@infra/calendar';
 import { Logger } from '@infra/logger';
 import {
@@ -8,8 +8,8 @@ import {
 	StepOperationType,
 	StepReportBuilder,
 } from '@modules/saga';
-import { Test, TestingModule } from '@nestjs/testing';
-import { USER_CONFIG_TOKEN, UserConfig } from '../user.config';
+import { Test, type TestingModule } from '@nestjs/testing';
+import { USER_CONFIG_TOKEN, type UserConfig } from '../user.config';
 import { DeleteUserCalendarDataStep } from './delete-user-calendar-data.step';
 
 describe(DeleteUserCalendarDataStep.name, () => {
