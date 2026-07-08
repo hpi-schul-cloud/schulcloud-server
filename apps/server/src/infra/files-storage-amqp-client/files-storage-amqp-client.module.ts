@@ -2,10 +2,8 @@ import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { ConfigurationModule } from '@infra/configuration';
 import { LegacyLogger, LoggerModule } from '@infra/logger';
 import { RabbitMQModuleOptions, RabbitMQWrapperModule } from '@infra/rabbitmq';
-import { SagaModule } from '@modules/saga';
 import { DynamicModule, Module } from '@nestjs/common';
 import { FilesStorageAMQPClientConfig } from './files-storage-amqp-client-config';
-import { DeleteUserFilesStorageDataStep } from './saga';
 import { FilesStorageClientAdapterService, FilesStorageProducer } from './service';
 
 export type FilesStorageAMQPClientModuleOptions = RabbitMQModuleOptions;
@@ -14,7 +12,6 @@ export class FilesStorageAMQPClientModule {
 	public static register(options: FilesStorageAMQPClientModuleOptions): DynamicModule {
 		const providers = [
 			FilesStorageClientAdapterService,
-			DeleteUserFilesStorageDataStep,
 			{
 				provide: FilesStorageProducer,
 				useFactory: (
@@ -30,7 +27,6 @@ export class FilesStorageAMQPClientModule {
 			module: FilesStorageAMQPClientModule,
 			imports: [
 				LoggerModule,
-				SagaModule,
 				ConfigurationModule.register(options.configInjectionToken, options.configConstructor),
 				ConfigurationModule.register(options.exchangeConfigInjectionToken, options.exchangeConfigConstructor),
 				RabbitMQWrapperModule.register(options),

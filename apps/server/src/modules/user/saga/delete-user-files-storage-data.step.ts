@@ -1,3 +1,4 @@
+import { FileDto, FilesStorageClientAdapterService } from '@infra/files-storage-amqp-client';
 import { Logger } from '@infra/logger';
 import {
 	ModuleName,
@@ -11,8 +12,6 @@ import {
 } from '@modules/saga';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { FileDO } from '../interfaces';
-import { FilesStorageProducer } from '../service';
 
 @Injectable()
 export class DeleteUserFilesStorageDataStep extends SagaStep<'deleteUserData'> {
@@ -20,7 +19,7 @@ export class DeleteUserFilesStorageDataStep extends SagaStep<'deleteUserData'> {
 
 	constructor(
 		private readonly sagaService: SagaService,
-		private readonly fileStorageMQProducer: FilesStorageProducer,
+		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService,
 		private readonly logger: Logger
 	) {
 		super('deleteUserData');
@@ -39,7 +38,7 @@ export class DeleteUserFilesStorageDataStep extends SagaStep<'deleteUserData'> {
 	}
 
 	public async removeUserReferences(creatorId: EntityId): Promise<StepOperationReport> {
-		const response = await this.fileStorageMQProducer.removeCreatorIdFromFileRecords(creatorId);
+		const response = await this.filesStorageClientAdapterService.removeCreatorIdFromFileRecords(creatorId);
 
 		const result = StepOperationReportBuilder.build(
 			StepOperationType.UPDATE,
@@ -50,7 +49,7 @@ export class DeleteUserFilesStorageDataStep extends SagaStep<'deleteUserData'> {
 		return result;
 	}
 
-	private getFileRecordsId(files: FileDO[]): EntityId[] {
+	private getFileRecordsId(files: FileDto[]): EntityId[] {
 		return files.map((file) => file.id);
 	}
 }

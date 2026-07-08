@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-restricted-imports
 import { ServerTestModule } from '@modules/server';
 import { Test, TestingModule } from '@nestjs/testing';
 import { TspClientFactory } from './tsp-client-factory';
