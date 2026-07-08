@@ -29,4 +29,6 @@ const userModelService = feathersMongooseService({
 });
 
 module.exports = {
+	userModelService,
+	userModelHooks,
 };

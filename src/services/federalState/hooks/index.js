@@ -1,7 +1,7 @@
 const { authenticate } = require('@feathersjs/authentication');
 const globalHooks = require('../../../hooks');
 
-const before = {
+exports.before = {
 	all: [authenticate('jwt')],
 	find: [globalHooks.hasPermission('FEDERALSTATE_VIEW')],
 	get: [globalHooks.hasPermission('FEDERALSTATE_VIEW')],
@@ -11,7 +11,7 @@ const before = {
 	remove: [globalHooks.hasPermission('FEDERALSTATE_CREATE'), globalHooks.permitGroupOperation],
 };
 
-const after = {
+exports.after = {
 	all: [],
 	find: [],
 	get: [],

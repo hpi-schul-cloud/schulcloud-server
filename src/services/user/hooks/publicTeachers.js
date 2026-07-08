@@ -57,7 +57,7 @@ const filterForPublicTeacher = (hook) => {
 	return Promise.resolve(hook);
 };
 
-const before = {
+exports.before = {
 	all: [authenticate('jwt')],
 	find: [
 		globalHooks.lookupSchool,
@@ -76,7 +76,7 @@ const before = {
 	remove: [disallow()],
 };
 
-const after = {
+exports.after = {
 	all: [],
 	find: [],
 	get: [],

@@ -15,5 +15,6 @@ const base64FileSchema = new Schema(
 const base64FileModel = mongoose.model('base64File', base64FileSchema);
 
 module.exports = {
+	base64FileSchema,
 	base64FileModel,
 };

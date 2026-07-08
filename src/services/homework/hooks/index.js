@@ -333,7 +333,7 @@ const addLessonInfo = async (hook) => {
 	return Promise.resolve(hook);
 };
 
-const before = () => {
+exports.before = () => {
 	return {
 		all: [authenticate('jwt')],
 		find: [
@@ -358,7 +358,7 @@ const before = () => {
 	};
 };
 
-const after = {
+exports.after = {
 	all: [],
 	find: [iff(isProvider('external'), [hasViewPermissionAfter, addStats])],
 	get: [iff(isProvider('external'), [hasViewPermissionAfter, addStats, addLessonInfo])],

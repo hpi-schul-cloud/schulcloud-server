@@ -1,5 +1,5 @@
 const { disallow } = require('feathers-hooks-common');
 
-const before = {
+exports.before = {
 	all: [disallow('external')],
 };

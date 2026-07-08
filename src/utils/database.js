@@ -53,4 +53,6 @@ function close() {
 }
 
 module.exports = {
+	connect,
+	close,
 };

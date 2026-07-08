@@ -32,13 +32,13 @@ exports.ifNotLocal = function ifNotLocal(hookForRemoteRequests) {
 	};
 };
 
-const forceHookResolve = (forcedHook) => (context) => {
+exports.forceHookResolve = (forcedHook) => (context) => {
 	forcedHook(context)
 		.then(() => context)
 		.catch(() => context);
 };
 
-const isAdmin = () => (context) => {
+exports.isAdmin = () => (context) => {
 	if (!(context.params.user.permissions || []).includes('ADMIN')) {
 		throw new Forbidden('you are not an administrator');
 	}
@@ -162,7 +162,7 @@ exports.hasPermission = hasPermission;
 	excludeOptions = undefined => remove response when not GET or FIND request
 	excludeOptions = ['get', ...] => remove when method not in array
  */
-const removeResponse = (excludeOptions) => (context) => {
+exports.removeResponse = (excludeOptions) => (context) => {
 	// If it was an internal call then skip this context
 	if (!context.params.provider) {
 		return context;
@@ -589,7 +589,7 @@ function validatedAttachments(attachments) {
 //   { path: "../views/template/mail_new-problem.hbs", "data": { "firstName": "Hannes", .... } };
 // if (maildata.template) { [Template-Build (view client/controller/administration.js)] }
 // mail.html = generatedHtml || "";
-const sendEmail = (context, maildata) => {
+exports.sendEmail = (context, maildata) => {
 	const files = maildata.attachments || [];
 	if (files) {
 		validatedAttachments(files);
@@ -771,7 +771,7 @@ exports.blockDisposableEmail =
 		return context;
 	};
 
-const authenticateWhenJWTExist = (context) => {
+exports.authenticateWhenJWTExist = (context) => {
 	if ((context.params.headers || {}).authorization) {
 		return authenticate('jwt')(context);
 	}

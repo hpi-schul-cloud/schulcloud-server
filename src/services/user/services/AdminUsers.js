@@ -184,4 +184,6 @@ const adminHookGenerator = (kind) => ({
 });
 
 module.exports = {
+	AdminUsers,
+	adminHookGenerator,
 };

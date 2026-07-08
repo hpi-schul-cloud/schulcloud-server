@@ -2,7 +2,7 @@ const hooks = require('feathers-hooks-common');
 const { authenticate } = require('@feathersjs/authentication');
 const globalHooks = require('../../../hooks');
 
-const before = {
+exports.before = {
 	all: [authenticate('jwt')],
 	find: [globalHooks.hasPermission('RELEASES_VIEW')],
 	get: [globalHooks.hasPermission('RELEASES_VIEW')],
@@ -12,7 +12,7 @@ const before = {
 	remove: [hooks.disallow()],
 };
 
-const after = {
+exports.after = {
 	all: [],
 	find: [],
 	get: [],

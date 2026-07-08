@@ -52,4 +52,5 @@ const LessonModel = mongoose.model('lesson', lessonSchema);
 
 module.exports = {
 	LessonModel,
+	lessonSchema,
 };

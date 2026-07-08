@@ -450,7 +450,7 @@ const checkGetSubmissionViewPermission = async (context) => {
 	throw new Forbidden();
 };
 
-const before = () => ({
+exports.before = () => ({
 	all: [authenticate('jwt'), stringifyUserId],
 	find: [
 		iff(isProvider('external'), globalHooks.restrictToCurrentSchool),
@@ -507,7 +507,7 @@ const before = () => ({
 	],
 });
 
-const after = {
+exports.after = {
 	all: [],
 	find: [],
 	get: [checkGetSubmissionViewPermission],

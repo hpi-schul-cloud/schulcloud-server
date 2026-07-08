@@ -23,7 +23,7 @@ const restrictToCurrentUser = (hook) => {
 	});
 };
 
-const before = {
+exports.before = {
 	all: [authenticate('jwt')],
 	find: [globalHooks.hasPermission('FILESTORAGE_VIEW')],
 	get: [globalHooks.hasPermission('FILESTORAGE_VIEW')],
@@ -33,7 +33,7 @@ const before = {
 	remove: [globalHooks.hasPermission('FILESTORAGE_REMOVE')],
 };
 
-const after = {
+exports.after = {
 	all: [discard('securityCheck.requestToken', 'thumbnailRequestToken')],
 	find: [restrictToCurrentUser],
 	get: [],

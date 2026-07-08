@@ -4,4 +4,4 @@ const prepareInternalParams = (params) => {
 	return paramsCopy;
 };
 
-module.exports = {  };
+module.exports = { prepareInternalParams };

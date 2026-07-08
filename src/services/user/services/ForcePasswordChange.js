@@ -54,4 +54,6 @@ class ForcePasswordChangeService {
 }
 
 module.exports = {
+	ForcePasswordChangeService,
+	ForcePasswordChangeServiceHooks,
 };

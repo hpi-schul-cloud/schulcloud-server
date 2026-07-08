@@ -2,7 +2,7 @@
 This is a port of the deprecated feathers-mongoose module to work with the new feathers version 5.
 Codebase clone from https://github.com/feathersjs-ecosystem/feathers-mongoose
 */
-const toObject =
+exports.toObject =
 	(options = {}, dataField = 'data') =>
 	(hook) => {
 		// Only perform this if it's used as an after hook.

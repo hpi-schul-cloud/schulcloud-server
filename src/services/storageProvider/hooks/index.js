@@ -15,7 +15,7 @@ const encryptSecret = (context) => {
 	return context;
 };
 
-const before = {
+exports.before = {
 	all: [authenticate('jwt'), iff(isProvider('external'), isSuperHero())],
 	find: [],
 	get: [],
@@ -25,7 +25,7 @@ const before = {
 	remove: [],
 };
 
-const after = {
+exports.after = {
 	all: [iff(isProvider('external'), discard('secretAccessKey'))],
 	find: [],
 	get: [],

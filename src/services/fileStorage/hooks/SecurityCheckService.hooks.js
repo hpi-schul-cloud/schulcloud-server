@@ -23,7 +23,7 @@ const parseData = (context) => {
 	throw new BadRequest('Expected request data to exist and to be a String or a Buffer.');
 };
 
-const before = {
+exports.before = {
 	all: [],
 	find: [disallow()],
 	get: [disallow()],
@@ -37,7 +37,7 @@ const before = {
 	remove: [disallow()],
 };
 
-const after = {
+exports.after = {
 	all: [],
 	find: [],
 	get: [],

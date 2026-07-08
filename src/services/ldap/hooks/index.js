@@ -3,7 +3,7 @@ const { disallow, iffElse, isProvider } = require('feathers-hooks-common');
 const { hasPermission, populateCurrentSchool } = require('../../../hooks');
 const restrictToSchoolSystems = require('./restrictToSchoolSystems');
 
-const before = {
+exports.before = {
 	all: [],
 	find: [disallow()],
 	get: [
@@ -19,7 +19,7 @@ const before = {
 	remove: [disallow()],
 };
 
-const after = {
+exports.after = {
 	all: [],
 	find: [],
 	get: [],

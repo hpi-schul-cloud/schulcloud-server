@@ -796,7 +796,7 @@ const updateTeamInCollaborativeStorage = (hook) => {
 	});
 };
 
-const before = {
+exports.before = {
 	all: [
 		authenticate('jwt'),
 		existId,
@@ -818,7 +818,7 @@ const before = {
 
 // todo:clear unused values
 // todo: update moongose
-const after = {
+exports.after = {
 	all: [],
 	find: [filterToRelated(keys.resFind, 'result.data'), cleanUserIdsHook], // filterFindResult
 	get: [cleanUserIdsHook, addCurrentUser], // see before (?)
@@ -828,7 +828,7 @@ const after = {
 	remove: [filterToRelated(keys.resId, 'result')],
 };
 
-const beforeExtern = {
+exports.beforeExtern = {
 	all: [authenticate('jwt'), existId, filterToRelated([], 'params.query')],
 	find: [],
 	get: [],
@@ -846,7 +846,7 @@ const beforeExtern = {
 	remove: [blockedMethod],
 };
 
-const afterExtern = {
+exports.afterExtern = {
 	all: [],
 	find: [filterToRelated(keys.resFind, 'result.data')],
 	get: [],
@@ -856,7 +856,7 @@ const afterExtern = {
 	remove: [],
 };
 
-const beforeAdmin = {
+exports.beforeAdmin = {
 	all: [authenticate('jwt'), isAdmin, existId],
 	find: [],
 	get: [blockedMethod],
@@ -866,7 +866,7 @@ const beforeAdmin = {
 	remove: [],
 };
 
-const afterAdmin = {
+exports.afterAdmin = {
 	all: [],
 	find: [],
 	get: [],
