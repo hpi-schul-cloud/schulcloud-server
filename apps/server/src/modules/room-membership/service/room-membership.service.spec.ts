@@ -721,7 +721,7 @@ describe('RoomMembershipService', () => {
 			await service.getRoomMembershipStatsByUsersAndRoomsSchoolId(schoolId1);
 
 			expect(groupService.findByUsersAndRoomsSchoolId).toHaveBeenCalledWith(schoolId1, [GroupTypes.ROOM], {
-				pagination: { skip: 0, limit: 50 },
+				pagination: { skip: 0, limit: 500 },
 			});
 		});
 	});
