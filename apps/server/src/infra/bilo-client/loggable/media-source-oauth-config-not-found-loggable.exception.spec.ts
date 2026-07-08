@@ -1,24 +1,25 @@
-import { mediaSourceFactory } from '@modules/media-source/testing';
+import { biloMediaSourceFactory } from '../testing';
 import { MediaSourceOauthConfigNotFoundLoggableException } from './media-source-oauth-config-not-found-loggable.exception';
 
 describe(MediaSourceOauthConfigNotFoundLoggableException.name, () => {
 	describe('getLogMessage', () => {
 		const setup = () => {
-			const mediaSource = mediaSourceFactory.build();
-			const exception = new MediaSourceOauthConfigNotFoundLoggableException(mediaSource.id, mediaSource.name as string);
+			const mediaSource = biloMediaSourceFactory.build();
+			const mediaSourceName = 'Test Media Source';
+			const exception = new MediaSourceOauthConfigNotFoundLoggableException(mediaSource.id, mediaSourceName);
 
 			return {
 				exception,
 				mediaSource,
+				mediaSourceName,
 			};
 		};
 
 		it('should return the correct log message', () => {
-			const { exception, mediaSource } = setup();
+			const { exception, mediaSource, mediaSourceName } = setup();
 
 			const logMessage = exception.getLogMessage();
 
-			const mediaSourceName = mediaSource.name as string;
 			expect(logMessage).toEqual({
 				message: `Required oauth config of media source ${mediaSourceName} is missing.`,
 				data: {
