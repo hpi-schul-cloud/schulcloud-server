@@ -1,15 +1,14 @@
-import { ConsoleWriterModule } from '@infra/console/console-writer/console-writer.module';
+import { ConsoleWriterModule } from '@infra/console';
 import { DATABASE_CONFIG_TOKEN, DatabaseConfig, DatabaseModule } from '@infra/database';
 import { ErrorModule } from '@infra/error';
-import { FilesConsoleModule } from '@modules/files';
-import { ManagementModule } from '@modules/management/management.module';
+import { LoggerModule } from '@infra/logger';
+import { ENTITIES } from '@modules/management/management.entity.imports';
 import { Module } from '@nestjs/common';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { ConsoleModule } from 'nestjs-console';
-import { ENTITIES } from './management.entity.imports';
-import migrationOptions from './migrations-options';
+import { TspSyncModule } from './tsp-sync.module';
 
-const imports = [ManagementModule, ConsoleModule, ConsoleWriterModule, FilesConsoleModule, ErrorModule];
+const imports = [LoggerModule, ErrorModule, ConsoleWriterModule, ConsoleModule, TspSyncModule];
 
 @Module({
 	imports: [
@@ -18,12 +17,10 @@ const imports = [ManagementModule, ConsoleModule, ConsoleWriterModule, FilesCons
 			configInjectionToken: DATABASE_CONFIG_TOKEN,
 			configConstructor: DatabaseConfig,
 			entities: ENTITIES,
-			migrationOptions,
 		}),
 	],
-	providers: [],
 })
-export class ManagementConsoleModule {}
+export class TspSyncConsoleAppModule {}
 
 @Module({
 	imports: [
@@ -32,6 +29,5 @@ export class ManagementConsoleModule {}
 			entities: ENTITIES,
 		}),
 	],
-	providers: [],
 })
-export class ManagementConsoleTestModule {}
+export class TspSyncConsoleAppTestModule {}

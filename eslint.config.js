@@ -7,6 +7,7 @@ const prettierPlugin = require('eslint-plugin-prettier');
 const prettierConfig = require('eslint-config-prettier');
 const jestPlugin = require('eslint-plugin-jest');
 const noOnlyTests = require('eslint-plugin-no-only-tests');
+const checkFile = require('eslint-plugin-check-file');
 const globals = require('globals');
 
 const airbnbRules = {
@@ -90,6 +91,7 @@ const tsBase = {
 		'import-x': importX,
 		prettier: prettierPlugin,
 		promise: promisePlugin,
+		'check-file': checkFile,
 	},
 	languageOptions: {
 		parser: tsParser,
@@ -120,8 +122,21 @@ const tsBase = {
 		'@typescript-eslint/no-non-null-assertion': 'warn',
 		'@typescript-eslint/no-unused-vars': ['warn', { args: 'after-used', argsIgnorePattern: '^_' }],
 		'@typescript-eslint/explicit-function-return-type': 'warn',
-		'@typescript-eslint/explicit-member-accessibility': 'off',
+		'@typescript-eslint/explicit-member-accessibility': [
+			'warn',
+			{
+				accessibility: 'explicit',
+				overrides: {
+					accessors: 'no-public',
+					constructors: 'no-public',
+					methods: 'explicit',
+					properties: 'explicit',
+					parameterProperties: 'explicit',
+				},
+			},
+		],
 		'@typescript-eslint/no-empty-interface': ['error', { allowSingleExtends: true }],
+		'check-file/filename-naming-convention': ['warn', { '**/*.ts': 'KEBAB_CASE' }, { ignoreMiddleExtensions: true }],
 		'no-restricted-imports': 'off',
 		'no-only-tests/no-only-tests': 'error',
 		'max-classes-per-file': 'off',
@@ -181,6 +196,7 @@ const layerRestrictions = [
 					],
 				},
 			],
+			'check-file/filename-naming-convention': ['warn', { '**/*.ts': 'PASCAL_CASE' }, { ignoreMiddleExtensions: true }],
 			'no-console': 'off',
 		},
 	},
@@ -224,15 +240,43 @@ const layerRestrictions = [
 		name: 'schulcloud/layer-infra',
 		files: ['apps/server/src/infra/**/*.ts'],
 		rules: {
+			'no-restricted-imports': [
+				'error',
+				{
+					patterns: [
+						{
+							group: ['@modules/**'],
+							message: 'infra-modules may NOT import from @modules',
+						},
+					],
+				},
+			],
 			'@typescript-eslint/no-restricted-imports': [
 				'warn',
 				{
 					patterns: [
 						{
-							group: ['**/apps/**', '@core/**', '@modules/**', '**/migrations/**'],
-							message: 'infra-modules may NOT import from apps, @core, @modules, or migrations',
+							group: ['**/apps/**', '@core/**', '**/migrations/**'],
+							message: 'infra-modules may NOT import from apps, @core, or migrations',
 						},
 						deepImportWarning,
+					],
+				},
+			],
+		},
+	},
+	{
+		name: 'schulcloud/layer-infra-collaborative-storage',
+		files: ['apps/server/src/infra/collaborative-storage/**/*.ts'],
+		rules: {
+			'no-restricted-imports': [
+				'warn',
+				{
+					patterns: [
+						{
+							group: ['@modules/**'],
+							message: 'infra-modules may NOT import from @modules',
+						},
 					],
 				},
 			],
@@ -245,7 +289,7 @@ const layerRestrictions = [
 			'@typescript-eslint/no-restricted-imports': [
 				'warn',
 				{
-					patterns: [{ group: ['**/apps/**'], message: 'modules-modules may NOT import from apps' }],
+					patterns: [{ group: ['**/apps/**'], message: 'modules-modules may NOT import from apps' }, deepImportWarning],
 				},
 			],
 		},
