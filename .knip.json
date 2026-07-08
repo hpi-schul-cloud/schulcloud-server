@@ -15,6 +15,7 @@
 		"apps/server/src/infra/files-storage-rest-client/generated/**/*",
 		"apps/server/src/infra/tldraw-client/generated/**/*",
 		"apps/server/src/infra/tsp-client/generated/**/*",
-		"apps/server/src/infra/vidis-client/generated/**/*"
+		"apps/server/src/infra/vidis-client/generated/**/*",
+		"src/**/*"
 	]
 }
