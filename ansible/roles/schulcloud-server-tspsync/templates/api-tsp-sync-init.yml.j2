@@ -43,7 +43,7 @@ spec:
             name: api-tsp-sync-init-configmap
         - secretRef:
             name: api-secret
-        command: ['/nodejs/bin/node', 'dist/apps/server/apps/tsp-sync-console.app', 'sync', 'run']
+        command: ['/nodejs/bin/node', 'dist/apps/server/apps/tsp-sync-console.app', 'sync', 'run', 'tsp']
         args: []
         resources:
           limits:
