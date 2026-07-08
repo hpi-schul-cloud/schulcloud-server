@@ -54,6 +54,11 @@ export class ShareTokenPermissionService {
 					throw new FeatureDisabledLoggableException('FEATURE_COLUMN_BOARD_SHARE');
 				}
 				break;
+			case ShareTokenParentType.Column:
+				if (!this.config.featureColumnBoardShare) {
+					throw new FeatureDisabledLoggableException('FEATURE_COLUMN_BOARD_SHARE');
+				}
+				break;
 			default:
 				throw new NotImplementedException('Import Feature not implemented');
 		}

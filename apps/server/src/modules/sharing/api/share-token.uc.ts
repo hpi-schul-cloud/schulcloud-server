@@ -1,10 +1,13 @@
 import { LegacyLogger } from '@infra/logger';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import {
+	AnyBoardNode,
 	BoardExternalReferenceType,
 	BoardNodeAuthorizableService,
 	BoardNodeService,
 	Card,
+	Column,
+	ColumnBoard,
 	ColumnBoardService,
 } from '@modules/board';
 import { LessonService } from '@modules/lesson';
@@ -117,6 +120,9 @@ export class ShareTokenUC {
 			case ShareTokenParentType.Card:
 				await this.checkCardSharePermission(user, payload.parentId);
 				break;
+			case ShareTokenParentType.Column:
+				await this.checkColumnSharePermission(user, payload.parentId);
+				break;
 			default:
 				throw new NotImplementedException('Share Feature not implemented');
 		}
@@ -133,25 +139,32 @@ export class ShareTokenUC {
 	}
 
 	private async checkColumnBoardSharePermission(user: User, boardNodeId: EntityId): Promise<void> {
-		const columBoard = await this.columnBoardService.findById(boardNodeId, 0);
-		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(columBoard);
-		const permissions = columBoard.context.type === BoardExternalReferenceType.Course ? [Permission.COURSE_EDIT] : [];
-		permissions.push(Permission.BOARD_SHARE_BOARD);
-
-		this.authorizationService.checkPermission(
-			user,
-			boardNodeAuthorizable,
-			AuthorizationContextBuilder.write(permissions)
-		);
+		const columnBoard = await this.columnBoardService.findById(boardNodeId, 0);
+		await this.checkBoardNodeSharePermission(user, columnBoard, [Permission.BOARD_SHARE_BOARD]);
 	}
 
 	private async checkCardSharePermission(user: User, cardId: EntityId): Promise<void> {
 		const card = await this.boardNodeService.findByClassAndId(Card, cardId, 0);
-		const board = await this.columnBoardService.findById(card.rootId, 0);
+		await this.checkBoardNodeSharePermission(user, card, [Permission.BOARD_SHARE_BOARD]);
+	}
 
-		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(card);
-		const permissions = board.context.type === BoardExternalReferenceType.Course ? [Permission.COURSE_EDIT] : [];
-		permissions.push(Permission.BOARD_SHARE_BOARD);
+	private async checkColumnSharePermission(user: User, columnId: EntityId): Promise<void> {
+		const column = await this.boardNodeService.findByClassAndId(Column, columnId, 0);
+		await this.checkBoardNodeSharePermission(user, column, [Permission.BOARD_SHARE_BOARD]);
+	}
+
+	private async checkBoardNodeSharePermission(
+		user: User,
+		node: AnyBoardNode,
+		additionalPermissions: Permission[]
+	): Promise<void> {
+		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(node);
+		const { rootNode } = boardNodeAuthorizable;
+		const permissions =
+			rootNode instanceof ColumnBoard && rootNode.context.type === BoardExternalReferenceType.Course
+				? [Permission.COURSE_EDIT]
+				: [];
+		permissions.push(...additionalPermissions);
 
 		this.authorizationService.checkPermission(
 			user,
@@ -187,6 +200,13 @@ export class ShareTokenUC {
 			case ShareTokenParentType.Card: {
 				const card = await this.boardNodeService.findByClassAndId(Card, payload.parentId, 0);
 				const columnBoard = await this.columnBoardService.findById(card.rootId, 0);
+				requiredPermissions =
+					columnBoard.context.type === BoardExternalReferenceType.Course ? [Permission.COURSE_EDIT] : [];
+				break;
+			}
+			case ShareTokenParentType.Column: {
+				const column = await this.boardNodeService.findByClassAndId(Column, payload.parentId, 0);
+				const columnBoard = await this.columnBoardService.findById(column.rootId, 0);
 				requiredPermissions =
 					columnBoard.context.type === BoardExternalReferenceType.Course ? [Permission.COURSE_EDIT] : [];
 				break;

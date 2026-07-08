@@ -1,18 +1,18 @@
 import { createMock, DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BoardNodeService, ColumnBoardService } from '@modules/board';
-import { cardFactory, columnBoardFactory } from '@modules/board/testing';
+import { cardFactory, columnBoardFactory, columnFactory } from '@modules/board/testing';
 import { CourseService } from '@modules/course';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { LessonService } from '@modules/lesson';
 import { LessonEntity, Material } from '@modules/lesson/repo';
 import { lessonFactory } from '@modules/lesson/testing';
+import { RoomService } from '@modules/room';
+import { roomFactory } from '@modules/room/testing';
 import { TaskService } from '@modules/task';
 import { Submission, Task } from '@modules/task/repo';
 import { taskFactory } from '@modules/task/testing';
-import { RoomService } from '@modules/room';
-import { roomFactory } from '@modules/room/testing';
 import { User } from '@modules/user/repo';
 import { NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -265,6 +265,25 @@ describe('ShareTokenService', () => {
 
 				const result = await service.lookupTokenWithParentName(shareToken.token);
 				expect(result).toEqual({ shareToken, parentName: card.title });
+			});
+		});
+
+		describe('when parent is column', () => {
+			const setup = () => {
+				const column = columnFactory.build();
+				boardNodeService.findByClassAndId.mockResolvedValue(column);
+
+				const payload = { parentId: column.id, parentType: ShareTokenParentType.Column };
+				const shareToken = shareTokenDOFactory.build({ payload });
+				repo.findOneByToken.mockResolvedValue(shareToken);
+
+				return { column, shareToken };
+			};
+			it('should return shareToken and parent name', async () => {
+				const { column, shareToken } = setup();
+
+				const result = await service.lookupTokenWithParentName(shareToken.token);
+				expect(result).toEqual({ shareToken, parentName: column.title });
 			});
 		});
 
