@@ -1,7 +1,7 @@
 // This import must come before @feathersjs/express to ensure type augmentation
 // for RouteLookup is available. See: https://github.com/feathersjs/feathers/discussions/3351
-import { Application } from '@feathersjs/express';
 import '@feathersjs/transport-commons';
+import { Application } from '@feathersjs/express';
 import { ImATeapotException, Inject, Injectable, Scope } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import { Request } from 'express';
@@ -28,10 +28,10 @@ export interface FeathersService {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-type FeathersServiceParams = Record<string, any>;
+export type FeathersServiceParams = Record<string, any>;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-type FeathersServiceResponse = Record<string, any> | any[];
+export type FeathersServiceResponse = Record<string, any> | any[];
 
 /**
  * This Service gives access to legacy feathers services. It is request based injected.

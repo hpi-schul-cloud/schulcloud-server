@@ -1,4 +1,8 @@
-export { AuthorizationBodyParamsReferenceType } from './authorization-api-client';
+export {
+	AuthorizationBodyParamsReferenceType,
+	AuthorizationContextParamsAction,
+	AuthorizationContextParamsRequiredPermissions,
+} from './authorization-api-client';
 export { AuthorizationClientAdapter } from './authorization-client.adapter';
 export {
 	AUTHORIZATION_CLIENT_CONFIG_TOKEN,

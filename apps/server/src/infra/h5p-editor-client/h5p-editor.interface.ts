@@ -10,6 +10,7 @@ export interface DeleteContentParams {
 }
 
 export enum CopyContentParentType {
+	Lesson = 'lessons',
 	BoardElement = 'board-element',
 }
 

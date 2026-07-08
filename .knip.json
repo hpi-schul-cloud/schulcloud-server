@@ -7,15 +7,5 @@
 		"scripts/**/*.{js,ts}!"
 	],
 	"project": ["**/*.{js,ts}!"],
-	"ignore": [
-		"apps/server/src/infra/authorization-client/authorization-api-client/**/*",
-		"apps/server/src/infra/common-cartridge-clients/fs-generated/**/*",
-		"apps/server/src/infra/common-cartridge-clients/generated/**/*",
-		"apps/server/src/infra/etherpad-client/etherpad-api-client/**/*",
-		"apps/server/src/infra/files-storage-rest-client/generated/**/*",
-		"apps/server/src/infra/tldraw-client/generated/**/*",
-		"apps/server/src/infra/tsp-client/generated/**/*",
-		"apps/server/src/infra/vidis-client/generated/**/*",
-		"src/**/*"
-	]
+	"ignore": ["apps/server/src/core/**/*", "apps/server/src/infra/**/*", "src/**/*"]
 }

@@ -1,5 +1,10 @@
 export { ErrorMapper } from './error.mapper';
-export { InternalRabbitMQExchangeConfig, RabbitMQExchangeType, RabbitMQModuleOptions } from './rabbitmq-module.options';
+export {
+	InternalRabbitMQConfig,
+	InternalRabbitMQExchangeConfig,
+	RabbitMQExchangeType,
+	RabbitMQModuleOptions,
+} from './rabbitmq-module.options';
 export { RABBITMQ_CONFIG_TOKEN, RabbitMQConfig } from './rabbitmq.config';
 export { RabbitMQWrapperModule } from './rabbitmq.module';
 export { IError, RpcMessage } from './rpc-message';

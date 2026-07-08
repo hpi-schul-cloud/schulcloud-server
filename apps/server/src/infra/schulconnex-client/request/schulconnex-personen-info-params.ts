@@ -1,4 +1,4 @@
-type SchulconnexPropertyContext = 'personen' | 'personenkontexte' | 'organisationen' | 'gruppen' | 'beziehungen';
+export type SchulconnexPropertyContext = 'personen' | 'personenkontexte' | 'organisationen' | 'gruppen' | 'beziehungen';
 
 export interface SchulconnexPersonenInfoParams {
 	vollstaendig?: SchulconnexPropertyContext[];
