@@ -45,4 +45,11 @@ export class FilesStorageClientAdapterService {
 
 		return fileInfos;
 	}
+
+	public async removeCreatorIdFromFileRecords(creatorId: EntityId): Promise<FileDto[]> {
+		const response = await this.fileStorageMQProducer.removeCreatorIdFromFileRecords(creatorId);
+		const fileInfos = FilesStorageClientMapper.mapfileRecordListResponseToDomainFilesDto(response);
+
+		return fileInfos;
+	}
 }
