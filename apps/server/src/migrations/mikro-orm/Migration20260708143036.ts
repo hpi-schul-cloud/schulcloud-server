@@ -17,17 +17,28 @@ export class Migration20260708143036 extends Migration {
 		let numberOfUpdatedTokens = 0;
 		let numberOfFailedUpdates = 0;
 
-		const cursor = this.getCollection(this.collectionName).find({});
+		const collection = this.getCollection(this.collectionName);
+		const cursor = collection.find({ refreshToken: { $type: 'string' } });
 
 		for await (const item of cursor) {
 			try {
-				// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-				const encrypted = AesEncryptionHelper.encrypt(item.refreshToken, AES_KEY);
+				const refreshToken: unknown = item.refreshToken;
 
-				await this.getCollection(this.collectionName).updateOne(
-					{ _id: item._id },
-					{ $set: { refreshToken: encrypted } }
-				);
+				if (typeof refreshToken !== 'string' || refreshToken.length === 0) {
+					continue;
+				}
+
+				// Avoid double-encrypting tokens (e.g. if the migration runs while the app already stores encrypted tokens)
+				try {
+					AesEncryptionHelper.decrypt(refreshToken, AES_KEY);
+					continue;
+				} catch {
+					// Token is not decryptable with the current key => treat as plaintext
+				}
+
+				const encrypted = AesEncryptionHelper.encrypt(refreshToken, AES_KEY);
+
+				await collection.updateOne({ _id: item._id }, { $set: { refreshToken: encrypted } });
 
 				numberOfUpdatedTokens += 1;
 			} catch (error) {
