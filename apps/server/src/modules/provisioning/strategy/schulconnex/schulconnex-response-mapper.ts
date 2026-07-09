@@ -53,7 +53,7 @@ type TimePeriode = {
 
 @Injectable()
 export class SchulconnexResponseMapper {
-	public SCHOOLNUMBER_PREFIX_REGEX = /^NI_/;
+	private SCHOOLNUMBER_PREFIX_REGEX = /^NI_/;
 
 	constructor(
 		@Inject(PROVISIONING_CONFIG_TOKEN)
