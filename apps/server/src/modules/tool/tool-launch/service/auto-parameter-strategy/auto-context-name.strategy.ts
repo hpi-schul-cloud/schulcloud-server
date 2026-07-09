@@ -23,7 +23,7 @@ export class AutoContextNameStrategy implements AutoParameterStrategy {
 		private readonly boardNodeService: BoardNodeService
 	) {}
 
-	async getValue(
+	public async getValue(
 		schoolExternalTool: SchoolExternalTool,
 		contextExternalTool: ContextExternalToolLaunchable
 	): Promise<string | undefined> {

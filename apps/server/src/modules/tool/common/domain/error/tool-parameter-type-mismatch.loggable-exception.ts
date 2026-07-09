@@ -23,7 +23,7 @@ export class ToolParameterTypeMismatchLoggableException extends BusinessError im
 		);
 	}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			type: this.type,
 			message: this.message,

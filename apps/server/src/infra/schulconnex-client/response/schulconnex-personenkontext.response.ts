@@ -1,8 +1,8 @@
 import { Type } from 'class-transformer';
 import { IsArray, IsObject, IsOptional, IsString, ValidateNested } from 'class-validator';
-import { SchulconnexErreichbarkeitenResponse } from './schulconnex-erreichbarkeiten-response';
-import { SchulconnexGruppenResponse } from './schulconnex-gruppen-response';
-import { SchulconnexOrganisationResponse } from './schulconnex-organisation-response';
+import { SchulconnexErreichbarkeitenResponse } from './schulconnex-erreichbarkeiten.response';
+import { SchulconnexGruppenResponse } from './schulconnex-gruppen.response';
+import { SchulconnexOrganisationResponse } from './schulconnex-organisation.response';
 import { SchulconnexResponseValidationGroups } from './schulconnex-response-validation-groups';
 
 export class SchulconnexPersonenkontextResponse {

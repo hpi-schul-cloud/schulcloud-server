@@ -17,7 +17,7 @@ export class ExternalToolLogoSizeExceededLoggableException extends BusinessError
 		);
 	}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			type: 'EXTERNAL_TOOL_LOGO_SIZE_EXCEEDED',
 			message: 'External tool logo size exceeded',

@@ -10,7 +10,7 @@ export class DomainObjectFactory<
 	C = U,
 > extends BaseFactory<T, U, I, C> {
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	override buildWithId(params?: DeepPartial<U>, id?: string, options: BuildOptions<U, I> = {}): T {
+	public override buildWithId(params?: DeepPartial<U>, id?: string, options: BuildOptions<U, I> = {}): T {
 		throw new MethodNotAllowedException(
 			'Domain Objects are always generated with an id. Use .build({ id: ... }) to set an id.'
 		);

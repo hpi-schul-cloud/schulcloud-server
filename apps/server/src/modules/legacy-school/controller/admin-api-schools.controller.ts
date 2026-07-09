@@ -16,7 +16,7 @@ export class AdminApiSchoolsController {
 	@ApiOperation({
 		summary: 'create an empty school',
 	})
-	async createSchool(@Body() body: AdminApiSchoolCreateBodyParams): Promise<AdminApiSchoolCreateResponseDto> {
+	public async createSchool(@Body() body: AdminApiSchoolCreateBodyParams): Promise<AdminApiSchoolCreateResponseDto> {
 		const school = await this.uc.createSchool(body);
 		const mapped = AdminApiSchoolMapper.mapSchoolDoToSchoolCreatedResponse(school);
 

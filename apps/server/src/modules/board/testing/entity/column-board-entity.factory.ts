@@ -5,7 +5,7 @@ import { BoardExternalReferenceType, BoardLayout, BoardNodeType, type ColumnBoar
 import { Context } from '../../repo/entity/embeddables';
 
 class ColumnBoardEntityFactory extends BoardNodeEntityFactory<PropsWithType<ColumnBoardProps>> {
-	withoutContext(): this {
+	public withoutContext(): this {
 		const params = { context: undefined };
 		return this.params(params);
 	}

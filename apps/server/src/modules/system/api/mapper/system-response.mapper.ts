@@ -2,7 +2,7 @@ import { type OauthConfig, type System } from '../../domain';
 import { OauthConfigResponse, PublicSystemListResponse, PublicSystemResponse } from '../dto/response';
 
 export class SystemResponseMapper {
-	static mapFromDtoToListResponse(systems: System[]): PublicSystemListResponse {
+	public static mapFromDtoToListResponse(systems: System[]): PublicSystemListResponse {
 		const systemResponses: PublicSystemResponse[] = systems.map(
 			(system: System): PublicSystemResponse => this.mapFromDtoToResponse(system)
 		);
@@ -12,7 +12,7 @@ export class SystemResponseMapper {
 		return systemListResponse;
 	}
 
-	static mapFromDtoToResponse(system: System): PublicSystemResponse {
+	public static mapFromDtoToResponse(system: System): PublicSystemResponse {
 		const systemResponse: PublicSystemResponse = new PublicSystemResponse({
 			id: system.id,
 			type: system.type,
@@ -26,7 +26,7 @@ export class SystemResponseMapper {
 		return systemResponse;
 	}
 
-	static mapFromOauthConfigDtoToResponse(oauthConfig: OauthConfig): OauthConfigResponse {
+	public static mapFromOauthConfigDtoToResponse(oauthConfig: OauthConfig): OauthConfigResponse {
 		const oauthConfigResponse: OauthConfigResponse = new OauthConfigResponse({
 			clientId: oauthConfig.clientId,
 			// clientSecret will not be mapped for security reasons,

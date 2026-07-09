@@ -5,7 +5,7 @@ import { AutoParameterStrategy } from './auto-parameter.strategy';
 
 @Injectable()
 export class AutoContextIdStrategy implements AutoParameterStrategy {
-	getValue(
+	public getValue(
 		schoolExternalTool: SchoolExternalTool,
 		contextExternalTool: ContextExternalToolLaunchable
 	): string | undefined {

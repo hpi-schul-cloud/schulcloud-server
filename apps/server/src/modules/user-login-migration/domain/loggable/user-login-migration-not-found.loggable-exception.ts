@@ -10,7 +10,7 @@ export class UserLoginMigrationNotFoundLoggableException extends NotFoundExcepti
 		super();
 	}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			type: 'USER_LOGIN_MIGRATION_NOT_FOUND',
 			message: 'Cannot find requested user login migration for school.',

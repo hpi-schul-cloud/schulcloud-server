@@ -5,7 +5,7 @@ import { createSeveralClasses } from './helper/class-definitions';
 import { createBoardsResilient } from './helper/create-board';
 import { formatDate } from './helper/format-date';
 import { getUrlConfiguration } from './helper/get-url-configuration';
-import { useResponseTimes } from './helper/responseTimes.composable';
+import { useResponseTimes } from './helper/response-times.composable';
 import { SocketConnectionManager } from './socket-connection-manager';
 import { Callback, ClassDefinitionWithAmount, CreateBoardLoadTest, SocketConfiguration } from './types';
 
@@ -43,7 +43,7 @@ export class LoadtestRunner {
 		this.startDate = new Date();
 	}
 
-	showStats(): void {
+	public showStats(): void {
 		const seconds = Math.ceil((performance.now() - this.startTime) / 1000);
 		const clients = this.socketConnectionManager.getClientCount();
 		const errors = this.getErrorCount();
@@ -66,18 +66,18 @@ export class LoadtestRunner {
 		});
 	}
 
-	startRegularStats = (): void => {
+	public startRegularStats = (): void => {
 		this.intervalHandle = setInterval(() => this.showStats(), 2000);
 	};
 
-	stopRegularStats = (): void => {
+	public stopRegularStats = (): void => {
 		if (this.intervalHandle) {
 			clearInterval(this.intervalHandle);
 		}
 		this.showStats();
 	};
 
-	onError: Callback = (message: unknown): void => {
+	public onError: Callback = (message: unknown): void => {
 		this.errors.push(message as string);
 	};
 
@@ -107,9 +107,9 @@ export class LoadtestRunner {
 		return protocol;
 	}
 
-	getErrorCount = (): number => this.errors.length;
+	public getErrorCount = (): number => this.errors.length;
 
-	async runLoadtest({
+	public async runLoadtest({
 		socketConfiguration,
 		courseId,
 		configurations,

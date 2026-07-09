@@ -5,7 +5,7 @@ import { AbstractBootstrapConsole, type BootstrapConsole } from 'nestjs-console'
 import { DatabaseManagementUc } from '../../uc/database-management.uc';
 
 export class TestBootstrapConsole extends AbstractBootstrapConsole<TestingModule> {
-	create(): Promise<TestingModule> {
+	public create(): Promise<TestingModule> {
 		return Test.createTestingModule({
 			imports: [this.options.module],
 		})

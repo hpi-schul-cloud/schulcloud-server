@@ -3,19 +3,19 @@ import { Embeddable, Property } from '@mikro-orm/core';
 @Embeddable()
 export class MediaSourceVidisConfigEmbeddable {
 	@Property()
-	public username: string;
+	username: string;
 
 	@Property()
-	public password: string;
+	password: string;
 
 	@Property()
-	public baseUrl: string;
+	baseUrl: string;
 
 	@Property()
-	public region: string;
+	region: string;
 
 	@Property()
-	public schoolNumberPrefix: string;
+	schoolNumberPrefix: string;
 
 	constructor(props: MediaSourceVidisConfigEmbeddable) {
 		this.username = props.username;

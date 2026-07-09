@@ -7,7 +7,7 @@ import { ContextExternalToolResponse, LtiDeepLinkResponse, ToolReferenceResponse
 import { type ContextExternalTool, type ToolReference } from '../domain';
 
 export class ContextExternalToolResponseMapper {
-	static mapContextExternalToolResponse(contextExternalTool: ContextExternalTool): ContextExternalToolResponse {
+	public static mapContextExternalToolResponse(contextExternalTool: ContextExternalTool): ContextExternalToolResponse {
 		const mapped: ContextExternalToolResponse = new ContextExternalToolResponse({
 			id: contextExternalTool.id ?? '',
 			contextId: contextExternalTool.contextRef.id,
@@ -37,7 +37,7 @@ export class ContextExternalToolResponseMapper {
 		return mapped;
 	}
 
-	static mapToToolReferenceResponses(toolReferences: ToolReference[]): ToolReferenceResponse[] {
+	public static mapToToolReferenceResponses(toolReferences: ToolReference[]): ToolReferenceResponse[] {
 		const toolReferenceResponses: ToolReferenceResponse[] = toolReferences.map((toolReference: ToolReference) =>
 			this.mapToToolReferenceResponse(toolReference)
 		);
@@ -45,7 +45,7 @@ export class ContextExternalToolResponseMapper {
 		return toolReferenceResponses;
 	}
 
-	static mapToToolReferenceResponse(toolReference: ToolReference): ToolReferenceResponse {
+	public static mapToToolReferenceResponse(toolReference: ToolReference): ToolReferenceResponse {
 		const { ltiDeepLink } = toolReference;
 		const ltiDeepLinkResponse: LtiDeepLinkResponse | undefined = ltiDeepLink
 			? new LtiDeepLinkResponse({

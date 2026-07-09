@@ -10,17 +10,17 @@ export class AccountResponse {
 	}
 
 	@ApiProperty()
-	public id: string;
+	id: string;
 
 	@ApiProperty()
-	public username: string;
+	username: string;
 
 	@ApiProperty()
-	public userId?: string;
+	userId?: string;
 
 	@ApiProperty()
-	public activated?: boolean;
+	activated?: boolean;
 
 	@ApiProperty()
-	public updatedAt?: Date;
+	updatedAt?: Date;
 }

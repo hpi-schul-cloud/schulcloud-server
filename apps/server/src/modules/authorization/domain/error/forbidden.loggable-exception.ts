@@ -8,12 +8,12 @@ export class ForbiddenLoggableException extends ForbiddenException implements Lo
 		private readonly userId: EntityId,
 		private readonly entityName: string,
 		private readonly context: AuthorizationContext,
-		readonly error?: unknown
+		public readonly error?: unknown
 	) {
 		super('Forbidden', { cause: error });
 	}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		const message: LoggableMessage = {
 			type: 'FORBIDDEN_EXCEPTION',
 			stack: this.stack,

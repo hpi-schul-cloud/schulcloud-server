@@ -19,11 +19,11 @@ export class QueueDeletionRequestOutputBuilder {
 		return output;
 	}
 
-	static buildSuccess(requestId: string, deletionPlannedAt: Date): QueueDeletionRequestOutput {
+	public static buildSuccess(requestId: string, deletionPlannedAt: Date): QueueDeletionRequestOutput {
 		return this.build(requestId, deletionPlannedAt);
 	}
 
-	static buildError(err: Error): QueueDeletionRequestOutput {
+	public static buildError(err: Error): QueueDeletionRequestOutput {
 		return this.build(undefined, undefined, err.toString());
 	}
 }

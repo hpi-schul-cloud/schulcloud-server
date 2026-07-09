@@ -11,11 +11,11 @@ export class DeletionTargetRefProps implements DeletionTargetRef {
 		enumName: 'DomainName',
 		description: 'The domain of the entity to be deleted',
 	})
-	public domain!: DomainName;
+	domain!: DomainName;
 
 	@IsMongoId()
 	@ApiProperty()
-	public id!: EntityId;
+	id!: EntityId;
 }
 
 export class DeletionRequestBodyParams {
@@ -24,7 +24,7 @@ export class DeletionRequestBodyParams {
 		required: true,
 		nullable: false,
 	})
-	public targetRef!: DeletionTargetRefProps;
+	targetRef!: DeletionTargetRefProps;
 
 	@IsNumber()
 	@Min(0)
@@ -32,5 +32,5 @@ export class DeletionRequestBodyParams {
 	@ApiPropertyOptional({
 		nullable: false,
 	})
-	public deleteAfterMinutes?: number;
+	deleteAfterMinutes?: number;
 }

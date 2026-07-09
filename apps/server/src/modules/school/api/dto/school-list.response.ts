@@ -3,10 +3,10 @@ import { PaginationResponse } from '@shared/controller/dto';
 
 export class SchoolItemResponse {
 	@ApiProperty()
-	public id: string;
+	id: string;
 
 	@ApiProperty()
-	public name: string;
+	name: string;
 
 	constructor(props: SchoolItemResponse) {
 		this.id = props.id;
@@ -16,7 +16,7 @@ export class SchoolItemResponse {
 
 export class SchoolListResponse extends PaginationResponse<SchoolItemResponse[]> {
 	@ApiProperty({ type: [SchoolItemResponse] })
-	public data: SchoolItemResponse[];
+	data: SchoolItemResponse[];
 
 	constructor(data: SchoolItemResponse[], total: number, skip?: number, limit?: number) {
 		super(total, skip, limit);

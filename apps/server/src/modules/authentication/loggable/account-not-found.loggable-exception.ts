@@ -14,7 +14,7 @@ export class AccountNotFoundLoggableException extends BusinessError implements L
 		);
 	}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		const message: LoggableMessage = {
 			type: this.type,
 			stack: this.stack,

@@ -10,7 +10,7 @@ export class InvalidToolTypeLoggableException extends UnprocessableEntityExcepti
 		super();
 	}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		const message: LoggableMessage = {
 			type: 'INVALID_TOOL_TYPE',
 			message: 'The external tool has the wrong tool type.',

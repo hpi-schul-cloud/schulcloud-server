@@ -9,7 +9,7 @@ export class UserLoginMigrationMultipleEmailUsersLoggableException
 		super();
 	}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			type: 'USER_LOGIN_MIGRATION_MULTIPLE_EMAIL_USERS',
 			message: 'There is multiple users with this email',

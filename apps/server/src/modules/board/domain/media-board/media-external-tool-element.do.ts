@@ -7,7 +7,7 @@ export class MediaExternalToolElement extends BoardNode<MediaExternalToolElement
 		return this.props.contextExternalToolId;
 	}
 
-	canHaveChild(): boolean {
+	public canHaveChild(): boolean {
 		return false;
 	}
 }

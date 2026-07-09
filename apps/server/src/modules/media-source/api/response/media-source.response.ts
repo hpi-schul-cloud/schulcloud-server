@@ -3,20 +3,20 @@ import { MediaSourceDataFormat } from '../../enum';
 
 export class MediaSourceResponse {
 	@ApiProperty({ type: String, description: 'Id of the media source' })
-	public id: string;
+	id: string;
 
 	@ApiProperty({ type: String, description: 'External Id of the media source' })
-	public sourceId: string;
+	sourceId: string;
 
 	@ApiPropertyOptional({ type: String, description: 'Name of the media source' })
-	public name?: string;
+	name?: string;
 
 	@ApiPropertyOptional({
 		enum: MediaSourceDataFormat,
 		enumName: 'MediaSourceDataFormat',
 		description: 'Format of the media source data',
 	})
-	public format?: MediaSourceDataFormat;
+	format?: MediaSourceDataFormat;
 
 	constructor(response: MediaSourceResponse) {
 		this.id = response.id;

@@ -14,7 +14,7 @@ export class SchoolNameRequiredLoggableException extends BusinessError implement
 		);
 	}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			type: this.type,
 			message: this.message,

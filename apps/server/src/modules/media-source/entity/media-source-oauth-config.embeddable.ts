@@ -4,19 +4,19 @@ import { MediaSourceAuthMethod } from '../enum';
 @Embeddable()
 export class MediaSourceOauthConfigEmbeddable {
 	@Property()
-	public clientId: string;
+	clientId: string;
 
 	@Property()
-	public clientSecret: string;
+	clientSecret: string;
 
 	@Property()
-	public authEndpoint: string;
+	authEndpoint: string;
 
 	@Enum({ nullable: false })
-	public method: MediaSourceAuthMethod;
+	method: MediaSourceAuthMethod;
 
 	@Property()
-	public baseUrl: string;
+	baseUrl: string;
 
 	constructor(props: MediaSourceOauthConfigEmbeddable) {
 		this.clientId = props.clientId;

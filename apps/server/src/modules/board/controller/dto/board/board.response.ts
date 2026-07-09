@@ -32,31 +32,31 @@ export class BoardResponse {
 	@ApiProperty({
 		pattern: bsonStringPattern,
 	})
-	public id: string;
+	id: string;
 
 	@ApiProperty()
 	@DecodeHtmlEntities()
-	public title?: string;
+	title?: string;
 
 	@ApiProperty({
 		type: [ColumnResponse],
 	})
-	public columns: ColumnResponse[];
+	columns: ColumnResponse[];
 
 	@ApiProperty()
-	public timestamps: TimestampsResponse;
+	timestamps: TimestampsResponse;
 
 	@ApiProperty()
-	public isVisible: boolean;
+	isVisible: boolean;
 
 	@ApiProperty()
-	public readersCanEdit: boolean;
+	readersCanEdit: boolean;
 
 	@ApiProperty({ enum: BoardLayout, enumName: 'BoardLayout' })
-	public layout: BoardLayout;
+	layout: BoardLayout;
 
 	@ApiProperty({ enum: BoardFeature, isArray: true, enumName: 'BoardFeature' })
-	public features: BoardFeature[];
+	features: BoardFeature[];
 
 	@ApiProperty({
 		type: 'object',
@@ -67,5 +67,5 @@ export class BoardResponse {
 		additionalProperties: false,
 		required: [...BoardOperationValues],
 	})
-	public allowedOperations: Record<BoardOperation, boolean>;
+	allowedOperations: Record<BoardOperation, boolean>;
 }

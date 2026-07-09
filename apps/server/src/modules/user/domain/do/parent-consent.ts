@@ -1,17 +1,17 @@
 import { type EntityId } from '@shared/domain/types';
 
 export class ParentConsent {
-	id: EntityId;
+	public id: EntityId;
 
-	form: string;
+	public form: string;
 
-	privacyConsent: boolean;
+	public privacyConsent: boolean;
 
-	termsOfUseConsent: boolean;
+	public termsOfUseConsent: boolean;
 
-	dateOfPrivacyConsent: Date;
+	public dateOfPrivacyConsent: Date;
 
-	dateOfTermsOfUseConsent: Date;
+	public dateOfTermsOfUseConsent: Date;
 
 	constructor(props: ParentConsent) {
 		this.id = props.id;

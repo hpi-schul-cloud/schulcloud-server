@@ -4,7 +4,7 @@ import { Scope } from '@shared/repo/scope';
 import { type Task } from './task.entity';
 
 export class TaskScope extends Scope<Task> {
-	byFinished(userId: EntityId, value: boolean): TaskScope {
+	public byFinished(userId: EntityId, value: boolean): TaskScope {
 		if (value === true) {
 			this.addQuery({ finished: userId });
 		} else {
@@ -14,7 +14,7 @@ export class TaskScope extends Scope<Task> {
 		return this;
 	}
 
-	byOnlyCreatorId(creatorId: EntityId): TaskScope {
+	public byOnlyCreatorId(creatorId: EntityId): TaskScope {
 		this.addQuery({
 			$and: [{ creator: creatorId }, { course: null }, { lesson: null }],
 		});
@@ -22,13 +22,13 @@ export class TaskScope extends Scope<Task> {
 		return this;
 	}
 
-	byCreatorId(creatorId: EntityId): TaskScope {
+	public byCreatorId(creatorId: EntityId): TaskScope {
 		this.addQuery({ creator: creatorId });
 
 		return this;
 	}
 
-	byCreatorIdWithCourseAndLesson(creatorId: EntityId): TaskScope {
+	public byCreatorIdWithCourseAndLesson(creatorId: EntityId): TaskScope {
 		this.addQuery({
 			$and: [{ creator: creatorId }, { $or: [{ course: { $ne: null } }, { lesson: { $ne: null } }] }],
 		});
@@ -36,7 +36,7 @@ export class TaskScope extends Scope<Task> {
 		return this;
 	}
 
-	byCourseIds(courseIds: EntityId[]): TaskScope {
+	public byCourseIds(courseIds: EntityId[]): TaskScope {
 		this.addQuery({
 			$and: [{ course: { $in: courseIds } }, { lesson: null }],
 		});
@@ -44,20 +44,20 @@ export class TaskScope extends Scope<Task> {
 		return this;
 	}
 
-	byLessonIds(lessonIds: EntityId[]): TaskScope {
+	public byLessonIds(lessonIds: EntityId[]): TaskScope {
 		this.addQuery({ lesson: { $in: lessonIds } });
 
 		return this;
 	}
 
-	byDraft(isDraft: boolean): TaskScope {
+	public byDraft(isDraft: boolean): TaskScope {
 		const query = this.getByDraftQuery(isDraft);
 		this.addQuery(query);
 
 		return this;
 	}
 
-	excludeDraftsOfOthers(creatorId: EntityId): TaskScope {
+	public excludeDraftsOfOthers(creatorId: EntityId): TaskScope {
 		this.addQuery({
 			$or: [this.getByDraftForCreatorQuery(creatorId), this.getByDraftQuery(false)],
 		});
@@ -65,20 +65,20 @@ export class TaskScope extends Scope<Task> {
 		return this;
 	}
 
-	byAvailable(availableDate: Date): TaskScope {
+	public byAvailable(availableDate: Date): TaskScope {
 		this.addQuery({ availableDate: { $lte: availableDate } });
 
 		return this;
 	}
 
-	noFutureAvailableDate(): TaskScope {
+	public noFutureAvailableDate(): TaskScope {
 		const query = { availableDate: { $lte: new Date(Date.now()) } };
 		this.addQuery(query);
 
 		return this;
 	}
 
-	excludeUnavailableOfOthers(creatorId: EntityId, availableOn: Date): TaskScope {
+	public excludeUnavailableOfOthers(creatorId: EntityId, availableOn: Date): TaskScope {
 		this.addQuery({
 			$or: [
 				{ creator: creatorId },
@@ -88,7 +88,7 @@ export class TaskScope extends Scope<Task> {
 		return this;
 	}
 
-	afterDueDateOrNone(dueDate: Date): TaskScope {
+	public afterDueDateOrNone(dueDate: Date): TaskScope {
 		this.addQuery({ $or: [{ dueDate: { $gte: dueDate } }, { dueDate: null }] });
 
 		return this;

@@ -10,7 +10,7 @@ export class SystemCanNotBeDeletedLoggableException extends NotFoundException im
 		});
 	}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		const message: LoggableMessage = {
 			type: SchoolErrorEnum.SYSTEM_CAN_NOT_BE_DELETED,
 			stack: this.stack,

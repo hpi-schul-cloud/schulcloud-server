@@ -44,17 +44,17 @@ export class CardResponse {
 	@ApiProperty({
 		pattern: bsonStringPattern,
 	})
-	public id: string;
+	id: string;
 
 	@ApiPropertyOptional()
 	@DecodeHtmlEntities()
-	public title?: string;
+	title?: string;
 
 	@ApiProperty({ enum: Colors, enumName: 'Colors' })
-	public backgroundColor: Colors;
+	backgroundColor: Colors;
 
 	@ApiProperty()
-	public height: number;
+	height: number;
 
 	@ApiProperty({
 		type: 'array',
@@ -73,11 +73,11 @@ export class CardResponse {
 			],
 		},
 	})
-	public elements: AnyContentElementResponse[];
+	elements: AnyContentElementResponse[];
 
 	@ApiProperty()
-	public visibilitySettings: VisibilitySettingsResponse;
+	visibilitySettings: VisibilitySettingsResponse;
 
 	@ApiProperty()
-	public timestamps: TimestampsResponse;
+	timestamps: TimestampsResponse;
 }

@@ -9,7 +9,7 @@ import { SystemQuery } from '../query';
 export class SystemService {
 	constructor(@Inject(SYSTEM_REPO) private readonly systemRepo: SystemRepo) {}
 
-	async find(filter: SystemQuery): Promise<System[]> {
+	public async find(filter: SystemQuery): Promise<System[]> {
 		const systems: System[] = await this.systemRepo.find(filter);
 
 		return systems;

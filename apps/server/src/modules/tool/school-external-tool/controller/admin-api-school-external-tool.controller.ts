@@ -14,7 +14,9 @@ export class AdminApiSchoolExternalToolController {
 
 	@Post()
 	@ApiOperation({ summary: 'Creates a SchoolExternalTool' })
-	async createSchoolExternalTool(@Body() body: SchoolExternalToolPostParams): Promise<SchoolExternalToolResponse> {
+	public async createSchoolExternalTool(
+		@Body() body: SchoolExternalToolPostParams
+	): Promise<SchoolExternalToolResponse> {
 		const schoolExternalToolProps: SchoolExternalToolProps =
 			SchoolExternalToolRequestMapper.mapSchoolExternalToolRequest(body);
 

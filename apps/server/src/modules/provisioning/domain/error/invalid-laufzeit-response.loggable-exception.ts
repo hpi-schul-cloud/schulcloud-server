@@ -7,7 +7,7 @@ export class InvalidLaufzeitResponseLoggableException extends InternalServerErro
 		super();
 	}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			type: 'INVALID_LAUFZEIT_RESPONSE',
 			stack: this.stack,

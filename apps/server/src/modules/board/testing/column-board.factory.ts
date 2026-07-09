@@ -4,7 +4,7 @@ import { BaseFactory } from '@testing/factory/base.factory';
 import { BoardExternalReferenceType, BoardLayout, ColumnBoard, type ColumnBoardProps, ROOT_PATH } from '../domain';
 
 class ColumnBoardFactory extends BaseFactory<ColumnBoard, ColumnBoardProps> {
-	withoutContext(): this {
+	public withoutContext(): this {
 		const params = { context: undefined };
 		return this.params(params);
 	}

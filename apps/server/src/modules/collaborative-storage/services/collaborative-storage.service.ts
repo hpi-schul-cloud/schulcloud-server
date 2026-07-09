@@ -29,7 +29,7 @@ export class CollaborativeStorageService {
 	 * @param populate Decide, if you want to populate the Users in the Entity
 	 * @return The mapped DTO
 	 */
-	async findTeamById(teamId: EntityId, populate = false): Promise<TeamDto> {
+	public async findTeamById(teamId: EntityId, populate = false): Promise<TeamDto> {
 		return this.teamsMapper.mapEntityToDto(await this.teamRepo.findById(teamId, populate));
 	}
 
@@ -40,7 +40,7 @@ export class CollaborativeStorageService {
 	 * @param roleId The RoleId
 	 * @param teamPermissions The new Permissions
 	 */
-	async updateTeamPermissionsForRole(
+	public async updateTeamPermissionsForRole(
 		currentUserId: string,
 		teamId: string,
 		roleId: string,
@@ -58,15 +58,15 @@ export class CollaborativeStorageService {
 		);
 	}
 
-	deleteTeam(teamId: string): Promise<void> {
+	public deleteTeam(teamId: string): Promise<void> {
 		return this.adapter.deleteTeam(teamId);
 	}
 
-	createTeam(team: TeamDto): Promise<void> {
+	public createTeam(team: TeamDto): Promise<void> {
 		return this.adapter.createTeam(team);
 	}
 
-	updateTeam(team: TeamDto): Promise<void> {
+	public updateTeam(team: TeamDto): Promise<void> {
 		return this.adapter.updateTeam(team);
 	}
 }

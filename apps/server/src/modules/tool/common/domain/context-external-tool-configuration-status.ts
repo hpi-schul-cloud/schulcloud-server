@@ -1,15 +1,15 @@
 export class ContextExternalToolConfigurationStatus {
-	isOutdatedOnScopeSchool: boolean;
+	public isOutdatedOnScopeSchool: boolean;
 
-	isOutdatedOnScopeContext: boolean;
+	public isOutdatedOnScopeContext: boolean;
 
-	isIncompleteOnScopeContext: boolean;
+	public isIncompleteOnScopeContext: boolean;
 
-	isDeactivated: boolean;
+	public isDeactivated: boolean;
 
-	isNotLicensed: boolean;
+	public isNotLicensed: boolean;
 
-	isIncompleteOperationalOnScopeContext: boolean;
+	public isIncompleteOperationalOnScopeContext: boolean;
 
 	constructor(props: ContextExternalToolConfigurationStatus) {
 		this.isOutdatedOnScopeSchool = props.isOutdatedOnScopeSchool;

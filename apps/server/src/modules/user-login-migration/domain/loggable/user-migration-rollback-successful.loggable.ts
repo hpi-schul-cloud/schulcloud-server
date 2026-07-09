@@ -8,7 +8,7 @@ export class UserMigrationRollbackSuccessfulLoggable implements Loggable {
 		private readonly userLoginMigrationId?: EntityId
 	) {}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			message: 'The user has been successfully rolled back from the migration.',
 			data: {

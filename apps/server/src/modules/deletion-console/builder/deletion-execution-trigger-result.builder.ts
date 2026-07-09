@@ -11,11 +11,11 @@ export class DeletionExecutionTriggerResultBuilder {
 		return output;
 	}
 
-	static buildSuccess(): DeletionExecutionTriggerResult {
+	public static buildSuccess(): DeletionExecutionTriggerResult {
 		return this.build(DeletionExecutionTriggerStatus.SUCCESS);
 	}
 
-	static buildFailure(err: Error): DeletionExecutionTriggerResult {
+	public static buildFailure(err: Error): DeletionExecutionTriggerResult {
 		return this.build(DeletionExecutionTriggerStatus.FAILURE, err.toString());
 	}
 }

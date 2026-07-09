@@ -3,13 +3,13 @@ import { InputFormat } from '@shared/domain/types';
 
 export class LessonLinkedTaskResponse {
 	@ApiProperty()
-	public readonly name: string;
+	readonly name: string;
 
 	@ApiProperty()
-	public readonly description: string;
+	readonly description: string;
 
 	@ApiProperty({ enum: InputFormat })
-	public readonly descriptionInputFormat: InputFormat;
+	readonly descriptionInputFormat: InputFormat;
 
 	@ApiProperty({ type: Date, nullable: true })
 	availableDate?: Date;
@@ -18,25 +18,25 @@ export class LessonLinkedTaskResponse {
 	dueDate?: Date;
 
 	@ApiProperty()
-	public readonly private: boolean = true;
+	readonly private: boolean = true;
 
 	@ApiProperty({ nullable: true })
-	public readonly publicSubmissions?: boolean;
+	readonly publicSubmissions?: boolean;
 
 	@ApiProperty({ nullable: true })
-	public readonly teamSubmissions?: boolean;
+	readonly teamSubmissions?: boolean;
 
 	@ApiProperty({ nullable: true })
-	public readonly creator?: string;
+	readonly creator?: string;
 
 	@ApiProperty({ nullable: true })
-	public readonly courseId?: string;
+	readonly courseId?: string;
 
 	@ApiProperty({ type: [String] })
-	public readonly submissionIds: string[] = [];
+	readonly submissionIds: string[] = [];
 
 	@ApiProperty({ type: [String] })
-	public readonly finishedIds: string[] = [];
+	readonly finishedIds: string[] = [];
 
 	constructor(props: Readonly<LessonLinkedTaskResponse>) {
 		this.name = props.name;

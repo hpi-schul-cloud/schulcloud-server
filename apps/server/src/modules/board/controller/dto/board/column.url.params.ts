@@ -8,5 +8,5 @@ export class ColumnUrlParams {
 		required: true,
 		nullable: false,
 	})
-	public columnId!: string;
+	columnId!: string;
 }

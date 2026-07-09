@@ -9,7 +9,7 @@ export class ReferenceNotPopulatedLoggableException extends InternalServerErrorE
 		super();
 	}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			type: 'REFERENCE_NOT_POPULATED',
 			stack: this.stack,

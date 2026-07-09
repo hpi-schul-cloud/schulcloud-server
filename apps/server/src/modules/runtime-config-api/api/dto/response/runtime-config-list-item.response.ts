@@ -3,21 +3,21 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class RuntimeConfigListItemResponse {
 	@ApiProperty()
-	public key: string;
+	key: string;
 
 	@ApiProperty({ enum: ['string', 'number', 'boolean'] })
-	public type: RuntimeConfigType;
+	type: RuntimeConfigType;
 
 	@ApiProperty({
 		description: 'guaranteed to be of the type defined in "type" property',
 		oneOf: [{ type: 'string' }, { type: 'number' }, { type: 'boolean' }],
 	})
-	public value: RuntimeConfigValueType;
+	value: RuntimeConfigValueType;
 
 	@ApiProperty({
 		required: false,
 	})
-	public description?: string;
+	description?: string;
 
 	constructor(item: RuntimeConfigListItemResponse) {
 		this.key = item.key;

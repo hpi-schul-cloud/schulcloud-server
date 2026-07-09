@@ -6,7 +6,7 @@ export class NoUsersToSynchronizationLoggableException extends InternalServerErr
 		super();
 	}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		const message: LoggableMessage = {
 			type: 'SYNCHRONIZATION_ERROR',
 			stack: this.stack,

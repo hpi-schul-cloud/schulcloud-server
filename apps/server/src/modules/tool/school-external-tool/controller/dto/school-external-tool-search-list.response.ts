@@ -3,7 +3,7 @@ import { SchoolExternalToolResponse } from './school-external-tool.response';
 
 export class SchoolExternalToolSearchListResponse {
 	@ApiProperty({ type: [SchoolExternalToolResponse] })
-	public data: SchoolExternalToolResponse[];
+	data: SchoolExternalToolResponse[];
 
 	constructor(data: SchoolExternalToolResponse[]) {
 		this.data = data;

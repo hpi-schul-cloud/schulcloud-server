@@ -11,7 +11,7 @@ interface AppStartInfo {
 export class AppStartLoggable implements Loggable {
 	constructor(private readonly info: AppStartInfo) {}
 
-	getLogMessage(): LogMessage {
+	public getLogMessage(): LogMessage {
 		const data: LogMessageData = { appName: this.info.appName };
 
 		if (this.info.port !== undefined) {

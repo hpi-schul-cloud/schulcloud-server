@@ -9,7 +9,7 @@ export class IdTokenCreationLoggableException extends InternalServerErrorExcepti
 		super();
 	}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		const message = {
 			type: 'INTERNAL_SERVER_ERROR_EXCEPTION',
 			message: 'Something went wrong for id token creation. Tool could not be found.',

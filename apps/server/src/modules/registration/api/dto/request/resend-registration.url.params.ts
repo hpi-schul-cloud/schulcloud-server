@@ -8,5 +8,5 @@ export class ResendRegistrationUrlParams {
 		required: true,
 		nullable: false,
 	})
-	public roomId!: string;
+	roomId!: string;
 }

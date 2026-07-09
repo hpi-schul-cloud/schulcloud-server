@@ -8,7 +8,7 @@ export class LdapAlreadyPersistedException extends LdapUserMigrationException im
 		super('ldapAlreadyPersisted', descriptionOrOptions);
 	}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			message: 'LDAP is already Persisted',
 		};
@@ -19,7 +19,7 @@ export class MissingSchoolNumberException extends LdapUserMigrationException imp
 		super('LDAP migration Exception', descriptionOrOptions);
 	}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			message: 'The school is missing a official school number',
 		};
@@ -30,7 +30,7 @@ export class MigrationAlreadyActivatedException extends LdapUserMigrationExcepti
 		super('LDAP migration Exception', descriptionOrOptions);
 	}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			message: 'Migration is already activated for this school',
 		};

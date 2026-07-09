@@ -8,5 +8,5 @@ export class AddByEmailBodyParams {
 		required: true,
 		nullable: false,
 	})
-	public email!: string;
+	email!: string;
 }

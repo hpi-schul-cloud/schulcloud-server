@@ -1,19 +1,19 @@
 export class OidcConfig {
-	clientId: string;
+	public clientId: string;
 
-	clientSecret: string;
+	public clientSecret: string;
 
-	idpHint: string;
+	public idpHint: string;
 
-	authorizationUrl: string;
+	public authorizationUrl: string;
 
-	tokenUrl: string;
+	public tokenUrl: string;
 
-	logoutUrl: string;
+	public logoutUrl: string;
 
-	userinfoUrl: string;
+	public userinfoUrl: string;
 
-	defaultScopes: string;
+	public defaultScopes: string;
 
 	constructor(oauthConfigDto: OidcConfig) {
 		this.clientId = oauthConfigDto.clientId;

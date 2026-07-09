@@ -8,7 +8,7 @@ import {
 import { type ParameterArrayValidator } from './parameter-array-validator';
 
 export class ParameterArrayUnknownKeyValidator implements ParameterArrayValidator {
-	validate(
+	public validate(
 		entries: CustomParameterEntry[],
 		declarations: CustomParameter[],
 		toolId: EntityId | undefined

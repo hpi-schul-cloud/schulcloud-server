@@ -6,7 +6,7 @@ export abstract class MongoDbScope<T> {
 
 	constructor(protected options?: IFindOptions<T>) {}
 
-	build(): unknown[] {
+	public build(): unknown[] {
 		const optionsPipeline: unknown[] = [];
 
 		if (this.options?.order) {

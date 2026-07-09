@@ -7,7 +7,7 @@ export class FetchingPoliciesInfoFailedLoggable implements Loggable {
 		private readonly policiesInfoEndpoint: string
 	) {}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			message: 'Could not fetch policies info for user. The provisioning of licenses will be skipped.',
 			data: {

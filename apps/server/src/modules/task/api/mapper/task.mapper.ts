@@ -5,7 +5,7 @@ import { type TaskCreateParams, TaskResponse, type TaskUpdateParams } from '../d
 import { TaskStatusMapper } from './task-status.mapper';
 
 export class TaskMapper {
-	static mapToResponse(taskWithStatus: TaskWithStatusVo): TaskResponse {
+	public static mapToResponse(taskWithStatus: TaskWithStatusVo): TaskResponse {
 		const { task, status } = taskWithStatus;
 		const taskDesc = task.getParentData();
 		const statusDto = TaskStatusMapper.mapToResponse(status);
@@ -38,7 +38,7 @@ export class TaskMapper {
 		return dto;
 	}
 
-	static mapTaskUpdateToDomain(params: TaskUpdateParams): TaskUpdate {
+	public static mapTaskUpdateToDomain(params: TaskUpdateParams): TaskUpdate {
 		const dto: TaskUpdate = {
 			name: params.name,
 			courseId: params.courseId,
@@ -53,7 +53,7 @@ export class TaskMapper {
 		return dto;
 	}
 
-	static mapTaskCreateToDomain(params: TaskCreateParams): TaskCreate {
+	public static mapTaskCreateToDomain(params: TaskCreateParams): TaskCreate {
 		const dto: TaskCreate = {
 			name: params.name || 'Draft',
 			courseId: params.courseId,

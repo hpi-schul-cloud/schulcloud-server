@@ -8,7 +8,7 @@ export class ShdUserCreateTokenLoggable implements Loggable {
 		private readonly expiredIn: number
 	) {}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		const message: LoggableMessage = {
 			message: `The support employee with the Id ${
 				this.supportUserId

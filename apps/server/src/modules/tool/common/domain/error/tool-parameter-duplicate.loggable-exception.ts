@@ -22,7 +22,7 @@ export class ToolParameterDuplicateLoggableException extends BusinessError imple
 		);
 	}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			type: this.type,
 			message: this.message,
