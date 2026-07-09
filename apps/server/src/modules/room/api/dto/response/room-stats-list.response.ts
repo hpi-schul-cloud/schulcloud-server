@@ -9,5 +9,5 @@ export class RoomStatsListResponse extends PaginationResponse<RoomStatsItemRespo
 	}
 
 	@ApiProperty({ type: [RoomStatsItemResponse] })
-	public data: RoomStatsItemResponse[];
+	data: RoomStatsItemResponse[];
 }
