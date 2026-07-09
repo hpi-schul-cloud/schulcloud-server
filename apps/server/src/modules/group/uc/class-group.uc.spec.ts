@@ -287,6 +287,18 @@ describe('ClassGroupUc', () => {
 				]);
 			});
 
+			it('should fetch groups in batches of 500 to prevent exceeding the 16 MB BSON limit', async () => {
+				const { teacherUser } = setup();
+
+				await uc.findAllClasses(teacherUser.id, teacherUser.school.id, SchoolYearQueryType.CURRENT_YEAR);
+
+				const scopeArg = groupService.findByScope.mock.calls[0][0];
+				const pipeline = scopeArg.build() as Array<Record<string, { data: unknown[] }>>;
+				const facetStage = pipeline.find((stage) => '$facet' in stage);
+
+				expect(facetStage?.['$facet'].data).toContainEqual({ $limit: 500 });
+			});
+
 			describe('when no pagination is given', () => {
 				it('should return all classes sorted by name', async () => {
 					const {

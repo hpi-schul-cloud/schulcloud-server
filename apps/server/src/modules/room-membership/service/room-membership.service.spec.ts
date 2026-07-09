@@ -705,6 +705,27 @@ describe('RoomMembershipService', () => {
 			expect(result.total).toBe(0);
 			expect(result.data.length).toEqual(0);
 		});
+
+		it('should forward pagination to the group service', async () => {
+			const { schoolId1 } = setup();
+			const pagination = { skip: 5, limit: 10 };
+
+			await service.getRoomMembershipStatsByUsersAndRoomsSchoolId(schoolId1, pagination);
+
+			expect(groupService.findByUsersAndRoomsSchoolId).toHaveBeenCalledWith(schoolId1, [GroupTypes.ROOM], {
+				pagination: { skip: 5, limit: 10 },
+			});
+		});
+
+		it('should use default pagination when none is provided', async () => {
+			const { schoolId1 } = setup();
+
+			await service.getRoomMembershipStatsByUsersAndRoomsSchoolId(schoolId1);
+
+			expect(groupService.findByUsersAndRoomsSchoolId).toHaveBeenCalledWith(schoolId1, [GroupTypes.ROOM], {
+				pagination: { skip: 0, limit: 500 },
+			});
+		});
 	});
 
 	describe('getRoomAuthorizablesByUserId', () => {
