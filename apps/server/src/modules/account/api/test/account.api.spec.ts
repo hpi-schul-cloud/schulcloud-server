@@ -9,7 +9,6 @@ import { Permission } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
-import { ACCOUNT_ENCRYPTION_CONFIG_TOKEN } from '../../encryption.config';
 import { AccountEntity } from '../../repo';
 import {
 	AccountByIdBodyParams,
@@ -18,8 +17,6 @@ import {
 	PatchMyAccountParams,
 	PatchMyPasswordParams,
 } from '../dto';
-
-const encryptionKey = 'test-key-with-32-characters-long';
 
 describe('Account Controller (API)', () => {
 	const basePath = '/account';
@@ -34,10 +31,7 @@ describe('Account Controller (API)', () => {
 	beforeAll(async () => {
 		const moduleFixture: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
-		})
-			.overrideProvider(ACCOUNT_ENCRYPTION_CONFIG_TOKEN)
-			.useValue({ aesKey: encryptionKey })
-			.compile();
+		}).compile();
 
 		app = moduleFixture.createNestApplication();
 		await app.init();
