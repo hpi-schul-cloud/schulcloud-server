@@ -1,6 +1,5 @@
 import { Migration } from '@mikro-orm/migrations-mongodb';
 import { AesEncryptionHelper } from '@shared/common/utils';
-import { FindCursor, WithId } from 'mongodb';
 
 export class Migration20260708143036 extends Migration {
 	private readonly collectionName = 'oauth-session-token';
@@ -18,10 +17,11 @@ export class Migration20260708143036 extends Migration {
 		let numberOfUpdatedTokens = 0;
 		let numberOfFailedUpdates = 0;
 
-		const cursor = this.getCollection('oauth-session-token').find({});
+		const cursor = this.getCollection(this.collectionName).find({});
 
 		for await (const item of cursor) {
 			try {
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 				const encrypted = AesEncryptionHelper.encrypt(item.refreshToken, AES_KEY);
 
 				await this.getCollection(this.collectionName).updateOne(
@@ -45,7 +45,7 @@ export class Migration20260708143036 extends Migration {
 		);
 	}
 
-	async down() {
+	async down(): Promise<void> {
 		console.info(`Start decrypting refreshTokens in collection ${this.collectionName}.`);
 
 		// eslint-disable-next-line no-process-env
@@ -58,10 +58,11 @@ export class Migration20260708143036 extends Migration {
 		let numberOfUpdatedTokens = 0;
 		let numberOfFailedUpdates = 0;
 
-		const cursor = this.getCollection('oauth-session-token').find({});
+		const cursor = this.getCollection(this.collectionName).find({});
 
 		for await (const item of cursor) {
 			try {
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 				const decrypted = AesEncryptionHelper.decrypt(item.refreshToken, AES_KEY);
 
 				await this.getCollection(this.collectionName).updateOne(
