@@ -23,7 +23,7 @@ export class MissingToolParameterValueLoggableException extends BusinessError im
 		);
 	}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		const parameterNames: string[] = this.parameters.map((param): string => param.name);
 
 		return {

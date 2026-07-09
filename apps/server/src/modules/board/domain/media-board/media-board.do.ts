@@ -32,7 +32,7 @@ export class MediaBoard extends BoardNode<MediaBoardProps> {
 		this.props.collapsed = collapsed;
 	}
 
-	canHaveChild(childNode: AnyMediaBoardNode): boolean {
+	public canHaveChild(childNode: AnyMediaBoardNode): boolean {
 		const allowed: boolean = childNode instanceof MediaLine;
 
 		return allowed;

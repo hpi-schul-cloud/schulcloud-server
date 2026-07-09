@@ -11,7 +11,7 @@ export class LdapService {
 		this.logger.setContext(LdapService.name);
 	}
 
-	async checkLdapCredentials(system: System, username: string, password: string): Promise<void> {
+	public async checkLdapCredentials(system: System, username: string, password: string): Promise<void> {
 		const connection = await this.connect(system, username, password);
 		if (connection.connected) {
 			connection.unbind();

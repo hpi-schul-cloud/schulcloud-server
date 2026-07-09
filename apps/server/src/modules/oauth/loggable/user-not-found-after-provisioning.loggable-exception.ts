@@ -20,7 +20,7 @@ export class UserNotFoundAfterProvisioningLoggableException extends BusinessErro
 		);
 	}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			type: this.type,
 			message: this.message,

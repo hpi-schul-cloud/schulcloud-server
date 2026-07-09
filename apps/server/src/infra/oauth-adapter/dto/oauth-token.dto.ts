@@ -1,9 +1,9 @@
 export class OAuthTokenDto {
-	public idToken: string;
+	idToken: string;
 
-	public refreshToken: string;
+	refreshToken: string;
 
-	public accessToken: string;
+	accessToken: string;
 
 	constructor(props: OAuthTokenDto) {
 		this.idToken = props.idToken;

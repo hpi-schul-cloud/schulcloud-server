@@ -1,13 +1,13 @@
 export class ExternalSchoolDto {
-	public externalId: string;
+	externalId: string;
 
-	public erwinId?: string;
+	erwinId?: string;
 
-	public name?: string;
+	name?: string;
 
-	public officialSchoolNumber?: string;
+	officialSchoolNumber?: string;
 
-	public location?: string;
+	location?: string;
 
 	constructor(props: ExternalSchoolDto) {
 		this.externalId = props.externalId;

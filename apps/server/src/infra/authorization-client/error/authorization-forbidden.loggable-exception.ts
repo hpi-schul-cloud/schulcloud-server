@@ -7,7 +7,7 @@ export class AuthorizationForbiddenLoggableException extends ForbiddenException 
 		super();
 	}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		const message: LoggableMessage = {
 			type: 'FORBIDDEN_EXCEPTION',
 			stack: this.stack,

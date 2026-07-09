@@ -4,7 +4,7 @@ import { type ExternalGroupUserDto } from '../dto';
 export class UserForGroupNotFoundLoggable implements Loggable {
 	constructor(private readonly groupUser: ExternalGroupUserDto) {}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			message: 'Unable to add unknown user to group during provisioning.',
 			data: {

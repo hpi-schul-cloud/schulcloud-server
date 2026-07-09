@@ -7,7 +7,7 @@ export class SchoolNumberMissingLoggableException extends UnprocessableEntityExc
 		super();
 	}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			type: 'SCHOOL_NUMBER_MISSING',
 			message: 'The school is missing a official school number.',

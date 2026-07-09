@@ -2,10 +2,10 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class MaintenanceStatusResponse {
 	@ApiProperty()
-	public active: boolean;
+	active: boolean;
 
 	@ApiPropertyOptional()
-	public startDate?: Date;
+	startDate?: Date;
 
 	constructor(props: MaintenanceStatusResponse) {
 		this.active = props.active;

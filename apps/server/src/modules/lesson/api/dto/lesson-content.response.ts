@@ -14,33 +14,33 @@ import { LernstoreResources } from './lernstore.resources';
 
 class ComponentTextPropsImpl implements ComponentTextProperties {
 	@ApiProperty({ nullable: false })
-	public text!: string;
+	text!: string;
 }
 
 class ComponentEtherpadPropsImpl implements ComponentEtherpadProperties {
 	@ApiProperty({ nullable: false, description: 'description of a Etherpad component' })
-	public description!: string;
+	description!: string;
 
 	@ApiProperty({ nullable: false, description: 'title of a Etherpad component' })
-	public title!: string;
+	title!: string;
 
 	@ApiProperty({ nullable: false, description: 'url of a Etherpad component' })
-	public url!: string;
+	url!: string;
 }
 
 class ComponentGeogebraPropsImpl implements ComponentGeogebraProperties {
 	@ApiProperty({ nullable: false, description: 'materialId of a Geogebra component' })
-	public materialId!: string;
+	materialId!: string;
 }
 
 class ComponentInternalPropsImpl implements ComponentInternalProperties {
 	@ApiProperty({ nullable: false, description: 'url of a Internal component' })
-	public url!: string;
+	url!: string;
 }
 
 class ComponentLernstorePropsImpl implements ComponentLernstoreProperties {
 	@ApiProperty({ nullable: false, description: 'resources of a Lernstore component', type: [LernstoreResources] })
-	public resources!: LernstoreResources[];
+	resources!: LernstoreResources[];
 }
 @ApiExtraModels(
 	ComponentTextPropsImpl,
@@ -69,7 +69,7 @@ export class LessonContentResponse {
 			{ $ref: getSchemaPath(ComponentLernstorePropsImpl) },
 		],
 	})
-	public content?:
+	content?:
 		| ComponentTextPropsImpl
 		| ComponentEtherpadPropsImpl
 		| ComponentGeogebraPropsImpl
@@ -81,22 +81,22 @@ export class LessonContentResponse {
 		pattern: bsonStringPattern,
 		deprecated: true,
 	})
-	public _id?: EntityId;
+	_id?: EntityId;
 
 	@ApiProperty({
 		description: 'The id of the Material entity',
 		pattern: bsonStringPattern,
 	})
-	public id?: EntityId;
+	id?: EntityId;
 
 	@ApiProperty({
 		description: 'Title of the Material entity',
 	})
-	public title: string;
+	title: string;
 
 	@ApiProperty({ enum: ComponentType })
-	public component: ComponentType;
+	component: ComponentType;
 
 	@ApiProperty()
-	public hidden: boolean;
+	hidden: boolean;
 }

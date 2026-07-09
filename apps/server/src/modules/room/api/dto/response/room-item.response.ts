@@ -5,29 +5,29 @@ import { RoomColor } from '../../../domain/type';
 
 export class RoomItemResponse {
 	@ApiProperty()
-	public id: string;
+	id: string;
 
 	@ApiProperty()
-	public name: string;
+	name: string;
 
 	@ApiProperty({ enum: RoomColor, enumName: 'RoomColor' })
 	@IsEnum(RoomColor)
-	public color: RoomColor;
+	color: RoomColor;
 
 	@ApiProperty()
-	public schoolId: string;
+	schoolId: string;
 
 	@ApiPropertyOptional({ type: Date })
-	public startDate?: Date;
+	startDate?: Date;
 
 	@ApiPropertyOptional({ type: Date })
-	public endDate?: Date;
+	endDate?: Date;
 
 	@ApiProperty({ type: Date })
-	public createdAt: Date;
+	createdAt: Date;
 
 	@ApiProperty({ type: Date })
-	public updatedAt: Date;
+	updatedAt: Date;
 
 	@ApiProperty({
 		type: 'object',
@@ -38,13 +38,13 @@ export class RoomItemResponse {
 		additionalProperties: false,
 		required: [...RoomOperationValues],
 	})
-	public allowedOperations: Record<RoomOperation, boolean>;
+	allowedOperations: Record<RoomOperation, boolean>;
 
 	@ApiProperty({ type: Boolean })
-	public isLocked: boolean;
+	isLocked: boolean;
 
 	@ApiProperty({ type: Number })
-	public totalMembers: number;
+	totalMembers: number;
 
 	constructor(room: RoomItemResponse) {
 		this.id = room.id;

@@ -13,7 +13,7 @@ export class StorageProviderRepo extends BaseRepo<StorageProviderEntity> {
 		return StorageProviderEntity;
 	}
 
-	async findAll(): Promise<StorageProviderEntity[]> {
+	public async findAll(): Promise<StorageProviderEntity[]> {
 		const providers = await this._em.find(StorageProviderEntity, {});
 
 		return providers;

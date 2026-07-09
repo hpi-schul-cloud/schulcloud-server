@@ -3,7 +3,7 @@ import { type SchoolExternalToolUtilization } from '../../tool-utilization/domai
 import { SchoolExternalToolMetadataResponse } from '../controller/dto';
 
 export class SchoolExternalToolMetadataMapper {
-	static mapToSchoolExternalToolMetadataResponse(
+	public static mapToSchoolExternalToolMetadataResponse(
 		schoolExternalToolUtilization: SchoolExternalToolUtilization
 	): SchoolExternalToolMetadataResponse {
 		const externalToolUtilizationResponse: SchoolExternalToolMetadataResponse = new SchoolExternalToolMetadataResponse({

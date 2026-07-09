@@ -38,7 +38,7 @@ export abstract class BoardNode<T extends BoardNodeProps> extends DomainObject<T
 		return parentId;
 	}
 
-	hasParent(): boolean {
+	public hasParent(): boolean {
 		return this.ancestorIds.length > 0;
 	}
 
@@ -47,7 +47,7 @@ export abstract class BoardNode<T extends BoardNodeProps> extends DomainObject<T
 		return parentIds;
 	}
 
-	isRoot(): boolean {
+	public isRoot(): boolean {
 		return this.ancestorIds.length === 0;
 	}
 
@@ -91,7 +91,7 @@ export abstract class BoardNode<T extends BoardNodeProps> extends DomainObject<T
 		return exists;
 	}
 
-	abstract canHaveChild(childNode: AnyBoardNode): boolean;
+	public abstract canHaveChild(childNode: AnyBoardNode): boolean;
 
 	public removeChild(child: AnyBoardNode): void {
 		this.props.children = this.children.filter((ch) => ch.id !== child.id);

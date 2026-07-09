@@ -11,15 +11,15 @@ type AxiosResponseProps<T> = {
 };
 
 class AxiosResponseImp<T> implements AxiosResponse {
-	data: T;
+	public data: T;
 
-	status: number;
+	public status: number;
 
-	statusText: string;
+	public statusText: string;
 
-	headers: AxiosHeaders;
+	public headers: AxiosHeaders;
 
-	config: InternalAxiosRequestConfig<unknown>;
+	public config: InternalAxiosRequestConfig<unknown>;
 
 	constructor(props: AxiosResponseProps<T>) {
 		this.data = props.data;

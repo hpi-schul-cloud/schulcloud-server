@@ -9,7 +9,7 @@ export class BoardErrorReportBodyParams {
 	})
 	@IsString()
 	@SanitizeHtml()
-	public type!: string;
+	type!: string;
 
 	@ApiProperty({
 		type: String,
@@ -17,7 +17,7 @@ export class BoardErrorReportBodyParams {
 	})
 	@IsString()
 	@SanitizeHtml()
-	public message!: string;
+	message!: string;
 
 	@ApiProperty({
 		type: String,
@@ -25,7 +25,7 @@ export class BoardErrorReportBodyParams {
 	})
 	@IsString()
 	@SanitizeHtml()
-	public url!: string;
+	url!: string;
 
 	@ApiProperty({
 		type: String,
@@ -33,14 +33,14 @@ export class BoardErrorReportBodyParams {
 	})
 	@IsString()
 	@SanitizeHtml()
-	public boardId!: string;
+	boardId!: string;
 
 	@ApiProperty({
 		type: Number,
 		description: 'Count of connection retries.',
 	})
 	@IsNumber()
-	public retryCount!: number;
+	retryCount!: number;
 
 	@ApiProperty({
 		type: String,
@@ -48,5 +48,5 @@ export class BoardErrorReportBodyParams {
 	})
 	@IsString()
 	@SanitizeHtml()
-	public logSteps!: string;
+	logSteps!: string;
 }

@@ -41,7 +41,7 @@ import { RoomInvitationLinkListResponse } from './dto/response/room-invitation-l
 import { RoomListResponse } from './dto/response/room-list.response';
 import { RoomMemberListResponse } from './dto/response/room-member-list.response';
 import { RoomRoleResponse } from './dto/response/room-role.response';
-import { RoomStatsListResponse } from './dto/response/room-stats-list.repsonse';
+import { RoomStatsListResponse } from './dto/response/room-stats-list.response';
 import { RoomInvitationLinkMapper } from './mapper/room-invitation-link.mapper';
 import { RoomMapper } from './mapper/room.mapper';
 import { RoomArrangementUc } from './room-arrangement.uc';

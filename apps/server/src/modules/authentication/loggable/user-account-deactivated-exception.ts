@@ -14,7 +14,7 @@ export class UserAccountDeactivatedLoggableException extends BusinessError imple
 		);
 	}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			type: this.type,
 			stack: this.stack,

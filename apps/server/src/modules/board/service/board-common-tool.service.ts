@@ -12,7 +12,7 @@ export class BoardCommonToolService {
 		private readonly boardNodeService: BoardNodeService
 	) {}
 
-	async countBoardUsageForExternalTools(contextExternalTools: ContextExternalTool[]): Promise<number> {
+	public async countBoardUsageForExternalTools(contextExternalTools: ContextExternalTool[]): Promise<number> {
 		// TODO check why this is done so complicated
 		const toolIds: EntityId[] = contextExternalTools
 			.map((tool: ContextExternalTool): EntityId | undefined => tool.id)
@@ -26,7 +26,7 @@ export class BoardCommonToolService {
 		return boardCount;
 	}
 
-	async findByDescendant(boardNode: AnyBoardNode): Promise<ColumnBoard | MediaBoard> {
+	public async findByDescendant(boardNode: AnyBoardNode): Promise<ColumnBoard | MediaBoard> {
 		const rootNode = await this.boardNodeService.findRoot(boardNode);
 
 		if (!isColumnBoard(rootNode) && !isMediaBoard(rootNode)) {

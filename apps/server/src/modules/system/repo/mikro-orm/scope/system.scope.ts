@@ -4,7 +4,7 @@ import { type SystemType } from '../../../domain';
 import { type SystemEntity } from '../system.entity';
 
 export class SystemScope extends Scope<SystemEntity> {
-	byIds(ids?: EntityId[]): this {
+	public byIds(ids?: EntityId[]): this {
 		if (ids) {
 			this.addQuery({ id: { $in: ids } });
 		}
@@ -12,7 +12,7 @@ export class SystemScope extends Scope<SystemEntity> {
 		return this;
 	}
 
-	byTypes(types?: SystemType[]): this {
+	public byTypes(types?: SystemType[]): this {
 		if (types) {
 			this.addQuery({ type: { $in: types } });
 		}

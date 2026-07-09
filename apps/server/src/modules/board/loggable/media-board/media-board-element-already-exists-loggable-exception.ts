@@ -10,7 +10,7 @@ export class MediaBoardElementAlreadyExistsLoggableException extends BadRequestE
 		super();
 	}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			type: 'MEDIA_BOARD_ELEMENT_ALREADY_EXISTS',
 			message: 'Media element already exists on media board',

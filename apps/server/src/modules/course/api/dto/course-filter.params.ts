@@ -7,10 +7,10 @@ export class CourseFilterParams {
 	@IsOptional()
 	@IsEnum(CourseStatus)
 	@ApiPropertyOptional({ enum: CourseStatus, enumName: 'CourseStatus' })
-	public status?: CourseStatus;
+	status?: CourseStatus;
 
 	@IsBoolean()
 	@StringToBoolean()
 	@ApiPropertyOptional()
-	public withoutTeacher?: boolean = false;
+	withoutTeacher?: boolean = false;
 }

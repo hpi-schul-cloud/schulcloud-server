@@ -60,7 +60,7 @@ export class GroupResponseMapper {
 		return classInfoResponse;
 	}
 
-	static mapToGroupResponse(resolvedGroup: ResolvedGroupDto): GroupResponse {
+	public static mapToGroupResponse(resolvedGroup: ResolvedGroupDto): GroupResponse {
 		const externalSource: ExternalSourceResponse | undefined = resolvedGroup.externalSource
 			? new ExternalSourceResponse({
 					externalId: resolvedGroup.externalSource.externalId,
@@ -93,7 +93,10 @@ export class GroupResponseMapper {
 		return groupResponse;
 	}
 
-	static mapToGroupListResponse(groups: Page<ResolvedGroupDto>, pagination: GroupPaginationParams): GroupListResponse {
+	public static mapToGroupListResponse(
+		groups: Page<ResolvedGroupDto>,
+		pagination: GroupPaginationParams
+	): GroupListResponse {
 		const groupResponseData: GroupResponse[] = groups.data.map(
 			(group: ResolvedGroupDto): GroupResponse => this.mapToGroupResponse(group)
 		);

@@ -3,7 +3,7 @@ import { AdminApiSchoolCreateNoIdErrorLoggable } from '../loggable/admin-api-sch
 import { AdminApiSchoolCreateResponseDto } from './dto/response/admin-api-school-create.response.dto';
 
 export class AdminApiSchoolMapper {
-	static mapSchoolDoToSchoolCreatedResponse(school: LegacySchoolDo): AdminApiSchoolCreateResponseDto {
+	public static mapSchoolDoToSchoolCreatedResponse(school: LegacySchoolDo): AdminApiSchoolCreateResponseDto {
 		if (school.id === undefined) {
 			/* istanbul ignore next */
 			throw new AdminApiSchoolCreateNoIdErrorLoggable();

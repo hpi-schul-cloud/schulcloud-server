@@ -3,5 +3,5 @@ export class BBBBaseMeetingConfig {
 		this.meetingID = config.meetingID;
 	}
 
-	meetingID: string;
+	public meetingID: string;
 }

@@ -13,7 +13,7 @@ export class EtherpadErrorLoggableException extends InternalServerErrorException
 		super(type, exceptionOptions);
 	}
 
-	getLogMessage(): ErrorLogMessage {
+	public getLogMessage(): ErrorLogMessage {
 		const { userId, parentId } = this.payload;
 
 		const message: ErrorLogMessage = {

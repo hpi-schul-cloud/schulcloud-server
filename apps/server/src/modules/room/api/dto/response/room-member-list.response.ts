@@ -7,5 +7,5 @@ export class RoomMemberListResponse {
 	}
 
 	@ApiProperty({ type: [RoomMemberResponse] })
-	public data: RoomMemberResponse[];
+	data: RoomMemberResponse[];
 }

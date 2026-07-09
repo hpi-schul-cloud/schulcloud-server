@@ -26,9 +26,9 @@ export class ToolLaunchService {
 		private readonly schoolExternalToolService: SchoolExternalToolService,
 		private readonly externalToolService: ExternalToolService,
 		private readonly toolConfigurationStatusService: ToolConfigurationStatusService,
-		readonly basicToolLaunchStrategy: BasicToolLaunchStrategy,
-		readonly lti11ToolLaunchStrategy: Lti11ToolLaunchStrategy,
-		readonly oauth2ToolLaunchStrategy: OAuth2ToolLaunchStrategy
+		public readonly basicToolLaunchStrategy: BasicToolLaunchStrategy,
+		public readonly lti11ToolLaunchStrategy: Lti11ToolLaunchStrategy,
+		public readonly oauth2ToolLaunchStrategy: OAuth2ToolLaunchStrategy
 	) {
 		this.strategies = new Map();
 		this.strategies.set(ToolConfigType.BASIC, basicToolLaunchStrategy);

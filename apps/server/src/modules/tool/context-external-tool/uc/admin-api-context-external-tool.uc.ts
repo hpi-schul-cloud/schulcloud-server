@@ -7,7 +7,9 @@ import { ContextExternalToolDto } from './dto/context-external-tool.types';
 export class AdminApiContextExternalToolUc {
 	constructor(private readonly contextExternalToolService: ContextExternalToolService) {}
 
-	async createContextExternalTool(contextExternalToolProps: ContextExternalToolDto): Promise<ContextExternalTool> {
+	public async createContextExternalTool(
+		contextExternalToolProps: ContextExternalToolDto
+	): Promise<ContextExternalTool> {
 		const contextExternalTool: ContextExternalTool = new ContextExternalTool(contextExternalToolProps);
 
 		const createdTool: ContextExternalTool =

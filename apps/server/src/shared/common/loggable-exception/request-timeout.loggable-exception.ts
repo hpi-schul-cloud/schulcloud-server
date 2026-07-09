@@ -6,7 +6,7 @@ export class RequestTimeoutLoggableException extends RequestTimeoutException imp
 		super();
 	}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		const message: LoggableMessage = {
 			type: 'REQUEST_TIMEOUT',
 			stack: this.stack,

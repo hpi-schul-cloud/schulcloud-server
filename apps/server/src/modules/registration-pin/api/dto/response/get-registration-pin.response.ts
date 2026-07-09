@@ -2,16 +2,16 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class GetRegistrationPinResponse {
 	@ApiProperty()
-	public username: string;
+	username: string;
 
 	@ApiProperty()
 	registrationPin: string;
 
 	@ApiProperty()
-	public verified: boolean;
+	verified: boolean;
 
 	@ApiProperty()
-	public createdAt: Date;
+	createdAt: Date;
 
 	constructor(props: Readonly<GetRegistrationPinResponse>) {
 		this.username = props.username;

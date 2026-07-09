@@ -12,7 +12,7 @@ export class ProvisioningOptionsInvalidTypeLoggableException extends Unprocessab
 		super();
 	}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			type: 'PROVISIONING_OPTIONS_INVALID_TYPE',
 			message: 'The provisioning options are not of the expected type.',

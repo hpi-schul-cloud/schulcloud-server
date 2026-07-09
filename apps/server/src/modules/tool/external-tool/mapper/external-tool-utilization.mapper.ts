@@ -3,7 +3,7 @@ import { type ExternalToolUtilization } from '../../tool-utilization/domain';
 import { ExternalToolUtilizationResponse } from '../controller/dto';
 
 export class ExternalToolUtilizationMapper {
-	static mapToExternalToolUtilizationResponse(
+	public static mapToExternalToolUtilizationResponse(
 		externalToolUtilization: ExternalToolUtilization
 	): ExternalToolUtilizationResponse {
 		const externalToolUtilizationResponse: ExternalToolUtilizationResponse = new ExternalToolUtilizationResponse({

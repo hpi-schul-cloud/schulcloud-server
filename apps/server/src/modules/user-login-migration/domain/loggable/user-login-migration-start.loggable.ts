@@ -7,7 +7,7 @@ export class UserLoginMigrationStartLoggable implements Loggable {
 		private readonly userLoginMigrationId: EntityId | undefined
 	) {}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			message: 'The school administrator started the migration for his school.',
 			data: {

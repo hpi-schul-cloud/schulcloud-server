@@ -9,7 +9,7 @@ export class H5pElementContent {
 	}
 
 	@ApiProperty({ type: String, required: true, nullable: true })
-	public contentId: string | null;
+	contentId: string | null;
 }
 
 export class H5pElementResponse {
@@ -21,14 +21,14 @@ export class H5pElementResponse {
 	}
 
 	@ApiProperty({ pattern: bsonStringPattern })
-	public id: string;
+	id: string;
 
 	@ApiProperty({ enum: ContentElementType, enumName: 'ContentElementType' })
-	public type: ContentElementType.H5P;
+	type: ContentElementType.H5P;
 
 	@ApiProperty()
-	public content: H5pElementContent;
+	content: H5pElementContent;
 
 	@ApiProperty()
-	public timestamps: TimestampsResponse;
+	timestamps: TimestampsResponse;
 }

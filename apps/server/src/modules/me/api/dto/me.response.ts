@@ -3,7 +3,7 @@ import { LanguageType, Permission } from '@shared/domain/interface';
 
 export class MeAccountResponse {
 	@ApiProperty()
-	public id: string;
+	id: string;
 
 	constructor(props: MeAccountResponse) {
 		this.id = props.id;
@@ -12,10 +12,10 @@ export class MeAccountResponse {
 
 export class MeSchoolLogoResponse {
 	@ApiPropertyOptional()
-	public url?: string;
+	url?: string;
 
 	@ApiPropertyOptional()
-	public name?: string;
+	name?: string;
 
 	constructor(props: MeSchoolLogoResponse) {
 		this.url = props.url;
@@ -25,13 +25,13 @@ export class MeSchoolLogoResponse {
 
 export class MeSchoolResponse {
 	@ApiProperty()
-	public id: string;
+	id: string;
 
 	@ApiProperty()
-	public name: string;
+	name: string;
 
 	@ApiProperty()
-	public logo: MeSchoolLogoResponse;
+	logo: MeSchoolLogoResponse;
 
 	constructor(props: MeSchoolResponse) {
 		this.id = props.id;
@@ -42,16 +42,16 @@ export class MeSchoolResponse {
 
 export class MeUserResponse {
 	@ApiProperty()
-	public id: string;
+	id: string;
 
 	@ApiProperty()
-	public firstName: string;
+	firstName: string;
 
 	@ApiProperty()
-	public lastName: string;
+	lastName: string;
 
 	@ApiPropertyOptional()
-	public customAvatarBackgroundColor?: string;
+	customAvatarBackgroundColor?: string;
 
 	constructor(props: MeUserResponse) {
 		this.id = props.id;
@@ -63,10 +63,10 @@ export class MeUserResponse {
 
 export class MeRoleResponse {
 	@ApiProperty()
-	public id: string;
+	id: string;
 
 	@ApiProperty()
-	public name: string;
+	name: string;
 
 	constructor(props: MeRoleResponse) {
 		this.id = props.id;
@@ -76,7 +76,7 @@ export class MeRoleResponse {
 
 export class MePreferencesResponse {
 	@ApiPropertyOptional({ nullable: true })
-	public releaseDate?: string;
+	releaseDate?: string;
 
 	constructor(props: MePreferencesResponse) {
 		this.releaseDate = props.releaseDate;
@@ -85,31 +85,31 @@ export class MePreferencesResponse {
 
 export class MeResponse {
 	@ApiProperty()
-	public school: MeSchoolResponse;
+	school: MeSchoolResponse;
 
 	@ApiProperty()
-	public user: MeUserResponse;
+	user: MeUserResponse;
 
 	@ApiProperty({ type: [MeRoleResponse] })
-	public roles: MeRoleResponse[];
+	roles: MeRoleResponse[];
 
 	@ApiProperty({ enum: Permission, isArray: true, enumName: 'Permission' })
-	public permissions: Permission[];
+	permissions: Permission[];
 
 	@ApiProperty({
 		enum: LanguageType,
 		enumName: 'LanguageType',
 	})
-	public language?: LanguageType;
+	language?: LanguageType;
 
 	@ApiProperty()
-	public preferences: MePreferencesResponse;
+	preferences: MePreferencesResponse;
 
 	@ApiProperty()
-	public account: MeAccountResponse;
+	account: MeAccountResponse;
 
 	@ApiPropertyOptional()
-	public systemId?: string;
+	systemId?: string;
 
 	constructor(props: MeResponse) {
 		this.school = props.school;

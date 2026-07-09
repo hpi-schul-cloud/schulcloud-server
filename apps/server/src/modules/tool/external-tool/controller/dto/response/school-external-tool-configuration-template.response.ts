@@ -5,22 +5,22 @@ import { ExternalToolMediumResponse } from './external-tool-medium.response';
 
 export class SchoolExternalToolConfigurationTemplateResponse {
 	@ApiProperty()
-	public externalToolId: EntityId;
+	externalToolId: EntityId;
 
 	@ApiProperty()
-	public name: string;
+	name: string;
 
 	@ApiProperty()
-	public baseUrl: string;
+	baseUrl: string;
 
 	@ApiPropertyOptional()
-	public logoUrl?: string;
+	logoUrl?: string;
 
 	@ApiProperty({ type: [CustomParameterResponse] })
-	public parameters: CustomParameterResponse[];
+	parameters: CustomParameterResponse[];
 
 	@ApiPropertyOptional({ type: ExternalToolMediumResponse, description: 'Medium of the external tool' })
-	public medium?: ExternalToolMediumResponse;
+	medium?: ExternalToolMediumResponse;
 
 	constructor(configuration: SchoolExternalToolConfigurationTemplateResponse) {
 		this.externalToolId = configuration.externalToolId;

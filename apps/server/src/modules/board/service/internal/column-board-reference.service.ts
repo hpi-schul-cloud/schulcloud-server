@@ -6,7 +6,7 @@ import { BoardNodeRepo } from '../../repo';
 export class ColumnBoardReferenceService {
 	constructor(private readonly boardNodeRepo: BoardNodeRepo) {}
 
-	async findByExternalReference(reference: BoardExternalReference, depth?: number): Promise<ColumnBoard[]> {
+	public async findByExternalReference(reference: BoardExternalReference, depth?: number): Promise<ColumnBoard[]> {
 		const boardNodes = await this.boardNodeRepo.findByExternalReference(reference, depth);
 
 		const boards = boardNodes.filter((bn) => isColumnBoard(bn));

@@ -10,7 +10,7 @@ export class RestrictedContextMismatchLoggableException extends UnprocessableEnt
 		super();
 	}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		const message: LoggableMessage = {
 			type: 'UNPROCESSABLE_ENTITY_EXCEPTION',
 			message: `Could not create an instance of ${this.externalToolName} in context: ${this.context} because of the context restrictions of the tool.`,

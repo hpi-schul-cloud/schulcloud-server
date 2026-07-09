@@ -11,7 +11,7 @@ import { Colors } from './types';
 
 @Injectable()
 export class MediaBoardNodeFactory {
-	buildMediaBoard(props: {
+	public buildMediaBoard(props: {
 		context: BoardExternalReference;
 		layout: BoardLayout;
 		backgroundColor: Colors;
@@ -22,13 +22,13 @@ export class MediaBoardNodeFactory {
 		return mediaBoard;
 	}
 
-	buildMediaLine(props: { title: string; backgroundColor: Colors; collapsed: boolean }): MediaLine {
+	public buildMediaLine(props: { title: string; backgroundColor: Colors; collapsed: boolean }): MediaLine {
 		const mediaLine = new MediaLine({ ...this.getBaseProps(), ...props });
 
 		return mediaLine;
 	}
 
-	buildExternalToolElement(props: { contextExternalToolId: EntityId }): MediaExternalToolElement {
+	public buildExternalToolElement(props: { contextExternalToolId: EntityId }): MediaExternalToolElement {
 		const mediaExternalToolElement = new MediaExternalToolElement({ ...this.getBaseProps(), ...props });
 
 		return mediaExternalToolElement;

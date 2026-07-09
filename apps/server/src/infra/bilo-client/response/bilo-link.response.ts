@@ -1,8 +1,8 @@
 import { IsString } from 'class-validator';
 
 export class BiloLinkResponse {
-	public href!: string;
+	href!: string;
 
 	@IsString()
-	public rel!: string;
+	rel!: string;
 }

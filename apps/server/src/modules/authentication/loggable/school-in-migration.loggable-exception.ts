@@ -14,7 +14,7 @@ export class SchoolInMigrationLoggableException extends BusinessError implements
 		);
 	}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			type: this.type,
 			stack: this.stack,

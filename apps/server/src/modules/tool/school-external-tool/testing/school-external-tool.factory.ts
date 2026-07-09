@@ -6,7 +6,7 @@ import { SchoolExternalTool, type SchoolExternalToolProps } from '../domain';
 import { schoolExternalToolConfigurationStatusFactory } from './school-external-tool-configuration-status.factory';
 
 class SchoolExternalToolFactory extends DoBaseFactory<SchoolExternalTool, SchoolExternalToolProps> {
-	withSchoolId(schoolId: string): this {
+	public withSchoolId(schoolId: string): this {
 		const params: DeepPartial<SchoolExternalTool> = {
 			schoolId,
 		};

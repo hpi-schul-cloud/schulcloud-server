@@ -6,7 +6,7 @@ import util from 'node:util';
 import { ErrorUtils } from '../utils/error.utils';
 
 export class ErrorLoggable implements Loggable {
-	readonly actualError: Error;
+	public readonly actualError: Error;
 
 	constructor(
 		private readonly error: unknown,
@@ -21,7 +21,7 @@ export class ErrorLoggable implements Loggable {
 
 	private readonly classValidatorMetadataStorage = getMetadataStorage();
 
-	getLogMessage(): ErrorLogMessage | ValidationErrorLogMessage {
+	public getLogMessage(): ErrorLogMessage | ValidationErrorLogMessage {
 		let logMessage: ErrorLogMessage | ValidationErrorLogMessage = {
 			error: this.actualError,
 			type: '',

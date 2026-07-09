@@ -9,7 +9,7 @@ export class UserLoginMigrationSchoolAlreadyMigratedLoggableException
 		super();
 	}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			type: 'USER_LOGIN_MIGRATION_SCHOOL_HAS_ALREADY_MIGRATED',
 			message: 'School has already migrated',

@@ -1,7 +1,7 @@
 import fs from 'fs';
 
 export class ReferencesService {
-	static loadFromTxtFile(filePath: string): string[] {
+	public static loadFromTxtFile(filePath: string): string[] {
 		let fileContent = fs.readFileSync(filePath).toString();
 
 		// Replace all the CRLF occurrences with just a LF.

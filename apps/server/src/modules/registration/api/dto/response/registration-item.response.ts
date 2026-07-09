@@ -2,25 +2,25 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class RegistrationItemResponse {
 	@ApiProperty()
-	public id: string;
+	id: string;
 
 	@ApiProperty()
-	public email: string;
+	email: string;
 
 	@ApiProperty()
-	public firstName: string;
+	firstName: string;
 
 	@ApiProperty()
-	public lastName: string;
+	lastName: string;
 
 	@ApiProperty({ type: Date })
-	public createdAt: Date;
+	createdAt: Date;
 
 	@ApiProperty({ type: Date })
-	public updatedAt: Date;
+	updatedAt: Date;
 
 	@ApiPropertyOptional({ type: Boolean, default: false })
-	public registeredUserExists: boolean;
+	registeredUserExists: boolean;
 
 	constructor(registration: RegistrationItemResponse) {
 		this.id = registration.id;

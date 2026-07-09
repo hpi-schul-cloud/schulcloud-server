@@ -11,7 +11,7 @@ export class Lti11ToolConfigUpdateParams extends ExternalToolConfigCreateParams 
 		description: 'Configuration type of the tool.',
 		example: ToolConfigType.LTI11,
 	})
-	public type!: ToolConfigType;
+	type!: ToolConfigType;
 
 	@IsUrl(
 		{ require_protocol: true, protocols: ['https'] },
@@ -22,20 +22,20 @@ export class Lti11ToolConfigUpdateParams extends ExternalToolConfigCreateParams 
 			'Defines the target URL that is launched. Can be automatically filled with parameter values when using : in-front of the parameter name. Must be HTTPS.',
 		example: 'https://example.com/:parameter1/test',
 	})
-	public baseUrl!: string;
+	baseUrl!: string;
 
 	@IsString()
 	@ApiProperty({
 		description: 'LTI 1.1 encryption key.',
 	})
-	public key!: string;
+	key!: string;
 
 	@IsString()
 	@IsOptional()
 	@ApiPropertyOptional({
 		description: 'LTI 1.1 encryption secret.',
 	})
-	public secret?: string;
+	secret?: string;
 
 	@IsEnum(LtiMessageType)
 	@ApiProperty({
@@ -44,7 +44,7 @@ export class Lti11ToolConfigUpdateParams extends ExternalToolConfigCreateParams 
 		description: 'LTI 1.1 message type.',
 		example: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
 	})
-	public lti_message_type!: LtiMessageType;
+	lti_message_type!: LtiMessageType;
 
 	@IsEnum(LtiPrivacyPermission)
 	@ApiProperty({
@@ -53,12 +53,12 @@ export class Lti11ToolConfigUpdateParams extends ExternalToolConfigCreateParams 
 		description: 'Describes the amount of personal information that the tool provider gets.',
 		example: LtiPrivacyPermission.ANONYMOUS,
 	})
-	public privacy_permission!: LtiPrivacyPermission;
+	privacy_permission!: LtiPrivacyPermission;
 
 	@IsLocale()
 	@ApiProperty({
 		description: 'LTI 1.1 requested language.',
 		example: 'de-DE',
 	})
-	public launch_presentation_locale!: string;
+	launch_presentation_locale!: string;
 }

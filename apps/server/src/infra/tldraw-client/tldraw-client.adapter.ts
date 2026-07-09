@@ -5,7 +5,7 @@ import { TldrawDocumentApi } from './generated';
 export class TldrawClientAdapter {
 	constructor(private readonly tldrawDocumentApi: TldrawDocumentApi) {}
 
-	async deleteDrawingBinData(parentId: string): Promise<void> {
+	public async deleteDrawingBinData(parentId: string): Promise<void> {
 		await this.tldrawDocumentApi.deleteByDocName(parentId);
 	}
 }

@@ -2,7 +2,7 @@ import { type CopyFilesRequestInfo, type FileRequestInfo } from '@infra/files-st
 import { type EntityId } from '@shared/domain/types';
 
 export class CopyFilesOfParentParamBuilder {
-	static build(userId: EntityId, source: FileRequestInfo, target: FileRequestInfo): CopyFilesRequestInfo {
+	public static build(userId: EntityId, source: FileRequestInfo, target: FileRequestInfo): CopyFilesRequestInfo {
 		const fileRequestInfo = {
 			userId,
 			source,
