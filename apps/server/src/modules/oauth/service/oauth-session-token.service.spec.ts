@@ -1,15 +1,16 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import { DefaultEncryptionService, type EncryptionService } from '@infra/encryption';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { OAUTH_SESSION_TOKEN_REPO, type OauthSessionTokenRepo } from '../repo';
 import { oauthSessionTokenFactory } from '../testing';
 import { OauthSessionTokenService } from './oauth-session-token.service';
-import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 
 describe(OauthSessionTokenService.name, () => {
 	let module: TestingModule;
 	let service: OauthSessionTokenService;
 
 	let repo: DeepMocked<OauthSessionTokenRepo>;
+	let encryptionService: DeepMocked<EncryptionService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -28,6 +29,7 @@ describe(OauthSessionTokenService.name, () => {
 
 		service = module.get(OauthSessionTokenService);
 		repo = module.get(OAUTH_SESSION_TOKEN_REPO);
+		encryptionService = module.get(DefaultEncryptionService);
 	});
 
 	afterAll(async () => {
@@ -42,11 +44,13 @@ describe(OauthSessionTokenService.name, () => {
 		describe('when saving a session token', () => {
 			const setup = () => {
 				const oauthSessionToken = oauthSessionTokenFactory.build();
+				const encryptedRefreshToken = 'encrypted-refresh-token';
 
-				repo.save.mockResolvedValue(oauthSessionToken);
+				encryptionService.encrypt.mockReturnValue(encryptedRefreshToken);
 
 				return {
 					oauthSessionToken,
+					encryptedRefreshToken,
 				};
 			};
 
@@ -58,12 +62,14 @@ describe(OauthSessionTokenService.name, () => {
 				expect(repo.save).toHaveBeenCalledWith(oauthSessionToken);
 			});
 
-			it('should return the saved token', async () => {
-				const { oauthSessionToken } = setup();
+			it('should encrypt the refresh token before saving', async () => {
+				const { oauthSessionToken, encryptedRefreshToken } = setup();
+				const originalRefreshToken = oauthSessionToken.refreshToken;
 
-				const result = await service.save(oauthSessionToken);
+				await service.save(oauthSessionToken);
 
-				expect(result).toEqual(oauthSessionToken);
+				expect(encryptionService.encrypt).toHaveBeenCalledWith(originalRefreshToken);
+				expect(repo.save).toHaveBeenCalledWith(expect.objectContaining({ refreshToken: encryptedRefreshToken }));
 			});
 		});
 	});
@@ -95,12 +101,15 @@ describe(OauthSessionTokenService.name, () => {
 			const setup = () => {
 				const sessionToken = oauthSessionTokenFactory.build();
 				const { userId } = sessionToken;
+				const decryptedRefreshToken = 'decrypted-refresh-token';
 
 				repo.findLatestByUserId.mockResolvedValue(sessionToken);
+				encryptionService.decrypt.mockReturnValue(decryptedRefreshToken);
 
 				return {
 					sessionToken,
 					userId,
+					decryptedRefreshToken,
 				};
 			};
 
@@ -111,6 +120,16 @@ describe(OauthSessionTokenService.name, () => {
 
 				expect(result).toEqual(sessionToken);
 				expect(repo.findLatestByUserId).toHaveBeenCalledWith(userId);
+			});
+
+			it('should decrypt the refresh token', async () => {
+				const { sessionToken, userId, decryptedRefreshToken } = setup();
+				const encryptedRefreshToken = sessionToken.refreshToken;
+
+				const result = await service.findLatestByUserId(userId);
+
+				expect(encryptionService.decrypt).toHaveBeenCalledWith(encryptedRefreshToken);
+				expect(result?.refreshToken).toBe(decryptedRefreshToken);
 			});
 		});
 	});
