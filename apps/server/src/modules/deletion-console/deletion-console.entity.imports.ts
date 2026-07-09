@@ -3,4 +3,4 @@ import { Role } from '@modules/role/repo';
 import { User } from '@modules/user/repo';
 
 export const ENTITIES = [Role, User, AccountEntity];
-const TEST_ENTITIES = [...ENTITIES];
+export const TEST_ENTITIES = [...ENTITIES];
