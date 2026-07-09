@@ -2,34 +2,34 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class RoomStatsItemResponse {
 	@ApiProperty({ type: String })
-	public roomId: string;
+	roomId: string;
 
 	@ApiProperty({ type: String })
-	public name: string;
+	name: string;
 
 	@ApiProperty({ type: String })
-	public owner: string | undefined;
+	owner: string | undefined;
 
 	@ApiProperty({ type: String })
-	public schoolId: string;
+	schoolId: string;
 
 	@ApiProperty({ type: String })
-	public schoolName: string;
+	schoolName: string;
 
 	@ApiProperty({ type: Number })
-	public totalMembers: number;
+	totalMembers: number;
 
 	@ApiProperty({ type: Number })
-	public internalMembers: number;
+	internalMembers: number;
 
 	@ApiProperty({ type: Number })
-	public externalMembers: number;
+	externalMembers: number;
 
 	@ApiProperty({ type: Date })
-	public createdAt: Date;
+	createdAt: Date;
 
 	@ApiProperty({ type: Date })
-	public updatedAt: Date;
+	updatedAt: Date;
 
 	constructor(room: RoomStatsItemResponse) {
 		this.roomId = room.roomId;

@@ -10,7 +10,7 @@ export class SystemNotFoundLoggableException extends NotFoundException implement
 		});
 	}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		const message: LoggableMessage = {
 			type: SchoolErrorEnum.SYSTEM_NOT_FOUND,
 			stack: this.stack,

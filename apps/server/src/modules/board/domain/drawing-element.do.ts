@@ -10,7 +10,7 @@ export class DrawingElement extends BoardNode<DrawingElementProps> {
 		this.props.description = value;
 	}
 
-	canHaveChild(): boolean {
+	public canHaveChild(): boolean {
 		return false;
 	}
 }

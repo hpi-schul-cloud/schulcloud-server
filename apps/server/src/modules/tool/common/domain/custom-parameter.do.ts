@@ -1,27 +1,27 @@
 import { type CustomParameterScope, type CustomParameterLocation, type CustomParameterType } from '../enum';
 
 export class CustomParameter {
-	name: string;
+	public name: string;
 
-	displayName: string;
+	public displayName: string;
 
-	description?: string;
+	public description?: string;
 
-	default?: string;
+	public default?: string;
 
-	regex?: string;
+	public regex?: string;
 
-	regexComment?: string;
+	public regexComment?: string;
 
-	scope: CustomParameterScope;
+	public scope: CustomParameterScope;
 
-	location: CustomParameterLocation;
+	public location: CustomParameterLocation;
 
-	type: CustomParameterType;
+	public type: CustomParameterType;
 
-	isOptional: boolean;
+	public isOptional: boolean;
 
-	isProtected: boolean;
+	public isProtected: boolean;
 
 	constructor(props: CustomParameter) {
 		this.name = props.name;

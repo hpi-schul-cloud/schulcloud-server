@@ -11,5 +11,5 @@ export class ResetFailedDeletionBatchBodyParams {
 	@IsArray()
 	@ArrayNotEmpty()
 	@IsMongoId({ each: true })
-	public targetRefIds: EntityId[] = [];
+	targetRefIds: EntityId[] = [];
 }

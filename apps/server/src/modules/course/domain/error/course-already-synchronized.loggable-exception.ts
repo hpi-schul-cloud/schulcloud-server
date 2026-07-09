@@ -7,7 +7,7 @@ export class CourseAlreadySynchronizedLoggableException extends UnprocessableEnt
 		super();
 	}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		const message: LoggableMessage = {
 			type: 'COURSE_ALREADY_SYNCHRONIZED',
 			stack: this.stack,

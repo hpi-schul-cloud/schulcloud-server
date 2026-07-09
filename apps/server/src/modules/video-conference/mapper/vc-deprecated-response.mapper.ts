@@ -11,14 +11,14 @@ import { VideoConferenceMapper } from './video-conference.mapper';
  * @deprecated Please use the VideoConferenceResponseMapper instead.
  */
 export class VideoConferenceResponseDeprecatedMapper {
-	static mapToBaseResponse(from: VideoConference<BBBBaseResponse>): VideoConferenceBaseResponse {
+	public static mapToBaseResponse(from: VideoConference<BBBBaseResponse>): VideoConferenceBaseResponse {
 		return new VideoConferenceBaseResponse({
 			state: VideoConferenceMapper.toVideoConferenceStateResponse(from.state),
 			permission: from.permission,
 		});
 	}
 
-	static mapToJoinResponse(from: VideoConferenceJoin): DeprecatedVideoConferenceJoinResponse {
+	public static mapToJoinResponse(from: VideoConferenceJoin): DeprecatedVideoConferenceJoinResponse {
 		return new DeprecatedVideoConferenceJoinResponse({
 			state: VideoConferenceMapper.toVideoConferenceStateResponse(from.state),
 			permission: from.permission,
@@ -26,7 +26,7 @@ export class VideoConferenceResponseDeprecatedMapper {
 		});
 	}
 
-	static mapToInfoResponse(from: VideoConferenceInfo): DeprecatedVideoConferenceInfoResponse {
+	public static mapToInfoResponse(from: VideoConferenceInfo): DeprecatedVideoConferenceInfoResponse {
 		return new DeprecatedVideoConferenceInfoResponse({
 			state: VideoConferenceMapper.toVideoConferenceStateResponse(from.state),
 			permission: from.permission,

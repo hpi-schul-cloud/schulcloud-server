@@ -14,7 +14,7 @@ export class CopyFilesService {
 		private readonly filesStorageClientAdapterService: FilesStorageClientAdapterService
 	) {}
 
-	async copyFilesOfEntity<T extends EntityWithEmbeddedFiles>(
+	public async copyFilesOfEntity<T extends EntityWithEmbeddedFiles>(
 		originalEntity: T,
 		copyEntity: T,
 		userId: EntityId

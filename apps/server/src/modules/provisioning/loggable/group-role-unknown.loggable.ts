@@ -4,7 +4,7 @@ import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
 export class GroupRoleUnknownLoggable implements Loggable {
 	constructor(private readonly relation: SchulconnexSonstigeGruppenzugehoerigeResponse) {}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			message: 'Unable to add unknown user to group during provisioning.',
 			data: {

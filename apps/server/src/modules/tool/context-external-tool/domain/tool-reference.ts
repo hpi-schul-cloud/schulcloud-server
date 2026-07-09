@@ -2,25 +2,25 @@ import { type ContextExternalToolConfigurationStatus } from '../../common/domain
 import { type LtiDeepLink } from './lti-deep-link';
 
 export class ToolReference {
-	contextToolId: string;
+	public contextToolId: string;
 
-	description?: string;
+	public description?: string;
 
-	logoUrl?: string;
+	public logoUrl?: string;
 
-	thumbnailUrl?: string;
+	public thumbnailUrl?: string;
 
-	displayName: string;
+	public displayName: string;
 
-	domain: string;
+	public domain: string;
 
-	openInNewTab: boolean;
+	public openInNewTab: boolean;
 
-	status: ContextExternalToolConfigurationStatus;
+	public status: ContextExternalToolConfigurationStatus;
 
-	isLtiDeepLinkingTool: boolean;
+	public isLtiDeepLinkingTool: boolean;
 
-	ltiDeepLink?: LtiDeepLink;
+	public ltiDeepLink?: LtiDeepLink;
 
 	constructor(toolReference: ToolReference) {
 		this.contextToolId = toolReference.contextToolId;

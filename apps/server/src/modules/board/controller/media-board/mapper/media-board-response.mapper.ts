@@ -4,7 +4,7 @@ import { MediaBoardResponse, type MediaLineResponse } from '../dto';
 import { MediaLineResponseMapper } from './media-line-response.mapper';
 
 export class MediaBoardResponseMapper {
-	static mapToResponse(board: MediaBoard): MediaBoardResponse {
+	public static mapToResponse(board: MediaBoard): MediaBoardResponse {
 		const lines: MediaLineResponse[] = board.children
 			.filter((line: AnyBoardNode): line is MediaLine => isMediaLine(line))
 			.map((line: MediaLine) => MediaLineResponseMapper.mapToResponse(line));

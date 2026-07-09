@@ -3,7 +3,7 @@ import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
 export class ExternalToolLogoFetchedLoggable implements Loggable {
 	constructor(private readonly logoUrl: string) {}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			type: 'EXTERNAL_TOOL_LOGO_FETCHED',
 			message: 'External tool logo was fetched',

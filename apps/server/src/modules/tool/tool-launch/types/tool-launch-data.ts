@@ -2,13 +2,13 @@ import { type PropertyData } from './property-data';
 import { type ToolLaunchDataType } from './tool-launch-data-type';
 
 export class ToolLaunchData {
-	baseUrl: string;
+	public baseUrl: string;
 
-	type: ToolLaunchDataType;
+	public type: ToolLaunchDataType;
 
-	properties: PropertyData[];
+	public properties: PropertyData[];
 
-	openNewTab: boolean;
+	public openNewTab: boolean;
 
 	constructor(props: ToolLaunchData) {
 		this.baseUrl = props.baseUrl;

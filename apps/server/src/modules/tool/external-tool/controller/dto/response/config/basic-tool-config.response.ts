@@ -9,14 +9,14 @@ export class BasicToolConfigResponse extends ExternalToolConfigResponse {
 		description: 'Configuration type of the tool.',
 		example: ToolConfigType.BASIC,
 	})
-	public type: ToolConfigType;
+	type: ToolConfigType;
 
 	@ApiProperty({
 		description:
 			'Defines the target URL that is launched. Can be automatically filled with parameter values when using : in-front of the parameter name.',
 		example: 'https://example.com/:parameter1/test',
 	})
-	public baseUrl: string;
+	baseUrl: string;
 
 	constructor(props: BasicToolConfigResponse) {
 		super();

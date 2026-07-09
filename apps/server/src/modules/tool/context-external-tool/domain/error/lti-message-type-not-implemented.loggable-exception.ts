@@ -6,7 +6,7 @@ export class LtiMessageTypeNotImplementedLoggableException extends NotImplemente
 		super();
 	}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		const message: LoggableMessage = {
 			type: 'LTI_MESSAGE_TYPE_NOT_IMPLEMENTED',
 			message: 'The lti message type is not implemented.',

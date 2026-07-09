@@ -14,7 +14,7 @@ export class CollaborativeTextEditorElementResponseMapper implements BaseRespons
 		return CollaborativeTextEditorElementResponseMapper.instance;
 	}
 
-	mapToResponse(element: CollaborativeTextEditorElement): CollaborativeTextEditorElementResponse {
+	public mapToResponse(element: CollaborativeTextEditorElement): CollaborativeTextEditorElementResponse {
 		const result = new CollaborativeTextEditorElementResponse({
 			id: element.id,
 			timestamps: new TimestampsResponse({ lastUpdatedAt: element.updatedAt, createdAt: element.createdAt }),
@@ -25,7 +25,7 @@ export class CollaborativeTextEditorElementResponseMapper implements BaseRespons
 		return result;
 	}
 
-	canMap(element: unknown): boolean {
+	public canMap(element: unknown): boolean {
 		return element instanceof CollaborativeTextEditorElement;
 	}
 }

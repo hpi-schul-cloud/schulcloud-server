@@ -201,15 +201,15 @@ export class ExternalTool extends DomainObject<ExternalToolProps> {
 		this.iconName = props.iconName;
 	}
 
-	static isBasicConfig(config: ExternalToolConfig): config is BasicToolConfig {
+	public static isBasicConfig(config: ExternalToolConfig): config is BasicToolConfig {
 		return ToolConfigType.BASIC === config.type;
 	}
 
-	static isOauth2Config(config: ExternalToolConfig): config is Oauth2ToolConfig {
+	public static isOauth2Config(config: ExternalToolConfig): config is Oauth2ToolConfig {
 		return ToolConfigType.OAUTH2 === config.type;
 	}
 
-	static isLti11Config(config: ExternalToolConfig): config is Lti11ToolConfig {
+	public static isLti11Config(config: ExternalToolConfig): config is Lti11ToolConfig {
 		return ToolConfigType.LTI11 === config.type;
 	}
 

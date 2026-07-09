@@ -16,7 +16,7 @@ export class AutoGroupExternalUuidStrategy implements AutoParameterStrategy {
 		private readonly boardNodeService: BoardNodeService
 	) {}
 
-	async getValue(
+	public async getValue(
 		_schoolExternalTool: SchoolExternalTool,
 		contextExternalTool: ContextExternalToolLaunchable
 	): Promise<string | undefined> {

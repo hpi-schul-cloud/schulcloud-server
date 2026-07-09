@@ -6,7 +6,7 @@ export class SchoolNumberDuplicateLoggableException extends UnprocessableEntityE
 		super();
 	}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			type: 'SCHOOL_NUMBER_DUPLICATE',
 			message: 'Unable to save the school. A school with this official school number does already exist.',

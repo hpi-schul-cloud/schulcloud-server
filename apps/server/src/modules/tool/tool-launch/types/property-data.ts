@@ -1,11 +1,11 @@
 import { type PropertyLocation } from './property-location';
 
 export class PropertyData {
-	name: string;
+	public name: string;
 
-	value: string;
+	public value: string;
 
-	location?: PropertyLocation;
+	public location?: PropertyLocation;
 
 	constructor(props: PropertyData) {
 		this.name = props.name;

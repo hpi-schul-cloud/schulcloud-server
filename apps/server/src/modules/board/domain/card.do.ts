@@ -27,7 +27,7 @@ export class Card extends BoardNode<CardProps> {
 		this.props.height = height;
 	}
 
-	canHaveChild(childNode: AnyBoardNode): boolean {
+	public canHaveChild(childNode: AnyBoardNode): boolean {
 		return isContentElement(childNode);
 	}
 }

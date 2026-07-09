@@ -23,7 +23,7 @@ export class ToolParameterRequiredLoggableException extends BusinessError implem
 		);
 	}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			stack: this.stack,
 			type: this.type,

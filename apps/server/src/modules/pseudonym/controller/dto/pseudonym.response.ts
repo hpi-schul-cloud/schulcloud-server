@@ -2,13 +2,13 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class PseudonymResponse {
 	@ApiProperty()
-	public id: string;
+	id: string;
 
 	@ApiProperty()
-	public toolId: string;
+	toolId: string;
 
 	@ApiProperty()
-	public userId: string;
+	userId: string;
 
 	constructor(response: PseudonymResponse) {
 		this.id = response.id;

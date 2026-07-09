@@ -4,7 +4,7 @@ import { Factory } from 'fishery';
 import { axiosResponseFactory } from './axios-response.factory';
 
 class AxiosErrorFactory extends Factory<AxiosError> {
-	withError(error: unknown): this {
+	public withError(error: unknown): this {
 		return this.params({
 			response: axiosResponseFactory.build({ status: HttpStatus.BAD_REQUEST, data: error }),
 		});

@@ -20,12 +20,12 @@ export class LegacySchoolService {
 		private readonly storageProviderRepo: StorageProviderRepo
 	) {}
 
-	async hasFeature(schoolId: EntityId, feature: SchoolFeature): Promise<boolean> {
+	public async hasFeature(schoolId: EntityId, feature: SchoolFeature): Promise<boolean> {
 		const entity: LegacySchoolDo = await this.schoolRepo.findById(schoolId);
 		return entity.features ? entity.features.includes(feature) : false;
 	}
 
-	async removeFeature(schoolId: EntityId, feature: SchoolFeature): Promise<void> {
+	public async removeFeature(schoolId: EntityId, feature: SchoolFeature): Promise<void> {
 		const school: LegacySchoolDo = await this.schoolRepo.findById(schoolId);
 		if (school.features && school.features.includes(feature)) {
 			school.features = school.features.filter((f: SchoolFeature) => f !== feature);
@@ -33,25 +33,25 @@ export class LegacySchoolService {
 		}
 	}
 
-	async getSchoolById(id: string): Promise<LegacySchoolDo> {
+	public async getSchoolById(id: string): Promise<LegacySchoolDo> {
 		const schoolDO: LegacySchoolDo = await this.schoolRepo.findById(id);
 
 		return schoolDO;
 	}
 
-	async getSchoolByExternalId(externalId: string, systemId: string): Promise<LegacySchoolDo | null> {
+	public async getSchoolByExternalId(externalId: string, systemId: string): Promise<LegacySchoolDo | null> {
 		const schoolDO: LegacySchoolDo | null = await this.schoolRepo.findByExternalId(externalId, systemId);
 
 		return schoolDO;
 	}
 
-	async getSchoolBySchoolNumber(schoolNumber: string): Promise<LegacySchoolDo | null> {
+	public async getSchoolBySchoolNumber(schoolNumber: string): Promise<LegacySchoolDo | null> {
 		const schoolDO: LegacySchoolDo | null = await this.schoolRepo.findBySchoolNumber(schoolNumber);
 
 		return schoolDO;
 	}
 
-	async save(school: LegacySchoolDo, validate = false): Promise<LegacySchoolDo> {
+	public async save(school: LegacySchoolDo, validate = false): Promise<LegacySchoolDo> {
 		if (validate) {
 			await this.schoolValidationService.validate(school);
 		}
@@ -66,7 +66,7 @@ export class LegacySchoolService {
 	 * this method is only used for the creation of Cypress test data
 	 * please do not use this method for other purposes
 	 */
-	async createSchool(props: { name: string; federalStateName: string }): Promise<LegacySchoolDo> {
+	public async createSchool(props: { name: string; federalStateName: string }): Promise<LegacySchoolDo> {
 		const [federalState, schoolYear, storageProviders] = await Promise.all([
 			this.federalStateService.findFederalStateByName(props.federalStateName),
 			this.schoolYearService.getCurrentOrNextSchoolYear(),

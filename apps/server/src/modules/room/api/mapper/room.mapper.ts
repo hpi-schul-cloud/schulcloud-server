@@ -11,7 +11,7 @@ import { RoomDetailsResponse } from '../dto/response/room-details.response';
 import { RoomItemResponse } from '../dto/response/room-item.response';
 import { RoomListResponse } from '../dto/response/room-list.response';
 import { RoomStatsItemResponse } from '../dto/response/room-stats-item.response';
-import { RoomStatsListResponse } from '../dto/response/room-stats-list.repsonse';
+import { RoomStatsListResponse } from '../dto/response/room-stats-list.response';
 import { type RoomStats } from '../type/room-stats.type';
 import { type RoomWithAllowedOperationsAndLockedStatus } from '../type/room-with-locked-status';
 

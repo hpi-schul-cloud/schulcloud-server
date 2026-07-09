@@ -5,7 +5,7 @@ import { type ContextExternalToolPostParams } from '../controller/dto';
 import { type ContextExternalToolDto } from '../uc/dto/context-external-tool.types';
 
 export class ContextExternalToolRequestMapper {
-	static mapContextExternalToolRequest(request: ContextExternalToolPostParams): ContextExternalToolDto {
+	public static mapContextExternalToolRequest(request: ContextExternalToolPostParams): ContextExternalToolDto {
 		return {
 			id: new ObjectId().toHexString(),
 			schoolToolRef: {

@@ -23,7 +23,7 @@ export class ToolParameterMandatoryValueMissingLoggableException extends Busines
 		);
 	}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			message: this.message,
 			type: this.type,

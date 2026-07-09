@@ -10,7 +10,7 @@ export class MediumMetadataParams {
 		required: true,
 		nullable: false,
 	})
-	public mediumId!: string;
+	mediumId!: string;
 
 	@IsString()
 	@IsNotEmpty()
@@ -20,5 +20,5 @@ export class MediumMetadataParams {
 		required: true,
 		nullable: false,
 	})
-	public mediaSourceId!: string;
+	mediaSourceId!: string;
 }

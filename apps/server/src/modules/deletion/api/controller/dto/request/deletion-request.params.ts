@@ -10,5 +10,5 @@ export class DeletionRequestParams {
 		description: 'The IDs of the users to be deleted',
 		required: true,
 	})
-	public ids!: string[];
+	ids!: string[];
 }

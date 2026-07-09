@@ -8,7 +8,7 @@ export class SchoolInUserMigrationStartLoggable implements Loggable {
 		private readonly useCentralLdap: boolean
 	) {}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			message: 'The school administrator started the migration for his school.',
 			data: {

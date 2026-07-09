@@ -1,17 +1,17 @@
 export class MediumMetadataDto {
-	public mediumId: string;
+	mediumId: string;
 
-	public name: string;
+	name: string;
 
-	public description?: string;
+	description?: string;
 
-	public publisher?: string;
+	publisher?: string;
 
-	public logoUrl?: string;
+	logoUrl?: string;
 
-	public previewLogoUrl?: string;
+	previewLogoUrl?: string;
 
-	public modifiedAt?: Date;
+	modifiedAt?: Date;
 
 	constructor(response: MediumMetadataDto) {
 		this.mediumId = response.mediumId;

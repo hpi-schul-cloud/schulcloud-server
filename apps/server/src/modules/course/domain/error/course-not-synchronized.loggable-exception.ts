@@ -7,7 +7,7 @@ export class CourseNotSynchronizedLoggableException extends UnprocessableEntityE
 		super();
 	}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		const message: LoggableMessage = {
 			type: 'COURSE_NOT_SYNCHRONIZED',
 			stack: this.stack,

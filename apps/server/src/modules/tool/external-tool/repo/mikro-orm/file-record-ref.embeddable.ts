@@ -4,13 +4,13 @@ import { ObjectId } from '@mikro-orm/mongodb';
 @Embeddable()
 export class FileRecordRefEmbeddable {
 	@Property()
-	public uploadUrl: string;
+	uploadUrl: string;
 
 	@Property()
-	public fileRecord: ObjectId;
+	fileRecord: ObjectId;
 
 	@Property()
-	public fileName: string;
+	fileName: string;
 
 	constructor(props: FileRecordRefEmbeddable) {
 		this.uploadUrl = props.uploadUrl;

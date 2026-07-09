@@ -8,7 +8,7 @@ export class UserMigrationStartedLoggable implements Loggable {
 		private readonly userLoginMigration: UserLoginMigrationDO
 	) {}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			message: 'A user started the user login migration.',
 			data: {

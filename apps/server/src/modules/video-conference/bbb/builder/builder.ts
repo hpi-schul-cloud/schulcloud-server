@@ -5,7 +5,7 @@ export class Builder<T> {
 		this.product = init;
 	}
 
-	build(): T {
+	public build(): T {
 		return this.product;
 	}
 }

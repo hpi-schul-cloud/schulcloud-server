@@ -1,6 +1,6 @@
-import { VideoConference } from './video-conference';
 import { type BBBMeetingInfoResponse } from '../../bbb';
 import { type VideoConferenceOptions } from '../../interface';
+import { VideoConference } from './video-conference.response';
 
 export class VideoConferenceInfo extends VideoConference<BBBMeetingInfoResponse> {
 	options: VideoConferenceOptions;

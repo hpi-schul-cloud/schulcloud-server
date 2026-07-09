@@ -11,7 +11,7 @@ export class HealthController {
 	private readonly contentTypeApplicationHealthJSON = 'application/health+json';
 
 	@Get('self')
-	getSelfHealth(@Res({ passthrough: true }) res: Response): HealthStatusResponse {
+	public getSelfHealth(@Res({ passthrough: true }) res: Response): HealthStatusResponse {
 		res.contentType(this.contentTypeApplicationHealthJSON);
 
 		const healthStatus = this.healthUc.checkSelfHealth();
@@ -20,7 +20,7 @@ export class HealthController {
 	}
 
 	@Get()
-	async getOverallHealth(@Res({ passthrough: true }) res: Response): Promise<HealthStatusResponse> {
+	public async getOverallHealth(@Res({ passthrough: true }) res: Response): Promise<HealthStatusResponse> {
 		res.contentType(this.contentTypeApplicationHealthJSON);
 
 		const healthStatus = await this.healthUc.checkOverallHealth();

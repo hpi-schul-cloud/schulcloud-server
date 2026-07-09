@@ -9,7 +9,7 @@ export class NotFoundLoggableException extends NotFoundException implements Logg
 		super();
 	}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		const message: LoggableMessage = {
 			type: 'NOT_FOUND',
 			stack: this.stack,

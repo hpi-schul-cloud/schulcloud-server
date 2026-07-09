@@ -1,6 +1,6 @@
 import { Type } from 'class-transformer';
 import { IsObject, IsOptional, IsString, ValidateNested } from 'class-validator';
-import { SchulconnexLaufzeitResponse } from './schulconnex-laufzeit-response';
+import { SchulconnexLaufzeitResponse } from './schulconnex-laufzeit.response';
 
 export class SchulconnexGruppeResponse {
 	@IsString()

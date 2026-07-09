@@ -5,7 +5,7 @@ import { type AnyProvisioningOptions, type SchoolSystemOptions, type SchoolSyste
 import { type SchoolSystemOptionsEntity, type SchoolSystemOptionsEntityProps } from '../entity';
 
 export class SchoolSystemOptionsRepoMapper {
-	static mapDomainObjectToEntityProperties(
+	public static mapDomainObjectToEntityProperties(
 		schoolSystemOptions: SchoolSystemOptions,
 		em: EntityManager
 	): SchoolSystemOptionsEntityProps {
@@ -21,7 +21,7 @@ export class SchoolSystemOptionsRepoMapper {
 		return mapped;
 	}
 
-	static mapEntityToDomainObjectProperties(
+	public static mapEntityToDomainObjectProperties(
 		entity: SchoolSystemOptionsEntity,
 		provisioningOptions: AnyProvisioningOptions
 	): SchoolSystemOptionsProps<AnyProvisioningOptions> {

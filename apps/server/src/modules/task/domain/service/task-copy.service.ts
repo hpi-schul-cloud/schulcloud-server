@@ -29,7 +29,7 @@ export class TaskCopyService {
 		private readonly copyFilesService: CopyFilesService
 	) {}
 
-	async copyTask(params: TaskCopyParams): Promise<CopyStatus> {
+	public async copyTask(params: TaskCopyParams): Promise<CopyStatus> {
 		const { user, destinationLesson, destinationCourse } = params;
 		const originalTask = await this.taskRepo.findById(params.originalTaskId);
 

@@ -11,7 +11,7 @@ export class TreeBuilder {
 		}
 	}
 
-	build(entity: BoardNodeEntity): AnyBoardNode {
+	public build(entity: BoardNodeEntity): AnyBoardNode {
 		const children = this.getChildren(entity).map((childProps) => this.build(childProps));
 
 		// Assign children only when not present.

@@ -8,5 +8,5 @@ export class PopulateImportUserParams {
 		description:
 			'Should the users preferred name from the external system be used for auto-matching to existing users?',
 	})
-	public matchByPreferredName?: boolean;
+	matchByPreferredName?: boolean;
 }

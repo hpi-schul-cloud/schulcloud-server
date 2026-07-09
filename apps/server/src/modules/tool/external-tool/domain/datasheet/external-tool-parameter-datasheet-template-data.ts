@@ -1,15 +1,15 @@
 import { type CustomParameterLocation } from '../../../common/enum';
 
 export class ExternalToolParameterDatasheetTemplateData {
-	name: string;
+	public name: string;
 
-	properties: string;
+	public properties: string;
 
-	scope: string;
+	public scope: string;
 
-	type: string;
+	public type: string;
 
-	location: CustomParameterLocation;
+	public location: CustomParameterLocation;
 
 	constructor(parameterData: ExternalToolParameterDatasheetTemplateData) {
 		this.name = parameterData.name;

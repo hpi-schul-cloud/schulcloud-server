@@ -17,7 +17,7 @@ export class ToolReferenceUc {
 		private readonly authorizationService: AuthorizationService
 	) {}
 
-	async getToolReferencesForContext(
+	public async getToolReferencesForContext(
 		userId: EntityId,
 		contextType: ToolContextType,
 		contextId: EntityId
@@ -58,7 +58,7 @@ export class ToolReferenceUc {
 		}
 	}
 
-	async getToolReference(userId: EntityId, contextExternalToolId: EntityId): Promise<ToolReference> {
+	public async getToolReference(userId: EntityId, contextExternalToolId: EntityId): Promise<ToolReference> {
 		const contextExternalTool: ContextExternalTool =
 			await this.contextExternalToolService.findByIdOrFail(contextExternalToolId);
 

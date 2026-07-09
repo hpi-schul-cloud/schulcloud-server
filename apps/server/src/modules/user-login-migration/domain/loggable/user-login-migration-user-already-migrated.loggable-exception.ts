@@ -17,7 +17,7 @@ export class UserLoginMigrationUserAlreadyMigratedLoggableException extends Busi
 		);
 	}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			type: this.type,
 			message: this.message,

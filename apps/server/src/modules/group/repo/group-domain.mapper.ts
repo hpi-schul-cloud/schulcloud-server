@@ -23,7 +23,7 @@ export const GroupTypesToGroupEntityTypesMapping: Record<GroupTypes, GroupEntity
 };
 
 export class GroupDomainMapper {
-	static mapDoToEntityData(group: Group, em: EntityManager): EntityData<GroupEntity> {
+	public static mapDoToEntityData(group: Group, em: EntityManager): EntityData<GroupEntity> {
 		const props: GroupProps = group.getProps();
 
 		let validPeriod: GroupValidPeriodEmbeddable | undefined;
@@ -50,7 +50,7 @@ export class GroupDomainMapper {
 		return groupEntityData;
 	}
 
-	static mapEntityToDo(entity: GroupEntity): Group {
+	public static mapEntityToDo(entity: GroupEntity): Group {
 		const group: Group = new Group({
 			id: entity.id,
 			users: entity.users.map((groupUser): GroupUser => this.mapGroupUserEntityToGroupUser(groupUser)),
@@ -68,7 +68,7 @@ export class GroupDomainMapper {
 		return group;
 	}
 
-	static mapExternalSourceToExternalSourceEntity(
+	public static mapExternalSourceToExternalSourceEntity(
 		externalSource: ExternalSource,
 		em: EntityManager
 	): ExternalSourceEmbeddable {
@@ -81,7 +81,7 @@ export class GroupDomainMapper {
 		return externalSourceEntity;
 	}
 
-	static mapExternalSourceEntityToExternalSource(entity: ExternalSourceEmbeddable): ExternalSource {
+	public static mapExternalSourceEntityToExternalSource(entity: ExternalSourceEmbeddable): ExternalSource {
 		const externalSource: ExternalSource = new ExternalSource({
 			externalId: entity.externalId,
 			systemId: entity.system.id,
@@ -91,7 +91,7 @@ export class GroupDomainMapper {
 		return externalSource;
 	}
 
-	static mapGroupUserToGroupUserEntity(groupUser: GroupUser, em: EntityManager): GroupUserEmbeddable {
+	public static mapGroupUserToGroupUserEntity(groupUser: GroupUser, em: EntityManager): GroupUserEmbeddable {
 		const groupUserEntity: GroupUserEmbeddable = new GroupUserEmbeddable({
 			user: em.getReference(User, groupUser.userId),
 			role: em.getReference(Role, groupUser.roleId),
@@ -100,7 +100,7 @@ export class GroupDomainMapper {
 		return groupUserEntity;
 	}
 
-	static mapGroupUserEntityToGroupUser(entity: GroupUserEmbeddable): GroupUser {
+	public static mapGroupUserEntityToGroupUser(entity: GroupUserEmbeddable): GroupUser {
 		const groupUser: GroupUser = new GroupUser({
 			userId: entity.user.id,
 			roleId: entity.role?.id,

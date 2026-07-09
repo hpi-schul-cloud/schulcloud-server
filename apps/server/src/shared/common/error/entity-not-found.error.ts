@@ -3,7 +3,7 @@ import { BusinessError } from './business.error';
 
 export class EntityNotFoundError extends BusinessError {
 	constructor(
-		readonly entityName: string,
+		public readonly entityName: string,
 		details?: Record<string, unknown>
 	) {
 		super(

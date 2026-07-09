@@ -1,7 +1,7 @@
 export class SchoolExternalToolRef {
-	schoolToolId: string;
+	public schoolToolId: string;
 
-	schoolId?: string;
+	public schoolId?: string;
 
 	constructor(props: SchoolExternalToolRef) {
 		this.schoolToolId = props.schoolToolId;

@@ -9,13 +9,13 @@ export interface HealthStatusProps {
 }
 
 export class HealthStatus {
-	status: string;
+	public status: string;
 
-	description?: string;
+	public description?: string;
 
-	output?: string;
+	public output?: string;
 
-	checks?: Record<string, Array<HealthStatusCheck>>;
+	public checks?: Record<string, Array<HealthStatusCheck>>;
 
 	constructor(props: HealthStatusProps) {
 		this.status = props.status;
@@ -24,7 +24,7 @@ export class HealthStatus {
 		this.checks = props.checks;
 	}
 
-	isPassed(): boolean {
+	public isPassed(): boolean {
 		if (this.checks !== undefined) {
 			for (const key of Object.keys(this.checks)) {
 				for (const check of this.checks[key]) {

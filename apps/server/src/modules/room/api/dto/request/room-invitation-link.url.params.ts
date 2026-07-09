@@ -4,5 +4,5 @@ import { IsMongoId } from 'class-validator';
 export class RoomInvitationLinkUrlParams {
 	@IsMongoId()
 	@ApiProperty()
-	public roomInvitationLinkId!: string;
+	roomInvitationLinkId!: string;
 }

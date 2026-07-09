@@ -14,7 +14,7 @@ export class RichTextElementResponseMapper implements BaseResponseMapper {
 		return RichTextElementResponseMapper.instance;
 	}
 
-	mapToResponse(element: RichTextElement): RichTextElementResponse {
+	public mapToResponse(element: RichTextElement): RichTextElementResponse {
 		const result = new RichTextElementResponse({
 			id: element.id,
 			timestamps: new TimestampsResponse({ lastUpdatedAt: element.updatedAt, createdAt: element.createdAt }),
@@ -25,7 +25,7 @@ export class RichTextElementResponseMapper implements BaseResponseMapper {
 		return result;
 	}
 
-	canMap(element: unknown): boolean {
+	public canMap(element: unknown): boolean {
 		return element instanceof RichTextElement;
 	}
 }
