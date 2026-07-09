@@ -5,7 +5,7 @@ import { createSeveralClasses } from './helper/class-definitions';
 import { createBoardsResilient } from './helper/create-board';
 import { formatDate } from './helper/format-date';
 import { getUrlConfiguration } from './helper/get-url-configuration';
-import { useResponseTimes } from './helper/responseTimes.composable';
+import { useResponseTimes } from './helper/response-times.composable';
 import { SocketConnectionManager } from './socket-connection-manager';
 import { Callback, ClassDefinitionWithAmount, CreateBoardLoadTest, SocketConfiguration } from './types';
 
