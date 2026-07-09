@@ -4,7 +4,7 @@ import { AesEncryptionHelper } from '@shared/common/utils';
 export class Migration20260708143036 extends Migration {
 	private readonly collectionName = 'oauth-session-token';
 
-	async up(): Promise<void> {
+	public async up(): Promise<void> {
 		console.info(`Start encrypting refreshTokens in collection ${this.collectionName}.`);
 
 		// eslint-disable-next-line no-process-env
@@ -63,7 +63,7 @@ export class Migration20260708143036 extends Migration {
 		);
 	}
 
-	async down(): Promise<void> {
+	public async down(): Promise<void> {
 		console.info(`Start decrypting refreshTokens in collection ${this.collectionName}.`);
 
 		// eslint-disable-next-line no-process-env
