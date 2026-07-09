@@ -1,5 +1,6 @@
 import { Type } from 'class-transformer';
 import { IsObject, IsString, ValidateNested } from 'class-validator';
+import 'reflect-metadata';
 import { SchulconnexPoliciesInfoErrorDescriptionResponse } from './schulconnex-policies-info-error-description.response';
 
 export class SchulconnexPoliciesInfoAccessControlResponse {
