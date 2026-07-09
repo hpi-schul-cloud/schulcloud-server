@@ -1,6 +1,6 @@
 import { HttpStatus, type ValidationError } from '@nestjs/common';
 import { ApiValidationError } from '@shared/common/error';
-import { ApiValidationErrorResponseFactory } from '../factory/api-validation-error-response.factory';
+import { ApiValidationErrorResponseFactory } from '../factory';
 
 describe('ApiValidationErrorResponseFactory', () => {
 	describe('toResponse', () => {
