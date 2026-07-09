@@ -44,8 +44,8 @@ export class InternalClassDto<T> {
 		this.studentCount = props.studentCount;
 		this.original = props.original;
 	}
+}
 
-	isGroup(): this is InternalClassDto<Group> {
-		return this.type === ClassRootType.GROUP;
-	}
+export function isGroupClassDto(dto: InternalClassDto<unknown>): dto is InternalClassDto<Group> {
+	return dto.type === ClassRootType.GROUP;
 }
