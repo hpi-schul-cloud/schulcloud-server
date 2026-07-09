@@ -9,7 +9,7 @@ import {
 } from '../controller/dto';
 import { BoardColumnBoardResponse } from '../controller/dto/single-column-board/board-column-board.response';
 import { ColumnBoardMetaData, LessonMetaData, RoomBoardDTO, RoomBoardElementTypes } from '../types';
-import { BoardTaskStatusMapper } from './board-taskStatus.mapper';
+import { BoardTaskStatusMapper } from './board-task-status.mapper';
 
 @Injectable()
 export class RoomBoardResponseMapper {
