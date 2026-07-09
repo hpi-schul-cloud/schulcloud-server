@@ -1,4 +1,4 @@
-import { Collection, Entity, Index, ManyToMany, ManyToOne, OneToMany, Property } from '@mikro-orm/core';
+import { Collection, Entity, Enum, Index, ManyToMany, ManyToOne, OneToMany, Property } from '@mikro-orm/core';
 import { CourseEntity } from '@modules/course/repo';
 import { LessonEntity } from '@modules/lesson/repo';
 import { SchoolEntity } from '@modules/school/repo';
@@ -57,7 +57,7 @@ export class Task extends BaseEntityWithTimestamps {
 	@Property()
 	description: string;
 
-	@Property()
+	@Enum({ items: () => InputFormat })
 	descriptionInputFormat: InputFormat;
 
 	@Property({ nullable: true })
@@ -112,6 +112,9 @@ export class Task extends BaseEntityWithTimestamps {
 		this.course = props.course;
 		this.school = props.school;
 		this.lesson = props.lesson;
+		if (this.lesson && !this.lesson.tasks.contains(this)) {
+			this.lesson.tasks.add(this);
+		}
 		this.submissions.set(props.submissions || []);
 		this.finished.set(props.finished || []);
 		this.publicSubmissions = props.publicSubmissions || false;

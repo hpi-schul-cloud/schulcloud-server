@@ -20,16 +20,16 @@ export class FilePermissionEntity {
 	@Enum({ nullable: false })
 	refPermModel: FilePermissionReferenceModel;
 
-	@Property()
+	@Property({ type: 'boolean' })
 	write = true;
 
-	@Property()
+	@Property({ type: 'boolean' })
 	read = true;
 
-	@Property()
+	@Property({ type: 'boolean' })
 	create = true;
 
-	@Property()
+	@Property({ type: 'boolean' })
 	delete = true;
 
 	constructor(props: FilePermissionEntityProps) {

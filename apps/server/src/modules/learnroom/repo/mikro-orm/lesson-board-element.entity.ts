@@ -7,8 +7,10 @@ export class LessonBoardElement extends LegacyBoardElement {
 	constructor(props: { target: LessonEntity }) {
 		super(props);
 		this.boardElementType = LegacyBoardElementType.Lesson;
+		this.target = props.target;
 	}
 
-	@ManyToOne('LessonEntity')
+	// Keep nullable to avoid discriminator validation race in persisted board element tests.
+	@ManyToOne('LessonEntity', { nullable: true })
 	target!: LessonEntity;
 }

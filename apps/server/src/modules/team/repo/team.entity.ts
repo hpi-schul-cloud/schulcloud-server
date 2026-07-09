@@ -59,7 +59,7 @@ export class TeamEntity extends BaseEntityWithTimestamps {
 	@Embedded(() => TeamUserEntity, { array: true })
 	userIds: TeamUserEntity[];
 
-	@Property()
+	@Property({ type: 'string' })
 	color = '#ACACAC';
 
 	get teamUsers(): TeamUserEntity[] {

@@ -1,4 +1,4 @@
-import { Entity, Property } from '@mikro-orm/core';
+import { Entity, Enum, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { EntityId } from '@shared/domain/types';
 import { SynchronizationStatusModel } from '../../domain/types';
@@ -24,7 +24,7 @@ export class SynchronizationEntity extends BaseEntityWithTimestamps {
 	@Property({ nullable: true })
 	failureCause?: string;
 
-	@Property({ nullable: true })
+	@Enum({ nullable: true, items: () => [SynchronizationStatusModel.FAILED, SynchronizationStatusModel.REGISTERED, SynchronizationStatusModel.SUCCESS] })
 	status?: SynchronizationStatusModel;
 
 	constructor(props: SynchronizationEntityProps) {

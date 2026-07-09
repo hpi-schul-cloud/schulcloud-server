@@ -45,8 +45,7 @@ export class SchoolSystemOptionsRepo {
 			domainObject,
 			this.em
 		);
-
-		const newEntity: SchoolSystemOptionsEntity = new SchoolSystemOptionsEntity(entityProps);
+		const { id: _ignoredId, ...updatableEntityProps } = entityProps;
 
 		const existingEntity: SchoolSystemOptionsEntity | null = await this.em.findOne(SchoolSystemOptionsEntity, {
 			id: domainObject.id,
@@ -62,8 +61,9 @@ export class SchoolSystemOptionsRepo {
 
 		let savedEntity: SchoolSystemOptionsEntity;
 		if (existingEntity) {
-			savedEntity = this.em.assign(existingEntity, newEntity);
+			savedEntity = this.em.assign(existingEntity, updatableEntityProps);
 		} else {
+			const newEntity: SchoolSystemOptionsEntity = new SchoolSystemOptionsEntity(entityProps);
 			this.em.persist(newEntity);
 
 			savedEntity = newEntity;

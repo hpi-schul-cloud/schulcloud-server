@@ -1,4 +1,4 @@
-import { Embedded, Entity, ManyToOne, Property } from '@mikro-orm/core';
+import { Embedded, Entity, Enum, ManyToOne, Property } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { EntityId } from '@shared/domain/types';
@@ -31,7 +31,7 @@ export class ContextExternalToolEntity extends BaseEntityWithTimestamps {
 	@Property()
 	contextId: ObjectId;
 
-	@Property()
+	@Enum({ items: () => ContextExternalToolType })
 	contextType: ContextExternalToolType;
 
 	@Property({ nullable: true })

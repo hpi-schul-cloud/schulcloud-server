@@ -25,11 +25,12 @@ export class SchoolExternalToolRepo {
 		);
 
 		const entityProps: SchoolExternalToolEntityProps = this.mapDomainObjectToEntityProps(domainObject);
-		let entity: SchoolExternalToolEntity = new SchoolExternalToolEntity(entityProps);
+		let entity: SchoolExternalToolEntity;
 
 		if (existing) {
-			entity = this.em.assign(existing, entity);
+			entity = this.em.assign(existing, entityProps);
 		} else {
+			entity = new SchoolExternalToolEntity(entityProps);
 			this.em.persist(entity);
 		}
 		await this.em.flush();

@@ -1,6 +1,7 @@
 import { MaybePromise, MikroORM } from '@mikro-orm/core';
 import { defineConfig, MongoDriver } from '@mikro-orm/mongodb';
-import { MikroOrmModule, MikroOrmModuleAsyncOptions } from '@mikro-orm/nestjs';
+import { MikroOrmModule } from '@mikro-orm/nestjs';
+import { TEST_ENTITIES } from '@modules/server/server.entity.imports';
 import { DynamicModule, Inject, Module, OnModuleDestroy } from '@nestjs/common';
 import _ from 'lodash';
 
@@ -8,18 +9,38 @@ import { MongoDatabaseModuleOptions } from './types';
 
 const dbName = (): string => _.times(20, () => _.random(35).toString(36)).join('');
 
-const createMikroOrmModule = (options: MikroOrmModuleAsyncOptions): MaybePromise<DynamicModule> => {
+const dedupeByEntityName = <T extends { name: string }>(entities: T[]): T[] => {
+	const uniqueByName = new Map<string, T>();
+
+	for (const entity of entities) {
+		uniqueByName.set(entity.name, entity);
+	}
+
+	return [...uniqueByName.values()];
+};
+
+const createMikroOrmModule = (options: MongoDatabaseModuleOptions | Record<string, unknown> = {}): MaybePromise<DynamicModule> => {
 	const mikroOrmModule = MikroOrmModule.forRootAsync({
 		driver: MongoDriver,
 		useFactory: () => {
+			const typedOptions = options as MongoDatabaseModuleOptions;
+			const configuredEntities = typedOptions.entities;
+			const configuredEntitiesArray = configuredEntities
+				? Array.isArray(configuredEntities)
+					? configuredEntities
+					: [configuredEntities]
+				: [];
+			const mergedEntities = dedupeByEntityName([...configuredEntitiesArray, ...TEST_ENTITIES]);
+
 			// eslint-disable-next-line no-process-env
 			const clientUrl = `${process.env.MONGO_TEST_URI}/${dbName()}`;
 			return defineConfig({
 				allowGlobalContext: true, // can be overridden by options
-				...options,
+				...typedOptions,
 				driver: MongoDriver,
 				clientUrl,
-			});
+				entities: mergedEntities,
+			} as Parameters<typeof defineConfig>[0]);
 		},
 	});
 
@@ -38,6 +59,9 @@ export class MongoMemoryDatabaseModule implements OnModuleDestroy {
 	}
 
 	public async onModuleDestroy(): Promise<void> {
+		// Give async CQRS handlers (triggered near app shutdown) a short chance to finish
+		// before closing the in-memory Mongo client to avoid teardown race errors in tests.
+		await new Promise((resolve) => setTimeout(resolve, 50));
 		await this.orm.close();
 	}
 }

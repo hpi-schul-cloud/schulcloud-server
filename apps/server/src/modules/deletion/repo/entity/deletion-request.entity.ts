@@ -29,11 +29,11 @@ export class DeletionRequestEntity extends BaseEntityWithTimestamps implements D
 	@Index()
 	targetRefId!: EntityId;
 
-	@Property()
+	@Property({ type: 'string' })
 	@Index()
 	targetRefDomain: DomainName;
 
-	@Property()
+	@Property({ type: 'string' })
 	@Index()
 	status: StatusModel;
 

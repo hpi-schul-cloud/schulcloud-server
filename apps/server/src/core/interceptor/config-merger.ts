@@ -3,15 +3,26 @@ import { TimeoutConfig } from './timeout-interceptor-config.interface';
 export class MergedTimeoutConfig extends TimeoutConfig {
 	constructor(configs: TimeoutConfig[]) {
 		super();
-		// Merge all configs into one object
+		const assignedKeys = new Set<string>();
+
+		// Merge all configs into one object.
+		// Under SWC, declared class fields can exist as own properties with undefined values,
+		// so duplicate detection must rely on actually assigned keys.
 		configs.forEach((config) => {
 			Object.keys(config).forEach((key) => {
-				if (key in this) {
+				const value = config[key];
+				if (value === undefined) {
+					return;
+				}
+
+				if (assignedKeys.has(key)) {
 					throw new Error(
 						`Duplicate timeout configuration key detected: '${key}'. Each timeout key must be unique across all configurations.`
 					);
 				}
-				this[key] = config[key];
+
+				this[key] = value;
+				assignedKeys.add(key);
 			});
 		});
 	}
