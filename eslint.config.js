@@ -360,6 +360,7 @@ const dtoFiles = {
 		'apps/server/src/**/*.params.ts',
 		'apps/server/src/**/*.param.ts',
 		'apps/server/src/**/*.response.ts',
+		'apps/server/src/**/*.body.ts',
 	],
 	rules: {
 		'@typescript-eslint/explicit-member-accessibility': [

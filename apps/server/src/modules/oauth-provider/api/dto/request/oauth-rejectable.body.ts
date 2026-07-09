@@ -10,7 +10,7 @@ export class OAuthRejectableBody {
 		required: false,
 		nullable: false,
 	})
-	public error?: string;
+	error?: string;
 
 	@IsString()
 	@IsOptional()
@@ -20,7 +20,7 @@ export class OAuthRejectableBody {
 		required: false,
 		nullable: false,
 	})
-	public error_debug?: string;
+	error_debug?: string;
 
 	@IsString()
 	@IsOptional()
@@ -29,7 +29,7 @@ export class OAuthRejectableBody {
 		required: false,
 		nullable: false,
 	})
-	public error_description?: string;
+	error_description?: string;
 
 	@IsString()
 	@IsOptional()
@@ -38,7 +38,7 @@ export class OAuthRejectableBody {
 		required: false,
 		nullable: false,
 	})
-	public error_hint?: string;
+	error_hint?: string;
 
 	@IsNumber()
 	@IsOptional()
@@ -47,5 +47,5 @@ export class OAuthRejectableBody {
 		required: false,
 		nullable: false,
 	})
-	public status_code?: number;
+	status_code?: number;
 }

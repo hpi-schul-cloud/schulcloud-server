@@ -5,21 +5,21 @@ import { SubjectTypeEnum, TokenAuthMethod } from '../../../domain/interface';
 export class OauthClientCreateBody {
 	@IsString()
 	@ApiProperty({ description: 'The Oauth2 client id.', nullable: false })
-	public client_id!: string;
+	client_id!: string;
 
 	@IsString()
 	@ApiProperty({ description: 'The Oauth2 client name.', nullable: false })
-	public client_name!: string;
+	client_name!: string;
 
 	@IsString()
 	@ApiProperty({ description: 'The Oauth2 client secret.', nullable: false })
-	public client_secret!: string;
+	client_secret!: string;
 
 	@IsArray()
 	@IsOptional()
 	@IsString({ each: true })
 	@ApiPropertyOptional({ description: 'The allowed redirect urls of the Oauth2 client.', nullable: false, default: [] })
-	public redirect_uris?: string[];
+	redirect_uris?: string[];
 
 	@IsEnum(TokenAuthMethod)
 	@ApiProperty({
@@ -27,7 +27,7 @@ export class OauthClientCreateBody {
 			'Requested Client Authentication method for the Token Endpoint. The options are client_secret_post, client_secret_basic, private_key_jwt, and none.',
 		nullable: false,
 	})
-	public token_endpoint_auth_method!: TokenAuthMethod;
+	token_endpoint_auth_method!: TokenAuthMethod;
 
 	@IsEnum(SubjectTypeEnum)
 	@ApiProperty({
@@ -35,7 +35,7 @@ export class OauthClientCreateBody {
 			'SubjectType requested for responses to this Client. The subject_types_supported Discovery parameter contains a list of the supported subject_type values for this server. Valid types include pairwise and public.',
 		nullable: false,
 	})
-	public subject_type!: SubjectTypeEnum;
+	subject_type!: SubjectTypeEnum;
 
 	@IsString()
 	@IsOptional()
@@ -45,7 +45,7 @@ export class OauthClientCreateBody {
 		nullable: false,
 		default: 'openid offline',
 	})
-	public scope?: string;
+	scope?: string;
 
 	@IsString()
 	@IsOptional()
@@ -53,7 +53,7 @@ export class OauthClientCreateBody {
 		description: 'Thr frontchannel logout uri.',
 		nullable: false,
 	})
-	public frontchannel_logout_uri?: string;
+	frontchannel_logout_uri?: string;
 
 	@IsArray()
 	@IsOptional()
@@ -63,7 +63,7 @@ export class OauthClientCreateBody {
 		nullable: false,
 		default: ['authorization_code', 'refresh_token'],
 	})
-	public grant_types?: string[];
+	grant_types?: string[];
 
 	@IsArray()
 	@IsOptional()
@@ -73,5 +73,5 @@ export class OauthClientCreateBody {
 		nullable: false,
 		default: ['code', 'token', 'id_token'],
 	})
-	public response_types?: string[];
+	response_types?: string[];
 }
