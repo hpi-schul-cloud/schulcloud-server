@@ -1,4 +1,4 @@
-import { useResponseTimes } from './responseTimes.composable';
+import { useResponseTimes } from './response-times.composable';
 
 describe('responseTimes.composable', () => {
 	const setup = () => {

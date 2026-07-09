@@ -1,4 +1,4 @@
-import { getRandomLink, getRandomRichContentBody, getRandomCardTitle } from './randomData';
+import { getRandomLink, getRandomRichContentBody, getRandomCardTitle } from './random-data';
 
 describe('randomData', () => {
 	describe('getRandomLink', () => {
