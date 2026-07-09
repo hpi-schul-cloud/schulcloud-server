@@ -5,6 +5,7 @@
 - Hold decision: do not proceed with broad SWC rollout yet.
 - Basis: although selected fairness/subset runs are stable, wider-suite runs still show instability/noise in this migration phase.
 - Performance outcome: no end-to-end speedup is demonstrated; measured full-suite and medium-scope comparisons remain slower than baseline.
+- Root-cause hypothesis: transform speedup is likely overshadowed by integration-suite runtime cost (Nest bootstrap, ORM metadata/discovery, DB lifecycle, decorator/transformer-heavy paths), so compiler swap alone does not move end-to-end time enough.
 - Tooling concern: keep architecture/toolchain scope minimal until performance and stability goals are met.
 - Exit criteria to revisit decision:
 	- repeatable green wider-suite runs,

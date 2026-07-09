@@ -181,4 +181,5 @@ Move-on decision:
 - Hold: do not proceed with broad SWC rollout yet.
 - Why: while targeted trials are green, broader stability/performance confidence is still insufficient.
 - Current state: no end-to-end runtime win is demonstrated; full-suite and medium-scope comparisons remain slower.
+- Root-cause hypothesis: SWC transform gains are likely masked by dominant integration-runtime costs (bootstrap/ORM/DB lifecycle and decorator-heavy execution paths), so transpiler replacement alone does not materially reduce total run time.
 - Next: continue with focused stabilization/performance work and reassess only after agreed exit criteria are met.
