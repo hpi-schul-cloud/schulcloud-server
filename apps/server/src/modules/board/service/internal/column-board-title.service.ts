@@ -10,7 +10,7 @@ export class ColumnBoardTitleService {
 		private readonly copyHelperService: CopyHelperService
 	) {}
 
-	async deriveColumnBoardTitle(
+	public async deriveColumnBoardTitle(
 		originalTitle: string,
 		destinationExternalReference: BoardExternalReference
 	): Promise<string> {

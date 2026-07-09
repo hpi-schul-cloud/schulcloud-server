@@ -2,15 +2,15 @@ import { type LaunchRequestMethod } from './launch-request-method';
 import { type LaunchType } from './launch-type.enum';
 
 export class ToolLaunchRequest {
-	method: LaunchRequestMethod;
+	public method: LaunchRequestMethod;
 
-	url: string;
+	public url: string;
 
-	payload?: string;
+	public payload?: string;
 
-	openNewTab: boolean;
+	public openNewTab: boolean;
 
-	launchType: LaunchType;
+	public launchType: LaunchType;
 
 	constructor(props: ToolLaunchRequest) {
 		this.url = props.url;

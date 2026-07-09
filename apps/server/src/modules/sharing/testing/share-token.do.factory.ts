@@ -6,7 +6,7 @@ import { type ShareTokenDO, ShareTokenParentType } from '../domainobject/share-t
 
 class ShareTokenDOFactory extends Factory<ShareTokenDO> {
 	/* istanbul ignore next */
-	withId(id?: EntityId): this {
+	public withId(id?: EntityId): this {
 		return this.params({ id: new ObjectId(id).toHexString() });
 	}
 }

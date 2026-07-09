@@ -10,7 +10,7 @@ export class ExternalSystemLogoutIsDisabledLoggableException extends ForbiddenEx
 		});
 	}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			type: 'FORBIDDEN_EXCEPTION',
 			message: 'Feature flag for external system logout is not enabled',

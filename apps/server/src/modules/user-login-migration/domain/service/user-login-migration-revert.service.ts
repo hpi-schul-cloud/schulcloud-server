@@ -11,7 +11,7 @@ export class UserLoginMigrationRevertService {
 		private readonly schoolService: LegacySchoolService
 	) {}
 
-	async revertUserLoginMigration(userLoginMigration: UserLoginMigrationDO): Promise<void> {
+	public async revertUserLoginMigration(userLoginMigration: UserLoginMigrationDO): Promise<void> {
 		await this.schoolService.removeFeature(userLoginMigration.schoolId, SchoolFeature.OAUTH_PROVISIONING_ENABLED);
 		await this.userLoginMigrationService.deleteUserLoginMigration(userLoginMigration);
 	}

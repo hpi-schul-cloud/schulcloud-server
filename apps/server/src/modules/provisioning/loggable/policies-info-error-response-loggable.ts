@@ -4,7 +4,7 @@ import { type Loggable, type LoggableMessage } from '@shared/common/loggable/int
 export class PoliciesInfoErrorResponseLoggable implements Loggable {
 	constructor(private readonly item: SchulconnexPoliciesInfoErrorResponse) {}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			message: 'The /policies-info endpoint returned an error for a media source.',
 			data: {

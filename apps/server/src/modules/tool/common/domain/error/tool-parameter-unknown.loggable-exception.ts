@@ -23,7 +23,7 @@ export class ToolParameterUnknownLoggableException extends BusinessError impleme
 		);
 	}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			type: this.type,
 			message: this.message,

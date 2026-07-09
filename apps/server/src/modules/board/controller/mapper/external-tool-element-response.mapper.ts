@@ -13,7 +13,7 @@ export class ExternalToolElementResponseMapper implements BaseResponseMapper {
 		return ExternalToolElementResponseMapper.instance;
 	}
 
-	mapToResponse(element: ExternalToolElement): ExternalToolElementResponse {
+	public mapToResponse(element: ExternalToolElement): ExternalToolElementResponse {
 		const result = new ExternalToolElementResponse({
 			id: element.id,
 			timestamps: new TimestampsResponse({ lastUpdatedAt: element.updatedAt, createdAt: element.createdAt }),
@@ -24,7 +24,7 @@ export class ExternalToolElementResponseMapper implements BaseResponseMapper {
 		return result;
 	}
 
-	canMap(element: unknown): boolean {
+	public canMap(element: unknown): boolean {
 		return element instanceof ExternalToolElement;
 	}
 }

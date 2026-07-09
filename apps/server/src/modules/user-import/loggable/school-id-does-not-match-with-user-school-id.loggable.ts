@@ -8,7 +8,7 @@ export class SchoolIdDoesNotMatchWithUserSchoolId implements Loggable {
 		private readonly schoolId?: EntityId
 	) {}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			message: 'School ID does not match with user school ID or with imported user school ID',
 			data: {

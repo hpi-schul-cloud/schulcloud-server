@@ -3,7 +3,7 @@ import { SystemProvisioningStrategy } from '@shared/domain/interface/system-prov
 import { ProvisioningSystemDto } from '../dto';
 
 export class ProvisioningSystemInputMapper {
-	static mapToInternal(dto: System): ProvisioningSystemDto {
+	public static mapToInternal(dto: System): ProvisioningSystemDto {
 		return new ProvisioningSystemDto({
 			systemId: dto.id,
 			provisioningStrategy: dto.provisioningStrategy || SystemProvisioningStrategy.UNDEFINED,

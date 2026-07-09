@@ -7,5 +7,5 @@ export class RegistrationListResponse {
 	}
 
 	@ApiProperty({ type: [RegistrationItemResponse] })
-	public data: RegistrationItemResponse[];
+	data: RegistrationItemResponse[];
 }

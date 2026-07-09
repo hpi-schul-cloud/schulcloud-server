@@ -10,7 +10,7 @@ export class LtiDeepLinkTokenMissingLoggableException extends UnauthorizedExcept
 		super();
 	}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		const message: LoggableMessage = {
 			type: 'UNAUTHORIZED_EXCEPTION',
 			message: 'Unable to find lti deep link token for this state. It might have expired.',

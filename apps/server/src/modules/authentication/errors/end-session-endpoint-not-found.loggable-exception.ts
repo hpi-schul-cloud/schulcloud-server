@@ -10,7 +10,7 @@ export class EndSessionEndpointNotFoundLoggableException extends InternalServerE
 		});
 	}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			type: 'INTERNAL_SERVER_ERROR',
 			stack: this.stack,

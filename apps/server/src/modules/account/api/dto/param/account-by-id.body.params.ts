@@ -12,7 +12,7 @@ export class AccountByIdBodyParams {
 	@ApiPropertyOptional({
 		description: 'The new user name for the user.',
 	})
-	public username?: string;
+	username?: string;
 
 	@PrivacyProtect()
 	@IsOptional()
@@ -21,12 +21,12 @@ export class AccountByIdBodyParams {
 	@ApiPropertyOptional({
 		description: 'The new password for the user.',
 	})
-	public password?: string;
+	password?: string;
 
 	@IsOptional()
 	@IsBoolean()
 	@ApiPropertyOptional({
 		description: 'The new activation state of the user.',
 	})
-	public activated?: boolean;
+	activated?: boolean;
 }

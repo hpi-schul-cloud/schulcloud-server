@@ -3,7 +3,7 @@ import { HealthStatusResponse, type HealthStatusCheckResponse } from '../respons
 import { HealthStatusCheckResponseMapper } from './health-status-check-response.mapper';
 
 export class HealthStatusResponseMapper {
-	static mapToResponse(healthStatus: HealthStatus): HealthStatusResponse {
+	public static mapToResponse(healthStatus: HealthStatus): HealthStatusResponse {
 		const response = new HealthStatusResponse({
 			status: healthStatus.status,
 			description: healthStatus.description,

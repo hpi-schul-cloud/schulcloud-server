@@ -6,7 +6,7 @@ export class SucessSynchronizationLoggable implements Loggable {
 		private readonly usersSynchronizedCount?: number
 	) {}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			message: 'Synchronization proccess end with success',
 			data: {

@@ -3,7 +3,7 @@ import { BusinessError } from './business.error';
 
 export class ValidationError extends BusinessError {
 	constructor(
-		readonly message: string,
+		public readonly message: string,
 		details?: Record<string, unknown>
 	) {
 		super(

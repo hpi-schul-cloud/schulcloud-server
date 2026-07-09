@@ -8,7 +8,7 @@ export class SchoolMigrationSuccessfulLoggable implements Loggable {
 		private readonly userLoginMigration: UserLoginMigrationDO
 	) {}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			message: 'A school has successfully migrated.',
 			data: {

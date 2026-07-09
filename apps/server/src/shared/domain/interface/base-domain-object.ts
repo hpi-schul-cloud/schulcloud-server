@@ -6,5 +6,5 @@ import { type AuthorizableObject } from '../domain-object';
  * @deprecated
  */
 export abstract class BaseDomainObject implements AuthorizableObject {
-	abstract id: string;
+	public abstract id: string;
 }

@@ -4,7 +4,7 @@ import { BaseFactory } from '@testing/factory/base.factory';
 import { type DeepPartial } from 'fishery';
 
 class ClassEntityFactory extends BaseFactory<ClassEntity, ClassEntityProps> {
-	withUserIds(userIds: ObjectId[]): this {
+	public withUserIds(userIds: ObjectId[]): this {
 		const params: DeepPartial<ClassEntityProps> = {
 			userIds,
 		};

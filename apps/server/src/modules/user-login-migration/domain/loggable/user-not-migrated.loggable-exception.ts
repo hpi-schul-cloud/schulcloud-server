@@ -7,7 +7,7 @@ export class UserNotMigratedLoggableException extends UnprocessableEntityExcepti
 		super();
 	}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			type: 'USER_NOT_MIGRATED',
 			message: 'The user has not migrated yet.',

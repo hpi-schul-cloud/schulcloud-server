@@ -7,7 +7,7 @@ export class SchoolForGroupNotFoundLoggable implements Loggable {
 		private readonly school: ExternalSchoolDto
 	) {}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			message: 'Unable to provision group, since the connected school cannot be found.',
 			data: {

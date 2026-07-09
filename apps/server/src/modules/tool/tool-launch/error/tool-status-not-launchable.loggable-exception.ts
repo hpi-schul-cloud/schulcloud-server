@@ -13,7 +13,7 @@ export class ToolStatusNotLaunchableLoggableException extends UnprocessableEntit
 		super();
 	}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			type: 'TOOL_STATUS_NOT_LAUNCHABLE',
 			message: 'The status of the tool cannot be launched by the user.',

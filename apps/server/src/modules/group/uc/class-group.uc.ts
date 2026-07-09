@@ -19,7 +19,7 @@ import { Group, GroupAggregateScope, GroupTypes, GroupUser, GroupVisibilityPermi
 import { GROUP_CONFIG_TOKEN } from '../group.config';
 import { UnknownQueryTypeLoggableException } from '../loggable';
 import { GroupService } from '../service';
-import { ClassInfoDto, ClassRootType, InternalClassDto } from './dto';
+import { ClassInfoDto, ClassRootType, InternalClassDto, isGroupClassDto } from './dto';
 
 @Injectable()
 export class ClassGroupUc {
@@ -75,7 +75,7 @@ export class ClassGroupUc {
 			async (dto: InternalClassDto<Group | Class>): Promise<ClassInfoDto> => {
 				let synchronizedCourses: Course[] | undefined;
 
-				if (this.groupConfig.featureSchulconnexCourseSyncEnabled && dto.isGroup()) {
+				if (this.groupConfig.featureSchulconnexCourseSyncEnabled && isGroupClassDto(dto)) {
 					synchronizedCourses = await this.courseService.findBySyncedGroup(dto.original);
 				}
 

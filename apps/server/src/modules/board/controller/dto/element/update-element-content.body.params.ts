@@ -152,16 +152,16 @@ export class H5pContentBody {
 	@IsMongoId()
 	@IsOptional()
 	@ApiPropertyOptional()
-	public contentId?: string;
+	contentId?: string;
 }
 
 export class H5pElementContentBody extends ElementContentBody {
 	@ApiProperty({ type: () => ContentElementType.H5P })
-	public type!: ContentElementType.H5P;
+	type!: ContentElementType.H5P;
 
 	@ValidateNested()
 	@ApiProperty()
-	public content!: H5pContentBody;
+	content!: H5pContentBody;
 }
 
 export type AnyElementContentBody =
@@ -204,7 +204,7 @@ export class UpdateElementContentBodyParams {
 			{ $ref: getSchemaPath(H5pElementContentBody) },
 		],
 	})
-	public data!:
+	data!:
 		| FileElementContentBody
 		| LinkElementContentBody
 		| RichTextElementContentBody

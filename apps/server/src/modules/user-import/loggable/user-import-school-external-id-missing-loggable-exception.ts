@@ -6,7 +6,7 @@ export class UserImportSchoolExternalIdMissingLoggableException extends BadReque
 		super();
 	}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			type: 'USER_IMPORT_SCHOOL_EXTERNAL_ID_MISSING',
 			message: 'The users school does not have an external id',

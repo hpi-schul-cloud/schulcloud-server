@@ -10,7 +10,7 @@ export class CreateOrUpdateRegistrationBodyParams implements RegistrationCreateP
 		required: true,
 		nullable: false,
 	})
-	public email!: string;
+	email!: string;
 
 	@IsString()
 	@SanitizeHtml()
@@ -19,7 +19,7 @@ export class CreateOrUpdateRegistrationBodyParams implements RegistrationCreateP
 		required: true,
 		nullable: false,
 	})
-	public firstName!: string;
+	firstName!: string;
 
 	@IsString()
 	@SanitizeHtml()
@@ -28,7 +28,7 @@ export class CreateOrUpdateRegistrationBodyParams implements RegistrationCreateP
 		required: true,
 		nullable: false,
 	})
-	public lastName!: string;
+	lastName!: string;
 
 	@IsMongoId()
 	@ApiProperty({
@@ -36,5 +36,5 @@ export class CreateOrUpdateRegistrationBodyParams implements RegistrationCreateP
 		required: true,
 		nullable: false,
 	})
-	public roomId!: string;
+	roomId!: string;
 }

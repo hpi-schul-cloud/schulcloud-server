@@ -24,29 +24,29 @@ export class MetaTagExtractorResponse {
 	}
 
 	@ApiProperty()
-	public url: string;
+	url: string;
 
 	@ApiProperty()
 	@DecodeHtmlEntities()
-	public title: string;
+	title: string;
 
 	@ApiProperty()
 	@DecodeHtmlEntities()
-	public description: string;
+	description: string;
 
 	@ApiPropertyOptional()
-	public originalImageUrl?: string;
+	originalImageUrl?: string;
 
 	@ApiPropertyOptional()
-	public imageUrl?: string;
+	imageUrl?: string;
 
 	@ApiProperty({ enum: MetaDataEntityType, enumName: 'MetaDataEntityType' })
-	public type: MetaDataEntityType;
+	type: MetaDataEntityType;
 
 	@ApiPropertyOptional()
 	@DecodeHtmlEntities()
-	public parentTitle?: string;
+	parentTitle?: string;
 
 	@ApiPropertyOptional({ enum: MetaDataEntityType, enumName: 'MetaDataEntityType' })
-	public parentType?: MetaDataEntityType;
+	parentType?: MetaDataEntityType;
 }

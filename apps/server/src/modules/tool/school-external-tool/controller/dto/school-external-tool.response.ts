@@ -6,31 +6,31 @@ import { SchoolExternalToolMediumResponse } from './school-external-tool-medium.
 
 export class SchoolExternalToolResponse {
 	@ApiProperty()
-	public id: string;
+	id: string;
 
 	@ApiProperty()
-	public name: string;
+	name: string;
 
 	@ApiProperty()
-	public toolId: string;
+	toolId: string;
 
 	@ApiProperty()
-	public schoolId: string;
+	schoolId: string;
 
 	@ApiProperty()
-	public isDeactivated: boolean;
+	isDeactivated: boolean;
 
 	@ApiProperty({ type: [CustomParameterEntryResponse] })
-	public parameters: CustomParameterEntryResponse[];
+	parameters: CustomParameterEntryResponse[];
 
 	@ApiProperty({ type: SchoolExternalToolConfigurationStatusResponse })
-	public status: SchoolExternalToolConfigurationStatusResponse;
+	status: SchoolExternalToolConfigurationStatusResponse;
 
 	@ApiPropertyOptional({ enum: ToolContextType, enumName: 'ToolContextType', isArray: true })
-	public restrictToContexts?: ToolContextType[];
+	restrictToContexts?: ToolContextType[];
 
 	@ApiPropertyOptional({ type: SchoolExternalToolMediumResponse })
-	public medium?: SchoolExternalToolMediumResponse;
+	medium?: SchoolExternalToolMediumResponse;
 
 	constructor(response: SchoolExternalToolResponse) {
 		this.id = response.id;

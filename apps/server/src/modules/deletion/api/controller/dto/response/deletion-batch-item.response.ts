@@ -2,28 +2,28 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class DeletionBatchItemResponse {
 	@ApiProperty()
-	public id: string;
+	id: string;
 
 	@ApiProperty()
-	public status: string;
+	status: string;
 
 	@ApiProperty()
-	public name: string;
+	name: string;
 
 	@ApiProperty()
-	public validUsers: number;
+	validUsers: number;
 
 	@ApiProperty()
-	public invalidUsers: number;
+	invalidUsers: number;
 
 	@ApiPropertyOptional()
-	public skippedUsers: number;
+	skippedUsers: number;
 
 	@ApiProperty({ type: Date })
-	public createdAt: Date;
+	createdAt: Date;
 
 	@ApiProperty({ type: Date })
-	public updatedAt: Date;
+	updatedAt: Date;
 
 	constructor(item: DeletionBatchItemResponse) {
 		this.id = item.id;

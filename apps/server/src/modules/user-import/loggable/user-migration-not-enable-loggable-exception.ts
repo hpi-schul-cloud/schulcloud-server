@@ -11,7 +11,7 @@ export class UserMigrationIsNotEnabledLoggableException extends ForbiddenExcepti
 		});
 	}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			type: 'USER_MIGRATION_IS_NOT_ENABLED',
 			message: 'Feature flag of user migration may be disable or the school is not an LDAP pilot',

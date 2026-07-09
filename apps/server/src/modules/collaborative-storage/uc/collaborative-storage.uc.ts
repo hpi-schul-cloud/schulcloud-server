@@ -18,7 +18,7 @@ export class CollaborativeStorageUc {
 	 * @param teamRole The Team and Role to be altered
 	 * @param permissionsDto The new permissions
 	 */
-	async updateUserPermissionsForRole(
+	public async updateUserPermissionsForRole(
 		currentUserId: string,
 		teamRole: TeamRoleDto,
 		permissionsDto: TeamPermissionsBody
@@ -31,15 +31,15 @@ export class CollaborativeStorageUc {
 		);
 	}
 
-	deleteTeam(teamId: string): Promise<void> {
+	public deleteTeam(teamId: string): Promise<void> {
 		return this.service.deleteTeam(teamId);
 	}
 
-	createTeam(team: TeamDto): Promise<void> {
+	public createTeam(team: TeamDto): Promise<void> {
 		return this.service.createTeam(team);
 	}
 
-	updateTeam(team: TeamDto): Promise<void> {
+	public updateTeam(team: TeamDto): Promise<void> {
 		return this.service.updateTeam(team);
 	}
 }

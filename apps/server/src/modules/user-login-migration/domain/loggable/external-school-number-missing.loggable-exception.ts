@@ -6,7 +6,7 @@ export class ExternalSchoolNumberMissingLoggableException extends UnprocessableE
 		super();
 	}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			type: 'EXTERNAL_SCHOOL_NUMBER_MISSING',
 			message: 'The external system did not provide a official school number for the school.',

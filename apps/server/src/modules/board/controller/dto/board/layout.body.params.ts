@@ -5,5 +5,5 @@ import { BoardLayout } from '../../../domain';
 export class LayoutBodyParams {
 	@IsEnum(BoardLayout)
 	@ApiProperty({ enum: BoardLayout, enumName: 'BoardLayout' })
-	public layout!: BoardLayout;
+	layout!: BoardLayout;
 }

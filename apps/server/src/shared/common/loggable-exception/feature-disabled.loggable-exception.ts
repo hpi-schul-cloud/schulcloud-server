@@ -6,7 +6,7 @@ export class FeatureDisabledLoggableException extends ForbiddenException impleme
 		super();
 	}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		const message: LoggableMessage = {
 			type: 'FEATURE_DISABLED',
 			stack: this.stack,

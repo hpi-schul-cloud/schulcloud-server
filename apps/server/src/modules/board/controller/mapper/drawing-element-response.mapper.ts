@@ -14,7 +14,7 @@ export class DrawingElementResponseMapper implements BaseResponseMapper {
 		return DrawingElementResponseMapper.instance;
 	}
 
-	mapToResponse(element: DrawingElement): DrawingElementResponse {
+	public mapToResponse(element: DrawingElement): DrawingElementResponse {
 		const result = new DrawingElementResponse({
 			id: element.id,
 			timestamps: new TimestampsResponse({ lastUpdatedAt: element.updatedAt, createdAt: element.createdAt }),
@@ -25,7 +25,7 @@ export class DrawingElementResponseMapper implements BaseResponseMapper {
 		return result;
 	}
 
-	canMap(element: unknown): boolean {
+	public canMap(element: unknown): boolean {
 		return element instanceof DrawingElement;
 	}
 }

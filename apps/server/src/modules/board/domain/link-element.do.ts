@@ -42,7 +42,7 @@ export class LinkElement extends BoardNode<LinkElementProps> {
 		this.props.originalImageUrl = value;
 	}
 
-	canHaveChild(): boolean {
+	public canHaveChild(): boolean {
 		return false;
 	}
 }

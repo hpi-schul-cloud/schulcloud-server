@@ -2,16 +2,16 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class SchoolUserResponse {
 	@ApiProperty()
-	public firstName!: string;
+	firstName!: string;
 
 	@ApiProperty()
-	public lastName!: string;
+	lastName!: string;
 
 	@ApiProperty()
-	public schoolName!: string;
+	schoolName!: string;
 
 	@ApiProperty()
-	public id!: string;
+	id!: string;
 
 	constructor(props: SchoolUserResponse) {
 		this.id = props.id;

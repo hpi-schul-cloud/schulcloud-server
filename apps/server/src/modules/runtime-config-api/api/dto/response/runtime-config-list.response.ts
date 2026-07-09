@@ -7,5 +7,5 @@ export class RuntimeConfigListResponse {
 	}
 
 	@ApiProperty({ type: [RuntimeConfigListItemResponse] })
-	public data: RuntimeConfigListItemResponse[];
+	data: RuntimeConfigListItemResponse[];
 }

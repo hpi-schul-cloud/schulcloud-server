@@ -7,7 +7,7 @@ export class SchoolNotMigratedLoggableException extends UnprocessableEntityExcep
 		super();
 	}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			type: 'SCHOOL_NOT_MIGRATED',
 			message: 'The school administrator started the migration for his school.',

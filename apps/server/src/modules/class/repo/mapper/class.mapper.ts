@@ -4,7 +4,7 @@ import { ClassSourceOptions } from '../../domain/class-source-options.do';
 import { ClassEntity } from '../../entity';
 
 export class ClassMapper {
-	static mapToDO(entity: ClassEntity): Class {
+	public static mapToDO(entity: ClassEntity): Class {
 		return new Class({
 			id: entity.id,
 			name: entity.name,
@@ -23,7 +23,7 @@ export class ClassMapper {
 		});
 	}
 
-	static mapToEntity(domainObject: Class): ClassEntity {
+	public static mapToEntity(domainObject: Class): ClassEntity {
 		return new ClassEntity({
 			id: domainObject.id,
 			name: domainObject.name,
@@ -40,11 +40,11 @@ export class ClassMapper {
 		});
 	}
 
-	static mapToDOs(entities: ClassEntity[]): Class[] {
+	public static mapToDOs(entities: ClassEntity[]): Class[] {
 		return entities.map((entity) => this.mapToDO(entity));
 	}
 
-	static mapToEntities(domainObjects: Class[]): ClassEntity[] {
+	public static mapToEntities(domainObjects: Class[]): ClassEntity[] {
 		return domainObjects.map((domainObject) => this.mapToEntity(domainObject));
 	}
 }

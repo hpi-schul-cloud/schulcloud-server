@@ -6,7 +6,7 @@ export class InvalidLernperiodeResponseLoggableException extends InternalServerE
 		super();
 	}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			type: 'INVALID_LERNPERIODE_RESPONSE',
 			stack: this.stack,

@@ -2,7 +2,7 @@ import { type DomainOperationReport, type DomainDeletionReport } from '../../../
 import { type DomainName } from '../../../../domain/types';
 
 export class DeletionLogStatisticBuilder {
-	static build(
+	public static build(
 		domain: DomainName,
 		operations: DomainOperationReport[],
 		subdomainOperations?: DomainDeletionReport[] | null

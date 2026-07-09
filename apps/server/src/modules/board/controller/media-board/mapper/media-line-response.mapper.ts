@@ -4,7 +4,7 @@ import { MediaLineResponse } from '../dto';
 import { AnyMediaElementResponseFactory } from './any-media-element-response.factory';
 
 export class MediaLineResponseMapper {
-	static mapToResponse(line: MediaLine): MediaLineResponse {
+	public static mapToResponse(line: MediaLine): MediaLineResponse {
 		const elements = line.children.filter((element: AnyBoardNode): element is AnyMediaElement =>
 			isAnyMediaElement(element)
 		);

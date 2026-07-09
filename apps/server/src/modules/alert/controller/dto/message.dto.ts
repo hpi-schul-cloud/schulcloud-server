@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { MessageOrigin } from './message-origin';
+import { MessageOrigin } from './message-origin.dto';
 
 export type MessageStatus = 'danger' | 'done' | 'info';
 

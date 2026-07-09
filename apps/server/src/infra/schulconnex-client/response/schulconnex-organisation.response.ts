@@ -1,6 +1,6 @@
 import { Type } from 'class-transformer';
 import { IsObject, IsOptional, IsString, ValidateNested } from 'class-validator';
-import { SchulconnexAnschriftResponse } from './schulconnex-anschrift-response';
+import { SchulconnexAnschriftResponse } from './schulconnex-anschrift.response';
 
 export class SchulconnexOrganisationResponse {
 	@IsString()
