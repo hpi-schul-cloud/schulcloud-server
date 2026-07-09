@@ -361,6 +361,7 @@ const dtoFiles = {
 		'apps/server/src/**/*.param.ts',
 		'apps/server/src/**/*.response.ts',
 		'apps/server/src/**/*.body.ts',
+		'apps/server/src/**/*.query.ts',
 	],
 	rules: {
 		'@typescript-eslint/explicit-member-accessibility': [
