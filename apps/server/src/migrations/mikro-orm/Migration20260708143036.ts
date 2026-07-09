@@ -22,15 +22,22 @@ export class Migration20260708143036 extends Migration {
 
 		for await (const item of cursor) {
 			try {
-				const refreshToken: unknown = item.refreshToken;
+				const { refreshToken } = item;
 
 				if (typeof refreshToken !== 'string' || refreshToken.length === 0) {
+					console.error(
+						`oauth-session-token with id ${item._id.toString()} has no or empty refresh token and was omitted.`
+					);
+					numberOfFailedUpdates += 1;
 					continue;
 				}
 
 				// Avoid double-encrypting tokens (e.g. if the migration runs while the app already stores encrypted tokens)
 				try {
 					AesEncryptionHelper.decrypt(refreshToken, AES_KEY);
+					console.info(
+						`oauth-session-token with id ${item._id.toString()} was omitted because the refresh token is already encrypted.`
+					);
 					continue;
 				} catch {
 					// Token is not decryptable with the current key => treat as plaintext
