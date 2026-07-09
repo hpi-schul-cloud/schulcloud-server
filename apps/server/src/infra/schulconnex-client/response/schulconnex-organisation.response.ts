@@ -1,20 +1,20 @@
 import { Type } from 'class-transformer';
 import { IsObject, IsOptional, IsString, ValidateNested } from 'class-validator';
-import { SchulconnexAnschriftResponse } from './schulconnex-anschrift-response';
+import { SchulconnexAnschriftResponse } from './schulconnex-anschrift.response';
 
 export class SchulconnexOrganisationResponse {
 	@IsString()
-	public id!: string;
+	id!: string;
 
 	@IsString()
-	public kennung!: string;
+	kennung!: string;
 
 	@IsString()
-	public name!: string;
+	name!: string;
 
 	@IsOptional()
 	@IsObject()
 	@ValidateNested()
 	@Type(() => SchulconnexAnschriftResponse)
-	public anschrift?: SchulconnexAnschriftResponse;
+	anschrift?: SchulconnexAnschriftResponse;
 }

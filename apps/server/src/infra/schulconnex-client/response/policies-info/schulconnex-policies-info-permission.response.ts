@@ -4,5 +4,5 @@ import { SchulconnexPoliciesInfoActionType } from './schulconnex-policies-info-a
 export class SchulconnexPoliciesInfoPermissionResponse {
 	@IsArray()
 	@IsString({ each: true })
-	public action!: SchulconnexPoliciesInfoActionType[];
+	action!: SchulconnexPoliciesInfoActionType[];
 }

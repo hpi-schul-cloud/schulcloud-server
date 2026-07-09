@@ -4,5 +4,5 @@ export class SchulconnexGruppenzugehoerigkeitResponse {
 	@IsOptional()
 	@IsArray()
 	@IsString({ each: true })
-	public rollen?: string[];
+	rollen?: string[];
 }

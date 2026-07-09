@@ -2,8 +2,8 @@ import { IsString } from 'class-validator';
 
 export class SchulconnexErreichbarkeitenResponse {
 	@IsString()
-	public typ!: string;
+	typ!: string;
 
 	@IsString()
-	public kennung!: string;
+	kennung!: string;
 }
