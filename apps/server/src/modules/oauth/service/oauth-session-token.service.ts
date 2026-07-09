@@ -10,18 +10,16 @@ export class OauthSessionTokenService {
 		@Inject(DefaultEncryptionService) private readonly encryptionService: EncryptionService
 	) {}
 
-	async save(domainObject: OauthSessionToken): Promise<OauthSessionToken> {
+	public async save(domainObject: OauthSessionToken): Promise<void> {
 		domainObject.refreshToken = this.encryptionService.encrypt(domainObject.refreshToken);
-		const oauthSessionToken = await this.oauthSessionTokenRepo.save(domainObject);
-
-		return oauthSessionToken;
+		await this.oauthSessionTokenRepo.save(domainObject);
 	}
 
-	async delete(domainObject: OauthSessionToken): Promise<void> {
+	public async delete(domainObject: OauthSessionToken): Promise<void> {
 		await this.oauthSessionTokenRepo.delete(domainObject);
 	}
 
-	async findLatestByUserId(userId: EntityId): Promise<OauthSessionToken | null> {
+	public async findLatestByUserId(userId: EntityId): Promise<OauthSessionToken | null> {
 		const oauthSessionToken = await this.oauthSessionTokenRepo.findLatestByUserId(userId);
 
 		if (oauthSessionToken?.refreshToken) {

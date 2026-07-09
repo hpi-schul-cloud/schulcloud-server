@@ -46,7 +46,6 @@ describe(OauthSessionTokenService.name, () => {
 				const oauthSessionToken = oauthSessionTokenFactory.build();
 				const encryptedRefreshToken = 'encrypted-refresh-token';
 
-				repo.save.mockResolvedValue(oauthSessionToken);
 				encryptionService.encrypt.mockReturnValue(encryptedRefreshToken);
 
 				return {
@@ -71,14 +70,6 @@ describe(OauthSessionTokenService.name, () => {
 
 				expect(encryptionService.encrypt).toHaveBeenCalledWith(originalRefreshToken);
 				expect(repo.save).toHaveBeenCalledWith(expect.objectContaining({ refreshToken: encryptedRefreshToken }));
-			});
-
-			it('should return the saved token', async () => {
-				const { oauthSessionToken } = setup();
-
-				const result = await service.save(oauthSessionToken);
-
-				expect(result).toEqual(oauthSessionToken);
 			});
 		});
 	});
