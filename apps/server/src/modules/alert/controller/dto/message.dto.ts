@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { MessageOrigin } from './message-origin';
+import { MessageOrigin } from './message-origin.dto';
 
 export type MessageStatus = 'danger' | 'done' | 'info';
 
@@ -23,23 +23,23 @@ export class Message {
 	}
 
 	@ApiProperty()
-	public title: string;
+	title: string;
 
 	@ApiProperty()
-	public text: string;
+	text: string;
 
 	@ApiProperty()
-	public timestamp: Date;
+	timestamp: Date;
 
 	@ApiProperty()
-	public origin: MessageOrigin;
+	origin: MessageOrigin;
 
 	@ApiProperty()
-	public url: string;
+	url: string;
 
 	@ApiProperty()
-	public status: MessageStatus;
+	status: MessageStatus;
 
 	@ApiProperty()
-	public createdAt: Date;
+	createdAt: Date;
 }

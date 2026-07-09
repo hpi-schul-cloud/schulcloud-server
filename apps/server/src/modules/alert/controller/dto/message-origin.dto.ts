@@ -7,8 +7,8 @@ export class MessageOrigin {
 	}
 
 	@ApiProperty()
-	public message_id: number;
+	message_id: number;
 
 	@ApiProperty()
-	public page: string;
+	page: string;
 }
