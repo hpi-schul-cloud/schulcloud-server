@@ -10,12 +10,12 @@ export class ShareTokenInfoResponse {
 	}
 
 	@ApiProperty()
-	public token: string;
+	token: string;
 
 	@ApiProperty({ enum: ShareTokenParentType })
-	public parentType: ShareTokenParentType;
+	parentType: ShareTokenParentType;
 
 	@ApiProperty()
 	@DecodeHtmlEntities()
-	public parentName: string;
+	parentName: string;
 }
