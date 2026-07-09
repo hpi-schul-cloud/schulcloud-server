@@ -52,8 +52,7 @@ export class Migration20260708143036 extends Migration {
 		const { AES_KEY } = process.env;
 
 		if (!AES_KEY) {
-			console.error('AES_KEY is not provided. Migration cannot proceed.');
-			return;
+			throw new Error('AES_KEY is not provided. Migration cannot proceed.');
 		}
 
 		let numberOfUpdatedTokens = 0;
