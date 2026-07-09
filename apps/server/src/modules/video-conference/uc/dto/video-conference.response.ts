@@ -3,11 +3,11 @@ import { type BBBBaseResponse, type BBBResponse } from '../../bbb';
 import { type VideoConferenceState } from './video-conference-state.enum';
 
 export class VideoConference<T extends BBBBaseResponse> {
-	public state: VideoConferenceState;
+	state: VideoConferenceState;
 
-	public permission: Permission;
+	permission: Permission;
 
-	public bbbResponse?: BBBResponse<T>;
+	bbbResponse?: BBBResponse<T>;
 
 	constructor(dto: VideoConference<T>) {
 		this.state = dto.state;

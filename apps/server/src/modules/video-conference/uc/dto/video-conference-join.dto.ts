@@ -2,11 +2,11 @@ import { type Permission } from '@shared/domain/interface';
 import { type VideoConferenceState } from './video-conference-state.enum';
 
 export class VideoConferenceJoin {
-	public state: VideoConferenceState;
+	state: VideoConferenceState;
 
-	public permission: Permission;
+	permission: Permission;
 
-	public url: string;
+	url: string;
 
 	constructor(dto: VideoConferenceJoin) {
 		this.state = dto.state;
