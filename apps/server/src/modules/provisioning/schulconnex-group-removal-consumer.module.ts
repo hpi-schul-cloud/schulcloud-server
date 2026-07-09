@@ -31,6 +31,7 @@ import { SchulconnexCourseSyncService, SchulconnexGroupProvisioningService } fro
 			exchangeConfigConstructor: ProvisioningExchangeConfig,
 			configInjectionToken: RABBITMQ_CONFIG_TOKEN,
 			configConstructor: RabbitMQConfig,
+			connectionName: 'schulconnex-group-removal',
 		}),
 	],
 	providers: [SchulconnexGroupRemovalConsumer, SchulconnexGroupProvisioningService, SchulconnexCourseSyncService],
