@@ -7,5 +7,5 @@ export class ClassSortParams extends SortingParams<ClassSortQueryType> {
 	@IsOptional()
 	@IsEnum(ClassSortQueryType)
 	@ApiPropertyOptional({ enum: ClassSortQueryType, enumName: 'ClassSortQueryType' })
-	public sortBy?: ClassSortQueryType;
+	sortBy?: ClassSortQueryType;
 }
