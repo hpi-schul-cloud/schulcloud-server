@@ -121,7 +121,7 @@
 		"ensureIndexes:prod": "npm run nest:start:console:prod -- database sync-indexes",
 		"schoolExport": "node ./scripts/schoolExport.js",
 		"schoolImport": "node ./scripts/schoolImport.js",
-		"pregenerate-client:authorization-api": "rimraf ./apps/server/src/infra/authorization-client/authorization-api-client",
+		"pregenerate-client:authorization-api": "rimraf ./apps/server/src/infra/authorization-client/generated",
 		"generate-client:authorization-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key authorization-api",
 		"pregenerate-client:authentication-api": "rimraf ./apps/server/src/infra/authentication-client/generated",
 		"generate-client:authentication-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key authentication-api",

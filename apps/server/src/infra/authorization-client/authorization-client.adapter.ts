@@ -4,12 +4,8 @@ import { REQUEST } from '@nestjs/core';
 import { JwtExtractor } from '@shared/common/utils';
 import { isAxiosError, RawAxiosRequestConfig } from 'axios';
 import { Request } from 'express';
-import {
-	AuthorizationApi,
-	AuthorizationBodyParamsReferenceType,
-	AuthorizationContextParams,
-} from './authorization-api-client';
 import { AuthorizationErrorLoggableException, AuthorizationForbiddenLoggableException } from './error';
+import { AuthorizationApi, AuthorizationBodyParamsReferenceType, AuthorizationContextParams } from './generated';
 
 @Injectable()
 export class AuthorizationClientAdapter {
