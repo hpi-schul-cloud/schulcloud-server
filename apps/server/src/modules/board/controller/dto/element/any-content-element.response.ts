@@ -2,11 +2,11 @@ import type { CollaborativeTextEditorElementResponse } from './collaborative-tex
 import type { DeletedElementResponse } from './deleted-element.response';
 import type { DrawingElementResponse } from './drawing-element.response';
 import type { ExternalToolElementResponse } from './external-tool-element.response';
-import { FileElementResponse } from './file-element.response';
+import type { FileElementResponse } from './file-element.response';
 import type { FileFolderElementResponse } from './file-folder-element.response';
 import type { H5pElementResponse } from './h5p-element.response';
 import type { LinkElementResponse } from './link-element.response';
-import { RichTextElementResponse } from './rich-text-element.response';
+import type { RichTextElementResponse } from './rich-text-element.response';
 import type { VideoConferenceElementResponse } from './video-conference-element.response';
 
 export type AnyContentElementResponse =
@@ -20,9 +20,3 @@ export type AnyContentElementResponse =
 	| VideoConferenceElementResponse
 	| FileFolderElementResponse
 	| H5pElementResponse;
-
-const isFileElementResponse = (element: AnyContentElementResponse): element is FileElementResponse =>
-	element instanceof FileElementResponse;
-
-const isRichTextElementResponse = (element: AnyContentElementResponse): element is RichTextElementResponse =>
-	element instanceof RichTextElementResponse;

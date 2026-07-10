@@ -1,16 +1,14 @@
 import { Action, AuthorizationContext, AuthorizationInjectionService, Rule } from '@modules/authorization';
-import { User } from '@modules/user/repo';
-import { HttpStatus, Injectable } from '@nestjs/common';
-import { Permission } from '@shared/domain/interface';
-import { RoomInvitationLinkAuthorizable } from '../do/room-invitation-link-authorizable.do';
 import { RoleName } from '@modules/role';
 import { RoomInvitationLinkError } from '@modules/room/api/dto/response/room-invitation-link.error';
 import { RoomInvitationLinkValidationError } from '@modules/room/api/type/room-invitation-link-validation-error.enum';
+import { User } from '@modules/user/repo';
+import { HttpStatus, Injectable } from '@nestjs/common';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
+import { Permission } from '@shared/domain/interface';
+import { RoomInvitationLinkAuthorizable } from '../do/room-invitation-link-authorizable.do';
 
-const RoomInvitationLinkOperationValues = ['useRoomInvitationLinks'] as const;
-
-export type RoomInvitationLinkOperation = (typeof RoomInvitationLinkOperationValues)[number]; // turn string list to type union of strings
+export type RoomInvitationLinkOperation = 'useRoomInvitationLinks';
 
 type OperationFn = (user: User, authorizable: RoomInvitationLinkAuthorizable) => boolean | Promise<boolean>;
 

@@ -13,7 +13,6 @@ import {
 	type ColumnResponse,
 	type CourseCommonCartridgeMetadataResponse,
 	type LessonContentResponse,
-	type LessonContentResponseContent,
 	type LessonLinkedTaskResponse,
 	type LessonResponse,
 	type SingleColumnBoardResponse,
@@ -23,7 +22,6 @@ import { fileElementResponseFactory } from './file-element.factory';
 import { fileFolderElementResponseFactory } from './file-folder-element.factory';
 import { linkElementFactory } from './link-element.factory';
 import { richTextElementFactroy } from './rich-text-element.factory';
-
 export const courseMetadataFactory = Factory.define<CourseCommonCartridgeMetadataResponse>(({ sequence }) => {
 	return {
 		id: sequence.toString(),
@@ -136,40 +134,6 @@ export const lessonLinkedTaskFactory = Factory.define<LessonLinkedTaskResponse>(
 		courseId: null,
 		submissionIds: [faker.string.uuid(), faker.string.uuid()],
 		finishedIds: [faker.string.uuid(), faker.string.uuid()],
-	};
-});
-
-const lernstoreContentFactory = Factory.define<LessonContentResponseContent>(({ sequence }) => {
-	return {
-		id: sequence.toString(),
-		type: 'resources',
-		content: {
-			resources: [
-				{
-					url: faker.internet.url(),
-					client: faker.company.name(),
-					description: faker.lorem.sentence(),
-					title: `lernstore-resource-${faker.lorem.sentence()}`,
-				},
-				{
-					url: faker.internet.url(),
-					client: faker.company.name(),
-					description: faker.lorem.sentence(),
-					title: `lernstore-resource-${faker.lorem.sentence()}`,
-				},
-				{
-					url: faker.internet.url(),
-					client: faker.company.name(),
-					description: faker.lorem.sentence(),
-					title: `lernstore-resource-${faker.lorem.sentence()}`,
-				},
-			],
-		},
-		title: `lernstore-content-${faker.lorem.sentence()}`,
-		component: 'resources',
-		hidden: faker.datatype.boolean(),
-		description: faker.lorem.lines(),
-		materialId: faker.string.uuid(),
 	};
 });
 

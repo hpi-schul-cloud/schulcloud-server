@@ -5,24 +5,6 @@ import { ComponentProperties, LessonEntity } from '../../repo';
 import { LessonContentResponse } from './lesson-content.response';
 import { MaterialResponse } from './material.response';
 
-class LessonMetadataResponse {
-	constructor({ _id, name }: LessonMetadataResponse) {
-		this._id = _id;
-		this.name = name;
-	}
-
-	@ApiProperty({
-		description: 'The id of the Lesson entity',
-		pattern: bsonStringPattern,
-	})
-	_id: EntityId;
-
-	@ApiProperty({
-		description: 'Name of the Lesson entity',
-	})
-	name: string;
-}
-
 export class LessonResponse {
 	constructor(lesson: LessonEntity) {
 		this.id = lesson.id;

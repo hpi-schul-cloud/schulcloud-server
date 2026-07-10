@@ -27,12 +27,9 @@ export enum RoleName {
 	USER = 'user',
 }
 
-const RoomRoleArray = [
-	RoleName.ROOMOWNER,
-	RoleName.ROOMADMIN,
-	RoleName.ROOMEDITOR,
-	RoleName.ROOMVIEWER,
-	RoleName.ROOMAPPLICANT,
-] as const;
-
-export type RoomRole = (typeof RoomRoleArray)[number];
+export type RoomRole =
+	| RoleName.ROOMOWNER
+	| RoleName.ROOMADMIN
+	| RoleName.ROOMEDITOR
+	| RoleName.ROOMVIEWER
+	| RoleName.ROOMAPPLICANT;
