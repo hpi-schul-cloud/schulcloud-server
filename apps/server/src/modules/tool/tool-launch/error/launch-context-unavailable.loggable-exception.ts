@@ -1,8 +1,8 @@
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
 import { HttpStatus } from '@nestjs/common';
 import { BusinessError } from '@shared/common/error';
-import { EntityId } from '@shared/domain/types';
-import { ContextExternalToolLaunchable } from '../../context-external-tool/domain';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
+import { type EntityId } from '@shared/domain/types';
+import { type ContextExternalToolLaunchable } from '../../context-external-tool/domain';
 
 export class LaunchContextUnavailableLoggableException extends BusinessError implements Loggable {
 	constructor(
@@ -19,7 +19,7 @@ export class LaunchContextUnavailableLoggableException extends BusinessError imp
 		);
 	}
 
-	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			type: this.type,
 			message: this.message,

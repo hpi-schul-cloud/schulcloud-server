@@ -1,4 +1,4 @@
-import { ValidationPipe, ValidationError } from '@nestjs/common';
+import { ValidationPipe, type ValidationError } from '@nestjs/common';
 import { WsException } from '@nestjs/websockets';
 
 export class WsValidationPipe extends ValidationPipe {

@@ -52,9 +52,7 @@ export class SchoolExternalToolService {
 
 	private async enrichWithDataFromExternalTools(tools: SchoolExternalTool[]): Promise<SchoolExternalTool[]> {
 		const enrichedTools: SchoolExternalTool[] = await Promise.all(
-			tools.map(
-				async (tool: SchoolExternalTool): Promise<SchoolExternalTool> => this.enrichWithDataFromExternalTool(tool)
-			)
+			tools.map((tool: SchoolExternalTool): Promise<SchoolExternalTool> => this.enrichWithDataFromExternalTool(tool))
 		);
 
 		return enrichedTools;

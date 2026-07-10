@@ -9,7 +9,7 @@ import {
 import { ServerTestModule } from '@modules/server';
 import { SystemEntity } from '@modules/system/repo';
 import { systemEntityFactory } from '@modules/system/testing';
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus, type INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';

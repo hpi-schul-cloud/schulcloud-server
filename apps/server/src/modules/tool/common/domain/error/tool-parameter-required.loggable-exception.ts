@@ -1,8 +1,8 @@
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
 import { HttpStatus } from '@nestjs/common';
 import { BusinessError } from '@shared/common/error';
-import { EntityId } from '@shared/domain/types';
-import { CustomParameter } from '../custom-parameter.do';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
+import { type EntityId } from '@shared/domain/types';
+import { type CustomParameter } from '../custom-parameter.do';
 
 export class ToolParameterRequiredLoggableException extends BusinessError implements Loggable {
 	constructor(
@@ -23,7 +23,7 @@ export class ToolParameterRequiredLoggableException extends BusinessError implem
 		);
 	}
 
-	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			stack: this.stack,
 			type: this.type,

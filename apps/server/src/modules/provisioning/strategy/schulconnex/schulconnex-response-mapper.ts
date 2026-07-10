@@ -53,7 +53,7 @@ type TimePeriode = {
 
 @Injectable()
 export class SchulconnexResponseMapper {
-	SCHOOLNUMBER_PREFIX_REGEX = /^NI_/;
+	private SCHOOLNUMBER_PREFIX_REGEX = /^NI_/;
 
 	constructor(
 		@Inject(PROVISIONING_CONFIG_TOKEN)
@@ -214,7 +214,7 @@ export class SchulconnexResponseMapper {
 		} else if (duration.vonlernperiode) {
 			const fromPeriode: TimePeriode = SchulconnexResponseMapper.mapLernperiode(duration.vonlernperiode);
 
-			from = fromPeriode.from;
+			({ from } = fromPeriode);
 		} else {
 			throw new InvalidLaufzeitResponseLoggableException(duration);
 		}
@@ -224,7 +224,7 @@ export class SchulconnexResponseMapper {
 		} else if (duration.bislernperiode) {
 			const untilPeriode: TimePeriode = SchulconnexResponseMapper.mapLernperiode(duration.bislernperiode);
 
-			until = untilPeriode.until;
+			({ until } = untilPeriode);
 		} else {
 			throw new InvalidLaufzeitResponseLoggableException(duration);
 		}

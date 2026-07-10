@@ -1,17 +1,17 @@
 import {
-	ContentElementType,
-	FileElementContentBody,
-	FileFolderElementContentBody,
-	LinkElementContentBody,
-	RichTextElementContentBody,
+	type ContentElementType,
+	type FileElementContentBody,
+	type FileFolderElementContentBody,
+	type LinkElementContentBody,
+	type RichTextElementContentBody,
 } from '@infra/common-cartridge-clients';
-import { InputFormat } from '@shared/domain/types';
-import { CommonCartridgeImportResourceProps, CommonCartridgeImportWebContentResourceProps } from '..';
+import { type InputFormat } from '@shared/domain/types';
+import { type CommonCartridgeImportResourceProps, type CommonCartridgeImportWebContentResourceProps } from '..';
 import { CommonCartridgeXmlResourceType } from '../import/common-cartridge-import.enums';
 import {
-	CommonCartridgeFileFolderResourceProps,
-	CommonCartridgeFileResourceProps,
-	CommonCartridgeWebLinkResourceProps,
+	type CommonCartridgeFileFolderResourceProps,
+	type CommonCartridgeFileResourceProps,
+	type CommonCartridgeWebLinkResourceProps,
 } from '../import/common-cartridge-import.types';
 
 export class CommonCartridgeImportMapper {

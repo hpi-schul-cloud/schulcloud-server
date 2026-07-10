@@ -1,6 +1,6 @@
 import { systemFactory } from '@modules/system/testing';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { ProvisioningSystemDto } from '../dto';
+import { type ProvisioningSystemDto } from '../dto';
 import { ProvisioningSystemInputMapper } from './provisioning-system-input.mapper';
 
 describe(ProvisioningSystemInputMapper.name, () => {

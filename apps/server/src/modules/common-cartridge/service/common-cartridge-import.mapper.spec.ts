@@ -1,12 +1,12 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { InputFormat } from '@shared/domain/types';
 import { CommonCartridgeXmlResourceType } from '../import/common-cartridge-import.enums';
 import {
-	CommonCartridgeFileFolderResourceProps,
-	CommonCartridgeFileResourceProps,
-	CommonCartridgeUnknownResourceProps,
-	CommonCartridgeWebContentResourceProps,
-	CommonCartridgeWebLinkResourceProps,
+	type CommonCartridgeFileFolderResourceProps,
+	type CommonCartridgeFileResourceProps,
+	type CommonCartridgeUnknownResourceProps,
+	type CommonCartridgeWebContentResourceProps,
+	type CommonCartridgeWebLinkResourceProps,
 } from '../import/common-cartridge-import.types';
 import { CommonCartridgeImportMapper } from './common-cartridge-import.mapper';
 

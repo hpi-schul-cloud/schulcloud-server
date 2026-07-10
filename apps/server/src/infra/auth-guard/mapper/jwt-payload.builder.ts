@@ -1,5 +1,5 @@
-import { EntityId } from '@shared/domain/types';
-import { CreateJwtPayload, ICurrentUser } from '../interface';
+import { type EntityId } from '@shared/domain/types';
+import { type CreateJwtPayload, type ICurrentUser } from '../interface';
 
 export class JwtPayloadBuilder {
 	private readonly currentUser: ICurrentUser;

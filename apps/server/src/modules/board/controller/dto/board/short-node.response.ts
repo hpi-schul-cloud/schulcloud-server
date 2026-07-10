@@ -7,8 +7,8 @@ export class ShortNodeResponse {
 	}
 
 	@ApiProperty()
-	public id: string;
+	id: string;
 
 	@ApiProperty()
-	public title?: string;
+	title?: string;
 }

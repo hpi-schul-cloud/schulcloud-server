@@ -1,4 +1,4 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { createMock } from '@golevelup/ts-jest';
 import { FeathersServiceProvider } from '@infra/feathers';
 import { DatabaseManagementUc } from '../uc/database-management.uc';

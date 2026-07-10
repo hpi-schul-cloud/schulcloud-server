@@ -1,7 +1,7 @@
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
 
 export class SchulconnexConfigurationMissingLoggable implements Loggable {
-	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			message: `SchulconnexRestClient: Missing configuration. Please check your environment variables in SCHULCONNEX_CLIENT.`,
 		};

@@ -1,9 +1,9 @@
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
 
 export class MigrationMayNotBeCompleted implements Loggable {
 	constructor(private readonly inUserMigration?: boolean) {}
 
-	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			message: 'The migration may not be yet complete or the school may not be in maintenance mode',
 			data: {

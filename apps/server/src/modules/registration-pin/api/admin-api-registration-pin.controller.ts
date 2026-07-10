@@ -11,7 +11,7 @@ export class AdminApiRegistrationPinController {
 	constructor(private readonly uc: RegistrationPinUc) {}
 
 	@Get(':email')
-	async getRegistrationPinsForEmail(@Param('email') email: string): Promise<GetRegistrationPinResponse[]> {
+	public async getRegistrationPinsForEmail(@Param('email') email: string): Promise<GetRegistrationPinResponse[]> {
 		const response = await this.uc.findForEmail(email);
 
 		return response;

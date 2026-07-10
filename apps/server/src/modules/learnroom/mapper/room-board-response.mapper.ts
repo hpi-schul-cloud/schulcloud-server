@@ -9,11 +9,11 @@ import {
 } from '../controller/dto';
 import { BoardColumnBoardResponse } from '../controller/dto/single-column-board/board-column-board.response';
 import { ColumnBoardMetaData, LessonMetaData, RoomBoardDTO, RoomBoardElementTypes } from '../types';
-import { BoardTaskStatusMapper } from './board-taskStatus.mapper';
+import { BoardTaskStatusMapper } from './board-task-status.mapper';
 
 @Injectable()
 export class RoomBoardResponseMapper {
-	mapToResponse(board: RoomBoardDTO): SingleColumnBoardResponse {
+	public mapToResponse(board: RoomBoardDTO): SingleColumnBoardResponse {
 		const elements: BoardElementResponse[] = this.mapBoardElements(board);
 
 		const mapped: SingleColumnBoardResponse = new SingleColumnBoardResponse({

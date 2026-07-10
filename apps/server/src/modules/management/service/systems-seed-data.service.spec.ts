@@ -1,9 +1,9 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import { DefaultEncryptionService, type EncryptionService } from '@infra/encryption';
 import { OauthConfig, System, SystemService } from '@modules/system';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { MANAGEMENT_SEED_DATA_CONFIG_TOKEN, ManagementSeedDataConfig } from '../management-seed-data.config';
+import { MANAGEMENT_SEED_DATA_CONFIG_TOKEN, type ManagementSeedDataConfig } from '../management-seed-data.config';
 import { SystemsSeedDataService } from './systems-seed-data.service';
 
 describe(SystemsSeedDataService.name, () => {

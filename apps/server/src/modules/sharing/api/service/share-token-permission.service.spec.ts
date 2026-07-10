@@ -1,22 +1,22 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { CourseService } from '@modules/course';
 import { CourseEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
-import { RoleDto, RoleName } from '@modules/role';
-import { RoomAuthorizable, RoomMembershipService, UserWithRoomRoles } from '@modules/room-membership';
+import { type RoleDto, RoleName } from '@modules/role';
+import { RoomAuthorizable, RoomMembershipService, type UserWithRoomRoles } from '@modules/room-membership';
 import { SchoolService } from '@modules/school';
 import { SchoolEntity } from '@modules/school/repo';
 import { schoolFactory } from '@modules/school/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { NotImplementedException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
-import { ShareTokenContext, ShareTokenContextType, ShareTokenParentType } from '../../domainobject/share-token.do';
-import { SHARING_PUBLIC_API_CONFIG_TOKEN, SharingPublicApiConfig } from '../../sharing.config';
+import { type ShareTokenContext, ShareTokenContextType, ShareTokenParentType } from '../../domainobject/share-token.do';
+import { SHARING_PUBLIC_API_CONFIG_TOKEN, type SharingPublicApiConfig } from '../../sharing.config';
 import { ShareTokenPermissionService } from './share-token-permission.service';
 
 describe('ShareTokenPermissionService', () => {
@@ -89,6 +89,10 @@ describe('ShareTokenPermissionService', () => {
 			expect(() => service.checkFeatureEnabled(ShareTokenParentType.Room)).toThrow(FeatureDisabledLoggableException);
 		});
 
+		it('should throw FeatureDisabledLoggableException if feature is disabled for Column', () => {
+			expect(() => service.checkFeatureEnabled(ShareTokenParentType.Column)).toThrow(FeatureDisabledLoggableException);
+		});
+
 		it('should not throw if feature is enabled', () => {
 			config.featureCourseShare = true;
 			config.featureLessonShare = true;
@@ -102,6 +106,7 @@ describe('ShareTokenPermissionService', () => {
 			expect(() => service.checkFeatureEnabled(ShareTokenParentType.ColumnBoard)).not.toThrow();
 			expect(() => service.checkFeatureEnabled(ShareTokenParentType.Card)).not.toThrow();
 			expect(() => service.checkFeatureEnabled(ShareTokenParentType.Room)).not.toThrow();
+			expect(() => service.checkFeatureEnabled(ShareTokenParentType.Column)).not.toThrow();
 		});
 
 		it('should throw NotImplementedException for unsupported parent types', () => {

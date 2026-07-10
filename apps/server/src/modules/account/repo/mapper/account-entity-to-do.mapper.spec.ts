@@ -1,5 +1,5 @@
 import { accountFactory } from '../../testing';
-import { AccountEntity } from '../account.entity';
+import { type AccountEntity } from '../account.entity';
 import { AccountEntityToDoMapper } from './account-entity-to-do.mapper';
 
 describe('AccountEntityToDoMapper', () => {

@@ -1,4 +1,4 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { Logger } from '@infra/logger';
 import { MailService } from '@infra/mail';
 import { ObjectId } from '@mikro-orm/mongodb';
@@ -15,11 +15,11 @@ import { schoolFactory } from '@modules/school/testing';
 import { UserService } from '@modules/user';
 import { userDoFactory } from '@modules/user/testing';
 import { BadRequestException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { LanguageType } from '@shared/domain/interface';
 import { RegistrationRepo } from '../../repo';
 import { registrationFactory } from '../../testing/registration.factory';
-import { Registration, RegistrationCreateProps, RegistrationProps } from '../do';
+import { type Registration, type RegistrationCreateProps, type RegistrationProps } from '../do';
 import { ResendingRegistrationMailLoggable } from '../error/resend-registration-mail.loggable';
 import { RegistrationService } from './registration.service';
 

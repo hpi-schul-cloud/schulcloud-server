@@ -1,6 +1,6 @@
-import { Platform, Type } from '@mikro-orm/core';
-import { EntityId } from '@shared/domain/types';
+import { type Platform, Type } from '@mikro-orm/core';
 import { MongoPlatform, ObjectId } from '@mikro-orm/mongodb';
+import type { EntityId } from '../../domain/types';
 
 export class ObjectIdType extends Type<EntityId, ObjectId> {
 	public convertToDatabaseValue(value: EntityId, platform: Platform): ObjectId {
@@ -15,7 +15,7 @@ export class ObjectIdType extends Type<EntityId, ObjectId> {
 
 	private validatePlatformSupport(platform: Platform): void {
 		if (!(platform instanceof MongoPlatform)) {
-			throw new Error('ObjectId custom type implemented only for Mongo.');
+			throw new TypeError('ObjectId custom type implemented only for Mongo.');
 		}
 	}
 }

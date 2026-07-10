@@ -1,9 +1,9 @@
 import { AesEncryptionHelper } from '@shared/common/utils';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { BaseFactory } from '@testing/factory/base.factory';
-import { DeepPartial } from 'fishery';
+import { type DeepPartial } from 'fishery';
 import { SystemTypeEnum } from '../domain';
-import { LdapConfigEntity, OauthConfigEntity, OidcConfigEntity, SystemEntity, SystemEntityProps } from '../repo';
+import { LdapConfigEntity, OauthConfigEntity, OidcConfigEntity, SystemEntity, type SystemEntityProps } from '../repo';
 
 export const systemOauthConfigEntityFactory = BaseFactory.define<OauthConfigEntity, OauthConfigEntity>(
 	OauthConfigEntity,

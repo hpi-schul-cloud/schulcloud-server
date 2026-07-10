@@ -1,4 +1,4 @@
-import { SchulconnexGroupRole, SchulconnexSonstigeGruppenzugehoerigeResponse } from '@infra/schulconnex-client';
+import { SchulconnexGroupRole, type SchulconnexSonstigeGruppenzugehoerigeResponse } from '@infra/schulconnex-client';
 import { GroupRoleUnknownLoggable } from './group-role-unknown.loggable';
 
 describe('GroupRoleUnknownLoggable', () => {

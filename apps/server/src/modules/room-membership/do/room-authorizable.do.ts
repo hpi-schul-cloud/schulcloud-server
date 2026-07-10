@@ -1,6 +1,6 @@
-import { RoleDto } from '@modules/role';
-import { AuthorizableObject } from '@shared/domain/domain-object';
-import { EntityId } from '@shared/domain/types';
+import { type RoleDto } from '@modules/role';
+import { type AuthorizableObject } from '@shared/domain/domain-object';
+import { type EntityId } from '@shared/domain/types';
 
 export type UserWithRoomRoles = {
 	roles: RoleDto[];

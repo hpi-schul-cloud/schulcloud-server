@@ -1,7 +1,7 @@
 export class SchoolExternalToolConfigurationStatus {
-	isOutdatedOnScopeSchool: boolean;
+	public isOutdatedOnScopeSchool: boolean;
 
-	isGloballyDeactivated: boolean;
+	public isGloballyDeactivated: boolean;
 
 	constructor(props: SchoolExternalToolConfigurationStatus) {
 		this.isOutdatedOnScopeSchool = props.isOutdatedOnScopeSchool;

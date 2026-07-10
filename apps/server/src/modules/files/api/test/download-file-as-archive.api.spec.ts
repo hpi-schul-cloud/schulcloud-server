@@ -1,6 +1,5 @@
 import { CoreModule } from '@core/core.module';
-import { ErrorModule } from '@core/error';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { AuthGuardModule, AuthGuardOptions, JWT_AUTH_GUARD_CONFIG_TOKEN, JwtAuthGuardConfig } from '@infra/auth-guard';
 import {
 	AUTHORIZATION_CLIENT_CONFIG_TOKEN,
@@ -9,13 +8,14 @@ import {
 	AuthorizationClientModule,
 } from '@infra/authorization-client';
 import { ConfigurationModule } from '@infra/configuration';
+import { ErrorModule } from '@infra/error';
 import { LoggerModule } from '@infra/logger';
 import { S3ClientAdapter } from '@infra/s3-client';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { AccountEntity } from '@modules/account/repo';
 import { storageProviderFactory } from '@modules/school/testing';
 import { User } from '@modules/user/repo';
-import { ForbiddenException, HttpStatus, INestApplication } from '@nestjs/common';
+import { ForbiddenException, HttpStatus, type INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
@@ -25,7 +25,7 @@ import { TEST_JWT_CONFIG_TOKEN, TestJwtModuleConfig } from '@testing/test-jwt-mo
 import { Readable } from 'node:stream';
 import { DownloadArchiveService, FileOwnerModel, LegacyFileStorageAdapter } from '../../domain';
 import { SignedUrlResponseVo } from '../../domain/vo';
-import { LEGACY_FILE_ARCHIVE_CONFIG_TOKEN, LegacyFileArchiveConfig } from '../../legacy-file-archive.config';
+import { LEGACY_FILE_ARCHIVE_CONFIG_TOKEN, type LegacyFileArchiveConfig } from '../../legacy-file-archive.config';
 import { fileDomainFactory, userForLoginFactory } from '../../testing';
 import { DownloadArchiveUC } from '../download-archive.uc';
 import { LegacyFileArchiveController } from '../legacy-file-archive.controller';

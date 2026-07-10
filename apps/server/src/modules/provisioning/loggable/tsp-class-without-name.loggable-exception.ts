@@ -1,6 +1,6 @@
-import { Class } from '@modules/class';
-import { Loggable, LoggableMessage } from '@shared/common/loggable';
-import { ExternalClassDto } from '../dto';
+import { type Class } from '@modules/class';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
+import { type ExternalClassDto } from '../dto';
 
 export class TspClassWithoutNameLoggable implements Loggable {
 	constructor(

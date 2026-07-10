@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseFactory } from '@testing/factory/base.factory';
-import { MediaAvailableLineElement, MediaAvailableLineElementProps } from '../domain';
+import { MediaAvailableLineElement, type MediaAvailableLineElementProps } from '../domain';
 
 export const mediaAvailableLineElementFactory = BaseFactory.define<
 	MediaAvailableLineElement,

@@ -1,23 +1,23 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { mediaBoardFactory, mediaExternalToolElementFactory } from '@modules/board/testing';
 import { ExternalToolService } from '@modules/tool';
 import { CustomParameterScope, ToolContextType } from '@modules/tool/common/enum';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool';
-import { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
+import { type ContextExternalTool } from '@modules/tool/context-external-tool/domain';
 import { contextExternalToolFactory } from '@modules/tool/context-external-tool/testing';
-import { ExternalTool } from '@modules/tool/external-tool/domain';
+import { type ExternalTool } from '@modules/tool/external-tool/domain';
 import { ExternalToolLogoService } from '@modules/tool/external-tool/service';
 import { externalToolFactory } from '@modules/tool/external-tool/testing';
 import { SchoolExternalToolService } from '@modules/tool/school-external-tool';
-import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
+import { type SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { schoolExternalToolFactory } from '@modules/tool/school-external-tool/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { Page } from '@shared/domain/domainobject';
 import { setupEntities } from '@testing/database';
-import { MediaAvailableLine, MediaBoard, MediaExternalToolElement } from '../../domain';
+import { type MediaAvailableLine, type MediaBoard, type MediaExternalToolElement } from '../../domain';
 import { MediaAvailableLineService } from './media-available-line.service';
 
 describe(MediaAvailableLineService.name, () => {

@@ -11,8 +11,8 @@ export class BoardContextResponse {
 	@ApiProperty({
 		pattern: bsonStringPattern,
 	})
-	id: string;
+	public id: string;
 
 	@ApiProperty({ enum: BoardExternalReferenceType, enumName: 'BoardExternalReferenceType' })
-	type: BoardExternalReferenceType;
+	public type: BoardExternalReferenceType;
 }

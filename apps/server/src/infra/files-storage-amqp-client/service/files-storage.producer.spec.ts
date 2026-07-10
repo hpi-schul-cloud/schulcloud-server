@@ -1,10 +1,10 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { StorageLocation } from '@infra/files-storage-amqp-client';
 import { LegacyLogger } from '@infra/logger';
 import { ErrorMapper } from '@infra/rabbitmq';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { FilesStorageAMQPClientConfig } from '../files-storage-amqp-client-config';
 import { FileRecordParentType, FilesStorageEvents } from '../interfaces';
 import { FilesStorageProducer } from './files-storage.producer';

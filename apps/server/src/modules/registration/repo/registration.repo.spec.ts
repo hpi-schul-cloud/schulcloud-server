@@ -1,7 +1,7 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { RoomEntity } from '@modules/room';
 import { roomEntityFactory } from '@modules/room/testing';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { registrationEntityFactory, registrationFactory } from '../testing';

@@ -1,6 +1,4 @@
-import { LegacyLogger } from '@infra/logger';
 import { EntityData, EntityName } from '@mikro-orm/core';
-import { EntityManager } from '@mikro-orm/mongodb';
 import { SchoolEntity, StorageProviderEntity } from '@modules/school/repo';
 import { SystemEntity } from '@modules/system/repo';
 import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
@@ -14,25 +12,18 @@ import { LegacySchoolDo } from '../domain';
  */
 @Injectable()
 export class LegacySchoolRepo extends BaseDORepo<LegacySchoolDo, SchoolEntity> {
-	constructor(
-		protected readonly _em: EntityManager,
-		protected readonly logger: LegacyLogger
-	) {
-		super(_em, logger);
-	}
-
 	get entityName(): EntityName<SchoolEntity> {
 		return SchoolEntity;
 	}
 
-	async findByExternalId(externalId: string, systemId: string): Promise<LegacySchoolDo | null> {
+	public async findByExternalId(externalId: string, systemId: string): Promise<LegacySchoolDo | null> {
 		const school: SchoolEntity | null = await this._em.findOne(SchoolEntity, { externalId, systems: systemId });
 
 		const schoolDo: LegacySchoolDo | null = school ? this.mapEntityToDO(school) : null;
 		return schoolDo;
 	}
 
-	async findBySchoolNumber(officialSchoolNumber: string): Promise<LegacySchoolDo | null> {
+	public async findBySchoolNumber(officialSchoolNumber: string): Promise<LegacySchoolDo | null> {
 		const [schools, count] = await this._em.findAndCount(SchoolEntity, { officialSchoolNumber });
 		if (count > 1) {
 			throw new InternalServerErrorException(`Multiple schools found for officialSchoolNumber ${officialSchoolNumber}`);
@@ -42,7 +33,7 @@ export class LegacySchoolRepo extends BaseDORepo<LegacySchoolDo, SchoolEntity> {
 		return schoolDo;
 	}
 
-	mapEntityToDO(entity: SchoolEntity): LegacySchoolDo {
+	public mapEntityToDO(entity: SchoolEntity): LegacySchoolDo {
 		return new LegacySchoolDo({
 			id: entity.id,
 			externalId: entity.externalId,
@@ -62,7 +53,7 @@ export class LegacySchoolRepo extends BaseDORepo<LegacySchoolDo, SchoolEntity> {
 		});
 	}
 
-	mapDOToEntityProperties(entityDO: LegacySchoolDo): EntityData<SchoolEntity> {
+	public mapDOToEntityProperties(entityDO: LegacySchoolDo): EntityData<SchoolEntity> {
 		return {
 			externalId: entityDO.externalId,
 			features: entityDO.features,

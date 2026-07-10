@@ -1,16 +1,16 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Logger } from '@infra/logger';
-import { OauthAdapterService, OAuthTokenDto } from '@modules/oauth-adapter';
-import { HttpService } from '@nestjs/axios';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import { type Logger } from '@infra/logger';
+import { type OauthAdapterService, OAuthTokenDto } from '@infra/oauth-adapter';
+import { type HttpService } from '@nestjs/axios';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
 import { of } from 'rxjs';
 import { SchulconnexConfigurationMissingLoggable } from './loggable';
 import {
-	SchulconnexPoliciesInfoLicenseResponse,
-	SchulconnexPoliciesInfoResponse,
-	SchulconnexResponse,
+	type SchulconnexPoliciesInfoLicenseResponse,
+	type SchulconnexPoliciesInfoResponse,
+	type SchulconnexResponse,
 } from './response';
-import { InternalSchulconnexClientConfig } from './schulconnex-client.config';
+import { type InternalSchulconnexClientConfig } from './schulconnex-client.config';
 import { SchulconnexRestClient } from './schulconnex-rest-client';
 import { schulconnexPoliciesInfoLicenseResponseFactory, schulconnexResponseFactory } from './testing';
 

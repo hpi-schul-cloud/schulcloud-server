@@ -1,9 +1,9 @@
-import { EntityId } from '@shared/domain/types';
+import { type EntityId } from '@shared/domain/types';
 import { Scope } from '@shared/repo/scope';
-import { RoomEntity } from './entity';
+import { type RoomEntity } from './entity';
 
 export class RoomScope extends Scope<RoomEntity> {
-	byIds(ids?: EntityId[]): this {
+	public byIds(ids?: EntityId[]): this {
 		if (ids) {
 			this.addQuery({ id: { $in: ids } });
 		}

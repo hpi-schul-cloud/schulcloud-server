@@ -1,7 +1,7 @@
-import { Group } from '../group';
+import { type Group } from '../group';
 
 export class GroupDeletedEvent {
-	target: Group;
+	public target: Group;
 
 	constructor(target: Group) {
 		this.target = target;

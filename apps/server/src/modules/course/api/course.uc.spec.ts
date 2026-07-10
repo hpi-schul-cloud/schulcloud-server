@@ -1,10 +1,10 @@
 import { faker } from '@faker-js/faker';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationService } from '@modules/authorization';
-import { RoleDto, RoleName, RoleService } from '@modules/role';
+import { type RoleDto, RoleName, RoleService } from '@modules/role';
 import { User } from '@modules/user/repo';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { Permission, SortOrder } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { currentUserFactory } from '@testing/factory/currentuser.factory';

@@ -1,9 +1,9 @@
-import { MediaSource } from '@modules/media-source';
-import { MediaSourceEntity } from '@modules/media-source/entity';
+import { type MediaSource } from '@modules/media-source';
+import { type MediaSourceEntity } from '@modules/media-source/entity';
 import { MediaSourceMapper } from '@modules/media-source/repo';
-import { School } from '@modules/school';
+import { type School } from '@modules/school';
 import { SchoolEntityMapper } from '@modules/school/repo';
-import { MediaSchoolLicense } from '../../domain';
+import { type MediaSchoolLicense } from '../../domain';
 import { mediaSchoolLicenseEntityFactory, mediaSchoolLicenseFactory } from '../../testing';
 import { MediaSchoolLicenseEntityMapper } from './media-school-license.entity.mapper';
 

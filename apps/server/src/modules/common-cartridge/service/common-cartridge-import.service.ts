@@ -1,4 +1,3 @@
-import { DomainErrorHandler } from '@core/error';
 import { JwtPayloadVo } from '@infra/auth-guard';
 import {
 	BoardsClientAdapter,
@@ -26,6 +25,7 @@ import {
 } from '../import/common-cartridge-import.types';
 import { CommonCartridgeMessageLoggable } from '../loggable/common-cartridge-message.loggable';
 import { CommonCartridgeImportMapper } from './common-cartridge-import.mapper';
+import { DomainErrorHandler } from '@infra/error';
 
 const DEPTH_BOARD = 0;
 const DEPTH_COLUMN = 1;

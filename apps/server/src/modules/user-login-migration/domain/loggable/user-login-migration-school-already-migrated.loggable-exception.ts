@@ -1,5 +1,5 @@
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
 import { UnprocessableEntityException } from '@nestjs/common';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
 
 export class UserLoginMigrationSchoolAlreadyMigratedLoggableException
 	extends UnprocessableEntityException
@@ -9,7 +9,7 @@ export class UserLoginMigrationSchoolAlreadyMigratedLoggableException
 		super();
 	}
 
-	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			type: 'USER_LOGIN_MIGRATION_SCHOOL_HAS_ALREADY_MIGRATED',
 			message: 'School has already migrated',

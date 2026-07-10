@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { CountyEmbeddable, FederalStateProperties } from '@modules/school/repo';
-import { DeepPartial } from 'fishery';
+import { CountyEmbeddable, type FederalStateEntity, type FederalStateProperties } from '@modules/school/repo';
+import { type DeepPartial } from 'fishery';
 import { federalStateFactory } from './factory/federal-state.factory';
 
 type SeedFederalStateProperties = Omit<FederalStateProperties, 'counties' | 'createdAt' | 'updatedAt'> & {
@@ -208,7 +208,7 @@ const seedFederalStates: SeedFederalStateProperties[] = [
 	},
 ];
 
-export function generateFederalStates() {
+export function generateFederalStates(): FederalStateEntity[] {
 	return seedFederalStates.map((federalState) => {
 		const counties: CountyEmbeddable[] =
 			federalState.counties?.map(

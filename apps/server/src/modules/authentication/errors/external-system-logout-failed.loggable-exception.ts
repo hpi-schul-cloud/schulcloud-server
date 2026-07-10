@@ -1,6 +1,6 @@
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
 import { InternalServerErrorException } from '@nestjs/common';
-import { AxiosError } from 'axios';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
+import { type AxiosError } from 'axios';
 
 export class ExternalSystemLogoutFailedLoggableException extends InternalServerErrorException implements Loggable {
 	constructor(
@@ -15,7 +15,7 @@ export class ExternalSystemLogoutFailedLoggableException extends InternalServerE
 		});
 	}
 
-	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			type: 'INTERNAL_SERVER_ERROR',
 			stack: this.stack,

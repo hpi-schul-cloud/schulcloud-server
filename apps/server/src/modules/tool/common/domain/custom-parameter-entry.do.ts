@@ -1,7 +1,7 @@
 export class CustomParameterEntry {
-	name: string;
+	public name: string;
 
-	value?: string;
+	public value?: string;
 
 	constructor(props: CustomParameterEntry) {
 		this.name = props.name;

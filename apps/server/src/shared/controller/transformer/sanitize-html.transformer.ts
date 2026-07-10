@@ -1,8 +1,8 @@
 import { NotImplementedException } from '@nestjs/common';
-import { InputFormat } from '@shared/domain/types/input-format.types';
-import { Transform, TransformFnParams } from 'class-transformer';
+import { Transform, type TransformFnParams } from 'class-transformer';
 import { decode } from 'html-entities';
-import sanitize, { IOptions } from 'sanitize-html';
+import sanitize, { type IOptions } from 'sanitize-html';
+import { InputFormat } from '../../domain/types';
 
 const inputFormatsSanitizeConfig: Record<string, IOptions> = {
 	PlainText: {

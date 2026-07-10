@@ -10,7 +10,7 @@ export class CreateCardBodyParams {
 		isArray: true,
 		enum: ContentElementType,
 	})
-	public requiredEmptyElements?: ContentElementType[];
+	requiredEmptyElements?: ContentElementType[];
 
 	@IsInt()
 	@Min(0)
@@ -18,5 +18,5 @@ export class CreateCardBodyParams {
 	@ApiPropertyOptional({
 		description: 'Position within the column at which to insert the card. If omitted, the card is appended at the end.',
 	})
-	public position?: number;
+	position?: number;
 }

@@ -1,4 +1,4 @@
-import { SchoolYear } from '../../domain';
+import { type SchoolYear } from '../../domain';
 import { YearsResponse } from '../dto';
 import { SchoolYearResponseMapper } from './school-year.response.mapper';
 

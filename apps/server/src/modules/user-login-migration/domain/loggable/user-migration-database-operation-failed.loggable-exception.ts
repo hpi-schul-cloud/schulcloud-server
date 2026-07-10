@@ -1,7 +1,7 @@
-import { ErrorUtils } from '@core/error/utils';
-import { ErrorLogMessage, Loggable } from '@infra/logger';
+import { ErrorUtils } from '@infra/error';
 import { InternalServerErrorException } from '@nestjs/common';
-import { EntityId } from '@shared/domain/types';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
+import { type EntityId } from '@shared/domain/types';
 
 export class UserMigrationDatabaseOperationFailedLoggableException
 	extends InternalServerErrorException
@@ -15,7 +15,7 @@ export class UserMigrationDatabaseOperationFailedLoggableException
 		super(ErrorUtils.createHttpExceptionOptions(error));
 	}
 
-	public getLogMessage(): ErrorLogMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			type: 'USER_LOGIN_MIGRATION_DATABASE_OPERATION_FAILED',
 			stack: this.stack,

@@ -1,12 +1,12 @@
-import { Colors } from './types';
-import { MediaAvailableLineElement } from './media-available-line-element.do';
+import { type Colors } from './types';
+import { type MediaAvailableLineElement } from './media-available-line-element.do';
 // TODO
 export class MediaAvailableLine {
-	elements: MediaAvailableLineElement[];
+	public elements: MediaAvailableLineElement[];
 
-	backgroundColor: Colors;
+	public backgroundColor: Colors;
 
-	collapsed: boolean;
+	public collapsed: boolean;
 
 	constructor(props: MediaAvailableLineProps) {
 		this.elements = props.elements;

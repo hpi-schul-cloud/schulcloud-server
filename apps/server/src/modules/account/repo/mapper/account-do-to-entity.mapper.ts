@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Account } from '../../domain';
+import { type Account } from '../../domain';
 import { AccountEntity } from '../account.entity';
 
 export class AccountDoToEntityMapper {

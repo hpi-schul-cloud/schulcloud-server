@@ -1,5 +1,5 @@
 import { RABBITMQ_CONFIG_TOKEN, RabbitMQConfig } from '@infra/rabbitmq';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { MailModule } from './mail.module';
 import { MailService } from './mail.service';
 import { TEST_MAIL_CONFIG_TOKEN, TestMailConfig } from './testing';

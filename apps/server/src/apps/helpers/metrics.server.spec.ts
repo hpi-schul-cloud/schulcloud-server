@@ -1,8 +1,9 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Logger, LogMessage } from '@infra/logger';
-import { MetricConfig, METRICS_CONFIG_TOKEN, MetricsModule, ResponseTimeMetricsInterceptor } from '@infra/metrics';
-import { INestApplication } from '@nestjs/common';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import { Logger } from '@infra/logger';
+import { type MetricConfig, METRICS_CONFIG_TOKEN, MetricsModule, ResponseTimeMetricsInterceptor } from '@infra/metrics';
+import { type INestApplication } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
+import { type LogMessage } from '@shared/common/loggable';
 import { AppStartLoggable } from './app-start-loggable';
 import {
 	createMetricsServer,
@@ -135,7 +136,11 @@ describe('createMetricsServer', () => {
 		const setup = () => {
 			mockMetricConfig.featureMetricsEnabled = true;
 			mockMetricsApp.listen.mockImplementation(
-				(port: number | string, hostnameOrCallback?: string | (() => void), callback?: () => void): Promise<any> => {
+				(
+					port: number | string,
+					hostnameOrCallback?: string | (() => void),
+					callback?: () => void
+				): Promise<unknown> => {
 					// Handle both overloads
 					const actualCallback = typeof hostnameOrCallback === 'function' ? hostnameOrCallback : callback;
 

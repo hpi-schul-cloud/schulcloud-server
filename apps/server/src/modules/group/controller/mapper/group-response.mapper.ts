@@ -1,13 +1,13 @@
-import { Course } from '@modules/course';
-import { Page } from '@shared/domain/domainobject';
+import { type Course } from '@modules/course';
+import { type Page } from '@shared/domain/domainobject';
 import { GroupTypes } from '../../domain';
-import { ClassInfoDto, ResolvedGroupDto, ResolvedGroupUser } from '../../uc/dto';
+import { type ClassInfoDto, type ResolvedGroupDto, type ResolvedGroupUser } from '../../uc/dto';
 import {
 	ClassInfoResponse,
 	ClassInfoSearchListResponse,
 	ExternalSourceResponse,
 	GroupListResponse,
-	GroupPaginationParams,
+	type GroupPaginationParams,
 	GroupResponse,
 	GroupTypeResponse,
 	GroupUserResponse,
@@ -60,7 +60,7 @@ export class GroupResponseMapper {
 		return classInfoResponse;
 	}
 
-	static mapToGroupResponse(resolvedGroup: ResolvedGroupDto): GroupResponse {
+	public static mapToGroupResponse(resolvedGroup: ResolvedGroupDto): GroupResponse {
 		const externalSource: ExternalSourceResponse | undefined = resolvedGroup.externalSource
 			? new ExternalSourceResponse({
 					externalId: resolvedGroup.externalSource.externalId,
@@ -93,7 +93,10 @@ export class GroupResponseMapper {
 		return groupResponse;
 	}
 
-	static mapToGroupListResponse(groups: Page<ResolvedGroupDto>, pagination: GroupPaginationParams): GroupListResponse {
+	public static mapToGroupListResponse(
+		groups: Page<ResolvedGroupDto>,
+		pagination: GroupPaginationParams
+	): GroupListResponse {
 		const groupResponseData: GroupResponse[] = groups.data.map(
 			(group: ResolvedGroupDto): GroupResponse => this.mapToGroupResponse(group)
 		);

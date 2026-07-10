@@ -1,7 +1,7 @@
-import { PushDeletionRequestsOptions } from '../interface';
+import { type PushDeletionRequestsOptions } from '../interface';
 
 export class PushDeleteRequestsOptionsBuilder {
-	static build(
+	public static build(
 		refsFilePath: string,
 		targetRefDomain: string,
 		deleteInMinutes: number,

@@ -1,7 +1,7 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { EtherpadClientAdapter } from '@infra/etherpad-client';
 import { Logger } from '@infra/logger';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { CollaborativeTextEditorParentType } from '../api/dto/get-collaborative-text-editor-for-parent.params';
 import { COLLABORATIVE_TEXT_EDITOR_CONFIG_TOKEN } from '../collaborative-text-editor.config';
 import { CollaborativeTextEditorService } from './collaborative-text-editor.service';

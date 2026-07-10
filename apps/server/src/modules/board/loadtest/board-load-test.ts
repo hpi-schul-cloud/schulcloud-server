@@ -1,29 +1,29 @@
 import { duplicateUserProfiles } from './helper/class-definitions';
-import { getRandomCardTitle, getRandomLink, getRandomRichContentBody } from './helper/randomData';
+import { getRandomCardTitle, getRandomLink, getRandomRichContentBody } from './helper/random-data';
 import { sleep } from './helper/sleep';
-import { createLoadtestClient, LoadtestClient } from './loadtest-client';
-import { SocketConnection } from './socket-connection';
-import { SocketConnectionManager } from './socket-connection-manager';
-import { Callback, ClassDefinition, UserProfile } from './types';
+import { createLoadtestClient, type LoadtestClient } from './loadtest-client';
+import { type SocketConnection } from './socket-connection';
+import { type SocketConnectionManager } from './socket-connection-manager';
+import { type Callback, type ClassDefinition, type UserProfile } from './types';
 
 const SIMULATE_USER_TIME_MS = 120000;
 
 export class BoardLoadTest {
-	private columns: { id: string; cards: { id: string }[] }[] = [];
+	private readonly columns: { id: string; cards: { id: string }[] }[] = [];
 
-	private userProfiles: UserProfile[] = [];
+	private readonly userProfiles: UserProfile[] = [];
 
 	private loadtestClients: LoadtestClient[] = [];
 
 	constructor(
-		private socketConnectionManager: SocketConnectionManager,
+		private readonly socketConnectionManager: SocketConnectionManager,
 		classDefinition: ClassDefinition,
-		private onError: Callback
+		private readonly onError: Callback
 	) {
 		this.userProfiles = duplicateUserProfiles(classDefinition.users);
 	}
 
-	async runBoardTest(): Promise<void> {
+	public async runBoardTest(): Promise<void> {
 		try {
 			await this.simulateUsersActions();
 		} catch (err) {
@@ -31,7 +31,7 @@ export class BoardLoadTest {
 		}
 	}
 
-	async initializeLoadtestClients(boardId: string): Promise<void> {
+	public async initializeLoadtestClients(boardId: string): Promise<void> {
 		const connections = await this.socketConnectionManager.createConnections(this.userProfiles.length);
 		this.loadtestClients = connections.map((socketConnection: SocketConnection) => {
 			const loadtestClient = createLoadtestClient(socketConnection, boardId);
@@ -39,7 +39,7 @@ export class BoardLoadTest {
 		});
 	}
 
-	async simulateUsersActions() {
+	public async simulateUsersActions(): Promise<void> {
 		// eslint-disable-next-line arrow-body-style
 		const promises = this.loadtestClients.map((loadtestClient, index) => {
 			/* istanbul ignore next */
@@ -48,7 +48,11 @@ export class BoardLoadTest {
 		await Promise.all(promises);
 	}
 
-	async simulateUserActions(loadtestClient: LoadtestClient, userProfile: UserProfile, actionsMax = 1000000) {
+	public async simulateUserActions(
+		loadtestClient: LoadtestClient,
+		userProfile: UserProfile,
+		actionsMax = 1000000
+	): Promise<void> {
 		const startTime = performance.now();
 
 		await sleep(Math.ceil(Math.random() * 20000));
@@ -80,13 +84,13 @@ export class BoardLoadTest {
 		}
 	}
 
-	async createColumn(loadtestClient: LoadtestClient) {
+	public async createColumn(loadtestClient: LoadtestClient): Promise<void> {
 		const column = await loadtestClient.createColumn();
 		const position = this.trackColumn(column.id);
 		await loadtestClient.updateColumnTitle({ columnId: column.id, newTitle: `${position}. Spalte` });
 	}
 
-	async createRandomCard(loadtestClient: LoadtestClient, pauseMs = 1000) {
+	public async createRandomCard(loadtestClient: LoadtestClient, pauseMs = 1000): Promise<void> {
 		const columnId = this.getRandomColumnId();
 		const card = await loadtestClient.createCard({ columnId });
 		this.trackCard(columnId, card.id);
@@ -99,7 +103,7 @@ export class BoardLoadTest {
 		}
 	}
 
-	async createRandomElement(loadtestClient: LoadtestClient, cardId: string) {
+	public async createRandomElement(loadtestClient: LoadtestClient, cardId: string): Promise<void> {
 		if (Math.random() > 0.5) {
 			await loadtestClient.createAndUpdateLinkElement(cardId, getRandomLink());
 		} else {
@@ -107,12 +111,12 @@ export class BoardLoadTest {
 		}
 	}
 
-	trackColumn(columnId: string) {
+	public trackColumn(columnId: string): number {
 		this.columns.push({ id: columnId, cards: [] });
 		return this.columns.length;
 	}
 
-	trackCard(columnId: string, cardId: string) {
+	public trackCard(columnId: string, cardId: string): void {
 		const column = this.columns.find((col) => col.id === columnId);
 		if (column) {
 			column.cards.push({ id: cardId });
@@ -122,11 +126,11 @@ export class BoardLoadTest {
 		}
 	}
 
-	columnCount() {
+	public columnCount(): number {
 		return this.columns.length;
 	}
 
-	getRandomColumnId() {
+	public getRandomColumnId(): string {
 		return this.columns[Math.floor(Math.random() * this.columns.length)].id;
 	}
 }

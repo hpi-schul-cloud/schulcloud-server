@@ -1,5 +1,5 @@
-import { DomainErrorHandler } from '@core/error';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import { DomainErrorHandler } from '@infra/error';
 import { FilesStorageClientAdapterService } from '@infra/files-storage-amqp-client';
 import { H5pEditorProducer } from '@infra/h5p-editor-client';
 import { TldrawClientAdapter } from '@infra/tldraw-client';
@@ -7,7 +7,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { CollaborativeTextEditorService } from '@modules/collaborative-text-editor';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool';
 import { contextExternalToolFactory } from '@modules/tool/context-external-tool/testing';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import {
 	collaborativeTextEditorFactory,
 	drawingElementFactory,

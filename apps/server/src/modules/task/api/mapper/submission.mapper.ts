@@ -1,8 +1,8 @@
-import { Submission } from '../../repo';
+import { type Submission } from '../../repo';
 import { SubmissionStatusResponse } from '../dto';
 
 export class SubmissionMapper {
-	static mapToStatusResponse(submission: Submission): SubmissionStatusResponse {
+	public static mapToStatusResponse(submission: Submission): SubmissionStatusResponse {
 		const dto = new SubmissionStatusResponse({
 			id: submission.id,
 			submitters: submission.getSubmitterIds(),

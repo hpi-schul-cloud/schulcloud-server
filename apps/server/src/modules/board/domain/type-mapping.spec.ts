@@ -5,8 +5,8 @@ import { BoardNodeType } from './types/board-node-type.enum';
 import {
 	cardFactory,
 	collaborativeTextEditorFactory,
-	columnFactory,
 	columnBoardFactory,
+	columnFactory,
 	drawingElementFactory,
 	externalToolElementFactory,
 	fileElementFactory,
@@ -36,7 +36,10 @@ describe('getBoardNodeType', () => {
 	});
 
 	it('should throw error for unknown type', () => {
-		class UnknownType {}
+		class UnknownType {
+			readonly type = 'unknown';
+		}
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		expect(() => getBoardNodeType(new UnknownType() as any)).toThrow();
 	});
 });

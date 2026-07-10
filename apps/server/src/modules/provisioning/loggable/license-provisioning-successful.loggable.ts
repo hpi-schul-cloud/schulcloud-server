@@ -1,4 +1,4 @@
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
 
 export class LicenseProvisioningSuccessfulLoggable implements Loggable {
 	constructor(
@@ -6,7 +6,7 @@ export class LicenseProvisioningSuccessfulLoggable implements Loggable {
 		private readonly licenseCount: number
 	) {}
 
-	public getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			message: 'License provisioning successful',
 			data: {

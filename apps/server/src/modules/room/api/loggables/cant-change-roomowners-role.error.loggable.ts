@@ -1,14 +1,13 @@
 import { BadRequestException } from '@nestjs/common';
-import { ErrorLogMessage } from '@shared/common/error';
-import { Loggable } from '@shared/common/loggable';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
 
 export class CantChangeOwnersRoleLoggableException extends BadRequestException implements Loggable {
 	constructor(private readonly props: { currentUserId: string; roomId: string }) {
 		super();
 	}
 
-	public getLogMessage(): ErrorLogMessage {
-		const message: ErrorLogMessage = {
+	public getLogMessage(): LoggableMessage {
+		const message: LoggableMessage = {
 			type: 'CANT_CHANGE_OWNERS_ROLE',
 			stack: this.stack,
 			data: {

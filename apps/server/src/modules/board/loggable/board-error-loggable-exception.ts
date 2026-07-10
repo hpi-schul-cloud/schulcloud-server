@@ -1,5 +1,5 @@
-import { Loggable, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
 import { BadGatewayException } from '@nestjs/common';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
 
 const SEPARATOR = ' | ';
 const SEPARATOR_REPLACEMENT = '-|-';
@@ -38,7 +38,7 @@ export class BoardErrorLoggableException extends BadGatewayException implements 
 		super();
 	}
 
-	public getLogMessage(): LogMessage | ValidationErrorLogMessage {
+	public getLogMessage(): LoggableMessage {
 		const data = {
 			v: '1.4', // update this value whenever the format or separator changes
 			url: this.url,

@@ -1,6 +1,6 @@
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
 import { HttpStatus } from '@nestjs/common';
 import { BusinessError } from '@shared/common/error';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
 
 export class UserLoginMigrationUserAlreadyMigratedLoggableException extends BusinessError implements Loggable {
 	constructor(private readonly externalUserId: string) {
@@ -17,7 +17,7 @@ export class UserLoginMigrationUserAlreadyMigratedLoggableException extends Busi
 		);
 	}
 
-	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			type: this.type,
 			message: this.message,

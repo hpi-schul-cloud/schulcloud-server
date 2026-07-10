@@ -1,5 +1,5 @@
-import { CustomParameterEntryParam, SchoolExternalToolPostParams } from '../controller/dto';
-import { SchoolExternalToolProps } from '../domain';
+import { type CustomParameterEntryParam, type SchoolExternalToolPostParams } from '../controller/dto';
+import { type SchoolExternalToolProps } from '../domain';
 import { SchoolExternalToolRequestMapper } from './school-external-tool-request.mapper';
 
 describe('SchoolExternalToolRequestMapper', () => {

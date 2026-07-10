@@ -2,13 +2,13 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
 import { systemEntityFactory } from '@modules/system/testing';
-import { HttpStatus, INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { HttpStatus, type INestApplication } from '@nestjs/common';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
-import { Response } from 'supertest';
-import { OauthConfigEntity, SystemEntity } from '../../repo';
-import { PublicSystemListResponse, PublicSystemResponse } from '../dto/response';
+import { type Response } from 'supertest';
+import { type OauthConfigEntity, SystemEntity } from '../../repo';
+import { type PublicSystemListResponse, type PublicSystemResponse } from '../dto/response';
 
 const baseRouteName = '/systems';
 

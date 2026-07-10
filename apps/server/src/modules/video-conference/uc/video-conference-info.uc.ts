@@ -38,7 +38,8 @@ export class VideoConferenceInfoUc {
 			);
 
 			if (bbbRole === BBBRole.MODERATOR) {
-				options = videoConference.options;
+				const { options: videoConferenceOptions } = videoConference;
+				options = videoConferenceOptions;
 			}
 
 			const config: BBBBaseMeetingConfig = new BBBBaseMeetingConfig({
@@ -47,7 +48,7 @@ export class VideoConferenceInfoUc {
 
 			bbbResponse = await this.bbbService.getMeetingInfo(config);
 			state = VideoConferenceState.RUNNING;
-		} catch (e) {
+		} catch {
 			// TODO should be refactored to not use exceptions for flow control
 		}
 

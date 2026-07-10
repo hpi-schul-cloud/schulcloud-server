@@ -1,6 +1,6 @@
 import { ContentElementType, DeletedElement } from '../../domain';
 import { DeletedElementContent, DeletedElementResponse, TimestampsResponse } from '../dto';
-import { BaseResponseMapper } from './base-mapper.interface';
+import { type BaseResponseMapper } from './base-mapper.interface';
 
 export class DeletedElementResponseMapper implements BaseResponseMapper<DeletedElement, DeletedElementResponse> {
 	private static instance: DeletedElementResponseMapper;
@@ -13,7 +13,7 @@ export class DeletedElementResponseMapper implements BaseResponseMapper<DeletedE
 		return DeletedElementResponseMapper.instance;
 	}
 
-	mapToResponse(element: DeletedElement): DeletedElementResponse {
+	public mapToResponse(element: DeletedElement): DeletedElementResponse {
 		const result = new DeletedElementResponse({
 			id: element.id,
 			timestamps: new TimestampsResponse({ lastUpdatedAt: element.updatedAt, createdAt: element.createdAt }),
@@ -28,7 +28,7 @@ export class DeletedElementResponseMapper implements BaseResponseMapper<DeletedE
 		return result;
 	}
 
-	canMap(element: unknown): boolean {
+	public canMap(element: unknown): boolean {
 		return element instanceof DeletedElement;
 	}
 }

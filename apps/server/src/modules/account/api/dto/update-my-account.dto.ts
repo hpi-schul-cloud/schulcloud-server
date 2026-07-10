@@ -1,13 +1,13 @@
 export class UpdateMyAccountDto {
-	public passwordOld!: string;
+	passwordOld!: string;
 
-	public passwordNew?: string;
+	passwordNew?: string;
 
-	public email?: string;
+	email?: string;
 
-	public firstName?: string;
+	firstName?: string;
 
-	public lastName?: string;
+	lastName?: string;
 
 	constructor(props: UpdateMyAccountDto) {
 		this.passwordOld = props.passwordOld;

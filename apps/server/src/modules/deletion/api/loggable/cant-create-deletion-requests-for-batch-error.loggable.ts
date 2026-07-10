@@ -1,8 +1,7 @@
 import { BadRequestException } from '@nestjs/common';
-import { ErrorLogMessage } from '@shared/common/error';
-import { Loggable } from '@shared/common/loggable';
-import { EntityId } from '@shared/domain/types';
-import { BatchStatus } from '../../domain/types';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
+import { type EntityId } from '@shared/domain/types';
+import { type BatchStatus } from '../../domain/types';
 
 export class CantCreateDeletionRequestsForBatchErrorLoggable extends BadRequestException implements Loggable {
 	constructor(
@@ -12,8 +11,8 @@ export class CantCreateDeletionRequestsForBatchErrorLoggable extends BadRequestE
 		super();
 	}
 
-	public getLogMessage(): ErrorLogMessage {
-		const message: ErrorLogMessage = {
+	public getLogMessage(): LoggableMessage {
+		const message: LoggableMessage = {
 			type: 'CANT_CREATE_DELETION_REQUESTS_FOR_BATCH',
 			stack: this.stack,
 			data: {

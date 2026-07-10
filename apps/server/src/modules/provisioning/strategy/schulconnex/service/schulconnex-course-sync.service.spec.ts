@@ -1,19 +1,19 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Course, CourseDoService, CourseSyncAttribute, CourseSyncService } from '@modules/course';
+import { type Course, CourseDoService, CourseSyncAttribute, CourseSyncService } from '@modules/course';
 import {
-	CourseSynchronizationHistory,
-	CourseSynchronizationHistoryProps,
+	type CourseSynchronizationHistory,
+	type CourseSynchronizationHistoryProps,
 	CourseSynchronizationHistoryService,
 } from '@modules/course-synchronization-history';
 import { courseSynchronizationHistoryFactory } from '@modules/course-synchronization-history/testing';
 import { courseFactory } from '@modules/course/testing';
-import { Group } from '@modules/group';
+import { type Group } from '@modules/group';
 import { groupFactory } from '@modules/group/testing';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { ExternalSource } from '@shared/domain/domainobject';
 import { CourseSyncHistoryGroupExternalSourceMissingLoggableException } from '../../../loggable';
-import { PROVISIONING_CONFIG_TOKEN, ProvisioningConfig } from '../../../provisioning.config';
+import { PROVISIONING_CONFIG_TOKEN, type ProvisioningConfig } from '../../../provisioning.config';
 import { SchulconnexCourseSyncService } from './schulconnex-course-sync.service';
 
 describe(SchulconnexCourseSyncService.name, () => {

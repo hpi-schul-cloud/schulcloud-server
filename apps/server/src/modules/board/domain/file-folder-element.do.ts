@@ -10,7 +10,7 @@ export class FileFolderElement extends BoardNode<FileFolderElementProps> {
 		this.props.title = value;
 	}
 
-	canHaveChild(): boolean {
+	public canHaveChild(): boolean {
 		return false;
 	}
 }

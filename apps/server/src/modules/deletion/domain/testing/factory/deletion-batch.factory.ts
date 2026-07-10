@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { DoBaseFactory } from '@testing/factory/domainobject';
-import { DeletionBatch, DeletionBatchProps } from '../../do';
+import { DeletionBatch, type DeletionBatchProps } from '../../do';
 import { BatchStatus, DomainName } from '../../types';
 
 class DeletionBatchFactory extends DoBaseFactory<DeletionBatch, DeletionBatchProps> {

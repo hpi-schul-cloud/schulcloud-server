@@ -1,11 +1,11 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { RuntimeConfigMikroOrmRepo } from './runtime-config.repo';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { RuntimeConfigEntity, RuntimeConfigProperties } from './entity/runtime-config.entity';
-import { RuntimeConfigDefault } from '../domain/runtime-config-value.do';
+import { RuntimeConfigEntity, type RuntimeConfigProperties } from './entity/runtime-config.entity';
+import { type RuntimeConfigDefault } from '../domain/runtime-config-value.do';
 import { RUNTIME_CONFIG_DEFAULTS } from '../injection-keys';
 
 describe('Runtime Config Repo', () => {

@@ -1,7 +1,7 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 
-import { SortOrder, SortOrderMap } from '@shared/domain/interface';
-import { CustomParameter } from '../../common/domain';
+import { SortOrder, type SortOrderMap } from '@shared/domain/interface';
+import { type CustomParameter } from '../../common/domain';
 import {
 	CustomParameterLocation,
 	CustomParameterLocationParams,
@@ -14,20 +14,20 @@ import {
 	TokenEndpointAuthMethod,
 	ToolConfigType,
 } from '../../common/enum';
-import { ExternalToolSearchQuery } from '../../common/interface';
+import { type ExternalToolSearchQuery } from '../../common/interface';
 import {
 	BasicToolConfigParams,
 	CustomParameterPostParams,
 	ExternalToolCreateParams,
-	ExternalToolSearchParams,
+	type ExternalToolSearchParams,
 	ExternalToolSortBy,
 	ExternalToolUpdateParams,
 	Lti11ToolConfigCreateParams,
 	Lti11ToolConfigUpdateParams,
 	Oauth2ToolConfigCreateParams,
-	SortExternalToolParams,
+	type SortExternalToolParams,
 } from '../controller/dto';
-import { BasicToolConfig, ExternalTool, Lti11ToolConfig, Oauth2ToolConfig } from '../domain';
+import { type BasicToolConfig, type ExternalTool, Lti11ToolConfig, type Oauth2ToolConfig } from '../domain';
 import {
 	basicToolConfigFactory,
 	customParameterFactory,
@@ -35,7 +35,7 @@ import {
 	lti11ToolConfigFactory,
 	oauth2ToolConfigFactory,
 } from '../testing';
-import { ExternalToolCreate, ExternalToolUpdate } from '../uc';
+import { type ExternalToolCreate, type ExternalToolUpdate } from '../uc';
 import { ExternalToolRequestMapper } from './external-tool-request.mapper';
 
 describe('ExternalToolRequestMapper', () => {

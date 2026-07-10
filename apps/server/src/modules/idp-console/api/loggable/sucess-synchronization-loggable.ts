@@ -1,4 +1,4 @@
-import { LogMessage, Loggable } from '@infra/logger';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
 
 export class SucessSynchronizationLoggable implements Loggable {
 	constructor(
@@ -6,7 +6,7 @@ export class SucessSynchronizationLoggable implements Loggable {
 		private readonly usersSynchronizedCount?: number
 	) {}
 
-	getLogMessage(): LogMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			message: 'Synchronization proccess end with success',
 			data: {

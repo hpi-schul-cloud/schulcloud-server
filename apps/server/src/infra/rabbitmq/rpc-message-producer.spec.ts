@@ -1,5 +1,5 @@
-import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { type AmqpConnection } from '@golevelup/nestjs-rabbitmq';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { ErrorMapper, RpcMessageProducer } from '.';
 
 interface TestPayload {

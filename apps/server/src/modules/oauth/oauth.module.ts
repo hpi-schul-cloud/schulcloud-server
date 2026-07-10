@@ -1,10 +1,10 @@
 import { ConfigurationModule } from '@infra/configuration';
 import { EncryptionModule } from '@infra/encryption';
 import { LoggerModule } from '@infra/logger';
+import { OauthAdapterModule } from '@infra/oauth-adapter';
 import { AuthorizationModule } from '@modules/authorization';
 import { ErwinIdentifierModule } from '@modules/erwin-identifier/erwin-identifier.module';
 import { LegacySchoolModule } from '@modules/legacy-school';
-import { OauthAdapterModule } from '@modules/oauth-adapter';
 import { ProvisioningModule } from '@modules/provisioning';
 import { SystemModule } from '@modules/system';
 import { UserModule } from '@modules/user';

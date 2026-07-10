@@ -1,6 +1,6 @@
 import { ImATeapotException, Scope } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { FeathersServiceProvider } from './feathers-service.provider';
 
 describe('FeathersServiceProvider', () => {

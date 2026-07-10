@@ -1,8 +1,7 @@
 import { BadRequest } from '@feathersjs/errors';
 
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
 import type { RuntimeConfigValue } from '../runtime-config-value.do';
-import { Loggable } from '@shared/common/loggable';
-import { ErrorLogMessage } from '@shared/common/error';
 
 export class RuntimeConfigValueInvalidTypeLoggable extends BadRequest implements Loggable {
 	constructor(
@@ -13,7 +12,7 @@ export class RuntimeConfigValueInvalidTypeLoggable extends BadRequest implements
 	}
 
 	/* istanbul ignore next */
-	public getLogMessage(): ErrorLogMessage {
+	public getLogMessage(): LoggableMessage {
 		const message = {
 			message: this.message,
 			newValue: this.value,

@@ -1,11 +1,11 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BoardExternalReferenceType, BoardNodeService, ColumnBoard } from '@modules/board';
 import { cardFactory, columnBoardFactory } from '@modules/board/testing';
 import { CourseDoService } from '@modules/course';
 import { courseFactory } from '@modules/course/testing';
-import { Test, TestingModule } from '@nestjs/testing';
-import { MetaData, MetaDataEntityType } from '../../types';
+import { Test, type TestingModule } from '@nestjs/testing';
+import { type MetaData, MetaDataEntityType } from '../../types';
 import { BoardUrlHandler } from './board-url-handler';
 
 describe(BoardUrlHandler.name, () => {

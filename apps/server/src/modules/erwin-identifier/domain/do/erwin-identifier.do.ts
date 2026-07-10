@@ -1,6 +1,6 @@
-import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
-import { EntityId } from '@shared/domain/types';
-import { ReferencedEntityType } from '../../types';
+import { type AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
+import { type EntityId } from '@shared/domain/types';
+import { type ReferencedEntityType } from '../../types';
 
 export interface ErwinIdentifierProps extends AuthorizableObject {
 	erwinId: string;

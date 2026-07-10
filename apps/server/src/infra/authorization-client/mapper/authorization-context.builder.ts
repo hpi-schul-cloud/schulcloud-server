@@ -1,11 +1,11 @@
 import {
-	AuthorizationContextParams,
+	type AuthorizationContextParams,
 	AuthorizationContextParamsAction,
-	AuthorizationContextParamsRequiredPermissions,
+	type AuthorizationContextParamsRequiredPermissions,
 } from '../authorization-api-client';
 
 export class AuthorizationContextBuilder {
-	static build(
+	public static build(
 		requiredPermissions: Array<AuthorizationContextParamsRequiredPermissions>,
 		action: AuthorizationContextParamsAction
 	): AuthorizationContextParams {
@@ -15,13 +15,15 @@ export class AuthorizationContextBuilder {
 		};
 	}
 
-	static write(requiredPermissions: AuthorizationContextParamsRequiredPermissions[]): AuthorizationContextParams {
+	public static write(
+		requiredPermissions: AuthorizationContextParamsRequiredPermissions[]
+	): AuthorizationContextParams {
 		const context = this.build(requiredPermissions, AuthorizationContextParamsAction.WRITE);
 
 		return context;
 	}
 
-	static read(requiredPermissions: AuthorizationContextParamsRequiredPermissions[]): AuthorizationContextParams {
+	public static read(requiredPermissions: AuthorizationContextParamsRequiredPermissions[]): AuthorizationContextParams {
 		const context = this.build(requiredPermissions, AuthorizationContextParamsAction.READ);
 
 		return context;

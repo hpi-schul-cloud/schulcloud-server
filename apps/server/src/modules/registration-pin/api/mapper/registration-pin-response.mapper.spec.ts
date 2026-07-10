@@ -1,5 +1,5 @@
 import { registrationPinEntityFactory } from '../../entity/testing';
-import { GetRegistrationPinResponse } from '../dto';
+import { type GetRegistrationPinResponse } from '../dto';
 import { RegistrationPinResponseMapper } from './registration-pin-response.mapper';
 
 describe('RegistrationPinResponseMapper', () => {

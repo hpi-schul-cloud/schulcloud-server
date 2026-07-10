@@ -9,17 +9,17 @@ import { SystemEntity } from '@modules/system/repo';
 import { systemEntityFactory } from '@modules/system/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
-import { Test, TestingModule } from '@nestjs/testing';
-import { ExternalSource, Page } from '@shared/domain/domainobject';
+import { Test, type TestingModule } from '@nestjs/testing';
+import { ExternalSource, type Page } from '@shared/domain/domainobject';
 import { SortOrder } from '@shared/domain/interface';
-import { EntityId } from '@shared/domain/types';
+import { type EntityId } from '@shared/domain/types';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
-import { Group, GroupAggregateScope, GroupProps, GroupTypes, GroupUser } from '../domain';
+import { type Group, GroupAggregateScope, type GroupProps, GroupTypes, GroupUser } from '../domain';
 import { GroupEntity, GroupEntityTypes, GroupUserEmbeddable } from '../entity';
 import { groupEntityFactory, groupFactory } from '../testing';
 import { GroupRepo } from './group.repo';
-import { Role } from '@modules/role/repo';
+import { type Role } from '@modules/role/repo';
 
 describe(GroupRepo.name, () => {
 	let module: TestingModule;
@@ -479,6 +479,22 @@ describe(GroupRepo.name, () => {
 				const result: Page<Group> = await repo.findByUsersAndRoomsSchoolId(school.id, [GroupTypes.ROOM]);
 
 				expect(result.data).toHaveLength(0);
+			});
+		});
+
+		describe('when pagination options are provided', () => {
+			it('should return only the requested page but report the full total', async () => {
+				const { role, school } = await setup();
+				await addGroup(school, role, 1, 0);
+				await addGroup(school, role, 1, 0);
+				await addGroup(school, role, 1, 0);
+
+				const result: Page<Group> = await repo.findByUsersAndRoomsSchoolId(school.id, [GroupTypes.ROOM], {
+					pagination: { skip: 1, limit: 1 },
+				});
+
+				expect(result.total).toEqual(3);
+				expect(result.data).toHaveLength(1);
 			});
 		});
 	});

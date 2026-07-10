@@ -1,6 +1,6 @@
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
 import { HttpStatus } from '@nestjs/common';
 import { BusinessError } from '@shared/common/error';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
 
 export class IdTokenExtractionFailureLoggableException extends BusinessError implements Loggable {
 	constructor(
@@ -18,7 +18,7 @@ export class IdTokenExtractionFailureLoggableException extends BusinessError imp
 		);
 	}
 
-	public getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	public getLogMessage(): LoggableMessage {
 		const logData = Array.isArray(this.fieldName) ? this.fieldName.join(', ') : this.fieldName;
 		return {
 			type: this.type,

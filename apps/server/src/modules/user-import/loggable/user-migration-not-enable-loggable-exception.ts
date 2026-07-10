@@ -1,5 +1,5 @@
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
 import { ForbiddenException } from '@nestjs/common';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
 
 export class UserMigrationIsNotEnabledLoggableException extends ForbiddenException implements Loggable {
 	constructor(
@@ -11,7 +11,7 @@ export class UserMigrationIsNotEnabledLoggableException extends ForbiddenExcepti
 		});
 	}
 
-	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			type: 'USER_MIGRATION_IS_NOT_ENABLED',
 			message: 'Feature flag of user migration may be disable or the school is not an LDAP pilot',

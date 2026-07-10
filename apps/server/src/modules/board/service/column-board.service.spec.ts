@@ -1,16 +1,16 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { StorageLocation } from '@infra/files-storage-amqp-client';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
-import { Test, TestingModule } from '@nestjs/testing';
-import { AuthorizableObject } from '@shared/domain/domain-object';
-import { EntityId } from '@shared/domain/types';
+import { CopyElementType, CopyHelperService, type CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
+import { Test, type TestingModule } from '@nestjs/testing';
+import { type AuthorizableObject } from '@shared/domain/domain-object';
+import { type EntityId } from '@shared/domain/types';
 import {
-	BoardExternalReference,
+	type BoardExternalReference,
 	BoardExternalReferenceType,
 	BoardNodeFactory,
 	ColumnBoard,
-	ColumnBoardProps,
+	type ColumnBoardProps,
 } from '../domain';
 import { BoardNodeRepo } from '../repo';
 import { columnBoardFactory } from '../testing';

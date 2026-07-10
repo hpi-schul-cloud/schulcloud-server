@@ -1,6 +1,6 @@
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
 import { BadRequestException } from '@nestjs/common';
-import { EntityId } from '@shared/domain/types';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
+import { type EntityId } from '@shared/domain/types';
 
 export class MediaBoardElementAlreadyExistsLoggableException extends BadRequestException implements Loggable {
 	constructor(
@@ -10,7 +10,7 @@ export class MediaBoardElementAlreadyExistsLoggableException extends BadRequestE
 		super();
 	}
 
-	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			type: 'MEDIA_BOARD_ELEMENT_ALREADY_EXISTS',
 			message: 'Media element already exists on media board',

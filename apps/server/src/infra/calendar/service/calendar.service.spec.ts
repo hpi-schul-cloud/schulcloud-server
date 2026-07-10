@@ -1,15 +1,15 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { CalendarEventDto, CalendarService } from '@infra/calendar';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import { type CalendarEventDto, CalendarService } from '@infra/calendar';
 import { Logger } from '@infra/logger';
 import { HttpService } from '@nestjs/axios';
 import { HttpStatus, InternalServerErrorException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
-import { AxiosResponse } from 'axios';
+import { type AxiosResponse } from 'axios';
 import { of, throwError } from 'rxjs';
 import { CALENDAR_CONFIG_TOKEN, CalendarConfig } from '../calendar.config';
-import { CalendarEventId } from '../interface/calendar-event-id.interface';
-import { CalendarEvent } from '../interface/calendar-event.interface';
+import { type CalendarEventId } from '../interface/calendar-event-id.interface';
+import { type CalendarEvent } from '../interface/calendar-event.interface';
 import { CalendarMapper } from '../mapper/calendar.mapper';
 
 describe('CalendarServiceSpec', () => {

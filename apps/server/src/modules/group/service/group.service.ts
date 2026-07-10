@@ -60,8 +60,12 @@ export class GroupService implements AuthorizationLoaderServiceGeneric<Group> {
 		return groups;
 	}
 
-	public async findByUsersAndRoomsSchoolId(schoolId: EntityId, types?: GroupTypes[]): Promise<Page<Group>> {
-		const groups: Page<Group> = await this.groupRepo.findByUsersAndRoomsSchoolId(schoolId, types);
+	public async findByUsersAndRoomsSchoolId(
+		schoolId: EntityId,
+		types?: GroupTypes[],
+		options?: IFindOptions<Group>
+	): Promise<Page<Group>> {
+		const groups: Page<Group> = await this.groupRepo.findByUsersAndRoomsSchoolId(schoolId, types, options);
 
 		return groups;
 	}

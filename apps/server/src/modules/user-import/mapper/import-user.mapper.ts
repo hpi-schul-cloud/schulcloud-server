@@ -1,14 +1,14 @@
 import { BadRequestException } from '@nestjs/common';
 import { StringValidator } from '@shared/common/validator';
-import { SortOrderMap } from '@shared/domain/interface';
+import { type SortOrderMap } from '@shared/domain/interface';
 import {
-	FilterImportUserParams,
+	type FilterImportUserParams,
 	ImportUserResponse,
 	ImportUserSortOrder,
-	SortImportUserParams,
+	type SortImportUserParams,
 } from '../controller/dto';
-import { ImportUserFilter } from '../domain/interface';
-import { ImportUser } from '../entity';
+import { type ImportUserFilter } from '../domain/interface';
+import { type ImportUser } from '../entity';
 import { ImportUserMatchMapper } from './match.mapper';
 import { RoleNameMapper } from './role-name.mapper';
 import { UserMatchMapper } from './user-match.mapper';

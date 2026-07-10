@@ -1,20 +1,20 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { SystemService } from '@modules/system';
 import { systemFactory } from '@modules/system/testing';
 import { NotFoundException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { IFindOptions, SortOrder } from '@shared/domain/interface';
+import { Test, type TestingModule } from '@nestjs/testing';
+import { type IFindOptions, SortOrder } from '@shared/domain/interface';
 import { SCHOOL_CONFIG_TOKEN, SchoolConfig, StudentTeamCreationOption } from '../../school.config';
 import { schoolFactory } from '../../testing';
-import { SchoolForLdapLogin, SchoolProps, SystemForLdapLogin } from '../do';
+import { SchoolForLdapLogin, type SchoolProps, SystemForLdapLogin } from '../do';
 import { SchoolFactory } from '../factory';
-import { SchoolRepo } from '../interface';
+import { type SchoolRepo } from '../interface';
 import {
 	SchoolHasNoSystemLoggableException,
 	SystemCanNotBeDeletedLoggableException,
 	SystemNotFoundLoggableException,
 } from '../loggable';
-import { SchoolQuery } from '../query';
+import { type SchoolQuery } from '../query';
 import { SchoolService } from './school.service';
 
 describe('SchoolService', () => {

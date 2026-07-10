@@ -1,4 +1,5 @@
-import { ErrorLogMessage, Loggable } from '@infra/logger';
+import { type ErrorLogMessage } from '@shared/common/error';
+import { type Loggable } from '@shared/common/loggable';
 
 export class AmqpConnectionLostLoggable implements Loggable {
 	constructor(private readonly error: Error) {}

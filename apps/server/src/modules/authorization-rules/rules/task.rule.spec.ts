@@ -1,4 +1,4 @@
-import { DeepPartial } from '@mikro-orm/core';
+import { type DeepPartial } from '@mikro-orm/core';
 import {
 	Action,
 	AUTHORIZATION_CONFIG_TOKEN,
@@ -16,7 +16,7 @@ import { taskFactory } from '@modules/task/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { NotImplementedException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { CourseGroupRule } from './course-group.rule';

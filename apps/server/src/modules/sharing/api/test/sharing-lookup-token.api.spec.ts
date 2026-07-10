@@ -2,15 +2,15 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { courseEntityFactory } from '@modules/course/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
-import { HttpStatus, INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { HttpStatus, type INestApplication } from '@nestjs/common';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { ShareTokenContextType, ShareTokenParentType } from '../../domainobject/share-token.do';
 import { ShareTokenService } from '../../service';
-import { SHARING_PUBLIC_API_CONFIG_TOKEN, SharingPublicApiConfig } from '../../sharing.config';
-import { ShareTokenInfoResponse } from '../dto';
+import { SHARING_PUBLIC_API_CONFIG_TOKEN, type SharingPublicApiConfig } from '../../sharing.config';
+import { type ShareTokenInfoResponse } from '../dto';
 
 describe(`share token lookup (api)`, () => {
 	let app: INestApplication;
@@ -86,13 +86,10 @@ describe(`share token lookup (api)`, () => {
 			await em.persist([course, teacherAccount, teacherUser]).flush();
 			em.clear();
 
-			const shareToken = await shareTokenService.createToken(
-				{
-					parentType,
-					parentId: course.id,
-				},
-				undefined
-			);
+			const shareToken = await shareTokenService.createToken({
+				parentType,
+				parentId: course.id,
+			});
 
 			const loggedInClient = await testApiClient.login(teacherAccount);
 

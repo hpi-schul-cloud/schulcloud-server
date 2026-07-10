@@ -20,6 +20,9 @@ type UserPreferences = {
 	firstLogin: boolean;
 };
 
+type Options = {
+	allowUpdate?: boolean;
+};
 @Injectable()
 export class AccountService extends AbstractAccountService {
 	constructor(
@@ -49,7 +52,8 @@ export class AccountService extends AbstractAccountService {
 		if (updateUser) {
 			try {
 				await this.userService.saveEntity(user);
-			} catch (err: unknown) {
+			} catch {
+				// TODO: handle error
 				throw new EntityNotFoundError('User');
 			}
 		}
@@ -140,14 +144,14 @@ export class AccountService extends AbstractAccountService {
 		if (updateUser) {
 			try {
 				await this.userService.saveEntity(targetUser);
-			} catch (err) {
+			} catch {
 				throw new EntityNotFoundError('User');
 			}
 		}
 		if (updateAccount) {
 			try {
 				return await this.save(targetAccount);
-			} catch (err) {
+			} catch {
 				throw new EntityNotFoundError('AccountEntity');
 			}
 		}
@@ -182,7 +186,7 @@ export class AccountService extends AbstractAccountService {
 		let user: User;
 		try {
 			user = await this.userService.getUserEntityWithRoles(userId);
-		} catch (err) {
+		} catch {
 			throw new EntityNotFoundError('User');
 		}
 
@@ -206,13 +210,13 @@ export class AccountService extends AbstractAccountService {
 		try {
 			account.password = password;
 			await this.save(account);
-		} catch (err) {
+		} catch {
 			throw new EntityNotFoundError('AccountEntity');
 		}
 		try {
 			user.forcePasswordChange = false;
 			await this.userService.saveEntity(user);
-		} catch (err) {
+		} catch {
 			throw new EntityNotFoundError('User');
 		}
 	}
@@ -270,10 +274,8 @@ export class AccountService extends AbstractAccountService {
 		return savedDbAccounts;
 	}
 
-	public async validateAccountBeforeSaveOrReject(
-		accountSave: AccountSave,
-		options: { allowUpdate?: boolean } = { allowUpdate: false }
-	): Promise<void> {
+	public async validateAccountBeforeSaveOrReject(accountSave: AccountSave, options?: Options): Promise<void> {
+		options = options || { allowUpdate: false };
 		// if username is undefined or empty, throw error ✔
 		if (!accountSave.username || !isNotEmpty(accountSave.username)) {
 			throw new ValidationError('username can not be empty');
@@ -292,7 +294,7 @@ export class AccountService extends AbstractAccountService {
 			throw new ValidationError('Username is not an email');
 		}
 
-		if (options?.allowUpdate === false) {
+		if (options.allowUpdate === false) {
 			// checkExistence ✔
 			if (accountSave.userId && (await this.findByUserId(accountSave.userId))) {
 				throw new ValidationError('Account already exists');
@@ -312,7 +314,7 @@ export class AccountService extends AbstractAccountService {
 		}
 	}
 
-	public async saveWithValidation(accountSave: AccountSave, options?: { allowUpdate?: boolean }): Promise<void> {
+	public async saveWithValidation(accountSave: AccountSave, options?: Options): Promise<void> {
 		await this.validateAccountBeforeSaveOrReject(accountSave, options);
 		await this.save(accountSave);
 	}

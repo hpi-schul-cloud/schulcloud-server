@@ -1,6 +1,6 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { RoomInvitationLinkService } from './room-invitation-link.service';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { RoomInvitationLinkRepo } from '../../repo';
 import { roomInvitationLinkTestFactory } from '@modules/room/testing/room-invitation-link.test.factory';
 import { RoomDeletedEvent } from '../events/room-deleted.event';

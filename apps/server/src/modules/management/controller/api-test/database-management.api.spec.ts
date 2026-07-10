@@ -3,8 +3,8 @@ import { FeathersServiceProvider } from '@infra/feathers';
 import { MikroORM } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { ManagementServerTestModule } from '@modules/management/management-server.app.module';
-import { ExpressAdapter, NestExpressApplication } from '@nestjs/platform-express';
-import { Test, TestingModule } from '@nestjs/testing';
+import { ExpressAdapter, type NestExpressApplication } from '@nestjs/platform-express';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { createCollections } from '@testing/create-collections';
 import request from 'supertest';
 

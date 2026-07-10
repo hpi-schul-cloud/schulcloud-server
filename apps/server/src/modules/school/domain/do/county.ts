@@ -1,4 +1,4 @@
-import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
+import { type AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 
 export class County extends DomainObject<CountyProps> {}
 

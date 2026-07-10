@@ -1,11 +1,11 @@
-import { SchoolEntity } from '@modules/school/repo';
-import { RoomSetup, UserSetupCompact } from './room-setup.helper';
-import { EntityManager } from '@mikro-orm/core';
-import { Role } from '@modules/role/repo';
-import { User } from '@modules/user/repo';
-import { Account } from '@modules/account';
-import { TestApiClient } from '@testing/test-api-client';
+import { type EntityManager } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { type Account } from '@modules/account';
+import { type Role } from '@modules/role/repo';
+import { type SchoolEntity } from '@modules/school/repo';
+import { type User } from '@modules/user/repo';
+import { type TestApiClient } from '@testing/test-api-client';
+import { RoomSetup, type UserSetupCompact } from './room-setup.helper';
 
 jest.mock('@modules/role/testing', () => {
 	return {
@@ -70,7 +70,7 @@ jest.mock('@modules/group/testing', () => {
 		groupEntityFactory: {
 			withTypeRoom: () => {
 				return {
-					buildWithId: ({ users, organization }: { users: any[]; organization: SchoolEntity }) => {
+					buildWithId: ({ users, organization }: { users: User[]; organization: SchoolEntity }) => {
 						return {
 							id: new ObjectId().toHexString(),
 							users,
@@ -135,7 +135,9 @@ describe('RoomSetup', () => {
 		it('should add users as members that have a room role', async () => {
 			const roomSetup = await setup();
 
-			expect(roomSetup.users.map((u) => u.firstName).sort()).toEqual(['Alice', 'Bob', 'Carol', 'Dave'].sort());
+			expect(roomSetup.users.map((u) => u.firstName).sort((a, b) => a.localeCompare(b))).toEqual(
+				['Alice', 'Bob', 'Carol', 'Dave'].sort((a, b) => a.localeCompare(b))
+			);
 		});
 
 		it('should create a room', async () => {

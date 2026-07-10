@@ -1,6 +1,6 @@
 import { ContentElementType, LinkElement } from '../../domain';
 import { LinkElementContent, LinkElementResponse, TimestampsResponse } from '../dto';
-import { BaseResponseMapper } from './base-mapper.interface';
+import { type BaseResponseMapper } from './base-mapper.interface';
 
 export class LinkElementResponseMapper implements BaseResponseMapper {
 	private static instance: LinkElementResponseMapper;
@@ -13,7 +13,7 @@ export class LinkElementResponseMapper implements BaseResponseMapper {
 		return LinkElementResponseMapper.instance;
 	}
 
-	mapToResponse(element: LinkElement): LinkElementResponse {
+	public mapToResponse(element: LinkElement): LinkElementResponse {
 		const result = new LinkElementResponse({
 			id: element.id,
 			timestamps: new TimestampsResponse({ lastUpdatedAt: element.updatedAt, createdAt: element.createdAt }),
@@ -30,7 +30,7 @@ export class LinkElementResponseMapper implements BaseResponseMapper {
 		return result;
 	}
 
-	canMap(element: unknown): boolean {
+	public canMap(element: unknown): boolean {
 		return element instanceof LinkElement;
 	}
 }

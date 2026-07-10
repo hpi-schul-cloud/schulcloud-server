@@ -1,31 +1,31 @@
-import { ExternalToolParameterDatasheetTemplateData } from './external-tool-parameter-datasheet-template-data';
+import { type ExternalToolParameterDatasheetTemplateData } from './external-tool-parameter-datasheet-template-data';
 
 export class ExternalToolDatasheetTemplateData {
-	createdAt: string;
+	public createdAt: string;
 
-	creatorName: string;
+	public creatorName: string;
 
-	instance: string;
+	public instance: string;
 
-	schoolName?: string;
+	public schoolName?: string;
 
-	toolName: string;
+	public toolName: string;
 
-	toolUrl: string;
+	public toolUrl: string;
 
-	isDeactivated?: string;
+	public isDeactivated?: string;
 
-	restrictToContexts?: string;
+	public restrictToContexts?: string;
 
-	toolType: string;
+	public toolType: string;
 
-	skipConsent?: string;
+	public skipConsent?: string;
 
-	messageType?: string;
+	public messageType?: string;
 
-	privacy?: string;
+	public privacy?: string;
 
-	parameters?: ExternalToolParameterDatasheetTemplateData[];
+	public parameters?: ExternalToolParameterDatasheetTemplateData[];
 
 	constructor(externalToolData: ExternalToolDatasheetTemplateData) {
 		this.createdAt = externalToolData.createdAt;

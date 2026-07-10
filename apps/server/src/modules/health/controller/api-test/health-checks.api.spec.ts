@@ -1,13 +1,13 @@
 import { EntityManager } from '@mikro-orm/mongodb';
-import { INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { type INestApplication } from '@nestjs/common';
+import { Test, type TestingModule } from '@nestjs/testing';
 import request from 'supertest';
 
 import { InternalServerTestModule } from '@modules/internal-server/internal-server-test.module';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import type { Server } from 'node:net';
 import { HealthStatuses } from '../../domain';
-import { HealthStatusResponse } from '../dto';
+import { type HealthStatusResponse } from '../dto';
 
 class API {
 	app: INestApplication<Server>;

@@ -5,7 +5,7 @@ import { schoolEntityFactory } from '@modules/school/testing';
 // eslint-disable-next-line @typescript-eslint/no-restricted-imports
 import { User } from '@modules/user/repo';
 import { setupEntities } from '@testing/database';
-import { UserAndAccountParams, UserAndAccountTestFactory } from './user-and-account.test.factory';
+import { type UserAndAccountParams, UserAndAccountTestFactory } from './user-and-account.test.factory';
 
 describe('user-and-account.test.factory', () => {
 	beforeAll(async () => {

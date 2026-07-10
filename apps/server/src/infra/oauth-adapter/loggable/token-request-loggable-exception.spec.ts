@@ -1,0 +1,36 @@
+import { axiosErrorFactory } from '@testing/factory/axios-error.factory';
+import { type AxiosError } from 'axios';
+import { TokenRequestLoggableException } from './token-request-loggable-exception';
+import util from 'util';
+
+describe(TokenRequestLoggableException.name, () => {
+	describe('getLogMessage', () => {
+		const setup = () => {
+			const error = {
+				error: 'invalid_request',
+			};
+			const axiosError: AxiosError = axiosErrorFactory.withError(error).build();
+			const exception = new TokenRequestLoggableException(axiosError);
+			exception.stack = 'mockedStack';
+
+			return {
+				axiosError,
+				exception,
+				error,
+			};
+		};
+
+		it('should return the correct log message', () => {
+			const { exception, error } = setup();
+
+			const logMessage = exception.getLogMessage();
+
+			expect(logMessage).toStrictEqual({
+				type: 'OAUTH_TOKEN_REQUEST_ERROR',
+				message: 'message: Bad Request code: 400',
+				data: util.inspect(error),
+				stack: exception.stack,
+			});
+		});
+	});
+});

@@ -1,10 +1,10 @@
-import { EntityId } from '@shared/domain/types';
-import { System } from '../do/system.do';
+import { type EntityId } from '@shared/domain/types';
+import { type System } from '../do/system.do';
 
 export class SystemDeletedEvent {
-	schoolId: EntityId;
+	public schoolId: EntityId;
 
-	system: System;
+	public system: System;
 
 	constructor(props: SystemDeletedEvent) {
 		this.schoolId = props.schoolId;

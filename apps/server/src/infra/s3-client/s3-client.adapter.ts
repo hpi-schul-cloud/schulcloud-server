@@ -1,25 +1,31 @@
 import {
 	CopyObjectCommand,
-	CopyObjectCommandOutput,
+	type CopyObjectCommandOutput,
 	CreateBucketCommand,
 	DeleteObjectsCommand,
 	GetObjectCommand,
 	HeadObjectCommand,
-	HeadObjectCommandOutput,
+	type HeadObjectCommandOutput,
 	ListObjectsV2Command,
-	ListObjectsV2CommandOutput,
-	PutObjectCommandInput,
-	S3Client,
-	ServiceOutputTypes,
+	type ListObjectsV2CommandOutput,
+	type PutObjectCommandInput,
+	type S3Client,
+	type ServiceOutputTypes,
 } from '@aws-sdk/client-s3';
 import { Upload } from '@aws-sdk/lib-storage';
-import { DomainErrorHandler } from '@core/error';
-import { ErrorUtils } from '@core/error/utils';
-import { Logger } from '@infra/logger';
+import { type DomainErrorHandler, ErrorUtils } from '@infra/error';
+import { type Logger } from '@infra/logger';
 import { InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { TypeGuard } from '@shared/common/guards';
-import { PassThrough, Readable } from 'stream';
-import { CopyFiles, File, GetFile, ListFiles, ObjectKeysRecursive, S3Config } from './interface';
+import { PassThrough, Readable } from 'node:stream';
+import {
+	type CopyFiles,
+	type File,
+	type GetFile,
+	type ListFiles,
+	type ObjectKeysRecursive,
+	type S3Config,
+} from './interface';
 import { S3ClientActionLoggable } from './loggable';
 
 export class S3ClientAdapter {

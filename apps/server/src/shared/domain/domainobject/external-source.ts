@@ -1,9 +1,9 @@
 export class ExternalSource {
-	externalId: string;
+	public externalId: string;
 
-	systemId: string;
+	public systemId: string;
 
-	lastSyncedAt: Date;
+	public lastSyncedAt: Date;
 
 	constructor(props: ExternalSource) {
 		this.externalId = props.externalId;

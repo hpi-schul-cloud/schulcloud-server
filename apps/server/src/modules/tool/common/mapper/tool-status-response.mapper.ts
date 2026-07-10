@@ -1,8 +1,10 @@
 import { ContextExternalToolConfigurationStatusResponse } from '../controller/dto';
-import { ContextExternalToolConfigurationStatus } from '../domain';
+import { type ContextExternalToolConfigurationStatus } from '../domain';
 
 export class ToolStatusResponseMapper {
-	static mapToResponse(status: ContextExternalToolConfigurationStatus): ContextExternalToolConfigurationStatusResponse {
+	public static mapToResponse(
+		status: ContextExternalToolConfigurationStatus
+	): ContextExternalToolConfigurationStatusResponse {
 		const configurationStatus: ContextExternalToolConfigurationStatusResponse =
 			new ContextExternalToolConfigurationStatusResponse({
 				isOutdatedOnScopeSchool: status.isOutdatedOnScopeSchool,

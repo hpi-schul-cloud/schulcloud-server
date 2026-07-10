@@ -1,9 +1,9 @@
-import { EntityId } from '@shared/domain/types';
+import { type EntityId } from '@shared/domain/types';
 
 export class GroupUser {
-	userId: EntityId;
+	public userId: EntityId;
 
-	roleId: EntityId;
+	public roleId: EntityId;
 
 	constructor(props: GroupUser) {
 		this.userId = props.userId;

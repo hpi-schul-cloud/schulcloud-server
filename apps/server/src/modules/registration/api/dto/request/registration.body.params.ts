@@ -8,5 +8,5 @@ export class RegistrationBodyParams {
 	})
 	@IsArray()
 	@IsMongoId({ each: true })
-	public registrationIds!: string[];
+	registrationIds!: string[];
 }

@@ -1,6 +1,6 @@
-import { ErrorLogMessage, Loggable } from '@infra/logger';
 import { InternalServerErrorException } from '@nestjs/common';
 import { CommonCartridgeErrorEnum } from './error.enums';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
 
 export class VersionNotSupportedLoggableException extends InternalServerErrorException implements Loggable {
 	constructor(private readonly version: string) {
@@ -9,8 +9,8 @@ export class VersionNotSupportedLoggableException extends InternalServerErrorExc
 		});
 	}
 
-	public getLogMessage(): ErrorLogMessage {
-		const message: ErrorLogMessage = {
+	public getLogMessage(): LoggableMessage {
+		const message: LoggableMessage = {
 			type: CommonCartridgeErrorEnum.VERSION_NOT_SUPPORTED,
 			stack: this.stack,
 			data: {

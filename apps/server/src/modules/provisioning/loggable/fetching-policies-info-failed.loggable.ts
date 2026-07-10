@@ -1,5 +1,5 @@
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
-import { ExternalUserDto } from '../dto';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
+import { type ExternalUserDto } from '../dto';
 
 export class FetchingPoliciesInfoFailedLoggable implements Loggable {
 	constructor(
@@ -7,7 +7,7 @@ export class FetchingPoliciesInfoFailedLoggable implements Loggable {
 		private readonly policiesInfoEndpoint: string
 	) {}
 
-	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			message: 'Could not fetch policies info for user. The provisioning of licenses will be skipped.',
 			data: {

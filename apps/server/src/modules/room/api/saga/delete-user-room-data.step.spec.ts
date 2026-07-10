@@ -14,7 +14,7 @@ import {
 import { SagaRegistryService, SagaStepRegistryService } from '@modules/saga/service';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { RoomArrangementEntity, RoomArrangementRepo, RoomEntity } from '../../repo';

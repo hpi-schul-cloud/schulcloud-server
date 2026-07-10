@@ -1,6 +1,6 @@
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
-import { MediaSourceDataFormat } from '@modules/media-source';
-import { MediaSourceSyncOperationReport, MediaSourceSyncReport } from '@modules/media-source-sync';
+import { type MediaSourceDataFormat } from '@modules/media-source';
+import { type MediaSourceSyncOperationReport, type MediaSourceSyncReport } from '@modules/media-source-sync';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
 
 export class MediaMetadataSyncReportLoggable implements Loggable {
 	constructor(
@@ -8,7 +8,7 @@ export class MediaMetadataSyncReportLoggable implements Loggable {
 		private readonly mediaSourceDataFormat: MediaSourceDataFormat
 	) {}
 
-	public getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	public getLogMessage(): LoggableMessage {
 		const message = `Media metadata sync for ${this.mediaSourceDataFormat} had finished. ${this.formatCountOverview(
 			this.report
 		)}${this.formatOperations(this.report.operations)}`;

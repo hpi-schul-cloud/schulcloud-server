@@ -1,9 +1,13 @@
-import { SchulconnexGroupType, SchulconnexGruppenResponse, SchulconnexResponse } from '@infra/schulconnex-client';
-import { EntityManager } from '@mikro-orm/mongodb';
+import {
+	SchulconnexGroupType,
+	type SchulconnexGruppenResponse,
+	type SchulconnexResponse,
+} from '@infra/schulconnex-client';
+import { type EntityManager } from '@mikro-orm/mongodb';
 import { SchulconnexResponseMapper } from '@modules/provisioning';
-import { RoleName } from '@modules/role';
-import { SchoolEntity } from '@modules/school/repo';
-import { System } from '@modules/system';
+import { type RoleName } from '@modules/role';
+import { type SchoolEntity } from '@modules/school/repo';
+import { type System } from '@modules/system';
 import { SystemEntity } from '@modules/system/repo';
 import { ImportUser } from '../entity';
 

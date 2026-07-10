@@ -12,12 +12,12 @@ import { CollaborativeStorageStrategy } from './strategy/base.interface.strategy
  */
 @Injectable()
 export class CollaborativeStorageAdapter {
-	strategy: CollaborativeStorageStrategy;
+	public strategy: CollaborativeStorageStrategy;
 
 	constructor(
 		@Inject('CollaborativeStorageStrategy') strategy: CollaborativeStorageStrategy,
-		private mapper: CollaborativeStorageAdapterMapper,
-		private logger: LegacyLogger
+		private readonly mapper: CollaborativeStorageAdapterMapper,
+		private readonly logger: LegacyLogger
 	) {
 		this.logger.setContext(CollaborativeStorageAdapter.name);
 		this.strategy = strategy;
@@ -27,7 +27,7 @@ export class CollaborativeStorageAdapter {
 	 * Set the strategy that should be used by the adapter
 	 * @param strategy The strategy
 	 */
-	setStrategy(strategy: CollaborativeStorageStrategy) {
+	public setStrategy(strategy: CollaborativeStorageStrategy): void {
 		this.strategy = strategy;
 	}
 
@@ -37,7 +37,7 @@ export class CollaborativeStorageAdapter {
 	 * @param role The Role DTO
 	 * @param permissions The permissions to set
 	 */
-	updateTeamPermissionsForRole(team: TeamDto, role: RoleDto, permissions: TeamPermissionsDto): Promise<void> {
+	public updateTeamPermissionsForRole(team: TeamDto, role: RoleDto, permissions: TeamPermissionsDto): Promise<void> {
 		return this.strategy.updateTeamPermissionsForRole(this.mapper.mapDomainToAdapter(team, role, permissions));
 	}
 
@@ -46,7 +46,7 @@ export class CollaborativeStorageAdapter {
 	 *
 	 * @param teamId The team id
 	 */
-	deleteTeam(teamId: string): Promise<void> {
+	public deleteTeam(teamId: string): Promise<void> {
 		return this.strategy.deleteTeam(teamId);
 	}
 
@@ -55,7 +55,7 @@ export class CollaborativeStorageAdapter {
 	 *
 	 * @param team The team DTO
 	 */
-	createTeam(team: TeamDto): Promise<void> {
+	public createTeam(team: TeamDto): Promise<void> {
 		return this.strategy.createTeam(team);
 	}
 
@@ -64,7 +64,7 @@ export class CollaborativeStorageAdapter {
 	 *
 	 * @param team The team DTO
 	 */
-	updateTeam(team: TeamDto): Promise<void> {
+	public updateTeam(team: TeamDto): Promise<void> {
 		return this.strategy.updateTeam(team);
 	}
 }

@@ -1,6 +1,6 @@
 import { AuthorizableReferenceType, AuthorizationContextBuilder } from '@modules/authorization';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { CreateAccessTokenParams } from '../api/dto';
+import { type CreateAccessTokenParams } from '../api/dto';
 
 class CreateAccessTokenParamsTestBuilder {
 	private props: CreateAccessTokenParams = {

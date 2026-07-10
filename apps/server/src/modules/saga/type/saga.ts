@@ -1,4 +1,4 @@
-import { SagaType } from './saga-type';
+import { type SagaType } from './saga-type';
 
 export abstract class Saga<T extends keyof SagaType> {
 	constructor(public readonly name: T) {}

@@ -1,9 +1,9 @@
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
 import { InternalServerErrorException } from '@nestjs/common';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
 
 export class SchoolYearsNoYearsLeft extends InternalServerErrorException implements Loggable {
 	// this is a 500, because our development team is responsible to create schoolyears.
-	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	public getLogMessage(): LoggableMessage {
 		/* istanbul ignore next */
 		return {
 			type: 'SCHOOL_YEARS_NO_YEARS_LEFT',

@@ -8,12 +8,12 @@ export class CreateCourseBodyParams {
 		required: true,
 		nullable: false,
 	})
-	public name!: string;
+	name!: string;
 
 	@IsString()
 	@IsOptional()
 	@ApiPropertyOptional({
 		description: 'The color of the course icon',
 	})
-	public color?: string;
+	color?: string;
 }

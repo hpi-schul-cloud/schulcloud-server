@@ -1,11 +1,11 @@
 import { createMock } from '@golevelup/ts-jest';
-import { FilesStorageClientAdapterService, StorageLocation } from '@infra/files-storage-amqp-client';
+import { type FilesStorageClientAdapterService, StorageLocation } from '@infra/files-storage-amqp-client';
 import { H5pEditorProducer } from '@infra/h5p-editor-client';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { CopyElementType, CopyHelperService, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
+import { CopyElementType, CopyHelperService, type CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
 import { SchoolExternalToolService } from '@modules/tool/school-external-tool/service';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { BOARD_CONFIG_TOKEN } from '../../board.config';
 import {
 	cardFactory,
@@ -25,7 +25,7 @@ import {
 	richTextElementFactory,
 	videoConferenceElementFactory,
 } from '../../testing';
-import { BoardNodeCopyContext, BoardNodeCopyContextProps } from './board-node-copy-context';
+import { BoardNodeCopyContext, type BoardNodeCopyContextProps } from './board-node-copy-context';
 import { BoardNodeCopyService } from './board-node-copy.service';
 
 describe(BoardNodeCopyService.name, () => {

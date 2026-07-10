@@ -1,10 +1,10 @@
-import { LogMessage } from '@infra/logger';
 import { MediaSourceDataFormat } from '@modules/media-source';
 import { MediaSourceSyncOperation, MediaSourceSyncStatus } from '@modules/media-source-sync';
 import {
 	mediaSourceSyncOperationReportFactory,
 	mediaSourceSyncReportFactory,
 } from '@modules/media-source-sync/testing';
+import { type LogMessage } from '@shared/common/loggable';
 import { MediaActivationsSyncReportLoggable } from './media-activations-sync-report.loggable';
 
 describe(MediaActivationsSyncReportLoggable.name, () => {

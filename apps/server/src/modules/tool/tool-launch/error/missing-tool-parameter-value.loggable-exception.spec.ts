@@ -1,5 +1,5 @@
-import { CustomParameter } from '../../common/domain';
-import { ContextExternalTool } from '../../context-external-tool/domain';
+import { type CustomParameter } from '../../common/domain';
+import { type ContextExternalTool } from '../../context-external-tool/domain';
 import { contextExternalToolFactory } from '../../context-external-tool/testing';
 import { customParameterFactory } from '../../external-tool/testing';
 import { MissingToolParameterValueLoggableException } from './missing-tool-parameter-value.loggable-exception';

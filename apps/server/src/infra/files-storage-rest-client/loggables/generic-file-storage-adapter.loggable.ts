@@ -1,5 +1,6 @@
-import { Loggable, LogMessage, LogMessageData } from '@infra/logger';
 import { InternalServerErrorException } from '@nestjs/common';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
+import { type LogMessageData } from '@shared/common/loggable/interfaces';
 
 export class GenericFileStorageLoggable extends InternalServerErrorException implements Loggable {
 	constructor(
@@ -10,7 +11,7 @@ export class GenericFileStorageLoggable extends InternalServerErrorException imp
 		super(message);
 	}
 
-	public getLogMessage(): LogMessage {
+	public getLogMessage(): LoggableMessage {
 		this.cause = this.error || 'An unknown error occurred in the GenericFileStorageLoggable';
 		return {
 			message: this.message,

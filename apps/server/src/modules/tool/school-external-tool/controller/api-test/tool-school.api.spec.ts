@@ -1,36 +1,36 @@
 import { EntityManager, MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { AccountEntity } from '@modules/account/repo';
+import { type AccountEntity } from '@modules/account/repo';
 import { accountFactory } from '@modules/account/testing';
 import { columnBoardEntityFactory, externalToolElementEntityFactory } from '@modules/board/testing';
 import { MediaSourceLicenseType } from '@modules/media-source';
 import { mediaSourceEntityFactory } from '@modules/media-source/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
-import { User } from '@modules/user/repo';
+import { type User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
-import { HttpStatus, INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { HttpStatus, type INestApplication } from '@nestjs/common';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { CustomParameterScope, CustomParameterType } from '../../../common/enum';
-import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/repo';
+import { type ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/repo';
 import { contextExternalToolEntityFactory } from '../../../context-external-tool/testing';
 import { ExternalToolMediumStatus } from '../../../external-tool/enum/external-tool-medium-status.enum';
-import { ExternalToolEntity } from '../../../external-tool/repo';
+import { type ExternalToolEntity } from '../../../external-tool/repo';
 import { customParameterEntityFactory, externalToolEntityFactory } from '../../../external-tool/testing';
-import { ToolConfig } from '../../../tool-config';
+import { type ToolConfig } from '../../../tool-config';
 import { SchoolExternalToolEntity } from '../../repo';
 import { SchoolExternalToolService } from '../../service';
 import { schoolExternalToolConfigurationStatusFactory, schoolExternalToolEntityFactory } from '../../testing';
 import {
-	CustomParameterEntryParam,
-	SchoolExternalToolMetadataResponse,
-	SchoolExternalToolPostParams,
+	type CustomParameterEntryParam,
+	type SchoolExternalToolMetadataResponse,
+	type SchoolExternalToolPostParams,
 	SchoolExternalToolResponse,
-	SchoolExternalToolSearchListResponse,
-	SchoolExternalToolSearchParams,
+	type SchoolExternalToolSearchListResponse,
+	type SchoolExternalToolSearchParams,
 } from '../dto';
 
 describe('ToolSchoolController (API)', () => {
