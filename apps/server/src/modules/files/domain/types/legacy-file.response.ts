@@ -1,4 +1,7 @@
 export enum SecurityCheckStatus {
+	PENDING = 'pending',
+	PASSED = 'passed',
+	FAILED = 'failed',
 	BLOCKED = 'blocked',
 }
 interface SecurityCheck {
