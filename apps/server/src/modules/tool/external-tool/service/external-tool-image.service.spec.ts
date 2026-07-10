@@ -1,11 +1,11 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { FileRecordParentType, FilesStorageClientAdapter, StorageLocation } from '@infra/files-storage-rest-client';
 import { fileRecordResponseFactory } from '@infra/files-storage-rest-client/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { InstanceService } from '@modules/instance';
 import { instanceFactory } from '@modules/instance/testing';
-import { Test, TestingModule } from '@nestjs/testing';
-import { FileRecordRef } from '../domain';
+import { Test, type TestingModule } from '@nestjs/testing';
+import { type FileRecordRef } from '../domain';
 import { ExternalToolImageService } from './external-tool-image.service';
 
 describe(ExternalToolImageService.name, () => {

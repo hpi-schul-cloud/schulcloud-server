@@ -1,9 +1,15 @@
 import { faker } from '@faker-js/faker';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Test, TestingModule } from '@nestjs/testing';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
-import { AxiosResponse } from 'axios';
-import { BoardCardApi, BoardElementApi, CardListResponse, CardResponse, ContentElementType } from '../generated';
+import { type AxiosResponse } from 'axios';
+import {
+	BoardCardApi,
+	BoardElementApi,
+	type CardListResponse,
+	type CardResponse,
+	ContentElementType,
+} from '../generated';
 import { AdapterUtils } from './adapter.utils';
 import { CardClientAdapter } from './card-client.adapter';
 

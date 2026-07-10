@@ -1,7 +1,7 @@
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
 import { HttpStatus } from '@nestjs/common';
 import { BusinessError } from '@shared/common/error';
-import { ExternalUserDto } from '../dto';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
+import { type ExternalUserDto } from '../dto';
 
 export class UserRoleUnknownLoggableException extends BusinessError implements Loggable {
 	constructor(private readonly externalUser: ExternalUserDto) {
@@ -15,7 +15,7 @@ export class UserRoleUnknownLoggableException extends BusinessError implements L
 		);
 	}
 
-	public getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			type: this.type,
 			message: this.message,

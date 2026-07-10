@@ -1,16 +1,16 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { MediaSchoolLicense } from '@modules/school-license';
+import { type MediaSchoolLicense } from '@modules/school-license';
 import { MediaSchoolLicenseService } from '@modules/school-license/service/media-school-license.service';
 import { mediaSchoolLicenseFactory } from '@modules/school-license/testing';
 import { UserService } from '@modules/user';
-import { MediaUserLicense, MediaUserLicenseService } from '@modules/user-license';
+import { type MediaUserLicense, MediaUserLicenseService } from '@modules/user-license';
 import { mediaUserLicenseFactory } from '@modules/user-license/testing';
 import { userDoFactory } from '@modules/user/testing';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { ValidationError } from '@shared/common/error';
 import {
-	ContextExternalToolConfigurationStatus,
+	type ContextExternalToolConfigurationStatus,
 	ToolParameterDuplicateLoggableException,
 	ToolParameterMandatoryValueMissingLoggableException,
 	ToolParameterOptionalValueMissingLoggableException,
@@ -18,7 +18,7 @@ import {
 import { CommonToolValidationService } from '../../common/service';
 import { customParameterFactory, externalToolFactory } from '../../external-tool/testing';
 import { schoolExternalToolFactory } from '../../school-external-tool/testing';
-import { TOOL_CONFIG_TOKEN, ToolConfig } from '../../tool-config';
+import { TOOL_CONFIG_TOKEN, type ToolConfig } from '../../tool-config';
 import { contextExternalToolFactory } from '../testing';
 import { ToolConfigurationStatusService } from './tool-configuration-status.service';
 

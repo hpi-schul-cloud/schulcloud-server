@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseFactory } from '@testing/factory/base.factory';
-import { MediaLine, MediaLineProps, ROOT_PATH } from '../domain';
+import { MediaLine, type MediaLineProps, ROOT_PATH } from '../domain';
 import { Colors } from '../domain/media-board/types';
 
 export const mediaLineFactory = BaseFactory.define<MediaLine, MediaLineProps>(MediaLine, ({ sequence }) => {

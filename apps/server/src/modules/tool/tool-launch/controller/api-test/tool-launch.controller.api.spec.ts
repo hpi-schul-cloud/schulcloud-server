@@ -2,16 +2,16 @@ import { EntityManager, MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BoardExternalReferenceType } from '@modules/board';
 import { mediaBoardEntityFactory } from '@modules/board/testing';
-import { CourseEntity } from '@modules/course/repo';
+import { type CourseEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
-import { HttpStatus, INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { HttpStatus, type INestApplication } from '@nestjs/common';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
-import { Response } from 'supertest';
+import { type Response } from 'supertest';
 import {
 	CustomParameterLocation,
 	CustomParameterScope,
@@ -19,17 +19,21 @@ import {
 	ToolConfigType,
 	ToolContextType,
 } from '../../../common/enum';
-import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/repo';
+import { type ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/repo';
 import { contextExternalToolEntityFactory, contextExternalToolFactory } from '../../../context-external-tool/testing';
 import {
 	basicToolConfigFactory,
 	customParameterFactory,
 	externalToolEntityFactory,
 } from '../../../external-tool/testing';
-import { SchoolExternalToolEntity } from '../../../school-external-tool/repo';
+import { type SchoolExternalToolEntity } from '../../../school-external-tool/repo';
 import { schoolExternalToolEntityFactory } from '../../../school-external-tool/testing';
 import { LaunchRequestMethod, LaunchType } from '../../types';
-import { ContextExternalToolBodyParams, ContextExternalToolLaunchParams, ToolLaunchRequestResponse } from '../dto';
+import {
+	type ContextExternalToolBodyParams,
+	type ContextExternalToolLaunchParams,
+	type ToolLaunchRequestResponse,
+} from '../dto';
 
 describe('ToolLaunchController (API)', () => {
 	let app: INestApplication;

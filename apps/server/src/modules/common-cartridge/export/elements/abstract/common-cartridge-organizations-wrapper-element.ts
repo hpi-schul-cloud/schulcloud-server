@@ -1,6 +1,6 @@
-import { CommonCartridgeElementType, CommonCartridgeVersion } from '../../common-cartridge.enums';
+import { CommonCartridgeElementType, type CommonCartridgeVersion } from '../../common-cartridge.enums';
 import { ElementTypeNotSupportedLoggableException } from '../../errors';
-import { CommonCartridgeElement, XmlObject } from '../../interfaces';
+import { CommonCartridgeElement, type XmlObject } from '../../interfaces';
 
 export type CommonCartridgeOrganizationsWrapperElementProps = {
 	type: CommonCartridgeElementType.ORGANIZATIONS_WRAPPER;
@@ -17,7 +17,7 @@ export abstract class CommonCartridgeOrganizationsWrapperElement extends CommonC
 		super(props);
 	}
 
-	abstract getSupportedVersion(): CommonCartridgeVersion;
+	public abstract getSupportedVersion(): CommonCartridgeVersion;
 
 	public getManifestXmlObject(elementType: CommonCartridgeElementType): XmlObject {
 		switch (elementType) {

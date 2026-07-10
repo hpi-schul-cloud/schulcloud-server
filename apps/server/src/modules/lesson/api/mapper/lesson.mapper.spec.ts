@@ -5,7 +5,7 @@ import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { setupEntities } from '@testing/database';
 import { LessonEntity, Material } from '../../repo';
-import { LessonLinkedTaskResponse } from '../dto/lesson-linked-task.response';
+import { type LessonLinkedTaskResponse } from '../dto/lesson-linked-task.response';
 import { LessonMapper } from './lesson.mapper';
 
 describe('LessonMapper', () => {

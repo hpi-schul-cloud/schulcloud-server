@@ -1,6 +1,6 @@
-import util from 'util';
-import { Loggable } from './interfaces';
-import { LogMessageWithContext } from './types';
+import { type Loggable } from '@shared/common/loggable';
+import util from 'node:util';
+import { type LogMessageWithContext } from './types';
 
 export class LoggingUtils {
 	public static createMessageWithContext(loggable: Loggable, context?: string): LogMessageWithContext {

@@ -1,6 +1,6 @@
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
-import { EntityId } from '@shared/domain/types';
-import { ModuleName, StepStatus } from '../type';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
+import { type EntityId } from '@shared/domain/types';
+import { type ModuleName, type StepStatus } from '../type';
 
 export class UserDeletionStepOperationLoggable implements Loggable {
 	constructor(
@@ -12,7 +12,7 @@ export class UserDeletionStepOperationLoggable implements Loggable {
 		private readonly deletedCount?: number
 	) {}
 
-	public getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			message: this.message,
 			data: {

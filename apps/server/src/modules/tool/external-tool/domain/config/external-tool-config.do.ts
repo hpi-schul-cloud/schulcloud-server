@@ -1,9 +1,9 @@
-import { ToolConfigType } from '../../../common/enum';
+import { type ToolConfigType } from '../../../common/enum';
 
 export abstract class ExternalToolConfig {
-	type: ToolConfigType;
+	public type: ToolConfigType;
 
-	baseUrl: string;
+	public baseUrl: string;
 
 	constructor(props: ExternalToolConfig) {
 		this.type = props.type;

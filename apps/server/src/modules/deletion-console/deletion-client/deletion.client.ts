@@ -1,4 +1,4 @@
-import { ErrorUtils } from '@core/error/utils';
+import { ErrorUtils } from '@infra/error';
 import { HttpService } from '@nestjs/axios';
 import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { AxiosResponse, HttpStatusCode } from 'axios';
@@ -92,7 +92,7 @@ export class DeletionClient {
 		return response;
 	}
 
-	private createDefaultHeaders() {
+	private createDefaultHeaders(): { headers: Record<string, string> } {
 		const apiKey = this.config.adminApiClientApiKey;
 
 		return {
@@ -109,11 +109,11 @@ export class DeletionClient {
 		// Throw an error if server didn't return a deletionPlannedAt timestamp so the user
 		// will not be aware after which date the deletion request's execution will begin.
 		if (!response.data.deletionPlannedAt) {
-			throw Error('no valid deletionPlannedAt returned from the server');
+			throw new Error('no valid deletionPlannedAt returned from the server');
 		}
 	}
 
-	private checkResponseStatusCode(response: AxiosResponse<unknown>, expectedStatusCode: HttpStatusCode): void {
+	private checkResponseStatusCode(response: AxiosResponse<unknown>, expectedStatusCode: number): void {
 		if (response.status !== Number(expectedStatusCode)) {
 			throw new Error(
 				`Invalid HTTP status code in a response from the server - ${response.status} instead of ${expectedStatusCode}.`

@@ -1,7 +1,7 @@
-import { Logger } from '@infra/logger';
-import archiver from 'archiver';
+import { type Logger } from '@infra/logger';
+import type archiver from 'archiver';
 import { PassThrough } from 'node:stream';
-import { ArchiveFactory, FileDo } from '../domain';
+import { ArchiveFactory, type FileDo } from '../domain';
 
 const createFileResponse = (name: string, content: string): { name: string; data: PassThrough } => {
 	const stream = new PassThrough();

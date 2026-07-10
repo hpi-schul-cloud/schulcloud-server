@@ -1,4 +1,4 @@
-import { AnyMediaBoardNode, isAnyMediaElement, Colors } from './types';
+import { type AnyMediaBoardNode, isAnyMediaElement, type Colors } from './types';
 import type { MediaLineProps } from '../types';
 import { BoardNode } from '../board-node.do';
 
@@ -27,7 +27,7 @@ export class MediaLine extends BoardNode<MediaLineProps> {
 		return this.props.collapsed;
 	}
 
-	canHaveChild(childNode: AnyMediaBoardNode): boolean {
+	public canHaveChild(childNode: AnyMediaBoardNode): boolean {
 		const allowed: boolean = isAnyMediaElement(childNode);
 
 		return allowed;

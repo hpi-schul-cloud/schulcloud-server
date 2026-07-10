@@ -78,6 +78,7 @@ import {
 			exchangeConfigConstructor: ProvisioningExchangeConfig,
 			configInjectionToken: RABBITMQ_CONFIG_TOKEN,
 			configConstructor: RabbitMQConfig,
+			connectionName: 'provisioning',
 		}),
 	],
 	providers: [

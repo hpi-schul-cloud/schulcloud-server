@@ -1,9 +1,9 @@
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
 
 export class SchoolForMediaActivationSyncNotFoundLoggable implements Loggable {
 	constructor(private readonly officialSchoolNumber: string) {}
 
-	public getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			message: 'Unable to sync media activations because school could not be found.',
 			data: {

@@ -5,7 +5,7 @@ import { AutoParameterStrategy } from './auto-parameter.strategy';
 
 @Injectable()
 export class AutoSchoolIdStrategy implements AutoParameterStrategy {
-	getValue(
+	public getValue(
 		schoolExternalTool: SchoolExternalTool,
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		contextExternalTool: ContextExternalToolLaunchable

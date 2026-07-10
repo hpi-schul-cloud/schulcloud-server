@@ -1,4 +1,4 @@
-import { UserDeviceProps } from '../interface';
+import { type UserDeviceProps } from '../interface';
 import { UserDevice } from './user-device.vo';
 
 describe('UserDevice', () => {

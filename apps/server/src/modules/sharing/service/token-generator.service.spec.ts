@@ -1,4 +1,4 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { TokenGenerator } from './token-generator.service';
 
 describe('TokenGeneratorService', () => {

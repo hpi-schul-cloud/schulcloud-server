@@ -1,21 +1,21 @@
-import { ErrorResponse } from '@core/error/dto';
-import { BiloMediaQueryResponse, biloMediaQueryResponseFactory } from '@infra/bilo-client';
-import { OfferDTO } from '@infra/vidis-client/generated';
+import { type BiloMediaQueryResponse, biloMediaQueryResponseFactory } from '@infra/bilo-client';
+import { type ErrorResponse } from '@infra/error';
+import { type OauthTokenResponse } from '@infra/oauth-adapter';
+import { type OfferDTO } from '@infra/vidis-client/generated';
 import { vidisOfferItemFactory } from '@infra/vidis-client/testing';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { mediaSourceEntityFactory } from '@modules/media-source';
-import { OauthTokenResponse } from '@modules/oauth-adapter';
 import { ServerTestModule } from '@modules/server';
-import { HttpStatus, INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { HttpStatus, type INestApplication } from '@nestjs/common';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface/permission.enum';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { Response } from 'supertest';
-import { MEDIUM_METADATA_ENCRYPTION_CONFIG_TOKEN, MediumMetadataEncryptionConfig } from '../../encryption.config';
+import { type Response } from 'supertest';
+import { MEDIUM_METADATA_ENCRYPTION_CONFIG_TOKEN, type MediumMetadataEncryptionConfig } from '../../encryption.config';
 
 describe('MediumMetadataController (API)', () => {
 	let app: INestApplication;

@@ -1,7 +1,7 @@
-import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
-import { EntityId } from '@shared/domain/types';
+import { type AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
+import { type EntityId } from '@shared/domain/types';
 import bcrypt from 'bcryptjs';
-import { AccountSave } from './account-save';
+import { type AccountSave } from './account-save';
 
 export interface AccountProps extends AuthorizableObject {
 	id: EntityId;

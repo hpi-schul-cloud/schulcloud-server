@@ -1,13 +1,13 @@
-import { ErrorLogMessage, Loggable } from '@infra/logger';
 import { InternalServerErrorException } from '@nestjs/common';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
 
 export class NoUsersToSynchronizationLoggableException extends InternalServerErrorException implements Loggable {
 	constructor(private readonly systemId: string) {
 		super();
 	}
 
-	getLogMessage(): ErrorLogMessage {
-		const message: ErrorLogMessage = {
+	public getLogMessage(): LoggableMessage {
+		const message: LoggableMessage = {
 			type: 'SYNCHRONIZATION_ERROR',
 			stack: this.stack,
 			data: {

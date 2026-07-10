@@ -6,7 +6,7 @@ import { SchoolExternalToolService } from '../service';
 export class AdminApiSchoolExternalToolUc {
 	constructor(private readonly schoolExternalToolService: SchoolExternalToolService) {}
 
-	async createSchoolExternalTool(schoolExternalToolProps: SchoolExternalToolProps): Promise<SchoolExternalTool> {
+	public async createSchoolExternalTool(schoolExternalToolProps: SchoolExternalToolProps): Promise<SchoolExternalTool> {
 		const schoolExternalTool: SchoolExternalTool = new SchoolExternalTool(schoolExternalToolProps);
 
 		const createdSchoolExternalTool: SchoolExternalTool =

@@ -1,9 +1,9 @@
 export class UpdateAccountDto {
-	public username?: string;
+	username?: string;
 
-	public password?: string;
+	password?: string;
 
-	public activated?: boolean;
+	activated?: boolean;
 
 	constructor(props: UpdateAccountDto) {
 		this.username = props.username;

@@ -1,13 +1,13 @@
-import { GroupEntity, GroupEntityTypes } from '@modules/group/entity';
-import { RoomProps } from '../domain';
-import { RoomMembershipEntity } from '@modules/room-membership';
-import { SchoolEntity } from '@modules/school/repo';
-import { Role } from '@modules/role/repo';
-import { User } from '@modules/user/repo';
+import { type GroupEntity, GroupEntityTypes } from '@modules/group/entity';
+import { type RoomProps } from '../domain';
+import { type RoomMembershipEntity } from '@modules/room-membership';
+import { type SchoolEntity } from '@modules/school/repo';
+import { type Role } from '@modules/role/repo';
+import { type User } from '@modules/user/repo';
 import { groupEntityFactory } from '@modules/group/testing';
 import { roomMembershipEntityFactory } from '@modules/room-membership/testing';
 import { roomEntityFactory } from './room-entity.factory';
-import { RoomEntity } from '../repo';
+import { type RoomEntity } from '../repo';
 
 type CreateRoomWithUserGroupReturn = {
 	roomEntity: RoomEntity;

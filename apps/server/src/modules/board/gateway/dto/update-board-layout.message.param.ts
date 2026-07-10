@@ -3,8 +3,8 @@ import { BoardLayout } from '../../domain';
 
 export class UpdateBoardLayoutMessageParams {
 	@IsMongoId()
-	public boardId!: string;
+	boardId!: string;
 
 	@IsEnum(BoardLayout)
-	public layout!: BoardLayout;
+	layout!: BoardLayout;
 }

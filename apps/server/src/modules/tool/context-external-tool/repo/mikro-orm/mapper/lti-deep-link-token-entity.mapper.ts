@@ -1,7 +1,7 @@
-import { EntityManager } from '@mikro-orm/mongodb';
+import { type EntityManager } from '@mikro-orm/mongodb';
 import { User } from '@modules/user/repo';
 import { LtiDeepLinkToken } from '../../../domain';
-import { LtiDeepLinkTokenEntityProps, LtiDeepLinkTokenEntity } from '../lti-deep-link-token.entity';
+import { type LtiDeepLinkTokenEntityProps, type LtiDeepLinkTokenEntity } from '../lti-deep-link-token.entity';
 
 export class LtiDeepLinkTokenEntityMapper {
 	public static mapDOToEntityProperties(

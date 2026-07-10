@@ -8,5 +8,5 @@ export class BoardUrlParams {
 		required: true,
 		nullable: false,
 	})
-	public boardId!: string;
+	boardId!: string;
 }

@@ -1,10 +1,10 @@
-import { RoleName } from '@modules/role';
-import { EntityId } from '../types';
+import type { RoleName } from '@modules/role'; // TODO: Remove this import when RoleReference is moved to @modules/role
+import { type EntityId } from '../types';
 
 export class RoleReference {
-	id: EntityId;
+	public id: EntityId;
 
-	name: RoleName;
+	public name: RoleName;
 
 	constructor(props: RoleReference) {
 		this.id = props.id;

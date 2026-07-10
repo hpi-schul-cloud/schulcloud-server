@@ -1,5 +1,5 @@
-import { EntityId } from '@shared/domain/types';
-import { FileDomainObjectProps, FileRecordParentType } from '../interfaces';
+import { type EntityId } from '@shared/domain/types';
+import { type FileDomainObjectProps, type FileRecordParentType } from '../interfaces';
 
 export class FileDto {
 	id: EntityId;

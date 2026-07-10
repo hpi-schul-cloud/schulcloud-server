@@ -1,6 +1,5 @@
-import { Loggable } from '@shared/common/loggable';
-import { ErrorLogMessage } from '@shared/common/error';
 import { InternalServerErrorException } from '@nestjs/common';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
 
 export class RuntimeConfigValueInvalidDataLoggable extends InternalServerErrorException implements Loggable {
 	constructor(
@@ -12,7 +11,7 @@ export class RuntimeConfigValueInvalidDataLoggable extends InternalServerErrorEx
 	}
 
 	/* istanbul ignore next */
-	public getLogMessage(): ErrorLogMessage {
+	public getLogMessage(): LoggableMessage {
 		const message = {
 			message: this.message,
 			value: this.value,

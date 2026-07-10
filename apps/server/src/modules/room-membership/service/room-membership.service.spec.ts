@@ -1,19 +1,19 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { LegacyLogger } from '@infra/logger';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Group, GroupService, GroupTypes, GroupUser } from '@modules/group';
+import { type Group, GroupService, GroupTypes, type GroupUser } from '@modules/group';
 import { groupFactory } from '@modules/group/testing';
 import { RoleDto, RoleName, RoleService } from '@modules/role';
 import { roleDtoFactory, roleFactory } from '@modules/role/testing';
-import { ROOM_PUBLIC_API_CONFIG_TOKEN, RoomPublicApiConfig, RoomService } from '@modules/room';
+import { ROOM_PUBLIC_API_CONFIG_TOKEN, type RoomPublicApiConfig, RoomService } from '@modules/room';
 import { roomFactory } from '@modules/room/testing';
 import { SchoolService } from '@modules/school/domain/service/school.service';
 import { schoolFactory } from '@modules/school/testing';
-import { UserDo, UserService } from '@modules/user';
+import { type UserDo, UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
 import { userDoFactory, userFactory } from '@modules/user/testing';
 import { BadRequestException } from '@nestjs/common/exceptions';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { RoomAuthorizable } from '../do/room-authorizable.do';
 import { RoomMembershipRepo } from '../repo/room-membership.repo';
@@ -588,7 +588,9 @@ describe('RoomMembershipService', () => {
 				roomService.getSingleRoom.mockResolvedValue(roomFactory.build({ id: roomId }));
 
 				// Mock getAuthorizables to return empty array (or more than 1 element)
-				const getAuthorizablesSpy = jest.spyOn(service as any, 'getAuthorizables').mockResolvedValue([]);
+				// @ts-expect-error spy private method
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-call
+				const getAuthorizablesSpy = jest.spyOn(service, 'getAuthorizables').mockResolvedValue([]);
 
 				const result = await service.getRoomAuthorizable(roomId);
 
@@ -596,7 +598,7 @@ describe('RoomMembershipService', () => {
 				expect(result).toBeInstanceOf(RoomAuthorizable);
 				expect(result.roomId).toBe(roomId);
 				expect(result.members).toHaveLength(0);
-
+				// eslint-disable-next-line @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
 				getAuthorizablesSpy.mockRestore();
 			});
 		});
@@ -702,6 +704,27 @@ describe('RoomMembershipService', () => {
 
 			expect(result.total).toBe(0);
 			expect(result.data.length).toEqual(0);
+		});
+
+		it('should forward pagination to the group service', async () => {
+			const { schoolId1 } = setup();
+			const pagination = { skip: 5, limit: 10 };
+
+			await service.getRoomMembershipStatsByUsersAndRoomsSchoolId(schoolId1, pagination);
+
+			expect(groupService.findByUsersAndRoomsSchoolId).toHaveBeenCalledWith(schoolId1, [GroupTypes.ROOM], {
+				pagination: { skip: 5, limit: 10 },
+			});
+		});
+
+		it('should use default pagination when none is provided', async () => {
+			const { schoolId1 } = setup();
+
+			await service.getRoomMembershipStatsByUsersAndRoomsSchoolId(schoolId1);
+
+			expect(groupService.findByUsersAndRoomsSchoolId).toHaveBeenCalledWith(schoolId1, [GroupTypes.ROOM], {
+				pagination: { skip: 0, limit: 500 },
+			});
 		});
 	});
 

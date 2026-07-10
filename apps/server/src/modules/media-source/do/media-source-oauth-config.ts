@@ -1,4 +1,4 @@
-import { MediaSourceAuthMethod } from '../enum';
+import { type MediaSourceAuthMethod } from '../enum';
 
 export class MediaSourceOauthConfig {
 	public clientId: string;

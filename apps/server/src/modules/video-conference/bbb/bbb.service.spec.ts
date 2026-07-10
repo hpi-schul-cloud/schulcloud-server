@@ -1,17 +1,23 @@
-import { ErrorUtils } from '@core/error/utils';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import { ErrorUtils } from '@infra/error';
 import { HttpService } from '@nestjs/axios';
 import { InternalServerErrorException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
-import { AxiosResponse } from 'axios';
-import crypto, { Hash } from 'crypto';
+import { type AxiosResponse } from 'axios';
+import crypto, { type Hash } from 'crypto';
 import { of } from 'rxjs';
-import { URLSearchParams } from 'url';
-import { VIDEO_CONFERENCE_CONFIG_TOKEN, VideoConferenceConfig } from '../video-conference-config';
+import { type URLSearchParams } from 'url';
+import { VIDEO_CONFERENCE_CONFIG_TOKEN, type VideoConferenceConfig } from '../video-conference-config';
 import { BBBService } from './bbb.service';
-import { BBBBaseMeetingConfig, BBBCreateConfig, BBBJoinConfig, BBBRole, GuestPolicy } from './request';
-import { BBBBaseResponse, BBBCreateResponse, BBBMeetingInfoResponse, BBBResponse, BBBStatus } from './response';
+import { type BBBBaseMeetingConfig, type BBBCreateConfig, type BBBJoinConfig, BBBRole, GuestPolicy } from './request';
+import {
+	type BBBBaseResponse,
+	type BBBCreateResponse,
+	type BBBMeetingInfoResponse,
+	type BBBResponse,
+	BBBStatus,
+} from './response';
 
 const createBBBCreateResponse = (): BBBResponse<BBBCreateResponse> => {
 	return {

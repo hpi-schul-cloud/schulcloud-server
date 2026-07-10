@@ -1,8 +1,8 @@
-import { EntityId } from '@shared/domain/types';
-import { UnsyncedEntitiesOptions } from '../interface';
+import { type EntityId } from '@shared/domain/types';
+import { type UnsyncedEntitiesOptions } from '../interface';
 
 export class UnsyncedEntitiesOptionsBuilder {
-	static build(
+	public static build(
 		systemId: EntityId,
 		unsyncedForMinutes: number,
 		targetRefDomain?: string,

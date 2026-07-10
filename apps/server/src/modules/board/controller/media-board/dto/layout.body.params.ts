@@ -6,5 +6,5 @@ export class LayoutBodyParams {
 	@IsEnum(BoardLayout)
 	@NotEquals(BoardLayout[BoardLayout.COLUMNS])
 	@ApiProperty({ enum: BoardLayout, enumName: 'BoardLayout' })
-	public layout!: BoardLayout;
+	layout!: BoardLayout;
 }

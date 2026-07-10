@@ -1,6 +1,6 @@
 import { EncryptionConfig, EncryptionModule } from '@infra/encryption';
 import { LoggerModule } from '@infra/logger';
-import { OauthAdapterModule } from '@modules/oauth-adapter';
+import { OauthAdapterModule } from '@infra/oauth-adapter';
 import { HttpModule } from '@nestjs/axios';
 import { DynamicModule, Module } from '@nestjs/common';
 import { BiloMediaClientAdapter } from './bilo-media-client.adapter';

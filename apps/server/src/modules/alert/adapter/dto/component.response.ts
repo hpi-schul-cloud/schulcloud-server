@@ -1,4 +1,4 @@
-import { ComponentDto } from './component.dto';
+import { type ComponentDto } from './component.dto';
 
 export class ComponentResponse {
 	constructor(data: ComponentDto) {

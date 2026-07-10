@@ -2,13 +2,13 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { schoolEntityFactory, schoolYearEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
 import { systemEntityFactory } from '@modules/system/testing';
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus, type INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { DateToString } from '@testing/date-to-string';
+import { type DateToString } from '@testing/date-to-string';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
-import { MaintenanceResponse, SchoolYearResponse } from '../dto';
+import { type MaintenanceResponse, type SchoolYearResponse } from '../dto';
 
 describe('School Controller (API)', () => {
 	let app: INestApplication;

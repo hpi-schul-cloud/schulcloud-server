@@ -1,7 +1,7 @@
-import { Logger } from '@infra/logger';
+import { type Logger } from '@infra/logger';
 import EventEmitter from 'node:events';
 import { InMemoryLoggable } from '../loggable';
-import { StorageClient } from '../types';
+import { type StorageClient } from '../types';
 
 export class InMemoryClient extends EventEmitter implements StorageClient {
 	private store: Record<string, string> = {};

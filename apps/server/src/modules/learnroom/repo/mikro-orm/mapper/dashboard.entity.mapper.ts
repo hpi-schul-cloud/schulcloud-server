@@ -2,9 +2,9 @@ import { EntityManager, wrap } from '@mikro-orm/core';
 import { CourseEntity, CourseType } from '@modules/course/repo';
 import { User } from '@modules/user/repo';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import { ReferenceNotPopulatedLoggableException } from '@shared/common/loggable-exception/reference-not-populated.loggable-exception';
 import { Dashboard, GridElement, GridElementWithPosition } from '../../../domain/do/dashboard';
 import { DashboardEntity, DashboardGridElementEntity } from '../dashboard.entity';
-import { ReferenceNotPopulatedLoggableException } from '@shared/common/loggable-exception/reference-not-populated.loggable-exception';
 
 @Injectable()
 export class DashboardModelMapper {
@@ -34,7 +34,7 @@ export class DashboardModelMapper {
 		if (!modelEntity.gridElements.isInitialized()) {
 			await modelEntity.gridElements.init();
 		}
-		const grid = await Promise.all(Array.from(modelEntity.gridElements).map(async (e) => this.mapElementToEntity(e)));
+		const grid = await Promise.all(Array.from(modelEntity.gridElements).map((e) => this.mapElementToEntity(e)));
 		return new Dashboard(modelEntity.id, { grid, userId: modelEntity.user.id });
 	}
 

@@ -4,10 +4,10 @@ import {
 	OauthConfigEntity,
 	OidcConfigEntity,
 	SystemEntity,
-	SystemEntityProps,
+	type SystemEntityProps,
 } from '@modules/system/repo';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
-import { DeepPartial } from 'fishery';
+import { type DeepPartial } from 'fishery';
 import { BaseFactory } from './base.factory';
 
 export const systemOauthConfigEntityFactory = BaseFactory.define<OauthConfigEntity, OauthConfigEntity>(
@@ -59,7 +59,7 @@ export const systemOidcConfigEntityFactory = BaseFactory.define<OidcConfigEntity
 );
 
 export class SystemEntityFactory extends BaseFactory<SystemEntity, SystemEntityProps> {
-	withOauthConfig(otherParams?: DeepPartial<OauthConfigEntity>): this {
+	public withOauthConfig(otherParams?: DeepPartial<OauthConfigEntity>): this {
 		const params: DeepPartial<SystemEntityProps> = {
 			type: SystemTypeEnum.OAUTH,
 			oauthConfig: systemOauthConfigEntityFactory.build(otherParams),
@@ -68,7 +68,7 @@ export class SystemEntityFactory extends BaseFactory<SystemEntity, SystemEntityP
 		return this.params(params);
 	}
 
-	withLdapConfig(otherParams?: DeepPartial<LdapConfigEntity>): this {
+	public withLdapConfig(otherParams?: DeepPartial<LdapConfigEntity>): this {
 		const params: DeepPartial<SystemEntityProps> = {
 			type: SystemTypeEnum.LDAP,
 			ldapConfig: systemLdapConfigEntityFactory.build(otherParams),
@@ -77,7 +77,7 @@ export class SystemEntityFactory extends BaseFactory<SystemEntity, SystemEntityP
 		return this.params(params);
 	}
 
-	withOidcConfig(otherParams?: DeepPartial<OidcConfigEntity>): this {
+	public withOidcConfig(otherParams?: DeepPartial<OidcConfigEntity>): this {
 		const params = {
 			type: SystemTypeEnum.OIDC,
 			oidcConfig: systemOidcConfigEntityFactory.build(otherParams),

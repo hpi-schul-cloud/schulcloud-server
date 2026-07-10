@@ -1,21 +1,21 @@
 import { faker } from '@faker-js/faker';
 import {
 	CommonCartridgeIntendedUseType,
-	CommonCartridgeResourceProps,
+	type CommonCartridgeResourceProps,
 	CommonCartridgeResourceType,
 	CommonCartridgeVersion,
 } from '@modules/common-cartridge';
 import { Readable } from 'stream';
 import { CommonCartridgeElementFactory } from '../export/elements/common-cartridge-element-factory';
-import { CommonCartridgeFileResourcePropsV110 } from '../export/resources/v1.1.0/common-cartridge-file-resource';
-import { CommonCartridgeManifestResourcePropsV110 } from '../export/resources/v1.1.0/common-cartridge-manifest-resource';
-import { CommonCartridgeWebContentResourcePropsV110 } from '../export/resources/v1.1.0/common-cartridge-web-content-resource';
-import { CommonCartridgeWebLinkResourcePropsV110 } from '../export/resources/v1.1.0/common-cartridge-web-link-resource';
-import { CommonCartridgeFileFolderResourcePropsV130 } from '../export/resources/v1.3.0/common-cartridge-file-folder-resource';
-import { CommonCartridgeFileResourcePropsV130 } from '../export/resources/v1.3.0/common-cartridge-file-resource';
-import { CommonCartridgeManifestResourcePropsV130 } from '../export/resources/v1.3.0/common-cartridge-manifest-resource';
-import { CommonCartridgeWebContentResourcePropsV130 } from '../export/resources/v1.3.0/common-cartridge-web-content-resource';
-import { CommonCartridgeWebLinkResourcePropsV130 } from '../export/resources/v1.3.0/common-cartridge-web-link-resource';
+import { type CommonCartridgeFileResourcePropsV110 } from '../export/resources/v1.1.0/common-cartridge-file-resource';
+import { type CommonCartridgeManifestResourcePropsV110 } from '../export/resources/v1.1.0/common-cartridge-manifest-resource';
+import { type CommonCartridgeWebContentResourcePropsV110 } from '../export/resources/v1.1.0/common-cartridge-web-content-resource';
+import { type CommonCartridgeWebLinkResourcePropsV110 } from '../export/resources/v1.1.0/common-cartridge-web-link-resource';
+import { type CommonCartridgeFileFolderResourcePropsV130 } from '../export/resources/v1.3.0/common-cartridge-file-folder-resource';
+import { type CommonCartridgeFileResourcePropsV130 } from '../export/resources/v1.3.0/common-cartridge-file-resource';
+import { type CommonCartridgeManifestResourcePropsV130 } from '../export/resources/v1.3.0/common-cartridge-manifest-resource';
+import { type CommonCartridgeWebContentResourcePropsV130 } from '../export/resources/v1.3.0/common-cartridge-web-content-resource';
+import { type CommonCartridgeWebLinkResourcePropsV130 } from '../export/resources/v1.3.0/common-cartridge-web-link-resource';
 import {
 	createCommonCartridgeMetadataElementPropsV110,
 	createCommonCartridgeMetadataElementPropsV130,

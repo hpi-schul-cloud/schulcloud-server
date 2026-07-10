@@ -1,4 +1,4 @@
-import { EntityId } from '@shared/domain/types';
+import { type EntityId } from '@shared/domain/types';
 import type { MediaExternalToolElementProps } from '../types';
 import { BoardNode } from '../board-node.do';
 
@@ -7,7 +7,7 @@ export class MediaExternalToolElement extends BoardNode<MediaExternalToolElement
 		return this.props.contextExternalToolId;
 	}
 
-	canHaveChild(): boolean {
+	public canHaveChild(): boolean {
 		return false;
 	}
 }

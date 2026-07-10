@@ -1,6 +1,6 @@
-import { Loggable, LogMessage } from '@infra/logger';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
 import util from 'node:util';
-import { FileDo } from '../do';
+import { type FileDo } from '../do';
 
 export class CreateArchiveLoggable implements Loggable {
 	constructor(
@@ -10,7 +10,7 @@ export class CreateArchiveLoggable implements Loggable {
 		private readonly error?: unknown
 	) {}
 
-	public getLogMessage(): LogMessage {
+	public getLogMessage(): LoggableMessage {
 		let serializedError: string | undefined;
 		if (this.error instanceof Error) {
 			serializedError = this.error.message;

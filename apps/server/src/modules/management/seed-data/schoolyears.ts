@@ -1,5 +1,5 @@
-import { SchoolYearProperties } from '@modules/school/repo';
-import { DeepPartial } from 'fishery';
+import { type SchoolYearEntity, type SchoolYearProperties } from '@modules/school/repo';
+import { type DeepPartial } from 'fishery';
 import { schoolYearFactory } from './factory/schoolyear.factory';
 
 type SeedSchoolYearProperties = Pick<SchoolYearProperties, 'name'> & {
@@ -87,7 +87,7 @@ const seedSchoolYears: SeedSchoolYearProperties[] = [
 	},
 ];
 
-export function generateSchoolYears() {
+export function generateSchoolYears(): SchoolYearEntity[] {
 	return seedSchoolYears.map((year) => {
 		const params: DeepPartial<SchoolYearProperties> = {
 			endDate: new Date(year.endDate),

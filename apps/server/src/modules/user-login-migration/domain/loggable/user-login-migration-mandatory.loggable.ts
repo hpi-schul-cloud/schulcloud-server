@@ -1,5 +1,5 @@
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
-import { EntityId } from '@shared/domain/types';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
+import { type EntityId } from '@shared/domain/types';
 
 export class UserLoginMigrationMandatoryLoggable implements Loggable {
 	constructor(
@@ -8,7 +8,7 @@ export class UserLoginMigrationMandatoryLoggable implements Loggable {
 		private readonly mandatory: boolean
 	) {}
 
-	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			message: 'The school administrator changed the requirement status of the user login migration for his school.',
 			data: {

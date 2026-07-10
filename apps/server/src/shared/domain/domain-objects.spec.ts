@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { DomainObject } from './domain-object';
-import { EntityId } from './types';
+import { type EntityId } from './types';
 
 interface MyDomainObjectProps {
 	id: EntityId;

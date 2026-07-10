@@ -1,7 +1,7 @@
-import { ValidationError } from '@shared/common/error';
+import { type ValidationError } from '@shared/common/error';
 import { customParameterFactory } from '../../../../external-tool/testing';
 import {
-	CustomParameter,
+	type CustomParameter,
 	CustomParameterEntry,
 	ToolParameterMandatoryValueMissingLoggableException,
 	ToolParameterRequiredLoggableException,

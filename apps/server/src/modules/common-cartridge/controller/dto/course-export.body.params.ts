@@ -9,7 +9,7 @@ export class CourseExportBodyParams {
 		type: [String],
 	})
 	@StringToObject(CourseExportBodyParams)
-	public readonly topics!: string[];
+	readonly topics!: string[];
 
 	@IsArray()
 	@ApiProperty({
@@ -17,7 +17,7 @@ export class CourseExportBodyParams {
 		type: [String],
 	})
 	@StringToObject(CourseExportBodyParams)
-	public readonly tasks!: string[];
+	readonly tasks!: string[];
 
 	@IsArray()
 	@ApiProperty({
@@ -25,5 +25,5 @@ export class CourseExportBodyParams {
 		type: [String],
 	})
 	@StringToObject(CourseExportBodyParams)
-	public readonly columnBoards!: string[];
+	readonly columnBoards!: string[];
 }

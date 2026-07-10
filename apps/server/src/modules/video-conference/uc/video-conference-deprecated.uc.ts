@@ -105,7 +105,8 @@ export class VideoConferenceDeprecatedUc {
 			if (!vcDo.salt) {
 				vcDo.salt = randomBytes(16).toString('hex');
 			}
-		} catch (error) {
+		} catch {
+			// TODO: check error handling
 			// Create new preset
 			vcDo = new VideoConferenceDO({
 				target: refId,

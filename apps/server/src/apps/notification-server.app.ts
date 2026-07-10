@@ -6,10 +6,10 @@ import { NestFactory } from '@nestjs/core';
 import { install as sourceMapInstall } from 'source-map-support';
 
 // application imports
-import { createRequestLoggerMiddleware, LegacyLogger, LOGGER_CONFIG_TOKEN, LoggerConfig } from '@infra/logger';
+import { createRequestLoggerMiddleware, LegacyLogger, LOGGER_CONFIG_TOKEN, type LoggerConfig } from '@infra/logger';
 import { NotificationServerModule } from '@modules/notification/notification-server.app.module';
 import { ExpressAdapter } from '@nestjs/platform-express';
-import { SwaggerDocumentOptions } from '@nestjs/swagger';
+import { type SwaggerDocumentOptions } from '@nestjs/swagger';
 import express from 'express';
 import { enableOpenApiDocs } from './helpers';
 import { createMetricsServer } from './helpers/metrics.server';

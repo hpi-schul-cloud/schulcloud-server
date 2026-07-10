@@ -1,11 +1,11 @@
-import { EntityId } from '@shared/domain/types';
+import { type EntityId } from '@shared/domain/types';
 
 export class ContextExternalToolDeletedEvent {
-	id: EntityId;
+	public id: EntityId;
 
-	title: string;
+	public title: string;
 
-	description?: string;
+	public description?: string;
 
 	constructor(props: ContextExternalToolDeletedEvent) {
 		this.id = props.id;

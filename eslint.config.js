@@ -7,6 +7,7 @@ const prettierPlugin = require('eslint-plugin-prettier');
 const prettierConfig = require('eslint-config-prettier');
 const jestPlugin = require('eslint-plugin-jest');
 const noOnlyTests = require('eslint-plugin-no-only-tests');
+const checkFile = require('eslint-plugin-check-file');
 const globals = require('globals');
 
 const airbnbRules = {
@@ -67,9 +68,9 @@ const baseConfig = {
 		'no-restricted-syntax': 'off',
 		'class-methods-use-this': 'off',
 		'no-underscore-dangle': ['error', { allow: ['_id', '_v', '__v'] }],
-		'prefer-destructuring': ['warn', { object: true, array: false }],
+		'prefer-destructuring': ['error', { object: true, array: false }],
 		'no-param-reassign': ['warn', { props: false }],
-		'no-unused-vars': ['warn', { args: 'after-used', argsIgnorePattern: 'app|req|res|next|options|params|^_' }],
+		'no-unused-vars': ['error', { args: 'after-used', argsIgnorePattern: 'app|req|res|next|options|params|^_' }],
 		'arrow-parens': ['error', 'always'],
 		'arrow-body-style': ['error', 'as-needed', { requireReturnForObjectLiteral: true }],
 		'no-only-tests/no-only-tests': 'error',
@@ -90,6 +91,7 @@ const tsBase = {
 		'import-x': importX,
 		prettier: prettierPlugin,
 		promise: promisePlugin,
+		'check-file': checkFile,
 	},
 	languageOptions: {
 		parser: tsParser,
@@ -115,16 +117,33 @@ const tsBase = {
 		'no-void': ['error', { allowAsStatement: true }],
 		'no-param-reassign': 'off',
 		'no-underscore-dangle': 'off',
-		'require-await': 'warn',
+		'require-await': 'error',
 		'@typescript-eslint/unbound-method': 'error',
 		'@typescript-eslint/no-non-null-assertion': 'warn',
-		'@typescript-eslint/no-unused-vars': ['warn', { args: 'after-used', argsIgnorePattern: '^_' }],
-		'@typescript-eslint/explicit-function-return-type': 'warn',
-		'@typescript-eslint/explicit-member-accessibility': 'off',
+		'@typescript-eslint/no-unused-vars': ['error', { args: 'after-used', argsIgnorePattern: '^_' }],
+		'@typescript-eslint/explicit-function-return-type': 'error',
+		'@typescript-eslint/explicit-member-accessibility': [
+			'error',
+			{
+				accessibility: 'explicit',
+				overrides: {
+					accessors: 'no-public',
+					constructors: 'no-public',
+					methods: 'explicit',
+					properties: 'explicit',
+					parameterProperties: 'explicit',
+				},
+			},
+		],
 		'@typescript-eslint/no-empty-interface': ['error', { allowSingleExtends: true }],
+		'check-file/filename-naming-convention': ['error', { '**/*.ts': 'KEBAB_CASE' }, { ignoreMiddleExtensions: true }],
 		'no-restricted-imports': 'off',
 		'no-only-tests/no-only-tests': 'error',
 		'max-classes-per-file': 'off',
+		'@typescript-eslint/consistent-type-imports': [
+			'error',
+			{ prefer: 'type-imports', fixStyle: 'inline-type-imports' },
+		],
 	},
 	settings: {
 		'import-x/resolver': {
@@ -156,7 +175,7 @@ const tsSpecs = {
 		'jest/unbound-method': 'error',
 		'@typescript-eslint/explicit-function-return-type': 'off',
 		'@typescript-eslint/explicit-member-accessibility': 'off',
-		'@typescript-eslint/no-explicit-any': 'warn',
+		'@typescript-eslint/no-explicit-any': 'error',
 	},
 };
 
@@ -180,6 +199,11 @@ const layerRestrictions = [
 						},
 					],
 				},
+			],
+			'check-file/filename-naming-convention': [
+				'error',
+				{ '**/*.ts': 'PASCAL_CASE' },
+				{ ignoreMiddleExtensions: true },
 			],
 			'no-console': 'off',
 		},
@@ -224,15 +248,43 @@ const layerRestrictions = [
 		name: 'schulcloud/layer-infra',
 		files: ['apps/server/src/infra/**/*.ts'],
 		rules: {
+			'no-restricted-imports': [
+				'error',
+				{
+					patterns: [
+						{
+							group: ['@modules/**'],
+							message: 'infra-modules may NOT import from @modules',
+						},
+					],
+				},
+			],
 			'@typescript-eslint/no-restricted-imports': [
 				'warn',
 				{
 					patterns: [
 						{
-							group: ['**/apps/**', '@core/**', '@modules/**', '**/migrations/**'],
-							message: 'infra-modules may NOT import from apps, @core, @modules, or migrations',
+							group: ['**/apps/**', '@core/**', '**/migrations/**'],
+							message: 'infra-modules may NOT import from apps, @core, or migrations',
 						},
 						deepImportWarning,
+					],
+				},
+			],
+		},
+	},
+	{
+		name: 'schulcloud/layer-infra-collaborative-storage',
+		files: ['apps/server/src/infra/collaborative-storage/**/*.ts'],
+		rules: {
+			'no-restricted-imports': [
+				'warn',
+				{
+					patterns: [
+						{
+							group: ['@modules/**'],
+							message: 'infra-modules may NOT import from @modules',
+						},
 					],
 				},
 			],
@@ -245,7 +297,7 @@ const layerRestrictions = [
 			'@typescript-eslint/no-restricted-imports': [
 				'warn',
 				{
-					patterns: [{ group: ['**/apps/**'], message: 'modules-modules may NOT import from apps' }],
+					patterns: [{ group: ['**/apps/**'], message: 'modules-modules may NOT import from apps' }, deepImportWarning],
 				},
 			],
 		},
@@ -287,10 +339,10 @@ const layerRestrictions = [
 
 const entityFiles = {
 	name: 'schulcloud/entities',
-	files: ['apps/server/src/**/*.entity.ts'],
+	files: ['apps/server/src/**/*.entity.ts', 'apps/server/src/**/*.embeddable.ts'],
 	rules: {
 		'@typescript-eslint/explicit-member-accessibility': [
-			'warn',
+			'error',
 			{
 				accessibility: 'explicit',
 				overrides: {
@@ -305,6 +357,40 @@ const entityFiles = {
 	},
 };
 
+const dtoFiles = {
+	name: 'schulcloud/dtos',
+	files: [
+		'apps/server/src/**/*.dto.ts',
+		'apps/server/src/**/*.params.ts',
+		'apps/server/src/**/*.param.ts',
+		'apps/server/src/**/*.response.ts',
+		'apps/server/src/**/*.body.ts',
+		'apps/server/src/**/*.query.ts',
+	],
+	rules: {
+		'@typescript-eslint/explicit-member-accessibility': [
+			'error',
+			{
+				accessibility: 'no-public',
+				overrides: {
+					accessors: 'no-public',
+					constructors: 'no-public',
+					methods: 'no-public',
+					properties: 'no-public',
+					parameterProperties: 'no-public',
+				},
+			},
+		],
+		'no-restricted-syntax': [
+			'error',
+			{
+				selector: 'MethodDefinition[kind="method"]',
+				message: 'Methods are not allowed in DTOs. DTOs should only be data holders.',
+			},
+		],
+	},
+};
+
 const singleClassFiles = {
 	name: 'schulcloud/single-class',
 	files: [
@@ -314,8 +400,17 @@ const singleClassFiles = {
 		'apps/server/src/**/*.uc.ts',
 	],
 	rules: {
-		'max-classes-per-file': ['warn', 1],
+		'max-classes-per-file': ['error', 1],
 	},
 };
 
-module.exports = [globalIgnores, baseConfig, tsBase, tsSpecs, ...layerRestrictions, entityFiles, singleClassFiles];
+module.exports = [
+	globalIgnores,
+	baseConfig,
+	tsBase,
+	tsSpecs,
+	...layerRestrictions,
+	entityFiles,
+	dtoFiles,
+	singleClassFiles,
+];

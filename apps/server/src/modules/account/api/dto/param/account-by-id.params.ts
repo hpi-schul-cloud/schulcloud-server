@@ -8,5 +8,5 @@ export class AccountByIdParams {
 		required: true,
 		nullable: false,
 	})
-	public id!: string;
+	id!: string;
 }

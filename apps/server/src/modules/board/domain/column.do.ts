@@ -11,7 +11,7 @@ export class Column extends BoardNode<ColumnProps> {
 		this.props.title = title;
 	}
 
-	canHaveChild(childNode: AnyBoardNode): boolean {
+	public canHaveChild(childNode: AnyBoardNode): boolean {
 		return childNode instanceof Card;
 	}
 }

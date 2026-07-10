@@ -1,9 +1,9 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Test, TestingModule } from '@nestjs/testing';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import { Test, type TestingModule } from '@nestjs/testing';
 
 import { Logger } from '@infra/logger';
 import { HealthStatuses } from '../domain';
-import { HEALTH_CONFIG_TOKEN, HealthConfig } from '../health.config';
+import { HEALTH_CONFIG_TOKEN, type HealthConfig } from '../health.config';
 import { HealthService } from '../service';
 import { HealthUC } from './health.uc';
 

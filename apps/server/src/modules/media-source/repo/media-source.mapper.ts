@@ -1,6 +1,6 @@
-import { EntityData } from '@mikro-orm/core';
+import { type EntityData } from '@mikro-orm/core';
 import { MediaSource } from '../do';
-import { MediaSourceEntity } from '../entity';
+import { type MediaSourceEntity } from '../entity';
 import { MediaSourceConfigMapper } from './media-source-config.mapper';
 
 export class MediaSourceMapper {

@@ -1,4 +1,4 @@
-import { Readable, Stream } from 'stream';
+import { Readable, type Stream } from 'stream';
 import { createCommonCartridgeFileResourcePropsV110 } from '../../../testing/common-cartridge-resource-props.factory';
 import {
 	CommonCartridgeElementType,

@@ -1,6 +1,6 @@
-import { ErrorLogMessage, Loggable } from '@infra/logger';
 import { HttpStatus } from '@nestjs/common';
 import { BusinessError } from '@shared/common/error';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
 
 export class UserAccountDeactivatedLoggableException extends BusinessError implements Loggable {
 	constructor() {
@@ -14,7 +14,7 @@ export class UserAccountDeactivatedLoggableException extends BusinessError imple
 		);
 	}
 
-	getLogMessage(): ErrorLogMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			type: this.type,
 			stack: this.stack,

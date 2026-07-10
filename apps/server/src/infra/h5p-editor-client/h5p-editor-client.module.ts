@@ -12,7 +12,7 @@ export class H5pEditorClientModule {
 		return {
 			module: H5pEditorClientModule,
 			imports: [
-				RabbitMQWrapperModule.register(options),
+				RabbitMQWrapperModule.register({ ...options, connectionName: 'h5p-editor' }),
 				ConfigurationModule.register(options.exchangeConfigInjectionToken, options.exchangeConfigConstructor),
 			],
 			providers: [

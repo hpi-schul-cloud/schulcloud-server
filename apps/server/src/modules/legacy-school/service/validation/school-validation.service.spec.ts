@@ -1,7 +1,7 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Test, TestingModule } from '@nestjs/testing';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import { Test, type TestingModule } from '@nestjs/testing';
 
-import { LegacySchoolDo } from '@modules/legacy-school/domain';
+import { type LegacySchoolDo } from '@modules/legacy-school/domain';
 import { LegacySchoolRepo } from '@modules/legacy-school/repo';
 import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
 import { SchoolNumberDuplicateLoggableException } from '../../loggable';
@@ -101,7 +101,7 @@ describe(SchoolValidationService.name, () => {
 				it('should throw a SchoolNumberDuplicateLoggableException', async () => {
 					const { newSchool } = setup();
 
-					const func = async () => service.validate(newSchool);
+					const func = () => service.validate(newSchool);
 
 					await expect(func).rejects.toThrow(SchoolNumberDuplicateLoggableException);
 				});

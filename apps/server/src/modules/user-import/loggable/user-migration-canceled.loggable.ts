@@ -1,10 +1,10 @@
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
-import { LegacySchoolDo } from '@modules/legacy-school/domain';
+import { type LegacySchoolDo } from '@modules/legacy-school/domain';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
 
 export class UserMigrationCanceledLoggable implements Loggable {
 	constructor(private readonly school: LegacySchoolDo) {}
 
-	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			message: 'The user migration was canceled.',
 			data: {

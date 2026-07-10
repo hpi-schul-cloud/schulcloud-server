@@ -1,4 +1,4 @@
-import { LogMessage } from '@infra/logger';
+import { type LogMessage } from '@shared/common/loggable';
 import { ProgressSynchronizationLoggable } from './progress-synchronization-loggable';
 
 describe(ProgressSynchronizationLoggable.name, () => {

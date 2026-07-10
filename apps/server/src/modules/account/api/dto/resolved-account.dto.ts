@@ -7,59 +7,59 @@ import { passwordPattern } from '../../domain';
 export class ResolvedAccountDto {
 	@ApiPropertyOptional()
 	@IsMongoId()
-	public readonly id: EntityId;
+	readonly id: EntityId;
 
 	@ApiPropertyOptional()
 	@IsDate()
-	public readonly createdAt?: Date;
+	readonly createdAt?: Date;
 
 	@ApiPropertyOptional()
 	@IsDate()
-	public readonly updatedAt?: Date;
+	readonly updatedAt?: Date;
 
 	@IsString()
 	@IsNotEmpty()
-	public username: string;
+	username: string;
 
 	@PrivacyProtect()
 	@ApiPropertyOptional()
 	@Matches(passwordPattern)
-	public password?: string;
+	password?: string;
 
 	@ApiPropertyOptional()
 	@IsString()
-	public token?: string;
+	token?: string;
 
 	@ApiPropertyOptional()
 	@IsString()
-	public credentialHash?: string;
+	credentialHash?: string;
 
 	@ApiPropertyOptional()
 	@IsMongoId()
-	public userId?: EntityId;
+	userId?: EntityId;
 
 	@ApiPropertyOptional()
 	@IsMongoId()
-	public systemId?: EntityId;
+	systemId?: EntityId;
 
 	@ApiPropertyOptional()
 	@IsDate()
-	public lasttriedFailedLogin?: Date;
+	lasttriedFailedLogin?: Date;
 
 	@ApiPropertyOptional()
 	@IsDate()
-	public expiresAt?: Date;
+	expiresAt?: Date;
 
 	@ApiPropertyOptional()
 	@IsBoolean()
-	public activated?: boolean;
+	activated?: boolean;
 
 	@ApiPropertyOptional()
-	public idmReferenceId?: string;
+	idmReferenceId?: string;
 
 	@ApiPropertyOptional()
 	@IsDate()
-	public deactivatedAt?: Date;
+	deactivatedAt?: Date;
 
 	constructor(account: ResolvedAccountDto) {
 		this.id = account.id;
@@ -80,13 +80,13 @@ export class ResolvedAccountDto {
 }
 
 export class ResolvedSearchListAccountDto {
-	public data: ResolvedAccountDto[];
+	data: ResolvedAccountDto[];
 
-	public total: number;
+	total: number;
 
-	public skip?: number;
+	skip?: number;
 
-	public limit?: number;
+	limit?: number;
 
 	constructor(data: ResolvedAccountDto[], total: number, skip?: number, limit?: number) {
 		this.data = data;

@@ -7,25 +7,25 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class RoomMemberResponse {
 	@ApiProperty()
-	public firstName!: string;
+	firstName!: string;
 
 	@ApiProperty()
-	public lastName!: string;
+	lastName!: string;
 
 	@ApiProperty({ enum: RoleName, enumName: 'RoleName' })
-	public roomRoleName!: RoleName;
+	roomRoleName!: RoleName;
 
 	@ApiProperty({ enum: RoleName, enumName: 'RoleName', isArray: true })
-	public schoolRoleNames!: RoleName[];
+	schoolRoleNames!: RoleName[];
 
 	@ApiProperty()
-	public schoolId!: string;
+	schoolId!: string;
 
 	@ApiProperty()
-	public schoolName!: string;
+	schoolName!: string;
 
 	@ApiProperty()
-	public userId!: string;
+	userId!: string;
 
 	@ApiProperty({
 		type: 'object',
@@ -36,7 +36,7 @@ export class RoomMemberResponse {
 		additionalProperties: false,
 		required: [...RoomMemberOperationValues],
 	})
-	public allowedOperations: Record<RoomMemberOperation, boolean>;
+	allowedOperations: Record<RoomMemberOperation, boolean>;
 
 	constructor(props: RoomMemberResponse) {
 		this.userId = props.userId;

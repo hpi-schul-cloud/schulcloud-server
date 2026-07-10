@@ -1,4 +1,4 @@
-import { CourseEntity } from '../../repo';
+import { type CourseEntity } from '../../repo';
 import { CourseCommonCartridgeMetadataResponse, CourseMetadataResponse, CreateCourseResponse } from '../dto';
 
 export class CourseMapper {

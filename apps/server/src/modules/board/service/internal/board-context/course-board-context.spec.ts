@@ -1,7 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BoardExternalReferenceType, BoardRoles } from '../../../domain';
 import { columnBoardFactory } from '../../../testing';
-import { CourseBoardContext, CourseBoardContextData } from './course-board-context';
+import { CourseBoardContext, type CourseBoardContextData } from './course-board-context';
 
 describe(CourseBoardContext.name, () => {
 	describe('constructor', () => {

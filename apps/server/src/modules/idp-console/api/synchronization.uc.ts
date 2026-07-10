@@ -1,11 +1,11 @@
-import { AxiosErrorLoggable } from '@core/error/loggable';
+import { AxiosErrorLoggable } from '@infra/error';
 import { Logger } from '@infra/logger';
 import { SchulconnexRestClient } from '@infra/schulconnex-client';
 import { AccountService } from '@modules/account';
 import { Synchronization, SynchronizationService, SynchronizationStatusModel } from '@modules/synchronization';
 import { UserService } from '@modules/user';
 import { Inject, Injectable } from '@nestjs/common';
-import util from 'util';
+import util from 'node:util';
 import { IDP_CONSOLE_CONFIG_TOKEN, IdpConsoleConfig } from '../idp-console.config';
 import {
 	ProgressSynchronizationLoggable,
@@ -135,7 +135,7 @@ export class SynchronizationUc {
 	// Should be privat! It is only used for testing.
 	// Every parts that need be tested and only avaible from intern,
 	// need to be passed from outside by constructor or public methods.
-	chunkArray(array: string[], chunkSize: number): string[][] {
+	public chunkArray(array: string[], chunkSize: number): string[][] {
 		const chunkedArray: string[][] = [];
 		let index = 0;
 

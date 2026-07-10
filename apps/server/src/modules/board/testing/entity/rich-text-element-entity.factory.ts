@@ -1,7 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { InputFormat } from '@shared/domain/types';
-import { BoardNodeType, RichTextElementProps, ROOT_PATH } from '../../domain';
-import { BoardNodeEntityFactory, PropsWithType } from './board-node-entity.factory';
+import { BoardNodeType, type RichTextElementProps, ROOT_PATH } from '../../domain';
+import { BoardNodeEntityFactory, type PropsWithType } from './board-node-entity.factory';
 
 export const richTextElementEntityFactory = BoardNodeEntityFactory.define<PropsWithType<RichTextElementProps>>(
 	({ sequence }) => {

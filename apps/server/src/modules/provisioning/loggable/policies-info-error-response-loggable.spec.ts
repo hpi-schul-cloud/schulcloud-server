@@ -1,4 +1,4 @@
-import { SchulconnexPoliciesInfoErrorResponse } from '@infra/schulconnex-client';
+import { type SchulconnexPoliciesInfoErrorResponse } from '@infra/schulconnex-client';
 import { schulconnexPoliciesInfoErrorResponseFactory } from '@infra/schulconnex-client/testing';
 import { PoliciesInfoErrorResponseLoggable } from './policies-info-error-response-loggable';
 

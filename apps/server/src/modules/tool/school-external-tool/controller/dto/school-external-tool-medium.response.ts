@@ -9,23 +9,23 @@ export class SchoolExternalToolMediumResponse {
 		enum: ExternalToolMediumStatus,
 		enumName: 'ExternalToolMediumStatus',
 	})
-	public status: ExternalToolMediumStatus;
+	status: ExternalToolMediumStatus;
 
 	@ApiPropertyOptional({ description: 'Id of the medium' })
-	public mediumId?: string;
+	mediumId?: string;
 
 	@ApiPropertyOptional({ description: 'The id of the media source' })
-	public mediaSourceId?: string;
+	mediaSourceId?: string;
 
 	@ApiPropertyOptional({ description: 'Name of the media source' })
-	public mediaSourceName?: string;
+	mediaSourceName?: string;
 
 	@ApiPropertyOptional({
 		enum: MediaSourceLicenseType,
 		enumName: 'MediaSourceLicenseType',
 		description: 'License type of the media source',
 	})
-	public mediaSourceLicenseType?: MediaSourceLicenseType;
+	mediaSourceLicenseType?: MediaSourceLicenseType;
 
 	constructor(props: SchoolExternalToolMediumResponse) {
 		this.status = props.status;

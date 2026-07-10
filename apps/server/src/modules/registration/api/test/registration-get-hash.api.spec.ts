@@ -2,12 +2,12 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
 import { userFactory } from '@modules/user/testing';
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus, type INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { LanguageType } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { TestApiClient } from '@testing/test-api-client';
-import { REGISTRATION_PUBLIC_API_CONFIG_TOKEN, RegistrationPublicApiConfig } from '../../registration.config';
+import { REGISTRATION_PUBLIC_API_CONFIG_TOKEN, type RegistrationPublicApiConfig } from '../../registration.config';
 import { registrationEntityFactory } from '../../testing/registration-entity.factory';
 
 describe('Room Controller (API)', () => {

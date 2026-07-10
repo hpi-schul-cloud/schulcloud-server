@@ -1,4 +1,4 @@
-import { Stream } from 'stream';
+import { type Stream } from 'stream';
 
 export function streamToString(stream: Stream): Promise<string> {
 	const chunks: Buffer[] = [];

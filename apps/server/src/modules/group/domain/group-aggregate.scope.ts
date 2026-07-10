@@ -1,9 +1,9 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { StringValidator } from '@shared/common/validator';
-import { EntityId } from '@shared/domain/types';
+import { type EntityId } from '@shared/domain/types';
 import { MongoPatterns } from '@shared/repo/mongo.patterns';
 import { MongoDbScope } from '@shared/repo/mongodb-scope';
-import { GroupEntity } from '../entity';
+import { type GroupEntity } from '../entity';
 import { GroupTypes } from './group-types';
 
 export class GroupAggregateScope extends MongoDbScope<GroupEntity> {

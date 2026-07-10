@@ -1,13 +1,13 @@
-import { AccountSearchType } from '../../domain/type/account-search-type';
+import { type AccountSearchType } from '../../domain/type/account-search-type';
 
 export class AccountSearchDto {
-	public type!: AccountSearchType;
+	type!: AccountSearchType;
 
-	public value!: string;
+	value!: string;
 
-	public skip?: number = 0;
+	skip?: number = 0;
 
-	public limit?: number = 10;
+	limit?: number = 10;
 
 	constructor(search: AccountSearchDto) {
 		this.type = search.type;

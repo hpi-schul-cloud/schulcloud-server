@@ -1,5 +1,5 @@
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
 import { NotFoundException } from '@nestjs/common';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
 
 export class MediumMetadataNotFoundLoggableException extends NotFoundException implements Loggable {
 	constructor(
@@ -9,7 +9,7 @@ export class MediumMetadataNotFoundLoggableException extends NotFoundException i
 		super();
 	}
 
-	public getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			message: `Medium metadata could not be found.`,
 			data: {

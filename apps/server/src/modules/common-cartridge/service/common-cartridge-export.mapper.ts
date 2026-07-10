@@ -1,34 +1,34 @@
 import {
-	BoardTaskResponse,
-	ComponentEtherpadPropsImpl,
-	ComponentGeogebraPropsImpl,
-	ComponentLernstorePropsImpl,
-	ComponentTextPropsImpl,
-	CourseCommonCartridgeMetadataResponse,
-	FileElementResponse,
-	FileFolderElementResponse,
-	FileRecordResponse,
-	LessonContentResponse,
+	type BoardTaskResponse,
+	type ComponentEtherpadPropsImpl,
+	type ComponentGeogebraPropsImpl,
+	type ComponentLernstorePropsImpl,
+	type ComponentTextPropsImpl,
+	type CourseCommonCartridgeMetadataResponse,
+	type FileElementResponse,
+	type FileFolderElementResponse,
+	type FileRecordResponse,
+	type LessonContentResponse,
 	LessonContentResponseComponent,
-	LessonLinkedTaskResponse,
-	LessonResponse,
-	LinkElementResponse,
-	RichTextElementResponse,
+	type LessonLinkedTaskResponse,
+	type LessonResponse,
+	type LinkElementResponse,
+	type RichTextElementResponse,
 } from '@infra/common-cartridge-clients';
 import sanitizeHtml from 'sanitize-html';
-import { Stream } from 'stream';
-import { CommonCartridgeOrganizationProps } from '../export/builders/common-cartridge-file-builder';
+import { type Stream } from 'stream';
+import { type CommonCartridgeOrganizationProps } from '../export/builders/common-cartridge-file-builder';
 import {
 	CommonCartridgeElementType,
 	CommonCartridgeIntendedUseType,
 	CommonCartridgeResourceType,
 	CommonCartridgeVersion,
 } from '../export/common-cartridge.enums';
-import { CommonCartridgeElementProps } from '../export/elements/common-cartridge-element-factory';
-import { CommonCartridgeResourceProps } from '../export/resources/common-cartridge-resource-factory';
-import { FileElement } from '../export/resources/v1.3.0/common-cartridge-file-folder-resource';
+import { type CommonCartridgeElementProps } from '../export/elements/common-cartridge-element-factory';
+import { type CommonCartridgeResourceProps } from '../export/resources/common-cartridge-resource-factory';
+import { type FileElement } from '../export/resources/v1.3.0/common-cartridge-file-folder-resource';
 import { createIdentifier } from '../export/utils';
-import { FileMetadataAndStream } from './common-cartridge-export.service';
+import { type FileMetadataAndStream } from './common-cartridge-export.service';
 
 export class CommonCartridgeExportMapper {
 	private static readonly GEOGEBRA_BASE_URL: string = 'https://geogebra.org';

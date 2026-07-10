@@ -1,5 +1,5 @@
 import { DomainObject } from '@shared/domain/domain-object';
-import { EntityId } from '@shared/domain/types';
+import { type EntityId } from '@shared/domain/types';
 
 export interface FileProps {
 	id: EntityId;

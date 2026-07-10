@@ -1,6 +1,6 @@
 import { createMock } from '@golevelup/ts-jest';
 import { LegacyLogger } from '@infra/logger';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { DeleteFilesConsole } from './delete-files.console';
 import { DeleteFilesUc } from './delete-files.uc';
 

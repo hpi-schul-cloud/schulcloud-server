@@ -3,37 +3,37 @@ import { EntityId } from '@shared/domain/types';
 
 export class DeletionBatchDetailsResponse {
 	@ApiProperty()
-	public id: string;
+	id: string;
 
 	@ApiProperty()
-	public name: string;
+	name: string;
 
 	@ApiProperty()
-	public status: string;
+	status: string;
 
 	@ApiProperty()
-	public validUsers: string[];
+	validUsers: string[];
 
 	@ApiProperty()
-	public invalidUsers: string[];
+	invalidUsers: string[];
 
 	@ApiProperty()
-	public skippedUsers: string[];
+	skippedUsers: string[];
 
 	@ApiProperty()
-	public pendingDeletions: EntityId[];
+	pendingDeletions: EntityId[];
 
 	@ApiProperty()
-	public failedDeletions: EntityId[];
+	failedDeletions: EntityId[];
 
 	@ApiProperty()
-	public successfulDeletions: EntityId[];
+	successfulDeletions: EntityId[];
 
 	@ApiProperty({ type: Date })
-	public createdAt: Date;
+	createdAt: Date;
 
 	@ApiProperty({ type: Date })
-	public updatedAt: Date;
+	updatedAt: Date;
 
 	constructor(item: DeletionBatchDetailsResponse) {
 		this.id = item.id;

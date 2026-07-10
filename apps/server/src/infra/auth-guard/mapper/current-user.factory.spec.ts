@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { ICurrentUser } from '../interface';
+import { type ICurrentUser } from '../interface';
 import { CurrentUserBuilder } from './current-user.factory';
 
 describe('CurrentUserBuilder', () => {

@@ -1,7 +1,11 @@
-import { ValidationError } from '@shared/common/error';
-import { EntityId } from '@shared/domain/types';
-import { CustomParameter, CustomParameterEntry, ToolParameterValueRegexLoggableException } from '../../../domain';
-import { ParameterEntryValidator } from './parameter-entry-validator';
+import { type ValidationError } from '@shared/common/error';
+import { type EntityId } from '@shared/domain/types';
+import {
+	type CustomParameter,
+	type CustomParameterEntry,
+	ToolParameterValueRegexLoggableException,
+} from '../../../domain';
+import { type ParameterEntryValidator } from './parameter-entry-validator';
 
 export class ParameterEntryRegexValidator implements ParameterEntryValidator {
 	public validate(

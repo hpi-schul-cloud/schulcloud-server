@@ -15,13 +15,13 @@ export class BBBJoinConfig extends BBBBaseMeetingConfig {
 		this.redirect = config.redirect;
 	}
 
-	fullName: string;
+	public fullName: string;
 
-	role: BBBRole;
+	public role: BBBRole;
 
-	userID?: string;
+	public userID?: string;
 
-	guest?: boolean;
+	public guest?: boolean;
 
-	redirect?: string;
+	public redirect?: string;
 }

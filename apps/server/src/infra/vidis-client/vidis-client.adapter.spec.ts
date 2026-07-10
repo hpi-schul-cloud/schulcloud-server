@@ -1,20 +1,18 @@
-import { AxiosErrorLoggable } from '@core/error/loggable';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { DefaultEncryptionService, EncryptionService, SymmetricKeyEncryptionService } from '@infra/encryption';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import {
-	Configuration,
-	IDMBetreiberApiFactory,
-	IDMBetreiberApiInterface,
-	PageOfferDTO,
-} from '@infra/vidis-client/index';
-import { MediaSourceDataFormat, MediaSourceVidisConfig } from '@modules/media-source';
-import { MediaSourceVidisConfigNotFoundLoggableException } from '@modules/media-source/loggable';
-import { mediaSourceFactory } from '@modules/media-source/testing';
-import { Test, TestingModule } from '@nestjs/testing';
+	DefaultEncryptionService,
+	type EncryptionService,
+	type SymmetricKeyEncryptionService,
+} from '@infra/encryption';
+import { AxiosErrorLoggable } from '@infra/error';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { axiosErrorFactory } from '@testing/factory/axios-error.factory';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
-import { AxiosResponse, RawAxiosRequestConfig } from 'axios';
-import { vidisPageOfferFactory } from './testing';
+import { type AxiosResponse, type RawAxiosRequestConfig } from 'axios';
+import { Configuration, IDMBetreiberApiFactory, type IDMBetreiberApiInterface, type PageOfferDTO } from './generated';
+import { type VidisConfig } from './interface';
+import { MediaSourceVidisConfigNotFoundLoggableException } from './loggable';
+import { vidisMediaSourceFactory, vidisPageOfferFactory } from './testing';
 import { VidisClientAdapter } from './vidis-client.adapter';
 
 jest.mock('@infra/vidis-client/generated/api');
@@ -57,7 +55,7 @@ describe(VidisClientAdapter.name, () => {
 		describe('when the media source has basic auth config', () => {
 			describe('when vidis returns the offer items successfully', () => {
 				const setup = () => {
-					const mediaSource = mediaSourceFactory.withVidis().build();
+					const mediaSource = vidisMediaSourceFactory.build();
 
 					const axiosResponse = axiosResponseFactory.build({
 						data: vidisPageOfferFactory.build(),
@@ -129,7 +127,7 @@ describe(VidisClientAdapter.name, () => {
 
 			describe('when vidis returns the no offer items', () => {
 				const setup = () => {
-					const mediaSource = mediaSourceFactory.withVidis().build();
+					const mediaSource = vidisMediaSourceFactory.build();
 
 					const axiosResponse = axiosResponseFactory.build({
 						data: vidisPageOfferFactory.build({ items: undefined }),
@@ -137,7 +135,7 @@ describe(VidisClientAdapter.name, () => {
 
 					vidisApi.getActivatedOffersByRegion.mockResolvedValueOnce(axiosResponse);
 
-					const basicAuth = mediaSource.vidisConfig as MediaSourceVidisConfig;
+					const basicAuth = mediaSource.vidisConfig as VidisConfig;
 					encryptionService.decrypt.mockReturnValueOnce(basicAuth.username);
 					encryptionService.decrypt.mockReturnValueOnce(basicAuth.password);
 
@@ -157,13 +155,13 @@ describe(VidisClientAdapter.name, () => {
 
 			describe('when an axios error is thrown', () => {
 				const setup = () => {
-					const mediaSource = mediaSourceFactory.withVidis().build();
+					const mediaSource = vidisMediaSourceFactory.build();
 
 					const axiosError = axiosErrorFactory.build();
 
 					vidisApi.getActivatedOffersByRegion.mockRejectedValueOnce(axiosError);
 
-					const basicAuth = mediaSource.vidisConfig as MediaSourceVidisConfig;
+					const basicAuth = mediaSource.vidisConfig as VidisConfig;
 					encryptionService.decrypt.mockReturnValueOnce(basicAuth.username);
 					encryptionService.decrypt.mockReturnValueOnce(basicAuth.password);
 
@@ -184,13 +182,13 @@ describe(VidisClientAdapter.name, () => {
 
 			describe('when an unknown error is thrown', () => {
 				const setup = () => {
-					const mediaSource = mediaSourceFactory.withVidis().build();
+					const mediaSource = vidisMediaSourceFactory.build();
 
 					const unknownError = new Error();
 
 					vidisApi.getActivatedOffersByRegion.mockRejectedValueOnce(unknownError);
 
-					const basicAuth = mediaSource.vidisConfig as MediaSourceVidisConfig;
+					const basicAuth = mediaSource.vidisConfig as VidisConfig;
 					encryptionService.decrypt.mockReturnValueOnce(basicAuth.username);
 					encryptionService.decrypt.mockReturnValueOnce(basicAuth.password);
 
@@ -212,7 +210,7 @@ describe(VidisClientAdapter.name, () => {
 
 		describe('when the media source has no basic auth config ', () => {
 			const setup = () => {
-				const mediaSource = mediaSourceFactory.build({ format: MediaSourceDataFormat.VIDIS, vidisConfig: undefined });
+				const mediaSource = vidisMediaSourceFactory.build({ vidisConfig: undefined });
 
 				return { mediaSource };
 			};
@@ -223,7 +221,7 @@ describe(VidisClientAdapter.name, () => {
 				const promise = service.getOfferItemsByRegion(mediaSource);
 
 				await expect(promise).rejects.toThrow(
-					new MediaSourceVidisConfigNotFoundLoggableException(mediaSource.id, MediaSourceDataFormat.VIDIS)
+					new MediaSourceVidisConfigNotFoundLoggableException(mediaSource.id, 'VIDIS')
 				);
 			});
 		});
@@ -233,7 +231,7 @@ describe(VidisClientAdapter.name, () => {
 		describe('when the media source has basic auth config', () => {
 			describe('when vidis returns the offer items successfully', () => {
 				const setup = () => {
-					const mediaSource = mediaSourceFactory.withVidis().build();
+					const mediaSource = vidisMediaSourceFactory.build();
 
 					const axiosResponse = axiosResponseFactory.build({
 						data: vidisPageOfferFactory.build(),
@@ -308,7 +306,7 @@ describe(VidisClientAdapter.name, () => {
 
 			describe('when vidis returns the no offer items', () => {
 				const setup = () => {
-					const mediaSource = mediaSourceFactory.withVidis().build();
+					const mediaSource = vidisMediaSourceFactory.build();
 
 					const axiosResponse = axiosResponseFactory.build({
 						data: vidisPageOfferFactory.build({ items: undefined }),
@@ -338,7 +336,7 @@ describe(VidisClientAdapter.name, () => {
 
 			describe('when an axios error is thrown', () => {
 				const setup = () => {
-					const mediaSource = mediaSourceFactory.withVidis().build();
+					const mediaSource = vidisMediaSourceFactory.build();
 
 					const axiosError = axiosErrorFactory.build();
 
@@ -369,7 +367,7 @@ describe(VidisClientAdapter.name, () => {
 
 			describe('when an unknown error is thrown', () => {
 				const setup = () => {
-					const mediaSource = mediaSourceFactory.withVidis().build();
+					const mediaSource = vidisMediaSourceFactory.build();
 
 					const unknownError = new Error();
 
@@ -399,7 +397,7 @@ describe(VidisClientAdapter.name, () => {
 
 		describe('when the media source has no basic auth config ', () => {
 			const setup = () => {
-				const mediaSource = mediaSourceFactory.build({ format: MediaSourceDataFormat.VIDIS, vidisConfig: undefined });
+				const mediaSource = vidisMediaSourceFactory.build({ vidisConfig: undefined });
 
 				const schoolName = 'NI_12345';
 
@@ -415,7 +413,7 @@ describe(VidisClientAdapter.name, () => {
 				const promise = service.getOfferItemsBySchoolName(mediaSource, schoolName);
 
 				await expect(promise).rejects.toThrow(
-					new MediaSourceVidisConfigNotFoundLoggableException(mediaSource.id, MediaSourceDataFormat.VIDIS)
+					new MediaSourceVidisConfigNotFoundLoggableException(mediaSource.id, 'VIDIS')
 				);
 			});
 		});

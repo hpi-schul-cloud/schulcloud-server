@@ -1,6 +1,6 @@
-import { EntityId } from '@shared/domain/types';
+import { type EntityId } from '@shared/domain/types';
 import { roomMembershipFactory } from '../testing';
-import { RoomMembership, RoomMembershipProps } from './room-membership.do';
+import { RoomMembership, type RoomMembershipProps } from './room-membership.do';
 
 describe('RoomMembership', () => {
 	let roomMembership: RoomMembership;

@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Factory } from 'fishery';
-import { CopyContextExternalToolRejectData } from '../domain';
+import { type CopyContextExternalToolRejectData } from '../domain';
 
 export const copyContextExternalToolRejectDataFactory = Factory.define<CopyContextExternalToolRejectData>(() => {
 	return {

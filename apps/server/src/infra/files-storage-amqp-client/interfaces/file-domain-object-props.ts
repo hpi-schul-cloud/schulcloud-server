@@ -1,5 +1,5 @@
-import { EntityId } from '@shared/domain/types';
-import { FileRecordParentType } from './files-storage';
+import { type EntityId } from '@shared/domain/types';
+import { type FileRecordParentType } from './files-storage';
 
 export interface FileDomainObjectProps {
 	id: EntityId;

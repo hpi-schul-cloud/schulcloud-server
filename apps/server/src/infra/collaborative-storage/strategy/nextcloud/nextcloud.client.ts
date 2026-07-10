@@ -1,4 +1,3 @@
-import { ErrorUtils } from '@core/error/utils';
 import {
 	GroupUsers,
 	GroupfoldersCreated,
@@ -7,7 +6,8 @@ import {
 	NextcloudGroups,
 	OcsResponse,
 	SuccessfulRes,
-} from '@infra/collaborative-storage/strategy/nextcloud/nextcloud.interface';
+} from '@infra/collaborative-storage';
+import { ErrorUtils } from '@infra/error';
 import { LegacyLogger } from '@infra/logger';
 import { HttpService } from '@nestjs/axios';
 import { Injectable, NotFoundException, NotImplementedException, UnprocessableEntityException } from '@nestjs/common';
@@ -43,7 +43,7 @@ export class NextcloudClient {
 	 * @param groupName Name of the group in nextcloud
 	 * @returns The groupId for the given groupName of the nextcloud group
 	 */
-	public async findGroupId(groupName: string): Promise<string> {
+	public findGroupId(groupName: string): Promise<string> {
 		const request = this.get<OcsResponse<NextcloudGroups>>(`/ocs/v1.php/cloud/groups?search=${groupName}`);
 
 		return this.handleOcsRequest<NextcloudGroups, string>(
@@ -64,7 +64,7 @@ export class NextcloudClient {
 	 * @param teamId Id of the schulcloud {@link TeamDto team}
 	 * @returns The groupId of the given teamId in nextcloud
 	 */
-	public async findGroupIdByTeamId(teamId: string): Promise<string> {
+	public findGroupIdByTeamId(teamId: string): Promise<string> {
 		const request = this.get<OcsResponse<NextcloudGroups>>(`/ocs/v1.php/cloud/groups?search=${teamId}`);
 
 		return this.handleOcsRequest<NextcloudGroups, string>(
@@ -73,7 +73,7 @@ export class NextcloudClient {
 				if (data.groups.length > 0) {
 					return data.groups[0];
 				}
-				throw Error();
+				throw new Error('No group found for the given teamId');
 			},
 			(error) => {
 				throw new NotFoundException(
@@ -184,7 +184,7 @@ export class NextcloudClient {
 	 * @param groupId Id of the related group in nextcloud
 	 * @returns The folderId of the group in nextcloud
 	 */
-	public async findGroupFolderIdForGroupId(groupId: string): Promise<number> {
+	public findGroupFolderIdForGroupId(groupId: string): Promise<number> {
 		const request = this.get<OcsResponse<GroupfoldersFolder[]>>(
 			`/apps/schulcloud/groupfolders/folders/group/${groupId}`
 		);
@@ -215,7 +215,7 @@ export class NextcloudClient {
 				if (data.success) {
 					return this.logger.log(`Successfully deleted folder with folder id: ${folderId} in Nextcloud`);
 				}
-				throw Error();
+				throw new Error(`Folder with folder id: ${folderId} could not be deleted in Nextcloud`);
 			},
 			(error) => {
 				throw new NotFoundException(

@@ -1,8 +1,8 @@
-import { Loggable, LogMessage } from '@infra/logger';
-import { EntityId } from '@shared/domain/types';
-import { News } from '../../repo';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
+import { type EntityId } from '@shared/domain/types';
+import { type News } from '../../repo';
 import { NewsLogMapper } from '../mapper';
-import { CrudOperation } from '../type';
+import { type CrudOperation } from '../type';
 
 export class NewsCrudOperationLoggable implements Loggable {
 	constructor(
@@ -11,7 +11,7 @@ export class NewsCrudOperationLoggable implements Loggable {
 		private readonly news: News
 	) {}
 
-	public getLogMessage(): LogMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			message: 'Performing a CRUD operation on a news',
 			data: {

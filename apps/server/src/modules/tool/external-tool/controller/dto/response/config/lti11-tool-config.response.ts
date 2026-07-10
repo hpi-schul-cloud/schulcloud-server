@@ -9,19 +9,19 @@ export class Lti11ToolConfigResponse extends ExternalToolConfigResponse {
 		description: 'Configuration type of the tool.',
 		example: ToolConfigType.LTI11,
 	})
-	public type: ToolConfigType;
+	type: ToolConfigType;
 
 	@ApiProperty({
 		description:
 			'Defines the target URL that is launched. Can be automatically filled with parameter values when using : in-front of the parameter name.',
 		example: 'https://example.com/:parameter1/test',
 	})
-	public baseUrl: string;
+	baseUrl: string;
 
 	@ApiProperty({
 		description: 'LTI 1.1 encryption key.',
 	})
-	public key: string;
+	key: string;
 
 	@ApiProperty({
 		enum: LtiMessageType,
@@ -29,7 +29,7 @@ export class Lti11ToolConfigResponse extends ExternalToolConfigResponse {
 		description: 'LTI 1.1 message type.',
 		example: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
 	})
-	public lti_message_type: LtiMessageType;
+	lti_message_type: LtiMessageType;
 
 	@ApiProperty({
 		enum: LtiPrivacyPermission,
@@ -37,13 +37,13 @@ export class Lti11ToolConfigResponse extends ExternalToolConfigResponse {
 		description: 'Describes the amount of personal information that the tool provider gets.',
 		example: LtiPrivacyPermission.ANONYMOUS,
 	})
-	public privacy_permission: LtiPrivacyPermission;
+	privacy_permission: LtiPrivacyPermission;
 
 	@ApiProperty({
 		description: 'LTI 1.1 requested language.',
 		example: 'de-DE',
 	})
-	public launch_presentation_locale: string;
+	launch_presentation_locale: string;
 
 	constructor(props: Lti11ToolConfigResponse) {
 		super();

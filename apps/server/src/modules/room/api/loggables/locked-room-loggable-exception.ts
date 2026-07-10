@@ -1,5 +1,5 @@
-import { ErrorLogMessage, Loggable } from '@infra/logger';
 import { ForbiddenException } from '@nestjs/common';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
 
 export class LockedRoomLoggableException extends ForbiddenException implements Loggable {
 	constructor(
@@ -9,7 +9,7 @@ export class LockedRoomLoggableException extends ForbiddenException implements L
 		super(title);
 	}
 
-	public getLogMessage(): ErrorLogMessage {
+	public getLogMessage(): LoggableMessage {
 		const message = {
 			type: 'LOCKED_ROOM',
 			message: this.message,

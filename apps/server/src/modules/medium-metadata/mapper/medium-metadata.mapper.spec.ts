@@ -1,6 +1,6 @@
 import { vidisOfferItemFactory } from '@infra/vidis-client/testing';
 import { base64TestLogo } from '@modules/tool/external-tool/testing';
-import { MediumMetadataDto } from '../dto';
+import { type MediumMetadataDto } from '../dto';
 import { MediumMetadataMapper } from './medium-metadata.mapper';
 
 describe(MediumMetadataMapper.name, () => {

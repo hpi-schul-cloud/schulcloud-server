@@ -1,11 +1,10 @@
-import { Loggable } from './interfaces';
+import { type Loggable, type LoggableMessage, type LogMessage } from '@shared/common/loggable';
 import { LoggingUtils } from './logging.utils';
-import { ErrorLogMessage, LogMessage, ValidationErrorLogMessage } from './types';
 
 class SampleLoggable implements Loggable {
-	constructor(private readonly message: LogMessage | ErrorLogMessage | ValidationErrorLogMessage) {}
+	constructor(private readonly message: LoggableMessage) {}
 
-	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	getLogMessage(): LoggableMessage {
 		return this.message;
 	}
 }

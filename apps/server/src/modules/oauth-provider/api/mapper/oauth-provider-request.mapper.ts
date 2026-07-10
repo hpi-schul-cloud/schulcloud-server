@@ -1,5 +1,5 @@
-import { AcceptLoginRequestBody } from '../../domain';
-import { LoginRequestBody } from '../dto';
+import { type AcceptLoginRequestBody } from '../../domain';
+import { type LoginRequestBody } from '../dto';
 
 export class OauthProviderRequestMapper {
 	public static mapCreateAcceptLoginRequestBody(

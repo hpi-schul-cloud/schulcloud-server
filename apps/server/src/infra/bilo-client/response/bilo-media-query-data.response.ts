@@ -4,31 +4,31 @@ import { BiloLinkResponse } from './bilo-link.response';
 
 export class BiloMediaQueryDataResponse {
 	@IsString()
-	public id!: string;
+	id!: string;
 
 	@IsString()
-	public title!: string;
-
-	@IsString()
-	@IsOptional()
-	public author?: string;
+	title!: string;
 
 	@IsString()
 	@IsOptional()
-	public description?: string;
+	author?: string;
 
 	@IsString()
-	public publisher!: string;
+	@IsOptional()
+	description?: string;
+
+	@IsString()
+	publisher!: string;
 
 	@ValidateNested({ each: true })
 	@Type(() => BiloLinkResponse)
-	public cover!: BiloLinkResponse;
+	cover!: BiloLinkResponse;
 
 	@ValidateNested({ each: true })
 	@Type(() => BiloLinkResponse)
-	public coverSmall!: BiloLinkResponse;
+	coverSmall!: BiloLinkResponse;
 
 	@IsInt()
 	@Min(0)
-	public modified!: number;
+	modified!: number;
 }

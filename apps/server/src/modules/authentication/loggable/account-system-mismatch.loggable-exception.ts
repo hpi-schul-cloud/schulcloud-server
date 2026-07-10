@@ -1,6 +1,6 @@
-import { ErrorLogMessage, Loggable } from '@infra/logger';
 import { BadRequestException } from '@nestjs/common';
-import { EntityId } from '@shared/domain/types';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
+import { type EntityId } from '@shared/domain/types';
 
 export class AccountSystemMismatchLoggableException extends BadRequestException implements Loggable {
 	constructor(
@@ -10,7 +10,7 @@ export class AccountSystemMismatchLoggableException extends BadRequestException 
 		super();
 	}
 
-	public getLogMessage(): ErrorLogMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			type: 'LOGIN_SYSTEM_MISMATCH',
 			stack: this.stack,

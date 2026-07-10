@@ -2,10 +2,10 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { SchoolEntity } from '@modules/school/repo';
 import { federalStateEntityFactory, schoolYearEntityFactory, storageProviderFactory } from '@modules/school/testing';
 import { AdminApiServerTestModule } from '@modules/server/admin-api.server.app.module';
-import { INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { type INestApplication } from '@nestjs/common';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { TestApiClient } from '@testing/test-api-client';
-import { AdminApiSchoolCreateResponseDto } from '../dto/response/admin-api-school-create.response.dto';
+import { type AdminApiSchoolCreateResponseDto } from '../dto/response/admin-api-school-create.response.dto';
 
 const baseRouteName = '/admin/schools';
 

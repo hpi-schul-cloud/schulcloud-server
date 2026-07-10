@@ -1,11 +1,11 @@
 import { createMock } from '@golevelup/ts-jest';
 import { ConsoleWriterService } from '@infra/console';
-import { Test, TestingModule } from '@nestjs/testing';
-import { AbstractBootstrapConsole, BootstrapConsole } from 'nestjs-console';
+import { Test, type TestingModule } from '@nestjs/testing';
+import { AbstractBootstrapConsole, type BootstrapConsole } from 'nestjs-console';
 import { DatabaseManagementUc } from '../../uc/database-management.uc';
 
 export class TestBootstrapConsole extends AbstractBootstrapConsole<TestingModule> {
-	create(): Promise<TestingModule> {
+	public create(): Promise<TestingModule> {
 		return Test.createTestingModule({
 			imports: [this.options.module],
 		})

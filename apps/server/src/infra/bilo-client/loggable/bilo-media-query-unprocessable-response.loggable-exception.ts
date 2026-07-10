@@ -1,5 +1,5 @@
-import { ErrorLogMessage, Loggable } from '@infra/logger';
 import { UnprocessableEntityException } from '@nestjs/common';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
 
 export class BiloMediaQueryUnprocessableResponseLoggableException
 	extends UnprocessableEntityException
@@ -9,7 +9,7 @@ export class BiloMediaQueryUnprocessableResponseLoggableException
 		super('Unprocessable or unexpected response from the media source');
 	}
 
-	public getLogMessage(): ErrorLogMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			type: 'BILO_MEDIA_QUERY_UNPROCESSABLE_RESPONSE',
 			stack: this.stack,

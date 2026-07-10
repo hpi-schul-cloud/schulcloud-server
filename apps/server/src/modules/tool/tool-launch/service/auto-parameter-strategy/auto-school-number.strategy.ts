@@ -8,7 +8,7 @@ import { AutoParameterStrategy } from './auto-parameter.strategy';
 export class AutoSchoolNumberStrategy implements AutoParameterStrategy {
 	constructor(private readonly schoolService: LegacySchoolService) {}
 
-	async getValue(
+	public async getValue(
 		schoolExternalTool: SchoolExternalTool,
 		// eslint-disable-next-line @typescript-eslint/no-unused-vars
 		contextExternalTool: ContextExternalToolLaunchable

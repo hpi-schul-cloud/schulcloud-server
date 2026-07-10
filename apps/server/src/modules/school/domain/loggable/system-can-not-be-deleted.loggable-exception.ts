@@ -1,6 +1,6 @@
-import { ErrorLogMessage, Loggable } from '@infra/logger';
 import { NotFoundException } from '@nestjs/common';
-import { EntityId } from '@shared/domain/types';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
+import { type EntityId } from '@shared/domain/types';
 import { SchoolErrorEnum } from './error.enum';
 
 export class SystemCanNotBeDeletedLoggableException extends NotFoundException implements Loggable {
@@ -10,8 +10,8 @@ export class SystemCanNotBeDeletedLoggableException extends NotFoundException im
 		});
 	}
 
-	getLogMessage(): ErrorLogMessage {
-		const message: ErrorLogMessage = {
+	public getLogMessage(): LoggableMessage {
+		const message: LoggableMessage = {
 			type: SchoolErrorEnum.SYSTEM_CAN_NOT_BE_DELETED,
 			stack: this.stack,
 			data: {

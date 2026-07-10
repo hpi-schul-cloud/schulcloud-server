@@ -1,4 +1,4 @@
-import { TIMEOUT_CONFIG_REGISTRY as OriginalRegistry } from './timeout-config.registry';
+import { type TIMEOUT_CONFIG_REGISTRY as OriginalRegistry } from './timeout-config.registry';
 
 describe('TimeoutConfigRegistry', () => {
 	describe('TIMEOUT_CONFIG_REGISTRY singleton', () => {

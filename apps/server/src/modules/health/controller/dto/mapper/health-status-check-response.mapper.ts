@@ -1,8 +1,8 @@
-import { HealthStatusCheck } from '../../../domain';
+import { type HealthStatusCheck } from '../../../domain';
 import { HealthStatusCheckResponse } from '../response';
 
 export class HealthStatusCheckResponseMapper {
-	static mapToResponse(healthStatusCheck: HealthStatusCheck): HealthStatusCheckResponse {
+	public static mapToResponse(healthStatusCheck: HealthStatusCheck): HealthStatusCheckResponse {
 		return new HealthStatusCheckResponse({
 			componentType: healthStatusCheck.componentType,
 			componentId: healthStatusCheck.componentId,

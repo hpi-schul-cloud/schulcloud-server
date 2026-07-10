@@ -2,7 +2,7 @@ import { HttpStatus } from '@nestjs/common';
 import { BusinessError } from '@shared/common/error';
 
 export class BruteForceError extends BusinessError {
-	readonly timeToWait: number;
+	public readonly timeToWait: number;
 
 	constructor(timeToWait: number, message: string) {
 		super(

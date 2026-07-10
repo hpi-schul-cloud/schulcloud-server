@@ -1,8 +1,8 @@
-import { ToolContextType } from '@modules/tool/common/enum';
-import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
-import { CustomParameterEntry } from '../../common/domain';
-import { SchoolExternalToolConfigurationStatus } from './school-external-tool-configuration-status';
-import { SchoolExternalToolMedium } from './school-external-tool-medium';
+import { type ToolContextType } from '@modules/tool/common/enum';
+import { type AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
+import { type CustomParameterEntry } from '../../common/domain';
+import { type SchoolExternalToolConfigurationStatus } from './school-external-tool-configuration-status';
+import { type SchoolExternalToolMedium } from './school-external-tool-medium';
 
 export interface SchoolExternalToolProps extends AuthorizableObject {
 	id: string;

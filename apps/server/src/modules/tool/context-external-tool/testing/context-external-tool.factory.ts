@@ -1,20 +1,20 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { DoBaseFactory } from '@testing/factory/domainobject';
-import { DeepPartial } from 'fishery';
+import { type DeepPartial } from 'fishery';
 import { CustomParameterEntry } from '../../common/domain';
 import { ToolContextType } from '../../common/enum';
 import { SchoolExternalToolRef } from '../../school-external-tool/domain';
-import { ContextExternalTool, ContextExternalToolProps, ContextRef } from '../domain';
+import { ContextExternalTool, type ContextExternalToolProps, ContextRef } from '../domain';
 
 class ContextExternalToolFactory extends DoBaseFactory<ContextExternalTool, ContextExternalToolProps> {
-	withSchoolExternalToolRef(schoolToolId: string, schoolId?: string): this {
+	public withSchoolExternalToolRef(schoolToolId: string, schoolId?: string): this {
 		const params: DeepPartial<ContextExternalTool> = {
 			schoolToolRef: { schoolToolId, schoolId },
 		};
 		return this.params(params);
 	}
 
-	withContextRef(contextId: string, contextType: ToolContextType): this {
+	public withContextRef(contextId: string, contextType: ToolContextType): this {
 		const params: DeepPartial<ContextExternalTool> = {
 			contextRef: { id: contextId, type: contextType },
 		};

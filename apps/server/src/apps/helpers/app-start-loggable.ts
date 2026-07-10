@@ -1,4 +1,5 @@
-import { Loggable, LogMessage, LogMessageData } from '@infra/logger';
+import { type Loggable, type LogMessage } from '@shared/common/loggable';
+import { type LogMessageData } from '@shared/common/loggable/interfaces';
 
 interface AppStartInfo {
 	appName: string;
@@ -10,7 +11,7 @@ interface AppStartInfo {
 export class AppStartLoggable implements Loggable {
 	constructor(private readonly info: AppStartInfo) {}
 
-	getLogMessage(): LogMessage {
+	public getLogMessage(): LogMessage {
 		const data: LogMessageData = { appName: this.info.appName };
 
 		if (this.info.port !== undefined) {

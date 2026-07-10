@@ -4,7 +4,7 @@ import { CommonCartridgeVersion } from '../common-cartridge.enums';
 import { CommonCartridgeResource } from '../interfaces';
 import { CommonCartridgeOrganizationNode } from './common-cartridge-organization-node';
 import { CommonCartridgeResourceCollectionBuilder } from './common-cartridge-resource-collection-builder';
-import { CommonCartridgeResourceNode, CommonCartridgeResourceNodeProps } from './common-cartridge-resource-node';
+import { CommonCartridgeResourceNode, type CommonCartridgeResourceNodeProps } from './common-cartridge-resource-node';
 
 describe('CommonCartridgeResourceNode', () => {
 	let sut: CommonCartridgeResourceNode;

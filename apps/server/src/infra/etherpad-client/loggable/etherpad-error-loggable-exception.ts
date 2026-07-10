@@ -1,6 +1,7 @@
-import { ErrorLogMessage, Loggable } from '@infra/logger';
-import { HttpExceptionOptions, InternalServerErrorException } from '@nestjs/common';
-import { EtherpadErrorType, EtherpadParams } from '../interface';
+import { type HttpExceptionOptions, InternalServerErrorException } from '@nestjs/common';
+import { type ErrorLogMessage } from '@shared/common/error';
+import { type Loggable } from '@shared/common/loggable';
+import { type EtherpadErrorType, type EtherpadParams } from '../interface';
 
 export class EtherpadErrorLoggableException extends InternalServerErrorException implements Loggable {
 	constructor(
@@ -12,7 +13,7 @@ export class EtherpadErrorLoggableException extends InternalServerErrorException
 		super(type, exceptionOptions);
 	}
 
-	getLogMessage(): ErrorLogMessage {
+	public getLogMessage(): ErrorLogMessage {
 		const { userId, parentId } = this.payload;
 
 		const message: ErrorLogMessage = {

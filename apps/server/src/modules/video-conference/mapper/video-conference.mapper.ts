@@ -1,14 +1,14 @@
 import { Permission } from '@shared/domain/interface';
 import { BBBRole } from '../bbb';
 import {
-	VideoConferenceCreateParams,
+	type VideoConferenceCreateParams,
 	VideoConferenceInfoResponse,
 	VideoConferenceJoinResponse,
 	VideoConferenceStateResponse,
 } from '../controller/dto';
 import { VideoConferenceOptionsResponse } from '../controller/dto/response/video-conference-options.response';
-import { VideoConferenceOptions, defaultVideoConferenceOptions } from '../interface';
-import { VideoConferenceInfo, VideoConferenceJoin, VideoConferenceState } from '../uc/dto';
+import { type VideoConferenceOptions, defaultVideoConferenceOptions } from '../interface';
+import { type VideoConferenceInfo, type VideoConferenceJoin, VideoConferenceState } from '../uc/dto';
 
 export const PermissionMapping = {
 	[BBBRole.MODERATOR]: Permission.START_MEETING,

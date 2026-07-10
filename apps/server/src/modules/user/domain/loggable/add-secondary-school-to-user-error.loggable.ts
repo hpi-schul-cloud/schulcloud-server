@@ -1,8 +1,6 @@
-import { LogMessage } from '@infra/logger';
 import { InternalServerErrorException } from '@nestjs/common';
-import { ErrorLogMessage, ValidationErrorLogMessage } from '@shared/common/error';
-import { Loggable } from '@shared/common/loggable';
-import { RoleReference } from '@shared/domain/domainobject';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
+import { type RoleReference } from '@shared/domain/domainobject';
 
 export class AddSecondarySchoolToUsersRoleErrorLoggableException
 	extends InternalServerErrorException
@@ -12,7 +10,7 @@ export class AddSecondarySchoolToUsersRoleErrorLoggableException
 		super();
 	}
 
-	public getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	public getLogMessage(): LoggableMessage {
 		const { roles } = this.payload;
 		const roleNames = roles.map((role) => role.name).join(', ');
 

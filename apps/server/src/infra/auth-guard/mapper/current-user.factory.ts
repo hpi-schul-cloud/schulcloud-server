@@ -1,6 +1,6 @@
 import { TypeGuard } from '@shared/common/guards';
-import { EntityId } from '@shared/domain/types';
-import { ICurrentUser } from '../interface';
+import { type EntityId } from '@shared/domain/types';
+import { type ICurrentUser } from '../interface';
 
 interface RequiredCurrentUserProps {
 	userId: EntityId;

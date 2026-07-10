@@ -1,6 +1,6 @@
-import { ErrorLogMessage, Loggable } from '@infra/logger';
 import { NotFoundException } from '@nestjs/common';
-import { EntityId } from '@shared/domain/types';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
+import { type EntityId } from '@shared/domain/types';
 import { SchoolErrorEnum } from './error.enum';
 
 export class SystemNotFoundLoggableException extends NotFoundException implements Loggable {
@@ -10,8 +10,8 @@ export class SystemNotFoundLoggableException extends NotFoundException implement
 		});
 	}
 
-	getLogMessage(): ErrorLogMessage {
-		const message: ErrorLogMessage = {
+	public getLogMessage(): LoggableMessage {
+		const message: LoggableMessage = {
 			type: SchoolErrorEnum.SYSTEM_NOT_FOUND,
 			stack: this.stack,
 			data: {

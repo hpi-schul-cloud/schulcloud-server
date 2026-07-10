@@ -1,12 +1,12 @@
-import { ErrorLogMessage, Loggable } from '@infra/logger';
 import { NotFoundException } from '@nestjs/common';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
 
 export class BiloNotFoundResponseLoggableException extends NotFoundException implements Loggable {
 	constructor() {
 		super();
 	}
 
-	public getLogMessage(): ErrorLogMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			type: 'BILDUNGSLOGIN_NOT_FOUND_RESPONSE',
 			stack: this.stack,

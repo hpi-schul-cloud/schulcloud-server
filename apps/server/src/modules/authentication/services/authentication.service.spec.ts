@@ -1,7 +1,7 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { JwtPayloadBuilder } from '@infra/auth-guard';
 import { jwtPayloadFactory } from '@infra/auth-guard/testing';
-import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
+import { DefaultEncryptionService, type EncryptionService } from '@infra/encryption';
 import { JwtWhitelistAdapter } from '@infra/jwt-whitelist';
 import { Logger } from '@infra/logger';
 import { Account, AccountService } from '@modules/account';
@@ -12,7 +12,7 @@ import { userFactory } from '@modules/user/testing';
 import { HttpService } from '@nestjs/axios';
 import { UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import jwt from 'jsonwebtoken';
 import { AUTHENTICATION_CONFIG_TOKEN, AuthenticationConfig } from '../authentication-config';

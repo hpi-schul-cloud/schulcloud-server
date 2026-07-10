@@ -1,11 +1,11 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { DeletionLogRepo } from '../../repo';
 import { DomainDeletionReportBuilder, DomainOperationReportBuilder } from '../builder';
 import { deletionLogFactory } from '../testing';
 import { DomainName, OperationType } from '../types';
-import { DeletionLogEntry, DeletionLogService } from './deletion-log.service';
+import { type DeletionLogEntry, DeletionLogService } from './deletion-log.service';
 
 describe(DeletionLogService.name, () => {
 	let module: TestingModule;

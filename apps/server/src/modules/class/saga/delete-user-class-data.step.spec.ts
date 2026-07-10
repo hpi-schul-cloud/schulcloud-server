@@ -1,4 +1,4 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { Logger } from '@infra/logger';
 import { ObjectId } from '@mikro-orm/mongodb';
 import {
@@ -10,7 +10,7 @@ import {
 	UserDeletionStepOperationLoggable,
 } from '@modules/saga';
 import { InternalServerErrorException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { classEntityFactory } from '../entity/testing';
 import { ClassesRepo } from '../repo';
 import { ClassMapper } from '../repo/mapper';

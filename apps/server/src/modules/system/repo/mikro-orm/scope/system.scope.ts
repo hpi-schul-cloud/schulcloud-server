@@ -1,10 +1,10 @@
-import { EntityId } from '@shared/domain/types/entity-id';
+import { type EntityId } from '@shared/domain/types/entity-id';
 import { Scope } from '@shared/repo/scope';
-import { SystemType } from '../../../domain';
-import { SystemEntity } from '../system.entity';
+import { type SystemType } from '../../../domain';
+import { type SystemEntity } from '../system.entity';
 
 export class SystemScope extends Scope<SystemEntity> {
-	byIds(ids?: EntityId[]): this {
+	public byIds(ids?: EntityId[]): this {
 		if (ids) {
 			this.addQuery({ id: { $in: ids } });
 		}
@@ -12,7 +12,7 @@ export class SystemScope extends Scope<SystemEntity> {
 		return this;
 	}
 
-	byTypes(types?: SystemType[]): this {
+	public byTypes(types?: SystemType[]): this {
 		if (types) {
 			this.addQuery({ type: { $in: types } });
 		}

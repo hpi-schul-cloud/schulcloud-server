@@ -1,5 +1,5 @@
 import { Factory } from 'fishery';
-import { IntrospectResponse } from '../domain/interface';
+import { type IntrospectResponse } from '../domain/interface';
 
 export const introspectResponseFactory = Factory.define<IntrospectResponse>(() => {
 	return {

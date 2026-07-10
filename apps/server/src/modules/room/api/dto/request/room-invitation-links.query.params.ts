@@ -7,5 +7,5 @@ export class RoomInvitationLinksQueryParams {
 		type: [String],
 	})
 	@IsMongoId({ each: true })
-	public roomInvitationLinkIds!: string[] | string;
+	roomInvitationLinkIds!: string[] | string;
 }

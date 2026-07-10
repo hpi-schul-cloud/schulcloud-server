@@ -10,9 +10,9 @@ export class CompleteRegistrationBodyParams {
 		enumName: 'LanguageType',
 	})
 	@IsEnum(LanguageType)
-	public language!: LanguageType;
+	language!: LanguageType;
 
 	@IsString()
 	@ApiProperty()
-	public password!: string;
+	password!: string;
 }

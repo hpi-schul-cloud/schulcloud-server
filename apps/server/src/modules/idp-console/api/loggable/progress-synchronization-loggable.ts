@@ -1,4 +1,4 @@
-import { Loggable, LogMessage } from '@infra/logger';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
 
 type Stats = {
 	chunkIndex: number;
@@ -10,9 +10,9 @@ type Stats = {
 export class ProgressSynchronizationLoggable implements Loggable {
 	constructor(private readonly stats: Stats) {}
 
-	public getLogMessage(): LogMessage {
+	public getLogMessage(): LoggableMessage {
 		const { chunkIndex, externalUserIdCount, userWithOneExternalIdCount, usersWithAccountAndSystem } = this.stats;
-		const message: LogMessage = {
+		const message: LoggableMessage = {
 			message: `chunk ${chunkIndex}: synchronization package ${externalUserIdCount ?? 0} external user ids / ${
 				userWithOneExternalIdCount ?? 0
 			} users found / ${usersWithAccountAndSystem ?? 0} with account and correct system`,

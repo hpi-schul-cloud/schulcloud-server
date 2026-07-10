@@ -3,7 +3,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class RoomRoleResponse {
 	@ApiProperty()
-	public roomRoleName!: RoomRole;
+	roomRoleName!: RoomRole;
 
 	constructor(roomRoleName: RoomRole) {
 		this.roomRoleName = roomRoleName;

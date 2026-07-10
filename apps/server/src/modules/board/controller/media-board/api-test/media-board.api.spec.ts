@@ -1,15 +1,15 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
-import { BOARD_CONFIG_TOKEN, BoardConfig } from '@modules/board/board.config';
+import { BOARD_CONFIG_TOKEN, type BoardConfig } from '@modules/board/board.config';
 import { mediaSourceEntityFactory } from '@modules/media-source/testing';
 import { ServerTestModule } from '@modules/server';
 import { contextExternalToolEntityFactory } from '@modules/tool/context-external-tool/testing';
 import { externalToolEntityFactory } from '@modules/tool/external-tool/testing';
 import { schoolExternalToolEntityFactory } from '@modules/tool/school-external-tool/testing';
-import { MediaUserLicenseEntity } from '@modules/user-license/entity';
+import { type MediaUserLicenseEntity } from '@modules/user-license/entity';
 import { mediaUserLicenseEntityFactory } from '@modules/user-license/testing';
-import { HttpStatus, INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
-import { DateToString } from '@testing/date-to-string';
+import { HttpStatus, type INestApplication } from '@nestjs/common';
+import { Test, type TestingModule } from '@nestjs/testing';
+import { type DateToString } from '@testing/date-to-string';
 import { expectIsoDateString } from '@testing/matchers';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
@@ -21,12 +21,12 @@ import {
 	mediaLineEntityFactory,
 } from '../../../testing';
 import {
-	CollapsableBodyParams,
-	ColorBodyParams,
-	LayoutBodyParams,
-	MediaAvailableLineResponse,
+	type CollapsableBodyParams,
+	type ColorBodyParams,
+	type LayoutBodyParams,
+	type MediaAvailableLineResponse,
 	type MediaBoardResponse,
-	MediaLineResponse,
+	type MediaLineResponse,
 } from '../dto';
 
 const baseRouteName = '/media-boards';

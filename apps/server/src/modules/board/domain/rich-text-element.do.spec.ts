@@ -1,6 +1,6 @@
 import { InputFormat } from '@shared/domain/types';
 import { richTextElementFactory } from '../testing';
-import { RichTextElement, isRichTextElement } from './rich-text-element.do';
+import { type RichTextElement, isRichTextElement } from './rich-text-element.do';
 
 describe('RichTextElement', () => {
 	let richTextElement: RichTextElement;

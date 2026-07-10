@@ -1,5 +1,5 @@
 import { BaseFactory } from '@testing/factory/base.factory';
-import { StorageProviderEntity, StorageProviderProperties } from '../repo';
+import { StorageProviderEntity, type StorageProviderProperties } from '../repo';
 
 export const storageProviderFactory = BaseFactory.define<StorageProviderEntity, StorageProviderProperties>(
 	StorageProviderEntity,

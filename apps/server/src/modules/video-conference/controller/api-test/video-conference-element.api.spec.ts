@@ -1,7 +1,7 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { accountFactory } from '@modules/account/testing';
 import { BoardExternalReferenceType } from '@modules/board';
-import { BOARD_CONTEXT_PUBLIC_API_CONFIG, BoardContextPublicApiConfig } from '@modules/board-context';
+import { BOARD_CONTEXT_PUBLIC_API_CONFIG, type BoardContextPublicApiConfig } from '@modules/board-context';
 import {
 	cardEntityFactory,
 	columnBoardEntityFactory,
@@ -19,19 +19,19 @@ import { SchoolFeature } from '@modules/school/domain';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
 import { userFactory } from '@modules/user/testing';
-import { HttpStatus, INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { HttpStatus, type INestApplication } from '@nestjs/common';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { Response } from 'supertest';
+import { type Response } from 'supertest';
 import { VideoConferenceScope } from '../../domain';
-import { VideoConferenceEntity, VideoConferenceTargetModels } from '../../repo';
+import { type VideoConferenceEntity, VideoConferenceTargetModels } from '../../repo';
 import { videoConferenceFactory } from '../../testing';
-import { VideoConferenceCreateParams, VideoConferenceJoinResponse } from '../dto';
+import { type VideoConferenceCreateParams, type VideoConferenceJoinResponse } from '../dto';
 
 describe('VideoConferenceController (API)', () => {
 	let app: INestApplication;

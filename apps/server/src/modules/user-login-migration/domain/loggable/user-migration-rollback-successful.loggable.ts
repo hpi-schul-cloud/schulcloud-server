@@ -1,5 +1,5 @@
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
-import { EntityId } from '@shared/domain/types';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
+import { type EntityId } from '@shared/domain/types';
 
 export class UserMigrationRollbackSuccessfulLoggable implements Loggable {
 	constructor(
@@ -8,7 +8,7 @@ export class UserMigrationRollbackSuccessfulLoggable implements Loggable {
 		private readonly userLoginMigrationId?: EntityId
 	) {}
 
-	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			message: 'The user has been successfully rolled back from the migration.',
 			data: {

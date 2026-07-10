@@ -1,4 +1,4 @@
-import { FwuItem } from '../../interface/fwu-item';
+import { type FwuItem } from '../../interface/fwu-item';
 import { FwuItemResponse } from '../dto/fwu-item.response';
 import { FwuListResponse } from '../dto/fwu-list.response';
 

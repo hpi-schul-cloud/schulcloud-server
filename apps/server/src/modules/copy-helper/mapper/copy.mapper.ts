@@ -1,14 +1,14 @@
 import type { CopyFileDto } from '@infra/files-storage-amqp-client';
 import { ColumnBoard } from '@modules/board/domain/colum-board.do';
-import { LessonCopyApiParams } from '@modules/learnroom/controller/dto/lesson/lesson-copy.params';
-import { LessonCopyParentParams } from '@modules/lesson';
+import { type LessonCopyApiParams } from '@modules/learnroom/controller/dto/lesson/lesson-copy.params';
+import { type LessonCopyParentParams } from '@modules/lesson';
 import { LessonEntity } from '@modules/lesson/repo';
-import { TaskCopyParentParams } from '@modules/task/api/dto/task-copy-parent.params';
-import { TaskCopyApiParams } from '@modules/task/api/dto/task-copy.params';
+import { type TaskCopyParentParams } from '@modules/task/api/dto/task-copy-parent.params';
+import { type TaskCopyApiParams } from '@modules/task/api/dto/task-copy.params';
 import { Task } from '@modules/task/repo';
-import { EntityId } from '@shared/domain/types';
+import { type EntityId } from '@shared/domain/types';
 import { CopyApiResponse } from '../dto/copy.response';
-import { CopyElementType, CopyStatus, CopyStatusEnum } from '../types/copy.types';
+import { CopyElementType, type CopyStatus, CopyStatusEnum } from '../types/copy.types';
 
 export class CopyMapper {
 	public static mapToResponse(copyStatus: CopyStatus): CopyApiResponse {

@@ -121,7 +121,7 @@ export class FileEntity extends BaseEntityWithTimestamps {
 	@Property({ fieldName: '__v', nullable: true })
 	versionKey?: number; // mongoose model version key
 
-	private validate(props: FileEntityProps) {
+	private validate(props: FileEntityProps): void {
 		if (props.isDirectory) return;
 
 		if (!props.size || !props.storageFileName || !props.bucket || !props.storageProvider) {

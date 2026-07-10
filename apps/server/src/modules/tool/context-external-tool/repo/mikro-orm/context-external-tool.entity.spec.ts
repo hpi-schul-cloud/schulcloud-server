@@ -8,7 +8,11 @@ import {
 	CustomParameterType,
 	ToolConfigType,
 } from '../../../common/enum';
-import { BasicToolConfigEntity, CustomParameterEntity, ExternalToolConfigEntity } from '../../../external-tool/repo';
+import {
+	BasicToolConfigEntity,
+	CustomParameterEntity,
+	type ExternalToolConfigEntity,
+} from '../../../external-tool/repo';
 import { externalToolEntityFactory } from '../../../external-tool/testing';
 import { schoolExternalToolEntityFactory } from '../../../school-external-tool/testing';
 import { contextExternalToolEntityFactory } from '../../testing';

@@ -1,6 +1,6 @@
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
 import { UnprocessableEntityException } from '@nestjs/common';
-import { EntityId } from '@shared/domain/types';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
+import { type EntityId } from '@shared/domain/types';
 
 export class InvalidUserLoginMigrationLoggableException extends UnprocessableEntityException implements Loggable {
 	constructor(
@@ -10,7 +10,7 @@ export class InvalidUserLoginMigrationLoggableException extends UnprocessableEnt
 		super();
 	}
 
-	getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			type: 'INVALID_USER_LOGIN_MIGRATION',
 			message: 'The migration cannot be started, because there is no migration to the selected target system.',

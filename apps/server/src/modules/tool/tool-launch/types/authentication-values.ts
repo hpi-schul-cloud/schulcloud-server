@@ -1,7 +1,7 @@
 export class AuthenticationValues {
-	keyValue: string;
+	public keyValue: string;
 
-	secretValue: string;
+	public secretValue: string;
 
 	constructor(props: AuthenticationValues) {
 		this.keyValue = props.keyValue;

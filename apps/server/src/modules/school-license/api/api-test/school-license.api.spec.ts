@@ -1,19 +1,19 @@
-import { PageOfferDTO } from '@infra/vidis-client';
+import { type PageOfferDTO } from '@infra/vidis-client';
 import { vidisPageOfferFactory } from '@infra/vidis-client/testing';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { mediaSourceEntityFactory } from '@modules/media-source/testing';
 import { federalStateEntityFactory, schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus, type INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { SCHOOL_LICENSE_ENCRYPTION_CONFIG_TOKEN, SchoolLicenseEncryptionConfig } from '../../encryption.config';
+import { SCHOOL_LICENSE_ENCRYPTION_CONFIG_TOKEN, type SchoolLicenseEncryptionConfig } from '../../encryption.config';
 import { mediaSchoolLicenseEntityFactory } from '../../testing';
-import { MediaSchoolLicenseListResponse } from '../dto';
+import { type MediaSchoolLicenseListResponse } from '../dto';
 
 describe('SchoolLicenseController (API)', () => {
 	let app: INestApplication;

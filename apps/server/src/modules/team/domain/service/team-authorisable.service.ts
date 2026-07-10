@@ -15,7 +15,7 @@ export class TeamAuthorisableService implements AuthorizationLoaderServiceGeneri
 		injectionService.injectReferenceLoader(AuthorizableReferenceType.Team, this);
 	}
 
-	findById(id: string): Promise<TeamEntity> {
+	public findById(id: string): Promise<TeamEntity> {
 		return this.teamRepo.findById(id, true);
 	}
 }

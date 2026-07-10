@@ -12,7 +12,7 @@ export class PatchMyPasswordParams {
 		required: true,
 		nullable: false,
 	})
-	public password!: string;
+	password!: string;
 
 	@PrivacyProtect()
 	@IsString()
@@ -22,5 +22,5 @@ export class PatchMyPasswordParams {
 		required: true,
 		nullable: false,
 	})
-	public confirmPassword!: string;
+	confirmPassword!: string;
 }

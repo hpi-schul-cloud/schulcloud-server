@@ -1,4 +1,4 @@
-import { TokenEndpointAuthMethod, ToolConfigType } from '../../../common/enum';
+import { type TokenEndpointAuthMethod, ToolConfigType } from '../../../common/enum';
 import { ExternalToolConfig } from './external-tool-config.do';
 
 export class Oauth2ToolConfig extends ExternalToolConfig {

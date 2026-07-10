@@ -1,5 +1,5 @@
-import { ErrorLogMessage, Loggable, LogMessage, ValidationErrorLogMessage } from '@infra/logger';
 import { BadRequestException } from '@nestjs/common';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
 
 export class ExternalIdMissingLoggableException extends BadRequestException implements Loggable {
 	constructor(
@@ -9,7 +9,7 @@ export class ExternalIdMissingLoggableException extends BadRequestException impl
 		super();
 	}
 
-	public getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			type: 'EXTERNAL_ID_MISSING',
 			message: `External ID is missing in ${this.context}`,

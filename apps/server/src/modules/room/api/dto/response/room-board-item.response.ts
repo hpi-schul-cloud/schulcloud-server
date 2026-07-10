@@ -29,7 +29,7 @@ export class RoomBoardItemResponse {
 		}, {}),
 		additionalProperties: false,
 	})
-	public allowedOperations: Partial<Record<BoardOperation, boolean>>;
+	allowedOperations: Partial<Record<BoardOperation, boolean>>;
 
 	constructor(item: RoomBoardItemResponse) {
 		this.id = item.id;

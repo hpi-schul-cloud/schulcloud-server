@@ -10,5 +10,5 @@ export class CourseQueryParams {
 		nullable: false,
 		enum: CommonCartridgeVersion,
 	})
-	public readonly version!: CommonCartridgeVersion;
+	readonly version!: CommonCartridgeVersion;
 }

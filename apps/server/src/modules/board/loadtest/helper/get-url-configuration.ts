@@ -1,4 +1,4 @@
-import { UrlConfiguration } from '../types';
+import { type UrlConfiguration } from '../types';
 
 export const getUrlConfiguration = (target?: string): UrlConfiguration => {
 	if (target === undefined || /localhost/.test(target)) {

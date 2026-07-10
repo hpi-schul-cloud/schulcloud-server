@@ -138,7 +138,7 @@ export class SchulconnexGroupProvisioningService {
 
 		const users = await Promise.all(
 			externalGroup.otherUsers.map(
-				async (externalGroupUser: ExternalGroupUserDto): Promise<GroupUser | null> =>
+				(externalGroupUser: ExternalGroupUserDto): Promise<GroupUser | null> =>
 					this.getGroupUser(externalGroupUser, systemId)
 			)
 		);

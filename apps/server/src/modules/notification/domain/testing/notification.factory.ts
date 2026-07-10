@@ -1,7 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { NotificationType } from '../../types';
 import { DoBaseFactory } from '@testing/factory/domainobject';
-import { Notification, NotificationProps } from '../do';
+import { Notification, type NotificationProps } from '../do';
 
 export const notificationFactory = DoBaseFactory.define<Notification, NotificationProps>(Notification, () => {
 	return {
