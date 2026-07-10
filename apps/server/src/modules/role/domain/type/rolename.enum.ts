@@ -6,6 +6,8 @@ export enum RoleName {
 	GROUPSUBSTITUTIONTEACHER = 'groupSubstitutionTeacher',
 	COURSETEACHER = 'courseTeacher',
 	DEMO = 'demo',
+	DEMOSTUDENT = 'demoStudent',
+	DEMOTEACHER = 'demoTeacher',
 	EXTERNALPERSON = 'externalPerson',
 	GUESTTEACHER = 'guestTeacher',
 	GUESTSTUDENT = 'guestStudent',
