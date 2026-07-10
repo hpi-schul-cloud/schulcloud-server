@@ -273,43 +273,6 @@ const dataExist = (hook) => {
 };
 
 /**
- * @afterHook
- * @param {Object::hook}
- * @return {Object::hook}
- */
-const pushUserChangedEvent = async (hook) => {
-	let team;
-	try {
-		team = await getTeam(hook);
-	} catch (err) {
-		// Do not fail the successful patch response when the previous team state
-		// cannot be reloaded for the current user context.
-		logger.warning('Skipping teams:after:usersChanged event; old team could not be loaded.', {
-			teamId: hook.id || (hook.result || {})._id || hook.teamId,
-			error: err && err.message,
-		});
-		return hook;
-	}
-	const oldUsers = team.userIds;
-	const newUsers = hook.result.userIds;
-
-	if (isUndefined(oldUsers) || isUndefined(newUsers)) {
-		// logger.warning('No user infos.', { oldUsers, newUsers });
-		// todo: cheak if undefined valid situation or not
-		return hook;
-	}
-
-	const changes = arrayRemoveAddDiffs(oldUsers, newUsers, 'userId');
-
-	if (isArrayWithElement(changes.remove) || isArrayWithElement(changes.add)) {
-		set(hook, 'changes', changes);
-		hook.app.emit('teams:after:usersChanged', hook);
-	}
-
-	return hook;
-};
-
-/**
  * Add teamroles to hook.teamroles.
  * Make avaible that you can use hook.findRole();
  * if you use it without hook object pass {app} as parameter
@@ -834,7 +797,7 @@ exports.after = {
 	get: [cleanUserIdsHook, addCurrentUser], // see before (?)
 	create: [filterToRelated(keys.resId, 'result'), createTeamInCollaborativeStorage],
 	update: [updateTeamInCollaborativeStorage], // test schoolId remove
-	patch: [isUserIsEmpty, addCurrentUser, pushUserChangedEvent, updateTeamInCollaborativeStorage], // test schoolId remove
+	patch: [isUserIsEmpty, addCurrentUser, updateTeamInCollaborativeStorage], // test schoolId remove
 	remove: [filterToRelated(keys.resId, 'result')],
 };
 
