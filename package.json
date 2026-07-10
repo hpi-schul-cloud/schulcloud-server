@@ -125,7 +125,7 @@
 		"generate-client:authorization-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key authorization-api",
 		"pregenerate-client:authentication-api": "rimraf ./apps/server/src/infra/authentication-client/generated",
 		"generate-client:authentication-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key authentication-api",
-		"generate-client:etherpad": "node ./scripts/generate-client.js -u 'http://localhost:9001/api/openapi.json' -p 'apps/server/src/infra/etherpad-client/etherpad-api-client' -c 'openapitools-config.json'",
+		"generate-client:etherpad": "node ./scripts/generate-client.js -u 'http://localhost:9001/api/openapi.json' -p 'apps/server/src/infra/etherpad-client/generated' -c 'openapitools-config.json'",
 		"pregenerate-client:tsp-api": "rimraf ./apps/server/src/infra/tsp-client/generated",
 		"generate-client:tsp-api": "openapi-generator-cli generate -c ./openapitools.json --generator-key tsp-api",
 		"pregenerate-client:files-storage-api": "rimraf ./apps/server/src/infra/files-storage-client/generated",

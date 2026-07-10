@@ -1,9 +1,9 @@
 import { ConfigurationModule } from '@infra/configuration';
 import { DynamicModule, Module } from '@nestjs/common';
-import { AuthorApi, GroupApi, PadApi, SessionApi } from './etherpad-api-client/api';
-import { Configuration } from './etherpad-api-client/configuration';
 import { InternalEtherpadClientConfig } from './etherpad-client-config.interface';
 import { EtherpadClientAdapter } from './etherpad-client.adapter';
+import { AuthorApi, GroupApi, PadApi, SessionApi } from './generated/api';
+import { Configuration } from './generated/configuration';
 
 @Module({})
 export class EtherpadClientModule {
