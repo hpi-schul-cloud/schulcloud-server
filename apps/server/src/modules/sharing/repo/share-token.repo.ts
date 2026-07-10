@@ -10,7 +10,7 @@ export class ShareTokenRepo extends BaseDORepo<ShareTokenDO, ShareToken> {
 		return ShareToken;
 	}
 
-	async findOneByToken(token: ShareTokenString): Promise<ShareTokenDO> {
+	public async findOneByToken(token: ShareTokenString): Promise<ShareTokenDO> {
 		const entity = await this._em.findOneOrFail(ShareToken, { token });
 
 		const shareToken = this.mapEntityToDO(entity);

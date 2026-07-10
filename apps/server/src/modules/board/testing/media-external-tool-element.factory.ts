@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseFactory } from '@testing/factory/base.factory';
-import { MediaExternalToolElement, MediaExternalToolElementProps, ROOT_PATH } from '../domain';
+import { MediaExternalToolElement, type MediaExternalToolElementProps, ROOT_PATH } from '../domain';
 
 export const mediaExternalToolElementFactory = BaseFactory.define<
 	MediaExternalToolElement,

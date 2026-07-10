@@ -38,15 +38,14 @@ export class BoardContextApiHelperService {
 		const columnBoard = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId, 0);
 		const { type, id } = columnBoard.context;
 
-		const items: ParentNodeInfo[] = [];
 		let name: string | undefined;
 
 		if (this.isCourse(type)) {
 			const course = await this.courseService.findById(id);
-			name = course.name;
+			({ name } = course);
 		} else if (this.isRoom(type)) {
 			const room = await this.roomService.getSingleRoom(id);
-			name = room.name;
+			({ name } = room);
 		} else if (this.isUser(type)) {
 			const user = await this.userService.getUserEntityWithRoles(id);
 			name = `${user.firstName} ${user.lastName}`;
@@ -54,12 +53,14 @@ export class BoardContextApiHelperService {
 			throw new BadRequestException(`Unsupported board reference type ${type as string}`);
 		}
 
-		items.push({
-			id,
-			name,
-			type,
-		});
-		items.push({ id: columnBoard.id, name: columnBoard.title, type: ElementReferenceType.BOARD });
+		const items: ParentNodeInfo[] = [
+			{
+				id,
+				name,
+				type,
+			},
+			{ id: columnBoard.id, name: columnBoard.title, type: ElementReferenceType.BOARD },
+		];
 
 		return items;
 	}

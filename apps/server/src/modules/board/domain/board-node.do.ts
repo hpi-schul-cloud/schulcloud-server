@@ -1,6 +1,6 @@
 import { BadRequestException, ForbiddenException } from '@nestjs/common';
 import { DomainObject } from '@shared/domain/domain-object';
-import { Constructor, EntityId } from '@shared/domain/types';
+import { type Constructor, type EntityId } from '@shared/domain/types';
 import { joinPath, ROOT_PATH } from './path-utils';
 import type { AnyBoardNode, BoardNodeProps } from './types';
 
@@ -34,11 +34,11 @@ export abstract class BoardNode<T extends BoardNodeProps> extends DomainObject<T
 	}
 
 	get parentId(): EntityId | undefined {
-		const parentId = this.hasParent() ? this.ancestorIds[this.ancestorIds.length - 1] : undefined;
+		const parentId = this.hasParent() ? this.ancestorIds.at(-1) : undefined;
 		return parentId;
 	}
 
-	hasParent() {
+	public hasParent(): boolean {
 		return this.ancestorIds.length > 0;
 	}
 
@@ -47,7 +47,7 @@ export abstract class BoardNode<T extends BoardNodeProps> extends DomainObject<T
 		return parentIds;
 	}
 
-	isRoot() {
+	public isRoot(): boolean {
 		return this.ancestorIds.length === 0;
 	}
 
@@ -91,7 +91,7 @@ export abstract class BoardNode<T extends BoardNodeProps> extends DomainObject<T
 		return exists;
 	}
 
-	abstract canHaveChild(childNode: AnyBoardNode): boolean;
+	public abstract canHaveChild(childNode: AnyBoardNode): boolean;
 
 	public removeChild(child: AnyBoardNode): void {
 		this.props.children = this.children.filter((ch) => ch.id !== child.id);

@@ -1,5 +1,5 @@
-import { Loggable, LoggableMessage } from '@shared/common/loggable';
-import { EntityId } from '@shared/domain/types';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
+import { type EntityId } from '@shared/domain/types';
 
 export class SchoolIdDoesNotMatchWithUserSchoolId implements Loggable {
 	constructor(
@@ -8,7 +8,7 @@ export class SchoolIdDoesNotMatchWithUserSchoolId implements Loggable {
 		private readonly schoolId?: EntityId
 	) {}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			message: 'School ID does not match with user school ID or with imported user school ID',
 			data: {

@@ -1,12 +1,12 @@
 import { RequestTimeoutException } from '@nestjs/common';
-import { Loggable, LoggableMessage } from '../loggable/interfaces';
+import { type Loggable, type LoggableMessage } from '../loggable/interfaces';
 
 export class RequestTimeoutLoggableException extends RequestTimeoutException implements Loggable {
 	constructor(private readonly url: string) {
 		super();
 	}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		const message: LoggableMessage = {
 			type: 'REQUEST_TIMEOUT',
 			stack: this.stack,

@@ -1,4 +1,4 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { Logger } from '@infra/logger';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { SchoolSystemOptionsService, SchulConneXProvisioningOptions } from '@modules/legacy-school';
@@ -16,9 +16,9 @@ import { customParameterFactory, externalToolFactory } from '@modules/tool/exter
 import { SchoolExternalToolService } from '@modules/tool/school-external-tool';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { schoolExternalToolFactory } from '@modules/tool/school-external-tool/testing';
-import { MediaUserLicense, MediaUserLicenseService } from '@modules/user-license';
+import { type MediaUserLicense, MediaUserLicenseService } from '@modules/user-license';
 import { mediaUserLicenseFactory } from '@modules/user-license/testing';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import _ from 'lodash';
 import { ExternalToolMetadataUpdateFailedLoggable } from '../../../loggable';
 import { SchulconnexToolProvisioningService } from './schulconnex-tool-provisioning.service';

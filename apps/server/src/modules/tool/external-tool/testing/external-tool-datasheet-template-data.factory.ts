@@ -1,9 +1,9 @@
 import { CustomParameterLocation, LtiMessageType, LtiPrivacyPermission } from '@modules/tool/common/enum';
 import {
-	ExternalToolDatasheetTemplateData,
-	ExternalToolParameterDatasheetTemplateData,
+	type ExternalToolDatasheetTemplateData,
+	type ExternalToolParameterDatasheetTemplateData,
 } from '@modules/tool/external-tool/domain';
-import { DeepPartial, Factory } from 'fishery';
+import { type DeepPartial, Factory } from 'fishery';
 
 export const externalToolParameterDatasheetTemplateDataFactory = Factory.define<
 	ExternalToolParameterDatasheetTemplateData,
@@ -18,8 +18,8 @@ export const externalToolParameterDatasheetTemplateDataFactory = Factory.define<
 	};
 });
 
-class ExternalToolDatasheetTemplateDataFactory extends Factory<ExternalToolDatasheetTemplateData> {
-	asOauth2Tool(): this {
+export class ExternalToolDatasheetTemplateDataFactory extends Factory<ExternalToolDatasheetTemplateData> {
+	public asOauth2Tool(): this {
 		const params: DeepPartial<ExternalToolDatasheetTemplateData> = {
 			toolType: 'OAuth 2.0',
 			skipConsent: 'Zustimmung überspringen: ja',
@@ -28,7 +28,7 @@ class ExternalToolDatasheetTemplateDataFactory extends Factory<ExternalToolDatas
 		return this.params(params);
 	}
 
-	asLti11Tool(): this {
+	public asLti11Tool(): this {
 		const params: DeepPartial<ExternalToolDatasheetTemplateData> = {
 			toolType: 'LTI 1.1',
 			messageType: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
@@ -38,14 +38,14 @@ class ExternalToolDatasheetTemplateDataFactory extends Factory<ExternalToolDatas
 		return this.params(params);
 	}
 
-	withParameters(number: number, customParam?: DeepPartial<ExternalToolParameterDatasheetTemplateData>): this {
+	public withParameters(number: number, customParam?: DeepPartial<ExternalToolParameterDatasheetTemplateData>): this {
 		const params: DeepPartial<ExternalToolDatasheetTemplateData> = {
 			parameters: externalToolParameterDatasheetTemplateDataFactory.buildList(number, customParam),
 		};
 		return this.params(params);
 	}
 
-	withOptionalProperties(): this {
+	public withOptionalProperties(): this {
 		const params: DeepPartial<ExternalToolDatasheetTemplateData> = {
 			isDeactivated: 'Das Tool ist instanzweit deaktiviert',
 			restrictToContexts: 'Kurs, Kurs-Board',

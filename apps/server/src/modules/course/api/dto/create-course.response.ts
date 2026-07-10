@@ -6,7 +6,7 @@ export class CreateCourseResponse {
 		type: () => String,
 		readOnly: true,
 	})
-	public courseId: string;
+	courseId: string;
 
 	constructor(props: Readonly<CreateCourseResponse>) {
 		this.courseId = props.courseId;

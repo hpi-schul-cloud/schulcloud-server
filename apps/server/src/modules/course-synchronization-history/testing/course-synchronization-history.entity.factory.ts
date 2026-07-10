@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseFactory } from '@testing/factory/base.factory';
-import { CourseSynchronizationHistoryEntity, CourseSynchronizationHistoryEntityProps } from '../repo/entity';
+import { CourseSynchronizationHistoryEntity, type CourseSynchronizationHistoryEntityProps } from '../repo/entity';
 
 export const courseSynchronizationHistoryEntityFactory = BaseFactory.define<
 	CourseSynchronizationHistoryEntity,

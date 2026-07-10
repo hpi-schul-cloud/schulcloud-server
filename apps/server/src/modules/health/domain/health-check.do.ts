@@ -1,7 +1,7 @@
 export class HealthCheck {
-	id: string;
+	public id: string;
 
-	updatedAt: Date;
+	public updatedAt: Date;
 
 	constructor(id: string, updatedAt: Date) {
 		this.id = id;

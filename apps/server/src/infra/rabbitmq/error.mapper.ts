@@ -1,9 +1,9 @@
 import { ErrorUtils } from '@infra/error';
-import { IError } from '@infra/rabbitmq';
+import { type IError } from '@infra/rabbitmq';
 import { BadRequestException, ForbiddenException, InternalServerErrorException } from '@nestjs/common';
 
 export class ErrorMapper {
-	static mapRpcErrorResponseToDomainError(
+	public static mapRpcErrorResponseToDomainError(
 		errorObj: IError
 	): BadRequestException | ForbiddenException | InternalServerErrorException {
 		let error: BadRequestException | ForbiddenException | InternalServerErrorException;

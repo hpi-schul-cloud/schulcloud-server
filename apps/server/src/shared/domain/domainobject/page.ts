@@ -1,7 +1,7 @@
 export class Page<T> {
-	data: T[];
+	public data: T[];
 
-	total: number;
+	public total: number;
 
 	constructor(data: T[], total: number) {
 		this.data = data;

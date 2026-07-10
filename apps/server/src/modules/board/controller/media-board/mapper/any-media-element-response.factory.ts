@@ -1,8 +1,8 @@
 import { NotImplementedException } from '@nestjs/common';
-import { AnyMediaElement } from '../../../domain';
+import { type AnyMediaElement } from '../../../domain';
 import { DeletedElementResponseMapper } from '../../mapper';
-import { BaseResponseMapper } from '../../mapper/base-mapper.interface';
-import { AnyMediaElementResponse } from '../dto';
+import { type BaseResponseMapper } from '../../mapper/base-mapper.interface';
+import { type AnyMediaElementResponse } from '../dto';
 import { MediaExternalToolElementResponseMapper } from './media-external-tool-element-response.mapper';
 
 export class AnyMediaElementResponseFactory {
@@ -11,7 +11,7 @@ export class AnyMediaElementResponseFactory {
 		MediaExternalToolElementResponseMapper.getInstance(),
 	];
 
-	static mapToResponse(elements: AnyMediaElement[]): AnyMediaElementResponse[] {
+	public static mapToResponse(elements: AnyMediaElement[]): AnyMediaElementResponse[] {
 		const mapped: AnyMediaElementResponse[] = elements.map((element) => {
 			const elementMapper = this.mappers.find((mapper) => mapper.canMap(element));
 

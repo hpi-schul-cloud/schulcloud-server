@@ -1,15 +1,15 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import { FilesStorageClientAdapterService } from '@infra/files-storage-amqp-client';
 import { Logger } from '@infra/logger';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ModuleName, SagaService } from '@modules/saga';
-import { Test, TestingModule } from '@nestjs/testing';
-import { FilesStorageProducer } from '../service';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { DeleteUserFilesStorageDataStep } from './delete-user-files-storage-data.step';
 
 describe(DeleteUserFilesStorageDataStep.name, () => {
 	let module: TestingModule;
 	let step: DeleteUserFilesStorageDataStep;
-	let client: DeepMocked<FilesStorageProducer>;
+	let client: DeepMocked<FilesStorageClientAdapterService>;
 
 	afterAll(async () => {
 		await module.close();
@@ -24,8 +24,8 @@ describe(DeleteUserFilesStorageDataStep.name, () => {
 					useValue: createMock<SagaService>(),
 				},
 				{
-					provide: FilesStorageProducer,
-					useValue: createMock<FilesStorageProducer>(),
+					provide: FilesStorageClientAdapterService,
+					useValue: createMock<FilesStorageClientAdapterService>(),
 				},
 				{
 					provide: Logger,
@@ -35,7 +35,7 @@ describe(DeleteUserFilesStorageDataStep.name, () => {
 		}).compile();
 
 		step = module.get(DeleteUserFilesStorageDataStep);
-		client = module.get(FilesStorageProducer);
+		client = module.get(FilesStorageClientAdapterService);
 	});
 
 	beforeEach(() => {
@@ -47,7 +47,7 @@ describe(DeleteUserFilesStorageDataStep.name, () => {
 			const sagaService = createMock<SagaService>();
 			const step = new DeleteUserFilesStorageDataStep(
 				sagaService,
-				createMock<FilesStorageProducer>(),
+				createMock<FilesStorageClientAdapterService>(),
 				createMock<Logger>()
 			);
 

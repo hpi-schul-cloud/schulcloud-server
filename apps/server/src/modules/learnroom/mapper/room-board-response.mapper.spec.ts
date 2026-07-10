@@ -5,10 +5,10 @@ import { courseEntityFactory } from '@modules/course/testing';
 import { LessonEntity, Material } from '@modules/lesson/repo';
 import { Submission, Task } from '@modules/task/repo';
 import { taskFactory } from '@modules/task/testing';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { BoardElementResponse, SingleColumnBoardResponse } from '../controller/dto';
-import { ColumnBoardMetaData, RoomBoardDTO, RoomBoardElementTypes } from '../types';
+import { type ColumnBoardMetaData, type RoomBoardDTO, RoomBoardElementTypes } from '../types';
 import { RoomBoardResponseMapper } from './room-board-response.mapper';
 
 describe('room board response mapper', () => {

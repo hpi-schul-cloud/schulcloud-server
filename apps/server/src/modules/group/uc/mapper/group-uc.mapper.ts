@@ -1,5 +1,5 @@
-import { Group } from '../../domain';
-import { ResolvedGroupDto, ResolvedGroupUser } from '../dto';
+import { type Group } from '../../domain';
+import { ResolvedGroupDto, type ResolvedGroupUser } from '../dto';
 
 export class GroupUcMapper {
 	public static mapToResolvedGroupDto(group: Group, resolvedGroupUsers: ResolvedGroupUser[]): ResolvedGroupDto {

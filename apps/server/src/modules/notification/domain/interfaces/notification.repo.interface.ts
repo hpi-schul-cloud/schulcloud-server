@@ -1,7 +1,7 @@
-import { EntityName } from '@mikro-orm/core';
-import { NotificationEntity } from '../../repo/entities';
-import { EntityId } from '@shared/domain/types';
-import { Notification } from '../do';
+import { type EntityName } from '@mikro-orm/core';
+import { type NotificationEntity } from '../../repo/entities';
+import { type EntityId } from '@shared/domain/types';
+import { type Notification } from '../do';
 
 export const NOTIFICATION_REPO = 'NOTIFICATION_REPO';
 

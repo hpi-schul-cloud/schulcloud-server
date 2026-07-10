@@ -1,5 +1,5 @@
-import { AnyBoardNode, getBoardNodeConstructor, joinPath } from '../domain';
-import { BoardNodeEntity } from './entity';
+import { type AnyBoardNode, getBoardNodeConstructor, joinPath } from '../domain';
+import { type BoardNodeEntity } from './entity';
 
 export class TreeBuilder {
 	private childrenMap: Record<string, BoardNodeEntity[]> = {};
@@ -11,7 +11,7 @@ export class TreeBuilder {
 		}
 	}
 
-	build(entity: BoardNodeEntity): AnyBoardNode {
+	public build(entity: BoardNodeEntity): AnyBoardNode {
 		const children = this.getChildren(entity).map((childProps) => this.build(childProps));
 
 		// Assign children only when not present.

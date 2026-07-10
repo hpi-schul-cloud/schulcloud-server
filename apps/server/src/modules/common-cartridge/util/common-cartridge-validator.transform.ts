@@ -1,4 +1,4 @@
-import { Transform, TransformCallback, TransformOptions } from 'node:stream';
+import { Transform, type TransformCallback, type TransformOptions } from 'node:stream';
 
 export const CC_VALIDATION_ERROR_EVENT = 'validationError';
 export enum CcValidationErrorType {

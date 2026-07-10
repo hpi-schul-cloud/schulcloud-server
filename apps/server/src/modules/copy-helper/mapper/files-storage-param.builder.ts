@@ -1,11 +1,11 @@
-import { FileRecordParentType, FileRequestInfo, StorageLocation } from '@infra/files-storage-amqp-client';
+import { FileRecordParentType, type FileRequestInfo, StorageLocation } from '@infra/files-storage-amqp-client';
 import { LessonEntity } from '@modules/lesson/repo';
 import { Submission, Task } from '@modules/task/repo';
-import { EntityId } from '@shared/domain/types';
-import { EntitiesWithFiles } from '../types';
+import { type EntityId } from '@shared/domain/types';
+import { type EntitiesWithFiles } from '../types';
 
 export class FileParamBuilder {
-	static build(
+	public static build(
 		storageLocationId: EntityId,
 		parent: EntitiesWithFiles,
 		storageLocation: StorageLocation = StorageLocation.SCHOOL
@@ -21,7 +21,7 @@ export class FileParamBuilder {
 		return fileRequestInfo;
 	}
 
-	static mapEntityToParentType(entity: EntitiesWithFiles): FileRecordParentType {
+	public static mapEntityToParentType(entity: EntitiesWithFiles): FileRecordParentType {
 		if (entity instanceof LessonEntity) return FileRecordParentType.Lesson;
 
 		if (entity instanceof Task) return FileRecordParentType.Task;

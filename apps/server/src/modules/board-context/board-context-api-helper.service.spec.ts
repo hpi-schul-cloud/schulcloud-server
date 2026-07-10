@@ -1,5 +1,5 @@
 import { createMock } from '@golevelup/ts-jest';
-import { AnyBoardNode, BoardExternalReferenceType, BoardNodeService } from '@modules/board';
+import { type AnyBoardNode, BoardExternalReferenceType, BoardNodeService } from '@modules/board';
 import { CourseService } from '@modules/course';
 import { CourseEntity, CourseFeatures, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
@@ -7,14 +7,14 @@ import { RoomService } from '@modules/room';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { UserService } from '@modules/user';
 import { userFactory } from '@modules/user/testing';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { BoardFeature, ElementReferenceType } from '../board/domain';
 import { cardFactory, columnBoardFactory, columnFactory } from '../board/testing';
 import { LegacySchoolService } from '../legacy-school';
 import { roomFactory } from '../room/testing';
 import { BoardContextApiHelperService } from './board-context-api-helper.service';
-import { BOARD_CONTEXT_PUBLIC_API_CONFIG, BoardContextPublicApiConfig } from './board-context.config';
+import { BOARD_CONTEXT_PUBLIC_API_CONFIG, type BoardContextPublicApiConfig } from './board-context.config';
 
 describe('BoardContextApiHelperService', () => {
 	let module: TestingModule;

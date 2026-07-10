@@ -1,4 +1,4 @@
-import { MikroORM } from '@mikro-orm/core';
+import { type MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory, courseGroupEntityFactory } from '@modules/course/testing';
@@ -9,7 +9,7 @@ import { setupEntities } from '@testing/database';
 import { LernstoreResources } from '../api';
 import { lessonFactory } from '../testing';
 import { materialFactory } from '../testing/material.factory';
-import { ComponentProperties, ComponentType, LessonEntity } from './lesson.entity';
+import { type ComponentProperties, ComponentType, LessonEntity } from './lesson.entity';
 import { Material } from './materials.entity';
 
 describe('Lesson Entity', () => {

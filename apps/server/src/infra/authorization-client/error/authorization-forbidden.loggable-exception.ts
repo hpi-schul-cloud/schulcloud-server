@@ -1,13 +1,13 @@
 import { ForbiddenException } from '@nestjs/common';
-import { Loggable, LoggableMessage } from '@shared/common/loggable';
-import { AuthorizationBodyParams } from '../authorization-api-client';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
+import { type AuthorizationBodyParams } from '../authorization-api-client';
 
 export class AuthorizationForbiddenLoggableException extends ForbiddenException implements Loggable {
 	constructor(private readonly params: AuthorizationBodyParams) {
 		super();
 	}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		const message: LoggableMessage = {
 			type: 'FORBIDDEN_EXCEPTION',
 			stack: this.stack,

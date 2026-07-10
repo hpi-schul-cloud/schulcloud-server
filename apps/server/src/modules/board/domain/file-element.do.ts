@@ -18,7 +18,7 @@ export class FileElement extends BoardNode<FileElementProps> {
 		this.props.caption = value;
 	}
 
-	canHaveChild(): boolean {
+	public canHaveChild(): boolean {
 		return false;
 	}
 }

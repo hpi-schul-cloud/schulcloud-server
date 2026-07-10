@@ -1,22 +1,22 @@
-import { ExternalClassDto } from './external-class.dto';
-import { ExternalGroupDto } from './external-group.dto';
-import { ExternalLicenseDto } from './external-license.dto';
-import { ExternalSchoolDto } from './external-school.dto';
-import { ExternalUserDto } from './external-user.dto';
-import { ProvisioningSystemDto } from './provisioning-system.dto';
+import { type ExternalClassDto } from './external-class.dto';
+import { type ExternalGroupDto } from './external-group.dto';
+import { type ExternalLicenseDto } from './external-license.dto';
+import { type ExternalSchoolDto } from './external-school.dto';
+import { type ExternalUserDto } from './external-user.dto';
+import { type ProvisioningSystemDto } from './provisioning-system.dto';
 
 export class OauthDataDto {
-	public system: ProvisioningSystemDto;
+	system: ProvisioningSystemDto;
 
-	public externalUser: ExternalUserDto;
+	externalUser: ExternalUserDto;
 
-	public externalSchool?: ExternalSchoolDto;
+	externalSchool?: ExternalSchoolDto;
 
-	public externalGroups?: ExternalGroupDto[];
+	externalGroups?: ExternalGroupDto[];
 
-	public externalLicenses?: ExternalLicenseDto[];
+	externalLicenses?: ExternalLicenseDto[];
 
-	public externalClasses?: ExternalClassDto[];
+	externalClasses?: ExternalClassDto[];
 
 	constructor(props: OauthDataDto) {
 		this.system = props.system;

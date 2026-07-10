@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
-import { CollaborativeStorageService } from '@modules/collaborative-storage/services/collaborative-storage.service';
 import { TeamPermissionsMapper } from '@modules/collaborative-storage/mapper/team-permissions.mapper';
+import { CollaborativeStorageService } from '@modules/collaborative-storage/services/collaborative-storage.service';
 import { TeamDto } from '@modules/collaborative-storage/services/dto/team.dto';
+import { Injectable } from '@nestjs/common';
 import { TeamPermissionsBody } from '../controller/dto/team-permissions.body.params';
 import { TeamRoleDto } from '../controller/dto/team-role.params';
 
@@ -18,12 +18,12 @@ export class CollaborativeStorageUc {
 	 * @param teamRole The Team and Role to be altered
 	 * @param permissionsDto The new permissions
 	 */
-	async updateUserPermissionsForRole(
+	public async updateUserPermissionsForRole(
 		currentUserId: string,
 		teamRole: TeamRoleDto,
 		permissionsDto: TeamPermissionsBody
 	): Promise<void> {
-		return this.service.updateTeamPermissionsForRole(
+		await this.service.updateTeamPermissionsForRole(
 			currentUserId,
 			teamRole.teamId,
 			teamRole.roleId,
@@ -31,15 +31,15 @@ export class CollaborativeStorageUc {
 		);
 	}
 
-	deleteTeam(teamId: string): Promise<void> {
+	public deleteTeam(teamId: string): Promise<void> {
 		return this.service.deleteTeam(teamId);
 	}
 
-	createTeam(team: TeamDto): Promise<void> {
+	public createTeam(team: TeamDto): Promise<void> {
 		return this.service.createTeam(team);
 	}
 
-	updateTeam(team: TeamDto): Promise<void> {
+	public updateTeam(team: TeamDto): Promise<void> {
 		return this.service.updateTeam(team);
 	}
 }

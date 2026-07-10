@@ -6,13 +6,13 @@ import { FileOwnerModel } from '../../domain';
 export class ArchiveFileParams {
 	@ApiProperty()
 	@IsMongoId()
-	public ownerId!: EntityId;
+	ownerId!: EntityId;
 
 	@ApiProperty()
 	@IsEnum(FileOwnerModel)
-	public ownerType!: FileOwnerModel;
+	ownerType!: FileOwnerModel;
 
 	@ApiProperty()
 	@IsString()
-	public archiveName!: string;
+	archiveName!: string;
 }

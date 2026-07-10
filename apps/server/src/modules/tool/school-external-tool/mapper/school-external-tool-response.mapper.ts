@@ -1,4 +1,4 @@
-import { CustomParameterEntry } from '../../common/domain';
+import { type CustomParameterEntry } from '../../common/domain';
 import {
 	CustomParameterEntryResponse,
 	SchoolExternalToolConfigurationStatusResponse,
@@ -6,7 +6,7 @@ import {
 	SchoolExternalToolResponse,
 	SchoolExternalToolSearchListResponse,
 } from '../controller/dto';
-import { SchoolExternalTool } from '../domain';
+import { type SchoolExternalTool } from '../domain';
 
 export class SchoolExternalToolResponseMapper {
 	public static mapToSearchListResponse(externalTools: SchoolExternalTool[]): SchoolExternalToolSearchListResponse {

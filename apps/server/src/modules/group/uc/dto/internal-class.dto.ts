@@ -1,5 +1,5 @@
-import { EntityId } from '@shared/domain/types';
-import { Group } from '../../domain';
+import { type EntityId } from '@shared/domain/types';
+import { type Group } from '../../domain';
 import { ClassRootType } from './class-root-type';
 
 export interface InternalClassDtoProps<T> {
@@ -15,23 +15,23 @@ export interface InternalClassDtoProps<T> {
 }
 
 export class InternalClassDto<T> {
-	public id: EntityId;
+	id: EntityId;
 
-	public type: ClassRootType;
+	type: ClassRootType;
 
-	public name: string;
+	name: string;
 
-	public externalSourceName?: string;
+	externalSourceName?: string;
 
-	public teacherNames: string[];
+	teacherNames: string[];
 
-	public schoolYear?: string;
+	schoolYear?: string;
 
-	public isUpgradable?: boolean;
+	isUpgradable?: boolean;
 
-	public studentCount: number;
+	studentCount: number;
 
-	public original: T;
+	original: T;
 
 	constructor(props: InternalClassDtoProps<T>) {
 		this.id = props.id;
@@ -44,8 +44,8 @@ export class InternalClassDto<T> {
 		this.studentCount = props.studentCount;
 		this.original = props.original;
 	}
+}
 
-	public isGroup(): this is InternalClassDto<Group> {
-		return this.type === ClassRootType.GROUP;
-	}
+export function isGroupClassDto(dto: InternalClassDto<unknown>): dto is InternalClassDto<Group> {
+	return dto.type === ClassRootType.GROUP;
 }

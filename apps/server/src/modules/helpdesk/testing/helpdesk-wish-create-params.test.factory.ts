@@ -1,4 +1,4 @@
-import { HelpdeskWishCreateParams } from '../api/dto/helpdesk-problem-create.params';
+import { type HelpdeskWishCreateParams } from '../api/dto/helpdesk-problem-create.params';
 import { SupportType } from '../domain/type/helpdesk-problem.type';
 
 export class HelpdeskWishCreateParamsFactory {

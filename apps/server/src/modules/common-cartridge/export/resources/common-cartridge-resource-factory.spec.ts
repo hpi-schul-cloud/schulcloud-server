@@ -5,7 +5,7 @@ import {
 import { CommonCartridgeResourceType, CommonCartridgeVersion } from '../common-cartridge.enums';
 import { VersionNotSupportedLoggableException } from '../errors';
 import { CommonCartridgeResourceFactory } from './common-cartridge-resource-factory';
-import { CommonCartridgeWebContentResourcePropsV110, CommonCartridgeWebContentResourceV110 } from './v1.1.0';
+import { type CommonCartridgeWebContentResourcePropsV110, CommonCartridgeWebContentResourceV110 } from './v1.1.0';
 import { CommonCartridgeWebContentResourceV130 } from './v1.3.0';
 
 describe('CommonCartridgeResourceVersion', () => {

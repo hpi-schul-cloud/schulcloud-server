@@ -1,7 +1,7 @@
 import { userDoFactory } from '@modules/user/testing';
-import { Test, TestingModule } from '@nestjs/testing';
-import { createPdf, TCreatedPdf } from 'pdfmake/build/pdfmake';
-import { TDocumentDefinitions } from 'pdfmake/interfaces';
+import { Test, type TestingModule } from '@nestjs/testing';
+import { createPdf, type TCreatedPdf } from 'pdfmake/build/pdfmake';
+import { type TDocumentDefinitions } from 'pdfmake/interfaces';
 import { customParameterFactory, externalToolDatasheetTemplateDataFactory, externalToolFactory } from '../testing';
 import { DatasheetPdfService } from './datasheet-pdf.service';
 

@@ -1,4 +1,4 @@
-import { FederalStateEntity, FederalStateProperties } from '@modules/school/repo';
+import { FederalStateEntity, type FederalStateProperties } from '@modules/school/repo';
 import { BaseFactory } from './base.factory';
 import { countyEmbeddableFactory } from './county.embeddable.factory';
 

@@ -10,7 +10,7 @@ class HttpError extends Error {
 	}
 }
 
-export const createBoard = async (apiBaseUrl: string, token: string, courseId: string) => {
+export const createBoard = async (apiBaseUrl: string, token: string, courseId: string): Promise<string> => {
 	const boardTitle = `${new Date().toISOString().substring(0, 10)} ${new Date().toLocaleTimeString(
 		'de-DE'
 	)} - Lasttest`;
@@ -38,7 +38,12 @@ export const createBoard = async (apiBaseUrl: string, token: string, courseId: s
 	return body.id;
 };
 
-export const createBoardsResilient = async (apiBaseUrl: string, token: string, courseId: string, amount: number) => {
+export const createBoardsResilient = async (
+	apiBaseUrl: string,
+	token: string,
+	courseId: string,
+	amount: number
+): Promise<string[]> => {
 	const boardIds: string[] = [];
 	let retries = 0;
 	while (boardIds.length < amount && retries < 10) {

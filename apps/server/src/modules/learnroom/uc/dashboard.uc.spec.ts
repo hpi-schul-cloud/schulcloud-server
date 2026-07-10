@@ -3,12 +3,12 @@ import { CourseService } from '@modules/course';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { NotFoundException } from '@nestjs/common/';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { SortOrder } from '@shared/domain/interface';
-import { EntityId } from '@shared/domain/types';
+import { type EntityId } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
 import { Dashboard, GridElement } from '../domain/do/dashboard';
-import { DASHBOARD_REPO, IDashboardRepo } from '../repo/mikro-orm/dashboard.repo';
+import { DASHBOARD_REPO, type IDashboardRepo } from '../repo/mikro-orm/dashboard.repo';
 import { DashboardUc } from './dashboard.uc';
 
 describe('dashboard uc', () => {

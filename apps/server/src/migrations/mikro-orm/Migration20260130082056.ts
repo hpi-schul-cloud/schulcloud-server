@@ -1,5 +1,5 @@
 import { Migration } from '@mikro-orm/migrations-mongodb';
-import { ObjectId } from 'mongodb';
+import { type ObjectId } from 'mongodb';
 
 // An issue in the code caused guest teachers to not have their secondarySchools cleaned up when when a room on a different school, that they were part of, was deleted.
 // This migration finds all users that have secondarySchools assigned, checks if they are still members of any rooms in those schools,

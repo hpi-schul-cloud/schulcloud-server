@@ -1,8 +1,8 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { RoleName } from '@modules/role';
-import { EntityId } from '@shared/domain/types';
+import { type RoleName } from '@modules/role';
+import { type EntityId } from '@shared/domain/types';
 import { DoBaseFactory } from '@testing/factory/domainobject';
-import { DeepPartial } from 'fishery';
+import { type DeepPartial } from 'fishery';
 import { UserDo } from '../domain';
 
 class UserDoFactory extends DoBaseFactory<UserDo, UserDo> {

@@ -10,32 +10,32 @@ export class CustomParameterPostParams {
 	@IsString()
 	@IsNotEmpty()
 	@ApiProperty({ description: 'Technical name of the parameter that is send to the tool provider.' })
-	public name!: string;
+	name!: string;
 
 	@IsString()
 	@IsNotEmpty()
 	@ApiProperty({ description: 'Display name that is shown in the user interface.' })
-	public displayName!: string;
+	displayName!: string;
 
 	@IsString()
 	@IsOptional()
 	@ApiPropertyOptional({ description: 'Additional description of the parameter in the user interface.' })
-	public description?: string;
+	description?: string;
 
 	@IsString()
 	@IsOptional()
 	@ApiPropertyOptional({ description: 'Pre-fill value for the parameter. Required for global parameters.' })
-	public defaultValue?: string;
+	defaultValue?: string;
 
 	@IsString()
 	@IsOptional()
 	@ApiPropertyOptional({ description: 'Regular expression to limit user input for this field.' })
-	public regex?: string;
+	regex?: string;
 
 	@IsString()
 	@IsOptional()
 	@ApiPropertyOptional({ description: 'A description for the regex.' })
-	public regexComment?: string;
+	regexComment?: string;
 
 	@IsEnum(CustomParameterScopeTypeParams)
 	@ApiProperty({
@@ -44,7 +44,7 @@ export class CustomParameterPostParams {
 		description: 'Scope where the parameter has to be configured.',
 		example: CustomParameterScopeTypeParams.SCHOOL,
 	})
-	public scope!: CustomParameterScopeTypeParams;
+	scope!: CustomParameterScopeTypeParams;
 
 	@IsEnum(CustomParameterLocationParams)
 	@ApiProperty({
@@ -53,7 +53,7 @@ export class CustomParameterPostParams {
 		description: 'Location where the parameter is transmitted in the HTTP request to the tool provider.',
 		example: CustomParameterLocationParams.QUERY,
 	})
-	public location!: CustomParameterLocationParams;
+	location!: CustomParameterLocationParams;
 
 	@IsEnum(CustomParameterTypeParams)
 	@ApiProperty({
@@ -62,13 +62,13 @@ export class CustomParameterPostParams {
 		description: 'Input field type. Auto parameters have to be global and cannot have a defaultValue.',
 		example: CustomParameterTypeParams.BOOLEAN,
 	})
-	public type!: CustomParameterTypeParams;
+	type!: CustomParameterTypeParams;
 
 	@IsBoolean()
 	@ApiProperty({ description: 'If true, the parameter does not have to be filled out during configuration.' })
-	public isOptional!: boolean;
+	isOptional!: boolean;
 
 	@IsBoolean()
 	@ApiProperty({ description: 'If true, the parameter value is not copied to other contexts.' })
-	public isProtected!: boolean;
+	isProtected!: boolean;
 }

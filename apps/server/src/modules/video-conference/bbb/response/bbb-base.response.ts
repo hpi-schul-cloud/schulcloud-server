@@ -1,4 +1,4 @@
-import { BBBStatus } from './bbb-status.enum';
+import { type BBBStatus } from './bbb-status.enum';
 
 export interface BBBBaseResponse {
 	returncode: BBBStatus;

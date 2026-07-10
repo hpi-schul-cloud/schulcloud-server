@@ -1,5 +1,5 @@
-import { EntityId } from '@shared/domain/types/entity-id';
-import { SchoolPurpose } from '../type';
+import { type EntityId } from '@shared/domain/types/entity-id';
+import { type SchoolPurpose } from '../type';
 
 export interface SchoolQuery {
 	federalStateId?: EntityId;

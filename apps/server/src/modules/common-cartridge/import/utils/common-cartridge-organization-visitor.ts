@@ -1,5 +1,5 @@
-import { CheerioAPI, SelectorType } from 'cheerio';
-import { CommonCartridgeFileParserOptions } from '../common-cartridge-import.types';
+import { type CheerioAPI, type SelectorType } from 'cheerio';
+import { type CommonCartridgeFileParserOptions } from '../common-cartridge-import.types';
 
 enum CommonCartridgeOrganizationVisitorNodeType {
 	ORGANIZATION = 'organization',

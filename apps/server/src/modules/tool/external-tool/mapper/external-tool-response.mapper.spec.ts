@@ -1,4 +1,4 @@
-import { CustomParameter } from '../../common/domain';
+import { type CustomParameter } from '../../common/domain';
 import {
 	CustomParameterLocation,
 	CustomParameterLocationParams,
@@ -18,7 +18,7 @@ import {
 	Lti11ToolConfigResponse,
 	Oauth2ToolConfigResponse,
 } from '../controller/dto';
-import { BasicToolConfig, ExternalTool, Lti11ToolConfig, Oauth2ToolConfig } from '../domain';
+import { type BasicToolConfig, type ExternalTool, type Lti11ToolConfig, type Oauth2ToolConfig } from '../domain';
 import {
 	basicToolConfigFactory,
 	customParameterFactory,

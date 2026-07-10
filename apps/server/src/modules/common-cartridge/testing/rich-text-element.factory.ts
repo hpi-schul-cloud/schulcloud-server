@@ -1,9 +1,9 @@
 import { faker } from '@faker-js/faker';
 import {
 	ContentElementType,
-	RichTextElementContent,
-	RichTextElementResponse,
-	TimestampsResponse,
+	type RichTextElementContent,
+	type RichTextElementResponse,
+	type TimestampsResponse,
 } from '@infra/common-cartridge-clients';
 import { BaseFactory } from '@testing/factory/base.factory';
 import { Factory } from 'fishery';

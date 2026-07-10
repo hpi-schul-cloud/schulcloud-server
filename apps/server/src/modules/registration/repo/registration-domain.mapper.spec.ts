@@ -2,7 +2,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { registrationEntityFactory } from '../testing';
 import { RegistrationEntity } from './entity';
 import { RegistrationDomainMapper } from './registration-domain.mapper';
-import { Registration, RegistrationProps } from '../domain/do';
+import { Registration, type RegistrationProps } from '../domain/do';
 
 describe('RegistrationDomainMapper', () => {
 	describe('mapEntityToDo', () => {

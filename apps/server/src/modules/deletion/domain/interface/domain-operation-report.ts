@@ -1,4 +1,4 @@
-import { OperationType } from '../types';
+import { type OperationType } from '../types';
 
 export interface DomainOperationReport {
 	operation: OperationType;

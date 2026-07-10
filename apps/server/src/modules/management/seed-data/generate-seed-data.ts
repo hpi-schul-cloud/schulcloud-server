@@ -1,11 +1,11 @@
-import { BaseEntity } from '@shared/domain/entity';
+import { type BaseEntity } from '@shared/domain/entity';
 import { generateFederalStates } from './federalstates';
 import { generateRole } from './roles';
 import { generateSchools } from './schools';
 import { generateSchoolYears } from './schoolyears';
 
 export function generateSeedData(
-	injectEnvVars: (s: string) => string
+	_injectEnvVars: (s: string) => string
 ): { collectionName: string; data: BaseEntity[] }[] {
 	let collections: { collectionName: string; data: BaseEntity[] }[] = [];
 	// create school related collections

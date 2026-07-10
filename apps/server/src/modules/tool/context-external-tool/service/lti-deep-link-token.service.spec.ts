@@ -1,8 +1,8 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Test, TestingModule } from '@nestjs/testing';
-import { TOOL_CONFIG_TOKEN, ToolConfig } from '../../tool-config';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import { Test, type TestingModule } from '@nestjs/testing';
+import { TOOL_CONFIG_TOKEN, type ToolConfig } from '../../tool-config';
 import { LtiDeepLinkToken } from '../domain';
-import { LTI_DEEP_LINK_TOKEN_REPO, LtiDeepLinkTokenRepo } from '../repo';
+import { LTI_DEEP_LINK_TOKEN_REPO, type LtiDeepLinkTokenRepo } from '../repo';
 import { ltiDeepLinkTokenFactory } from '../testing';
 import { LtiDeepLinkTokenService } from './lti-deep-link-token.service';
 

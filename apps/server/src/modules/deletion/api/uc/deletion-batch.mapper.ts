@@ -1,6 +1,6 @@
-import { Page } from '@shared/domain/domainobject';
-import { DeletionBatchDetails, DeletionBatchSummary } from '../../domain/service';
-import { DeletionBatchPaginationParams } from '../controller/dto/request/deletion-batch-pagination.params';
+import { type Page } from '@shared/domain/domainobject';
+import { type DeletionBatchDetails, type DeletionBatchSummary } from '../../domain/service';
+import { type DeletionBatchPaginationParams } from '../controller/dto/request/deletion-batch-pagination.params';
 import { DeletionBatchDetailsResponse } from '../controller/dto/response/deletion-batch-details.response';
 import { DeletionBatchItemResponse } from '../controller/dto/response/deletion-batch-item.response';
 import { DeletionBatchListResponse } from '../controller/dto/response/deletion-batch-list.response';

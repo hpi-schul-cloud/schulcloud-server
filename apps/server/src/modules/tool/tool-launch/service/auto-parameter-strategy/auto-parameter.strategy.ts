@@ -1,5 +1,5 @@
-import { ContextExternalToolLaunchable } from '../../../context-external-tool/domain';
-import { SchoolExternalTool } from '../../../school-external-tool/domain';
+import { type ContextExternalToolLaunchable } from '../../../context-external-tool/domain';
+import { type SchoolExternalTool } from '../../../school-external-tool/domain';
 
 export interface AutoParameterStrategy {
 	getValue(

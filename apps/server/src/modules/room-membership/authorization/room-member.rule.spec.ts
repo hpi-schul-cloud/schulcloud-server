@@ -1,4 +1,4 @@
-import { EntityManager } from '@mikro-orm/core';
+import { type EntityManager } from '@mikro-orm/core';
 import {
 	Action,
 	AUTHORIZATION_CONFIG_TOKEN,
@@ -6,14 +6,14 @@ import {
 	AuthorizationHelper,
 	AuthorizationInjectionService,
 } from '@modules/authorization';
-import { Role } from '@modules/role/repo';
+import { type Role } from '@modules/role/repo';
 import { roomEntityFactory } from '@modules/room/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
-import { TestApiClient } from '@testing/test-api-client';
+import { type TestApiClient } from '@testing/test-api-client';
 import { RoomSetup } from '../../room/api/test/util/room-setup.helper';
 import { RoomAuthorizable } from '../do/room-authorizable.do';
 import { buildRoomMemberAuthorizable } from '../testing';

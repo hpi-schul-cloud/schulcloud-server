@@ -1,20 +1,20 @@
 import { CommonCartridgeElementType } from '../../common-cartridge.enums';
 import { ElementTypeNotSupportedLoggableException } from '../../errors';
-import { CommonCartridgeElement } from '../../interfaces';
+import { type CommonCartridgeElement } from '../../interfaces';
 import {
-	CommonCartridgeMetadataElementPropsV130,
+	type CommonCartridgeMetadataElementPropsV130,
 	CommonCartridgeMetadataElementV130,
 } from './common-cartridge-metadata-element';
 import {
-	CommonCartridgeOrganizationElementPropsV130,
+	type CommonCartridgeOrganizationElementPropsV130,
 	CommonCartridgeOrganizationElementV130,
 } from './common-cartridge-organization-element';
 import {
-	CommonCartridgeOrganizationsWrapperElementPropsV130,
+	type CommonCartridgeOrganizationsWrapperElementPropsV130,
 	CommonCartridgeOrganizationsWrapperElementV130,
 } from './common-cartridge-organizations-wrapper-element';
 import {
-	CommonCartridgeResourcesWrapperElementPropsV130,
+	type CommonCartridgeResourcesWrapperElementPropsV130,
 	CommonCartridgeResourcesWrapperElementV130,
 } from './common-cartridge-resources-wrapper-element';
 

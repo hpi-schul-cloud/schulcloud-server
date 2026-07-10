@@ -1,6 +1,6 @@
-import { DeletedElement, isDeletedElement } from '../../deleted-element.do';
-import { AnyBoardNode } from '../../types';
-import { isMediaExternalToolElement, MediaExternalToolElement } from '../media-external-tool-element.do';
+import { type DeletedElement, isDeletedElement } from '../../deleted-element.do';
+import { type AnyBoardNode } from '../../types';
+import { isMediaExternalToolElement, type MediaExternalToolElement } from '../media-external-tool-element.do';
 
 export type AnyMediaElement = MediaExternalToolElement | DeletedElement;
 

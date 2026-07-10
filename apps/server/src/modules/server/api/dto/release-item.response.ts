@@ -2,31 +2,31 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 
 export class ReleaseItemResponse {
 	@ApiProperty()
-	public id: string;
+	id: string;
 
 	@ApiProperty()
-	public name: string;
+	name: string;
 
 	@ApiProperty()
-	public body: string;
+	body: string;
 
 	@ApiProperty()
-	public url: string;
+	url: string;
 
 	@ApiProperty()
-	public author: string;
+	author: string;
 
 	@ApiProperty()
-	public authorUrl: string;
+	authorUrl: string;
 
 	@ApiProperty({ type: Date })
-	public createdAt: Date;
+	createdAt: Date;
 
 	@ApiProperty({ type: Date })
-	public publishedAt: Date;
+	publishedAt: Date;
 
 	@ApiPropertyOptional()
-	public zipUrl?: string;
+	zipUrl?: string;
 
 	constructor(release: ReleaseItemResponse) {
 		this.id = release.id;

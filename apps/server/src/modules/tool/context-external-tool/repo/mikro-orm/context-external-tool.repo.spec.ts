@@ -9,12 +9,12 @@ import { ExternalToolEntity, ExternalToolRepoMapper } from '@modules/tool/extern
 import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/repo';
 import { schoolExternalToolEntityFactory } from '@modules/tool/school-external-tool/testing';
 import { User } from '@modules/user/repo';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
-import { ContextExternalTool, ContextExternalToolProps } from '../../domain';
+import { ContextExternalTool, type ContextExternalToolProps } from '../../domain';
 import { contextExternalToolEntityFactory, contextExternalToolFactory, ltiDeepLinkFactory } from '../../testing';
-import { ContextExternalToolQuery } from '../../uc/dto/context-external-tool.types';
+import { type ContextExternalToolQuery } from '../../uc/dto/context-external-tool.types';
 import { ContextExternalToolType } from './context-external-tool-type.enum';
 import { ContextExternalToolEntity } from './context-external-tool.entity';
 import { ContextExternalToolRepo } from './context-external-tool.repo';

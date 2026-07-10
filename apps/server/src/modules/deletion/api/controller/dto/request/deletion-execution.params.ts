@@ -8,5 +8,5 @@ export class DeletionExecutionParams {
 	})
 	@IsArray()
 	@IsMongoId({ each: true })
-	public ids!: string[];
+	ids!: string[];
 }

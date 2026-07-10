@@ -1,12 +1,12 @@
 import { InternalServerErrorException } from '@nestjs/common';
-import { Loggable, LoggableMessage } from '@shared/common/loggable';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
 
 export class UnknownQueryTypeLoggableException extends InternalServerErrorException implements Loggable {
 	constructor(private readonly unknownQueryType: string) {
 		super();
 	}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			type: 'INTERNAL_SERVER_ERROR',
 			stack: this.stack,

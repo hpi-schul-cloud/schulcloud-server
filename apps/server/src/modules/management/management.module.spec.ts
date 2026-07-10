@@ -1,4 +1,4 @@
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { DatabaseManagementController } from './controller/database-management.controller';
 import { ManagementServerTestModule } from './management-server.app.module';
 import { DatabaseManagementUc } from './uc/database-management.uc';

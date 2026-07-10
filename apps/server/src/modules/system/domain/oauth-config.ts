@@ -1,34 +1,34 @@
 export class OauthConfig {
-	clientId: string;
+	public clientId: string;
 
-	clientSecret: string;
+	public clientSecret: string;
 
-	idpHint?: string;
+	public idpHint?: string;
 
-	redirectUri: string;
+	public redirectUri: string;
 
-	grantType: string;
+	public grantType: string;
 
-	tokenEndpoint: string;
+	public tokenEndpoint: string;
 
-	authEndpoint: string;
+	public authEndpoint: string;
 
-	responseType: string;
+	public responseType: string;
 
-	scope: string;
+	public scope: string;
 
-	provider: string;
+	public provider: string;
 
 	/**
 	 * If this is set it will be used to redirect the user after login to the logout endpoint of the identity provider.
 	 */
-	logoutEndpoint?: string;
+	public logoutEndpoint?: string;
 
-	issuer: string;
+	public issuer: string;
 
-	jwksEndpoint: string;
+	public jwksEndpoint: string;
 
-	endSessionEndpoint?: string;
+	public endSessionEndpoint?: string;
 
 	constructor(oauthConfigDto: OauthConfig) {
 		this.clientId = oauthConfigDto.clientId;

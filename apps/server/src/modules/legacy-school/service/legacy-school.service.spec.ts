@@ -1,8 +1,8 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { FederalStateService, SchoolFeature, SchoolYearService } from '@modules/school/domain';
 import { StorageProviderEntity, StorageProviderRepo } from '@modules/school/repo';
 import { federalStateEntityFactory, schoolYearEntityFactory, storageProviderFactory } from '@modules/school/testing';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { LegacySchoolDo } from '../domain';
 import { LegacySchoolRepo } from '../repo';

@@ -5,52 +5,52 @@ import { HelpdeskProblemProps, HelpdeskProps, HelpdeskWishProps, SupportType } f
 class HelpdeskCreateParams implements HelpdeskProps {
 	@ApiProperty({ enum: SupportType })
 	@IsEnum(SupportType)
-	public supportType!: SupportType;
+	supportType!: SupportType;
 
 	@ApiProperty()
 	@IsString()
-	public subject!: string;
+	subject!: string;
 
 	@ApiProperty()
 	@IsEmail()
-	public replyEmail!: string;
+	replyEmail!: string;
 
 	@ApiProperty()
 	@IsString({ each: true })
-	public problemArea!: string[];
+	problemArea!: string[];
 
 	@ApiProperty({ required: false })
 	@IsOptional()
 	@IsString()
-	public device?: string;
+	device?: string;
 
 	@ApiProperty({ required: false })
 	@IsOptional()
 	@IsBoolean()
-	public consent?: boolean;
+	consent?: boolean;
 }
 
 export class HelpdeskProblemCreateParams extends HelpdeskCreateParams implements HelpdeskProblemProps {
 	@ApiProperty()
 	@IsString()
-	public problemDescription!: string;
+	problemDescription!: string;
 }
 
 export class HelpdeskWishCreateParams extends HelpdeskCreateParams implements HelpdeskWishProps {
 	@ApiProperty()
 	@IsString()
-	public role!: string;
+	role!: string;
 
 	@ApiProperty()
 	@IsString()
-	public desire!: string;
+	desire!: string;
 
 	@ApiProperty()
 	@IsString()
-	public benefit!: string;
+	benefit!: string;
 
 	@ApiProperty({ required: false })
 	@IsOptional()
 	@IsString()
-	public acceptanceCriteria?: string;
+	acceptanceCriteria?: string;
 }

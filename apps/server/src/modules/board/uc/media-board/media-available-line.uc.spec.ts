@@ -1,28 +1,28 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationService } from '@modules/authorization';
-import { MediaSchoolLicense, MediaSchoolLicenseService } from '@modules/school-license';
+import { type MediaSchoolLicense, MediaSchoolLicenseService } from '@modules/school-license';
 import { mediaSchoolLicenseFactory } from '@modules/school-license/testing';
-import { ExternalTool } from '@modules/tool/external-tool/domain';
+import { type ExternalTool } from '@modules/tool/external-tool/domain';
 import { externalToolFactory } from '@modules/tool/external-tool/testing';
-import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
+import { type SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { schoolExternalToolFactory } from '@modules/tool/school-external-tool/testing';
-import { MediaUserLicense, MediaUserLicenseService } from '@modules/user-license';
+import { type MediaUserLicense, MediaUserLicenseService } from '@modules/user-license';
 import { mediaUserLicenseFactory } from '@modules/user-license/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 import { setupEntities } from '@testing/database';
 import { BoardNodeRule } from '../../authorisation/board-node.rule';
 import { BOARD_CONFIG_TOKEN, BoardConfig } from '../../board.config';
 import {
-	BoardNodeAuthorizable,
-	MediaAvailableLine,
-	MediaAvailableLineElement,
+	type BoardNodeAuthorizable,
+	type MediaAvailableLine,
+	type MediaAvailableLineElement,
 	MediaBoard,
 	Colors,
-	MediaExternalToolElement,
+	type MediaExternalToolElement,
 } from '../../domain';
 import {
 	BoardNodeAuthorizableService,

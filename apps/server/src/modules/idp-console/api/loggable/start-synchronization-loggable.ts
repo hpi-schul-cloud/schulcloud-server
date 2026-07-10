@@ -1,9 +1,9 @@
-import { Loggable, LoggableMessage } from '@shared/common/loggable';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
 
 export class StartSynchronizationLoggable implements Loggable {
 	constructor(private readonly systemId: string) {}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			message: 'Start synchronization users from systemId',
 			data: {

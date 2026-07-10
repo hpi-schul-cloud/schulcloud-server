@@ -1,7 +1,7 @@
-import { Mail, PlainTextMailContent } from '@infra/mail';
-import { RegistrationConfig } from '@modules/registration/registration.config';
-import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
-import { EntityId } from '@shared/domain/types';
+import { type Mail, type PlainTextMailContent } from '@infra/mail';
+import { type RegistrationConfig } from '@modules/registration/registration.config';
+import { type AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
+import { type EntityId } from '@shared/domain/types';
 
 export interface RegistrationProps extends AuthorizableObject {
 	id: EntityId;
@@ -31,10 +31,8 @@ export class Registration extends DomainObject<RegistrationProps> {
 		// We need to make sure that only properties of type T are returned
 		// At runtime the props are a MikroORM entity that has additional non-persisted properties
 		// see @Property({ persist: false })
-
-		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-		// @ts-ignore
-		const { domainObject, ...copyProps } = this.props;
+		const copyProps = { ...this.props } as RegistrationProps & { domainObject?: unknown };
+		delete copyProps.domainObject;
 
 		return copyProps;
 	}

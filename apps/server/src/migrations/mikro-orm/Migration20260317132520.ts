@@ -51,7 +51,7 @@ export class Migration20260317132520 extends Migration {
 		console.log('Finished dropping Rocketchat Collections');
 	}
 
-	public async down(): Promise<void> {
+	public down(): Promise<void> {
 		console.log('Rocketchat Collections can not be restored. If necessary, restore from backup.');
 
 		return Promise.resolve();

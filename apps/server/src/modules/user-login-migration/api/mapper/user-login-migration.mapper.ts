@@ -1,9 +1,9 @@
-import { UserLoginMigrationDO } from '../../domain';
-import { UserLoginMigrationQuery } from '../../domain/interface';
-import { UserLoginMigrationResponse, UserLoginMigrationSearchParams } from '../dto';
+import { type UserLoginMigrationDO } from '../../domain';
+import { type UserLoginMigrationQuery } from '../../domain/interface';
+import { UserLoginMigrationResponse, type UserLoginMigrationSearchParams } from '../dto';
 
 export class UserLoginMigrationMapper {
-	static mapSearchParamsToQuery(searchParams: UserLoginMigrationSearchParams): UserLoginMigrationQuery {
+	public static mapSearchParamsToQuery(searchParams: UserLoginMigrationSearchParams): UserLoginMigrationQuery {
 		const query: UserLoginMigrationQuery = {
 			userId: searchParams.userId,
 		};
@@ -11,7 +11,7 @@ export class UserLoginMigrationMapper {
 		return query;
 	}
 
-	static mapUserLoginMigrationDoToResponse(domainObject: UserLoginMigrationDO): UserLoginMigrationResponse {
+	public static mapUserLoginMigrationDoToResponse(domainObject: UserLoginMigrationDO): UserLoginMigrationResponse {
 		const response: UserLoginMigrationResponse = new UserLoginMigrationResponse({
 			id: domainObject.id as string,
 			sourceSystemId: domainObject.sourceSystemId,

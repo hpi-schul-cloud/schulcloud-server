@@ -1,5 +1,5 @@
 import { Factory } from 'fishery';
-import { ExternalToolMedium } from '../domain';
+import { type ExternalToolMedium } from '../domain';
 import { ExternalToolMediumStatus } from '../enum';
 
 export const externalToolMediumFactory = Factory.define<ExternalToolMedium>(({ sequence }) => {

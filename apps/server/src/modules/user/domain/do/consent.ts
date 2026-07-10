@@ -1,5 +1,5 @@
-import { ParentConsent } from './parent-consent';
-import { UserConsent } from './user-consent';
+import { type ParentConsent } from './parent-consent';
+import { type UserConsent } from './user-consent';
 
 export class Consent {
 	public userConsent?: UserConsent;

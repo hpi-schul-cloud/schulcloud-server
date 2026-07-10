@@ -8,19 +8,19 @@ export class ExternalToolMediumResponse {
 		enum: ExternalToolMediumStatus,
 		enumName: 'ExternalToolMediumStatus',
 	})
-	public status: ExternalToolMediumStatus;
+	status: ExternalToolMediumStatus;
 
 	@ApiPropertyOptional({ type: String, description: 'Id of the medium' })
-	public mediumId?: string;
+	mediumId?: string;
 
 	@ApiPropertyOptional({ type: String, description: 'Publisher of the medium' })
-	public publisher?: string;
+	publisher?: string;
 
 	@ApiPropertyOptional({ type: String, description: 'The id of the media source' })
-	public mediaSourceId?: string;
+	mediaSourceId?: string;
 
 	@ApiPropertyOptional({ type: Date, description: 'The last modified date of the medium' })
-	public modifiedAt?: Date;
+	modifiedAt?: Date;
 
 	constructor(props: ExternalToolMediumResponse) {
 		this.status = props.status;

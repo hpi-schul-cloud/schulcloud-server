@@ -1,6 +1,6 @@
 import { ContentElementType, FileElement } from '../../domain';
 import { FileElementContent, FileElementResponse, TimestampsResponse } from '../dto';
-import { BaseResponseMapper } from './base-mapper.interface';
+import { type BaseResponseMapper } from './base-mapper.interface';
 
 export class FileElementResponseMapper implements BaseResponseMapper {
 	private static instance: FileElementResponseMapper;
@@ -13,7 +13,7 @@ export class FileElementResponseMapper implements BaseResponseMapper {
 		return FileElementResponseMapper.instance;
 	}
 
-	mapToResponse(element: FileElement): FileElementResponse {
+	public mapToResponse(element: FileElement): FileElementResponse {
 		const result = new FileElementResponse({
 			id: element.id,
 			timestamps: new TimestampsResponse({ lastUpdatedAt: element.updatedAt, createdAt: element.createdAt }),
@@ -24,7 +24,7 @@ export class FileElementResponseMapper implements BaseResponseMapper {
 		return result;
 	}
 
-	canMap(element: unknown): boolean {
+	public canMap(element: unknown): boolean {
 		return element instanceof FileElement;
 	}
 }

@@ -1,25 +1,25 @@
-import { Course } from '@modules/course';
-import { EntityId } from '@shared/domain/types';
-import { ClassRootType } from './class-root-type';
+import { type Course } from '@modules/course';
+import { type EntityId } from '@shared/domain/types';
+import { type ClassRootType } from './class-root-type';
 
 export class ClassInfoDto {
-	public id: EntityId;
+	id: EntityId;
 
-	public type: ClassRootType;
+	type: ClassRootType;
 
-	public name: string;
+	name: string;
 
-	public externalSourceName?: string;
+	externalSourceName?: string;
 
-	public teacherNames: string[];
+	teacherNames: string[];
 
-	public schoolYear?: string;
+	schoolYear?: string;
 
-	public isUpgradable?: boolean;
+	isUpgradable?: boolean;
 
-	public studentCount: number;
+	studentCount: number;
 
-	public synchronizedCourses?: Course[];
+	synchronizedCourses?: Course[];
 
 	constructor(props: ClassInfoDto) {
 		this.id = props.id;

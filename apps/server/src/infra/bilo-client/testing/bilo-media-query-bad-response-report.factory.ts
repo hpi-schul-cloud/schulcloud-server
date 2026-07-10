@@ -1,6 +1,6 @@
 import { Factory } from 'fishery';
 import { ValidationError } from 'class-validator';
-import { MediaQueryBadResponseReport } from '../interface';
+import { type MediaQueryBadResponseReport } from '../interface';
 
 export const biloMediaQueryBadResponseReportFactory = Factory.define<MediaQueryBadResponseReport>(({ sequence }) => {
 	const report: MediaQueryBadResponseReport = {

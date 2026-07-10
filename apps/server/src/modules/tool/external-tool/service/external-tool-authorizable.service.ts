@@ -17,7 +17,7 @@ export class ExternalToolAuthorizableService implements AuthorizationLoaderServi
 		injectionService.injectReferenceLoader(AuthorizableReferenceType.ExternalTool, this);
 	}
 
-	async findById(id: EntityId): Promise<ExternalTool> {
+	public async findById(id: EntityId): Promise<ExternalTool> {
 		const externalTool: ExternalTool = await this.externalToolRepo.findById(id);
 
 		return externalTool;

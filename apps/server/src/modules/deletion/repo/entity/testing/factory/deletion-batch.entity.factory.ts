@@ -2,7 +2,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { EntityFactory } from '@testing/factory/entity.factory';
 
 import { DeletionBatchEntity } from '../../index';
-import { DeletionBatchProps } from '../../../../domain/do';
+import { type DeletionBatchProps } from '../../../../domain/do';
 import { BatchStatus, DomainName } from '../../../../domain/types';
 
 export const deletionBatchEntityFactory = EntityFactory.define<DeletionBatchEntity, DeletionBatchProps>(

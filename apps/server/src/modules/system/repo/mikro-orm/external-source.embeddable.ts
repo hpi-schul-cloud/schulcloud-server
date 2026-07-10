@@ -12,13 +12,13 @@ export interface ExternalSourceEntityProps {
 @Embeddable()
 export class ExternalSourceEmbeddable {
 	@Property()
-	public externalId: string;
+	externalId: string;
 
 	@ManyToOne(() => SystemEntity)
-	public system: SystemEntity;
+	system: SystemEntity;
 
 	@Property()
-	public lastSyncedAt: Date;
+	lastSyncedAt: Date;
 
 	constructor(props: ExternalSourceEntityProps) {
 		this.externalId = props.externalId;

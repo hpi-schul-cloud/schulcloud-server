@@ -1,9 +1,9 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { Logger } from '@infra/logger';
 import { ModuleName, SagaService, StepOperationType } from '@modules/saga';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { DeletionLogService, DeletionRequestService } from '.';
-import { DeletionRequest } from '../do';
+import { type DeletionRequest } from '../do';
 import { DeletionErrorLoggableException } from '../loggable-exception';
 import { DomainName, StatusModel } from '../types';
 import { DeletionExecutionService } from './deletion-execution.service';
@@ -134,7 +134,7 @@ describe(DeletionExecutionService.name, () => {
 
 			try {
 				await service.executeDeletionRequest(deletionRequest);
-			} catch (error) {
+			} catch {
 				expect(deletionRequestService.markDeletionRequestAsFailed).toHaveBeenCalledWith(deletionRequest.id);
 			}
 		});
@@ -146,12 +146,9 @@ describe(DeletionExecutionService.name, () => {
 			sagaService.executeSaga.mockRejectedValueOnce(error);
 			try {
 				await service.executeDeletionRequest(deletionRequest);
-			} catch (error) {
+			} catch {
 				expect(logger.warning).toHaveBeenCalledWith(
-					new DeletionErrorLoggableException(
-						`An error occurred during deletion execution ${deletionRequest.id}`,
-						error as Error
-					)
+					new DeletionErrorLoggableException(`An error occurred during deletion execution ${deletionRequest.id}`, error)
 				);
 			}
 		});

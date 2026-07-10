@@ -1,8 +1,8 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { GroupService, GroupTypes } from '@modules/group';
 import { groupFactory } from '@modules/group/testing';
 import { userDoFactory } from '@modules/user/testing';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { MoinSchuleClassService } from './moin-schule-class.service';
 
 describe(MoinSchuleClassService.name, () => {

@@ -1,5 +1,5 @@
 import { customParameterFactory } from '@modules/tool/external-tool/testing';
-import { CustomParameter } from '../custom-parameter.do';
+import { type CustomParameter } from '../custom-parameter.do';
 import { ToolParameterOptionalValueMissingLoggableException } from './tool-parameter-optional-value-missing-loggable-exception';
 
 describe(ToolParameterOptionalValueMissingLoggableException.name, () => {

@@ -1,20 +1,14 @@
 import { sleep } from './helper/sleep';
 import { SocketConnection } from './socket-connection';
-import { Callback, SocketConfiguration } from './types';
+import { type Callback, type SocketConfiguration } from './types';
 
 export class SocketConnectionManager {
-	private connections: SocketConnection[];
-
-	private socketConfiguration: SocketConfiguration;
-
+	private connections: SocketConnection[] = [];
 	private onErrorHandler: Callback = console.log;
 
-	constructor(socketConfiguration: SocketConfiguration) {
-		this.connections = [];
-		this.socketConfiguration = socketConfiguration;
-	}
+	constructor(private readonly socketConfiguration: SocketConfiguration) {}
 
-	async createConnection(): Promise<SocketConnection> {
+	public async createConnection(): Promise<SocketConnection> {
 		// eslint-disable-next-line arrow-body-style
 		const socket = new SocketConnection(this.socketConfiguration, (errorMessage: unknown) => {
 			/* istanbul ignore next */
@@ -26,7 +20,7 @@ export class SocketConnectionManager {
 		return socket;
 	}
 
-	async createConnections(amount: number): Promise<SocketConnection[]> {
+	public async createConnections(amount: number): Promise<SocketConnection[]> {
 		const connections: SocketConnection[] = [];
 
 		while (connections.length < amount) {
@@ -37,16 +31,16 @@ export class SocketConnectionManager {
 		return connections;
 	}
 
-	getClientCount() {
+	public getClientCount(): number {
 		return this.connections.length;
 	}
 
-	setOnErrorHandler(onErrorHandler: Callback) {
+	public setOnErrorHandler(onErrorHandler: Callback): void {
 		/* istanbul ignore next */
 		this.onErrorHandler = onErrorHandler;
 	}
 
-	destroySocketConnections() {
+	public destroySocketConnections(): void {
 		this.connections.forEach((connection) => connection.close());
 		this.connections = [];
 	}

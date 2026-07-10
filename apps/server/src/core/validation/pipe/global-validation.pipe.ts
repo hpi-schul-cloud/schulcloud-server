@@ -1,4 +1,4 @@
-import { ValidationError, ValidationPipe } from '@nestjs/common';
+import { type ValidationError, ValidationPipe } from '@nestjs/common';
 import { ApiValidationError } from '@shared/common/error';
 
 /** *********************************************

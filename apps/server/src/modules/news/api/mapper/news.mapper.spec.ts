@@ -1,21 +1,21 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
-import { SchoolEntity } from '@modules/school/repo';
+import { type SchoolEntity } from '@modules/school/repo';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { TeamEntity } from '@modules/team/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { setupEntities } from '@testing/database';
-import { CreateNews, INewsScope, IUpdateNews, NewsTarget, NewsTargetModel } from '../../domain';
-import { CourseNews, News, NewsProperties, SchoolNews, TeamNews } from '../../repo';
+import { type CreateNews, type INewsScope, type IUpdateNews, type NewsTarget, NewsTargetModel } from '../../domain';
+import { CourseNews, type News, type NewsProperties, SchoolNews, TeamNews } from '../../repo';
 import {
-	CreateNewsParams,
+	type CreateNewsParams,
 	FilterNewsParams,
 	NewsResponse,
 	SchoolInfoResponse,
 	TargetInfoResponse,
-	UpdateNewsParams,
+	type UpdateNewsParams,
 	UserInfoResponse,
 } from '../dto';
 import { NewsMapper } from './news.mapper';

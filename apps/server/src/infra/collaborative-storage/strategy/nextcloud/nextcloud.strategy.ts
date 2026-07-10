@@ -35,14 +35,15 @@ export class NextcloudStrategy implements CollaborativeStorageStrategy {
 	 *
 	 * @param dto
 	 */
-	async updateTeamPermissionsForRole(dto: TeamRolePermissionsDto): Promise<void> {
+	public async updateTeamPermissionsForRole(dto: TeamRolePermissionsDto): Promise<void> {
 		const groupId: string = await this.client.findGroupId(NextcloudStrategy.generateGroupId(dto));
 		let folderId: number;
 
 		try {
 			folderId = await this.client.findGroupFolderIdForGroupId(groupId);
 			await this.client.setGroupPermissions(groupId, folderId, dto.permissions);
-		} catch (e) {
+		} catch {
+			// TODO: check error handling
 			this.logger.log(
 				`Permissions in nextcloud were not set because of missing groupId or folderId for teamId ${dto.teamId}`
 			);
@@ -56,7 +57,7 @@ export class NextcloudStrategy implements CollaborativeStorageStrategy {
 	 *
 	 * @param teamId id of the schulcloud team
 	 */
-	async deleteTeam(teamId: string): Promise<void> {
+	public async deleteTeam(teamId: string): Promise<void> {
 		const groupId: string = this.client.getNameWithPrefix(teamId);
 		if (groupId) {
 			const folderId: number = await this.client.findGroupFolderIdForGroupId(groupId);
@@ -72,7 +73,7 @@ export class NextcloudStrategy implements CollaborativeStorageStrategy {
 	 *
 	 * @param team schulcloud team
 	 */
-	async createTeam(team: TeamDto): Promise<void> {
+	public async createTeam(team: TeamDto): Promise<void> {
 		const groupId: string = this.client.getNameWithPrefix(team.id);
 
 		await this.client.createGroup(groupId, team.name);
@@ -95,7 +96,7 @@ export class NextcloudStrategy implements CollaborativeStorageStrategy {
 	 *
 	 * @param team schulcloud team
 	 */
-	async updateTeam(team: TeamDto): Promise<void> {
+	public async updateTeam(team: TeamDto): Promise<void> {
 		if (!team.id) {
 			throw new UnprocessableEntityException('Cannot update team without id');
 		}

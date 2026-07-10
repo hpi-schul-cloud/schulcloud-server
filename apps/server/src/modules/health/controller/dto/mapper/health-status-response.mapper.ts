@@ -1,9 +1,9 @@
-import { HealthStatus } from '../../../domain';
-import { HealthStatusResponse, HealthStatusCheckResponse } from '../response';
+import { type HealthStatus } from '../../../domain';
+import { HealthStatusResponse, type HealthStatusCheckResponse } from '../response';
 import { HealthStatusCheckResponseMapper } from './health-status-check-response.mapper';
 
 export class HealthStatusResponseMapper {
-	static mapToResponse(healthStatus: HealthStatus): HealthStatusResponse {
+	public static mapToResponse(healthStatus: HealthStatus): HealthStatusResponse {
 		const response = new HealthStatusResponse({
 			status: healthStatus.status,
 			description: healthStatus.description,

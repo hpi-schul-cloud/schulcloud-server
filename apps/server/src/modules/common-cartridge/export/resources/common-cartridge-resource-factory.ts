@@ -1,22 +1,22 @@
-import { CommonCartridgeResourceType, CommonCartridgeVersion } from '../common-cartridge.enums';
+import { type CommonCartridgeResourceType, CommonCartridgeVersion } from '../common-cartridge.enums';
 import { VersionNotSupportedLoggableException } from '../errors';
-import { CommonCartridgeResource } from '../interfaces';
-import { OmitVersionAndFolder } from '../utils';
+import { type CommonCartridgeResource } from '../interfaces';
+import { type OmitVersionAndFolder } from '../utils';
 import {
-	CommonCartridgeManifestResourcePropsV110,
+	type CommonCartridgeManifestResourcePropsV110,
 	CommonCartridgeResourceFactoryV110,
-	CommonCartridgeWebContentResourcePropsV110,
-	CommonCartridgeWebLinkResourcePropsV110,
+	type CommonCartridgeWebContentResourcePropsV110,
+	type CommonCartridgeWebLinkResourcePropsV110,
 } from './v1.1.0';
-import { CommonCartridgeFileResourcePropsV110 } from './v1.1.0/common-cartridge-file-resource';
+import { type CommonCartridgeFileResourcePropsV110 } from './v1.1.0/common-cartridge-file-resource';
 import {
-	CommonCartridgeManifestResourcePropsV130,
+	type CommonCartridgeManifestResourcePropsV130,
 	CommonCartridgeResourceFactoryV130,
-	CommonCartridgeWebContentResourcePropsV130,
-	CommonCartridgeWebLinkResourcePropsV130,
+	type CommonCartridgeWebContentResourcePropsV130,
+	type CommonCartridgeWebLinkResourcePropsV130,
 } from './v1.3.0';
-import { CommonCartridgeFileFolderResourcePropsV130 } from './v1.3.0/common-cartridge-file-folder-resource';
-import { CommonCartridgeFileResourcePropsV130 } from './v1.3.0/common-cartridge-file-resource';
+import { type CommonCartridgeFileFolderResourcePropsV130 } from './v1.3.0/common-cartridge-file-folder-resource';
+import { type CommonCartridgeFileResourcePropsV130 } from './v1.3.0/common-cartridge-file-resource';
 
 export type CommonCartridgeResourceProps =
 	| OmitVersionAndFolder<CommonCartridgeWebContentResourcePropsV110>

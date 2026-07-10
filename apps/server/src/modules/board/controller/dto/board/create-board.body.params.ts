@@ -11,14 +11,14 @@ export class CreateBoardBodyParams {
 	@MinLength(1)
 	@MaxLength(100)
 	@SanitizeHtml()
-	public title!: string;
+	title!: string;
 
 	@IsMongoId()
 	@ApiProperty({
 		description: 'The id of the parent',
 		required: true,
 	})
-	public parentId!: string;
+	parentId!: string;
 
 	@ApiProperty({
 		description: 'The type of the parent',
@@ -27,7 +27,7 @@ export class CreateBoardBodyParams {
 		enumName: 'BoardParentType',
 	})
 	@IsEnum(BoardExternalReferenceType)
-	public parentType!: BoardExternalReferenceType;
+	parentType!: BoardExternalReferenceType;
 
 	@ApiProperty({
 		description: 'The layout of the board',
@@ -37,5 +37,5 @@ export class CreateBoardBodyParams {
 	})
 	@IsEnum(BoardLayout, {})
 	@NotEquals(BoardLayout[BoardLayout.GRID])
-	public layout!: BoardLayout;
+	layout!: BoardLayout;
 }

@@ -1,5 +1,5 @@
 import { Factory } from 'fishery';
-import { ProviderConsentResponse } from '../domain/interface';
+import { type ProviderConsentResponse } from '../domain/interface';
 import { providerOauthClientFactory } from './provider-oauth-client.factory';
 import { providerOidcContextFactory } from './provider-oidc-context.factory';
 

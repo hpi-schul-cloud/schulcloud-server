@@ -1,5 +1,5 @@
 import { CustomParameterEntry } from '../../common/domain';
-import { Lti11DeepLinkContentItemParams, Lti11DeepLinkParams } from '../controller/dto';
+import { type Lti11DeepLinkContentItemParams, type Lti11DeepLinkParams } from '../controller/dto';
 import { LtiDeepLink } from '../domain';
 
 export class LtiDeepLinkRequestMapper {

@@ -1,7 +1,7 @@
-import { DeletionRequestOutput } from '../interface';
+import { type DeletionRequestOutput } from '../interface';
 
 export class DeletionRequestOutputBuilder {
-	static build(requestId: string, deletionPlannedAt: Date): DeletionRequestOutput {
+	public static build(requestId: string, deletionPlannedAt: Date): DeletionRequestOutput {
 		return {
 			requestId,
 			deletionPlannedAt,

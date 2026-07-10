@@ -1,7 +1,7 @@
 import { viewersClass } from './helper/class-definitions';
 import { LoadtestRunner } from './loadtest-runner';
 import { SocketConnectionManager } from './socket-connection-manager';
-import { Configuration } from './types';
+import { type Configuration } from './types';
 
 jest.mock('./socket-connection-manager');
 

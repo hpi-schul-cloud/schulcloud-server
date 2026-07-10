@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import {
-	CourseSynchronizationHistoryBuildParams,
+	type CourseSynchronizationHistoryBuildParams,
 	CourseSynchronizationHistoryFactory,
 } from './course-synchronization-history.factory';
 

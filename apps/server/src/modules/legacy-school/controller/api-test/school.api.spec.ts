@@ -2,16 +2,16 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
 import { systemEntityFactory } from '@modules/system/testing';
-import { HttpStatus, INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { HttpStatus, type INestApplication } from '@nestjs/common';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { SchoolSystemOptionsEntity } from '../../entity';
-import { ProvisioningOptionsInterface } from '../../interface';
+import { type ProvisioningOptionsInterface } from '../../interface';
 import { schoolSystemOptionsEntityFactory } from '../../testing';
-import { SchulConneXProvisioningOptionsResponse } from '../dto';
+import { type SchulConneXProvisioningOptionsResponse } from '../dto';
 
 const baseRouteName = '/schools';
 

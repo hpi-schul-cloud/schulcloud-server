@@ -1,4 +1,4 @@
-import { RegistrationPinEntity } from '../../entity';
+import { type RegistrationPinEntity } from '../../entity';
 import { GetRegistrationPinResponse } from '../dto';
 
 export class RegistrationPinResponseMapper {

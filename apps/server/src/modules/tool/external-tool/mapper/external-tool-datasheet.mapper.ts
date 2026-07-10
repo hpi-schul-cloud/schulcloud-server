@@ -1,5 +1,5 @@
-import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
-import { CustomParameter } from '../../common/domain';
+import { type SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
+import { type CustomParameter } from '../../common/domain';
 import { CustomParameterScope, CustomParameterType, ToolConfigType, ToolContextType } from '../../common/enum';
 import {
 	ExternalTool,

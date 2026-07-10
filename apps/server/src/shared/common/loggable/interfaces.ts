@@ -1,4 +1,4 @@
-import { ErrorLogMessage, ValidationErrorLogMessage } from '../error';
+import { type ErrorLogMessage, type ValidationErrorLogMessage } from '../error';
 
 export type LogMessageDataObject = {
 	[key: string]: LogMessageData;

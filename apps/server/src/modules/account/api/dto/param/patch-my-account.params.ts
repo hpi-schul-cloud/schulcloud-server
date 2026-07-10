@@ -11,7 +11,7 @@ export class PatchMyAccountParams {
 		required: true,
 		nullable: false,
 	})
-	public passwordOld!: string;
+	passwordOld!: string;
 
 	@PrivacyProtect()
 	@IsString()
@@ -20,7 +20,7 @@ export class PatchMyAccountParams {
 	@ApiPropertyOptional({
 		description: 'The new password for the current user.',
 	})
-	public passwordNew?: string;
+	passwordNew?: string;
 
 	@IsEmail()
 	@SanitizeHtml()
@@ -28,7 +28,7 @@ export class PatchMyAccountParams {
 	@ApiPropertyOptional({
 		description: 'The new email address for the current user.',
 	})
-	public email?: string;
+	email?: string;
 
 	@IsString()
 	@SanitizeHtml()
@@ -37,7 +37,7 @@ export class PatchMyAccountParams {
 	@ApiPropertyOptional({
 		description: 'The new first name for the current user.',
 	})
-	public firstName?: string;
+	firstName?: string;
 
 	@IsString()
 	@SanitizeHtml()
@@ -46,5 +46,5 @@ export class PatchMyAccountParams {
 	@ApiPropertyOptional({
 		description: 'The new last name for the current user.',
 	})
-	public lastName?: string;
+	lastName?: string;
 }

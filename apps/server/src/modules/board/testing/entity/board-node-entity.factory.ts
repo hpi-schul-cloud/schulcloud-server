@@ -1,5 +1,5 @@
-import { BuildOptions, DeepPartial, Factory, GeneratorFn, HookFn } from 'fishery';
-import { AnyBoardNodeProps, BoardNodeType, pathOfChildren } from '../../domain';
+import { type BuildOptions, type DeepPartial, Factory, type GeneratorFn, type HookFn } from 'fishery';
+import { type AnyBoardNodeProps, type BoardNodeType, pathOfChildren } from '../../domain';
 import { BoardNodeEntity } from '../../repo';
 
 export type PropsWithType<T extends AnyBoardNodeProps> = T & { type: BoardNodeType };

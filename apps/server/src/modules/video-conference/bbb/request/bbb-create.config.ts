@@ -19,21 +19,21 @@ export class BBBCreateConfig extends BBBBaseMeetingConfig {
 		this['meta_bbb-origin-server-name'] = config['meta_bbb-origin-server-name'];
 	}
 
-	name: string;
+	public name: string;
 
-	attendeePW?: string;
+	public attendeePW?: string;
 
-	moderatorPW?: string;
+	public moderatorPW?: string;
 
-	logoutURL?: string;
+	public logoutURL?: string;
 
-	welcome?: string;
+	public welcome?: string;
 
-	guestPolicy?: GuestPolicy;
+	public guestPolicy?: GuestPolicy;
 
-	muteOnStart?: boolean;
+	public muteOnStart?: boolean;
 
-	allowModsToUnmuteUsers?: boolean;
+	public allowModsToUnmuteUsers?: boolean;
 
-	'meta_bbb-origin-server-name'?: string;
+	public 'meta_bbb-origin-server-name'?: string;
 }

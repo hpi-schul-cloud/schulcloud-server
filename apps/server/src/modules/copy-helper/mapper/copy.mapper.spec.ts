@@ -1,11 +1,11 @@
-import { CopyFileDto } from '@infra/files-storage-amqp-client';
+import { type CopyFileDto } from '@infra/files-storage-amqp-client';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { CopyElementType, CopyStatusEnum } from '@modules/copy-helper';
-import { LessonCopyApiParams } from '@modules/learnroom/controller/dto/lesson/lesson-copy.params';
-import { LessonCopyParentParams } from '@modules/lesson';
-import { TaskCopyParentParams } from '@modules/task/api/dto';
-import { TaskCopyApiParams } from '@modules/task/api/dto/task-copy.params';
-import { Test, TestingModule } from '@nestjs/testing';
+import { type LessonCopyApiParams } from '@modules/learnroom/controller/dto/lesson/lesson-copy.params';
+import { type LessonCopyParentParams } from '@modules/lesson';
+import { type TaskCopyParentParams } from '@modules/task/api/dto';
+import { type TaskCopyApiParams } from '@modules/task/api/dto/task-copy.params';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { CopyApiResponse } from '../dto/copy.response';
 import { CopyMapper } from './copy.mapper';
 

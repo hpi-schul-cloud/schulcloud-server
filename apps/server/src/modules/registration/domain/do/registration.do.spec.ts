@@ -1,8 +1,8 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { EntityId } from '@shared/domain/types';
-import { RegistrationConfig } from '../../registration.config';
+import { type EntityId } from '@shared/domain/types';
+import { type RegistrationConfig } from '../../registration.config';
 import { registrationFactory } from '../../testing';
-import { Registration, RegistrationProps } from './registration.do';
+import { Registration, type RegistrationProps } from './registration.do';
 
 describe('Registration', () => {
 	const setup = (overwrites: Partial<RegistrationProps> = {}) => {

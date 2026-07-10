@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { MethodNotAllowedException } from '@nestjs/common';
-import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
+import { type AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { DomainObjectFactory } from './domain-object.factory';
 
 class TestClass extends DomainObject<AuthorizableObject> {}

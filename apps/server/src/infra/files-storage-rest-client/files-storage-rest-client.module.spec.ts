@@ -1,8 +1,8 @@
 import { faker } from '@faker-js/faker';
 import { createMock } from '@golevelup/ts-jest';
 import { REQUEST } from '@nestjs/core';
-import { Test, TestingModule } from '@nestjs/testing';
-import { Request } from 'express';
+import { Test, type TestingModule } from '@nestjs/testing';
+import { type Request } from 'express';
 import { FilesStorageClientAdapter } from './files-storage-client.adapter';
 import { FILES_STORAGE_REST_CLIENT_CONFIG_TOKEN, FilesStorageRestClientConfig } from './files-storage-client.config';
 import { FilesStorageRestClientModule } from './files-storage-rest-client.module';

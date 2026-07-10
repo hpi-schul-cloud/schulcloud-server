@@ -1,6 +1,6 @@
 import { externalToolFactory } from '@modules/tool/external-tool/testing';
-import { Test, TestingModule } from '@nestjs/testing';
-import { ExternalTool } from '../../external-tool/domain';
+import { Test, type TestingModule } from '@nestjs/testing';
+import { type ExternalTool } from '../../external-tool/domain';
 import { ToolContextType } from '../enum';
 import { CommonToolService } from './common-tool.service';
 

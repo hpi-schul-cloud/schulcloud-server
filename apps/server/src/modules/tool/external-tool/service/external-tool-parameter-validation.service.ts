@@ -117,7 +117,7 @@ export class ExternalToolParameterValidationService {
 		if (param.regex) {
 			try {
 				new RegExp(param.regex);
-			} catch (e) {
+			} catch {
 				return false;
 			}
 		}

@@ -1,15 +1,15 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { biloMediaQueryDataResponseFactory } from '@infra/bilo-client';
 import { MediaSourceDataFormat, mediaSourceFactory, MediaSourceService } from '@modules/media-source';
-import { Test, TestingModule } from '@nestjs/testing';
-import { MediumMetadataDto } from '../dto';
+import { Test, type TestingModule } from '@nestjs/testing';
+import { type MediumMetadataDto } from '../dto';
 import {
 	MediaSourceDataFormatNotFoundLoggableException,
 	MediaSourceNotFoundLoggableException,
 	MediumMetadataStrategyNotImplementedLoggableException,
 } from '../loggable';
 import { MediumMetadataMapper } from '../mapper';
-import { BiloStrategy, MediumMetadataStrategy, VidisStrategy } from '../strategy';
+import { BiloStrategy, type MediumMetadataStrategy, VidisStrategy } from '../strategy';
 import { mediumMetadataDtoFactory } from '../testing';
 import { MediumMetadataService } from './medium-metadata.service';
 

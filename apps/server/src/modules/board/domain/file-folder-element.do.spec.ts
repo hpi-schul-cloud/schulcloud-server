@@ -1,5 +1,5 @@
 import { fileFolderElementFactory } from '../testing';
-import { FileFolderElement, isFileFolderElement } from './file-folder-element.do';
+import { type FileFolderElement, isFileFolderElement } from './file-folder-element.do';
 
 describe('FileFolderElement', () => {
 	let folderElement: FileFolderElement;

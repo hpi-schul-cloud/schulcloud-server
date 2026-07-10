@@ -1,7 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { LogMessage } from '@shared/common/loggable';
+import { type LogMessage } from '@shared/common/loggable';
 import { userLoginMigrationDOFactory } from '../../../testing';
-import { UserLoginMigrationDO } from '../../do';
+import { type UserLoginMigrationDO } from '../../do';
 import { UserMigrationCorrectionSuccessfulLoggable } from './user-migration-correction-successful-loggable';
 
 describe(UserMigrationCorrectionSuccessfulLoggable.name, () => {

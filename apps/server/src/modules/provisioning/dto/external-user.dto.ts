@@ -1,21 +1,21 @@
-import { RoleName } from '@modules/role';
+import { type RoleName } from '@modules/role';
 
 export class ExternalUserDto {
-	public externalId: string;
+	externalId: string;
 
-	public erwinId?: string;
+	erwinId?: string;
 
-	public firstName?: string;
+	firstName?: string;
 
-	public preferredName?: string;
+	preferredName?: string;
 
-	public lastName?: string;
+	lastName?: string;
 
-	public email?: string;
+	email?: string;
 
-	public roles: RoleName[];
+	roles: RoleName[];
 
-	public birthday?: Date;
+	birthday?: Date;
 
 	constructor(props: ExternalUserDto) {
 		this.externalId = props.externalId;

@@ -1,7 +1,7 @@
 /* istanbul ignore file */
 import { ObjectId } from '@mikro-orm/mongodb';
-import { BoardNodeType, CardProps, Colors, ROOT_PATH } from '../../domain';
-import { BoardNodeEntityFactory, PropsWithType } from './board-node-entity.factory';
+import { BoardNodeType, type CardProps, Colors, ROOT_PATH } from '../../domain';
+import { BoardNodeEntityFactory, type PropsWithType } from './board-node-entity.factory';
 
 export const cardEntityFactory = BoardNodeEntityFactory.define<PropsWithType<CardProps>>(({ sequence }) => {
 	const props: PropsWithType<CardProps> = {

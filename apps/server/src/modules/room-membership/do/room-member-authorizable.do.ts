@@ -1,7 +1,7 @@
-import { AuthorizableObject } from '@shared/domain/domain-object';
-import { EntityId } from '@shared/domain/types';
-import { RoomAuthorizable } from './room-authorizable.do';
-import { RoomMember } from './room-member.do';
+import { type AuthorizableObject } from '@shared/domain/domain-object';
+import { type EntityId } from '@shared/domain/types';
+import { type RoomAuthorizable } from './room-authorizable.do';
+import { type RoomMember } from './room-member.do';
 
 export class RoomMemberAuthorizable implements AuthorizableObject {
 	public readonly id: EntityId = '';

@@ -1,11 +1,11 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { DoBaseFactory } from '@testing/factory/domainobject';
-import { DeepPartial } from 'fishery';
+import { type DeepPartial } from 'fishery';
 import { ClassSourceOptions } from '../../class-source-options.do';
-import { Class, ClassProps } from '../../class.do';
+import { Class, type ClassProps } from '../../class.do';
 
 class ClassFactory extends DoBaseFactory<Class, ClassProps> {
-	withUserIds(userIds: string[]): this {
+	public withUserIds(userIds: string[]): this {
 		const params: DeepPartial<ClassProps> = {
 			userIds,
 		};

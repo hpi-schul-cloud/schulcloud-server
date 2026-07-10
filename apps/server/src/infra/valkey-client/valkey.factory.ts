@@ -1,12 +1,12 @@
-import { DomainErrorHandler } from '@infra/error';
-import { Logger } from '@infra/logger';
+import { type DomainErrorHandler } from '@infra/error';
+import { type Logger } from '@infra/logger';
 import Valkey from 'iovalkey';
 import * as dns from 'node:dns';
 import * as util from 'node:util';
 import { InMemoryClient, ValkeyClient } from './clients';
 import { ConnectedLoggable, DiscoveredSentinalHostsLoggable } from './loggable';
-import { SentinalHost, StorageClient } from './types';
-import { ValkeyConfig, ValkeyMode } from './valkey.config';
+import { type SentinalHost, type StorageClient } from './types';
+import { type ValkeyConfig, ValkeyMode } from './valkey.config';
 
 export class ValkeyFactory {
 	public static async build(

@@ -1,4 +1,4 @@
-import { INestApplication } from '@nestjs/common';
+import { type INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { TestApiClient } from '@testing/test-api-client';
 import { MetricsModule } from '../metrics.module';

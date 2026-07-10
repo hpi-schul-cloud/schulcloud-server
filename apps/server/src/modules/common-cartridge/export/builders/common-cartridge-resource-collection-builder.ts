@@ -1,5 +1,5 @@
-import { CommonCartridgeResource } from '../interfaces';
-import { CommonCartridgeResourceNode } from './common-cartridge-resource-node';
+import { type CommonCartridgeResource } from '../interfaces';
+import { type CommonCartridgeResourceNode } from './common-cartridge-resource-node';
 
 export class CommonCartridgeResourceCollectionBuilder {
 	private readonly resourceNodes: CommonCartridgeResourceNode[] = [];

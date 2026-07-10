@@ -1,7 +1,7 @@
-import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
-import { EntityId } from '@shared/domain/types';
-import { CourseFeatures } from '../repo';
-import { CourseSyncAttribute } from './interface';
+import { type AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
+import { type EntityId } from '@shared/domain/types';
+import { type CourseFeatures } from '../repo';
+import { type CourseSyncAttribute } from './interface';
 
 export interface CourseProps extends AuthorizableObject {
 	name: string;

@@ -1,9 +1,9 @@
-import { EntityId } from '@shared/domain/types';
-import { DeletionTargetRef } from '../../../../domain/interface';
-import { DomainName } from '../../../../domain/types';
+import { type EntityId } from '@shared/domain/types';
+import { type DeletionTargetRef } from '../../../../domain/interface';
+import { type DomainName } from '../../../../domain/types';
 
 export class DeletionTargetRefBuilder {
-	static build(domain: DomainName, id: EntityId): DeletionTargetRef {
+	public static build(domain: DomainName, id: EntityId): DeletionTargetRef {
 		const deletionTargetRef = { domain, id };
 
 		return deletionTargetRef;

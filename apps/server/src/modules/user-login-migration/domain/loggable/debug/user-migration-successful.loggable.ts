@@ -1,6 +1,6 @@
-import { Loggable, LoggableMessage } from '@shared/common/loggable';
-import { EntityId } from '@shared/domain/types';
-import { UserLoginMigrationDO } from '../../do';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
+import { type EntityId } from '@shared/domain/types';
+import { type UserLoginMigrationDO } from '../../do';
 
 export class UserMigrationSuccessfulLoggable implements Loggable {
 	constructor(
@@ -8,7 +8,7 @@ export class UserMigrationSuccessfulLoggable implements Loggable {
 		private readonly userLoginMigration: UserLoginMigrationDO
 	) {}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			message: 'A user has successfully migrated.',
 			data: {

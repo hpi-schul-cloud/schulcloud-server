@@ -1,5 +1,5 @@
 import type { ImportUserRoleName } from '../../entity';
-import { ImportUserMatchCreatorScope } from './import-user-match-creator-scope.enum';
+import { type ImportUserMatchCreatorScope } from './import-user-match-creator-scope.enum';
 
 export interface ImportUserFilter {
 	firstName?: string;

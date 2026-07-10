@@ -1,5 +1,5 @@
-import { EntityId } from '../../domain/types';
-import { Loggable, LoggableMessage } from './interfaces';
+import { type EntityId } from '../../domain/types';
+import { type Loggable, type LoggableMessage } from './interfaces';
 
 export class ReferencedEntityNotFoundLoggable implements Loggable {
 	constructor(
@@ -9,7 +9,7 @@ export class ReferencedEntityNotFoundLoggable implements Loggable {
 		private readonly referencedEntityId: EntityId
 	) {}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			message: 'The requested entity could not been found, but it is still referenced.',
 			data: {
