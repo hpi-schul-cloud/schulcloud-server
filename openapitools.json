@@ -182,6 +182,22 @@
 					"withInterfaces": true,
 					"withSeparateModelsAndApi": true
 				}
+			},
+			"etherpad": {
+				"generatorName": "typescript-axios",
+				"inputSpec": "http://localhost:9001/api/openapi.json",
+				"output": "./apps/server/src/infra/etherpad-client/generated",
+				"skipValidateSpec": true,
+				"enablePostProcessFile": true,
+				"additionalProperties": {
+					"apiPackage": "api",
+					"enumNameSuffix": "",
+					"enumPropertyNaming": "UPPERCASE",
+					"modelPackage": "models",
+					"supportsES6": true,
+					"withInterfaces": true,
+					"withSeparateModelsAndApi": true
+				}
 			}
 		}
 	}
