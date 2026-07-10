@@ -9,11 +9,27 @@ import { MongoDatabaseModuleOptions } from './types';
 
 const dbName = (): string => _.times(20, () => _.random(35).toString(36)).join('');
 
-const dedupeByEntityName = <T extends { name: string }>(entities: T[]): T[] => {
+const getEntityName = (entity: unknown): string => {
+	if (typeof entity === 'string') {
+		return entity;
+	}
+
+	if (typeof entity === 'function') {
+		return entity.name;
+	}
+
+	if (entity && typeof entity === 'object' && 'name' in entity) {
+		return String((entity as { name: unknown }).name);
+	}
+
+	return String(entity);
+};
+
+const dedupeByEntityName = <T>(entities: T[]): T[] => {
 	const uniqueByName = new Map<string, T>();
 
 	for (const entity of entities) {
-		uniqueByName.set(entity.name, entity);
+		uniqueByName.set(getEntityName(entity), entity);
 	}
 
 	return [...uniqueByName.values()];

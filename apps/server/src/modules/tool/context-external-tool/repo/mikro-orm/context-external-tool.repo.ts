@@ -39,7 +39,7 @@ export class ContextExternalToolRepo {
 		let entity: ContextExternalToolEntity;
 
 		if (existing) {
-			entity = this.em.assign(existing, entityProps);
+			entity = this.em.assign(existing, entityProps as never);
 		} else {
 			entity = new ContextExternalToolEntity(entityProps);
 			this.em.persist(entity);

@@ -140,3 +140,53 @@ Medium-trial interpretation:
 - This larger green/green trial confirms functional comparability on a broader scope than the 7-spec subset.
 - Runtime on this medium subset is still slower on current SWC (about `+13.5 s` by Jest time).
 - Combined decision signal remains: move forward with SWC Phase 1 for correctness/stability, while opening explicit performance follow-up tasks.
+
+## Clean Build Benchmark (10x, `nest:prebuild` + `build`)
+
+Method:
+
+- Each run used `npm run nest:prebuild && npm run build`.
+- Iterations per side: `10`.
+- Environment on both sides: Node `24.15.0`, npm `11.12.1`.
+
+Current branch runs:
+
+- Run 1: `11.68 s`
+- Run 2: `11.35 s`
+- Run 3: `10.77 s`
+- Run 4: `10.92 s`
+- Run 5: `11.02 s`
+- Run 6: `10.85 s`
+- Run 7: `10.78 s`
+- Run 8: `10.61 s`
+- Run 9: `10.85 s`
+- Run 10: `10.80 s`
+- Median: `10.85 s`
+- Average: `10.963 s`
+
+Main branch runs:
+
+- Run 1: `11.53 s`
+- Run 2: `11.57 s`
+- Run 3: `12.13 s`
+- Run 4: `12.00 s`
+- Run 5: `11.02 s`
+- Run 6: `11.08 s`
+- Run 7: `11.13 s`
+- Run 8: `10.47 s`
+- Run 9: `10.45 s`
+- Run 10: `10.26 s`
+- Median: `11.11 s`
+- Average: `11.164 s`
+
+Build delta (median):
+
+- Current branch: `10.85 s`
+- Main branch: `11.11 s`
+- Absolute delta: `-0.26 s`
+- Relative delta: about `2.3%` faster on the current branch
+
+Interpretation:
+
+- Clean build timing is effectively at parity, with the current branch slightly ahead on median.
+- The difference is small relative to run-to-run spread, so it does not support a large build regression claim.
