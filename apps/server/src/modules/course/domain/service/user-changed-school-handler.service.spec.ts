@@ -1,13 +1,13 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import { MikroORM } from '@mikro-orm/core';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { Test, type TestingModule } from '@nestjs/testing';
+import { setupEntities } from '@testing/database';
 import { UserChangedSchoolEvent } from '../../../user/domain/events/user-changed-school.event';
+import { userFactory } from '../../../user/testing';
+import { CourseEntity, CourseGroupEntity } from '../../repo';
 import { CourseRepo } from '../../repo/course.repo';
 import { UserChangedSchoolHandlerService } from './user-changed-school-handler.service';
-import { userFactory } from '../../../user/testing';
-import { MikroORM } from '@mikro-orm/core';
-import { setupEntities } from '@testing/database';
-import { CourseEntity } from '../../repo';
-import { schoolEntityFactory } from '@modules/school/testing';
 
 describe(UserChangedSchoolHandlerService.name, () => {
 	let module: TestingModule;
@@ -24,7 +24,7 @@ describe(UserChangedSchoolHandlerService.name, () => {
 				},
 				{
 					provide: MikroORM,
-					useValue: await setupEntities([CourseEntity]),
+					useValue: await setupEntities([CourseEntity, CourseGroupEntity]),
 				},
 			],
 		}).compile();

@@ -1,7 +1,7 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { CourseService } from '@modules/course';
-import { CourseEntity } from '@modules/course/repo';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { type RoleDto, RoleName } from '@modules/role';
 import { RoomAuthorizable, RoomMembershipService, type UserWithRoomRoles } from '@modules/room-membership';
@@ -55,7 +55,7 @@ describe('ShareTokenPermissionService', () => {
 		schoolService = module.get(SchoolService);
 		config = module.get<SharingPublicApiConfig>(SHARING_PUBLIC_API_CONFIG_TOKEN);
 
-		await setupEntities([User, CourseEntity, SchoolEntity]);
+		await setupEntities([User, CourseEntity, CourseGroupEntity, SchoolEntity]);
 	});
 
 	afterEach(() => {
