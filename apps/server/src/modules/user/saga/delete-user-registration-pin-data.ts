@@ -12,9 +12,9 @@ import {
 	StepStatus,
 	UserDeletionStepOperationLoggable,
 } from '@modules/saga';
-import { UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
+import { UserService } from '../domain/service/user.service';
 
 @Injectable()
 export class DeleteUserRegistrationPinDataStep extends SagaStep<'deleteUserData'> {

@@ -1,4 +1,4 @@
-import { System, SystemService } from '@modules/system';
+import { System, SystemService } from '@modules/system/domain';
 import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { TypeGuard } from '@shared/common/guards';
 import { IFindOptions } from '@shared/domain/interface/find-options';

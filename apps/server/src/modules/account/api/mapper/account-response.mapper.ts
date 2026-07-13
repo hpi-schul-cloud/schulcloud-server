@@ -1,5 +1,6 @@
 import { AccountResponse, AccountSearchListResponse } from '../dto';
-import { type ResolvedAccountDto, type ResolvedSearchListAccountDto } from '../dto/resolved-account.dto';
+import { type ResolvedAccountDto } from '../dto/resolved-account.dto';
+import { type ResolvedSearchListAccountDto } from '../dto/resolved-search-list-account.dto';
 
 export class AccountResponseMapper {
 	public static mapToAccountResponse(resolvedAccount: ResolvedAccountDto): AccountResponse {

@@ -8,7 +8,7 @@ import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { InputFormat } from '@shared/domain/types/input-format.types';
 import { ITask, TaskStatus } from '../domain';
-import { Submission } from './submission.entity';
+import type { Submission } from './submission.entity';
 
 export class TaskWithStatusVo {
 	task!: Task;
@@ -92,7 +92,7 @@ export class Task extends BaseEntityWithTimestamps {
 	@ManyToOne(() => LessonEntity, { fieldName: 'lessonId', nullable: true })
 	lesson?: LessonEntity; // In database exist also null, but it can not set.
 
-	@OneToMany(() => Submission, 'task')
+	@OneToMany('Submission', 'task')
 	submissions = new Collection<Submission>(this);
 
 	@Index()

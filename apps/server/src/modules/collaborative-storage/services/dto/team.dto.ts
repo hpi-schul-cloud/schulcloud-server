@@ -1,4 +1,5 @@
 import { type EntityId } from '@shared/domain/types';
+import { TeamUserDto } from './team-user.dto';
 
 /**
  * TODO
@@ -16,19 +17,5 @@ export class TeamDto {
 		this.id = props.id;
 		this.name = props.name;
 		this.teamUsers = props.teamUsers;
-	}
-}
-
-export class TeamUserDto {
-	userId: string;
-
-	roleId: string;
-
-	schoolId: string;
-
-	constructor(props: TeamUserDto) {
-		this.userId = props.userId;
-		this.roleId = props.roleId;
-		this.schoolId = props.schoolId;
 	}
 }

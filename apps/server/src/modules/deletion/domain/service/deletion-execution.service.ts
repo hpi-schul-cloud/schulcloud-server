@@ -5,7 +5,8 @@ import { DeletionRequest } from '../do';
 import { DomainDeletionReport, DomainOperationReport } from '../interface';
 import { DeletionErrorLoggableException } from '../loggable-exception';
 import { DomainName, OperationType } from '../types';
-import { DeletionLogEntry, DeletionLogService, DeletionRequestService } from './';
+import { DeletionLogEntry, DeletionLogService } from './deletion-log.service';
+import { DeletionRequestService } from './deletion-request.service';
 
 @Injectable()
 export class DeletionExecutionService {

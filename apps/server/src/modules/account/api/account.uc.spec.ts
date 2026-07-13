@@ -20,7 +20,8 @@ import { AccountEntity, AccountEntityToDoMapper } from '../repo';
 import { accountFactory } from '../testing';
 import { AccountUc } from './account.uc';
 import { type AccountSearchDto, AccountSearchType, type UpdateAccountDto } from './dto';
-import { ResolvedAccountDto, ResolvedSearchListAccountDto } from './dto/resolved-account.dto';
+import { ResolvedAccountDto } from './dto/resolved-account.dto';
+import { ResolvedSearchListAccountDto } from './dto/resolved-search-list-account.dto';
 
 describe('AccountUc', () => {
 	let module: TestingModule;

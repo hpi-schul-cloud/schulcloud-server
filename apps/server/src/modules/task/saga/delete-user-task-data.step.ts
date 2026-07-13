@@ -13,7 +13,7 @@ import {
 } from '@modules/saga';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { TaskService } from '..';
+import { TaskService } from '../domain/service/task.service';
 import { Task, TaskRepo } from '../repo';
 
 @Injectable()

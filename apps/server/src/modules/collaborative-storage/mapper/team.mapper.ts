@@ -1,6 +1,7 @@
 import { TeamEntity, TeamUserEntity } from '@modules/team/repo';
 import { Injectable } from '@nestjs/common';
-import { TeamDto, TeamUserDto } from '../services/dto/team.dto';
+import { TeamUserDto } from '../services/dto/team-user.dto';
+import { TeamDto } from '../services/dto/team.dto';
 
 @Injectable()
 export class TeamMapper {

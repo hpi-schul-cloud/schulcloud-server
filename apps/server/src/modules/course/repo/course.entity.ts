@@ -1,15 +1,15 @@
 import { Collection, Entity, Enum, Index, ManyToMany, ManyToOne, OneToMany, Property, Unique } from '@mikro-orm/core';
 import { ClassEntity } from '@modules/class/entity/class.entity';
 import { GroupEntity } from '@modules/group/entity/group.entity';
-import { LessonParent } from '@modules/lesson/repo';
+import type { LessonParent } from '@modules/lesson/repo';
 import { SchoolEntity } from '@modules/school/repo';
-import { TaskParent } from '@modules/task/repo';
+import type { TaskParent } from '@modules/task/repo';
 import { User } from '@modules/user/repo';
 import { InternalServerErrorException } from '@nestjs/common/exceptions/internal-server-error.exception';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { CourseSyncAttribute } from '../domain';
-import { CourseGroupEntity } from './coursegroup.entity'; // https://github.com/mikro-orm/mikro-orm/discussions/4089
+import type { CourseGroupEntity } from './coursegroup.entity'; // https://github.com/mikro-orm/mikro-orm/discussions/4089
 
 export enum CourseType {
 	'Course' = 'course',
@@ -92,7 +92,7 @@ export class CourseEntity extends BaseEntityWithTimestamps implements TaskParent
 	@ManyToMany('User', undefined, { fieldName: 'substitutionIds' })
 	substitutionTeachers = new Collection<User>(this);
 
-	@OneToMany(() => CourseGroupEntity, 'course', { orphanRemoval: true })
+	@OneToMany('CourseGroupEntity', 'course', { orphanRemoval: true })
 	courseGroups = new Collection<CourseGroupEntity>(this);
 
 	// TODO: string color format

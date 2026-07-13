@@ -1,5 +1,5 @@
 import { type Role } from '../repo';
-import { RoleDto } from '../service';
+import { RoleDto } from '../service/dto';
 
 export class RoleMapper {
 	public static mapFromEntityToDto(entity: Role): RoleDto {

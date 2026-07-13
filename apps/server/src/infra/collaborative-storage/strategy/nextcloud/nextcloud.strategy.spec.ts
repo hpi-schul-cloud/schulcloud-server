@@ -1,6 +1,7 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { LegacyLogger } from '@infra/logger';
-import { type TeamDto, type TeamUserDto } from '@modules/collaborative-storage/services/dto/team.dto';
+import { type TeamUserDto } from '@modules/collaborative-storage/services/dto/team-user.dto';
+import { type TeamDto } from '@modules/collaborative-storage/services/dto/team.dto';
 import { PseudonymService } from '@modules/pseudonym';
 import { type Pseudonym } from '@modules/pseudonym/repo';
 import { pseudonymFactory } from '@modules/pseudonym/testing';

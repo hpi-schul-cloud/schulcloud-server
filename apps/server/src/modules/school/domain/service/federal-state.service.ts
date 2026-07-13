@@ -1,5 +1,7 @@
-import { FederalStateRepo, FederalStateEntity, FederalStateEntityMapper } from '@modules/school/repo';
 import { Injectable } from '@nestjs/common';
+import { FederalStateEntity } from '../../repo/federal-state.entity';
+import { FederalStateRepo } from '../../repo/federal-state.repo';
+import { FederalStateEntityMapper } from '../../repo/mapper/federal-state.entity.mapper';
 import { FederalState } from '../do';
 
 @Injectable()
