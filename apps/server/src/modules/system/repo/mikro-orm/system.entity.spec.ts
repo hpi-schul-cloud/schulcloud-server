@@ -1,10 +1,11 @@
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo/user-login-migration.entity';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { setupEntities } from '@testing/database';
 import { SystemEntity } from './system.entity';
 
 describe('System Entity', () => {
 	beforeAll(async () => {
-		await setupEntities([SystemEntity]);
+		await setupEntities([SystemEntity, UserLoginMigrationEntity]);
 	});
 
 	describe('constructor', () => {

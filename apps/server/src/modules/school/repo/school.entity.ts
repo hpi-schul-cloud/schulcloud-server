@@ -11,7 +11,7 @@ import {
 	OneToOne,
 	Property,
 } from '@mikro-orm/core';
-import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity/school-system-options.entity';
+import type { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity/school-system-options.entity';
 import { SystemEntity } from '@modules/system/repo/mikro-orm/system.entity';
 import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo/user-login-migration.entity';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
@@ -135,7 +135,7 @@ export class SchoolEntity extends BaseEntityWithTimestamps {
 	@Property({ nullable: true })
 	timezone?: string;
 
-	@OneToMany(() => SchoolSystemOptionsEntity, (options) => options.school, { cascade: [Cascade.REMOVE] })
+	@OneToMany({ entity: 'SchoolSystemOptionsEntity', mappedBy: 'school', cascade: [Cascade.REMOVE] })
 	schoolSystemOptions = new Collection<SchoolSystemOptionsEntity>(this);
 
 	constructor(props: SchoolProperties) {

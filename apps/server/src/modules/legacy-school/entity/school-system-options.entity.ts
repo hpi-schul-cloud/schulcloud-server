@@ -1,6 +1,6 @@
 import { Embedded, Entity, ManyToOne, Unique } from '@mikro-orm/core';
-import type { SchoolEntity } from '@modules/school/repo';
-import type { SystemEntity } from '@modules/system/repo';
+import { SchoolEntity } from '@modules/school/repo/school.entity';
+import type { SystemEntity } from '@modules/system/repo/mikro-orm/system.entity';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { EntityId } from '@shared/domain/types';
 import { ProvisioningOptionsInterface } from '../interface';
@@ -19,7 +19,7 @@ export interface SchoolSystemOptionsEntityProps {
 @Entity({ tableName: 'school-system-options' })
 @Unique({ properties: ['school', 'system'] })
 export class SchoolSystemOptionsEntity extends BaseEntityWithTimestamps {
-	@ManyToOne('SchoolEntity')
+	@ManyToOne(() => SchoolEntity)
 	school: SchoolEntity;
 
 	@ManyToOne('SystemEntity')
