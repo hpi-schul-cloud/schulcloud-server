@@ -11,9 +11,9 @@ import {
 	OneToOne,
 	Property,
 } from '@mikro-orm/core';
-import type { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
-import type { SystemEntity } from '@modules/system/repo';
-import type { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity/school-system-options.entity';
+import { SystemEntity } from '@modules/system/repo/mikro-orm/system.entity';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo/user-login-migration.entity';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { LanguageType } from '@shared/domain/interface';
 import { FileStorageType, SchoolFeature, SchoolPurpose } from '../domain';
@@ -85,7 +85,7 @@ export class SchoolEntity extends BaseEntityWithTimestamps {
 	@Property({ nullable: true })
 	officialSchoolNumber?: string;
 
-	@ManyToMany('SystemEntity')
+	@ManyToMany(() => SystemEntity)
 	systems = new Collection<SystemEntity>(this);
 
 	@Embedded(() => SchoolRoles, { object: true, nullable: true, prefix: false })
@@ -94,7 +94,14 @@ export class SchoolEntity extends BaseEntityWithTimestamps {
 	@ManyToOne(() => SchoolYearEntity, { nullable: true })
 	currentYear?: SchoolYearEntity;
 
-	@OneToOne({ entity: 'UserLoginMigrationEntity', mappedBy: 'school', orphanRemoval: true, eager: true })
+	@OneToOne(
+		() => UserLoginMigrationEntity,
+		(userLoginMigration: UserLoginMigrationEntity) => userLoginMigration.school,
+		{
+			orphanRemoval: true,
+			eager: true,
+		}
+	)
 	userLoginMigration?: UserLoginMigrationEntity;
 
 	@Index()
@@ -128,7 +135,7 @@ export class SchoolEntity extends BaseEntityWithTimestamps {
 	@Property({ nullable: true })
 	timezone?: string;
 
-	@OneToMany({ entity: 'SchoolSystemOptionsEntity', mappedBy: 'school', cascade: [Cascade.REMOVE] })
+	@OneToMany(() => SchoolSystemOptionsEntity, (options) => options.school, { cascade: [Cascade.REMOVE] })
 	schoolSystemOptions = new Collection<SchoolSystemOptionsEntity>(this);
 
 	constructor(props: SchoolProperties) {

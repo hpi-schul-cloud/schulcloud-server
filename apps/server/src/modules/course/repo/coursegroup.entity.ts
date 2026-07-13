@@ -5,7 +5,7 @@ import type { TaskParent } from '@modules/task/repo';
 import { User } from '@modules/user/repo';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import type { CourseEntity } from './course.entity'; // https://github.com/mikro-orm/mikro-orm/discussions/4089
+import { CourseEntity } from './course.entity'; // https://github.com/mikro-orm/mikro-orm/discussions/4089
 
 export interface CourseGroupProperties {
 	name: string;
@@ -24,7 +24,7 @@ export class CourseGroupEntity extends BaseEntityWithTimestamps implements TaskP
 	students = new Collection<User>(this);
 
 	@Index()
-	@ManyToOne('CourseEntity', { fieldName: 'courseId' })
+	@ManyToOne(() => CourseEntity, { fieldName: 'courseId' })
 	course: CourseEntity;
 
 	@ManyToOne(() => SchoolEntity, { fieldName: 'schoolId' })
