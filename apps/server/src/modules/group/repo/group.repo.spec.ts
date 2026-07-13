@@ -481,6 +481,22 @@ describe(GroupRepo.name, () => {
 				expect(result.data).toHaveLength(0);
 			});
 		});
+
+		describe('when pagination options are provided', () => {
+			it('should return only the requested page but report the full total', async () => {
+				const { role, school } = await setup();
+				await addGroup(school, role, 1, 0);
+				await addGroup(school, role, 1, 0);
+				await addGroup(school, role, 1, 0);
+
+				const result: Page<Group> = await repo.findByUsersAndRoomsSchoolId(school.id, [GroupTypes.ROOM], {
+					pagination: { skip: 1, limit: 1 },
+				});
+
+				expect(result.total).toEqual(3);
+				expect(result.data).toHaveLength(1);
+			});
+		});
 	});
 
 	describe('findGroupsForScope', () => {
