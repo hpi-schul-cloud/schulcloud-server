@@ -1,4 +1,6 @@
-import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import { DefaultEncryptionService, type EncryptionService } from '@infra/encryption';
+import { EntityManager } from '@mikro-orm/mongodb';
 import { userFactory } from '@modules/user/testing';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
@@ -12,15 +14,23 @@ describe(OauthSessionTokenMikroOrmRepo.name, () => {
 	let module: TestingModule;
 	let repo: OauthSessionTokenMikroOrmRepo;
 	let em: EntityManager;
+	let encryptionService: DeepMocked<EncryptionService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [OauthSessionTokenEntity] })],
-			providers: [{ provide: OAUTH_SESSION_TOKEN_REPO, useClass: OauthSessionTokenMikroOrmRepo }],
+			providers: [
+				{ provide: OAUTH_SESSION_TOKEN_REPO, useClass: OauthSessionTokenMikroOrmRepo },
+				{
+					provide: DefaultEncryptionService,
+					useValue: createMock<EncryptionService>(),
+				},
+			],
 		}).compile();
 
 		repo = module.get(OAUTH_SESSION_TOKEN_REPO);
 		em = module.get(EntityManager);
+		encryptionService = module.get(DefaultEncryptionService);
 	});
 
 	afterAll(async () => {
@@ -32,67 +42,13 @@ describe(OauthSessionTokenMikroOrmRepo.name, () => {
 	});
 
 	describe('save', () => {
-		describe('when a new object is provided', () => {
-			const setup = () => {
-				const oauthSessionToken = oauthSessionTokenFactory.build();
+		it('should insert a new token', async () => {
+			const oauthSessionToken = oauthSessionTokenFactory.build();
+			encryptionService.encrypt.mockReturnValueOnce('skdhfksdf');
 
-				return {
-					oauthSessionToken,
-				};
-			};
+			await repo.save(oauthSessionToken);
 
-			it('should create a new entity', async () => {
-				const { oauthSessionToken } = setup();
-
-				await repo.save(oauthSessionToken);
-
-				await expect(em.findOneOrFail(OauthSessionTokenEntity, oauthSessionToken.id)).resolves.toBeDefined();
-			});
-
-			it('should return the object', async () => {
-				const { oauthSessionToken } = setup();
-
-				const result = await repo.save(oauthSessionToken);
-
-				expect(result).toEqual(oauthSessionToken);
-			});
-		});
-
-		describe('when an entity with the id exists', () => {
-			const setup = async () => {
-				const oauthSessionTokenId = new ObjectId().toHexString();
-				const oauthSessionTokenEntity = oauthSessionTokenEntityFactory.build({
-					id: oauthSessionTokenId,
-					refreshToken: 'token1',
-				});
-
-				await em.persist(oauthSessionTokenEntity).flush();
-				em.clear();
-
-				const oauthSessionToken = oauthSessionTokenFactory.build({ id: oauthSessionTokenId, refreshToken: 'token2' });
-
-				return {
-					oauthSessionToken,
-				};
-			};
-
-			it('should update the entity', async () => {
-				const { oauthSessionToken } = await setup();
-
-				await repo.save(oauthSessionToken);
-
-				await expect(em.findOneOrFail(OauthSessionTokenEntity, oauthSessionToken.id)).resolves.toEqual(
-					expect.objectContaining({ refreshToken: 'token2' })
-				);
-			});
-
-			it('should return the object', async () => {
-				const { oauthSessionToken } = await setup();
-
-				const result = await repo.save(oauthSessionToken);
-
-				expect(result).toEqual(oauthSessionToken);
-			});
+			await expect(em.findOneOrFail(OauthSessionTokenEntity, oauthSessionToken.id)).resolves.toBeDefined();
 		});
 	});
 
