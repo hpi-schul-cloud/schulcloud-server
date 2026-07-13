@@ -1,4 +1,4 @@
-import { PushDeletionRequestsOptions } from '../interface';
+import { type PushDeletionRequestsOptions } from '../interface';
 import { PushDeleteRequestsOptionsBuilder } from './push-delete-requests-options.builder';
 
 describe(PushDeleteRequestsOptionsBuilder.name, () => {

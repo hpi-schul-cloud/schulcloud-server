@@ -15,7 +15,7 @@ export class SystemUc {
 		private readonly eventBus: EventBus
 	) {}
 
-	async find(types?: SystemType[]): Promise<System[]> {
+	public async find(types?: SystemType[]): Promise<System[]> {
 		let systems: System[] = await this.systemService.find({ types });
 
 		systems = systems.filter((system: System) => system.ldapConfig?.active !== false);
@@ -23,7 +23,7 @@ export class SystemUc {
 		return systems;
 	}
 
-	async findById(systemId: EntityId): Promise<System> {
+	public async findById(systemId: EntityId): Promise<System> {
 		const system: System | null = await this.systemService.findById(systemId);
 
 		if (!system || system.ldapConfig?.active === false) {
@@ -33,7 +33,7 @@ export class SystemUc {
 		return system;
 	}
 
-	async delete(userId: EntityId, schoolId: EntityId, systemId: EntityId): Promise<void> {
+	public async delete(userId: EntityId, schoolId: EntityId, systemId: EntityId): Promise<void> {
 		const system: System | null = await this.systemService.findById(systemId);
 
 		if (!system) {

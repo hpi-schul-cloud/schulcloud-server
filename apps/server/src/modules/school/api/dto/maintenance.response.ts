@@ -4,16 +4,16 @@ import { SchoolYearResponse } from './school-year.response';
 
 export class MaintenanceResponse {
 	@ApiProperty()
-	public schoolUsesLdap: boolean;
+	schoolUsesLdap: boolean;
 
 	@ApiProperty()
-	public maintenance: MaintenanceStatusResponse;
+	maintenance: MaintenanceStatusResponse;
 
 	@ApiProperty()
-	public currentYear: SchoolYearResponse;
+	currentYear: SchoolYearResponse;
 
 	@ApiProperty()
-	public nextYear: SchoolYearResponse;
+	nextYear: SchoolYearResponse;
 
 	constructor(props: MaintenanceResponse) {
 		this.schoolUsesLdap = props.schoolUsesLdap;

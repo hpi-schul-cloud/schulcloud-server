@@ -8,5 +8,5 @@ export class AddRoomMembersBodyParams {
 	})
 	@IsArray()
 	@IsMongoId({ each: true })
-	public userIds!: string[];
+	userIds!: string[];
 }

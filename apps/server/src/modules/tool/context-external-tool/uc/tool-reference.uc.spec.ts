@@ -1,13 +1,13 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { ForbiddenException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { ToolContextType } from '../../common/enum';
 import { ToolPermissionHelper } from '../../common/uc/tool-permission-helper';
-import { ExternalTool } from '../../external-tool/domain';
+import { type ExternalTool } from '../../external-tool/domain';
 import { externalToolFactory, toolConfigurationStatusFactory } from '../../external-tool/testing';
-import { ContextExternalTool, ToolReference } from '../domain';
+import { type ContextExternalTool, ToolReference } from '../domain';
 import { ContextExternalToolService, ToolReferenceService } from '../service';
 import { contextExternalToolFactory } from '../testing';
 import { ToolReferenceUc } from './tool-reference.uc';

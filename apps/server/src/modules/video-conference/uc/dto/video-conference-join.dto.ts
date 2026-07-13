@@ -1,5 +1,5 @@
-import { Permission } from '@shared/domain/interface';
-import { VideoConferenceState } from './video-conference-state.enum';
+import { type Permission } from '@shared/domain/interface';
+import { type VideoConferenceState } from './video-conference-state.enum';
 
 export class VideoConferenceJoin {
 	state: VideoConferenceState;

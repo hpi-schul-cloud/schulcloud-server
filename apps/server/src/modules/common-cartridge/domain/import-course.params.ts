@@ -1,4 +1,4 @@
-import { EntityId } from '@shared/domain/types';
+import { type EntityId } from '@shared/domain/types';
 
 export interface ImportCourseParams {
 	fileRecordId: EntityId;

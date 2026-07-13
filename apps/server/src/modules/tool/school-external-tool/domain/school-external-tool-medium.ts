@@ -1,5 +1,5 @@
-import { MediaSourceLicenseType } from '@modules/media-source';
-import { ExternalToolMediumStatus } from '../../external-tool/enum';
+import { type MediaSourceLicenseType } from '@modules/media-source';
+import { type ExternalToolMediumStatus } from '../../external-tool/enum';
 
 export class SchoolExternalToolMedium {
 	public status: ExternalToolMediumStatus;

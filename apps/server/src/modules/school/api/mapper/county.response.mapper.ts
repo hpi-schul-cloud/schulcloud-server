@@ -1,4 +1,4 @@
-import { County } from '../../domain';
+import { type County } from '../../domain';
 import { CountyResponse } from '../dto';
 
 export class CountyResponseMapper {

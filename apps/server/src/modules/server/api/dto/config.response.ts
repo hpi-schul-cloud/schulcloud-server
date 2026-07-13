@@ -70,7 +70,7 @@ export class ConfigResponse {
 	FEATURE_TEAMS_ENABLED: boolean;
 
 	@ApiProperty()
-	public FEATURE_TEAM_CREATE_ROOM_ENABLED: boolean;
+	FEATURE_TEAM_CREATE_ROOM_ENABLED: boolean;
 
 	@ApiProperty()
 	FEATURE_FWU_CONTENT_ENABLED: boolean;
@@ -118,10 +118,10 @@ export class ConfigResponse {
 	FEATURE_COLUMN_BOARD_FILE_FOLDER_ENABLED: boolean;
 
 	@ApiProperty()
-	public FEATURE_COLUMN_BOARD_H5P_ENABLED: boolean;
+	FEATURE_COLUMN_BOARD_H5P_ENABLED: boolean;
 
 	@ApiProperty()
-	public FEATURE_COLUMN_BOARD_COLLABORA_ENABLED: boolean;
+	FEATURE_COLUMN_BOARD_COLLABORA_ENABLED: boolean;
 
 	@ApiProperty()
 	FEATURE_COURSE_SHARE: boolean;
@@ -151,13 +151,13 @@ export class ConfigResponse {
 	FEATURE_CONSENT_NECESSARY: boolean;
 
 	@ApiProperty()
-	public FEATURE_COMMON_CARTRIDGE_COURSE_EXPORT_ENABLED: boolean;
+	FEATURE_COMMON_CARTRIDGE_COURSE_EXPORT_ENABLED: boolean;
 
 	@ApiProperty()
-	public FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_ENABLED: boolean;
+	FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_ENABLED: boolean;
 
 	@ApiProperty()
-	public FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_MAX_FILE_SIZE: number;
+	FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_MAX_FILE_SIZE: number;
 
 	@ApiProperty()
 	FEATURE_USER_LOGIN_MIGRATION_ENABLED: boolean;
@@ -256,10 +256,10 @@ export class ConfigResponse {
 	FEATURE_EXTERNAL_SYSTEM_LOGOUT_ENABLED: boolean;
 
 	@ApiProperty()
-	public FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED: boolean;
+	FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED: boolean;
 
 	@ApiPropertyOptional()
-	public LICENSE_SUMMARY_URL?: string;
+	LICENSE_SUMMARY_URL?: string;
 
 	@ApiProperty({ type: String, nullable: true })
 	ROOM_MEMBER_INFO_URL: string | null;

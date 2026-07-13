@@ -1,6 +1,6 @@
-import { EntityId } from '@shared/domain/types';
-import { DeletionRequestBodyParams } from '../controller/dto';
-import { DomainName } from '../../domain/types';
+import { type EntityId } from '@shared/domain/types';
+import { type DeletionRequestBodyParams } from '../controller/dto';
+import { type DomainName } from '../../domain/types';
 
 export class DeletionRequestBodyPropsBuilder {
 	public static build(domain: DomainName, id: EntityId, deleteAfterMinutes?: number): DeletionRequestBodyParams {

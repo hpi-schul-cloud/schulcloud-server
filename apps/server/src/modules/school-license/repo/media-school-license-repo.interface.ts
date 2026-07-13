@@ -1,5 +1,5 @@
-import { EntityId } from '@shared/domain/types';
-import { MediaSchoolLicense } from '../domain';
+import { type EntityId } from '@shared/domain/types';
+import { type MediaSchoolLicense } from '../domain';
 
 export interface MediaSchoolLicenseRepo {
 	saveAll(domainObjects: MediaSchoolLicense[]): Promise<MediaSchoolLicense[]>;

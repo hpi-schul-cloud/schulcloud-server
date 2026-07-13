@@ -1,11 +1,11 @@
 import {
-	CopyFileDto,
+	type CopyFileDto,
 	FileRecordParentType,
-	FilesStorageClientAdapterService,
-	StorageLocation,
+	type FilesStorageClientAdapterService,
+	type StorageLocation,
 } from '@infra/files-storage-amqp-client';
-import { EntityId } from '@shared/domain/types';
-import { CopyContext } from './board-node-copy.service';
+import { type EntityId } from '@shared/domain/types';
+import { type CopyContext } from './board-node-copy.service';
 
 export type StorageLocationReference = {
 	id: EntityId;

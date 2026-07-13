@@ -1,5 +1,5 @@
-import { JwtFromRequestFunction, StrategyOptionsWithoutRequest } from 'passport-jwt';
-import { JwtAuthGuardConfig } from '../config';
+import { type JwtFromRequestFunction, type StrategyOptionsWithoutRequest } from 'passport-jwt';
+import { type JwtAuthGuardConfig } from '../config';
 
 export class JwtStrategyOptionsFactory {
 	public static build(

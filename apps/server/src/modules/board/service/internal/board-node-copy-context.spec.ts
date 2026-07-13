@@ -1,11 +1,11 @@
 import { createMock } from '@golevelup/ts-jest';
 import {
 	FileRecordParentType,
-	FilesStorageClientAdapterService,
+	type FilesStorageClientAdapterService,
 	StorageLocation,
 } from '@infra/files-storage-amqp-client';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { BoardNodeCopyContext, BoardNodeCopyContextProps } from './board-node-copy-context';
+import { BoardNodeCopyContext, type BoardNodeCopyContextProps } from './board-node-copy-context';
 
 describe(BoardNodeCopyContext.name, () => {
 	describe('copyFilesOfParent', () => {

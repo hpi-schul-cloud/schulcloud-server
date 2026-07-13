@@ -1,8 +1,8 @@
 import { ServerTestModule } from '@modules/server';
-import { HttpStatus, INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { HttpStatus, type INestApplication } from '@nestjs/common';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { TestApiClient } from '@testing/test-api-client';
-import { ConfigResponse } from '../dto';
+import { type ConfigResponse } from '../dto';
 
 describe('Server Controller (API)', () => {
 	let app: INestApplication;

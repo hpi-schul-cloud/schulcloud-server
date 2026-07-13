@@ -1,5 +1,5 @@
 import { faker } from '@faker-js/faker';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { Logger } from '@infra/logger';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { schoolEntityFactory } from '@modules/school/testing';
@@ -7,7 +7,7 @@ import { systemFactory } from '@modules/system/testing';
 import { UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import {
 	AuthorizationError,
 	EntityNotFoundError,
@@ -17,11 +17,11 @@ import {
 import { setupEntities } from '@testing/database';
 import 'reflect-metadata';
 import { accountDoFactory, accountFactory } from '../../testing';
-import { Account, AccountSave, UpdateAccount } from '../do';
-import { ACCOUNT_REPO, AccountRepo } from '../interface';
+import { type Account, type AccountSave, type UpdateAccount } from '../do';
+import { ACCOUNT_REPO, type AccountRepo } from '../interface';
 import { AccountServiceDb } from './account-db.service';
 import { AccountService } from './account.service';
-import { AbstractAccountService } from './account.service.abstract';
+import { type AbstractAccountService } from './account.service.abstract';
 
 describe('AccountService', () => {
 	let module: TestingModule;

@@ -1,4 +1,4 @@
-import { UserContextProps } from '../domain/interface';
+import { type UserContextProps } from '../domain/interface';
 
 export const userContextPropsFactory = {
 	create: (props?: Partial<UserContextProps>): UserContextProps => {

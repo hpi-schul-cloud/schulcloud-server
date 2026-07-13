@@ -29,7 +29,7 @@ export class TaskCopyService {
 		private readonly copyFilesService: CopyFilesService
 	) {}
 
-	async copyTask(params: TaskCopyParams): Promise<CopyStatus> {
+	public async copyTask(params: TaskCopyParams): Promise<CopyStatus> {
 		const { user, destinationLesson, destinationCourse } = params;
 		const originalTask = await this.taskRepo.findById(params.originalTaskId);
 
@@ -52,7 +52,7 @@ export class TaskCopyService {
 		user: User,
 		destinationCourse: CourseEntity | undefined,
 		destinationLesson: LessonEntity | undefined
-	) {
+	): Promise<Task> {
 		const taskCopy = new Task({
 			name: params.copyName || originalTask.name,
 			description: originalTask.description,
@@ -67,14 +67,14 @@ export class TaskCopyService {
 		return taskCopy;
 	}
 
-	private async updateFileUrls(task: Task, fileUrlReplacements: FileUrlReplacement[]) {
+	private async updateFileUrls(task: Task, fileUrlReplacements: FileUrlReplacement[]): Promise<void> {
 		fileUrlReplacements.forEach(({ regex, replacement }) => {
 			task.description = task.description.replace(regex, replacement);
 		});
 		await this.taskRepo.save(task);
 	}
 
-	private deriveCopyStatus(fileCopyStatus: CopyStatus, originalTask: Task, taskCopy: Task) {
+	private deriveCopyStatus(fileCopyStatus: CopyStatus, originalTask: Task, taskCopy: Task): CopyStatus {
 		const elements = [
 			{
 				type: CopyElementType.METADATA,

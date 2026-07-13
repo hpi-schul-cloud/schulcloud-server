@@ -10,7 +10,7 @@ export class VideoConferenceElement extends BoardNode<VideoConferenceElementProp
 		this.props.title = value;
 	}
 
-	canHaveChild(): boolean {
+	public canHaveChild(): boolean {
 		return false;
 	}
 }

@@ -1,9 +1,9 @@
 import { BaseFactory } from '@testing/factory/base.factory';
-import { DeepPartial } from 'fishery';
-import { MediaAvailableLine, MediaAvailableLineElement, MediaAvailableLineProps, Colors } from '../domain';
+import { type DeepPartial } from 'fishery';
+import { MediaAvailableLine, type MediaAvailableLineElement, type MediaAvailableLineProps, Colors } from '../domain';
 
 class MediaAvailableLineFactory extends BaseFactory<MediaAvailableLine, MediaAvailableLineProps> {
-	withElement(element: MediaAvailableLineElement): this {
+	public withElement(element: MediaAvailableLineElement): this {
 		const params: DeepPartial<MediaAvailableLineProps> = { elements: [element] };
 
 		return this.params(params);

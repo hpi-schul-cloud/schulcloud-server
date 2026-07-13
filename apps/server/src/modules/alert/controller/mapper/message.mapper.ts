@@ -1,5 +1,5 @@
-import { IncidentDto } from '../../adapter/dto';
-import { Message, MessageOrigin, MessageStatus } from '../dto';
+import { type IncidentDto } from '../../adapter/dto';
+import { Message, MessageOrigin, type MessageStatus } from '../dto';
 
 export class MessageMapper {
 	public static mapToMessage(incident: IncidentDto, url: string): Message {

@@ -1,5 +1,5 @@
 import { Factory } from 'fishery';
-import { ProviderOidcContext } from '../domain/interface';
+import { type ProviderOidcContext } from '../domain/interface';
 
 export const providerOidcContextFactory = Factory.define<ProviderOidcContext>(() => {
 	return {

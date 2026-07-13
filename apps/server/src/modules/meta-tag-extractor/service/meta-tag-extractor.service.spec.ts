@@ -1,10 +1,10 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Test, TestingModule } from '@nestjs/testing';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import { Test, type TestingModule } from '@nestjs/testing';
+import { META_TAG_EXTRACTOR_CONFIG_TOKEN } from '../meta-tag-extractor.config';
 import { MetaDataEntityType } from '../types';
 import { MetaTagExternalUrlService } from './meta-tag-external-url.service';
 import { MetaTagExtractorService } from './meta-tag-extractor.service';
 import { MetaTagInternalUrlService } from './meta-tag-internal-url.service';
-import { META_TAG_EXTRACTOR_CONFIG_TOKEN } from '../meta-tag-extractor.config';
 
 describe(MetaTagExtractorService.name, () => {
 	let module: TestingModule;
@@ -56,7 +56,7 @@ describe(MetaTagExtractorService.name, () => {
 			it('should throw an error', async () => {
 				const url = '';
 
-				await expect(async () => service.getMetaData(url)).rejects.toThrow();
+				await expect(() => service.getMetaData(url)).rejects.toThrow();
 			});
 		});
 
@@ -131,7 +131,7 @@ describe(MetaTagExtractorService.name, () => {
 				{ url: 'https://FE80:CD00:0000:0CDE:1257:0000:211E:729C:8000' },
 				{ url: 'https://FE80:CD00:0000:0CDE:1257:0000:211E:729C:8000/course' },
 			])('should return undefined for $url ', async ({ url }) => {
-				await expect(async () => service.getMetaData(url)).rejects.toThrow();
+				await expect(() => service.getMetaData(url)).rejects.toThrow();
 			});
 		});
 	});

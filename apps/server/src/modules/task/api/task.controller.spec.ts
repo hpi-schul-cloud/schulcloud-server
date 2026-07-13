@@ -1,7 +1,7 @@
 import { createMock } from '@golevelup/ts-jest';
-import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
+import { type CopyElementType, type CopyStatus, type CopyStatusEnum } from '@modules/copy-helper';
 import { CopyApiResponse } from '@modules/copy-helper/dto/copy.response';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { currentUserFactory } from '@testing/factory/currentuser.factory';
 import { TaskCopyUC } from './task-copy.uc';
 import { TaskController } from './task.controller';

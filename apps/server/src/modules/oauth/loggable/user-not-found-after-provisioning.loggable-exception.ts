@@ -1,7 +1,7 @@
 import { HttpStatus } from '@nestjs/common';
 import { BusinessError } from '@shared/common/error';
-import { Loggable, LoggableMessage } from '@shared/common/loggable';
-import { EntityId } from '@shared/domain/types';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
+import { type EntityId } from '@shared/domain/types';
 
 export class UserNotFoundAfterProvisioningLoggableException extends BusinessError implements Loggable {
 	constructor(
@@ -20,7 +20,7 @@ export class UserNotFoundAfterProvisioningLoggableException extends BusinessErro
 		);
 	}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			type: this.type,
 			message: this.message,

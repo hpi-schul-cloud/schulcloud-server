@@ -1,6 +1,6 @@
 import { Scope } from '@shared/repo/scope';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { AccountEntity } from '../account.entity';
+import { type AccountEntity } from '../account.entity';
 
 export class AccountScope extends Scope<AccountEntity> {
 	public byUserIdsAndSystemId(userIds: string[], systemId: string): AccountScope {

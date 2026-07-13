@@ -135,7 +135,7 @@ export class SynchronizationUc {
 	// Should be privat! It is only used for testing.
 	// Every parts that need be tested and only avaible from intern,
 	// need to be passed from outside by constructor or public methods.
-	chunkArray(array: string[], chunkSize: number): string[][] {
+	public chunkArray(array: string[], chunkSize: number): string[][] {
 		const chunkedArray: string[][] = [];
 		let index = 0;
 

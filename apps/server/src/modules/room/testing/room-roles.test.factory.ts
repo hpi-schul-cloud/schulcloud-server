@@ -1,5 +1,5 @@
 import { RoleName } from '@modules/role';
-import { Role } from '@modules/role/repo';
+import { type Role } from '@modules/role/repo';
 import { roleFactory } from '@modules/role/testing';
 import { Permission } from '@shared/domain/interface';
 

@@ -11,11 +11,11 @@ export class MetaTagExtractorUc {
 		private readonly metaTagExtractorService: MetaTagExtractorService
 	) {}
 
-	async getMetaData(userId: EntityId, url: string): Promise<MetaData> {
+	public async getMetaData(userId: EntityId, url: string): Promise<MetaData> {
 		try {
 			await this.authorizationService.getUserWithPermissions(userId);
 		} catch (error) {
-			throw new UnauthorizedException();
+			throw new UnauthorizedException(null, { cause: error });
 		}
 		const result = await this.metaTagExtractorService.getMetaData(url);
 		return result;

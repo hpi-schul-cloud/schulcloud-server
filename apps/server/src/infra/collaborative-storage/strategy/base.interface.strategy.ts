@@ -1,5 +1,5 @@
-import { TeamDto } from '@modules/collaborative-storage/services/dto/team.dto';
-import { TeamRolePermissionsDto } from '../dto/team-role-permissions.dto';
+import { type TeamDto } from '@modules/collaborative-storage/services/dto/team.dto';
+import { type TeamRolePermissionsDto } from '../dto/team-role-permissions.dto';
 
 /**
  * base interface for all CollaborativeStorage Strategies

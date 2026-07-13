@@ -1,6 +1,6 @@
 import { EntityManager } from '@mikro-orm/mongodb';
-import { Test, TestingModule } from '@nestjs/testing';
-import { EntityId } from '@shared/domain/types';
+import { Test, type TestingModule } from '@nestjs/testing';
+import { type EntityId } from '@shared/domain/types';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { courseEntityFactory, courseGroupEntityFactory } from '../testing';
 import { CourseEntity } from './course.entity';

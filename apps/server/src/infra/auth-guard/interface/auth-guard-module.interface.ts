@@ -1,4 +1,4 @@
-import { Algorithm } from 'jsonwebtoken';
+import { type Algorithm } from 'jsonwebtoken';
 
 export interface InternalJwtAuthGuardConfig {
 	jwtPublicKey: string;

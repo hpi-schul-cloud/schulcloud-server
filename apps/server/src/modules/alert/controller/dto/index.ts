@@ -1,3 +1,3 @@
 export * from './alert.response';
-export * from './message';
-export * from './message-origin';
+export * from './message-origin.dto';
+export * from './message.dto';

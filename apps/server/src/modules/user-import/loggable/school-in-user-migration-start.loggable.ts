@@ -1,5 +1,5 @@
-import { Loggable, LoggableMessage } from '@shared/common/loggable';
-import { EntityId } from '@shared/domain/types';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
+import { type EntityId } from '@shared/domain/types';
 
 export class SchoolInUserMigrationStartLoggable implements Loggable {
 	constructor(
@@ -8,7 +8,7 @@ export class SchoolInUserMigrationStartLoggable implements Loggable {
 		private readonly useCentralLdap: boolean
 	) {}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			message: 'The school administrator started the migration for his school.',
 			data: {

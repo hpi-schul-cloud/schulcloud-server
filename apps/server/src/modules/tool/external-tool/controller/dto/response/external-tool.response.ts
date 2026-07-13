@@ -7,22 +7,22 @@ import { ExternalToolMediumResponse } from './external-tool-medium.response';
 
 export class ExternalToolResponse {
 	@ApiProperty({ type: String, description: 'Id of the external tool' })
-	public id: string;
+	id: string;
 
 	@ApiProperty({ type: String, description: 'Name of the external tool' })
-	public name: string;
+	name: string;
 
 	@ApiPropertyOptional({ type: String, description: 'Description of the external tool' })
-	public description?: string;
+	description?: string;
 
 	@ApiPropertyOptional({ type: String, description: 'URL of the external tool' })
-	public url?: string;
+	url?: string;
 
 	@ApiPropertyOptional({ type: String, description: 'URL of the logo of the external tool' })
-	public logoUrl?: string;
+	logoUrl?: string;
 
 	@ApiPropertyOptional({ type: String, description: 'URL of the thumbnail of the external tool' })
-	public thumbnailUrl?: string;
+	thumbnailUrl?: string;
 
 	@ApiProperty({
 		description: 'Configuration of the external tool',
@@ -32,19 +32,19 @@ export class ExternalToolResponse {
 			{ $ref: getSchemaPath(Oauth2ToolConfigCreateParams) },
 		],
 	})
-	public config: BasicToolConfigResponse | Oauth2ToolConfigResponse | Lti11ToolConfigResponse;
+	config: BasicToolConfigResponse | Oauth2ToolConfigResponse | Lti11ToolConfigResponse;
 
 	@ApiProperty({ type: [CustomParameterResponse], description: 'Custom parameters of the external tool' })
-	public parameters: CustomParameterResponse[];
+	parameters: CustomParameterResponse[];
 
 	@ApiProperty({ type: Boolean, description: 'Is the external tool hidden' })
-	public isHidden: boolean;
+	isHidden: boolean;
 
 	@ApiProperty({ type: Boolean, description: 'Is the external tool deactivated' })
-	public isDeactivated: boolean;
+	isDeactivated: boolean;
 
 	@ApiProperty({ type: Boolean, description: 'Should the external tool be opened in a new tab' })
-	public openNewTab: boolean;
+	openNewTab: boolean;
 
 	@ApiPropertyOptional({
 		enum: ToolContextType,
@@ -52,19 +52,19 @@ export class ExternalToolResponse {
 		isArray: true,
 		description: 'Contexts in which the external tool is restricted',
 	})
-	public restrictToContexts?: ToolContextType[];
+	restrictToContexts?: ToolContextType[];
 
 	@ApiPropertyOptional({ type: ExternalToolMediumResponse, description: 'Medium of the external tool' })
-	public medium?: ExternalToolMediumResponse;
+	medium?: ExternalToolMediumResponse;
 
 	@ApiProperty({ type: Boolean, description: 'Should the tool be a preferred tool' })
-	public isPreferred: boolean;
+	isPreferred: boolean;
 
 	@ApiPropertyOptional({
 		type: String,
 		description: 'Name of the icon to be rendered when displaying it as a preferred tool',
 	})
-	public iconName?: string;
+	iconName?: string;
 
 	constructor(response: ExternalToolResponse) {
 		this.id = response.id;

@@ -1,38 +1,49 @@
-import { writeFileSync } from 'fs';
 import { Injectable } from '@nestjs/common';
+import { writeFileSync } from 'node:fs';
+import { BoardLoadTest } from './board-load-test';
 import { createSeveralClasses } from './helper/class-definitions';
 import { createBoardsResilient } from './helper/create-board';
 import { formatDate } from './helper/format-date';
 import { getUrlConfiguration } from './helper/get-url-configuration';
-import { useResponseTimes } from './helper/responseTimes.composable';
+import { useResponseTimes } from './helper/response-times.composable';
 import { SocketConnectionManager } from './socket-connection-manager';
 import { Callback, ClassDefinitionWithAmount, CreateBoardLoadTest, SocketConfiguration } from './types';
-import { BoardLoadTest } from './board-load-test';
 
 const { getAvgByAction, getTotalAvg } = useResponseTimes();
+type Protocol = {
+	protocolFilename: string;
+	startDateTime: string;
+	endDateTime: string;
+	courseId: string;
+	socketConfiguration: SocketConfiguration;
+	configurations: ClassDefinitionWithAmount[];
+	responseTimes: {
+		totalAvg: string;
+		[key: string]: string;
+	};
+	errorCount: number;
+	errors: string[];
+};
 
 @Injectable()
 export class LoadtestRunner {
-	private socketConnectionManager: SocketConnectionManager;
-
 	private intervalHandle: NodeJS.Timeout | undefined;
 
-	private startTime: number;
+	private readonly startTime: number;
 
-	private startDate: Date;
+	private readonly startDate: Date;
 
-	private errors: string[] = [];
+	private readonly errors: string[] = [];
 
-	private readonly createBoardLoadTest: CreateBoardLoadTest;
-
-	constructor(socketConnectionManager: SocketConnectionManager, createBoardLoadTest: CreateBoardLoadTest) {
-		this.socketConnectionManager = socketConnectionManager;
-		this.createBoardLoadTest = createBoardLoadTest;
+	constructor(
+		private readonly socketConnectionManager: SocketConnectionManager,
+		private readonly createBoardLoadTest: CreateBoardLoadTest
+	) {
 		this.startTime = performance.now();
 		this.startDate = new Date();
 	}
 
-	showStats() {
+	public showStats(): void {
 		const seconds = Math.ceil((performance.now() - this.startTime) / 1000);
 		const clients = this.socketConnectionManager.getClientCount();
 		const errors = this.getErrorCount();
@@ -55,18 +66,18 @@ export class LoadtestRunner {
 		});
 	}
 
-	startRegularStats = () => {
+	public startRegularStats = (): void => {
 		this.intervalHandle = setInterval(() => this.showStats(), 2000);
 	};
 
-	stopRegularStats = () => {
+	public stopRegularStats = (): void => {
 		if (this.intervalHandle) {
 			clearInterval(this.intervalHandle);
 		}
 		this.showStats();
 	};
 
-	onError: Callback = (message: unknown) => {
+	public onError: Callback = (message: unknown): void => {
 		this.errors.push(message as string);
 	};
 
@@ -74,7 +85,7 @@ export class LoadtestRunner {
 		courseId: string,
 		socketConfiguration: SocketConfiguration,
 		configurations: ClassDefinitionWithAmount[]
-	) {
+	): Protocol {
 		const protocolFilename = `${formatDate(this.startDate)}_${Math.ceil(Math.random() * 1000)}.loadtest.json`;
 		const protocol = {
 			protocolFilename,
@@ -92,12 +103,13 @@ export class LoadtestRunner {
 		};
 		writeFileSync(protocolFilename, JSON.stringify(protocol, null, 2));
 		process.stdout.write(JSON.stringify(protocol, null, 2));
+
 		return protocol;
 	}
 
-	getErrorCount = () => this.errors.length;
+	public getErrorCount = (): number => this.errors.length;
 
-	async runLoadtest({
+	public async runLoadtest({
 		socketConfiguration,
 		courseId,
 		configurations,
@@ -105,7 +117,7 @@ export class LoadtestRunner {
 		socketConfiguration: SocketConfiguration;
 		courseId: string;
 		configurations: ClassDefinitionWithAmount[];
-	}) {
+	}): Promise<void> {
 		const urls = getUrlConfiguration(socketConfiguration.baseUrl);
 		const classes = createSeveralClasses(configurations);
 

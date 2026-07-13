@@ -1,5 +1,5 @@
-import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
-import { EntityId } from '@shared/domain/types';
+import { type AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
+import { type EntityId } from '@shared/domain/types';
 
 export interface OauthSessionTokenProps extends AuthorizableObject {
 	userId: EntityId;

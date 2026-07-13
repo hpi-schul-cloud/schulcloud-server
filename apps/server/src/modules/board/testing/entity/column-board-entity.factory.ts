@@ -1,11 +1,11 @@
 /* istanbul ignore file */
 import { ObjectId } from '@mikro-orm/mongodb';
-import { BoardNodeEntityFactory, PropsWithType } from './board-node-entity.factory';
-import { BoardExternalReferenceType, BoardLayout, BoardNodeType, ColumnBoardProps, ROOT_PATH } from '../../domain';
+import { BoardNodeEntityFactory, type PropsWithType } from './board-node-entity.factory';
+import { BoardExternalReferenceType, BoardLayout, BoardNodeType, type ColumnBoardProps, ROOT_PATH } from '../../domain';
 import { Context } from '../../repo/entity/embeddables';
 
 class ColumnBoardEntityFactory extends BoardNodeEntityFactory<PropsWithType<ColumnBoardProps>> {
-	withoutContext(): this {
+	public withoutContext(): this {
 		const params = { context: undefined };
 		return this.params(params);
 	}

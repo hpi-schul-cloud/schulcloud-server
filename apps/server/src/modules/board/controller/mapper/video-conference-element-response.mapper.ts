@@ -1,6 +1,6 @@
 import { ContentElementType, VideoConferenceElement } from '../../domain';
 import { TimestampsResponse, VideoConferenceElementContent, VideoConferenceElementResponse } from '../dto';
-import { BaseResponseMapper } from './base-mapper.interface';
+import { type BaseResponseMapper } from './base-mapper.interface';
 
 export class VideoConferenceElementResponseMapper implements BaseResponseMapper {
 	private static instance: VideoConferenceElementResponseMapper;
@@ -13,7 +13,7 @@ export class VideoConferenceElementResponseMapper implements BaseResponseMapper 
 		return VideoConferenceElementResponseMapper.instance;
 	}
 
-	mapToResponse(element: VideoConferenceElement): VideoConferenceElementResponse {
+	public mapToResponse(element: VideoConferenceElement): VideoConferenceElementResponse {
 		const result = new VideoConferenceElementResponse({
 			id: element.id,
 			timestamps: new TimestampsResponse({ lastUpdatedAt: element.updatedAt, createdAt: element.createdAt }),
@@ -24,7 +24,7 @@ export class VideoConferenceElementResponseMapper implements BaseResponseMapper 
 		return result;
 	}
 
-	canMap(element: unknown): boolean {
+	public canMap(element: unknown): boolean {
 		return element instanceof VideoConferenceElement;
 	}
 }

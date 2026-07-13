@@ -13,7 +13,9 @@ export class AdminApiContextExternalToolController {
 
 	@Post()
 	@ApiOperation({ summary: 'Creates a ContextExternalTool' })
-	async createContextExternalTool(@Body() body: ContextExternalToolPostParams): Promise<ContextExternalToolResponse> {
+	public async createContextExternalTool(
+		@Body() body: ContextExternalToolPostParams
+	): Promise<ContextExternalToolResponse> {
 		const contextExternalToolProps = ContextExternalToolRequestMapper.mapContextExternalToolRequest(body);
 
 		const contextExternalTool =

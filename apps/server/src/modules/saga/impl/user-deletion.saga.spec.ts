@@ -1,9 +1,9 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { User } from '@modules/user/repo';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { SagaRegistryService, SagaStepRegistryService } from '../service';
-import { ModuleName, StepOperationType, StepReport } from '../type';
+import { ModuleName, StepOperationType, type StepReport } from '../type';
 import { UserDeletionSaga, UserDeletionSagaExecutionOrder } from './user-deletion.saga';
 
 describe(UserDeletionSaga.name, () => {

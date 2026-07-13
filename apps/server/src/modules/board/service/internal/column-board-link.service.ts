@@ -11,7 +11,7 @@ export class ColumnBoardLinkService {
 		private readonly boardNodeRepo: BoardNodeRepo
 	) {}
 
-	async swapLinkedIds(boardId: EntityId, idMap: Map<EntityId, EntityId>) {
+	public async swapLinkedIds(boardId: EntityId, idMap: Map<EntityId, EntityId>): Promise<ColumnBoard> {
 		const board = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId);
 
 		this.updateLinkElements(board, idMap);
@@ -20,7 +20,7 @@ export class ColumnBoardLinkService {
 		return board;
 	}
 
-	private updateLinkElements(boardNode: AnyBoardNode, idMap: Map<EntityId, EntityId>) {
+	private updateLinkElements(boardNode: AnyBoardNode, idMap: Map<EntityId, EntityId>): void {
 		if (isLinkElement(boardNode)) {
 			idMap.forEach((value, key) => {
 				boardNode.url = boardNode.url.replace(key, value);

@@ -1,5 +1,5 @@
 import { BaseFactory } from '@testing/factory/base.factory';
-import { Material, MaterialProperties } from '../repo';
+import { Material, type MaterialProperties } from '../repo';
 
 class MaterialFactory extends BaseFactory<Material, MaterialProperties> {}
 

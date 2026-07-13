@@ -7,5 +7,5 @@ export class PassOwnershipBodyParams {
 		required: true,
 	})
 	@IsMongoId()
-	public userId!: string;
+	userId!: string;
 }

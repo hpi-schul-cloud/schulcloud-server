@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { UserSearchQuery } from '../..';
+import { type UserSearchQuery } from '../..';
 import { createMultiDocumentAggregation } from './aggregation-helper';
 
 describe('Aggregation helper', () => {

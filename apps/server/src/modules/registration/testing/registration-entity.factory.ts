@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { EntityFactory } from '@testing/factory/entity.factory';
-import { RegistrationProps } from '../domain/do';
+import { type RegistrationProps } from '../domain/do';
 import { RegistrationEntity } from '../repo/entity';
 
 export const registrationEntityFactory = EntityFactory.define<RegistrationEntity, RegistrationProps>(

@@ -1,5 +1,5 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Test, TestingModule } from '@nestjs/testing';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { UserChangedSchoolEvent } from '../../user/domain/events/user-changed-school.event';
 import { ClassesRepo } from '../repo';
 import { UserChangedSchoolHandlerService } from './user-changed-school-handler.service';

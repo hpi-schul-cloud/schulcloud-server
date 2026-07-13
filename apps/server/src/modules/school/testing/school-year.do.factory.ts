@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BaseFactory } from '@testing/factory/base.factory';
-import { SchoolYear, SchoolYearProps } from '../domain';
+import { SchoolYear, type SchoolYearProps } from '../domain';
 
 type SchoolYearTransientParams = {
 	startYear: number;

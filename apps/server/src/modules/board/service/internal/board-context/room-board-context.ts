@@ -1,16 +1,16 @@
 import { RoleName } from '@modules/role';
-import { Room, RoomFeatures } from '@modules/room';
-import { RoomAuthorizable, UserWithRoomRoles } from '@modules/room-membership';
+import { type Room, RoomFeatures } from '@modules/room';
+import { type RoomAuthorizable, type UserWithRoomRoles } from '@modules/room-membership';
 import { Permission } from '@shared/domain/interface';
 import {
-	BoardConfiguration,
+	type BoardConfiguration,
 	BoardExternalReferenceType,
 	BoardRoles,
 	ColumnBoard,
-	MediaBoard,
-	UserWithBoardRoles,
+	type MediaBoard,
+	type UserWithBoardRoles,
 } from '../../../domain';
-import { PreparedBoardContext } from './prepared-board-context.interface';
+import { type PreparedBoardContext } from './prepared-board-context.interface';
 
 /**
  * Prepared context for Room-based boards.

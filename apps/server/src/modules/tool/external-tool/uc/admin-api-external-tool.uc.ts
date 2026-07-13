@@ -9,7 +9,10 @@ export class AdminApiExternalToolUc {
 	constructor(private readonly externalToolService: ExternalToolService) {}
 
 	public async createExternalTool(externalToolCreate: ExternalToolCreate): Promise<ExternalTool> {
-		const { thumbnailUrl, logoUrl, ...externalToolCreateProps } = externalToolCreate;
+		const externalToolCreateProps = { ...externalToolCreate };
+
+		delete externalToolCreateProps.thumbnailUrl;
+		delete externalToolCreateProps.logoUrl;
 
 		const pendingExternalTool: ExternalTool = new ExternalTool({
 			...externalToolCreateProps,

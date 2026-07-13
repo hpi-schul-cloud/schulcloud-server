@@ -2,17 +2,17 @@ import { EntityManager, MikroORM } from '@mikro-orm/core';
 import { courseEntityFactory } from '@modules/course/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { AdminApiServerTestModule } from '@modules/server/admin-api.server.app.module';
-import { HttpStatus, INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { HttpStatus, type INestApplication } from '@nestjs/common';
+import { Test, type TestingModule } from '@nestjs/testing';
 // admin-api-context-external-tool and test file is wrong placed need to be part of a admin-api-module folder
 import { TestApiClient } from '@testing/test-api-client';
 import { CustomParameterScope, CustomParameterType, ToolContextType } from '../../../common/enum';
-import { ExternalToolResponse } from '../../../external-tool/controller/dto';
-import { ExternalToolEntity } from '../../../external-tool/repo';
+import { type ExternalToolResponse } from '../../../external-tool/controller/dto';
+import { type ExternalToolEntity } from '../../../external-tool/repo';
 import { customParameterEntityFactory, externalToolEntityFactory } from '../../../external-tool/testing';
 import { schoolExternalToolEntityFactory } from '../../../school-external-tool/testing';
 import { ContextExternalToolEntity } from '../../repo';
-import { ContextExternalToolPostParams, ContextExternalToolResponse } from '../dto';
+import { type ContextExternalToolPostParams, type ContextExternalToolResponse } from '../dto';
 
 describe('AdminApiContextExternalTool (API)', () => {
 	let app: INestApplication;

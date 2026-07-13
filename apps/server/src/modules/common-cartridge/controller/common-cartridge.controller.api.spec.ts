@@ -1,8 +1,8 @@
 import { faker } from '@faker-js/faker';
 import { createMock } from '@golevelup/ts-jest';
-import { Logger } from '@infra/logger';
-import { INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { type Logger } from '@infra/logger';
+import { type INestApplication } from '@nestjs/common';
+import { Test, type TestingModule } from '@nestjs/testing';
 import archiver from 'archiver';
 import type { Server } from 'node:net';
 import supertest from 'supertest';

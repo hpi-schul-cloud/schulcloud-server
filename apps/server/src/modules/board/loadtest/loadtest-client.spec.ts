@@ -1,9 +1,9 @@
 // Rest of the code...
 import { InputFormat } from '@shared/domain/types';
 import { ContentElementType } from '../domain';
-import { UpdateContentElementMessageParams } from '../gateway/dto';
-import { LoadtestClient } from './loadtest-client';
-import { SocketConnection } from './socket-connection';
+import { type UpdateContentElementMessageParams } from '../gateway/dto';
+import { createLoadtestClient, LoadtestClient } from './loadtest-client';
+import { type SocketConnection } from './socket-connection';
 
 describe('LoadtestClient', () => {
 	let loadtestClient: LoadtestClient;
@@ -22,6 +22,13 @@ describe('LoadtestClient', () => {
 
 	afterEach(() => {
 		jest.clearAllMocks();
+	});
+
+	describe('createLoadtestClient', () => {
+		it('should create a LoadtestClient instance', () => {
+			const loadtestClient = createLoadtestClient(socketConnection, boardId);
+			expect(loadtestClient).toBeInstanceOf(LoadtestClient);
+		});
 	});
 
 	describe('fetchBoard', () => {

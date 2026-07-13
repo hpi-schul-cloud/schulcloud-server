@@ -1,5 +1,5 @@
 import { UnprocessableEntityException } from '@nestjs/common';
-import { Loggable, LoggableMessage } from '@shared/common/loggable';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
 
 export class UserLoginMigrationMultipleEmailUsersLoggableException
 	extends UnprocessableEntityException
@@ -9,7 +9,7 @@ export class UserLoginMigrationMultipleEmailUsersLoggableException
 		super();
 	}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			type: 'USER_LOGIN_MIGRATION_MULTIPLE_EMAIL_USERS',
 			message: 'There is multiple users with this email',

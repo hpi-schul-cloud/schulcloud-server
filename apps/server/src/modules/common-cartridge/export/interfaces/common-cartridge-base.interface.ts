@@ -1,4 +1,4 @@
-import { CommonCartridgeVersion } from '../common-cartridge.enums';
+import { type CommonCartridgeVersion } from '../common-cartridge.enums';
 import { VersionNotSupportedLoggableException } from '../errors';
 
 type CommonCartridgeBaseProps = {

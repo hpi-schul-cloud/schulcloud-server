@@ -1,5 +1,5 @@
-import { EntityId } from '@shared/domain/types';
-import { UserDo } from '../do';
+import { type EntityId } from '@shared/domain/types';
+import { type UserDo } from '../do';
 
 export enum UserDiscoverableQuery {
 	TRUE = 'true',

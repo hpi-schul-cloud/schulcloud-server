@@ -1,12 +1,12 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { RoleName } from '@modules/role';
 import { ServerTestModule } from '@modules/server';
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus, type INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
-import { RoomMemberListResponse } from '../dto/response/room-member-list.response';
+import { type RoomMemberListResponse } from '../dto/response/room-member-list.response';
 import { RoomSetup } from './util/room-setup.helper';
 
 describe('Room Controller (API)', () => {

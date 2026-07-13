@@ -5,17 +5,17 @@ import { StatusModel } from '../../../../domain/types';
 
 export class DeletionRequestLogResponse {
 	@ApiProperty()
-	public targetRef: DeletionTargetRef;
+	targetRef: DeletionTargetRef;
 
 	@ApiProperty()
-	public deletionPlannedAt: Date;
+	deletionPlannedAt: Date;
 
 	@ApiProperty()
-	public status: StatusModel;
+	status: StatusModel;
 
 	@ApiProperty()
 	@IsOptional()
-	public statistics?: DomainDeletionReport[];
+	statistics?: DomainDeletionReport[];
 
 	constructor(response: DeletionRequestLogResponse) {
 		this.targetRef = response.targetRef;

@@ -1,5 +1,5 @@
-import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
-import { SystemForLdapLogin } from './system-for-ldap-login';
+import { type AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
+import { type SystemForLdapLogin } from './system-for-ldap-login';
 
 export interface SchoolForLdapLoginProps extends AuthorizableObject {
 	id: string;

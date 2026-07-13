@@ -3,7 +3,7 @@ import { SchoolEntity } from '@modules/school/repo';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { type SystemEntity } from '@modules/system/repo';
 import { systemEntityFactory } from '@modules/system/testing';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { UserLoginMigrationDO } from '../domain';
@@ -61,7 +61,8 @@ describe('UserLoginMigrationRepo', () => {
 
 			it('should save a UserLoginMigration to the database', async () => {
 				const { domainObject } = await setup();
-				const { id, ...expected } = domainObject;
+				const expected = { ...domainObject };
+				delete expected.id;
 
 				const result: UserLoginMigrationDO = await repo.save(domainObject);
 
@@ -118,12 +119,9 @@ describe('UserLoginMigrationRepo', () => {
 
 				await em.persist(userLoginMigration).flush();
 				em.clear();
-
-				const domainObject: UserLoginMigrationDO = repo.mapEntityToDO(userLoginMigration);
-
 				return {
 					userLoginMigration,
-					domainObject,
+					domainObject: repo.mapEntityToDO(userLoginMigration),
 				};
 			};
 

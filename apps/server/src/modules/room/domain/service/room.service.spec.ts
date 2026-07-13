@@ -1,14 +1,14 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { MailService } from '@infra/mail';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { ROOM_CONFIG_TOKEN } from '@modules/room/room.config';
 import { EventBus } from '@nestjs/cqrs';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { ValidationError } from '@shared/common/error';
-import { EntityId } from '@shared/domain/types';
+import { type EntityId } from '@shared/domain/types';
 import { RoomRepo } from '../../repo';
 import { roomFactory } from '../../testing';
-import { Room, RoomCreateProps, RoomUpdateProps } from '../do';
+import { type Room, type RoomCreateProps, type RoomUpdateProps } from '../do';
 import { RoomDeletedEvent } from '../events/room-deleted.event';
 import { RoomColor } from '../type';
 import { RoomService } from './room.service';

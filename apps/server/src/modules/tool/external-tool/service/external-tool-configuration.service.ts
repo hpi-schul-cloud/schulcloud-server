@@ -53,7 +53,7 @@ export class ExternalToolConfigurationService {
 		return availableToolsForContext;
 	}
 
-	public filterParametersForScope(externalTool: ExternalTool, scope: CustomParameterScope) {
+	public filterParametersForScope(externalTool: ExternalTool, scope: CustomParameterScope): void {
 		if (externalTool.parameters) {
 			externalTool.parameters = externalTool.parameters.filter(
 				(parameter: CustomParameter) => parameter.scope === scope

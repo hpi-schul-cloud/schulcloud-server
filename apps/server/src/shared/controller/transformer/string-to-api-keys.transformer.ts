@@ -1,4 +1,4 @@
-import { Transform, TransformFnParams } from 'class-transformer';
+import { Transform, type TransformFnParams } from 'class-transformer';
 
 /**
  * Allowed Admin API keys (for accessing the Admin API). - A comma seperated list of strings where description is optional

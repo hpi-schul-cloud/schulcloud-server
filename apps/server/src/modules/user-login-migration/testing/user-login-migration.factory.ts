@@ -1,7 +1,7 @@
 import { schoolEntityFactory } from '@modules/school/testing';
 import { systemEntityFactory } from '@modules/system/testing';
 import { BaseFactory } from '@testing/factory/base.factory';
-import { UserLoginMigrationEntity, UserLoginMigrationEntityProps } from '../repo';
+import { UserLoginMigrationEntity, type UserLoginMigrationEntityProps } from '../repo';
 
 export const userLoginMigrationFactory = BaseFactory.define<UserLoginMigrationEntity, UserLoginMigrationEntityProps>(
 	UserLoginMigrationEntity,

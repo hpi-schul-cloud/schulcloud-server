@@ -1,4 +1,4 @@
-import { Loggable, LoggableMessage, LogMessage } from '@shared/common/loggable';
+import { type Loggable, type LoggableMessage, type LogMessage } from '@shared/common/loggable';
 import { LoggingUtils } from './logging.utils';
 
 class SampleLoggable implements Loggable {

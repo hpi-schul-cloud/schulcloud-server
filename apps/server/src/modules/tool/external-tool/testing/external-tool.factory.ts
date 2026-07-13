@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { DoBaseFactory } from '@testing/factory/domainobject';
-import { DeepPartial } from 'fishery';
+import { type DeepPartial } from 'fishery';
 import { CustomParameter } from '../../common/domain';
 import {
 	CustomParameterLocation,
@@ -14,8 +14,8 @@ import {
 import {
 	BasicToolConfig,
 	ExternalTool,
-	ExternalToolMedium,
-	ExternalToolProps,
+	type ExternalToolMedium,
+	type ExternalToolProps,
 	Lti11ToolConfig,
 	Oauth2ToolConfig,
 } from '../domain';
@@ -31,7 +31,7 @@ export const basicToolConfigFactory = DoBaseFactory.define<BasicToolConfig, Basi
 });
 
 class Oauth2ToolConfigFactory extends DoBaseFactory<Oauth2ToolConfig, Oauth2ToolConfig> {
-	withExternalData(oauth2Params?: DeepPartial<Oauth2ToolConfig>): this {
+	public withExternalData(oauth2Params?: DeepPartial<Oauth2ToolConfig>): this {
 		const params: DeepPartial<Oauth2ToolConfig> = {
 			clientSecret: 'clientSecret',
 			scope: 'offline openid',
@@ -66,7 +66,7 @@ export const lti11ToolConfigFactory = DoBaseFactory.define<Lti11ToolConfig, Lti1
 });
 
 class CustomParameterFactory extends DoBaseFactory<CustomParameter, CustomParameter> {
-	buildListWithEachType(params?: DeepPartial<CustomParameter>): CustomParameter[] {
+	public buildListWithEachType(params?: DeepPartial<CustomParameter>): CustomParameter[] {
 		const globalParameter = this.build({ ...params, scope: CustomParameterScope.GLOBAL });
 		const schoolParameter = this.build({ ...params, scope: CustomParameterScope.SCHOOL });
 		const contextParameter = this.build({ ...params, scope: CustomParameterScope.CONTEXT });

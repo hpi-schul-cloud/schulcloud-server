@@ -13,11 +13,11 @@ export class RichText {
 		description: 'Content of the rich text element',
 	})
 	@DecodeHtmlEntities()
-	content: string;
+	public content: string;
 
 	@ApiProperty({
 		description: 'Input format of the rich text element',
 		enum: InputFormat,
 	})
-	type: InputFormat;
+	public type: InputFormat;
 }

@@ -1,5 +1,5 @@
 import { Factory } from 'fishery';
-import { AcceptConsentRequestBody } from '../domain/interface';
+import { type AcceptConsentRequestBody } from '../domain/interface';
 import { idTokenFactory } from './id-token.factory';
 
 export const acceptConsentRequestBodyFactory = Factory.define<AcceptConsentRequestBody>(() => {

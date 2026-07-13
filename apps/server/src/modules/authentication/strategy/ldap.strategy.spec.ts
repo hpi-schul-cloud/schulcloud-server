@@ -1,22 +1,22 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { ICurrentUser } from '@infra/auth-guard';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import { type ICurrentUser } from '@infra/auth-guard';
 import { Logger } from '@infra/logger';
-import { Account } from '@modules/account';
+import { type Account } from '@modules/account';
 import { accountDoFactory, defaultTestPassword, defaultTestPasswordHash } from '@modules/account/testing';
 import { LegacySchoolRepo } from '@modules/legacy-school/repo';
 import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
 import { RoleName } from '@modules/role';
 import { schoolEntityFactory } from '@modules/school/testing';
-import { System, SystemService } from '@modules/system';
+import { type System, SystemService } from '@modules/system';
 import { systemFactory } from '@modules/system/testing';
 import { UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { UnauthorizedException } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
-import { LdapAuthorizationBodyParams } from '../controllers/dto';
+import { type LdapAuthorizationBodyParams } from '../controllers/dto';
 import { AuthenticationService } from '../services/authentication.service';
 import { LdapService } from '../services/ldap.service';
 import { LdapStrategy } from './ldap.strategy';
@@ -123,7 +123,7 @@ describe('LdapStrategy', () => {
 			it('should throw unauthorized error', async () => {
 				const { request } = setup();
 
-				const func = async () => strategy.validate(request);
+				const func = () => strategy.validate(request);
 
 				await expect(func).rejects.toThrow(UnauthorizedException);
 			});
@@ -170,7 +170,7 @@ describe('LdapStrategy', () => {
 			it('should throw unauthorized error', async () => {
 				const { request } = setup();
 
-				const func = async () => strategy.validate(request);
+				const func = () => strategy.validate(request);
 
 				await expect(func).rejects.toThrow(UnauthorizedException);
 			});
@@ -217,7 +217,7 @@ describe('LdapStrategy', () => {
 			it('should throw unauthorized error', async () => {
 				const { request } = setup();
 
-				const func = async () => strategy.validate(request);
+				const func = () => strategy.validate(request);
 
 				await expect(func).rejects.toThrow(UnauthorizedException);
 			});
@@ -264,7 +264,7 @@ describe('LdapStrategy', () => {
 			it('should throw unauthorized error', async () => {
 				const { request } = setup();
 
-				const func = async () => strategy.validate(request);
+				const func = () => strategy.validate(request);
 
 				await expect(func).rejects.toThrow(UnauthorizedException);
 			});
@@ -313,7 +313,7 @@ describe('LdapStrategy', () => {
 			it('should throw unauthorized error', async () => {
 				const { request, account } = setup();
 
-				const func = async () => strategy.validate(request);
+				const func = () => strategy.validate(request);
 
 				await expect(func).rejects.toThrow(UnauthorizedException);
 

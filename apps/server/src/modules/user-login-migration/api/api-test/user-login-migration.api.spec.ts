@@ -1,6 +1,6 @@
-import { ErrorResponse } from '@infra/error';
-import { OauthTokenResponse } from '@infra/oauth-adapter';
-import { SchulconnexResponse, SchulconnexRole } from '@infra/schulconnex-client';
+import { type ErrorResponse } from '@infra/error';
+import { type OauthTokenResponse } from '@infra/oauth-adapter';
+import { type SchulconnexResponse, SchulconnexRole } from '@infra/schulconnex-client';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { SchoolEntity } from '@modules/school/repo';
 import { schoolEntityFactory } from '@modules/school/testing';
@@ -11,8 +11,8 @@ import { ImportUser } from '@modules/user-import/entity';
 import { importUserFactory } from '@modules/user-import/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
-import { HttpStatus, INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { HttpStatus, type INestApplication } from '@nestjs/common';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { JwtTestFactory } from '@testing/factory/jwt.test.factory';
@@ -21,11 +21,11 @@ import { TestApiClient } from '@testing/test-api-client';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { UUID } from 'bson';
-import { DeepPartial } from 'fishery';
-import { Response } from 'supertest';
+import { type DeepPartial } from 'fishery';
+import { type Response } from 'supertest';
 import { UserLoginMigrationEntity } from '../../repo';
 import { userLoginMigrationFactory } from '../../testing';
-import { ForceMigrationParams, Oauth2MigrationParams, UserLoginMigrationResponse } from '../dto';
+import { ForceMigrationParams, Oauth2MigrationParams, type UserLoginMigrationResponse } from '../dto';
 import { UserLoginMigrationUc } from '../uc';
 
 jest.mock('jwks-rsa', () => () => {

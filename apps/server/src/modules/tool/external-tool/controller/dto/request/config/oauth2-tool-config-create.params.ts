@@ -11,7 +11,7 @@ export class Oauth2ToolConfigCreateParams extends ExternalToolConfigCreateParams
 		description: 'Configuration type of the tool.',
 		example: ToolConfigType.OAUTH2,
 	})
-	public type!: ToolConfigType;
+	type!: ToolConfigType;
 
 	@IsUrl(
 		{ require_protocol: true, protocols: ['https'] },
@@ -22,39 +22,39 @@ export class Oauth2ToolConfigCreateParams extends ExternalToolConfigCreateParams
 			'Defines the target URL that is launched. Can be automatically filled with parameter values when using : in-front of the parameter name. Must be HTTPS.',
 		example: 'https://example.com/:parameter1/test',
 	})
-	public baseUrl!: string;
+	baseUrl!: string;
 
 	@IsString()
 	@ApiProperty({
 		description: 'OAuth2 client id.',
 	})
-	public clientId!: string;
+	clientId!: string;
 
 	@IsString()
 	@ApiProperty({
 		description: 'OAuth2 client secret.',
 	})
-	public clientSecret!: string;
+	clientSecret!: string;
 
 	@IsBoolean()
 	@ApiProperty({
 		description: 'If true, skips the users consent request before launching the tool for the first time.',
 	})
-	public skipConsent!: boolean;
+	skipConsent!: boolean;
 
 	@IsString()
 	@IsOptional()
 	@ApiPropertyOptional({
 		description: 'OAuth2 frontchannel logout uri.',
 	})
-	public frontchannelLogoutUri?: string;
+	frontchannelLogoutUri?: string;
 
 	@IsString()
 	@IsOptional()
 	@ApiPropertyOptional({
 		description: 'OAuth2 scopes.',
 	})
-	public scope?: string;
+	scope?: string;
 
 	@IsArray()
 	@ApiProperty({
@@ -62,7 +62,7 @@ export class Oauth2ToolConfigCreateParams extends ExternalToolConfigCreateParams
 		description: 'Allowed OAuth2 redirect uris.',
 		isArray: true,
 	})
-	public redirectUris!: string[];
+	redirectUris!: string[];
 
 	@IsEnum(TokenEndpointAuthMethod)
 	@ApiProperty({
@@ -71,5 +71,5 @@ export class Oauth2ToolConfigCreateParams extends ExternalToolConfigCreateParams
 		description: 'OAuth2 token endpoint method',
 		example: TokenEndpointAuthMethod.CLIENT_SECRET_BASIC,
 	})
-	public tokenEndpointAuthMethod!: TokenEndpointAuthMethod;
+	tokenEndpointAuthMethod!: TokenEndpointAuthMethod;
 }

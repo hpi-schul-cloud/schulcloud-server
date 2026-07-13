@@ -1,18 +1,18 @@
-import { BBBJoinConfig, BBBRole } from '../request/bbb-join.config';
+import { type BBBJoinConfig, type BBBRole } from '../request/bbb-join.config';
 import { Builder } from './builder';
 
 export class BBBJoinConfigBuilder extends Builder<BBBJoinConfig> {
-	asGuest(value: boolean): BBBJoinConfigBuilder {
+	public asGuest(value: boolean): BBBJoinConfigBuilder {
 		this.product.guest = value;
 		return this;
 	}
 
-	withRole(value: BBBRole): BBBJoinConfigBuilder {
+	public withRole(value: BBBRole): BBBJoinConfigBuilder {
 		this.product.role = value;
 		return this;
 	}
 
-	withUserId(value: string): BBBJoinConfigBuilder {
+	public withUserId(value: string): BBBJoinConfigBuilder {
 		this.product.userID = value;
 		return this;
 	}

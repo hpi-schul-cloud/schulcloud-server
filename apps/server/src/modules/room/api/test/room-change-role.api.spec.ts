@@ -7,15 +7,15 @@ import { roomMembershipEntityFactory } from '@modules/room-membership/testing/ro
 import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
 import { userFactory } from '@modules/user/testing';
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus, type INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { roomEntityFactory } from '../../testing/room-entity.factory';
 import { RoomRolesTestFactory } from '../../testing/room-roles.test.factory';
-import { RoomMemberListResponse } from '../dto/response/room-member-list.response';
-import { ApiValidationError } from '@shared/common/error';
+import { type RoomMemberListResponse } from '../dto/response/room-member-list.response';
+import { type ApiValidationError } from '@shared/common/error';
 
 describe('Room Controller (API)', () => {
 	let app: INestApplication;

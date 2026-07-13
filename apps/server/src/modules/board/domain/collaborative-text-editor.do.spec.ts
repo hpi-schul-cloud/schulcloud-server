@@ -1,5 +1,5 @@
 import { collaborativeTextEditorFactory } from '../testing';
-import { CollaborativeTextEditorElement, isCollaborativeTextEditorElement } from './collaborative-text-editor.do';
+import { type CollaborativeTextEditorElement, isCollaborativeTextEditorElement } from './collaborative-text-editor.do';
 
 describe('CollaborativeTextEditorElement', () => {
 	let collaborativeTextEditorElement: CollaborativeTextEditorElement;

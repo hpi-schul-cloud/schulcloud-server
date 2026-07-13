@@ -1,9 +1,9 @@
 import { UUID } from 'bson';
-import { DeepPartial, Factory } from 'fishery';
+import { type DeepPartial, Factory } from 'fishery';
 import crypto from 'node:crypto';
-import OAuth, { Authorization, RequestOptions } from 'oauth-1.0a';
-import { Lti11ContentItemType, Lti11DeepLinkParams } from '../controller/dto';
-import { Lti11DeepLinkParamsRaw } from '../controller/dto/lti11-deep-link/lti11-deep-link-raw.params';
+import OAuth, { type Authorization, type RequestOptions } from 'oauth-1.0a';
+import { Lti11ContentItemType, type Lti11DeepLinkParams } from '../controller/dto';
+import { type Lti11DeepLinkParamsRaw } from '../controller/dto/lti11-deep-link/lti11-deep-link-raw.params';
 
 type Lti11DeepLinkParamsPayload = Omit<Lti11DeepLinkParams, keyof Authorization>;
 
@@ -53,12 +53,12 @@ export class Lti11DeepLinkParamsFactory {
 				secret: this.secret,
 			},
 			signature_method: 'HMAC-SHA1',
-			hash_function: (base_string: string, hashKey: string) =>
+			hash_function: (base_string: string, hashKey: string): string =>
 				crypto.createHmac('sha1', hashKey).update(base_string).digest('base64'),
 		});
 	}
 
-	build(params?: DeepPartial<Lti11DeepLinkParamsPayload>): Lti11DeepLinkParams {
+	public build(params?: DeepPartial<Lti11DeepLinkParamsPayload>): Lti11DeepLinkParams {
 		const payload: Lti11DeepLinkParamsPayload = lti11DeepLinkParamsPayloadFactory.build(params);
 
 		const requestData: RequestOptions = {
@@ -72,7 +72,7 @@ export class Lti11DeepLinkParamsFactory {
 		return authorization as Lti11DeepLinkParams;
 	}
 
-	buildRaw(params?: DeepPartial<Lti11DeepLinkParamsPayload>): Lti11DeepLinkParamsRaw {
+	public buildRaw(params?: DeepPartial<Lti11DeepLinkParamsPayload>): Lti11DeepLinkParamsRaw {
 		const payload: Lti11DeepLinkParamsPayload = lti11DeepLinkParamsPayloadFactory.build(params);
 
 		const requestData: RequestOptions = {

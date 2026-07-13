@@ -1,7 +1,7 @@
 import { InternalServerErrorException } from '@nestjs/common';
-import { Loggable, LoggableMessage } from '@shared/common/loggable';
-import { ValidationError } from 'class-validator';
-import { MediaQueryBadResponseReport } from '../interface';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
+import { type ValidationError } from 'class-validator';
+import { type MediaQueryBadResponseReport } from '../interface';
 
 export class BiloMediaQueryBadResponseLoggableException extends InternalServerErrorException implements Loggable {
 	constructor(private readonly badResponseReports: MediaQueryBadResponseReport[]) {

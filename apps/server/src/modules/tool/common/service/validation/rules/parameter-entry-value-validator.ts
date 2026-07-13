@@ -1,12 +1,12 @@
-import { ValidationError } from '@shared/common/error';
-import { EntityId } from '@shared/domain/types';
+import { type ValidationError } from '@shared/common/error';
+import { type EntityId } from '@shared/domain/types';
 import {
-	CustomParameter,
-	CustomParameterEntry,
+	type CustomParameter,
+	type CustomParameterEntry,
 	ToolParameterMandatoryValueMissingLoggableException,
 	ToolParameterOptionalValueMissingLoggableException,
 } from '../../../domain';
-import { ParameterEntryValidator } from './parameter-entry-validator';
+import { type ParameterEntryValidator } from './parameter-entry-validator';
 
 export class ParameterEntryValueValidator implements ParameterEntryValidator {
 	public validate(

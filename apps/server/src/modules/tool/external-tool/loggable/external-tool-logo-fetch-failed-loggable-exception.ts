@@ -1,6 +1,6 @@
 import { HttpStatus } from '@nestjs/common';
 import { BusinessError } from '@shared/common/error';
-import { Loggable, LoggableMessage } from '@shared/common/loggable';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
 
 export class ExternalToolLogoFetchFailedLoggableException extends BusinessError implements Loggable {
 	constructor(
@@ -17,7 +17,7 @@ export class ExternalToolLogoFetchFailedLoggableException extends BusinessError 
 		);
 	}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			type: 'EXTERNAL_TOOL_LOGO_FETCH_FAILED',
 			message: 'External tool logo could not been fetched',

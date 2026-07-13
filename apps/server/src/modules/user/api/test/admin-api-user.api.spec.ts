@@ -3,12 +3,12 @@ import { AccountEntity } from '@modules/account/repo';
 import { RoleName } from '@modules/role';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { AdminApiServerTestModule } from '@modules/server/admin-api.server.app.module';
-import { INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { type INestApplication } from '@nestjs/common';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { TestApiClient } from '@testing/test-api-client';
 import { nanoid } from 'nanoid';
 import { User } from '../../repo';
-import { AdminApiUserCreateResponse } from '../dto/admin-api-user-create.response.dto';
+import { type AdminApiUserCreateResponse } from '../dto/admin-api-user-create.response.dto';
 
 const baseRouteName = '/admin/users';
 

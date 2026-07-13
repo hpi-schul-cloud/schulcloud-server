@@ -1,5 +1,5 @@
-import { Loggable, LoggableMessage } from '@shared/common/loggable';
-import { EntityId } from '@shared/domain/types';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
+import { type EntityId } from '@shared/domain/types';
 
 export class ShdUserCreateTokenLoggable implements Loggable {
 	constructor(
@@ -8,7 +8,7 @@ export class ShdUserCreateTokenLoggable implements Loggable {
 		private readonly expiredIn: number
 	) {}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		const message: LoggableMessage = {
 			message: `The support employee with the Id ${
 				this.supportUserId

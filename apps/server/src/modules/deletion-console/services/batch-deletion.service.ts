@@ -7,7 +7,7 @@ import { QueueDeletionRequestInput, QueueDeletionRequestOutput } from './interfa
 export class BatchDeletionService {
 	constructor(private readonly deletionClient: DeletionClient) {}
 
-	async queueDeletionRequests(
+	public async queueDeletionRequests(
 		inputs: QueueDeletionRequestInput[],
 		callsDelayMilliseconds?: number
 	): Promise<QueueDeletionRequestOutput[]> {

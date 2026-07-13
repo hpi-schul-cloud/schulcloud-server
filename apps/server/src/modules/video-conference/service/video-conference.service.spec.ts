@@ -1,4 +1,4 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { CalendarService } from '@infra/calendar';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
@@ -29,12 +29,12 @@ import { User } from '@modules/user/repo';
 import { userDoFactory, userFactory } from '@modules/user/testing';
 import { BadRequestException, ForbiddenException } from '@nestjs/common';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
-import { EntityId } from '@shared/domain/types';
+import { type EntityId } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
 import { BBBRole } from '../bbb';
-import { VideoConferenceDO, VideoConferenceScope } from '../domain';
+import { type VideoConferenceDO, VideoConferenceScope } from '../domain';
 import { ErrorStatus } from '../error';
 import { VideoConferenceRepo } from '../repo';
 import { videoConferenceDOFactory } from '../testing';
@@ -427,7 +427,7 @@ describe(VideoConferenceService.name, () => {
 			it('should throw a ForbiddenException', async () => {
 				const { scopeId } = setup();
 
-				const func = async () =>
+				const func = () =>
 					service.isExternalPersonOrTeamExpert('nonexistentUserId', VideoConferenceScope.EVENT, scopeId);
 
 				await expect(func()).rejects.toThrow(new ForbiddenException(ErrorStatus.UNKNOWN_USER));

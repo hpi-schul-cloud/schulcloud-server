@@ -1,4 +1,4 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import {
 	Action,
 	AUTHORIZATION_CONFIG_TOKEN,
@@ -7,21 +7,21 @@ import {
 } from '@modules/authorization';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { LessonEntity, Material } from '@modules/lesson/repo';
-import { Role } from '@modules/role/repo';
+import { type Role } from '@modules/role/repo';
 import { roleFactory } from '@modules/role/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { Submission, Task } from '@modules/task/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { NotImplementedException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
-import { SchoolExternalTool } from '../../school-external-tool/domain';
-import { SchoolExternalToolEntity } from '../../school-external-tool/repo';
+import { type SchoolExternalTool } from '../../school-external-tool/domain';
+import { type SchoolExternalToolEntity } from '../../school-external-tool/repo';
 import { schoolExternalToolEntityFactory } from '../../school-external-tool/testing';
-import { ContextExternalTool } from '../domain';
-import { ContextExternalToolEntity } from '../repo';
+import { type ContextExternalTool } from '../domain';
+import { type ContextExternalToolEntity } from '../repo';
 import { contextExternalToolEntityFactory } from '../testing';
 import { ContextExternalToolRule } from './context-external-tool.rule';
 

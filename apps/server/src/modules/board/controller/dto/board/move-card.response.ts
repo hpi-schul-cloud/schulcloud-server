@@ -12,17 +12,17 @@ export class MoveCardResponse {
 	}
 
 	@ApiProperty({ type: ShortNodeResponse })
-	public fromBoard: ShortNodeResponse;
+	fromBoard: ShortNodeResponse;
 
 	@ApiProperty({ type: ShortNodeResponse })
-	public toBoard: ShortNodeResponse;
+	toBoard: ShortNodeResponse;
 
 	@ApiProperty({ type: ShortNodeResponse })
-	public fromColumn: ShortNodeResponse;
+	fromColumn: ShortNodeResponse;
 
 	@ApiProperty({ type: ShortNodeResponse })
-	public toColumn: ShortNodeResponse;
+	toColumn: ShortNodeResponse;
 
 	@ApiProperty({ type: CardSkeletonResponse })
-	public card: CardSkeletonResponse;
+	card: CardSkeletonResponse;
 }

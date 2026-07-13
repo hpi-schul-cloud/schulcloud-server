@@ -5,7 +5,8 @@ import { ApiValidationError, BusinessError } from '@shared/common/error';
 import { Response } from 'express';
 import _ from 'lodash';
 import { DomainErrorHandler } from '../domain';
-import { ApiValidationErrorResponse, ErrorResponse } from '../dto';
+import { ErrorResponse } from '../dto';
+import { ApiValidationErrorResponseFactory } from '../factory';
 import { FeathersError } from '../interface';
 import { ErrorUtils } from '../utils';
 
@@ -22,7 +23,7 @@ export enum UseableContextType {
 export class GlobalErrorFilter<E extends IError> implements ExceptionFilter<E> {
 	constructor(private readonly domainErrorHandler: DomainErrorHandler) {}
 
-	catch(error: E, host: ArgumentsHost): void | RpcMessage<undefined> | WsException {
+	public catch(error: E, host: ArgumentsHost): void | RpcMessage<undefined> | WsException {
 		const contextType = host.getType<UseableContextType>();
 		switch (contextType) {
 			case UseableContextType.http:
@@ -93,7 +94,7 @@ export class GlobalErrorFilter<E extends IError> implements ExceptionFilter<E> {
 		let response: ErrorResponse;
 
 		if (error instanceof ApiValidationError) {
-			response = new ApiValidationErrorResponse(error);
+			response = ApiValidationErrorResponseFactory.fromApiValidationError(error);
 		} else {
 			response = error.getResponse();
 		}

@@ -1,6 +1,6 @@
-import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
-import { EntityId } from '@shared/domain/types';
-import { UserLicenseType } from '../entity';
+import { type AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
+import { type EntityId } from '@shared/domain/types';
+import { type UserLicenseType } from '../entity';
 
 export interface UserLicenseProps extends AuthorizableObject {
 	userId: EntityId;

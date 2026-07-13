@@ -1,23 +1,23 @@
-import { CustomParameterEntry } from '../../common/domain';
+import { type CustomParameterEntry } from '../../common/domain';
 
 export class LtiDeepLink {
-	mediaType: string;
+	public mediaType: string;
 
-	url?: string;
+	public url?: string;
 
-	title?: string;
+	public title?: string;
 
-	text?: string;
+	public text?: string;
 
-	parameters: CustomParameterEntry[];
+	public parameters: CustomParameterEntry[];
 
-	availableFrom?: Date;
+	public availableFrom?: Date;
 
-	availableUntil?: Date;
+	public availableUntil?: Date;
 
-	submissionFrom?: Date;
+	public submissionFrom?: Date;
 
-	submissionUntil?: Date;
+	public submissionUntil?: Date;
 
 	constructor(props: LtiDeepLink) {
 		this.mediaType = props.mediaType;

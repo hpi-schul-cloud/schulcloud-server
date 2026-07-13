@@ -1,7 +1,7 @@
-import { PaginationParams } from '@shared/controller/dto';
-import { School, SchoolForLdapLogin } from '../../domain';
+import { type PaginationParams } from '@shared/controller/dto';
+import { type School, type SchoolForLdapLogin } from '../../domain';
 import {
-	YearsResponse,
+	type YearsResponse,
 	SchoolResponse,
 	SchoolItemResponse,
 	SchoolListResponse,

@@ -1,4 +1,4 @@
-import { User } from '@modules/user/repo';
+import { type User } from '@modules/user/repo';
 import { UserInfoResponse } from '../dto';
 
 export class UserInfoMapper {

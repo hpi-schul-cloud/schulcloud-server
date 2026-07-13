@@ -1,10 +1,10 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { OAUTH_PUBLIC_API_CONFIG_TOKEN, OauthSessionToken, OauthSessionTokenService } from '@modules/oauth';
 import { oauthSessionTokenFactory } from '@modules/oauth/testing';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { FeatureDisabledLoggableException, NotFoundLoggableException } from '@shared/common/loggable-exception';
-import { OauthPublicApiConfig } from '../oauth.config';
+import { type OauthPublicApiConfig } from '../oauth.config';
 import { OAuthUc } from './oauth.uc';
 
 describe(OAuthUc.name, () => {

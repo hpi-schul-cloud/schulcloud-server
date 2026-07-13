@@ -1,14 +1,12 @@
-import { createMock } from '@golevelup/ts-jest';
-import { LegacyLogger } from '@infra/logger';
 import { Entity, EntityData, EntityName, Property } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
-import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
-import { BaseEntityWithTimestamps } from '@shared/domain/entity';
-import { EntityId } from '@shared/domain/types';
-import { BaseDomainObjectRepo } from '@shared/repo/base-domain-object.repo';
 import { MongoMemoryDatabaseModule } from '@testing/database';
+import { AuthorizableObject, DomainObject } from '../domain/domain-object';
+import { BaseEntityWithTimestamps } from '../domain/entity';
+import { EntityId } from '../domain/types';
+import { BaseDomainObjectRepo } from '../repo/base-domain-object.repo';
 
 describe('BaseDomainObjectRepo', () => {
 	interface TestEntityProperties {
@@ -68,13 +66,7 @@ describe('BaseDomainObjectRepo', () => {
 					entities: [TestEntity],
 				}),
 			],
-			providers: [
-				TestRepo,
-				{
-					provide: LegacyLogger,
-					useValue: createMock<LegacyLogger>(),
-				},
-			],
+			providers: [TestRepo],
 		}).compile();
 
 		repo = module.get(TestRepo);
@@ -105,7 +97,10 @@ describe('BaseDomainObjectRepo', () => {
 				const dob = new TestDO({ id: oid.toHexString(), name: 'test' });
 				const spyCreate = jest.spyOn(em, 'create');
 
-				const { id, ...expected } = dob.getProps();
+				const expected = { ...dob.getProps() };
+				// @ts-expect-error - testing internal behavior
+				delete expected.id;
+
 				return { dob, spyCreate, oid, expected };
 			};
 
@@ -148,7 +143,9 @@ describe('BaseDomainObjectRepo', () => {
 				const dob = new TestDO({ id: entity.id, name: 'test' });
 				const spyAssign = jest.spyOn(em, 'assign');
 
-				const { id, ...expected } = dob.getProps();
+				const expected = { ...dob.getProps() };
+				// @ts-expect-error - testing internal behavior
+				delete expected.id;
 
 				return { entity, dob, spyAssign, expected };
 			};

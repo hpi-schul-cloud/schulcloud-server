@@ -1,5 +1,5 @@
 import { MessageMapper } from './message.mapper';
-import { IncidentDto } from '../../adapter/dto';
+import { type IncidentDto } from '../../adapter/dto';
 
 describe('MessageMapper', () => {
 	describe('map to message', () => {

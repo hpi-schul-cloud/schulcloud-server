@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { EntityId } from '@shared/domain/types';
-import jwt, { JwtPayload } from 'jsonwebtoken';
+import { type EntityId } from '@shared/domain/types';
+import jwt, { type JwtPayload } from 'jsonwebtoken';
 import { TokenInvalidLoggableException } from '../../loggable';
 import { OauthSessionToken } from './oauth-session-token';
 

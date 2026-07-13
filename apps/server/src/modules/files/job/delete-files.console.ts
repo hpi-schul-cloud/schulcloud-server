@@ -15,7 +15,7 @@ export class DeleteFilesConsole {
 		command: 'cleanup-job <days> [batchSize]',
 		description: 'cleanup job to remove files that were marked for deletion <days> days ago',
 	})
-	async deleteMarkedFiles(daysSinceDeletion: number, batchSize = 1000): Promise<void> {
+	public async deleteMarkedFiles(daysSinceDeletion: number, batchSize = 1000): Promise<void> {
 		this.logger.log(
 			`Start cleanup job: Deleting files that were marked for deletion at least ${daysSinceDeletion} days ago; batch size: ${batchSize}`
 		);

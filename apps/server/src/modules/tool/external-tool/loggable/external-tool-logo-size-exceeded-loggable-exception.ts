@@ -1,6 +1,6 @@
 import { HttpStatus } from '@nestjs/common';
 import { BusinessError } from '@shared/common/error';
-import { Loggable, LoggableMessage } from '@shared/common/loggable';
+import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
 
 export class ExternalToolLogoSizeExceededLoggableException extends BusinessError implements Loggable {
 	constructor(
@@ -17,7 +17,7 @@ export class ExternalToolLogoSizeExceededLoggableException extends BusinessError
 		);
 	}
 
-	getLogMessage(): LoggableMessage {
+	public getLogMessage(): LoggableMessage {
 		return {
 			type: 'EXTERNAL_TOOL_LOGO_SIZE_EXCEEDED',
 			message: 'External tool logo size exceeded',

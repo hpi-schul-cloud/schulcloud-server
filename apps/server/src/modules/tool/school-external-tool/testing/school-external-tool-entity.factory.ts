@@ -1,7 +1,7 @@
 import { schoolEntityFactory } from '@modules/school/testing';
 import { BaseFactory } from '@testing/factory/base.factory';
 import { externalToolEntityFactory } from '../../external-tool/testing';
-import { SchoolExternalToolEntity, SchoolExternalToolEntityProps } from '../repo';
+import { SchoolExternalToolEntity, type SchoolExternalToolEntityProps } from '../repo';
 
 export const schoolExternalToolEntityFactory = BaseFactory.define<
 	SchoolExternalToolEntity,

@@ -14,12 +14,12 @@ export class CopyApiResponse {
 	@ApiPropertyOptional({
 		description: 'Id of copied element',
 	})
-	public id?: string;
+	id?: string;
 
 	@ApiPropertyOptional({
 		description: 'Title of copied element',
 	})
-	public title?: string;
+	title?: string;
 
 	@ApiProperty({
 		enum: CopyElementType,
@@ -27,12 +27,12 @@ export class CopyApiResponse {
 		description: 'Type of copied element',
 		example: 'COURSE',
 	})
-	public type: CopyElementType;
+	type: CopyElementType;
 
 	@ApiPropertyOptional({
 		description: 'Id of destination parent reference',
 	})
-	public destinationId?: string;
+	destinationId?: string;
 
 	@ApiProperty({
 		enum: CopyStatusEnum,
@@ -40,12 +40,12 @@ export class CopyApiResponse {
 		description: 'Copy progress status of copied element',
 		example: 'success',
 	})
-	public status: CopyStatusEnum;
+	status: CopyStatusEnum;
 
 	@ApiPropertyOptional({
 		type: 'array',
 		items: { $ref: getSchemaPath(CopyApiResponse) },
 		description: 'List of included sub elements with recursive type structure',
 	})
-	public elements?: CopyApiResponse[];
+	elements?: CopyApiResponse[];
 }

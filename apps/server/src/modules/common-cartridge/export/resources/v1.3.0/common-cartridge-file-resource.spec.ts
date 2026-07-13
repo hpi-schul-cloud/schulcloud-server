@@ -1,5 +1,5 @@
 import { streamToString } from '@modules/common-cartridge/testing/common-cartridge-testing.utils';
-import { Readable, Stream } from 'stream';
+import { Readable, type Stream } from 'stream';
 import { createCommonCartridgeFileResourcePropsV130 } from '../../../testing/common-cartridge-resource-props.factory';
 import {
 	CommonCartridgeElementType,

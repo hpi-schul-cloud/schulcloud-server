@@ -12,11 +12,11 @@ import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
-import { HttpStatus, INestApplication } from '@nestjs/common';
+import { HttpStatus, type INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { TestApiClient } from '@testing/test-api-client';
-import { REGISTRATION_PUBLIC_API_CONFIG_TOKEN, RegistrationPublicApiConfig } from '../../registration.config';
+import { REGISTRATION_PUBLIC_API_CONFIG_TOKEN, type RegistrationPublicApiConfig } from '../../registration.config';
 import { registrationEntityFactory } from '../../testing/registration-entity.factory';
 
 const MOCK_PASSWORD = 'password123';

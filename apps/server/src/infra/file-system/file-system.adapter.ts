@@ -9,7 +9,7 @@ const { mkdir, readdir, writeFile, readFile, mkdtemp } = fsp;
 
 @Injectable()
 export class FileSystemAdapter {
-	private encoding: BufferEncoding;
+	private readonly encoding: BufferEncoding;
 
 	constructor() {
 		this.encoding = 'utf-8';
@@ -23,7 +23,7 @@ export class FileSystemAdapter {
 	 * creates a directory if not already exists
 	 * @param folderPath
 	 */
-	async createDir(folderPath: string): Promise<void> {
+	public async createDir(folderPath: string): Promise<void> {
 		const exists = existsSync(folderPath);
 		if (!exists) await mkdir(folderPath);
 	}
@@ -33,7 +33,7 @@ export class FileSystemAdapter {
 	 * @param folderPath path to an existing folder
 	 * @returns string array of filenames
 	 */
-	async readDir(folderPath: string): Promise<string[]> {
+	public async readDir(folderPath: string): Promise<string[]> {
 		const filenames = await readdir(folderPath, { encoding: this.encoding });
 		return filenames;
 	}
@@ -45,7 +45,7 @@ export class FileSystemAdapter {
 	 * @param filePath path to a file
 	 * @param text
 	 */
-	async writeFile(filePath: string, text: string): Promise<void> {
+	public async writeFile(filePath: string, text: string): Promise<void> {
 		await writeFile(filePath, text);
 	}
 
@@ -54,7 +54,7 @@ export class FileSystemAdapter {
 	 * @param filePath path to existing file, format depending on os
 	 * @returns file content as encoded text
 	 */
-	async readFile(filePath: string): Promise<string> {
+	public async readFile(filePath: string): Promise<string> {
 		const text = await readFile(filePath, this.encoding);
 		return text;
 	}
@@ -65,7 +65,7 @@ export class FileSystemAdapter {
 	 * @param dirNamePrefix
 	 * @returns full path string to temp folder, format depends on os
 	 */
-	async createTmpDir(dirNamePrefix: string): Promise<string> {
+	public async createTmpDir(dirNamePrefix: string): Promise<string> {
 		const dirPath = this.joinPath(os.tmpdir(), dirNamePrefix);
 		const tmpDirPath = await mkdtemp(dirPath);
 		return tmpDirPath;
@@ -75,13 +75,13 @@ export class FileSystemAdapter {
 	 * Removes the given folder recursively including content when not empty.
 	 * @param folderPath path to an existing folder, format depending on
 	 */
-	async removeDirRecursive(folderPath: string): Promise<void> {
+	public removeDirRecursive(folderPath: string): Promise<void> {
 		// fs.rm changed in node 14.14, use rimraf instead
 		rimrafSync(folderPath);
 		return Promise.resolve();
 	}
 
-	joinPath(...paths: string[]): string {
+	public joinPath(...paths: string[]): string {
 		return path.join(...paths);
 	}
 }

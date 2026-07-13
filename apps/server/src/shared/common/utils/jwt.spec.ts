@@ -1,8 +1,8 @@
 import { faker } from '@faker-js/faker';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { UnauthorizedException } from '@nestjs/common';
-import { Request } from 'express';
-import { JwtFromRequestFunction } from 'passport-jwt';
+import { type Request } from 'express';
+import { type JwtFromRequestFunction } from 'passport-jwt';
 import { JwtExtractor } from './jwt';
 
 describe('JwtExtractor', () => {

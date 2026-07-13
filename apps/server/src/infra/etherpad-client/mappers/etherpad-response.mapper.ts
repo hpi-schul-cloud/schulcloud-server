@@ -2,19 +2,19 @@ import { ErrorUtils } from '@infra/error';
 import { InternalServerErrorException } from '@nestjs/common';
 import { TypeGuard } from '@shared/common/guards';
 import {
-	CreateAuthorUsingGET200ResponseData,
-	CreateGroupUsingGET200ResponseData,
-	CreateSessionUsingGET200ResponseData,
+	type CreateAuthorUsingGET200ResponseData,
+	type CreateGroupUsingGET200ResponseData,
+	type CreateSessionUsingGET200ResponseData,
 } from '../etherpad-api-client';
 import {
-	AuthorId,
-	EtherpadErrorType,
-	EtherpadParams,
-	EtherpadResponse,
-	GroupId,
-	PadId,
-	Session,
-	SessionId,
+	type AuthorId,
+	type EtherpadErrorType,
+	type EtherpadParams,
+	type EtherpadResponse,
+	type GroupId,
+	type PadId,
+	type Session,
+	type SessionId,
 } from '../interface';
 import { EtherpadErrorLoggableException } from '../loggable';
 

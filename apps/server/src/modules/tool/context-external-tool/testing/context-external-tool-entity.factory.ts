@@ -2,7 +2,7 @@ import { courseEntityFactory } from '@modules/course/testing';
 import { BaseFactory } from '@testing/factory/base.factory';
 import { CustomParameterEntryEntity } from '../../common/entity';
 import { schoolExternalToolEntityFactory } from '../../school-external-tool/testing/school-external-tool-entity.factory';
-import { ContextExternalToolEntity, ContextExternalToolEntityProps, ContextExternalToolType } from '../repo';
+import { ContextExternalToolEntity, type ContextExternalToolEntityProps, ContextExternalToolType } from '../repo';
 
 export const contextExternalToolEntityFactory = BaseFactory.define<
 	ContextExternalToolEntity,

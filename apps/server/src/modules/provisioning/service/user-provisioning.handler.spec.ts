@@ -1,23 +1,23 @@
 import { faker } from '@faker-js/faker';
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountService } from '@modules/account';
 import { ErwinIdentifierService, ReferencedEntityType } from '@modules/erwin-identifier';
 import { erwinIdentifierFactoryWithUser } from '@modules/erwin-identifier/testing';
-import { RoleDto, RoleName, RoleService } from '@modules/role';
+import { type RoleDto, RoleName, RoleService } from '@modules/role';
 import { SchoolService } from '@modules/school';
 import { schoolFactory } from '@modules/school/testing';
 import { UserService } from '@modules/user';
 import { userDoFactory } from '@modules/user/testing';
-import { Test, TestingModule } from '@nestjs/testing';
-import { ExternalSchoolDto, ExternalUserDto, ProvisioningSystemDto } from '../dto';
+import { Test, type TestingModule } from '@nestjs/testing';
+import { type ExternalSchoolDto, ExternalUserDto, type ProvisioningSystemDto } from '../dto';
 import {
 	BadDataLoggableException,
 	SchoolMissingLoggableException,
 	UserRoleUnknownLoggableException,
 } from '../loggable';
 import { externalSchoolDtoFactory, externalUserDtoFactory, provisioningSystemDtoFactory } from '../testing';
-import { ProvisioningContext } from './erwin-provisioning-handler.interface';
+import { type ProvisioningContext } from './erwin-provisioning-handler.interface';
 import { UserProvisioningHandler } from './user-provisioning.handler';
 
 describe('UserProvisioningHandler', () => {

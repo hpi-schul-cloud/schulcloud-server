@@ -1,8 +1,8 @@
-import { AuthorizableObject } from '@shared/domain/domain-object';
-import { EntityId } from '@shared/domain/types';
-import { RoomAuthorizable } from './room-authorizable.do';
-import { RoomInvitationLink } from '@modules/room/domain/do/room-invitation-link.do';
-import { RoomPublicApiConfig } from '@modules/room';
+import { type AuthorizableObject } from '@shared/domain/domain-object';
+import { type EntityId } from '@shared/domain/types';
+import { type RoomAuthorizable } from './room-authorizable.do';
+import { type RoomInvitationLink } from '@modules/room/domain/do/room-invitation-link.do';
+import { type RoomPublicApiConfig } from '@modules/room';
 
 export class RoomInvitationLinkAuthorizable implements AuthorizableObject {
 	public readonly id: EntityId = '';

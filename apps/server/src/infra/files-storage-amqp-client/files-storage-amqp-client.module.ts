@@ -29,7 +29,7 @@ export class FilesStorageAMQPClientModule {
 				LoggerModule,
 				ConfigurationModule.register(options.configInjectionToken, options.configConstructor),
 				ConfigurationModule.register(options.exchangeConfigInjectionToken, options.exchangeConfigConstructor),
-				RabbitMQWrapperModule.register(options),
+				RabbitMQWrapperModule.register({ ...options, connectionName: 'files-storage' }),
 			],
 			providers,
 			exports: [FilesStorageClientAdapterService],

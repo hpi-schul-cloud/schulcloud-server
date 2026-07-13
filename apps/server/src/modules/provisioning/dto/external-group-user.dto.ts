@@ -1,4 +1,4 @@
-import { RoleName } from '@modules/role';
+import { type RoleName } from '@modules/role';
 
 export class ExternalGroupUserDto {
 	externalUserId: string;

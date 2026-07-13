@@ -1,10 +1,10 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { mediaSourceFactory } from '@modules/media-source/testing';
-import { ExternalToolMedium } from '@modules/tool/external-tool/domain';
-import { Test, TestingModule } from '@nestjs/testing';
+import { type ExternalToolMedium } from '@modules/tool/external-tool/domain';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { ExternalToolMediumStatus } from '../../tool/external-tool/enum';
-import { MediaUserLicense } from '../domain';
+import { type MediaUserLicense } from '../domain';
 import { MediaUserLicenseRepo } from '../repo';
 import { mediaUserLicenseFactory } from '../testing';
 import { MediaUserLicenseService } from './media-user-license.service';

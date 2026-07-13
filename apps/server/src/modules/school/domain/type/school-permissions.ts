@@ -1,4 +1,4 @@
-import { Permission } from '@shared/domain/interface';
+import { type Permission } from '@shared/domain/interface';
 
 export interface TeacherPermission {
 	[Permission.STUDENT_LIST]?: boolean;

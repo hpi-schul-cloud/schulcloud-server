@@ -1,6 +1,6 @@
-import { ValidationError } from '@shared/common/error';
+import { type ValidationError } from '@shared/common/error';
 import { customParameterFactory } from '../../../../external-tool/testing';
-import { CustomParameter, CustomParameterEntry, ToolParameterUnknownLoggableException } from '../../../domain';
+import { type CustomParameter, CustomParameterEntry, ToolParameterUnknownLoggableException } from '../../../domain';
 import { ParameterArrayUnknownKeyValidator } from './parameter-array-unknown-key-validator';
 
 describe(ParameterArrayUnknownKeyValidator.name, () => {

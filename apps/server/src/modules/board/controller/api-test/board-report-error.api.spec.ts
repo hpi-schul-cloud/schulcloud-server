@@ -3,11 +3,11 @@ import { accountFactory } from '@modules/account/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server/server.app.module';
 import { userFactory } from '@modules/user/testing';
-import { INestApplication } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { type INestApplication } from '@nestjs/common';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { TestApiClient } from '@testing/test-api-client';
-import { BoardErrorReportBodyParams } from '../dto/board/board-error-report.body.params';
+import { type BoardErrorReportBodyParams } from '../dto/board/board-error-report.body.params';
 
 const baseRouteName = '/report-board-error';
 

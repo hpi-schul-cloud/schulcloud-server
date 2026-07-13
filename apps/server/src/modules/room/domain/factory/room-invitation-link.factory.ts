@@ -1,5 +1,9 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { RoomInvitationLink, RoomInvitationLinkDto, RoomInvitationLinkProps } from '../do/room-invitation-link.do';
+import {
+	RoomInvitationLink,
+	type RoomInvitationLinkDto,
+	type RoomInvitationLinkProps,
+} from '../do/room-invitation-link.do';
 
 export class RoomInvitationLinkFactory {
 	public static createInvitationLink(dto: RoomInvitationLinkDto): RoomInvitationLink {

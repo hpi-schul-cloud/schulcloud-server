@@ -1,8 +1,12 @@
-import { BusinessError } from '@shared/common/error';
-import { EntityId } from '@shared/domain/types';
-import { CustomParameter, CustomParameterEntry, ToolParameterTypeMismatchLoggableException } from '../../../domain';
+import { type BusinessError } from '@shared/common/error';
+import { type EntityId } from '@shared/domain/types';
+import {
+	type CustomParameter,
+	type CustomParameterEntry,
+	ToolParameterTypeMismatchLoggableException,
+} from '../../../domain';
 import { ToolParameterTypeValidationUtil } from '../tool-parameter-type-validation.util';
-import { ParameterEntryValidator } from './parameter-entry-validator';
+import { type ParameterEntryValidator } from './parameter-entry-validator';
 
 export class ParameterEntryTypeValidator implements ParameterEntryValidator {
 	public validate(

@@ -11,7 +11,7 @@ export class BasicToolConfigParams extends ExternalToolConfigCreateParams {
 		description: 'Configuration type of the tool.',
 		example: ToolConfigType.BASIC,
 	})
-	public type!: ToolConfigType;
+	type!: ToolConfigType;
 
 	@IsUrl(
 		{ require_protocol: true, protocols: ['https'] },
@@ -22,5 +22,5 @@ export class BasicToolConfigParams extends ExternalToolConfigCreateParams {
 			'Defines the target URL that is launched. Can be automatically filled with parameter values when using : in-front of the parameter name. Must be HTTPS.',
 		example: 'https://example.com/:parameter1/test',
 	})
-	public baseUrl!: string;
+	baseUrl!: string;
 }

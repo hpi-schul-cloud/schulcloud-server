@@ -1,22 +1,22 @@
-import { DeepMocked, createMock } from '@golevelup/ts-jest';
-import { InternalCollaborativeStorageAdapterConfig } from '@infra/collaborative-storage/collaborative-storage-adapter.config';
+import { type DeepMocked, createMock } from '@golevelup/ts-jest';
+import { type InternalCollaborativeStorageAdapterConfig } from '@infra/collaborative-storage/collaborative-storage-adapter.config';
 import { LegacyLogger } from '@infra/logger';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { HttpService } from '@nestjs/axios';
 import { NotFoundException, NotImplementedException, UnprocessableEntityException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { axiosResponseFactory } from '@testing/factory/axios-response.factory';
-import { AxiosResponse } from 'axios';
-import { Observable, of } from 'rxjs';
+import { type AxiosResponse } from 'axios';
+import { type Observable, of } from 'rxjs';
 import { NextcloudClient } from './nextcloud.client';
 import {
-	GroupUsers,
-	GroupfoldersCreated,
-	GroupfoldersFolder,
-	Meta,
-	NextcloudGroups,
-	OcsResponse,
-	SuccessfulRes,
+	type GroupUsers,
+	type GroupfoldersCreated,
+	type GroupfoldersFolder,
+	type Meta,
+	type NextcloudGroups,
+	type OcsResponse,
+	type SuccessfulRes,
 } from './nextcloud.interface';
 
 const defaultMetadata: Meta = {

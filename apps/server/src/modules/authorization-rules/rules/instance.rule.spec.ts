@@ -1,6 +1,6 @@
 import {
 	AUTHORIZATION_CONFIG_TOKEN,
-	AuthorizationContext,
+	type AuthorizationContext,
 	AuthorizationContextBuilder,
 	AuthorizationHelper,
 	AuthorizationInjectionService,
@@ -9,7 +9,7 @@ import { instanceFactory } from '@modules/instance/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { NotImplementedException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { InstanceRule } from './instance.rule';

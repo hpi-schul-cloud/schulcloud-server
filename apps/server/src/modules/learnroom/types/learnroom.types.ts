@@ -1,7 +1,7 @@
-import { CourseEntity, CourseMetadata, CourseType } from '@modules/course/repo';
-import { LessonEntity } from '@modules/lesson/repo';
-import { Task } from '@modules/task/repo';
-import { ColumnBoardNode } from './room-board.types';
+import { type CourseEntity, type CourseMetadata, type CourseType } from '@modules/course/repo';
+import { type LessonEntity } from '@modules/lesson/repo';
+import { type Task } from '@modules/task/repo';
+import { type ColumnBoardNode } from './room-board.types';
 
 export type Learnroom = CourseEntity;
 

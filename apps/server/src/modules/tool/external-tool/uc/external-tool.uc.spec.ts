@@ -1,31 +1,31 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import { DefaultEncryptionService, type EncryptionService } from '@infra/encryption';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
-import { School, SchoolService } from '@modules/school';
+import { type School, SchoolService } from '@modules/school';
 import { schoolFactory } from '@modules/school/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
-import { Test, TestingModule } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 import { Page } from '@shared/domain/domainobject/page';
-import { IFindOptions, Permission, SortOrder } from '@shared/domain/interface';
+import { type IFindOptions, Permission, SortOrder } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { currentUserFactory } from '@testing/factory/currentuser.factory';
-import { CustomParameter } from '../../common/domain';
+import { type CustomParameter } from '../../common/domain';
 import { LtiMessageType, LtiPrivacyPermission, ToolConfigType } from '../../common/enum';
-import { ExternalToolSearchQuery } from '../../common/interface';
-import { SchoolExternalTool } from '../../school-external-tool/domain';
+import { type ExternalToolSearchQuery } from '../../common/interface';
+import { type SchoolExternalTool } from '../../school-external-tool/domain';
 import { SchoolExternalToolService } from '../../school-external-tool/service';
 import { schoolExternalToolFactory } from '../../school-external-tool/testing';
 import { TOOL_CONFIG_TOKEN } from '../../tool-config';
 import {
 	ExternalTool,
-	ExternalToolDatasheetTemplateData,
+	type ExternalToolDatasheetTemplateData,
 	ExternalToolParameterDatasheetTemplateProperty,
-	ExternalToolProps,
-	Lti11ToolConfig,
-	Oauth2ToolConfig,
+	type ExternalToolProps,
+	type Lti11ToolConfig,
+	type Oauth2ToolConfig,
 } from '../domain';
 import {
 	DatasheetPdfService,
@@ -42,7 +42,12 @@ import {
 	lti11ToolConfigFactory,
 	oauth2ToolConfigFactory,
 } from '../testing';
-import { ExternalToolCreate, ExternalToolImportResult, ExternalToolUpdate, Lti11ToolConfigUpdate } from './dto';
+import {
+	type ExternalToolCreate,
+	type ExternalToolImportResult,
+	type ExternalToolUpdate,
+	type Lti11ToolConfigUpdate,
+} from './dto';
 import { ExternalToolUc } from './external-tool.uc';
 
 describe(ExternalToolUc.name, () => {

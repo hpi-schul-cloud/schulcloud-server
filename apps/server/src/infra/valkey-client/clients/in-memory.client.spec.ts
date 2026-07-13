@@ -1,5 +1,5 @@
-import { createMock, DeepMocked } from '@golevelup/ts-jest';
-import { Logger } from '@infra/logger';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import { type Logger } from '@infra/logger';
 import { InMemoryClient } from './in-memory.client';
 
 describe(InMemoryClient.name, () => {

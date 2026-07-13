@@ -1,7 +1,7 @@
 import { Type } from 'class-transformer';
 import { ArrayMinSize, IsArray, IsObject, IsString, ValidateNested } from 'class-validator';
-import { SchulconnexPersonResponse } from './schulconnex-person-response';
-import { SchulconnexPersonenkontextResponse } from './schulconnex-personenkontext-response';
+import { SchulconnexPersonResponse } from './schulconnex-person.response';
+import { SchulconnexPersonenkontextResponse } from './schulconnex-personenkontext.response';
 import { SchulconnexResponseValidationGroups } from './schulconnex-response-validation-groups';
 
 export class SchulconnexResponse {

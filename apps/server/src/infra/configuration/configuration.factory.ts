@@ -1,7 +1,7 @@
-import { ConfigService } from '@nestjs/config';
+import { type ConfigService } from '@nestjs/config';
 import { plainToClassFromExist } from 'class-transformer';
 import { validateSync } from 'class-validator';
-import { WithConfigurationDecorator } from './configuration.decorator';
+import { type WithConfigurationDecorator } from './configuration.decorator';
 
 /**
  * Factory to load and validate configuration classes decorated with @Configuration()

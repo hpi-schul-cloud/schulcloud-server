@@ -1,10 +1,14 @@
-import { ValidationError } from '@shared/common/error';
-import { EntityId } from '@shared/domain/types';
-import { CustomParameter, CustomParameterEntry, ToolParameterUnknownLoggableException } from '../../../domain';
-import { ParameterArrayValidator } from './parameter-array-validator';
+import { type ValidationError } from '@shared/common/error';
+import { type EntityId } from '@shared/domain/types';
+import {
+	type CustomParameter,
+	type CustomParameterEntry,
+	ToolParameterUnknownLoggableException,
+} from '../../../domain';
+import { type ParameterArrayValidator } from './parameter-array-validator';
 
 export class ParameterArrayUnknownKeyValidator implements ParameterArrayValidator {
-	validate(
+	public validate(
 		entries: CustomParameterEntry[],
 		declarations: CustomParameter[],
 		toolId: EntityId | undefined

@@ -1,5 +1,5 @@
-import { LogMessageData } from '@shared/common/loggable/interfaces';
-import { News } from '../../repo';
+import { type LogMessageData } from '@shared/common/loggable/interfaces';
+import { type News } from '../../repo';
 
 export class NewsLogMapper {
 	public static mapToLogMessageData(news: News): LogMessageData {

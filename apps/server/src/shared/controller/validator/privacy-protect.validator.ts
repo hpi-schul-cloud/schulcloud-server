@@ -1,4 +1,4 @@
-import { Allow, ValidationOptions } from 'class-validator';
+import { Allow, type ValidationOptions } from 'class-validator';
 
 /**
  * Set privacy protect context attribute in validation options.

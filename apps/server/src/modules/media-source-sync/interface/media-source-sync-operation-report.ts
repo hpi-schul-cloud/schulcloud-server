@@ -1,4 +1,4 @@
-import { MediaSourceSyncOperation, MediaSourceSyncStatus } from '../types';
+import { type MediaSourceSyncOperation, type MediaSourceSyncStatus } from '../types';
 
 export interface MediaSourceSyncOperationReport {
 	operation: MediaSourceSyncOperation;

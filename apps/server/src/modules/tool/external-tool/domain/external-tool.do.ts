@@ -1,10 +1,10 @@
 import { InternalServerErrorException } from '@nestjs/common';
-import { AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
-import { CustomParameter } from '../../common/domain';
-import { LtiMessageType, ToolConfigType, ToolContextType } from '../../common/enum';
-import { BasicToolConfig, ExternalToolConfig, Lti11ToolConfig, Oauth2ToolConfig } from './config';
-import { ExternalToolMedium } from './external-tool-medium.do';
-import { FileRecordRef } from './file-record-ref';
+import { type AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
+import { type CustomParameter } from '../../common/domain';
+import { LtiMessageType, ToolConfigType, type ToolContextType } from '../../common/enum';
+import { BasicToolConfig, type ExternalToolConfig, Lti11ToolConfig, Oauth2ToolConfig } from './config';
+import { type ExternalToolMedium } from './external-tool-medium.do';
+import { type FileRecordRef } from './file-record-ref';
 
 export interface ExternalToolProps extends AuthorizableObject {
 	id: string;
@@ -201,15 +201,15 @@ export class ExternalTool extends DomainObject<ExternalToolProps> {
 		this.iconName = props.iconName;
 	}
 
-	static isBasicConfig(config: ExternalToolConfig): config is BasicToolConfig {
+	public static isBasicConfig(config: ExternalToolConfig): config is BasicToolConfig {
 		return ToolConfigType.BASIC === config.type;
 	}
 
-	static isOauth2Config(config: ExternalToolConfig): config is Oauth2ToolConfig {
+	public static isOauth2Config(config: ExternalToolConfig): config is Oauth2ToolConfig {
 		return ToolConfigType.OAUTH2 === config.type;
 	}
 
-	static isLti11Config(config: ExternalToolConfig): config is Lti11ToolConfig {
+	public static isLti11Config(config: ExternalToolConfig): config is Lti11ToolConfig {
 		return ToolConfigType.LTI11 === config.type;
 	}
 

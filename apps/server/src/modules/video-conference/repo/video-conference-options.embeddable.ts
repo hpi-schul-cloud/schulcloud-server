@@ -3,13 +3,13 @@ import { Embeddable, Property } from '@mikro-orm/core';
 @Embeddable()
 export class VideoConferenceOptions {
 	@Property()
-	public everyAttendeJoinsMuted: boolean;
+	everyAttendeJoinsMuted: boolean;
 
 	@Property()
-	public everybodyJoinsAsModerator: boolean;
+	everybodyJoinsAsModerator: boolean;
 
 	@Property()
-	public moderatorMustApproveJoinRequests: boolean;
+	moderatorMustApproveJoinRequests: boolean;
 
 	constructor(options: VideoConferenceOptions) {
 		this.everyAttendeJoinsMuted = options.everyAttendeJoinsMuted;

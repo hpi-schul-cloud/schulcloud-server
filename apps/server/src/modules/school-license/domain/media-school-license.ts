@@ -1,5 +1,5 @@
-import { MediaSource, MediumIdentifier } from '@modules/media-source';
-import { SchoolLicense, SchoolLicenseProps } from './school-license';
+import { type MediaSource, type MediumIdentifier } from '@modules/media-source';
+import { SchoolLicense, type SchoolLicenseProps } from './school-license';
 
 export interface MediaSchoolLicenseProps extends SchoolLicenseProps, MediumIdentifier {}
 

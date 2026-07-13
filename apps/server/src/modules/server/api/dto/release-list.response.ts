@@ -7,5 +7,5 @@ export class ReleaseListResponse {
 	}
 
 	@ApiProperty({ type: [ReleaseItemResponse] })
-	public data: ReleaseItemResponse[];
+	data: ReleaseItemResponse[];
 }
