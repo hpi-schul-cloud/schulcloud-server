@@ -1,5 +1,5 @@
 import { type EntityId } from '@shared/domain/types';
-import { TeamUserDto } from './team-user.dto';
+import type { TeamUserDto } from './team-user.dto';
 
 /**
  * TODO

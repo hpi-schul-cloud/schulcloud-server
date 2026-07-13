@@ -1,4 +1,4 @@
-import { ResolvedAccountDto } from './resolved-account.dto';
+import type { ResolvedAccountDto } from './resolved-account.dto';
 
 export class ResolvedSearchListAccountDto {
 	data: ResolvedAccountDto[];
