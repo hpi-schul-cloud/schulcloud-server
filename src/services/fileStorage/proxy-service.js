@@ -81,7 +81,7 @@ const getStorageProviderIdAndBucket = async (userId, fileObject, strategy) => {
  */
 const prepareSecurityCheck = async (file, userId, strategy) => {
 	if (Configuration.get('ENABLE_FILE_SECURITY_CHECK') === true) {
-		const FILE_SECURITY_CHECK_MAX_FILE_SIZE =  Configuration.get('FILE_SECURITY_CHECK_MAX_FILE_SIZE');
+		const FILE_SECURITY_CHECK_MAX_FILE_SIZE = Configuration.get('FILE_SECURITY_CHECK_MAX_FILE_SIZE');
 		if (file.size > FILE_SECURITY_CHECK_MAX_FILE_SIZE) {
 			return FileModel.updateOne(
 				{ _id: file._id },
@@ -105,6 +105,9 @@ const prepareSecurityCheck = async (file, userId, strategy) => {
 			})
 			.then((signedUrl) => {
 				const SECURITY_CHECK_SERVICE_PATH = Configuration.get('SECURITY_CHECK_SERVICE_PATH');
+				const callbackUrl = new URL(
+					`${Configuration.get('API_HOST')}${SECURITY_CHECK_SERVICE_PATH}${file.securityCheck.requestToken}`
+				);
 				const params = {
 					url: Configuration.get('FILE_SECURITY_CHECK_SERVICE_URI'),
 					method: 'POST',
@@ -114,10 +117,7 @@ const prepareSecurityCheck = async (file, userId, strategy) => {
 					},
 					data: {
 						download_uri: signedUrl,
-						callback_uri: url.resolve(
-							Configuration.get('API_HOST'),
-							`${SECURITY_CHECK_SERVICE_PATH}${file.securityCheck.requestToken}`
-						),
+						callback_uri: callbackUrl.toString(),
 					},
 				};
 				const send = axios(params);
@@ -889,7 +889,7 @@ const filePermissionService = {
 										? {
 												read,
 												write: isFileCreator ? write : undefined,
-										  }
+											}
 										: { write, read };
 								},
 								teacher() {
@@ -898,7 +898,7 @@ const filePermissionService = {
 										: {
 												read,
 												write: isFileCreator ? write : undefined,
-										  };
+											};
 								},
 							};
 
