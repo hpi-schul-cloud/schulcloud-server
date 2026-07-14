@@ -94,6 +94,7 @@ export class TestApiClientBuilder {
 
 	public asServiceAccount(): this {
 		this.isServiceAccount = true;
+
 		return this;
 	}
 
@@ -118,6 +119,7 @@ export class TestApiClientBuilder {
 	public withJwt(user: UserForAuthentication, jwtConfig: TestJwtModuleConfig): this {
 		this.user = user;
 		this.jwtConfig = jwtConfig;
+
 		return this;
 	}
 
@@ -127,6 +129,7 @@ export class TestApiClientBuilder {
 	 */
 	public withApiKey(apiKey: string): AuthenticatedTestApiClient {
 		this.apiKey = apiKey;
+
 		return new AuthenticatedTestApiClient(this.app, this.baseRoute, apiKey, true);
 	}
 
@@ -217,6 +220,7 @@ export class TestApiClientBuilder {
 
 	private normalizeRoute(route: string): string {
 		if (!route) return '/';
+
 		return route.startsWith('/') ? route : `/${route}`;
 	}
 }
