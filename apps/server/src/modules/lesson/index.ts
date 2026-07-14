@@ -1,3 +1,2 @@
-export { LessonCopyParentParams } from './domain';
-export { LessonCopyService, LessonService } from './domain/service';
+export { LessonCopyParentParams, LessonCopyService, LessonService } from './domain';
 export * from './lesson.module';
