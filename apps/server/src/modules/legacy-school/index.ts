@@ -11,4 +11,4 @@ export {
 	SchulConneXProvisioningOptions,
 } from './domain';
 export { LegacySchoolModule } from './legacy-school.module';
-export * from './service';
+export { LegacySchoolService, SchoolSystemOptionsService } from './service';

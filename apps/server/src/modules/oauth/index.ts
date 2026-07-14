@@ -4,8 +4,7 @@
  * Please do not use wildcard exports.                       *
  *********************************************************** */
 
-export * from './domain';
-export * from './loggable';
+export { OauthSessionToken, OauthSessionTokenFactory } from './domain';
+export { IdTokenExtractionFailureLoggableException, OauthConfigMissingLoggableException } from './loggable';
 export { OAUTH_PUBLIC_API_CONFIG_TOKEN, OauthPublicApiConfig } from './oauth.config';
-export * from './oauth.module';
-export * from './service';
+export { OAuthService, OauthSessionTokenService } from './service';

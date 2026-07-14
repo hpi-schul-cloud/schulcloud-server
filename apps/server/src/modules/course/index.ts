@@ -4,5 +4,5 @@
  * Please do not use wildcard exports.                       *
  *********************************************************** */
 
-export * from './course.module';
+export { CourseModule } from './course.module';
 export { Course, CourseDoService, CourseService, CourseSyncService, CourseSyncAttribute } from './domain';

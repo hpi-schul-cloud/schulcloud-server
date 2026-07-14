@@ -5,6 +5,6 @@
  *********************************************************** */
 
 export { MediaSourceSyncOperationReport, MediaSourceSyncReport } from './interface';
-export * from './media-source-sync.module';
-export * from './service';
-export * from './types';
+export { MediaSourceSyncModule } from './media-source-sync.module';
+export { ExternalToolMetadataUpdateService, MediaSourceSyncService } from './service';
+export { MediaSourceSyncOperation, MediaSourceSyncStatus } from './types';

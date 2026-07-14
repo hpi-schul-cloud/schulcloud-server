@@ -5,4 +5,4 @@
  *********************************************************** */
 
 export { PseudonymModule } from './pseudonym.module';
-export * from './service';
+export { PseudonymService } from './service';

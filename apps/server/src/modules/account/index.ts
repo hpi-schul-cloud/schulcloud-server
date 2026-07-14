@@ -4,6 +4,6 @@
  * Please do not use wildcard exports.                       *
  *********************************************************** */
 
-export * from './account.module';
-export * from './domain';
+export { AccountModule } from './account.module';
+export { Account, AccountSave } from './domain';
 export { AccountService } from './domain/services';

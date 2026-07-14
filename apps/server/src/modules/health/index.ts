@@ -4,5 +4,5 @@
  * Please do not use wildcard exports.                       *
  *********************************************************** */
 
-export * from './health.entities';
-export * from './health-api.module';
+export { HealthEntities } from './health.entities';
+export { HealthApiModule } from './health-api.module';

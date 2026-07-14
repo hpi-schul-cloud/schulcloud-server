@@ -4,7 +4,7 @@
  * Please do not use wildcard exports.                       *
  *********************************************************** */
 
-export * from './domain';
-export * from './repo/entity';
+export { Room, RoomColor, RoomFeatures, RoomService } from './domain';
+export { RoomArrangementEntity, RoomEntity } from './repo/entity';
 export { ROOM_PUBLIC_API_CONFIG_TOKEN, RoomPublicApiConfig } from './room.config';
-export * from './room.module';
+export { RoomModule } from './room.module';

@@ -4,5 +4,4 @@
  * Please do not use wildcard exports.                       *
  *********************************************************** */
 
-export * from './service/share-token.service';
 export { SHARING_PUBLIC_API_CONFIG_TOKEN, SharingPublicApiConfig } from './sharing.config';

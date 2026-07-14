@@ -6,5 +6,5 @@
 
 export { GroupModule } from './group.module';
 export { GroupConfig } from './group.config';
-export * from './domain';
+export { Group, GroupDeletedEvent, GroupFilter, GroupPeriod, GroupTypes, GroupUser } from './domain';
 export { GroupService } from './service';

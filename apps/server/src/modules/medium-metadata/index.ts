@@ -4,7 +4,7 @@
  * Please do not use wildcard exports.                       *
  *********************************************************** */
 
-export * from './dto';
+export { MediumMetadataDto } from './dto';
 export { MediumMetadataApiModule } from './medium-metadata-api.module';
 export { MediumMetadataModule } from './medium-metadata.module';
 export { MediumMetadataService } from './service';

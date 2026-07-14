@@ -5,4 +5,4 @@
  *********************************************************** */
 
 export { LessonCopyParentParams, LessonCopyService, LessonService } from './domain';
-export * from './lesson.module';
+export { LessonModule } from './lesson.module';

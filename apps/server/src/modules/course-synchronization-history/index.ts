@@ -5,4 +5,9 @@
  *********************************************************** */
 
 export { CourseSynchronizationHistoryModule } from './course-synchronization-history.module';
-export * from './domain';
+export {
+	CourseSynchronizationHistory,
+	CourseSynchronizationHistoryFactory,
+	CourseSynchronizationHistoryProps,
+	CourseSynchronizationHistoryService,
+} from './domain';

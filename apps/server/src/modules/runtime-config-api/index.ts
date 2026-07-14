@@ -4,5 +4,5 @@
  * Please do not use wildcard exports.                       *
  *********************************************************** */
 
-export * from './runtime-config-api.module';
-export * from './server-runtime-config.module';
+export { RuntimeConfigApiModule } from './runtime-config-api.module';
+export { ServerRuntimeConfigModule } from './server-runtime-config.module';

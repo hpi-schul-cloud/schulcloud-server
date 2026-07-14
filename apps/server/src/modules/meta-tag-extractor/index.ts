@@ -4,7 +4,5 @@
  * Please do not use wildcard exports.                       *
  *********************************************************** */
 
-export * from './controller';
-export * from './meta-tag-extractor-api.module';
-export * from './meta-tag-extractor.module';
-export * from './uc';
+export { MetaTagExtractorApiModule } from './meta-tag-extractor-api.module';
+export { MetaTagExtractorModule } from './meta-tag-extractor.module';

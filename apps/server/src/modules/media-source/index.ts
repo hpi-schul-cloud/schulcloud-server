@@ -4,10 +4,9 @@
  * Please do not use wildcard exports.                       *
  *********************************************************** */
 
-export * from './do';
-export * from './enum';
-export * from './loggable';
+export { MediaSource, MediaSourceVidisConfig, MediumIdentifier } from './do';
+export { MediaSourceAuthMethod, MediaSourceDataFormat, MediaSourceLicenseType } from './enum';
+export { MediaSourceNotFoundLoggableException } from './loggable';
 export { MediaSourceModule } from './media-source.module';
-export * from './repo';
 export { MediaSourceService } from './service';
-export * from './testing';
+export { mediaSourceEntityFactory, mediaSourceFactory } from './testing';
