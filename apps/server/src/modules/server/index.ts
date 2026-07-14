@@ -6,4 +6,3 @@
  *********************************************************** */
 
 export { ServerTestModule } from './server.app.module';
-export { SERVER_PUBLIC_API_CONFIG_TOKEN, ServerPublicApiConfig } from './server.config';
