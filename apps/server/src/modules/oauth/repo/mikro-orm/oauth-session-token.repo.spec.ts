@@ -31,6 +31,8 @@ describe(OauthSessionTokenMikroOrmRepo.name, () => {
 		repo = module.get(OAUTH_SESSION_TOKEN_REPO);
 		em = module.get(EntityManager);
 		encryptionService = module.get(DefaultEncryptionService);
+
+		encryptionService.encrypt.mockReturnValue('skdhfksdf');
 	});
 
 	afterAll(async () => {
@@ -44,11 +46,32 @@ describe(OauthSessionTokenMikroOrmRepo.name, () => {
 	describe('save', () => {
 		it('should insert a new token', async () => {
 			const oauthSessionToken = oauthSessionTokenFactory.build();
-			encryptionService.encrypt.mockReturnValueOnce('skdhfksdf');
 
 			await repo.save(oauthSessionToken);
 
 			await expect(em.findOneOrFail(OauthSessionTokenEntity, oauthSessionToken.id)).resolves.toBeDefined();
+		});
+
+		it('should encrypt the refresh token', async () => {
+			const oauthSessionToken = oauthSessionTokenFactory.build();
+
+			await repo.save(oauthSessionToken);
+
+			const savedToken = await em.findOneOrFail(OauthSessionTokenEntity, oauthSessionToken.id);
+			expect(savedToken.refreshToken).not.toEqual(oauthSessionToken.refreshToken);
+			expect(savedToken.refreshToken).toEqual('skdhfksdf');
+		});
+	});
+
+	describe('delete', () => {
+		it('should delete the given token', async () => {
+			const token = oauthSessionTokenFactory.build();
+			await repo.save(token);
+			em.clear();
+
+			await repo.delete(token);
+
+			await expect(em.findOneOrFail(OauthSessionTokenEntity, token.id)).rejects.toThrow();
 		});
 	});
 
