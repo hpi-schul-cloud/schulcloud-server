@@ -12,7 +12,7 @@ import { Test, type TestingModule } from '@nestjs/testing';
 import { type Permission } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
-import { TestApiClient } from '@testing/test-api-client';
+import { TestApiClientBuilder } from '@testing/test-api-client-builder';
 import { TEST_JWT_CONFIG_TOKEN, TestJwtModuleConfig } from '@testing/test-jwt-module.config';
 import { type MeResponse } from '../dto';
 
@@ -51,7 +51,6 @@ const mapToMeResponseObject = (user: User, account: AccountEntity, permissions: 
 describe('Me Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let testApiClient: TestApiClient;
 	let userService: UserService;
 	let jwtConfig: TestJwtModuleConfig;
 	let moduleFixture: TestingModule;
@@ -66,7 +65,6 @@ describe('Me Controller (API)', () => {
 				app = moduleFixture.createNestApplication();
 				await app.init();
 				em = app.get(EntityManager);
-				testApiClient = new TestApiClient(app, 'me');
 				userService = app.get(UserService);
 				jwtConfig = moduleFixture.get(TEST_JWT_CONFIG_TOKEN);
 			});
@@ -81,7 +79,7 @@ describe('Me Controller (API)', () => {
 
 			describe('when no jwt is passed', () => {
 				it('should respond with unauthorized exception', async () => {
-					const response = await testApiClient.get();
+					const response = await new TestApiClientBuilder(app, 'me').unauthenticated().get();
 
 					expect(response.statusCode).toEqual(HttpStatus.UNAUTHORIZED);
 					expect(response.body).toEqual({
@@ -101,7 +99,7 @@ describe('Me Controller (API)', () => {
 						await em.persist([account, user]).flush();
 						em.clear();
 
-						const loggedInClient = await testApiClient.login(account);
+						const loggedInClient = await new TestApiClientBuilder(app, 'me').authenticate(account);
 						const expectedPermissions = userService.resolvePermissions(user);
 						const expectedResponse = mapToMeResponseObject(user, account, expectedPermissions);
 
@@ -125,7 +123,7 @@ describe('Me Controller (API)', () => {
 						await em.persist([account, user]).flush();
 						em.clear();
 
-						const loggedInClient = await testApiClient.login(account);
+						const loggedInClient = await new TestApiClientBuilder(app, 'me').authenticate(account);
 						const expectedPermissions = userService.resolvePermissions(user);
 						const expectedResponse = mapToMeResponseObject(user, account, expectedPermissions);
 
@@ -149,7 +147,7 @@ describe('Me Controller (API)', () => {
 						await em.persist([account, user]).flush();
 						em.clear();
 
-						const loggedInClient = await testApiClient.login(account);
+						const loggedInClient = await new TestApiClientBuilder(app, 'me').authenticate(account);
 						const expectedPermissions = userService.resolvePermissions(user);
 						const expectedResponse = mapToMeResponseObject(user, account, expectedPermissions);
 
@@ -176,10 +174,12 @@ describe('Me Controller (API)', () => {
 						await em.persist([studentAccount, studentUser, system]).flush();
 						em.clear();
 
-						const loggedInClient = await testApiClient.loginByUser(studentAccount, studentUser, jwtConfig, {
-							isExternalUser: true,
-							systemId: system.id,
-						});
+						const loggedInClient = await new TestApiClientBuilder(app, 'me')
+							.withUser(studentUser)
+							.withJwtConfig(jwtConfig)
+							.asExternalUser()
+							.withSystemId(system.id)
+							.authenticate(studentAccount);
 						const expectedPermissions = userService.resolvePermissions(studentUser);
 
 						const expectedResponse = mapToMeResponseObject(studentUser, studentAccount, expectedPermissions);
@@ -225,7 +225,6 @@ describe('Me Controller (API)', () => {
 		describe('when user is a service account', () => {
 			let serviceAccountApp: INestApplication;
 			let serviceAccountEm: EntityManager;
-			let serviceAccountTestApiClient: TestApiClient;
 			let serviceAccountJwtConfig: TestJwtModuleConfig;
 			let mockWinstonLogger: { info: jest.Mock };
 
@@ -242,7 +241,6 @@ describe('Me Controller (API)', () => {
 				serviceAccountApp = serviceAccountModuleFixture.createNestApplication();
 				await serviceAccountApp.init();
 				serviceAccountEm = serviceAccountApp.get(EntityManager);
-				serviceAccountTestApiClient = new TestApiClient(serviceAccountApp, 'me');
 				serviceAccountJwtConfig = serviceAccountModuleFixture.get(TEST_JWT_CONFIG_TOKEN);
 			});
 
@@ -261,12 +259,11 @@ describe('Me Controller (API)', () => {
 				await serviceAccountEm.persist([serviceAccount, serviceAccountUser]).flush();
 				serviceAccountEm.clear();
 
-				const loggedInClient = await serviceAccountTestApiClient.loginByUser(
-					serviceAccount,
-					serviceAccountUser,
-					serviceAccountJwtConfig,
-					{ isServiceAccount: true }
-				);
+				const loggedInClient = await new TestApiClientBuilder(serviceAccountApp, 'me')
+					.withUser(serviceAccountUser)
+					.withJwtConfig(serviceAccountJwtConfig)
+					.asServiceAccount()
+					.authenticate(serviceAccount);
 
 				return { loggedInClient, userId: serviceAccountUser.id };
 			};
@@ -287,7 +284,7 @@ describe('Me Controller (API)', () => {
 
 				expect(mockWinstonLogger.info).toHaveBeenCalledTimes(1);
 				expect(mockWinstonLogger.info).toHaveBeenCalledWith({
-					message: `[AUDIT] Actor: ServiceAccount: ${userId} | Action: API GET /me/ -> 200`,
+					message: `[AUDIT] Actor: ServiceAccount: ${userId} | Action: API GET /me -> 200`,
 				});
 			});
 		});
