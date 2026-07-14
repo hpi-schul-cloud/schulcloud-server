@@ -16,6 +16,8 @@ describe(OauthSessionTokenMikroOrmRepo.name, () => {
 	let em: EntityManager;
 	let encryptionService: DeepMocked<EncryptionService>;
 
+	const cipherText = 'someCipherText';
+
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [OauthSessionTokenEntity] })],
@@ -32,7 +34,7 @@ describe(OauthSessionTokenMikroOrmRepo.name, () => {
 		em = module.get(EntityManager);
 		encryptionService = module.get(DefaultEncryptionService);
 
-		encryptionService.encrypt.mockReturnValue('skdhfksdf');
+		encryptionService.encrypt.mockReturnValue(cipherText);
 	});
 
 	afterAll(async () => {
@@ -59,7 +61,7 @@ describe(OauthSessionTokenMikroOrmRepo.name, () => {
 
 			const savedToken = await em.findOneOrFail(OauthSessionTokenEntity, oauthSessionToken.id);
 			expect(savedToken.refreshToken).not.toEqual(oauthSessionToken.refreshToken);
-			expect(savedToken.refreshToken).toEqual('skdhfksdf');
+			expect(savedToken.refreshToken).toEqual(cipherText);
 		});
 	});
 
@@ -119,31 +121,29 @@ describe(OauthSessionTokenMikroOrmRepo.name, () => {
 				await em.persist([user, ...sessionTokens, latestSessionToken]).flush();
 				em.clear();
 
-				const expectedTokenEntity: OauthSessionTokenEntity = latestSessionToken;
-				const latestExpiredAt = latestSessionToken.expiresAt;
+				const decryptedRefreshToken = 'somePlainText';
+				encryptionService.decrypt.mockReturnValueOnce(decryptedRefreshToken);
 
 				const expectedToken = oauthSessionTokenFactory.build({
-					id: expectedTokenEntity.id,
-					refreshToken: expectedTokenEntity.refreshToken,
-					systemId: expectedTokenEntity.system.id,
-					expiresAt: expectedTokenEntity.expiresAt,
+					id: latestSessionToken.id,
+					refreshToken: decryptedRefreshToken,
+					systemId: latestSessionToken.system.id,
+					expiresAt: latestSessionToken.expiresAt,
 					userId: user.id,
 				});
 
 				return {
 					expectedToken,
-					latestExpiredAt,
 					userId: user.id,
 				};
 			};
 
 			it('should return the latest session token domain object', async () => {
-				const { expectedToken, latestExpiredAt, userId } = await setup();
+				const { expectedToken, userId } = await setup();
 
 				const result = await repo.findLatestByUserId(userId);
 
 				expect(result).toEqual(expectedToken);
-				expect(result?.expiresAt).toEqual(latestExpiredAt);
 			});
 		});
 	});
