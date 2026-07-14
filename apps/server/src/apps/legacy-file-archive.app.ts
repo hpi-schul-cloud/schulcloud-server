@@ -7,7 +7,7 @@ import {
 	LOGGER_CONFIG_TOKEN,
 	type LoggerConfig,
 } from '@infra/logger';
-import { LegacyFileArchiveApiModule } from '@modules/files';
+import { LegacyFileArchiveApiModule } from '@modules/files/legacy-file-archive.app.module';
 import { NestFactory } from '@nestjs/core';
 import { ExpressAdapter } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';

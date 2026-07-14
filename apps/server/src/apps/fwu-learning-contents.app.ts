@@ -9,7 +9,7 @@ import { install as sourceMapInstall } from 'source-map-support';
 
 // application imports
 import { createRequestLoggerMiddleware, LegacyLogger, LOGGER_CONFIG_TOKEN, type LoggerConfig } from '@infra/logger';
-import { FwuLearningContentsModule } from '@modules/fwu-learning-contents';
+import { FwuLearningContentsModule } from '@modules/fwu-learning-contents/fwu-learning-contents.app.module';
 import { enableOpenApiDocs } from './helpers';
 
 async function bootstrap(): Promise<void> {
