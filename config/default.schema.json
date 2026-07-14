@@ -63,7 +63,7 @@
 		},
 		"SECURITY_CHECK_SERVICE_PATH": {
 			"type": "string",
-			"default": "/v1/fileStorage/securityCheck/",
+			"default": "/api/v1/fileStorage/securityCheck/",
 			"description": "Path for the file security check service. Path must start and end with a slash. Legacy."
 		},
 		"REQUEST_OPTION": {
