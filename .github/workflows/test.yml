@@ -119,7 +119,7 @@ jobs:
       - name: npm ci
         run: npm ci --ignore-scripts --prefer-offline --no-audit
       - name: Build
-        run: npx nest build
+        run: npm run build
       - name: Check circular dependencies
         run: |
           OUTPUT=$(npx madge@latest --circular . 2>&1) || true
