@@ -47,7 +47,7 @@ export class OauthSessionTokenMikroOrmRepo implements OauthSessionTokenRepo {
 			return null;
 		}
 
-		const decryptedRefreshToken = this.encryptionService.encrypt(sessionTokenEntity.refreshToken);
+		const decryptedRefreshToken = this.encryptionService.decrypt(sessionTokenEntity.refreshToken);
 
 		const sessionToken = OauthSessionTokenEntityMapper.mapEntityToDo(sessionTokenEntity, decryptedRefreshToken);
 
