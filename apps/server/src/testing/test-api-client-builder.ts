@@ -39,20 +39,25 @@ const AUTH_PREFIX = 'Bearer';
  * A fluent builder for creating authenticated TestApiClient instances.
  *
  * @example
- * // Simple login
+ * // Simple login via /authentication/local
  * const client = await new TestApiClientBuilder(app, 'users').authenticate(account);
  *
  * @example
- * // Service account login
+ * // Service account login via /authentication/local-service-account
  * const client = await new TestApiClientBuilder(app, 'users')
  *   .asServiceAccount()
  *   .authenticate(account);
  *
  * @example
- * // External user with JWT config
+ * // Direct JWT generation (bypasses login endpoint)
  * const client = await new TestApiClientBuilder(app, 'users')
- *   .withUser(user)
- *   .withJwtConfig(jwtConfig)
+ *   .withJwt(user, jwtConfig)
+ *   .authenticate(account);
+ *
+ * @example
+ * // External user with direct JWT generation
+ * const client = await new TestApiClientBuilder(app, 'users')
+ *   .withJwt(user, jwtConfig)
  *   .asExternalUser()
  *   .withSystemId(systemId)
  *   .authenticate(account);
@@ -60,6 +65,10 @@ const AUTH_PREFIX = 'Bearer';
  * @example
  * // API Key authentication
  * const client = new TestApiClientBuilder(app, 'external-api').withApiKey('my-api-key');
+ *
+ * @example
+ * // Unauthenticated request (for testing 401 responses)
+ * const response = await new TestApiClientBuilder(app, 'users').unauthenticated().get();
  */
 export class TestApiClientBuilder {
 	private readonly app: INestApplication<Server>;
@@ -83,47 +92,31 @@ export class TestApiClientBuilder {
 		this.baseRoute = this.normalizeRoute(baseRoute);
 	}
 
-	/**
-	 * Marks the authentication as a service account login.
-	 * Must be used with authenticate() to complete the authentication.
-	 */
 	public asServiceAccount(): this {
 		this.isServiceAccount = true;
 		return this;
 	}
 
-	/**
-	 * Marks the user as an external user.
-	 * Requires withUser() and withJwtConfig() to be called before authenticate().
-	 */
 	public asExternalUser(): this {
 		this.isExternalUser = true;
+
 		return this;
 	}
 
-	/**
-	 * Sets the system ID for external system authentication.
-	 * Requires withUser() and withJwtConfig() to be called before authenticate().
-	 */
 	public withSystemId(systemId: string): this {
 		this.systemId = systemId;
+
 		return this;
 	}
 
 	/**
-	 * Sets the user for JWT-based authentication.
-	 * Required when using asExternalUser() or asServiceAccount() with JWT.
+	 * Sets the user and JWT configuration for direct JWT generation.
+	 * Use this instead of credential-based login when you need to:
+	 * - Generate a JWT directly without hitting the login endpoint
+	 * - Use asExternalUser() or asServiceAccount() flags in the JWT
 	 */
-	public withUser(user: UserForAuthentication): this {
+	public withJwt(user: UserForAuthentication, jwtConfig: TestJwtModuleConfig): this {
 		this.user = user;
-		return this;
-	}
-
-	/**
-	 * Sets the JWT configuration for token generation.
-	 * Required when using withUser().
-	 */
-	public withJwtConfig(jwtConfig: TestJwtModuleConfig): this {
 		this.jwtConfig = jwtConfig;
 		return this;
 	}
@@ -166,9 +159,7 @@ export class TestApiClientBuilder {
 
 	private async authenticateWithJwt(account: AccountForAuthentication): Promise<AuthenticatedTestApiClient> {
 		if (!this.user || !this.jwtConfig) {
-			throw new Error(
-				'JWT authentication requires both user and jwtConfig to be set via withUser() and withJwtConfig()'
-			);
+			throw new Error('JWT authentication requires user and jwtConfig to be set via withJwt()');
 		}
 
 		const jwtWhitelistAdapter = this.app.get(JwtWhitelistAdapter);

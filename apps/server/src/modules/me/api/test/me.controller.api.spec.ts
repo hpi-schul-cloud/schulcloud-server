@@ -175,8 +175,7 @@ describe('Me Controller (API)', () => {
 						em.clear();
 
 						const loggedInClient = await new TestApiClientBuilder(app, 'me')
-							.withUser(studentUser)
-							.withJwtConfig(jwtConfig)
+							.withJwt(studentUser, jwtConfig)
 							.asExternalUser()
 							.withSystemId(system.id)
 							.authenticate(studentAccount);
@@ -260,8 +259,7 @@ describe('Me Controller (API)', () => {
 				serviceAccountEm.clear();
 
 				const loggedInClient = await new TestApiClientBuilder(serviceAccountApp, 'me')
-					.withUser(serviceAccountUser)
-					.withJwtConfig(serviceAccountJwtConfig)
+					.withJwt(serviceAccountUser, serviceAccountJwtConfig)
 					.asServiceAccount()
 					.authenticate(serviceAccount);
 
