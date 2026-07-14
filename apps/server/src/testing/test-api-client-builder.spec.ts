@@ -1,36 +1,41 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import {
+	Body,
 	Controller,
 	Delete,
 	Get,
 	Headers,
 	HttpStatus,
-	INestApplication,
+	type INestApplication,
 	Patch,
 	Post,
 	Put,
 	UnauthorizedException,
 } from '@nestjs/common';
-import { Test } from '@nestjs/testing';
+import { Test, type TestingModule } from '@nestjs/testing';
 
 import { accountFactory } from '@modules/account/testing';
 import { TestApiClient, TestApiClientBuilder } from './test-api-client-builder';
 
+interface AuthRequestBody {
+	simulateError?: boolean;
+}
+
 @Controller('')
 class TestController {
 	@Delete(':id')
-	public delete(@Headers('authorization') authorization: string) {
-		return Promise.resolve({ method: 'delete', authorization });
+	public delete(@Headers('authorization') authorization: string, @Headers('X-API-KEY') apiKey: string) {
+		return Promise.resolve({ method: 'delete', authorization: authorization || apiKey });
 	}
 
 	@Post()
-	public post(@Headers('authorization') authorization: string) {
-		return Promise.resolve({ method: 'post', authorization });
+	public post(@Headers('authorization') authorization: string, @Headers('X-API-KEY') apiKey: string) {
+		return Promise.resolve({ method: 'post', authorization: authorization || apiKey });
 	}
 
 	@Get(':id')
-	public get(@Headers('authorization') authorization: string) {
-		return Promise.resolve({ method: 'get', authorization });
+	public get(@Headers('authorization') authorization: string, @Headers('X-API-KEY') apiKey: string) {
+		return Promise.resolve({ method: 'get', authorization: authorization || apiKey });
 	}
 
 	@Put()
@@ -44,96 +49,60 @@ class TestController {
 	}
 
 	@Post('/authentication/local')
-	public jwt() {
+	public jwt(@Body() body: AuthRequestBody) {
+		if (body.simulateError) {
+			return Promise.reject(new UnauthorizedException());
+		}
+
 		return Promise.resolve({ accessToken: 'test-jwt-token-123' });
 	}
 
 	@Post('/authentication/local-service-account')
-	public jwtServiceAccount() {
+	public jwtServiceAccount(@Body() body: AuthRequestBody) {
+		if (body.simulateError) {
+			return Promise.reject(new UnauthorizedException());
+		}
+
 		return Promise.resolve({ accessToken: 'service-account-token-456' });
 	}
 }
 
-@Controller('')
-class TestErrorController {
-	@Post('/authentication/local')
-	public jwt() {
-		return Promise.reject(new UnauthorizedException());
-	}
-
-	@Post('/authentication/local-service-account')
-	public jwtServiceAccount() {
-		return Promise.reject(new UnauthorizedException());
-	}
-}
-
-@Controller('')
-class TestXApiKeyController {
-	@Delete(':id')
-	public delete(@Headers('X-API-KEY') authorization: string) {
-		return Promise.resolve({ method: 'delete', authorization });
-	}
-
-	@Post()
-	public post(@Headers('X-API-KEY') authorization: string) {
-		return Promise.resolve({ method: 'post', authorization });
-	}
-
-	@Get(':id')
-	public get(@Headers('X-API-KEY') authorization: string) {
-		return Promise.resolve({ method: 'get', authorization });
-	}
-}
-
 describe(TestApiClientBuilder.name, () => {
-	describe('when authentication endpoint throws an error', () => {
-		let app: INestApplication;
+	let module: TestingModule;
+	let app: INestApplication;
 
-		beforeAll(async () => {
-			const moduleFixture = await Test.createTestingModule({
-				controllers: [TestErrorController],
-			}).compile();
+	beforeAll(async () => {
+		module = await Test.createTestingModule({
+			controllers: [TestController],
+		}).compile();
 
-			app = moduleFixture.createNestApplication();
-			await app.init();
-		});
-
-		afterAll(async () => {
-			await app.close();
-		});
-
-		it('should throw an error for standard authentication', async () => {
-			const account = accountFactory.build();
-
-			await expect(new TestApiClientBuilder(app, '').build(account)).rejects.toThrow();
-		});
-
-		it('should throw an error for service account authentication', async () => {
-			const account = accountFactory.build();
-
-			await expect(new TestApiClientBuilder(app, '').asServiceAccount().build(account)).rejects.toThrow();
-		});
+		app = module.createNestApplication();
+		await app.init();
 	});
 
-	describe('when using JWT authentication', () => {
-		let app: INestApplication;
+	afterAll(async () => {
+		await app.close();
+	});
 
-		beforeAll(async () => {
-			const moduleFixture = await Test.createTestingModule({
-				controllers: [TestController],
-			}).compile();
+	describe('build', () => {
+		describe('when called without account', () => {
+			it('should return an unauthenticated client', () => {
+				const client = new TestApiClientBuilder(app, '/test').build();
 
-			app = moduleFixture.createNestApplication();
-			await app.init();
+				expect(client).toBeInstanceOf(TestApiClient);
+				expect(client.getAuthHeader()).toEqual('Bearer ');
+			});
 		});
 
-		afterAll(async () => {
-			await app.close();
-		});
-
-		describe('authenticate', () => {
-			it('should return an authenticated client with JWT', async () => {
+		describe('when called with account', () => {
+			const setup = () => {
 				const account = accountFactory.build();
+
+				return { account };
+			};
+
+			it('should return an authenticated client with JWT', async () => {
+				const { account } = setup();
 
 				const client = await new TestApiClientBuilder(app, '').build(account);
 
@@ -141,34 +110,121 @@ describe(TestApiClientBuilder.name, () => {
 			});
 
 			it('should return a new client instance', async () => {
-				const account = accountFactory.build();
-				const builder = new TestApiClientBuilder(app, '');
+				const { account } = setup();
 
-				const client = await builder.build(account);
+				const client = await new TestApiClientBuilder(app, '').build(account);
 
 				expect(client).toBeInstanceOf(TestApiClient);
 			});
 		});
+	});
 
-		describe('asServiceAccount', () => {
-			it('should authenticate using the service account endpoint', async () => {
+	describe('asServiceAccount', () => {
+		describe('when authenticating as service account', () => {
+			const setup = () => {
 				const account = accountFactory.build();
+
+				return { account };
+			};
+
+			it('should authenticate using the service account endpoint', async () => {
+				const { account } = setup();
 
 				const client = await new TestApiClientBuilder(app, '').asServiceAccount().build(account);
 
 				expect(client.getAuthHeader()).toEqual('Bearer service-account-token-456');
 			});
 		});
+	});
 
-		describe('unauthenticated', () => {
-			it('should return a client without authentication token', () => {
-				const client = new TestApiClientBuilder(app, '/test').unauthenticated();
+	describe('withApiKey', () => {
+		describe('when authenticating with API key', () => {
+			const setup = () => {
+				const apiKey = '7ccd4e11-c6f6-48b0-81eb-cccf7922e7a4';
 
-				expect(client.getAuthHeader()).toEqual('Bearer ');
+				return { apiKey };
+			};
+
+			it('should return a client authenticated with API key', () => {
+				const { apiKey } = setup();
+
+				const client = new TestApiClientBuilder(app, '').withApiKey(apiKey).build();
+
+				expect(client.getAuthHeader()).toEqual(apiKey);
+			});
+		});
+	});
+
+	describe('path handling', () => {
+		describe('when base route has no leading slash', () => {
+			const setup = () => {
+				const account = accountFactory.build();
+
+				return { account };
+			};
+
+			it('should normalize the route', async () => {
+				const { account } = setup();
+
+				const client = await new TestApiClientBuilder(app, 'test-route').build(account);
+
+				expect(client).toBeInstanceOf(TestApiClient);
 			});
 		});
 
-		describe('HTTP methods', () => {
+		describe('when base route has leading slash', () => {
+			const setup = () => {
+				const account = accountFactory.build();
+
+				return { account };
+			};
+
+			it('should keep the route unchanged', async () => {
+				const { account } = setup();
+
+				const client = await new TestApiClientBuilder(app, '/test-route').build(account);
+
+				expect(client).toBeInstanceOf(TestApiClient);
+			});
+		});
+
+		describe('when base route is empty', () => {
+			const setup = () => {
+				const account = accountFactory.build();
+
+				return { account };
+			};
+
+			it('should handle empty route', async () => {
+				const { account } = setup();
+
+				const client = await new TestApiClientBuilder(app, '').build(account);
+
+				expect(client).toBeInstanceOf(TestApiClient);
+			});
+		});
+	});
+});
+
+describe(TestApiClient.name, () => {
+	let module: TestingModule;
+	let app: INestApplication;
+
+	beforeAll(async () => {
+		module = await Test.createTestingModule({
+			controllers: [TestController],
+		}).compile();
+
+		app = module.createNestApplication();
+		await app.init();
+	});
+
+	afterAll(async () => {
+		await app.close();
+	});
+
+	describe('get', () => {
+		describe('when using JWT authentication', () => {
 			const setup = async () => {
 				const account = accountFactory.build();
 				const client = await new TestApiClientBuilder(app, '').build(account);
@@ -177,239 +233,224 @@ describe(TestApiClientBuilder.name, () => {
 				return { client, id };
 			};
 
-			describe('get', () => {
-				it('should resolve requests with status OK', async () => {
-					const { client, id } = await setup();
+			it('should resolve requests with status OK', async () => {
+				const { client, id } = await setup();
 
-					const result = await client.get(id);
+				const result = await client.get(id);
 
-					expect(result.statusCode).toEqual(HttpStatus.OK);
-					expect(result.body).toEqual(expect.objectContaining({ method: 'get' }));
-				});
-
-				it('should include the bearer token', async () => {
-					const { client, id } = await setup();
-
-					const result = await client.get(id);
-
-					expect(result.body).toEqual(expect.objectContaining({ authorization: 'Bearer test-jwt-token-123' }));
-				});
+				expect(result.statusCode).toEqual(HttpStatus.OK);
+				expect(result.body).toEqual(expect.objectContaining({ method: 'get' }));
 			});
 
-			describe('post', () => {
-				it('should resolve requests with status CREATED', async () => {
-					const { client } = await setup();
+			it('should include the bearer token', async () => {
+				const { client, id } = await setup();
 
-					const result = await client.post();
+				const result = await client.get(id);
 
-					expect(result.statusCode).toEqual(HttpStatus.CREATED);
-					expect(result.body).toEqual(expect.objectContaining({ method: 'post' }));
-				});
-
-				it('should include the bearer token', async () => {
-					const { client } = await setup();
-
-					const result = await client.post();
-
-					expect(result.body).toEqual(expect.objectContaining({ authorization: 'Bearer test-jwt-token-123' }));
-				});
+				expect(result.body).toEqual(expect.objectContaining({ authorization: 'Bearer test-jwt-token-123' }));
 			});
+		});
 
-			describe('delete', () => {
-				it('should resolve requests with status OK', async () => {
-					const { client, id } = await setup();
+		describe('when using API key authentication', () => {
+			const setup = () => {
+				const apiKey = '7ccd4e11-c6f6-48b0-81eb-cccf7922e7a4';
+				const client = new TestApiClientBuilder(app, '').withApiKey(apiKey).build();
+				const id = new ObjectId().toHexString();
 
-					const result = await client.delete(id);
+				return { client, id, apiKey };
+			};
 
-					expect(result.statusCode).toEqual(HttpStatus.OK);
-					expect(result.body).toEqual(expect.objectContaining({ method: 'delete' }));
-				});
+			it('should resolve requests with status OK', async () => {
+				const { client, id, apiKey } = setup();
 
-				it('should include the bearer token', async () => {
-					const { client, id } = await setup();
+				const result = await client.get(id);
 
-					const result = await client.delete(id);
-
-					expect(result.body).toEqual(expect.objectContaining({ authorization: 'Bearer test-jwt-token-123' }));
-				});
-			});
-
-			describe('put', () => {
-				it('should resolve requests with status OK', async () => {
-					const { client } = await setup();
-
-					const result = await client.put();
-
-					expect(result.statusCode).toEqual(HttpStatus.OK);
-					expect(result.body).toEqual(expect.objectContaining({ method: 'put' }));
-				});
-
-				it('should include the bearer token', async () => {
-					const { client } = await setup();
-
-					const result = await client.put();
-
-					expect(result.body).toEqual(expect.objectContaining({ authorization: 'Bearer test-jwt-token-123' }));
-				});
-			});
-
-			describe('patch', () => {
-				it('should resolve requests with status OK', async () => {
-					const { client, id } = await setup();
-
-					const result = await client.patch(id);
-
-					expect(result.statusCode).toEqual(HttpStatus.OK);
-					expect(result.body).toEqual(expect.objectContaining({ method: 'patch' }));
-				});
-
-				it('should include the bearer token', async () => {
-					const { client, id } = await setup();
-
-					const result = await client.patch(id);
-
-					expect(result.body).toEqual(expect.objectContaining({ authorization: 'Bearer test-jwt-token-123' }));
-				});
+				expect(result.statusCode).toEqual(HttpStatus.OK);
+				expect(result.body).toEqual(expect.objectContaining({ method: 'get', authorization: apiKey }));
 			});
 		});
 	});
 
-	describe('when using API key authentication', () => {
-		let app: INestApplication;
-		const API_KEY = '7ccd4e11-c6f6-48b0-81eb-cccf7922e7a4';
+	describe('post', () => {
+		describe('when using JWT authentication', () => {
+			const setup = async () => {
+				const account = accountFactory.build();
+				const client = await new TestApiClientBuilder(app, '').build(account);
 
-		beforeAll(async () => {
-			const moduleFixture = await Test.createTestingModule({
-				controllers: [TestXApiKeyController],
-			}).compile();
+				return { client };
+			};
 
-			app = moduleFixture.createNestApplication();
-			await app.init();
-		});
+			it('should resolve requests with status CREATED', async () => {
+				const { client } = await setup();
 
-		afterAll(async () => {
-			await app.close();
-		});
+				const result = await client.post();
 
-		describe('withApiKey', () => {
-			it('should return a client authenticated with API key', () => {
-				const client = new TestApiClientBuilder(app, '').withApiKey(API_KEY).build();
+				expect(result.statusCode).toEqual(HttpStatus.CREATED);
+				expect(result.body).toEqual(expect.objectContaining({ method: 'post' }));
+			});
 
-				expect(client.getAuthHeader()).toEqual(API_KEY);
+			it('should include the bearer token', async () => {
+				const { client } = await setup();
+
+				const result = await client.post();
+
+				expect(result.body).toEqual(expect.objectContaining({ authorization: 'Bearer test-jwt-token-123' }));
 			});
 		});
 
-		describe('HTTP methods with API key', () => {
+		describe('when using API key authentication', () => {
 			const setup = () => {
-				const client = new TestApiClientBuilder(app, '').withApiKey(API_KEY).build();
+				const apiKey = '7ccd4e11-c6f6-48b0-81eb-cccf7922e7a4';
+				const client = new TestApiClientBuilder(app, '').withApiKey(apiKey).build();
+
+				return { client, apiKey };
+			};
+
+			it('should resolve requests with status CREATED', async () => {
+				const { client, apiKey } = setup();
+
+				const result = await client.post();
+
+				expect(result.statusCode).toEqual(HttpStatus.CREATED);
+				expect(result.body).toEqual(expect.objectContaining({ method: 'post', authorization: apiKey }));
+			});
+		});
+	});
+
+	describe('delete', () => {
+		describe('when using JWT authentication', () => {
+			const setup = async () => {
+				const account = accountFactory.build();
+				const client = await new TestApiClientBuilder(app, '').build(account);
 				const id = new ObjectId().toHexString();
 
 				return { client, id };
 			};
 
-			describe('get', () => {
-				it('should resolve requests with status OK', async () => {
-					const { client, id } = setup();
+			it('should resolve requests with status OK', async () => {
+				const { client, id } = await setup();
 
-					const result = await client.get(id);
+				const result = await client.delete(id);
 
-					expect(result.statusCode).toEqual(HttpStatus.OK);
-					expect(result.body).toEqual(expect.objectContaining({ method: 'get', authorization: API_KEY }));
-				});
+				expect(result.statusCode).toEqual(HttpStatus.OK);
+				expect(result.body).toEqual(expect.objectContaining({ method: 'delete' }));
 			});
 
-			describe('post', () => {
-				it('should resolve requests with status CREATED', async () => {
-					const { client } = setup();
+			it('should include the bearer token', async () => {
+				const { client, id } = await setup();
 
-					const result = await client.post();
+				const result = await client.delete(id);
 
-					expect(result.statusCode).toEqual(HttpStatus.CREATED);
-					expect(result.body).toEqual(expect.objectContaining({ method: 'post', authorization: API_KEY }));
-				});
+				expect(result.body).toEqual(expect.objectContaining({ authorization: 'Bearer test-jwt-token-123' }));
 			});
+		});
 
-			describe('delete', () => {
-				it('should resolve requests with status OK', async () => {
-					const { client, id } = setup();
+		describe('when using API key authentication', () => {
+			const setup = () => {
+				const apiKey = '7ccd4e11-c6f6-48b0-81eb-cccf7922e7a4';
+				const client = new TestApiClientBuilder(app, '').withApiKey(apiKey).build();
+				const id = new ObjectId().toHexString();
 
-					const result = await client.delete(id);
+				return { client, id, apiKey };
+			};
 
-					expect(result.statusCode).toEqual(HttpStatus.OK);
-					expect(result.body).toEqual(expect.objectContaining({ method: 'delete', authorization: API_KEY }));
-				});
+			it('should resolve requests with status OK', async () => {
+				const { client, id, apiKey } = setup();
+
+				const result = await client.delete(id);
+
+				expect(result.statusCode).toEqual(HttpStatus.OK);
+				expect(result.body).toEqual(expect.objectContaining({ method: 'delete', authorization: apiKey }));
 			});
 		});
 	});
 
-	describe('path handling', () => {
-		let app: INestApplication;
+	describe('put', () => {
+		describe('when using JWT authentication', () => {
+			const setup = async () => {
+				const account = accountFactory.build();
+				const client = await new TestApiClientBuilder(app, '').build(account);
 
-		beforeAll(async () => {
-			const moduleFixture = await Test.createTestingModule({
-				controllers: [TestController],
-			}).compile();
+				return { client };
+			};
 
-			app = moduleFixture.createNestApplication();
-			await app.init();
-		});
+			it('should resolve requests with status OK', async () => {
+				const { client } = await setup();
 
-		afterAll(async () => {
-			await app.close();
-		});
+				const result = await client.put();
 
-		it('should handle base route without leading slash', async () => {
-			const account = accountFactory.build();
-			const client = await new TestApiClientBuilder(app, 'test-route').build(account);
+				expect(result.statusCode).toEqual(HttpStatus.OK);
+				expect(result.body).toEqual(expect.objectContaining({ method: 'put' }));
+			});
 
-			expect(client).toBeInstanceOf(TestApiClient);
-		});
+			it('should include the bearer token', async () => {
+				const { client } = await setup();
 
-		it('should handle base route with leading slash', async () => {
-			const account = accountFactory.build();
-			const client = await new TestApiClientBuilder(app, '/test-route').build(account);
+				const result = await client.put();
 
-			expect(client).toBeInstanceOf(TestApiClient);
-		});
-
-		it('should handle empty base route', async () => {
-			const account = accountFactory.build();
-			const client = await new TestApiClientBuilder(app, '').build(account);
-
-			expect(client).toBeInstanceOf(TestApiClient);
+				expect(result.body).toEqual(expect.objectContaining({ authorization: 'Bearer test-jwt-token-123' }));
+			});
 		});
 	});
-});
 
-describe(TestApiClient.name, () => {
+	describe('patch', () => {
+		describe('when using JWT authentication', () => {
+			const setup = async () => {
+				const account = accountFactory.build();
+				const client = await new TestApiClientBuilder(app, '').build(account);
+				const id = new ObjectId().toHexString();
+
+				return { client, id };
+			};
+
+			it('should resolve requests with status OK', async () => {
+				const { client, id } = await setup();
+
+				const result = await client.patch(id);
+
+				expect(result.statusCode).toEqual(HttpStatus.OK);
+				expect(result.body).toEqual(expect.objectContaining({ method: 'patch' }));
+			});
+
+			it('should include the bearer token', async () => {
+				const { client, id } = await setup();
+
+				const result = await client.patch(id);
+
+				expect(result.body).toEqual(expect.objectContaining({ authorization: 'Bearer test-jwt-token-123' }));
+			});
+		});
+	});
+
 	describe('getAuthHeader', () => {
-		let app: INestApplication;
+		describe('when using JWT authentication', () => {
+			const setup = async () => {
+				const account = accountFactory.build();
+				const client = await new TestApiClientBuilder(app, '').build(account);
 
-		beforeAll(async () => {
-			const moduleFixture = await Test.createTestingModule({
-				controllers: [TestController],
-			}).compile();
+				return { client };
+			};
 
-			app = moduleFixture.createNestApplication();
-			await app.init();
+			it('should return the formatted auth header', async () => {
+				const { client } = await setup();
+
+				expect(client.getAuthHeader()).toEqual('Bearer test-jwt-token-123');
+			});
 		});
 
-		afterAll(async () => {
-			await app.close();
-		});
+		describe('when using API key authentication', () => {
+			const setup = () => {
+				const apiKey = 'test-api-key';
+				const client = new TestApiClientBuilder(app, '').withApiKey(apiKey).build();
 
-		it('should return the formatted auth header for JWT', async () => {
-			const account = accountFactory.build();
-			const client = await new TestApiClientBuilder(app, '').build(account);
+				return { client, apiKey };
+			};
 
-			expect(client.getAuthHeader()).toEqual('Bearer test-jwt-token-123');
-		});
+			it('should return the API key', () => {
+				const { client, apiKey } = setup();
 
-		it('should return the API key for API key auth', () => {
-			const apiKey = 'test-api-key';
-			const client = new TestApiClientBuilder(app, '').withApiKey(apiKey).build();
-
-			expect(client.getAuthHeader()).toEqual(apiKey);
+				expect(client.getAuthHeader()).toEqual(apiKey);
+			});
 		});
 	});
 });

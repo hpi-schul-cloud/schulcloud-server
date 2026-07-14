@@ -79,7 +79,7 @@ describe('Me Controller (API)', () => {
 
 			describe('when no jwt is passed', () => {
 				it('should respond with unauthorized exception', async () => {
-					const response = await new TestApiClientBuilder(app, 'me').unauthenticated().get();
+					const response = await new TestApiClientBuilder(app, 'me').build().get();
 
 					expect(response.statusCode).toEqual(HttpStatus.UNAUTHORIZED);
 					expect(response.body).toEqual({

@@ -90,8 +90,6 @@ export class TestApiClientBuilder {
 
 	private skipWhitelist = false;
 
-	private canAuthenticate = false;
-
 	public constructor(app: INestApplication, baseRoute: string) {
 		this.app = app as INestApplication<Server>;
 		this.baseRoute = this.normalizeRoute(baseRoute);
@@ -136,7 +134,6 @@ export class TestApiClientBuilder {
 
 		this.user = user;
 		this.jwtConfig = jwtConfig;
-		this.canAuthenticate = true;
 
 		return this;
 	}
@@ -150,7 +147,6 @@ export class TestApiClientBuilder {
 		}
 
 		this.apiKey = apiKey;
-		this.canAuthenticate = true;
 
 		return this;
 	}
@@ -177,19 +173,15 @@ export class TestApiClientBuilder {
 	public build(): TestApiClient;
 	public build(account: AccountForAuthentication): Promise<TestApiClient>;
 	public build(account?: AccountForAuthentication): TestApiClient | Promise<TestApiClient> {
-		if (!this.canAuthenticate) {
-			return new TestApiClient(this.app, this.baseRoute);
-		}
-
 		if (this.apiKey) {
 			return new TestApiClient(this.app, this.baseRoute, this.apiKey, true);
 		}
 
-		if (!account) {
-			throw new Error('Account is required for credential-based or JWT authentication');
+		if (account) {
+			return this.buildWithAuthentication(account);
 		}
 
-		return this.buildWithAuthentication(account);
+		return new TestApiClient(this.app, this.baseRoute);
 	}
 
 	private async buildWithAuthentication(account: AccountForAuthentication): Promise<TestApiClient> {
