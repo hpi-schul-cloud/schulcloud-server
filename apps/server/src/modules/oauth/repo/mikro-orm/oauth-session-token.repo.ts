@@ -1,8 +1,7 @@
 import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
-import { EntityName } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Inject, Injectable } from '@nestjs/common';
-import { SortOrder, SortOrderMap } from '@shared/domain/interface';
+import { SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { OauthSessionToken } from '../../domain';
 import { OauthSessionTokenEntity } from '../../entity';
@@ -15,10 +14,6 @@ export class OauthSessionTokenMikroOrmRepo implements OauthSessionTokenRepo {
 		private readonly em: EntityManager,
 		@Inject(DefaultEncryptionService) private readonly encryptionService: EncryptionService
 	) {}
-
-	protected get entityName(): EntityName<OauthSessionTokenEntity> {
-		return OauthSessionTokenEntity;
-	}
 
 	public async save(token: OauthSessionToken): Promise<void> {
 		const encryptedRefreshToken = this.encryptionService.encrypt(token.refreshToken);
@@ -35,10 +30,10 @@ export class OauthSessionTokenMikroOrmRepo implements OauthSessionTokenRepo {
 	}
 
 	public async findLatestByUserId(userId: EntityId): Promise<OauthSessionToken | null> {
-		const sortByLatestExpiresAt: SortOrderMap<OauthSessionTokenEntity> = { expiresAt: SortOrder.desc };
+		const sortByLatestExpiresAt = { expiresAt: SortOrder.desc };
 
-		const sessionTokenEntity: OauthSessionTokenEntity | null = await this.em.findOne(
-			this.entityName,
+		const sessionTokenEntity = await this.em.findOne(
+			OauthSessionTokenEntity,
 			{ user: userId },
 			{ orderBy: sortByLatestExpiresAt }
 		);
