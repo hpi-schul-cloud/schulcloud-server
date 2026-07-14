@@ -18,7 +18,7 @@ export class Migration20260708143036 extends Migration {
 		let numberOfFailedUpdates = 0;
 
 		const collection = this.getCollection(this.collectionName);
-		const cursor = collection.find({ refreshToken: { $type: 'string' } });
+		const cursor = collection.find({});
 
 		for await (const item of cursor) {
 			try {
@@ -32,15 +32,10 @@ export class Migration20260708143036 extends Migration {
 					continue;
 				}
 
-				// Avoid double-encrypting tokens (e.g. if the migration runs while the app already stores encrypted tokens)
-				try {
-					AesEncryptionHelper.decrypt(refreshToken, AES_KEY);
-					console.info(
-						`oauth-session-token with id ${item._id.toString()} was omitted because the refresh token is already encrypted.`
-					);
+				// Avoid double-encrypting tokens if the migration runs while the app already stores encrypted tokens
+				// Plain refresh tokens are JWTs and contain '.', encrypted values are base64 and do not contain '.'
+				if (refreshToken.includes('.')) {
 					continue;
-				} catch {
-					// Token is not decryptable with the current key => treat as plaintext
 				}
 
 				const encrypted = AesEncryptionHelper.encrypt(refreshToken, AES_KEY);
