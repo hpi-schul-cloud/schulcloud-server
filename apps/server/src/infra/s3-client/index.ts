@@ -5,6 +5,6 @@
  * Do not export *.app.module.ts here; import them directly. *
  *********************************************************** */
 
-export * from './interface';
-export * from './s3-client.adapter';
-export * from './s3-client.module';
+export { GetFile, S3Config } from './interface';
+export { S3ClientAdapter } from './s3-client.adapter';
+export { S3ClientModule } from './s3-client.module';

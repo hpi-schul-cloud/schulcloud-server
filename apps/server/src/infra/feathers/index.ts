@@ -5,5 +5,5 @@
  * Do not export *.app.module.ts here; import them directly. *
  *********************************************************** */
 
-export * from './feathers-service.provider';
-export * from './feathers.module';
+export { FeathersServiceProvider } from './feathers-service.provider';
+export { FeathersModule } from './feathers.module';

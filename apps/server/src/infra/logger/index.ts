@@ -5,13 +5,11 @@
  * Do not export *.app.module.ts here; import them directly. *
  *********************************************************** */
 
-export * from './audit-logger';
-export * from './error-logger';
-export * from './interfaces';
-export * from './legacy-logger.service';
-export * from './logger';
+export { AUDIT_LOGGER_PROVIDER, AuditLogger } from './audit-logger';
+export { ErrorLogger } from './error-logger';
+export { LegacyLogger } from './legacy-logger.service';
+export { Logger } from './logger';
 export { LOGGER_CONFIG_TOKEN, LoggerConfig } from './logger.config';
-export * from './logger.module';
-export * from './logging.utils';
-export * from './request-logger-middleware';
-export * from './types';
+export { LoggerModule } from './logger.module';
+export { LoggingUtils } from './logging.utils';
+export { createRequestLoggerMiddleware } from './request-logger-middleware';

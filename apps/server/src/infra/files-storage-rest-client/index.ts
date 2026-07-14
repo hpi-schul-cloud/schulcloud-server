@@ -13,4 +13,5 @@ export {
 } from './files-storage-client.config';
 export { FilesStorageRestClientModule } from './files-storage-rest-client.module';
 export { FileApi } from './generated/api';
-export * from './generated/models';
+export { FileRecordParentType, FileRecordResponse, StorageLocation } from './generated/models';
+export { fileRecordResponseFactory } from './testing';

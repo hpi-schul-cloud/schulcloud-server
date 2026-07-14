@@ -5,6 +5,7 @@
  * Do not export *.app.module.ts here; import them directly. *
  *********************************************************** */
 
-export * from './generated';
+export { OfferDTO, PageOfferDTO, SchoolActivationDTO } from './generated';
+export { vidisOfferItemFactory, vidisPageOfferFactory } from './testing';
 export { VidisClientAdapter } from './vidis-client.adapter';
-export * from './vidis-client.module';
+export { VidisClientModule } from './vidis-client.module';

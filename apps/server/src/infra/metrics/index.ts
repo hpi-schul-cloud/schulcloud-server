@@ -5,7 +5,7 @@
  * Do not export *.app.module.ts here; import them directly. *
  *********************************************************** */
 
-export * from './interceptor';
+export { ResponseTimeMetricsInterceptor } from './interceptor';
 export { MetricConfig, METRICS_CONFIG_TOKEN } from './metrics.config';
 export { MetricsModule } from './metrics.module';
 export { MetricsService } from './metrics.service';

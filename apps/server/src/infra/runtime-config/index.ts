@@ -5,5 +5,10 @@
  * Do not export *.app.module.ts here; import them directly. *
  *********************************************************** */
 
-export * from './domain/runtime-config.service';
-export * from './domain/runtime-config-value.do';
+export {
+	RuntimeConfigDefault,
+	RuntimeConfigType,
+	RuntimeConfigValue,
+	RuntimeConfigValueType,
+} from './domain/runtime-config-value.do';
+export { RuntimeConfigService } from './domain/runtime-config.service';

@@ -6,4 +6,4 @@
  *********************************************************** */
 
 export { ConfigProperty, Configuration } from './configuration.decorator';
-export * from './configuration.module';
+export { ConfigurationModule } from './configuration.module';

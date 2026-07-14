@@ -5,5 +5,5 @@
  * Do not export *.app.module.ts here; import them directly. *
  *********************************************************** */
 
-export * from './file-system.adapter';
-export * from './file-system.module';
+export { FileSystemAdapter } from './file-system.adapter';
+export { FileSystemModule } from './file-system.module';
