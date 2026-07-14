@@ -1,4 +1,6 @@
-import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import { DefaultEncryptionService, type EncryptionService } from '@infra/encryption';
+import { EntityManager } from '@mikro-orm/mongodb';
 import { userFactory } from '@modules/user/testing';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
@@ -12,15 +14,27 @@ describe(OauthSessionTokenMikroOrmRepo.name, () => {
 	let module: TestingModule;
 	let repo: OauthSessionTokenMikroOrmRepo;
 	let em: EntityManager;
+	let encryptionService: DeepMocked<EncryptionService>;
+
+	const cipherText = 'someCipherText';
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [OauthSessionTokenEntity] })],
-			providers: [{ provide: OAUTH_SESSION_TOKEN_REPO, useClass: OauthSessionTokenMikroOrmRepo }],
+			providers: [
+				{ provide: OAUTH_SESSION_TOKEN_REPO, useClass: OauthSessionTokenMikroOrmRepo },
+				{
+					provide: DefaultEncryptionService,
+					useValue: createMock<EncryptionService>(),
+				},
+			],
 		}).compile();
 
 		repo = module.get(OAUTH_SESSION_TOKEN_REPO);
 		em = module.get(EntityManager);
+		encryptionService = module.get(DefaultEncryptionService);
+
+		encryptionService.encrypt.mockReturnValue(cipherText);
 	});
 
 	afterAll(async () => {
@@ -32,67 +46,34 @@ describe(OauthSessionTokenMikroOrmRepo.name, () => {
 	});
 
 	describe('save', () => {
-		describe('when a new object is provided', () => {
-			const setup = () => {
-				const oauthSessionToken = oauthSessionTokenFactory.build();
+		it('should insert a new token', async () => {
+			const oauthSessionToken = oauthSessionTokenFactory.build();
 
-				return {
-					oauthSessionToken,
-				};
-			};
+			await repo.save(oauthSessionToken);
 
-			it('should create a new entity', async () => {
-				const { oauthSessionToken } = setup();
-
-				await repo.save(oauthSessionToken);
-
-				await expect(em.findOneOrFail(OauthSessionTokenEntity, oauthSessionToken.id)).resolves.toBeDefined();
-			});
-
-			it('should return the object', async () => {
-				const { oauthSessionToken } = setup();
-
-				const result = await repo.save(oauthSessionToken);
-
-				expect(result).toEqual(oauthSessionToken);
-			});
+			await expect(em.findOneOrFail(OauthSessionTokenEntity, oauthSessionToken.id)).resolves.toBeDefined();
 		});
 
-		describe('when an entity with the id exists', () => {
-			const setup = async () => {
-				const oauthSessionTokenId = new ObjectId().toHexString();
-				const oauthSessionTokenEntity = oauthSessionTokenEntityFactory.build({
-					id: oauthSessionTokenId,
-					refreshToken: 'token1',
-				});
+		it('should encrypt the refresh token', async () => {
+			const oauthSessionToken = oauthSessionTokenFactory.build();
 
-				await em.persist(oauthSessionTokenEntity).flush();
-				em.clear();
+			await repo.save(oauthSessionToken);
 
-				const oauthSessionToken = oauthSessionTokenFactory.build({ id: oauthSessionTokenId, refreshToken: 'token2' });
+			const savedToken = await em.findOneOrFail(OauthSessionTokenEntity, oauthSessionToken.id);
+			expect(savedToken.refreshToken).not.toEqual(oauthSessionToken.refreshToken);
+			expect(savedToken.refreshToken).toEqual(cipherText);
+		});
+	});
 
-				return {
-					oauthSessionToken,
-				};
-			};
+	describe('delete', () => {
+		it('should delete the given token', async () => {
+			const token = oauthSessionTokenFactory.build();
+			await repo.save(token);
+			em.clear();
 
-			it('should update the entity', async () => {
-				const { oauthSessionToken } = await setup();
+			await repo.delete(token);
 
-				await repo.save(oauthSessionToken);
-
-				await expect(em.findOneOrFail(OauthSessionTokenEntity, oauthSessionToken.id)).resolves.toEqual(
-					expect.objectContaining({ refreshToken: 'token2' })
-				);
-			});
-
-			it('should return the object', async () => {
-				const { oauthSessionToken } = await setup();
-
-				const result = await repo.save(oauthSessionToken);
-
-				expect(result).toEqual(oauthSessionToken);
-			});
+			await expect(em.findOneOrFail(OauthSessionTokenEntity, token.id)).rejects.toThrow();
 		});
 	});
 
@@ -140,31 +121,29 @@ describe(OauthSessionTokenMikroOrmRepo.name, () => {
 				await em.persist([user, ...sessionTokens, latestSessionToken]).flush();
 				em.clear();
 
-				const expectedTokenEntity: OauthSessionTokenEntity = latestSessionToken;
-				const latestExpiredAt = latestSessionToken.expiresAt;
+				const decryptedRefreshToken = 'somePlainText';
+				encryptionService.decrypt.mockReturnValueOnce(decryptedRefreshToken);
 
 				const expectedToken = oauthSessionTokenFactory.build({
-					id: expectedTokenEntity.id,
-					refreshToken: expectedTokenEntity.refreshToken,
-					systemId: expectedTokenEntity.system.id,
-					expiresAt: expectedTokenEntity.expiresAt,
+					id: latestSessionToken.id,
+					refreshToken: decryptedRefreshToken,
+					systemId: latestSessionToken.system.id,
+					expiresAt: latestSessionToken.expiresAt,
 					userId: user.id,
 				});
 
 				return {
 					expectedToken,
-					latestExpiredAt,
 					userId: user.id,
 				};
 			};
 
 			it('should return the latest session token domain object', async () => {
-				const { expectedToken, latestExpiredAt, userId } = await setup();
+				const { expectedToken, userId } = await setup();
 
 				const result = await repo.findLatestByUserId(userId);
 
 				expect(result).toEqual(expectedToken);
-				expect(result?.expiresAt).toEqual(latestExpiredAt);
 			});
 		});
 	});

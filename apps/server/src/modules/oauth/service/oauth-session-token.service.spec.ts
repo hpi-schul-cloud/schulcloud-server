@@ -38,8 +38,6 @@ describe(OauthSessionTokenService.name, () => {
 			const setup = () => {
 				const oauthSessionToken = oauthSessionTokenFactory.build();
 
-				repo.save.mockResolvedValue(oauthSessionToken);
-
 				return {
 					oauthSessionToken,
 				};
@@ -51,14 +49,6 @@ describe(OauthSessionTokenService.name, () => {
 				await service.save(oauthSessionToken);
 
 				expect(repo.save).toHaveBeenCalledWith(oauthSessionToken);
-			});
-
-			it('should return the saved token', async () => {
-				const { oauthSessionToken } = setup();
-
-				const result = await service.save(oauthSessionToken);
-
-				expect(result).toEqual(oauthSessionToken);
 			});
 		});
 	});
