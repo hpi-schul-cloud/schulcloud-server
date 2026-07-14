@@ -1,3 +1,9 @@
+/** **********************************************************
+ * This is a module facade!                                  *
+ * Please export only what is allowed to be used externally. *
+ * Please do not use wildcard exports.                       *
+ *********************************************************** */
+
 export { BOARD_PUBLIC_API_CONFIG_TOKEN, BoardPublicApiConfig } from './board.config';
 export { BoardModule } from './board.module';
 export {

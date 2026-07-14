@@ -1,3 +1,9 @@
+/** **********************************************************
+ * This is a module facade!                                  *
+ * Please export only what is allowed to be used externally. *
+ * Please do not use wildcard exports.                       *
+ *********************************************************** */
+
 export { UserLoginMigrationDO } from './domain';
 export { MigrationCheckService, UserLoginMigrationService, UserMigrationService } from './domain/service';
 export {

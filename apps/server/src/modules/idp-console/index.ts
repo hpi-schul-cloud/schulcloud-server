@@ -1,3 +1,6 @@
-/** *************************************************
- *   Do not re-export here! File should be empty!   *
- ************************************************** */
+/** **********************************************************
+ * This is a module facade!                                  *
+ * Please export only what is allowed to be used externally. *
+ * Please do not use wildcard exports.                       *
+ *********************************************************** */
+
