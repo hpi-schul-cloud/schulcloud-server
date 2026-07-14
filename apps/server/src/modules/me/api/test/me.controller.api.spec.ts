@@ -99,7 +99,7 @@ describe('Me Controller (API)', () => {
 						await em.persist([account, user]).flush();
 						em.clear();
 
-						const loggedInClient = await new TestApiClientBuilder(app, 'me').authenticate(account);
+						const loggedInClient = await new TestApiClientBuilder(app, 'me').build(account);
 						const expectedPermissions = userService.resolvePermissions(user);
 						const expectedResponse = mapToMeResponseObject(user, account, expectedPermissions);
 
@@ -123,7 +123,7 @@ describe('Me Controller (API)', () => {
 						await em.persist([account, user]).flush();
 						em.clear();
 
-						const loggedInClient = await new TestApiClientBuilder(app, 'me').authenticate(account);
+						const loggedInClient = await new TestApiClientBuilder(app, 'me').build(account);
 						const expectedPermissions = userService.resolvePermissions(user);
 						const expectedResponse = mapToMeResponseObject(user, account, expectedPermissions);
 
@@ -147,7 +147,7 @@ describe('Me Controller (API)', () => {
 						await em.persist([account, user]).flush();
 						em.clear();
 
-						const loggedInClient = await new TestApiClientBuilder(app, 'me').authenticate(account);
+						const loggedInClient = await new TestApiClientBuilder(app, 'me').build(account);
 						const expectedPermissions = userService.resolvePermissions(user);
 						const expectedResponse = mapToMeResponseObject(user, account, expectedPermissions);
 
@@ -178,7 +178,7 @@ describe('Me Controller (API)', () => {
 							.withJwt(studentUser, jwtConfig)
 							.asExternalUser()
 							.withSystemId(system.id)
-							.authenticate(studentAccount);
+							.build(studentAccount);
 						const expectedPermissions = userService.resolvePermissions(studentUser);
 
 						const expectedResponse = mapToMeResponseObject(studentUser, studentAccount, expectedPermissions);
@@ -261,7 +261,7 @@ describe('Me Controller (API)', () => {
 				const loggedInClient = await new TestApiClientBuilder(serviceAccountApp, 'me')
 					.withJwt(serviceAccountUser, serviceAccountJwtConfig)
 					.asServiceAccount()
-					.authenticate(serviceAccount);
+					.build(serviceAccount);
 
 				return { loggedInClient, userId: serviceAccountUser.id };
 			};

@@ -64,11 +64,12 @@ const AUTH_PREFIX = 'Bearer';
  *
  * @example
  * // API Key authentication
- * const client = new TestApiClientBuilder(app, 'external-api').withApiKey('my-api-key');
+ * const client = new TestApiClientBuilder(app, 'external-api').withApiKey('my-api-key').build();
  *
  * @example
- * // Unauthenticated request (for testing 401 responses)
- * const response = await new TestApiClientBuilder(app, 'users').unauthenticated().get();
+ * // Unauthenticated request (default, for testing 401 responses)
+ * const client = new TestApiClientBuilder(app, 'users').build();
+ * const response = await client.get();
  */
 export class TestApiClientBuilder {
 	private readonly app: INestApplication<Server>;
@@ -87,18 +88,30 @@ export class TestApiClientBuilder {
 
 	private apiKey?: string;
 
+	private skipWhitelist = false;
+
+	private canAuthenticate = false;
+
 	public constructor(app: INestApplication, baseRoute: string) {
 		this.app = app as INestApplication<Server>;
 		this.baseRoute = this.normalizeRoute(baseRoute);
 	}
 
 	public asServiceAccount(): this {
+		if (this.isExternalUser) {
+			throw new Error('asServiceAccount() and asExternalUser() are mutually exclusive');
+		}
+
 		this.isServiceAccount = true;
 
 		return this;
 	}
 
 	public asExternalUser(): this {
+		if (this.isServiceAccount) {
+			throw new Error('asExternalUser() and asServiceAccount() are mutually exclusive');
+		}
+
 		this.isExternalUser = true;
 
 		return this;
@@ -117,55 +130,122 @@ export class TestApiClientBuilder {
 	 * - Use asExternalUser() or asServiceAccount() flags in the JWT
 	 */
 	public withJwt(user: UserForAuthentication, jwtConfig: TestJwtModuleConfig): this {
+		if (this.apiKey) {
+			throw new Error('withJwt() and withApiKey() are mutually exclusive');
+		}
+
 		this.user = user;
 		this.jwtConfig = jwtConfig;
+		this.canAuthenticate = true;
 
 		return this;
 	}
 
 	/**
-	 * Creates an API client authenticated with an API key.
-	 * This is a terminal operation and returns the client directly (not a Promise).
+	 * Sets the API key for authentication.
 	 */
-	public withApiKey(apiKey: string): AuthenticatedTestApiClient {
-		this.apiKey = apiKey;
-
-		return new AuthenticatedTestApiClient(this.app, this.baseRoute, apiKey, true);
-	}
-
-	/**
-	 * Creates an unauthenticated client for testing unauthorized access.
-	 * This is a terminal operation.
-	 */
-	public unauthenticated(): AuthenticatedTestApiClient {
-		return new AuthenticatedTestApiClient(this.app, this.baseRoute);
-	}
-
-	/**
-	 * Authenticates with the given account and returns an authenticated client.
-	 * This is the terminal operation that completes the builder chain.
-	 *
-	 * @param account - The account to authenticate with
-	 * @returns An authenticated TestApiClient instance
-	 */
-	public async authenticate(account: AccountForAuthentication): Promise<AuthenticatedTestApiClient> {
-		if (this.shouldUseJwtAuthentication()) {
-			return this.authenticateWithJwt(account);
+	public withApiKey(apiKey: string): this {
+		if (this.user || this.jwtConfig) {
+			throw new Error('withApiKey() and withJwt() are mutually exclusive');
 		}
 
-		return this.authenticateWithCredentials(account);
+		this.apiKey = apiKey;
+		this.canAuthenticate = true;
+
+		return this;
 	}
 
-	private shouldUseJwtAuthentication(): boolean {
+	/**
+	 * Skips adding the JWT to the whitelist.
+	 * Useful for testing unauthorized/expired token scenarios.
+	 * Only has effect when used with withJwt().
+	 */
+	public withoutWhitelist(): this {
+		this.skipWhitelist = true;
+
+		return this;
+	}
+
+	/**
+	 * Builds the API client.
+	 * - With API key: No account needed, returns synchronously
+	 * - With credentials/JWT: Account required, returns Promise
+	 *
+	 * @param account - The account to authenticate with (not needed for API key auth)
+	 * @returns A TestApiClient instance
+	 */
+	public build(): TestApiClient;
+	public build(account: AccountForAuthentication): Promise<TestApiClient>;
+	public build(account?: AccountForAuthentication): TestApiClient | Promise<TestApiClient> {
+		if (!this.canAuthenticate) {
+			return new TestApiClient(this.app, this.baseRoute);
+		}
+
+		if (this.apiKey) {
+			return new TestApiClient(this.app, this.baseRoute, this.apiKey, true);
+		}
+
+		if (!account) {
+			throw new Error('Account is required for credential-based or JWT authentication');
+		}
+
+		return this.buildWithAuthentication(account);
+	}
+
+	private async buildWithAuthentication(account: AccountForAuthentication): Promise<TestApiClient> {
+		this.validateConfiguration();
+
+		let jwt: string;
+
+		if (this.shouldGenerateJwt()) {
+			jwt = this.generateJwt(account);
+
+			if (!this.skipWhitelist) {
+				const jwtWhitelistAdapter = this.app.get(JwtWhitelistAdapter);
+				await jwtWhitelistAdapter.addToWhitelist(account.id, 'jti');
+			}
+		} else {
+			jwt = await this.authenticateWithCredentials(account);
+		}
+
+		return new TestApiClient(this.app, this.baseRoute, jwt);
+	}
+
+	private validateConfiguration(): void {
+		const usesCredentialLogin = !this.shouldGenerateJwt();
+
+		if (this.skipWhitelist && usesCredentialLogin) {
+			throw new Error('withoutWhitelist() requires withJwt() - credential-based login automatically adds to whitelist');
+		}
+
+		if (usesCredentialLogin) {
+			if (this.isExternalUser) {
+				// eslint-disable-next-line no-console
+				console.log('Warning: asExternalUser() has no effect without withJwt() - flag is only used in JWT generation');
+			}
+			if (this.isServiceAccount) {
+				// eslint-disable-next-line no-console
+				console.log(
+					'Warning: asServiceAccount() affects login endpoint but isServiceAccount flag in JWT requires withJwt()'
+				);
+			}
+			if (this.systemId) {
+				// eslint-disable-next-line no-console
+				console.log(
+					'Warning: withSystemId() has no effect without withJwt() - systemId is only used in JWT generation'
+				);
+			}
+		}
+	}
+
+	private shouldGenerateJwt(): boolean {
 		return this.user !== undefined && this.jwtConfig !== undefined;
 	}
 
-	private async authenticateWithJwt(account: AccountForAuthentication): Promise<AuthenticatedTestApiClient> {
+	private generateJwt(account: AccountForAuthentication): string {
 		if (!this.user || !this.jwtConfig) {
 			throw new Error('JWT authentication requires user and jwtConfig to be set via withJwt()');
 		}
-
-		const jwtWhitelistAdapter = this.app.get(JwtWhitelistAdapter);
 
 		const jwt = JwtAuthenticationFactory.createJwt(
 			{
@@ -181,12 +261,10 @@ export class TestApiClientBuilder {
 			this.jwtConfig
 		);
 
-		await jwtWhitelistAdapter.addToWhitelist(account.id, 'jti');
-
-		return new AuthenticatedTestApiClient(this.app, this.baseRoute, jwt);
+		return jwt;
 	}
 
-	private async authenticateWithCredentials(account: AccountForAuthentication): Promise<AuthenticatedTestApiClient> {
+	private async authenticateWithCredentials(account: AccountForAuthentication): Promise<string> {
 		const loginPath = this.isServiceAccount ? ENDPOINTS.SERVICE_ACCOUNT_LOGIN : ENDPOINTS.LOCAL_LOGIN;
 
 		const response = await supertest(this.app.getHttpServer())
@@ -197,9 +275,7 @@ export class TestApiClientBuilder {
 				password: defaultTestPassword,
 			});
 
-		const jwt = this.extractJwtFromResponse(response);
-
-		return new AuthenticatedTestApiClient(this.app, this.baseRoute, jwt);
+		return this.extractJwtFromResponse(response);
 	}
 
 	private extractJwtFromResponse(response: Response): string {
@@ -225,11 +301,7 @@ export class TestApiClientBuilder {
 	}
 }
 
-/**
- * An authenticated HTTP client for API testing.
- * Provides methods for making HTTP requests with authentication.
- */
-export class AuthenticatedTestApiClient {
+export class TestApiClient {
 	private readonly app: INestApplication<Server>;
 
 	private readonly baseRoute: string;

@@ -14,7 +14,7 @@ import {
 import { Test } from '@nestjs/testing';
 
 import { accountFactory } from '@modules/account/testing';
-import { AuthenticatedTestApiClient, TestApiClientBuilder } from './test-api-client-builder';
+import { TestApiClient, TestApiClientBuilder } from './test-api-client-builder';
 
 @Controller('')
 class TestController {
@@ -105,13 +105,13 @@ describe(TestApiClientBuilder.name, () => {
 		it('should throw an error for standard authentication', async () => {
 			const account = accountFactory.build();
 
-			await expect(new TestApiClientBuilder(app, '').authenticate(account)).rejects.toThrow();
+			await expect(new TestApiClientBuilder(app, '').build(account)).rejects.toThrow();
 		});
 
 		it('should throw an error for service account authentication', async () => {
 			const account = accountFactory.build();
 
-			await expect(new TestApiClientBuilder(app, '').asServiceAccount().authenticate(account)).rejects.toThrow();
+			await expect(new TestApiClientBuilder(app, '').asServiceAccount().build(account)).rejects.toThrow();
 		});
 	});
 
@@ -135,7 +135,7 @@ describe(TestApiClientBuilder.name, () => {
 			it('should return an authenticated client with JWT', async () => {
 				const account = accountFactory.build();
 
-				const client = await new TestApiClientBuilder(app, '').authenticate(account);
+				const client = await new TestApiClientBuilder(app, '').build(account);
 
 				expect(client.getAuthHeader()).toEqual('Bearer test-jwt-token-123');
 			});
@@ -144,9 +144,9 @@ describe(TestApiClientBuilder.name, () => {
 				const account = accountFactory.build();
 				const builder = new TestApiClientBuilder(app, '');
 
-				const client = await builder.authenticate(account);
+				const client = await builder.build(account);
 
-				expect(client).toBeInstanceOf(AuthenticatedTestApiClient);
+				expect(client).toBeInstanceOf(TestApiClient);
 			});
 		});
 
@@ -154,7 +154,7 @@ describe(TestApiClientBuilder.name, () => {
 			it('should authenticate using the service account endpoint', async () => {
 				const account = accountFactory.build();
 
-				const client = await new TestApiClientBuilder(app, '').asServiceAccount().authenticate(account);
+				const client = await new TestApiClientBuilder(app, '').asServiceAccount().build(account);
 
 				expect(client.getAuthHeader()).toEqual('Bearer service-account-token-456');
 			});
@@ -171,7 +171,7 @@ describe(TestApiClientBuilder.name, () => {
 		describe('HTTP methods', () => {
 			const setup = async () => {
 				const account = accountFactory.build();
-				const client = await new TestApiClientBuilder(app, '').authenticate(account);
+				const client = await new TestApiClientBuilder(app, '').build(account);
 				const id = new ObjectId().toHexString();
 
 				return { client, id };
@@ -293,7 +293,7 @@ describe(TestApiClientBuilder.name, () => {
 
 		describe('withApiKey', () => {
 			it('should return a client authenticated with API key', () => {
-				const client = new TestApiClientBuilder(app, '').withApiKey(API_KEY);
+				const client = new TestApiClientBuilder(app, '').withApiKey(API_KEY).build();
 
 				expect(client.getAuthHeader()).toEqual(API_KEY);
 			});
@@ -301,7 +301,7 @@ describe(TestApiClientBuilder.name, () => {
 
 		describe('HTTP methods with API key', () => {
 			const setup = () => {
-				const client = new TestApiClientBuilder(app, '').withApiKey(API_KEY);
+				const client = new TestApiClientBuilder(app, '').withApiKey(API_KEY).build();
 				const id = new ObjectId().toHexString();
 
 				return { client, id };
@@ -360,28 +360,28 @@ describe(TestApiClientBuilder.name, () => {
 
 		it('should handle base route without leading slash', async () => {
 			const account = accountFactory.build();
-			const client = await new TestApiClientBuilder(app, 'test-route').authenticate(account);
+			const client = await new TestApiClientBuilder(app, 'test-route').build(account);
 
-			expect(client).toBeInstanceOf(AuthenticatedTestApiClient);
+			expect(client).toBeInstanceOf(TestApiClient);
 		});
 
 		it('should handle base route with leading slash', async () => {
 			const account = accountFactory.build();
-			const client = await new TestApiClientBuilder(app, '/test-route').authenticate(account);
+			const client = await new TestApiClientBuilder(app, '/test-route').build(account);
 
-			expect(client).toBeInstanceOf(AuthenticatedTestApiClient);
+			expect(client).toBeInstanceOf(TestApiClient);
 		});
 
 		it('should handle empty base route', async () => {
 			const account = accountFactory.build();
-			const client = await new TestApiClientBuilder(app, '').authenticate(account);
+			const client = await new TestApiClientBuilder(app, '').build(account);
 
-			expect(client).toBeInstanceOf(AuthenticatedTestApiClient);
+			expect(client).toBeInstanceOf(TestApiClient);
 		});
 	});
 });
 
-describe(AuthenticatedTestApiClient.name, () => {
+describe(TestApiClient.name, () => {
 	describe('getAuthHeader', () => {
 		let app: INestApplication;
 
@@ -400,14 +400,14 @@ describe(AuthenticatedTestApiClient.name, () => {
 
 		it('should return the formatted auth header for JWT', async () => {
 			const account = accountFactory.build();
-			const client = await new TestApiClientBuilder(app, '').authenticate(account);
+			const client = await new TestApiClientBuilder(app, '').build(account);
 
 			expect(client.getAuthHeader()).toEqual('Bearer test-jwt-token-123');
 		});
 
 		it('should return the API key for API key auth', () => {
 			const apiKey = 'test-api-key';
-			const client = new TestApiClientBuilder(app, '').withApiKey(apiKey);
+			const client = new TestApiClientBuilder(app, '').withApiKey(apiKey).build();
 
 			expect(client.getAuthHeader()).toEqual(apiKey);
 		});
