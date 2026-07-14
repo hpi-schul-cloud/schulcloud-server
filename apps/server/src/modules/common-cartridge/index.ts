@@ -1,7 +1,8 @@
 /** **********************************************************
- * This is a module facade!                                  *
- * Please export only what is allowed to be used externally. *
- * Please do not use wildcard exports.                       *
+ * This is a module facade.                                  *
+ * Export only what is allowed to be used externally.        *
+ * Do not use wildcard exports.                              *
+ * Do not export *.app.module.ts here; import them directly. *
  *********************************************************** */
 
 export { COMMON_CARTRIDGE_PUBLIC_API_CONFIG_TOKEN, CommonCartridgePublicApiConfig } from './common-cartridge.config';
