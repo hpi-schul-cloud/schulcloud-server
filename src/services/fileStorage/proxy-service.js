@@ -106,7 +106,7 @@ const prepareSecurityCheck = async (file, userId, strategy) => {
 			.then((signedUrl) => {
 				const SECURITY_CHECK_SERVICE_PATH = Configuration.get('SECURITY_CHECK_SERVICE_PATH');
 				const API_HOST = Configuration.get('API_HOST');
-				const callbackUrl = new URL(`${SECURITY_CHECK_SERVICE_PATH}${file.securityCheck.requestToken}`, API_HOST);
+				const callbackUrl = new URL(`${API_HOST}${SECURITY_CHECK_SERVICE_PATH}${file.securityCheck.requestToken}`);
 				const params = {
 					url: Configuration.get('FILE_SECURITY_CHECK_SERVICE_URI'),
 					method: 'POST',
