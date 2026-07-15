@@ -6,6 +6,9 @@ metadata:
     app: api
 spec:
   template:
+    metadata:
+      labels:
+        app: server-init
     spec:
       os:
         name: linux

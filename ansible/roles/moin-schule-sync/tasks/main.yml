@@ -55,3 +55,11 @@
     state: "{{ 'present' if WITH_UNSYNCED_ENTITIES_DELETION is defined and WITH_UNSYNCED_ENTITIES_DELETION|bool else 'absent'}}"
   tags:
     - configmap
+
+- name: Add moin-schule-sync default allow network policy
+  kubernetes.core.k8s:
+    kubeconfig: ~/.kube/config
+    namespace: "{{ NAMESPACE }}"
+    template: default-allow-networkpolicy.yml.j2
+  tags:
+    - networkPolicy

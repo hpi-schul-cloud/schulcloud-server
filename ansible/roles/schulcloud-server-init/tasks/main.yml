@@ -1,4 +1,3 @@
-
   - name: Init Configmap File
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
@@ -115,3 +114,11 @@
     when: not WITH_SCHULCLOUD_INIT
     tags:
       - job
+
+  - name: Add schulcloud-server-init default allow network policy
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: default-allow-networkpolicy.yml.j2
+    tags:
+      - networkPolicy

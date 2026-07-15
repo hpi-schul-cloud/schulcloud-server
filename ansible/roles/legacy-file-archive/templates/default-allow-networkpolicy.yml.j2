@@ -1,0 +1,29 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: legacy-file-archive-default-allow
+  namespace: {{ NAMESPACE }}
+# Transitional compatibility policy: this intentionally preserves the broad
+# ingress access allowed by the former namespace-wide default-allow policy.
+# TODO: Replace it with service-specific sources and ports as dependencies are mapped.
+
+spec:
+  podSelector:
+    matchExpressions:
+      - key: app
+        operator: In
+        values:
+          - legacy-file-archive
+  policyTypes:
+    - Ingress
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchExpressions:
+              - key: kubernetes.io/metadata.name
+                operator: In
+                values:
+                  - monitoring
+                  - ingress-controller
+                  - scaling
+                  - "{{ NAMESPACE }}"
