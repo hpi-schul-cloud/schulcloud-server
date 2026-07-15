@@ -6,7 +6,7 @@ import { userFactory } from '@modules/user/testing';
 import { type INestApplication } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { TestApiClient } from '@testing/test-api-client';
+import { TestApiClientBuilder } from '@testing/test-api-client-builder';
 import { type BoardErrorReportBodyParams } from '../dto/board/board-error-report.body.params';
 
 const baseRouteName = '/report-board-error';
@@ -14,7 +14,6 @@ const baseRouteName = '/report-board-error';
 describe('BoardErrorReportController (api)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let testApiClient: TestApiClient;
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -24,7 +23,6 @@ describe('BoardErrorReportController (api)', () => {
 		app = module.createNestApplication();
 		await app.init();
 		em = module.get(EntityManager);
-		testApiClient = new TestApiClient(app, baseRouteName);
 	});
 
 	afterAll(async () => {
@@ -52,7 +50,7 @@ describe('BoardErrorReportController (api)', () => {
 		await em.persist([school, user, account]).flush();
 		em.clear();
 
-		const loggedInClient = await testApiClient.login(account);
+		const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(account);
 
 		return { loggedInClient };
 	};
@@ -70,7 +68,7 @@ describe('BoardErrorReportController (api)', () => {
 
 	describe('When user is unauthorized', () => {
 		it('should return status 401', async () => {
-			const response = await testApiClient.post(undefined, validPayload);
+			const response = await new TestApiClientBuilder(app, baseRouteName).build().post(undefined, validPayload);
 
 			expect(response.status).toEqual(401);
 		});

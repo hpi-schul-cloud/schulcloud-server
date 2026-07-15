@@ -10,7 +10,7 @@ import { userFactory } from '@modules/user/testing';
 import { type INestApplication } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { TestApiClient } from '@testing/test-api-client';
+import { TestApiClientBuilder } from '@testing/test-api-client-builder';
 import { BoardExternalReferenceType, BoardLayout } from '../../domain';
 import { BoardNodeEntity } from '../../repo';
 import { columnBoardEntityFactory } from '../../testing';
@@ -21,7 +21,6 @@ const baseRouteName = '/boards';
 describe(`board update layout with room relation (api)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let testApiClient: TestApiClient;
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -31,7 +30,6 @@ describe(`board update layout with room relation (api)`, () => {
 		app = module.createNestApplication();
 		await app.init();
 		em = module.get(EntityManager);
-		testApiClient = new TestApiClient(app, baseRouteName);
 	});
 
 	afterAll(async () => {
@@ -101,7 +99,7 @@ describe(`board update layout with room relation (api)`, () => {
 	describe('with user who has edit role in room', () => {
 		it('should return status 204', async () => {
 			const { accountWithEditRole, columnBoardNode } = await setup();
-			const loggedInClient = await testApiClient.login(accountWithEditRole);
+			const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(accountWithEditRole);
 
 			const response = await loggedInClient.patch(`${columnBoardNode.id}/layout`, { layout: BoardLayout.LIST });
 
@@ -110,7 +108,7 @@ describe(`board update layout with room relation (api)`, () => {
 
 		it('should actually change the board layout', async () => {
 			const { accountWithEditRole, columnBoardNode } = await setup();
-			const loggedInClient = await testApiClient.login(accountWithEditRole);
+			const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(accountWithEditRole);
 
 			await loggedInClient.patch(`${columnBoardNode.id}/layout`, { layout: BoardLayout.LIST });
 
@@ -123,7 +121,7 @@ describe(`board update layout with room relation (api)`, () => {
 	describe('with user who has only view role in room', () => {
 		it('should return status 403', async () => {
 			const { accountWithViewRole, columnBoardNode } = await setup();
-			const loggedInClient = await testApiClient.login(accountWithViewRole);
+			const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(accountWithViewRole);
 
 			const response = await loggedInClient.patch(`${columnBoardNode.id}/layout`, { layout: BoardLayout.LIST });
 
@@ -132,7 +130,7 @@ describe(`board update layout with room relation (api)`, () => {
 
 		it('should not change the board layout', async () => {
 			const { accountWithViewRole, columnBoardNode } = await setup();
-			const loggedInClient = await testApiClient.login(accountWithViewRole);
+			const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(accountWithViewRole);
 
 			await loggedInClient.patch(`${columnBoardNode.id}/layout`, { layout: BoardLayout.LIST });
 
@@ -144,7 +142,7 @@ describe(`board update layout with room relation (api)`, () => {
 	describe('with user who is not part of the room', () => {
 		it('should return status 403', async () => {
 			const { noAccessAccount, columnBoardNode } = await setup();
-			const loggedInClient = await testApiClient.login(noAccessAccount);
+			const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(noAccessAccount);
 
 			const response = await loggedInClient.patch(`${columnBoardNode.id}/layout`, { layout: BoardLayout.LIST });
 
@@ -153,7 +151,7 @@ describe(`board update layout with room relation (api)`, () => {
 
 		it('should not change the board layout', async () => {
 			const { noAccessAccount, columnBoardNode } = await setup();
-			const loggedInClient = await testApiClient.login(noAccessAccount);
+			const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(noAccessAccount);
 
 			await loggedInClient.patch(`${columnBoardNode.id}/layout`, { layout: BoardLayout.LIST });
 
