@@ -8,7 +8,7 @@ import { Test, type TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
-import { TestApiClient } from '@testing/test-api-client';
+import { TestApiClientBuilder } from '@testing/test-api-client-builder';
 import { ACCOUNT_ENCRYPTION_CONFIG_TOKEN } from '../../encryption.config';
 import { AccountEntity } from '../../repo';
 import {
@@ -26,7 +26,6 @@ describe('Account Controller (API)', () => {
 
 	let app: INestApplication;
 	let em: EntityManager;
-	let testApiClient: TestApiClient;
 
 	const defaultPassword = 'DummyPasswd!1';
 	const defaultPasswordHash = '$2a$10$/DsztV5o6P5piW2eWJsxw.4nHovmJGBA.QNwiTmuZ/uvUc40b.Uhu';
@@ -42,7 +41,6 @@ describe('Account Controller (API)', () => {
 		app = moduleFixture.createNestApplication();
 		await app.init();
 		em = app.get(EntityManager);
-		testApiClient = new TestApiClient(app, basePath);
 	});
 
 	beforeEach(async () => {
@@ -63,7 +61,7 @@ describe('Account Controller (API)', () => {
 
 				await em.persist([school, studentUser, studentAccount]).flush();
 
-				const loggedInClient = await testApiClient.login(studentAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, basePath).build(studentAccount);
 
 				const passwordPatchParams: PatchMyPasswordParams = {
 					password: 'Valid12$',
@@ -91,7 +89,7 @@ describe('Account Controller (API)', () => {
 
 				await em.persist([school, studentUser, studentAccount]).flush();
 
-				const loggedInClient = await testApiClient.login(studentAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, basePath).build(studentAccount);
 
 				const passwordPatchParams: PatchMyPasswordParams = {
 					password: 'weak',
@@ -118,7 +116,7 @@ describe('Account Controller (API)', () => {
 
 				await em.persist([school, studentUser, studentAccount]).flush();
 
-				const loggedInClient = await testApiClient.login(studentAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, basePath).build(studentAccount);
 
 				const newEmailValue = 'new@mail.com';
 
@@ -146,7 +144,7 @@ describe('Account Controller (API)', () => {
 
 				await em.persist([school, studentUser, studentAccount]).flush();
 
-				const loggedInClient = await testApiClient.login(studentAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, basePath).build(studentAccount);
 
 				const newEmailValue = 'new@mail.com';
 
@@ -172,7 +170,7 @@ describe('Account Controller (API)', () => {
 
 				await em.persist([school, teacherUser, teacherAccount]).flush();
 
-				const loggedInClient = await testApiClient.login(teacherAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, basePath).build(teacherAccount);
 
 				const patchMyAccountParams: PatchMyAccountParams = {
 					passwordOld: defaultPassword,
@@ -204,7 +202,7 @@ describe('Account Controller (API)', () => {
 
 				await em.persist([school, studentUser, superheroUser, studentAccount, superheroAccount]).flush();
 
-				const loggedInClient = await testApiClient.loginAsServiceAccount(superheroAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, basePath).asServiceAccount().build(superheroAccount);
 
 				const query: AccountSearchQueryParams = {
 					type: AccountSearchType.USER_ID,
@@ -234,7 +232,7 @@ describe('Account Controller (API)', () => {
 
 				await em.persist([school, studentUser, superheroUser, studentAccount, superheroAccount]).flush();
 
-				const loggedInClient = await testApiClient.loginAsServiceAccount(superheroAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, basePath).asServiceAccount().build(superheroAccount);
 
 				const query: AccountSearchQueryParams = {
 					type: AccountSearchType.USER_ID,
@@ -266,7 +264,7 @@ describe('Account Controller (API)', () => {
 
 				await em.persist([school, studentUser, superheroUser, studentAccount, superheroAccount]).flush();
 
-				const loggedInClient = await testApiClient.loginAsServiceAccount(superheroAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, basePath).asServiceAccount().build(superheroAccount);
 
 				const query: AccountSearchQueryParams = {
 					type: AccountSearchType.USERNAME,
@@ -293,7 +291,7 @@ describe('Account Controller (API)', () => {
 
 				await em.persist([school, studentUser, superheroUser, studentAccount, superheroAccount]).flush();
 
-				const loggedInClient = await testApiClient.loginAsServiceAccount(superheroAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, basePath).asServiceAccount().build(superheroAccount);
 
 				const query: AccountSearchQueryParams = {
 					type: '' as AccountSearchType,
@@ -320,7 +318,7 @@ describe('Account Controller (API)', () => {
 
 				await em.persist([school, adminUser, adminAccount, studentUser, studentAccount]).flush();
 
-				const loggedInClient = await testApiClient.login(adminAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, basePath).build(adminAccount);
 
 				const query: AccountSearchQueryParams = {
 					type: AccountSearchType.USERNAME,
@@ -352,7 +350,7 @@ describe('Account Controller (API)', () => {
 
 				await em.persist([school, studentUser, superheroUser, studentAccount, superheroAccount]).flush();
 
-				const loggedInClient = await testApiClient.loginAsServiceAccount(superheroAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, basePath).asServiceAccount().build(superheroAccount);
 
 				return { loggedInClient, studentAccount };
 			};
@@ -371,7 +369,7 @@ describe('Account Controller (API)', () => {
 
 				await em.persist([school, adminUser, adminAccount, studentUser, studentAccount]).flush();
 
-				const loggedInClient = await testApiClient.login(adminAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, basePath).build(adminAccount);
 
 				return { loggedInClient, studentAccount };
 			};
@@ -391,7 +389,7 @@ describe('Account Controller (API)', () => {
 
 				await em.persist([school, superheroUser, superheroAccount]).flush();
 
-				const loggedInClient = await testApiClient.loginAsServiceAccount(superheroAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, basePath).asServiceAccount().build(superheroAccount);
 
 				return { loggedInClient };
 			};
@@ -416,7 +414,7 @@ describe('Account Controller (API)', () => {
 
 				await em.persist([school, studentUser, superheroUser, studentAccount, superheroAccount]).flush();
 
-				const loggedInClient = await testApiClient.loginAsServiceAccount(superheroAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, basePath).asServiceAccount().build(superheroAccount);
 
 				const body: AccountByIdBodyParams = {
 					password: defaultPassword,
@@ -442,7 +440,7 @@ describe('Account Controller (API)', () => {
 
 				await em.persist([school, studentUser, studentAccount]).flush();
 
-				const loggedInClient = await testApiClient.login(studentAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, basePath).build(studentAccount);
 
 				const body: AccountByIdBodyParams = {
 					password: defaultPassword,
@@ -468,7 +466,7 @@ describe('Account Controller (API)', () => {
 
 				await em.persist([school, studentUser, superheroUser, studentAccount, superheroAccount]).flush();
 
-				const loggedInClient = await testApiClient.loginAsServiceAccount(superheroAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, basePath).asServiceAccount().build(superheroAccount);
 
 				const body: AccountByIdBodyParams = {
 					password: defaultPassword,
@@ -497,7 +495,7 @@ describe('Account Controller (API)', () => {
 
 				await em.persist([school, studentUser, superheroUser, studentAccount, superheroAccount]).flush();
 
-				const loggedInClient = await testApiClient.loginAsServiceAccount(superheroAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, basePath).asServiceAccount().build(superheroAccount);
 
 				return { loggedInClient, studentAccount };
 			};
@@ -516,7 +514,7 @@ describe('Account Controller (API)', () => {
 
 				await em.persist([school, adminUser, adminAccount, studentUser, studentAccount]).flush();
 
-				const loggedInClient = await testApiClient.login(adminAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, basePath).build(adminAccount);
 
 				return { loggedInClient, studentAccount };
 			};
@@ -536,7 +534,7 @@ describe('Account Controller (API)', () => {
 
 				await em.persist([school, superheroUser, superheroAccount]).flush();
 
-				const loggedInClient = await testApiClient.loginAsServiceAccount(superheroAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, basePath).asServiceAccount().build(superheroAccount);
 
 				return { loggedInClient };
 			};

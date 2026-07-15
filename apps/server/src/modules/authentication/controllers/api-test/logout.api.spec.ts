@@ -12,7 +12,7 @@ import { cleanupCollections } from '@testing/cleanup-collections';
 import { currentUserFactory } from '@testing/factory/currentuser.factory';
 import { JwtTestFactory } from '@testing/factory/jwt.test.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
-import { TestApiClient } from '@testing/test-api-client';
+import { TestApiClientBuilder } from '@testing/test-api-client-builder';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { type Request } from 'express';
@@ -36,7 +36,6 @@ describe('Logout Controller (api)', () => {
 
 	let app: INestApplication;
 	let em: EntityManager;
-	let testApiClient: TestApiClient;
 	let axiosMock: MockAdapter;
 	let config: AuthenticationConfig;
 
@@ -52,7 +51,6 @@ describe('Logout Controller (api)', () => {
 		app = moduleFixture.createNestApplication();
 		await app.init();
 		em = app.get(EntityManager);
-		testApiClient = new TestApiClient(app, baseRouteName);
 		config = app.get<AuthenticationConfig>(AUTHENTICATION_CONFIG_TOKEN);
 	});
 
@@ -67,7 +65,7 @@ describe('Logout Controller (api)', () => {
 				await em.persist([studentAccount, studentUser]).flush();
 				em.clear();
 
-				const loggedInClient = await testApiClient.login(studentAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 				return {
 					loggedInClient,
@@ -86,7 +84,7 @@ describe('Logout Controller (api)', () => {
 
 		describe('when the user is not logged in', () => {
 			it('should return unauthorized', async () => {
-				const response: Response = await testApiClient.post('');
+				const response: Response = await new TestApiClientBuilder(app, baseRouteName).build().post('');
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 			});
@@ -127,7 +125,9 @@ describe('Logout Controller (api)', () => {
 			it('should log out the user', async () => {
 				const { logoutToken } = await setup();
 
-				const response: Response = await testApiClient.post('/oidc', { logout_token: logoutToken });
+				const response: Response = await new TestApiClientBuilder(app, baseRouteName)
+					.build()
+					.post('/oidc', { logout_token: logoutToken });
 
 				expect(response.status).toEqual(HttpStatus.OK);
 			});
@@ -154,14 +154,13 @@ describe('Logout Controller (api)', () => {
 			app = moduleFixture.createNestApplication();
 			await app.init();
 			em = app.get(EntityManager);
-			testApiClient = new TestApiClient(app, baseRouteName);
 			axiosMock = new MockAdapter(axios);
 			config = app.get<AuthenticationConfig>(AUTHENTICATION_CONFIG_TOKEN);
 		};
 
 		describe('when the user is not logged in', () => {
 			it('should return unauthorized', async () => {
-				const response: Response = await testApiClient.post('/external');
+				const response: Response = await new TestApiClientBuilder(app, baseRouteName).build().post('/external');
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 			});
@@ -181,7 +180,7 @@ describe('Logout Controller (api)', () => {
 				await em.persist([studentAccount, studentUser, system, token]).flush();
 				em.clear();
 
-				const loggedInClient = await testApiClient.login(studentAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 				currentUser = currentUserFactory.build({
 					userId: studentUser.id,
@@ -221,7 +220,7 @@ describe('Logout Controller (api)', () => {
 					await em.persist([studentAccount, studentUser, system, token]).flush();
 					em.clear();
 
-					const loggedInClient = await testApiClient.login(studentAccount);
+					const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 					currentUser = currentUserFactory.build({
 						userId: studentUser.id,
@@ -258,7 +257,7 @@ describe('Logout Controller (api)', () => {
 					await em.persist([studentAccount, studentUser, system, token]).flush();
 					em.clear();
 
-					const loggedInClient = await testApiClient.login(studentAccount);
+					const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 					currentUser = currentUserFactory.build({
 						userId: studentUser.id,
@@ -295,7 +294,7 @@ describe('Logout Controller (api)', () => {
 					await em.persist([studentAccount, studentUser, system, token]).flush();
 					em.clear();
 
-					const loggedInClient = await testApiClient.login(studentAccount);
+					const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 					currentUser = currentUserFactory.build({
 						userId: studentUser.id,
@@ -334,7 +333,7 @@ describe('Logout Controller (api)', () => {
 					await em.persist([studentAccount, studentUser, system, token]).flush();
 					em.clear();
 
-					const loggedInClient = await testApiClient.login(studentAccount);
+					const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 					currentUser = currentUserFactory.build({
 						userId: studentUser.id,
@@ -371,7 +370,7 @@ describe('Logout Controller (api)', () => {
 					await em.persist([studentAccount, studentUser, system]).flush();
 					em.clear();
 
-					const loggedInClient = await testApiClient.login(studentAccount);
+					const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 					currentUser = currentUserFactory.build({
 						userId: studentUser.id,
@@ -406,7 +405,7 @@ describe('Logout Controller (api)', () => {
 					await em.persist([studentAccount, studentUser, system, token]).flush();
 					em.clear();
 
-					const loggedInClient = await testApiClient.login(studentAccount);
+					const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 					currentUser = currentUserFactory.build({
 						userId: studentUser.id,
