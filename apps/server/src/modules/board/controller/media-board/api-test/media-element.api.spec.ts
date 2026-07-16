@@ -7,7 +7,7 @@ import { schoolExternalToolEntityFactory } from '@modules/tool/school-external-t
 import { HttpStatus, type INestApplication } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
-import { TestApiClient } from '@testing/test-api-client';
+import { TestApiClientBuilder } from '@testing/test-api-client-builder';
 import { BOARD_CONFIG_TOKEN, type BoardConfig } from '../../../board.config';
 import { BoardExternalReferenceType } from '../../../domain';
 import { BoardNodeEntity } from '../../../repo';
@@ -23,7 +23,6 @@ const baseRouteName = '/media-elements';
 describe('Media Element (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let testApiClient: TestApiClient;
 	let config: BoardConfig;
 
 	beforeAll(async () => {
@@ -34,7 +33,6 @@ describe('Media Element (API)', () => {
 		app = module.createNestApplication();
 		await app.init();
 		em = module.get(EntityManager);
-		testApiClient = new TestApiClient(app, baseRouteName);
 		config = module.get<BoardConfig>(BOARD_CONFIG_TOKEN);
 	});
 
@@ -62,7 +60,7 @@ describe('Media Element (API)', () => {
 				await em.persist([studentAccount, studentUser, mediaBoard, mediaLine, mediaElementA, mediaElementB]).flush();
 				em.clear();
 
-				const studentClient = await testApiClient.login(studentAccount);
+				const studentClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 				return {
 					studentClient,
@@ -106,7 +104,7 @@ describe('Media Element (API)', () => {
 				await em.persist([studentAccount, studentUser, mediaBoard, mediaLine, mediaElement]).flush();
 				em.clear();
 
-				const studentClient = await testApiClient.login(studentAccount);
+				const studentClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 				return {
 					studentClient,
@@ -160,7 +158,7 @@ describe('Media Element (API)', () => {
 			it('should return unauthorized', async () => {
 				const { mediaLine, mediaElement } = await setup();
 
-				const response = await testApiClient.put<MoveElementBodyParams>(`${mediaElement.id}/position`, {
+				const response = await new TestApiClientBuilder(app, baseRouteName).build().put<MoveElementBodyParams>(`${mediaElement.id}/position`, {
 					toLineId: mediaLine.id,
 					toPosition: 0,
 				});
@@ -201,7 +199,7 @@ describe('Media Element (API)', () => {
 					.flush();
 				em.clear();
 
-				const studentClient = await testApiClient.login(studentAccount);
+				const studentClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 				return {
 					studentClient,
@@ -239,7 +237,7 @@ describe('Media Element (API)', () => {
 			it('should return unauthorized', async () => {
 				setup();
 
-				const response = await testApiClient.post(undefined, {
+				const response = await new TestApiClientBuilder(app, baseRouteName).build().post(undefined, {
 					lineId: new ObjectId().toHexString(),
 					position: 0,
 					schoolExternalToolId: new ObjectId().toHexString(),
@@ -264,7 +262,7 @@ describe('Media Element (API)', () => {
 				await em.persist([studentAccount, studentUser]).flush();
 				em.clear();
 
-				const studentClient = await testApiClient.login(studentAccount);
+				const studentClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 				return {
 					studentClient,
@@ -333,7 +331,7 @@ describe('Media Element (API)', () => {
 					.flush();
 				em.clear();
 
-				const studentClient = await testApiClient.login(studentAccount);
+				const studentClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 				return {
 					studentClient,
@@ -364,7 +362,7 @@ describe('Media Element (API)', () => {
 			it('should return unauthorized', async () => {
 				setup();
 
-				const response = await testApiClient.delete(new ObjectId().toHexString());
+				const response = await new TestApiClientBuilder(app, baseRouteName).build().delete(new ObjectId().toHexString());
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 				expect(response.body).toEqual({
@@ -385,7 +383,7 @@ describe('Media Element (API)', () => {
 				await em.persist([studentAccount, studentUser]).flush();
 				em.clear();
 
-				const studentClient = await testApiClient.login(studentAccount);
+				const studentClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 				return {
 					studentClient,

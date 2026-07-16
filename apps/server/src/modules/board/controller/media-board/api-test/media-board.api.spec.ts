@@ -12,7 +12,7 @@ import { Test, type TestingModule } from '@nestjs/testing';
 import { type DateToString } from '@testing/date-to-string';
 import { expectIsoDateString } from '@testing/matchers';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
-import { TestApiClient } from '@testing/test-api-client';
+import { TestApiClientBuilder } from '@testing/test-api-client-builder';
 import { BoardExternalReferenceType, BoardLayout, Colors } from '../../../domain';
 import { BoardNodeEntity } from '../../../repo';
 import {
@@ -34,7 +34,6 @@ const baseRouteName = '/media-boards';
 describe('Media Board (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let testApiClient: TestApiClient;
 	let config: BoardConfig;
 
 	beforeAll(async () => {
@@ -45,7 +44,6 @@ describe('Media Board (API)', () => {
 		app = module.createNestApplication();
 		await app.init();
 		em = module.get(EntityManager);
-		testApiClient = new TestApiClient(app, baseRouteName);
 
 		config = module.get<BoardConfig>(BOARD_CONFIG_TOKEN);
 	});
@@ -76,7 +74,7 @@ describe('Media Board (API)', () => {
 				await em.persist([studentAccount, studentUser, mediaBoard, mediaLine, mediaElement]).flush();
 				em.clear();
 
-				const studentClient = await testApiClient.login(studentAccount);
+				const studentClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 				return {
 					studentClient,
@@ -136,7 +134,7 @@ describe('Media Board (API)', () => {
 				await em.persist([studentAccount, studentUser]).flush();
 				em.clear();
 
-				const studentClient = await testApiClient.login(studentAccount);
+				const studentClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 				return {
 					studentClient,
@@ -166,7 +164,7 @@ describe('Media Board (API)', () => {
 			it('should return unauthorized', async () => {
 				setup();
 
-				const response = await testApiClient.get('me');
+				const response = await new TestApiClientBuilder(app, baseRouteName).build().get('me');
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 				expect(response.body).toEqual({
@@ -196,7 +194,7 @@ describe('Media Board (API)', () => {
 				await em.persist([studentAccount, studentUser, mediaBoard]).flush();
 				em.clear();
 
-				const studentClient = await testApiClient.login(studentAccount);
+				const studentClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 				return {
 					studentClient,
@@ -238,7 +236,7 @@ describe('Media Board (API)', () => {
 				await em.persist([studentAccount, studentUser]).flush();
 				em.clear();
 
-				const studentClient = await testApiClient.login(studentAccount);
+				const studentClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 				return {
 					studentClient,
@@ -283,7 +281,7 @@ describe('Media Board (API)', () => {
 			it('should return unauthorized', async () => {
 				const { mediaBoard } = await setup();
 
-				const response = await testApiClient.post(`${mediaBoard.id}/media-lines`);
+				const response = await new TestApiClientBuilder(app, baseRouteName).build().post(`${mediaBoard.id}/media-lines`);
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 				expect(response.body).toEqual({
@@ -354,7 +352,7 @@ describe('Media Board (API)', () => {
 					.flush();
 				em.clear();
 
-				const studentClient = await testApiClient.login(studentAccount);
+				const studentClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 				return {
 					studentClient,
@@ -413,7 +411,7 @@ describe('Media Board (API)', () => {
 			it('should return unauthorized', async () => {
 				const { mediaBoard } = await setup();
 
-				const response = await testApiClient.get(`${mediaBoard.id}/media-available-line`);
+				const response = await new TestApiClientBuilder(app, baseRouteName).build().get(`${mediaBoard.id}/media-available-line`);
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 				expect(response.body).toEqual({
@@ -441,7 +439,7 @@ describe('Media Board (API)', () => {
 				await em.persist([studentAccount, studentUser, mediaBoard]).flush();
 				em.clear();
 
-				const studentClient = await testApiClient.login(studentAccount);
+				const studentClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 				return {
 					studentClient,
@@ -480,7 +478,7 @@ describe('Media Board (API)', () => {
 				await em.persist([studentAccount, studentUser, mediaBoard]).flush();
 				em.clear();
 
-				const studentClient = await testApiClient.login(studentAccount);
+				const studentClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 				return {
 					studentClient,
@@ -579,7 +577,7 @@ describe('Media Board (API)', () => {
 					.flush();
 				em.clear();
 
-				const studentClient = await testApiClient.login(studentAccount);
+				const studentClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 				return {
 					studentClient,
@@ -670,7 +668,7 @@ describe('Media Board (API)', () => {
 					.flush();
 				em.clear();
 
-				const studentClient = await testApiClient.login(studentAccount);
+				const studentClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 				return {
 					studentClient,
@@ -720,7 +718,7 @@ describe('Media Board (API)', () => {
 			it('should return unauthorized', async () => {
 				const { mediaBoard } = await setup();
 
-				const response = await testApiClient.patch<CollapsableBodyParams>(
+				const response = await new TestApiClientBuilder(app, baseRouteName).build().patch<CollapsableBodyParams>(
 					`${mediaBoard.id}/media-available-line/collapse`,
 					{
 						collapsed: true,
@@ -753,7 +751,7 @@ describe('Media Board (API)', () => {
 				await em.persist([studentAccount, studentUser, mediaBoard]).flush();
 				em.clear();
 
-				const studentClient = await testApiClient.login(studentAccount);
+				const studentClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 				return {
 					studentClient,
@@ -831,7 +829,7 @@ describe('Media Board (API)', () => {
 					.flush();
 				em.clear();
 
-				const studentClient = await testApiClient.login(studentAccount);
+				const studentClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 				return {
 					studentClient,
@@ -878,7 +876,7 @@ describe('Media Board (API)', () => {
 			it('should return unauthorized', async () => {
 				const { mediaBoard } = await setup();
 
-				const response = await testApiClient.patch<ColorBodyParams>(`${mediaBoard.id}/media-available-line/color`, {
+				const response = await new TestApiClientBuilder(app, baseRouteName).build().patch<ColorBodyParams>(`${mediaBoard.id}/media-available-line/color`, {
 					backgroundColor: Colors.BLUE,
 				});
 
@@ -908,7 +906,7 @@ describe('Media Board (API)', () => {
 				await em.persist([studentAccount, studentUser, mediaBoard]).flush();
 				em.clear();
 
-				const studentClient = await testApiClient.login(studentAccount);
+				const studentClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 				return {
 					studentClient,
@@ -949,7 +947,7 @@ describe('Media Board (API)', () => {
 				await em.persist([studentAccount, studentUser, mediaBoard]).flush();
 				em.clear();
 
-				const studentClient = await testApiClient.login(studentAccount);
+				const studentClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 				return {
 					studentClient,
@@ -994,7 +992,7 @@ describe('Media Board (API)', () => {
 				await em.persist([studentAccount, studentUser, mediaBoard, mediaLine, mediaElement]).flush();
 				em.clear();
 
-				const studentClient = await testApiClient.login(studentAccount);
+				const studentClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 				return {
 					studentClient,
@@ -1041,7 +1039,7 @@ describe('Media Board (API)', () => {
 			it('should return unauthorized', async () => {
 				const { mediaBoard } = await setup();
 
-				const response = await testApiClient.get(`${mediaBoard.id}/media-available-line`);
+				const response = await new TestApiClientBuilder(app, baseRouteName).build().get(`${mediaBoard.id}/media-available-line`);
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 				expect(response.body).toEqual({
@@ -1069,7 +1067,7 @@ describe('Media Board (API)', () => {
 				await em.persist([studentAccount, studentUser, mediaBoard]).flush();
 				em.clear();
 
-				const studentClient = await testApiClient.login(studentAccount);
+				const studentClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 				return {
 					studentClient,
@@ -1108,7 +1106,7 @@ describe('Media Board (API)', () => {
 				await em.persist([studentAccount, studentUser, mediaBoard]).flush();
 				em.clear();
 
-				const studentClient = await testApiClient.login(studentAccount);
+				const studentClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 				return {
 					studentClient,

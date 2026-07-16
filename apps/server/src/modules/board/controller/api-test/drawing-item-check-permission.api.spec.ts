@@ -5,7 +5,7 @@ import { type INestApplication } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
-import { TestApiClient } from '@testing/test-api-client';
+import { TestApiClientBuilder } from '@testing/test-api-client-builder';
 import { BoardExternalReferenceType } from '../../domain';
 import {
 	cardEntityFactory,
@@ -19,7 +19,6 @@ const baseRouteName = '/elements';
 describe('drawing permission check (api)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let testApiClient: TestApiClient;
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -29,7 +28,6 @@ describe('drawing permission check (api)', () => {
 		app = module.createNestApplication();
 		await app.init();
 		em = module.get(EntityManager);
-		testApiClient = new TestApiClient(app, baseRouteName);
 	});
 
 	afterAll(async () => {
@@ -57,7 +55,7 @@ describe('drawing permission check (api)', () => {
 			await em.persistAndFlush([columnBoardNode, columnNode, cardNode, drawingItemNode]);
 			em.clear();
 
-			const loggedInClient = await testApiClient.login(teacherAccount);
+			const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(teacherAccount);
 
 			return { loggedInClient, teacherUser, columnBoardNode, columnNode, cardNode, drawingItemNode };
 		};
@@ -95,7 +93,7 @@ describe('drawing permission check (api)', () => {
 			await em.persistAndFlush([columnBoardNode, columnNode, cardNode, drawingItemNode]);
 			em.clear();
 
-			const loggedInClient = await testApiClient.login(studentAccount);
+			const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 			return { loggedInClient, studentUser, columnBoardNode, columnNode, cardNode, drawingItemNode };
 		};
@@ -118,7 +116,7 @@ describe('drawing permission check (api)', () => {
 
 			em.clear();
 
-			const loggedInClient = await testApiClient.login(teacherAccount);
+			const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(teacherAccount);
 
 			return { loggedInClient };
 		};
