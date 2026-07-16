@@ -4,7 +4,7 @@ import { AdminApiServerTestModule } from '@modules/server/admin-api.server.app.m
 import { userFactory } from '@modules/user/testing';
 import { type INestApplication } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
-import { TestApiClient } from '@testing/test-api-client';
+import { TestApiClientBuilder } from '@testing/test-api-client-builder';
 import { DomainName, StatusModel } from '../../../domain/types';
 import { DeletionLogEntity, DeletionRequestEntity } from '../../../repo/entity';
 import {
@@ -19,7 +19,6 @@ const baseRouteName = '/deletion-batches';
 describe('createDeletionRequestsForBatch', () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let testApiClient: TestApiClient;
 	const API_KEY = 'someotherkey';
 
 	beforeAll(async () => {
@@ -29,7 +28,6 @@ describe('createDeletionRequestsForBatch', () => {
 
 		app = module.createNestApplication();
 		em = module.get(EntityManager);
-		testApiClient = new TestApiClient(app, baseRouteName, API_KEY, true);
 
 		await app.init();
 	});
@@ -59,7 +57,7 @@ describe('createDeletionRequestsForBatch', () => {
 		it('should return status 202', async () => {
 			const { batch } = await setup();
 
-			const response = await testApiClient.post(`/${batch.id}/execute`);
+			const response = await new TestApiClientBuilder(app, baseRouteName).withApiKey(API_KEY).build().post(`/${batch.id}/execute`);
 
 			expect(response.status).toEqual(202);
 			const result = response.body as DeletionBatchItemResponse;
@@ -69,7 +67,7 @@ describe('createDeletionRequestsForBatch', () => {
 		it('should update batch status to "queued"', async () => {
 			const { batch } = await setup();
 
-			const response = await testApiClient.post(`/${batch.id}/execute`);
+			const response = await new TestApiClientBuilder(app, baseRouteName).withApiKey(API_KEY).build().post(`/${batch.id}/execute`);
 
 			const result = response.body as DeletionBatchItemResponse;
 			expect(result.status).toEqual('deletion-requested'); // Assuming the status changes to 'queued'
@@ -116,7 +114,7 @@ describe('createDeletionRequestsForBatch', () => {
 		it('should reset failed request to registered and delete logs for reset request ids', async () => {
 			const { batch, student1, failedRequest, successfulRequest } = await setup();
 
-			const response = await testApiClient.post(`/${batch.id}/reset-failed`, {
+			const response = await new TestApiClientBuilder(app, baseRouteName).withApiKey(API_KEY).build().post(`/${batch.id}/reset-failed`, {
 				targetRefIds: [student1.id],
 			});
 
@@ -140,7 +138,7 @@ describe('createDeletionRequestsForBatch', () => {
 		it('should support reset-failed alias endpoint', async () => {
 			const { batch, student1 } = await setup();
 
-			const response = await testApiClient.post(`/${batch.id}/reset-failed`, {
+			const response = await new TestApiClientBuilder(app, baseRouteName).withApiKey(API_KEY).build().post(`/${batch.id}/reset-failed`, {
 				targetRefIds: [student1.id],
 			});
 
@@ -151,7 +149,7 @@ describe('createDeletionRequestsForBatch', () => {
 			const { batch } = await setup();
 			const unknownTargetRefId = new ObjectId().toHexString();
 
-			const response = await testApiClient.post(`/${batch.id}/reset-failed`, {
+			const response = await new TestApiClientBuilder(app, baseRouteName).withApiKey(API_KEY).build().post(`/${batch.id}/reset-failed`, {
 				targetRefIds: [unknownTargetRefId],
 			});
 

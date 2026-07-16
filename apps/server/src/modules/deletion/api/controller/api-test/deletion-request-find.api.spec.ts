@@ -3,7 +3,7 @@ import { AdminApiServerTestModule } from '@modules/server/admin-api.server.app.m
 import { type INestApplication } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { TestApiClient } from '@testing/test-api-client';
+import { TestApiClientBuilder } from '@testing/test-api-client-builder';
 import { deletionRequestEntityFactory } from '../../../repo/entity/testing';
 import { type DeletionRequestLogResponse } from '../dto';
 
@@ -12,7 +12,6 @@ const baseRouteName = '/deletionRequests';
 describe(`deletionRequest find (api)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let testApiClient: TestApiClient;
 	const API_KEY = 'someotherkey';
 
 	beforeAll(async () => {
@@ -23,7 +22,6 @@ describe(`deletionRequest find (api)`, () => {
 		app = module.createNestApplication();
 		await app.init();
 		em = module.get(EntityManager);
-		testApiClient = new TestApiClient(app, baseRouteName, API_KEY, true);
 	});
 
 	afterAll(async () => {
@@ -45,7 +43,7 @@ describe(`deletionRequest find (api)`, () => {
 			it('should return status 202', async () => {
 				const { deletionRequest } = await setup();
 
-				const response = await testApiClient.get(`${deletionRequest.id}`);
+				const response = await new TestApiClientBuilder(app, baseRouteName).withApiKey(API_KEY).build().get(`${deletionRequest.id}`);
 
 				expect(response.status).toEqual(200);
 			});
@@ -53,7 +51,7 @@ describe(`deletionRequest find (api)`, () => {
 			it('should return the found deletionRequest', async () => {
 				const { deletionRequest } = await setup();
 
-				const response = await testApiClient.get(`${deletionRequest.id}`);
+				const response = await new TestApiClientBuilder(app, baseRouteName).withApiKey(API_KEY).build().get(`${deletionRequest.id}`);
 				const result = response.body as DeletionRequestLogResponse;
 
 				expect(result.targetRef.id).toEqual(deletionRequest.targetRefId);
