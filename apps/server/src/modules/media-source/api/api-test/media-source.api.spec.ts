@@ -40,7 +40,7 @@ describe('MediaSourceController (API)', () => {
 				await em.persist([adminUser, adminAccount]).flush();
 				em.clear();
 
-				const loggedInClient: TestApiClient = await new TestApiClientBuilder(app, baseRouteName).build(adminAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(adminAccount);
 
 				return {
 					loggedInClient,
@@ -67,7 +67,7 @@ describe('MediaSourceController (API)', () => {
 				await em.persist([superheroUser, superheroAccount, bilo, vidis]).flush();
 				em.clear();
 
-				const loggedInClient: TestApiClient = await new TestApiClientBuilder(app, baseRouteName)
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName)
 					.asServiceAccount()
 					.build(superheroAccount);
 
@@ -108,7 +108,7 @@ describe('MediaSourceController (API)', () => {
 				await em.persist([superheroUser, superheroAccount]).flush();
 				em.clear();
 
-				const loggedInClient: TestApiClient = await new TestApiClientBuilder(app, baseRouteName)
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName)
 					.asServiceAccount()
 					.build(superheroAccount);
 

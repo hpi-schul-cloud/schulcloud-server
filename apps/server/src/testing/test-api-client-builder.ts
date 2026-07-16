@@ -90,7 +90,7 @@ export class TestApiClientBuilder {
 
 	private skipWhitelist = false;
 
-	public constructor(app: INestApplication, baseRoute: string) {
+	constructor(app: INestApplication, baseRoute: string) {
 		this.app = app as INestApplication<Server>;
 		this.baseRoute = this.normalizeRoute(baseRoute);
 	}
