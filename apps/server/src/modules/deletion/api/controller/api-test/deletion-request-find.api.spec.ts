@@ -43,7 +43,10 @@ describe(`deletionRequest find (api)`, () => {
 			it('should return status 202', async () => {
 				const { deletionRequest } = await setup();
 
-				const response = await new TestApiClientBuilder(app, baseRouteName).withApiKey(API_KEY).build().get(`${deletionRequest.id}`);
+				const response = await new TestApiClientBuilder(app, baseRouteName)
+					.withApiKey(API_KEY)
+					.build()
+					.get(`${deletionRequest.id}`);
 
 				expect(response.status).toEqual(200);
 			});
@@ -51,7 +54,10 @@ describe(`deletionRequest find (api)`, () => {
 			it('should return the found deletionRequest', async () => {
 				const { deletionRequest } = await setup();
 
-				const response = await new TestApiClientBuilder(app, baseRouteName).withApiKey(API_KEY).build().get(`${deletionRequest.id}`);
+				const response = await new TestApiClientBuilder(app, baseRouteName)
+					.withApiKey(API_KEY)
+					.build()
+					.get(`${deletionRequest.id}`);
 				const result = response.body as DeletionRequestLogResponse;
 
 				expect(result.targetRef.id).toEqual(deletionRequest.targetRefId);
