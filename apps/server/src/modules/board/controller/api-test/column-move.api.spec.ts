@@ -5,7 +5,7 @@ import { type INestApplication } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
-import { TestApiClient } from '@testing/test-api-client';
+import { TestApiClientBuilder } from '@testing/test-api-client-builder';
 import { BoardExternalReferenceType } from '../../domain';
 import { BoardNodeEntity } from '../../repo';
 import { cardEntityFactory, columnBoardEntityFactory, columnEntityFactory } from '../../testing';
@@ -16,7 +16,6 @@ const baseRouteName = '/columns';
 describe(`column move (api)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let testApiClient: TestApiClient;
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -26,7 +25,6 @@ describe(`column move (api)`, () => {
 		app = module.createNestApplication();
 		await app.init();
 		em = module.get(EntityManager);
-		testApiClient = new TestApiClient(app, baseRouteName);
 	});
 
 	beforeEach(async () => {
@@ -56,7 +54,7 @@ describe(`column move (api)`, () => {
 		await em.persist([cardNode, ...columnNodes, columnBoardNode]).flush();
 		em.clear();
 
-		const loggedInClient = await testApiClient.login(teacherAccount);
+		const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(teacherAccount);
 
 		return { loggedInClient, cardNode, columnToMove, columnBoardNode };
 	};
@@ -96,7 +94,7 @@ describe(`column move (api)`, () => {
 
 			const { studentAccount: noAccessAccount, studentUser: noAccessUser } = UserAndAccountTestFactory.buildStudent();
 			await em.persist([noAccessAccount, noAccessUser]).flush();
-			const loggedInClient = await testApiClient.login(noAccessAccount);
+			const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(noAccessAccount);
 
 			return {
 				...vars,
