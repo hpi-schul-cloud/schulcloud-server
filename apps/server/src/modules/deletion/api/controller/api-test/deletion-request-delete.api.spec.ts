@@ -48,7 +48,10 @@ describe(`deletionRequest delete (api)`, () => {
 		it('should return status 204', async () => {
 			const { deletionRequest } = await setup();
 
-			const response = await new TestApiClientBuilder(app, baseRouteName).withApiKey(API_KEY).build().delete(`${deletionRequest.id}`);
+			const response = await new TestApiClientBuilder(app, baseRouteName)
+				.withApiKey(API_KEY)
+				.build()
+				.delete(`${deletionRequest.id}`);
 
 			expect(response.status).toEqual(204);
 		});

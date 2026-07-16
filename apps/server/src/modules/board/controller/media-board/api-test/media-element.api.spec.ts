@@ -158,10 +158,12 @@ describe('Media Element (API)', () => {
 			it('should return unauthorized', async () => {
 				const { mediaLine, mediaElement } = await setup();
 
-				const response = await new TestApiClientBuilder(app, baseRouteName).build().put<MoveElementBodyParams>(`${mediaElement.id}/position`, {
-					toLineId: mediaLine.id,
-					toPosition: 0,
-				});
+				const response = await new TestApiClientBuilder(app, baseRouteName)
+					.build()
+					.put<MoveElementBodyParams>(`${mediaElement.id}/position`, {
+						toLineId: mediaLine.id,
+						toPosition: 0,
+					});
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 				expect(response.body).toEqual({
@@ -362,7 +364,9 @@ describe('Media Element (API)', () => {
 			it('should return unauthorized', async () => {
 				setup();
 
-				const response = await new TestApiClientBuilder(app, baseRouteName).build().delete(new ObjectId().toHexString());
+				const response = await new TestApiClientBuilder(app, baseRouteName)
+					.build()
+					.delete(new ObjectId().toHexString());
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 				expect(response.body).toEqual({

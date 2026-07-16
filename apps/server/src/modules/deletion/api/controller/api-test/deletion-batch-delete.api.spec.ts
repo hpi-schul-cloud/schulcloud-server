@@ -57,7 +57,10 @@ describe('deleteBatch', () => {
 
 	describe('when calling with invalid id', () => {
 		it('should return status 404', async () => {
-			const response = await new TestApiClientBuilder(app, baseRouteName).withApiKey(API_KEY).build().delete('invalid-id');
+			const response = await new TestApiClientBuilder(app, baseRouteName)
+				.withApiKey(API_KEY)
+				.build()
+				.delete('invalid-id');
 
 			expect(response.status).toEqual(404);
 		});

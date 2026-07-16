@@ -107,7 +107,10 @@ describe(`deletionRequest create (api)`, () => {
 		it('should return status 202', async () => {
 			const { deletionRequestToCreate } = await setup();
 
-			const response = await new TestApiClientBuilder(app, baseRouteName).withApiKey(API_KEY).build().post('', deletionRequestToCreate);
+			const response = await new TestApiClientBuilder(app, baseRouteName)
+				.withApiKey(API_KEY)
+				.build()
+				.post('', deletionRequestToCreate);
 
 			expect(response.status).toEqual(202);
 		});
@@ -115,7 +118,10 @@ describe(`deletionRequest create (api)`, () => {
 		it('should return the created deletionRequest', async () => {
 			const { deletionRequestToCreate } = await setup();
 
-			const response = await new TestApiClientBuilder(app, baseRouteName).withApiKey(API_KEY).build().post('', deletionRequestToCreate);
+			const response = await new TestApiClientBuilder(app, baseRouteName)
+				.withApiKey(API_KEY)
+				.build()
+				.post('', deletionRequestToCreate);
 
 			const result = response.body as DeletionRequestResponse;
 			expect(result.requestId).toBeDefined();
@@ -141,7 +147,10 @@ describe(`deletionRequest create (api)`, () => {
 			it('should set the "deleteAfter" date to the date after the default DELETION_DELETE_AFTER_MINUTES ', async () => {
 				const { deletionRequestToCreate, defaultDeleteAfterMinutes, operationalTimeToleranceInSeconds } = await setup();
 
-				const response = await new TestApiClientBuilder(app, baseRouteName).withApiKey(API_KEY).build().post('', deletionRequestToCreate);
+				const response = await new TestApiClientBuilder(app, baseRouteName)
+					.withApiKey(API_KEY)
+					.build()
+					.post('', deletionRequestToCreate);
 
 				const result = response.body as DeletionRequestResponse;
 				const createdDeletionRequestId = result.requestId;
@@ -163,7 +172,10 @@ describe(`deletionRequest create (api)`, () => {
 			it('should set the "deleteAfter" date to now', async () => {
 				const { deletionRequestToImmediateRemoval, operationalTimeToleranceInSeconds } = await setup();
 
-				const response = await new TestApiClientBuilder(app, baseRouteName).withApiKey(API_KEY).build().post('', deletionRequestToImmediateRemoval);
+				const response = await new TestApiClientBuilder(app, baseRouteName)
+					.withApiKey(API_KEY)
+					.build()
+					.post('', deletionRequestToImmediateRemoval);
 
 				const result = response.body as DeletionRequestResponse;
 				const createdDeletionRequestId = result.requestId;
@@ -189,7 +201,10 @@ describe(`deletionRequest create (api)`, () => {
 
 				deletionRequestToCreate.deleteAfterMinutes = deleteAfterMinutes;
 
-				const response = await new TestApiClientBuilder(app, baseRouteName).withApiKey(API_KEY).build().post('', deletionRequestToCreate);
+				const response = await new TestApiClientBuilder(app, baseRouteName)
+					.withApiKey(API_KEY)
+					.build()
+					.post('', deletionRequestToCreate);
 
 				const result = response.body as DeletionRequestResponse;
 				const createdDeletionRequestId = result.requestId;

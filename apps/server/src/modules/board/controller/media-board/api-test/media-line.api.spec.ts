@@ -154,10 +154,12 @@ describe('Media Line (API)', () => {
 			it('should return unauthorized', async () => {
 				const { mediaBoard, mediaLine } = await setup();
 
-				const response = await new TestApiClientBuilder(app, baseRouteName).build().put<MoveColumnBodyParams>(`${mediaLine.id}/position`, {
-					toBoardId: mediaBoard.id,
-					toPosition: 0,
-				});
+				const response = await new TestApiClientBuilder(app, baseRouteName)
+					.build()
+					.put<MoveColumnBodyParams>(`${mediaLine.id}/position`, {
+						toBoardId: mediaBoard.id,
+						toPosition: 0,
+					});
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 				expect(response.body).toEqual({
@@ -281,9 +283,11 @@ describe('Media Line (API)', () => {
 			it('should return unauthorized', async () => {
 				const { mediaLine } = await setup();
 
-				const response = await new TestApiClientBuilder(app, baseRouteName).build().patch<RenameBodyParams>(`${mediaLine.id}/title`, {
-					title: 'newTitle',
-				});
+				const response = await new TestApiClientBuilder(app, baseRouteName)
+					.build()
+					.patch<RenameBodyParams>(`${mediaLine.id}/title`, {
+						title: 'newTitle',
+					});
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 				expect(response.body).toEqual({
@@ -403,9 +407,11 @@ describe('Media Line (API)', () => {
 			it('should return unauthorized', async () => {
 				const { mediaLine } = await setup();
 
-				const response = await new TestApiClientBuilder(app, baseRouteName).build().patch<ColorBodyParams>(`${mediaLine.id}/color`, {
-					backgroundColor: Colors.TRANSPARENT,
-				});
+				const response = await new TestApiClientBuilder(app, baseRouteName)
+					.build()
+					.patch<ColorBodyParams>(`${mediaLine.id}/color`, {
+						backgroundColor: Colors.TRANSPARENT,
+					});
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 				expect(response.body).toEqual({
@@ -525,9 +531,11 @@ describe('Media Line (API)', () => {
 			it('should return unauthorized', async () => {
 				const { mediaLine } = await setup();
 
-				const response = await new TestApiClientBuilder(app, baseRouteName).build().patch<RenameBodyParams>(`${mediaLine.id}/title`, {
-					title: 'newTitle',
-				});
+				const response = await new TestApiClientBuilder(app, baseRouteName)
+					.build()
+					.patch<RenameBodyParams>(`${mediaLine.id}/title`, {
+						title: 'newTitle',
+					});
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 				expect(response.body).toEqual({

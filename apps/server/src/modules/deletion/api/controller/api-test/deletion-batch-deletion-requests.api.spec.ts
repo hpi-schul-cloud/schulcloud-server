@@ -57,7 +57,10 @@ describe('createDeletionRequestsForBatch', () => {
 		it('should return status 202', async () => {
 			const { batch } = await setup();
 
-			const response = await new TestApiClientBuilder(app, baseRouteName).withApiKey(API_KEY).build().post(`/${batch.id}/execute`);
+			const response = await new TestApiClientBuilder(app, baseRouteName)
+				.withApiKey(API_KEY)
+				.build()
+				.post(`/${batch.id}/execute`);
 
 			expect(response.status).toEqual(202);
 			const result = response.body as DeletionBatchItemResponse;
@@ -67,7 +70,10 @@ describe('createDeletionRequestsForBatch', () => {
 		it('should update batch status to "queued"', async () => {
 			const { batch } = await setup();
 
-			const response = await new TestApiClientBuilder(app, baseRouteName).withApiKey(API_KEY).build().post(`/${batch.id}/execute`);
+			const response = await new TestApiClientBuilder(app, baseRouteName)
+				.withApiKey(API_KEY)
+				.build()
+				.post(`/${batch.id}/execute`);
 
 			const result = response.body as DeletionBatchItemResponse;
 			expect(result.status).toEqual('deletion-requested'); // Assuming the status changes to 'queued'
@@ -114,9 +120,12 @@ describe('createDeletionRequestsForBatch', () => {
 		it('should reset failed request to registered and delete logs for reset request ids', async () => {
 			const { batch, student1, failedRequest, successfulRequest } = await setup();
 
-			const response = await new TestApiClientBuilder(app, baseRouteName).withApiKey(API_KEY).build().post(`/${batch.id}/reset-failed`, {
-				targetRefIds: [student1.id],
-			});
+			const response = await new TestApiClientBuilder(app, baseRouteName)
+				.withApiKey(API_KEY)
+				.build()
+				.post(`/${batch.id}/reset-failed`, {
+					targetRefIds: [student1.id],
+				});
 
 			expect(response.status).toEqual(204);
 
@@ -138,9 +147,12 @@ describe('createDeletionRequestsForBatch', () => {
 		it('should support reset-failed alias endpoint', async () => {
 			const { batch, student1 } = await setup();
 
-			const response = await new TestApiClientBuilder(app, baseRouteName).withApiKey(API_KEY).build().post(`/${batch.id}/reset-failed`, {
-				targetRefIds: [student1.id],
-			});
+			const response = await new TestApiClientBuilder(app, baseRouteName)
+				.withApiKey(API_KEY)
+				.build()
+				.post(`/${batch.id}/reset-failed`, {
+					targetRefIds: [student1.id],
+				});
 
 			expect(response.status).toEqual(204);
 		});
@@ -149,9 +161,12 @@ describe('createDeletionRequestsForBatch', () => {
 			const { batch } = await setup();
 			const unknownTargetRefId = new ObjectId().toHexString();
 
-			const response = await new TestApiClientBuilder(app, baseRouteName).withApiKey(API_KEY).build().post(`/${batch.id}/reset-failed`, {
-				targetRefIds: [unknownTargetRefId],
-			});
+			const response = await new TestApiClientBuilder(app, baseRouteName)
+				.withApiKey(API_KEY)
+				.build()
+				.post(`/${batch.id}/reset-failed`, {
+					targetRefIds: [unknownTargetRefId],
+				});
 
 			expect(response.status).toEqual(400);
 		});

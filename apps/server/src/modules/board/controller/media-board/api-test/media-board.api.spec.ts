@@ -10,8 +10,8 @@ import { mediaUserLicenseEntityFactory } from '@modules/user-license/testing';
 import { HttpStatus, type INestApplication } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { type DateToString } from '@testing/date-to-string';
-import { expectIsoDateString } from '@testing/matchers';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
+import { expectIsoDateString } from '@testing/matchers';
 import { TestApiClientBuilder } from '@testing/test-api-client-builder';
 import { BoardExternalReferenceType, BoardLayout, Colors } from '../../../domain';
 import { BoardNodeEntity } from '../../../repo';
@@ -281,7 +281,9 @@ describe('Media Board (API)', () => {
 			it('should return unauthorized', async () => {
 				const { mediaBoard } = await setup();
 
-				const response = await new TestApiClientBuilder(app, baseRouteName).build().post(`${mediaBoard.id}/media-lines`);
+				const response = await new TestApiClientBuilder(app, baseRouteName)
+					.build()
+					.post(`${mediaBoard.id}/media-lines`);
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 				expect(response.body).toEqual({
@@ -411,7 +413,9 @@ describe('Media Board (API)', () => {
 			it('should return unauthorized', async () => {
 				const { mediaBoard } = await setup();
 
-				const response = await new TestApiClientBuilder(app, baseRouteName).build().get(`${mediaBoard.id}/media-available-line`);
+				const response = await new TestApiClientBuilder(app, baseRouteName)
+					.build()
+					.get(`${mediaBoard.id}/media-available-line`);
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 				expect(response.body).toEqual({
@@ -718,12 +722,11 @@ describe('Media Board (API)', () => {
 			it('should return unauthorized', async () => {
 				const { mediaBoard } = await setup();
 
-				const response = await new TestApiClientBuilder(app, baseRouteName).build().patch<CollapsableBodyParams>(
-					`${mediaBoard.id}/media-available-line/collapse`,
-					{
+				const response = await new TestApiClientBuilder(app, baseRouteName)
+					.build()
+					.patch<CollapsableBodyParams>(`${mediaBoard.id}/media-available-line/collapse`, {
 						collapsed: true,
-					}
-				);
+					});
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 				expect(response.body).toEqual({
@@ -876,9 +879,11 @@ describe('Media Board (API)', () => {
 			it('should return unauthorized', async () => {
 				const { mediaBoard } = await setup();
 
-				const response = await new TestApiClientBuilder(app, baseRouteName).build().patch<ColorBodyParams>(`${mediaBoard.id}/media-available-line/color`, {
-					backgroundColor: Colors.BLUE,
-				});
+				const response = await new TestApiClientBuilder(app, baseRouteName)
+					.build()
+					.patch<ColorBodyParams>(`${mediaBoard.id}/media-available-line/color`, {
+						backgroundColor: Colors.BLUE,
+					});
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 				expect(response.body).toEqual({
@@ -1039,7 +1044,9 @@ describe('Media Board (API)', () => {
 			it('should return unauthorized', async () => {
 				const { mediaBoard } = await setup();
 
-				const response = await new TestApiClientBuilder(app, baseRouteName).build().get(`${mediaBoard.id}/media-available-line`);
+				const response = await new TestApiClientBuilder(app, baseRouteName)
+					.build()
+					.get(`${mediaBoard.id}/media-available-line`);
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 				expect(response.body).toEqual({
