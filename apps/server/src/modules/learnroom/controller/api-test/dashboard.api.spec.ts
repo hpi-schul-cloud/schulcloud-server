@@ -5,17 +5,18 @@ import { type User } from '@modules/user/repo';
 import { type INestApplication } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
-import { TestApiClient } from '@testing/test-api-client';
+import { TestApiClientBuilder } from '@testing/test-api-client-builder';
 import { Dashboard, GridElement } from '../../domain/do/dashboard';
 import { DASHBOARD_REPO, type IDashboardRepo } from '../../repo/mikro-orm/dashboard.repo';
 import { type DashboardResponse } from '../dto';
 import { schoolEntityFactory } from '@modules/school/testing';
 
+const baseRouteName = '/dashboard';
+
 describe('Dashboard Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let dashboardRepo: IDashboardRepo;
-	let apiClient: TestApiClient;
 
 	beforeAll(async () => {
 		const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -27,7 +28,6 @@ describe('Dashboard Controller (API)', () => {
 		em = app.get(EntityManager);
 		dashboardRepo = app.get(DASHBOARD_REPO);
 
-		apiClient = new TestApiClient(app, '/dashboard');
 	});
 
 	afterAll(async () => {
@@ -74,7 +74,7 @@ describe('Dashboard Controller (API)', () => {
 				await em.persist([teacherUser, teacherAccount, studentUser, ...courses]).flush();
 				const { id: dashboardId } = await dashboardRepo.getUsersDashboard(teacherUser.id);
 
-				const loggedInClient = await apiClient.login(teacherAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(teacherAccount);
 
 				return { teacherUser, dashboardId, loggedInClient };
 			};
@@ -110,7 +110,7 @@ describe('Dashboard Controller (API)', () => {
 			it('should return status 401', async () => {
 				await setup();
 
-				const response = await apiClient.get();
+				const response = await new TestApiClientBuilder(app, baseRouteName).build().get();
 
 				expect(response.status).toEqual(401);
 			});
@@ -132,7 +132,7 @@ describe('Dashboard Controller (API)', () => {
 				await em.persist([teacherUser, studentAccount, studentUser, ...courses, lockedCourse]).flush();
 				const { id: dashboardId } = await dashboardRepo.getUsersDashboard(studentUser.id);
 
-				const loggedInClient = await apiClient.login(studentAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 				return { teacherUser, dashboardId, loggedInClient };
 			};
@@ -173,7 +173,7 @@ describe('Dashboard Controller (API)', () => {
 			await em.persist([teacherUser, teacherAccount, studentUser, ...courses]).flush();
 			const { id: dashboardId } = await dashboardRepo.getUsersDashboard(teacherUser.id);
 
-			const loggedInClient = await apiClient.login(teacherAccount);
+			const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(teacherAccount);
 
 			return { teacherUser, dashboardId, loggedInClient };
 		};
@@ -334,7 +334,7 @@ describe('Dashboard Controller (API)', () => {
 			await em.persist([teacherUser, teacherAccount, studentUser, ...courses]).flush();
 			const { id: dashboardId } = await dashboardRepo.getUsersDashboard(teacherUser.id);
 
-			const loggedInClient = await apiClient.login(teacherAccount);
+			const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(teacherAccount);
 
 			return { teacherUser, dashboardId, loggedInClient };
 		};

@@ -9,13 +9,14 @@ import { HttpStatus, type INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
-import { TestApiClient } from '@testing/test-api-client';
+import { TestApiClientBuilder } from '@testing/test-api-client-builder';
 import { HelpdeskProblemCreateParamsFactory } from '../../testing/helpdesk-problem-create-params.test.factory';
+
+const baseRouteName = 'helpdesk';
 
 describe('Helpdesk Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let testApiClient: TestApiClient;
 
 	beforeAll(async () => {
 		const moduleFixture = await Test.createTestingModule({
@@ -27,7 +28,6 @@ describe('Helpdesk Controller (API)', () => {
 		await app.init();
 		em = app.get(EntityManager);
 
-		testApiClient = new TestApiClient(app, 'helpdesk');
 	});
 
 	beforeEach(async () => {
@@ -43,7 +43,7 @@ describe('Helpdesk Controller (API)', () => {
 			it('should return 401', async () => {
 				const validBody = HelpdeskProblemCreateParamsFactory.create();
 
-				const response = await testApiClient.post('problem', validBody);
+				const response = await new TestApiClientBuilder(app, baseRouteName).build().post('problem', validBody);
 
 				expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
 			});
@@ -61,7 +61,7 @@ describe('Helpdesk Controller (API)', () => {
 
 				await em.persist([studentAccount, studentUser]).flush();
 
-				const loggedInClient = await testApiClient.login(studentAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 				const validBody = HelpdeskProblemCreateParamsFactory.create();
 
 				return { loggedInClient, validBody };
@@ -83,7 +83,7 @@ describe('Helpdesk Controller (API)', () => {
 
 				await em.persist([studentAccount, studentUser]).flush();
 
-				const loggedInClient = await testApiClient.login(studentAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 				return { loggedInClient, body };
 			};
@@ -105,7 +105,7 @@ describe('Helpdesk Controller (API)', () => {
 
 				await em.persist([studentAccount, studentUser]).flush();
 
-				const loggedInClient = await testApiClient.login(studentAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 				return { loggedInClient, body };
 			};
@@ -127,7 +127,7 @@ describe('Helpdesk Controller (API)', () => {
 
 				await em.persist([studentAccount, studentUser]).flush();
 
-				const loggedInClient = await testApiClient.login(studentAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 				return { loggedInClient, body };
 			};
@@ -149,7 +149,7 @@ describe('Helpdesk Controller (API)', () => {
 
 				await em.persist([studentAccount, studentUser]).flush();
 
-				const loggedInClient = await testApiClient.login(studentAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 				return { loggedInClient, body };
 			};
@@ -171,7 +171,7 @@ describe('Helpdesk Controller (API)', () => {
 
 				await em.persist([studentAccount, studentUser]).flush();
 
-				const loggedInClient = await testApiClient.login(studentAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 				return { loggedInClient, validBody };
 			};
@@ -192,7 +192,7 @@ describe('Helpdesk Controller (API)', () => {
 
 				await em.persist([studentAccount, studentUser]).flush();
 
-				const loggedInClient = await testApiClient.login(studentAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 				// Create a file larger than 5 MB (5000 * 1024 bytes)
 				const largeFile = Buffer.alloc(5001 * 1024);
@@ -227,7 +227,7 @@ describe('Helpdesk Controller (API)', () => {
 
 				await em.persist([studentAccount, studentUser]).flush();
 
-				const loggedInClient = await testApiClient.login(studentAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 				// Create a file with invalid mime type
 				const invalidFile = Buffer.from('test content');
@@ -265,7 +265,7 @@ describe('Helpdesk Controller (API)', () => {
 
 				await em.persist([studentAccount, studentUser]).flush();
 
-				const loggedInClient = await testApiClient.login(studentAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 				// Create a valid file
 				const validFile = Buffer.from('valid image content');
@@ -303,7 +303,7 @@ describe('Helpdesk Controller (API)', () => {
 
 				await em.persist([studentAccount, studentUser]).flush();
 
-				const loggedInClient = await testApiClient.login(studentAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 				const validFile = Buffer.from('valid png content');
 
@@ -340,7 +340,7 @@ describe('Helpdesk Controller (API)', () => {
 
 				await em.persist([studentAccount, studentUser]).flush();
 
-				const loggedInClient = await testApiClient.login(studentAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 				const validFile = Buffer.from('valid mp4 content');
 
@@ -377,7 +377,7 @@ describe('Helpdesk Controller (API)', () => {
 
 				await em.persist([studentAccount, studentUser]).flush();
 
-				const loggedInClient = await testApiClient.login(studentAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 				const validFile = Buffer.from('valid pdf content');
 
@@ -414,7 +414,7 @@ describe('Helpdesk Controller (API)', () => {
 
 				await em.persist([studentAccount, studentUser]).flush();
 
-				const loggedInClient = await testApiClient.login(studentAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 				const validFile = Buffer.from('valid docx content');
 

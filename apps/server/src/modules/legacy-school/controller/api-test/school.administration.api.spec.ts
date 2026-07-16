@@ -4,14 +4,13 @@ import { federalStateEntityFactory, schoolYearEntityFactory, storageProviderFact
 import { AdminApiServerTestModule } from '@modules/server/admin-api.server.app.module';
 import { type INestApplication } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
-import { TestApiClient } from '@testing/test-api-client';
+import { TestApiClientBuilder } from '@testing/test-api-client-builder';
 import { type AdminApiSchoolCreateResponseDto } from '../dto/response/admin-api-school-create.response.dto';
 
 const baseRouteName = '/admin/schools';
 
 describe('Admin API - Schools (API)', () => {
 	let app: INestApplication;
-	let testApiClient: TestApiClient;
 	let em: EntityManager;
 
 	beforeAll(async () => {
@@ -23,7 +22,7 @@ describe('Admin API - Schools (API)', () => {
 		await app.init();
 		em = module.get(EntityManager);
 
-		testApiClient = new TestApiClient(app, baseRouteName, 'someotherkey', true);
+		// Removed - now using TestApiClientBuilder with API_KEY
 	});
 
 	afterAll(async () => {
@@ -33,14 +32,14 @@ describe('Admin API - Schools (API)', () => {
 	describe('create a school', () => {
 		describe('without token', () => {
 			it('should refuse with wrong token', async () => {
-				const client = new TestApiClient(app, baseRouteName, 'thisisaninvalidapikey', true);
+				const client = new TestApiClientBuilder(app, baseRouteName).withApiKey('thisisaninvalidapikey').build();
 
 				const response = await client.post('');
 
 				expect(response.status).toEqual(401);
 			});
 			it('should refuse without token', async () => {
-				const client = new TestApiClient(app, baseRouteName, '', true);
+				const client = new TestApiClientBuilder(app, baseRouteName).withApiKey('').build();
 
 				const response = await client.post('');
 
@@ -60,7 +59,7 @@ describe('Admin API - Schools (API)', () => {
 			it('should return school', async () => {
 				const { federalState } = await setup();
 
-				const response = await testApiClient.post('', { name: 'schoolname', federalStateName: federalState.name });
+				const response = await new TestApiClientBuilder(app, baseRouteName).withApiKey('someotherkey').build().post('', { name: 'schoolname', federalStateName: federalState.name });
 
 				expect(response.status).toEqual(201);
 				const result = response.body as AdminApiSchoolCreateResponseDto;
@@ -70,7 +69,7 @@ describe('Admin API - Schools (API)', () => {
 			it('should have persisted the school', async () => {
 				const { federalState } = await setup();
 
-				const response = await testApiClient.post('', { name: 'schoolname', federalStateName: federalState.name });
+				const response = await new TestApiClientBuilder(app, baseRouteName).withApiKey('someotherkey').build().post('', { name: 'schoolname', federalStateName: federalState.name });
 
 				const { id } = response.body as AdminApiSchoolCreateResponseDto;
 				const loaded = await em.findOneOrFail(SchoolEntity, id);
