@@ -77,7 +77,9 @@ describe('FwuLearningContents Controller (api)', () => {
 				s3ClientAdapter.get.mockResolvedValueOnce(fileResponse);
 
 				const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent();
-				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).withJwt(studentUser, jwtConfig).build(studentAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName)
+					.withJwt(studentUser, jwtConfig)
+					.build(studentAccount);
 
 				return { path, fileResponse, text, loggedInClient };
 			};
@@ -121,7 +123,9 @@ describe('FwuLearningContents Controller (api)', () => {
 				s3ClientAdapter.get.mockRejectedValueOnce(error);
 
 				const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent();
-				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).withJwt(studentUser, jwtConfig).build(studentAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName)
+					.withJwt(studentUser, jwtConfig)
+					.build(studentAccount);
 
 				return { loggedInClient };
 			};
@@ -141,7 +145,9 @@ describe('FwuLearningContents Controller (api)', () => {
 				s3ClientAdapter.get.mockRejectedValueOnce(error);
 
 				const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent();
-				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).withJwt(studentUser, jwtConfig).build(studentAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName)
+					.withJwt(studentUser, jwtConfig)
+					.build(studentAccount);
 				fwuConfig.fwuContentEnabled = false;
 
 				return { loggedInClient };
@@ -169,7 +175,9 @@ describe('FwuLearningContents Controller (api)', () => {
 		describe('when feature is not enabled', () => {
 			const setup = async () => {
 				const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent();
-				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).withJwt(studentUser, jwtConfig).build(studentAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName)
+					.withJwt(studentUser, jwtConfig)
+					.build(studentAccount);
 				fwuConfig.fwuContentEnabled = false;
 
 				return { loggedInClient };
@@ -195,7 +203,9 @@ describe('FwuLearningContents Controller (api)', () => {
 
 				const setup = async () => {
 					const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent();
-					const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).withJwt(studentUser, jwtConfig).build(studentAccount);
+					const loggedInClient = await new TestApiClientBuilder(app, baseRouteName)
+						.withJwt(studentUser, jwtConfig)
+						.build(studentAccount);
 					fwuConfig.fwuContentEnabled = true;
 
 					const htmlContent = `<html>
@@ -237,7 +247,9 @@ describe('FwuLearningContents Controller (api)', () => {
 				describe('thumbnailUrl parsing', () => {
 					const setupWithPlayerTag = async (playerHtmlContent: string) => {
 						const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent();
-						const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).withJwt(studentUser, jwtConfig).build(studentAccount);
+						const loggedInClient = await new TestApiClientBuilder(app, baseRouteName)
+							.withJwt(studentUser, jwtConfig)
+							.build(studentAccount);
 
 						const htmlContent = `<html>
 						<body>
