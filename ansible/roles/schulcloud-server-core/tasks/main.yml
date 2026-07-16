@@ -268,3 +268,11 @@
       state: "{{ 'present' if WITH_BOARD_COLLABORATION else 'absent'}}"
     tags:
       - prometheus
+
+  - name: Add schulcloud-server-core default allow network policy
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: default-allow-networkpolicy.yml.j2
+    tags:
+      - networkPolicy

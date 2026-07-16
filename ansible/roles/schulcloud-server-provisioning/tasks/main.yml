@@ -75,3 +75,11 @@
       state: "{{ 'present' if WITH_SCHULCONNEX_PROVISIONING else 'absent'}}"
     tags:
       - deployment
+
+  - name: Add schulcloud-server-provisioning default allow network policy
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: default-allow-networkpolicy.yml.j2
+    tags:
+      - networkPolicy
