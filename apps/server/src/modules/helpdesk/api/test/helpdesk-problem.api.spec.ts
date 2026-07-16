@@ -27,7 +27,6 @@ describe('Helpdesk Controller (API)', () => {
 
 		await app.init();
 		em = app.get(EntityManager);
-
 	});
 
 	beforeEach(async () => {

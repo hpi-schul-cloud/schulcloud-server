@@ -26,6 +26,8 @@ import {
 } from '../../testing';
 import { OauthProviderController } from '../oauth-provider.controller';
 
+const baseRouteName = 'oauth2';
+
 describe(OauthProviderController.name, () => {
 	let app: INestApplication;
 	let em: EntityManager;
@@ -40,7 +42,6 @@ describe(OauthProviderController.name, () => {
 		app = moduleFixture.createNestApplication();
 		await app.init();
 		em = app.get(EntityManager);
-		testApiClient = new TestApiClient(app, 'oauth2');
 		configModule = app.get<OauthProviderConfig>(OAUTH_PROVIDER_CONFIG_TOKEN);
 	});
 
@@ -425,7 +426,9 @@ describe(OauthProviderController.name, () => {
 			it('should return unauthorized', async () => {
 				const challenge = 'challenge';
 
-				const response = await new TestApiClientBuilder(app, baseRouteName).build().patch(`consentRequest/${challenge}`);
+				const response = await new TestApiClientBuilder(app, baseRouteName)
+					.build()
+					.patch(`consentRequest/${challenge}`);
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 			});
@@ -472,7 +475,9 @@ describe(OauthProviderController.name, () => {
 			it('should return unauthorized', async () => {
 				const challenge = 'challenge';
 
-				const response = await new TestApiClientBuilder(app, baseRouteName).build().patch(`consentRequest/${challenge}`);
+				const response = await new TestApiClientBuilder(app, baseRouteName)
+					.build()
+					.patch(`consentRequest/${challenge}`);
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 			});

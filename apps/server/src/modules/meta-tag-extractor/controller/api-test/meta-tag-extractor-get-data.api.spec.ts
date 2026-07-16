@@ -14,6 +14,8 @@ const mockedResponse = {
 	description: 'with great description',
 };
 
+const baseRouteName = '/meta-tag-extractor';
+
 describe(`get meta tags (api)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
@@ -31,7 +33,6 @@ describe(`get meta tags (api)`, () => {
 		app = module.createNestApplication();
 		await app.init();
 		em = module.get(EntityManager);
-		testApiClient = new TestApiClient(app, '/meta-tag-extractor');
 	});
 
 	afterAll(async () => {

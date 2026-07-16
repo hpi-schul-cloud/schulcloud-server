@@ -8,6 +8,8 @@ import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.tes
 import { TestApiClientBuilder } from '@testing/test-api-client-builder';
 import { lessonFactory } from '../../testing';
 
+const baseRouteName = '/lessons';
+
 describe('Lesson Controller (API) - GET list of lesson tasks /lessons/:lessonId/tasks', () => {
 	let module: TestingModule;
 	let app: INestApplication;
@@ -19,7 +21,6 @@ describe('Lesson Controller (API) - GET list of lesson tasks /lessons/:lessonId/
 		}).compile();
 		app = module.createNestApplication();
 		em = module.get(EntityManager);
-		testApiClient = new TestApiClient(app, '/lessons');
 
 		await app.init();
 	});

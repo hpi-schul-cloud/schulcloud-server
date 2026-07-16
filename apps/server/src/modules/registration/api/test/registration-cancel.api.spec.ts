@@ -18,6 +18,8 @@ import { TestApiClientBuilder } from '@testing/test-api-client-builder';
 import { REGISTRATION_PUBLIC_API_CONFIG_TOKEN, type RegistrationPublicApiConfig } from '../../registration.config';
 import { type RegistrationListResponse } from '../dto/response/registration-list.response';
 
+const baseRouteName = 'registrations';
+
 describe('Room Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
@@ -31,7 +33,6 @@ describe('Room Controller (API)', () => {
 		app = moduleFixture.createNestApplication();
 		await app.init();
 		em = app.get(EntityManager);
-		testApiClient = new TestApiClient(app, 'registrations');
 
 		config = moduleFixture.get<RegistrationPublicApiConfig>(REGISTRATION_PUBLIC_API_CONFIG_TOKEN);
 	});

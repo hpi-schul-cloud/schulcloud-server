@@ -8,6 +8,8 @@ import { TestApiClientBuilder } from '@testing/test-api-client-builder';
 import { mediaSourceEntityFactory } from '../../testing';
 import { type MediaSourceListResponse } from '../response';
 
+const baseRouteName = 'media-sources';
+
 describe('MediaSourceController (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
@@ -20,7 +22,6 @@ describe('MediaSourceController (API)', () => {
 		app = moduleRef.createNestApplication();
 		await app.init();
 		em = app.get(EntityManager);
-		testApiClient = new TestApiClient(app, 'media-sources');
 	});
 
 	afterAll(async () => {
@@ -66,7 +67,9 @@ describe('MediaSourceController (API)', () => {
 				await em.persist([superheroUser, superheroAccount, bilo, vidis]).flush();
 				em.clear();
 
-				const loggedInClient: TestApiClient = await new TestApiClientBuilder(app, baseRouteName).asServiceAccount().build(superheroAccount);
+				const loggedInClient: TestApiClient = await new TestApiClientBuilder(app, baseRouteName)
+					.asServiceAccount()
+					.build(superheroAccount);
 
 				return {
 					loggedInClient,
@@ -105,7 +108,9 @@ describe('MediaSourceController (API)', () => {
 				await em.persist([superheroUser, superheroAccount]).flush();
 				em.clear();
 
-				const loggedInClient: TestApiClient = await new TestApiClientBuilder(app, baseRouteName).asServiceAccount().build(superheroAccount);
+				const loggedInClient: TestApiClient = await new TestApiClientBuilder(app, baseRouteName)
+					.asServiceAccount()
+					.build(superheroAccount);
 
 				return {
 					loggedInClient,

@@ -10,6 +10,8 @@ import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.tes
 import { TestApiClientBuilder } from '@testing/test-api-client-builder';
 import { UUID } from 'bson';
 
+const baseRouteName = 'oauth';
+
 describe('OAuth Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
@@ -23,8 +25,6 @@ describe('OAuth Controller (API)', () => {
 		app = module.createNestApplication();
 		await app.init();
 		em = app.get(EntityManager);
-
-		testApiClient = new TestApiClient(app, 'oauth');
 
 		config = module.get(OAUTH_PUBLIC_API_CONFIG_TOKEN);
 	});

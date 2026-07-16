@@ -222,7 +222,10 @@ describe('Course Rooms Controller (API)', () => {
 			it('should return 401', async () => {
 				const { course, task, params } = await setup();
 
-				const response = await new TestApiClientBuilder(app, baseRouteName).build().patch(`${course.id}/elements/${task.id}/visibility`).send(params);
+				const response = await new TestApiClientBuilder(app, baseRouteName)
+					.build()
+					.patch(`${course.id}/elements/${task.id}/visibility`)
+					.send(params);
 
 				expect(response.status).toEqual(401);
 			});
@@ -282,7 +285,10 @@ describe('Course Rooms Controller (API)', () => {
 			it('should return 401', async () => {
 				const { course, params } = await setup();
 
-				const response = await new TestApiClientBuilder(app, baseRouteName).build().patch(`${course.id}/board/order`).send(params);
+				const response = await new TestApiClientBuilder(app, baseRouteName)
+					.build()
+					.patch(`${course.id}/board/order`)
+					.send(params);
 
 				expect(response.status).toEqual(401);
 			});
@@ -510,7 +516,9 @@ describe('Course Rooms Controller (API)', () => {
 			it('should return 401', async () => {
 				const { course, lesson } = await setup();
 
-				const response = await new TestApiClientBuilder(app, baseRouteName).build().post(`lessons/${lesson.id}/copy`, { courseId: course.id });
+				const response = await new TestApiClientBuilder(app, baseRouteName)
+					.build()
+					.post(`lessons/${lesson.id}/copy`, { courseId: course.id });
 
 				expect(response.status).toEqual(401);
 			});

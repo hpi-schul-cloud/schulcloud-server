@@ -12,11 +12,10 @@ import { type Response } from 'supertest';
 import { type ExternalToolPseudonymEntity } from '../../entity';
 import { externalToolPseudonymEntityFactory } from '../../testing';
 import { type PseudonymResponse } from '../dto';
-
+const baseRouteName = 'pseudonyms';
 describe('PseudonymController (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
-
 
 	beforeAll(async () => {
 		const moduleRef: TestingModule = await Test.createTestingModule({
@@ -28,7 +27,6 @@ describe('PseudonymController (API)', () => {
 		await app.init();
 
 		em = app.get(EntityManager);
-		testApiClient = new TestApiClient(app, 'pseudonyms');
 	});
 
 	afterAll(async () => {
@@ -42,7 +40,9 @@ describe('PseudonymController (API)', () => {
 	describe('[GET] pseudonyms/:pseudonym', () => {
 		describe('when user is not authenticated', () => {
 			it('should return unauthorized', async () => {
-				const response: Response = await new TestApiClientBuilder(app, baseRouteName).build().get(new ObjectId().toHexString());
+				const response: Response = await new TestApiClientBuilder(app, baseRouteName)
+					.build()
+					.get(new ObjectId().toHexString());
 
 				expect(response.statusCode).toEqual(HttpStatus.UNAUTHORIZED);
 			});

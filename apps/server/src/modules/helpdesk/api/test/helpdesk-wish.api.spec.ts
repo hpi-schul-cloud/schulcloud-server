@@ -28,7 +28,6 @@ describe('Helpdesk Wish Endpoint (API)', () => {
 
 		await app.init();
 		em = app.get(EntityManager);
-
 	});
 
 	beforeEach(async () => {

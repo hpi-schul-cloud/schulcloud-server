@@ -1,5 +1,6 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { courseEntityFactory } from '@modules/course/testing';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server/server.app.module';
 import { type User } from '@modules/user/repo';
 import { type INestApplication } from '@nestjs/common';
@@ -9,7 +10,6 @@ import { TestApiClientBuilder } from '@testing/test-api-client-builder';
 import { Dashboard, GridElement } from '../../domain/do/dashboard';
 import { DASHBOARD_REPO, type IDashboardRepo } from '../../repo/mikro-orm/dashboard.repo';
 import { type DashboardResponse } from '../dto';
-import { schoolEntityFactory } from '@modules/school/testing';
 
 const baseRouteName = '/dashboard';
 
@@ -27,7 +27,6 @@ describe('Dashboard Controller (API)', () => {
 		await app.init();
 		em = app.get(EntityManager);
 		dashboardRepo = app.get(DASHBOARD_REPO);
-
 	});
 
 	afterAll(async () => {
