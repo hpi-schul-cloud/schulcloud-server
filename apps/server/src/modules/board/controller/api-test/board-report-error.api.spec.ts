@@ -6,7 +6,7 @@ import { userFactory } from '@modules/user/testing';
 import { type INestApplication } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { TestApiClientBuilder } from '@testing/test-api-client-builder';
+import { TestApiClient, TestApiClientBuilder } from '@testing/test-api-client-builder';
 import { type BoardErrorReportBodyParams } from '../dto/board/board-error-report.body.params';
 
 const baseRouteName = '/report-board-error';
