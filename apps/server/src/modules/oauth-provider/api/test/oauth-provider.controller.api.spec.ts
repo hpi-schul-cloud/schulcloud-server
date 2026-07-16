@@ -8,7 +8,7 @@ import { Test } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
-import { TestApiClient } from '@testing/test-api-client';
+import { TestApiClientBuilder } from '@testing/test-api-client-builder';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import {
@@ -30,7 +30,6 @@ describe(OauthProviderController.name, () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let axiosMock: MockAdapter;
-	let testApiClient: TestApiClient;
 	let configModule: OauthProviderConfig;
 
 	beforeAll(async () => {
@@ -63,7 +62,7 @@ describe(OauthProviderController.name, () => {
 			it('should return unauthorized', async () => {
 				const clientId = 'oauth2ClientId';
 
-				const response = await testApiClient.get(`clients/${clientId}`);
+				const response = await new TestApiClientBuilder(app, baseRouteName).build().get(`clients/${clientId}`);
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 			});
@@ -87,7 +86,7 @@ describe(OauthProviderController.name, () => {
 				await em.persist([adminAccount, adminUser]).flush();
 				em.clear();
 
-				const loggedInClient = await testApiClient.login(adminAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(adminAccount);
 
 				return {
 					clientId,
@@ -111,7 +110,7 @@ describe(OauthProviderController.name, () => {
 	describe('listOAuth2Clients', () => {
 		describe('when no user is logged in', () => {
 			it('should return unauthorized', async () => {
-				const response = await testApiClient.get(`clients`);
+				const response = await new TestApiClientBuilder(app, baseRouteName).build().get(`clients`);
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 			});
@@ -132,7 +131,7 @@ describe(OauthProviderController.name, () => {
 				await em.persist([adminAccount, adminUser]).flush();
 				em.clear();
 
-				const loggedInClient = await testApiClient.login(adminAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(adminAccount);
 
 				return {
 					loggedInClient,
@@ -154,7 +153,7 @@ describe(OauthProviderController.name, () => {
 	describe('createOAuth2Client', () => {
 		describe('when no user is logged in', () => {
 			it('should return unauthorized', async () => {
-				const response = await testApiClient.post(`clients`);
+				const response = await new TestApiClientBuilder(app, baseRouteName).build().post(`clients`);
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 			});
@@ -173,7 +172,7 @@ describe(OauthProviderController.name, () => {
 				await em.persist([adminAccount, adminUser]).flush();
 				em.clear();
 
-				const loggedInClient = await testApiClient.login(adminAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(adminAccount);
 
 				return {
 					loggedInClient,
@@ -198,7 +197,7 @@ describe(OauthProviderController.name, () => {
 			it('should return unauthorized', async () => {
 				const clientId = 'oauth2ClientId';
 
-				const response = await testApiClient.put(`clients/${clientId}`);
+				const response = await new TestApiClientBuilder(app, baseRouteName).build().put(`clients/${clientId}`);
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 			});
@@ -222,7 +221,7 @@ describe(OauthProviderController.name, () => {
 				await em.persist([adminAccount, adminUser]).flush();
 				em.clear();
 
-				const loggedInClient = await testApiClient.login(adminAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(adminAccount);
 
 				return {
 					loggedInClient,
@@ -248,7 +247,7 @@ describe(OauthProviderController.name, () => {
 			it('should return unauthorized', async () => {
 				const clientId = 'oauth2ClientId';
 
-				const response = await testApiClient.delete(`clients/${clientId}`);
+				const response = await new TestApiClientBuilder(app, baseRouteName).build().delete(`clients/${clientId}`);
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 			});
@@ -270,7 +269,7 @@ describe(OauthProviderController.name, () => {
 				await em.persist([adminAccount, adminUser]).flush();
 				em.clear();
 
-				const loggedInClient = await testApiClient.login(adminAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(adminAccount);
 
 				return {
 					loggedInClient,
@@ -305,7 +304,7 @@ describe(OauthProviderController.name, () => {
 				await em.persist([studentAccount, studentUser]).flush();
 				em.clear();
 
-				const loggedInClient = await testApiClient.login(studentAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 				return {
 					loggedInClient,
@@ -330,7 +329,7 @@ describe(OauthProviderController.name, () => {
 			it('should return unauthorized', async () => {
 				const challenge = 'challenge';
 
-				const response = await testApiClient.patch(`loginRequest/${challenge}`);
+				const response = await new TestApiClientBuilder(app, baseRouteName).build().patch(`loginRequest/${challenge}`);
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 			});
@@ -357,7 +356,7 @@ describe(OauthProviderController.name, () => {
 				await em.persist([studentAccount, studentUser, externalTool]).flush();
 				em.clear();
 
-				const loggedInClient = await testApiClient.login(studentAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 				return {
 					loggedInClient,
@@ -382,7 +381,7 @@ describe(OauthProviderController.name, () => {
 			it('should return unauthorized', async () => {
 				const challenge = 'challenge';
 
-				const response = await testApiClient.patch(`logoutRequest/${challenge}`);
+				const response = await new TestApiClientBuilder(app, baseRouteName).build().patch(`logoutRequest/${challenge}`);
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 			});
@@ -401,7 +400,7 @@ describe(OauthProviderController.name, () => {
 				await em.persist([studentAccount, studentUser]).flush();
 				em.clear();
 
-				const loggedInClient = await testApiClient.login(studentAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 				return {
 					loggedInClient,
@@ -426,7 +425,7 @@ describe(OauthProviderController.name, () => {
 			it('should return unauthorized', async () => {
 				const challenge = 'challenge';
 
-				const response = await testApiClient.patch(`consentRequest/${challenge}`);
+				const response = await new TestApiClientBuilder(app, baseRouteName).build().patch(`consentRequest/${challenge}`);
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 			});
@@ -448,7 +447,7 @@ describe(OauthProviderController.name, () => {
 				await em.persist([studentAccount, studentUser]).flush();
 				em.clear();
 
-				const loggedInClient = await testApiClient.login(studentAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 				return {
 					loggedInClient,
@@ -473,7 +472,7 @@ describe(OauthProviderController.name, () => {
 			it('should return unauthorized', async () => {
 				const challenge = 'challenge';
 
-				const response = await testApiClient.patch(`consentRequest/${challenge}`);
+				const response = await new TestApiClientBuilder(app, baseRouteName).build().patch(`consentRequest/${challenge}`);
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 			});
@@ -502,7 +501,7 @@ describe(OauthProviderController.name, () => {
 				await em.persist([studentAccount, studentUser, externalTool, pseudonym]).flush();
 				em.clear();
 
-				const loggedInClient = await testApiClient.login(studentAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 				return {
 					loggedInClient,
@@ -525,7 +524,7 @@ describe(OauthProviderController.name, () => {
 	describe('listConsentSessions', () => {
 		describe('when no user is logged in', () => {
 			it('should return unauthorized', async () => {
-				const response = await testApiClient.get(`auth/sessions/consent`);
+				const response = await new TestApiClientBuilder(app, baseRouteName).build().get(`auth/sessions/consent`);
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 			});
@@ -548,7 +547,7 @@ describe(OauthProviderController.name, () => {
 				await em.persist([studentAccount, studentUser, externalTool, pseudonym]).flush();
 				em.clear();
 
-				const loggedInClient = await testApiClient.login(studentAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 				return {
 					loggedInClient,
@@ -576,7 +575,7 @@ describe(OauthProviderController.name, () => {
 	describe('revokeConsentSession', () => {
 		describe('when no user is logged in', () => {
 			it('should return unauthorized', async () => {
-				const response = await testApiClient.delete(`auth/sessions/consent`);
+				const response = await new TestApiClientBuilder(app, baseRouteName).build().delete(`auth/sessions/consent`);
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 			});
@@ -596,7 +595,7 @@ describe(OauthProviderController.name, () => {
 				await em.persist([studentAccount, studentUser]).flush();
 				em.clear();
 
-				const loggedInClient = await testApiClient.login(studentAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 				return {
 					loggedInClient,

@@ -11,7 +11,7 @@ import { Test, type TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface/permission.enum';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
-import { TestApiClient } from '@testing/test-api-client';
+import { TestApiClientBuilder } from '@testing/test-api-client-builder';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import { type Response } from 'supertest';
@@ -21,7 +21,6 @@ describe('MediumMetadataController (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 
-	let testApiClient: TestApiClient;
 	let axiosMock: MockAdapter;
 	let encryptionConfig: MediumMetadataEncryptionConfig;
 
@@ -71,7 +70,7 @@ describe('MediumMetadataController (API)', () => {
 
 				axiosMock.onPost(/(.*)\/query/).replyOnce(HttpStatus.OK, responses);
 
-				const loggedInClient: TestApiClient = await testApiClient.loginAsServiceAccount(superheroAccount);
+				const loggedInClient: TestApiClient = await new TestApiClientBuilder(app, baseRouteName).asServiceAccount().build(superheroAccount);
 
 				return { loggedInClient, mediaSourceEntity, biloMediaMetaData: responses[0] };
 			};
@@ -103,7 +102,7 @@ describe('MediumMetadataController (API)', () => {
 				await em.persist([superheroAccount, superheroUser, mediaSourceEntity]).flush();
 				em.clear();
 
-				const loggedInClient: TestApiClient = await testApiClient.loginAsServiceAccount(superheroAccount);
+				const loggedInClient: TestApiClient = await new TestApiClientBuilder(app, baseRouteName).asServiceAccount().build(superheroAccount);
 
 				return { loggedInClient, mediaSourceEntity };
 			};
@@ -132,7 +131,7 @@ describe('MediumMetadataController (API)', () => {
 
 				axiosMock.onGet(/^.*by-region\/.*$/).replyOnce(HttpStatus.OK, responses);
 
-				const loggedInClient: TestApiClient = await testApiClient.loginAsServiceAccount(superheroAccount);
+				const loggedInClient: TestApiClient = await new TestApiClientBuilder(app, baseRouteName).asServiceAccount().build(superheroAccount);
 
 				return { loggedInClient, mediaSourceEntity, vidisMediaMetaData: responses[0] };
 			};
@@ -164,7 +163,7 @@ describe('MediumMetadataController (API)', () => {
 
 				axiosMock.onPost(/(.*)\/query/).replyOnce(HttpStatus.OK, responses);
 
-				const loggedInClient: TestApiClient = await testApiClient.loginAsServiceAccount(superheroAccount);
+				const loggedInClient: TestApiClient = await new TestApiClientBuilder(app, baseRouteName).asServiceAccount().build(superheroAccount);
 
 				return { loggedInClient, mediaSourceEntity, biloMediaMetaData: responses[0] };
 			};
@@ -192,7 +191,7 @@ describe('MediumMetadataController (API)', () => {
 					access_token: 'accessToken',
 				});
 
-				const loggedInClient: TestApiClient = await testApiClient.loginAsServiceAccount(superheroAccount);
+				const loggedInClient: TestApiClient = await new TestApiClientBuilder(app, baseRouteName).asServiceAccount().build(superheroAccount);
 
 				return { loggedInClient };
 			};
@@ -218,7 +217,7 @@ describe('MediumMetadataController (API)', () => {
 			it('should return unauthorized', async () => {
 				const { mediaSourceEntity } = setup();
 
-				const response: Response = await testApiClient.get(
+				const response: Response = await new TestApiClientBuilder(app, baseRouteName).build().get(
 					`medium/medium-id-1/media-source/${mediaSourceEntity.sourceId}`
 				);
 
@@ -251,7 +250,7 @@ describe('MediumMetadataController (API)', () => {
 
 				axiosMock.onPost(/(.*)\/query/).replyOnce(HttpStatus.OK, responses);
 
-				const loggedInClient: TestApiClient = await testApiClient.loginAsServiceAccount(superheroAccount);
+				const loggedInClient: TestApiClient = await new TestApiClientBuilder(app, baseRouteName).asServiceAccount().build(superheroAccount);
 
 				return { loggedInClient, mediaSourceEntity };
 			};
@@ -298,7 +297,7 @@ describe('MediumMetadataController (API)', () => {
 
 				axiosMock.onPost(/(.*)\/query/).replyOnce(HttpStatus.OK, responses);
 
-				const loggedInClient: TestApiClient = await testApiClient.loginAsServiceAccount(superheroAccount);
+				const loggedInClient: TestApiClient = await new TestApiClientBuilder(app, baseRouteName).asServiceAccount().build(superheroAccount);
 
 				return { loggedInClient, mediaSourceEntity };
 			};
@@ -344,7 +343,7 @@ describe('MediumMetadataController (API)', () => {
 
 				axiosMock.onPost(/(.*)\/query/).replyOnce(HttpStatus.OK, responses);
 
-				const loggedInClient: TestApiClient = await testApiClient.loginAsServiceAccount(superheroAccount);
+				const loggedInClient: TestApiClient = await new TestApiClientBuilder(app, baseRouteName).asServiceAccount().build(superheroAccount);
 
 				return { loggedInClient, mediaSourceEntity };
 			};

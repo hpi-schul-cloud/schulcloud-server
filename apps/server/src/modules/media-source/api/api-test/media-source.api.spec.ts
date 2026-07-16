@@ -4,14 +4,13 @@ import { HttpStatus, type INestApplication } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
-import { TestApiClient } from '@testing/test-api-client';
+import { TestApiClientBuilder } from '@testing/test-api-client-builder';
 import { mediaSourceEntityFactory } from '../../testing';
 import { type MediaSourceListResponse } from '../response';
 
 describe('MediaSourceController (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let testApiClient: TestApiClient;
 
 	beforeAll(async () => {
 		const moduleRef: TestingModule = await Test.createTestingModule({
@@ -40,7 +39,7 @@ describe('MediaSourceController (API)', () => {
 				await em.persist([adminUser, adminAccount]).flush();
 				em.clear();
 
-				const loggedInClient: TestApiClient = await testApiClient.login(adminAccount);
+				const loggedInClient: TestApiClient = await new TestApiClientBuilder(app, baseRouteName).build(adminAccount);
 
 				return {
 					loggedInClient,
@@ -67,7 +66,7 @@ describe('MediaSourceController (API)', () => {
 				await em.persist([superheroUser, superheroAccount, bilo, vidis]).flush();
 				em.clear();
 
-				const loggedInClient: TestApiClient = await testApiClient.loginAsServiceAccount(superheroAccount);
+				const loggedInClient: TestApiClient = await new TestApiClientBuilder(app, baseRouteName).asServiceAccount().build(superheroAccount);
 
 				return {
 					loggedInClient,
@@ -106,7 +105,7 @@ describe('MediaSourceController (API)', () => {
 				await em.persist([superheroUser, superheroAccount]).flush();
 				em.clear();
 
-				const loggedInClient: TestApiClient = await testApiClient.loginAsServiceAccount(superheroAccount);
+				const loggedInClient: TestApiClient = await new TestApiClientBuilder(app, baseRouteName).asServiceAccount().build(superheroAccount);
 
 				return {
 					loggedInClient,

@@ -6,7 +6,7 @@ import { HttpStatus, type INestApplication } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
-import { TestApiClient } from '@testing/test-api-client';
+import { TestApiClientBuilder } from '@testing/test-api-client-builder';
 import { UUID } from 'bson';
 import { type Response } from 'supertest';
 import { type ExternalToolPseudonymEntity } from '../../entity';
@@ -17,7 +17,6 @@ describe('PseudonymController (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 
-	let testApiClient: TestApiClient;
 
 	beforeAll(async () => {
 		const moduleRef: TestingModule = await Test.createTestingModule({
@@ -43,7 +42,7 @@ describe('PseudonymController (API)', () => {
 	describe('[GET] pseudonyms/:pseudonym', () => {
 		describe('when user is not authenticated', () => {
 			it('should return unauthorized', async () => {
-				const response: Response = await testApiClient.get(new ObjectId().toHexString());
+				const response: Response = await new TestApiClientBuilder(app, baseRouteName).build().get(new ObjectId().toHexString());
 
 				expect(response.statusCode).toEqual(HttpStatus.UNAUTHORIZED);
 			});
@@ -64,7 +63,7 @@ describe('PseudonymController (API)', () => {
 				await em.persist([studentAccount, studentUser, pseudonym, externalToolEntity, school]).flush();
 				em.clear();
 
-				const loggedInClient: TestApiClient = await testApiClient.login(studentAccount);
+				const loggedInClient: TestApiClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 				return { loggedInClient, pseudonym, pseudonymString };
 			};
@@ -101,7 +100,7 @@ describe('PseudonymController (API)', () => {
 					.flush();
 				em.clear();
 
-				const loggedInClient: TestApiClient = await testApiClient.login(studentAccount);
+				const loggedInClient: TestApiClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 				return { loggedInClient, pseudonymString };
 			};
@@ -130,7 +129,7 @@ describe('PseudonymController (API)', () => {
 				await em.persist([studentAccount, studentUser, pseudonym, externalToolEntity, school]).flush();
 				em.clear();
 
-				const loggedInClient: TestApiClient = await testApiClient.login(studentAccount);
+				const loggedInClient: TestApiClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 				return { loggedInClient, pseudonymString };
 			};

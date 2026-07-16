@@ -7,13 +7,12 @@ import { HttpStatus, type INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
-import { TestApiClient } from '@testing/test-api-client';
+import { TestApiClientBuilder } from '@testing/test-api-client-builder';
 import { UUID } from 'bson';
 
 describe('OAuth Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let testApiClient: TestApiClient;
 	let config: OauthPublicApiConfig;
 
 	beforeAll(async () => {
@@ -42,7 +41,7 @@ describe('OAuth Controller (API)', () => {
 	describe('GET /session-token/expiration', () => {
 		describe('when the user is not authenticated', () => {
 			it('should return a 401 error', async () => {
-				const response = await testApiClient.get('/session-token/expiration');
+				const response = await new TestApiClientBuilder(app, baseRouteName).build().get('/session-token/expiration');
 
 				expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
 			});
@@ -60,7 +59,7 @@ describe('OAuth Controller (API)', () => {
 				await em.persist([studentAccount, studentUser, system]).flush();
 				em.clear();
 
-				const loggedInClient = await testApiClient.login(studentAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 				config.featureExternalSystemLogoutEnabled = false;
 
@@ -92,7 +91,7 @@ describe('OAuth Controller (API)', () => {
 				await em.persist([studentAccount, studentUser, system, sessionToken]).flush();
 				em.clear();
 
-				const loggedInClient = await testApiClient.login(studentAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 				return { loggedInClient, sessionToken };
 			};
@@ -126,7 +125,7 @@ describe('OAuth Controller (API)', () => {
 				await em.persist([studentAccount, studentUser, system, latestSessionToken, olderSessionToken]).flush();
 				em.clear();
 
-				const loggedInClient = await testApiClient.login(studentAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 				return { loggedInClient, latestSessionToken };
 			};
@@ -153,7 +152,7 @@ describe('OAuth Controller (API)', () => {
 				await em.persist([studentAccount, studentUser, system]).flush();
 				em.clear();
 
-				const loggedInClient = await testApiClient.login(studentAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 				return { loggedInClient };
 			};
