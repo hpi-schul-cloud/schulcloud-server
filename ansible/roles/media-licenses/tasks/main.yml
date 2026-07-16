@@ -15,11 +15,3 @@
     state: "{{ 'present' if WITH_MEDIA_LICENSES is defined and WITH_MEDIA_LICENSES|bool else 'absent'}}"
   tags:
     - cronjob
-
-- name: Add media-licenses default allow network policy
-  kubernetes.core.k8s:
-    kubeconfig: ~/.kube/config
-    namespace: "{{ NAMESPACE }}"
-    template: default-allow-networkpolicy.yml.j2
-  tags:
-    - networkPolicy

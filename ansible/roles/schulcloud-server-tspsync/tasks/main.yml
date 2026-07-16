@@ -95,11 +95,3 @@
       - NAMESPACE != "main"
     tags:
       - job
-
-  - name: Add schulcloud-server-tspsync default allow network policy
-    kubernetes.core.k8s:
-      kubeconfig: ~/.kube/config
-      namespace: "{{ NAMESPACE }}"
-      template: default-allow-networkpolicy.yml.j2
-    tags:
-      - networkPolicy

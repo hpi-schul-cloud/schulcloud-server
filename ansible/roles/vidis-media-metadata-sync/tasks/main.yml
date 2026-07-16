@@ -15,11 +15,3 @@
     state: "{{ 'present' if WITH_VIDIS_MEDIA_METADATA_SYNC is defined and WITH_VIDIS_MEDIA_METADATA_SYNC|bool else 'absent'}}"
   tags:
     - cronjob
-
-- name: Add vidis-media-metadata-sync default allow network policy
-  kubernetes.core.k8s:
-    kubeconfig: ~/.kube/config
-    namespace: "{{ NAMESPACE }}"
-    template: default-allow-networkpolicy.yml.j2
-  tags:
-    - networkPolicy

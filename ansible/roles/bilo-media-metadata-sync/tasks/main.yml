@@ -33,11 +33,3 @@
     state: "{{ 'present' if WITH_BILO_MEDIA_METADATA_SYNC is defined and WITH_BILO_MEDIA_METADATA_SYNC|bool else 'absent'}}"
   tags:
     - cronjob
-
-- name: Add bilo-media-metadata-sync default allow network policy
-  kubernetes.core.k8s:
-    kubeconfig: ~/.kube/config
-    namespace: "{{ NAMESPACE }}"
-    template: default-allow-networkpolicy.yml.j2
-  tags:
-    - networkPolicy
