@@ -71,7 +71,7 @@ describe('MediumMetadataController (API)', () => {
 
 				axiosMock.onPost(/(.*)\/query/).replyOnce(HttpStatus.OK, responses);
 
-				const loggedInClient: TestApiClient = await new TestApiClientBuilder(app, baseRouteName)
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName)
 					.asServiceAccount()
 					.build(superheroAccount);
 
@@ -105,7 +105,7 @@ describe('MediumMetadataController (API)', () => {
 				await em.persist([superheroAccount, superheroUser, mediaSourceEntity]).flush();
 				em.clear();
 
-				const loggedInClient: TestApiClient = await new TestApiClientBuilder(app, baseRouteName)
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName)
 					.asServiceAccount()
 					.build(superheroAccount);
 
@@ -136,7 +136,7 @@ describe('MediumMetadataController (API)', () => {
 
 				axiosMock.onGet(/^.*by-region\/.*$/).replyOnce(HttpStatus.OK, responses);
 
-				const loggedInClient: TestApiClient = await new TestApiClientBuilder(app, baseRouteName)
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName)
 					.asServiceAccount()
 					.build(superheroAccount);
 
@@ -170,7 +170,7 @@ describe('MediumMetadataController (API)', () => {
 
 				axiosMock.onPost(/(.*)\/query/).replyOnce(HttpStatus.OK, responses);
 
-				const loggedInClient: TestApiClient = await new TestApiClientBuilder(app, baseRouteName)
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName)
 					.asServiceAccount()
 					.build(superheroAccount);
 
@@ -200,7 +200,7 @@ describe('MediumMetadataController (API)', () => {
 					access_token: 'accessToken',
 				});
 
-				const loggedInClient: TestApiClient = await new TestApiClientBuilder(app, baseRouteName)
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName)
 					.asServiceAccount()
 					.build(superheroAccount);
 
@@ -261,7 +261,7 @@ describe('MediumMetadataController (API)', () => {
 
 				axiosMock.onPost(/(.*)\/query/).replyOnce(HttpStatus.OK, responses);
 
-				const loggedInClient: TestApiClient = await new TestApiClientBuilder(app, baseRouteName)
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName)
 					.asServiceAccount()
 					.build(superheroAccount);
 
@@ -310,7 +310,7 @@ describe('MediumMetadataController (API)', () => {
 
 				axiosMock.onPost(/(.*)\/query/).replyOnce(HttpStatus.OK, responses);
 
-				const loggedInClient: TestApiClient = await new TestApiClientBuilder(app, baseRouteName)
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName)
 					.asServiceAccount()
 					.build(superheroAccount);
 
@@ -358,7 +358,7 @@ describe('MediumMetadataController (API)', () => {
 
 				axiosMock.onPost(/(.*)\/query/).replyOnce(HttpStatus.OK, responses);
 
-				const loggedInClient: TestApiClient = await new TestApiClientBuilder(app, baseRouteName)
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName)
 					.asServiceAccount()
 					.build(superheroAccount);
 

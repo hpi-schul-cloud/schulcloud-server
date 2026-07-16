@@ -59,7 +59,10 @@ describe('Admin API - Schools (API)', () => {
 			it('should return school', async () => {
 				const { federalState } = await setup();
 
-				const response = await new TestApiClientBuilder(app, baseRouteName).withApiKey('someotherkey').build().post('', { name: 'schoolname', federalStateName: federalState.name });
+				const response = await new TestApiClientBuilder(app, baseRouteName)
+					.withApiKey('someotherkey')
+					.build()
+					.post('', { name: 'schoolname', federalStateName: federalState.name });
 
 				expect(response.status).toEqual(201);
 				const result = response.body as AdminApiSchoolCreateResponseDto;
@@ -69,7 +72,10 @@ describe('Admin API - Schools (API)', () => {
 			it('should have persisted the school', async () => {
 				const { federalState } = await setup();
 
-				const response = await new TestApiClientBuilder(app, baseRouteName).withApiKey('someotherkey').build().post('', { name: 'schoolname', federalStateName: federalState.name });
+				const response = await new TestApiClientBuilder(app, baseRouteName)
+					.withApiKey('someotherkey')
+					.build()
+					.post('', { name: 'schoolname', federalStateName: federalState.name });
 
 				const { id } = response.body as AdminApiSchoolCreateResponseDto;
 				const loaded = await em.findOneOrFail(SchoolEntity, id);

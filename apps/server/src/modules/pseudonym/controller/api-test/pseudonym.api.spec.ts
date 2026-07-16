@@ -63,7 +63,7 @@ describe('PseudonymController (API)', () => {
 				await em.persist([studentAccount, studentUser, pseudonym, externalToolEntity, school]).flush();
 				em.clear();
 
-				const loggedInClient: TestApiClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 				return { loggedInClient, pseudonym, pseudonymString };
 			};
@@ -100,7 +100,7 @@ describe('PseudonymController (API)', () => {
 					.flush();
 				em.clear();
 
-				const loggedInClient: TestApiClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 				return { loggedInClient, pseudonymString };
 			};
@@ -129,7 +129,7 @@ describe('PseudonymController (API)', () => {
 				await em.persist([studentAccount, studentUser, pseudonym, externalToolEntity, school]).flush();
 				em.clear();
 
-				const loggedInClient: TestApiClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 				return { loggedInClient, pseudonymString };
 			};

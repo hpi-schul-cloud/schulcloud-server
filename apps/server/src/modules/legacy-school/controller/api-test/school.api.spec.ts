@@ -115,7 +115,9 @@ describe('School (API)', () => {
 			it('should return unauthorized', async () => {
 				const { school, system } = await setup();
 
-				const response = await new TestApiClientBuilder(app, baseRouteName).build().get(`/${school.id}/systems/${system.id}/provisioning-options`);
+				const response = await new TestApiClientBuilder(app, baseRouteName)
+					.build()
+					.get(`/${school.id}/systems/${system.id}/provisioning-options`);
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 				expect(response.body).toEqual({
@@ -284,11 +286,13 @@ describe('School (API)', () => {
 			it('should return unauthorized', async () => {
 				const { school, system } = await setup();
 
-				const response = await new TestApiClientBuilder(app, baseRouteName).build().post(`/${school.id}/systems/${system.id}/provisioning-options`, {
-					groupProvisioningClassesEnabled: true,
-					groupProvisioningCoursesEnabled: true,
-					groupProvisioningOtherEnabled: true,
-				});
+				const response = await new TestApiClientBuilder(app, baseRouteName)
+					.build()
+					.post(`/${school.id}/systems/${system.id}/provisioning-options`, {
+						groupProvisioningClassesEnabled: true,
+						groupProvisioningCoursesEnabled: true,
+						groupProvisioningOtherEnabled: true,
+					});
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 				expect(response.body).toEqual({
