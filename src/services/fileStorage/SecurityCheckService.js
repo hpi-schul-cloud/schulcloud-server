@@ -29,11 +29,11 @@ class SecurityCheckService {
 	}
 }
 
-const SECURITY_CHECK_SERVICE_PATH = Configuration.get('SECURITY_CHECK_SERVICE_PATH');
 module.exports = {
 	service: (app) => {
-		app.use(SECURITY_CHECK_SERVICE_PATH, new SecurityCheckService());
-		const securityCheckService = app.service(SECURITY_CHECK_SERVICE_PATH);
+		const endpoint = '/fileStorage/securityCheck';
+		app.use(endpoint, new SecurityCheckService());
+		const securityCheckService = app.service(endpoint);
 		securityCheckService.hooks(hooks);
 	},
 };
