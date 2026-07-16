@@ -1,3 +1,4 @@
+// eslint-disable-next-line @typescript-eslint/no-restricted-imports
 import { JwtWhitelistAdapter } from '@infra/jwt-whitelist';
 import { defaultTestPassword } from '@modules/account/testing/account.factory';
 import { type INestApplication } from '@nestjs/common';
