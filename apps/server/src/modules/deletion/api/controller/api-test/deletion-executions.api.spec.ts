@@ -39,7 +39,7 @@ import { type INestApplication } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
-import { TestApiClient, TestApiClientBuilder } from '@testing/test-api-client-builder';
+import { type TestApiClient, TestApiClientBuilder } from '@testing/test-api-client-builder';
 import { deletionRequestEntityFactory } from '../../../repo/entity/testing';
 
 const baseRouteName = '/deletionExecutions';
