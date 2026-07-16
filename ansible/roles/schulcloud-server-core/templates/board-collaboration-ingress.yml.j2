@@ -20,7 +20,7 @@ metadata:
     nginx.ingress.kubernetes.io/session-cookie-name: BOARD_COLLABORATION_AFFINITY
     nginx.ingress.kubernetes.io/session-cookie-secure: "true"
     nginx.ingress.kubernetes.io/session-cookie-domain: {{ DOMAIN }}
-    nginx.ingress.kubernetes.io/session-cookie-samesite: "Strict"
+    nginx.ingress.kubernetes.io/session-cookie-samesite: "Lax"
     nginx.ingress.kubernetes.io/session-cookie-max-age: "3600"
     nginx.ingress.kubernetes.io/session-cookie-change-on-failure: "true"
 {% if CLUSTER_ISSUER is defined %}
