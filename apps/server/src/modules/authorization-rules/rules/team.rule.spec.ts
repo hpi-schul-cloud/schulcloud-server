@@ -6,7 +6,9 @@ import {
 	AuthorizationInjectionService,
 } from '@modules/authorization';
 import { roleFactory } from '@modules/role/testing';
+import { SystemEntity } from '@modules/system/repo';
 import { teamFactory } from '@modules/team/testing';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { NotImplementedException } from '@nestjs/common';
@@ -20,7 +22,7 @@ describe('TeamRule', () => {
 	let injectionService: AuthorizationInjectionService;
 
 	beforeAll(async () => {
-		await setupEntities([User]);
+		await setupEntities([SystemEntity, UserLoginMigrationEntity, User]);
 
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [

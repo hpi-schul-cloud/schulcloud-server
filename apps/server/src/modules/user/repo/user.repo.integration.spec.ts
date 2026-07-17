@@ -2,8 +2,9 @@ import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { roleFactory } from '@modules/role/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
-import { type SystemEntity } from '@modules/system/repo';
+import { SystemEntity } from '@modules/system/repo';
 import { systemEntityFactory } from '@modules/system/testing';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { SortOrder } from '@shared/domain/interface';
@@ -20,7 +21,12 @@ describe('user repo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [User], ensureIndexes: true })],
+			imports: [
+				MongoMemoryDatabaseModule.forRoot({
+					entities: [User, SystemEntity, UserLoginMigrationEntity],
+					ensureIndexes: true,
+				}),
+			],
 			providers: [UserMikroOrmRepo],
 		}).compile();
 		repo = module.get(UserMikroOrmRepo);

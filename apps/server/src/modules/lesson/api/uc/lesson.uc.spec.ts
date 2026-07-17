@@ -3,6 +3,7 @@ import { AuthorizationContextBuilder, AuthorizationService } from '@modules/auth
 import { CourseService } from '@modules/course';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { Submission, Task } from '@modules/task/repo';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, type TestingModule } from '@nestjs/testing';
@@ -43,7 +44,16 @@ describe('LessonUC', () => {
 		lessonService = module.get(LessonService);
 		authorizationService = module.get(AuthorizationService);
 
-		await setupEntities([User, Task, Submission, CourseEntity, CourseGroupEntity, LessonEntity, Material]);
+		await setupEntities([
+			User,
+			Task,
+			Submission,
+			CourseEntity,
+			CourseGroupEntity,
+			LessonEntity,
+			Material,
+			UserLoginMigrationEntity,
+		]);
 	});
 
 	afterAll(async () => {

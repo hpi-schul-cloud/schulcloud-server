@@ -8,6 +8,7 @@ import { RoomAuthorizable, RoomMembershipService, type UserWithRoomRoles } from 
 import { SchoolService } from '@modules/school';
 import { SchoolEntity } from '@modules/school/repo';
 import { schoolFactory } from '@modules/school/testing';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { NotImplementedException } from '@nestjs/common';
@@ -55,7 +56,7 @@ describe('ShareTokenPermissionService', () => {
 		schoolService = module.get(SchoolService);
 		config = module.get<SharingPublicApiConfig>(SHARING_PUBLIC_API_CONFIG_TOKEN);
 
-		await setupEntities([User, CourseEntity, CourseGroupEntity, SchoolEntity]);
+		await setupEntities([User, CourseEntity, CourseGroupEntity, SchoolEntity, UserLoginMigrationEntity]);
 	});
 
 	afterEach(() => {

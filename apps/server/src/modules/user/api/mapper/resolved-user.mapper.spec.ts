@@ -1,4 +1,6 @@
 import { roleFactory } from '@modules/role/testing';
+import { SystemEntity } from '@modules/system/repo';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { userFactory } from '@modules/user/testing';
 import { setupEntities } from '@testing/database';
 import { User } from '../../repo';
@@ -7,7 +9,7 @@ import { ResolvedUserMapper } from './resolved-user.mapper';
 
 describe('ResolvedUserMapper', () => {
 	beforeAll(async () => {
-		await setupEntities([User]);
+		await setupEntities([SystemEntity, UserLoginMigrationEntity, User]);
 	});
 
 	it('should has mapToResponse static method', () => {

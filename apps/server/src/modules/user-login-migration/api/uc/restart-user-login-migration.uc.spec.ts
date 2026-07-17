@@ -1,6 +1,8 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { Logger } from '@infra/logger';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { SystemEntity } from '@modules/system/repo';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { ForbiddenException } from '@nestjs/common';
@@ -49,7 +51,7 @@ describe(RestartUserLoginMigrationUc.name, () => {
 		authorizationService = module.get(AuthorizationService);
 		schoolMigrationService = module.get(SchoolMigrationService);
 
-		await setupEntities([User]);
+		await setupEntities([SystemEntity, UserLoginMigrationEntity, User]);
 	});
 
 	afterAll(async () => {

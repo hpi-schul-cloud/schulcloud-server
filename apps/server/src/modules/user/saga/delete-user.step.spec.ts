@@ -7,6 +7,8 @@ import {
 	StepOperationType,
 	StepReportBuilder,
 } from '@modules/saga';
+import { SystemEntity } from '@modules/system/repo';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { User, UserMikroOrmRepo } from '../repo';
@@ -23,7 +25,7 @@ describe(DeleteUserStep.name, () => {
 	});
 
 	beforeAll(async () => {
-		await setupEntities([User]);
+		await setupEntities([SystemEntity, UserLoginMigrationEntity, User]);
 
 		module = await Test.createTestingModule({
 			providers: [

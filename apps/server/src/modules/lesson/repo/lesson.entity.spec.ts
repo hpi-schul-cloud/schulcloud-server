@@ -4,6 +4,7 @@ import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory, courseGroupEntityFactory } from '@modules/course/testing';
 import { Submission, Task } from '@modules/task/repo';
 import { taskFactory } from '@modules/task/testing';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { setupEntities } from '@testing/database';
 import { LernstoreResources } from '../api';
@@ -17,7 +18,16 @@ describe('Lesson Entity', () => {
 	const inOneDay = new Date(Date.now() + 8.64e7);
 
 	beforeAll(async () => {
-		orm = await setupEntities([User, Task, Submission, LessonEntity, Material, CourseEntity, CourseGroupEntity]);
+		orm = await setupEntities([
+			User,
+			Task,
+			Submission,
+			LessonEntity,
+			Material,
+			CourseEntity,
+			CourseGroupEntity,
+			UserLoginMigrationEntity,
+		]);
 	});
 
 	describe('numberOfPublishedTasks', () => {

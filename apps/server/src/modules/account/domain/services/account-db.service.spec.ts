@@ -2,6 +2,8 @@ import { faker } from '@faker-js/faker';
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { Logger } from '@infra/logger';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { SystemEntity } from '@modules/system/repo';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, type TestingModule } from '@nestjs/testing';
@@ -42,7 +44,7 @@ describe('AccountDbService', () => {
 		accountRepo = module.get(ACCOUNT_REPO);
 		accountService = module.get(AccountServiceDb);
 
-		await setupEntities([User]);
+		await setupEntities([User, SystemEntity, UserLoginMigrationEntity]);
 	});
 
 	beforeEach(() => {

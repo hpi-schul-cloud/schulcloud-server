@@ -22,6 +22,7 @@ import { ShareTokenRepo } from '../repo/share-token.repo';
 import { shareTokenDOFactory } from '../testing/share-token.do.factory';
 import { ShareTokenService } from './share-token.service';
 import { TokenGenerator } from './token-generator.service';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 
 const buildId = () => new ObjectId().toHexString();
 
@@ -85,7 +86,16 @@ describe('ShareTokenService', () => {
 		columnBoardService = await module.get(ColumnBoardService);
 		boardNodeService = await module.get(BoardNodeService);
 		roomService = await module.get(RoomService);
-		await setupEntities([User, CourseEntity, CourseGroupEntity, Task, Submission, LessonEntity, Material]);
+		await setupEntities([
+			User,
+			CourseEntity,
+			CourseGroupEntity,
+			Task,
+			Submission,
+			LessonEntity,
+			Material,
+			UserLoginMigrationEntity,
+		]);
 	});
 
 	afterAll(async () => {

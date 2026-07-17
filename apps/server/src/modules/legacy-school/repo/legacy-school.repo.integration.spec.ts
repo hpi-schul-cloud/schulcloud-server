@@ -22,7 +22,7 @@ describe('LegacySchoolRepo', () => {
 		module = await Test.createTestingModule({
 			imports: [
 				MongoMemoryDatabaseModule.forRoot({
-					entities: [SchoolEntity],
+					entities: [SchoolEntity, SystemEntity, UserLoginMigrationEntity],
 				}),
 			],
 			providers: [LegacySchoolRepo],

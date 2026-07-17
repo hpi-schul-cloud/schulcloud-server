@@ -8,6 +8,8 @@ import {
 	mediaSourceOAuthConfigEmbeddableFactory,
 	mediaSourceVidisConfigEmbeddableFactory,
 } from '@modules/media-source/testing';
+import { SystemEntity } from '@modules/system/repo';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, type TestingModule } from '@nestjs/testing';
@@ -27,7 +29,14 @@ describe(MediaUserLicenseRepo.name, () => {
 		module = await Test.createTestingModule({
 			imports: [
 				MongoMemoryDatabaseModule.forRoot({
-					entities: [MediaUserLicenseEntity, UserLicenseEntity, MediaSourceEntity, User],
+					entities: [
+						MediaUserLicenseEntity,
+						UserLicenseEntity,
+						MediaSourceEntity,
+						User,
+						SystemEntity,
+						UserLoginMigrationEntity,
+					],
 				}),
 			],
 			providers: [MediaUserLicenseRepo],

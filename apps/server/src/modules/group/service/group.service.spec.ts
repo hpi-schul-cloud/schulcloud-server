@@ -3,7 +3,9 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { type RoleDto, RoleName, RoleService } from '@modules/role';
 import { roleDtoFactory } from '@modules/role/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
+import { SystemEntity } from '@modules/system/repo';
 import { UserService } from '@modules/user';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userDoFactory, userFactory } from '@modules/user/testing';
 import { EventBus } from '@nestjs/cqrs';
@@ -29,7 +31,7 @@ describe('GroupService', () => {
 	let config: GroupConfig;
 
 	beforeAll(async () => {
-		await setupEntities([User]);
+		await setupEntities([SystemEntity, UserLoginMigrationEntity, User]);
 
 		module = await Test.createTestingModule({
 			providers: [

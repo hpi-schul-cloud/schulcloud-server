@@ -1,5 +1,7 @@
 import { type EntityData, NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { SystemEntity } from '@modules/system/repo';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, type TestingModule } from '@nestjs/testing';
@@ -24,7 +26,9 @@ describe('AccountMikroOrmRepo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [AccountEntity, User] })],
+			imports: [
+				MongoMemoryDatabaseModule.forRoot({ entities: [AccountEntity, SystemEntity, User, UserLoginMigrationEntity] }),
+			],
 			providers: [AccountTestRepo],
 		}).compile();
 		repo = module.get(AccountTestRepo);

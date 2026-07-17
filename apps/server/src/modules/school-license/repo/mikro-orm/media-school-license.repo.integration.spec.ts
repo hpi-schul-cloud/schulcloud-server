@@ -3,6 +3,8 @@ import { MediaSourceEntity } from '@modules/media-source/entity';
 import { mediaSourceEntityFactory } from '@modules/media-source/testing';
 import { SchoolEntity } from '@modules/school/repo';
 import { schoolEntityFactory } from '@modules/school/testing';
+import { SystemEntity } from '@modules/system/repo';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
@@ -20,7 +22,14 @@ describe(MediaSchoolLicenseMikroOrmRepo.name, () => {
 		module = await Test.createTestingModule({
 			imports: [
 				MongoMemoryDatabaseModule.forRoot({
-					entities: [MediaSchoolLicenseEntity, MediaSourceEntity, SchoolLicenseEntity, SchoolEntity],
+					entities: [
+						MediaSchoolLicenseEntity,
+						MediaSourceEntity,
+						SchoolLicenseEntity,
+						SchoolEntity,
+						SystemEntity,
+						UserLoginMigrationEntity,
+					],
 				}),
 			],
 			providers: [MediaSchoolLicenseMikroOrmRepo],

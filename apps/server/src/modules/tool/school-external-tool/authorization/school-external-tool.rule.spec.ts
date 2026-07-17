@@ -1,4 +1,4 @@
-import { type DeepMocked, createMock } from '@golevelup/ts-jest';
+import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import {
 	Action,
 	AUTHORIZATION_CONFIG_TOKEN,
@@ -7,6 +7,8 @@ import {
 } from '@modules/authorization';
 import { roleFactory } from '@modules/role/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
+import { SystemEntity } from '@modules/system/repo';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { NotImplementedException } from '@nestjs/common';
@@ -22,7 +24,7 @@ describe('SchoolExternalToolRule', () => {
 	let injectionService: DeepMocked<AuthorizationInjectionService>;
 
 	beforeAll(async () => {
-		await setupEntities([User]);
+		await setupEntities([SystemEntity, UserLoginMigrationEntity, User]);
 
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [

@@ -5,6 +5,7 @@ import { LessonEntity, Material } from '@modules/lesson/repo';
 import { TaskService } from '@modules/task';
 import { Submission, Task } from '@modules/task/repo';
 import { taskFactory } from '@modules/task/testing';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
@@ -29,7 +30,16 @@ describe(TaskUrlHandler.name, () => {
 
 		taskService = module.get(TaskService);
 		taskUrlHandler = module.get(TaskUrlHandler);
-		await setupEntities([User, Task, Submission, CourseEntity, CourseGroupEntity, LessonEntity, Material]);
+		await setupEntities([
+			User,
+			Task,
+			Submission,
+			CourseEntity,
+			CourseGroupEntity,
+			LessonEntity,
+			Material,
+			UserLoginMigrationEntity,
+		]);
 	});
 
 	afterAll(async () => {

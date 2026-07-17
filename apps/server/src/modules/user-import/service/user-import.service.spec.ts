@@ -7,9 +7,11 @@ import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
 import { SchoolFeature } from '@modules/school/domain';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { type System, SystemService } from '@modules/system';
+import { SystemEntity } from '@modules/system/repo';
 import { systemFactory } from '@modules/system/testing';
 import { UserService } from '@modules/user';
 import { type UserLoginMigrationDO } from '@modules/user-login-migration';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { userLoginMigrationDOFactory } from '@modules/user-login-migration/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
@@ -41,7 +43,7 @@ describe(UserImportService.name, () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [User] })],
+			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [User, SystemEntity, UserLoginMigrationEntity] })],
 			providers: [
 				UserImportService,
 				{

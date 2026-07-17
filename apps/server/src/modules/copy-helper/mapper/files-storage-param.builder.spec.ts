@@ -4,13 +4,23 @@ import { LessonEntity, Material } from '@modules/lesson/repo';
 import { lessonFactory } from '@modules/lesson/testing';
 import { Submission, Task } from '@modules/task/repo';
 import { taskFactory } from '@modules/task/testing';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { setupEntities } from '@testing/database';
 import { FileParamBuilder } from './files-storage-param.builder';
 
 describe('FileParamBuilder', () => {
 	beforeAll(async () => {
-		await setupEntities([User, Task, Submission, LessonEntity, Material, CourseEntity, CourseGroupEntity]);
+		await setupEntities([
+			User,
+			Task,
+			Submission,
+			LessonEntity,
+			Material,
+			CourseEntity,
+			CourseGroupEntity,
+			UserLoginMigrationEntity,
+		]);
 	});
 
 	it('Should throw for not supported parent type', () => {

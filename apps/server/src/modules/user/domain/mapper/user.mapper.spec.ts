@@ -1,4 +1,6 @@
 import { roleFactory } from '@modules/role/testing';
+import { SystemEntity } from '@modules/system/repo';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { userFactory } from '@modules/user/testing';
 import { setupEntities } from '@testing/database';
 import type { UserDto } from '../../api/dto/user.dto';
@@ -9,7 +11,7 @@ describe('UserMapper', () => {
 	let userEntity: User;
 
 	beforeAll(async () => {
-		await setupEntities([User]);
+		await setupEntities([SystemEntity, UserLoginMigrationEntity, User]);
 	});
 
 	beforeEach(() => {

@@ -3,11 +3,13 @@ import { LegacyLogger } from '@infra/logger';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { schoolEntityFactory } from '@modules/school/testing';
+import { SystemEntity } from '@modules/system/repo';
 import { CustomParameterEntry } from '@modules/tool/common/domain';
 import { ToolContextType } from '@modules/tool/common/enum';
 import { ExternalToolEntity, ExternalToolRepoMapper } from '@modules/tool/external-tool/repo';
 import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/repo';
 import { schoolExternalToolEntityFactory } from '@modules/tool/school-external-tool/testing';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
@@ -35,6 +37,8 @@ describe(ContextExternalToolRepo.name, () => {
 						User,
 						CourseEntity,
 						CourseGroupEntity,
+						SystemEntity,
+						UserLoginMigrationEntity,
 					],
 				}),
 			],

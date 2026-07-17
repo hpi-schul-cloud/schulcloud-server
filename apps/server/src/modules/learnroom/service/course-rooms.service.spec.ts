@@ -16,6 +16,7 @@ import { setupEntities } from '@testing/database';
 import { ColumnBoardNodeRepo, LegacyBoard, LegacyBoardElement, LegacyBoardRepo } from '../repo';
 import { boardFactory } from '../testing';
 import { CourseRoomsService } from './course-rooms.service';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 
 describe('rooms service', () => {
 	let module: TestingModule;
@@ -40,6 +41,7 @@ describe('rooms service', () => {
 			Submission,
 			LegacyBoard,
 			LegacyBoardElement,
+			UserLoginMigrationEntity,
 		]);
 		module = await Test.createTestingModule({
 			providers: [

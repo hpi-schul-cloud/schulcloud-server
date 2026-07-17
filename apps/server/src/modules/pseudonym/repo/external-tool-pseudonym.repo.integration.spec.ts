@@ -1,6 +1,8 @@
 import { createMock } from '@golevelup/ts-jest';
 import { LegacyLogger } from '@infra/logger';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { SystemEntity } from '@modules/system/repo';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, type TestingModule } from '@nestjs/testing';
@@ -22,7 +24,10 @@ describe('ExternalToolPseudonymRepo', () => {
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [
-				MongoMemoryDatabaseModule.forRoot({ entities: [ExternalToolPseudonymEntity, User], ensureIndexes: true }),
+				MongoMemoryDatabaseModule.forRoot({
+					entities: [ExternalToolPseudonymEntity, User, SystemEntity, UserLoginMigrationEntity],
+					ensureIndexes: true,
+				}),
 			],
 			providers: [
 				ExternalToolPseudonymRepo,

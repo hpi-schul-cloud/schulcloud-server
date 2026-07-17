@@ -3,6 +3,8 @@ import { Logger } from '@infra/logger';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
+import { SystemEntity } from '@modules/system/repo';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { ForbiddenException } from '@nestjs/common';
@@ -54,7 +56,7 @@ describe(StartUserLoginMigrationUc.name, () => {
 		authorizationService = module.get(AuthorizationService);
 		schoolService = module.get(LegacySchoolService);
 
-		await setupEntities([User]);
+		await setupEntities([SystemEntity, UserLoginMigrationEntity, User]);
 	});
 
 	afterAll(async () => {

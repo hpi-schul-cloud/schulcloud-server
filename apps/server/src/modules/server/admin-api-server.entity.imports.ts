@@ -19,6 +19,7 @@ import { TeamEntity } from '@modules/team/repo';
 import { ContextExternalToolEntity, LtiDeepLinkTokenEntity } from '@modules/tool/context-external-tool/repo';
 import { ExternalToolEntity } from '@modules/tool/external-tool/repo';
 import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/repo';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 
 export const ENTITIES = [
@@ -32,6 +33,7 @@ export const ENTITIES = [
 	StorageProviderEntity,
 	FederalStateEntity,
 	User,
+	UserLoginMigrationEntity,
 	CourseEntity,
 	CourseGroupEntity,
 	ClassEntity,

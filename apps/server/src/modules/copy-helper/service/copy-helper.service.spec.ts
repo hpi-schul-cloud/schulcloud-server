@@ -1,5 +1,6 @@
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { CopyElementType, type CopyStatus, CopyStatusEnum } from '../types/copy.types';
@@ -36,7 +37,7 @@ describe('copy helper service', () => {
 	let copyHelperService: CopyHelperService;
 
 	beforeAll(async () => {
-		await setupEntities([CourseEntity, CourseGroupEntity]);
+		await setupEntities([CourseEntity, CourseGroupEntity, UserLoginMigrationEntity]);
 	});
 
 	afterAll(async () => {

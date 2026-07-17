@@ -11,6 +11,8 @@ import {
 import { AuthorizableReferenceType } from '@modules/authorization/domain';
 import { BoardContextApiHelperService } from '@modules/board-context';
 import { schoolEntityFactory } from '@modules/school/testing';
+import { SystemEntity } from '@modules/system/repo';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { ForbiddenException, UnprocessableEntityException } from '@nestjs/common';
@@ -60,7 +62,7 @@ describe(ContextExternalToolUc.name, () => {
 	let boardContextApiHelperService: DeepMocked<BoardContextApiHelperService>;
 
 	beforeAll(async () => {
-		await setupEntities([User]);
+		await setupEntities([SystemEntity, UserLoginMigrationEntity, User]);
 		module = await Test.createTestingModule({
 			providers: [
 				ContextExternalToolUc,

@@ -1,6 +1,7 @@
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { Submission, Task } from '@modules/task/repo';
 import { submissionFactory, taskFactory } from '@modules/task/testing';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { setupEntities } from '@testing/database';
@@ -10,7 +11,16 @@ import { LessonMapper } from './lesson.mapper';
 
 describe('LessonMapper', () => {
 	beforeAll(async () => {
-		await setupEntities([User, Task, Submission, CourseEntity, CourseGroupEntity, LessonEntity, Material]);
+		await setupEntities([
+			User,
+			Task,
+			Submission,
+			CourseEntity,
+			CourseGroupEntity,
+			LessonEntity,
+			Material,
+			UserLoginMigrationEntity,
+		]);
 	});
 
 	describe('mapTaskToResponse', () => {

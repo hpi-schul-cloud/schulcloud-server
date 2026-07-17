@@ -8,6 +8,8 @@ import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { UserLoginMigrationRollbackService } from '../../domain/service';
 import { UserLoginMigrationRollbackUc } from './user-login-migration-rollback.uc';
+import { SystemEntity } from '@modules/system/repo';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 
 describe(UserLoginMigrationRollbackUc.name, () => {
 	let module: TestingModule;
@@ -17,7 +19,7 @@ describe(UserLoginMigrationRollbackUc.name, () => {
 	let userLoginMigrationRollbackService: DeepMocked<UserLoginMigrationRollbackService>;
 
 	beforeAll(async () => {
-		await setupEntities([User]);
+		await setupEntities([SystemEntity, UserLoginMigrationEntity, User]);
 
 		module = await Test.createTestingModule({
 			providers: [

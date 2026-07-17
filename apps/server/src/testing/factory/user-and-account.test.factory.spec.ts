@@ -3,13 +3,17 @@ import { AccountEntity } from '@modules/account/repo';
 // eslint-disable-next-line @typescript-eslint/no-restricted-imports
 import { schoolEntityFactory } from '@modules/school/testing';
 // eslint-disable-next-line @typescript-eslint/no-restricted-imports
+import { SystemEntity } from '@modules/system/repo';
+// eslint-disable-next-line @typescript-eslint/no-restricted-imports
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
+// eslint-disable-next-line @typescript-eslint/no-restricted-imports
 import { User } from '@modules/user/repo';
 import { setupEntities } from '@testing/database';
 import { type UserAndAccountParams, UserAndAccountTestFactory } from './user-and-account.test.factory';
 
 describe('user-and-account.test.factory', () => {
 	beforeAll(async () => {
-		await setupEntities([User]);
+		await setupEntities([User, SystemEntity, UserLoginMigrationEntity]);
 	});
 
 	const createParams = () => {

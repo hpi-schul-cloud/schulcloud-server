@@ -1,4 +1,5 @@
 import { EntityManager } from '@mikro-orm/mongodb';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { type EntityId } from '@shared/domain/types';
 import { MongoMemoryDatabaseModule } from '@testing/database';
@@ -20,7 +21,9 @@ describe('course group repo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [CourseEntity, CourseGroupEntity] })],
+			imports: [
+				MongoMemoryDatabaseModule.forRoot({ entities: [CourseEntity, CourseGroupEntity, UserLoginMigrationEntity] }),
+			],
 			providers: [CourseGroupRepo],
 		}).compile();
 		repo = module.get(CourseGroupRepo);

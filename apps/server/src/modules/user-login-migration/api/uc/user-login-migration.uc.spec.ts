@@ -11,8 +11,10 @@ import { ExternalSchoolDto, OauthDataDto, ProvisioningService, ProvisioningSyste
 import { externalUserDtoFactory } from '@modules/provisioning/testing';
 import { RoleName } from '@modules/role';
 import { schoolEntityFactory } from '@modules/school/testing';
+import { SystemEntity } from '@modules/system/repo';
 import { systemEntityFactory } from '@modules/system/testing';
 import { UserService } from '@modules/user';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userDoFactory, userFactory } from '@modules/user/testing';
 import { ForbiddenException } from '@nestjs/common';
@@ -51,7 +53,7 @@ describe(UserLoginMigrationUc.name, () => {
 	let userService: DeepMocked<UserService>;
 
 	beforeAll(async () => {
-		await setupEntities([User]);
+		await setupEntities([SystemEntity, UserLoginMigrationEntity, User]);
 
 		module = await Test.createTestingModule({
 			providers: [

@@ -1,4 +1,6 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { SchoolEntity } from '@modules/school/repo';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { cleanupCollections } from '@testing/cleanup-collections';
@@ -22,7 +24,9 @@ describe(SystemMikroOrmRepo.name, () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [SystemEntity] })],
+			imports: [
+				MongoMemoryDatabaseModule.forRoot({ entities: [SystemEntity, SchoolEntity, UserLoginMigrationEntity] }),
+			],
 			providers: [{ provide: SYSTEM_REPO, useClass: SystemMikroOrmRepo }],
 		}).compile();
 

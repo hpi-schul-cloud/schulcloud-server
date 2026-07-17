@@ -1,6 +1,8 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { Logger } from '@infra/logger';
+import { SystemEntity } from '@modules/system/repo';
 import { teamFactory, teamUserFactory } from '@modules/team/testing';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { TeamEntity, TeamRepo } from '../../repo';
@@ -13,7 +15,7 @@ describe('TeamService', () => {
 	let teamRepo: DeepMocked<TeamRepo>;
 
 	beforeAll(async () => {
-		await setupEntities([TeamEntity]);
+		await setupEntities([SystemEntity, TeamEntity, UserLoginMigrationEntity]);
 
 		module = await Test.createTestingModule({
 			providers: [

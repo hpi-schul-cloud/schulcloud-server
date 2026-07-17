@@ -13,6 +13,7 @@ import { schoolEntityFactory, schoolFactory } from '@modules/school/testing';
 import { TaskService } from '@modules/task';
 import { Submission, Task } from '@modules/task/repo';
 import { taskFactory } from '@modules/task/testing';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { NotImplementedException } from '@nestjs/common';
@@ -90,7 +91,16 @@ describe('ShareTokenUC', () => {
 		columnBoardService = module.get(ColumnBoardService);
 		shareTokenPermissionService = module.get(ShareTokenPermissionService);
 
-		await setupEntities([User, CourseEntity, CourseGroupEntity, Task, Submission, LessonEntity, Material]);
+		await setupEntities([
+			User,
+			CourseEntity,
+			CourseGroupEntity,
+			Task,
+			Submission,
+			LessonEntity,
+			Material,
+			UserLoginMigrationEntity,
+		]);
 	});
 
 	afterAll(async () => {

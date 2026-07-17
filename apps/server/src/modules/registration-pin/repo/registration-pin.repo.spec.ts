@@ -1,4 +1,6 @@
 import { EntityManager } from '@mikro-orm/mongodb';
+import { SystemEntity } from '@modules/system/repo';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, type TestingModule } from '@nestjs/testing';
@@ -15,7 +17,11 @@ describe(RegistrationPinRepo.name, () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [RegistrationPinEntity, User] })],
+			imports: [
+				MongoMemoryDatabaseModule.forRoot({
+					entities: [RegistrationPinEntity, User, SystemEntity, UserLoginMigrationEntity],
+				}),
+			],
 			providers: [RegistrationPinRepo],
 		}).compile();
 

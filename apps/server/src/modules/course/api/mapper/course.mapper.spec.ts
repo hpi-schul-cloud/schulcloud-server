@@ -1,3 +1,4 @@
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { setupEntities } from '@testing/database';
 import { CourseEntity, CourseGroupEntity } from '../../repo';
 import { courseEntityFactory } from '../../testing';
@@ -6,7 +7,7 @@ import { CourseMapper } from './course.mapper';
 
 describe(CourseMapper.name, () => {
 	beforeAll(async () => {
-		await setupEntities([CourseEntity, CourseGroupEntity]);
+		await setupEntities([CourseEntity, CourseGroupEntity, UserLoginMigrationEntity]);
 	});
 
 	describe('mapToCreateCourseResponse', () => {

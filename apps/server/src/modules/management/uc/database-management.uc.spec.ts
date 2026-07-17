@@ -5,6 +5,8 @@ import { LegacyLogger } from '@infra/logger';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Role } from '@modules/role/repo';
 import { SchoolEntity, type StorageProviderEntity } from '@modules/school/repo';
+import { SystemEntity } from '@modules/system/repo';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { BsonConverter } from '../converter/bson.converter';
@@ -218,7 +220,7 @@ describe('DatabaseManagementService', () => {
 		systemsSeedDataService = module.get(SystemsSeedDataService);
 		externalToolsSeedDataService = module.get(ExternalToolsSeedDataService);
 		instancesSeedDataService = module.get(InstancesSeedDataService);
-		await setupEntities([SchoolEntity, Role]);
+		await setupEntities([SchoolEntity, Role, SystemEntity, UserLoginMigrationEntity]);
 	});
 
 	afterAll(async () => {

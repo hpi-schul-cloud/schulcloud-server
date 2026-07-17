@@ -1,6 +1,7 @@
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
 import {
 	courseNewsFactory,
 	courseUnpublishedNewsFactory,
@@ -9,7 +10,10 @@ import {
 	teamNewsFactory,
 	teamUnpublishedNewsFactory,
 } from '@modules/news/testing';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { TeamEntity } from '@modules/team/repo';
+import { teamFactory } from '@modules/team/testing/team.factory';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { SortOrder } from '@shared/domain/interface';
@@ -18,9 +22,6 @@ import { MongoMemoryDatabaseModule } from '@testing/database';
 import { NewsTargetModel } from '../domain';
 import { CourseNews, News, SchoolNews, TeamNews } from './news.entity';
 import { NewsRepo } from './news.repo';
-import { courseEntityFactory } from '@modules/course/testing';
-import { teamFactory } from '@modules/team/testing/team.factory';
-import { schoolEntityFactory } from '@modules/school/testing';
 
 describe('NewsRepo', () => {
 	let repo: NewsRepo;
@@ -31,7 +32,16 @@ describe('NewsRepo', () => {
 		module = await Test.createTestingModule({
 			imports: [
 				MongoMemoryDatabaseModule.forRoot({
-					entities: [News, TeamEntity, CourseEntity, CourseGroupEntity, CourseNews, SchoolNews, TeamNews],
+					entities: [
+						News,
+						TeamEntity,
+						CourseEntity,
+						CourseGroupEntity,
+						CourseNews,
+						SchoolNews,
+						TeamNews,
+						UserLoginMigrationEntity,
+					],
 				}),
 			],
 			providers: [NewsRepo],

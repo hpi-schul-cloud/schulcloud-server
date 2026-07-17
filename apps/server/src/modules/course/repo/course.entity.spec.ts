@@ -1,6 +1,7 @@
 import { type MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { schoolEntityFactory } from '@modules/school/testing';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { userFactory } from '@modules/user/testing';
 import { InternalServerErrorException } from '@nestjs/common';
 import { setupEntities } from '@testing/database';
@@ -17,7 +18,7 @@ describe('CourseEntity', () => {
 	let orm: MikroORM;
 
 	beforeAll(async () => {
-		orm = await setupEntities([CourseEntity, CourseGroupEntity]);
+		orm = await setupEntities([CourseEntity, CourseGroupEntity, UserLoginMigrationEntity]);
 	});
 
 	describe('constructor', () => {

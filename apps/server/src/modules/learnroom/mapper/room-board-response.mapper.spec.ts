@@ -5,6 +5,7 @@ import { courseEntityFactory } from '@modules/course/testing';
 import { LessonEntity, Material } from '@modules/lesson/repo';
 import { Submission, Task } from '@modules/task/repo';
 import { taskFactory } from '@modules/task/testing';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { BoardElementResponse, SingleColumnBoardResponse } from '../controller/dto';
@@ -20,7 +21,15 @@ describe('room board response mapper', () => {
 	});
 
 	beforeAll(async () => {
-		await setupEntities([CourseEntity, CourseGroupEntity, Task, Submission, LessonEntity, Material]);
+		await setupEntities([
+			CourseEntity,
+			CourseGroupEntity,
+			Task,
+			Submission,
+			LessonEntity,
+			Material,
+			UserLoginMigrationEntity,
+		]);
 		module = await Test.createTestingModule({
 			imports: [],
 			providers: [RoomBoardResponseMapper],

@@ -5,6 +5,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizableReferenceType, AuthorizationInjectionService } from '@modules/authorization';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { Submission, Task } from '@modules/task/repo';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { type ComponentProperties, ComponentType, LessonEntity, LessonRepo, Material } from '../../repo';
@@ -20,7 +21,15 @@ describe('LessonService', () => {
 	let filesStorageClientAdapterService: DeepMocked<FilesStorageClientAdapterService>;
 
 	beforeAll(async () => {
-		await setupEntities([CourseEntity, CourseGroupEntity, Task, Submission, LessonEntity, Material]);
+		await setupEntities([
+			CourseEntity,
+			CourseGroupEntity,
+			Task,
+			Submission,
+			LessonEntity,
+			Material,
+			UserLoginMigrationEntity,
+		]);
 
 		module = await Test.createTestingModule({
 			providers: [

@@ -6,6 +6,8 @@ import { RoleDto, RoleName, RoleService } from '@modules/role';
 import type { Role } from '@modules/role/repo';
 import { roleFactory } from '@modules/role/testing';
 import { schoolEntityFactory, schoolFactory } from '@modules/school/testing';
+import { SystemEntity } from '@modules/system/repo';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { NotFoundException } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { Page } from '@shared/domain/domainobject';
@@ -31,7 +33,7 @@ describe('UserService', () => {
 	let config: UserConfig;
 
 	beforeAll(async () => {
-		await setupEntities([User]);
+		await setupEntities([SystemEntity, UserLoginMigrationEntity, User]);
 
 		module = await Test.createTestingModule({
 			providers: [

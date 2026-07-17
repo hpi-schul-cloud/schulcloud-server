@@ -1,13 +1,15 @@
-import { Test, type TestingModule } from '@nestjs/testing';
-import { EntityManager } from '@mikro-orm/mongodb';
-import { MongoMemoryDatabaseModule } from '@testing/database';
-import { User } from '@modules/user/repo/user.entity';
-import { cleanupCollections } from '@testing/cleanup-collections';
-import { UserEventSubscriber } from '@modules/user/repo/user-event-subscriber';
-import { userFactory } from '@modules/user/testing';
-import { schoolEntityFactory } from '@modules/school/testing';
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import { EntityManager } from '@mikro-orm/mongodb';
+import { schoolEntityFactory } from '@modules/school/testing';
+import { SystemEntity } from '@modules/system/repo';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
+import { UserEventSubscriber } from '@modules/user/repo/user-event-subscriber';
+import { User } from '@modules/user/repo/user.entity';
+import { userFactory } from '@modules/user/testing';
 import { EventBus } from '@nestjs/cqrs';
+import { Test, type TestingModule } from '@nestjs/testing';
+import { cleanupCollections } from '@testing/cleanup-collections';
+import { MongoMemoryDatabaseModule } from '@testing/database';
 
 describe(UserEventSubscriber.name, () => {
 	let module: TestingModule;
@@ -16,7 +18,12 @@ describe(UserEventSubscriber.name, () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [User], ensureIndexes: true })],
+			imports: [
+				MongoMemoryDatabaseModule.forRoot({
+					entities: [User, SystemEntity, UserLoginMigrationEntity],
+					ensureIndexes: true,
+				}),
+			],
 			providers: [
 				UserEventSubscriber,
 				{

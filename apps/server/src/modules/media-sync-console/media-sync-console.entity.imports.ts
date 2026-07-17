@@ -1,10 +1,12 @@
 import { InstanceEntity } from '@modules/instance';
 import { MediaSourceEntity } from '@modules/media-source/entity';
-import { ExternalToolEntity } from '@modules/tool/external-tool/repo';
-import { SchoolEntity, SchoolYearEntity } from '@modules/school/repo';
 import { MediaSchoolLicenseEntity, SchoolLicenseEntity } from '@modules/school-license/entity';
-import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/repo';
+import { SchoolEntity, SchoolYearEntity } from '@modules/school/repo';
+import { SystemEntity } from '@modules/system/repo';
 import { ContextExternalToolRepo } from '@modules/tool/context-external-tool/repo';
+import { ExternalToolEntity } from '@modules/tool/external-tool/repo';
+import { SchoolExternalToolEntity } from '@modules/tool/school-external-tool/repo';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 
 export const ENTITIES = [
 	MediaSourceEntity,
@@ -18,4 +20,4 @@ export const ENTITIES = [
 	SchoolYearEntity,
 ];
 
-export const TEST_ENTITIES = [...ENTITIES];
+export const TEST_ENTITIES = [SystemEntity, UserLoginMigrationEntity, ...ENTITIES];

@@ -2,6 +2,8 @@ import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { LessonEntity, Material } from '@modules/lesson/repo';
+import { SystemEntity } from '@modules/system/repo';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, type TestingModule } from '@nestjs/testing';
@@ -20,7 +22,17 @@ describe('Submission Uc', () => {
 	let authorizationService: DeepMocked<AuthorizationService>;
 
 	beforeAll(async () => {
-		await setupEntities([User, Task, Submission, CourseEntity, CourseGroupEntity, LessonEntity, Material]);
+		await setupEntities([
+			User,
+			Task,
+			Submission,
+			CourseEntity,
+			CourseGroupEntity,
+			LessonEntity,
+			Material,
+			SystemEntity,
+			UserLoginMigrationEntity,
+		]);
 
 		module = await Test.createTestingModule({
 			imports: [],

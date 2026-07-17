@@ -1,4 +1,6 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import { SystemEntity } from '@modules/system/repo';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { UnauthorizedException } from '@nestjs/common';
@@ -34,7 +36,7 @@ describe('AuthorizationService', () => {
 	const testPermission = 'CAN_TEST' as Permission;
 
 	beforeAll(async () => {
-		await setupEntities([User]);
+		await setupEntities([SystemEntity, User, UserLoginMigrationEntity]);
 
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [

@@ -3,6 +3,8 @@ import { LegacyLogger } from '@infra/logger';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { SchoolEntity } from '@modules/school/repo';
 import { schoolEntityFactory } from '@modules/school/testing/school-entity.factory';
+import { SystemEntity } from '@modules/system/repo';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
@@ -18,7 +20,11 @@ describe('ShareTokenRepo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [ShareToken, SchoolEntity] })],
+			imports: [
+				MongoMemoryDatabaseModule.forRoot({
+					entities: [ShareToken, SchoolEntity, SystemEntity, UserLoginMigrationEntity],
+				}),
+			],
 			providers: [
 				ShareTokenRepo,
 				{

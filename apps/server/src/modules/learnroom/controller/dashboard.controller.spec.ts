@@ -1,5 +1,6 @@
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { type EntityId } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
@@ -41,7 +42,7 @@ describe('dashboard uc', () => {
 		uc = module.get(DashboardUc);
 		controller = module.get(DashboardController);
 
-		await setupEntities([CourseEntity, CourseGroupEntity]);
+		await setupEntities([CourseEntity, CourseGroupEntity, UserLoginMigrationEntity]);
 	});
 
 	describe('getUsersDashboard', () => {

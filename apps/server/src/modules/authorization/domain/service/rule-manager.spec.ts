@@ -1,6 +1,8 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
+import { SystemEntity } from '@modules/system/repo';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { InternalServerErrorException, NotImplementedException } from '@nestjs/common';
@@ -15,7 +17,7 @@ describe('RuleManager', () => {
 	let injectionService: DeepMocked<AuthorizationInjectionService>;
 
 	beforeAll(async () => {
-		await setupEntities([User, CourseEntity, CourseGroupEntity]);
+		await setupEntities([SystemEntity, User, UserLoginMigrationEntity, CourseEntity, CourseGroupEntity]);
 
 		const module = await Test.createTestingModule({
 			providers: [

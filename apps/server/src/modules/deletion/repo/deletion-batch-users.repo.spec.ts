@@ -2,6 +2,8 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { RoleName } from '@modules/role';
 import { Role } from '@modules/role/repo';
 import { roleFactory } from '@modules/role/testing';
+import { SystemEntity } from '@modules/system/repo';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, type TestingModule } from '@nestjs/testing';
@@ -16,7 +18,7 @@ describe(DeletionBatchUsersRepo.name, () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [User, Role] })],
+			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [User, Role, SystemEntity, UserLoginMigrationEntity] })],
 			providers: [DeletionBatchUsersRepo],
 		}).compile();
 

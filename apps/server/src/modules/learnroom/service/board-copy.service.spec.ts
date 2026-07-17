@@ -26,6 +26,7 @@ import {
 	taskBoardElementFactory,
 } from '../testing';
 import { LegacyBoardCopyService } from './legacy-board-copy.service';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 
 describe('board copy service', () => {
 	let module: TestingModule;
@@ -51,6 +52,7 @@ describe('board copy service', () => {
 			Material,
 			LegacyBoard,
 			LegacyBoardElement,
+			UserLoginMigrationEntity,
 		]);
 
 		module = await Test.createTestingModule({

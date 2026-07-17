@@ -3,6 +3,8 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { SchoolService } from '@modules/school';
 import { schoolFactory } from '@modules/school/testing';
+import { SystemEntity } from '@modules/system/repo';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, type TestingModule } from '@nestjs/testing';
@@ -23,7 +25,7 @@ describe(SchoolExternalToolUtilizationUc.name, () => {
 	let schoolService: DeepMocked<SchoolService>;
 
 	beforeAll(async () => {
-		await setupEntities([User]);
+		await setupEntities([SystemEntity, UserLoginMigrationEntity, User]);
 		module = await Test.createTestingModule({
 			providers: [
 				SchoolExternalToolUtilizationUc,

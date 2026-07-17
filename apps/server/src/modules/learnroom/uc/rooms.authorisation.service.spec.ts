@@ -4,6 +4,7 @@ import { LessonEntity, Material } from '@modules/lesson/repo';
 import { lessonFactory } from '@modules/lesson/testing';
 import { Submission, Task } from '@modules/task/repo';
 import { taskFactory } from '@modules/task/testing';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { NotImplementedException } from '@nestjs/common';
@@ -25,7 +26,16 @@ describe('rooms authorisation service', () => {
 		}).compile();
 
 		service = module.get(CourseRoomsAuthorisationService);
-		await setupEntities([User, CourseEntity, CourseGroupEntity, LessonEntity, Material, Task, Submission]);
+		await setupEntities([
+			User,
+			CourseEntity,
+			CourseGroupEntity,
+			LessonEntity,
+			Material,
+			Task,
+			Submission,
+			UserLoginMigrationEntity,
+		]);
 	});
 
 	describe('hasCourseReadPermission', () => {

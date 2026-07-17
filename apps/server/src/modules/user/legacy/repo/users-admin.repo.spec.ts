@@ -16,6 +16,8 @@ import { MongoMemoryDatabaseModule } from '@testing/database';
 import { classEntityFactory } from '../../../class/entity/testing';
 import { type UserListResponse, type UserResponse, type UsersSearchQueryParams } from '../controller/dto';
 import { UsersAdminRepo } from './users-admin.repo';
+import { SystemEntity } from '@modules/system/repo';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 
 describe('users admin repo', () => {
 	let module: TestingModule;
@@ -119,7 +121,16 @@ describe('users admin repo', () => {
 		module = await Test.createTestingModule({
 			imports: [
 				MongoMemoryDatabaseModule.forRoot({
-					entities: [User, Role, SchoolEntity, SchoolYearEntity, AccountEntity, ClassEntity],
+					entities: [
+						User,
+						Role,
+						SchoolEntity,
+						SchoolYearEntity,
+						AccountEntity,
+						ClassEntity,
+						SystemEntity,
+						UserLoginMigrationEntity,
+					],
 				}),
 			],
 			providers: [UsersAdminRepo],

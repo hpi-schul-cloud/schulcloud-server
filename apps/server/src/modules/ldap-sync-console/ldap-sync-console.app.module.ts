@@ -7,7 +7,7 @@ import { MongoMemoryDatabaseModule } from '@testing/database';
 import { ConsoleModule } from 'nestjs-console';
 import { LdapSyncConsole } from './api/ldap-sync.console';
 import { LdapSyncUc } from './api/ldap-sync.uc';
-import { ENTITIES } from './ldap-sync.entity.imports';
+import { ENTITIES, TEST_ENTITIES } from './ldap-sync.entity.imports';
 
 const imports = [LoggerModule, ErrorModule, ConsoleWriterModule, ConsoleModule];
 const providers = [LdapSyncConsole, LdapSyncUc];
@@ -28,7 +28,7 @@ export class LdapSyncConsoleAppModule {}
 	imports: [
 		...imports,
 		MongoMemoryDatabaseModule.forRoot({
-			entities: ENTITIES,
+			entities: TEST_ENTITIES,
 		}),
 	],
 	providers,

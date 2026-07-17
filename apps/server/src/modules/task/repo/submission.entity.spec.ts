@@ -3,6 +3,7 @@ import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseGroupEntityFactory } from '@modules/course/testing';
 import { LessonEntity, Material } from '@modules/lesson/repo';
 import { schoolEntityFactory } from '@modules/school/testing';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { InternalServerErrorException } from '@nestjs/common';
@@ -13,7 +14,16 @@ import { Task } from './task.entity';
 
 describe('Submission entity', () => {
 	beforeAll(async () => {
-		await setupEntities([User, CourseEntity, CourseGroupEntity, Task, Submission, LessonEntity, Material]);
+		await setupEntities([
+			User,
+			CourseEntity,
+			CourseGroupEntity,
+			Task,
+			Submission,
+			LessonEntity,
+			Material,
+			UserLoginMigrationEntity,
+		]);
 	});
 
 	beforeEach(() => {

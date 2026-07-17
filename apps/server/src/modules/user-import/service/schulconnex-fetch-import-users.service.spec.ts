@@ -4,9 +4,10 @@ import { schulconnexResponseFactory } from '@infra/schulconnex-client/testing';
 import { RoleName } from '@modules/role';
 import { type SchoolEntity } from '@modules/school/repo';
 import { schoolEntityFactory } from '@modules/school/testing';
-import { type SystemEntity } from '@modules/system/repo';
+import { SystemEntity } from '@modules/system/repo';
 import { systemEntityFactory, systemFactory } from '@modules/system/testing';
 import { UserService } from '@modules/user';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userDoFactory } from '@modules/user/testing';
 import { Test, type TestingModule } from '@nestjs/testing';
@@ -25,7 +26,7 @@ describe(SchulconnexFetchImportUsersService.name, () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [User] })],
+			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [User, SystemEntity, UserLoginMigrationEntity] })],
 			providers: [
 				SchulconnexFetchImportUsersService,
 				{

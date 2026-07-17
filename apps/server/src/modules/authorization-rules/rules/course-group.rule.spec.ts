@@ -7,6 +7,8 @@ import {
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory, courseGroupEntityFactory } from '@modules/course/testing';
 import { roleFactory } from '@modules/role/testing';
+import { SystemEntity } from '@modules/system/repo';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { NotImplementedException } from '@nestjs/common';
@@ -34,7 +36,7 @@ describe('CourseGroupRule', () => {
 	let entity: CourseGroupEntity;
 
 	beforeAll(async () => {
-		await setupEntities([User, CourseEntity, CourseGroupEntity]);
+		await setupEntities([SystemEntity, UserLoginMigrationEntity, User, CourseEntity, CourseGroupEntity]);
 
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [

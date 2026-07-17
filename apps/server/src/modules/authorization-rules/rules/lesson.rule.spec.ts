@@ -13,7 +13,9 @@ import { LessonEntity, Material } from '@modules/lesson/repo';
 import { lessonFactory } from '@modules/lesson/testing';
 import { RoleName } from '@modules/role';
 import { roleFactory } from '@modules/role/testing';
+import { SystemEntity } from '@modules/system/repo';
 import { Submission, Task } from '@modules/task/repo';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { NotImplementedException } from '@nestjs/common';
@@ -37,7 +39,17 @@ describe('LessonRule', () => {
 	const permissionC = 'c' as Permission;
 
 	beforeAll(async () => {
-		await setupEntities([User, CourseEntity, CourseGroupEntity, Task, LessonEntity, Material, Submission]);
+		await setupEntities([
+			SystemEntity,
+			UserLoginMigrationEntity,
+			User,
+			CourseEntity,
+			CourseGroupEntity,
+			Task,
+			LessonEntity,
+			Material,
+			Submission,
+		]);
 
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [

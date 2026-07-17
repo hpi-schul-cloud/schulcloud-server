@@ -10,6 +10,8 @@ import { Test, type TestingModule } from '@nestjs/testing';
 import { type EntityId } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
 import { ReferenceLoader } from './reference.loader';
+import { SystemEntity } from '@modules/system/repo';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 
 describe('reference.loader', () => {
 	let service: ReferenceLoader;
@@ -20,7 +22,7 @@ describe('reference.loader', () => {
 	const entityId: EntityId = new ObjectId().toHexString();
 
 	beforeAll(async () => {
-		await setupEntities([User]);
+		await setupEntities([SystemEntity, User, UserLoginMigrationEntity]);
 
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [

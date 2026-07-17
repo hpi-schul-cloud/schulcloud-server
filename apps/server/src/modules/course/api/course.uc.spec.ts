@@ -3,6 +3,7 @@ import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationService } from '@modules/authorization';
 import { type RoleDto, RoleName, RoleService } from '@modules/role';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { Permission, SortOrder } from '@shared/domain/interface';
@@ -22,7 +23,7 @@ describe('CourseUc', () => {
 	let roleService: DeepMocked<RoleService>;
 
 	beforeAll(async () => {
-		await setupEntities([User, CourseEntity, CourseGroupEntity]);
+		await setupEntities([User, CourseEntity, CourseGroupEntity, UserLoginMigrationEntity]);
 		module = await Test.createTestingModule({
 			providers: [
 				CourseUc,

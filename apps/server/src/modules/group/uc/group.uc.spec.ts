@@ -5,7 +5,9 @@ import { RoleService } from '@modules/role';
 import { roleDtoFactory, roleFactory } from '@modules/role/testing';
 import { SchoolService } from '@modules/school/domain';
 import { schoolEntityFactory, schoolFactory } from '@modules/school/testing';
+import { SystemEntity } from '@modules/system/repo';
 import { UserService } from '@modules/user';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userDoFactory, userFactory } from '@modules/user/testing';
 import { ForbiddenException } from '@nestjs/common';
@@ -70,7 +72,7 @@ describe(GroupUc.name, () => {
 		authorizationService = module.get(AuthorizationService);
 		logger = module.get(Logger);
 
-		await setupEntities([User]);
+		await setupEntities([SystemEntity, UserLoginMigrationEntity, User]);
 	});
 
 	afterAll(async () => {

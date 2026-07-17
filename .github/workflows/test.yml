@@ -121,13 +121,4 @@ jobs:
       - name: Build
         run: npm run build
       - name: Check circular dependencies
-        run: |
-          OUTPUT=$(npx madge@latest --circular . 2>&1) || true
-          echo "$OUTPUT"
-          # Allow exactly 3 known circular dependencies (inherent bidirectional entity relations)
-          COUNT=$(echo "$OUTPUT" | grep -oP 'Found \K[0-9]+(?= circular)' || echo "0")
-          if [ "$COUNT" -gt 3 ]; then
-            echo "::error::Found $COUNT circular dependencies (expected at most 3 known ones). New circular dependencies were introduced!"
-            exit 1
-          fi
-          echo "✔ No new circular dependencies found ($COUNT known cycles present)"
+        run: npx madge@latest --circular .

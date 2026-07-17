@@ -25,15 +25,15 @@ import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { SchoolExternalToolService } from '@modules/tool/school-external-tool/service';
 import { schoolExternalToolFactory } from '@modules/tool/school-external-tool/testing';
 import { UserDo, UserService } from '@modules/user';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { userDoFactory } from '@modules/user/testing';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
+import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
-import { FeathersRosterService } from './feathers-roster.service';
-
-import { Permission } from '@shared/domain/interface';
 import { ROSTER_PUBLIC_API_CONFIG_TOKEN, RosterPublicApiConfig } from '../roster.config';
+import { FeathersRosterService } from './feathers-roster.service';
 
 describe('FeathersRosterService', () => {
 	let module: TestingModule;
@@ -109,7 +109,7 @@ describe('FeathersRosterService', () => {
 		roomMembershipService = module.get(RoomMembershipService);
 		config = module.get(ROSTER_PUBLIC_API_CONFIG_TOKEN);
 
-		await setupEntities([CourseEntity, CourseGroupEntity]);
+		await setupEntities([CourseEntity, CourseGroupEntity, UserLoginMigrationEntity]);
 	});
 
 	beforeEach(() => {

@@ -3,6 +3,7 @@ import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory, courseGroupEntityFactory } from '@modules/course/testing';
 import { LessonEntity, Material } from '@modules/lesson/repo';
 import { lessonFactory } from '@modules/lesson/testing';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
@@ -20,7 +21,15 @@ describe('submission repo', () => {
 		module = await Test.createTestingModule({
 			imports: [
 				MongoMemoryDatabaseModule.forRoot({
-					entities: [Submission, Task, LessonEntity, CourseEntity, CourseGroupEntity, Material],
+					entities: [
+						Submission,
+						Task,
+						LessonEntity,
+						CourseEntity,
+						CourseGroupEntity,
+						Material,
+						UserLoginMigrationEntity,
+					],
 				}),
 			],
 			providers: [SubmissionRepo],

@@ -3,6 +3,8 @@ import { FileDto, FileRecordParentType, FilesStorageClientAdapterService } from 
 import { Logger } from '@infra/logger';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { LessonEntity, Material } from '@modules/lesson/repo';
+import { SystemEntity } from '@modules/system/repo';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { type Counted } from '@shared/domain/types';
@@ -18,7 +20,17 @@ describe('Submission Service', () => {
 	let filesStorageClientAdapterService: DeepMocked<FilesStorageClientAdapterService>;
 
 	beforeAll(async () => {
-		await setupEntities([User, Task, Submission, CourseEntity, CourseGroupEntity, LessonEntity, Material]);
+		await setupEntities([
+			User,
+			Task,
+			Submission,
+			CourseEntity,
+			CourseGroupEntity,
+			LessonEntity,
+			Material,
+			SystemEntity,
+			UserLoginMigrationEntity,
+		]);
 
 		module = await Test.createTestingModule({
 			imports: [],

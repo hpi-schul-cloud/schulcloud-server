@@ -9,7 +9,9 @@ import {
 import { type SchoolSystemOptions } from '@modules/legacy-school';
 import { schoolSystemOptionsFactory } from '@modules/legacy-school/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
+import { SystemEntity } from '@modules/system/repo';
 import { systemEntityFactory } from '@modules/system/testing';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { NotImplementedException } from '@nestjs/common';
@@ -25,7 +27,7 @@ describe(SchoolSystemOptionsRule.name, () => {
 	let authorizationHelper: DeepMocked<AuthorizationHelper>;
 
 	beforeAll(async () => {
-		await setupEntities([User]);
+		await setupEntities([SystemEntity, UserLoginMigrationEntity, User]);
 
 		module = await Test.createTestingModule({
 			providers: [

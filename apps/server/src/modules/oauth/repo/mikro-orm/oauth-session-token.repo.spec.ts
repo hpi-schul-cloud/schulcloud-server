@@ -1,6 +1,7 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { DefaultEncryptionService, type EncryptionService } from '@infra/encryption';
 import { EntityManager } from '@mikro-orm/mongodb';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
@@ -20,7 +21,7 @@ describe(OauthSessionTokenMikroOrmRepo.name, () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [OauthSessionTokenEntity] })],
+			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [OauthSessionTokenEntity, UserLoginMigrationEntity] })],
 			providers: [
 				{ provide: OAUTH_SESSION_TOKEN_REPO, useClass: OauthSessionTokenMikroOrmRepo },
 				{

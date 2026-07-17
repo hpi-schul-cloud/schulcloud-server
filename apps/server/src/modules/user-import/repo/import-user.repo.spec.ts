@@ -3,6 +3,8 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { RoleName } from '@modules/role';
 import { SchoolEntity } from '@modules/school/repo';
 import { schoolEntityFactory } from '@modules/school/testing';
+import { SystemEntity } from '@modules/system/repo';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, type TestingModule } from '@nestjs/testing';
@@ -29,7 +31,11 @@ describe('ImportUserRepo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [ImportUser, SchoolEntity, User] })],
+			imports: [
+				MongoMemoryDatabaseModule.forRoot({
+					entities: [ImportUser, SchoolEntity, User, SystemEntity, UserLoginMigrationEntity],
+				}),
+			],
 			providers: [ImportUserRepo],
 		}).compile();
 		repo = module.get(ImportUserRepo);

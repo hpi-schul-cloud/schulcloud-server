@@ -1,5 +1,6 @@
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { setupEntities } from '@testing/database';
 import { DashboardResponse } from '../controller/dto';
 import { Dashboard, GridElement, type GridElementWithPosition } from '../domain/do/dashboard';
@@ -7,7 +8,7 @@ import { DashboardMapper } from './dashboard.mapper';
 
 describe('dashboard mapper', () => {
 	beforeAll(async () => {
-		await setupEntities([CourseEntity, CourseGroupEntity]);
+		await setupEntities([CourseEntity, CourseGroupEntity, UserLoginMigrationEntity]);
 	});
 
 	it('should map the required properties correctly', () => {

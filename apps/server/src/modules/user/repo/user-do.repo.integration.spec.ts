@@ -7,8 +7,9 @@ import type { Role } from '@modules/role/repo';
 import { roleFactory } from '@modules/role/testing';
 import { SchoolEntity } from '@modules/school/repo';
 import { schoolEntityFactory } from '@modules/school/testing';
-import type { SystemEntity } from '@modules/system/repo';
+import { SystemEntity } from '@modules/system/repo';
 import { systemEntityFactory } from '@modules/system/testing';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common/error';
 import { RoleReference } from '@shared/domain/domainobject';
@@ -27,7 +28,7 @@ describe('UserRepo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [User] })],
+			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [User, SystemEntity, UserLoginMigrationEntity] })],
 			providers: [
 				UserDoMikroOrmRepo,
 				{

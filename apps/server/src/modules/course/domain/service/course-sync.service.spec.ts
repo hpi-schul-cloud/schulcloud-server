@@ -4,6 +4,7 @@ import { type Group, GroupUser } from '@modules/group';
 import { groupFactory } from '@modules/group/testing';
 import { type RoleDto, RoleName, RoleService } from '@modules/role';
 import { roleDtoFactory } from '@modules/role/testing';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, type TestingModule } from '@nestjs/testing';
@@ -41,7 +42,7 @@ describe(CourseSyncService.name, () => {
 		service = module.get(CourseSyncService);
 		roleService = module.get(RoleService);
 		courseDoService = module.get(CourseDoService);
-		await setupEntities([User, Course, CourseGroupEntity]);
+		await setupEntities([User, Course, CourseGroupEntity, UserLoginMigrationEntity]);
 	});
 
 	afterAll(async () => {

@@ -8,8 +8,10 @@ import { CollaborativeStorageService } from '@modules/collaborative-storage/serv
 import { RoleName } from '@modules/role';
 import { RoleDto } from '@modules/role/service/dto/role.dto';
 import { RoleService } from '@modules/role/service/role.service';
+import { SystemEntity } from '@modules/system/repo';
 import { TeamEntity, TeamRepo } from '@modules/team/repo';
 import { teamFactory } from '@modules/team/testing';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
@@ -60,7 +62,7 @@ describe('Collaborative Storage Service', () => {
 		authService = module.get(AuthorizationService);
 		roleService = module.get(RoleService);
 		teamRepo = module.get(TeamRepo);
-		await setupEntities([TeamEntity]);
+		await setupEntities([TeamEntity, SystemEntity, UserLoginMigrationEntity]);
 	});
 
 	beforeEach(() => {

@@ -1,5 +1,6 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { AuthorizableReferenceType, AuthorizationInjectionService } from '@modules/authorization';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { CourseEntity, CourseGroupEntity, CourseGroupRepo } from '../../repo';
@@ -14,7 +15,7 @@ describe(CourseGroupAuthorizableService.name, () => {
 	let injectionService: AuthorizationInjectionService;
 
 	beforeAll(async () => {
-		await setupEntities([CourseEntity, CourseGroupEntity]);
+		await setupEntities([CourseEntity, CourseGroupEntity, UserLoginMigrationEntity]);
 		module = await Test.createTestingModule({
 			providers: [
 				CourseGroupAuthorizableService,

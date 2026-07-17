@@ -1,5 +1,6 @@
 import { schoolEntityFactory } from '@modules/school/testing';
 import { SystemEntity } from '@modules/system/repo';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { setupEntities } from '@testing/database';
 import { School } from '../../domain';
 import { SchoolEntity } from '../school.entity';
@@ -12,7 +13,7 @@ describe('SchoolEntityMapper', () => {
 	describe('mapToDo', () => {
 		describe('when school entity is passed', () => {
 			const setup = async () => {
-				await setupEntities([SchoolEntity]);
+				await setupEntities([SchoolEntity, SystemEntity, UserLoginMigrationEntity]);
 
 				const system = new SystemEntity({
 					type: 'type',

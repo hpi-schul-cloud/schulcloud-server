@@ -2,8 +2,10 @@ import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { AuthorizationService } from '@modules/authorization';
 import { PseudonymService } from '@modules/pseudonym';
 import { pseudonymFactory } from '@modules/pseudonym/testing';
+import { SystemEntity } from '@modules/system/repo';
 import { externalToolFactory } from '@modules/tool/external-tool/testing';
 import { UserService } from '@modules/user';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userDoFactory, userFactory } from '@modules/user/testing';
 import { InternalServerErrorException, UnprocessableEntityException } from '@nestjs/common';
@@ -67,7 +69,7 @@ describe(OauthProviderLoginFlowUc.name, () => {
 		authorizationService = module.get(AuthorizationService);
 		userService = module.get(UserService);
 
-		await setupEntities([User]);
+		await setupEntities([SystemEntity, UserLoginMigrationEntity, User]);
 	});
 
 	afterAll(async () => {

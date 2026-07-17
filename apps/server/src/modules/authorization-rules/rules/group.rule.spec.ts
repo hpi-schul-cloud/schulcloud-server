@@ -10,7 +10,9 @@ import { Group } from '@modules/group';
 import { groupFactory } from '@modules/group/testing';
 import { roleFactory } from '@modules/role/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
-import { User } from '@modules/user/repo';
+import { SystemEntity } from '@modules/system/repo';
+import { User } from '@modules/user';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { userFactory } from '@modules/user/testing';
 import { NotImplementedException } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
@@ -26,7 +28,7 @@ describe('GroupRule', () => {
 	let authorizationHelper: DeepMocked<AuthorizationHelper>;
 
 	beforeAll(async () => {
-		await setupEntities([User, Group]);
+		await setupEntities([SystemEntity, UserLoginMigrationEntity, User, Group]);
 
 		module = await Test.createTestingModule({
 			providers: [

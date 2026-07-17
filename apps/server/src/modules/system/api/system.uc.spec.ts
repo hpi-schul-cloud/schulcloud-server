@@ -1,6 +1,7 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { EventBus } from '@nestjs/cqrs';
@@ -9,6 +10,7 @@ import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { SystemDeletedEvent, type SystemQuery, SystemService, SystemType } from '../domain';
+import { SystemEntity } from '../repo';
 import { systemFactory } from '../testing';
 import { SystemUc } from './system.uc';
 
@@ -21,7 +23,7 @@ describe('SystemUc', () => {
 	let eventBus: DeepMocked<EventBus>;
 
 	beforeAll(async () => {
-		await setupEntities([User]);
+		await setupEntities([SystemEntity, UserLoginMigrationEntity, User]);
 
 		module = await Test.createTestingModule({
 			providers: [

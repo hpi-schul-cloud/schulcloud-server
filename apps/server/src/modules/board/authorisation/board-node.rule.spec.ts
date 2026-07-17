@@ -3,7 +3,9 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Action, AuthorizationInjectionService } from '@modules/authorization';
 import { BoardRoles } from '@modules/board';
 import { roleFactory } from '@modules/role/testing';
+import { SystemEntity } from '@modules/system/repo';
 import { UserService } from '@modules/user';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, type TestingModule } from '@nestjs/testing';
@@ -26,7 +28,7 @@ describe(BoardNodeRule.name, () => {
 	let userService: DeepMocked<UserService>;
 
 	beforeAll(async () => {
-		await setupEntities([User]);
+		await setupEntities([SystemEntity, UserLoginMigrationEntity, User]);
 
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [

@@ -1,5 +1,7 @@
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { schoolEntityFactory } from '@modules/school/testing';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { SortOrder } from '@shared/domain/interface';
@@ -10,7 +12,6 @@ import { courseEntityFactory, courseGroupEntityFactory } from '../testing';
 import { CourseEntity } from './course.entity';
 import { CourseRepo } from './course.repo';
 import { CourseGroupEntity } from './coursegroup.entity';
-import { schoolEntityFactory } from '@modules/school/testing';
 
 const checkEqualIds = (arr1: { id: EntityId }[], arr2: { id: EntityId }[]): boolean => {
 	const ids2 = arr2.map((o) => o.id);
@@ -25,7 +26,9 @@ describe('course repo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [CourseEntity, CourseGroupEntity] })],
+			imports: [
+				MongoMemoryDatabaseModule.forRoot({ entities: [CourseEntity, CourseGroupEntity, UserLoginMigrationEntity] }),
+			],
 			providers: [CourseRepo],
 		}).compile();
 		repo = module.get(CourseRepo);

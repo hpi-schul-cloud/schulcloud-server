@@ -14,6 +14,8 @@ import { S3ClientAdapter } from '@infra/s3-client';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { AccountEntity } from '@modules/account/repo';
 import { storageProviderFactory } from '@modules/school/testing';
+import { SystemEntity } from '@modules/system/repo';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { ForbiddenException, HttpStatus, type INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
@@ -54,7 +56,7 @@ describe('DownloadArchive Controller (API)', () => {
 				]),
 				ErrorModule,
 				MongoMemoryDatabaseModule.forRoot({
-					entities: [User, AccountEntity],
+					entities: [User, AccountEntity, SystemEntity, UserLoginMigrationEntity],
 				}),
 				ConfigurationModule.register(TEST_JWT_CONFIG_TOKEN, TestJwtModuleConfig),
 			],

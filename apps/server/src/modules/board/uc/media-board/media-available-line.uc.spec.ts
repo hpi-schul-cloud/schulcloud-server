@@ -3,12 +3,14 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationService } from '@modules/authorization';
 import { type MediaSchoolLicense, MediaSchoolLicenseService } from '@modules/school-license';
 import { mediaSchoolLicenseFactory } from '@modules/school-license/testing';
+import { SystemEntity } from '@modules/system/repo';
 import { type ExternalTool } from '@modules/tool/external-tool/domain';
 import { externalToolFactory } from '@modules/tool/external-tool/testing';
 import { type SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { schoolExternalToolFactory } from '@modules/tool/school-external-tool/testing';
 import { type MediaUserLicense, MediaUserLicenseService } from '@modules/user-license';
 import { mediaUserLicenseFactory } from '@modules/user-license/testing';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, type TestingModule } from '@nestjs/testing';
@@ -18,10 +20,10 @@ import { BoardNodeRule } from '../../authorisation/board-node.rule';
 import { BOARD_CONFIG_TOKEN, BoardConfig } from '../../board.config';
 import {
 	type BoardNodeAuthorizable,
+	Colors,
 	type MediaAvailableLine,
 	type MediaAvailableLineElement,
 	MediaBoard,
-	Colors,
 	type MediaExternalToolElement,
 } from '../../domain';
 import {
@@ -53,7 +55,7 @@ describe(MediaAvailableLineUc.name, () => {
 	let mediaSchoolLicenseService: DeepMocked<MediaSchoolLicenseService>;
 
 	beforeAll(async () => {
-		await setupEntities([User]);
+		await setupEntities([SystemEntity, UserLoginMigrationEntity, User]);
 
 		module = await Test.createTestingModule({
 			providers: [

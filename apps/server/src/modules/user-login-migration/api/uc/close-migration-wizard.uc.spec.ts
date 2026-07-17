@@ -1,14 +1,16 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationService } from '@modules/authorization';
 import { LegacySchoolService } from '@modules/legacy-school';
 import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
+import { SystemEntity } from '@modules/system/repo';
 import { UserImportService } from '@modules/user-import';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
-import { ObjectId } from '@mikro-orm/mongodb';
 import { CloseMigrationWizardUc } from './close-migration-wizard.uc';
 
 describe(CloseMigrationWizardUc.name, () => {
@@ -20,7 +22,7 @@ describe(CloseMigrationWizardUc.name, () => {
 	let authorizationService: DeepMocked<AuthorizationService>;
 
 	beforeAll(async () => {
-		await setupEntities([User]);
+		await setupEntities([SystemEntity, UserLoginMigrationEntity, User]);
 
 		module = await Test.createTestingModule({
 			providers: [

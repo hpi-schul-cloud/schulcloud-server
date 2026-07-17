@@ -7,6 +7,7 @@ import { LessonService } from '@modules/lesson';
 import { LessonEntity, Material } from '@modules/lesson/repo';
 import { lessonFactory } from '@modules/lesson/testing';
 import { roleFactory } from '@modules/role/testing';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { ForbiddenException, UnauthorizedException } from '@nestjs/common';
@@ -35,7 +36,16 @@ describe('TaskUC', () => {
 	};
 
 	beforeAll(async () => {
-		await setupEntities([User, Task, Submission, CourseEntity, CourseGroupEntity, LessonEntity, Material]);
+		await setupEntities([
+			User,
+			Task,
+			Submission,
+			CourseEntity,
+			CourseGroupEntity,
+			LessonEntity,
+			Material,
+			UserLoginMigrationEntity,
+		]);
 
 		module = await Test.createTestingModule({
 			imports: [],

@@ -13,6 +13,7 @@ import { RoleName } from '@modules/role';
 import { roleFactory } from '@modules/role/testing';
 import { Submission, Task } from '@modules/task/repo';
 import { taskFactory } from '@modules/task/testing';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { NotImplementedException } from '@nestjs/common';
@@ -42,7 +43,16 @@ describe('TaskRule', () => {
 	let injectionService: AuthorizationInjectionService;
 
 	beforeAll(async () => {
-		await setupEntities([User, CourseEntity, CourseGroupEntity, Task, LessonEntity, Material, Submission]);
+		await setupEntities([
+			User,
+			CourseEntity,
+			CourseGroupEntity,
+			Task,
+			LessonEntity,
+			Material,
+			Submission,
+			UserLoginMigrationEntity,
+		]);
 
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [

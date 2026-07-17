@@ -6,6 +6,8 @@ import { CourseService } from '@modules/course';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { RoomService } from '@modules/room';
 import { RoomMembershipService } from '@modules/room-membership';
+import { SystemEntity } from '@modules/system/repo';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, type TestingModule } from '@nestjs/testing';
@@ -92,7 +94,7 @@ describe(BoardUc.name, () => {
 		boardNodeRule = module.get(BoardNodeRule);
 		authorizationService = module.get(AuthorizationService);
 		boardNodeAuthorizableService = module.get(BoardNodeAuthorizableService);
-		await setupEntities([User, CourseEntity, CourseGroupEntity]);
+		await setupEntities([SystemEntity, UserLoginMigrationEntity, User, CourseEntity, CourseGroupEntity]);
 	});
 
 	afterAll(async () => {

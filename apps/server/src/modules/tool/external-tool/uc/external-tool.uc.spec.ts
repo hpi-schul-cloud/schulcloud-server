@@ -4,6 +4,8 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { type School, SchoolService } from '@modules/school';
 import { schoolFactory } from '@modules/school/testing';
+import { SystemEntity } from '@modules/system/repo';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
@@ -65,7 +67,7 @@ describe(ExternalToolUc.name, () => {
 	let encryptionService: DeepMocked<EncryptionService>;
 
 	beforeAll(async () => {
-		await setupEntities([User]);
+		await setupEntities([SystemEntity, UserLoginMigrationEntity, User]);
 
 		module = await Test.createTestingModule({
 			providers: [

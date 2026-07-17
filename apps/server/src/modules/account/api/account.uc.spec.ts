@@ -8,6 +8,8 @@ import { RoleName } from '@modules/role';
 import { Role } from '@modules/role/repo';
 import { SchoolEntity } from '@modules/school/repo';
 import { schoolEntityFactory } from '@modules/school/testing';
+import { SystemEntity } from '@modules/system/repo';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { UnauthorizedException } from '@nestjs/common/exceptions/unauthorized.exception';
@@ -57,7 +59,7 @@ describe('AccountUc', () => {
 		accountUc = module.get(AccountUc);
 		accountService = module.get(AccountService);
 		authorizationService = module.get(AuthorizationService);
-		await setupEntities([AccountEntity, Role, SchoolEntity, User]);
+		await setupEntities([AccountEntity, Role, SchoolEntity, SystemEntity, User, UserLoginMigrationEntity]);
 	});
 
 	beforeEach(() => {

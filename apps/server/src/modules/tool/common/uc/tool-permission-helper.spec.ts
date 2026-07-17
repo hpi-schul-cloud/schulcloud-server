@@ -13,7 +13,9 @@ import { CourseService } from '@modules/course';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { LessonEntity, Material } from '@modules/lesson/repo';
+import { SystemEntity } from '@modules/system/repo';
 import { Submission, Task } from '@modules/task/repo';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { ForbiddenException } from '@nestjs/common';
@@ -36,7 +38,17 @@ describe('ToolPermissionHelper', () => {
 	let boardNodeAuthorizableService: DeepMocked<BoardNodeAuthorizableService>;
 
 	beforeAll(async () => {
-		await setupEntities([User, Task, Submission, CourseEntity, CourseGroupEntity, LessonEntity, Material]);
+		await setupEntities([
+			SystemEntity,
+			UserLoginMigrationEntity,
+			User,
+			Task,
+			Submission,
+			CourseEntity,
+			CourseGroupEntity,
+			LessonEntity,
+			Material,
+		]);
 
 		module = await Test.createTestingModule({
 			providers: [

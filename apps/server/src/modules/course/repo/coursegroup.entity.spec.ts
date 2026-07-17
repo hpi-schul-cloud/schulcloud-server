@@ -1,3 +1,4 @@
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { setupEntities } from '@testing/database';
@@ -7,7 +8,7 @@ import { CourseGroupEntity } from './coursegroup.entity';
 
 describe('CourseGroupEntity', () => {
 	beforeAll(async () => {
-		await setupEntities([User, CourseEntity, CourseGroupEntity]);
+		await setupEntities([User, CourseEntity, CourseGroupEntity, UserLoginMigrationEntity]);
 	});
 
 	describe('constructor', () => {

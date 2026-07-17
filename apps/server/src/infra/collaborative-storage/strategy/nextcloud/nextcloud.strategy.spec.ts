@@ -6,9 +6,11 @@ import { PseudonymService } from '@modules/pseudonym';
 import { type Pseudonym } from '@modules/pseudonym/repo';
 import { pseudonymFactory } from '@modules/pseudonym/testing';
 import { RoleName } from '@modules/role';
+import { SystemEntity } from '@modules/system/repo';
 import { ExternalToolService } from '@modules/tool/external-tool/service';
 import { externalToolFactory } from '@modules/tool/external-tool/testing';
 import { UserService } from '@modules/user';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userDoFactory, userFactory } from '@modules/user/testing';
 import { UnprocessableEntityException } from '@nestjs/common';
@@ -86,7 +88,7 @@ describe('NextCloudStrategy', () => {
 
 		strategy = new NextcloudStrategySpec(logger, client, pseudonymService, externalToolService, userService, config);
 
-		await setupEntities([User]);
+		await setupEntities([User, SystemEntity, UserLoginMigrationEntity]);
 	});
 
 	afterEach(() => {

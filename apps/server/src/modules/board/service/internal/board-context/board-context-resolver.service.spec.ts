@@ -6,6 +6,8 @@ import { courseEntityFactory } from '@modules/course/testing';
 import { RoomService } from '@modules/room';
 import { RoomAuthorizable, RoomMembershipService } from '@modules/room-membership';
 import { roomFactory } from '@modules/room/testing';
+import { SystemEntity } from '@modules/system/repo';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, type TestingModule } from '@nestjs/testing';
@@ -47,7 +49,7 @@ describe(BoardContextResolverService.name, () => {
 		roomMembershipService = module.get(RoomMembershipService);
 		courseService = module.get(CourseService);
 
-		await setupEntities([User, CourseEntity, CourseGroupEntity]);
+		await setupEntities([SystemEntity, UserLoginMigrationEntity, User, CourseEntity, CourseGroupEntity]);
 	});
 
 	afterEach(() => {

@@ -1,13 +1,14 @@
+import { ObjectId } from '@mikro-orm/mongodb';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { setupEntities } from '@testing/database';
-import { ObjectId } from '@mikro-orm/mongodb';
 import { Dashboard, GridElement } from '../../domain/do/dashboard';
 
 describe('dashboard entity', () => {
 	beforeAll(async () => {
-		await setupEntities([CourseEntity, CourseGroupEntity]);
+		await setupEntities([CourseEntity, CourseGroupEntity, UserLoginMigrationEntity]);
 	});
 
 	describe('constructor', () => {

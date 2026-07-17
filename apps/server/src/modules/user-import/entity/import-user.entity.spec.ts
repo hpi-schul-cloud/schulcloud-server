@@ -1,4 +1,6 @@
 import { schoolEntityFactory } from '@modules/school/testing';
+import { SystemEntity } from '@modules/system/repo';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { setupEntities } from '@testing/database';
@@ -7,7 +9,7 @@ import { MatchCreator } from './import-user.entity';
 
 describe('ImportUser entity', () => {
 	beforeAll(async () => {
-		await setupEntities([User]);
+		await setupEntities([SystemEntity, UserLoginMigrationEntity, User]);
 	});
 
 	describe('When ldapDN is given', () => {

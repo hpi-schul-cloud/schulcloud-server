@@ -5,6 +5,8 @@ import { Role } from '@modules/role/repo';
 import { roleFactory } from '@modules/role/testing';
 import { SchoolEntity } from '@modules/school/repo';
 import { schoolEntityFactory } from '@modules/school/testing';
+import { SystemEntity } from '@modules/system/repo';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { userFactory } from '@modules/user/testing';
 import { ReferenceNotPopulatedLoggableException } from '@shared/common/loggable-exception/reference-not-populated.loggable-exception';
 import { LanguageType, Permission } from '@shared/domain/interface';
@@ -18,7 +20,7 @@ describe('User Entity', () => {
 	const permissionC = 'c' as Permission;
 
 	beforeAll(async () => {
-		orm = await setupEntities([User]);
+		orm = await setupEntities([SystemEntity, UserLoginMigrationEntity, User]);
 	});
 
 	describe('constructor', () => {

@@ -1,10 +1,12 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { PseudonymService } from '@modules/pseudonym/service';
 import { pseudonymFactory } from '@modules/pseudonym/testing';
+import { SystemEntity } from '@modules/system/repo';
 import { TeamRepo } from '@modules/team/repo';
 import { teamFactory } from '@modules/team/testing';
 import { externalToolFactory } from '@modules/tool/external-tool/testing';
 import { UserService } from '@modules/user';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userDoFactory } from '@modules/user/testing';
 import { Test, type TestingModule } from '@nestjs/testing';
@@ -53,7 +55,7 @@ describe('IdTokenService', () => {
 		teamRepo = module.get(TeamRepo);
 		userService = module.get(UserService);
 
-		await setupEntities([User]);
+		await setupEntities([SystemEntity, UserLoginMigrationEntity, User]);
 	});
 
 	afterAll(async () => {

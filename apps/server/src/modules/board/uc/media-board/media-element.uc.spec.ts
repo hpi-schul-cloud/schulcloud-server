@@ -1,10 +1,12 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { AuthorizationService } from '@modules/authorization';
+import { SystemEntity } from '@modules/system/repo';
 import { type ContextExternalTool } from '@modules/tool/context-external-tool/domain';
 import { contextExternalToolFactory } from '@modules/tool/context-external-tool/testing';
 import { SchoolExternalToolService } from '@modules/tool/school-external-tool';
 import { type SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { schoolExternalToolFactory } from '@modules/tool/school-external-tool/testing';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, type TestingModule } from '@nestjs/testing';
@@ -38,7 +40,7 @@ describe(MediaElementUc.name, () => {
 	let boardNodeRule: DeepMocked<BoardNodeRule>;
 
 	beforeAll(async () => {
-		await setupEntities([User]);
+		await setupEntities([SystemEntity, UserLoginMigrationEntity, User]);
 
 		module = await Test.createTestingModule({
 			providers: [

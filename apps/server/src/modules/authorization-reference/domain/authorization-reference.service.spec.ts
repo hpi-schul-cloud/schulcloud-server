@@ -8,6 +8,8 @@ import {
 } from '@modules/authorization';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
+import { SystemEntity } from '@modules/system/repo';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { NotFoundException } from '@nestjs/common';
@@ -22,7 +24,7 @@ describe('AuthorizationReferenceService', () => {
 	let loader: DeepMocked<ReferenceLoader>;
 
 	beforeAll(async () => {
-		await setupEntities([User, CourseEntity, CourseGroupEntity]);
+		await setupEntities([SystemEntity, User, UserLoginMigrationEntity, CourseEntity, CourseGroupEntity]);
 
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [

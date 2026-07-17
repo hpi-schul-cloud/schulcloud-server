@@ -1,5 +1,7 @@
 import { RoleName } from '@modules/role';
 import { roleFactory } from '@modules/role/testing';
+import { SystemEntity } from '@modules/system/repo';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { setupEntities } from '@testing/database';
@@ -11,7 +13,7 @@ import { UserMatchMapper } from './user-match.mapper';
 
 describe('[UserMatchMapper]', () => {
 	beforeAll(async () => {
-		await setupEntities([User]);
+		await setupEntities([SystemEntity, UserLoginMigrationEntity, User]);
 	});
 
 	describe('[mapToDomain] from query', () => {

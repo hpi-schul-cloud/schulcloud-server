@@ -9,7 +9,9 @@ import { ROOM_PUBLIC_API_CONFIG_TOKEN, type RoomPublicApiConfig, RoomService } f
 import { roomFactory } from '@modules/room/testing';
 import { SchoolService } from '@modules/school/domain/service/school.service';
 import { schoolFactory } from '@modules/school/testing';
+import { SystemEntity } from '@modules/system/repo';
 import { type UserDo, UserService } from '@modules/user';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userDoFactory, userFactory } from '@modules/user/testing';
 import { BadRequestException } from '@nestjs/common/exceptions';
@@ -32,7 +34,7 @@ describe('RoomMembershipService', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [User] })],
+			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [User, SystemEntity, UserLoginMigrationEntity] })],
 			providers: [
 				RoomMembershipService,
 				{

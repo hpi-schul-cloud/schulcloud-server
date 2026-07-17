@@ -7,6 +7,7 @@ import { Test, type TestingModule } from '@nestjs/testing';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { DashboardElementRepo } from './dashboard-element.repo';
 import { DashboardEntity, DashboardGridElementEntity } from './dashboard.entity';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 
 describe(DashboardElementRepo.name, () => {
 	let repo: DashboardElementRepo;
@@ -17,7 +18,14 @@ describe(DashboardElementRepo.name, () => {
 		module = await Test.createTestingModule({
 			imports: [
 				MongoMemoryDatabaseModule.forRoot({
-					entities: [DashboardGridElementEntity, DashboardEntity, CourseEntity, User, CourseGroupEntity],
+					entities: [
+						DashboardGridElementEntity,
+						DashboardEntity,
+						CourseEntity,
+						User,
+						CourseGroupEntity,
+						UserLoginMigrationEntity,
+					],
 				}),
 			],
 			providers: [DashboardElementRepo],

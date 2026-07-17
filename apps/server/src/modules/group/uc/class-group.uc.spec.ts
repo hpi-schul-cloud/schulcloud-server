@@ -17,8 +17,10 @@ import { roleDtoFactory } from '@modules/role/testing';
 import { type School, SchoolService, SchoolYearService } from '@modules/school/domain';
 import { schoolFactory, schoolYearDoFactory } from '@modules/school/testing';
 import { SystemService } from '@modules/system';
+import { SystemEntity } from '@modules/system/repo';
 import { systemFactory } from '@modules/system/testing';
 import { type UserDo, UserService } from '@modules/user';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { ForbiddenException } from '@nestjs/common';
@@ -35,6 +37,7 @@ import { UnknownQueryTypeLoggableException } from '../loggable';
 import { GroupService } from '../service';
 import { groupFactory } from '../testing';
 import { type ClassInfoDto, ClassRootType } from './dto';
+import { get } from 'http';
 
 describe('ClassGroupUc', () => {
 	let module: TestingModule;
@@ -121,7 +124,7 @@ describe('ClassGroupUc', () => {
 		authorizationConfig = module.get(AUTHORIZATION_CONFIG_TOKEN);
 		userService = module.get(UserService);
 
-		await setupEntities([User]);
+		await setupEntities([SystemEntity, UserLoginMigrationEntity, User]);
 	});
 
 	afterAll(async () => {

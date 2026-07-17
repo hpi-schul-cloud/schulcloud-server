@@ -1,7 +1,9 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { AuthorizationService } from '@modules/authorization';
 import { BoardNodeRule } from '@modules/board/authorisation/board-node.rule';
+import { SystemEntity } from '@modules/system/repo';
 import { UserService } from '@modules/user';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userDoFactory, userFactory } from '@modules/user/testing';
 import { Test, type TestingModule } from '@nestjs/testing';
@@ -27,7 +29,7 @@ describe(MediaBoardUc.name, () => {
 	let boardNodeAuthorizableService: DeepMocked<BoardNodeAuthorizableService>;
 
 	beforeAll(async () => {
-		await setupEntities([User]);
+		await setupEntities([SystemEntity, UserLoginMigrationEntity, User]);
 
 		module = await Test.createTestingModule({
 			providers: [

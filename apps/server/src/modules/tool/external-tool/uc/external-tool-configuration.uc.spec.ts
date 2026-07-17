@@ -4,6 +4,8 @@ import { AuthorizationContextBuilder, AuthorizationService } from '@modules/auth
 import { BoardContextApiHelperService } from '@modules/board-context';
 import { type School, SchoolService } from '@modules/school';
 import { schoolEntityFactory, schoolFactory } from '@modules/school/testing';
+import { SystemEntity } from '@modules/system/repo';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { ForbiddenException, NotFoundException, UnauthorizedException } from '@nestjs/common';
@@ -38,7 +40,7 @@ describe('ExternalToolConfigurationUc', () => {
 	let schoolService: DeepMocked<SchoolService>;
 
 	beforeAll(async () => {
-		await setupEntities([User]);
+		await setupEntities([SystemEntity, UserLoginMigrationEntity, User]);
 
 		module = await Test.createTestingModule({
 			providers: [

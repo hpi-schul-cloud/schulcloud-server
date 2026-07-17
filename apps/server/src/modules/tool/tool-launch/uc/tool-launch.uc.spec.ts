@@ -1,8 +1,10 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { SystemEntity } from '@modules/system/repo';
 import { type SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { LaunchContextUnavailableLoggableException } from '@modules/tool/tool-launch/error';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, type TestingModule } from '@nestjs/testing';
@@ -66,7 +68,7 @@ describe('ToolLaunchUc', () => {
 	});
 
 	beforeAll(async () => {
-		await setupEntities([User]);
+		await setupEntities([SystemEntity, UserLoginMigrationEntity, User]);
 	});
 
 	afterAll(async () => {

@@ -22,9 +22,11 @@ import { RoomAuthorizable, RoomMembershipService } from '@modules/room-membershi
 import { roomMembershipFactory } from '@modules/room-membership/testing';
 import { roomFactory } from '@modules/room/testing';
 import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
+import { SystemEntity } from '@modules/system/repo';
 import { TeamRepo } from '@modules/team/repo';
 import { teamFactory, teamUserFactory } from '@modules/team/testing';
 import { UserService } from '@modules/user';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userDoFactory, userFactory } from '@modules/user/testing';
 import { BadRequestException, ForbiddenException } from '@nestjs/common';
@@ -124,7 +126,7 @@ describe(VideoConferenceService.name, () => {
 		videoConferenceRepo = module.get(VideoConferenceRepo);
 		config = module.get(VIDEO_CONFERENCE_CONFIG_TOKEN);
 
-		await setupEntities([User, CourseEntity, CourseGroupEntity]);
+		await setupEntities([User, CourseEntity, CourseGroupEntity, SystemEntity, UserLoginMigrationEntity]);
 	});
 
 	describe('canGuestJoin', () => {

@@ -1,5 +1,6 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { Logger } from '@infra/logger';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, type TestingModule } from '@nestjs/testing';
@@ -14,7 +15,7 @@ describe('CourseGroupService', () => {
 	let courseGroupService: CourseGroupService;
 
 	beforeAll(async () => {
-		await setupEntities([User, CourseEntity, CourseGroupEntity]);
+		await setupEntities([User, CourseEntity, CourseGroupEntity, UserLoginMigrationEntity]);
 		module = await Test.createTestingModule({
 			providers: [
 				CourseGroupService,

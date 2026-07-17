@@ -8,9 +8,11 @@ import { LegacySchoolService } from '@modules/legacy-school';
 import { RoleName } from '@modules/role';
 import { Role } from '@modules/role/repo';
 import { roleFactory } from '@modules/role/testing';
+import { SystemEntity } from '@modules/system/repo';
 import { type TeamEntity, TeamRepo } from '@modules/team/repo';
 import { teamFactory } from '@modules/team/testing';
 import { type UserDo, UserService } from '@modules/user';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userDoFactory } from '@modules/user/testing';
 import { BadRequestException, ForbiddenException, InternalServerErrorException } from '@nestjs/common';
@@ -97,7 +99,7 @@ describe('VideoConferenceUc', () => {
 	};
 
 	beforeAll(async () => {
-		await setupEntities([User, Role]);
+		await setupEntities([User, Role, SystemEntity, UserLoginMigrationEntity]);
 
 		module = await Test.createTestingModule({
 			providers: [

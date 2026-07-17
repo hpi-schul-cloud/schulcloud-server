@@ -4,14 +4,17 @@ import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { LessonEntity, Material } from '@modules/lesson/repo';
 import { lessonFactory } from '@modules/lesson/testing';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { Submission, Task, TaskRepo } from '@modules/task/repo';
 import { taskFactory } from '@modules/task/testing';
 import { UserService } from '@modules/user';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { ForbiddenException } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
+import { LockedCourseLoggableException } from '../loggable';
 import { LegacyBoard, LegacyBoardElement, LegacyBoardRepo } from '../repo';
 import { CourseRoomsService } from '../service/course-rooms.service';
 import { boardFactory } from '../testing';
@@ -19,8 +22,6 @@ import { type RoomBoardDTO } from '../types';
 import { CourseRoomsAuthorisationService } from './course-rooms.authorisation.service';
 import { CourseRoomsUc } from './course-rooms.uc';
 import { RoomBoardDTOFactory } from './room-board-dto.factory';
-import { LockedCourseLoggableException } from '../loggable';
-import { schoolEntityFactory } from '@modules/school/testing';
 
 describe('rooms usecase', () => {
 	let uc: CourseRoomsUc;
@@ -92,6 +93,7 @@ describe('rooms usecase', () => {
 			Material,
 			LegacyBoard,
 			LegacyBoardElement,
+			UserLoginMigrationEntity,
 		]);
 	});
 

@@ -11,6 +11,7 @@ import { courseEntityFactory } from '@modules/course/testing';
 import { TaskCopyService } from '@modules/task';
 import { Submission, Task } from '@modules/task/repo';
 import { taskFactory } from '@modules/task/testing';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo/user-login-migration.entity';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, type TestingModule } from '@nestjs/testing';
@@ -49,7 +50,16 @@ describe('lesson copy service', () => {
 	});
 
 	beforeAll(async () => {
-		await setupEntities([User, Task, Submission, CourseEntity, CourseGroupEntity, LessonEntity, Material]);
+		await setupEntities([
+			User,
+			Task,
+			Submission,
+			CourseEntity,
+			CourseGroupEntity,
+			LessonEntity,
+			Material,
+			UserLoginMigrationEntity,
+		]);
 		module = await Test.createTestingModule({
 			providers: [
 				LessonCopyService,

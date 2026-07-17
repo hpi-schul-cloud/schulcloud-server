@@ -1,7 +1,9 @@
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { roleFactory } from '@modules/role/testing';
+import { SystemEntity } from '@modules/system/repo';
 import { teamFactory, teamUserFactory } from '@modules/team/testing';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { type EntityId } from '@shared/domain/types';
 import { cleanupCollections } from '@testing/cleanup-collections';
@@ -16,7 +18,7 @@ describe('team repo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [TeamEntity] })],
+			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [SystemEntity, TeamEntity, UserLoginMigrationEntity] })],
 			providers: [TeamRepo],
 		}).compile();
 		repo = module.get(TeamRepo);

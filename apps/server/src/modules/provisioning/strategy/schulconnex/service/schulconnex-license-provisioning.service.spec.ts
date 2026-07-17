@@ -1,8 +1,10 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { MediaSource, MediaSourceService } from '@modules/media-source';
 import { mediaSourceFactory } from '@modules/media-source/testing';
+import { SystemEntity } from '@modules/system/repo';
 import { MediaUserLicense, MediaUserLicenseService, UserLicenseType } from '@modules/user-license';
 import { mediaUserLicenseFactory } from '@modules/user-license/testing';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, type TestingModule } from '@nestjs/testing';
@@ -18,7 +20,7 @@ describe(SchulconnexLicenseProvisioningService.name, () => {
 	let mediaSourceService: DeepMocked<MediaSourceService>;
 
 	beforeAll(async () => {
-		await setupEntities([User]);
+		await setupEntities([SystemEntity, UserLoginMigrationEntity, User]);
 		module = await Test.createTestingModule({
 			providers: [
 				SchulconnexLicenseProvisioningService,

@@ -1,5 +1,7 @@
 import { Entity } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { SystemEntity } from '@modules/system/repo';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { setupEntities } from '@testing/database';
 import { BaseEntity } from './base.entity';
 
@@ -8,7 +10,7 @@ class User extends BaseEntity {}
 
 describe('BaseEntity', () => {
 	beforeAll(async () => {
-		await setupEntities([User]);
+		await setupEntities([SystemEntity, UserLoginMigrationEntity, User]);
 	});
 
 	describe('when _id property is set to ObjectId', () => {

@@ -1,3 +1,4 @@
+import { ObjectId } from '@mikro-orm/mongodb';
 import {
 	Action,
 	AUTHORIZATION_CONFIG_TOKEN,
@@ -7,19 +8,20 @@ import {
 import { authorizationContextFactory } from '@modules/authorization/testing';
 import { RoleName } from '@modules/role';
 import { roleDtoFactory } from '@modules/role/testing';
-import { roomInvitationLinkTestFactory } from '@modules/room/testing/room-invitation-link.test.factory';
 import { type RoomPublicApiConfig } from '@modules/room';
+import { RoomInvitationLinkError } from '@modules/room/api/dto/response/room-invitation-link.error';
+import { roomInvitationLinkTestFactory } from '@modules/room/testing/room-invitation-link.test.factory';
+import { SystemEntity } from '@modules/system/repo';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, type TestingModule } from '@nestjs/testing';
+import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
-import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
-import { RoomInvitationLinkError } from '@modules/room/api/dto/response/room-invitation-link.error';
 import { RoomAuthorizable } from '../do/room-authorizable.do';
 import { RoomInvitationLinkAuthorizable } from '../do/room-invitation-link-authorizable.do';
 import { RoomInvitationLinkRule } from './room-invitation-link.rule';
-import { ObjectId } from '@mikro-orm/mongodb';
 
 describe(RoomInvitationLinkRule.name, () => {
 	let service: RoomInvitationLinkRule;
@@ -41,7 +43,7 @@ describe(RoomInvitationLinkRule.name, () => {
 	};
 
 	beforeAll(async () => {
-		await setupEntities([User]);
+		await setupEntities([SystemEntity, UserLoginMigrationEntity, User]);
 
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [

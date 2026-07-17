@@ -1,16 +1,17 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
+import { ReferenceNotPopulatedLoggableException } from '@shared/common/loggable-exception/reference-not-populated.loggable-exception';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { Dashboard, GridElement } from '../../../domain/do/dashboard';
 import { type LearnroomMetadata, type LearnroomTypes } from '../../../types';
 import { DashboardEntity, DashboardGridElementEntity } from '../dashboard.entity';
 import { DashboardModelMapper } from './dashboard.entity.mapper';
-import { ReferenceNotPopulatedLoggableException } from '@shared/common/loggable-exception/reference-not-populated.loggable-exception';
 
 describe('dashboard model mapper', () => {
 	let mapper: DashboardModelMapper;
@@ -21,7 +22,14 @@ describe('dashboard model mapper', () => {
 		module = await Test.createTestingModule({
 			imports: [
 				MongoMemoryDatabaseModule.forRoot({
-					entities: [DashboardEntity, DashboardGridElementEntity, User, CourseEntity, CourseGroupEntity],
+					entities: [
+						DashboardEntity,
+						DashboardGridElementEntity,
+						User,
+						CourseEntity,
+						CourseGroupEntity,
+						UserLoginMigrationEntity,
+					],
 				}),
 			],
 			providers: [DashboardModelMapper],

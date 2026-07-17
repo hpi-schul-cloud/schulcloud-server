@@ -3,8 +3,10 @@ import { courseEntityFactory, courseFactory } from '@modules/course/testing';
 import { LessonEntity, Material } from '@modules/lesson/repo';
 import { RoleName } from '@modules/role';
 import { roleFactory } from '@modules/role/testing';
+import { SystemEntity } from '@modules/system/repo';
 import { Submission, Task } from '@modules/task/repo';
 import { taskFactory } from '@modules/task/testing';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, type TestingModule } from '@nestjs/testing';
@@ -32,7 +34,17 @@ describe('AuthorizationHelper', () => {
 
 		service = module.get<AuthorizationHelper>(AuthorizationHelper);
 
-		await setupEntities([User, CourseEntity, CourseGroupEntity, Task, LessonEntity, Submission, Material]);
+		await setupEntities([
+			User,
+			CourseEntity,
+			CourseGroupEntity,
+			Task,
+			LessonEntity,
+			Submission,
+			Material,
+			SystemEntity,
+			UserLoginMigrationEntity,
+		]);
 	});
 
 	afterEach(() => {

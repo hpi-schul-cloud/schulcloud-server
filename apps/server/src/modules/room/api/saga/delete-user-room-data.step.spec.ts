@@ -12,6 +12,8 @@ import {
 	StepReportBuilder,
 } from '@modules/saga';
 import { SagaRegistryService, SagaStepRegistryService } from '@modules/saga/service';
+import { SystemEntity } from '@modules/system/repo';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, type TestingModule } from '@nestjs/testing';
@@ -27,7 +29,11 @@ describe(DeleteUserRoomDataStep.name, () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [User, RoomEntity, RoomArrangementEntity] })],
+			imports: [
+				MongoMemoryDatabaseModule.forRoot({
+					entities: [User, RoomEntity, RoomArrangementEntity, SystemEntity, UserLoginMigrationEntity],
+				}),
+			],
 			providers: [
 				DeleteUserRoomDataStep,
 				SagaService,

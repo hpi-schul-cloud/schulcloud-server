@@ -1,5 +1,7 @@
 import { RoleName } from '@modules/role';
 import { schoolEntityFactory } from '@modules/school/testing';
+import { SystemEntity } from '@modules/system/repo';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { BadRequestException } from '@nestjs/common';
@@ -23,7 +25,7 @@ import { UserMatchMapper } from './user-match.mapper';
 
 describe('[ImportUserMapper]', () => {
 	beforeAll(async () => {
-		await setupEntities([User]);
+		await setupEntities([SystemEntity, UserLoginMigrationEntity, User]);
 	});
 
 	describe('[mapSortingQueryToDomain] from query to domain', () => {

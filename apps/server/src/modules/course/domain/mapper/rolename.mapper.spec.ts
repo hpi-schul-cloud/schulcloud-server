@@ -8,6 +8,7 @@ import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.tes
 import { CourseEntity, CourseGroupEntity } from '../../repo';
 import { courseEntityFactory } from '../../testing';
 import { RoleNameMapper } from './rolename.mapper';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 
 describe('rolename mapper', () => {
 	let module: TestingModule;
@@ -17,7 +18,7 @@ describe('rolename mapper', () => {
 	});
 
 	beforeAll(async () => {
-		await setupEntities([User, CourseEntity, CourseGroupEntity]);
+		await setupEntities([User, CourseEntity, CourseGroupEntity, UserLoginMigrationEntity]);
 		module = await Test.createTestingModule({
 			imports: [],
 			providers: [],

@@ -1,12 +1,14 @@
 import { Role } from '@modules/role/repo';
 import { SchoolEntity } from '@modules/school/repo';
+import { SystemEntity } from '@modules/system/repo';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { setupEntities } from '@testing/database';
 import { generateSeedData } from './generate-seed-data';
 import * as roleModule from './roles';
 
 describe('Seed Data generation', () => {
 	beforeAll(async () => {
-		await setupEntities([SchoolEntity, Role]);
+		await setupEntities([SchoolEntity, SystemEntity, Role, UserLoginMigrationEntity]);
 	});
 
 	const setup = () => {

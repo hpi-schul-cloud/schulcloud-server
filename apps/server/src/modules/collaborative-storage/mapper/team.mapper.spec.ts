@@ -1,5 +1,7 @@
+import { SystemEntity } from '@modules/system/repo';
 import { TeamEntity } from '@modules/team/repo';
 import { teamFactory } from '@modules/team/testing';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { TeamMapper } from './team.mapper';
@@ -14,7 +16,7 @@ describe('TeamMapper', () => {
 			providers: [TeamMapper],
 		}).compile();
 		mapper = module.get(TeamMapper);
-		await setupEntities([TeamEntity]);
+		await setupEntities([TeamEntity, SystemEntity, UserLoginMigrationEntity]);
 	});
 
 	afterAll(async () => {

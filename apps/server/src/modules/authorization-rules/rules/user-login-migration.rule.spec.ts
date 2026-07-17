@@ -15,6 +15,8 @@ import { Test, type TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { UserLoginMigrationRule } from './user-login-migration.rule';
+import { SystemEntity } from '@modules/system/repo';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 
 describe('UserLoginMigrationRule', () => {
 	let module: TestingModule;
@@ -23,7 +25,7 @@ describe('UserLoginMigrationRule', () => {
 	let authorizationHelper: DeepMocked<AuthorizationHelper>;
 
 	beforeAll(async () => {
-		await setupEntities([User]);
+		await setupEntities([SystemEntity, UserLoginMigrationEntity, User]);
 
 		module = await Test.createTestingModule({
 			providers: [

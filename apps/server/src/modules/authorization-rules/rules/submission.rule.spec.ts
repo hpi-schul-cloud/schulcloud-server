@@ -9,8 +9,10 @@ import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory, courseGroupEntityFactory } from '@modules/course/testing';
 import { LessonEntity, Material } from '@modules/lesson/repo';
 import { roleFactory } from '@modules/role/testing';
+import { SystemEntity } from '@modules/system/repo';
 import { Submission, Task } from '@modules/task/repo';
 import { submissionFactory, taskFactory } from '@modules/task/testing';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { NotImplementedException } from '@nestjs/common';
@@ -35,7 +37,17 @@ describe('SubmissionRule', () => {
 	let injectionService: AuthorizationInjectionService;
 
 	beforeAll(async () => {
-		await setupEntities([User, Submission, Task, CourseEntity, CourseGroupEntity, LessonEntity, Material]);
+		await setupEntities([
+			SystemEntity,
+			UserLoginMigrationEntity,
+			User,
+			Submission,
+			Task,
+			CourseEntity,
+			CourseGroupEntity,
+			LessonEntity,
+			Material,
+		]);
 
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [

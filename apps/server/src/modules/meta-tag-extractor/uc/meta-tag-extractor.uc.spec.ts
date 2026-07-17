@@ -1,5 +1,7 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { AuthorizationService } from '@modules/authorization';
+import { SystemEntity } from '@modules/system/repo';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { UnauthorizedException } from '@nestjs/common';
@@ -33,7 +35,7 @@ describe(MetaTagExtractorUc.name, () => {
 		authorizationService = module.get(AuthorizationService);
 		metaTagExtractorService = module.get(MetaTagExtractorService);
 
-		await setupEntities([User]);
+		await setupEntities([SystemEntity, UserLoginMigrationEntity, User]);
 	});
 
 	afterAll(async () => {

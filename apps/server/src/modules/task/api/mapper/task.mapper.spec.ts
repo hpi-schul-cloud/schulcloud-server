@@ -1,6 +1,8 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { LessonEntity, Material } from '@modules/lesson/repo';
+import { SystemEntity } from '@modules/system/repo';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { InputFormat } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
@@ -45,7 +47,17 @@ const createExpectedResponse = (task: Task, status: TaskStatus, descriptions: Ta
 
 describe('task.mapper', () => {
 	beforeAll(async () => {
-		await setupEntities([User, Task, Submission, CourseEntity, CourseGroupEntity, LessonEntity, Material]);
+		await setupEntities([
+			User,
+			Task,
+			Submission,
+			CourseEntity,
+			CourseGroupEntity,
+			LessonEntity,
+			Material,
+			SystemEntity,
+			UserLoginMigrationEntity,
+		]);
 	});
 
 	describe('mapToResponse', () => {

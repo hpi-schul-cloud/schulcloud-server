@@ -3,6 +3,8 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { Action, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { type Role } from '@modules/role/repo';
 import { roleFactory } from '@modules/role/testing';
+import { SystemEntity } from '@modules/system/repo';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { UnauthorizedException } from '@nestjs/common';
@@ -25,7 +27,7 @@ describe(ExternalToolUtilizationUc.name, () => {
 	let externalToolUtilizationService: DeepMocked<ExternalToolUtilizationService>;
 
 	beforeAll(async () => {
-		await setupEntities([User]);
+		await setupEntities([SystemEntity, UserLoginMigrationEntity, User]);
 
 		module = await Test.createTestingModule({
 			providers: [

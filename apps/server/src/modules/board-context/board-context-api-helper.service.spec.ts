@@ -6,6 +6,7 @@ import { courseEntityFactory } from '@modules/course/testing';
 import { RoomService } from '@modules/room';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { UserService } from '@modules/user';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
@@ -27,7 +28,7 @@ describe('BoardContextApiHelperService', () => {
 	let boardContextApiConfig: BoardContextPublicApiConfig;
 
 	beforeEach(async () => {
-		await setupEntities([CourseEntity, CourseGroupEntity]);
+		await setupEntities([CourseEntity, CourseGroupEntity, UserLoginMigrationEntity]);
 		module = await Test.createTestingModule({
 			providers: [
 				BoardContextApiHelperService,

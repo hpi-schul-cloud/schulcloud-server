@@ -7,6 +7,8 @@ import { Logger } from '@infra/logger';
 import { Account, AccountService } from '@modules/account';
 import { accountDoFactory } from '@modules/account/testing';
 import { OauthSessionTokenService } from '@modules/oauth';
+import { SystemEntity } from '@modules/system/repo';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { HttpService } from '@nestjs/axios';
@@ -40,7 +42,7 @@ describe(AuthenticationService.name, () => {
 	});
 
 	beforeAll(async () => {
-		await setupEntities([Account, User]);
+		await setupEntities([Account, SystemEntity, User, UserLoginMigrationEntity]);
 
 		module = await Test.createTestingModule({
 			providers: [

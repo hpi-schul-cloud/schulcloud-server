@@ -18,6 +18,7 @@ import {
 } from './board-copy.service';
 import { ColumnBoardTitleService } from './column-board-title.service';
 // Warning: do not move the BoardNodeCopyService import up. Otherwise it will lead to dependency cycle.
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Card, Column } from '../../domain';
 import { BoardNodeCopyService } from './board-node-copy.service';
@@ -58,7 +59,7 @@ describe(BoardCopyService.name, () => {
 		boardNodeCopyService = module.get(BoardNodeCopyService);
 		columnBoardTitleService = module.get(ColumnBoardTitleService);
 
-		await setupEntities([CourseEntity, CourseGroupEntity]);
+		await setupEntities([CourseEntity, CourseGroupEntity, UserLoginMigrationEntity]);
 	});
 
 	afterEach(() => {

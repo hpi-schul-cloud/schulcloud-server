@@ -1,6 +1,7 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { mediaBoardFactory, mediaExternalToolElementFactory } from '@modules/board/testing';
+import { SystemEntity } from '@modules/system/repo';
 import { ExternalToolService } from '@modules/tool';
 import { CustomParameterScope, ToolContextType } from '@modules/tool/common/enum';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool';
@@ -12,6 +13,7 @@ import { externalToolFactory } from '@modules/tool/external-tool/testing';
 import { SchoolExternalToolService } from '@modules/tool/school-external-tool';
 import { type SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { schoolExternalToolFactory } from '@modules/tool/school-external-tool/testing';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo/user-login-migration.entity';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, type TestingModule } from '@nestjs/testing';
@@ -58,7 +60,7 @@ describe(MediaAvailableLineService.name, () => {
 		contextExternalToolService = module.get(ContextExternalToolService);
 		externalToolLogoService = module.get(ExternalToolLogoService);
 
-		await setupEntities([User]);
+		await setupEntities([SystemEntity, UserLoginMigrationEntity, User]);
 	});
 
 	afterAll(async () => {

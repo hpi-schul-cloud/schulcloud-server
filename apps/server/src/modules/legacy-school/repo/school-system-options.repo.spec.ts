@@ -3,6 +3,7 @@ import { SchoolEntity } from '@modules/school/repo';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { SystemEntity } from '@modules/system/repo';
 import { systemEntityFactory } from '@modules/system/testing';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { MongoMemoryDatabaseModule } from '@testing/database';
@@ -20,7 +21,9 @@ describe(SchoolSystemOptionsRepo.name, () => {
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [
-				MongoMemoryDatabaseModule.forRoot({ entities: [SchoolSystemOptionsEntity, SchoolEntity, SystemEntity] }),
+				MongoMemoryDatabaseModule.forRoot({
+					entities: [SchoolSystemOptionsEntity, SchoolEntity, SystemEntity, UserLoginMigrationEntity],
+				}),
 			],
 			providers: [SchoolSystemOptionsRepo],
 		}).compile();

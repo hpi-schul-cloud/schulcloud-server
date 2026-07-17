@@ -14,6 +14,8 @@ import { Test, type TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { setupEntities } from '@testing/database';
 import { CourseRule } from './course.rule';
+import { SystemEntity } from '@modules/system/repo';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 
 const createUserWithPermissions = () => {
 	const permissionA = 'a' as Permission;
@@ -32,7 +34,7 @@ describe('CourseRule', () => {
 	let injectionService: AuthorizationInjectionService;
 
 	beforeAll(async () => {
-		await setupEntities([User, CourseEntity, CourseGroupEntity]);
+		await setupEntities([SystemEntity, UserLoginMigrationEntity, User, CourseEntity, CourseGroupEntity]);
 
 		module = await Test.createTestingModule({
 			providers: [

@@ -19,6 +19,7 @@ import {
 	UserInfoResponse,
 } from '../dto';
 import { NewsMapper } from './news.mapper';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 
 const getTargetModel = (news: News): NewsTargetModel => {
 	if (news instanceof SchoolNews) {
@@ -110,7 +111,7 @@ const getExpectedNewsResponse = (
 
 describe('NewsMapper', () => {
 	beforeAll(async () => {
-		await setupEntities([User, CourseEntity, CourseGroupEntity]);
+		await setupEntities([User, CourseEntity, CourseGroupEntity, UserLoginMigrationEntity]);
 	});
 
 	describe('mapToResponse', () => {

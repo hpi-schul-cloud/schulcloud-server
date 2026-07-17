@@ -1,13 +1,14 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
-import { Test, type TestingModule } from '@nestjs/testing';
-import { UserChangedSchoolEvent } from '../../user/domain/events/user-changed-school.event';
-import { TaskRepo } from '../repo/task.repo';
-import { UserChangedSchoolTaskHandlerService } from './user-changed-school-task-handler.service';
 import { MikroORM } from '@mikro-orm/core';
-import { setupEntities } from '@testing/database';
-import { Task } from '../repo/task.entity';
 import { LessonEntity, Material } from '@modules/lesson/repo';
 import { Submission } from '@modules/task/repo';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
+import { Test, type TestingModule } from '@nestjs/testing';
+import { setupEntities } from '@testing/database';
+import { UserChangedSchoolEvent } from '../../user/domain/events/user-changed-school.event';
+import { Task } from '../repo/task.entity';
+import { TaskRepo } from '../repo/task.repo';
+import { UserChangedSchoolTaskHandlerService } from './user-changed-school-task-handler.service';
 
 describe(UserChangedSchoolTaskHandlerService.name, () => {
 	let module: TestingModule;
@@ -24,7 +25,7 @@ describe(UserChangedSchoolTaskHandlerService.name, () => {
 				},
 				{
 					provide: MikroORM,
-					useValue: await setupEntities([Task, LessonEntity, Submission, Material]),
+					useValue: await setupEntities([Task, LessonEntity, Submission, Material, UserLoginMigrationEntity]),
 				},
 			],
 		}).compile();

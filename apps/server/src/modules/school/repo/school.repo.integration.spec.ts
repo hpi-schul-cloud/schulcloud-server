@@ -2,7 +2,9 @@ import { faker } from '@faker-js/faker';
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { countyEmbeddableFactory, federalStateEntityFactory, schoolYearEntityFactory } from '@modules/school/testing';
+import { SystemEntity } from '@modules/system/repo';
 import { systemEntityFactory } from '@modules/system/testing';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { LanguageType, SortOrder } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
@@ -20,7 +22,9 @@ describe('SchoolMikroOrmRepo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [SchoolEntity] })],
+			imports: [
+				MongoMemoryDatabaseModule.forRoot({ entities: [SchoolEntity, SystemEntity, UserLoginMigrationEntity] }),
+			],
 			providers: [{ provide: SCHOOL_REPO, useClass: SchoolMikroOrmRepo }],
 		}).compile();
 

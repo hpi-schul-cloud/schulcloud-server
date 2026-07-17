@@ -2,11 +2,13 @@ import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
 import { RoleName } from '@modules/role';
+import { type Role } from '@modules/role/repo';
 import { roleFactory } from '@modules/role/testing';
 import { SchoolEntity } from '@modules/school/repo';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { SystemEntity } from '@modules/system/repo';
 import { systemEntityFactory } from '@modules/system/testing';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, type TestingModule } from '@nestjs/testing';
@@ -19,7 +21,6 @@ import { type Group, GroupAggregateScope, type GroupProps, GroupTypes, GroupUser
 import { GroupEntity, GroupEntityTypes, GroupUserEmbeddable } from '../entity';
 import { groupEntityFactory, groupFactory } from '../testing';
 import { GroupRepo } from './group.repo';
-import { type Role } from '@modules/role/repo';
 
 describe(GroupRepo.name, () => {
 	let module: TestingModule;
@@ -30,7 +31,15 @@ describe(GroupRepo.name, () => {
 		module = await Test.createTestingModule({
 			imports: [
 				MongoMemoryDatabaseModule.forRoot({
-					entities: [GroupEntity, SchoolEntity, User, SystemEntity, CourseEntity, CourseGroupEntity],
+					entities: [
+						GroupEntity,
+						SchoolEntity,
+						User,
+						SystemEntity,
+						CourseEntity,
+						CourseGroupEntity,
+						UserLoginMigrationEntity,
+					],
 				}),
 			],
 			providers: [GroupRepo],

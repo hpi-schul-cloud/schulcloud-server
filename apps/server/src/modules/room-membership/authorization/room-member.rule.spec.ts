@@ -8,6 +8,8 @@ import {
 } from '@modules/authorization';
 import { type Role } from '@modules/role/repo';
 import { roomEntityFactory } from '@modules/room/testing';
+import { SystemEntity } from '@modules/system/repo';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, type TestingModule } from '@nestjs/testing';
@@ -25,7 +27,7 @@ describe(RoomMemberRule.name, () => {
 	let injectionService: AuthorizationInjectionService;
 
 	beforeAll(async () => {
-		await setupEntities([User]);
+		await setupEntities([SystemEntity, UserLoginMigrationEntity, User]);
 
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [

@@ -9,6 +9,8 @@ import { courseEntityFactory } from '@modules/course/testing';
 import { LessonService } from '@modules/lesson';
 import { LessonEntity, Material } from '@modules/lesson/repo';
 import { lessonFactory } from '@modules/lesson/testing';
+import { SystemEntity } from '@modules/system/repo';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { ForbiddenException, InternalServerErrorException, NotFoundException } from '@nestjs/common';
@@ -33,7 +35,17 @@ describe('task copy uc', () => {
 	let config: TaskPublicApiConfig;
 
 	beforeAll(async () => {
-		await setupEntities([User, Task, Submission, CourseEntity, CourseGroupEntity, LessonEntity, Material]);
+		await setupEntities([
+			User,
+			Task,
+			Submission,
+			CourseEntity,
+			CourseGroupEntity,
+			LessonEntity,
+			Material,
+			SystemEntity,
+			UserLoginMigrationEntity,
+		]);
 
 		module = await Test.createTestingModule({
 			providers: [

@@ -14,6 +14,7 @@ import { ContextExternalToolService } from '@modules/tool/context-external-tool/
 import { type SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { schoolExternalToolFactory } from '@modules/tool/school-external-tool/testing';
 import { UserService } from '@modules/user';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, type TestingModule } from '@nestjs/testing';
@@ -47,7 +48,14 @@ describe('course copy service', () => {
 	});
 
 	beforeAll(async () => {
-		await setupEntities([User, CourseEntity, CourseGroupEntity, LegacyBoard, LegacyBoardElement]);
+		await setupEntities([
+			User,
+			CourseEntity,
+			CourseGroupEntity,
+			LegacyBoard,
+			LegacyBoardElement,
+			UserLoginMigrationEntity,
+		]);
 		module = await Test.createTestingModule({
 			providers: [
 				CourseCopyService,

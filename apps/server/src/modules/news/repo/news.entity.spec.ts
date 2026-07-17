@@ -1,3 +1,5 @@
+import { SystemEntity } from '@modules/system/repo';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { setupEntities } from '@testing/database';
@@ -6,7 +8,7 @@ import { News } from './news.entity';
 
 describe(News.name, () => {
 	beforeAll(async () => {
-		await setupEntities([User]);
+		await setupEntities([SystemEntity, UserLoginMigrationEntity, User]);
 	});
 
 	describe('removeCreatorReference', () => {
