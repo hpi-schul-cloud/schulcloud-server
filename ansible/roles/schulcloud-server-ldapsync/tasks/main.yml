@@ -28,4 +28,10 @@
       - SCALED_API_WORKER_ENABLED is defined and SCALED_API_WORKER_ENABLED|bool
     tags:
       - keda
-
+  - name: Add schulcloud-server-ldapsync default allow network policy
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: default-allow-networkpolicy.yml.j2
+    tags:
+      - networkPolicy
