@@ -34,7 +34,10 @@ export class Migration20260708143036 extends Migration {
 
 				// Avoid double-encrypting tokens if the migration runs while the app already stores encrypted tokens
 				// Plain refresh tokens are JWTs and contain '.', encrypted values are base64 and do not contain '.'
-				if (refreshToken.includes('.')) {
+				if (!refreshToken.includes('.')) {
+					console.info(
+						`oauth-session-token with id ${item._id.toString()} was omitted because the refresh token is already encrypted.`
+					);
 					continue;
 				}
 
