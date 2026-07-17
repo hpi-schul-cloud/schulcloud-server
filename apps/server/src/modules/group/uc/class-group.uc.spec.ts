@@ -37,7 +37,6 @@ import { UnknownQueryTypeLoggableException } from '../loggable';
 import { GroupService } from '../service';
 import { groupFactory } from '../testing';
 import { type ClassInfoDto, ClassRootType } from './dto';
-import { get } from 'http';
 
 describe('ClassGroupUc', () => {
 	let module: TestingModule;

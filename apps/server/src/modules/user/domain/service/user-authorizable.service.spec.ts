@@ -8,7 +8,6 @@ import { User, UserMikroOrmRepo } from '../../repo';
 import { userDoFactory, userFactory } from '../../testing';
 import { UserAuthorizableService } from './user-authorizable.service';
 import { UserService } from './user.service';
-import { get } from 'http';
 
 describe(UserAuthorizableService.name, () => {
 	let module: TestingModule;
