@@ -148,7 +148,7 @@ export class InvalidLinkUrlLoggableException extends BadRequestException impleme
         super();
     }
 
-    getLogMessage(): LogMessage | ErrorLogMessage | ValidationErrorLogMessage {
+    getLogMessage(): ErrorLogMessage {
         return {
             type: 'INVALID_LINK_URL',
             message: this.message,

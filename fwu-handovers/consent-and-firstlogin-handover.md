@@ -1,4 +1,4 @@
-# Technical Handover: Consent & FirstLogin
+# Technical Handover: Consent & FirstLogin & Registration
 
 ## Document Purpose & Structure
 
