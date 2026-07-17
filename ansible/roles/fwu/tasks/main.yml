@@ -54,3 +54,11 @@
       state: "{{ 'present' if WITH_FWU is defined and WITH_FWU|bool else 'absent' }}"
     tags:
       - ingress
+
+  - name: Add fwu default allow network policy
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: default-allow-networkpolicy.yml.j2
+    tags:
+      - networkPolicy
