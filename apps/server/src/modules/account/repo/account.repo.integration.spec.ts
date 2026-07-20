@@ -1,5 +1,6 @@
 import { type EntityData, NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { SystemEntity } from '@modules/system/repo';
 import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
@@ -27,7 +28,15 @@ describe('AccountMikroOrmRepo', () => {
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [
-				MongoMemoryDatabaseModule.forRoot({ entities: [AccountEntity, SystemEntity, User, UserLoginMigrationEntity] }),
+				MongoMemoryDatabaseModule.forRoot({
+					entities: [
+						AccountEntity,
+						SchoolSystemOptionsEntity,
+						SystemEntity,
+						User,
+						UserLoginMigrationEntity,
+					]
+				}),
 			],
 			providers: [AccountTestRepo],
 		}).compile();

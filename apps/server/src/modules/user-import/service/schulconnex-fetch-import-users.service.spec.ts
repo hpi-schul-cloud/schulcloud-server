@@ -1,6 +1,7 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { type SchulconnexResponse, SchulconnexRestClient } from '@infra/schulconnex-client';
 import { schulconnexResponseFactory } from '@infra/schulconnex-client/testing';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { RoleName } from '@modules/role';
 import { type SchoolEntity } from '@modules/school/repo';
 import { schoolEntityFactory } from '@modules/school/testing';
@@ -26,7 +27,14 @@ describe(SchulconnexFetchImportUsersService.name, () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [User, SystemEntity, UserLoginMigrationEntity] })],
+			imports: [MongoMemoryDatabaseModule.forRoot({
+				entities: [
+					SchoolSystemOptionsEntity,
+					SystemEntity,
+					User,
+					UserLoginMigrationEntity,
+				]
+			})],
 			providers: [
 				SchulconnexFetchImportUsersService,
 				{

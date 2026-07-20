@@ -1,5 +1,6 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { SystemEntity } from '@modules/system/repo';
 import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
@@ -55,7 +56,12 @@ describe(BoardNodeService.name, () => {
 		// contentElementUpdateService = module.get(ContentElementUpdateService);
 		// boardNodeDeleteHooksService = module.get(BoardNodeDeleteHooksService);
 
-		await setupEntities([SystemEntity, UserLoginMigrationEntity, User]);
+		await setupEntities([
+			SchoolSystemOptionsEntity,
+			SystemEntity,
+			User,
+			UserLoginMigrationEntity,
+		]);
 	});
 
 	afterEach(() => {

@@ -1,6 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseGroupEntityFactory } from '@modules/course/testing';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { LessonEntity, Material } from '@modules/lesson/repo';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
@@ -15,13 +16,14 @@ import { Task } from './task.entity';
 describe('Submission entity', () => {
 	beforeAll(async () => {
 		await setupEntities([
-			User,
 			CourseEntity,
 			CourseGroupEntity,
-			Task,
-			Submission,
 			LessonEntity,
 			Material,
+			SchoolSystemOptionsEntity,
+			Submission,
+			Task,
+			User,
 			UserLoginMigrationEntity,
 		]);
 	});

@@ -1,5 +1,6 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { LessonEntity, Material } from '@modules/lesson/repo';
 import { Submission } from '@modules/task/repo';
 import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
@@ -25,7 +26,14 @@ describe(UserChangedSchoolTaskHandlerService.name, () => {
 				},
 				{
 					provide: MikroORM,
-					useValue: await setupEntities([Task, LessonEntity, Submission, Material, UserLoginMigrationEntity]),
+					useValue: await setupEntities([
+						LessonEntity,
+						Material,
+						SchoolSystemOptionsEntity,
+						Submission,
+						Task,
+						UserLoginMigrationEntity,
+					]),
 				},
 			],
 		}).compile();

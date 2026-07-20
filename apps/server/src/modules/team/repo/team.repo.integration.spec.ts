@@ -1,5 +1,6 @@
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { roleFactory } from '@modules/role/testing';
 import { SystemEntity } from '@modules/system/repo';
 import { teamFactory, teamUserFactory } from '@modules/team/testing';
@@ -18,7 +19,14 @@ describe('team repo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [SystemEntity, TeamEntity, UserLoginMigrationEntity] })],
+			imports: [MongoMemoryDatabaseModule.forRoot({
+				entities: [
+					SchoolSystemOptionsEntity,
+					SystemEntity,
+					TeamEntity,
+					UserLoginMigrationEntity,
+				]
+			})],
 			providers: [TeamRepo],
 		}).compile();
 		repo = module.get(TeamRepo);

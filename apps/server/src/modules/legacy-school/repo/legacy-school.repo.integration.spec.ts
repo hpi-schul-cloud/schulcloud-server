@@ -1,5 +1,6 @@
 import { type EntityData, EntityManager } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { SchoolEntity, SchoolRolePermission, SchoolRoles, SchoolYearEntity } from '@modules/school/repo';
 import { schoolEntityFactory, schoolYearEntityFactory } from '@modules/school/testing';
 import { SystemEntity } from '@modules/system/repo';
@@ -22,7 +23,12 @@ describe('LegacySchoolRepo', () => {
 		module = await Test.createTestingModule({
 			imports: [
 				MongoMemoryDatabaseModule.forRoot({
-					entities: [SchoolEntity, SystemEntity, UserLoginMigrationEntity],
+					entities: [
+						SchoolEntity,
+						SchoolSystemOptionsEntity,
+						SystemEntity,
+						UserLoginMigrationEntity,
+					]
 				}),
 			],
 			providers: [LegacySchoolRepo],

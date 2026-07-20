@@ -2,6 +2,7 @@ import { createMock } from '@golevelup/ts-jest';
 import { Logger } from '@infra/logger';
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { RoomArrangementService } from '@modules/room/domain';
 import { roomArrangementEntityFactory, roomEntityFactory } from '@modules/room/testing';
 import {
@@ -31,7 +32,14 @@ describe(DeleteUserRoomDataStep.name, () => {
 		module = await Test.createTestingModule({
 			imports: [
 				MongoMemoryDatabaseModule.forRoot({
-					entities: [User, RoomEntity, RoomArrangementEntity, SystemEntity, UserLoginMigrationEntity],
+					entities: [
+						RoomArrangementEntity,
+						RoomEntity,
+						SchoolSystemOptionsEntity,
+						SystemEntity,
+						User,
+						UserLoginMigrationEntity,
+					]
 				}),
 			],
 			providers: [

@@ -1,4 +1,5 @@
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { LessonEntity, Material } from '@modules/lesson/repo';
 import { Submission, Task } from '@modules/task/repo';
 import { taskFactory } from '@modules/task/testing';
@@ -11,13 +12,14 @@ import { TaskBoardElement } from './task-board-element.entity';
 describe('TaskBoardElementEntity', () => {
 	beforeAll(async () => {
 		await setupEntities([
-			User,
-			Task,
-			Submission,
 			CourseEntity,
 			CourseGroupEntity,
 			LessonEntity,
 			Material,
+			SchoolSystemOptionsEntity,
+			Submission,
+			Task,
+			User,
 			UserLoginMigrationEntity,
 		]);
 	});

@@ -1,6 +1,7 @@
 import { createMock } from '@golevelup/ts-jest';
 import { LegacyLogger } from '@infra/logger';
 import { EntityManager } from '@mikro-orm/mongodb';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { SystemEntity } from '@modules/system/repo';
 import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
@@ -26,7 +27,13 @@ describe(SchoolExternalToolRepo.name, () => {
 		module = await Test.createTestingModule({
 			imports: [
 				MongoMemoryDatabaseModule.forRoot({
-					entities: [SchoolExternalToolEntity, ExternalToolEntity, SystemEntity, UserLoginMigrationEntity],
+					entities: [
+						ExternalToolEntity,
+						SchoolExternalToolEntity,
+						SchoolSystemOptionsEntity,
+						SystemEntity,
+						UserLoginMigrationEntity,
+					]
 				}),
 			],
 			providers: [

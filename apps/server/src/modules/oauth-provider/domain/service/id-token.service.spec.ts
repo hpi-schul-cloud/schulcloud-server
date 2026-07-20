@@ -1,4 +1,5 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { PseudonymService } from '@modules/pseudonym/service';
 import { pseudonymFactory } from '@modules/pseudonym/testing';
 import { SystemEntity } from '@modules/system/repo';
@@ -55,7 +56,12 @@ describe('IdTokenService', () => {
 		teamRepo = module.get(TeamRepo);
 		userService = module.get(UserService);
 
-		await setupEntities([SystemEntity, UserLoginMigrationEntity, User]);
+		await setupEntities([
+			SchoolSystemOptionsEntity,
+			SystemEntity,
+			User,
+			UserLoginMigrationEntity,
+		]);
 	});
 
 	afterAll(async () => {

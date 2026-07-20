@@ -2,6 +2,7 @@ import { faker } from '@faker-js/faker';
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { Logger } from '@infra/logger';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { SystemEntity } from '@modules/system/repo';
 import { systemFactory } from '@modules/system/testing';
@@ -44,7 +45,12 @@ describe('AccountService', () => {
 	});
 
 	beforeAll(async () => {
-		await setupEntities([User, SystemEntity, UserLoginMigrationEntity]);
+		await setupEntities([
+			SchoolSystemOptionsEntity,
+			SystemEntity,
+			User,
+			UserLoginMigrationEntity,
+		]);
 
 		module = await Test.createTestingModule({
 			providers: [

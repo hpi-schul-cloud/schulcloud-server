@@ -1,6 +1,7 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { type Account } from '@modules/account';
 import { accountDoFactory } from '@modules/account/testing';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { RoleName } from '@modules/role';
 import { SystemEntity } from '@modules/system/repo';
 import { type UserService } from '@modules/user';
@@ -26,7 +27,12 @@ describe('LocalStrategy', () => {
 	const mockPasswordHash = bcrypt.hashSync(mockPassword);
 
 	beforeAll(async () => {
-		await setupEntities([SystemEntity, User, UserLoginMigrationEntity]);
+		await setupEntities([
+			SchoolSystemOptionsEntity,
+			SystemEntity,
+			User,
+			UserLoginMigrationEntity,
+		]);
 		authenticationServiceMock = createMock<AuthenticationService>();
 		config = new AuthenticationConfig();
 		userServiceMock = createMock<UserService>();

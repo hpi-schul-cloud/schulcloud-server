@@ -10,6 +10,7 @@ import {
 } from '@modules/authorization';
 import { AuthorizableReferenceType } from '@modules/authorization/domain';
 import { BoardContextApiHelperService } from '@modules/board-context';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { SystemEntity } from '@modules/system/repo';
 import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
@@ -62,7 +63,12 @@ describe(ContextExternalToolUc.name, () => {
 	let boardContextApiHelperService: DeepMocked<BoardContextApiHelperService>;
 
 	beforeAll(async () => {
-		await setupEntities([SystemEntity, UserLoginMigrationEntity, User]);
+		await setupEntities([
+			SchoolSystemOptionsEntity,
+			SystemEntity,
+			User,
+			UserLoginMigrationEntity,
+		]);
 		module = await Test.createTestingModule({
 			providers: [
 				ContextExternalToolUc,

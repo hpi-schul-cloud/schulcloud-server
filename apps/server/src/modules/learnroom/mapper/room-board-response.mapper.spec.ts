@@ -2,6 +2,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { BoardLayout } from '@modules/board';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { LessonEntity, Material } from '@modules/lesson/repo';
 import { Submission, Task } from '@modules/task/repo';
 import { taskFactory } from '@modules/task/testing';
@@ -24,10 +25,11 @@ describe('room board response mapper', () => {
 		await setupEntities([
 			CourseEntity,
 			CourseGroupEntity,
-			Task,
-			Submission,
 			LessonEntity,
 			Material,
+			SchoolSystemOptionsEntity,
+			Submission,
+			Task,
 			UserLoginMigrationEntity,
 		]);
 		module = await Test.createTestingModule({

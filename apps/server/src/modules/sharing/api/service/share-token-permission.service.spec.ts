@@ -3,6 +3,7 @@ import { AuthorizationContextBuilder, AuthorizationService } from '@modules/auth
 import { CourseService } from '@modules/course';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { type RoleDto, RoleName } from '@modules/role';
 import { RoomAuthorizable, RoomMembershipService, type UserWithRoomRoles } from '@modules/room-membership';
 import { SchoolService } from '@modules/school';
@@ -56,7 +57,14 @@ describe('ShareTokenPermissionService', () => {
 		schoolService = module.get(SchoolService);
 		config = module.get<SharingPublicApiConfig>(SHARING_PUBLIC_API_CONFIG_TOKEN);
 
-		await setupEntities([User, CourseEntity, CourseGroupEntity, SchoolEntity, UserLoginMigrationEntity]);
+		await setupEntities([
+			CourseEntity,
+			CourseGroupEntity,
+			SchoolEntity,
+			SchoolSystemOptionsEntity,
+			User,
+			UserLoginMigrationEntity,
+		]);
 	});
 
 	afterEach(() => {

@@ -1,6 +1,7 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { LessonService } from '@modules/lesson';
 import { LessonEntity, Material } from '@modules/lesson/repo';
 import { lessonFactory } from '@modules/lesson/testing';
@@ -30,12 +31,13 @@ describe(LessonUrlHandler.name, () => {
 		lessonService = module.get(LessonService);
 		lessonUrlHandler = module.get(LessonUrlHandler);
 		await setupEntities([
-			LessonEntity,
-			Material,
 			CourseEntity,
 			CourseGroupEntity,
-			Task,
+			LessonEntity,
+			Material,
+			SchoolSystemOptionsEntity,
 			Submission,
+			Task,
 			UserLoginMigrationEntity,
 		]);
 	});

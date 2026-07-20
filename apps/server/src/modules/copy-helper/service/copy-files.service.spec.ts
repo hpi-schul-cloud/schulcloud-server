@@ -4,6 +4,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { CopyElementType, CopyHelperService } from '@modules/copy-helper';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { type ComponentProperties, ComponentType, LessonEntity, Material } from '@modules/lesson/repo';
 import { lessonFactory } from '@modules/lesson/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
@@ -28,13 +29,14 @@ describe('copy files service', () => {
 
 	beforeAll(async () => {
 		await setupEntities([
-			User,
-			Task,
-			Submission,
-			LessonEntity,
-			Material,
 			CourseEntity,
 			CourseGroupEntity,
+			LessonEntity,
+			Material,
+			SchoolSystemOptionsEntity,
+			Submission,
+			Task,
+			User,
 			UserLoginMigrationEntity,
 		]);
 	});

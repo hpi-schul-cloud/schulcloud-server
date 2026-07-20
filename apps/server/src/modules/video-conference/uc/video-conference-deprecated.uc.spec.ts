@@ -5,6 +5,7 @@ import { AuthorizationService } from '@modules/authorization';
 import { CourseService } from '@modules/course';
 import { type CourseEntity } from '@modules/course/repo';
 import { LegacySchoolService } from '@modules/legacy-school';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { RoleName } from '@modules/role';
 import { Role } from '@modules/role/repo';
 import { roleFactory } from '@modules/role/testing';
@@ -99,7 +100,13 @@ describe('VideoConferenceUc', () => {
 	};
 
 	beforeAll(async () => {
-		await setupEntities([User, Role, SystemEntity, UserLoginMigrationEntity]);
+		await setupEntities([
+			Role,
+			SchoolSystemOptionsEntity,
+			SystemEntity,
+			User,
+			UserLoginMigrationEntity,
+		]);
 
 		module = await Test.createTestingModule({
 			providers: [

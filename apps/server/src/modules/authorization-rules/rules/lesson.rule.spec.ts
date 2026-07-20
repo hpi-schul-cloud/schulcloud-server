@@ -9,6 +9,7 @@ import {
 } from '@modules/authorization';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory, courseGroupEntityFactory } from '@modules/course/testing';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { LessonEntity, Material } from '@modules/lesson/repo';
 import { lessonFactory } from '@modules/lesson/testing';
 import { RoleName } from '@modules/role';
@@ -40,15 +41,16 @@ describe('LessonRule', () => {
 
 	beforeAll(async () => {
 		await setupEntities([
-			SystemEntity,
-			UserLoginMigrationEntity,
-			User,
 			CourseEntity,
 			CourseGroupEntity,
-			Task,
 			LessonEntity,
 			Material,
+			SchoolSystemOptionsEntity,
 			Submission,
+			SystemEntity,
+			Task,
+			User,
+			UserLoginMigrationEntity,
 		]);
 
 		const module: TestingModule = await Test.createTestingModule({

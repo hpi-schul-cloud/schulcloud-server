@@ -6,6 +6,7 @@ import {
 	AuthorizationInjectionService,
 	TeacherVisibilityForExternalTeamInvitation,
 } from '@modules/authorization';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { RoleName } from '@modules/role';
 import { roleFactory } from '@modules/role/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
@@ -26,7 +27,12 @@ describe('UserRule', () => {
 	let config: AuthorizationConfig;
 
 	beforeAll(async () => {
-		await setupEntities([SystemEntity, UserLoginMigrationEntity, User]);
+		await setupEntities([
+			SchoolSystemOptionsEntity,
+			SystemEntity,
+			User,
+			UserLoginMigrationEntity,
+		]);
 
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [

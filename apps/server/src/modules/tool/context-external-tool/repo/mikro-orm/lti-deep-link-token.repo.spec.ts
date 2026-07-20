@@ -1,4 +1,5 @@
 import { EntityManager } from '@mikro-orm/mongodb';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { SystemEntity } from '@modules/system/repo';
 import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { Test, type TestingModule } from '@nestjs/testing';
@@ -20,7 +21,12 @@ describe(LtiDeepLinkTokenMikroOrmRepo.name, () => {
 		module = await Test.createTestingModule({
 			imports: [
 				MongoMemoryDatabaseModule.forRoot({
-					entities: [LtiDeepLinkTokenEntity, SystemEntity, UserLoginMigrationEntity],
+					entities: [
+						LtiDeepLinkTokenEntity,
+						SchoolSystemOptionsEntity,
+						SystemEntity,
+						UserLoginMigrationEntity,
+					]
 				}),
 			],
 			providers: [{ provide: LTI_DEEP_LINK_TOKEN_REPO, useClass: LtiDeepLinkTokenMikroOrmRepo }],

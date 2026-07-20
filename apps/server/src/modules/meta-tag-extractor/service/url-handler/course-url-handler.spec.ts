@@ -3,6 +3,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { CourseService } from '@modules/course';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { LessonEntity, Material } from '@modules/lesson/repo';
 import { Submission, Task } from '@modules/task/repo';
 import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
@@ -33,10 +34,11 @@ describe(CourseUrlHandler.name, () => {
 		await setupEntities([
 			CourseEntity,
 			CourseGroupEntity,
-			Task,
-			Submission,
 			LessonEntity,
 			Material,
+			SchoolSystemOptionsEntity,
+			Submission,
+			Task,
 			UserLoginMigrationEntity,
 		]);
 	});

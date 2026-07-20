@@ -2,6 +2,7 @@ import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { AuthorizationService } from '@modules/authorization';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { LessonEntity, Material } from '@modules/lesson/repo';
 import { lessonFactory } from '@modules/lesson/testing';
 import { Submission, Task, type TaskWithStatusVo } from '@modules/task/repo';
@@ -61,15 +62,16 @@ describe(RoomBoardDTOFactory.name, () => {
 		config = module.get<LearnroomConfig>(LEARNROOM_CONFIG_TOKEN);
 
 		await setupEntities([
-			User,
 			CourseEntity,
 			CourseGroupEntity,
-			LessonEntity,
-			Material,
-			Task,
-			Submission,
 			LegacyBoard,
 			LegacyBoardElement,
+			LessonEntity,
+			Material,
+			SchoolSystemOptionsEntity,
+			Submission,
+			Task,
+			User,
 			UserLoginMigrationEntity,
 		]);
 	});

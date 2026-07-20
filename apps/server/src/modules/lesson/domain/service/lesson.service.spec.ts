@@ -4,6 +4,7 @@ import { Logger } from '@infra/logger';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizableReferenceType, AuthorizationInjectionService } from '@modules/authorization';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { Submission, Task } from '@modules/task/repo';
 import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { Test, type TestingModule } from '@nestjs/testing';
@@ -24,10 +25,11 @@ describe('LessonService', () => {
 		await setupEntities([
 			CourseEntity,
 			CourseGroupEntity,
-			Task,
-			Submission,
 			LessonEntity,
 			Material,
+			SchoolSystemOptionsEntity,
+			Submission,
+			Task,
 			UserLoginMigrationEntity,
 		]);
 

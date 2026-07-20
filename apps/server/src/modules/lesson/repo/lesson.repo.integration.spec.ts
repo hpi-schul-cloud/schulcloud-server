@@ -1,6 +1,7 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { Submission, Task } from '@modules/task/repo';
 import { taskFactory } from '@modules/task/testing';
 import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
@@ -22,14 +23,15 @@ describe('LessonRepo', () => {
 			imports: [
 				MongoMemoryDatabaseModule.forRoot({
 					entities: [
-						LessonEntity,
-						Material,
-						Task,
-						Submission,
 						CourseEntity,
 						CourseGroupEntity,
+						LessonEntity,
+						Material,
+						SchoolSystemOptionsEntity,
+						Submission,
+						Task,
 						UserLoginMigrationEntity,
-					],
+					]
 				}),
 			],
 			providers: [LessonRepo],

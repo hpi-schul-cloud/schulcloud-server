@@ -1,5 +1,6 @@
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory, courseFactory } from '@modules/course/testing';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { LessonEntity, Material } from '@modules/lesson/repo';
 import { RoleName } from '@modules/role';
 import { roleFactory } from '@modules/role/testing';
@@ -35,14 +36,15 @@ describe('AuthorizationHelper', () => {
 		service = module.get<AuthorizationHelper>(AuthorizationHelper);
 
 		await setupEntities([
-			User,
 			CourseEntity,
 			CourseGroupEntity,
-			Task,
 			LessonEntity,
-			Submission,
 			Material,
+			SchoolSystemOptionsEntity,
+			Submission,
 			SystemEntity,
+			Task,
+			User,
 			UserLoginMigrationEntity,
 		]);
 	});

@@ -15,6 +15,7 @@ import { courseEntityFactory } from '@modules/course/testing';
 import { GroupTypes } from '@modules/group';
 import { groupFactory } from '@modules/group/testing';
 import { LegacySchoolService } from '@modules/legacy-school';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { RoleName } from '@modules/role';
 import { roleFactory } from '@modules/role/testing';
 import { RoomService } from '@modules/room';
@@ -126,7 +127,14 @@ describe(VideoConferenceService.name, () => {
 		videoConferenceRepo = module.get(VideoConferenceRepo);
 		config = module.get(VIDEO_CONFERENCE_CONFIG_TOKEN);
 
-		await setupEntities([User, CourseEntity, CourseGroupEntity, SystemEntity, UserLoginMigrationEntity]);
+		await setupEntities([
+			CourseEntity,
+			CourseGroupEntity,
+			SchoolSystemOptionsEntity,
+			SystemEntity,
+			User,
+			UserLoginMigrationEntity,
+		]);
 	});
 
 	describe('canGuestJoin', () => {

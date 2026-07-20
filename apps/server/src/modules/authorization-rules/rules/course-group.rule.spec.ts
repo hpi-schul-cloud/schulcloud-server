@@ -6,6 +6,7 @@ import {
 } from '@modules/authorization';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory, courseGroupEntityFactory } from '@modules/course/testing';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { roleFactory } from '@modules/role/testing';
 import { SystemEntity } from '@modules/system/repo';
 import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
@@ -36,7 +37,14 @@ describe('CourseGroupRule', () => {
 	let entity: CourseGroupEntity;
 
 	beforeAll(async () => {
-		await setupEntities([SystemEntity, UserLoginMigrationEntity, User, CourseEntity, CourseGroupEntity]);
+		await setupEntities([
+			CourseEntity,
+			CourseGroupEntity,
+			SchoolSystemOptionsEntity,
+			SystemEntity,
+			User,
+			UserLoginMigrationEntity,
+		]);
 
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [

@@ -1,4 +1,5 @@
 import { EntityManager } from '@mikro-orm/mongodb';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { SystemEntity } from '@modules/system/repo';
 import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
@@ -19,7 +20,13 @@ describe(RegistrationPinRepo.name, () => {
 		module = await Test.createTestingModule({
 			imports: [
 				MongoMemoryDatabaseModule.forRoot({
-					entities: [RegistrationPinEntity, User, SystemEntity, UserLoginMigrationEntity],
+					entities: [
+						RegistrationPinEntity,
+						SchoolSystemOptionsEntity,
+						SystemEntity,
+						User,
+						UserLoginMigrationEntity,
+					]
 				}),
 			],
 			providers: [RegistrationPinRepo],

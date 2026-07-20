@@ -4,6 +4,7 @@ import { AuthorizationService } from '@modules/authorization';
 import { BoardContextApiHelperService } from '@modules/board-context';
 import { CourseService } from '@modules/course';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { RoomService } from '@modules/room';
 import { RoomMembershipService } from '@modules/room-membership';
 import { SystemEntity } from '@modules/system/repo';
@@ -94,7 +95,14 @@ describe(BoardUc.name, () => {
 		boardNodeRule = module.get(BoardNodeRule);
 		authorizationService = module.get(AuthorizationService);
 		boardNodeAuthorizableService = module.get(BoardNodeAuthorizableService);
-		await setupEntities([SystemEntity, UserLoginMigrationEntity, User, CourseEntity, CourseGroupEntity]);
+		await setupEntities([
+			CourseEntity,
+			CourseGroupEntity,
+			SchoolSystemOptionsEntity,
+			SystemEntity,
+			User,
+			UserLoginMigrationEntity,
+		]);
 	});
 
 	afterAll(async () => {

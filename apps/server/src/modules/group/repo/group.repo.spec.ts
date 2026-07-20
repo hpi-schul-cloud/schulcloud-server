@@ -1,6 +1,7 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { RoleName } from '@modules/role';
 import { type Role } from '@modules/role/repo';
 import { roleFactory } from '@modules/role/testing';
@@ -32,14 +33,15 @@ describe(GroupRepo.name, () => {
 			imports: [
 				MongoMemoryDatabaseModule.forRoot({
 					entities: [
-						GroupEntity,
-						SchoolEntity,
-						User,
-						SystemEntity,
 						CourseEntity,
 						CourseGroupEntity,
+						GroupEntity,
+						SchoolEntity,
+						SchoolSystemOptionsEntity,
+						SystemEntity,
+						User,
 						UserLoginMigrationEntity,
-					],
+					]
 				}),
 			],
 			providers: [GroupRepo],

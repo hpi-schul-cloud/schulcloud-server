@@ -5,6 +5,7 @@ import {
 	AuthorizationHelper,
 	AuthorizationInjectionService,
 } from '@modules/authorization';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { roleFactory } from '@modules/role/testing';
 import { SystemEntity } from '@modules/system/repo';
 import { teamFactory } from '@modules/team/testing';
@@ -22,7 +23,12 @@ describe('TeamRule', () => {
 	let injectionService: AuthorizationInjectionService;
 
 	beforeAll(async () => {
-		await setupEntities([SystemEntity, UserLoginMigrationEntity, User]);
+		await setupEntities([
+			SchoolSystemOptionsEntity,
+			SystemEntity,
+			User,
+			UserLoginMigrationEntity,
+		]);
 
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [

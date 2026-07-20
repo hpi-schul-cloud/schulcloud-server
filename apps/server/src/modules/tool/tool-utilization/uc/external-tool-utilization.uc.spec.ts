@@ -1,6 +1,7 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Action, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { type Role } from '@modules/role/repo';
 import { roleFactory } from '@modules/role/testing';
 import { SystemEntity } from '@modules/system/repo';
@@ -27,7 +28,12 @@ describe(ExternalToolUtilizationUc.name, () => {
 	let externalToolUtilizationService: DeepMocked<ExternalToolUtilizationService>;
 
 	beforeAll(async () => {
-		await setupEntities([SystemEntity, UserLoginMigrationEntity, User]);
+		await setupEntities([
+			SchoolSystemOptionsEntity,
+			SystemEntity,
+			User,
+			UserLoginMigrationEntity,
+		]);
 
 		module = await Test.createTestingModule({
 			providers: [

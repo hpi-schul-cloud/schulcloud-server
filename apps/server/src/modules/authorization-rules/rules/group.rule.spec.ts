@@ -8,6 +8,7 @@ import {
 } from '@modules/authorization';
 import { Group } from '@modules/group';
 import { groupFactory } from '@modules/group/testing';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { roleFactory } from '@modules/role/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { SystemEntity } from '@modules/system/repo';
@@ -28,7 +29,13 @@ describe('GroupRule', () => {
 	let authorizationHelper: DeepMocked<AuthorizationHelper>;
 
 	beforeAll(async () => {
-		await setupEntities([SystemEntity, UserLoginMigrationEntity, User, Group]);
+		await setupEntities([
+			Group,
+			SchoolSystemOptionsEntity,
+			SystemEntity,
+			User,
+			UserLoginMigrationEntity,
+		]);
 
 		module = await Test.createTestingModule({
 			providers: [

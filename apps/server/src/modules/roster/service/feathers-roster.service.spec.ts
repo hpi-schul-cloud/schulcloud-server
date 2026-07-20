@@ -6,6 +6,7 @@ import { cardFactory, columnBoardFactory, columnFactory, externalToolElementFact
 import { CourseService } from '@modules/course';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
 import { PseudonymService } from '@modules/pseudonym';
 import { pseudonymFactory } from '@modules/pseudonym/testing';
@@ -109,7 +110,12 @@ describe('FeathersRosterService', () => {
 		roomMembershipService = module.get(RoomMembershipService);
 		config = module.get(ROSTER_PUBLIC_API_CONFIG_TOKEN);
 
-		await setupEntities([CourseEntity, CourseGroupEntity, UserLoginMigrationEntity]);
+		await setupEntities([
+			CourseEntity,
+			CourseGroupEntity,
+			SchoolSystemOptionsEntity,
+			UserLoginMigrationEntity,
+		]);
 	});
 
 	beforeEach(() => {

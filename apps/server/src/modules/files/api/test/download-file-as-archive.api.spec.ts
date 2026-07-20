@@ -13,6 +13,7 @@ import { LoggerModule } from '@infra/logger';
 import { S3ClientAdapter } from '@infra/s3-client';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { AccountEntity } from '@modules/account/repo';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { storageProviderFactory } from '@modules/school/testing';
 import { SystemEntity } from '@modules/system/repo';
 import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
@@ -56,7 +57,13 @@ describe('DownloadArchive Controller (API)', () => {
 				]),
 				ErrorModule,
 				MongoMemoryDatabaseModule.forRoot({
-					entities: [User, AccountEntity, SystemEntity, UserLoginMigrationEntity],
+					entities: [
+						AccountEntity,
+						SchoolSystemOptionsEntity,
+						SystemEntity,
+						User,
+						UserLoginMigrationEntity,
+					]
 				}),
 				ConfigurationModule.register(TEST_JWT_CONFIG_TOKEN, TestJwtModuleConfig),
 			],

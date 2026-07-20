@@ -5,6 +5,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { CopyElementType, type CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
 import { BoardExternalReferenceType } from '../../domain/types';
@@ -59,7 +60,12 @@ describe(BoardCopyService.name, () => {
 		boardNodeCopyService = module.get(BoardNodeCopyService);
 		columnBoardTitleService = module.get(ColumnBoardTitleService);
 
-		await setupEntities([CourseEntity, CourseGroupEntity, UserLoginMigrationEntity]);
+		await setupEntities([
+			CourseEntity,
+			CourseGroupEntity,
+			SchoolSystemOptionsEntity,
+			UserLoginMigrationEntity,
+		]);
 	});
 
 	afterEach(() => {

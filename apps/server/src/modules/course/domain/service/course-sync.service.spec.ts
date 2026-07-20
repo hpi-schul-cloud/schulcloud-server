@@ -2,6 +2,7 @@ import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { type Group, GroupUser } from '@modules/group';
 import { groupFactory } from '@modules/group/testing';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { type RoleDto, RoleName, RoleService } from '@modules/role';
 import { roleDtoFactory } from '@modules/role/testing';
 import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
@@ -42,7 +43,13 @@ describe(CourseSyncService.name, () => {
 		service = module.get(CourseSyncService);
 		roleService = module.get(RoleService);
 		courseDoService = module.get(CourseDoService);
-		await setupEntities([User, Course, CourseGroupEntity, UserLoginMigrationEntity]);
+		await setupEntities([
+			Course,
+			CourseGroupEntity,
+			SchoolSystemOptionsEntity,
+			User,
+			UserLoginMigrationEntity,
+		]);
 	});
 
 	afterAll(async () => {

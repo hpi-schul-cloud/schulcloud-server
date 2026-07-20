@@ -2,6 +2,7 @@ import { createMock } from '@golevelup/ts-jest';
 import { CourseService } from '@modules/course';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { NotFoundException } from '@nestjs/common/';
 import { Test, type TestingModule } from '@nestjs/testing';
@@ -42,7 +43,12 @@ describe('dashboard uc', () => {
 		repo = module.get(DASHBOARD_REPO);
 		courseService = module.get(CourseService);
 
-		await setupEntities([CourseEntity, CourseGroupEntity, UserLoginMigrationEntity]);
+		await setupEntities([
+			CourseEntity,
+			CourseGroupEntity,
+			SchoolSystemOptionsEntity,
+			UserLoginMigrationEntity,
+		]);
 	});
 
 	afterEach(() => {

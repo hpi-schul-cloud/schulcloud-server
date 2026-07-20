@@ -8,6 +8,7 @@ import {
 } from '@modules/authorization';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { SystemEntity } from '@modules/system/repo';
 import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
@@ -24,7 +25,14 @@ describe('AuthorizationReferenceService', () => {
 	let loader: DeepMocked<ReferenceLoader>;
 
 	beforeAll(async () => {
-		await setupEntities([SystemEntity, User, UserLoginMigrationEntity, CourseEntity, CourseGroupEntity]);
+		await setupEntities([
+			CourseEntity,
+			CourseGroupEntity,
+			SchoolSystemOptionsEntity,
+			SystemEntity,
+			User,
+			UserLoginMigrationEntity,
+		]);
 
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [

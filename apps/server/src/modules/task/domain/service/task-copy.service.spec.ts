@@ -3,6 +3,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { CopyElementType, CopyFilesService, CopyHelperService, CopyStatusEnum } from '@modules/copy-helper';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { LessonEntity, Material } from '@modules/lesson/repo';
 import { lessonFactory } from '@modules/lesson/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
@@ -28,14 +29,15 @@ describe('task copy service', () => {
 
 	beforeAll(async () => {
 		await setupEntities([
-			User,
-			Task,
-			Submission,
 			CourseEntity,
 			CourseGroupEntity,
 			LessonEntity,
 			Material,
+			SchoolSystemOptionsEntity,
+			Submission,
 			SystemEntity,
+			Task,
+			User,
 			UserLoginMigrationEntity,
 		]);
 		module = await Test.createTestingModule({

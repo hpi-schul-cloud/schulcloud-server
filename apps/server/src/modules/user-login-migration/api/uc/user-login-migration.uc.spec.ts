@@ -5,6 +5,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthenticationService } from '@modules/authentication';
 import { Action, AuthorizationService } from '@modules/authorization';
 import { LegacySchoolService } from '@modules/legacy-school';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
 import { OAuthService } from '@modules/oauth';
 import { ExternalSchoolDto, OauthDataDto, ProvisioningService, ProvisioningSystemDto } from '@modules/provisioning';
@@ -53,7 +54,12 @@ describe(UserLoginMigrationUc.name, () => {
 	let userService: DeepMocked<UserService>;
 
 	beforeAll(async () => {
-		await setupEntities([SystemEntity, UserLoginMigrationEntity, User]);
+		await setupEntities([
+			SchoolSystemOptionsEntity,
+			SystemEntity,
+			User,
+			UserLoginMigrationEntity,
+		]);
 
 		module = await Test.createTestingModule({
 			providers: [

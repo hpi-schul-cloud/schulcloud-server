@@ -1,4 +1,7 @@
 import { ObjectId } from '@mikro-orm/mongodb';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
+import { SchoolEntity } from '@modules/school/repo';
+import { SystemEntity } from '@modules/system/repo';
 import { setupEntities } from '@testing/database';
 import {
 	CustomParameterLocation,
@@ -14,7 +17,7 @@ import { ExternalToolEntity } from './external-tool.entity';
 
 describe('ExternalToolEntity', () => {
 	beforeAll(async () => {
-		await setupEntities([ExternalToolEntity]);
+		await setupEntities([ExternalToolEntity, SchoolEntity, SchoolSystemOptionsEntity, SystemEntity]);
 	});
 
 	describe('constructor', () => {

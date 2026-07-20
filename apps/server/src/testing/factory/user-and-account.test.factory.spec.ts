@@ -1,5 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountEntity } from '@modules/account/repo';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 // eslint-disable-next-line @typescript-eslint/no-restricted-imports
 import { schoolEntityFactory } from '@modules/school/testing';
 // eslint-disable-next-line @typescript-eslint/no-restricted-imports
@@ -13,7 +14,12 @@ import { type UserAndAccountParams, UserAndAccountTestFactory } from './user-and
 
 describe('user-and-account.test.factory', () => {
 	beforeAll(async () => {
-		await setupEntities([User, SystemEntity, UserLoginMigrationEntity]);
+		await setupEntities([
+			SchoolSystemOptionsEntity,
+			SystemEntity,
+			User,
+			UserLoginMigrationEntity,
+		]);
 	});
 
 	const createParams = () => {

@@ -3,6 +3,7 @@ import { DefaultEncryptionService, type SymmetricKeyEncryptionService } from '@i
 import { FileSystemAdapter } from '@infra/file-system';
 import { LegacyLogger } from '@infra/logger';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { Role } from '@modules/role/repo';
 import { SchoolEntity, type StorageProviderEntity } from '@modules/school/repo';
 import { SystemEntity } from '@modules/system/repo';
@@ -220,7 +221,13 @@ describe('DatabaseManagementService', () => {
 		systemsSeedDataService = module.get(SystemsSeedDataService);
 		externalToolsSeedDataService = module.get(ExternalToolsSeedDataService);
 		instancesSeedDataService = module.get(InstancesSeedDataService);
-		await setupEntities([SchoolEntity, Role, SystemEntity, UserLoginMigrationEntity]);
+		await setupEntities([
+			Role,
+			SchoolEntity,
+			SchoolSystemOptionsEntity,
+			SystemEntity,
+			UserLoginMigrationEntity,
+		]);
 	});
 
 	afterAll(async () => {

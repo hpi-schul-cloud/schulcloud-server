@@ -2,6 +2,7 @@ import { createMock } from '@golevelup/ts-jest';
 import { LegacyLogger } from '@infra/logger';
 import { type EntityData, type FindOptions, NotFoundError, type QueryOrderMap } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { RoleName } from '@modules/role';
 import type { Role } from '@modules/role/repo';
 import { roleFactory } from '@modules/role/testing';
@@ -28,7 +29,14 @@ describe('UserRepo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [User, SystemEntity, UserLoginMigrationEntity] })],
+			imports: [MongoMemoryDatabaseModule.forRoot({
+				entities: [
+					SchoolSystemOptionsEntity,
+					SystemEntity,
+					User,
+					UserLoginMigrationEntity,
+				]
+			})],
 			providers: [
 				UserDoMikroOrmRepo,
 				{

@@ -1,3 +1,4 @@
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { RoleName } from '@modules/role';
 import { roleFactory } from '@modules/role/testing';
 import { SystemEntity } from '@modules/system/repo';
@@ -13,7 +14,12 @@ import { UserMatchMapper } from './user-match.mapper';
 
 describe('[UserMatchMapper]', () => {
 	beforeAll(async () => {
-		await setupEntities([SystemEntity, UserLoginMigrationEntity, User]);
+		await setupEntities([
+			SchoolSystemOptionsEntity,
+			SystemEntity,
+			User,
+			UserLoginMigrationEntity,
+		]);
 	});
 
 	describe('[mapToDomain] from query', () => {

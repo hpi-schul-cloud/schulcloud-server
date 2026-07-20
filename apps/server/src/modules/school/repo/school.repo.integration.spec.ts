@@ -1,6 +1,7 @@
 import { faker } from '@faker-js/faker';
 import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { countyEmbeddableFactory, federalStateEntityFactory, schoolYearEntityFactory } from '@modules/school/testing';
 import { SystemEntity } from '@modules/system/repo';
 import { systemEntityFactory } from '@modules/system/testing';
@@ -23,7 +24,14 @@ describe('SchoolMikroOrmRepo', () => {
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [
-				MongoMemoryDatabaseModule.forRoot({ entities: [SchoolEntity, SystemEntity, UserLoginMigrationEntity] }),
+				MongoMemoryDatabaseModule.forRoot({
+					entities: [
+						SchoolEntity,
+						SchoolSystemOptionsEntity,
+						SystemEntity,
+						UserLoginMigrationEntity,
+					]
+				}),
 			],
 			providers: [{ provide: SCHOOL_REPO, useClass: SchoolMikroOrmRepo }],
 		}).compile();

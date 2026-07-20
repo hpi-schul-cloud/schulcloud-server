@@ -1,4 +1,5 @@
 import { EntityManager } from '@mikro-orm/mongodb';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { SchoolEntity } from '@modules/school/repo';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { type SystemEntity } from '@modules/system/repo';
@@ -18,7 +19,12 @@ describe('UserLoginMigrationRepo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [UserLoginMigrationEntity] })],
+			imports: [MongoMemoryDatabaseModule.forRoot({
+				entities: [
+					SchoolSystemOptionsEntity,
+					UserLoginMigrationEntity,
+				]
+			})],
 			providers: [UserLoginMigrationRepo],
 		}).compile();
 

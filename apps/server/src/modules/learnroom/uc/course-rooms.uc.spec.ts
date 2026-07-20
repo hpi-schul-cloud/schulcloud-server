@@ -2,6 +2,7 @@ import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { CourseService } from '@modules/course';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { LessonEntity, Material } from '@modules/lesson/repo';
 import { lessonFactory } from '@modules/lesson/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
@@ -84,15 +85,16 @@ describe('rooms usecase', () => {
 		roomsService = module.get(CourseRoomsService);
 
 		await setupEntities([
-			User,
 			CourseEntity,
 			CourseGroupEntity,
-			Task,
-			Submission,
-			LessonEntity,
-			Material,
 			LegacyBoard,
 			LegacyBoardElement,
+			LessonEntity,
+			Material,
+			SchoolSystemOptionsEntity,
+			Submission,
+			Task,
+			User,
 			UserLoginMigrationEntity,
 		]);
 	});

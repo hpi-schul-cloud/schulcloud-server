@@ -3,6 +3,7 @@ import { AuthorizationContextBuilder, AuthorizationService } from '@modules/auth
 import { courseFactory } from '@modules/course/testing';
 import { GroupService } from '@modules/group';
 import { groupFactory } from '@modules/group/testing';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { SystemEntity } from '@modules/system/repo';
 import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
@@ -51,7 +52,12 @@ describe(CourseSyncUc.name, () => {
 		groupService = module.get(GroupService);
 		courseSyncService = module.get(CourseSyncService);
 
-		await setupEntities([SystemEntity, UserLoginMigrationEntity, User]);
+		await setupEntities([
+			SchoolSystemOptionsEntity,
+			SystemEntity,
+			User,
+			UserLoginMigrationEntity,
+		]);
 	});
 
 	afterAll(async () => {

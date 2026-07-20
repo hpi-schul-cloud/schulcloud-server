@@ -1,5 +1,6 @@
 import { type MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { userFactory } from '@modules/user/testing';
@@ -18,7 +19,12 @@ describe('CourseEntity', () => {
 	let orm: MikroORM;
 
 	beforeAll(async () => {
-		orm = await setupEntities([CourseEntity, CourseGroupEntity, UserLoginMigrationEntity]);
+		orm = await setupEntities([
+			CourseEntity,
+			CourseGroupEntity,
+			SchoolSystemOptionsEntity,
+			UserLoginMigrationEntity,
+		]);
 	});
 
 	describe('constructor', () => {

@@ -2,6 +2,7 @@ import { createMock } from '@golevelup/ts-jest';
 import { LegacyLogger } from '@infra/logger';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { SystemEntity } from '@modules/system/repo';
 import { CustomParameterEntry } from '@modules/tool/common/domain';
@@ -32,14 +33,15 @@ describe(ContextExternalToolRepo.name, () => {
 				MongoMemoryDatabaseModule.forRoot({
 					entities: [
 						ContextExternalToolEntity,
-						SchoolExternalToolEntity,
-						ExternalToolEntity,
-						User,
 						CourseEntity,
 						CourseGroupEntity,
+						ExternalToolEntity,
+						SchoolExternalToolEntity,
+						SchoolSystemOptionsEntity,
 						SystemEntity,
+						User,
 						UserLoginMigrationEntity,
-					],
+					]
 				}),
 			],
 			providers: [

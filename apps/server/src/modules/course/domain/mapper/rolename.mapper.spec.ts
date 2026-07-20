@@ -1,3 +1,4 @@
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { RoleName } from '@modules/role';
 import { roleFactory } from '@modules/role/testing';
 import { User } from '@modules/user/repo';
@@ -18,7 +19,13 @@ describe('rolename mapper', () => {
 	});
 
 	beforeAll(async () => {
-		await setupEntities([User, CourseEntity, CourseGroupEntity, UserLoginMigrationEntity]);
+		await setupEntities([
+			CourseEntity,
+			CourseGroupEntity,
+			SchoolSystemOptionsEntity,
+			User,
+			UserLoginMigrationEntity,
+		]);
 		module = await Test.createTestingModule({
 			imports: [],
 			providers: [],

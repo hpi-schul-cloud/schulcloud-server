@@ -5,6 +5,7 @@ import { cardFactory, columnBoardFactory, columnFactory } from '@modules/board/t
 import { CourseService } from '@modules/course';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { LessonService } from '@modules/lesson';
 import { LessonEntity, Material } from '@modules/lesson/repo';
 import { lessonFactory } from '@modules/lesson/testing';
@@ -87,13 +88,14 @@ describe('ShareTokenService', () => {
 		boardNodeService = await module.get(BoardNodeService);
 		roomService = await module.get(RoomService);
 		await setupEntities([
-			User,
 			CourseEntity,
 			CourseGroupEntity,
-			Task,
-			Submission,
 			LessonEntity,
 			Material,
+			SchoolSystemOptionsEntity,
+			Submission,
+			Task,
+			User,
 			UserLoginMigrationEntity,
 		]);
 	});

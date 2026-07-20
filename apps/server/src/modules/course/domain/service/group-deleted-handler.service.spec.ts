@@ -4,6 +4,7 @@ import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { GroupDeletedEvent } from '@modules/group';
 import { groupFactory } from '@modules/group/testing';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
@@ -33,7 +34,12 @@ describe(GroupDeletedHandlerService.name, () => {
 				},
 				{
 					provide: MikroORM,
-					useValue: await setupEntities([CourseEntity, CourseGroupEntity, UserLoginMigrationEntity]),
+					useValue: await setupEntities([
+						CourseEntity,
+						CourseGroupEntity,
+						SchoolSystemOptionsEntity,
+						UserLoginMigrationEntity,
+					]),
 				},
 			],
 		}).compile();

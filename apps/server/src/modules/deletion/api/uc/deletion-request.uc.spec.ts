@@ -3,6 +3,9 @@ import { LegacyLogger } from '@infra/logger';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountService } from '@modules/account';
 import { AuthenticationService } from '@modules/authentication';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
+import { SchoolEntity } from '@modules/school/repo';
+import { SystemEntity } from '@modules/system/repo';
 import { UserService } from '@modules/user';
 import { NotFoundException } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
@@ -32,7 +35,7 @@ describe(DeletionRequestUc.name, () => {
 	let userService: DeepMocked<UserService>;
 
 	beforeAll(async () => {
-		await setupEntities([DeletionRequestEntity]);
+		await setupEntities([DeletionRequestEntity, SchoolEntity, SchoolSystemOptionsEntity, SystemEntity]);
 
 		module = await Test.createTestingModule({
 			providers: [

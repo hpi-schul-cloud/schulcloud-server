@@ -1,4 +1,5 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { MediaSourceEntity } from '@modules/media-source/entity';
 import { mediaSourceEntityFactory } from '@modules/media-source/testing';
 import { SchoolEntity } from '@modules/school/repo';
@@ -25,11 +26,12 @@ describe(MediaSchoolLicenseMikroOrmRepo.name, () => {
 					entities: [
 						MediaSchoolLicenseEntity,
 						MediaSourceEntity,
-						SchoolLicenseEntity,
 						SchoolEntity,
+						SchoolLicenseEntity,
+						SchoolSystemOptionsEntity,
 						SystemEntity,
 						UserLoginMigrationEntity,
-					],
+					]
 				}),
 			],
 			providers: [MediaSchoolLicenseMikroOrmRepo],

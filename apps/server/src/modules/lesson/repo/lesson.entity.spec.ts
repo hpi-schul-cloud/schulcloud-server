@@ -2,6 +2,7 @@ import { type MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory, courseGroupEntityFactory } from '@modules/course/testing';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { Submission, Task } from '@modules/task/repo';
 import { taskFactory } from '@modules/task/testing';
 import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
@@ -19,13 +20,14 @@ describe('Lesson Entity', () => {
 
 	beforeAll(async () => {
 		orm = await setupEntities([
-			User,
-			Task,
-			Submission,
-			LessonEntity,
-			Material,
 			CourseEntity,
 			CourseGroupEntity,
+			LessonEntity,
+			Material,
+			SchoolSystemOptionsEntity,
+			Submission,
+			Task,
+			User,
 			UserLoginMigrationEntity,
 		]);
 	});

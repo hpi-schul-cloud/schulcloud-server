@@ -1,6 +1,7 @@
 import { createMock } from '@golevelup/ts-jest';
 import { LegacyLogger } from '@infra/logger';
 import { EntityManager } from '@mikro-orm/mongodb';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { SchoolEntity } from '@modules/school/repo';
 import { schoolEntityFactory } from '@modules/school/testing/school-entity.factory';
 import { SystemEntity } from '@modules/system/repo';
@@ -22,7 +23,13 @@ describe('ShareTokenRepo', () => {
 		module = await Test.createTestingModule({
 			imports: [
 				MongoMemoryDatabaseModule.forRoot({
-					entities: [ShareToken, SchoolEntity, SystemEntity, UserLoginMigrationEntity],
+					entities: [
+						SchoolEntity,
+						SchoolSystemOptionsEntity,
+						ShareToken,
+						SystemEntity,
+						UserLoginMigrationEntity,
+					]
 				}),
 			],
 			providers: [

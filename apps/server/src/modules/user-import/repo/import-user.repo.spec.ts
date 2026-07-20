@@ -1,5 +1,6 @@
 import { MikroORM, NotFoundError } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { RoleName } from '@modules/role';
 import { SchoolEntity } from '@modules/school/repo';
 import { schoolEntityFactory } from '@modules/school/testing';
@@ -33,7 +34,14 @@ describe('ImportUserRepo', () => {
 		module = await Test.createTestingModule({
 			imports: [
 				MongoMemoryDatabaseModule.forRoot({
-					entities: [ImportUser, SchoolEntity, User, SystemEntity, UserLoginMigrationEntity],
+					entities: [
+						ImportUser,
+						SchoolEntity,
+						SchoolSystemOptionsEntity,
+						SystemEntity,
+						User,
+						UserLoginMigrationEntity,
+					]
 				}),
 			],
 			providers: [ImportUserRepo],

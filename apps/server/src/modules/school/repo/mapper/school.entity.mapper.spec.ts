@@ -1,3 +1,4 @@
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { SystemEntity } from '@modules/system/repo';
 import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
@@ -13,7 +14,12 @@ describe('SchoolEntityMapper', () => {
 	describe('mapToDo', () => {
 		describe('when school entity is passed', () => {
 			const setup = async () => {
-				await setupEntities([SchoolEntity, SystemEntity, UserLoginMigrationEntity]);
+				await setupEntities([
+					SchoolEntity,
+					SchoolSystemOptionsEntity,
+					SystemEntity,
+					UserLoginMigrationEntity,
+				]);
 
 				const system = new SystemEntity({
 					type: 'type',

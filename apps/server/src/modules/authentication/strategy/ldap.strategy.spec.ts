@@ -3,6 +3,7 @@ import { type ICurrentUser } from '@infra/auth-guard';
 import { Logger } from '@infra/logger';
 import { type Account } from '@modules/account';
 import { accountDoFactory, defaultTestPassword, defaultTestPasswordHash } from '@modules/account/testing';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { LegacySchoolRepo } from '@modules/legacy-school/repo';
 import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
 import { RoleName } from '@modules/role';
@@ -34,7 +35,12 @@ describe('LdapStrategy', () => {
 	let systemService: DeepMocked<SystemService>;
 
 	beforeAll(async () => {
-		await setupEntities([SystemEntity, User, UserLoginMigrationEntity]);
+		await setupEntities([
+			SchoolSystemOptionsEntity,
+			SystemEntity,
+			User,
+			UserLoginMigrationEntity,
+		]);
 
 		module = await Test.createTestingModule({
 			imports: [PassportModule],

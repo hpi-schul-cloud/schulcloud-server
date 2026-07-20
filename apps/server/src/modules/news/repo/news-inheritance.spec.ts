@@ -1,5 +1,6 @@
 import { Collection, Entity, Enum, ManyToMany, ManyToOne, Property } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 import { cleanupCollections } from '@testing/cleanup-collections';
@@ -95,7 +96,17 @@ describe('News mapping', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [User, School, Course, News, SchoolNews, CourseNews] })],
+			imports: [MongoMemoryDatabaseModule.forRoot({
+				entities: [
+					Course,
+					CourseNews,
+					News,
+					School,
+					SchoolNews,
+					SchoolSystemOptionsEntity,
+					User,
+				]
+			})],
 		}).compile();
 
 		em = module.get(EntityManager);

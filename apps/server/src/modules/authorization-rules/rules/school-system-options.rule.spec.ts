@@ -7,6 +7,7 @@ import {
 	AuthorizationInjectionService,
 } from '@modules/authorization';
 import { type SchoolSystemOptions } from '@modules/legacy-school';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { schoolSystemOptionsFactory } from '@modules/legacy-school/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { SystemEntity } from '@modules/system/repo';
@@ -27,7 +28,12 @@ describe(SchoolSystemOptionsRule.name, () => {
 	let authorizationHelper: DeepMocked<AuthorizationHelper>;
 
 	beforeAll(async () => {
-		await setupEntities([SystemEntity, UserLoginMigrationEntity, User]);
+		await setupEntities([
+			SchoolSystemOptionsEntity,
+			SystemEntity,
+			User,
+			UserLoginMigrationEntity,
+		]);
 
 		module = await Test.createTestingModule({
 			providers: [

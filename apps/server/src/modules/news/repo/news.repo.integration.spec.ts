@@ -2,6 +2,7 @@ import { NotFoundError } from '@mikro-orm/core';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import {
 	courseNewsFactory,
 	courseUnpublishedNewsFactory,
@@ -33,15 +34,16 @@ describe('NewsRepo', () => {
 			imports: [
 				MongoMemoryDatabaseModule.forRoot({
 					entities: [
-						News,
-						TeamEntity,
 						CourseEntity,
 						CourseGroupEntity,
 						CourseNews,
+						News,
 						SchoolNews,
+						SchoolSystemOptionsEntity,
+						TeamEntity,
 						TeamNews,
 						UserLoginMigrationEntity,
-					],
+					]
 				}),
 			],
 			providers: [NewsRepo],

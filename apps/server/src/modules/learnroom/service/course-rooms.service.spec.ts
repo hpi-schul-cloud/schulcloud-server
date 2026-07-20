@@ -3,6 +3,7 @@ import { BoardExternalReferenceType } from '@modules/board';
 import { columnBoardEntityFactory } from '@modules/board/testing/entity/column-board-entity.factory';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { LessonService } from '@modules/lesson';
 import { LessonEntity, Material } from '@modules/lesson/repo';
 import { lessonFactory } from '@modules/lesson/testing';
@@ -32,15 +33,16 @@ describe('rooms service', () => {
 
 	beforeAll(async () => {
 		await setupEntities([
-			User,
 			CourseEntity,
 			CourseGroupEntity,
-			LessonEntity,
-			Material,
-			Task,
-			Submission,
 			LegacyBoard,
 			LegacyBoardElement,
+			LessonEntity,
+			Material,
+			SchoolSystemOptionsEntity,
+			Submission,
+			Task,
+			User,
 			UserLoginMigrationEntity,
 		]);
 		module = await Test.createTestingModule({

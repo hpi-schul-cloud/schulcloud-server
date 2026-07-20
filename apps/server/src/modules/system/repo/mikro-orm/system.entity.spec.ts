@@ -1,3 +1,4 @@
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo/user-login-migration.entity';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { setupEntities } from '@testing/database';
@@ -5,7 +6,11 @@ import { SystemEntity } from './system.entity';
 
 describe('System Entity', () => {
 	beforeAll(async () => {
-		await setupEntities([SystemEntity, UserLoginMigrationEntity]);
+		await setupEntities([
+			SchoolSystemOptionsEntity,
+			SystemEntity,
+			UserLoginMigrationEntity,
+		]);
 	});
 
 	describe('constructor', () => {

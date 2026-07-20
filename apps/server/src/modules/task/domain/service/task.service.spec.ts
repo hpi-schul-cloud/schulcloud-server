@@ -2,6 +2,7 @@ import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { FilesStorageClientAdapterService } from '@infra/files-storage-amqp-client';
 import { Logger } from '@infra/logger';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { LessonEntity, Material } from '@modules/lesson/repo';
 import { SystemEntity } from '@modules/system/repo';
 import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
@@ -22,14 +23,15 @@ describe('TaskService', () => {
 
 	beforeAll(async () => {
 		await setupEntities([
-			User,
-			Task,
-			Submission,
 			CourseEntity,
 			CourseGroupEntity,
 			LessonEntity,
 			Material,
+			SchoolSystemOptionsEntity,
+			Submission,
 			SystemEntity,
+			Task,
+			User,
 			UserLoginMigrationEntity,
 		]);
 

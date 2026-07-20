@@ -3,6 +3,7 @@ import { type AnyBoardNode, BoardExternalReferenceType, BoardNodeService } from 
 import { CourseService } from '@modules/course';
 import { CourseEntity, CourseFeatures, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { RoomService } from '@modules/room';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { UserService } from '@modules/user';
@@ -28,7 +29,12 @@ describe('BoardContextApiHelperService', () => {
 	let boardContextApiConfig: BoardContextPublicApiConfig;
 
 	beforeEach(async () => {
-		await setupEntities([CourseEntity, CourseGroupEntity, UserLoginMigrationEntity]);
+		await setupEntities([
+			CourseEntity,
+			CourseGroupEntity,
+			SchoolSystemOptionsEntity,
+			UserLoginMigrationEntity,
+		]);
 		module = await Test.createTestingModule({
 			providers: [
 				BoardContextApiHelperService,

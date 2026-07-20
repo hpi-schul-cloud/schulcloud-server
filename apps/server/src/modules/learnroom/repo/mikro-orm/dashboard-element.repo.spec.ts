@@ -1,6 +1,7 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, type TestingModule } from '@nestjs/testing';
@@ -19,13 +20,14 @@ describe(DashboardElementRepo.name, () => {
 			imports: [
 				MongoMemoryDatabaseModule.forRoot({
 					entities: [
-						DashboardGridElementEntity,
-						DashboardEntity,
 						CourseEntity,
-						User,
 						CourseGroupEntity,
+						DashboardEntity,
+						DashboardGridElementEntity,
+						SchoolSystemOptionsEntity,
+						User,
 						UserLoginMigrationEntity,
-					],
+					]
 				}),
 			],
 			providers: [DashboardElementRepo],

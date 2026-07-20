@@ -4,6 +4,7 @@ import { CopyElementType, CopyStatusEnum } from '@modules/copy-helper';
 import { CourseDoService } from '@modules/course';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory, courseFactory } from '@modules/course/testing';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
@@ -24,7 +25,13 @@ describe('course copy uc', () => {
 	let config: LearnroomConfig;
 
 	beforeAll(async () => {
-		await setupEntities([User, CourseEntity, CourseGroupEntity, UserLoginMigrationEntity]);
+		await setupEntities([
+			CourseEntity,
+			CourseGroupEntity,
+			SchoolSystemOptionsEntity,
+			User,
+			UserLoginMigrationEntity,
+		]);
 		module = await Test.createTestingModule({
 			providers: [
 				CourseCopyUC,

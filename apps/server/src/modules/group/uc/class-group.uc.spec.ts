@@ -12,6 +12,7 @@ import { classFactory } from '@modules/class/domain/testing/factory/class.factor
 import { type Course, CourseDoService } from '@modules/course';
 import { courseFactory } from '@modules/course/testing';
 import { ClassGroupUc } from '@modules/group/uc/class-group.uc';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { RoleService } from '@modules/role';
 import { roleDtoFactory } from '@modules/role/testing';
 import { type School, SchoolService, SchoolYearService } from '@modules/school/domain';
@@ -123,7 +124,12 @@ describe('ClassGroupUc', () => {
 		authorizationConfig = module.get(AUTHORIZATION_CONFIG_TOKEN);
 		userService = module.get(UserService);
 
-		await setupEntities([SystemEntity, UserLoginMigrationEntity, User]);
+		await setupEntities([
+			SchoolSystemOptionsEntity,
+			SystemEntity,
+			User,
+			UserLoginMigrationEntity,
+		]);
 	});
 
 	afterAll(async () => {

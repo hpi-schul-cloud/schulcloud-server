@@ -6,6 +6,7 @@ import { JwtWhitelistAdapter } from '@infra/jwt-whitelist';
 import { Logger } from '@infra/logger';
 import { Account, AccountService } from '@modules/account';
 import { accountDoFactory } from '@modules/account/testing';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { OauthSessionTokenService } from '@modules/oauth';
 import { SystemEntity } from '@modules/system/repo';
 import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
@@ -42,7 +43,13 @@ describe(AuthenticationService.name, () => {
 	});
 
 	beforeAll(async () => {
-		await setupEntities([Account, SystemEntity, User, UserLoginMigrationEntity]);
+		await setupEntities([
+			Account,
+			SchoolSystemOptionsEntity,
+			SystemEntity,
+			User,
+			UserLoginMigrationEntity,
+		]);
 
 		module = await Test.createTestingModule({
 			providers: [

@@ -1,3 +1,4 @@
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { SystemEntity } from '@modules/system/repo';
 import { TeamEntity } from '@modules/team/repo';
 import { teamFactory } from '@modules/team/testing';
@@ -16,7 +17,12 @@ describe('TeamMapper', () => {
 			providers: [TeamMapper],
 		}).compile();
 		mapper = module.get(TeamMapper);
-		await setupEntities([TeamEntity, SystemEntity, UserLoginMigrationEntity]);
+		await setupEntities([
+			SchoolSystemOptionsEntity,
+			SystemEntity,
+			TeamEntity,
+			UserLoginMigrationEntity,
+		]);
 	});
 
 	afterAll(async () => {

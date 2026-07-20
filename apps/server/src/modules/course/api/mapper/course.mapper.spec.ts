@@ -1,3 +1,4 @@
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { setupEntities } from '@testing/database';
 import { CourseEntity, CourseGroupEntity } from '../../repo';
@@ -7,7 +8,12 @@ import { CourseMapper } from './course.mapper';
 
 describe(CourseMapper.name, () => {
 	beforeAll(async () => {
-		await setupEntities([CourseEntity, CourseGroupEntity, UserLoginMigrationEntity]);
+		await setupEntities([
+			CourseEntity,
+			CourseGroupEntity,
+			SchoolSystemOptionsEntity,
+			UserLoginMigrationEntity,
+		]);
 	});
 
 	describe('mapToCreateCourseResponse', () => {

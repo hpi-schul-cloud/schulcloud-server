@@ -1,3 +1,4 @@
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { Role } from '@modules/role/repo';
 import { SchoolEntity } from '@modules/school/repo';
 import { SystemEntity } from '@modules/system/repo';
@@ -8,7 +9,13 @@ import * as roleModule from './roles';
 
 describe('Seed Data generation', () => {
 	beforeAll(async () => {
-		await setupEntities([SchoolEntity, SystemEntity, Role, UserLoginMigrationEntity]);
+		await setupEntities([
+			Role,
+			SchoolEntity,
+			SchoolSystemOptionsEntity,
+			SystemEntity,
+			UserLoginMigrationEntity,
+		]);
 	});
 
 	const setup = () => {

@@ -1,4 +1,5 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { EntityNotFoundError } from '@shared/common/error';
 
@@ -59,7 +60,15 @@ describe('AccountUc', () => {
 		accountUc = module.get(AccountUc);
 		accountService = module.get(AccountService);
 		authorizationService = module.get(AuthorizationService);
-		await setupEntities([AccountEntity, Role, SchoolEntity, SystemEntity, User, UserLoginMigrationEntity]);
+		await setupEntities([
+			AccountEntity,
+			Role,
+			SchoolEntity,
+			SchoolSystemOptionsEntity,
+			SystemEntity,
+			User,
+			UserLoginMigrationEntity,
+		]);
 	});
 
 	beforeEach(() => {

@@ -3,6 +3,7 @@ import { LegacyLogger } from '@infra/logger';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { type Group, GroupService, GroupTypes, type GroupUser } from '@modules/group';
 import { groupFactory } from '@modules/group/testing';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { RoleDto, RoleName, RoleService } from '@modules/role';
 import { roleDtoFactory, roleFactory } from '@modules/role/testing';
 import { ROOM_PUBLIC_API_CONFIG_TOKEN, type RoomPublicApiConfig, RoomService } from '@modules/room';
@@ -34,7 +35,14 @@ describe('RoomMembershipService', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot({ entities: [User, SystemEntity, UserLoginMigrationEntity] })],
+			imports: [MongoMemoryDatabaseModule.forRoot({
+				entities: [
+					SchoolSystemOptionsEntity,
+					SystemEntity,
+					User,
+					UserLoginMigrationEntity,
+				]
+			})],
 			providers: [
 				RoomMembershipService,
 				{

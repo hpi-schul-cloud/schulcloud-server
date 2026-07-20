@@ -5,6 +5,7 @@ import { BoardNodeAuthorizableService, BoardNodeService, ColumnBoardService } fr
 import { boardNodeAuthorizableFactory, cardFactory, columnBoardFactory, columnFactory } from '@modules/board/testing';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { LessonService } from '@modules/lesson';
 import { LessonEntity, Material } from '@modules/lesson/repo';
 import { lessonFactory } from '@modules/lesson/testing';
@@ -92,13 +93,14 @@ describe('ShareTokenUC', () => {
 		shareTokenPermissionService = module.get(ShareTokenPermissionService);
 
 		await setupEntities([
-			User,
 			CourseEntity,
 			CourseGroupEntity,
-			Task,
-			Submission,
 			LessonEntity,
 			Material,
+			SchoolSystemOptionsEntity,
+			Submission,
+			Task,
+			User,
 			UserLoginMigrationEntity,
 		]);
 	});

@@ -1,4 +1,5 @@
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { Submission, Task } from '@modules/task/repo';
 import { submissionFactory, taskFactory } from '@modules/task/testing';
 import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
@@ -12,13 +13,14 @@ import { LessonMapper } from './lesson.mapper';
 describe('LessonMapper', () => {
 	beforeAll(async () => {
 		await setupEntities([
-			User,
-			Task,
-			Submission,
 			CourseEntity,
 			CourseGroupEntity,
 			LessonEntity,
 			Material,
+			SchoolSystemOptionsEntity,
+			Submission,
+			Task,
+			User,
 			UserLoginMigrationEntity,
 		]);
 	});

@@ -3,6 +3,7 @@ import { CopyElementType, CopyHelperService, type CopyStatus, CopyStatusEnum } f
 import { CourseService } from '@modules/course';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory, courseGroupEntityFactory } from '@modules/course/testing';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { LessonCopyService } from '@modules/lesson';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { ToolContextType } from '@modules/tool/common/enum';
@@ -49,11 +50,12 @@ describe('course copy service', () => {
 
 	beforeAll(async () => {
 		await setupEntities([
-			User,
 			CourseEntity,
 			CourseGroupEntity,
 			LegacyBoard,
 			LegacyBoardElement,
+			SchoolSystemOptionsEntity,
+			User,
 			UserLoginMigrationEntity,
 		]);
 		module = await Test.createTestingModule({

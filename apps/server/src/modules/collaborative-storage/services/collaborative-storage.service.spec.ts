@@ -5,6 +5,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationService } from '@modules/authorization';
 import { TeamMapper } from '@modules/collaborative-storage/mapper/team.mapper';
 import { CollaborativeStorageService } from '@modules/collaborative-storage/services/collaborative-storage.service';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { RoleName } from '@modules/role';
 import { RoleDto } from '@modules/role/service/dto/role.dto';
 import { RoleService } from '@modules/role/service/role.service';
@@ -62,7 +63,12 @@ describe('Collaborative Storage Service', () => {
 		authService = module.get(AuthorizationService);
 		roleService = module.get(RoleService);
 		teamRepo = module.get(TeamRepo);
-		await setupEntities([TeamEntity, SystemEntity, UserLoginMigrationEntity]);
+		await setupEntities([
+			SchoolSystemOptionsEntity,
+			SystemEntity,
+			TeamEntity,
+			UserLoginMigrationEntity,
+		]);
 	});
 
 	beforeEach(() => {

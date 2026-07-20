@@ -3,6 +3,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { CourseService } from '@modules/course';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { RoomService } from '@modules/room';
 import { RoomAuthorizable, RoomMembershipService } from '@modules/room-membership';
 import { roomFactory } from '@modules/room/testing';
@@ -49,7 +50,14 @@ describe(BoardContextResolverService.name, () => {
 		roomMembershipService = module.get(RoomMembershipService);
 		courseService = module.get(CourseService);
 
-		await setupEntities([SystemEntity, UserLoginMigrationEntity, User, CourseEntity, CourseGroupEntity]);
+		await setupEntities([
+			CourseEntity,
+			CourseGroupEntity,
+			SchoolSystemOptionsEntity,
+			SystemEntity,
+			User,
+			UserLoginMigrationEntity,
+		]);
 	});
 
 	afterEach(() => {

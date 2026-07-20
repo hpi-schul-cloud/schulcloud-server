@@ -1,6 +1,7 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { type System, SystemService } from '@modules/system';
 import { SystemEntity } from '@modules/system/repo';
 import { systemFactory } from '@modules/system/testing';
@@ -28,7 +29,12 @@ describe(SchoolSystemOptionsUc.name, () => {
 	let provisioningOptionsUpdateService: DeepMocked<ProvisioningOptionsUpdateService>;
 
 	beforeAll(async () => {
-		await setupEntities([SystemEntity, UserLoginMigrationEntity, User]);
+		await setupEntities([
+			SchoolSystemOptionsEntity,
+			SystemEntity,
+			User,
+			UserLoginMigrationEntity,
+		]);
 
 		module = await Test.createTestingModule({
 			providers: [

@@ -6,6 +6,7 @@ import {
 	AuthorizationInjectionService,
 } from '@modules/authorization';
 import { authorizationContextFactory } from '@modules/authorization/testing';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { RoleName } from '@modules/role';
 import { roleDtoFactory } from '@modules/role/testing';
 import { type RoomPublicApiConfig } from '@modules/room';
@@ -43,7 +44,12 @@ describe(RoomInvitationLinkRule.name, () => {
 	};
 
 	beforeAll(async () => {
-		await setupEntities([SystemEntity, UserLoginMigrationEntity, User]);
+		await setupEntities([
+			SchoolSystemOptionsEntity,
+			SystemEntity,
+			User,
+			UserLoginMigrationEntity,
+		]);
 
 		const module: TestingModule = await Test.createTestingModule({
 			providers: [

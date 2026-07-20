@@ -3,6 +3,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { AccountEntity } from '@modules/account/repo';
 import { accountFactory } from '@modules/account/testing';
 import { ClassEntity } from '@modules/class/entity';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { RoleName } from '@modules/role';
 import { Role } from '@modules/role/repo';
 import { roleFactory } from '@modules/role/testing';
@@ -122,15 +123,16 @@ describe('users admin repo', () => {
 			imports: [
 				MongoMemoryDatabaseModule.forRoot({
 					entities: [
-						User,
-						Role,
-						SchoolEntity,
-						SchoolYearEntity,
 						AccountEntity,
 						ClassEntity,
+						Role,
+						SchoolEntity,
+						SchoolSystemOptionsEntity,
+						SchoolYearEntity,
 						SystemEntity,
+						User,
 						UserLoginMigrationEntity,
-					],
+					]
 				}),
 			],
 			providers: [UsersAdminRepo],

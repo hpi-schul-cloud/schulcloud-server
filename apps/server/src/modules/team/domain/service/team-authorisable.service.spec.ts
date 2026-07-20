@@ -1,5 +1,6 @@
 import { type DeepMocked, createMock } from '@golevelup/ts-jest';
 import { AuthorizableReferenceType, AuthorizationInjectionService } from '@modules/authorization';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { SystemEntity } from '@modules/system/repo';
 import { teamFactory } from '@modules/team/testing';
 import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
@@ -16,7 +17,12 @@ describe('team authorisable service', () => {
 	let teamRepo: DeepMocked<TeamRepo>;
 
 	beforeAll(async () => {
-		await setupEntities([TeamEntity, SystemEntity, UserLoginMigrationEntity]);
+		await setupEntities([
+			SchoolSystemOptionsEntity,
+			SystemEntity,
+			TeamEntity,
+			UserLoginMigrationEntity,
+		]);
 
 		module = await Test.createTestingModule({
 			providers: [

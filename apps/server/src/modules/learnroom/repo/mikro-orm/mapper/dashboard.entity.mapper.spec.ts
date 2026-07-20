@@ -1,6 +1,7 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
@@ -23,13 +24,14 @@ describe('dashboard model mapper', () => {
 			imports: [
 				MongoMemoryDatabaseModule.forRoot({
 					entities: [
-						DashboardEntity,
-						DashboardGridElementEntity,
-						User,
 						CourseEntity,
 						CourseGroupEntity,
+						DashboardEntity,
+						DashboardGridElementEntity,
+						SchoolSystemOptionsEntity,
+						User,
 						UserLoginMigrationEntity,
-					],
+					]
 				}),
 			],
 			providers: [DashboardModelMapper],

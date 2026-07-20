@@ -1,4 +1,5 @@
 import { EntityManager } from '@mikro-orm/mongodb';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { MediaSource } from '@modules/media-source';
 import { MediaSourceEntity } from '@modules/media-source/entity';
 import { MediaSourceConfigMapper } from '@modules/media-source/repo';
@@ -30,13 +31,14 @@ describe(MediaUserLicenseRepo.name, () => {
 			imports: [
 				MongoMemoryDatabaseModule.forRoot({
 					entities: [
-						MediaUserLicenseEntity,
-						UserLicenseEntity,
 						MediaSourceEntity,
-						User,
+						MediaUserLicenseEntity,
+						SchoolSystemOptionsEntity,
 						SystemEntity,
+						User,
+						UserLicenseEntity,
 						UserLoginMigrationEntity,
-					],
+					]
 				}),
 			],
 			providers: [MediaUserLicenseRepo],

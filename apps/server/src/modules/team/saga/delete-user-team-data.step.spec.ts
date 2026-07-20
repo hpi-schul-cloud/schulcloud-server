@@ -1,5 +1,6 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { Logger } from '@infra/logger';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import {
 	ModuleName,
 	SagaService,
@@ -25,7 +26,12 @@ describe(DeleteUserTeamDataStep.name, () => {
 	});
 
 	beforeAll(async () => {
-		await setupEntities([SystemEntity, TeamEntity, UserLoginMigrationEntity]);
+		await setupEntities([
+			SchoolSystemOptionsEntity,
+			SystemEntity,
+			TeamEntity,
+			UserLoginMigrationEntity,
+		]);
 
 		module = await Test.createTestingModule({
 			providers: [

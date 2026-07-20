@@ -1,5 +1,6 @@
 import { FileRecordParentType, StorageLocation } from '@infra/files-storage-amqp-client';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { LessonEntity, Material } from '@modules/lesson/repo';
 import { lessonFactory } from '@modules/lesson/testing';
 import { Submission, Task } from '@modules/task/repo';
@@ -12,13 +13,14 @@ import { FileParamBuilder } from './files-storage-param.builder';
 describe('FileParamBuilder', () => {
 	beforeAll(async () => {
 		await setupEntities([
-			User,
-			Task,
-			Submission,
-			LessonEntity,
-			Material,
 			CourseEntity,
 			CourseGroupEntity,
+			LessonEntity,
+			Material,
+			SchoolSystemOptionsEntity,
+			Submission,
+			Task,
+			User,
 			UserLoginMigrationEntity,
 		]);
 	});

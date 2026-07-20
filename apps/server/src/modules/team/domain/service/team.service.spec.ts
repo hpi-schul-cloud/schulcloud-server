@@ -1,5 +1,6 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { Logger } from '@infra/logger';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { SystemEntity } from '@modules/system/repo';
 import { teamFactory, teamUserFactory } from '@modules/team/testing';
 import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
@@ -15,7 +16,12 @@ describe('TeamService', () => {
 	let teamRepo: DeepMocked<TeamRepo>;
 
 	beforeAll(async () => {
-		await setupEntities([SystemEntity, TeamEntity, UserLoginMigrationEntity]);
+		await setupEntities([
+			SchoolSystemOptionsEntity,
+			SystemEntity,
+			TeamEntity,
+			UserLoginMigrationEntity,
+		]);
 
 		module = await Test.createTestingModule({
 			providers: [

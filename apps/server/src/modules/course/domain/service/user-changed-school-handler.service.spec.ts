@@ -1,5 +1,6 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { MikroORM } from '@mikro-orm/core';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { Test, type TestingModule } from '@nestjs/testing';
@@ -25,7 +26,12 @@ describe(UserChangedSchoolHandlerService.name, () => {
 				},
 				{
 					provide: MikroORM,
-					useValue: await setupEntities([CourseEntity, CourseGroupEntity, UserLoginMigrationEntity]),
+					useValue: await setupEntities([
+						CourseEntity,
+						CourseGroupEntity,
+						SchoolSystemOptionsEntity,
+						UserLoginMigrationEntity,
+					]),
 				},
 			],
 		}).compile();

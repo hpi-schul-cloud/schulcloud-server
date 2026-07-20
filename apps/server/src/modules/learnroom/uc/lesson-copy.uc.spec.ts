@@ -5,6 +5,7 @@ import { CopyElementType, CopyHelperService, CopyStatusEnum } from '@modules/cop
 import { CourseService } from '@modules/course';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { courseEntityFactory } from '@modules/course/testing';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { LessonCopyService, LessonService } from '@modules/lesson';
 import { LessonEntity, Material } from '@modules/lesson/repo';
 import { lessonFactory } from '@modules/lesson/testing';
@@ -35,13 +36,14 @@ describe('lesson copy uc', () => {
 
 	beforeAll(async () => {
 		await setupEntities([
-			User,
 			CourseEntity,
 			CourseGroupEntity,
 			LessonEntity,
 			Material,
-			Task,
+			SchoolSystemOptionsEntity,
 			Submission,
+			Task,
+			User,
 			UserLoginMigrationEntity,
 		]);
 		module = await Test.createTestingModule({
