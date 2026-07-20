@@ -7,6 +7,7 @@ import { fileDomainFactory } from '../testing';
 import { DownloadArchiveService } from './download-archive.service';
 import { ArchiveFactory } from './factory';
 import { LegacyFileStorageAdapter } from './legacy-file-storage.adapter';
+import { SkipFileLoggable } from './loggable/skip-file.loggable';
 
 const flushPromises = (): Promise<void> => new Promise((resolve) => setImmediate(resolve));
 
@@ -35,6 +36,7 @@ const createMockArchiveWithError = (error: Error): DeepMocked<Archiver> => {
 describe('DownloadArchiveService', () => {
 	let service: DownloadArchiveService;
 	let legacyFileStorageAdapter: DeepMocked<LegacyFileStorageAdapter>;
+	let logger: { setContext: jest.Mock; warning: jest.Mock };
 	let module: TestingModule;
 
 	beforeAll(async () => {
@@ -45,6 +47,7 @@ describe('DownloadArchiveService', () => {
 					provide: Logger,
 					useValue: {
 						setContext: jest.fn(),
+						warning: jest.fn(),
 					},
 				},
 				{
@@ -56,6 +59,7 @@ describe('DownloadArchiveService', () => {
 
 		service = module.get(DownloadArchiveService);
 		legacyFileStorageAdapter = module.get(LegacyFileStorageAdapter);
+		logger = module.get(Logger) as unknown as { setContext: jest.Mock; warning: jest.Mock };
 	});
 
 	afterAll(async () => {
@@ -252,6 +256,50 @@ describe('DownloadArchiveService', () => {
 			});
 		});
 
+		describe('when a file download fails', () => {
+			const setup = () => {
+				const file1 = fileDomainFactory.build({ isDirectory: false, name: 'failing.txt', parentId: undefined });
+				const file2 = fileDomainFactory.build({ isDirectory: false, name: 'success.txt', parentId: undefined });
+
+				const ownerId = 'owner123';
+				const archiveName = 'test-archive';
+
+				const mockStream = new Readable();
+				mockStream.push('content');
+				mockStream.push(null);
+
+				legacyFileStorageAdapter.getFilesForOwner.mockResolvedValueOnce([file1, file2]);
+				legacyFileStorageAdapter.downloadFile
+					.mockRejectedValueOnce(new Error('download failed'))
+					.mockResolvedValueOnce(mockStream);
+
+				const mockArchive = createMockArchive();
+				jest.spyOn(ArchiveFactory, 'createEmpty').mockReturnValueOnce(mockArchive);
+				const appendFileSpy = jest.spyOn(ArchiveFactory, 'appendFile').mockReturnValue(undefined);
+
+				return { ownerId, archiveName, file1, file2, appendFileSpy };
+			};
+
+			it('should skip the failing file and continue with the remaining files', async () => {
+				const { ownerId, archiveName, file2, appendFileSpy } = setup();
+
+				await service.downloadFilesAsArchive(ownerId, archiveName);
+				await flushPromises();
+
+				const appendedNames = appendFileSpy.mock.calls.map(([, r]) => r.name);
+				expect(appendedNames).toEqual([file2.name]);
+			});
+
+			it('should log a warning for the skipped file', async () => {
+				const { ownerId, archiveName, file1 } = setup();
+
+				await service.downloadFilesAsArchive(ownerId, archiveName);
+				await flushPromises();
+
+				expect(logger.warning).toHaveBeenCalledWith(new SkipFileLoggable(file1.id));
+			});
+		});
+
 		describe('when archive emits an error during file append', () => {
 			const setup = () => {
 				const file = fileDomainFactory.build({
@@ -260,7 +308,6 @@ describe('DownloadArchiveService', () => {
 					parentId: undefined,
 				});
 
-				const error = new Error('archive error');
 				const ownerId = 'owner123';
 				const archiveName = 'test-archive';
 
@@ -271,11 +318,11 @@ describe('DownloadArchiveService', () => {
 				legacyFileStorageAdapter.getFilesForOwner.mockResolvedValueOnce([file]);
 				legacyFileStorageAdapter.downloadFile.mockResolvedValueOnce(mockStream);
 
-				const mockArchive = createMockArchiveWithError(error);
+				const mockArchive = createMockArchiveWithError(new Error('archive error'));
 				jest.spyOn(ArchiveFactory, 'createEmpty').mockReturnValueOnce(mockArchive);
 				jest.spyOn(ArchiveFactory, 'appendFile').mockReturnValue(undefined);
 
-				return { ownerId, archiveName, error, mockArchive };
+				return { ownerId, archiveName, file, mockArchive };
 			};
 
 			it('should remove the entry listener when an error occurs', async () => {
@@ -287,13 +334,13 @@ describe('DownloadArchiveService', () => {
 				expect(mockArchive.off).toHaveBeenCalledWith('entry', expect.any(Function));
 			});
 
-			it('should propagate the error to the archive via emit', async () => {
-				const { ownerId, archiveName, error, mockArchive } = setup();
+			it('should skip the file and log a warning', async () => {
+				const { ownerId, archiveName, file } = setup();
 
 				await service.downloadFilesAsArchive(ownerId, archiveName);
 				await flushPromises();
 
-				expect(mockArchive.emit).toHaveBeenCalledWith('error', error);
+				expect(logger.warning).toHaveBeenCalledWith(new SkipFileLoggable(file.id));
 			});
 		});
 	});
