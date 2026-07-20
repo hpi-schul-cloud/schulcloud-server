@@ -87,8 +87,7 @@ export class DownloadArchiveService {
 
 	private appendMissingFilesReport(archive: Archiver, missingFileNames: string[]): void {
 		const header =
-			'Die folgenden Dateien konnten nicht heruntergeladen werden und sind nicht im Archiv enthalten:\n' +
-			'The following files could not be downloaded and are not included in the archive:';
+			'Folgende Datei(en) konnten nicht heruntergeladen werden / The following files could not be downloaded:';
 		const content = `${header}\n\n${missingFileNames.join('\n')}`;
 		archive.append(Buffer.from(content), { name: 'fehlende-dateien.txt' });
 	}
