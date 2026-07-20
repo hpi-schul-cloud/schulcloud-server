@@ -30,7 +30,7 @@ describe('dashboard repo', () => {
 						SchoolSystemOptionsEntity,
 						User,
 						UserLoginMigrationEntity,
-					]
+					],
 				}),
 			],
 			providers: [DashboardRepo, DashboardModelMapper],

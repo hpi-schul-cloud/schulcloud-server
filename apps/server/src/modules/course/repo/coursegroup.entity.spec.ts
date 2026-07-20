@@ -9,13 +9,7 @@ import { CourseGroupEntity } from './coursegroup.entity';
 
 describe('CourseGroupEntity', () => {
 	beforeAll(async () => {
-		await setupEntities([
-			CourseEntity,
-			CourseGroupEntity,
-			SchoolSystemOptionsEntity,
-			User,
-			UserLoginMigrationEntity,
-		]);
+		await setupEntities([CourseEntity, CourseGroupEntity, SchoolSystemOptionsEntity, User, UserLoginMigrationEntity]);
 	});
 
 	describe('constructor', () => {

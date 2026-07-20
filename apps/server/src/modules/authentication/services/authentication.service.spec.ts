@@ -43,13 +43,7 @@ describe(AuthenticationService.name, () => {
 	});
 
 	beforeAll(async () => {
-		await setupEntities([
-			Account,
-			SchoolSystemOptionsEntity,
-			SystemEntity,
-			User,
-			UserLoginMigrationEntity,
-		]);
+		await setupEntities([Account, SchoolSystemOptionsEntity, SystemEntity, User, UserLoginMigrationEntity]);
 
 		module = await Test.createTestingModule({
 			providers: [

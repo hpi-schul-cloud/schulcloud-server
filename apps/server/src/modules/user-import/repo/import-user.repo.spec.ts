@@ -34,14 +34,7 @@ describe('ImportUserRepo', () => {
 		module = await Test.createTestingModule({
 			imports: [
 				MongoMemoryDatabaseModule.forRoot({
-					entities: [
-						ImportUser,
-						SchoolEntity,
-						SchoolSystemOptionsEntity,
-						SystemEntity,
-						User,
-						UserLoginMigrationEntity,
-					]
+					entities: [ImportUser, SchoolEntity, SchoolSystemOptionsEntity, SystemEntity, User, UserLoginMigrationEntity],
 				}),
 			],
 			providers: [ImportUserRepo],

@@ -31,7 +31,7 @@ describe(MediaSchoolLicenseMikroOrmRepo.name, () => {
 						SchoolSystemOptionsEntity,
 						SystemEntity,
 						UserLoginMigrationEntity,
-					]
+					],
 				}),
 			],
 			providers: [MediaSchoolLicenseMikroOrmRepo],

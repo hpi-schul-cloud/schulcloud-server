@@ -27,12 +27,7 @@ describe('LocalStrategy', () => {
 	const mockPasswordHash = bcrypt.hashSync(mockPassword);
 
 	beforeAll(async () => {
-		await setupEntities([
-			SchoolSystemOptionsEntity,
-			SystemEntity,
-			User,
-			UserLoginMigrationEntity,
-		]);
+		await setupEntities([SchoolSystemOptionsEntity, SystemEntity, User, UserLoginMigrationEntity]);
 		authenticationServiceMock = createMock<AuthenticationService>();
 		config = new AuthenticationConfig();
 		userServiceMock = createMock<UserService>();

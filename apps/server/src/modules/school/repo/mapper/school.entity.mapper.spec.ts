@@ -14,12 +14,7 @@ describe('SchoolEntityMapper', () => {
 	describe('mapToDo', () => {
 		describe('when school entity is passed', () => {
 			const setup = async () => {
-				await setupEntities([
-					SchoolEntity,
-					SchoolSystemOptionsEntity,
-					SystemEntity,
-					UserLoginMigrationEntity,
-				]);
+				await setupEntities([SchoolEntity, SchoolSystemOptionsEntity, SystemEntity, UserLoginMigrationEntity]);
 
 				const system = new SystemEntity({
 					type: 'type',

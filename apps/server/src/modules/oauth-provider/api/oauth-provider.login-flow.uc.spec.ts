@@ -70,12 +70,7 @@ describe(OauthProviderLoginFlowUc.name, () => {
 		authorizationService = module.get(AuthorizationService);
 		userService = module.get(UserService);
 
-		await setupEntities([
-			SchoolSystemOptionsEntity,
-			SystemEntity,
-			User,
-			UserLoginMigrationEntity,
-		]);
+		await setupEntities([SchoolSystemOptionsEntity, SystemEntity, User, UserLoginMigrationEntity]);
 	});
 
 	afterAll(async () => {

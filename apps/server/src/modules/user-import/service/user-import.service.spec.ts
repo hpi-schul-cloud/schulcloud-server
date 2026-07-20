@@ -44,14 +44,11 @@ describe(UserImportService.name, () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot({
-				entities: [
-					SchoolSystemOptionsEntity,
-					SystemEntity,
-					User,
-					UserLoginMigrationEntity,
-				]
-			})],
+			imports: [
+				MongoMemoryDatabaseModule.forRoot({
+					entities: [SchoolSystemOptionsEntity, SystemEntity, User, UserLoginMigrationEntity],
+				}),
+			],
 			providers: [
 				UserImportService,
 				{

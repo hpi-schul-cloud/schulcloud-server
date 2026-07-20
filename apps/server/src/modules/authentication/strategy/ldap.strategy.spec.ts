@@ -35,12 +35,7 @@ describe('LdapStrategy', () => {
 	let systemService: DeepMocked<SystemService>;
 
 	beforeAll(async () => {
-		await setupEntities([
-			SchoolSystemOptionsEntity,
-			SystemEntity,
-			User,
-			UserLoginMigrationEntity,
-		]);
+		await setupEntities([SchoolSystemOptionsEntity, SystemEntity, User, UserLoginMigrationEntity]);
 
 		module = await Test.createTestingModule({
 			imports: [PassportModule],

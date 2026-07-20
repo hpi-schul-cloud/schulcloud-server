@@ -9,12 +9,7 @@ import { Dashboard, GridElement } from '../../domain/do/dashboard';
 
 describe('dashboard entity', () => {
 	beforeAll(async () => {
-		await setupEntities([
-			CourseEntity,
-			CourseGroupEntity,
-			SchoolSystemOptionsEntity,
-			UserLoginMigrationEntity,
-		]);
+		await setupEntities([CourseEntity, CourseGroupEntity, SchoolSystemOptionsEntity, UserLoginMigrationEntity]);
 	});
 
 	describe('constructor', () => {

@@ -69,12 +69,7 @@ describe('ToolLaunchUc', () => {
 	});
 
 	beforeAll(async () => {
-		await setupEntities([
-			SchoolSystemOptionsEntity,
-			SystemEntity,
-			User,
-			UserLoginMigrationEntity,
-		]);
+		await setupEntities([SchoolSystemOptionsEntity, SystemEntity, User, UserLoginMigrationEntity]);
 	});
 
 	afterAll(async () => {

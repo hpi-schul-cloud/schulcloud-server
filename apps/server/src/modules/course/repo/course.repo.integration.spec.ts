@@ -29,12 +29,7 @@ describe('course repo', () => {
 		module = await Test.createTestingModule({
 			imports: [
 				MongoMemoryDatabaseModule.forRoot({
-					entities: [
-						CourseEntity,
-						CourseGroupEntity,
-						SchoolSystemOptionsEntity,
-						UserLoginMigrationEntity,
-					]
+					entities: [CourseEntity, CourseGroupEntity, SchoolSystemOptionsEntity, UserLoginMigrationEntity],
 				}),
 			],
 			providers: [CourseRepo],

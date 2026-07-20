@@ -23,13 +23,7 @@ describe('ShareTokenRepo', () => {
 		module = await Test.createTestingModule({
 			imports: [
 				MongoMemoryDatabaseModule.forRoot({
-					entities: [
-						SchoolEntity,
-						SchoolSystemOptionsEntity,
-						ShareToken,
-						SystemEntity,
-						UserLoginMigrationEntity,
-					]
+					entities: [SchoolEntity, SchoolSystemOptionsEntity, ShareToken, SystemEntity, UserLoginMigrationEntity],
 				}),
 			],
 			providers: [

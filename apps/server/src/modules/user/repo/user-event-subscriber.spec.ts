@@ -21,12 +21,7 @@ describe(UserEventSubscriber.name, () => {
 		module = await Test.createTestingModule({
 			imports: [
 				MongoMemoryDatabaseModule.forRoot({
-					entities: [
-						SchoolSystemOptionsEntity,
-						SystemEntity,
-						User,
-						UserLoginMigrationEntity,
-					],
+					entities: [SchoolSystemOptionsEntity, SystemEntity, User, UserLoginMigrationEntity],
 					ensureIndexes: true,
 				}),
 			],

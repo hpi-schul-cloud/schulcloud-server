@@ -89,12 +89,7 @@ describe('NextCloudStrategy', () => {
 
 		strategy = new NextcloudStrategySpec(logger, client, pseudonymService, externalToolService, userService, config);
 
-		await setupEntities([
-			SchoolSystemOptionsEntity,
-			SystemEntity,
-			User,
-			UserLoginMigrationEntity,
-		]);
+		await setupEntities([SchoolSystemOptionsEntity, SystemEntity, User, UserLoginMigrationEntity]);
 	});
 
 	afterEach(() => {

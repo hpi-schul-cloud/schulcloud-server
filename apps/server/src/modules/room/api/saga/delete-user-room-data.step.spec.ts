@@ -39,7 +39,7 @@ describe(DeleteUserRoomDataStep.name, () => {
 						SystemEntity,
 						User,
 						UserLoginMigrationEntity,
-					]
+					],
 				}),
 			],
 			providers: [

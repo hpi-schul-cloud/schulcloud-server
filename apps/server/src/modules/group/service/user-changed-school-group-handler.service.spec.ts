@@ -24,11 +24,7 @@ describe(UserChangedSchoolGroupHandlerService.name, () => {
 				},
 				{
 					provide: MikroORM,
-					useValue: await setupEntities([
-						GroupEntity,
-						SchoolSystemOptionsEntity,
-						UserLoginMigrationEntity,
-					]),
+					useValue: await setupEntities([GroupEntity, SchoolSystemOptionsEntity, UserLoginMigrationEntity]),
 				},
 			],
 		}).compile();

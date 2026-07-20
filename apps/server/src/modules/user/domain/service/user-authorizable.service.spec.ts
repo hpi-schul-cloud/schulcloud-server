@@ -38,12 +38,7 @@ describe(UserAuthorizableService.name, () => {
 		userRepo = module.get(UserMikroOrmRepo);
 		userService = module.get(UserService);
 		injectionService = module.get(AuthorizationInjectionService);
-		await setupEntities([
-			SchoolSystemOptionsEntity,
-			SystemEntity,
-			User,
-			UserLoginMigrationEntity,
-		]);
+		await setupEntities([SchoolSystemOptionsEntity, SystemEntity, User, UserLoginMigrationEntity]);
 	});
 
 	afterAll(async () => {

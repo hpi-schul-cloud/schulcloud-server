@@ -16,12 +16,7 @@ describe('TeamService', () => {
 	let teamRepo: DeepMocked<TeamRepo>;
 
 	beforeAll(async () => {
-		await setupEntities([
-			SchoolSystemOptionsEntity,
-			SystemEntity,
-			TeamEntity,
-			UserLoginMigrationEntity,
-		]);
+		await setupEntities([SchoolSystemOptionsEntity, SystemEntity, TeamEntity, UserLoginMigrationEntity]);
 
 		module = await Test.createTestingModule({
 			providers: [

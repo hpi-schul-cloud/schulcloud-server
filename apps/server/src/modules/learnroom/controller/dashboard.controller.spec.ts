@@ -43,12 +43,7 @@ describe('dashboard uc', () => {
 		uc = module.get(DashboardUc);
 		controller = module.get(DashboardController);
 
-		await setupEntities([
-			CourseEntity,
-			CourseGroupEntity,
-			SchoolSystemOptionsEntity,
-			UserLoginMigrationEntity,
-		]);
+		await setupEntities([CourseEntity, CourseGroupEntity, SchoolSystemOptionsEntity, UserLoginMigrationEntity]);
 	});
 
 	describe('getUsersDashboard', () => {

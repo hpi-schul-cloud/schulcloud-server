@@ -20,13 +20,7 @@ describe(RegistrationPinRepo.name, () => {
 		module = await Test.createTestingModule({
 			imports: [
 				MongoMemoryDatabaseModule.forRoot({
-					entities: [
-						RegistrationPinEntity,
-						SchoolSystemOptionsEntity,
-						SystemEntity,
-						User,
-						UserLoginMigrationEntity,
-					]
+					entities: [RegistrationPinEntity, SchoolSystemOptionsEntity, SystemEntity, User, UserLoginMigrationEntity],
 				}),
 			],
 			providers: [RegistrationPinRepo],

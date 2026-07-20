@@ -38,7 +38,7 @@ describe(MediaUserLicenseRepo.name, () => {
 						User,
 						UserLicenseEntity,
 						UserLoginMigrationEntity,
-					]
+					],
 				}),
 			],
 			providers: [MediaUserLicenseRepo],

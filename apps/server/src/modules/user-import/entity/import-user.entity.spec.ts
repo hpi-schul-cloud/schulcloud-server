@@ -10,12 +10,7 @@ import { MatchCreator } from './import-user.entity';
 
 describe('ImportUser entity', () => {
 	beforeAll(async () => {
-		await setupEntities([
-			SchoolSystemOptionsEntity,
-			SystemEntity,
-			User,
-			UserLoginMigrationEntity,
-		]);
+		await setupEntities([SchoolSystemOptionsEntity, SystemEntity, User, UserLoginMigrationEntity]);
 	});
 
 	describe('When ldapDN is given', () => {

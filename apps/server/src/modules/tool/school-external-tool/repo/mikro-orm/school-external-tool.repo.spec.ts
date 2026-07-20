@@ -33,7 +33,7 @@ describe(SchoolExternalToolRepo.name, () => {
 						SchoolSystemOptionsEntity,
 						SystemEntity,
 						UserLoginMigrationEntity,
-					]
+					],
 				}),
 			],
 			providers: [

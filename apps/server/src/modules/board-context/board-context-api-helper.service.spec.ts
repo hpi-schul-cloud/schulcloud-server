@@ -29,12 +29,7 @@ describe('BoardContextApiHelperService', () => {
 	let boardContextApiConfig: BoardContextPublicApiConfig;
 
 	beforeEach(async () => {
-		await setupEntities([
-			CourseEntity,
-			CourseGroupEntity,
-			SchoolSystemOptionsEntity,
-			UserLoginMigrationEntity,
-		]);
+		await setupEntities([CourseEntity, CourseGroupEntity, SchoolSystemOptionsEntity, UserLoginMigrationEntity]);
 		module = await Test.createTestingModule({
 			providers: [
 				BoardContextApiHelperService,

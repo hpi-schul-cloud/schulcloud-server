@@ -9,12 +9,7 @@ import { News } from './news.entity';
 
 describe(News.name, () => {
 	beforeAll(async () => {
-		await setupEntities([
-			SchoolSystemOptionsEntity,
-			SystemEntity,
-			User,
-			UserLoginMigrationEntity,
-		]);
+		await setupEntities([SchoolSystemOptionsEntity, SystemEntity, User, UserLoginMigrationEntity]);
 	});
 
 	describe('removeCreatorReference', () => {

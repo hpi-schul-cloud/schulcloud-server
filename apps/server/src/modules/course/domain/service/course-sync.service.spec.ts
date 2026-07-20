@@ -43,13 +43,7 @@ describe(CourseSyncService.name, () => {
 		service = module.get(CourseSyncService);
 		roleService = module.get(RoleService);
 		courseDoService = module.get(CourseDoService);
-		await setupEntities([
-			Course,
-			CourseGroupEntity,
-			SchoolSystemOptionsEntity,
-			User,
-			UserLoginMigrationEntity,
-		]);
+		await setupEntities([Course, CourseGroupEntity, SchoolSystemOptionsEntity, User, UserLoginMigrationEntity]);
 	});
 
 	afterAll(async () => {

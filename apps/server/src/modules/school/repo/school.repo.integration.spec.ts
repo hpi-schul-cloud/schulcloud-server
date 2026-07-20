@@ -25,12 +25,7 @@ describe('SchoolMikroOrmRepo', () => {
 		module = await Test.createTestingModule({
 			imports: [
 				MongoMemoryDatabaseModule.forRoot({
-					entities: [
-						SchoolEntity,
-						SchoolSystemOptionsEntity,
-						SystemEntity,
-						UserLoginMigrationEntity,
-					]
+					entities: [SchoolEntity, SchoolSystemOptionsEntity, SystemEntity, UserLoginMigrationEntity],
 				}),
 			],
 			providers: [{ provide: SCHOOL_REPO, useClass: SchoolMikroOrmRepo }],

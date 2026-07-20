@@ -19,12 +19,11 @@ describe('UserLoginMigrationRepo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot({
-				entities: [
-					SchoolSystemOptionsEntity,
-					UserLoginMigrationEntity,
-				]
-			})],
+			imports: [
+				MongoMemoryDatabaseModule.forRoot({
+					entities: [SchoolSystemOptionsEntity, UserLoginMigrationEntity],
+				}),
+			],
 			providers: [UserLoginMigrationRepo],
 		}).compile();
 

@@ -43,12 +43,7 @@ describe('dashboard uc', () => {
 		repo = module.get(DASHBOARD_REPO);
 		courseService = module.get(CourseService);
 
-		await setupEntities([
-			CourseEntity,
-			CourseGroupEntity,
-			SchoolSystemOptionsEntity,
-			UserLoginMigrationEntity,
-		]);
+		await setupEntities([CourseEntity, CourseGroupEntity, SchoolSystemOptionsEntity, UserLoginMigrationEntity]);
 	});
 
 	afterEach(() => {

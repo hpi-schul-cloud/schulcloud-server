@@ -23,12 +23,7 @@ import { ContextExternalToolEntity } from './context-external-tool.entity';
 
 describe(ContextExternalToolEntity.name, () => {
 	beforeAll(async () => {
-		await setupEntities([
-			CourseEntity,
-			CourseGroupEntity,
-			SchoolSystemOptionsEntity,
-			UserLoginMigrationEntity,
-		]);
+		await setupEntities([CourseEntity, CourseGroupEntity, SchoolSystemOptionsEntity, UserLoginMigrationEntity]);
 	});
 
 	describe('constructor', () => {

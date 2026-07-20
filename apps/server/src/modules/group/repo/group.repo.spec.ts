@@ -41,7 +41,7 @@ describe(GroupRepo.name, () => {
 						SystemEntity,
 						User,
 						UserLoginMigrationEntity,
-					]
+					],
 				}),
 			],
 			providers: [GroupRepo],

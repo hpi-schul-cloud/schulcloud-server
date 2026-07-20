@@ -36,12 +36,7 @@ describe(MetaTagExtractorUc.name, () => {
 		authorizationService = module.get(AuthorizationService);
 		metaTagExtractorService = module.get(MetaTagExtractorService);
 
-		await setupEntities([
-			SchoolSystemOptionsEntity,
-			SystemEntity,
-			User,
-			UserLoginMigrationEntity,
-		]);
+		await setupEntities([SchoolSystemOptionsEntity, SystemEntity, User, UserLoginMigrationEntity]);
 	});
 
 	afterAll(async () => {

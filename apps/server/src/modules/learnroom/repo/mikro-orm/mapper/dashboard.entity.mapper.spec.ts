@@ -31,7 +31,7 @@ describe('dashboard model mapper', () => {
 						SchoolSystemOptionsEntity,
 						User,
 						UserLoginMigrationEntity,
-					]
+					],
 				}),
 			],
 			providers: [DashboardModelMapper],

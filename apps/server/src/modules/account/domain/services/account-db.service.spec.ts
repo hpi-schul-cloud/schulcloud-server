@@ -45,12 +45,7 @@ describe('AccountDbService', () => {
 		accountRepo = module.get(ACCOUNT_REPO);
 		accountService = module.get(AccountServiceDb);
 
-		await setupEntities([
-			SchoolSystemOptionsEntity,
-			SystemEntity,
-			User,
-			UserLoginMigrationEntity,
-		]);
+		await setupEntities([SchoolSystemOptionsEntity, SystemEntity, User, UserLoginMigrationEntity]);
 	});
 
 	beforeEach(() => {

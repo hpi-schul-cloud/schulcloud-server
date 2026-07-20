@@ -14,12 +14,7 @@ import { UserMatchMapper } from './user-match.mapper';
 
 describe('[UserMatchMapper]', () => {
 	beforeAll(async () => {
-		await setupEntities([
-			SchoolSystemOptionsEntity,
-			SystemEntity,
-			User,
-			UserLoginMigrationEntity,
-		]);
+		await setupEntities([SchoolSystemOptionsEntity, SystemEntity, User, UserLoginMigrationEntity]);
 	});
 
 	describe('[mapToDomain] from query', () => {

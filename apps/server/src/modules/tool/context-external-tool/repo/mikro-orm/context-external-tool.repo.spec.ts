@@ -41,7 +41,7 @@ describe(ContextExternalToolRepo.name, () => {
 						SystemEntity,
 						User,
 						UserLoginMigrationEntity,
-					]
+					],
 				}),
 			],
 			providers: [

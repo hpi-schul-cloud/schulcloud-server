@@ -63,12 +63,7 @@ describe('Collaborative Storage Service', () => {
 		authService = module.get(AuthorizationService);
 		roleService = module.get(RoleService);
 		teamRepo = module.get(TeamRepo);
-		await setupEntities([
-			SchoolSystemOptionsEntity,
-			SystemEntity,
-			TeamEntity,
-			UserLoginMigrationEntity,
-		]);
+		await setupEntities([SchoolSystemOptionsEntity, SystemEntity, TeamEntity, UserLoginMigrationEntity]);
 	});
 
 	beforeEach(() => {

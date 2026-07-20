@@ -38,12 +38,7 @@ describe('copy helper service', () => {
 	let copyHelperService: CopyHelperService;
 
 	beforeAll(async () => {
-		await setupEntities([
-			CourseEntity,
-			CourseGroupEntity,
-			SchoolSystemOptionsEntity,
-			UserLoginMigrationEntity,
-		]);
+		await setupEntities([CourseEntity, CourseGroupEntity, SchoolSystemOptionsEntity, UserLoginMigrationEntity]);
 	});
 
 	afterAll(async () => {

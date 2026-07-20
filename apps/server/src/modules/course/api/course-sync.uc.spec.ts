@@ -52,12 +52,7 @@ describe(CourseSyncUc.name, () => {
 		groupService = module.get(GroupService);
 		courseSyncService = module.get(CourseSyncService);
 
-		await setupEntities([
-			SchoolSystemOptionsEntity,
-			SystemEntity,
-			User,
-			UserLoginMigrationEntity,
-		]);
+		await setupEntities([SchoolSystemOptionsEntity, SystemEntity, User, UserLoginMigrationEntity]);
 	});
 
 	afterAll(async () => {

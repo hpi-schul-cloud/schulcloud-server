@@ -60,12 +60,7 @@ describe(BoardCopyService.name, () => {
 		boardNodeCopyService = module.get(BoardNodeCopyService);
 		columnBoardTitleService = module.get(ColumnBoardTitleService);
 
-		await setupEntities([
-			CourseEntity,
-			CourseGroupEntity,
-			SchoolSystemOptionsEntity,
-			UserLoginMigrationEntity,
-		]);
+		await setupEntities([CourseEntity, CourseGroupEntity, SchoolSystemOptionsEntity, UserLoginMigrationEntity]);
 	});
 
 	afterEach(() => {

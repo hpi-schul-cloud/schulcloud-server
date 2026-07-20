@@ -17,14 +17,11 @@ describe(UserDeletionSaga.name, () => {
 
 	beforeEach(async () => {
 		const module: TestingModule = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot({
-				entities: [
-					SchoolSystemOptionsEntity,
-					SystemEntity,
-					User,
-					UserLoginMigrationEntity,
-				]
-			})],
+			imports: [
+				MongoMemoryDatabaseModule.forRoot({
+					entities: [SchoolSystemOptionsEntity, SystemEntity, User, UserLoginMigrationEntity],
+				}),
+			],
 			providers: [UserDeletionSaga, SagaStepRegistryService, SagaRegistryService],
 		}).compile();
 

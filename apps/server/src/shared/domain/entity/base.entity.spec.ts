@@ -11,12 +11,7 @@ class User extends BaseEntity {}
 
 describe('BaseEntity', () => {
 	beforeAll(async () => {
-		await setupEntities([
-			SchoolSystemOptionsEntity,
-			SystemEntity,
-			User,
-			UserLoginMigrationEntity,
-		]);
+		await setupEntities([SchoolSystemOptionsEntity, SystemEntity, User, UserLoginMigrationEntity]);
 	});
 
 	describe('when _id property is set to ObjectId', () => {

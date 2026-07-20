@@ -52,12 +52,7 @@ describe(RestartUserLoginMigrationUc.name, () => {
 		authorizationService = module.get(AuthorizationService);
 		schoolMigrationService = module.get(SchoolMigrationService);
 
-		await setupEntities([
-			SchoolSystemOptionsEntity,
-			SystemEntity,
-			User,
-			UserLoginMigrationEntity,
-		]);
+		await setupEntities([SchoolSystemOptionsEntity, SystemEntity, User, UserLoginMigrationEntity]);
 	});
 
 	afterAll(async () => {

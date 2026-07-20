@@ -221,13 +221,7 @@ describe('DatabaseManagementService', () => {
 		systemsSeedDataService = module.get(SystemsSeedDataService);
 		externalToolsSeedDataService = module.get(ExternalToolsSeedDataService);
 		instancesSeedDataService = module.get(InstancesSeedDataService);
-		await setupEntities([
-			Role,
-			SchoolEntity,
-			SchoolSystemOptionsEntity,
-			SystemEntity,
-			UserLoginMigrationEntity,
-		]);
+		await setupEntities([Role, SchoolEntity, SchoolSystemOptionsEntity, SystemEntity, UserLoginMigrationEntity]);
 	});
 
 	afterAll(async () => {

@@ -6,11 +6,7 @@ import { SystemEntity } from './system.entity';
 
 describe('System Entity', () => {
 	beforeAll(async () => {
-		await setupEntities([
-			SchoolSystemOptionsEntity,
-			SystemEntity,
-			UserLoginMigrationEntity,
-		]);
+		await setupEntities([SchoolSystemOptionsEntity, SystemEntity, UserLoginMigrationEntity]);
 	});
 
 	describe('constructor', () => {

@@ -17,12 +17,7 @@ describe('TeamMapper', () => {
 			providers: [TeamMapper],
 		}).compile();
 		mapper = module.get(TeamMapper);
-		await setupEntities([
-			SchoolSystemOptionsEntity,
-			SystemEntity,
-			TeamEntity,
-			UserLoginMigrationEntity,
-		]);
+		await setupEntities([SchoolSystemOptionsEntity, SystemEntity, TeamEntity, UserLoginMigrationEntity]);
 	});
 
 	afterAll(async () => {

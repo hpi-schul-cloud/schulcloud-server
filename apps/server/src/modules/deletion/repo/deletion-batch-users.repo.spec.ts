@@ -19,15 +19,11 @@ describe(DeletionBatchUsersRepo.name, () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot({
-				entities: [
-					Role,
-					SchoolSystemOptionsEntity,
-					SystemEntity,
-					User,
-					UserLoginMigrationEntity,
-				]
-			})],
+			imports: [
+				MongoMemoryDatabaseModule.forRoot({
+					entities: [Role, SchoolSystemOptionsEntity, SystemEntity, User, UserLoginMigrationEntity],
+				}),
+			],
 			providers: [DeletionBatchUsersRepo],
 		}).compile();
 

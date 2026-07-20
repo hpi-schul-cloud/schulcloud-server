@@ -19,13 +19,7 @@ describe('rolename mapper', () => {
 	});
 
 	beforeAll(async () => {
-		await setupEntities([
-			CourseEntity,
-			CourseGroupEntity,
-			SchoolSystemOptionsEntity,
-			User,
-			UserLoginMigrationEntity,
-		]);
+		await setupEntities([CourseEntity, CourseGroupEntity, SchoolSystemOptionsEntity, User, UserLoginMigrationEntity]);
 		module = await Test.createTestingModule({
 			imports: [],
 			providers: [],

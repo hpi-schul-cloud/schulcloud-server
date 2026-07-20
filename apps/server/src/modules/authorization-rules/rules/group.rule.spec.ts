@@ -29,13 +29,7 @@ describe('GroupRule', () => {
 	let authorizationHelper: DeepMocked<AuthorizationHelper>;
 
 	beforeAll(async () => {
-		await setupEntities([
-			Group,
-			SchoolSystemOptionsEntity,
-			SystemEntity,
-			User,
-			UserLoginMigrationEntity,
-		]);
+		await setupEntities([Group, SchoolSystemOptionsEntity, SystemEntity, User, UserLoginMigrationEntity]);
 
 		module = await Test.createTestingModule({
 			providers: [

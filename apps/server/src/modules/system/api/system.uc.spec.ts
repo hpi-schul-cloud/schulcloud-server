@@ -24,12 +24,7 @@ describe('SystemUc', () => {
 	let eventBus: DeepMocked<EventBus>;
 
 	beforeAll(async () => {
-		await setupEntities([
-			SchoolSystemOptionsEntity,
-			SystemEntity,
-			User,
-			UserLoginMigrationEntity,
-		]);
+		await setupEntities([SchoolSystemOptionsEntity, SystemEntity, User, UserLoginMigrationEntity]);
 
 		module = await Test.createTestingModule({
 			providers: [

@@ -9,13 +9,7 @@ import * as roleModule from './roles';
 
 describe('Seed Data generation', () => {
 	beforeAll(async () => {
-		await setupEntities([
-			Role,
-			SchoolEntity,
-			SchoolSystemOptionsEntity,
-			SystemEntity,
-			UserLoginMigrationEntity,
-		]);
+		await setupEntities([Role, SchoolEntity, SchoolSystemOptionsEntity, SystemEntity, UserLoginMigrationEntity]);
 	});
 
 	const setup = () => {

@@ -40,7 +40,7 @@ describe('LegacyRoomBoardRepo', () => {
 						Task,
 						TaskBoardElement,
 						UserLoginMigrationEntity,
-					]
+					],
 				}),
 			],
 			providers: [LegacyBoardRepo],

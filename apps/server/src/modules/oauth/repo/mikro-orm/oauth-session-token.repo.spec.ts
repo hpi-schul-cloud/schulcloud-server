@@ -22,13 +22,11 @@ describe(OauthSessionTokenMikroOrmRepo.name, () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot({
-				entities: [
-					OauthSessionTokenEntity,
-					SchoolSystemOptionsEntity,
-					UserLoginMigrationEntity,
-				]
-			})],
+			imports: [
+				MongoMemoryDatabaseModule.forRoot({
+					entities: [OauthSessionTokenEntity, SchoolSystemOptionsEntity, UserLoginMigrationEntity],
+				}),
+			],
 			providers: [
 				{ provide: OAUTH_SESSION_TOKEN_REPO, useClass: OauthSessionTokenMikroOrmRepo },
 				{

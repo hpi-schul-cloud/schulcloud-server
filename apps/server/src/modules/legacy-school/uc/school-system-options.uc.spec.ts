@@ -29,12 +29,7 @@ describe(SchoolSystemOptionsUc.name, () => {
 	let provisioningOptionsUpdateService: DeepMocked<ProvisioningOptionsUpdateService>;
 
 	beforeAll(async () => {
-		await setupEntities([
-			SchoolSystemOptionsEntity,
-			SystemEntity,
-			User,
-			UserLoginMigrationEntity,
-		]);
+		await setupEntities([SchoolSystemOptionsEntity, SystemEntity, User, UserLoginMigrationEntity]);
 
 		module = await Test.createTestingModule({
 			providers: [

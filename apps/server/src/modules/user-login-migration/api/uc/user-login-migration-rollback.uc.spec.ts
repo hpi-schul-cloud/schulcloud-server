@@ -20,12 +20,7 @@ describe(UserLoginMigrationRollbackUc.name, () => {
 	let userLoginMigrationRollbackService: DeepMocked<UserLoginMigrationRollbackService>;
 
 	beforeAll(async () => {
-		await setupEntities([
-			SchoolSystemOptionsEntity,
-			SystemEntity,
-			User,
-			UserLoginMigrationEntity,
-		]);
+		await setupEntities([SchoolSystemOptionsEntity, SystemEntity, User, UserLoginMigrationEntity]);
 
 		module = await Test.createTestingModule({
 			providers: [

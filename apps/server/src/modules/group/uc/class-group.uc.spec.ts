@@ -124,12 +124,7 @@ describe('ClassGroupUc', () => {
 		authorizationConfig = module.get(AUTHORIZATION_CONFIG_TOKEN);
 		userService = module.get(UserService);
 
-		await setupEntities([
-			SchoolSystemOptionsEntity,
-			SystemEntity,
-			User,
-			UserLoginMigrationEntity,
-		]);
+		await setupEntities([SchoolSystemOptionsEntity, SystemEntity, User, UserLoginMigrationEntity]);
 	});
 
 	afterAll(async () => {

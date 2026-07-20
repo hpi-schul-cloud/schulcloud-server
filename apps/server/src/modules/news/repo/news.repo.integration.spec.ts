@@ -43,7 +43,7 @@ describe('NewsRepo', () => {
 						TeamEntity,
 						TeamNews,
 						UserLoginMigrationEntity,
-					]
+					],
 				}),
 			],
 			providers: [NewsRepo],

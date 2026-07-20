@@ -11,13 +11,7 @@ import { UserMigrationFailedLoggable } from './user-migration-failed.loggable';
 describe(UserMigrationFailedLoggable.name, () => {
 	describe('getLogMessage', () => {
 		const setup = async () => {
-			await setupEntities([
-				ImportUser,
-				SchoolSystemOptionsEntity,
-				SystemEntity,
-				User,
-				UserLoginMigrationEntity,
-			]);
+			await setupEntities([ImportUser, SchoolSystemOptionsEntity, SystemEntity, User, UserLoginMigrationEntity]);
 			const importUser = importUserFactory.build();
 			const error = new NotFoundException('user not found');
 			const loggable = new UserMigrationFailedLoggable(importUser, error);

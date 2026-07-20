@@ -24,13 +24,7 @@ describe('CourseUc', () => {
 	let roleService: DeepMocked<RoleService>;
 
 	beforeAll(async () => {
-		await setupEntities([
-			CourseEntity,
-			CourseGroupEntity,
-			SchoolSystemOptionsEntity,
-			User,
-			UserLoginMigrationEntity,
-		]);
+		await setupEntities([CourseEntity, CourseGroupEntity, SchoolSystemOptionsEntity, User, UserLoginMigrationEntity]);
 		module = await Test.createTestingModule({
 			providers: [
 				CourseUc,

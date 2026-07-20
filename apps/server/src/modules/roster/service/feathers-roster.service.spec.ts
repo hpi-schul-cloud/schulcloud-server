@@ -110,12 +110,7 @@ describe('FeathersRosterService', () => {
 		roomMembershipService = module.get(RoomMembershipService);
 		config = module.get(ROSTER_PUBLIC_API_CONFIG_TOKEN);
 
-		await setupEntities([
-			CourseEntity,
-			CourseGroupEntity,
-			SchoolSystemOptionsEntity,
-			UserLoginMigrationEntity,
-		]);
+		await setupEntities([CourseEntity, CourseGroupEntity, SchoolSystemOptionsEntity, UserLoginMigrationEntity]);
 	});
 
 	beforeEach(() => {

@@ -28,12 +28,7 @@ describe(ExternalToolUtilizationUc.name, () => {
 	let externalToolUtilizationService: DeepMocked<ExternalToolUtilizationService>;
 
 	beforeAll(async () => {
-		await setupEntities([
-			SchoolSystemOptionsEntity,
-			SystemEntity,
-			User,
-			UserLoginMigrationEntity,
-		]);
+		await setupEntities([SchoolSystemOptionsEntity, SystemEntity, User, UserLoginMigrationEntity]);
 
 		module = await Test.createTestingModule({
 			providers: [

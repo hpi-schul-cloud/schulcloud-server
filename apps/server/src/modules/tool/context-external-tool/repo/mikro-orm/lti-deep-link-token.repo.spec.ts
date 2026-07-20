@@ -21,12 +21,7 @@ describe(LtiDeepLinkTokenMikroOrmRepo.name, () => {
 		module = await Test.createTestingModule({
 			imports: [
 				MongoMemoryDatabaseModule.forRoot({
-					entities: [
-						LtiDeepLinkTokenEntity,
-						SchoolSystemOptionsEntity,
-						SystemEntity,
-						UserLoginMigrationEntity,
-					]
+					entities: [LtiDeepLinkTokenEntity, SchoolSystemOptionsEntity, SystemEntity, UserLoginMigrationEntity],
 				}),
 			],
 			providers: [{ provide: LTI_DEEP_LINK_TOKEN_REPO, useClass: LtiDeepLinkTokenMikroOrmRepo }],

@@ -73,12 +73,7 @@ describe(GroupUc.name, () => {
 		authorizationService = module.get(AuthorizationService);
 		logger = module.get(Logger);
 
-		await setupEntities([
-			SchoolSystemOptionsEntity,
-			SystemEntity,
-			User,
-			UserLoginMigrationEntity,
-		]);
+		await setupEntities([SchoolSystemOptionsEntity, SystemEntity, User, UserLoginMigrationEntity]);
 	});
 
 	afterAll(async () => {

@@ -10,12 +10,7 @@ import { ResolvedUserMapper } from './resolved-user.mapper';
 
 describe('ResolvedUserMapper', () => {
 	beforeAll(async () => {
-		await setupEntities([
-			SchoolSystemOptionsEntity,
-			SystemEntity,
-			User,
-			UserLoginMigrationEntity,
-		]);
+		await setupEntities([SchoolSystemOptionsEntity, SystemEntity, User, UserLoginMigrationEntity]);
 	});
 
 	it('should has mapToResponse static method', () => {

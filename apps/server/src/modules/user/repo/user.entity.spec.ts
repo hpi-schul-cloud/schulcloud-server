@@ -21,12 +21,7 @@ describe('User Entity', () => {
 	const permissionC = 'c' as Permission;
 
 	beforeAll(async () => {
-		orm = await setupEntities([
-			SchoolSystemOptionsEntity,
-			SystemEntity,
-			User,
-			UserLoginMigrationEntity,
-		]);
+		orm = await setupEntities([SchoolSystemOptionsEntity, SystemEntity, User, UserLoginMigrationEntity]);
 	});
 
 	describe('constructor', () => {

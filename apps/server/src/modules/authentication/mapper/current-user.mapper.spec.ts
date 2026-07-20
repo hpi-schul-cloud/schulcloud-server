@@ -17,12 +17,7 @@ import { CurrentUserMapper } from './current-user.mapper';
 
 describe('CurrentUserMapper', () => {
 	beforeAll(async () => {
-		await setupEntities([
-			SchoolSystemOptionsEntity,
-			SystemEntity,
-			User,
-			UserLoginMigrationEntity,
-		]);
+		await setupEntities([SchoolSystemOptionsEntity, SystemEntity, User, UserLoginMigrationEntity]);
 	});
 
 	describe('extractRoleIds', () => {

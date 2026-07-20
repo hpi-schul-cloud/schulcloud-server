@@ -8,12 +8,7 @@ import { CourseMapper } from './course.mapper';
 
 describe(CourseMapper.name, () => {
 	beforeAll(async () => {
-		await setupEntities([
-			CourseEntity,
-			CourseGroupEntity,
-			SchoolSystemOptionsEntity,
-			UserLoginMigrationEntity,
-		]);
+		await setupEntities([CourseEntity, CourseGroupEntity, SchoolSystemOptionsEntity, UserLoginMigrationEntity]);
 	});
 
 	describe('mapToCreateCourseResponse', () => {

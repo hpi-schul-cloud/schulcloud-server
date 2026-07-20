@@ -56,12 +56,7 @@ describe(BoardNodeService.name, () => {
 		// contentElementUpdateService = module.get(ContentElementUpdateService);
 		// boardNodeDeleteHooksService = module.get(BoardNodeDeleteHooksService);
 
-		await setupEntities([
-			SchoolSystemOptionsEntity,
-			SystemEntity,
-			User,
-			UserLoginMigrationEntity,
-		]);
+		await setupEntities([SchoolSystemOptionsEntity, SystemEntity, User, UserLoginMigrationEntity]);
 	});
 
 	afterEach(() => {

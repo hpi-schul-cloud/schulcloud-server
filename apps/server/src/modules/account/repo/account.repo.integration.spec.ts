@@ -29,13 +29,7 @@ describe('AccountMikroOrmRepo', () => {
 		module = await Test.createTestingModule({
 			imports: [
 				MongoMemoryDatabaseModule.forRoot({
-					entities: [
-						AccountEntity,
-						SchoolSystemOptionsEntity,
-						SystemEntity,
-						User,
-						UserLoginMigrationEntity,
-					]
+					entities: [AccountEntity, SchoolSystemOptionsEntity, SystemEntity, User, UserLoginMigrationEntity],
 				}),
 			],
 			providers: [AccountTestRepo],

@@ -96,17 +96,11 @@ describe('News mapping', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot({
-				entities: [
-					Course,
-					CourseNews,
-					News,
-					School,
-					SchoolNews,
-					SchoolSystemOptionsEntity,
-					User,
-				]
-			})],
+			imports: [
+				MongoMemoryDatabaseModule.forRoot({
+					entities: [Course, CourseNews, News, School, SchoolNews, SchoolSystemOptionsEntity, User],
+				}),
+			],
 		}).compile();
 
 		em = module.get(EntityManager);

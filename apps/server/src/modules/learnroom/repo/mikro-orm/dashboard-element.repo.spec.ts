@@ -27,7 +27,7 @@ describe(DashboardElementRepo.name, () => {
 						SchoolSystemOptionsEntity,
 						User,
 						UserLoginMigrationEntity,
-					]
+					],
 				}),
 			],
 			providers: [DashboardElementRepo],

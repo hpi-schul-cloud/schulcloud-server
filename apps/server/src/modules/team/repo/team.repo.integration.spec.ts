@@ -19,14 +19,11 @@ describe('team repo', () => {
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
-			imports: [MongoMemoryDatabaseModule.forRoot({
-				entities: [
-					SchoolSystemOptionsEntity,
-					SystemEntity,
-					TeamEntity,
-					UserLoginMigrationEntity,
-				]
-			})],
+			imports: [
+				MongoMemoryDatabaseModule.forRoot({
+					entities: [SchoolSystemOptionsEntity, SystemEntity, TeamEntity, UserLoginMigrationEntity],
+				}),
+			],
 			providers: [TeamRepo],
 		}).compile();
 		repo = module.get(TeamRepo);

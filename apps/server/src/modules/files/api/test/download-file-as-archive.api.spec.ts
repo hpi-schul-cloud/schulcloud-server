@@ -57,13 +57,7 @@ describe('DownloadArchive Controller (API)', () => {
 				]),
 				ErrorModule,
 				MongoMemoryDatabaseModule.forRoot({
-					entities: [
-						AccountEntity,
-						SchoolSystemOptionsEntity,
-						SystemEntity,
-						User,
-						UserLoginMigrationEntity,
-					]
+					entities: [AccountEntity, SchoolSystemOptionsEntity, SystemEntity, User, UserLoginMigrationEntity],
 				}),
 				ConfigurationModule.register(TEST_JWT_CONFIG_TOKEN, TestJwtModuleConfig),
 			],

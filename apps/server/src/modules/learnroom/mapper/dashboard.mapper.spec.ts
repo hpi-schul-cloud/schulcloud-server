@@ -9,12 +9,7 @@ import { DashboardMapper } from './dashboard.mapper';
 
 describe('dashboard mapper', () => {
 	beforeAll(async () => {
-		await setupEntities([
-			CourseEntity,
-			CourseGroupEntity,
-			SchoolSystemOptionsEntity,
-			UserLoginMigrationEntity,
-		]);
+		await setupEntities([CourseEntity, CourseGroupEntity, SchoolSystemOptionsEntity, UserLoginMigrationEntity]);
 	});
 
 	it('should map the required properties correctly', () => {

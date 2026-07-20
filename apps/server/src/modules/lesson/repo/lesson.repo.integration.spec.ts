@@ -31,7 +31,7 @@ describe('LessonRepo', () => {
 						Submission,
 						Task,
 						UserLoginMigrationEntity,
-					]
+					],
 				}),
 			],
 			providers: [LessonRepo],

@@ -100,13 +100,7 @@ describe('VideoConferenceUc', () => {
 	};
 
 	beforeAll(async () => {
-		await setupEntities([
-			Role,
-			SchoolSystemOptionsEntity,
-			SystemEntity,
-			User,
-			UserLoginMigrationEntity,
-		]);
+		await setupEntities([Role, SchoolSystemOptionsEntity, SystemEntity, User, UserLoginMigrationEntity]);
 
 		module = await Test.createTestingModule({
 			providers: [

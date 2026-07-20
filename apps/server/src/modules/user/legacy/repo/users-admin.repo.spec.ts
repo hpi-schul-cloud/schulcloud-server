@@ -132,7 +132,7 @@ describe('users admin repo', () => {
 						SystemEntity,
 						User,
 						UserLoginMigrationEntity,
-					]
+					],
 				}),
 			],
 			providers: [UsersAdminRepo],
