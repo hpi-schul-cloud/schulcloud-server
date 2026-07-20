@@ -1,2 +1,2 @@
 export { NotificationType } from './types';
-export { NotificationEntry, NotificationService } from './domain';
+export { NotificationService, NotificationEntry } from './domain';
