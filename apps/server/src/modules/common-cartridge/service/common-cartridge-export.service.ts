@@ -15,7 +15,6 @@ import {
 	FileElementResponse,
 	FileFolderElementResponse,
 	FileRecordParentType,
-	FileRecordResponse,
 	FileRecordScanStatus,
 	FilesStorageClientAdapter,
 	LessonClientAdapter,
@@ -27,7 +26,6 @@ import {
 import { Logger } from '@infra/logger';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import archiver from 'archiver';
-import { Stream } from 'node:stream';
 import { CommonCartridgeFileBuilder } from '../export/builders/common-cartridge-file-builder';
 import { CommonCartridgeOrganizationNode } from '../export/builders/common-cartridge-organization-node';
 import { CommonCartridgeVersion } from '../export/common-cartridge.enums';
@@ -35,8 +33,6 @@ import { createIdentifier } from '../export/utils';
 import { CommonCartridgeMessageLoggable } from '../loggable/common-cartridge-message.loggable';
 import { CommonCartridgeExportMapper } from './common-cartridge-export.mapper';
 import { CommonCartridgeExportResponse } from './common-cartridge-export.response';
-
-export type FileMetadataAndStream = { name: string; file: Stream; fileDto: FileRecordResponse };
 
 @Injectable()
 export class CommonCartridgeExportService {
@@ -363,15 +359,17 @@ export class CommonCartridgeExportService {
 		cardOrganization: CommonCartridgeOrganizationNode
 	): Promise<void> {
 		switch (element.type) {
-			case ContentElementType.RICH_TEXT:
+			case ContentElementType.RICH_TEXT: {
 				const resource = this.mapper.mapRichTextElementToResource(element as RichTextElementResponse);
 				cardOrganization.addResource(resource);
 				break;
-			case ContentElementType.LINK:
+			}
+			case ContentElementType.LINK: {
 				const linkResource = this.mapper.mapLinkElementToResource(element as LinkElementResponse);
 				cardOrganization.addResource(linkResource);
 				break;
-			case ContentElementType.FILE:
+			}
+			case ContentElementType.FILE: {
 				const metadataAndStreamsForFile = await this.openStreamsToFiles(jwt, element);
 
 				for (const fileMetadata of metadataAndStreamsForFile) {
@@ -381,7 +379,8 @@ export class CommonCartridgeExportService {
 				}
 
 				break;
-			case ContentElementType.FILE_FOLDER:
+			}
+			case ContentElementType.FILE_FOLDER: {
 				const metadataAndStreamsForFolder = await this.openStreamsToFiles(jwt, element);
 
 				const fileFolderElement = element as FileFolderElementResponse;
@@ -392,6 +391,7 @@ export class CommonCartridgeExportService {
 				}
 
 				break;
+			}
 		}
 	}
 

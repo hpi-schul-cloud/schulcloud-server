@@ -1,6 +1,6 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { RoomContentItem } from '../domain';
+import { RoomContentItem } from '../domain/type/room-content';
 import { RoomContentEntity } from './entity';
 
 @Injectable()

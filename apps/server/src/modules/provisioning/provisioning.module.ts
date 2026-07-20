@@ -32,13 +32,9 @@ import { ProvisioningService } from './service/provisioning.service';
 import { SchoolProvisioningHandler } from './service/school-provisioning.handler';
 import { TspProvisioningService } from './service/tsp-provisioning.service';
 import { UserProvisioningHandler } from './service/user-provisioning.handler';
-import {
-	OidcProvisioningStrategy,
-	SchulconnexAsyncProvisioningStrategy,
-	SchulconnexResponseMapper,
-	TspProvisioningStrategy,
-} from './strategy';
-import { ErwinProvisioningStrategy } from './strategy/erwin';
+import { ErwinProvisioningStrategy } from './strategy/erwin/erwin.strategy';
+import { OidcProvisioningStrategy } from './strategy/oidc/oidc.strategy';
+import { SchulconnexAsyncProvisioningStrategy, SchulconnexResponseMapper } from './strategy/schulconnex';
 import {
 	SchulconnexCourseSyncService,
 	SchulconnexGroupProvisioningService,
@@ -47,6 +43,7 @@ import {
 	SchulconnexToolProvisioningService,
 	SchulconnexUserProvisioningService,
 } from './strategy/schulconnex/service';
+import { TspProvisioningStrategy } from './strategy/tsp/tsp.strategy';
 
 @Module({
 	imports: [

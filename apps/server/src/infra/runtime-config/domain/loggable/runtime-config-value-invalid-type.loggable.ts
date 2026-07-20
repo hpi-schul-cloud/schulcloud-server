@@ -1,12 +1,12 @@
 import { BadRequest } from '@feathersjs/errors';
 
 import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
-import type { RuntimeConfigValue } from '../runtime-config-value.do';
+import type { RuntimeConfigValueLike } from '../runtime-config-value.types';
 
 export class RuntimeConfigValueInvalidTypeLoggable extends BadRequest implements Loggable {
 	constructor(
 		private readonly value: string | number | boolean,
-		private readonly domainObject: RuntimeConfigValue
+		private readonly domainObject: RuntimeConfigValueLike
 	) {
 		super('The Value does not match the type of the RuntimeConfigValue.');
 	}

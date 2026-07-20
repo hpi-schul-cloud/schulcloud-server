@@ -1,17 +1,13 @@
 import { CommonCartridgeElementType } from '../common-cartridge.enums';
 import { CommonCartridgeElementFactory } from '../elements/common-cartridge-element-factory';
-import { type CommonCartridgeOrganizationElementPropsV110 } from '../elements/v1.1.0';
-import { type CommonCartridgeOrganizationElementPropsV130 } from '../elements/v1.3.0';
 import { type CommonCartridgeElement } from '../interfaces';
 import { type CommonCartridgeResourceProps } from '../resources/common-cartridge-resource-factory';
-import type { CommonCartridgeOrganizationProps } from './common-cartridge-file-builder';
+import type {
+	CommonCartridgeOrganizationNodeProps,
+	CommonCartridgeOrganizationProps,
+} from './common-cartridge-organization.types';
 import { type CommonCartridgeResourceCollectionBuilder } from './common-cartridge-resource-collection-builder';
 import { CommonCartridgeResourceNode } from './common-cartridge-resource-node';
-
-export type CommonCartridgeOrganizationNodeProps = Omit<
-	CommonCartridgeOrganizationElementPropsV110 | CommonCartridgeOrganizationElementPropsV130,
-	'items'
->;
 
 export class CommonCartridgeOrganizationNode {
 	private readonly parent: CommonCartridgeOrganizationNode | null = null;
@@ -52,7 +48,7 @@ export class CommonCartridgeOrganizationNode {
 				...resourceProps,
 				version: this.props.version,
 			},
-			this
+			this.folder
 		);
 
 		this.children.push(resource);

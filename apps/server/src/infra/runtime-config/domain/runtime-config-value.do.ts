@@ -2,6 +2,7 @@ import { sanitizeRichText } from '@shared/controller/transformer/sanitize-html.t
 import { type AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { InputFormat } from '@shared/domain/types';
 import { RuntimeConfigValueInvalidTypeLoggable } from './loggable/runtime-config-value-invalid-type.loggable';
+import type { RuntimeConfigValueLike } from './runtime-config-value.types';
 
 export type RuntimeConfigValueProps = RuntimeConfigDefault & AuthorizableObject;
 
@@ -19,8 +20,8 @@ export type RuntimeConfigType = RuntimeConfigValueAndType['type'];
 
 export type RuntimeConfigValueType = RuntimeConfigValueAndType['value'];
 
-export class RuntimeConfigValue extends DomainObject<RuntimeConfigValueProps> {
-	public setValue(value: string | number | boolean): RuntimeConfigValue {
+export class RuntimeConfigValue extends DomainObject<RuntimeConfigValueProps> implements RuntimeConfigValueLike {
+	public setValue(value: string | number | boolean): this {
 		if (this.props.type === 'string' && typeof value === 'string') {
 			this.props.value = sanitizeRichText(value, InputFormat.RICH_TEXT_CK5);
 		} else if (this.props.type === 'number' && typeof value === 'number') {
@@ -33,7 +34,7 @@ export class RuntimeConfigValue extends DomainObject<RuntimeConfigValueProps> {
 		return this;
 	}
 
-	public setValueFromString(value: string): RuntimeConfigValue {
+	public setValueFromString(value: string): this {
 		if (this.props.type === 'string') {
 			this.props.value = sanitizeRichText(value, InputFormat.RICH_TEXT_CK5);
 		}
@@ -60,7 +61,7 @@ export class RuntimeConfigValue extends DomainObject<RuntimeConfigValueProps> {
 
 	private toNumber(value: string): number {
 		const number = Number(value);
-		if (isNaN(number)) {
+		if (Number.isNaN(number)) {
 			throw new RuntimeConfigValueInvalidTypeLoggable(value, this);
 		}
 		return number;

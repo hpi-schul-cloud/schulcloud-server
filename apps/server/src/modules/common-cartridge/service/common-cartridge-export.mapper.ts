@@ -15,8 +15,8 @@ import {
 	type LinkElementResponse,
 	type RichTextElementResponse,
 } from '@infra/common-cartridge-clients';
+import { type Stream } from 'node:stream';
 import sanitizeHtml from 'sanitize-html';
-import { type Stream } from 'stream';
 import { type CommonCartridgeOrganizationProps } from '../export/builders/common-cartridge-file-builder';
 import {
 	CommonCartridgeElementType,
@@ -28,7 +28,7 @@ import { type CommonCartridgeElementProps } from '../export/elements/common-cart
 import { type CommonCartridgeResourceProps } from '../export/resources/common-cartridge-resource-factory';
 import { type FileElement } from '../export/resources/v1.3.0/common-cartridge-file-folder-resource';
 import { createIdentifier } from '../export/utils';
-import { type FileMetadataAndStream } from './common-cartridge-export.service';
+import { type FileMetadataAndStream } from './common-cartridge-export.types';
 
 export class CommonCartridgeExportMapper {
 	private static readonly GEOGEBRA_BASE_URL: string = 'https://geogebra.org';

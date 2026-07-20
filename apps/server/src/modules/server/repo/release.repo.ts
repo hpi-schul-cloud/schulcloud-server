@@ -2,7 +2,7 @@ import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { validateSync } from 'class-validator';
-import { Release } from '../domain';
+import { Release } from '../domain/types';
 import { ReleaseClass } from './release.class';
 
 @Injectable()

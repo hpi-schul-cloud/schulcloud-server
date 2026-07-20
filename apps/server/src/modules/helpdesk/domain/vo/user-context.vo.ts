@@ -1,6 +1,6 @@
 import { ValueObject } from '@shared/domain/value-object.decorator';
 import { IsArray, IsEmail, IsMongoId, IsString } from 'class-validator';
-import { UserContextProps } from '..';
+import { UserContextProps } from '../interface/helpdesk.interface';
 
 @ValueObject()
 export class UserContext implements UserContextProps {

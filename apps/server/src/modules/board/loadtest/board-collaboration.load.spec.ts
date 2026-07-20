@@ -1,42 +1,48 @@
 /* eslint-disable no-process-env */
-import { type CreateBoardLoadTest, type SocketConfiguration } from './types';
-import { viewersClass, collaborativeClass } from './helper/class-definitions';
-import { SocketConnectionManager } from './socket-connection-manager';
-import { LoadtestRunner } from './loadtest-runner';
 import { BoardLoadTest } from './board-load-test';
+import { type CreateBoardLoadTest } from './create-board-loadtest';
+import { collaborativeClass, viewersClass } from './helper/class-definitions';
+import { LoadtestRunner } from './loadtest-runner';
+import { SocketConnectionManager } from './socket-connection-manager';
+import { type SocketConfiguration } from './types';
 
 describe('Board Collaboration Load Test', () => {
+	const shouldRunLoadtest = !!(process.env.COURSE_ID && process.env.TOKEN && process.env.TARGET_URL);
+
 	it('should run a basic load test', async () => {
+		if (!shouldRunLoadtest) {
+			expect(shouldRunLoadtest).toBe(false);
+			return;
+		}
+
 		const { COURSE_ID, TOKEN, TARGET_URL } = process.env;
 		const viewerClassesAmount = process.env.VIEWER_CLASSES ? parseInt(process.env.VIEWER_CLASSES, 10) : 20;
 		const collabClassesAmount = process.env.COLLAB_CLASSES ? parseInt(process.env.COLLAB_CLASSES, 10) : 0;
-		if (COURSE_ID && TOKEN && TARGET_URL) {
-			const socketConfiguration: SocketConfiguration = {
-				baseUrl: TARGET_URL,
-				path: '/board-collaboration',
-				token: TOKEN,
-				connectTimeout: 5000,
-			};
+		let connectionIssues = 0;
 
-			const socketConnectionManager = new SocketConnectionManager(socketConfiguration);
-			let connectionIssues = 0;
+		const socketConfiguration: SocketConfiguration = {
+			baseUrl: TARGET_URL,
+			path: '/board-collaboration',
+			token: TOKEN,
+			connectTimeout: 5000,
+		};
 
-			socketConnectionManager.setOnErrorHandler(() => connectionIssues++);
-			const createBoardLoadTest: CreateBoardLoadTest = (...args) => new BoardLoadTest(...args);
-			const runner = new LoadtestRunner(socketConnectionManager, createBoardLoadTest);
+		const socketConnectionManager = new SocketConnectionManager(socketConfiguration);
 
-			await runner.runLoadtest({
-				socketConfiguration,
-				courseId: COURSE_ID,
-				configurations: [
-					{ classDefinition: viewersClass, amount: viewerClassesAmount },
-					{ classDefinition: collaborativeClass, amount: collabClassesAmount },
-				],
-			});
+		socketConnectionManager.setOnErrorHandler(() => connectionIssues++);
+		const createBoardLoadTest: CreateBoardLoadTest = (...args) => new BoardLoadTest(...args);
+		const runner = new LoadtestRunner(socketConnectionManager, createBoardLoadTest);
 
-			socketConnectionManager.destroySocketConnections();
-		} else {
-			expect('this should only be ran manually').toBeTruthy();
-		}
+		await runner.runLoadtest({
+			socketConfiguration,
+			courseId: COURSE_ID,
+			configurations: [
+				{ classDefinition: viewersClass, amount: viewerClassesAmount },
+				{ classDefinition: collaborativeClass, amount: collabClassesAmount },
+			],
+		});
+
+		socketConnectionManager.destroySocketConnections();
+		expect(connectionIssues).toBe(0);
 	}, 600000);
 });

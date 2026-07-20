@@ -1,6 +1,6 @@
 import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
 import { type EntityId } from '@shared/domain/types';
-import { type News } from '../../repo';
+import { type News } from '../../repo/news.entity';
 import { NewsLogMapper } from '../mapper';
 import { type CrudOperation } from '../type';
 

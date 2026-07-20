@@ -3,13 +3,11 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { OauthDataDto, OauthDataStrategyInputDto, ProvisioningDto, ProvisioningSystemDto } from '../dto';
 import { ProvisioningSystemInputMapper } from '../mapper/provisioning-system-input.mapper';
-import {
-	OidcProvisioningStrategy,
-	ProvisioningStrategy,
-	SchulconnexAsyncProvisioningStrategy,
-	TspProvisioningStrategy,
-} from '../strategy';
-import { ErwinProvisioningStrategy } from '../strategy/erwin';
+import { ProvisioningStrategy } from '../strategy/base.strategy';
+import { ErwinProvisioningStrategy } from '../strategy/erwin/erwin.strategy';
+import { OidcProvisioningStrategy } from '../strategy/oidc/oidc.strategy';
+import { SchulconnexAsyncProvisioningStrategy } from '../strategy/schulconnex/schulconnex-async-provisioning.strategy';
+import { TspProvisioningStrategy } from '../strategy/tsp/tsp.strategy';
 
 @Injectable()
 export class ProvisioningService {

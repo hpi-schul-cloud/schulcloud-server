@@ -4,22 +4,21 @@ import {
 	CommonCartridgeResourceFactory,
 	type CommonCartridgeResourceProps,
 } from '../resources/common-cartridge-resource-factory';
-import type { CommonCartridgeOrganizationNode } from './common-cartridge-organization-node';
 
 export type CommonCartridgeResourceNodeProps = CommonCartridgeResourceProps & { version: CommonCartridgeVersion };
 
 export class CommonCartridgeResourceNode {
-	private readonly parent: CommonCartridgeOrganizationNode;
+	private readonly parentFolder: string;
 
 	constructor(
 		private readonly props: CommonCartridgeResourceNodeProps,
-		parent: CommonCartridgeOrganizationNode
+		parentFolder: string
 	) {
-		this.parent = parent;
+		this.parentFolder = parentFolder;
 	}
 
 	public build(): CommonCartridgeResource {
-		const resource = CommonCartridgeResourceFactory.createResource({ ...this.props, folder: this.parent.folder });
+		const resource = CommonCartridgeResourceFactory.createResource({ ...this.props, folder: this.parentFolder });
 
 		return resource;
 	}

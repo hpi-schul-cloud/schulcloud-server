@@ -1,5 +1,5 @@
-import { IsString, IsDate, IsOptional } from 'class-validator';
-import { Release } from '../domain';
+import { IsDate, IsOptional, IsString } from 'class-validator';
+import { Release } from '../domain/types';
 
 export class ReleaseClass implements Release {
 	@IsString()

@@ -10,10 +10,8 @@ import {
 import { MissingMetadataLoggableException } from '../errors';
 import { type CommonCartridgeElement } from '../interfaces';
 import { CommonCartridgeResourceFactory } from '../resources/common-cartridge-resource-factory';
-import {
-	CommonCartridgeOrganizationNode,
-	type CommonCartridgeOrganizationNodeProps,
-} from './common-cartridge-organization-node';
+import { CommonCartridgeOrganizationNode } from './common-cartridge-organization-node';
+import type { CommonCartridgeOrganizationProps } from './common-cartridge-organization.types';
 import { CommonCartridgeResourceCollectionBuilder } from './common-cartridge-resource-collection-builder';
 
 import { type Logger } from '@infra/logger';
@@ -25,8 +23,6 @@ export type CommonCartridgeFileBuilderProps = {
 	version: CommonCartridgeVersion;
 	identifier: string;
 };
-
-export type CommonCartridgeOrganizationProps = Omit<CommonCartridgeOrganizationNodeProps, 'version' | 'type'>;
 
 export class CommonCartridgeFileBuilder {
 	private readonly resourcesBuilder: CommonCartridgeResourceCollectionBuilder =

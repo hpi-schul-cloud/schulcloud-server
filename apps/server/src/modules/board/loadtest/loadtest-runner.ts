@@ -1,13 +1,15 @@
 import { Injectable } from '@nestjs/common';
+import { randomInt } from 'node:crypto';
 import { writeFileSync } from 'node:fs';
 import { BoardLoadTest } from './board-load-test';
+import { type CreateBoardLoadTest } from './create-board-loadtest';
 import { createSeveralClasses } from './helper/class-definitions';
 import { createBoardsResilient } from './helper/create-board';
 import { formatDate } from './helper/format-date';
 import { getUrlConfiguration } from './helper/get-url-configuration';
 import { useResponseTimes } from './helper/response-times.composable';
 import { SocketConnectionManager } from './socket-connection-manager';
-import { Callback, ClassDefinitionWithAmount, CreateBoardLoadTest, SocketConfiguration } from './types';
+import { Callback, ClassDefinitionWithAmount, SocketConfiguration } from './types';
 
 const { getAvgByAction, getTotalAvg } = useResponseTimes();
 type Protocol = {
@@ -86,7 +88,7 @@ export class LoadtestRunner {
 		socketConfiguration: SocketConfiguration,
 		configurations: ClassDefinitionWithAmount[]
 	): Protocol {
-		const protocolFilename = `${formatDate(this.startDate)}_${Math.ceil(Math.random() * 1000)}.loadtest.json`;
+		const protocolFilename = `${formatDate(this.startDate)}_${randomInt(1000)}.loadtest.json`;
 		const protocol = {
 			protocolFilename,
 			startDateTime: formatDate(this.startDate),

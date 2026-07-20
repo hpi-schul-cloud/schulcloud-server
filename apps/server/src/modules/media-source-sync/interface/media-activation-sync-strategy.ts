@@ -1,5 +1,5 @@
 import { type MediaSource, type MediaSourceDataFormat } from '@modules/media-source';
-import { type MediaSourceSyncReport } from '@modules/media-source-sync';
+import { type MediaSourceSyncReport } from './media-source-sync-report';
 
 export interface MediaActivationSyncStrategy {
 	getMediaSourceFormat(): MediaSourceDataFormat;

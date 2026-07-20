@@ -1,5 +1,5 @@
 import { type EntityId } from '@shared/domain/types/entity-id';
-import { type NewsTargetModel } from '../type';
+import { type NewsTargetModel } from '../type/news-target-model.enum';
 
 /** news interface for ceating news */
 export interface CreateNews {

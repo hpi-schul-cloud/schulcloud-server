@@ -1,5 +1,5 @@
 import { ExternalToolMedium } from '@modules/tool/external-tool/domain';
-import { MediaUserLicense } from '@modules/user-license';
+import { MediaUserLicense } from '@modules/user-license/domain';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { MediaUserLicenseRepo } from '../repo';
