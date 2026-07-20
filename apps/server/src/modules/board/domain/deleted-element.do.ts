@@ -1,5 +1,6 @@
 import { BoardNode } from './board-node.do';
-import type { ContentElementType, DeletedElementProps } from './types';
+import type { DeletedElementProps } from './types/board-node-props';
+import type { ContentElementType } from './types/content-element-type.enum';
 
 export class DeletedElement extends BoardNode<DeletedElementProps> {
 	get title(): string {

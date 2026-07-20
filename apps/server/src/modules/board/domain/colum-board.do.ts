@@ -1,8 +1,8 @@
 import { BoardNode } from './board-node.do';
 import { Column } from './column.do';
-import type { AnyBoardNode } from './types/any-board-node';
 import type { BoardExternalReference } from './types/board-external-reference';
 import type { BoardLayout } from './types/board-layout.enum';
+import type { BoardNodeChild } from './types/board-node-child';
 import type { ColumnBoardProps } from './types/board-node-props';
 
 export class ColumnBoard extends BoardNode<ColumnBoardProps> {
@@ -49,7 +49,7 @@ export class ColumnBoard extends BoardNode<ColumnBoardProps> {
 		this.props.readersCanEdit = readersCanEdit;
 	}
 
-	public canHaveChild(childNode: AnyBoardNode): boolean {
+	public canHaveChild(childNode: BoardNodeChild): boolean {
 		const allowed = childNode instanceof Column;
 		return allowed;
 	}

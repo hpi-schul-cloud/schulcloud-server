@@ -1,5 +1,5 @@
 import { BoardNode } from './board-node.do';
-import type { CollaborativeTextEditorElementProps } from './types';
+import type { CollaborativeTextEditorElementProps } from './types/board-node-props';
 
 export class CollaborativeTextEditorElement extends BoardNode<CollaborativeTextEditorElementProps> {
 	public canHaveChild(): boolean {

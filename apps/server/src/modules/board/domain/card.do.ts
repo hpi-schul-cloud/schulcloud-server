@@ -1,6 +1,6 @@
 import { BoardNode } from './board-node.do';
-import { type AnyBoardNode } from './types/any-board-node';
 import { isContentElement, type CardProps } from './types/any-content-element';
+import type { BoardNodeChild } from './types/board-node-child';
 import { Colors } from './types/colors.enum';
 
 export class Card extends BoardNode<CardProps> {
@@ -28,7 +28,7 @@ export class Card extends BoardNode<CardProps> {
 		this.props.height = height;
 	}
 
-	public canHaveChild(childNode: AnyBoardNode): boolean {
+	public canHaveChild(childNode: BoardNodeChild): boolean {
 		return isContentElement(childNode);
 	}
 }

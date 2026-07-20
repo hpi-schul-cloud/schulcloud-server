@@ -3,11 +3,13 @@ import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 
 import { ROOT_PATH } from '../path-utils';
-import { BoardExternalReference, BoardLayout, BoardNodeProps } from '../types';
+import { type BoardExternalReference } from '../types/board-external-reference';
+import { type BoardLayout } from '../types/board-layout.enum';
+import { type BoardNodeProps } from '../types/board-node-props';
+import { Colors } from '../types/colors.enum';
 import { MediaBoard } from './media-board.do';
 import { MediaExternalToolElement } from './media-external-tool-element.do';
 import { MediaLine } from './media-line.do';
-import { Colors } from './types';
 
 @Injectable()
 export class MediaBoardNodeFactory {

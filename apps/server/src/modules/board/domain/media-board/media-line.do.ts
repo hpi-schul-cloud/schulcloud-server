@@ -1,6 +1,7 @@
-import { type AnyMediaBoardNode, isAnyMediaElement, type Colors } from './types';
-import type { MediaLineProps } from '../types';
 import { BoardNode } from '../board-node.do';
+import type { MediaLineProps } from '../types/board-node-props';
+import type { Colors } from '../types/colors.enum';
+import { type AnyMediaBoardNode, isAnyMediaElement } from './types/any-media-board-node';
 
 export class MediaLine extends BoardNode<MediaLineProps> {
 	get title(): string {

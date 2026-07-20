@@ -3,7 +3,8 @@ import { Logger } from '@infra/logger';
 import { Injectable } from '@nestjs/common';
 import { IFindOptions } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
-import { Task, TaskRepo } from '../../repo';
+import { Task } from '../../repo/task.entity';
+import { TaskRepo } from '../../repo/task.repo';
 import { SubmissionService } from './submission.service';
 
 @Injectable()

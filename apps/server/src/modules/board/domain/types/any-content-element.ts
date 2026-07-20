@@ -9,7 +9,6 @@ import { type H5pElement, isH5pElement } from '../h5p-element.do';
 import { isLinkElement, type LinkElement } from '../link-element.do';
 import { isRichTextElement, type RichTextElement } from '../rich-text-element.do';
 import { isVideoConferenceElement, type VideoConferenceElement } from '../video-conference-element.do';
-import { type AnyBoardNode } from './any-board-node';
 import { type BoardExternalReferenceType } from './board-external-reference';
 
 export type AnyContentElement =
@@ -24,7 +23,7 @@ export type AnyContentElement =
 	| VideoConferenceElement
 	| H5pElement;
 
-export const isContentElement = (boardNode: AnyBoardNode): boardNode is AnyContentElement => {
+export const isContentElement = (boardNode: unknown): boardNode is AnyContentElement => {
 	const result: boolean =
 		isCollaborativeTextEditorElement(boardNode) ||
 		isDrawingElement(boardNode) ||
@@ -40,7 +39,6 @@ export const isContentElement = (boardNode: AnyBoardNode): boardNode is AnyConte
 	return result;
 };
 
-// @TODO check namings
 export enum ElementReferenceType {
 	BOARD = 'board',
 }

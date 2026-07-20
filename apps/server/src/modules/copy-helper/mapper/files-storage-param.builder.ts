@@ -1,6 +1,7 @@
 import { FileRecordParentType, type FileRequestInfo, StorageLocation } from '@infra/files-storage-amqp-client';
-import { LessonEntity } from '@modules/lesson/repo';
-import { Submission, Task } from '@modules/task/repo';
+import { LessonEntity } from '@modules/lesson/repo/lesson.entity';
+import { Submission } from '@modules/task/repo/submission.entity';
+import { Task } from '@modules/task/repo/task.entity';
 import { type EntityId } from '@shared/domain/types';
 import { type EntitiesWithFiles } from '../types';
 

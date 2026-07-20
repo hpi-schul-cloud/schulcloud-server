@@ -1,6 +1,5 @@
-import { type Colors } from './types';
+import type { Colors } from '../types/colors.enum';
 import { type MediaAvailableLineElement } from './media-available-line-element.do';
-// TODO
 export class MediaAvailableLine {
 	public elements: MediaAvailableLineElement[];
 

@@ -12,7 +12,8 @@ import { H5pElement } from './h5p-element.do';
 import { LinkElement } from './link-element.do';
 import { MediaBoard, MediaExternalToolElement, MediaLine } from './media-board';
 import { RichTextElement } from './rich-text-element.do';
-import { type AnyBoardNode, BoardNodeType } from './types';
+import type { AnyBoardNode } from './types/any-board-node';
+import { BoardNodeType } from './types/board-node-type.enum';
 import { VideoConferenceElement } from './video-conference-element.do';
 
 // register node types

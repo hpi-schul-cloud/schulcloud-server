@@ -2,7 +2,8 @@ import { FilesStorageClientAdapterService } from '@infra/files-storage-amqp-clie
 import { Logger } from '@infra/logger';
 import { Injectable } from '@nestjs/common';
 import { Counted, EntityId } from '@shared/domain/types';
-import { Submission, SubmissionRepo } from '../../repo';
+import { Submission } from '../../repo/submission.entity';
+import { SubmissionRepo } from '../../repo/submission.repo';
 
 @Injectable()
 export class SubmissionService {

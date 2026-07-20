@@ -1,6 +1,7 @@
 import { BoardNode } from './board-node.do';
 import { Card } from './card.do';
-import type { AnyBoardNode, ColumnProps } from './types';
+import type { AnyBoardNode } from './types/any-board-node';
+import type { ColumnProps } from './types/board-node-props';
 
 export class Column extends BoardNode<ColumnProps> {
 	get title(): string | undefined {

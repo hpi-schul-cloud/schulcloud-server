@@ -7,7 +7,7 @@ import { InternalServerErrorException } from '@nestjs/common';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { InputFormat } from '@shared/domain/types/input-format.types';
-import { ITask, TaskStatus } from '../domain';
+import { type ITask, type TaskStatus } from '../domain/interface/task.types';
 import type { Submission } from './submission.entity';
 
 export class TaskWithStatusVo {

@@ -2,7 +2,7 @@ import { BadRequestException, ForbiddenException } from '@nestjs/common';
 import { DomainObject } from '@shared/domain/domain-object';
 import { type Constructor, type EntityId } from '@shared/domain/types';
 import { joinPath, PATH_SEPARATOR, ROOT_PATH } from './path-utils';
-import type { AnyBoardNode } from './types/any-board-node';
+import type { BoardNodeChild, BoardNodeParent } from './types/board-node-child';
 import type { BoardNodeProps } from './types/board-node-props';
 
 export abstract class BoardNode<T extends BoardNodeProps> extends DomainObject<T> {
@@ -16,9 +16,6 @@ export abstract class BoardNode<T extends BoardNodeProps> extends DomainObject<T
 
 	public getProps(): T {
 		const copyProps = { ...this.props };
-		// TODO This is a Hotfix. We need to make sure that only properties of type T are returned
-		// At runtime the props are a MikroORM entity that has additional non-persisted properties
-		// see @Property({ persist: false })
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore
 		copyProps.domainObject = undefined;
@@ -30,7 +27,7 @@ export abstract class BoardNode<T extends BoardNodeProps> extends DomainObject<T
 		return this.ancestorIds.length;
 	}
 
-	get children(): readonly AnyBoardNode[] {
+	get children(): readonly BoardNodeChild[] {
 		return this.props.children;
 	}
 
@@ -64,7 +61,7 @@ export abstract class BoardNode<T extends BoardNodeProps> extends DomainObject<T
 		return this.props.position;
 	}
 
-	public addChild(child: AnyBoardNode, position?: number): void {
+	public addChild(child: BoardNodeChild, position?: number): void {
 		if (!this.canHaveChild(child)) {
 			throw new ForbiddenException(`Cannot add child of type '${child.constructor.name}'`);
 		}
@@ -87,14 +84,14 @@ export abstract class BoardNode<T extends BoardNodeProps> extends DomainObject<T
 		this.props.children.forEach((c, pos) => c.updatePosition(pos));
 	}
 
-	public hasChild(child: AnyBoardNode): boolean {
+	public hasChild(child: BoardNodeChild): boolean {
 		const exists = this.children.includes(child);
 		return exists;
 	}
 
-	public abstract canHaveChild(childNode: AnyBoardNode): boolean;
+	public abstract canHaveChild(childNode: BoardNodeChild): boolean;
 
-	public removeChild(child: AnyBoardNode): void {
+	public removeChild(child: BoardNodeChild): void {
 		this.props.children = this.children.filter((ch) => ch.id !== child.id);
 		this.props.children.forEach((c, pos) => c.updatePosition(pos));
 		child.resetPath();
@@ -108,7 +105,7 @@ export abstract class BoardNode<T extends BoardNodeProps> extends DomainObject<T
 		return this.props.createdAt;
 	}
 
-	public getChildrenOfType<U extends AnyBoardNode>(type: Constructor<U>): U[] {
+	public getChildrenOfType<U extends BoardNodeChild>(type: Constructor<U>): U[] {
 		const childrenOfType: U[] = [];
 
 		for (const child of this.children) {
@@ -122,7 +119,7 @@ export abstract class BoardNode<T extends BoardNodeProps> extends DomainObject<T
 		return childrenOfType;
 	}
 
-	private updatePath(parent: BoardNode<BoardNodeProps>): void {
+	private updatePath(parent: BoardNodeParent): void {
 		this.props.path = joinPath(parent.path, parent.id);
 		this.props.level = parent.level + 1;
 		this.props.children.forEach((child) => {

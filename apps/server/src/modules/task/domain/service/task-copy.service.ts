@@ -11,7 +11,8 @@ import { LessonEntity } from '@modules/lesson/repo';
 import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { Task, TaskRepo } from '../../repo';
+import { Task } from '../../repo/task.entity';
+import { TaskRepo } from '../../repo/task.repo';
 
 type TaskCopyParams = {
 	originalTaskId: EntityId;

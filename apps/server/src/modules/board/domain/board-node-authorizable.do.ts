@@ -1,7 +1,7 @@
 import { type AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { Permission } from '@shared/domain/interface';
 import { type EntityId } from '@shared/domain/types';
-import { type AnyBoardNode } from './types';
+import { type AnyBoardNode } from './types/any-board-node';
 
 export enum BoardRoles {
 	EDITOR = 'editor',

@@ -1,7 +1,10 @@
-import type { BoardExternalReference, BoardLayout, MediaBoardProps } from '../types';
-import type { AnyMediaBoardNode, Colors } from './types';
-import { MediaLine } from './media-line.do';
 import { BoardNode } from '../board-node.do';
+import type { BoardExternalReference } from '../types/board-external-reference';
+import type { BoardLayout } from '../types/board-layout.enum';
+import type { MediaBoardProps } from '../types/board-node-props';
+import type { Colors } from '../types/colors.enum';
+import { MediaLine } from './media-line.do';
+import type { AnyMediaBoardNode } from './types/any-media-board-node';
 
 export class MediaBoard extends BoardNode<MediaBoardProps> {
 	get context(): BoardExternalReference {
