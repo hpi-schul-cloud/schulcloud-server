@@ -44,7 +44,11 @@ describe('SchoolEntityMapper', () => {
 					federalState: FederalStateEntityMapper.mapToDo(entity.federalState),
 					county: entity.county && CountyEmbeddableMapper.mapToDo(entity.county),
 					currentYear: entity.currentYear && SchoolYearEntityMapper.mapToDo(entity.currentYear),
-					systemIds: [system.id],
+					ldapLastSync: entity.ldapLastSync,
+					systemIds: entity.systems
+						.getItems()
+						.map((s) => s.id)
+						.filter((id): id is string => typeof id === 'string'),
 				});
 
 				return { entity, expected };
