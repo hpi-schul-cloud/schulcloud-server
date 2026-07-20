@@ -34,3 +34,11 @@
     tags:
       - ingress
 
+  - name: Add schulcloud-server-migration-system default allow network policy
+    kubernetes.core.k8s:
+      kubeconfig: ~/.kube/config
+      namespace: "{{ NAMESPACE }}"
+      template: default-allow-networkpolicy.yml.j2
+    tags:
+      - networkPolicy
+
