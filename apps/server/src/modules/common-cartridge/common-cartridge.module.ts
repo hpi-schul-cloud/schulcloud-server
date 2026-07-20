@@ -2,7 +2,7 @@ import { CoreModule } from '@core/core.module';
 import { CommonCartridgeClientsModule } from '@infra/common-cartridge-clients/common-cartridge-clients.module';
 import { ConfigurationModule } from '@infra/configuration';
 import { LoggerModule } from '@infra/logger';
-import { NotificationModule } from '@modules/notification';
+import { NotificationModule } from '@modules/notification/notification.module';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { CqrsModule } from '@nestjs/cqrs';
