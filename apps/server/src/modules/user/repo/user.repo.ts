@@ -5,7 +5,7 @@ import { Injectable } from '@nestjs/common';
 import type { IFindOptions } from '@shared/domain/interface';
 import type { Counted, EntityId } from '@shared/domain/types';
 import { BaseRepo } from '@shared/repo/base.repo';
-import type { UserName } from '../domain';
+import type { UserName } from '../domain/type/user-name.type';
 import { UserScope } from './scope/user.scope';
 import { User } from './user.entity';
 

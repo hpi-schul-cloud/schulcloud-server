@@ -6,7 +6,7 @@ import { Page, RoleReference } from '@shared/domain/domainobject';
 import type { IFindOptions, LanguageType, Permission } from '@shared/domain/interface';
 import type { Counted, EntityId } from '@shared/domain/types';
 import type { UserDto } from '../../api/dto';
-import type { UserDo } from '../../domain';
+import type { UserDo } from '../../do/user.do';
 import type { User } from '../../repo/user.entity';
 import { UserMikroOrmRepo } from '../../repo/user.repo';
 import { USER_CONFIG_TOKEN, UserConfig } from '../../user.config';

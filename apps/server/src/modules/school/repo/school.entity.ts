@@ -16,7 +16,9 @@ import type { SystemEntity } from '@modules/system/repo/mikro-orm/system.entity'
 import type { UserLoginMigrationEntity } from '@modules/user-login-migration/repo/user-login-migration.entity';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { LanguageType } from '@shared/domain/interface';
-import { FileStorageType, SchoolFeature, SchoolPurpose } from '../domain';
+import { FileStorageType } from '../domain/type/file-storage-type.enum';
+import { SchoolFeature } from '../domain/type/school-feature.enum';
+import { SchoolPurpose } from '../domain/type/school-purpose.enum';
 import { CountyEmbeddable, FederalStateEntity } from './federal-state.entity';
 import { SchoolYearEntity } from './school-year.entity';
 import { StorageProviderEntity } from './storageprovider.entity';

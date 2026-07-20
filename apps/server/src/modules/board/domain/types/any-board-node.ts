@@ -9,7 +9,7 @@ import type { FileElement } from '../file-element.do';
 import type { FileFolderElement } from '../file-folder-element.do';
 import type { H5pElement } from '../h5p-element.do';
 import type { LinkElement } from '../link-element.do';
-import type { AnyMediaBoardNode } from '../media-board';
+import type { AnyMediaBoardNode } from '../media-board/types/any-media-board-node';
 import type { RichTextElement } from '../rich-text-element.do';
 import type { VideoConferenceElement } from '../video-conference-element.do';
 

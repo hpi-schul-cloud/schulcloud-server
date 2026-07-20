@@ -1,8 +1,8 @@
 import type { EntityId, InputFormat } from '@shared/domain/types';
-import type { Colors } from '../media-board';
 import type { AnyBoardNode } from './any-board-node';
 import type { BoardExternalReference } from './board-external-reference';
 import type { BoardLayout } from './board-layout.enum';
+import type { Colors } from './colors.enum';
 import type { ContentElementType } from './content-element-type.enum';
 
 export interface BoardNodeProps {

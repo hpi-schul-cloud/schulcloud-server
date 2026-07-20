@@ -1,6 +1,9 @@
 import { BoardNode } from './board-node.do';
 import { Column } from './column.do';
-import type { AnyBoardNode, BoardExternalReference, BoardLayout, ColumnBoardProps } from './types';
+import type { AnyBoardNode } from './types/any-board-node';
+import type { BoardExternalReference } from './types/board-external-reference';
+import type { BoardLayout } from './types/board-layout.enum';
+import type { ColumnBoardProps } from './types/board-node-props';
 
 export class ColumnBoard extends BoardNode<ColumnBoardProps> {
 	get title(): string {

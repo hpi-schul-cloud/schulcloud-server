@@ -1,8 +1,8 @@
 import { type EntityData } from '@mikro-orm/core';
 import { type EntityManager } from '@mikro-orm/mongodb';
 import { SystemEntity } from '@modules/system/repo';
-import { type School } from '../../domain';
-import { SchoolFactory } from '../../domain/factory';
+import { type School } from '../../domain/do/school';
+import { SchoolFactory } from '../../domain/factory/school.factory';
 import { FederalStateEntity } from '../federal-state.entity';
 import { SchoolYearEntity } from '../school-year.entity';
 import { type SchoolEntity } from '../school.entity';

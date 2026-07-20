@@ -1,5 +1,5 @@
 import { School, type SchoolProps } from '../do';
-import { type SchoolUpdateBody } from '../interface';
+import { type SchoolUpdateBody } from '../interface/school-update-body.interface';
 
 export class SchoolFactory {
 	public static build(props: SchoolProps): School {

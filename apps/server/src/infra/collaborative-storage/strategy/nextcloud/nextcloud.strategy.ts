@@ -1,5 +1,6 @@
 import { LegacyLogger } from '@infra/logger';
-import { TeamDto, TeamUserDto } from '@modules/collaborative-storage';
+import { TeamUserDto } from '@modules/collaborative-storage/services/dto/team-user.dto';
+import { TeamDto } from '@modules/collaborative-storage/services/dto/team.dto';
 import { PseudonymService } from '@modules/pseudonym';
 import { Pseudonym } from '@modules/pseudonym/repo';
 import { ExternalTool } from '@modules/tool/external-tool/domain';

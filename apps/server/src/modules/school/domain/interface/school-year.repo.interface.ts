@@ -1,4 +1,4 @@
-import { type SchoolYearEntity } from '@modules/school/repo';
+import { type SchoolYearEntity } from '@modules/school/repo/school-year.entity';
 import { type BaseRepo } from '@shared/repo/base.repo';
 import { type SchoolYear } from '../do';
 
