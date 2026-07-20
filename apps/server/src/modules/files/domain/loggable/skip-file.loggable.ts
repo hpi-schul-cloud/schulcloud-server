@@ -7,7 +7,7 @@ export class SkipFileLoggable implements Loggable {
 	public getLogMessage(): LoggableMessage {
 		return {
 			message: 'Skipping file due to download error',
-			data: { fileId: this.fileId, fileName: this.fileName },
+			data: { fileId: this.fileId },
 		};
 	}
 }
