@@ -1,5 +1,5 @@
 import { LegacyLogger } from '@infra/logger';
-import { ProviderOauthClient } from '@modules/oauth-provider/domain';
+import { ProviderOauthClient } from '@modules/oauth-provider/domain/interface/oauth-client.interface';
 import { OauthProviderService } from '@modules/oauth-provider/domain/service/oauth-provider.service';
 import { Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { Page } from '@shared/domain/domainobject';

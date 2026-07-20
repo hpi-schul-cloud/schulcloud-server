@@ -1,5 +1,11 @@
-import { BoardExternalReference, BoardExternalReferenceType, BoardNodeService, ColumnBoard } from '@modules/board';
-import { BoardFeature, ElementReferenceType, ParentNodeInfo } from '@modules/board/domain';
+import { ColumnBoard } from '@modules/board/domain/colum-board.do';
+import { ElementReferenceType, ParentNodeInfo } from '@modules/board/domain/types/any-content-element';
+import {
+	BoardExternalReference,
+	BoardExternalReferenceType,
+} from '@modules/board/domain/types/board-external-reference';
+import { BoardFeature } from '@modules/board/domain/types/board-feature.enum';
+import { BoardNodeService } from '@modules/board/service/board-node.service';
 import { CourseService } from '@modules/course';
 import { CourseFeatures } from '@modules/course/repo';
 import { RoomService } from '@modules/room';

@@ -4,7 +4,7 @@ import { Account, AccountSave, AccountService } from '@modules/account';
 import { Class, ClassFactory, ClassService, ClassSourceOptions } from '@modules/class';
 import { RoleName, RoleService } from '@modules/role';
 import { School, SchoolService } from '@modules/school';
-import type { TspUserInfo } from '@modules/tsp-sync';
+import type { TspUserInfo } from '@modules/tsp-sync/strategy/tsp/tsp-oauth-data.mapper';
 
 import { Consent, ParentConsent, UserConsent, UserDo, UserService } from '@modules/user';
 import { Injectable } from '@nestjs/common';
@@ -229,7 +229,7 @@ export class TspProvisioningService {
 			const updated = this.createOrUpdateAccount(data.system.systemId, savedUser, account);
 			await this.accountService.save(updated);
 		} catch {
-			// TODO: check error handling
+			// Keep rollback for newly created users when account persistence fails.
 			if (existingUser === null) {
 				await this.userService.deleteUser(savedUser.id ?? '');
 			}

@@ -1,6 +1,6 @@
 import { type EntityId } from '@shared/domain/types';
-import type { MediaExternalToolElementProps } from '../types';
 import { BoardNode } from '../board-node.do';
+import type { MediaExternalToolElementProps } from '../types/board-node-props';
 
 export class MediaExternalToolElement extends BoardNode<MediaExternalToolElementProps> {
 	get contextExternalToolId(): EntityId {

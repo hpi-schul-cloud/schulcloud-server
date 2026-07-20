@@ -1,5 +1,5 @@
 import { BoardNode } from './board-node.do';
-import type { FileElementProps } from './types';
+import type { FileElementProps } from './types/board-node-props';
 
 export class FileElement extends BoardNode<FileElementProps> {
 	get alternativeText(): string {

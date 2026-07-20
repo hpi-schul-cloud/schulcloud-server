@@ -3,11 +3,9 @@ import { CopyContentParams, CopyContentParentType, H5pEditorProducer } from '@in
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BOARD_CONFIG_TOKEN, BoardConfig } from '@modules/board/board.config';
 import { CopyElementType, CopyHelperService, CopyMapper, type CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
-import { ContextExternalToolService } from '@modules/tool/context-external-tool';
-import {
-	type ContextExternalTool,
-	CopyContextExternalToolRejectData,
-} from '@modules/tool/context-external-tool/domain';
+import { type ContextExternalTool } from '@modules/tool/context-external-tool/domain/context-external-tool.do';
+import { CopyContextExternalToolRejectData } from '@modules/tool/context-external-tool/domain/copy-context-external-tool-reject-data';
+import { ContextExternalToolService } from '@modules/tool/context-external-tool/service/context-external-tool.service';
 import { Inject, Injectable } from '@nestjs/common';
 import type { EntityId } from '@shared/domain/types';
 import {
@@ -306,7 +304,7 @@ export class BoardNodeCopyService {
 				status: CopyStatusEnum.SUCCESS,
 			};
 
-			return Promise.resolve(copyStatus);
+			return copyStatus;
 		}
 
 		const linkedTool = await this.contextExternalToolService.findById(original.contextExternalToolId);

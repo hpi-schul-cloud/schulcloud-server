@@ -1,5 +1,5 @@
 import { BoardNode } from './board-node.do';
-import type { ExternalToolElementProps } from './types';
+import type { ExternalToolElementProps } from './types/board-node-props';
 
 export class ExternalToolElement extends BoardNode<ExternalToolElementProps> {
 	get contextExternalToolId(): string | undefined {

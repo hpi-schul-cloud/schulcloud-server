@@ -1,5 +1,5 @@
 import { BoardNode } from './board-node.do';
-import type { VideoConferenceElementProps } from './types';
+import type { VideoConferenceElementProps } from './types/board-node-props';
 
 export class VideoConferenceElement extends BoardNode<VideoConferenceElementProps> {
 	get title(): string {

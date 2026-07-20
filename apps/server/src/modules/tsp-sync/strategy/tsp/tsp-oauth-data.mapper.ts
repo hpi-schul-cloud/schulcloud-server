@@ -1,13 +1,11 @@
 import { Logger } from '@infra/logger';
 import { RobjExportKlasse, RobjExportLehrer, RobjExportSchueler } from '@infra/tsp-client';
-import {
-	ExternalClassDto,
-	ExternalSchoolDto,
-	ExternalUserDto,
-	OauthDataDto,
-	ProvisioningSystemDto,
-} from '@modules/provisioning';
-import { BadDataLoggableException } from '@modules/provisioning/loggable';
+import { ExternalClassDto } from '@modules/provisioning/dto/external-class.dto';
+import { ExternalSchoolDto } from '@modules/provisioning/dto/external-school.dto';
+import { ExternalUserDto } from '@modules/provisioning/dto/external-user.dto';
+import { OauthDataDto } from '@modules/provisioning/dto/oauth-data.dto';
+import { ProvisioningSystemDto } from '@modules/provisioning/dto/provisioning-system.dto';
+import { BadDataLoggableException } from '@modules/provisioning/loggable/bad-data.loggable-exception';
 import { RoleName } from '@modules/role';
 import { School } from '@modules/school';
 import { System } from '@modules/system';
@@ -25,7 +23,7 @@ const CLASS_NAME_FORMATS = [
 			let gradeLevel: number | undefined = undefined;
 			const gradeMatch = fullName.match(/^(?:0)*((?:1[0-3])|[1-9])(?:\D.*)$/);
 			if (gradeMatch && gradeMatch.length >= 2) {
-				gradeLevel = parseInt(gradeMatch[1]);
+				gradeLevel = Number.parseInt(gradeMatch[1]);
 			}
 
 			let name = fullName;

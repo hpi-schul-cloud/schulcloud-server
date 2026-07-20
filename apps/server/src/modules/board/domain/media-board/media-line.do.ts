@@ -1,7 +1,8 @@
 import { BoardNode } from '../board-node.do';
+import type { BoardNodeChild } from '../types/board-node-child';
 import type { MediaLineProps } from '../types/board-node-props';
 import type { Colors } from '../types/colors.enum';
-import { type AnyMediaBoardNode, isAnyMediaElement } from './types/any-media-board-node';
+import { isAnyMediaElement } from './types/any-media-element';
 
 export class MediaLine extends BoardNode<MediaLineProps> {
 	get title(): string {
@@ -28,7 +29,7 @@ export class MediaLine extends BoardNode<MediaLineProps> {
 		return this.props.collapsed;
 	}
 
-	public canHaveChild(childNode: AnyMediaBoardNode): boolean {
+	public canHaveChild(childNode: BoardNodeChild): boolean {
 		const allowed: boolean = isAnyMediaElement(childNode);
 
 		return allowed;

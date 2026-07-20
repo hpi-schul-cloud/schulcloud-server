@@ -1,5 +1,5 @@
 import { AuthorizationContext, AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
-import { BoardContextApiHelperService } from '@modules/board-context';
+import { BoardContextApiHelperService } from '@modules/board-context/board-context-api-helper.service';
 import { School, SchoolService } from '@modules/school';
 import { User } from '@modules/user/repo';
 import { forwardRef, Inject, Injectable } from '@nestjs/common';

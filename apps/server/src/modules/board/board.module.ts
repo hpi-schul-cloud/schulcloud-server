@@ -13,7 +13,7 @@ import { CollaborativeTextEditorModule } from '@modules/collaborative-text-edito
 import { CopyHelperModule } from '@modules/copy-helper';
 import { CourseModule } from '@modules/course';
 import { RoomModule } from '@modules/room';
-import { ContextExternalToolModule } from '@modules/tool/context-external-tool';
+import { ContextExternalToolModule } from '@modules/tool/context-external-tool/context-external-tool.module';
 import { UserModule } from '@modules/user';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';

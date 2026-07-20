@@ -1,5 +1,5 @@
 import { ExternalTool } from '@modules/tool/external-tool/domain';
-import { ExternalToolService } from '@modules/tool/external-tool/service';
+import { ExternalToolService } from '@modules/tool/external-tool/service/external-tool.service';
 import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
 import { NotFoundException } from '@nestjs/common/exceptions/not-found.exception';
 

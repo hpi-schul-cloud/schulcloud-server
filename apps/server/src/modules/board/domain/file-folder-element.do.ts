@@ -1,5 +1,5 @@
 import { BoardNode } from './board-node.do';
-import type { FileFolderElementProps } from './types';
+import type { FileFolderElementProps } from './types/board-node-props';
 
 export class FileFolderElement extends BoardNode<FileFolderElementProps> {
 	get title(): string {

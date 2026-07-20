@@ -1,6 +1,6 @@
 import { type InputFormat } from '@shared/domain/types';
 import { BoardNode } from './board-node.do';
-import type { RichTextElementProps } from './types';
+import type { RichTextElementProps } from './types/board-node-props';
 
 export class RichTextElement extends BoardNode<RichTextElementProps> {
 	get text(): string {

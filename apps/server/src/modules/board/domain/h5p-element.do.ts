@@ -1,5 +1,5 @@
 import { BoardNode } from './board-node.do';
-import type { H5pElementProps } from './types';
+import type { H5pElementProps } from './types/board-node-props';
 
 export class H5pElement extends BoardNode<H5pElementProps> {
 	get contentId(): string | undefined {

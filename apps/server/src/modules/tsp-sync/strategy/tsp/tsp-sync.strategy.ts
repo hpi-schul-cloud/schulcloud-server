@@ -1,8 +1,9 @@
 import { Logger } from '@infra/logger';
 import { RuntimeConfigService } from '@infra/runtime-config';
 import { RobjExportKlasse, RobjExportLehrer, RobjExportSchueler, RobjExportSchule } from '@infra/tsp-client';
-import { ExternalClassDto, OauthDataDto } from '@modules/provisioning';
-import { BadDataLoggableException } from '@modules/provisioning/loggable';
+import { ExternalClassDto } from '@modules/provisioning/dto/external-class.dto';
+import { OauthDataDto } from '@modules/provisioning/dto/oauth-data.dto';
+import { BadDataLoggableException } from '@modules/provisioning/loggable/bad-data.loggable-exception';
 import { TspProvisioningService } from '@modules/provisioning/service/tsp-provisioning.service';
 import { School } from '@modules/school';
 import { System, SystemService, SystemType } from '@modules/system';

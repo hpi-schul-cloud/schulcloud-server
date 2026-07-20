@@ -1,5 +1,5 @@
 import { BoardNode } from './board-node.do';
-import type { LinkElementProps } from './types';
+import type { LinkElementProps } from './types/board-node-props';
 
 export class LinkElement extends BoardNode<LinkElementProps> {
 	get url(): string {

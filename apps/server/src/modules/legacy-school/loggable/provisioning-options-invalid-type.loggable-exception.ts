@@ -1,7 +1,7 @@
 import { UnprocessableEntityException } from '@nestjs/common';
 import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
 import { type EntityId } from '@shared/domain/types';
-import { type AnyProvisioningOptions } from '../domain';
+import { type AnyProvisioningOptions } from '../domain/school-system-options.do';
 
 export class ProvisioningOptionsInvalidTypeLoggableException extends UnprocessableEntityException implements Loggable {
 	constructor(

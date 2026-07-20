@@ -1,6 +1,8 @@
 import { AuthorizationContext, AuthorizationService, ForbiddenLoggableException } from '@modules/authorization';
 import { AuthorizableReferenceType } from '@modules/authorization/domain';
-import { BoardNodeAuthorizable, BoardNodeAuthorizableService, BoardNodeService } from '@modules/board';
+import { BoardNodeAuthorizable } from '@modules/board/domain/board-node-authorizable.do';
+import { BoardNodeAuthorizableService } from '@modules/board/service/board-node-authorizable.service';
+import { BoardNodeService } from '@modules/board/service/board-node.service';
 import { CourseService } from '@modules/course';
 import { CourseEntity } from '@modules/course/repo';
 import { User } from '@modules/user/repo';

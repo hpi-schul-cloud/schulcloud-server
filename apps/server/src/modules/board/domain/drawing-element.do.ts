@@ -1,5 +1,5 @@
 import { BoardNode } from './board-node.do';
-import type { DrawingElementProps } from './types';
+import type { DrawingElementProps } from './types/board-node-props';
 
 export class DrawingElement extends BoardNode<DrawingElementProps> {
 	get description(): string {

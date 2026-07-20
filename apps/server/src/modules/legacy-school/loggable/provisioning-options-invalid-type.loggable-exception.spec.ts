@@ -1,6 +1,6 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { type EntityId } from '@shared/domain/types';
-import { SchulConneXProvisioningOptions } from '../domain';
+import { SchulConneXProvisioningOptions } from '../domain/schulconnex-provisionin-options.do';
 import { ProvisioningOptionsInvalidTypeLoggableException } from './provisioning-options-invalid-type.loggable-exception';
 
 describe(ProvisioningOptionsInvalidTypeLoggableException.name, () => {

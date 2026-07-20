@@ -1,10 +1,11 @@
 import { CustomParameterScope, ToolContextType } from '@modules/tool/common/enum';
-import { ContextExternalToolService } from '@modules/tool/context-external-tool';
-import { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
-import { ExternalTool } from '@modules/tool/external-tool/domain';
-import { ExternalToolLogoService, ExternalToolService } from '@modules/tool/external-tool/service';
-import { SchoolExternalToolService } from '@modules/tool/school-external-tool';
-import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
+import { type ContextExternalTool } from '@modules/tool/context-external-tool/domain/context-external-tool.do';
+import { ContextExternalToolService } from '@modules/tool/context-external-tool/service/context-external-tool.service';
+import { ExternalTool } from '@modules/tool/external-tool/domain/external-tool.do';
+import { ExternalToolLogoService } from '@modules/tool/external-tool/service/external-tool-logo.service';
+import { ExternalToolService } from '@modules/tool/external-tool/service/external-tool.service';
+import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain/school-external-tool.do';
+import { SchoolExternalToolService } from '@modules/tool/school-external-tool/service/school-external-tool.service';
 import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
 import { Page } from '@shared/domain/domainobject';
