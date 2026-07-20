@@ -142,7 +142,7 @@ export class BoardNodeRepo {
 		const boardNodes = Utils.asArray(boardNode);
 
 		boardNodes.forEach((bn) => {
-			bn.children.forEach((child) => this.persist(child));
+			bn.children.forEach((child) => this.persist(child as AnyBoardNode));
 
 			const props = this.getProps(bn);
 
@@ -165,7 +165,7 @@ export class BoardNodeRepo {
 
 		boardNodes.forEach((bn) => {
 			this.em.remove(this.getProps(bn));
-			bn.children.forEach((child) => this.remove(child));
+			bn.children.forEach((child) => this.remove(child as AnyBoardNode));
 		});
 
 		return this;

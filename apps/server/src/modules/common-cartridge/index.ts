@@ -2,9 +2,12 @@ export { COMMON_CARTRIDGE_PUBLIC_API_CONFIG_TOKEN, CommonCartridgePublicApiConfi
 export {
 	CommonCartridgeFileBuilder,
 	CommonCartridgeFileBuilderProps,
-	CommonCartridgeOrganizationProps,
 } from './export/builders/common-cartridge-file-builder';
 export { CommonCartridgeOrganizationNode } from './export/builders/common-cartridge-organization-node';
+export {
+	CommonCartridgeOrganizationNodeProps,
+	CommonCartridgeOrganizationProps,
+} from './export/builders/common-cartridge-organization.types';
 export {
 	CommonCartridgeElementType,
 	CommonCartridgeIntendedUseType,

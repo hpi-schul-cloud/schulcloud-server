@@ -33,6 +33,7 @@ import { createIdentifier } from '../export/utils';
 import { CommonCartridgeMessageLoggable } from '../loggable/common-cartridge-message.loggable';
 import { CommonCartridgeExportMapper } from './common-cartridge-export.mapper';
 import { CommonCartridgeExportResponse } from './common-cartridge-export.response';
+import { type FileMetadataAndStream } from './common-cartridge-export.types';
 
 @Injectable()
 export class CommonCartridgeExportService {

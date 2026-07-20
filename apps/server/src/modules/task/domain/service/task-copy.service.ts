@@ -1,11 +1,11 @@
-import { CopyFilesService } from '@modules/copy-helper/service/copy-files.service';
 import {
 	CopyElementType,
 	CopyHelperService,
 	CopyStatus,
 	CopyStatusEnum,
 	FileUrlReplacement,
-} from '@modules/copy-helper/service/copy-helper.service';
+} from '@modules/copy-helper';
+import { CopyFilesService } from '@modules/copy-helper/service/copy-files.service';
 import { CourseEntity } from '@modules/course/repo';
 import { LessonEntity } from '@modules/lesson/repo';
 import { User } from '@modules/user/repo';

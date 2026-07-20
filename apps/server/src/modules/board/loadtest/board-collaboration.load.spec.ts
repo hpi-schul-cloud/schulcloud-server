@@ -15,7 +15,9 @@ describe('Board Collaboration Load Test', () => {
 			return;
 		}
 
-		const { COURSE_ID, TOKEN, TARGET_URL } = process.env;
+		const COURSE_ID = process.env.COURSE_ID ?? '';
+		const TOKEN = process.env.TOKEN ?? '';
+		const TARGET_URL = process.env.TARGET_URL ?? '';
 		const viewerClassesAmount = process.env.VIEWER_CLASSES ? parseInt(process.env.VIEWER_CLASSES, 10) : 20;
 		const collabClassesAmount = process.env.COLLAB_CLASSES ? parseInt(process.env.COLLAB_CLASSES, 10) : 0;
 		let connectionIssues = 0;

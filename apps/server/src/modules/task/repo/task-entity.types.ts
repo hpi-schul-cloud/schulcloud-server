@@ -18,24 +18,34 @@ export interface TaskSchoolLike {
 }
 
 export interface TaskCourseLike {
-	name: string;
-	color: string;
-	isFinished(): boolean;
-	isUserSubstitutionTeacher(user: User): boolean;
-	getStudentIds(): EntityId[];
+	id?: EntityId;
+	name?: string;
+	color?: string;
+	isFinished?(): boolean;
+	isUserSubstitutionTeacher?(user: User): boolean;
+	getStudentIds?(): EntityId[];
 }
 
 export interface TaskLessonLike {
+	id?: EntityId;
 	name: string;
 	hidden: boolean;
+	course?: TaskCourseLike;
+	courseGroup?: TaskCourseGroupLike;
 }
 
 export interface TaskCourseGroupLike {
+	id?: EntityId;
+	name?: string;
 	course: TaskCourseLike;
+	getStudentIds?(): EntityId[];
 }
 
 export interface SubmissionLike {
 	id: EntityId;
+	comment?: string;
+	createdAt?: Date;
+	courseGroup?: TaskCourseGroupLike;
 	isSubmitted(): boolean;
 	isGraded(): boolean;
 	isSubmittedForUser(user: User): boolean;

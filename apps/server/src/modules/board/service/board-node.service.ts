@@ -104,11 +104,11 @@ export class BoardNodeService {
 			const sourceParent = await this.findParent(child);
 			if (sourceParent) {
 				sourceParent.removeChild(child);
-				saveList.concat(sourceParent.children);
+				saveList.concat(sourceParent.children as AnyBoardNode[]);
 			}
 		}
 		targetParent.addChild(child, targetPosition);
-		saveList.concat(targetParent.children);
+		saveList.concat(targetParent.children as AnyBoardNode[]);
 
 		await this.boardNodeRepo.save(saveList);
 	}

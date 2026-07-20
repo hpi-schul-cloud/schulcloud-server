@@ -5,11 +5,11 @@ import {
 	AuthorizationInjectionService,
 	Rule,
 } from '@modules/authorization';
-import { Submission } from '@modules/task/repo';
+import { Submission, Task } from '@modules/task/repo';
 import { User } from '@modules/user/repo';
 import { Injectable, NotImplementedException } from '@nestjs/common';
-import { TaskRule } from './task.rule';
 import { Permission } from '@shared/domain/interface';
+import { TaskRule } from './task.rule';
 
 @Injectable()
 export class SubmissionRule implements Rule<Submission> {
@@ -92,7 +92,7 @@ export class SubmissionRule implements Rule<Submission> {
 	}
 
 	private hasParentTaskWriteAccess(user: User, submission: Submission): boolean {
-		const hasParentTaskWriteAccess = this.taskRule.hasPermission(user, submission.task, {
+		const hasParentTaskWriteAccess = this.taskRule.hasPermission(user, submission.task as Task, {
 			action: Action.write,
 			requiredPermissions: [],
 		});
@@ -101,12 +101,12 @@ export class SubmissionRule implements Rule<Submission> {
 	}
 
 	private hasParentTaskReadAccess(user: User, submission: Submission): boolean {
-		const hasParentTaskReadAccess = this.taskRule.hasPermission(user, submission.task, {
+		const hasParentTaskReadAccess = this.taskRule.hasPermission(user, submission.task as Task, {
 			action: Action.read,
 			requiredPermissions: [],
 		});
 
-		return hasParentTaskReadAccess && submission.task.areSubmissionsPublic();
+		return hasParentTaskReadAccess && (submission.task as Task).areSubmissionsPublic();
 	}
 
 	private isDueDatePendingOrUndefined(submission: Submission): boolean {

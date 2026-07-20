@@ -6,7 +6,7 @@ import { MediaLineResponseMapper } from './media-line-response.mapper';
 export class MediaBoardResponseMapper {
 	public static mapToResponse(board: MediaBoard): MediaBoardResponse {
 		const lines: MediaLineResponse[] = board.children
-			.filter((line: AnyBoardNode): line is MediaLine => isMediaLine(line))
+			.filter((line): line is MediaLine => isMediaLine(line as AnyBoardNode))
 			.map((line: MediaLine) => MediaLineResponseMapper.mapToResponse(line));
 
 		const boardResponse: MediaBoardResponse = new MediaBoardResponse({

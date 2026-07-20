@@ -16,7 +16,7 @@ describe('CommonCartridgeResourceCollectionBuilder', () => {
 		};
 		const organizationNodeProps = createCommonCartridgeOrganizationNodeProps();
 		const organizationNode = new CommonCartridgeOrganizationNode(organizationNodeProps, sut, null);
-		const resourceNode = new CommonCartridgeResourceNode(resourceNodeProps, organizationNode);
+		const resourceNode = new CommonCartridgeResourceNode(resourceNodeProps, organizationNode.folder);
 
 		return resourceNode;
 	};

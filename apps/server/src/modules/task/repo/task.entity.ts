@@ -93,9 +93,9 @@ export class Task extends BaseEntityWithTimestamps {
 
 		if (props.private !== undefined) this.private = props.private;
 		this.creator = props.creator;
-		this.course = props.course;
-		this.school = props.school;
-		this.lesson = props.lesson;
+		this.course = props.course as CourseEntity | undefined;
+		this.school = props.school as SchoolEntity;
+		this.lesson = props.lesson as LessonEntity | undefined;
 		this.submissions.set(props.submissions || []);
 		this.finished.set(props.finished || []);
 		this.publicSubmissions = props.publicSubmissions || false;
@@ -133,7 +133,7 @@ export class Task extends BaseEntityWithTimestamps {
 		let maxSubmissions = 0;
 		if (parent) {
 			// For draft (user as parent) propaly user is not a student, but for maxSubmission one is valid result
-			maxSubmissions = parent instanceof User ? 1 : parent.getStudentIds().length;
+			maxSubmissions = parent instanceof User ? 1 : (parent.getStudentIds?.().length ?? 0);
 		}
 		return maxSubmissions;
 	}
@@ -142,7 +142,7 @@ export class Task extends BaseEntityWithTimestamps {
 		const finishedUserIds = this.getFinishedUserIds();
 		const isUserInFinishedUser = finishedUserIds.some((finishedUserId) => finishedUserId === user.id);
 
-		const isCourseFinished = this.course ? this.course.isFinished() : false;
+		const isCourseFinished = this.course ? (this.course.isFinished?.() ?? false) : false;
 
 		const isFinishedForUser = isUserInFinishedUser || isCourseFinished;
 
@@ -225,7 +225,7 @@ export class Task extends BaseEntityWithTimestamps {
 	}
 
 	private isUserSubstitutionTeacherInCourse(user: User): boolean {
-		const isSubstitutionTeacher = this.course ? this.course.isUserSubstitutionTeacher(user) : false;
+		const isSubstitutionTeacher = this.course ? (this.course.isUserSubstitutionTeacher?.(user) ?? false) : false;
 
 		return isSubstitutionTeacher;
 	}
@@ -278,11 +278,11 @@ export class Task extends BaseEntityWithTimestamps {
 		let descriptions: TaskParentDescriptions;
 		if (this.course) {
 			descriptions = {
-				courseName: this.course.name,
-				courseId: this.course.id,
+				courseName: this.course.name ?? '',
+				courseId: this.course.id ?? '',
 				lessonName: this.lesson ? this.lesson.name : '',
 				lessonHidden: this.lesson ? this.lesson.hidden : false,
-				color: this.course.color,
+				color: this.course.color ?? '#ACACAC',
 			};
 		} else {
 			descriptions = {

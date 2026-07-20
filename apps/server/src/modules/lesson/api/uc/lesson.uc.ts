@@ -1,4 +1,5 @@
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
+import { Task } from '@modules/task/repo';
 import { Injectable } from '@nestjs/common';
 import { Permission } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
@@ -44,7 +45,7 @@ export class LessonUC {
 
 		this.authorizationService.checkPermission(user, lesson, AuthorizationContextBuilder.read([Permission.TOPIC_VIEW]));
 
-		const tasks = lesson.getLessonLinkedTasks().map((task) => LessonMapper.mapTaskToResponse(task));
+		const tasks = lesson.getLessonLinkedTasks().map((task) => LessonMapper.mapTaskToResponse(task as Task));
 
 		return tasks;
 	}

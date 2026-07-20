@@ -64,7 +64,7 @@ export class BoardNodeDeleteHooksService {
 			// noop
 		}
 
-		await Promise.allSettled(boardNode.children.map((child: AnyBoardNode): Promise<void> => this.afterDelete(child)));
+		await Promise.allSettled(boardNode.children.map((child): Promise<void> => this.afterDelete(child as AnyBoardNode)));
 	}
 
 	public afterDeleteFileElement(fileElement: FileElement | FileFolderElement): void {

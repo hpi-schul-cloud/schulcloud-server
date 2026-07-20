@@ -1,6 +1,5 @@
 import { FindOptions } from '@mikro-orm/core';
 import { EntityData, EntityName, Populate } from '@mikro-orm/core/typings';
-import type { SystemEntity } from '@modules/system/repo';
 import { Injectable } from '@nestjs/common';
 import { IFindOptions, SortOrder } from '@shared/domain/interface/find-options';
 import { EntityId } from '@shared/domain/types/entity-id';
@@ -122,7 +121,7 @@ export class SchoolMikroOrmRepo extends BaseDomainObjectRepo<School, SchoolEntit
 
 		const hasLdapSystem: boolean = entity.systems
 			.getItems()
-			.some((system: SystemEntity): boolean => system.type === 'ldap' && !!system.ldapConfig?.active);
+			.some((system): boolean => system.type === 'ldap' && !!system.ldapConfig?.active);
 
 		return hasLdapSystem;
 	}

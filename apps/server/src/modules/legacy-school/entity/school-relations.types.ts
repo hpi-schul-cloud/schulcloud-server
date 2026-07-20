@@ -4,6 +4,10 @@ export interface SchoolReferenceLike {
 
 export interface SystemReferenceLike {
 	id?: string;
+	type?: string;
+	ldapConfig?: {
+		active?: boolean;
+	};
 }
 
 export interface SchoolSystemOptionsLike {
@@ -12,5 +16,10 @@ export interface SchoolSystemOptionsLike {
 }
 
 export interface UserLoginMigrationLike {
+	id?: string;
 	school?: SchoolReferenceLike;
+	externalId?: string;
+	previousExternalId?: string;
+	lastLoginSystemChange?: Date;
+	outdatedSince?: Date;
 }

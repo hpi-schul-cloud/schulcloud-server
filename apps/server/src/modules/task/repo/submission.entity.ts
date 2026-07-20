@@ -50,7 +50,7 @@ export class Submission extends BaseEntityWithTimestamps {
 
 	constructor(props: SubmissionProperties) {
 		super();
-		this.school = props.school;
+		this.school = props.school as SchoolEntity;
 		if (props.student !== undefined) {
 			this.student = props.student;
 		}
@@ -61,7 +61,7 @@ export class Submission extends BaseEntityWithTimestamps {
 		this.graded = props.graded || false;
 		this.grade = props.grade;
 		this.gradeComment = props.gradeComment;
-		this.courseGroup = props.courseGroup;
+		this.courseGroup = props.courseGroup as CourseGroupEntity | undefined;
 
 		if (props.teamMembers !== undefined) {
 			this.teamMembers.set(props.teamMembers);

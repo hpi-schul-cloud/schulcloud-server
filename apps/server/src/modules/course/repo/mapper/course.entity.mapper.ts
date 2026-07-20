@@ -13,7 +13,7 @@ export class CourseEntityMapper {
 	public static mapEntityToDo(entity: CourseEntity): Course {
 		const courseGroupIds: EntityId[] = entity.courseGroups
 			.getItems()
-			.map((courseGroup: CourseGroupEntity): EntityId => courseGroup.id);
+			.map((courseGroup): EntityId => courseGroup.id ?? '');
 
 		const classIds: EntityId[] = entity.classes.getItems().map((clazz: ClassEntity): EntityId => clazz.id);
 		const groupIds: EntityId[] = entity.groups.getItems().map((group: GroupEntity): EntityId => group.id);

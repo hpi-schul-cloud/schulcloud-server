@@ -18,8 +18,8 @@ import type { AnyContentElement } from './types/any-content-element';
 import type { BoardExternalReference } from './types/board-external-reference';
 import type { BoardLayout } from './types/board-layout.enum';
 import type { BoardNodeProps } from './types/board-node-props';
-import type { Colors } from './types/colors.enum';
-import type { ContentElementType } from './types/content-element-type.enum';
+import { Colors } from './types/colors.enum';
+import { ContentElementType } from './types/content-element-type.enum';
 import { VideoConferenceElement } from './video-conference-element.do';
 
 @Injectable()

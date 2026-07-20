@@ -1,4 +1,3 @@
-import { CopyFilesService } from '@modules/copy-helper/service/copy-files.service';
 import {
 	CopyDictionary,
 	CopyElementType,
@@ -6,8 +5,10 @@ import {
 	CopyStatus,
 	CopyStatusEnum,
 	FileUrlReplacement,
-} from '@modules/copy-helper/service/copy-helper.service';
+} from '@modules/copy-helper';
+import { CopyFilesService } from '@modules/copy-helper/service/copy-files.service';
 import { TaskCopyService } from '@modules/task/domain/service/task-copy.service';
+import { Task } from '@modules/task/repo';
 import { Inject, Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { randomBytes } from 'node:crypto';
@@ -193,7 +194,7 @@ export class LessonCopyService {
 				const status = this.statusMap[element.component](element.title);
 				return { copy, status };
 			} catch {
-				// TODO: Add proper error handling and logging
+				// Mark this content as failed and continue copying remaining components.
 				const status = this.statusMap[element.component](element.title);
 				status.status = CopyStatusEnum.FAIL;
 				return { copy: undefined, status };
@@ -337,7 +338,7 @@ export class LessonCopyService {
 			const copiedTasksStatus = await Promise.all(
 				linkedTasks.map((element) =>
 					this.taskCopyService.copyTask({
-						originalTaskId: element.id,
+						originalTaskId: (element as Task).id,
 						destinationCourse: params.destinationCourse,
 						destinationLesson,
 						user: params.user,

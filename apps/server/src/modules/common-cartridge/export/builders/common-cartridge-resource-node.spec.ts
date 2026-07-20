@@ -34,7 +34,7 @@ describe('CommonCartridgeResourceNode', () => {
 			it('should return a CommonCartridgeResource', () => {
 				const { resourceNodeProps, organizationNode } = setup();
 
-				sut = new CommonCartridgeResourceNode(resourceNodeProps, organizationNode);
+				sut = new CommonCartridgeResourceNode(resourceNodeProps, organizationNode.folder);
 
 				const result = sut.build();
 

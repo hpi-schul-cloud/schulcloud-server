@@ -3,6 +3,7 @@ import { Logger } from '@infra/logger';
 import { Injectable } from '@nestjs/common';
 import { IFindOptions } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
+import { Submission } from '../../repo/submission.entity';
 import { Task } from '../../repo/task.entity';
 import { TaskRepo } from '../../repo/task.repo';
 import { SubmissionService } from './submission.service';
@@ -39,7 +40,7 @@ export class TaskService {
 
 	private async deleteSubmissions(task: Task): Promise<void> {
 		const submissions = task.submissions.getItems();
-		const promises = submissions.map((submission) => this.submissionService.delete(submission));
+		const promises = submissions.map((submission) => this.submissionService.delete(submission as Submission));
 
 		await Promise.all(promises);
 	}

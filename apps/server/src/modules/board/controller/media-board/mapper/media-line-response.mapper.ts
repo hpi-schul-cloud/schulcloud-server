@@ -5,8 +5,8 @@ import { AnyMediaElementResponseFactory } from './any-media-element-response.fac
 
 export class MediaLineResponseMapper {
 	public static mapToResponse(line: MediaLine): MediaLineResponse {
-		const elements = line.children.filter((element: AnyBoardNode): element is AnyMediaElement =>
-			isAnyMediaElement(element)
+		const elements = line.children.filter((element): element is AnyMediaElement =>
+			isAnyMediaElement(element as AnyBoardNode)
 		);
 
 		const lineResponse: MediaLineResponse = new MediaLineResponse({

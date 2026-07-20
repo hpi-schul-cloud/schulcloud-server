@@ -1395,7 +1395,7 @@ describe('UserLoginMigrationController (API)', () => {
 			};
 			expect(school).toEqual(expect.objectContaining(expectedSchoolPartial));
 
-			const systems: SystemEntity[] = school?.systems.getItems();
+			const systems = school?.systems.getItems() as SystemEntity[];
 			systems?.forEach((system) => {
 				expect([sourceSystem.id, targetSystem.id]).toContainEqual(system.id);
 			});

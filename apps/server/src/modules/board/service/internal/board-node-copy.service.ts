@@ -486,7 +486,7 @@ export class BoardNodeCopyService {
 			boardNode.children.map(async (child) => {
 				return {
 					id: child.id,
-					status: await this.copy(child, context),
+					status: await this.copy(child as AnyBoardNode, context),
 				};
 			})
 		);

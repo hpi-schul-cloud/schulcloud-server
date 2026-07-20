@@ -119,7 +119,7 @@ export abstract class BoardNode<T extends BoardNodeProps> extends DomainObject<T
 		return childrenOfType;
 	}
 
-	private updatePath(parent: BoardNodeParent): void {
+	public updatePath(parent: BoardNodeParent): void {
 		this.props.path = joinPath(parent.path, parent.id);
 		this.props.level = parent.level + 1;
 		this.props.children.forEach((child) => {
@@ -127,7 +127,7 @@ export abstract class BoardNode<T extends BoardNodeProps> extends DomainObject<T
 		});
 	}
 
-	private resetPath(): void {
+	public resetPath(): void {
 		this.props.path = ROOT_PATH;
 		this.props.level = 0;
 		this.props.children.forEach((child) => {
@@ -135,7 +135,7 @@ export abstract class BoardNode<T extends BoardNodeProps> extends DomainObject<T
 		});
 	}
 
-	private updatePosition(position: number): void {
+	public updatePosition(position: number): void {
 		this.props.position = position;
 	}
 }

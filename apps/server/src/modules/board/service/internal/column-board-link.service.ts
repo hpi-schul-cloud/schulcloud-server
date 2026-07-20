@@ -26,6 +26,6 @@ export class ColumnBoardLinkService {
 				boardNode.url = boardNode.url.replace(key, value);
 			});
 		}
-		boardNode.children.forEach((bn) => this.updateLinkElements(bn, idMap));
+		boardNode.children.forEach((bn) => this.updateLinkElements(bn as AnyBoardNode, idMap));
 	}
 }

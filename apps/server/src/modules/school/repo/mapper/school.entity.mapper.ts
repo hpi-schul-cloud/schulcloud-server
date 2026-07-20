@@ -16,7 +16,10 @@ export class SchoolEntityMapper {
 		const federalState = entity.federalState ? FederalStateEntityMapper.mapToDo(entity.federalState) : undefined;
 		const features = new Set(entity.features);
 		const county = entity.county && CountyEmbeddableMapper.mapToDo(entity.county);
-		const systemIds = entity.systems.getItems().map((system) => system.id);
+		const systemIds = entity.systems
+			.getItems()
+			.map((system) => system.id)
+			.filter((id): id is string => typeof id === 'string');
 		const logo = entity.logo_dataUrl ? { dataUrl: entity.logo_dataUrl, name: entity.logo_name } : undefined;
 
 		const school = SchoolFactory.build({

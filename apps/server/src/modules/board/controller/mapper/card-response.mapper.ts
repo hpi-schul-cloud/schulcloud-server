@@ -1,4 +1,4 @@
-import { type Card } from '../../domain';
+import { type AnyBoardNode, type Card } from '../../domain';
 import { CardResponse, TimestampsResponse, VisibilitySettingsResponse } from '../dto';
 import { ContentElementResponseFactory } from './content-element-response.factory';
 
@@ -9,7 +9,7 @@ export class CardResponseMapper {
 			title: card.title,
 			backgroundColor: card.backgroundColor,
 			height: card.height,
-			elements: card.children.map((element) => ContentElementResponseFactory.mapToResponse(element)),
+			elements: card.children.map((element) => ContentElementResponseFactory.mapToResponse(element as AnyBoardNode)),
 			visibilitySettings: new VisibilitySettingsResponse({}),
 			timestamps: new TimestampsResponse({ lastUpdatedAt: card.updatedAt, createdAt: card.createdAt }),
 		});

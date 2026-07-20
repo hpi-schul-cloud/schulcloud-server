@@ -17,7 +17,7 @@ import {
 } from '@infra/common-cartridge-clients';
 import { type Stream } from 'node:stream';
 import sanitizeHtml from 'sanitize-html';
-import { type CommonCartridgeOrganizationProps } from '../export/builders/common-cartridge-file-builder';
+import { type CommonCartridgeOrganizationProps } from '../export/builders/common-cartridge-organization.types';
 import {
 	CommonCartridgeElementType,
 	CommonCartridgeIntendedUseType,

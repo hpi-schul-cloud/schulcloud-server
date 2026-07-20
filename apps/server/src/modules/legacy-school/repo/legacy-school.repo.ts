@@ -44,7 +44,7 @@ export class LegacySchoolRepo extends BaseDORepo<LegacySchoolDo, SchoolEntity> {
 			previousExternalId: entity.previousExternalId,
 			officialSchoolNumber: entity.officialSchoolNumber,
 			schoolYear: entity.currentYear,
-			systems: entity.systems.isInitialized() ? entity.systems.getItems().map((system: SystemEntity) => system.id) : [],
+			systems: entity.systems.isInitialized() ? entity.systems.getItems().map((system) => system.id ?? '') : [],
 			userLoginMigrationId: entity.userLoginMigration?.id,
 			federalState: entity.federalState,
 			ldapLastSync: entity.ldapLastSync,

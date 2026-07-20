@@ -106,7 +106,7 @@ describe('LegacySchoolRepo', () => {
 
 			await em.persist(schoolEntity).flush();
 
-			const result = await repo.findByExternalId(schoolEntity.externalId as string, schoolEntity.systems[0].id);
+			const result = await repo.findByExternalId(schoolEntity.externalId as string, schoolEntity.systems[0].id ?? '');
 
 			expect(result?.externalId).toEqual(schoolEntity.externalId);
 		});

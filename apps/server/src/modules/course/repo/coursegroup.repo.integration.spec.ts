@@ -67,7 +67,7 @@ describe('course group repo', () => {
 			await em.persist(courseGroup).flush();
 			em.clear();
 
-			const [result, count] = await repo.findByCourseIds([courseGroup.course.id]);
+			const [result, count] = await repo.findByCourseIds([courseGroup.course.id ?? '']);
 
 			expect(result).toBeInstanceOf(Array);
 			expect(typeof count).toEqual('number');
@@ -79,7 +79,7 @@ describe('course group repo', () => {
 			await em.persist(courseGroup).flush();
 			em.clear();
 
-			const [result] = await repo.findByCourseIds([courseGroup.course.id]);
+			const [result] = await repo.findByCourseIds([courseGroup.course.id ?? '']);
 
 			const keysOfFirstElements = Object.keys(result[0]).sort();
 			const expectedResult = ['_id', 'name', 'course', 'updatedAt', 'createdAt', 'school', 'students'].sort();

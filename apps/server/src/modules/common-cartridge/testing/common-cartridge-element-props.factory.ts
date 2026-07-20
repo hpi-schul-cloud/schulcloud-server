@@ -5,7 +5,7 @@ import {
 	type CommonCartridgeOrganizationProps,
 	CommonCartridgeVersion,
 } from '@modules/common-cartridge';
-import { type CommonCartridgeOrganizationNodeProps } from '../export/builders/common-cartridge-organization-node';
+import { type CommonCartridgeOrganizationNodeProps } from '../export/builders/common-cartridge-organization.types';
 import { type CommonCartridgeMetadataElementPropsV110 } from '../export/elements/v1.1.0/common-cartridge-metadata-element';
 import { type CommonCartridgeOrganizationElementPropsV110 } from '../export/elements/v1.1.0/common-cartridge-organization-element';
 import { type CommonCartridgeOrganizationsWrapperElementPropsV110 } from '../export/elements/v1.1.0/common-cartridge-organizations-wrapper-element';

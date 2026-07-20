@@ -5,11 +5,11 @@ import {
 	AuthorizationInjectionService,
 	Rule,
 } from '@modules/authorization';
-import { CourseGroupEntity } from '@modules/course/repo';
+import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { User } from '@modules/user/repo';
 import { Injectable, NotImplementedException } from '@nestjs/common';
-import { CourseRule } from './course.rule';
 import { Permission } from '@shared/domain/interface/permission.enum';
+import { CourseRule } from './course.rule';
 
 @Injectable()
 export class CourseGroupRule implements Rule<CourseGroupEntity> {
@@ -62,7 +62,7 @@ export class CourseGroupRule implements Rule<CourseGroupEntity> {
 	}
 
 	private hasCourseWriteAccess(user: User, object: CourseGroupEntity, context: AuthorizationContext): boolean {
-		return this.courseRule.hasPermission(user, object.course, {
+		return this.courseRule.hasPermission(user, object.course as CourseEntity, {
 			action: Action.write,
 			requiredPermissions: context.requiredPermissions,
 		});

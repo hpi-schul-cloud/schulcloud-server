@@ -1,6 +1,7 @@
 import { BoardNode } from './board-node.do';
-import { isContentElement, type CardProps } from './types/any-content-element';
+import { isContentElement } from './types/any-content-element';
 import type { BoardNodeChild } from './types/board-node-child';
+import type { CardProps } from './types/board-node-props';
 import { Colors } from './types/colors.enum';
 
 export class Card extends BoardNode<CardProps> {
