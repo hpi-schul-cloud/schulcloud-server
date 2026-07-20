@@ -713,6 +713,7 @@ describe('CommonCartridgeExportService', () => {
 				const { jwt, courseId, boardId, fileRecordBlocked, fileRecordNotBlocked } = setup();
 
 				const result = await sut.exportCourse(jwt, courseId, CommonCartridgeVersion.V_1_1_0, [], [], [boardId]);
+
 				expect(result).toBeDefined();
 
 				expect(filesStorageClientAdapterMock.getStream).not.toHaveBeenCalledWith(
