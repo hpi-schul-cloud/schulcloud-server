@@ -106,7 +106,7 @@ describe('DownloadArchiveService', () => {
 				const createEmptySpy = jest.spyOn(ArchiveFactory, 'createEmpty').mockReturnValueOnce(mockArchive);
 				const appendFileSpy = jest.spyOn(ArchiveFactory, 'appendFile').mockReturnValue(undefined);
 
-				return { ownerId, archiveName, file1, file2, createEmptySpy, appendFileSpy };
+				return { ownerId, archiveName, file1, file2, createEmptySpy, appendFileSpy, mockArchive };
 			};
 
 			it('should return a file response with archive', async () => {
@@ -136,6 +136,15 @@ describe('DownloadArchiveService', () => {
 
 				expect(legacyFileStorageAdapter.downloadFile).toHaveBeenCalledWith(file1.id, file1.name);
 				expect(legacyFileStorageAdapter.downloadFile).toHaveBeenCalledWith(file2.id, file2.name);
+			});
+
+			it('should not append a fehlende-dateien.txt report when all files succeed', async () => {
+				const { ownerId, archiveName, mockArchive } = setup();
+
+				await service.downloadFilesAsArchive(ownerId, archiveName);
+				await flushPromises();
+
+				expect(mockArchive.append).not.toHaveBeenCalledWith(expect.any(Buffer), { name: 'fehlende-dateien.txt' });
 			});
 		});
 
@@ -277,7 +286,7 @@ describe('DownloadArchiveService', () => {
 				jest.spyOn(ArchiveFactory, 'createEmpty').mockReturnValueOnce(mockArchive);
 				const appendFileSpy = jest.spyOn(ArchiveFactory, 'appendFile').mockReturnValue(undefined);
 
-				return { ownerId, archiveName, file1, file2, appendFileSpy };
+				return { ownerId, archiveName, file1, file2, appendFileSpy, mockArchive };
 			};
 
 			it('should skip the failing file and continue with the remaining files', async () => {
@@ -297,6 +306,17 @@ describe('DownloadArchiveService', () => {
 				await flushPromises();
 
 				expect(logger.warning).toHaveBeenCalledWith(new SkipFileLoggable(file1.id));
+			});
+
+			it('should append a missing-files.txt report to the archive', async () => {
+				const { ownerId, archiveName, file1, mockArchive } = setup();
+
+				await service.downloadFilesAsArchive(ownerId, archiveName);
+				await flushPromises();
+
+				expect(mockArchive.append).toHaveBeenCalledWith(expect.any(Buffer), { name: 'fehlende-dateien.txt' });
+				const reportBuffer = mockArchive.append.mock.calls[0][0] as Buffer;
+				expect(reportBuffer.toString()).toContain(file1.name);
 			});
 		});
 

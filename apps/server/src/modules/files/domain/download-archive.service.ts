@@ -44,23 +44,51 @@ export class DownloadArchiveService {
 		files: FileDo[],
 		filesById: Map<EntityId, FileDo>
 	): Promise<void> {
-		await this.populateArchive(archive, files, filesById);
+		const missingFileNames = await this.populateArchive(archive, files, filesById);
+
+		if (missingFileNames.length > 0) {
+			this.appendMissingFilesReport(archive, missingFileNames);
+		}
+
 		await archive.finalize();
 	}
 
-	private async populateArchive(archive: Archiver, files: FileDo[], filesById: Map<EntityId, FileDo>): Promise<void> {
+	private async populateArchive(
+		archive: Archiver,
+		files: FileDo[],
+		filesById: Map<EntityId, FileDo>
+	): Promise<string[]> {
+		const missingFileNames: string[] = [];
+
 		for (const file of files) {
-			await this.tryAppendFile(archive, file, filesById);
+			const missingName = await this.tryAppendFile(archive, file, filesById);
+			if (missingName !== null) missingFileNames.push(missingName);
 		}
+
+		return missingFileNames;
 	}
 
-	private async tryAppendFile(archive: Archiver, file: FileDo, filesById: Map<EntityId, FileDo>): Promise<void> {
+	private async tryAppendFile(
+		archive: Archiver,
+		file: FileDo,
+		filesById: Map<EntityId, FileDo>
+	): Promise<string | null> {
 		try {
 			const fileResponse = await this.downloadFileWithPath(file, filesById);
 			await this.appendAndWaitForEntry(archive, fileResponse);
+
+			return null;
 		} catch {
 			this.logger.warning(new SkipFileLoggable(file.id));
+
+			return file.name;
 		}
+	}
+
+	private appendMissingFilesReport(archive: Archiver, missingFileNames: string[]): void {
+		const header = 'Fehlende Dateien / Missing files:';
+		const content = `${header}\n${missingFileNames.join('\n')}`;
+		archive.append(Buffer.from(content), { name: 'fehlende-dateien.txt' });
 	}
 
 	private appendAndWaitForEntry(archive: Archiver, fileResponse: GetFileResponse): Promise<void> {
