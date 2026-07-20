@@ -7,6 +7,7 @@ import {
 } from '@infra/authorization-client';
 import { ConfigurationModule } from '@infra/configuration';
 import { LoggerModule } from '@infra/logger';
+import { NotificationModule } from '@modules/notification';
 import { HttpModule } from '@nestjs/axios';
 import { Module } from '@nestjs/common';
 import { DownloadArchiveUC, LegacyFileArchiveController } from './api';
@@ -18,6 +19,7 @@ import { LEGACY_FILE_ARCHIVE_CONFIG_TOKEN, LegacyFileArchiveConfig } from './leg
 		CoreModule,
 		LoggerModule,
 		HttpModule,
+		NotificationModule,
 		AuthorizationClientModule.register(AUTHORIZATION_CLIENT_CONFIG_TOKEN, AuthorizationClientConfig),
 		AuthGuardModule.register([
 			{
