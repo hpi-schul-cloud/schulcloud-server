@@ -11,9 +11,11 @@ import {
 	OneToOne,
 	Property,
 } from '@mikro-orm/core';
-import type { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity/school-system-options.entity';
-import type { SystemEntity } from '@modules/system/repo/mikro-orm/system.entity';
-import type { UserLoginMigrationEntity } from '@modules/user-login-migration/repo/user-login-migration.entity';
+import type {
+	SchoolSystemOptionsLike,
+	SystemReferenceLike,
+	UserLoginMigrationLike,
+} from '@modules/legacy-school/entity/school-relations.types';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { LanguageType } from '@shared/domain/interface';
 import { FileStorageType } from '../domain/type/file-storage-type.enum';
@@ -31,11 +33,11 @@ export interface SchoolProperties {
 	previousExternalId?: string;
 	name: string;
 	officialSchoolNumber?: string;
-	systems?: SystemEntity[];
+	systems?: SystemReferenceLike[];
 	permissions?: SchoolRoles;
 	features?: SchoolFeature[];
 	currentYear?: SchoolYearEntity;
-	userLoginMigration?: UserLoginMigrationEntity;
+	userLoginMigration?: UserLoginMigrationLike;
 	federalState: FederalStateEntity;
 	county?: CountyEmbeddable;
 	purpose?: SchoolPurpose;
@@ -88,7 +90,7 @@ export class SchoolEntity extends BaseEntityWithTimestamps {
 	officialSchoolNumber?: string;
 
 	@ManyToMany('SystemEntity')
-	systems = new Collection<SystemEntity>(this);
+	systems = new Collection<SystemReferenceLike>(this);
 
 	@Embedded(() => SchoolRoles, { object: true, nullable: true, prefix: false })
 	permissions?: SchoolRoles;
@@ -96,11 +98,11 @@ export class SchoolEntity extends BaseEntityWithTimestamps {
 	@ManyToOne(() => SchoolYearEntity, { nullable: true })
 	currentYear?: SchoolYearEntity;
 
-	@OneToOne('UserLoginMigrationEntity', (userLoginMigration: UserLoginMigrationEntity) => userLoginMigration.school, {
+	@OneToOne('UserLoginMigrationEntity', (userLoginMigration: UserLoginMigrationLike) => userLoginMigration.school, {
 		orphanRemoval: true,
 		eager: true,
 	})
-	userLoginMigration?: UserLoginMigrationEntity;
+	userLoginMigration?: UserLoginMigrationLike;
 
 	@Index()
 	@ManyToOne(() => FederalStateEntity)
@@ -134,7 +136,7 @@ export class SchoolEntity extends BaseEntityWithTimestamps {
 	timezone?: string;
 
 	@OneToMany({ entity: 'SchoolSystemOptionsEntity', mappedBy: 'school', cascade: [Cascade.REMOVE] })
-	schoolSystemOptions = new Collection<SchoolSystemOptionsEntity>(this);
+	schoolSystemOptions = new Collection<SchoolSystemOptionsLike>(this);
 
 	constructor(props: SchoolProperties) {
 		super();

@@ -8,7 +8,7 @@ import { User } from '@modules/user/repo';
 import { InternalServerErrorException } from '@nestjs/common/exceptions/internal-server-error.exception';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { CourseSyncAttribute } from '../domain';
+import { CourseSyncAttribute } from '../domain/interface/course-sync-attribute.enum';
 import type { CourseGroupLike } from './course.types';
 
 export enum CourseType {

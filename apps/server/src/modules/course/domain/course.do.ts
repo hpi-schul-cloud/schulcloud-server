@@ -1,7 +1,7 @@
 import { type AuthorizableObject, DomainObject } from '@shared/domain/domain-object';
 import { type EntityId } from '@shared/domain/types';
-import { type CourseFeatures } from '../repo';
-import { type CourseSyncAttribute } from './interface';
+import { type CourseFeatures } from '../repo/course.entity';
+import { type CourseSyncAttribute } from './interface/course-sync-attribute.enum';
 
 export interface CourseProps extends AuthorizableObject {
 	name: string;
@@ -113,7 +113,7 @@ export class Course extends DomainObject<CourseProps> {
 	}
 
 	public isTeacher(userId: EntityId): boolean {
-		const isTeacher: boolean = this.teachers.some((teacherId: EntityId) => teacherId === userId);
+		const isTeacher: boolean = this.teachers.includes(userId);
 
 		return isTeacher;
 	}

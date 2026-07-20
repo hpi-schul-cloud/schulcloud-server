@@ -1,5 +1,5 @@
 import { Cascade, Collection, Embeddable, Embedded, Entity, Enum, OneToMany, Property } from '@mikro-orm/core';
-import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity/school-system-options.entity';
+import type { SchoolSystemOptionsLike } from '@modules/legacy-school/entity/school-relations.types';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { EntityId } from '@shared/domain/types';
@@ -225,8 +225,10 @@ export class SystemEntity extends BaseEntityWithTimestamps {
 	@Property({ nullable: true })
 	provisioningUrl?: string;
 
-	@OneToMany(() => SchoolSystemOptionsEntity, (options) => options.system, { cascade: [Cascade.REMOVE] })
-	schoolSystemOptions = new Collection<SchoolSystemOptionsEntity>(this);
+	@OneToMany('SchoolSystemOptionsEntity', (options: SchoolSystemOptionsLike) => options.system, {
+		cascade: [Cascade.REMOVE],
+	})
+	schoolSystemOptions = new Collection<SchoolSystemOptionsLike>(this);
 
 	constructor(props: SystemEntityProps) {
 		super();
