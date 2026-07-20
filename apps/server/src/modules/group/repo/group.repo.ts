@@ -109,11 +109,14 @@ export class GroupRepo extends BaseDomainObjectRepo<Group, GroupEntity> {
 	}
 
 	public async findGroupsForScope(scope: GroupAggregateScope): Promise<Page<Group>> {
+		console.time('GroupRepo.findGroupsForScope - aggregate');
 		const mongoEntitiesFacet = (await this.em.aggregate(
 			GroupEntity,
 			scope.build()
 		)) as ScopeAggregateResult<GroupEntity>;
+		console.timeEnd('GroupRepo.findGroupsForScope - aggregate');
 
+		console.time('GroupRepo.findGroupsForScope - mapEntityToDo');
 		const total: number = mongoEntitiesFacet[0]?.total[0]?.count ?? 0;
 
 		const entities: GroupEntity[] = mongoEntitiesFacet[0].data.map((entity: EntityDictionary<GroupEntity>) =>
@@ -123,7 +126,7 @@ export class GroupRepo extends BaseDomainObjectRepo<Group, GroupEntity> {
 		const domainObjects: Group[] = entities.map((entity) => GroupDomainMapper.mapEntityToDo(entity));
 
 		const page: Page<Group> = new Page<Group>(domainObjects, total);
-
+		console.timeEnd('GroupRepo.findGroupsForScope - mapEntityToDo');
 		return page;
 	}
 
