@@ -59,7 +59,7 @@ export class DownloadArchiveService {
 			const fileResponse = await this.downloadFileWithPath(file, filesById);
 			await this.appendAndWaitForEntry(archive, fileResponse);
 		} catch {
-			this.logger.warning(new SkipFileLoggable(file.id, file.name));
+			this.logger.warning(new SkipFileLoggable(file.id));
 		}
 	}
 

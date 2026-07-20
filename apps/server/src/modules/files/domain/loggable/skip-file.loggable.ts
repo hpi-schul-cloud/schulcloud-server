@@ -2,10 +2,7 @@ import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
 import { type EntityId } from '@shared/domain/types';
 
 export class SkipFileLoggable implements Loggable {
-	constructor(
-		private readonly fileId: EntityId,
-		private readonly fileName: string
-	) {}
+	constructor(private readonly fileId: EntityId) {}
 
 	public getLogMessage(): LoggableMessage {
 		return {
