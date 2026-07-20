@@ -314,7 +314,7 @@ describe('DownloadArchiveService', () => {
 				await service.downloadFilesAsArchive(ownerId, archiveName);
 				await flushPromises();
 
-				expect(mockArchive.append).toHaveBeenCalledWith(expect.any(Buffer), { name: 'fehlende-dateien.txt' });
+				expect(mockArchive.append).toHaveBeenCalledWith(expect.any(Buffer), { name: 'FEHLENDE-DATEIEN.txt' });
 				const reportBuffer = mockArchive.append.mock.calls[0][0] as Buffer;
 				expect(reportBuffer.toString()).toContain(file1.name);
 			});
