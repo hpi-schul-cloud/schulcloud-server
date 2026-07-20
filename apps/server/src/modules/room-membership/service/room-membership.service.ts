@@ -60,8 +60,11 @@ export class RoomMembershipService {
 
 		const group = await this.groupService.findById(roomMembership.userGroupId);
 		const userIds = group.users.map((u) => u.userId);
-		const users = await this.userService.findByIds(userIds);
-		const roles = await this.roleService.findByIds(group.users.flatMap((u) => u.roleId));
+		const userRoleIds = group.users.flatMap((u) => u.roleId);
+		const [users, roles] = await Promise.all([
+			this.userService.findByIds(userIds),
+			this.roleService.findByIds(userRoleIds),
+		]);
 		const validRoomMembers = users
 			.map((user) => {
 				const groupUser = group.users.find((g) => g.userId === user.id);
@@ -90,8 +93,7 @@ export class RoomMembershipService {
 		const group = await this.groupService.findById(roomMembership.userGroupId);
 		const userIds = group.users.map((user) => user.userId);
 
-		await this.groupService.delete(group);
-		await this.roomMembershipRepo.delete(roomMembership);
+		await Promise.all([this.groupService.delete(group), this.roomMembershipRepo.delete(roomMembership)]);
 
 		await this.handleGuestRoleRemoval(userIds, roomMembership.schoolId);
 	}
@@ -109,9 +111,10 @@ export class RoomMembershipService {
 		const userIdsAndRoles = userIds.map((userId) => {
 			return { userId, roleName };
 		});
-		await this.groupService.addUsersToGroup(roomMembership.userGroupId, userIdsAndRoles);
-
-		await this.userService.addSecondarySchoolToUsers(userIds, roomMembership.schoolId);
+		await Promise.all([
+			this.groupService.addUsersToGroup(roomMembership.userGroupId, userIdsAndRoles),
+			this.userService.addSecondarySchoolToUsers(userIds, roomMembership.schoolId),
+		]);
 
 		return roleName;
 	}
@@ -173,8 +176,11 @@ export class RoomMembershipService {
 	}
 
 	public async getRoomAuthorizable(roomId: EntityId): Promise<RoomAuthorizable> {
-		const room = await this.roomService.getSingleRoom(roomId);
-		const roomMembership = await this.roomMembershipRepo.findByRoomId(roomId);
+		const [room, roomMembership] = await Promise.all([
+			this.roomService.getSingleRoom(roomId),
+			this.roomMembershipRepo.findByRoomId(roomId),
+		]);
+
 		if (roomMembership === null) {
 			this.logger.warn(`No room membership found for roomId ${roomId}`);
 			return new RoomAuthorizable(roomId, [], room.schoolId);
@@ -199,8 +205,10 @@ export class RoomMembershipService {
 	): Promise<RoomInvitationLinkAuthorizable> {
 		const { creatorSchoolId, roomId } = roomInvitationLink;
 
-		const creatorSchool = await this.schoolService.getSchoolById(creatorSchoolId);
-		const roomAuthorizable = await this.getRoomAuthorizable(roomId);
+		const [creatorSchool, roomAuthorizable] = await Promise.all([
+			this.schoolService.getSchoolById(creatorSchoolId),
+			this.getRoomAuthorizable(roomId),
+		]);
 
 		return new RoomInvitationLinkAuthorizable(
 			roomAuthorizable,
@@ -212,9 +220,10 @@ export class RoomMembershipService {
 
 	private async getAuthorizables(groups: Group[], roomMemberships: RoomMembership[]): Promise<RoomAuthorizable[]> {
 		const userIds = [...groups.flatMap((group) => group.users.map((user) => user.userId))];
-		const userSchoolMap = await this.userService.getSchoolIdsByUserIds(userIds);
-
-		const roleDtos = await this.roleService.findAll();
+		const [userSchoolMap, roleDtos] = await Promise.all([
+			this.userService.getSchoolIdsByUserIds(userIds),
+			this.roleService.findAll(),
+		]);
 
 		const roomAuthorizables: RoomAuthorizable[] = [];
 		for (const roomMembership of roomMemberships) {
@@ -245,10 +254,11 @@ export class RoomMembershipService {
 
 	private async getStats(groupsOnPage: Group[], schoolId: string): Promise<RoomMembershipStats[]> {
 		const groupIds = groupsOnPage.map((group) => group.id);
-		const roomMemberships = await this.roomMembershipRepo.findByGroupIds(groupIds);
-		const groupIdOwnerMap = await this.getOwnerMap(groupsOnPage);
-
-		const stats = await this.getRoomMemberStatsForGroups(schoolId, groupsOnPage);
+		const [roomMemberships, groupIdOwnerMap, stats] = await Promise.all([
+			this.roomMembershipRepo.findByGroupIds(groupIds),
+			this.getOwnerMap(groupsOnPage),
+			this.getRoomMemberStatsForGroups(schoolId, groupsOnPage),
+		]);
 
 		const result = roomMemberships.map((item) => {
 			const { userGroupId, schoolId, roomId } = item;
