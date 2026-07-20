@@ -7,8 +7,8 @@ import { InternalServerErrorException } from '@nestjs/common';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { InputFormat } from '@shared/domain/types/input-format.types';
-import { type ITask, type TaskStatus } from '../domain/interface/task.types';
-import type { Submission } from './submission.entity';
+import { type TaskStatus } from '../domain/interface/task.types';
+import type { SubmissionLike, TaskParent, TaskProperties } from './task-entity.types';
 
 export class TaskWithStatusVo {
 	task!: Task;
@@ -28,22 +28,6 @@ export type TaskParentDescriptions = {
 	lessonHidden: boolean;
 	color: string;
 };
-
-export interface TaskParent {
-	getStudentIds(): EntityId[];
-}
-
-export interface TaskProperties extends ITask {
-	course?: CourseEntity;
-	lesson?: LessonEntity;
-	creator: User;
-	school: SchoolEntity;
-	finished?: User[];
-	private?: boolean;
-	submissions?: Submission[];
-	publicSubmissions?: boolean;
-	teamSubmissions?: boolean;
-}
 
 @Entity({ tableName: 'homeworks' })
 @Index({ properties: ['private', 'dueDate', 'finished'] })
@@ -93,7 +77,7 @@ export class Task extends BaseEntityWithTimestamps {
 	lesson?: LessonEntity; // In database exist also null, but it can not set.
 
 	@OneToMany('Submission', 'task')
-	submissions = new Collection<Submission>(this);
+	submissions = new Collection<SubmissionLike>(this);
 
 	@Index()
 	@ManyToMany(() => User, undefined, { fieldName: 'archived' })
@@ -118,7 +102,7 @@ export class Task extends BaseEntityWithTimestamps {
 		this.teamSubmissions = props.teamSubmissions || false;
 	}
 
-	private getSubmissionItems(): Submission[] {
+	private getSubmissionItems(): SubmissionLike[] {
 		if (!this.submissions || !this.submissions.isInitialized(true)) {
 			throw new InternalServerErrorException('Submissions items are not loaded.');
 		}
@@ -192,7 +176,7 @@ export class Task extends BaseEntityWithTimestamps {
 		return false;
 	}
 
-	private getSubmittedSubmissions(): Submission[] {
+	private getSubmittedSubmissions(): SubmissionLike[] {
 		const submissions = this.getSubmissionItems();
 		const submittedSubmissions = submissions.filter((submission) => submission.isSubmitted());
 
@@ -205,7 +189,7 @@ export class Task extends BaseEntityWithTimestamps {
 		return areSubmissionsPublic;
 	}
 
-	private getGradedSubmissions(): Submission[] {
+	private getGradedSubmissions(): SubmissionLike[] {
 		const submissions = this.getSubmissionItems();
 		const gradedSubmissions = submissions.filter((submission) => submission.isGraded());
 
@@ -226,7 +210,7 @@ export class Task extends BaseEntityWithTimestamps {
 		return isGraded;
 	}
 
-	private calculateNumberOfSubmitters(submissions: Submission[]): number {
+	private calculateNumberOfSubmitters(submissions: SubmissionLike[]): number {
 		let taskSubmitterIds: EntityId[] = [];
 
 		submissions.forEach((submission) => {

@@ -1,15 +1,15 @@
 import { Collection, Entity, Index, ManyToMany, ManyToOne, Property } from '@mikro-orm/core';
-import type { LessonParent } from '@modules/lesson/repo';
+import type { LessonParent } from '@modules/lesson/repo/lesson.types';
 import { SchoolEntity } from '@modules/school/repo';
-import type { TaskParent } from '@modules/task/repo';
+import type { TaskParent } from '@modules/task/repo/task-entity.types';
 import { User } from '@modules/user/repo';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { CourseEntity } from './course.entity'; // https://github.com/mikro-orm/mikro-orm/discussions/4089
+import type { CourseLike } from './course.types';
 
 export interface CourseGroupProperties {
 	name: string;
-	course: CourseEntity;
+	course: CourseLike;
 	students?: User[];
 }
 
@@ -24,8 +24,8 @@ export class CourseGroupEntity extends BaseEntityWithTimestamps implements TaskP
 	students = new Collection<User>(this);
 
 	@Index()
-	@ManyToOne(() => CourseEntity, { fieldName: 'courseId' })
-	course: CourseEntity;
+	@ManyToOne('CourseEntity', { fieldName: 'courseId' })
+	course: CourseLike;
 
 	@ManyToOne(() => SchoolEntity, { fieldName: 'schoolId' })
 	@Index()

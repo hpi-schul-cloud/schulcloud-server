@@ -5,20 +5,7 @@ import type { User } from '@modules/user/repo';
 import { InternalServerErrorException } from '@nestjs/common';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import type { Task } from './task.entity';
-
-export interface SubmissionProperties {
-	school: SchoolEntity;
-	task: Task;
-	student?: User;
-	courseGroup?: CourseGroupEntity;
-	teamMembers?: User[];
-	comment: string;
-	submitted?: boolean;
-	graded?: boolean;
-	grade?: number;
-	gradeComment?: string;
-}
+import type { SubmissionProperties, TaskLike } from './task-entity.types';
 
 @Entity({ tableName: 'submissions' })
 @Index({ properties: ['student', 'teamMembers'] })
@@ -33,7 +20,7 @@ export class Submission extends BaseEntityWithTimestamps {
 
 	@ManyToOne('Task', { fieldName: 'homeworkId' })
 	@Index()
-	task: Task;
+	task: TaskLike;
 
 	@ManyToOne('User', { fieldName: 'studentId', nullable: true })
 	student?: User;

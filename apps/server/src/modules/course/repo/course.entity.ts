@@ -1,15 +1,15 @@
 import { Collection, Entity, Enum, Index, ManyToMany, ManyToOne, OneToMany, Property, Unique } from '@mikro-orm/core';
 import { ClassEntity } from '@modules/class/entity/class.entity';
 import { GroupEntity } from '@modules/group/entity/group.entity';
-import type { LessonParent } from '@modules/lesson/repo';
+import type { LessonParent } from '@modules/lesson/repo/lesson.types';
 import { SchoolEntity } from '@modules/school/repo';
-import type { TaskParent } from '@modules/task/repo';
+import type { TaskParent } from '@modules/task/repo/task-entity.types';
 import { User } from '@modules/user/repo';
 import { InternalServerErrorException } from '@nestjs/common/exceptions/internal-server-error.exception';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { CourseSyncAttribute } from '../domain';
-import type { CourseGroupEntity } from './coursegroup.entity'; // https://github.com/mikro-orm/mikro-orm/discussions/4089
+import type { CourseGroupLike } from './course.types';
 
 export enum CourseType {
 	'Course' = 'course',
@@ -93,7 +93,7 @@ export class CourseEntity extends BaseEntityWithTimestamps implements TaskParent
 	substitutionTeachers = new Collection<User>(this);
 
 	@OneToMany('CourseGroupEntity', 'course', { orphanRemoval: true })
-	courseGroups = new Collection<CourseGroupEntity>(this);
+	courseGroups = new Collection<CourseGroupLike>(this);
 
 	// TODO: string color format
 	@Property()
@@ -220,7 +220,7 @@ export class CourseEntity extends BaseEntityWithTimestamps implements TaskParent
 		return isSubstitutionTeacher;
 	}
 
-	public getCourseGroupItems(): CourseGroupEntity[] {
+	public getCourseGroupItems(): CourseGroupLike[] {
 		if (!this.courseGroups.isInitialized(true)) {
 			throw new InternalServerErrorException('Courses trying to access their course groups that are not loaded.');
 		}

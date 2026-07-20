@@ -1,11 +1,13 @@
 import { Collection, Entity, Index, ManyToMany, ManyToOne, OneToMany, Property } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
-import type { Task, TaskParent } from '@modules/task/repo';
+import { CourseEntity } from '@modules/course/repo/course.entity';
+import { CourseGroupEntity } from '@modules/course/repo/coursegroup.entity';
+import type { TaskParent, TaskStateLike } from '@modules/task/repo/task-entity.types';
 import { InternalServerErrorException } from '@nestjs/common';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { LernstoreResources } from '../api/dto/lernstore.resources';
+import type { LessonParent } from './lesson.types';
 import { Material } from './materials.entity';
 
 export interface LessonProperties {
@@ -61,10 +63,6 @@ export type ComponentProperties = {
 	| { component: ComponentType.LERNSTORE; content?: ComponentLernstoreProperties }
 );
 
-export interface LessonParent {
-	getStudentIds(): EntityId[];
-}
-
 @Entity({ tableName: 'lessons' })
 export class LessonEntity extends BaseEntityWithTimestamps implements TaskParent {
 	@Property()
@@ -91,7 +89,7 @@ export class LessonEntity extends BaseEntityWithTimestamps implements TaskParent
 	materials = new Collection<Material>(this);
 
 	@OneToMany('Task', 'lesson', { orphanRemoval: true })
-	tasks = new Collection<Task>(this);
+	tasks = new Collection<TaskStateLike>(this);
 
 	constructor(props: LessonProperties) {
 		super();
@@ -110,7 +108,7 @@ export class LessonEntity extends BaseEntityWithTimestamps implements TaskParent
 		return parent;
 	}
 
-	private getTasksItems(): Task[] {
+	private getTasksItems(): TaskStateLike[] {
 		if (!this.tasks.isInitialized(true)) {
 			throw new InternalServerErrorException('Lessons trying to access their tasks that are not loaded.');
 		}
@@ -140,7 +138,7 @@ export class LessonEntity extends BaseEntityWithTimestamps implements TaskParent
 		return this.contents;
 	}
 
-	public getLessonLinkedTasks(): Task[] {
+	public getLessonLinkedTasks(): TaskStateLike[] {
 		const tasks = this.getTasksItems();
 		return tasks;
 	}
