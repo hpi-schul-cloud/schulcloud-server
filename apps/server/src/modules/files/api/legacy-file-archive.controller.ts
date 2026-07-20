@@ -1,4 +1,4 @@
-import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
+import { JwtAuthentication } from '@infra/auth-guard';
 import {
 	Controller,
 	ForbiddenException,
@@ -38,11 +38,10 @@ export class LegacyFileArchiveController {
 	@Get()
 	public async downloadFilesAsArchive(
 		@Query() params: ArchiveFileParams,
-		@CurrentUser() currentUser: ICurrentUser,
 		@Req() req: Request,
 		@Res({ passthrough: true }) response: Response
 	): Promise<StreamableFile | void> {
-		const data = await this.downloadArchiveUC.downloadFilesOfParentAsArchive(params, currentUser.userId);
+		const data = await this.downloadArchiveUC.downloadFilesOfParentAsArchive(params);
 		const streamableFile = this.streamFileToClient(req, data, response);
 
 		return streamableFile;
