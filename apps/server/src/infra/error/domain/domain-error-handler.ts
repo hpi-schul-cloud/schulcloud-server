@@ -1,4 +1,4 @@
-import { ICurrentUser } from '@infra/auth-guard';
+import { type ICurrentUser } from '@infra/auth-guard/interface';
 import { ErrorLogger, LoggingUtils } from '@infra/logger';
 import { Injectable } from '@nestjs/common';
 import { HttpArgumentsHost } from '@nestjs/common/interfaces';

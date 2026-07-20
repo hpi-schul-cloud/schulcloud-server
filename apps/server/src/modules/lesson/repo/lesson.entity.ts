@@ -5,7 +5,7 @@ import type { Task, TaskParent } from '@modules/task/repo';
 import { InternalServerErrorException } from '@nestjs/common';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { LernstoreResources } from '../api';
+import { LernstoreResources } from '../api/dto/lernstore.resources';
 import { Material } from './materials.entity';
 
 export interface LessonProperties {

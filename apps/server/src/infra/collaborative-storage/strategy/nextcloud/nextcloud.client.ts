@@ -1,3 +1,11 @@
+import { ErrorUtils } from '@infra/error/utils/error.utils';
+import { LegacyLogger } from '@infra/logger';
+import { HttpService } from '@nestjs/axios';
+import { Injectable, NotFoundException, NotImplementedException, UnprocessableEntityException } from '@nestjs/common';
+import { AxiosRequestConfig, AxiosResponse } from 'axios';
+import { parseInt } from 'lodash';
+import { Observable, firstValueFrom } from 'rxjs';
+import { InternalCollaborativeStorageAdapterConfig } from '../../collaborative-storage-adapter.config';
 import {
 	GroupUsers,
 	GroupfoldersCreated,
@@ -6,15 +14,7 @@ import {
 	NextcloudGroups,
 	OcsResponse,
 	SuccessfulRes,
-} from '@infra/collaborative-storage';
-import { ErrorUtils } from '@infra/error';
-import { LegacyLogger } from '@infra/logger';
-import { HttpService } from '@nestjs/axios';
-import { Injectable, NotFoundException, NotImplementedException, UnprocessableEntityException } from '@nestjs/common';
-import { AxiosRequestConfig, AxiosResponse } from 'axios';
-import { parseInt } from 'lodash';
-import { Observable, firstValueFrom } from 'rxjs';
-import { InternalCollaborativeStorageAdapterConfig } from '../../collaborative-storage-adapter.config';
+} from './nextcloud.interface';
 
 @Injectable()
 export class NextcloudClient {

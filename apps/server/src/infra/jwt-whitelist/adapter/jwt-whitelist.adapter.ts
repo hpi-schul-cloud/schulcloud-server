@@ -1,4 +1,4 @@
-import { StorageClient } from '@infra/valkey-client';
+import { type StorageClient } from '@infra/valkey-client/types';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { InternalJwtWhitelistConfig } from '../interface';

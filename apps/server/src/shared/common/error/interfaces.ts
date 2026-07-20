@@ -1,4 +1,4 @@
-import type { LogMessageDataObject } from '../loggable';
+import type { LogMessageDataObject } from '../loggable/log-message-data';
 
 export type ErrorLogMessage = {
 	error?: Error;

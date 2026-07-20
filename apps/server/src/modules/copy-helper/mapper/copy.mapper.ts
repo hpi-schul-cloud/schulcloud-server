@@ -1,11 +1,11 @@
 import type { CopyFileDto } from '@infra/files-storage-amqp-client';
 import { ColumnBoard } from '@modules/board/domain/colum-board.do';
 import { type LessonCopyApiParams } from '@modules/learnroom/controller/dto/lesson/lesson-copy.params';
-import { type LessonCopyParentParams } from '@modules/lesson';
-import { LessonEntity } from '@modules/lesson/repo';
+import { type LessonCopyParentParams } from '@modules/lesson/domain/types/lesson-copy-parent.params';
+import { LessonEntity } from '@modules/lesson/repo/lesson.entity';
 import { type TaskCopyParentParams } from '@modules/task/api/dto/task-copy-parent.params';
 import { type TaskCopyApiParams } from '@modules/task/api/dto/task-copy.params';
-import { Task } from '@modules/task/repo';
+import { Task } from '@modules/task/repo/task.entity';
 import { type EntityId } from '@shared/domain/types';
 import { CopyApiResponse } from '../dto/copy.response';
 import { CopyElementType, type CopyStatus, CopyStatusEnum } from '../types/copy.types';

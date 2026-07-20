@@ -1,10 +1,4 @@
-import { type ErrorLogMessage, type ValidationErrorLogMessage } from '../error';
-
-export type LogMessageDataObject = {
-	[key: string]: LogMessageData;
-};
-
-export type LogMessageData = LogMessageDataObject | string | number | boolean | undefined;
+import { type ErrorLogMessage, type ValidationErrorLogMessage } from '../error/interfaces';
 
 export type LogMessage = {
 	message: string;

@@ -1,4 +1,4 @@
-import { type JwtWhitelistAdapter } from '@infra/jwt-whitelist';
+import { type JwtWhitelistAdapter } from '@infra/jwt-whitelist/adapter/jwt-whitelist.adapter';
 import { UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { JwtExtractor } from '@shared/common/utils';

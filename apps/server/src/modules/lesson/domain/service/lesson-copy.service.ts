@@ -1,13 +1,13 @@
+import { CopyFilesService } from '@modules/copy-helper/service/copy-files.service';
 import {
 	CopyDictionary,
 	CopyElementType,
-	CopyFilesService,
 	CopyHelperService,
 	CopyStatus,
 	CopyStatusEnum,
 	FileUrlReplacement,
-} from '@modules/copy-helper';
-import { TaskCopyService } from '@modules/task';
+} from '@modules/copy-helper/service/copy-helper.service';
+import { TaskCopyService } from '@modules/task/domain/service/task-copy.service';
 import { Inject, Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { randomBytes } from 'node:crypto';
