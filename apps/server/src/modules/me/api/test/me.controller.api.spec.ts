@@ -224,7 +224,6 @@ describe('Me Controller (API)', () => {
 		describe('when user is a service account', () => {
 			let serviceAccountApp: INestApplication;
 			let serviceAccountEm: EntityManager;
-			let serviceAccountJwtConfig: TestJwtModuleConfig;
 			let mockWinstonLogger: { info: jest.Mock };
 
 			beforeAll(async () => {
@@ -240,7 +239,6 @@ describe('Me Controller (API)', () => {
 				serviceAccountApp = serviceAccountModuleFixture.createNestApplication();
 				await serviceAccountApp.init();
 				serviceAccountEm = serviceAccountApp.get(EntityManager);
-				serviceAccountJwtConfig = serviceAccountModuleFixture.get(TEST_JWT_CONFIG_TOKEN);
 			});
 
 			beforeEach(async () => {
@@ -259,7 +257,6 @@ describe('Me Controller (API)', () => {
 				serviceAccountEm.clear();
 
 				const loggedInClient = await new TestApiClientBuilder(serviceAccountApp, 'me')
-					.withJwt(serviceAccountUser, serviceAccountJwtConfig)
 					.asServiceAccount()
 					.build(serviceAccount);
 
@@ -280,8 +277,14 @@ describe('Me Controller (API)', () => {
 
 				await loggedInClient.get();
 
-				expect(mockWinstonLogger.info).toHaveBeenCalledTimes(1);
-				expect(mockWinstonLogger.info).toHaveBeenCalledWith({
+				expect(mockWinstonLogger.info).toHaveBeenCalledTimes(3);
+				expect(mockWinstonLogger.info).toHaveBeenNthCalledWith(1, {
+					message: `[AUDIT] Actor: ServiceAccount: ${userId} | Action: ServiceAccountAuthenticated`,
+				});
+				expect(mockWinstonLogger.info).toHaveBeenNthCalledWith(2, {
+					message: `[AUDIT] Actor: ServiceAccount: ${userId} | Action: API POST /authentication/local-service-account -> 200`,
+				});
+				expect(mockWinstonLogger.info).toHaveBeenNthCalledWith(3, {
 					message: `[AUDIT] Actor: ServiceAccount: ${userId} | Action: API GET /me -> 200`,
 				});
 			});
