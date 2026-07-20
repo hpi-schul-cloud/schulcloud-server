@@ -101,7 +101,9 @@ export class GroupRepo extends BaseDomainObjectRepo<Group, GroupEntity> {
 		scope.byType(types);
 		scope.byUsersAndOrganizationsSchoolId(schoolId);
 
+		console.time('GroupRepo.findByUsersAndRoomsSchoolId - findGroupsForScope');
 		const groups: Page<Group> = await this.findGroupsForScope(scope);
+		console.timeEnd('GroupRepo.findByUsersAndRoomsSchoolId - findGroupsForScope');
 
 		return groups;
 	}
