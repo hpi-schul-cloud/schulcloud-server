@@ -46,24 +46,27 @@ export class RoomUc {
 		this.roomPermissionService.checkFeatureAdministrateRoomsEnabled();
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		this.authorizationService.checkOneOfPermissions(user, [Permission.SCHOOL_ADMINISTRATE_ROOMS]);
-
+		console.time('RoomUc.getRoomStats - getRoomStatsAggregated');
 		const roomStatsAggregated = await this.roomMembershipService.getRoomStatsAggregated(
 			user.school.id,
 			findOptions.pagination
 		);
 
-		const roomStats: RoomStats[] = roomStatsAggregated.data.map((stats) => ({
-			roomId: stats.roomId,
-			name: stats.roomName,
-			owner: stats.owner,
-			totalMembers: stats.totalMembers,
-			internalMembers: stats.internalMembers,
-			externalMembers: stats.externalMembers,
-			schoolId: stats.roomSchoolId,
-			schoolName: stats.schoolName,
-			createdAt: stats.createdAt,
-			updatedAt: stats.updatedAt,
-		}));
+		console.timeEnd('RoomUc.getRoomStats - getRoomStatsAggregated');
+		const roomStats: RoomStats[] = roomStatsAggregated.data.map((stats) => {
+			return {
+				roomId: stats.roomId,
+				name: stats.roomName,
+				owner: stats.owner,
+				totalMembers: stats.totalMembers,
+				internalMembers: stats.internalMembers,
+				externalMembers: stats.externalMembers,
+				schoolId: stats.roomSchoolId,
+				schoolName: stats.schoolName,
+				createdAt: stats.createdAt,
+				updatedAt: stats.updatedAt,
+			};
+		});
 
 		return { data: roomStats, total: roomStatsAggregated.total };
 	}
