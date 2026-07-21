@@ -11,7 +11,7 @@ import { userFactory } from '@modules/user/testing';
 import { type INestApplication } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { TestApiClient } from '@testing/test-api-client';
+import { TestApiClientBuilder } from '@testing/test-api-client-builder';
 import { BoardExternalReferenceType } from '../../domain';
 import { columnBoardEntityFactory } from '../../testing';
 
@@ -20,7 +20,6 @@ const baseRouteName = '/boards';
 describe('board get context in room (api)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let testApiClient: TestApiClient;
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -30,7 +29,6 @@ describe('board get context in room (api)', () => {
 		app = module.createNestApplication();
 		await app.init();
 		em = module.get(EntityManager);
-		testApiClient = new TestApiClient(app, baseRouteName);
 	});
 
 	afterAll(async () => {
@@ -102,7 +100,7 @@ describe('board get context in room (api)', () => {
 		it('should return status 200', async () => {
 			const { accountWithEditRole, columnBoardNode } = await setup();
 
-			const loggedInClient = await testApiClient.login(accountWithEditRole);
+			const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(accountWithEditRole);
 
 			const response = await loggedInClient.get(`${columnBoardNode.id}/context`);
 
@@ -112,7 +110,7 @@ describe('board get context in room (api)', () => {
 		it('should return the context', async () => {
 			const { accountWithEditRole, columnBoardNode } = await setup();
 
-			const loggedInClient = await testApiClient.login(accountWithEditRole);
+			const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(accountWithEditRole);
 
 			const response = await loggedInClient.get(`${columnBoardNode.id}/context`);
 
@@ -124,7 +122,7 @@ describe('board get context in room (api)', () => {
 		it('should return status 403', async () => {
 			const { noAccessAccount, columnBoardNode } = await setup();
 
-			const loggedInClient = await testApiClient.login(noAccessAccount);
+			const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(noAccessAccount);
 
 			const response = await loggedInClient.get(`${columnBoardNode.id}/context`);
 

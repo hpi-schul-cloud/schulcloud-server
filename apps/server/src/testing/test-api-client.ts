@@ -43,6 +43,7 @@ const testRequestConst = {
 
 /**
  * Note res.cookie is not supported atm, feel free to add this
+ * @deprecated please use TestApiClientBuilder instead.
  */
 export class TestApiClient {
 	private readonly app: INestApplication<Server>;

@@ -10,7 +10,7 @@ import { HttpStatus, type INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
-import { TestApiClient } from '@testing/test-api-client';
+import { TestApiClientBuilder } from '@testing/test-api-client-builder';
 import { nanoid } from 'nanoid';
 import { createAccessTokenParamsTestFactory } from '../../testing';
 import { type AuthorizationBodyParams, type AuthorizationManyReferencesBodyParams } from '../dto';
@@ -46,7 +46,8 @@ const createAuthorizationManyReferencesBodyParams = (userId: string): Authorizat
 describe('Authorization Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let testApiClient: TestApiClient;
+
+	const baseRouteName = 'authorization';
 
 	beforeAll(async () => {
 		const moduleFixture = await Test.createTestingModule({
@@ -56,8 +57,6 @@ describe('Authorization Controller (API)', () => {
 		app = moduleFixture.createNestApplication();
 		await app.init();
 		em = app.get(EntityManager);
-
-		testApiClient = new TestApiClient(app, 'authorization');
 	});
 
 	afterAll(async () => {
@@ -82,7 +81,7 @@ describe('Authorization Controller (API)', () => {
 			it('should response with unauthorized exception', async () => {
 				const { postData } = await setup();
 
-				const response = await testApiClient.post(`by-reference`, postData);
+				const response = await new TestApiClientBuilder(app, baseRouteName).build().post(`by-reference`, postData);
 
 				expect(response.statusCode).toEqual(HttpStatus.UNAUTHORIZED);
 				expect(response.body).toEqual({
@@ -101,7 +100,7 @@ describe('Authorization Controller (API)', () => {
 				await em.persist([teacherAccount, teacherUser]).flush();
 				em.clear();
 
-				const loggedInClient = await testApiClient.login(teacherAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(teacherAccount);
 				const postData = createAuthorizationBodyParams(teacherUser.id);
 
 				return {
@@ -212,7 +211,7 @@ describe('Authorization Controller (API)', () => {
 				await em.persist([teacherAccount, teacherUser, otherUser]).flush();
 				em.clear();
 
-				const loggedInClient = await testApiClient.login(teacherAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(teacherAccount);
 				const postData = createAuthorizationBodyParams(otherUser.id);
 				postData.context.requiredPermissions = [Permission.ADMIN_EDIT];
 				const expectedResult = AuthorizationResponseMapper.mapToAuthorizedResponse(teacherUser.id, false);
@@ -241,7 +240,7 @@ describe('Authorization Controller (API)', () => {
 				await em.persist([teacherAccount, teacherUser]).flush();
 				em.clear();
 
-				const loggedInClient = await testApiClient.login(teacherAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(teacherAccount);
 				const postData = createAuthorizationBodyParams(teacherUser.id);
 				const expectedResult = AuthorizationResponseMapper.mapToAuthorizedResponse(teacherUser.id, true);
 
@@ -281,7 +280,7 @@ describe('Authorization Controller (API)', () => {
 			it('should response with unauthorized exception', async () => {
 				const { postData } = await setup();
 
-				const response = await testApiClient.post(`by-references`, postData);
+				const response = await new TestApiClientBuilder(app, baseRouteName).build().post(`by-references`, postData);
 
 				expect(response.statusCode).toEqual(HttpStatus.UNAUTHORIZED);
 				expect(response.body).toEqual({
@@ -300,7 +299,7 @@ describe('Authorization Controller (API)', () => {
 				await em.persist([teacherAccount, teacherUser]).flush();
 				em.clear();
 
-				const loggedInClient = await testApiClient.login(teacherAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(teacherAccount);
 				const postData = { references: [] };
 
 				return {
@@ -326,7 +325,7 @@ describe('Authorization Controller (API)', () => {
 				await em.persist([teacherAccount, teacherUser]).flush();
 				em.clear();
 
-				const loggedInClient = await testApiClient.login(teacherAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(teacherAccount);
 				const postData = createAuthorizationManyReferencesBodyParams(teacherUser.id);
 
 				return {
@@ -439,7 +438,7 @@ describe('Authorization Controller (API)', () => {
 				await em.persist([teacherAccount, teacherUser, otherUser]).flush();
 				em.clear();
 
-				const loggedInClient = await testApiClient.login(teacherAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(teacherAccount);
 				const postData = createAuthorizationManyReferencesBodyParams(otherUser.id);
 				postData.references[0].context.requiredPermissions = [Permission.ADMIN_EDIT];
 				const expectedResult = [
@@ -475,7 +474,7 @@ describe('Authorization Controller (API)', () => {
 				await em.persist([teacherAccount, teacherUser]).flush();
 				em.clear();
 
-				const loggedInClient = await testApiClient.login(teacherAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(teacherAccount);
 				const postData = createAuthorizationManyReferencesBodyParams(teacherUser.id);
 				const expectedResult = [
 					AuthorizationResponseMapper.mapToAuthorizedByReferenceResponse(
@@ -522,7 +521,7 @@ describe('Authorization Controller (API)', () => {
 			it('should response with unauthorized exception', async () => {
 				const { postData } = await setup();
 
-				const response = await testApiClient.post('create-token', postData);
+				const response = await new TestApiClientBuilder(app, baseRouteName).build().post('create-token', postData);
 
 				expect(response.statusCode).toEqual(HttpStatus.UNAUTHORIZED);
 				expect(response.body).toEqual({
@@ -541,7 +540,7 @@ describe('Authorization Controller (API)', () => {
 				await em.persist([teacherAccount, teacherUser]).flush();
 				em.clear();
 
-				const loggedInClient = await testApiClient.login(teacherAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(teacherAccount);
 				const postData = createAccessTokenParamsTestFactory().withReferenceId(teacherUser.id).build();
 
 				return {
@@ -632,7 +631,7 @@ describe('Authorization Controller (API)', () => {
 				await em.persist([teacherAccount, teacherUser, otherUser]).flush();
 				em.clear();
 
-				const loggedInClient = await testApiClient.login(teacherAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(teacherAccount);
 				const postData = createAccessTokenParamsTestFactory().withReferenceId(otherUser.id).withWriteAccess().build();
 				postData.context.requiredPermissions = [Permission.ADMIN_EDIT];
 
@@ -664,7 +663,7 @@ describe('Authorization Controller (API)', () => {
 				await em.persist([teacherAccount, teacherUser]).flush();
 				em.clear();
 
-				const loggedInClient = await testApiClient.login(teacherAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(teacherAccount);
 				const postData = createAccessTokenParamsTestFactory().withReferenceId(teacherUser.id).withWriteAccess().build();
 
 				return {
@@ -695,7 +694,7 @@ describe('Authorization Controller (API)', () => {
 				await em.persist([teacherAccount, teacherUser]).flush();
 				em.clear();
 
-				const loggedInClient = await testApiClient.login(teacherAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(teacherAccount);
 				const postData = createAccessTokenParamsTestFactory().withReferenceId(teacherUser.id).build();
 				const response = await loggedInClient.post('create-token', postData);
 				const body = response.body as { token: string };
@@ -708,7 +707,9 @@ describe('Authorization Controller (API)', () => {
 			it('should response ok', async () => {
 				const { token, tokenTtl } = await setup();
 
-				const response = await testApiClient.get(`resolve-token/${token}/ttl/${tokenTtl.toString()}`);
+				const response = await new TestApiClientBuilder(app, baseRouteName)
+					.build()
+					.get(`resolve-token/${token}/ttl/${tokenTtl.toString()}`);
 
 				expect(response.statusCode).toEqual(HttpStatus.OK);
 				expect(response.body).toEqual({
@@ -734,7 +735,9 @@ describe('Authorization Controller (API)', () => {
 			it('should response with validation error', async () => {
 				const { token, tokenTtl } = await setup();
 
-				const response = await testApiClient.get(`resolve-token/${token}/ttl/${tokenTtl.toString()}`);
+				const response = await new TestApiClientBuilder(app, baseRouteName)
+					.build()
+					.get(`resolve-token/${token}/ttl/${tokenTtl.toString()}`);
 
 				expect(response.statusCode).toEqual(HttpStatus.BAD_REQUEST);
 				expect(response.body).toEqual({
@@ -768,7 +771,9 @@ describe('Authorization Controller (API)', () => {
 			it('should response with forbidden', async () => {
 				const { token, tokenTtl } = await setup();
 
-				const response = await testApiClient.get(`resolve-token/${token}/ttl/${tokenTtl.toString()}`);
+				const response = await new TestApiClientBuilder(app, baseRouteName)
+					.build()
+					.get(`resolve-token/${token}/ttl/${tokenTtl.toString()}`);
 
 				expect(response.statusCode).toEqual(HttpStatus.FORBIDDEN);
 				expect(response.body).toEqual({

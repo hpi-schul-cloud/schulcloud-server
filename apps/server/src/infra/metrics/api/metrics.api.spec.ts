@@ -1,6 +1,6 @@
 import { type INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
-import { TestApiClient } from '@testing/test-api-client';
+import { TestApiClientBuilder } from '@testing/test-api-client-builder';
 import { MetricsModule } from '../metrics.module';
 
 describe('Metrics Api Test', () => {
@@ -22,7 +22,7 @@ describe('Metrics Api Test', () => {
 
 	describe('getMetrics', () => {
 		const setup = () => {
-			const testApiClient = new TestApiClient(app, baseRoute);
+			const testApiClient = new TestApiClientBuilder(app, baseRoute).build();
 
 			return { testApiClient };
 		};

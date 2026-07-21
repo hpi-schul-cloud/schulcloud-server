@@ -23,7 +23,7 @@ import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
-import { TestApiClient } from '@testing/test-api-client';
+import { TestApiClientBuilder } from '@testing/test-api-client-builder';
 import { TEST_JWT_CONFIG_TOKEN, TestJwtModuleConfig } from '@testing/test-jwt-module.config';
 import { Readable } from 'node:stream';
 import { DownloadArchiveService, FileOwnerModel, LegacyFileStorageAdapter } from '../../domain';
@@ -33,10 +33,11 @@ import { fileDomainFactory, userForLoginFactory } from '../../testing';
 import { DownloadArchiveUC } from '../download-archive.uc';
 import { LegacyFileArchiveController } from '../legacy-file-archive.controller';
 
+const baseRouteName = 'filestorage/files/archive';
+
 describe('DownloadArchive Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let testApiClient: TestApiClient;
 	let jwtConfig: TestJwtModuleConfig;
 	let config: LegacyFileArchiveConfig;
 	let authorizationClient: DeepMocked<AuthorizationClientAdapter>;
@@ -83,7 +84,6 @@ describe('DownloadArchive Controller (API)', () => {
 		await app.init();
 		em = app.get(EntityManager);
 		jwtConfig = moduleFixture.get(TEST_JWT_CONFIG_TOKEN);
-		testApiClient = new TestApiClient(app, 'filestorage/files/archive');
 		config = moduleFixture.get(LEGACY_FILE_ARCHIVE_CONFIG_TOKEN);
 		authorizationClient = moduleFixture.get(AuthorizationClientAdapter);
 		legacyFileStorageAdapter = moduleFixture.get(LegacyFileStorageAdapter);
@@ -106,7 +106,7 @@ describe('DownloadArchive Controller (API)', () => {
 					archiveName: 'test-archive',
 				};
 
-				const response = await testApiClient.get().query(params);
+				const response = await new TestApiClientBuilder(app, baseRouteName).build().get().query(params);
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 			});
@@ -117,7 +117,9 @@ describe('DownloadArchive Controller (API)', () => {
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 				await em.persist([studentUser, studentAccount]).flush();
 
-				const loggedInClient = await testApiClient.loginByUser(studentAccount, studentUser, jwtConfig);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName)
+					.withJwt(studentUser, jwtConfig)
+					.build(studentAccount);
 
 				return { loggedInClient };
 			};
@@ -146,7 +148,9 @@ describe('DownloadArchive Controller (API)', () => {
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 				await em.persist([studentUser, studentAccount]).flush();
 
-				const loggedInClient = await testApiClient.loginByUser(studentAccount, studentUser, jwtConfig);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName)
+					.withJwt(studentUser, jwtConfig)
+					.build(studentAccount);
 
 				return { loggedInClient };
 			};
@@ -180,7 +184,9 @@ describe('DownloadArchive Controller (API)', () => {
 				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 				await em.persist([studentUser, studentAccount]).flush();
 
-				const loggedInClient = await testApiClient.loginByUser(studentAccount, studentUser, jwtConfig);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName)
+					.withJwt(studentUser, jwtConfig)
+					.build(studentAccount);
 
 				config.featureTeamArchiveDownload = false;
 
@@ -211,7 +217,9 @@ describe('DownloadArchive Controller (API)', () => {
 
 				authorizationClient.checkPermissionsByReference.mockRejectedValueOnce(new ForbiddenException());
 
-				const loggedInClient = await testApiClient.loginByUser(studentAccount, studentUser, jwtConfig);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName)
+					.withJwt(studentUser, jwtConfig)
+					.build(studentAccount);
 
 				return { teamId, loggedInClient };
 			};
@@ -237,7 +245,9 @@ describe('DownloadArchive Controller (API)', () => {
 
 				authorizationClient.checkPermissionsByReference.mockRejectedValueOnce(new ForbiddenException());
 
-				const loggedInClient = await testApiClient.loginByUser(studentAccount, studentUser, jwtConfig);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName)
+					.withJwt(studentUser, jwtConfig)
+					.build(studentAccount);
 
 				return { loggedInClient };
 			};
@@ -264,7 +274,9 @@ describe('DownloadArchive Controller (API)', () => {
 
 				authorizationClient.checkPermissionsByReference.mockRejectedValueOnce(new ForbiddenException());
 
-				const loggedInClient = await testApiClient.loginByUser(studentAccount, studentUser, jwtConfig);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName)
+					.withJwt(studentUser, jwtConfig)
+					.build(studentAccount);
 
 				return { otherUserId: otherStudentUser.id, loggedInClient };
 			};
@@ -289,7 +301,9 @@ describe('DownloadArchive Controller (API)', () => {
 				await em.persist([teacherUser, teacherAccount]).flush();
 				const teamId = new ObjectId().toHexString();
 
-				const loggedInClient = await testApiClient.loginByUser(teacherAccount, teacherUser, jwtConfig);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName)
+					.withJwt(teacherUser, jwtConfig)
+					.build(teacherAccount);
 				const archiveName = 'team-files';
 
 				const storageProvider = storageProviderFactory.buildWithId({ region: 'us-east-1' });
@@ -335,7 +349,9 @@ describe('DownloadArchive Controller (API)', () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 				await em.persist([teacherUser, teacherAccount]).flush();
 
-				const loggedInClient = await testApiClient.loginByUser(teacherAccount, teacherUser, jwtConfig);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName)
+					.withJwt(teacherUser, jwtConfig)
+					.build(teacherAccount);
 				const archiveName = 'course-files';
 
 				const storageProvider = storageProviderFactory.buildWithId({ region: 'us-east-1' });
@@ -384,7 +400,9 @@ describe('DownloadArchive Controller (API)', () => {
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 				await em.persist([teacherUser, teacherAccount]).flush();
 
-				const loggedInClient = await testApiClient.loginByUser(teacherAccount, teacherUser, jwtConfig);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName)
+					.withJwt(teacherUser, jwtConfig)
+					.build(teacherAccount);
 				const archiveName = 'user-files';
 
 				const storageProvider = storageProviderFactory.buildWithId({ region: 'us-east-1' });

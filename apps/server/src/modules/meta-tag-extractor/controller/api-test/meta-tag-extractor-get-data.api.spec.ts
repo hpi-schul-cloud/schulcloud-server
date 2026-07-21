@@ -3,7 +3,7 @@ import { ServerTestModule } from '@modules/server/server.app.module';
 import { type INestApplication } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
-import { TestApiClient } from '@testing/test-api-client';
+import { TestApiClientBuilder } from '@testing/test-api-client-builder';
 import { MetaTagExtractorService } from '../../service';
 
 const URL = 'https://best-example.de/my-article';
@@ -14,10 +14,11 @@ const mockedResponse = {
 	description: 'with great description',
 };
 
+const baseRouteName = '/meta-tag-extractor';
+
 describe(`get meta tags (api)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let testApiClient: TestApiClient;
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -32,7 +33,6 @@ describe(`get meta tags (api)`, () => {
 		app = module.createNestApplication();
 		await app.init();
 		em = module.get(EntityManager);
-		testApiClient = new TestApiClient(app, '/meta-tag-extractor');
 	});
 
 	afterAll(async () => {
@@ -46,7 +46,7 @@ describe(`get meta tags (api)`, () => {
 			await em.persist([teacherAccount, teacherUser]).flush();
 			em.clear();
 
-			const loggedInClient = await testApiClient.login(teacherAccount);
+			const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(teacherAccount);
 
 			return { loggedInClient };
 		};
@@ -70,7 +70,7 @@ describe(`get meta tags (api)`, () => {
 
 	describe('with invalid user', () => {
 		it('should return status 401', async () => {
-			const { status } = await testApiClient.post(undefined, { url: URL });
+			const { status } = await new TestApiClientBuilder(app, baseRouteName).build().post(undefined, { url: URL });
 
 			expect(status).toEqual(401);
 		});
