@@ -14,7 +14,7 @@ import {
 	ListSessionsOfGroupUsingGET200Response,
 	PadApi,
 	SessionApi,
-} from './etherpad-api-client';
+} from './generated';
 import {
 	AuthorId,
 	EtherpadErrorType,

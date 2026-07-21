@@ -1,7 +1,7 @@
 import { BadRequestException, ForbiddenException } from '@nestjs/common';
 import { DomainObject } from '@shared/domain/domain-object';
 import { type Constructor, type EntityId } from '@shared/domain/types';
-import { joinPath, PATH_SEPARATOR, ROOT_PATH } from './path-utils';
+import { joinPath, ROOT_PATH } from './path-utils';
 import type { BoardNodeChild, BoardNodeParent } from './types/board-node-child';
 import type { BoardNodeProps } from './types/board-node-props';
 
@@ -41,7 +41,7 @@ export abstract class BoardNode<T extends BoardNodeProps> extends DomainObject<T
 	}
 
 	get ancestorIds(): readonly EntityId[] {
-		const parentIds = this.props.path.split(PATH_SEPARATOR).filter((id) => id !== '');
+		const parentIds = this.props.path.split(ROOT_PATH).filter((id) => id !== '');
 		return parentIds;
 	}
 

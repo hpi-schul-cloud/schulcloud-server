@@ -31,7 +31,7 @@
 			"files-storage-api": {
 				"generatorName": "typescript-axios",
 				"inputSpec": "http://localhost:4444/api/v3/file/docs-json",
-				"output": "./apps/server/src/infra/files-storage-client/generated",
+				"output": "./apps/server/src/infra/files-storage-rest-client/generated",
 				"skipValidateSpec": true,
 				"enablePostProcessFile": true,
 				"openapiNormalizer": {
@@ -138,7 +138,7 @@
 			"authorization-api": {
 				"generatorName": "typescript-axios",
 				"inputSpec": "http://localhost:3030/api/v3/docs-json",
-				"output": "./apps/server/src/infra/authorization-client/authorization-api-client",
+				"output": "./apps/server/src/infra/authorization-client/generated",
 				"skipValidateSpec": true,
 				"enablePostProcessFile": true,
 				"openapiNormalizer": {
@@ -173,6 +173,22 @@
 					"apis": "",
 					"supportingFiles": ""
 				},
+				"additionalProperties": {
+					"apiPackage": "api",
+					"enumNameSuffix": "",
+					"enumPropertyNaming": "UPPERCASE",
+					"modelPackage": "models",
+					"supportsES6": true,
+					"withInterfaces": true,
+					"withSeparateModelsAndApi": true
+				}
+			},
+			"etherpad": {
+				"generatorName": "typescript-axios",
+				"inputSpec": "http://localhost:9001/api/openapi.json",
+				"output": "./apps/server/src/infra/etherpad-client/generated",
+				"skipValidateSpec": true,
+				"enablePostProcessFile": true,
 				"additionalProperties": {
 					"apiPackage": "api",
 					"enumNameSuffix": "",

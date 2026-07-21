@@ -96,7 +96,7 @@ export interface MediaLineProps extends BoardNodeProps {
 	title: string;
 }
 
-export type MediaBoardNodeProps = MediaBoardProps | MediaExternalToolElementProps | MediaLineProps;
+type MediaBoardNodeProps = MediaBoardProps | MediaExternalToolElementProps | MediaLineProps;
 
 export type AnyBoardNodeProps =
 	| CardProps
