@@ -10,7 +10,7 @@ import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
-import { CourseGroupEntity } from '../../repo';
+import { CourseEntity, CourseGroupEntity } from '../../repo';
 import { courseFactory } from '../../testing';
 import { Course } from '../course.do';
 import { CourseAlreadySynchronizedLoggableException, CourseNotSynchronizedLoggableException } from '../error';
@@ -43,7 +43,14 @@ describe(CourseSyncService.name, () => {
 		service = module.get(CourseSyncService);
 		roleService = module.get(RoleService);
 		courseDoService = module.get(CourseDoService);
-		await setupEntities([Course, CourseGroupEntity, SchoolSystemOptionsEntity, User, UserLoginMigrationEntity]);
+		await setupEntities([
+			Course,
+			CourseEntity,
+			CourseGroupEntity,
+			SchoolSystemOptionsEntity,
+			User,
+			UserLoginMigrationEntity,
+		]);
 	});
 
 	afterAll(async () => {

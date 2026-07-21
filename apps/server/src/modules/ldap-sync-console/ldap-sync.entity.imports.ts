@@ -1,3 +1,4 @@
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { SchoolEntity } from '@modules/school/repo';
 import { SystemEntity } from '@modules/system/repo';
 import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
@@ -8,4 +9,4 @@ import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
  */
 export const ENTITIES = [SystemEntity];
 
-export const TEST_ENTITIES = [SchoolEntity, UserLoginMigrationEntity, ...ENTITIES];
+export const TEST_ENTITIES = [SchoolEntity, SchoolSystemOptionsEntity, UserLoginMigrationEntity, ...ENTITIES];

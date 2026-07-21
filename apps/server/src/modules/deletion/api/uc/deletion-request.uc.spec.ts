@@ -7,6 +7,7 @@ import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { SchoolEntity } from '@modules/school/repo';
 import { SystemEntity } from '@modules/system/repo';
 import { UserService } from '@modules/user';
+import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
 import { NotFoundException } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { setupEntities } from '@testing/database';
@@ -35,7 +36,13 @@ describe(DeletionRequestUc.name, () => {
 	let userService: DeepMocked<UserService>;
 
 	beforeAll(async () => {
-		await setupEntities([DeletionRequestEntity, SchoolEntity, SchoolSystemOptionsEntity, SystemEntity]);
+		await setupEntities([
+			DeletionRequestEntity,
+			SchoolEntity,
+			SchoolSystemOptionsEntity,
+			SystemEntity,
+			UserLoginMigrationEntity,
+		]);
 
 		module = await Test.createTestingModule({
 			providers: [

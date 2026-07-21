@@ -1,6 +1,5 @@
 import { Collection, Entity, Enum, ManyToMany, ManyToOne, Property } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
-import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { Test, TestingModule } from '@nestjs/testing';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 import { cleanupCollections } from '@testing/cleanup-collections';
@@ -71,22 +70,22 @@ abstract class News extends BaseEntityWithTimestamps {
 @Entity({ tableName: 'news', discriminatorValue: 'schools' })
 class SchoolNews extends News {
 	@ManyToOne({ entity: () => School, fieldName: 'target' })
-	target: School;
+	school: School;
 
 	constructor(props: { title: string; target: School }) {
 		super({ title: props.title });
-		this.target = props.target;
+		this.school = props.target;
 	}
 }
 
-@Entity({ tableName: 'news', discriminatorValue: 'schools' })
+@Entity({ tableName: 'news', discriminatorValue: 'courses' })
 class CourseNews extends News {
 	@ManyToOne({ entity: () => Course, fieldName: 'target' })
-	target: Course;
+	course: Course;
 
 	constructor(props: { title: string; target: Course }) {
 		super({ title: props.title });
-		this.target = props.target;
+		this.course = props.target;
 	}
 }
 
@@ -98,7 +97,7 @@ describe('News mapping', () => {
 		module = await Test.createTestingModule({
 			imports: [
 				MongoMemoryDatabaseModule.forRoot({
-					entities: [Course, CourseNews, News, School, SchoolNews, SchoolSystemOptionsEntity, User],
+					entities: [Course, CourseNews, News, School, SchoolNews, User],
 				}),
 			],
 		}).compile();
@@ -123,6 +122,6 @@ describe('News mapping', () => {
 
 		const result = await em.findOneOrFail(CourseNews, news.id);
 		expect(result).toBeDefined();
-		expect(result.target.id).toEqual(course.id);
+		expect(result.course.id).toEqual(course.id);
 	});
 });

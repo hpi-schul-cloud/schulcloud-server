@@ -1,4 +1,5 @@
 import { InstanceEntity } from '@modules/instance';
+import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { MediaSourceEntity } from '@modules/media-source/entity';
 import { MediaSchoolLicenseEntity, SchoolLicenseEntity } from '@modules/school-license/entity';
 import { SchoolEntity, SchoolYearEntity } from '@modules/school/repo';
@@ -20,4 +21,4 @@ export const ENTITIES = [
 	SchoolYearEntity,
 ];
 
-export const TEST_ENTITIES = [SystemEntity, UserLoginMigrationEntity, ...ENTITIES];
+export const TEST_ENTITIES = [SystemEntity, SchoolSystemOptionsEntity, UserLoginMigrationEntity, ...ENTITIES];
