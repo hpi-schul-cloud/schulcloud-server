@@ -14,14 +14,15 @@ import { HttpStatus, type INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
-import { TestApiClient } from '@testing/test-api-client';
+import { TestApiClientBuilder } from '@testing/test-api-client-builder';
 import { REGISTRATION_PUBLIC_API_CONFIG_TOKEN, type RegistrationPublicApiConfig } from '../../registration.config';
 import { type RegistrationListResponse } from '../dto/response/registration-list.response';
+
+const baseRouteName = 'registrations';
 
 describe('Room Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let testApiClient: TestApiClient;
 	let config: RegistrationPublicApiConfig;
 
 	beforeAll(async () => {
@@ -32,7 +33,6 @@ describe('Room Controller (API)', () => {
 		app = moduleFixture.createNestApplication();
 		await app.init();
 		em = app.get(EntityManager);
-		testApiClient = new TestApiClient(app, 'registrations');
 
 		config = moduleFixture.get<RegistrationPublicApiConfig>(REGISTRATION_PUBLIC_API_CONFIG_TOKEN);
 	});
@@ -120,7 +120,7 @@ describe('Room Controller (API)', () => {
 			it('should return a 403 error', async () => {
 				config.featureExternalPersonRegistrationEnabled = false;
 				const { registration1, teacherAccount } = await setup();
-				const loggedInClient = await testApiClient.login(teacherAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(teacherAccount);
 
 				const response = await loggedInClient.patch(`/cancel/${registration1.roomIds[0]}`, {
 					registrationIds: [registration1.id],
@@ -133,7 +133,7 @@ describe('Room Controller (API)', () => {
 		describe('when the registration does not exist', () => {
 			it('should return a 404 error', async () => {
 				const { teacherAccount } = await setup();
-				const loggedInClient = await testApiClient.login(teacherAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(teacherAccount);
 				const someNonExistingRegistrationId = new ObjectId().toHexString();
 				const someNonExistingRoomId = new ObjectId().toHexString();
 				const response = await loggedInClient.patch(`/cancel/${someNonExistingRoomId}`, {
@@ -149,7 +149,7 @@ describe('Room Controller (API)', () => {
 				it('should return a 403 error', async () => {
 					const { registration1, otherTeacherAccount } = await setup();
 
-					const loggedInClient = await testApiClient.login(otherTeacherAccount);
+					const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(otherTeacherAccount);
 
 					const response = await loggedInClient.patch(`/cancel/${registration1.roomIds[0]}`, {
 						registrationIds: [registration1.id],
@@ -162,7 +162,7 @@ describe('Room Controller (API)', () => {
 				describe('when the registration is for one room', () => {
 					it('should return 200', async () => {
 						const { registration1, teacherAccount } = await setup();
-						const loggedInClient = await testApiClient.login(teacherAccount);
+						const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(teacherAccount);
 
 						const response = await loggedInClient.patch(`/cancel/${registration1.roomIds[0]}`, {
 							registrationIds: [registration1.id],
@@ -173,7 +173,7 @@ describe('Room Controller (API)', () => {
 
 					it('should delete the registration', async () => {
 						const { registration1, teacherAccount } = await setup();
-						const loggedInClient = await testApiClient.login(teacherAccount);
+						const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(teacherAccount);
 
 						await loggedInClient.patch(`/cancel/${registration1.roomIds[0]}`, {
 							registrationIds: [registration1.id],
@@ -186,7 +186,7 @@ describe('Room Controller (API)', () => {
 				describe('when multiple registrations are provided and one has multiple rooms assigned', () => {
 					it('should detach only the specified room from the registration and delete the other registration', async () => {
 						const { registration1, registration2, teacherAccount, room } = await setup();
-						const loggedInClient = await testApiClient.login(teacherAccount);
+						const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(teacherAccount);
 
 						const response = await loggedInClient.patch(`/cancel/${registration1.roomIds[0]}`).send({
 							registrationIds: [registration1.id, registration2.id],

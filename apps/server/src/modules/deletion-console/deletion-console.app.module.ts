@@ -10,7 +10,7 @@ import { MongoMemoryDatabaseModule } from '@testing/database';
 import { ConsoleModule } from 'nestjs-console';
 import { DeletionClient } from './deletion-client';
 import { DELETION_CONSOLE_CONFIG_TOKEN, DeletionConsoleConfig } from './deletion-console.config';
-import { ENTITIES } from './deletion-console.entity.imports';
+import { ENTITIES, TEST_ENTITIES } from './deletion-console.entity.imports';
 import { DeletionExecutionConsole } from './deletion-execution.console';
 import { DeletionQueueConsole } from './deletion-queue.console';
 import { BatchDeletionService } from './services';
@@ -52,7 +52,7 @@ export class DeletionConsoleModule {}
 	imports: [
 		...imports,
 		MongoMemoryDatabaseModule.forRoot({
-			entities: ENTITIES,
+			entities: TEST_ENTITIES,
 		}),
 	],
 	providers,

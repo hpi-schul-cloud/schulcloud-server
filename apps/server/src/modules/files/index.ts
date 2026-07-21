@@ -1,3 +1,9 @@
+/** **********************************************************
+ * This is a module facade.                                  *
+ * Export only what is allowed to be used externally.        *
+ * Do not use wildcard exports.                              *
+ * Do not export *.app.module.ts here; import them directly. *
+ *********************************************************** */
+
 export { FilesConsoleModule } from './files-console.module';
 export { FilesModule } from './files.module';
-export { LegacyFileArchiveApiModule } from './legacy-file-archive.app.module';

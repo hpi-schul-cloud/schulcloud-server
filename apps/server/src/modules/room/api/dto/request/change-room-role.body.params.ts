@@ -1,9 +1,9 @@
-import { RoomRole, RoleName } from '@modules/role';
+import { RoleName, RoomRole } from '@modules/role';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsArray, IsEnum, IsMongoId } from 'class-validator';
 
 export type AssignableRoomRole = Exclude<RoomRole, RoleName.ROOMOWNER>;
-export enum AssignableRoomRoleEnum {
+enum AssignableRoomRoleEnum {
 	ROOMADMIN = RoleName.ROOMADMIN,
 	ROOMEDITOR = RoleName.ROOMEDITOR,
 	ROOMVIEWER = RoleName.ROOMVIEWER,
