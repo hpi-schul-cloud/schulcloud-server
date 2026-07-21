@@ -1,3 +1,10 @@
+/** **********************************************************
+ * This is a module facade.                                  *
+ * Export only what is allowed to be used externally.        *
+ * Do not use wildcard exports.                              *
+ * Do not export *.app.module.ts here; import them directly. *
+ *********************************************************** */
+
 export { ClassModule } from './class.module';
-export * from './domain';
+export { Class, ClassFactory, ClassSourceOptions } from './domain';
 export { ClassService } from './service';

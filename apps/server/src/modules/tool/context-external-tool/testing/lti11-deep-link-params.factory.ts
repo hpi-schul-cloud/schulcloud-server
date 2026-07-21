@@ -7,7 +7,7 @@ import { type Lti11DeepLinkParamsRaw } from '../controller/dto/lti11-deep-link/l
 
 type Lti11DeepLinkParamsPayload = Omit<Lti11DeepLinkParams, keyof Authorization>;
 
-export const lti11DeepLinkParamsPayloadFactory = Factory.define<Lti11DeepLinkParamsPayload>(() => {
+const lti11DeepLinkParamsPayloadFactory = Factory.define<Lti11DeepLinkParamsPayload>(() => {
 	return {
 		lti_message_type: 'ContentItemSelection',
 		lti_version: 'LTI-1p0',

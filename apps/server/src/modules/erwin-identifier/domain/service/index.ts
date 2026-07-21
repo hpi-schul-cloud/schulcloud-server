@@ -1,1 +1,1 @@
-export { ErwinIdentifierEntry, ErwinIdentifierService } from './erwin-identifier.service';
+export { ErwinIdentifierService } from './erwin-identifier.service';

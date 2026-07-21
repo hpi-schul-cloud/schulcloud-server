@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { IsBoolean, IsEmail, IsEnum, IsOptional, IsString } from 'class-validator';
 import { HelpdeskProblemProps, HelpdeskProps, HelpdeskWishProps, SupportType } from '../../domain';
 
-export class HelpdeskCreateParams implements HelpdeskProps {
+class HelpdeskCreateParams implements HelpdeskProps {
 	@ApiProperty({ enum: SupportType })
 	@IsEnum(SupportType)
 	supportType!: SupportType;

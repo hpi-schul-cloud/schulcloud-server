@@ -1,5 +1,10 @@
+/** **********************************************************
+ * This is a module facade.                                  *
+ * Export only what is allowed to be used externally.        *
+ * Do not use wildcard exports.                              *
+ * Do not export *.app.module.ts here; import them directly. *
+ *********************************************************** */
+
 export { DeletionModule } from './deletion.module';
-export { DomainDeletionReportBuilder, DomainOperationReportBuilder } from './domain/builder';
-export { DomainDeletionReport, DomainOperationReport } from './domain/interface';
-export { DeletionErrorLoggableException } from './domain/loggable-exception';
+export { DomainOperationReportBuilder } from './domain/builder';
 export { DomainName, OperationType, StatusModel } from './domain/types';
