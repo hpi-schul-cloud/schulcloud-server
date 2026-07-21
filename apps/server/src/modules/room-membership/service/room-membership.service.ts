@@ -293,9 +293,9 @@ export class RoomMembershipService {
 		});
 		console.timeEnd('RoomMembershipService.getOwnerMap - roleService.findByName');
 		const ownerUserIds = owners.map((owner) => owner.ownerUserId).filter((id): id is EntityId => id !== undefined);
-		console.time('RoomMembershipService.getOwnerMap - userService.findByIds');
-		const ownerUsers = await this.userService.findByIds(ownerUserIds);
-		console.timeEnd('RoomMembershipService.getOwnerMap - userService.findByIds');
+		console.time('RoomMembershipService.getOwnerMap - userService.findByIds ' + ownerUserIds.length);
+		const ownerUsers = await this.userService.findByIds(ownerUserIds, false);
+		console.timeEnd('RoomMembershipService.getOwnerMap - userService.findByIds ' + ownerUserIds.length);
 		const groupIdOwnerMap = new Map(
 			owners.map(({ groupId, ownerUserId }) => {
 				const ownerUser = ownerUsers.find((user) => user.id === ownerUserId);
@@ -310,8 +310,10 @@ export class RoomMembershipService {
 		schoolId: EntityId,
 		groups: T[]
 	): Promise<Map<T['id'], MemberStats>> {
+		console.time('RoomMembershipService.getStats - getRoomMemberStatsForGroups');
+
 		const userIds = groups.flatMap((group) => group.users.map((user) => user.userId));
-		const users = await this.userService.findByIds(userIds);
+		const users = await this.userService.findByIds(userIds, false);
 
 		const userSchoolMap = new Map(users.map((user) => [user.id, user.schoolId]));
 
@@ -332,6 +334,7 @@ export class RoomMembershipService {
 				return [group.id, memberStats];
 			})
 		);
+		console.timeEnd('RoomMembershipService.getStats - getRoomMemberStatsForGroups');
 
 		return statsMap;
 	}
