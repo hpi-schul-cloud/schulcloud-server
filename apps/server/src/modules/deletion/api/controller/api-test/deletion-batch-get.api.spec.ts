@@ -4,7 +4,7 @@ import { AdminApiServerTestModule } from '@modules/server/admin-api.server.app.m
 import { userFactory } from '@modules/user/testing';
 import { type INestApplication } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
-import { TestApiClient } from '@testing/test-api-client';
+import { TestApiClientBuilder } from '@testing/test-api-client-builder';
 import { deletionBatchEntityFactory } from '../../../repo/entity/testing'; // testing need to be changed to top level of the module
 import { type DeletionBatchListResponse } from '../dto/response/deletion-batch-list.response'; // barrel file
 
@@ -13,7 +13,6 @@ const baseRouteName = '/deletion-batches';
 describe('getBatches ', () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let testApiClient: TestApiClient;
 	const API_KEY = 'someotherkey';
 
 	beforeAll(async () => {
@@ -23,7 +22,6 @@ describe('getBatches ', () => {
 
 		app = module.createNestApplication();
 		em = module.get(EntityManager);
-		testApiClient = new TestApiClient(app, baseRouteName, API_KEY, true);
 
 		await app.init();
 	});
@@ -88,7 +86,7 @@ describe('getBatches ', () => {
 		};
 
 		it('should return status 200', async () => {
-			const response = await testApiClient.get();
+			const response = await new TestApiClientBuilder(app, baseRouteName).withApiKey(API_KEY).build().get();
 
 			expect(response.status).toEqual(200);
 			// Should return empty list when no batches exist
@@ -100,7 +98,7 @@ describe('getBatches ', () => {
 		it('should return a paginated list of deletion batches', async () => {
 			const { deletionBatchListResponse1, deletionBatchListResponse2 } = await setup();
 
-			const response = await testApiClient.get();
+			const response = await new TestApiClientBuilder(app, baseRouteName).withApiKey(API_KEY).build().get();
 			const result = response.body as DeletionBatchListResponse;
 
 			expect(result.total).toEqual(2);

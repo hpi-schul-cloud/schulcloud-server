@@ -8,7 +8,7 @@ import {
 import { BaseFactory } from '@testing/factory/base.factory';
 import { Factory } from 'fishery';
 
-export const fileElementContentFactory = Factory.define<FileElementContent>(() => {
+const fileElementContentFactory = Factory.define<FileElementContent>(() => {
 	return {
 		caption: faker.lorem.sentence(),
 		alternativeText: faker.lorem.sentence(),

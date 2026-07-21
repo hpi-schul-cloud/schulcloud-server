@@ -1,3 +1,10 @@
+/** **********************************************************
+ * This is a module facade.                                  *
+ * Export only what is allowed to be used externally.        *
+ * Do not use wildcard exports.                              *
+ * Do not export *.app.module.ts here; import them directly. *
+ *********************************************************** */
+
 export {
 	FileStorageType,
 	School,
@@ -8,5 +15,4 @@ export {
 	SchoolYearService,
 } from './domain';
 export { SchoolYearEntityMapper } from './repo';
-export { SCHOOL_CONFIG_TOKEN as SCHOOL_PUBLIC_API_CONFIG_TOKEN } from './school.config';
 export { SchoolModule } from './school.module';

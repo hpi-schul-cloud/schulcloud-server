@@ -42,7 +42,7 @@ export type DeletionBatchSummary = {
 	updatedAt: Date;
 };
 
-export const ALLOWED_USER_ROLES_FOR_BATCH_DELETION = [
+const ALLOWED_USER_ROLES_FOR_BATCH_DELETION = [
 	RoleName.STUDENT,
 	RoleName.COURSESTUDENT,
 	RoleName.TEACHER,

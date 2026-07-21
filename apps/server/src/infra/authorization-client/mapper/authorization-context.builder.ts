@@ -2,7 +2,7 @@ import {
 	type AuthorizationContextParams,
 	AuthorizationContextParamsAction,
 	type AuthorizationContextParamsRequiredPermissions,
-} from '../authorization-api-client';
+} from '../generated';
 
 export class AuthorizationContextBuilder {
 	public static build(

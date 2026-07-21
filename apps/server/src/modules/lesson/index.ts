@@ -1,4 +1,9 @@
-export { LessonCopyParams, LessonCopyParentParams } from './domain';
-export { EtherpadService, LessonCopyService, LessonService } from './domain/service';
-export { LessonConfig } from './lesson.config';
-export * from './lesson.module';
+/** **********************************************************
+ * This is a module facade.                                  *
+ * Export only what is allowed to be used externally.        *
+ * Do not use wildcard exports.                              *
+ * Do not export *.app.module.ts here; import them directly. *
+ *********************************************************** */
+
+export { LessonCopyParentParams, LessonCopyService, LessonService } from './domain';
+export { LessonModule } from './lesson.module';

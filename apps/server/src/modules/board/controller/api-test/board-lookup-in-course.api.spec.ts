@@ -5,7 +5,7 @@ import { type INestApplication } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
-import { TestApiClient } from '@testing/test-api-client';
+import { TestApiClientBuilder } from '@testing/test-api-client-builder';
 import { BoardExternalReferenceType, BoardLayout } from '../../domain';
 import { cardEntityFactory, columnBoardEntityFactory, columnEntityFactory } from '../../testing';
 import { type BoardResponse } from '../dto';
@@ -15,7 +15,6 @@ const baseRouteName = '/boards';
 describe(`board lookup in course (api)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let testApiClient: TestApiClient;
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -25,7 +24,6 @@ describe(`board lookup in course (api)`, () => {
 		app = module.createNestApplication();
 		await app.init();
 		em = module.get(EntityManager);
-		testApiClient = new TestApiClient(app, baseRouteName);
 	});
 
 	afterAll(async () => {
@@ -55,7 +53,7 @@ describe(`board lookup in course (api)`, () => {
 			await em.persist([columnBoardNode, columnNode, cardNode1, cardNode2, cardNode3, notOfThisBoardCardNode]).flush();
 			em.clear();
 
-			const loggedInClient = await testApiClient.login(teacherAccount);
+			const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(teacherAccount);
 
 			return { loggedInClient, columnBoardNode, columnNode, card1: cardNode1, card2: cardNode2, card3: cardNode3 };
 		};
@@ -137,7 +135,7 @@ describe(`board lookup in course (api)`, () => {
 
 			em.clear();
 
-			const loggedInClient = await testApiClient.login(teacherAccount);
+			const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(teacherAccount);
 
 			return { loggedInClient, columnBoardNode };
 		};

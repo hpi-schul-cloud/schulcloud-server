@@ -1,7 +1,7 @@
 import { BadRequestException, type HttpExceptionOptions } from '@nestjs/common';
 import { type Loggable, type LoggableMessage } from '@shared/common/loggable';
 
-export class LdapUserMigrationException extends BadRequestException {}
+class LdapUserMigrationException extends BadRequestException {}
 
 export class LdapAlreadyPersistedException extends LdapUserMigrationException implements Loggable {
 	constructor(descriptionOrOptions?: string | HttpExceptionOptions) {

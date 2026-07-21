@@ -1,6 +1,6 @@
 import { RoomColor } from '@modules/room';
 
-export const TEAM_TO_ROOM_COLOR_MAP: Record<string, RoomColor> = {
+const TEAM_TO_ROOM_COLOR_MAP: Record<string, RoomColor> = {
 	// RED
 	'#9a0007': RoomColor.RED,
 	'#d32f2f': RoomColor.RED,
@@ -54,7 +54,7 @@ export const TEAM_TO_ROOM_COLOR_MAP: Record<string, RoomColor> = {
 	'#a98274': RoomColor.BROWN,
 };
 
-export const DEFAULT_ROOM_COLOR = RoomColor.BLUE_GREY;
+const DEFAULT_ROOM_COLOR = RoomColor.BLUE_GREY;
 
 export function mapTeamColorToRoomColor(teamColor: string): RoomColor {
 	return TEAM_TO_ROOM_COLOR_MAP[teamColor] || DEFAULT_ROOM_COLOR;

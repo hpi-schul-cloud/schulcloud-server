@@ -13,15 +13,16 @@ import { type INestApplication } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
-import { TestApiClient } from '@testing/test-api-client';
+import { TestApiClientBuilder } from '@testing/test-api-client-builder';
 import { LEARNROOM_CONFIG_TOKEN, type LearnroomConfig } from '../../learnroom.config';
+
+const baseRouteName = '/course-rooms';
 
 // This needs to be in a separate test file because of the above configuration.
 // When we find a way to mock the config, it should be moved alongside the other API tests.
 describe('Course Rooms copy (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let apiClient: TestApiClient;
 	let config: LearnroomConfig;
 	let timeoutConfig: LearnroomTimeoutConfig;
 
@@ -37,7 +38,6 @@ describe('Course Rooms copy (API)', () => {
 		await app.init();
 		em = app.get(EntityManager);
 
-		apiClient = new TestApiClient(app, '/course-rooms');
 		config = app.get<LearnroomConfig>(LEARNROOM_CONFIG_TOKEN);
 		config.featureCopyServiceEnabled = true;
 		timeoutConfig = app.get(LEARNROOM_TIMEOUT_CONFIG_TOKEN);
@@ -57,7 +57,7 @@ describe('Course Rooms copy (API)', () => {
 			await em.persist([course, teacherAccount, teacherUser]).flush();
 			em.clear();
 
-			const loggedInClient = await apiClient.login(teacherAccount);
+			const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(teacherAccount);
 
 			return { loggedInClient, course };
 		};
@@ -80,7 +80,7 @@ describe('Course Rooms copy (API)', () => {
 			await em.persist([course, lesson, teacherAccount, teacherUser]).flush();
 			em.clear();
 
-			const loggedInClient = await apiClient.login(teacherAccount);
+			const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(teacherAccount);
 
 			return { loggedInClient, lesson };
 		};

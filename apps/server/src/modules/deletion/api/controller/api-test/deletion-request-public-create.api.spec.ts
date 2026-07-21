@@ -6,7 +6,7 @@ import { type INestApplication } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
-import { TestApiClient } from '@testing/test-api-client';
+import { TestApiClientBuilder } from '@testing/test-api-client-builder';
 import { type DeletionRequestParams } from '../dto';
 
 const baseRouteName = '/deletionRequestsPublic';
@@ -14,7 +14,6 @@ const baseRouteName = '/deletionRequestsPublic';
 describe(`deletionRequest public create (api)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let testApiClient: TestApiClient;
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -29,7 +28,6 @@ describe(`deletionRequest public create (api)`, () => {
 		app.getHttpAdapter().getInstance().set('query parser', 'extended');
 		await app.init();
 		em = module.get(EntityManager);
-		testApiClient = new TestApiClient(app, baseRouteName);
 	});
 
 	beforeEach(async () => {
@@ -55,7 +53,7 @@ describe(`deletionRequest public create (api)`, () => {
 
 			const queryString = deletionRequestToCreate.ids.map((id) => `ids[]=${id}`).join('&');
 			const nonexistentId = new ObjectId().toString();
-			const loggedInClient = await testApiClient.login(adminAccount);
+			const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(adminAccount);
 
 			return {
 				nonexistentId,
@@ -161,7 +159,7 @@ describe(`deletionRequest public create (api)`, () => {
 			};
 			const queryString = deletionRequestToCreate.ids.map((id) => `ids[]=${id}`).join('&');
 			const nonexistentId = new ObjectId().toString();
-			const loggedInClient = await testApiClient.login(adminAccount);
+			const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(adminAccount);
 
 			return {
 				nonexistentId,
@@ -200,7 +198,7 @@ describe(`deletionRequest public create (api)`, () => {
 				ids: [targetUser.id],
 			};
 			const queryString = deletionRequestToCreate.ids.map((id) => `ids[]=${id}`).join('&');
-			const loggedInClient = await testApiClient.login(adminAccount);
+			const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(adminAccount);
 
 			return {
 				targetUser,

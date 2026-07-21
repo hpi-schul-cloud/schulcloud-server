@@ -11,7 +11,7 @@ import { userFactory } from '@modules/user/testing';
 import { type INestApplication } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { TestApiClient } from '@testing/test-api-client';
+import { TestApiClientBuilder } from '@testing/test-api-client-builder';
 import { type BoardConfig } from '../../board.config';
 import { BoardExternalReferenceType } from '../../domain';
 import { columnBoardEntityFactory } from '../../testing';
@@ -23,7 +23,6 @@ const baseRouteName = '/boards';
 describe(`board readersCanEdit setting (api)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let testApiClient: TestApiClient;
 	let config: BoardConfig;
 
 	beforeAll(async () => {
@@ -34,7 +33,6 @@ describe(`board readersCanEdit setting (api)`, () => {
 		app = module.createNestApplication();
 		await app.init();
 		em = module.get(EntityManager);
-		testApiClient = new TestApiClient(app, baseRouteName);
 		// Get the config from BoardUc's private field — this is the instance actually used
 		// when checking featureBoardReadersCanEditToggle in NestJS v11.s
 		// Access the private config field used by BoardUc (NestJS v11 multi-instance workaround)
@@ -125,7 +123,7 @@ describe(`board readersCanEdit setting (api)`, () => {
 			it('should return status 204', async () => {
 				const { accountWithAdminRole, columnBoardNode } = await setup();
 
-				const loggedInClient = await testApiClient.login(accountWithAdminRole);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(accountWithAdminRole);
 
 				const readersCanEdit = true;
 
@@ -137,7 +135,7 @@ describe(`board readersCanEdit setting (api)`, () => {
 			it('should actually change the board visibility', async () => {
 				const { accountWithAdminRole, columnBoardNode } = await setup();
 
-				const loggedInClient = await testApiClient.login(accountWithAdminRole);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(accountWithAdminRole);
 
 				const readersCanEdit = true;
 
@@ -155,7 +153,7 @@ describe(`board readersCanEdit setting (api)`, () => {
 				const { accountWithAdminRole, columnBoardNode } = await setup();
 				config.featureBoardReadersCanEditToggle = false;
 
-				const loggedInClient = await testApiClient.login(accountWithAdminRole);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(accountWithAdminRole);
 
 				const readersCanEdit = true;
 
@@ -168,7 +166,7 @@ describe(`board readersCanEdit setting (api)`, () => {
 				const { accountWithAdminRole, columnBoardNode } = await setup();
 				config.featureBoardReadersCanEditToggle = false;
 
-				const loggedInClient = await testApiClient.login(accountWithAdminRole);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(accountWithAdminRole);
 
 				const readersCanEdit = true;
 
@@ -185,7 +183,7 @@ describe(`board readersCanEdit setting (api)`, () => {
 			it('should return status 403', async () => {
 				const { accountWithEditRole, columnBoardNode } = await setup();
 
-				const loggedInClient = await testApiClient.login(accountWithEditRole);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(accountWithEditRole);
 
 				const readersCanEdit = true;
 
@@ -197,7 +195,7 @@ describe(`board readersCanEdit setting (api)`, () => {
 			it('should not change the board visibility', async () => {
 				const { accountWithEditRole, columnBoardNode } = await setup();
 
-				const loggedInClient = await testApiClient.login(accountWithEditRole);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(accountWithEditRole);
 
 				const readersCanEdit = true;
 
@@ -214,7 +212,7 @@ describe(`board readersCanEdit setting (api)`, () => {
 			it('should return status 403', async () => {
 				const { accountWithViewRole, columnBoardNode } = await setup();
 
-				const loggedInClient = await testApiClient.login(accountWithViewRole);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(accountWithViewRole);
 
 				const readersCanEdit = true;
 
@@ -226,7 +224,7 @@ describe(`board readersCanEdit setting (api)`, () => {
 			it('should not change the board visibility', async () => {
 				const { accountWithViewRole, columnBoardNode } = await setup();
 
-				const loggedInClient = await testApiClient.login(accountWithViewRole);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(accountWithViewRole);
 
 				const readersCanEdit = true;
 
@@ -242,7 +240,7 @@ describe(`board readersCanEdit setting (api)`, () => {
 		describe('with user who is not part of the room', () => {
 			it('should return status 403', async () => {
 				const { noAccessAccount, columnBoardNode } = await setup();
-				const loggedInClient = await testApiClient.login(noAccessAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(noAccessAccount);
 				const readersCanEdit = true;
 
 				const response = await loggedInClient.patch(`${columnBoardNode.id}/readers-can-edit`, { readersCanEdit });
@@ -251,12 +249,12 @@ describe(`board readersCanEdit setting (api)`, () => {
 			});
 			it('should not change the board visibility', async () => {
 				const { noAccessAccount, columnBoardNode, accountWithViewRole } = await setup();
-				const loggedInClient = await testApiClient.login(noAccessAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(noAccessAccount);
 				const readersCanEdit = true;
 
 				await loggedInClient.patch(`${columnBoardNode.id}/readers-can-edit`, { readersCanEdit });
 
-				const loggedInClientWithView = await testApiClient.login(accountWithViewRole);
+				const loggedInClientWithView = await new TestApiClientBuilder(app, baseRouteName).build(accountWithViewRole);
 
 				const response = await loggedInClientWithView.get(columnBoardNode.id);
 				const result = response.body as BoardResponse;
