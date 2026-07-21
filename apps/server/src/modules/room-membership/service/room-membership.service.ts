@@ -16,6 +16,7 @@ import { RoomMember } from '../do/room-member.do';
 import { RoomMembership } from '../do/room-membership.do';
 import { RoomMembershipRepo } from '../repo/room-membership.repo';
 import { MemberStats, RoomMembershipStats } from '../type/room-membership-stats.type';
+import { RoomStatsAggregated } from '../type/room-stats-aggregated.type';
 
 @Injectable()
 export class RoomMembershipService {
@@ -168,6 +169,10 @@ export class RoomMembershipService {
 
 		const page = new Page<RoomMembershipStats>(result, total);
 		return page;
+	}
+
+	public async getRoomStatsAggregated(schoolId: EntityId, pagination?: Pagination): Promise<Page<RoomStatsAggregated>> {
+		return this.roomMembershipRepo.findRoomStatsAggregated(schoolId, pagination);
 	}
 
 	public async getRoomAuthorizablesByUserId(userId: EntityId): Promise<RoomAuthorizable[]> {

@@ -5,8 +5,6 @@ import { RoomAuthorizable, RoomMembershipService } from '@modules/room-membershi
 import { RoomMemberRule } from '@modules/room-membership/authorization/room-member.rule';
 import { RoomOperation, RoomRule } from '@modules/room-membership/authorization/room.rule';
 import { RoomMemberAuthorizable } from '@modules/room-membership/do/room-member-authorizable.do';
-import { RoomMembershipStats } from '@modules/room-membership/type/room-membership-stats.type';
-import { School, SchoolService } from '@modules/school';
 import { UserDo, UserService } from '@modules/user';
 import { User } from '@modules/user/repo'; // TODO: Auth service should use a different type
 import {
@@ -38,7 +36,6 @@ export class RoomUc {
 		private readonly userService: UserService,
 		private readonly authorizationService: AuthorizationService,
 		private readonly roomPermissionService: RoomPermissionService,
-		private readonly schoolService: SchoolService,
 		private readonly roomBoardService: RoomBoardService,
 		private readonly accountService: AccountService,
 		private readonly roomRule: RoomRule,
@@ -46,53 +43,29 @@ export class RoomUc {
 	) {}
 
 	public async getRoomStats(userId: EntityId, findOptions: IFindOptions<Room>): Promise<Page<RoomStats>> {
-		console.time('RoomUc.getRoomStats');
-
-		console.time('RoomUc.getRoomStats - checkFeatureAdministrateRoomsEnabled');
 		this.roomPermissionService.checkFeatureAdministrateRoomsEnabled();
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		this.authorizationService.checkOneOfPermissions(user, [Permission.SCHOOL_ADMINISTRATE_ROOMS]);
-		console.timeEnd('RoomUc.getRoomStats - checkFeatureAdministrateRoomsEnabled');
 
-		console.time('RoomUc.getRoomStats - getRoomMembershipStatsByUsersAndRoomsSchoolId');
-		const roomMembershipStats = await this.roomMembershipService.getRoomMembershipStatsByUsersAndRoomsSchoolId(
+		const roomStatsAggregated = await this.roomMembershipService.getRoomStatsAggregated(
 			user.school.id,
 			findOptions.pagination
 		);
-		console.timeEnd('RoomUc.getRoomStats - getRoomMembershipStatsByUsersAndRoomsSchoolId');
-		const roomIds: EntityId[] = roomMembershipStats.data
-			.flatMap((membership) => membership.roomId)
-			.filter((id): id is EntityId => !!id);
 
-		console.time('RoomUc.getRoomStats - getRoomsByIds');
-		const rooms: Room[] = await this.roomService.getRoomsByIds(roomIds);
-		console.timeEnd('RoomUc.getRoomStats - getRoomsByIds');
+		const roomStats: RoomStats[] = roomStatsAggregated.data.map((stats) => ({
+			roomId: stats.roomId,
+			name: stats.roomName,
+			owner: stats.owner,
+			totalMembers: stats.totalMembers,
+			internalMembers: stats.internalMembers,
+			externalMembers: stats.externalMembers,
+			schoolId: stats.roomSchoolId,
+			schoolName: stats.schoolName,
+			createdAt: stats.createdAt,
+			updatedAt: stats.updatedAt,
+		}));
 
-		const schoolIds: EntityId[] = rooms.map((room) => room.schoolId);
-
-		console.time('RoomUc.getRoomStats - getSchoolsByIds');
-		const schools = await this.schoolService.getSchoolsByIds(schoolIds);
-		console.timeEnd('RoomUc.getRoomStats - getSchoolsByIds');
-
-		const roomStats = this.mapRoomStats(roomMembershipStats, rooms, schools);
-
-		console.timeEnd('RoomUc.getRoomStats');
-		return { data: roomStats, total: roomMembershipStats.total };
-	}
-
-	private mapRoomStats(membershipStats: Page<RoomMembershipStats>, rooms: Room[], schools: School[]): RoomStats[] {
-		return membershipStats.data.map((membership) => {
-			const room = rooms.find((r) => r.id === membership.roomId);
-			const school = schools.find((s) => s.id === room?.schoolId);
-			return {
-				...membership,
-				name: room?.name ?? '',
-				schoolId: room?.schoolId ?? '',
-				schoolName: school?.getProps().name ?? '',
-				createdAt: room?.createdAt ?? new Date(),
-				updatedAt: room?.updatedAt ?? new Date(),
-			};
-		});
+		return { data: roomStats, total: roomStatsAggregated.total };
 	}
 
 	public async createRoom(userId: EntityId, props: CreateRoomBodyParams): Promise<Room> {
