@@ -1,7 +1,7 @@
 import { type Logger } from '@infra/logger';
+import { type StorageClient } from '@shared/domain/interface';
 import EventEmitter from 'node:events';
 import { InMemoryLoggable } from '../loggable';
-import { type StorageClient } from '../types';
 
 export class InMemoryClient extends EventEmitter implements StorageClient {
 	private store: Record<string, string> = {};
@@ -18,12 +18,10 @@ export class InMemoryClient extends EventEmitter implements StorageClient {
 		super();
 	}
 
-	public set(key: string, value: string, ...args: unknown[]): Promise<void> {
+	public set(key: string, value: string, ttlSeconds?: number): Promise<void> {
 		this.store[key] = value;
-		const ex = args.indexOf('EX');
-		if (ex >= 0) {
-			const ttlValue = Number(args[ex + 1]);
-			this.ttlStore[key] = { expiresAt: Date.now() + ttlValue * 1000, ttl: ttlValue };
+		if (ttlSeconds !== undefined) {
+			this.ttlStore[key] = { expiresAt: Date.now() + ttlSeconds * 1000, ttl: ttlSeconds };
 		}
 
 		this.logger.warning(new InMemoryLoggable(`SET - Key: ${key} - Value: ${value}`));

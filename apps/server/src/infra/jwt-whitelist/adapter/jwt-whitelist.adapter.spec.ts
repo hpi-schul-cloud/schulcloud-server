@@ -1,7 +1,7 @@
 import { createMock } from '@golevelup/ts-jest';
-import { type StorageClient } from '@infra/valkey-client';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { UnauthorizedException } from '@nestjs/common';
+import { type StorageClient } from '@shared/domain/interface';
 import { JwtWhitelistAdapter } from './jwt-whitelist.adapter';
 
 describe(JwtWhitelistAdapter.name, () => {
@@ -27,7 +27,7 @@ describe(JwtWhitelistAdapter.name, () => {
 
 				await adapter.addToWhitelist(accountId, jti);
 
-				expect(storageClient.set).toHaveBeenCalledWith(`jwt:${accountId}:${jti}`, '1', 'EX', expirationInSeconds);
+				expect(storageClient.set).toHaveBeenCalledWith(`jwt:${accountId}:${jti}`, '1', expirationInSeconds);
 			});
 		});
 	});
@@ -98,7 +98,7 @@ describe(JwtWhitelistAdapter.name, () => {
 				await expect(adapter.isWhitelisted(accountId, jti)).resolves.toBeUndefined();
 
 				expect(storageClient.get).toHaveBeenCalledWith(`jwt:${accountId}:${jti}`);
-				expect(storageClient.set).toHaveBeenCalledWith(`jwt:${accountId}:${jti}`, '1', 'EX', 7200);
+				expect(storageClient.set).toHaveBeenCalledWith(`jwt:${accountId}:${jti}`, '1', 7200);
 			});
 		});
 

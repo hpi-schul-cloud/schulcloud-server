@@ -15,14 +15,13 @@ describe(InMemoryClient.name, () => {
 		const setup = () => {
 			const key = 'key1';
 			const value = 'value1';
-			const args = ['EX', 60];
-			return { key, value, args };
+			return { key, value };
 		};
 
 		it('should set a value and log it', async () => {
-			const { key, value, args } = setup();
+			const { key, value } = setup();
 
-			await client.set(key, value, args);
+			await client.set(key, value, 60);
 
 			expect(logger.warning).toHaveBeenCalledWith(expect.anything());
 		});
@@ -61,7 +60,7 @@ describe(InMemoryClient.name, () => {
 					const value = 'value1';
 					const ttlInSeconds = 60;
 
-					await client.set(key, value, 'EX', ttlInSeconds);
+					await client.set(key, value, ttlInSeconds);
 
 					return { key, value };
 				};
@@ -85,7 +84,7 @@ describe(InMemoryClient.name, () => {
 					let now = originalDateNow();
 					jest.spyOn(Date, 'now').mockImplementation(() => now);
 
-					await client.set(key, value, 'EX', ttlInSeconds);
+					await client.set(key, value, ttlInSeconds);
 
 					now += ttlInSeconds * 1000 + 1000;
 
@@ -154,7 +153,7 @@ describe(InMemoryClient.name, () => {
 		const setup = async () => {
 			const keyWithTTL = 'keyWithTTL';
 
-			await client.set(keyWithTTL, 'value', 'EX', 60);
+			await client.set(keyWithTTL, 'value', 60);
 
 			return { keyWithTTL };
 		};

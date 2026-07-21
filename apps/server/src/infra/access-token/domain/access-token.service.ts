@@ -1,5 +1,5 @@
-import { StorageClient } from '@infra/valkey-client';
 import { ForbiddenException, Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
+import { StorageClient } from '@shared/domain/interface';
 import { ACCESS_TOKEN_VALKEY_CLIENT } from '../access-token.config';
 import { AccessTokenFactory } from './factory';
 import { ResolveTokenParams } from './types';
@@ -49,7 +49,7 @@ export class AccessTokenService {
 	}
 
 	private async persistTokenData(token: string, value: string, tokenTtlInSeconds: number): Promise<void> {
-		await this.storageClient.set(token, value, 'EX', tokenTtlInSeconds);
+		await this.storageClient.set(token, value, tokenTtlInSeconds);
 	}
 
 	private async renewTokenTimeout(token: string, value: string, tokenTtlInSeconds: number): Promise<void> {
