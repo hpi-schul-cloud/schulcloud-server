@@ -39,7 +39,7 @@ import { type INestApplication } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
-import { TestApiClient } from '@testing/test-api-client';
+import { type TestApiClient, TestApiClientBuilder } from '@testing/test-api-client-builder';
 import { deletionRequestEntityFactory } from '../../../repo/entity/testing';
 
 const baseRouteName = '/deletionExecutions';
@@ -85,7 +85,7 @@ describe(`deletionExecution (api)`, () => {
 	describe('executeDeletions', () => {
 		describe('when execute deletionRequests with default limit', () => {
 			const setup = async () => {
-				testApiClient = new TestApiClient(app, baseRouteName, API_KEY, true);
+				testApiClient = new TestApiClientBuilder(app, baseRouteName).withApiKey(API_KEY).build();
 				const deletionRequest = deletionRequestEntityFactory.build();
 
 				await em.persist(deletionRequest).flush();
@@ -120,7 +120,7 @@ describe(`deletionExecution (api)`, () => {
 
 		describe('without token', () => {
 			it('should refuse with wrong token', async () => {
-				testApiClient = new TestApiClient(app, baseRouteName, 'thisisaninvalidapikey', true);
+				testApiClient = new TestApiClientBuilder(app, baseRouteName).withApiKey('thisisaninvalidapikey').build();
 
 				const response = await testApiClient.post('');
 
@@ -128,7 +128,7 @@ describe(`deletionExecution (api)`, () => {
 			});
 
 			it('should refuse without token', async () => {
-				testApiClient = new TestApiClient(app, baseRouteName, '', true);
+				testApiClient = new TestApiClientBuilder(app, baseRouteName).withApiKey('').build();
 
 				const response = await testApiClient.post('');
 
@@ -263,7 +263,7 @@ describe(`deletionExecution (api)`, () => {
 				await em.persist([deletionRequestsTeacher, deletionRequestsStudent]).flush();
 				const deletionRequestIds = [deletionRequestsTeacher.id, deletionRequestsStudent.id];
 
-				testApiClient = new TestApiClient(app, baseRouteName, API_KEY, true);
+				testApiClient = new TestApiClientBuilder(app, baseRouteName).withApiKey(API_KEY).build();
 
 				return {
 					deletionRequestIds,
@@ -423,7 +423,7 @@ describe(`deletionExecution (api)`, () => {
 
 	describe('findAllItemsToExecute', () => {
 		const setup = async () => {
-			testApiClient = new TestApiClient(app, baseRouteName, API_KEY, true);
+			testApiClient = new TestApiClientBuilder(app, baseRouteName).withApiKey(API_KEY).build();
 
 			const deletionRequest = deletionRequestEntityFactory.build();
 

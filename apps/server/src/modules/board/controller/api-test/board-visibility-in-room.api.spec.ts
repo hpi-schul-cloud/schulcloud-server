@@ -10,7 +10,7 @@ import { userFactory } from '@modules/user/testing';
 import { type INestApplication } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { TestApiClient } from '@testing/test-api-client';
+import { TestApiClientBuilder } from '@testing/test-api-client-builder';
 import { BoardExternalReferenceType } from '../../domain';
 import { BoardNodeEntity } from '../../repo';
 import { columnBoardEntityFactory } from '../../testing';
@@ -21,7 +21,6 @@ const baseRouteName = '/boards';
 describe(`board update visibility with room relation (api)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let testApiClient: TestApiClient;
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -31,7 +30,6 @@ describe(`board update visibility with room relation (api)`, () => {
 		app = module.createNestApplication();
 		await app.init();
 		em = module.get(EntityManager);
-		testApiClient = new TestApiClient(app, baseRouteName);
 	});
 
 	afterAll(async () => {
@@ -101,7 +99,7 @@ describe(`board update visibility with room relation (api)`, () => {
 		it('should return status 204', async () => {
 			const { accountWithEditRole, columnBoardNode } = await setup();
 
-			const loggedInClient = await testApiClient.login(accountWithEditRole);
+			const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(accountWithEditRole);
 
 			const isVisible = true;
 
@@ -113,7 +111,7 @@ describe(`board update visibility with room relation (api)`, () => {
 		it('should actually change the board visibility', async () => {
 			const { accountWithEditRole, columnBoardNode } = await setup();
 
-			const loggedInClient = await testApiClient.login(accountWithEditRole);
+			const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(accountWithEditRole);
 
 			const isVisible = true;
 
@@ -129,7 +127,7 @@ describe(`board update visibility with room relation (api)`, () => {
 		it('should return status 403', async () => {
 			const { accountWithViewRole, columnBoardNode } = await setup();
 
-			const loggedInClient = await testApiClient.login(accountWithViewRole);
+			const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(accountWithViewRole);
 
 			const isVisible = true;
 
@@ -140,7 +138,7 @@ describe(`board update visibility with room relation (api)`, () => {
 		it('should not change the board visibility', async () => {
 			const { accountWithViewRole, columnBoardNode } = await setup();
 
-			const loggedInClient = await testApiClient.login(accountWithViewRole);
+			const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(accountWithViewRole);
 
 			const isVisible = true;
 			await loggedInClient.patch(`${columnBoardNode.id}/visibility`, { isVisible });
@@ -153,7 +151,7 @@ describe(`board update visibility with room relation (api)`, () => {
 		it('should return status 403', async () => {
 			const { noAccessAccount, columnBoardNode } = await setup();
 
-			const loggedInClient = await testApiClient.login(noAccessAccount);
+			const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(noAccessAccount);
 
 			const isVisible = true;
 
@@ -164,7 +162,7 @@ describe(`board update visibility with room relation (api)`, () => {
 		it('should not change the board visibility', async () => {
 			const { noAccessAccount, columnBoardNode } = await setup();
 
-			const loggedInClient = await testApiClient.login(noAccessAccount);
+			const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(noAccessAccount);
 
 			const isVisible = true;
 			await loggedInClient.patch(`${columnBoardNode.id}/visibility`, { isVisible });

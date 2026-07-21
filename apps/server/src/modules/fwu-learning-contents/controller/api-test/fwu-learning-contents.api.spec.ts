@@ -5,13 +5,15 @@ import { FWU_PUBLIC_API_CONFIG_TOKEN, type FwuPublicApiConfig } from '@modules/f
 import { type INestApplication, NotFoundException } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
-import { TestApiClient } from '@testing/test-api-client';
+import { TestApiClientBuilder } from '@testing/test-api-client-builder';
 import { TEST_JWT_CONFIG_TOKEN, TestJwtModuleConfig } from '@testing/test-jwt-module.config';
 import { Readable } from 'node:stream';
 import { FwuLearningContentsTestModule } from '../../fwu-learning-contents-test.module';
 import { FWU_S3_CLIENT_INJECTION_TOKEN } from '../../fwu.const';
 import { type FwuItem } from '../../interface/fwu-item';
 import { type FwuListResponse } from '../dto/fwu-list.response';
+
+const baseRouteName = 'fwu';
 
 jest.mock('../../fwu.filesIndex', () => {
 	return {
@@ -22,7 +24,6 @@ jest.mock('../../fwu.filesIndex', () => {
 describe('FwuLearningContents Controller (api)', () => {
 	let app: INestApplication;
 	let s3ClientAdapter: DeepMocked<S3ClientAdapter>;
-	let testApiClient: TestApiClient;
 	let jwtConfig: TestJwtModuleConfig;
 	let fwuConfig: FwuPublicApiConfig;
 
@@ -41,7 +42,6 @@ describe('FwuLearningContents Controller (api)', () => {
 		await app.init();
 		jwtConfig = module.get(TEST_JWT_CONFIG_TOKEN);
 		s3ClientAdapter = module.get(FWU_S3_CLIENT_INJECTION_TOKEN);
-		testApiClient = new TestApiClient(app, 'fwu');
 		fwuConfig = module.get<FwuPublicApiConfig>(FWU_PUBLIC_API_CONFIG_TOKEN);
 
 		fwuConfig.fwuContentEnabled = true;
@@ -54,7 +54,7 @@ describe('FwuLearningContents Controller (api)', () => {
 	describe('requestFwuContent', () => {
 		describe('when user is not authenticated', () => {
 			it('should return 401 status', async () => {
-				const response = await testApiClient.get('12345/example.txt');
+				const response = await new TestApiClientBuilder(app, baseRouteName).build().get('12345/example.txt');
 
 				expect(response.status).toEqual(401);
 			});
@@ -77,7 +77,9 @@ describe('FwuLearningContents Controller (api)', () => {
 				s3ClientAdapter.get.mockResolvedValueOnce(fileResponse);
 
 				const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent();
-				const loggedInClient = await testApiClient.loginByUser(studentAccount, studentUser, jwtConfig);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName)
+					.withJwt(studentUser, jwtConfig)
+					.build(studentAccount);
 
 				return { path, fileResponse, text, loggedInClient };
 			};
@@ -121,7 +123,9 @@ describe('FwuLearningContents Controller (api)', () => {
 				s3ClientAdapter.get.mockRejectedValueOnce(error);
 
 				const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent();
-				const loggedInClient = await testApiClient.loginByUser(studentAccount, studentUser, jwtConfig);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName)
+					.withJwt(studentUser, jwtConfig)
+					.build(studentAccount);
 
 				return { loggedInClient };
 			};
@@ -141,7 +145,9 @@ describe('FwuLearningContents Controller (api)', () => {
 				s3ClientAdapter.get.mockRejectedValueOnce(error);
 
 				const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent();
-				const loggedInClient = await testApiClient.loginByUser(studentAccount, studentUser, jwtConfig);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName)
+					.withJwt(studentUser, jwtConfig)
+					.build(studentAccount);
 				fwuConfig.fwuContentEnabled = false;
 
 				return { loggedInClient };
@@ -160,7 +166,7 @@ describe('FwuLearningContents Controller (api)', () => {
 	describe('getList', () => {
 		describe('when user is not authenticated', () => {
 			it('should return 401 status', async () => {
-				const response = await testApiClient.get('');
+				const response = await new TestApiClientBuilder(app, baseRouteName).build().get('');
 
 				expect(response.status).toEqual(401);
 			});
@@ -169,7 +175,9 @@ describe('FwuLearningContents Controller (api)', () => {
 		describe('when feature is not enabled', () => {
 			const setup = async () => {
 				const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent();
-				const loggedInClient = await testApiClient.loginByUser(studentAccount, studentUser, jwtConfig);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName)
+					.withJwt(studentUser, jwtConfig)
+					.build(studentAccount);
 				fwuConfig.fwuContentEnabled = false;
 
 				return { loggedInClient };
@@ -195,7 +203,9 @@ describe('FwuLearningContents Controller (api)', () => {
 
 				const setup = async () => {
 					const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent();
-					const loggedInClient = await testApiClient.loginByUser(studentAccount, studentUser, jwtConfig);
+					const loggedInClient = await new TestApiClientBuilder(app, baseRouteName)
+						.withJwt(studentUser, jwtConfig)
+						.build(studentAccount);
 					fwuConfig.fwuContentEnabled = true;
 
 					const htmlContent = `<html>
@@ -237,7 +247,9 @@ describe('FwuLearningContents Controller (api)', () => {
 				describe('thumbnailUrl parsing', () => {
 					const setupWithPlayerTag = async (playerHtmlContent: string) => {
 						const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent();
-						const loggedInClient = await testApiClient.loginByUser(studentAccount, studentUser, jwtConfig);
+						const loggedInClient = await new TestApiClientBuilder(app, baseRouteName)
+							.withJwt(studentUser, jwtConfig)
+							.build(studentAccount);
 
 						const htmlContent = `<html>
 						<body>

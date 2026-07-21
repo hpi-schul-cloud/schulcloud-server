@@ -9,14 +9,15 @@ import { HttpStatus, type INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
-import { TestApiClient } from '@testing/test-api-client';
+import { TestApiClientBuilder } from '@testing/test-api-client-builder';
 import { type SupportType } from '../../domain';
 import { HelpdeskWishCreateParamsFactory } from '../../testing/helpdesk-wish-create-params.test.factory';
+
+const baseRouteName = 'helpdesk';
 
 describe('Helpdesk Wish Endpoint (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let testApiClient: TestApiClient;
 
 	beforeAll(async () => {
 		const moduleFixture = await Test.createTestingModule({
@@ -27,8 +28,6 @@ describe('Helpdesk Wish Endpoint (API)', () => {
 
 		await app.init();
 		em = app.get(EntityManager);
-
-		testApiClient = new TestApiClient(app, 'helpdesk');
 	});
 
 	beforeEach(async () => {
@@ -54,7 +53,7 @@ describe('Helpdesk Wish Endpoint (API)', () => {
 
 				await em.persist([studentAccount, studentUser]).flush();
 
-				const loggedInClient = await testApiClient.login(studentAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 				const validBody = HelpdeskWishCreateParamsFactory.create();
 
 				return { loggedInClient, validBody };
@@ -73,7 +72,7 @@ describe('Helpdesk Wish Endpoint (API)', () => {
 			it('should return 401', async () => {
 				const validBody = HelpdeskWishCreateParamsFactory.create();
 
-				const response = await testApiClient.post('wish', validBody);
+				const response = await new TestApiClientBuilder(app, baseRouteName).build().post('wish', validBody);
 
 				expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
 			});
@@ -86,7 +85,7 @@ describe('Helpdesk Wish Endpoint (API)', () => {
 
 				await em.persist([studentAccount, studentUser]).flush();
 
-				const loggedInClient = await testApiClient.login(studentAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 				return { loggedInClient, body };
 			};
@@ -108,7 +107,7 @@ describe('Helpdesk Wish Endpoint (API)', () => {
 
 				await em.persist([studentAccount, studentUser]).flush();
 
-				const loggedInClient = await testApiClient.login(studentAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 				return { loggedInClient, body };
 			};
@@ -130,7 +129,7 @@ describe('Helpdesk Wish Endpoint (API)', () => {
 
 				await em.persist([studentAccount, studentUser]).flush();
 
-				const loggedInClient = await testApiClient.login(studentAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 				return { loggedInClient, body };
 			};
@@ -152,7 +151,7 @@ describe('Helpdesk Wish Endpoint (API)', () => {
 
 				await em.persist([studentAccount, studentUser]).flush();
 
-				const loggedInClient = await testApiClient.login(studentAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 				return { loggedInClient, body };
 			};
@@ -174,7 +173,7 @@ describe('Helpdesk Wish Endpoint (API)', () => {
 
 				await em.persist([studentAccount, studentUser]).flush();
 
-				const loggedInClient = await testApiClient.login(studentAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 				return { loggedInClient, body };
 			};
@@ -196,7 +195,7 @@ describe('Helpdesk Wish Endpoint (API)', () => {
 
 				await em.persist([studentAccount, studentUser]).flush();
 
-				const loggedInClient = await testApiClient.login(studentAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 				return { loggedInClient, body };
 			};
@@ -218,7 +217,7 @@ describe('Helpdesk Wish Endpoint (API)', () => {
 
 				await em.persist([studentAccount, studentUser]).flush();
 
-				const loggedInClient = await testApiClient.login(studentAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 				return { loggedInClient, body };
 			};
@@ -240,7 +239,7 @@ describe('Helpdesk Wish Endpoint (API)', () => {
 
 				await em.persist([studentAccount, studentUser]).flush();
 
-				const loggedInClient = await testApiClient.login(studentAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 				return { loggedInClient, validBody };
 			};
@@ -261,7 +260,7 @@ describe('Helpdesk Wish Endpoint (API)', () => {
 
 				await em.persist([studentAccount, studentUser]).flush();
 
-				const loggedInClient = await testApiClient.login(studentAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 				// Create a file larger than 5 MB (5000 * 1024 bytes)
 				const largeFile = Buffer.alloc(5001 * 1024);
@@ -298,7 +297,7 @@ describe('Helpdesk Wish Endpoint (API)', () => {
 
 				await em.persist([studentAccount, studentUser]).flush();
 
-				const loggedInClient = await testApiClient.login(studentAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 				// Create a file with invalid mime type
 				const invalidFile = Buffer.from('test content');
@@ -338,7 +337,7 @@ describe('Helpdesk Wish Endpoint (API)', () => {
 
 				await em.persist([studentAccount, studentUser]).flush();
 
-				const loggedInClient = await testApiClient.login(studentAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 				const validFile = Buffer.from('valid image content');
 
@@ -377,7 +376,7 @@ describe('Helpdesk Wish Endpoint (API)', () => {
 
 				await em.persist([studentAccount, studentUser]).flush();
 
-				const loggedInClient = await testApiClient.login(studentAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 				const validFile = Buffer.from('valid png content');
 
@@ -416,7 +415,7 @@ describe('Helpdesk Wish Endpoint (API)', () => {
 
 				await em.persist([studentAccount, studentUser]).flush();
 
-				const loggedInClient = await testApiClient.login(studentAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 				const validFile = Buffer.from('valid mp4 content');
 
@@ -455,7 +454,7 @@ describe('Helpdesk Wish Endpoint (API)', () => {
 
 				await em.persist([studentAccount, studentUser]).flush();
 
-				const loggedInClient = await testApiClient.login(studentAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 				const validFile = Buffer.from('valid pdf content');
 
@@ -494,7 +493,7 @@ describe('Helpdesk Wish Endpoint (API)', () => {
 
 				await em.persist([studentAccount, studentUser]).flush();
 
-				const loggedInClient = await testApiClient.login(studentAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 				const validFile = Buffer.from('valid docx content');
 

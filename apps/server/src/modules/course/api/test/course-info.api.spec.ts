@@ -1,4 +1,8 @@
 import { EntityManager } from '@mikro-orm/mongodb';
+import { GroupEntityTypes } from '@modules/group/entity';
+import { groupEntityFactory } from '@modules/group/testing';
+import { RoleName } from '@modules/role';
+import { roleFactory } from '@modules/role/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server/server.app.module';
 import { HttpStatus, type INestApplication } from '@nestjs/common';
@@ -6,14 +10,12 @@ import { Test, type TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
-import { TestApiClient } from '@testing/test-api-client';
+import { TestApiClientBuilder } from '@testing/test-api-client-builder';
 import { CourseSortProps, CourseStatus } from '../../domain';
 import { courseEntityFactory } from '../../testing';
 import { type CourseInfoListResponse } from '../dto';
-import { groupEntityFactory } from '@modules/group/testing';
-import { GroupEntityTypes } from '@modules/group/entity';
-import { roleFactory } from '@modules/role/testing';
-import { RoleName } from '@modules/role';
+
+const baseRouteName = 'course-info';
 
 const createStudent = () => {
 	const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent({}, [Permission.COURSE_VIEW]);
@@ -35,7 +37,6 @@ const createAdmin = () => {
 describe('Course Info Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let testApiClient: TestApiClient;
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -45,7 +46,6 @@ describe('Course Info Controller (API)', () => {
 		app = module.createNestApplication();
 		await app.init();
 		em = module.get(EntityManager);
-		testApiClient = new TestApiClient(app, 'course-info');
 	});
 
 	afterAll(async () => {
@@ -121,7 +121,7 @@ describe('Course Info Controller (API)', () => {
 				const { admin } = await setup();
 				const query = {};
 
-				const loggedInClient = await testApiClient.login(admin.account);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(admin.account);
 				const response = await loggedInClient.get().query(query);
 
 				expect(response.statusCode).toBe(200);
@@ -135,7 +135,7 @@ describe('Course Info Controller (API)', () => {
 				const { admin } = await setup();
 				const query = { withoutTeacher: true, status: CourseStatus.CURRENT };
 
-				const loggedInClient = await testApiClient.login(admin.account);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(admin.account);
 				const response = await loggedInClient.get().query(query);
 
 				const { data } = response.body as CourseInfoListResponse;
@@ -146,7 +146,7 @@ describe('Course Info Controller (API)', () => {
 				const { admin } = await setup();
 				const query = { withoutTeacher: true, status: CourseStatus.ARCHIVE };
 
-				const loggedInClient = await testApiClient.login(admin.account);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(admin.account);
 				const response = await loggedInClient.get().query(query);
 
 				const { data } = response.body as CourseInfoListResponse;
@@ -157,7 +157,7 @@ describe('Course Info Controller (API)', () => {
 				const { admin } = await setup();
 				const query = { skip: 0, limit: 10, sortBy: CourseSortProps.NAME, status: CourseStatus.ARCHIVE };
 
-				const loggedInClient = await testApiClient.login(admin.account);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(admin.account);
 				const response = await loggedInClient.get().query(query);
 
 				const { total, skip, limit, data } = response.body as CourseInfoListResponse;
@@ -172,7 +172,7 @@ describe('Course Info Controller (API)', () => {
 				const { admin, currentCourses, group } = await setup();
 				const query = { skip: 4, limit: 2, sortBy: CourseSortProps.NAME, status: CourseStatus.CURRENT };
 
-				const loggedInClient = await testApiClient.login(admin.account);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(admin.account);
 				const response = await loggedInClient.get().query(query);
 
 				const { total, skip, limit, data } = response.body as CourseInfoListResponse;
@@ -190,7 +190,7 @@ describe('Course Info Controller (API)', () => {
 			it('should return unauthorized', async () => {
 				const query = {};
 
-				const response = await testApiClient.get().query(query);
+				const response = await new TestApiClientBuilder(app, baseRouteName).build().get().query(query);
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 				expect(response.body).toEqual({

@@ -1,7 +1,7 @@
 import { EntityManager } from '@mikro-orm/core';
 import { type INestApplication } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
-import { TestApiClient } from '@testing/test-api-client';
+import { TestApiClientBuilder } from '@testing/test-api-client-builder';
 import { AdminApiServerTestModule } from '../../../../server/admin-api.server.app.module';
 import { DomainName } from '../../../domain/types';
 import { DeletionBatchEntity } from '../../../repo/entity';
@@ -13,7 +13,6 @@ const baseRouteName = '/deletion-batches';
 describe('createBatch', () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let testApiClient: TestApiClient;
 	const API_KEY = 'someotherkey';
 
 	beforeAll(async () => {
@@ -23,7 +22,6 @@ describe('createBatch', () => {
 
 		app = module.createNestApplication();
 		em = module.get(EntityManager);
-		testApiClient = new TestApiClient(app, baseRouteName, API_KEY, true);
 
 		await app.init();
 	});
@@ -46,7 +44,10 @@ describe('createBatch', () => {
 		it('should return status 201', async () => {
 			const { createDeletionBatchBodyParams } = setup();
 
-			const response = await testApiClient.post('', createDeletionBatchBodyParams);
+			const response = await new TestApiClientBuilder(app, baseRouteName)
+				.withApiKey(API_KEY)
+				.build()
+				.post('', createDeletionBatchBodyParams);
 
 			expect(response.status).toEqual(201);
 		});
@@ -54,7 +55,10 @@ describe('createBatch', () => {
 		it('should return the created deletion batch', async () => {
 			const { createDeletionBatchBodyParams } = setup();
 
-			const response = await testApiClient.post('', createDeletionBatchBodyParams);
+			const response = await new TestApiClientBuilder(app, baseRouteName)
+				.withApiKey(API_KEY)
+				.build()
+				.post('', createDeletionBatchBodyParams);
 
 			const result = response.body as DeletionBatchItemResponse;
 			expect(result.id).toBeDefined();
@@ -63,7 +67,10 @@ describe('createBatch', () => {
 		it('should actually create the deletion batch', async () => {
 			const { createDeletionBatchBodyParams } = setup();
 
-			const response = await testApiClient.post('', createDeletionBatchBodyParams);
+			const response = await new TestApiClientBuilder(app, baseRouteName)
+				.withApiKey(API_KEY)
+				.build()
+				.post('', createDeletionBatchBodyParams);
 
 			const result = response.body as DeletionBatchItemResponse;
 

@@ -11,7 +11,7 @@ import { userFactory } from '@modules/user/testing';
 import { type INestApplication } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
-import { TestApiClient } from '@testing/test-api-client';
+import { TestApiClientBuilder } from '@testing/test-api-client-builder';
 import { BoardExternalReferenceType, BoardLayout } from '../../domain';
 import { cardEntityFactory, columnBoardEntityFactory, columnEntityFactory } from '../../testing';
 import { type BoardResponse } from '../dto';
@@ -21,7 +21,6 @@ const baseRouteName = '/boards';
 describe(`board lookup in room (api)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let testApiClient: TestApiClient;
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -31,7 +30,6 @@ describe(`board lookup in room (api)`, () => {
 		app = module.createNestApplication();
 		await app.init();
 		em = module.get(EntityManager);
-		testApiClient = new TestApiClient(app, baseRouteName);
 	});
 
 	afterAll(async () => {
@@ -116,7 +114,7 @@ describe(`board lookup in room (api)`, () => {
 			it('should return status 200', async () => {
 				const { accountWithEditRole, columnBoardNode } = await setup();
 
-				const loggedInClient = await testApiClient.login(accountWithEditRole);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(accountWithEditRole);
 
 				const response = await loggedInClient.get(columnBoardNode.id);
 
@@ -126,7 +124,7 @@ describe(`board lookup in room (api)`, () => {
 			it('should return the correct board', async () => {
 				const { accountWithEditRole, columnBoardNode, columnNode } = await setup();
 
-				const loggedInClient = await testApiClient.login(accountWithEditRole);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(accountWithEditRole);
 
 				const response = await loggedInClient.get(columnBoardNode.id);
 				const result = response.body as BoardResponse;
@@ -142,7 +140,7 @@ describe(`board lookup in room (api)`, () => {
 			it(`should default to ${BoardLayout.COLUMNS}`, async () => {
 				const { accountWithEditRole, columnBoardNode } = await setup();
 
-				const loggedInClient = await testApiClient.login(accountWithEditRole);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(accountWithEditRole);
 
 				const response = await loggedInClient.get(columnBoardNode.id);
 				const result = response.body as BoardResponse;
@@ -156,7 +154,7 @@ describe(`board lookup in room (api)`, () => {
 				const { accountWithEditRole } = await setup();
 				const notExistingBoardId = new ObjectId().toString();
 
-				const loggedInClient = await testApiClient.login(accountWithEditRole);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(accountWithEditRole);
 
 				const response = await loggedInClient.get(notExistingBoardId);
 
@@ -169,7 +167,7 @@ describe(`board lookup in room (api)`, () => {
 		it('should return status 200', async () => {
 			const { accountWithViewRole, columnBoardNode } = await setup();
 
-			const loggedInClient = await testApiClient.login(accountWithViewRole);
+			const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(accountWithViewRole);
 
 			const response = await loggedInClient.get(columnBoardNode.id);
 
@@ -181,7 +179,7 @@ describe(`board lookup in room (api)`, () => {
 		it('should return status 403', async () => {
 			const { noAccessAccount, columnBoardNode } = await setup();
 
-			const loggedInClient = await testApiClient.login(noAccessAccount);
+			const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(noAccessAccount);
 
 			const response = await loggedInClient.get(columnBoardNode.id);
 
