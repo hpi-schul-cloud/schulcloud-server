@@ -1,3 +1,9 @@
-export { CollaborativeTextEditorConfig } from './collaborative-text-editor.config';
+/** **********************************************************
+ * This is a module facade.                                  *
+ * Export only what is allowed to be used externally.        *
+ * Do not use wildcard exports.                              *
+ * Do not export *.app.module.ts here; import them directly. *
+ *********************************************************** */
+
 export { CollaborativeTextEditorModule } from './collaborative-text-editor.module';
 export { CollaborativeTextEditorService } from './service/collaborative-text-editor.service';

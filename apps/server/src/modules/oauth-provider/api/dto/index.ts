@@ -10,7 +10,6 @@ export { RevokeConsentParams } from './request/revoke-consent.params';
 export { OauthClientResponse } from './response/oauth-client.response';
 export { ConsentResponse } from './response/consent.response';
 export { RedirectResponse } from './response/redirect.response';
-export { OidcContextResponse } from './response/oidc-context.response';
 export { ConsentSessionResponse } from './response/consent-session.response';
 export { OauthProviderLoginResponse } from './response/oauth-provider-login.response';
 export { OAuthRejectableBody } from './request/oauth-rejectable.body';

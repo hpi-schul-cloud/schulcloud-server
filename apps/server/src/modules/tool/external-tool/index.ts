@@ -6,4 +6,3 @@ export {
 	ExternalToolValidationService,
 	ExternalToolParameterValidationService,
 } from './service';
-export { ExternalToolMediumStatus } from './enum';

@@ -4,7 +4,7 @@ export enum SecurityCheckStatus {
 	FAILED = 'failed',
 	BLOCKED = 'blocked',
 }
-export interface SecurityCheck {
+interface SecurityCheck {
 	status: SecurityCheckStatus;
 }
 export interface LegacyFileResponse {

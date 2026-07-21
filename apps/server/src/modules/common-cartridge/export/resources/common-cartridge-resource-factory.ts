@@ -27,14 +27,14 @@ export type CommonCartridgeResourceProps =
 	| OmitVersionAndFolder<CommonCartridgeFileResourcePropsV130>
 	| OmitVersionAndFolder<CommonCartridgeFileFolderResourcePropsV130>;
 
-export type CommonCartridgeResourcePropsInternalV110 =
+type CommonCartridgeResourcePropsInternalV110 =
 	| CommonCartridgeManifestResourcePropsV110
 	| CommonCartridgeWebContentResourcePropsV110
 	| CommonCartridgeWebLinkResourcePropsV110
 	| CommonCartridgeFileResourcePropsV110
 	| { version: CommonCartridgeVersion.V_1_1_0; type: CommonCartridgeResourceType.FILE_FOLDER };
 
-export type CommonCartridgeResourcePropsInternalV130 =
+type CommonCartridgeResourcePropsInternalV130 =
 	| CommonCartridgeManifestResourcePropsV130
 	| CommonCartridgeWebContentResourcePropsV130
 	| CommonCartridgeWebLinkResourcePropsV130
