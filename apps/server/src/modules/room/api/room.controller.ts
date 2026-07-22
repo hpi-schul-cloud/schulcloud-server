@@ -22,7 +22,10 @@ import { RequestTimeout } from '@shared/common/decorators';
 import { ApiValidationError } from '@shared/common/error';
 import { IFindOptions } from '@shared/domain/interface';
 import { Room } from '../domain';
-import { ROOM_INCOMING_REQUEST_TIMEOUT_COPY_API_KEY } from '../timeout.config';
+import {
+	ROOM_INCOMING_REQUEST_TIMEOUT_COPY_API_KEY,
+	ROOM_INCOMING_REQUEST_TIMEOUT_ROOM_STATS,
+} from '../timeout.config';
 import { AddByEmailBodyParams } from './dto/request/add-by-email.body.params';
 import { AddRoomMembersBodyParams } from './dto/request/add-room-members.body.params';
 import { ApplicantIdsBodyParams } from './dto/request/applicant-ids.body.params';
@@ -91,6 +94,7 @@ export class RoomController {
 		await this.roomArrangementUc.moveRoomInUserArrangement(currentUser.userId, bodyParams.id, bodyParams.toPosition);
 	}
 
+	@RequestTimeout(ROOM_INCOMING_REQUEST_TIMEOUT_ROOM_STATS)
 	@Get('stats')
 	@ApiOperation({ summary: 'Get a list of room statistics.' })
 	@ApiResponse({
