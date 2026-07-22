@@ -5,7 +5,7 @@ import {
 	type CreateAuthorUsingGET200ResponseData,
 	type CreateGroupUsingGET200ResponseData,
 	type CreateSessionUsingGET200ResponseData,
-} from '../etherpad-api-client';
+} from '../generated';
 import {
 	type AuthorId,
 	type EtherpadErrorType,

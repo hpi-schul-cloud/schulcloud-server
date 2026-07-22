@@ -1,6 +1,6 @@
 import { ConfigProperty, Configuration } from '@infra/configuration';
 import { IsUrl } from 'class-validator';
-import { ConfigurationParameters } from './authorization-api-client';
+import { ConfigurationParameters } from './generated';
 
 export interface InternalAuthorizationClientConfig extends ConfigurationParameters {
 	basePath: string;

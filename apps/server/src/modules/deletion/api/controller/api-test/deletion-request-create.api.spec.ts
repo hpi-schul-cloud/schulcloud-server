@@ -4,7 +4,7 @@ import { AdminApiServerTestModule } from '@modules/server/admin-api.server.app.m
 import { type INestApplication } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
-import { TestApiClient } from '@testing/test-api-client';
+import { TestApiClientBuilder } from '@testing/test-api-client-builder';
 import { DomainName } from '../../../domain/types';
 import { DeletionRequestEntity } from '../../../repo/entity';
 import { type DeletionRequestBodyParams, type DeletionRequestResponse } from '../dto';
@@ -54,7 +54,6 @@ const isDeletionPlannedWithinAcceptableRange = (
 describe(`deletionRequest create (api)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let testApiClient: TestApiClient;
 	const API_KEY = 'someotherkey';
 
 	beforeAll(async () => {
@@ -65,7 +64,6 @@ describe(`deletionRequest create (api)`, () => {
 		app = module.createNestApplication();
 		await app.init();
 		em = module.get(EntityManager);
-		testApiClient = new TestApiClient(app, baseRouteName, API_KEY, true);
 	});
 
 	afterAll(async () => {
@@ -109,7 +107,10 @@ describe(`deletionRequest create (api)`, () => {
 		it('should return status 202', async () => {
 			const { deletionRequestToCreate } = await setup();
 
-			const response = await testApiClient.post('', deletionRequestToCreate);
+			const response = await new TestApiClientBuilder(app, baseRouteName)
+				.withApiKey(API_KEY)
+				.build()
+				.post('', deletionRequestToCreate);
 
 			expect(response.status).toEqual(202);
 		});
@@ -117,7 +118,10 @@ describe(`deletionRequest create (api)`, () => {
 		it('should return the created deletionRequest', async () => {
 			const { deletionRequestToCreate } = await setup();
 
-			const response = await testApiClient.post('', deletionRequestToCreate);
+			const response = await new TestApiClientBuilder(app, baseRouteName)
+				.withApiKey(API_KEY)
+				.build()
+				.post('', deletionRequestToCreate);
 
 			const result = response.body as DeletionRequestResponse;
 			expect(result.requestId).toBeDefined();
@@ -126,7 +130,7 @@ describe(`deletionRequest create (api)`, () => {
 		it('should deactivate the user account', async () => {
 			const { deletionRequestToCreate } = await setup();
 
-			await testApiClient.post('', deletionRequestToCreate);
+			await new TestApiClientBuilder(app, baseRouteName).withApiKey(API_KEY).build().post('', deletionRequestToCreate);
 			const account = await em.findOne(AccountEntity, { userId: new ObjectId(deletionRequestToCreate.targetRef.id) });
 			expect(account?.deactivatedAt).toBeDefined();
 		});
@@ -134,7 +138,7 @@ describe(`deletionRequest create (api)`, () => {
 		it('should flag user as deleted until actual deletion is performed', async () => {
 			const { deletionRequestToCreate } = await setup();
 
-			await testApiClient.post('', deletionRequestToCreate);
+			await new TestApiClientBuilder(app, baseRouteName).withApiKey(API_KEY).build().post('', deletionRequestToCreate);
 			const account = await em.findOne(AccountEntity, { userId: new ObjectId(deletionRequestToCreate.targetRef.id) });
 			expect(account?.deactivatedAt).toBeDefined();
 		});
@@ -143,7 +147,10 @@ describe(`deletionRequest create (api)`, () => {
 			it('should set the "deleteAfter" date to the date after the default DELETION_DELETE_AFTER_MINUTES ', async () => {
 				const { deletionRequestToCreate, defaultDeleteAfterMinutes, operationalTimeToleranceInSeconds } = await setup();
 
-				const response = await testApiClient.post('', deletionRequestToCreate);
+				const response = await new TestApiClientBuilder(app, baseRouteName)
+					.withApiKey(API_KEY)
+					.build()
+					.post('', deletionRequestToCreate);
 
 				const result = response.body as DeletionRequestResponse;
 				const createdDeletionRequestId = result.requestId;
@@ -165,7 +172,10 @@ describe(`deletionRequest create (api)`, () => {
 			it('should set the "deleteAfter" date to now', async () => {
 				const { deletionRequestToImmediateRemoval, operationalTimeToleranceInSeconds } = await setup();
 
-				const response = await testApiClient.post('', deletionRequestToImmediateRemoval);
+				const response = await new TestApiClientBuilder(app, baseRouteName)
+					.withApiKey(API_KEY)
+					.build()
+					.post('', deletionRequestToImmediateRemoval);
 
 				const result = response.body as DeletionRequestResponse;
 				const createdDeletionRequestId = result.requestId;
@@ -191,7 +201,10 @@ describe(`deletionRequest create (api)`, () => {
 
 				deletionRequestToCreate.deleteAfterMinutes = deleteAfterMinutes;
 
-				const response = await testApiClient.post('', deletionRequestToCreate);
+				const response = await new TestApiClientBuilder(app, baseRouteName)
+					.withApiKey(API_KEY)
+					.build()
+					.post('', deletionRequestToCreate);
 
 				const result = response.body as DeletionRequestResponse;
 				const createdDeletionRequestId = result.requestId;

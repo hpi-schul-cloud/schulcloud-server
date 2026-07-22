@@ -64,3 +64,11 @@
   when: WITH_NOTIFICATION_SERVER is defined and WITH_NOTIFICATION_SERVER|bool
   tags:
     - ingress
+
+- name: Add notification-server default allow network policy
+  kubernetes.core.k8s:
+    kubeconfig: ~/.kube/config
+    namespace: "{{ NAMESPACE }}"
+    template: default-allow-networkpolicy.yml.j2
+  tags:
+    - networkPolicy

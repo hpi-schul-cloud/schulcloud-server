@@ -8,7 +8,7 @@ import { type INestApplication } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
-import { TestApiClient } from '@testing/test-api-client';
+import { TestApiClientBuilder } from '@testing/test-api-client-builder';
 import { BoardExternalReferenceType } from '../../domain';
 import { BoardNodeEntity } from '../../repo';
 import {
@@ -26,7 +26,6 @@ describe(`content element delete (api)`, () => {
 	let em: EntityManager;
 	let filesStorageClientAdapterService: DeepMocked<FilesStorageClientAdapterService>;
 	let drawingElementAdapterService: DeepMocked<TldrawClientAdapter>;
-	let apiClient: TestApiClient;
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -43,7 +42,6 @@ describe(`content element delete (api)`, () => {
 		em = module.get(EntityManager);
 		filesStorageClientAdapterService = module.get(FilesStorageClientAdapterService);
 		drawingElementAdapterService = module.get(TldrawClientAdapter);
-		apiClient = new TestApiClient(app, baseRouteName);
 	});
 
 	afterAll(async () => {
@@ -68,7 +66,7 @@ describe(`content element delete (api)`, () => {
 			await em.persist([columnBoardNode, columnNode, cardNode, element, sibling]).flush();
 			em.clear();
 
-			const loggedInClient = await apiClient.login(teacherAccount);
+			const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(teacherAccount);
 
 			return { loggedInClient, columnBoardNode, columnNode, cardNode, element, sibling };
 		};
@@ -117,7 +115,7 @@ describe(`content element delete (api)`, () => {
 			await em.persist([columnBoardNode, columnNode, cardNode, element, sibling]).flush();
 			em.clear();
 
-			const loggedInClient = await apiClient.login(teacherAccount);
+			const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(teacherAccount);
 
 			return { loggedInClient, columnBoardNode, columnNode, cardNode, element, sibling };
 		};
@@ -152,7 +150,7 @@ describe(`content element delete (api)`, () => {
 				await em.persist([columnBoardNode, columnNode, cardNode, element]).flush();
 				em.clear();
 
-				const loggedInClient = await apiClient.login(teacherAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(teacherAccount);
 
 				return { element, loggedInClient };
 			};
@@ -200,7 +198,7 @@ describe(`content element delete (api)`, () => {
 			it('should return status 204', async () => {
 				const { element } = await drawingSetup();
 
-				const response = await apiClient.delete(element.id);
+				const response = await new TestApiClientBuilder(app, baseRouteName).build().delete(element.id);
 
 				expect(response.status).toEqual(401);
 			});
@@ -226,7 +224,7 @@ describe(`content element delete (api)`, () => {
 				await em.persist([columnBoardNode, columnNode, cardNode, element]).flush();
 				em.clear();
 
-				const loggedInClient = await apiClient.login(studentAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 				return { element, loggedInClient };
 			};

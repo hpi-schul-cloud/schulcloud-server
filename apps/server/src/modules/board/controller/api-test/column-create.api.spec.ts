@@ -5,7 +5,7 @@ import { type INestApplication } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
-import { TestApiClient } from '@testing/test-api-client';
+import { TestApiClientBuilder } from '@testing/test-api-client-builder';
 import { BoardExternalReferenceType } from '../../domain';
 import { columnBoardEntityFactory } from '../../testing';
 import { type ColumnResponse } from '../dto';
@@ -15,7 +15,6 @@ const baseRouteName = '/boards';
 describe(`board create (api)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let apiClient: TestApiClient;
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -25,7 +24,6 @@ describe(`board create (api)`, () => {
 		app = module.createNestApplication();
 		await app.init();
 		em = module.get(EntityManager);
-		apiClient = new TestApiClient(app, baseRouteName);
 	});
 
 	afterAll(async () => {
@@ -46,7 +44,7 @@ describe(`board create (api)`, () => {
 			await em.persist([columnBoardNode]).flush();
 			em.clear();
 
-			const loggedInClient = await apiClient.login(teacherAccount);
+			const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(teacherAccount);
 
 			return { loggedInClient, columnBoardNode };
 		};
@@ -83,7 +81,7 @@ describe(`board create (api)`, () => {
 			await em.persist([columnBoardNode]).flush();
 			em.clear();
 
-			const loggedInClient = await apiClient.login(teacherAccount);
+			const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(teacherAccount);
 
 			return { loggedInClient, columnBoardNode };
 		};
@@ -117,7 +115,7 @@ describe(`board create (api)`, () => {
 		it('should return status 403', async () => {
 			const { columnBoardNode } = await setup();
 
-			const response = await apiClient.post(`${columnBoardNode.id}/columns`);
+			const response = await new TestApiClientBuilder(app, baseRouteName).build().post(`${columnBoardNode.id}/columns`);
 
 			expect(response.status).toEqual(401);
 		});

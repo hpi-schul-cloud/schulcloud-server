@@ -11,6 +11,7 @@ import { RoomPublicApiConfig } from '@modules/room';
 import { RosterPublicApiConfig } from '@modules/roster';
 import { SharingPublicApiConfig } from '@modules/sharing';
 import { TaskPublicApiConfig } from '@modules/task';
+import { TeamPublicApiConfig } from '@modules/team';
 import { ToolPublicApiConfig } from '@modules/tool';
 import { UserPublicApiConfig } from '@modules/user';
 import { UserImportPublicApiConfig } from '@modules/user-import';
@@ -19,9 +20,8 @@ import { VideoConferencePublicApiConfig } from '@modules/video-conference';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { LanguageType } from '@shared/domain/interface';
 import { SchulcloudTheme } from '@shared/domain/types';
-import type { ServerPublicApiConfig } from '../..';
+import type { ServerPublicApiConfig } from '../../server.config';
 import { Timezone } from '../../types/timezone.enum';
-import { TeamPublicApiConfig } from '@modules/team';
 
 export class ConfigResponse {
 	@ApiProperty()

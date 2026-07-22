@@ -43,3 +43,11 @@
   when: WITH_LEGACY_FILE_ARCHIVE is defined and WITH_LEGACY_FILE_ARCHIVE|bool
   tags:
     - prometheus
+
+- name: Add legacy-file-archive default allow network policy
+  kubernetes.core.k8s:
+    kubeconfig: ~/.kube/config
+    namespace: "{{ NAMESPACE }}"
+    template: default-allow-networkpolicy.yml.j2
+  tags:
+    - networkPolicy

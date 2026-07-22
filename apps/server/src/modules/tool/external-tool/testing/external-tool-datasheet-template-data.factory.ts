@@ -18,7 +18,7 @@ export const externalToolParameterDatasheetTemplateDataFactory = Factory.define<
 	};
 });
 
-export class ExternalToolDatasheetTemplateDataFactory extends Factory<ExternalToolDatasheetTemplateData> {
+class ExternalToolDatasheetTemplateDataFactory extends Factory<ExternalToolDatasheetTemplateData> {
 	public asOauth2Tool(): this {
 		const params: DeepPartial<ExternalToolDatasheetTemplateData> = {
 			toolType: 'OAuth 2.0',

@@ -6,12 +6,13 @@ import { HttpStatus, type INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
-import { TestApiClient } from '@testing/test-api-client';
+import { TestApiClientBuilder } from '@testing/test-api-client-builder';
+
+const baseRouteName = 'collaborative-text-editor';
 
 describe('Collaborative Text Editor Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let testApiClient: TestApiClient;
 	let etherpadClientAdapter: DeepMocked<EtherpadClientAdapter>;
 
 	beforeAll(async () => {
@@ -25,7 +26,6 @@ describe('Collaborative Text Editor Controller (API)', () => {
 		app = module.createNestApplication();
 		await app.init();
 		em = app.get(EntityManager);
-		testApiClient = new TestApiClient(app, 'collaborative-text-editor');
 		etherpadClientAdapter = module.get(EtherpadClientAdapter);
 	});
 
@@ -40,7 +40,7 @@ describe('Collaborative Text Editor Controller (API)', () => {
 	describe('delete sessions by user', () => {
 		describe('when no user is logged in', () => {
 			it('should return 401', async () => {
-				const response = await testApiClient.delete(`delete-sessions`);
+				const response = await new TestApiClientBuilder(app, baseRouteName).build().delete(`delete-sessions`);
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 			});
@@ -53,7 +53,7 @@ describe('Collaborative Text Editor Controller (API)', () => {
 				await em.persist([studentAccount, studentUser]).flush();
 				em.clear();
 
-				const loggedInClient = await testApiClient.login(studentAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 				const authorId = 'authorId';
 				etherpadClientAdapter.getOrCreateAuthorId.mockResolvedValueOnce(authorId);

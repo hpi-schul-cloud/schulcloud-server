@@ -7,7 +7,7 @@ import { Module } from '@nestjs/common';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { ConsoleModule } from 'nestjs-console';
 import { MediaSyncConsole } from './api/media-sync-console';
-import { ENTITIES } from './media-sync-console.entity.imports';
+import { ENTITIES, TEST_ENTITIES } from './media-sync-console.entity.imports';
 import { MediaSourceSyncUc } from './uc';
 
 const imports = [MediaSourceSyncModule, LoggerModule, ConsoleWriterModule, ConsoleModule, ErrorModule];
@@ -31,7 +31,7 @@ export class MediaSyncConsoleAppModule {}
 	imports: [
 		...imports,
 		MongoMemoryDatabaseModule.forRoot({
-			entities: ENTITIES,
+			entities: TEST_ENTITIES,
 		}),
 	],
 	providers,

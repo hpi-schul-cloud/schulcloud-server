@@ -19,7 +19,7 @@ import { type INestApplication } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
-import { TestApiClient } from '@testing/test-api-client';
+import { TestApiClientBuilder } from '@testing/test-api-client-builder';
 import { BoardNodeEntity } from '../../../board/repo';
 import { LessonEntity } from '../../../lesson/repo';
 import { LEARNROOM_CONFIG_TOKEN, type LearnroomConfig } from '../../learnroom.config';
@@ -27,10 +27,11 @@ import { LegacyBoard } from '../../repo';
 import { boardFactory } from '../../testing';
 import { type SingleColumnBoardResponse } from '../dto';
 
+const baseRouteName = '/course-rooms';
+
 describe('Course Rooms Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let apiClient: TestApiClient;
 	let config: LearnroomConfig;
 
 	beforeAll(async () => {
@@ -45,7 +46,6 @@ describe('Course Rooms Controller (API)', () => {
 		await app.init();
 		em = app.get(EntityManager);
 
-		apiClient = new TestApiClient(app, '/course-rooms');
 		config = app.get<LearnroomConfig>(LEARNROOM_CONFIG_TOKEN);
 		config.featureCopyServiceEnabled = true;
 	});
@@ -67,7 +67,7 @@ describe('Course Rooms Controller (API)', () => {
 				await em.persist([course, task, studentAccount, studentUser, teacherUser]).flush();
 				em.clear();
 
-				const loggedInClient = await apiClient.login(studentAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 				return { loggedInClient, course };
 			};
@@ -98,7 +98,7 @@ describe('Course Rooms Controller (API)', () => {
 			it('should return status 200 and courseId', async () => {
 				const { course } = await setup();
 
-				const response = await apiClient.get(`${course.id}/board`);
+				const response = await new TestApiClientBuilder(app, baseRouteName).build().get(`${course.id}/board`);
 
 				expect(response.status).toEqual(401);
 			});
@@ -137,7 +137,7 @@ describe('Course Rooms Controller (API)', () => {
 					.flush();
 				em.clear();
 
-				const loggedInClient = await apiClient.login(teacherAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(teacherAccount);
 
 				return { loggedInClient, course, visibleTask, visibleColumnBoard, invisibleTask, invisibleColumnBoard };
 			};
@@ -222,7 +222,10 @@ describe('Course Rooms Controller (API)', () => {
 			it('should return 401', async () => {
 				const { course, task, params } = await setup();
 
-				const response = await apiClient.patch(`${course.id}/elements/${task.id}/visibility`).send(params);
+				const response = await new TestApiClientBuilder(app, baseRouteName)
+					.build()
+					.patch(`${course.id}/elements/${task.id}/visibility`)
+					.send(params);
 
 				expect(response.status).toEqual(401);
 			});
@@ -246,7 +249,7 @@ describe('Course Rooms Controller (API)', () => {
 					elements: [tasks[2], lessons[1], tasks[0], lessons[2], tasks[1], lessons[0]].map((el) => el.id),
 				};
 
-				const loggedInClient = await apiClient.login(teacherAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(teacherAccount);
 
 				return { loggedInClient, course, params };
 			};
@@ -282,7 +285,10 @@ describe('Course Rooms Controller (API)', () => {
 			it('should return 401', async () => {
 				const { course, params } = await setup();
 
-				const response = await apiClient.patch(`${course.id}/board/order`).send(params);
+				const response = await new TestApiClientBuilder(app, baseRouteName)
+					.build()
+					.patch(`${course.id}/board/order`)
+					.send(params);
 
 				expect(response.status).toEqual(401);
 			});
@@ -302,7 +308,7 @@ describe('Course Rooms Controller (API)', () => {
 				await em.persist([course, teacherAccount, teacherUser, board, ...tasks, ...lessons]).flush();
 				em.clear();
 
-				const loggedInClient = await apiClient.login(teacherAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(teacherAccount);
 
 				return { loggedInClient, course };
 			};
@@ -356,7 +362,7 @@ describe('Course Rooms Controller (API)', () => {
 			it('should return 401', async () => {
 				const { course } = await setup();
 
-				const response = await apiClient.post(`${course.id}/copy`);
+				const response = await new TestApiClientBuilder(app, baseRouteName).build().post(`${course.id}/copy`);
 
 				expect(response.status).toEqual(401);
 			});
@@ -425,7 +431,7 @@ describe('Course Rooms Controller (API)', () => {
 				await em.persist([legacyBoard]).flush();
 				em.clear();
 
-				const loggedInClient = await apiClient.login(teacherAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(teacherAccount);
 
 				return { loggedInClient, course };
 			};
@@ -481,7 +487,7 @@ describe('Course Rooms Controller (API)', () => {
 				await em.persist([lesson, course, teacherAccount, teacherUser]).flush();
 				em.clear();
 
-				const loggedInClient = await apiClient.login(teacherAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(teacherAccount);
 
 				return { loggedInClient, course, lesson };
 			};
@@ -510,7 +516,9 @@ describe('Course Rooms Controller (API)', () => {
 			it('should return 401', async () => {
 				const { course, lesson } = await setup();
 
-				const response = await apiClient.post(`lessons/${lesson.id}/copy`, { courseId: course.id });
+				const response = await new TestApiClientBuilder(app, baseRouteName)
+					.build()
+					.post(`lessons/${lesson.id}/copy`, { courseId: course.id });
 
 				expect(response.status).toEqual(401);
 			});

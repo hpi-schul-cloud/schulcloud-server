@@ -6,6 +6,7 @@ import { Archiver } from 'archiver';
 import { FileDo } from './do';
 import { ArchiveFactory, FileResponseFactory } from './factory';
 import { LegacyFileStorageAdapter } from './legacy-file-storage.adapter';
+import { SkipFileLoggable } from './loggable/skip-file.loggable';
 import { GetFileResponse } from './types';
 
 @Injectable()
@@ -43,12 +44,52 @@ export class DownloadArchiveService {
 		files: FileDo[],
 		filesById: Map<EntityId, FileDo>
 	): Promise<void> {
-		for (const file of files) {
-			const fileResponse = await this.downloadFileWithPath(file, filesById);
-			await this.appendAndWaitForEntry(archive, fileResponse);
+		const missingFileNames = await this.populateArchive(archive, files, filesById);
+
+		if (missingFileNames.length > 0) {
+			this.appendMissingFilesReport(archive, missingFileNames);
 		}
 
 		await archive.finalize();
+	}
+
+	private async populateArchive(
+		archive: Archiver,
+		files: FileDo[],
+		filesById: Map<EntityId, FileDo>
+	): Promise<string[]> {
+		const missingFileNames: string[] = [];
+
+		for (const file of files) {
+			const missingName = await this.tryAppendFile(archive, file, filesById);
+			if (missingName !== null) missingFileNames.push(missingName);
+		}
+
+		return missingFileNames;
+	}
+
+	private async tryAppendFile(
+		archive: Archiver,
+		file: FileDo,
+		filesById: Map<EntityId, FileDo>
+	): Promise<string | null> {
+		try {
+			const fileResponse = await this.downloadFileWithPath(file, filesById);
+			await this.appendAndWaitForEntry(archive, fileResponse);
+
+			return null;
+		} catch {
+			this.logger.warning(new SkipFileLoggable(file.id));
+
+			return file.name;
+		}
+	}
+
+	private appendMissingFilesReport(archive: Archiver, missingFileNames: string[]): void {
+		const header =
+			'Folgende Datei(en) konnten nicht heruntergeladen werden / The following files could not be downloaded:';
+		const content = `${header}\n\n${missingFileNames.join('\n')}`;
+		archive.append(Buffer.from(content), { name: 'FEHLENDE-DATEIEN.txt' });
 	}
 
 	private appendAndWaitForEntry(archive: Archiver, fileResponse: GetFileResponse): Promise<void> {
