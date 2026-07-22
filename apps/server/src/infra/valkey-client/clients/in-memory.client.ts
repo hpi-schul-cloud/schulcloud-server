@@ -19,8 +19,9 @@ export class InMemoryClient extends EventEmitter implements StorageClient {
 	}
 
 	public set(key: string, value: string, ttlSeconds?: number): Promise<void> {
-		this.store[key] = value;
-		if (ttlSeconds !== undefined) {
+		if (ttlSeconds === undefined) {
+			this.store[key] = value;
+		} else {
 			this.ttlStore[key] = { expiresAt: Date.now() + ttlSeconds * 1000, ttl: ttlSeconds };
 		}
 
