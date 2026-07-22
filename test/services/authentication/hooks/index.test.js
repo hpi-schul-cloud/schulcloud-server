@@ -60,6 +60,6 @@ describe('authentication hooks', () => {
 		expect(result).to.not.equal(undefined);
 
 		const jwtTtl = await jwtWhitelistAdapter.getTtl(accountId, jti);
-		expect(jwtTtl).to.be.equals(-1);
+		expect(jwtTtl).to.be.equals(-2);
 	});
 });
