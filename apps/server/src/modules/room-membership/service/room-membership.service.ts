@@ -93,7 +93,8 @@ export class RoomMembershipService {
 		const group = await this.groupService.findById(roomMembership.userGroupId);
 		const userIds = group.users.map((user) => user.userId);
 
-		await Promise.all([this.groupService.delete(group), this.roomMembershipRepo.delete(roomMembership)]);
+		await this.groupService.delete(group);
+		await this.roomMembershipRepo.delete(roomMembership);
 
 		await this.handleGuestRoleRemoval(userIds, roomMembership.schoolId);
 	}
@@ -111,10 +112,9 @@ export class RoomMembershipService {
 		const userIdsAndRoles = userIds.map((userId) => {
 			return { userId, roleName };
 		});
-		await Promise.all([
-			this.groupService.addUsersToGroup(roomMembership.userGroupId, userIdsAndRoles),
-			this.userService.addSecondarySchoolToUsers(userIds, roomMembership.schoolId),
-		]);
+
+		await this.groupService.addUsersToGroup(roomMembership.userGroupId, userIdsAndRoles);
+		await this.userService.addSecondarySchoolToUsers(userIds, roomMembership.schoolId);
 
 		return roleName;
 	}
