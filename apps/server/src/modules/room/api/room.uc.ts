@@ -59,7 +59,7 @@ export class RoomUc {
 			.flatMap((membership) => membership.roomId)
 			.filter((id): id is EntityId => !!id);
 
-		const rooms: Room[] = await this.roomService.getRoomsByIds(roomIds);
+		const rooms = await this.roomService.getRoomsByIds(roomIds);
 		const schoolIds: EntityId[] = rooms.map((room) => room.schoolId);
 
 		const schools = await this.schoolService.getSchoolsByIds(schoolIds);
