@@ -1,5 +1,5 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { StorageClient } from '@shared/domain/interface';
+import { StorageClient } from '@infra/valkey-client';
 import { EntityId } from '@shared/domain/types';
 import { InternalJwtWhitelistConfig } from '../interface';
 import { JwtWhitelistIdentifier } from './jwt-whitelist-identifier.vo';

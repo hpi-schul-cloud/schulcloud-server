@@ -1,5 +1,5 @@
 import { type Logger } from '@infra/logger';
-import { type StorageClient } from '@shared/domain/interface';
+import { type StorageClient } from '../types';
 import EventEmitter from 'node:events';
 import { InMemoryLoggable } from '../loggable';
 

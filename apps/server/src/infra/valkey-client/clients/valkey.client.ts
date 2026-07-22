@@ -1,5 +1,5 @@
-import { type StorageClient } from '@shared/domain/interface';
 import type Valkey from 'iovalkey';
+import { type StorageClient } from '../types';
 
 /**
  *  This class is a wrapper around the Valkey library to provide a consistent interface for storage operations.
