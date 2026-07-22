@@ -11,15 +11,16 @@ import { type INestApplication } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
-import { TestApiClient } from '@testing/test-api-client';
+import { TestApiClientBuilder } from '@testing/test-api-client-builder';
 import { BoardExternalReferenceType, ContentElementType, ElementReferenceType } from '../../domain';
 import { columnBoardEntityFactory, fileFolderElementEntityFactory } from '../../testing';
 import { type ElementWithParentHierarchyResponse } from '../dto';
 
+const baseRouteName = 'elements';
+
 describe(`getElementWithParentHierarchy (api)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let testApiClient: TestApiClient;
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -29,7 +30,6 @@ describe(`getElementWithParentHierarchy (api)`, () => {
 		app = module.createNestApplication();
 		await app.init();
 		em = module.get(EntityManager);
-		testApiClient = new TestApiClient(app, 'elements');
 	});
 
 	afterAll(async () => {
@@ -56,7 +56,7 @@ describe(`getElementWithParentHierarchy (api)`, () => {
 				await em.persist([columnBoardNode, fileFolderElement]).flush();
 				em.clear();
 
-				const loggedInClient = await testApiClient.login(teacherAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(teacherAccount);
 
 				return {
 					loggedInClient,
@@ -149,7 +149,7 @@ describe(`getElementWithParentHierarchy (api)`, () => {
 					.flush();
 				em.clear();
 
-				const loggedInClient = await testApiClient.login(teacherAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(teacherAccount);
 
 				return {
 					loggedInClient,
@@ -212,7 +212,7 @@ describe(`getElementWithParentHierarchy (api)`, () => {
 				await em.persist([columnBoardNode, fileFolderElement, teacherUser, teacherAccount]).flush();
 				em.clear();
 
-				const loggedInClient = await testApiClient.login(teacherAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(teacherAccount);
 
 				return {
 					loggedInClient,
@@ -274,7 +274,7 @@ describe(`getElementWithParentHierarchy (api)`, () => {
 		it('should return status 401', async () => {
 			const { fileFolderElementId } = setup();
 
-			const response = await testApiClient.get(fileFolderElementId);
+			const response = await new TestApiClientBuilder(app, baseRouteName).build().get(fileFolderElementId);
 
 			expect(response.statusCode).toEqual(401);
 		});
@@ -297,7 +297,7 @@ describe(`getElementWithParentHierarchy (api)`, () => {
 				await em.persist([columnBoardNode, fileFolderElement, otherTeacherAccount, otherTeacherUser]).flush();
 				em.clear();
 
-				const loggedInClient = await testApiClient.login(otherTeacherAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(otherTeacherAccount);
 
 				return {
 					loggedInClient,
@@ -358,7 +358,7 @@ describe(`getElementWithParentHierarchy (api)`, () => {
 					.flush();
 				em.clear();
 
-				const loggedInClient = await testApiClient.login(otherTeacherAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(otherTeacherAccount);
 
 				return {
 					loggedInClient,

@@ -1,4 +1,4 @@
-import { AuthorizationBodyParamsReferenceType, AuthorizationContextParamsAction } from '../authorization-api-client';
+import { AuthorizationBodyParamsReferenceType, AuthorizationContextParamsAction } from '../generated';
 import { AuthorizationForbiddenLoggableException } from './authorization-forbidden.loggable-exception';
 
 describe('AuthorizationForbiddenLoggableException', () => {

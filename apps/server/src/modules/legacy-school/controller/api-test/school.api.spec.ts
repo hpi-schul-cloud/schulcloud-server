@@ -7,7 +7,7 @@ import { Test, type TestingModule } from '@nestjs/testing';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
-import { TestApiClient } from '@testing/test-api-client';
+import { TestApiClientBuilder } from '@testing/test-api-client-builder';
 import { SchoolSystemOptionsEntity } from '../../entity';
 import { type ProvisioningOptionsInterface } from '../../interface';
 import { schoolSystemOptionsEntityFactory } from '../../testing';
@@ -18,7 +18,6 @@ const baseRouteName = '/schools';
 describe('School (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let testApiClient: TestApiClient;
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -28,7 +27,6 @@ describe('School (API)', () => {
 		app = module.createNestApplication();
 		await app.init();
 		em = module.get(EntityManager);
-		testApiClient = new TestApiClient(app, baseRouteName);
 	});
 
 	afterAll(async () => {
@@ -63,7 +61,7 @@ describe('School (API)', () => {
 				await em.persist([school, adminAccount, adminUser, system, schoolSystemOptions]).flush();
 				em.clear();
 
-				const adminClient = await testApiClient.login(adminAccount);
+				const adminClient = await new TestApiClientBuilder(app, baseRouteName).build(adminAccount);
 
 				return {
 					adminClient,
@@ -117,7 +115,9 @@ describe('School (API)', () => {
 			it('should return unauthorized', async () => {
 				const { school, system } = await setup();
 
-				const response = await testApiClient.get(`/${school.id}/systems/${system.id}/provisioning-options`);
+				const response = await new TestApiClientBuilder(app, baseRouteName)
+					.build()
+					.get(`/${school.id}/systems/${system.id}/provisioning-options`);
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 				expect(response.body).toEqual({
@@ -144,7 +144,7 @@ describe('School (API)', () => {
 				await em.persist([school, adminAccount, adminUser, system]).flush();
 				em.clear();
 
-				const adminClient = await testApiClient.login(adminAccount);
+				const adminClient = await new TestApiClientBuilder(app, baseRouteName).build(adminAccount);
 
 				return {
 					adminClient,
@@ -216,7 +216,7 @@ describe('School (API)', () => {
 				await em.persist([school, adminAccount, adminUser, system, schoolSystemOptions]).flush();
 				em.clear();
 
-				const adminClient = await testApiClient.login(adminAccount);
+				const adminClient = await new TestApiClientBuilder(app, baseRouteName).build(adminAccount);
 
 				return {
 					adminClient,
@@ -286,11 +286,13 @@ describe('School (API)', () => {
 			it('should return unauthorized', async () => {
 				const { school, system } = await setup();
 
-				const response = await testApiClient.post(`/${school.id}/systems/${system.id}/provisioning-options`, {
-					groupProvisioningClassesEnabled: true,
-					groupProvisioningCoursesEnabled: true,
-					groupProvisioningOtherEnabled: true,
-				});
+				const response = await new TestApiClientBuilder(app, baseRouteName)
+					.build()
+					.post(`/${school.id}/systems/${system.id}/provisioning-options`, {
+						groupProvisioningClassesEnabled: true,
+						groupProvisioningCoursesEnabled: true,
+						groupProvisioningOtherEnabled: true,
+					});
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 				expect(response.body).toEqual({

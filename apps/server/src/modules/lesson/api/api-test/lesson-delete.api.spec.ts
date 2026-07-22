@@ -7,14 +7,15 @@ import { ServerTestModule } from '@modules/server';
 import { HttpStatus, type INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
-import { TestApiClient } from '@testing/test-api-client';
+import { TestApiClientBuilder } from '@testing/test-api-client-builder';
 import { LessonEntity } from '../../repo';
 import { lessonFactory } from '../../testing';
+
+const baseRouteName = 'lessons';
 
 describe('Lesson Controller (API) - delete', () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let testApiClient: TestApiClient;
 
 	beforeAll(async () => {
 		const moduleFixture = await Test.createTestingModule({
@@ -27,7 +28,6 @@ describe('Lesson Controller (API) - delete', () => {
 		app = moduleFixture.createNestApplication();
 		await app.init();
 		em = app.get(EntityManager);
-		testApiClient = new TestApiClient(app, 'lessons');
 	});
 
 	afterAll(async () => {
@@ -55,7 +55,7 @@ describe('Lesson Controller (API) - delete', () => {
 			it('should response with unauthorized exception', async () => {
 				const { lessonId } = await setup();
 
-				const response = await testApiClient.delete(lessonId);
+				const response = await new TestApiClientBuilder(app, baseRouteName).build().delete(lessonId);
 
 				expect(response.statusCode).toEqual(HttpStatus.UNAUTHORIZED);
 				expect(response.body).toEqual({
@@ -69,7 +69,7 @@ describe('Lesson Controller (API) - delete', () => {
 			it('should NOT delete the lesson', async () => {
 				const { lessonId } = await setup();
 
-				await testApiClient.delete(lessonId);
+				await new TestApiClientBuilder(app, baseRouteName).build().delete(lessonId);
 
 				const result = await em.findOne(LessonEntity, { id: lessonId });
 				expect(result).toBeInstanceOf(LessonEntity);
@@ -83,7 +83,7 @@ describe('Lesson Controller (API) - delete', () => {
 				await em.persist([teacherAccount, teacherUser]).flush();
 				em.clear();
 
-				const loggedInClient = await testApiClient.login(teacherAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(teacherAccount);
 
 				return { loggedInClient };
 			};
@@ -97,7 +97,7 @@ describe('Lesson Controller (API) - delete', () => {
 				expect(response.body).toEqual({
 					type: 'NOT_FOUND',
 					title: 'Not Found',
-					message: 'Cannot DELETE /lessons/', // postman say "Cannot DELETE /api/v3/lessons/" differents result from bootstrap process, but important to note and maybe fix later for all requests
+					message: 'Cannot DELETE /lessons', // postman say "Cannot DELETE /api/v3/lessons/" differents result from bootstrap process, but important to note and maybe fix later for all requests
 					code: 404,
 				});
 			});
@@ -145,7 +145,7 @@ describe('Lesson Controller (API) - delete', () => {
 					await em.persist([studentAccount, studentUser, lesson]).flush();
 					em.clear();
 
-					const loggedInClient = await testApiClient.login(studentAccount);
+					const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 					return { loggedInClient, lessonId: lesson.id };
 				};
@@ -178,7 +178,7 @@ describe('Lesson Controller (API) - delete', () => {
 					await em.persist([studentAccount, studentUser, lesson]).flush();
 					em.clear();
 
-					const loggedInClient = await testApiClient.login(studentAccount);
+					const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 					return { loggedInClient, lessonId: lesson.id };
 				};
@@ -211,7 +211,7 @@ describe('Lesson Controller (API) - delete', () => {
 					await em.persist([studentAccount, studentUser, lesson]).flush();
 					em.clear();
 
-					const loggedInClient = await testApiClient.login(studentAccount);
+					const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 					return { loggedInClient, lessonId: lesson.id };
 				};
@@ -244,7 +244,7 @@ describe('Lesson Controller (API) - delete', () => {
 					await em.persist([studentAccount, studentUser, lesson]).flush();
 					em.clear();
 
-					const loggedInClient = await testApiClient.login(studentAccount);
+					const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 					return { loggedInClient, lessonId: lesson.id };
 				};
@@ -281,7 +281,7 @@ describe('Lesson Controller (API) - delete', () => {
 					await em.persist([teacherAccount, teacherUser, lesson]).flush();
 					em.clear();
 
-					const loggedInClient = await testApiClient.login(teacherAccount);
+					const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(teacherAccount);
 
 					return { loggedInClient, lessonId: lesson.id };
 				};
@@ -314,7 +314,7 @@ describe('Lesson Controller (API) - delete', () => {
 					await em.persist([teacherAccount, teacherUser, lesson]).flush();
 					em.clear();
 
-					const loggedInClient = await testApiClient.login(teacherAccount);
+					const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(teacherAccount);
 
 					return { loggedInClient, lessonId: lesson.id };
 				};
@@ -348,7 +348,7 @@ describe('Lesson Controller (API) - delete', () => {
 					await em.persist([teacherAccount, teacherUser, lesson]).flush();
 					em.clear();
 
-					const loggedInClient = await testApiClient.login(teacherAccount);
+					const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(teacherAccount);
 
 					return { loggedInClient, lessonId: lesson.id };
 				};
@@ -382,7 +382,7 @@ describe('Lesson Controller (API) - delete', () => {
 					await em.persist([teacherAccount, teacherUser, lesson]).flush();
 					em.clear();
 
-					const loggedInClient = await testApiClient.login(teacherAccount);
+					const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(teacherAccount);
 
 					return { loggedInClient, lessonId: lesson.id };
 				};
@@ -419,7 +419,7 @@ describe('Lesson Controller (API) - delete', () => {
 					await em.persist([adminAccount, adminUser, lesson]).flush();
 					em.clear();
 
-					const loggedInClient = await testApiClient.login(adminAccount);
+					const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(adminAccount);
 
 					return { loggedInClient, lessonId: lesson.id };
 				};
@@ -452,7 +452,7 @@ describe('Lesson Controller (API) - delete', () => {
 					await em.persist([adminAccount, adminUser, lesson]).flush();
 					em.clear();
 
-					const loggedInClient = await testApiClient.login(adminAccount);
+					const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(adminAccount);
 
 					return { loggedInClient, lessonId: lesson.id };
 				};

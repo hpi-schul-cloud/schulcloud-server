@@ -5,5 +5,5 @@ export {
 	ExternalToolDatasheetTemplateData,
 	ExternalToolParameterDatasheetTemplateData,
 } from './datasheet';
-export { ExternalToolMedium, ExternalToolMediumProps } from './external-tool-medium.do';
-export { FileRecordRef, FileRecordRefProps } from './file-record-ref';
+export { ExternalToolMedium } from './external-tool-medium.do';
+export { FileRecordRef } from './file-record-ref';

@@ -17,7 +17,7 @@ import { ApiValidationError } from '@shared/common/error/api-validation.error';
 import { Request, Response } from 'express';
 import { FWU_PUBLIC_API_CONFIG_TOKEN, FwuPublicApiConfig } from '../fwu.config';
 import { filesIndex } from '../fwu.filesIndex';
-import { FwuLearningContentsUc } from '../uc/fwu-learning-contents.uc';
+import { FwuLearningContentsUc } from '../uc';
 import { GetFwuLearningContentParams } from './dto/fwu-learning-contents.params';
 import { FwuListResponse } from './dto/fwu-list.response';
 import { FwuMapper } from './mapper/fwu.mapper';

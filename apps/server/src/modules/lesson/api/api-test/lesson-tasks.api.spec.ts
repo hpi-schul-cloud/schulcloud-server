@@ -5,14 +5,15 @@ import { taskFactory } from '@modules/task/testing';
 import { type INestApplication } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
-import { TestApiClient } from '@testing/test-api-client';
+import { TestApiClientBuilder } from '@testing/test-api-client-builder';
 import { lessonFactory } from '../../testing';
+
+const baseRouteName = '/lessons';
 
 describe('Lesson Controller (API) - GET list of lesson tasks /lessons/:lessonId/tasks', () => {
 	let module: TestingModule;
 	let app: INestApplication;
 	let em: EntityManager;
-	let testApiClient: TestApiClient;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -20,7 +21,6 @@ describe('Lesson Controller (API) - GET list of lesson tasks /lessons/:lessonId/
 		}).compile();
 		app = module.createNestApplication();
 		em = module.get(EntityManager);
-		testApiClient = new TestApiClient(app, '/lessons');
 
 		await app.init();
 	});
@@ -39,7 +39,7 @@ describe('Lesson Controller (API) - GET list of lesson tasks /lessons/:lessonId/
 
 			await em.persist([teacherAccount, teacherUser, course, lesson, ...tasks]).flush();
 
-			const loggedInClient = await testApiClient.login(teacherAccount);
+			const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(teacherAccount);
 
 			return { loggedInClient, course, lesson, tasks };
 		};

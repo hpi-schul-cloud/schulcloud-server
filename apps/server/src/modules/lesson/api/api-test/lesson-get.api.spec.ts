@@ -4,7 +4,7 @@ import { ServerTestModule } from '@modules/server';
 import { HttpStatus, type INestApplication } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
-import { TestApiClient } from '@testing/test-api-client';
+import { TestApiClientBuilder } from '@testing/test-api-client-builder';
 import {
 	type ComponentEtherpadProperties,
 	type ComponentGeogebraProperties,
@@ -17,10 +17,11 @@ import {
 import { lessonFactory, materialFactory } from '../../testing';
 import { type LessonResponse } from '../dto';
 
+const baseRouteName = '/lessons';
+
 describe('Lesson Controller (API) - GET /lessons/:lessonId', () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let testApiClient: TestApiClient;
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -30,7 +31,6 @@ describe('Lesson Controller (API) - GET /lessons/:lessonId', () => {
 		app = module.createNestApplication();
 		await app.init();
 		em = module.get(EntityManager);
-		testApiClient = new TestApiClient(app, '/lessons');
 	});
 
 	afterAll(async () => {
@@ -46,7 +46,7 @@ describe('Lesson Controller (API) - GET /lessons/:lessonId', () => {
 			const hiddenLesson = lessonFactory.build({ course, hidden: true });
 			await em.persist([teacherAccount, teacherUser, course, material, lesson, hiddenLesson]).flush();
 
-			const loggedInClient = await testApiClient.login(teacherAccount);
+			const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(teacherAccount);
 
 			return { loggedInClient, lesson, hiddenLesson };
 		};
@@ -143,7 +143,7 @@ describe('Lesson Controller (API) - GET /lessons/:lessonId', () => {
 				])
 				.flush();
 
-			const loggedInClient = await testApiClient.login(teacherAccount);
+			const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(teacherAccount);
 
 			return {
 				loggedInClient,
@@ -234,7 +234,7 @@ describe('Lesson Controller (API) - GET /lessons/:lessonId', () => {
 
 			await em.persist([studentAccount, studentUser, course, lesson, hiddenLesson]).flush();
 
-			const loggedInClient = await testApiClient.login(studentAccount);
+			const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 			return { loggedInClient, lesson, hiddenLesson };
 		};
@@ -263,7 +263,7 @@ describe('Lesson Controller (API) - GET /lessons/:lessonId', () => {
 			const lesson = lessonFactory.build({ course });
 			await em.persist([studentAccount, studentUser, course, lesson]).flush();
 
-			const loggedInClient = await testApiClient.login(studentAccount);
+			const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 			return { loggedInClient, course, lesson };
 		};
@@ -282,7 +282,7 @@ describe('Lesson Controller (API) - GET /lessons/:lessonId', () => {
 			const lesson = lessonFactory.build({ courseGroup });
 			await em.persist([teacherAccount, teacherUser, course, courseGroup, lesson]).flush();
 
-			const loggedInClient = await testApiClient.login(teacherAccount);
+			const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(teacherAccount);
 
 			return { loggedInClient, lesson, courseGroup };
 		};

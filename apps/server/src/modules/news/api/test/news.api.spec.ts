@@ -1,26 +1,27 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { FeathersAuthorizationService } from '@modules/authorization';
+import { CourseEntity } from '@modules/course/repo';
+import { courseEntityFactory } from '@modules/course/testing';
 import { ServerTestModule } from '@modules/server/server.app.module';
+import { TeamEntity } from '@modules/team/repo';
+import { teamFactory } from '@modules/team/testing';
 import { type User } from '@modules/user/repo';
 import { type INestApplication } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { type EntityId } from '@shared/domain/types';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
-import { TestApiClient } from '@testing/test-api-client';
+import { TestApiClientBuilder } from '@testing/test-api-client-builder';
 import moment from 'moment';
 import { NewsTargetModel } from '../../domain';
 import { News } from '../../repo';
 import { CreateNewsParams, type NewsListResponse, type NewsResponse, type UpdateNewsParams } from '../dto';
-import { courseEntityFactory } from '@modules/course/testing';
-import { CourseEntity } from '@modules/course/repo';
-import { TeamEntity } from '@modules/team/repo';
-import { teamFactory } from '@modules/team/testing';
+
+const newsApiRoute = '/news';
+const teamsApiRoute = '/team';
 
 describe('News Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let newsApiClient: TestApiClient;
-	let teamsApiClient: TestApiClient;
 
 	const courseTargetId = new ObjectId().toHexString();
 	const unpublishedCourseTargetId = new ObjectId().toHexString();
@@ -56,9 +57,6 @@ describe('News Controller (API)', () => {
 		app = module.createNestApplication();
 		await app.init();
 		em = module.get(EntityManager);
-
-		newsApiClient = new TestApiClient(app, '/news');
-		teamsApiClient = new TestApiClient(app, '/team');
 	});
 
 	beforeEach(async () => {
@@ -112,7 +110,7 @@ describe('News Controller (API)', () => {
 
 				await em.persist([studentAccount, studentUser]).flush();
 
-				const loggedInClient = await newsApiClient.login(studentAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, newsApiRoute).build(studentAccount);
 
 				return { loggedInClient, studentUser };
 			};
@@ -166,7 +164,7 @@ describe('News Controller (API)', () => {
 
 		describe('when user is not authenticated', () => {
 			it('should return 401 status', async () => {
-				await newsApiClient.get().expect(401);
+				await new TestApiClientBuilder(app, newsApiRoute).build().get().expect(401);
 			});
 		});
 	});
@@ -178,7 +176,7 @@ describe('News Controller (API)', () => {
 
 				await em.persist([studentAccount, studentUser]).flush();
 
-				const loggedInClient = await newsApiClient.login(studentAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, newsApiRoute).build(studentAccount);
 
 				return { loggedInClient, studentUser };
 			};
@@ -213,7 +211,7 @@ describe('News Controller (API)', () => {
 			it('should return 401 status', async () => {
 				const { news } = await setup();
 
-				await newsApiClient.get(`${news._id.toHexString()}`).expect(401);
+				await new TestApiClientBuilder(app, newsApiRoute).build().get(`${news._id.toHexString()}`).expect(401);
 			});
 		});
 	});
@@ -227,7 +225,7 @@ describe('News Controller (API)', () => {
 
 				await em.persist([studentAccount, studentUser]).flush();
 
-				const loggedInClient = await teamsApiClient.login(studentAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, teamsApiRoute).build(studentAccount);
 
 				return { loggedInClient, news };
 			};
@@ -262,7 +260,7 @@ describe('News Controller (API)', () => {
 			it('should return 401 status', async () => {
 				await setup();
 
-				await teamsApiClient.get(`${teamTargetId}/news`).expect(401);
+				await new TestApiClientBuilder(app, teamsApiRoute).build().get(`${teamTargetId}/news`).expect(401);
 			});
 		});
 	});
@@ -274,7 +272,7 @@ describe('News Controller (API)', () => {
 
 				await em.persist([studentAccount, studentUser]).flush();
 
-				const loggedInClient = await newsApiClient.login(studentAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, newsApiRoute).build(studentAccount);
 
 				return { loggedInClient, studentUser };
 			};
@@ -327,7 +325,7 @@ describe('News Controller (API)', () => {
 			it('should return 401 status', async () => {
 				const { params } = setup();
 
-				await newsApiClient.post().send(params).expect(401);
+				await new TestApiClientBuilder(app, newsApiRoute).build().post().send(params).expect(401);
 			});
 		});
 	});
@@ -339,7 +337,7 @@ describe('News Controller (API)', () => {
 
 				await em.persist([studentAccount, studentUser]).flush();
 
-				const loggedInClient = await newsApiClient.login(studentAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, newsApiRoute).build(studentAccount);
 
 				return { loggedInClient, studentUser };
 			};
@@ -398,7 +396,11 @@ describe('News Controller (API)', () => {
 			it('should return 401 status', async () => {
 				const { params, news } = await setup();
 
-				await newsApiClient.patch(`${news._id.toHexString()}`).send(params).expect(401);
+				await new TestApiClientBuilder(app, newsApiRoute)
+					.build()
+					.patch(`${news._id.toHexString()}`)
+					.send(params)
+					.expect(401);
 			});
 		});
 	});
@@ -410,7 +412,7 @@ describe('News Controller (API)', () => {
 
 				await em.persist([studentAccount, studentUser]).flush();
 
-				const loggedInClient = await newsApiClient.login(studentAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, newsApiRoute).build(studentAccount);
 
 				return { loggedInClient, studentUser };
 			};
@@ -447,7 +449,7 @@ describe('News Controller (API)', () => {
 			it('should return 401 status', async () => {
 				const { newsId } = await setup();
 
-				await newsApiClient.delete(`${newsId}`).expect(401);
+				await new TestApiClientBuilder(app, newsApiRoute).build().delete(`${newsId}`).expect(401);
 			});
 		});
 	});

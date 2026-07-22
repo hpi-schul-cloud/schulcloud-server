@@ -4,6 +4,8 @@ import { REQUEST } from '@nestjs/core';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { type AxiosResponse } from 'axios';
 import { type Request } from 'express';
+import { AuthorizationClientAdapter } from './authorization-client.adapter';
+import { AuthorizationErrorLoggableException, AuthorizationForbiddenLoggableException } from './error';
 import {
 	AuthorizationApi,
 	type AuthorizationBodyParams,
@@ -11,9 +13,7 @@ import {
 	AuthorizationContextParamsAction,
 	AuthorizationContextParamsRequiredPermissions,
 	type AuthorizedResponse,
-} from './authorization-api-client';
-import { AuthorizationClientAdapter } from './authorization-client.adapter';
-import { AuthorizationErrorLoggableException, AuthorizationForbiddenLoggableException } from './error';
+} from './generated';
 
 jest.mock('@infra/error');
 jest.mock('axios', (): unknown => {
