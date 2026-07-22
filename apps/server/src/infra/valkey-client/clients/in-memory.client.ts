@@ -3,9 +3,10 @@ import { type StorageClient } from '../types';
 import EventEmitter from 'node:events';
 import { InMemoryLoggable } from '../loggable';
 
+type StoreEntry = { value: string; expiresAt?: number; ttl?: number };
+
 export class InMemoryClient extends EventEmitter implements StorageClient {
-	private store: Record<string, string> = {};
-	private ttlStore: Record<string, { expiresAt: number; ttl: number }> = {};
+	private store: Record<string, StoreEntry> = {};
 	private static instance: InMemoryClient | null = null;
 
 	public static getInstance(logger: Logger): InMemoryClient {
@@ -19,10 +20,10 @@ export class InMemoryClient extends EventEmitter implements StorageClient {
 	}
 
 	public set(key: string, value: string, ttlSeconds?: number): Promise<void> {
-		if (ttlSeconds === undefined) {
-			this.store[key] = value;
+		if (ttlSeconds !== undefined) {
+			this.store[key] = { value, expiresAt: Date.now() + ttlSeconds * 1000, ttl: ttlSeconds };
 		} else {
-			this.ttlStore[key] = { expiresAt: Date.now() + ttlSeconds * 1000, ttl: ttlSeconds };
+			this.store[key] = { value };
 		}
 
 		this.logger.info(new InMemoryLoggable(`SET - Key: ${key} - Value: ${value}`));
@@ -31,23 +32,28 @@ export class InMemoryClient extends EventEmitter implements StorageClient {
 	}
 
 	public get(key: string): Promise<string | null> {
-		this.logger.info(new InMemoryLoggable(`GET - Key: ${key} - Value: ${this.store[key]}`));
+		const entry = this.store[key];
 
-		if (this.ttlStore[key]?.expiresAt < Date.now()) {
+		this.logger.info(new InMemoryLoggable(`GET - Key: ${key} - Value: ${entry?.value}`));
+
+		if (entry === undefined) {
 			return Promise.resolve(null);
 		}
 
-		return Promise.resolve(this.store[key] ?? null);
+		if (entry.expiresAt !== undefined && entry.expiresAt < Date.now()) {
+			return Promise.resolve(null);
+		}
+
+		return Promise.resolve(entry.value);
 	}
 
 	public del(key: string): Promise<number> {
 		let length = 0;
-		if (this.store[key]) {
+		if (this.store[key] !== undefined) {
 			delete this.store[key];
-			delete this.ttlStore[key];
 			length = 1;
 		}
-		this.logger.info(new InMemoryLoggable(`DELETE - Key: ${key} - Value: ${this.store[key]}`));
+		this.logger.info(new InMemoryLoggable(`DELETE - Key: ${key}`));
 
 		return Promise.resolve(length);
 	}
@@ -60,8 +66,9 @@ export class InMemoryClient extends EventEmitter implements StorageClient {
 	}
 
 	public ttl(key: string): Promise<number> {
-		this.logger.info(new InMemoryLoggable(`TTL - Key: ${key} - TTL: ${this.ttlStore[key]?.ttl}`));
+		const ttl = this.store[key]?.ttl;
+		this.logger.info(new InMemoryLoggable(`TTL - Key: ${key} - TTL: ${ttl}`));
 
-		return Promise.resolve(this.ttlStore[key]?.ttl ?? -1);
+		return Promise.resolve(ttl ?? -1);
 	}
 }
