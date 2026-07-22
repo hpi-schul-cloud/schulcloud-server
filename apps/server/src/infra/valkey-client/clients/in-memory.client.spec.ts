@@ -99,6 +99,16 @@ describe(InMemoryClient.name, () => {
 
 					restore();
 				});
+
+				it('should delete the expired key from the store', async () => {
+					const { key, restore } = await setup();
+
+					await client.get(key);
+					const result = await client.del(key);
+					expect(result).toBe(0);
+
+					restore();
+				});
 			});
 		});
 	});

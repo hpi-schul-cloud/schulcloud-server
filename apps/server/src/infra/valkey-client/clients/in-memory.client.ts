@@ -41,6 +41,7 @@ export class InMemoryClient extends EventEmitter implements StorageClient {
 		}
 
 		if (entry.expiresAt !== undefined && entry.expiresAt < Date.now()) {
+			delete this.store[key];
 			return Promise.resolve(null);
 		}
 
