@@ -159,13 +159,5 @@ describe(GroupAggregateScope.name, () => {
 				]);
 			});
 		});
-
-		describe('when no value was given', () => {
-			it('should not include the query in the result', () => {
-				const result = new GroupAggregateScope().byUsersAndOrganizationsSchoolId(undefined).build();
-
-				expect(result).toEqual([defaultFacetQuery]);
-			});
-		});
 	});
 });

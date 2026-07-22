@@ -46,37 +46,25 @@ export class RoomUc {
 	) {}
 
 	public async getRoomStats(userId: EntityId, findOptions: IFindOptions<Room>): Promise<Page<RoomStats>> {
-		console.time('RoomUc.getRoomStats');
-
-		console.time('RoomUc.getRoomStats - checkFeatureAdministrateRoomsEnabled');
 		this.roomPermissionService.checkFeatureAdministrateRoomsEnabled();
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		this.authorizationService.checkOneOfPermissions(user, [Permission.SCHOOL_ADMINISTRATE_ROOMS]);
-		console.timeEnd('RoomUc.getRoomStats - checkFeatureAdministrateRoomsEnabled');
 
-		console.time('RoomUc.getRoomStats - getRoomMembershipStatsByUsersAndRoomsSchoolId');
 		const roomMembershipStats = await this.roomMembershipService.getRoomMembershipStatsByUsersAndRoomsSchoolId(
 			user.school.id,
 			findOptions.pagination
 		);
-		console.timeEnd('RoomUc.getRoomStats - getRoomMembershipStatsByUsersAndRoomsSchoolId');
+
 		const roomIds: EntityId[] = roomMembershipStats.data
 			.flatMap((membership) => membership.roomId)
 			.filter((id): id is EntityId => !!id);
 
-		console.time('RoomUc.getRoomStats - getRoomsByIds');
 		const rooms: Room[] = await this.roomService.getRoomsByIds(roomIds);
-		console.timeEnd('RoomUc.getRoomStats - getRoomsByIds');
-
 		const schoolIds: EntityId[] = rooms.map((room) => room.schoolId);
 
-		console.time('RoomUc.getRoomStats - getSchoolsByIds');
 		const schools = await this.schoolService.getSchoolsByIds(schoolIds);
-		console.timeEnd('RoomUc.getRoomStats - getSchoolsByIds');
-
 		const roomStats = this.mapRoomStats(roomMembershipStats, rooms, schools);
 
-		console.timeEnd('RoomUc.getRoomStats');
 		return { data: roomStats, total: roomMembershipStats.total };
 	}
 
