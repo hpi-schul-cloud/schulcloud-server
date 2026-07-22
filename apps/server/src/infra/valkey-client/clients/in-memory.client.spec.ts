@@ -191,7 +191,7 @@ describe(InMemoryClient.name, () => {
 			return { keyWithTTL };
 		};
 
-		it('should set and retrieve TTL for a key', async () => {
+		it('should retrieve TTL for a key', async () => {
 			const { keyWithTTL } = await setup();
 
 			const ttl = await client.ttl(keyWithTTL);
@@ -207,10 +207,66 @@ describe(InMemoryClient.name, () => {
 			expect(ttl).toBe(-1);
 		});
 
-		it('should return -1 for TTL of a non-existent key', async () => {
+		it('should return -2 for a non-existent key', async () => {
 			const ttl = await client.ttl('nonExistentKey');
 
-			expect(ttl).toBe(-1);
+			expect(ttl).toBe(-2);
+		});
+
+		describe('when the key has expired', () => {
+			const setup = async () => {
+				const originalDateNow = Date.now;
+				let now = originalDateNow();
+				jest.spyOn(Date, 'now').mockImplementation(() => now);
+
+				await client.set('expiredTTLKey', 'value', 60);
+
+				now += 61 * 1000;
+
+				return { restore: () => (Date.now = originalDateNow) };
+			};
+
+			it('should return -2 for an expired key', async () => {
+				const { restore } = await setup();
+
+				const ttl = await client.ttl('expiredTTLKey');
+				expect(ttl).toBe(-2);
+
+				restore();
+			});
+
+			it('should evict the expired key from the store', async () => {
+				const { restore } = await setup();
+
+				await client.ttl('expiredTTLKey');
+				const result = await client.del('expiredTTLKey');
+				expect(result).toBe(0);
+
+				restore();
+			});
+		});
+
+		describe('when time has passed but the key has not yet expired', () => {
+			const setup = async () => {
+				const originalDateNow = Date.now;
+				let now = originalDateNow();
+				jest.spyOn(Date, 'now').mockImplementation(() => now);
+
+				await client.set('partialTTLKey', 'value', 60);
+
+				now += 10 * 1000;
+
+				return { restore: () => (Date.now = originalDateNow) };
+			};
+
+			it('should return the remaining TTL in seconds', async () => {
+				const { restore } = await setup();
+
+				const ttl = await client.ttl('partialTTLKey');
+				expect(ttl).toBe(50);
+
+				restore();
+			});
 		});
 	});
 });
