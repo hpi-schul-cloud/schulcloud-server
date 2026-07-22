@@ -30,6 +30,7 @@
     kubeconfig: ~/.kube/config
     namespace: '{{ NAMESPACE }}'
     template: ingress.yml.j2
+    apply: yes
   when: WITH_LEGACY_FILE_ARCHIVE is defined and WITH_LEGACY_FILE_ARCHIVE|bool
   tags:
     - ingress
