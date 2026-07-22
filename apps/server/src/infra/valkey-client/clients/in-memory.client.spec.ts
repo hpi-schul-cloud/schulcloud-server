@@ -23,7 +23,7 @@ describe(InMemoryClient.name, () => {
 
 			await client.set(key, value, 60);
 
-			expect(logger.warning).toHaveBeenCalledWith(expect.anything());
+			expect(logger.info).toHaveBeenCalledWith(expect.anything());
 		});
 	});
 
@@ -43,7 +43,7 @@ describe(InMemoryClient.name, () => {
 				const result = await client.get(key);
 
 				expect(result).toBe(value);
-				expect(logger.warning).toHaveBeenCalledWith(expect.anything());
+				expect(logger.info).toHaveBeenCalledWith(expect.anything());
 			});
 
 			it('should return null for a non-existent key', async () => {
