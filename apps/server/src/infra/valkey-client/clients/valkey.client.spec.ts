@@ -38,6 +38,12 @@ describe('ValkeyClient', () => {
 
 			expect(redisMock.set).toHaveBeenCalledWith('key', 'value', 'EX', 60);
 		});
+
+		it('should set a value without expiration', async () => {
+			await valkeyClient.set('key', 'value');
+
+			expect(redisMock.set).toHaveBeenCalledWith('key', 'value');
+		});
 	});
 
 	describe('DEL', () => {
