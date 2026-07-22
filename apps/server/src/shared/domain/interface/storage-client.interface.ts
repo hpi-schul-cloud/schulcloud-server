@@ -6,6 +6,4 @@ export interface StorageClient {
 	keys(pattern: string): Promise<string[]>;
 	on(event: 'error', callback: (err: Error) => void): void;
 	on(event: 'connect', callback: (msg: unknown) => void): void;
-	emit(event: 'error', err: Error): boolean;
-	emit(event: 'connect', msg: unknown): boolean;
 }

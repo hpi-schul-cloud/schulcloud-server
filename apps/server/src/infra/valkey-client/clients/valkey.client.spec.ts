@@ -80,13 +80,4 @@ describe('ValkeyClient', () => {
 			expect(redisMock.on).toHaveBeenCalledWith('error', callback);
 		});
 	});
-
-	describe('EMIT', () => {
-		it('should emit an event with arguments', () => {
-			const err = new Error('test');
-			valkeyClient.emit('error', err);
-
-			expect(redisMock.emit).toHaveBeenCalledWith('error', err);
-		});
-	});
 });

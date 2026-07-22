@@ -42,7 +42,7 @@ describe(ValkeyFactory.name, () => {
 
 				const redisInstance = await ValkeyFactory.build(config, logger, domainErrorHandler);
 
-				redisInstance.emit('connect', { test: true });
+				(redisInstance as unknown as InMemoryClient).emit('connect', { test: true });
 
 				expect(logger.info).toHaveBeenNthCalledWith(1, new ConnectedLoggable({ test: true }));
 			});
