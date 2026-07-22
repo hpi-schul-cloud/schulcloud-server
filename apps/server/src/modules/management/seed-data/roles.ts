@@ -405,7 +405,7 @@ const roleSeedData: { [key: string | RoleName]: SeedRoleProperties } = {
 		permissions: [],
 	},
 };
-export const roleOrder = [
+const roleOrder = [
 	'user',
 	'administrator',
 	'superhero',

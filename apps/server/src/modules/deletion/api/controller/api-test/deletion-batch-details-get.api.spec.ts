@@ -4,7 +4,7 @@ import { AdminApiServerTestModule } from '@modules/server/admin-api.server.app.m
 import { userFactory } from '@modules/user/testing';
 import { type INestApplication } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
-import { TestApiClient } from '@testing/test-api-client';
+import { TestApiClientBuilder } from '@testing/test-api-client-builder';
 import { StatusModel } from '../../../domain/types'; // barrel file
 import { type DeletionBatchEntity } from '../../../repo/entity'; // barrel file
 import { deletionBatchEntityFactory, deletionRequestEntityFactory } from '../../../repo/entity/testing'; // testing need to be changed to top level of the module
@@ -14,7 +14,6 @@ const baseRouteName = '/deletion-batches';
 describe('getBatchDetails ', () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let testApiClient: TestApiClient;
 	const API_KEY = 'someotherkey';
 
 	beforeAll(async () => {
@@ -24,7 +23,6 @@ describe('getBatchDetails ', () => {
 
 		app = module.createNestApplication();
 		em = module.get(EntityManager);
-		testApiClient = new TestApiClient(app, baseRouteName, API_KEY, true);
 
 		await app.init();
 	});
@@ -84,7 +82,7 @@ describe('getBatchDetails ', () => {
 		it('should return status 200', async () => {
 			const { id } = await setup();
 
-			const response = await testApiClient.get(id);
+			const response = await new TestApiClientBuilder(app, baseRouteName).withApiKey(API_KEY).build().get(id);
 
 			expect(response.status).toEqual(200);
 		});
@@ -92,7 +90,7 @@ describe('getBatchDetails ', () => {
 		it('should return the deletion batch', async () => {
 			const { id, expectedResponse } = await setup();
 
-			const response = await testApiClient.get(id);
+			const response = await new TestApiClientBuilder(app, baseRouteName).withApiKey(API_KEY).build().get(id);
 
 			const responseBody = response.body as DeletionBatchEntity;
 
@@ -102,7 +100,7 @@ describe('getBatchDetails ', () => {
 
 	describe('when calling with invalid id', () => {
 		it('should return status 404', async () => {
-			const response = await testApiClient.get('invalid-id');
+			const response = await new TestApiClientBuilder(app, baseRouteName).withApiKey(API_KEY).build().get('invalid-id');
 
 			expect(response.status).toEqual(404);
 		});
@@ -137,7 +135,7 @@ describe('getBatchDetails ', () => {
 		it('should return response with empty arrays', async () => {
 			const { id, expectedResponse } = await setup();
 
-			const result = await testApiClient.get(id);
+			const result = await new TestApiClientBuilder(app, baseRouteName).withApiKey(API_KEY).build().get(id);
 
 			expect(result.status).toEqual(200);
 			expect(result.body).toEqual(expectedResponse);

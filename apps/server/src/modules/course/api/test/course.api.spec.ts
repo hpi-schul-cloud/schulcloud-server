@@ -1,19 +1,21 @@
 import { faker } from '@faker-js/faker';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { groupEntityFactory } from '@modules/group/testing';
+import { schoolEntityFactory } from '@modules/management/seed-data/factory/school.entity.factory';
+import { type SchoolEntity } from '@modules/school/repo';
 import { ServerTestModule } from '@modules/server/server.app.module';
 import { HttpStatus, type INestApplication } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
-import { TestApiClient } from '@testing/test-api-client';
+import { TestApiClientBuilder } from '@testing/test-api-client-builder';
 import { CourseEntity } from '../../repo';
 import { courseEntityFactory } from '../../testing';
 import { type CourseMetadataListResponse } from '../dto';
 import { type CourseCommonCartridgeMetadataResponse } from '../dto/course-cc-metadata.response';
-import { schoolEntityFactory } from '@modules/management/seed-data/factory/school.entity.factory';
-import { type SchoolEntity } from '@modules/school/repo';
+
+const baseRouteName = 'courses';
 
 const createStudent = (school: SchoolEntity) => {
 	const { studentUser, studentAccount } = UserAndAccountTestFactory.buildStudent({ school }, [Permission.COURSE_VIEW]);
@@ -31,7 +33,6 @@ const createTeacher = (school: SchoolEntity) => {
 describe('Course Controller (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let testApiClient: TestApiClient;
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -41,7 +42,6 @@ describe('Course Controller (API)', () => {
 		app = module.createNestApplication();
 		await app.init();
 		em = module.get(EntityManager);
-		testApiClient = new TestApiClient(app, 'courses');
 	});
 
 	afterAll(async () => {
@@ -80,7 +80,7 @@ describe('Course Controller (API)', () => {
 		it('should find courses as student', async () => {
 			const { student, course } = await setup();
 
-			const loggedInClient = await testApiClient.login(student.account);
+			const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(student.account);
 			const response = await loggedInClient.get();
 
 			const { data } = response.body as CourseMetadataListResponse;
@@ -93,7 +93,7 @@ describe('Course Controller (API)', () => {
 		it('should find courses as teacher', async () => {
 			const { teacher, course } = await setup();
 
-			const loggedInClient = await testApiClient.login(teacher.account);
+			const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(teacher.account);
 			const response = await loggedInClient.get();
 
 			const { data } = response.body as CourseMetadataListResponse;
@@ -106,7 +106,7 @@ describe('Course Controller (API)', () => {
 		it('should return locked=true if course has no teachers', async () => {
 			const { student, courseWithoutTeacher } = await setup();
 
-			const loggedInClient = await testApiClient.login(student.account);
+			const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(student.account);
 			const response = await loggedInClient.get();
 
 			const { data } = response.body as CourseMetadataListResponse;
@@ -131,7 +131,7 @@ describe('Course Controller (API)', () => {
 				await em.persist([teacher.account, teacher.user, course, group]).flush();
 				em.clear();
 
-				const loggedInClient = await testApiClient.login(teacher.account);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(teacher.account);
 
 				return {
 					loggedInClient,
@@ -171,7 +171,7 @@ describe('Course Controller (API)', () => {
 			it('should return unauthorized', async () => {
 				const { course } = await setup();
 
-				const response = await testApiClient.post(`${course.id}/stop-sync`);
+				const response = await new TestApiClientBuilder(app, baseRouteName).build().post(`${course.id}/stop-sync`);
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 				expect(response.body).toEqual({
@@ -202,7 +202,7 @@ describe('Course Controller (API)', () => {
 			await em.persist([teacher.account, teacher.user, course]).flush();
 			em.clear();
 
-			const loggedInClient = await testApiClient.login(teacher.account);
+			const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(teacher.account);
 			const response = await loggedInClient.get(`${course.id}/user-permissions`);
 			const data = response.body as { [key: string]: string[] };
 
@@ -226,7 +226,7 @@ describe('Course Controller (API)', () => {
 				await em.persist([teacher.account, teacher.user, course, group]).flush();
 				em.clear();
 
-				const loggedInClient = await testApiClient.login(teacher.account);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(teacher.account);
 
 				return {
 					loggedInClient,
@@ -259,7 +259,7 @@ describe('Course Controller (API)', () => {
 				await em.persist([teacher.account, teacher.user, course, group]).flush();
 				em.clear();
 
-				const loggedInClient = await testApiClient.login(teacher.account);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(teacher.account);
 				const params = { groupId: 'not-mongo-id' };
 
 				return {
@@ -293,7 +293,7 @@ describe('Course Controller (API)', () => {
 				await em.persist([teacher.account, teacher.user, course, group]).flush();
 				em.clear();
 
-				const loggedInClient = await testApiClient.login(teacher.account);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(teacher.account);
 
 				return {
 					loggedInClient,
@@ -343,7 +343,10 @@ describe('Course Controller (API)', () => {
 				const { course, group } = await setup();
 				const params = { groupId: group.id };
 
-				const response = await testApiClient.post(`${course.id}/start-sync`).send(params);
+				const response = await new TestApiClientBuilder(app, baseRouteName)
+					.build()
+					.post(`${course.id}/start-sync`)
+					.send(params);
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 				expect(response.body).toEqual({
@@ -374,7 +377,7 @@ describe('Course Controller (API)', () => {
 		it('should return common cartridge metadata of a course', async () => {
 			const { course, teacher } = await setup();
 
-			const loggedInClient = await testApiClient.login(teacher.account);
+			const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(teacher.account);
 			const response = await loggedInClient.get(`${course.id}/cc-metadata`);
 			const data = response.body as CourseCommonCartridgeMetadataResponse;
 
@@ -392,7 +395,7 @@ describe('Course Controller (API)', () => {
 			await em.persist([teacher.account, teacher.user]).flush();
 			em.clear();
 
-			const loggedInClient = await testApiClient.login(teacher.account);
+			const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(teacher.account);
 
 			return { loggedInClient, course };
 		};

@@ -1,4 +1,4 @@
-import { type ConfigurationParameters } from './etherpad-api-client';
+import { type ConfigurationParameters } from './generated';
 
 export interface InternalEtherpadClientConfig extends ConfigurationParameters {
 	apiKey: string;

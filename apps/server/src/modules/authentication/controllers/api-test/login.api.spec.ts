@@ -16,7 +16,7 @@ import { Test, type TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { JwtTestFactory } from '@testing/factory/jwt.test.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
-import { TestApiClient } from '@testing/test-api-client';
+import { TestApiClientBuilder } from '@testing/test-api-client-builder';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import jwt from 'jsonwebtoken';
@@ -77,7 +77,6 @@ describe('Login Controller (api)', () => {
 
 	let app: INestApplication<Server>;
 	let em: EntityManager;
-	let testApiClient: TestApiClient;
 
 	beforeAll(async () => {
 		const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -87,7 +86,6 @@ describe('Login Controller (api)', () => {
 		app = moduleFixture.createNestApplication();
 		await app.init();
 		em = app.get(EntityManager);
-		testApiClient = new TestApiClient(app, basePath);
 	});
 
 	afterAll(async () => {
@@ -621,7 +619,7 @@ describe('Login Controller (api)', () => {
 				await em.persist([studentAccount, studentUser]).flush();
 				em.clear();
 
-				const loggedInClient = await testApiClient.login(studentAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, basePath).build(studentAccount);
 
 				return {
 					loggedInClient,
@@ -642,7 +640,7 @@ describe('Login Controller (api)', () => {
 
 		describe('when an invalid access token is provided', () => {
 			it('should return error response', async () => {
-				const response: Response = await testApiClient.post('/refresh-session');
+				const response: Response = await new TestApiClientBuilder(app, basePath).build().post('/refresh-session');
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 			});
@@ -659,7 +657,7 @@ describe('Login Controller (api)', () => {
 				em.clear();
 
 				const data = { userId: superheroUser.id };
-				const loggedInClient = await testApiClient.login(studentAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, basePath).build(studentAccount);
 
 				return { data, loggedInClient };
 			};
@@ -668,7 +666,7 @@ describe('Login Controller (api)', () => {
 				it('should respond with unauthorized exception', async () => {
 					const { data } = await setup();
 
-					const response = await testApiClient.post('/support-jwt', data);
+					const response = await new TestApiClientBuilder(app, basePath).build().post('/support-jwt', data);
 
 					expect(response.statusCode).toEqual(HttpStatus.UNAUTHORIZED);
 				});
@@ -694,7 +692,7 @@ describe('Login Controller (api)', () => {
 				em.clear();
 
 				const data = { userId: userId ?? studentUser.id };
-				const loggedInClient = await testApiClient.loginAsServiceAccount(superheroAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, basePath).asServiceAccount().build(superheroAccount);
 
 				return { data, loggedInClient };
 			};

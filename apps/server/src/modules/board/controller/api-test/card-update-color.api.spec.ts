@@ -1,20 +1,21 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { courseEntityFactory } from '@modules/course/testing';
+import { schoolEntityFactory } from '@modules/school/testing';
 import { ServerTestModule } from '@modules/server/server.app.module';
 import { type INestApplication } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
-import { TestApiClient } from '@testing/test-api-client';
+import { TestApiClientBuilder } from '@testing/test-api-client-builder';
 import { BoardExternalReferenceType, Colors } from '../../domain';
 import { BoardNodeEntity } from '../../repo';
 import { cardEntityFactory, columnBoardEntityFactory, columnEntityFactory } from '../../testing';
-import { schoolEntityFactory } from '@modules/school/testing';
+
+const baseRouteName = '/cards';
 
 describe(`card update color (api)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let testApiClient: TestApiClient;
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
@@ -24,7 +25,6 @@ describe(`card update color (api)`, () => {
 		app = module.createNestApplication();
 		await app.init();
 		em = module.get(EntityManager);
-		testApiClient = new TestApiClient(app, 'cards');
 	});
 
 	afterAll(async () => {
@@ -49,7 +49,7 @@ describe(`card update color (api)`, () => {
 
 		await em.persist([cardNode, columnNode, columnBoardNode]).flush();
 		em.clear();
-		const teacherClient = await testApiClient.login(teacherAccount);
+		const teacherClient = await new TestApiClientBuilder(app, baseRouteName).build(teacherAccount);
 
 		return { cardNode, teacherClient };
 	};
@@ -82,7 +82,7 @@ describe(`card update color (api)`, () => {
 
 			const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 			await em.persist([studentAccount, studentUser]).flush();
-			const studentClient = await testApiClient.login(studentAccount);
+			const studentClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
 
 			const newColor = Colors.RED;
 

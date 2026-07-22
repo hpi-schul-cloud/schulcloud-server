@@ -6,4 +6,3 @@ export {
 	SystemEntity,
 	SystemEntityProps,
 } from './mikro-orm/system.entity';
-export { SystemMikroOrmRepo } from './mikro-orm/system.repo';

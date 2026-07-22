@@ -13,7 +13,7 @@ import { HttpStatus, type INestApplication } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { SortOrder } from '@shared/domain/interface';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
-import { TestApiClient } from '@testing/test-api-client';
+import { TestApiClientBuilder } from '@testing/test-api-client-builder';
 import { GroupEntityTypes } from '../../entity';
 import { groupEntityFactory } from '../../testing';
 import { ClassRootType } from '../../uc/dto';
@@ -27,7 +27,6 @@ const baseRouteName = '/groups';
 describe('Group (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let testApiClient: TestApiClient;
 	let authorizationConfig: AuthorizationConfig;
 
 	beforeAll(async () => {
@@ -38,7 +37,6 @@ describe('Group (API)', () => {
 		app = module.createNestApplication();
 		await app.init();
 		em = module.get(EntityManager);
-		testApiClient = new TestApiClient(app, baseRouteName);
 
 		authorizationConfig = module.get(AUTHORIZATION_CONFIG_TOKEN);
 	});
@@ -108,7 +106,7 @@ describe('Group (API)', () => {
 					.flush();
 				em.clear();
 
-				const adminClient = await testApiClient.login(adminAccount);
+				const adminClient = await new TestApiClientBuilder(app, baseRouteName).build(adminAccount);
 
 				return {
 					adminClient,
@@ -265,7 +263,7 @@ describe('Group (API)', () => {
 					.flush();
 				em.clear();
 
-				const teacherClient = await testApiClient.login(teacherAccount);
+				const teacherClient = await new TestApiClientBuilder(app, baseRouteName).build(teacherAccount);
 
 				return {
 					teacherClient,
@@ -612,7 +610,7 @@ describe('Group (API)', () => {
 					await em.persist([teacherAccount, teacherUser, group]).flush();
 					em.clear();
 
-					const loggedInClient = await testApiClient.login(teacherAccount);
+					const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(teacherAccount);
 
 					return {
 						loggedInClient,
@@ -659,7 +657,7 @@ describe('Group (API)', () => {
 					await em.persist([teacherAccount, teacherUser]).flush();
 					em.clear();
 
-					const loggedInClient = await testApiClient.login(teacherAccount);
+					const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(teacherAccount);
 
 					return {
 						loggedInClient,
@@ -699,7 +697,7 @@ describe('Group (API)', () => {
 			it('should return unauthorized', async () => {
 				const { groupId } = await setup();
 
-				const response = await testApiClient.get(`${groupId}`);
+				const response = await new TestApiClientBuilder(app, baseRouteName).build().get(`${groupId}`);
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 				expect(response.body).toEqual({
@@ -794,7 +792,7 @@ describe('Group (API)', () => {
 					.flush();
 				em.clear();
 
-				const loggedInClient = await testApiClient.login(adminAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(adminAccount);
 
 				return {
 					loggedInClient,
@@ -964,7 +962,7 @@ describe('Group (API)', () => {
 					.flush();
 				em.clear();
 
-				const loggedInClient = await testApiClient.login(teacherAccount);
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(teacherAccount);
 
 				return {
 					loggedInClient,
@@ -1094,7 +1092,7 @@ describe('Group (API)', () => {
 			it('should return unauthorized', async () => {
 				await setup();
 
-				const response = await testApiClient.get();
+				const response = await new TestApiClientBuilder(app, baseRouteName).build().get();
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 				expect(response.body).toEqual({

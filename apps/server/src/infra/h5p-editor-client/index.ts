@@ -1,3 +1,10 @@
+/** **********************************************************
+ * This is a module facade.                                  *
+ * Export only what is allowed to be used externally.        *
+ * Do not use wildcard exports.                              *
+ * Do not export *.app.module.ts here; import them directly. *
+ *********************************************************** */
+
 export { H5pEditorClientModule } from './h5p-editor-client.module';
 export { CopyContentParams, CopyContentParentType } from './h5p-editor.interface';
 export { H5P_EXCHANGE_CONFIG_TOKEN, H5pExchangeConfig } from './h5p-exchange.config';

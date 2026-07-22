@@ -2,7 +2,6 @@ import { CoreModule } from '@core/core.module';
 import { AuthGuardModule, AuthGuardOptions, JWT_AUTH_GUARD_CONFIG_TOKEN, JwtAuthGuardConfig } from '@infra/auth-guard';
 import { DATABASE_CONFIG_TOKEN, DatabaseConfig, DatabaseModule } from '@infra/database';
 import { Module } from '@nestjs/common';
-import { MongoMemoryDatabaseModule } from '@testing/database';
 import { NotificationApiModule } from './notification-api.module';
 import { NotificationEntity } from './repo/entities';
 
@@ -33,13 +32,3 @@ const ENTITIES = [NotificationEntity];
 	exports: [],
 })
 export class NotificationServerModule {}
-
-@Module({
-	imports: [
-		...imports,
-		MongoMemoryDatabaseModule.forRoot({
-			entities: ENTITIES,
-		}),
-	],
-})
-export class NotificationServerTestModule {}

@@ -1,6 +1,20 @@
-export * from './common/interface';
-export * from './context-external-tool/service/context-external-tool-authorizable.service';
-export * from './external-tool';
-export { ExternalToolAuthorizableService } from './external-tool/service/external-tool-authorizable.service';
+/** **********************************************************
+ * This is a module facade.                                  *
+ * Export only what is allowed to be used externally.        *
+ * Do not use wildcard exports.                              *
+ * Do not export *.app.module.ts here; import them directly. *
+ *********************************************************** */
+
+export {
+	ExternalTool,
+	ExternalToolLogoService,
+	ExternalToolMedium,
+	ExternalToolModule,
+	ExternalToolParameterValidationService,
+	ExternalToolService,
+	ExternalToolValidationService,
+	Lti11ToolConfig,
+	Oauth2ToolConfig,
+} from './external-tool';
 export { TOOL_PUBLIC_API_CONFIG_TOKEN, ToolPublicApiConfig } from './tool-config';
-export * from './tool.module';
+export { ToolModule } from './tool.module';
