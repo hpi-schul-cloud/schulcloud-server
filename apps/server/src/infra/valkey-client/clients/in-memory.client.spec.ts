@@ -157,6 +157,29 @@ describe(InMemoryClient.name, () => {
 			expect(keys).toEqual(expect.arrayContaining([key1, key2]));
 			expect(keys).not.toContain('anotherKey');
 		});
+
+		it('should return keys that have no TTL', async () => {
+			await client.set('persistentKey', 'value');
+
+			const keys = await client.keys('persistent*');
+
+			expect(keys).toContain('persistentKey');
+		});
+
+		it('should not return expired keys', async () => {
+			const originalDateNow = Date.now;
+			let now = originalDateNow();
+			jest.spyOn(Date, 'now').mockImplementation(() => now);
+
+			await client.set('expiredKey', 'value', 60);
+
+			now += 61 * 1000;
+
+			const keys = await client.keys('expired*');
+			expect(keys).not.toContain('expiredKey');
+
+			Date.now = originalDateNow;
+		});
 	});
 
 	describe('TTL', () => {
@@ -174,6 +197,14 @@ describe(InMemoryClient.name, () => {
 			const ttl = await client.ttl(keyWithTTL);
 
 			expect(ttl).toBe(60);
+		});
+
+		it('should return -1 for a key set without a TTL', async () => {
+			await client.set('keyWithoutTTL', 'value');
+
+			const ttl = await client.ttl('keyWithoutTTL');
+
+			expect(ttl).toBe(-1);
 		});
 
 		it('should return -1 for TTL of a non-existent key', async () => {

@@ -62,8 +62,13 @@ export class InMemoryClient extends EventEmitter implements StorageClient {
 	public keys(pattern: string): Promise<string[]> {
 		const regex = new RegExp(pattern.replace(/\*/g, '.*'));
 		this.logger.info(new InMemoryLoggable(`Pattern: ${pattern}`));
+		const now = Date.now();
+		const keys = Object.entries(this.store)
+			.filter(([, entry]) => entry.expiresAt === undefined || entry.expiresAt >= now)
+			.map(([key]) => key)
+			.filter((key) => regex.test(key));
 
-		return Promise.resolve(Object.keys(this.store).filter((key) => regex.test(key)));
+		return Promise.resolve(keys);
 	}
 
 	public ttl(key: string): Promise<number> {
