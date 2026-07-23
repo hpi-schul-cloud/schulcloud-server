@@ -1,5 +1,5 @@
-import { StorageClient } from '@infra/valkey-client';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { type StorageClient } from '@infra/valkey-client';
 import { EntityId } from '@shared/domain/types';
 import { InternalJwtWhitelistConfig } from '../interface';
 import { JwtWhitelistIdentifier } from './jwt-whitelist-identifier.vo';
@@ -66,7 +66,9 @@ export class JwtWhitelistAdapter {
 	}
 
 	private async setInStorage(redisIdentifier: JwtWhitelistIdentifier): Promise<void> {
-		await this.storageClient.set(redisIdentifier.value, '1', 'EX', this.config.jwtTimeoutSeconds);
+		// We are using a placeholder value because we only care about the key existence in the storage, not the value itself.
+		const placeholderValue = '1';
+		await this.storageClient.set(redisIdentifier.value, placeholderValue, this.config.jwtTimeoutSeconds);
 	}
 
 	private checkValue(value: string | null): void {
