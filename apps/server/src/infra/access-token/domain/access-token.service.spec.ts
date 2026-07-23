@@ -1,7 +1,7 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
-import { type StorageClient } from '@infra/valkey-client';
 import { ForbiddenException, InternalServerErrorException } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
+import { type StorageClient } from '@infra/valkey-client';
 import { randomUUID } from 'crypto';
 import { ACCESS_TOKEN_VALKEY_CLIENT } from '../access-token.config';
 import { AccessTokenService } from './access-token.service';
@@ -51,12 +51,7 @@ describe('AccessTokenService', () => {
 
 				const result = await service.createToken(payload, tokenTtlInSeconds);
 
-				expect(storageClient.set).toHaveBeenCalledWith(
-					expect.any(String),
-					JSON.stringify(payload),
-					'EX',
-					tokenTtlInSeconds
-				);
+				expect(storageClient.set).toHaveBeenCalledWith(expect.any(String), JSON.stringify(payload), tokenTtlInSeconds);
 				expect(result.token).toEqual(expect.any(String));
 				expect(result.token.length).toBe(24);
 			});
@@ -77,12 +72,7 @@ describe('AccessTokenService', () => {
 				const { payload, tokenTtlInSeconds, error } = setup();
 
 				await expect(service.createToken(payload, tokenTtlInSeconds)).rejects.toThrow(error);
-				expect(storageClient.set).toHaveBeenCalledWith(
-					expect.any(String),
-					JSON.stringify(payload),
-					'EX',
-					tokenTtlInSeconds
-				);
+				expect(storageClient.set).toHaveBeenCalledWith(expect.any(String), JSON.stringify(payload), tokenTtlInSeconds);
 			});
 		});
 	});
@@ -121,7 +111,6 @@ describe('AccessTokenService', () => {
 					expect(storageClient.set).toHaveBeenCalledWith(
 						expect.any(String),
 						JSON.stringify(payload),
-						'EX',
 						tokenTtlInSeconds
 					);
 				});

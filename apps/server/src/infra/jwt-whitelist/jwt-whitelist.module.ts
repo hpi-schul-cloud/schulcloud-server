@@ -1,7 +1,7 @@
 import { ConfigurationModule } from '@infra/configuration';
 import {
 	SESSION_VALKEY_CLIENT_CONFIG_TOKEN,
-	StorageClient,
+	type StorageClient,
 	ValkeyClientModule,
 	ValkeyClientSessionConfig,
 } from '@infra/valkey-client';

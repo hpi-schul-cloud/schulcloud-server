@@ -57,6 +57,7 @@
     kubeconfig: ~/.kube/config
     namespace: "{{ NAMESPACE }}"
     template: ingress.yml.j2
+    apply: yes
   when: WITH_COMMON_CARTRIDGE is defined and WITH_COMMON_CARTRIDGE|bool
   tags:
     - ingress

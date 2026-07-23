@@ -14,8 +14,12 @@ export class ValkeyClient implements StorageClient {
 		return result;
 	}
 
-	public async set(key: string, value: string, ...args: ['EX', number]): Promise<void> {
-		await this.valkeyInstance.set(key, value, ...args);
+	public async set(key: string, value: string, ttlSeconds?: number): Promise<void> {
+		if (ttlSeconds !== undefined) {
+			await this.valkeyInstance.set(key, value, 'EX', ttlSeconds);
+		} else {
+			await this.valkeyInstance.set(key, value);
+		}
 	}
 
 	public async del(key: string): Promise<number> {
@@ -36,11 +40,9 @@ export class ValkeyClient implements StorageClient {
 		return result;
 	}
 
-	public on(event: string, callback: (...args: unknown[]) => void): void {
+	public on(event: 'error', callback: (err: Error) => void): void;
+	public on(event: 'connect', callback: (msg: unknown) => void): void;
+	public on(event: string, callback: ((err: Error) => void) | ((msg: unknown) => void)): void {
 		this.valkeyInstance.on(event, callback);
-	}
-
-	public emit(event: string, ...args: unknown[]): boolean {
-		return this.valkeyInstance.emit(event, args);
 	}
 }

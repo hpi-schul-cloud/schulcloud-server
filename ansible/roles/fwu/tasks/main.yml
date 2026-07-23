@@ -51,6 +51,7 @@
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: ingress.yml.j2
+      apply: yes
       state: "{{ 'present' if WITH_FWU is defined and WITH_FWU|bool else 'absent' }}"
     tags:
       - ingress
