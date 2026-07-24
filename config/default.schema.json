@@ -306,6 +306,20 @@
 			"default": true,
 			"description": "Enables using the storage provider collection to determine a provider with free buckets upon school creation. If disabled, the only storage provider is configured via the environment variables in config/secrets.js"
 		},
+		"FEATURE_LEGACY_FILES_SHARED_BUCKET_ENABLED": {
+			"type": "boolean",
+			"default": false,
+			"description": "Stores legacy fileStorage objects in a shared bucket using school-scoped prefixes instead of per-school buckets."
+		},
+		"LEGACY_FILES_SHARED_BUCKET": {
+			"type": "string",
+			"description": "Shared bucket name for legacy fileStorage when FEATURE_LEGACY_FILES_SHARED_BUCKET_ENABLED=true."
+		},
+		"LEGACY_FILES_SHARED_BUCKET_PREFIX": {
+			"type": "string",
+			"default": "legacy-files",
+			"description": "Root prefix inside the shared legacy bucket."
+		},
 		"S3_KEY": {
 			"type": "string",
 			"description": "Synchronous encryption key used to secure storage provider secrets. Only used with FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED=true",
