@@ -355,30 +355,45 @@ describe('School Controller (API)', () => {
 							return { loggedInClient, school, expectedResponse, newParams };
 						};
 
-						it('should update school', async () => {
-							const { loggedInClient, school, expectedResponse, newParams } = await setup();
+						describe('when the request body is valid', () => {
+							it('should return 200 and update school', async () => {
+								const { loggedInClient, school, expectedResponse, newParams } = await setup();
+								newParams.logo.dataUrl =
+									'data:image/png;base64,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';
+								const response = await loggedInClient.patch(school.id).send(newParams);
 
-							const response = await loggedInClient.patch(school.id).send(newParams);
+								expect(response.status).toEqual(HttpStatus.OK);
+								expect(response.body).toEqual(expectedResponse);
 
-							expect(response.status).toEqual(HttpStatus.OK);
-							expect(response.body).toEqual(expectedResponse);
+								const updatedSchool = await em.findOne(SchoolEntity, { id: school.id });
+								const { logo, ...expectedParams } = newParams;
 
-							const updatedSchool = await em.findOne(SchoolEntity, { id: school.id });
-							const { logo, ...expectedParams } = newParams;
-
-							expect(updatedSchool).toEqual(
-								expect.objectContaining({ ...expectedParams, logo_name: logo.name, logo_dataUrl: logo.dataUrl })
-							);
+								expect(updatedSchool).toEqual(
+									expect.objectContaining({ ...expectedParams, logo_name: logo.name, logo_dataUrl: logo.dataUrl })
+								);
+							});
 						});
 
-						it('should not update school', async () => {
-							const { loggedInClient, school } = await setup();
+						describe('when the request body is valid but the logo dataUrl is invalid', () => {
+							it('should return 400', async () => {
+								const { loggedInClient, school, newParams } = await setup();
+								newParams.logo.dataUrl = 'invalid-data-url';
+								const response = await loggedInClient.patch(school.id).send(newParams);
 
-							const firstResponse = await loggedInClient.get(`id/${school.id}`);
-							const response = await loggedInClient.patch(school.id).send({});
+								expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
+							});
+						});
 
-							expect(response.status).toEqual(HttpStatus.OK);
-							expect(response.body).toEqual(firstResponse.body);
+						describe('when the request body is empty', () => {
+							it('should return 200 but not update school', async () => {
+								const { loggedInClient, school } = await setup();
+
+								const firstResponse = await loggedInClient.get(`id/${school.id}`);
+								const response = await loggedInClient.patch(school.id).send({});
+
+								expect(response.status).toEqual(HttpStatus.OK);
+								expect(response.body).toEqual(firstResponse.body);
+							});
 						});
 					});
 				});

@@ -281,6 +281,20 @@ const validateCounty = async (context) => {
 	return context;
 };
 
+const validateLogoDataUrl = async (context) => {
+	if (context?.data?.logo_dataUrl) {
+		const { logo_dataUrl } = context.data;
+
+		const regex = /^data:image\/(webp|jpeg|png|svg+xml|gif|avif);base64,[A-Za-z0-9+/]+={0,2}$/;
+		if (logo_dataUrl && regex.test(logo_dataUrl) === false) {
+			throw new Error(
+				'Invalid data URL format. The data URL for the school logo must be a base64-encoded image (WEBP, PNG, GIF, AVIF or JPEG).'
+			);
+		}
+	}
+	return context;
+};
+
 const setDefaultStudentListPermission = async (context) => {
 	if (Configuration.get('TEACHER_STUDENT_VISIBILITY__IS_ENABLED_BY_DEFAULT')) {
 		context.data.permissions = context.data.permissions || {};
@@ -347,6 +361,7 @@ exports.before = {
 		globalHooks.ifNotLocal(restrictToUserSchool),
 		validateOfficialSchoolNumber,
 		validateCounty,
+		validateLogoDataUrl,
 		iff(isProvider('external'), [preventSystemsChange]),
 		syncFederalState,
 	],
@@ -356,6 +371,7 @@ exports.before = {
 		globalHooks.ifNotLocal(restrictToUserSchool),
 		validateOfficialSchoolNumber,
 		validateCounty,
+		validateLogoDataUrl,
 		iff(isProvider('external'), [preventSystemsChange]),
 		syncFederalState,
 	],
