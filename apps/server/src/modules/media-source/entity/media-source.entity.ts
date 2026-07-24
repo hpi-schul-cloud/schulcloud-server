@@ -1,4 +1,4 @@
-import { Embedded, Entity, Property, Unique } from '@mikro-orm/core';
+import { Embedded, Entity, Enum, Property, Unique } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { EntityId } from '@shared/domain/types';
 import { MediaSourceDataFormat } from '../enum';
@@ -40,7 +40,7 @@ export class MediaSourceEntity extends BaseEntityWithTimestamps {
 	@Property({ nullable: true })
 	name?: string;
 
-	@Property({ nullable: true })
+	@Enum({ nullable: true, items: () => MediaSourceDataFormat })
 	format?: MediaSourceDataFormat;
 
 	@Embedded(() => MediaSourceOauthConfigEmbeddable, { object: true, nullable: true })

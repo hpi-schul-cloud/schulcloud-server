@@ -1,4 +1,4 @@
-export const enum FileSecurityCheckStatus {
+export enum FileSecurityCheckStatus {
 	PENDING = 'pending',
 	VERIFIED = 'verified',
 	BLOCKED = 'blocked',

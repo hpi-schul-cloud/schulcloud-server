@@ -7,13 +7,14 @@ import {
 	Index,
 	ManyToMany,
 	ManyToOne,
+	Enum,
 	OneToMany,
 	OneToOne,
 	Property,
 } from '@mikro-orm/core';
-import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
-import { SystemEntity } from '@modules/system/repo';
-import { UserLoginMigrationEntity } from '@modules/user-login-migration/repo';
+import type { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity/school-system-options.entity';
+import type { SystemEntity } from '@modules/system/repo/mikro-orm/system.entity';
+import type { UserLoginMigrationEntity } from '@modules/user-login-migration/repo/user-login-migration.entity';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { LanguageType } from '@shared/domain/interface';
 import { FileStorageType, SchoolFeature, SchoolPurpose } from '../domain';
@@ -85,7 +86,7 @@ export class SchoolEntity extends BaseEntityWithTimestamps {
 	@Property({ nullable: true })
 	officialSchoolNumber?: string;
 
-	@ManyToMany(() => SystemEntity)
+	@ManyToMany('SystemEntity')
 	systems = new Collection<SystemEntity>(this);
 
 	@Embedded(() => SchoolRoles, { object: true, nullable: true, prefix: false })
@@ -95,7 +96,7 @@ export class SchoolEntity extends BaseEntityWithTimestamps {
 	currentYear?: SchoolYearEntity;
 
 	@OneToOne(
-		() => UserLoginMigrationEntity,
+		'UserLoginMigrationEntity',
 		(userLoginMigration: UserLoginMigrationEntity) => userLoginMigration.school,
 		{
 			orphanRemoval: true,
@@ -111,7 +112,7 @@ export class SchoolEntity extends BaseEntityWithTimestamps {
 	@Embedded(() => CountyEmbeddable, { nullable: true })
 	county?: CountyEmbeddable;
 
-	@Property({ nullable: true })
+	@Enum({ nullable: true, items: () => SchoolPurpose })
 	purpose?: SchoolPurpose;
 
 	@Property({ nullable: true })
@@ -123,19 +124,21 @@ export class SchoolEntity extends BaseEntityWithTimestamps {
 	@Property({ nullable: true })
 	logo_name?: string;
 
-	@Property({ nullable: true })
+	@Enum({ nullable: true, items: () => FileStorageType })
 	fileStorageType?: FileStorageType;
 
 	@ManyToOne(() => StorageProviderEntity, { nullable: true })
 	storageProvider?: StorageProviderEntity;
 
-	@Property({ nullable: true })
+	@Enum({ nullable: true, items: () => LanguageType })
 	language?: LanguageType;
 
 	@Property({ nullable: true })
 	timezone?: string;
 
-	@OneToMany(() => SchoolSystemOptionsEntity, (options) => options.school, { cascade: [Cascade.REMOVE] })
+	@OneToMany('SchoolSystemOptionsEntity', (options: SchoolSystemOptionsEntity) => options.school, {
+		cascade: [Cascade.REMOVE],
+	})
 	schoolSystemOptions = new Collection<SchoolSystemOptionsEntity>(this);
 
 	constructor(props: SchoolProperties) {

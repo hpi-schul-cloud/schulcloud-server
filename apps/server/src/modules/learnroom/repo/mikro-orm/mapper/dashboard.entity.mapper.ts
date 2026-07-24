@@ -109,16 +109,22 @@ export class DashboardModelMapper {
 
 	public async mapDashboardToModel(entity: Dashboard): Promise<DashboardEntity> {
 		const modelEntity = await this.getOrConstructDashboardModelEntity(entity);
+		if (!modelEntity.gridElements.isInitialized()) {
+			await modelEntity.gridElements.init();
+		}
+
+		const existingElements = Array.from(modelEntity.gridElements);
 		const mappedElements = await Promise.all(
 			entity.getGrid().map((elementWithPosition) => this.mapGridElementToModel(elementWithPosition, modelEntity))
 		);
 
-		Array.from(modelEntity.gridElements).forEach((el) => {
-			if (!mappedElements.includes(el)) {
-				modelEntity.gridElements.remove(el);
-				this.em.remove(el);
+		existingElements.forEach((element) => {
+			if (!mappedElements.includes(element)) {
+				this.em.remove(element);
 			}
 		});
+
+		modelEntity.gridElements.set(mappedElements);
 
 		return modelEntity;
 	}

@@ -1,6 +1,6 @@
 import { Entity, ManyToOne, OneToOne, Property } from '@mikro-orm/core';
-import { SchoolEntity } from '@modules/school/repo';
-import { SystemEntity } from '@modules/system/repo';
+import type { SchoolEntity } from '@modules/school/repo/school.entity';
+import type { SystemEntity } from '@modules/system/repo/mikro-orm/system.entity';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 
 export type UserLoginMigrationEntityProps = {
@@ -21,14 +21,14 @@ export type UserLoginMigrationEntityProps = {
 
 @Entity({ tableName: 'user-login-migrations' })
 export class UserLoginMigrationEntity extends BaseEntityWithTimestamps {
-	@OneToOne(() => SchoolEntity, (school) => school.userLoginMigration, { nullable: false, owner: true })
+	@OneToOne('SchoolEntity', (school: SchoolEntity) => school.userLoginMigration, { nullable: false, owner: true })
 	school: SchoolEntity;
 
 	// undefined, if migrating from 'local'
-	@ManyToOne(() => SystemEntity, { nullable: true })
+	@ManyToOne('SystemEntity', { nullable: true })
 	sourceSystem?: SystemEntity;
 
-	@ManyToOne(() => SystemEntity)
+	@ManyToOne('SystemEntity')
 	targetSystem!: SystemEntity;
 
 	@Property({ nullable: true })

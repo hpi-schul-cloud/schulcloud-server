@@ -256,6 +256,8 @@
 		"@nestjs/schematics": "^11.1.0",
 		"@nestjs/testing": "^11.1.19",
 		"@openapitools/openapi-generator-cli": "^2.39.0",
+		"@swc/core": "^1.15.43",
+		"@swc/jest": "^0.2.39",
 		"@types/adm-zip": "^0.5.7",
 		"@types/amqplib": "^0.10.7",
 		"@types/archiver": "^6.0.3",

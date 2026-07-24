@@ -11,13 +11,14 @@ import {
 	Index,
 	ManyToMany,
 	ManyToOne,
+	Enum,
 	Property,
 	Unique,
 	wrap,
 } from '@mikro-orm/core';
 import { RoleName } from '@modules/role';
 import { Role } from '@modules/role/repo';
-import { SchoolEntity, SchoolRoles } from '@modules/school/repo';
+import type { SchoolEntity, SchoolRoles } from '@modules/school/repo/school.entity';
 import { ReferenceNotPopulatedLoggableException } from '@shared/common/loggable-exception/reference-not-populated.loggable-exception';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 import { LanguageType, Permission } from '@shared/domain/interface';
@@ -63,7 +64,7 @@ interface UserInfo {
 @Embeddable()
 export class UserSchoolEmbeddable {
 	@Index()
-	@ManyToOne(() => SchoolEntity)
+	@ManyToOne('SchoolEntity')
 	school: SchoolEntity;
 
 	@ManyToOne(() => Role)
@@ -105,7 +106,7 @@ export class User extends BaseEntityWithTimestamps {
 	roles = new Collection<Role>(this);
 
 	@Index()
-	@ManyToOne(() => SchoolEntity, { fieldName: 'schoolId' })
+	@ManyToOne('SchoolEntity', { fieldName: 'schoolId' })
 	school: SchoolEntity;
 
 	@Embedded(() => UserSchoolEmbeddable, { array: true, nullable: true })
@@ -125,7 +126,7 @@ export class User extends BaseEntityWithTimestamps {
 	@Index()
 	importHash?: string;
 
-	@Property({ nullable: true })
+	@Enum({ nullable: true, items: () => LanguageType })
 	language?: LanguageType;
 
 	@Property({ nullable: true })

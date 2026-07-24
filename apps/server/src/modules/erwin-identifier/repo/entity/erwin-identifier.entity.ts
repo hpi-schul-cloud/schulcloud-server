@@ -1,4 +1,4 @@
-import { Entity, Property, Unique } from '@mikro-orm/core';
+import { Entity, Enum, Property, Unique } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { ReferencedEntityType } from '../../types';
@@ -16,7 +16,7 @@ export class ErwinIdentifierEntity extends BaseEntityWithTimestamps {
 	@Property()
 	erwinId: string;
 
-	@Property()
+	@Enum({ items: () => ReferencedEntityType })
 	type: ReferencedEntityType;
 
 	@Property()

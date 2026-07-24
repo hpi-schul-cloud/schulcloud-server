@@ -1,4 +1,4 @@
-import { Embeddable, Embedded, Entity, Index, Property } from '@mikro-orm/core';
+import { Embeddable, Embedded, Entity, Enum, Index, Property } from '@mikro-orm/core';
 import { RoomContentProps, RoomContentType, RoomContentItem as IRoomContentItem } from '../../domain/type';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
@@ -10,7 +10,7 @@ class RoomContentItem implements IRoomContentItem {
 	@Property({ nullable: false })
 	id!: EntityId;
 
-	@Property({ nullable: false })
+	@Enum({ nullable: false, items: () => RoomContentType })
 	type!: RoomContentType;
 }
 
