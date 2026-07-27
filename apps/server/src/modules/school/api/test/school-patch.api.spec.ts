@@ -65,7 +65,19 @@ describe('School Controller (API)', () => {
 
 						const loggedInClient = await testApiClient.login(adminAccount);
 
-						return { loggedInClient, school };
+						const schoolParams = {
+							name: school.name,
+							officialSchoolNumber: school.officialSchoolNumber,
+							logo: {
+								dataUrl: school.logo_dataUrl,
+								name: school.logo_name,
+							},
+							fileStorageType: school.fileStorageType,
+							language: school.language,
+							features: school.features,
+						};
+
+						return { loggedInClient, school, schoolParams };
 					};
 
 					describe('when id in params is not a mongo id', () => {
@@ -244,6 +256,37 @@ describe('School Controller (API)', () => {
 							);
 						});
 					});
+
+					describe('when the logo dataUrl is an url', () => {
+						it('should return 400', async () => {
+							const { loggedInClient, school, schoolParams } = await setup();
+							schoolParams.logo.dataUrl = 'http://example.com/logo.png';
+							const response = await loggedInClient.patch(school.id).send(schoolParams);
+
+							expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
+						});
+					});
+
+					describe('when the logo dataUrl is a text', () => {
+						it('should return 400', async () => {
+							const { loggedInClient, school, schoolParams } = await setup();
+							schoolParams.logo.dataUrl = 'invalid-data-url';
+							const response = await loggedInClient.patch(school.id).send(schoolParams);
+
+							expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
+						});
+					});
+
+					describe('when the logo dataUrl has an incorrect mime-type', () => {
+						it('should return 400', async () => {
+							const { loggedInClient, school, schoolParams } = await setup();
+							schoolParams.logo.dataUrl =
+								'data:video/mp4;base64,AAAAIGZ0eXBtcDQyAAAAAG1wNDFtcDQxaXNvbWF2YzEAAACsbW9vdgAAAGxtdmhkAAAAAAAAAAAAAAAAAAAD6AAAB9AAAB9AAAB9AAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAA';
+							const response = await loggedInClient.patch(school.id).send(schoolParams);
+
+							expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
+						});
+					});
 				});
 
 				describe('when request is valid', () => {
@@ -371,16 +414,6 @@ describe('School Controller (API)', () => {
 								expect(updatedSchool).toEqual(
 									expect.objectContaining({ ...expectedParams, logo_name: logo.name, logo_dataUrl: logo.dataUrl })
 								);
-							});
-						});
-
-						describe('when the request body is valid but the logo dataUrl is invalid', () => {
-							it('should return 400', async () => {
-								const { loggedInClient, school, newParams } = await setup();
-								newParams.logo.dataUrl = 'invalid-data-url';
-								const response = await loggedInClient.patch(school.id).send(newParams);
-
-								expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
 							});
 						});
 
