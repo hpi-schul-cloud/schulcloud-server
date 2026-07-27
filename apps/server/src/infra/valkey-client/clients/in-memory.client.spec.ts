@@ -15,16 +15,15 @@ describe(InMemoryClient.name, () => {
 		const setup = () => {
 			const key = 'key1';
 			const value = 'value1';
-			const args = ['EX', 60];
-			return { key, value, args };
+			return { key, value };
 		};
 
 		it('should set a value and log it', async () => {
-			const { key, value, args } = setup();
+			const { key, value } = setup();
 
-			await client.set(key, value, args);
+			await client.set(key, value, 60);
 
-			expect(logger.warning).toHaveBeenCalledWith(expect.anything());
+			expect(logger.info).toHaveBeenCalledWith(expect.anything());
 		});
 	});
 
@@ -44,7 +43,7 @@ describe(InMemoryClient.name, () => {
 				const result = await client.get(key);
 
 				expect(result).toBe(value);
-				expect(logger.warning).toHaveBeenCalledWith(expect.anything());
+				expect(logger.info).toHaveBeenCalledWith(expect.anything());
 			});
 
 			it('should return null for a non-existent key', async () => {
@@ -61,7 +60,7 @@ describe(InMemoryClient.name, () => {
 					const value = 'value1';
 					const ttlInSeconds = 60;
 
-					await client.set(key, value, 'EX', ttlInSeconds);
+					await client.set(key, value, ttlInSeconds);
 
 					return { key, value };
 				};
@@ -85,7 +84,7 @@ describe(InMemoryClient.name, () => {
 					let now = originalDateNow();
 					jest.spyOn(Date, 'now').mockImplementation(() => now);
 
-					await client.set(key, value, 'EX', ttlInSeconds);
+					await client.set(key, value, ttlInSeconds);
 
 					now += ttlInSeconds * 1000 + 1000;
 
@@ -97,6 +96,16 @@ describe(InMemoryClient.name, () => {
 
 					const result = await client.get(key);
 					expect(result).toBeNull();
+
+					restore();
+				});
+
+				it('should delete the expired key from the store', async () => {
+					const { key, restore } = await setup();
+
+					await client.get(key);
+					const result = await client.del(key);
+					expect(result).toBe(0);
 
 					restore();
 				});
@@ -148,18 +157,41 @@ describe(InMemoryClient.name, () => {
 			expect(keys).toEqual(expect.arrayContaining([key1, key2]));
 			expect(keys).not.toContain('anotherKey');
 		});
+
+		it('should return keys that have no TTL', async () => {
+			await client.set('persistentKey', 'value');
+
+			const keys = await client.keys('persistent*');
+
+			expect(keys).toContain('persistentKey');
+		});
+
+		it('should not return expired keys', async () => {
+			const originalDateNow = Date.now;
+			let now = originalDateNow();
+			jest.spyOn(Date, 'now').mockImplementation(() => now);
+
+			await client.set('expiredKey', 'value', 60);
+
+			now += 61 * 1000;
+
+			const keys = await client.keys('expired*');
+			expect(keys).not.toContain('expiredKey');
+
+			Date.now = originalDateNow;
+		});
 	});
 
 	describe('TTL', () => {
 		const setup = async () => {
 			const keyWithTTL = 'keyWithTTL';
 
-			await client.set(keyWithTTL, 'value', 'EX', 60);
+			await client.set(keyWithTTL, 'value', 60);
 
 			return { keyWithTTL };
 		};
 
-		it('should set and retrieve TTL for a key', async () => {
+		it('should retrieve TTL for a key', async () => {
 			const { keyWithTTL } = await setup();
 
 			const ttl = await client.ttl(keyWithTTL);
@@ -167,10 +199,74 @@ describe(InMemoryClient.name, () => {
 			expect(ttl).toBe(60);
 		});
 
-		it('should return -1 for TTL of a non-existent key', async () => {
-			const ttl = await client.ttl('nonExistentKey');
+		it('should return -1 for a key set without a TTL', async () => {
+			await client.set('keyWithoutTTL', 'value');
+
+			const ttl = await client.ttl('keyWithoutTTL');
 
 			expect(ttl).toBe(-1);
+		});
+
+		it('should return -2 for a non-existent key', async () => {
+			const ttl = await client.ttl('nonExistentKey');
+
+			expect(ttl).toBe(-2);
+		});
+
+		describe('when the key has expired', () => {
+			const setup = async () => {
+				const originalDateNow = Date.now;
+				let now = originalDateNow();
+				jest.spyOn(Date, 'now').mockImplementation(() => now);
+
+				await client.set('expiredTTLKey', 'value', 60);
+
+				now += 61 * 1000;
+
+				return { restore: () => (Date.now = originalDateNow) };
+			};
+
+			it('should return -2 for an expired key', async () => {
+				const { restore } = await setup();
+
+				const ttl = await client.ttl('expiredTTLKey');
+				expect(ttl).toBe(-2);
+
+				restore();
+			});
+
+			it('should evict the expired key from the store', async () => {
+				const { restore } = await setup();
+
+				await client.ttl('expiredTTLKey');
+				const result = await client.del('expiredTTLKey');
+				expect(result).toBe(0);
+
+				restore();
+			});
+		});
+
+		describe('when time has passed but the key has not yet expired', () => {
+			const setup = async () => {
+				const originalDateNow = Date.now;
+				let now = originalDateNow();
+				jest.spyOn(Date, 'now').mockImplementation(() => now);
+
+				await client.set('partialTTLKey', 'value', 60);
+
+				now += 10 * 1000;
+
+				return { restore: () => (Date.now = originalDateNow) };
+			};
+
+			it('should return the remaining TTL in seconds', async () => {
+				const { restore } = await setup();
+
+				const ttl = await client.ttl('partialTTLKey');
+				expect(ttl).toBe(50);
+
+				restore();
+			});
 		});
 	});
 });

@@ -1,9 +1,9 @@
 export interface StorageClient {
 	get(key: string): Promise<string | null>;
-	set(key: string, value: string, ...args: ['EX', number]): Promise<void>;
+	set(key: string, value: string, ttlSeconds?: number): Promise<void>;
 	del(key: string): Promise<number>;
 	ttl(key: string): Promise<number>;
 	keys(pattern: string): Promise<string[]>;
-	on(event: string, callback: (...args: unknown[]) => void): void;
-	emit(eventName: string, ...args: unknown[]): boolean;
+	on(event: 'error', callback: (err: Error) => void): void;
+	on(event: 'connect', callback: (msg: unknown) => void): void;
 }
