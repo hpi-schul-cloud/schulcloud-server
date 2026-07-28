@@ -224,22 +224,6 @@ export class FeathersRosterService {
 		return filteredRooms;
 	}
 
-	private async filterByToolAvailability<T extends CourseEntity | Room>(
-		items: T[],
-		schoolExternalToolId: EntityId
-	): Promise<T[]> {
-		const validItems: T[] = [];
-		await Promise.all(
-			items.map(async (item: T): Promise<void> => {
-				const isExternalToolReferenced = await this.isExternalToolReferenced(item, schoolExternalToolId);
-				if (isExternalToolReferenced) {
-					validItems.push(item);
-				}
-			})
-		);
-		return validItems;
-	}
-
 	private async getRoomGroup(roomMembers: RoomAuthorizable, externalTool: ExternalTool): Promise<Group> {
 		const { students, teachers } = await this.mapRoomUsers(roomMembers, 'userRoles');
 
