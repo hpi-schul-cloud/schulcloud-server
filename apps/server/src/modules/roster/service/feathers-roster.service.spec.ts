@@ -34,6 +34,7 @@ import { FeathersRosterService } from './feathers-roster.service';
 
 import { Permission } from '@shared/domain/interface';
 import { ROSTER_PUBLIC_API_CONFIG_TOKEN, RosterPublicApiConfig } from '../roster.config';
+import { UnprocessableEntityException } from '@nestjs/common';
 
 describe('FeathersRosterService', () => {
 	let module: TestingModule;
@@ -618,6 +619,26 @@ describe('FeathersRosterService', () => {
 
 				await expect(service.getUserGroups(pseudonym.pseudonym, 'clientId')).rejects.toThrow(
 					new NotFoundLoggableException(SchoolExternalTool.name, { toolId: externalTool.id })
+				);
+			});
+		});
+
+		describe('when the pseudonym does not match the tool', () => {
+			const setup = () => {
+				const clientId = 'testClientId';
+				const externalTool = externalToolFactory.withOauth2Config({ clientId }).buildWithId();
+				externalToolService.findExternalToolByOAuth2ConfigClientId.mockResolvedValueOnce(externalTool);
+
+				const pseudonym = pseudonymFactory.build({ toolId: 'some string' });
+				pseudonymService.findOneByPseudonym.mockResolvedValue(pseudonym);
+
+				return { clientId, pseudonym, externalTool };
+			};
+
+			it('should throw an error', async () => {
+				const { pseudonym, clientId } = setup();
+				await expect(service.getUserGroups(pseudonym.pseudonym, clientId)).rejects.toThrow(
+					new UnprocessableEntityException(ExternalTool.name)
 				);
 			});
 		});
