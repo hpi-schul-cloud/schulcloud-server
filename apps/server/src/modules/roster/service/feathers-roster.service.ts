@@ -13,7 +13,7 @@ import { ExternalToolService } from '@modules/tool/external-tool/service';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { SchoolExternalToolService } from '@modules/tool/school-external-tool/service';
 import { UserDo, UserService } from '@modules/user';
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, UnprocessableEntityException } from '@nestjs/common';
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { RoleReference } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
@@ -92,17 +92,28 @@ export class FeathersRosterService {
 
 	public async getUserGroups(pseudonym: string, oauth2ClientId: string): Promise<UserGroups> {
 		const pseudonymContext = await this.getByPseudonym(pseudonym);
-		const user = await this.userService.findById(pseudonymContext.userId);
+		const { userId, toolId } = pseudonymContext;
+
+		const user = await this.userService.findById(userId);
 
 		const externalTool = await this.validateAndGetExternalTool(oauth2ClientId);
-		const schoolExternalTool = await this.validateSchoolExternalTool(user.schoolId, externalTool.id);
+		if (externalTool.id !== toolId) {
+			throw new UnprocessableEntityException(ExternalTool.name);
+		}
 
-		const coursesUserGroups = await this.getCoursesUserGroups(pseudonymContext, schoolExternalTool, user.schoolId);
-		const roomsUserGroups = await this.getRoomsUserGroups(pseudonymContext, schoolExternalTool);
+		const coursesUserGroups = await this.getCoursesUserGroups(userId, user.schoolId, externalTool.id);
+
+		const roomsUserGroups = await this.getRoomsUserGroups(userId, toolId);
+
+		const groups = [...coursesUserGroups, ...roomsUserGroups];
+
+		if (groups.length === 0) {
+			throw new NotFoundLoggableException(ExternalTool.name, { 'config.clientId': oauth2ClientId });
+		}
 
 		const userGroups: UserGroups = {
 			data: {
-				groups: [...coursesUserGroups, ...roomsUserGroups],
+				groups,
 			},
 		};
 
@@ -137,47 +148,60 @@ export class FeathersRosterService {
 		return group;
 	}
 
-	private async getCoursesUserGroups(
-		pseudonymContext: Pseudonym,
-		schoolExternalTool: SchoolExternalTool,
-		userSchoolId: EntityId
-	): Promise<UserGroup[]> {
-		let [courses] = await this.courseService.findAllByUserId(pseudonymContext.userId, userSchoolId);
-		courses = await this.filterByToolAvailability(courses, schoolExternalTool);
-
-		const coursesUserGroups = courses.map((course) => {
-			const courseUserGroup: UserGroup = {
-				group_id: course.id,
-				name: course.name,
-				student_count: course.students.length,
-			};
-			return courseUserGroup;
+	private async getCoursesUserGroups(userId: EntityId, schoolId: EntityId, toolId: string): Promise<UserGroup[]> {
+		const schoolExternalTools = await this.schoolExternalToolService.findSchoolExternalTools({
+			schoolId,
+			toolId,
+			isDeactivated: false,
 		});
+		if (!schoolExternalTools || schoolExternalTools.length === 0) return [];
+
+		const schoolExternalTool = schoolExternalTools[0];
+
+		const [courses] = await this.courseService.findAllByUserId(userId, schoolId);
+		const coursesUserGroups = (
+			await Promise.all(
+				courses.map(async (course) => {
+					const isExternalToolReferenced = await this.isExternalToolReferenced(course, schoolExternalTool.id);
+					if (!isExternalToolReferenced) return undefined;
+
+					const courseUserGroup: UserGroup = {
+						group_id: course.id,
+						name: course.name,
+						student_count: course.students.length,
+					};
+
+					return courseUserGroup;
+				})
+			)
+		).filter((group): group is UserGroup => group !== undefined);
 
 		return coursesUserGroups;
 	}
 
-	private async getRoomsUserGroups(
-		pseudonymContext: Pseudonym,
-		schoolExternalTool: SchoolExternalTool
-	): Promise<UserGroup[]> {
-		let rooms = await this.getRoomsForUser(pseudonymContext.userId);
-		rooms = await this.filterByToolAvailability(rooms, schoolExternalTool);
+	private async getRoomsUserGroups(userId: EntityId, toolId: EntityId): Promise<UserGroup[]> {
+		const rooms = await this.getRoomsForUser(userId);
 
-		const roomUserGroups = await Promise.all(
-			rooms.map(async (room: Room) => {
-				const roomMembership = await this.roomMembershipService.getRoomAuthorizable(room.id);
-				const { students } = await this.mapRoomUsers(roomMembership, 'userRoles');
+		const roomUserGroups = (
+			await Promise.all(
+				rooms.map(async (room: Room) => {
+					const schoolExternalTool = await this.validateSchoolExternalTool(room.schoolId, toolId);
+					const isExternalToolReferenced = await this.isExternalToolReferenced(room, schoolExternalTool.id);
+					if (!isExternalToolReferenced) return undefined;
 
-				const userGroup: UserGroup = {
-					group_id: room.id,
-					name: room.name,
-					student_count: students.length,
-				};
+					const roomMembership = await this.roomMembershipService.getRoomAuthorizable(room.id);
+					const { students } = await this.mapRoomUsers(roomMembership, 'userRoles');
 
-				return userGroup;
-			})
-		);
+					const userGroup: UserGroup = {
+						group_id: room.id,
+						name: room.name,
+						student_count: students.length,
+					};
+
+					return userGroup;
+				})
+			)
+		).filter((group): group is UserGroup => group !== undefined);
 		return roomUserGroups;
 	}
 
@@ -202,12 +226,12 @@ export class FeathersRosterService {
 
 	private async filterByToolAvailability<T extends CourseEntity | Room>(
 		items: T[],
-		schoolExternalTool: SchoolExternalTool
+		schoolExternalToolId: EntityId
 	): Promise<T[]> {
 		const validItems: T[] = [];
 		await Promise.all(
 			items.map(async (item: T): Promise<void> => {
-				const isExternalToolReferenced = await this.isExternalToolReferenced(item, schoolExternalTool);
+				const isExternalToolReferenced = await this.isExternalToolReferenced(item, schoolExternalToolId);
 				if (isExternalToolReferenced) {
 					validItems.push(item);
 				}
@@ -329,9 +353,10 @@ export class FeathersRosterService {
 
 	private async isExternalToolReferenced(
 		context: CourseEntity | Room,
-		schoolExternalTool: SchoolExternalTool
+		schoolExternalToolId: EntityId
 	): Promise<boolean> {
 		if (context instanceof CourseEntity) {
+			// directly attached to course
 			const contextExternalTools: ContextExternalTool[] =
 				await this.contextExternalToolService.findContextExternalTools({
 					context: {
@@ -339,7 +364,7 @@ export class FeathersRosterService {
 						type: ToolContextType.COURSE,
 					},
 					schoolToolRef: {
-						schoolToolId: schoolExternalTool.id,
+						schoolToolId: schoolExternalToolId,
 					},
 				});
 
@@ -349,6 +374,7 @@ export class FeathersRosterService {
 		}
 
 		if (this.config.featureColumnBoardExternalToolsEnabled) {
+			// part of a Board which can be in a Course of Room
 			const columnBoards: ColumnBoard[] = await this.columnBoardService.findByExternalReference({
 				type: context instanceof CourseEntity ? BoardExternalReferenceType.Course : BoardExternalReferenceType.Room,
 				id: context.id,
@@ -357,7 +383,7 @@ export class FeathersRosterService {
 			const isExternalToolReferencedInColumnBoard: boolean[] = await Promise.all(
 				columnBoards.map(
 					(columnBoard: ColumnBoard): Promise<boolean> =>
-						this.isExternalToolReferencedInColumnBoard(columnBoard, schoolExternalTool)
+						this.isExternalToolReferencedInColumnBoard(columnBoard, schoolExternalToolId)
 				)
 			);
 
@@ -371,7 +397,7 @@ export class FeathersRosterService {
 
 	private async isExternalToolReferencedInColumnBoard(
 		columnBoard: ColumnBoard,
-		schoolExternalTool: SchoolExternalTool
+		schoolExternalToolId: EntityId
 	): Promise<boolean> {
 		const elements = columnBoard.getChildrenOfType(ExternalToolElement);
 
@@ -383,7 +409,7 @@ export class FeathersRosterService {
 
 				const contextExternalTool = await this.contextExternalToolService.findById(element.contextExternalToolId);
 
-				const isRequestedTool = contextExternalTool?.schoolToolRef.schoolToolId === schoolExternalTool.id;
+				const isRequestedTool = contextExternalTool?.schoolToolRef.schoolToolId === schoolExternalToolId;
 
 				return isRequestedTool;
 			})
@@ -425,7 +451,7 @@ export class FeathersRosterService {
 	): Promise<ExternalTool> {
 		const externalTool = await this.validateAndGetExternalTool(oauth2ClientId);
 		const schoolExternalTool = await this.validateSchoolExternalTool(schoolId, externalTool.id);
-		const isExternalToolReferenced = await this.isExternalToolReferenced(context, schoolExternalTool);
+		const isExternalToolReferenced = await this.isExternalToolReferenced(context, schoolExternalTool.id);
 
 		if (!isExternalToolReferenced) {
 			throw new NotFoundLoggableException(ContextExternalTool.name, { contextId: context.id });
