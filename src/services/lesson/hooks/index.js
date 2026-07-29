@@ -5,6 +5,7 @@ const { nanoid } = require('nanoid');
 const { iff, isProvider } = require('feathers-hooks-common');
 const { NotFound, BadRequest } = require('../../../errors');
 const { equal } = require('../../../helper/compare').ObjectId;
+const { removeHomeworksByLessonId } = require('../../homework/removeDependentHomeworks');
 const {
 	injectUserId,
 	hasPermission,
@@ -197,5 +198,10 @@ exports.after = {
 	create: [addShareTokenIfCourseShareable],
 	update: [],
 	patch: [],
-	remove: [],
+	remove: [
+		async (context) => {
+			await removeHomeworksByLessonId(context.id || context.result._id);
+			return context;
+		},
+	],
 };
