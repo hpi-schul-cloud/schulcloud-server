@@ -2,6 +2,7 @@ const { expect } = require('chai');
 const appPromise = require('../../../../src/app');
 const testObjects = require('../../helpers/testObjects')(appPromise());
 const { courseGroupModel } = require('../../../../src/services/user-group/model');
+const { LessonModel } = require('../../../../src/services/lesson/model');
 
 const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 
@@ -124,6 +125,26 @@ describe('courseGroup service', () => {
 			const result = await app.service('courseGroups').remove(courseGroup._id, params);
 			expect(result).to.not.be.undefined;
 			expect(result).to.haveOwnProperty('_id');
+		});
+
+		it('REMOVE a courseGroup and only its dependent lessons', async () => {
+			const { _id: schoolId } = await testObjects.createTestSchool({});
+			const student = await testObjects.createTestUser({ roles: ['student'], schoolId });
+			const { _id: courseId } = await testObjects.createTestCourse({ schoolId, userIds: [student._id] });
+			const courseGroup = await testObjects.createTestCourseGroup({ schoolId, courseId, userIds: [student._id] });
+			const otherCourseGroup = await testObjects.createTestCourseGroup({ schoolId, courseId, userIds: [student._id] });
+			const directCourseLesson = await testObjects.createTestLesson({ courseId });
+			const targetLesson = await testObjects.createTestLesson({ courseGroupId: courseGroup._id });
+			const siblingCourseGroupLesson = await testObjects.createTestLesson({ courseGroupId: otherCourseGroup._id });
+
+			const params = await testObjects.generateRequestParamsFromUser(student);
+			params.query = {};
+
+			await app.service('courseGroups').remove(courseGroup._id, params);
+
+			expect(await LessonModel.findById(targetLesson._id).lean().exec()).to.be.null;
+			expect(await LessonModel.findById(directCourseLesson._id).lean().exec()).to.not.be.null;
+			expect(await LessonModel.findById(siblingCourseGroupLesson._id).lean().exec()).to.not.be.null;
 		});
 	});
 
