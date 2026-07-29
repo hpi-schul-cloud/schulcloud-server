@@ -3,12 +3,12 @@ import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestj
 import { ApiTags } from '@nestjs/swagger';
 import { PaginationParams } from '@shared/controller/dto';
 import {
-	CreateNewsParams,
-	FilterNewsParams,
-	NewsListResponse,
-	NewsResponse,
-	NewsUrlParams,
-	UpdateNewsParams,
+    CreateNewsParams,
+    FilterNewsParams,
+    NewsListResponse,
+    NewsResponse,
+    NewsUrlParams,
+    UpdateNewsParams,
 } from './dto';
 import { NewsMapper } from './mapper';
 import { NewsUc } from './news.uc';
@@ -51,7 +51,7 @@ export class NewsController {
 			{ pagination }
 		);
 		const dtoList = newsList.map((news) => NewsMapper.mapToResponse(news));
-		const response = new NewsListResponse(dtoList, count);
+		const response = new NewsListResponse(dtoList, count, pagination.skip, pagination.limit);
 		return response;
 	}
 

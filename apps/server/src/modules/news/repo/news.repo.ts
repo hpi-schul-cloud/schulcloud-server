@@ -1,7 +1,7 @@
 import { EntityName, FilterQuery, QueryOrderMap } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
-import { IFindOptions } from '@shared/domain/interface';
+import { IFindOptions, SortOrder } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
 import { BaseRepo } from '@shared/repo/base.repo';
 import { getFieldName } from '@shared/repo/utils/repo-helper';
@@ -87,9 +87,11 @@ export class NewsRepo extends BaseRepo<News> {
 	/** resolves a news documents list with some elements (school, target, and updator/creator) populated already */
 	private async findNewsAndCount(query: FilterQuery<News>, options?: IFindOptions<News>): Promise<Counted<News[]>> {
 		const { pagination, order } = options || {};
+		const orderBy = { ...order, _id: order?._id ?? SortOrder.desc } as QueryOrderMap<News>;
 		const [newsEntities, count] = await this._em.findAndCount(News, query, {
-			...pagination,
-			orderBy: order as QueryOrderMap<News>,
+			offset: pagination?.skip,
+			limit: pagination?.limit,
+			orderBy,
 		});
 		// populate target for all inheritances of news which not works when the list contains different types
 		const schoolNews = newsEntities.filter((news) => news instanceof SchoolNews);

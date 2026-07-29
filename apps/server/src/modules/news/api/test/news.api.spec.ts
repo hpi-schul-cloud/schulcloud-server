@@ -140,6 +140,27 @@ describe('News Controller (API)', () => {
 				expect(data[0].id).toBe(expected.data[0]._id.toString());
 			});
 
+			it('should return the second page and pagination metadata', async () => {
+				const { loggedInClient, studentUser } = await setup();
+				await createCourseTarget(courseTargetId, studentUser);
+				const newsList = Array.from({ length: 11 }, () =>
+					newTestNews(NewsTargetModel.Course, courseTargetId, studentUser)
+				);
+				await em.persist(newsList).flush();
+
+				const firstPageResponse = await loggedInClient.get('?skip=0&limit=10').expect(200);
+				const secondPageResponse = await loggedInClient.get('?skip=10&limit=10').expect(200);
+				const firstPage = firstPageResponse.body as NewsListResponse;
+				const { data, total, skip, limit } = secondPageResponse.body as NewsListResponse;
+
+				expect(firstPage.data).toHaveLength(10);
+				expect(data).toHaveLength(1);
+				expect(firstPage.data.map((news) => news.id)).not.toContain(data[0].id);
+				expect(total).toBe(11);
+				expect(skip).toBe(10);
+				expect(limit).toBe(10);
+			});
+
 			it('should get for /news with unpublished params only unpublished news', async () => {
 				const { loggedInClient, studentUser } = await setup();
 				await createCourseTarget(unpublishedCourseTargetId, studentUser);
