@@ -87,7 +87,7 @@ export class NewsRepo extends BaseRepo<News> {
 	/** resolves a news documents list with some elements (school, target, and updator/creator) populated already */
 	private async findNewsAndCount(query: FilterQuery<News>, options?: IFindOptions<News>): Promise<Counted<News[]>> {
 		const { pagination, order } = options || {};
-		const orderBy = { ...order, _id: order?._id ?? SortOrder.desc } as QueryOrderMap<News>;
+		const orderBy = order ? ({ ...order, _id: order._id ?? SortOrder.desc } as QueryOrderMap<News>) : undefined;
 		const [newsEntities, count] = await this._em.findAndCount(News, query, {
 			offset: pagination?.skip,
 			limit: pagination?.limit,
