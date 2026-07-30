@@ -58,6 +58,12 @@ const setupNestServices = async (app) => {
 	app.services['nest-feathers-roster-service'] = feathersRosterService;
 	app.services['nest-orm'] = orm;
 	app.services['nest-jwt-whitelist-adapter'] = jwtWhitelistAdapter;
+	app.services['nest-column-board-service'] = {
+		deleteByCourseId: async () => undefined,
+	};
+	app.services['nest-context-external-tool-service'] = {
+		deleteContextExternalToolsByCourseId: async () => undefined,
+	};
 
 	return { nestApp, orm, accountUc, accountService, jwtWhitelistAdapter };
 };

@@ -3,6 +3,7 @@ const appPromise = require('../../../../src/app');
 const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 const testObjects = require('../../helpers/testObjects')(appPromise());
 const { courseModel } = require('../../../../src/services/user-group/model');
+const { LessonModel } = require('../../../../src/services/lesson/model');
 
 describe('course service', () => {
 	let app;
@@ -84,6 +85,32 @@ describe('course service', () => {
 			.patch(course._id, { description: 'this description has been changed' }, params);
 		expect(result).to.not.be.undefined;
 		expect(result.description).to.eq('this description has been changed');
+	});
+
+	it('REMOVE a course and its dependent lessons', async () => {
+		const { _id: schoolId } = await testObjects.createTestSchool({});
+		const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
+		const course = await testObjects.createTestCourse({ schoolId, teacherIds: [teacher._id] });
+		const otherCourse = await testObjects.createTestCourse({ schoolId, teacherIds: [teacher._id] });
+		const courseGroup = await testObjects.createTestCourseGroup({ schoolId, courseId: course._id, userIds: [] });
+		const otherCourseGroup = await testObjects.createTestCourseGroup({ schoolId, courseId: otherCourse._id, userIds: [] });
+
+		const directLesson = await testObjects.createTestLesson({ courseId: course._id });
+		const courseGroupLesson = await testObjects.createTestLesson({ courseGroupId: courseGroup._id });
+		const unrelatedCourseLesson = await testObjects.createTestLesson({ courseId: otherCourse._id });
+		const unrelatedCourseGroupLesson = await testObjects.createTestLesson({ courseGroupId: otherCourseGroup._id });
+
+		const params = await testObjects.generateRequestParamsFromUser(teacher);
+		const result = await app.service('courses').remove(course._id, params);
+
+		expect(result).to.not.be.undefined;
+		expect(await LessonModel.findById(directLesson._id).lean().exec()).to.be.null;
+		expect(await LessonModel.findById(courseGroupLesson._id).lean().exec()).to.be.null;
+		expect(await courseModel.findById(course._id).lean().exec()).to.be.null;
+		expect(await app.service('courseGroupModel').get(courseGroup._id).catch(() => null)).to.be.null;
+		expect(await LessonModel.findById(unrelatedCourseLesson._id).lean().exec()).to.not.be.null;
+		expect(await LessonModel.findById(unrelatedCourseGroupLesson._id).lean().exec()).to.not.be.null;
+		expect(await app.service('courseGroupModel').get(otherCourseGroup._id)).to.not.be.null;
 	});
 
 	describe('security features', () => {
