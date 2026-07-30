@@ -34,6 +34,7 @@ import { FeathersRosterService } from './feathers-roster.service';
 
 import { Permission } from '@shared/domain/interface';
 import { ROSTER_PUBLIC_API_CONFIG_TOKEN, RosterPublicApiConfig } from '../roster.config';
+import { UnprocessableEntityException } from '@nestjs/common';
 
 describe('FeathersRosterService', () => {
 	let module: TestingModule;
@@ -228,8 +229,6 @@ describe('FeathersRosterService', () => {
 			const setup = () => {
 				const user = userDoFactory.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.STUDENT }]).build();
 				const school = legacySchoolDoFactory.buildWithId({ id: user.schoolId });
-				const pseudonym = pseudonymFactory.build({ userId: user.id });
-
 				const courseA = courseEntityFactory.buildWithId();
 				const courseB = courseEntityFactory.buildWithId();
 				const courseC = courseEntityFactory.buildWithId();
@@ -237,6 +236,7 @@ describe('FeathersRosterService', () => {
 
 				const clientId = 'testClientId';
 				const externalTool = externalToolFactory.withOauth2Config({ clientId }).buildWithId();
+				const pseudonym = pseudonymFactory.build({ userId: user.id, toolId: externalTool.id });
 				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
 					toolId: externalTool.id,
 					schoolId: school.id,
@@ -299,7 +299,6 @@ describe('FeathersRosterService', () => {
 			const setup = () => {
 				const user = userDoFactory.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.STUDENT }]).build();
 				const school = legacySchoolDoFactory.buildWithId({ id: user.schoolId });
-				const pseudonym = pseudonymFactory.build({ userId: user.id });
 
 				const courseA = courseEntityFactory.buildWithId();
 				const courseB = courseEntityFactory.buildWithId();
@@ -308,6 +307,7 @@ describe('FeathersRosterService', () => {
 
 				const clientId = 'testClientId';
 				const externalTool = externalToolFactory.withOauth2Config({ clientId }).buildWithId();
+				const pseudonym = pseudonymFactory.build({ userId: user.id, toolId: externalTool.id });
 				const otherExternalTool = externalToolFactory.buildWithId();
 				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
 					toolId: externalTool.id,
@@ -408,12 +408,11 @@ describe('FeathersRosterService', () => {
 
 				const school = legacySchoolDoFactory.buildWithId({ id: user.schoolId });
 
-				const pseudonym = pseudonymFactory.build({ userId: user.id });
-
 				const room = roomFactory.build({ schoolId: school.id });
 
 				const clientId = 'testClientId';
 				const externalTool = externalToolFactory.withOauth2Config({ clientId }).buildWithId();
+				const pseudonym = pseudonymFactory.build({ userId: user.id, toolId: externalTool.id });
 				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
 					toolId: externalTool.id,
 					schoolId: school.id,
@@ -448,7 +447,7 @@ describe('FeathersRosterService', () => {
 				pseudonymService.findOneByPseudonym.mockResolvedValueOnce(pseudonym);
 				userService.findById.mockResolvedValue(user);
 				externalToolService.findExternalToolByOAuth2ConfigClientId.mockResolvedValueOnce(externalTool);
-				schoolExternalToolService.findSchoolExternalTools.mockResolvedValueOnce([schoolExternalTool]);
+				schoolExternalToolService.findSchoolExternalTools.mockResolvedValue([schoolExternalTool]);
 
 				roomService.getSingleRoom.mockResolvedValueOnce(room);
 
@@ -599,10 +598,10 @@ describe('FeathersRosterService', () => {
 		describe('when the school external tool does not exist or is deactivated', () => {
 			const setup = () => {
 				const user = userDoFactory.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.STUDENT }]).build();
-				const pseudonym = pseudonymFactory.build({ userId: user.id });
 
 				const clientId = 'testClientId';
 				const externalTool = externalToolFactory.withOauth2Config({ clientId }).buildWithId();
+				const pseudonym = pseudonymFactory.build({ userId: user.id, toolId: externalTool.id });
 
 				pseudonymService.findOneByPseudonym.mockResolvedValue(pseudonym);
 				userService.findById.mockResolvedValueOnce(user);
@@ -620,6 +619,26 @@ describe('FeathersRosterService', () => {
 
 				await expect(service.getUserGroups(pseudonym.pseudonym, 'clientId')).rejects.toThrow(
 					new NotFoundLoggableException(SchoolExternalTool.name, { toolId: externalTool.id })
+				);
+			});
+		});
+
+		describe('when the pseudonym does not match the tool', () => {
+			const setup = () => {
+				const clientId = 'testClientId';
+				const externalTool = externalToolFactory.withOauth2Config({ clientId }).buildWithId();
+				externalToolService.findExternalToolByOAuth2ConfigClientId.mockResolvedValueOnce(externalTool);
+
+				const pseudonym = pseudonymFactory.build({ toolId: 'some string' });
+				pseudonymService.findOneByPseudonym.mockResolvedValue(pseudonym);
+
+				return { clientId, pseudonym, externalTool };
+			};
+
+			it('should throw an error', async () => {
+				const { pseudonym, clientId } = setup();
+				await expect(service.getUserGroups(pseudonym.pseudonym, clientId)).rejects.toThrow(
+					new UnprocessableEntityException(ExternalTool.name)
 				);
 			});
 		});
