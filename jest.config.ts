@@ -10,8 +10,12 @@ let config: Config.InitialOptions = {
 	// ignore legacy mocha tests
 	testPathIgnorePatterns: ['^src', '^test'],
 	transform: {
-		'^.+\\.(t|j)s$': 'ts-jest',
+		'^.+\\.(t|j)s$': ['ts-jest', { tsconfig: { allowJs: true } }],
 	},
+	// sanitize-html pulls in an ESM-only htmlparser2 chain that must be transpiled for Jest
+	transformIgnorePatterns: [
+		'/node_modules/(?!(?:.*/)?(?:htmlparser2|domhandler|domutils|dom-serializer|domelementtype|entities)/)',
+	],
 	collectCoverageFrom: ['apps/**/*.(t|j)s'],
 	coverageDirectory: './coverage',
 	coveragePathIgnorePatterns: ['.module.ts$', 'index.ts$', 'spec.ts$'],
