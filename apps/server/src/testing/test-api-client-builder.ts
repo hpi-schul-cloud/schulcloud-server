@@ -213,17 +213,14 @@ export class TestApiClientBuilder {
 
 		if (usesCredentialLogin) {
 			if (this.isExternalUser) {
-				// eslint-disable-next-line no-console
 				console.log('Warning: asExternalUser() has no effect without withJwt() - flag is only used in JWT generation');
 			}
 			if (this.isServiceAccount) {
-				// eslint-disable-next-line no-console
 				console.log(
 					'Warning: asServiceAccount() affects login endpoint but isServiceAccount flag in JWT requires withJwt()'
 				);
 			}
 			if (this.systemId) {
-				// eslint-disable-next-line no-console
 				console.log(
 					'Warning: withSystemId() has no effect without withJwt() - systemId is only used in JWT generation'
 				);

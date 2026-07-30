@@ -51,8 +51,8 @@ export class CourseEntityMapper {
 	public static mapDoToEntityData(domainObject: Course, em: EntityManager): EntityData<CourseEntity> {
 		const props: CourseProps = domainObject.getProps();
 		const school: SchoolEntity = em.getReference(SchoolEntity, props.schoolId);
-		const courseGroups: CourseGroupEntity[] = props.courseGroupIds.map(
-			(id: EntityId): CourseGroupEntity => em.getReference(CourseGroupEntity, id)
+		const courseGroups: CourseGroupEntity[] = props.courseGroupIds.map((id: EntityId): CourseGroupEntity =>
+			em.getReference(CourseGroupEntity, id)
 		);
 
 		const classes: ClassEntity[] = props.classIds.map((id: EntityId): ClassEntity => em.getReference(ClassEntity, id));
@@ -60,8 +60,8 @@ export class CourseEntityMapper {
 
 		const students: UserEntity[] = props.studentIds.map((id: EntityId): UserEntity => em.getReference(UserEntity, id));
 		const teachers: UserEntity[] = props.teacherIds.map((id: EntityId): UserEntity => em.getReference(UserEntity, id));
-		const substitutionTeachers: UserEntity[] = props.substitutionTeacherIds.map(
-			(id: EntityId): UserEntity => em.getReference(UserEntity, id)
+		const substitutionTeachers: UserEntity[] = props.substitutionTeacherIds.map((id: EntityId): UserEntity =>
+			em.getReference(UserEntity, id)
 		);
 
 		const courseEntityData: EntityData<CourseEntity> = {

@@ -2,17 +2,17 @@ import { BaseDO } from '@shared/domain/domainobject';
 import { type EntityId } from '@shared/domain/types';
 
 export enum ShareTokenParentType {
-	'Course' = 'courses',
-	'Task' = 'tasks',
-	'Lesson' = 'lessons',
-	'ColumnBoard' = 'columnBoard',
-	'Room' = 'room',
-	'Card' = 'card',
-	'Column' = 'column',
+	Course = 'courses',
+	Task = 'tasks',
+	Lesson = 'lessons',
+	ColumnBoard = 'columnBoard',
+	Room = 'room',
+	Card = 'card',
+	Column = 'column',
 }
 
 export enum ShareTokenContextType {
-	'School' = 'schools',
+	School = 'schools',
 }
 
 export type ShareTokenString = string;

@@ -355,9 +355,8 @@ export class FeathersRosterService {
 			});
 
 			const isExternalToolReferencedInColumnBoard: boolean[] = await Promise.all(
-				columnBoards.map(
-					(columnBoard: ColumnBoard): Promise<boolean> =>
-						this.isExternalToolReferencedInColumnBoard(columnBoard, schoolExternalTool)
+				columnBoards.map((columnBoard: ColumnBoard): Promise<boolean> =>
+					this.isExternalToolReferencedInColumnBoard(columnBoard, schoolExternalTool)
 				)
 			);
 

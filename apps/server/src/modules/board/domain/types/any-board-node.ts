@@ -6,9 +6,4 @@ import type { AnyMediaBoardNode } from '../media-board';
 import type { AnyContentElement } from './any-content-element';
 
 export type AnyBoardNode =
-	| AnyContentElement
-	| AnyMediaBoardNode
-	| Card
-	| CollaborativeTextEditorElement
-	| Column
-	| ColumnBoard;
+	AnyContentElement | AnyMediaBoardNode | Card | CollaborativeTextEditorElement | Column | ColumnBoard;

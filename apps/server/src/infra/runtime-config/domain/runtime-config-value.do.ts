@@ -11,9 +11,7 @@ export type RuntimeConfigDefault = {
 } & RuntimeConfigValueAndType;
 
 export type RuntimeConfigValueAndType =
-	| { value: string; type: 'string' }
-	| { value: number; type: 'number' }
-	| { value: boolean; type: 'boolean' };
+	{ value: string; type: 'string' } | { value: number; type: 'number' } | { value: boolean; type: 'boolean' };
 
 export type RuntimeConfigType = RuntimeConfigValueAndType['type'];
 
