@@ -26,6 +26,7 @@
 			"@modules/*": ["apps/server/src/modules/*"],
 			"@shared/*": ["apps/server/src/shared/*"],
 			"@testing/*": ["apps/server/src/testing/*"],
+			"axios": ["node_modules/axios/index.d.ts"],
 		}
 	}
 }
