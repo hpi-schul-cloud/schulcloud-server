@@ -243,5 +243,35 @@
 			"$date": "2025-08-01T08:01:29.382Z"
 		},
 		"__v": 0
+	},
+	{
+		"_id": {
+			"$oid": "6a6c596d11f91764b2f79ab2"
+		},
+		"userIds": [
+			{
+				"$oid": "5fa2cccab229544f2c696917"
+			}
+		],
+		"teacherIds": [
+			{
+				"$oid": "5fa2c71bb229544f2c6966d9"
+			}
+		],
+		"schoolId": {
+			"$oid": "5fa2c5ccb229544f2c69666c"
+		},
+		"name": "a",
+		"gradeLevel": 9,
+		"year": {
+			"$oid": "682f14e4e7599e58d4563079"
+		},
+		"createdAt": {
+			"$date": "2026-08-01T08:00:26.985Z"
+		},
+		"updatedAt": {
+			"$date": "2026-08-01T08:01:29.382Z"
+		},
+		"__v": 0
 	}
 ]
