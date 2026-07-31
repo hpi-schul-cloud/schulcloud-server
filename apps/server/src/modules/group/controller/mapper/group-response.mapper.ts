@@ -97,8 +97,8 @@ export class GroupResponseMapper {
 		groups: Page<ResolvedGroupDto>,
 		pagination: GroupPaginationParams
 	): GroupListResponse {
-		const groupResponseData: GroupResponse[] = groups.data.map(
-			(group: ResolvedGroupDto): GroupResponse => this.mapToGroupResponse(group)
+		const groupResponseData: GroupResponse[] = groups.data.map((group: ResolvedGroupDto): GroupResponse =>
+			this.mapToGroupResponse(group)
 		);
 
 		const response: GroupListResponse = new GroupListResponse(

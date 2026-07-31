@@ -50,8 +50,8 @@ export class RoomMapper {
 	}
 
 	public static mapToRoomListResponse(rooms: RoomWithAllowedOperationsAndLockedStatus[]): RoomListResponse {
-		const roomResponseData: RoomItemResponse[] = rooms.map(
-			(room): RoomItemResponse => this.mapToRoomItemResponse(room)
+		const roomResponseData: RoomItemResponse[] = rooms.map((room): RoomItemResponse =>
+			this.mapToRoomItemResponse(room)
 		);
 		const response = new RoomListResponse(roomResponseData);
 

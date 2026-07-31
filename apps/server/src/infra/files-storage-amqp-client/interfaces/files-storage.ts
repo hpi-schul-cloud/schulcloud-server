@@ -6,11 +6,11 @@ export enum StorageLocation {
 }
 
 export enum FilesStorageEvents {
-	'COPY_FILES_OF_PARENT' = 'copy-files-of-parent',
-	'LIST_FILES_OF_PARENT' = 'list-files-of-parent',
-	'DELETE_FILES_OF_PARENT' = 'delete-files-of-parent',
-	'REMOVE_CREATORID_OF_FILES' = 'remove-creatorId-of-files',
-	'DELETE_FILES' = 'delete-files',
+	COPY_FILES_OF_PARENT = 'copy-files-of-parent',
+	LIST_FILES_OF_PARENT = 'list-files-of-parent',
+	DELETE_FILES_OF_PARENT = 'delete-files-of-parent',
+	REMOVE_CREATORID_OF_FILES = 'remove-creatorId-of-files',
+	DELETE_FILES = 'delete-files',
 }
 
 export enum ScanStatus {
@@ -22,15 +22,15 @@ export enum ScanStatus {
 }
 
 export enum FileRecordParentType {
-	'User' = 'users',
-	'School' = 'schools',
-	'Course' = 'courses',
-	'Task' = 'tasks',
-	'Lesson' = 'lessons',
-	'Submission' = 'submissions',
-	'Grading' = 'gradings',
-	'BoardNode' = 'boardnodes',
-	'ExternalTool' = 'externaltools',
+	User = 'users',
+	School = 'schools',
+	Course = 'courses',
+	Task = 'tasks',
+	Lesson = 'lessons',
+	Submission = 'submissions',
+	Grading = 'gradings',
+	BoardNode = 'boardnodes',
+	ExternalTool = 'externaltools',
 }
 
 export interface CopyFilesOfParentParams {
