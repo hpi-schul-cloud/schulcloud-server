@@ -143,6 +143,7 @@
 			"cross-spawn": "6.0.6"
 		},
 		"js-yaml": "5.2.2",
+		"minimatch": "^10.0.3",
 		"validator": "^13.15.23"
 	},
 	"dependencies": {
@@ -188,7 +189,7 @@
 		"axios": "^1.19.0",
 		"bcryptjs": "*",
 		"body-parser": "^2.3.0",
-		"bson": "^7.3.1",
+		"bson": "^6.10.4",
 		"cache-manager": "^7.2.9",
 		"cheerio": "^1.2.0",
 		"class-transformer": "^0.5.1",

@@ -5,7 +5,7 @@ Codebase clone from https://github.com/feathersjs-ecosystem/feathers-mongoose
 */
 const chai = require('chai');
 const sinon = require('sinon');
-const sinonChai = require('sinon-chai');
+const { default: sinonChai } = require('sinon-chai');
 
 const hooks = require('../../src/utils/feathers-mongoose/hooks');
 
