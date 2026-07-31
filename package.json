@@ -138,9 +138,11 @@
 		"generate-client:common-cartridge-clients": "openapi-generator-cli generate -c ./openapitools.json --generator-key common-cartridge-clients && openapi-generator-cli generate -c ./openapitools.json --generator-key common-cartridge-files-storage-api"
 	},
 	"overrides": {
+		"brace-expansion": "5.0.8",
 		"gm": {
 			"cross-spawn": "6.0.6"
 		},
+		"js-yaml": "5.2.2",
 		"validator": "^13.15.23"
 	},
 	"dependencies": {
