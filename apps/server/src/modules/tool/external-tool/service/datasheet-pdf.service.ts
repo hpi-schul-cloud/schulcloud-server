@@ -1,12 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { createPdf, TCreatedPdf } from 'pdfmake/build/pdfmake';
+import { addVirtualFileSystem, createPdf, TCreatedPdf } from 'pdfmake/build/pdfmake';
 import pdfFonts from 'pdfmake/build/vfs_fonts';
 import { Content, TDocumentDefinitions } from 'pdfmake/interfaces';
 import { ExternalToolDatasheetTemplateData, ExternalToolParameterDatasheetTemplateData } from '../domain';
 
+// Register the bundled Roboto fonts in pdfmake's virtual file system (required since pdfmake 0.3).
+addVirtualFileSystem(pdfFonts);
+
 @Injectable()
 export class DatasheetPdfService {
-	public generatePdf(templateData: ExternalToolDatasheetTemplateData): Promise<Buffer> {
+	public async generatePdf(templateData: ExternalToolDatasheetTemplateData): Promise<Buffer> {
 		const content: Content = [];
 
 		content.push(
@@ -67,32 +70,21 @@ export class DatasheetPdfService {
 			content.push('\n', 'Die Konfiguration dieses Tools enthält keine benutzerspezifischen Parameter.');
 		}
 
-		return new Promise<Buffer>((resolve, reject) => {
-			try {
-				const documentDefinition: TDocumentDefinitions = {
-					content,
-					styles: {
-						'right-aligned': { alignment: 'right' },
-						'center-aligned': { alignment: 'center' },
-						h4: { fontSize: 14, bold: true, margin: [0, 10, 0, 5] },
-						h1: { fontSize: 22, bold: true, margin: [0, 10, 0, 5] },
-						h2: { fontSize: 18, bold: true, margin: [0, 10, 0, 5] },
-						link: { color: 'blue', decoration: 'underline' },
-					},
-				};
+		const documentDefinition: TDocumentDefinitions = {
+			content,
+			styles: {
+				'right-aligned': { alignment: 'right' },
+				'center-aligned': { alignment: 'center' },
+				h4: { fontSize: 14, bold: true, margin: [0, 10, 0, 5] },
+				h1: { fontSize: 22, bold: true, margin: [0, 10, 0, 5] },
+				h2: { fontSize: 18, bold: true, margin: [0, 10, 0, 5] },
+				link: { color: 'blue', decoration: 'underline' },
+			},
+		};
 
-				const pdfDoc: TCreatedPdf = createPdf(
-					documentDefinition,
-					{},
-					undefined,
-					pdfFonts.vfs as unknown as { [file: string]: string }
-				);
-				pdfDoc.getBuffer((buffer: Buffer): void => {
-					resolve(buffer);
-				});
-			} catch (error) {
-				reject(error instanceof Error ? error : new Error(String(error)));
-			}
-		});
+		const pdfDoc: TCreatedPdf = createPdf(documentDefinition);
+		const buffer: Buffer = await pdfDoc.getBuffer();
+
+		return buffer;
 	}
 }
