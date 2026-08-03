@@ -3,6 +3,8 @@ const appPromise = require('../../../../src/app');
 const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 const testObjects = require('../../helpers/testObjects')(appPromise());
 const { courseModel } = require('../../../../src/services/user-group/model');
+const { FileModel } = require('../../../../src/services/fileStorage/model');
+const { homeworkModel, submissionModel } = require('../../../../src/services/homework/model');
 const { LessonModel } = require('../../../../src/services/lesson/model');
 
 describe('course service', () => {
@@ -111,6 +113,100 @@ describe('course service', () => {
 		expect(await LessonModel.findById(unrelatedCourseLesson._id).lean().exec()).to.not.be.null;
 		expect(await LessonModel.findById(unrelatedCourseGroupLesson._id).lean().exec()).to.not.be.null;
 		expect(await app.service('courseGroupModel').get(otherCourseGroup._id)).to.not.be.null;
+	});
+
+	it('REMOVE a course and its dependent files', async () => {
+		const { _id: schoolId } = await testObjects.createTestSchool({});
+		const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
+		const course = await testObjects.createTestCourse({ schoolId, teacherIds: [teacher._id] });
+		const otherCourse = await testObjects.createTestCourse({ schoolId, teacherIds: [teacher._id] });
+		const courseFile = await FileModel.create({
+			isDirectory: false,
+			name: 'course-file.txt',
+			type: 'text/plain',
+			size: 12,
+			storageFileName: 'course-file.txt',
+			bucket: 'bucket-test',
+			storageProviderId: teacher._id,
+			owner: course._id,
+			refOwnerModel: 'course',
+			creator: teacher._id,
+			permissions: [{ refId: teacher._id, refPermModel: 'user', read: true, write: true, create: true, delete: true }],
+		});
+		const unrelatedCourseFile = await FileModel.create({
+			isDirectory: false,
+			name: 'other-course-file.txt',
+			type: 'text/plain',
+			size: 12,
+			storageFileName: 'other-course-file.txt',
+			bucket: 'bucket-test',
+			storageProviderId: teacher._id,
+			owner: otherCourse._id,
+			refOwnerModel: 'course',
+			creator: teacher._id,
+			permissions: [{ refId: teacher._id, refPermModel: 'user', read: true, write: true, create: true, delete: true }],
+		});
+
+		const params = await testObjects.generateRequestParamsFromUser(teacher);
+		await app.service('courses').remove(course._id, params);
+
+		expect(await FileModel.findById(courseFile._id).lean().exec()).to.be.null;
+		expect((await FileModel.findOneWithDeleted({ _id: courseFile._id }).lean().exec()).deleted).to.be.true;
+		expect(await FileModel.findById(unrelatedCourseFile._id).lean().exec()).to.not.be.null;
+	});
+
+	it('REMOVE a course and its dependent homework', async () => {
+		const { _id: schoolId } = await testObjects.createTestSchool({});
+		const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
+		const student = await testObjects.createTestUser({ roles: ['student'], schoolId });
+		const course = await testObjects.createTestCourse({ schoolId, teacherIds: [teacher._id], userIds: [student._id] });
+		const otherCourse = await testObjects.createTestCourse({
+			schoolId,
+			teacherIds: [teacher._id],
+			userIds: [student._id],
+		});
+		const homework = await testObjects.createTestHomework({
+			schoolId,
+			teacherId: teacher._id,
+			courseId: course._id,
+		});
+		const lesson = await testObjects.createTestLesson({ courseId: course._id });
+		const lessonHomework = await testObjects.createTestHomework({
+			schoolId,
+			teacherId: teacher._id,
+			courseId: course._id,
+			lessonId: lesson._id,
+		});
+		const unrelatedHomework = await testObjects.createTestHomework({
+			schoolId,
+			teacherId: teacher._id,
+			courseId: otherCourse._id,
+		});
+		const homeworkSubmission = await testObjects.createTestSubmission({
+			schoolId,
+			studentId: student._id,
+			homeworkId: homework._id,
+		});
+		const lessonHomeworkSubmission = await testObjects.createTestSubmission({
+			schoolId,
+			studentId: student._id,
+			homeworkId: lessonHomework._id,
+		});
+		const unrelatedSubmission = await testObjects.createTestSubmission({
+			schoolId,
+			studentId: student._id,
+			homeworkId: unrelatedHomework._id,
+		});
+
+		const params = await testObjects.generateRequestParamsFromUser(teacher);
+		await app.service('courses').remove(course._id, params);
+
+		expect(await homeworkModel.findById(homework._id).lean().exec()).to.be.null;
+		expect(await homeworkModel.findById(lessonHomework._id).lean().exec()).to.be.null;
+		expect(await submissionModel.findById(homeworkSubmission._id).lean().exec()).to.be.null;
+		expect(await submissionModel.findById(lessonHomeworkSubmission._id).lean().exec()).to.be.null;
+		expect(await homeworkModel.findById(unrelatedHomework._id).lean().exec()).to.not.be.null;
+		expect(await submissionModel.findById(unrelatedSubmission._id).lean().exec()).to.not.be.null;
 	});
 
 	describe('security features', () => {

@@ -3,6 +3,7 @@ const { expect } = require('chai');
 const appPromise = require('../../../src/app');
 const { setupNestServices, closeNestServices } = require('../../utils/setup.nest.services');
 const testObjects = require('../helpers/testObjects')(appPromise());
+const { homeworkModel, submissionModel } = require('../../../src/services/homework/model');
 
 const testLesson = {
 	name: 'testLesson',
@@ -139,6 +140,49 @@ describe('lessons service', () => {
 			const result = await app.service('lessons').create(data, params);
 			expect(result).to.haveOwnProperty('_id');
 			expect(result.name).to.equal('Here we go...');
+		});
+
+		it('teacher can REMOVE lesson and its dependent homework', async () => {
+			const { _id: schoolId } = await testObjects.createTestSchool({});
+			const teacher = await testObjects.createTestUser({ roles: ['teacher'], schoolId });
+			const student = await testObjects.createTestUser({ roles: ['student'], schoolId });
+			const course = await testObjects.createTestCourse({
+				schoolId,
+				teacherIds: [teacher._id],
+				userIds: [student._id],
+			});
+			const otherLesson = await testObjects.createTestLesson({ courseId: course._id });
+			const lesson = await testObjects.createTestLesson({ courseId: course._id });
+			const homework = await testObjects.createTestHomework({
+				schoolId,
+				teacherId: teacher._id,
+				courseId: course._id,
+				lessonId: lesson._id,
+			});
+			const unrelatedHomework = await testObjects.createTestHomework({
+				schoolId,
+				teacherId: teacher._id,
+				courseId: course._id,
+				lessonId: otherLesson._id,
+			});
+			const submission = await testObjects.createTestSubmission({
+				schoolId,
+				studentId: student._id,
+				homeworkId: homework._id,
+			});
+			const unrelatedSubmission = await testObjects.createTestSubmission({
+				schoolId,
+				studentId: student._id,
+				homeworkId: unrelatedHomework._id,
+			});
+
+			const params = await testObjects.generateRequestParamsFromUser(teacher);
+			await app.service('lessons').remove(lesson._id, params);
+
+			expect(await homeworkModel.findById(homework._id).lean().exec()).to.be.null;
+			expect(await submissionModel.findById(submission._id).lean().exec()).to.be.null;
+			expect(await homeworkModel.findById(unrelatedHomework._id).lean().exec()).to.not.be.null;
+			expect(await submissionModel.findById(unrelatedSubmission._id).lean().exec()).to.not.be.null;
 		});
 	});
 
