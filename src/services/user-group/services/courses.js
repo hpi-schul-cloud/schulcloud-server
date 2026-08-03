@@ -17,6 +17,7 @@ const {
 const {
 	modelServices: { prepareInternalParams },
 } = require('../../../utils');
+const { removeLessonsByCourseId } = require('./removeDependentLessons');
 
 const restrictToCurrentSchoolIfNotLocal = ifNotLocal(restrictToCurrentSchool);
 const restrictToUsersOwnCoursesIfNotLocal = ifNotLocal(restrictToUsersOwnCourses);
@@ -61,9 +62,12 @@ class Courses {
 		return this.app.service('courseModel').patch(id, data, prepareInternalParams(params));
 	}
 
-	remove(id, params) {
-		this.app.service('/calendar/courses').remove(id, prepareInternalParams(params));
-		return this.app.service('courseModel').remove(id, prepareInternalParams(params));
+	async remove(id, params) {
+		const internalParams = prepareInternalParams(params);
+
+		await removeLessonsByCourseId(id);
+		this.app.service('/calendar/courses').remove(id, internalParams);
+		return this.app.service('courseModel').remove(id, internalParams);
 	}
 
 	setup(app) {

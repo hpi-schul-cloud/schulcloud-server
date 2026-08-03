@@ -1,9 +1,12 @@
 import { AuthorizationContextBuilder, AuthorizationService } from '@modules/authorization';
 import { ClassService } from '@modules/class';
+import { MoinSchuleClassService } from '@modules/class-moin-schule/moin-schule-class.service';
 import { RoleName } from '@modules/role';
 import { UserDo, UserService } from '@modules/user';
 import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
+import { ValidationError } from '@shared/common/error';
+import { PaginationParams } from '@shared/controller/dto';
 import { Page } from '@shared/domain/domainobject';
 import { Permission, SortOrder } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
@@ -18,8 +21,8 @@ import {
 	MaintenanceResponse,
 	SchoolExistsResponse,
 	SchoolForExternalInviteResponse,
-	SchoolListResponse,
 	SchoolForLdapLoginResponse,
+	SchoolListResponse,
 	SchoolResponse,
 	SchoolSystemResponse,
 	SchoolUpdateBodyParams,
@@ -32,8 +35,6 @@ import {
 	SystemResponseMapper,
 	YearsResponseMapper,
 } from './mapper';
-import { MoinSchuleClassService } from '@modules/class-moin-schule/moin-schule-class.service';
-import { PaginationParams } from '@shared/controller/dto';
 
 @Injectable()
 export class SchoolUc {
@@ -143,6 +144,7 @@ export class SchoolUc {
 
 		const authContext = AuthorizationContextBuilder.write([Permission.SCHOOL_EDIT]);
 		this.authorizationService.checkPermission(user, school, authContext);
+		this.checkValidDataUrl(body.logo?.dataUrl);
 
 		const updatedSchool = await this.schoolService.updateSchool(school, body);
 
@@ -376,5 +378,14 @@ export class SchoolUc {
 		}
 
 		return response;
+	}
+
+	private checkValidDataUrl(dataUrl: string | undefined): void {
+		const regex = /^data:image\/(webp|jpeg|png|svg+xml|gif|avif);base64,[A-Za-z0-9+/]+={0,2}$/;
+		if (dataUrl && regex.test(dataUrl) === false) {
+			throw new ValidationError(
+				'Invalid data URL format. The data URL for the school logo must be a base64-encoded image (WEBP, PNG, GIF, AVIF or JPEG).'
+			);
+		}
 	}
 }

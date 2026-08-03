@@ -54,14 +54,15 @@ export class RoomUc {
 			user.school.id,
 			findOptions.pagination
 		);
+
 		const roomIds: EntityId[] = roomMembershipStats.data
 			.flatMap((membership) => membership.roomId)
 			.filter((id): id is EntityId => !!id);
-		const rooms: Room[] = await this.roomService.getRoomsByIds(roomIds);
 
+		const rooms = await this.roomService.getRoomsByIds(roomIds);
 		const schoolIds: EntityId[] = rooms.map((room) => room.schoolId);
-		const schools = await this.schoolService.getSchoolsByIds(schoolIds);
 
+		const schools = await this.schoolService.getSchoolsByIds(schoolIds);
 		const roomStats = this.mapRoomStats(roomMembershipStats, rooms, schools);
 
 		return { data: roomStats, total: roomMembershipStats.total };

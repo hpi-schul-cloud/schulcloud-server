@@ -9,6 +9,7 @@ const {
 const {
 	modelServices: { prepareInternalParams },
 } = require('../../../utils');
+const { removeLessonsByCourseGroupId } = require('./removeDependentLessons');
 
 const { restrictToUsersCourses, denyIfNotInCourse } = require('../hooks/courseGroups');
 
@@ -39,7 +40,8 @@ class CourseGroups {
 		return this.app.service('courseGroupModel').patch(id, data, prepareInternalParams(params));
 	}
 
-	remove(id, params) {
+	async remove(id, params) {
+		await removeLessonsByCourseGroupId(id);
 		return this.app.service('courseGroupModel').remove(id, prepareInternalParams(params));
 	}
 
