@@ -5,6 +5,7 @@ import {
 	AnyBoardNode,
 	BoardExternalReference,
 	BoardExternalReferenceType,
+	Column,
 	ColumnBoard,
 	ColumnBoardProps,
 	isColumnBoard,
@@ -104,6 +105,10 @@ export class ColumnBoardService {
 			copyStatus.copyEntity = await this.swapLinkedIds(copyStatus.copyEntity?.id, idMap);
 		}
 
+		if (copyStatus.type === CopyElementType.COLUMN && copyStatus.copyEntity) {
+			copyStatus.copyEntity = await this.swapLinkedIdsInColumn(copyStatus.copyEntity.id, idMap);
+		}
+
 		const updatedElements = await Promise.all(
 			elements.map(async (el) => {
 				if (el.type === CopyElementType.COLUMNBOARD && el.copyEntity) {
@@ -121,5 +126,9 @@ export class ColumnBoardService {
 		const board = await this.columnBoardLinkService.swapLinkedIds(boardId, idMap);
 
 		return board;
+	}
+
+	public swapLinkedIdsInColumn(columnId: EntityId, idMap: Map<EntityId, EntityId>): Promise<Column> {
+		return this.columnBoardLinkService.swapLinkedIdsInColumn(columnId, idMap);
 	}
 }

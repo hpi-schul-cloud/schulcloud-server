@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { AnyBoardNode, ColumnBoard, isLinkElement } from '../../domain';
+import { AnyBoardNode, Column, ColumnBoard, isLinkElement } from '../../domain';
 import { BoardNodeRepo } from '../../repo/board-node.repo';
 import { BoardNodeService } from '../board-node.service';
 
@@ -18,6 +18,15 @@ export class ColumnBoardLinkService {
 		await this.boardNodeRepo.save(board);
 
 		return board;
+	}
+
+	public async swapLinkedIdsInColumn(columnId: EntityId, idMap: Map<EntityId, EntityId>): Promise<Column> {
+		const column = await this.boardNodeService.findByClassAndId(Column, columnId);
+
+		this.updateLinkElements(column, idMap);
+		await this.boardNodeRepo.save(column);
+
+		return column;
 	}
 
 	private updateLinkElements(boardNode: AnyBoardNode, idMap: Map<EntityId, EntityId>): void {

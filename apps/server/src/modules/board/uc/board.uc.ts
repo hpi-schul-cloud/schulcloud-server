@@ -173,6 +173,8 @@ export class BoardUc {
 			throw new InternalServerErrorException('Copied entity is not a column');
 		}
 
+		await this.columnBoardService.swapLinkedIdsInBoards(copyStatus);
+
 		return { copyEntity: copyStatus.copyEntity, status: copyStatus.status };
 	}
 

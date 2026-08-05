@@ -139,4 +139,34 @@ describe(BoardUc.name, () => {
 			});
 		});
 	});
+
+	describe('copyColumn', () => {
+		describe('when copy succeeds', () => {
+			it('should call swapLinkedIdsInBoards with the copy status', async () => {
+				const { user, board } = setup();
+				const column = columnFactory.build({ path: board.id });
+				const copiedColumn = columnFactory.build();
+
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(column);
+				boardNodeRule.can.mockReturnValueOnce(true);
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				boardNodeAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(
+					boardNodeAuthorizableFactory.build({ boardNode: column })
+				);
+
+				const copyStatus: CopyStatus = {
+					status: CopyStatusEnum.SUCCESS,
+					type: CopyElementType.COLUMN,
+					elements: [],
+					copyEntity: copiedColumn,
+				};
+				columnBoardService.copyColumn.mockResolvedValueOnce(copyStatus);
+				columnBoardService.swapLinkedIdsInBoards.mockResolvedValueOnce(copyStatus);
+
+				await uc.copyColumn(user.id, column.id, 'school-id');
+
+				expect(columnBoardService.swapLinkedIdsInBoards).toHaveBeenCalledWith(copyStatus);
+			});
+		});
+	});
 });

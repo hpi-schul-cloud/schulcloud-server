@@ -2,7 +2,7 @@ import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { type EntityId } from '@shared/domain/types';
-import { ColumnBoard, type LinkElement } from '../../domain';
+import { Column, ColumnBoard, type LinkElement } from '../../domain';
 import { BoardNodeRepo } from '../../repo';
 import {
 	cardFactory,
@@ -91,6 +91,52 @@ describe(ColumnBoardLinkService.name, () => {
 				await service.swapLinkedIds(board.id, idMap);
 
 				expect(boardNodeRepo.save).toHaveBeenCalledWith(board);
+			});
+		});
+	});
+
+	describe('swapLinkedIdsInColumn', () => {
+		const setup = () => {
+			const oldId = new ObjectId().toHexString();
+			const newId = new ObjectId().toHexString();
+			const idMap = new Map<EntityId, EntityId>();
+			idMap.set(oldId, newId);
+
+			const elements = [
+				richTextElementFactory.build(),
+				linkElementFactory.build({ url: `https://example.com/${oldId}/article` }),
+			];
+			const card = cardFactory.build({ children: elements });
+			const column = columnFactory.build({ children: [card] });
+
+			boardNodeService.findByClassAndId.mockResolvedValueOnce(column);
+
+			return { column, linkElement: elements[1] as LinkElement, idMap, oldId, newId };
+		};
+
+		it('should find the column', async () => {
+			const { column, idMap } = setup();
+
+			await service.swapLinkedIdsInColumn(column.id, idMap);
+
+			expect(boardNodeService.findByClassAndId).toHaveBeenCalledWith(Column, column.id);
+		});
+
+		describe('when column contains a link element', () => {
+			it('should replace ids in urls', async () => {
+				const { column, linkElement, idMap, newId } = setup();
+
+				await service.swapLinkedIdsInColumn(column.id, idMap);
+
+				expect(linkElement.url).toBe(`https://example.com/${newId}/article`);
+			});
+
+			it('should save the column', async () => {
+				const { column, idMap } = setup();
+
+				await service.swapLinkedIdsInColumn(column.id, idMap);
+
+				expect(boardNodeRepo.save).toHaveBeenCalledWith(column);
 			});
 		});
 	});

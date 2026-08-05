@@ -13,7 +13,7 @@ import {
 	type ColumnBoardProps,
 } from '../domain';
 import { BoardNodeRepo } from '../repo';
-import { columnBoardFactory } from '../testing';
+import { columnBoardFactory, columnFactory } from '../testing';
 import { BoardNodeService } from './board-node.service';
 import { ColumnBoardService } from './column-board.service';
 import { BoardCopyService, ColumnBoardLinkService } from './internal';
@@ -260,6 +260,56 @@ describe('ColumnBoardService', () => {
 
 			expect(result).toEqual(copyStatus);
 			expect(result.elements?.[0].copyEntity).toEqual(copyStatus.elements?.[0].copyEntity);
+		});
+
+		describe('when copy status type is COLUMN', () => {
+			const setupColumn = () => {
+				const column = columnFactory.build();
+
+				const idMap = new Map<EntityId, EntityId>();
+				idMap.set('id1', 'id2');
+				columnBoardLinkService.swapLinkedIdsInColumn.mockResolvedValueOnce(column);
+
+				copyHelperService.buildCopyEntityDict.mockReturnValue(new Map<EntityId, AuthorizableObject>());
+
+				const copyStatus: CopyStatus = {
+					status: CopyStatusEnum.SUCCESS,
+					type: CopyElementType.COLUMN,
+					copyEntity: column,
+					elements: [],
+				};
+
+				return { column, idMap, copyStatus };
+			};
+
+			it('should call columnBoardLinkService.swapLinkedIdsInColumn', async () => {
+				const { column, idMap, copyStatus } = setupColumn();
+
+				await service.swapLinkedIdsInBoards(copyStatus, idMap);
+
+				expect(columnBoardLinkService.swapLinkedIdsInColumn).toHaveBeenCalledWith(column.id, idMap);
+			});
+
+			it('should update copyStatus.copyEntity with the result', async () => {
+				const { column, copyStatus } = setupColumn();
+
+				const result = await service.swapLinkedIdsInBoards(copyStatus);
+
+				expect(result.copyEntity).toEqual(column);
+			});
+		});
+	});
+
+	describe('swapLinkedIdsInColumn', () => {
+		it('should delegate to columnBoardLinkService', async () => {
+			const column = columnFactory.build();
+			const idMap = new Map<EntityId, EntityId>();
+			columnBoardLinkService.swapLinkedIdsInColumn.mockResolvedValueOnce(column);
+
+			const result = await service.swapLinkedIdsInColumn(column.id, idMap);
+
+			expect(columnBoardLinkService.swapLinkedIdsInColumn).toHaveBeenCalledWith(column.id, idMap);
+			expect(result).toEqual(column);
 		});
 	});
 });
