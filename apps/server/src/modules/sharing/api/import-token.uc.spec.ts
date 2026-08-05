@@ -362,7 +362,7 @@ describe('ShareTokenUC', () => {
 					status: CopyStatusEnum.SUCCESS,
 					copyEntity: columnBoard,
 				};
-				columnBoardService.swapLinkedIdsInBoards.mockResolvedValue(status);
+				columnBoardService.swapLinkedIdsInCopy.mockResolvedValue(status);
 				columnBoardService.copyColumnBoard.mockResolvedValueOnce(status);
 
 				const payload: ShareTokenPayload = { parentType: ShareTokenParentType.ColumnBoard, parentId: columnBoard.id };
@@ -411,7 +411,7 @@ describe('ShareTokenUC', () => {
 				const { user, shareToken, course } = setup();
 				const newName = 'NewName';
 				await uc.importShareToken(user.id, shareToken.token, newName, course.id);
-				expect(columnBoardService.swapLinkedIdsInBoards).toHaveBeenCalled();
+				expect(columnBoardService.swapLinkedIdsInCopy).toHaveBeenCalled();
 			});
 			it('should return the result', async () => {
 				const { user, shareToken, columnBoard, status } = setup();

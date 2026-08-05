@@ -90,7 +90,7 @@ export class CopyRoomBoardsStep extends SagaStep<'copyRoomBoards'> {
 			elements: copyStatuses,
 		};
 
-		await this.columnBoardService.swapLinkedIdsInBoards(status);
+		await this.columnBoardService.swapLinkedIdsInCopy(status);
 
 		return copyStatuses;
 	}

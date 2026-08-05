@@ -161,11 +161,11 @@ describe(BoardUc.name, () => {
 					copyEntity: copiedColumn,
 				};
 				columnBoardService.copyColumn.mockResolvedValueOnce(copyStatus);
-				columnBoardService.swapLinkedIdsInBoards.mockResolvedValueOnce(copyStatus);
+				columnBoardService.swapLinkedIdsInCopy.mockResolvedValueOnce(copyStatus);
 
 				await uc.copyColumn(user.id, column.id, 'school-id');
 
-				expect(columnBoardService.swapLinkedIdsInBoards).toHaveBeenCalledWith(copyStatus);
+				expect(columnBoardService.swapLinkedIdsInCopy).toHaveBeenCalledWith(copyStatus);
 			});
 		});
 	});

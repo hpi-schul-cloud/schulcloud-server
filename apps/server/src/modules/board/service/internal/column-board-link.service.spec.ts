@@ -2,7 +2,7 @@ import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { type EntityId } from '@shared/domain/types';
-import { Column, ColumnBoard, type LinkElement } from '../../domain';
+import { type LinkElement } from '../../domain';
 import { BoardNodeRepo } from '../../repo';
 import {
 	cardFactory,
@@ -48,93 +48,83 @@ describe(ColumnBoardLinkService.name, () => {
 		await module.close();
 	});
 
-	describe('swap link ids', () => {
-		const setup = () => {
-			const oldId = new ObjectId().toHexString();
-			const newId = new ObjectId().toHexString();
-			const idMap = new Map<EntityId, EntityId>();
-			idMap.set(oldId, newId);
+	describe('swapLinkedIdsInBoardNode', () => {
+		describe('when called with a board containing link elements', () => {
+			const setup = () => {
+				const oldId = new ObjectId().toHexString();
+				const newId = new ObjectId().toHexString();
+				const idMap = new Map<EntityId, EntityId>();
+				idMap.set(oldId, newId);
 
-			const elements = [
-				richTextElementFactory.build(),
-				linkElementFactory.build({ url: `https://example.com/${oldId}/article` }),
-			];
-			const card = cardFactory.build({ children: elements });
-			const column = columnFactory.build({ children: [card] });
-			const board = columnBoardFactory.build({ children: [column] });
+				const elements = [
+					richTextElementFactory.build(),
+					linkElementFactory.build({ url: `https://example.com/${oldId}/article` }),
+				];
+				const card = cardFactory.build({ children: elements });
+				const column = columnFactory.build({ children: [card] });
+				const board = columnBoardFactory.build({ children: [column] });
 
-			boardNodeService.findByClassAndId.mockResolvedValueOnce(board);
+				boardNodeService.findById.mockResolvedValueOnce(board);
 
-			return { board, linkElement: elements[1] as LinkElement, idMap, oldId, newId };
-		};
+				return { board, linkElement: elements[1] as LinkElement, idMap, newId };
+			};
 
-		it('should find the board', async () => {
-			const { board, idMap } = setup();
+			it('should load the node by id', async () => {
+				const { board, idMap } = setup();
 
-			await service.swapLinkedIds(board.id, idMap);
+				await service.swapLinkedIdsInBoardNode(board.id, idMap);
 
-			expect(boardNodeService.findByClassAndId).toHaveBeenCalledWith(ColumnBoard, board.id);
-		});
+				expect(boardNodeService.findById).toHaveBeenCalledWith(board.id);
+			});
 
-		describe('when board node is a link element', () => {
-			it('should replace ids in urls', async () => {
+			it('should replace ids in link element urls', async () => {
 				const { board, linkElement, idMap, newId } = setup();
 
-				await service.swapLinkedIds(board.id, idMap);
+				await service.swapLinkedIdsInBoardNode(board.id, idMap);
 
 				expect(linkElement.url).toBe(`https://example.com/${newId}/article`);
 			});
 
-			it('should save the board', async () => {
+			it('should save the node', async () => {
 				const { board, idMap } = setup();
 
-				await service.swapLinkedIds(board.id, idMap);
+				await service.swapLinkedIdsInBoardNode(board.id, idMap);
 
 				expect(boardNodeRepo.save).toHaveBeenCalledWith(board);
 			});
 		});
-	});
 
-	describe('swapLinkedIdsInColumn', () => {
-		const setup = () => {
-			const oldId = new ObjectId().toHexString();
-			const newId = new ObjectId().toHexString();
-			const idMap = new Map<EntityId, EntityId>();
-			idMap.set(oldId, newId);
+		describe('when called with a column containing link elements', () => {
+			const setup = () => {
+				const oldId = new ObjectId().toHexString();
+				const newId = new ObjectId().toHexString();
+				const idMap = new Map<EntityId, EntityId>();
+				idMap.set(oldId, newId);
 
-			const elements = [
-				richTextElementFactory.build(),
-				linkElementFactory.build({ url: `https://example.com/${oldId}/article` }),
-			];
-			const card = cardFactory.build({ children: elements });
-			const column = columnFactory.build({ children: [card] });
+				const elements = [
+					richTextElementFactory.build(),
+					linkElementFactory.build({ url: `https://example.com/${oldId}/article` }),
+				];
+				const card = cardFactory.build({ children: elements });
+				const column = columnFactory.build({ children: [card] });
 
-			boardNodeService.findByClassAndId.mockResolvedValueOnce(column);
+				boardNodeService.findById.mockResolvedValueOnce(column);
 
-			return { column, linkElement: elements[1] as LinkElement, idMap, oldId, newId };
-		};
+				return { column, linkElement: elements[1] as LinkElement, idMap, newId };
+			};
 
-		it('should find the column', async () => {
-			const { column, idMap } = setup();
-
-			await service.swapLinkedIdsInColumn(column.id, idMap);
-
-			expect(boardNodeService.findByClassAndId).toHaveBeenCalledWith(Column, column.id);
-		});
-
-		describe('when column contains a link element', () => {
-			it('should replace ids in urls', async () => {
+			it('should replace ids in link element urls', async () => {
 				const { column, linkElement, idMap, newId } = setup();
 
-				await service.swapLinkedIdsInColumn(column.id, idMap);
+				await service.swapLinkedIdsInBoardNode(column.id, idMap);
 
 				expect(linkElement.url).toBe(`https://example.com/${newId}/article`);
 			});
 
-			it('should save the column', async () => {
+			it('should save the node', async () => {
 				const { column, idMap } = setup();
 
-				await service.swapLinkedIdsInColumn(column.id, idMap);
+				await service.swapLinkedIdsInBoardNode(column.id, idMap);
 
 				expect(boardNodeRepo.save).toHaveBeenCalledWith(column);
 			});

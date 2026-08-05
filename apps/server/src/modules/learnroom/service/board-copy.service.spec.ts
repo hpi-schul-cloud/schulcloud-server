@@ -198,7 +198,7 @@ describe('board copy service', () => {
 					originalEntity: originalBoard,
 					elements: [taskCopyStatus],
 				};
-				columnBoardService.swapLinkedIdsInBoards.mockResolvedValueOnce(copyStatus);
+				columnBoardService.swapLinkedIdsInCopy.mockResolvedValueOnce(copyStatus);
 				return { destinationCourse, originalBoard, user, originalTask };
 			};
 
@@ -273,7 +273,7 @@ describe('board copy service', () => {
 					originalEntity: originalBoard,
 					elements: [lessonCopyStatus],
 				};
-				columnBoardService.swapLinkedIdsInBoards.mockResolvedValueOnce(copyStatus);
+				columnBoardService.swapLinkedIdsInCopy.mockResolvedValueOnce(copyStatus);
 
 				return { destinationCourse, originalBoard, user, originalLesson };
 			};
@@ -347,7 +347,7 @@ describe('board copy service', () => {
 					originalEntity: originalBoard,
 					elements: [columnBoardCopyStatus],
 				};
-				columnBoardService.swapLinkedIdsInBoards.mockResolvedValueOnce(copyStatus);
+				columnBoardService.swapLinkedIdsInCopy.mockResolvedValueOnce(copyStatus);
 
 				return { destinationCourse, originalBoard, user, originalColumnBoard, columnBoardTarget };
 			};
@@ -438,7 +438,7 @@ describe('board copy service', () => {
 					originalEntity: originalBoard,
 					elements: [lessonCopyStatus, taskCopyStatus],
 				};
-				columnBoardService.swapLinkedIdsInBoards.mockResolvedValueOnce(status);
+				columnBoardService.swapLinkedIdsInCopy.mockResolvedValueOnce(status);
 				const user = userFactory.build();
 
 				return { destinationCourse, originalBoard, user, taskCopy, lessonCopy, lessonCopyStatus, taskCopyStatus };
@@ -527,7 +527,7 @@ describe('board copy service', () => {
 					originalEntity: originalBoard,
 					elements: [lessonCopyStatus],
 				};
-				columnBoardService.swapLinkedIdsInBoards.mockResolvedValue(status);
+				columnBoardService.swapLinkedIdsInCopy.mockResolvedValue(status);
 
 				boardRepo.save.mockRejectedValue(new Error());
 

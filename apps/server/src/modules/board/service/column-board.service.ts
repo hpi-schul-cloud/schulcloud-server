@@ -1,11 +1,10 @@
-import { CopyElementType, CopyStatus, CopyHelperService } from '@modules/copy-helper';
+import { CopyElementType, CopyHelperService, CopyStatus } from '@modules/copy-helper';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import {
 	AnyBoardNode,
 	BoardExternalReference,
 	BoardExternalReferenceType,
-	Column,
 	ColumnBoard,
 	ColumnBoardProps,
 	isColumnBoard,
@@ -15,8 +14,8 @@ import { BoardNodeService } from './board-node.service';
 import {
 	BoardCopyService,
 	ColumnBoardLinkService,
-	CopyColumnBoardParams,
 	CopyCardParams,
+	CopyColumnBoardParams,
 	CopyColumnParams,
 } from './internal';
 
@@ -93,26 +92,23 @@ export class ColumnBoardService {
 		return copyStatus;
 	}
 
-	public async swapLinkedIdsInBoards(copyStatus: CopyStatus, idMap?: Map<EntityId, EntityId>): Promise<CopyStatus> {
+	public async swapLinkedIdsInCopy(copyStatus: CopyStatus, idMap?: Map<EntityId, EntityId>): Promise<CopyStatus> {
 		if (!idMap) {
 			idMap = new Map<EntityId, EntityId>();
 		}
 		const copyDict = this.copyHelperService.buildCopyEntityDict(copyStatus);
 		copyDict.forEach((value, key) => idMap.set(key, value.id));
 
-		const elements = copyStatus.elements ?? [];
-		if (copyStatus.type === CopyElementType.COLUMNBOARD && copyStatus.copyEntity) {
-			copyStatus.copyEntity = await this.swapLinkedIds(copyStatus.copyEntity?.id, idMap);
-		}
+		const swappableBoardNodeTypes = new Set([CopyElementType.COLUMNBOARD, CopyElementType.COLUMN]);
 
-		if (copyStatus.type === CopyElementType.COLUMN && copyStatus.copyEntity) {
-			copyStatus.copyEntity = await this.swapLinkedIdsInColumn(copyStatus.copyEntity.id, idMap);
+		if (swappableBoardNodeTypes.has(copyStatus.type) && copyStatus.copyEntity) {
+			copyStatus.copyEntity = await this.swapLinkedIdsInBoardNode(copyStatus.copyEntity.id, idMap);
 		}
 
 		const updatedElements = await Promise.all(
-			elements.map(async (el) => {
-				if (el.type === CopyElementType.COLUMNBOARD && el.copyEntity) {
-					el.copyEntity = await this.swapLinkedIds(el.copyEntity?.id, idMap);
+			(copyStatus.elements ?? []).map(async (el) => {
+				if (swappableBoardNodeTypes.has(el.type) && el.copyEntity) {
+					el.copyEntity = await this.swapLinkedIdsInBoardNode(el.copyEntity.id, idMap);
 				}
 				return el;
 			})
@@ -122,13 +118,7 @@ export class ColumnBoardService {
 		return copyStatus;
 	}
 
-	public async swapLinkedIds(boardId: EntityId, idMap: Map<EntityId, EntityId>): Promise<ColumnBoard> {
-		const board = await this.columnBoardLinkService.swapLinkedIds(boardId, idMap);
-
-		return board;
-	}
-
-	public swapLinkedIdsInColumn(columnId: EntityId, idMap: Map<EntityId, EntityId>): Promise<Column> {
-		return this.columnBoardLinkService.swapLinkedIdsInColumn(columnId, idMap);
+	public swapLinkedIdsInBoardNode(nodeId: EntityId, idMap: Map<EntityId, EntityId>): Promise<AnyBoardNode> {
+		return this.columnBoardLinkService.swapLinkedIdsInBoardNode(nodeId, idMap);
 	}
 }

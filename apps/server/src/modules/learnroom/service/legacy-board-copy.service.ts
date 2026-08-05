@@ -203,7 +203,7 @@ export class LegacyBoardCopyService {
 		if (status.copyEntity instanceof LegacyBoard && status.originalEntity instanceof LegacyBoard) {
 			map.set(status.originalEntity.course.id, status.copyEntity.course.id);
 		}
-		status = await this.columnBoardService.swapLinkedIdsInBoards(status, map);
+		status = await this.columnBoardService.swapLinkedIdsInCopy(status, map);
 
 		return status;
 	}
