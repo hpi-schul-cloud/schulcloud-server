@@ -1,4 +1,4 @@
-import { CopyElementType, CopyHelperService, CopyStatus } from '@modules/copy-helper';
+import { CopyHelperService, CopyStatus } from '@modules/copy-helper';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import {
@@ -7,6 +7,7 @@ import {
 	BoardExternalReferenceType,
 	ColumnBoard,
 	ColumnBoardProps,
+	isAnyBoardNode,
 	isColumnBoard,
 } from '../domain';
 import { BoardNodeRepo } from '../repo';
@@ -93,30 +94,20 @@ export class ColumnBoardService {
 	}
 
 	public async swapLinkedIdsInCopy(copyStatus: CopyStatus, idMap?: Map<EntityId, EntityId>): Promise<CopyStatus> {
+		if (copyStatus.copyEntity === undefined) {
+			return copyStatus;
+		}
+
+		if (!isAnyBoardNode(copyStatus.copyEntity)) {
+			return copyStatus;
+		}
+
 		idMap ??= new Map<EntityId, EntityId>();
 		const copyDict = this.copyHelperService.buildCopyEntityDict(copyStatus);
 		copyDict.forEach((value, key) => idMap.set(key, value.id));
 
-		const swappableBoardNodeTypes = new Set([CopyElementType.COLUMNBOARD, CopyElementType.COLUMN]);
+		copyStatus.copyEntity = await this.columnBoardLinkService.swapLinkedIdsInBoardNode(copyStatus.copyEntity, idMap);
 
-		if (swappableBoardNodeTypes.has(copyStatus.type) && copyStatus.copyEntity) {
-			copyStatus.copyEntity = await this.swapLinkedIdsInBoardNode(copyStatus.copyEntity.id, idMap);
-		}
-
-		const updatedElements = await Promise.all(
-			(copyStatus.elements ?? []).map(async (el) => {
-				if (swappableBoardNodeTypes.has(el.type) && el.copyEntity) {
-					el.copyEntity = await this.swapLinkedIdsInBoardNode(el.copyEntity.id, idMap);
-				}
-				return el;
-			})
-		);
-
-		copyStatus.elements = updatedElements;
 		return copyStatus;
-	}
-
-	public swapLinkedIdsInBoardNode(nodeId: EntityId, idMap: Map<EntityId, EntityId>): Promise<AnyBoardNode> {
-		return this.columnBoardLinkService.swapLinkedIdsInBoardNode(nodeId, idMap);
 	}
 }

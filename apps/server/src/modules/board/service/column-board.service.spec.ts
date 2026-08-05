@@ -173,16 +173,76 @@ describe('ColumnBoardService', () => {
 		expect(returnedCopyStatus).toEqual(expectedCopyStatus);
 	});
 
-	it('should delegate swapLinkedIdsInBoardNode to columnBoardLinkService', async () => {
-		const idMap = new Map<EntityId, EntityId>();
-		idMap.set('1', '2');
-		const board = columnBoardFactory.build();
-		columnBoardLinkService.swapLinkedIdsInBoardNode.mockResolvedValueOnce(board);
+	describe('swapLinkedIdsInCopy', () => {
+		describe('when copyEntity is undefined', () => {
+			it('should return the copy status without calling the link service', async () => {
+				const copyStatus: CopyStatus = { status: CopyStatusEnum.SUCCESS, type: CopyElementType.COLUMNBOARD };
 
-		const result = await service.swapLinkedIdsInBoardNode('1', idMap);
+				const result = await service.swapLinkedIdsInCopy(copyStatus);
 
-		expect(columnBoardLinkService.swapLinkedIdsInBoardNode).toHaveBeenCalledWith('1', idMap);
-		expect(result).toEqual(board);
+				expect(result).toBe(copyStatus);
+				expect(columnBoardLinkService.swapLinkedIdsInBoardNode).not.toHaveBeenCalled();
+			});
+		});
+
+		describe('when copyEntity is not a board node', () => {
+			it('should return copy status and skip link updates', async () => {
+				const copyStatus: CopyStatus = {
+					status: CopyStatusEnum.SUCCESS,
+					type: CopyElementType.COLUMNBOARD,
+					copyEntity: { id: 'not-a-board-node' },
+				};
+
+				const result = await service.swapLinkedIdsInCopy(copyStatus);
+
+				expect(result).toBe(copyStatus);
+				expect(columnBoardLinkService.swapLinkedIdsInBoardNode).not.toHaveBeenCalled();
+			});
+		});
+
+		describe('when copyEntity is a valid board node', () => {
+			const setup = () => {
+				const node = columnBoardFactory.build();
+				const idMap = new Map<EntityId, EntityId>();
+				idMap.set('id1', 'id2');
+
+				columnBoardLinkService.swapLinkedIdsInBoardNode.mockResolvedValueOnce(node);
+				copyHelperService.buildCopyEntityDict.mockReturnValue(new Map<EntityId, AuthorizableObject>());
+
+				const copyStatus: CopyStatus = {
+					status: CopyStatusEnum.SUCCESS,
+					type: CopyElementType.COLUMNBOARD,
+					copyEntity: node,
+				};
+
+				return { node, idMap, copyStatus };
+			};
+
+			it('should call buildCopyEntityDict', async () => {
+				const { copyStatus } = setup();
+
+				await service.swapLinkedIdsInCopy(copyStatus);
+
+				expect(copyHelperService.buildCopyEntityDict).toHaveBeenCalledWith(copyStatus);
+			});
+
+			it('should call swapLinkedIdsInBoardNode with the copy entity', async () => {
+				const { node, idMap, copyStatus } = setup();
+
+				await service.swapLinkedIdsInCopy(copyStatus, idMap);
+
+				expect(columnBoardLinkService.swapLinkedIdsInBoardNode).toHaveBeenCalledWith(node, idMap);
+			});
+
+			it('should return copy status with updated copyEntity', async () => {
+				const { node, copyStatus } = setup();
+
+				const result = await service.swapLinkedIdsInCopy(copyStatus);
+
+				expect(result).toBe(copyStatus);
+				expect(result.copyEntity).toEqual(node);
+			});
+		});
 	});
 
 	describe('createColumnBoard', () => {
@@ -201,100 +261,6 @@ describe('ColumnBoardService', () => {
 				await service.createColumnBoard(columnBoard);
 
 				expect(repo.save).toHaveBeenCalledTimes(1);
-			});
-		});
-	});
-
-	describe('swapLinkedIdsInBoards', () => {
-		const setup = (type: CopyElementType, withCopyEntity = false) => {
-			const board = columnBoardFactory.build();
-			const idMap = new Map<EntityId, EntityId>();
-			idMap.set('id1', 'id2');
-
-			columnBoardLinkService.swapLinkedIdsInBoardNode.mockResolvedValue(board);
-			copyHelperService.buildCopyEntityDict.mockReturnValue(new Map<EntityId, AuthorizableObject>());
-
-			const copyStatus: CopyStatus = {
-				status: CopyStatusEnum.SUCCESS,
-				type: CopyElementType.ROOM,
-				elements: [
-					{
-						type,
-						status: CopyStatusEnum.SUCCESS,
-						copyEntity: withCopyEntity ? board : undefined,
-					},
-				],
-			};
-
-			return { board, idMap, copyStatus };
-		};
-
-		it('should call copyHelperService.buildCopyEntityDict', async () => {
-			const { copyStatus } = setup(CopyElementType.COLUMNBOARD);
-
-			await service.swapLinkedIdsInCopy(copyStatus);
-
-			expect(copyHelperService.buildCopyEntityDict).toHaveBeenCalledWith(copyStatus);
-		});
-
-		it('should return copy status with updated linked ids', async () => {
-			const { copyStatus } = setup(CopyElementType.COLUMNBOARD, true);
-
-			const result = await service.swapLinkedIdsInCopy(copyStatus);
-
-			expect(result).toEqual(copyStatus);
-			expect(result.elements?.[0].copyEntity).toEqual(copyStatus.elements?.[0].copyEntity);
-		});
-
-		describe.each([
-			{ type: CopyElementType.COLUMNBOARD, label: 'COLUMNBOARD' },
-			{ type: CopyElementType.COLUMN, label: 'COLUMN' },
-		])('when top-level copyStatus.type is $label', ({ type }) => {
-			const setupTopLevel = () => {
-				const node = columnBoardFactory.build();
-				const idMap = new Map<EntityId, EntityId>();
-				idMap.set('id1', 'id2');
-
-				columnBoardLinkService.swapLinkedIdsInBoardNode.mockResolvedValueOnce(node);
-				copyHelperService.buildCopyEntityDict.mockReturnValue(new Map<EntityId, AuthorizableObject>());
-
-				const copyStatus: CopyStatus = {
-					status: CopyStatusEnum.SUCCESS,
-					type,
-					copyEntity: node,
-					elements: [],
-				};
-
-				return { node, idMap, copyStatus };
-			};
-
-			it('should call swapLinkedIdsInBoardNode with the copy entity id', async () => {
-				const { node, idMap, copyStatus } = setupTopLevel();
-
-				await service.swapLinkedIdsInCopy(copyStatus, idMap);
-
-				expect(columnBoardLinkService.swapLinkedIdsInBoardNode).toHaveBeenCalledWith(node.id, idMap);
-			});
-		});
-
-		describe.each([
-			{ type: CopyElementType.COLUMNBOARD, label: 'COLUMNBOARD' },
-			{ type: CopyElementType.COLUMN, label: 'COLUMN' },
-		])('when a sub-element type is $label', ({ type }) => {
-			it('should call swapLinkedIdsInBoardNode for the element', async () => {
-				const { board, idMap, copyStatus } = setup(type, true);
-
-				await service.swapLinkedIdsInCopy(copyStatus, idMap);
-
-				expect(columnBoardLinkService.swapLinkedIdsInBoardNode).toHaveBeenCalledWith(board.id, idMap);
-			});
-
-			it('should skip the element if it has no copyEntity', async () => {
-				const { copyStatus } = setup(type, false);
-
-				await service.swapLinkedIdsInCopy(copyStatus);
-
-				expect(columnBoardLinkService.swapLinkedIdsInBoardNode).not.toHaveBeenCalled();
 			});
 		});
 	});
