@@ -93,9 +93,7 @@ export class ColumnBoardService {
 	}
 
 	public async swapLinkedIdsInCopy(copyStatus: CopyStatus, idMap?: Map<EntityId, EntityId>): Promise<CopyStatus> {
-		if (!idMap) {
-			idMap = new Map<EntityId, EntityId>();
-		}
+		idMap ??= new Map<EntityId, EntityId>();
 		const copyDict = this.copyHelperService.buildCopyEntityDict(copyStatus);
 		copyDict.forEach((value, key) => idMap.set(key, value.id));
 
