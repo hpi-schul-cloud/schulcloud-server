@@ -59,11 +59,4 @@ export class CopyHelperService {
 		}
 		return map;
 	}
-
-	public buildIdMap(status: CopyStatus): Map<EntityId, EntityId> {
-		const idMap = new Map<EntityId, EntityId>();
-		const copyDict = this.buildCopyEntityDict(status);
-		copyDict.forEach((value, key) => idMap.set(key, value.id));
-		return idMap;
-	}
 }
