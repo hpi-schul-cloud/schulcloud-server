@@ -120,6 +120,8 @@ export class ColumnUc {
 			throw new InternalServerErrorException('Copied entity is not a card');
 		}
 
+		await this.columnBoardService.swapLinkedIdsInCopy(copyStatus);
+
 		return { copyEntity: copyStatus.copyEntity, status: copyStatus.status };
 	}
 }

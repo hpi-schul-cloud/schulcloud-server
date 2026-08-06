@@ -8,8 +8,13 @@ import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.tes
 import { TestApiClientBuilder } from '@testing/test-api-client-builder';
 import { BoardExternalReferenceType } from '../../domain';
 import { BoardNodeEntity } from '../../repo';
-import { columnBoardEntityFactory, columnEntityFactory } from '../../testing';
-import { type ColumnFullResponse } from '../dto';
+import {
+	cardEntityFactory,
+	columnBoardEntityFactory,
+	columnEntityFactory,
+	linkElementEntityFactory,
+} from '../../testing';
+import type { ColumnFullResponse, LinkElementResponse } from '../dto';
 
 const baseRouteName = '/columns';
 
@@ -45,14 +50,44 @@ describe(`column copy (api)`, () => {
 			context: { id: course.id, type: BoardExternalReferenceType.Course },
 		});
 		const columnNode1 = columnEntityFactory.withParent(columnBoardNode).build();
+		const cardNode1a = cardEntityFactory.withParent(columnNode1).build();
+		const cardNode1b = cardEntityFactory.withParent(columnNode1).build();
 		const columnNode2 = columnEntityFactory.withParent(columnBoardNode).build();
+		const cardNode2a = cardEntityFactory.withParent(columnNode2).build();
 
-		await em.persist([columnNode1, columnNode2, columnBoardNode]).flush();
+		const linkElement1 = linkElementEntityFactory.withParent(cardNode1a).build({
+			url: `https://my-svs-test-url.de/boards/${columnBoardNode.id}#card-${cardNode1b.id}`,
+		});
+		const linkElement2 = linkElementEntityFactory.withParent(cardNode1a).build({
+			url: `https://my-svs-test-url.de/boards/${columnBoardNode.id}#card-${cardNode2a.id}`,
+		});
+		await em
+			.persist([
+				columnNode1,
+				columnNode2,
+				columnBoardNode,
+				cardNode1a,
+				cardNode1b,
+				cardNode2a,
+				linkElement1,
+				linkElement2,
+			])
+			.flush();
 		em.clear();
 
 		const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(teacherAccount);
 
-		return { loggedInClient, columnNode1, columnNode2, columnBoardNode };
+		return {
+			loggedInClient,
+			columnNode1,
+			columnNode2,
+			columnBoardNode,
+			cardNode1a,
+			cardNode1b,
+			cardNode2a,
+			linkElement1,
+			linkElement2,
+		};
 	};
 
 	describe('with valid user', () => {
@@ -99,6 +134,28 @@ describe(`column copy (api)`, () => {
 			expect(resultCopiedColumn.position).toEqual(columnNode1.position + 1);
 			expect(resultColumn2.position).not.toEqual(columnNode2.position);
 			expect(resultColumn2.position).toEqual(resultCopiedColumn.position + 1);
+		});
+
+		it('should replace self-referencing ids in link-element-urls in the copied column', async () => {
+			const { loggedInClient, columnNode1 } = await setup();
+
+			const response = await loggedInClient.post(`${columnNode1.id}/copy`);
+			const copiedColumn = response.body as ColumnFullResponse;
+			const [copiedCard1, copiedCard2] = copiedColumn.cards;
+			const [copiedLinkElement1] = copiedCard1.elements;
+
+			expect((copiedLinkElement1 as LinkElementResponse).content.url).toContain(`#card-${copiedCard2.id}`);
+		});
+
+		it('should keep non-self-referencing ids in link-element-urls in the copied column', async () => {
+			const { loggedInClient, columnNode1, cardNode2a } = await setup();
+
+			const response = await loggedInClient.post(`${columnNode1.id}/copy`);
+			const copiedColumn = response.body as ColumnFullResponse;
+			const [copiedCard1] = copiedColumn.cards;
+			const [, copiedLinkElement2] = copiedCard1.elements;
+
+			expect((copiedLinkElement2 as LinkElementResponse).content?.url).toContain(`#card-${cardNode2a.id}`);
 		});
 	});
 

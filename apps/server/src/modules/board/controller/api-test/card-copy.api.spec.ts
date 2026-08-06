@@ -6,14 +6,19 @@ import { Test, type TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClientBuilder } from '@testing/test-api-client-builder';
-import { BoardExternalReferenceType } from '../../domain';
+import { BoardExternalReferenceType, ContentElementType } from '../../domain';
 import { BoardNodeEntity } from '../../repo';
-import { cardEntityFactory, columnBoardEntityFactory, columnEntityFactory } from '../../testing';
+import {
+	cardEntityFactory,
+	columnBoardEntityFactory,
+	columnEntityFactory,
+	linkElementEntityFactory,
+} from '../../testing';
 import { type CardResponse } from '../dto';
 
 const baseRouteName = '/cards';
 
-describe(`card move (api)`, () => {
+describe(`card copy (api)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
 
@@ -47,8 +52,11 @@ describe(`card move (api)`, () => {
 		const parentColumn = columnEntityFactory.withParent(columnBoardNode).build();
 		const cardNode1 = cardEntityFactory.withParent(parentColumn).build();
 		const cardNode2 = cardEntityFactory.withParent(parentColumn).build();
+		const linkElement = linkElementEntityFactory.withParent(cardNode1).build({
+			url: `https://my-svs-test-url.de/boards/${columnBoardNode.id}#card-${cardNode1.id}`,
+		});
 
-		await em.persist([cardNode1, cardNode2, parentColumn, columnBoardNode]).flush();
+		await em.persist([cardNode1, cardNode2, parentColumn, columnBoardNode, linkElement]).flush();
 		em.clear();
 
 		const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(teacherAccount);
@@ -100,6 +108,19 @@ describe(`card move (api)`, () => {
 			expect(resultCopiedCard.position).toEqual(cardNode1.position + 1);
 			expect(resultCard2.position).not.toEqual(cardNode2.position);
 			expect(resultCard2.position).toEqual(resultCopiedCard.position + 1);
+		});
+
+		it('should replace self-referencing ids in link-element-urls in the copied card', async () => {
+			const { loggedInClient, cardNode1 } = await setup();
+
+			const response = await loggedInClient.post(`${cardNode1.id}/copy`);
+			const copiedCard = response.body as CardResponse;
+
+			const linkElement = copiedCard.elements.find((element) => element.type === ContentElementType.LINK) as
+				| { content?: { url?: string } }
+				| undefined;
+
+			expect(linkElement?.content?.url).toContain(`#card-${copiedCard.id}`);
 		});
 	});
 
