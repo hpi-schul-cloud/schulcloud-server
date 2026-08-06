@@ -636,7 +636,7 @@ describe('ShareTokenUC', () => {
 
 				sagaService.executeSaga.mockResolvedValueOnce({
 					roomCopied: { id: room.id, name: 'copy' },
-					boardsCopied: [board],
+					boardsCopied: [{ id: board.id, title: board.title, copyId: board.id, originalId: board.id }],
 				});
 
 				return { user, school, shareToken, room, board };
