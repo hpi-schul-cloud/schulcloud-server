@@ -49,14 +49,21 @@ export class CopyHelperService {
 		return composedName;
 	}
 
-	public buildCopyEntityDict(status: CopyStatus): CopyDictionary {
-		const map = new Map<EntityId, AuthorizableObject>();
+	public buildCopyEntityDict(status: CopyStatus, map?: Map<EntityId, AuthorizableObject>): CopyDictionary {
+		map ??= new Map<EntityId, AuthorizableObject>();
 		status.elements?.forEach((elementStatus: CopyStatus) => {
-			this.buildCopyEntityDict(elementStatus).forEach((el, key) => map.set(key, el));
+			this.buildCopyEntityDict(elementStatus, map).forEach((el, key) => map.set(key, el));
 		});
 		if (status.originalEntity && status.copyEntity) {
 			map.set(status.originalEntity.id, status.copyEntity);
 		}
 		return map;
+	}
+
+	public buildIdMap(status: CopyStatus): Map<EntityId, EntityId> {
+		const idMap = new Map<EntityId, EntityId>();
+		const copyDict = this.buildCopyEntityDict(status);
+		copyDict.forEach((value, key) => idMap.set(key, value.id));
+		return idMap;
 	}
 }

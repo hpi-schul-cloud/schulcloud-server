@@ -98,15 +98,18 @@ export class ColumnBoardService {
 			return copyStatus;
 		}
 
-		if (!isAnyBoardNode(copyStatus.copyEntity)) {
-			return copyStatus;
-		}
-
 		idMap ??= new Map<EntityId, EntityId>();
 		const copyDict = this.copyHelperService.buildCopyEntityDict(copyStatus);
 		copyDict.forEach((value, key) => idMap.set(key, value.id));
 
-		copyStatus.copyEntity = await this.columnBoardLinkService.swapLinkedIdsInBoardNode(copyStatus.copyEntity, idMap);
+		if (isAnyBoardNode(copyStatus.copyEntity)) {
+			copyStatus.copyEntity = await this.columnBoardLinkService.swapLinkedIdsInBoardNode(copyStatus.copyEntity, idMap);
+			return copyStatus;
+		} else {
+			const promises = copyStatus.elements?.map((element) => this.swapLinkedIdsInCopy(element, idMap)) ?? [];
+
+			copyStatus.elements = await Promise.all(promises);
+		}
 
 		return copyStatus;
 	}

@@ -289,6 +289,8 @@ export class ImportTokenUC {
 			destinationColumnBoardId: destinationBoardId,
 		});
 
+		await this.columnBoardService.swapLinkedIdsInCopy(copyStatus);
+
 		return copyStatus;
 	}
 
