@@ -57,7 +57,7 @@ export class TaskCreateParams implements TaskCreate {
 
 	@IsString()
 	@IsOptional()
-	@SanitizeHtml(InputFormat.RICH_TEXT_CK5)
+	@SanitizeHtml(InputFormat.RICH_TEXT_CK5_TASK)
 	@ApiPropertyOptional({
 		description: 'The description of the task',
 	})

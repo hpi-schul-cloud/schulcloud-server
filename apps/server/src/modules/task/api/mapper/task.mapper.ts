@@ -56,7 +56,7 @@ export class TaskMapper {
 			maxTeamMembers: params.maxTeamMembers,
 		};
 		if (params.description) {
-			dto.descriptionInputFormat = InputFormat.RICH_TEXT_CK5;
+			dto.descriptionInputFormat = InputFormat.RICH_TEXT_CK5_TASK;
 		}
 		return dto;
 	}
@@ -75,7 +75,7 @@ export class TaskMapper {
 			maxTeamMembers: params.maxTeamMembers,
 		};
 		if (params.description) {
-			dto.descriptionInputFormat = InputFormat.RICH_TEXT_CK5;
+			dto.descriptionInputFormat = InputFormat.RICH_TEXT_CK5_TASK;
 		}
 		return dto;
 	}
