@@ -142,7 +142,7 @@ describe(BoardUc.name, () => {
 
 	describe('copyColumn', () => {
 		describe('when copy succeeds', () => {
-			it('should call swapLinkedIdsInBoards with the copy status', async () => {
+			it('should call swapLinkedIdsInCopy with the copy status', async () => {
 				const { user, board } = setup();
 				const column = columnFactory.build({ path: board.id });
 				const copiedColumn = columnFactory.build();

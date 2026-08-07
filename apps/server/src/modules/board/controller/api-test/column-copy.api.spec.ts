@@ -153,7 +153,7 @@ describe(`column copy (api)`, () => {
 			const response = await loggedInClient.post(`${columnNode1.id}/copy`);
 			const copiedColumn = response.body as ColumnFullResponse;
 			const [copiedCard1] = copiedColumn.cards;
-			const [, copiedLinkElement2] = copiedCard1.elements;
+			const copiedLinkElement2 = copiedCard1.elements.at(1);
 
 			expect((copiedLinkElement2 as LinkElementResponse).content?.url).toContain(`#card-${cardNode2a.id}`);
 		});

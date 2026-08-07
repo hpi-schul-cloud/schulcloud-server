@@ -49,10 +49,10 @@ export class CopyHelperService {
 		return composedName;
 	}
 
-	public buildCopyEntityDict(status: CopyStatus, map?: Map<EntityId, AuthorizableObject>): CopyDictionary {
-		map ??= new Map<EntityId, AuthorizableObject>();
+	public buildCopyEntityDict(status: CopyStatus): CopyDictionary {
+		const map = new Map<EntityId, AuthorizableObject>();
 		status.elements?.forEach((elementStatus: CopyStatus) => {
-			this.buildCopyEntityDict(elementStatus, map).forEach((el, key) => map.set(key, el));
+			this.buildCopyEntityDict(elementStatus).forEach((el, key) => map.set(key, el));
 		});
 		if (status.originalEntity && status.copyEntity) {
 			map.set(status.originalEntity.id, status.copyEntity);

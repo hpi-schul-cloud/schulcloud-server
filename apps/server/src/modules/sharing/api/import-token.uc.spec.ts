@@ -407,7 +407,7 @@ describe('ShareTokenUC', () => {
 					targetSchoolId: user.school.id,
 				});
 			});
-			it('should call columnBoardService to swapLinkedIdsInBoards', async () => {
+			it('should call columnBoardService to swapLinkedIdsInCopy', async () => {
 				const { user, shareToken, course } = setup();
 				const newName = 'NewName';
 				await uc.importShareToken(user.id, shareToken.token, newName, course.id);
