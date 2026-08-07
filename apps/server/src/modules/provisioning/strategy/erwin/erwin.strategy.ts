@@ -133,11 +133,6 @@ export class ErwinProvisioningStrategy extends ProvisioningStrategy {
 	}
 
 	private mapPayloadRoleToRoleName(role: PayloadRolle): RoleName {
-		const erwinRoleMap: Record<ErwinRole, RoleName> = {
-			[ErwinRole.LERN]: RoleName.STUDENT,
-			[ErwinRole.LEHR]: RoleName.TEACHER,
-			[ErwinRole.LEIT]: RoleName.ADMINISTRATOR,
-		};
 		const mappedSvsRolleMap: Record<MappedSvsRolle, RoleName> = {
 			[MappedSvsRolle.USER]: RoleName.USER,
 			[MappedSvsRolle.STUDENT]: RoleName.STUDENT,
@@ -146,10 +141,10 @@ export class ErwinProvisioningStrategy extends ProvisioningStrategy {
 			[MappedSvsRolle.ADMIN]: RoleName.ADMINISTRATOR,
 		};
 
-		if (Object.values(ErwinRole).includes(role as ErwinRole)) {
-			return erwinRoleMap[role as ErwinRole];
+		if (Object.keys(mappedSvsRolleMap).includes(role)) {
+			return mappedSvsRolleMap[role];
 		}
 
-		return mappedSvsRolleMap[role as MappedSvsRolle];
+		return RoleName.USER;
 	}
 }
