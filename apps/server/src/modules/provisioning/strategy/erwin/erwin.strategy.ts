@@ -15,7 +15,7 @@ import {
 import { BadDataLoggableException } from '../../loggable';
 import { ErwinProvisioningService, ProvisioningEntityType } from '../../service/erwin-provisioning.service';
 import { ProvisioningStrategy } from '../base.strategy';
-import { ErwinRole, MappedSvsRolle, PayloadRolle } from './enums/rolle.enum';
+import { MappedSvsRolle, PayloadRolle } from './enums/rolle.enum';
 import { ErwinJwtPayload } from './erwin.jwt.payload';
 import { plainToInstance } from 'class-transformer';
 
@@ -139,10 +139,10 @@ export class ErwinProvisioningStrategy extends ProvisioningStrategy {
 			[MappedSvsRolle.TEACHER]: RoleName.TEACHER,
 			[MappedSvsRolle.SUPERHERO]: RoleName.SUPERHERO,
 			[MappedSvsRolle.ADMIN]: RoleName.ADMINISTRATOR,
-		};
+		} as const;
 
-		if (Object.keys(mappedSvsRolleMap).includes(role)) {
-			return mappedSvsRolleMap[role];
+		if (Object.values(MappedSvsRolle).includes(role as MappedSvsRolle)) {
+			return mappedSvsRolleMap[role as MappedSvsRolle];
 		}
 
 		return RoleName.USER;
