@@ -289,7 +289,10 @@ export class ImportTokenUC {
 			destinationColumnBoardId: destinationBoardId,
 		});
 
-		await this.columnBoardService.swapLinkedIdsInCopy(copyStatus);
+		const idMap = new Map<EntityId, EntityId>();
+		idMap.set(originalBoard.id, destinationBoardId);
+
+		await this.columnBoardService.swapLinkedIdsInCopy(copyStatus, idMap);
 
 		return copyStatus;
 	}
