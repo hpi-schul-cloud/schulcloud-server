@@ -136,6 +136,9 @@ export class ConfigResponse {
 	FEATURE_TASK_SHARE: boolean;
 
 	@ApiProperty()
+	FEATURE_TASKS_V3_ENABLED: boolean;
+
+	@ApiProperty()
 	FEATURE_BOARD_LAYOUT_ENABLED: boolean;
 
 	@ApiProperty()
@@ -316,6 +319,7 @@ export class ConfigResponse {
 		this.FEATURE_LOGIN_LINK_ENABLED = config.featureLoginLinkEnabled;
 		this.FEATURE_LESSON_SHARE = config.featureLessonShare;
 		this.FEATURE_TASK_SHARE = config.featureTaskShare;
+		this.FEATURE_TASKS_V3_ENABLED = config.featureTasksV3Enabled;
 		this.FEATURE_BOARD_LAYOUT_ENABLED = config.featureBoardLayoutEnabled;
 		this.FEATURE_USER_MIGRATION_ENABLED = config.featureUserMigrationEnabled;
 		this.FEATURE_COPY_SERVICE_ENABLED = config.featureCopyServiceEnabled;
