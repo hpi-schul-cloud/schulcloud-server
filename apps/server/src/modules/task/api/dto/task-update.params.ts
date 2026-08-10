@@ -2,7 +2,7 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { bsonStringPattern } from '@shared/controller/bson-string-pattern';
 import { SanitizeHtml } from '@shared/controller/transformer';
 import { InputFormat } from '@shared/domain/types';
-import { IsBoolean, IsDate, IsInt, IsMongoId, IsOptional, IsString, Min } from 'class-validator';
+import { IsBoolean, IsDate, IsInt, IsMongoId, IsNotEmpty, IsOptional, IsString, Min } from 'class-validator';
 import { TaskUpdate } from '../../domain';
 
 export class TaskUpdateParams implements TaskUpdate {
@@ -48,6 +48,7 @@ export class TaskUpdateParams implements TaskUpdate {
 	maxTeamMembers?: number;
 
 	@IsString()
+	@IsNotEmpty()
 	@SanitizeHtml()
 	@ApiProperty({
 		description: 'The title of the task',

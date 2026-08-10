@@ -126,10 +126,12 @@ inputFormatsSanitizeConfig.RichTextCk5Task = {
 			? inputFormatsSanitizeConfig.RichTextCk5.allowedTags
 			: []),
 		'img',
+		'audio',
 	],
 	allowedAttributes: {
 		...inputFormatsSanitizeConfig.RichTextCk5.allowedAttributes,
 		img: ['src', 'srcset', 'alt', 'title', 'width', 'height', 'loading'],
+		audio: ['src', 'controls', 'controlslist'],
 		figure: ['class', 'style'],
 	},
 	allowedStyles: {

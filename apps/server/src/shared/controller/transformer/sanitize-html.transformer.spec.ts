@@ -120,6 +120,19 @@ describe('SanitizeHtmlTransformer Decorator', () => {
 				'<figure class="image image_resized" style="width:37.43%;height:120px"><img src="task-image.png" /></figure>'
 			);
 		});
+		it('should preserve audio only for task rich text', () => {
+			const plainString = {
+				contentCk5: '<audio src="task-audio.mp3" controls></audio>',
+				contentCk5Task:
+					'<audio src="task-audio.mp3" controls controlslist="nodownload" onerror="alert(1)"></audio>',
+			};
+			const instance = plainToClass(WithHtmlDto, plainString);
+
+			expect(instance.contentCk5).toEqual('');
+			expect(instance.contentCk5Task).toEqual(
+				'<audio src="task-audio.mp3" controls controlslist="nodownload"></audio>'
+			);
+		});
 	});
 
 	describe('when sanitizing rich text ck4 formatting', () => {
