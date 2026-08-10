@@ -62,7 +62,6 @@ export class CopyHelperService {
 
 	public buildReplacementMap(status: CopyStatus): Record<string, string> {
 		if (!status.originalEntity || !status.copyEntity) {
-			console.warn(`Missing original or copy entity for element status: ${JSON.stringify(status)}`);
 			return {};
 		}
 

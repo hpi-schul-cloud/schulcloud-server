@@ -402,7 +402,6 @@ describe('copy helper service', () => {
 
 		describe('when original or copy entity is missing', () => {
 			it('should return empty map and log warning', () => {
-				const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
 				const status: CopyStatus = {
 					type: CopyElementType.COURSE,
 					status: CopyStatusEnum.SUCCESS,
@@ -411,10 +410,6 @@ describe('copy helper service', () => {
 				const replacementMap = copyHelperService.buildReplacementMap(status);
 
 				expect(replacementMap).toEqual({});
-				expect(warnSpy).toHaveBeenCalledWith(
-					expect.stringContaining('Missing original or copy entity for element status:')
-				);
-				warnSpy.mockRestore();
 			});
 
 			describe('when entity access changes between checks', () => {
