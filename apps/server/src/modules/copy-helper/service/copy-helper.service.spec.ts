@@ -324,4 +324,129 @@ describe('copy helper service', () => {
 			expect(copyMap.get(originalChildEntity.id)).toEqual(copyChildEntity);
 		});
 	});
+
+	describe('buildReplacementMap', () => {
+		it('should map original entity id to copy entity id for non-card elements', () => {
+			const originalEntity = courseEntityFactory.buildWithId();
+			const copyEntity = courseEntityFactory.buildWithId();
+			const status: CopyStatus = {
+				type: CopyElementType.COURSE,
+				status: CopyStatusEnum.SUCCESS,
+				originalEntity,
+				copyEntity,
+			};
+
+			const replacementMap = copyHelperService.buildReplacementMap(status);
+
+			expect(replacementMap).toEqual({
+				[originalEntity.id]: copyEntity.id,
+			});
+		});
+
+		it('should map board card links for card elements', () => {
+			const status: CopyStatus = {
+				type: CopyElementType.CARD,
+				status: CopyStatusEnum.SUCCESS,
+				originalEntity: { id: 'card-original', rootId: 'board-original' } as unknown as NonNullable<
+					CopyStatus['originalEntity']
+				>,
+				copyEntity: { id: 'card-copy', rootId: 'board-copy' } as unknown as NonNullable<CopyStatus['copyEntity']>,
+			};
+
+			const replacementMap = copyHelperService.buildReplacementMap(status);
+
+			expect(replacementMap).toEqual({
+				'/boards/board-original#card-card-original': '/boards/board-copy#card-card-copy',
+			});
+		});
+
+		it('should merge replacements from nested elements', () => {
+			const originalParent = courseEntityFactory.buildWithId();
+			const copyParent = courseEntityFactory.buildWithId();
+			const originalChild = courseEntityFactory.buildWithId();
+			const copyChild = courseEntityFactory.buildWithId();
+			const status: CopyStatus = {
+				type: CopyElementType.COURSE,
+				status: CopyStatusEnum.SUCCESS,
+				originalEntity: originalParent,
+				copyEntity: copyParent,
+				elements: [
+					{
+						type: CopyElementType.COURSE,
+						status: CopyStatusEnum.SUCCESS,
+						originalEntity: originalChild,
+						copyEntity: copyChild,
+					},
+					{
+						type: CopyElementType.CARD,
+						status: CopyStatusEnum.SUCCESS,
+						originalEntity: { id: 'nested-card-original', rootId: 'nested-board-original' } as unknown as NonNullable<
+							CopyStatus['originalEntity']
+						>,
+						copyEntity: {
+							id: 'nested-card-copy',
+							rootId: 'nested-board-copy',
+						} as unknown as NonNullable<CopyStatus['copyEntity']>,
+					},
+				],
+			};
+
+			const replacementMap = copyHelperService.buildReplacementMap(status);
+
+			expect(replacementMap).toEqual({
+				[originalParent.id]: copyParent.id,
+				[originalChild.id]: copyChild.id,
+				'/boards/nested-board-original#card-nested-card-original': '/boards/nested-board-copy#card-nested-card-copy',
+			});
+		});
+
+		describe('when original or copy entity is missing', () => {
+			it('should return empty map and log warning', () => {
+				const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+				const status: CopyStatus = {
+					type: CopyElementType.COURSE,
+					status: CopyStatusEnum.SUCCESS,
+				};
+
+				const replacementMap = copyHelperService.buildReplacementMap(status);
+
+				expect(replacementMap).toEqual({});
+				expect(warnSpy).toHaveBeenCalledWith(
+					expect.stringContaining('Missing original or copy entity for element status:')
+				);
+				warnSpy.mockRestore();
+			});
+
+			describe('when entity access changes between checks', () => {
+				it('should log warning in final fallback branch', () => {
+					const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+					const stableOriginalEntity = courseEntityFactory.buildWithId();
+					const stableCopyEntity = courseEntityFactory.buildWithId();
+					let originalEntityReads = 0;
+					let copyEntityReads = 0;
+
+					const status = {
+						type: CopyElementType.COURSE,
+						status: CopyStatusEnum.SUCCESS,
+						get originalEntity() {
+							originalEntityReads += 1;
+							return originalEntityReads === 1 ? stableOriginalEntity : undefined;
+						},
+						get copyEntity() {
+							copyEntityReads += 1;
+							return copyEntityReads === 1 ? stableCopyEntity : undefined;
+						},
+					} as unknown as CopyStatus;
+
+					const replacementMap = copyHelperService.buildReplacementMap(status);
+
+					expect(replacementMap).toEqual({});
+					expect(warnSpy).toHaveBeenCalledWith(
+						expect.stringContaining('Missing original or copy entity for element status:')
+					);
+					warnSpy.mockRestore();
+				});
+			});
+		});
+	});
 });

@@ -181,7 +181,7 @@ describe('ColumnBoardService', () => {
 				const result = await service.swapLinkedIdsInCopy(copyStatus);
 
 				expect(result).toBe(copyStatus);
-				expect(columnBoardLinkService.swapLinkedIdsInBoardNode).not.toHaveBeenCalled();
+				expect(columnBoardLinkService.rewriteLinkUrlsInBoardNode).not.toHaveBeenCalled();
 			});
 		});
 
@@ -196,7 +196,7 @@ describe('ColumnBoardService', () => {
 				const result = await service.swapLinkedIdsInCopy(copyStatus);
 
 				expect(result).toBe(copyStatus);
-				expect(columnBoardLinkService.swapLinkedIdsInBoardNode).not.toHaveBeenCalled();
+				expect(columnBoardLinkService.rewriteLinkUrlsInBoardNode).not.toHaveBeenCalled();
 			});
 		});
 
@@ -206,7 +206,7 @@ describe('ColumnBoardService', () => {
 				const idMap = new Map<EntityId, EntityId>();
 				idMap.set('id1', 'id2');
 
-				columnBoardLinkService.swapLinkedIdsInBoardNode.mockResolvedValueOnce(node);
+				columnBoardLinkService.rewriteLinkUrlsInBoardNode.mockResolvedValueOnce(node);
 				copyHelperService.buildCopyEntityDict.mockReturnValue(new Map<EntityId, AuthorizableObject>());
 
 				const copyStatus: CopyStatus = {
@@ -231,7 +231,7 @@ describe('ColumnBoardService', () => {
 
 				await service.swapLinkedIdsInCopy(copyStatus, idMap);
 
-				expect(columnBoardLinkService.swapLinkedIdsInBoardNode).toHaveBeenCalledWith(node, idMap);
+				expect(columnBoardLinkService.rewriteLinkUrlsInBoardNode).toHaveBeenCalledWith(node, idMap);
 			});
 
 			it('should return copy status with updated copyEntity', async () => {

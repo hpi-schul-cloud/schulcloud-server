@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { AuthorizableObject } from '@shared/domain/domain-object';
 import { EntityId } from '@shared/domain/types';
-import { CopyDictionary, CopyStatus, CopyStatusEnum } from '../types/copy.types';
+import { CopyDictionary, CopyElementType, CopyStatus, CopyStatusEnum } from '../types/copy.types';
 
 const isAtLeastPartialSuccessfull = (status: CopyStatusEnum): boolean =>
 	status === CopyStatusEnum.PARTIAL || status === CopyStatusEnum.SUCCESS;
@@ -58,5 +58,34 @@ export class CopyHelperService {
 			map.set(status.originalEntity.id, status.copyEntity);
 		}
 		return map;
+	}
+
+	public buildReplacementMap(status: CopyStatus): Record<string, string> {
+		if (!status.originalEntity || !status.copyEntity) {
+			console.warn(`Missing original or copy entity for element status: ${JSON.stringify(status)}`);
+			return {};
+		}
+
+		const replacementMap: Record<string, string> = {};
+		status.elements?.forEach((elementStatus: CopyStatus) => {
+			Object.assign(replacementMap, this.buildReplacementMap(elementStatus));
+		});
+
+		if (status.type === CopyElementType.CARD) {
+			const { originalEntity, copyEntity } = status;
+			const { rootId: originalRootId, id: originalCardId } = (originalEntity ?? {}) as {
+				rootId: EntityId;
+				id: EntityId;
+			};
+			const { rootId: copyRootId, id: copyCardId } = (copyEntity ?? {}) as { rootId: EntityId; id: EntityId };
+			const sourceCardLink = `/boards/${originalRootId}#card-${originalCardId}`;
+			const targetCardLink = `/boards/${copyRootId}#card-${copyCardId}`;
+			replacementMap[sourceCardLink] = targetCardLink;
+		} else if (status.originalEntity && status.copyEntity) {
+			replacementMap[status.originalEntity.id] = status.copyEntity.id;
+		} else {
+			console.warn(`Missing original or copy entity for element status: ${JSON.stringify(status)}`);
+		}
+		return replacementMap;
 	}
 }

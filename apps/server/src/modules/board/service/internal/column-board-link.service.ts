@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId } from '@shared/domain/types';
 import { AnyBoardNode, isLinkElement } from '../../domain';
 import { BoardNodeRepo } from '../../repo/board-node.repo';
 
@@ -7,21 +6,21 @@ import { BoardNodeRepo } from '../../repo/board-node.repo';
 export class ColumnBoardLinkService {
 	constructor(private readonly boardNodeRepo: BoardNodeRepo) {}
 
-	public async swapLinkedIdsInBoardNode(
+	public async rewriteLinkUrlsInBoardNode(
 		boardNode: AnyBoardNode,
-		idMap?: Map<EntityId, EntityId>
+		replacementMap?: Record<string, string>
 	): Promise<AnyBoardNode> {
-		this.updateLinkElements(boardNode, idMap ?? new Map<EntityId, EntityId>());
+		this.updateLinkElements(boardNode, replacementMap ?? {});
 		await this.boardNodeRepo.save(boardNode);
 		return boardNode;
 	}
 
-	private updateLinkElements(boardNode: AnyBoardNode, idMap: Map<EntityId, EntityId>): void {
+	private updateLinkElements(boardNode: AnyBoardNode, replacementMap: Record<string, string>): void {
 		if (isLinkElement(boardNode)) {
-			idMap.forEach((value, key) => {
-				boardNode.url = boardNode.url.replace(key, value);
-			});
+			for (const [searchValue, replaceValue] of Object.entries(replacementMap)) {
+				boardNode.url = boardNode.url.replace(searchValue, replaceValue);
+			}
 		}
-		boardNode.children.forEach((bn) => this.updateLinkElements(bn, idMap));
+		boardNode.children.forEach((bn) => this.updateLinkElements(bn, replacementMap));
 	}
 }

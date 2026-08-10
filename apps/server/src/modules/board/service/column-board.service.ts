@@ -93,20 +93,24 @@ export class ColumnBoardService {
 		return copyStatus;
 	}
 
-	public async swapLinkedIdsInCopy(copyStatus: CopyStatus, idMap?: Map<EntityId, EntityId>): Promise<CopyStatus> {
+	public async swapLinkedIdsInCopy(
+		copyStatus: CopyStatus,
+		replacementMap: Record<string, string> = {}
+	): Promise<CopyStatus> {
 		if (copyStatus.copyEntity === undefined) {
 			return copyStatus;
 		}
 
-		idMap ??= new Map<EntityId, EntityId>();
-		const copyDict = this.copyHelperService.buildCopyEntityDict(copyStatus);
-		copyDict.forEach((value, key) => idMap.set(key, value.id));
+		Object.assign(replacementMap, this.copyHelperService.buildReplacementMap(copyStatus));
 
 		if (isAnyBoardNode(copyStatus.copyEntity)) {
-			copyStatus.copyEntity = await this.columnBoardLinkService.swapLinkedIdsInBoardNode(copyStatus.copyEntity, idMap);
+			copyStatus.copyEntity = await this.columnBoardLinkService.rewriteLinkUrlsInBoardNode(
+				copyStatus.copyEntity,
+				replacementMap
+			);
 			return copyStatus;
 		} else {
-			const promises = copyStatus.elements?.map((element) => this.swapLinkedIdsInCopy(element, idMap)) ?? [];
+			const promises = copyStatus.elements?.map((element) => this.swapLinkedIdsInCopy(element, replacementMap)) ?? [];
 
 			copyStatus.elements = await Promise.all(promises);
 		}
