@@ -52,7 +52,7 @@ export class RoomCopyUc {
 			}),
 		};
 
-		await this.columnBoardService.swapLinkedIdsInCopy(copyStatus);
+		await this.columnBoardService.updateIdsInLinks(copyStatus);
 
 		return copyStatus;
 	}

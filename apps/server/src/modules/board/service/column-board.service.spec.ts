@@ -3,8 +3,6 @@ import { StorageLocation } from '@infra/files-storage-amqp-client';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { CopyElementType, CopyHelperService, type CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { Test, type TestingModule } from '@nestjs/testing';
-import { type AuthorizableObject } from '@shared/domain/domain-object';
-import { type EntityId } from '@shared/domain/types';
 import {
 	type BoardExternalReference,
 	BoardExternalReferenceType,
@@ -178,7 +176,7 @@ describe('ColumnBoardService', () => {
 			it('should return the copy status without calling the link service', async () => {
 				const copyStatus: CopyStatus = { status: CopyStatusEnum.SUCCESS, type: CopyElementType.COLUMNBOARD };
 
-				const result = await service.swapLinkedIdsInCopy(copyStatus);
+				const result = await service.updateIdsInLinks(copyStatus);
 
 				expect(result).toBe(copyStatus);
 				expect(columnBoardLinkService.rewriteLinkUrlsInBoardNode).not.toHaveBeenCalled();
@@ -193,7 +191,7 @@ describe('ColumnBoardService', () => {
 					copyEntity: { id: 'not-a-board-node' },
 				};
 
-				const result = await service.swapLinkedIdsInCopy(copyStatus);
+				const result = await service.updateIdsInLinks(copyStatus);
 
 				expect(result).toBe(copyStatus);
 				expect(columnBoardLinkService.rewriteLinkUrlsInBoardNode).not.toHaveBeenCalled();
@@ -203,11 +201,10 @@ describe('ColumnBoardService', () => {
 		describe('when copyEntity is a valid board node', () => {
 			const setup = () => {
 				const node = columnBoardFactory.build();
-				const idMap = new Map<EntityId, EntityId>();
-				idMap.set('id1', 'id2');
+				const idMap = { ['id1']: 'id2' };
 
 				columnBoardLinkService.rewriteLinkUrlsInBoardNode.mockResolvedValueOnce(node);
-				copyHelperService.buildCopyEntityDict.mockReturnValue(new Map<EntityId, AuthorizableObject>());
+				copyHelperService.buildReplacementMap.mockReturnValue(idMap);
 
 				const copyStatus: CopyStatus = {
 					status: CopyStatusEnum.SUCCESS,
@@ -221,15 +218,15 @@ describe('ColumnBoardService', () => {
 			it('should call buildCopyEntityDict', async () => {
 				const { copyStatus } = setup();
 
-				await service.swapLinkedIdsInCopy(copyStatus);
+				await service.updateIdsInLinks(copyStatus);
 
-				expect(copyHelperService.buildCopyEntityDict).toHaveBeenCalledWith(copyStatus);
+				expect(copyHelperService.buildReplacementMap).toHaveBeenCalledWith(copyStatus);
 			});
 
 			it('should call swapLinkedIdsInBoardNode with the copy entity', async () => {
 				const { node, idMap, copyStatus } = setup();
 
-				await service.swapLinkedIdsInCopy(copyStatus, idMap);
+				await service.updateIdsInLinks(copyStatus);
 
 				expect(columnBoardLinkService.rewriteLinkUrlsInBoardNode).toHaveBeenCalledWith(node, idMap);
 			});
@@ -237,7 +234,7 @@ describe('ColumnBoardService', () => {
 			it('should return copy status with updated copyEntity', async () => {
 				const { node, copyStatus } = setup();
 
-				const result = await service.swapLinkedIdsInCopy(copyStatus);
+				const result = await service.updateIdsInLinks(copyStatus);
 
 				expect(result).toBe(copyStatus);
 				expect(result.copyEntity).toEqual(node);

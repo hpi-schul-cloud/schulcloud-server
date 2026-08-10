@@ -182,7 +182,7 @@ export class ImportTokenUC {
 			targetSchoolId: user.school.id,
 		});
 
-		await this.columnBoardService.swapLinkedIdsInCopy(copyStatus);
+		await this.columnBoardService.updateIdsInLinks(copyStatus);
 
 		return copyStatus;
 	}
@@ -289,7 +289,7 @@ export class ImportTokenUC {
 			destinationColumnBoardId: destinationBoardId,
 		});
 
-		await this.columnBoardService.swapLinkedIdsInCopy(copyStatus);
+		await this.columnBoardService.updateIdsInLinks(copyStatus);
 
 		return copyStatus;
 	}

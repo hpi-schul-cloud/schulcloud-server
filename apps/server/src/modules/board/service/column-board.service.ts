@@ -93,7 +93,7 @@ export class ColumnBoardService {
 		return copyStatus;
 	}
 
-	public async swapLinkedIdsInCopy(
+	public async updateIdsInLinks(
 		copyStatus: CopyStatus,
 		replacementMap: Record<string, string> = {}
 	): Promise<CopyStatus> {
@@ -110,7 +110,7 @@ export class ColumnBoardService {
 			);
 			return copyStatus;
 		} else {
-			const promises = copyStatus.elements?.map((element) => this.swapLinkedIdsInCopy(element, replacementMap)) ?? [];
+			const promises = copyStatus.elements?.map((element) => this.updateIdsInLinks(element, replacementMap)) ?? [];
 
 			copyStatus.elements = await Promise.all(promises);
 		}

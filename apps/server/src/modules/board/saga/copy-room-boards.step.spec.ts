@@ -112,7 +112,7 @@ describe('CopyRoomBoardsStep', () => {
 
 				await step.execute({ userId, sourceRoomId: sourceRoom.id, targetRoomId: targetRoom.id });
 
-				expect(columnBoardService.swapLinkedIdsInCopy).toHaveBeenCalledWith({
+				expect(columnBoardService.updateIdsInLinks).toHaveBeenCalledWith({
 					title: 'board',
 					type: CopyElementType.ROOM,
 					status: CopyStatusEnum.SUCCESS,
