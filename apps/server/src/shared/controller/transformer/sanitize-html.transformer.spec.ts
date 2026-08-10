@@ -123,8 +123,7 @@ describe('SanitizeHtmlTransformer Decorator', () => {
 		it('should preserve audio only for task rich text', () => {
 			const plainString = {
 				contentCk5: '<audio src="task-audio.mp3" controls></audio>',
-				contentCk5Task:
-					'<audio src="task-audio.mp3" controls controlslist="nodownload" onerror="alert(1)"></audio>',
+				contentCk5Task: '<audio src="task-audio.mp3" controls controlslist="nodownload" onerror="alert(1)"></audio>',
 			};
 			const instance = plainToClass(WithHtmlDto, plainString);
 
@@ -133,6 +132,17 @@ describe('SanitizeHtmlTransformer Decorator', () => {
 				'<audio src="task-audio.mp3" controls controlslist="nodownload"></audio>'
 			);
 		});
+	});
+
+	it('should preserve video only for task rich text', () => {
+		const plainString = {
+			contentCk5: '<video src="task-video.mp4" controls></video>',
+			contentCk5Task: '<video src="task-video.mp4" controls controlslist="nodownload" onerror="alert(1)"></video>',
+		};
+		const instance = plainToClass(WithHtmlDto, plainString);
+
+		expect(instance.contentCk5).toEqual('');
+		expect(instance.contentCk5Task).toEqual('<video src="task-video.mp4" controls controlslist="nodownload"></video>');
 	});
 
 	describe('when sanitizing rich text ck4 formatting', () => {
