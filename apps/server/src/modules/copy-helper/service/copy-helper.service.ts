@@ -82,8 +82,6 @@ export class CopyHelperService {
 			replacementMap[sourceCardLink] = targetCardLink;
 		} else if (status.originalEntity && status.copyEntity) {
 			replacementMap[status.originalEntity.id] = status.copyEntity.id;
-		} else {
-			console.warn(`Missing original or copy entity for element status: ${JSON.stringify(status)}`);
 		}
 		return replacementMap;
 	}
