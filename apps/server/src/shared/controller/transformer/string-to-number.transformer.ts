@@ -8,8 +8,12 @@ import { TypeGuard } from '../../common/guards';
  */
 export function StringToNumber(): PropertyDecorator {
 	return Transform((params: TransformFnParams) => {
-		// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access
-		const value = params.obj[params.key];
+		// Use class-transformer's resolved value to preserve defaults on plainToClassFromExist.
+		const value = params.value;
+			if (value === undefined || value === null) {
+				return value;
+			}
+
 		if (typeof value === 'number') {
 			return value;
 		}

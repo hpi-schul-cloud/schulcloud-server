@@ -31,7 +31,8 @@ export class AccountMikroOrmRepo extends BaseDomainObjectRepo<Account, AccountEn
 
 		let saved: AccountEntity;
 		if (existing) {
-			saved = this.em.assign(existing, saveEntity);
+			this.updateExistingEntity(existing, saveEntity);
+			saved = existing;
 		} else {
 			this.em.persist(saveEntity);
 			saved = saveEntity;
@@ -116,7 +117,8 @@ export class AccountMikroOrmRepo extends BaseDomainObjectRepo<Account, AccountEn
 
 		let saved: AccountEntity;
 		if (existing) {
-			saved = this.em.assign(existing, saveEntity);
+			this.updateExistingEntity(existing, saveEntity);
+			saved = existing;
 		} else {
 			this.em.persist(saveEntity);
 			saved = saveEntity;
@@ -218,5 +220,19 @@ export class AccountMikroOrmRepo extends BaseDomainObjectRepo<Account, AccountEn
 			{ userId: { $in: objectIds } },
 			{ deactivatedAt, updatedAt: new Date() }
 		);
+	}
+
+	private updateExistingEntity(existing: AccountEntity, update: AccountEntity): void {
+		existing.username = update.username;
+		existing.password = update.password;
+		existing.token = update.token;
+		existing.credentialHash = update.credentialHash;
+		existing.userId = update.userId;
+		existing.systemId = update.systemId;
+		existing.lastLogin = update.lastLogin;
+		existing.lasttriedFailedLogin = update.lasttriedFailedLogin;
+		existing.expiresAt = update.expiresAt;
+		existing.activated = update.activated;
+		existing.deactivatedAt = update.deactivatedAt;
 	}
 }

@@ -10,13 +10,13 @@ export interface FileSecurityCheckEntityProps {
 
 @Embeddable()
 export class FileSecurityCheckEntity {
-	@Enum()
+	@Enum({ items: () => FileSecurityCheckStatus })
 	status: FileSecurityCheckStatus = FileSecurityCheckStatus.PENDING;
 
-	@Property()
+	@Property({ type: 'string' })
 	reason = 'not yet scanned';
 
-	@Property()
+	@Property({ type: 'string' })
 	requestToken?: string = uuid();
 
 	@Property({ type: Date })

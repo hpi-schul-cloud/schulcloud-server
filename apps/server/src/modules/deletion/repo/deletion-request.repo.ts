@@ -31,7 +31,7 @@ export class DeletionRequestRepo {
 			? deletionRequests.map((deletionRequest) => DeletionRequestMapper.mapToEntity(deletionRequest))
 			: [DeletionRequestMapper.mapToEntity(deletionRequests)];
 
-		await this.em.upsertMany(deletionRequestEntities);
+		this.em.persist(deletionRequestEntities);
 		await this.em.flush();
 	}
 

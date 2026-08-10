@@ -1,5 +1,5 @@
 import { Cascade, Collection, Embeddable, Embedded, Entity, Enum, OneToMany, Property } from '@mikro-orm/core';
-import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
+import type { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity/school-system-options.entity';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { EntityId } from '@shared/domain/types';
@@ -128,7 +128,7 @@ export class LdapConfigEntity {
 	@Property({ nullable: true })
 	provider?: string;
 
-	@Property({ nullable: true })
+	@Property({ nullable: true, type: 'object' })
 	providerOptions?: {
 		schoolName?: string;
 		userPathAdditions?: string;
@@ -212,8 +212,7 @@ export class SystemEntity extends BaseEntityWithTimestamps {
 	@Embedded(() => OauthConfigEntity, { object: true, nullable: true })
 	oauthConfig?: OauthConfigEntity;
 
-	@Property({ nullable: true })
-	@Enum()
+	@Enum({ nullable: true, items: () => SystemProvisioningStrategy })
 	provisioningStrategy?: SystemProvisioningStrategy;
 
 	@Embedded(() => OidcConfigEntity, { object: true, nullable: true })
@@ -225,7 +224,9 @@ export class SystemEntity extends BaseEntityWithTimestamps {
 	@Property({ nullable: true })
 	provisioningUrl?: string;
 
-	@OneToMany(() => SchoolSystemOptionsEntity, (options) => options.system, { cascade: [Cascade.REMOVE] })
+	@OneToMany('SchoolSystemOptionsEntity', (options: SchoolSystemOptionsEntity) => options.system, {
+		cascade: [Cascade.REMOVE],
+	})
 	schoolSystemOptions = new Collection<SchoolSystemOptionsEntity>(this);
 
 	constructor(props: SystemEntityProps) {

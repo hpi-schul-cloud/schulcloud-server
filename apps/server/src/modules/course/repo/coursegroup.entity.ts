@@ -1,11 +1,11 @@
 import { Collection, Entity, Index, ManyToMany, ManyToOne, Property } from '@mikro-orm/core';
 import { LessonParent } from '@modules/lesson/repo';
-import { SchoolEntity } from '@modules/school/repo';
+import type { SchoolEntity } from '@modules/school/repo';
 import { TaskParent } from '@modules/task/repo';
 import { User } from '@modules/user/repo';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { CourseEntity } from './course.entity'; // https://github.com/mikro-orm/mikro-orm/discussions/4089
+import type { CourseEntity } from '@modules/course/repo/course.entity';
 
 export interface CourseGroupProperties {
 	name: string;
@@ -24,10 +24,10 @@ export class CourseGroupEntity extends BaseEntityWithTimestamps implements TaskP
 	students = new Collection<User>(this);
 
 	@Index()
-	@ManyToOne(() => CourseEntity, { fieldName: 'courseId' })
+	@ManyToOne('CourseEntity', { fieldName: 'courseId' })
 	course: CourseEntity;
 
-	@ManyToOne(() => SchoolEntity, { fieldName: 'schoolId' })
+	@ManyToOne('SchoolEntity', { fieldName: 'schoolId' })
 	@Index()
 	school: SchoolEntity;
 
@@ -36,6 +36,9 @@ export class CourseGroupEntity extends BaseEntityWithTimestamps implements TaskP
 		this.name = props.name;
 		this.course = props.course;
 		this.school = props.course.school;
+		if (!this.course.courseGroups.contains(this)) {
+			this.course.courseGroups.add(this);
+		}
 		if (props.students) this.students.set(props.students);
 	}
 

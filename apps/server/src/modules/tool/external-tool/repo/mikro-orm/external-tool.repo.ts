@@ -23,14 +23,19 @@ export class ExternalToolRepo {
 	}
 
 	public async save(domainObject: ExternalTool): Promise<ExternalTool> {
-		const existing: ExternalToolEntity | null = await this.em.findOne(this.entityName, domainObject.id);
+		const existing: ExternalToolEntity | null = domainObject.id
+			? await this.em.findOne(this.entityName, domainObject.id)
+			: null;
 
 		const entityProps: ExternalToolEntityProps = this.mapDomainObjectToEntityProps(domainObject);
-		let entity: ExternalToolEntity = new ExternalToolEntity(entityProps);
+		let entity: ExternalToolEntity;
 
 		if (existing) {
-			entity = this.em.assign(existing, entity);
+			const updateProps: ExternalToolEntityProps = { ...entityProps };
+			delete updateProps.id;
+			entity = this.em.assign(existing, updateProps);
 		} else {
+			entity = new ExternalToolEntity(entityProps);
 			this.em.persist(entity);
 		}
 
@@ -186,14 +191,19 @@ export class ExternalToolRepo {
 	}
 
 	private async saveWithoutFlush(domainObject: ExternalTool): Promise<ExternalTool> {
-		const existing: ExternalToolEntity | null = await this.em.findOne(this.entityName, domainObject.id);
+		const existing: ExternalToolEntity | null = domainObject.id
+			? await this.em.findOne(this.entityName, domainObject.id)
+			: null;
 
 		const entityProps: ExternalToolEntityProps = this.mapDomainObjectToEntityProps(domainObject);
-		let entity: ExternalToolEntity = new ExternalToolEntity(entityProps);
+		let entity: ExternalToolEntity;
 
 		if (existing) {
-			entity = this.em.assign(existing, entity);
+			const updateProps: ExternalToolEntityProps = { ...entityProps };
+			delete updateProps.id;
+			entity = this.em.assign(existing, updateProps);
 		} else {
+			entity = new ExternalToolEntity(entityProps);
 			this.em.persist(entity);
 		}
 

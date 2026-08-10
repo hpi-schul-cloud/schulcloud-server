@@ -1,5 +1,5 @@
 import { EntityName, Primary, Utils } from '@mikro-orm/core';
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { ToolContextType } from '../../../common/enum/tool-context-type.enum';
@@ -36,11 +36,12 @@ export class ContextExternalToolRepo {
 		);
 
 		const entityProps: ContextExternalToolEntityProps = this.mapDomainObjectToEntityProps(domainObject);
-		let entity: ContextExternalToolEntity = new ContextExternalToolEntity(entityProps);
+		let entity: ContextExternalToolEntity;
 
 		if (existing) {
-			entity = this.em.assign(existing, entity);
+			entity = this.em.assign(existing, entityProps as never);
 		} else {
+			entity = new ContextExternalToolEntity(entityProps);
 			this.em.persist(entity);
 		}
 		await this.em.flush();
@@ -182,7 +183,7 @@ export class ContextExternalToolRepo {
 			: undefined;
 
 		return {
-			contextId: entityDO.contextRef.id,
+			contextId: new ObjectId(entityDO.contextRef.id),
 			contextType: this.mapContextTypeToEntityType(entityDO.contextRef.type),
 			displayName: entityDO.displayName,
 			schoolTool: this.em.getReference(SchoolExternalToolEntity, entityDO.schoolToolRef.schoolToolId),

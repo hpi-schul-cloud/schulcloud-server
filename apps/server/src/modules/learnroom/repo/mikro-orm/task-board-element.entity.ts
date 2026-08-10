@@ -7,6 +7,7 @@ export class TaskBoardElement extends LegacyBoardElement {
 	constructor(props: { target: Task }) {
 		super(props);
 		this.boardElementType = LegacyBoardElementType.Task;
+		this.target = props.target;
 	}
 
 	// FIXME Due to a weird behaviour in the mikro-orm validation we have to

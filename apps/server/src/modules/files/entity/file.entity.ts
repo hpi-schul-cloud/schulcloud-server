@@ -96,7 +96,7 @@ export class FileEntity extends BaseEntityWithTimestamps {
 		return this._ownerId.toHexString();
 	}
 
-	@Enum({ nullable: false })
+	@Enum({ items: () => FileOwnerModel, nullable: false })
 	@Index()
 	refOwnerModel: FileOwnerModel;
 

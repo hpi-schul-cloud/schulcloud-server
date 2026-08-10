@@ -1,9 +1,9 @@
-import { Embeddable, Property } from '@mikro-orm/core';
+import { Embeddable, Enum, Property } from '@mikro-orm/core';
 import { ExternalToolMediumStatus } from '../../enum';
 
 @Embeddable()
 export class ExternalToolMediumEntity {
-	@Property({ nullable: false })
+	@Enum({ nullable: false, items: () => ExternalToolMediumStatus })
 	status: ExternalToolMediumStatus;
 
 	@Property({ nullable: true })

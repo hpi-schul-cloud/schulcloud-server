@@ -21,13 +21,13 @@ export class CustomParameterEntity {
 	@Property({ nullable: true })
 	regexComment?: string;
 
-	@Enum()
+	@Enum({ items: () => CustomParameterScope })
 	scope: CustomParameterScope;
 
-	@Enum()
+	@Enum({ items: () => CustomParameterLocation })
 	location: CustomParameterLocation;
 
-	@Enum()
+	@Enum({ items: () => CustomParameterType })
 	type: CustomParameterType;
 
 	@Property()

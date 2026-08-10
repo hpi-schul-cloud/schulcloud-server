@@ -5,12 +5,11 @@ import type { Config } from '@jest/types';
 let config: Config.InitialOptions = {
 	moduleFileExtensions: ['js', 'json', 'ts'],
 	rootDir: '.',
-	preset: 'ts-jest',
 	testRegex: '\\.spec\\.ts$',
 	// ignore legacy mocha tests
 	testPathIgnorePatterns: ['^src', '^test'],
 	transform: {
-		'^.+\\.(t|j)s$': 'ts-jest',
+		'^.+\\.(t|j)s$': ['@swc/jest'],
 	},
 	collectCoverageFrom: ['apps/**/*.(t|j)s'],
 	coverageDirectory: './coverage',

@@ -9,10 +9,10 @@ export class DeletionBatchEntity extends BaseEntityWithTimestamps implements Del
 	@Property({ nullable: false })
 	name!: string;
 
-	@Property({ nullable: false })
+	@Enum({ nullable: false, items: () => [BatchStatus.CREATED, BatchStatus.DELETION_REQUESTED] })
 	status!: BatchStatus;
 
-	@Enum({ nullable: false })
+	@Enum({ nullable: false, items: () => DomainName })
 	targetRefDomain!: DomainName;
 
 	@Property({ nullable: false })

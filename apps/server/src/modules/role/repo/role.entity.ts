@@ -1,4 +1,4 @@
-import { Collection, Entity, ManyToMany, Property, Unique } from '@mikro-orm/core';
+import { Collection, Entity, Enum, ManyToMany, Property, Unique } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { RoleName } from '../domain';
@@ -11,7 +11,7 @@ export interface RoleProperties {
 
 @Entity({ tableName: 'roles' })
 export class Role extends BaseEntityWithTimestamps {
-	@Property()
+	@Enum({ items: () => RoleName })
 	@Unique()
 	name: RoleName;
 

@@ -1,4 +1,4 @@
-import { Entity, Index, Property } from '@mikro-orm/core';
+import { Entity, Enum, Index, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
 import { NotificationType } from '../../types';
@@ -14,16 +14,16 @@ export interface NotificationEntityProps {
 
 @Entity({ tableName: 'notifications' })
 export class NotificationEntity extends BaseEntityWithTimestamps {
-	@Property({ nullable: true })
+	@Enum({ nullable: true, items: () => NotificationType })
 	type: NotificationType;
 
-	@Property({ nullable: true })
+	@Property({ nullable: true, type: 'string' })
 	key: string;
 
-	@Property({ nullable: true })
+	@Property({ nullable: true, type: 'object' })
 	arguments?: Record<string, unknown>;
 
-	@Property({ nullable: true })
+	@Property({ nullable: true, type: 'string' })
 	@Index()
 	userId: EntityId;
 

@@ -1,4 +1,4 @@
-import { Entity, Index, Property } from '@mikro-orm/core';
+import { Entity, Enum, Index, Property } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { EntityId } from '@shared/domain/types';
 import { ObjectIdType } from '@shared/repo/types/object-id.type';
@@ -10,7 +10,7 @@ export class RoomEntity extends BaseEntityWithTimestamps implements RoomProps {
 	@Property({ nullable: false })
 	name!: string;
 
-	@Property({ nullable: false })
+	@Enum({ nullable: false, items: () => RoomColor })
 	color!: RoomColor;
 
 	@Index()

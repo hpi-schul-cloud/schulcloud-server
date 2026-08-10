@@ -115,6 +115,7 @@ export class SchoolNews extends News {
 	constructor(props: NewsProperties) {
 		super(props);
 		this.targetModel = NewsTargetModel.School;
+		this.target = props.target as SchoolEntity;
 	}
 }
 
@@ -126,6 +127,7 @@ export class CourseNews extends News {
 	constructor(props: NewsProperties) {
 		super(props);
 		this.targetModel = NewsTargetModel.Course;
+		this.target = props.target as CourseEntity;
 	}
 }
 
@@ -137,5 +139,6 @@ export class TeamNews extends News {
 	constructor(props: NewsProperties) {
 		super(props);
 		this.targetModel = NewsTargetModel.Team;
+		this.target = props.target as TeamEntity;
 	}
 }

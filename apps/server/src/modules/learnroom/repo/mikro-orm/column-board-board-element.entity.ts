@@ -7,6 +7,7 @@ export class ColumnBoardBoardElement extends LegacyBoardElement {
 	constructor(props: { target: BoardNodeEntity }) {
 		super(props);
 		this.boardElementType = LegacyBoardElementType.ColumnBoard;
+		this.target = props.target;
 	}
 
 	@ManyToOne('BoardNodeEntity', { nullable: false })
