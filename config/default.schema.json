@@ -315,6 +315,10 @@
 			"type": "string",
 			"description": "Shared bucket name for legacy fileStorage when FEATURE_LEGACY_FILES_SHARED_BUCKET_ENABLED=true."
 		},
+		"LEGACY_FILES_SHARED_STORAGE_PROVIDER_ID": {
+			"type": "string",
+			"description": "Storage provider id used for legacy shared bucket mode when FEATURE_LEGACY_FILES_SHARED_BUCKET_ENABLED=true."
+		},
 		"LEGACY_FILES_SHARED_BUCKET_PREFIX": {
 			"type": "string",
 			"default": "legacy-files",

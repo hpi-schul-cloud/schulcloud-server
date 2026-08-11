@@ -221,6 +221,28 @@ class AWSS3Strategy {
 		return bucket;
 	}
 
+	getSharedStorageProviderId() {
+		const storageProviderId = Configuration.get('LEGACY_FILES_SHARED_STORAGE_PROVIDER_ID');
+		if (!storageProviderId) {
+			throw new Error(
+				'Legacy shared bucket mode is enabled but LEGACY_FILES_SHARED_STORAGE_PROVIDER_ID is not configured'
+			);
+		}
+
+		return storageProviderId;
+	}
+
+	async getSharedStorageProvider() {
+		const storageProviderId = this.getSharedStorageProviderId();
+		const storageProvider = await StorageProviderModel.findOne({ _id: storageProviderId }).lean().exec();
+
+		if (!storageProvider) {
+			throw new NotFound(`Shared storage provider ${storageProviderId} not found.`);
+		}
+
+		return storageProvider;
+	}
+
 	getStorageFileName(schoolId, storageFileName) {
 		if (!this.isSharedBucketMode()) {
 			return storageFileName;
@@ -290,11 +312,19 @@ class AWSS3Strategy {
 	async createAWSObjectFromSchool(school) {
 		const schoolId = school._id.toString();
 		let awsObject;
-		if (Configuration.get('FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED') === true) {
+		if (this.isSharedBucketMode()) {
+			const storageProvider = await this.getSharedStorageProvider();
+			const s3 = getS3(storageProvider, this.awsClientHelper);
+
+			awsObject = {
+				s3,
+				bucket: this.getBucket(schoolId),
+			};
+		} else if (Configuration.get('FEATURE_MULTIPLE_S3_PROVIDERS_ENABLED') === true) {
 			if (!school.storageProvider) {
 				school.storageProvider = await this.getStorageProviderForSchool(schoolId);
 			}
-			if (!school.storageProvider) throw new Error('No storage provider configured for legacy shared bucket mode.');
+			if (!school.storageProvider) throw new Error('No storage provider configured for school.');
 			const s3 = getS3(school.storageProvider, this.awsClientHelper);
 
 			awsObject = {
@@ -320,16 +350,17 @@ class AWSS3Strategy {
 
 	async getStorageProviderForSchool(schoolId) {
 		if (this.isSharedBucketMode()) {
-			return StorageProviderModel.findOne({ isShared: true })
-				.sort({ _id: 1 })
-				.lean()
-				.exec();
+			return this.getSharedStorageProvider();
 		}
 
 		return chooseProvider(schoolId);
 	}
 
 	async getStorageProviderIdForSchool(schoolId, school) {
+		if (this.isSharedBucketMode()) {
+			return this.getSharedStorageProviderId();
+		}
+
 		const schoolWithProvider = school || (await this.loadSchool(schoolId));
 
 		if (schoolWithProvider.storageProvider) {
@@ -462,14 +493,15 @@ class AWSS3Strategy {
 	}
 
 	checkSignedUrlParameter(storageProviderId, bucket, flatFileName) {
-		if (!storageProviderId || !bucket || !flatFileName) {
+		if ((!storageProviderId && !this.isSharedBucketMode()) || !bucket || !flatFileName) {
 			throw new BadRequest('Missing parameters by getSignedUrl.', { storageProviderId, bucket, flatFileName });
 		}
 	}
 
 	// private
 	async getAwsObjectForMultipleProvider(bucket, storageProviderId) {
-		const storageProvider = await StorageProviderModel.findOne({ _id: storageProviderId }).lean().exec();
+		const effectiveStorageProviderId = this.isSharedBucketMode() ? this.getSharedStorageProviderId() : storageProviderId;
+		const storageProvider = await StorageProviderModel.findOne({ _id: effectiveStorageProviderId }).lean().exec();
 
 		if (!storageProvider) {
 			throw new NotFound('Storage provider not found.');
