@@ -42,8 +42,7 @@ type CommonCartridgeResourcePropsInternalV130 =
 	| CommonCartridgeFileFolderResourcePropsV130;
 
 export type CommonCartridgeResourcePropsInternal =
-	| CommonCartridgeResourcePropsInternalV110
-	| CommonCartridgeResourcePropsInternalV130;
+	CommonCartridgeResourcePropsInternalV110 | CommonCartridgeResourcePropsInternalV130;
 
 export class CommonCartridgeResourceFactory {
 	public static createResource(props: CommonCartridgeResourcePropsInternal): CommonCartridgeResource {

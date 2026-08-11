@@ -8,9 +8,9 @@ import { EntityId } from '@shared/domain/types';
 export type LegacyBoardElementReference = Task | LessonEntity | BoardNodeEntity;
 
 export enum LegacyBoardElementType {
-	'Task' = 'task',
-	'Lesson' = 'lesson',
-	'ColumnBoard' = 'columnboard',
+	Task = 'task',
+	Lesson = 'lesson',
+	ColumnBoard = 'columnboard',
 }
 
 export type LegacyBoardElementProps = {

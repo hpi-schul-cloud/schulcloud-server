@@ -35,9 +35,7 @@ import {
 } from './ldap-user-migration.error';
 
 export type UserImportPermissions =
-	| Permission.IMPORT_USER_MIGRATE
-	| Permission.IMPORT_USER_UPDATE
-	| Permission.IMPORT_USER_VIEW;
+	Permission.IMPORT_USER_MIGRATE | Permission.IMPORT_USER_UPDATE | Permission.IMPORT_USER_VIEW;
 
 @Injectable()
 export class UserImportUc {

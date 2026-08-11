@@ -30,8 +30,4 @@ export enum RoleName {
 }
 
 export type RoomRole =
-	| RoleName.ROOMOWNER
-	| RoleName.ROOMADMIN
-	| RoleName.ROOMEDITOR
-	| RoleName.ROOMVIEWER
-	| RoleName.ROOMAPPLICANT;
+	RoleName.ROOMOWNER | RoleName.ROOMADMIN | RoleName.ROOMEDITOR | RoleName.ROOMVIEWER | RoleName.ROOMAPPLICANT;

@@ -25,8 +25,8 @@ export class DeletionBatchMapper {
 		summaries: Page<DeletionBatchSummary>,
 		pagination: DeletionBatchPaginationParams
 	): DeletionBatchListResponse {
-		const data: DeletionBatchItemResponse[] = summaries.data.map(
-			(summary): DeletionBatchItemResponse => this.mapToDeletionBatchItemResponse(summary)
+		const data: DeletionBatchItemResponse[] = summaries.data.map((summary): DeletionBatchItemResponse =>
+			this.mapToDeletionBatchItemResponse(summary)
 		);
 		const response = new DeletionBatchListResponse(data, summaries.total, pagination.skip, pagination.limit);
 

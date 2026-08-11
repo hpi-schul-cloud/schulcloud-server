@@ -164,9 +164,11 @@ export class EntityFactory<T extends U, U extends object, I = unknown, C = U, P 
 	}
 
 	protected clone<F extends EntityFactory<T, U, I, C, P>>(this: F, propsFactory: Factory<U, I, C, P>): F {
-		const copy = new (this.constructor as {
-			new (EntityClass: { new (): T }, propsFactory: Factory<U, I, C, P>): F;
-		})(this.EntityClass, propsFactory);
+		const copy = new (
+			this.constructor as {
+				new (EntityClass: { new (): T }, propsFactory: Factory<U, I, C, P>): F;
+			}
+		)(this.EntityClass, propsFactory);
 
 		return copy;
 	}

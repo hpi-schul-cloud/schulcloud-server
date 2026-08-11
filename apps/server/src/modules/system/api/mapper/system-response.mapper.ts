@@ -3,8 +3,8 @@ import { OauthConfigResponse, PublicSystemListResponse, PublicSystemResponse } f
 
 export class SystemResponseMapper {
 	public static mapFromDtoToListResponse(systems: System[]): PublicSystemListResponse {
-		const systemResponses: PublicSystemResponse[] = systems.map(
-			(system: System): PublicSystemResponse => this.mapFromDtoToResponse(system)
+		const systemResponses: PublicSystemResponse[] = systems.map((system: System): PublicSystemResponse =>
+			this.mapFromDtoToResponse(system)
 		);
 
 		const systemListResponse: PublicSystemListResponse = new PublicSystemListResponse(systemResponses);
