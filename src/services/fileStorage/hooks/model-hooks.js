@@ -23,10 +23,21 @@ const restrictToCurrentUser = (hook) => {
 	});
 };
 
+const restrictGetToCurrentUser = (hook) => {
+	const {
+		params: {
+			account: { userId },
+		},
+		id,
+	} = hook;
+
+	return canRead(userId, id).then(() => hook);
+};
+
 exports.before = {
 	all: [authenticate('jwt')],
 	find: [globalHooks.hasPermission('FILESTORAGE_VIEW')],
-	get: [globalHooks.hasPermission('FILESTORAGE_VIEW')],
+	get: [globalHooks.hasPermission('FILESTORAGE_VIEW'), restrictGetToCurrentUser],
 	create: [globalHooks.hasPermission('FILESTORAGE_CREATE')],
 	update: [globalHooks.hasPermission('FILESTORAGE_EDIT')],
 	patch: [globalHooks.hasPermission('FILESTORAGE_EDIT')],
