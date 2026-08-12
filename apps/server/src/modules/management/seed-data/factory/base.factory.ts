@@ -149,9 +149,11 @@ export class BaseFactory<T, U, I = any, C = U, P = DeepPartial<U>> {
 	}
 
 	protected clone<F extends BaseFactory<T, U, I, C, P>>(this: F, propsFactory: Factory<U, I, C, P>): F {
-		const copy = new (this.constructor as {
-			new (EntityClass: { new (props: U): T }, propsOfFactory: Factory<U, I, C, P>): F;
-		})(this.EntityClass, propsFactory);
+		const copy = new (
+			this.constructor as {
+				new (EntityClass: { new (props: U): T }, propsOfFactory: Factory<U, I, C, P>): F;
+			}
+		)(this.EntityClass, propsFactory);
 
 		return copy;
 	}

@@ -33,9 +33,8 @@ export class ToolConfigurationMapper {
 	public static mapToSchoolExternalToolConfigurationTemplateListResponse(
 		externalTools: ExternalTool[]
 	): SchoolExternalToolConfigurationTemplateListResponse {
-		const mappedTools = externalTools.map(
-			(tool): SchoolExternalToolConfigurationTemplateResponse =>
-				this.mapToSchoolExternalToolConfigurationTemplateResponse(tool)
+		const mappedTools = externalTools.map((tool): SchoolExternalToolConfigurationTemplateResponse =>
+			this.mapToSchoolExternalToolConfigurationTemplateResponse(tool)
 		);
 
 		const mapped = new SchoolExternalToolConfigurationTemplateListResponse(mappedTools);
@@ -65,9 +64,8 @@ export class ToolConfigurationMapper {
 	public static mapToContextExternalToolConfigurationTemplateListResponse(
 		toolInfos: ContextExternalToolTemplateInfo[]
 	): ContextExternalToolConfigurationTemplateListResponse {
-		const mappedTools = toolInfos.map(
-			(tool): ContextExternalToolConfigurationTemplateResponse =>
-				this.mapToContextExternalToolConfigurationTemplateResponse(tool)
+		const mappedTools = toolInfos.map((tool): ContextExternalToolConfigurationTemplateResponse =>
+			this.mapToContextExternalToolConfigurationTemplateResponse(tool)
 		);
 
 		const mapped = new ContextExternalToolConfigurationTemplateListResponse(mappedTools);

@@ -69,8 +69,8 @@ export class OauthProviderController {
 			params.owner
 		);
 
-		const mapped: OauthClientResponse[] = clients.map(
-			(client: ProviderOauthClient): OauthClientResponse => OauthProviderResponseMapper.mapOauthClientResponse(client)
+		const mapped: OauthClientResponse[] = clients.map((client: ProviderOauthClient): OauthClientResponse =>
+			OauthProviderResponseMapper.mapOauthClientResponse(client)
 		);
 
 		return mapped;

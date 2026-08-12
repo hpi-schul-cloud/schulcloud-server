@@ -129,8 +129,8 @@ export class ToolController {
 
 		const tools: Page<ExternalTool> = await this.externalToolUc.findExternalTool(currentUser.userId, query, options);
 
-		const dtoList: ExternalToolResponse[] = tools.data.map(
-			(tool: ExternalTool): ExternalToolResponse => ExternalToolResponseMapper.mapToExternalToolResponse(tool)
+		const dtoList: ExternalToolResponse[] = tools.data.map((tool: ExternalTool): ExternalToolResponse =>
+			ExternalToolResponseMapper.mapToExternalToolResponse(tool)
 		);
 		const response: ExternalToolSearchListResponse = new ExternalToolSearchListResponse(
 			dtoList,

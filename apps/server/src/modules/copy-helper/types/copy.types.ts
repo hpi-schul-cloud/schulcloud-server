@@ -55,11 +55,11 @@ export enum CopyElementType {
 }
 
 export enum CopyStatusEnum {
-	'SUCCESS' = 'success',
-	'FAIL' = 'failure', // but tried
-	'NOT_DOING' = 'not-doing', // for functional reasons
-	'NOT_IMPLEMENTED' = 'not-implemented', // might be implemented in the future
-	'PARTIAL' = 'partial', // parent is partial successful
+	SUCCESS = 'success',
+	FAIL = 'failure', // but tried
+	NOT_DOING = 'not-doing', // for functional reasons
+	NOT_IMPLEMENTED = 'not-implemented', // might be implemented in the future
+	PARTIAL = 'partial', // parent is partial successful
 }
 
 export type CopyDictionary = Map<EntityId, AuthorizableObject>;

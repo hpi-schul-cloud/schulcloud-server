@@ -50,7 +50,9 @@ describe('Admin API - Schools (API)', () => {
 		describe('with api token', () => {
 			const setup = async () => {
 				const federalState = federalStateEntityFactory.build({ name: 'niedersachsen' });
-				const year = schoolYearEntityFactory.build();
+				// Use the upcoming school year so its end date is always in the future, even when the
+				// test runs on the last day (July 31) of the current school year, so getCurrentOrNextSchoolYear resolves.
+				const year = schoolYearEntityFactory.withStartYear(new Date().getFullYear()).build();
 				const storageProvider = storageProviderFactory.build();
 				await em.persist([federalState, year, storageProvider]).flush();
 				return { federalState, year };

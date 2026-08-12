@@ -12,7 +12,7 @@ import { CourseSyncAttribute } from '../domain';
 import { CourseGroupEntity } from './coursegroup.entity'; // https://github.com/mikro-orm/mikro-orm/discussions/4089
 
 export enum CourseType {
-	'Course' = 'course',
+	Course = 'course',
 }
 
 export interface CourseMetadata {
