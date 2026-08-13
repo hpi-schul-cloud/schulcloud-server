@@ -119,6 +119,31 @@ describe('Helpdesk Controller (API)', () => {
 			});
 		});
 
+		describe('when logged in user email is invalid', () => {
+			const setup = async (email: string) => {
+				const body = HelpdeskProblemCreateParamsFactory.create();
+				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({ email });
+
+				await em.persist([studentAccount, studentUser]).flush();
+
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
+
+				return { loggedInClient, body };
+			};
+
+			it.each([
+				['obviously malformed', 'invalid-email-address'],
+				['passing the frontend regex but failing class-validator', 'test@example'],
+				['passing the frontend regex but containing a copy-pasted look-alike dot', 'joerg.winterwald@nibis｡de'],
+			])('should return 500 for %s email', async (_scenario, email) => {
+				const { loggedInClient, body } = await setup(email);
+
+				const response = await loggedInClient.post('problem', body);
+
+				expect(response.status).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
+			});
+		});
+
 		describe('when problemArea is missing', () => {
 			const setup = async () => {
 				const body = HelpdeskProblemCreateParamsFactory.create({ problemArea: undefined as unknown as string[] });
