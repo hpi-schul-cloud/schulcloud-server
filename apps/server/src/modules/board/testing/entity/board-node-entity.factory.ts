@@ -154,9 +154,11 @@ export class BoardNodeEntityFactory<T extends AnyBoardNodeProps, I = unknown, C 
 	}
 
 	protected clone<F extends BoardNodeEntityFactory<T, I, C, P>>(this: F, propsFactory: Factory<T, I, C, P>): F {
-		const copy = new (this.constructor as {
-			new (propsOfFactory: Factory<T, I, C, P>): F;
-		})(propsFactory);
+		const copy = new (
+			this.constructor as {
+				new (propsOfFactory: Factory<T, I, C, P>): F;
+			}
+		)(propsFactory);
 
 		return copy;
 	}

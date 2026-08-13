@@ -11,9 +11,8 @@ describe(PolymorphicArrayTransform.name, () => {
 	}
 
 	class PolymorphicArrayDto {
-		@PolymorphicArrayTransform(
-			(obj: unknown): ClassConstructor<Str | Num> =>
-				typeof obj === 'object' && obj !== null && 'str' in obj ? Str : Num
+		@PolymorphicArrayTransform((obj: unknown): ClassConstructor<Str | Num> =>
+			typeof obj === 'object' && obj !== null && 'str' in obj ? Str : Num
 		)
 		input!: (Str | Num)[];
 	}
