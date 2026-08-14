@@ -1,6 +1,6 @@
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { EntityId } from '@shared/domain/types';
-import { IsEnum, IsMongoId, IsNumber, IsString } from 'class-validator';
+import { IsEnum, IsMongoId, IsString } from 'class-validator';
 import { FileOwnerModel } from '../../domain';
 
 export class ArchiveFileParams {
@@ -15,8 +15,4 @@ export class ArchiveFileParams {
 	@ApiProperty()
 	@IsString()
 	archiveName!: string;
-
-	@ApiPropertyOptional({ default: 6 })
-	@IsNumber()
-	compression?: number;
 }
