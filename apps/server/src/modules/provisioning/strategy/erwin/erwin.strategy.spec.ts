@@ -107,7 +107,7 @@ describe('ErwinProvisioningStrategy', () => {
 					email: 'test@example.com',
 					externalId: 'personExternalId',
 					erwinId: '550e8400-e29b-41d4-a716-446655440000',
-					roles: [RoleName.STUDENT],
+					roles: [RoleName.USER],
 					firstName: 'firstName',
 					lastName: 'lastName',
 				});
@@ -181,18 +181,18 @@ describe('ErwinProvisioningStrategy', () => {
 				return { input, validateSpy };
 			};
 
-			it('should map LEHR role to TEACHER', async () => {
+			it('should map LEHR erwin role to USER', async () => {
 				const { input, validateSpy } = setup();
 
 				const result = await sut.getData(input);
 
-				expect(result.externalUser.roles).toEqual([RoleName.TEACHER]);
+				expect(result.externalUser.roles).toEqual([RoleName.USER]);
 
 				validateSpy.mockRestore();
 			});
 		});
 
-		describe('when token is valid with LEIT role', () => {
+		describe('when token is valid with LEIT erwin role', () => {
 			const setup = () => {
 				const input = new OauthDataStrategyInputDto({
 					system: new ProvisioningSystemDto({
@@ -228,12 +228,12 @@ describe('ErwinProvisioningStrategy', () => {
 				return { input, validateSpy };
 			};
 
-			it('should map LEIT role to ADMINISTRATOR', async () => {
+			it('should map LEIT role to USER', async () => {
 				const { input, validateSpy } = setup();
 
 				const result = await sut.getData(input);
 
-				expect(result.externalUser.roles).toEqual([RoleName.ADMINISTRATOR]);
+				expect(result.externalUser.roles).toEqual([RoleName.USER]);
 
 				validateSpy.mockRestore();
 			});
