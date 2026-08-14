@@ -221,12 +221,6 @@ const removeContextExternalTools = async (context) => {
 	await context.app.service('nest-context-external-tool-service').deleteContextExternalToolsByCourseId(courseId);
 };
 
-
-const removeVideoConferences = async (context) => {
-	const courseId = context.id;
-
-}
-
 /**
  * remove all substitution teacher which are also teachers
  * @param hook - contains and request body

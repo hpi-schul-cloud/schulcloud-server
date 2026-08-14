@@ -109,8 +109,6 @@ async function bootstrap(): Promise<void> {
 
 	feathersExpress.services['nest-context-external-tool-service'] = nestApp.get(ContextExternalToolService);
 
-	feathersExpress.services['nest-context-external-tool-service'] = nestApp.get(ContextExternalToolService);
-
 	feathersExpress.services['nest-system-rule'] = nestApp.get(SystemRule);
 	feathersExpress.services['nest-orm'] = orm;
 	feathersExpress.services['nest-jwt-whitelist-adapter'] = await nestApp.resolve(JwtWhitelistAdapter);
