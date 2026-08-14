@@ -11,7 +11,7 @@ import {
 	Res,
 	StreamableFile,
 } from '@nestjs/common';
-import { ApiHeader, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiHeader, ApiOkResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common/error';
 import { Request, Response } from 'express';
 import { GetFileResponse } from '../domain';
@@ -45,6 +45,20 @@ export class LegacyFileArchiveController {
 		const streamableFile = this.streamFileToClient(req, data, response);
 
 		return streamableFile;
+	}
+
+	@ApiOperation({ summary: 'List downloadable files' })
+	@ApiOkResponse({ description: 'File list' })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 500, type: InternalServerErrorException })
+	@ApiResponse({ status: 501, type: NotImplementedException })
+	@ApiHeader({ name: 'Range', required: false })
+	@Get('file-list')
+	public async listDownloadableFiles(@Query() params: ArchiveFileParams): Promise<GetFileResponse[]> {
+		const fileResponses = await this.downloadArchiveUC.listDownloadableFiles(params);
+
+		return fileResponses;
 	}
 
 	private streamFileToClient(req: Request, fileResponse: GetFileResponse, httpResponse: Response): StreamableFile {

@@ -23,6 +23,16 @@ export class DownloadArchiveUC {
 		return fileResponse;
 	}
 
+	public async listDownloadableFiles(params: ArchiveFileParams): Promise<GetFileResponse[]> {
+		this.featureEnabled();
+
+		await this.checkPermission(params);
+
+		const fileResponses = await this.filesStorageService.listDownloadableFiles(params.ownerId);
+
+		return fileResponses;
+	}
+
 	private async checkPermission(params: ArchiveFileParams): Promise<void> {
 		const { ownerId, ownerType } = params;
 		const referenceType = AuthorizationReferenceTypeMapper.mapOwnerTypeToReferenceType(ownerType);
