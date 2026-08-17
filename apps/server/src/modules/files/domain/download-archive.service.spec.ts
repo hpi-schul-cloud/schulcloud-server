@@ -364,4 +364,26 @@ describe('DownloadArchiveService', () => {
 			});
 		});
 	});
+
+	describe('listDownloadableFiles', () => {
+		const setup = () => {
+			const ownerId = 'owner123';
+			const directory = fileDomainFactory.build({ isDirectory: true });
+			const file1 = fileDomainFactory.build({ isDirectory: false, name: 'file1.txt', parentId: directory.id });
+			const file2 = fileDomainFactory.build({ isDirectory: false, name: 'file2.txt', parentId: directory.id });
+			const fileDos = [directory, file1, file2];
+
+			legacyFileStorageAdapter.getFilesForOwner.mockResolvedValueOnce(fileDos);
+
+			return { ownerId, fileDos };
+		};
+
+		it('should return a list of downloadable files', async () => {
+			const { ownerId, fileDos } = setup();
+
+			const result = await service.listDownloadableFiles(ownerId);
+
+			expect(result).toEqual(fileDos);
+		});
+	});
 });

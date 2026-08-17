@@ -14,7 +14,7 @@ import {
 import { ApiHeader, ApiOkResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common/error';
 import { Request, Response } from 'express';
-import { GetFileResponse } from '../domain';
+import { FileProps, GetFileResponse } from '../domain';
 import { DownloadArchiveUC } from './download-archive.uc';
 import { ArchiveFileParams } from './dto';
 import { StreamableFileMapper } from './mapper';
@@ -53,10 +53,10 @@ export class LegacyFileArchiveController {
 	@ApiResponse({ status: 403, type: ForbiddenException })
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
 	@ApiResponse({ status: 501, type: NotImplementedException })
-	@ApiHeader({ name: 'Range', required: false })
 	@Get('file-list')
-	public async listDownloadableFiles(@Query() params: ArchiveFileParams): Promise<GetFileResponse[]> {
-		const fileResponses = await this.downloadArchiveUC.listDownloadableFiles(params);
+	public async listDownloadableFiles(@Query() params: ArchiveFileParams): Promise<FileProps[]> {
+		const files = await this.downloadArchiveUC.listDownloadableFiles(params);
+		const fileResponses = files.map((file) => file.getProps()); // TODO: Consider using a dedicated mapper for this transformation and a response-type
 
 		return fileResponses;
 	}

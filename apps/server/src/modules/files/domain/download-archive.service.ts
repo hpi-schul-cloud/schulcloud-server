@@ -31,25 +31,10 @@ export class DownloadArchiveService {
 		return FileResponseFactory.createFromArchive(archiveName, archive);
 	}
 
-	public async listDownloadableFiles(ownerId: EntityId): Promise<GetFileResponse[]> {
+	public async listDownloadableFiles(ownerId: EntityId): Promise<FileDo[]> {
 		const files = await this.legacyFileStorageAdapter.getFilesForOwner(ownerId);
-		const filesById = this.createFileMap(files);
-		const downloadableFiles = this.filterDownloadableFiles(files);
 
-		const fileResponses: GetFileResponse[] = [];
-
-		for (const file of downloadableFiles) {
-			try {
-				const fileResponse = await this.downloadFileWithPath(file, filesById);
-				fileResponses.push(fileResponse);
-			} catch {
-				this.logger.warning(new SkipFileLoggable(file.id));
-			}
-		}
-
-		console.log('fileResponses', fileResponses);
-
-		return fileResponses;
+		return files;
 	}
 
 	private createFileMap(files: FileDo[]): Map<EntityId, FileDo> {
