@@ -119,10 +119,10 @@ describe('Helpdesk Controller (API)', () => {
 			});
 		});
 
-		describe('when logged in user email is invalid', () => {
-			const setup = async (email: string) => {
-				const body = HelpdeskProblemCreateParamsFactory.create();
-				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({ email });
+		describe('when replyEmail is invalid', () => {
+			const setup = async (replyEmail: string) => {
+				const body = HelpdeskProblemCreateParamsFactory.create({ replyEmail });
+				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
 
 				await em.persist([studentAccount, studentUser]).flush();
 
@@ -140,7 +140,13 @@ describe('Helpdesk Controller (API)', () => {
 
 				const response = await loggedInClient.post('problem', body);
 
-				expect(response.status).toBe(HttpStatus.INTERNAL_SERVER_ERROR);
+				expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+				expect(response.body).toEqual(
+					expect.objectContaining({
+						message: expect.stringContaining('API validation failed'),
+						validationErrors: expect.anything(),
+					})
+				);
 			});
 		});
 
