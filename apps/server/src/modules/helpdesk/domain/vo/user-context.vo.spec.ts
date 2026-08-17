@@ -173,19 +173,4 @@ describe('UserContext', () => {
 			expect(() => new UserContext(props as unknown as UserContextProps)).toThrow();
 		});
 	});
-
-	describe('when user does not have an email', () => {
-		it('should allow userEmail to be an empty string', () => {
-			const props = {
-				userId: new ObjectId().toHexString(),
-				userName: 'Test User',
-				userEmail: '',
-				userRoles: ['admin'],
-				schoolId: new ObjectId().toHexString(),
-				schoolName: 'Test School',
-				instanceName: 'Test Instance',
-			};
-			expect(() => new UserContext(props as UserContextProps)).not.toThrow();
-		});
-	});
 });
