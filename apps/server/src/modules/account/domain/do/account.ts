@@ -17,7 +17,6 @@ export interface AccountProps extends AuthorizableObject {
 	lasttriedFailedLogin?: Date;
 	expiresAt?: Date;
 	activated?: boolean;
-	idmReferenceId?: string;
 	deactivatedAt?: Date;
 }
 
@@ -100,10 +99,6 @@ export class Account extends DomainObject<AccountProps> {
 
 	set activated(activated: boolean | undefined) {
 		this.props.activated = activated;
-	}
-
-	get idmReferenceId(): string | undefined {
-		return this.props.idmReferenceId;
 	}
 
 	get deactivatedAt(): Date | undefined {
