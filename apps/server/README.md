@@ -28,25 +28,7 @@ docker run \
   quay.io/minio/minio server /data --console-address ":9001"
 ```
 
-5. Have ErWIn-IDM started [currently not needed, but will be mandatory in the future]. For more information look [here](https://hpi-schul-cloud.github.io/schulcloud-server/additional-documentation/nestjs-application/keycloak.html).
-
-Change directory to the `schulcloud-server` root folder. Execute following command to setup the ErWIn-IDM container:
-
-```bash
-docker run \
-  --name erwinidm \
-  -p 8080:8080 \
-  -p 8443:8443 \
-  -v "$PWD/backup/idm/keycloak:/tmp/realms" \
-  ghcr.io/hpi-schul-cloud/erwin-idm/dev:latest \
-  "&& /opt/keycloak/bin/kc.sh import --dir /tmp/realms"
-```
-
-To add seed data into ErWIn-IDM, use `npm run setup:idm` to reset and apply seed data.
-
-See [ErWIn-IDM specific documentation](https://hpi-schul-cloud.github.io/schulcloud-server/additional-documentation/nestjs-application/keycloak.html) to learn how to add the ErWIn-IDM identity broker feature.
-
-6. Add secrets to systems (optional)
+5. Add secrets to systems (optional)
 
 The systems of the seed data do not contain any secrets, so connecting to those systems will fail.
 You can add these secrets by putting them into your env vars. E.g. if you add `SCHULCONNEX_CLIENT_ID=<actual secret>` into your .env file, the secret will be written into the db, when you run the database setup. You need to add the env var `AES_KEY` as well to encrypt those secrets in the DB.
