@@ -38,7 +38,6 @@ describe('LocalStrategy', () => {
 		authenticationServiceMock.normalizeUsername.mockImplementation((username: string) => username);
 		authenticationServiceMock.normalizePassword.mockImplementation((password: string) => password);
 		userServiceMock.getUserEntityWithRoles.mockResolvedValue(mockUser);
-		config.identityManagementLoginEnabled = false;
 	});
 
 	afterEach(() => {
