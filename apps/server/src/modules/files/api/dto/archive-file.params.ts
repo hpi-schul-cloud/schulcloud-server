@@ -1,6 +1,6 @@
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { EntityId } from '@shared/domain/types';
-import { IsArray, IsEnum, IsMongoId, IsString } from 'class-validator';
+import { IsArray, IsEnum, IsMongoId, IsOptional, IsString } from 'class-validator';
 import { FileOwnerModel } from '../../domain';
 
 export class ArchiveFileParams {
@@ -17,6 +17,7 @@ export class ArchiveFileParams {
 	archiveName!: string;
 
 	@ApiPropertyOptional()
+	@IsOptional()
 	@IsArray()
 	@IsString({ each: true })
 	selectedFiles?: string[];
