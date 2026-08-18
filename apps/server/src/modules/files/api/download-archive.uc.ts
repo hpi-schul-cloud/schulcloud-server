@@ -18,7 +18,11 @@ export class DownloadArchiveUC {
 
 		await this.checkPermission(params);
 
-		const fileResponse = await this.filesStorageService.downloadFilesAsArchive(params.ownerId, params.archiveName);
+		const fileResponse = await this.filesStorageService.downloadFilesAsArchive(
+			params.ownerId,
+			params.archiveName,
+			params.selectedFiles
+		);
 
 		return fileResponse;
 	}
