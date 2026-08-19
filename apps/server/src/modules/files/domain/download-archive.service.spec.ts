@@ -363,6 +363,59 @@ describe('DownloadArchiveService', () => {
 				expect(logger.warning).toHaveBeenCalledWith(new SkipFileLoggable(file.id));
 			});
 		});
+
+		describe('when selectedFiles parameter is provided', () => {
+			const setup = () => {
+				const file1 = fileDomainFactory.build({ isDirectory: false, name: 'file1.txt', parentId: undefined });
+				const file2 = fileDomainFactory.build({ isDirectory: false, name: 'file2.txt', parentId: undefined });
+				const file3 = fileDomainFactory.build({ isDirectory: false, name: 'file3.txt', parentId: undefined });
+
+				const ownerId = 'owner123';
+				const archiveName = 'test-archive';
+
+				legacyFileStorageAdapter.getFilesForOwner.mockResolvedValueOnce([file1, file2, file3]);
+
+				const mockStream1 = new Readable();
+				const mockStream3 = new Readable();
+				mockStream1.push('content1');
+				mockStream1.push(null);
+				mockStream3.push('content3');
+				mockStream3.push(null);
+
+				legacyFileStorageAdapter.downloadFile.mockResolvedValueOnce(mockStream1).mockResolvedValueOnce(mockStream3);
+
+				const mockArchive = createMockArchive();
+				jest.spyOn(ArchiveFactory, 'createEmpty').mockReturnValueOnce(mockArchive);
+				const appendFileSpy = jest.spyOn(ArchiveFactory, 'appendFile').mockReturnValue(undefined);
+
+				return { ownerId, archiveName, file1, file2, file3, appendFileSpy };
+			};
+
+			it('should only download and append the selected files', async () => {
+				const { ownerId, archiveName, file1, file2, file3, appendFileSpy } = setup();
+
+				const selectedFiles = [file1.id, file3.id];
+				await service.downloadFilesAsArchive(ownerId, archiveName, selectedFiles);
+				await flushPromises();
+
+				const appendedNames = appendFileSpy.mock.calls.map(([, r]) => r.name);
+				expect(appendedNames).toEqual(expect.arrayContaining([file1.name, file3.name]));
+				expect(appendedNames).not.toContain(file2.name);
+			});
+
+			it('should ignore fileids that are not part of the owning parent (e.g. teams)', async () => {
+				const { ownerId, archiveName, file1, file2, file3, appendFileSpy } = setup();
+
+				const selectedFiles = [file1.id, 'nonexistent-file-id', file2.id];
+				await service.downloadFilesAsArchive(ownerId, archiveName, selectedFiles);
+				await flushPromises();
+
+				const appendedNames = appendFileSpy.mock.calls.map(([, r]) => r.name);
+				expect(appendedNames).toEqual(expect.arrayContaining([file1.name, file2.name]));
+				expect(appendedNames).not.toContain(file3.name);
+				expect(appendedNames).not.toContain('nonexistent-file-id');
+			});
+		});
 	});
 
 	describe('listDownloadableFiles', () => {
