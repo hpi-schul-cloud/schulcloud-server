@@ -14,24 +14,21 @@ import {
 	ForbiddenOperationError,
 	ValidationError,
 } from '@shared/common/error';
+import { EntityId } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
+import bcrypt from 'bcryptjs';
 import 'reflect-metadata';
 import { accountDoFactory, accountFactory } from '../../testing';
-import { type Account, type AccountSave, type UpdateAccount } from '../do';
+import { Account, type AccountSave, type UpdateAccount } from '../do';
 import { ACCOUNT_REPO, type AccountRepo } from '../interface';
-import { AccountServiceDb } from './account-db.service';
 import { AccountService } from './account.service';
-import { type AbstractAccountService } from './account.service.abstract';
 
 describe('AccountService', () => {
 	let module: TestingModule;
 	let accountService: AccountService;
-	let accountServiceDb: DeepMocked<AccountServiceDb>;
 	let logger: DeepMocked<Logger>;
 	let userService: DeepMocked<UserService>;
 	let accountRepo: DeepMocked<AccountRepo>;
-
-	const newAccountService = () => new AccountService(accountServiceDb, logger, userService, accountRepo);
 
 	const defaultPassword = 'DummyPasswd!1';
 	const otherPassword = 'DummyPasswd!2';
@@ -48,10 +45,6 @@ describe('AccountService', () => {
 			providers: [
 				AccountService,
 				{
-					provide: AccountServiceDb,
-					useValue: createMock<AccountServiceDb>(),
-				},
-				{
 					provide: Logger,
 					useValue: createMock<Logger>(),
 				},
@@ -65,7 +58,6 @@ describe('AccountService', () => {
 				},
 			],
 		}).compile();
-		accountServiceDb = module.get(AccountServiceDb);
 		accountService = module.get(AccountService);
 		logger = module.get(Logger);
 		userService = module.get(UserService);
@@ -79,107 +71,667 @@ describe('AccountService', () => {
 		jest.resetModules();
 	});
 
+	it('should be defined', () => {
+		expect(accountService).toBeDefined();
+	});
+
 	describe('findById', () => {
 		describe('When calling findById in accountService', () => {
 			const setup = () => {
-				accountServiceDb.findById.mockResolvedValueOnce(accountDoFactory.build());
+				const mockTeacherAccount = accountDoFactory.build();
+				mockTeacherAccount.username = 'changedUsername@example.org';
+				mockTeacherAccount.activated = false;
+
+				accountRepo.findById.mockResolvedValueOnce(mockTeacherAccount);
+
+				return { mockTeacherAccount };
 			};
 
-			it('should call findById in accountServiceDb', async () => {
-				setup();
+			it('should return accountDto', async () => {
+				const { mockTeacherAccount } = setup();
 
-				await expect(accountService.findById('id')).resolves.not.toThrow();
-				expect(accountServiceDb.findById).toHaveBeenCalledTimes(1);
+				const resultAccount = await accountService.findById(mockTeacherAccount.id);
+
+				expect(accountRepo.findById).toHaveBeenCalledTimes(1);
+				expect(resultAccount).toEqual(mockTeacherAccount);
 			});
 		});
 	});
 
 	describe('findByUserId', () => {
-		describe('When calling findByUserId in accountService', () => {
+		describe('when user id exists', () => {
 			const setup = () => {
-				accountServiceDb.findByUserId.mockResolvedValueOnce(accountDoFactory.build());
+				const mockTeacherUser = userFactory.buildWithId();
+				const mockTeacherAccount = accountDoFactory.build();
+
+				accountRepo.findByUserId.mockImplementation((userId: EntityId | ObjectId): Promise<Account | null> => {
+					if (userId === mockTeacherUser.id) {
+						return Promise.resolve(mockTeacherAccount);
+					}
+					return Promise.resolve(null);
+				});
+
+				return { mockTeacherUser, mockTeacherAccount };
 			};
 
-			it('should call findByUserId in accountServiceDb', async () => {
-				setup();
+			it('should return accountDto', async () => {
+				const { mockTeacherUser, mockTeacherAccount } = setup();
+				const resultAccount = await accountService.findByUserId(mockTeacherUser.id);
 
-				await expect(accountService.findByUserId('userId')).resolves.not.toThrow();
-				expect(accountServiceDb.findByUserId).toHaveBeenCalledTimes(1);
+				expect(resultAccount).toEqual(mockTeacherAccount);
+			});
+		});
+
+		describe('when user id not exists', () => {
+			const setup = () => {
+				accountRepo.findByUserId.mockResolvedValue(null);
+			};
+
+			it('should return null', async () => {
+				setup();
+				const resultAccount = await accountService.findByUserId('nonExistentId');
+
+				expect(resultAccount).toBeNull();
 			});
 		});
 	});
 
 	describe('findByUsernameAndSystemId', () => {
-		describe('When calling findByUsernameAndSystemId in accountService', () => {
+		describe('when user name and system id exists', () => {
 			const setup = () => {
-				accountServiceDb.findByUsernameAndSystemId.mockResolvedValueOnce(accountDoFactory.build());
+				const mockAccountWithSystemId = accountDoFactory.build({
+					systemId: new ObjectId().toHexString(),
+				});
+				accountRepo.findByUsernameAndSystemId.mockResolvedValue(mockAccountWithSystemId);
+
+				return { mockAccountWithSystemId };
 			};
 
-			it('should call findByUsernameAndSystemId in accountServiceDb', async () => {
-				setup();
+			it('should return accountDto', async () => {
+				const { mockAccountWithSystemId } = setup();
+				const resultAccount = await accountService.findByUsernameAndSystemId(
+					mockAccountWithSystemId.username,
+					mockAccountWithSystemId.systemId ?? ''
+				);
 
-				await expect(accountService.findByUsernameAndSystemId('username', 'systemId')).resolves.not.toThrow();
-				expect(accountServiceDb.findByUsernameAndSystemId).toHaveBeenCalledTimes(1);
+				expect(resultAccount).not.toBe(undefined);
+			});
+		});
+
+		describe('when only system id exists', () => {
+			const setup = () => {
+				const mockAccountWithSystemId = accountDoFactory.build({
+					systemId: new ObjectId().toHexString(),
+				});
+				accountRepo.findByUsernameAndSystemId.mockImplementation(
+					(username: string, systemId: EntityId | ObjectId): Promise<Account | null> => {
+						if (mockAccountWithSystemId.username === username && mockAccountWithSystemId.systemId === systemId) {
+							return Promise.resolve(mockAccountWithSystemId);
+						}
+						return Promise.resolve(null);
+					}
+				);
+
+				return { mockAccountWithSystemId };
+			};
+
+			it('should return null if username does not exist', async () => {
+				const { mockAccountWithSystemId } = setup();
+				const resultAccount = await accountService.findByUsernameAndSystemId(
+					'nonExistentUsername',
+					mockAccountWithSystemId.systemId ?? ''
+				);
+
+				expect(resultAccount).toBeNull();
+			});
+		});
+
+		describe('when only user name exists', () => {
+			const setup = () => {
+				const mockAccountWithSystemId = accountDoFactory.build({
+					systemId: new ObjectId().toHexString(),
+				});
+
+				accountRepo.findByUsernameAndSystemId.mockImplementation(
+					(username: string, systemId: EntityId | ObjectId): Promise<Account | null> => {
+						if (mockAccountWithSystemId.username === username && mockAccountWithSystemId.systemId === systemId) {
+							return Promise.resolve(mockAccountWithSystemId);
+						}
+						return Promise.resolve(null);
+					}
+				);
+
+				return { mockAccountWithSystemId };
+			};
+
+			it('should return null if system id does not exist', async () => {
+				const { mockAccountWithSystemId } = setup();
+				const resultAccount = await accountService.findByUsernameAndSystemId(
+					mockAccountWithSystemId.username,
+					'nonExistentSystemId'
+				);
+
+				expect(resultAccount).toBeNull();
 			});
 		});
 	});
 
 	describe('findMultipleByUserId', () => {
-		describe('When calling findMultipleByUserId in accountService', () => {
+		describe('when searching for multiple existing ids', () => {
 			const setup = () => {
-				accountServiceDb.findMultipleByUserId.mockResolvedValueOnce([accountDoFactory.build()]);
+				const mockTeacherUser = userFactory.buildWithId();
+				const mockStudentUser = userFactory.buildWithId();
+				const mockTeacherAccount = accountDoFactory.build({
+					userId: mockTeacherUser.id,
+					password: defaultPassword,
+				});
+				const mockStudentAccount = accountDoFactory.build({
+					userId: mockStudentUser.id,
+					password: defaultPassword,
+				});
+
+				accountRepo.findMultipleByUserId.mockImplementation((userIds: (EntityId | ObjectId)[]): Promise<Account[]> => {
+					const accounts = [mockStudentAccount, mockTeacherAccount].filter((tempAccount) =>
+						userIds.find((userId) => tempAccount.userId?.toString() === userId)
+					);
+					return Promise.resolve(accounts);
+				});
+
+				return { mockStudentUser, mockStudentAccount, mockTeacherUser, mockTeacherAccount };
 			};
 
-			it('should call findMultipleByUserId in accountServiceDb', async () => {
-				setup();
+			it('should return multiple accountDtos', async () => {
+				const { mockStudentUser, mockStudentAccount, mockTeacherUser, mockTeacherAccount } = setup();
+				const resultAccounts = await accountService.findMultipleByUserId([mockTeacherUser.id, mockStudentUser.id]);
 
-				await expect(accountService.findMultipleByUserId(['userId1, userId2'])).resolves.not.toThrow();
-				expect(accountServiceDb.findMultipleByUserId).toHaveBeenCalledTimes(1);
+				expect(resultAccounts).toContainEqual(mockTeacherAccount);
+				expect(resultAccounts).toContainEqual(mockStudentAccount);
+				expect(resultAccounts).toHaveLength(2);
+			});
+		});
+
+		describe('when only user name exists', () => {
+			const setup = () => {
+				const mockTeacherAccount = accountDoFactory.build();
+				const mockStudentAccount = accountDoFactory.build();
+
+				accountRepo.findMultipleByUserId.mockImplementation((userIds: (EntityId | ObjectId)[]): Promise<Account[]> => {
+					const accounts = [mockStudentAccount, mockTeacherAccount].filter((tempAccount) =>
+						userIds.find((userId) => tempAccount.userId?.toString() === userId)
+					);
+					return Promise.resolve(accounts);
+				});
+
+				return {};
+			};
+
+			it('should return empty array on mismatch', async () => {
+				setup();
+				const resultAccount = await accountService.findMultipleByUserId(['nonExistentId1']);
+
+				expect(resultAccount).toHaveLength(0);
 			});
 		});
 	});
 
 	describe('findByUserIdOrFail', () => {
-		describe('When calling findByUserIdOrFail in accountService', () => {
+		describe('when user exists', () => {
 			const setup = () => {
-				accountServiceDb.findByUserIdOrFail.mockResolvedValueOnce(accountDoFactory.build());
+				const mockTeacherUser = userFactory.buildWithId();
+				const mockTeacherAccount = accountDoFactory.build({
+					userId: mockTeacherUser.id,
+					password: defaultPassword,
+				});
+
+				accountRepo.findByUserIdOrFail.mockResolvedValue(mockTeacherAccount);
+
+				return { mockTeacherUser, mockTeacherAccount };
 			};
 
-			it('should call findByUserIdOrFail in accountServiceDb', async () => {
+			it('should return accountDto', async () => {
+				const { mockTeacherUser, mockTeacherAccount } = setup();
+				const resultAccount = await accountService.findByUserIdOrFail(mockTeacherUser.id);
+
+				expect(resultAccount).toEqual(mockTeacherAccount);
+			});
+		});
+
+		describe('when user does not exist', () => {
+			const setup = () => {
+				const mockTeacherUser = userFactory.buildWithId();
+				const mockTeacherAccount = accountDoFactory.build({
+					userId: mockTeacherUser.id,
+					password: defaultPassword,
+				});
+
+				accountRepo.findByUserIdOrFail.mockImplementation((userId: EntityId | ObjectId): Promise<Account> => {
+					if (mockTeacherUser.id === userId) {
+						return Promise.resolve(mockTeacherAccount);
+					}
+					return Promise.reject(new EntityNotFoundError('AccountEntity'));
+				});
+
+				return {};
+			};
+
+			it('should throw EntityNotFoundError', async () => {
 				setup();
 
-				await expect(accountService.findByUserIdOrFail('userId')).resolves.not.toThrow();
-				expect(accountServiceDb.findByUserIdOrFail).toHaveBeenCalledTimes(1);
+				await expect(accountService.findByUserIdOrFail('nonExistentId')).rejects.toBeInstanceOf(EntityNotFoundError);
 			});
 		});
 	});
 
 	describe('save', () => {
-		describe('When calling save in accountService', () => {
-			it('should call save in accountServiceDb', async () => {
-				await expect(accountService.save({} as Account)).resolves.not.toThrow();
-				expect(accountServiceDb.save).toHaveBeenCalledTimes(1);
+		describe('when update an existing account', () => {
+			const setup = () => {
+				const mockTeacherAccount = accountDoFactory.build();
+
+				mockTeacherAccount.username = 'changedUsername@example.org';
+				mockTeacherAccount.activated = false;
+				accountRepo.findById.mockResolvedValue(mockTeacherAccount);
+				accountRepo.save.mockResolvedValue(mockTeacherAccount);
+
+				return { mockTeacherAccount };
+			};
+
+			it('should update account', async () => {
+				const { mockTeacherAccount } = setup();
+				const ret = await accountService.save(mockTeacherAccount);
+
+				expect(accountRepo.save).toHaveBeenCalledTimes(1);
+				expect(ret).toBeDefined();
+				expect(ret).toMatchObject({
+					id: mockTeacherAccount.id,
+					username: mockTeacherAccount.username,
+					activated: mockTeacherAccount.activated,
+					systemId: mockTeacherAccount.systemId,
+					userId: mockTeacherAccount.userId,
+				});
+			});
+		});
+
+		describe("when update an existing account's system", () => {
+			const setup = () => {
+				const mockTeacherAccount = accountDoFactory.build();
+
+				mockTeacherAccount.username = 'changedUsername@example.org';
+				mockTeacherAccount.systemId = '123456789012';
+				accountRepo.findById.mockResolvedValue(mockTeacherAccount);
+				accountRepo.save.mockResolvedValue(mockTeacherAccount);
+
+				return { mockTeacherAccount };
+			};
+
+			it("should update an existing account's system", async () => {
+				const { mockTeacherAccount } = setup();
+
+				const ret = await accountService.save(mockTeacherAccount);
+
+				expect(ret).toBeDefined();
+				expect(ret).toMatchObject({
+					id: mockTeacherAccount.id,
+					username: mockTeacherAccount.username,
+					activated: mockTeacherAccount.activated,
+					systemId: mockTeacherAccount.systemId,
+					userId: mockTeacherAccount.userId,
+				});
+			});
+		});
+
+		describe("when update an existing account's user", () => {
+			const setup = () => {
+				const mockTeacherAccount = accountDoFactory.build();
+				const mockStudentUser = accountDoFactory.build();
+
+				mockTeacherAccount.username = 'changedUsername@example.org';
+				mockTeacherAccount.userId = mockStudentUser.id;
+				accountRepo.findById.mockResolvedValue(mockTeacherAccount);
+				accountRepo.save.mockResolvedValue(mockTeacherAccount);
+
+				return { mockStudentUser, mockTeacherAccount };
+			};
+
+			it('should update account', async () => {
+				const { mockTeacherAccount } = setup();
+
+				const ret = await accountService.save(mockTeacherAccount);
+
+				expect(ret).toBeDefined();
+				expect(ret).toEqual(mockTeacherAccount);
+			});
+		});
+
+		describe("when existing account's system is undefined", () => {
+			const setup = () => {
+				const mockTeacherAccount = accountDoFactory.build();
+
+				mockTeacherAccount.username = 'changedUsername@example.org';
+				mockTeacherAccount.systemId = undefined;
+
+				accountRepo.findById.mockResolvedValue(mockTeacherAccount);
+				accountRepo.save.mockResolvedValue(mockTeacherAccount);
+
+				return { mockTeacherAccount };
+			};
+
+			it('should keep undefined on update', async () => {
+				const { mockTeacherAccount } = setup();
+
+				const ret = await accountService.save(mockTeacherAccount);
+
+				expect(ret).toBeDefined();
+				expect(ret).toMatchObject({
+					id: mockTeacherAccount.id,
+					username: mockTeacherAccount.username,
+					activated: mockTeacherAccount.activated,
+					systemId: mockTeacherAccount.systemId,
+					userId: mockTeacherAccount.userId,
+				});
+			});
+		});
+
+		describe('when account does not exists', () => {
+			const setup = () => {
+				const mockUserWithoutAccount = userFactory.buildWithId();
+
+				const accountToSave: Account = {
+					createdAt: new Date(),
+					updatedAt: new Date(),
+					username: 'asdf@asdf.de',
+					userId: mockUserWithoutAccount.id,
+					systemId: '012345678912',
+					password: defaultPassword,
+				} as Account;
+				(accountRepo.findById as jest.Mock).mockClear();
+				(accountRepo.save as jest.Mock).mockClear();
+
+				accountRepo.save.mockResolvedValue(
+					new Account({
+						id: new ObjectId().toHexString(),
+						username: accountToSave.username,
+						userId: accountToSave.userId,
+						systemId: accountToSave.systemId,
+						createdAt: accountToSave.createdAt,
+						updatedAt: accountToSave.updatedAt,
+					})
+				);
+
+				return { accountToSave };
+			};
+
+			it('should save a new account', async () => {
+				const { accountToSave } = setup();
+
+				const ret = await accountService.save(accountToSave);
+
+				expect(accountRepo.save).toHaveBeenCalledTimes(1);
+				expect(ret).toBeDefined();
+				expect(ret).toBeInstanceOf(Account);
+				expect(ret).toMatchObject({
+					username: accountToSave.username,
+					userId: accountToSave.userId,
+					systemId: accountToSave.systemId,
+					createdAt: accountToSave.createdAt,
+					updatedAt: accountToSave.updatedAt,
+				});
+			});
+		});
+
+		describe("when account's system undefined", () => {
+			const setup = () => {
+				const mockUserWithoutAccount = userFactory.buildWithId();
+
+				const accountToSave: Account = {
+					createdAt: new Date(),
+					updatedAt: new Date(),
+					username: 'asdf@asdf.de',
+					userId: mockUserWithoutAccount.id,
+					password: defaultPassword,
+				} as Account;
+				(accountRepo.findById as jest.Mock).mockClear();
+				(accountRepo.save as jest.Mock).mockClear();
+
+				accountRepo.save.mockResolvedValue(
+					new Account({
+						id: new ObjectId().toHexString(),
+						username: accountToSave.username,
+						userId: accountToSave.userId,
+						createdAt: accountToSave.createdAt,
+						updatedAt: accountToSave.updatedAt,
+					})
+				);
+
+				return { accountToSave };
+			};
+
+			it('should keep undefined on save', async () => {
+				const { accountToSave } = setup();
+
+				const ret = await accountService.save(accountToSave);
+
+				expect(ret).toBeDefined();
+				expect(accountRepo.save).toHaveBeenCalledWith(expect.objectContaining({ systemId: undefined }));
+			});
+		});
+
+		describe('when save account', () => {
+			const setup = () => {
+				const mockUserWithoutAccount = userFactory.buildWithId();
+
+				const accountToSave = {
+					createdAt: new Date(),
+					updatedAt: new Date(),
+					username: 'asdf@asdf.de',
+					userId: mockUserWithoutAccount.id,
+					systemId: '012345678912',
+					password: defaultPassword,
+				} as Account;
+				(accountRepo.findById as jest.Mock).mockClear();
+				(accountRepo.save as jest.Mock).mockClear();
+
+				accountRepo.save.mockResolvedValue(
+					new Account({
+						id: new ObjectId().toHexString(),
+						username: accountToSave.username,
+						userId: accountToSave.userId,
+						createdAt: accountToSave.createdAt,
+						updatedAt: accountToSave.updatedAt,
+					})
+				);
+
+				return { accountToSave };
+			};
+
+			it('should encrypt password', async () => {
+				const { accountToSave } = setup();
+
+				const ret = await accountService.save(accountToSave);
+
+				expect(ret).toBeDefined();
+				expect(accountRepo.save).toHaveBeenCalledWith(
+					expect.objectContaining({ password: expect.not.stringMatching(defaultPassword) })
+				);
+			});
+		});
+
+		describe('when save account with id', () => {
+			const setup = () => {
+				const mockUserWithoutAccount = userFactory.buildWithId();
+
+				const accountToSave = {
+					id: new ObjectId().toHexString(),
+					createdAt: new Date(),
+					updatedAt: new Date(),
+					username: 'asdf@asdf.de',
+					userId: mockUserWithoutAccount.id,
+					systemId: '012345678912',
+					password: defaultPassword,
+				} as Account;
+				const accountInRepo = new Account({
+					id: new ObjectId().toHexString(),
+					createdAt: new Date(),
+					updatedAt: new Date(),
+					username: 'asdf@asdf.de',
+					userId: mockUserWithoutAccount.id,
+					systemId: '012345678912',
+					password: defaultPassword,
+				});
+				jest.spyOn(accountInRepo, 'update').mockImplementation();
+
+				(accountRepo.findById as jest.Mock).mockClear();
+				(accountRepo.save as jest.Mock).mockClear();
+
+				accountRepo.findById.mockResolvedValue(accountInRepo);
+				accountRepo.save.mockResolvedValue(
+					new Account({
+						id: new ObjectId().toHexString(),
+						username: accountToSave.username,
+						userId: accountToSave.userId,
+						createdAt: accountToSave.createdAt,
+						updatedAt: accountToSave.updatedAt,
+					})
+				);
+
+				return { accountToSave, accountInRepo };
+			};
+
+			it('should encrypt password', async () => {
+				const { accountToSave, accountInRepo } = setup();
+
+				const ret = await accountService.save(accountToSave);
+
+				expect(ret).toBeDefined();
+				expect(accountInRepo.update).toHaveBeenCalledWith(accountToSave);
+			});
+		});
+
+		describe('when creating a new account', () => {
+			const setup = () => {
+				const spy = jest.spyOn(accountRepo, 'save');
+				const account = {
+					username: 'john.doe@domain.tld',
+					password: '',
+				} as Account;
+				(accountRepo.findById as jest.Mock).mockClear();
+				(accountRepo.save as jest.Mock).mockClear();
+
+				accountRepo.save.mockResolvedValue(
+					new Account({
+						id: new ObjectId().toHexString(),
+						username: account.username,
+						password: undefined,
+						createdAt: new Date(),
+						updatedAt: new Date(),
+					})
+				);
+
+				return { spy, account };
+			};
+
+			it('should set password to undefined if password is empty', async () => {
+				const { spy, account } = setup();
+
+				await expect(accountService.save(account)).resolves.not.toThrow();
+				expect(accountRepo.findById).not.toHaveBeenCalled();
+				expect(spy).toHaveBeenCalledWith(
+					expect.objectContaining({
+						password: undefined,
+					})
+				);
+			});
+		});
+
+		describe('when password is empty while editing an existing account', () => {
+			const setup = () => {
+				const mockTeacherAccount = accountDoFactory.build();
+
+				const spy = jest.spyOn(accountRepo, 'save');
+				const account = {
+					id: mockTeacherAccount.id,
+					password: undefined,
+				} as Account;
+
+				accountRepo.findById.mockResolvedValue(mockTeacherAccount);
+				accountRepo.save.mockResolvedValue(mockTeacherAccount);
+
+				return { mockTeacherAccount, spy, account };
+			};
+
+			it('should not change password', async () => {
+				const { mockTeacherAccount, spy, account } = setup();
+
+				await expect(accountService.save(account)).resolves.not.toThrow();
+				expect(accountRepo.findById).toHaveBeenCalled();
+				expect(spy).toHaveBeenCalledWith(
+					expect.objectContaining({
+						password: mockTeacherAccount.password,
+					})
+				);
+			});
+		});
+
+		describe('when username is empty while creating a new account', () => {
+			const setup = () => {
+				const account = {
+					username: '',
+					password: defaultPassword,
+				} as Account;
+				return { account };
+			};
+
+			it('should throw an error', async () => {
+				const { account } = setup();
+
+				await expect(accountService.save(account)).rejects.toThrow();
 			});
 		});
 	});
 
 	describe('saveAll', () => {
-		describe('when saving accounts', () => {
+		describe('when given account that does not exist', () => {
 			const setup = () => {
-				const accounts = accountDoFactory.buildList(1);
+				const account = accountDoFactory.build({
+					id: undefined,
+				});
+				const savedAccount = accountDoFactory.build({
+					...account,
+					id: new ObjectId().toHexString(),
+				});
 
-				accountServiceDb.saveAll.mockResolvedValueOnce(accounts);
+				accountRepo.saveAll.mockResolvedValueOnce([savedAccount]);
 
-				return { accounts, sut: newAccountService() };
+				return { account, savedAccount };
 			};
 
-			it('should delegate to db', async () => {
-				const { accounts, sut } = setup();
+			it('should save it', async () => {
+				const { account, savedAccount } = setup();
+				const result = await accountService.saveAll([account]);
 
-				const result = await sut.saveAll(accounts);
+				expect(result).toStrictEqual([savedAccount]);
+			});
+		});
 
-				expect(result).toBeDefined();
-				expect(accountServiceDb.saveAll).toHaveBeenCalledTimes(1);
+		describe('when given account that exist', () => {
+			const setup = () => {
+				const account = accountDoFactory.build();
+				const foundAccount = accountDoFactory.build();
+				const updateSpy = jest.spyOn(foundAccount, 'update');
+
+				accountRepo.findById.mockResolvedValueOnce(foundAccount);
+				accountRepo.saveAll.mockResolvedValueOnce([foundAccount]);
+
+				return { account, foundAccount, updateSpy };
+			};
+
+			it('should update it', async () => {
+				const { account, foundAccount, updateSpy } = setup();
+
+				const result = await accountService.saveAll([account]);
+
+				expect(updateSpy).toHaveBeenCalledTimes(1);
+				expect(result.length).toBe(1);
+				expect(result[0].id).toBe(foundAccount.id);
 			});
 		});
 	});
@@ -198,12 +750,12 @@ describe('AccountService', () => {
 			const setup = () => {
 				const spy = jest.spyOn(accountService, 'save');
 
-				accountServiceDb.save.mockResolvedValueOnce({
+				accountRepo.save.mockResolvedValueOnce({
 					getProps: () => {
 						return { id: '' };
 					},
 				} as Account);
-				accountServiceDb.isUniqueEmail.mockResolvedValueOnce(true);
+				jest.spyOn(accountService, 'isUniqueEmail').mockResolvedValueOnce(true);
 
 				return spy;
 			};
@@ -215,6 +767,7 @@ describe('AccountService', () => {
 					username: ' John.Doe@domain.tld ',
 					systemId: new ObjectId().toHexString(),
 				} as AccountSave;
+
 				await accountService.saveWithValidation(params);
 				expect(spy).toHaveBeenCalledWith(
 					expect.objectContaining({
@@ -231,18 +784,19 @@ describe('AccountService', () => {
 					username: 'John Doe',
 					password: 'JohnsPassword_123',
 				} as AccountSave;
+
 				await expect(accountService.saveWithValidation(params)).rejects.toThrow('Username is not an email');
 			});
 		});
 
 		describe('When username for an external user is not an email', () => {
 			const setup = () => {
-				accountServiceDb.save.mockResolvedValueOnce({
+				accountRepo.save.mockResolvedValueOnce({
 					getProps: () => {
 						return { id: '' };
 					},
 				} as Account);
-				accountServiceDb.isUniqueEmail.mockResolvedValueOnce(true);
+				jest.spyOn(accountService, 'isUniqueEmail').mockResolvedValueOnce(true);
 			};
 
 			it('should not throw an error', async () => {
@@ -251,18 +805,19 @@ describe('AccountService', () => {
 					username: 'John Doe',
 					systemId: new ObjectId().toHexString(),
 				} as AccountSave;
+
 				await expect(accountService.saveWithValidation(params)).resolves.not.toThrow();
 			});
 		});
 
 		describe('When username for an external user is a ldap search string', () => {
 			const setup = () => {
-				accountServiceDb.save.mockResolvedValueOnce({
+				accountRepo.save.mockResolvedValueOnce({
 					getProps: () => {
 						return { id: '' };
 					},
 				} as Account);
-				accountServiceDb.isUniqueEmail.mockResolvedValueOnce(true);
+				jest.spyOn(accountService, 'isUniqueEmail').mockResolvedValueOnce(true);
 			};
 
 			it('should not throw an error', async () => {
@@ -271,6 +826,7 @@ describe('AccountService', () => {
 					username: 'dc=schul-cloud,dc=org/fake.ldap',
 					systemId: new ObjectId().toHexString(),
 				} as AccountSave;
+
 				await expect(accountService.saveWithValidation(params)).resolves.not.toThrow();
 			});
 		});
@@ -280,6 +836,7 @@ describe('AccountService', () => {
 				const params: AccountSave = {
 					username: 'john.doe@mail.tld',
 				} as AccountSave;
+
 				await expect(accountService.saveWithValidation(params)).rejects.toThrow('No password provided');
 			});
 		});
@@ -291,14 +848,15 @@ describe('AccountService', () => {
 					password: 'JohnsPassword_123',
 					userId: new ObjectId().toHexString(),
 				} as AccountSave;
-				accountServiceDb.findByUserId.mockResolvedValueOnce({ id: 'foundAccount123' } as Account);
+				accountRepo.findByUserId.mockResolvedValueOnce({ id: 'foundAccount123' } as Account);
+
 				await expect(accountService.saveWithValidation(params)).rejects.toThrow('Account already exists');
 			});
 		});
 
 		describe('When username already exists in mongoDB', () => {
 			const setup = () => {
-				accountServiceDb.isUniqueEmail.mockResolvedValueOnce(false);
+				jest.spyOn(accountService, 'isUniqueEmail').mockResolvedValueOnce(false);
 			};
 
 			it('should throw username already exists', async () => {
@@ -307,6 +865,7 @@ describe('AccountService', () => {
 					username: 'john.doe@mail.tld',
 					password: 'JohnsPassword_123',
 				} as AccountSave;
+
 				await expect(accountService.saveWithValidation(params)).rejects.toThrow('Username already exists');
 			});
 		});
@@ -354,7 +913,7 @@ describe('AccountService', () => {
 		describe('when username is not unique', () => {
 			it('should throw ValidationError', async () => {
 				const accountSave = { username: 'notunique@mail.com', password: 'pw', systemId: undefined } as AccountSave;
-				accountServiceDb.isUniqueEmail.mockResolvedValueOnce(false);
+				jest.spyOn(accountService, 'isUniqueEmail').mockResolvedValueOnce(false);
 
 				await expect(accountService.validateAccountBeforeSaveOrReject(accountSave)).rejects.toThrow(ValidationError);
 			});
@@ -363,8 +922,8 @@ describe('AccountService', () => {
 		describe('when username is sanitized for local user', () => {
 			it('should sanitize username', async () => {
 				const accountSave = { username: 'Test@Mail.com ', password: 'pw', systemId: undefined } as AccountSave;
-				accountServiceDb.isUniqueEmail.mockResolvedValueOnce(true);
-				accountServiceDb.findByUserId.mockResolvedValueOnce(null);
+				jest.spyOn(accountService, 'isUniqueEmail').mockResolvedValueOnce(true);
+				jest.spyOn(accountService, 'findByUserId').mockResolvedValueOnce(null);
 
 				await expect(accountService.validateAccountBeforeSaveOrReject(accountSave)).resolves.not.toThrow();
 				expect(accountSave.username).toBe('test@mail.com');
@@ -379,8 +938,8 @@ describe('AccountService', () => {
 					systemId: undefined,
 					userId: 'user1',
 				} as AccountSave;
-				accountServiceDb.isUniqueEmail.mockResolvedValueOnce(true);
-				accountServiceDb.findByUserId.mockResolvedValueOnce(null);
+				jest.spyOn(accountService, 'isUniqueEmail').mockResolvedValueOnce(true);
+				jest.spyOn(accountService, 'findByUserId').mockResolvedValueOnce(null);
 
 				await expect(
 					accountService.validateAccountBeforeSaveOrReject(accountSave, { allowUpdate: true })
@@ -390,129 +949,291 @@ describe('AccountService', () => {
 	});
 
 	describe('updateUsername', () => {
-		describe('When calling updateUsername in accountService', () => {
-			it('should call updateUsername in accountServiceDb', async () => {
-				await expect(accountService.updateUsername('accountId', 'username')).resolves.not.toThrow();
-				expect(accountServiceDb.updateUsername).toHaveBeenCalledTimes(1);
+		describe('when updating username', () => {
+			const setup = () => {
+				const mockTeacherAccount = accountDoFactory.build();
+				const newUsername = 'newUsername';
+
+				accountRepo.findById.mockResolvedValue(mockTeacherAccount);
+				accountRepo.save.mockImplementation(async (account: Account) => account);
+
+				return { mockTeacherAccount, newUsername };
+			};
+
+			it('should update only user name', async () => {
+				const { mockTeacherAccount, newUsername } = setup();
+				const ret = await accountService.updateUsername(mockTeacherAccount.id, newUsername);
+
+				expect(ret).toBeDefined();
+				expect(ret.getProps()).toMatchObject({
+					...mockTeacherAccount.getProps(),
+					username: newUsername,
+				});
 			});
 		});
 	});
 
 	describe('updateLastLogin', () => {
-		it('should call updateLastLogin in accountServiceDb', async () => {
-			const someId = new ObjectId().toHexString();
+		describe('When calling updateLastLogin in accountService', () => {
+			const setup = () => {
+				const mockTeacherAccount = accountDoFactory.build();
+				const theNewDate = new Date();
 
-			await accountService.updateLastLogin(someId, new Date());
+				accountRepo.findById.mockResolvedValue(mockTeacherAccount);
+				accountRepo.save.mockResolvedValue(mockTeacherAccount);
 
-			expect(accountServiceDb.updateLastLogin).toHaveBeenCalledTimes(1);
+				return { mockTeacherAccount, theNewDate };
+			};
+
+			it('should update last login', async () => {
+				const { mockTeacherAccount, theNewDate } = setup();
+
+				await accountService.updateLastLogin(mockTeacherAccount.id, theNewDate);
+
+				expect(mockTeacherAccount.lastLogin).toEqual(theNewDate);
+			});
 		});
 	});
 
 	describe('updateLastTriedFailedLogin', () => {
 		describe('When calling updateLastTriedFailedLogin in accountService', () => {
-			it('should call updateLastTriedFailedLogin in accountServiceDb', async () => {
-				await expect(accountService.updateLastTriedFailedLogin('accountId', {} as Date)).resolves.not.toThrow();
-				expect(accountServiceDb.updateLastTriedFailedLogin).toHaveBeenCalledTimes(1);
+			const setup = () => {
+				const mockTeacherAccount = accountDoFactory.build();
+				const theNewDate = new Date();
+
+				accountRepo.findById.mockResolvedValue(mockTeacherAccount);
+				accountRepo.save.mockResolvedValue(mockTeacherAccount);
+
+				return { mockTeacherAccount, theNewDate };
+			};
+
+			it('should update last tried failed login', async () => {
+				const { mockTeacherAccount, theNewDate } = setup();
+				const ret = await accountService.updateLastTriedFailedLogin(mockTeacherAccount.id, theNewDate);
+
+				expect(ret.lasttriedFailedLogin).toEqual(theNewDate);
 			});
 		});
 	});
 
 	describe('updatePassword', () => {
-		describe('When calling updatePassword in accountService', () => {
-			it('should call updatePassword in accountServiceDb', async () => {
-				await expect(accountService.updatePassword('accountId', 'password')).resolves.not.toThrow();
-				expect(accountServiceDb.updatePassword).toHaveBeenCalledTimes(1);
+		describe('when update Password', () => {
+			const setup = () => {
+				const mockTeacherAccount = accountDoFactory.build();
+				const newPassword = 'newPassword';
+
+				accountRepo.findById.mockResolvedValue(mockTeacherAccount);
+				accountRepo.save.mockResolvedValue(mockTeacherAccount);
+				return { mockTeacherAccount, newPassword };
+			};
+
+			it('should update password', async () => {
+				const { mockTeacherAccount, newPassword } = setup();
+
+				const ret = await accountService.updatePassword(mockTeacherAccount.id, newPassword);
+
+				expect(ret).toBeDefined();
+				if (ret.password) {
+					await expect(bcrypt.compare(newPassword, ret.password)).resolves.toBe(true);
+				}
 			});
 		});
 	});
 
 	describe('validatePassword', () => {
-		describe('when validating a password', () => {
-			const setup = () => {
-				accountServiceDb.validatePassword.mockResolvedValueOnce(true);
+		describe('when accepted Password', () => {
+			const setup = async () => {
+				const ret = await accountService.validatePassword(
+					{ password: await bcrypt.hash(defaultPassword, 10) } as unknown as Account,
+					defaultPassword
+				);
+
+				return { ret };
 			};
 
-			it('should call validatePassword in accountServiceDb', async () => {
-				setup();
+			it('should validate password', async () => {
+				const { ret } = await setup();
 
-				await expect(accountService.validatePassword({} as Account, 'password')).resolves.not.toThrow();
-				expect(accountServiceDb.validatePassword).toHaveBeenCalledTimes(1);
+				expect(ret).toBe(true);
+			});
+		});
+
+		describe('when wrong Password', () => {
+			const setup = async () => {
+				const ret = await accountService.validatePassword(
+					{ password: await bcrypt.hash(defaultPassword, 10) } as unknown as Account,
+					'incorrectPwd'
+				);
+
+				return { ret };
+			};
+
+			it('should report', async () => {
+				const { ret } = await setup();
+
+				expect(ret).toBe(false);
+			});
+		});
+
+		describe('when missing account password', () => {
+			const setup = async () => {
+				const ret = await accountService.validatePassword({ password: undefined } as Account, 'incorrectPwd');
+
+				return { ret };
+			};
+
+			it('should report', async () => {
+				const { ret } = await setup();
+
+				expect(ret).toBe(false);
 			});
 		});
 	});
 
 	describe('delete', () => {
-		describe('When calling delete in accountService', () => {
-			it('should call delete in accountServiceDb', async () => {
-				await expect(accountService.delete('accountId')).resolves.not.toThrow();
-				expect(accountServiceDb.delete).toHaveBeenCalledTimes(1);
+		describe('when delete an existing account', () => {
+			const setup = () => {
+				const mockTeacherAccount = accountDoFactory.build();
+
+				accountRepo.findById.mockResolvedValue(mockTeacherAccount);
+
+				return { mockTeacherAccount };
+			};
+
+			it('should delete account via repo', async () => {
+				const { mockTeacherAccount } = setup();
+				await accountService.delete(mockTeacherAccount.id);
+				expect(accountRepo.deleteById).toHaveBeenCalledWith(new ObjectId(mockTeacherAccount.id));
+			});
+		});
+
+		describe('when deleting non existing account', () => {
+			const setup = () => {
+				accountRepo.deleteById.mockImplementationOnce(() => {
+					throw new EntityNotFoundError('AccountEntity');
+				});
+			};
+
+			it('should throw account not found', async () => {
+				setup();
+
+				await expect(accountService.delete('nonExisting')).rejects.toThrow();
 			});
 		});
 	});
 
 	describe('deleteByUserId', () => {
-		describe('When calling deleteByUserId in accountService', () => {
-			it('should call deleteByUserId in accountServiceDb', async () => {
-				await expect(accountService.deleteByUserId('userId')).resolves.not.toThrow();
-				expect(accountServiceDb.deleteByUserId).toHaveBeenCalledTimes(1);
+		describe('when delete account with given user id', () => {
+			const setup = () => {
+				const mockTeacherUser = userFactory.buildWithId();
+
+				const mockTeacherAccount = accountDoFactory.build({
+					userId: mockTeacherUser.id,
+					password: defaultPassword,
+				});
+
+				accountRepo.findById.mockResolvedValue(mockTeacherAccount);
+
+				return { mockTeacherUser, mockTeacherAccount };
+			};
+
+			it('should delete via repo', async () => {
+				const { mockTeacherUser, mockTeacherAccount } = setup();
+
+				await accountService.deleteByUserId(mockTeacherAccount.userId?.toString() ?? '');
+				expect(accountRepo.deleteByUserId).toHaveBeenCalledWith(mockTeacherUser.id);
 			});
 		});
 	});
 
 	describe('findMany', () => {
-		describe('When calling findMany in accountService', () => {
+		describe('when find many one time', () => {
 			const setup = () => {
-				accountServiceDb.findMany.mockResolvedValueOnce(accountDoFactory.buildList(1));
+				const mockTeacherAccount = accountDoFactory.build();
+
+				accountRepo.findMany.mockResolvedValue([mockTeacherAccount]);
+
+				return {};
 			};
 
-			it('should call findMany in accountServiceDb', async () => {
+			it('should call repo', async () => {
 				setup();
+				const foundAccounts = await accountService.findMany(1, 1);
 
-				await expect(accountService.findMany()).resolves.not.toThrow();
-				expect(accountServiceDb.findMany).toHaveBeenCalledTimes(1);
+				expect(accountRepo.findMany).toHaveBeenCalledWith(1, 1);
+				expect(foundAccounts).toBeDefined();
+			});
+		});
+		describe('when call find many more than one time', () => {
+			const setup = () => {
+				const mockTeacherAccount = accountDoFactory.build();
+
+				accountRepo.findMany.mockResolvedValue([mockTeacherAccount]);
+
+				return {};
+			};
+
+			it('should call repo each time', async () => {
+				setup();
+				const foundAccounts = await accountService.findMany();
+
+				expect(accountRepo.findMany).toHaveBeenCalledWith(0, 100);
+				expect(foundAccounts).toBeDefined();
 			});
 		});
 	});
 
 	describe('searchByUsernamePartialMatch', () => {
-		describe('When calling searchByUsernamePartialMatch in accountService', () => {
+		describe('when searching by part of username', () => {
 			const setup = () => {
-				accountServiceDb.searchByUsernamePartialMatch.mockResolvedValueOnce([accountDoFactory.buildList(1), 1]);
+				const partialUserName = 'admin';
+				const skip = 2;
+				const limit = 10;
+				const mockTeacherAccount = accountDoFactory.build();
+				const mockStudentAccount = accountDoFactory.build();
+				const mockAccountWithSystemId = accountDoFactory.build({
+					systemId: new ObjectId().toHexString(),
+				});
+				const mockAccounts = [mockTeacherAccount, mockStudentAccount, mockAccountWithSystemId];
+
+				accountRepo.findById.mockResolvedValue(mockTeacherAccount);
+				accountRepo.searchByUsernamePartialMatch.mockResolvedValue([
+					[mockTeacherAccount, mockStudentAccount, mockAccountWithSystemId],
+					3,
+				]);
+
+				return { partialUserName, skip, limit, mockTeacherAccount, mockAccounts };
 			};
 
-			it('should call searchByUsernamePartialMatch in accountServiceDb', async () => {
-				setup();
+			it('should call repo', async () => {
+				const { partialUserName, skip, limit, mockTeacherAccount, mockAccounts } = setup();
+				const [accounts, total] = await accountService.searchByUsernamePartialMatch(partialUserName, skip, limit);
 
-				await expect(accountService.searchByUsernamePartialMatch('username', 1, 1)).resolves.not.toThrow();
-				expect(accountServiceDb.searchByUsernamePartialMatch).toHaveBeenCalledTimes(1);
+				expect(accountRepo.searchByUsernamePartialMatch).toHaveBeenCalledWith(partialUserName, skip, limit);
+				expect(total).toBe(mockAccounts.length);
+				expect(accounts[0]).toEqual(mockTeacherAccount);
 			});
 		});
 	});
 
 	describe('searchByUsernameExactMatch', () => {
-		const setup = () => {
-			accountServiceDb.searchByUsernameExactMatch.mockResolvedValueOnce([accountDoFactory.buildList(1), 1]);
-		};
-
-		it('should call searchByUsernameExactMatch in accountServiceDb', async () => {
-			setup();
-
-			await expect(accountService.searchByUsernameExactMatch('username')).resolves.not.toThrow();
-			expect(accountServiceDb.searchByUsernameExactMatch).toHaveBeenCalledTimes(1);
-		});
-	});
-
-	describe('searchByUsernameExactMatch', () => {
-		describe('When calling searchByUsernameExactMatch in accountService', () => {
+		describe('when searching by username', () => {
 			const setup = () => {
-				accountServiceDb.searchByUsernameExactMatch.mockResolvedValueOnce([accountDoFactory.buildList(1), 1]);
+				const partialUserName = 'admin';
+				const mockTeacherAccount = accountDoFactory.build();
+
+				accountRepo.searchByUsernameExactMatch.mockResolvedValue([[mockTeacherAccount], 1]);
+
+				return { partialUserName, mockTeacherAccount };
 			};
 
-			it('should call searchByUsernameExactMatch in accountServiceDb', async () => {
-				setup();
+			it('should call repo', async () => {
+				const { partialUserName, mockTeacherAccount } = setup();
+				const [accounts, total] = await accountService.searchByUsernameExactMatch(partialUserName);
 
-				await expect(accountService.searchByUsernameExactMatch('username')).resolves.not.toThrow();
-				expect(accountServiceDb.searchByUsernameExactMatch).toHaveBeenCalledTimes(1);
+				expect(accountRepo.searchByUsernameExactMatch).toHaveBeenCalledWith(partialUserName);
+				expect(total).toBe(1);
+				expect(accounts[0]).toEqual(mockTeacherAccount);
 			});
 		});
 	});
@@ -532,7 +1253,7 @@ describe('AccountService', () => {
 					systemId: externalSystem.id,
 				});
 
-				accountServiceDb.findByUserIdOrFail.mockResolvedValueOnce(mockExternalAccount);
+				accountRepo.findByUserIdOrFail.mockResolvedValueOnce(mockExternalAccount);
 
 				return { mockExternalUser, mockExternalAccount };
 			};
@@ -560,8 +1281,8 @@ describe('AccountService', () => {
 					password: defaultPasswordHash,
 				});
 
-				accountServiceDb.findByUserIdOrFail.mockResolvedValueOnce(mockStudentAccount);
-				accountServiceDb.validatePassword.mockResolvedValueOnce(false);
+				accountRepo.findByUserIdOrFail.mockResolvedValueOnce(mockStudentAccount);
+				jest.spyOn(accountService, 'validatePassword').mockResolvedValueOnce(false);
 
 				return { mockStudentUser, mockStudentAccount };
 			};
@@ -588,14 +1309,16 @@ describe('AccountService', () => {
 					password: defaultPasswordHash,
 				});
 
-				accountServiceDb.validatePassword.mockResolvedValue(true);
-				accountServiceDb.save.mockResolvedValue(mockStudentAccountDo);
+				jest.spyOn(accountService, 'validatePassword').mockResolvedValue(true);
+				accountRepo.findById.mockResolvedValue(mockStudentAccountDo);
+				accountRepo.save.mockResolvedValue(mockStudentAccountDo);
 
 				return { mockStudentUser, mockStudentAccountDo };
 			};
 
 			it('should allow to update with strong password', async () => {
 				const { mockStudentUser, mockStudentAccountDo } = setup();
+
 				await expect(
 					accountService.updateMyAccount(mockStudentUser, mockStudentAccountDo, {
 						passwordOld: defaultPassword,
@@ -617,11 +1340,12 @@ describe('AccountService', () => {
 					password: defaultPasswordHash,
 				});
 
-				accountServiceDb.validatePassword.mockResolvedValue(true);
-				accountServiceDb.save.mockResolvedValue(mockStudentAccountDo);
-				const spyAccountServiceSave = jest.spyOn(accountServiceDb, 'save');
+				jest.spyOn(accountService, 'validatePassword').mockResolvedValue(true);
+				accountRepo.findById.mockResolvedValue(mockStudentAccountDo);
+				accountRepo.save.mockResolvedValue(mockStudentAccountDo);
+				const spyAccountServiceSave = jest.spyOn(accountService, 'save');
 
-				accountServiceDb.isUniqueEmail.mockResolvedValue(true);
+				jest.spyOn(accountService, 'isUniqueEmail').mockResolvedValue(true);
 
 				return { mockStudentUser, mockStudentAccountDo, spyAccountServiceSave };
 			};
@@ -633,6 +1357,7 @@ describe('AccountService', () => {
 					passwordNew: undefined,
 					email: 'newemail@to.update',
 				});
+
 				expect(spyAccountServiceSave).toHaveBeenCalledWith(
 					expect.objectContaining({
 						password: undefined,
@@ -653,15 +1378,17 @@ describe('AccountService', () => {
 					password: defaultPasswordHash,
 				});
 
-				accountServiceDb.validatePassword.mockResolvedValue(true);
-				accountServiceDb.save.mockResolvedValue(mockStudentAccountDo);
-				accountServiceDb.isUniqueEmail.mockResolvedValue(true);
+				jest.spyOn(accountService, 'validatePassword').mockResolvedValue(true);
+				accountRepo.findById.mockResolvedValue(mockStudentAccountDo);
+				accountRepo.save.mockResolvedValue(mockStudentAccountDo);
+				jest.spyOn(accountService, 'isUniqueEmail').mockResolvedValue(true);
 
 				return { mockStudentUser, mockStudentAccountDo };
 			};
 
 			it('should allow to update email', async () => {
 				const { mockStudentUser, mockStudentAccountDo } = setup();
+
 				await expect(
 					accountService.updateMyAccount(mockStudentUser, mockStudentAccountDo, {
 						passwordOld: defaultPassword,
@@ -683,11 +1410,12 @@ describe('AccountService', () => {
 					password: defaultPasswordHash,
 				});
 
-				accountServiceDb.validatePassword.mockResolvedValue(true);
+				jest.spyOn(accountService, 'validatePassword').mockResolvedValue(true);
 
-				accountServiceDb.isUniqueEmail.mockResolvedValueOnce(true);
-				accountServiceDb.save.mockResolvedValue(mockStudentAccountDo);
-				const accountSaveSpy = jest.spyOn(accountServiceDb, 'save');
+				jest.spyOn(accountService, 'isUniqueEmail').mockResolvedValueOnce(true);
+				accountRepo.findById.mockResolvedValue(mockStudentAccountDo);
+				accountRepo.save.mockResolvedValue(mockStudentAccountDo);
+				const accountSaveSpy = jest.spyOn(accountRepo, 'save');
 
 				return { mockStudentUser, mockStudentAccountDo, accountSaveSpy };
 			};
@@ -696,6 +1424,7 @@ describe('AccountService', () => {
 				const { mockStudentUser, mockStudentAccountDo, accountSaveSpy } = setup();
 
 				const testMail = 'AN@AVAILABLE.MAIL';
+
 				await expect(
 					accountService.updateMyAccount(mockStudentUser, mockStudentAccountDo, {
 						passwordOld: defaultPassword,
@@ -718,9 +1447,10 @@ describe('AccountService', () => {
 					password: defaultPasswordHash,
 				});
 
-				accountServiceDb.validatePassword.mockResolvedValue(true);
-				accountServiceDb.save.mockResolvedValue(mockStudentAccountDo);
-				accountServiceDb.isUniqueEmail.mockResolvedValueOnce(true);
+				jest.spyOn(accountService, 'validatePassword').mockResolvedValue(true);
+				accountRepo.findById.mockResolvedValue(mockStudentAccountDo);
+				accountRepo.save.mockResolvedValue(mockStudentAccountDo);
+				jest.spyOn(accountService, 'isUniqueEmail').mockResolvedValueOnce(true);
 
 				const userUpdateSpy = jest.spyOn(userService, 'saveEntity');
 
@@ -730,6 +1460,7 @@ describe('AccountService', () => {
 			it('should use email as user email in lower case', async () => {
 				const { mockStudentUser, mockStudentAccountDo, userUpdateSpy } = setup();
 				const testMail = 'AN@AVAILABLE.MAIL';
+
 				await expect(
 					accountService.updateMyAccount(mockStudentUser, mockStudentAccountDo, {
 						passwordOld: defaultPassword,
@@ -752,11 +1483,12 @@ describe('AccountService', () => {
 					password: defaultPasswordHash,
 				});
 
-				accountServiceDb.validatePassword.mockResolvedValue(true);
-				accountServiceDb.save.mockResolvedValue(mockStudentAccountDo);
-				accountServiceDb.isUniqueEmail.mockResolvedValueOnce(true);
+				jest.spyOn(accountService, 'validatePassword').mockResolvedValue(true);
+				accountRepo.findById.mockResolvedValue(mockStudentAccountDo);
+				accountRepo.save.mockResolvedValue(mockStudentAccountDo);
+				jest.spyOn(accountService, 'isUniqueEmail').mockResolvedValueOnce(true);
 
-				const accountSaveSpy = jest.spyOn(accountServiceDb, 'save');
+				const accountSaveSpy = jest.spyOn(accountRepo, 'save');
 				const userUpdateSpy = jest.spyOn(userService, 'saveEntity');
 
 				return { mockStudentUser, mockStudentAccountDo, accountSaveSpy, userUpdateSpy };
@@ -765,6 +1497,7 @@ describe('AccountService', () => {
 			it('should always update account user name AND user email together.', async () => {
 				const { mockStudentUser, mockStudentAccountDo, accountSaveSpy, userUpdateSpy } = setup();
 				const testMail = 'an@available.mail';
+
 				await expect(
 					accountService.updateMyAccount(mockStudentUser, mockStudentAccountDo, {
 						passwordOld: defaultPassword,
@@ -788,14 +1521,15 @@ describe('AccountService', () => {
 					password: defaultPasswordHash,
 				});
 
-				accountServiceDb.validatePassword.mockResolvedValue(true);
-				accountServiceDb.isUniqueEmail.mockResolvedValueOnce(false);
+				jest.spyOn(accountService, 'validatePassword').mockResolvedValue(true);
+				jest.spyOn(accountService, 'isUniqueEmail').mockResolvedValueOnce(false);
 
 				return { mockStudentUser, mockStudentAccountDo };
 			};
 
 			it('should throw ValidationError', async () => {
 				const { mockStudentUser, mockStudentAccountDo } = setup();
+
 				await expect(
 					accountService.updateMyAccount(mockStudentUser, mockStudentAccountDo, {
 						passwordOld: defaultPassword,
@@ -817,13 +1551,14 @@ describe('AccountService', () => {
 					password: defaultPasswordHash,
 				});
 
-				accountServiceDb.validatePassword.mockResolvedValue(true);
+				jest.spyOn(accountService, 'validatePassword').mockResolvedValue(true);
 
 				return { mockTeacherUser, mockTeacherAccountDo };
 			};
 
 			it('should allow to update first and last name', async () => {
 				const { mockTeacherUser, mockTeacherAccountDo } = setup();
+
 				await expect(
 					accountService.updateMyAccount(mockTeacherUser, mockTeacherAccountDo, {
 						passwordOld: defaultPassword,
@@ -852,13 +1587,14 @@ describe('AccountService', () => {
 				});
 
 				userService.saveEntity.mockRejectedValueOnce(undefined);
-				accountServiceDb.validatePassword.mockResolvedValue(true);
+				jest.spyOn(accountService, 'validatePassword').mockResolvedValue(true);
 
 				return { mockTeacherUser, mockTeacherAccountDo };
 			};
 
 			it('should throw EntityNotFoundError', async () => {
 				const { mockTeacherUser, mockTeacherAccountDo } = setup();
+
 				await expect(
 					accountService.updateMyAccount(mockTeacherUser, mockTeacherAccountDo, {
 						passwordOld: defaultPassword,
@@ -881,16 +1617,18 @@ describe('AccountService', () => {
 				});
 
 				userService.saveEntity.mockResolvedValueOnce(undefined);
-				accountServiceDb.validatePassword.mockResolvedValue(true);
-				accountServiceDb.save.mockRejectedValueOnce(undefined);
+				jest.spyOn(accountService, 'validatePassword').mockResolvedValue(true);
+				accountRepo.findById.mockResolvedValue(mockStudentAccountDo);
+				accountRepo.save.mockRejectedValueOnce(undefined);
 
-				accountServiceDb.isUniqueEmail.mockResolvedValue(true);
+				jest.spyOn(accountService, 'isUniqueEmail').mockResolvedValue(true);
 
 				return { mockStudentUser, mockStudentAccountDo };
 			};
 
 			it('should throw EntityNotFoundError', async () => {
 				const { mockStudentUser, mockStudentAccountDo } = setup();
+
 				await expect(
 					accountService.updateMyAccount(mockStudentUser, mockStudentAccountDo, {
 						passwordOld: defaultPassword,
@@ -913,16 +1651,18 @@ describe('AccountService', () => {
 				});
 
 				userService.saveEntity.mockResolvedValueOnce(undefined);
-				accountServiceDb.validatePassword.mockResolvedValue(true);
-				accountServiceDb.save.mockRejectedValueOnce(new ValidationError('fail to update'));
+				jest.spyOn(accountService, 'validatePassword').mockResolvedValue(true);
+				accountRepo.findById.mockResolvedValue(mockStudentAccountDo);
+				accountRepo.save.mockRejectedValueOnce(new ValidationError('fail to update'));
 
-				accountServiceDb.isUniqueEmail.mockResolvedValue(true);
+				jest.spyOn(accountService, 'isUniqueEmail').mockResolvedValue(true);
 
 				return { mockStudentUser, mockStudentAccountDo };
 			};
 
 			it('should rethrow ValidationError', async () => {
 				const { mockStudentUser, mockStudentAccountDo } = setup();
+
 				await expect(
 					accountService.updateMyAccount(mockStudentUser, mockStudentAccountDo, {
 						passwordOld: defaultPassword,
@@ -946,7 +1686,8 @@ describe('AccountService', () => {
 				});
 
 				userService.saveEntity.mockResolvedValue();
-				accountServiceDb.save.mockImplementation((account: AccountSave): Promise<Account> => {
+				accountRepo.findById.mockResolvedValue(mockStudentAccountDo);
+				accountRepo.save.mockImplementation((account: AccountSave): Promise<Account> => {
 					Object.assign(mockStudentAccountDo, account);
 
 					return Promise.resolve(mockStudentAccountDo);
@@ -980,12 +1721,13 @@ describe('AccountService', () => {
 				});
 
 				userService.saveEntity.mockResolvedValue();
-				accountServiceDb.save.mockImplementation((account: AccountSave): Promise<Account> => {
+				accountRepo.findById.mockResolvedValue(mockStudentAccountDo);
+				accountRepo.save.mockImplementation((account: AccountSave): Promise<Account> => {
 					Object.assign(mockStudentAccountDo, account);
 
 					return Promise.resolve(mockStudentAccountDo);
 				});
-				accountServiceDb.isUniqueEmail.mockResolvedValue(true);
+				jest.spyOn(accountService, 'isUniqueEmail').mockResolvedValue(true);
 
 				return { mockStudentUser, mockStudentAccountDo };
 			};
@@ -1014,7 +1756,8 @@ describe('AccountService', () => {
 				});
 
 				userService.saveEntity.mockResolvedValue();
-				accountServiceDb.save.mockImplementation((account: AccountSave): Promise<Account> => {
+				accountRepo.findById.mockResolvedValue(mockStudentAccountDo);
+				accountRepo.save.mockImplementation((account: AccountSave): Promise<Account> => {
 					Object.assign(mockStudentAccountDo, account);
 
 					return Promise.resolve(mockStudentAccountDo);
@@ -1044,9 +1787,10 @@ describe('AccountService', () => {
 				});
 
 				userService.saveEntity.mockResolvedValue();
-				accountServiceDb.save.mockRejectedValueOnce(undefined);
+				accountRepo.findById.mockResolvedValue(mockStudentAccountDo);
+				accountRepo.save.mockRejectedValueOnce(undefined);
 
-				accountServiceDb.isUniqueEmail.mockResolvedValue(true);
+				jest.spyOn(accountService, 'isUniqueEmail').mockResolvedValue(true);
 
 				return { mockStudentUser, mockStudentAccountDo };
 			};
@@ -1074,7 +1818,7 @@ describe('AccountService', () => {
 
 				userService.saveEntity.mockRejectedValueOnce(undefined);
 
-				accountServiceDb.isUniqueEmail.mockResolvedValue(true);
+				jest.spyOn(accountService, 'isUniqueEmail').mockResolvedValue(true);
 
 				return { mockStudentUser, mockStudentAccountDo };
 			};
@@ -1133,7 +1877,7 @@ describe('AccountService', () => {
 				});
 
 				userService.saveEntity.mockRejectedValueOnce(undefined);
-				accountServiceDb.isUniqueEmail.mockResolvedValueOnce(false);
+				jest.spyOn(accountService, 'isUniqueEmail').mockResolvedValueOnce(false);
 
 				return { mockStudentUser, mockStudentAccountDo, mockOtherTeacherAccount };
 			};
@@ -1160,11 +1904,12 @@ describe('AccountService', () => {
 				});
 
 				accountRepo.findByUserIdOrFail.mockResolvedValueOnce(mockStudentAccountDo);
+				accountRepo.findById.mockResolvedValue(mockStudentAccountDo);
 
 				const mockStudentAccountDoSaved = accountDoFactory.build({
 					userId: mockStudentUser.id,
 				});
-				accountServiceDb.save.mockResolvedValueOnce(mockStudentAccountDoSaved);
+				accountRepo.save.mockResolvedValueOnce(mockStudentAccountDoSaved);
 
 				return { mockStudentAccountDo, mockStudentUser };
 			};
@@ -1172,6 +1917,7 @@ describe('AccountService', () => {
 			it('should fetch account by userId', async () => {
 				const { mockStudentUser } = setup();
 				await accountService.deactivateAccount(mockStudentUser.id, new Date());
+
 				expect(accountRepo.findByUserIdOrFail).toHaveBeenCalledWith(mockStudentUser.id);
 			});
 
@@ -1179,7 +1925,8 @@ describe('AccountService', () => {
 				const { mockStudentUser } = setup();
 				const deactivatedAt = new Date();
 				await accountService.deactivateAccount(mockStudentUser.id, deactivatedAt);
-				expect(accountServiceDb.save).toHaveBeenCalledWith(
+
+				expect(accountRepo.save).toHaveBeenCalledWith(
 					expect.objectContaining({
 						deactivatedAt: deactivatedAt,
 					})
@@ -1198,11 +1945,12 @@ describe('AccountService', () => {
 				});
 
 				accountRepo.findByUserIdOrFail.mockResolvedValueOnce(mockStudentAccountDo);
+				accountRepo.findById.mockResolvedValue(mockStudentAccountDo);
 
 				const mockStudentAccountDoSaved = accountDoFactory.build({
 					userId: mockStudentUser.id,
 				});
-				accountServiceDb.save.mockResolvedValueOnce(mockStudentAccountDoSaved);
+				accountRepo.save.mockResolvedValueOnce(mockStudentAccountDoSaved);
 
 				return { mockStudentAccountDo, mockStudentUser };
 			};
@@ -1216,7 +1964,8 @@ describe('AccountService', () => {
 			it('should save account with deactivatedAt undefined', async () => {
 				const { mockStudentUser } = setup();
 				await accountService.reactivateAccount(mockStudentUser.id);
-				expect(accountServiceDb.save).toHaveBeenCalledWith(
+
+				expect(accountRepo.save).toHaveBeenCalledWith(
 					expect.not.objectContaining({
 						deactivatedAt: expect.anything(),
 					})
@@ -1230,6 +1979,7 @@ describe('AccountService', () => {
 			const userIds = ['userId1', 'userId2'];
 			const deactivatedAt = new Date();
 			await accountService.deactivateMultipleAccounts(userIds, deactivatedAt);
+
 			expect(accountRepo.deactivateMultipleByUserIds).toHaveBeenCalledWith(userIds, deactivatedAt);
 		});
 	});
@@ -1251,7 +2001,7 @@ describe('AccountService', () => {
 				});
 
 				userService.getUserEntityWithRoles.mockResolvedValueOnce(mockUserWithoutAccount);
-				accountServiceDb.findByUserIdOrFail.mockImplementation(() => {
+				accountRepo.findByUserIdOrFail.mockImplementation(() => {
 					throw new EntityNotFoundError('AccountEntity');
 				});
 
@@ -1260,6 +2010,7 @@ describe('AccountService', () => {
 
 			it('should throw EntityNotFoundError', async () => {
 				const { mockUserWithoutAccount } = setup();
+
 				await expect(
 					accountService.replaceMyTemporaryPassword(mockUserWithoutAccount.id, defaultPassword, defaultPassword)
 				).rejects.toThrow(EntityNotFoundError);
@@ -1273,6 +2024,7 @@ describe('AccountService', () => {
 
 			it('should throw EntityNotFoundError', async () => {
 				setup();
+
 				await expect(
 					accountService.replaceMyTemporaryPassword('accountWithoutUser', defaultPassword, defaultPassword)
 				).rejects.toThrow(EntityNotFoundError);
@@ -1299,13 +2051,14 @@ describe('AccountService', () => {
 				});
 
 				userService.getUserEntityWithRoles.mockResolvedValueOnce(mockExternalUser);
-				accountServiceDb.findByUserIdOrFail.mockResolvedValueOnce(mockExternalUserAccountDo);
+				accountRepo.findByUserIdOrFail.mockResolvedValueOnce(mockExternalUserAccountDo);
 
 				return { mockExternalUserAccount };
 			};
 
 			it('should throw ForbiddenOperationError', async () => {
 				const { mockExternalUserAccount } = setup();
+
 				await expect(
 					accountService.replaceMyTemporaryPassword(
 						mockExternalUserAccount.userId?.toString() ?? '',
@@ -1335,13 +2088,14 @@ describe('AccountService', () => {
 				});
 
 				userService.getUserEntityWithRoles.mockResolvedValueOnce(mockStudentUser);
-				accountServiceDb.findByUserIdOrFail.mockResolvedValueOnce(mockStudentAccountDo);
+				accountRepo.findByUserIdOrFail.mockResolvedValueOnce(mockStudentAccountDo);
 
 				return { mockStudentAccount };
 			};
 
 			it('should throw ForbiddenOperationError', async () => {
 				const { mockStudentAccount } = setup();
+
 				await expect(
 					accountService.replaceMyTemporaryPassword(
 						mockStudentAccount.userId?.toString() ?? '',
@@ -1371,14 +2125,15 @@ describe('AccountService', () => {
 				});
 
 				userService.getUserEntityWithRoles.mockResolvedValueOnce(mockStudentUser);
-				accountServiceDb.findByUserIdOrFail.mockResolvedValueOnce(mockStudentAccountDo);
-				accountServiceDb.validatePassword.mockResolvedValueOnce(true);
+				accountRepo.findByUserIdOrFail.mockResolvedValueOnce(mockStudentAccountDo);
+				jest.spyOn(accountService, 'validatePassword').mockResolvedValueOnce(true);
 
 				return { mockStudentAccount };
 			};
 
 			it('should throw ForbiddenOperationError', async () => {
 				const { mockStudentAccount } = setup();
+
 				await expect(
 					accountService.replaceMyTemporaryPassword(
 						mockStudentAccount.userId?.toString() ?? '',
@@ -1408,14 +2163,15 @@ describe('AccountService', () => {
 				});
 
 				userService.getUserEntityWithRoles.mockResolvedValueOnce(mockStudentUser);
-				accountServiceDb.findByUserIdOrFail.mockResolvedValueOnce(mockStudentAccountDo);
-				accountServiceDb.validatePassword.mockResolvedValueOnce(true);
+				accountRepo.findByUserIdOrFail.mockResolvedValueOnce(mockStudentAccountDo);
+				jest.spyOn(accountService, 'validatePassword').mockResolvedValueOnce(true);
 
 				return { mockStudentAccount };
 			};
 
 			it('should throw Error', async () => {
 				const { mockStudentAccount } = setup();
+
 				await expect(
 					accountService.replaceMyTemporaryPassword(
 						mockStudentAccount.userId?.toString() ?? '',
@@ -1445,9 +2201,10 @@ describe('AccountService', () => {
 				});
 
 				userService.getUserEntityWithRoles.mockResolvedValueOnce(mockStudentUser);
-				accountServiceDb.findByUserIdOrFail.mockResolvedValueOnce(mockStudentAccountDo);
-				accountServiceDb.validatePassword.mockResolvedValueOnce(false);
-				accountServiceDb.save.mockResolvedValueOnce(mockStudentAccountDo);
+				accountRepo.findByUserIdOrFail.mockResolvedValueOnce(mockStudentAccountDo);
+				jest.spyOn(accountService, 'validatePassword').mockResolvedValueOnce(false);
+				accountRepo.findById.mockResolvedValue(mockStudentAccountDo);
+				accountRepo.save.mockResolvedValueOnce(mockStudentAccountDo);
 
 				return { mockStudentAccount };
 			};
@@ -1484,9 +2241,10 @@ describe('AccountService', () => {
 				});
 
 				userService.getUserEntityWithRoles.mockResolvedValueOnce(mockStudentUser);
-				accountServiceDb.findByUserIdOrFail.mockResolvedValueOnce(mockStudentAccountDo);
-				accountServiceDb.validatePassword.mockResolvedValueOnce(false);
-				accountServiceDb.save.mockResolvedValueOnce(mockStudentAccountDo);
+				accountRepo.findByUserIdOrFail.mockResolvedValueOnce(mockStudentAccountDo);
+				jest.spyOn(accountService, 'validatePassword').mockResolvedValueOnce(false);
+				accountRepo.findById.mockResolvedValue(mockStudentAccountDo);
+				accountRepo.save.mockResolvedValueOnce(mockStudentAccountDo);
 
 				return { mockStudentAccount };
 			};
@@ -1523,15 +2281,17 @@ describe('AccountService', () => {
 				});
 
 				userService.getUserEntityWithRoles.mockResolvedValueOnce(mockStudentUser);
-				accountServiceDb.findByUserIdOrFail.mockResolvedValueOnce(mockStudentAccountDo);
-				accountServiceDb.validatePassword.mockResolvedValueOnce(false);
-				accountServiceDb.save.mockResolvedValueOnce(mockStudentAccountDo);
+				accountRepo.findByUserIdOrFail.mockResolvedValueOnce(mockStudentAccountDo);
+				jest.spyOn(accountService, 'validatePassword').mockResolvedValueOnce(false);
+				accountRepo.findById.mockResolvedValue(mockStudentAccountDo);
+				accountRepo.save.mockResolvedValueOnce(mockStudentAccountDo);
 
 				return { mockStudentAccount };
 			};
 
 			it('should allow to set strong password', async () => {
 				const { mockStudentAccount } = setup();
+
 				await expect(
 					accountService.replaceMyTemporaryPassword(
 						mockStudentAccount.userId?.toString() ?? '',
@@ -1563,9 +2323,10 @@ describe('AccountService', () => {
 
 				userService.getUserEntityWithRoles.mockResolvedValueOnce(mockStudentUser);
 				userService.saveEntity.mockRejectedValueOnce(undefined);
-				accountServiceDb.findByUserIdOrFail.mockResolvedValueOnce(mockStudentAccountDo);
-				accountServiceDb.validatePassword.mockResolvedValueOnce(false);
-				accountServiceDb.save.mockResolvedValueOnce({
+				accountRepo.findByUserIdOrFail.mockResolvedValueOnce(mockStudentAccountDo);
+				jest.spyOn(accountService, 'validatePassword').mockResolvedValueOnce(false);
+				accountRepo.findById.mockResolvedValue(mockStudentAccountDo);
+				accountRepo.save.mockResolvedValueOnce({
 					getProps: () => {
 						return { id: '' };
 					},
@@ -1576,6 +2337,7 @@ describe('AccountService', () => {
 
 			it('should throw EntityNotFoundError', async () => {
 				const { mockStudentAccount } = setup();
+
 				await expect(
 					accountService.replaceMyTemporaryPassword(
 						mockStudentAccount.userId?.toString() ?? '',
@@ -1607,15 +2369,17 @@ describe('AccountService', () => {
 
 				userService.getUserEntityWithRoles.mockResolvedValueOnce(mockStudentUser);
 				userService.saveEntity.mockResolvedValueOnce();
-				accountServiceDb.findByUserIdOrFail.mockResolvedValueOnce(mockStudentAccountDo);
-				accountServiceDb.save.mockRejectedValueOnce(undefined);
-				accountServiceDb.validatePassword.mockResolvedValueOnce(false);
+				accountRepo.findByUserIdOrFail.mockResolvedValueOnce(mockStudentAccountDo);
+				accountRepo.findById.mockResolvedValue(mockStudentAccountDo);
+				accountRepo.save.mockRejectedValueOnce(undefined);
+				jest.spyOn(accountService, 'validatePassword').mockResolvedValueOnce(false);
 
 				return { mockStudentAccount };
 			};
 
 			it('should throw EntityNotFoundError', async () => {
 				const { mockStudentAccount } = setup();
+
 				await expect(
 					accountService.replaceMyTemporaryPassword(
 						mockStudentAccount.userId?.toString() ?? '',
@@ -1660,21 +2424,40 @@ describe('AccountService', () => {
 	});
 
 	describe('isUniqueEmail', () => {
-		describe('when checking if email is unique', () => {
+		describe('when email is unique', () => {
 			const setup = () => {
 				const email = faker.internet.email();
-				const accountImpl = Reflect.get(accountService, 'accountImpl') as DeepMocked<AbstractAccountService>;
-				const isUniqueEmailSpy = jest.spyOn(accountImpl, 'isUniqueEmail');
 
-				return { email, isUniqueEmailSpy };
+				accountRepo.findByUsername.mockResolvedValue(null);
+
+				return { email };
 			};
 
-			it('should call the underlying account service implementation', async () => {
-				const { email, isUniqueEmailSpy } = setup();
+			it('should return true', async () => {
+				const { email } = setup();
 
-				await accountService.isUniqueEmail(email);
+				const result = await accountService.isUniqueEmail(email);
 
-				expect(isUniqueEmailSpy).toHaveBeenCalledWith(email);
+				expect(result).toBe(true);
+			});
+		});
+
+		describe('when email is not unique', () => {
+			const setup = () => {
+				const email = faker.internet.email();
+				const mockTeacherAccount = accountDoFactory.build();
+
+				accountRepo.findByUsername.mockResolvedValue(mockTeacherAccount);
+
+				return { email, mockTeacherAccount };
+			};
+
+			it('should return false', async () => {
+				const { email } = setup();
+
+				const result = await accountService.isUniqueEmail(email);
+
+				expect(result).toBe(false);
 			});
 		});
 	});
