@@ -56,7 +56,7 @@ export class LegacyFileArchiveController {
 	@Get('file-list')
 	public async listDownloadableFiles(@Query() params: ArchiveFileParams): Promise<FileProps[]> {
 		const files = await this.downloadArchiveUC.listDownloadableFiles(params);
-		const fileResponses = files.map((file) => file.getProps()); // TODO: Consider using a dedicated mapper for this transformation and a response-type
+		const fileResponses = files.map((file) => file.getProps());
 
 		return fileResponses;
 	}
