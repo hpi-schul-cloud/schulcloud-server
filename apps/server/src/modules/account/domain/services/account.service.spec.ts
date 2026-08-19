@@ -14,7 +14,7 @@ import {
 	ForbiddenOperationError,
 	ValidationError,
 } from '@shared/common/error';
-import { EntityId } from '@shared/domain/types';
+import type { EntityId } from '@shared/domain/types';
 import { setupEntities } from '@testing/database';
 import bcrypt from 'bcryptjs';
 import 'reflect-metadata';
@@ -26,7 +26,6 @@ import { AccountService } from './account.service';
 describe('AccountService', () => {
 	let module: TestingModule;
 	let accountService: AccountService;
-	let logger: DeepMocked<Logger>;
 	let userService: DeepMocked<UserService>;
 	let accountRepo: DeepMocked<AccountRepo>;
 
@@ -59,7 +58,6 @@ describe('AccountService', () => {
 			],
 		}).compile();
 		accountService = module.get(AccountService);
-		logger = module.get(Logger);
 		userService = module.get(UserService);
 		accountRepo = module.get(ACCOUNT_REPO);
 	});
@@ -955,7 +953,7 @@ describe('AccountService', () => {
 				const newUsername = 'newUsername';
 
 				accountRepo.findById.mockResolvedValue(mockTeacherAccount);
-				accountRepo.save.mockImplementation(async (account: Account) => account);
+				accountRepo.save.mockImplementation((account: Account) => Promise.resolve(account));
 
 				return { mockTeacherAccount, newUsername };
 			};
