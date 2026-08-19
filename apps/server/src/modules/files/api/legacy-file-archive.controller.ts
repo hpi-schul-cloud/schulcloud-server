@@ -18,6 +18,7 @@ import { FileProps, GetFileResponse } from '../domain';
 import { DownloadArchiveUC } from './download-archive.uc';
 import { ArchiveFileParams } from './dto';
 import { StreamableFileMapper } from './mapper';
+import { FileRecordWithSizeMapper } from './mapper/file-record-with-size.mapper';
 
 @ApiTags('DownloadArchive')
 @Controller('filestorage/files/archive')
@@ -56,7 +57,7 @@ export class LegacyFileArchiveController {
 	@Get('file-list')
 	public async listDownloadableFiles(@Query() params: ArchiveFileParams): Promise<FileProps[]> {
 		const files = await this.downloadArchiveUC.listDownloadableFiles(params);
-		const fileResponses = files.map((file) => file.getProps());
+		const fileResponses = files.map((file) => FileRecordWithSizeMapper.mapFileDo(file));
 
 		return fileResponses;
 	}

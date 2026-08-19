@@ -24,7 +24,7 @@ export class LegacyFileResponseVo implements LegacyFileResponse {
 	@IsOptional()
 	public readonly storageProviderId?: EntityId;
 	@IsOptional()
-	public readonly size: number;
+	public readonly size: number | undefined;
 
 	constructor(props: LegacyFileResponse) {
 		this._id = props._id;
