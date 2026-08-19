@@ -119,6 +119,37 @@ describe('Helpdesk Controller (API)', () => {
 			});
 		});
 
+		describe('when replyEmail is invalid', () => {
+			const setup = async (replyEmail: string) => {
+				const body = HelpdeskProblemCreateParamsFactory.create({ replyEmail });
+				const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent();
+
+				await em.persist([studentAccount, studentUser]).flush();
+
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
+
+				return { loggedInClient, body };
+			};
+
+			it.each([
+				['obviously malformed', 'invalid-email-address'],
+				['passing the frontend regex but failing class-validator', 'test@example'],
+				['passing the frontend regex but containing a copy-pasted look-alike dot', 'joerg.winterwald@nibis｡de'],
+			])('should return 500 for %s email', async (_scenario, email) => {
+				const { loggedInClient, body } = await setup(email);
+
+				const response = await loggedInClient.post('problem', body);
+
+				expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+				expect(response.body).toEqual(
+					expect.objectContaining({
+						message: expect.stringContaining('API validation failed'),
+						validationErrors: expect.anything(),
+					})
+				);
+			});
+		});
+
 		describe('when problemArea is missing', () => {
 			const setup = async () => {
 				const body = HelpdeskProblemCreateParamsFactory.create({ problemArea: undefined as unknown as string[] });
