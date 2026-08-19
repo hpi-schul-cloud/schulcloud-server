@@ -154,7 +154,7 @@ describe('AccountService', () => {
 					mockAccountWithSystemId.systemId ?? ''
 				);
 
-				expect(resultAccount).not.toBe(undefined);
+				expect(resultAccount).toBeDefined();
 			});
 		});
 
@@ -730,7 +730,7 @@ describe('AccountService', () => {
 				const result = await accountService.saveAll([account]);
 
 				expect(updateSpy).toHaveBeenCalledTimes(1);
-				expect(result.length).toBe(1);
+				expect(result).toHaveLength(1);
 				expect(result[0].id).toBe(foundAccount.id);
 			});
 		});
