@@ -1,7 +1,6 @@
 import { Logger } from '@infra/logger';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { UserService } from '@modules/user';
-import { User } from '@modules/user/repo';
+import { User, UserService } from '@modules/user';
 import { Inject, Injectable } from '@nestjs/common';
 import {
 	AuthorizationError,
@@ -219,8 +218,8 @@ export class AccountService {
 	}
 
 	public findById(id: string): Promise<Account> {
-		const internalId = this.convertExternalToInternalId(id);
-		const account = this.accountRepo.findById(internalId);
+		const objectId = this.ensureValidObjectId(id);
+		const account = this.accountRepo.findById(objectId);
 
 		return account;
 	}
@@ -264,9 +263,9 @@ export class AccountService {
 	public async save(accountSave: AccountSave): Promise<Account> {
 		let account: Account;
 		if (accountSave.id) {
-			const internalId = this.convertExternalToInternalId(accountSave.id);
+			const objectId = this.ensureValidObjectId(accountSave.id);
 
-			account = await this.accountRepo.findById(internalId);
+			account = await this.accountRepo.findById(objectId);
 		} else {
 			account = this.createAccount(accountSave);
 		}
@@ -282,9 +281,9 @@ export class AccountService {
 			accountSaves.map(async (accountSave) => {
 				let account: Account;
 				if (accountSave.id) {
-					const internalId = this.convertExternalToInternalId(accountSave.id);
+					const objectId = this.ensureValidObjectId(accountSave.id);
 
-					account = await this.accountRepo.findById(internalId);
+					account = await this.accountRepo.findById(objectId);
 				} else {
 					account = this.createAccount(accountSave);
 				}
@@ -344,8 +343,8 @@ export class AccountService {
 	}
 
 	public async updateUsername(accountId: string, username: string): Promise<Account> {
-		const internalId = this.convertExternalToInternalId(accountId);
-		const account = await this.accountRepo.findById(internalId);
+		const objectId = this.ensureValidObjectId(accountId);
+		const account = await this.accountRepo.findById(objectId);
 		account.username = username;
 		const ret = await this.accountRepo.save(account);
 
@@ -353,15 +352,15 @@ export class AccountService {
 	}
 
 	public async updateLastLogin(accountId: string, lastLogin: Date): Promise<void> {
-		const internalId = this.convertExternalToInternalId(accountId);
-		const account = await this.accountRepo.findById(internalId);
+		const objectId = this.ensureValidObjectId(accountId);
+		const account = await this.accountRepo.findById(objectId);
 		account.lastLogin = lastLogin;
 		await this.accountRepo.save(account);
 	}
 
 	public async updateLastTriedFailedLogin(accountId: string, lastTriedFailedLogin: Date): Promise<Account> {
-		const internalId = this.convertExternalToInternalId(accountId);
-		const account = await this.accountRepo.findById(internalId);
+		const objectId = this.ensureValidObjectId(accountId);
+		const account = await this.accountRepo.findById(objectId);
 		account.lasttriedFailedLogin = lastTriedFailedLogin;
 		const ret = await this.accountRepo.save(account);
 
@@ -369,8 +368,8 @@ export class AccountService {
 	}
 
 	public async updatePassword(accountId: string, password: string): Promise<Account> {
-		const internalId = this.convertExternalToInternalId(accountId);
-		const account = await this.accountRepo.findById(internalId);
+		const objectId = this.ensureValidObjectId(accountId);
+		const account = await this.accountRepo.findById(objectId);
 		account.password = await this.encryptPassword(password);
 		const ret = await this.accountRepo.save(account);
 
@@ -388,8 +387,8 @@ export class AccountService {
 	}
 
 	public async delete(accountId: string): Promise<void> {
-		const internalId = this.convertExternalToInternalId(accountId);
-		await this.accountRepo.deleteById(internalId);
+		const objectId = this.ensureValidObjectId(accountId);
+		await this.accountRepo.deleteById(objectId);
 	}
 
 	public async deleteByUserId(userId: string): Promise<EntityId[]> {
@@ -426,7 +425,7 @@ export class AccountService {
 		return isUniqueEmail;
 	}
 
-	private convertExternalToInternalId(id: EntityId | ObjectId): ObjectId {
+	private ensureValidObjectId(id: EntityId | ObjectId): ObjectId {
 		if (id instanceof ObjectId || ObjectId.isValid(id)) {
 			return new ObjectId(id);
 		}
