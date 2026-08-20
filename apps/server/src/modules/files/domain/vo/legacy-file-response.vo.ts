@@ -23,6 +23,8 @@ export class LegacyFileResponseVo implements LegacyFileResponse {
 	@IsMongoId()
 	@IsOptional()
 	public readonly storageProviderId?: EntityId;
+	@IsOptional()
+	public readonly size: number | undefined;
 
 	constructor(props: LegacyFileResponse) {
 		this._id = props._id;
@@ -32,5 +34,6 @@ export class LegacyFileResponseVo implements LegacyFileResponse {
 		this.storageFileName = props.storageFileName;
 		this.bucket = props.bucket;
 		this.storageProviderId = props.storageProviderId;
+		this.size = props.size;
 	}
 }

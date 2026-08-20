@@ -15,6 +15,7 @@ export class FileFactory {
 			storageFileName: response.storageFileName,
 			bucket: response.bucket,
 			storageProviderId: response.storageProviderId,
+			size: response.size,
 		});
 	}
 }

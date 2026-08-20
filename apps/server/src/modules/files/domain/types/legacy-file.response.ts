@@ -16,4 +16,5 @@ export interface LegacyFileResponse {
 	bucket?: string;
 	storageProviderId?: string;
 	securityCheck?: SecurityCheck;
+	size?: number;
 }
