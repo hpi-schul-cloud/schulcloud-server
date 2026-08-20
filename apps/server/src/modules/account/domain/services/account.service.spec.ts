@@ -4,8 +4,7 @@ import { Logger } from '@infra/logger';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { systemFactory } from '@modules/system/testing';
-import { UserService } from '@modules/user';
-import { User } from '@modules/user/repo';
+import { User, UserService } from '@modules/user';
 import { userFactory } from '@modules/user/testing';
 import { Test, type TestingModule } from '@nestjs/testing';
 import {
@@ -31,7 +30,7 @@ describe('AccountService', () => {
 
 	const defaultPassword = 'DummyPasswd!1';
 	const otherPassword = 'DummyPasswd!2';
-	const defaultPasswordHash = '$2a$1$/DsztV5o6P5piW2eWJsxw.4nHovmJGBA.QNwiTmuZ/uvUc40b.Uhu';
+	const defaultPasswordHash = '$2b$10$6T0nBt.BOXd1/LRPUILcFe8M9Wo6NRudHHcPK1je6SyayjCh9u4i6';
 
 	afterAll(async () => {
 		await module.close();
@@ -575,7 +574,6 @@ describe('AccountService', () => {
 					systemId: '012345678912',
 					password: defaultPassword,
 				});
-				jest.spyOn(accountInRepo, 'update').mockImplementation();
 
 				(accountRepo.findById as jest.Mock).mockClear();
 				(accountRepo.save as jest.Mock).mockClear();
@@ -595,18 +593,25 @@ describe('AccountService', () => {
 			};
 
 			it('should encrypt password', async () => {
-				const { accountToSave, accountInRepo } = setup();
+				const { accountToSave } = setup();
 
 				const ret = await accountService.save(accountToSave);
 
 				expect(ret).toBeDefined();
-				expect(accountInRepo.update).toHaveBeenCalledWith(accountToSave);
+				expect(accountRepo.findById).toHaveBeenCalled();
+				expect(accountRepo.save).toHaveBeenCalledTimes(1);
+
+				const savedAccount = accountRepo.save.mock.calls[0][0] as Account;
+				expect(savedAccount.password).toBeDefined();
+				expect(savedAccount.password).not.toBe(defaultPassword);
+				if (savedAccount.password) {
+					await expect(bcrypt.compare(defaultPassword, savedAccount.password)).resolves.toBe(true);
+				}
 			});
 		});
 
 		describe('when creating a new account', () => {
 			const setup = () => {
-				const spy = jest.spyOn(accountRepo, 'save');
 				const account = {
 					username: 'john.doe@domain.tld',
 					password: '',
@@ -624,15 +629,15 @@ describe('AccountService', () => {
 					})
 				);
 
-				return { spy, account };
+				return { account };
 			};
 
 			it('should set password to undefined if password is empty', async () => {
-				const { spy, account } = setup();
+				const { account } = setup();
 
 				await expect(accountService.save(account)).resolves.not.toThrow();
 				expect(accountRepo.findById).not.toHaveBeenCalled();
-				expect(spy).toHaveBeenCalledWith(
+				expect(accountRepo.save).toHaveBeenCalledWith(
 					expect.objectContaining({
 						password: undefined,
 					})
@@ -644,7 +649,6 @@ describe('AccountService', () => {
 			const setup = () => {
 				const mockTeacherAccount = accountDoFactory.build();
 
-				const spy = jest.spyOn(accountRepo, 'save');
 				const account = {
 					id: mockTeacherAccount.id,
 					password: undefined,
@@ -653,15 +657,15 @@ describe('AccountService', () => {
 				accountRepo.findById.mockResolvedValue(mockTeacherAccount);
 				accountRepo.save.mockResolvedValue(mockTeacherAccount);
 
-				return { mockTeacherAccount, spy, account };
+				return { mockTeacherAccount, account };
 			};
 
 			it('should not change password', async () => {
-				const { mockTeacherAccount, spy, account } = setup();
+				const { mockTeacherAccount, account } = setup();
 
 				await expect(accountService.save(account)).resolves.not.toThrow();
 				expect(accountRepo.findById).toHaveBeenCalled();
-				expect(spy).toHaveBeenCalledWith(
+				expect(accountRepo.save).toHaveBeenCalledWith(
 					expect.objectContaining({
 						password: mockTeacherAccount.password,
 					})
@@ -714,20 +718,23 @@ describe('AccountService', () => {
 			const setup = () => {
 				const account = accountDoFactory.build();
 				const foundAccount = accountDoFactory.build();
-				const updateSpy = jest.spyOn(foundAccount, 'update');
 
 				accountRepo.findById.mockResolvedValueOnce(foundAccount);
 				accountRepo.saveAll.mockResolvedValueOnce([foundAccount]);
 
-				return { account, foundAccount, updateSpy };
+				return { account, foundAccount };
 			};
 
 			it('should update it', async () => {
-				const { account, foundAccount, updateSpy } = setup();
+				const { account, foundAccount } = setup();
 
 				const result = await accountService.saveAll([account]);
 
-				expect(updateSpy).toHaveBeenCalledTimes(1);
+				expect(accountRepo.findById).toHaveBeenCalledTimes(1);
+				expect(accountRepo.saveAll).toHaveBeenCalledTimes(1);
+				expect(accountRepo.saveAll).toHaveBeenCalledWith(
+					expect.arrayContaining([expect.objectContaining({ id: foundAccount.id })])
+				);
 				expect(result).toHaveLength(1);
 				expect(result[0].id).toBe(foundAccount.id);
 			});
@@ -746,20 +753,17 @@ describe('AccountService', () => {
 
 		describe('When calling saveWithValidation on accountService', () => {
 			const setup = () => {
-				const spy = jest.spyOn(accountService, 'save');
-
 				accountRepo.save.mockResolvedValueOnce({
 					getProps: () => {
 						return { id: '' };
 					},
 				} as Account);
-				jest.spyOn(accountService, 'isUniqueEmail').mockResolvedValueOnce(true);
 
-				return spy;
+				accountRepo.findByUsername.mockResolvedValueOnce(null);
 			};
 
 			it('should not sanitize username for external user', async () => {
-				const spy = setup();
+				setup();
 
 				const params: AccountSave = {
 					username: ' John.Doe@domain.tld ',
@@ -767,12 +771,13 @@ describe('AccountService', () => {
 				} as AccountSave;
 
 				await accountService.saveWithValidation(params);
-				expect(spy).toHaveBeenCalledWith(
+
+				expect(accountRepo.findByUsername).toHaveBeenCalledWith(' John.Doe@domain.tld ');
+				expect(accountRepo.save).toHaveBeenCalledWith(
 					expect.objectContaining({
 						username: ' John.Doe@domain.tld ',
 					})
 				);
-				spy.mockRestore();
 			});
 		});
 
@@ -794,7 +799,8 @@ describe('AccountService', () => {
 						return { id: '' };
 					},
 				} as Account);
-				jest.spyOn(accountService, 'isUniqueEmail').mockResolvedValueOnce(true);
+
+				accountRepo.findByUsername.mockResolvedValueOnce(null);
 			};
 
 			it('should not throw an error', async () => {
@@ -805,6 +811,7 @@ describe('AccountService', () => {
 				} as AccountSave;
 
 				await expect(accountService.saveWithValidation(params)).resolves.not.toThrow();
+				expect(accountRepo.findByUsername).toHaveBeenCalledWith('John Doe');
 			});
 		});
 
@@ -815,7 +822,8 @@ describe('AccountService', () => {
 						return { id: '' };
 					},
 				} as Account);
-				jest.spyOn(accountService, 'isUniqueEmail').mockResolvedValueOnce(true);
+
+				accountRepo.findByUsername.mockResolvedValueOnce(null);
 			};
 
 			it('should not throw an error', async () => {
@@ -826,6 +834,7 @@ describe('AccountService', () => {
 				} as AccountSave;
 
 				await expect(accountService.saveWithValidation(params)).resolves.not.toThrow();
+				expect(accountRepo.findByUsername).toHaveBeenCalledWith('dc=schul-cloud,dc=org/fake.ldap');
 			});
 		});
 
@@ -854,7 +863,7 @@ describe('AccountService', () => {
 
 		describe('When username already exists in mongoDB', () => {
 			const setup = () => {
-				jest.spyOn(accountService, 'isUniqueEmail').mockResolvedValueOnce(false);
+				accountRepo.findByUsername.mockResolvedValueOnce(accountDoFactory.build({ username: 'john.doe@mail.tld' }));
 			};
 
 			it('should throw username already exists', async () => {
@@ -865,6 +874,7 @@ describe('AccountService', () => {
 				} as AccountSave;
 
 				await expect(accountService.saveWithValidation(params)).rejects.toThrow('Username already exists');
+				expect(accountRepo.findByUsername).toHaveBeenCalledWith('john.doe@mail.tld');
 			});
 		});
 	});
@@ -902,29 +912,32 @@ describe('AccountService', () => {
 					userId: 'user1',
 					systemId: undefined,
 				} as AccountSave;
-				jest.spyOn(accountService, 'findByUserId').mockImplementation().mockResolvedValueOnce(accountDoFactory.build());
+				accountRepo.findByUserId.mockResolvedValueOnce(accountDoFactory.build());
 
 				await expect(accountService.validateAccountBeforeSaveOrReject(accountSave)).rejects.toThrow(ValidationError);
+				expect(accountRepo.findByUserId).toHaveBeenCalledWith(accountSave.userId);
 			});
 		});
 
 		describe('when username is not unique', () => {
 			it('should throw ValidationError', async () => {
 				const accountSave = { username: 'notunique@mail.com', password: 'pw', systemId: undefined } as AccountSave;
-				jest.spyOn(accountService, 'isUniqueEmail').mockResolvedValueOnce(false);
+				accountRepo.findByUsername.mockResolvedValueOnce(accountDoFactory.build({ username: 'notunique@mail.com' }));
 
 				await expect(accountService.validateAccountBeforeSaveOrReject(accountSave)).rejects.toThrow(ValidationError);
+				expect(accountRepo.findByUsername).toHaveBeenCalledWith('notunique@mail.com');
 			});
 		});
 
 		describe('when username is sanitized for local user', () => {
 			it('should sanitize username', async () => {
 				const accountSave = { username: 'Test@Mail.com ', password: 'pw', systemId: undefined } as AccountSave;
-				jest.spyOn(accountService, 'isUniqueEmail').mockResolvedValueOnce(true);
-				jest.spyOn(accountService, 'findByUserId').mockResolvedValueOnce(null);
+				accountRepo.findByUsername.mockResolvedValueOnce(null);
 
 				await expect(accountService.validateAccountBeforeSaveOrReject(accountSave)).resolves.not.toThrow();
 				expect(accountSave.username).toBe('test@mail.com');
+				expect(accountRepo.findByUsername).toHaveBeenCalledWith('test@mail.com');
+				expect(accountRepo.findByUserId).not.toHaveBeenCalled();
 			});
 		});
 
@@ -936,12 +949,13 @@ describe('AccountService', () => {
 					systemId: undefined,
 					userId: 'user1',
 				} as AccountSave;
-				jest.spyOn(accountService, 'isUniqueEmail').mockResolvedValueOnce(true);
-				jest.spyOn(accountService, 'findByUserId').mockResolvedValueOnce(null);
+
+				accountRepo.findByUsername.mockResolvedValueOnce(null);
 
 				await expect(
 					accountService.validateAccountBeforeSaveOrReject(accountSave, { allowUpdate: true })
 				).resolves.not.toThrow();
+				expect(accountRepo.findByUserId).not.toHaveBeenCalled();
 			});
 		});
 	});
@@ -1280,7 +1294,6 @@ describe('AccountService', () => {
 				});
 
 				accountRepo.findByUserIdOrFail.mockResolvedValueOnce(mockStudentAccount);
-				jest.spyOn(accountService, 'validatePassword').mockResolvedValueOnce(false);
 
 				return { mockStudentUser, mockStudentAccount };
 			};
@@ -1307,7 +1320,6 @@ describe('AccountService', () => {
 					password: defaultPasswordHash,
 				});
 
-				jest.spyOn(accountService, 'validatePassword').mockResolvedValue(true);
 				accountRepo.findById.mockResolvedValue(mockStudentAccountDo);
 				accountRepo.save.mockResolvedValue(mockStudentAccountDo);
 
@@ -1338,29 +1350,30 @@ describe('AccountService', () => {
 					password: defaultPasswordHash,
 				});
 
-				jest.spyOn(accountService, 'validatePassword').mockResolvedValue(true);
 				accountRepo.findById.mockResolvedValue(mockStudentAccountDo);
 				accountRepo.save.mockResolvedValue(mockStudentAccountDo);
-				const spyAccountServiceSave = jest.spyOn(accountService, 'save');
 
-				jest.spyOn(accountService, 'isUniqueEmail').mockResolvedValue(true);
+				accountRepo.findByUsername.mockResolvedValueOnce(null);
 
-				return { mockStudentUser, mockStudentAccountDo, spyAccountServiceSave };
+				return { mockStudentUser, mockStudentAccountDo };
 			};
 
 			it('should not update password', async () => {
-				const { mockStudentUser, mockStudentAccountDo, spyAccountServiceSave } = setup();
+				const { mockStudentUser, mockStudentAccountDo } = setup();
 				await accountService.updateMyAccount(mockStudentUser, mockStudentAccountDo, {
 					passwordOld: defaultPassword,
 					passwordNew: undefined,
 					email: 'newemail@to.update',
 				});
 
-				expect(spyAccountServiceSave).toHaveBeenCalledWith(
+				expect(accountRepo.save).toHaveBeenCalledWith(
 					expect.objectContaining({
-						password: undefined,
+						props: expect.objectContaining({
+							password: mockStudentAccountDo.password,
+						}),
 					})
 				);
+				expect(accountRepo.findByUsername).toHaveBeenCalledWith('newemail@to.update');
 			});
 		});
 
@@ -1376,10 +1389,9 @@ describe('AccountService', () => {
 					password: defaultPasswordHash,
 				});
 
-				jest.spyOn(accountService, 'validatePassword').mockResolvedValue(true);
 				accountRepo.findById.mockResolvedValue(mockStudentAccountDo);
 				accountRepo.save.mockResolvedValue(mockStudentAccountDo);
-				jest.spyOn(accountService, 'isUniqueEmail').mockResolvedValue(true);
+				accountRepo.findByUsername.mockResolvedValueOnce(null);
 
 				return { mockStudentUser, mockStudentAccountDo };
 			};
@@ -1393,6 +1405,7 @@ describe('AccountService', () => {
 						email: 'an@available.mail',
 					})
 				).resolves.not.toThrow();
+				expect(accountRepo.findByUsername).toHaveBeenCalledWith('an@available.mail');
 			});
 		});
 
@@ -1408,18 +1421,15 @@ describe('AccountService', () => {
 					password: defaultPasswordHash,
 				});
 
-				jest.spyOn(accountService, 'validatePassword').mockResolvedValue(true);
-
-				jest.spyOn(accountService, 'isUniqueEmail').mockResolvedValueOnce(true);
+				accountRepo.findByUsername.mockResolvedValueOnce(null);
 				accountRepo.findById.mockResolvedValue(mockStudentAccountDo);
 				accountRepo.save.mockResolvedValue(mockStudentAccountDo);
-				const accountSaveSpy = jest.spyOn(accountRepo, 'save');
 
-				return { mockStudentUser, mockStudentAccountDo, accountSaveSpy };
+				return { mockStudentUser, mockStudentAccountDo };
 			};
 
 			it('should use email as account user name in lower case', async () => {
-				const { mockStudentUser, mockStudentAccountDo, accountSaveSpy } = setup();
+				const { mockStudentUser, mockStudentAccountDo } = setup();
 
 				const testMail = 'AN@AVAILABLE.MAIL';
 
@@ -1429,7 +1439,8 @@ describe('AccountService', () => {
 						email: testMail,
 					})
 				).resolves.not.toThrow();
-				expect(accountSaveSpy).toHaveBeenCalledWith(expect.objectContaining({ username: testMail.toLowerCase() }));
+				expect(accountRepo.save).toHaveBeenCalledWith(expect.objectContaining({ username: testMail.toLowerCase() }));
+				expect(accountRepo.findByUsername).toHaveBeenCalledWith(testMail.toLowerCase());
 			});
 		});
 
@@ -1445,18 +1456,15 @@ describe('AccountService', () => {
 					password: defaultPasswordHash,
 				});
 
-				jest.spyOn(accountService, 'validatePassword').mockResolvedValue(true);
 				accountRepo.findById.mockResolvedValue(mockStudentAccountDo);
 				accountRepo.save.mockResolvedValue(mockStudentAccountDo);
-				jest.spyOn(accountService, 'isUniqueEmail').mockResolvedValueOnce(true);
+				accountRepo.findByUsername.mockResolvedValueOnce(null);
 
-				const userUpdateSpy = jest.spyOn(userService, 'saveEntity');
-
-				return { mockStudentUser, mockStudentAccountDo, userUpdateSpy };
+				return { mockStudentUser, mockStudentAccountDo };
 			};
 
 			it('should use email as user email in lower case', async () => {
-				const { mockStudentUser, mockStudentAccountDo, userUpdateSpy } = setup();
+				const { mockStudentUser, mockStudentAccountDo } = setup();
 				const testMail = 'AN@AVAILABLE.MAIL';
 
 				await expect(
@@ -1465,7 +1473,8 @@ describe('AccountService', () => {
 						email: testMail,
 					})
 				).resolves.not.toThrow();
-				expect(userUpdateSpy).toHaveBeenCalledWith(expect.objectContaining({ email: testMail.toLowerCase() }));
+				expect(userService.saveEntity).toHaveBeenCalledWith(expect.objectContaining({ email: testMail.toLowerCase() }));
+				expect(accountRepo.findByUsername).toHaveBeenCalledWith(testMail.toLowerCase());
 			});
 		});
 
@@ -1481,19 +1490,15 @@ describe('AccountService', () => {
 					password: defaultPasswordHash,
 				});
 
-				jest.spyOn(accountService, 'validatePassword').mockResolvedValue(true);
 				accountRepo.findById.mockResolvedValue(mockStudentAccountDo);
 				accountRepo.save.mockResolvedValue(mockStudentAccountDo);
-				jest.spyOn(accountService, 'isUniqueEmail').mockResolvedValueOnce(true);
+				accountRepo.findByUsername.mockResolvedValueOnce(null);
 
-				const accountSaveSpy = jest.spyOn(accountRepo, 'save');
-				const userUpdateSpy = jest.spyOn(userService, 'saveEntity');
-
-				return { mockStudentUser, mockStudentAccountDo, accountSaveSpy, userUpdateSpy };
+				return { mockStudentUser, mockStudentAccountDo };
 			};
 
 			it('should always update account user name AND user email together.', async () => {
-				const { mockStudentUser, mockStudentAccountDo, accountSaveSpy, userUpdateSpy } = setup();
+				const { mockStudentUser, mockStudentAccountDo } = setup();
 				const testMail = 'an@available.mail';
 
 				await expect(
@@ -1502,8 +1507,10 @@ describe('AccountService', () => {
 						email: testMail,
 					})
 				).resolves.not.toThrow();
-				expect(userUpdateSpy).toHaveBeenCalledWith(expect.objectContaining({ email: testMail.toLowerCase() }));
-				expect(accountSaveSpy).toHaveBeenCalledWith(expect.objectContaining({ username: testMail.toLowerCase() }));
+				expect(userService.saveEntity).toHaveBeenCalledWith(expect.objectContaining({ email: testMail.toLowerCase() }));
+				expect(accountRepo.save).toHaveBeenCalledWith(expect.objectContaining({ username: testMail.toLowerCase() }));
+				expect(accountRepo.findByUsername).toHaveBeenCalledWith(testMail.toLowerCase());
+				expect(accountRepo.findByUsername).toHaveBeenCalledTimes(1);
 			});
 		});
 
@@ -1519,8 +1526,7 @@ describe('AccountService', () => {
 					password: defaultPasswordHash,
 				});
 
-				jest.spyOn(accountService, 'validatePassword').mockResolvedValue(true);
-				jest.spyOn(accountService, 'isUniqueEmail').mockResolvedValueOnce(false);
+				accountRepo.findByUsername.mockResolvedValueOnce(accountDoFactory.build({ username: 'already@in.use' }));
 
 				return { mockStudentUser, mockStudentAccountDo };
 			};
@@ -1534,6 +1540,7 @@ describe('AccountService', () => {
 						email: 'already@in.use',
 					})
 				).rejects.toThrow(ValidationError);
+				expect(accountRepo.findByUsername).toHaveBeenCalledWith('already@in.use');
 			});
 		});
 
@@ -1548,8 +1555,6 @@ describe('AccountService', () => {
 					userId: mockTeacherUser.id,
 					password: defaultPasswordHash,
 				});
-
-				jest.spyOn(accountService, 'validatePassword').mockResolvedValue(true);
 
 				return { mockTeacherUser, mockTeacherAccountDo };
 			};
@@ -1585,7 +1590,6 @@ describe('AccountService', () => {
 				});
 
 				userService.saveEntity.mockRejectedValueOnce(undefined);
-				jest.spyOn(accountService, 'validatePassword').mockResolvedValue(true);
 
 				return { mockTeacherUser, mockTeacherAccountDo };
 			};
@@ -1615,11 +1619,9 @@ describe('AccountService', () => {
 				});
 
 				userService.saveEntity.mockResolvedValueOnce(undefined);
-				jest.spyOn(accountService, 'validatePassword').mockResolvedValue(true);
 				accountRepo.findById.mockResolvedValue(mockStudentAccountDo);
 				accountRepo.save.mockRejectedValueOnce(undefined);
-
-				jest.spyOn(accountService, 'isUniqueEmail').mockResolvedValue(true);
+				accountRepo.findByUsername.mockResolvedValueOnce(null);
 
 				return { mockStudentUser, mockStudentAccountDo };
 			};
@@ -1633,6 +1635,7 @@ describe('AccountService', () => {
 						email: 'fail@to.update',
 					})
 				).rejects.toThrow(EntityNotFoundError);
+				expect(accountRepo.findByUsername).toHaveBeenCalledWith('fail@to.update');
 			});
 		});
 
@@ -1649,11 +1652,9 @@ describe('AccountService', () => {
 				});
 
 				userService.saveEntity.mockResolvedValueOnce(undefined);
-				jest.spyOn(accountService, 'validatePassword').mockResolvedValue(true);
 				accountRepo.findById.mockResolvedValue(mockStudentAccountDo);
 				accountRepo.save.mockRejectedValueOnce(new ValidationError('fail to update'));
-
-				jest.spyOn(accountService, 'isUniqueEmail').mockResolvedValue(true);
+				accountRepo.findByUsername.mockResolvedValueOnce(null);
 
 				return { mockStudentUser, mockStudentAccountDo };
 			};
@@ -1667,6 +1668,7 @@ describe('AccountService', () => {
 						email: 'fail@to.update',
 					})
 				).rejects.toThrow(ValidationError);
+				expect(accountRepo.findByUsername).toHaveBeenCalledWith('fail@to.update');
 			});
 		});
 	});
@@ -1725,7 +1727,7 @@ describe('AccountService', () => {
 
 					return Promise.resolve(mockStudentAccountDo);
 				});
-				jest.spyOn(accountService, 'isUniqueEmail').mockResolvedValue(true);
+				accountRepo.findByUsername.mockResolvedValueOnce(null);
 
 				return { mockStudentUser, mockStudentAccountDo };
 			};
@@ -1738,6 +1740,7 @@ describe('AccountService', () => {
 				expect(mockStudentAccountDo.username).not.toBe(newUsername);
 				await accountService.updateAccount(mockStudentUser, mockStudentAccountDo, body);
 				expect(mockStudentAccountDo.username).toBe(newUsername.toLowerCase());
+				expect(accountRepo.findByUsername).toHaveBeenCalledWith(newUsername.toLowerCase());
 			});
 		});
 
@@ -1787,8 +1790,7 @@ describe('AccountService', () => {
 				userService.saveEntity.mockResolvedValue();
 				accountRepo.findById.mockResolvedValue(mockStudentAccountDo);
 				accountRepo.save.mockRejectedValueOnce(undefined);
-
-				jest.spyOn(accountService, 'isUniqueEmail').mockResolvedValue(true);
+				accountRepo.findByUsername.mockResolvedValueOnce(null);
 
 				return { mockStudentUser, mockStudentAccountDo };
 			};
@@ -1800,6 +1802,7 @@ describe('AccountService', () => {
 				await expect(accountService.updateAccount(mockStudentUser, mockStudentAccountDo, body)).rejects.toThrow(
 					EntityNotFoundError
 				);
+				expect(accountRepo.findByUsername).toHaveBeenCalledWith('fail@to.update');
 			});
 		});
 
@@ -1815,8 +1818,7 @@ describe('AccountService', () => {
 				});
 
 				userService.saveEntity.mockRejectedValueOnce(undefined);
-
-				jest.spyOn(accountService, 'isUniqueEmail').mockResolvedValue(true);
+				accountRepo.findByUsername.mockResolvedValueOnce(null);
 
 				return { mockStudentUser, mockStudentAccountDo };
 			};
@@ -1828,6 +1830,7 @@ describe('AccountService', () => {
 				await expect(accountService.updateAccount(mockStudentUser, mockStudentAccountDo, body)).rejects.toThrow(
 					EntityNotFoundError
 				);
+				expect(accountRepo.findByUsername).toHaveBeenCalledWith('user-fail@to.update');
 			});
 		});
 
@@ -1875,7 +1878,9 @@ describe('AccountService', () => {
 				});
 
 				userService.saveEntity.mockRejectedValueOnce(undefined);
-				jest.spyOn(accountService, 'isUniqueEmail').mockResolvedValueOnce(false);
+				accountRepo.findByUsername.mockResolvedValueOnce(
+					accountDoFactory.build({ username: mockOtherTeacherAccount.username })
+				);
 
 				return { mockStudentUser, mockStudentAccountDo, mockOtherTeacherAccount };
 			};
@@ -1887,6 +1892,7 @@ describe('AccountService', () => {
 				await expect(accountService.updateAccount(mockStudentUser, mockStudentAccountDo, body)).rejects.toThrow(
 					ValidationError
 				);
+				expect(accountRepo.findByUsername).toHaveBeenCalledWith(mockOtherTeacherAccount.username);
 			});
 		});
 	});
@@ -2124,7 +2130,6 @@ describe('AccountService', () => {
 
 				userService.getUserEntityWithRoles.mockResolvedValueOnce(mockStudentUser);
 				accountRepo.findByUserIdOrFail.mockResolvedValueOnce(mockStudentAccountDo);
-				jest.spyOn(accountService, 'validatePassword').mockResolvedValueOnce(true);
 
 				return { mockStudentAccount };
 			};
@@ -2162,7 +2167,6 @@ describe('AccountService', () => {
 
 				userService.getUserEntityWithRoles.mockResolvedValueOnce(mockStudentUser);
 				accountRepo.findByUserIdOrFail.mockResolvedValueOnce(mockStudentAccountDo);
-				jest.spyOn(accountService, 'validatePassword').mockResolvedValueOnce(true);
 
 				return { mockStudentAccount };
 			};
@@ -2200,7 +2204,6 @@ describe('AccountService', () => {
 
 				userService.getUserEntityWithRoles.mockResolvedValueOnce(mockStudentUser);
 				accountRepo.findByUserIdOrFail.mockResolvedValueOnce(mockStudentAccountDo);
-				jest.spyOn(accountService, 'validatePassword').mockResolvedValueOnce(false);
 				accountRepo.findById.mockResolvedValue(mockStudentAccountDo);
 				accountRepo.save.mockResolvedValueOnce(mockStudentAccountDo);
 
@@ -2240,7 +2243,6 @@ describe('AccountService', () => {
 
 				userService.getUserEntityWithRoles.mockResolvedValueOnce(mockStudentUser);
 				accountRepo.findByUserIdOrFail.mockResolvedValueOnce(mockStudentAccountDo);
-				jest.spyOn(accountService, 'validatePassword').mockResolvedValueOnce(false);
 				accountRepo.findById.mockResolvedValue(mockStudentAccountDo);
 				accountRepo.save.mockResolvedValueOnce(mockStudentAccountDo);
 
@@ -2280,7 +2282,6 @@ describe('AccountService', () => {
 
 				userService.getUserEntityWithRoles.mockResolvedValueOnce(mockStudentUser);
 				accountRepo.findByUserIdOrFail.mockResolvedValueOnce(mockStudentAccountDo);
-				jest.spyOn(accountService, 'validatePassword').mockResolvedValueOnce(false);
 				accountRepo.findById.mockResolvedValue(mockStudentAccountDo);
 				accountRepo.save.mockResolvedValueOnce(mockStudentAccountDo);
 
@@ -2322,7 +2323,6 @@ describe('AccountService', () => {
 				userService.getUserEntityWithRoles.mockResolvedValueOnce(mockStudentUser);
 				userService.saveEntity.mockRejectedValueOnce(undefined);
 				accountRepo.findByUserIdOrFail.mockResolvedValueOnce(mockStudentAccountDo);
-				jest.spyOn(accountService, 'validatePassword').mockResolvedValueOnce(false);
 				accountRepo.findById.mockResolvedValue(mockStudentAccountDo);
 				accountRepo.save.mockResolvedValueOnce({
 					getProps: () => {
@@ -2370,7 +2370,6 @@ describe('AccountService', () => {
 				accountRepo.findByUserIdOrFail.mockResolvedValueOnce(mockStudentAccountDo);
 				accountRepo.findById.mockResolvedValue(mockStudentAccountDo);
 				accountRepo.save.mockRejectedValueOnce(undefined);
-				jest.spyOn(accountService, 'validatePassword').mockResolvedValueOnce(false);
 
 				return { mockStudentAccount };
 			};
