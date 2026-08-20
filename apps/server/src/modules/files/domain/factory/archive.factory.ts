@@ -24,7 +24,7 @@ export class ArchiveFactory {
 	}
 
 	public static createEmpty(files: FileDo[], logger: Logger, archiveType: archiver.Format = 'zip'): archiver.Archiver {
-		const archive = archiver(archiveType);
+		const archive = archiver(archiveType, { zlib: { level: 0 } });
 
 		archive.on('warning', (err) => {
 			if (err.code === 'ENOENT') {

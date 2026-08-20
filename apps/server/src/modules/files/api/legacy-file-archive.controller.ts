@@ -11,13 +11,14 @@ import {
 	Res,
 	StreamableFile,
 } from '@nestjs/common';
-import { ApiHeader, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiHeader, ApiOkResponse, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ApiValidationError } from '@shared/common/error';
 import { Request, Response } from 'express';
-import { GetFileResponse } from '../domain';
+import { FileProps, GetFileResponse } from '../domain';
 import { DownloadArchiveUC } from './download-archive.uc';
 import { ArchiveFileParams } from './dto';
 import { StreamableFileMapper } from './mapper';
+import { FileRecordWithSizeMapper } from './mapper/file-record-with-size.mapper';
 
 @ApiTags('DownloadArchive')
 @Controller('filestorage/files/archive')
@@ -45,6 +46,20 @@ export class LegacyFileArchiveController {
 		const streamableFile = this.streamFileToClient(req, data, response);
 
 		return streamableFile;
+	}
+
+	@ApiOperation({ summary: 'List downloadable files' })
+	@ApiOkResponse({ description: 'File list' })
+	@ApiResponse({ status: 400, type: ApiValidationError })
+	@ApiResponse({ status: 403, type: ForbiddenException })
+	@ApiResponse({ status: 500, type: InternalServerErrorException })
+	@ApiResponse({ status: 501, type: NotImplementedException })
+	@Get('file-list')
+	public async listDownloadableFiles(@Query() params: ArchiveFileParams): Promise<FileProps[]> {
+		const files = await this.downloadArchiveUC.listDownloadableFiles(params);
+		const fileResponses = files.map((file) => FileRecordWithSizeMapper.mapFileDo(file));
+
+		return fileResponses;
 	}
 
 	private streamFileToClient(req: Request, fileResponse: GetFileResponse, httpResponse: Response): StreamableFile {
