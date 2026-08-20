@@ -829,7 +829,7 @@ describe(SchulconnexAsyncProvisioningStrategy.name, () => {
 
 				await strategy.apply(oauthData);
 
-				expect(schulconnexLicenseProvisioningProducer.provisonLicenses).toHaveBeenCalledWith<
+				expect(schulconnexLicenseProvisioningProducer.provisionLicenses).toHaveBeenCalledWith<
 					[SchulconnexLicenseProvisioningMessage]
 				>({
 					userId,
@@ -886,7 +886,7 @@ describe(SchulconnexAsyncProvisioningStrategy.name, () => {
 
 				await strategy.apply(oauthData);
 
-				expect(schulconnexLicenseProvisioningProducer.provisonLicenses).toHaveBeenCalledWith<
+				expect(schulconnexLicenseProvisioningProducer.provisionLicenses).toHaveBeenCalledWith<
 					[SchulconnexLicenseProvisioningMessage]
 				>({
 					userId,
