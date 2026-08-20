@@ -1,4 +1,5 @@
 import { AuthorizationService } from '@modules/authorization';
+import { ColumnBoardService } from '@modules/board';
 import { CopyElementType, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { RoomMembershipService } from '@modules/room-membership';
 import { RoomRule } from '@modules/room-membership/authorization/room.rule';
@@ -16,6 +17,7 @@ export class RoomCopyUc {
 		private readonly roomRule: RoomRule,
 		private readonly roomMembershipService: RoomMembershipService,
 		private readonly authorizationService: AuthorizationService,
+		private readonly columnBoardService: ColumnBoardService,
 		@Inject(ROOM_PUBLIC_API_CONFIG_TOKEN) private readonly config: RoomPublicApiConfig
 	) {}
 
@@ -40,12 +42,17 @@ export class RoomCopyUc {
 					title: boardItem.title,
 					type: CopyElementType.BOARD,
 					status: CopyStatusEnum.SUCCESS,
+					originalEntity: {
+						id: boardItem.originalId,
+					},
 					copyEntity: {
-						id: boardItem.id,
+						id: boardItem.copyId,
 					},
 				};
 			}),
 		};
+
+		await this.columnBoardService.updateIdsInLinks(copyStatus);
 
 		return copyStatus;
 	}
