@@ -1,6 +1,6 @@
 import { AuthorizationClientAdapter, AuthorizationContextBuilder } from '@infra/authorization-client';
 import { Inject, Injectable, NotImplementedException } from '@nestjs/common';
-import { DownloadArchiveService, GetFileResponse } from '../domain';
+import { DownloadArchiveService, FileDo, GetFileResponse } from '../domain';
 import { LEGACY_FILE_ARCHIVE_CONFIG_TOKEN, LegacyFileArchiveConfig } from '../legacy-file-archive.config';
 import { ArchiveFileParams } from './dto';
 import { AuthorizationReferenceTypeMapper } from './mapper';
@@ -18,9 +18,23 @@ export class DownloadArchiveUC {
 
 		await this.checkPermission(params);
 
-		const fileResponse = await this.filesStorageService.downloadFilesAsArchive(params.ownerId, params.archiveName);
+		const fileResponse = await this.filesStorageService.downloadFilesAsArchive(
+			params.ownerId,
+			params.archiveName,
+			params.selectedFiles
+		);
 
 		return fileResponse;
+	}
+
+	public async listDownloadableFiles(params: ArchiveFileParams): Promise<FileDo[]> {
+		this.featureEnabled();
+
+		await this.checkPermission(params);
+
+		const fileResponses = await this.filesStorageService.listDownloadableFiles(params.ownerId);
+
+		return fileResponses;
 	}
 
 	private async checkPermission(params: ArchiveFileParams): Promise<void> {
