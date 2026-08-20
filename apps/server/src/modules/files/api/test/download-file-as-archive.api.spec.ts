@@ -443,4 +443,63 @@ describe('DownloadArchive Controller (API)', () => {
 			});
 		});
 	});
+
+	describe('listDownloadableFiles', () => {
+		describe('when user successfully lists team files', () => {
+			const setup = async () => {
+				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
+				await em.persist([teacherUser, teacherAccount]).flush();
+				const teamId = new ObjectId().toHexString();
+
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName)
+					.withJwt(teacherUser, jwtConfig)
+					.build(teacherAccount);
+
+				const storageProvider = storageProviderFactory.buildWithId({ region: 'us-east-1' });
+
+				const folder = fileDomainFactory.build({
+					name: 'project-folder',
+					storageProviderId: storageProvider.id,
+					isDirectory: true,
+				});
+				const file1 = fileDomainFactory.build({
+					name: 'team-doc.pdf',
+					storageProviderId: storageProvider.id,
+					isDirectory: false,
+					parentId: folder.id,
+				});
+				const file2 = fileDomainFactory.build({
+					name: 'notes.txt',
+					storageProviderId: storageProvider.id,
+					isDirectory: false,
+					parentId: folder.id,
+				});
+
+				legacyFileStorageAdapter.getFilesForOwner.mockResolvedValueOnce([folder, file1, file2]);
+				legacyFileStorageAdapter.downloadFile.mockResolvedValue(Readable.from('mock file content'));
+
+				return { teamId, loggedInClient, folder, file1, file2 };
+			};
+
+			it('should return 200 with archive file', async () => {
+				const { teamId, loggedInClient, folder, file1, file2 } = await setup();
+				const params = {
+					ownerId: teamId,
+					ownerType: FileOwnerModel.TEAMS,
+					archiveName: folder.name,
+				};
+
+				const response = await loggedInClient.get('/file-list').query(params);
+
+				expect(response.status).toEqual(HttpStatus.OK);
+				expect(response.body).toEqual(
+					expect.arrayContaining([
+						expect.objectContaining({ name: folder.name, isDirectory: true }),
+						expect.objectContaining({ name: file1.name, isDirectory: false, size: file1.size }),
+						expect.objectContaining({ name: file2.name, isDirectory: false, size: file2.size }),
+					])
+				);
+			});
+		});
+	});
 });

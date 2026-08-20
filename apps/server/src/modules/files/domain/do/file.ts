@@ -9,6 +9,7 @@ export interface FileProps {
 	storageFileName?: string;
 	bucket?: string;
 	storageProviderId?: EntityId;
+	size?: number;
 }
 
 export class FileDo extends DomainObject<FileProps> {
@@ -38,6 +39,10 @@ export class FileDo extends DomainObject<FileProps> {
 
 	get storageProviderId(): EntityId | undefined {
 		return this.props.storageProviderId;
+	}
+
+	get size(): number | undefined {
+		return this.props.size;
 	}
 
 	private sanitizePathSegment(name: string): string {

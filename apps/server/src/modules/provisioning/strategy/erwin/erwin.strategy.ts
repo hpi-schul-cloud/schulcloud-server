@@ -15,7 +15,7 @@ import {
 import { BadDataLoggableException } from '../../loggable';
 import { ErwinProvisioningService, ProvisioningEntityType } from '../../service/erwin-provisioning.service';
 import { ProvisioningStrategy } from '../base.strategy';
-import { ErwinRole, MappedSvsRolle, PayloadRolle } from './enums/rolle.enum';
+import { MappedSvsRolle, PayloadRolle } from './enums/rolle.enum';
 import { ErwinJwtPayload } from './erwin.jwt.payload';
 import { plainToInstance } from 'class-transformer';
 
@@ -133,23 +133,18 @@ export class ErwinProvisioningStrategy extends ProvisioningStrategy {
 	}
 
 	private mapPayloadRoleToRoleName(role: PayloadRolle): RoleName {
-		const erwinRoleMap: Record<ErwinRole, RoleName> = {
-			[ErwinRole.LERN]: RoleName.STUDENT,
-			[ErwinRole.LEHR]: RoleName.TEACHER,
-			[ErwinRole.LEIT]: RoleName.ADMINISTRATOR,
-		};
 		const mappedSvsRolleMap: Record<MappedSvsRolle, RoleName> = {
 			[MappedSvsRolle.USER]: RoleName.USER,
 			[MappedSvsRolle.STUDENT]: RoleName.STUDENT,
 			[MappedSvsRolle.TEACHER]: RoleName.TEACHER,
 			[MappedSvsRolle.SUPERHERO]: RoleName.SUPERHERO,
 			[MappedSvsRolle.ADMIN]: RoleName.ADMINISTRATOR,
-		};
+		} as const;
 
-		if (Object.values(ErwinRole).includes(role as ErwinRole)) {
-			return erwinRoleMap[role as ErwinRole];
+		if (Object.values(MappedSvsRolle).includes(role as MappedSvsRolle)) {
+			return mappedSvsRolleMap[role as MappedSvsRolle];
 		}
 
-		return mappedSvsRolleMap[role as MappedSvsRolle];
+		return RoleName.USER;
 	}
 }

@@ -40,8 +40,8 @@ export class GroupDomainMapper {
 			externalSource: props.externalSource
 				? this.mapExternalSourceToExternalSourceEntity(props.externalSource, em)
 				: undefined,
-			users: props.users.map(
-				(groupUser): GroupUserEmbeddable => GroupDomainMapper.mapGroupUserToGroupUserEntity(groupUser, em)
+			users: props.users.map((groupUser): GroupUserEmbeddable =>
+				GroupDomainMapper.mapGroupUserToGroupUserEntity(groupUser, em)
 			),
 			validPeriod,
 			organization: props.organizationId ? em.getReference(SchoolEntity, props.organizationId) : undefined,

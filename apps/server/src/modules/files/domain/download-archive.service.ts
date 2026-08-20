@@ -18,17 +18,28 @@ export class DownloadArchiveService {
 		this.logger.setContext(DownloadArchiveService.name);
 	}
 
-	public async downloadFilesAsArchive(ownerId: EntityId, archiveName: string): Promise<GetFileResponse> {
+	public async downloadFilesAsArchive(
+		ownerId: EntityId,
+		archiveName: string,
+		selectedFiles?: string[]
+	): Promise<GetFileResponse> {
 		const files = await this.legacyFileStorageAdapter.getFilesForOwner(ownerId);
 		const filesById = this.createFileMap(files);
 		const downloadableFiles = this.filterDownloadableFiles(files);
+		const filesToDownload = this.filterSelectedFiles(downloadableFiles, selectedFiles);
 
-		const archive = ArchiveFactory.createEmpty(downloadableFiles, this.logger);
-		this.populateArchiveAndFinalize(archive, downloadableFiles, filesById).catch((err: unknown) =>
+		const archive = ArchiveFactory.createEmpty(filesToDownload, this.logger);
+		this.populateArchiveAndFinalize(archive, filesToDownload, filesById).catch((err: unknown) =>
 			archive.emit('error', err as Error)
 		);
 
 		return FileResponseFactory.createFromArchive(archiveName, archive);
+	}
+
+	public async listDownloadableFiles(ownerId: EntityId): Promise<FileDo[]> {
+		const files = await this.legacyFileStorageAdapter.getFilesForOwner(ownerId);
+
+		return files;
 	}
 
 	private createFileMap(files: FileDo[]): Map<EntityId, FileDo> {
@@ -37,6 +48,15 @@ export class DownloadArchiveService {
 
 	private filterDownloadableFiles(files: FileDo[]): FileDo[] {
 		return files.filter((file) => !file.isDirectory);
+	}
+
+	private filterSelectedFiles(files: FileDo[], selectedFiles?: string[]): FileDo[] {
+		if (!selectedFiles || selectedFiles.length === 0) {
+			return files;
+		}
+
+		const selectedFileSet = new Set(selectedFiles);
+		return files.filter((file) => selectedFileSet.has(file.id));
 	}
 
 	private async populateArchiveAndFinalize(

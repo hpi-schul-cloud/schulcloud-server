@@ -204,6 +204,44 @@ describe('HelpdeskService', () => {
 				});
 			});
 		});
+
+		describe('when user creating the problem is a supporter with an empty email adress in his user account', () => {
+			const setup = () => {
+				const problem = helpdeskProblemPropsFactory.create();
+				const userContext = userContextPropsFactory.create({ userEmail: '' });
+				const plainTextContent = TextFormatter.createProblemText(problem, userContext);
+
+				return { problem, userContext, plainTextContent };
+			};
+
+			it('should not block the sending and call emailService.send with correct parameters', async () => {
+				const { problem, userContext, plainTextContent } = setup();
+
+				await service.createProblem(problem, userContext);
+
+				expect(mailService.send).toHaveBeenCalledWith({
+					recipients: [config.problemEmailAddress],
+					mail: {
+						subject: problem.subject,
+						plainTextContent,
+						attachments: undefined,
+					},
+					replyTo: [problem.replyEmail],
+				});
+				expect(plainTextContent).toContain(userContext.userId);
+				expect(plainTextContent).toContain(userContext.userName);
+				expect(plainTextContent).toContain(userContext.schoolId);
+				expect(plainTextContent).toContain(userContext.schoolName);
+			});
+
+			it('should not call logger.debug', async () => {
+				const { problem, userContext } = setup();
+
+				await service.createProblem(problem, userContext);
+
+				expect(logger.debug).not.toHaveBeenCalled();
+			});
+		});
 	});
 
 	describe('createWish', () => {

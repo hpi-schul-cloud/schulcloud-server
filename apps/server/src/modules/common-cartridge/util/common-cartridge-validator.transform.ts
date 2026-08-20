@@ -2,8 +2,8 @@ import { Transform, type TransformCallback, type TransformOptions } from 'node:s
 
 export const CC_VALIDATION_ERROR_EVENT = 'validationError';
 export enum CcValidationErrorType {
-	'MaximumSizeExceeded' = 'MaximumSizeExceeded',
-	'NotAZipFile' = 'NotAZipFile',
+	MaximumSizeExceeded = 'MaximumSizeExceeded',
+	NotAZipFile = 'NotAZipFile',
 }
 
 export class CommonCartridgeValidatorTransform extends Transform {
