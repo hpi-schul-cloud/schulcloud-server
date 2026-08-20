@@ -116,9 +116,7 @@ describe(`card copy (api)`, () => {
 			const response = await loggedInClient.post(`${cardNode1.id}/copy`);
 			const copiedCard = response.body as CardResponse;
 
-			const linkElement = copiedCard.elements.find((element) => element.type === ContentElementType.LINK) as
-				| { content?: { url?: string } }
-				| undefined;
+			const linkElement = copiedCard.elements.find((element) => element.type === ContentElementType.LINK);
 
 			expect(linkElement?.content?.url).toContain(`#card-${copiedCard.id}`);
 		});
