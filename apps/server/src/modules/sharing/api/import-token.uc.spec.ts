@@ -362,7 +362,7 @@ describe('ShareTokenUC', () => {
 					status: CopyStatusEnum.SUCCESS,
 					copyEntity: columnBoard,
 				};
-				columnBoardService.swapLinkedIdsInBoards.mockResolvedValue(status);
+				columnBoardService.updateIdsInLinks.mockResolvedValue(status);
 				columnBoardService.copyColumnBoard.mockResolvedValueOnce(status);
 
 				const payload: ShareTokenPayload = { parentType: ShareTokenParentType.ColumnBoard, parentId: columnBoard.id };
@@ -407,11 +407,11 @@ describe('ShareTokenUC', () => {
 					targetSchoolId: user.school.id,
 				});
 			});
-			it('should call columnBoardService to swapLinkedIdsInBoards', async () => {
+			it('should call columnBoardService to swapLinkedIdsInCopy', async () => {
 				const { user, shareToken, course } = setup();
 				const newName = 'NewName';
 				await uc.importShareToken(user.id, shareToken.token, newName, course.id);
-				expect(columnBoardService.swapLinkedIdsInBoards).toHaveBeenCalled();
+				expect(columnBoardService.updateIdsInLinks).toHaveBeenCalled();
 			});
 			it('should return the result', async () => {
 				const { user, shareToken, columnBoard, status } = setup();
@@ -636,7 +636,7 @@ describe('ShareTokenUC', () => {
 
 				sagaService.executeSaga.mockResolvedValueOnce({
 					roomCopied: { id: room.id, name: 'copy' },
-					boardsCopied: [board],
+					boardsCopied: [{ id: board.id, title: board.title, copyId: board.id, originalId: board.id }],
 				});
 
 				return { user, school, shareToken, room, board };

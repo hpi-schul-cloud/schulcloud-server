@@ -13,11 +13,10 @@ export class RoomCopySaga extends Saga<'roomCopy'> {
 		this.sagaRegistry.registerSaga(this);
 	}
 
-	public async execute(params: {
-		userId: EntityId;
-		roomId: EntityId;
-		newName?: string;
-	}): Promise<{ roomCopied: { id: EntityId; name: string }; boardsCopied: { id: EntityId; title: string }[] }> {
+	public async execute(params: { userId: EntityId; roomId: EntityId; newName?: string }): Promise<{
+		roomCopied: { id: EntityId; name: string };
+		boardsCopied: { id: EntityId; title: string; originalId: EntityId; copyId: EntityId }[];
+	}> {
 		const { userId, roomId, newName } = params;
 
 		this.stepRegistry.checkStep(ModuleName.ROOM, 'copyRoom');

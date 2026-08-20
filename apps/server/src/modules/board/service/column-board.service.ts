@@ -1,4 +1,4 @@
-import { CopyElementType, CopyStatus, CopyHelperService } from '@modules/copy-helper';
+import { CopyHelperService, CopyStatus } from '@modules/copy-helper';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import {
@@ -7,6 +7,7 @@ import {
 	BoardExternalReferenceType,
 	ColumnBoard,
 	ColumnBoardProps,
+	isAnyBoardNode,
 	isColumnBoard,
 } from '../domain';
 import { BoardNodeRepo } from '../repo';
@@ -14,8 +15,8 @@ import { BoardNodeService } from './board-node.service';
 import {
 	BoardCopyService,
 	ColumnBoardLinkService,
-	CopyColumnBoardParams,
 	CopyCardParams,
+	CopyColumnBoardParams,
 	CopyColumnParams,
 } from './internal';
 
@@ -92,34 +93,28 @@ export class ColumnBoardService {
 		return copyStatus;
 	}
 
-	public async swapLinkedIdsInBoards(copyStatus: CopyStatus, idMap?: Map<EntityId, EntityId>): Promise<CopyStatus> {
-		if (!idMap) {
-			idMap = new Map<EntityId, EntityId>();
-		}
-		const copyDict = this.copyHelperService.buildCopyEntityDict(copyStatus);
-		copyDict.forEach((value, key) => idMap.set(key, value.id));
-
-		const elements = copyStatus.elements ?? [];
-		if (copyStatus.type === CopyElementType.COLUMNBOARD && copyStatus.copyEntity) {
-			copyStatus.copyEntity = await this.swapLinkedIds(copyStatus.copyEntity?.id, idMap);
+	public async updateIdsInLinks(
+		copyStatus: CopyStatus,
+		replacementMap: Record<string, string> = {}
+	): Promise<CopyStatus> {
+		if (copyStatus.copyEntity === undefined) {
+			return copyStatus;
 		}
 
-		const updatedElements = await Promise.all(
-			elements.map(async (el) => {
-				if (el.type === CopyElementType.COLUMNBOARD && el.copyEntity) {
-					el.copyEntity = await this.swapLinkedIds(el.copyEntity?.id, idMap);
-				}
-				return el;
-			})
-		);
+		Object.assign(replacementMap, this.copyHelperService.buildReplacementMap(copyStatus));
 
-		copyStatus.elements = updatedElements;
+		if (isAnyBoardNode(copyStatus.copyEntity)) {
+			copyStatus.copyEntity = await this.columnBoardLinkService.rewriteLinkUrlsInBoardNode(
+				copyStatus.copyEntity,
+				replacementMap
+			);
+			return copyStatus;
+		} else {
+			const promises = copyStatus.elements?.map((element) => this.updateIdsInLinks(element, replacementMap)) ?? [];
+
+			copyStatus.elements = await Promise.all(promises);
+		}
+
 		return copyStatus;
-	}
-
-	public async swapLinkedIds(boardId: EntityId, idMap: Map<EntityId, EntityId>): Promise<ColumnBoard> {
-		const board = await this.columnBoardLinkService.swapLinkedIds(boardId, idMap);
-
-		return board;
 	}
 }

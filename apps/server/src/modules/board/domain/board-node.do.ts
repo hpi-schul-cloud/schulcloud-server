@@ -141,3 +141,5 @@ export abstract class BoardNode<T extends BoardNodeProps> extends DomainObject<T
 		this.props.position = position;
 	}
 }
+
+export const isAnyBoardNode = (value: unknown): value is AnyBoardNode => value instanceof BoardNode;
