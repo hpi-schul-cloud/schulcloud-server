@@ -6,7 +6,10 @@ export interface SagaType {
 
 	roomCopy: {
 		params: { userId: EntityId; roomId: EntityId; newName?: string };
-		result: { roomCopied: { id: EntityId; name: string }; boardsCopied: { id: EntityId; title: string }[] };
+		result: {
+			roomCopied: { id: EntityId; name: string };
+			boardsCopied: { id: EntityId; title: string; originalId: EntityId; copyId: EntityId }[];
+		};
 	};
 
 	// add more, e.g:
