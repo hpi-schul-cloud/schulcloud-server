@@ -1,5 +1,6 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import { ErrorLoggable } from '@infra/error';
 import { Logger } from '@infra/logger';
 import { MikroORM } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
@@ -133,7 +134,7 @@ describe(SchulconnexLicenseProvisioningConsumer.name, () => {
 	});
 
 	describe('provisionLicenses', () => {
-		describe('when provisioning a new group', () => {
+		describe('when provisioning is successful', () => {
 			const setup = () => {
 				const userId = new ObjectId().toHexString();
 				const schoolId = new ObjectId().toHexString();
@@ -198,6 +199,45 @@ describe(SchulconnexLicenseProvisioningConsumer.name, () => {
 				expect(logger.info).toHaveBeenCalledWith(
 					new LicenseProvisioningSuccessfulLoggable(userId, externalLicenses.length)
 				);
+			});
+		});
+
+		describe('when provisioning fails', () => {
+			it('should log error and rethrow if external tool provisioning fails', async () => {
+				const userId = new ObjectId().toHexString();
+				const schoolId = new ObjectId().toHexString();
+				const systemId = new ObjectId().toHexString();
+				const externalLicenses = [
+					new ExternalLicenseDto({
+						mediumId: 'medium:1',
+					}),
+				];
+
+				const error = new Error('tool provisioning failed');
+				schulconnexToolProvisioningService.provisionSchoolExternalTools.mockRejectedValue(error);
+
+				await expect(
+					consumer.provisionLicenses({
+						userId,
+						schoolId,
+						systemId,
+						externalLicenses,
+					})
+				).rejects.toThrow(error);
+
+				expect(logger.warning).toHaveBeenCalledTimes(1);
+				const [loggable] = logger.warning.mock.calls[0];
+				expect(loggable).toBeInstanceOf(ErrorLoggable);
+				expect(loggable.getLogMessage()).toMatchObject({
+					type: 'Unhandled or Unknown Error',
+					data: {
+						message: 'provisionLicenses tool provisioning failed',
+						userId,
+						schoolId,
+						systemId,
+					},
+				});
+				expect(logger.info).not.toHaveBeenCalled();
 			});
 		});
 	});

@@ -1,4 +1,5 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
+import { ErrorLoggable } from '@infra/error';
 import { Logger } from '@infra/logger';
 import { MikroORM, RequestContext } from '@mikro-orm/core';
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
@@ -45,12 +46,24 @@ export class SchulconnexLicenseProvisioningConsumer implements OnModuleInit {
 				payload.userId,
 				payload.externalLicenses
 			);
-			await this.schulconnexToolProvisioningService.provisionSchoolExternalTools(
-				payload.userId,
-				payload.schoolId,
-				payload.systemId
-			);
 
+			try {
+				await this.schulconnexToolProvisioningService.provisionSchoolExternalTools(
+					payload.userId,
+					payload.schoolId,
+					payload.systemId
+				);
+			} catch (error: unknown) {
+				this.logger.warning(
+					new ErrorLoggable(error, {
+						message: 'provisionLicenses tool provisioning failed',
+						userId: payload.userId,
+						schoolId: payload.schoolId,
+						systemId: payload.systemId,
+					})
+				);
+				throw error;
+			}
 			this.logger.info(new LicenseProvisioningSuccessfulLoggable(payload.userId, payload.externalLicenses.length));
 		});
 	}
