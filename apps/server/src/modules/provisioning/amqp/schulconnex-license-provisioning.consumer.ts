@@ -47,23 +47,12 @@ export class SchulconnexLicenseProvisioningConsumer implements OnModuleInit {
 				payload.externalLicenses
 			);
 
-			try {
-				await this.schulconnexToolProvisioningService.provisionSchoolExternalTools(
-					payload.userId,
-					payload.schoolId,
-					payload.systemId
-				);
-			} catch (error: unknown) {
-				this.logger.warning(
-					new ErrorLoggable(error, {
-						message: 'provisionLicenses tool provisioning failed',
-						userId: payload.userId,
-						schoolId: payload.schoolId,
-						systemId: payload.systemId,
-					})
-				);
-				throw error;
-			}
+			await this.schulconnexToolProvisioningService.provisionSchoolExternalTools(
+				payload.userId,
+				payload.schoolId,
+				payload.systemId
+			);
+
 			this.logger.info(new LicenseProvisioningSuccessfulLoggable(payload.userId, payload.externalLicenses.length));
 		});
 	}
