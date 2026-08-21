@@ -91,7 +91,7 @@ export class SchulconnexToolProvisioningService {
 					userId,
 					schoolId,
 					license,
-					'External tool is not active or has non-global parameters'
+new Error('External tool is not active or has non-global parameters')
 				)
 			);
 			return;
