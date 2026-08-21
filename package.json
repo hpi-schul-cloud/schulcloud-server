@@ -218,7 +218,7 @@
 		"mongoose-delete": "^1.0.7",
 		"mongoose-lean-virtuals": "^2.1.0",
 		"mongoose-shortid-nodeps": "^0.6.5",
-		"nanoid": "^3.3.11",
+		"nanoid": "^3.3.18",
 		"nest-winston": "^1.10.2",
 		"nestjs-console": "^10.0.0",
 		"oauth-1.0a": "^2.2.6",
