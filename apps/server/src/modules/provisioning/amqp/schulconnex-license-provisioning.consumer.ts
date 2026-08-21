@@ -1,5 +1,4 @@
 import { AmqpConnection } from '@golevelup/nestjs-rabbitmq';
-import { ErrorLoggable } from '@infra/error';
 import { Logger } from '@infra/logger';
 import { MikroORM, RequestContext } from '@mikro-orm/core';
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
