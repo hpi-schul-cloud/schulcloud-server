@@ -13,6 +13,7 @@ export const fileDomainFactory: BaseFactory<FileDo, FileProps> = BaseFactory.def
 			bucket: `bucket-00${sequence}`,
 			storageProviderId: new ObjectId().toHexString(),
 			parentId: undefined,
+			size: 1000 + sequence * 325,
 		};
 	}
 );

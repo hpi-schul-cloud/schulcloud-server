@@ -1,31 +1,26 @@
 import { Injectable } from '@nestjs/common';
-import { EntityId } from '@shared/domain/types';
-import { AnyBoardNode, ColumnBoard, isLinkElement } from '../../domain';
+import { AnyBoardNode, isLinkElement } from '../../domain';
 import { BoardNodeRepo } from '../../repo/board-node.repo';
-import { BoardNodeService } from '../board-node.service';
 
 @Injectable()
 export class ColumnBoardLinkService {
-	constructor(
-		private readonly boardNodeService: BoardNodeService,
-		private readonly boardNodeRepo: BoardNodeRepo
-	) {}
+	constructor(private readonly boardNodeRepo: BoardNodeRepo) {}
 
-	public async swapLinkedIds(boardId: EntityId, idMap: Map<EntityId, EntityId>): Promise<ColumnBoard> {
-		const board = await this.boardNodeService.findByClassAndId(ColumnBoard, boardId);
-
-		this.updateLinkElements(board, idMap);
-		await this.boardNodeRepo.save(board);
-
-		return board;
+	public async rewriteLinkUrlsInBoardNode(
+		boardNode: AnyBoardNode,
+		replacementMap?: Record<string, string>
+	): Promise<AnyBoardNode> {
+		this.updateLinkElements(boardNode, replacementMap ?? {});
+		await this.boardNodeRepo.save(boardNode);
+		return boardNode;
 	}
 
-	private updateLinkElements(boardNode: AnyBoardNode, idMap: Map<EntityId, EntityId>): void {
+	private updateLinkElements(boardNode: AnyBoardNode, replacementMap: Record<string, string>): void {
 		if (isLinkElement(boardNode)) {
-			idMap.forEach((value, key) => {
-				boardNode.url = boardNode.url.replace(key, value);
-			});
+			for (const [searchValue, replaceValue] of Object.entries(replacementMap)) {
+				boardNode.url = boardNode.url.replace(searchValue, replaceValue);
+			}
 		}
-		boardNode.children.forEach((bn) => this.updateLinkElements(bn, idMap));
+		boardNode.children.forEach((bn) => this.updateLinkElements(bn, replacementMap));
 	}
 }

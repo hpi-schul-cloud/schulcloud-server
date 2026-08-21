@@ -1,6 +1,7 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { SingleValueToArrayTransformer } from '@shared/controller/transformer/single-value-to-array.transformer';
 import { EntityId } from '@shared/domain/types';
-import { IsEnum, IsMongoId, IsString } from 'class-validator';
+import { IsArray, IsEnum, IsMongoId, IsOptional, IsString } from 'class-validator';
 import { FileOwnerModel } from '../../domain';
 
 export class ArchiveFileParams {
@@ -15,4 +16,11 @@ export class ArchiveFileParams {
 	@ApiProperty()
 	@IsString()
 	archiveName!: string;
+
+	@ApiPropertyOptional()
+	@IsOptional()
+	@IsArray()
+	@IsString({ each: true })
+	@SingleValueToArrayTransformer()
+	selectedFiles?: string[];
 }
