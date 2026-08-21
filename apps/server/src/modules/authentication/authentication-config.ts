@@ -32,9 +32,4 @@ export class AuthenticationConfig {
 	@StringToBoolean()
 	@IsBoolean()
 	public externalSystemLogoutEnabled = false;
-
-	@ConfigProperty('FEATURE_IDENTITY_MANAGEMENT_LOGIN_ENABLED')
-	@StringToBoolean()
-	@IsBoolean()
-	public identityManagementLoginEnabled = false;
 }

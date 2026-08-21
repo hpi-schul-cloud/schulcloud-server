@@ -1,7 +1,6 @@
 import { Logger } from '@infra/logger';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { UserService } from '@modules/user';
-import { User } from '@modules/user/repo';
+import { User, UserService } from '@modules/user';
 import { Inject, Injectable } from '@nestjs/common';
 import {
 	AuthorizationError,
@@ -10,11 +9,10 @@ import {
 	ValidationError,
 } from '@shared/common/error';
 import { Counted, EntityId } from '@shared/domain/types';
+import bcrypt from 'bcryptjs';
 import { isEmail, isNotEmpty } from 'class-validator';
 import { Account, AccountSave, UpdateAccount, UpdateMyAccount } from '../do';
 import { ACCOUNT_REPO, AccountRepo } from '../interface';
-import { AccountServiceDb } from './account-db.service';
-import { AbstractAccountService } from './account.service.abstract';
 
 type UserPreferences = {
 	firstLogin: boolean;
@@ -24,14 +22,12 @@ type Options = {
 	allowUpdate?: boolean;
 };
 @Injectable()
-export class AccountService extends AbstractAccountService {
+export class AccountService {
 	constructor(
-		private readonly accountImpl: AccountServiceDb,
 		private readonly logger: Logger,
 		private readonly userService: UserService,
 		@Inject(ACCOUNT_REPO) private readonly accountRepo: AccountRepo
 	) {
-		super();
 		this.logger.setContext(AccountService.name);
 	}
 
@@ -222,54 +218,81 @@ export class AccountService extends AbstractAccountService {
 	}
 
 	public findById(id: string): Promise<Account> {
-		const account = this.accountImpl.findById(id);
+		const objectId = this.ensureValidObjectId(id);
+		const account = this.accountRepo.findById(objectId);
 
 		return account;
 	}
 
 	public findMultipleByUserId(userIds: string[]): Promise<Account[]> {
-		const accounts = this.accountImpl.findMultipleByUserId(userIds);
+		const accounts = this.accountRepo.findMultipleByUserId(userIds);
 
 		return accounts;
 	}
 
 	public findByUserId(userId: string): Promise<Account | null> {
-		const account = this.accountImpl.findByUserId(userId);
+		const account = this.accountRepo.findByUserId(userId);
 
 		return account;
 	}
 
 	public findByUserIdOrFail(userId: string): Promise<Account> {
-		const account = this.accountImpl.findByUserIdOrFail(userId);
+		const account = this.accountRepo.findByUserIdOrFail(userId);
 
 		return account;
 	}
 
 	public findByUsernameAndSystemId(username: string, systemId: string | ObjectId): Promise<Account | null> {
-		const account = this.accountImpl.findByUsernameAndSystemId(username, systemId);
+		const account = this.accountRepo.findByUsernameAndSystemId(username, systemId);
 
 		return account;
 	}
 
 	public searchByUsernamePartialMatch(userName: string, skip: number, limit: number): Promise<Counted<Account[]>> {
-		const result = this.accountImpl.searchByUsernamePartialMatch(userName, skip, limit);
+		const result = this.accountRepo.searchByUsernamePartialMatch(userName, skip, limit);
 
 		return result;
 	}
 
 	public searchByUsernameExactMatch(userName: string): Promise<Counted<Account[]>> {
-		const result = this.accountImpl.searchByUsernameExactMatch(userName);
+		const result = this.accountRepo.searchByUsernameExactMatch(userName);
 
 		return result;
 	}
 
 	public async save(accountSave: AccountSave): Promise<Account> {
-		const ret = await this.accountImpl.save(accountSave);
+		let account: Account;
+		if (accountSave.id) {
+			const objectId = this.ensureValidObjectId(accountSave.id);
+
+			account = await this.accountRepo.findById(objectId);
+		} else {
+			account = this.createAccount(accountSave);
+		}
+
+		await account.update(accountSave);
+		const ret = await this.accountRepo.save(account);
+
 		return new Account({ ...ret.getProps() });
 	}
 
 	public async saveAll(accountSaves: AccountSave[]): Promise<Account[]> {
-		const savedDbAccounts = await this.accountImpl.saveAll(accountSaves);
+		const updatedAccounts = await Promise.all(
+			accountSaves.map(async (accountSave) => {
+				let account: Account;
+				if (accountSave.id) {
+					const objectId = this.ensureValidObjectId(accountSave.id);
+
+					account = await this.accountRepo.findById(objectId);
+				} else {
+					account = this.createAccount(accountSave);
+				}
+				await account.update(accountSave);
+				return account;
+			})
+		);
+
+		const savedDbAccounts = await this.accountRepo.saveAll(updatedAccounts);
 
 		return savedDbAccounts;
 	}
@@ -320,39 +343,56 @@ export class AccountService extends AbstractAccountService {
 	}
 
 	public async updateUsername(accountId: string, username: string): Promise<Account> {
-		const ret = await this.accountImpl.updateUsername(accountId, username);
+		const objectId = this.ensureValidObjectId(accountId);
+		const account = await this.accountRepo.findById(objectId);
+		account.username = username;
+		const ret = await this.accountRepo.save(account);
 
 		return new Account({ ...ret.getProps() });
 	}
 
 	public async updateLastLogin(accountId: string, lastLogin: Date): Promise<void> {
-		await this.accountImpl.updateLastLogin(accountId, lastLogin);
+		const objectId = this.ensureValidObjectId(accountId);
+		const account = await this.accountRepo.findById(objectId);
+		account.lastLogin = lastLogin;
+		await this.accountRepo.save(account);
 	}
 
 	public async updateLastTriedFailedLogin(accountId: string, lastTriedFailedLogin: Date): Promise<Account> {
-		const ret = await this.accountImpl.updateLastTriedFailedLogin(accountId, lastTriedFailedLogin);
+		const objectId = this.ensureValidObjectId(accountId);
+		const account = await this.accountRepo.findById(objectId);
+		account.lasttriedFailedLogin = lastTriedFailedLogin;
+		const ret = await this.accountRepo.save(account);
 
 		return new Account({ ...ret.getProps() });
 	}
 
 	public async updatePassword(accountId: string, password: string): Promise<Account> {
-		const ret = await this.accountImpl.updatePassword(accountId, password);
+		const objectId = this.ensureValidObjectId(accountId);
+		const account = await this.accountRepo.findById(objectId);
+		account.password = await this.encryptPassword(password);
+		const ret = await this.accountRepo.save(account);
 
 		return new Account({ ...ret.getProps() });
 	}
 
 	public validatePassword(account: Account, comparePassword: string): Promise<boolean> {
-		const result = this.accountImpl.validatePassword(account, comparePassword);
+		if (!account.password) {
+			return Promise.resolve(false);
+		}
+
+		const result = bcrypt.compare(comparePassword, account.password);
 
 		return result;
 	}
 
 	public async delete(accountId: string): Promise<void> {
-		await this.accountImpl.delete(accountId);
+		const objectId = this.ensureValidObjectId(accountId);
+		await this.accountRepo.deleteById(objectId);
 	}
 
 	public async deleteByUserId(userId: string): Promise<EntityId[]> {
-		const deletedAccounts = await this.accountImpl.deleteByUserId(userId);
+		const deletedAccounts = await this.accountRepo.deleteByUserId(userId);
 
 		return deletedAccounts;
 	}
@@ -361,7 +401,7 @@ export class AccountService extends AbstractAccountService {
 	 * @deprecated For migration purpose only
 	 */
 	public findMany(offset = 0, limit = 100): Promise<Account[]> {
-		const accounts = this.accountImpl.findMany(offset, limit);
+		const accounts = this.accountRepo.findMany(offset, limit);
 
 		return accounts;
 	}
@@ -379,8 +419,33 @@ export class AccountService extends AbstractAccountService {
 	}
 
 	public async isUniqueEmail(email: string): Promise<boolean> {
-		const isUniqueEmail = await this.accountImpl.isUniqueEmail(email);
+		const account = await this.accountRepo.findByUsername(email);
+		const isUniqueEmail = !account;
 
 		return isUniqueEmail;
+	}
+
+	private ensureValidObjectId(id: EntityId | ObjectId): ObjectId {
+		if (id instanceof ObjectId || ObjectId.isValid(id)) {
+			return new ObjectId(id);
+		}
+		throw new EntityNotFoundError(`Account with id ${id.toString()} not found`);
+	}
+
+	private encryptPassword(password: string): Promise<string> {
+		return bcrypt.hash(password, 10);
+	}
+
+	private createAccount(accountSave: AccountSave): Account {
+		if (!accountSave.username) {
+			throw new Error('Username is required');
+		}
+
+		const account = new Account({
+			id: new ObjectId().toHexString(),
+			username: accountSave.username,
+		});
+
+		return account;
 	}
 }

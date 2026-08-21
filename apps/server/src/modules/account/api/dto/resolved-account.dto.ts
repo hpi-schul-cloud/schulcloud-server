@@ -55,9 +55,6 @@ export class ResolvedAccountDto {
 	activated?: boolean;
 
 	@ApiPropertyOptional()
-	idmReferenceId?: string;
-
-	@ApiPropertyOptional()
 	@IsDate()
 	deactivatedAt?: Date;
 
@@ -74,7 +71,6 @@ export class ResolvedAccountDto {
 		this.credentialHash = account.credentialHash;
 		this.lasttriedFailedLogin = account.lasttriedFailedLogin;
 		this.expiresAt = account.expiresAt;
-		this.idmReferenceId = account.idmReferenceId;
 		this.deactivatedAt = account.deactivatedAt;
 	}
 }
