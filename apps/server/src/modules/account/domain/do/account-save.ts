@@ -13,8 +13,6 @@ export class AccountSave {
 
 	public activated: boolean | undefined;
 
-	public idmReferenceId: string | undefined;
-
 	public expiresAt: Date | undefined;
 
 	public token: string | undefined;
@@ -31,7 +29,6 @@ export class AccountSave {
 		this.password = props.password;
 		this.lasttriedFailedLogin = props.lasttriedFailedLogin;
 		this.activated = props.activated;
-		this.idmReferenceId = props.idmReferenceId;
 		this.expiresAt = props.expiresAt;
 		this.token = props.token;
 		this.credentialHash = props.credentialHash;

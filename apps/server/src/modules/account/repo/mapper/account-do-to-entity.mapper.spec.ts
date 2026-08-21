@@ -2,7 +2,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { accountDoFactory } from '../../testing';
 import { AccountDoToEntityMapper } from './account-do-to-entity.mapper';
 
-describe('AccountEntityToDoMapper', () => {
+describe('AccountDoToEntityMapper', () => {
 	beforeEach(() => {
 		jest.useFakeTimers();
 		jest.setSystemTime(new Date(2020, 1, 1));
@@ -25,7 +25,6 @@ describe('AccountEntityToDoMapper', () => {
 					lasttriedFailedLogin: new Date(),
 					token: 'token',
 					activated: true,
-					idmReferenceId: 'idmReferenceId',
 					deactivatedAt: new Date(),
 				});
 

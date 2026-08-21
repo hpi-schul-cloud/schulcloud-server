@@ -1,16 +1,16 @@
 /* istanbul ignore file */
-import { type EntityId } from '@shared/domain/types';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { type User } from '@modules/user/repo';
+import { type EntityId } from '@shared/domain/types';
 import { BaseFactory } from '@testing/factory/base.factory';
 import { type DeepPartial } from 'fishery';
-import { AccountEntity, type IdmAccountProperties } from '../repo';
+import { AccountEntity, type AccountProperties } from '../repo';
 
 export const defaultTestPassword = 'DummyPasswd!1';
 export const defaultTestPasswordHash = '$2a$10$/DsztV5o6P5piW2eWJsxw.4nHovmJGBA.QNwiTmuZ/uvUc40b.Uhu';
-class AccountFactory extends BaseFactory<AccountEntity, IdmAccountProperties> {
+class AccountFactory extends BaseFactory<AccountEntity, AccountProperties> {
 	public withSystemId(id: EntityId | ObjectId): this {
-		const params: DeepPartial<IdmAccountProperties> = { systemId: id };
+		const params: DeepPartial<AccountProperties> = { systemId: id };
 
 		return this.params(params);
 	}
@@ -20,7 +20,7 @@ class AccountFactory extends BaseFactory<AccountEntity, IdmAccountProperties> {
 			throw new Error('User does not have an id.');
 		}
 
-		const params: DeepPartial<IdmAccountProperties> = { userId: user.id, username: user.email };
+		const params: DeepPartial<AccountProperties> = { userId: user.id, username: user.email };
 
 		return this.params(params);
 	}

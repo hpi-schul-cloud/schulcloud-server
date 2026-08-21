@@ -33,7 +33,6 @@ const globalIgnores = {
 		'data/**',
 		'backup/**',
 		'!backup/setup/**',
-		'!backup/idm/**',
 		'apps/server/src/modules/board/loadtest/**/*.html',
 		'apps/server/src/modules/board/loadtest/artilleryreport.json',
 		'*.loadtest.json',
