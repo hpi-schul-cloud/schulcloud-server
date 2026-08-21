@@ -51,7 +51,7 @@ export class NewsController {
 			{ pagination }
 		);
 		const dtoList = newsList.map((news) => NewsMapper.mapToResponse(news));
-		const response = new NewsListResponse(dtoList, count);
+		const response = new NewsListResponse(dtoList, count, pagination.skip, pagination.limit);
 		return response;
 	}
 
