@@ -34,7 +34,7 @@ describe(ExternalToolCreatedLoggable.name, () => {
 					schoolId,
 					mediumId: license.mediumId,
 					mediaSourceId: license.mediaSource?.sourceId,
-					ExternalToolId: externalTool.id,
+					externalToolId: externalTool.id,
 				},
 			});
 		});

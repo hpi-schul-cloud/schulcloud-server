@@ -18,7 +18,7 @@ export class ExternalToolCreatedLoggable implements Loggable {
 				schoolId: this.schoolId,
 				mediumId: this.license.mediumId,
 				mediaSourceId: this.license.mediaSource?.sourceId,
-				ExternalToolId: this.externalTool.id,
+				externalToolId: this.externalTool.id,
 			},
 		};
 	}
