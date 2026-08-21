@@ -62,7 +62,7 @@ describe(SchulconnexLicenseProvisioningProducer.name, () => {
 			it('should publish the message', async () => {
 				const { message } = setup();
 
-				await producer.provisonLicenses(message);
+				await producer.provisionLicenses(message);
 
 				expect(amqpConnection.publish).toHaveBeenCalledWith(
 					exchangeName,

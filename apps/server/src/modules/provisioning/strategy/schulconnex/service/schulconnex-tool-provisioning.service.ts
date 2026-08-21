@@ -13,9 +13,14 @@ import { ExternalToolMediumStatus } from '@modules/tool/external-tool/enum';
 import { SchoolExternalToolService } from '@modules/tool/school-external-tool';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { MediaUserLicense, MediaUserLicenseService } from '@modules/user-license';
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
-import { ExternalToolMetadataUpdateFailedLoggable, SchoolExternalToolCreatedLoggable } from '../../../loggable';
+import {
+	ExternalToolMetadataUpdateFailedLoggable,
+	ExternalToolProvisioningFailedLoggable,
+	ExternalToolCreatedLoggable,
+	SchoolExternalToolCreatedLoggable,
+} from '../../../loggable';
 
 @Injectable()
 export class SchulconnexToolProvisioningService {
@@ -47,70 +52,78 @@ export class SchulconnexToolProvisioningService {
 
 		const mediaLicenses: MediumIdentifier[] = [...mediaUserLicenses, ...mediaSchoolLicenses];
 
-		await Promise.all(
-			mediaLicenses.map(async (license: MediumIdentifier): Promise<void> => {
-				let externalTool: ExternalTool | null = await this.externalToolService.findExternalToolByMedium(
-					license.mediumId,
-					license.mediaSource?.sourceId
-				);
-
-				if (!externalTool) {
-					externalTool = await this.provisionExternalTool(license);
-				}
-
-				if (
-					externalTool?.medium?.status !== ExternalToolMediumStatus.ACTIVE ||
-					!this.hasOnlyGlobalParamters(externalTool)
-				) {
-					return;
-				}
-
-				const schoolExternalTools: SchoolExternalTool[] = await this.schoolExternalToolService.findSchoolExternalTools({
-					schoolId,
-					toolId: externalTool.id,
-				});
-
-				if (schoolExternalTools.length === 0) {
-					const schoolExternalTool: SchoolExternalTool = await this.createSchoolExternalTool(externalTool, schoolId);
-
-					this.logger.notice(new SchoolExternalToolCreatedLoggable(userId, license, schoolExternalTool));
-				}
-			})
+		const results = await Promise.allSettled(
+			mediaLicenses.map((license: MediumIdentifier): Promise<void> =>
+				this.provisionExternalToolForLicense(userId, schoolId, license)
+			)
 		);
+
+		results.forEach((result: PromiseSettledResult<void>, index: number): void => {
+			if (result.status === 'rejected') {
+				this.logger.warning(
+					new ExternalToolProvisioningFailedLoggable(userId, schoolId, mediaLicenses[index], result.reason)
+				);
+			}
+		});
 	}
 
-	private async provisionExternalTool(medium: MediumIdentifier): Promise<ExternalTool | null> {
-		const template: ExternalTool | null = await this.externalToolService.findTemplate(medium.mediaSource?.sourceId);
+	private async provisionExternalToolForLicense(
+		userId: EntityId,
+		schoolId: EntityId,
+		license: MediumIdentifier
+	): Promise<void> {
+		let externalTool: ExternalTool | null = await this.externalToolService.findExternalToolByMedium(
+			license.mediumId,
+			license.mediaSource?.sourceId
+		);
 
-		if (!template) {
-			return null;
+		if (!externalTool) {
+			externalTool = await this.provisionExternalTool(license);
+			this.logger.notice(new ExternalToolCreatedLoggable(userId, schoolId, license, externalTool));
 		}
 
-		const externalTool: ExternalTool = new ExternalTool({
+		if (
+			externalTool?.medium?.status !== ExternalToolMediumStatus.ACTIVE ||
+			!this.hasOnlyGlobalParamters(externalTool)
+		) {
+			this.logger.warning(
+				new ExternalToolProvisioningFailedLoggable(
+					userId,
+					schoolId,
+					license,
+					new Error('External tool is not active or has non-global parameters')
+				)
+			);
+			return;
+		}
+
+		await this.provisionSchoolExternalTool(userId, schoolId, license, externalTool);
+	}
+
+	private async provisionExternalTool(medium: MediumIdentifier): Promise<ExternalTool> {
+		const template = await this.externalToolService.findTemplate(medium.mediaSource?.sourceId);
+
+		if (!template || !template.medium) {
+			throw new NotFoundException(`No template found for media source ${medium.mediaSource?.sourceId}`);
+		}
+
+		template.medium.status = ExternalToolMediumStatus.DRAFT;
+		template.medium.mediumId = medium.mediumId;
+
+		const externalTool = new ExternalTool({
 			...template.getProps(),
 			id: new ObjectId().toHexString(),
 			name: `Draft: ${medium.mediaSource?.sourceId ?? '-'} ${medium.mediumId}`,
 			thumbnail: undefined, // Thumbnail reference has to be removed to avoid multiple tools pointing to the same file
 		});
 
-		if (!externalTool.medium) {
-			return null;
-		}
-
-		externalTool.medium.status = ExternalToolMediumStatus.DRAFT;
-		externalTool.medium.mediumId = medium.mediumId;
-
 		await this.updateMetadata(externalTool, medium);
 
-		try {
-			await this.externalToolValidationService.validateCreate(externalTool);
+		await this.externalToolValidationService.validateCreate(externalTool);
 
-			const savedTool: ExternalTool = await this.externalToolService.createExternalTool(externalTool);
+		const savedTool = await this.externalToolService.createExternalTool(externalTool);
 
-			return savedTool;
-		} catch {
-			return null;
-		}
+		return savedTool;
 	}
 
 	private async updateMetadata(externalTool: ExternalTool, medium: MediumIdentifier): Promise<void> {
@@ -133,6 +146,7 @@ export class SchulconnexToolProvisioningService {
 			externalTool.medium.status = ExternalToolMediumStatus.ACTIVE;
 		} catch (error: unknown) {
 			this.logger.warning(new ExternalToolMetadataUpdateFailedLoggable(externalTool, medium, error));
+			// do not throw error, as we still want to provision the tool, even if metadata update fails
 		}
 	}
 
@@ -142,6 +156,24 @@ export class SchulconnexToolProvisioningService {
 			externalTool.parameters.every((param: CustomParameter) => param.scope === CustomParameterScope.GLOBAL);
 
 		return hasOnlyGlobalParameters;
+	}
+
+	private async provisionSchoolExternalTool(
+		userId: EntityId,
+		schoolId: EntityId,
+		license: MediumIdentifier,
+		externalTool: ExternalTool
+	): Promise<void> {
+		const schoolExternalTools: SchoolExternalTool[] = await this.schoolExternalToolService.findSchoolExternalTools({
+			schoolId,
+			toolId: externalTool.id,
+		});
+
+		if (schoolExternalTools.length === 0) {
+			const schoolExternalTool: SchoolExternalTool = await this.createSchoolExternalTool(externalTool, schoolId);
+
+			this.logger.notice(new SchoolExternalToolCreatedLoggable(userId, license, schoolExternalTool));
+		}
 	}
 
 	private async createSchoolExternalTool(externalTool: ExternalTool, schoolId: EntityId): Promise<SchoolExternalTool> {
