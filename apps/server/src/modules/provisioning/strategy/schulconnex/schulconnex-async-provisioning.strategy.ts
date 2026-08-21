@@ -183,7 +183,7 @@ export class SchulconnexAsyncProvisioningStrategy extends ProvisioningStrategy {
 		}
 
 		if (this.config.featureSchulconnexMediaLicenseEnabled && user.id) {
-			await this.schulconnexLicenseProvisioningProducer.provisonLicenses({
+			await this.schulconnexLicenseProvisioningProducer.provisionLicenses({
 				userId: user.id,
 				schoolId: user.schoolId,
 				systemId,
