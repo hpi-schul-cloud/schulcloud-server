@@ -11,6 +11,10 @@ const logger = require('../../../logger');
  */
 class EtherpadClient {
 	constructor() {
+		if(!Configuration.has('FEATURE_ETHERPAD_ENABLED') || !Configuration.get('FEATURE_ETHERPAD_ENABLED')) {
+			throw new Error('EtherpadClient is disabled. Please enable FEATURE_ETHERPAD_ENABLED in your configuration.');
+		}
+
 		if (Configuration.has('ETHERPAD__URI')) {
 			this.uri = () => Configuration.get('ETHERPAD__URI');
 			logger.info('Etherpad uri is set to=', this.uri());
