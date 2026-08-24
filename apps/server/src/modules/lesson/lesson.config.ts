@@ -13,5 +13,5 @@ export class LessonConfig {
 	@ConfigProperty('FEATURE_ETHERPAD_ENABLED')
 	@StringToBoolean()
 	@IsBoolean()
-	public featureEtherpadEnabled = true;
+	public featureEtherpadEnabled = false;
 }

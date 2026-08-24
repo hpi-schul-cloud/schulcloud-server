@@ -25,7 +25,7 @@ export class BoardPublicApiConfig {
 	@ConfigProperty('FEATURE_COLUMN_BOARD_COLLABORATIVE_TEXT_EDITOR_ENABLED')
 	@StringToBoolean()
 	@IsBoolean()
-	public featureColumnBoardCollaborativeTextEditorEnabled = true;
+	public featureColumnBoardCollaborativeTextEditorEnabled = false;
 
 	@ConfigProperty('FEATURE_COLUMN_BOARD_SOCKET_ENABLED')
 	@StringToBoolean()
