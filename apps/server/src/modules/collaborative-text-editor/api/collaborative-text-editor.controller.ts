@@ -33,7 +33,9 @@ export class CollaborativeTextEditorController {
 		res.cookie('sessionID', textEditor.sessionId, {
 			expires: textEditor.sessionExpiryDate,
 			secure: true,
-			path: textEditor.path,
+			path: '/etherpad/', //textEditor.path,
+			sameSite: 'lax',
+			httpOnly: true,
 		});
 
 		const dto = CollaborativeTextEditorMapper.mapCollaborativeTextEditorToResponse(textEditor);
