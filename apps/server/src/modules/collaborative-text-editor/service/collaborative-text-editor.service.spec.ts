@@ -387,4 +387,105 @@ describe('CollaborativeTextEditorService', () => {
 			});
 		});
 	});
+
+	describe('getSessionIdsOfAuthor', () => {
+		describe('WHEN there is one session for the author', () => {
+			const setup = () => {
+				const userId = 'userId';
+				const authorId = 'authorId';
+				const sessionIds = ['sessionId1', 'sessionId2'];
+
+				etherpadClientAdapter.getOrCreateAuthorId.mockResolvedValueOnce(authorId);
+				etherpadClientAdapter.listSessionIdsOfAuthor.mockResolvedValueOnce(sessionIds);
+
+				return { userId, authorId, sessionIds };
+			};
+
+			it('should return its session id', async () => {
+				const { userId, sessionIds } = setup();
+
+				const result = await service.getSessionIdsOfAuthor(userId);
+
+				expect(result).toEqual(sessionIds);
+			});
+		});
+
+		describe('WHEN there is no session for the author', () => {
+			const setup = () => {
+				const userId = 'userId';
+				const authorId = 'authorId';
+				const sessionIds: string[] = [];
+
+				etherpadClientAdapter.getOrCreateAuthorId.mockResolvedValueOnce(authorId);
+				etherpadClientAdapter.listSessionIdsOfAuthor.mockResolvedValueOnce(sessionIds);
+
+				return { userId, authorId, sessionIds };
+			};
+
+			it('should return an empty array', async () => {
+				const { userId, sessionIds } = setup();
+
+				const result = await service.getSessionIdsOfAuthor(userId);
+
+				expect(result).toEqual(sessionIds);
+			});
+		});
+
+		describe('WHEN there are multiple sessions for the author', () => {
+			const setup = () => {
+				const userId = 'userId';
+				const authorId = 'authorId';
+				const sessionIds = ['sessionId1', 'sessionId2', 'sessionId3'];
+
+				etherpadClientAdapter.getOrCreateAuthorId.mockResolvedValueOnce(authorId);
+				etherpadClientAdapter.listSessionIdsOfAuthor.mockResolvedValueOnce(sessionIds);
+
+				return { userId, authorId, sessionIds };
+			};
+
+			it('should return all session ids', async () => {
+				const { userId, sessionIds } = setup();
+
+				const result = await service.getSessionIdsOfAuthor(userId);
+
+				expect(result).toEqual(sessionIds);
+			});
+		});
+
+		describe('WHEN etherpadClientAdapter.getOrCreateAuthorId throws an error', () => {
+			const setup = () => {
+				const userId = 'userId';
+				const error = new Error('error');
+
+				etherpadClientAdapter.getOrCreateAuthorId.mockRejectedValueOnce(error);
+
+				return { userId, error };
+			};
+
+			it('should throw an error', async () => {
+				const { userId, error } = setup();
+
+				await expect(service.getSessionIdsOfAuthor(userId)).rejects.toThrow(error);
+			});
+		});
+
+		describe('WHEN etherpadClientAdapter.listSessionIdsOfAuthor throws an error', () => {
+			const setup = () => {
+				const userId = 'userId';
+				const authorId = 'authorId';
+				const error = new Error('error');
+
+				etherpadClientAdapter.getOrCreateAuthorId.mockResolvedValueOnce(authorId);
+				etherpadClientAdapter.listSessionIdsOfAuthor.mockRejectedValueOnce(error);
+
+				return { userId, authorId, error };
+			};
+
+			it('should throw an error', async () => {
+				const { userId, error } = setup();
+
+				await expect(service.getSessionIdsOfAuthor(userId)).rejects.toThrow(error);
+			});
+		});
+	});
 });
