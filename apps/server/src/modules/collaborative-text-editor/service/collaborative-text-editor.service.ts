@@ -49,6 +49,13 @@ export class CollaborativeTextEditorService {
 		};
 	}
 
+	public async getSessionIdsOfAuthor(userId: string): Promise<string[]> {
+		const authorId = await this.collaborativeTextEditorAdapter.getOrCreateAuthorId(userId);
+		const sessionIds = await this.collaborativeTextEditorAdapter.listSessionIdsOfAuthor(authorId);
+
+		return sessionIds;
+	}
+
 	public async deleteCollaborativeTextEditorByParentId(parentId: string): Promise<void> {
 		const groupId = await this.collaborativeTextEditorAdapter.getOrCreateGroupId(parentId);
 
