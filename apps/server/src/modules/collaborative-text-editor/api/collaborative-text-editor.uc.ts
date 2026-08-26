@@ -37,6 +37,14 @@ export class CollaborativeTextEditorUc {
 		return textEditor;
 	}
 
+	public async getSessionIdsOfUser(userId: EntityId): Promise<string[]> {
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+
+		const sessionIds = await this.collaborativeTextEditorService.getSessionIdsOfAuthor(user.id);
+
+		return sessionIds;
+	}
+
 	public async deleteSessionsByUser(userId: EntityId): Promise<void> {
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 

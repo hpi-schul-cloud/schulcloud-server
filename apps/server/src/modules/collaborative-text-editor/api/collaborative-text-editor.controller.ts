@@ -30,10 +30,15 @@ export class CollaborativeTextEditorController {
 			getCollaborativeTextEditorForParentParams
 		);
 
-		res.cookie('sessionID', textEditor.sessionId, {
+		const sessionIds = await this.collaborativeTextEditorUc.getSessionIdsOfUser(currentUser.userId);
+		const sessionIdList = sessionIds.join(',');
+
+		res.cookie('sessionID', sessionIdList, {
 			expires: textEditor.sessionExpiryDate,
 			secure: true,
-			path: textEditor.path,
+			path: '/etherpad/',
+			sameSite: 'lax',
+			httpOnly: true,
 		});
 
 		const dto = CollaborativeTextEditorMapper.mapCollaborativeTextEditorToResponse(textEditor);
