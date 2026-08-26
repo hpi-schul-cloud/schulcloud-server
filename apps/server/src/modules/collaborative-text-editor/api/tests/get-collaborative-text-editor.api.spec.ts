@@ -137,10 +137,10 @@ describe('Collaborative Text Editor Controller (API)', () => {
 
 					const editorId = 'editorId';
 					etherpadClientAdapter.getOrCreateEtherpadId.mockResolvedValueOnce(editorId);
-					const otherSessionIds = [];
-					etherpadClientAdapter.listSessionIdsOfAuthor.mockResolvedValueOnce(otherSessionIds);
 					const sessionId = 'sessionId';
 					etherpadClientAdapter.getOrCreateSessionId.mockResolvedValueOnce(sessionId);
+					const otherSessionIds = [sessionId];
+					etherpadClientAdapter.listSessionIdsOfAuthor.mockResolvedValueOnce(otherSessionIds);
 
 					const basePath = 'http://localhost:9001/p';
 					const expectedPath = `${basePath}/${editorId}`;
@@ -160,14 +160,8 @@ describe('Collaborative Text Editor Controller (API)', () => {
 				};
 
 				it('should return response and set cookie', async () => {
-					const {
-						loggedInClient,
-						collaborativeTextEditorElement,
-						expectedPath,
-						sessionId,
-						sessionCookieExpiryDate,
-						editorId,
-					} = await setup();
+					const { loggedInClient, collaborativeTextEditorElement, expectedPath, sessionId, sessionCookieExpiryDate } =
+						await setup();
 
 					const response = await loggedInClient.get(`content-element/${collaborativeTextEditorElement.id}`);
 
@@ -176,7 +170,7 @@ describe('Collaborative Text Editor Controller (API)', () => {
 					expect(response.body['url']).toEqual(expectedPath);
 
 					expect(response.headers['set-cookie'][0]).toContain(
-						`sessionID=${sessionId}; Path=/p/${editorId}; Expires=${sessionCookieExpiryDate}`
+						`sessionID=${sessionId}; Path=/etherpad/; Expires=${sessionCookieExpiryDate}`
 					);
 				});
 			});
@@ -209,10 +203,10 @@ describe('Collaborative Text Editor Controller (API)', () => {
 
 					const editorId = 'editorId';
 					etherpadClientAdapter.getOrCreateEtherpadId.mockResolvedValueOnce(editorId);
-					const otherSessionIds = ['otherSessionId1', 'otherSessionId2'];
-					etherpadClientAdapter.listSessionIdsOfAuthor.mockResolvedValueOnce(otherSessionIds);
 					const sessionId = 'sessionId';
 					etherpadClientAdapter.getOrCreateSessionId.mockResolvedValueOnce(sessionId);
+					const allSessionIds = ['otherSessionId1', 'otherSessionId2', sessionId];
+					etherpadClientAdapter.listSessionIdsOfAuthor.mockResolvedValueOnce(allSessionIds);
 
 					const basePath = 'http://localhost:9001/p';
 					const expectedPath = `${basePath}/${editorId}`;
@@ -228,6 +222,7 @@ describe('Collaborative Text Editor Controller (API)', () => {
 						sessionId,
 						sessionCookieExpiryDate,
 						editorId,
+						allSessionIds,
 					};
 				};
 
@@ -236,10 +231,11 @@ describe('Collaborative Text Editor Controller (API)', () => {
 						loggedInClient,
 						collaborativeTextEditorElement,
 						expectedPath,
-						sessionId,
 						sessionCookieExpiryDate,
-						editorId,
+						allSessionIds,
 					} = await setup();
+
+					const concatenatedSessionIds = encodeURIComponent(allSessionIds.join(','));
 
 					const response = await loggedInClient.get(`content-element/${collaborativeTextEditorElement.id}`);
 
@@ -248,7 +244,7 @@ describe('Collaborative Text Editor Controller (API)', () => {
 					expect(response.body['url']).toEqual(expectedPath);
 
 					expect(response.headers['set-cookie'][0]).toContain(
-						`sessionID=${sessionId}; Path=/p/${editorId}; Expires=${sessionCookieExpiryDate}`
+						`sessionID=${concatenatedSessionIds}; Path=/etherpad/; Expires=${sessionCookieExpiryDate}`
 					);
 				});
 			});
@@ -282,8 +278,8 @@ describe('Collaborative Text Editor Controller (API)', () => {
 					const editorId = 'editorId';
 					etherpadClientAdapter.getOrCreateEtherpadId.mockResolvedValueOnce(editorId);
 					const sessionId = 'sessionId';
-					const otherSessionIds = ['sessionId'];
-					etherpadClientAdapter.listSessionIdsOfAuthor.mockResolvedValueOnce(otherSessionIds);
+					const allSessionIds = ['sessionId'];
+					etherpadClientAdapter.listSessionIdsOfAuthor.mockResolvedValueOnce(allSessionIds);
 					etherpadClientAdapter.getOrCreateSessionId.mockResolvedValueOnce(sessionId);
 
 					const basePath = 'http://localhost:9001/p';
@@ -304,14 +300,8 @@ describe('Collaborative Text Editor Controller (API)', () => {
 				};
 
 				it('should return response and set cookie', async () => {
-					const {
-						loggedInClient,
-						collaborativeTextEditorElement,
-						expectedPath,
-						sessionId,
-						sessionCookieExpiryDate,
-						editorId,
-					} = await setup();
+					const { loggedInClient, collaborativeTextEditorElement, expectedPath, sessionId, sessionCookieExpiryDate } =
+						await setup();
 
 					const response = await loggedInClient.get(`content-element/${collaborativeTextEditorElement.id}`);
 
@@ -320,7 +310,7 @@ describe('Collaborative Text Editor Controller (API)', () => {
 					expect(response.body['url']).toEqual(expectedPath);
 
 					expect(response.headers['set-cookie'][0]).toContain(
-						`sessionID=${sessionId}; Path=/p/${editorId}; Expires=${sessionCookieExpiryDate}`
+						`sessionID=${sessionId}; Path=/etherpad/; Expires=${sessionCookieExpiryDate}`
 					);
 				});
 			});
