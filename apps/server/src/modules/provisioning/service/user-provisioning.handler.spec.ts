@@ -660,6 +660,59 @@ describe('UserProvisioningHandler', () => {
 			});
 		});
 
+		describe('when context is provided for school assignment', () => {
+			it('should update the schoolId to the matching school', async () => {
+				const school = schoolFactory.build();
+				const user = userDoFactory.buildWithId({ schoolId: new ObjectId().toHexString() });
+				const system: ProvisioningSystemDto = provisioningSystemDtoFactory.build();
+				const externalSchool: ExternalSchoolDto = externalSchoolDtoFactory.build({
+					externalId: school.externalId,
+				});
+				const externalUser: ExternalUserDto = externalUserDtoFactory.build({
+					roles: [],
+				});
+				const context: ProvisioningContext = { system, externalSchool, externalUser };
+
+				schoolServiceMock.getSchools.mockResolvedValueOnce([school]);
+				userServiceMock.save.mockResolvedValueOnce(user);
+
+				await sut.update(user, externalUser, context);
+
+				expect(user.schoolId).toBe(school.id);
+				expect(userServiceMock.save).toHaveBeenCalledWith(user);
+			});
+
+			it('should throw SchoolMissingLoggableException when the school cannot be resolved', async () => {
+				const user = userDoFactory.buildWithId();
+				const system: ProvisioningSystemDto = provisioningSystemDtoFactory.build();
+				const externalSchool: ExternalSchoolDto = externalSchoolDtoFactory.build();
+				const externalUser: ExternalUserDto = externalUserDtoFactory.build({
+					roles: [],
+				});
+				const context: ProvisioningContext = { system, externalSchool, externalUser };
+
+				schoolServiceMock.getSchools.mockResolvedValueOnce([]);
+
+				await expect(sut.update(user, externalUser, context)).rejects.toThrow(SchoolMissingLoggableException);
+			});
+		});
+
+		describe('when context is not provided', () => {
+			it('should keep the existing schoolId', async () => {
+				const user = userDoFactory.buildWithId({ schoolId: new ObjectId().toHexString() });
+				const externalUser: ExternalUserDto = externalUserDtoFactory.build({
+					roles: [],
+				});
+
+				userServiceMock.save.mockResolvedValueOnce(user);
+
+				await sut.update(user, externalUser);
+
+				expect(user.schoolId).toBeDefined();
+				expect(userServiceMock.save).toHaveBeenCalledWith(user);
+			});
+		});
+
 		describe('when externalUser has no properties to update', () => {
 			it('should not update user properties', async () => {
 				const originalFirstName = 'Original';

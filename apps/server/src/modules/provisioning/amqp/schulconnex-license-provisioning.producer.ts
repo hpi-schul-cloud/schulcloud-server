@@ -14,7 +14,7 @@ export class SchulconnexLicenseProvisioningProducer {
 		@Inject(PROVISIONING_EXCHANGE_CONFIG_TOKEN) private readonly config: InternalProvisioningExchangeConfig
 	) {}
 
-	public async provisonLicenses(message: SchulconnexLicenseProvisioningMessage): Promise<void> {
+	public async provisionLicenses(message: SchulconnexLicenseProvisioningMessage): Promise<void> {
 		await this.amqpConnection.publish(
 			this.config.exchangeName,
 			SchulconnexProvisioningEvents.LICENSE_PROVISIONING,

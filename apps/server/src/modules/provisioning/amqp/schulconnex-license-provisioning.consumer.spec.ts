@@ -133,7 +133,7 @@ describe(SchulconnexLicenseProvisioningConsumer.name, () => {
 	});
 
 	describe('provisionLicenses', () => {
-		describe('when provisioning a new group', () => {
+		describe('when provisioning is successful', () => {
 			const setup = () => {
 				const userId = new ObjectId().toHexString();
 				const schoolId = new ObjectId().toHexString();

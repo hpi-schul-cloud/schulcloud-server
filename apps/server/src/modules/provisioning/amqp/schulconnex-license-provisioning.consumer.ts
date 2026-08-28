@@ -45,6 +45,7 @@ export class SchulconnexLicenseProvisioningConsumer implements OnModuleInit {
 				payload.userId,
 				payload.externalLicenses
 			);
+
 			await this.schulconnexToolProvisioningService.provisionSchoolExternalTools(
 				payload.userId,
 				payload.schoolId,

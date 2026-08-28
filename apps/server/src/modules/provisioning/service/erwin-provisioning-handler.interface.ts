@@ -29,5 +29,9 @@ export interface ProvisioningEntityHandler {
 	findByEntityId(entityId: string): Promise<ProvisioningResult | null>;
 	findByExternalId(context: ProvisioningContext): Promise<ProvisioningResult | null>;
 	create(context: ProvisioningContext): Promise<ProvisioningResult>;
-	update(entity: ProvisioningResult, externalData: ExternalEntityData): Promise<ProvisioningResult>;
+	update(
+		entity: ProvisioningResult,
+		externalData: ExternalEntityData,
+		context: ProvisioningContext
+	): Promise<ProvisioningResult>;
 }

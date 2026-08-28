@@ -58,7 +58,7 @@ export class ErwinProvisioningService {
 				const entity: ProvisioningResult | null = await handler.findByEntityId(erwinIdentifier.referencedEntityId);
 
 				if (entity) {
-					return externalData.externalId ? handler.update(entity, externalData) : entity;
+					return externalData.externalId ? handler.update(entity, externalData, context) : entity;
 				}
 			}
 		}
@@ -72,7 +72,7 @@ export class ErwinProvisioningService {
 		const entityByExternalId = await handler.findByExternalId(context);
 
 		if (entityByExternalId) {
-			const updated = await handler.update(entityByExternalId, externalData);
+			const updated = await handler.update(entityByExternalId, externalData, context);
 
 			if (erwinId) {
 				await this.addErwinIdReference(handler.referencedEntityType, this.getEntityId(updated), erwinId);
