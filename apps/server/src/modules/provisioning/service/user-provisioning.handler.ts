@@ -107,7 +107,11 @@ export class UserProvisioningHandler implements ProvisioningEntityHandler {
 		return savedUser;
 	}
 
-	public async update(entity: ProvisioningResult, data: ExternalEntityData): Promise<UserDo> {
+	public async update(
+		entity: ProvisioningResult,
+		data: ExternalEntityData,
+		context?: ProvisioningContext
+	): Promise<UserDo> {
 		const user = entity as UserDo;
 		const externalUser = data as ExternalUserDto;
 
@@ -136,6 +140,15 @@ export class UserProvisioningHandler implements ProvisioningEntityHandler {
 			if (roleRefs?.length) {
 				user.roles = roleRefs;
 			}
+		}
+
+		if (context) {
+			const school = await this.findSchoolByExternalId(context);
+			if (!school) {
+				throw new SchoolMissingLoggableException(externalUser);
+			}
+
+			user.schoolId = school.id;
 		}
 
 		return this.userService.save(user);
