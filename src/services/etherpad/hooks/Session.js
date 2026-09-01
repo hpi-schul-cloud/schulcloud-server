@@ -41,9 +41,11 @@ const getGroupData = async (context) => {
 };
 
 const getSessionInformation = async (context) => {
-	const sessionListPromise = EtherpadClient.getactiveSessions({ authorID: context.data.authorID });
+	console.log('getSessionInformation context.data', context.data);
+	const sessionListPromise = EtherpadClient.getActiveSessions({ authorID: context.data.authorID });
 	try {
 		const response = await sessionListPromise;
+		console.log('getSessionInformation response', response);
 		// Collect all active sessions for this author
 		const activeSessionIds = [];
 		
@@ -54,7 +56,6 @@ const getSessionInformation = async (context) => {
 			
 			// Collect all valid active session IDs
 			Object.keys(responseData)
-				.filter((sessionID) => responseData[sessionID] !== null && responseData[sessionID] !== undefined)
 				.forEach((sessionID) => {
 					const sessionData = responseData[sessionID];
 					const diffSeconds = sessionData.validUntil - unixTimestamp;
@@ -84,7 +85,7 @@ const getSessionInformation = async (context) => {
 			};
 		}
 		
-		context.data.activeSessionIds = activeSessionIds;
+		
 
 		if (context.data.sessionID === undefined || context.data.sessionID === null) {
 			const { cookieExpiresSeconds } = EtherpadClient;
@@ -95,12 +96,19 @@ const getSessionInformation = async (context) => {
 			const createResponse = await sessionCreatePromise;
 
 			if (createResponse.data !== undefined && createResponse.data !== null) {
+				const { sessionID } = createResponse.data;
 				context.data = {
 					...context.data,
-					sessionID: createResponse.data.sessionID,
+					sessionID,
 				};
+				activeSessionIds.push(sessionID);
 			}
 		}
+
+		console.log('activeSessionIds', activeSessionIds);
+
+		context.data.activeSessionIds = activeSessionIds;
+		console.log('context.data', context.data);
 
 		return context;
 	} catch (err) {
