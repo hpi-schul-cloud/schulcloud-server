@@ -41,19 +41,34 @@ const getGroupData = async (context) => {
 };
 
 const getSessionInformation = async (context) => {
-	const sessionListPromise = EtherpadClient.getActiveSessions({ authorID: context.data.authorID });
+	const sessionListPromise = EtherpadClient.getactiveSessions({ authorID: context.data.authorID });
 	try {
 		const response = await sessionListPromise;
+		// Collect all active sessions for this author
+		const activeSessionIds = [];
+		
 		// Return existing session from hooks
 		if (response?.data !== undefined && response.data !== null) {
 			const responseData = response.data;
 			const unixTimestamp = Number.parseInt(new Date(Date.now()).getTime() / 1000, 10);
+			
+			// Collect all valid active session IDs
+			Object.keys(responseData)
+				.filter((sessionID) => responseData[sessionID] !== null && responseData[sessionID] !== undefined)
+				.forEach((sessionID) => {
+					const sessionData = responseData[sessionID];
+					const diffSeconds = sessionData.validUntil - unixTimestamp;
+					if (diffSeconds > 0) {
+						activeSessionIds.push(sessionID);
+					}
+				});
 			const foundSessionID = Object.keys(responseData)
 				.filter((sessionID) => responseData[sessionID] !== null && responseData[sessionID] !== undefined)
 				.find((sessionID) => {
-					const diffSeconds = responseData[sessionID].validUntil - unixTimestamp;
+					const sessionData = responseData[sessionID];
+					const diffSeconds = sessionData.validUntil - unixTimestamp;
 					return (
-						responseData[sessionID].groupID === context.data.groupID &&
+						sessionData.groupID === context.data.groupID &&
 						diffSeconds >= EtherpadClient.cookieReleaseThreshold
 					);
 				});
@@ -68,6 +83,8 @@ const getSessionInformation = async (context) => {
 				validUntil,
 			};
 		}
+		
+		context.data.activeSessionIds = activeSessionIds;
 
 		if (context.data.sessionID === undefined || context.data.sessionID === null) {
 			const { cookieExpiresSeconds } = EtherpadClient;
