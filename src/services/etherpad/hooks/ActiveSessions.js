@@ -63,7 +63,7 @@ const getActiveSessions = async (context) => {
 
 const before = {
 	all: [authenticate('jwt')],
-	find: [disallow()],
+	find: [getAuthorData, getGroupData, getActiveSessions],
 	get: [getAuthorData, getGroupData, getActiveSessions],
 	create: [disallow()],
 	update: [disallow()],
