@@ -59,7 +59,6 @@ class EtherpadClient {
 	}
 
 	createOrGetAuthor(params) {
-		console.trace('EtherpadClient.createOrGetAuthor', params);
 		const url = this.createUrl('createAuthorIfNotExistsFor', params);
 		return axios(url)
 			.then((res) => this.handleEtherpadResponse(res))
@@ -69,7 +68,6 @@ class EtherpadClient {
 	}
 
 	createOrGetGroup(params) {
-		console.trace('EtherpadClient.createOrGetGroup', params);
 		const url = this.createUrl('createGroupIfNotExistsFor', params);
 		return axios(url)
 			.then((res) => this.handleEtherpadResponse(res))
@@ -79,7 +77,6 @@ class EtherpadClient {
 	}
 
 	getActiveSessions(params) {
-		console.trace('EtherpadClient.getActiveSessions', params);
 		const url = this.createUrl('listSessionsOfAuthor', params);
 		return axios(url)
 			.then((res) => this.handleEtherpadResponse(res))

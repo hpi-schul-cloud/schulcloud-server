@@ -41,11 +41,10 @@ const getGroupData = async (context) => {
 };
 
 const getSessionInformation = async (context) => {
-	console.log('getSessionInformation context.data', context.data);
 	const sessionListPromise = EtherpadClient.getActiveSessions({ authorID: context.data.authorID });
 	try {
 		const response = await sessionListPromise;
-		console.log('getSessionInformation response', response);
+
 		// Collect all active sessions for this author
 		const activeSessionIds = [];
 		
@@ -63,6 +62,7 @@ const getSessionInformation = async (context) => {
 						activeSessionIds.push(sessionID);
 					}
 				});
+
 			const foundSessionID = Object.keys(responseData)
 				.filter((sessionID) => responseData[sessionID] !== null && responseData[sessionID] !== undefined)
 				.find((sessionID) => {
@@ -105,10 +105,7 @@ const getSessionInformation = async (context) => {
 			}
 		}
 
-		console.log('activeSessionIds', activeSessionIds);
-
 		context.data.activeSessionIds = activeSessionIds;
-		console.log('context.data', context.data);
 
 		return context;
 	} catch (err) {
