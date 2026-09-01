@@ -11,6 +11,7 @@ class Session {
 			data: {
 				sessionID: params.sessionID,
 				validUntil: params.validUntil,
+				activeSessionIds: params.activeSessionIds || [],
 			},
 		});
 	}
