@@ -1,6 +1,8 @@
-import { type AnyMediaBoardNode, isAnyMediaElement, type Colors } from './types';
+import { DeletedElement } from '../deleted-element.do';
+import { type AnyMediaBoardNode, type Colors } from './types';
 import type { MediaLineProps } from '../types';
 import { BoardNode } from '../board-node.do';
+import { MediaExternalToolElement } from './media-external-tool-element.do';
 
 export class MediaLine extends BoardNode<MediaLineProps> {
 	get title(): string {
@@ -28,7 +30,8 @@ export class MediaLine extends BoardNode<MediaLineProps> {
 	}
 
 	public canHaveChild(childNode: AnyMediaBoardNode): boolean {
-		const allowed: boolean = isAnyMediaElement(childNode);
+		// Using direct instanceof checks to avoid circular dependency with guards/
+		const allowed: boolean = childNode instanceof MediaExternalToolElement || childNode instanceof DeletedElement;
 
 		return allowed;
 	}
