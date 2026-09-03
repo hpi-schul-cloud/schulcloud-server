@@ -5,7 +5,14 @@ import { ApiTags } from '@nestjs/swagger';
 import { RequestTimeout } from '@shared/common/decorators';
 import { PaginationParams } from '@shared/controller/dto';
 import { TASK_INCOMING_REQUEST_TIMEOUT_COPY_API_KEY } from '../timeout.config';
-import { TaskCopyApiParams, TaskListResponse, TaskResponse, TaskUrlParams } from './dto';
+import {
+	TaskCopyApiParams,
+	TaskCreateParams,
+	TaskListResponse,
+	TaskResponse,
+	TaskUpdateParams,
+	TaskUrlParams,
+} from './dto';
 import { TaskMapper } from './mapper';
 import { TaskCopyUC } from './task-copy.uc';
 import { TaskUC } from './task.uc';
@@ -37,6 +44,37 @@ export class TaskController {
 		const result = await this.findAllTasks(currentUser, pagination, true);
 
 		return result;
+	}
+
+	@Get(':taskId')
+	public async findById(
+		@Param() urlParams: TaskUrlParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<TaskResponse> {
+		const task = await this.taskUc.findById(currentUser.userId, urlParams.taskId);
+
+		return TaskMapper.mapToResponse(task);
+	}
+
+	@Post()
+	public async create(
+		@Body() params: TaskCreateParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<TaskResponse> {
+		const task = await this.taskUc.create(currentUser.userId, params);
+
+		return TaskMapper.mapToResponse(task);
+	}
+
+	@Patch(':taskId')
+	public async update(
+		@Param() urlParams: TaskUrlParams,
+		@Body() params: TaskUpdateParams,
+		@CurrentUser() currentUser: ICurrentUser
+	): Promise<TaskResponse> {
+		const task = await this.taskUc.update(currentUser.userId, urlParams.taskId, params);
+
+		return TaskMapper.mapToResponse(task);
 	}
 
 	private async findAllTasks(
