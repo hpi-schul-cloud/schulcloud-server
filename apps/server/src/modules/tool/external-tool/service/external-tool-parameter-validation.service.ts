@@ -86,18 +86,22 @@ export class ExternalToolParameterValidationService {
 			return true;
 		}
 
-		const duplicates: ExternalTool[] = await this.externalToolService.findExternalToolsByName(externalTool.name);
-		if (duplicates.length === 0) {
-			return true;
+		const allWithName = await this.externalToolService.findExternalToolsByName(externalTool.name);
+		const duplicates: ExternalTool[] = allWithName.filter((duplicate) => duplicate.id !== externalTool.id);
+
+		if (externalTool.isMediaTool()) {
+			return this.noneWithSameMediumIdentity(externalTool, duplicates);
+		} else {
+			return this.noOtherNonMediaTool(duplicates);
 		}
+	}
 
-		if (duplicates.length > 1) {
-			return false;
-		}
+	private noOtherNonMediaTool(toolsWithSameName: ExternalTool[]): boolean {
+		return toolsWithSameName.every((tool: ExternalTool) => tool.isMediaTool());
+	}
 
-		const isDuplicateSelf = duplicates[0].id === externalTool.id;
-
-		return isDuplicateSelf;
+	private noneWithSameMediumIdentity(externalTool: ExternalTool, toolsWithSameName: ExternalTool[]): boolean {
+		return toolsWithSameName.every((tool: ExternalTool) => !tool.hasSameMediumIdentity(externalTool));
 	}
 
 	private isCustomParameterNameEmpty(param: CustomParameter): boolean {

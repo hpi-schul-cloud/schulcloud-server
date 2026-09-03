@@ -50,11 +50,11 @@ export class SchulconnexToolProvisioningService {
 		const mediaSchoolLicenses: MediaSchoolLicense[] =
 			await this.mediaSchoolLicenseService.findMediaSchoolLicensesBySchoolId(schoolId);
 
-		const mediaLicenses: MediumIdentifier[] = [...mediaUserLicenses, ...mediaSchoolLicenses];
+		const mediaLicenses: MediumIdentifier[] = this.getUniqueMediaLicenses(mediaUserLicenses, mediaSchoolLicenses);
 
 		const results = await Promise.allSettled(
-			mediaLicenses.map((license: MediumIdentifier): Promise<void> =>
-				this.provisionExternalToolForLicense(userId, schoolId, license)
+			mediaLicenses.map(
+				(license: MediumIdentifier): Promise<void> => this.provisionExternalToolForLicense(userId, schoolId, license)
 			)
 		);
 
@@ -65,6 +65,20 @@ export class SchulconnexToolProvisioningService {
 				);
 			}
 		});
+	}
+
+	private getUniqueMediaLicenses(
+		mediaUserLicenses: MediaUserLicense[],
+		mediaSchoolLicenses: MediaSchoolLicense[]
+	): MediumIdentifier[] {
+		return Array.from(
+			new Map(
+				[...mediaUserLicenses, ...mediaSchoolLicenses].map((license: MediumIdentifier) => [
+					JSON.stringify([license.mediaSource?.sourceId, license.mediumId]),
+					license,
+				])
+			).values()
+		);
 	}
 
 	private async provisionExternalToolForLicense(
