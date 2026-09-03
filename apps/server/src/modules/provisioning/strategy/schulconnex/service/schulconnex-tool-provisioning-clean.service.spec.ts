@@ -466,6 +466,35 @@ describe(SchulconnexToolProvisioningService.name, () => {
 		});
 
 		describe('processing multiple licenses', () => {
+			it('should provision different media with the same name', async () => {
+				const scenario = createScenario();
+				const secondLicense = mediaSchoolLicenseFactory.build({
+					schoolId: scenario.schoolId,
+					mediumId: 'second-medium-id',
+					mediaSource: mediaSourceFactory.build({ sourceId: 'second-media-source-id' }),
+				});
+				const secondTool = createActiveExternalTool(secondLicense as unknown as MediaUserLicense);
+				scenario.externalTool.name = 'same medium name';
+				secondTool.name = scenario.externalTool.name;
+				mediaSchoolLicenseService.findMediaSchoolLicensesBySchoolId.mockResolvedValue([secondLicense]);
+				externalToolService.findExternalToolByMedium.mockImplementation((mediumId) => {
+					if (mediumId === scenario.license.mediumId) {
+						return Promise.resolve(scenario.externalTool);
+					}
+					return Promise.resolve(secondTool);
+				});
+
+				await provision(scenario);
+
+				expect(schoolExternalToolService.saveSchoolExternalTool).toHaveBeenCalledTimes(2);
+				expect(schoolExternalToolService.saveSchoolExternalTool).toHaveBeenCalledWith(
+					expect.objectContaining({ toolId: scenario.externalTool.id, schoolId: scenario.schoolId })
+				);
+				expect(schoolExternalToolService.saveSchoolExternalTool).toHaveBeenCalledWith(
+					expect.objectContaining({ toolId: secondTool.id, schoolId: scenario.schoolId })
+				);
+			});
+
 			describe('when one license fails', () => {
 				const createPartialFailureScenario = (): { scenario: Scenario; secondTool: ExternalTool } => {
 					const scenario = createScenario();

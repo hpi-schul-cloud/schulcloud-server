@@ -75,7 +75,7 @@ describe('ExternalToolParameterValidationService', () => {
 
 		describe('when checking if tool name is unique', () => {
 			describe('when name already exists', () => {
-				it('should throw an exception', async () => {
+				it('should throw an exception for non-medium tools', async () => {
 					const externalTool: ExternalTool = externalToolFactory.build({ name: 'sameName' });
 					const existingExternalToolDO: ExternalTool = externalToolFactory.buildWithId({ name: 'sameName' });
 					createScenario({ externalTool, existingExternalTools: [existingExternalToolDO] });
@@ -85,6 +85,32 @@ describe('ExternalToolParameterValidationService', () => {
 					await expect(result).rejects.toThrow(
 						new ValidationError(`tool_name_duplicate: The tool name "${externalTool.name}" is already used.`)
 					);
+				});
+
+				it('should allow the same name for external tools of different media', async () => {
+					const externalTool: ExternalTool = externalToolFactory
+						.withMedium({ mediumId: 'medium-2', mediaSourceId: 'media-source' })
+						.build({ name: 'sameName' });
+					const existingExternalToolDO: ExternalTool = externalToolFactory
+						.withMedium({ mediumId: 'medium-1', mediaSourceId: 'media-source' })
+						.buildWithId({ name: 'sameName' });
+					createScenario({ externalTool, existingExternalTools: [existingExternalToolDO] });
+
+					const result: Promise<void> = service.validateCommon(externalTool);
+
+					await expect(result).resolves.not.toThrow();
+				});
+
+				it('should allow the same name for a medium tool and a non-medium tool', async () => {
+					const externalTool: ExternalTool = externalToolFactory
+						.withMedium({ mediumId: 'medium-1', mediaSourceId: 'media-source' })
+						.build({ name: 'sameName' });
+					const existingExternalToolDO: ExternalTool = externalToolFactory.buildWithId({ name: 'sameName' });
+					createScenario({ externalTool, existingExternalTools: [existingExternalToolDO] });
+
+					const result: Promise<void> = service.validateCommon(externalTool);
+
+					await expect(result).resolves.not.toThrow();
 				});
 			});
 
@@ -444,6 +470,22 @@ describe('ExternalToolParameterValidationService', () => {
 	});
 
 	describe('isNameUnique', () => {
+		describe('when the external tool belongs to a medium', () => {
+			it('should return true regardless of another tool with the same name', async () => {
+				const externalTool: ExternalTool = externalToolFactory
+					.withMedium({ mediumId: 'medium-2', mediaSourceId: 'media-source' })
+					.build({ name: 'test-name' });
+				const existingExternalTool: ExternalTool = externalToolFactory
+					.withMedium({ mediumId: 'medium-1', mediaSourceId: 'media-source' })
+					.buildWithId({ name: 'test-name' });
+				createScenario({ externalTool, existingExternalTools: [existingExternalTool] });
+
+				const result = await service.isNameUnique(externalTool);
+
+				expect(result).toBe(true);
+			});
+		});
+
 		describe('when there exists no other external tools with the same name', () => {
 			const setup = () => {
 				const externalTool: ExternalTool = externalToolFactory.build({ name: 'test-name' });
