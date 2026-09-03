@@ -213,6 +213,24 @@ export class ExternalTool extends DomainObject<ExternalToolProps> {
 		return ToolConfigType.LTI11 === config.type;
 	}
 
+	public isMediaTool(): boolean {
+		return !!this.medium;
+	}
+
+	public isNonMediaTool(): boolean {
+		return !this.medium;
+	}
+
+	public hasSameMediumIdentity(otherTool: ExternalTool): boolean {
+		if (!this.medium || !otherTool.medium) {
+			return false;
+		}
+
+		return (
+			this.medium.mediumId === otherTool.medium.mediumId && this.medium.mediaSourceId === otherTool.medium.mediaSourceId
+		);
+	}
+
 	public isLtiDeepLinkingTool(): boolean {
 		return (
 			ExternalTool.isLti11Config(this.config) &&

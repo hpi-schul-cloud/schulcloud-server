@@ -470,23 +470,92 @@ describe('ExternalToolParameterValidationService', () => {
 	});
 
 	describe('isNameUnique', () => {
-		describe('when the external tool belongs to a medium', () => {
-			it('should return true regardless of another tool with the same name', async () => {
-				const externalTool: ExternalTool = externalToolFactory
-					.withMedium({ mediumId: 'medium-2', mediaSourceId: 'media-source' })
-					.build({ name: 'test-name' });
-				const existingExternalTool: ExternalTool = externalToolFactory
-					.withMedium({ mediumId: 'medium-1', mediaSourceId: 'media-source' })
-					.buildWithId({ name: 'test-name' });
-				createScenario({ externalTool, existingExternalTools: [existingExternalTool] });
+		describe('when the external tool has no name', () => {
+			it('should return true without looking up tools', async () => {
+				const externalTool: ExternalTool = externalToolFactory.build({ name: undefined });
 
 				const result = await service.isNameUnique(externalTool);
 
 				expect(result).toBe(true);
+				expect(externalToolService.findExternalToolsByName).not.toHaveBeenCalled();
 			});
 		});
 
-		describe('when there exists no other external tools with the same name', () => {
+		describe('when the external tool belongs to a medium', () => {
+			describe('when no other tool with the same name exists', () => {
+				it('should return true', async () => {
+					const externalTool: ExternalTool = externalToolFactory
+						.withMedium({ mediumId: 'medium-1', mediaSourceId: 'media-source' })
+						.build({ name: 'test-name' });
+					createScenario({ externalTool });
+
+					const result = await service.isNameUnique(externalTool);
+
+					expect(result).toBe(true);
+				});
+			});
+
+			describe('when the only matching tool is the same tool', () => {
+				it('should return true', async () => {
+					const externalTool: ExternalTool = externalToolFactory
+						.withMedium({ mediumId: 'medium-1', mediaSourceId: 'media-source' })
+						.buildWithId({ name: 'test-name' });
+					createScenario({ externalTool, existingExternalTools: [externalTool] });
+
+					const result = await service.isNameUnique(externalTool);
+
+					expect(result).toBe(true);
+				});
+			});
+
+			describe('when a non-medium tool has the same name', () => {
+				it('should return true', async () => {
+					const externalTool: ExternalTool = externalToolFactory
+						.withMedium({ mediumId: 'medium-1', mediaSourceId: 'media-source' })
+						.build({ name: 'test-name' });
+					const existingExternalTool: ExternalTool = externalToolFactory.buildWithId({ name: 'test-name' });
+					createScenario({ externalTool, existingExternalTools: [existingExternalTool] });
+
+					const result = await service.isNameUnique(externalTool);
+
+					expect(result).toBe(true);
+				});
+			});
+
+			describe('when another medium tool has the same name but a different medium identity', () => {
+				it('should return true', async () => {
+					const externalTool: ExternalTool = externalToolFactory
+						.withMedium({ mediumId: 'medium-2', mediaSourceId: 'media-source' })
+						.build({ name: 'test-name' });
+					const existingExternalTool: ExternalTool = externalToolFactory
+						.withMedium({ mediumId: 'medium-1', mediaSourceId: 'media-source' })
+						.buildWithId({ name: 'test-name' });
+					createScenario({ externalTool, existingExternalTools: [existingExternalTool] });
+
+					const result = await service.isNameUnique(externalTool);
+
+					expect(result).toBe(true);
+				});
+			});
+
+			describe('when another medium tool has the same name and medium identity', () => {
+				it('should return false', async () => {
+					const externalTool: ExternalTool = externalToolFactory
+						.withMedium({ mediumId: 'medium-1', mediaSourceId: 'media-source' })
+						.buildWithId({ name: 'test-name' });
+					const existingExternalTool: ExternalTool = externalToolFactory
+						.withMedium({ mediumId: 'medium-1', mediaSourceId: 'media-source' })
+						.buildWithId({ name: 'test-name' });
+					createScenario({ externalTool, existingExternalTools: [existingExternalTool] });
+
+					const result = await service.isNameUnique(externalTool);
+
+					expect(result).toBe(false);
+				});
+			});
+		});
+
+		describe('when there exists no other non-medium tool with the same name', () => {
 			const setup = () => {
 				const externalTool: ExternalTool = externalToolFactory.build({ name: 'test-name' });
 
@@ -504,7 +573,21 @@ describe('ExternalToolParameterValidationService', () => {
 			});
 		});
 
-		describe('when the only external tool with the same name is the tool itself', () => {
+		describe('when only medium tools have the same name', () => {
+			it('should return true for a non-medium tool', async () => {
+				const externalTool: ExternalTool = externalToolFactory.build({ name: 'test-name' });
+				const existingExternalTool: ExternalTool = externalToolFactory
+					.withMedium({ mediumId: 'medium-1', mediaSourceId: 'media-source' })
+					.buildWithId({ name: 'test-name' });
+				createScenario({ externalTool, existingExternalTools: [existingExternalTool] });
+
+				const result = await service.isNameUnique(externalTool);
+
+				expect(result).toBe(true);
+			});
+		});
+
+		describe('when the only non-medium tool with the same name is the tool itself', () => {
 			const setup = () => {
 				const externalTool: ExternalTool = externalToolFactory.build({ name: 'test-name' });
 
@@ -522,7 +605,7 @@ describe('ExternalToolParameterValidationService', () => {
 			});
 		});
 
-		describe('when there exists other external tools with the same name', () => {
+		describe('when there exists another non-medium tool with the same name', () => {
 			const setup = () => {
 				const externalTool: ExternalTool = externalToolFactory.build({ name: 'test-name' });
 				const existingExternalTool: ExternalTool = externalToolFactory.build({ name: 'test-name' });
