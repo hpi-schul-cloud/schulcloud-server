@@ -44,13 +44,9 @@ export interface ExternalToolEntityProps {
 @Entity({ tableName: 'external-tools' })
 @Unique({ properties: ['config.clientId'], options: { sparse: true } })
 @Unique({
-	name: 'externalToolMediumIdentityUniqueIndex',
+	name: 'externalToolNameUniqueIndex',
 	properties: ['name'],
-	options: {
-		partialFilterExpression: {
-			$or: [{ 'medium.mediumId': { $exists: false } }, { 'medium.mediumId': { $in: [null, ''] } }],
-		},
-	},
+	options: { partialFilterExpression: { 'medium.mediumId': { $in: [null, ''] } } },
 })
 @Unique({
 	name: 'externalToolMediumIdentityUniqueIndex',
