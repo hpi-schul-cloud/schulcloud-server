@@ -363,6 +363,7 @@ export class DatabaseManagementUc {
 		await collection.updateMany({ 'medium.mediumId': { $in: [null, ''] } }, { $unset: { 'medium.mediumId': '' } });
 	}
 
+	// hint: indexes should be added via decorator to the according entities
 	private async createGroupUniqueIndex(): Promise<void> {
 		const indexName = 'groupExternalSourceUniqueIndex';
 		const collection = this.databaseManagementService.getDatabaseCollection('groups');

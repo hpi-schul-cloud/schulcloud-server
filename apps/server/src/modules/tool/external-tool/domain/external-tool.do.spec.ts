@@ -74,7 +74,6 @@ describe(ExternalTool.name, () => {
 			const externalTool = externalToolFactory.withMedium({ mediumId: undefined }).buildWithId();
 
 			expect(externalTool.isMediaTool()).toBe(false);
-			expect(externalTool.isNonMediaTool()).toBe(true);
 		});
 
 		it('should identify medium tools by mediumId and mediaSourceId', () => {

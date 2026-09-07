@@ -5,6 +5,7 @@ import { type CustomParameter } from '../../common/domain';
 import { CustomParameterLocation, CustomParameterScope, CustomParameterType } from '../../common/enum';
 import { CommonToolValidationService } from '../../common/service';
 import { type ExternalTool } from '../domain';
+import { ExternalToolMediumStatus } from '../enum';
 import { customParameterFactory, externalToolFactory } from '../testing';
 import { ExternalToolParameterValidationService } from './external-tool-parameter-validation.service';
 import { ExternalToolService } from './external-tool.service';
@@ -90,7 +91,7 @@ describe('ExternalToolParameterValidationService', () => {
 					const result: Promise<void> = service.validateCommon(externalTool);
 
 					await expect(result).rejects.toThrow(
-						new ValidationError(`tool_name_duplicate: The tool name "${externalTool.name}" is already used.`)
+						new ValidationError(`tool_not_unique: The non-media tool "${externalTool.name}" is already used.`)
 					);
 				});
 
@@ -596,6 +597,55 @@ describe('ExternalToolParameterValidationService', () => {
 						externalTool.medium?.mediaSourceId
 					);
 					expect(externalToolService.findExternalToolsByName).not.toHaveBeenCalled();
+				});
+			});
+		});
+
+		describe('when the external tool is a template', () => {
+			describe('when another template uses the same media source', () => {
+				it('should return false', async () => {
+					const externalTool: ExternalTool = externalToolFactory
+						.withMedium({ status: ExternalToolMediumStatus.TEMPLATE, mediumId: undefined, mediaSourceId: 'source-1' })
+						.buildWithId({ name: 'test-name' });
+					const existingTemplate: ExternalTool = externalToolFactory
+						.withMedium({ status: ExternalToolMediumStatus.TEMPLATE, mediumId: undefined, mediaSourceId: 'source-1' })
+						.buildWithId({ name: 'other-name' });
+					createScenario({ externalTool });
+					externalToolService.findTemplate.mockResolvedValueOnce(existingTemplate);
+
+					const result = await service.isExternalToolUnique(externalTool);
+
+					expect(result).toBe(false);
+					expect(externalToolService.findTemplate).toHaveBeenCalledWith('source-1');
+				});
+			});
+
+			describe('when the existing template for the media source is the same tool', () => {
+				it('should return true', async () => {
+					const externalTool: ExternalTool = externalToolFactory
+						.withMedium({ status: ExternalToolMediumStatus.TEMPLATE, mediumId: undefined, mediaSourceId: 'source-1' })
+						.buildWithId({ name: 'test-name' });
+					createScenario({ externalTool });
+					externalToolService.findTemplate.mockResolvedValueOnce(externalTool);
+
+					const result = await service.isExternalToolUnique(externalTool);
+
+					expect(result).toBe(true);
+				});
+			});
+
+			describe('when no other template uses the media source', () => {
+				it('should still reject a duplicate name', async () => {
+					const externalTool: ExternalTool = externalToolFactory
+						.withMedium({ status: ExternalToolMediumStatus.TEMPLATE, mediumId: undefined, mediaSourceId: 'source-1' })
+						.buildWithId({ name: 'test-name' });
+					const existingExternalTool: ExternalTool = externalToolFactory.buildWithId({ name: 'test-name' });
+					createScenario({ externalTool, existingExternalTools: [existingExternalTool] });
+					externalToolService.findTemplate.mockResolvedValueOnce(null);
+
+					const result = await service.isExternalToolUnique(externalTool);
+
+					expect(result).toBe(false);
 				});
 			});
 		});

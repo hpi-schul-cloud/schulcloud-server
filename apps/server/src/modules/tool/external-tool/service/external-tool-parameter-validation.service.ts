@@ -13,7 +13,13 @@ export class ExternalToolParameterValidationService {
 
 	public async validateCommon(externalTool: ExternalTool): Promise<void> {
 		if (!(await this.isExternalToolUnique(externalTool))) {
-			throw new ValidationError(`tool_name_duplicate: The tool name "${externalTool.name || ''}" is already used.`);
+			if (externalTool.isMediaTool()) {
+				throw new ValidationError(
+					`tool_not_unique: The media tool "${externalTool.name || ''}" (mediumId: "${externalTool.medium?.mediumId || ''}", mediaSourceId: "${externalTool.medium?.mediaSourceId || ''}") is already used.`
+				);
+			} else {
+				throw new ValidationError(`tool_not_unique: The non-media tool "${externalTool.name || ''}" is already used.`);
+			}
 		}
 
 		if (externalTool.parameters) {
@@ -92,14 +98,24 @@ export class ExternalToolParameterValidationService {
 			return existingExternalTool == null || existingExternalTool.id === externalTool.id;
 		}
 
+		if (medium && !(await this.isTemplateSourceUnique(externalTool))) {
+			return false;
+		}
+
 		if (!externalTool.name) {
 			return true;
 		}
 
-		const allWithName = await this.externalToolService.findExternalToolsByName(externalTool.name);
-		const duplicates: ExternalTool[] = allWithName.filter((duplicate) => duplicate.id !== externalTool.id);
+		const existingToolsWithName = await this.externalToolService.findExternalToolsByName(externalTool.name);
+		const duplicates: ExternalTool[] = existingToolsWithName.filter((duplicate) => duplicate.id !== externalTool.id);
 
 		return this.noOtherNonMediaTool(duplicates);
+	}
+
+	private async isTemplateSourceUnique(externalTool: ExternalTool): Promise<boolean> {
+		const existingTemplate = await this.externalToolService.findTemplate(externalTool.medium?.mediaSourceId);
+
+		return existingTemplate == null || existingTemplate.id === externalTool.id;
 	}
 
 	private noOtherNonMediaTool(toolsWithSameName: ExternalTool[]): boolean {

@@ -217,10 +217,6 @@ export class ExternalTool extends DomainObject<ExternalToolProps> {
 		return !!this.medium?.mediumId;
 	}
 
-	public isNonMediaTool(): boolean {
-		return !this.isMediaTool();
-	}
-
 	public hasSameMediumIdentity(otherTool: ExternalTool): boolean {
 		const { medium } = this;
 		const { medium: otherMedium } = otherTool;
