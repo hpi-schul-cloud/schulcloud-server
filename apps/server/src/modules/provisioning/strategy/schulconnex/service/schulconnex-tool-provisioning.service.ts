@@ -53,9 +53,7 @@ export class SchulconnexToolProvisioningService {
 		const mediaLicenses: MediumIdentifier[] = this.getUniqueMediaLicenses(mediaUserLicenses, mediaSchoolLicenses);
 
 		const results = await Promise.allSettled(
-			mediaLicenses.map(
-				(license: MediumIdentifier): Promise<void> => this.provisionExternalToolForLicense(userId, schoolId, license)
-			)
+			mediaLicenses.map((license: MediumIdentifier) => this.provisionExternalToolForLicense(userId, schoolId, license))
 		);
 
 		results.forEach((result: PromiseSettledResult<void>, index: number): void => {
