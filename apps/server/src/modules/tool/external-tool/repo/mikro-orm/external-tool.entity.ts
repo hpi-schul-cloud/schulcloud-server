@@ -44,7 +44,7 @@ export interface ExternalToolEntityProps {
 @Entity({ tableName: 'external-tools' })
 @Unique({ properties: ['config.clientId'], options: { sparse: true } })
 @Unique({
-	name: 'externalToolNameUniqueIndex',
+	name: 'externalToolMediumIdentityUniqueIndex',
 	properties: ['name'],
 	options: {
 		partialFilterExpression: {
