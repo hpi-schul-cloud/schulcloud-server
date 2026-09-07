@@ -469,12 +469,12 @@ describe('ExternalToolParameterValidationService', () => {
 		});
 	});
 
-	describe('isNameUnique', () => {
+	describe('isExternalToolUnique', () => {
 		describe('when the external tool has no name', () => {
 			it('should return true without looking up tools', async () => {
 				const externalTool: ExternalTool = externalToolFactory.build({ name: undefined });
 
-				const result = await service.isNameUnique(externalTool);
+				const result = await service.isExternalToolUnique(externalTool);
 
 				expect(result).toBe(true);
 				expect(externalToolService.findExternalToolsByName).not.toHaveBeenCalled();
@@ -489,7 +489,7 @@ describe('ExternalToolParameterValidationService', () => {
 						.build({ name: 'test-name' });
 					createScenario({ externalTool });
 
-					const result = await service.isNameUnique(externalTool);
+					const result = await service.isExternalToolUnique(externalTool);
 
 					expect(result).toBe(true);
 				});
@@ -502,7 +502,7 @@ describe('ExternalToolParameterValidationService', () => {
 						.buildWithId({ name: 'test-name' });
 					createScenario({ externalTool, existingExternalTools: [externalTool] });
 
-					const result = await service.isNameUnique(externalTool);
+					const result = await service.isExternalToolUnique(externalTool);
 
 					expect(result).toBe(true);
 				});
@@ -516,7 +516,7 @@ describe('ExternalToolParameterValidationService', () => {
 					const existingExternalTool: ExternalTool = externalToolFactory.buildWithId({ name: 'test-name' });
 					createScenario({ externalTool, existingExternalTools: [existingExternalTool] });
 
-					const result = await service.isNameUnique(externalTool);
+					const result = await service.isExternalToolUnique(externalTool);
 
 					expect(result).toBe(true);
 				});
@@ -532,7 +532,7 @@ describe('ExternalToolParameterValidationService', () => {
 						.buildWithId({ name: 'test-name' });
 					createScenario({ externalTool, existingExternalTools: [existingExternalTool] });
 
-					const result = await service.isNameUnique(externalTool);
+					const result = await service.isExternalToolUnique(externalTool);
 
 					expect(result).toBe(true);
 				});
@@ -548,7 +548,7 @@ describe('ExternalToolParameterValidationService', () => {
 						.buildWithId({ name: 'test-name' });
 					createScenario({ externalTool, existingExternalTools: [existingExternalTool] });
 
-					const result = await service.isNameUnique(externalTool);
+					const result = await service.isExternalToolUnique(externalTool);
 
 					expect(result).toBe(true);
 				});
@@ -564,7 +564,7 @@ describe('ExternalToolParameterValidationService', () => {
 						.buildWithId({ name: 'test-name' });
 					createScenario({ externalTool, existingExternalTools: [existingExternalTool] });
 
-					const result = await service.isNameUnique(externalTool);
+					const result = await service.isExternalToolUnique(externalTool);
 
 					expect(result).toBe(false);
 				});
@@ -580,7 +580,7 @@ describe('ExternalToolParameterValidationService', () => {
 						.buildWithId({ name: 'other-name' });
 					createScenario({ externalTool, existingExternalTools: [existingExternalTool] });
 
-					const result = await service.isNameUnique(externalTool);
+					const result = await service.isExternalToolUnique(externalTool);
 
 					expect(result).toBe(false);
 				});
@@ -599,7 +599,7 @@ describe('ExternalToolParameterValidationService', () => {
 			it('should return true', async () => {
 				const { externalTool } = setup();
 
-				const result = await service.isNameUnique(externalTool);
+				const result = await service.isExternalToolUnique(externalTool);
 
 				expect(result).toBe(true);
 			});
@@ -613,7 +613,7 @@ describe('ExternalToolParameterValidationService', () => {
 					.buildWithId({ name: 'test-name' });
 				createScenario({ externalTool, existingExternalTools: [existingExternalTool] });
 
-				const result = await service.isNameUnique(externalTool);
+				const result = await service.isExternalToolUnique(externalTool);
 
 				expect(result).toBe(true);
 			});
@@ -631,7 +631,7 @@ describe('ExternalToolParameterValidationService', () => {
 			it('should return true', async () => {
 				const { externalTool } = setup();
 
-				const result = await service.isNameUnique(externalTool);
+				const result = await service.isExternalToolUnique(externalTool);
 
 				expect(result).toBe(true);
 			});
@@ -650,7 +650,7 @@ describe('ExternalToolParameterValidationService', () => {
 			it('should return false', async () => {
 				const { externalTool } = setup();
 
-				const result = await service.isNameUnique(externalTool);
+				const result = await service.isExternalToolUnique(externalTool);
 
 				expect(result).toBe(false);
 			});

@@ -12,7 +12,7 @@ export class ExternalToolParameterValidationService {
 	constructor(private readonly externalToolService: ExternalToolService) {}
 
 	public async validateCommon(externalTool: ExternalTool): Promise<void> {
-		if (!(await this.isNameUnique(externalTool))) {
+		if (!(await this.isExternalToolUnique(externalTool))) {
 			throw new ValidationError(`tool_name_duplicate: The tool name "${externalTool.name || ''}" is already used.`);
 		}
 
@@ -81,7 +81,7 @@ export class ExternalToolParameterValidationService {
 		}
 	}
 
-	public async isNameUnique(externalTool: ExternalTool): Promise<boolean> {
+	public async isExternalToolUnique(externalTool: ExternalTool): Promise<boolean> {
 		if (!externalTool.name) {
 			return true;
 		}
