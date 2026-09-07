@@ -46,7 +46,7 @@ export interface ExternalToolEntityProps {
 @Unique({
 	name: 'externalToolNameUniqueIndex',
 	properties: ['name'],
-	options: { partialFilterExpression: { 'medium.mediumId': { $in: [null, ''] } } },
+	options: { partialFilterExpression: { 'medium.mediumId': { $exists: false } } },
 })
 @Unique({
 	name: 'externalToolMediumIdentityUniqueIndex',

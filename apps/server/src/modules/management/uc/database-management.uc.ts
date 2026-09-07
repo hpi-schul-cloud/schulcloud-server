@@ -327,6 +327,7 @@ export class DatabaseManagementUc {
 	public async syncIndexes(): Promise<void> {
 		await this.deleteExternalToolNameUniqueIndex();
 		await this.deleteExternalToolMediumUniqueIndex();
+		await this.normalizeExternalToolMediumIds();
 		await this.createGroupUniqueIndex();
 		return this.databaseManagementService.syncIndexes();
 	}
@@ -355,6 +356,11 @@ export class DatabaseManagementUc {
 		}
 
 		await collection.dropIndex(indexName);
+	}
+
+	private async normalizeExternalToolMediumIds(): Promise<void> {
+		const collection = this.databaseManagementService.getDatabaseCollection('external-tools');
+		await collection.updateMany({ 'medium.mediumId': { $in: [null, ''] } }, { $unset: { 'medium.mediumId': '' } });
 	}
 
 	private async createGroupUniqueIndex(): Promise<void> {

@@ -82,6 +82,16 @@ export class ExternalToolParameterValidationService {
 	}
 
 	public async isExternalToolUnique(externalTool: ExternalTool): Promise<boolean> {
+		const { medium } = externalTool;
+		if (medium?.mediumId) {
+			const existingExternalTool = await this.externalToolService.findExternalToolByMedium(
+				medium.mediumId,
+				medium.mediaSourceId
+			);
+
+			return existingExternalTool == null || existingExternalTool.id === externalTool.id;
+		}
+
 		if (!externalTool.name) {
 			return true;
 		}
@@ -89,19 +99,11 @@ export class ExternalToolParameterValidationService {
 		const allWithName = await this.externalToolService.findExternalToolsByName(externalTool.name);
 		const duplicates: ExternalTool[] = allWithName.filter((duplicate) => duplicate.id !== externalTool.id);
 
-		if (externalTool.isMediaTool()) {
-			return this.noneWithSameMediumIdentity(externalTool, duplicates);
-		} else {
-			return this.noOtherNonMediaTool(duplicates);
-		}
+		return this.noOtherNonMediaTool(duplicates);
 	}
 
 	private noOtherNonMediaTool(toolsWithSameName: ExternalTool[]): boolean {
 		return toolsWithSameName.every((tool: ExternalTool) => tool.isMediaTool());
-	}
-
-	private noneWithSameMediumIdentity(externalTool: ExternalTool, toolsWithSameName: ExternalTool[]): boolean {
-		return toolsWithSameName.every((tool: ExternalTool) => !tool.hasSameMediumIdentity(externalTool));
 	}
 
 	private isCustomParameterNameEmpty(param: CustomParameter): boolean {

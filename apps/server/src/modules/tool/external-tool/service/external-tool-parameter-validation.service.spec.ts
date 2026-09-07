@@ -55,6 +55,13 @@ describe('ExternalToolParameterValidationService', () => {
 		};
 
 		externalToolService.findExternalToolsByName.mockResolvedValue(scenario.existingExternalTools);
+		externalToolService.findExternalToolByMedium.mockImplementation((mediumId, mediaSourceId) =>
+			Promise.resolve(
+				scenario.existingExternalTools.find(
+					(tool) => tool.medium?.mediumId === mediumId && tool.medium?.mediaSourceId === mediaSourceId
+				) ?? null
+			)
+		);
 
 		return scenario;
 	};
@@ -578,11 +585,17 @@ describe('ExternalToolParameterValidationService', () => {
 					const existingExternalTool: ExternalTool = externalToolFactory
 						.withMedium({ mediumId: 'medium-1', mediaSourceId: 'media-source' })
 						.buildWithId({ name: 'other-name' });
-					createScenario({ externalTool, existingExternalTools: [existingExternalTool] });
+					createScenario({ externalTool });
+					externalToolService.findExternalToolByMedium.mockResolvedValueOnce(existingExternalTool);
 
 					const result = await service.isExternalToolUnique(externalTool);
 
 					expect(result).toBe(false);
+					expect(externalToolService.findExternalToolByMedium).toHaveBeenCalledWith(
+						externalTool.medium?.mediumId,
+						externalTool.medium?.mediaSourceId
+					);
+					expect(externalToolService.findExternalToolsByName).not.toHaveBeenCalled();
 				});
 			});
 		});

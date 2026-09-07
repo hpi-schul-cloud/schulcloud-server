@@ -109,8 +109,17 @@ describe(SchulconnexToolProvisioningService.name, () => {
 				const { provisioningOptions } = schoolSystemOptionsFactory.build({
 					provisioningOptions: { schoolExternalToolProvisioningEnabled: true },
 				});
-				const mediaUserLicense: MediaUserLicense = mediaUserLicenseFactory.build({ userId });
-				const mediaSchoolLicense = mediaSchoolLicenseFactory.build({ schoolId });
+				const mediaSource = mediaSourceFactory.build({ sourceId: 'shared-source', format: undefined });
+				const mediaUserLicense: MediaUserLicense = mediaUserLicenseFactory.build({
+					userId,
+					mediumId: 'shared-medium',
+					mediaSource,
+				});
+				const mediaSchoolLicense = mediaSchoolLicenseFactory.build({
+					schoolId,
+					mediumId: mediaUserLicense.mediumId,
+					mediaSource,
+				});
 				const externalTool: ExternalTool = externalToolFactory
 					.withMedium({
 						mediumId: mediaUserLicense.mediumId,
@@ -125,7 +134,6 @@ describe(SchulconnexToolProvisioningService.name, () => {
 				schoolSystemOptionsService.getProvisioningOptions.mockResolvedValueOnce(provisioningOptions);
 				mediaUserLicenseService.getMediaUserLicensesForUser.mockResolvedValueOnce([mediaUserLicense]);
 				mediaSchoolLicenseService.findMediaSchoolLicensesBySchoolId.mockResolvedValueOnce([mediaSchoolLicense]);
-				externalToolService.findExternalToolByMedium.mockResolvedValueOnce(externalTool);
 				externalToolService.findExternalToolByMedium.mockResolvedValueOnce(externalTool);
 				schoolExternalToolService.findSchoolExternalTools.mockResolvedValueOnce([]);
 				schoolExternalToolService.findSchoolExternalTools.mockResolvedValueOnce([schoolExternalTool]);
@@ -169,6 +177,7 @@ describe(SchulconnexToolProvisioningService.name, () => {
 					mediaUserLicense.mediumId,
 					mediaUserLicense.mediaSource?.sourceId
 				);
+				expect(externalToolService.findExternalToolByMedium).toHaveBeenCalledTimes(1);
 			});
 
 			it('should look for a school external tool', async () => {
@@ -196,6 +205,33 @@ describe(SchulconnexToolProvisioningService.name, () => {
 						parameters: [],
 					})
 				);
+			});
+		});
+
+		describe('when user and school licenses share a mediumId without a media source', () => {
+			it('should look up and provision the external tool only once', async () => {
+				const schoolId = new ObjectId().toHexString();
+				const userId = new ObjectId().toHexString();
+				const systemId = new ObjectId().toHexString();
+				const { provisioningOptions } = schoolSystemOptionsFactory.build({
+					provisioningOptions: { schoolExternalToolProvisioningEnabled: true },
+				});
+				const mediumId = 'shared-medium';
+				const mediaUserLicense = mediaUserLicenseFactory.build({ userId, mediumId, mediaSource: undefined });
+				const mediaSchoolLicense = mediaSchoolLicenseFactory.build({ schoolId, mediumId, mediaSource: undefined });
+				const externalTool = externalToolFactory.withMedium({ mediumId, mediaSourceId: undefined }).build();
+
+				schoolSystemOptionsService.getProvisioningOptions.mockResolvedValueOnce(provisioningOptions);
+				mediaUserLicenseService.getMediaUserLicensesForUser.mockResolvedValueOnce([mediaUserLicense]);
+				mediaSchoolLicenseService.findMediaSchoolLicensesBySchoolId.mockResolvedValueOnce([mediaSchoolLicense]);
+				externalToolService.findExternalToolByMedium.mockResolvedValueOnce(externalTool);
+				schoolExternalToolService.findSchoolExternalTools.mockResolvedValueOnce([]);
+
+				await service.provisionSchoolExternalTools(userId, schoolId, systemId);
+
+				expect(externalToolService.findExternalToolByMedium).toHaveBeenCalledWith(mediumId, undefined);
+				expect(externalToolService.findExternalToolByMedium).toHaveBeenCalledTimes(1);
+				expect(schoolExternalToolService.saveSchoolExternalTool).toHaveBeenCalledTimes(1);
 			});
 		});
 
