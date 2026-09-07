@@ -214,21 +214,21 @@ export class ExternalTool extends DomainObject<ExternalToolProps> {
 	}
 
 	public isMediaTool(): boolean {
-		return !!this.medium;
+		return !!this.medium?.mediumId;
 	}
 
 	public isNonMediaTool(): boolean {
-		return !this.medium;
+		return !this.isMediaTool();
 	}
 
 	public hasSameMediumIdentity(otherTool: ExternalTool): boolean {
-		if (!this.medium || !otherTool.medium) {
+		const { medium } = this;
+		const { medium: otherMedium } = otherTool;
+		if (!medium?.mediumId || !otherMedium?.mediumId) {
 			return false;
 		}
 
-		return (
-			this.medium.mediumId === otherTool.medium.mediumId && this.medium.mediaSourceId === otherTool.medium.mediaSourceId
-		);
+		return medium.mediumId === otherMedium.mediumId && medium.mediaSourceId === otherMedium.mediaSourceId;
 	}
 
 	public isLtiDeepLinkingTool(): boolean {

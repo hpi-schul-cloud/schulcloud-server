@@ -43,8 +43,21 @@ export interface ExternalToolEntityProps {
 
 @Entity({ tableName: 'external-tools' })
 @Unique({ properties: ['config.clientId'], options: { sparse: true } })
+@Unique({
+	name: 'externalToolNameUniqueIndex',
+	properties: ['name'],
+	options: {
+		partialFilterExpression: {
+			$or: [{ 'medium.mediumId': { $exists: false } }, { 'medium.mediumId': { $in: [null, ''] } }],
+		},
+	},
+})
+@Unique({
+	name: 'externalToolMediumIdentityUniqueIndex',
+	properties: ['medium.mediumId', 'medium.mediaSourceId'],
+	options: { partialFilterExpression: { 'medium.mediumId': { $type: 'string', $gt: '' } } },
+})
 export class ExternalToolEntity extends BaseEntityWithTimestamps {
-	@Unique()
 	@Property()
 	name: string;
 

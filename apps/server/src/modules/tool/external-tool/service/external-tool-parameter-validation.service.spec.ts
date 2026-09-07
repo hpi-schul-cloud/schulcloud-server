@@ -538,6 +538,22 @@ describe('ExternalToolParameterValidationService', () => {
 				});
 			});
 
+			describe('when another medium tool has the same name and mediumId but a different mediaSourceId', () => {
+				it('should return true', async () => {
+					const externalTool: ExternalTool = externalToolFactory
+						.withMedium({ mediumId: 'medium-1', mediaSourceId: 'media-source-2' })
+						.build({ name: 'test-name' });
+					const existingExternalTool: ExternalTool = externalToolFactory
+						.withMedium({ mediumId: 'medium-1', mediaSourceId: 'media-source-1' })
+						.buildWithId({ name: 'test-name' });
+					createScenario({ externalTool, existingExternalTools: [existingExternalTool] });
+
+					const result = await service.isNameUnique(externalTool);
+
+					expect(result).toBe(true);
+				});
+			});
+
 			describe('when another medium tool has the same name and medium identity', () => {
 				it('should return false', async () => {
 					const externalTool: ExternalTool = externalToolFactory
@@ -546,6 +562,22 @@ describe('ExternalToolParameterValidationService', () => {
 					const existingExternalTool: ExternalTool = externalToolFactory
 						.withMedium({ mediumId: 'medium-1', mediaSourceId: 'media-source' })
 						.buildWithId({ name: 'test-name' });
+					createScenario({ externalTool, existingExternalTools: [existingExternalTool] });
+
+					const result = await service.isNameUnique(externalTool);
+
+					expect(result).toBe(false);
+				});
+			});
+
+			describe('when another medium tool has the same medium identity but a different name', () => {
+				it('should return false', async () => {
+					const externalTool: ExternalTool = externalToolFactory
+						.withMedium({ mediumId: 'medium-1', mediaSourceId: 'media-source' })
+						.buildWithId({ name: 'test-name' });
+					const existingExternalTool: ExternalTool = externalToolFactory
+						.withMedium({ mediumId: 'medium-1', mediaSourceId: 'media-source' })
+						.buildWithId({ name: 'other-name' });
 					createScenario({ externalTool, existingExternalTools: [existingExternalTool] });
 
 					const result = await service.isNameUnique(externalTool);
