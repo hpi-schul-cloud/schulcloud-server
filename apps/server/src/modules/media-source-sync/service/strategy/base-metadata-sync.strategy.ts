@@ -94,7 +94,7 @@ export abstract class BaseMetadataSyncStrategy {
 						this.getMediaSourceFormat()
 					);
 
-					if (!(await this.externalToolParameterValidationService.isNameUnique(externalTool))) {
+					if (!(await this.externalToolParameterValidationService.isExternalToolUnique(externalTool))) {
 						externalTool.name = `${externalTool.name} - [${fetchedMetadata.mediumId}]`;
 					}
 

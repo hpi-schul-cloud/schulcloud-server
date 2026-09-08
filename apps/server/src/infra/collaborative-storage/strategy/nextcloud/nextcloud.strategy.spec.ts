@@ -218,7 +218,7 @@ describe('NextCloudStrategy', () => {
 			const folderId = 1;
 
 			const externalTool = externalToolFactory.withOauth2Config().build({ name: toolName });
-			externalToolService.findExternalToolByName.mockResolvedValueOnce(externalTool);
+			externalToolService.findNonMediaExternalToolByName.mockResolvedValueOnce(externalTool);
 			client.getNameWithPrefix.mockReturnValue(groupId);
 			pseudonymService.findByUserAndToolOrThrow.mockRejectedValueOnce(undefined);
 			client.findGroupFolderIdForGroupId.mockResolvedValue(folderId);
@@ -283,7 +283,7 @@ describe('NextCloudStrategy', () => {
 				const groupId = 'groupId';
 
 				const externalTool = externalToolFactory.withOauth2Config().build({ name: toolName });
-				externalToolService.findExternalToolByName.mockResolvedValueOnce(externalTool);
+				externalToolService.findNonMediaExternalToolByName.mockResolvedValueOnce(externalTool);
 				client.getNameWithPrefix.mockReturnValue(groupId);
 				client.getGroupUsers.mockResolvedValue([nextCloudUserId]);
 				pseudonymService.findByUserAndToolOrThrow.mockRejectedValueOnce(undefined);
@@ -375,7 +375,7 @@ describe('NextCloudStrategy', () => {
 				const nextCloudUserId = `prefix-${pseudonym.pseudonym}`;
 				const groupId = 'groupId';
 
-				externalToolService.findExternalToolByName.mockResolvedValueOnce(externalTool);
+				externalToolService.findNonMediaExternalToolByName.mockResolvedValueOnce(externalTool);
 				client.getGroupUsers.mockResolvedValue([]);
 				pseudonymService.findByUserAndToolOrThrow.mockResolvedValue(pseudonym);
 				client.getNameWithPrefix.mockReturnValue(nextCloudUserId);
@@ -456,7 +456,7 @@ describe('NextCloudStrategy', () => {
 				const nextCloudUserId = `prefix-${pseudonym.pseudonym}`;
 				const groupId = 'groupId';
 
-				externalToolService.findExternalToolByName.mockResolvedValueOnce(externalTool);
+				externalToolService.findNonMediaExternalToolByName.mockResolvedValueOnce(externalTool);
 				client.getGroupUsers.mockResolvedValue([nextCloudUserId]);
 				pseudonymService.findByUserAndToolOrThrow.mockResolvedValue(pseudonym);
 				client.getNameWithPrefix.mockReturnValue(nextCloudUserId);
@@ -523,7 +523,7 @@ describe('NextCloudStrategy', () => {
 				const nextCloudUserId = `prefix-${pseudonym.pseudonym}`;
 				const groupId = 'groupId';
 
-				externalToolService.findExternalToolByName.mockResolvedValueOnce(externalTool);
+				externalToolService.findNonMediaExternalToolByName.mockResolvedValueOnce(externalTool);
 				client.getGroupUsers.mockResolvedValue([nextCloudUserId]);
 				pseudonymService.findByUserAndToolOrThrow.mockResolvedValueOnce(pseudonym).mockRejectedValueOnce(undefined);
 				client.getNameWithPrefix.mockReturnValue(nextCloudUserId);
@@ -555,7 +555,7 @@ describe('NextCloudStrategy', () => {
 
 				const groupId = 'groupId';
 
-				externalToolService.findExternalToolByName.mockResolvedValueOnce(null);
+				externalToolService.findNonMediaExternalToolByName.mockResolvedValueOnce(null);
 
 				return { user, teamUsers, groupId };
 			};

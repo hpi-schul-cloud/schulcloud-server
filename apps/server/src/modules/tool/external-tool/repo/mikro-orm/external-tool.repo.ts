@@ -72,8 +72,8 @@ export class ExternalToolRepo {
 		await this.em.remove(this.em.getReference(this.entityName, id)).flush();
 	}
 
-	public async findByName(name: string): Promise<ExternalTool | null> {
-		const entity: ExternalToolEntity | null = await this.em.findOne(this.entityName, { name });
+	public async findNonMediaToolByName(name: string): Promise<ExternalTool | null> {
+		const entity: ExternalToolEntity | null = await this.em.findOne(this.entityName, { name, medium: null });
 		if (entity !== null) {
 			const domainObject: ExternalTool = this.mapEntityToDomainObject(entity);
 			return domainObject;
