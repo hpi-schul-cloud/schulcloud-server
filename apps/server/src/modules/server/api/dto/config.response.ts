@@ -91,6 +91,9 @@ export class ConfigResponse {
 	FEATURE_SCHOOL_TERMS_OF_USE_ENABLED: boolean;
 
 	@ApiProperty()
+	FEATURE_SCHOOL_DATA_READONLY_ENABLED: boolean;
+
+	@ApiProperty()
 	FEATURE_VIDEOCONFERENCE_ENABLED: boolean;
 
 	@ApiProperty()
@@ -303,6 +306,7 @@ export class ConfigResponse {
 		this.TEACHER_STUDENT_VISIBILITY__IS_VISIBLE = config.teacherStudentVisibilityIsVisible;
 		this.FEATURE_SCHOOL_POLICY_ENABLED_NEW = config.featureSchoolPolicyEnabledNew;
 		this.FEATURE_SCHOOL_TERMS_OF_USE_ENABLED = config.featureSchoolTermsOfUseEnabled;
+		this.FEATURE_SCHOOL_DATA_READONLY_ENABLED = config.featureSchoolDataReadonlyEnabled;
 		this.FEATURE_COLUMN_BOARD_ENABLED = config.featureColumnBoardEnabled;
 		this.FEATURE_COLUMN_BOARD_COLLABORATIVE_TEXT_EDITOR_ENABLED =
 			config.featureColumnBoardCollaborativeTextEditorEnabled;
