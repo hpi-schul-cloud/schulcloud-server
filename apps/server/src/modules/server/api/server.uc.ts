@@ -4,6 +4,7 @@ import { BOARD_CONTEXT_PUBLIC_API_CONFIG, BoardContextPublicApiConfig } from '@m
 import { COMMON_CARTRIDGE_PUBLIC_API_CONFIG_TOKEN, CommonCartridgePublicApiConfig } from '@modules/common-cartridge';
 import { FWU_PUBLIC_API_CONFIG_TOKEN, FwuPublicApiConfig } from '@modules/fwu-learning-contents';
 import { LEARNROOM_PUBLIC_API_CONFIG_TOKEN, LearnroomPublicApiConfig } from '@modules/learnroom';
+import { NOTIFICATION_PUBLIC_API_CONFIG_TOKEN, NotificationPublicApiConfig } from '@modules/notification';
 import { OAUTH_PUBLIC_API_CONFIG_TOKEN, OauthPublicApiConfig } from '@modules/oauth';
 import { PROVISIONING_PUBLIC_API_CONFIG, ProvisioningPublicApiConfig } from '@modules/provisioning';
 import { REGISTRATION_PUBLIC_API_CONFIG_TOKEN, RegistrationPublicApiConfig } from '@modules/registration';
@@ -49,7 +50,8 @@ export class ServerUc {
 		@Inject(USER_LOGIN_MIGRATION_PUBLIC_API_CONFIG_TOKEN)
 		private readonly userLoginMigrationConfig: UserLoginMigrationPublicApiConfig,
 		@Inject(FWU_PUBLIC_API_CONFIG_TOKEN) private readonly fwuConfig: FwuPublicApiConfig,
-		@Inject(TEAM_PUBLIC_API_CONFIG_TOKEN) private readonly teamConfig: TeamPublicApiConfig
+		@Inject(TEAM_PUBLIC_API_CONFIG_TOKEN) private readonly teamConfig: TeamPublicApiConfig,
+		@Inject(NOTIFICATION_PUBLIC_API_CONFIG_TOKEN) private readonly notificationConfig: NotificationPublicApiConfig
 	) {}
 
 	public getConfig(): ConfigResponse {
@@ -73,7 +75,8 @@ export class ServerUc {
 			this.userImportConfig,
 			this.userLoginMigrationConfig,
 			this.fwuConfig,
-			this.teamConfig
+			this.teamConfig,
+			this.notificationConfig
 		);
 
 		return configDto;

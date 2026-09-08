@@ -34,7 +34,7 @@
     kubeconfig: ~/.kube/config
     namespace: "{{ NAMESPACE }}"
     template: deployment.yml.j2
-  when: WITH_NOTIFICATION_SERVER is defined and WITH_NOTIFICATION_SERVER|bool
+    state: "{{ 'present' if (WITH_NOTIFICATION_SERVER | default(false) | bool) else 'absent' }}"
   tags:
     - deployment
 
