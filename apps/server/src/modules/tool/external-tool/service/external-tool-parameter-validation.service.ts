@@ -108,18 +108,15 @@ export class ExternalToolParameterValidationService {
 
 		const existingToolsWithName = await this.externalToolService.findExternalToolsByName(externalTool.name);
 		const duplicates: ExternalTool[] = existingToolsWithName.filter((duplicate) => duplicate.id !== externalTool.id);
+		const nonMediaDuplicates: ExternalTool[] = duplicates.filter((tool) => !tool.isMediaTool());
 
-		return this.noOtherNonMediaTool(duplicates);
+		return nonMediaDuplicates.length === 0;
 	}
 
 	private async isTemplateSourceUnique(externalTool: ExternalTool): Promise<boolean> {
 		const existingTemplate = await this.externalToolService.findTemplate(externalTool.medium?.mediaSourceId);
 
 		return existingTemplate == null || existingTemplate.id === externalTool.id;
-	}
-
-	private noOtherNonMediaTool(toolsWithSameName: ExternalTool[]): boolean {
-		return toolsWithSameName.every((tool: ExternalTool) => tool.isMediaTool());
 	}
 
 	private isCustomParameterNameEmpty(param: CustomParameter): boolean {
