@@ -68,27 +68,4 @@ describe(ExternalTool.name, () => {
 			});
 		});
 	});
-
-	describe('medium identity', () => {
-		it('should treat a tool without a mediumId as a non-medium tool', () => {
-			const externalTool = externalToolFactory.withMedium({ mediumId: undefined }).buildWithId();
-
-			expect(externalTool.isMediaTool()).toBe(false);
-		});
-
-		it('should identify medium tools by mediumId and mediaSourceId', () => {
-			const firstTool = externalToolFactory
-				.withMedium({ mediumId: 'medium-1', mediaSourceId: 'source-1' })
-				.buildWithId();
-			const sameIdentity = externalToolFactory
-				.withMedium({ mediumId: 'medium-1', mediaSourceId: 'source-1' })
-				.buildWithId();
-			const differentSource = externalToolFactory
-				.withMedium({ mediumId: 'medium-1', mediaSourceId: 'source-2' })
-				.buildWithId();
-
-			expect(firstTool.hasSameMediumIdentity(sameIdentity)).toBe(true);
-			expect(firstTool.hasSameMediumIdentity(differentSource)).toBe(false);
-		});
-	});
 });

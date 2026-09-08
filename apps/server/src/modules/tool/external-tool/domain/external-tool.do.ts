@@ -217,16 +217,6 @@ export class ExternalTool extends DomainObject<ExternalToolProps> {
 		return !!this.medium?.mediumId;
 	}
 
-	public hasSameMediumIdentity(otherTool: ExternalTool): boolean {
-		const { medium } = this;
-		const { medium: otherMedium } = otherTool;
-		if (!medium?.mediumId || !otherMedium?.mediumId) {
-			return false;
-		}
-
-		return medium.mediumId === otherMedium.mediumId && medium.mediaSourceId === otherMedium.mediaSourceId;
-	}
-
 	public isLtiDeepLinkingTool(): boolean {
 		return (
 			ExternalTool.isLti11Config(this.config) &&
