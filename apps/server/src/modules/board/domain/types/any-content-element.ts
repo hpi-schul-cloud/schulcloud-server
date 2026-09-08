@@ -1,15 +1,14 @@
 import { type EntityId } from '@shared/domain/types';
-import { type CollaborativeTextEditorElement, isCollaborativeTextEditorElement } from '../collaborative-text-editor.do';
-import { type DeletedElement, isDeletedElement } from '../deleted-element.do';
-import { type DrawingElement, isDrawingElement } from '../drawing-element.do';
-import { type ExternalToolElement, isExternalToolElement } from '../external-tool-element.do';
-import { type FileElement, isFileElement } from '../file-element.do';
-import { type FileFolderElement, isFileFolderElement } from '../file-folder-element.do';
-import { type H5pElement, isH5pElement } from '../h5p-element.do';
-import { isLinkElement, type LinkElement } from '../link-element.do';
-import { isRichTextElement, type RichTextElement } from '../rich-text-element.do';
-import { isVideoConferenceElement, type VideoConferenceElement } from '../video-conference-element.do';
-import { type AnyBoardNode } from './any-board-node';
+import type { CollaborativeTextEditorElement } from '../collaborative-text-editor.do';
+import type { DeletedElement } from '../deleted-element.do';
+import type { DrawingElement } from '../drawing-element.do';
+import type { ExternalToolElement } from '../external-tool-element.do';
+import type { FileElement } from '../file-element.do';
+import type { FileFolderElement } from '../file-folder-element.do';
+import type { H5pElement } from '../h5p-element.do';
+import type { LinkElement } from '../link-element.do';
+import type { RichTextElement } from '../rich-text-element.do';
+import type { VideoConferenceElement } from '../video-conference-element.do';
 import { type BoardExternalReferenceType } from './board-external-reference';
 
 export type AnyContentElement =
@@ -24,21 +23,8 @@ export type AnyContentElement =
 	| VideoConferenceElement
 	| H5pElement;
 
-export const isContentElement = (boardNode: AnyBoardNode): boardNode is AnyContentElement => {
-	const result: boolean =
-		isCollaborativeTextEditorElement(boardNode) ||
-		isDrawingElement(boardNode) ||
-		isExternalToolElement(boardNode) ||
-		isFileElement(boardNode) ||
-		isFileFolderElement(boardNode) ||
-		isLinkElement(boardNode) ||
-		isRichTextElement(boardNode) ||
-		isDeletedElement(boardNode) ||
-		isVideoConferenceElement(boardNode) ||
-		isH5pElement(boardNode);
-
-	return result;
-};
+// NOTE: isContentElement guard has been moved to ../guards/board-node.guards.ts
+// to break circular dependencies. Import it from there or from domain/index.ts
 
 // @TODO check namings
 export enum ElementReferenceType {
