@@ -157,7 +157,7 @@ export class NextcloudStrategy implements CollaborativeStorageStrategy {
 	}
 
 	private async findNextcloudTool(): Promise<ExternalTool> {
-		const tool: ExternalTool | null = await this.externalToolService.findExternalToolByName(
+		const tool: ExternalTool | null = await this.externalToolService.findNonMediaExternalToolByName(
 			this.config.oidcInternalName
 		);
 

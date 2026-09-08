@@ -43,8 +43,18 @@ export interface ExternalToolEntityProps {
 
 @Entity({ tableName: 'external-tools' })
 @Unique({ properties: ['config.clientId'], options: { sparse: true } })
+// MongoDB 4 partial indexes support neither $exists: false nor $in, so an unset mediumId is matched via null equality
+@Unique({
+	name: 'externalToolNameUniqueIndex',
+	properties: ['name'],
+	options: { partialFilterExpression: { 'medium.mediumId': null } },
+})
+@Unique({
+	name: 'externalToolMediumIdentityUniqueIndex',
+	properties: ['medium.mediumId', 'medium.mediaSourceId'],
+	options: { partialFilterExpression: { medium: { $exists: true } } },
+})
 export class ExternalToolEntity extends BaseEntityWithTimestamps {
-	@Unique()
 	@Property()
 	name: string;
 

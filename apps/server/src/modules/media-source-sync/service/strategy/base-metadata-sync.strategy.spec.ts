@@ -118,7 +118,7 @@ describe(BaseMetadataSyncStrategy.name, () => {
 
 				externalToolService.findExternalToolsByMediaSource.mockResolvedValueOnce([externalTool]);
 				mediumMetadataService.getMetadataItems.mockResolvedValueOnce([mediumMetadata]);
-				externalToolParameterValidationService.isNameUnique.mockResolvedValueOnce(true);
+				externalToolParameterValidationService.isExternalToolUnique.mockResolvedValueOnce(true);
 
 				return {
 					mediaSource,
@@ -279,7 +279,7 @@ describe(BaseMetadataSyncStrategy.name, () => {
 
 				externalToolService.findExternalToolsByMediaSource.mockResolvedValueOnce([externalTool]);
 				mediumMetadataService.getMetadataItems.mockResolvedValueOnce([mediumMetadata]);
-				externalToolParameterValidationService.isNameUnique.mockResolvedValueOnce(true);
+				externalToolParameterValidationService.isExternalToolUnique.mockResolvedValueOnce(true);
 				externalToolValidationService.validateUpdate.mockRejectedValueOnce(new Error());
 
 				return {
@@ -326,7 +326,7 @@ describe(BaseMetadataSyncStrategy.name, () => {
 
 				externalToolService.findExternalToolsByMediaSource.mockResolvedValueOnce([externalTool]);
 				mediumMetadataService.getMetadataItems.mockResolvedValueOnce([mediumMetadata]);
-				externalToolParameterValidationService.isNameUnique.mockResolvedValueOnce(false);
+				externalToolParameterValidationService.isExternalToolUnique.mockResolvedValueOnce(false);
 
 				const modifiedExternalTool = externalToolFactory.build({
 					...externalTool.getProps(),

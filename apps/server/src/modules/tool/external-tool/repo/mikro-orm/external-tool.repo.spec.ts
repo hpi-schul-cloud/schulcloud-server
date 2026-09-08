@@ -91,18 +91,18 @@ describe(ExternalToolRepo.name, () => {
 	});
 
 	describe('findByName', () => {
-		it('should find an external tool with given toolName', async () => {
+		it('should find an (non-media = regular) external tool with given toolName', async () => {
 			const { externalToolEntity } = await setup();
 
-			const result: ExternalTool | null = await repo.findByName(externalToolEntity.name);
+			const result: ExternalTool | null = await repo.findNonMediaToolByName(externalToolEntity.name);
 
 			expect(result?.name).toEqual(externalToolEntity.name);
 		});
 
-		it('should return null when no external tool with the given name was found', async () => {
+		it('should return null when no (non-media = regular) external tool with the given name was found', async () => {
 			await setup();
 
-			const result: ExternalTool | null = await repo.findByName('notExisting');
+			const result: ExternalTool | null = await repo.findNonMediaToolByName('notExisting');
 
 			expect(result).toBeNull();
 		});
