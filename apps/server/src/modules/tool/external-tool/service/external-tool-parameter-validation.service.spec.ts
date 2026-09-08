@@ -122,6 +122,26 @@ describe('ExternalToolParameterValidationService', () => {
 				});
 			});
 
+			describe('when the medium identity already exists', () => {
+				it('should throw an exception for media tools', async () => {
+					const externalTool: ExternalTool = externalToolFactory
+						.withMedium({ mediumId: 'medium-1', mediaSourceId: 'media-source' })
+						.build({ name: 'sameName' });
+					const existingExternalToolDO: ExternalTool = externalToolFactory
+						.withMedium({ mediumId: 'medium-1', mediaSourceId: 'media-source' })
+						.buildWithId({ name: 'otherName' });
+					createScenario({ externalTool, existingExternalTools: [existingExternalToolDO] });
+
+					const result: Promise<void> = service.validateCommon(externalTool);
+
+					await expect(result).rejects.toThrow(
+						new ValidationError(
+							`tool_not_unique: The media tool "sameName" (mediumId: "medium-1", mediaSourceId: "media-source") is already used.`
+						)
+					);
+				});
+			});
+
 			describe('when tool name is undefined', () => {
 				it('should return without an exception', async () => {
 					const externalTool: ExternalTool = externalToolFactory.build({
