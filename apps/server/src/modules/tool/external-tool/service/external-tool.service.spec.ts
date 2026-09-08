@@ -380,41 +380,41 @@ describe(ExternalToolService.name, () => {
 		});
 	});
 
-	describe('findExternalToolByName', () => {
+	describe('findNonMediaExternalToolByName', () => {
 		describe('when name is set', () => {
 			it('should call the externalToolRepo', async () => {
 				const toolName = 'toolName';
 
-				await service.findExternalToolByName(toolName);
+				await service.findNonMediaExternalToolByName(toolName);
 
-				expect(externalToolRepo.findByName).toHaveBeenCalledWith(toolName);
+				expect(externalToolRepo.findNonMediaToolByName).toHaveBeenCalledWith(toolName);
 			});
 		});
 
-		describe('when tool was found', () => {
+		describe('when (non-media = regular) tool was found', () => {
 			const setup = () => {
 				const externalTool: ExternalTool = externalToolFactory.build();
-				externalToolRepo.findByName.mockResolvedValue(externalTool);
+				externalToolRepo.findNonMediaToolByName.mockResolvedValue(externalTool);
 			};
 
 			it('should return externalTool ', async () => {
 				setup();
 
-				const result: ExternalTool | null = await service.findExternalToolByName('toolName');
+				const result: ExternalTool | null = await service.findNonMediaExternalToolByName('toolName');
 
 				expect(result).toBeInstanceOf(ExternalTool);
 			});
 		});
 
-		describe('when tool was not found', () => {
+		describe('when (non-media = regular) tool was not found', () => {
 			const setup = () => {
-				externalToolRepo.findByName.mockResolvedValue(null);
+				externalToolRepo.findNonMediaToolByName.mockResolvedValue(null);
 			};
 
 			it('should return null', async () => {
 				setup();
 
-				const result: ExternalTool | null = await service.findExternalToolByName('toolName');
+				const result: ExternalTool | null = await service.findNonMediaExternalToolByName('toolName');
 
 				expect(result).toBeNull();
 			});
