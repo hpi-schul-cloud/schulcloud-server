@@ -4,6 +4,7 @@ import { type BoardContextPublicApiConfig } from '@modules/board-context';
 import { type CommonCartridgePublicApiConfig } from '@modules/common-cartridge';
 import { type FwuPublicApiConfig } from '@modules/fwu-learning-contents';
 import { type LearnroomPublicApiConfig } from '@modules/learnroom';
+import { type NotificationPublicApiConfig } from '@modules/notification';
 import { type OauthPublicApiConfig } from '@modules/oauth';
 import { type ProvisioningPublicApiConfig } from '@modules/provisioning';
 import { type RegistrationPublicApiConfig } from '@modules/registration';
@@ -41,7 +42,8 @@ export class ConfigResponseMapper {
 		userImportConfig: UserImportPublicApiConfig,
 		userLoginMigrationConfig: UserLoginMigrationPublicApiConfig,
 		fwuConfig: FwuPublicApiConfig,
-		teamConfig: TeamPublicApiConfig
+		teamConfig: TeamPublicApiConfig,
+		notificationConfig: NotificationPublicApiConfig
 	): ConfigResponse {
 		const configResponse = new ConfigResponse({
 			...serverConfig,
@@ -64,6 +66,7 @@ export class ConfigResponseMapper {
 			...userLoginMigrationConfig,
 			...fwuConfig,
 			...teamConfig,
+			...notificationConfig,
 		});
 
 		return configResponse;
