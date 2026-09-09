@@ -7,3 +7,4 @@
 
 export { NotificationType } from './types';
 export { NotificationService } from './domain';
+export { NOTIFICATION_PUBLIC_API_CONFIG_TOKEN, NotificationPublicApiConfig } from './notification.config';
