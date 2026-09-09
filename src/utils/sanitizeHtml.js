@@ -72,8 +72,9 @@ const COLOR_REGEX = [
 	/^rgb\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*\)$/,
 ];
 
-// Match any number with px, em, or %
-const SIZE_REGEX = [/^\d+(?:px|em|%)$/];
+// Match any number (optionally decimal) with px, em, or %
+const SIZE_REGEX = [/^\d+(?:\.\d+)?(?:px|em|%)$/];
+const ASPECT_RATIO_REGEX = [/^\d+\/\d+$/];
 const BORDER_REGEX = [
 	/^\d+(?:px|em|%) none|hidden|dotted|dashed|solid|double|groove|ridge|inset|outset hsl\s*\(\s*\d{1,3}%?\s*,\s*\d{1,3}%?\s*,\s*\d{1,3}%?\s*\)$/,
 ];
@@ -130,6 +131,7 @@ const htmlTrueOptions = {
 			'font-size': SIZE_REGEX,
 			height: SIZE_REGEX,
 			width: SIZE_REGEX,
+			'aspect-ratio': ASPECT_RATIO_REGEX,
 			'min-width': SIZE_REGEX,
 			'max-width': SIZE_REGEX,
 			'min-height': SIZE_REGEX,
