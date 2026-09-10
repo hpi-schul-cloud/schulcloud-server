@@ -47,6 +47,11 @@ export class ServerPublicApiConfig {
 	@IsBoolean()
 	public featureSchoolTermsOfUseEnabled = false;
 
+	@ConfigProperty('FEATURE_SCHOOL_DATA_READONLY_ENABLED')
+	@StringToBoolean()
+	@IsBoolean()
+	public featureSchoolDataReadonlyEnabled = false;
+
 	@ConfigProperty('FEATURE_BOARD_LAYOUT_ENABLED')
 	@StringToBoolean()
 	@IsBoolean()
