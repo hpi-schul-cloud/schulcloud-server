@@ -73,6 +73,7 @@ const COLOR_REGEX = [
 ];
 
 // Match any number (optionally decimal) with px, em, or %
+// Needed for CKEditor 5 ImageResize output (e.g. width:13.74%).
 const SIZE_REGEX = [/^\d+(?:\.\d+)?(?:px|em|%)$/];
 const ASPECT_RATIO_REGEX = [/^\d+\/\d+$/];
 const BORDER_REGEX = [
