@@ -4,6 +4,7 @@ import { BoardContextPublicApiConfig } from '@modules/board-context';
 import { CommonCartridgePublicApiConfig } from '@modules/common-cartridge';
 import { FwuPublicApiConfig } from '@modules/fwu-learning-contents';
 import { LearnroomPublicApiConfig } from '@modules/learnroom';
+import { NotificationPublicApiConfig } from '@modules/notification';
 import { OauthPublicApiConfig } from '@modules/oauth';
 import { ProvisioningPublicApiConfig } from '@modules/provisioning';
 import { RegistrationPublicApiConfig } from '@modules/registration';
@@ -24,6 +25,9 @@ import type { ServerPublicApiConfig } from '../../server.config';
 import { Timezone } from '../../types/timezone.enum';
 
 export class ConfigResponse {
+	@ApiProperty()
+	FEATURE_NOTIFICATIONS_ENABLED: boolean;
+
 	@ApiProperty()
 	ACCESSIBILITY_REPORT_EMAIL: string;
 
@@ -290,8 +294,10 @@ export class ConfigResponse {
 			UserImportPublicApiConfig &
 			UserLoginMigrationPublicApiConfig &
 			FwuPublicApiConfig &
-			TeamPublicApiConfig
+			TeamPublicApiConfig &
+			NotificationPublicApiConfig
 	) {
+		this.FEATURE_NOTIFICATIONS_ENABLED = config.featureNotificationsEnabled;
 		this.ACCESSIBILITY_REPORT_EMAIL = config.accessibilityReportEmail;
 		this.SC_CONTACT_EMAIL = config.scContactEmail;
 		this.SC_CONTACT_EMAIL_SUBJECT = config.scContactEmailSubject;

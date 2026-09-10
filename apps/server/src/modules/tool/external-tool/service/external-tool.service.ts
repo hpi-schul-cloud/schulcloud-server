@@ -87,8 +87,8 @@ export class ExternalToolService {
 		return tool;
 	}
 
-	public findExternalToolByName(name: string): Promise<ExternalTool | null> {
-		const externalTool: Promise<ExternalTool | null> = this.externalToolRepo.findByName(name);
+	public findNonMediaExternalToolByName(name: string): Promise<ExternalTool | null> {
+		const externalTool: Promise<ExternalTool | null> = this.externalToolRepo.findNonMediaToolByName(name);
 		return externalTool;
 	}
 

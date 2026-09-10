@@ -325,11 +325,45 @@ export class DatabaseManagementUc {
 	 * Updates the indexes in the database based on definitions in entities
 	 */
 	public async syncIndexes(): Promise<void> {
+		await this.deleteExternalToolNameUniqueIndex();
+		await this.deleteExternalToolMediumUniqueIndex();
+		await this.normalizeExternalToolMediumIds();
 		await this.createGroupUniqueIndex();
-		await this.createExternalToolMediumUniqueIndex();
 		return this.databaseManagementService.syncIndexes();
 	}
 
+	private async deleteExternalToolNameUniqueIndex(): Promise<void> {
+		const indexName = 'name_1';
+		const collection = this.databaseManagementService.getDatabaseCollection('external-tools');
+		const indexExists: boolean = await collection.indexExists(indexName);
+
+		if (!indexExists) {
+			this.logger.debug(`${indexName} does not require deletion`);
+			return;
+		}
+
+		await collection.dropIndex(indexName);
+	}
+
+	private async deleteExternalToolMediumUniqueIndex(): Promise<void> {
+		const indexName = 'externalToolMediumUniqueIndex';
+		const collection = this.databaseManagementService.getDatabaseCollection('external-tools');
+		const indexExists: boolean = await collection.indexExists(indexName);
+
+		if (!indexExists) {
+			this.logger.debug(`${indexName} does not require deletion`);
+			return;
+		}
+
+		await collection.dropIndex(indexName);
+	}
+
+	private async normalizeExternalToolMediumIds(): Promise<void> {
+		const collection = this.databaseManagementService.getDatabaseCollection('external-tools');
+		await collection.updateMany({ 'medium.mediumId': { $in: [null, ''] } }, { $unset: { 'medium.mediumId': '' } });
+	}
+
+	// hint: indexes should be added via decorator to the according entities
 	private async createGroupUniqueIndex(): Promise<void> {
 		const indexName = 'groupExternalSourceUniqueIndex';
 		const collection = this.databaseManagementService.getDatabaseCollection('groups');
@@ -352,29 +386,6 @@ export class DatabaseManagementUc {
 			}
 		);
 	}
-	private async createExternalToolMediumUniqueIndex(): Promise<void> {
-		const indexName = 'externalToolMediumUniqueIndex';
-		const collection = this.databaseManagementService.getDatabaseCollection('external-tools');
-		const indexExists: boolean = await collection.indexExists(indexName);
-
-		if (indexExists) {
-			this.logger.debug(`${indexName} does not require update`);
-			return;
-		}
-
-		await collection.createIndex(
-			{
-				'medium.mediumId': 1,
-				'medium.mediaSourceId': 1,
-			},
-			{
-				name: indexName,
-				unique: true,
-				partialFilterExpression: { medium: { $exists: true } },
-			}
-		);
-	}
-
 	private injectEnvVars(json: string): string {
 		// replace \$ with $ (escaped placeholder sequence)
 		json = json.replace(/\\\$/g, '$');
