@@ -148,13 +148,27 @@ describe('CommonCartridgeExportService', () => {
 			parentId: fileDto.parentId,
 		});
 
-		const file = Readable.from(faker.lorem.paragraphs(100));
+		let listCallCount = 0;
+		filesStorageClientAdapterMock.list.mockImplementation(() => {
+			listCallCount += 1;
 
-		filesStorageClientAdapterMock.list.mockResolvedValue([fileRecord]);
+			if (listCallCount === 1) {
+				return Promise.resolve([fileRecord]);
+			}
+
+			return Promise.resolve([
+				fileRecordResponseFactory.build({
+					name: `${listCallCount}-${faker.system.fileName()}`,
+				}),
+			]);
+		});
+
 		filesStorageClientAdapterMock.getFileRecord.mockResolvedValue(fileRecord);
-		filesStorageClientAdapterMock.getStream.mockResolvedValue(file);
+		filesStorageClientAdapterMock.getStream.mockImplementation(() =>
+			Promise.resolve(Readable.from(faker.lorem.paragraphs(100)))
+		);
 
-		return { fileDto, file };
+		return { fileDto, file: Readable.from(faker.lorem.paragraphs(100)) };
 	};
 
 	beforeAll(async () => {
