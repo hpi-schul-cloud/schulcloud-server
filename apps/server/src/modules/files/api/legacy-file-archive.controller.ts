@@ -1,11 +1,14 @@
 import { JwtAuthentication } from '@infra/auth-guard';
 import {
+	Body,
 	Controller,
 	ForbiddenException,
 	Get,
+	HttpCode,
 	HttpStatus,
 	InternalServerErrorException,
 	NotImplementedException,
+	Post,
 	Query,
 	Req,
 	Res,
@@ -36,9 +39,10 @@ export class LegacyFileArchiveController {
 	@ApiResponse({ status: 500, type: InternalServerErrorException })
 	@ApiResponse({ status: 501, type: NotImplementedException })
 	@ApiHeader({ name: 'Range', required: false })
-	@Get()
+	@Post()
+	@HttpCode(HttpStatus.OK)
 	public async downloadFilesAsArchive(
-		@Query() params: ArchiveFileParams,
+		@Body() params: ArchiveFileParams,
 		@Req() req: Request,
 		@Res({ passthrough: true }) response: Response
 	): Promise<StreamableFile | void> {
