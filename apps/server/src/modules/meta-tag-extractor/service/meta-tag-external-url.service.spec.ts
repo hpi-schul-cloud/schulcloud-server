@@ -97,6 +97,9 @@ describe(MetaTagExternalUrlService.name, () => {
 						throw new Error('user canceled');
 					}),
 					reason: { message: 'user canceled' },
+					subscribe: jest.fn(),
+					unsubscribe: jest.fn(),
+					toAbortSignal: jest.fn().mockReturnValue(new AbortController().signal),
 				},
 			};
 			return cancelTokenSource;
