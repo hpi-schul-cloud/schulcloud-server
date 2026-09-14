@@ -103,7 +103,7 @@ describe('DownloadArchive Controller (API)', () => {
 					archiveName: 'test-archive',
 				};
 
-				const response = await new TestApiClientBuilder(app, baseRouteName).build().get().query(params);
+				const response = await new TestApiClientBuilder(app, baseRouteName).build().post(undefined, params);
 
 				expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 			});
@@ -129,7 +129,7 @@ describe('DownloadArchive Controller (API)', () => {
 					archiveName: 'test-archive',
 				};
 
-				const response = await loggedInClient.get().query(params);
+				const response = await loggedInClient.post(undefined, params);
 
 				expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
 				expect(response.body).toEqual(
@@ -160,7 +160,7 @@ describe('DownloadArchive Controller (API)', () => {
 					archiveName: 'test-archive',
 				};
 
-				const response = await loggedInClient.get().query(params);
+				const response = await loggedInClient.post(undefined, params);
 
 				expect(response.status).toEqual(HttpStatus.BAD_REQUEST);
 				expect(response.body).toEqual(
@@ -198,7 +198,7 @@ describe('DownloadArchive Controller (API)', () => {
 					archiveName: 'test-archive',
 				};
 
-				const response = await loggedInClient.get().query(params);
+				const response = await loggedInClient.post(undefined, params);
 
 				expect(response.status).toEqual(HttpStatus.NOT_IMPLEMENTED);
 
@@ -229,7 +229,7 @@ describe('DownloadArchive Controller (API)', () => {
 					archiveName: 'team-archive',
 				};
 
-				const response = await loggedInClient.get().query(params);
+				const response = await loggedInClient.post(undefined, params);
 
 				expect(response.status).toEqual(HttpStatus.FORBIDDEN);
 			});
@@ -257,7 +257,7 @@ describe('DownloadArchive Controller (API)', () => {
 					archiveName: 'course-archive',
 				};
 
-				const response = await loggedInClient.get().query(params);
+				const response = await loggedInClient.post(undefined, params);
 
 				expect(response.status).toEqual(HttpStatus.FORBIDDEN);
 			});
@@ -286,7 +286,7 @@ describe('DownloadArchive Controller (API)', () => {
 					archiveName: 'user-archive',
 				};
 
-				const response = await loggedInClient.get().query(params);
+				const response = await loggedInClient.post(undefined, params);
 
 				expect(response.status).toEqual(HttpStatus.FORBIDDEN);
 			});
@@ -333,7 +333,7 @@ describe('DownloadArchive Controller (API)', () => {
 					archiveName,
 				};
 
-				const response = await loggedInClient.get().query(params);
+				const response = await loggedInClient.post(undefined, params);
 
 				expect(response.status).toEqual(HttpStatus.OK);
 				expect(response.headers['content-type']).toContain('application/zip');
@@ -384,7 +384,7 @@ describe('DownloadArchive Controller (API)', () => {
 					archiveName,
 				};
 
-				const response = await loggedInClient.get().query(params);
+				const response = await loggedInClient.post(undefined, params);
 
 				expect(response.status).toEqual(HttpStatus.OK);
 				expect(response.headers['content-type']).toContain('application/zip');
@@ -435,7 +435,7 @@ describe('DownloadArchive Controller (API)', () => {
 					archiveName,
 				};
 
-				const response = await loggedInClient.get().query(params);
+				const response = await loggedInClient.post(undefined, params);
 
 				expect(response.status).toEqual(HttpStatus.OK);
 				expect(response.headers['content-type']).toContain('application/zip');
