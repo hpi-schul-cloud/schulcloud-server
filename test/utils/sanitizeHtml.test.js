@@ -192,4 +192,57 @@ describe('[utils] sanitizeDeep', () => {
 		};
 		expect(sanitizeDeep(input)).to.eql(output);
 	});
+
+	it('preserves CKEditor 5 resized image styles', () => {
+		const input = {
+			content:
+				'<figure class="image" style="width:13.74%;">' +
+				'<img style="aspect-ratio:300/200;" src="https://example.com/image.png" alt="description">' +
+				'</figure>',
+		};
+
+		const result = sanitizeDeep(input, 'topics');
+
+		expect(result.content).to.contain('width:13.74%');
+		expect(result.content).to.contain('aspect-ratio:300/200');
+	});
+
+	it('preserves decimal percentage widths on allowed tags', () => {
+		const input = {
+			content:
+				'<figure class="image" style="width:42.5%;">' +
+				'<img style="aspect-ratio:300/200;" src="https://example.com/image.png" alt="description">' +
+				'</figure>',
+		};
+
+		const result = sanitizeDeep(input, 'topics');
+
+		expect(result.content).to.contain('width:42.5%');
+		expect(result.content).to.contain('aspect-ratio:300/200');
+	});
+
+	it('strips width from tags that are not allowed to carry style', () => {
+		const input = {
+			content: '<div style="width:13.74%;">text</div>',
+		};
+
+		const result = sanitizeDeep(input, 'topics');
+
+		expect(result.content).to.equal('<div>text</div>');
+	});
+
+	it('strips invalid style values while keeping valid ones', () => {
+		const input = {
+			content:
+				'<figure class="image" style="width:13.74%;">' +
+				'<img style="width:expression(alert(1));aspect-ratio:300/200;" src="https://example.com/image.png" alt="description">' +
+				'</figure>',
+		};
+
+		const result = sanitizeDeep(input, 'topics');
+
+		expect(result.content).to.contain('width:13.74%');
+		expect(result.content).to.contain('aspect-ratio:300/200');
+		expect(result.content).not.to.contain('expression');
+	});
 });
