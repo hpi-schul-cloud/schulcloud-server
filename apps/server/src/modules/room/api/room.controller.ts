@@ -95,7 +95,7 @@ export class RoomController {
 	}
 
 	@RequestTimeout(ROOM_INCOMING_REQUEST_TIMEOUT_ROOM_STATS)
-	@Get('stats')
+	@Get('stats') // hier gehen wir rein
 	@ApiOperation({ summary: 'Get a list of room statistics.' })
 	@ApiResponse({
 		status: HttpStatus.OK,
