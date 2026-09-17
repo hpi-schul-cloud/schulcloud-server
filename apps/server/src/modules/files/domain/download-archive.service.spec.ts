@@ -37,7 +37,7 @@ const createMockArchiveWithError = (error: Error): DeepMocked<Archiver> => {
 describe('DownloadArchiveService', () => {
 	let service: DownloadArchiveService;
 	let legacyFileStorageAdapter: DeepMocked<LegacyFileStorageAdapter>;
-	let logger: { setContext: jest.Mock; warning: jest.Mock };
+	let logger: { setContext: jest.Mock; warning: jest.Mock; debug: jest.Mock };
 	let module: TestingModule;
 
 	beforeAll(async () => {
@@ -49,6 +49,7 @@ describe('DownloadArchiveService', () => {
 					useValue: {
 						setContext: jest.fn(),
 						warning: jest.fn(),
+						debug: jest.fn(),
 					},
 				},
 				{
@@ -60,7 +61,7 @@ describe('DownloadArchiveService', () => {
 
 		service = module.get(DownloadArchiveService);
 		legacyFileStorageAdapter = module.get(LegacyFileStorageAdapter);
-		logger = module.get(Logger) as unknown as { setContext: jest.Mock; warning: jest.Mock };
+		logger = module.get(Logger) as unknown as { setContext: jest.Mock; warning: jest.Mock; debug: jest.Mock };
 	});
 
 	afterAll(async () => {
@@ -309,13 +310,13 @@ describe('DownloadArchiveService', () => {
 				expect(logger.warning).toHaveBeenCalledWith(new SkipFileLoggable(file1.id));
 			});
 
-			it('should append an INFO.txt report to the archive', async () => {
+			it('should append a REPORT.txt report to the archive', async () => {
 				const { ownerId, archiveName, file1, mockArchive } = setup();
 
 				await service.downloadFilesAsArchive(ownerId, archiveName);
 				await flushPromises();
 
-				expect(mockArchive.append).toHaveBeenCalledWith(expect.any(Readable), { name: 'INFO.txt' });
+				expect(mockArchive.append).toHaveBeenCalledWith(expect.any(Readable), { name: 'REPORT.txt' });
 				const reportStream = mockArchive.append.mock.calls[0][0] as Readable;
 				const chunks: Buffer[] = [];
 				for await (const chunk of reportStream) {
@@ -355,18 +356,18 @@ describe('DownloadArchiveService', () => {
 
 				const expected = ZipSizeCalculator.storedArchiveSize([
 					{ name: file.name, size: 8 },
-					{ name: 'INFO.txt', size: 4096 },
+					{ name: 'REPORT.txt', size: 4096 },
 				]);
 				expect(result.contentLength).toBe(expected);
 			});
 
-			it('should always append the INFO.txt entry', async () => {
+			it('should always append the REPORT.txt entry', async () => {
 				const { ownerId, archiveName, mockArchive } = setup();
 
 				await service.downloadFilesAsArchive(ownerId, archiveName);
 				await flushPromises();
 
-				expect(mockArchive.append).toHaveBeenCalledWith(expect.any(Readable), { name: 'INFO.txt' });
+				expect(mockArchive.append).toHaveBeenCalledWith(expect.any(Readable), { name: 'REPORT.txt' });
 			});
 		});
 
@@ -401,13 +402,63 @@ describe('DownloadArchiveService', () => {
 				expect(result.contentLength).toBeUndefined();
 			});
 
-			it('should not append the INFO.txt entry', async () => {
+			it('should not append the REPORT.txt entry', async () => {
 				const { ownerId, archiveName, mockArchive } = setup();
 
 				await service.downloadFilesAsArchive(ownerId, archiveName);
 				await flushPromises();
 
 				expect(mockArchive.append).not.toHaveBeenCalled();
+			});
+		});
+
+		describe('when the archive is built without mocking archiver', () => {
+			const setup = (options: { failingFile?: boolean; wrongSize?: boolean } = {}) => {
+				const file1 = fileDomainFactory.build({
+					isDirectory: false,
+					name: 'täst 1.txt',
+					parentId: undefined,
+					size: options.wrongSize ? 1000 : 8,
+				});
+				const file2 = fileDomainFactory.build({
+					isDirectory: false,
+					name: 'test2.bin',
+					parentId: undefined,
+					size: 70000,
+				});
+
+				legacyFileStorageAdapter.getFilesForOwner.mockResolvedValueOnce([file1, file2]);
+				legacyFileStorageAdapter.downloadFile
+					.mockResolvedValueOnce(Readable.from([Buffer.from('content1')]))
+					.mockImplementationOnce(() =>
+						options.failingFile
+							? Promise.reject(new Error('download failed'))
+							: Promise.resolve(Readable.from([Buffer.alloc(70000, 1)]))
+					);
+
+				return { ownerId: 'owner123', archiveName: 'test-archive' };
+			};
+
+			const collectSize = async (stream: Readable): Promise<number> => {
+				let size = 0;
+				for await (const chunk of stream) {
+					size += (chunk as Buffer).length;
+				}
+
+				return size;
+			};
+
+			it.each([
+				['all files are available', {}],
+				['a file download fails', { failingFile: true }],
+				['a file is smaller than announced', { wrongSize: true }],
+			])('should stream exactly the announced content length when %s', async (_name, options) => {
+				const { ownerId, archiveName } = setup(options);
+
+				const result = await service.downloadFilesAsArchive(ownerId, archiveName);
+				const streamedSize = await collectSize(result.data);
+
+				expect(streamedSize).toBe(result.contentLength);
 			});
 		});
 

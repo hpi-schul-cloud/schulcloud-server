@@ -93,6 +93,7 @@ export class DownloadArchiveService {
 		const sizes = entries.map((entry) => {
 			return { name: entry.path, size: entry.size ?? 0 };
 		});
+		sizes.push({ name: REPORT_ENTRY_NAME, size: REPORT_RESERVED_SIZE });
 
 		return ZipSizeCalculator.storedArchiveSize(sizes);
 	}
