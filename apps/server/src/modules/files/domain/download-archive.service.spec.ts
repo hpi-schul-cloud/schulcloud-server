@@ -463,6 +463,56 @@ describe('DownloadArchiveService', () => {
 			});
 		});
 
+		describe('when a user file occupies the report name', () => {
+			const setup = (userFileNames: string[]) => {
+				const files = userFileNames.map((name) =>
+					fileDomainFactory.build({ isDirectory: false, name, parentId: undefined, size: 4 })
+				);
+
+				legacyFileStorageAdapter.getFilesForOwner.mockResolvedValueOnce(files);
+				files.forEach(() => legacyFileStorageAdapter.downloadFile.mockResolvedValueOnce(Readable.from(['user'])));
+
+				return { ownerId: 'owner123', archiveName: 'test-archive' };
+			};
+
+			const collect = async (stream: Readable): Promise<Buffer> => {
+				const chunks: Buffer[] = [];
+				for await (const chunk of stream) {
+					chunks.push(chunk as Buffer);
+				}
+
+				return Buffer.concat(chunks);
+			};
+
+			it.each([
+				[['REPORT.txt'], 'REPORT_1.txt'],
+				[['report.txt'], 'REPORT_1.txt'],
+				[['REPORT.txt', 'REPORT_1.txt'], 'REPORT_2.txt'],
+			])('should pick a collision-free name for %j', async (userFileNames, expectedReportName) => {
+				const { ownerId, archiveName } = setup(userFileNames);
+
+				const result = await service.downloadFilesAsArchive(ownerId, archiveName);
+				const archiveBuffer = await collect(result.data);
+				const zip = new AdmZip(archiveBuffer);
+
+				const entryNames = zip.getEntries().map((entry) => entry.entryName);
+				expect(entryNames).toEqual([...userFileNames, expectedReportName]);
+				expect(archiveBuffer).toHaveLength(result.contentLength as number);
+			});
+
+			it('should announce a content length that matches the longer collision-free report name', async () => {
+				const userFileNames = ['REPORT.txt', ...Array.from({ length: 10 }, (_, index) => `REPORT_${index + 1}.txt`)];
+				const { ownerId, archiveName } = setup(userFileNames);
+
+				const result = await service.downloadFilesAsArchive(ownerId, archiveName);
+				const archiveBuffer = await collect(result.data);
+				const zip = new AdmZip(archiveBuffer);
+
+				expect(zip.getEntries().map((entry) => entry.entryName)).toContain('REPORT_11.txt');
+				expect(archiveBuffer).toHaveLength(result.contentLength as number);
+			});
+		});
+
 		describe('when a file stream fails after partial data', () => {
 			const setup = () => {
 				const brokenFile = fileDomainFactory.build({

@@ -12,7 +12,7 @@ import { SkipFileLoggable } from './loggable/skip-file.loggable';
 import { GetFileResponse } from './types';
 import { ZipSizeCalculator } from './zip-size.calculator';
 
-const REPORT_ENTRY_NAME = 'REPORT.txt';
+const REPORT_ENTRY_BASE_NAME = 'REPORT';
 const REPORT_RESERVED_SIZE = 4096;
 
 interface ArchiveEntry {
@@ -52,10 +52,11 @@ export class DownloadArchiveService {
 				size: file.size,
 			};
 		});
-		const contentLength = this.calculateContentLength(entries);
+		const reportName = this.resolveReportName(entries);
+		const contentLength = this.calculateContentLength(entries, reportName);
 
 		const archive = ArchiveFactory.createEmpty(filesToDownload, this.logger);
-		this.populateArchiveAndFinalize(archive, entries, contentLength !== undefined).catch((err: unknown) =>
+		this.populateArchiveAndFinalize(archive, entries, reportName, contentLength !== undefined).catch((err: unknown) =>
 			archive.emit('error', err as Error)
 		);
 
@@ -85,7 +86,20 @@ export class DownloadArchiveService {
 		return files.filter((file) => selectedFileSet.has(file.id));
 	}
 
-	private calculateContentLength(entries: ArchiveEntry[]): number | undefined {
+	private resolveReportName(entries: ArchiveEntry[]): string {
+		const takenPaths = new Set(entries.map((entry) => entry.path.toLowerCase()));
+
+		let name = `${REPORT_ENTRY_BASE_NAME}.txt`;
+		let index = 1;
+		while (takenPaths.has(name.toLowerCase())) {
+			name = `${REPORT_ENTRY_BASE_NAME}_${index}.txt`;
+			index += 1;
+		}
+
+		return name;
+	}
+
+	private calculateContentLength(entries: ArchiveEntry[], reportName: string): number | undefined {
 		if (entries.some((entry) => entry.size === undefined || !Number.isSafeInteger(entry.size) || entry.size < 0)) {
 			return undefined;
 		}
@@ -93,7 +107,7 @@ export class DownloadArchiveService {
 		const sizes = entries.map((entry) => {
 			return { name: entry.path, size: entry.size ?? 0 };
 		});
-		sizes.push({ name: REPORT_ENTRY_NAME, size: REPORT_RESERVED_SIZE });
+		sizes.push({ name: reportName, size: REPORT_RESERVED_SIZE });
 
 		return ZipSizeCalculator.storedArchiveSize(sizes);
 	}
@@ -101,14 +115,15 @@ export class DownloadArchiveService {
 	private async populateArchiveAndFinalize(
 		archive: Archiver,
 		entries: ArchiveEntry[],
+		reportName: string,
 		exactSize: boolean
 	): Promise<void> {
 		const { problems, deficit } = await this.populateArchive(archive, entries, exactSize);
 
 		if (exactSize) {
-			this.appendReport(archive, problems, REPORT_RESERVED_SIZE + deficit);
+			this.appendReport(archive, reportName, problems, REPORT_RESERVED_SIZE + deficit);
 		} else if (problems.length > 0) {
-			this.appendReport(archive, problems);
+			this.appendReport(archive, reportName, problems);
 		}
 
 		await archive.finalize();
@@ -165,12 +180,12 @@ export class DownloadArchiveService {
 		return fixedSize;
 	}
 
-	private appendReport(archive: Archiver, problemFileNames: string[], exactSize?: number): void {
+	private appendReport(archive: Archiver, reportName: string, problemFileNames: string[], exactSize?: number): void {
 		const content = Buffer.from(this.buildReportContent(problemFileNames), 'utf8');
 		const source = Readable.from([content]);
 		const data = exactSize === undefined ? source : this.toFixedSizeStream(source, exactSize);
 
-		archive.append(data, { name: REPORT_ENTRY_NAME });
+		archive.append(data, { name: reportName });
 	}
 
 	private buildReportContent(problemFileNames: string[]): string {
