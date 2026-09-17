@@ -12,11 +12,13 @@ export class FileResponseFactory {
 	public static createFromArchive(
 		archiveName: string,
 		archive: archiver.Archiver,
+		contentLength?: number,
 		archiveType: archiver.Format = 'zip'
 	): GetFileResponse {
 		const file: GetFile = {
 			data: archive,
 			contentType: `application/${archiveType}`,
+			contentLength,
 		};
 		const name = `${archiveName}.${archiveType}`;
 		const fileResponse = this.create(file, name);
