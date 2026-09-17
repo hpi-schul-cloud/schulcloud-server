@@ -86,7 +86,7 @@ export class DownloadArchiveService {
 	}
 
 	private calculateContentLength(entries: ArchiveEntry[]): number | undefined {
-		if (entries.some((entry) => entry.size === undefined)) {
+		if (entries.some((entry) => entry.size === undefined || !Number.isSafeInteger(entry.size) || entry.size < 0)) {
 			return undefined;
 		}
 

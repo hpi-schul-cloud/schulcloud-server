@@ -26,7 +26,7 @@ export class ZipSizeCalculator {
 
 	/** Returns undefined when zip64 headers would be required, because their size is not predictable here. */
 	public static storedArchiveSize(entries: ZipEntrySize[]): number | undefined {
-		if (entries.length > MAX_ENTRY_COUNT) {
+		if (entries.length >= MAX_ENTRY_COUNT) {
 			return undefined;
 		}
 
