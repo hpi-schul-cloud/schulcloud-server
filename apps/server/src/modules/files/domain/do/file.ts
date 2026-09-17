@@ -46,8 +46,8 @@ export class FileDo extends DomainObject<FileProps> {
 	}
 
 	private sanitizePathSegment(name: string): string {
-		// Replace any path separators with a safe character to prevent nested paths.
-		let segment = name.replace(/[\/\\]+/g, '_');
+		// Replace path separators and drive-letter colons, so archiver does not rewrite the entry name.
+		let segment = name.replace(/[/\\:]+/g, '_');
 		// Trim whitespace and neutralize pure traversal segments like "." or "..".
 		segment = segment.trim();
 		if (segment === '' || segment === '.' || segment === '..') {

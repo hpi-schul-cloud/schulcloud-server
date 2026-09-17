@@ -8,6 +8,7 @@ import { DownloadArchiveService } from './download-archive.service';
 import { ArchiveFactory } from './factory';
 import { LegacyFileStorageAdapter } from './legacy-file-storage.adapter';
 import { SkipFileLoggable } from './loggable/skip-file.loggable';
+import { ZipSizeCalculator } from './zip-size.calculator';
 
 const flushPromises = (): Promise<void> => new Promise((resolve) => setImmediate(resolve));
 
@@ -308,15 +309,105 @@ describe('DownloadArchiveService', () => {
 				expect(logger.warning).toHaveBeenCalledWith(new SkipFileLoggable(file1.id));
 			});
 
-			it('should append a missing-files.txt report to the archive', async () => {
+			it('should append an INFO.txt report to the archive', async () => {
 				const { ownerId, archiveName, file1, mockArchive } = setup();
 
 				await service.downloadFilesAsArchive(ownerId, archiveName);
 				await flushPromises();
 
-				expect(mockArchive.append).toHaveBeenCalledWith(expect.any(Buffer), { name: 'FEHLENDE-DATEIEN.txt' });
-				const reportBuffer = mockArchive.append.mock.calls[0][0] as Buffer;
-				expect(reportBuffer.toString()).toContain(file1.name);
+				expect(mockArchive.append).toHaveBeenCalledWith(expect.any(Readable), { name: 'INFO.txt' });
+				const reportStream = mockArchive.append.mock.calls[0][0] as Readable;
+				const chunks: Buffer[] = [];
+				for await (const chunk of reportStream) {
+					chunks.push(chunk as Buffer);
+				}
+				expect(Buffer.concat(chunks).toString()).toContain(file1.name);
+			});
+		});
+
+		describe('when all file sizes are known', () => {
+			const setup = () => {
+				const file = fileDomainFactory.build({
+					isDirectory: false,
+					name: 'test.txt',
+					parentId: undefined,
+					size: 8,
+				});
+
+				const mockStream = new Readable();
+				mockStream.push('content1');
+				mockStream.push(null);
+
+				legacyFileStorageAdapter.getFilesForOwner.mockResolvedValueOnce([file]);
+				legacyFileStorageAdapter.downloadFile.mockResolvedValueOnce(mockStream);
+
+				const mockArchive = createMockArchive();
+				jest.spyOn(ArchiveFactory, 'createEmpty').mockReturnValueOnce(mockArchive);
+				jest.spyOn(ArchiveFactory, 'appendFile').mockReturnValue(undefined);
+
+				return { ownerId: 'owner123', archiveName: 'test-archive', file, mockArchive };
+			};
+
+			it('should return the predicted content length', async () => {
+				const { ownerId, archiveName, file } = setup();
+
+				const result = await service.downloadFilesAsArchive(ownerId, archiveName);
+
+				const expected = ZipSizeCalculator.storedArchiveSize([
+					{ name: file.name, size: 8 },
+					{ name: 'INFO.txt', size: 4096 },
+				]);
+				expect(result.contentLength).toBe(expected);
+			});
+
+			it('should always append the INFO.txt entry', async () => {
+				const { ownerId, archiveName, mockArchive } = setup();
+
+				await service.downloadFilesAsArchive(ownerId, archiveName);
+				await flushPromises();
+
+				expect(mockArchive.append).toHaveBeenCalledWith(expect.any(Readable), { name: 'INFO.txt' });
+			});
+		});
+
+		describe('when a file size is unknown', () => {
+			const setup = () => {
+				const file = fileDomainFactory.build({
+					isDirectory: false,
+					name: 'test.txt',
+					parentId: undefined,
+					size: undefined,
+				});
+
+				const mockStream = new Readable();
+				mockStream.push('content1');
+				mockStream.push(null);
+
+				legacyFileStorageAdapter.getFilesForOwner.mockResolvedValueOnce([file]);
+				legacyFileStorageAdapter.downloadFile.mockResolvedValueOnce(mockStream);
+
+				const mockArchive = createMockArchive();
+				jest.spyOn(ArchiveFactory, 'createEmpty').mockReturnValueOnce(mockArchive);
+				jest.spyOn(ArchiveFactory, 'appendFile').mockReturnValue(undefined);
+
+				return { ownerId: 'owner123', archiveName: 'test-archive', mockArchive };
+			};
+
+			it('should not return a content length', async () => {
+				const { ownerId, archiveName } = setup();
+
+				const result = await service.downloadFilesAsArchive(ownerId, archiveName);
+
+				expect(result.contentLength).toBeUndefined();
+			});
+
+			it('should not append the INFO.txt entry', async () => {
+				const { ownerId, archiveName, mockArchive } = setup();
+
+				await service.downloadFilesAsArchive(ownerId, archiveName);
+				await flushPromises();
+
+				expect(mockArchive.append).not.toHaveBeenCalled();
 			});
 		});
 
