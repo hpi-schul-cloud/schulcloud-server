@@ -2,7 +2,8 @@ import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { Logger } from '@infra/logger';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { type Archiver } from 'archiver';
-import { Readable } from 'node:stream';
+import AdmZip from 'adm-zip';
+import { PassThrough, Readable } from 'node:stream';
 import { fileDomainFactory } from '../testing';
 import { DownloadArchiveService } from './download-archive.service';
 import { ArchiveFactory } from './factory';
@@ -459,6 +460,90 @@ describe('DownloadArchiveService', () => {
 				const streamedSize = await collectSize(result.data);
 
 				expect(streamedSize).toBe(result.contentLength);
+			});
+		});
+
+		describe('when a file stream fails after partial data', () => {
+			const setup = () => {
+				const brokenFile = fileDomainFactory.build({
+					isDirectory: false,
+					name: 'broken.txt',
+					parentId: undefined,
+					size: 8,
+				});
+				const intactFile = fileDomainFactory.build({
+					isDirectory: false,
+					name: 'intact.txt',
+					parentId: undefined,
+					size: 6,
+				});
+
+				const brokenSource = new PassThrough();
+				brokenSource.write(Buffer.from('abc'));
+				// Fail only once the already written bytes reached the archive, otherwise they would be discarded.
+				const failWhenFlushed = (): void => {
+					if (brokenSource.readableLength === 0) {
+						brokenSource.destroy(new Error('connection reset'));
+					} else {
+						setImmediate(failWhenFlushed);
+					}
+				};
+				setImmediate(failWhenFlushed);
+
+				legacyFileStorageAdapter.getFilesForOwner.mockResolvedValueOnce([brokenFile, intactFile]);
+				legacyFileStorageAdapter.downloadFile
+					.mockResolvedValueOnce(brokenSource)
+					.mockResolvedValueOnce(Readable.from([Buffer.from('intact')]));
+
+				return { ownerId: 'owner123', archiveName: 'test-archive', brokenFile, intactFile };
+			};
+
+			const collect = async (stream: Readable): Promise<Buffer> => {
+				const chunks: Buffer[] = [];
+				for await (const chunk of stream) {
+					chunks.push(chunk as Buffer);
+				}
+
+				return Buffer.concat(chunks);
+			};
+
+			it('should stream exactly the announced content length', async () => {
+				const { ownerId, archiveName } = setup();
+
+				const result = await service.downloadFilesAsArchive(ownerId, archiveName);
+				const archiveBuffer = await collect(result.data);
+
+				expect(archiveBuffer).toHaveLength(result.contentLength as number);
+			});
+
+			it('should pad the truncated entry with zero bytes', async () => {
+				const { ownerId, archiveName, brokenFile } = setup();
+
+				const result = await service.downloadFilesAsArchive(ownerId, archiveName);
+				const zip = new AdmZip(await collect(result.data));
+
+				const entryData = zip.getEntry(brokenFile.name)?.getData();
+				expect(entryData).toEqual(Buffer.concat([Buffer.from('abc'), Buffer.alloc(5)]));
+			});
+
+			it('should keep the remaining files intact', async () => {
+				const { ownerId, archiveName, intactFile } = setup();
+
+				const result = await service.downloadFilesAsArchive(ownerId, archiveName);
+				const zip = new AdmZip(await collect(result.data));
+
+				expect(zip.getEntry(intactFile.name)?.getData().toString()).toBe('intact');
+			});
+
+			it('should list the incomplete file in the report', async () => {
+				const { ownerId, archiveName, brokenFile, intactFile } = setup();
+
+				const result = await service.downloadFilesAsArchive(ownerId, archiveName);
+				const zip = new AdmZip(await collect(result.data));
+
+				const report = zip.getEntry('REPORT.txt')?.getData().toString() ?? '';
+				expect(report).toContain(brokenFile.name);
+				expect(report).not.toContain(intactFile.name);
 			});
 		});
 
