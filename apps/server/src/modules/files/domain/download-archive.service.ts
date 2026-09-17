@@ -10,7 +10,7 @@ import { FixedSizeStream } from './fixed-size.stream';
 import { LegacyFileStorageAdapter } from './legacy-file-storage.adapter';
 import { SkipFileLoggable } from './loggable/skip-file.loggable';
 import { GetFileResponse } from './types';
-import { ZipSizeCalculator } from './zip-size.calculator';
+import { ZipSizeCalculator, type ZipEntrySize } from './zip-size.calculator';
 
 const REPORT_ENTRY_BASE_NAME = 'REPORT';
 const REPORT_RESERVED_SIZE = 4096;
@@ -100,13 +100,14 @@ export class DownloadArchiveService {
 	}
 
 	private calculateContentLength(entries: ArchiveEntry[], reportName: string): number | undefined {
-		if (entries.some((entry) => entry.size === undefined || !Number.isSafeInteger(entry.size) || entry.size < 0)) {
-			return undefined;
-		}
+		const sizes: ZipEntrySize[] = [];
 
-		const sizes = entries.map((entry) => {
-			return { name: entry.path, size: entry.size ?? 0 };
-		});
+		for (const entry of entries) {
+			if (entry.size === undefined || !Number.isSafeInteger(entry.size) || entry.size < 0) {
+				return undefined;
+			}
+			sizes.push({ name: entry.path, size: entry.size });
+		}
 		sizes.push({ name: reportName, size: REPORT_RESERVED_SIZE });
 
 		return ZipSizeCalculator.storedArchiveSize(sizes);
@@ -138,7 +139,7 @@ export class DownloadArchiveService {
 		let deficit = 0;
 
 		for (const entry of entries) {
-			const result = await this.tryAppendEntry(archive, entry, exactSize);
+			const result = await this.tryAppendEntry(archive, entry, exactSize ? entry.size : undefined);
 			if (result.problem) problems.push(result.problem);
 			deficit += result.deficit;
 		}
@@ -146,17 +147,17 @@ export class DownloadArchiveService {
 		return { problems, deficit };
 	}
 
-	private async tryAppendEntry(archive: Archiver, entry: ArchiveEntry, exactSize: boolean): Promise<AppendResult> {
+	private async tryAppendEntry(archive: Archiver, entry: ArchiveEntry, exactSize?: number): Promise<AppendResult> {
 		try {
 			const data = await this.legacyFileStorageAdapter.downloadFile(entry.file.id, entry.file.name);
 
-			if (!exactSize) {
+			if (exactSize === undefined) {
 				await this.appendAndWaitForEntry(archive, { name: entry.path, data });
 
 				return { deficit: 0 };
 			}
 
-			const fixedSize = this.toFixedSizeStream(data, entry.size ?? 0);
+			const fixedSize = this.toFixedSizeStream(data, exactSize);
 			await this.appendAndWaitForEntry(archive, { name: entry.path, data: fixedSize });
 
 			return fixedSize.isExact ? { deficit: 0 } : { problem: entry.file.name, deficit: 0 };
@@ -164,7 +165,7 @@ export class DownloadArchiveService {
 			this.logger.warning(new SkipFileLoggable(entry.file.id));
 
 			// The skipped entry is missing from the announced Content-Length and gets compensated by the report entry.
-			const deficit = exactSize ? ZipSizeCalculator.streamedEntrySize(entry.path, entry.size ?? 0) : 0;
+			const deficit = exactSize === undefined ? 0 : ZipSizeCalculator.streamedEntrySize(entry.path, exactSize);
 
 			return { problem: entry.file.name, deficit };
 		}

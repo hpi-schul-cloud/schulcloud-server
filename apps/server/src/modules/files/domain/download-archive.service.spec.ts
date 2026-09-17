@@ -641,6 +641,98 @@ describe('DownloadArchiveService', () => {
 			});
 		});
 
+		describe('when a file size is invalid', () => {
+			const setup = (size: number) => {
+				const file = fileDomainFactory.build({ isDirectory: false, name: 'test.txt', parentId: undefined, size });
+
+				legacyFileStorageAdapter.getFilesForOwner.mockResolvedValueOnce([file]);
+				legacyFileStorageAdapter.downloadFile.mockResolvedValueOnce(Readable.from(['content1']));
+
+				const mockArchive = createMockArchive();
+				jest.spyOn(ArchiveFactory, 'createEmpty').mockReturnValueOnce(mockArchive);
+				jest.spyOn(ArchiveFactory, 'appendFile').mockReturnValue(undefined);
+
+				return { ownerId: 'owner123', archiveName: 'test-archive' };
+			};
+
+			it.each([
+				['negative', -1],
+				['fractional', 12.5],
+				['above the safe integer range', Number.MAX_SAFE_INTEGER + 2],
+			])('should not return a content length for a %s size', async (_name, size) => {
+				const { ownerId, archiveName } = setup(size);
+
+				const result = await service.downloadFilesAsArchive(ownerId, archiveName);
+
+				expect(result.contentLength).toBeUndefined();
+			});
+		});
+
+		describe('when a download fails and no content length is announced', () => {
+			const setup = () => {
+				const file = fileDomainFactory.build({
+					isDirectory: false,
+					name: 'failing.txt',
+					parentId: undefined,
+					size: undefined,
+				});
+
+				legacyFileStorageAdapter.getFilesForOwner.mockResolvedValueOnce([file]);
+				legacyFileStorageAdapter.downloadFile.mockRejectedValueOnce(new Error('download failed'));
+
+				const mockArchive = createMockArchive();
+				jest.spyOn(ArchiveFactory, 'createEmpty').mockReturnValueOnce(mockArchive);
+				jest.spyOn(ArchiveFactory, 'appendFile').mockReturnValue(undefined);
+
+				return { ownerId: 'owner123', archiveName: 'test-archive', file, mockArchive };
+			};
+
+			it('should append an unpadded report listing the skipped file', async () => {
+				const { ownerId, archiveName, file, mockArchive } = setup();
+
+				const result = await service.downloadFilesAsArchive(ownerId, archiveName);
+				await flushPromises();
+
+				expect(result.contentLength).toBeUndefined();
+				expect(mockArchive.append).toHaveBeenCalledWith(expect.any(Readable), { name: 'REPORT.txt' });
+
+				const reportStream = mockArchive.append.mock.calls[0][0] as Readable;
+				const chunks: Buffer[] = [];
+				for await (const chunk of reportStream) {
+					chunks.push(chunk as Buffer);
+				}
+				const report = Buffer.concat(chunks);
+				expect(report.toString()).toContain(file.name);
+				expect(report.length).toBeLessThan(4096);
+			});
+		});
+
+		describe('when finalizing the archive fails', () => {
+			const setup = () => {
+				const file = fileDomainFactory.build({ isDirectory: false, name: 'test.txt', parentId: undefined });
+
+				legacyFileStorageAdapter.getFilesForOwner.mockResolvedValueOnce([file]);
+				legacyFileStorageAdapter.downloadFile.mockResolvedValueOnce(Readable.from(['content1']));
+
+				const error = new Error('finalize failed');
+				const mockArchive = createMockArchive();
+				mockArchive.finalize.mockRejectedValueOnce(error);
+				jest.spyOn(ArchiveFactory, 'createEmpty').mockReturnValueOnce(mockArchive);
+				jest.spyOn(ArchiveFactory, 'appendFile').mockReturnValue(undefined);
+
+				return { ownerId: 'owner123', archiveName: 'test-archive', error, mockArchive };
+			};
+
+			it('should forward the error to the archive stream', async () => {
+				const { ownerId, archiveName, error, mockArchive } = setup();
+
+				await service.downloadFilesAsArchive(ownerId, archiveName);
+				await flushPromises();
+
+				expect(mockArchive.emit).toHaveBeenCalledWith('error', error);
+			});
+		});
+
 		describe('when selectedFiles parameter is provided', () => {
 			const setup = () => {
 				const file1 = fileDomainFactory.build({ isDirectory: false, name: 'file1.txt', parentId: undefined });
