@@ -32,7 +32,8 @@ describe('MediumMetadataController (API)', () => {
 		}).compile();
 
 		app = moduleRef.createNestApplication();
-		axiosMock = new MockAdapter(axios);
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument -- axios-mock-adapter/axios@1.20 type mismatch under ts-jest, see jest.config.ts
+		axiosMock = new MockAdapter(axios as any);
 
 		await app.init();
 

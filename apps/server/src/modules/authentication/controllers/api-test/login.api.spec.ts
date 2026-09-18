@@ -504,7 +504,8 @@ describe('Login Controller (api)', () => {
 					external_sub: userExternalId,
 				});
 
-				const axiosMock: MockAdapter = new MockAdapter(axios);
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument -- axios-mock-adapter/axios@1.20 type mismatch under ts-jest, see jest.config.ts
+				const axiosMock: MockAdapter = new MockAdapter(axios as any);
 
 				axiosMock.onPost(system.oauthConfig?.tokenEndpoint).reply<OauthTokenResponse>(200, {
 					id_token: idToken,
@@ -584,7 +585,8 @@ describe('Login Controller (api)', () => {
 					external_sub: userExternalId,
 				});
 
-				const axiosMock: MockAdapter = new MockAdapter(axios);
+				// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument -- axios-mock-adapter/axios@1.20 type mismatch under ts-jest, see jest.config.ts
+				const axiosMock: MockAdapter = new MockAdapter(axios as any);
 
 				axiosMock.onPost(system.oauthConfig?.tokenEndpoint).reply<OauthTokenResponse>(200, {
 					id_token: idToken,

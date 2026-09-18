@@ -37,7 +37,8 @@ describe('VideoConferenceController (API)', () => {
 		app = moduleRef.createNestApplication();
 		await app.init();
 		em = app.get(EntityManager);
-		axiosMock = new MockAdapter(axios);
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument -- axios-mock-adapter/axios@1.20 type mismatch under ts-jest, see jest.config.ts
+		axiosMock = new MockAdapter(axios as any);
 		testApiClient = new TestApiClient(app, 'videoconference2');
 		videoConverenceConfig = app.get(VIDEO_CONFERENCE_CONFIG_TOKEN);
 		videoConverenceConfig.featureVideoConferenceEnabled = true;
@@ -49,7 +50,8 @@ describe('VideoConferenceController (API)', () => {
 
 	afterEach(async () => {
 		await cleanupCollections(em);
-		axiosMock = new MockAdapter(axios);
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument -- axios-mock-adapter/axios@1.20 type mismatch under ts-jest, see jest.config.ts
+		axiosMock = new MockAdapter(axios as any);
 	});
 
 	const mockBbbMeetingInfoFailed = (meetingId: string) => {

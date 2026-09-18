@@ -429,7 +429,8 @@ describe('UserLoginMigrationController (API)', () => {
 			targetUserId: string,
 			officialSchoolNumber: string
 		) => {
-			const axiosMock = new MockAdapter(axios);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument -- axios-mock-adapter/axios@1.20 type mismatch under ts-jest, see jest.config.ts
+			const axiosMock = new MockAdapter(axios as any);
 
 			axiosMock
 				.onPost(targetSystem.oauthConfig?.tokenEndpoint)
