@@ -432,4 +432,74 @@ describe('LegacyFileStorageAdapter', () => {
 			});
 		});
 	});
+
+	describe('downloadFileFromUrl', () => {
+		describe('when the url is reachable', () => {
+			it('should return the readable stream', async () => {
+				const mockStream = new Readable({ read() {} });
+				httpService.get.mockReturnValueOnce(of(buildAxiosResponse(mockStream)));
+
+				const result = await adapter.downloadFileFromUrl('https://s3.example.com/file');
+
+				expect(result).toBe(mockStream);
+				expect(httpService.get).toHaveBeenCalledWith('https://s3.example.com/file', { responseType: 'stream' });
+			});
+		});
+	});
+
+	describe('probeFile', () => {
+		describe('when the object exists', () => {
+			const setup = (contentLength: unknown) => {
+				const fileId = new ObjectId().toHexString();
+				const signedUrl = 'https://s3.example.com/bucket/file?X-Amz-Signature=abc123';
+
+				httpService.get.mockReturnValueOnce(of(buildAxiosResponse({ url: signedUrl })));
+				httpService.head.mockReturnValueOnce(
+					of({ ...buildAxiosResponse(''), headers: { 'content-length': contentLength } } as AxiosResponse)
+				);
+
+				return { fileId, signedUrl };
+			};
+
+			it('should return the signed url and the reported size', async () => {
+				const { fileId, signedUrl } = setup('1234');
+
+				const result = await adapter.probeFile(fileId, 'document.pdf');
+
+				expect(result).toEqual({ url: signedUrl, size: 1234 });
+				expect(httpService.head).toHaveBeenCalledWith(signedUrl);
+			});
+
+			it.each([
+				['missing', undefined],
+				['not numeric', 'abc'],
+				['negative', '-1'],
+				['fractional', '12.5'],
+				['above the safe integer range', '9007199254740993'],
+			])('should return an undefined size when the content length is %s', async (_name, contentLength) => {
+				const { fileId } = setup(contentLength);
+
+				const result = await adapter.probeFile(fileId, 'document.pdf');
+
+				expect(result.size).toBeUndefined();
+			});
+		});
+
+		describe('when the signed url cannot be obtained', () => {
+			it('should throw an InternalServerErrorException', async () => {
+				httpService.get.mockReturnValueOnce(throwError(() => new Error('Network error')));
+
+				await expect(adapter.probeFile('file123', 'document.pdf')).rejects.toThrow(InternalServerErrorException);
+			});
+		});
+
+		describe('when the object is not reachable', () => {
+			it('should throw an InternalServerErrorException', async () => {
+				httpService.get.mockReturnValueOnce(of(buildAxiosResponse({ url: 'signedUrl' })));
+				httpService.head.mockReturnValueOnce(throwError(() => new Error('Not found')));
+
+				await expect(adapter.probeFile('file123', 'document.pdf')).rejects.toThrow(InternalServerErrorException);
+			});
+		});
+	});
 });

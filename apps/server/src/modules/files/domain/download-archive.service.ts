@@ -13,17 +13,21 @@ import { GetFileResponse } from './types';
 import { ZipSizeCalculator, type ZipEntrySize } from './zip-size.calculator';
 
 const REPORT_ENTRY_BASE_NAME = 'REPORT';
-const REPORT_RESERVED_SIZE = 4096;
+const PROBE_CONCURRENCY = 10;
 
-interface ArchiveEntry {
+interface PlannedEntry {
 	file: FileDo;
 	path: string;
+}
+
+interface ArchiveEntry extends PlannedEntry {
+	url: string;
 	size?: number;
 }
 
-interface AppendResult {
-	problem?: string;
-	deficit: number;
+interface ArchiveReport {
+	name: string;
+	content: Buffer;
 }
 
 @Injectable()
@@ -45,18 +49,19 @@ export class DownloadArchiveService {
 		const downloadableFiles = this.filterDownloadableFiles(files);
 		const filesToDownload = this.filterSelectedFiles(downloadableFiles, selectedFiles);
 
-		const entries = filesToDownload.map((file) => {
-			return {
-				file,
-				path: this.buildFilePath(file, filesById),
-				size: file.size,
-			};
+		const planned = filesToDownload.map((file) => {
+			return { file, path: this.buildFilePath(file, filesById) };
 		});
-		const reportName = this.resolveReportName(entries);
-		const contentLength = this.calculateContentLength(entries, reportName);
+		// Unreachable files are detected before a size is announced, so they cannot invalidate the Content-Length.
+		const { entries, missingFileNames } = await this.probeEntries(planned);
+		const report = this.buildReport(planned, missingFileNames);
+		const contentLength = this.calculateContentLength(entries, report);
 
-		const archive = ArchiveFactory.createEmpty(filesToDownload, this.logger);
-		this.populateArchiveAndFinalize(archive, entries, reportName, contentLength !== undefined).catch((err: unknown) =>
+		const archive = ArchiveFactory.createEmpty(
+			entries.map((entry) => entry.file),
+			this.logger
+		);
+		this.populateArchiveAndFinalize(archive, entries, report, contentLength !== undefined).catch((err: unknown) =>
 			archive.emit('error', err as Error)
 		);
 
@@ -86,8 +91,62 @@ export class DownloadArchiveService {
 		return files.filter((file) => selectedFileSet.has(file.id));
 	}
 
-	private resolveReportName(entries: ArchiveEntry[]): string {
-		const takenPaths = new Set(entries.map((entry) => entry.path.toLowerCase()));
+	private async probeEntries(
+		planned: PlannedEntry[]
+	): Promise<{ entries: ArchiveEntry[]; missingFileNames: string[] }> {
+		const probed = await this.mapWithConcurrency<PlannedEntry, ArchiveEntry | undefined>(
+			planned,
+			PROBE_CONCURRENCY,
+			async (entry) => {
+				try {
+					const { url, size } = await this.legacyFileStorageAdapter.probeFile(entry.file.id, entry.file.name);
+
+					return { ...entry, url, size };
+				} catch {
+					this.logger.warning(new SkipFileLoggable(entry.file.id));
+
+					return undefined;
+				}
+			}
+		);
+
+		const entries = probed.filter((entry): entry is ArchiveEntry => entry !== undefined);
+		const missingFileNames = planned.filter((_, index) => probed[index] === undefined).map((entry) => entry.file.name);
+
+		return { entries, missingFileNames };
+	}
+
+	private async mapWithConcurrency<T, R>(items: T[], limit: number, worker: (item: T) => Promise<R>): Promise<R[]> {
+		const results = new Array<R>(items.length);
+		let nextIndex = 0;
+
+		const runners = Array.from({ length: Math.min(limit, items.length) }, async () => {
+			while (nextIndex < items.length) {
+				const index = nextIndex;
+				nextIndex += 1;
+				results[index] = await worker(items[index]);
+			}
+		});
+		await Promise.all(runners);
+
+		return results;
+	}
+
+	private buildReport(planned: PlannedEntry[], missingFileNames: string[]): ArchiveReport | undefined {
+		if (missingFileNames.length === 0) {
+			return undefined;
+		}
+
+		const header =
+			'Folgende Datei(en) konnten nicht heruntergeladen werden / The following files could not be downloaded:';
+		const content = Buffer.from(`${header}\n\n${missingFileNames.join('\n')}\n`, 'utf8');
+
+		return { name: this.resolveReportName(planned), content };
+	}
+
+	/** Extractors hide or overwrite duplicate zip members, so the report must not clash with a user file. */
+	private resolveReportName(planned: PlannedEntry[]): string {
+		const takenPaths = new Set(planned.map((entry) => entry.path.toLowerCase()));
 
 		let name = `${REPORT_ENTRY_BASE_NAME}.txt`;
 		let index = 1;
@@ -99,16 +158,19 @@ export class DownloadArchiveService {
 		return name;
 	}
 
-	private calculateContentLength(entries: ArchiveEntry[], reportName: string): number | undefined {
+	private calculateContentLength(entries: ArchiveEntry[], report?: ArchiveReport): number | undefined {
 		const sizes: ZipEntrySize[] = [];
 
 		for (const entry of entries) {
-			if (entry.size === undefined || !Number.isSafeInteger(entry.size) || entry.size < 0) {
+			if (entry.size === undefined) {
 				return undefined;
 			}
 			sizes.push({ name: entry.path, size: entry.size });
 		}
-		sizes.push({ name: reportName, size: REPORT_RESERVED_SIZE });
+
+		if (report) {
+			sizes.push({ name: report.name, size: report.content.length });
+		}
 
 		return ZipSizeCalculator.storedArchiveSize(sizes);
 	}
@@ -116,58 +178,48 @@ export class DownloadArchiveService {
 	private async populateArchiveAndFinalize(
 		archive: Archiver,
 		entries: ArchiveEntry[],
-		reportName: string,
+		report: ArchiveReport | undefined,
 		exactSize: boolean
 	): Promise<void> {
-		const { problems, deficit } = await this.populateArchive(archive, entries, exactSize);
+		for (const entry of entries) {
+			await this.appendEntry(archive, entry, exactSize ? entry.size : undefined);
+		}
 
-		if (exactSize) {
-			this.appendReport(archive, reportName, problems, REPORT_RESERVED_SIZE + deficit);
-		} else if (problems.length > 0) {
-			this.appendReport(archive, reportName, problems);
+		if (report) {
+			archive.append(Readable.from([report.content]), { name: report.name });
 		}
 
 		await archive.finalize();
 	}
 
-	private async populateArchive(
-		archive: Archiver,
-		entries: ArchiveEntry[],
-		exactSize: boolean
-	): Promise<{ problems: string[]; deficit: number }> {
-		const problems: string[] = [];
-		let deficit = 0;
+	private async appendEntry(archive: Archiver, entry: ArchiveEntry, exactSize?: number): Promise<void> {
+		const source = await this.openEntry(entry, exactSize !== undefined);
 
-		for (const entry of entries) {
-			const result = await this.tryAppendEntry(archive, entry, exactSize ? entry.size : undefined);
-			if (result.problem) problems.push(result.problem);
-			deficit += result.deficit;
+		if (source === undefined) {
+			return;
 		}
 
-		return { problems, deficit };
+		const data = exactSize === undefined ? source : this.toFixedSizeStream(source, exactSize);
+		await this.appendAndWaitForEntry(archive, { name: entry.path, data });
 	}
 
-	private async tryAppendEntry(archive: Archiver, entry: ArchiveEntry, exactSize?: number): Promise<AppendResult> {
+	/** Falls back to an empty stream when a size was already announced, so the padding keeps the Content-Length valid. */
+	private async openEntry(entry: ArchiveEntry, exactSize: boolean): Promise<Readable | undefined> {
 		try {
-			const data = await this.legacyFileStorageAdapter.downloadFile(entry.file.id, entry.file.name);
-
-			if (exactSize === undefined) {
-				await this.appendAndWaitForEntry(archive, { name: entry.path, data });
-
-				return { deficit: 0 };
-			}
-
-			const fixedSize = this.toFixedSizeStream(data, exactSize);
-			await this.appendAndWaitForEntry(archive, { name: entry.path, data: fixedSize });
-
-			return fixedSize.isExact ? { deficit: 0 } : { problem: entry.file.name, deficit: 0 };
+			return await this.download(entry);
 		} catch {
 			this.logger.warning(new SkipFileLoggable(entry.file.id));
 
-			// The skipped entry is missing from the announced Content-Length and gets compensated by the report entry.
-			const deficit = exactSize === undefined ? 0 : ZipSizeCalculator.streamedEntrySize(entry.path, exactSize);
+			return exactSize ? Readable.from([]) : undefined;
+		}
+	}
 
-			return { problem: entry.file.name, deficit };
+	private async download(entry: ArchiveEntry): Promise<Readable> {
+		try {
+			return await this.legacyFileStorageAdapter.downloadFileFromUrl(entry.url);
+		} catch {
+			// The signed url from the probe may have expired while earlier entries were streamed.
+			return this.legacyFileStorageAdapter.downloadFile(entry.file.id, entry.file.name);
 		}
 	}
 
@@ -179,25 +231,6 @@ export class DownloadArchiveService {
 		source.pipe(fixedSize);
 
 		return fixedSize;
-	}
-
-	private appendReport(archive: Archiver, reportName: string, problemFileNames: string[], exactSize?: number): void {
-		const content = Buffer.from(this.buildReportContent(problemFileNames), 'utf8');
-		const source = Readable.from([content]);
-		const data = exactSize === undefined ? source : this.toFixedSizeStream(source, exactSize);
-
-		archive.append(data, { name: reportName });
-	}
-
-	private buildReportContent(problemFileNames: string[]): string {
-		if (problemFileNames.length === 0) {
-			return 'Alle Dateien wurden vollständig heruntergeladen. / All files were downloaded completely.\n';
-		}
-
-		const header =
-			'Folgende Datei(en) konnten nicht (vollständig) heruntergeladen werden / The following files could not be downloaded (completely):';
-
-		return `${header}\n\n${problemFileNames.join('\n')}\n`;
 	}
 
 	private appendAndWaitForEntry(archive: Archiver, fileResponse: GetFileResponse): Promise<void> {
