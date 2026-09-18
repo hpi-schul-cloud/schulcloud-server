@@ -666,6 +666,12 @@ describe('RoomMembershipService', () => {
 					.filter((user): user is UserDo => user !== undefined);
 				return Promise.resolve(users);
 			});
+			userService.getSchoolIdsByUserIds.mockImplementation((userIds: string[]) => {
+				const users = [...usersSchool2, ...usersSchool1].filter(
+					(user): user is UserDo & { id: string } => user.id !== undefined && userIds.includes(user.id)
+				);
+				return Promise.resolve(new Map(users.map((user) => [user.id, user.schoolId])));
+			});
 
 			roleService.findByName.mockResolvedValue(role);
 
@@ -725,6 +731,19 @@ describe('RoomMembershipService', () => {
 			expect(groupService.findByUsersAndRoomsSchoolId).toHaveBeenCalledWith(schoolId1, [GroupTypes.ROOM], {
 				pagination: { skip: 0, limit: 500 },
 			});
+		});
+
+		it('should load school ids once for duplicate users across groups', async () => {
+			const { schoolId1, usersSchool1, usersSchool2 } = setup();
+
+			await service.getRoomMembershipStatsByUsersAndRoomsSchoolId(schoolId1);
+
+			expect(userService.getSchoolIdsByUserIds).toHaveBeenCalledWith(
+				expect.arrayContaining([...usersSchool1, ...usersSchool2].map((user) => user.id))
+			);
+			expect(userService.getSchoolIdsByUserIds.mock.calls[0][0]).toHaveLength(
+				usersSchool1.length + usersSchool2.length
+			);
 		});
 	});
 
