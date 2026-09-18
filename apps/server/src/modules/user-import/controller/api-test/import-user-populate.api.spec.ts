@@ -65,7 +65,8 @@ describe('ImportUser Controller Populate (API)', () => {
 
 		em = app.get(EntityManager);
 		testApiClient = new TestApiClient(app, 'user/import');
-		axiosMock = new MockAdapter(axios);
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument -- axios-mock-adapter/axios@1.20 type mismatch under ts-jest, see jest.config.ts
+		axiosMock = new MockAdapter(axios as any);
 		userImportConfig = app.get<UserImportConfig>(USER_IMPORT_CONFIG_TOKEN);
 	});
 
