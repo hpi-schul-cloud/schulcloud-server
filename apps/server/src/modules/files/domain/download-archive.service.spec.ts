@@ -1,5 +1,6 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { Logger } from '@infra/logger';
+import { InternalServerErrorException } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
 import AdmZip from 'adm-zip';
 import { type Archiver } from 'archiver';
@@ -251,12 +252,12 @@ describe('DownloadArchiveService', () => {
 				return { ownerId: 'owner123', archiveName: 'test-archive', missingFile, intactFile };
 			};
 
-			it('should log a warning for the unreachable file', async () => {
+			it('should log a warning with the reason for the unreachable file', async () => {
 				const { ownerId, archiveName, missingFile } = setup();
 
 				await service.downloadFilesAsArchive(ownerId, archiveName);
 
-				expect(logger.warning).toHaveBeenCalledWith(new SkipFileLoggable(missingFile.id));
+				expect(logger.warning).toHaveBeenCalledWith(new SkipFileLoggable(missingFile.id, 'not found'));
 			});
 
 			it('should not try to download the unreachable file', async () => {
@@ -287,6 +288,50 @@ describe('DownloadArchiveService', () => {
 				const archiveBuffer = await collect(result.data);
 
 				expect(archiveBuffer).toHaveLength(result.contentLength as number);
+			});
+		});
+
+		describe('when a probe rejects with a non error value', () => {
+			const setup = () => {
+				const missingFile = fileDomainFactory.build({ isDirectory: false, name: 'missing.txt', parentId: undefined });
+				const intactFile = fileDomainFactory.build({ isDirectory: false, name: 'intact.txt', parentId: undefined });
+
+				legacyFileStorageAdapter.getFilesForOwner.mockResolvedValueOnce([missingFile, intactFile]);
+				legacyFileStorageAdapter.probeFile
+
+					.mockRejectedValueOnce('boom')
+					.mockResolvedValueOnce({ url: 'https://storage/2', size: 6 });
+				legacyFileStorageAdapter.downloadFileFromUrl.mockResolvedValueOnce(Readable.from([Buffer.from('intact')]));
+
+				return { ownerId: 'owner123', archiveName: 'test-archive', missingFile };
+			};
+
+			it('should log a generic reason', async () => {
+				const { ownerId, archiveName, missingFile } = setup();
+
+				await service.downloadFilesAsArchive(ownerId, archiveName);
+
+				expect(logger.warning).toHaveBeenCalledWith(new SkipFileLoggable(missingFile.id, 'unknown error'));
+			});
+		});
+
+		describe('when no file is reachable at all', () => {
+			const setup = () => {
+				const file1 = fileDomainFactory.build({ isDirectory: false, name: 'one.txt', parentId: undefined });
+				const file2 = fileDomainFactory.build({ isDirectory: false, name: 'two.txt', parentId: undefined });
+
+				legacyFileStorageAdapter.getFilesForOwner.mockResolvedValueOnce([file1, file2]);
+				legacyFileStorageAdapter.probeFile.mockRejectedValue(new Error('status 403'));
+
+				return { ownerId: 'owner123', archiveName: 'test-archive' };
+			};
+
+			it('should throw instead of returning an archive containing only the report', async () => {
+				const { ownerId, archiveName } = setup();
+
+				await expect(service.downloadFilesAsArchive(ownerId, archiveName)).rejects.toThrow(
+					InternalServerErrorException
+				);
 			});
 		});
 
@@ -380,7 +425,7 @@ describe('DownloadArchiveService', () => {
 
 				expect(archiveBuffer).toHaveLength(result.contentLength as number);
 				expect(zip.getEntry(file.name)?.getData()).toEqual(Buffer.alloc(6));
-				expect(logger.warning).toHaveBeenCalledWith(new SkipFileLoggable(file.id));
+				expect(logger.warning).toHaveBeenCalledWith(new SkipFileLoggable(file.id, 'gone'));
 			});
 		});
 
@@ -475,7 +520,7 @@ describe('DownloadArchiveService', () => {
 
 				expect(result.contentLength).toBeUndefined();
 				expect(zip.getEntries()).toHaveLength(0);
-				expect(logger.warning).toHaveBeenCalledWith(new SkipFileLoggable(file.id));
+				expect(logger.warning).toHaveBeenCalledWith(new SkipFileLoggable(file.id, 'gone'));
 			});
 		});
 

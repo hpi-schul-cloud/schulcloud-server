@@ -1,5 +1,5 @@
 import { Logger } from '@infra/logger';
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { Archiver } from 'archiver';
 import { Readable } from 'node:stream';
@@ -102,8 +102,8 @@ export class DownloadArchiveService {
 					const { url, size } = await this.legacyFileStorageAdapter.probeFile(entry.file.id, entry.file.name);
 
 					return { ...entry, url, size };
-				} catch {
-					this.logger.warning(new SkipFileLoggable(entry.file.id));
+				} catch (error: unknown) {
+					this.logger.warning(new SkipFileLoggable(entry.file.id, this.describeError(error)));
 
 					return undefined;
 				}
@@ -113,7 +113,16 @@ export class DownloadArchiveService {
 		const entries = probed.filter((entry): entry is ArchiveEntry => entry !== undefined);
 		const missingFileNames = planned.filter((_, index) => probed[index] === undefined).map((entry) => entry.file.name);
 
+		// A complete failure points at a storage or network outage rather than at missing files.
+		if (planned.length > 0 && entries.length === 0) {
+			throw new InternalServerErrorException('None of the requested files could be accessed');
+		}
+
 		return { entries, missingFileNames };
+	}
+
+	private describeError(error: unknown): string {
+		return error instanceof Error ? error.message : 'unknown error';
 	}
 
 	private async mapWithConcurrency<T, R>(items: T[], limit: number, worker: (item: T) => Promise<R>): Promise<R[]> {
@@ -207,8 +216,8 @@ export class DownloadArchiveService {
 	private async openEntry(entry: ArchiveEntry, exactSize: boolean): Promise<Readable | undefined> {
 		try {
 			return await this.download(entry);
-		} catch {
-			this.logger.warning(new SkipFileLoggable(entry.file.id));
+		} catch (error: unknown) {
+			this.logger.warning(new SkipFileLoggable(entry.file.id, this.describeError(error)));
 
 			return exactSize ? Readable.from([]) : undefined;
 		}

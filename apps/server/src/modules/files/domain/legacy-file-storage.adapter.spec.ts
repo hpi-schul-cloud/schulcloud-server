@@ -4,7 +4,7 @@ import { HttpService } from '@nestjs/axios';
 import { InternalServerErrorException } from '@nestjs/common';
 import { REQUEST } from '@nestjs/core';
 import { Test, type TestingModule } from '@nestjs/testing';
-import { type AxiosResponse } from 'axios';
+import { AxiosError, type AxiosResponse } from 'axios';
 import { ObjectId } from 'bson';
 import { Readable } from 'node:stream';
 import { of, throwError } from 'rxjs';
@@ -449,35 +449,56 @@ describe('LegacyFileStorageAdapter', () => {
 
 	describe('probeFile', () => {
 		describe('when the object exists', () => {
-			const setup = (contentLength: unknown) => {
+			const setup = (headers: Record<string, unknown>) => {
 				const fileId = new ObjectId().toHexString();
 				const signedUrl = 'https://s3.example.com/bucket/file?X-Amz-Signature=abc123';
+				const mockStream = new Readable({ read() {} });
 
-				httpService.get.mockReturnValueOnce(of(buildAxiosResponse({ url: signedUrl })));
-				httpService.head.mockReturnValueOnce(
-					of({ ...buildAxiosResponse(''), headers: { 'content-length': contentLength } } as AxiosResponse)
-				);
+				httpService.get
+					.mockReturnValueOnce(of(buildAxiosResponse({ url: signedUrl })))
+					.mockReturnValueOnce(of({ ...buildAxiosResponse(mockStream), headers } as AxiosResponse));
 
-				return { fileId, signedUrl };
+				return { fileId, signedUrl, mockStream };
 			};
 
-			it('should return the signed url and the reported size', async () => {
-				const { fileId, signedUrl } = setup('1234');
+			it('should probe with a single byte range request', async () => {
+				const { fileId, signedUrl } = setup({ 'content-range': 'bytes 0-0/1234' });
 
 				const result = await adapter.probeFile(fileId, 'document.pdf');
 
 				expect(result).toEqual({ url: signedUrl, size: 1234 });
-				expect(httpService.head).toHaveBeenCalledWith(signedUrl);
+				expect(httpService.get).toHaveBeenCalledWith(signedUrl, {
+					responseType: 'stream',
+					headers: { Range: 'bytes=0-0' },
+				});
+			});
+
+			it('should destroy the probe stream', async () => {
+				const { fileId, mockStream } = setup({ 'content-range': 'bytes 0-0/1234' });
+
+				await adapter.probeFile(fileId, 'document.pdf');
+
+				expect(mockStream.destroyed).toBe(true);
+			});
+
+			it('should fall back to the content length when the range header is ignored', async () => {
+				const { fileId } = setup({ 'content-length': '4321' });
+
+				const result = await adapter.probeFile(fileId, 'document.pdf');
+
+				expect(result.size).toBe(4321);
 			});
 
 			it.each([
-				['missing', undefined],
-				['not numeric', 'abc'],
-				['negative', '-1'],
-				['fractional', '12.5'],
-				['above the safe integer range', '9007199254740993'],
-			])('should return an undefined size when the content length is %s', async (_name, contentLength) => {
-				const { fileId } = setup(contentLength);
+				['an unsatisfiable total', { 'content-range': 'bytes 0-0/*' }],
+				['a missing content length', {}],
+				['a non numeric content length', { 'content-length': 'abc' }],
+				['an empty content length', { 'content-length': ' ' }],
+				['a negative content length', { 'content-length': '-1' }],
+				['a fractional content length', { 'content-length': '12.5' }],
+				['a content length above the safe integer range', { 'content-length': '9007199254740993' }],
+			])('should return an undefined size for %s', async (_name, headers) => {
+				const { fileId } = setup(headers);
 
 				const result = await adapter.probeFile(fileId, 'document.pdf');
 
@@ -494,9 +515,36 @@ describe('LegacyFileStorageAdapter', () => {
 		});
 
 		describe('when the object is not reachable', () => {
-			it('should throw an InternalServerErrorException', async () => {
-				httpService.get.mockReturnValueOnce(of(buildAxiosResponse({ url: 'signedUrl' })));
-				httpService.head.mockReturnValueOnce(throwError(() => new Error('Not found')));
+			const setupFailure = (error: unknown) => {
+				httpService.get
+					.mockReturnValueOnce(of(buildAxiosResponse({ url: 'signedUrl' })))
+					.mockReturnValueOnce(throwError(() => error));
+			};
+
+			it('should report the http status in the error message', async () => {
+				setupFailure(
+					new AxiosError('Request failed', 'ERR_BAD_REQUEST', undefined, undefined, {
+						status: 403,
+					} as AxiosResponse)
+				);
+
+				await expect(adapter.probeFile('file123', 'document.pdf')).rejects.toThrow(/\(status 403\)/);
+			});
+
+			it('should report the error code when there is no response', async () => {
+				setupFailure(new AxiosError('connect ECONNREFUSED', 'ECONNREFUSED'));
+
+				await expect(adapter.probeFile('file123', 'document.pdf')).rejects.toThrow(/\(ECONNREFUSED\)/);
+			});
+
+			it('should report the message when there is neither response nor code', async () => {
+				setupFailure(new AxiosError('socket hang up'));
+
+				await expect(adapter.probeFile('file123', 'document.pdf')).rejects.toThrow(/\(socket hang up\)/);
+			});
+
+			it('should throw an InternalServerErrorException for a non axios error', async () => {
+				setupFailure(new Error('Not found'));
 
 				await expect(adapter.probeFile('file123', 'document.pdf')).rejects.toThrow(InternalServerErrorException);
 			});

@@ -4,7 +4,7 @@ import { REQUEST } from '@nestjs/core';
 import { TypeGuard } from '@shared/common/guards';
 import { JwtExtractor } from '@shared/common/utils';
 import { EntityId } from '@shared/domain/types';
-import { AxiosResponse } from 'axios';
+import { AxiosResponse, isAxiosError } from 'axios';
 import { Request } from 'express';
 import { Readable } from 'node:stream';
 import { firstValueFrom } from 'rxjs';
@@ -52,21 +52,50 @@ export class LegacyFileStorageAdapter {
 		const { url } = await this.getSignedUrl(fileId, fileName);
 
 		try {
-			const response = await firstValueFrom(this.httpService.head(url));
-			const size = this.parseContentLength(response.headers['content-length']);
+			// The url is signed for GET only, so a single byte range request is used instead of HEAD.
+			const response = await firstValueFrom(
+				this.httpService.get<Readable>(url, { responseType: 'stream', headers: { Range: 'bytes=0-0' } })
+			);
+			response.data.destroy();
 
-			return { url, size };
+			return { url, size: this.parseObjectSize(response) };
 		} catch (error) {
-			throw new InternalServerErrorException(`Failed to probe file in legacy storage with id ${fileId}`, {
-				cause: error,
-			});
+			throw new InternalServerErrorException(
+				`Failed to probe file in legacy storage with id ${fileId}${this.describeFailure(error)}`,
+				{ cause: error }
+			);
 		}
 	}
 
-	private parseContentLength(value: unknown): number | undefined {
+	private parseObjectSize(response: AxiosResponse): number | undefined {
+		const contentRange: unknown = response.headers['content-range'];
+
+		if (typeof contentRange === 'string') {
+			return this.parseSize(contentRange.split('/')[1]);
+		}
+
+		// Providers that ignore the range header answer with the complete object.
+		return this.parseSize(response.headers['content-length']);
+	}
+
+	private parseSize(value: unknown): number | undefined {
+		if (typeof value !== 'string' || value.trim() === '') {
+			return undefined;
+		}
+
 		const size = Number(value);
 
-		return typeof value === 'string' && Number.isSafeInteger(size) && size >= 0 ? size : undefined;
+		return Number.isSafeInteger(size) && size >= 0 ? size : undefined;
+	}
+
+	private describeFailure(error: unknown): string {
+		if (!isAxiosError(error)) {
+			return '';
+		}
+
+		const status = error.response?.status;
+
+		return status === undefined ? ` (${error.code ?? error.message})` : ` (status ${status})`;
 	}
 
 	private async getSignedUrl(fileId: EntityId, fileName: string): Promise<SignedUrlResponseVo> {
