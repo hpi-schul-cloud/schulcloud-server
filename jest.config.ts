@@ -9,7 +9,7 @@ let config: Config.InitialOptions = {
 	testRegex: '\\.spec\\.ts$',
 	// ignore legacy mocha tests
 	testPathIgnorePatterns: ['^src', '^test'],
-	// @faker-js/faker and sanitize-html (+ its nested htmlparser2/entities/dom-* deps) ship ESM-only; compile them to CJS so ts-jest/Jest's CJS runtime can require() them
+	// Jest bypasses Node 24's native require(esm); compile ESM-only test dependencies to CJS for its custom runtime
 	transformIgnorePatterns: [
 		'/node_modules/(?!(@faker-js/faker|sanitize-html|htmlparser2|dom-serializer|domelementtype|domutils|entities|domhandler)/)',
 	],
