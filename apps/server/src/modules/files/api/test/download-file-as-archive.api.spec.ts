@@ -317,7 +317,10 @@ describe('DownloadArchive Controller (API)', () => {
 				});
 
 				legacyFileStorageAdapter.getFilesForOwner.mockResolvedValueOnce([file1, file2]);
-				legacyFileStorageAdapter.downloadFile.mockResolvedValue(Readable.from('mock file content'));
+				legacyFileStorageAdapter.probeFile.mockResolvedValue({ url: 'http://signed-url', size: 17 });
+				legacyFileStorageAdapter.downloadFileFromUrl.mockImplementation(() =>
+					Promise.resolve(Readable.from('mock file content'))
+				);
 				// @ts-expect-error - we only need the url property for this test
 				// eslint-disable-next-line @typescript-eslint/no-unsafe-call
 				legacyFileStorageAdapter.getSignedUrl.mockResolvedValue(new SignedUrlResponseVo('http://signed-url'));
@@ -365,6 +368,10 @@ describe('DownloadArchive Controller (API)', () => {
 				});
 
 				legacyFileStorageAdapter.getFilesForOwner.mockResolvedValueOnce([file1, file2]);
+				legacyFileStorageAdapter.probeFile.mockResolvedValue({ url: 'http://signed-url', size: 17 });
+				legacyFileStorageAdapter.downloadFileFromUrl.mockImplementation(() =>
+					Promise.resolve(Readable.from('mock file content'))
+				);
 
 				jest.spyOn(S3ClientAdapter.prototype, 'get').mockResolvedValue({
 					data: Readable.from('mock file content'),
