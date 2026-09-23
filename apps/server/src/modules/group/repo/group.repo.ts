@@ -7,7 +7,6 @@ import { IFindOptions } from '@shared/domain/interface';
 import { EntityId } from '@shared/domain/types';
 import { BaseDomainObjectRepo } from '@shared/repo/base-domain-object.repo';
 import { MongoPatterns } from '@shared/repo/mongo.patterns';
-import { ScopeAggregateResult } from '@shared/repo/mongodb-scope';
 import { Group, GroupAggregateScope, GroupFilter, GroupTypes } from '../domain';
 import { GroupEntity } from '../entity';
 import { GroupDomainMapper, GroupTypesToGroupEntityTypesMapping } from './group-domain.mapper';
@@ -107,14 +106,14 @@ export class GroupRepo extends BaseDomainObjectRepo<Group, GroupEntity> {
 	}
 
 	public async findGroupsForScope(scope: GroupAggregateScope): Promise<Page<Group>> {
-		const mongoEntitiesFacet = (await this.em.aggregate(
-			GroupEntity,
-			scope.build()
-		)) as ScopeAggregateResult<GroupEntity>;
+		const [mongoEntities, countResult] = await Promise.all([
+			this.aggregateGroups<EntityDictionary<GroupEntity>>(scope.buildDataPipeline()),
+			this.aggregateGroups<{ count: number }>(scope.buildCountPipeline()),
+		]);
 
-		const total: number = mongoEntitiesFacet[0]?.total[0]?.count ?? 0;
+		const total: number = countResult[0]?.count ?? 0;
 
-		const entities: GroupEntity[] = mongoEntitiesFacet[0].data.map((entity: EntityDictionary<GroupEntity>) =>
+		const entities: GroupEntity[] = mongoEntities.map((entity: EntityDictionary<GroupEntity>) =>
 			this.em.map(GroupEntity, entity)
 		);
 
@@ -123,6 +122,10 @@ export class GroupRepo extends BaseDomainObjectRepo<Group, GroupEntity> {
 		const page: Page<Group> = new Page<Group>(domainObjects, total);
 
 		return page;
+	}
+
+	private async aggregateGroups<T extends object>(pipeline: Record<string, unknown>[]): Promise<T[]> {
+		return (await this.em.aggregate(GroupEntity, pipeline)) as T[];
 	}
 
 	public async removeUserReference(userId: EntityId): Promise<number> {

@@ -121,6 +121,24 @@ describe('Room Controller (API)', () => {
 				return { loggedInClient, school, otherSchool, adminUser, adminAccount };
 			};
 
+			describe('when pagination is provided', () => {
+				it('should accept the maximum limit', async () => {
+					const { loggedInClient } = await setup();
+
+					const response = await loggedInClient.get().query({ limit: 500 });
+
+					expect(response.status).toBe(HttpStatus.OK);
+				});
+
+				it('should reject a limit above the maximum', async () => {
+					const { loggedInClient } = await setup();
+
+					const response = await loggedInClient.get().query({ limit: 501 });
+
+					expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+				});
+			});
+
 			describe('when the feature is disabled', () => {
 				it('should return a 403 error', async () => {
 					const { loggedInClient } = await setup();

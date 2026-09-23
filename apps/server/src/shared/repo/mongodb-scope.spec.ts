@@ -13,7 +13,7 @@ describe(MongoDbScope.name, () => {
 					{
 						$facet: {
 							total: [{ $count: 'count' }],
-							data: [{ $skip: 0 }],
+							data: [{ $sort: { _id: 1 } }, { $skip: 0 }],
 						},
 					},
 				]);
@@ -39,11 +39,31 @@ describe(MongoDbScope.name, () => {
 					{
 						$facet: {
 							total: [{ $count: 'count' }],
-							data: [{ $sort: { name: 1, tree: -1 } }, { $skip: 12 }, { $limit: 50 }],
+							data: [{ $sort: { name: 1, tree: -1, _id: 1 } }, { $skip: 12 }, { $limit: 50 }],
 						},
 					},
 				]);
 			});
+		});
+	});
+
+	describe('buildDataPipeline', () => {
+		it('should append stable sorting and pagination without mutating the scope', () => {
+			const scope = new TestScope({ pagination: { skip: 12, limit: 50 } });
+
+			const firstResult = scope.buildDataPipeline();
+			const secondResult = scope.buildDataPipeline();
+
+			expect(firstResult).toEqual([{ $sort: { _id: 1 } }, { $skip: 12 }, { $limit: 50 }]);
+			expect(secondResult).toEqual(firstResult);
+		});
+	});
+
+	describe('buildCountPipeline', () => {
+		it('should append only the count stage', () => {
+			const result = new TestScope({ pagination: { skip: 12, limit: 50 } }).buildCountPipeline();
+
+			expect(result).toEqual([{ $count: 'count' }]);
 		});
 	});
 });
