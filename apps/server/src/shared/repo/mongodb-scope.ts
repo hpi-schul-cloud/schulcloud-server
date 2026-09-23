@@ -1,21 +1,40 @@
-import { type EntityDictionary } from '@mikro-orm/core';
 import { type IFindOptions, SortOrder, type SortOrderNumberType } from '../domain/interface';
 
 export abstract class MongoDbScope<T> {
-	protected pipeline: unknown[] = [];
+	protected pipeline: Record<string, unknown>[] = [];
 
 	constructor(protected options?: IFindOptions<T>) {}
 
-	public build(): unknown[] {
-		const optionsPipeline: unknown[] = [];
+	public buildDataPipeline(): Record<string, unknown>[] {
+		return [...this.pipeline, ...this.buildOptionsPipeline()];
+	}
 
-		if (this.options?.order) {
-			const sortObject: SortOrderNumberType = Object.fromEntries(
-				Object.entries(this.options?.order).map(([key, value]) => [key, value === SortOrder.asc ? 1 : -1])
-			);
+	public buildCountPipeline(): Record<string, unknown>[] {
+		return [...this.pipeline, { $count: 'count' }];
+	}
 
-			optionsPipeline.push({ $sort: sortObject });
+	public build(): Record<string, unknown>[] {
+		return [
+			...this.pipeline,
+			{
+				$facet: {
+					total: [{ $count: 'count' }],
+					data: this.buildOptionsPipeline(),
+				},
+			},
+		];
+	}
+
+	private buildOptionsPipeline(): Record<string, unknown>[] {
+		const optionsPipeline: Record<string, unknown>[] = [];
+		const sortObject: SortOrderNumberType = Object.fromEntries(
+			Object.entries(this.options?.order ?? {}).map(([key, value]) => [key, value === SortOrder.asc ? 1 : -1])
+		);
+
+		if (!('_id' in sortObject)) {
+			sortObject._id = 1;
 		}
+		optionsPipeline.push({ $sort: sortObject });
 
 		optionsPipeline.push({ $skip: this.options?.pagination?.skip || 0 });
 
@@ -23,15 +42,6 @@ export abstract class MongoDbScope<T> {
 			optionsPipeline.push({ $limit: this.options.pagination.limit });
 		}
 
-		this.pipeline.push({
-			$facet: {
-				total: [{ $count: 'count' }],
-				data: optionsPipeline,
-			},
-		});
-
-		return this.pipeline;
+		return optionsPipeline;
 	}
 }
-
-export type ScopeAggregateResult<T> = [{ total: [{ count: number }]; data: EntityDictionary<T>[] }];

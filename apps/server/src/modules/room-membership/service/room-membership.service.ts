@@ -287,7 +287,9 @@ export class RoomMembershipService {
 				ownerUserId: owner?.userId,
 			};
 		});
-		const ownerUserIds = owners.map((owner) => owner.ownerUserId).filter((id): id is EntityId => id !== undefined);
+		const ownerUserIds = [
+			...new Set(owners.map((owner) => owner.ownerUserId).filter((id): id is EntityId => id !== undefined)),
+		];
 
 		const ownerUsers = await this.userService.findByIds(ownerUserIds, false);
 		const groupIdOwnerMap = new Map(
@@ -305,10 +307,8 @@ export class RoomMembershipService {
 		schoolId: EntityId,
 		groups: T[]
 	): Promise<Map<T['id'], MemberStats>> {
-		const userIds = groups.flatMap((group) => group.users.map((user) => user.userId));
-		const users = await this.userService.findByIds(userIds, false);
-
-		const userSchoolMap = new Map(users.map((user) => [user.id, user.schoolId]));
+		const userIds = [...new Set(groups.flatMap((group) => group.users.map((user) => user.userId)))];
+		const userSchoolMap = await this.userService.getSchoolIdsByUserIds(userIds);
 
 		const statsMap = new Map(
 			groups.map((group) => {
