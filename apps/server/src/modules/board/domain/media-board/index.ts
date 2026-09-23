@@ -11,4 +11,5 @@ export {
 export { MediaAvailableLine, MediaAvailableLineProps } from './media-available-line.do';
 export { MediaAvailableLineElement, MediaAvailableLineElementProps } from './media-available-line-element.do';
 
+export * from './guards';
 export * from './types';

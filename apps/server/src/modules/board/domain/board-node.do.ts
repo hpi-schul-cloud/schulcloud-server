@@ -1,10 +1,11 @@
 import { BadRequestException, ForbiddenException } from '@nestjs/common';
 import { DomainObject } from '@shared/domain/domain-object';
 import { type Constructor, type EntityId } from '@shared/domain/types';
+import { type IBoardNode } from './interface';
 import { joinPath, ROOT_PATH } from './path-utils';
 import type { AnyBoardNode, BoardNodeProps } from './types';
 
-export abstract class BoardNode<T extends BoardNodeProps> extends DomainObject<T> {
+export abstract class BoardNode<T extends BoardNodeProps> extends DomainObject<T> implements IBoardNode {
 	constructor(props: T) {
 		super(props);
 		props.children.forEach((child, pos) => {

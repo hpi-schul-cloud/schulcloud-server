@@ -1,6 +1,16 @@
 import { BoardNode } from './board-node.do';
-import { type AnyBoardNode, type CardProps, isContentElement } from './types';
+import { CollaborativeTextEditorElement } from './collaborative-text-editor.do';
+import { DeletedElement } from './deleted-element.do';
+import { DrawingElement } from './drawing-element.do';
+import { ExternalToolElement } from './external-tool-element.do';
+import { FileElement } from './file-element.do';
+import { FileFolderElement } from './file-folder-element.do';
+import { H5pElement } from './h5p-element.do';
+import { LinkElement } from './link-element.do';
+import { RichTextElement } from './rich-text-element.do';
+import { type AnyBoardNode, type CardProps } from './types';
 import { Colors } from './types/colors.enum';
+import { VideoConferenceElement } from './video-conference-element.do';
 
 export class Card extends BoardNode<CardProps> {
 	get title(): string | undefined {
@@ -28,7 +38,19 @@ export class Card extends BoardNode<CardProps> {
 	}
 
 	public canHaveChild(childNode: AnyBoardNode): boolean {
-		return isContentElement(childNode);
+		// Using direct instanceof checks to avoid circular dependency with guards/
+		return (
+			childNode instanceof CollaborativeTextEditorElement ||
+			childNode instanceof DrawingElement ||
+			childNode instanceof ExternalToolElement ||
+			childNode instanceof FileElement ||
+			childNode instanceof FileFolderElement ||
+			childNode instanceof LinkElement ||
+			childNode instanceof RichTextElement ||
+			childNode instanceof DeletedElement ||
+			childNode instanceof VideoConferenceElement ||
+			childNode instanceof H5pElement
+		);
 	}
 }
 
