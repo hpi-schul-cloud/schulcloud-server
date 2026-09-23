@@ -431,6 +431,26 @@ describe(GroupRepo.name, () => {
 				expect(result.data[0].id).toEqual(group.id);
 				expect(result.total).toEqual(1);
 			});
+
+			it('should not retain large user documents in the aggregation result', async () => {
+				const { role, school } = await setup();
+				const users = userFactory.buildListWithId(17, {
+					school,
+					preferences: { payload: 'x'.repeat(1024 * 1024) },
+				});
+				const groupUsers = users.map((user) => {
+					return { user, role };
+				});
+				const group = groupEntityFactory.withTypeRoom().buildWithId({ organization: school, users: groupUsers });
+				await em.persist([...users, role, group]).flush();
+				em.clear();
+
+				const result = await repo.findByUsersAndRoomsSchoolId(school.id, [GroupTypes.ROOM]);
+
+				expect(result.data).toHaveLength(1);
+				expect(result.data[0].id).toEqual(group.id);
+				expect(result.total).toEqual(1);
+			});
 		});
 
 		describe('when users from the same school are in multiple groups', () => {

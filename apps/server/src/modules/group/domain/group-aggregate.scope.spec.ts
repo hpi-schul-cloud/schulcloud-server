@@ -5,7 +5,7 @@ import { GroupTypes } from './group-types';
 describe(GroupAggregateScope.name, () => {
 	const defaultFacetQuery = {
 		$facet: {
-			data: [{ $skip: 0 }],
+			data: [{ $sort: { _id: 1 } }, { $skip: 0 }],
 			total: [{ $count: 'count' }],
 		},
 	};
@@ -140,6 +140,7 @@ describe(GroupAggregateScope.name, () => {
 							from: 'users',
 							localField: 'users.user',
 							foreignField: '_id',
+							pipeline: [{ $match: { schoolId: new ObjectId(schoolId) } }, { $project: { _id: 1 } }, { $limit: 1 }],
 							as: 'groupUsers',
 						},
 					},
@@ -147,7 +148,7 @@ describe(GroupAggregateScope.name, () => {
 						$match: {
 							$or: [
 								{
-									'groupUsers.schoolId': new ObjectId(schoolId),
+									'groupUsers.0': { $exists: true },
 								},
 								{
 									organization: new ObjectId(schoolId),
@@ -155,6 +156,7 @@ describe(GroupAggregateScope.name, () => {
 							],
 						},
 					},
+					{ $unset: 'groupUsers' },
 					defaultFacetQuery,
 				]);
 			});
