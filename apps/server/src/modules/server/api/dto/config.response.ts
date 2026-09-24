@@ -175,9 +175,6 @@ export class ConfigResponse {
 	@ApiProperty()
 	FEATURE_ALLOW_INSECURE_LDAP_URL_ENABLED: boolean;
 
-	@ApiProperty()
-	GHOST_BASE_URL: string;
-
 	// LERNSTORE_MODE: boolean; looks like not in use anymore
 
 	@ApiProperty({
@@ -335,7 +332,6 @@ export class ConfigResponse {
 		this.FEATURE_COMMON_CARTRIDGE_COURSE_IMPORT_MAX_FILE_SIZE = config.courseImportMaxFileSize;
 		this.FEATURE_USER_LOGIN_MIGRATION_ENABLED = config.featureUserLoginMigrationEnabled;
 		this.FEATURE_ALLOW_INSECURE_LDAP_URL_ENABLED = config.featureAllowInsecureLdapUrlEnabled;
-		this.GHOST_BASE_URL = config.ghostBaseUrl;
 		this.I18N__AVAILABLE_LANGUAGES = config.availableLanguages;
 		this.I18N__DEFAULT_LANGUAGE = config.i18nDefaultLanguage;
 		this.I18N__FALLBACK_LANGUAGE = config.i18nFallbackLanguage;
