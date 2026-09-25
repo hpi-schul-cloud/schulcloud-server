@@ -16,15 +16,14 @@ import { HttpStatus, type INestApplication } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { Permission } from '@shared/domain/interface';
 import { TestApiClient } from '@testing/test-api-client';
-import axios from 'axios';
-import MockAdapter from 'axios-mock-adapter';
+import { createAxiosMockAdapter, type AxiosMockAdapter } from '@testing/axios-mock-adapter';
 
 describe('ImportUser Controller Populate (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 
 	let testApiClient: TestApiClient;
-	let axiosMock: MockAdapter;
+	let axiosMock: AxiosMockAdapter;
 	let userImportConfig: UserImportConfig;
 
 	const authenticatedUser = async (
@@ -65,8 +64,7 @@ describe('ImportUser Controller Populate (API)', () => {
 
 		em = app.get(EntityManager);
 		testApiClient = new TestApiClient(app, 'user/import');
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument -- axios-mock-adapter/axios@1.20 type mismatch under ts-jest, see jest.config.ts
-		axiosMock = new MockAdapter(axios as any);
+		axiosMock = createAxiosMockAdapter();
 		userImportConfig = app.get<UserImportConfig>(USER_IMPORT_CONFIG_TOKEN);
 	});
 

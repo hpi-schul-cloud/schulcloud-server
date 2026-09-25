@@ -11,8 +11,7 @@ import { Permission } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
-import axios from 'axios';
-import MockAdapter from 'axios-mock-adapter';
+import { createAxiosMockAdapter, type AxiosMockAdapter } from '@testing/axios-mock-adapter';
 import { type Response } from 'supertest';
 import {
 	CustomParameterLocationParams,
@@ -41,15 +40,14 @@ describe('ToolController (API)', () => {
 	let em: EntityManager;
 
 	let testApiClient: TestApiClient;
-	let axiosMock: MockAdapter;
+	let axiosMock: AxiosMockAdapter;
 
 	beforeAll(async () => {
 		const moduleRef: TestingModule = await Test.createTestingModule({
 			imports: [ServerTestModule],
 		}).compile();
 		app = moduleRef.createNestApplication();
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument -- axios-mock-adapter/axios@1.20 type mismatch under ts-jest, see jest.config.ts
-		axiosMock = new MockAdapter(axios as any);
+		axiosMock = createAxiosMockAdapter();
 
 		await app.init();
 

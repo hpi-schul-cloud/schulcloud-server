@@ -18,8 +18,7 @@ import { cleanupCollections } from '@testing/cleanup-collections';
 import { JwtTestFactory } from '@testing/factory/jwt.test.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
-import axios from 'axios';
-import MockAdapter from 'axios-mock-adapter';
+import { createAxiosMockAdapter } from '@testing/axios-mock-adapter';
 import { UUID } from 'bson';
 import { type DeepPartial } from 'fishery';
 import { type Response } from 'supertest';
@@ -429,8 +428,7 @@ describe('UserLoginMigrationController (API)', () => {
 			targetUserId: string,
 			officialSchoolNumber: string
 		) => {
-			// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument -- axios-mock-adapter/axios@1.20 type mismatch under ts-jest, see jest.config.ts
-			const axiosMock = new MockAdapter(axios as any);
+			const axiosMock = createAxiosMockAdapter();
 
 			axiosMock
 				.onPost(targetSystem.oauthConfig?.tokenEndpoint)

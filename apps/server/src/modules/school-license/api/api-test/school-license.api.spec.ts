@@ -9,8 +9,7 @@ import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
-import axios from 'axios';
-import MockAdapter from 'axios-mock-adapter';
+import { createAxiosMockAdapter, type AxiosMockAdapter } from '@testing/axios-mock-adapter';
 import { SCHOOL_LICENSE_ENCRYPTION_CONFIG_TOKEN, type SchoolLicenseEncryptionConfig } from '../../encryption.config';
 import { mediaSchoolLicenseEntityFactory } from '../../testing';
 import { type MediaSchoolLicenseListResponse } from '../dto';
@@ -19,7 +18,7 @@ describe('SchoolLicenseController (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let testApiClient: TestApiClient;
-	let axiosMock: MockAdapter;
+	let axiosMock: AxiosMockAdapter;
 	let encryptionConfig: SchoolLicenseEncryptionConfig;
 
 	beforeAll(async () => {
@@ -31,8 +30,7 @@ describe('SchoolLicenseController (API)', () => {
 		await app.init();
 		em = app.get(EntityManager);
 
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument -- axios-mock-adapter/axios@1.20 type mismatch under ts-jest, see jest.config.ts
-		axiosMock = new MockAdapter(axios as any);
+		axiosMock = createAxiosMockAdapter();
 
 		testApiClient = new TestApiClient(app, 'school-licenses');
 

@@ -12,8 +12,7 @@ import { Permission } from '@shared/domain/interface/permission.enum';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClientBuilder } from '@testing/test-api-client-builder';
-import axios from 'axios';
-import MockAdapter from 'axios-mock-adapter';
+import { createAxiosMockAdapter, type AxiosMockAdapter } from '@testing/axios-mock-adapter';
 import { type Response } from 'supertest';
 import { MEDIUM_METADATA_ENCRYPTION_CONFIG_TOKEN, type MediumMetadataEncryptionConfig } from '../../encryption.config';
 
@@ -23,7 +22,7 @@ describe('MediumMetadataController (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
 
-	let axiosMock: MockAdapter;
+	let axiosMock: AxiosMockAdapter;
 	let encryptionConfig: MediumMetadataEncryptionConfig;
 
 	beforeAll(async () => {
@@ -32,8 +31,7 @@ describe('MediumMetadataController (API)', () => {
 		}).compile();
 
 		app = moduleRef.createNestApplication();
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument -- axios-mock-adapter/axios@1.20 type mismatch under ts-jest, see jest.config.ts
-		axiosMock = new MockAdapter(axios as any);
+		axiosMock = createAxiosMockAdapter();
 
 		await app.init();
 

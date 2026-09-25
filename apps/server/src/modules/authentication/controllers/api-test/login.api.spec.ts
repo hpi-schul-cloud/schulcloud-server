@@ -17,8 +17,7 @@ import { Permission } from '@shared/domain/interface';
 import { JwtTestFactory } from '@testing/factory/jwt.test.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClientBuilder } from '@testing/test-api-client-builder';
-import axios from 'axios';
-import MockAdapter from 'axios-mock-adapter';
+import { createAxiosMockAdapter, type AxiosMockAdapter } from '@testing/axios-mock-adapter';
 import jwt from 'jsonwebtoken';
 import moment from 'moment';
 import type { Server } from 'node:net';
@@ -504,8 +503,7 @@ describe('Login Controller (api)', () => {
 					external_sub: userExternalId,
 				});
 
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument -- axios-mock-adapter/axios@1.20 type mismatch under ts-jest, see jest.config.ts
-				const axiosMock: MockAdapter = new MockAdapter(axios as any);
+				const axiosMock: AxiosMockAdapter = createAxiosMockAdapter();
 
 				axiosMock.onPost(system.oauthConfig?.tokenEndpoint).reply<OauthTokenResponse>(200, {
 					id_token: idToken,
@@ -585,8 +583,7 @@ describe('Login Controller (api)', () => {
 					external_sub: userExternalId,
 				});
 
-				// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument -- axios-mock-adapter/axios@1.20 type mismatch under ts-jest, see jest.config.ts
-				const axiosMock: MockAdapter = new MockAdapter(axios as any);
+				const axiosMock: AxiosMockAdapter = createAxiosMockAdapter();
 
 				axiosMock.onPost(system.oauthConfig?.tokenEndpoint).reply<OauthTokenResponse>(200, {
 					id_token: idToken,

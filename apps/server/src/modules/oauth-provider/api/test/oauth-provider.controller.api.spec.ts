@@ -9,8 +9,7 @@ import { Permission } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClientBuilder } from '@testing/test-api-client-builder';
-import axios from 'axios';
-import MockAdapter from 'axios-mock-adapter';
+import { createAxiosMockAdapter, type AxiosMockAdapter } from '@testing/axios-mock-adapter';
 import {
 	type ProviderConsentResponse,
 	type ProviderConsentSessionResponse,
@@ -31,7 +30,7 @@ const baseRouteName = 'oauth2';
 describe(OauthProviderController.name, () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let axiosMock: MockAdapter;
+	let axiosMock: AxiosMockAdapter;
 	let configModule: OauthProviderConfig;
 
 	beforeAll(async () => {
@@ -47,8 +46,7 @@ describe(OauthProviderController.name, () => {
 
 	beforeEach(async () => {
 		await cleanupCollections(em);
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument -- axios-mock-adapter/axios@1.20 type mismatch under ts-jest, see jest.config.ts
-		axiosMock = new MockAdapter(axios as any);
+		axiosMock = createAxiosMockAdapter();
 	});
 
 	afterAll(async () => {
