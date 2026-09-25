@@ -9,7 +9,14 @@ let config: Config.InitialOptions = {
 	testRegex: '\\.spec\\.ts$',
 	// ignore legacy mocha tests
 	testPathIgnorePatterns: ['^src', '^test'],
+	// Jest bypasses Node 24's native require(esm); compile ESM-only test dependencies to CJS for its custom runtime
+	transformIgnorePatterns: [
+		'/node_modules/(?!(@faker-js/faker|sanitize-html|htmlparser2|dom-serializer|domelementtype|domutils|entities|domhandler)/)',
+	],
 	transform: {
+		'node_modules/@faker-js/faker/.+\\.js$': ['babel-jest', { presets: [['@babel/preset-env', { targets: { node: 'current' } }]] }],
+		'node_modules/(sanitize-html|sanitize-html/node_modules/(htmlparser2|dom-serializer|domelementtype|domutils|entities|domhandler))/.+\\.js$':
+			['babel-jest', { presets: [['@babel/preset-env', { targets: { node: 'current' } }]] }],
 		'^.+\\.(t|j)s$': 'ts-jest',
 	},
 	collectCoverageFrom: ['apps/**/*.(t|j)s'],

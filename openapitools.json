@@ -6,6 +6,7 @@
 		"generators": {
 			"tsp-api": {
 				"generatorName": "typescript-axios",
+				"templateDir": "./openapi-templates/typescript-axios",
 				"inputSpec": "./apps/server/src/infra/tsp-client/openapi.json",
 				"output": "./apps/server/src/infra/tsp-client/generated",
 				"skipValidateSpec": true,
@@ -30,6 +31,7 @@
 			},
 			"files-storage-api": {
 				"generatorName": "typescript-axios",
+				"templateDir": "./openapi-templates/typescript-axios",
 				"inputSpec": "http://localhost:4444/api/v3/file/docs-json",
 				"output": "./apps/server/src/infra/files-storage-rest-client/generated",
 				"skipValidateSpec": true,
@@ -54,6 +56,7 @@
 			},
 			"tldraw-api": {
 				"generatorName": "typescript-axios",
+				"templateDir": "./openapi-templates/typescript-axios",
 				"inputSpec": "http://localhost:3349/api/tldraw/docs-json",
 				"output": "./apps/server/src/infra/tldraw-client/generated",
 				"skipValidateSpec": true,
@@ -70,6 +73,7 @@
 			},
 			"vidis-api": {
 				"generatorName": "typescript-axios",
+				"templateDir": "./openapi-templates/typescript-axios",
 				"inputSpec": "./apps/server/src/infra/vidis-client/vidis.yml",
 				"output": "./apps/server/src/infra/vidis-client/generated",
 				"skipValidateSpec": true,
@@ -89,6 +93,7 @@
 			},
 			"common-cartridge-clients": {
 				"generatorName": "typescript-axios",
+				"templateDir": "./openapi-templates/typescript-axios",
 				"inputSpec": "http://localhost:3030/api/v3/docs-json/",
 				"output": "./apps/server/src/infra/common-cartridge-clients/generated",
 				"skipValidateSpec": true,
@@ -113,6 +118,7 @@
 			},
 			"common-cartridge-files-storage-api": {
 				"generatorName": "typescript-axios",
+				"templateDir": "./openapi-templates/typescript-axios",
 				"inputSpec": "http://localhost:4444/api/v3/file/docs-json",
 				"output": "./apps/server/src/infra/common-cartridge-clients/fs-generated",
 				"skipValidateSpec": true,
@@ -137,6 +143,7 @@
 			},
 			"authorization-api": {
 				"generatorName": "typescript-axios",
+				"templateDir": "./openapi-templates/typescript-axios",
 				"inputSpec": "http://localhost:3030/api/v3/docs-json",
 				"output": "./apps/server/src/infra/authorization-client/generated",
 				"skipValidateSpec": true,
@@ -161,6 +168,7 @@
 			},
 			"authentication-api": {
 				"generatorName": "typescript-axios",
+				"templateDir": "./openapi-templates/typescript-axios",
 				"inputSpec": "http://localhost:3030/api/v3/docs-json",
 				"output": "./apps/server/src/infra/authentication-client/generated",
 				"skipValidateSpec": true,
@@ -185,6 +193,7 @@
 			},
 			"etherpad": {
 				"generatorName": "typescript-axios",
+				"templateDir": "./openapi-templates/typescript-axios",
 				"inputSpec": "http://localhost:9001/api/openapi.json",
 				"output": "./apps/server/src/infra/etherpad-client/generated",
 				"skipValidateSpec": true,

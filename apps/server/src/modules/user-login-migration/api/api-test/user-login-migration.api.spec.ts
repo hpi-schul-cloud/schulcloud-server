@@ -18,8 +18,7 @@ import { cleanupCollections } from '@testing/cleanup-collections';
 import { JwtTestFactory } from '@testing/factory/jwt.test.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
-import axios from 'axios';
-import MockAdapter from 'axios-mock-adapter';
+import { createAxiosMockAdapter } from '@testing/axios-mock-adapter';
 import { UUID } from 'bson';
 import { type DeepPartial } from 'fishery';
 import { type Response } from 'supertest';
@@ -429,7 +428,7 @@ describe('UserLoginMigrationController (API)', () => {
 			targetUserId: string,
 			officialSchoolNumber: string
 		) => {
-			const axiosMock = new MockAdapter(axios);
+			const axiosMock = createAxiosMockAdapter();
 
 			axiosMock
 				.onPost(targetSystem.oauthConfig?.tokenEndpoint)

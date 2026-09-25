@@ -25,8 +25,7 @@ import { Permission } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
-import axios from 'axios';
-import MockAdapter from 'axios-mock-adapter';
+import { createAxiosMockAdapter, type AxiosMockAdapter } from '@testing/axios-mock-adapter';
 import { type Response } from 'supertest';
 import { VideoConferenceScope } from '../../domain';
 import { type VideoConferenceEntity, VideoConferenceTargetModels } from '../../repo';
@@ -36,7 +35,7 @@ import { type VideoConferenceCreateParams, type VideoConferenceJoinResponse } fr
 describe('VideoConferenceController (API)', () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	let axiosMock: MockAdapter;
+	let axiosMock: AxiosMockAdapter;
 	let testApiClient: TestApiClient;
 	let boardContextConfig: BoardContextPublicApiConfig;
 
@@ -48,7 +47,7 @@ describe('VideoConferenceController (API)', () => {
 		app = moduleRef.createNestApplication();
 		await app.init();
 		em = app.get(EntityManager);
-		axiosMock = new MockAdapter(axios);
+		axiosMock = createAxiosMockAdapter();
 		testApiClient = new TestApiClient(app, 'videoconference2');
 		boardContextConfig = app.get(BOARD_CONTEXT_PUBLIC_API_CONFIG);
 		boardContextConfig.featureColumnBoardVideoconferenceEnabled = true;
@@ -61,7 +60,7 @@ describe('VideoConferenceController (API)', () => {
 
 	afterEach(async () => {
 		await cleanupCollections(em);
-		axiosMock = new MockAdapter(axios);
+		axiosMock = createAxiosMockAdapter();
 	});
 
 	const mockBbbMeetingInfoFailed = (meetingId: string) => {
