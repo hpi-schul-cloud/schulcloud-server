@@ -95,7 +95,7 @@ describe('task.mapper', () => {
 				courseId: params.courseId,
 				lessonId: params.lessonId,
 				description: params.description,
-				descriptionInputFormat: InputFormat.RICH_TEXT_CK5,
+				descriptionInputFormat: InputFormat.RICH_TEXT_CK5_TASK,
 				dueDate: params.dueDate,
 				availableDate: params.availableDate,
 			};
@@ -119,7 +119,7 @@ describe('task.mapper', () => {
 				courseId: params.courseId,
 				lessonId: params.lessonId,
 				description: params.description,
-				descriptionInputFormat: InputFormat.RICH_TEXT_CK5,
+				descriptionInputFormat: InputFormat.RICH_TEXT_CK5_TASK,
 				dueDate: params.dueDate,
 				availableDate: params.availableDate,
 			};

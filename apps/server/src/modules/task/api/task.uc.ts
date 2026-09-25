@@ -8,7 +8,9 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { Pagination, Permission, SortOrder } from '@shared/domain/interface';
 import { Counted, EntityId } from '@shared/domain/types';
 import { TaskService, TaskStatus } from '../domain';
-import { TaskRepo, TaskWithStatusVo } from '../repo';
+import { Task, TaskRepo, TaskWithStatusVo } from '../repo';
+import { TaskCreateParams, TaskUpdateParams } from './dto';
+import { TaskMapper } from './mapper';
 @Injectable()
 export class TaskUC {
 	constructor(
@@ -103,6 +105,90 @@ export class TaskUC {
 		const result = new TaskWithStatusVo(task, status);
 
 		return result;
+	}
+
+	public async findById(userId: EntityId, taskId: EntityId): Promise<TaskWithStatusVo> {
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const task = await this.taskRepo.findById(taskId);
+
+		this.authorizationService.checkPermission(user, task, AuthorizationContextBuilder.read([]));
+
+		const status = this.authorizationService.hasPermission(user, task, AuthorizationContextBuilder.write([]))
+			? task.createTeacherStatusForUser(user)
+			: task.createStudentStatusForUser(user);
+
+		return new TaskWithStatusVo(task, status);
+	}
+
+	public async create(userId: EntityId, params: TaskCreateParams): Promise<TaskWithStatusVo> {
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const create = TaskMapper.mapTaskCreateToDomain(params);
+		const course = create.courseId ? await this.courseService.findById(create.courseId) : undefined;
+		const lesson = create.lessonId ? await this.lessonService.findById(create.lessonId) : undefined;
+
+		if (course) {
+			this.authorizationService.checkPermission(user, course, AuthorizationContextBuilder.write([]));
+		}
+		if (lesson) {
+			this.authorizationService.checkPermission(user, lesson, AuthorizationContextBuilder.write([]));
+		}
+
+		const task = new Task({
+			name: create.name,
+			description: create.description,
+			descriptionInputFormat: create.descriptionInputFormat,
+			availableDate: create.availableDate,
+			dueDate: create.dueDate,
+			creator: user,
+			school: user.school,
+			course,
+			lesson,
+			private: create.private,
+			publicSubmissions: create.publicSubmissions,
+			teamSubmissions: create.teamSubmissions,
+			maxTeamMembers: create.maxTeamMembers,
+		});
+
+		await this.taskRepo.createTask(task);
+
+		return new TaskWithStatusVo(task, task.createTeacherStatusForUser(user));
+	}
+
+	public async update(userId: EntityId, taskId: EntityId, params: TaskUpdateParams): Promise<TaskWithStatusVo> {
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const task = await this.taskRepo.findById(taskId);
+
+		this.authorizationService.checkPermission(user, task, AuthorizationContextBuilder.write([]));
+
+		const update = TaskMapper.mapTaskUpdateToDomain(params);
+		if (update.courseId !== undefined) {
+			task.course = update.courseId ? await this.courseService.findById(update.courseId) : undefined;
+		}
+		if (update.lessonId !== undefined) {
+			task.lesson = update.lessonId ? await this.lessonService.findById(update.lessonId) : undefined;
+		}
+		if (task.course) {
+			this.authorizationService.checkPermission(user, task.course, AuthorizationContextBuilder.write([]));
+		}
+		if (task.lesson) {
+			this.authorizationService.checkPermission(user, task.lesson, AuthorizationContextBuilder.write([]));
+		}
+
+		if (update.name !== undefined) task.name = update.name;
+		if (update.description !== undefined) {
+			task.description = update.description;
+			task.descriptionInputFormat = update.descriptionInputFormat || task.descriptionInputFormat;
+		}
+		if (update.availableDate !== undefined) task.availableDate = update.availableDate;
+		if (update.dueDate !== undefined) task.dueDate = update.dueDate;
+		if (update.private !== undefined) task.private = update.private;
+		if (update.publicSubmissions !== undefined) task.publicSubmissions = update.publicSubmissions;
+		if (update.teamSubmissions !== undefined) task.teamSubmissions = update.teamSubmissions;
+		if (update.maxTeamMembers !== undefined) task.maxTeamMembers = update.maxTeamMembers;
+
+		await this.taskRepo.save(task);
+
+		return new TaskWithStatusVo(task, task.createTeacherStatusForUser(user));
 	}
 
 	public async revertPublished(userId: EntityId, taskId: EntityId): Promise<TaskWithStatusVo> {
