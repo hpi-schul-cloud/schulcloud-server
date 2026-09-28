@@ -170,7 +170,7 @@
 		"@nestjs/jwt": "^11.0.2",
 		"@nestjs/microservices": "^11.1.28",
 		"@nestjs/passport": "^11.0.5",
-		"@nestjs/platform-express": "^11.1.28",
+		"@nestjs/platform-express": "^11.2.6",
 		"@nestjs/platform-socket.io": "^11.1.28",
 		"@nestjs/swagger": "^11.4.6",
 		"@nestjs/websockets": "^11.1.28",
