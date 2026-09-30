@@ -67,10 +67,6 @@ export class ServerPublicApiConfig {
 	@IsBoolean()
 	public featureAllowInsecureLdapUrlEnabled = false;
 
-	@ConfigProperty('GHOST_BASE_URL')
-	@IsUrl({ require_tld: false })
-	public ghostBaseUrl = 'https://blog.dbildungscloud.de';
-
 	@ConfigProperty('JWT_SHOW_TIMEOUT_WARNING_SECONDS')
 	@IsNumber()
 	@StringToNumber()
