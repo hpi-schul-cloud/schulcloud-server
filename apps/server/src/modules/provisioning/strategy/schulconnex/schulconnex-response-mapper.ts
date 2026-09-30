@@ -22,6 +22,7 @@ import {
 	ExternalLicenseDto,
 	ExternalSchoolDto,
 	ExternalUserDto,
+	LicenseScope,
 } from '../../dto';
 import { GroupRoleUnknownLoggable } from '../../loggable';
 import { PROVISIONING_CONFIG_TOKEN, ProvisioningConfig } from '../../provisioning.config';
@@ -259,19 +260,57 @@ export class SchulconnexResponseMapper {
 
 	public static mapToExternalLicenses(licenseInfos: SchulconnexPoliciesInfoLicenseResponse[]): ExternalLicenseDto[] {
 		const externalLicenseDtos: ExternalLicenseDto[] = licenseInfos
-			.map((license: SchulconnexPoliciesInfoLicenseResponse) => {
-				if (license.target.partOf === '') {
-					license.target.partOf = undefined;
+			.filter((license: SchulconnexPoliciesInfoLicenseResponse) => license.access_control?.type === 'license_key')
+			.map((license: SchulconnexPoliciesInfoLicenseResponse): ExternalLicenseDto | null => {
+				const target = license.policy?.target ?? license.target;
+				const mediumId = target?.uid;
+
+				if (!mediumId) {
+					return null;
 				}
 
-				const externalLicenseDto: ExternalLicenseDto = new ExternalLicenseDto({
-					mediumId: license.target.uid,
-					mediaSourceId: license.target.partOf,
-				});
+				let mediaSourceId = license.policy?.assigner?.uid;
+				if (!mediaSourceId) {
+					mediaSourceId = target?.partOf === '' ? undefined : target?.partOf;
+				}
 
-				return externalLicenseDto;
+				let scope: LicenseScope = 'USER';
+				let scopeId: string | undefined;
+
+				const permissions = license.policy?.permission ?? license.permission ?? [];
+				for (const perm of permissions) {
+					const refinements = perm.assignee?.refinement ?? [];
+					for (const ref of refinements) {
+						if (ref.leftOperand === 'urn:schulconnex:de:kern:personenkontext:gruppe') {
+							scope = 'GROUP';
+							scopeId = ref.rightOperand;
+							break;
+						} else if (ref.leftOperand === 'urn:schulconnex:de:kern:personenkontext:organisation') {
+							scope = 'SCHOOL';
+							scopeId = ref.rightOperand;
+							break;
+						} else if (ref.leftOperand === 'urn:schulconnex:de:kern:personenkontext') {
+							scope = 'USER';
+							scopeId = ref.rightOperand;
+							break;
+						}
+					}
+					if (scopeId) {
+						break;
+					}
+				}
+
+				const licenseKey = license.access_control?.value?.licenseKey;
+
+				return new ExternalLicenseDto({
+					mediumId,
+					mediaSourceId,
+					scope,
+					scopeId,
+					licenseKey,
+				});
 			})
-			.filter((license: ExternalLicenseDto) => license.mediumId !== '');
+			.filter((license: ExternalLicenseDto | null): license is ExternalLicenseDto => license !== null);
 
 		return externalLicenseDtos;
 	}
