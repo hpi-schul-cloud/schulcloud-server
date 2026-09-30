@@ -1,9 +1,11 @@
 import { AuthorizationService } from '@modules/authorization';
+import { Group, GroupService } from '@modules/group';
+import { MediaGroupLicense, MediaGroupLicenseService } from '@modules/group-license';
 import { MediaSchoolLicense, MediaSchoolLicenseService } from '@modules/school-license';
 import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { MediaUserLicense, MediaUserLicenseService } from '@modules/user-license';
-import { Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable, Optional } from '@nestjs/common';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 import { throwForbiddenIfFalse } from '@shared/common/utils';
 import { EntityId } from '@shared/domain/types';
@@ -30,7 +32,9 @@ export class MediaAvailableLineUc {
 		private readonly mediaBoardService: MediaBoardService,
 		@Inject(BOARD_CONFIG_TOKEN) private readonly config: BoardConfig,
 		private readonly mediaUserLicenseService: MediaUserLicenseService,
-		private readonly mediaSchoolLicenseService: MediaSchoolLicenseService
+		private readonly mediaSchoolLicenseService: MediaSchoolLicenseService,
+		@Optional() private readonly mediaGroupLicenseService?: MediaGroupLicenseService,
+		@Optional() private readonly groupService?: GroupService
 	) {}
 
 	public async getMediaAvailableLine(userId: EntityId, boardId: EntityId): Promise<MediaAvailableLine> {
@@ -99,7 +103,7 @@ export class MediaAvailableLineUc {
 		let filteredTools = matchedTools;
 
 		if (this.config.featureSchulconnexMediaLicenseEnabled) {
-			filteredTools = await this.filterUnlicensedTools(userId, filteredTools);
+			filteredTools = await this.filterUnlicensedTools(userId, schoolId, filteredTools);
 		}
 
 		if (this.config.featureVidisMediaActivationsEnabled) {
@@ -111,15 +115,66 @@ export class MediaAvailableLineUc {
 
 	private async filterUnlicensedTools(
 		userId: EntityId,
+		schoolId: EntityId,
 		tools: [ExternalTool, SchoolExternalTool][]
 	): Promise<[ExternalTool, SchoolExternalTool][]> {
 		const mediaUserLicenses: MediaUserLicense[] =
-			await this.mediaUserLicenseService.getMediaUserLicensesForUser(userId);
+			(await this.mediaUserLicenseService.getMediaUserLicensesForUser(userId)) ?? [];
+
+		let mediaGroupLicenses: MediaGroupLicense[] = [];
+		if (this.mediaGroupLicenseService && this.groupService) {
+			const userGroups = await this.groupService.findGroups({ userId, schoolId });
+			if (userGroups && Array.isArray(userGroups.data)) {
+				const userGroupIds = userGroups.data.map((group: Group) => group.id);
+				if (userGroupIds.length > 0) {
+					const foundGroupLicenses = await this.mediaGroupLicenseService.findMediaGroupLicensesByGroupIds(userGroupIds);
+					if (Array.isArray(foundGroupLicenses)) {
+						mediaGroupLicenses = foundGroupLicenses;
+					}
+				}
+			}
+		}
+
+		let mediaSchoolLicenses: MediaSchoolLicense[] = [];
+		if (this.mediaSchoolLicenseService) {
+			const foundSchoolLicenses = await this.mediaSchoolLicenseService.findMediaSchoolLicensesBySchoolId(schoolId);
+			if (Array.isArray(foundSchoolLicenses)) {
+				mediaSchoolLicenses = foundSchoolLicenses;
+			}
+		}
 
 		const filteredTools = tools.filter((tool: [ExternalTool, SchoolExternalTool]): boolean => {
 			const externalToolMedium = tool[0]?.medium;
 			if (externalToolMedium) {
-				return this.mediaUserLicenseService.hasLicenseForExternalTool(externalToolMedium, mediaUserLicenses);
+				const hasUserLicense = this.mediaUserLicenseService.hasLicenseForExternalTool(
+					externalToolMedium,
+					mediaUserLicenses
+				);
+				if (hasUserLicense) {
+					return true;
+				}
+
+				if (this.mediaGroupLicenseService && mediaGroupLicenses.length > 0) {
+					const hasGroupLicense = this.mediaGroupLicenseService.hasLicenseForExternalTool(
+						externalToolMedium,
+						mediaGroupLicenses
+					);
+					if (hasGroupLicense) {
+						return true;
+					}
+				}
+
+				if (this.mediaSchoolLicenseService && mediaSchoolLicenses.length > 0) {
+					const hasSchoolLicense = this.mediaSchoolLicenseService.hasLicenseForExternalTool(
+						externalToolMedium,
+						mediaSchoolLicenses
+					);
+					if (hasSchoolLicense) {
+						return true;
+					}
+				}
+
+				return false;
 			}
 			return true;
 		});
