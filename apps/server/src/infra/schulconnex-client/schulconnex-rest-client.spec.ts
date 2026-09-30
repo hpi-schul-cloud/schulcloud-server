@@ -209,13 +209,16 @@ describe(SchulconnexRestClient.name, () => {
 
 				await client.getPoliciesInfo(accessToken);
 
-				expect(httpService.get).toHaveBeenCalledWith(`${config.apiUrl ?? ''}/policies-info`, {
-					headers: {
-						Authorization: `Bearer ${accessToken}`,
-						'Accept-Encoding': 'gzip',
-					},
-					timeout: config.policiesInfoTimeoutInMs,
-				});
+				expect(httpService.get).toHaveBeenCalledWith(
+					`${config.apiUrl ?? ''}/policies-info?access_control=true&api=1.7`,
+					{
+						headers: {
+							Authorization: `Bearer ${accessToken}`,
+							'Accept-Encoding': 'gzip',
+						},
+						timeout: config.policiesInfoTimeoutInMs,
+					}
+				);
 			});
 
 			it('should return the response', async () => {
@@ -247,7 +250,7 @@ describe(SchulconnexRestClient.name, () => {
 
 				await client.getPoliciesInfo(accessToken, { overrideUrl: customUrl });
 
-				expect(httpService.get).toHaveBeenCalledWith(customUrl, expect.anything());
+				expect(httpService.get).toHaveBeenCalledWith(`${customUrl}?access_control=true&api=1.7`, expect.anything());
 			});
 		});
 	});
