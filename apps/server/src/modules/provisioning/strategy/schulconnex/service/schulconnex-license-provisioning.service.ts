@@ -1,8 +1,11 @@
 import { ObjectId } from '@mikro-orm/mongodb';
+import { Group, GroupService } from '@modules/group';
+import { GroupLicenseType, MediaGroupLicense, MediaGroupLicenseService } from '@modules/group-license';
 import { MediaSource } from '@modules/media-source';
 import { MediaSourceService } from '@modules/media-source/service';
+import { MediaSchoolLicense, MediaSchoolLicenseService, SchoolLicenseType } from '@modules/school-license';
 import { MediaUserLicense, MediaUserLicenseService, UserLicenseType } from '@modules/user-license';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Optional } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { ExternalLicenseDto } from '../../../dto';
 
@@ -10,30 +13,55 @@ import { ExternalLicenseDto } from '../../../dto';
 export class SchulconnexLicenseProvisioningService {
 	constructor(
 		private readonly mediaUserLicenseService: MediaUserLicenseService,
-		private readonly mediaSourceService: MediaSourceService
+		private readonly mediaSourceService: MediaSourceService,
+		@Optional() private readonly mediaSchoolLicenseService?: MediaSchoolLicenseService,
+		@Optional() private readonly mediaGroupLicenseService?: MediaGroupLicenseService,
+		@Optional() private readonly groupService?: GroupService
 	) {}
 
 	private getLicenseIdentifier(mediumId: string, mediaSourceId?: string): string {
 		return `${mediumId} ${mediaSourceId || ''}`;
 	}
 
-	public async provisionExternalLicenses(userId: EntityId, externalLicenses?: ExternalLicenseDto[]): Promise<void> {
+	public async provisionExternalLicenses(
+		userId: EntityId,
+		externalLicenses?: ExternalLicenseDto[],
+		schoolId?: EntityId,
+		systemId?: EntityId
+	): Promise<void> {
 		if (!externalLicenses) {
 			return;
 		}
 
+		const userLicenses = externalLicenses.filter(
+			(license: ExternalLicenseDto) => !license.scope || license.scope === 'USER'
+		);
+		const schoolLicenses = externalLicenses.filter((license: ExternalLicenseDto) => license.scope === 'SCHOOL');
+		const groupLicenses = externalLicenses.filter((license: ExternalLicenseDto) => license.scope === 'GROUP');
+
+		const mediaSourceMap: Map<string, MediaSource> = await this.provisionMediaSources(externalLicenses);
+
 		const existingMediaUserLicenses: MediaUserLicense[] =
 			await this.mediaUserLicenseService.getMediaUserLicensesForUser(userId);
 
-		await this.provisionNewLicenses(externalLicenses, existingMediaUserLicenses, userId);
+		await this.provisionNewLicenses(userLicenses, existingMediaUserLicenses, userId, mediaSourceMap);
 
-		await this.deleteExpiredLicenses(externalLicenses, existingMediaUserLicenses);
+		await this.deleteExpiredLicenses(userLicenses, existingMediaUserLicenses);
+
+		if (this.mediaSchoolLicenseService && schoolId && schoolLicenses.length > 0) {
+			await this.provisionSchoolLicenses(schoolLicenses, schoolId, mediaSourceMap);
+		}
+
+		if (this.mediaGroupLicenseService && this.groupService && systemId && groupLicenses.length > 0) {
+			await this.provisionGroupLicenses(groupLicenses, systemId, mediaSourceMap);
+		}
 	}
 
 	private async provisionNewLicenses(
 		externalLicenses: ExternalLicenseDto[],
 		existingMediaUserLicenses: MediaUserLicense[],
-		userId: EntityId
+		userId: EntityId,
+		mediaSourceMap: Map<string, MediaSource>
 	): Promise<void> {
 		const existingMediaUserLicenseIdentifiers: Set<string> = new Set(
 			existingMediaUserLicenses.map((license: MediaUserLicense): string =>
@@ -50,8 +78,6 @@ export class SchulconnexLicenseProvisioningService {
 				return !hasLicense;
 			}
 		);
-
-		const mediaSourceMap: Map<string, MediaSource> = await this.provisionMediaSources(newLicenses);
 
 		const newLicense: MediaUserLicense[] = newLicenses.map((externalLicense: ExternalLicenseDto): MediaUserLicense => {
 			let mediaSource: MediaSource | undefined;
@@ -72,6 +98,116 @@ export class SchulconnexLicenseProvisioningService {
 		});
 
 		await this.mediaUserLicenseService.saveAll(newLicense);
+	}
+
+	private async provisionSchoolLicenses(
+		schoolLicenses: ExternalLicenseDto[],
+		schoolId: EntityId,
+		mediaSourceMap: Map<string, MediaSource>
+	): Promise<void> {
+		if (!this.mediaSchoolLicenseService) {
+			return;
+		}
+
+		const existingMediaSchoolLicenses: MediaSchoolLicense[] =
+			await this.mediaSchoolLicenseService.findMediaSchoolLicensesBySchoolId(schoolId);
+
+		const existingSchoolLicenseIdentifiers: Set<string> = new Set(
+			existingMediaSchoolLicenses.map((license: MediaSchoolLicense): string =>
+				this.getLicenseIdentifier(license.mediumId, license.mediaSource?.sourceId)
+			)
+		);
+
+		const newLicenses: ExternalLicenseDto[] = schoolLicenses.filter((externalLicense: ExternalLicenseDto): boolean => {
+			const identifier: string = this.getLicenseIdentifier(externalLicense.mediumId, externalLicense.mediaSourceId);
+
+			return !existingSchoolLicenseIdentifiers.has(identifier);
+		});
+
+		const newMediaSchoolLicenses: MediaSchoolLicense[] = newLicenses.map(
+			(externalLicense: ExternalLicenseDto): MediaSchoolLicense => {
+				let mediaSource: MediaSource | undefined;
+
+				if (externalLicense.mediaSourceId) {
+					mediaSource = mediaSourceMap.get(externalLicense.mediaSourceId);
+				}
+
+				return new MediaSchoolLicense({
+					id: new ObjectId().toHexString(),
+					type: SchoolLicenseType.MEDIA_LICENSE,
+					schoolId,
+					mediaSource,
+					mediumId: externalLicense.mediumId,
+				});
+			}
+		);
+
+		if (newMediaSchoolLicenses.length > 0) {
+			await this.mediaSchoolLicenseService.saveAllMediaSchoolLicenses(newMediaSchoolLicenses);
+		}
+	}
+
+	private async provisionGroupLicenses(
+		groupLicenses: ExternalLicenseDto[],
+		systemId: EntityId,
+		mediaSourceMap: Map<string, MediaSource>
+	): Promise<void> {
+		if (!this.mediaGroupLicenseService || !this.groupService) {
+			return;
+		}
+
+		const licensesByScopeId = new Map<string, ExternalLicenseDto[]>();
+		for (const license of groupLicenses) {
+			if (license.scopeId) {
+				const groupList = licensesByScopeId.get(license.scopeId) ?? [];
+				groupList.push(license);
+				licensesByScopeId.set(license.scopeId, groupList);
+			}
+		}
+
+		const newMediaGroupLicenses: MediaGroupLicense[] = [];
+
+		for (const [externalGroupId, licenses] of licensesByScopeId.entries()) {
+			const group: Group | null = await this.groupService.findByExternalSource(externalGroupId, systemId);
+			if (!group) {
+				continue;
+			}
+
+			const existingGroupLicenses: MediaGroupLicense[] =
+				await this.mediaGroupLicenseService.findMediaGroupLicensesByGroupId(group.id);
+
+			const existingGroupLicenseIdentifiers: Set<string> = new Set(
+				existingGroupLicenses.map((license: MediaGroupLicense): string =>
+					this.getLicenseIdentifier(license.mediumId, license.mediaSource?.sourceId)
+				)
+			);
+
+			for (const license of licenses) {
+				const identifier = this.getLicenseIdentifier(license.mediumId, license.mediaSourceId);
+				if (!existingGroupLicenseIdentifiers.has(identifier)) {
+					existingGroupLicenseIdentifiers.add(identifier);
+
+					let mediaSource: MediaSource | undefined;
+					if (license.mediaSourceId) {
+						mediaSource = mediaSourceMap.get(license.mediaSourceId);
+					}
+
+					newMediaGroupLicenses.push(
+						new MediaGroupLicense({
+							id: new ObjectId().toHexString(),
+							type: GroupLicenseType.MEDIA_LICENSE,
+							groupId: group.id,
+							mediaSource,
+							mediumId: license.mediumId,
+						})
+					);
+				}
+			}
+		}
+
+		if (newMediaGroupLicenses.length > 0) {
+			await this.mediaGroupLicenseService.saveAll(newMediaGroupLicenses);
+		}
 	}
 
 	private async provisionMediaSources(licenses: ExternalLicenseDto[]): Promise<Map<string, MediaSource>> {

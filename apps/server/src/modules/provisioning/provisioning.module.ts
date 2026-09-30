@@ -9,6 +9,7 @@ import { CourseModule } from '@modules/course';
 import { CourseSynchronizationHistoryModule } from '@modules/course-synchronization-history';
 import { ErwinIdentifierModule } from '@modules/erwin-identifier';
 import { GroupModule } from '@modules/group';
+import { GroupLicenseModule } from '@modules/group-license';
 import { LegacySchoolModule } from '@modules/legacy-school';
 import { MediaSourceSyncModule } from '@modules/media-source-sync';
 import { MediaSourceModule } from '@modules/media-source/media-source.module';
@@ -58,6 +59,7 @@ import {
 		SystemModule,
 		LoggerModule,
 		GroupModule,
+		GroupLicenseModule,
 		TeamModule,
 		CourseModule,
 		SchulconnexClientModule.register(SCHULCONNEX_CLIENT_CONFIG_TOKEN, SchulconnexClientConfig),
