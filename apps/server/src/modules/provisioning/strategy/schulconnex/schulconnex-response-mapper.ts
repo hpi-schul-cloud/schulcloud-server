@@ -269,10 +269,7 @@ export class SchulconnexResponseMapper {
 					return null;
 				}
 
-				let mediaSourceId = license.policy?.assigner?.uid;
-				if (!mediaSourceId) {
-					mediaSourceId = target?.partOf === '' ? undefined : target?.partOf;
-				}
+				const mediaSourceId = target?.partOf === '' ? undefined : target?.partOf;
 
 				let scope: LicenseScope = 'USER';
 				let scopeId: string | undefined;
