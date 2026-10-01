@@ -2,12 +2,34 @@ const { authenticate } = require('@feathersjs/authentication');
 const { hasPermission, injectUserId, mapPayload } = require('../../../hooks');
 const resolveStorageType = require('./resolveStorageType');
 const { excludeAttributesFromSanitization } = require('../../../hooks/sanitizationExceptions');
+const logger = require('../../../logger');
 
 const resolveUserId = (hook) => {
 	// local workaround if authentication is disabled
 	hook.params.payload = hook.params.payload || (hook.data || {}).userPayload || {};
 	hook.params.account = hook.params.account || hook.data.account;
 	hook.params.payload.userId = hook.params.account.userId || '';
+
+	return hook;
+};
+
+const logFileStorageError = async (hook) => {
+	const { error, path, method, params } = hook;
+
+	logger.error({
+		message: 'Legacy fileStorage request failed',
+		path,
+		method,
+		userId: params?.payload?.userId,
+		reason: {
+			name: error?.name,
+			message: error?.message,
+			code: error?.code,
+			className: error?.className,
+			type: error?.type,
+		},
+		stack: error?.stack,
+	});
 
 	return hook;
 };
@@ -32,4 +54,8 @@ exports.after = {
 	update: [],
 	patch: [],
 	remove: [],
+};
+
+exports.error = {
+	all: [logFileStorageError],
 };
