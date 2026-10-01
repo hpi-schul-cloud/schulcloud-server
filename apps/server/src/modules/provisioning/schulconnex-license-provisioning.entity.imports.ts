@@ -1,3 +1,5 @@
+import { GroupEntity } from '@modules/group/entity';
+import { GroupLicenseEntity, MediaGroupLicenseEntity } from '@modules/group-license/entity';
 import { SchoolSystemOptionsEntity } from '@modules/legacy-school/entity';
 import { MediaSourceEntity } from '@modules/media-source/entity';
 import { Role } from '@modules/role/repo';
@@ -21,6 +23,7 @@ export const ENTITIES = [
 	SchoolSystemOptionsEntity,
 	User,
 	Role,
+	GroupEntity,
 	ExternalToolEntity,
 	SchoolExternalToolEntity,
 	ContextExternalToolEntity,
@@ -29,4 +32,6 @@ export const ENTITIES = [
 	MediaUserLicenseEntity,
 	SchoolLicenseEntity,
 	MediaSchoolLicenseEntity,
+	GroupLicenseEntity,
+	MediaGroupLicenseEntity,
 ];

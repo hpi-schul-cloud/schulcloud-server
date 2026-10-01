@@ -27,6 +27,7 @@ import { RegistrationPinEntity } from '@modules/registration-pin/entity';
 import { Role } from '@modules/role/repo';
 import { RoomMembershipEntity } from '@modules/room-membership/repo/entity/room-membership.entity';
 import { RoomEntity } from '@modules/room/repo/entity';
+import { GroupLicenseEntity, MediaGroupLicenseEntity } from '@modules/group-license/entity';
 import { MediaSchoolLicenseEntity, SchoolLicenseEntity } from '@modules/school-license/entity';
 import {
 	CountyEmbeddable,
@@ -107,6 +108,8 @@ export const ENTITIES = [
 	InstanceEntity,
 	SchoolLicenseEntity,
 	MediaSchoolLicenseEntity,
+	GroupLicenseEntity,
+	MediaGroupLicenseEntity,
 	OauthSessionTokenEntity,
 	LtiDeepLinkTokenEntity,
 	RuntimeConfigEntity,

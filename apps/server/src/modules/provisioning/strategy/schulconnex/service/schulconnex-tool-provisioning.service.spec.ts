@@ -1,6 +1,10 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { Logger } from '@infra/logger';
 import { ObjectId } from '@mikro-orm/mongodb';
+import { GroupService } from '@modules/group';
+import { groupFactory } from '@modules/group/testing';
+import { MediaGroupLicenseService } from '@modules/group-license';
+import { mediaGroupLicenseFactory } from '@modules/group-license/testing';
 import { SchoolSystemOptionsService } from '@modules/legacy-school';
 import { schoolSystemOptionsFactory } from '@modules/legacy-school/testing';
 import { MediaSourceDataFormat, mediaSourceFactory } from '@modules/media-source';
@@ -19,6 +23,7 @@ import { schoolExternalToolFactory } from '@modules/tool/school-external-tool/te
 import { type MediaUserLicense, MediaUserLicenseService } from '@modules/user-license';
 import { mediaUserLicenseFactory } from '@modules/user-license/testing';
 import { Test, type TestingModule } from '@nestjs/testing';
+import { Page } from '@shared/domain/domainobject';
 import { ExternalToolMetadataUpdateFailedLoggable, ExternalToolProvisioningFailedLoggable } from '../../../loggable';
 import { SchulconnexToolProvisioningService } from './schulconnex-tool-provisioning.service';
 
@@ -35,6 +40,8 @@ describe(SchulconnexToolProvisioningService.name, () => {
 	let mediumMetadataService: DeepMocked<MediumMetadataService>;
 	let externalToolMetadataUpdateService: DeepMocked<ExternalToolMetadataUpdateService>;
 	let logger: DeepMocked<Logger>;
+	let mediaGroupLicenseService: DeepMocked<MediaGroupLicenseService>;
+	let groupService: DeepMocked<GroupService>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -49,6 +56,8 @@ describe(SchulconnexToolProvisioningService.name, () => {
 				{ provide: MediumMetadataService, useValue: createMock<MediumMetadataService>() },
 				{ provide: ExternalToolMetadataUpdateService, useValue: createMock<ExternalToolMetadataUpdateService>() },
 				{ provide: Logger, useValue: createMock<Logger>() },
+				{ provide: MediaGroupLicenseService, useValue: createMock<MediaGroupLicenseService>() },
+				{ provide: GroupService, useValue: createMock<GroupService>() },
 			],
 		}).compile();
 
@@ -62,6 +71,8 @@ describe(SchulconnexToolProvisioningService.name, () => {
 		mediumMetadataService = module.get(MediumMetadataService);
 		externalToolMetadataUpdateService = module.get(ExternalToolMetadataUpdateService);
 		logger = module.get(Logger);
+		mediaGroupLicenseService = module.get(MediaGroupLicenseService);
+		groupService = module.get(GroupService);
 	});
 
 	afterAll(async () => {
@@ -103,6 +114,8 @@ describe(SchulconnexToolProvisioningService.name, () => {
 		schoolSystemOptionsService.getProvisioningOptions.mockResolvedValue(provisioningOptions);
 		mediaUserLicenseService.getMediaUserLicensesForUser.mockResolvedValue([scenario.license]);
 		mediaSchoolLicenseService.findMediaSchoolLicensesBySchoolId.mockResolvedValue([]);
+		groupService.findGroups.mockResolvedValue(new Page([], 0));
+		mediaGroupLicenseService.findMediaGroupLicensesByGroupIds.mockResolvedValue([]);
 		externalToolService.findExternalToolByMedium.mockResolvedValue(scenario.externalTool);
 		externalToolService.createExternalTool.mockImplementation((tool) => Promise.resolve(tool));
 		externalToolValidationService.validateCreate.mockResolvedValue();
@@ -527,6 +540,36 @@ describe(SchulconnexToolProvisioningService.name, () => {
 					await provision(scenario);
 
 					expect(logger.warning).toHaveBeenCalledWith(expect.any(ExternalToolProvisioningFailedLoggable));
+				});
+			});
+
+			describe('when user has group licenses', () => {
+				it('should provision external tools unlocked by group licenses', async () => {
+					const scenario = createScenario();
+					const group = groupFactory.build({ id: 'group-1' });
+					groupService.findGroups.mockResolvedValue(new Page([group], 1));
+
+					const groupLicense = mediaGroupLicenseFactory.build({ groupId: group.id });
+					mediaGroupLicenseService.findMediaGroupLicensesByGroupIds.mockResolvedValue([groupLicense]);
+
+					const groupTool = createActiveExternalTool(groupLicense as unknown as MediaUserLicense);
+					externalToolService.findExternalToolByMedium.mockImplementation((mediumId) => {
+						if (mediumId === groupLicense.mediumId) {
+							return Promise.resolve(groupTool);
+						}
+						return Promise.resolve(scenario.externalTool);
+					});
+
+					await provision(scenario);
+
+					expect(groupService.findGroups).toHaveBeenCalledWith({
+						userId: scenario.userId,
+						schoolId: scenario.schoolId,
+					});
+					expect(mediaGroupLicenseService.findMediaGroupLicensesByGroupIds).toHaveBeenCalledWith([group.id]);
+					expect(schoolExternalToolService.saveSchoolExternalTool).toHaveBeenCalledWith(
+						expect.objectContaining({ toolId: groupTool.id, schoolId: scenario.schoolId })
+					);
 				});
 			});
 		});
