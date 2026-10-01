@@ -14,7 +14,13 @@
 		"editor.defaultFormatter": "esbenp.prettier-vscode"
 	},
 	"javascript.preferences.importModuleSpecifier": "relative",
-	"jest.autoRun": { "watch": false, "onSave": "test-file" },
+	"jest.autoRun": {
+		"watch": false,
+		"onSave": "test-file"
+	},
+	"jest.nodeEnv": {
+		"NODE_OPTIONS": "--experimental-vm-modules"
+	},
 	"coverage-gutters.showLineCoverage": true,
 	"coverage-gutters.coverageReportFileName": "coverage/index.html",
 	"editor.codeActionsOnSave": {
