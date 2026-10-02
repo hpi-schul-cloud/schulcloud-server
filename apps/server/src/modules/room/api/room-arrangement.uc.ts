@@ -23,26 +23,29 @@ export class RoomArrangementUc {
 
 	public async getRoomsByUserArrangement(userId: EntityId): Promise<RoomWithAllowedOperationsAndLockedStatus[]> {
 		const accessibleRoomAuthorizables = await this.roomMembershipService.getRoomAuthorizablesByUserId(userId);
-		const roomIds = accessibleRoomAuthorizables.map((item) => item.roomId);
 		const user = await this.authorizationService.getUserWithPermissions(userId);
+
+		const userSchoolRoomAuthorizables = accessibleRoomAuthorizables.filter((item) =>
+			this.roomRule.hasAccessToSchool(user, item.schoolId)
+		);
+		const roomIds = userSchoolRoomAuthorizables.map((item) => item.roomId);
 
 		// archived rooms have their own listing via getArchivedRooms, so they are excluded from the regular overview here.
 		// While the feature is disabled that listing is unavailable, so archived rooms stay in the overview to remain reachable.
 		const rooms = (await this.roomService.getRoomsByIds(roomIds)).filter(
 			(room) => !this.config.featureRoomArchiveEnabled || !room.isArchived
 		);
-
 		const existingRoomIds = rooms.map((room) => room.id);
 		const orderedRoomIds = await this.roomArrangementService.sortRoomIdsByUserArrangement(userId, existingRoomIds);
 		rooms.sort((a, b) => orderedRoomIds.indexOf(a.id) - orderedRoomIds.indexOf(b.id));
 
 		const roomsWithAllowedOperationsAndLockedStatus = rooms
 			.map((room) => {
-				const roomAuthorizable = accessibleRoomAuthorizables.find((item) => item.roomId === room.id);
+				const roomAuthorizable = userSchoolRoomAuthorizables.find((item) => item.roomId === room.id);
 				if (!roomAuthorizable) return null;
 				const allowedOperations = this.roomRule.listAllowedOperations(user, roomAuthorizable);
 
-				const hasOwner = accessibleRoomAuthorizables.some(
+				const hasOwner = userSchoolRoomAuthorizables.some(
 					(item) =>
 						item.roomId === room.id &&
 						item.members.some((member) => member.roles.some((role) => role.name === RoleName.ROOMOWNER))
