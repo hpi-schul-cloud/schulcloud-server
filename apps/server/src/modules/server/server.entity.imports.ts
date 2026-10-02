@@ -6,6 +6,7 @@ import { CourseEntity } from '@modules/course/repo/course.entity';
 import { CourseGroupEntity } from '@modules/course/repo/coursegroup.entity';
 import { DeletionBatchEntity, DeletionLogEntity, DeletionRequestEntity } from '@modules/deletion/repo/entity';
 import { ErwinIdentifierEntity } from '@modules/erwin-identifier/repo/entity';
+import { SchoolMaterialTransferRequestEntity } from '@modules/former-membership/repo/entity/school-material-transfer-request.entity';
 import { GroupEntity } from '@modules/group/entity';
 import { InstanceEntity } from '@modules/instance';
 import {
@@ -115,6 +116,7 @@ export const ENTITIES = [
 	RoomContentEntity,
 	RoomArrangementEntity,
 	RuntimeConfigEntity,
+	SchoolMaterialTransferRequestEntity,
 ];
 
 export const TEST_ENTITIES = [...ENTITIES];
