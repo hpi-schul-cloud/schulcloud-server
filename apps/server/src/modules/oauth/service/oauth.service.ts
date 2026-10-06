@@ -144,7 +144,7 @@ export class OAuthService {
 		const identifiers = [
 			externalUserId ? `externalUserId=${externalUserId}` : undefined,
 			userId ? `userId=${userId}` : undefined,
-		].filter((identifier): identifier is string => Boolean(identifier));
+		].filter(Boolean);
 
 		return identifiers.length ? ` [${identifiers.join(' ')}]` : '';
 	}
