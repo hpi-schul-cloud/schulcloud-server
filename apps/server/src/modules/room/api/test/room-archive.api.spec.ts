@@ -318,6 +318,76 @@ describe('Room Controller (API) - archive', () => {
 				expect(body.data.map((room) => room.id)).not.toContain(archivedRoom.id);
 			});
 		});
+
+		describe('when the user owns multiple archived rooms', () => {
+			const setup = async () => {
+				const school = schoolEntityFactory.buildWithId();
+				const olderArchivedRoom = roomEntityFactory.build({
+					schoolId: school.id,
+					name: 'Older Archived Room',
+					archivedAt: new Date('2026-01-01'),
+				});
+				const newerArchivedRoom = roomEntityFactory.build({
+					schoolId: school.id,
+					name: 'Newer Archived Room',
+					archivedAt: new Date('2026-06-01'),
+				});
+				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
+				const { roomOwnerRole } = RoomRolesTestFactory.createRoomRoles();
+
+				const olderUserGroup = groupEntityFactory.buildWithId({
+					type: GroupEntityTypes.ROOM,
+					users: [{ role: roomOwnerRole, user: teacherUser }],
+					organization: school,
+					externalSource: undefined,
+				});
+				const newerUserGroup = groupEntityFactory.buildWithId({
+					type: GroupEntityTypes.ROOM,
+					users: [{ role: roomOwnerRole, user: teacherUser }],
+					organization: school,
+					externalSource: undefined,
+				});
+				const olderMembership = roomMembershipEntityFactory.build({
+					userGroupId: olderUserGroup.id,
+					roomId: olderArchivedRoom.id,
+					schoolId: school.id,
+				});
+				const newerMembership = roomMembershipEntityFactory.build({
+					userGroupId: newerUserGroup.id,
+					roomId: newerArchivedRoom.id,
+					schoolId: school.id,
+				});
+
+				await em
+					.persist([
+						olderArchivedRoom,
+						newerArchivedRoom,
+						teacherAccount,
+						teacherUser,
+						roomOwnerRole,
+						olderUserGroup,
+						newerUserGroup,
+						olderMembership,
+						newerMembership,
+					])
+					.flush();
+				em.clear();
+
+				const loggedInClient = await testApiClient.login(teacherAccount);
+
+				return { loggedInClient, olderArchivedRoom, newerArchivedRoom };
+			};
+
+			it('should order them with the most recently archived room first', async () => {
+				const { loggedInClient, olderArchivedRoom, newerArchivedRoom } = await setup();
+
+				const response = await loggedInClient.get('archived');
+
+				expect(response.status).toBe(HttpStatus.OK);
+				const body = response.body as RoomArchivedListResponse;
+				expect(body.data.map((room) => room.id)).toEqual([newerArchivedRoom.id, olderArchivedRoom.id]);
+			});
+		});
 	});
 
 	describe('interaction with deletion', () => {
