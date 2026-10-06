@@ -42,40 +42,69 @@ export class OAuthService {
 	}
 
 	public async authenticateUser(systemId: string, redirectUri: string, code: string): Promise<OAuthTokenDto> {
+		this.logger.log('OAuth2 starting external user authentication');
+		this.logger.log('OAuth2 starting OAuth system configuration load');
 		const system = await this.systemService.findById(systemId);
+		this.logger.log('OAuth2 finished OAuth system configuration load');
 
 		if (!system || !system.oauthConfig) {
 			throw new OauthConfigMissingLoggableException(systemId);
 		}
 		const { oauthConfig } = system;
 
+		this.logger.log('OAuth2 starting authorization code exchange');
 		const oauthTokens = await this.requestToken(code, oauthConfig, redirectUri);
+		this.logger.log('OAuth2 finished authorization code exchange');
 
+		this.logger.log('OAuth2 starting ID token validation');
 		await this.validateToken(oauthTokens.idToken, oauthConfig);
+		this.logger.log('OAuth2 finished ID token validation');
 
+		this.logger.log('OAuth2 finished external user authentication');
 		return oauthTokens;
 	}
 
 	public async provisionUser(systemId: string, idToken: string, accessToken: string): Promise<UserDo | null> {
-		const data = await this.provisioningService.getData(systemId, idToken, accessToken);
+		let userId: string | undefined;
 
+		this.logger.log('OAuth2 starting user provisioning');
+		this.logger.log('OAuth2 starting external provisioning data fetch');
+		const data = await this.provisioningService.getData(systemId, idToken, accessToken);
 		const externalUserId = data.externalUser.externalId;
+		this.logger.log(
+			`OAuth2 finished external provisioning data fetch${this.formatUserIdentifier(externalUserId, userId)}`
+		);
+
 		const officialSchoolNumber = data.externalSchool?.officialSchoolNumber;
 		const { erwinId } = data.externalUser;
 
 		let isProvisioningEnabled = true;
 
 		if (officialSchoolNumber) {
+			this.logger.log(
+				`OAuth2 starting school OAuth provisioning check${this.formatUserIdentifier(externalUserId, userId)}`
+			);
 			isProvisioningEnabled = await this.isOauthProvisioningEnabledForSchool(officialSchoolNumber);
+			this.logger.log(
+				`OAuth2 finished school OAuth provisioning check${this.formatUserIdentifier(externalUserId, userId)}`
+			);
 
+			this.logger.log(`OAuth2 starting user migration state check${this.formatUserIdentifier(externalUserId, userId)}`);
 			const shouldUserMigrate = await this.migrationCheckService.shouldUserMigrate(
 				externalUserId,
 				systemId,
 				officialSchoolNumber
 			);
+			this.logger.log(`OAuth2 finished user migration state check${this.formatUserIdentifier(externalUserId, userId)}`);
 
 			if (shouldUserMigrate) {
+				this.logger.log(
+					`OAuth2 starting migrating OAuth user lookup${this.formatUserIdentifier(externalUserId, userId)}`
+				);
 				const existingUser = await this.userService.findByExternalId(externalUserId, systemId);
+				this.logger.log(
+					`OAuth2 finished migrating OAuth user lookup${this.formatUserIdentifier(externalUserId, userId)}`
+				);
 
 				if (!existingUser) {
 					return null;
@@ -84,17 +113,40 @@ export class OAuthService {
 		}
 
 		if (isProvisioningEnabled) {
+			this.logger.log(
+				`OAuth2 starting provisioned data persistence${this.formatUserIdentifier(externalUserId, userId)}`
+			);
 			await this.provisioningService.provisionData(data);
+			this.logger.log(
+				`OAuth2 finished provisioned data persistence${this.formatUserIdentifier(externalUserId, userId)}`
+			);
 		}
 
+		this.logger.log(
+			`OAuth2 starting provisioned OAuth user lookup${this.formatUserIdentifier(externalUserId, userId)}`
+		);
 		const user: UserDo = await this.findUserAfterProvisioningOrThrow(
 			externalUserId,
 			systemId,
 			officialSchoolNumber,
 			erwinId
 		);
+		userId = user.id;
+		this.logger.log(
+			`OAuth2 finished provisioned OAuth user lookup${this.formatUserIdentifier(externalUserId, userId)}`
+		);
 
+		this.logger.log(`OAuth2 finished user provisioning${this.formatUserIdentifier(externalUserId, userId)}`);
 		return user;
+	}
+
+	private formatUserIdentifier(externalUserId?: string, userId?: string): string {
+		const identifiers = [
+			externalUserId ? `externalUserId=${externalUserId}` : undefined,
+			userId ? `userId=${userId}` : undefined,
+		].filter((identifier): identifier is string => Boolean(identifier));
+
+		return identifiers.length ? ` [${identifiers.join(' ')}]` : '';
 	}
 
 	private async findUserAfterProvisioningOrThrow(
