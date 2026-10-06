@@ -83,4 +83,51 @@ describe('Room', () => {
 		const expectedRoomName = roomProps.name;
 		expect(room.getRoomName()).toBe(expectedRoomName);
 	});
+
+	describe('isArchived', () => {
+		it('should return false when archivedAt is not set', () => {
+			expect(room.isArchived).toBe(false);
+		});
+
+		it('should return true when archivedAt is set', () => {
+			const archivedRoom = new Room({ ...roomProps, archivedAt: new Date() });
+
+			expect(archivedRoom.isArchived).toBe(true);
+		});
+	});
+
+	describe('archive', () => {
+		it('should set archivedAt', () => {
+			room.archive();
+
+			expect(room.isArchived).toBe(true);
+			expect(room.archivedAt).toBeInstanceOf(Date);
+		});
+
+		it('should not change archivedAt when already archived', () => {
+			room.archive();
+			const firstArchivedAt = room.archivedAt;
+
+			room.archive();
+
+			expect(room.archivedAt).toBe(firstArchivedAt);
+		});
+	});
+
+	describe('unarchive', () => {
+		it('should clear archivedAt', () => {
+			room.archive();
+
+			room.unarchive();
+
+			expect(room.isArchived).toBe(false);
+			expect(room.archivedAt).toBeUndefined();
+		});
+
+		it('should be a no-op when room is not archived', () => {
+			room.unarchive();
+
+			expect(room.isArchived).toBe(false);
+		});
+	});
 });

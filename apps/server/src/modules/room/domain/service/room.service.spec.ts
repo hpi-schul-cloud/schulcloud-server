@@ -198,6 +198,43 @@ describe('RoomService', () => {
 		});
 	});
 
+	describe('archiveRoom', () => {
+		it('should set the room to archived', async () => {
+			const room = roomFactory.build();
+
+			await service.archiveRoom(room);
+
+			expect(room.isArchived).toBe(true);
+		});
+
+		it('should call repo to save room', async () => {
+			const room = roomFactory.build();
+
+			await service.archiveRoom(room);
+
+			expect(roomRepo.save).toHaveBeenCalledWith(room);
+		});
+	});
+
+	describe('unarchiveRoom', () => {
+		it('should clear the archived state', async () => {
+			const room = roomFactory.build();
+			room.archive();
+
+			await service.unarchiveRoom(room);
+
+			expect(room.isArchived).toBe(false);
+		});
+
+		it('should call repo to save room', async () => {
+			const room = roomFactory.build();
+
+			await service.unarchiveRoom(room);
+
+			expect(roomRepo.save).toHaveBeenCalledWith(room);
+		});
+	});
+
 	describe('getRoomsByIds', () => {
 		const setup = () => {
 			const roomIds: EntityId[] = ['1', '2', '3'];

@@ -8,6 +8,7 @@ export interface RoomProps extends AuthorizableObject {
 	color: RoomColor;
 	startDate?: Date;
 	endDate?: Date;
+	archivedAt?: Date;
 	schoolId: EntityId;
 	features: RoomFeatures[];
 	createdAt: Date;
@@ -68,6 +69,14 @@ export class Room extends DomainObject<RoomProps> {
 		this.props.endDate = value;
 	}
 
+	get isArchived(): boolean {
+		return !!this.props.archivedAt;
+	}
+
+	get archivedAt(): Date | undefined {
+		return this.props.archivedAt;
+	}
+
 	get createdAt(): Date {
 		return this.props.createdAt;
 	}
@@ -86,5 +95,15 @@ export class Room extends DomainObject<RoomProps> {
 
 	public getRoomName(): string {
 		return this.props.name;
+	}
+
+	public archive(): void {
+		if (this.isArchived) return;
+
+		this.props.archivedAt = new Date();
+	}
+
+	public unarchive(): void {
+		this.props.archivedAt = undefined;
 	}
 }

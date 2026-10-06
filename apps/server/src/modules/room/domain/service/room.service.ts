@@ -82,6 +82,18 @@ export class RoomService {
 		await this.eventBus.publish(new RoomDeletedEvent(room.id));
 	}
 
+	public async archiveRoom(room: Room): Promise<void> {
+		room.archive();
+
+		await this.roomRepo.save(room);
+	}
+
+	public async unarchiveRoom(room: Room): Promise<void> {
+		room.unarchive();
+
+		await this.roomRepo.save(room);
+	}
+
 	public canEditorManageVideoconferences(room: Room): boolean {
 		return room.features.includes(RoomFeatures.EDITOR_MANAGE_VIDEOCONFERENCE);
 	}
