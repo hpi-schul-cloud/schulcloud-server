@@ -4,6 +4,8 @@ import { type RoomOperation } from '@modules/room-membership/authorization/room.
 import { type PaginationParams } from '@shared/controller/dto';
 import { type Page } from '@shared/domain/domainobject';
 import { type Room } from '../../domain/do/room.do';
+import { RoomArchivedItemResponse } from '../dto/response/room-archived-item.response';
+import { RoomArchivedListResponse } from '../dto/response/room-archived-list.response';
 import { RoomBoardItemResponse } from '../dto/response/room-board-item.response';
 import { RoomBoardListResponse } from '../dto/response/room-board-list.response';
 import { RoomCreatedResponse } from '../dto/response/room-created.response';
@@ -12,6 +14,7 @@ import { RoomItemResponse } from '../dto/response/room-item.response';
 import { RoomListResponse } from '../dto/response/room-list.response';
 import { RoomStatsItemResponse } from '../dto/response/room-stats-item.response';
 import { RoomStatsListResponse } from '../dto/response/room-stats-list.response';
+import { type RoomArchived } from '../type/room-archived.type';
 import { type RoomStats } from '../type/room-stats.type';
 import { type RoomWithAllowedOperationsAndLockedStatus } from '../type/room-with-locked-status';
 
@@ -69,6 +72,7 @@ export class RoomMapper {
 			schoolId: room.schoolId,
 			startDate: room.startDate,
 			endDate: room.endDate,
+			isArchived: room.isArchived,
 			createdAt: room.createdAt,
 			updatedAt: room.updatedAt,
 			allowedOperations,
@@ -128,5 +132,22 @@ export class RoomMapper {
 		);
 
 		return response;
+	}
+
+	public static mapToRoomArchivedListResponse(items: RoomArchived[]): RoomArchivedListResponse {
+		const data = items.map(
+			({ room, allowedOperations, totalMembers, ownerName, schoolName }) =>
+				new RoomArchivedItemResponse({
+					id: room.id,
+					name: room.name,
+					ownerName,
+					totalMembers,
+					archivedAt: room.archivedAt as Date,
+					schoolName,
+					allowedOperations,
+				})
+		);
+
+		return new RoomArchivedListResponse(data);
 	}
 }

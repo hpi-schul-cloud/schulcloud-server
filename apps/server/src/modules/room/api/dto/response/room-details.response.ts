@@ -23,6 +23,9 @@ export class RoomDetailsResponse {
 	@ApiPropertyOptional({ type: Date })
 	endDate?: Date;
 
+	@ApiProperty({ type: Boolean })
+	isArchived: boolean;
+
 	@ApiProperty({ type: Date })
 	createdAt: Date;
 
@@ -51,6 +54,7 @@ export class RoomDetailsResponse {
 
 		this.startDate = room.startDate;
 		this.endDate = room.endDate;
+		this.isArchived = room.isArchived;
 		this.createdAt = room.createdAt;
 		this.updatedAt = room.updatedAt;
 

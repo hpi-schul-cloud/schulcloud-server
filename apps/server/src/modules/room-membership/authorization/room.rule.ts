@@ -11,6 +11,7 @@ export const RoomOperationValues = [
 	'addAllStudents',
 	'addExternalPersonByEmail',
 	'addMembers',
+	'archiveRoom',
 	'arrangeRooms',
 	'changeRolesOfMembers',
 	'copyRoom',
@@ -74,6 +75,7 @@ export class RoomRule implements Rule<RoomAuthorizable> {
 			addAllStudents: canAddAllStudents,
 			addExternalPersonByEmail: canAddExternalPersonByEmail,
 			addMembers: canAddMembers,
+			archiveRoom: canArchiveRoom,
 			arrangeRooms: canAccessRoom,
 			changeRolesOfMembers: canChangeRolesOfMembers,
 			copyRoom: canCopyRoom,
@@ -311,6 +313,13 @@ const canDeleteRoom = (user: User, roomAuthorizable: RoomAuthorizable): boolean 
 	const result = hasRoomPermission || (isOwnSchool && canAdministrateSchoolRooms);
 
 	return result;
+};
+
+const canArchiveRoom = (user: User, roomAuthorizable: RoomAuthorizable): boolean => {
+	const { roomPermissions } = resolveUserPermissions(user, roomAuthorizable);
+	const isRoomOwner = roomPermissions.includes(Permission.ROOM_CHANGE_OWNER);
+
+	return isRoomOwner;
 };
 
 const canGetRoomMembers = (user: User, roomAuthorizable: RoomAuthorizable): boolean => {

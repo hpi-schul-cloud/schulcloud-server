@@ -16,6 +16,7 @@ import {
 	InternalServerErrorException,
 	NotFoundException,
 } from '@nestjs/common';
+import { TypeGuard } from '@shared/common/guards';
 import { throwForbiddenIfFalse, throwUnauthorizedIfFalse } from '@shared/common/utils';
 import { Page } from '@shared/domain/domainobject';
 import { IFindOptions, Permission } from '@shared/domain/interface';
@@ -28,6 +29,7 @@ import { CantAssignRoomRoleToExternalPersonLoggableException } from './loggables
 import { CantChangeOwnersRoleLoggableException } from './loggables/cant-change-roomowners-role.error.loggable';
 import { LockedRoomLoggableException } from './loggables/locked-room-loggable-exception';
 import { RoomBoardService, RoomPermissionService } from './service';
+import { RoomArchived } from './type/room-archived.type';
 import { RoomStats } from './type/room-stats.type';
 
 @Injectable()
@@ -147,6 +149,93 @@ export class RoomUc {
 		await this.roomService.deleteRoom(room);
 		await this.roomMembershipService.deleteRoomMembership(roomId);
 		await this.roomBoardService.deleteRoomContent(roomId);
+	}
+
+	public async archiveRoom(currentUserId: EntityId, roomId: EntityId): Promise<void> {
+		this.roomPermissionService.checkFeatureRoomArchiveEnabled();
+
+		const user = await this.authorizationService.getUserWithPermissions(currentUserId);
+		const roomAuthorizable = await this.roomMembershipService.getRoomAuthorizable(roomId);
+
+		throwForbiddenIfFalse(this.roomRule.can('archiveRoom', user, roomAuthorizable));
+
+		const room = await this.roomService.getSingleRoom(roomId);
+		await this.roomService.archiveRoom(room);
+	}
+
+	public async unarchiveRoom(currentUserId: EntityId, roomId: EntityId): Promise<void> {
+		this.roomPermissionService.checkFeatureRoomArchiveEnabled();
+
+		const user = await this.authorizationService.getUserWithPermissions(currentUserId);
+		const roomAuthorizable = await this.roomMembershipService.getRoomAuthorizable(roomId);
+
+		throwForbiddenIfFalse(this.roomRule.can('archiveRoom', user, roomAuthorizable));
+
+		const room = await this.roomService.getSingleRoom(roomId);
+		await this.roomService.unarchiveRoom(room);
+	}
+
+	public async getArchivedRooms(userId: EntityId): Promise<RoomArchived[]> {
+		this.roomPermissionService.checkFeatureRoomArchiveEnabled();
+
+		const user = await this.authorizationService.getUserWithPermissions(userId);
+		const roomAuthorizables = await this.roomMembershipService.getRoomAuthorizablesByUserId(userId);
+
+		const rooms = await this.roomService.getRoomsByIds(roomAuthorizables.map((item) => item.roomId));
+		const archivedRooms = rooms
+			.filter((room) => room.isArchived)
+			.sort((a, b) => (b.archivedAt?.getTime() ?? 0) - (a.archivedAt?.getTime() ?? 0));
+
+		const archivedRoomAuthorizables = roomAuthorizables.filter((item) =>
+			archivedRooms.some((room) => room.id === item.roomId)
+		);
+		const [ownerNameByRoomId, schoolNameById] = await Promise.all([
+			this.getOwnerNameByRoomId(archivedRoomAuthorizables),
+			this.getSchoolNameById(archivedRooms.map((room) => room.schoolId)),
+		]);
+
+		const result = archivedRooms
+			.map((room) => {
+				const roomAuthorizable = archivedRoomAuthorizables.find((item) => item.roomId === room.id);
+				if (!roomAuthorizable) return null;
+
+				return {
+					room,
+					allowedOperations: this.roomRule.listAllowedOperations(user, roomAuthorizable),
+					totalMembers: roomAuthorizable.members.length,
+					ownerName: ownerNameByRoomId.get(room.id),
+					schoolName: schoolNameById.get(room.schoolId) ?? '',
+				};
+			})
+			.filter((item) => TypeGuard.isNotNullOrUndefined(item));
+
+		return result;
+	}
+
+	private async getOwnerNameByRoomId(roomAuthorizables: RoomAuthorizable[]): Promise<Map<EntityId, string>> {
+		const ownerUserIdByRoomId = new Map<EntityId, EntityId>();
+		for (const { roomId, members } of roomAuthorizables) {
+			const owner = members.find((member) => member.roles.some((role) => role.name === RoleName.ROOMOWNER));
+			if (owner) ownerUserIdByRoomId.set(roomId, owner.userId);
+		}
+
+		const owners = await this.userService.findByIds([...new Set(ownerUserIdByRoomId.values())], false);
+
+		const ownerNameByRoomId = new Map<EntityId, string>();
+		for (const [roomId, ownerUserId] of ownerUserIdByRoomId) {
+			const owner = owners.find((user) => user.id === ownerUserId);
+			if (owner) ownerNameByRoomId.set(roomId, `${owner.firstName} ${owner.lastName}`.trim());
+		}
+
+		return ownerNameByRoomId;
+	}
+
+	private async getSchoolNameById(schoolIds: EntityId[]): Promise<Map<EntityId, string>> {
+		const schools = await this.schoolService.getSchoolsByIds([...new Set(schoolIds)]);
+
+		const schoolNameById = new Map(schools.map((school) => [school.id, school.getProps().name]));
+
+		return schoolNameById;
 	}
 
 	public async getRoomMembers(userId: EntityId, roomId: EntityId): Promise<RoomMemberResponse[]> {

@@ -37,6 +37,7 @@ import { RemoveRoomMembersBodyParams } from './dto/request/remove-room-members.b
 import { RoomPaginationParams } from './dto/request/room-pagination.params';
 import { RoomUrlParams } from './dto/request/room.url.params';
 import { UpdateRoomBodyParams } from './dto/request/update-room.body.params';
+import { RoomArchivedListResponse } from './dto/response/room-archived-list.response';
 import { RoomBoardListResponse } from './dto/response/room-board-list.response';
 import { RoomCreatedResponse } from './dto/response/room-created.response';
 import { RoomDetailsResponse } from './dto/response/room-details.response';
@@ -76,6 +77,20 @@ export class RoomController {
 		const rooms = await this.roomArrangementUc.getRoomsByUserArrangement(currentUser.userId);
 
 		const response = RoomMapper.mapToRoomListResponse(rooms);
+
+		return response;
+	}
+
+	@Get('archived')
+	@ApiOperation({ summary: 'Get the archived rooms of the current user.' })
+	@ApiResponse({ status: HttpStatus.OK, type: RoomArchivedListResponse })
+	@ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })
+	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
+	@ApiResponse({ status: '5XX', type: ErrorResponse })
+	public async getArchivedRooms(@CurrentUser() currentUser: ICurrentUser): Promise<RoomArchivedListResponse> {
+		const rooms = await this.roomUc.getArchivedRooms(currentUser.userId);
+
+		const response = RoomMapper.mapToRoomArchivedListResponse(rooms);
 
 		return response;
 	}
@@ -246,6 +261,33 @@ export class RoomController {
 	@HttpCode(204)
 	public async deleteRoom(@CurrentUser() currentUser: ICurrentUser, @Param() urlParams: RoomUrlParams): Promise<void> {
 		await this.roomUc.deleteRoom(currentUser.userId, urlParams.roomId);
+	}
+
+	@Patch(':roomId/archive')
+	@ApiOperation({ summary: 'Archive a room' })
+	@ApiResponse({ status: HttpStatus.OK, description: 'Archiving successful', type: String })
+	@ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiValidationError })
+	@ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })
+	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
+	@ApiResponse({ status: HttpStatus.NOT_FOUND, type: NotFoundException })
+	@ApiResponse({ status: '5XX', type: ErrorResponse })
+	public async archiveRoom(@CurrentUser() currentUser: ICurrentUser, @Param() urlParams: RoomUrlParams): Promise<void> {
+		await this.roomUc.archiveRoom(currentUser.userId, urlParams.roomId);
+	}
+
+	@Patch(':roomId/unarchive')
+	@ApiOperation({ summary: 'Restore an archived room' })
+	@ApiResponse({ status: HttpStatus.OK, description: 'Restoring successful', type: String })
+	@ApiResponse({ status: HttpStatus.BAD_REQUEST, type: ApiValidationError })
+	@ApiResponse({ status: HttpStatus.UNAUTHORIZED, type: UnauthorizedException })
+	@ApiResponse({ status: HttpStatus.FORBIDDEN, type: ForbiddenException })
+	@ApiResponse({ status: HttpStatus.NOT_FOUND, type: NotFoundException })
+	@ApiResponse({ status: '5XX', type: ErrorResponse })
+	public async unarchiveRoom(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() urlParams: RoomUrlParams
+	): Promise<void> {
+		await this.roomUc.unarchiveRoom(currentUser.userId, urlParams.roomId);
 	}
 
 	@Patch(':roomId/members/add')

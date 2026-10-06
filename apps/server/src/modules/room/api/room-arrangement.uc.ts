@@ -24,7 +24,9 @@ export class RoomArrangementUc {
 		const roomIds = accessibleRoomAuthorizables.map((item) => item.roomId);
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 
-		const rooms = await this.roomService.getRoomsByIds(roomIds);
+		// archived rooms have their own listing via getArchivedRooms, so they are excluded from the regular overview here
+		const rooms = (await this.roomService.getRoomsByIds(roomIds)).filter((room) => !room.isArchived);
+
 		const existingRoomIds = rooms.map((room) => room.id);
 		const orderedRoomIds = await this.roomArrangementService.sortRoomIdsByUserArrangement(userId, existingRoomIds);
 		rooms.sort((a, b) => orderedRoomIds.indexOf(a.id) - orderedRoomIds.indexOf(b.id));
