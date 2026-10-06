@@ -1,4 +1,5 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import { LegacyLogger } from '@infra/logger';
 import { type Account, AccountService } from '@modules/account';
 import { accountDoFactory } from '@modules/account/testing';
 import { OAuthService, OauthSessionTokenService } from '@modules/oauth';
@@ -38,6 +39,10 @@ describe(Oauth2ContextHelper.name, () => {
 				{
 					provide: OauthSessionTokenService,
 					useValue: createMock<OauthSessionTokenService>(),
+				},
+				{
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
 				},
 				{
 					provide: AUTHENTICATION_CONFIG_TOKEN,
