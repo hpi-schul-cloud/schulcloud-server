@@ -180,6 +180,53 @@ describe('Room Controller (API)', () => {
 			});
 		});
 
+		describe('when the room is archived', () => {
+			const setup = async () => {
+				const school = schoolEntityFactory.buildWithId();
+				const room = roomEntityFactory.build({ schoolId: school.id, archivedAt: new Date() });
+				const boards = columnBoardEntityFactory.buildList(2, {
+					context: { type: BoardExternalReferenceType.Room, id: room.id },
+				});
+				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school });
+				const { roomOwnerRole } = RoomRolesTestFactory.createRoomRoles();
+				const userGroupEntity = groupEntityFactory.buildWithId({
+					type: GroupEntityTypes.ROOM,
+					users: [{ role: roomOwnerRole, user: teacherUser }],
+					organization: school,
+					externalSource: undefined,
+				});
+				const roomMembership = roomMembershipEntityFactory.build({
+					userGroupId: userGroupEntity.id,
+					roomId: room.id,
+					schoolId: school.id,
+				});
+				await em
+					.persist([room, ...boards, teacherAccount, teacherUser, roomOwnerRole, userGroupEntity, roomMembership])
+					.flush();
+
+				const roomContent = roomContentEntityFactory.build({
+					roomId: room.id,
+					items: boards.map((board) => {
+						return { id: board.id, type: RoomContentType.BOARD };
+					}),
+				});
+				await em.persist(roomContent).flush();
+				em.clear();
+
+				const loggedInClient = await testApiClient.login(teacherAccount);
+
+				return { loggedInClient, room, boards };
+			};
+
+			it('should return a 403 error, even for the room owner', async () => {
+				const { loggedInClient, room, boards } = await setup();
+
+				const response = await loggedInClient.patch(`${room.id}/boards`, { id: boards[1].id, toPosition: 0 });
+
+				expect(response.status).toBe(HttpStatus.FORBIDDEN);
+			});
+		});
+
 		describe('when the user has not the required permissions', () => {
 			const setup = async () => {
 				const room = roomEntityFactory.build({

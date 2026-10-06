@@ -64,6 +64,10 @@ export class RoomRule implements Rule<RoomAuthorizable> {
 		if (action === Action.read) {
 			return roomPermissions.includes(Permission.ROOM_LIST_CONTENT);
 		}
+
+		if (object.isArchived) {
+			return false;
+		}
 		return roomPermissions.includes(Permission.ROOM_EDIT_CONTENT);
 	}
 
@@ -246,7 +250,7 @@ const canAddMembers = (user: User, roomAuthorizable: RoomAuthorizable): boolean 
 };
 
 const canEditContent = (user: User, roomAuthorizable: RoomAuthorizable): boolean => {
-	if (isLockedRoom(roomAuthorizable)) {
+	if (isLockedRoom(roomAuthorizable) || roomAuthorizable.isArchived) {
 		return false;
 	}
 

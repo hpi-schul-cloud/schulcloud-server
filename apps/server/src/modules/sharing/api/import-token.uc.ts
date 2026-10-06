@@ -274,7 +274,7 @@ export class ImportTokenUC {
 			throw new ForbiddenException('Columns cannot be imported into course boards');
 		}
 
-		await this.shareTokenPermissionService.checkRoomWritePermission(user, targetExternalReference.id);
+		await this.shareTokenPermissionService.checkRoomImportPermission(user, targetExternalReference.id);
 
 		const sourceStorageLocationReference = await this.getStorageLocationReference(originalBoard.context);
 		const targetStorageLocationReference = await this.getStorageLocationReference(targetExternalReference);
@@ -298,7 +298,7 @@ export class ImportTokenUC {
 		if (boardContext.type === BoardExternalReferenceType.Course) {
 			await this.shareTokenPermissionService.checkCourseWritePermission(user, boardContext.id, Permission.COURSE_EDIT);
 		} else if (boardContext.type === BoardExternalReferenceType.Room) {
-			await this.shareTokenPermissionService.checkRoomWritePermission(user, boardContext.id);
+			await this.shareTokenPermissionService.checkRoomImportPermission(user, boardContext.id);
 		} else {
 			/* istanbul ignore next */
 			throw new Error(`Unsupported board reference type ${boardContext.type as string}`);
