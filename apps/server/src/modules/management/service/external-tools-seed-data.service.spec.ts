@@ -5,6 +5,7 @@ import { Logger } from '@infra/logger';
 import { OauthProviderService } from '@modules/oauth-provider/domain';
 import { ExternalTool, ExternalToolService, Lti11ToolConfig, Oauth2ToolConfig } from '@modules/tool';
 import { CustomParameter } from '@modules/tool/common/domain';
+import { ExternalToolMediumStatus } from '@modules/tool/external-tool/enum';
 import {
 	CustomParameterLocation,
 	CustomParameterScope,
@@ -83,9 +84,12 @@ describe(ExternalToolsSeedDataService.name, () => {
 				config.ctlSeedSecretOnlineDiaDeutsch = 'deutsch_secret';
 				config.ctlSeedSecretOnlineDiaMathe = 'mathe_secret';
 				config.ctlSeedSecretMerlin = 'merlin_secret';
+				config.mediaSourceBiloClientId = 'bilo_client_id';
+				config.mediaSourceBiloClientSecret = 'bilo_client_secret';
 
 				const error = new Error('Client not found');
 				oauthProviderService.deleteOAuth2Client.mockRejectedValueOnce(error);
+				encryptionService.encrypt.mockReturnValueOnce('encrypted_bilo_client_secret');
 				encryptionService.encrypt.mockReturnValueOnce('encrypted_deutsch_secret');
 				encryptionService.encrypt.mockReturnValueOnce('encrypted_mathe_secret');
 				encryptionService.encrypt.mockReturnValueOnce('encrypted_merlin_secret');
@@ -135,6 +139,46 @@ describe(ExternalToolsSeedDataService.name, () => {
 						isHidden: true,
 						isDeactivated: false,
 						isPreferred: false,
+					})
+				);
+			});
+
+			it('should import the Bildungslogin template', async () => {
+				setup();
+
+				await service.import();
+
+				expect(externalToolService.createExternalTool).toHaveBeenCalledWith<[ExternalTool]>(
+					new ExternalTool({
+						id: '6859557bb36d9e807dfeeb87',
+						name: 'BiLo - Template',
+						config: new Lti11ToolConfig({
+							baseUrl: 'https://route-resolver.services.bildungslogin.de/api/v1/lti11/launch/bilo_client_id',
+							key: 'bilo_client_id',
+							secret: 'encrypted_bilo_client_secret',
+							lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
+							privacy_permission: LtiPrivacyPermission.ANONYMOUS,
+							launch_presentation_locale: 'de-DE',
+						}),
+						openNewTab: false,
+						isHidden: false,
+						isDeactivated: false,
+						isPreferred: false,
+						parameters: [
+							new CustomParameter({
+								name: 'custom_product_id',
+								displayName: 'Kontext',
+								scope: CustomParameterScope.GLOBAL,
+								location: CustomParameterLocation.BODY,
+								type: CustomParameterType.AUTO_MEDIUMID,
+								isOptional: false,
+								isProtected: false,
+							}),
+						],
+						medium: {
+							status: ExternalToolMediumStatus.TEMPLATE,
+							mediaSourceId: 'urn:bilo:medium',
+						},
 					})
 				);
 			});
@@ -301,12 +345,12 @@ describe(ExternalToolsSeedDataService.name, () => {
 				);
 			});
 
-			it('should return 4', async () => {
+			it('should return 5', async () => {
 				setup();
 
 				const result = await service.import();
 
-				expect(result).toEqual(4);
+				expect(result).toEqual(5);
 			});
 		});
 	});

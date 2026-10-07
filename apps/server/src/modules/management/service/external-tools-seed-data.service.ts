@@ -4,6 +4,7 @@ import { Logger } from '@infra/logger';
 import { OauthProviderService } from '@modules/oauth-provider/domain';
 import { ExternalTool, ExternalToolService, Lti11ToolConfig, Oauth2ToolConfig } from '@modules/tool';
 import { CustomParameter } from '@modules/tool/common/domain';
+import { ExternalToolMediumStatus } from '@modules/tool/external-tool/enum';
 import {
 	CustomParameterLocation,
 	CustomParameterScope,
@@ -34,6 +35,8 @@ export class ExternalToolsSeedDataService {
 			ctlSeedSecretOnlineDiaDeutsch: onlineDiaDeutschSecret,
 			ctlSeedSecretOnlineDiaMathe: onlineDiaMatheSecret,
 			ctlSeedSecretMerlin: merlinSecret,
+			mediaSourceBiloClientId: biloClientId,
+			mediaSourceBiloClientSecret: biloClientSecret,
 			nextcloudBaseUrl,
 			nextcloudClientId,
 			nextcloudClientSecret,
@@ -58,6 +61,42 @@ export class ExternalToolsSeedDataService {
 					isHidden: true,
 					isDeactivated: false,
 					isPreferred: false,
+				})
+			);
+		}
+
+		if (biloClientId && biloClientSecret) {
+			externalTools.push(
+				new ExternalTool({
+					id: '6859557bb36d9e807dfeeb87',
+					name: 'BiLo - Template',
+					config: new Lti11ToolConfig({
+						baseUrl: `https://route-resolver.services.bildungslogin.de/api/v1/lti11/launch/${biloClientId}`,
+						key: biloClientId,
+						secret: this.encryptionService.encrypt(biloClientSecret),
+						lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
+						privacy_permission: LtiPrivacyPermission.ANONYMOUS,
+						launch_presentation_locale: 'de-DE',
+					}),
+					openNewTab: false,
+					isHidden: false,
+					isDeactivated: false,
+					isPreferred: false,
+					parameters: [
+						new CustomParameter({
+							name: 'custom_product_id',
+							displayName: 'Kontext',
+							scope: CustomParameterScope.GLOBAL,
+							location: CustomParameterLocation.BODY,
+							type: CustomParameterType.AUTO_MEDIUMID,
+							isOptional: false,
+							isProtected: false,
+						}),
+					],
+					medium: {
+						status: ExternalToolMediumStatus.TEMPLATE,
+						mediaSourceId: 'urn:bilo:medium',
+					},
 				})
 			);
 		}
