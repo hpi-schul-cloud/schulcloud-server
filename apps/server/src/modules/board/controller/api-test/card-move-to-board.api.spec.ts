@@ -208,6 +208,7 @@ describe(`card move to board (api)`, () => {
 
 					await createRoomMembership(teacherUser, rooms[0].id, 'owner');
 					await createRoomMembership(teacherUser, rooms[0].id, 'admin');
+					await createRoomMembership(teacherUser, rooms[1].id, 'owner');
 					await createRoomMembership(teacherUser, rooms[1].id, 'editor');
 
 					const loggedInClient = await loginTeacher();

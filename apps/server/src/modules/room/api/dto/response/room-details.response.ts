@@ -1,6 +1,6 @@
 import { RoomOperation, RoomOperationValues } from '@modules/room-membership/authorization/room.rule';
 import { RoomColor, RoomFeatures } from '@modules/room/domain/type';
-import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum } from 'class-validator';
 
 export class RoomDetailsResponse {
@@ -17,11 +17,8 @@ export class RoomDetailsResponse {
 	@ApiProperty()
 	schoolId: string;
 
-	@ApiPropertyOptional({ type: Date })
-	startDate?: Date;
-
-	@ApiPropertyOptional({ type: Date })
-	endDate?: Date;
+	@ApiProperty({ type: Boolean })
+	isArchived: boolean;
 
 	@ApiProperty({ type: Date })
 	createdAt: Date;
@@ -49,8 +46,7 @@ export class RoomDetailsResponse {
 		this.color = room.color;
 		this.schoolId = room.schoolId;
 
-		this.startDate = room.startDate;
-		this.endDate = room.endDate;
+		this.isArchived = room.isArchived;
 		this.createdAt = room.createdAt;
 		this.updatedAt = room.updatedAt;
 
