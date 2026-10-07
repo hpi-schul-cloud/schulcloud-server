@@ -16,9 +16,11 @@
 <!--
 Base links to copy
 - https://github.com/hpi-schul-cloud/schulcloud-client/pull/????
-- https://ticketsystem.dbildungscloud.de/browse/BC-????
+- https://github.com/hpi-schul-cloud/nuxt-client/pull/????
+- https://github.com/hpi-schul-cloud/dof_app_deploy/pull/????
 -->
 <!-- related-prs-and-tickets-start -->
+- https://fwu-de.atlassian.net/browse/SVSDEV-???
 <!-- related-prs-and-tickets-end -->
 
 ## Changes

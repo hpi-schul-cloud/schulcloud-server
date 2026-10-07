@@ -17,8 +17,7 @@ import { Permission } from '@shared/domain/interface';
 import { JwtTestFactory } from '@testing/factory/jwt.test.factory';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClientBuilder } from '@testing/test-api-client-builder';
-import axios from 'axios';
-import MockAdapter from 'axios-mock-adapter';
+import { createAxiosMockAdapter, type AxiosMockAdapter } from '@testing/axios-mock-adapter';
 import jwt from 'jsonwebtoken';
 import moment from 'moment';
 import type { Server } from 'node:net';
@@ -504,7 +503,7 @@ describe('Login Controller (api)', () => {
 					external_sub: userExternalId,
 				});
 
-				const axiosMock: MockAdapter = new MockAdapter(axios);
+				const axiosMock: AxiosMockAdapter = createAxiosMockAdapter();
 
 				axiosMock.onPost(system.oauthConfig?.tokenEndpoint).reply<OauthTokenResponse>(200, {
 					id_token: idToken,
@@ -584,7 +583,7 @@ describe('Login Controller (api)', () => {
 					external_sub: userExternalId,
 				});
 
-				const axiosMock: MockAdapter = new MockAdapter(axios);
+				const axiosMock: AxiosMockAdapter = createAxiosMockAdapter();
 
 				axiosMock.onPost(system.oauthConfig?.tokenEndpoint).reply<OauthTokenResponse>(200, {
 					id_token: idToken,
