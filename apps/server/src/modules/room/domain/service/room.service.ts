@@ -2,7 +2,6 @@ import { Mail, MailService, PlainTextMailContent } from '@infra/mail';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Inject, Injectable } from '@nestjs/common';
 import { EventBus } from '@nestjs/cqrs';
-import { ValidationError } from '@shared/common/error';
 import { EntityId } from '@shared/domain/types';
 import { RoomRepo } from '../../repo';
 import { ROOM_CONFIG_TOKEN, RoomConfig } from '../../room.config';
@@ -32,13 +31,9 @@ export class RoomService {
 			color: props.color,
 			schoolId: props.schoolId,
 			features: props.features,
-			// make sure that the dates are not null at runtime
-			startDate: props.startDate ?? undefined,
-			endDate: props.endDate ?? undefined,
 			createdAt: new Date(),
 			updatedAt: new Date(),
 		};
-		this.validateTimeSpan(props, roomProps.id);
 		const room = new Room(roomProps);
 
 		await this.roomRepo.save(room);
@@ -64,14 +59,9 @@ export class RoomService {
 	}
 
 	public async updateRoom(room: Room, props: RoomUpdateProps): Promise<void> {
-		this.validateTimeSpan(props, room.id);
-
 		room.name = props.name;
 		room.color = props.color;
 		room.features = props.features;
-		// make sure that the dates are not null at runtime
-		room.startDate = props.startDate ?? undefined;
-		room.endDate = props.endDate ?? undefined;
 
 		await this.roomRepo.save(room);
 	}
@@ -101,14 +91,6 @@ export class RoomService {
 	public async sendRoomWelcomeMail(email: string, roomId: string): Promise<void> {
 		const roomWelcomeMail = await this.generateRoomWelcomeMail(email, roomId);
 		await this.mailService.send(roomWelcomeMail);
-	}
-
-	private validateTimeSpan(props: RoomCreateProps | RoomUpdateProps, roomId: string): void {
-		if (props.startDate != null && props.endDate != null && props.startDate > props.endDate) {
-			throw new ValidationError(
-				`Invalid room timespan. Start date '${props.startDate.toISOString()}' has to be before end date: '${props.endDate.toISOString()}'. Room id='${roomId}'`
-			);
-		}
 	}
 
 	private async generateRoomWelcomeMail(email: string, roomId: string): Promise<Mail> {

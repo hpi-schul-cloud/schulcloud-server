@@ -68,8 +68,6 @@ describe('Room Controller (API)', () => {
 			const setup = async () => {
 				const school = schoolEntityFactory.buildWithId();
 				const room = roomEntityFactory.build({
-					startDate: new Date('2024-10-01'),
-					endDate: new Date('2024-10-20'),
 					schoolId: school.id,
 				});
 				const { roomOwnerRole } = RoomRolesTestFactory.createRoomRoles();
@@ -151,155 +149,11 @@ describe('Room Controller (API)', () => {
 					});
 				});
 			});
-
-			describe('when a start date is given', () => {
-				it('should update the room', async () => {
-					const { loggedInClient, room } = await setup();
-
-					const params = { name: 'Room #101', color: 'green', startDate: '2024-10-02', features: [] };
-					const response = await loggedInClient.put(room.id, params);
-
-					expect(response.status).toBe(HttpStatus.OK);
-					await expect(em.findOneOrFail(RoomEntity, room.id)).resolves.toMatchObject({
-						id: room.id,
-						startDate: new Date('2024-10-02'),
-					});
-				});
-
-				describe('when the date is invalid', () => {
-					it('should return a 400 error', async () => {
-						const { loggedInClient, room } = await setup();
-						const params = { name: 'Room #101', color: 'green', startDate: 'invalid date' };
-						const response = await loggedInClient.put(room.id, params);
-						expect(response.status).toBe(HttpStatus.BAD_REQUEST);
-					});
-				});
-
-				describe('when the date is null', () => {
-					it('should unset the property', async () => {
-						const { loggedInClient, room } = await setup();
-						const params = { name: 'Room #101', color: 'green', startDate: null, features: [] };
-
-						const response = await loggedInClient.put(room.id, params);
-
-						expect(response.status).toBe(HttpStatus.OK);
-						const resultRoom = await em.findOneOrFail(RoomEntity, room.id);
-						expect(resultRoom.startDate).toBe(undefined);
-					});
-				});
-			});
-
-			describe('when the startDate is omitted', () => {
-				it('should unset the property', async () => {
-					const { loggedInClient, room } = await setup();
-					const params = { name: 'Room #101', color: 'green', features: [] };
-
-					const response = await loggedInClient.put(room.id, params);
-
-					expect(response.status).toBe(HttpStatus.OK);
-
-					const resultRoom = await em.findOneOrFail(RoomEntity, room.id);
-					expect(resultRoom.endDate).toBe(undefined);
-				});
-			});
-
-			describe('when an end date is given', () => {
-				it('should update the room', async () => {
-					const { loggedInClient, room } = await setup();
-					const params = { name: 'Room #101', color: 'green', endDate: '2024-10-18', features: [] };
-
-					const response = await loggedInClient.put(room.id, params);
-
-					expect(response.status).toBe(HttpStatus.OK);
-					await expect(em.findOneOrFail(RoomEntity, room.id)).resolves.toMatchObject({
-						id: room.id,
-						endDate: new Date('2024-10-18'),
-					});
-				});
-
-				describe('when the date is invalid', () => {
-					it('should return a 400 error', async () => {
-						const { loggedInClient, room } = await setup();
-						const params = { name: 'Room #101', color: 'green', endDate: 'invalid date' };
-						const response = await loggedInClient.put(room.id, params);
-						expect(response.status).toBe(HttpStatus.BAD_REQUEST);
-					});
-				});
-
-				describe('when the date is null', () => {
-					it('should unset the property', async () => {
-						const { loggedInClient, room } = await setup();
-						const params = { name: 'Room #101', color: 'green', startDate: '2024-10-02', endDate: null, features: [] };
-
-						const response = await loggedInClient.put(room.id, params);
-
-						expect(response.status).toBe(HttpStatus.OK);
-
-						const resultRoom = await em.findOneOrFail(RoomEntity, room.id);
-						expect(resultRoom.endDate).toBe(undefined);
-					});
-				});
-			});
-
-			describe('when the endDate is omitted', () => {
-				it('should unset the property', async () => {
-					const { loggedInClient, room } = await setup();
-					const params = { name: 'Room #101', color: 'green', startDate: '2024-10-02', features: [] };
-
-					const response = await loggedInClient.put(room.id, params);
-
-					expect(response.status).toBe(HttpStatus.OK);
-
-					const resultRoom = await em.findOneOrFail(RoomEntity, room.id);
-					expect(resultRoom.endDate).toBe(undefined);
-				});
-			});
-
-			describe('when the start date is before the end date', () => {
-				it('should update the room', async () => {
-					const { loggedInClient, room } = await setup();
-					const params = {
-						name: 'Room #101',
-						color: 'green',
-						startDate: '2024-10-05',
-						endDate: '2024-10-18',
-						features: [],
-					};
-
-					const response = await loggedInClient.put(room.id, params);
-
-					expect(response.status).toBe(HttpStatus.OK);
-					await expect(em.findOneOrFail(RoomEntity, room.id)).resolves.toMatchObject({
-						id: room.id,
-						startDate: new Date('2024-10-05'),
-						endDate: new Date('2024-10-18'),
-					});
-				});
-			});
-
-			describe('when the start date is after the end date', () => {
-				it('should return a 400 error', async () => {
-					const { loggedInClient, room } = await setup();
-					const params = {
-						name: 'Room #101',
-						color: 'green',
-						startDate: '2024-10-10',
-						endDate: '2024-10-05',
-					};
-
-					const response = await loggedInClient.put(room.id, params);
-
-					expect(response.status).toBe(HttpStatus.BAD_REQUEST);
-				});
-			});
 		});
 
 		describe('when the user has not the required permissions', () => {
 			const setup = async () => {
-				const room = roomEntityFactory.build({
-					startDate: new Date('2024-10-01'),
-					endDate: new Date('2024-10-20'),
-				});
+				const room = roomEntityFactory.build();
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 				await em.persist([room, teacherAccount, teacherUser]).flush();
 				em.clear();

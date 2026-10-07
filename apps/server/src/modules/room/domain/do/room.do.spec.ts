@@ -11,8 +11,6 @@ describe('Room', () => {
 		id: roomId,
 		name: 'Conference Room',
 		color: RoomColor.BLUE,
-		startDate: new Date('2024-01-01'),
-		endDate: new Date('2024-12-31'),
 		schoolId: new ObjectId().toHexString(),
 		createdAt: new Date('2024-01-01'),
 		updatedAt: new Date('2024-01-01'),
@@ -47,20 +45,6 @@ describe('Room', () => {
 		expect(room.color).toBe(RoomColor.BLUE);
 		room.color = RoomColor.RED;
 		expect(room.color).toBe(RoomColor.RED);
-	});
-
-	it('should get and set startDate', () => {
-		expect(room.startDate).toEqual(new Date('2024-01-01'));
-		const newStartDate = new Date('2024-02-01');
-		room.startDate = newStartDate;
-		expect(room.startDate).toEqual(newStartDate);
-	});
-
-	it('should get and set endDate', () => {
-		expect(room.endDate).toEqual(new Date('2024-12-31'));
-		const newEndDate = new Date('2024-11-30');
-		room.endDate = newEndDate;
-		expect(room.endDate).toEqual(newEndDate);
 	});
 
 	it('should get createdAt', () => {

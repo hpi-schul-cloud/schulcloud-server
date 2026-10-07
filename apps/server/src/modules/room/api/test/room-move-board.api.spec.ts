@@ -229,10 +229,7 @@ describe('Room Controller (API)', () => {
 
 		describe('when the user has not the required permissions', () => {
 			const setup = async () => {
-				const room = roomEntityFactory.build({
-					startDate: new Date('2024-10-01'),
-					endDate: new Date('2024-10-20'),
-				});
+				const room = roomEntityFactory.build();
 				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 				await em.persist([room, teacherAccount, teacherUser]).flush();
 				em.clear();

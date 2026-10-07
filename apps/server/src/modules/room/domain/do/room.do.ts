@@ -6,8 +6,6 @@ export interface RoomProps extends AuthorizableObject {
 	id: EntityId;
 	name: string;
 	color: RoomColor;
-	startDate?: Date;
-	endDate?: Date;
 	archivedAt?: Date;
 	schoolId: EntityId;
 	features: RoomFeatures[];
@@ -15,7 +13,7 @@ export interface RoomProps extends AuthorizableObject {
 	updatedAt: Date;
 }
 
-export type RoomCreateProps = Pick<RoomProps, 'name' | 'color' | 'startDate' | 'endDate' | 'schoolId' | 'features'>;
+export type RoomCreateProps = Pick<RoomProps, 'name' | 'color' | 'schoolId' | 'features'>;
 export type RoomUpdateProps = Omit<RoomCreateProps, 'schoolId'>;
 
 export class Room extends DomainObject<RoomProps> {
@@ -51,22 +49,6 @@ export class Room extends DomainObject<RoomProps> {
 
 	get schoolId(): EntityId {
 		return this.props.schoolId;
-	}
-
-	get startDate(): Date | undefined {
-		return this.props.startDate;
-	}
-
-	set startDate(value: Date | undefined) {
-		this.props.startDate = value;
-	}
-
-	get endDate(): Date | undefined {
-		return this.props.endDate;
-	}
-
-	set endDate(value: Date | undefined) {
-		this.props.endDate = value;
 	}
 
 	get isArchived(): boolean {
