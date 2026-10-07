@@ -49,7 +49,7 @@ export class MediaSourcesSeedDataService {
 				new MediaSource({
 					id: '679b870e987d8f9a40c1bcbb',
 					name: 'Bildungslogin',
-					sourceId: 'urn:bilo:catalog',
+					sourceId: 'urn:bilo:medium',
 					format: MediaSourceDataFormat.BILDUNGSLOGIN,
 					oauthConfig: {
 						clientId: biloClientId,
