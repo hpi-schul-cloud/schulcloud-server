@@ -21,6 +21,7 @@ import { COMMON_CARTRIDGE_PUBLIC_API_CONFIG_TOKEN, CommonCartridgePublicApiConfi
 import { CourseApiModule } from '@modules/course/course-api.module';
 import { DeletionPublicApiModule } from '@modules/deletion/deletion-public-api.module';
 import { FWU_PUBLIC_API_CONFIG_TOKEN, FwuPublicApiConfig } from '@modules/fwu-learning-contents';
+import { FormerMembershipApiModule } from '@modules/former-membership';
 import { GroupApiModule } from '@modules/group/group-api.module';
 import { HelpdeskApiModule } from '@modules/helpdesk';
 import { LEARNROOM_PUBLIC_API_CONFIG_TOKEN, LearnroomPublicApiConfig } from '@modules/learnroom';
@@ -159,6 +160,7 @@ const serverModules = [
 	MoinSchuleClassModule,
 	DeletionPublicApiModule,
 	ReleaseApiModule,
+	FormerMembershipApiModule,
 ];
 
 const providers = [ServerUc];

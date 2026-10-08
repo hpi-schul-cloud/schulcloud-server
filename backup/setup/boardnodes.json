@@ -3,7 +3,7 @@
 		"_id": {
 			"$oid": "649452a81fef6fd796117f7f"
 		},
-		"context": {
+		"contextId": {
 			"$oid": "5fa3a2f3a9c31a26f4d1d309"
 		},
 		"contextType": "course",
@@ -87,7 +87,7 @@
 		"type": "column-board",
 		"title": "Herzlich willkommen!",
 		"contextType": "course",
-		"context": {
+		"contextId": {
 			"$oid": "681c7b138945ce807e90249f"
 		},
 		"layout": "list",
@@ -159,7 +159,7 @@
 		"type": "column-board",
 		"title": "Kapitel 1 : Grundlagen - Was ist KI",
 		"contextType": "course",
-		"context": {
+		"contextId": {
 			"$oid": "681c7b138945ce807e90249f"
 		},
 		"layout": "columns",
@@ -297,7 +297,7 @@
 		"type": "column-board",
 		"title": "Kapitel 2: Anwendungsfelder und ausgewählte Beispiele von KI im Schulkontext",
 		"contextType": "course",
-		"context": {
+		"contextId": {
 			"$oid": "681c7b138945ce807e90249f"
 		},
 		"layout": "columns",
@@ -519,7 +519,7 @@
 		"type": "column-board",
 		"title": "Kapitel 3: Bedienungskompetenz - Voraussetzungen für die Nutzung von KI",
 		"contextType": "course",
-		"context": {
+		"contextId": {
 			"$oid": "681c7b138945ce807e90249f"
 		},
 		"layout": "columns",
@@ -707,7 +707,7 @@
 		"type": "column-board",
 		"title": "Kapitel 4: Auswirkung von KI im Schulkontext",
 		"contextType": "course",
-		"context": {
+		"contextId": {
 			"$oid": "681c7b138945ce807e90249f"
 		},
 		"layout": "columns",
@@ -880,7 +880,7 @@
 		"type": "column-board",
 		"title": "Kapitel 5: Rechtliche Grundlagen zur Nutzung von KI im Unterricht",
 		"contextType": "course",
-		"context": {
+		"contextId": {
 			"$oid": "681c7b138945ce807e90249f"
 		},
 		"layout": "columns",
@@ -1185,7 +1185,7 @@
 		"type": "column-board",
 		"title": "Kapitel 6: KI und Desinformation am Beispiel",
 		"contextType": "course",
-		"context": {
+		"contextId": {
 			"$oid": "681c7b138945ce807e90249f"
 		},
 		"layout": "columns",
@@ -1557,7 +1557,7 @@
 		"type": "column-board",
 		"title": "Kapitel 7: Vorausschau in die Zukunft - Eine hell oder dunkle Zukunft?",
 		"contextType": "course",
-		"context": {
+		"contextId": {
 			"$oid": "681c7b138945ce807e90249f"
 		},
 		"layout": "columns",
@@ -1780,7 +1780,7 @@
 		"type": "column-board",
 		"title": "Quellen Urheberrechte &amp; Lizenzen",
 		"contextType": "course",
-		"context": {
+		"contextId": {
 			"$oid": "681c7b138945ce807e90249f"
 		},
 		"layout": "columns",
@@ -1952,7 +1952,7 @@
 		"type": "column-board",
 		"title": "Aufgaben",
 		"contextType": "course",
-		"context": {
+		"contextId": {
 			"$oid": "681c7b138945ce807e90249f"
 		},
 		"layout": "columns",
@@ -2108,7 +2108,7 @@
 		"type": "column-board",
 		"title": "Einspaltiger Bereich",
 		"contextType": "course",
-		"context": {
+		"contextId": {
 			"$oid": "681e018089002b0ee99aa0af"
 		},
 		"layout": "list",
@@ -2297,7 +2297,7 @@
 		"type": "column-board",
 		"title": "Mehrspaltiger Bereich",
 		"contextType": "course",
-		"context": {
+		"contextId": {
 			"$oid": "681e018089002b0ee99aa0af"
 		},
 		"layout": "columns",
@@ -2536,7 +2536,7 @@
 		"type": "column-board",
 		"title": "Einspaltiger Bereich ohne Inhalt",
 		"contextType": "course",
-		"context": {
+		"contextId": {
 			"$oid": "681e018089002b0ee99aa0af"
 		},
 		"layout": "list",
@@ -2558,7 +2558,7 @@
 		"type": "column-board",
 		"title": "Mehrspaltiger Bereich ohne Inhalt",
 		"contextType": "course",
-		"context": {
+		"contextId": {
 			"$oid": "681e018089002b0ee99aa0af"
 		},
 		"layout": "columns",
@@ -2667,7 +2667,7 @@
 		"type": "column-board",
 		"title": "Mehrspaltiger Bereich 2",
 		"contextType": "course",
-		"context": {
+		"contextId": {
 			"$oid": "681e018089002b0ee99aa0af"
 		},
 		"layout": "columns",
@@ -3125,7 +3125,7 @@
 		"type": "column-board",
 		"title": "Kurs-Bereich",
 		"contextType": "course",
-		"context": {
+		"contextId": {
 			"$oid": "681e018089002b0ee99aa0af"
 		},
 		"layout": "columns",
@@ -3386,7 +3386,7 @@
 		"type" : "column-board",
 		"title" : "Raum-Bereich",
 		"contextType" : "room",
-		"context": {
+		"contextId": {
 			"$oid": "68af290bcf0a6d6da2508125"
 		},
 		"layout" : "columns",
