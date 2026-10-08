@@ -23,119 +23,24 @@ import type { FileRecordScanStatus } from './file-record-scan-status';
 // @ts-ignore
 import type { PreviewStatus } from './preview-status';
 
-/**
- * 
- * @export
- * @interface FileRecordResponse
- */
 export interface FileRecordResponse {
-    /**
-     * 
-     * @type {string}
-     * @memberof FileRecordResponse
-     */
     'id': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof FileRecordResponse
-     */
     'name': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof FileRecordResponse
-     */
     'parentId': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof FileRecordResponse
-     */
     'url': string;
-    /**
-     * 
-     * @type {FileRecordScanStatus}
-     * @memberof FileRecordResponse
-     */
     'securityCheckStatus': FileRecordScanStatus;
-    /**
-     * 
-     * @type {number}
-     * @memberof FileRecordResponse
-     */
     'size': number;
-    /**
-     * 
-     * @type {string}
-     * @memberof FileRecordResponse
-     */
     'creatorId': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof FileRecordResponse
-     */
     'mimeType': string;
-    /**
-     * 
-     * @type {FileRecordParentType}
-     * @memberof FileRecordResponse
-     */
     'parentType': FileRecordParentType;
-    /**
-     * 
-     * @type {boolean}
-     * @memberof FileRecordResponse
-     */
     'isUploading'?: boolean;
-    /**
-     * 
-     * @type {PreviewStatus}
-     * @memberof FileRecordResponse
-     */
     'previewStatus': PreviewStatus;
-    /**
-     * 
-     * @type {boolean}
-     * @memberof FileRecordResponse
-     */
     'isCollaboraEditable': boolean;
-    /**
-     * 
-     * @type {boolean}
-     * @memberof FileRecordResponse
-     */
     'exceedsCollaboraEditableFileSize': boolean;
-    /**
-     * 
-     * @type {string}
-     * @memberof FileRecordResponse
-     */
     'deletedSince'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof FileRecordResponse
-     */
     'createdAt'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof FileRecordResponse
-     */
     'updatedAt'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof FileRecordResponse
-     */
     'contentLastModifiedAt'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof FileRecordResponse
-     */
     'expiresAt'?: string;
 }
 

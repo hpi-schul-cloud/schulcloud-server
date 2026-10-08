@@ -14,17 +14,7 @@
 
 
 
-/**
- * 
- * @export
- * @interface DrawingElementContent
- */
 export interface DrawingElementContent {
-    /**
-     * 
-     * @type {string}
-     * @memberof DrawingElementContent
-     */
     'description': string;
 }
 

@@ -18,7 +18,7 @@ import type { AxiosPromise, AxiosInstance, RawAxiosRequestConfig } from 'axios';
 import globalAxios from 'axios';
 // Some imports not used depending on template conditions
 // @ts-ignore
-import { DUMMY_BASE_URL, assertParamExists, setApiKeyToObject, setBasicAuthToObject, setBearerAuthToObject, setOAuthToObject, setSearchParams, serializeDataIfNeeded, toPathString, createRequestFunction } from '../common';
+import { DUMMY_BASE_URL, assertParamExists, setApiKeyToObject, setBasicAuthToObject, setBearerAuthToObject, setOAuthToObject, setSearchParams, serializeDataIfNeeded, toPathString, createRequestFunction, replaceWithSerializableTypeIfNeeded } from '../common';
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, type RequestArgs, BaseAPI, RequiredError, operationServerMap } from '../base';
 // @ts-ignore
@@ -37,7 +37,6 @@ import type { RobjExportSchule } from '../models';
 import type { VersionResponse } from '../models';
 /**
  * ExportApi - axios parameter creator
- * @export
  */
 export const ExportApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
@@ -68,8 +67,8 @@ export const ExportApiAxiosParamCreator = function (configuration?: Configuratio
                 localVarQueryParameter['dtLetzteAenderung'] = dtLetzteAenderung;
             }
 
+            localVarHeaderParameter['Accept'] = 'application/json';
 
-    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -106,8 +105,8 @@ export const ExportApiAxiosParamCreator = function (configuration?: Configuratio
                 localVarQueryParameter['dtLetzteAenderung'] = dtLetzteAenderung;
             }
 
+            localVarHeaderParameter['Accept'] = 'application/json';
 
-    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -139,8 +138,8 @@ export const ExportApiAxiosParamCreator = function (configuration?: Configuratio
             // authentication Bearer required
             await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
 
+            localVarHeaderParameter['Accept'] = 'application/json';
 
-    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -177,8 +176,8 @@ export const ExportApiAxiosParamCreator = function (configuration?: Configuratio
                 localVarQueryParameter['dtLetzteAenderung'] = dtLetzteAenderung;
             }
 
+            localVarHeaderParameter['Accept'] = 'application/json';
 
-    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -210,8 +209,8 @@ export const ExportApiAxiosParamCreator = function (configuration?: Configuratio
             // authentication Bearer required
             await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
 
+            localVarHeaderParameter['Accept'] = 'application/json';
 
-    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -248,8 +247,8 @@ export const ExportApiAxiosParamCreator = function (configuration?: Configuratio
                 localVarQueryParameter['dtLetzteAenderung'] = dtLetzteAenderung;
             }
 
+            localVarHeaderParameter['Accept'] = 'application/json';
 
-    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -281,8 +280,8 @@ export const ExportApiAxiosParamCreator = function (configuration?: Configuratio
             // authentication Bearer required
             await setApiKeyToObject(localVarHeaderParameter, "Authorization", configuration)
 
+            localVarHeaderParameter['Accept'] = 'application/json';
 
-    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -297,7 +296,6 @@ export const ExportApiAxiosParamCreator = function (configuration?: Configuratio
 
 /**
  * ExportApi - functional programming interface
- * @export
  */
 export const ExportApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = ExportApiAxiosParamCreator(configuration)
@@ -395,7 +393,6 @@ export const ExportApiFp = function(configuration?: Configuration) {
 
 /**
  * ExportApi - factory interface
- * @export
  */
 export const ExportApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
     const localVarFp = ExportApiFp(configuration)
@@ -407,7 +404,7 @@ export const ExportApiFactory = function (configuration?: Configuration, basePat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        exportKlasseList(dtLetzteAenderung?: string, options?: any): AxiosPromise<Array<RobjExportKlasse>> {
+        exportKlasseList(dtLetzteAenderung?: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<RobjExportKlasse>> {
             return localVarFp.exportKlasseList(dtLetzteAenderung, options).then((request) => request(axios, basePath));
         },
         /**
@@ -417,7 +414,7 @@ export const ExportApiFactory = function (configuration?: Configuration, basePat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        exportLehrerList(dtLetzteAenderung?: string, options?: any): AxiosPromise<Array<RobjExportLehrer>> {
+        exportLehrerList(dtLetzteAenderung?: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<RobjExportLehrer>> {
             return localVarFp.exportLehrerList(dtLetzteAenderung, options).then((request) => request(axios, basePath));
         },
         /**
@@ -426,7 +423,7 @@ export const ExportApiFactory = function (configuration?: Configuration, basePat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        exportLehrerListMigration(options?: any): AxiosPromise<Array<RobjExportLehrerMigration>> {
+        exportLehrerListMigration(options?: RawAxiosRequestConfig): AxiosPromise<Array<RobjExportLehrerMigration>> {
             return localVarFp.exportLehrerListMigration(options).then((request) => request(axios, basePath));
         },
         /**
@@ -436,7 +433,7 @@ export const ExportApiFactory = function (configuration?: Configuration, basePat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        exportSchuelerList(dtLetzteAenderung?: string, options?: any): AxiosPromise<Array<RobjExportSchueler>> {
+        exportSchuelerList(dtLetzteAenderung?: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<RobjExportSchueler>> {
             return localVarFp.exportSchuelerList(dtLetzteAenderung, options).then((request) => request(axios, basePath));
         },
         /**
@@ -445,7 +442,7 @@ export const ExportApiFactory = function (configuration?: Configuration, basePat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        exportSchuelerListMigration(options?: any): AxiosPromise<Array<RobjExportSchuelerMigration>> {
+        exportSchuelerListMigration(options?: RawAxiosRequestConfig): AxiosPromise<Array<RobjExportSchuelerMigration>> {
             return localVarFp.exportSchuelerListMigration(options).then((request) => request(axios, basePath));
         },
         /**
@@ -455,7 +452,7 @@ export const ExportApiFactory = function (configuration?: Configuration, basePat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        exportSchuleList(dtLetzteAenderung?: string, options?: any): AxiosPromise<Array<RobjExportSchule>> {
+        exportSchuleList(dtLetzteAenderung?: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<RobjExportSchule>> {
             return localVarFp.exportSchuleList(dtLetzteAenderung, options).then((request) => request(axios, basePath));
         },
         /**
@@ -464,7 +461,7 @@ export const ExportApiFactory = function (configuration?: Configuration, basePat
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        version(options?: any): AxiosPromise<VersionResponse> {
+        version(options?: RawAxiosRequestConfig): AxiosPromise<VersionResponse> {
             return localVarFp.version(options).then((request) => request(axios, basePath));
         },
     };
@@ -472,8 +469,6 @@ export const ExportApiFactory = function (configuration?: Configuration, basePat
 
 /**
  * ExportApi - interface
- * @export
- * @interface ExportApi
  */
 export interface ExportApiInterface {
     /**
@@ -482,7 +477,6 @@ export interface ExportApiInterface {
      * @param {string} [dtLetzteAenderung] Datum der letzten Änderung eingeben
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof ExportApiInterface
      */
     exportKlasseList(dtLetzteAenderung?: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<RobjExportKlasse>>;
 
@@ -492,7 +486,6 @@ export interface ExportApiInterface {
      * @param {string} [dtLetzteAenderung] Datum der letzten Änderung eingeben
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof ExportApiInterface
      */
     exportLehrerList(dtLetzteAenderung?: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<RobjExportLehrer>>;
 
@@ -501,7 +494,6 @@ export interface ExportApiInterface {
      * @summary liefert eine Liste von allen Lehrern. Zu einem Lehrer wird die alte und die neue uid geliefert.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof ExportApiInterface
      */
     exportLehrerListMigration(options?: RawAxiosRequestConfig): AxiosPromise<Array<RobjExportLehrerMigration>>;
 
@@ -511,7 +503,6 @@ export interface ExportApiInterface {
      * @param {string} [dtLetzteAenderung] Datum der letzten Änderung eingeben
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof ExportApiInterface
      */
     exportSchuelerList(dtLetzteAenderung?: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<RobjExportSchueler>>;
 
@@ -520,7 +511,6 @@ export interface ExportApiInterface {
      * @summary liefert eine Liste von allen Lehrern. Zu einem Schüler wird die alte und die neue uid geliefert.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof ExportApiInterface
      */
     exportSchuelerListMigration(options?: RawAxiosRequestConfig): AxiosPromise<Array<RobjExportSchuelerMigration>>;
 
@@ -530,7 +520,6 @@ export interface ExportApiInterface {
      * @param {string} [dtLetzteAenderung] Datum der letzten Änderung eingeben
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof ExportApiInterface
      */
     exportSchuleList(dtLetzteAenderung?: string, options?: RawAxiosRequestConfig): AxiosPromise<Array<RobjExportSchule>>;
 
@@ -539,7 +528,6 @@ export interface ExportApiInterface {
      * @summary liefert die aktuelle Version zurück
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof ExportApiInterface
      */
     version(options?: RawAxiosRequestConfig): AxiosPromise<VersionResponse>;
 
@@ -547,9 +535,6 @@ export interface ExportApiInterface {
 
 /**
  * ExportApi - object-oriented interface
- * @export
- * @class ExportApi
- * @extends {BaseAPI}
  */
 export class ExportApi extends BaseAPI implements ExportApiInterface {
     /**
@@ -558,7 +543,6 @@ export class ExportApi extends BaseAPI implements ExportApiInterface {
      * @param {string} [dtLetzteAenderung] Datum der letzten Änderung eingeben
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof ExportApi
      */
     public exportKlasseList(dtLetzteAenderung?: string, options?: RawAxiosRequestConfig) {
         return ExportApiFp(this.configuration).exportKlasseList(dtLetzteAenderung, options).then((request) => request(this.axios, this.basePath));
@@ -570,7 +554,6 @@ export class ExportApi extends BaseAPI implements ExportApiInterface {
      * @param {string} [dtLetzteAenderung] Datum der letzten Änderung eingeben
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof ExportApi
      */
     public exportLehrerList(dtLetzteAenderung?: string, options?: RawAxiosRequestConfig) {
         return ExportApiFp(this.configuration).exportLehrerList(dtLetzteAenderung, options).then((request) => request(this.axios, this.basePath));
@@ -581,7 +564,6 @@ export class ExportApi extends BaseAPI implements ExportApiInterface {
      * @summary liefert eine Liste von allen Lehrern. Zu einem Lehrer wird die alte und die neue uid geliefert.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof ExportApi
      */
     public exportLehrerListMigration(options?: RawAxiosRequestConfig) {
         return ExportApiFp(this.configuration).exportLehrerListMigration(options).then((request) => request(this.axios, this.basePath));
@@ -593,7 +575,6 @@ export class ExportApi extends BaseAPI implements ExportApiInterface {
      * @param {string} [dtLetzteAenderung] Datum der letzten Änderung eingeben
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof ExportApi
      */
     public exportSchuelerList(dtLetzteAenderung?: string, options?: RawAxiosRequestConfig) {
         return ExportApiFp(this.configuration).exportSchuelerList(dtLetzteAenderung, options).then((request) => request(this.axios, this.basePath));
@@ -604,7 +585,6 @@ export class ExportApi extends BaseAPI implements ExportApiInterface {
      * @summary liefert eine Liste von allen Lehrern. Zu einem Schüler wird die alte und die neue uid geliefert.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof ExportApi
      */
     public exportSchuelerListMigration(options?: RawAxiosRequestConfig) {
         return ExportApiFp(this.configuration).exportSchuelerListMigration(options).then((request) => request(this.axios, this.basePath));
@@ -616,7 +596,6 @@ export class ExportApi extends BaseAPI implements ExportApiInterface {
      * @param {string} [dtLetzteAenderung] Datum der letzten Änderung eingeben
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof ExportApi
      */
     public exportSchuleList(dtLetzteAenderung?: string, options?: RawAxiosRequestConfig) {
         return ExportApiFp(this.configuration).exportSchuleList(dtLetzteAenderung, options).then((request) => request(this.axios, this.basePath));
@@ -627,7 +606,6 @@ export class ExportApi extends BaseAPI implements ExportApiInterface {
      * @summary liefert die aktuelle Version zurück
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof ExportApi
      */
     public version(options?: RawAxiosRequestConfig) {
         return ExportApiFp(this.configuration).version(options).then((request) => request(this.axios, this.basePath));

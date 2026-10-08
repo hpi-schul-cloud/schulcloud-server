@@ -18,14 +18,13 @@ import type { AxiosPromise, AxiosInstance, RawAxiosRequestConfig } from 'axios';
 import globalAxios from 'axios';
 // Some imports not used depending on template conditions
 // @ts-ignore
-import { DUMMY_BASE_URL, assertParamExists, setApiKeyToObject, setBasicAuthToObject, setBearerAuthToObject, setOAuthToObject, setSearchParams, serializeDataIfNeeded, toPathString, createRequestFunction } from '../common';
+import { DUMMY_BASE_URL, assertParamExists, setApiKeyToObject, setBasicAuthToObject, setBearerAuthToObject, setOAuthToObject, setSearchParams, serializeDataIfNeeded, toPathString, createRequestFunction, replaceWithSerializableTypeIfNeeded } from '../common';
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, type RequestArgs, BaseAPI, RequiredError, operationServerMap } from '../base';
 // @ts-ignore
 import type { SingleColumnBoardResponse } from '../models';
 /**
  * CourseRoomsApi - axios parameter creator
- * @export
  */
 export const CourseRoomsApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
@@ -39,7 +38,7 @@ export const CourseRoomsApiAxiosParamCreator = function (configuration?: Configu
             // verify required parameter 'roomId' is not null or undefined
             assertParamExists('courseRoomsControllerGetRoomBoard', 'roomId', roomId)
             const localVarPath = `/course-rooms/{roomId}/board`
-                .replace(`{${"roomId"}}`, encodeURIComponent(String(roomId)));
+                .replace('{roomId}', encodeURIComponent(String(roomId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -55,8 +54,8 @@ export const CourseRoomsApiAxiosParamCreator = function (configuration?: Configu
             // http bearer authentication required
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
+            localVarHeaderParameter['Accept'] = 'application/json';
 
-    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -71,7 +70,6 @@ export const CourseRoomsApiAxiosParamCreator = function (configuration?: Configu
 
 /**
  * CourseRoomsApi - functional programming interface
- * @export
  */
 export const CourseRoomsApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = CourseRoomsApiAxiosParamCreator(configuration)
@@ -93,7 +91,6 @@ export const CourseRoomsApiFp = function(configuration?: Configuration) {
 
 /**
  * CourseRoomsApi - factory interface
- * @export
  */
 export const CourseRoomsApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
     const localVarFp = CourseRoomsApiFp(configuration)
@@ -104,7 +101,7 @@ export const CourseRoomsApiFactory = function (configuration?: Configuration, ba
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        courseRoomsControllerGetRoomBoard(roomId: string, options?: any): AxiosPromise<SingleColumnBoardResponse> {
+        courseRoomsControllerGetRoomBoard(roomId: string, options?: RawAxiosRequestConfig): AxiosPromise<SingleColumnBoardResponse> {
             return localVarFp.courseRoomsControllerGetRoomBoard(roomId, options).then((request) => request(axios, basePath));
         },
     };
@@ -112,8 +109,6 @@ export const CourseRoomsApiFactory = function (configuration?: Configuration, ba
 
 /**
  * CourseRoomsApi - interface
- * @export
- * @interface CourseRoomsApi
  */
 export interface CourseRoomsApiInterface {
     /**
@@ -121,7 +116,6 @@ export interface CourseRoomsApiInterface {
      * @param {string} roomId The id of the room.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof CourseRoomsApiInterface
      */
     courseRoomsControllerGetRoomBoard(roomId: string, options?: RawAxiosRequestConfig): AxiosPromise<SingleColumnBoardResponse>;
 
@@ -129,9 +123,6 @@ export interface CourseRoomsApiInterface {
 
 /**
  * CourseRoomsApi - object-oriented interface
- * @export
- * @class CourseRoomsApi
- * @extends {BaseAPI}
  */
 export class CourseRoomsApi extends BaseAPI implements CourseRoomsApiInterface {
     /**
@@ -139,7 +130,6 @@ export class CourseRoomsApi extends BaseAPI implements CourseRoomsApiInterface {
      * @param {string} roomId The id of the room.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof CourseRoomsApi
      */
     public courseRoomsControllerGetRoomBoard(roomId: string, options?: RawAxiosRequestConfig) {
         return CourseRoomsApiFp(this.configuration).courseRoomsControllerGetRoomBoard(roomId, options).then((request) => request(this.axios, this.basePath));

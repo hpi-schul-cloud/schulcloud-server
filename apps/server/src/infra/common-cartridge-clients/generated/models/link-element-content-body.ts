@@ -20,23 +20,11 @@ import type { ContentElementType } from './content-element-type';
 // @ts-ignore
 import type { LinkContentBody } from './link-content-body';
 
-/**
- * 
- * @export
- * @interface LinkElementContentBody
- */
 export interface LinkElementContentBody {
     /**
      * the type of the updated element
-     * @type {ContentElementType}
-     * @memberof LinkElementContentBody
      */
     'type': ContentElementType;
-    /**
-     * 
-     * @type {LinkContentBody}
-     * @memberof LinkElementContentBody
-     */
     'content': LinkContentBody;
 }
 

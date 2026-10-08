@@ -55,7 +55,6 @@ import type { VideoConferenceElementResponse } from './video-conference-element-
 
 /**
  * @type CardResponseElementsInner
- * @export
  */
 export type CardResponseElementsInner = CollaborativeTextEditorElementResponse | DeletedElementResponse | DrawingElementResponse | ExternalToolElementResponse | FileElementResponse | FileFolderElementResponse | H5pElementResponse | LinkElementResponse | RichTextElementResponse | VideoConferenceElementResponse;
 

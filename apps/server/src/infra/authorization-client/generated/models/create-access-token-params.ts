@@ -17,40 +17,22 @@
 // @ts-ignore
 import type { AuthorizationContextParams } from './authorization-context-params';
 
-/**
- * 
- * @export
- * @interface CreateAccessTokenParams
- */
 export interface CreateAccessTokenParams {
-    /**
-     * 
-     * @type {AuthorizationContextParams}
-     * @memberof CreateAccessTokenParams
-     */
     'context': AuthorizationContextParams;
     /**
      * The entity or domain object the operation should be performed on.
-     * @type {string}
-     * @memberof CreateAccessTokenParams
      */
     'referenceType': CreateAccessTokenParamsReferenceType;
     /**
      * The id of the entity/domain object of the defined referenceType.
-     * @type {string}
-     * @memberof CreateAccessTokenParams
      */
     'referenceId': string;
     /**
      * Lifetime of token
-     * @type {number}
-     * @memberof CreateAccessTokenParams
      */
     'tokenTtlInSeconds': number;
     /**
      * The payload of the access token.
-     * @type {object}
-     * @memberof CreateAccessTokenParams
      */
     'payload': object;
 }
@@ -68,7 +50,7 @@ export const CreateAccessTokenParamsReferenceType = {
     BOARDNODES: 'boardnodes',
     CONTEXT_EXTERNAL_TOOLS: 'context-external-tools',
     EXTERNAL_TOOLS: 'external-tools',
-    INSTANCES: 'instances'
+    INSTANCES: 'instances',
 } as const;
 
 export type CreateAccessTokenParamsReferenceType = typeof CreateAccessTokenParamsReferenceType[keyof typeof CreateAccessTokenParamsReferenceType];

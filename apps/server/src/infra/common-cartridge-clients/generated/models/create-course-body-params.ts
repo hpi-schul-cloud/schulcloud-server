@@ -14,22 +14,13 @@
 
 
 
-/**
- * 
- * @export
- * @interface CreateCourseBodyParams
- */
 export interface CreateCourseBodyParams {
     /**
      * The name of the course
-     * @type {string}
-     * @memberof CreateCourseBodyParams
      */
     'name': string;
     /**
      * The color of the course icon
-     * @type {string}
-     * @memberof CreateCourseBodyParams
      */
     'color'?: string;
 }

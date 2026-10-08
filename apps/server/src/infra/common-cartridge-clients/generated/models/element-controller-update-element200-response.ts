@@ -49,7 +49,6 @@ import type { VideoConferenceElementResponse } from './video-conference-element-
 
 /**
  * @type ElementControllerUpdateElement200Response
- * @export
  */
 export type ElementControllerUpdateElement200Response = DrawingElementResponse | ExternalToolElementResponse | FileElementResponse | FileFolderElementResponse | H5pElementResponse | LinkElementResponse | RichTextElementResponse | VideoConferenceElementResponse;
 

@@ -38,7 +38,6 @@ import type { ToolConfigType } from './tool-config-type';
 /**
  * @type ExternalToolUpdateParamsConfig
  * Configuration of the external tool
- * @export
  */
 export type ExternalToolUpdateParamsConfig = BasicToolConfigParams | Lti11ToolConfigUpdateParams | Oauth2ToolConfigUpdateParams;
 

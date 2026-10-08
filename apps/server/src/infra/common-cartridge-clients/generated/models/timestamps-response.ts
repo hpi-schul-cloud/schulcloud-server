@@ -14,29 +14,9 @@
 
 
 
-/**
- * 
- * @export
- * @interface TimestampsResponse
- */
 export interface TimestampsResponse {
-    /**
-     * 
-     * @type {string}
-     * @memberof TimestampsResponse
-     */
     'lastUpdatedAt': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof TimestampsResponse
-     */
     'createdAt': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof TimestampsResponse
-     */
     'deletedAt'?: string;
 }
 

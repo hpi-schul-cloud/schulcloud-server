@@ -14,65 +14,15 @@
 
 
 
-/**
- * 
- * @export
- * @interface BoardLessonResponse
- */
 export interface BoardLessonResponse {
-    /**
-     * 
-     * @type {string}
-     * @memberof BoardLessonResponse
-     */
     'id': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof BoardLessonResponse
-     */
     'name': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof BoardLessonResponse
-     */
     'courseName'?: string;
-    /**
-     * 
-     * @type {number}
-     * @memberof BoardLessonResponse
-     */
     'numberOfPublishedTasks': number;
-    /**
-     * 
-     * @type {number}
-     * @memberof BoardLessonResponse
-     */
     'numberOfDraftTasks': number;
-    /**
-     * 
-     * @type {number}
-     * @memberof BoardLessonResponse
-     */
     'numberOfPlannedTasks': number;
-    /**
-     * 
-     * @type {string}
-     * @memberof BoardLessonResponse
-     */
     'createdAt': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof BoardLessonResponse
-     */
     'updatedAt': string;
-    /**
-     * 
-     * @type {boolean}
-     * @memberof BoardLessonResponse
-     */
     'hidden': boolean;
 }
 

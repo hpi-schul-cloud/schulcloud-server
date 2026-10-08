@@ -34,7 +34,6 @@ import type { LernstoreResources } from './lernstore-resources';
 
 /**
  * @type LessonContentResponseContent
- * @export
  */
 export type LessonContentResponseContent = ComponentEtherpadPropsImpl | ComponentGeogebraPropsImpl | ComponentInternalPropsImpl | ComponentLernstorePropsImpl | ComponentTextPropsImpl;
 

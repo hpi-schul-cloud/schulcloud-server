@@ -20,53 +20,13 @@ import type { Facet } from './facet';
 // @ts-ignore
 import type { SchoolDTO } from './school-dto';
 
-/**
- * 
- * @export
- * @interface PageSchoolDTO
- */
 export interface PageSchoolDTO {
-    /**
-     * 
-     * @type {Array<SchoolDTO>}
-     * @memberof PageSchoolDTO
-     */
     'items'?: Array<SchoolDTO>;
-    /**
-     * 
-     * @type {number}
-     * @memberof PageSchoolDTO
-     */
     'lastPage'?: number;
-    /**
-     * 
-     * @type {number}
-     * @memberof PageSchoolDTO
-     */
     'totalCount'?: number;
-    /**
-     * 
-     * @type {number}
-     * @memberof PageSchoolDTO
-     */
     'pageSize'?: number;
-    /**
-     * 
-     * @type {{ [key: string]: { [key: string]: string; }; }}
-     * @memberof PageSchoolDTO
-     */
     'actions'?: { [key: string]: { [key: string]: string; }; };
-    /**
-     * 
-     * @type {number}
-     * @memberof PageSchoolDTO
-     */
     'page'?: number;
-    /**
-     * 
-     * @type {Array<Facet>}
-     * @memberof PageSchoolDTO
-     */
     'facets'?: Array<Facet>;
 }
 

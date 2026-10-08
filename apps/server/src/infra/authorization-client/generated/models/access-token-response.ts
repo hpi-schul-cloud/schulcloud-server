@@ -14,17 +14,7 @@
 
 
 
-/**
- * 
- * @export
- * @interface AccessTokenResponse
- */
 export interface AccessTokenResponse {
-    /**
-     * 
-     * @type {string}
-     * @memberof AccessTokenResponse
-     */
     'token': string;
 }
 

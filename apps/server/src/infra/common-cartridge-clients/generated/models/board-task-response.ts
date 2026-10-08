@@ -17,71 +17,16 @@
 // @ts-ignore
 import type { BoardTaskStatusResponse } from './board-task-status-response';
 
-/**
- * 
- * @export
- * @interface BoardTaskResponse
- */
 export interface BoardTaskResponse {
-    /**
-     * 
-     * @type {string}
-     * @memberof BoardTaskResponse
-     */
     'id': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof BoardTaskResponse
-     */
     'name': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof BoardTaskResponse
-     */
     'availableDate'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof BoardTaskResponse
-     */
     'dueDate'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof BoardTaskResponse
-     */
     'courseName'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof BoardTaskResponse
-     */
     'description'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof BoardTaskResponse
-     */
     'displayColor'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof BoardTaskResponse
-     */
     'createdAt': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof BoardTaskResponse
-     */
     'updatedAt': string;
-    /**
-     * 
-     * @type {BoardTaskStatusResponse}
-     * @memberof BoardTaskResponse
-     */
     'status': BoardTaskStatusResponse;
 }
 

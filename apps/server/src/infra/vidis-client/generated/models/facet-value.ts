@@ -14,23 +14,8 @@
 
 
 
-/**
- * 
- * @export
- * @interface FacetValue
- */
 export interface FacetValue {
-    /**
-     * 
-     * @type {number}
-     * @memberof FacetValue
-     */
     'numberOfOccurrences'?: number;
-    /**
-     * 
-     * @type {string}
-     * @memberof FacetValue
-     */
     'term'?: string;
 }
 

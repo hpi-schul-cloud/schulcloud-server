@@ -14,17 +14,7 @@
 
 
 
-/**
- * 
- * @export
- * @interface VersionResponse
- */
 export interface VersionResponse {
-    /**
-     * 
-     * @type {string}
-     * @memberof VersionResponse
-     */
     'version'?: string;
 }
 

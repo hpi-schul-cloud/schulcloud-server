@@ -20,23 +20,11 @@ import type { ContentElementType } from './content-element-type';
 // @ts-ignore
 import type { DrawingContentBody } from './drawing-content-body';
 
-/**
- * 
- * @export
- * @interface DrawingElementContentBody
- */
 export interface DrawingElementContentBody {
     /**
      * the type of the updated element
-     * @type {ContentElementType}
-     * @memberof DrawingElementContentBody
      */
     'type': ContentElementType;
-    /**
-     * 
-     * @type {DrawingContentBody}
-     * @memberof DrawingElementContentBody
-     */
     'content': DrawingContentBody;
 }
 

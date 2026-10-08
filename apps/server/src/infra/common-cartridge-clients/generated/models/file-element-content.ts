@@ -14,23 +14,8 @@
 
 
 
-/**
- * 
- * @export
- * @interface FileElementContent
- */
 export interface FileElementContent {
-    /**
-     * 
-     * @type {string}
-     * @memberof FileElementContent
-     */
     'caption': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof FileElementContent
-     */
     'alternativeText': string;
 }
 
