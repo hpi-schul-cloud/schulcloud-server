@@ -29,65 +29,15 @@ import type { ColumnResponse } from './column-response';
 // @ts-ignore
 import type { TimestampsResponse } from './timestamps-response';
 
-/**
- * 
- * @export
- * @interface BoardResponse
- */
 export interface BoardResponse {
-    /**
-     * 
-     * @type {string}
-     * @memberof BoardResponse
-     */
     'id': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof BoardResponse
-     */
     'title': string;
-    /**
-     * 
-     * @type {Array<ColumnResponse>}
-     * @memberof BoardResponse
-     */
     'columns': Array<ColumnResponse>;
-    /**
-     * 
-     * @type {TimestampsResponse}
-     * @memberof BoardResponse
-     */
     'timestamps': TimestampsResponse;
-    /**
-     * 
-     * @type {boolean}
-     * @memberof BoardResponse
-     */
     'isVisible': boolean;
-    /**
-     * 
-     * @type {boolean}
-     * @memberof BoardResponse
-     */
     'readersCanEdit': boolean;
-    /**
-     * 
-     * @type {BoardLayout}
-     * @memberof BoardResponse
-     */
     'layout': BoardLayout;
-    /**
-     * 
-     * @type {Array<BoardFeature>}
-     * @memberof BoardResponse
-     */
     'features': Array<BoardFeature>;
-    /**
-     * 
-     * @type {BoardResponseAllowedOperations}
-     * @memberof BoardResponse
-     */
     'allowedOperations'?: BoardResponseAllowedOperations;
 }
 

@@ -20,35 +20,10 @@ import type { ContentElementType } from './content-element-type';
 // @ts-ignore
 import type { TimestampsResponse } from './timestamps-response';
 
-/**
- * 
- * @export
- * @interface CollaborativeTextEditorElementResponse
- */
 export interface CollaborativeTextEditorElementResponse {
-    /**
-     * 
-     * @type {string}
-     * @memberof CollaborativeTextEditorElementResponse
-     */
     'id': string;
-    /**
-     * 
-     * @type {ContentElementType}
-     * @memberof CollaborativeTextEditorElementResponse
-     */
     'type': ContentElementType;
-    /**
-     * 
-     * @type {TimestampsResponse}
-     * @memberof CollaborativeTextEditorElementResponse
-     */
     'timestamps': TimestampsResponse;
-    /**
-     * 
-     * @type {object}
-     * @memberof CollaborativeTextEditorElementResponse
-     */
     'content': object;
 }
 

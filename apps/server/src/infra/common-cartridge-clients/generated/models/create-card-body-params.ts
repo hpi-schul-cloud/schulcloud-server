@@ -14,18 +14,12 @@
 
 
 
-/**
- * 
- * @export
- * @interface CreateCardBodyParams
- */
 export interface CreateCardBodyParams {
-    /**
-     * 
-     * @type {Array<string>}
-     * @memberof CreateCardBodyParams
-     */
     'requiredEmptyElements'?: Array<CreateCardBodyParamsRequiredEmptyElements>;
+    /**
+     * Position within the column at which to insert the card. If omitted, the card is appended at the end.
+     */
+    'position'?: number;
 }
 
 export const CreateCardBodyParamsRequiredEmptyElements = {
@@ -38,7 +32,7 @@ export const CreateCardBodyParamsRequiredEmptyElements = {
     VIDEO_CONFERENCE: 'videoConference',
     FILE_FOLDER: 'fileFolder',
     DELETED: 'deleted',
-    H5P: 'h5p'
+    H5P: 'h5p',
 } as const;
 
 export type CreateCardBodyParamsRequiredEmptyElements = typeof CreateCardBodyParamsRequiredEmptyElements[keyof typeof CreateCardBodyParamsRequiredEmptyElements];

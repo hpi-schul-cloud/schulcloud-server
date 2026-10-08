@@ -17,23 +17,8 @@
 // @ts-ignore
 import type { FacetValue } from './facet-value';
 
-/**
- * 
- * @export
- * @interface Facet
- */
 export interface Facet {
-    /**
-     * 
-     * @type {string}
-     * @memberof Facet
-     */
     'facetCriteria'?: string;
-    /**
-     * 
-     * @type {Array<FacetValue>}
-     * @memberof Facet
-     */
     'facetValues'?: Array<FacetValue>;
 }
 

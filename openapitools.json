@@ -2,11 +2,10 @@
 	"$schema": "./node_modules/@openapitools/openapi-generator-cli/config.schema.json",
 	"spaces": 2,
 	"generator-cli": {
-		"version": "7.6.0",
+		"version": "7.25.0",
 		"generators": {
 			"tsp-api": {
 				"generatorName": "typescript-axios",
-				"templateDir": "./openapi-templates/typescript-axios",
 				"inputSpec": "./apps/server/src/infra/tsp-client/openapi.json",
 				"output": "./apps/server/src/infra/tsp-client/generated",
 				"skipValidateSpec": true,
@@ -15,6 +14,8 @@
 					"FILTER": "operationId:exportKlasseList|exportLehrerListMigration|exportLehrerList|exportSchuelerListMigration|exportSchuelerList|exportSchuleList|version"
 				},
 				"globalProperty": {
+					"apiDocs": false,
+					"modelDocs": false,
 					"models": "RobjExportKlasse:RobjExportLehrerMigration:RobjExportLehrer:RobjExportSchuelerMigration:RobjExportSchueler:RobjExportSchule:VersionResponse",
 					"apis": "",
 					"supportingFiles": ""
@@ -31,7 +32,6 @@
 			},
 			"files-storage-api": {
 				"generatorName": "typescript-axios",
-				"templateDir": "./openapi-templates/typescript-axios",
 				"inputSpec": "http://localhost:4444/api/v3/file/docs-json",
 				"output": "./apps/server/src/infra/files-storage-rest-client/generated",
 				"skipValidateSpec": true,
@@ -40,6 +40,8 @@
 					"FILTER": "operationId:upload|download|uploadFromUrl|deleteByParent|deleteFile|getFileRecord"
 				},
 				"globalProperty": {
+					"apiDocs": false,
+					"modelDocs": false,
 					"models": "FileRecordResponse:StreamableFile:FileRecordParentType:FileRecordScanStatus:PreviewStatus:StorageLocation:FileUrlParams:FileRecordListResponse:SingleFileParams",
 					"apis": "",
 					"supportingFiles": ""
@@ -56,11 +58,14 @@
 			},
 			"tldraw-api": {
 				"generatorName": "typescript-axios",
-				"templateDir": "./openapi-templates/typescript-axios",
 				"inputSpec": "http://localhost:3349/api/tldraw/docs-json",
 				"output": "./apps/server/src/infra/tldraw-client/generated",
 				"skipValidateSpec": true,
 				"enablePostProcessFile": true,
+				"globalProperty": {
+					"apiDocs": false,
+					"modelDocs": false
+				},
 				"additionalProperties": {
 					"apiPackage": "api",
 					"enumNameSuffix": "",
@@ -73,13 +78,16 @@
 			},
 			"vidis-api": {
 				"generatorName": "typescript-axios",
-				"templateDir": "./openapi-templates/typescript-axios",
 				"inputSpec": "./apps/server/src/infra/vidis-client/vidis.yml",
 				"output": "./apps/server/src/infra/vidis-client/generated",
 				"skipValidateSpec": true,
 				"enablePostProcessFile": true,
 				"openapiNormalizer": {
 					"FILTER": "operationId:getActivatedOffersByRegion|operationId:getActivatedOffersBySchool"
+				},
+				"globalProperty": {
+					"apiDocs": false,
+					"modelDocs": false
 				},
 				"additionalProperties": {
 					"apiPackage": "api",
@@ -93,7 +101,6 @@
 			},
 			"common-cartridge-clients": {
 				"generatorName": "typescript-axios",
-				"templateDir": "./openapi-templates/typescript-axios",
 				"inputSpec": "http://localhost:3030/api/v3/docs-json/",
 				"output": "./apps/server/src/infra/common-cartridge-clients/generated",
 				"skipValidateSpec": true,
@@ -102,6 +109,8 @@
 					"FILTER": "operationId:BoardController_createBoard|BoardController_createColumn|BoardController_getBoardSkeleton|CardController_createElement|CardController_getCards|CardController_updateCardTitle|ColumnController_createCard|ColumnController_updateColumnTitle|CourseController_createCourse|CourseController_getCourseCcMetadataById|ElementController_updateElement|LessonController_getLesson|LessonController_getLessonTasks|CourseRoomsController_getRoomBoard"
 				},
 				"globalProperty": {
+					"apiDocs": false,
+					"modelDocs": false,
 					"models": "AnyContentElementResponse:AnyElementContentBody:ApiValidationError:BoardColumnBoardResponse:BoardElementResponse:BoardElementResponse_content:BoardLayout:BoardLayout:BoardLessonResponse:BoardParentType:BoardResponse:BoardTaskResponse:BoardTaskStatusResponse:CardController_createElement_201_response:CardListResponse:CardResponse:CardResponse:CardResponse_elements_inner:CardResponseElementsInner:CardSkeletonResponse:CollaborativeTextEditorElementResponse:Colors:ColumnResponse:ComponentEtherpadPropsImpl:ComponentGeogebraPropsImpl:ComponentInternalPropsImpl:ComponentLernstorePropsImpl:ComponentTextPropsImpl:ContentElementType:CourseCommonCartridgeMetadataResponse:CourseRoomUrlParams:CreateBoardBodyParams:CreateBoardResponse:CreateCardBodyParams:CreateContentElementBodyParams:CreateCourseBodyParams:CreateCourseResponse:DeletedElementContent:DeletedElementResponse:DrawingContentBody:DrawingElementContent:DrawingElementContentBody:DrawingElementResponse:ElementController_updateElement_200_response:ElementController_updateElement_200_response:ExternalToolContentBody:ExternalToolElementContent:ExternalToolElementContentBody:ExternalToolElementResponse:ExternalToolResponse_config:ExternalToolUpdateParams_config:FileContentBody:FileElementContent:FileElementContentBody:FileElementResponse:FileFolderContentBody:FileFolderElementContent:FileFolderElementContentBody:FileFolderElementResponse:FileFolderElementResponse:H5pElementContent:H5pElementResponse:InputFormat:LernstoreResources:LessonContentResponse:LessonContentResponse_content:LessonLinkedTaskResponse:LessonResponse:LinkContentBody:LinkElementContent:LinkElementContentBody:LinkElementResponse:MaterialResponse:MediaLineResponse_elements_inner:MoveCardBodyParams:RenameBodyParams:RenameBodyParams:RichTextContentBody:RichTextElementContent:RichTextElementContentBody:RichTextElementResponse:RoomBoardElementTypes:SingleColumnBoardResponse:TimestampsResponse:TimestampsResponse:UpdateElementContentBodyParams:UpdateElementContentBodyParams_data:UpdateElementContentBodyParamsData:VideoConferenceContentBody:VideoConferenceElementContent:VideoConferenceElementContentBody:VideoConferenceElementResponse:VisibilitySettingsResponse",
 					"apis": "",
 					"supportingFiles": ""
@@ -118,7 +127,6 @@
 			},
 			"common-cartridge-files-storage-api": {
 				"generatorName": "typescript-axios",
-				"templateDir": "./openapi-templates/typescript-axios",
 				"inputSpec": "http://localhost:4444/api/v3/file/docs-json",
 				"output": "./apps/server/src/infra/common-cartridge-clients/fs-generated",
 				"skipValidateSpec": true,
@@ -127,6 +135,8 @@
 					"FILTER": "operationId:upload|download|uploadFromUrl|deleteByParent|deleteFile|getFileRecord|list|tempUpload"
 				},
 				"globalProperty": {
+					"apiDocs": false,
+					"modelDocs": false,
 					"models": "FileRecordResponse:StreamableFile:FileRecordParentType:FileRecordScanStatus:PreviewStatus:StorageLocation:FileUrlParams:FileRecordListResponse:SingleFileParams",
 					"apis": "",
 					"supportingFiles": ""
@@ -143,7 +153,6 @@
 			},
 			"authorization-api": {
 				"generatorName": "typescript-axios",
-				"templateDir": "./openapi-templates/typescript-axios",
 				"inputSpec": "http://localhost:3030/api/v3/docs-json",
 				"output": "./apps/server/src/infra/authorization-client/generated",
 				"skipValidateSpec": true,
@@ -152,6 +161,8 @@
 					"FILTER": "operationId:AuthorizationReferenceController_authorizeByReference|AuthorizationReferenceController_createToken|AuthorizationReferenceController_resolveToken"
 				},
 				"globalProperty": {
+					"apiDocs": false,
+					"modelDocs": false,
 					"models": "AuthorizationBodyParams:AuthorizationContextParams:AuthorizedResponse:CreateAccessTokenParams:AccessTokenResponse:AccessTokenParams:AccessTokenPayloadResponse",
 					"apis": "",
 					"supportingFiles": ""
@@ -168,7 +179,6 @@
 			},
 			"authentication-api": {
 				"generatorName": "typescript-axios",
-				"templateDir": "./openapi-templates/typescript-axios",
 				"inputSpec": "http://localhost:3030/api/v3/docs-json",
 				"output": "./apps/server/src/infra/authentication-client/generated",
 				"skipValidateSpec": true,
@@ -177,6 +187,8 @@
 					"FILTER": "operationId:LoginController_loginLocalServiceAccount|LogoutController_logout"
 				},
 				"globalProperty": {
+					"apiDocs": false,
+					"modelDocs": false,
 					"models": "LocalAuthorizationBodyParams:LoginResponse",
 					"apis": "",
 					"supportingFiles": ""
@@ -193,11 +205,14 @@
 			},
 			"etherpad": {
 				"generatorName": "typescript-axios",
-				"templateDir": "./openapi-templates/typescript-axios",
 				"inputSpec": "http://localhost:9001/api/openapi.json",
 				"output": "./apps/server/src/infra/etherpad-client/generated",
 				"skipValidateSpec": true,
 				"enablePostProcessFile": true,
+				"globalProperty": {
+					"apiDocs": false,
+					"modelDocs": false
+				},
 				"additionalProperties": {
 					"apiPackage": "api",
 					"enumNameSuffix": "",

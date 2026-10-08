@@ -20,23 +20,11 @@ import type { ContentElementType } from './content-element-type';
 // @ts-ignore
 import type { RichTextContentBody } from './rich-text-content-body';
 
-/**
- * 
- * @export
- * @interface RichTextElementContentBody
- */
 export interface RichTextElementContentBody {
     /**
      * the type of the updated element
-     * @type {ContentElementType}
-     * @memberof RichTextElementContentBody
      */
     'type': ContentElementType;
-    /**
-     * 
-     * @type {RichTextContentBody}
-     * @memberof RichTextElementContentBody
-     */
     'content': RichTextContentBody;
 }
 

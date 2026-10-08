@@ -23,35 +23,10 @@ import type { DrawingElementContent } from './drawing-element-content';
 // @ts-ignore
 import type { TimestampsResponse } from './timestamps-response';
 
-/**
- * 
- * @export
- * @interface DrawingElementResponse
- */
 export interface DrawingElementResponse {
-    /**
-     * 
-     * @type {string}
-     * @memberof DrawingElementResponse
-     */
     'id': string;
-    /**
-     * 
-     * @type {ContentElementType}
-     * @memberof DrawingElementResponse
-     */
     'type': ContentElementType;
-    /**
-     * 
-     * @type {TimestampsResponse}
-     * @memberof DrawingElementResponse
-     */
     'timestamps': TimestampsResponse;
-    /**
-     * 
-     * @type {DrawingElementContent}
-     * @memberof DrawingElementResponse
-     */
     'content': DrawingElementContent;
 }
 

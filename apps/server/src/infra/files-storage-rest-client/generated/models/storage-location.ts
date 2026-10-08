@@ -14,15 +14,10 @@
 
 
 
-/**
- * 
- * @export
- * @enum {string}
- */
 
 export const StorageLocation = {
     SCHOOL: 'school',
-    INSTANCE: 'instance'
+    INSTANCE: 'instance',
 } as const;
 
 export type StorageLocation = typeof StorageLocation[keyof typeof StorageLocation];

@@ -14,29 +14,9 @@
 
 
 
-/**
- * 
- * @export
- * @interface FileUrlParams
- */
 export interface FileUrlParams {
-    /**
-     * 
-     * @type {string}
-     * @memberof FileUrlParams
-     */
     'url': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof FileUrlParams
-     */
     'fileName': string;
-    /**
-     * 
-     * @type {object}
-     * @memberof FileUrlParams
-     */
     'headers'?: object;
 }
 

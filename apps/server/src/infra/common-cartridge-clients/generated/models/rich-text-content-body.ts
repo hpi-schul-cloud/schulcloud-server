@@ -14,23 +14,8 @@
 
 
 
-/**
- * 
- * @export
- * @interface RichTextContentBody
- */
 export interface RichTextContentBody {
-    /**
-     * 
-     * @type {string}
-     * @memberof RichTextContentBody
-     */
     'text': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof RichTextContentBody
-     */
     'inputFormat': string;
 }
 

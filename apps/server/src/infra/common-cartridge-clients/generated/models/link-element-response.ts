@@ -23,35 +23,10 @@ import type { LinkElementContent } from './link-element-content';
 // @ts-ignore
 import type { TimestampsResponse } from './timestamps-response';
 
-/**
- * 
- * @export
- * @interface LinkElementResponse
- */
 export interface LinkElementResponse {
-    /**
-     * 
-     * @type {string}
-     * @memberof LinkElementResponse
-     */
     'id': string;
-    /**
-     * 
-     * @type {ContentElementType}
-     * @memberof LinkElementResponse
-     */
     'type': ContentElementType;
-    /**
-     * 
-     * @type {LinkElementContent}
-     * @memberof LinkElementResponse
-     */
     'content': LinkElementContent;
-    /**
-     * 
-     * @type {TimestampsResponse}
-     * @memberof LinkElementResponse
-     */
     'timestamps': TimestampsResponse;
 }
 

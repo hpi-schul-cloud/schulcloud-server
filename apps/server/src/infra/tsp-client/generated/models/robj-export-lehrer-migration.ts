@@ -14,23 +14,8 @@
 
 
 
-/**
- * 
- * @export
- * @interface RobjExportLehrerMigration
- */
 export interface RobjExportLehrerMigration {
-    /**
-     * 
-     * @type {string}
-     * @memberof RobjExportLehrerMigration
-     */
     'lehrerUidAlt'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof RobjExportLehrerMigration
-     */
     'lehrerUidNeu'?: string;
 }
 

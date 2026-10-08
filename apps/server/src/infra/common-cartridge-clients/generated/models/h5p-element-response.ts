@@ -23,35 +23,10 @@ import type { H5pElementContent } from './h5p-element-content';
 // @ts-ignore
 import type { TimestampsResponse } from './timestamps-response';
 
-/**
- * 
- * @export
- * @interface H5pElementResponse
- */
 export interface H5pElementResponse {
-    /**
-     * 
-     * @type {string}
-     * @memberof H5pElementResponse
-     */
     'id': string;
-    /**
-     * 
-     * @type {ContentElementType}
-     * @memberof H5pElementResponse
-     */
     'type': ContentElementType;
-    /**
-     * 
-     * @type {H5pElementContent}
-     * @memberof H5pElementResponse
-     */
     'content': H5pElementContent;
-    /**
-     * 
-     * @type {TimestampsResponse}
-     * @memberof H5pElementResponse
-     */
     'timestamps': TimestampsResponse;
 }
 

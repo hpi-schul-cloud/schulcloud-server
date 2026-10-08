@@ -14,22 +14,10 @@
 
 
 
-/**
- * 
- * @export
- * @interface CardSkeletonResponse
- */
 export interface CardSkeletonResponse {
-    /**
-     * 
-     * @type {string}
-     * @memberof CardSkeletonResponse
-     */
     'cardId': string;
     /**
      * The approximate height of the referenced card. Intended to be used for prerendering purposes. Note, that different devices can lead to this value not being precise
-     * @type {number}
-     * @memberof CardSkeletonResponse
      */
     'height': number;
 }

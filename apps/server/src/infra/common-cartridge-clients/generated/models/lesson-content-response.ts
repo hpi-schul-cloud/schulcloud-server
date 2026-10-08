@@ -17,48 +17,22 @@
 // @ts-ignore
 import type { LessonContentResponseContent } from './lesson-content-response-content';
 
-/**
- * 
- * @export
- * @interface LessonContentResponse
- */
 export interface LessonContentResponse {
-    /**
-     * 
-     * @type {LessonContentResponseContent}
-     * @memberof LessonContentResponse
-     */
     'content': LessonContentResponseContent;
     /**
      * The id of the Material entity
-     * @type {string}
-     * @memberof LessonContentResponse
      * @deprecated
      */
     '_id': string;
     /**
      * The id of the Material entity
-     * @type {string}
-     * @memberof LessonContentResponse
      */
     'id': string;
     /**
      * Title of the Material entity
-     * @type {string}
-     * @memberof LessonContentResponse
      */
     'title': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof LessonContentResponse
-     */
     'component': LessonContentResponseComponent;
-    /**
-     * 
-     * @type {boolean}
-     * @memberof LessonContentResponse
-     */
     'hidden': boolean;
 }
 
@@ -67,7 +41,7 @@ export const LessonContentResponseComponent = {
     GEO_GEBRA: 'geoGebra',
     INTERNAL: 'internal',
     RESOURCES: 'resources',
-    TEXT: 'text'
+    TEXT: 'text',
 } as const;
 
 export type LessonContentResponseComponent = typeof LessonContentResponseComponent[keyof typeof LessonContentResponseComponent];

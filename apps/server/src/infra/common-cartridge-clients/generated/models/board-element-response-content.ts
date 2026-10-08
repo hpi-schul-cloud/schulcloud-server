@@ -32,7 +32,6 @@ import type { BoardTaskStatusResponse } from './board-task-status-response';
 /**
  * @type BoardElementResponseContent
  * Content of the Board, either: a task or a lesson specific for the board
- * @export
  */
 export type BoardElementResponseContent = BoardColumnBoardResponse | BoardLessonResponse | BoardTaskResponse;
 

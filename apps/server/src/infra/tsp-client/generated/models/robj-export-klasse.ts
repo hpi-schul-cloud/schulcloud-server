@@ -14,47 +14,12 @@
 
 
 
-/**
- * 
- * @export
- * @interface RobjExportKlasse
- */
 export interface RobjExportKlasse {
-    /**
-     * 
-     * @type {string}
-     * @memberof RobjExportKlasse
-     */
     'id'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof RobjExportKlasse
-     */
     'version'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof RobjExportKlasse
-     */
     'klasseId'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof RobjExportKlasse
-     */
     'klasseName'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof RobjExportKlasse
-     */
     'schuleNummer'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof RobjExportKlasse
-     */
     'lehrerUid'?: string;
 }
 

@@ -14,23 +14,8 @@
 
 
 
-/**
- * 
- * @export
- * @interface LocalAuthorizationBodyParams
- */
 export interface LocalAuthorizationBodyParams {
-    /**
-     * 
-     * @type {string}
-     * @memberof LocalAuthorizationBodyParams
-     */
     'username': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof LocalAuthorizationBodyParams
-     */
     'password': string;
 }
 

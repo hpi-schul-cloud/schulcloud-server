@@ -23,35 +23,10 @@ import type { DeletedElementContent } from './deleted-element-content';
 // @ts-ignore
 import type { TimestampsResponse } from './timestamps-response';
 
-/**
- * 
- * @export
- * @interface DeletedElementResponse
- */
 export interface DeletedElementResponse {
-    /**
-     * 
-     * @type {string}
-     * @memberof DeletedElementResponse
-     */
     'id': string;
-    /**
-     * 
-     * @type {ContentElementType}
-     * @memberof DeletedElementResponse
-     */
     'type': ContentElementType;
-    /**
-     * 
-     * @type {DeletedElementContent}
-     * @memberof DeletedElementResponse
-     */
     'content': DeletedElementContent;
-    /**
-     * 
-     * @type {TimestampsResponse}
-     * @memberof DeletedElementResponse
-     */
     'timestamps': TimestampsResponse;
 }
 

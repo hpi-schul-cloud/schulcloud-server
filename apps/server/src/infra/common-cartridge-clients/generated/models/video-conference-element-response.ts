@@ -23,35 +23,10 @@ import type { TimestampsResponse } from './timestamps-response';
 // @ts-ignore
 import type { VideoConferenceElementContent } from './video-conference-element-content';
 
-/**
- * 
- * @export
- * @interface VideoConferenceElementResponse
- */
 export interface VideoConferenceElementResponse {
-    /**
-     * 
-     * @type {string}
-     * @memberof VideoConferenceElementResponse
-     */
     'id': string;
-    /**
-     * 
-     * @type {ContentElementType}
-     * @memberof VideoConferenceElementResponse
-     */
     'type': ContentElementType;
-    /**
-     * 
-     * @type {TimestampsResponse}
-     * @memberof VideoConferenceElementResponse
-     */
     'timestamps': TimestampsResponse;
-    /**
-     * 
-     * @type {VideoConferenceElementContent}
-     * @memberof VideoConferenceElementResponse
-     */
     'content': VideoConferenceElementContent;
 }
 

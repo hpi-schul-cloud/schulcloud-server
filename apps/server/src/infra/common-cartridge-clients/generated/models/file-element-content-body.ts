@@ -20,23 +20,11 @@ import type { ContentElementType } from './content-element-type';
 // @ts-ignore
 import type { FileContentBody } from './file-content-body';
 
-/**
- * 
- * @export
- * @interface FileElementContentBody
- */
 export interface FileElementContentBody {
     /**
      * the type of the updated element
-     * @type {ContentElementType}
-     * @memberof FileElementContentBody
      */
     'type': ContentElementType;
-    /**
-     * 
-     * @type {FileContentBody}
-     * @memberof FileElementContentBody
-     */
     'content': FileContentBody;
 }
 

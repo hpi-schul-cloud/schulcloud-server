@@ -52,7 +52,6 @@ import type { VideoConferenceElementResponse } from './video-conference-element-
 
 /**
  * @type CardControllerCreateElement201Response
- * @export
  */
 export type CardControllerCreateElement201Response = DeletedElementResponse | DrawingElementResponse | ExternalToolElementResponse | FileElementResponse | FileFolderElementResponse | H5pElementResponse | LinkElementResponse | RichTextElementResponse | VideoConferenceElementResponse;
 
