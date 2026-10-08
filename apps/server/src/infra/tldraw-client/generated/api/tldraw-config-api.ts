@@ -18,14 +18,13 @@ import type { AxiosPromise, AxiosInstance, RawAxiosRequestConfig } from 'axios';
 import globalAxios from 'axios';
 // Some imports not used depending on template conditions
 // @ts-ignore
-import { DUMMY_BASE_URL, assertParamExists, setApiKeyToObject, setBasicAuthToObject, setBearerAuthToObject, setOAuthToObject, setSearchParams, serializeDataIfNeeded, toPathString, createRequestFunction } from '../common';
+import { DUMMY_BASE_URL, assertParamExists, setApiKeyToObject, setBasicAuthToObject, setBearerAuthToObject, setOAuthToObject, setSearchParams, serializeDataIfNeeded, toPathString, createRequestFunction, replaceWithSerializableTypeIfNeeded } from '../common';
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, type RequestArgs, BaseAPI, RequiredError, operationServerMap } from '../base';
 // @ts-ignore
 import type { TldrawPublicConfigResponse } from '../models';
 /**
  * TldrawConfigApi - axios parameter creator
- * @export
  */
 export const TldrawConfigApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
@@ -48,8 +47,8 @@ export const TldrawConfigApiAxiosParamCreator = function (configuration?: Config
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            localVarHeaderParameter['Accept'] = 'application/json';
 
-    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -64,7 +63,6 @@ export const TldrawConfigApiAxiosParamCreator = function (configuration?: Config
 
 /**
  * TldrawConfigApi - functional programming interface
- * @export
  */
 export const TldrawConfigApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = TldrawConfigApiAxiosParamCreator(configuration)
@@ -86,7 +84,6 @@ export const TldrawConfigApiFp = function(configuration?: Configuration) {
 
 /**
  * TldrawConfigApi - factory interface
- * @export
  */
 export const TldrawConfigApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
     const localVarFp = TldrawConfigApiFp(configuration)
@@ -97,7 +94,7 @@ export const TldrawConfigApiFactory = function (configuration?: Configuration, b
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        publicConfig(options?: any): AxiosPromise<TldrawPublicConfigResponse> {
+        publicConfig(options?: RawAxiosRequestConfig): AxiosPromise<TldrawPublicConfigResponse> {
             return localVarFp.publicConfig(options).then((request) => request(axios, basePath));
         },
     };
@@ -105,8 +102,6 @@ export const TldrawConfigApiFactory = function (configuration?: Configuration, b
 
 /**
  * TldrawConfigApi - interface
- * @export
- * @interface TldrawConfigApi
  */
 export interface TldrawConfigApiInterface {
     /**
@@ -114,7 +109,6 @@ export interface TldrawConfigApiInterface {
      * @summary Useable configuration for clients
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof TldrawConfigApiInterface
      */
     publicConfig(options?: RawAxiosRequestConfig): AxiosPromise<TldrawPublicConfigResponse>;
 
@@ -122,9 +116,6 @@ export interface TldrawConfigApiInterface {
 
 /**
  * TldrawConfigApi - object-oriented interface
- * @export
- * @class TldrawConfigApi
- * @extends {BaseAPI}
  */
 export class TldrawConfigApi extends BaseAPI implements TldrawConfigApiInterface {
     /**
@@ -132,7 +123,6 @@ export class TldrawConfigApi extends BaseAPI implements TldrawConfigApiInterface
      * @summary Useable configuration for clients
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof TldrawConfigApi
      */
     public publicConfig(options?: RawAxiosRequestConfig) {
         return TldrawConfigApiFp(this.configuration).publicConfig(options).then((request) => request(this.axios, this.basePath));
