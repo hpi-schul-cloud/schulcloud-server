@@ -28,6 +28,8 @@ const globalIgnores = {
 		'docs/**',
 		'coverage/**',
 		'node_modules/**',
+		'apps/server/src/infra/*/generated/**',
+		'apps/server/src/infra/*/fs-generated/**',
 		'.nyc_output/**',
 		'lib/**',
 		'data/**',
