@@ -13,11 +13,13 @@
  */
 
 
+// May contain unused imports in some cases
+// @ts-ignore
+import type { ListAuthorsOfPadUsingPOST200ResponseData } from './list-authors-of-pad-using-post200-response-data';
 
-export * from './api/author-api';
-export * from './api/chat-api';
-export * from './api/group-api';
-export * from './api/pad-api';
-export * from './api/server-api';
-export * from './api/session-api';
+export interface ListAuthorsOfPadUsingPOST200Response {
+    'code'?: number;
+    'message'?: string;
+    'data'?: ListAuthorsOfPadUsingPOST200ResponseData;
+}
 

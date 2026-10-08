@@ -14,10 +14,10 @@
 
 
 
-export * from './api/author-api';
-export * from './api/chat-api';
-export * from './api/group-api';
-export * from './api/pad-api';
-export * from './api/server-api';
-export * from './api/session-api';
+export interface GetAuthorNameUsingPOST200ResponseDataInfo {
+    'id'?: string;
+    'colorId'?: string;
+    'name'?: string;
+    'timestamp'?: number;
+}
 

@@ -28,27 +28,28 @@ import type { CreateGroupUsingPOST401Response } from '../models';
 // @ts-ignore
 import type { CreateGroupUsingPOST500Response } from '../models';
 // @ts-ignore
-import type { CreateSessionUsingPOST200Response } from '../models';
-// @ts-ignore
 import type { DeleteGroupUsingPOST200Response } from '../models';
 // @ts-ignore
-import type { GetSessionInfoUsingPOST200Response } from '../models';
+import type { GetChatHeadUsingPOST200Response } from '../models';
+// @ts-ignore
+import type { GetChatHistoryUsingPOST200Response } from '../models';
 /**
- * SessionApi - axios parameter creator
+ * ChatApi - axios parameter creator
  */
-export const SessionApiAxiosParamCreator = function (configuration?: Configuration) {
+export const ChatApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
         /**
          * 
-         * @summary creates a new session. validUntil is an unix timestamp in seconds
-         * @param {string} [groupID] 
+         * @summary appends a chat message
+         * @param {string} [padID] 
+         * @param {string} [text] 
          * @param {string} [authorID] 
-         * @param {string} [validUntil] 
+         * @param {string} [time] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createSessionUsingPOST: async (groupID?: string, authorID?: string, validUntil?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/createSession`;
+        appendChatMessageUsingPOST: async (padID?: string, text?: string, authorID?: string, time?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/appendChatMessage`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -69,16 +70,20 @@ export const SessionApiAxiosParamCreator = function (configuration?: Configurati
             // authentication apiKeyHeader required
             await setApiKeyToObject(localVarHeaderParameter, "apikey", configuration)
 
-            if (groupID !== undefined) {
-                localVarQueryParameter['groupID'] = groupID;
+            if (padID !== undefined) {
+                localVarQueryParameter['padID'] = padID;
+            }
+
+            if (text !== undefined) {
+                localVarQueryParameter['text'] = text;
             }
 
             if (authorID !== undefined) {
                 localVarQueryParameter['authorID'] = authorID;
             }
 
-            if (validUntil !== undefined) {
-                localVarQueryParameter['validUntil'] = validUntil;
+            if (time !== undefined) {
+                localVarQueryParameter['time'] = time;
             }
 
             localVarHeaderParameter['Accept'] = 'application/json';
@@ -94,13 +99,13 @@ export const SessionApiAxiosParamCreator = function (configuration?: Configurati
         },
         /**
          * 
-         * @summary deletes a session
-         * @param {string} [sessionID] 
+         * @summary returns the chatHead (chat-message) of the pad
+         * @param {string} [padID] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deleteSessionUsingPOST: async (sessionID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/deleteSession`;
+        getChatHeadUsingPOST: async (padID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/getChatHead`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -121,8 +126,8 @@ export const SessionApiAxiosParamCreator = function (configuration?: Configurati
             // authentication apiKeyHeader required
             await setApiKeyToObject(localVarHeaderParameter, "apikey", configuration)
 
-            if (sessionID !== undefined) {
-                localVarQueryParameter['sessionID'] = sessionID;
+            if (padID !== undefined) {
+                localVarQueryParameter['padID'] = padID;
             }
 
             localVarHeaderParameter['Accept'] = 'application/json';
@@ -138,13 +143,15 @@ export const SessionApiAxiosParamCreator = function (configuration?: Configurati
         },
         /**
          * 
-         * @summary returns information about a session
-         * @param {string} [sessionID] 
+         * @summary returns the chat history
+         * @param {string} [padID] 
+         * @param {string} [start] 
+         * @param {string} [end] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getSessionInfoUsingPOST: async (sessionID?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
-            const localVarPath = `/getSessionInfo`;
+        getChatHistoryUsingPOST: async (padID?: string, start?: string, end?: string, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/getChatHistory`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -165,8 +172,16 @@ export const SessionApiAxiosParamCreator = function (configuration?: Configurati
             // authentication apiKeyHeader required
             await setApiKeyToObject(localVarHeaderParameter, "apikey", configuration)
 
-            if (sessionID !== undefined) {
-                localVarQueryParameter['sessionID'] = sessionID;
+            if (padID !== undefined) {
+                localVarQueryParameter['padID'] = padID;
+            }
+
+            if (start !== undefined) {
+                localVarQueryParameter['start'] = start;
+            }
+
+            if (end !== undefined) {
+                localVarQueryParameter['end'] = end;
             }
 
             localVarHeaderParameter['Accept'] = 'application/json';
@@ -184,168 +199,180 @@ export const SessionApiAxiosParamCreator = function (configuration?: Configurati
 };
 
 /**
- * SessionApi - functional programming interface
+ * ChatApi - functional programming interface
  */
-export const SessionApiFp = function(configuration?: Configuration) {
-    const localVarAxiosParamCreator = SessionApiAxiosParamCreator(configuration)
+export const ChatApiFp = function(configuration?: Configuration) {
+    const localVarAxiosParamCreator = ChatApiAxiosParamCreator(configuration)
     return {
         /**
          * 
-         * @summary creates a new session. validUntil is an unix timestamp in seconds
-         * @param {string} [groupID] 
+         * @summary appends a chat message
+         * @param {string} [padID] 
+         * @param {string} [text] 
          * @param {string} [authorID] 
-         * @param {string} [validUntil] 
+         * @param {string} [time] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async createSessionUsingPOST(groupID?: string, authorID?: string, validUntil?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<CreateSessionUsingPOST200Response>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.createSessionUsingPOST(groupID, authorID, validUntil, options);
+        async appendChatMessageUsingPOST(padID?: string, text?: string, authorID?: string, time?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingPOST200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.appendChatMessageUsingPOST(padID, text, authorID, time, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['SessionApi.createSessionUsingPOST']?.[localVarOperationServerIndex]?.url;
+            const localVarOperationServerBasePath = operationServerMap['ChatApi.appendChatMessageUsingPOST']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
-         * @summary deletes a session
-         * @param {string} [sessionID] 
+         * @summary returns the chatHead (chat-message) of the pad
+         * @param {string} [padID] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async deleteSessionUsingPOST(sessionID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<DeleteGroupUsingPOST200Response>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.deleteSessionUsingPOST(sessionID, options);
+        async getChatHeadUsingPOST(padID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetChatHeadUsingPOST200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getChatHeadUsingPOST(padID, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['SessionApi.deleteSessionUsingPOST']?.[localVarOperationServerIndex]?.url;
+            const localVarOperationServerBasePath = operationServerMap['ChatApi.getChatHeadUsingPOST']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
          * 
-         * @summary returns information about a session
-         * @param {string} [sessionID] 
+         * @summary returns the chat history
+         * @param {string} [padID] 
+         * @param {string} [start] 
+         * @param {string} [end] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async getSessionInfoUsingPOST(sessionID?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetSessionInfoUsingPOST200Response>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.getSessionInfoUsingPOST(sessionID, options);
+        async getChatHistoryUsingPOST(padID?: string, start?: string, end?: string, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<GetChatHistoryUsingPOST200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.getChatHistoryUsingPOST(padID, start, end, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
-            const localVarOperationServerBasePath = operationServerMap['SessionApi.getSessionInfoUsingPOST']?.[localVarOperationServerIndex]?.url;
+            const localVarOperationServerBasePath = operationServerMap['ChatApi.getChatHistoryUsingPOST']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
     }
 };
 
 /**
- * SessionApi - factory interface
+ * ChatApi - factory interface
  */
-export const SessionApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
-    const localVarFp = SessionApiFp(configuration)
+export const ChatApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
+    const localVarFp = ChatApiFp(configuration)
     return {
         /**
          * 
-         * @summary creates a new session. validUntil is an unix timestamp in seconds
-         * @param {string} [groupID] 
+         * @summary appends a chat message
+         * @param {string} [padID] 
+         * @param {string} [text] 
          * @param {string} [authorID] 
-         * @param {string} [validUntil] 
+         * @param {string} [time] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        createSessionUsingPOST(groupID?: string, authorID?: string, validUntil?: string, options?: RawAxiosRequestConfig): AxiosPromise<CreateSessionUsingPOST200Response> {
-            return localVarFp.createSessionUsingPOST(groupID, authorID, validUntil, options).then((request) => request(axios, basePath));
+        appendChatMessageUsingPOST(padID?: string, text?: string, authorID?: string, time?: string, options?: RawAxiosRequestConfig): AxiosPromise<DeleteGroupUsingPOST200Response> {
+            return localVarFp.appendChatMessageUsingPOST(padID, text, authorID, time, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @summary deletes a session
-         * @param {string} [sessionID] 
+         * @summary returns the chatHead (chat-message) of the pad
+         * @param {string} [padID] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deleteSessionUsingPOST(sessionID?: string, options?: RawAxiosRequestConfig): AxiosPromise<DeleteGroupUsingPOST200Response> {
-            return localVarFp.deleteSessionUsingPOST(sessionID, options).then((request) => request(axios, basePath));
+        getChatHeadUsingPOST(padID?: string, options?: RawAxiosRequestConfig): AxiosPromise<GetChatHeadUsingPOST200Response> {
+            return localVarFp.getChatHeadUsingPOST(padID, options).then((request) => request(axios, basePath));
         },
         /**
          * 
-         * @summary returns information about a session
-         * @param {string} [sessionID] 
+         * @summary returns the chat history
+         * @param {string} [padID] 
+         * @param {string} [start] 
+         * @param {string} [end] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getSessionInfoUsingPOST(sessionID?: string, options?: RawAxiosRequestConfig): AxiosPromise<GetSessionInfoUsingPOST200Response> {
-            return localVarFp.getSessionInfoUsingPOST(sessionID, options).then((request) => request(axios, basePath));
+        getChatHistoryUsingPOST(padID?: string, start?: string, end?: string, options?: RawAxiosRequestConfig): AxiosPromise<GetChatHistoryUsingPOST200Response> {
+            return localVarFp.getChatHistoryUsingPOST(padID, start, end, options).then((request) => request(axios, basePath));
         },
     };
 };
 
 /**
- * SessionApi - interface
+ * ChatApi - interface
  */
-export interface SessionApiInterface {
+export interface ChatApiInterface {
     /**
      * 
-     * @summary creates a new session. validUntil is an unix timestamp in seconds
-     * @param {string} [groupID] 
+     * @summary appends a chat message
+     * @param {string} [padID] 
+     * @param {string} [text] 
      * @param {string} [authorID] 
-     * @param {string} [validUntil] 
+     * @param {string} [time] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    createSessionUsingPOST(groupID?: string, authorID?: string, validUntil?: string, options?: RawAxiosRequestConfig): AxiosPromise<CreateSessionUsingPOST200Response>;
+    appendChatMessageUsingPOST(padID?: string, text?: string, authorID?: string, time?: string, options?: RawAxiosRequestConfig): AxiosPromise<DeleteGroupUsingPOST200Response>;
 
     /**
      * 
-     * @summary deletes a session
-     * @param {string} [sessionID] 
+     * @summary returns the chatHead (chat-message) of the pad
+     * @param {string} [padID] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    deleteSessionUsingPOST(sessionID?: string, options?: RawAxiosRequestConfig): AxiosPromise<DeleteGroupUsingPOST200Response>;
+    getChatHeadUsingPOST(padID?: string, options?: RawAxiosRequestConfig): AxiosPromise<GetChatHeadUsingPOST200Response>;
 
     /**
      * 
-     * @summary returns information about a session
-     * @param {string} [sessionID] 
+     * @summary returns the chat history
+     * @param {string} [padID] 
+     * @param {string} [start] 
+     * @param {string} [end] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    getSessionInfoUsingPOST(sessionID?: string, options?: RawAxiosRequestConfig): AxiosPromise<GetSessionInfoUsingPOST200Response>;
+    getChatHistoryUsingPOST(padID?: string, start?: string, end?: string, options?: RawAxiosRequestConfig): AxiosPromise<GetChatHistoryUsingPOST200Response>;
 
 }
 
 /**
- * SessionApi - object-oriented interface
+ * ChatApi - object-oriented interface
  */
-export class SessionApi extends BaseAPI implements SessionApiInterface {
+export class ChatApi extends BaseAPI implements ChatApiInterface {
     /**
      * 
-     * @summary creates a new session. validUntil is an unix timestamp in seconds
-     * @param {string} [groupID] 
+     * @summary appends a chat message
+     * @param {string} [padID] 
+     * @param {string} [text] 
      * @param {string} [authorID] 
-     * @param {string} [validUntil] 
+     * @param {string} [time] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public createSessionUsingPOST(groupID?: string, authorID?: string, validUntil?: string, options?: RawAxiosRequestConfig) {
-        return SessionApiFp(this.configuration).createSessionUsingPOST(groupID, authorID, validUntil, options).then((request) => request(this.axios, this.basePath));
+    public appendChatMessageUsingPOST(padID?: string, text?: string, authorID?: string, time?: string, options?: RawAxiosRequestConfig) {
+        return ChatApiFp(this.configuration).appendChatMessageUsingPOST(padID, text, authorID, time, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
-     * @summary deletes a session
-     * @param {string} [sessionID] 
+     * @summary returns the chatHead (chat-message) of the pad
+     * @param {string} [padID] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public deleteSessionUsingPOST(sessionID?: string, options?: RawAxiosRequestConfig) {
-        return SessionApiFp(this.configuration).deleteSessionUsingPOST(sessionID, options).then((request) => request(this.axios, this.basePath));
+    public getChatHeadUsingPOST(padID?: string, options?: RawAxiosRequestConfig) {
+        return ChatApiFp(this.configuration).getChatHeadUsingPOST(padID, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
      * 
-     * @summary returns information about a session
-     * @param {string} [sessionID] 
+     * @summary returns the chat history
+     * @param {string} [padID] 
+     * @param {string} [start] 
+     * @param {string} [end] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      */
-    public getSessionInfoUsingPOST(sessionID?: string, options?: RawAxiosRequestConfig) {
-        return SessionApiFp(this.configuration).getSessionInfoUsingPOST(sessionID, options).then((request) => request(this.axios, this.basePath));
+    public getChatHistoryUsingPOST(padID?: string, start?: string, end?: string, options?: RawAxiosRequestConfig) {
+        return ChatApiFp(this.configuration).getChatHistoryUsingPOST(padID, start, end, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

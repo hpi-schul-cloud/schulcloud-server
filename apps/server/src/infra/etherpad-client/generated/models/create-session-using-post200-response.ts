@@ -13,11 +13,13 @@
  */
 
 
+// May contain unused imports in some cases
+// @ts-ignore
+import type { CreateSessionUsingPOST200ResponseData } from './create-session-using-post200-response-data';
 
-export * from './api/author-api';
-export * from './api/chat-api';
-export * from './api/group-api';
-export * from './api/pad-api';
-export * from './api/server-api';
-export * from './api/session-api';
+export interface CreateSessionUsingPOST200Response {
+    'code'?: number;
+    'message'?: string;
+    'data'?: CreateSessionUsingPOST200ResponseData;
+}
 

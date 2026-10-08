@@ -13,11 +13,11 @@
  */
 
 
+// May contain unused imports in some cases
+// @ts-ignore
+import type { GetChatHistoryUsingPOST200ResponseDataMessagesInner } from './get-chat-history-using-post200-response-data-messages-inner';
 
-export * from './api/author-api';
-export * from './api/chat-api';
-export * from './api/group-api';
-export * from './api/pad-api';
-export * from './api/server-api';
-export * from './api/session-api';
+export interface GetChatHistoryUsingPOST200ResponseData {
+    'messages'?: Array<GetChatHistoryUsingPOST200ResponseDataMessagesInner>;
+}
 

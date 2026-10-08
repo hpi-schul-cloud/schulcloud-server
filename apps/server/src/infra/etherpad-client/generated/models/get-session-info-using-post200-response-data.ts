@@ -13,11 +13,11 @@
  */
 
 
+// May contain unused imports in some cases
+// @ts-ignore
+import type { GetSessionInfoUsingPOST200ResponseDataInfo } from './get-session-info-using-post200-response-data-info';
 
-export * from './api/author-api';
-export * from './api/chat-api';
-export * from './api/group-api';
-export * from './api/pad-api';
-export * from './api/server-api';
-export * from './api/session-api';
+export interface GetSessionInfoUsingPOST200ResponseData {
+    'info'?: GetSessionInfoUsingPOST200ResponseDataInfo;
+}
 
