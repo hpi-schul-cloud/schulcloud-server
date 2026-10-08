@@ -43,6 +43,16 @@ export class ManagementSeedDataConfig {
 	@IsOptional()
 	public mediaSourceBiloClientSecret?: string;
 
+	@ConfigProperty('CTL_SEED_BILO_LTI_KEY')
+	@IsString()
+	@IsOptional()
+	public ctlSeedBiloLtiKey?: string;
+
+	@ConfigProperty('CTL_SEED_BILO_LTI_SECRET')
+	@IsString()
+	@IsOptional()
+	public ctlSeedBiloLtiSecret?: string;
+
 	@ConfigProperty('NEXTCLOUD_SOCIALLOGIN_OIDC_INTERNAL_NAME')
 	@IsString()
 	public nextcloudSocialloginOidcInternalName = 'SchulcloudNextcloud';

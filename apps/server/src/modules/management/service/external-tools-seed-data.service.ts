@@ -32,11 +32,11 @@ export class ExternalToolsSeedDataService {
 
 		const nextcloudName: string | undefined = this.config.nextcloudSocialloginOidcInternalName;
 		const {
+			ctlSeedBiloLtiKey: biloLtiKey,
+			ctlSeedBiloLtiSecret: biloLtiSecret,
 			ctlSeedSecretOnlineDiaDeutsch: onlineDiaDeutschSecret,
 			ctlSeedSecretOnlineDiaMathe: onlineDiaMatheSecret,
 			ctlSeedSecretMerlin: merlinSecret,
-			mediaSourceBiloClientId: biloClientId,
-			mediaSourceBiloClientSecret: biloClientSecret,
 			nextcloudBaseUrl,
 			nextcloudClientId,
 			nextcloudClientSecret,
@@ -65,15 +65,15 @@ export class ExternalToolsSeedDataService {
 			);
 		}
 
-		if (biloClientId && biloClientSecret) {
+		if (biloLtiKey && biloLtiSecret) {
 			externalTools.push(
 				new ExternalTool({
 					id: '6859557bb36d9e807dfeeb87',
 					name: 'BiLo - Template',
 					config: new Lti11ToolConfig({
-						baseUrl: `https://route-resolver.services.bildungslogin.de/api/v1/lti11/launch/${biloClientId}`,
-						key: biloClientId,
-						secret: this.encryptionService.encrypt(biloClientSecret),
+						baseUrl: `https://route-resolver.test.services.bildungslogin.de/api/v1/lti11/launch/${biloLtiKey}`,
+						key: biloLtiKey,
+						secret: this.encryptionService.encrypt(biloLtiSecret),
 						lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
 						privacy_permission: LtiPrivacyPermission.ANONYMOUS,
 						launch_presentation_locale: 'de-DE',

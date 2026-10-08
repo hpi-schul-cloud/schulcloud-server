@@ -84,12 +84,12 @@ describe(ExternalToolsSeedDataService.name, () => {
 				config.ctlSeedSecretOnlineDiaDeutsch = 'deutsch_secret';
 				config.ctlSeedSecretOnlineDiaMathe = 'mathe_secret';
 				config.ctlSeedSecretMerlin = 'merlin_secret';
-				config.mediaSourceBiloClientId = 'bilo_client_id';
-				config.mediaSourceBiloClientSecret = 'bilo_client_secret';
+				config.ctlSeedBiloLtiKey = 'bilo_lti_key';
+				config.ctlSeedBiloLtiSecret = 'bilo_lti_secret';
 
 				const error = new Error('Client not found');
 				oauthProviderService.deleteOAuth2Client.mockRejectedValueOnce(error);
-				encryptionService.encrypt.mockReturnValueOnce('encrypted_bilo_client_secret');
+				encryptionService.encrypt.mockReturnValueOnce('encrypted_bilo_lti_secret');
 				encryptionService.encrypt.mockReturnValueOnce('encrypted_deutsch_secret');
 				encryptionService.encrypt.mockReturnValueOnce('encrypted_mathe_secret');
 				encryptionService.encrypt.mockReturnValueOnce('encrypted_merlin_secret');
@@ -153,9 +153,9 @@ describe(ExternalToolsSeedDataService.name, () => {
 						id: '6859557bb36d9e807dfeeb87',
 						name: 'BiLo - Template',
 						config: new Lti11ToolConfig({
-							baseUrl: 'https://route-resolver.services.bildungslogin.de/api/v1/lti11/launch/bilo_client_id',
-							key: 'bilo_client_id',
-							secret: 'encrypted_bilo_client_secret',
+							baseUrl: 'https://route-resolver.test.services.bildungslogin.de/api/v1/lti11/launch/bilo_lti_key',
+							key: 'bilo_lti_key',
+							secret: 'encrypted_bilo_lti_secret',
 							lti_message_type: LtiMessageType.BASIC_LTI_LAUNCH_REQUEST,
 							privacy_permission: LtiPrivacyPermission.ANONYMOUS,
 							launch_presentation_locale: 'de-DE',
