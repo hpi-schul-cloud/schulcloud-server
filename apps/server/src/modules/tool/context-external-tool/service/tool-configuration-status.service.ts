@@ -1,8 +1,9 @@
+import { Group, GroupService } from '@modules/group';
+import { MediaGroupLicense, MediaGroupLicenseService } from '@modules/group-license';
 import { MediaSchoolLicense, MediaSchoolLicenseService } from '@modules/school-license';
 import { UserService } from '@modules/user';
 import { MediaUserLicense, MediaUserLicenseService } from '@modules/user-license';
-import { Inject } from '@nestjs/common';
-import { Injectable } from '@nestjs/common/decorators/core/injectable.decorator';
+import { Inject, Injectable, Optional } from '@nestjs/common';
 import { ValidationError } from '@shared/common/error';
 import { EntityId } from '@shared/domain/types';
 import {
@@ -23,7 +24,9 @@ export class ToolConfigurationStatusService {
 		private readonly mediaUserLicenseService: MediaUserLicenseService,
 		private readonly mediaSchoolLicenseService: MediaSchoolLicenseService,
 		@Inject(TOOL_CONFIG_TOKEN) private readonly config: ToolConfig,
-		private readonly userService: UserService
+		private readonly userService: UserService,
+		@Optional() private readonly mediaGroupLicenseService?: MediaGroupLicenseService,
+		@Optional() private readonly groupService?: GroupService
 	) {}
 
 	public async determineToolConfigurationStatus(
@@ -97,8 +100,9 @@ export class ToolConfigurationStatusService {
 	private async isToolLicensed(externalTool: ExternalTool, userId: EntityId): Promise<boolean> {
 		const user = await this.userService.findById(userId);
 		const isToolLicensedForUser = await this.isToolLicensedForUser(externalTool, userId);
+		const isToolLicensedForGroup = await this.isToolLicensedForGroup(externalTool, userId, user.schoolId);
 		const isToolLicensedForSchool = await this.isToolLicensedForSchool(externalTool, user.schoolId);
-		const isToolLicensed = isToolLicensedForUser || isToolLicensedForSchool;
+		const isToolLicensed = isToolLicensedForUser || isToolLicensedForGroup || isToolLicensedForSchool;
 
 		return isToolLicensed;
 	}
@@ -137,6 +141,36 @@ export class ToolConfigurationStatusService {
 			}
 		}
 		return true;
+	}
+
+	private async isToolLicensedForGroup(
+		externalTool: ExternalTool,
+		userId: EntityId,
+		schoolId: EntityId
+	): Promise<boolean> {
+		if (!this.config.featureSchulconnexMediaLicenseEnabled || !this.mediaGroupLicenseService || !this.groupService) {
+			return false;
+		}
+
+		const externalToolMedium = externalTool.medium;
+		if (!externalToolMedium?.mediumId) {
+			return false;
+		}
+
+		const userGroups = await this.groupService.findGroups({ userId, schoolId });
+		if (!userGroups || !Array.isArray(userGroups.data)) {
+			return false;
+		}
+
+		const userGroupIds = userGroups.data.map((group: Group) => group.id);
+		if (userGroupIds.length === 0) {
+			return false;
+		}
+
+		const mediaGroupLicenses: MediaGroupLicense[] =
+			await this.mediaGroupLicenseService.findMediaGroupLicensesByGroupIds(userGroupIds);
+
+		return this.mediaGroupLicenseService.hasLicenseForExternalTool(externalToolMedium, mediaGroupLicenses);
 	}
 
 	private isMandatoryValueMissing(errors: ValidationError[]): boolean {

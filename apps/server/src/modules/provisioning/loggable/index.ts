@@ -12,6 +12,7 @@ export { FetchingPoliciesInfoFailedLoggable } from './fetching-policies-info-fai
 export { GroupProvisioningSuccessfulLoggable } from './group-provisioning-successful.loggable';
 export { GroupRemovalSuccessfulLoggable } from './group-removal-successful.loggable';
 export { LicenseProvisioningSuccessfulLoggable } from './license-provisioning-successful.loggable';
+export { LicenseMediaSourceMissingLoggable } from './license-media-source-missing.loggable';
 export { PoliciesInfoErrorResponseLoggable } from './policies-info-error-response-loggable';
 export { SchoolExternalToolCreatedLoggable } from './school-external-tool-created.loggable';
 export { SchoolMissingLoggableException } from './school-missing.loggable-exception';

@@ -1,6 +1,10 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AuthorizationService } from '@modules/authorization';
+import { GroupService } from '@modules/group';
+import { groupFactory } from '@modules/group/testing';
+import { MediaGroupLicenseService } from '@modules/group-license';
+import { mediaGroupLicenseFactory } from '@modules/group-license/testing';
 import { type MediaSchoolLicense, MediaSchoolLicenseService } from '@modules/school-license';
 import { mediaSchoolLicenseFactory } from '@modules/school-license/testing';
 import { type ExternalTool } from '@modules/tool/external-tool/domain';
@@ -13,6 +17,7 @@ import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
+import { Page } from '@shared/domain/domainobject';
 import { setupEntities } from '@testing/database';
 import { BoardNodeRule } from '../../authorisation/board-node.rule';
 import { BOARD_CONFIG_TOKEN, BoardConfig } from '../../board.config';
@@ -51,10 +56,11 @@ describe(MediaAvailableLineUc.name, () => {
 	let mediaBoardService: DeepMocked<MediaBoardService>;
 	let mediaUserLicenseService: DeepMocked<MediaUserLicenseService>;
 	let mediaSchoolLicenseService: DeepMocked<MediaSchoolLicenseService>;
+	let mediaGroupLicenseService: DeepMocked<MediaGroupLicenseService>;
+	let groupService: DeepMocked<GroupService>;
 
 	beforeAll(async () => {
 		await setupEntities([User]);
-
 		module = await Test.createTestingModule({
 			providers: [
 				MediaAvailableLineUc,
@@ -94,6 +100,14 @@ describe(MediaAvailableLineUc.name, () => {
 					provide: MediaSchoolLicenseService,
 					useValue: createMock<MediaSchoolLicenseService>(),
 				},
+				{
+					provide: MediaGroupLicenseService,
+					useValue: createMock<MediaGroupLicenseService>(),
+				},
+				{
+					provide: GroupService,
+					useValue: createMock<GroupService>(),
+				},
 			],
 		}).compile();
 
@@ -107,6 +121,8 @@ describe(MediaAvailableLineUc.name, () => {
 		mediaBoardService = module.get(MediaBoardService);
 		mediaUserLicenseService = module.get(MediaUserLicenseService);
 		mediaSchoolLicenseService = module.get(MediaSchoolLicenseService);
+		mediaGroupLicenseService = module.get(MediaGroupLicenseService);
+		groupService = module.get(GroupService);
 	});
 
 	afterAll(async () => {
@@ -115,6 +131,8 @@ describe(MediaAvailableLineUc.name, () => {
 
 	afterEach(() => {
 		jest.clearAllMocks();
+		config.featureSchulconnexMediaLicenseEnabled = false;
+		config.featureVidisMediaActivationsEnabled = false;
 	});
 
 	describe('getMediaAvailableLine', () => {
@@ -430,6 +448,80 @@ describe(MediaAvailableLineUc.name, () => {
 						backgroundColor: mediaBoard.backgroundColor,
 						elements: [],
 					});
+				});
+			});
+
+			describe('when group license exists', () => {
+				it('should return available line with group-licensed tool', async () => {
+					config.featureSchulconnexMediaLicenseEnabled = true;
+
+					const user: User = userFactory.build();
+					const mediaBoard: MediaBoard = mediaBoardFactory.build();
+					const mediaAvailableLineElement: MediaAvailableLineElement = mediaAvailableLineElementFactory.build();
+					const mediaAvailableLine: MediaAvailableLine = mediaAvailableLineFactory
+						.withElement(mediaAvailableLineElement)
+						.build();
+					const externalTool1: ExternalTool = externalToolFactory.build({ medium: { mediumId: 'mediumId' } });
+					const schoolExternalTool1: SchoolExternalTool = schoolExternalToolFactory.build({ toolId: externalTool1.id });
+
+					const group = groupFactory.build({ id: 'group-1' });
+					const groupLicense = mediaGroupLicenseFactory.build({ groupId: group.id, mediumId: 'mediumId' });
+
+					mediaUserLicenseService.getMediaUserLicensesForUser.mockResolvedValue([]);
+					mediaUserLicenseService.hasLicenseForExternalTool.mockReturnValue(false);
+
+					groupService.findGroups.mockResolvedValue(new Page([group], 1));
+					mediaGroupLicenseService.findMediaGroupLicensesByGroupIds.mockResolvedValue([groupLicense]);
+					mediaGroupLicenseService.hasLicenseForExternalTool.mockReturnValue(true);
+
+					boardNodeService.findByClassAndId.mockResolvedValueOnce(mediaBoard);
+					mediaAvailableLineService.getUnusedAvailableSchoolExternalTools.mockResolvedValueOnce([schoolExternalTool1]);
+					mediaAvailableLineService.getAvailableExternalToolsForSchool.mockResolvedValueOnce([externalTool1]);
+					mediaAvailableLineService.matchTools.mockReturnValueOnce([[externalTool1, schoolExternalTool1]]);
+					mediaAvailableLineService.createMediaAvailableLine.mockReturnValueOnce(mediaAvailableLine);
+
+					const line: MediaAvailableLine = await uc.getMediaAvailableLine(user.id, mediaBoard.id);
+
+					expect(mediaGroupLicenseService.hasLicenseForExternalTool).toHaveBeenCalled();
+					expect(line.elements).toHaveLength(1);
+				});
+			});
+
+			describe('when school license exists under Schulconnex feature flag', () => {
+				it('should return available line with school-licensed tool', async () => {
+					config.featureSchulconnexMediaLicenseEnabled = true;
+
+					const user: User = userFactory.build();
+					const mediaBoard: MediaBoard = mediaBoardFactory.build();
+					const mediaAvailableLineElement: MediaAvailableLineElement = mediaAvailableLineElementFactory.build();
+					const mediaAvailableLine: MediaAvailableLine = mediaAvailableLineFactory
+						.withElement(mediaAvailableLineElement)
+						.build();
+					const externalTool1: ExternalTool = externalToolFactory.build({ medium: { mediumId: 'mediumId' } });
+					const schoolExternalTool1: SchoolExternalTool = schoolExternalToolFactory.build({ toolId: externalTool1.id });
+
+					const schoolLicense = mediaSchoolLicenseFactory.build({ schoolId: user.school.id, mediumId: 'mediumId' });
+
+					mediaUserLicenseService.getMediaUserLicensesForUser.mockResolvedValue([]);
+					mediaUserLicenseService.hasLicenseForExternalTool.mockReturnValue(false);
+
+					groupService.findGroups.mockResolvedValue(new Page([], 0));
+					mediaGroupLicenseService.findMediaGroupLicensesByGroupIds.mockResolvedValue([]);
+					mediaGroupLicenseService.hasLicenseForExternalTool.mockReturnValue(false);
+
+					mediaSchoolLicenseService.findMediaSchoolLicensesBySchoolId.mockResolvedValue([schoolLicense]);
+					mediaSchoolLicenseService.hasLicenseForExternalTool.mockReturnValue(true);
+
+					boardNodeService.findByClassAndId.mockResolvedValueOnce(mediaBoard);
+					mediaAvailableLineService.getUnusedAvailableSchoolExternalTools.mockResolvedValueOnce([schoolExternalTool1]);
+					mediaAvailableLineService.getAvailableExternalToolsForSchool.mockResolvedValueOnce([externalTool1]);
+					mediaAvailableLineService.matchTools.mockReturnValueOnce([[externalTool1, schoolExternalTool1]]);
+					mediaAvailableLineService.createMediaAvailableLine.mockReturnValueOnce(mediaAvailableLine);
+
+					const line: MediaAvailableLine = await uc.getMediaAvailableLine(user.id, mediaBoard.id);
+
+					expect(mediaSchoolLicenseService.hasLicenseForExternalTool).toHaveBeenCalled();
+					expect(line.elements).toHaveLength(1);
 				});
 			});
 		});

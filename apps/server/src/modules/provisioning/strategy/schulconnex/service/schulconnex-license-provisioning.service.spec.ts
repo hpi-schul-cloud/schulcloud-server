@@ -1,6 +1,11 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import { GroupService } from '@modules/group';
+import { groupFactory } from '@modules/group/testing';
+import { GroupLicenseType, MediaGroupLicenseService } from '@modules/group-license';
+import { mediaGroupLicenseFactory } from '@modules/group-license/testing';
 import { MediaSource, MediaSourceService } from '@modules/media-source';
 import { mediaSourceFactory } from '@modules/media-source/testing';
+import { MediaSchoolLicense, MediaSchoolLicenseService, SchoolLicenseType } from '@modules/school-license';
 import { MediaUserLicense, MediaUserLicenseService, UserLicenseType } from '@modules/user-license';
 import { mediaUserLicenseFactory } from '@modules/user-license/testing';
 import { User } from '@modules/user/repo';
@@ -16,6 +21,9 @@ describe(SchulconnexLicenseProvisioningService.name, () => {
 
 	let mediaUserLicenseService: DeepMocked<MediaUserLicenseService>;
 	let mediaSourceService: DeepMocked<MediaSourceService>;
+	let mediaSchoolLicenseService: DeepMocked<MediaSchoolLicenseService>;
+	let mediaGroupLicenseService: DeepMocked<MediaGroupLicenseService>;
+	let groupService: DeepMocked<GroupService>;
 
 	beforeAll(async () => {
 		await setupEntities([User]);
@@ -30,12 +38,27 @@ describe(SchulconnexLicenseProvisioningService.name, () => {
 					provide: MediaSourceService,
 					useValue: createMock<MediaSourceService>(),
 				},
+				{
+					provide: MediaSchoolLicenseService,
+					useValue: createMock<MediaSchoolLicenseService>(),
+				},
+				{
+					provide: MediaGroupLicenseService,
+					useValue: createMock<MediaGroupLicenseService>(),
+				},
+				{
+					provide: GroupService,
+					useValue: createMock<GroupService>(),
+				},
 			],
 		}).compile();
 
 		service = module.get(SchulconnexLicenseProvisioningService);
 		mediaUserLicenseService = module.get(MediaUserLicenseService);
 		mediaSourceService = module.get(MediaSourceService);
+		mediaSchoolLicenseService = module.get(MediaSchoolLicenseService);
+		mediaGroupLicenseService = module.get(MediaGroupLicenseService);
+		groupService = module.get(GroupService);
 	});
 
 	afterAll(async () => {
@@ -197,6 +220,276 @@ describe(SchulconnexLicenseProvisioningService.name, () => {
 
 				expect(mediaUserLicenseService.delete).toHaveBeenCalledWith([expiredMediaUserLicense]);
 			});
+		});
+
+		describe('when school licenses are provided', () => {
+			it('should provision new school licenses and skip existing ones', async () => {
+				const userId = 'user-1';
+				const schoolId = 'school-1';
+				mediaUserLicenseService.getMediaUserLicensesForUser.mockResolvedValueOnce([]);
+
+				const existingLicense = new MediaSchoolLicense({
+					id: 'lic-1',
+					type: SchoolLicenseType.MEDIA_LICENSE,
+					schoolId,
+					mediumId: 'med-existing',
+				});
+				mediaSchoolLicenseService.findMediaSchoolLicensesBySchoolId.mockResolvedValueOnce([existingLicense]);
+
+				const schoolLicenses: ExternalLicenseDto[] = [
+					{
+						scope: 'SCHOOL',
+						scopeId: 'school-uuid',
+						mediumId: 'med-existing',
+					},
+					{
+						scope: 'SCHOOL',
+						scopeId: 'school-uuid',
+						mediumId: 'med-new',
+						mediaSourceId: 'src-1',
+					},
+				];
+
+				await service.provisionExternalLicenses(userId, schoolLicenses, schoolId);
+
+				expect(mediaSchoolLicenseService.saveAllMediaSchoolLicenses).toHaveBeenCalledWith([
+					expect.objectContaining({
+						props: expect.objectContaining({
+							type: SchoolLicenseType.MEDIA_LICENSE,
+							schoolId,
+							mediumId: 'med-new',
+						}),
+					}),
+				]);
+			});
+
+			it('should provision school license without mediaSourceId', async () => {
+				const userId = 'user-1';
+				const schoolId = 'school-1';
+				mediaUserLicenseService.getMediaUserLicensesForUser.mockResolvedValueOnce([]);
+				mediaSchoolLicenseService.findMediaSchoolLicensesBySchoolId.mockResolvedValueOnce([]);
+
+				const schoolLicenses: ExternalLicenseDto[] = [
+					{ scope: 'SCHOOL', scopeId: 'school-uuid', mediumId: 'med-no-source' },
+				];
+
+				await service.provisionExternalLicenses(userId, schoolLicenses, schoolId);
+
+				expect(mediaSchoolLicenseService.saveAllMediaSchoolLicenses).toHaveBeenCalledWith([
+					expect.objectContaining({
+						props: expect.objectContaining({ mediumId: 'med-no-source', mediaSource: undefined }),
+					}),
+				]);
+			});
+
+			it('should not call save when all school licenses already exist', async () => {
+				const userId = 'user-1';
+				const schoolId = 'school-1';
+				mediaUserLicenseService.getMediaUserLicensesForUser.mockResolvedValueOnce([]);
+
+				const existingLicense = new MediaSchoolLicense({
+					id: 'lic-1',
+					type: SchoolLicenseType.MEDIA_LICENSE,
+					schoolId,
+					mediumId: 'med-existing',
+				});
+				mediaSchoolLicenseService.findMediaSchoolLicensesBySchoolId.mockResolvedValueOnce([existingLicense]);
+
+				const schoolLicenses: ExternalLicenseDto[] = [
+					{ scope: 'SCHOOL', scopeId: 'school-uuid', mediumId: 'med-existing' },
+				];
+
+				await service.provisionExternalLicenses(userId, schoolLicenses, schoolId);
+
+				expect(mediaSchoolLicenseService.saveAllMediaSchoolLicenses).not.toHaveBeenCalled();
+			});
+		});
+
+		describe('when group licenses are provided', () => {
+			it('should resolve internal group and provision group licenses', async () => {
+				const userId = 'user-1';
+				const systemId = 'system-1';
+				const externalGroupId = 'ext-group-uuid';
+				mediaUserLicenseService.getMediaUserLicensesForUser.mockResolvedValueOnce([]);
+
+				const group = groupFactory.build({ id: 'internal-group-1' });
+				groupService.findByExternalSource.mockResolvedValueOnce(group);
+				mediaGroupLicenseService.findMediaGroupLicensesByGroupId.mockResolvedValueOnce([]);
+
+				const groupLicenses: ExternalLicenseDto[] = [
+					{
+						scope: 'GROUP',
+						scopeId: externalGroupId,
+						mediumId: 'med-group-1',
+						mediaSourceId: 'src-1',
+					},
+				];
+
+				await service.provisionExternalLicenses(userId, groupLicenses, 'school-1', systemId);
+
+				expect(groupService.findByExternalSource).toHaveBeenCalledWith(externalGroupId, systemId);
+				expect(mediaGroupLicenseService.saveAll).toHaveBeenCalledWith([
+					expect.objectContaining({
+						props: expect.objectContaining({
+							type: GroupLicenseType.MEDIA_LICENSE,
+							groupId: 'internal-group-1',
+							mediumId: 'med-group-1',
+						}),
+					}),
+				]);
+			});
+
+			it('should skip group licenses without a scopeId', async () => {
+				const userId = 'user-1';
+				const systemId = 'system-1';
+				mediaUserLicenseService.getMediaUserLicensesForUser.mockResolvedValueOnce([]);
+
+				const groupLicenses: ExternalLicenseDto[] = [
+					{
+						scope: 'GROUP',
+						mediumId: 'med-group-1',
+						mediaSourceId: 'src-1',
+					},
+				];
+
+				await service.provisionExternalLicenses(userId, groupLicenses, 'school-1', systemId);
+
+				expect(groupService.findByExternalSource).not.toHaveBeenCalled();
+				expect(mediaGroupLicenseService.saveAll).not.toHaveBeenCalled();
+			});
+
+			it('should skip group licenses when the external group cannot be resolved', async () => {
+				const userId = 'user-1';
+				const systemId = 'system-1';
+				const externalGroupId = 'unknown-ext-group';
+				mediaUserLicenseService.getMediaUserLicensesForUser.mockResolvedValueOnce([]);
+				groupService.findByExternalSource.mockResolvedValueOnce(null);
+
+				const groupLicenses: ExternalLicenseDto[] = [
+					{
+						scope: 'GROUP',
+						scopeId: externalGroupId,
+						mediumId: 'med-group-1',
+						mediaSourceId: 'src-1',
+					},
+				];
+
+				await service.provisionExternalLicenses(userId, groupLicenses, 'school-1', systemId);
+
+				expect(groupService.findByExternalSource).toHaveBeenCalledWith(externalGroupId, systemId);
+				expect(mediaGroupLicenseService.saveAll).not.toHaveBeenCalled();
+			});
+
+			it('should skip group licenses that already exist', async () => {
+				const userId = 'user-1';
+				const systemId = 'system-1';
+				const externalGroupId = 'ext-group-uuid';
+				mediaUserLicenseService.getMediaUserLicensesForUser.mockResolvedValueOnce([]);
+
+				const group = groupFactory.build({ id: 'internal-group-1' });
+				groupService.findByExternalSource.mockResolvedValueOnce(group);
+
+				const existingLicense = mediaGroupLicenseFactory.build({
+					groupId: group.id,
+					mediumId: 'med-group-1',
+					mediaSource: mediaSourceFactory.build({ sourceId: 'src-1' }),
+				});
+				mediaGroupLicenseService.findMediaGroupLicensesByGroupId.mockResolvedValueOnce([existingLicense]);
+
+				const groupLicenses: ExternalLicenseDto[] = [
+					{
+						scope: 'GROUP',
+						scopeId: externalGroupId,
+						mediumId: 'med-group-1',
+						mediaSourceId: 'src-1',
+					},
+				];
+
+				await service.provisionExternalLicenses(userId, groupLicenses, 'school-1', systemId);
+
+				expect(mediaGroupLicenseService.saveAll).not.toHaveBeenCalled();
+			});
+
+			it('should provision group license without mediaSourceId', async () => {
+				const userId = 'user-1';
+				const systemId = 'system-1';
+				const externalGroupId = 'ext-group-uuid';
+				mediaUserLicenseService.getMediaUserLicensesForUser.mockResolvedValueOnce([]);
+
+				const group = groupFactory.build({ id: 'internal-group-1' });
+				groupService.findByExternalSource.mockResolvedValueOnce(group);
+				mediaGroupLicenseService.findMediaGroupLicensesByGroupId.mockResolvedValueOnce([]);
+
+				const groupLicenses: ExternalLicenseDto[] = [
+					{ scope: 'GROUP', scopeId: externalGroupId, mediumId: 'med-no-source' },
+				];
+
+				await service.provisionExternalLicenses(userId, groupLicenses, 'school-1', systemId);
+
+				expect(mediaGroupLicenseService.saveAll).toHaveBeenCalledWith([
+					expect.objectContaining({
+						props: expect.objectContaining({ mediumId: 'med-no-source', mediaSource: undefined }),
+					}),
+				]);
+			});
+		});
+	});
+
+	describe('when optional services are not provided', () => {
+		let serviceWithoutOptionals: SchulconnexLicenseProvisioningService;
+		let minimalUserLicenseService: DeepMocked<MediaUserLicenseService>;
+		let minimalModule: TestingModule;
+
+		beforeAll(async () => {
+			minimalModule = await Test.createTestingModule({
+				providers: [
+					SchulconnexLicenseProvisioningService,
+					{
+						provide: MediaUserLicenseService,
+						useValue: createMock<MediaUserLicenseService>(),
+					},
+					{
+						provide: MediaSourceService,
+						useValue: createMock<MediaSourceService>(),
+					},
+				],
+			}).compile();
+
+			serviceWithoutOptionals = minimalModule.get(SchulconnexLicenseProvisioningService);
+			minimalUserLicenseService = minimalModule.get(MediaUserLicenseService);
+		});
+
+		afterAll(async () => {
+			await minimalModule.close();
+		});
+
+		afterEach(() => {
+			jest.resetAllMocks();
+		});
+
+		it('should skip school license provisioning when MediaSchoolLicenseService is absent', async () => {
+			minimalUserLicenseService.getMediaUserLicensesForUser.mockResolvedValueOnce([]);
+
+			await expect(
+				serviceWithoutOptionals.provisionExternalLicenses(
+					'user-1',
+					[{ scope: 'SCHOOL', scopeId: 'school-uuid', mediumId: 'med-1' }],
+					'school-1'
+				)
+			).resolves.not.toThrow();
+		});
+
+		it('should skip group license provisioning when MediaGroupLicenseService is absent', async () => {
+			minimalUserLicenseService.getMediaUserLicensesForUser.mockResolvedValueOnce([]);
+
+			await expect(
+				serviceWithoutOptionals.provisionExternalLicenses(
+					'user-1',
+					[{ scope: 'GROUP', scopeId: 'ext-group-uuid', mediumId: 'med-1' }],
+					'school-1',
+					'system-1'
+				)
+			).resolves.not.toThrow();
 		});
 	});
 });

@@ -12,7 +12,11 @@ import {
 } from './response';
 import { type InternalSchulconnexClientConfig } from './schulconnex-client.config';
 import { SchulconnexRestClient } from './schulconnex-rest-client';
-import { schulconnexPoliciesInfoLicenseResponseFactory, schulconnexResponseFactory } from './testing';
+import {
+	schulconnexPoliciesInfoLicenseResponseFactory,
+	schulconnexPoliciesInfoResponseFactory,
+	schulconnexResponseFactory,
+} from './testing';
 
 describe(SchulconnexRestClient.name, () => {
 	let client: SchulconnexRestClient;
@@ -209,13 +213,16 @@ describe(SchulconnexRestClient.name, () => {
 
 				await client.getPoliciesInfo(accessToken);
 
-				expect(httpService.get).toHaveBeenCalledWith(`${config.apiUrl ?? ''}/policies-info`, {
-					headers: {
-						Authorization: `Bearer ${accessToken}`,
-						'Accept-Encoding': 'gzip',
-					},
-					timeout: config.policiesInfoTimeoutInMs,
-				});
+				expect(httpService.get).toHaveBeenCalledWith(
+					`${config.apiUrl ?? ''}/policies-info?access_control=true&api=1.7`,
+					{
+						headers: {
+							Authorization: `Bearer ${accessToken}`,
+							'Accept-Encoding': 'gzip',
+						},
+						timeout: config.policiesInfoTimeoutInMs,
+					}
+				);
 			});
 
 			it('should return the response', async () => {
@@ -247,7 +254,26 @@ describe(SchulconnexRestClient.name, () => {
 
 				await client.getPoliciesInfo(accessToken, { overrideUrl: customUrl });
 
-				expect(httpService.get).toHaveBeenCalledWith(customUrl, expect.anything());
+				expect(httpService.get).toHaveBeenCalledWith(`${customUrl}?access_control=true&api=1.7`, expect.anything());
+			});
+		});
+
+		describe('when the api returns a response object (not an array)', () => {
+			const setup = () => {
+				const accessToken = 'accessToken';
+				const response: SchulconnexPoliciesInfoResponse = schulconnexPoliciesInfoResponseFactory.build();
+
+				httpService.get.mockReturnValueOnce(of(axiosResponseFactory.build({ data: response })));
+
+				return { accessToken, response };
+			};
+
+			it('should return the response object directly', async () => {
+				const { accessToken, response } = setup();
+
+				const result = await client.getPoliciesInfo(accessToken);
+
+				expect(result).toEqual(response);
 			});
 		});
 	});
