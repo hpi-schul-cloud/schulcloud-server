@@ -155,6 +155,20 @@ describe(SchulconnexResponseMapper.name, () => {
 		});
 	});
 
+	describe('mapToGroupNameList', () => {
+		describe('when groups are provided', () => {
+			it('should return the group names', () => {
+				const schulconnexResponse: SchulconnexResponse = schulconnexResponseFactory.build();
+				const groups: SchulconnexGruppenResponse[] = schulconnexResponse.personenkontexte[0]
+					.gruppen as SchulconnexGruppenResponse[];
+
+				const result: string[] = SchulconnexResponseMapper.mapToGroupNameList(groups);
+
+				expect(result).toEqual(groups.map((g) => g.gruppe.bezeichnung));
+			});
+		});
+	});
+
 	describe('mapToExternalGroupDtos', () => {
 		describe('when no group is given', () => {
 			const setup = () => {
@@ -878,6 +892,56 @@ describe(SchulconnexResponseMapper.name, () => {
 				expect(result).toHaveLength(1);
 				expect(result[0].mediumId).toBe('urn:bilo:medium:WEB-507-76690');
 				expect(result[0].licenseKey).toBe('valid-key');
+			});
+		});
+
+		describe('when a license response has user scope refinement', () => {
+			const setup = () => {
+				const licenseResponse: SchulconnexPoliciesInfoLicenseResponse[] = [
+					{
+						policy: {
+							uid: 'urn:bilo:license::WEB-507-76690',
+							target: { uid: 'urn:bilo:medium:WEB-507-76690', partOf: 'urn:bilo:catalog' },
+							assigner: { uid: 'WES', partOf: 'urn:bilo:licensor' },
+							permission: [
+								{
+									action: [SchulconnexPoliciesInfoActionType.EXECUTE],
+									assignee: {
+										refinement: [
+											{
+												leftOperand: 'urn:schulconnex:de:kern:personenkontext',
+												operator: 'eq',
+												rightOperand: 'user-pid-1234',
+											},
+										],
+									},
+								},
+							],
+						},
+						access_control: {
+							type: 'license_key',
+							value: { licenseKey: 'WES-moin.schule.1-User' },
+						},
+					},
+				];
+
+				return { licenseResponse };
+			};
+
+			it('should map to USER scope with correct scopeId and licenseKey', () => {
+				const { licenseResponse } = setup();
+
+				const result = SchulconnexResponseMapper.mapToExternalLicenses(licenseResponse);
+
+				expect(result).toEqual<ExternalLicenseDto[]>([
+					{
+						mediumId: 'urn:bilo:medium:WEB-507-76690',
+						mediaSourceId: 'urn:bilo:catalog',
+						scope: 'USER',
+						scopeId: 'user-pid-1234',
+						licenseKey: 'WES-moin.schule.1-User',
+					},
+				]);
 			});
 		});
 	});

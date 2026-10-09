@@ -92,6 +92,27 @@ describe(MediaGroupLicenseMikroOrmRepo.name, () => {
 				})
 			);
 		});
+
+		it('should return an empty array when groupIds is empty', async () => {
+			const result = await repo.findMediaGroupLicensesByGroupIds([]);
+
+			expect(result).toEqual([]);
+		});
+	});
+
+	describe('findMediaGroupLicensesByGroupId', () => {
+		it('should return licenses for the given group', async () => {
+			const group = groupEntityFactory.build();
+			const license = mediaGroupLicenseEntityFactory.build({ group });
+
+			await em.persist([group, license]).flush();
+			em.clear();
+
+			const result = await repo.findMediaGroupLicensesByGroupId(group.id);
+
+			expect(result).toHaveLength(1);
+			expect(result[0].groupId).toBe(group.id);
+		});
 	});
 
 	describe('saveAll', () => {

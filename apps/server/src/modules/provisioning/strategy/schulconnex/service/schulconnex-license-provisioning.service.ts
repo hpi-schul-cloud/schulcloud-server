@@ -168,9 +168,7 @@ export class SchulconnexLicenseProvisioningService {
 				return group ? { group, licenses } : null;
 			})
 		);
-		return resolved.filter(
-			(entry): entry is { group: Group; licenses: ExternalLicenseDto[] } => entry !== null
-		);
+		return resolved.filter((entry): entry is { group: Group; licenses: ExternalLicenseDto[] } => entry !== null);
 	}
 
 	private async buildNewGroupLicenses(

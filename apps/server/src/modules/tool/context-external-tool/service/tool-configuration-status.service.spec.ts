@@ -756,6 +756,78 @@ describe(ToolConfigurationStatusService.name, () => {
 						]);
 					});
 				});
+
+				describe('when tool has no medium', () => {
+					const setup = () => {
+						const userId = new ObjectId().toHexString();
+						const schoolId = new ObjectId().toHexString();
+						const user = userDoFactory.buildWithId({ id: userId, schoolId });
+						const externalTool = externalToolFactory.buildWithId();
+						const schoolExternalTool = schoolExternalToolFactory.buildWithId({ toolId: externalTool.id });
+						const contextExternalTool = contextExternalToolFactory
+							.withSchoolExternalToolRef(schoolExternalTool.id)
+							.buildWithId();
+
+						commonToolValidationService.validateParameters.mockReturnValue([]);
+						userService.findById.mockResolvedValue(user);
+						mediaUserLicenseService.getMediaUserLicensesForUser.mockResolvedValue([]);
+						groupService.findGroups.mockResolvedValue(new Page([], 0));
+						mediaGroupLicenseService.findMediaGroupLicensesByGroupIds.mockResolvedValue([]);
+						mediaGroupLicenseService.hasLicenseForExternalTool.mockReturnValue(false);
+						mediaSchoolLicenseService.findMediaSchoolLicensesBySchoolId.mockResolvedValue([]);
+
+						return { contextExternalTool, externalTool, schoolExternalTool, userId };
+					};
+
+					it('should not call findMediaGroupLicensesByGroupIds', async () => {
+						const { contextExternalTool, externalTool, schoolExternalTool, userId } = setup();
+
+						await service.determineToolConfigurationStatus(
+							externalTool,
+							schoolExternalTool,
+							contextExternalTool,
+							userId
+						);
+
+						expect(mediaGroupLicenseService.findMediaGroupLicensesByGroupIds).not.toHaveBeenCalled();
+					});
+				});
+
+				describe('when user has no groups', () => {
+					const setup = () => {
+						const userId = new ObjectId().toHexString();
+						const schoolId = new ObjectId().toHexString();
+						const user = userDoFactory.buildWithId({ id: userId, schoolId });
+						const externalTool = externalToolFactory.withMedium().buildWithId();
+						const schoolExternalTool = schoolExternalToolFactory.buildWithId({ toolId: externalTool.id });
+						const contextExternalTool = contextExternalToolFactory
+							.withSchoolExternalToolRef(schoolExternalTool.id)
+							.buildWithId();
+
+						commonToolValidationService.validateParameters.mockReturnValue([]);
+						userService.findById.mockResolvedValue(user);
+						mediaUserLicenseService.getMediaUserLicensesForUser.mockResolvedValue([]);
+						groupService.findGroups.mockResolvedValue(new Page([], 0));
+						mediaGroupLicenseService.findMediaGroupLicensesByGroupIds.mockResolvedValue([]);
+						mediaGroupLicenseService.hasLicenseForExternalTool.mockReturnValue(false);
+						mediaSchoolLicenseService.findMediaSchoolLicensesBySchoolId.mockResolvedValue([]);
+
+						return { contextExternalTool, externalTool, schoolExternalTool, userId };
+					};
+
+					it('should not call findMediaGroupLicensesByGroupIds', async () => {
+						const { contextExternalTool, externalTool, schoolExternalTool, userId } = setup();
+
+						await service.determineToolConfigurationStatus(
+							externalTool,
+							schoolExternalTool,
+							contextExternalTool,
+							userId
+						);
+
+						expect(mediaGroupLicenseService.findMediaGroupLicensesByGroupIds).not.toHaveBeenCalled();
+					});
+				});
 			});
 			describe('determineToolConfigurationStatus with FEATURE_VIDIS_MEDIA_ACTIVATIONS_ENABLED media license activations', () => {
 				beforeEach(() => {
