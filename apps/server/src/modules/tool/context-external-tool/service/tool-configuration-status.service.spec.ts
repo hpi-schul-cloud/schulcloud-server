@@ -699,6 +699,7 @@ describe(ToolConfigurationStatusService.name, () => {
 						const mediaGroupLicense: MediaGroupLicense = mediaGroupLicenseFactory.build({ groupId: group.id });
 
 						config.featureVidisMediaActivationsEnabled = true;
+						config.featureSchulconnexGroupSchoolMediaLicenseEnabled = true;
 						commonToolValidationService.validateParameters.mockReturnValue([]);
 						userService.findById.mockResolvedValue(user);
 						mediaUserLicenseService.getMediaUserLicensesForUser.mockResolvedValue([]);
@@ -768,6 +769,7 @@ describe(ToolConfigurationStatusService.name, () => {
 							.withSchoolExternalToolRef(schoolExternalTool.id)
 							.buildWithId();
 
+						config.featureSchulconnexGroupSchoolMediaLicenseEnabled = true;
 						commonToolValidationService.validateParameters.mockReturnValue([]);
 						userService.findById.mockResolvedValue(user);
 						mediaUserLicenseService.getMediaUserLicensesForUser.mockResolvedValue([]);
@@ -804,6 +806,7 @@ describe(ToolConfigurationStatusService.name, () => {
 							.withSchoolExternalToolRef(schoolExternalTool.id)
 							.buildWithId();
 
+						config.featureSchulconnexGroupSchoolMediaLicenseEnabled = true;
 						commonToolValidationService.validateParameters.mockReturnValue([]);
 						userService.findById.mockResolvedValue(user);
 						mediaUserLicenseService.getMediaUserLicensesForUser.mockResolvedValue([]);

@@ -148,7 +148,7 @@ export class ToolConfigurationStatusService {
 		userId: EntityId,
 		schoolId: EntityId
 	): Promise<boolean> {
-		if (!this.config.featureSchulconnexMediaLicenseEnabled || !this.mediaGroupLicenseService || !this.groupService) {
+		if (!this.config.featureSchulconnexGroupSchoolMediaLicenseEnabled || !this.mediaGroupLicenseService || !this.groupService) {
 			return false;
 		}
 

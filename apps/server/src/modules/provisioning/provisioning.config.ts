@@ -16,6 +16,11 @@ export class ProvisioningPublicApiConfig {
 	@StringToBoolean()
 	@IsBoolean()
 	public featureSchulconnexMediaLicenseEnabled = false;
+
+	@ConfigProperty('FEATURE_SCHULCONNEX_GROUP_SCHOOL_MEDIA_LICENSE_ENABLED')
+	@StringToBoolean()
+	@IsBoolean()
+	public featureSchulconnexGroupSchoolMediaLicenseEnabled = false;
 }
 
 @Configuration()

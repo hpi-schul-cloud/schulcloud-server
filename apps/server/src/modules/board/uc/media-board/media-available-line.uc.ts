@@ -122,7 +122,7 @@ export class MediaAvailableLineUc {
 			(await this.mediaUserLicenseService.getMediaUserLicensesForUser(userId)) ?? [];
 
 		let mediaGroupLicenses: MediaGroupLicense[] = [];
-		if (this.mediaGroupLicenseService && this.groupService) {
+		if (this.config.featureSchulconnexGroupSchoolMediaLicenseEnabled && this.mediaGroupLicenseService && this.groupService) {
 			const userGroups = await this.groupService.findGroups({ userId, schoolId });
 			if (userGroups && Array.isArray(userGroups.data)) {
 				const userGroupIds = userGroups.data.map((group: Group) => group.id);
@@ -136,7 +136,7 @@ export class MediaAvailableLineUc {
 		}
 
 		let mediaSchoolLicenses: MediaSchoolLicense[] = [];
-		if (this.mediaSchoolLicenseService) {
+		if (this.config.featureSchulconnexGroupSchoolMediaLicenseEnabled && this.mediaSchoolLicenseService) {
 			const foundSchoolLicenses = await this.mediaSchoolLicenseService.findMediaSchoolLicensesBySchoolId(schoolId);
 			if (Array.isArray(foundSchoolLicenses)) {
 				mediaSchoolLicenses = foundSchoolLicenses;
