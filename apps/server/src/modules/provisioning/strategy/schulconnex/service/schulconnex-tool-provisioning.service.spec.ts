@@ -25,6 +25,7 @@ import { mediaUserLicenseFactory } from '@modules/user-license/testing';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { Page } from '@shared/domain/domainobject';
 import { ExternalToolMetadataUpdateFailedLoggable, ExternalToolProvisioningFailedLoggable } from '../../../loggable';
+import { PROVISIONING_CONFIG_TOKEN, type ProvisioningConfig } from '../../../provisioning.config';
 import { SchulconnexToolProvisioningService } from './schulconnex-tool-provisioning.service';
 
 describe(SchulconnexToolProvisioningService.name, () => {
@@ -42,6 +43,7 @@ describe(SchulconnexToolProvisioningService.name, () => {
 	let logger: DeepMocked<Logger>;
 	let mediaGroupLicenseService: DeepMocked<MediaGroupLicenseService>;
 	let groupService: DeepMocked<GroupService>;
+	let config: ProvisioningConfig;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -58,6 +60,10 @@ describe(SchulconnexToolProvisioningService.name, () => {
 				{ provide: Logger, useValue: createMock<Logger>() },
 				{ provide: MediaGroupLicenseService, useValue: createMock<MediaGroupLicenseService>() },
 				{ provide: GroupService, useValue: createMock<GroupService>() },
+				{
+					provide: PROVISIONING_CONFIG_TOKEN,
+					useValue: { featureSchulconnexGroupSchoolMediaLicenseEnabled: true },
+				},
 			],
 		}).compile();
 
@@ -73,6 +79,7 @@ describe(SchulconnexToolProvisioningService.name, () => {
 		logger = module.get(Logger);
 		mediaGroupLicenseService = module.get(MediaGroupLicenseService);
 		groupService = module.get(GroupService);
+		config = module.get(PROVISIONING_CONFIG_TOKEN);
 	});
 
 	afterAll(async () => {
@@ -570,6 +577,22 @@ describe(SchulconnexToolProvisioningService.name, () => {
 					expect(schoolExternalToolService.saveSchoolExternalTool).toHaveBeenCalledWith(
 						expect.objectContaining({ toolId: groupTool.id, schoolId: scenario.schoolId })
 					);
+				});
+			});
+
+			describe('when the group and school media license feature is disabled', () => {
+				afterEach(() => {
+					config.featureSchulconnexGroupSchoolMediaLicenseEnabled = true;
+				});
+
+				it('should not look up group licenses', async () => {
+					const scenario = createScenario();
+					config.featureSchulconnexGroupSchoolMediaLicenseEnabled = false;
+
+					await provision(scenario);
+
+					expect(groupService.findGroups).not.toHaveBeenCalled();
+					expect(mediaGroupLicenseService.findMediaGroupLicensesByGroupIds).not.toHaveBeenCalled();
 				});
 			});
 		});

@@ -15,7 +15,7 @@ import { ExternalToolMediumStatus } from '@modules/tool/external-tool/enum';
 import { SchoolExternalToolService } from '@modules/tool/school-external-tool';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { MediaUserLicense, MediaUserLicenseService } from '@modules/user-license';
-import { Injectable, NotFoundException, Optional } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import {
 	ExternalToolMetadataUpdateFailedLoggable,
@@ -23,6 +23,7 @@ import {
 	ExternalToolCreatedLoggable,
 	SchoolExternalToolCreatedLoggable,
 } from '../../../loggable';
+import { PROVISIONING_CONFIG_TOKEN, ProvisioningConfig } from '../../../provisioning.config';
 
 @Injectable()
 export class SchulconnexToolProvisioningService {
@@ -36,8 +37,9 @@ export class SchulconnexToolProvisioningService {
 		private readonly mediumMetadataService: MediumMetadataService,
 		private readonly externalToolMetadataUpdateService: ExternalToolMetadataUpdateService,
 		private readonly logger: Logger,
-		@Optional() private readonly mediaGroupLicenseService?: MediaGroupLicenseService,
-		@Optional() private readonly groupService?: GroupService
+		private readonly mediaGroupLicenseService: MediaGroupLicenseService,
+		private readonly groupService: GroupService,
+		@Inject(PROVISIONING_CONFIG_TOKEN) private readonly config: ProvisioningConfig
 	) {}
 
 	public async provisionSchoolExternalTools(userId: EntityId, schoolId: EntityId, systemId: string): Promise<void> {
@@ -55,7 +57,7 @@ export class SchulconnexToolProvisioningService {
 			await this.mediaSchoolLicenseService.findMediaSchoolLicensesBySchoolId(schoolId);
 
 		let mediaGroupLicenses: MediaGroupLicense[] = [];
-		if (this.mediaGroupLicenseService && this.groupService) {
+		if (this.config.featureSchulconnexGroupSchoolMediaLicenseEnabled) {
 			const userGroups = await this.groupService.findGroups({ userId, schoolId });
 			const userGroupIds = userGroups.data.map((group: Group) => group.id);
 			if (userGroupIds.length > 0) {

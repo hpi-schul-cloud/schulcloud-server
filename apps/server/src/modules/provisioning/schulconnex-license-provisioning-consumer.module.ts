@@ -13,6 +13,7 @@ import { UserLicenseModule } from '@modules/user-license';
 import { Module } from '@nestjs/common';
 import { SchulconnexLicenseProvisioningConsumer } from './amqp';
 import { PROVISIONING_EXCHANGE_CONFIG_TOKEN, ProvisioningExchangeConfig } from './provisioning-exchange.config';
+import { PROVISIONING_CONFIG_TOKEN, ProvisioningConfig } from './provisioning.config';
 import {
 	SchulconnexLicenseProvisioningService,
 	SchulconnexToolProvisioningService,
@@ -30,6 +31,7 @@ import {
 		ToolModule,
 		MediumMetadataModule,
 		MediaSourceSyncModule,
+		ConfigurationModule.register(PROVISIONING_CONFIG_TOKEN, ProvisioningConfig),
 		ConfigurationModule.register(PROVISIONING_EXCHANGE_CONFIG_TOKEN, ProvisioningExchangeConfig),
 		RabbitMQWrapperModule.register({
 			exchangeConfigInjectionToken: PROVISIONING_EXCHANGE_CONFIG_TOKEN,

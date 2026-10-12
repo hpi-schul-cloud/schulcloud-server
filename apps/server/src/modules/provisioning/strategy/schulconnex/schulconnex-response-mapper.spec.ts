@@ -764,7 +764,7 @@ describe(SchulconnexResponseMapper.name, () => {
 					{
 						policy: {
 							uid: 'urn:bilo:license::WEB-507-76690',
-							target: { uid: 'urn:bilo:medium:WEB-507-76690', partOf: 'urn:bilo:catalog' },
+							target: { uid: 'urn:bilo:medium:WEB-507-76690', partOf: 'urn:bilo:medium' },
 							assigner: { uid: 'WES', partOf: 'urn:bilo:licensor' },
 							permission: [
 								{
@@ -799,7 +799,7 @@ describe(SchulconnexResponseMapper.name, () => {
 				expect(result).toEqual<ExternalLicenseDto[]>([
 					{
 						mediumId: 'urn:bilo:medium:WEB-507-76690',
-						mediaSourceId: 'urn:bilo:catalog',
+						mediaSourceId: 'urn:bilo:medium',
 						scope: 'GROUP',
 						scopeId: 'e06c3234-81cc-42e9-a86c-2f59ef42babc',
 						licenseKey: 'WES-moin.schule.7-Gruppe',
@@ -814,7 +814,7 @@ describe(SchulconnexResponseMapper.name, () => {
 					{
 						policy: {
 							uid: 'urn:bilo:license::WEB-507-76690',
-							target: { uid: 'urn:bilo:medium:WEB-507-76690', partOf: 'urn:bilo:catalog' },
+							target: { uid: 'urn:bilo:medium:WEB-507-76690', partOf: 'urn:bilo:medium' },
 							assigner: { uid: 'WES', partOf: 'urn:bilo:licensor' },
 							permission: [
 								{
@@ -849,7 +849,7 @@ describe(SchulconnexResponseMapper.name, () => {
 				expect(result).toEqual<ExternalLicenseDto[]>([
 					{
 						mediumId: 'urn:bilo:medium:WEB-507-76690',
-						mediaSourceId: 'urn:bilo:catalog',
+						mediaSourceId: 'urn:bilo:medium',
 						scope: 'SCHOOL',
 						scopeId: 'school-uuid-1234',
 						licenseKey: 'WES-moin.schule.1-Schule',
@@ -858,7 +858,7 @@ describe(SchulconnexResponseMapper.name, () => {
 			});
 		});
 
-		describe('when response contains noise without license_key access_control', () => {
+		describe('when response contains entries without license_key access_control', () => {
 			const setup = () => {
 				const licenseResponse: SchulconnexPoliciesInfoLicenseResponse[] = [
 					{
@@ -884,14 +884,79 @@ describe(SchulconnexResponseMapper.name, () => {
 				return { licenseResponse };
 			};
 
-			it('should filter out entries where access_control type is not license_key', () => {
+			it('should keep all entries as USER licenses, as before API v1.7', () => {
 				const { licenseResponse } = setup();
 
 				const result = SchulconnexResponseMapper.mapToExternalLicenses(licenseResponse);
 
-				expect(result).toHaveLength(1);
-				expect(result[0].mediumId).toBe('urn:bilo:medium:WEB-507-76690');
-				expect(result[0].licenseKey).toBe('valid-key');
+				expect(result).toEqual<ExternalLicenseDto[]>([
+					{ mediumId: 'postman', mediaSourceId: undefined, scope: 'USER', scopeId: undefined, licenseKey: undefined },
+					{ mediumId: 'cucTest', mediaSourceId: undefined, scope: 'USER', scopeId: undefined, licenseKey: undefined },
+					{
+						mediumId: 'urn:bilo:medium:WEB-507-76690',
+						mediaSourceId: undefined,
+						scope: 'USER',
+						scopeId: undefined,
+						licenseKey: 'valid-key',
+					},
+				]);
+			});
+		});
+
+		describe('when a medium is assigned to several groups', () => {
+			const setup = () => {
+				const licenseResponse: SchulconnexPoliciesInfoLicenseResponse[] = [
+					{
+						policy: {
+							uid: 'urn:bilo:license::WEB-507-76690',
+							target: { uid: 'urn:bilo:medium:WEB-507-76690', partOf: 'urn:bilo:medium' },
+							assigner: { uid: 'WES', partOf: 'urn:bilo:licensor' },
+							permission: [
+								{
+									action: [SchulconnexPoliciesInfoActionType.EXECUTE],
+									assignee: {
+										refinement: [
+											{
+												leftOperand: 'urn:schulconnex:de:kern:personenkontext:gruppe',
+												operator: 'eq',
+												rightOperand: 'group-uuid-1',
+											},
+										],
+									},
+								},
+								{
+									action: [SchulconnexPoliciesInfoActionType.EXECUTE],
+									assignee: {
+										refinement: [
+											{
+												leftOperand: 'urn:schulconnex:de:kern:personenkontext:gruppe',
+												operator: 'eq',
+												rightOperand: 'group-uuid-2',
+											},
+										],
+									},
+								},
+							],
+						},
+						access_control: {
+							type: 'license_key',
+							value: { licenseKey: 'WES-moin.schule.7-Gruppe' },
+						},
+					},
+				];
+
+				return { licenseResponse };
+			};
+
+			it('should map one GROUP license per assigned group', () => {
+				const { licenseResponse } = setup();
+
+				const result = SchulconnexResponseMapper.mapToExternalLicenses(licenseResponse);
+
+				expect(result.map((license) => [license.scope, license.scopeId])).toEqual([
+					['GROUP', 'group-uuid-1'],
+					['GROUP', 'group-uuid-2'],
+				]);
 			});
 		});
 
@@ -901,7 +966,7 @@ describe(SchulconnexResponseMapper.name, () => {
 					{
 						policy: {
 							uid: 'urn:bilo:license::WEB-507-76690',
-							target: { uid: 'urn:bilo:medium:WEB-507-76690', partOf: 'urn:bilo:catalog' },
+							target: { uid: 'urn:bilo:medium:WEB-507-76690', partOf: 'urn:bilo:medium' },
 							assigner: { uid: 'WES', partOf: 'urn:bilo:licensor' },
 							permission: [
 								{
@@ -936,7 +1001,7 @@ describe(SchulconnexResponseMapper.name, () => {
 				expect(result).toEqual<ExternalLicenseDto[]>([
 					{
 						mediumId: 'urn:bilo:medium:WEB-507-76690',
-						mediaSourceId: 'urn:bilo:catalog',
+						mediaSourceId: 'urn:bilo:medium',
 						scope: 'USER',
 						scopeId: 'user-pid-1234',
 						licenseKey: 'WES-moin.schule.1-User',
@@ -951,7 +1016,7 @@ describe(SchulconnexResponseMapper.name, () => {
 					{
 						policy: {
 							uid: 'urn:bilo:license::WEB-507-76690',
-							target: { uid: 'urn:bilo:medium:WEB-507-76690', partOf: 'urn:bilo:catalog' },
+							target: { uid: 'urn:bilo:medium:WEB-507-76690', partOf: 'urn:bilo:medium' },
 							assigner: { uid: 'WES', partOf: 'urn:bilo:licensor' },
 							permission: [
 								{
@@ -978,20 +1043,12 @@ describe(SchulconnexResponseMapper.name, () => {
 				return { licenseResponse };
 			};
 
-			it('should skip the unknown refinement and default to USER scope', () => {
+			it('should not grant any license', () => {
 				const { licenseResponse } = setup();
 
 				const result = SchulconnexResponseMapper.mapToExternalLicenses(licenseResponse);
 
-				expect(result).toEqual<ExternalLicenseDto[]>([
-					{
-						mediumId: 'urn:bilo:medium:WEB-507-76690',
-						mediaSourceId: 'urn:bilo:catalog',
-						scope: 'USER',
-						scopeId: undefined,
-						licenseKey: 'WES-moin.schule.1-Unknown',
-					},
-				]);
+				expect(result).toEqual<ExternalLicenseDto[]>([]);
 			});
 		});
 	});

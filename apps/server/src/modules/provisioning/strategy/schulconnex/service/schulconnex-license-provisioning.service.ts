@@ -1,13 +1,15 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Group, GroupService } from '@modules/group';
 import { GroupLicenseType, MediaGroupLicense, MediaGroupLicenseService } from '@modules/group-license';
+import { LegacySchoolService } from '@modules/legacy-school';
 import { MediaSource } from '@modules/media-source';
 import { MediaSourceService } from '@modules/media-source/service';
 import { MediaSchoolLicense, MediaSchoolLicenseService, SchoolLicenseType } from '@modules/school-license';
 import { MediaUserLicense, MediaUserLicenseService, UserLicenseType } from '@modules/user-license';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { ExternalLicenseDto } from '../../../dto';
+import { PROVISIONING_CONFIG_TOKEN, ProvisioningConfig } from '../../../provisioning.config';
 
 @Injectable()
 export class SchulconnexLicenseProvisioningService {
@@ -16,7 +18,9 @@ export class SchulconnexLicenseProvisioningService {
 		private readonly mediaSourceService: MediaSourceService,
 		private readonly mediaSchoolLicenseService: MediaSchoolLicenseService,
 		private readonly mediaGroupLicenseService: MediaGroupLicenseService,
-		private readonly groupService: GroupService
+		private readonly groupService: GroupService,
+		private readonly schoolService: LegacySchoolService,
+		@Inject(PROVISIONING_CONFIG_TOKEN) private readonly config: ProvisioningConfig
 	) {}
 
 	private getLicenseIdentifier(mediumId: string, mediaSourceId?: string): string {
@@ -46,11 +50,13 @@ export class SchulconnexLicenseProvisioningService {
 
 		await this.deleteExpiredLicenses(userLicenses, existingMediaUserLicenses);
 
-		await this.provisionSchoolLicenses(schoolLicenses, mediaSourceMap);
-
-		if (systemId) {
-			await this.provisionGroupLicenses(groupLicenses, systemId, mediaSourceMap);
+		if (!this.config.featureSchulconnexGroupSchoolMediaLicenseEnabled || !systemId) {
+			return;
 		}
+
+		await this.provisionSchoolLicenses(schoolLicenses, systemId, mediaSourceMap);
+
+		await this.provisionGroupLicenses(groupLicenses, systemId, mediaSourceMap);
 	}
 
 	private async provisionNewLicenses(
@@ -98,24 +104,23 @@ export class SchulconnexLicenseProvisioningService {
 
 	private async provisionSchoolLicenses(
 		schoolLicenses: ExternalLicenseDto[],
+		systemId: EntityId,
 		mediaSourceMap: Map<string, MediaSource>
 	): Promise<void> {
 		const licensesByScopeId: Map<string, ExternalLicenseDto[]> = this.groupLicensesByScopeId(schoolLicenses);
-		const entries = Array.from(licensesByScopeId.entries());
+		const resolvedSchools = await this.resolveExternalSchools(licensesByScopeId, systemId);
 
 		const existingLicensesPerSchool: MediaSchoolLicense[][] = await Promise.all(
-			entries.map(([scopedSchoolId]) =>
-				this.mediaSchoolLicenseService.findMediaSchoolLicensesBySchoolId(scopedSchoolId)
-			)
+			resolvedSchools.map(({ schoolId }) => this.mediaSchoolLicenseService.findMediaSchoolLicensesBySchoolId(schoolId))
 		);
 
 		const newLicenses: MediaSchoolLicense[] = [];
 		const expiredLicenses: MediaSchoolLicense[] = [];
 
-		entries.forEach(([scopedSchoolId, licenses], i) => {
+		resolvedSchools.forEach(({ schoolId, licenses }, i) => {
 			const existingForSchool: MediaSchoolLicense[] = existingLicensesPerSchool[i];
 
-			newLicenses.push(...this.buildNewSchoolLicenses(scopedSchoolId, licenses, existingForSchool, mediaSourceMap));
+			newLicenses.push(...this.buildNewSchoolLicenses(schoolId, licenses, existingForSchool, mediaSourceMap));
 			expiredLicenses.push(...this.findExpiredLicenses(licenses, existingForSchool));
 		});
 
@@ -183,6 +188,20 @@ export class SchulconnexLicenseProvisioningService {
 			}
 		}
 		return licensesByScopeId;
+	}
+
+	private async resolveExternalSchools(
+		licensesByScopeId: Map<string, ExternalLicenseDto[]>,
+		systemId: EntityId
+	): Promise<Array<{ schoolId: EntityId; licenses: ExternalLicenseDto[] }>> {
+		const entries = Array.from(licensesByScopeId.entries());
+		const resolved = await Promise.all(
+			entries.map(async ([externalSchoolId, licenses]) => {
+				const school = await this.schoolService.getSchoolByExternalId(externalSchoolId, systemId);
+				return school?.id ? { schoolId: school.id, licenses } : null;
+			})
+		);
+		return resolved.filter((entry): entry is { schoolId: EntityId; licenses: ExternalLicenseDto[] } => entry !== null);
 	}
 
 	private async resolveExternalGroups(
