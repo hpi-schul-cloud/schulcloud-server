@@ -944,5 +944,55 @@ describe(SchulconnexResponseMapper.name, () => {
 				]);
 			});
 		});
+
+		describe('when a license response has only unknown refinements', () => {
+			const setup = () => {
+				const licenseResponse: SchulconnexPoliciesInfoLicenseResponse[] = [
+					{
+						policy: {
+							uid: 'urn:bilo:license::WEB-507-76690',
+							target: { uid: 'urn:bilo:medium:WEB-507-76690', partOf: 'urn:bilo:catalog' },
+							assigner: { uid: 'WES', partOf: 'urn:bilo:licensor' },
+							permission: [
+								{
+									action: [SchulconnexPoliciesInfoActionType.EXECUTE],
+									assignee: {
+										refinement: [
+											{
+												leftOperand: 'urn:schulconnex:de:kern:unknown',
+												operator: 'eq',
+												rightOperand: 'unknown-id',
+											},
+										],
+									},
+								},
+							],
+						},
+						access_control: {
+							type: 'license_key',
+							value: { licenseKey: 'WES-moin.schule.1-Unknown' },
+						},
+					},
+				];
+
+				return { licenseResponse };
+			};
+
+			it('should skip the unknown refinement and default to USER scope', () => {
+				const { licenseResponse } = setup();
+
+				const result = SchulconnexResponseMapper.mapToExternalLicenses(licenseResponse);
+
+				expect(result).toEqual<ExternalLicenseDto[]>([
+					{
+						mediumId: 'urn:bilo:medium:WEB-507-76690',
+						mediaSourceId: 'urn:bilo:catalog',
+						scope: 'USER',
+						scopeId: undefined,
+						licenseKey: 'WES-moin.schule.1-Unknown',
+					},
+				]);
+			});
+		});
 	});
 });

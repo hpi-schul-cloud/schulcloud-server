@@ -100,70 +100,82 @@ export class SchulconnexLicenseProvisioningService {
 		schoolLicenses: ExternalLicenseDto[],
 		mediaSourceMap: Map<string, MediaSource>
 	): Promise<void> {
-		// Group licenses by their scopeId (the actual school they belong to)
-		const licensesByScopeId = new Map<string, ExternalLicenseDto[]>();
-		for (const license of schoolLicenses) {
-			if (license.scopeId) {
-				const list = licensesByScopeId.get(license.scopeId) ?? [];
-				list.push(license);
-				licensesByScopeId.set(license.scopeId, list);
-			}
+		const licensesByScopeId: Map<string, ExternalLicenseDto[]> = this.groupLicensesByScopeId(schoolLicenses);
+		const entries = Array.from(licensesByScopeId.entries());
+
+		const existingLicensesPerSchool: MediaSchoolLicense[][] = await Promise.all(
+			entries.map(([scopedSchoolId]) =>
+				this.mediaSchoolLicenseService.findMediaSchoolLicensesBySchoolId(scopedSchoolId)
+			)
+		);
+
+		const newLicenses: MediaSchoolLicense[] = [];
+		const expiredLicenses: MediaSchoolLicense[] = [];
+
+		entries.forEach(([scopedSchoolId, licenses], i) => {
+			const existingForSchool: MediaSchoolLicense[] = existingLicensesPerSchool[i];
+
+			newLicenses.push(...this.buildNewSchoolLicenses(scopedSchoolId, licenses, existingForSchool, mediaSourceMap));
+			expiredLicenses.push(...this.findExpiredLicenses(licenses, existingForSchool));
+		});
+
+		if (expiredLicenses.length > 0) {
+			await this.mediaSchoolLicenseService.delete(expiredLicenses);
 		}
 
-		const allNewLicenses: MediaSchoolLicense[] = [];
-
-		for (const [scopedSchoolId, licenses] of licensesByScopeId.entries()) {
-			const existingMediaSchoolLicenses: MediaSchoolLicense[] =
-				await this.mediaSchoolLicenseService.findMediaSchoolLicensesBySchoolId(scopedSchoolId);
-
-			const existingSchoolLicenseIdentifiers: Set<string> = new Set(
-				existingMediaSchoolLicenses.map((license: MediaSchoolLicense): string =>
-					this.getLicenseIdentifier(license.mediumId, license.mediaSource?.sourceId)
-				)
-			);
-
-			// Add new licenses
-			for (const externalLicense of licenses) {
-				const identifier: string = this.getLicenseIdentifier(externalLicense.mediumId, externalLicense.mediaSourceId);
-
-				if (!existingSchoolLicenseIdentifiers.has(identifier)) {
-					const mediaSource: MediaSource | undefined = externalLicense.mediaSourceId
-						? mediaSourceMap.get(externalLicense.mediaSourceId)
-						: undefined;
-
-					allNewLicenses.push(
-						new MediaSchoolLicense({
-							id: new ObjectId().toHexString(),
-							type: SchoolLicenseType.MEDIA_LICENSE,
-							schoolId: scopedSchoolId,
-							mediaSource,
-							mediumId: externalLicense.mediumId,
-						})
-					);
-				}
-			}
-
-			// Revoke licenses no longer in response for this school
-			const incomingIdentifiers: Set<string> = new Set(
-				licenses.map((l) => this.getLicenseIdentifier(l.mediumId, l.mediaSourceId))
-			);
-			const expiredLicenses: MediaSchoolLicense[] = existingMediaSchoolLicenses.filter((existing) => {
-				const identifier = this.getLicenseIdentifier(existing.mediumId, existing.mediaSource?.sourceId);
-				return !incomingIdentifiers.has(identifier);
-			});
-			if (expiredLicenses.length > 0) {
-				await this.mediaSchoolLicenseService.delete(expiredLicenses);
-			}
-		}
-
-		if (allNewLicenses.length > 0) {
-			await this.mediaSchoolLicenseService.saveAllMediaSchoolLicenses(allNewLicenses);
+		if (newLicenses.length > 0) {
+			await this.mediaSchoolLicenseService.saveAllMediaSchoolLicenses(newLicenses);
 		}
 	}
 
-	private groupLicensesByScopeId(groupLicenses: ExternalLicenseDto[]): Map<string, ExternalLicenseDto[]> {
+	private buildNewSchoolLicenses(
+		schoolId: EntityId,
+		licenses: ExternalLicenseDto[],
+		existingLicenses: MediaSchoolLicense[],
+		mediaSourceMap: Map<string, MediaSource>
+	): MediaSchoolLicense[] {
+		const existingIdentifiers: Set<string> = new Set(
+			existingLicenses.map((license: MediaSchoolLicense): string =>
+				this.getLicenseIdentifier(license.mediumId, license.mediaSource?.sourceId)
+			)
+		);
+
+		return licenses
+			.filter(
+				(license: ExternalLicenseDto): boolean =>
+					!existingIdentifiers.has(this.getLicenseIdentifier(license.mediumId, license.mediaSourceId))
+			)
+			.map(
+				(license: ExternalLicenseDto): MediaSchoolLicense =>
+					new MediaSchoolLicense({
+						id: new ObjectId().toHexString(),
+						type: SchoolLicenseType.MEDIA_LICENSE,
+						schoolId,
+						mediaSource: license.mediaSourceId ? mediaSourceMap.get(license.mediaSourceId) : undefined,
+						mediumId: license.mediumId,
+					})
+			);
+	}
+
+	private findExpiredLicenses<T extends { mediumId: string; mediaSource?: MediaSource }>(
+		incomingLicenses: ExternalLicenseDto[],
+		existingLicenses: T[]
+	): T[] {
+		const incomingIdentifiers: Set<string> = new Set(
+			incomingLicenses.map((license: ExternalLicenseDto): string =>
+				this.getLicenseIdentifier(license.mediumId, license.mediaSourceId)
+			)
+		);
+
+		return existingLicenses.filter(
+			(existing: T): boolean =>
+				!incomingIdentifiers.has(this.getLicenseIdentifier(existing.mediumId, existing.mediaSource?.sourceId))
+		);
+	}
+
+	private groupLicensesByScopeId(scopedLicenses: ExternalLicenseDto[]): Map<string, ExternalLicenseDto[]> {
 		const licensesByScopeId = new Map<string, ExternalLicenseDto[]>();
-		for (const license of groupLicenses) {
+		for (const license of scopedLicenses) {
 			if (license.scopeId) {
 				const groupList = licensesByScopeId.get(license.scopeId) ?? [];
 				groupList.push(license);
