@@ -1,3 +1,6 @@
+.gitignore
+.npmignore
+.openapi-generator-ignore
 api.ts
 api/author-api.ts
 api/chat-api.ts
@@ -8,6 +11,7 @@ api/session-api.ts
 base.ts
 common.ts
 configuration.ts
+git_push.sh
 index.ts
 models/create-author-using-post200-response-data.ts
 models/create-author-using-post200-response.ts
