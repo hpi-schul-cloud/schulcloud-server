@@ -836,6 +836,7 @@ describe(ToolConfigurationStatusService.name, () => {
 				beforeEach(() => {
 					config.featureSchulconnexMediaLicenseEnabled = false;
 					config.featureVidisMediaActivationsEnabled = true;
+					config.featureSchulconnexGroupSchoolMediaLicenseEnabled = false;
 				});
 				describe('when license feature is enabled and user school has no license for externalTool', () => {
 					const setup = () => {

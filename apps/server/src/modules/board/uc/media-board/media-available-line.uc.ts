@@ -5,7 +5,7 @@ import { MediaSchoolLicense, MediaSchoolLicenseService } from '@modules/school-l
 import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { SchoolExternalTool } from '@modules/tool/school-external-tool/domain';
 import { MediaUserLicense, MediaUserLicenseService } from '@modules/user-license';
-import { Inject, Injectable, Optional } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { FeatureDisabledLoggableException } from '@shared/common/loggable-exception';
 import { throwForbiddenIfFalse } from '@shared/common/utils';
 import { EntityId } from '@shared/domain/types';
@@ -33,8 +33,8 @@ export class MediaAvailableLineUc {
 		@Inject(BOARD_CONFIG_TOKEN) private readonly config: BoardConfig,
 		private readonly mediaUserLicenseService: MediaUserLicenseService,
 		private readonly mediaSchoolLicenseService: MediaSchoolLicenseService,
-		@Optional() private readonly mediaGroupLicenseService?: MediaGroupLicenseService,
-		@Optional() private readonly groupService?: GroupService
+		private readonly mediaGroupLicenseService: MediaGroupLicenseService,
+		private readonly groupService: GroupService
 	) {}
 
 	public async getMediaAvailableLine(userId: EntityId, boardId: EntityId): Promise<MediaAvailableLine> {
@@ -119,28 +119,20 @@ export class MediaAvailableLineUc {
 		tools: [ExternalTool, SchoolExternalTool][]
 	): Promise<[ExternalTool, SchoolExternalTool][]> {
 		const mediaUserLicenses: MediaUserLicense[] =
-			(await this.mediaUserLicenseService.getMediaUserLicensesForUser(userId)) ?? [];
+			await this.mediaUserLicenseService.getMediaUserLicensesForUser(userId);
 
 		let mediaGroupLicenses: MediaGroupLicense[] = [];
-		if (this.config.featureSchulconnexGroupSchoolMediaLicenseEnabled && this.mediaGroupLicenseService && this.groupService) {
+		if (this.config.featureSchulconnexGroupSchoolMediaLicenseEnabled) {
 			const userGroups = await this.groupService.findGroups({ userId, schoolId });
-			if (userGroups && Array.isArray(userGroups.data)) {
-				const userGroupIds = userGroups.data.map((group: Group) => group.id);
-				if (userGroupIds.length > 0) {
-					const foundGroupLicenses = await this.mediaGroupLicenseService.findMediaGroupLicensesByGroupIds(userGroupIds);
-					if (Array.isArray(foundGroupLicenses)) {
-						mediaGroupLicenses = foundGroupLicenses;
-					}
-				}
+			const userGroupIds = userGroups.data.map((group: Group) => group.id);
+			if (userGroupIds.length > 0) {
+				mediaGroupLicenses = await this.mediaGroupLicenseService.findMediaGroupLicensesByGroupIds(userGroupIds);
 			}
 		}
 
 		let mediaSchoolLicenses: MediaSchoolLicense[] = [];
-		if (this.config.featureSchulconnexGroupSchoolMediaLicenseEnabled && this.mediaSchoolLicenseService) {
-			const foundSchoolLicenses = await this.mediaSchoolLicenseService.findMediaSchoolLicensesBySchoolId(schoolId);
-			if (Array.isArray(foundSchoolLicenses)) {
-				mediaSchoolLicenses = foundSchoolLicenses;
-			}
+		if (this.config.featureSchulconnexGroupSchoolMediaLicenseEnabled) {
+			mediaSchoolLicenses = await this.mediaSchoolLicenseService.findMediaSchoolLicensesBySchoolId(schoolId);
 		}
 
 		const filteredTools = tools.filter((tool: [ExternalTool, SchoolExternalTool]): boolean => {
@@ -154,7 +146,7 @@ export class MediaAvailableLineUc {
 					return true;
 				}
 
-				if (this.mediaGroupLicenseService && mediaGroupLicenses.length > 0) {
+				if (mediaGroupLicenses.length > 0) {
 					const hasGroupLicense = this.mediaGroupLicenseService.hasLicenseForExternalTool(
 						externalToolMedium,
 						mediaGroupLicenses
@@ -164,7 +156,7 @@ export class MediaAvailableLineUc {
 					}
 				}
 
-				if (this.mediaSchoolLicenseService && mediaSchoolLicenses.length > 0) {
+				if (mediaSchoolLicenses.length > 0) {
 					const hasSchoolLicense = this.mediaSchoolLicenseService.hasLicenseForExternalTool(
 						externalToolMedium,
 						mediaSchoolLicenses

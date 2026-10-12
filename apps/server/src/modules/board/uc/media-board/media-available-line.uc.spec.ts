@@ -133,6 +133,7 @@ describe(MediaAvailableLineUc.name, () => {
 		jest.clearAllMocks();
 		config.featureSchulconnexMediaLicenseEnabled = false;
 		config.featureVidisMediaActivationsEnabled = false;
+		config.featureSchulconnexGroupSchoolMediaLicenseEnabled = false;
 	});
 
 	describe('getMediaAvailableLine', () => {
@@ -454,6 +455,7 @@ describe(MediaAvailableLineUc.name, () => {
 			describe('when group license exists', () => {
 				it('should return available line with group-licensed tool', async () => {
 					config.featureSchulconnexMediaLicenseEnabled = true;
+					config.featureSchulconnexGroupSchoolMediaLicenseEnabled = true;
 
 					const user: User = userFactory.build();
 					const mediaBoard: MediaBoard = mediaBoardFactory.build();
@@ -490,6 +492,7 @@ describe(MediaAvailableLineUc.name, () => {
 			describe('when school license exists under Schulconnex feature flag', () => {
 				it('should return available line with school-licensed tool', async () => {
 					config.featureSchulconnexMediaLicenseEnabled = true;
+					config.featureSchulconnexGroupSchoolMediaLicenseEnabled = true;
 
 					const user: User = userFactory.build();
 					const mediaBoard: MediaBoard = mediaBoardFactory.build();
@@ -598,6 +601,7 @@ describe(MediaAvailableLineUc.name, () => {
 			describe('when license exist', () => {
 				const setup = () => {
 					config.featureSchulconnexMediaLicenseEnabled = true;
+					config.featureVidisMediaActivationsEnabled = true;
 
 					const user: User = userFactory.build();
 					const mediaBoard: MediaBoard = mediaBoardFactory.build();

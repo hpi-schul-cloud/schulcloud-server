@@ -3,7 +3,7 @@ import { MediaGroupLicense, MediaGroupLicenseService } from '@modules/group-lice
 import { MediaSchoolLicense, MediaSchoolLicenseService } from '@modules/school-license';
 import { UserService } from '@modules/user';
 import { MediaUserLicense, MediaUserLicenseService } from '@modules/user-license';
-import { Inject, Injectable, Optional } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { ValidationError } from '@shared/common/error';
 import { EntityId } from '@shared/domain/types';
 import {
@@ -25,8 +25,8 @@ export class ToolConfigurationStatusService {
 		private readonly mediaSchoolLicenseService: MediaSchoolLicenseService,
 		@Inject(TOOL_CONFIG_TOKEN) private readonly config: ToolConfig,
 		private readonly userService: UserService,
-		@Optional() private readonly mediaGroupLicenseService?: MediaGroupLicenseService,
-		@Optional() private readonly groupService?: GroupService
+		private readonly mediaGroupLicenseService: MediaGroupLicenseService,
+		private readonly groupService: GroupService
 	) {}
 
 	public async determineToolConfigurationStatus(
@@ -148,7 +148,7 @@ export class ToolConfigurationStatusService {
 		userId: EntityId,
 		schoolId: EntityId
 	): Promise<boolean> {
-		if (!this.config.featureSchulconnexGroupSchoolMediaLicenseEnabled || !this.mediaGroupLicenseService || !this.groupService) {
+		if (!this.config.featureSchulconnexGroupSchoolMediaLicenseEnabled) {
 			return false;
 		}
 
@@ -158,10 +158,6 @@ export class ToolConfigurationStatusService {
 		}
 
 		const userGroups = await this.groupService.findGroups({ userId, schoolId });
-		if (!userGroups || !Array.isArray(userGroups.data)) {
-			return false;
-		}
-
 		const userGroupIds = userGroups.data.map((group: Group) => group.id);
 		if (userGroupIds.length === 0) {
 			return false;
