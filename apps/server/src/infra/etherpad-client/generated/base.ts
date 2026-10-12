@@ -19,7 +19,10 @@ import type { Configuration } from './configuration';
 import type { AxiosPromise, AxiosInstance, RawAxiosRequestConfig } from 'axios';
 import globalAxios from 'axios';
 
-export const BASE_PATH = "http://niedersachsen.cloud/api/1.3.1".replace(/\/+$/, "");
+// Etherpad is not locally run on dev machines but run on the clusters. Therefore it is important to generate the client when
+// a new ehterpad version is deployed.
+// The production openapi spec can be found at https://niedersachsen.cloud/etherpad/api/1.3.1/openapi.json
+export const BASE_PATH = "https://niedersachsen.cloud/etherpad/api/1.3.1".replace(/\/+$/, "");
 
 export const COLLECTION_FORMATS = {
     csv: ",",
