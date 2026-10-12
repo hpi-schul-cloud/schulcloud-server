@@ -1,6 +1,6 @@
 import { type CopyFileDto } from '@infra/files-storage-amqp-client';
 import { ObjectId } from '@mikro-orm/mongodb';
-import { CopyElementType, CopyStatusEnum } from '@modules/copy-helper';
+import { CopyElementType, type CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { type LessonCopyApiParams } from '@modules/learnroom/controller/dto/lesson/lesson-copy.params';
 import { type LessonCopyParentParams } from '@modules/lesson';
 import { type TaskCopyParentParams } from '@modules/task/api/dto';
@@ -206,6 +206,65 @@ describe('copy mapper', () => {
 				const result = CopyMapper.mapFileDtosToCopyStatus(copyFileDtos);
 
 				expect(result[0].status).toEqual(CopyStatusEnum.FAIL);
+			});
+		});
+	});
+
+	describe('mapToFailedFileNames', () => {
+		describe('when the copy status tree contains failed files', () => {
+			const setup = () => {
+				const copyStatus: CopyStatus = {
+					type: CopyElementType.COLUMN,
+					status: CopyStatusEnum.PARTIAL,
+					elements: [
+						{
+							type: CopyElementType.CARD,
+							status: CopyStatusEnum.PARTIAL,
+							elements: [
+								{
+									type: CopyElementType.FILE_ELEMENT,
+									status: CopyStatusEnum.FAIL,
+									elements: [{ type: CopyElementType.FILE, status: CopyStatusEnum.FAIL, title: 'video.mp4' }],
+								},
+								{
+									type: CopyElementType.FILE_FOLDER_ELEMENT,
+									status: CopyStatusEnum.PARTIAL,
+									elements: [
+										{ type: CopyElementType.FILE, status: CopyStatusEnum.SUCCESS, title: 'image.png' },
+										{ type: CopyElementType.FILE, status: CopyStatusEnum.FAIL, title: 'archive.zip' },
+									],
+								},
+							],
+						},
+					],
+				};
+
+				return { copyStatus };
+			};
+
+			it('should return the names of all failed files', () => {
+				const { copyStatus } = setup();
+
+				const result = CopyMapper.mapToFailedFileNames(copyStatus);
+
+				expect(result).toEqual(['video.mp4', 'archive.zip']);
+			});
+		});
+
+		describe('when the copy status tree contains no failed files', () => {
+			it('should return an empty list', () => {
+				const copyStatus: CopyStatus = {
+					type: CopyElementType.COLUMN,
+					status: CopyStatusEnum.PARTIAL,
+					elements: [
+						{ type: CopyElementType.EXTERNAL_TOOL_ELEMENT, status: CopyStatusEnum.FAIL },
+						{ type: CopyElementType.FILE, status: CopyStatusEnum.SUCCESS, title: 'image.png' },
+					],
+				};
+
+				const result = CopyMapper.mapToFailedFileNames(copyStatus);
+
+				expect(result).toEqual([]);
 			});
 		});
 	});

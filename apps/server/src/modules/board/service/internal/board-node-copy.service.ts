@@ -1,4 +1,5 @@
-import type { CopyFileDto } from '@infra/files-storage-amqp-client/dto';
+import { DomainErrorHandler } from '@infra/error';
+import type { CopyFileDto, FileDto } from '@infra/files-storage-amqp-client/dto';
 import { CopyContentParams, CopyContentParentType, H5pEditorProducer } from '@infra/h5p-editor-client';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { BOARD_CONFIG_TOKEN, BoardConfig } from '@modules/board/board.config';
@@ -35,11 +36,13 @@ import {
 	RichTextElement,
 	VideoConferenceElement,
 } from '../../domain';
+import { BoardNodeCopyFailedLoggableException } from '../../loggable';
 
 export interface CopyContext {
 	targetSchoolId: EntityId;
 	userId: EntityId;
 	copyFilesOfParent(sourceParentId: EntityId, targetParentId: EntityId): Promise<CopyFileDto[]>;
+	listFilesOfParent(parentId: EntityId): Promise<FileDto[]>;
 }
 
 @Injectable()
@@ -49,7 +52,8 @@ export class BoardNodeCopyService {
 		private readonly config: BoardConfig,
 		private readonly contextExternalToolService: ContextExternalToolService,
 		private readonly copyHelperService: CopyHelperService,
-		private readonly h5pEditorProducer: H5pEditorProducer
+		private readonly h5pEditorProducer: H5pEditorProducer,
+		private readonly domainErrorHandler: DomainErrorHandler
 	) {}
 
 	public async copy(boardNode: AnyBoardNode, context: CopyContext): Promise<CopyStatus> {
@@ -180,14 +184,7 @@ export class BoardNodeCopyService {
 			...this.buildSpecificProps([]),
 		});
 
-		const fileCopyStatus = await this.copyFilesOfParent(original, context, copy);
-
-		const result: CopyStatus = {
-			copyEntity: copy,
-			type: CopyElementType.FILE_ELEMENT,
-			status: CopyStatusEnum.SUCCESS,
-			elements: fileCopyStatus,
-		};
+		const result = await this.copyElementWithFiles(original, copy, CopyElementType.FILE_ELEMENT, context);
 
 		return result;
 	}
@@ -198,16 +195,53 @@ export class BoardNodeCopyService {
 			...this.buildSpecificProps([]),
 		});
 
-		const fileCopyStatus = await this.copyFilesOfParent(original, context, copy);
-
-		const result: CopyStatus = {
-			copyEntity: copy,
-			type: CopyElementType.FILE_FOLDER_ELEMENT,
-			status: CopyStatusEnum.SUCCESS,
-			elements: fileCopyStatus,
-		};
+		const result = await this.copyElementWithFiles(original, copy, CopyElementType.FILE_FOLDER_ELEMENT, context);
 
 		return result;
+	}
+
+	private async copyElementWithFiles(
+		original: FileElement | FileFolderElement,
+		copy: FileElement | FileFolderElement,
+		type: CopyElementType.FILE_ELEMENT | CopyElementType.FILE_FOLDER_ELEMENT,
+		context: CopyContext
+	): Promise<CopyStatus> {
+		try {
+			const fileCopyStatus = await this.copyFilesOfParent(original, context, copy);
+
+			return { copyEntity: copy, type, status: CopyStatusEnum.SUCCESS, elements: fileCopyStatus };
+		} catch (error) {
+			this.domainErrorHandler.exec(
+				new BoardNodeCopyFailedLoggableException(original.id, getBoardNodeType(original), error)
+			);
+			const failedFiles = await this.listFilesOfParentAsFailed(original, context);
+
+			// without copyEntity the element is dropped from the copy, the failed files are still reported
+			return {
+				copyEntity: undefined,
+				originalEntity: original,
+				type,
+				status: CopyStatusEnum.FAIL,
+				elements: failedFiles,
+			};
+		}
+	}
+
+	private async listFilesOfParentAsFailed(
+		original: FileElement | FileFolderElement,
+		context: CopyContext
+	): Promise<CopyStatus[]> {
+		try {
+			const files = await context.listFilesOfParent(original.id);
+
+			return files.map((file) => {
+				return { type: CopyElementType.FILE, status: CopyStatusEnum.FAIL, title: file.name };
+			});
+		} catch (error) {
+			this.domainErrorHandler.exec(error);
+
+			return [];
+		}
 	}
 
 	private async copyFilesOfParent(
@@ -500,8 +534,12 @@ export class BoardNodeCopyService {
 			} else {
 				const child = boardNode.children[index];
 				if (child) {
+					this.domainErrorHandler.exec(
+						new BoardNodeCopyFailedLoggableException(child.id, getBoardNodeType(child), res.reason)
+					);
 					resultMap.set(child.id, {
 						copyEntity: undefined,
+						originalEntity: child,
 						type: CopyElementType.LEAF,
 						status: CopyStatusEnum.FAIL,
 					});

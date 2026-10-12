@@ -2,7 +2,7 @@ import { StorageLocation } from '@infra/files-storage-amqp-client';
 import { LegacyLogger } from '@infra/logger';
 import { Action, AuthorizationService } from '@modules/authorization';
 import { BoardContextApiHelperService } from '@modules/board-context';
-import { CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
+import { CopyMapper, CopyStatus, CopyStatusEnum } from '@modules/copy-helper';
 import { CourseService } from '@modules/course';
 import { RoomService } from '@modules/room';
 import { RoomMembershipService } from '@modules/room-membership';
@@ -153,7 +153,7 @@ export class BoardUc {
 		userId: EntityId,
 		columnId: EntityId,
 		schoolId: EntityId
-	): Promise<{ copyEntity: Column; status: CopyStatusEnum }> {
+	): Promise<{ copyEntity: Column; status: CopyStatusEnum; failedFileNames: string[] }> {
 		const column = await this.boardNodeService.findByClassAndId(Column, columnId);
 
 		const user = await this.authorizationService.getUserWithPermissions(userId);
@@ -175,7 +175,11 @@ export class BoardUc {
 
 		await this.columnBoardService.updateIdsInLinks(copyStatus);
 
-		return { copyEntity: copyStatus.copyEntity, status: copyStatus.status };
+		return {
+			copyEntity: copyStatus.copyEntity,
+			status: copyStatus.status,
+			failedFileNames: CopyMapper.mapToFailedFileNames(copyStatus),
+		};
 	}
 
 	public async copyBoard(userId: EntityId, boardId: EntityId, targetSchoolId: EntityId): Promise<CopyStatus> {
