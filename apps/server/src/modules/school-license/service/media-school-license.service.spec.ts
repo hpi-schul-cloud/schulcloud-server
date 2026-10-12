@@ -120,26 +120,6 @@ describe(MediaSchoolLicenseService.name, () => {
 		});
 	});
 
-	describe('delete', () => {
-		describe('when media school licenses are given', () => {
-			const setup = () => {
-				const mediaSchoolLicenses = mediaSchoolLicenseFactory.buildList(2);
-
-				return {
-					mediaSchoolLicenses,
-				};
-			};
-
-			it('should delete the media school licenses', async () => {
-				const { mediaSchoolLicenses } = setup();
-
-				await mediaSchoolLicenseService.delete(mediaSchoolLicenses);
-
-				expect(mediaSchoolLicenseRepo.delete).toHaveBeenCalledWith(mediaSchoolLicenses);
-			});
-		});
-	});
-
 	describe('findMediaSchoolLicensesBySchoolId', () => {
 		describe('when media school licenses are found', () => {
 			const setup = () => {

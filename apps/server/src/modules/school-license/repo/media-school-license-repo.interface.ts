@@ -4,8 +4,6 @@ import { type MediaSchoolLicense } from '../domain';
 export interface MediaSchoolLicenseRepo {
 	saveAll(domainObjects: MediaSchoolLicense[]): Promise<MediaSchoolLicense[]>;
 
-	delete(domainObjects: MediaSchoolLicense[] | MediaSchoolLicense): Promise<void>;
-
 	deleteAllByMediaSource(mediaSourceId: EntityId): Promise<number>;
 
 	findMediaSchoolLicensesBySchoolId(schoolId: string): Promise<MediaSchoolLicense[]>;

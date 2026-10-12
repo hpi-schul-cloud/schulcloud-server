@@ -30,10 +30,6 @@ export class MediaSchoolLicenseService {
 		return deleteCount;
 	}
 
-	public async delete(licenses: MediaSchoolLicense[] | MediaSchoolLicense): Promise<void> {
-		await this.mediaSchoolLicenseRepo.delete(licenses);
-	}
-
 	public async saveAllMediaSchoolLicenses(licenses: MediaSchoolLicense[]): Promise<MediaSchoolLicense[]> {
 		const mediaSchoolLicenses: MediaSchoolLicense[] = await this.mediaSchoolLicenseRepo.saveAll(licenses);
 
