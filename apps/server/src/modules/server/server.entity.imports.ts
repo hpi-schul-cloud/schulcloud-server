@@ -29,6 +29,7 @@ import { Role } from '@modules/role/repo';
 import { RoomMembershipEntity } from '@modules/room-membership/repo/entity/room-membership.entity';
 import { RoomArrangementEntity, RoomEntity, RoomInvitationLinkEntity } from '@modules/room/repo/entity';
 import { RoomContentEntity } from '@modules/room/repo/entity/room-content.entity';
+import { GroupLicenseEntity, MediaGroupLicenseEntity } from '@modules/group-license/entity';
 import { MediaSchoolLicenseEntity, SchoolLicenseEntity } from '@modules/school-license/entity';
 import {
 	CountyEmbeddable,
@@ -110,6 +111,8 @@ export const ENTITIES = [
 	MediaSourceEntity,
 	SchoolLicenseEntity,
 	MediaSchoolLicenseEntity,
+	GroupLicenseEntity,
+	MediaGroupLicenseEntity,
 	OauthSessionTokenEntity,
 	LtiDeepLinkTokenEntity,
 	RoomContentEntity,

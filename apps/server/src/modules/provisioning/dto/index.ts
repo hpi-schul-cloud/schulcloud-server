@@ -1,7 +1,7 @@
 export * from './external-class.dto';
 export * from './external-group-user.dto';
 export * from './external-group.dto';
-export { ExternalLicenseDto } from './external-license.dto';
+export { ExternalLicenseDto, LicenseScope } from './external-license.dto';
 export * from './external-school.dto';
 export * from './external-user.dto';
 export * from './oauth-data-strategy-input.dto';
