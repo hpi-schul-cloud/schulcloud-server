@@ -1,6 +1,8 @@
 import { ConfigurationModule } from '@infra/configuration';
 import { LoggerModule } from '@infra/logger';
 import { RABBITMQ_CONFIG_TOKEN, RabbitMQConfig, RabbitMQWrapperModule } from '@infra/rabbitmq';
+import { GroupModule } from '@modules/group';
+import { GroupLicenseModule } from '@modules/group-license';
 import { LegacySchoolModule } from '@modules/legacy-school';
 import { MediaSourceSyncModule } from '@modules/media-source-sync';
 import { MediaSourceModule } from '@modules/media-source/media-source.module';
@@ -11,6 +13,7 @@ import { UserLicenseModule } from '@modules/user-license';
 import { Module } from '@nestjs/common';
 import { SchulconnexLicenseProvisioningConsumer } from './amqp';
 import { PROVISIONING_EXCHANGE_CONFIG_TOKEN, ProvisioningExchangeConfig } from './provisioning-exchange.config';
+import { PROVISIONING_CONFIG_TOKEN, ProvisioningConfig } from './provisioning.config';
 import {
 	SchulconnexLicenseProvisioningService,
 	SchulconnexToolProvisioningService,
@@ -21,11 +24,14 @@ import {
 		LoggerModule,
 		UserLicenseModule,
 		SchoolLicenseModule,
+		GroupModule,
+		GroupLicenseModule,
 		MediaSourceModule,
 		LegacySchoolModule,
 		ToolModule,
 		MediumMetadataModule,
 		MediaSourceSyncModule,
+		ConfigurationModule.register(PROVISIONING_CONFIG_TOKEN, ProvisioningConfig),
 		ConfigurationModule.register(PROVISIONING_EXCHANGE_CONFIG_TOKEN, ProvisioningExchangeConfig),
 		RabbitMQWrapperModule.register({
 			exchangeConfigInjectionToken: PROVISIONING_EXCHANGE_CONFIG_TOKEN,

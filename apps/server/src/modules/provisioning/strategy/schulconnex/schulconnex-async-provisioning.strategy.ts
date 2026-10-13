@@ -26,7 +26,11 @@ import {
 	OauthDataStrategyInputDto,
 	ProvisioningDto,
 } from '../../dto';
-import { FetchingPoliciesInfoFailedLoggable, PoliciesInfoErrorResponseLoggable } from '../../loggable';
+import {
+	FetchingPoliciesInfoFailedLoggable,
+	LicenseMediaSourceMissingLoggable,
+	PoliciesInfoErrorResponseLoggable,
+} from '../../loggable';
 import { PROVISIONING_CONFIG_TOKEN, ProvisioningConfig } from '../../provisioning.config';
 import { ProvisioningStrategy } from '../base.strategy';
 import { SchulconnexResponseMapper } from './schulconnex-response-mapper';
@@ -118,6 +122,13 @@ export class SchulconnexAsyncProvisioningStrategy extends ProvisioningStrategy {
 						this.logger.warning(new PoliciesInfoErrorResponseLoggable(item));
 						return false;
 					});
+
+				schulconnexPoliciesInfoLicenceResponses.forEach((license) => {
+					const target = license.policy?.target ?? license.target;
+					if (target?.uid && !target.partOf) {
+						this.logger.warning(new LicenseMediaSourceMissingLoggable(target.uid));
+					}
+				});
 
 				externalLicenses = SchulconnexResponseMapper.mapToExternalLicenses(schulconnexPoliciesInfoLicenceResponses);
 			} catch {

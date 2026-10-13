@@ -66,17 +66,25 @@ export class SchulconnexRestClient implements SchulconnexApiInterface {
 		options?: { overrideUrl: string }
 	): Promise<SchulconnexPoliciesInfoResponse> {
 		const url: URL = new URL(options?.overrideUrl ?? `${this.SCHULCONNEX_API_BASE_URL}/policies-info`);
+		if (!url.searchParams.has('access_control')) {
+			url.searchParams.set('access_control', 'true');
+		}
+		if (!url.searchParams.has('api')) {
+			url.searchParams.set('api', '1.7');
+		}
 
-		const response: (SchulconnexPoliciesInfoLicenseResponse | SchulconnexPoliciesInfoErrorResponse)[] =
-			await this.getRequest<(SchulconnexPoliciesInfoLicenseResponse | SchulconnexPoliciesInfoErrorResponse)[]>(
-				url,
-				accessToken,
-				this.config.policiesInfoTimeoutInMs
-			);
+		const response:
+			| SchulconnexPoliciesInfoResponse
+			| (SchulconnexPoliciesInfoLicenseResponse | SchulconnexPoliciesInfoErrorResponse)[] = await this.getRequest<
+			| SchulconnexPoliciesInfoResponse
+			| (SchulconnexPoliciesInfoLicenseResponse | SchulconnexPoliciesInfoErrorResponse)[]
+		>(url, accessToken, this.config.policiesInfoTimeoutInMs);
 
-		const responseObject: SchulconnexPoliciesInfoResponse = { data: response };
+		if (Array.isArray(response)) {
+			return { data: response };
+		}
 
-		return responseObject;
+		return response;
 	}
 
 	private checkOptions(): boolean {
