@@ -10,7 +10,7 @@ export class FilesStorageAMQPClientConfig {
 	@ConfigProperty('INCOMING_REQUEST_TIMEOUT_COPY_API')
 	@StringToNumber()
 	@IsNumber()
-	public incomingTimeoutCopyApi = 30000; // TODO: increase to 120000 (2 minutes)
+	public incomingTimeoutCopyApi = 120000;
 
 	@ConfigProperty('FILES_STORAGE__EXCHANGE')
 	@IsString()
