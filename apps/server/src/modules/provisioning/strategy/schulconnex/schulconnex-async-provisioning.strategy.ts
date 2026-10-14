@@ -1,4 +1,4 @@
-import { Logger } from '@infra/logger';
+import { LegacyLogger, Logger } from '@infra/logger';
 import {
 	SchulconnexPoliciesInfoLicenseResponse,
 	SchulconnexPoliciesInfoResponse,
@@ -53,7 +53,8 @@ export class SchulconnexAsyncProvisioningStrategy extends ProvisioningStrategy {
 		protected readonly schulconnexRestClient: SchulconnexRestClient,
 		@Inject(PROVISIONING_CONFIG_TOKEN)
 		protected readonly config: ProvisioningConfig,
-		protected readonly logger: Logger
+		protected readonly logger: Logger,
+		private readonly legacyLogger: LegacyLogger
 	) {
 		super();
 	}
@@ -105,6 +106,11 @@ export class SchulconnexAsyncProvisioningStrategy extends ProvisioningStrategy {
 						overrideUrl: policiesInfoUrl,
 					}
 				);
+				if (this.config.logPolicyEndpointResponse) {
+					this.legacyLogger.debug(
+						`Schulconnex policies-info response: ${JSON.stringify(schulconnexPoliciesInfoAxiosResponse)}`
+					);
+				}
 
 				const schulconnexPoliciesInfoResponse = plainToClass(
 					SchulconnexPoliciesInfoResponse,

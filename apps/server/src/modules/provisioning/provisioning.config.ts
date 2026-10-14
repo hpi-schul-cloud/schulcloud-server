@@ -29,6 +29,11 @@ export class ProvisioningConfig extends ProvisioningPublicApiConfig {
 	@IsString()
 	public provisioningSchulconnexPoliciesInfoUrl = '';
 
+	@ConfigProperty('LOG_POLICY_ENDPOINT_RESPONSE')
+	@StringToBoolean()
+	@IsBoolean()
+	public logPolicyEndpointResponse = false;
+
 	@ConfigProperty('PROVISIONING_SCHULCONNEX_GROUP_USERS_LIMIT')
 	@IsOptional()
 	@IsNumber()
