@@ -1,5 +1,5 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
-import { Logger } from '@infra/logger';
+import { LegacyLogger, Logger } from '@infra/logger';
 import {
 	type SchulconnexPoliciesInfoLicenseResponse,
 	type SchulconnexPoliciesInfoResponse,
@@ -68,6 +68,7 @@ describe(SchulconnexAsyncProvisioningStrategy.name, () => {
 	let schulconnexRestClient: DeepMocked<SchulconnexRestClient>;
 	let config: ProvisioningConfig;
 	let logger: DeepMocked<Logger>;
+	let legacyLogger: DeepMocked<LegacyLogger>;
 
 	let validationFunction: SpyInstance<
 		ReturnType<typeof classValidator.validate>,
@@ -122,6 +123,10 @@ describe(SchulconnexAsyncProvisioningStrategy.name, () => {
 					provide: Logger,
 					useValue: createMock<Logger>(),
 				},
+				{
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
+				},
 			],
 		}).compile();
 
@@ -136,6 +141,7 @@ describe(SchulconnexAsyncProvisioningStrategy.name, () => {
 		schulconnexRestClient = module.get(SchulconnexRestClient);
 		config = module.get(PROVISIONING_CONFIG_TOKEN);
 		logger = module.get(Logger);
+		legacyLogger = module.get(LegacyLogger);
 
 		validationFunction = jest.spyOn(classValidator, 'validate');
 	});
@@ -146,6 +152,7 @@ describe(SchulconnexAsyncProvisioningStrategy.name, () => {
 
 	afterEach(() => {
 		jest.clearAllMocks();
+		config.logPolicyEndpointResponse = false;
 	});
 
 	describe('getType', () => {
@@ -266,6 +273,17 @@ describe(SchulconnexAsyncProvisioningStrategy.name, () => {
 					always: true,
 					forbidUnknownValues: false,
 				});
+			});
+
+			it('should log the policies-info response when enabled', async () => {
+				const { input, schulconnexPoliciesInfoResponse } = setup();
+				config.logPolicyEndpointResponse = true;
+
+				await strategy.getData(input);
+
+				expect(legacyLogger.debug).toHaveBeenCalledWith(
+					`Schulconnex policies-info response: ${JSON.stringify(schulconnexPoliciesInfoResponse)}`
+				);
 			});
 
 			it('should return the oauth data', async () => {
