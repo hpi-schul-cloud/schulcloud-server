@@ -1,19 +1,19 @@
 
   - name: Ldap Sync CronJob
-    when: WITH_LDAP is defined and WITH_LDAP|bool == true
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: api-ldap-sync-full-cronjob.yml.j2
+      state: "{{ 'present' if WITH_LDAP is defined and WITH_LDAP|bool else 'absent' }}"
     tags:
       - cronjob
 
   - name: Ldap Worker Deployment
-    when: WITH_LDAP is defined and WITH_LDAP|bool == true
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: api-ldap-worker-deployment.yml.j2
+      state: "{{ 'present' if WITH_LDAP is defined and WITH_LDAP|bool else 'absent' }}"
     tags:
       - deployment
 
@@ -22,16 +22,18 @@
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: api-ldap-worker-scaled-object.yml.j2
+      state: "{{ 'present' if WITH_LDAP is defined and WITH_LDAP|bool else 'absent' }}"
     when:
-      - WITH_LDAP is defined and WITH_LDAP|bool
       - KEDA_ENABLED is defined and KEDA_ENABLED|bool
       - SCALED_API_WORKER_ENABLED is defined and SCALED_API_WORKER_ENABLED|bool
     tags:
       - keda
+
   - name: Add schulcloud-server-ldapsync default allow network policy
     kubernetes.core.k8s:
       kubeconfig: ~/.kube/config
       namespace: "{{ NAMESPACE }}"
       template: default-allow-networkpolicy.yml.j2
+      state: "{{ 'present' if WITH_LDAP is defined and WITH_LDAP|bool else 'absent' }}"
     tags:
       - networkPolicy
