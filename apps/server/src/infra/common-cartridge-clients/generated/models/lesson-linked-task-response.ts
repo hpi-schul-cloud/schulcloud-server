@@ -14,83 +14,18 @@
 
 
 
-/**
- * 
- * @export
- * @interface LessonLinkedTaskResponse
- */
 export interface LessonLinkedTaskResponse {
-    /**
-     * 
-     * @type {string}
-     * @memberof LessonLinkedTaskResponse
-     */
     'name': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof LessonLinkedTaskResponse
-     */
     'description': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof LessonLinkedTaskResponse
-     */
     'descriptionInputFormat': LessonLinkedTaskResponseDescriptionInputFormat;
-    /**
-     * 
-     * @type {string}
-     * @memberof LessonLinkedTaskResponse
-     */
     'availableDate': string | null;
-    /**
-     * 
-     * @type {string}
-     * @memberof LessonLinkedTaskResponse
-     */
     'dueDate': string | null;
-    /**
-     * 
-     * @type {boolean}
-     * @memberof LessonLinkedTaskResponse
-     */
     'private': boolean;
-    /**
-     * 
-     * @type {boolean}
-     * @memberof LessonLinkedTaskResponse
-     */
     'publicSubmissions': boolean | null;
-    /**
-     * 
-     * @type {boolean}
-     * @memberof LessonLinkedTaskResponse
-     */
     'teamSubmissions': boolean | null;
-    /**
-     * 
-     * @type {string}
-     * @memberof LessonLinkedTaskResponse
-     */
     'creator': string | null;
-    /**
-     * 
-     * @type {string}
-     * @memberof LessonLinkedTaskResponse
-     */
     'courseId': string | null;
-    /**
-     * 
-     * @type {Array<string>}
-     * @memberof LessonLinkedTaskResponse
-     */
     'submissionIds': Array<string>;
-    /**
-     * 
-     * @type {Array<string>}
-     * @memberof LessonLinkedTaskResponse
-     */
     'finishedIds': Array<string>;
 }
 
@@ -99,7 +34,7 @@ export const LessonLinkedTaskResponseDescriptionInputFormat = {
     RICH_TEXT_CK5_SIMPLE: 'richTextCk5Simple',
     RICH_TEXT_CK4: 'richTextCk4',
     RICH_TEXT_CK5: 'richTextCk5',
-    RICH_TEXT_CK5_NEWS: 'richTextCk5News'
+    RICH_TEXT_CK5_NEWS: 'richTextCk5News',
 } as const;
 
 export type LessonLinkedTaskResponseDescriptionInputFormat = typeof LessonLinkedTaskResponseDescriptionInputFormat[keyof typeof LessonLinkedTaskResponseDescriptionInputFormat];

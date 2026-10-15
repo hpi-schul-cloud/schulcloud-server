@@ -18,7 +18,7 @@ import type { AxiosPromise, AxiosInstance, RawAxiosRequestConfig } from 'axios';
 import globalAxios from 'axios';
 // Some imports not used depending on template conditions
 // @ts-ignore
-import { DUMMY_BASE_URL, assertParamExists, setApiKeyToObject, setBasicAuthToObject, setBearerAuthToObject, setOAuthToObject, setSearchParams, serializeDataIfNeeded, toPathString, createRequestFunction } from '../common';
+import { DUMMY_BASE_URL, assertParamExists, setApiKeyToObject, setBasicAuthToObject, setBearerAuthToObject, setOAuthToObject, setSearchParams, serializeDataIfNeeded, toPathString, createRequestFunction, replaceWithSerializableTypeIfNeeded } from '../common';
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, type RequestArgs, BaseAPI, RequiredError, operationServerMap } from '../base';
 // @ts-ignore
@@ -31,7 +31,6 @@ import type { LoginResponse } from '../models';
 import type { ValidationError } from '../models';
 /**
  * AuthenticationApi - axios parameter creator
- * @export
  */
 export const AuthenticationApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
@@ -57,9 +56,8 @@ export const AuthenticationApiAxiosParamCreator = function (configuration?: Conf
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
-
-    
             localVarHeaderParameter['Content-Type'] = 'application/json';
+            localVarHeaderParameter['Accept'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
@@ -95,7 +93,6 @@ export const AuthenticationApiAxiosParamCreator = function (configuration?: Conf
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
-    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -110,7 +107,6 @@ export const AuthenticationApiAxiosParamCreator = function (configuration?: Conf
 
 /**
  * AuthenticationApi - functional programming interface
- * @export
  */
 export const AuthenticationApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = AuthenticationApiAxiosParamCreator(configuration)
@@ -145,7 +141,6 @@ export const AuthenticationApiFp = function(configuration?: Configuration) {
 
 /**
  * AuthenticationApi - factory interface
- * @export
  */
 export const AuthenticationApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
     const localVarFp = AuthenticationApiFp(configuration)
@@ -157,7 +152,7 @@ export const AuthenticationApiFactory = function (configuration?: Configuration,
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        loginControllerLoginLocalServiceAccount(localAuthorizationBodyParams: LocalAuthorizationBodyParams, options?: any): AxiosPromise<LoginResponse> {
+        loginControllerLoginLocalServiceAccount(localAuthorizationBodyParams: LocalAuthorizationBodyParams, options?: RawAxiosRequestConfig): AxiosPromise<LoginResponse> {
             return localVarFp.loginControllerLoginLocalServiceAccount(localAuthorizationBodyParams, options).then((request) => request(axios, basePath));
         },
         /**
@@ -166,7 +161,7 @@ export const AuthenticationApiFactory = function (configuration?: Configuration,
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        logoutControllerLogout(options?: any): AxiosPromise<void> {
+        logoutControllerLogout(options?: RawAxiosRequestConfig): AxiosPromise<void> {
             return localVarFp.logoutControllerLogout(options).then((request) => request(axios, basePath));
         },
     };
@@ -174,8 +169,6 @@ export const AuthenticationApiFactory = function (configuration?: Configuration,
 
 /**
  * AuthenticationApi - interface
- * @export
- * @interface AuthenticationApi
  */
 export interface AuthenticationApiInterface {
     /**
@@ -184,7 +177,6 @@ export interface AuthenticationApiInterface {
      * @param {LocalAuthorizationBodyParams} localAuthorizationBodyParams 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof AuthenticationApiInterface
      */
     loginControllerLoginLocalServiceAccount(localAuthorizationBodyParams: LocalAuthorizationBodyParams, options?: RawAxiosRequestConfig): AxiosPromise<LoginResponse>;
 
@@ -193,7 +185,6 @@ export interface AuthenticationApiInterface {
      * @summary Logs out a user.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof AuthenticationApiInterface
      */
     logoutControllerLogout(options?: RawAxiosRequestConfig): AxiosPromise<void>;
 
@@ -201,9 +192,6 @@ export interface AuthenticationApiInterface {
 
 /**
  * AuthenticationApi - object-oriented interface
- * @export
- * @class AuthenticationApi
- * @extends {BaseAPI}
  */
 export class AuthenticationApi extends BaseAPI implements AuthenticationApiInterface {
     /**
@@ -212,7 +200,6 @@ export class AuthenticationApi extends BaseAPI implements AuthenticationApiInter
      * @param {LocalAuthorizationBodyParams} localAuthorizationBodyParams 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof AuthenticationApi
      */
     public loginControllerLoginLocalServiceAccount(localAuthorizationBodyParams: LocalAuthorizationBodyParams, options?: RawAxiosRequestConfig) {
         return AuthenticationApiFp(this.configuration).loginControllerLoginLocalServiceAccount(localAuthorizationBodyParams, options).then((request) => request(this.axios, this.basePath));
@@ -223,7 +210,6 @@ export class AuthenticationApi extends BaseAPI implements AuthenticationApiInter
      * @summary Logs out a user.
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof AuthenticationApi
      */
     public logoutControllerLogout(options?: RawAxiosRequestConfig) {
         return AuthenticationApiFp(this.configuration).logoutControllerLogout(options).then((request) => request(this.axios, this.basePath));

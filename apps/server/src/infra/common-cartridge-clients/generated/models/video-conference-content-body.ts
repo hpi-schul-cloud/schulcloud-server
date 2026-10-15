@@ -14,17 +14,7 @@
 
 
 
-/**
- * 
- * @export
- * @interface VideoConferenceContentBody
- */
 export interface VideoConferenceContentBody {
-    /**
-     * 
-     * @type {string}
-     * @memberof VideoConferenceContentBody
-     */
     'title': string;
 }
 

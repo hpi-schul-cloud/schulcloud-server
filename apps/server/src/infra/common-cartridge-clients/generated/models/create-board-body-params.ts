@@ -20,34 +20,21 @@ import type { BoardLayout } from './board-layout';
 // @ts-ignore
 import type { BoardParentType } from './board-parent-type';
 
-/**
- * 
- * @export
- * @interface CreateBoardBodyParams
- */
 export interface CreateBoardBodyParams {
     /**
      * The title of the board
-     * @type {string}
-     * @memberof CreateBoardBodyParams
      */
     'title': string;
     /**
      * The id of the parent
-     * @type {string}
-     * @memberof CreateBoardBodyParams
      */
     'parentId': string;
     /**
      * The type of the parent
-     * @type {BoardParentType}
-     * @memberof CreateBoardBodyParams
      */
     'parentType': BoardParentType;
     /**
      * The layout of the board
-     * @type {BoardLayout}
-     * @memberof CreateBoardBodyParams
      */
     'layout': BoardLayout;
 }

@@ -20,53 +20,13 @@ import type { Facet } from './facet';
 // @ts-ignore
 import type { OfferDTO } from './offer-dto';
 
-/**
- * 
- * @export
- * @interface PageOfferDTO
- */
 export interface PageOfferDTO {
-    /**
-     * 
-     * @type {Array<OfferDTO>}
-     * @memberof PageOfferDTO
-     */
     'items'?: Array<OfferDTO>;
-    /**
-     * 
-     * @type {number}
-     * @memberof PageOfferDTO
-     */
     'lastPage'?: number;
-    /**
-     * 
-     * @type {number}
-     * @memberof PageOfferDTO
-     */
     'totalCount'?: number;
-    /**
-     * 
-     * @type {number}
-     * @memberof PageOfferDTO
-     */
     'pageSize'?: number;
-    /**
-     * 
-     * @type {{ [key: string]: { [key: string]: string; }; }}
-     * @memberof PageOfferDTO
-     */
     'actions'?: { [key: string]: { [key: string]: string; }; };
-    /**
-     * 
-     * @type {number}
-     * @memberof PageOfferDTO
-     */
     'page'?: number;
-    /**
-     * 
-     * @type {Array<Facet>}
-     * @memberof PageOfferDTO
-     */
     'facets'?: Array<Facet>;
 }
 

@@ -31,7 +31,6 @@ import type { TimestampsResponse } from './timestamps-response';
 
 /**
  * @type MediaLineResponseElementsInner
- * @export
  */
 export type MediaLineResponseElementsInner = DeletedElementResponse | MediaExternalToolElementResponse;
 

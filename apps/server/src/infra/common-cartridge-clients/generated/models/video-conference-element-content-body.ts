@@ -20,23 +20,11 @@ import type { ContentElementType } from './content-element-type';
 // @ts-ignore
 import type { VideoConferenceContentBody } from './video-conference-content-body';
 
-/**
- * 
- * @export
- * @interface VideoConferenceElementContentBody
- */
 export interface VideoConferenceElementContentBody {
     /**
      * the type of the updated element
-     * @type {ContentElementType}
-     * @memberof VideoConferenceElementContentBody
      */
     'type': ContentElementType;
-    /**
-     * 
-     * @type {VideoConferenceContentBody}
-     * @memberof VideoConferenceElementContentBody
-     */
     'content': VideoConferenceContentBody;
 }
 

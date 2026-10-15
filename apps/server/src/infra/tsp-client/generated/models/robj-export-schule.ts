@@ -14,23 +14,8 @@
 
 
 
-/**
- * 
- * @export
- * @interface RobjExportSchule
- */
 export interface RobjExportSchule {
-    /**
-     * 
-     * @type {string}
-     * @memberof RobjExportSchule
-     */
     'schuleNummer'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof RobjExportSchule
-     */
     'schuleName'?: string;
 }
 

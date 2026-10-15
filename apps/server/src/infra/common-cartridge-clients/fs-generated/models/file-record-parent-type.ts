@@ -14,11 +14,6 @@
 
 
 
-/**
- * 
- * @export
- * @enum {string}
- */
 
 export const FileRecordParentType = {
     USERS: 'users',
@@ -29,7 +24,7 @@ export const FileRecordParentType = {
     SUBMISSIONS: 'submissions',
     GRADINGS: 'gradings',
     BOARDNODES: 'boardnodes',
-    EXTERNALTOOLS: 'externaltools'
+    EXTERNALTOOLS: 'externaltools',
 } as const;
 
 export type FileRecordParentType = typeof FileRecordParentType[keyof typeof FileRecordParentType];

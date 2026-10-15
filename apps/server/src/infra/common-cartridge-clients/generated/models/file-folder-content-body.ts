@@ -14,17 +14,7 @@
 
 
 
-/**
- * 
- * @export
- * @interface FileFolderContentBody
- */
 export interface FileFolderContentBody {
-    /**
-     * 
-     * @type {string}
-     * @memberof FileFolderContentBody
-     */
     'title': string;
 }
 
