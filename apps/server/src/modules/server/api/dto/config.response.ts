@@ -125,6 +125,9 @@ export class ConfigResponse {
 	FEATURE_COLUMN_BOARD_FILE_FOLDER_ENABLED: boolean;
 
 	@ApiProperty()
+	FEATURE_COLUMN_BOARD_TABLE_OF_CONTENTS_ENABLED: boolean;
+
+	@ApiProperty()
 	FEATURE_COLUMN_BOARD_H5P_ENABLED: boolean;
 
 	@ApiProperty()
@@ -319,6 +322,7 @@ export class ConfigResponse {
 		this.FEATURE_COLUMN_BOARD_SOCKET_ENABLED = config.featureColumnBoardSocketEnabled;
 		this.FEATURE_COLUMN_BOARD_VIDEOCONFERENCE_ENABLED = config.featureColumnBoardVideoconferenceEnabled;
 		this.FEATURE_COLUMN_BOARD_FILE_FOLDER_ENABLED = config.featureColumnBoardFileFolderEnabled;
+		this.FEATURE_COLUMN_BOARD_TABLE_OF_CONTENTS_ENABLED = config.featureColumnBoardTableOfContentsEnabled;
 		this.FEATURE_COURSE_SHARE = config.featureCourseShare;
 		this.FEATURE_LOGIN_LINK_ENABLED = config.featureLoginLinkEnabled;
 		this.FEATURE_LESSON_SHARE = config.featureLessonShare;
