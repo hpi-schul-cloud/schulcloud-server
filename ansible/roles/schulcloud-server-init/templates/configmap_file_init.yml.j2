@@ -134,18 +134,26 @@ data:
 
     # AWS S3 storage configuration (stored in the 'storageproviders' collection).
     ENCRYPTED_AWS_SECRET_ACCESS_KEY=$(encrypt_secret $AWS_SECRET_ACCESS_KEY $S3_KEY)
-    mongosh $DB_URL --quiet --eval 'db.storageproviders.insertOne( {
-                                       "isShared" : true,
-                                       "region" : "eu-central-1",
-                                       "type" : "S3",
-                                       "endpointUrl" : "https://storage-{{ DOMAIN }}",
-                                       "accessKeyId" : "'$AWS_ACCESS_KEY'",
-                                       "secretAccessKey" : "'$ENCRYPTED_AWS_SECRET_ACCESS_KEY'",
-                                       "maxBuckets" : 999999,
-                                       "freeBuckets" : 999999,
-                                       "createdAt" : ISODate("2021-07-16T09:03:18.536Z"),
-                                       "updatedAt" : ISODate("2021-07-16T09:03:18.536Z")
-                                     } );'
+    mongosh $DB_URL --quiet --eval 'db.storageproviders.updateOne(
+                                       { "_id": ObjectId("'$LEGACY_FILES_SHARED_STORAGE_PROVIDER_ID'") },
+                                       {
+                                         "$set": {
+                                           "isShared" : true,
+                                           "region" : "'$AWS_REGION'",
+                                           "type" : "S3",
+                                           "endpointUrl" : "'$AWS_ENDPOINT_URL'",
+                                           "accessKeyId" : "'$AWS_ACCESS_KEY'",
+                                           "secretAccessKey" : "'$ENCRYPTED_AWS_SECRET_ACCESS_KEY'",
+                                           "maxBuckets" : 999999,
+                                           "freeBuckets" : 999999,
+                                           "updatedAt" : new Date()
+                                         },
+                                         "$setOnInsert": {
+                                           "createdAt" : new Date()
+                                         }
+                                       },
+                                       { "upsert": true }
+                                     );'
 
     # Update secret for LTI test tool
     ENCRYPTED_LTI_TEST_TOOL_SECRET=$(encrypt_secret $LTI_TEST_TOOL_SECRET $AES_KEY)
@@ -338,5 +346,4 @@ data:
       echo "Successfully added Erwin Portal system"
     fi
     # ========== End of Erwin Portal system creation
-
 
