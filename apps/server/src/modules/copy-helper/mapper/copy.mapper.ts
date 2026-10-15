@@ -66,4 +66,15 @@ export class CopyMapper {
 
 		return copyStatus;
 	}
+
+	public static mapToFailedFileNames(copyStatus: CopyStatus): string[] {
+		const childFileNames = (copyStatus.elements ?? []).flatMap((element) => CopyMapper.mapToFailedFileNames(element));
+
+		const isFailedFile = copyStatus.type === CopyElementType.FILE && copyStatus.status === CopyStatusEnum.FAIL;
+		if (isFailedFile && copyStatus.title) {
+			return [copyStatus.title, ...childFileNames];
+		}
+
+		return childFileNames;
+	}
 }

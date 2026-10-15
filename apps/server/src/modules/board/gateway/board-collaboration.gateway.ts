@@ -327,6 +327,7 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 				...data,
 				duplicatedCard: cardResponse,
 				status: copyResult.status,
+				failedFileNames: copyResult.failedFileNames,
 			};
 			emitter.emitToClientAndRoom(responsePayload, copyResult.copyEntity);
 		} catch {
@@ -348,6 +349,7 @@ export class BoardCollaborationGateway implements OnGatewayConnection, OnGateway
 				...data,
 				duplicatedColumn: columnFullResponse,
 				status: copyResult.status,
+				failedFileNames: copyResult.failedFileNames,
 			};
 			emitter.emitToClientAndRoom(responsePayload, copyResult.copyEntity);
 		} catch {

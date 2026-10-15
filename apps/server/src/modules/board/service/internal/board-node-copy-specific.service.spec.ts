@@ -1,4 +1,5 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import { DomainErrorHandler } from '@infra/error';
 import { type FilesStorageClientAdapterService, StorageLocation } from '@infra/files-storage-amqp-client';
 import { type CopyContentParams, CopyContentParentType, H5pEditorProducer } from '@infra/h5p-editor-client';
 import { ObjectId } from '@mikro-orm/mongodb';
@@ -12,8 +13,10 @@ import {
 import { Test, type TestingModule } from '@nestjs/testing';
 
 import { copyFileDtoFactory } from '@infra/files-storage-amqp-client/testing';
+import type { FileDto } from '@infra/files-storage-amqp-client';
 import { BOARD_CONFIG_TOKEN, type BoardConfig } from '@modules/board/board.config';
 import {
+	BoardNodeType,
 	Card,
 	CollaborativeTextEditorElement,
 	Column,
@@ -45,6 +48,7 @@ import {
 	richTextElementFactory,
 	videoConferenceElementFactory,
 } from '../../testing';
+import { BoardNodeCopyFailedLoggableException } from '../../loggable';
 import { BoardNodeCopyContext, type BoardNodeCopyContextProps } from './board-node-copy-context';
 import { BoardNodeCopyService } from './board-node-copy.service';
 
@@ -55,6 +59,7 @@ describe(BoardNodeCopyService.name, () => {
 	let contextExternalToolService: DeepMocked<ContextExternalToolService>;
 	let copyHelperService: DeepMocked<CopyHelperService>;
 	let h5pEditorProducer: DeepMocked<H5pEditorProducer>;
+	let domainErrorHandler: DeepMocked<DomainErrorHandler>;
 
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
@@ -76,6 +81,10 @@ describe(BoardNodeCopyService.name, () => {
 					provide: H5pEditorProducer,
 					useValue: createMock<H5pEditorProducer>(),
 				},
+				{
+					provide: DomainErrorHandler,
+					useValue: createMock<DomainErrorHandler>(),
+				},
 			],
 		}).compile();
 
@@ -83,6 +92,7 @@ describe(BoardNodeCopyService.name, () => {
 		contextExternalToolService = module.get(ContextExternalToolService);
 		copyHelperService = module.get(CopyHelperService);
 		h5pEditorProducer = module.get(H5pEditorProducer);
+		domainErrorHandler = module.get(DomainErrorHandler);
 		config = module.get<BoardConfig>(BOARD_CONFIG_TOKEN);
 	});
 
@@ -248,7 +258,21 @@ describe(BoardNodeCopyService.name, () => {
 						type: CopyElementType.LEAF,
 						status: CopyStatusEnum.FAIL,
 						copyEntity: undefined,
+						originalEntity: card.children[0],
 					})
+				);
+			});
+
+			it('should log the error with the id and type of the rejected child', async () => {
+				const { copyContext, card } = setup();
+				const error = new Error('copy failed');
+
+				jest.spyOn(service, 'copy').mockRejectedValueOnce(error);
+
+				await service.copyCard(card, copyContext);
+
+				expect(domainErrorHandler.exec).toHaveBeenCalledWith(
+					new BoardNodeCopyFailedLoggableException(card.children[0].id, BoardNodeType.RICH_TEXT_ELEMENT, error)
 				);
 			});
 		});
@@ -305,6 +329,87 @@ describe(BoardNodeCopyService.name, () => {
 				]);
 			});
 		});
+
+		describe('when copying the files throws', () => {
+			const setup = () => {
+				const { copyContext } = setupContext();
+				const fileElement = fileElementFactory.build();
+				const error = new Error('RPC timeout');
+				jest.spyOn(copyContext, 'copyFilesOfParent').mockRejectedValueOnce(error);
+				jest
+					.spyOn(copyContext, 'listFilesOfParent')
+					.mockResolvedValueOnce([{ name: 'video.mp4' } as FileDto, { name: 'audio.mp3' } as FileDto]);
+
+				return { copyContext, fileElement, error };
+			};
+
+			it('should return a failed status without copy entity', async () => {
+				const { copyContext, fileElement } = setup();
+
+				const result = await service.copyFileElement(fileElement, copyContext);
+
+				expect(result).toEqual(
+					expect.objectContaining({
+						copyEntity: undefined,
+						originalEntity: fileElement,
+						type: CopyElementType.FILE_ELEMENT,
+						status: CopyStatusEnum.FAIL,
+					})
+				);
+			});
+
+			it('should report the files of the original element as failed', async () => {
+				const { copyContext, fileElement } = setup();
+
+				const result = await service.copyFileElement(fileElement, copyContext);
+
+				expect(copyContext.listFilesOfParent).toHaveBeenCalledWith(fileElement.id);
+				expect(result.elements).toEqual([
+					{ type: CopyElementType.FILE, status: CopyStatusEnum.FAIL, title: 'video.mp4' },
+					{ type: CopyElementType.FILE, status: CopyStatusEnum.FAIL, title: 'audio.mp3' },
+				]);
+			});
+
+			it('should log the error', async () => {
+				const { copyContext, fileElement, error } = setup();
+
+				await service.copyFileElement(fileElement, copyContext);
+
+				expect(domainErrorHandler.exec).toHaveBeenCalledWith(
+					new BoardNodeCopyFailedLoggableException(fileElement.id, BoardNodeType.FILE_ELEMENT, error)
+				);
+			});
+		});
+
+		describe('when copying and listing the files throws', () => {
+			const setup = () => {
+				const { copyContext } = setupContext();
+				const fileElement = fileElementFactory.build();
+				const listError = new Error('list failed');
+				jest.spyOn(copyContext, 'copyFilesOfParent').mockRejectedValueOnce(new Error('RPC timeout'));
+				jest.spyOn(copyContext, 'listFilesOfParent').mockRejectedValueOnce(listError);
+
+				return { copyContext, fileElement, listError };
+			};
+
+			it('should return a failed status without files', async () => {
+				const { copyContext, fileElement } = setup();
+
+				const result = await service.copyFileElement(fileElement, copyContext);
+
+				expect(result).toEqual(
+					expect.objectContaining({ copyEntity: undefined, status: CopyStatusEnum.FAIL, elements: [] })
+				);
+			});
+
+			it('should log the listing error', async () => {
+				const { copyContext, fileElement, listError } = setup();
+
+				await service.copyFileElement(fileElement, copyContext);
+
+				expect(domainErrorHandler.exec).toHaveBeenCalledWith(listError);
+			});
+		});
 	});
 
 	describe('copy file folder element', () => {
@@ -359,6 +464,31 @@ describe(BoardNodeCopyService.name, () => {
 				expect(result.elements).toEqual([
 					expect.objectContaining({ title: `(old fileid: ${fileCopyStatus.sourceId})`, status: CopyStatusEnum.FAIL }),
 				]);
+			});
+		});
+
+		describe('when copying the files throws', () => {
+			const setup = () => {
+				const { copyContext } = setupContext();
+				const fileFolderElement = fileFolderElementFactory.build();
+				jest.spyOn(copyContext, 'copyFilesOfParent').mockRejectedValueOnce(new Error('RPC timeout'));
+				jest.spyOn(copyContext, 'listFilesOfParent').mockResolvedValueOnce([{ name: 'image.png' } as FileDto]);
+
+				return { copyContext, fileFolderElement };
+			};
+
+			it('should return a failed status without copy entity and report the files as failed', async () => {
+				const { copyContext, fileFolderElement } = setup();
+
+				const result = await service.copyFileFolderElement(fileFolderElement, copyContext);
+
+				expect(result).toEqual({
+					copyEntity: undefined,
+					originalEntity: fileFolderElement,
+					type: CopyElementType.FILE_FOLDER_ELEMENT,
+					status: CopyStatusEnum.FAIL,
+					elements: [{ type: CopyElementType.FILE, status: CopyStatusEnum.FAIL, title: 'image.png' }],
+				});
 			});
 		});
 	});
