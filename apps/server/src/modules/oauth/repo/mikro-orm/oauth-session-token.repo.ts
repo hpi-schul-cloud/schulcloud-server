@@ -22,17 +22,17 @@ export class OauthSessionTokenMikroOrmRepo implements OauthSessionTokenRepo {
 	public async save(token: OauthSessionToken): Promise<void> {
 		const context = `[tokenId=${token.id} userId=${token.userId}]`;
 
-		this.logger.log(`OAuth2 starting refresh token encryption ${context}`);
+		this.logger.debug(`OAuth2 starting refresh token encryption ${context}`);
 		const encryptedRefreshToken = this.encryptionService.encrypt(token.refreshToken);
-		this.logger.log(`OAuth2 finished refresh token encryption ${context}`);
+		this.logger.debug(`OAuth2 finished refresh token encryption ${context}`);
 
 		const props = OauthSessionTokenEntityMapper.mapDOToEntityProperties(token, encryptedRefreshToken, this.em);
 
 		this.em.create(OauthSessionTokenEntity, props);
 
-		this.logger.log(`OAuth2 starting session token database flush ${context}`);
+		this.logger.debug(`OAuth2 starting session token database flush ${context}`);
 		await this.em.flush();
-		this.logger.log(`OAuth2 finished session token database flush ${context}`);
+		this.logger.debug(`OAuth2 finished session token database flush ${context}`);
 	}
 
 	public async delete(token: OauthSessionToken): Promise<void> {

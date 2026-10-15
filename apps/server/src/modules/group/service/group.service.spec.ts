@@ -269,6 +269,20 @@ describe('GroupService', () => {
 		});
 	});
 
+	describe('findMembershipReferences', () => {
+		it('returns the membership references for the user and system', async () => {
+			const userId = new ObjectId().toHexString();
+			const systemId = new ObjectId().toHexString();
+			const references = [{ id: new ObjectId().toHexString(), externalId: 'external-group' }];
+			groupRepo.findMembershipReferences.mockResolvedValueOnce(references);
+
+			const result = await service.findMembershipReferences(userId, systemId);
+
+			expect(groupRepo.findMembershipReferences).toHaveBeenCalledWith(userId, systemId);
+			expect(result).toEqual(references);
+		});
+	});
+
 	describe('findByUsersAndRoomsSchoolId', () => {
 		const setup = () => {
 			const schoolId: EntityId = new ObjectId().toHexString();
