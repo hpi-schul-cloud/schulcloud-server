@@ -32,6 +32,11 @@ export class ServerPublicApiConfig {
 	@IsBoolean()
 	public featureTeamsEnabled = true;
 
+	@ConfigProperty('FEATURE_QUICK_NAVIGATION_ENABLED')
+	@StringToBoolean()
+	@IsBoolean()
+	public featureQuickNavigationEnabled = false;
+
 	@ConfigProperty('TEACHER_STUDENT_VISIBILITY__IS_VISIBLE')
 	@StringToBoolean()
 	@IsBoolean()
