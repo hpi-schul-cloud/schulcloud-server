@@ -1077,6 +1077,91 @@ describe(BoardNodeRule.name, () => {
 		});
 	});
 
+	describe('listAllowedOperations when board is archived', () => {
+		const setup = () => {
+			const user = userFactory.asAdmin().buildWithId();
+			const videoConferenceElement = videoConferenceElementFactory.build();
+			const columnBoard = columnBoardFactory.build();
+			const boardNodeAuthorizable = boardNodeAuthorizableFactory.build({
+				users: [{ userId: user.id, roles: [BoardRoles.EDITOR, BoardRoles.ADMIN] }],
+				id: new ObjectId().toHexString(),
+				boardNode: videoConferenceElement,
+				rootNode: columnBoard,
+				boardConfiguration: { canEditorsManageVideoconference: true, isLocked: false, isArchived: true },
+			});
+
+			return { user, boardNodeAuthorizable };
+		};
+
+		it('should deny every mutating operation but keep viewing operations allowed', () => {
+			const { user, boardNodeAuthorizable } = setup();
+
+			const res = boardNodeRule.listAllowedOperations(user, boardNodeAuthorizable);
+			const expectedAllowedOperations = {
+				// board
+				copyBoard: false,
+				deleteBoard: false,
+				findBoard: true,
+				relocateContent: false,
+				shareBoard: false,
+				updateBoardLayout: false,
+				updateBoardTitle: false,
+				updateReadersCanEditSetting: false,
+
+				// column
+				copyColumn: false,
+				createColumn: false,
+				deleteColumn: false,
+				moveColumn: false,
+				shareColumn: false,
+				updateColumnTitle: false,
+
+				// card
+				copyCard: false,
+				createCard: false,
+				deleteCard: false,
+				findCards: true,
+				moveCard: false,
+				shareCard: false,
+				updateCardHeight: false,
+				updateCardTitle: false,
+				updateCardColor: false,
+
+				// element
+				createElement: false,
+				deleteElement: false,
+				moveElement: false,
+				updateElement: false,
+				viewElement: true,
+
+				// element / externalToolElement
+				createExternalToolElement: false,
+
+				// element / fileElement
+				createFileElement: false,
+
+				// element / videoConferenceElement
+				manageVideoConference: false,
+
+				// mediaBoard
+				collapseMediaBoard: false,
+				updateBoardVisibility: false,
+				updateMediaBoardColor: false,
+				updateMediaBoardLayout: false,
+				viewMediaBoard: true,
+
+				// mediaBoardLine
+				collapseMediaBoardLine: false,
+				createMediaBoardLine: false,
+				deleteMediaBoardLine: false,
+				updateMediaBoardLine: false,
+				updateMediaBoardLineColor: false,
+			} satisfies Record<BoardOperation, boolean>;
+
+			expect(res).toEqual(expectedAllowedOperations);
+		});
+	});
+
 	describe('hasPermission when board is locked', () => {
 		const setup = () => {
 			const user = userFactory.buildWithId();
@@ -1102,6 +1187,45 @@ describe(BoardNodeRule.name, () => {
 			});
 
 			expect(res).toBe(false);
+		});
+
+		it('should return false for write action', () => {
+			const { user, boardNodeAuthorizable } = setup();
+
+			const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
+				action: Action.write,
+				requiredPermissions: [],
+			});
+
+			expect(res).toBe(false);
+		});
+	});
+
+	describe('hasPermission when board is archived', () => {
+		const setup = () => {
+			const user = userFactory.buildWithId();
+			const anyBoardNode = fileElementFactory.build();
+			const columnBoard = columnBoardFactory.build();
+			const boardNodeAuthorizable = boardNodeAuthorizableFactory.build({
+				users: [{ userId: user.id, roles: [BoardRoles.EDITOR] }],
+				id: new ObjectId().toHexString(),
+				boardNode: anyBoardNode,
+				rootNode: columnBoard,
+				boardConfiguration: { isLocked: false, isArchived: true },
+			});
+
+			return { user, boardNodeAuthorizable };
+		};
+
+		it('should return true for read action', () => {
+			const { user, boardNodeAuthorizable } = setup();
+
+			const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
+				action: Action.read,
+				requiredPermissions: [],
+			});
+
+			expect(res).toBe(true);
 		});
 
 		it('should return false for write action', () => {

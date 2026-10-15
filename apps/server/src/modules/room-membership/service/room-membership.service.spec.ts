@@ -522,6 +522,7 @@ describe('RoomMembershipService', () => {
 		describe('when roomMembership exists', () => {
 			it('should return RoomAuthorizable', async () => {
 				const { roomId, userId, roleId } = setup();
+				roomService.getSingleRoom.mockResolvedValue(roomFactory.build({ id: roomId }));
 
 				const result = await service.getRoomAuthorizable(roomId);
 
@@ -531,6 +532,24 @@ describe('RoomMembershipService', () => {
 				expect(result.members[0].userId).toBe(userId);
 				expect(result.members[0].roles[0].id).toBe(roleId);
 				expect(result.members[0].userSchoolId).toBeDefined();
+			});
+
+			it('should return isArchived false when the room is not archived', async () => {
+				const { roomId } = setup();
+				roomService.getSingleRoom.mockResolvedValue(roomFactory.build({ id: roomId }));
+
+				const result = await service.getRoomAuthorizable(roomId);
+
+				expect(result.isArchived).toBe(false);
+			});
+
+			it('should return isArchived true when the room is archived', async () => {
+				const { roomId } = setup();
+				roomService.getSingleRoom.mockResolvedValue(roomFactory.build({ id: roomId, archivedAt: new Date() }));
+
+				const result = await service.getRoomAuthorizable(roomId);
+
+				expect(result.isArchived).toBe(true);
 			});
 		});
 
@@ -800,6 +819,19 @@ describe('RoomMembershipService', () => {
 			const result = await service.getRoomAuthorizablesByUserId(userId);
 
 			expect(result).toHaveLength(0);
+		});
+
+		it('should propagate the isArchived state of each room', async () => {
+			const { userId, roomMemberships } = setup();
+			roomService.getRoomsByIds.mockResolvedValue([
+				roomFactory.build({ id: roomMemberships[0].roomId, archivedAt: new Date() }),
+				roomFactory.build({ id: roomMemberships[1].roomId }),
+			]);
+
+			const result = await service.getRoomAuthorizablesByUserId(userId);
+
+			expect(result.find((item) => item.roomId === roomMemberships[0].roomId)?.isArchived).toBe(true);
+			expect(result.find((item) => item.roomId === roomMemberships[1].roomId)?.isArchived).toBe(false);
 		});
 	});
 });

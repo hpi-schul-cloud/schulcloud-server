@@ -184,6 +184,49 @@ describe(`create board in room (api)`, () => {
 			});
 		});
 
+		describe('When the room is archived', () => {
+			const setup = async () => {
+				const school = schoolEntityFactory.buildWithId();
+				const user = userFactory.buildWithId({ school });
+				const account = accountFactory.withUser(user).build();
+
+				const { roomOwnerRole } = RoomRolesTestFactory.createRoomRoles();
+
+				const userGroup = groupEntityFactory.buildWithId({
+					type: GroupEntityTypes.ROOM,
+					users: [{ user, role: roomOwnerRole }],
+				});
+
+				const room = roomEntityFactory.buildWithId({ schoolId: user.school.id, archivedAt: new Date() });
+
+				const roomMembership = roomMembershipEntityFactory.build({
+					roomId: room.id,
+					userGroupId: userGroup.id,
+					schoolId: user.school.id,
+				});
+
+				await em.persist([account, user, roomOwnerRole, userGroup, room, roomMembership]).flush();
+				em.clear();
+
+				const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(account);
+
+				return { loggedInClient, room };
+			};
+
+			it('should return status 403, even for the room owner', async () => {
+				const { loggedInClient, room } = await setup();
+
+				const response = await loggedInClient.post(undefined, {
+					title: 'new board',
+					parentId: room.id,
+					parentType: BoardExternalReferenceType.Room,
+					layout: BoardLayout.COLUMNS,
+				});
+
+				expect(response.status).toEqual(403);
+			});
+		});
+
 		describe('When user is only allowed to view the room', () => {
 			const setup = async () => {
 				const user = userFactory.buildWithId();

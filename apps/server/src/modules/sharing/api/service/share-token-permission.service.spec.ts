@@ -190,6 +190,52 @@ describe('ShareTokenPermissionService', () => {
 		});
 	});
 
+	describe('checkRoomImportPermission', () => {
+		const setup = (isArchived = false) => {
+			const user = userFactory.buildWithId();
+			const roleDto: RoleDto = {
+				id: 'role-id',
+				name: RoleName.TEACHER,
+				permissions: [Permission.ROOM_EDIT_ROOM],
+			};
+			const members: UserWithRoomRoles[] = [
+				{
+					roles: [roleDto],
+					userId: user.id,
+					userSchoolId: 'school-id',
+				},
+			];
+			const roomAuthorizable = new RoomAuthorizable('room-id', members, 'school-id', isArchived);
+			roomMembershipService.getRoomAuthorizable.mockResolvedValueOnce(roomAuthorizable);
+
+			return { user, roomAuthorizable };
+		};
+
+		it('should check write permission', async () => {
+			const { user, roomAuthorizable } = setup();
+
+			await service.checkRoomImportPermission(user, 'room-id');
+
+			expect(authorizationService.checkPermission).toHaveBeenCalledWith(
+				user,
+				roomAuthorizable,
+				AuthorizationContextBuilder.write([])
+			);
+		});
+
+		it('should not throw when the room is not archived', async () => {
+			const { user } = setup(false);
+
+			await expect(service.checkRoomImportPermission(user, 'room-id')).resolves.toBeUndefined();
+		});
+
+		it('should throw ForbiddenException when the room is archived', async () => {
+			const { user } = setup(true);
+
+			await expect(service.checkRoomImportPermission(user, 'room-id')).rejects.toThrow('archived');
+		});
+	});
+
 	describe('checkContextReadPermission', () => {
 		const setup = () => {
 			const user = userFactory.buildWithId();

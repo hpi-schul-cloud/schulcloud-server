@@ -180,4 +180,20 @@ describe('RoomPermissionService', () => {
 			expect(() => service.checkFeatureRoomCopyEnabled()).not.toThrow();
 		});
 	});
+
+	describe('checkFeatureRoomArchiveEnabled', () => {
+		it('checkFeatureRoomArchiveEnabled: throws when feature flag disabled', () => {
+			const { service, config } = setup();
+			config.featureRoomArchiveEnabled = false;
+
+			expect(() => service.checkFeatureRoomArchiveEnabled()).toThrow();
+		});
+
+		it('checkFeatureRoomArchiveEnabled: does nothing when enabled', () => {
+			const { service, config } = setup();
+			config.featureRoomArchiveEnabled = true;
+
+			expect(() => service.checkFeatureRoomArchiveEnabled()).not.toThrow();
+		});
+	});
 });

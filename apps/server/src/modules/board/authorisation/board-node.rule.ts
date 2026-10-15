@@ -125,6 +125,10 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 		}
 
 		if (context.action === Action.write) {
+			if (authorizable.boardConfiguration.isArchived) {
+				return false;
+			}
+
 			const isReader = userWithBoardRoles.roles.includes(BoardRoles.READER);
 			const readersCanEdit = authorizable.boardConfiguration.canReadersEdit ?? false;
 
@@ -292,7 +296,7 @@ const hasBoardRole = (user: User, authorizable: BoardNodeAuthorizable, role: Boa
 };
 
 const _canEditBoard = (user: User, authorizable: BoardNodeAuthorizable): boolean => {
-	if (authorizable.boardConfiguration.isLocked) {
+	if (authorizable.boardConfiguration.isLocked || authorizable.boardConfiguration.isArchived) {
 		return false;
 	}
 
@@ -320,7 +324,7 @@ const canEditBoardTitle = (user: User, authorizable: BoardNodeAuthorizable): boo
 };
 
 const _canManageBoard = (user: User, authorizable: BoardNodeAuthorizable): boolean => {
-	if (authorizable.boardConfiguration.isLocked) {
+	if (authorizable.boardConfiguration.isLocked || authorizable.boardConfiguration.isArchived) {
 		return false;
 	}
 
@@ -346,7 +350,7 @@ const _canViewBoard = (user: User, authorizable: BoardNodeAuthorizable): boolean
 };
 
 const _canCreateExternalToolElement = (user: User, authorizable: BoardNodeAuthorizable): boolean => {
-	if (authorizable.boardConfiguration.isLocked) {
+	if (authorizable.boardConfiguration.isLocked || authorizable.boardConfiguration.isArchived) {
 		return false;
 	}
 
@@ -378,7 +382,7 @@ const canFindBoard = (user: User, authorizable: BoardNodeAuthorizable): boolean 
 };
 
 const canManageVideoConference = (user: User, authorizable: BoardNodeAuthorizable): boolean => {
-	if (authorizable.boardConfiguration.isLocked) {
+	if (authorizable.boardConfiguration.isLocked || authorizable.boardConfiguration.isArchived) {
 		return false;
 	}
 
@@ -397,7 +401,7 @@ const canManageVideoConference = (user: User, authorizable: BoardNodeAuthorizabl
 };
 
 const canUpdateReadersCanEditSetting = (user: User, authorizable: BoardNodeAuthorizable): boolean => {
-	if (authorizable.boardConfiguration.isLocked) {
+	if (authorizable.boardConfiguration.isLocked || authorizable.boardConfiguration.isArchived) {
 		return false;
 	}
 
@@ -410,7 +414,7 @@ const canUpdateReadersCanEditSetting = (user: User, authorizable: BoardNodeAutho
 };
 
 const canRelocateContent = (user: User, authorizable: BoardNodeAuthorizable): boolean => {
-	if (authorizable.boardConfiguration.isLocked) {
+	if (authorizable.boardConfiguration.isLocked || authorizable.boardConfiguration.isArchived) {
 		return false;
 	}
 
@@ -423,7 +427,7 @@ const canRelocateContent = (user: User, authorizable: BoardNodeAuthorizable): bo
 };
 
 const canShareBoardNode = (user: User, authorizable: BoardNodeAuthorizable): boolean => {
-	if (authorizable.boardConfiguration.isLocked) {
+	if (authorizable.boardConfiguration.isLocked || authorizable.boardConfiguration.isArchived) {
 		return false;
 	}
 
