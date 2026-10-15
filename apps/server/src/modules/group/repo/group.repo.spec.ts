@@ -5,7 +5,7 @@ import { RoleName } from '@modules/role';
 import { roleFactory } from '@modules/role/testing';
 import { SchoolEntity } from '@modules/school/repo';
 import { schoolEntityFactory } from '@modules/school/testing';
-import { SystemEntity } from '@modules/system/repo';
+import { ExternalSourceEmbeddable, SystemEntity } from '@modules/system/repo';
 import { systemEntityFactory } from '@modules/system/testing';
 import { User } from '@modules/user/repo';
 import { userFactory } from '@modules/user/testing';
@@ -377,6 +377,43 @@ describe(GroupRepo.name, () => {
 
 				expect(result.data).toHaveLength(0);
 			});
+		});
+	});
+
+	describe('findMembershipReferences', () => {
+		it('returns only matching IDs without tracking groups or overwriting a concurrent membership removal', async () => {
+			const group = groupEntityFactory.buildWithId();
+			const userId = group.users[0].user.id;
+			const system = group.externalSource?.system;
+			if (!system) throw new Error('Expected group system');
+			const systemId = system.id;
+
+			const otherSystemGroup = groupEntityFactory.buildWithId({ users: [group.users[0]] });
+			const otherUserGroup = groupEntityFactory.buildWithId({
+				externalSource: new ExternalSourceEmbeddable({
+					externalId: 'other-user-group',
+					system,
+					lastSyncedAt: new Date(),
+				}),
+			});
+
+			await em.persist([group, otherSystemGroup, otherUserGroup]).flush();
+			em.clear();
+
+			const references = await repo.findMembershipReferences(userId, systemId);
+
+			expect(references).toEqual([{ id: group.id, externalId: group.externalSource?.externalId }]);
+			expect(em.getUnitOfWork().getIdentityMap().values()).not.toContainEqual(expect.any(GroupEntity));
+
+			const trackedUser = await em.findOneOrFail(User, { id: userId });
+			trackedUser.firstName = 'Updated';
+			await em.nativeUpdate(GroupEntity, { id: group.id }, {
+				$pull: { users: { user: new ObjectId(userId) } },
+			} as Partial<GroupEntity>);
+			await em.flush();
+
+			const savedGroup = await em.getCollection(GroupEntity).findOne({ _id: new ObjectId(group.id) });
+			expect(savedGroup?.users).toHaveLength(group.users.length - 1);
 		});
 	});
 

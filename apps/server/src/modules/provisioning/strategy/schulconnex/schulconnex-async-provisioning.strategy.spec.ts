@@ -15,7 +15,6 @@ import {
 } from '@infra/schulconnex-client/testing';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { GroupService, GroupTypes } from '@modules/group';
-import { groupFactory } from '@modules/group/testing';
 import { legacySchoolDoFactory } from '@modules/legacy-school/testing';
 import { userDoFactory } from '@modules/user/testing';
 import { InternalServerErrorException } from '@nestjs/common';
@@ -723,12 +722,8 @@ describe(SchulconnexAsyncProvisioningStrategy.name, () => {
 				const externalGroup = externalGroupDtoFactory.build();
 				const schoolId = new ObjectId().toHexString();
 				const systemId = new ObjectId().toHexString();
-				const groupToKeep = groupFactory.build({
-					externalSource: { externalId: externalGroup.externalId, systemId },
-				});
-				const groupToRemove = groupFactory.build({
-					externalSource: { externalId: 'other-group', systemId },
-				});
+				const groupToKeep = { id: new ObjectId().toHexString(), externalId: externalGroup.externalId };
+				const groupToRemove = { id: new ObjectId().toHexString(), externalId: 'other-group' };
 				const oauthData = new OauthDataDto({
 					system: new ProvisioningSystemDto({
 						systemId,
@@ -756,7 +751,7 @@ describe(SchulconnexAsyncProvisioningStrategy.name, () => {
 				schulconnexUserProvisioningService.provisionExternalUser.mockResolvedValueOnce(user);
 				config.featureSchulconnexGroupProvisioningEnabled = true;
 				schulconnexGroupProvisioningService.filterExternalGroups.mockResolvedValueOnce([externalGroup]);
-				groupService.findGroups.mockResolvedValueOnce({ data: [groupToKeep, groupToRemove], total: 2 });
+				groupService.findMembershipReferences.mockResolvedValueOnce([groupToKeep, groupToRemove]);
 				config.featureSchulconnexMediaLicenseEnabled = false;
 
 				return {
@@ -772,6 +767,7 @@ describe(SchulconnexAsyncProvisioningStrategy.name, () => {
 
 				await strategy.apply(oauthData);
 
+				expect(groupService.findMembershipReferences).toHaveBeenCalledWith(userId, oauthData.system.systemId);
 				expect(schulconnexGroupProvisioningProducer.removeUserFromGroup).toHaveBeenCalledTimes(1);
 				expect(schulconnexGroupProvisioningProducer.removeUserFromGroup).toHaveBeenCalledWith<
 					[SchulconnexGroupRemovalMessage]
