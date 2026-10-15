@@ -22,6 +22,7 @@ import {
 	ExternalLicenseDto,
 	ExternalSchoolDto,
 	ExternalUserDto,
+	LicenseScope,
 } from '../../dto';
 import { GroupRoleUnknownLoggable } from '../../loggable';
 import { PROVISIONING_CONFIG_TOKEN, ProvisioningConfig } from '../../provisioning.config';
@@ -258,21 +259,56 @@ export class SchulconnexResponseMapper {
 	}
 
 	public static mapToExternalLicenses(licenseInfos: SchulconnexPoliciesInfoLicenseResponse[]): ExternalLicenseDto[] {
-		const externalLicenseDtos: ExternalLicenseDto[] = licenseInfos
-			.map((license: SchulconnexPoliciesInfoLicenseResponse) => {
-				if (license.target.partOf === '') {
-					license.target.partOf = undefined;
+		const externalLicenseDtos: ExternalLicenseDto[] = licenseInfos.flatMap(
+			(license: SchulconnexPoliciesInfoLicenseResponse): ExternalLicenseDto[] => {
+				const target = license.policy?.target ?? license.target;
+				const mediumId = target?.uid;
+
+				if (!mediumId) {
+					return [];
 				}
 
-				const externalLicenseDto: ExternalLicenseDto = new ExternalLicenseDto({
-					mediumId: license.target.uid,
-					mediaSourceId: license.target.partOf,
-				});
+				const mediaSourceId = target?.partOf === '' ? undefined : target?.partOf;
+				const licenseKey = license.access_control?.value?.licenseKey;
 
-				return externalLicenseDto;
-			})
-			.filter((license: ExternalLicenseDto) => license.mediumId !== '');
+				const permissions = license.policy?.permission ?? license.permission ?? [];
+				const refinements = permissions.flatMap((permission) => permission.assignee?.refinement ?? []);
+
+				// Licenses without refinements are personal licenses (pre-v1.7 behaviour)
+				if (refinements.length === 0) {
+					return [new ExternalLicenseDto({ mediumId, mediaSourceId, scope: 'USER', licenseKey })];
+				}
+
+				// Unknown refinements are skipped, so a new or restricted scope never broadens access
+				return refinements.flatMap((refinement): ExternalLicenseDto[] => {
+					const scope: LicenseScope | undefined = SchulconnexResponseMapper.mapRefinementToScope(
+						refinement.leftOperand
+					);
+
+					if (!scope) {
+						return [];
+					}
+
+					return [
+						new ExternalLicenseDto({ mediumId, mediaSourceId, scope, scopeId: refinement.rightOperand, licenseKey }),
+					];
+				});
+			}
+		);
 
 		return externalLicenseDtos;
+	}
+
+	private static mapRefinementToScope(leftOperand: string): LicenseScope | undefined {
+		switch (leftOperand) {
+			case 'urn:schulconnex:de:kern:personenkontext:gruppe':
+				return 'GROUP';
+			case 'urn:schulconnex:de:kern:personenkontext:organisation':
+				return 'SCHOOL';
+			case 'urn:schulconnex:de:kern:personenkontext':
+				return 'USER';
+			default:
+				return undefined;
+		}
 	}
 }

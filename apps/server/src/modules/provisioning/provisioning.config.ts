@@ -16,6 +16,11 @@ export class ProvisioningPublicApiConfig {
 	@StringToBoolean()
 	@IsBoolean()
 	public featureSchulconnexMediaLicenseEnabled = false;
+
+	@ConfigProperty('FEATURE_SCHULCONNEX_GROUP_SCHOOL_MEDIA_LICENSE_ENABLED')
+	@StringToBoolean()
+	@IsBoolean()
+	public featureSchulconnexGroupSchoolMediaLicenseEnabled = false;
 }
 
 @Configuration()
@@ -23,6 +28,11 @@ export class ProvisioningConfig extends ProvisioningPublicApiConfig {
 	@ConfigProperty('PROVISIONING_SCHULCONNEX_POLICIES_INFO_URL')
 	@IsString()
 	public provisioningSchulconnexPoliciesInfoUrl = '';
+
+	@ConfigProperty('LOG_POLICY_ENDPOINT_RESPONSE')
+	@StringToBoolean()
+	@IsBoolean()
+	public logPolicyEndpointResponse = false;
 
 	@ConfigProperty('PROVISIONING_SCHULCONNEX_GROUP_USERS_LIMIT')
 	@IsOptional()
