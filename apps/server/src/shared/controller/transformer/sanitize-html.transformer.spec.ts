@@ -17,6 +17,9 @@ describe('SanitizeHtmlTransformer Decorator', () => {
 		@SanitizeHtml(InputFormat.RICH_TEXT_CK5)
 		contentCk5!: string;
 
+		@SanitizeHtml(InputFormat.RICH_TEXT_CK5_TASK)
+		contentCk5Task!: string;
+
 		@SanitizeHtml(InputFormat.RICH_TEXT_CK4)
 		contentCk4!: string;
 
@@ -69,12 +72,20 @@ describe('SanitizeHtmlTransformer Decorator', () => {
 		it('should remove all html but rich text ck5 tags', () => {
 			const plainString = {
 				contentCk5:
-					'<h1></h1><h2><b><mark>html <h4>text</h4></mark></b></h2><span class="math-tex">[x=\\frac{-bpmsqrt{b^2-4ac}}{2a}]</span><scriPT>alert("foobar");</sCript><stYle></style><img src="some.png" />',
+					'<h1></h1><h2><b><mark>html <h4>text</h4></mark></b></h2><span class="math-tex">[x=\\frac{-bpmsqrt{b^2-4ac}}{2a}]</span><scriPT>alert("foobar");</sCript><stYle></style>',
 			};
 			const instance = plainToClass(WithHtmlDto, plainString);
 			expect(instance.contentCk5).toEqual(
 				'<b><mark>html <h4>text</h4></mark></b><span class="math-tex">[x=\\frac{-bpmsqrt{b^2-4ac}}{2a}]</span>'
 			);
+		});
+		it('should preserve safe images and remove unsafe image attributes', () => {
+			const plainString = {
+				contentCk5:
+					'<figure class="image"><img src="/file/download/id/image.png" alt="A picture" onerror="alert(1)" /></figure>',
+			};
+			const instance = plainToClass(WithHtmlDto, plainString);
+			expect(instance.contentCk5).toEqual('<figure class="image"></figure>');
 		});
 		it('should remove attributes without values', () => {
 			const plainString = {
@@ -83,6 +94,55 @@ describe('SanitizeHtmlTransformer Decorator', () => {
 			const instance = plainToClass(WithHtmlDto, plainString);
 			expect(instance.contentCk5).toEqual('<a></a><a></a>');
 		});
+		it('should preserve images for task rich text only', () => {
+			const plainString = {
+				contentCk5: '<img src="task-image.png" alt="task image" />',
+				contentCk5Task:
+					'<figure class="image"><img src="task-image.png" alt="task image" onerror="alert(1)" /></figure>',
+			};
+			const instance = plainToClass(WithHtmlDto, plainString);
+			expect(instance.contentCk5).toEqual('');
+			expect(instance.contentCk5Task).toEqual(
+				'<figure class="image"><img src="task-image.png" alt="task image" /></figure>'
+			);
+		});
+		it('should preserve safe decimal image resize styles for task rich text only', () => {
+			const plainString = {
+				contentCk5:
+					'<figure class="image image_resized" style="width:37.43%;height:120px;position:absolute"><img src="task-image.png" /></figure>',
+				contentCk5Task:
+					'<figure class="image image_resized" style="width:37.43%;height:120px;position:absolute"><img src="task-image.png" /></figure>',
+			};
+			const instance = plainToClass(WithHtmlDto, plainString);
+
+			expect(instance.contentCk5).toEqual('<figure class="image image_resized"></figure>');
+			expect(instance.contentCk5Task).toEqual(
+				'<figure class="image image_resized" style="width:37.43%;height:120px"><img src="task-image.png" /></figure>'
+			);
+		});
+		it('should preserve audio only for task rich text', () => {
+			const plainString = {
+				contentCk5: '<audio src="task-audio.mp3" controls></audio>',
+				contentCk5Task: '<audio src="task-audio.mp3" controls controlslist="nodownload" onerror="alert(1)"></audio>',
+			};
+			const instance = plainToClass(WithHtmlDto, plainString);
+
+			expect(instance.contentCk5).toEqual('');
+			expect(instance.contentCk5Task).toEqual(
+				'<audio src="task-audio.mp3" controls controlslist="nodownload"></audio>'
+			);
+		});
+	});
+
+	it('should preserve video only for task rich text', () => {
+		const plainString = {
+			contentCk5: '<video src="task-video.mp4" controls></video>',
+			contentCk5Task: '<video src="task-video.mp4" controls controlslist="nodownload" onerror="alert(1)"></video>',
+		};
+		const instance = plainToClass(WithHtmlDto, plainString);
+
+		expect(instance.contentCk5).toEqual('');
+		expect(instance.contentCk5Task).toEqual('<video src="task-video.mp4" controls controlslist="nodownload"></video>');
 	});
 
 	describe('when sanitizing rich text ck4 formatting', () => {

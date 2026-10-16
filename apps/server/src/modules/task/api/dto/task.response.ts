@@ -42,6 +42,9 @@ export class TaskResponse {
 	@ApiProperty()
 	courseId: string = '';
 
+	@ApiPropertyOptional()
+	lessonId?: string;
+
 	@ApiPropertyOptional({
 		description: 'Task description object, with props content: string and type: input format types',
 		type: RichText,
@@ -62,6 +65,15 @@ export class TaskResponse {
 
 	@ApiProperty()
 	status: TaskStatusResponse;
+
+	@ApiPropertyOptional()
+	publicSubmissions?: boolean;
+
+	@ApiPropertyOptional()
+	teamSubmissions?: boolean;
+
+	@ApiPropertyOptional()
+	maxTeamMembers?: number;
 }
 
 export class TaskListResponse extends PaginationResponse<TaskResponse[]> {

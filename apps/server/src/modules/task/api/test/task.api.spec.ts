@@ -70,7 +70,7 @@ describe('Task Controller (API)', () => {
 				const task = taskFactory.build({
 					course,
 					description: '<p>test</p>',
-					descriptionInputFormat: InputFormat.RICH_TEXT_CK5,
+					descriptionInputFormat: InputFormat.RICH_TEXT_CK5_TASK,
 				});
 				await em.persist([account, user, course, task]).flush();
 				em.clear();
@@ -89,7 +89,7 @@ describe('Task Controller (API)', () => {
 				expect(result.data[0]).toHaveProperty('displayColor');
 				expect(result.data[0]).toHaveProperty('name');
 				expect(result.data[0]).toHaveProperty('description');
-				expect(result.data[0].description).toEqual({ content: '<p>test</p>', type: InputFormat.RICH_TEXT_CK5 });
+				expect(result.data[0].description).toEqual({ content: '<p>test</p>', type: InputFormat.RICH_TEXT_CK5_TASK });
 			});
 		});
 
