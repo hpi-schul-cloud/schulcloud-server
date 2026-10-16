@@ -60,6 +60,21 @@ export class BoardNodeRepo {
 		return boardNodes;
 	}
 
+	public async findIdsByExternalReference(reference: BoardExternalReference): Promise<EntityId[]> {
+		const entities = await this.em.find(
+			BoardNodeEntity,
+			{
+				context: {
+					_contextId: new ObjectId(reference.id),
+					_contextType: reference.type,
+				} as FilterQuery<BoardExternalReference>,
+			},
+			{ fields: ['id'] }
+		);
+
+		return entities.map((entity) => entity.id);
+	}
+
 	public async findByContextExternalToolIds(
 		contextExternalToolIds: EntityId[],
 		depth?: number
@@ -186,5 +201,101 @@ export class BoardNodeRepo {
 		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
 		// @ts-ignore
 		boardNode.props = props;
+	}
+
+	public async findIdsByExternalReferences(references: BoardExternalReference[]): Promise<Map<EntityId, EntityId[]>> {
+		if (references.length === 0) {
+			return new Map();
+		}
+
+		const query = {
+			$or: references.map((reference) => ({
+				context: {
+					_contextId: new ObjectId(reference.id),
+					_contextType: reference.type,
+				} as FilterQuery<BoardExternalReference>,
+			})),
+		};
+
+		const entities = await this.em.find(BoardNodeEntity, query, { fields: ['id', 'context'] });
+		const result = new Map<EntityId, EntityId[]>();
+
+		for (const reference of references) {
+			result.set(reference.id, []);
+		}
+
+		for (const entity of entities) {
+			const context = entity.context as { _contextId?: ObjectId; _contextType?: BoardExternalReference['type'] } | undefined;
+			const contextId = context?._contextId?.toString();
+			const contextType = context?._contextType;
+
+			if (!contextId || !contextType) {
+				continue;
+			}
+
+			const matchingReference = references.find(
+				(reference) => reference.id === contextId && reference.type === contextType
+			);
+
+			if (!matchingReference) {
+				continue;
+			}
+
+			const ids = result.get(matchingReference.id) ?? [];
+			ids.push(entity.id);
+			result.set(matchingReference.id, ids);
+		}
+
+		return result;
+	}
+
+	public async findByExternalReferences(
+		references: BoardExternalReference[],
+		depth?: number
+	): Promise<Map<EntityId, AnyBoardNode[]>> {
+		if (references.length === 0) {
+			return new Map();
+		}
+
+		const entities = await this.em.find(BoardNodeEntity, {
+			$or: references.map((reference) => ({
+				context: {
+					_contextId: new ObjectId(reference.id),
+					_contextType: reference.type,
+				} as FilterQuery<BoardExternalReference>,
+			})),
+		});
+
+		const descendantsMap = await this.findDescendantsOfMany(entities, depth);
+		const result = new Map<EntityId, AnyBoardNode[]>();
+
+		for (const reference of references) {
+			result.set(reference.id, []);
+		}
+
+		for (const entity of entities) {
+			const boardNode = new TreeBuilder(descendantsMap[pathOfChildren(entity)] ?? []).build(entity);
+			const context = entity.context as { _contextId?: ObjectId; _contextType?: BoardExternalReference['type'] } | undefined;
+			const contextId = context?._contextId?.toString();
+			const contextType = context?._contextType;
+
+			if (!contextId || !contextType) {
+				continue;
+			}
+
+			const matchingReference = references.find(
+				(reference) => reference.id === contextId && reference.type === contextType
+			);
+
+			if (!matchingReference) {
+				continue;
+			}
+
+			const matchingBoards = result.get(matchingReference.id) ?? [];
+			matchingBoards.push(boardNode);
+			result.set(matchingReference.id, matchingBoards);
+		}
+
+		return result;
 	}
 }

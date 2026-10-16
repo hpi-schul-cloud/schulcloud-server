@@ -271,7 +271,7 @@ describe(BoardNodeAuthorizableService.name, () => {
 
 				boardNodeService.findByIds.mockResolvedValue([columnBoard1, columnBoard2]);
 
-				return { card1, card2 };
+				return { card1, card2, columnBoard1, columnBoard2 };
 			};
 
 			it('should throw an error', async () => {
@@ -280,6 +280,24 @@ describe(BoardNodeAuthorizableService.name, () => {
 				await expect(service.getBoardAuthorizables([card1, card2])).rejects.toThrow(
 					'Multiple contexts found for board nodes. All board nodes must share the same context to load authorizables.'
 				);
+			});
+
+			it('should not throw an error when uniqueness check is disabled', async () => {
+				const { card1, card2, columnBoard1, columnBoard2 } = setup();
+				const usersWithRoles: UserWithBoardRoles[] = [{ userId: columnBoard1.context.id, roles: [BoardRoles.EDITOR] }];
+				const preparedContext: PreparedBoardContext = {
+					type: columnBoard1.context.type,
+					getUsersWithBoardRoles: () => usersWithRoles,
+					getBoardConfiguration: () => {
+						return {};
+					},
+				};
+				boardContextResolverService.resolve.mockResolvedValue(preparedContext);
+
+				await expect(service.getBoardAuthorizables([card1, card2], false)).resolves.toHaveLength(2);
+				expect(boardContextResolverService.resolve).toHaveBeenCalledWith(columnBoard1.context);
+				expect((await service.getBoardAuthorizables([card1, card2], false))[0].rootNode).toEqual(columnBoard1);
+				expect((await service.getBoardAuthorizables([card1, card2], false))[1].rootNode).toEqual(columnBoard2);
 			});
 		});
 	});
