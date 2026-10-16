@@ -1,3 +1,10 @@
+// Interfaces first (no dependencies)
+export * from './interface';
+
+// Guards (depend on DOs for instanceof checks)
+export * from './guards';
+
+// Domain objects
 export * from './board-node-authorizable.do';
 export * from './board-node.do';
 export * from './board-node.factory';
