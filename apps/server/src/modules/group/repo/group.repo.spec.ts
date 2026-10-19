@@ -109,9 +109,12 @@ describe(GroupRepo.name, () => {
 			const setup = async () => {
 				const userEntity: User = userFactory.buildWithId();
 				const userId: EntityId = userEntity.id;
-				const groups: GroupEntity[] = groupEntityFactory.buildListWithId(4, {
-					users: [{ user: userEntity, role: roleFactory.buildWithId() }],
-				});
+				const groups: GroupEntity[] = ['Group 9', 'Group 10', 'Group 7', 'Group 8'].map((name) =>
+					groupEntityFactory.buildWithId({
+						name,
+						users: [{ user: userEntity, role: roleFactory.buildWithId() }],
+					})
+				);
 				groups[1].type = GroupEntityTypes.COURSE;
 				groups[2].type = GroupEntityTypes.OTHER;
 				groups[3].type = GroupEntityTypes.ROOM;
@@ -140,14 +143,19 @@ describe(GroupRepo.name, () => {
 				);
 			});
 
-			it('should return groups according to pagination', async () => {
+			it.each([
+				{ skip: 0, expectedIndex: 1 },
+				{ skip: 1, expectedIndex: 2 },
+				{ skip: 2, expectedIndex: 3 },
+				{ skip: 3, expectedIndex: 0 },
+			])('should sort groups by name before pagination with skip $skip', async ({ skip, expectedIndex }) => {
 				const { userId, groups } = await setup();
 
-				const result: Page<Group> = await repo.findGroups({ userId }, { pagination: { skip: 1, limit: 1 } });
+				const result: Page<Group> = await repo.findGroups({ userId }, { pagination: { skip, limit: 1 } });
 
 				expect(result.total).toEqual(groups.length);
 				expect(result.data.length).toEqual(1);
-				// FIXME expect(result.data[0].id).toEqual(groups[1].id); MikroORM sorting does not work correctly (e.g. [10, 7, 8, 9])
+				expect(result.data[0].id).toEqual(groups[expectedIndex].id);
 			});
 
 			it('should return groups according to name query', async () => {
