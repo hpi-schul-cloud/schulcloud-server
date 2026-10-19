@@ -1,5 +1,4 @@
-import { FindOptions } from '@mikro-orm/core';
-import { EntityData, EntityName, Populate } from '@mikro-orm/core/typings';
+import { type EntityData, type EntityName, type FindOptions, type Populate } from '@mikro-orm/core';
 import type { SystemEntity } from '@modules/system/repo';
 import { Injectable } from '@nestjs/common';
 import { IFindOptions, SortOrder } from '@shared/domain/interface/find-options';
