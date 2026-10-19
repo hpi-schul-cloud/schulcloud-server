@@ -55,7 +55,7 @@ describe('ToolConfigurationController (API)', () => {
 	});
 
 	afterEach(async () => {
-		await orm.getSchemaGenerator().clearDatabase();
+		await orm.schema.clear();
 	});
 
 	describe('[GET] tools/:contextType/:contextId/available-tools', () => {

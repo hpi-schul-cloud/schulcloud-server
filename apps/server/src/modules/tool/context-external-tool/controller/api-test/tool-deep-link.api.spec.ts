@@ -48,7 +48,7 @@ describe('ToolDeepLinkController (API)', () => {
 	});
 
 	afterEach(async () => {
-		await orm.getSchemaGenerator().clearDatabase();
+		await orm.schema.clear();
 	});
 
 	describe('[POST] tools/context-external-tools/:contextExternalToolId/lti11-deep-link-callback', () => {

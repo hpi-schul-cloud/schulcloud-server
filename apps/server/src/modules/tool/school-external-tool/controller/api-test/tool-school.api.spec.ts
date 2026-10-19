@@ -65,7 +65,7 @@ describe('ToolSchoolController (API)', () => {
 	});
 
 	afterEach(async () => {
-		await orm.getSchemaGenerator().clearDatabase();
+		await orm.schema.clear();
 	});
 
 	describe('[POST] tools/school-external-tools', () => {

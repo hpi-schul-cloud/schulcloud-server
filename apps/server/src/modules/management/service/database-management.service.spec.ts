@@ -1,6 +1,6 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { type IMigrator, MikroORM } from '@mikro-orm/core';
-import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { EntityManager, type MongoDriver, ObjectId } from '@mikro-orm/mongodb';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { createCollections } from '@testing/create-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
@@ -11,7 +11,7 @@ const randomChars = () => new ObjectId().toHexString();
 describe('DatabaseManagementService', () => {
 	let service: DatabaseManagementService;
 	let module: TestingModule;
-	let orm: MikroORM;
+	let orm: MikroORM<MongoDriver>;
 	beforeAll(async () => {
 		module = await Test.createTestingModule({
 			imports: [MongoMemoryDatabaseModule.forRoot({ entities: TEST_ENTITIES })],
@@ -92,8 +92,8 @@ describe('DatabaseManagementService', () => {
 	});
 
 	describe('When call syncIndexes()', () => {
-		it('should call getSchemaGenerator().ensureIndexes()', async () => {
-			const spy = jest.spyOn(orm, 'getSchemaGenerator');
+		it('should call schema.ensureIndexes()', async () => {
+			const spy = jest.spyOn(orm.schema, 'ensureIndexes');
 			await service.syncIndexes();
 			expect(spy).toHaveBeenCalled();
 		});
@@ -101,90 +101,94 @@ describe('DatabaseManagementService', () => {
 
 	describe('When call migrationUp()', () => {
 		const setup = () => {
-			jest.spyOn(orm.getMigrator(), 'up').mockImplementation();
+			jest.spyOn(orm.migrator, 'up').mockImplementation();
 		};
 		it('should call migrator.up()', async () => {
 			setup();
 			await service.migrationUp();
-			expect(orm.getMigrator().up).toHaveBeenCalled();
+			expect(orm.migrator.up).toHaveBeenCalled();
 		});
 		it('should call migrator.up() with from', async () => {
 			setup();
 			const params = { from: 'foo' };
 			await service.migrationUp(params.from, undefined, undefined);
-			expect(orm.getMigrator().up).toHaveBeenCalledWith(params);
+			expect(orm.migrator.up).toHaveBeenCalledWith(params);
 		});
 		it('should call migrator.up() with param "to"', async () => {
 			setup();
 			const params = { to: 'foo' };
 			await service.migrationUp(undefined, params.to, undefined);
-			expect(orm.getMigrator().up).toHaveBeenCalledWith(params);
+			expect(orm.migrator.up).toHaveBeenCalledWith(params);
 		});
 		it('should call migrator.up() with param "only"', async () => {
 			setup();
 			const params = { only: 'foo' };
 			await service.migrationUp(undefined, undefined, params.only);
-			expect(orm.getMigrator().up).toHaveBeenCalledWith({ migrations: [params.only] });
+			expect(orm.migrator.up).toHaveBeenCalledWith({ migrations: [params.only] });
 		});
 		it('should call migrator.up() with param "only" and ignore from and to', async () => {
 			setup();
 			const params = { only: 'foo' };
 			await service.migrationUp('bar', 'baz', params.only);
-			expect(orm.getMigrator().up).toHaveBeenCalledWith({ migrations: [params.only] });
+			expect(orm.migrator.up).toHaveBeenCalledWith({ migrations: [params.only] });
 		});
 	});
 
 	describe('When call migrationDown()', () => {
 		const setup = () => {
-			jest.spyOn(orm.getMigrator(), 'down').mockImplementation();
+			jest.spyOn(orm.migrator, 'down').mockImplementation();
 		};
 		it('should call migrator.down()', async () => {
 			setup();
 			await service.migrationDown();
-			expect(orm.getMigrator().down).toHaveBeenCalled();
+			expect(orm.migrator.down).toHaveBeenCalled();
 		});
 		it('should call migrator.down() with from', async () => {
 			setup();
 			const params = { from: 'foo' };
 			await service.migrationDown(params.from, undefined, undefined);
-			expect(orm.getMigrator().down).toHaveBeenCalledWith(params);
+			expect(orm.migrator.down).toHaveBeenCalledWith(params);
 		});
 		it('should call migrator.down() with param "to"', async () => {
 			setup();
 			const params = { to: 'foo' };
 			await service.migrationDown(undefined, params.to, undefined);
-			expect(orm.getMigrator().down).toHaveBeenCalledWith(params);
+			expect(orm.migrator.down).toHaveBeenCalledWith(params);
 		});
 		it('should call migrator.down() with param "only"', async () => {
 			setup();
 			const params = { only: 'foo' };
 			await service.migrationDown(undefined, undefined, params.only);
-			expect(orm.getMigrator().down).toHaveBeenCalledWith({ migrations: [params.only] });
+			expect(orm.migrator.down).toHaveBeenCalledWith({ migrations: [params.only] });
 		});
 		it('should call migrator.down() with param "only" and ignore from and to', async () => {
 			setup();
 			const params = { only: 'foo' };
 			await service.migrationDown('bar', 'baz', params.only);
-			expect(orm.getMigrator().down).toHaveBeenCalledWith({ migrations: [params.only] });
+			expect(orm.migrator.down).toHaveBeenCalledWith({ migrations: [params.only] });
 		});
 	});
 
 	describe('When call migrationPending()', () => {
-		it('should call migrator.getPendingMigrations()', async () => {
-			const spy = jest.spyOn(orm.getMigrator(), 'getPendingMigrations');
-			await service.migrationPending();
+		it('should return migrator.getPending()', async () => {
+			const pending = [{ name: 'Migration20260101000000' }];
+			const spy = jest.spyOn(orm.migrator, 'getPending').mockResolvedValueOnce(pending);
+			const result = await service.migrationPending();
 			expect(spy).toHaveBeenCalled();
+			expect(result).toBe(pending);
+			spy.mockRestore();
 		});
 	});
 
 	describe('When call migrationCreate()', () => {
-		it('should call migrator.createInitialMigration()', async () => {
-			const spyGetMigrator = jest.spyOn(orm, 'getMigrator');
+		it('should call migrator.createInitial()', async () => {
+			const spyGetMigrator = jest.spyOn(orm, 'migrator', 'get');
 			const spyMigrator: DeepMocked<IMigrator> = createMock<IMigrator>();
 			spyGetMigrator.mockReturnValue(spyMigrator);
 
 			await service.migrationCreate();
-			expect(spyMigrator.createInitialMigration).toHaveBeenCalled();
+			expect(spyMigrator.createInitial).toHaveBeenCalled();
+			spyGetMigrator.mockRestore();
 		});
 	});
 });

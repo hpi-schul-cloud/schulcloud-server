@@ -39,7 +39,7 @@ describe('AdminApiSchoolExternalTool (API)', () => {
 	});
 
 	afterEach(async () => {
-		await orm.getSchemaGenerator().clearDatabase();
+		await orm.schema.clear();
 	});
 
 	describe('[POST] admin/tools/school-external-tools', () => {

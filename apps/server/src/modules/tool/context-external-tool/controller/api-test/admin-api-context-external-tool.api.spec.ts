@@ -40,7 +40,7 @@ describe('AdminApiContextExternalTool (API)', () => {
 	});
 
 	afterEach(async () => {
-		await orm.getSchemaGenerator().clearDatabase();
+		await orm.schema.clear();
 	});
 
 	describe('[POST] admin/tools/context-external-tools', () => {

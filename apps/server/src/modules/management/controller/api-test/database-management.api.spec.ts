@@ -31,7 +31,7 @@ describe('Database Management Controller (API)', () => {
 		app.useBodyParser('text');
 		await app.init();
 		orm = module.get(MikroORM);
-		await orm.getSchemaGenerator().clearDatabase();
+		await orm.schema.clear();
 
 		const em = module.get(EntityManager);
 		await createCollections(em);
