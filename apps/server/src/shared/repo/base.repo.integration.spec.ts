@@ -15,6 +15,9 @@ describe('BaseRepo', () => {
 	class TestEntity extends BaseEntity {
 		@Property()
 		name = 'test';
+
+		@Property({ nullable: true })
+		description?: string;
 	}
 
 	@Injectable()
@@ -71,6 +74,20 @@ describe('BaseRepo', () => {
 
 			const resEntity = repo.create(testEntity);
 			expect(resEntity.name).toEqual(testEntity.name);
+		});
+
+		it('should create an entity from data without optional properties', () => {
+			const entity = repo.create({ name: 'from data' });
+
+			expect(entity).toBeInstanceOf(TestEntity);
+			expect(entity.name).toBe('from data');
+			expect(entity.description).toBeUndefined();
+		});
+
+		it('should preserve optional properties when provided', () => {
+			const entity = repo.create({ name: 'from data', description: 'optional value' });
+
+			expect(entity.description).toBe('optional value');
 		});
 	});
 
