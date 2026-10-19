@@ -78,8 +78,10 @@ export class CourseMikroOrmRepo extends BaseDomainObjectRepo<Course, CourseEntit
 		return page;
 	}
 
-	private mapToMikroOrmOptions<P extends string = never>(options?: IFindOptions<Course>): FindOptions<CourseEntity, P> {
-		const findOptions: FindOptions<CourseEntity, P> = {
+	private mapToMikroOrmOptions(
+		options?: IFindOptions<Course>
+	): Pick<FindOptions<CourseEntity>, 'offset' | 'limit' | 'orderBy'> {
+		const findOptions: Pick<FindOptions<CourseEntity>, 'offset' | 'limit' | 'orderBy'> = {
 			offset: options?.pagination?.skip,
 			limit: options?.pagination?.limit,
 			orderBy: options?.order,

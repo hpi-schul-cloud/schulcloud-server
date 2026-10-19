@@ -135,8 +135,8 @@ export class SchoolMikroOrmRepo extends BaseDomainObjectRepo<School, SchoolEntit
 	private mapToMikroOrmOptions<P extends string = never>(
 		options?: IFindOptions<SchoolProps>,
 		populate?: Populate<SchoolEntity, P>
-	): FindOptions<SchoolEntity, P> {
-		const findOptions: FindOptions<SchoolEntity, P> = {
+	): Pick<FindOptions<SchoolEntity, P>, 'offset' | 'limit' | 'orderBy' | 'populate'> {
+		const findOptions: Pick<FindOptions<SchoolEntity, P>, 'offset' | 'limit' | 'orderBy' | 'populate'> = {
 			offset: options?.pagination?.skip,
 			limit: options?.pagination?.limit,
 			orderBy: options?.order,
