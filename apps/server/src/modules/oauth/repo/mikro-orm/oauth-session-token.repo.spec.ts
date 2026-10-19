@@ -1,5 +1,6 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { DefaultEncryptionService, type EncryptionService } from '@infra/encryption';
+import { LegacyLogger } from '@infra/logger';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { userFactory } from '@modules/user/testing';
 import { Test, type TestingModule } from '@nestjs/testing';
@@ -27,6 +28,7 @@ describe(OauthSessionTokenMikroOrmRepo.name, () => {
 					provide: DefaultEncryptionService,
 					useValue: createMock<EncryptionService>(),
 				},
+				{ provide: LegacyLogger, useValue: createMock<LegacyLogger>() },
 			],
 		}).compile();
 

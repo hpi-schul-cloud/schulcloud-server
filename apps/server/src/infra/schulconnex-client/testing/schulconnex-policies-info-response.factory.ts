@@ -18,6 +18,12 @@ export const schulconnexPoliciesInfoLicenseResponseFactory = Factory.define<Schu
 					action: [SchulconnexPoliciesInfoActionType.EXECUTE],
 				},
 			],
+			access_control: {
+				type: 'license_key',
+				value: {
+					licenseKey: 'test-license-key',
+				},
+			},
 		};
 	}
 );
