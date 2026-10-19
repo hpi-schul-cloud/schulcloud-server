@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
 import ogs from 'open-graph-scraper';
-import { ImageObject } from 'open-graph-scraper/types/lib/types';
+import { type ImageObject } from 'open-graph-scraper/types';
 import { InvalidLinkUrlLoggableException } from '../loggable/invalid-link-url.loggable';
 import { MetaData, MetaDataEntityType } from '../types';
 
