@@ -81,6 +81,7 @@ export class RoomUc {
 				schoolName: school?.getProps().name ?? '',
 				createdAt: room?.createdAt ?? new Date(),
 				updatedAt: room?.updatedAt ?? new Date(),
+				archivedAt: room?.archivedAt,
 			};
 		});
 	}
