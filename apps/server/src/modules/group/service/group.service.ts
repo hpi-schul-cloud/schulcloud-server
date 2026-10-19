@@ -19,7 +19,7 @@ import {
 	GroupVisibilityPermission,
 } from '../domain';
 import { GROUP_CONFIG_TOKEN, GroupConfig } from '../group.config';
-import { GroupRepo } from '../repo';
+import { type GroupMembershipReference, GroupRepo } from '../repo';
 
 @Injectable()
 export class GroupService implements AuthorizationLoaderServiceGeneric<Group> {
@@ -58,6 +58,10 @@ export class GroupService implements AuthorizationLoaderServiceGeneric<Group> {
 		const groups: Page<Group> = await this.groupRepo.findGroups(filter, options);
 
 		return groups;
+	}
+
+	public findMembershipReferences(userId: EntityId, systemId: EntityId): Promise<GroupMembershipReference[]> {
+		return this.groupRepo.findMembershipReferences(userId, systemId);
 	}
 
 	public async findByUsersAndRoomsSchoolId(

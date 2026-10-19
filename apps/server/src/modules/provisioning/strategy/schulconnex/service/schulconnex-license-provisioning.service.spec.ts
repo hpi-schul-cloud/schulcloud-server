@@ -1,4 +1,5 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
+import { LegacyLogger } from '@infra/logger';
 import { GroupService } from '@modules/group';
 import { groupFactory } from '@modules/group/testing';
 import { GroupLicenseType, MediaGroupLicenseService } from '@modules/group-license';
@@ -28,6 +29,7 @@ describe(SchulconnexLicenseProvisioningService.name, () => {
 	let mediaGroupLicenseService: DeepMocked<MediaGroupLicenseService>;
 	let groupService: DeepMocked<GroupService>;
 	let schoolService: DeepMocked<LegacySchoolService>;
+	let logger: DeepMocked<LegacyLogger>;
 	let config: ProvisioningConfig;
 
 	beforeAll(async () => {
@@ -60,6 +62,10 @@ describe(SchulconnexLicenseProvisioningService.name, () => {
 					useValue: createMock<LegacySchoolService>(),
 				},
 				{
+					provide: LegacyLogger,
+					useValue: createMock<LegacyLogger>(),
+				},
+				{
 					provide: PROVISIONING_CONFIG_TOKEN,
 					useValue: { featureSchulconnexGroupSchoolMediaLicenseEnabled: true },
 				},
@@ -73,6 +79,7 @@ describe(SchulconnexLicenseProvisioningService.name, () => {
 		mediaGroupLicenseService = module.get(MediaGroupLicenseService);
 		groupService = module.get(GroupService);
 		schoolService = module.get(LegacySchoolService);
+		logger = module.get(LegacyLogger);
 		config = module.get(PROVISIONING_CONFIG_TOKEN);
 	});
 
@@ -301,7 +308,9 @@ describe(SchulconnexLicenseProvisioningService.name, () => {
 
 			it('should ignore school licenses when the own school has no external id', async () => {
 				mediaUserLicenseService.getMediaUserLicensesForUser.mockResolvedValueOnce([]);
-				schoolService.getSchoolById.mockResolvedValueOnce(legacySchoolDoFactory.build({ id: schoolId }));
+				const school = legacySchoolDoFactory.build({ id: schoolId });
+				school.externalId = undefined;
+				schoolService.getSchoolById.mockResolvedValueOnce(school);
 
 				const schoolLicenses: ExternalLicenseDto[] = [
 					new ExternalLicenseDto({ scope: 'SCHOOL', scopeId: externalSchoolId, mediumId: 'med-1' }),
@@ -311,6 +320,9 @@ describe(SchulconnexLicenseProvisioningService.name, () => {
 
 				expect(mediaSchoolLicenseService.findMediaSchoolLicensesBySchoolId).not.toHaveBeenCalled();
 				expect(mediaSchoolLicenseService.saveAllMediaSchoolLicenses).not.toHaveBeenCalled();
+				expect(logger.warn).toHaveBeenCalledWith(
+					`Skipping ${schoolLicenses.length} school media licenses for school ${schoolId}: school has no external ID.`
+				);
 			});
 
 			it('should provision school license without mediaSourceId', async () => {
@@ -481,6 +493,9 @@ describe(SchulconnexLicenseProvisioningService.name, () => {
 
 				expect(groupService.findByExternalSource).toHaveBeenCalledWith(externalGroupId, systemId);
 				expect(mediaGroupLicenseService.saveAll).not.toHaveBeenCalled();
+				expect(logger.warn).toHaveBeenCalledWith(
+					`Skipping ${groupLicenses.length} group media licenses: group ${externalGroupId} is not provisioned for system ${systemId}.`
+				);
 			});
 
 			it('should skip group licenses that already exist', async () => {
