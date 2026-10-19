@@ -17,17 +17,7 @@
 // @ts-ignore
 import type { UpdateElementContentBodyParamsData } from './update-element-content-body-params-data';
 
-/**
- * 
- * @export
- * @interface UpdateElementContentBodyParams
- */
 export interface UpdateElementContentBodyParams {
-    /**
-     * 
-     * @type {UpdateElementContentBodyParamsData}
-     * @memberof UpdateElementContentBodyParams
-     */
     'data': UpdateElementContentBodyParamsData;
 }
 

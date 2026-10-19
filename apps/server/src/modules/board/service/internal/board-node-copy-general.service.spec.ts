@@ -1,4 +1,5 @@
 import { createMock } from '@golevelup/ts-jest';
+import { DomainErrorHandler } from '@infra/error';
 import { type FilesStorageClientAdapterService, StorageLocation } from '@infra/files-storage-amqp-client';
 import { H5pEditorProducer } from '@infra/h5p-editor-client';
 import { ObjectId } from '@mikro-orm/mongodb';
@@ -56,6 +57,10 @@ describe(BoardNodeCopyService.name, () => {
 				{
 					provide: BOARD_CONFIG_TOKEN,
 					useValue: {},
+				},
+				{
+					provide: DomainErrorHandler,
+					useValue: createMock<DomainErrorHandler>(),
 				},
 			],
 		}).compile();

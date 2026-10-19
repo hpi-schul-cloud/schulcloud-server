@@ -14,34 +14,21 @@
 
 
 
-/**
- * 
- * @export
- * @interface CourseCommonCartridgeMetadataResponse
- */
 export interface CourseCommonCartridgeMetadataResponse {
     /**
      * The id of the course
-     * @type {string}
-     * @memberof CourseCommonCartridgeMetadataResponse
      */
     'id': string;
     /**
      * Title of the course
-     * @type {string}
-     * @memberof CourseCommonCartridgeMetadataResponse
      */
     'title': string;
     /**
      * Creation date of the course
-     * @type {string}
-     * @memberof CourseCommonCartridgeMetadataResponse
      */
     'creationDate': string;
     /**
      * Copy right owners of the course
-     * @type {Array<string>}
-     * @memberof CourseCommonCartridgeMetadataResponse
      */
     'copyRightOwners': Array<string>;
 }

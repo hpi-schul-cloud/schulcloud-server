@@ -1,3 +1,4 @@
+import { LegacyLogger } from '@infra/logger';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { Group, GroupService } from '@modules/group';
 import { GroupLicenseType, MediaGroupLicense, MediaGroupLicenseService } from '@modules/group-license';
@@ -20,6 +21,7 @@ export class SchulconnexLicenseProvisioningService {
 		private readonly mediaGroupLicenseService: MediaGroupLicenseService,
 		private readonly groupService: GroupService,
 		private readonly schoolService: LegacySchoolService,
+		private readonly logger: LegacyLogger,
 		@Inject(PROVISIONING_CONFIG_TOKEN) private readonly config: ProvisioningConfig
 	) {}
 
@@ -40,6 +42,9 @@ export class SchulconnexLicenseProvisioningService {
 		const userLicenses = externalLicenses.filter((license: ExternalLicenseDto) => license.scope === 'USER');
 		const schoolLicenses = externalLicenses.filter((license: ExternalLicenseDto) => license.scope === 'SCHOOL');
 		const groupLicenses = externalLicenses.filter((license: ExternalLicenseDto) => license.scope === 'GROUP');
+		this.logger.log(
+			`Schulconnex media licenses for user ${userId}: user=${userLicenses.length}, school=${schoolLicenses.length}, group=${groupLicenses.length}.`
+		);
 
 		const mediaSourceMap: Map<string, MediaSource> = await this.provisionMediaSources(externalLicenses);
 
@@ -51,6 +56,7 @@ export class SchulconnexLicenseProvisioningService {
 		await this.deleteExpiredLicenses(userLicenses, existingMediaUserLicenses);
 
 		if (!this.config.featureSchulconnexGroupSchoolMediaLicenseEnabled) {
+			this.logger.debug(`Skipping school and group media licenses for user ${userId}: feature is disabled.`);
 			return;
 		}
 
@@ -113,14 +119,27 @@ export class SchulconnexLicenseProvisioningService {
 		schoolId: EntityId,
 		mediaSourceMap: Map<string, MediaSource>
 	): Promise<void> {
+		if (schoolLicenses.length === 0) {
+			return;
+		}
+
 		const school = await this.schoolService.getSchoolById(schoolId);
+		if (!school.externalId) {
+			this.logger.warn(
+				`Skipping ${schoolLicenses.length} school media licenses for school ${schoolId}: school has no external ID.`
+			);
+			return;
+		}
 
 		// Only the user's own school is known, so licenses for any other organisation are ignored
 		const licensesForOwnSchool: ExternalLicenseDto[] = schoolLicenses.filter(
-			(license: ExternalLicenseDto): boolean => !!school.externalId && license.scopeId === school.externalId
+			(license: ExternalLicenseDto): boolean => license.scopeId === school.externalId
 		);
 
 		if (licensesForOwnSchool.length === 0) {
+			this.logger.warn(
+				`Skipping ${schoolLicenses.length} school media licenses for school ${schoolId}: no license scope matches external ID ${school.externalId}.`
+			);
 			return;
 		}
 
@@ -136,6 +155,7 @@ export class SchulconnexLicenseProvisioningService {
 
 		if (newLicenses.length > 0) {
 			await this.mediaSchoolLicenseService.saveAllMediaSchoolLicenses(newLicenses);
+			this.logger.log(`Persisted ${newLicenses.length} school media licenses for school ${schoolId}.`);
 		}
 	}
 
@@ -188,6 +208,11 @@ export class SchulconnexLicenseProvisioningService {
 		const resolved = await Promise.all(
 			entries.map(async ([externalGroupId, licenses]) => {
 				const group: Group | null = await this.groupService.findByExternalSource(externalGroupId, systemId);
+				if (!group) {
+					this.logger.warn(
+						`Skipping ${licenses.length} group media licenses: group ${externalGroupId} is not provisioned for system ${systemId}.`
+					);
+				}
 				return group ? { group, licenses } : null;
 			})
 		);
@@ -249,6 +274,7 @@ export class SchulconnexLicenseProvisioningService {
 
 		if (newLicenses.length > 0) {
 			await this.mediaGroupLicenseService.saveAll(newLicenses);
+			this.logger.log(`Persisted ${newLicenses.length} group media licenses for system ${systemId}.`);
 		}
 	}
 

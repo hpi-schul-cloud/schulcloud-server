@@ -14,22 +14,10 @@
 
 
 
-/**
- * 
- * @export
- * @interface MoveCardBodyParams
- */
 export interface MoveCardBodyParams {
-    /**
-     * 
-     * @type {string}
-     * @memberof MoveCardBodyParams
-     */
     'toColumnId': string;
     /**
      * to bring element to a specific position, default is last position
-     * @type {number}
-     * @memberof MoveCardBodyParams
      */
     'toPosition'?: number;
 }

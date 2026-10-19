@@ -14,23 +14,8 @@
 
 
 
-/**
- * 
- * @export
- * @interface AuthorizedResponse
- */
 export interface AuthorizedResponse {
-    /**
-     * 
-     * @type {string}
-     * @memberof AuthorizedResponse
-     */
     'userId': string;
-    /**
-     * 
-     * @type {boolean}
-     * @memberof AuthorizedResponse
-     */
     'isAuthorized': boolean;
 }
 

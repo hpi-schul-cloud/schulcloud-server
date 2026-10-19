@@ -12,6 +12,11 @@ import { GroupEntity } from '../entity';
 import { GroupDomainMapper, GroupTypesToGroupEntityTypesMapping } from './group-domain.mapper';
 import { GroupScope } from './group.scope';
 
+export interface GroupMembershipReference {
+	id: EntityId;
+	externalId?: string;
+}
+
 @Injectable()
 export class GroupRepo extends BaseDomainObjectRepo<Group, GroupEntity> {
 	protected get entityName(): EntityName<GroupEntity> {
@@ -89,6 +94,22 @@ export class GroupRepo extends BaseDomainObjectRepo<Group, GroupEntity> {
 		const page: Page<Group> = new Page<Group>(domainObjects, total);
 
 		return page;
+	}
+
+	public async findMembershipReferences(userId: EntityId, systemId: EntityId): Promise<GroupMembershipReference[]> {
+		const groups = await this.aggregateGroups<{ _id: ObjectId; externalSource?: { externalId?: string } }>([
+			{
+				$match: {
+					'users.user': new ObjectId(userId),
+					'externalSource.system': new ObjectId(systemId),
+				},
+			},
+			{ $project: { _id: 1, 'externalSource.externalId': 1 } },
+		]);
+
+		return groups.map((group) => {
+			return { id: group._id.toHexString(), externalId: group.externalSource?.externalId };
+		});
 	}
 
 	public async findByUsersAndRoomsSchoolId(

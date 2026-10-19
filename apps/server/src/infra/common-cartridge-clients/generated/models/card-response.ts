@@ -26,53 +26,13 @@ import type { TimestampsResponse } from './timestamps-response';
 // @ts-ignore
 import type { VisibilitySettingsResponse } from './visibility-settings-response';
 
-/**
- * 
- * @export
- * @interface CardResponse
- */
 export interface CardResponse {
-    /**
-     * 
-     * @type {string}
-     * @memberof CardResponse
-     */
     'id': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof CardResponse
-     */
     'title'?: string;
-    /**
-     * 
-     * @type {Colors}
-     * @memberof CardResponse
-     */
     'backgroundColor': Colors;
-    /**
-     * 
-     * @type {number}
-     * @memberof CardResponse
-     */
     'height': number;
-    /**
-     * 
-     * @type {Array<CardResponseElementsInner>}
-     * @memberof CardResponse
-     */
     'elements': Array<CardResponseElementsInner>;
-    /**
-     * 
-     * @type {VisibilitySettingsResponse}
-     * @memberof CardResponse
-     */
     'visibilitySettings': VisibilitySettingsResponse;
-    /**
-     * 
-     * @type {TimestampsResponse}
-     * @memberof CardResponse
-     */
     'timestamps': TimestampsResponse;
 }
 

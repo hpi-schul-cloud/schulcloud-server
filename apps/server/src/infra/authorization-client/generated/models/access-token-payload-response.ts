@@ -14,17 +14,7 @@
 
 
 
-/**
- * 
- * @export
- * @interface AccessTokenPayloadResponse
- */
 export interface AccessTokenPayloadResponse {
-    /**
-     * 
-     * @type {object}
-     * @memberof AccessTokenPayloadResponse
-     */
     'payload': object;
 }
 

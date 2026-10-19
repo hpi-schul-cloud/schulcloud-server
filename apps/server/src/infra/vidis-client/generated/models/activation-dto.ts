@@ -14,65 +14,15 @@
 
 
 
-/**
- * 
- * @export
- * @interface ActivationDTO
- */
 export interface ActivationDTO {
-    /**
-     * 
-     * @type {string}
-     * @memberof ActivationDTO
-     */
     'activationUserEmail'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof ActivationDTO
-     */
     'generatedAVVLink'?: string;
-    /**
-     * 
-     * @type {number}
-     * @memberof ActivationDTO
-     */
     'offerId'?: number;
-    /**
-     * 
-     * @type {string}
-     * @memberof ActivationDTO
-     */
     'offerTitle'?: string;
-    /**
-     * 
-     * @type {number}
-     * @memberof ActivationDTO
-     */
     'organizationId'?: number;
-    /**
-     * 
-     * @type {string}
-     * @memberof ActivationDTO
-     */
     'organizationName'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof ActivationDTO
-     */
     'schoolNameFromIdm'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof ActivationDTO
-     */
     'schoolNumber'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof ActivationDTO
-     */
     'x-class-name'?: string;
 }
 

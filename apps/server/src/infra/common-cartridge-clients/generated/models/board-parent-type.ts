@@ -16,14 +16,12 @@
 
 /**
  * The type of the parent
- * @export
- * @enum {string}
  */
 
 export const BoardParentType = {
     COURSE: 'course',
     ROOM: 'room',
-    USER: 'user'
+    USER: 'user',
 } as const;
 
 export type BoardParentType = typeof BoardParentType[keyof typeof BoardParentType];

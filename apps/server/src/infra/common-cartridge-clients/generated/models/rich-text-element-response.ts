@@ -23,35 +23,10 @@ import type { RichTextElementContent } from './rich-text-element-content';
 // @ts-ignore
 import type { TimestampsResponse } from './timestamps-response';
 
-/**
- * 
- * @export
- * @interface RichTextElementResponse
- */
 export interface RichTextElementResponse {
-    /**
-     * 
-     * @type {string}
-     * @memberof RichTextElementResponse
-     */
     'id': string;
-    /**
-     * 
-     * @type {ContentElementType}
-     * @memberof RichTextElementResponse
-     */
     'type': ContentElementType;
-    /**
-     * 
-     * @type {RichTextElementContent}
-     * @memberof RichTextElementResponse
-     */
     'content': RichTextElementContent;
-    /**
-     * 
-     * @type {TimestampsResponse}
-     * @memberof RichTextElementResponse
-     */
     'timestamps': TimestampsResponse;
 }
 

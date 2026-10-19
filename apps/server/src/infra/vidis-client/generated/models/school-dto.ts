@@ -14,77 +14,17 @@
 
 
 
-/**
- * 
- * @export
- * @interface SchoolDTO
- */
 export interface SchoolDTO {
-    /**
-     * 
-     * @type {number}
-     * @memberof SchoolDTO
-     */
     'organizationId'?: number;
-    /**
-     * 
-     * @type {string}
-     * @memberof SchoolDTO
-     */
     'organizationName'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof SchoolDTO
-     */
     'schoolAddress'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof SchoolDTO
-     */
     'schoolAdminEmailAddress'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof SchoolDTO
-     */
     'schoolCity'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof SchoolDTO
-     */
     'schoolName'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof SchoolDTO
-     */
     'schoolNameFromIdm'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof SchoolDTO
-     */
     'schoolNumber'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof SchoolDTO
-     */
     'schoolRegion'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof SchoolDTO
-     */
     'schoolZipcode'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof SchoolDTO
-     */
     'x-class-name'?: string;
 }
 

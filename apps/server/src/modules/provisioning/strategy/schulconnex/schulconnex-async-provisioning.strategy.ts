@@ -1,4 +1,4 @@
-import { Logger } from '@infra/logger';
+import { LegacyLogger, Logger } from '@infra/logger';
 import {
 	SchulconnexPoliciesInfoLicenseResponse,
 	SchulconnexPoliciesInfoResponse,
@@ -6,12 +6,11 @@ import {
 	SchulconnexResponseValidationGroups,
 	SchulconnexRestClient,
 } from '@infra/schulconnex-client';
-import { Group, GroupService } from '@modules/group';
+import { GroupService } from '@modules/group';
 import { LegacySchoolDo } from '@modules/legacy-school/domain';
 import { UserDo } from '@modules/user';
 import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { NotFoundLoggableException, ValidationErrorLoggableException } from '@shared/common/loggable-exception';
-import { Page } from '@shared/domain/domainobject';
 import { SystemProvisioningStrategy } from '@shared/domain/interface/system-provisioning.strategy';
 import { plainToClass } from 'class-transformer';
 import { validate, ValidationError } from 'class-validator';
@@ -53,7 +52,8 @@ export class SchulconnexAsyncProvisioningStrategy extends ProvisioningStrategy {
 		protected readonly schulconnexRestClient: SchulconnexRestClient,
 		@Inject(PROVISIONING_CONFIG_TOKEN)
 		protected readonly config: ProvisioningConfig,
-		protected readonly logger: Logger
+		protected readonly logger: Logger,
+		private readonly legacyLogger: LegacyLogger
 	) {
 		super();
 	}
@@ -105,6 +105,11 @@ export class SchulconnexAsyncProvisioningStrategy extends ProvisioningStrategy {
 						overrideUrl: policiesInfoUrl,
 					}
 				);
+				if (this.config.logPolicyEndpointResponse) {
+					this.legacyLogger.debug(
+						`Schulconnex policies-info response: ${JSON.stringify(schulconnexPoliciesInfoAxiosResponse)}`
+					);
+				}
 
 				const schulconnexPoliciesInfoResponse = plainToClass(
 					SchulconnexPoliciesInfoResponse,
@@ -221,18 +226,17 @@ export class SchulconnexAsyncProvisioningStrategy extends ProvisioningStrategy {
 			);
 		}
 
-		const existingGroupsOfUser: Page<Group> = await this.groupService.findGroups({ userId, systemId });
+		const existingGroupsOfUser = await this.groupService.findMembershipReferences(userId, systemId);
 
-		const groupsWithoutUser = existingGroupsOfUser.data.filter((existingGroupFromSystem: Group) => {
+		const groupsWithoutUser = existingGroupsOfUser.filter((existingGroupFromSystem) => {
 			const isUserInGroup = externalGroups.some(
-				(externalGroup: ExternalGroupDto) =>
-					externalGroup.externalId === existingGroupFromSystem.externalSource?.externalId
+				(externalGroup: ExternalGroupDto) => externalGroup.externalId === existingGroupFromSystem.externalId
 			);
 
 			return !isUserInGroup;
 		});
 
-		const removalPromises = groupsWithoutUser.map(async (group: Group): Promise<void> => {
+		const removalPromises = groupsWithoutUser.map(async (group): Promise<void> => {
 			await this.schulconnexGroupProvisioningProducer.removeUserFromGroup({
 				userId,
 				groupId: group.id,

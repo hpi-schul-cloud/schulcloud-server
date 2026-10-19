@@ -14,11 +14,6 @@
 
 
 
-/**
- * 
- * @export
- * @enum {string}
- */
 
 export const Colors = {
     TRANSPARENT: 'transparent',
@@ -40,7 +35,7 @@ export const Colors = {
     DEEP_ORANGE: 'deepOrange',
     BROWN: 'brown',
     GREY: 'grey',
-    BLUE_GREY: 'blueGrey'
+    BLUE_GREY: 'blueGrey',
 } as const;
 
 export type Colors = typeof Colors[keyof typeof Colors];
