@@ -941,6 +941,129 @@ describe(RoomRule.name, () => {
 		});
 	});
 
+	describe('canArchiveRoom', () => {
+		describe('when user has room archive permission', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const userOwner = userFactory.buildWithId();
+				const roomRoleDto = roleDtoFactory.build({ permissions: [Permission.ROOM_ARCHIVE_ROOM] });
+				const roleOwner = roleDtoFactory.build({ name: RoleName.ROOMOWNER });
+				const roomAuthorizable = new RoomAuthorizable(
+					'roomId',
+					[
+						{ roles: [roomRoleDto], userId: user.id, userSchoolId: user.school.id },
+						{ roles: [roleOwner], userId: userOwner.id, userSchoolId: userOwner.school.id },
+					],
+					user.school.id
+				);
+
+				return { user, roomAuthorizable };
+			};
+
+			it('should return true', () => {
+				const { user, roomAuthorizable } = setup();
+
+				const result = service.can('archiveRoom', user, roomAuthorizable);
+
+				expect(result).toBe(true);
+			});
+		});
+
+		describe('when user has school admin permission and room is from own school', () => {
+			const setup = () => {
+				const schoolRole = roleFactory.build({ permissions: [Permission.SCHOOL_ADMINISTRATE_ROOMS] });
+				const user = userFactory.buildWithId({ roles: [schoolRole] });
+				const roomRoleDto = roleDtoFactory.build({ permissions: [] });
+				const roomAuthorizable = new RoomAuthorizable(
+					'roomId',
+					[{ roles: [roomRoleDto], userId: user.id, userSchoolId: user.school.id }],
+					user.school.id
+				);
+
+				return { user, roomAuthorizable };
+			};
+
+			it('should return true', () => {
+				const { user, roomAuthorizable } = setup();
+
+				const result = service.can('archiveRoom', user, roomAuthorizable);
+
+				expect(result).toBe(true);
+			});
+		});
+
+		describe('when user has school admin permission but room is not from own school', () => {
+			const setup = () => {
+				const schoolRole = roleFactory.build({ permissions: [Permission.SCHOOL_ADMINISTRATE_ROOMS] });
+				const user = userFactory.buildWithId({ roles: [schoolRole] });
+				const otherSchool = schoolEntityFactory.buildWithId();
+				const roomRoleDto = roleDtoFactory.build({ permissions: [] });
+				const roomAuthorizable = new RoomAuthorizable(
+					'roomId',
+					[{ roles: [roomRoleDto], userId: user.id, userSchoolId: user.school.id }],
+					otherSchool.id
+				);
+
+				return { user, roomAuthorizable };
+			};
+
+			it('should return false', () => {
+				const { user, roomAuthorizable } = setup();
+
+				const result = service.can('archiveRoom', user, roomAuthorizable);
+
+				expect(result).toBe(false);
+			});
+		});
+
+		describe('when user has neither permission', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const roomRoleDto = roleDtoFactory.build({ permissions: [] });
+				const roomAuthorizable = new RoomAuthorizable(
+					'roomId',
+					[{ roles: [roomRoleDto], userId: user.id, userSchoolId: user.school.id }],
+					user.school.id
+				);
+
+				return { user, roomAuthorizable };
+			};
+
+			it('should return false', () => {
+				const { user, roomAuthorizable } = setup();
+
+				const result = service.can('archiveRoom', user, roomAuthorizable);
+
+				expect(result).toBe(false);
+			});
+		});
+
+		describe('when user only has room change owner permission', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const roomRoleDto = roleDtoFactory.build({
+					name: RoleName.ROOMOWNER,
+					permissions: [Permission.ROOM_CHANGE_OWNER],
+				});
+				const roomAuthorizable = new RoomAuthorizable(
+					'roomId',
+					[{ roles: [roomRoleDto], userId: user.id, userSchoolId: user.school.id }],
+					user.school.id
+				);
+
+				return { user, roomAuthorizable };
+			};
+
+			it('should return false', () => {
+				const { user, roomAuthorizable } = setup();
+
+				const result = service.can('archiveRoom', user, roomAuthorizable);
+
+				expect(result).toBe(false);
+			});
+		});
+	});
+
 	describe('canGetRoomMembers', () => {
 		describe('when user has both school list members and room list content permissions', () => {
 			const setup = () => {

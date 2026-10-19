@@ -15,6 +15,7 @@ export class RoomRolesTestFactory {
 			name: RoleName.ROOMOWNER,
 			permissions: [
 				Permission.ROOM_ADD_MEMBERS,
+				Permission.ROOM_ARCHIVE_ROOM,
 				Permission.ROOM_CHANGE_OWNER,
 				Permission.ROOM_CHANGE_ROLES,
 				Permission.ROOM_COPY_ROOM,

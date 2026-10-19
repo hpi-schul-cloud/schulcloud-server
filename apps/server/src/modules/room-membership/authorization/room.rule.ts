@@ -68,6 +68,7 @@ export class RoomRule implements Rule<RoomAuthorizable> {
 		if (object.isArchived) {
 			return false;
 		}
+
 		return roomPermissions.includes(Permission.ROOM_EDIT_CONTENT);
 	}
 
@@ -320,10 +321,18 @@ const canDeleteRoom = (user: User, roomAuthorizable: RoomAuthorizable): boolean 
 };
 
 const canArchiveRoom = (user: User, roomAuthorizable: RoomAuthorizable): boolean => {
-	const { roomPermissions } = resolveUserPermissions(user, roomAuthorizable);
-	const isRoomOwner = roomPermissions.includes(Permission.ROOM_CHANGE_OWNER);
+	const { schoolPermissions, roomPermissions } = resolveUserPermissions(user, roomAuthorizable);
+	const hasRoomPermission = roomPermissions.includes(Permission.ROOM_ARCHIVE_ROOM);
+	const isOwnSchool = roomAuthorizable.schoolId === user.school.id;
+	const canAdministrateSchoolRooms = schoolPermissions.includes(Permission.SCHOOL_ADMINISTRATE_ROOMS);
 
-	return isRoomOwner;
+	if (!canAdministrateSchoolRooms && isLockedRoom(roomAuthorizable)) {
+		return false;
+	}
+
+	const result = hasRoomPermission || (isOwnSchool && canAdministrateSchoolRooms);
+
+	return result;
 };
 
 const canGetRoomMembers = (user: User, roomAuthorizable: RoomAuthorizable): boolean => {
