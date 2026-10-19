@@ -26,7 +26,7 @@ async function bootstrap(): Promise<void> {
 
 	const nestExpressAdapter = new ExpressAdapter(nestExpress);
 	const nestApp: NestExpressApplication = await NestFactory.create(ManagementServerModule, nestExpressAdapter);
-	const orm = nestApp.get(MikroORM);
+	const orm = nestApp.get<MikroORM>(MikroORM);
 
 	nestApp.useBodyParser('text');
 
