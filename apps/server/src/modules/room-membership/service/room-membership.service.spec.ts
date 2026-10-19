@@ -534,22 +534,26 @@ describe('RoomMembershipService', () => {
 				expect(result.members[0].userSchoolId).toBeDefined();
 			});
 
-			it('should return isArchived false when the room is not archived', async () => {
-				const { roomId } = setup();
-				roomService.getSingleRoom.mockResolvedValue(roomFactory.build({ id: roomId }));
+			describe('when the room is not archived', () => {
+				it('should return isArchived false', async () => {
+					const { roomId } = setup();
+					roomService.getSingleRoom.mockResolvedValue(roomFactory.build({ id: roomId }));
 
-				const result = await service.getRoomAuthorizable(roomId);
+					const result = await service.getRoomAuthorizable(roomId);
 
-				expect(result.isArchived).toBe(false);
+					expect(result.isArchived).toBe(false);
+				});
 			});
 
-			it('should return isArchived true when the room is archived', async () => {
-				const { roomId } = setup();
-				roomService.getSingleRoom.mockResolvedValue(roomFactory.build({ id: roomId, archivedAt: new Date() }));
+			describe('when the room is archived', () => {
+				it('should return isArchived true', async () => {
+					const { roomId } = setup();
+					roomService.getSingleRoom.mockResolvedValue(roomFactory.build({ id: roomId, archivedAt: new Date() }));
 
-				const result = await service.getRoomAuthorizable(roomId);
+					const result = await service.getRoomAuthorizable(roomId);
 
-				expect(result.isArchived).toBe(true);
+					expect(result.isArchived).toBe(true);
+				});
 			});
 		});
 

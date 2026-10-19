@@ -223,16 +223,20 @@ describe('ShareTokenPermissionService', () => {
 			);
 		});
 
-		it('should not throw when the room is not archived', async () => {
-			const { user } = setup(false);
+		describe('when the room is not archived', () => {
+			it('should not throw', async () => {
+				const { user } = setup(false);
 
-			await expect(service.checkRoomImportPermission(user, 'room-id')).resolves.toBeUndefined();
+				await expect(service.checkRoomImportPermission(user, 'room-id')).resolves.toBeUndefined();
+			});
 		});
 
-		it('should throw ForbiddenException when the room is archived', async () => {
-			const { user } = setup(true);
+		describe('when the room is archived', () => {
+			it('should throw ForbiddenException', async () => {
+				const { user } = setup(true);
 
-			await expect(service.checkRoomImportPermission(user, 'room-id')).rejects.toThrow('archived');
+				await expect(service.checkRoomImportPermission(user, 'room-id')).rejects.toThrow('archived');
+			});
 		});
 	});
 

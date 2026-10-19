@@ -150,23 +150,27 @@ describe(ColumnUc.name, () => {
 				return { user, card, toColumn };
 			};
 
-			it('should throw forbidden when the target board denies content creation (e.g. an archived room)', async () => {
-				const { user, card, toColumn } = setupCrossBoardMove();
+			describe('when the target board denies content creation (e.g. an archived room)', () => {
+				it('should throw forbidden', async () => {
+					const { user, card, toColumn } = setupCrossBoardMove();
 
-				boardNodeRule.can.mockImplementation((operation) => operation !== 'createCard');
+					boardNodeRule.can.mockImplementation((operation) => operation !== 'createCard');
 
-				await expect(uc.moveCard(user.id, card.id, toColumn.id)).rejects.toThrow();
-				expect(boardNodeService.move).not.toHaveBeenCalled();
+					await expect(uc.moveCard(user.id, card.id, toColumn.id)).rejects.toThrow();
+					expect(boardNodeService.move).not.toHaveBeenCalled();
+				});
 			});
 
-			it('should move the card when the target board allows content creation', async () => {
-				const { user, card, toColumn } = setupCrossBoardMove();
+			describe('when the target board allows content creation', () => {
+				it('should move the card', async () => {
+					const { user, card, toColumn } = setupCrossBoardMove();
 
-				boardNodeRule.can.mockReturnValue(true);
+					boardNodeRule.can.mockReturnValue(true);
 
-				await uc.moveCard(user.id, card.id, toColumn.id);
+					await uc.moveCard(user.id, card.id, toColumn.id);
 
-				expect(boardNodeService.move).toHaveBeenCalledWith(card, toColumn, undefined);
+					expect(boardNodeService.move).toHaveBeenCalledWith(card, toColumn, undefined);
+				});
 			});
 		});
 	});

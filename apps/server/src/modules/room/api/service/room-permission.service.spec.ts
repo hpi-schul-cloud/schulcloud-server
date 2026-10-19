@@ -182,18 +182,22 @@ describe('RoomPermissionService', () => {
 	});
 
 	describe('checkFeatureRoomArchiveEnabled', () => {
-		it('checkFeatureRoomArchiveEnabled: throws when feature flag disabled', () => {
-			const { service, config } = setup();
-			config.featureRoomArchiveEnabled = false;
+		describe('when the feature flag is disabled', () => {
+			it('should throw', () => {
+				const { service, config } = setup();
+				config.featureRoomArchiveEnabled = false;
 
-			expect(() => service.checkFeatureRoomArchiveEnabled()).toThrow();
+				expect(() => service.checkFeatureRoomArchiveEnabled()).toThrow();
+			});
 		});
 
-		it('checkFeatureRoomArchiveEnabled: does nothing when enabled', () => {
-			const { service, config } = setup();
-			config.featureRoomArchiveEnabled = true;
+		describe('when the feature flag is enabled', () => {
+			it('should not throw', () => {
+				const { service, config } = setup();
+				config.featureRoomArchiveEnabled = true;
 
-			expect(() => service.checkFeatureRoomArchiveEnabled()).not.toThrow();
+				expect(() => service.checkFeatureRoomArchiveEnabled()).not.toThrow();
+			});
 		});
 	});
 });
