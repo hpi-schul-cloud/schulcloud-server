@@ -35,6 +35,13 @@ export const RoomOperationValues = [
 
 export type RoomOperation = (typeof RoomOperationValues)[number]; // turn string list to type union of strings
 
+const MEMBER_MANAGEMENT_PERMISSIONS: Permission[] = [
+	Permission.ROOM_ADD_MEMBERS,
+	Permission.ROOM_REMOVE_MEMBERS,
+	Permission.ROOM_CHANGE_ROLES,
+	Permission.ROOM_MANAGE_INVITATIONLINKS,
+];
+
 type OperationFn = (user: User, authorizable: RoomAuthorizable) => boolean;
 
 @Injectable()
@@ -65,7 +72,7 @@ export class RoomRule implements Rule<RoomAuthorizable> {
 			return roomPermissions.includes(Permission.ROOM_LIST_CONTENT);
 		}
 
-		if (object.isArchived) {
+		if (object.isArchived && !this.isMemberManagement(requiredPermissions)) {
 			return false;
 		}
 
@@ -134,6 +141,11 @@ export class RoomRule implements Rule<RoomAuthorizable> {
 		}
 
 		return true;
+	}
+
+	// archived rooms are read-only for content, but their members can still be managed
+	private isMemberManagement(requiredPermissions: Permission[]): boolean {
+		return requiredPermissions.some((permission) => MEMBER_MANAGEMENT_PERMISSIONS.includes(permission));
 	}
 
 	private hasAccessToSchool(user: User, schoolId: string): boolean {

@@ -176,6 +176,52 @@ describe(RoomRule.name, () => {
 			});
 		});
 
+		describe('when the room is archived', () => {
+			const setup = () => {
+				const user = userFactory.buildWithId();
+				const roleDto = roleDtoFactory.build({
+					permissions: [Permission.ROOM_LIST_CONTENT, Permission.ROOM_EDIT_CONTENT, Permission.ROOM_ADD_MEMBERS],
+				});
+				const roomAuthorizable = new RoomAuthorizable(
+					'',
+					[{ roles: [roleDto], userId: user.id, userSchoolId: user.school.id }],
+					user.school.id,
+					true
+				);
+
+				return { user, roomAuthorizable };
+			};
+
+			it('should return "true" for read action', () => {
+				const { user, roomAuthorizable } = setup();
+
+				const res = service.hasPermission(user, roomAuthorizable, { action: Action.read, requiredPermissions: [] });
+
+				expect(res).toBe(true);
+			});
+
+			it('should return "false" for content write action', () => {
+				const { user, roomAuthorizable } = setup();
+
+				const res = service.hasPermission(user, roomAuthorizable, { action: Action.write, requiredPermissions: [] });
+
+				expect(res).toBe(false);
+			});
+
+			describe('when the write action manages members', () => {
+				it('should return "true"', () => {
+					const { user, roomAuthorizable } = setup();
+
+					const res = service.hasPermission(user, roomAuthorizable, {
+						action: Action.write,
+						requiredPermissions: [Permission.ROOM_ADD_MEMBERS],
+					});
+
+					expect(res).toBe(true);
+				});
+			});
+		});
+
 		describe("when user is guest at room's school", () => {
 			describe('when user has view permission for room', () => {
 				const setup = () => {
