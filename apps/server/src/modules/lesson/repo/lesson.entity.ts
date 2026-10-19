@@ -88,10 +88,10 @@ export class LessonEntity extends BaseEntityWithTimestamps implements TaskParent
 	@Property({ type: ArrayType<ComponentProperties> })
 	contents: ComponentProperties[] | [];
 
-	@ManyToMany('Material', undefined, { fieldName: 'materialIds' })
+	@ManyToMany(() => Material, undefined, { fieldName: 'materialIds' })
 	materials = new Collection<Material>(this);
 
-	@OneToMany('Task', 'lesson', { orphanRemoval: true })
+	@OneToMany(() => Task, 'lesson', { orphanRemoval: true })
 	tasks = new Collection<Task>(this);
 
 	constructor(props: LessonProperties) {

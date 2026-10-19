@@ -20,7 +20,7 @@ export class CourseGroupEntity extends BaseEntityWithTimestamps implements TaskP
 	@Property()
 	name: string;
 
-	@ManyToMany('User', undefined, { fieldName: 'userIds' })
+	@ManyToMany(() => User, undefined, { fieldName: 'userIds' })
 	@Index()
 	students = new Collection<User>(this);
 

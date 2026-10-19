@@ -26,7 +26,7 @@ export class LegacyBoard extends BaseEntityWithTimestamps {
 	@OneToOne({ entity: () => CourseEntity, fieldName: 'courseId', ref: true, unique: true, owner: true })
 	course: Ref<CourseEntity>;
 
-	@ManyToMany('LegacyBoardElement', undefined, { fieldName: 'referenceIds' })
+	@ManyToMany(() => LegacyBoardElement, undefined, { fieldName: 'referenceIds' })
 	references = new Collection<LegacyBoardElement>(this);
 
 	public getByTargetId(id: EntityId): LearnroomElement {

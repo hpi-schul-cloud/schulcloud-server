@@ -9,6 +9,6 @@ export class LessonBoardElement extends LegacyBoardElement {
 		this.boardElementType = LegacyBoardElementType.Lesson;
 	}
 
-	@ManyToOne('LessonEntity')
+	@ManyToOne(() => LessonEntity)
 	target!: LessonEntity;
 }

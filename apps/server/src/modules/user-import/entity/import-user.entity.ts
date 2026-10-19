@@ -106,7 +106,7 @@ export class ImportUser extends BaseEntityWithTimestamps {
 	 * Update user-match together with matchedBy, take the field as read-only
 	 * @read
 	 */
-	@ManyToOne('User', { fieldName: 'match_userId', eager: true, nullable: true })
+	@ManyToOne(() => User, { fieldName: 'match_userId', eager: true, nullable: true })
 	@Unique({ options: { partialFilterExpression: { match_userId: { $type: 'objectId' } } } })
 	user?: User;
 

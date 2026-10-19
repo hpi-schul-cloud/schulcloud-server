@@ -20,7 +20,7 @@ export class Role extends BaseEntityWithTimestamps {
 	@Property({ type: ArrayType<Permission> })
 	permissions: Permission[] = [];
 
-	@ManyToMany({ entity: 'Role' })
+	@ManyToMany({ entity: () => Role })
 	roles = new Collection<Role>(this);
 
 	constructor(props: RoleProperties) {

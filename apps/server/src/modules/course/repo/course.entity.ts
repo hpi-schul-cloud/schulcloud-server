@@ -82,15 +82,15 @@ export class CourseEntity extends BaseEntityWithTimestamps implements TaskParent
 	school: SchoolEntity;
 
 	@Index()
-	@ManyToMany('User', undefined, { fieldName: 'userIds' })
+	@ManyToMany(() => User, undefined, { fieldName: 'userIds' })
 	students = new Collection<User>(this);
 
 	@Index()
-	@ManyToMany('User', undefined, { fieldName: 'teacherIds' })
+	@ManyToMany(() => User, undefined, { fieldName: 'teacherIds' })
 	teachers = new Collection<User>(this);
 
 	@Index()
-	@ManyToMany('User', undefined, { fieldName: 'substitutionIds' })
+	@ManyToMany(() => User, undefined, { fieldName: 'substitutionIds' })
 	substitutionTeachers = new Collection<User>(this);
 
 	@OneToMany(() => CourseGroupEntity, 'course', { orphanRemoval: true })

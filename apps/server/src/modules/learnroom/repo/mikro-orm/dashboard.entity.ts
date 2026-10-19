@@ -43,7 +43,7 @@ export class DashboardGridElementEntity extends BaseEntityWithTimestamps {
 	references = new Collection<CourseEntity>(this);
 
 	@Index()
-	@ManyToOne('DashboardEntity', { ref: true })
+	@ManyToOne(() => DashboardEntity, { ref: true })
 	dashboard: Ref<DashboardEntity>;
 }
 
@@ -63,12 +63,12 @@ export class DashboardEntity extends BaseEntityWithTimestamps {
 		if (props.gridElements) this.gridElements.set(props.gridElements);
 	}
 
-	@OneToMany('DashboardGridElementEntity', 'dashboard', { orphanRemoval: true })
+	@OneToMany(() => DashboardGridElementEntity, 'dashboard', { orphanRemoval: true })
 	gridElements: Collection<DashboardGridElementEntity> = new Collection<DashboardGridElementEntity>(this);
 
 	// userId
 	@Index()
-	@ManyToOne('User', { fieldName: 'userId', ref: true })
+	@ManyToOne(() => User, { fieldName: 'userId', ref: true })
 	user: Ref<User>;
 
 	// sizetype
