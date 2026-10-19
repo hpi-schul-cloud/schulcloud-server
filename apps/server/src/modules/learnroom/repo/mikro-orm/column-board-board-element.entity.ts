@@ -9,6 +9,6 @@ export class ColumnBoardBoardElement extends LegacyBoardElement {
 		this.boardElementType = LegacyBoardElementType.ColumnBoard;
 	}
 
-	@ManyToOne(() => BoardNodeEntity, { nullable: false })
+	@ManyToOne(() => BoardNodeEntity, { fieldName: 'target', nullable: false })
 	target!: BoardNodeEntity;
 }
