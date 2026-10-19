@@ -1,5 +1,5 @@
 import { RoomOperation, RoomOperationValues } from '@modules/room-membership/authorization/room.rule';
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsEnum } from 'class-validator';
 import { RoomColor } from '../../../domain/type';
 
@@ -22,6 +22,9 @@ export class RoomItemResponse {
 
 	@ApiProperty({ type: Date })
 	updatedAt: Date;
+
+	@ApiPropertyOptional({ type: Date })
+	archivedAt?: Date;
 
 	@ApiProperty({
 		type: 'object',
@@ -48,6 +51,7 @@ export class RoomItemResponse {
 
 		this.createdAt = room.createdAt;
 		this.updatedAt = room.updatedAt;
+		this.archivedAt = room.archivedAt;
 
 		this.allowedOperations = room.allowedOperations;
 		this.isLocked = room.isLocked;

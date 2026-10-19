@@ -17,6 +17,12 @@ export class RoomArchivedItemResponse {
 	@ApiProperty({ type: Date })
 	archivedAt: Date;
 
+	@ApiProperty({ type: Date })
+	createdAt: Date;
+
+	@ApiProperty({ type: Date })
+	updatedAt: Date;
+
 	@ApiProperty({ type: String })
 	schoolName: string;
 
@@ -37,6 +43,8 @@ export class RoomArchivedItemResponse {
 		this.ownerName = props.ownerName;
 		this.totalMembers = props.totalMembers;
 		this.archivedAt = props.archivedAt;
+		this.createdAt = props.createdAt;
+		this.updatedAt = props.updatedAt;
 		this.schoolName = props.schoolName;
 		this.allowedOperations = props.allowedOperations;
 	}

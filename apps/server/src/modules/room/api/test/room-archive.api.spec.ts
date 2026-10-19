@@ -61,40 +61,48 @@ describe('Room Controller (API) - archive', () => {
 			return roomSetup;
 		};
 
-		it('should return a 401 error when the user is not authenticated', async () => {
-			const roomSetup = await setup();
+		describe('when the user is not authenticated', () => {
+			it('should return a 401 error', async () => {
+				const roomSetup = await setup();
 
-			const response = await testApiClient.patch(`/${roomSetup.room.id}/archive`);
+				const response = await testApiClient.patch(`/${roomSetup.room.id}/archive`);
 
-			expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
+				expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
+			});
 		});
 
-		it('should return a 403 error when the feature is disabled', async () => {
-			const roomSetup = await setup();
-			config.featureRoomArchiveEnabled = false;
+		describe('when the feature is disabled', () => {
+			it('should return a 403 error', async () => {
+				const roomSetup = await setup();
+				config.featureRoomArchiveEnabled = false;
 
-			const loggedInClient = await roomSetup.loginUser('Owner');
-			const response = await loggedInClient.patch(`/${roomSetup.room.id}/archive`);
+				const loggedInClient = await roomSetup.loginUser('Owner');
+				const response = await loggedInClient.patch(`/${roomSetup.room.id}/archive`);
 
-			expect(response.status).toBe(HttpStatus.FORBIDDEN);
+				expect(response.status).toBe(HttpStatus.FORBIDDEN);
+			});
 		});
 
-		it('should return a 404 error when the room does not exist', async () => {
-			const roomSetup = await setup();
-			const loggedInClient = await roomSetup.loginUser('Owner');
+		describe('when the room does not exist', () => {
+			it('should return a 404 error', async () => {
+				const roomSetup = await setup();
+				const loggedInClient = await roomSetup.loginUser('Owner');
 
-			const response = await loggedInClient.patch(`/${new ObjectId().toHexString()}/archive`);
+				const response = await loggedInClient.patch(`/${new ObjectId().toHexString()}/archive`);
 
-			expect(response.status).toBe(HttpStatus.NOT_FOUND);
+				expect(response.status).toBe(HttpStatus.NOT_FOUND);
+			});
 		});
 
-		it('should return a 400 error when the room id is not a valid mongo id', async () => {
-			const roomSetup = await setup();
-			const loggedInClient = await roomSetup.loginUser('Owner');
+		describe('when the room id is not a valid mongo id', () => {
+			it('should return a 400 error', async () => {
+				const roomSetup = await setup();
+				const loggedInClient = await roomSetup.loginUser('Owner');
 
-			const response = await loggedInClient.patch('/42/archive');
+				const response = await loggedInClient.patch('/42/archive');
 
-			expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+				expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+			});
 		});
 
 		it.each([
@@ -133,18 +141,20 @@ describe('Room Controller (API) - archive', () => {
 			expect((response.body as RoomDetailsResponse).isArchived).toBe(true);
 		});
 
-		it('should be idempotent when archiving an already archived room', async () => {
-			const roomSetup = await setup();
-			const loggedInClient = await roomSetup.loginUser('Owner');
+		describe('when archiving an already archived room', () => {
+			it('should be idempotent', async () => {
+				const roomSetup = await setup();
+				const loggedInClient = await roomSetup.loginUser('Owner');
 
-			const firstResponse = await loggedInClient.patch(`/${roomSetup.room.id}/archive`);
-			const secondResponse = await loggedInClient.patch(`/${roomSetup.room.id}/archive`);
+				const firstResponse = await loggedInClient.patch(`/${roomSetup.room.id}/archive`);
+				const secondResponse = await loggedInClient.patch(`/${roomSetup.room.id}/archive`);
 
-			expect(firstResponse.status).toBe(HttpStatus.OK);
-			expect(secondResponse.status).toBe(HttpStatus.OK);
+				expect(firstResponse.status).toBe(HttpStatus.OK);
+				expect(secondResponse.status).toBe(HttpStatus.OK);
 
-			const getResponse = await loggedInClient.get(roomSetup.room.id);
-			expect((getResponse.body as RoomDetailsResponse).isArchived).toBe(true);
+				const getResponse = await loggedInClient.get(roomSetup.room.id);
+				expect((getResponse.body as RoomDetailsResponse).isArchived).toBe(true);
+			});
 		});
 
 		describe('when the room has no owner', () => {
@@ -177,12 +187,14 @@ describe('Room Controller (API) - archive', () => {
 			return { roomSetup, ownerClient };
 		};
 
-		it('should return a 401 error when the user is not authenticated', async () => {
-			const { roomSetup } = await setup();
+		describe('when the user is not authenticated', () => {
+			it('should return a 401 error', async () => {
+				const { roomSetup } = await setup();
 
-			const response = await testApiClient.patch(`/${roomSetup.room.id}/unarchive`);
+				const response = await testApiClient.patch(`/${roomSetup.room.id}/unarchive`);
 
-			expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
+				expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
+			});
 		});
 
 		it.each([
@@ -209,35 +221,41 @@ describe('Room Controller (API) - archive', () => {
 			expect((response.body as RoomDetailsResponse).isArchived).toBe(false);
 		});
 
-		it('should be idempotent when restoring a room that is not archived', async () => {
-			const { roomSetup, ownerClient } = await setup();
-			await ownerClient.patch(`/${roomSetup.room.id}/unarchive`);
+		describe('when restoring a room that is not archived', () => {
+			it('should be idempotent', async () => {
+				const { roomSetup, ownerClient } = await setup();
+				await ownerClient.patch(`/${roomSetup.room.id}/unarchive`);
 
-			const secondResponse = await ownerClient.patch(`/${roomSetup.room.id}/unarchive`);
+				const secondResponse = await ownerClient.patch(`/${roomSetup.room.id}/unarchive`);
 
-			expect(secondResponse.status).toBe(HttpStatus.OK);
-			const getResponse = await ownerClient.get(roomSetup.room.id);
-			expect((getResponse.body as RoomDetailsResponse).isArchived).toBe(false);
+				expect(secondResponse.status).toBe(HttpStatus.OK);
+				const getResponse = await ownerClient.get(roomSetup.room.id);
+				expect((getResponse.body as RoomDetailsResponse).isArchived).toBe(false);
+			});
 		});
 	});
 
 	describe('GET /rooms/archived', () => {
-		it('should return a 401 error when the user is not authenticated', async () => {
-			const response = await testApiClient.get('archived');
+		describe('when the user is not authenticated', () => {
+			it('should return a 401 error', async () => {
+				const response = await testApiClient.get('archived');
 
-			expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
+				expect(response.status).toBe(HttpStatus.UNAUTHORIZED);
+			});
 		});
 
-		it('should return a 403 error when the feature is disabled', async () => {
-			config.featureRoomArchiveEnabled = false;
-			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-			await em.persist([teacherAccount, teacherUser]).flush();
-			em.clear();
-			const loggedInClient = await testApiClient.login(teacherAccount);
+		describe('when the feature is disabled', () => {
+			it('should return a 403 error', async () => {
+				config.featureRoomArchiveEnabled = false;
+				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
+				await em.persist([teacherAccount, teacherUser]).flush();
+				em.clear();
+				const loggedInClient = await testApiClient.login(teacherAccount);
 
-			const response = await loggedInClient.get('archived');
+				const response = await loggedInClient.get('archived');
 
-			expect(response.status).toBe(HttpStatus.FORBIDDEN);
+				expect(response.status).toBe(HttpStatus.FORBIDDEN);
+			});
 		});
 
 		describe('when the user owns an active room and an archived room', () => {
@@ -304,6 +322,13 @@ describe('Room Controller (API) - archive', () => {
 				const body = response.body as RoomArchivedListResponse;
 				expect(body.data).toHaveLength(1);
 				expect(body.data[0].id).toBe(archivedRoom.id);
+				expect(body.data[0]).toEqual(
+					expect.objectContaining({
+						archivedAt: archivedRoom.archivedAt?.toISOString(),
+						createdAt: archivedRoom.createdAt.toISOString(),
+						updatedAt: archivedRoom.updatedAt.toISOString(),
+					})
+				);
 				expect(body.data.map((room) => room.id)).not.toContain(activeRoom.id);
 			});
 
@@ -316,6 +341,23 @@ describe('Room Controller (API) - archive', () => {
 				const body = response.body as RoomListResponse;
 				expect(body.data.map((room) => room.id)).toContain(activeRoom.id);
 				expect(body.data.map((room) => room.id)).not.toContain(archivedRoom.id);
+			});
+
+			describe('when the feature is disabled', () => {
+				it('should list the archived room in the normal room overview', async () => {
+					const { loggedInClient, activeRoom, archivedRoom } = await setup();
+					config.featureRoomArchiveEnabled = false;
+
+					const response = await loggedInClient.get();
+
+					expect(response.status).toBe(HttpStatus.OK);
+					const body = response.body as RoomListResponse;
+					expect(body.data.map((room) => room.id)).toEqual(expect.arrayContaining([activeRoom.id, archivedRoom.id]));
+					expect(body.data.find((room) => room.id === archivedRoom.id)?.archivedAt).toBe(
+						archivedRoom.archivedAt?.toISOString()
+					);
+					expect(body.data.find((room) => room.id === activeRoom.id)?.archivedAt).toBeUndefined();
+				});
 			});
 		});
 

@@ -42,6 +42,7 @@ export class RoomMapper {
 			schoolId: room.schoolId,
 			createdAt: room.createdAt,
 			updatedAt: room.updatedAt,
+			archivedAt: room.archivedAt,
 			allowedOperations,
 			isLocked,
 			totalMembers,
@@ -139,6 +140,8 @@ export class RoomMapper {
 					ownerName,
 					totalMembers,
 					archivedAt: room.archivedAt as Date,
+					createdAt: room.createdAt,
+					updatedAt: room.updatedAt,
 					schoolName,
 					allowedOperations,
 				})

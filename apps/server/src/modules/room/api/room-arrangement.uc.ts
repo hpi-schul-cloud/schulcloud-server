@@ -2,10 +2,11 @@ import { AuthorizationService } from '@modules/authorization';
 import { RoleName } from '@modules/role';
 import { RoomMembershipService } from '@modules/room-membership';
 import { RoomRule } from '@modules/room-membership/authorization/room.rule';
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { TypeGuard } from '@shared/common/guards';
 import { EntityId } from '@shared/domain/types';
 import { RoomArrangementService, RoomService } from '../domain';
+import { ROOM_PUBLIC_API_CONFIG_TOKEN, RoomPublicApiConfig } from '../room.config';
 import { RoomWithAllowedOperationsAndLockedStatus } from './type/room-with-locked-status';
 import { throwForbiddenIfFalse } from '@shared/common/utils/wrap-with-exception';
 
@@ -16,7 +17,8 @@ export class RoomArrangementUc {
 		private readonly roomMembershipService: RoomMembershipService,
 		private readonly roomService: RoomService,
 		private readonly roomArrangementService: RoomArrangementService,
-		private readonly roomRule: RoomRule
+		private readonly roomRule: RoomRule,
+		@Inject(ROOM_PUBLIC_API_CONFIG_TOKEN) private readonly config: RoomPublicApiConfig
 	) {}
 
 	public async getRoomsByUserArrangement(userId: EntityId): Promise<RoomWithAllowedOperationsAndLockedStatus[]> {
@@ -24,8 +26,11 @@ export class RoomArrangementUc {
 		const roomIds = accessibleRoomAuthorizables.map((item) => item.roomId);
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 
-		// archived rooms have their own listing via getArchivedRooms, so they are excluded from the regular overview here
-		const rooms = (await this.roomService.getRoomsByIds(roomIds)).filter((room) => !room.isArchived);
+		// archived rooms have their own listing via getArchivedRooms, so they are excluded from the regular overview here.
+		// While the feature is disabled that listing is unavailable, so archived rooms stay in the overview to remain reachable.
+		const rooms = (await this.roomService.getRoomsByIds(roomIds)).filter(
+			(room) => !this.config.featureRoomArchiveEnabled || !room.isArchived
+		);
 
 		const existingRoomIds = rooms.map((room) => room.id);
 		const orderedRoomIds = await this.roomArrangementService.sortRoomIdsByUserArrangement(userId, existingRoomIds);
