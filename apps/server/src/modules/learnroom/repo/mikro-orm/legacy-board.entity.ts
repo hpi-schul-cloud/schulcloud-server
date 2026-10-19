@@ -1,4 +1,5 @@
-import { Collection, Entity, ManyToMany, OneToOne, Ref, wrap } from '@mikro-orm/decorators/legacy';
+import { Collection, Ref, wrap } from '@mikro-orm/core';
+import { Entity, ManyToMany, OneToOne } from '@mikro-orm/decorators/legacy';
 import { CourseEntity } from '@modules/course/repo';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity';
