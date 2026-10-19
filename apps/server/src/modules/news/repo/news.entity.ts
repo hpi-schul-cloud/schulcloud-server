@@ -1,4 +1,4 @@
-import { Entity, Enum, Index, ManyToOne, Property } from '@mikro-orm/core';
+import { Entity, Enum, Index, ManyToOne, Property } from '@mikro-orm/decorators/legacy';
 import { CourseEntity } from '@modules/course/repo';
 import { SchoolEntity } from '@modules/school/repo';
 import type { TeamEntity } from '@modules/team/repo';

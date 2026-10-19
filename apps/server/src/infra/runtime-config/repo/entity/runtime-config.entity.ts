@@ -1,4 +1,4 @@
-import { Entity, Property, Unique } from '@mikro-orm/core';
+import { Entity, Property, Unique } from '@mikro-orm/decorators/legacy';
 import { BaseEntity } from '@shared/domain/entity';
 import { RuntimeConfigType } from '../../domain/runtime-config-value.do';
 

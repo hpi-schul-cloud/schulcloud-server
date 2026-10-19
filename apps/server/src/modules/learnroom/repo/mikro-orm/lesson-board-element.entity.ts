@@ -1,4 +1,4 @@
-import { Entity, ManyToOne } from '@mikro-orm/core';
+import { Entity, ManyToOne } from '@mikro-orm/decorators/legacy';
 import { LessonEntity } from '@modules/lesson/repo';
 import { LegacyBoardElement, LegacyBoardElementType } from './legacy-board-element.entity';
 

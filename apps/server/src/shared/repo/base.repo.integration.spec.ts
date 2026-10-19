@@ -1,4 +1,5 @@
-import { Entity, EntityName, Property } from '@mikro-orm/core';
+import { EntityName } from '@mikro-orm/core';
+import { Entity, Property } from '@mikro-orm/decorators/legacy';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';

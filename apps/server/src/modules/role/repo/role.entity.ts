@@ -1,4 +1,6 @@
-import { Collection, Entity, ManyToMany, Property, Unique } from '@mikro-orm/core';
+import { Entity, ManyToMany, Property, Unique } from '@mikro-orm/decorators/legacy';
+import { Collection } from '@mikro-orm/core';
+import { ArrayType } from '@mikro-orm/mongodb';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 import { Permission } from '@shared/domain/interface';
 import { RoleName } from '../domain';
@@ -15,7 +17,7 @@ export class Role extends BaseEntityWithTimestamps {
 	@Unique()
 	name: RoleName;
 
-	@Property()
+	@Property({ type: ArrayType<Permission> })
 	permissions: Permission[] = [];
 
 	@ManyToMany({ entity: 'Role' })

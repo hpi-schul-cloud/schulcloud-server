@@ -1,4 +1,5 @@
-import { Entity, Property } from '@mikro-orm/core';
+import { Entity, Property } from '@mikro-orm/decorators/legacy';
+import { ArrayType } from '@mikro-orm/mongodb';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 
 export interface TargetGroupProperties {
@@ -32,7 +33,7 @@ export class Material extends BaseEntityWithTimestamps {
 	@Property()
 	description?: string;
 
-	@Property()
+	@Property({ type: ArrayType<string> })
 	license: string[];
 
 	@Property()

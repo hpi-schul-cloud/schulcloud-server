@@ -1,4 +1,5 @@
-import { Collection, Entity, Ref, Index, ManyToMany, ManyToOne, OneToMany, Property, wrap } from '@mikro-orm/core';
+import { Entity, Index, ManyToMany, ManyToOne, OneToMany, Property } from '@mikro-orm/decorators/legacy';
+import { Collection, Ref, wrap } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { CourseEntity } from '@modules/course/repo';
 import { User } from '@modules/user/repo';

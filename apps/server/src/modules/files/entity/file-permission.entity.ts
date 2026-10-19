@@ -1,4 +1,4 @@
-import { Embeddable, Enum, Property } from '@mikro-orm/core';
+import { Embeddable, Enum, Property } from '@mikro-orm/decorators/legacy';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { EntityId } from '@shared/domain/types';
 import { FilePermissionReferenceModel } from '../domain';

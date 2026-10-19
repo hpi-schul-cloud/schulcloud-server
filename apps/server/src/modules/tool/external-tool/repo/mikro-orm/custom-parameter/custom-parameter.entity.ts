@@ -1,4 +1,4 @@
-import { Embeddable, Enum, Property } from '@mikro-orm/core';
+import { Embeddable, Enum, Property } from '@mikro-orm/decorators/legacy';
 import { CustomParameterLocation, CustomParameterScope, CustomParameterType } from '../../../../common/enum';
 
 @Embeddable()

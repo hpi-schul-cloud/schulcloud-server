@@ -1,4 +1,4 @@
-import { Embeddable, Embedded, Entity, Index, Property } from '@mikro-orm/core';
+import { Embeddable, Embedded, Entity, Index, Property } from '@mikro-orm/decorators/legacy';
 import { RoomContentProps, RoomContentType, RoomContentItem as IRoomContentItem } from '../../domain/type';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';

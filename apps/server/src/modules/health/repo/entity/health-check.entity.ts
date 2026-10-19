@@ -1,4 +1,4 @@
-import { Entity, PrimaryKeyProp, PrimaryKey, Property, Index } from '@mikro-orm/core';
+import { Entity, PrimaryKeyProp, PrimaryKey, Property, Index } from '@mikro-orm/decorators/legacy';
 
 export interface HealthCheckEntityProps {
 	id: string;

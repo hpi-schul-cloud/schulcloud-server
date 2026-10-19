@@ -1,4 +1,4 @@
-import { Entity, Property } from '@mikro-orm/core';
+import { Entity, Property } from '@mikro-orm/decorators/legacy';
 import { EmptyResultQuery } from './query/empty-result.query';
 import { Scope } from './scope';
 

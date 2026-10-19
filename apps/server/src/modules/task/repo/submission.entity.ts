@@ -1,4 +1,5 @@
-import { Collection, Entity, Index, ManyToMany, ManyToOne, Property, Unique } from '@mikro-orm/core';
+import { Collection } from '@mikro-orm/core';
+import { Entity, Index, ManyToMany, ManyToOne, Property, Unique } from '@mikro-orm/decorators/legacy';
 import { CourseGroupEntity } from '@modules/course/repo';
 import { SchoolEntity } from '@modules/school/repo';
 import type { User } from '@modules/user/repo';

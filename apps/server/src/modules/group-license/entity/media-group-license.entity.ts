@@ -1,4 +1,4 @@
-import { Entity, ManyToOne, Property } from '@mikro-orm/core';
+import { Entity, ManyToOne, Property } from '@mikro-orm/decorators/legacy';
 import { MediaSourceEntity } from '@modules/media-source/entity';
 import { GroupLicenseType } from '../enum';
 import { GroupLicenseEntity, GroupLicenseEntityProps } from './group-license.entity';

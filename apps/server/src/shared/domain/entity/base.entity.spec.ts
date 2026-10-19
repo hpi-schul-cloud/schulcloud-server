@@ -1,4 +1,4 @@
-import { Entity } from '@mikro-orm/core';
+import { Entity } from '@mikro-orm/decorators/legacy';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { setupEntities } from '@testing/database';
 import { BaseEntity } from './base.entity';

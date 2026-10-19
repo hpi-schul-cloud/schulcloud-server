@@ -1,10 +1,11 @@
-import { Embedded, Entity, Enum, Index, Property } from '@mikro-orm/core';
+import { Embedded, Entity, Enum, Index, Property } from '@mikro-orm/decorators/legacy';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { EntityId, InputFormat } from '@shared/domain/types';
 import { ObjectIdType } from '@shared/repo/types/object-id.type';
 import { AnyBoardNode, BoardLayout, BoardNodeType, ContentElementType, Colors, ROOT_PATH } from '../../domain';
 import type { BoardNodeEntityProps } from '../types';
 import { Context } from './embeddables';
+import { ArrayType } from '@mikro-orm/mongodb';
 
 @Entity({ tableName: 'boardnodes' })
 export class BoardNodeEntity extends BaseEntityWithTimestamps implements BoardNodeEntityProps {
@@ -24,7 +25,7 @@ export class BoardNodeEntity extends BaseEntityWithTimestamps implements BoardNo
 	@Enum(() => BoardNodeType)
 	type!: BoardNodeType;
 
-	@Property({ persist: false })
+	@Property({ persist: false, type: ArrayType<AnyBoardNode> })
 	children: AnyBoardNode[] = [];
 
 	@Property({ persist: false })

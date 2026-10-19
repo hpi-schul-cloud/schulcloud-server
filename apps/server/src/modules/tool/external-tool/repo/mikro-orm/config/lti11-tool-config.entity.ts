@@ -1,4 +1,4 @@
-import { Embeddable, Enum, Property } from '@mikro-orm/core';
+import { Embeddable, Enum, Property } from '@mikro-orm/decorators/legacy';
 import { LtiMessageType, LtiPrivacyPermission, ToolConfigType } from '../../../../common/enum';
 import { ExternalToolConfigEntity } from './external-tool-config.entity';
 

@@ -1,4 +1,4 @@
-import { Entity, ManyToOne } from '@mikro-orm/core';
+import { Entity, ManyToOne } from '@mikro-orm/decorators/legacy';
 import type { BoardNodeEntity } from '@modules/board/repo/entity/board-node.entity';
 import { LegacyBoardElement, LegacyBoardElementType } from './legacy-board-element.entity';
 

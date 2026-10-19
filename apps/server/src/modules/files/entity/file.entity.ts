@@ -1,5 +1,5 @@
-import { Embedded, Entity, Enum, Index, ManyToOne, Property } from '@mikro-orm/core';
-import { ObjectId } from '@mikro-orm/mongodb';
+import { Embedded, Entity, Enum, Index, ManyToOne, Property } from '@mikro-orm/decorators/legacy';
+import { ArrayType, ObjectId } from '@mikro-orm/mongodb';
 import { StorageProviderEntity } from '@modules/school/repo';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { EntityId } from '@shared/domain/types';
@@ -76,7 +76,7 @@ export class FileEntity extends BaseEntityWithTimestamps {
 	@Embedded(() => FileSecurityCheckEntity, { object: true, nullable: false })
 	securityCheck: FileSecurityCheckEntity = new FileSecurityCheckEntity({});
 
-	@Property({ nullable: true })
+	@Property({ nullable: true, type: ArrayType<string> })
 	@Index()
 	shareTokens: string[] = [];
 
@@ -108,7 +108,7 @@ export class FileEntity extends BaseEntityWithTimestamps {
 		return this._creatorId?.toHexString();
 	}
 
-	@Embedded(() => FilePermissionEntity, { array: true, nullable: false })
+	@Embedded(() => FilePermissionEntity, { nullable: false, type: ArrayType<FilePermissionEntity> })
 	permissions: FilePermissionEntity[];
 
 	@Property({ fieldName: 'lockId', nullable: true })
