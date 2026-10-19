@@ -116,6 +116,10 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 			return false;
 		}
 
+		if (authorizable.boardConfiguration.isArchived && this.isWriteRequest(context)) {
+			return false;
+		}
+
 		if (this.shouldProcessDrawingElementFile(authorizable, context)) {
 			return this.hasPermissionForDrawingElementFile(userWithBoardRoles);
 		}
@@ -125,10 +129,6 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 		}
 
 		if (context.action === Action.write) {
-			if (authorizable.boardConfiguration.isArchived) {
-				return false;
-			}
-
 			const isReader = userWithBoardRoles.roles.includes(BoardRoles.READER);
 			const readersCanEdit = authorizable.boardConfiguration.canReadersEdit ?? false;
 
@@ -249,6 +249,15 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 
 	private isBoardReader(userWithBoardRoles: UserWithBoardRoles): boolean {
 		return [BoardRoles.READER, BoardRoles.EDITOR].some((role) => userWithBoardRoles.roles.includes(role));
+	}
+
+	private isWriteRequest(context: AuthorizationContext): boolean {
+		// file uploads/removals on drawing elements are authorized via required permissions, independent of the action
+		return (
+			context.action === Action.write ||
+			context.requiredPermissions.includes(Permission.FILESTORAGE_CREATE) ||
+			context.requiredPermissions.includes(Permission.FILESTORAGE_REMOVE)
+		);
 	}
 
 	private shouldProcessDrawingElementFile(

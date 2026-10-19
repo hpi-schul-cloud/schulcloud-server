@@ -1238,5 +1238,91 @@ describe(BoardNodeRule.name, () => {
 
 			expect(res).toBe(false);
 		});
+
+		describe('when the element is a drawing element', () => {
+			const setupDrawing = () => {
+				const user = userFactory.asTeacher().buildWithId();
+				const boardNodeAuthorizable = boardNodeAuthorizableFactory.build({
+					users: [{ userId: user.id, roles: [BoardRoles.READER] }],
+					id: new ObjectId().toHexString(),
+					boardNode: drawingElementFactory.build(),
+					rootNode: columnBoardFactory.build(),
+					boardConfiguration: { isLocked: false, isArchived: true },
+				});
+				userService.resolvePermissions.mockReturnValueOnce([...userPermissions, ...studentPermissions]);
+
+				return { user, boardNodeAuthorizable };
+			};
+
+			it('should return true for FILESTORAGE_VIEW', () => {
+				const { user, boardNodeAuthorizable } = setupDrawing();
+
+				const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
+					action: Action.read,
+					requiredPermissions: [Permission.FILESTORAGE_VIEW],
+				});
+
+				expect(res).toBe(true);
+			});
+
+			it('should return false for FILESTORAGE_CREATE', () => {
+				const { user, boardNodeAuthorizable } = setupDrawing();
+
+				const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
+					action: Action.read,
+					requiredPermissions: [Permission.FILESTORAGE_CREATE],
+				});
+
+				expect(res).toBe(false);
+			});
+
+			it('should return false for FILESTORAGE_REMOVE', () => {
+				const { user, boardNodeAuthorizable } = setupDrawing();
+
+				const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
+					action: Action.read,
+					requiredPermissions: [Permission.FILESTORAGE_REMOVE],
+				});
+
+				expect(res).toBe(false);
+			});
+		});
+
+		describe('when the element is a video conference element', () => {
+			const setupVideoConference = () => {
+				const user = userFactory.buildWithId();
+				const boardNodeAuthorizable = boardNodeAuthorizableFactory.build({
+					users: [{ userId: user.id, roles: [BoardRoles.EDITOR, BoardRoles.ADMIN] }],
+					id: new ObjectId().toHexString(),
+					boardNode: videoConferenceElementFactory.build(),
+					rootNode: columnBoardFactory.build(),
+					boardConfiguration: { isLocked: false, isArchived: true, canEditorsManageVideoconference: true },
+				});
+
+				return { user, boardNodeAuthorizable };
+			};
+
+			it('should return true for read action', () => {
+				const { user, boardNodeAuthorizable } = setupVideoConference();
+
+				const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
+					action: Action.read,
+					requiredPermissions: [],
+				});
+
+				expect(res).toBe(true);
+			});
+
+			it('should return false for write action', () => {
+				const { user, boardNodeAuthorizable } = setupVideoConference();
+
+				const res = boardNodeRule.hasPermission(user, boardNodeAuthorizable, {
+					action: Action.write,
+					requiredPermissions: [],
+				});
+
+				expect(res).toBe(false);
+			});
+		});
 	});
 });

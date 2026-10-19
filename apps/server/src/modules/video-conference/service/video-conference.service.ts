@@ -120,6 +120,11 @@ export class VideoConferenceService {
 
 	private async hasStartMeetingAndCanRead(authorizableUser: User, entity: ConferenceResource): Promise<boolean> {
 		if (entity instanceof Room) {
+			// archived rooms are read-only, so no one may start or end a meeting there
+			if (entity.isArchived) {
+				return false;
+			}
+
 			const roomAuthorizable = await this.roomMembershipService.getRoomAuthorizable(entity.id);
 			const roomMember = roomAuthorizable.members.find((member) => member.userId === authorizableUser.id);
 
@@ -131,6 +136,10 @@ export class VideoConferenceService {
 		}
 		if (entity instanceof VideoConferenceElement) {
 			const boardDoAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(entity);
+			if (boardDoAuthorizable.boardConfiguration.isArchived) {
+				return false;
+			}
+
 			const boardAuthorisedUser = boardDoAuthorizable.users.find((user) => user.userId === authorizableUser.id);
 
 			if (boardAuthorisedUser) {
