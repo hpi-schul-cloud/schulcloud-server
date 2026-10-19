@@ -20,7 +20,7 @@ export class SchoolExternalToolRepo {
 
 	public async save(domainObject: SchoolExternalTool): Promise<SchoolExternalTool> {
 		const existing: SchoolExternalToolEntity | null = await this.em.findOne<SchoolExternalToolEntity>(
-			SchoolExternalToolEntity.name,
+			SchoolExternalToolEntity,
 			domainObject.id
 		);
 

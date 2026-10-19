@@ -15,7 +15,7 @@ import { Permission } from '@shared/domain/interface';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { CustomParameterScope, CustomParameterType } from '../../../common/enum';
-import { type ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/repo';
+import { ContextExternalToolEntity, ContextExternalToolType } from '../../../context-external-tool/repo';
 import { contextExternalToolEntityFactory } from '../../../context-external-tool/testing';
 import { ExternalToolMediumStatus } from '../../../external-tool/enum/external-tool-medium-status.enum';
 import { type ExternalToolEntity } from '../../../external-tool/repo';
@@ -241,9 +241,7 @@ describe('ToolSchoolController (API)', () => {
 			});
 			expect(deleted).toBeNull();
 
-			await expect(
-				em.findOneOrFail('ContextExternalToolEntity', { id: contextExternalToolEntity.id })
-			).rejects.toThrow();
+			await expect(em.findOneOrFail(ContextExternalToolEntity, { id: contextExternalToolEntity.id })).rejects.toThrow();
 		});
 	});
 

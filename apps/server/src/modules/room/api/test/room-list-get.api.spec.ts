@@ -1,6 +1,7 @@
 import { EntityManager } from '@mikro-orm/mongodb';
 import { GroupEntityTypes } from '@modules/group/entity/group.entity';
 import { groupEntityFactory } from '@modules/group/testing';
+import { RoomMembershipEntity } from '@modules/room-membership';
 import { roomMembershipEntityFactory } from '@modules/room-membership/testing/room-membership-entity.factory';
 import { roomArrangementEntityFactory } from '@modules/room/testing';
 import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
@@ -12,6 +13,7 @@ import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { omit } from 'lodash';
+import { RoomEntity } from '../../repo';
 import { roomEntityFactory } from '../../testing/room-entity.factory';
 import { type RoomListResponse } from '../dto/response/room-list.response';
 
@@ -212,8 +214,8 @@ describe('Room Controller (API)', () => {
 						const { loggedInClient, rooms, roomArrangement } = await setupWithArrangement();
 
 						// Delete one of the rooms in the arrangement
-						await em.nativeDelete('RoomEntity', { id: rooms[0].id });
-						await em.nativeDelete('RoomMembershipEntity', { id: rooms[0].id });
+						await em.nativeDelete(RoomEntity, { id: rooms[0].id });
+						await em.nativeDelete(RoomMembershipEntity, { id: rooms[0].id });
 
 						const response = await loggedInClient.get();
 

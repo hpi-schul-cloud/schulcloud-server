@@ -9,6 +9,7 @@ import { Permission } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
+import { Task } from '../../repo';
 import { taskFactory } from '../../testing';
 
 const createStudent = () => {
@@ -109,7 +110,7 @@ describe('Task Controller (API)', () => {
 
 				await anotherTeacherClient.delete(`${task.id}`);
 
-				const taskAfterDelete = await em.findOneOrFail('Task', task.id);
+				const taskAfterDelete = await em.findOneOrFail(Task, task.id);
 
 				expect(taskAfterDelete).toBeDefined();
 			});

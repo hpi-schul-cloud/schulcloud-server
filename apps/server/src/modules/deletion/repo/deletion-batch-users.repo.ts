@@ -1,5 +1,7 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { RoleName } from '@modules/role';
+import { Role } from '@modules/role/repo';
+import { User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 
@@ -64,15 +66,16 @@ export class DeletionBatchUsersRepo {
 			},
 		];
 
-		const [result] = await this.em.getConnection().aggregate<GroupedUserIdsByRoles>('users', pipeline);
+		const [result] = await this.em.getCollection(User).aggregate<GroupedUserIdsByRoles>(pipeline).toArray();
 
 		return result;
 	}
 
 	private async getRoleObjectIdsByNames(roleNames: RoleName[]): Promise<ObjectId[]> {
 		const roles = await this.em
-			.getConnection()
-			.aggregate<{ _id: ObjectId }>('roles', [{ $match: { name: { $in: roleNames } } }, { $project: { _id: 1 } }]);
+			.getCollection(Role)
+			.aggregate<{ _id: ObjectId }>([{ $match: { name: { $in: roleNames } } }, { $project: { _id: 1 } }])
+			.toArray();
 		const roleObjectIds = roles.map((r) => r._id);
 
 		return roleObjectIds;

@@ -16,6 +16,7 @@ import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { RoomContentType } from '../../domain';
+import { RoomContentEntity } from '../../repo';
 import { roomContentEntityFactory, roomEntityFactory } from '../../testing';
 import { expectIsoDateString } from '@testing/matchers';
 
@@ -266,11 +267,11 @@ describe('Room Controller (API)', () => {
 					it('should create one', async () => {
 						const { loggedInClient, room } = await setup();
 
-						await em.nativeDelete('RoomContentEntity', { roomId: room.id });
+						await em.nativeDelete(RoomContentEntity, { roomId: room.id });
 
 						await loggedInClient.get(`${room.id}/boards`);
 
-						const roomContent = await em.findOneOrFail('RoomContentEntity', { roomId: room.id });
+						const roomContent = await em.findOneOrFail(RoomContentEntity, { roomId: room.id });
 						expect(roomContent['items']).toHaveLength(3);
 					});
 				});

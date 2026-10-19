@@ -5,6 +5,7 @@ import { userFactory } from '@modules/user/testing';
 import { type INestApplication } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { TestApiClientBuilder } from '@testing/test-api-client-builder';
+import { DeletionBatchEntity } from '../../../repo/entity';
 import { deletionBatchEntityFactory } from '../../../repo/entity/testing'; // testing need to be changed to top level of the module
 import { type DeletionBatchListResponse } from '../dto/response/deletion-batch-list.response'; // barrel file
 
@@ -27,7 +28,7 @@ describe('getBatches ', () => {
 	});
 
 	beforeEach(async () => {
-		await em.nativeDelete('DeletionBatch', {});
+		await em.nativeDelete(DeletionBatchEntity, {});
 	});
 
 	afterAll(async () => {
