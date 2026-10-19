@@ -1,4 +1,5 @@
 import { MaybePromise, MikroORM } from '@mikro-orm/core';
+import { ReflectMetadataProvider } from '@mikro-orm/decorators/legacy';
 import { defineConfig, MongoDriver } from '@mikro-orm/mongodb';
 import { MikroOrmModule, MikroOrmModuleAsyncOptions } from '@mikro-orm/nestjs';
 import { DynamicModule, Inject, Module, OnModuleDestroy } from '@nestjs/common';
@@ -19,6 +20,7 @@ const createMikroOrmModule = (options: MikroOrmModuleAsyncOptions): MaybePromise
 				...options,
 				driver: MongoDriver,
 				clientUrl,
+				metadataProvider: ReflectMetadataProvider,
 			});
 		},
 	});
