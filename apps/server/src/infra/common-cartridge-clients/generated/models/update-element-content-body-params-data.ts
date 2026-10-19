@@ -46,7 +46,6 @@ import type { VideoConferenceElementContentBody } from './video-conference-eleme
 
 /**
  * @type UpdateElementContentBodyParamsData
- * @export
  */
 export type UpdateElementContentBodyParamsData = DrawingElementContentBody | ExternalToolElementContentBody | FileElementContentBody | FileFolderElementContentBody | H5pElementContentBody | LinkElementContentBody | RichTextElementContentBody | VideoConferenceElementContentBody;
 

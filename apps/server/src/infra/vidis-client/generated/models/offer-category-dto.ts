@@ -14,41 +14,11 @@
 
 
 
-/**
- * 
- * @export
- * @interface OfferCategoryDTO
- */
 export interface OfferCategoryDTO {
-    /**
-     * 
-     * @type {Array<string>}
-     * @memberof OfferCategoryDTO
-     */
     'category'?: Array<string>;
-    /**
-     * 
-     * @type {Array<string>}
-     * @memberof OfferCategoryDTO
-     */
     'competency'?: Array<string>;
-    /**
-     * 
-     * @type {Array<string>}
-     * @memberof OfferCategoryDTO
-     */
     'gradeLevel'?: Array<string>;
-    /**
-     * 
-     * @type {Array<string>}
-     * @memberof OfferCategoryDTO
-     */
     'schoolType'?: Array<string>;
-    /**
-     * 
-     * @type {string}
-     * @memberof OfferCategoryDTO
-     */
     'x-class-name'?: string;
 }
 

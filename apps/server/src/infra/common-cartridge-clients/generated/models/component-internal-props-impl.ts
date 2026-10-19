@@ -14,16 +14,9 @@
 
 
 
-/**
- * 
- * @export
- * @interface ComponentInternalPropsImpl
- */
 export interface ComponentInternalPropsImpl {
     /**
      * url of a Internal component
-     * @type {string}
-     * @memberof ComponentInternalPropsImpl
      */
     'url': string;
 }

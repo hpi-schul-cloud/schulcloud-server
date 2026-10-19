@@ -18,14 +18,13 @@ import type { AxiosPromise, AxiosInstance, RawAxiosRequestConfig } from 'axios';
 import globalAxios from 'axios';
 // Some imports not used depending on template conditions
 // @ts-ignore
-import { DUMMY_BASE_URL, assertParamExists, setApiKeyToObject, setBasicAuthToObject, setBearerAuthToObject, setOAuthToObject, setSearchParams, serializeDataIfNeeded, toPathString, createRequestFunction } from '../common';
+import { DUMMY_BASE_URL, assertParamExists, setApiKeyToObject, setBasicAuthToObject, setBearerAuthToObject, setOAuthToObject, setSearchParams, serializeDataIfNeeded, toPathString, createRequestFunction, replaceWithSerializableTypeIfNeeded } from '../common';
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, type RequestArgs, BaseAPI, RequiredError, operationServerMap } from '../base';
 // @ts-ignore
 import type { PageOfferDTO } from '../models';
 /**
  * IDMBetreiberApi - axios parameter creator
- * @export
  */
 export const IDMBetreiberApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
@@ -41,7 +40,7 @@ export const IDMBetreiberApiAxiosParamCreator = function (configuration?: Config
             // verify required parameter 'regionName' is not null or undefined
             assertParamExists('getActivatedOffersByRegion', 'regionName', regionName)
             const localVarPath = `/v1.0/offers/activated/by-region/{regionName}`
-                .replace(`{${"regionName"}}`, encodeURIComponent(String(regionName)));
+                .replace('{regionName}', encodeURIComponent(String(regionName)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -61,8 +60,8 @@ export const IDMBetreiberApiAxiosParamCreator = function (configuration?: Config
                 localVarQueryParameter['pageSize'] = pageSize;
             }
 
+            localVarHeaderParameter['Accept'] = 'application/json,application/xml';
 
-    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -84,7 +83,7 @@ export const IDMBetreiberApiAxiosParamCreator = function (configuration?: Config
             // verify required parameter 'schoolName' is not null or undefined
             assertParamExists('getActivatedOffersBySchool', 'schoolName', schoolName)
             const localVarPath = `/v1.0/offers/activated/by-school/{schoolName}`
-                .replace(`{${"schoolName"}}`, encodeURIComponent(String(schoolName)));
+                .replace('{schoolName}', encodeURIComponent(String(schoolName)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -104,8 +103,8 @@ export const IDMBetreiberApiAxiosParamCreator = function (configuration?: Config
                 localVarQueryParameter['pageSize'] = pageSize;
             }
 
+            localVarHeaderParameter['Accept'] = 'application/json,application/xml';
 
-    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -143,8 +142,8 @@ export const IDMBetreiberApiAxiosParamCreator = function (configuration?: Config
                 localVarQueryParameter['pageSize'] = pageSize;
             }
 
+            localVarHeaderParameter['Accept'] = 'application/json,application/xml';
 
-    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -159,7 +158,6 @@ export const IDMBetreiberApiAxiosParamCreator = function (configuration?: Config
 
 /**
  * IDMBetreiberApi - functional programming interface
- * @export
  */
 export const IDMBetreiberApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = IDMBetreiberApiAxiosParamCreator(configuration)
@@ -210,7 +208,6 @@ export const IDMBetreiberApiFp = function(configuration?: Configuration) {
 
 /**
  * IDMBetreiberApi - factory interface
- * @export
  */
 export const IDMBetreiberApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
     const localVarFp = IDMBetreiberApiFp(configuration)
@@ -223,7 +220,7 @@ export const IDMBetreiberApiFactory = function (configuration?: Configuration, b
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getActivatedOffersByRegion(regionName: string, page?: string, pageSize?: string, options?: any): AxiosPromise<PageOfferDTO> {
+        getActivatedOffersByRegion(regionName: string, page?: string, pageSize?: string, options?: RawAxiosRequestConfig): AxiosPromise<PageOfferDTO> {
             return localVarFp.getActivatedOffersByRegion(regionName, page, pageSize, options).then((request) => request(axios, basePath));
         },
         /**
@@ -234,7 +231,7 @@ export const IDMBetreiberApiFactory = function (configuration?: Configuration, b
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getActivatedOffersBySchool(schoolName: string, page?: string, pageSize?: string, options?: any): AxiosPromise<PageOfferDTO> {
+        getActivatedOffersBySchool(schoolName: string, page?: string, pageSize?: string, options?: RawAxiosRequestConfig): AxiosPromise<PageOfferDTO> {
             return localVarFp.getActivatedOffersBySchool(schoolName, page, pageSize, options).then((request) => request(axios, basePath));
         },
         /**
@@ -244,7 +241,7 @@ export const IDMBetreiberApiFactory = function (configuration?: Configuration, b
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getAllOffers(page?: string, pageSize?: string, options?: any): AxiosPromise<PageOfferDTO> {
+        getAllOffers(page?: string, pageSize?: string, options?: RawAxiosRequestConfig): AxiosPromise<PageOfferDTO> {
             return localVarFp.getAllOffers(page, pageSize, options).then((request) => request(axios, basePath));
         },
     };
@@ -252,8 +249,6 @@ export const IDMBetreiberApiFactory = function (configuration?: Configuration, b
 
 /**
  * IDMBetreiberApi - interface
- * @export
- * @interface IDMBetreiberApi
  */
 export interface IDMBetreiberApiInterface {
     /**
@@ -263,7 +258,6 @@ export interface IDMBetreiberApiInterface {
      * @param {string} [pageSize] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof IDMBetreiberApiInterface
      */
     getActivatedOffersByRegion(regionName: string, page?: string, pageSize?: string, options?: RawAxiosRequestConfig): AxiosPromise<PageOfferDTO>;
 
@@ -274,7 +268,6 @@ export interface IDMBetreiberApiInterface {
      * @param {string} [pageSize] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof IDMBetreiberApiInterface
      */
     getActivatedOffersBySchool(schoolName: string, page?: string, pageSize?: string, options?: RawAxiosRequestConfig): AxiosPromise<PageOfferDTO>;
 
@@ -284,7 +277,6 @@ export interface IDMBetreiberApiInterface {
      * @param {string} [pageSize] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof IDMBetreiberApiInterface
      */
     getAllOffers(page?: string, pageSize?: string, options?: RawAxiosRequestConfig): AxiosPromise<PageOfferDTO>;
 
@@ -292,9 +284,6 @@ export interface IDMBetreiberApiInterface {
 
 /**
  * IDMBetreiberApi - object-oriented interface
- * @export
- * @class IDMBetreiberApi
- * @extends {BaseAPI}
  */
 export class IDMBetreiberApi extends BaseAPI implements IDMBetreiberApiInterface {
     /**
@@ -304,7 +293,6 @@ export class IDMBetreiberApi extends BaseAPI implements IDMBetreiberApiInterface
      * @param {string} [pageSize] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof IDMBetreiberApi
      */
     public getActivatedOffersByRegion(regionName: string, page?: string, pageSize?: string, options?: RawAxiosRequestConfig) {
         return IDMBetreiberApiFp(this.configuration).getActivatedOffersByRegion(regionName, page, pageSize, options).then((request) => request(this.axios, this.basePath));
@@ -317,7 +305,6 @@ export class IDMBetreiberApi extends BaseAPI implements IDMBetreiberApiInterface
      * @param {string} [pageSize] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof IDMBetreiberApi
      */
     public getActivatedOffersBySchool(schoolName: string, page?: string, pageSize?: string, options?: RawAxiosRequestConfig) {
         return IDMBetreiberApiFp(this.configuration).getActivatedOffersBySchool(schoolName, page, pageSize, options).then((request) => request(this.axios, this.basePath));
@@ -329,7 +316,6 @@ export class IDMBetreiberApi extends BaseAPI implements IDMBetreiberApiInterface
      * @param {string} [pageSize] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof IDMBetreiberApi
      */
     public getAllOffers(page?: string, pageSize?: string, options?: RawAxiosRequestConfig) {
         return IDMBetreiberApiFp(this.configuration).getAllOffers(page, pageSize, options).then((request) => request(this.axios, this.basePath));
