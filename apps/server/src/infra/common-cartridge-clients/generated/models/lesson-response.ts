@@ -20,65 +20,42 @@ import type { LessonContentResponse } from './lesson-content-response';
 // @ts-ignore
 import type { MaterialResponse } from './material-response';
 
-/**
- * 
- * @export
- * @interface LessonResponse
- */
 export interface LessonResponse {
     /**
      * The id of the Lesson entity
-     * @type {string}
-     * @memberof LessonResponse
      * @deprecated
      */
     '_id': string;
     /**
      * The id of the Lesson entity
-     * @type {string}
-     * @memberof LessonResponse
      */
     'id': string;
     /**
      * Name of the Lesson entity
-     * @type {string}
-     * @memberof LessonResponse
      */
     'name': string;
     /**
      * The id of the Course entity
-     * @type {string}
-     * @memberof LessonResponse
      */
     'courseId'?: string;
     /**
      * The id of the Course-group entity
-     * @type {string}
-     * @memberof LessonResponse
      */
     'courseGroupId'?: string;
     /**
      * Hidden status of the Lesson entity
-     * @type {boolean}
-     * @memberof LessonResponse
      */
     'hidden': boolean;
     /**
      * Position of the Lesson entity
-     * @type {number}
-     * @memberof LessonResponse
      */
     'position': number;
     /**
      * Contents of the Lesson entity
-     * @type {Array<LessonContentResponse>}
-     * @memberof LessonResponse
      */
     'contents': Array<LessonContentResponse>;
     /**
      * Materials of the Lesson entity
-     * @type {Array<MaterialResponse>}
-     * @memberof LessonResponse
      */
     'materials': Array<MaterialResponse>;
 }

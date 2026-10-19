@@ -14,41 +14,11 @@
 
 
 
-/**
- * 
- * @export
- * @interface RobjExportSchueler
- */
 export interface RobjExportSchueler {
-    /**
-     * 
-     * @type {string}
-     * @memberof RobjExportSchueler
-     */
     'schuelerUid'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof RobjExportSchueler
-     */
     'schuelerVorname'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof RobjExportSchueler
-     */
     'schuelerNachname'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof RobjExportSchueler
-     */
     'schuleNummer'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof RobjExportSchueler
-     */
     'klasseId'?: string;
 }
 

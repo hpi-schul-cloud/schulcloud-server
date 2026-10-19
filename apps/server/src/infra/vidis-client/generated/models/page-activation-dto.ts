@@ -20,53 +20,13 @@ import type { ActivationDTO } from './activation-dto';
 // @ts-ignore
 import type { Facet } from './facet';
 
-/**
- * 
- * @export
- * @interface PageActivationDTO
- */
 export interface PageActivationDTO {
-    /**
-     * 
-     * @type {Array<ActivationDTO>}
-     * @memberof PageActivationDTO
-     */
     'items'?: Array<ActivationDTO>;
-    /**
-     * 
-     * @type {number}
-     * @memberof PageActivationDTO
-     */
     'lastPage'?: number;
-    /**
-     * 
-     * @type {number}
-     * @memberof PageActivationDTO
-     */
     'totalCount'?: number;
-    /**
-     * 
-     * @type {number}
-     * @memberof PageActivationDTO
-     */
     'pageSize'?: number;
-    /**
-     * 
-     * @type {{ [key: string]: { [key: string]: string; }; }}
-     * @memberof PageActivationDTO
-     */
     'actions'?: { [key: string]: { [key: string]: string; }; };
-    /**
-     * 
-     * @type {number}
-     * @memberof PageActivationDTO
-     */
     'page'?: number;
-    /**
-     * 
-     * @type {Array<Facet>}
-     * @memberof PageActivationDTO
-     */
     'facets'?: Array<Facet>;
 }
 

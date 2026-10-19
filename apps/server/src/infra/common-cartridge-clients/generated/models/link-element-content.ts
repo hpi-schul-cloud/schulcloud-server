@@ -14,41 +14,11 @@
 
 
 
-/**
- * 
- * @export
- * @interface LinkElementContent
- */
 export interface LinkElementContent {
-    /**
-     * 
-     * @type {string}
-     * @memberof LinkElementContent
-     */
     'url': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof LinkElementContent
-     */
     'title': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof LinkElementContent
-     */
     'description'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof LinkElementContent
-     */
     'originalImageUrl'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof LinkElementContent
-     */
     'imageUrl'?: string;
 }
 

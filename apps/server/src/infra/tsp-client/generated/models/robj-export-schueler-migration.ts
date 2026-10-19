@@ -14,23 +14,8 @@
 
 
 
-/**
- * 
- * @export
- * @interface RobjExportSchuelerMigration
- */
 export interface RobjExportSchuelerMigration {
-    /**
-     * 
-     * @type {string}
-     * @memberof RobjExportSchuelerMigration
-     */
     'schuelerUidAlt'?: string;
-    /**
-     * 
-     * @type {string}
-     * @memberof RobjExportSchuelerMigration
-     */
     'schuelerUidNeu'?: string;
 }
 
