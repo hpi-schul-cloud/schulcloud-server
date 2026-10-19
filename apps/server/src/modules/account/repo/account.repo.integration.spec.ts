@@ -185,7 +185,7 @@ describe('AccountMikroOrmRepo', () => {
 	describe('findByUsernameAndSystemId', () => {
 		describe('When username and systemId are given', () => {
 			const setup = async () => {
-				const accountToFind = accountFactory.withSystemId(new ObjectId(10)).build();
+				const accountToFind = accountFactory.withSystemId(new ObjectId()).build();
 				await em.persist(accountToFind).flush();
 				em.clear();
 				return accountToFind;
