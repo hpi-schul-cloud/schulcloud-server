@@ -1,4 +1,5 @@
 import { MikroORM } from '@mikro-orm/core';
+import { ConfigurationFactory } from '@infra/configuration/configuration.factory';
 import { Entity, Property, ReflectMetadataProvider } from '@mikro-orm/decorators/legacy';
 import { type MongoDriver, ObjectId } from '@mikro-orm/mongodb';
 import { Test } from '@nestjs/testing';
@@ -9,7 +10,7 @@ import { DatabaseModule } from './database.module';
 @Entity()
 class ConfigurationTestEntity extends BaseEntity {
 	@Property()
-	name = 'test';
+	name!: string;
 }
 
 describe(DatabaseModule.name, () => {
@@ -40,6 +41,8 @@ describe(DatabaseModule.name, () => {
 				MIKRO_ORM_ALLOW_GLOBAL_CONTEXT: String(!enabled),
 				MIKRO_ORM_DEBUG: 'true',
 			});
+			const configurationSpy = jest.spyOn(ConfigurationFactory.prototype, 'loadAndValidateConfigs');
+			const initSpy = jest.spyOn(MikroORM, 'init');
 
 			const module = await Test.createTestingModule({
 				imports: [
@@ -58,11 +61,16 @@ describe(DatabaseModule.name, () => {
 				expect(config.dbUrl).toBe(dbUrl);
 				expect(config.dbEnsureIndexes).toBe(enabled);
 				expect(config.dbAllowGlobalContext).toBe(enabled);
+				expect(configurationSpy).toHaveBeenCalledWith(DatabaseConfig);
+				expect(initSpy).toHaveBeenCalledTimes(1);
+				expect(configurationSpy.mock.invocationCallOrder[0]).toBeLessThan(initSpy.mock.invocationCallOrder[0]);
 				expect(orm.config.get('clientUrl')).toBe(dbUrl);
 				expect(orm.config.get('ensureIndexes')).toBe(enabled);
 				expect(orm.config.get('allowGlobalContext')).toBe(enabled);
 				expect(orm.config.get('debug')).toBe(false);
 				expect(orm.config.get('metadataProvider')).toBe(ReflectMetadataProvider);
+				expect(Reflect.getMetadata('design:type', ConfigurationTestEntity.prototype, 'name')).toBe(String);
+				expect(orm.getMetadata().get(ConfigurationTestEntity).properties.name.type).toBe('string');
 
 				const em = orm.em.fork();
 				const entity = em.create(ConfigurationTestEntity, { name: 'configuration precedence' });
@@ -75,4 +83,26 @@ describe(DatabaseModule.name, () => {
 			}
 		}
 	);
+
+	it('should reject invalid application configuration before initializing the ORM', async () => {
+		jest.replaceProperty(process, 'env', {
+			// eslint-disable-next-line no-process-env
+			...process.env,
+			DB_URL: 'not a valid URL',
+		});
+		const initSpy = jest.spyOn(MikroORM, 'init');
+
+		await expect(
+			Test.createTestingModule({
+				imports: [
+					DatabaseModule.register({
+						configInjectionToken: DATABASE_CONFIG_TOKEN,
+						configConstructor: DatabaseConfig,
+						entities: [ConfigurationTestEntity],
+					}),
+				],
+			}).compile()
+		).rejects.toThrow('dbUrl');
+		expect(initSpy).not.toHaveBeenCalled();
+	});
 });
