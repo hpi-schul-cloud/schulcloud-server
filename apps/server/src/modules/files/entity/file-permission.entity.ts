@@ -17,7 +17,7 @@ export class FilePermissionEntity {
 	@Property({ nullable: false })
 	refId: ObjectId;
 
-	@Enum({ nullable: false })
+	@Enum({ items: [FilePermissionReferenceModel.USER, FilePermissionReferenceModel.ROLE], nullable: false })
 	refPermModel: FilePermissionReferenceModel;
 
 	@Property()

@@ -48,7 +48,7 @@ export class DeletionBatchUsersRepo {
 							$project: {
 								_id: 0,
 								id: { $toString: '$_id' },
-								roles: { $map: { input: { $ifNull: ['$roles', []] }, as: 'r', in: { $toString: '$$r' } } },
+								roleIds: { $map: { input: { $ifNull: ['$roles', []] }, as: 'r', in: { $toString: '$$r' } } },
 							},
 						},
 					],
@@ -58,7 +58,7 @@ export class DeletionBatchUsersRepo {
 							$project: {
 								_id: 0,
 								id: { $toString: '$_id' },
-								roles: { $map: { input: { $ifNull: ['$roles', []] }, as: 'r', in: { $toString: '$$r' } } },
+								roleIds: { $map: { input: { $ifNull: ['$roles', []] }, as: 'r', in: { $toString: '$$r' } } },
 							},
 						},
 					],

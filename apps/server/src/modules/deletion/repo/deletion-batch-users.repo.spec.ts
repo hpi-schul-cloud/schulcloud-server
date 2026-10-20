@@ -88,6 +88,13 @@ describe(DeletionBatchUsersRepo.name, () => {
 				expect(result.withAllowedRole).toHaveLength(2);
 				expect(result.withoutAllowedRole.map((u) => u.id)).toEqual([admin.id]);
 				expect(result.withoutAllowedRole).toHaveLength(1);
+				expect(result.withAllowedRole).toEqual(
+					expect.arrayContaining([
+						{ id: student.id, roleIds: [studentRole.id] },
+						{ id: teacher.id, roleIds: [teacherRole.id] },
+					])
+				);
+				expect(result.withoutAllowedRole).toEqual([{ id: admin.id, roleIds: [adminRole.id] }]);
 			});
 		});
 
@@ -103,6 +110,21 @@ describe(DeletionBatchUsersRepo.name, () => {
 
 				expect(result.withAllowedRole.map((u) => u.id)).toEqual([multiRoleUser.id]);
 				expect(result.withoutAllowedRole).toEqual([]);
+				expect(result.withAllowedRole).toEqual([{ id: multiRoleUser.id, roleIds: [studentRole.id, adminRole.id] }]);
+			});
+		});
+
+		describe('when a user has no roles', () => {
+			it('should return the declared result shape with an empty roleIds array', async () => {
+				const user = userFactory.buildWithId({ roles: [] });
+				await em.persist(user).flush();
+
+				const result = await repo.groupUserIdsByAllowedRoles([user.id], [RoleName.STUDENT]);
+
+				expect(result).toEqual({
+					withAllowedRole: [],
+					withoutAllowedRole: [{ id: user.id, roleIds: [] }],
+				});
 			});
 		});
 

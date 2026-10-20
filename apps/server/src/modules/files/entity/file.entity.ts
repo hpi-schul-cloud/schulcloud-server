@@ -96,7 +96,7 @@ export class FileEntity extends BaseEntityWithTimestamps {
 		return this._ownerId.toHexString();
 	}
 
-	@Enum({ nullable: false })
+	@Enum({ items: () => FileOwnerModel, nullable: false })
 	@Index()
 	refOwnerModel: FileOwnerModel;
 
@@ -108,7 +108,7 @@ export class FileEntity extends BaseEntityWithTimestamps {
 		return this._creatorId?.toHexString();
 	}
 
-	@Embedded(() => FilePermissionEntity, { nullable: false, type: ArrayType<FilePermissionEntity> })
+	@Embedded(() => FilePermissionEntity, { array: true, nullable: false, type: ArrayType<FilePermissionEntity> })
 	permissions: FilePermissionEntity[];
 
 	@Property({ fieldName: 'lockId', nullable: true })
