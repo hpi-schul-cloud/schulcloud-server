@@ -1,7 +1,7 @@
 import { createMock } from '@golevelup/ts-jest';
 import { LegacyLogger } from '@infra/logger';
 import { UniqueConstraintViolationException } from '@mikro-orm/core';
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { InternalServerErrorException } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { ValidationError } from '@shared/common/error';
@@ -696,6 +696,24 @@ describe(ExternalToolRepo.name, () => {
 	});
 
 	describe('saveAll', () => {
+		it('should flush mixed scalar updates and inserts before a database-filtered read', async () => {
+			const existing = externalToolEntityFactory.withBasicConfig().buildWithId({ name: 'before-batch' });
+			await em.persist(existing).flush();
+			const updated = ExternalToolRepoMapper.mapEntityToDO(existing);
+			updated.name = 'after-batch';
+			const created = externalToolFactory.build({ name: 'created-in-batch' });
+
+			await repo.saveAll([updated, created]);
+
+			const collection = em.getCollection(ExternalToolEntity);
+			expect(await collection.findOne({ _id: existing._id })).toMatchObject({ name: 'after-batch' });
+			expect(await collection.findOne({ _id: new ObjectId(created.id) })).toMatchObject({ name: 'created-in-batch' });
+			em.clear();
+			expect((await repo.findNonMediaToolByName('after-batch'))?.id).toBe(existing.id);
+			expect(await repo.findNonMediaToolByName('before-batch')).toBeNull();
+			expect((await repo.findNonMediaToolByName('created-in-batch'))?.id).toBe(created.id);
+		});
+
 		describe('when the external tools passed do not exist', () => {
 			it('should save all the external tools', async () => {
 				const externalToolDOs: ExternalTool[] = externalToolFactory.buildList(5);
