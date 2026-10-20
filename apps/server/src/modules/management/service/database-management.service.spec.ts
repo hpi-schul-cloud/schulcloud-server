@@ -126,6 +126,73 @@ describe('DatabaseManagementService', () => {
 	});
 
 	describe('When call syncIndexes()', () => {
+		it('should preserve existing MongoDB index names and options across repeated synchronization', async () => {
+			const db = orm.em.getConnection().getDb();
+			const users = db.collection('users');
+			await db.collection('roles').createIndex({ name: 1 }, { name: 'name_1', unique: true });
+			await users.createIndex({ firstName: 1, lastName: 1 }, { name: 'firstName_1_lastName_1' });
+			await users.createIndex({ lastName: -1 }, { name: 'legacy_user_last_name' });
+
+			try {
+				await service.syncIndexes();
+
+				expect(await db.collection('roles').listIndexes().toArray()).toEqual(
+					expect.arrayContaining([expect.objectContaining({ name: 'name_1', key: { name: 1 }, unique: true })])
+				);
+				expect(await users.listIndexes().toArray()).toEqual(
+					expect.arrayContaining([
+						expect.objectContaining({ name: 'firstName_1_lastName_1', key: { firstName: 1, lastName: 1 } }),
+						expect.objectContaining({ name: 'legacy_user_last_name', key: { lastName: -1 } }),
+						expect.objectContaining({ name: 'deletedAt_1', key: { deletedAt: 1 }, sparse: true }),
+						expect.objectContaining({
+							name: 'ldapId_1_source_1',
+							key: { ldapId: 1, source: 1 },
+							unique: true,
+							partialFilterExpression: { source: { $exists: true } },
+						}),
+						expect.objectContaining({
+							name: 'userSearchIndex2',
+							textIndexVersion: 3,
+							language_override: 'ignore-this-field',
+						}),
+					])
+				);
+				expect(await db.collection('sharetokens').listIndexes().toArray()).toEqual(
+					expect.arrayContaining([
+						expect.objectContaining({ name: 'expiresAt_1', key: { expiresAt: 1 }, expireAfterSeconds: 0 }),
+					])
+				);
+
+				const collections = (await db.listCollections({}, { nameOnly: true }).toArray()).map(({ name }) => name).sort();
+				const readIndexes = () =>
+					Promise.all(
+						collections.map(async (name) => {
+							const indexes = await db
+								.collection(name)
+								.listIndexes()
+								.map((index: { name: string; key: Record<string, unknown> }) => {
+									return {
+										...index,
+										key: Object.entries(index.key),
+									};
+								})
+								.toArray();
+							return {
+								name,
+								indexes: indexes.sort((left, right) => (left.name ?? '').localeCompare(right.name ?? '')),
+							};
+						})
+					);
+				const before = await readIndexes();
+
+				await service.syncIndexes();
+
+				expect(await readIndexes()).toEqual(before);
+			} finally {
+				await users.dropIndex('legacy_user_last_name');
+			}
+		});
+
 		it('should call schema.ensureIndexes()', async () => {
 			const spy = jest.spyOn(orm.schema, 'ensureIndexes');
 			await service.syncIndexes();
