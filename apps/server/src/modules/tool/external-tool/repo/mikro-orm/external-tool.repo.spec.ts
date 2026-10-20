@@ -24,6 +24,7 @@ import { externalToolEntityFactory, externalToolFactory } from '../../testing';
 import { ExternalToolEntity } from './external-tool.entity';
 import { ExternalToolRepo } from './external-tool.repo';
 import { ExternalToolRepoMapper } from './mapper';
+import { CustomParameterEntity } from './custom-parameter/custom-parameter.entity';
 
 describe(ExternalToolRepo.name, () => {
 	let module: TestingModule;
@@ -54,6 +55,53 @@ describe(ExternalToolRepo.name, () => {
 	afterEach(async () => {
 		await em.flush();
 		await cleanupCollections(em);
+	});
+
+	it('should create and reload all custom parameter string enum values', async () => {
+		const parameters = [
+			...Object.values(CustomParameterScope).map((scope) => {
+				return { scope };
+			}),
+			...Object.values(CustomParameterLocation).map((location) => {
+				return { location };
+			}),
+			...Object.values(CustomParameterType).map((type) => {
+				return { type };
+			}),
+		].map(
+			(values, index) =>
+				new CustomParameterEntity({
+					name: `parameter-${index}`,
+					displayName: `Parameter ${index}`,
+					scope: CustomParameterScope.GLOBAL,
+					location: CustomParameterLocation.QUERY,
+					type: CustomParameterType.STRING,
+					isOptional: true,
+					isProtected: false,
+					...values,
+				})
+		);
+		const source = externalToolEntityFactory.withBasicConfig().buildWithId({ parameters });
+		const entity = em.create(ExternalToolEntity, source);
+		await em.persist(entity).flush();
+		em.clear();
+
+		const stored = await em.findOneOrFail(ExternalToolEntity, entity.id);
+
+		expect(stored.parameters).toHaveLength(parameters.length);
+		if (!stored.parameters) {
+			throw new Error('Persisted custom parameters are missing');
+		}
+		const raw = await em.getCollection(ExternalToolEntity).findOne({ _id: entity._id });
+		stored.parameters.forEach((parameter, index) => {
+			const { name, scope, location, type } = parameters[index];
+			expect(parameter).toBeInstanceOf(CustomParameterEntity);
+			expect(parameter).toMatchObject({ name, scope, location, type });
+			expect(raw).toHaveProperty(`parameters.${index}.name`, name);
+			expect(raw).toHaveProperty(`parameters.${index}.scope`, scope);
+			expect(raw).toHaveProperty(`parameters.${index}.location`, location);
+			expect(raw).toHaveProperty(`parameters.${index}.type`, type);
+		});
 	});
 
 	const setup = async () => {
