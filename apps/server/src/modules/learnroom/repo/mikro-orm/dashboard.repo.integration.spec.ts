@@ -117,6 +117,60 @@ describe('dashboard repo', () => {
 		expect(result.getGrid()[0].gridElement.getReferences().length).toEqual(2);
 	});
 
+	it.each(['persist', 'persistAndFlush'] as const)(
+		'should store scalar grid updates through %s before a fresh dashboard read',
+		async (method) => {
+			const user = userFactory.build();
+			const courses = courseEntityFactory.buildList(2, { students: [user] });
+			await em.persist([user, ...courses]).flush();
+			const elementId = new ObjectId();
+			const dashboard = new Dashboard(new ObjectId().toHexString(), {
+				grid: [
+					{
+						pos: { x: 1, y: 3 },
+						gridElement: GridElement.FromPersistedGroup(elementId.toHexString(), 'before', courses),
+					},
+				],
+				userId: user.id,
+			});
+			await repo.persistAndFlush(dashboard);
+			const collection = em.getConnection().getDb().collection<{
+				_id: ObjectId;
+				title?: string;
+				xPos: number;
+				yPos: number;
+				referenceIds: ObjectId[];
+				dashboard: ObjectId;
+			}>(em.getMetadata().get(DashboardGridElementEntity).collection);
+			const before = await collection.findOne({ _id: elementId });
+			expect(before).toMatchObject({
+				xPos: 1,
+				yPos: 3,
+				referenceIds: courses.map((course) => course._id),
+				dashboard: new ObjectId(dashboard.id),
+			});
+
+			dashboard.getElement({ x: 1, y: 3 }).setGroupName('after');
+			dashboard.moveElement({ x: 1, y: 3 }, { x: 2, y: 4 });
+
+			await repo[method](dashboard);
+			if (method === 'persist') {
+				await em.flush();
+			}
+
+			const stored = await collection.findOne({ _id: elementId });
+			expect(stored).toMatchObject({ title: 'after', xPos: 2, yPos: 4 });
+			expect(stored?.referenceIds).toEqual(before?.referenceIds);
+			expect(stored?.dashboard).toEqual(before?.dashboard);
+			em.clear();
+			const reloaded = await repo.getDashboardById(dashboard.id);
+			expect(reloaded.getGrid()).toHaveLength(1);
+			const element = reloaded.getElement({ x: 2, y: 4 });
+			expect(element.getContent().title).toBe('after');
+			expect(element.getReferences().map((course) => course.id)).toEqual(courses.map((course) => course.id));
+		}
+	);
+
 	it('should remove orphaned gridelements', async () => {
 		const user = userFactory.build();
 		const courses = courseEntityFactory.buildList(2, { students: [user] });
