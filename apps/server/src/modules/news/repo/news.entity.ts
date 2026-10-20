@@ -109,7 +109,7 @@ export abstract class News extends BaseEntityWithTimestamps {
 
 @Entity({ discriminatorValue: NewsTargetModel.School })
 export class SchoolNews extends News {
-	@ManyToOne(() => SchoolEntity)
+	@ManyToOne(() => SchoolEntity, { fieldName: 'target' })
 	target!: SchoolEntity;
 
 	constructor(props: NewsProperties) {
@@ -120,7 +120,7 @@ export class SchoolNews extends News {
 
 @Entity({ discriminatorValue: NewsTargetModel.Course })
 export class CourseNews extends News {
-	@ManyToOne(() => CourseEntity)
+	@ManyToOne(() => CourseEntity, { fieldName: 'target' })
 	target!: CourseEntity;
 
 	constructor(props: NewsProperties) {
@@ -131,7 +131,7 @@ export class CourseNews extends News {
 
 @Entity({ discriminatorValue: NewsTargetModel.Team })
 export class TeamNews extends News {
-	@ManyToOne(() => TeamEntity)
+	@ManyToOne(() => TeamEntity, { fieldName: 'target' })
 	target!: TeamEntity;
 
 	constructor(props: NewsProperties) {

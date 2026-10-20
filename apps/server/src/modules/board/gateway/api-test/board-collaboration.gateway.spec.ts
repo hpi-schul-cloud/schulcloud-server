@@ -63,9 +63,12 @@ describe(BoardCollaborationGateway.name, () => {
 		jwtConfig = app.get(TEST_JWT_CONFIG_TOKEN);
 	});
 
-	afterAll(async () => {
+	afterEach(() => {
 		ioClient.disconnect();
 		unauthorizedIoClient.disconnect();
+	});
+
+	afterAll(async () => {
 		await app.close();
 	});
 

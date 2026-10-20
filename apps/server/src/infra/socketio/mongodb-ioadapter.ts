@@ -9,6 +9,8 @@ const COLLECTION_NAME = 'socketio-adapter-events';
 export class MongoIoAdapter extends IoAdapter {
 	private adapterConstructor: ReturnType<typeof createAdapter> | undefined = undefined;
 
+	private mongoClient: MongoClient | undefined;
+
 	public async connectToMongoDb(dbConfig: InternalDatabaseConfig): Promise<void> {
 		const mongoClient = new MongoClient(dbConfig.dbUrl);
 		await mongoClient.connect();
@@ -19,6 +21,12 @@ export class MongoIoAdapter extends IoAdapter {
 		this.adapterConstructor = createAdapter(mongoCollection, {
 			addCreatedAtField: true,
 		});
+		this.mongoClient = mongoClient;
+	}
+
+	public override async dispose(): Promise<void> {
+		await super.dispose();
+		await this.mongoClient?.close();
 	}
 
 	public createIOServer(port: number, options?: ServerOptions): Server {
