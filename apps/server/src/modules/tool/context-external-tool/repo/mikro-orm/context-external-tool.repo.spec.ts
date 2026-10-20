@@ -12,12 +12,14 @@ import { User } from '@modules/user/repo';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
+import { CustomParameterEntryEntity } from '../../../common/entity';
 import { ContextExternalTool, type ContextExternalToolProps } from '../../domain';
 import { contextExternalToolEntityFactory, contextExternalToolFactory, ltiDeepLinkFactory } from '../../testing';
 import { type ContextExternalToolQuery } from '../../uc/dto/context-external-tool.types';
 import { ContextExternalToolType } from './context-external-tool-type.enum';
 import { ContextExternalToolEntity } from './context-external-tool.entity';
 import { ContextExternalToolRepo } from './context-external-tool.repo';
+import { LtiDeepLinkEmbeddable } from './lti-deep-link.embeddable';
 
 describe(ContextExternalToolRepo.name, () => {
 	let module: TestingModule;
@@ -88,6 +90,47 @@ describe(ContextExternalToolRepo.name, () => {
 			const { entityName } = repo;
 			expect(entityName).toEqual(ContextExternalToolEntity);
 		});
+	});
+
+	describe('nested deep-link parameter arrays', () => {
+		it.each(['orm', 'raw'] as const)(
+			'should preserve BSON arrays from %s writes and persist empty replacements',
+			async (source) => {
+				const parameters = [
+					new CustomParameterEntryEntity({ name: 'first', value: 'value,with,commas' }),
+					new CustomParameterEntryEntity({ name: 'second', value: '["not","an","array"]' }),
+				];
+				const tool = contextExternalToolEntityFactory.buildWithId({
+					ltiDeepLink: new LtiDeepLinkEmbeddable({
+						mediaType: 'ltiResourceLink',
+						parameters: source === 'orm' ? parameters : [],
+					}),
+				});
+				await em.persist(tool).flush();
+				const collection = em.getCollection(ContextExternalToolEntity);
+				const filter = { _id: new ObjectId(tool.id) };
+				if (source === 'raw') {
+					await collection.updateOne(filter, { $set: { 'ltiDeepLink.parameters': parameters } });
+				}
+				em.clear();
+
+				const document = await collection.findOne(filter);
+				expect(document?.ltiDeepLink?.parameters).toEqual(parameters);
+				const loaded = await em.findOneOrFail(ContextExternalToolEntity, tool.id);
+				expect(loaded.ltiDeepLink?.parameters).toEqual(parameters);
+				expect(loaded.ltiDeepLink?.parameters[0]).toBeInstanceOf(CustomParameterEntryEntity);
+
+				if (!loaded.ltiDeepLink) {
+					throw new Error('Expected LTI deep link to be hydrated');
+				}
+				loaded.ltiDeepLink.parameters = [];
+				await em.flush();
+				em.clear();
+
+				expect((await collection.findOne(filter))?.ltiDeepLink?.parameters).toEqual([]);
+				expect((await em.findOneOrFail(ContextExternalToolEntity, tool.id)).ltiDeepLink?.parameters).toEqual([]);
+			}
+		);
 	});
 
 	describe('deleteBySchoolExternalToolIds', () => {

@@ -11,6 +11,8 @@ import { SortOrder } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { ResolvedUserMapper } from '../api/mapper/resolved-user.mapper';
+import { ConsentEntity } from './consent.entity';
+import { ParentConsentEntity } from './parent-consent.entity';
 import type { UserParentsEntityProps } from './user-parents.entity';
 import { User } from './user.entity';
 import { UserMikroOrmRepo } from './user.repo';
@@ -45,6 +47,51 @@ describe('user repo', () => {
 
 	it('should implement entityName getter', () => {
 		expect(repo.entityName).toBe(User);
+	});
+
+	describe('nested consent arrays', () => {
+		it.each(['orm', 'raw'] as const)(
+			'should preserve BSON arrays from %s writes and persist empty replacements',
+			async (source) => {
+				const parentConsents = ['digital', 'paper'].map(
+					(form) =>
+						new ParentConsentEntity({
+							_id: new ObjectId(),
+							form,
+							privacyConsent: true,
+							termsOfUseConsent: false,
+							dateOfPrivacyConsent: new Date('2020-01-02T03:04:05.000Z'),
+							dateOfTermsOfUseConsent: new Date('2020-02-03T04:05:06.000Z'),
+						})
+				);
+				const user = userFactory.build({
+					consent: new ConsentEntity({ parentConsents: source === 'orm' ? parentConsents : [] }),
+				});
+				await em.persist(user).flush();
+				const collection = em.getCollection(User);
+				const filter = { _id: new ObjectId(user.id) };
+				if (source === 'raw') {
+					await collection.updateOne(filter, { $set: { 'consent.parentConsents': parentConsents } });
+				}
+				em.clear();
+
+				const document = await collection.findOne(filter);
+				expect(document?.consent?.parentConsents).toEqual(parentConsents);
+				const loaded = await em.findOneOrFail(User, user.id);
+				expect(loaded.consent?.parentConsents).toEqual(parentConsents);
+				expect(loaded.consent?.parentConsents?.[0]).toBeInstanceOf(ParentConsentEntity);
+
+				if (!loaded.consent) {
+					throw new Error('Expected consent to be hydrated');
+				}
+				loaded.consent.parentConsents = [];
+				await em.flush();
+				em.clear();
+
+				expect((await collection.findOne(filter))?.consent?.parentConsents).toEqual([]);
+				expect((await em.findOneOrFail(User, user.id)).consent?.parentConsents).toEqual([]);
+			}
+		);
 	});
 
 	describe('beforeCreate search values', () => {
