@@ -16,6 +16,9 @@ describe('BaseDORepo', () => {
 		@Property()
 		name: string;
 
+		@Property({ nullable: true })
+		description?: string;
+
 		constructor(props: TestEntityProperties) {
 			super();
 			this.name = props.name;
@@ -91,6 +94,34 @@ describe('BaseDORepo', () => {
 	});
 
 	describe('save', () => {
+		it.each([false, true])('should preserve partial update semantics when description is cleared=%s', async (clear) => {
+			const entity = new TestEntity({ name: 'before' });
+			entity.description = 'keep unless explicitly cleared';
+			await em.persist(entity).flush();
+			const { id, _id, createdAt } = entity;
+			em.clear();
+
+			const data: EntityData<TestEntity> = clear ? { name: 'after', description: undefined } : { name: 'after' };
+			const mapperSpy = jest.spyOn(repo, 'mapDOToEntityProperties').mockReturnValueOnce(data);
+			try {
+				await repo.save(new TestDO({ id, name: 'after' }));
+				em.clear();
+
+				const stored = await em.findOneOrFail(TestEntity, id);
+				expect(stored.name).toBe('after');
+				expect(stored._id).toEqual(_id);
+				expect(stored.createdAt).toEqual(createdAt);
+				const raw = await em.getCollection(TestEntity).findOne({ _id });
+				if (clear) {
+					expect(raw).not.toHaveProperty('description');
+				} else {
+					expect(raw).toHaveProperty('description', 'keep unless explicitly cleared');
+				}
+			} finally {
+				mapperSpy.mockRestore();
+			}
+		});
+
 		it('should persist and flush a single new entity', async () => {
 			const testDO = new TestDO({ name: 'test' });
 

@@ -19,6 +19,22 @@ describe('MikroORM entity data type contracts', () => {
 		{ statement: "em.assign(entity, { description: 'updated' });", valid: true },
 		{ statement: 'em.assign(entity, { unknownProperty: true });', valid: false },
 		{ statement: 'em.assign(entity, { name: 123 });', valid: false },
+		...['BaseDORepo<LegacyDO, TypeContractEntity>', 'BaseDomainObjectRepo<ModernDO, TypeContractEntity>'].flatMap(
+			(base, baseIndex) =>
+				[
+					{ data: "{ name: 'updated' }", valid: true },
+					{ data: "{ description: 'partial update' }", valid: true },
+					{ data: '{ description: undefined }', valid: true },
+					{ data: '{}', valid: true },
+					{ data: '{ name: 123 }', valid: false },
+					{ data: '{ description: 123 }', valid: false },
+				].map(({ data, valid }, index) => {
+					return {
+						statement: `abstract class Mapper${baseIndex}_${index} extends ${base} { protected mapDOToEntityProperties() { return ${data}; } }`,
+						valid,
+					};
+				})
+		),
 	];
 	let diagnosticsByLine: Map<number, ts.Diagnostic[]>;
 	let firstCaseLine: number;
@@ -40,6 +56,12 @@ describe('MikroORM entity data type contracts', () => {
 			"import { type EntityManager } from '@mikro-orm/mongodb';",
 			"import { BaseEntity } from '../domain/entity/base.entity';",
 			"import { BaseRepo } from './base.repo';",
+			"import { BaseDORepo } from './base.do.repo';",
+			"import { BaseDomainObjectRepo } from './base-domain-object.repo';",
+			"import { BaseDO } from '../domain/domainobject/base.do';",
+			"import { DomainObject } from '../domain/domain-object';",
+			'class LegacyDO extends BaseDO {}',
+			'class ModernDO extends DomainObject<{ id: string }> {}',
 			'class TypeContractEntity extends BaseEntity { name!: string; description?: string; }',
 			'class TypeContractRepo extends BaseRepo<TypeContractEntity> {',
 			'get entityName(): EntityName<TypeContractEntity> { return TypeContractEntity; }',
