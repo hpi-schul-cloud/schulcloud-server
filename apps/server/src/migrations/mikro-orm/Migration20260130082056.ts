@@ -13,7 +13,7 @@ type UserWithSecondarySchools = {
 	}>;
 	secondarySchoolIds: ObjectId[];
 	activeSecondarySchoolIds: ObjectId[];
-	schoolsIdsToRemove: ObjectId[];
+	secondarySchoolIdsToRemove: ObjectId[];
 	ownSchoolId: ObjectId;
 };
 
@@ -113,7 +113,7 @@ export class Migration20260130082056 extends Migration {
 		for (const user of usersToUpdate) {
 			const { activeSecondarySchoolIds } = user;
 			const schoolsToKeep = (user.secondarySchools ?? []).filter((entry) =>
-				activeSecondarySchoolIds.includes(entry.school)
+				activeSecondarySchoolIds.some((schoolId) => schoolId.equals(entry.school))
 			);
 
 			console.log(`Updating user ${user._id.toString()} (school ${user.ownSchoolId.toString()})`);
