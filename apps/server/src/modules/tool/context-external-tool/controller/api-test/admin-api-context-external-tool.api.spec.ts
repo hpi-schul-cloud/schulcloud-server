@@ -1,3 +1,4 @@
+import { X_API_KEY_AUTH_GUARD_CONFIG_TOKEN, type XApiKeyAuthGuardConfig } from '@infra/auth-guard';
 import { EntityManager, MikroORM } from '@mikro-orm/core';
 import { courseEntityFactory } from '@modules/course/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
@@ -25,7 +26,10 @@ describe('AdminApiContextExternalTool (API)', () => {
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [AdminApiServerTestModule],
-		}).compile();
+		})
+			.overrideProvider(X_API_KEY_AUTH_GUARD_CONFIG_TOKEN)
+			.useValue({ allowedApiKeys: ['someotherkey'] } satisfies XApiKeyAuthGuardConfig)
+			.compile();
 
 		app = module.createNestApplication();
 		await app.init();

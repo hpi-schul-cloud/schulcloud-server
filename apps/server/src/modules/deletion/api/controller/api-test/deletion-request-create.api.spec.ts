@@ -1,4 +1,5 @@
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { X_API_KEY_AUTH_GUARD_CONFIG_TOKEN, type XApiKeyAuthGuardConfig } from '@infra/auth-guard';
 import { AccountEntity } from '@modules/account/repo';
 import { AdminApiServerTestModule } from '@modules/server/admin-api.server.app.module';
 import { type INestApplication } from '@nestjs/common';
@@ -54,12 +55,15 @@ const isDeletionPlannedWithinAcceptableRange = (
 describe(`deletionRequest create (api)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
-	const API_KEY = 'someotherkey';
+	const API_KEY = 'deletion-request-api-test-key';
 
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [AdminApiServerTestModule],
-		}).compile();
+		})
+			.overrideProvider(X_API_KEY_AUTH_GUARD_CONFIG_TOKEN)
+			.useValue({ allowedApiKeys: [API_KEY] } satisfies XApiKeyAuthGuardConfig)
+			.compile();
 
 		app = module.createNestApplication();
 		await app.init();
@@ -68,6 +72,16 @@ describe(`deletionRequest create (api)`, () => {
 
 	afterAll(async () => {
 		await app.close();
+	});
+
+	it.each([undefined, 'invalid-api-key'])('should reject requests with API key %s', async (apiKey) => {
+		const builder = new TestApiClientBuilder(app, baseRouteName);
+		if (apiKey !== undefined) {
+			builder.withApiKey(apiKey);
+		}
+		const response = await builder.build().post('');
+
+		expect(response.status).toBe(401);
 	});
 
 	describe('createDeletionRequests', () => {
