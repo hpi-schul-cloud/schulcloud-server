@@ -1,4 +1,4 @@
-import { EntityData, EntityName } from '@mikro-orm/core';
+import { EntityData, EntityName, FlushMode } from '@mikro-orm/core';
 import { Entity, Property } from '@mikro-orm/decorators/legacy';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
@@ -120,6 +120,17 @@ describe('BaseDORepo', () => {
 	});
 
 	describe('saveAll', () => {
+		it('should persist scalar updates to multiple managed entities', async () => {
+			const entities = [new TestEntity({ name: 'first' }), new TestEntity({ name: 'second' })];
+			await em.persist(entities).flush();
+
+			await repo.saveAll(entities.map((entity) => new TestDO({ id: entity.id, name: `${entity.name} updated` })));
+			em.clear();
+
+			const stored = await em.find(TestEntity, {}, { orderBy: { name: 'asc' } });
+			expect(stored.map((entity) => entity.name)).toEqual(['first updated', 'second updated']);
+		});
+
 		it('should save an entity array', async () => {
 			const testDO1 = new TestDO({ name: 'test1' });
 			const testDO2 = new TestDO({ name: 'test2' });
@@ -131,6 +142,33 @@ describe('BaseDORepo', () => {
 			expect(result).toHaveLength(2);
 			expect(result[0].name).toEqual('test1');
 			expect(result[1].name).toEqual('test2');
+		});
+	});
+
+	describe('scalar change detection', () => {
+		it('should persist a managed scalar change through an explicit flush', async () => {
+			const entity = new TestEntity({ name: 'before' });
+			await em.persist(entity).flush();
+
+			entity.name = 'after';
+			await em.flush();
+			em.clear();
+
+			expect((await em.findOneOrFail(TestEntity, entity.id)).name).toBe('after');
+		});
+
+		it('should require persist to auto-flush a scalar change before a query', async () => {
+			const entity = new TestEntity({ name: 'before' });
+			await em.persist(entity).flush();
+			entity.name = 'after';
+
+			expect(await em.count(TestEntity, { name: 'after' }, { flushMode: FlushMode.AUTO })).toBe(0);
+
+			em.persist(entity);
+
+			expect(await em.count(TestEntity, { name: 'after' }, { flushMode: FlushMode.AUTO })).toBe(1);
+			em.clear();
+			expect((await em.findOneOrFail(TestEntity, entity.id)).name).toBe('after');
 		});
 	});
 
