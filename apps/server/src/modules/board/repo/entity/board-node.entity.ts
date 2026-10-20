@@ -43,7 +43,7 @@ export class BoardNodeEntity extends BaseEntityWithTimestamps implements BoardNo
 	// ColumnBoard, MediaBoard
 	// --------------------------------------------------------------------------
 	@Embedded(() => Context, { prefix: false, nullable: true })
-	context: BoardNodeEntityProps['context'] | undefined;
+	context: Context | undefined;
 
 	@Enum({ type: 'BoardLayout', nullable: true })
 	layout: BoardLayout | undefined;

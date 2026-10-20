@@ -1,9 +1,11 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { BoardExternalReferenceType } from '@modules/board';
 import { BoardNodeEntity } from '@modules/board/repo';
-import { columnBoardFactory } from '@modules/board/testing';
+import { columnBoardEntityFactory, columnBoardFactory } from '@modules/board/testing';
 import { Test, type TestingModule } from '@nestjs/testing';
+import { MongoMemoryDatabaseModule } from '@testing/database';
+import { cleanupCollections } from '@testing/cleanup-collections';
 import { ColumnBoardNodeRepo } from './column-board-node.repo';
 
 describe('ColumnBoardNodeRepo', () => {
@@ -24,6 +26,49 @@ describe('ColumnBoardNodeRepo', () => {
 
 		repo = module.get(ColumnBoardNodeRepo);
 		em = module.get(EntityManager);
+	});
+
+	describe('persistence', () => {
+		let module: TestingModule;
+		let repo: ColumnBoardNodeRepo;
+		let em: EntityManager;
+
+		beforeAll(async () => {
+			module = await Test.createTestingModule({
+				imports: [MongoMemoryDatabaseModule.forRoot({ entities: [BoardNodeEntity] })],
+				providers: [ColumnBoardNodeRepo],
+			}).compile();
+			repo = module.get(ColumnBoardNodeRepo);
+			em = module.get(EntityManager);
+		});
+
+		afterEach(async () => {
+			await cleanupCollections(em);
+		});
+
+		afterAll(async () => {
+			await module.close();
+		});
+
+		it('should find only boards with the requested context id and type after reload', async () => {
+			const reference = { id: new ObjectId().toHexString(), type: BoardExternalReferenceType.Course };
+			const expected = columnBoardEntityFactory.buildList(2, { context: reference });
+			const otherId = columnBoardEntityFactory.build();
+			const otherType = columnBoardEntityFactory.build({
+				context: { ...reference, type: BoardExternalReferenceType.Room },
+			});
+			await em.persist([...expected, otherId, otherType]).flush();
+			em.clear();
+
+			const result = await repo.findByExternalReference(reference);
+
+			expect(result.map(({ id }) => id).sort()).toEqual(expected.map(({ id }) => id).sort());
+			result.forEach(({ context }) => {
+				expect(context?.id).toBe(reference.id);
+				expect(context?.type).toBe(reference.type);
+			});
+			expect(await repo.findByExternalReference({ ...reference, id: new ObjectId().toHexString() })).toEqual([]);
+		});
 	});
 
 	afterAll(async () => {

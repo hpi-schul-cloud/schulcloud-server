@@ -1,6 +1,5 @@
 import { BoardExternalReference } from '@modules/board';
 import { BoardNodeEntity } from '@modules/board/repo/entity/board-node.entity';
-import { Context } from '@modules/board/repo/entity/embeddables';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types/entity-id';
 import { EntityManager } from '@mikro-orm/mongodb';
@@ -20,7 +19,10 @@ export class ColumnBoardNodeRepo {
 
 	public async findByExternalReference(reference: BoardExternalReference): Promise<BoardNodeEntity[]> {
 		const boardNodes = await this.em.find(BoardNodeEntity, {
-			context: new Context(reference),
+			context: {
+				_contextId: reference.id,
+				_contextType: reference.type,
+			},
 		});
 
 		return boardNodes;
