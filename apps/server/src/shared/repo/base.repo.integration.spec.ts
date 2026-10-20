@@ -92,6 +92,32 @@ describe('BaseRepo', () => {
 	});
 
 	describe('save', () => {
+		it('should persist partial assignments while preserving omitted properties', async () => {
+			const entity = repo.create({ name: 'before', description: 'preserved' });
+			await repo.save(entity);
+			em.clear();
+
+			const loaded = await repo.findById(entity.id);
+			em.assign(loaded, { name: 'after' });
+			await repo.save(loaded);
+			em.clear();
+
+			const updated = await repo.findById(entity.id);
+			expect(updated.name).toBe('after');
+			expect(updated.description).toBe('preserved');
+
+			em.assign(updated, { description: undefined });
+			await repo.save(updated);
+			em.clear();
+
+			const withoutDescription = await repo.findById(entity.id);
+			expect(withoutDescription.name).toBe('after');
+			expect(withoutDescription.description).toBeUndefined();
+			expect(await em.getCollection(TestEntity).findOne({ _id: new ObjectId(entity.id) })).not.toHaveProperty(
+				'description'
+			);
+		});
+
 		it('should persist and flush a single entity', async () => {
 			const testEntity = new TestEntity();
 
