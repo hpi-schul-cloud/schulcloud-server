@@ -199,7 +199,9 @@ export class User extends BaseEntityWithTimestamps {
 		this.preferredName = props.preferredName;
 		this.email = props.email;
 		this.school = props.school;
-		this.secondarySchools = props.secondarySchools || [];
+		this.secondarySchools = (props.secondarySchools ?? []).map((secondarySchool) =>
+			secondarySchool instanceof UserSchoolEmbeddable ? secondarySchool : new UserSchoolEmbeddable(secondarySchool)
+		);
 		this.roles.set(props.roles);
 		this.ldapDn = props.ldapDn;
 		this.externalId = props.externalId;

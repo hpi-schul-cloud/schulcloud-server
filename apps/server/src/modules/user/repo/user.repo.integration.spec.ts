@@ -1,4 +1,5 @@
 import { NotFoundError } from '@mikro-orm/core';
+import { buildAllSearchableStringsForUser } from '@imports-from-feathers';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { roleFactory } from '@modules/role/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
@@ -43,6 +44,46 @@ describe('user repo', () => {
 
 	it('should implement entityName getter', () => {
 		expect(repo.entityName).toBe(User);
+	});
+
+	describe('beforeCreate search values', () => {
+		it('should generate search values on flush for a user created with em.create', async () => {
+			const school = schoolEntityFactory.build();
+			const props = {
+				firstName: 'Alice',
+				lastName: 'Example',
+				email: 'alice@example.org',
+				school,
+				roles: [],
+				secondarySchools: [],
+				allSearchableStrings: [],
+			};
+			const expected = buildAllSearchableStringsForUser(props.firstName, props.lastName, props.email);
+
+			const user = em.create(User, props);
+
+			expect(user.allSearchableStrings).toEqual([]);
+			await em.persist(user).flush();
+			em.clear();
+
+			const stored = await em.findOneOrFail(User, user.id);
+			expect(stored.allSearchableStrings).toEqual(expected);
+		});
+
+		it('should generate the same search values when persisting a constructed user', async () => {
+			const user = userFactory.build({
+				firstName: 'Alice',
+				lastName: 'Example',
+				email: 'alice@example.org',
+			});
+			const expected = buildAllSearchableStringsForUser(user.firstName, user.lastName, user.email);
+
+			await em.persist(user).flush();
+			em.clear();
+
+			const stored = await em.findOneOrFail(User, user.id);
+			expect(stored.allSearchableStrings).toEqual(expected);
+		});
 	});
 
 	describe('findById', () => {
