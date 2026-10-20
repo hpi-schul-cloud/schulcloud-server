@@ -120,17 +120,17 @@ export class DatabaseManagementConsole {
 				description: 'rollback migration (down)',
 			},
 			{
-				flags: '-f, --from',
+				flags: '-f, --from <name>',
 				required: false,
 				description: 'run migration up/down from specified name',
 			},
 			{
-				flags: '-t, --to',
+				flags: '-t, --to <name>',
 				required: false,
 				description: 'run migration up/down to specified name',
 			},
 			{
-				flags: '-o, --only',
+				flags: '-o, --only <name>',
 				required: false,
 				description: 'run a single migration',
 			},
