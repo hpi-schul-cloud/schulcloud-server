@@ -20,12 +20,7 @@ export class UsersAdminService {
 		schoolYearId: EntityId | undefined,
 		params: UsersSearchQueryParams
 	): Promise<UserListResponse> {
-		const usersResponse = (await this.usersAdminRepo.getUsersWithNestedData(
-			roleId,
-			schoolId,
-			schoolYearId,
-			params
-		)) as UserListResponse[];
+		const usersResponse = await this.usersAdminRepo.getUsersWithNestedData(roleId, schoolId, schoolYearId, params);
 		return new UserListResponse(usersResponse[0]);
 	}
 
@@ -33,14 +28,9 @@ export class UsersAdminService {
 		roleId: string | undefined,
 		schoolId: EntityId,
 		schoolYearId: EntityId | undefined,
-		userId?: string
+		userId: string
 	): Promise<UserResponse> {
-		const user = (await this.usersAdminRepo.getUserByIdWithNestedData(
-			roleId,
-			schoolId,
-			schoolYearId,
-			userId
-		)) as UserResponse[];
+		const user = await this.usersAdminRepo.getUserByIdWithNestedData(roleId, schoolId, schoolYearId, userId);
 		if (user.length < 1) {
 			throw new EntityNotFoundError('User');
 		}

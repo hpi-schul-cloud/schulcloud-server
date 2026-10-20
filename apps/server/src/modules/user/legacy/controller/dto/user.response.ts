@@ -1,6 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ConsentsResponse } from './consents.response';
-import { ClassResponse } from './class.response';
+import { type ObjectId } from '@mikro-orm/mongodb';
+import { ConsentsResponse, type ConsentsResponseProps } from './consents.response';
+
+export type UserResponseProps = Omit<UserResponse, '_id' | 'consent'> & {
+	_id: string | ObjectId;
+	consent?: ConsentsResponseProps;
+};
 
 export class UserResponse {
 	constructor({
@@ -17,7 +22,7 @@ export class UserResponse {
 		importHash,
 		lastLoginSystemChange,
 		outdatedSince,
-	}: UserResponse) {
+	}: UserResponseProps) {
 		this._id = _id.toString();
 		this.firstName = firstName;
 		this.lastName = lastName;
@@ -60,8 +65,8 @@ export class UserResponse {
 	@ApiProperty()
 	consent?: ConsentsResponse;
 
-	@ApiProperty({ type: [ClassResponse] })
-	classes?: ClassResponse[];
+	@ApiProperty({ type: [String] })
+	classes?: string[];
 
 	@ApiProperty()
 	importHash?: string;
