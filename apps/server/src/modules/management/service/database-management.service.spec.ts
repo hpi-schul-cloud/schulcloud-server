@@ -6,6 +6,7 @@ import { createCollections } from '@testing/create-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
 import { TEST_ENTITIES } from '../management.entity.imports';
 import { DatabaseManagementService } from './database-management.service';
+import { BsonConverter } from '../converter/bson.converter';
 
 const randomChars = () => new ObjectId().toHexString();
 describe('DatabaseManagementService', () => {
@@ -76,6 +77,39 @@ describe('DatabaseManagementService', () => {
 	});
 
 	describe('When persist data to a collection', () => {
+		it('should roundtrip Extended JSON BSON values through the active MongoDB driver', async () => {
+			const converter = new BsonConverter();
+			const collectionName = randomChars();
+			const source = [
+				{
+					_id: { $oid: randomChars() },
+					createdAt: { $date: '2026-01-01T00:00:00Z' },
+					references: [{ $oid: randomChars() }],
+					amount: { $numberDecimal: '12.50' },
+					payload: { $binary: { base64: 'AQID', subType: '00' } },
+				},
+			];
+			const documents = converter.deserialize(source).map((document) => {
+				if (typeof document !== 'object' || document === null || Array.isArray(document)) {
+					throw new Error('Expected a deserialized BSON document');
+				}
+				return document;
+			});
+
+			try {
+				expect(await service.importCollection(collectionName, documents)).toBe(1);
+				const exported = await service.findDocumentsOfCollection(collectionName);
+
+				expect(exported).toHaveLength(1);
+				expect(exported[0]).toHaveProperty('_id', expect.any(ObjectId));
+				expect(converter.serialize(exported)).toEqual(source);
+			} finally {
+				if (await service.collectionExists(collectionName)) {
+					await service.dropCollection(collectionName);
+				}
+			}
+		});
+
 		it('should find previously imported data', async () => {
 			const random = randomChars();
 			await service.createCollection(random);
