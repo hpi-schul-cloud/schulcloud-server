@@ -1,7 +1,7 @@
 import { StorageLocation } from '@infra/files-storage-amqp-client';
 import { LegacyLogger } from '@infra/logger';
 import { AuthorizationService } from '@modules/authorization';
-import { CopyStatusEnum } from '@modules/copy-helper';
+import { CopyMapper, CopyStatusEnum } from '@modules/copy-helper';
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { throwForbiddenIfFalse } from '@shared/common/utils';
 import { EntityId } from '@shared/domain/types';
@@ -101,7 +101,7 @@ export class ColumnUc {
 		userId: EntityId,
 		cardId: EntityId,
 		schoolId: EntityId
-	): Promise<{ copyEntity: Card; status: CopyStatusEnum }> {
+	): Promise<{ copyEntity: Card; status: CopyStatusEnum; failedFileNames: string[] }> {
 		const card = await this.boardNodeService.findByClassAndId(Card, cardId);
 		const user = await this.authorizationService.getUserWithPermissions(userId);
 		const boardNodeAuthorizable = await this.boardNodeAuthorizableService.getBoardAuthorizable(card);
@@ -122,6 +122,10 @@ export class ColumnUc {
 
 		await this.columnBoardService.updateIdsInLinks(copyStatus);
 
-		return { copyEntity: copyStatus.copyEntity, status: copyStatus.status };
+		return {
+			copyEntity: copyStatus.copyEntity,
+			status: copyStatus.status,
+			failedFileNames: CopyMapper.mapToFailedFileNames(copyStatus),
+		};
 	}
 }

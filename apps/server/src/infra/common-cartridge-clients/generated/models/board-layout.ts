@@ -14,16 +14,11 @@
 
 
 
-/**
- * 
- * @export
- * @enum {string}
- */
 
 export const BoardLayout = {
     COLUMNS: 'columns',
     LIST: 'list',
-    GRID: 'grid'
+    GRID: 'grid',
 } as const;
 
 export type BoardLayout = typeof BoardLayout[keyof typeof BoardLayout];

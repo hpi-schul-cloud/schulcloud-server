@@ -1,5 +1,6 @@
 import {
 	type CopyFileDto,
+	type FileDto,
 	FileRecordParentType,
 	type FilesStorageClientAdapterService,
 	type StorageLocation,
@@ -46,5 +47,9 @@ export class BoardNodeCopyContext implements CopyContext {
 			},
 			userId: this.props.userId,
 		});
+	}
+
+	public listFilesOfParent(parentId: EntityId): Promise<FileDto[]> {
+		return this.props.filesStorageClientAdapterService.listFilesOfParent(parentId);
 	}
 }

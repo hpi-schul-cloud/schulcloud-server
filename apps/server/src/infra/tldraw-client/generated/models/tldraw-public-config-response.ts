@@ -14,41 +14,12 @@
 
 
 
-/**
- * 
- * @export
- * @interface TldrawPublicConfigResponse
- */
 export interface TldrawPublicConfigResponse {
-    /**
-     * 
-     * @type {string}
-     * @memberof TldrawPublicConfigResponse
-     */
     'TLDRAW_WEBSOCKET_URL': string;
-    /**
-     * 
-     * @type {boolean}
-     * @memberof TldrawPublicConfigResponse
-     */
     'TLDRAW_ASSETS_ENABLED': boolean;
-    /**
-     * 
-     * @type {number}
-     * @memberof TldrawPublicConfigResponse
-     */
     'TLDRAW_ASSETS_MAX_SIZE_BYTES': number;
-    /**
-     * 
-     * @type {Array<string>}
-     * @memberof TldrawPublicConfigResponse
-     */
     'TLDRAW_ASSETS_ALLOWED_MIME_TYPES_LIST': Array<string>;
-    /**
-     * 
-     * @type {boolean}
-     * @memberof TldrawPublicConfigResponse
-     */
     'FEATURE_TLDRAW_ENABLED': boolean;
+    'NOT_AUTHENTICATED_REDIRECT_URL': string;
 }
 

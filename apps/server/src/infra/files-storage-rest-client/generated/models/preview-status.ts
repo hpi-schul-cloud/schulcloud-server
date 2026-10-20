@@ -14,11 +14,6 @@
 
 
 
-/**
- * 
- * @export
- * @enum {string}
- */
 
 export const PreviewStatus = {
     PREVIEW_POSSIBLE: 'preview_possible',
@@ -26,7 +21,7 @@ export const PreviewStatus = {
     PREVIEW_NOT_POSSIBLE_SCAN_STATUS_ERROR: 'preview_not_possible_scan_status_error',
     PREVIEW_NOT_POSSIBLE_SCAN_STATUS_WONT_CHECK: 'preview_not_possible_scan_status_wont_check',
     PREVIEW_NOT_POSSIBLE_SCAN_STATUS_BLOCKED: 'preview_not_possible_scan_status_blocked',
-    PREVIEW_NOT_POSSIBLE_WRONG_MIME_TYPE: 'preview_not_possible_wrong_mime_type'
+    PREVIEW_NOT_POSSIBLE_WRONG_MIME_TYPE: 'preview_not_possible_wrong_mime_type',
 } as const;
 
 export type PreviewStatus = typeof PreviewStatus[keyof typeof PreviewStatus];

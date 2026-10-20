@@ -262,6 +262,15 @@
 	},
 	{
 		"_id": {
+			"$oid": "6ac616fca0f162f580c71457"
+		},
+		"name": "Migration20261007120000",
+		"executed_at": {
+			"$date": "2026-10-07T09:55:08.170Z"
+		}
+	},
+	{
+		"_id": {
 			"$oid": "6accafa0cfbd000000000003"
 		},
 		"name": "Migration20261012100000",

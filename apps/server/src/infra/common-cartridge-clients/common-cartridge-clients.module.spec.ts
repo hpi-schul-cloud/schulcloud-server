@@ -10,8 +10,22 @@ import {
 	FilesStorageClientAdapter,
 	LessonClientAdapter,
 } from './adapter';
-import { InternalCommonCartridgeClientsConfig } from './common-cartridge-clients.configs';
+import {
+	FILE_STORAGE_CLIENT_CONFIG_TOKEN,
+	InternalCommonCartridgeClientsConfig,
+	InternalFilesStorageClientConfig,
+} from './common-cartridge-clients.configs';
 import { CommonCartridgeClientsModule } from './common-cartridge-clients.module';
+import { FileApi } from './fs-generated';
+import {
+	BoardApi,
+	BoardCardApi,
+	BoardColumnApi,
+	BoardElementApi,
+	CourseRoomsApi,
+	CoursesApi,
+	LessonApi,
+} from './generated';
 
 @Configuration()
 class TestInternalCommonCartridgeClientsConfig implements InternalCommonCartridgeClientsConfig {
@@ -26,7 +40,12 @@ describe(CommonCartridgeClientsModule.name, () => {
 	beforeEach(async () => {
 		module = await Test.createTestingModule({
 			imports: [CommonCartridgeClientsModule.register('CC_CLIENT_CONFIG', TestInternalCommonCartridgeClientsConfig)],
-		}).compile();
+		})
+			.overrideProvider('CC_CLIENT_CONFIG')
+			.useValue({ basePath: 'https://configured-api.example/api' })
+			.overrideProvider(FILE_STORAGE_CLIENT_CONFIG_TOKEN)
+			.useValue({ basePath: 'https://configured-files.example' })
+			.compile();
 	});
 
 	afterAll(async () => {
@@ -39,6 +58,23 @@ describe(CommonCartridgeClientsModule.name, () => {
 
 	it('should be defined', () => {
 		expect(module).toBeDefined();
+	});
+
+	it.each([BoardApi, BoardCardApi, BoardColumnApi, BoardElementApi, CourseRoomsApi, CoursesApi, LessonApi])(
+		'should use the configured API host for %p',
+		(apiConstructor) => {
+			const config = module.get<InternalCommonCartridgeClientsConfig>('CC_CLIENT_CONFIG');
+			const client = module.get(apiConstructor);
+
+			expect(Reflect.get(client, 'basePath')).toBe(`${config.basePath}/v3`);
+		}
+	);
+
+	it('should use the configured file-storage host', () => {
+		const config = module.get<InternalFilesStorageClientConfig>(FILE_STORAGE_CLIENT_CONFIG_TOKEN);
+		const client = module.get(FileApi);
+
+		expect(Reflect.get(client, 'basePath')).toBe(`${config.basePath}/api/v3`);
 	});
 
 	describe('when resolving dependencies', () => {

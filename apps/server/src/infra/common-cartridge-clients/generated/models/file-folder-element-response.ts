@@ -23,35 +23,10 @@ import type { FileFolderElementContent } from './file-folder-element-content';
 // @ts-ignore
 import type { TimestampsResponse } from './timestamps-response';
 
-/**
- * 
- * @export
- * @interface FileFolderElementResponse
- */
 export interface FileFolderElementResponse {
-    /**
-     * 
-     * @type {string}
-     * @memberof FileFolderElementResponse
-     */
     'id': string;
-    /**
-     * 
-     * @type {ContentElementType}
-     * @memberof FileFolderElementResponse
-     */
     'type': ContentElementType;
-    /**
-     * 
-     * @type {FileFolderElementContent}
-     * @memberof FileFolderElementResponse
-     */
     'content': FileFolderElementContent;
-    /**
-     * 
-     * @type {TimestampsResponse}
-     * @memberof FileFolderElementResponse
-     */
     'timestamps': TimestampsResponse;
 }
 

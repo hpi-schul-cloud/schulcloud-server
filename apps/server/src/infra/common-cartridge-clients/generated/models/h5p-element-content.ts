@@ -14,17 +14,7 @@
 
 
 
-/**
- * 
- * @export
- * @interface H5pElementContent
- */
 export interface H5pElementContent {
-    /**
-     * 
-     * @type {string}
-     * @memberof H5pElementContent
-     */
     'contentId': string | null;
 }
 

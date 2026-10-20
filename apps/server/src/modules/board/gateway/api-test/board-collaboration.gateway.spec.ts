@@ -171,7 +171,9 @@ describe(BoardCollaborationGateway.name, () => {
 					copiedColumn: ColumnProps;
 				};
 
-				expect(Object.keys(success)).toEqual(expect.arrayContaining(['columnId', 'duplicatedColumn']));
+				expect(Object.keys(success)).toEqual(
+					expect.arrayContaining(['columnId', 'duplicatedColumn', 'failedFileNames'])
+				);
 			});
 		});
 
@@ -200,7 +202,7 @@ describe(BoardCollaborationGateway.name, () => {
 					copiedCard: CardProps;
 				};
 
-				expect(Object.keys(success)).toEqual(expect.arrayContaining(['cardId', 'duplicatedCard']));
+				expect(Object.keys(success)).toEqual(expect.arrayContaining(['cardId', 'duplicatedCard', 'failedFileNames']));
 			});
 		});
 

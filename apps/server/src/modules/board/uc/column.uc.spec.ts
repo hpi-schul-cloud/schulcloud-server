@@ -108,6 +108,35 @@ describe(ColumnUc.name, () => {
 				await expect(uc.copyCard(user.id, card.id, 'school-id')).rejects.toThrow('Copied entity is not a card');
 			});
 		});
+
+		describe('when files could not be copied', () => {
+			it('should return the names of the failed files', async () => {
+				const { user, card } = setup();
+				const copiedCard = cardFactory.build();
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(card);
+				boardNodeRule.can.mockReturnValueOnce(true);
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				boardNodeAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(
+					boardNodeAuthorizableFactory.build({ boardNode: card })
+				);
+
+				const copyStatus: CopyStatus = {
+					status: CopyStatusEnum.PARTIAL,
+					type: CopyElementType.CARD,
+					elements: [{ type: CopyElementType.FILE, status: CopyStatusEnum.FAIL, title: 'video.mp4' }],
+					copyEntity: copiedCard,
+				};
+				columnBoardService.copyCard.mockResolvedValueOnce(copyStatus);
+
+				const result = await uc.copyCard(user.id, card.id, 'school-id');
+
+				expect(result).toEqual({
+					copyEntity: copiedCard,
+					status: CopyStatusEnum.PARTIAL,
+					failedFileNames: ['video.mp4'],
+				});
+			});
+		});
 	});
 
 	describe('moveCard', () => {

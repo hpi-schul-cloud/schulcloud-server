@@ -18,7 +18,7 @@ import type { AxiosPromise, AxiosInstance, RawAxiosRequestConfig } from 'axios';
 import globalAxios from 'axios';
 // Some imports not used depending on template conditions
 // @ts-ignore
-import { DUMMY_BASE_URL, assertParamExists, setApiKeyToObject, setBasicAuthToObject, setBearerAuthToObject, setOAuthToObject, setSearchParams, serializeDataIfNeeded, toPathString, createRequestFunction } from '../common';
+import { DUMMY_BASE_URL, assertParamExists, setApiKeyToObject, setBasicAuthToObject, setBearerAuthToObject, setOAuthToObject, setSearchParams, serializeDataIfNeeded, toPathString, createRequestFunction, replaceWithSerializableTypeIfNeeded } from '../common';
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, type RequestArgs, BaseAPI, RequiredError, operationServerMap } from '../base';
 // @ts-ignore
@@ -31,7 +31,6 @@ import type { PageOfferDTO } from '../models';
 import type { PageSchoolDTO } from '../models';
 /**
  * EducationProviderApi - axios parameter creator
- * @export
  */
 export const EducationProviderApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
@@ -48,8 +47,8 @@ export const EducationProviderApiAxiosParamCreator = function (configuration?: C
             // verify required parameter 'organizationId' is not null or undefined
             assertParamExists('getActivationByOfferAndSchool', 'organizationId', organizationId)
             const localVarPath = `/v1.0/activation/offers/{offerId}/schools/{organizationId}/details`
-                .replace(`{${"offerId"}}`, encodeURIComponent(String(offerId)))
-                .replace(`{${"organizationId"}}`, encodeURIComponent(String(organizationId)));
+                .replace('{offerId}', encodeURIComponent(String(offerId)))
+                .replace('{organizationId}', encodeURIComponent(String(organizationId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -61,8 +60,8 @@ export const EducationProviderApiAxiosParamCreator = function (configuration?: C
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            localVarHeaderParameter['Accept'] = 'application/json,application/xml';
 
-    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -85,8 +84,8 @@ export const EducationProviderApiAxiosParamCreator = function (configuration?: C
             // verify required parameter 'offerId' is not null or undefined
             assertParamExists('getActivationBySchoolAndOffer', 'offerId', offerId)
             const localVarPath = `/v1.0/activation/schools/{organizationId}/offers/{offerId}/details`
-                .replace(`{${"organizationId"}}`, encodeURIComponent(String(organizationId)))
-                .replace(`{${"offerId"}}`, encodeURIComponent(String(offerId)));
+                .replace('{organizationId}', encodeURIComponent(String(organizationId)))
+                .replace('{offerId}', encodeURIComponent(String(offerId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -98,8 +97,8 @@ export const EducationProviderApiAxiosParamCreator = function (configuration?: C
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
+            localVarHeaderParameter['Accept'] = 'application/json,application/xml';
 
-    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -137,8 +136,8 @@ export const EducationProviderApiAxiosParamCreator = function (configuration?: C
                 localVarQueryParameter['pageSize'] = pageSize;
             }
 
+            localVarHeaderParameter['Accept'] = 'application/json,application/xml';
 
-    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -176,8 +175,8 @@ export const EducationProviderApiAxiosParamCreator = function (configuration?: C
                 localVarQueryParameter['pageSize'] = pageSize;
             }
 
+            localVarHeaderParameter['Accept'] = 'application/json,application/xml';
 
-    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -199,7 +198,7 @@ export const EducationProviderApiAxiosParamCreator = function (configuration?: C
             // verify required parameter 'organizationId' is not null or undefined
             assertParamExists('getOffersBySchool', 'organizationId', organizationId)
             const localVarPath = `/v1.0/activation/schools/{organizationId}/offers`
-                .replace(`{${"organizationId"}}`, encodeURIComponent(String(organizationId)));
+                .replace('{organizationId}', encodeURIComponent(String(organizationId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -219,8 +218,8 @@ export const EducationProviderApiAxiosParamCreator = function (configuration?: C
                 localVarQueryParameter['pageSize'] = pageSize;
             }
 
+            localVarHeaderParameter['Accept'] = 'application/json,application/xml';
 
-    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -258,8 +257,8 @@ export const EducationProviderApiAxiosParamCreator = function (configuration?: C
                 localVarQueryParameter['pageSize'] = pageSize;
             }
 
+            localVarHeaderParameter['Accept'] = 'application/json,application/xml';
 
-    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -281,7 +280,7 @@ export const EducationProviderApiAxiosParamCreator = function (configuration?: C
             // verify required parameter 'offerId' is not null or undefined
             assertParamExists('getSchoolsByOffer', 'offerId', offerId)
             const localVarPath = `/v1.0/activation/offers/{offerId}/schools`
-                .replace(`{${"offerId"}}`, encodeURIComponent(String(offerId)));
+                .replace('{offerId}', encodeURIComponent(String(offerId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -301,8 +300,8 @@ export const EducationProviderApiAxiosParamCreator = function (configuration?: C
                 localVarQueryParameter['pageSize'] = pageSize;
             }
 
+            localVarHeaderParameter['Accept'] = 'application/json,application/xml';
 
-    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -317,7 +316,6 @@ export const EducationProviderApiAxiosParamCreator = function (configuration?: C
 
 /**
  * EducationProviderApi - functional programming interface
- * @export
  */
 export const EducationProviderApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = EducationProviderApiAxiosParamCreator(configuration)
@@ -420,7 +418,6 @@ export const EducationProviderApiFp = function(configuration?: Configuration) {
 
 /**
  * EducationProviderApi - factory interface
- * @export
  */
 export const EducationProviderApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
     const localVarFp = EducationProviderApiFp(configuration)
@@ -432,7 +429,7 @@ export const EducationProviderApiFactory = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getActivationByOfferAndSchool(offerId: string, organizationId: string, options?: any): AxiosPromise<ActivationDTO> {
+        getActivationByOfferAndSchool(offerId: string, organizationId: string, options?: RawAxiosRequestConfig): AxiosPromise<ActivationDTO> {
             return localVarFp.getActivationByOfferAndSchool(offerId, organizationId, options).then((request) => request(axios, basePath));
         },
         /**
@@ -442,7 +439,7 @@ export const EducationProviderApiFactory = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getActivationBySchoolAndOffer(organizationId: string, offerId: string, options?: any): AxiosPromise<ActivationDTO> {
+        getActivationBySchoolAndOffer(organizationId: string, offerId: string, options?: RawAxiosRequestConfig): AxiosPromise<ActivationDTO> {
             return localVarFp.getActivationBySchoolAndOffer(organizationId, offerId, options).then((request) => request(axios, basePath));
         },
         /**
@@ -452,7 +449,7 @@ export const EducationProviderApiFactory = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getActivations(page?: string, pageSize?: string, options?: any): AxiosPromise<PageActivationDTO> {
+        getActivations(page?: string, pageSize?: string, options?: RawAxiosRequestConfig): AxiosPromise<PageActivationDTO> {
             return localVarFp.getActivations(page, pageSize, options).then((request) => request(axios, basePath));
         },
         /**
@@ -462,7 +459,7 @@ export const EducationProviderApiFactory = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getOffers(page?: string, pageSize?: string, options?: any): AxiosPromise<PageOfferDTO> {
+        getOffers(page?: string, pageSize?: string, options?: RawAxiosRequestConfig): AxiosPromise<PageOfferDTO> {
             return localVarFp.getOffers(page, pageSize, options).then((request) => request(axios, basePath));
         },
         /**
@@ -473,7 +470,7 @@ export const EducationProviderApiFactory = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getOffersBySchool(organizationId: string, page?: string, pageSize?: string, options?: any): AxiosPromise<PageOfferDTO> {
+        getOffersBySchool(organizationId: string, page?: string, pageSize?: string, options?: RawAxiosRequestConfig): AxiosPromise<PageOfferDTO> {
             return localVarFp.getOffersBySchool(organizationId, page, pageSize, options).then((request) => request(axios, basePath));
         },
         /**
@@ -483,7 +480,7 @@ export const EducationProviderApiFactory = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getSchools(page?: string, pageSize?: string, options?: any): AxiosPromise<PageSchoolDTO> {
+        getSchools(page?: string, pageSize?: string, options?: RawAxiosRequestConfig): AxiosPromise<PageSchoolDTO> {
             return localVarFp.getSchools(page, pageSize, options).then((request) => request(axios, basePath));
         },
         /**
@@ -494,7 +491,7 @@ export const EducationProviderApiFactory = function (configuration?: Configurati
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        getSchoolsByOffer(offerId: string, page?: string, pageSize?: string, options?: any): AxiosPromise<PageSchoolDTO> {
+        getSchoolsByOffer(offerId: string, page?: string, pageSize?: string, options?: RawAxiosRequestConfig): AxiosPromise<PageSchoolDTO> {
             return localVarFp.getSchoolsByOffer(offerId, page, pageSize, options).then((request) => request(axios, basePath));
         },
     };
@@ -502,8 +499,6 @@ export const EducationProviderApiFactory = function (configuration?: Configurati
 
 /**
  * EducationProviderApi - interface
- * @export
- * @interface EducationProviderApi
  */
 export interface EducationProviderApiInterface {
     /**
@@ -512,7 +507,6 @@ export interface EducationProviderApiInterface {
      * @param {string} organizationId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof EducationProviderApiInterface
      */
     getActivationByOfferAndSchool(offerId: string, organizationId: string, options?: RawAxiosRequestConfig): AxiosPromise<ActivationDTO>;
 
@@ -522,7 +516,6 @@ export interface EducationProviderApiInterface {
      * @param {string} offerId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof EducationProviderApiInterface
      */
     getActivationBySchoolAndOffer(organizationId: string, offerId: string, options?: RawAxiosRequestConfig): AxiosPromise<ActivationDTO>;
 
@@ -532,7 +525,6 @@ export interface EducationProviderApiInterface {
      * @param {string} [pageSize] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof EducationProviderApiInterface
      */
     getActivations(page?: string, pageSize?: string, options?: RawAxiosRequestConfig): AxiosPromise<PageActivationDTO>;
 
@@ -542,7 +534,6 @@ export interface EducationProviderApiInterface {
      * @param {string} [pageSize] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof EducationProviderApiInterface
      */
     getOffers(page?: string, pageSize?: string, options?: RawAxiosRequestConfig): AxiosPromise<PageOfferDTO>;
 
@@ -553,7 +544,6 @@ export interface EducationProviderApiInterface {
      * @param {string} [pageSize] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof EducationProviderApiInterface
      */
     getOffersBySchool(organizationId: string, page?: string, pageSize?: string, options?: RawAxiosRequestConfig): AxiosPromise<PageOfferDTO>;
 
@@ -563,7 +553,6 @@ export interface EducationProviderApiInterface {
      * @param {string} [pageSize] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof EducationProviderApiInterface
      */
     getSchools(page?: string, pageSize?: string, options?: RawAxiosRequestConfig): AxiosPromise<PageSchoolDTO>;
 
@@ -574,7 +563,6 @@ export interface EducationProviderApiInterface {
      * @param {string} [pageSize] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof EducationProviderApiInterface
      */
     getSchoolsByOffer(offerId: string, page?: string, pageSize?: string, options?: RawAxiosRequestConfig): AxiosPromise<PageSchoolDTO>;
 
@@ -582,9 +570,6 @@ export interface EducationProviderApiInterface {
 
 /**
  * EducationProviderApi - object-oriented interface
- * @export
- * @class EducationProviderApi
- * @extends {BaseAPI}
  */
 export class EducationProviderApi extends BaseAPI implements EducationProviderApiInterface {
     /**
@@ -593,7 +578,6 @@ export class EducationProviderApi extends BaseAPI implements EducationProviderAp
      * @param {string} organizationId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof EducationProviderApi
      */
     public getActivationByOfferAndSchool(offerId: string, organizationId: string, options?: RawAxiosRequestConfig) {
         return EducationProviderApiFp(this.configuration).getActivationByOfferAndSchool(offerId, organizationId, options).then((request) => request(this.axios, this.basePath));
@@ -605,7 +589,6 @@ export class EducationProviderApi extends BaseAPI implements EducationProviderAp
      * @param {string} offerId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof EducationProviderApi
      */
     public getActivationBySchoolAndOffer(organizationId: string, offerId: string, options?: RawAxiosRequestConfig) {
         return EducationProviderApiFp(this.configuration).getActivationBySchoolAndOffer(organizationId, offerId, options).then((request) => request(this.axios, this.basePath));
@@ -617,7 +600,6 @@ export class EducationProviderApi extends BaseAPI implements EducationProviderAp
      * @param {string} [pageSize] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof EducationProviderApi
      */
     public getActivations(page?: string, pageSize?: string, options?: RawAxiosRequestConfig) {
         return EducationProviderApiFp(this.configuration).getActivations(page, pageSize, options).then((request) => request(this.axios, this.basePath));
@@ -629,7 +611,6 @@ export class EducationProviderApi extends BaseAPI implements EducationProviderAp
      * @param {string} [pageSize] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof EducationProviderApi
      */
     public getOffers(page?: string, pageSize?: string, options?: RawAxiosRequestConfig) {
         return EducationProviderApiFp(this.configuration).getOffers(page, pageSize, options).then((request) => request(this.axios, this.basePath));
@@ -642,7 +623,6 @@ export class EducationProviderApi extends BaseAPI implements EducationProviderAp
      * @param {string} [pageSize] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof EducationProviderApi
      */
     public getOffersBySchool(organizationId: string, page?: string, pageSize?: string, options?: RawAxiosRequestConfig) {
         return EducationProviderApiFp(this.configuration).getOffersBySchool(organizationId, page, pageSize, options).then((request) => request(this.axios, this.basePath));
@@ -654,7 +634,6 @@ export class EducationProviderApi extends BaseAPI implements EducationProviderAp
      * @param {string} [pageSize] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof EducationProviderApi
      */
     public getSchools(page?: string, pageSize?: string, options?: RawAxiosRequestConfig) {
         return EducationProviderApiFp(this.configuration).getSchools(page, pageSize, options).then((request) => request(this.axios, this.basePath));
@@ -667,7 +646,6 @@ export class EducationProviderApi extends BaseAPI implements EducationProviderAp
      * @param {string} [pageSize] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof EducationProviderApi
      */
     public getSchoolsByOffer(offerId: string, page?: string, pageSize?: string, options?: RawAxiosRequestConfig) {
         return EducationProviderApiFp(this.configuration).getSchoolsByOffer(offerId, page, pageSize, options).then((request) => request(this.axios, this.basePath));

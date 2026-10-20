@@ -14,11 +14,6 @@
 
 
 
-/**
- * 
- * @export
- * @enum {string}
- */
 
 export const ContentElementType = {
     FILE: 'file',
@@ -30,7 +25,7 @@ export const ContentElementType = {
     VIDEO_CONFERENCE: 'videoConference',
     FILE_FOLDER: 'fileFolder',
     DELETED: 'deleted',
-    H5P: 'h5p'
+    H5P: 'h5p',
 } as const;
 
 export type ContentElementType = typeof ContentElementType[keyof typeof ContentElementType];

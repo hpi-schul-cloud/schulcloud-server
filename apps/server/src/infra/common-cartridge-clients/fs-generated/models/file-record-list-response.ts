@@ -17,34 +17,21 @@
 // @ts-ignore
 import type { FileRecordResponse } from './file-record-response';
 
-/**
- * 
- * @export
- * @interface FileRecordListResponse
- */
 export interface FileRecordListResponse {
     /**
      * The items for the current page.
-     * @type {Array<FileRecordResponse>}
-     * @memberof FileRecordListResponse
      */
     'data': Array<FileRecordResponse>;
     /**
      * The total amount of items.
-     * @type {number}
-     * @memberof FileRecordListResponse
      */
     'total': number;
     /**
      * The amount of items skipped from the start.
-     * @type {number}
-     * @memberof FileRecordListResponse
      */
     'skip': number;
     /**
      * The page size of the response.
-     * @type {number}
-     * @memberof FileRecordListResponse
      */
     'limit': number;
 }
