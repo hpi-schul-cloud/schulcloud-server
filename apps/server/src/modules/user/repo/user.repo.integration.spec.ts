@@ -10,6 +10,7 @@ import { Test, type TestingModule } from '@nestjs/testing';
 import { SortOrder } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
+import { ResolvedUserMapper } from '../api/mapper/resolved-user.mapper';
 import type { UserParentsEntityProps } from './user-parents.entity';
 import { User } from './user.entity';
 import { UserMikroOrmRepo } from './user.repo';
@@ -86,8 +87,38 @@ describe('user repo', () => {
 		});
 	});
 
+	describe('optional property hydration', () => {
+		it.each(['findById', 'findByExternalIdOrFail'] as const)(
+			'should preserve supplied optional values through %s',
+			async (method) => {
+				const system = systemEntityFactory.build();
+				const school = schoolEntityFactory.build({ systems: [system] });
+				const optionalValues = {
+					preferredName: 'Johnny',
+					birthday: new Date('2000-01-02'),
+					forcePasswordChange: false,
+					discoverable: false,
+					importHash: 'import-hash',
+					source: 'ldap',
+				};
+				const user = userFactory.build({ school, externalId: 'optional-properties', ...optionalValues });
+				await em.persist(user).flush();
+				em.clear();
+
+				const result =
+					method === 'findById'
+						? await repo.findById(user.id)
+						: await repo.findByExternalIdOrFail('optional-properties', system.id);
+
+				expect(result).toMatchObject(optionalValues);
+				expect(Object.keys(result)).toEqual(expect.arrayContaining(Object.keys(optionalValues)));
+				expect(ResolvedUserMapper.mapToResponse(result)).toStrictEqual(ResolvedUserMapper.mapToResponse(user));
+			}
+		);
+	});
+
 	describe('findById', () => {
-		it('should return right keys', async () => {
+		it('should return hydrated fields without absent optional own properties', async () => {
 			const user = userFactory.build();
 
 			await em.persist([user]).flush();
@@ -101,31 +132,18 @@ describe('user repo', () => {
 					'roles',
 					'firstName',
 					'lastName',
-					'preferredName',
-					'lastSyncedAt',
 					'email',
 					'school',
 					'secondarySchools',
-					'source',
 					'_id',
-					'ldapDn',
-					'externalId',
-					'forcePasswordChange',
-					'customAvatarBackgroundColor',
-					'importHash',
-					'parents',
 					'preferences',
-					'language',
-					'deletedAt',
-					'discoverable',
-					'lastLoginSystemChange',
-					'outdatedSince',
-					'previousExternalId',
-					'birthday',
 					'consent',
 					'allSearchableStrings',
 				].sort()
 			);
+			expect(result.preferredName).toBeUndefined();
+			expect(result.birthday).toBeUndefined();
+			expect(ResolvedUserMapper.mapToResponse(result)).toStrictEqual(ResolvedUserMapper.mapToResponse(user));
 		});
 
 		it('should return one role that matched by id', async () => {
@@ -225,7 +243,7 @@ describe('user repo', () => {
 			em.clear();
 		});
 
-		it('should return right keys', async () => {
+		it('should return hydrated fields without absent optional own properties', async () => {
 			const result = await repo.findByExternalIdOrFail(userA.externalId as string, sys.id);
 			expect(Object.keys(result).sort()).toEqual(
 				[
@@ -234,31 +252,19 @@ describe('user repo', () => {
 					'roles',
 					'firstName',
 					'lastName',
-					'preferredName',
-					'lastSyncedAt',
 					'email',
-					'customAvatarBackgroundColor',
 					'school',
 					'secondarySchools',
 					'_id',
-					'ldapDn',
 					'externalId',
-					'forcePasswordChange',
-					'importHash',
-					'parents',
 					'preferences',
-					'language',
-					'deletedAt',
-					'lastLoginSystemChange',
-					'outdatedSince',
-					'previousExternalId',
-					'birthday',
 					'consent',
-					'source',
-					'discoverable',
 					'allSearchableStrings',
 				].sort()
 			);
+			expect(result.preferredName).toBeUndefined();
+			expect(result.birthday).toBeUndefined();
+			expect(ResolvedUserMapper.mapToResponse(result)).toStrictEqual(ResolvedUserMapper.mapToResponse(userA));
 		});
 
 		it('should return user matched by id', async () => {
