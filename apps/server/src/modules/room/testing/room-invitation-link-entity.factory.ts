@@ -2,6 +2,7 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { RoomInvitationLinkEntity } from '../repo/entity/room-invitation-link.entity';
 import { type RoomInvitationLinkProps } from '../domain/do/room-invitation-link.do';
 import { EntityFactory } from '@testing/factory/entity.factory';
+import { randomBytes } from 'node:crypto';
 
 const inOneWeek = new Date(Date.now() + 1000 * 60 * 60 * 24 * 7);
 export const roomInvitationLinkEntityFactory = EntityFactory.define<RoomInvitationLinkEntity, RoomInvitationLinkProps>(
@@ -9,6 +10,7 @@ export const roomInvitationLinkEntityFactory = EntityFactory.define<RoomInvitati
 	({ sequence }) => {
 		return {
 			id: new ObjectId().toHexString(),
+			invitationToken: randomBytes(32).toString('base64url'),
 			title: `room invitation link #${sequence}`,
 			restrictedToCreatorSchool: true,
 			isUsableByExternalPersons: false,

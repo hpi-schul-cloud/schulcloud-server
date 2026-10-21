@@ -24,6 +24,41 @@ Note that not all the .md file here are up to date.
 ### Sync console
 > Find the [Documentation](./apps/server/src/infra/sync/console/README.md) here.
 
+## Room invitation credentials
+
+New room invitations have an internal ObjectId (`id`) and a separate secret
+`invitationToken`, generated from 32 cryptographically random bytes and encoded as
+43 base64url characters. Authorized create, update, and list responses include the
+token. Metadata updates preserve it; clients cannot supply or change it.
+
+Use `invitationToken ?? id` when building share/copy/QR URLs. Pass that value
+unchanged to `POST /api/v3/room-invitation-links/:roomInvitationLinkId`. Redemption
+accepts a 43-character base64url token or a legacy 24-character hexadecimal ID.
+Malformed values return 400; unknown credentials return 404 (`INVALID_LINK`).
+Authentication and all existing invitation restrictions still apply.
+
+Keep using `id` for administrative update/delete operations. Token-backed
+invitations **cannot** be redeemed using their internal IDs. Existing invitations
+without a token retain their original URLs indefinitely, including after metadata
+updates. No data backfill is required; these legacy URLs remain guessable until
+their invitations expire or are deleted and replaced.
+
+The separate frontend must update its API types, share URL generation, and
+ObjectId-only redemption guards. Preserve tokens, including their case, through
+login redirects and pending-invitation storage; never truncate, lowercase, or log
+them. Cover both token and legacy URLs, malformed values, and login round-trips
+with frontend tests.
+
+Deploy frontend support for optional tokens before enabling token creation on the
+server, and coordinate reloads of older frontend bundles: old clients would copy
+internal IDs and produce unusable links for new invitations. During the server
+release, run the established index synchronization (`npm run ensureIndexes:prod`)
+with the new entity definitions before exposing token-backed creation. It creates
+the unique partial `roomInvitationTokenUniqueIndex`, which allows multiple legacy
+records without tokens. Smoke-test a new shared link, rejection of its internal
+ID, and an existing legacy URL. Do not restore unrestricted ID redemption as a
+compatibility workaround.
+
 
 ## Feathers application
 

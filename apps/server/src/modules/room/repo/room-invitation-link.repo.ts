@@ -1,4 +1,4 @@
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { RoomInvitationLink } from '../domain/do/room-invitation-link.do';
 import { EntityId } from '@shared/domain/types';
@@ -16,6 +16,15 @@ export class RoomInvitationLinkRepo {
 		const entity = await this.em.findOneOrFail(RoomInvitationLinkEntity, id);
 		const domainobject = this.roomInvitationLinkDomainMapper.mapEntityToDo(entity);
 		return domainobject;
+	}
+
+	public async findByInvitationCredential(credential: string): Promise<RoomInvitationLink | null> {
+		const query = ObjectId.isValid(credential)
+			? { id: credential, invitationToken: null }
+			: { invitationToken: credential };
+		const entity = await this.em.findOne(RoomInvitationLinkEntity, query);
+
+		return entity ? this.roomInvitationLinkDomainMapper.mapEntityToDo(entity) : null;
 	}
 
 	public async findByIds(ids: EntityId[]): Promise<RoomInvitationLink[]> {
