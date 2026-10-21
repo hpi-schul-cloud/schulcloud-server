@@ -131,6 +131,47 @@ describe('RoomInvitationLinkService', () => {
 		});
 	});
 
+	describe('findByInvitationCredential', () => {
+		describe('when the repository resolves', () => {
+			const setup = () => {
+				const credential = Buffer.alloc(32, 1).toString('base64url');
+				const link = roomInvitationLinkTestFactory.build({ invitationToken: credential });
+				repo.findByInvitationCredential.mockResolvedValueOnce(link).mockResolvedValueOnce(null);
+
+				return { link, credential };
+			};
+
+			it('should forward the credential and preserve found and missing results', async () => {
+				const { link, credential } = setup();
+
+				const found = await service.findByInvitationCredential(credential);
+				const missing = await service.findByInvitationCredential(credential);
+
+				expect(found).toBe(link);
+				expect(missing).toBeNull();
+				expect(repo.findByInvitationCredential).toHaveBeenCalledWith(credential);
+			});
+		});
+
+		describe('when the repository rejects', () => {
+			const setup = () => {
+				const credential = Buffer.alloc(32, 1).toString('base64url');
+				const error = new Error('Database unavailable');
+				repo.findByInvitationCredential.mockRejectedValueOnce(error);
+
+				return { credential, error };
+			};
+
+			it('should propagate the database error', async () => {
+				const { credential, error } = setup();
+
+				const result = service.findByInvitationCredential(credential);
+
+				await expect(result).rejects.toBe(error);
+			});
+		});
+	});
+
 	describe('findByRoomId', () => {
 		describe('when room has invitation links', () => {
 			it('should return the links', async () => {

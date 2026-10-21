@@ -1,4 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
+import { randomBytes } from 'node:crypto';
 import {
 	RoomInvitationLink,
 	type RoomInvitationLinkDto,
@@ -8,8 +9,9 @@ import {
 export class RoomInvitationLinkFactory {
 	public static createInvitationLink(dto: RoomInvitationLinkDto): RoomInvitationLink {
 		const props: RoomInvitationLinkProps = {
-			id: new ObjectId().toHexString(),
 			...dto,
+			id: new ObjectId().toHexString(),
+			invitationToken: randomBytes(32).toString('base64url'),
 		};
 
 		const roomInvitationLink = this.buildFromProps(props);
@@ -19,6 +21,7 @@ export class RoomInvitationLinkFactory {
 	public static buildFromProps(props: RoomInvitationLinkProps): RoomInvitationLink {
 		const roomInvitationLink = new RoomInvitationLink({
 			id: props.id,
+			invitationToken: props.invitationToken ?? undefined,
 			title: props.title,
 			restrictedToCreatorSchool: props.restrictedToCreatorSchool,
 			isUsableByExternalPersons: props.isUsableByExternalPersons,

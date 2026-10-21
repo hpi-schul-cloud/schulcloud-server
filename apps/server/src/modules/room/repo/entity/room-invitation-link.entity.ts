@@ -1,10 +1,18 @@
-import { Entity, Property } from '@mikro-orm/core';
+import { Entity, Property, Unique } from '@mikro-orm/core';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { EntityId } from '@shared/domain/types';
 import { RoomInvitationLink, RoomInvitationLinkProps } from '../../domain/do/room-invitation-link.do';
 
 @Entity({ tableName: 'room-invitation-links' })
+@Unique({
+	name: 'roomInvitationTokenUniqueIndex',
+	properties: ['invitationToken'],
+	options: { partialFilterExpression: { invitationToken: { $type: 'string' } } },
+})
 export class RoomInvitationLinkEntity extends BaseEntityWithTimestamps implements RoomInvitationLinkProps {
+	@Property({ nullable: true })
+	invitationToken?: string;
+
 	@Property({ nullable: false })
 	title!: string;
 

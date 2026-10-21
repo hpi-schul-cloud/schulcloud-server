@@ -130,6 +130,22 @@ describe('Room Controller (API)', () => {
 				});
 			});
 
+			describe('when a token is used instead of the management id', () => {
+				it('should return 400 without deleting the invitation', async () => {
+					const { teacherOwnerAccount, roomInvitationLink } = await setup();
+					const loggedInClient = await testApiClient.login(teacherOwnerAccount);
+
+					const response = await loggedInClient.delete().query({
+						roomInvitationLinkIds: [roomInvitationLink.invitationToken],
+					});
+					em.clear();
+					const persisted = await em.findOneOrFail(RoomInvitationLinkEntity, roomInvitationLink.id);
+
+					expect(response.status).toBe(HttpStatus.BAD_REQUEST);
+					expect(persisted.invitationToken).toBe(roomInvitationLink.invitationToken);
+				});
+			});
+
 			describe('when multiple roomInvitationLinks exist', () => {
 				describe('when all links belong to the same room', () => {
 					it('should delete the roomInvitationLink', async () => {

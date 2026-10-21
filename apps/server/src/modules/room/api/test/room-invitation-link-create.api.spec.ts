@@ -16,6 +16,8 @@ import { TestApiClient } from '@testing/test-api-client';
 import { type RoomProps } from '../../../room/domain';
 import { type RoomEntity } from '../../../room/repo';
 import { type CreateRoomInvitationLinkBodyParams } from '../dto/request/create-room-invitation-link.body.params';
+import { RoomInvitationLinkEntity } from '../../repo/entity/room-invitation-link.entity';
+import { type RoomInvitationLinkResponse } from '../dto/response/room-invitation-link.response';
 
 const inOneWeek = new Date(Date.now() + 1000 * 60 * 60 * 24 * 7);
 
@@ -109,7 +111,10 @@ describe('Room Invitation Link Controller (API)', () => {
 					requiresConfirmation: false,
 				};
 
-				const response = await loggedInClient.post(undefined, params);
+				const suppliedToken = 'a'.repeat(43);
+				const response = await loggedInClient.post(undefined, { ...params, invitationToken: suppliedToken });
+				const { body }: { body: RoomInvitationLinkResponse } = response;
+
 				expect(response.status).toBe(HttpStatus.CREATED);
 				expect(response.body).toMatchObject({
 					...params,
@@ -118,6 +123,12 @@ describe('Room Invitation Link Controller (API)', () => {
 					creatorUserId: teacherUser.id,
 					creatorSchoolId: teacherUser.school.id,
 				});
+				expect(ObjectId.isValid(body.id)).toBe(true);
+				expect(body.invitationToken).toMatch(/^[A-Za-z0-9_-]{43}$/);
+				expect(body.invitationToken).not.toBe(suppliedToken);
+				em.clear();
+				const persisted = await em.findOneOrFail(RoomInvitationLinkEntity, body.id);
+				expect(persisted.invitationToken).toBe(body.invitationToken);
 			});
 		});
 
