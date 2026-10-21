@@ -21,8 +21,12 @@ export class RoomArrangementUc {
 
 	public async getRoomsByUserArrangement(userId: EntityId): Promise<RoomWithAllowedOperationsAndLockedStatus[]> {
 		const accessibleRoomAuthorizables = await this.roomMembershipService.getRoomAuthorizablesByUserId(userId);
-		const roomIds = accessibleRoomAuthorizables.map((item) => item.roomId);
 		const user = await this.authorizationService.getUserWithPermissions(userId);
+
+		const userSchoolRoomAuthorizables = accessibleRoomAuthorizables.filter((item) =>
+			this.roomRule.hasAccessToSchool(user, item.schoolId)
+		);
+		const roomIds = userSchoolRoomAuthorizables.map((item) => item.roomId);
 
 		const rooms = await this.roomService.getRoomsByIds(roomIds);
 		const existingRoomIds = rooms.map((room) => room.id);
@@ -31,11 +35,11 @@ export class RoomArrangementUc {
 
 		const roomsWithAllowedOperationsAndLockedStatus = rooms
 			.map((room) => {
-				const roomAuthorizable = accessibleRoomAuthorizables.find((item) => item.roomId === room.id);
+				const roomAuthorizable = userSchoolRoomAuthorizables.find((item) => item.roomId === room.id);
 				if (!roomAuthorizable) return null;
 				const allowedOperations = this.roomRule.listAllowedOperations(user, roomAuthorizable);
 
-				const hasOwner = accessibleRoomAuthorizables.some(
+				const hasOwner = userSchoolRoomAuthorizables.some(
 					(item) =>
 						item.roomId === room.id &&
 						item.members.some((member) => member.roles.some((role) => role.name === RoleName.ROOMOWNER))

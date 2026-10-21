@@ -282,5 +282,68 @@ describe('Room Controller (API)', () => {
 				expect(response.body as RoomListResponse).toEqual({ data: [] });
 			});
 		});
+
+		describe('when the user has memberships in rooms from a former school', () => {
+			it('should only return rooms belonging to the user current school', async () => {
+				const currentSchool = schoolEntityFactory.buildWithId();
+				const formerSchool = schoolEntityFactory.buildWithId();
+
+				const currentSchoolRoom = roomEntityFactory.buildWithId({
+					schoolId: currentSchool.id,
+					name: 'Current School Room',
+				});
+				const formerSchoolRoom = roomEntityFactory.buildWithId({
+					schoolId: formerSchool.id,
+					name: 'Former School Room',
+				});
+
+				const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher({ school: currentSchool });
+				const { roomOwnerRole } = RoomRolesTestFactory.createRoomRoles();
+
+				const currentSchoolGroup = groupEntityFactory.buildWithId({
+					users: [{ role: roomOwnerRole, user: teacherUser }],
+					type: GroupEntityTypes.ROOM,
+					organization: currentSchool,
+				});
+				const formerSchoolGroup = groupEntityFactory.buildWithId({
+					users: [{ role: roomOwnerRole, user: teacherUser }],
+					type: GroupEntityTypes.ROOM,
+					organization: formerSchool,
+				});
+
+				const currentRoomMembership = roomMembershipEntityFactory.build({
+					userGroupId: currentSchoolGroup.id,
+					roomId: currentSchoolRoom.id,
+					schoolId: currentSchool.id,
+				});
+				const formerRoomMembership = roomMembershipEntityFactory.build({
+					userGroupId: formerSchoolGroup.id,
+					roomId: formerSchoolRoom.id,
+					schoolId: formerSchool.id,
+				});
+
+				await em
+					.persist([
+						currentSchoolRoom,
+						formerSchoolRoom,
+						currentRoomMembership,
+						formerRoomMembership,
+						teacherAccount,
+						teacherUser,
+						currentSchoolGroup,
+						formerSchoolGroup,
+					])
+					.flush();
+				em.clear();
+
+				const loggedInClient = await testApiClient.login(teacherAccount);
+				const response = await loggedInClient.get();
+
+				expect(response.status).toBe(HttpStatus.OK);
+				const result = response.body as RoomListResponse;
+				expect(result.data.length).toBe(1);
+				expect(result.data[0].id).toBe(currentSchoolRoom.id);
+			});
+		});
 	});
 });

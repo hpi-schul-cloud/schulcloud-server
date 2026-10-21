@@ -129,12 +129,12 @@ export class RoomRule implements Rule<RoomAuthorizable> {
 		return true;
 	}
 
-	private hasAccessToSchool(user: User, schoolId: string): boolean {
-		const primarySchoolId = user.school.id;
+	public hasAccessToSchool(user: User, schoolId: string): boolean {
+		const primarySchoolId = user.school?.id;
 		const secondarySchools = user.secondarySchools ?? [];
 		const secondarySchoolIds = secondarySchools.map(({ school }) => school.id);
 
-		const allSchools = [primarySchoolId, ...secondarySchoolIds];
+		const allSchools = [primarySchoolId, ...secondarySchoolIds].filter(Boolean);
 		const includesSchool = allSchools.includes(schoolId);
 
 		return includesSchool;
