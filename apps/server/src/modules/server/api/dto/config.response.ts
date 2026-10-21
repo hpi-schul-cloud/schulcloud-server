@@ -74,6 +74,9 @@ export class ConfigResponse {
 	FEATURE_TEAMS_ENABLED: boolean;
 
 	@ApiProperty()
+	FEATURE_ROOM_SEARCH_ENABLED: boolean;
+
+	@ApiProperty()
 	FEATURE_TEAM_CREATE_ROOM_ENABLED: boolean;
 
 	@ApiProperty()
@@ -302,6 +305,7 @@ export class ConfigResponse {
 		this.ALERT_STATUS_URL = config.alertStatusUrl;
 		this.CALENDAR_SERVICE_ENABLED = config.calendarServiceEnabled;
 		this.FEATURE_TEAMS_ENABLED = config.featureTeamsEnabled;
+		this.FEATURE_ROOM_SEARCH_ENABLED = config.featureRoomSearchEnabled;
 		this.FEATURE_TEAM_CREATE_ROOM_ENABLED = config.featureTeamCreateRoomEnabled;
 		this.FEATURE_FWU_CONTENT_ENABLED = config.fwuContentEnabled;
 		this.TEACHER_STUDENT_VISIBILITY__IS_CONFIGURABLE = config.teacherStudentVisibilityIsConfigurable;
