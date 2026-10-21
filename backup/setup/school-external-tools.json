@@ -118,5 +118,499 @@
 		},
 		"schoolParameters": [],
 		"isDeactivated": false
+	},
+	{
+		"_id": {
+			"$oid": "6accafa05c5ffb75779890b6"
+		},
+		"createdAt": {
+			"$date": "2026-10-12T10:00:00.000Z"
+		},
+		"updatedAt": {
+			"$date": "2026-10-12T10:00:00.000Z"
+		},
+		"tool": {
+			"$oid": "6accafa0cfbd000000000001"
+		},
+		"school": {
+			"$oid": "5f2987e020834114b8efd6f6"
+		},
+		"schoolParameters": [],
+		"isDeactivated": false
+	},
+	{
+		"_id": {
+			"$oid": "6accafa0eae2ecc82e73efb8"
+		},
+		"createdAt": {
+			"$date": "2026-10-12T10:00:00.000Z"
+		},
+		"updatedAt": {
+			"$date": "2026-10-12T10:00:00.000Z"
+		},
+		"tool": {
+			"$oid": "6accafa0cfbd000000000001"
+		},
+		"school": {
+			"$oid": "5f2987e020834114b8efd6f7"
+		},
+		"schoolParameters": [],
+		"isDeactivated": false
+	},
+	{
+		"_id": {
+			"$oid": "6accafa04b67df1a205cab67"
+		},
+		"createdAt": {
+			"$date": "2026-10-12T10:00:00.000Z"
+		},
+		"updatedAt": {
+			"$date": "2026-10-12T10:00:00.000Z"
+		},
+		"tool": {
+			"$oid": "6accafa0cfbd000000000001"
+		},
+		"school": {
+			"$oid": "5f2987e020834114b8efd6f8"
+		},
+		"schoolParameters": [],
+		"isDeactivated": false
+	},
+	{
+		"_id": {
+			"$oid": "6accafa095c7f21b2972662c"
+		},
+		"createdAt": {
+			"$date": "2026-10-12T10:00:00.000Z"
+		},
+		"updatedAt": {
+			"$date": "2026-10-12T10:00:00.000Z"
+		},
+		"tool": {
+			"$oid": "6accafa0cfbd000000000001"
+		},
+		"school": {
+			"$oid": "5f2987e020834114b8efd6f9"
+		},
+		"schoolParameters": [],
+		"isDeactivated": false
+	},
+	{
+		"_id": {
+			"$oid": "6accafa095ecbd08fa3e5bf9"
+		},
+		"createdAt": {
+			"$date": "2026-10-12T10:00:00.000Z"
+		},
+		"updatedAt": {
+			"$date": "2026-10-12T10:00:00.000Z"
+		},
+		"tool": {
+			"$oid": "6accafa0cfbd000000000001"
+		},
+		"school": {
+			"$oid": "5fa2c5ccb229544f2c69666c"
+		},
+		"schoolParameters": [],
+		"isDeactivated": false
+	},
+	{
+		"_id": {
+			"$oid": "6accafa0ddac99189d733769"
+		},
+		"createdAt": {
+			"$date": "2026-10-12T10:00:00.000Z"
+		},
+		"updatedAt": {
+			"$date": "2026-10-12T10:00:00.000Z"
+		},
+		"tool": {
+			"$oid": "6accafa0cfbd000000000001"
+		},
+		"school": {
+			"$oid": "5fa318f2b229544f2c697a56"
+		},
+		"schoolParameters": [],
+		"isDeactivated": false
+	},
+	{
+		"_id": {
+			"$oid": "6accafa0da8655363a2a4d5d"
+		},
+		"createdAt": {
+			"$date": "2026-10-12T10:00:00.000Z"
+		},
+		"updatedAt": {
+			"$date": "2026-10-12T10:00:00.000Z"
+		},
+		"tool": {
+			"$oid": "6accafa0cfbd000000000001"
+		},
+		"school": {
+			"$oid": "5fa31f3db229544f2c697e3e"
+		},
+		"schoolParameters": [],
+		"isDeactivated": false
+	},
+	{
+		"_id": {
+			"$oid": "6accafa0843f0510a6859fca"
+		},
+		"createdAt": {
+			"$date": "2026-10-12T10:00:00.000Z"
+		},
+		"updatedAt": {
+			"$date": "2026-10-12T10:00:00.000Z"
+		},
+		"tool": {
+			"$oid": "6accafa0cfbd000000000001"
+		},
+		"school": {
+			"$oid": "5fcfb0bc685b9af4d4abf899"
+		},
+		"schoolParameters": [],
+		"isDeactivated": false
+	},
+	{
+		"_id": {
+			"$oid": "6accafa04c558b50a1d2b579"
+		},
+		"createdAt": {
+			"$date": "2026-10-12T10:00:00.000Z"
+		},
+		"updatedAt": {
+			"$date": "2026-10-12T10:00:00.000Z"
+		},
+		"tool": {
+			"$oid": "6accafa0cfbd000000000001"
+		},
+		"school": {
+			"$oid": "5fda01df490123cba891a193"
+		},
+		"schoolParameters": [],
+		"isDeactivated": false
+	},
+	{
+		"_id": {
+			"$oid": "6accafa0fc748a8027b6767d"
+		},
+		"createdAt": {
+			"$date": "2026-10-12T10:00:00.000Z"
+		},
+		"updatedAt": {
+			"$date": "2026-10-12T10:00:00.000Z"
+		},
+		"tool": {
+			"$oid": "6accafa0cfbd000000000001"
+		},
+		"school": {
+			"$oid": "5f2987e020834114b8efd600"
+		},
+		"schoolParameters": [],
+		"isDeactivated": false
+	},
+	{
+		"_id": {
+			"$oid": "6accafa06f4cc777689d4822"
+		},
+		"createdAt": {
+			"$date": "2026-10-12T10:00:00.000Z"
+		},
+		"updatedAt": {
+			"$date": "2026-10-12T10:00:00.000Z"
+		},
+		"tool": {
+			"$oid": "6accafa0cfbd000000000001"
+		},
+		"school": {
+			"$oid": "6492cc63ad0aa141f4e361d1"
+		},
+		"schoolParameters": [],
+		"isDeactivated": false
+	},
+	{
+		"_id": {
+			"$oid": "6accafa0fd9f1bff9e545016"
+		},
+		"createdAt": {
+			"$date": "2026-10-12T10:00:00.000Z"
+		},
+		"updatedAt": {
+			"$date": "2026-10-12T10:00:00.000Z"
+		},
+		"tool": {
+			"$oid": "6accafa0cfbd000000000001"
+		},
+		"school": {
+			"$oid": "6613a91e0f48785dcfe9e0b3"
+		},
+		"schoolParameters": [],
+		"isDeactivated": false
+	},
+	{
+		"_id": {
+			"$oid": "6accafa037c534e182b4cce0"
+		},
+		"createdAt": {
+			"$date": "2026-10-12T10:00:00.000Z"
+		},
+		"updatedAt": {
+			"$date": "2026-10-12T10:00:00.000Z"
+		},
+		"tool": {
+			"$oid": "6accafa0cfbd000000000001"
+		},
+		"school": {
+			"$oid": "67a3a9115d5d9cb7f26eb59d"
+		},
+		"schoolParameters": [],
+		"isDeactivated": false
+	},
+	{
+		"_id": {
+			"$oid": "6accafa07626d78e4648c543"
+		},
+		"createdAt": {
+			"$date": "2026-10-12T10:00:00.000Z"
+		},
+		"updatedAt": {
+			"$date": "2026-10-12T10:00:00.000Z"
+		},
+		"tool": {
+			"$oid": "6accafa0cfbd000000000002"
+		},
+		"school": {
+			"$oid": "5f2987e020834114b8efd6f6"
+		},
+		"schoolParameters": [],
+		"isDeactivated": false
+	},
+	{
+		"_id": {
+			"$oid": "6accafa04b399ebf989b0aa6"
+		},
+		"createdAt": {
+			"$date": "2026-10-12T10:00:00.000Z"
+		},
+		"updatedAt": {
+			"$date": "2026-10-12T10:00:00.000Z"
+		},
+		"tool": {
+			"$oid": "6accafa0cfbd000000000002"
+		},
+		"school": {
+			"$oid": "5f2987e020834114b8efd6f7"
+		},
+		"schoolParameters": [],
+		"isDeactivated": false
+	},
+	{
+		"_id": {
+			"$oid": "6accafa0cce3fbaad0591967"
+		},
+		"createdAt": {
+			"$date": "2026-10-12T10:00:00.000Z"
+		},
+		"updatedAt": {
+			"$date": "2026-10-12T10:00:00.000Z"
+		},
+		"tool": {
+			"$oid": "6accafa0cfbd000000000002"
+		},
+		"school": {
+			"$oid": "5f2987e020834114b8efd6f8"
+		},
+		"schoolParameters": [],
+		"isDeactivated": false
+	},
+	{
+		"_id": {
+			"$oid": "6accafa0d833f6b304bc58dc"
+		},
+		"createdAt": {
+			"$date": "2026-10-12T10:00:00.000Z"
+		},
+		"updatedAt": {
+			"$date": "2026-10-12T10:00:00.000Z"
+		},
+		"tool": {
+			"$oid": "6accafa0cfbd000000000002"
+		},
+		"school": {
+			"$oid": "5f2987e020834114b8efd6f9"
+		},
+		"schoolParameters": [],
+		"isDeactivated": false
+	},
+	{
+		"_id": {
+			"$oid": "6accafa094350cb2c1627056"
+		},
+		"createdAt": {
+			"$date": "2026-10-12T10:00:00.000Z"
+		},
+		"updatedAt": {
+			"$date": "2026-10-12T10:00:00.000Z"
+		},
+		"tool": {
+			"$oid": "6accafa0cfbd000000000002"
+		},
+		"school": {
+			"$oid": "5fa2c5ccb229544f2c69666c"
+		},
+		"schoolParameters": [],
+		"isDeactivated": false
+	},
+	{
+		"_id": {
+			"$oid": "6accafa038495a5987c3f080"
+		},
+		"createdAt": {
+			"$date": "2026-10-12T10:00:00.000Z"
+		},
+		"updatedAt": {
+			"$date": "2026-10-12T10:00:00.000Z"
+		},
+		"tool": {
+			"$oid": "6accafa0cfbd000000000002"
+		},
+		"school": {
+			"$oid": "5fa318f2b229544f2c697a56"
+		},
+		"schoolParameters": [],
+		"isDeactivated": false
+	},
+	{
+		"_id": {
+			"$oid": "6accafa010e66549c8d2ea6e"
+		},
+		"createdAt": {
+			"$date": "2026-10-12T10:00:00.000Z"
+		},
+		"updatedAt": {
+			"$date": "2026-10-12T10:00:00.000Z"
+		},
+		"tool": {
+			"$oid": "6accafa0cfbd000000000002"
+		},
+		"school": {
+			"$oid": "5fa31f3db229544f2c697e3e"
+		},
+		"schoolParameters": [],
+		"isDeactivated": false
+	},
+	{
+		"_id": {
+			"$oid": "6accafa0f9746300cb2d7c23"
+		},
+		"createdAt": {
+			"$date": "2026-10-12T10:00:00.000Z"
+		},
+		"updatedAt": {
+			"$date": "2026-10-12T10:00:00.000Z"
+		},
+		"tool": {
+			"$oid": "6accafa0cfbd000000000002"
+		},
+		"school": {
+			"$oid": "5fcfb0bc685b9af4d4abf899"
+		},
+		"schoolParameters": [],
+		"isDeactivated": false
+	},
+	{
+		"_id": {
+			"$oid": "6accafa07f0024595261586e"
+		},
+		"createdAt": {
+			"$date": "2026-10-12T10:00:00.000Z"
+		},
+		"updatedAt": {
+			"$date": "2026-10-12T10:00:00.000Z"
+		},
+		"tool": {
+			"$oid": "6accafa0cfbd000000000002"
+		},
+		"school": {
+			"$oid": "5fda01df490123cba891a193"
+		},
+		"schoolParameters": [],
+		"isDeactivated": false
+	},
+	{
+		"_id": {
+			"$oid": "6accafa0ff09b28ee6de2b6e"
+		},
+		"createdAt": {
+			"$date": "2026-10-12T10:00:00.000Z"
+		},
+		"updatedAt": {
+			"$date": "2026-10-12T10:00:00.000Z"
+		},
+		"tool": {
+			"$oid": "6accafa0cfbd000000000002"
+		},
+		"school": {
+			"$oid": "5f2987e020834114b8efd600"
+		},
+		"schoolParameters": [],
+		"isDeactivated": false
+	},
+	{
+		"_id": {
+			"$oid": "6accafa03bdfeb8bb3dce903"
+		},
+		"createdAt": {
+			"$date": "2026-10-12T10:00:00.000Z"
+		},
+		"updatedAt": {
+			"$date": "2026-10-12T10:00:00.000Z"
+		},
+		"tool": {
+			"$oid": "6accafa0cfbd000000000002"
+		},
+		"school": {
+			"$oid": "6492cc63ad0aa141f4e361d1"
+		},
+		"schoolParameters": [],
+		"isDeactivated": false
+	},
+	{
+		"_id": {
+			"$oid": "6accafa0c072d2ba0dbe8fce"
+		},
+		"createdAt": {
+			"$date": "2026-10-12T10:00:00.000Z"
+		},
+		"updatedAt": {
+			"$date": "2026-10-12T10:00:00.000Z"
+		},
+		"tool": {
+			"$oid": "6accafa0cfbd000000000002"
+		},
+		"school": {
+			"$oid": "6613a91e0f48785dcfe9e0b3"
+		},
+		"schoolParameters": [],
+		"isDeactivated": false
+	},
+	{
+		"_id": {
+			"$oid": "6accafa032d77df4eb287e7b"
+		},
+		"createdAt": {
+			"$date": "2026-10-12T10:00:00.000Z"
+		},
+		"updatedAt": {
+			"$date": "2026-10-12T10:00:00.000Z"
+		},
+		"tool": {
+			"$oid": "6accafa0cfbd000000000002"
+		},
+		"school": {
+			"$oid": "67a3a9115d5d9cb7f26eb59d"
+		},
+		"schoolParameters": [],
+		"isDeactivated": false
 	}
 ]
