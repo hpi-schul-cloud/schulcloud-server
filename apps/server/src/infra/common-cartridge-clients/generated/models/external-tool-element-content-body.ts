@@ -20,23 +20,11 @@ import type { ContentElementType } from './content-element-type';
 // @ts-ignore
 import type { ExternalToolContentBody } from './external-tool-content-body';
 
-/**
- * 
- * @export
- * @interface ExternalToolElementContentBody
- */
 export interface ExternalToolElementContentBody {
     /**
      * the type of the updated element
-     * @type {ContentElementType}
-     * @memberof ExternalToolElementContentBody
      */
     'type': ContentElementType;
-    /**
-     * 
-     * @type {ExternalToolContentBody}
-     * @memberof ExternalToolElementContentBody
-     */
     'content': ExternalToolContentBody;
 }
 

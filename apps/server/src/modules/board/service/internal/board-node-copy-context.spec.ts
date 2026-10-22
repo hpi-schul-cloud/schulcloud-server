@@ -48,4 +48,29 @@ describe(BoardNodeCopyContext.name, () => {
 			});
 		});
 	});
+
+	describe('listFilesOfParent', () => {
+		const setup = () => {
+			const contextProps: BoardNodeCopyContextProps = {
+				sourceStorageLocationReference: { id: new ObjectId().toHexString(), type: StorageLocation.SCHOOL },
+				targetStorageLocationReference: { id: new ObjectId().toHexString(), type: StorageLocation.SCHOOL },
+				userId: new ObjectId().toHexString(),
+				filesStorageClientAdapterService: createMock<FilesStorageClientAdapterService>(),
+				targetSchoolId: new ObjectId().toHexString(),
+			};
+
+			const copyContext = new BoardNodeCopyContext(contextProps);
+			const parentId = new ObjectId().toHexString();
+
+			return { contextProps, copyContext, parentId };
+		};
+
+		it('should use the service to list the files', async () => {
+			const { contextProps, copyContext, parentId } = setup();
+
+			await copyContext.listFilesOfParent(parentId);
+
+			expect(contextProps.filesStorageClientAdapterService.listFilesOfParent).toHaveBeenCalledWith(parentId);
+		});
+	});
 });

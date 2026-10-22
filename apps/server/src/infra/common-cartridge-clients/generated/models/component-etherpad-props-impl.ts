@@ -14,28 +14,17 @@
 
 
 
-/**
- * 
- * @export
- * @interface ComponentEtherpadPropsImpl
- */
 export interface ComponentEtherpadPropsImpl {
     /**
      * description of a Etherpad component
-     * @type {string}
-     * @memberof ComponentEtherpadPropsImpl
      */
     'description': string;
     /**
      * title of a Etherpad component
-     * @type {string}
-     * @memberof ComponentEtherpadPropsImpl
      */
     'title': string;
     /**
      * url of a Etherpad component
-     * @type {string}
-     * @memberof ComponentEtherpadPropsImpl
      */
     'url': string;
 }

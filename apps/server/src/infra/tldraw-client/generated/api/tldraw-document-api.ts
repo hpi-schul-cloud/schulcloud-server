@@ -18,12 +18,11 @@ import type { AxiosPromise, AxiosInstance, RawAxiosRequestConfig } from 'axios';
 import globalAxios from 'axios';
 // Some imports not used depending on template conditions
 // @ts-ignore
-import { DUMMY_BASE_URL, assertParamExists, setApiKeyToObject, setBasicAuthToObject, setBearerAuthToObject, setOAuthToObject, setSearchParams, serializeDataIfNeeded, toPathString, createRequestFunction } from '../common';
+import { DUMMY_BASE_URL, assertParamExists, setApiKeyToObject, setBasicAuthToObject, setBearerAuthToObject, setOAuthToObject, setSearchParams, serializeDataIfNeeded, toPathString, createRequestFunction, replaceWithSerializableTypeIfNeeded } from '../common';
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, type RequestArgs, BaseAPI, RequiredError, operationServerMap } from '../base';
 /**
  * TldrawDocumentApi - axios parameter creator
- * @export
  */
 export const TldrawDocumentApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
@@ -37,7 +36,7 @@ export const TldrawDocumentApiAxiosParamCreator = function (configuration?: Conf
             // verify required parameter 'parentId' is not null or undefined
             assertParamExists('deleteByDocName', 'parentId', parentId)
             const localVarPath = `/api/tldraw-document/{parentId}`
-                .replace(`{${"parentId"}}`, encodeURIComponent(String(parentId)));
+                .replace('{parentId}', encodeURIComponent(String(parentId)));
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
             let baseOptions;
@@ -50,7 +49,6 @@ export const TldrawDocumentApiAxiosParamCreator = function (configuration?: Conf
             const localVarQueryParameter = {} as any;
 
 
-    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
@@ -65,7 +63,6 @@ export const TldrawDocumentApiAxiosParamCreator = function (configuration?: Conf
 
 /**
  * TldrawDocumentApi - functional programming interface
- * @export
  */
 export const TldrawDocumentApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = TldrawDocumentApiAxiosParamCreator(configuration)
@@ -87,7 +84,6 @@ export const TldrawDocumentApiFp = function(configuration?: Configuration) {
 
 /**
  * TldrawDocumentApi - factory interface
- * @export
  */
 export const TldrawDocumentApiFactory = function (configuration?: Configuration, basePath?: string, axios?: AxiosInstance) {
     const localVarFp = TldrawDocumentApiFp(configuration)
@@ -98,7 +94,7 @@ export const TldrawDocumentApiFactory = function (configuration?: Configuration,
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        deleteByDocName(parentId: string, options?: any): AxiosPromise<void> {
+        deleteByDocName(parentId: string, options?: RawAxiosRequestConfig): AxiosPromise<void> {
             return localVarFp.deleteByDocName(parentId, options).then((request) => request(axios, basePath));
         },
     };
@@ -106,8 +102,6 @@ export const TldrawDocumentApiFactory = function (configuration?: Configuration,
 
 /**
  * TldrawDocumentApi - interface
- * @export
- * @interface TldrawDocumentApi
  */
 export interface TldrawDocumentApiInterface {
     /**
@@ -115,7 +109,6 @@ export interface TldrawDocumentApiInterface {
      * @param {string} parentId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof TldrawDocumentApiInterface
      */
     deleteByDocName(parentId: string, options?: RawAxiosRequestConfig): AxiosPromise<void>;
 
@@ -123,9 +116,6 @@ export interface TldrawDocumentApiInterface {
 
 /**
  * TldrawDocumentApi - object-oriented interface
- * @export
- * @class TldrawDocumentApi
- * @extends {BaseAPI}
  */
 export class TldrawDocumentApi extends BaseAPI implements TldrawDocumentApiInterface {
     /**
@@ -133,7 +123,6 @@ export class TldrawDocumentApi extends BaseAPI implements TldrawDocumentApiInter
      * @param {string} parentId 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
-     * @memberof TldrawDocumentApi
      */
     public deleteByDocName(parentId: string, options?: RawAxiosRequestConfig) {
         return TldrawDocumentApiFp(this.configuration).deleteByDocName(parentId, options).then((request) => request(this.axios, this.basePath));

@@ -14,23 +14,8 @@
 
 
 
-/**
- * 
- * @export
- * @interface SchoolActivationDTO
- */
 export interface SchoolActivationDTO {
-    /**
-     * 
-     * @type {string}
-     * @memberof SchoolActivationDTO
-     */
     'date': string;
-    /**
-     * 
-     * @type {string}
-     * @memberof SchoolActivationDTO
-     */
     'regionName': string;
 }
 

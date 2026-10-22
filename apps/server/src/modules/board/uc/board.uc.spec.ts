@@ -168,5 +168,36 @@ describe(BoardUc.name, () => {
 				expect(columnBoardService.updateIdsInLinks).toHaveBeenCalledWith(copyStatus);
 			});
 		});
+
+		describe('when files could not be copied', () => {
+			it('should return the names of the failed files', async () => {
+				const { user, board } = setup();
+				const column = columnFactory.build({ path: board.id });
+				const copiedColumn = columnFactory.build();
+
+				boardNodeService.findByClassAndId.mockResolvedValueOnce(column);
+				boardNodeRule.can.mockReturnValueOnce(true);
+				authorizationService.getUserWithPermissions.mockResolvedValueOnce(user);
+				boardNodeAuthorizableService.getBoardAuthorizable.mockResolvedValueOnce(
+					boardNodeAuthorizableFactory.build({ boardNode: column })
+				);
+
+				const copyStatus: CopyStatus = {
+					status: CopyStatusEnum.PARTIAL,
+					type: CopyElementType.COLUMN,
+					elements: [{ type: CopyElementType.FILE, status: CopyStatusEnum.FAIL, title: 'video.mp4' }],
+					copyEntity: copiedColumn,
+				};
+				columnBoardService.copyColumn.mockResolvedValueOnce(copyStatus);
+
+				const result = await uc.copyColumn(user.id, column.id, 'school-id');
+
+				expect(result).toEqual({
+					copyEntity: copiedColumn,
+					status: CopyStatusEnum.PARTIAL,
+					failedFileNames: ['video.mp4'],
+				});
+			});
+		});
 	});
 });

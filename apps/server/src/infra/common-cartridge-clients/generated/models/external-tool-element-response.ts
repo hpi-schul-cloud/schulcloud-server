@@ -23,35 +23,10 @@ import type { ExternalToolElementContent } from './external-tool-element-content
 // @ts-ignore
 import type { TimestampsResponse } from './timestamps-response';
 
-/**
- * 
- * @export
- * @interface ExternalToolElementResponse
- */
 export interface ExternalToolElementResponse {
-    /**
-     * 
-     * @type {string}
-     * @memberof ExternalToolElementResponse
-     */
     'id': string;
-    /**
-     * 
-     * @type {ContentElementType}
-     * @memberof ExternalToolElementResponse
-     */
     'type': ContentElementType;
-    /**
-     * 
-     * @type {ExternalToolElementContent}
-     * @memberof ExternalToolElementResponse
-     */
     'content': ExternalToolElementContent;
-    /**
-     * 
-     * @type {TimestampsResponse}
-     * @memberof ExternalToolElementResponse
-     */
     'timestamps': TimestampsResponse;
 }
 

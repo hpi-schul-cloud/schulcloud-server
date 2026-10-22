@@ -14,47 +14,12 @@
 
 
 
-/**
- * 
- * @export
- * @interface BoardTaskStatusResponse
- */
 export interface BoardTaskStatusResponse {
-    /**
-     * 
-     * @type {number}
-     * @memberof BoardTaskStatusResponse
-     */
     'submitted': number;
-    /**
-     * 
-     * @type {number}
-     * @memberof BoardTaskStatusResponse
-     */
     'maxSubmissions': number;
-    /**
-     * 
-     * @type {number}
-     * @memberof BoardTaskStatusResponse
-     */
     'graded': number;
-    /**
-     * 
-     * @type {boolean}
-     * @memberof BoardTaskStatusResponse
-     */
     'isDraft': boolean;
-    /**
-     * 
-     * @type {boolean}
-     * @memberof BoardTaskStatusResponse
-     */
     'isSubstitutionTeacher': boolean;
-    /**
-     * 
-     * @type {boolean}
-     * @memberof BoardTaskStatusResponse
-     */
     'isFinished': boolean;
 }
 
