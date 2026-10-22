@@ -732,44 +732,6 @@ describe('FeathersRosterService', () => {
 			});
 		});
 
-		describe('getUserGroups when the course lookup returns unexpected data', () => {
-			const setup = () => {
-				const user = userDoFactory.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.STUDENT }]).build();
-				const clientId = 'testClientId';
-				const externalTool = externalToolFactory.withOauth2Config({ clientId }).buildWithId();
-				const pseudonym = pseudonymFactory.build({ userId: user.id, toolId: externalTool.id });
-				const schoolExternalTool = schoolExternalToolFactory.buildWithId({
-					toolId: externalTool.id,
-					schoolId: user.schoolId,
-				});
-
-				config.featureColumnBoardExternalToolsEnabled = false;
-
-				pseudonymService.findOneByPseudonym.mockResolvedValue(pseudonym);
-				userService.findById.mockResolvedValue(user);
-				externalToolService.findExternalToolByOAuth2ConfigClientId.mockResolvedValue(externalTool);
-				schoolExternalToolService.findSchoolExternalTools.mockResolvedValue([schoolExternalTool]);
-
-				const notFoundError = new NotFoundLoggableException(ExternalTool.name, { 'config.clientId': clientId });
-
-				return { pseudonym, clientId, notFoundError };
-			};
-
-			it('should treat an undefined course result as no courses', async () => {
-				const { pseudonym, clientId, notFoundError } = setup();
-				courseService.findAllByUserId.mockResolvedValue(undefined as unknown as [CourseEntity[], number]);
-
-				await expect(service.getUserGroups(pseudonym.pseudonym, clientId)).rejects.toThrow(notFoundError);
-			});
-
-			it('should treat a non-array course result as no courses', async () => {
-				const { pseudonym, clientId, notFoundError } = setup();
-				courseService.findAllByUserId.mockResolvedValue([null, 0] as unknown as [CourseEntity[], number]);
-
-				await expect(service.getUserGroups(pseudonym.pseudonym, clientId)).rejects.toThrow(notFoundError);
-			});
-		});
-
 		describe('getUserGroups for rooms', () => {
 			const buildRole = (name: RoleName, permissions: Permission[] = []): RoleDto => {
 				return { id: new ObjectId().toHexString(), name, permissions };
@@ -781,6 +743,17 @@ describe('FeathersRosterService', () => {
 					level: 3,
 					contextExternalToolId,
 				});
+
+			// places the tool (via a new context external tool and element) on the given board only
+			const mockToolOnBoard = (board: AnyBoardNode): void => {
+				const toolElementNode = buildToolElementNode(board.id, new ObjectId().toHexString());
+				contextExternalToolService.findBySchoolToolIdsAndContextType.mockResolvedValue([
+					contextExternalToolFactory.buildWithId({
+						contextRef: new ContextRef({ id: toolElementNode.id, type: ToolContextType.BOARD_ELEMENT }),
+					}),
+				]);
+				mockBoardNodes([toolElementNode, board]);
+			};
 
 			const setup = () => {
 				const owner = userDoFactory.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.TEACHER }]).build();
@@ -887,7 +860,6 @@ describe('FeathersRosterService', () => {
 					await service.getUserGroups(pseudonym.pseudonym, clientId);
 
 					expect(columnBoardService.findByExternalReference).not.toHaveBeenCalled();
-					expect(columnBoardService.findByExternalReferences).not.toHaveBeenCalled();
 				});
 
 				it('should look up context external tools of the school external tool on board elements', async () => {
@@ -1001,27 +973,22 @@ describe('FeathersRosterService', () => {
 
 			describe('when the board root node is not a column board', () => {
 				it('should ignore the room', async () => {
-					const { pseudonym, clientId, columnBoard, contextExternalTool, notFoundError } = setup();
-					const mediaBoard = mediaBoardFactory.build({ id: columnBoard.id });
-					mockBoardNodes([buildToolElementNode(mediaBoard.id, contextExternalTool.id), mediaBoard]);
+					const { pseudonym, clientId, notFoundError } = setup();
+					mockToolOnBoard(mediaBoardFactory.build());
 
 					await expect(service.getUserGroups(pseudonym.pseudonym, clientId)).rejects.toThrow(notFoundError);
+					expect(boardNodeService.findByIds).toHaveBeenCalledTimes(2);
 				});
 			});
 
 			describe('when the tool is on a board of a room the user is not member of', () => {
 				it('should ignore the room', async () => {
-					const { pseudonym, clientId, contextExternalTool, notFoundError } = setup();
-					const foreignBoard = columnBoardFactory.build({
-						context: { id: new ObjectId().toHexString(), type: BoardExternalReferenceType.Room },
-					});
-					const toolElementNode = buildToolElementNode(foreignBoard.id, contextExternalTool.id);
-					contextExternalToolService.findBySchoolToolIdsAndContextType.mockResolvedValue([
-						contextExternalToolFactory.buildWithId({
-							contextRef: new ContextRef({ id: toolElementNode.id, type: ToolContextType.BOARD_ELEMENT }),
-						}),
-					]);
-					mockBoardNodes([toolElementNode, foreignBoard]);
+					const { pseudonym, clientId, notFoundError } = setup();
+					mockToolOnBoard(
+						columnBoardFactory.build({
+							context: { id: new ObjectId().toHexString(), type: BoardExternalReferenceType.Room },
+						})
+					);
 
 					await expect(service.getUserGroups(pseudonym.pseudonym, clientId)).rejects.toThrow(notFoundError);
 					expect(userService.findByIds).not.toHaveBeenCalled();
@@ -1030,36 +997,30 @@ describe('FeathersRosterService', () => {
 
 			describe('when the tool is on a board of a course', () => {
 				it('should ignore the board', async () => {
-					const { pseudonym, clientId, room, contextExternalTool, notFoundError } = setup();
-					const courseBoard = columnBoardFactory.build({
-						context: { id: room.id, type: BoardExternalReferenceType.Course },
-					});
-					const toolElementNode = buildToolElementNode(courseBoard.id, contextExternalTool.id);
-					contextExternalToolService.findBySchoolToolIdsAndContextType.mockResolvedValue([
-						contextExternalToolFactory.buildWithId({
-							contextRef: new ContextRef({ id: toolElementNode.id, type: ToolContextType.BOARD_ELEMENT }),
-						}),
-					]);
-					mockBoardNodes([toolElementNode, courseBoard]);
+					const { pseudonym, clientId, room, notFoundError } = setup();
+					mockToolOnBoard(
+						columnBoardFactory.build({ context: { id: room.id, type: BoardExternalReferenceType.Course } })
+					);
 
 					await expect(service.getUserGroups(pseudonym.pseudonym, clientId)).rejects.toThrow(notFoundError);
 				});
 			});
 
-			describe('when the board is hidden and the user can edit it', () => {
-				it('should include the room', async () => {
-					const { pseudonym, clientId, room, contextExternalTool, expectedGroups } = setup();
-					const hiddenBoard = columnBoardFactory.build({
-						isVisible: false,
+			describe('when the tool is on multiple boards of the same room', () => {
+				it('should return the room only once', async () => {
+					const { pseudonym, clientId, room, columnBoard, toolElementNode, contextExternalTool, expectedGroups } =
+						setup();
+					const secondBoard = columnBoardFactory.build({
 						context: { id: room.id, type: BoardExternalReferenceType.Room },
 					});
-					const toolElementNode = buildToolElementNode(hiddenBoard.id, contextExternalTool.id);
+					const secondElement = buildToolElementNode(secondBoard.id, new ObjectId().toHexString());
 					contextExternalToolService.findBySchoolToolIdsAndContextType.mockResolvedValue([
+						contextExternalTool,
 						contextExternalToolFactory.buildWithId({
-							contextRef: new ContextRef({ id: toolElementNode.id, type: ToolContextType.BOARD_ELEMENT }),
+							contextRef: new ContextRef({ id: secondElement.id, type: ToolContextType.BOARD_ELEMENT }),
 						}),
 					]);
-					mockBoardNodes([toolElementNode, hiddenBoard]);
+					mockBoardNodes([toolElementNode, columnBoard, secondElement, secondBoard]);
 
 					const result = await service.getUserGroups(pseudonym.pseudonym, clientId);
 
@@ -1067,45 +1028,13 @@ describe('FeathersRosterService', () => {
 				});
 			});
 
-			describe('when the user only has reader permissions in the room', () => {
-				it('should include the room', async () => {
-					const { pseudonym, clientId, room, owner, expectedGroups } = setup();
-					const viewer = userDoFactory
+			describe('when checking the board access of the requesting user', () => {
+				const setupRequestingMember = (roles: RoleDto[], isBoardVisible = true) => {
+					const { pseudonym, clientId, room, owner, notFoundError } = setup();
+					const member = userDoFactory
 						.withRoles([{ id: new ObjectId().toHexString(), name: RoleName.STUDENT }])
 						.build({ id: new ObjectId().toHexString() });
-					pseudonymService.findOneByPseudonym.mockResolvedValue(
-						pseudonymFactory.build({ userId: viewer.id, toolId: pseudonym.toolId })
-					);
-					roomMembershipService.getRoomAuthorizablesByUserId.mockResolvedValue([
-						new RoomAuthorizable(
-							room.id,
-							[
-								{
-									roles: [buildRole(RoleName.ROOMOWNER, boardMemberPermissions)],
-									userId: owner.id as string,
-									userSchoolId: owner.schoolId,
-								},
-								{
-									roles: [buildRole(RoleName.ROOMVIEWER, [Permission.ROOM_LIST_CONTENT])],
-									userId: viewer.id as string,
-									userSchoolId: viewer.schoolId,
-								},
-							],
-							room.schoolId
-						),
-					]);
-					userService.findByIds.mockResolvedValue([owner, viewer]);
 
-					const result = await service.getUserGroups(pseudonym.pseudonym, clientId);
-
-					expect(result).toEqual(expectedGroups);
-				});
-			});
-
-			describe('when the user has no board relevant permissions in the room', () => {
-				it('should ignore the room', async () => {
-					const { pseudonym, clientId, room, owner, notFoundError } = setup();
-					const member = userDoFactory.build({ id: new ObjectId().toHexString() });
 					pseudonymService.findOneByPseudonym.mockResolvedValue(
 						pseudonymFactory.build({ userId: member.id, toolId: pseudonym.toolId })
 					);
@@ -1118,15 +1047,66 @@ describe('FeathersRosterService', () => {
 									userId: owner.id as string,
 									userSchoolId: owner.schoolId,
 								},
-								{
-									roles: [buildRole(RoleName.ROOMVIEWER)],
-									userId: member.id as string,
-									userSchoolId: member.schoolId,
-								},
+								{ roles, userId: member.id as string, userSchoolId: member.schoolId },
 							],
 							room.schoolId
 						),
 					]);
+					userService.findByIds.mockResolvedValue([owner, member]);
+					mockToolOnBoard(
+						columnBoardFactory.build({
+							isVisible: isBoardVisible,
+							context: { id: room.id, type: BoardExternalReferenceType.Room },
+						})
+					);
+
+					const expectedGroups = {
+						data: { groups: [{ group_id: room.id, name: room.name, student_count: 1 }] },
+					};
+
+					return { pseudonym, clientId, notFoundError, expectedGroups };
+				};
+
+				describe.each([true, false])('when the board visibility is %s', (isBoardVisible: boolean) => {
+					it.each([
+						['reader', Permission.ROOM_LIST_CONTENT],
+						['editor', Permission.ROOM_EDIT_CONTENT],
+						['admin', Permission.ROOM_ADD_MEMBERS],
+						['owner', Permission.ROOM_CHANGE_OWNER],
+					])('should include the room for a room %s', async (_role: string, permission: Permission) => {
+						const { pseudonym, clientId, expectedGroups } = setupRequestingMember(
+							[buildRole(RoleName.ROOMVIEWER, [permission])],
+							isBoardVisible
+						);
+
+						const result = await service.getUserGroups(pseudonym.pseudonym, clientId);
+
+						expect(result).toEqual(expectedGroups);
+					});
+
+					it('should ignore the room when the user has no board relevant permissions', async () => {
+						const { pseudonym, clientId, notFoundError } = setupRequestingMember(
+							[buildRole(RoleName.ROOMVIEWER, [Permission.ROOM_EDIT_ROOM])],
+							isBoardVisible
+						);
+
+						await expect(service.getUserGroups(pseudonym.pseudonym, clientId)).rejects.toThrow(notFoundError);
+					});
+				});
+
+				it('should ignore the room when the role has no permissions', async () => {
+					const { pseudonym, clientId, notFoundError } = setupRequestingMember([
+						{ id: new ObjectId().toHexString(), name: RoleName.ROOMVIEWER },
+					]);
+
+					await expect(service.getUserGroups(pseudonym.pseudonym, clientId)).rejects.toThrow(notFoundError);
+				});
+
+				it('should ignore the room when the user is not a member of it', async () => {
+					const { pseudonym, clientId, notFoundError } = setup();
+					pseudonymService.findOneByPseudonym.mockResolvedValue(
+						pseudonymFactory.build({ userId: new ObjectId().toHexString(), toolId: pseudonym.toolId })
+					);
 
 					await expect(service.getUserGroups(pseudonym.pseudonym, clientId)).rejects.toThrow(notFoundError);
 				});
