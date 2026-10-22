@@ -27,6 +27,7 @@ describe(RoomInvitationLinkRule.name, () => {
 
 	const DEFAULT_ROOM_CONFIG: RoomPublicApiConfig = {
 		featureRoomCopyEnabled: true,
+		featureRoomArchiveEnabled: false,
 		featureRoomLinkInvitationExternalPersonsEnabled: true,
 		roomMemberAddExternalPersonRequirementsUrl: null,
 		featureRoomAddExternalPersonsEnabled: false,
@@ -484,6 +485,7 @@ describe(RoomInvitationLinkRule.name, () => {
 			const roomAuthorizable = new RoomAuthorizable('roomId', [], '69a9a9f030b4d4076fa35978');
 			const roomConfig: RoomPublicApiConfig = {
 				featureRoomCopyEnabled: true,
+				featureRoomArchiveEnabled: false,
 				featureRoomLinkInvitationExternalPersonsEnabled: featureEnabled,
 				roomMemberAddExternalPersonRequirementsUrl: null,
 				featureRoomAddExternalPersonsEnabled: false,

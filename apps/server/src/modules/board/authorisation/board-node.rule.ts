@@ -116,6 +116,10 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 			return false;
 		}
 
+		if (authorizable.boardConfiguration.isArchived && this.isWriteRequest(context)) {
+			return false;
+		}
+
 		if (this.shouldProcessDrawingElementFile(authorizable, context)) {
 			return this.hasPermissionForDrawingElementFile(userWithBoardRoles);
 		}
@@ -247,6 +251,15 @@ export class BoardNodeRule implements Rule<BoardNodeAuthorizable> {
 		return [BoardRoles.READER, BoardRoles.EDITOR].some((role) => userWithBoardRoles.roles.includes(role));
 	}
 
+	private isWriteRequest(context: AuthorizationContext): boolean {
+		// file uploads/removals on drawing elements are authorized via required permissions, independent of the action
+		return (
+			context.action === Action.write ||
+			context.requiredPermissions.includes(Permission.FILESTORAGE_CREATE) ||
+			context.requiredPermissions.includes(Permission.FILESTORAGE_REMOVE)
+		);
+	}
+
 	private shouldProcessDrawingElementFile(
 		boardNodeAuthorizable: BoardNodeAuthorizable,
 		context: AuthorizationContext
@@ -292,7 +305,7 @@ const hasBoardRole = (user: User, authorizable: BoardNodeAuthorizable, role: Boa
 };
 
 const _canEditBoard = (user: User, authorizable: BoardNodeAuthorizable): boolean => {
-	if (authorizable.boardConfiguration.isLocked) {
+	if (authorizable.boardConfiguration.isLocked || authorizable.boardConfiguration.isArchived) {
 		return false;
 	}
 
@@ -320,7 +333,7 @@ const canEditBoardTitle = (user: User, authorizable: BoardNodeAuthorizable): boo
 };
 
 const _canManageBoard = (user: User, authorizable: BoardNodeAuthorizable): boolean => {
-	if (authorizable.boardConfiguration.isLocked) {
+	if (authorizable.boardConfiguration.isLocked || authorizable.boardConfiguration.isArchived) {
 		return false;
 	}
 
@@ -346,7 +359,7 @@ const _canViewBoard = (user: User, authorizable: BoardNodeAuthorizable): boolean
 };
 
 const _canCreateExternalToolElement = (user: User, authorizable: BoardNodeAuthorizable): boolean => {
-	if (authorizable.boardConfiguration.isLocked) {
+	if (authorizable.boardConfiguration.isLocked || authorizable.boardConfiguration.isArchived) {
 		return false;
 	}
 
@@ -378,7 +391,7 @@ const canFindBoard = (user: User, authorizable: BoardNodeAuthorizable): boolean 
 };
 
 const canManageVideoConference = (user: User, authorizable: BoardNodeAuthorizable): boolean => {
-	if (authorizable.boardConfiguration.isLocked) {
+	if (authorizable.boardConfiguration.isLocked || authorizable.boardConfiguration.isArchived) {
 		return false;
 	}
 
@@ -397,7 +410,7 @@ const canManageVideoConference = (user: User, authorizable: BoardNodeAuthorizabl
 };
 
 const canUpdateReadersCanEditSetting = (user: User, authorizable: BoardNodeAuthorizable): boolean => {
-	if (authorizable.boardConfiguration.isLocked) {
+	if (authorizable.boardConfiguration.isLocked || authorizable.boardConfiguration.isArchived) {
 		return false;
 	}
 
@@ -410,7 +423,7 @@ const canUpdateReadersCanEditSetting = (user: User, authorizable: BoardNodeAutho
 };
 
 const canRelocateContent = (user: User, authorizable: BoardNodeAuthorizable): boolean => {
-	if (authorizable.boardConfiguration.isLocked) {
+	if (authorizable.boardConfiguration.isLocked || authorizable.boardConfiguration.isArchived) {
 		return false;
 	}
 
@@ -423,7 +436,7 @@ const canRelocateContent = (user: User, authorizable: BoardNodeAuthorizable): bo
 };
 
 const canShareBoardNode = (user: User, authorizable: BoardNodeAuthorizable): boolean => {
-	if (authorizable.boardConfiguration.isLocked) {
+	if (authorizable.boardConfiguration.isLocked || authorizable.boardConfiguration.isArchived) {
 		return false;
 	}
 

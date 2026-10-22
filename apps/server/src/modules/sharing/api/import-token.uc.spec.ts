@@ -585,12 +585,12 @@ describe('ShareTokenUC', () => {
 				});
 			});
 
-			it('should check room write permission', async () => {
+			it('should check room import permission', async () => {
 				const { user, shareToken, room, destinationBoard } = setup();
 
 				await uc.importShareToken(user.id, shareToken.token, 'NewName', destinationBoard.id);
 
-				expect(shareTokenPermissionService.checkRoomWritePermission).toHaveBeenCalledWith(user, room.id);
+				expect(shareTokenPermissionService.checkRoomImportPermission).toHaveBeenCalledWith(user, room.id);
 			});
 
 			it('should call the column copy service', async () => {

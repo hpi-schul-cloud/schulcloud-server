@@ -17,10 +17,13 @@ export class RoomAuthorizable implements AuthorizableObject {
 
 	public readonly members: UserWithRoomRoles[];
 
-	constructor(roomId: EntityId, members: UserWithRoomRoles[], schoolId: EntityId) {
+	public readonly isArchived: boolean;
+
+	constructor(roomId: EntityId, members: UserWithRoomRoles[], schoolId: EntityId, isArchived = false) {
 		this.members = members;
 		this.roomId = roomId;
 		this.schoolId = schoolId;
+		this.isArchived = isArchived;
 	}
 
 	public getRoleOfUser(userId: EntityId): RoleDto | null {

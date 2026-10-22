@@ -30,6 +30,7 @@ export interface BoardConfiguration {
 	canReadersEdit?: boolean;
 	canAdminsToggleReadersCanEdit?: boolean;
 	isLocked?: boolean;
+	isArchived?: boolean;
 }
 
 export class BoardNodeAuthorizable extends DomainObject<BoardNodeAuthorizableProps> {

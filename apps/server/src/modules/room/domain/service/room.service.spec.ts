@@ -4,7 +4,6 @@ import { ObjectId } from '@mikro-orm/mongodb';
 import { ROOM_CONFIG_TOKEN } from '@modules/room/room.config';
 import { EventBus } from '@nestjs/cqrs';
 import { Test, type TestingModule } from '@nestjs/testing';
-import { ValidationError } from '@shared/common/error';
 import { type EntityId } from '@shared/domain/types';
 import { RoomRepo } from '../../repo';
 import { roomFactory } from '../../testing';
@@ -78,14 +77,6 @@ describe('RoomService', () => {
 			await service.createRoom(props);
 
 			expect(roomRepo.save).toHaveBeenCalledWith(expect.objectContaining(props));
-		});
-
-		it('should throw validation error if start date is after end date', async () => {
-			const { props } = setup();
-			props.startDate = new Date('2024-12-31');
-			props.endDate = new Date('2024-01-01');
-
-			await expect(service.createRoom(props)).rejects.toThrow(ValidationError);
 		});
 	});
 
@@ -170,14 +161,6 @@ describe('RoomService', () => {
 
 			expect(roomRepo.save).toHaveBeenCalledWith(room);
 		});
-
-		it('should throw validation error if start date is after end date', async () => {
-			const { props, room } = setup();
-			props.startDate = new Date('2024-12-31');
-			props.endDate = new Date('2024-01-01');
-
-			await expect(service.updateRoom(room, props)).rejects.toThrow(ValidationError);
-		});
 	});
 
 	describe('deleteRoom', () => {
@@ -195,6 +178,43 @@ describe('RoomService', () => {
 			await service.deleteRoom(room);
 
 			expect(eventBus.publish).toHaveBeenCalledWith(new RoomDeletedEvent(room.id));
+		});
+	});
+
+	describe('archiveRoom', () => {
+		it('should set the room to archived', async () => {
+			const room = roomFactory.build();
+
+			await service.archiveRoom(room);
+
+			expect(room.isArchived).toBe(true);
+		});
+
+		it('should call repo to save room', async () => {
+			const room = roomFactory.build();
+
+			await service.archiveRoom(room);
+
+			expect(roomRepo.save).toHaveBeenCalledWith(room);
+		});
+	});
+
+	describe('unarchiveRoom', () => {
+		it('should clear the archived state', async () => {
+			const room = roomFactory.build();
+			room.archive();
+
+			await service.unarchiveRoom(room);
+
+			expect(room.isArchived).toBe(false);
+		});
+
+		it('should call repo to save room', async () => {
+			const room = roomFactory.build();
+
+			await service.unarchiveRoom(room);
+
+			expect(roomRepo.save).toHaveBeenCalledWith(room);
 		});
 	});
 

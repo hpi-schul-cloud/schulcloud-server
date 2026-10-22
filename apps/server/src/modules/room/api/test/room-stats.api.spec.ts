@@ -57,8 +57,8 @@ describe('Room Controller (API)', () => {
 		describe('when the user has the required permissions', () => {
 			const { roomViewerRole, roomOwnerRole } = RoomRolesTestFactory.createRoomRoles();
 
-			const createRoom = async (school: SchoolEntity, users: User[]) => {
-				const room = roomEntityFactory.build({ schoolId: school.id });
+			const createRoom = async (school: SchoolEntity, users: User[], archivedAt?: Date) => {
+				const room = roomEntityFactory.build({ schoolId: school.id, archivedAt });
 
 				const groupUsers = users.map((user, index) => {
 					const role = index === 0 ? roomOwnerRole : roomViewerRole;
@@ -172,6 +172,27 @@ describe('Room Controller (API)', () => {
 							}),
 						])
 					);
+				});
+			});
+
+			describe('when a room of the same school is archived', () => {
+				it('should return the archive date of the room', async () => {
+					const { loggedInClient, school } = await setup();
+					const { users } = await createUsers(school, 1);
+					const archivedAt = new Date('2026-10-01T10:00:00.000Z');
+					const { room: archivedRoom } = await createRoom(school, users, archivedAt);
+					const { room: activeRoom } = await createRoom(school, users);
+
+					const response = (await loggedInClient.get()) as {
+						status: number;
+						body: { data: { roomId: string; archivedAt?: string }[] };
+					};
+
+					expect(response.status).toBe(HttpStatus.OK);
+					const archivedItem = response.body.data.find((item) => item.roomId === archivedRoom.id);
+					const activeItem = response.body.data.find((item) => item.roomId === activeRoom.id);
+					expect(archivedItem?.archivedAt).toBe(archivedAt.toISOString());
+					expect(activeItem?.archivedAt).toBeUndefined();
 				});
 			});
 
