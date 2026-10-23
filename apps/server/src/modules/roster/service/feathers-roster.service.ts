@@ -7,6 +7,7 @@ import { Room, RoomService } from '@modules/room';
 import { RoomAuthorizable, RoomMembershipService } from '@modules/room-membership';
 import { ToolContextType } from '@modules/tool/common/enum';
 import { ContextExternalTool } from '@modules/tool/context-external-tool/domain';
+import { ContextExternalToolType } from '@modules/tool/context-external-tool/repo/mikro-orm';
 import { ContextExternalToolService } from '@modules/tool/context-external-tool/service';
 import { ExternalTool } from '@modules/tool/external-tool/domain';
 import { ExternalToolService } from '@modules/tool/external-tool/service';
@@ -17,9 +18,17 @@ import { Inject, Injectable, UnprocessableEntityException } from '@nestjs/common
 import { NotFoundLoggableException } from '@shared/common/loggable-exception';
 import { RoleReference } from '@shared/domain/domainobject';
 import { EntityId } from '@shared/domain/types';
-import { BoardExternalReferenceType, ColumnBoard, ColumnBoardService } from '../../board';
-import { ExternalToolElement } from '../../board/domain';
+import {
+	AnyBoardNode,
+	BoardExternalReferenceType,
+	BoardNodeService,
+	ColumnBoard,
+	ColumnBoardService,
+	ExternalToolElement,
+	isColumnBoard,
+} from '@modules/board';
 import { ROSTER_PUBLIC_API_CONFIG_TOKEN, RosterPublicApiConfig } from '../roster.config';
+import { Permission } from '@shared/domain/interface';
 
 interface UserMetadata {
 	data: {
@@ -55,6 +64,9 @@ interface Group {
 
 type RoomUserMappingType = 'roomRoles' | 'userRoles';
 
+// keeps the $or descendant query of BoardNodeRepo.findByIds at a reasonable size
+const BOARD_NODE_BATCH_SIZE = 500;
+
 /**
  * Please do not use this service in any other nest modules.
  * This service will be called from feathers to get the roster data for ctl pseudonyms {@link ExternalToolPseudonymEntity}.
@@ -70,6 +82,7 @@ export class FeathersRosterService {
 		private readonly schoolExternalToolService: SchoolExternalToolService,
 		private readonly contextExternalToolService: ContextExternalToolService,
 		private readonly columnBoardService: ColumnBoardService,
+		private readonly boardNodeService: BoardNodeService,
 		private readonly roomService: RoomService,
 		private readonly roomMembershipService: RoomMembershipService,
 		@Inject(ROSTER_PUBLIC_API_CONFIG_TOKEN) private readonly config: RosterPublicApiConfig
@@ -149,16 +162,19 @@ export class FeathersRosterService {
 	}
 
 	private async getCoursesUserGroups(userId: EntityId, schoolId: EntityId, toolId: string): Promise<UserGroup[]> {
-		const schoolExternalTools = await this.schoolExternalToolService.findSchoolExternalTools({
-			schoolId,
-			toolId,
-			isDeactivated: false,
-		});
+		const schoolExternalTools = await this.schoolExternalToolService.findSchoolExternalTools(
+			{
+				schoolId,
+				toolId,
+				isDeactivated: false,
+			},
+			false
+		);
 		if (!schoolExternalTools || schoolExternalTools.length === 0) return [];
 
 		const schoolExternalTool = schoolExternalTools[0];
 
-		const [courses] = await this.courseService.findAllByUserId(userId, schoolId);
+		const [courses] = await this.courseService.findAllByUserId(userId, schoolId, { onlyActiveCourses: true });
 		const coursesUserGroups = (
 			await Promise.all(
 				courses.map(async (course) => {
@@ -180,55 +196,182 @@ export class FeathersRosterService {
 	}
 
 	private async getRoomsUserGroups(userId: EntityId, toolId: EntityId): Promise<UserGroup[]> {
-		const rooms = await this.getRoomsForUser(userId);
+		if (!this.config.featureColumnBoardExternalToolsEnabled) return [];
 
-		const roomUserGroups = (
-			await Promise.all(
-				rooms.map(async (room: Room) => {
-					const schoolExternalTools = await this.schoolExternalToolService.findSchoolExternalTools({
-						schoolId: room.schoolId,
+		const { rooms, roomAuthorizablesByRoomId } = await this.getRoomsForUser(userId);
+		if (rooms.length === 0) return [];
+
+		// get a list of school ids for the rooms, so we can fetch the school external tools for those schools
+		const schoolIds = Array.from(new Set(rooms.map((room) => room.schoolId)));
+		const schoolExternalToolBySchoolId = new Map<EntityId, EntityId>();
+
+		await Promise.all(
+			schoolIds.map(async (schoolId) => {
+				const schoolExternalTools = await this.schoolExternalToolService.findSchoolExternalTools(
+					{
+						schoolId,
 						toolId,
 						isDeactivated: false,
-					});
-					if (!schoolExternalTools || schoolExternalTools.length === 0) return undefined;
+					},
+					false // TODO allow enrich data to sure the schoolExternalTool is up-to-date
+				);
 
-					const isExternalToolReferenced = await this.isExternalToolReferenced(room, schoolExternalTools[0].id);
-					if (!isExternalToolReferenced) return undefined;
+				if (schoolExternalTools.length > 0) {
+					schoolExternalToolBySchoolId.set(schoolId, schoolExternalTools[0].id);
+				}
+			})
+		);
 
-					const roomMembership = await this.roomMembershipService.getRoomAuthorizable(room.id);
-					const { students } = await this.mapRoomUsers(roomMembership, 'userRoles');
+		let eligibleRooms = rooms.filter((room) => schoolExternalToolBySchoolId.has(room.schoolId));
+		if (eligibleRooms.length === 0) return [];
 
-					const userGroup: UserGroup = {
-						group_id: room.id,
-						name: room.name,
-						student_count: students.length,
-					};
+		const schoolExternalToolIds = Array.from(
+			new Set(eligibleRooms.map((room) => schoolExternalToolBySchoolId.get(room.schoolId) as EntityId))
+		);
 
-					return userGroup;
-				})
-			)
-		).filter((group): group is UserGroup => group !== undefined);
+		// for BOARD_ELEMENT context external tools, the contextRef points directly to the external tool element
+		const contextExternalTools = await this.contextExternalToolService.findBySchoolToolIdsAndContextType(
+			schoolExternalToolIds,
+			ContextExternalToolType.BOARD_ELEMENT
+		);
+		const elementIds = Array.from(new Set(contextExternalTools.map((tool) => tool.contextRef.id)));
+		if (elementIds.length === 0) return [];
+
+		const eligibleRoomIds = new Set(eligibleRooms.map((room) => room.id));
+		const boardsByRoomId = await this.findRoomBoardsContainingElements(elementIds, eligibleRoomIds);
+
+		eligibleRooms = eligibleRooms.filter((room) => {
+			const roomAuthorizable = roomAuthorizablesByRoomId.get(room.id);
+			const boards = boardsByRoomId.get(room.id) ?? [];
+
+			return boards.some((board) => this.hasBoardAccess(userId, roomAuthorizable, board));
+		});
+
+		if (eligibleRooms.length === 0) return [];
+
+		const roomUserGroups = await this.roomUserGroups(eligibleRooms, roomAuthorizablesByRoomId);
 
 		return roomUserGroups;
 	}
 
-	private async getRoomsForUser(userId: EntityId): Promise<Room[]> {
-		const roomAuthorizables = await this.roomMembershipService.getRoomAuthorizablesByUserId(userId);
-		if (!roomAuthorizables) return [];
-		const roomIds = roomAuthorizables.map((item) => item.roomId);
+	/**
+	 * Resolves element ids to their root column boards (via the materialized path) and
+	 * groups those boards by room. Only boards of the given rooms are returned.
+	 * Everything is loaded by primary key with depth 0, so no board trees are loaded.
+	 */
+	private async findRoomBoardsContainingElements(
+		elementIds: EntityId[],
+		roomIds: Set<EntityId>
+	): Promise<Map<EntityId, ColumnBoard[]>> {
+		const boardsByRoomId = new Map<EntityId, ColumnBoard[]>();
 
-		const rooms = await this.roomService.getRoomsByIds(roomIds);
+		const elements = await this.findBoardNodesByIds(elementIds);
+		const rootIds = Array.from(new Set(elements.map((element) => element.rootId)));
+		if (rootIds.length === 0) return boardsByRoomId;
 
-		const filteredRooms = rooms.filter((room) => {
-			const hasOwner = roomAuthorizables.some(
-				(item) =>
-					item.roomId === room.id &&
-					item.members.some((member) => member.roles.some((role) => role.name === RoleName.ROOMOWNER))
-			);
+		const rootNodes = await this.findBoardNodesByIds(rootIds);
+
+		for (const rootNode of rootNodes) {
+			if (!isColumnBoard(rootNode)) continue;
+
+			const { context } = rootNode;
+			if (context.type !== BoardExternalReferenceType.Room || !roomIds.has(context.id)) continue;
+
+			const roomBoards = boardsByRoomId.get(context.id) ?? [];
+			roomBoards.push(rootNode);
+			boardsByRoomId.set(context.id, roomBoards);
+		}
+
+		return boardsByRoomId;
+	}
+
+	private async findBoardNodesByIds(ids: EntityId[]): Promise<AnyBoardNode[]> {
+		const batches: EntityId[][] = [];
+		for (let i = 0; i < ids.length; i += BOARD_NODE_BATCH_SIZE) {
+			batches.push(ids.slice(i, i + BOARD_NODE_BATCH_SIZE));
+		}
+
+		const results = await Promise.all(batches.map((batch) => this.boardNodeService.findByIds(batch, 0)));
+
+		return results.flat();
+	}
+
+	/**
+	 * In-memory equivalent of BoardNodeAuthorizableService for room boards:
+	 * board roles are derived from the room permissions (see RoomBoardContext)
+	 * and mapped to board permissions (see BoardNodeAuthorizable.getUserPermissions).
+	 */
+	private hasBoardAccess(
+		userId: EntityId,
+		roomAuthorizable: RoomAuthorizable | undefined,
+		board: ColumnBoard
+	): boolean {
+		const member = roomAuthorizable?.members.find((roomMember) => roomMember.userId === userId);
+		if (!member) return false;
+
+		const permissions = new Set(member.roles.flatMap((role) => role.permissions ?? []));
+
+		const isBoardAdmin = permissions.has(Permission.ROOM_ADD_MEMBERS) || permissions.has(Permission.ROOM_CHANGE_OWNER);
+		const isEditor = isBoardAdmin || permissions.has(Permission.ROOM_EDIT_CONTENT);
+		const isReader = permissions.has(Permission.ROOM_LIST_CONTENT);
+
+		const canViewBoard = isEditor || isReader;
+		const canEditBoard = isEditor;
+		const hasBoardAccess = canViewBoard || (!board.isVisible && canEditBoard);
+
+		return hasBoardAccess;
+	}
+
+	private async getRoomsForUser(
+		userId: EntityId
+	): Promise<{ rooms: Room[]; roomAuthorizablesByRoomId: Map<EntityId, RoomAuthorizable> }> {
+		const roomAuthorizables = (await this.roomMembershipService.getRoomAuthorizablesByUserId(userId)) ?? [];
+		const roomAuthorizablesByRoomId = new Map<EntityId, RoomAuthorizable>(
+			roomAuthorizables.map((roomAuthorizable) => [roomAuthorizable.roomId, roomAuthorizable])
+		);
+		if (roomAuthorizablesByRoomId.size === 0) return { rooms: [], roomAuthorizablesByRoomId: new Map() };
+
+		const roomIds = Array.from(roomAuthorizablesByRoomId.keys());
+		let rooms = await this.roomService.getRoomsByIds(roomIds);
+		rooms = rooms.filter((room) => {
+			const members = roomAuthorizablesByRoomId.get(room.id)?.members ?? [];
+			const hasOwner = members.some((member) => member.roles.some((role) => role.name === RoleName.ROOMOWNER));
 			return hasOwner;
 		});
 
-		return filteredRooms;
+		const roomsAndAuthorizables = { rooms, roomAuthorizablesByRoomId };
+
+		return roomsAndAuthorizables;
+	}
+
+	private async roomUserGroups(
+		rooms: Room[],
+		roomAuthorizablesByRoomId: Map<EntityId, RoomAuthorizable>
+	): Promise<UserGroup[]> {
+		const memberUserIds = new Set<EntityId>();
+		for (const room of rooms) {
+			roomAuthorizablesByRoomId.get(room.id)?.members.forEach((member) => memberUserIds.add(member.userId));
+		}
+
+		const users = await this.userService.findByIds(Array.from(memberUserIds));
+
+		const studentRoles = [RoleName.STUDENT, RoleName.COURSESTUDENT];
+		const studentUserIds = new Set(
+			users.filter((user) => user.roles.some((role) => studentRoles.includes(role.name))).map((user) => user.id)
+		);
+
+		const userGroups = rooms.map((room): UserGroup => {
+			const members = roomAuthorizablesByRoomId.get(room.id)?.members ?? [];
+			const studentCount = members.filter((member) => studentUserIds.has(member.userId)).length;
+
+			return {
+				group_id: room.id,
+				name: room.name,
+				student_count: studentCount,
+			};
+		});
+
+		return userGroups;
 	}
 
 	private async getRoomGroup(roomMembers: RoomAuthorizable, externalTool: ExternalTool): Promise<Group> {
