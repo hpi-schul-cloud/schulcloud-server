@@ -44,46 +44,6 @@ export class ColumnBoardService {
 		return boards;
 	}
 
-	public findExternalReferenceIds(reference: BoardExternalReference): Promise<EntityId[]> {
-		return this.boardNodeRepo.findIdsByExternalReference(reference);
-	}
-
-	public findExternalReferenceIdsByReferences(
-		references: BoardExternalReference[]
-	): Promise<Map<EntityId, EntityId[]>> {
-		if (references.length === 0) {
-			return Promise.resolve(new Map());
-		}
-
-		return this.boardNodeRepo.findIdsByExternalReferences(references);
-	}
-
-	public async findExternalReferenceIdsByContextExternalToolIds(
-		contextExternalToolIds: EntityId[],
-		referenceType: BoardExternalReferenceType
-	): Promise<EntityId[]> {
-		if (contextExternalToolIds.length === 0) {
-			return [];
-		}
-
-		// Depth 0 avoids loading descendants; we only need root board/context information.
-		const toolNodes = await this.boardNodeRepo.findByContextExternalToolIds(contextExternalToolIds, 0);
-		const rootBoardIds = Array.from(new Set(toolNodes.map((node) => node.rootId)));
-
-		if (rootBoardIds.length === 0) {
-			return [];
-		}
-
-		const rootNodes = await this.boardNodeRepo.findByIds(rootBoardIds, 0);
-		const references = rootNodes
-			.filter((node): node is ColumnBoard => isColumnBoard(node))
-			.map((board) => board.context)
-			.filter((context) => context.type === referenceType)
-			.map((context) => context.id);
-
-		return Array.from(new Set(references));
-	}
-
 	public async updateVisibility(columnBoard: ColumnBoard, visibility: boolean): Promise<void> {
 		await this.boardNodeService.updateVisibility(columnBoard, visibility);
 	}
@@ -156,22 +116,5 @@ export class ColumnBoardService {
 		}
 
 		return copyStatus;
-	}
-
-	public async findByExternalReferences(
-		references: BoardExternalReference[],
-		depth?: number
-	): Promise<Map<EntityId, ColumnBoard[]>> {
-		const boardMap = await this.boardNodeRepo.findByExternalReferences(references, depth);
-		const result = new Map<EntityId, ColumnBoard[]>();
-
-		for (const reference of references) {
-			result.set(
-				reference.id,
-				(boardMap.get(reference.id) ?? []).filter((boardNode): boardNode is ColumnBoard => isColumnBoard(boardNode))
-			);
-		}
-
-		return result;
 	}
 }

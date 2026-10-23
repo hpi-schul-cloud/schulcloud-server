@@ -53,25 +53,19 @@ export class BoardNodeAuthorizableService implements AuthorizationLoaderService 
 		return boardNodeAuthorizable;
 	}
 
-	public async getBoardAuthorizables(
-		boardNodes: AnyBoardNode[],
-		hasUniqueContext = true
-	): Promise<BoardNodeAuthorizable[]> {
+	public async getBoardAuthorizables(boardNodes: AnyBoardNode[]): Promise<BoardNodeAuthorizable[]> {
 		const rootIds = boardNodes.map((node) => node.rootId);
 		const parentIds = boardNodes.map((node) => node.parentId).filter((defined) => defined) as EntityId[];
 		const boardNodeMap = await this.getBoardNodeMap([...rootIds, ...parentIds]);
 		const rootNodeIds = Array.from(new Set(rootIds));
 		const rootNodes = rootNodeIds.map((id) => boardNodeMap[id]);
-
-		if (hasUniqueContext) {
-			const uniqueRootNodeContextIds = Array.from(
-				new Set(rootNodes.map((node) => ('context' in node ? node.context.id : undefined)))
+		const uniqueRootNodeContextIds = Array.from(
+			new Set(rootNodes.map((node) => ('context' in node ? node.context.id : undefined)))
+		);
+		if (uniqueRootNodeContextIds.length > 1) {
+			throw new Error(
+				'Multiple contexts found for board nodes. All board nodes must share the same context to load authorizables.'
 			);
-			if (uniqueRootNodeContextIds.length > 1) {
-				throw new Error(
-					'Multiple contexts found for board nodes. All board nodes must share the same context to load authorizables.'
-				);
-			}
 		}
 
 		const preparedContext = await this.resolveContext(rootNodes[0]);
