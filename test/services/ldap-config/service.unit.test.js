@@ -133,7 +133,7 @@ describe('LdapConfigService', () => {
 
 		it('should throw if something unexpected happens', async () => {
 			mockLdapService.getUsers = sinon.fake.rejects(new Error('unexpected'));
-			expect(instance.verifyConfig({ foo: 'bar' })).to.be.rejectedWith(Error);
+			await expect(instance.verifyConfig({ foo: 'bar' })).to.be.rejectedWith(Error);
 		});
 
 		it('should handle known errors', async () => {

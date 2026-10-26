@@ -6,6 +6,7 @@ Codebase clone from https://github.com/feathersjs-ecosystem/feathers-mongoose
 */
 const { expect } = require('chai');
 const mongoose = require('mongoose');
+const { ObjectId: OrmObjectId } = require('bson');
 
 const errors = require('@feathersjs/errors');
 const { feathers } = require('@feathersjs/feathers');
@@ -171,8 +172,21 @@ const QMPets = app.service('pets3');
 const posts = app.service('posts');
 
 describe('Feathers Mongoose Service', () => {
-	// Connect to your MongoDB instance(s)
-	before(async () => mongoose.createConnection('mongodb://localhost:27017/feathers'));
+	before(async () => {
+		if (mongoose.connection.readyState === 0) {
+			await mongoose.connect('mongodb://localhost:27017/feathers');
+		} else {
+			await mongoose.connection.asPromise();
+		}
+		// Adapter contract tests require empty, test-only collections, even after an interrupted run.
+		await Peeps.deleteMany({});
+		await CustomPeeps.deleteMany({});
+	});
+
+	after(async () => {
+		await Peeps.deleteMany({});
+		await CustomPeeps.deleteMany({});
+	});
 
 	describe('Requiring', () => {
 		// eslint-disable-next-line global-require
@@ -210,6 +224,43 @@ describe('Feathers Mongoose Service', () => {
 
 		it('when missing the lean option sets the default to be false', () => {
 			expect(people.lean).to.be.false;
+		});
+
+		describe('ObjectId conversion', () => {
+			const hexId = '507f1f77bcf86cd799439011';
+			const cases = [
+				['a string', hexId],
+				['a Mongoose ObjectId', new mongoose.Types.ObjectId(hexId)],
+				['a MikroORM BSON ObjectId', new OrmObjectId(hexId)],
+			];
+
+			cases.forEach(([description, input]) => {
+				it(`converts ${description} into an ID serializable by the Mongoose driver`, () => {
+					const params = { query: { _id: input } };
+
+					const { query } = people.filterQuery(params);
+
+					expect(query._id).to.be.instanceOf(mongoose.Types.ObjectId);
+					expect(query._id.toHexString()).to.equal(hexId);
+					const serialized = mongoose.mongo.BSON.serialize(query);
+					expect(mongoose.mongo.BSON.deserialize(serialized)._id.toHexString()).to.equal(hexId);
+					expect(params.query._id).to.equal(input);
+				});
+			});
+
+			it('preserves query operators for Mongoose casting', () => {
+				const condition = { $in: [hexId] };
+				expect(people.getObjectId(condition)).to.equal(condition);
+			});
+
+			it('does not objectify custom IDs', () => {
+				expect(app.service('peeps-customid').getObjectId(hexId)).to.equal(hexId);
+			});
+
+			it('respects disableObjectify', () => {
+				const service = adapter({ Model: Peeps, disableObjectify: true });
+				expect(service.getObjectId(hexId)).to.equal(hexId);
+			});
 		});
 	});
 

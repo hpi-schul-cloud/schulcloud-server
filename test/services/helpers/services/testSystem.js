@@ -1,3 +1,5 @@
+const System = require('../../../../src/services/system/model');
+
 let createdSystemIds = [];
 
 const createTestSystem =
@@ -9,18 +11,17 @@ const createTestSystem =
 		return system;
 	};
 
-const cleanup = (appPromise) => async () => {
-	const app = await appPromise;
+const cleanup = async () => {
 	if (createdSystemIds.length === 0) {
 		return Promise.resolve();
 	}
 	const ids = createdSystemIds;
 	createdSystemIds = [];
-	return ids.map((id) => app.service('systems').remove(id));
+	return System.deleteMany({ _id: { $in: ids } });
 };
 
 module.exports = (app) => ({
 	create: createTestSystem(app),
-	cleanup: cleanup(app),
+	cleanup,
 	info: createdSystemIds,
 });

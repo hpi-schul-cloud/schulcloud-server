@@ -1,5 +1,7 @@
 const { MikroORM } = require('@mikro-orm/core');
 const { Test } = require('@nestjs/testing');
+const { WINSTON_MODULE_PROVIDER } = require('nest-winston');
+const { AUDIT_LOGGER_PROVIDER } = require('../../dist/apps/server/infra/logger/audit-logger');
 
 // run 'npm run nest:build' for the following imports to work,
 // this is a workaround to make TypeScript modules available in JavaScript
@@ -70,8 +72,15 @@ const setupNestServices = async (app) => {
 
 const closeNestServices = async (nestServices) => {
 	const { nestApp, orm } = nestServices;
-	await orm.close();
-	await nestApp.close();
+	const logger = nestApp.get(WINSTON_MODULE_PROVIDER);
+	const auditLogger = nestApp.get(AUDIT_LOGGER_PROVIDER);
+	try {
+		await orm.close();
+		await nestApp.close();
+	} finally {
+		logger.close();
+		auditLogger.close();
+	}
 };
 
 module.exports = {

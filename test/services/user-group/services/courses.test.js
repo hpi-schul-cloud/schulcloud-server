@@ -1,4 +1,5 @@
 const { expect } = require('chai');
+const sinon = require('sinon');
 const appPromise = require('../../../../src/app');
 const { setupNestServices, closeNestServices } = require('../../../utils/setup.nest.services');
 const testObjects = require('../../helpers/testObjects')(appPromise());
@@ -11,6 +12,7 @@ describe('course service', () => {
 	let app;
 	let server;
 	let nestServices;
+	let calendarRemove;
 
 	before(async () => {
 		app = await appPromise();
@@ -22,6 +24,14 @@ describe('course service', () => {
 		await testObjects.cleanup();
 		await server.close();
 		await closeNestServices(nestServices);
+	});
+
+	beforeEach(() => {
+		calendarRemove = sinon.stub(app.service('/calendar/courses'), 'remove').resolves();
+	});
+
+	afterEach(() => {
+		calendarRemove.restore();
 	});
 
 	it('CREATE a course', async () => {
@@ -105,6 +115,7 @@ describe('course service', () => {
 		const params = await testObjects.generateRequestParamsFromUser(teacher);
 		const result = await app.service('courses').remove(course._id, params);
 
+		expect(calendarRemove.calledOnceWithExactly(course._id, sinon.match.object)).to.be.true;
 		expect(result).to.not.be.undefined;
 		expect(await LessonModel.findById(directLesson._id).lean().exec()).to.be.null;
 		expect(await LessonModel.findById(courseGroupLesson._id).lean().exec()).to.be.null;
@@ -150,6 +161,7 @@ describe('course service', () => {
 		const params = await testObjects.generateRequestParamsFromUser(teacher);
 		await app.service('courses').remove(course._id, params);
 
+		expect(calendarRemove.calledOnceWithExactly(course._id, sinon.match.object)).to.be.true;
 		expect(await FileModel.findById(courseFile._id).lean().exec()).to.be.null;
 		expect((await FileModel.findOneWithDeleted({ _id: courseFile._id }).lean().exec()).deleted).to.be.true;
 		expect(await FileModel.findById(unrelatedCourseFile._id).lean().exec()).to.not.be.null;
@@ -201,6 +213,7 @@ describe('course service', () => {
 		const params = await testObjects.generateRequestParamsFromUser(teacher);
 		await app.service('courses').remove(course._id, params);
 
+		expect(calendarRemove.calledOnceWithExactly(course._id, sinon.match.object)).to.be.true;
 		expect(await homeworkModel.findById(homework._id).lean().exec()).to.be.null;
 		expect(await homeworkModel.findById(lessonHomework._id).lean().exec()).to.be.null;
 		expect(await submissionModel.findById(homeworkSubmission._id).lean().exec()).to.be.null;

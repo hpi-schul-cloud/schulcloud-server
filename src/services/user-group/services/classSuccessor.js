@@ -68,6 +68,7 @@ const updateClassPredecessors = async function updateClassPredecessors(context, 
 class ClassSuccessorService {
 	constructor(app) {
 		this.docs = {};
+		this.onClassRemoved = ClassSuccessorService.onClassRemoved.bind(this);
 	}
 
 	/**
@@ -127,12 +128,19 @@ class ClassSuccessorService {
 	 * @listens classes:removed
 	 */
 	registerEventListeners() {
-		this.app.service('/classes').on('removed', ClassSuccessorService.onClassRemoved.bind(this));
+		this.app.service('/classes').on('removed', this.onClassRemoved);
 	}
 
 	setup(app) {
+		if (this.app) {
+			this.teardown();
+		}
 		this.app = app;
 		this.registerEventListeners();
+	}
+
+	teardown() {
+		this.app.service('/classes').removeListener('removed', this.onClassRemoved);
 	}
 }
 

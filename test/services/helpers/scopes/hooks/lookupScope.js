@@ -22,7 +22,7 @@ describe('lookupScope', () => {
 	});
 
 	it('should fail if required params are missing', async () => {
-		expect(lookupScope({})).to.eventually.throw(BadRequest);
+		await expect(lookupScope({})).to.be.rejectedWith(BadRequest);
 	});
 
 	it('adds the requested team to the query', async () => {
@@ -35,7 +35,6 @@ describe('lookupScope', () => {
 			params: { route: { scopeId: team._id } },
 			path: `/teams/${team._id.toString()}/userPermissions/`,
 		};
-		expect(() => lookupScope(context)).not.to.throw();
 		expect(await lookupScope(context)).to.deep.equal(context);
 		expect(context.params.scope).to.deep.equal(team);
 	});
@@ -50,11 +49,11 @@ describe('lookupScope', () => {
 			params: { route: { scopeId: team._id } },
 			// context.path is not set, so no scope name can be derived
 		};
-		expect(lookupScope(context)).to.eventually.throw(BadRequest);
+		await expect(lookupScope(context)).to.be.rejectedWith(BadRequest);
 		expect(context.params.scope).to.equal(undefined);
 	});
 
-	it('should fail if no scopeId is provided', () => {
+	it('should fail if no scopeId is provided', async () => {
 		const team = {
 			_id: new ObjectId(),
 			foo: 'bar',
@@ -68,11 +67,11 @@ describe('lookupScope', () => {
 			},
 			path: `/teams/${team._id.toString()}/userPermissions/`,
 		};
-		expect(lookupScope(context)).to.eventually.throw(BadRequest);
+		await expect(lookupScope(context)).to.be.rejectedWith(BadRequest);
 		expect(context.params.scope).to.equal(undefined);
 	});
 
-	it('should fail if no service responds to the scope', () => {
+	it('should fail if no service responds to the scope', async () => {
 		const tomato = {
 			_id: new ObjectId(),
 			foo: 'bar',
@@ -82,7 +81,7 @@ describe('lookupScope', () => {
 			params: { route: { scopeId: tomato._id } },
 			path: `/tomatoes/${tomato._id.toString()}/userPermissions/`, // tomato service does not exist
 		};
-		expect(lookupScope(context)).to.eventually.throw(BadRequest);
+		await expect(lookupScope(context)).to.be.rejectedWith(BadRequest);
 		expect(context.params.scope).to.equal(undefined);
 	});
 });
