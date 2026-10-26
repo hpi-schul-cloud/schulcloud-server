@@ -1,7 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Matches } from 'class-validator';
 
-// Unlike $, the final assertion also rejects trailing line breaks.
 const ROOM_INVITATION_CREDENTIAL_PATTERN = /^(?:[A-Za-z0-9_-]{43}|[a-fA-F0-9]{24})(?![\s\S])/;
 
 export class UseRoomInvitationLinkUrlParams {
