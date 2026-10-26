@@ -317,7 +317,7 @@ export class FeathersRosterService {
 
 		const canViewBoard = isEditor || isReader;
 		const canEditBoard = isEditor;
-		const hasBoardAccess = canViewBoard || (!board.isVisible && canEditBoard);
+		const hasBoardAccess = canEditBoard || (board.isVisible && canViewBoard);
 
 		return hasBoardAccess;
 	}

@@ -1067,9 +1067,32 @@ describe('FeathersRosterService', () => {
 					return { pseudonym, clientId, notFoundError, expectedGroups };
 				};
 
+				describe('when the board is visible', () => {
+					it('should include the room for a room reader', async () => {
+						const { pseudonym, clientId, expectedGroups } = setupRequestingMember(
+							[buildRole(RoleName.ROOMVIEWER, [Permission.ROOM_LIST_CONTENT])],
+							true
+						);
+
+						const result = await service.getUserGroups(pseudonym.pseudonym, clientId);
+
+						expect(result).toEqual(expectedGroups);
+					});
+				});
+
+				describe('when the board is not visible', () => {
+					it('should ignore the room for a room reader', async () => {
+						const { pseudonym, clientId, notFoundError } = setupRequestingMember(
+							[buildRole(RoleName.ROOMVIEWER, [Permission.ROOM_LIST_CONTENT])],
+							false
+						);
+
+						await expect(service.getUserGroups(pseudonym.pseudonym, clientId)).rejects.toThrow(notFoundError);
+					});
+				});
+
 				describe.each([true, false])('when the board visibility is %s', (isBoardVisible: boolean) => {
 					it.each([
-						['reader', Permission.ROOM_LIST_CONTENT],
 						['editor', Permission.ROOM_EDIT_CONTENT],
 						['admin', Permission.ROOM_ADD_MEMBERS],
 						['owner', Permission.ROOM_CHANGE_OWNER],
