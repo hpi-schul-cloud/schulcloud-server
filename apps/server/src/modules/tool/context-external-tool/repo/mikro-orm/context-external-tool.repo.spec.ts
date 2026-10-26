@@ -182,6 +182,46 @@ describe(ContextExternalToolRepo.name, () => {
 	});
 
 	describe('save', () => {
+		it.each([false, true])(
+			'should store scalar updates and empty parameters when removing the deep link=%s',
+			async (removeDeepLink) => {
+				const schoolTool = schoolExternalToolEntityFactory.buildWithId();
+				await em.persist(schoolTool).flush();
+				const original = contextExternalToolFactory
+					.withSchoolExternalToolRef(schoolTool.id, schoolTool.school.id)
+					.build({ displayName: 'before', ltiDeepLink: ltiDeepLinkFactory.build() });
+				const domainObject = await repo.save(original);
+				const id = new ObjectId(domainObject.id);
+				const collection = em.getCollection(ContextExternalToolEntity);
+				const before = await collection.findOne({ _id: id });
+				expect(before?.ltiDeepLink?.parameters).toHaveLength(1);
+				domainObject.displayName = 'after';
+				domainObject.parameters.splice(0);
+				domainObject.ltiDeepLink = removeDeepLink ? undefined : ltiDeepLinkFactory.build({ parameters: [] });
+
+				await repo.save(domainObject);
+
+				const stored = await collection.findOne({ _id: id });
+				expect(stored).toMatchObject({
+					_id: id,
+					displayName: 'after',
+					parameters: [],
+					schoolTool: schoolTool._id,
+					contextId: new ObjectId(domainObject.contextRef.id),
+					contextType: ContextExternalToolType.COURSE,
+				});
+				if (removeDeepLink) {
+					expect(stored).not.toHaveProperty('ltiDeepLink');
+				} else {
+					expect(stored?.ltiDeepLink?.parameters).toEqual([]);
+					expect(stored?.ltiDeepLink?.mediaType).toBe(domainObject.ltiDeepLink?.mediaType);
+				}
+				em.clear();
+				const reloaded = await repo.findById(domainObject.id);
+				expect(reloaded.getProps()).toEqual(domainObject.getProps());
+			}
+		);
+
 		describe('when context is course', () => {
 			function setup() {
 				const domainObject: ContextExternalTool = contextExternalToolFactory.build({
