@@ -1,5 +1,4 @@
-import { FindOptions } from '@mikro-orm/core';
-import { EntityData, EntityName, Populate } from '@mikro-orm/core/typings';
+import { type EntityData, type EntityName, type FindOptions, type Populate } from '@mikro-orm/core';
 import type { SystemEntity } from '@modules/system/repo';
 import { Injectable } from '@nestjs/common';
 import { IFindOptions, SortOrder } from '@shared/domain/interface/find-options';
@@ -136,8 +135,8 @@ export class SchoolMikroOrmRepo extends BaseDomainObjectRepo<School, SchoolEntit
 	private mapToMikroOrmOptions<P extends string = never>(
 		options?: IFindOptions<SchoolProps>,
 		populate?: Populate<SchoolEntity, P>
-	): FindOptions<SchoolEntity, P> {
-		const findOptions: FindOptions<SchoolEntity, P> = {
+	): Pick<FindOptions<SchoolEntity, P>, 'offset' | 'limit' | 'orderBy' | 'populate'> {
+		const findOptions: Pick<FindOptions<SchoolEntity, P>, 'offset' | 'limit' | 'orderBy' | 'populate'> = {
 			offset: options?.pagination?.skip,
 			limit: options?.pagination?.limit,
 			orderBy: options?.order,

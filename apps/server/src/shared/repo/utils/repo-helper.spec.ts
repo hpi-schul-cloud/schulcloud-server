@@ -1,6 +1,8 @@
 import { type EntityManager, type MetadataStorage } from '@mikro-orm/core';
 import { getFieldName } from './repo-helper';
 
+class TestEntity {}
+
 describe('getFieldName', () => {
 	let em: EntityManager;
 	let metadata: MetadataStorage;
@@ -23,13 +25,14 @@ describe('getFieldName', () => {
 
 	it('should return the correct field name', () => {
 		setup();
-		const fieldName = getFieldName(em, 'students', 'CourseGroupEntity');
+		const fieldName = getFieldName(em, 'students', TestEntity);
 		expect(fieldName).toBe('students_id');
+		expect(metadata.find).toHaveBeenCalledWith(TestEntity);
 	});
 
 	it('should throw an error if the prop is not found', () => {
 		jest.spyOn(metadata, 'find').mockImplementation().mockReturnValueOnce(undefined);
 
-		expect(() => getFieldName(em, 'students', 'CourseGroupEntity')).toThrow('Field name for students not found.');
+		expect(() => getFieldName(em, 'students', TestEntity)).toThrow('Field name for students not found.');
 	});
 });

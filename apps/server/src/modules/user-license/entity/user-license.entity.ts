@@ -1,4 +1,4 @@
-import { Entity, Enum, Index, ManyToOne } from '@mikro-orm/core';
+import { Entity, Enum, Index, ManyToOne } from '@mikro-orm/decorators/legacy';
 import { User as UserEntity } from '@modules/user/repo';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { EntityId } from '@shared/domain/types';

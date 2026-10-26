@@ -43,7 +43,7 @@ export abstract class BaseDORepo<DO extends BaseDO, E extends BaseEntity> {
 	}
 
 	private async createOrUpdateEntity(domainObject: DO): Promise<{ domainObject: DO; persistedEntity: E }> {
-		const entityData: EntityData<unknown> = this.mapDOToEntityProperties(domainObject);
+		const entityData = this.mapDOToEntityProperties(domainObject);
 		this.removeProtectedEntityFields(entityData);
 
 		const { entityName } = this;
@@ -52,9 +52,13 @@ export abstract class BaseDORepo<DO extends BaseDO, E extends BaseEntity> {
 			? await this._em.findOneOrFail(entityName, { id: domainObject.id } as FilterQuery<E>)
 			: undefined;
 
-		const persistedEntity: E = existingEntity
-			? (this._em.assign(existingEntity, entityData) as E)
-			: this._em.create(entityName, entityData as RequiredEntityData<E>);
+		let persistedEntity: E;
+		if (existingEntity) {
+			this._em.assign<E>(existingEntity, entityData);
+			persistedEntity = existingEntity;
+		} else {
+			persistedEntity = this._em.create(entityName, entityData as RequiredEntityData<E>);
+		}
 
 		return { domainObject, persistedEntity };
 	}
@@ -96,7 +100,7 @@ export abstract class BaseDORepo<DO extends BaseDO, E extends BaseEntity> {
 	/**
 	 * Ignore base entity properties when updating entity
 	 */
-	private removeProtectedEntityFields(entityData: EntityData<E>): void {
+	private removeProtectedEntityFields(entityData: EntityData<FromEntityType<E>>): void {
 		Object.keys(entityData).forEach((key) => {
 			if (baseEntityProperties.includes(key)) {
 				delete entityData[key];

@@ -40,7 +40,7 @@ describe('drawing permission check (api)', () => {
 
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
 			const course = courseEntityFactory.build({ school: teacherUser.school, teachers: [teacherUser] });
-			await em.persistAndFlush([teacherAccount, teacherUser, course]);
+			await em.persist([teacherAccount, teacherUser, course]).flush();
 
 			const columnBoardNode = columnBoardEntityFactory.build({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
@@ -52,7 +52,7 @@ describe('drawing permission check (api)', () => {
 
 			const drawingItemNode = drawingElementEntityFactory.withParent(cardNode).build();
 
-			await em.persistAndFlush([columnBoardNode, columnNode, cardNode, drawingItemNode]);
+			await em.persist([columnBoardNode, columnNode, cardNode, drawingItemNode]).flush();
 			em.clear();
 
 			const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(teacherAccount);
@@ -78,7 +78,7 @@ describe('drawing permission check (api)', () => {
 			const { studentAccount, studentUser } = UserAndAccountTestFactory.buildStudent({ school });
 
 			const course = courseEntityFactory.build({ school, students: [teacherUser] });
-			await em.persistAndFlush([teacherAccount, teacherUser, course, studentAccount, studentUser]);
+			await em.persist([teacherAccount, teacherUser, course, studentAccount, studentUser]).flush();
 
 			const columnBoardNode = columnBoardEntityFactory.build({
 				context: { id: course.id, type: BoardExternalReferenceType.Course },
@@ -90,7 +90,7 @@ describe('drawing permission check (api)', () => {
 
 			const drawingItemNode = drawingElementEntityFactory.withParent(cardNode).build();
 
-			await em.persistAndFlush([columnBoardNode, columnNode, cardNode, drawingItemNode]);
+			await em.persist([columnBoardNode, columnNode, cardNode, drawingItemNode]).flush();
 			em.clear();
 
 			const loggedInClient = await new TestApiClientBuilder(app, baseRouteName).build(studentAccount);
@@ -112,7 +112,7 @@ describe('drawing permission check (api)', () => {
 			await cleanupCollections(em);
 
 			const { teacherAccount, teacherUser } = UserAndAccountTestFactory.buildTeacher();
-			await em.persistAndFlush([teacherAccount, teacherUser]);
+			await em.persist([teacherAccount, teacherUser]).flush();
 
 			em.clear();
 

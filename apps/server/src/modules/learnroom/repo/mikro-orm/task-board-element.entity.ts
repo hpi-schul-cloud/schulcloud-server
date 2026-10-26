@@ -1,4 +1,4 @@
-import { Entity, ManyToOne } from '@mikro-orm/core';
+import { Entity, ManyToOne } from '@mikro-orm/decorators/legacy';
 import { Task } from '@modules/task/repo';
 import { LegacyBoardElement, LegacyBoardElementType } from './legacy-board-element.entity';
 
@@ -12,6 +12,6 @@ export class TaskBoardElement extends LegacyBoardElement {
 	// FIXME Due to a weird behaviour in the mikro-orm validation we have to
 	// disable the validation by setting the reference nullable.
 	// Remove when fixed in mikro-orm.
-	@ManyToOne('Task', { nullable: true })
+	@ManyToOne(() => Task, { fieldName: 'target', nullable: true })
 	target!: Task;
 }

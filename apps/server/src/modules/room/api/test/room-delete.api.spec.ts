@@ -18,7 +18,7 @@ import { Test } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
-import { RoomEntity } from '../../repo';
+import { RoomContentEntity, RoomEntity } from '../../repo';
 import { roomEntityFactory } from '../../testing/room-entity.factory';
 import { waitForEventBus } from './util/wait-for-event-bus';
 
@@ -154,11 +154,11 @@ describe('Room Controller (API)', () => {
 					const { teacherOwnerAccount, room } = await setup();
 					const loggedInClient = await testApiClient.login(teacherOwnerAccount);
 
-					await expect(em.findOneOrFail('RoomContentEntity', { roomId: room.id })).resolves.not.toThrow();
+					await expect(em.findOneOrFail(RoomContentEntity, { roomId: room.id })).resolves.not.toThrow();
 
 					const response = await loggedInClient.delete(room.id);
 					expect(response.status).toBe(HttpStatus.NO_CONTENT);
-					await expect(em.findOneOrFail('RoomContentEntity', { roomId: room.id })).rejects.toThrow(NotFoundException);
+					await expect(em.findOneOrFail(RoomContentEntity, { roomId: room.id })).rejects.toThrow(NotFoundException);
 				});
 
 				describe('when the room contains a guest teacher from another school', () => {

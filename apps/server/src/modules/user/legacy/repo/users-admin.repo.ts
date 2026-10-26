@@ -1,4 +1,4 @@
-import { User } from '@modules/user/repo';
+import { type ConsentEntity, User } from '@modules/user/repo';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { BaseRepo } from '@shared/repo/base.repo';
@@ -6,6 +6,19 @@ import { EntityName, ObjectId } from '@mikro-orm/mongodb';
 import { UsersSearchQueryParams } from '../controller/dto';
 import { UserSearchQuery } from '../interfaces';
 import { createMultiDocumentAggregation, SearchQueryHelper } from './helper';
+import { type UserResponseProps } from '../controller/dto/user.response';
+
+export type UserAggregationResult = Omit<UserResponseProps, '_id' | 'consent'> & {
+	_id: ObjectId;
+	consent?: ConsentEntity;
+};
+
+export interface UserListAggregationResult {
+	total: number;
+	skip: number;
+	limit: number;
+	data: UserAggregationResult[];
+}
 
 @Injectable()
 export class UsersAdminRepo extends BaseRepo<User> {
@@ -17,8 +30,8 @@ export class UsersAdminRepo extends BaseRepo<User> {
 		roleId: string | undefined,
 		schoolId: EntityId,
 		schoolYearId: EntityId | undefined,
-		_id?: string
-	): Promise<unknown[]> {
+		_id: string
+	): Promise<UserAggregationResult[]> {
 		const query: UserSearchQuery = {
 			limit: undefined,
 			skip: undefined,
@@ -47,7 +60,7 @@ export class UsersAdminRepo extends BaseRepo<User> {
 
 		const aggregation = createMultiDocumentAggregation(query);
 
-		return this._em.aggregate(User, aggregation);
+		return this._em.getCollection(User).aggregate<UserAggregationResult>(aggregation).toArray();
 	}
 
 	public getUsersWithNestedData(
@@ -55,7 +68,7 @@ export class UsersAdminRepo extends BaseRepo<User> {
 		schoolId: EntityId,
 		schoolYearId: EntityId | undefined,
 		params: UsersSearchQueryParams
-	): Promise<unknown[]> {
+	): Promise<UserListAggregationResult[]> {
 		const query: UserSearchQuery = {
 			schoolId: new ObjectId(schoolId),
 			roles: new ObjectId(roleId),
@@ -93,6 +106,6 @@ export class UsersAdminRepo extends BaseRepo<User> {
 
 		const aggregation = createMultiDocumentAggregation(query);
 
-		return this._em.aggregate(User, aggregation);
+		return this._em.getCollection(User).aggregate<UserListAggregationResult>(aggregation).toArray();
 	}
 }

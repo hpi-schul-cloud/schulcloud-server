@@ -1,4 +1,4 @@
-import { Embeddable, Enum, Property } from '@mikro-orm/core';
+import { Embeddable, Enum, Property } from '@mikro-orm/decorators/legacy';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { EntityId } from '@shared/domain/types';
 import { FilePermissionReferenceModel } from '../domain';
@@ -17,7 +17,7 @@ export class FilePermissionEntity {
 	@Property({ nullable: false })
 	refId: ObjectId;
 
-	@Enum({ nullable: false })
+	@Enum({ items: [FilePermissionReferenceModel.USER, FilePermissionReferenceModel.ROLE], nullable: false })
 	refPermModel: FilePermissionReferenceModel;
 
 	@Property()

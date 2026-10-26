@@ -1,6 +1,7 @@
 import { ICurrentUser, WsJwtAuthentication } from '@infra/auth-guard';
 import { Socket, WsValidationPipe } from '@infra/socketio';
-import { EnsureRequestContext, MikroORM } from '@mikro-orm/core';
+import { MikroORM } from '@mikro-orm/core';
+import { EnsureRequestContext } from '@mikro-orm/decorators/legacy';
 import { Inject, UsePipes } from '@nestjs/common';
 import {
 	OnGatewayConnection,

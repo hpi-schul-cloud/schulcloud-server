@@ -10,7 +10,9 @@ Codebase clone from https://github.com/feathersjs-ecosystem/feathers-mongoose
 const { _ } = require('@feathersjs/commons');
 const { AdapterBase, select, getLimit } = require('@feathersjs/adapter-commons');
 const errors = require('@feathersjs/errors');
-const { ObjectId } = require('bson');
+const {
+	Types: { ObjectId },
+} = require('mongoose');
 
 const { ERROR, errorHandler } = require('./error-handler');
 

@@ -1,4 +1,5 @@
-import { Collection, Entity, Ref, Index, ManyToMany, ManyToOne, OneToMany, Property, wrap } from '@mikro-orm/core';
+import { Entity, Index, ManyToMany, ManyToOne, OneToMany, Property } from '@mikro-orm/decorators/legacy';
+import { Collection, Ref, wrap } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { CourseEntity } from '@modules/course/repo';
 import { User } from '@modules/user/repo';
@@ -42,7 +43,7 @@ export class DashboardGridElementEntity extends BaseEntityWithTimestamps {
 	references = new Collection<CourseEntity>(this);
 
 	@Index()
-	@ManyToOne('DashboardEntity', { ref: true })
+	@ManyToOne(() => DashboardEntity, { ref: true })
 	dashboard: Ref<DashboardEntity>;
 }
 
@@ -62,12 +63,12 @@ export class DashboardEntity extends BaseEntityWithTimestamps {
 		if (props.gridElements) this.gridElements.set(props.gridElements);
 	}
 
-	@OneToMany('DashboardGridElementEntity', 'dashboard', { orphanRemoval: true })
+	@OneToMany(() => DashboardGridElementEntity, 'dashboard', { orphanRemoval: true })
 	gridElements: Collection<DashboardGridElementEntity> = new Collection<DashboardGridElementEntity>(this);
 
 	// userId
 	@Index()
-	@ManyToOne('User', { fieldName: 'userId', ref: true })
+	@ManyToOne(() => User, { fieldName: 'userId', ref: true })
 	user: Ref<User>;
 
 	// sizetype

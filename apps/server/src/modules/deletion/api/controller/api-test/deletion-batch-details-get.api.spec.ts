@@ -1,3 +1,4 @@
+import { X_API_KEY_AUTH_GUARD_CONFIG_TOKEN, type XApiKeyAuthGuardConfig } from '@infra/auth-guard';
 import { EntityManager } from '@mikro-orm/core';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { AdminApiServerTestModule } from '@modules/server/admin-api.server.app.module';
@@ -6,7 +7,7 @@ import { type INestApplication } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { TestApiClientBuilder } from '@testing/test-api-client-builder';
 import { StatusModel } from '../../../domain/types'; // barrel file
-import { type DeletionBatchEntity } from '../../../repo/entity'; // barrel file
+import { DeletionBatchEntity } from '../../../repo/entity'; // barrel file
 import { deletionBatchEntityFactory, deletionRequestEntityFactory } from '../../../repo/entity/testing'; // testing need to be changed to top level of the module
 
 const baseRouteName = '/deletion-batches';
@@ -19,7 +20,10 @@ describe('getBatchDetails ', () => {
 	beforeAll(async () => {
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [AdminApiServerTestModule],
-		}).compile();
+		})
+			.overrideProvider(X_API_KEY_AUTH_GUARD_CONFIG_TOKEN)
+			.useValue({ allowedApiKeys: [API_KEY] } satisfies XApiKeyAuthGuardConfig)
+			.compile();
 
 		app = module.createNestApplication();
 		em = module.get(EntityManager);
@@ -28,7 +32,7 @@ describe('getBatchDetails ', () => {
 	});
 
 	beforeEach(async () => {
-		await em.nativeDelete('DeletionBatch', {});
+		await em.nativeDelete(DeletionBatchEntity, {});
 	});
 
 	afterAll(async () => {

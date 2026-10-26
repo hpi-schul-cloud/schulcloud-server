@@ -31,7 +31,7 @@ export class ContextExternalToolRepo {
 
 	public async save(domainObject: ContextExternalTool): Promise<ContextExternalTool> {
 		const existing: ContextExternalToolEntity | null = await this.em.findOne<ContextExternalToolEntity>(
-			ContextExternalToolEntity.name,
+			ContextExternalToolEntity,
 			domainObject.id
 		);
 

@@ -3,6 +3,7 @@ import { accountFactory } from '@modules/account/testing';
 import { GroupEntityTypes } from '@modules/group/entity';
 import { groupEntityFactory } from '@modules/group/testing';
 import { roomMembershipEntityFactory } from '@modules/room-membership/testing';
+import { RoomContentEntity } from '@modules/room/repo';
 import { roomEntityFactory } from '@modules/room/testing';
 import { RoomRolesTestFactory } from '@modules/room/testing/room-roles.test.factory';
 import { ServerTestModule } from '@modules/server';
@@ -142,7 +143,7 @@ describe(`board delete in room (api)`, () => {
 			// wait for event bus
 			await new Promise((resolve) => setTimeout(resolve, 50));
 
-			const roomContent = await em.findOneOrFail('RoomContentEntity', {
+			const roomContent = await em.findOneOrFail(RoomContentEntity, {
 				roomId: columnBoardNode.context?.id,
 			});
 

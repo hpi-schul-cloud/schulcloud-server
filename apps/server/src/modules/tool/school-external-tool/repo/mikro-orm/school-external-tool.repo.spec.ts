@@ -1,6 +1,6 @@
 import { createMock } from '@golevelup/ts-jest';
 import { LegacyLogger } from '@infra/logger';
-import { EntityManager } from '@mikro-orm/mongodb';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { schoolEntityFactory } from '@modules/school/testing';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
@@ -138,6 +138,90 @@ describe(SchoolExternalToolRepo.name, () => {
 	});
 
 	describe('save', () => {
+		it.each(['save', 'saveMany'] as const)(
+			'should store activation and empty parameters through %s before querying again',
+			async (method) => {
+				const entity = schoolExternalToolEntityFactory.buildWithId({
+					isDeactivated: true,
+					schoolParameters: [{ name: 'old', value: 'value,with,commas' }],
+				});
+				await em.persist(entity).flush();
+				const domainObject = await repo.findById(entity.id);
+				domainObject.activate();
+				domainObject.parameters.splice(0);
+
+				if (method === 'save') {
+					await repo.save(domainObject);
+				} else {
+					await repo.saveMany([domainObject]);
+				}
+
+				const stored = await em.getCollection(SchoolExternalToolEntity).findOne({ _id: entity._id });
+				expect(stored).toMatchObject({
+					_id: entity._id,
+					isDeactivated: false,
+					schoolParameters: [],
+					school: entity.school._id,
+					tool: entity.tool._id,
+				});
+				em.clear();
+				const reloaded = await repo.find({
+					schoolId: domainObject.schoolId,
+					toolId: domainObject.toolId,
+					isDeactivated: false,
+				});
+				expect(reloaded).toHaveLength(1);
+				expect(reloaded[0].getProps()).toMatchObject({
+					id: domainObject.id,
+					parameters: [],
+					isDeactivated: false,
+				});
+				await expect(
+					repo.find({
+						schoolId: domainObject.schoolId,
+						toolId: domainObject.toolId,
+						isDeactivated: true,
+					})
+				).resolves.toEqual([]);
+			}
+		);
+
+		it('should upsert existing and new tools in one batch before any ORM read', async () => {
+			const existing = schoolExternalToolEntityFactory.buildWithId({ isDeactivated: true });
+			await em.persist(existing).flush();
+			const updated = await repo.findById(existing.id);
+			updated.activate();
+			const newTool = externalToolEntityFactory.buildWithId();
+			await em.persist(newTool).flush();
+			const newDomainObject = schoolExternalToolFactory.build({
+				schoolId: updated.schoolId,
+				toolId: newTool.id,
+				isDeactivated: false,
+				parameters: [new CustomParameterEntry({ name: 'new', value: '["not","an","array"]' })],
+			});
+
+			await repo.saveMany([updated, newDomainObject]);
+
+			const collection = em.getCollection(SchoolExternalToolEntity);
+			expect(await collection.findOne({ _id: existing._id })).toMatchObject({ isDeactivated: false });
+			expect(await collection.findOne({ _id: new ObjectId(newDomainObject.id) })).toMatchObject({
+				isDeactivated: false,
+				school: existing.school._id,
+				tool: newTool._id,
+				schoolParameters: [{ name: 'new', value: '["not","an","array"]' }],
+			});
+			em.clear();
+			await expect(repo.findById(updated.id)).resolves.toMatchObject({ isDeactivated: false });
+			const reloaded = await repo.findById(newDomainObject.id);
+			expect(reloaded.getProps()).toEqual({
+				id: newDomainObject.id,
+				schoolId: newDomainObject.schoolId,
+				toolId: newDomainObject.toolId,
+				isDeactivated: false,
+				parameters: newDomainObject.parameters,
+			});
+		});
+
 		const setup = () => {
 			const schoolExternalToolEntity: SchoolExternalToolEntity = schoolExternalToolEntityFactory.buildWithId({
 				school: schoolEntityFactory.buildWithId(),

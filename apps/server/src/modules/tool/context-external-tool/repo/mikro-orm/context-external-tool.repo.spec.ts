@@ -12,12 +12,14 @@ import { User } from '@modules/user/repo';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
+import { CustomParameterEntryEntity } from '../../../common/entity';
 import { ContextExternalTool, type ContextExternalToolProps } from '../../domain';
 import { contextExternalToolEntityFactory, contextExternalToolFactory, ltiDeepLinkFactory } from '../../testing';
 import { type ContextExternalToolQuery } from '../../uc/dto/context-external-tool.types';
 import { ContextExternalToolType } from './context-external-tool-type.enum';
 import { ContextExternalToolEntity } from './context-external-tool.entity';
 import { ContextExternalToolRepo } from './context-external-tool.repo';
+import { LtiDeepLinkEmbeddable } from './lti-deep-link.embeddable';
 
 describe(ContextExternalToolRepo.name, () => {
 	let module: TestingModule;
@@ -90,6 +92,47 @@ describe(ContextExternalToolRepo.name, () => {
 		});
 	});
 
+	describe('nested deep-link parameter arrays', () => {
+		it.each(['orm', 'raw'] as const)(
+			'should preserve BSON arrays from %s writes and persist empty replacements',
+			async (source) => {
+				const parameters = [
+					new CustomParameterEntryEntity({ name: 'first', value: 'value,with,commas' }),
+					new CustomParameterEntryEntity({ name: 'second', value: '["not","an","array"]' }),
+				];
+				const tool = contextExternalToolEntityFactory.buildWithId({
+					ltiDeepLink: new LtiDeepLinkEmbeddable({
+						mediaType: 'ltiResourceLink',
+						parameters: source === 'orm' ? parameters : [],
+					}),
+				});
+				await em.persist(tool).flush();
+				const collection = em.getCollection(ContextExternalToolEntity);
+				const filter = { _id: new ObjectId(tool.id) };
+				if (source === 'raw') {
+					await collection.updateOne(filter, { $set: { 'ltiDeepLink.parameters': parameters } });
+				}
+				em.clear();
+
+				const document = await collection.findOne(filter);
+				expect(document?.ltiDeepLink?.parameters).toEqual(parameters);
+				const loaded = await em.findOneOrFail(ContextExternalToolEntity, tool.id);
+				expect(loaded.ltiDeepLink?.parameters).toEqual(parameters);
+				expect(loaded.ltiDeepLink?.parameters[0]).toBeInstanceOf(CustomParameterEntryEntity);
+
+				if (!loaded.ltiDeepLink) {
+					throw new Error('Expected LTI deep link to be hydrated');
+				}
+				loaded.ltiDeepLink.parameters = [];
+				await em.flush();
+				em.clear();
+
+				expect((await collection.findOne(filter))?.ltiDeepLink?.parameters).toEqual([]);
+				expect((await em.findOneOrFail(ContextExternalToolEntity, tool.id)).ltiDeepLink?.parameters).toEqual([]);
+			}
+		);
+	});
+
 	describe('deleteBySchoolExternalToolIds', () => {
 		const setup = async () => {
 			const {
@@ -139,6 +182,46 @@ describe(ContextExternalToolRepo.name, () => {
 	});
 
 	describe('save', () => {
+		it.each([false, true])(
+			'should store scalar updates and empty parameters when removing the deep link=%s',
+			async (removeDeepLink) => {
+				const schoolTool = schoolExternalToolEntityFactory.buildWithId();
+				await em.persist(schoolTool).flush();
+				const original = contextExternalToolFactory
+					.withSchoolExternalToolRef(schoolTool.id, schoolTool.school.id)
+					.build({ displayName: 'before', ltiDeepLink: ltiDeepLinkFactory.build() });
+				const domainObject = await repo.save(original);
+				const id = new ObjectId(domainObject.id);
+				const collection = em.getCollection(ContextExternalToolEntity);
+				const before = await collection.findOne({ _id: id });
+				expect(before?.ltiDeepLink?.parameters).toHaveLength(1);
+				domainObject.displayName = 'after';
+				domainObject.parameters.splice(0);
+				domainObject.ltiDeepLink = removeDeepLink ? undefined : ltiDeepLinkFactory.build({ parameters: [] });
+
+				await repo.save(domainObject);
+
+				const stored = await collection.findOne({ _id: id });
+				expect(stored).toMatchObject({
+					_id: id,
+					displayName: 'after',
+					parameters: [],
+					schoolTool: schoolTool._id,
+					contextId: new ObjectId(domainObject.contextRef.id),
+					contextType: ContextExternalToolType.COURSE,
+				});
+				if (removeDeepLink) {
+					expect(stored).not.toHaveProperty('ltiDeepLink');
+				} else {
+					expect(stored?.ltiDeepLink?.parameters).toEqual([]);
+					expect(stored?.ltiDeepLink?.mediaType).toBe(domainObject.ltiDeepLink?.mediaType);
+				}
+				em.clear();
+				const reloaded = await repo.findById(domainObject.id);
+				expect(reloaded.getProps()).toEqual(domainObject.getProps());
+			}
+		);
+
 		describe('when context is course', () => {
 			function setup() {
 				const domainObject: ContextExternalTool = contextExternalToolFactory.build({

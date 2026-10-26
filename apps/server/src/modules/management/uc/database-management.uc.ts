@@ -1,7 +1,7 @@
 import { DefaultEncryptionService, EncryptionService } from '@infra/encryption';
 import { FileSystemAdapter } from '@infra/file-system';
 import { LegacyLogger } from '@infra/logger';
-import { UmzugMigration } from '@mikro-orm/migrations-mongodb';
+import { MigrationInfo } from '@mikro-orm/core';
 import { EntityManager } from '@mikro-orm/mongodb';
 import { StorageProviderEntity } from '@modules/school/repo';
 import { SystemEntity } from '@modules/system/repo';
@@ -458,7 +458,7 @@ export class DatabaseManagementUc {
 		await this.databaseManagementService.migrationDown(from, to, only);
 	}
 
-	public async migrationPending(): Promise<UmzugMigration[]> {
+	public async migrationPending(): Promise<MigrationInfo[]> {
 		const result = await this.databaseManagementService.migrationPending();
 
 		return result;

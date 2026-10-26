@@ -1,5 +1,6 @@
 import { ConfigurationModule } from '@infra/configuration';
 import { defineConfig } from '@mikro-orm/core';
+import { ReflectMetadataProvider } from '@mikro-orm/decorators/legacy';
 import { MongoDriver } from '@mikro-orm/mongodb';
 import { MikroOrmModule } from '@mikro-orm/nestjs';
 import { DynamicModule, Module } from '@nestjs/common';
@@ -27,6 +28,7 @@ export class DatabaseModule {
 							allowGlobalContext: config.dbAllowGlobalContext,
 							debug: config.dbDebug,
 							migrations: options.migrationOptions,
+							metadataProvider: ReflectMetadataProvider,
 						}),
 					inject: [options.configInjectionToken],
 					imports: [ConfigurationModule.register(options.configInjectionToken, options.configConstructor)],

@@ -1,4 +1,5 @@
-import { Collection, Entity, ManyToMany, OneToOne, Ref, wrap } from '@mikro-orm/core';
+import { Collection, Ref, wrap } from '@mikro-orm/core';
+import { Entity, ManyToMany, OneToOne } from '@mikro-orm/decorators/legacy';
 import { CourseEntity } from '@modules/course/repo';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity';
@@ -25,7 +26,7 @@ export class LegacyBoard extends BaseEntityWithTimestamps {
 	@OneToOne({ entity: () => CourseEntity, fieldName: 'courseId', ref: true, unique: true, owner: true })
 	course: Ref<CourseEntity>;
 
-	@ManyToMany('LegacyBoardElement', undefined, { fieldName: 'referenceIds' })
+	@ManyToMany(() => LegacyBoardElement, undefined, { fieldName: 'referenceIds' })
 	references = new Collection<LegacyBoardElement>(this);
 
 	public getByTargetId(id: EntityId): LearnroomElement {

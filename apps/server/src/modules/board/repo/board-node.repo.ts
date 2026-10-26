@@ -1,5 +1,5 @@
-import { FilterQuery, Utils } from '@mikro-orm/core';
-import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
+import { Utils } from '@mikro-orm/core';
+import { EntityManager } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { EntityId } from '@shared/domain/types';
 import { AnyBoardNode, BoardExternalReference, getBoardNodeType } from '../domain';
@@ -41,9 +41,9 @@ export class BoardNodeRepo {
 	public async findByExternalReference(reference: BoardExternalReference, depth?: number): Promise<AnyBoardNode[]> {
 		const entities = await this.em.find(BoardNodeEntity, {
 			context: {
-				_contextId: new ObjectId(reference.id),
+				_contextId: reference.id,
 				_contextType: reference.type,
-			} as FilterQuery<BoardExternalReference>,
+			},
 		});
 
 		// TODO refactor descendants mapping, more DRY?

@@ -1,4 +1,5 @@
-import { Collection, Entity, Index, ManyToMany, ManyToOne, Property } from '@mikro-orm/core';
+import { Collection } from '@mikro-orm/core';
+import { Entity, Index, ManyToMany, ManyToOne, Property } from '@mikro-orm/decorators/legacy';
 import { LessonParent } from '@modules/lesson/repo';
 import { SchoolEntity } from '@modules/school/repo';
 import { TaskParent } from '@modules/task/repo';
@@ -19,7 +20,7 @@ export class CourseGroupEntity extends BaseEntityWithTimestamps implements TaskP
 	@Property()
 	name: string;
 
-	@ManyToMany('User', undefined, { fieldName: 'userIds' })
+	@ManyToMany(() => User, undefined, { fieldName: 'userIds' })
 	@Index()
 	students = new Collection<User>(this);
 

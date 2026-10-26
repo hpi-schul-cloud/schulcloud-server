@@ -1,5 +1,6 @@
 import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { CalendarService } from '@infra/calendar';
+import { X_API_KEY_AUTH_GUARD_CONFIG_TOKEN, type XApiKeyAuthGuardConfig } from '@infra/auth-guard';
 import { type FileDO, FileRecordParentType, ScanStatus } from '@infra/files-storage-amqp-client';
 import { FilesStorageProducer } from '@infra/files-storage-amqp-client/service';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
@@ -48,7 +49,7 @@ describe(`deletionExecution (api)`, () => {
 	let app: INestApplication;
 	let em: EntityManager;
 	let testApiClient: TestApiClient;
-	const API_KEY = 'someotherkey';
+	const API_KEY = 'deletion-execution-api-test-key';
 	let filesStorageProducer: DeepMocked<FilesStorageProducer>;
 	let calendarService: DeepMocked<CalendarService>;
 	let dashboardRepo: IDashboardRepo;
@@ -57,6 +58,8 @@ describe(`deletionExecution (api)`, () => {
 		const module: TestingModule = await Test.createTestingModule({
 			imports: [AdminApiServerTestModule],
 		})
+			.overrideProvider(X_API_KEY_AUTH_GUARD_CONFIG_TOKEN)
+			.useValue({ allowedApiKeys: [API_KEY] } satisfies XApiKeyAuthGuardConfig)
 			.overrideProvider(FilesStorageProducer)
 			.useValue(createMock<FilesStorageProducer>())
 			.overrideProvider(CalendarService)
@@ -80,6 +83,16 @@ describe(`deletionExecution (api)`, () => {
 
 	beforeEach(async () => {
 		await cleanupCollections(em);
+	});
+
+	it.each([undefined, 'invalid-api-key'])('should reject requests with API key %s', async (apiKey) => {
+		const builder = new TestApiClientBuilder(app, baseRouteName);
+		if (apiKey !== undefined) {
+			builder.withApiKey(apiKey);
+		}
+		const response = await builder.build().post('');
+
+		expect(response.status).toBe(401);
 	});
 
 	describe('executeDeletions', () => {

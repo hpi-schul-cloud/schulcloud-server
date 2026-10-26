@@ -30,7 +30,7 @@ export class SynchronizationRepo {
 	}
 
 	public async update(synchronization: Synchronization): Promise<void> {
-		const referencedEntity = this.em.getReference(SynchronizationEntity, synchronization.id);
+		const referencedEntity = await this.em.findOneOrFail(SynchronizationEntity, synchronization.id);
 
 		referencedEntity.status = synchronization.status;
 		referencedEntity.count = synchronization.count;

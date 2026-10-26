@@ -1,10 +1,11 @@
-import { Collection, Entity, Index, ManyToMany, ManyToOne, OneToMany, Property } from '@mikro-orm/core';
+import { Collection } from '@mikro-orm/core';
+import { Entity, Index, ManyToMany, ManyToOne, OneToMany, Property } from '@mikro-orm/decorators/legacy';
 import { CourseEntity, CourseGroupEntity } from '@modules/course/repo';
 import { Task, TaskParent } from '@modules/task/repo';
 import { InternalServerErrorException } from '@nestjs/common';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import { ObjectId } from '@mikro-orm/mongodb';
+import { ArrayType, ObjectId } from '@mikro-orm/mongodb';
 import { LernstoreResources } from '../api';
 import { Material } from './materials.entity';
 
@@ -84,13 +85,13 @@ export class LessonEntity extends BaseEntityWithTimestamps implements TaskParent
 	@Property()
 	position: number;
 
-	@Property()
+	@Property({ type: ArrayType<ComponentProperties> })
 	contents: ComponentProperties[] | [];
 
-	@ManyToMany('Material', undefined, { fieldName: 'materialIds' })
+	@ManyToMany(() => Material, undefined, { fieldName: 'materialIds' })
 	materials = new Collection<Material>(this);
 
-	@OneToMany('Task', 'lesson', { orphanRemoval: true })
+	@OneToMany(() => Task, 'lesson', { orphanRemoval: true })
 	tasks = new Collection<Task>(this);
 
 	constructor(props: LessonProperties) {

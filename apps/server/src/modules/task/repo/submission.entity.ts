@@ -1,11 +1,12 @@
-import { Collection, Entity, Index, ManyToMany, ManyToOne, Property, Unique } from '@mikro-orm/core';
+import { Collection } from '@mikro-orm/core';
+import { Entity, Index, ManyToMany, ManyToOne, Property, Unique } from '@mikro-orm/decorators/legacy';
 import { CourseGroupEntity } from '@modules/course/repo';
 import { SchoolEntity } from '@modules/school/repo';
-import type { User } from '@modules/user/repo';
+import { User } from '@modules/user/repo';
 import { InternalServerErrorException } from '@nestjs/common';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity';
 import { EntityId } from '@shared/domain/types';
-import type { Task } from './task.entity';
+import { Task } from './task.entity';
 
 export interface SubmissionProperties {
 	school: SchoolEntity;
@@ -31,18 +32,18 @@ export class Submission extends BaseEntityWithTimestamps {
 	@Index()
 	school: SchoolEntity;
 
-	@ManyToOne('Task', { fieldName: 'homeworkId' })
+	@ManyToOne(() => Task, { fieldName: 'homeworkId' })
 	@Index()
 	task: Task;
 
-	@ManyToOne('User', { fieldName: 'studentId', nullable: true })
+	@ManyToOne(() => User, { fieldName: 'studentId', nullable: true })
 	student?: User;
 
 	@ManyToOne(() => CourseGroupEntity, { fieldName: 'courseGroupId', nullable: true })
 	@Index()
 	courseGroup?: CourseGroupEntity;
 
-	@ManyToMany('User', undefined, { fieldName: 'teamMembers' })
+	@ManyToMany(() => User, undefined, { fieldName: 'teamMembers' })
 	@Index()
 	teamMembers = new Collection<User>(this);
 

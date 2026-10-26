@@ -1,20 +1,17 @@
 import { buildAllSearchableStringsForUser } from '@imports-from-feathers';
+import { ArrayType, ChangeSet, Collection, EventArgs, wrap } from '@mikro-orm/core';
 import {
 	BeforeCreate,
 	BeforeUpdate,
-	ChangeSet,
-	Collection,
 	Embeddable,
 	Embedded,
 	Entity,
-	EventArgs,
 	Index,
 	ManyToMany,
 	ManyToOne,
 	Property,
 	Unique,
-	wrap,
-} from '@mikro-orm/core';
+} from '@mikro-orm/decorators/legacy';
 import { RoleName } from '@modules/role';
 import { Role } from '@modules/role/repo';
 import { SchoolEntity, SchoolRoles } from '@modules/school/repo';
@@ -156,7 +153,7 @@ export class User extends BaseEntityWithTimestamps {
 	@Embedded(() => ConsentEntity, { nullable: true, object: true })
 	consent?: ConsentEntity;
 
-	@Embedded(() => UserParentsEntity, { array: true, nullable: true })
+	@Embedded(() => UserParentsEntity, { array: true, nullable: true, type: ArrayType<UserParentsEntity> })
 	parents?: UserParentsEntity[];
 
 	@Property({ nullable: true })
@@ -202,7 +199,9 @@ export class User extends BaseEntityWithTimestamps {
 		this.preferredName = props.preferredName;
 		this.email = props.email;
 		this.school = props.school;
-		this.secondarySchools = props.secondarySchools || [];
+		this.secondarySchools = (props.secondarySchools ?? []).map((secondarySchool) =>
+			secondarySchool instanceof UserSchoolEmbeddable ? secondarySchool : new UserSchoolEmbeddable(secondarySchool)
+		);
 		this.roles.set(props.roles);
 		this.ldapDn = props.ldapDn;
 		this.externalId = props.externalId;

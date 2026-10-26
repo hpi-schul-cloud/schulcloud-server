@@ -27,7 +27,6 @@ describe('Lesson Controller (API) - GET list of lesson tasks /lessons/:lessonId/
 
 	afterAll(async () => {
 		await app.close();
-		await module.close();
 	});
 
 	describe('when lesson exists', () => {

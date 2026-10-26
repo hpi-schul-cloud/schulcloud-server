@@ -1,7 +1,9 @@
 import { EntityManager } from '@mikro-orm/mongodb';
+import { Role } from '@modules/role/repo';
 import { ServerTestModule } from '@modules/server';
 import { HttpStatus, type INestApplication } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
+import { Permission } from '@shared/domain/interface';
 import { UserAndAccountTestFactory } from '@testing/factory/user-and-account.test.factory';
 import { TestApiClient } from '@testing/test-api-client';
 import { type Release } from '../../domain';
@@ -90,7 +92,9 @@ describe('Release Controller (API)', () => {
 				it('should return a 403 error if the user does not have the required permission', async () => {
 					const { loggedInClient, user } = await setup();
 					// Revoke the RELEASES_VIEW permission from the user
-					await em.nativeUpdate('roles', { _id: user.roles[0]._id }, { $pull: { permissions: 'RELEASES_VIEW' } });
+					await em
+						.getCollection(Role)
+						.updateOne({ _id: user.roles[0]._id }, { $pull: { permissions: Permission.RELEASES_VIEW } });
 
 					const response = await loggedInClient.get();
 					expect(response.status).toBe(HttpStatus.FORBIDDEN);

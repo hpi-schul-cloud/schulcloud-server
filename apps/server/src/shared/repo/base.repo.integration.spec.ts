@@ -1,4 +1,5 @@
-import { Entity, EntityName, Property } from '@mikro-orm/core';
+import { EntityName } from '@mikro-orm/core';
+import { Entity, Property } from '@mikro-orm/decorators/legacy';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { Injectable } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
@@ -14,6 +15,9 @@ describe('BaseRepo', () => {
 	class TestEntity extends BaseEntity {
 		@Property()
 		name = 'test';
+
+		@Property({ nullable: true })
+		description?: string;
 	}
 
 	@Injectable()
@@ -71,9 +75,49 @@ describe('BaseRepo', () => {
 			const resEntity = repo.create(testEntity);
 			expect(resEntity.name).toEqual(testEntity.name);
 		});
+
+		it('should create an entity from data without optional properties', () => {
+			const entity = repo.create({ name: 'from data' });
+
+			expect(entity).toBeInstanceOf(TestEntity);
+			expect(entity.name).toBe('from data');
+			expect(entity.description).toBeUndefined();
+		});
+
+		it('should preserve optional properties when provided', () => {
+			const entity = repo.create({ name: 'from data', description: 'optional value' });
+
+			expect(entity.description).toBe('optional value');
+		});
 	});
 
 	describe('save', () => {
+		it('should persist partial assignments while preserving omitted properties', async () => {
+			const entity = repo.create({ name: 'before', description: 'preserved' });
+			await repo.save(entity);
+			em.clear();
+
+			const loaded = await repo.findById(entity.id);
+			em.assign(loaded, { name: 'after' });
+			await repo.save(loaded);
+			em.clear();
+
+			const updated = await repo.findById(entity.id);
+			expect(updated.name).toBe('after');
+			expect(updated.description).toBe('preserved');
+
+			em.assign(updated, { description: undefined });
+			await repo.save(updated);
+			em.clear();
+
+			const withoutDescription = await repo.findById(entity.id);
+			expect(withoutDescription.name).toBe('after');
+			expect(withoutDescription.description).toBeUndefined();
+			expect(await em.getCollection(TestEntity).findOne({ _id: new ObjectId(entity.id) })).not.toHaveProperty(
+				'description'
+			);
+		});
+
 		it('should persist and flush a single entity', async () => {
 			const testEntity = new TestEntity();
 

@@ -348,7 +348,7 @@ describe(LogoutService.name, () => {
 
 	describe('logoutFromExternalSystem', () => {
 		const setupAxiosConfig = (clientId: string, clientSecret: string): AxiosRequestConfig => {
-			const headers: AxiosHeaders = new AxiosHeaders();
+			const headers = new AxiosHeaders();
 			headers.setContentType('application/x-www-form-urlencoded');
 
 			const config: AxiosRequestConfig = {

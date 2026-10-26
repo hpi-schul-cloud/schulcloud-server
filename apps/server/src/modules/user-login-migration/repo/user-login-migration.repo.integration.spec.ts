@@ -1,7 +1,8 @@
-import { EntityManager } from '@mikro-orm/mongodb';
+import { wrap } from '@mikro-orm/core';
+import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { SchoolEntity } from '@modules/school/repo';
 import { schoolEntityFactory } from '@modules/school/testing';
-import { type SystemEntity } from '@modules/system/repo';
+import { SystemEntity } from '@modules/system/repo';
 import { systemEntityFactory } from '@modules/system/testing';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { cleanupCollections } from '@testing/cleanup-collections';
@@ -31,7 +32,82 @@ describe('UserLoginMigrationRepo', () => {
 	});
 
 	afterEach(async () => {
+		em.clear();
 		await cleanupCollections(em);
+	});
+
+	describe('relation nullability', () => {
+		it('should explicitly allow an absent inverse migration while requiring the owning school', () => {
+			const schoolMetadata = em.getMetadata().get(SchoolEntity);
+			const migrationMetadata = em.getMetadata().get(UserLoginMigrationEntity);
+
+			expect(schoolMetadata.properties.userLoginMigration).toMatchObject({
+				nullable: true,
+				owner: false,
+				orphanRemoval: true,
+			});
+			expect(migrationMetadata.properties.school).toMatchObject({ nullable: false, owner: true });
+			expect(migrationMetadata.properties.sourceSystem.nullable).toBe(true);
+			expect(migrationMetadata.properties.targetSystem.nullable).not.toBe(true);
+		});
+
+		it.each(['missing', 'null'] as const)(
+			'should hydrate and map an optional source from a %s BSON field',
+			async (source) => {
+				const migration = userLoginMigrationFactory.buildWithId();
+				await em.persist(migration).flush();
+				const collection = em.getCollection<{ _id: ObjectId; sourceSystem?: ObjectId | null }>(
+					em.getMetadata().get(UserLoginMigrationEntity).collection
+				);
+				const filter = { _id: new ObjectId(migration.id) };
+				if (source === 'null') {
+					await collection.updateOne(filter, { $set: { sourceSystem: null } });
+				}
+				em.clear();
+
+				const loaded = await em.findOneOrFail(UserLoginMigrationEntity, migration.id);
+				expect(loaded.sourceSystem).toBe(source === 'null' ? null : undefined);
+				expect(wrap(loaded).toObject().sourceSystem).toBe(source === 'null' ? null : undefined);
+				expect(repo.mapEntityToDO(loaded).sourceSystemId).toBeUndefined();
+			}
+		);
+
+		it('should persist removal of a source system without deleting the system', async () => {
+			const sourceSystem = systemEntityFactory.buildWithId();
+			const migration = userLoginMigrationFactory.buildWithId({ sourceSystem });
+			await em.persist(migration).flush();
+			em.clear();
+
+			const loaded = await em.findOneOrFail(UserLoginMigrationEntity, migration.id);
+			loaded.sourceSystem = undefined;
+			await em.flush();
+			em.clear();
+
+			const reloaded = await em.findOneOrFail(UserLoginMigrationEntity, migration.id);
+			expect(reloaded.sourceSystem).toBeUndefined();
+			expect(repo.mapEntityToDO(reloaded).sourceSystemId).toBeUndefined();
+			expect(
+				(await em.getCollection(UserLoginMigrationEntity).findOne({ _id: new ObjectId(migration.id) }))?.sourceSystem
+			).toBeUndefined();
+			await em.findOneOrFail(SystemEntity, sourceSystem.id);
+		});
+
+		it('should remove an orphaned migration without deleting its school or target system', async () => {
+			const migration = userLoginMigrationFactory.buildWithId();
+			await em.persist(migration).flush();
+			em.clear();
+
+			const school = await em.findOneOrFail(SchoolEntity, migration.school.id);
+			expect(school.userLoginMigration?.id).toBe(migration.id);
+			school.userLoginMigration = undefined;
+			await em.flush();
+			em.clear();
+
+			expect(await em.findOne(UserLoginMigrationEntity, migration.id)).toBeNull();
+			const reloaded = await em.findOneOrFail(SchoolEntity, school.id);
+			expect(reloaded.userLoginMigration).toBeUndefined();
+			await em.findOneOrFail(SystemEntity, migration.targetSystem.id);
+		});
 	});
 
 	describe('save', () => {

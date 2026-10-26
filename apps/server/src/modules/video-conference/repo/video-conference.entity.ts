@@ -1,4 +1,4 @@
-import { Embedded, Entity, Enum, Index, Property } from '@mikro-orm/core';
+import { Embedded, Entity, Enum, Index, Property } from '@mikro-orm/decorators/legacy';
 import { BaseEntityWithTimestamps } from '@shared/domain/entity/base.entity';
 import { VideoConferenceOptions } from './video-conference-options.embeddable';
 import { VideoConferenceTargetModels } from './video-conference-target-models.enum';

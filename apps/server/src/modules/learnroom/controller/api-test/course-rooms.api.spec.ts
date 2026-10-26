@@ -1,7 +1,7 @@
 import { createMock } from '@golevelup/ts-jest';
 import { FilesStorageClientAdapterService } from '@infra/files-storage-amqp-client';
-import { EntityManager, type FilterQuery, ObjectId } from '@mikro-orm/mongodb';
-import { type BoardExternalReference, BoardExternalReferenceType, BoardNodeType } from '@modules/board';
+import { EntityManager } from '@mikro-orm/mongodb';
+import { BoardExternalReferenceType, BoardNodeType } from '@modules/board';
 import {
 	cardEntityFactory,
 	columnBoardEntityFactory,
@@ -426,6 +426,8 @@ describe('Course Rooms Controller (API)', () => {
 
 				const columnBoardNode1 = await em.findOneOrFail(BoardNodeEntity, columnBoard1.id);
 				const columnBoardNode2 = await em.findOneOrFail(BoardNodeEntity, columnBoard2.id);
+				expect(columnBoardNode1.context?.id).toBe(course.id);
+				expect(columnBoardNode1.context?.type).toBe(BoardExternalReferenceType.Course);
 				legacyBoard.syncBoardElementReferences([task, lesson, columnBoardNode1, columnBoardNode2]);
 
 				await em.persist([legacyBoard]).flush();
@@ -440,28 +442,26 @@ describe('Course Rooms Controller (API)', () => {
 				const { loggedInClient, course } = await setup();
 
 				const response = await loggedInClient.post(`${course.id}/copy`);
+				expect(response.status).toBe(201);
 				const body = response.body as CopyApiResponse;
 				const copyCourseId = body.id as string;
+				em.clear();
 
 				const copiedTask = await em.findOneOrFail(Task, { course: copyCourseId });
 				const copiedLesson = await em.findOneOrFail(LessonEntity, { course: copyCourseId });
 				const copiedColumnBoards = await em.find(BoardNodeEntity, {
 					context: {
-						_contextId: new ObjectId(copyCourseId),
+						_contextId: copyCourseId,
 						_contextType: BoardExternalReferenceType.Course,
-					} as FilterQuery<BoardExternalReference>,
+					},
 				});
+				expect(copiedColumnBoards).toHaveLength(2);
 
 				const linkElements = await em.find(BoardNodeEntity, {
 					type: BoardNodeType.LINK_ELEMENT,
-					// for some reason, this does not work, hence the filter below
-					// path: { $re: [`^${copiedColumnBoards[0].id}`, `^${copiedColumnBoards[1].id}`] },
 				});
 				const urls = linkElements
-					.filter(
-						(linkElement) =>
-							linkElement.path.includes(copiedColumnBoards[0].id) || linkElement.path.includes(copiedColumnBoards[1].id)
-					)
+					.filter((linkElement) => copiedColumnBoards.some((board) => linkElement.path.includes(board.id)))
 					.map((linkElement) => linkElement.url);
 
 				const urlsToCheck = [
@@ -472,6 +472,17 @@ describe('Course Rooms Controller (API)', () => {
 					`https://example.com/${copyCourseId}`,
 				];
 
+				expect(urls).toHaveLength(4);
+				expect(urls).toEqual(
+					expect.arrayContaining([
+						`https://example.com/${copiedTask.id}`,
+						`https://example.com/${copiedLesson.id}`,
+						`https://example.com/${copyCourseId}`,
+					])
+				);
+				expect(
+					urls.filter((url) => copiedColumnBoards.some((board) => url === `https://example.com/${board.id}`))
+				).toHaveLength(1);
 				expect(urlsToCheck.sort()).toEqual(expect.arrayContaining(urls.sort()));
 			});
 		});

@@ -107,25 +107,23 @@ describe('LdapConfigService', () => {
 		});
 
 		it('should not allow accessing systems with provider!=general', async () => {
-			expect(app.service('legacy/v1/ldap-config').get(iservLdapSystem1._id, paramsAdmin1)).to.eventually.throw(
-				new Forbidden()
+			await expect(app.service('legacy/v1/ldap-config').get(iservLdapSystem1._id, paramsAdmin1)).to.be.rejectedWith(
+				Forbidden
 			);
 		});
 
 		it('should not allow accessing non-ldap systems', async () => {
-			expect(app.service('legacy/v1/ldap-config').get(otherSystem1._id, paramsAdmin1)).to.eventually.throw(
-				new Forbidden()
+			await expect(app.service('legacy/v1/ldap-config').get(otherSystem1._id, paramsAdmin1)).to.be.rejectedWith(
+				Forbidden
 			);
 		});
 
 		it('should not allow accessing systems of different schools', async () => {
-			expect(app.service('legacy/v1/ldap-config').get(system2._id, paramsAdmin1)).to.eventually.throw(new Forbidden());
+			await expect(app.service('legacy/v1/ldap-config').get(system2._id, paramsAdmin1)).to.be.rejectedWith(Forbidden);
 		});
 
 		it('should not allow accessing a system if not admin', async () => {
-			expect(app.service('legacy/v1/ldap-config').get(system2._id, paramsTeacher2)).to.eventually.throw(
-				new Forbidden()
-			);
+			await expect(app.service('legacy/v1/ldap-config').get(system2._id, paramsTeacher2)).to.be.rejectedWith(Forbidden);
 		});
 	});
 

@@ -117,7 +117,8 @@ describe('UserAccountService integration', () => {
 				ldapId: secondLdapId,
 			};
 			try {
-				service.createUserAndAccount(inputUserSecond, inputAccount, school);
+				await service.createUserAndAccount(inputUserSecond, inputAccount, school);
+				throw new Error('Expected duplicate email to be rejected');
 			} catch (error) {
 				expect(error).to.be.an.instanceof(BadRequest);
 				expect(error).to.have.property('message');

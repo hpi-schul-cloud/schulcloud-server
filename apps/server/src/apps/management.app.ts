@@ -26,7 +26,7 @@ async function bootstrap(): Promise<void> {
 
 	const nestExpressAdapter = new ExpressAdapter(nestExpress);
 	const nestApp: NestExpressApplication = await NestFactory.create(ManagementServerModule, nestExpressAdapter);
-	const orm = nestApp.get(MikroORM);
+	const orm = nestApp.get<MikroORM>(MikroORM);
 
 	nestApp.useBodyParser('text');
 
@@ -43,7 +43,7 @@ async function bootstrap(): Promise<void> {
 
 	// set reference to legacy app as an express setting so we can
 	// access it over the current request within FeathersServiceProvider
-	// TODO remove if not needed anymore, needed for legacy indexes
+	// Required by management/database/sync-indexes to sync Mongoose indexes before MikroORM indexes.
 	nestExpress.set('feathersApp', feathersExpress);
 
 	// customize nest app settings

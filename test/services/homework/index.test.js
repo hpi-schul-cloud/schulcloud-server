@@ -8,7 +8,7 @@ chai.use(chaiAsPromised);
 const { expect } = chai;
 
 const { setupNestServices, closeNestServices } = require('../../utils/setup.nest.services');
-const { NotAuthenticated } = require('../../../src/errors');
+const { MethodNotAllowed } = require('@feathersjs/errors');
 
 describe('homework service', () => {
 	let app;
@@ -216,7 +216,7 @@ describe('homework service', () => {
 			const { homework, teacher } = await setupHomeworkWithCourse();
 			const params = await testObjects.generateRequestParamsFromUser(teacher);
 			params.query = {};
-			expect(homeworkService.remove(homework._id, params)).to.be.rejectedWith(NotAuthenticated);
+			await expect(homeworkService.remove(homework._id, params)).to.be.rejectedWith(MethodNotAllowed);
 		});
 	});
 

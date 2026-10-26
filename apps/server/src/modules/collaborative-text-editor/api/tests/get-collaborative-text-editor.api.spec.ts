@@ -21,6 +21,7 @@ import {
 } from '../../collaborative-text-editor.config';
 
 const baseRouteName = 'collaborative-text-editor';
+const padUri = 'https://editor.example.test/p';
 
 describe('Collaborative Text Editor Controller (API)', () => {
 	let app: INestApplication;
@@ -32,6 +33,12 @@ describe('Collaborative Text Editor Controller (API)', () => {
 		const module = await Test.createTestingModule({
 			imports: [ServerTestModule],
 		})
+			.overrideProvider(COLLABORATIVE_TEXT_EDITOR_CONFIG_TOKEN)
+			.useValue({
+				padUri,
+				cookieReleaseThreshold: 7200,
+				cookieExpiresInSeconds: 7200,
+			} satisfies CollaborativeTextEditorConfig)
 			.overrideProvider(EtherpadClientAdapter)
 			.useValue(createMock<EtherpadClientAdapter>())
 			.compile();
@@ -142,8 +149,7 @@ describe('Collaborative Text Editor Controller (API)', () => {
 					const otherSessionIds = [sessionId];
 					etherpadClientAdapter.listSessionIdsOfAuthor.mockResolvedValueOnce(otherSessionIds);
 
-					const basePath = 'http://localhost:9001/p';
-					const expectedPath = `${basePath}/${editorId}`;
+					const expectedPath = `${padUri}/${editorId}`;
 
 					const cookieExpiresMilliseconds = collaborativeTextEditorConfig.cookieExpiresInSeconds * 1000;
 					// Remove the last 8 characters from the string to prevent conflict between time of test and code execution
@@ -208,8 +214,7 @@ describe('Collaborative Text Editor Controller (API)', () => {
 					const allSessionIds = ['otherSessionId1', 'otherSessionId2', sessionId];
 					etherpadClientAdapter.listSessionIdsOfAuthor.mockResolvedValueOnce(allSessionIds);
 
-					const basePath = 'http://localhost:9001/p';
-					const expectedPath = `${basePath}/${editorId}`;
+					const expectedPath = `${padUri}/${editorId}`;
 
 					const cookieExpiresMilliseconds = collaborativeTextEditorConfig.cookieExpiresInSeconds * 1000;
 					// Remove the last 8 characters from the string to prevent conflict between time of test and code execution
@@ -282,8 +287,7 @@ describe('Collaborative Text Editor Controller (API)', () => {
 					etherpadClientAdapter.listSessionIdsOfAuthor.mockResolvedValueOnce(allSessionIds);
 					etherpadClientAdapter.getOrCreateSessionId.mockResolvedValueOnce(sessionId);
 
-					const basePath = 'http://localhost:9001/p';
-					const expectedPath = `${basePath}/${editorId}`;
+					const expectedPath = `${padUri}/${editorId}`;
 
 					const cookieExpiresMilliseconds = collaborativeTextEditorConfig.cookieExpiresInSeconds * 1000;
 					// Remove the last 8 characters from the string to prevent conflict between time of test and code execution

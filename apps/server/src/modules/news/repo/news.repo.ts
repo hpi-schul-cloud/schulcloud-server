@@ -70,8 +70,8 @@ export class NewsRepo extends BaseRepo<News> {
 	public async removeUserReference(userId: EntityId): Promise<[number, number]> {
 		const id = new ObjectId(userId);
 
-		const creatorFieldName = getFieldName(this._em, 'creator', News.name);
-		const updaterFieldName = getFieldName(this._em, 'updater', News.name);
+		const creatorFieldName = getFieldName(this._em, 'creator', News);
+		const updaterFieldName = getFieldName(this._em, 'updater', News);
 
 		const countCreator = await this._em.nativeUpdate(News, { creator: id }, {
 			$unset: { [creatorFieldName]: '' },

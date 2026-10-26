@@ -1,4 +1,4 @@
-import { Embeddable, Embedded } from '@mikro-orm/core';
+import { Embeddable, Embedded } from '@mikro-orm/decorators/legacy';
 import { ParentConsentEntity } from './parent-consent.entity';
 import { UserConsentEntity } from './user-consent.entity';
 

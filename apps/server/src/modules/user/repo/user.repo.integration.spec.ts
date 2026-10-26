@@ -1,4 +1,5 @@
 import { NotFoundError } from '@mikro-orm/core';
+import { buildAllSearchableStringsForUser } from '@imports-from-feathers';
 import { EntityManager, ObjectId } from '@mikro-orm/mongodb';
 import { roleFactory } from '@modules/role/testing';
 import { schoolEntityFactory } from '@modules/school/testing';
@@ -9,6 +10,9 @@ import { Test, type TestingModule } from '@nestjs/testing';
 import { SortOrder } from '@shared/domain/interface';
 import { cleanupCollections } from '@testing/cleanup-collections';
 import { MongoMemoryDatabaseModule } from '@testing/database';
+import { ResolvedUserMapper } from '../api/mapper/resolved-user.mapper';
+import { ConsentEntity } from './consent.entity';
+import { ParentConsentEntity } from './parent-consent.entity';
 import type { UserParentsEntityProps } from './user-parents.entity';
 import { User } from './user.entity';
 import { UserMikroOrmRepo } from './user.repo';
@@ -45,8 +49,123 @@ describe('user repo', () => {
 		expect(repo.entityName).toBe(User);
 	});
 
+	describe('nested consent arrays', () => {
+		it.each(['orm', 'raw'] as const)(
+			'should preserve BSON arrays from %s writes and persist empty replacements',
+			async (source) => {
+				const parentConsents = ['digital', 'paper'].map(
+					(form) =>
+						new ParentConsentEntity({
+							_id: new ObjectId(),
+							form,
+							privacyConsent: true,
+							termsOfUseConsent: false,
+							dateOfPrivacyConsent: new Date('2020-01-02T03:04:05.000Z'),
+							dateOfTermsOfUseConsent: new Date('2020-02-03T04:05:06.000Z'),
+						})
+				);
+				const user = userFactory.build({
+					consent: new ConsentEntity({ parentConsents: source === 'orm' ? parentConsents : [] }),
+				});
+				await em.persist(user).flush();
+				const collection = em.getCollection(User);
+				const filter = { _id: new ObjectId(user.id) };
+				if (source === 'raw') {
+					await collection.updateOne(filter, { $set: { 'consent.parentConsents': parentConsents } });
+				}
+				em.clear();
+
+				const document = await collection.findOne(filter);
+				expect(document?.consent?.parentConsents).toEqual(parentConsents);
+				const loaded = await em.findOneOrFail(User, user.id);
+				expect(loaded.consent?.parentConsents).toEqual(parentConsents);
+				expect(loaded.consent?.parentConsents?.[0]).toBeInstanceOf(ParentConsentEntity);
+
+				if (!loaded.consent) {
+					throw new Error('Expected consent to be hydrated');
+				}
+				loaded.consent.parentConsents = [];
+				await em.flush();
+				em.clear();
+
+				expect((await collection.findOne(filter))?.consent?.parentConsents).toEqual([]);
+				expect((await em.findOneOrFail(User, user.id)).consent?.parentConsents).toEqual([]);
+			}
+		);
+	});
+
+	describe('beforeCreate search values', () => {
+		it('should generate search values on flush for a user created with em.create', async () => {
+			const school = schoolEntityFactory.build();
+			const props = {
+				firstName: 'Alice',
+				lastName: 'Example',
+				email: 'alice@example.org',
+				school,
+				roles: [],
+				secondarySchools: [],
+				allSearchableStrings: [],
+			};
+			const expected = buildAllSearchableStringsForUser(props.firstName, props.lastName, props.email);
+
+			const user = em.create(User, props);
+
+			expect(user.allSearchableStrings).toEqual([]);
+			await em.persist(user).flush();
+			em.clear();
+
+			const stored = await em.findOneOrFail(User, user.id);
+			expect(stored.allSearchableStrings).toEqual(expected);
+		});
+
+		it('should generate the same search values when persisting a constructed user', async () => {
+			const user = userFactory.build({
+				firstName: 'Alice',
+				lastName: 'Example',
+				email: 'alice@example.org',
+			});
+			const expected = buildAllSearchableStringsForUser(user.firstName, user.lastName, user.email);
+
+			await em.persist(user).flush();
+			em.clear();
+
+			const stored = await em.findOneOrFail(User, user.id);
+			expect(stored.allSearchableStrings).toEqual(expected);
+		});
+	});
+
+	describe('optional property hydration', () => {
+		it.each(['findById', 'findByExternalIdOrFail'] as const)(
+			'should preserve supplied optional values through %s',
+			async (method) => {
+				const system = systemEntityFactory.build();
+				const school = schoolEntityFactory.build({ systems: [system] });
+				const optionalValues = {
+					preferredName: 'Johnny',
+					birthday: new Date('2000-01-02'),
+					forcePasswordChange: false,
+					discoverable: false,
+					importHash: 'import-hash',
+					source: 'ldap',
+				};
+				const user = userFactory.build({ school, externalId: 'optional-properties', ...optionalValues });
+				await em.persist(user).flush();
+				em.clear();
+
+				const result =
+					method === 'findById'
+						? await repo.findById(user.id)
+						: await repo.findByExternalIdOrFail('optional-properties', system.id);
+
+				expect(result).toMatchObject(optionalValues);
+				expect(Object.keys(result)).toEqual(expect.arrayContaining(Object.keys(optionalValues)));
+				expect(ResolvedUserMapper.mapToResponse(result)).toStrictEqual(ResolvedUserMapper.mapToResponse(user));
+			}
+		);
+	});
+
 	describe('findById', () => {
-		it('should return right keys', async () => {
+		it('should return hydrated fields without absent optional own properties', async () => {
 			const user = userFactory.build();
 
 			await em.persist([user]).flush();
@@ -60,31 +179,18 @@ describe('user repo', () => {
 					'roles',
 					'firstName',
 					'lastName',
-					'preferredName',
-					'lastSyncedAt',
 					'email',
 					'school',
 					'secondarySchools',
-					'source',
 					'_id',
-					'ldapDn',
-					'externalId',
-					'forcePasswordChange',
-					'customAvatarBackgroundColor',
-					'importHash',
-					'parents',
 					'preferences',
-					'language',
-					'deletedAt',
-					'discoverable',
-					'lastLoginSystemChange',
-					'outdatedSince',
-					'previousExternalId',
-					'birthday',
 					'consent',
 					'allSearchableStrings',
 				].sort()
 			);
+			expect(result.preferredName).toBeUndefined();
+			expect(result.birthday).toBeUndefined();
+			expect(ResolvedUserMapper.mapToResponse(result)).toStrictEqual(ResolvedUserMapper.mapToResponse(user));
 		});
 
 		it('should return one role that matched by id', async () => {
@@ -184,7 +290,7 @@ describe('user repo', () => {
 			em.clear();
 		});
 
-		it('should return right keys', async () => {
+		it('should return hydrated fields without absent optional own properties', async () => {
 			const result = await repo.findByExternalIdOrFail(userA.externalId as string, sys.id);
 			expect(Object.keys(result).sort()).toEqual(
 				[
@@ -193,31 +299,19 @@ describe('user repo', () => {
 					'roles',
 					'firstName',
 					'lastName',
-					'preferredName',
-					'lastSyncedAt',
 					'email',
-					'customAvatarBackgroundColor',
 					'school',
 					'secondarySchools',
 					'_id',
-					'ldapDn',
 					'externalId',
-					'forcePasswordChange',
-					'importHash',
-					'parents',
 					'preferences',
-					'language',
-					'deletedAt',
-					'lastLoginSystemChange',
-					'outdatedSince',
-					'previousExternalId',
-					'birthday',
 					'consent',
-					'source',
-					'discoverable',
 					'allSearchableStrings',
 				].sort()
 			);
+			expect(result.preferredName).toBeUndefined();
+			expect(result.birthday).toBeUndefined();
+			expect(ResolvedUserMapper.mapToResponse(result)).toStrictEqual(ResolvedUserMapper.mapToResponse(userA));
 		});
 
 		it('should return user matched by id', async () => {
