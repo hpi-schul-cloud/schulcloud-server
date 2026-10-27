@@ -438,7 +438,7 @@ describe('VideoConferenceController (API)', () => {
 		describe('[GET] /videoconference2/:scope/:scopeId/join', () => {
 			describe('when user is unauthorized', () => {
 				it('should return unauthorized', async () => {
-					const response: Response = await testApiClient.get('/anyScope/anyId/join');
+					const response: Response = await testApiClient.post('/anyScope/anyId/join');
 
 					expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 				});
@@ -496,7 +496,7 @@ describe('VideoConferenceController (API)', () => {
 					it('should return forbidden', async () => {
 						const { loggedInClient, scope, scopeId } = await setup();
 
-						const response: Response = await loggedInClient.get(`${scope}/${scopeId}/join`);
+						const response: Response = await loggedInClient.post(`${scope}/${scopeId}/join`);
 
 						expect(response.status).toEqual(HttpStatus.FORBIDDEN);
 					});
@@ -553,7 +553,7 @@ describe('VideoConferenceController (API)', () => {
 					it('should return the conference', async () => {
 						const { loggedInClient, scope, scopeId } = await setup();
 
-						const response: Response = await loggedInClient.get(`${scope}/${scopeId}/join`);
+						const response: Response = await loggedInClient.post(`${scope}/${scopeId}/join`);
 
 						expect(response.status).toEqual(HttpStatus.OK);
 						expect(response.body).toEqual<VideoConferenceJoinResponse>({
@@ -613,7 +613,7 @@ describe('VideoConferenceController (API)', () => {
 					it('should return internal server error', async () => {
 						const { loggedInClient, scope, scopeId } = await setup();
 
-						const response: Response = await loggedInClient.get(`${scope}/${scopeId}/join`);
+						const response: Response = await loggedInClient.post(`${scope}/${scopeId}/join`);
 
 						expect(response.status).toEqual(HttpStatus.INTERNAL_SERVER_ERROR);
 					});
@@ -875,10 +875,10 @@ describe('VideoConferenceController (API)', () => {
 			});
 		});
 
-		describe('[PUT] /videoconference2/:scope/:scopeId/end', () => {
+		describe('[POST] /videoconference2/:scope/:scopeId/end', () => {
 			describe('when user is unauthorized', () => {
 				it('should return unauthorized', async () => {
-					const response: Response = await testApiClient.get('/anyScope/anyId/end');
+					const response: Response = await testApiClient.post('/anyScope/anyId/end');
 
 					expect(response.status).toEqual(HttpStatus.UNAUTHORIZED);
 				});
@@ -937,7 +937,7 @@ describe('VideoConferenceController (API)', () => {
 					it('should return forbidden', async () => {
 						const { loggedInClient, scope, scopeId } = await setup();
 
-						const response: Response = await loggedInClient.get(`${scope}/${scopeId}/end`);
+						const response: Response = await loggedInClient.post(`${scope}/${scopeId}/end`);
 
 						expect(response.status).toEqual(HttpStatus.FORBIDDEN);
 					});
@@ -992,7 +992,7 @@ describe('VideoConferenceController (API)', () => {
 					it('should return forbidden', async () => {
 						const { loggedInClient, scope, scopeId } = await setup();
 
-						const response: Response = await loggedInClient.get(`${scope}/${scopeId}/end`);
+						const response: Response = await loggedInClient.post(`${scope}/${scopeId}/end`);
 
 						expect(response.status).toEqual(HttpStatus.FORBIDDEN);
 					});
@@ -1051,7 +1051,7 @@ describe('VideoConferenceController (API)', () => {
 					it('should return ok', async () => {
 						const { loggedInClient, scope, scopeId } = await setup();
 
-						const response: Response = await loggedInClient.get(`${scope}/${scopeId}/end`);
+						const response: Response = await loggedInClient.post(`${scope}/${scopeId}/end`);
 
 						expect(response.status).toEqual(HttpStatus.OK);
 					});
