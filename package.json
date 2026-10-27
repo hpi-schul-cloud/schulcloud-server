@@ -184,7 +184,7 @@
 		"aws-sdk": "^2.1693.0",
 		"axios": "~1.20.0",
 		"bcryptjs": "*",
-		"body-parser": "^2.3.0",
+		"body-parser": "^2.4.0",
 		"bson": "^6.10.4",
 		"cache-manager": "^7.2.9",
 		"cheerio": "^1.2.0",
