@@ -64,7 +64,7 @@ describe('RoomInvitationLinkRepo', () => {
 	describe('findByInvitationCredential', () => {
 		describe('when the invitation has a token', () => {
 			const setup = async () => {
-				const token = Buffer.alloc(32, 1).toString('base64url');
+				const token = 'A_0-'.repeat(5) + 'z';
 				const link = roomInvitationLinkEntityFactory.build({ invitationToken: token });
 				await em.persist(link).flush();
 				em.clear();
@@ -113,7 +113,7 @@ describe('RoomInvitationLinkRepo', () => {
 
 		describe('when the invitation does not exist', () => {
 			const setup = () => {
-				const token = Buffer.alloc(32, 3).toString('base64url');
+				const token = 'B_1-'.repeat(5) + 'z';
 				const link = roomInvitationLinkEntityFactory.build({ invitationToken: token });
 
 				return { link, token };
@@ -135,7 +135,7 @@ describe('RoomInvitationLinkRepo', () => {
 		describe('when saving invitations', () => {
 			const setup = () => {
 				const legacyLinks = roomInvitationLinkEntityFactory.buildList(2, { invitationToken: undefined });
-				const token = Buffer.alloc(32, 2).toString('base64url');
+				const token = 'C_2-'.repeat(5) + 'z';
 				const first = roomInvitationLinkEntityFactory.build({ invitationToken: token });
 				const duplicate = roomInvitationLinkEntityFactory.build({ invitationToken: token });
 

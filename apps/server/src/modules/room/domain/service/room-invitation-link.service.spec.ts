@@ -134,7 +134,7 @@ describe('RoomInvitationLinkService', () => {
 	describe('findByInvitationCredential', () => {
 		describe('when the repository resolves', () => {
 			const setup = () => {
-				const credential = Buffer.alloc(32, 1).toString('base64url');
+				const credential = 'A_0-'.repeat(5) + 'z';
 				const link = roomInvitationLinkTestFactory.build({ invitationToken: credential });
 				repo.findByInvitationCredential.mockResolvedValueOnce(link).mockResolvedValueOnce(null);
 
@@ -155,7 +155,7 @@ describe('RoomInvitationLinkService', () => {
 
 		describe('when the repository rejects', () => {
 			const setup = () => {
-				const credential = Buffer.alloc(32, 1).toString('base64url');
+				const credential = 'A_0-'.repeat(5) + 'z';
 				const error = new Error('Database unavailable');
 				repo.findByInvitationCredential.mockRejectedValueOnce(error);
 

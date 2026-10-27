@@ -111,7 +111,7 @@ describe('Room Invitation Link Controller (API)', () => {
 					requiresConfirmation: false,
 				};
 
-				const suppliedToken = 'a'.repeat(43);
+				const suppliedToken = 'a'.repeat(21);
 				const response = await loggedInClient.post(undefined, { ...params, invitationToken: suppliedToken });
 				const { body }: { body: RoomInvitationLinkResponse } = response;
 
@@ -124,7 +124,7 @@ describe('Room Invitation Link Controller (API)', () => {
 					creatorSchoolId: teacherUser.school.id,
 				});
 				expect(ObjectId.isValid(body.id)).toBe(true);
-				expect(body.invitationToken).toMatch(/^[A-Za-z0-9_-]{43}$/);
+				expect(body.invitationToken).toMatch(/^[A-Za-z0-9_-]{21}$/);
 				expect(body.invitationToken).not.toBe(suppliedToken);
 				em.clear();
 				const persisted = await em.findOneOrFail(RoomInvitationLinkEntity, body.id);

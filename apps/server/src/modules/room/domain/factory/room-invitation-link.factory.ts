@@ -1,5 +1,5 @@
 import { ObjectId } from '@mikro-orm/mongodb';
-import { randomBytes } from 'node:crypto';
+import { nanoid } from 'nanoid';
 import {
 	RoomInvitationLink,
 	type RoomInvitationLinkDto,
@@ -11,7 +11,7 @@ export class RoomInvitationLinkFactory {
 		const props: RoomInvitationLinkProps = {
 			...dto,
 			id: new ObjectId().toHexString(),
-			invitationToken: randomBytes(32).toString('base64url'),
+			invitationToken: nanoid(21),
 		};
 
 		const roomInvitationLink = this.buildFromProps(props);

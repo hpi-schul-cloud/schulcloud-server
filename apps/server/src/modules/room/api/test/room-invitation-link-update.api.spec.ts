@@ -150,7 +150,7 @@ describe('Room Invitation Link Controller (API)', () => {
 						isUsableByExternalPersons: false,
 						isUsableByStudents: false,
 						restrictedToCreatorSchool: false,
-						invitationToken: 'a'.repeat(43),
+						invitationToken: 'a'.repeat(21),
 					};
 
 					const response = await loggedInClient.put(roomInvitationLink.id, params);

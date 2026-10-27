@@ -261,7 +261,7 @@ describe('Room Invitation Link Controller (API)', () => {
 		});
 
 		describe('when the credential is malformed', () => {
-			it.each(['invalid-token', 'a'.repeat(42), 'a'.repeat(44), `${'a'.repeat(42)}+`])(
+			it.each(['invalid-token', 'a'.repeat(20), 'a'.repeat(22), 'a'.repeat(43), `${'a'.repeat(20)}+`])(
 				'should reject %s with 400',
 				async (credential) => {
 					const { loggedInClient } = await setup({}, UserRole.TEACHER, UserSchool.SAME_SCHOOL);

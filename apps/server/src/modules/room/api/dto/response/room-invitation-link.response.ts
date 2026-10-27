@@ -8,9 +8,9 @@ export class RoomInvitationLinkResponse {
 	@ApiPropertyOptional({
 		description:
 			'Secret invitation credential used in share URLs. Only legacy invitations omit this field; use id for those.',
-		minLength: 43,
-		maxLength: 43,
-		pattern: '^[A-Za-z0-9_-]{43}$',
+		minLength: 21,
+		maxLength: 21,
+		pattern: '^[A-Za-z0-9_-]{21}$',
 	})
 	invitationToken?: string;
 

@@ -1,19 +1,19 @@
 import { ObjectId } from '@mikro-orm/mongodb';
 import { roomInvitationLinkTestFactory } from '../../testing/room-invitation-link.test.factory';
 import { RoomInvitationLinkFactory } from './room-invitation-link.factory';
-import { randomBytes } from 'node:crypto';
-import type * as Crypto from 'node:crypto';
+import { nanoid } from 'nanoid';
+import type * as Nanoid from 'nanoid';
 
-jest.mock('node:crypto', () => {
+jest.mock('nanoid', () => {
 	return {
-		...jest.requireActual<typeof Crypto>('node:crypto'),
-		randomBytes: jest.fn(),
+		...jest.requireActual<typeof Nanoid>('nanoid'),
+		nanoid: jest.fn(),
 	};
 });
 
 describe('RoomInvitationLinkFactory', () => {
 	beforeEach(() => {
-		jest.mocked(randomBytes).mockImplementation(jest.requireActual<typeof Crypto>('node:crypto').randomBytes);
+		jest.mocked(nanoid).mockImplementation(jest.requireActual<typeof Nanoid>('nanoid').nanoid);
 	});
 
 	afterEach(() => {
@@ -23,23 +23,23 @@ describe('RoomInvitationLinkFactory', () => {
 	describe('createInvitationLink', () => {
 		describe('when creating an invitation', () => {
 			const setup = () => {
-				const bytes = Buffer.alloc(32, 255);
+				const token = 'A_0-'.repeat(5) + 'z';
 				const link = roomInvitationLinkTestFactory.build();
-				jest.mocked(randomBytes).mockImplementationOnce(() => bytes);
+				jest.mocked(nanoid).mockReturnValueOnce(token);
 
-				return { bytes, props: link.getProps() };
+				return { token, props: link.getProps() };
 			};
 
-			it('should generate an independent 256-bit URL-safe credential and a valid internal id', () => {
-				const { bytes, props } = setup();
+			it('should generate an independent 21-character NanoID credential and a valid internal id', () => {
+				const { token, props } = setup();
 
 				const link = RoomInvitationLinkFactory.createInvitationLink(props);
 
 				expect(ObjectId.isValid(link.id)).toBe(true);
 				expect(link.id).not.toBe(props.id);
-				expect(randomBytes).toHaveBeenLastCalledWith(32);
-				expect(link.invitationToken).toBe(bytes.toString('base64url'));
-				expect(link.invitationToken).toHaveLength(43);
+				expect(nanoid).toHaveBeenLastCalledWith(21);
+				expect(link.invitationToken).toBe(token);
+				expect(link.invitationToken).toHaveLength(21);
 				expect(link.invitationToken).toMatch(/^[A-Za-z0-9_-]+$/);
 			});
 		});
@@ -50,7 +50,7 @@ describe('RoomInvitationLinkFactory', () => {
 			const setup = () => {
 				const link = roomInvitationLinkTestFactory.build();
 				const legacyLink = roomInvitationLinkTestFactory.build({ invitationToken: undefined });
-				jest.mocked(randomBytes).mockClear();
+				jest.mocked(nanoid).mockClear();
 
 				return { link, legacyLink };
 			};
@@ -63,7 +63,7 @@ describe('RoomInvitationLinkFactory', () => {
 
 				expect(rebuilt.invitationToken).toBe(link.invitationToken);
 				expect(rebuiltLegacy.invitationToken).toBeUndefined();
-				expect(randomBytes).not.toHaveBeenCalled();
+				expect(nanoid).not.toHaveBeenCalled();
 			});
 		});
 	});
