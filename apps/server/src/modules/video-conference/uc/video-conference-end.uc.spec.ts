@@ -2,12 +2,13 @@ import { createMock, type DeepMocked } from '@golevelup/ts-jest';
 import { ObjectId } from '@mikro-orm/mongodb';
 import { UserService } from '@modules/user';
 import { userDoFactory } from '@modules/user/testing';
-import { ForbiddenException } from '@nestjs/common';
+import { ForbiddenException, NotFoundException } from '@nestjs/common';
 import { Test, type TestingModule } from '@nestjs/testing';
 import { type BBBBaseResponse, type BBBResponse, BBBRole, BBBStatus } from '../bbb';
 import { VideoConferenceScope } from '../domain';
 import { ErrorStatus } from '../error';
 import { BBBService, VideoConferenceService } from '../service';
+import { videoConferenceDOFactory } from '../testing';
 import { type ScopeInfo, VideoConferenceState } from './dto';
 import { VideoConferenceEndUc } from './video-conference-end.uc';
 import { VideoConferenceFeatureService } from './video-conference-feature.service';
@@ -92,6 +93,7 @@ describe('VideoConferenceEndUc', () => {
 				const func = () => uc.end(currentUserId, scope);
 
 				await expect(func).rejects.toThrow(new ForbiddenException(ErrorStatus.INSUFFICIENT_PERMISSION));
+				expect(bbbService.end).not.toHaveBeenCalled();
 			});
 		});
 
@@ -100,6 +102,7 @@ describe('VideoConferenceEndUc', () => {
 				const user = userDoFactory.buildWithId();
 				const currentUserId: string = user.id as string;
 				const scope = { scope: VideoConferenceScope.COURSE, id: new ObjectId().toHexString() };
+				const videoConference = videoConferenceDOFactory.build({ salt: 'fixed-salt-for-testing' });
 				const scopeInfo: ScopeInfo = {
 					scopeId: scope.id,
 					scopeName: VideoConferenceScope.COURSE,
@@ -118,8 +121,9 @@ describe('VideoConferenceEndUc', () => {
 				videoConferenceService.getScopeInfo.mockResolvedValue(scopeInfo);
 				bbbService.end.mockResolvedValue(bbbEndResponse);
 				videoConferenceService.determineBbbRole.mockResolvedValue(BBBRole.MODERATOR);
+				videoConferenceService.findVideoConferenceByScopeIdAndScope.mockResolvedValue(videoConference);
 
-				return { currentUserId, scope, bbbEndResponse };
+				return { currentUserId, scope, bbbEndResponse, videoConference };
 			};
 
 			it('should call feature check service', async () => {
@@ -141,12 +145,22 @@ describe('VideoConferenceEndUc', () => {
 				expect(videoConferenceService.getScopeInfo).toHaveBeenCalledWith(currentUserId, scope.id, scope.scope);
 			});
 
-			it('should call bbbService.end', async () => {
-				const { currentUserId, scope } = setup();
+			it('should end the meeting using the saved conference salt', async () => {
+				const { currentUserId, scope, videoConference } = setup();
 
 				await uc.end(currentUserId, scope);
 
-				expect(bbbService.end).toHaveBeenCalledWith({ meetingID: scope.id });
+				expect(videoConferenceService.findVideoConferenceByScopeIdAndScope).toHaveBeenCalledWith(scope.id, scope.scope);
+				expect(bbbService.end).toHaveBeenCalledWith({ meetingID: scope.id + videoConference.salt });
+			});
+
+			it('should propagate a missing conference error without calling BBB', async () => {
+				const { currentUserId, scope } = setup();
+				const error = new NotFoundException();
+				videoConferenceService.findVideoConferenceByScopeIdAndScope.mockRejectedValue(error);
+
+				await expect(uc.end(currentUserId, scope)).rejects.toThrow(error);
+				expect(bbbService.end).not.toHaveBeenCalled();
 			});
 
 			it('should call videoConferenceService.determineBbbRole', async () => {
@@ -198,6 +212,7 @@ describe('VideoConferenceEndUc', () => {
 				const { currentUserId, scope } = setup(VideoConferenceScope.VIDEO_CONFERENCE_ELEMENT);
 
 				videoConferenceFeatureService.checkVideoConferenceFeatureEnabled.mockResolvedValue();
+				videoConferenceService.findVideoConferenceByScopeIdAndScope.mockResolvedValue(videoConferenceDOFactory.build());
 
 				await uc.end(currentUserId, scope);
 

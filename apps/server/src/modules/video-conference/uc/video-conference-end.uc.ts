@@ -30,8 +30,13 @@ export class VideoConferenceEndUc {
 			throw new ForbiddenException(ErrorStatus.INSUFFICIENT_PERMISSION);
 		}
 
+		const savedVideoConference = await this.videoConferenceService.findVideoConferenceByScopeIdAndScope(
+			scope.id,
+			scope.scope
+		);
+
 		const config: BBBBaseMeetingConfig = new BBBBaseMeetingConfig({
-			meetingID: scope.id,
+			meetingID: scope.id + savedVideoConference.salt,
 		});
 
 		const bbbResponse: BBBResponse<BBBBaseResponse> = await this.bbbService.end(config);
