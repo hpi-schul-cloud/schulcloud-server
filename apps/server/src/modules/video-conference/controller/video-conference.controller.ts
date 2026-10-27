@@ -1,5 +1,5 @@
 import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
-import { Body, Controller, Get, HttpStatus, Param, Post, Put, Req } from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Put, Req } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
 import { VideoConferenceOptions } from '../interface';
@@ -24,7 +24,7 @@ export class VideoConferenceController {
 		private readonly videoConferenceInfoUc: VideoConferenceInfoUc
 	) {}
 
-	@Post(':scope/:scopeId/start')
+	@Put(':scope/:scopeId/start')
 	@ApiOperation({
 		summary: 'Creates the video conference, if it has not started yet.',
 		description:
@@ -53,6 +53,7 @@ export class VideoConferenceController {
 	}
 
 	@Post(':scope/:scopeId/join')
+	@HttpCode(HttpStatus.OK)
 	@ApiOperation({
 		summary: 'Creates a join link for a video conference, if it has started.',
 		description:
@@ -110,6 +111,7 @@ export class VideoConferenceController {
 	}
 
 	@Post(':scope/:scopeId/end')
+	@HttpCode(HttpStatus.OK)
 	@ApiOperation({
 		summary: 'Ends a running video conference.',
 		description: 'Use this endpoint to end a running video conference.',
