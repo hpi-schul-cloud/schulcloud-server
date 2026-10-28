@@ -14,6 +14,7 @@ import {
 } from './uc';
 import { VIDEO_CONFERENCE_CONFIG_TOKEN, VideoConferenceConfig } from './video-conference-config';
 import { VideoConferenceModule } from './video-conference.module';
+import { LoggerModule } from '@infra/logger';
 
 @Module({
 	imports: [
@@ -23,6 +24,7 @@ import { VideoConferenceModule } from './video-conference.module';
 		BoardContextApiHelperModule,
 		LegacySchoolModule,
 		ConfigurationModule.register(VIDEO_CONFERENCE_CONFIG_TOKEN, VideoConferenceConfig),
+		LoggerModule,
 	],
 	controllers: [VideoConferenceController],
 	providers: [
