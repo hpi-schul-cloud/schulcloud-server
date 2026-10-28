@@ -11,5 +11,5 @@ export class PaginationParams {
 	@Min(1)
 	@Max(100)
 	@ApiPropertyOptional({ description: 'Page limit, defaults to 10.', minimum: 1, maximum: 99 })
-	limit?: number = 10;
+	limit?: number = 30;
 }
