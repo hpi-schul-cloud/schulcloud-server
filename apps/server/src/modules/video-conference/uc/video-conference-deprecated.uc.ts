@@ -71,7 +71,6 @@ export class VideoConferenceDeprecatedUc {
 		options: VideoConferenceOptions
 	): Promise<VideoConference<BBBCreateResponse>> {
 		const { userId, schoolId } = currentUser;
-		console.log(' you better dont show up');
 
 		await this.throwOnFeaturesDisabled(schoolId);
 		const { scopeInfo, object } = await this.getScopeInfo(userId, conferenceScope, refId);
@@ -273,6 +272,7 @@ export class VideoConferenceDeprecatedUc {
 		refId: EntityId
 	): Promise<VideoConference<BBBBaseResponse>> {
 		const { userId, schoolId } = currentUser;
+		console.log('Calling end in deprecated UC, you better dont show up');
 
 		await this.throwOnFeaturesDisabled(schoolId);
 
