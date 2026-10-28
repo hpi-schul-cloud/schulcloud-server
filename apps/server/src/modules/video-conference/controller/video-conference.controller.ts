@@ -1,7 +1,8 @@
+import { Request } from 'express';
 import { CurrentUser, ICurrentUser, JwtAuthentication } from '@infra/auth-guard';
+import { LegacyLogger } from '@infra/logger';
 import { Body, Controller, Get, HttpCode, HttpStatus, Param, Post, Put, Req } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { Request } from 'express';
 import { VideoConferenceOptions } from '../interface';
 import { VideoConferenceMapper } from '../mapper/video-conference.mapper';
 import { VideoConferenceCreateUc, VideoConferenceEndUc, VideoConferenceInfoUc, VideoConferenceJoinUc } from '../uc';
@@ -21,8 +22,11 @@ export class VideoConferenceController {
 		private readonly videoConferenceCreateUc: VideoConferenceCreateUc,
 		private readonly videoConferenceJoinUc: VideoConferenceJoinUc,
 		private readonly videoConferenceEndUc: VideoConferenceEndUc,
-		private readonly videoConferenceInfoUc: VideoConferenceInfoUc
-	) {}
+		private readonly videoConferenceInfoUc: VideoConferenceInfoUc,
+		private readonly logger: LegacyLogger
+	) {
+		this.logger.setContext(VideoConferenceController.name);
+	}
 
 	@Put(':scope/:scopeId/start')
 	@ApiOperation({
@@ -46,6 +50,7 @@ export class VideoConferenceController {
 		@Param() scopeParams: VideoConferenceScopeParams,
 		@Body() params: VideoConferenceCreateParams
 	): Promise<void> {
+		this.logger.log(`Starting video conference for scope: ${scopeParams.scope}, scopeId: ${scopeParams.scopeId}`);
 		const scopeRef = new ScopeRef(scopeParams.scopeId, scopeParams.scope);
 		const videoConferenceOptions: VideoConferenceOptions = VideoConferenceMapper.toVideoConferenceOptions(params);
 
@@ -74,6 +79,7 @@ export class VideoConferenceController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() scopeParams: VideoConferenceScopeParams
 	): Promise<VideoConferenceJoinResponse> {
+		this.logger.log(`Joining video conference for scope: ${scopeParams.scope}, scopeId: ${scopeParams.scopeId}`);
 		const scopeRef = new ScopeRef(scopeParams.scopeId, scopeParams.scope);
 		const dto: VideoConferenceJoin = await this.videoConferenceJoinUc.join(currentUser.userId, scopeRef);
 
@@ -102,6 +108,9 @@ export class VideoConferenceController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() scopeParams: VideoConferenceScopeParams
 	): Promise<VideoConferenceInfoResponse> {
+		this.logger.log(
+			`Fetching info for video conference for scope: ${scopeParams.scope}, scopeId: ${scopeParams.scopeId}`
+		);
 		const scopeRef = new ScopeRef(scopeParams.scopeId, scopeParams.scope);
 		const dto: VideoConferenceInfo = await this.videoConferenceInfoUc.getMeetingInfo(currentUser.userId, scopeRef);
 
@@ -130,6 +139,18 @@ export class VideoConferenceController {
 		@CurrentUser() currentUser: ICurrentUser,
 		@Param() scopeParams: VideoConferenceScopeParams
 	): Promise<void> {
+		this.logger.log(`Ending video conference [POST] for scope: ${scopeParams.scope}, scopeId: ${scopeParams.scopeId}`);
+		const scopeRef = new ScopeRef(scopeParams.scopeId, scopeParams.scope);
+
+		await this.videoConferenceEndUc.end(currentUser.userId, scopeRef);
+	}
+
+	@Post(':scope/:scopeId/end')
+	public async endGet(
+		@CurrentUser() currentUser: ICurrentUser,
+		@Param() scopeParams: VideoConferenceScopeParams
+	): Promise<void> {
+		this.logger.log(`Ending video conference [GET] for scope: ${scopeParams.scope}, scopeId: ${scopeParams.scopeId}`);
 		const scopeRef = new ScopeRef(scopeParams.scopeId, scopeParams.scope);
 
 		await this.videoConferenceEndUc.end(currentUser.userId, scopeRef);
