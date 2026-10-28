@@ -71,6 +71,7 @@ export class VideoConferenceDeprecatedUc {
 		options: VideoConferenceOptions
 	): Promise<VideoConference<BBBCreateResponse>> {
 		const { userId, schoolId } = currentUser;
+		console.log(' you better dont show up');
 
 		await this.throwOnFeaturesDisabled(schoolId);
 		const { scopeInfo, object } = await this.getScopeInfo(userId, conferenceScope, refId);
