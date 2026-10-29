@@ -6,4 +6,5 @@
  *********************************************************** */
 
 export { AuthenticationModule } from './authentication.module';
+export { AdminApiAuthenticationModule } from './controllers/admin-api-authentication.module';
 export { AuthenticationService } from './services';

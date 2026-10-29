@@ -17,6 +17,7 @@ import { UserAdminApiModule } from '@modules/user/user-admin-api.module';
 
 // needed for deletion module
 import { AccountApiModule } from '@modules/account/account-api.module';
+import { AccountAdminApiModule } from '@modules/account/account-admin-api.module';
 import { ClassModule } from '@modules/class';
 import { CourseApiModule } from '@modules/course/course-api.module';
 import { DeletionApiModule } from '@modules/deletion/deletion-api.module';
@@ -32,6 +33,7 @@ import { UserApiModule } from '@modules/user/user-api.module';
 import { ConfigurationModule } from '@infra/configuration';
 import { DATABASE_CONFIG_TOKEN, DatabaseConfig, DatabaseModule } from '@infra/database';
 import { AuthenticationApiModule } from '@modules/authentication/authentication-api.module';
+import { AdminApiAuthenticationModule } from '@modules/authentication';
 import { MediaBoardApiModule } from '@modules/board/media-board-api.module';
 import { RoomApiModule } from '@modules/room/room-api.module';
 import { findOneOrFailHandler } from '@shared/common/database-error.handler';
@@ -54,7 +56,9 @@ const serverModules = [
 		},
 	]),
 	AccountApiModule,
+	AccountAdminApiModule,
 	AuthenticationApiModule,
+	AdminApiAuthenticationModule,
 	MediaBoardApiModule,
 	ClassModule,
 	CourseApiModule,

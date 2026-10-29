@@ -7,4 +7,5 @@
 
 export { AccountModule } from './account.module';
 export { Account, AccountSave } from './domain';
+export { UpdateAccount } from './domain';
 export { AccountService } from './domain/services';
