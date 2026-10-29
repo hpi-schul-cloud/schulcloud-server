@@ -41,7 +41,12 @@ export class OAuthService {
 		this.logger.setContext(OAuthService.name);
 	}
 
-	public async authenticateUser(systemId: string, redirectUri: string, code: string): Promise<OAuthTokenDto> {
+	public async authenticateUser(
+		systemId: string,
+		redirectUri: string,
+		code: string,
+		codeVerifier?: string
+	): Promise<OAuthTokenDto> {
 		this.logger.log('OAuth2 starting external user authentication');
 		this.logger.log('OAuth2 starting OAuth system configuration load');
 		const system = await this.systemService.findById(systemId);
@@ -53,7 +58,7 @@ export class OAuthService {
 		const { oauthConfig } = system;
 
 		this.logger.log('OAuth2 starting authorization code exchange');
-		const oauthTokens = await this.requestToken(code, oauthConfig, redirectUri);
+		const oauthTokens = await this.requestToken(code, oauthConfig, redirectUri, codeVerifier);
 		this.logger.log('OAuth2 finished authorization code exchange');
 
 		this.logger.log('OAuth2 starting ID token validation');
@@ -196,8 +201,13 @@ export class OAuthService {
 	}
 
 	// private
-	public async requestToken(code: string, oauthConfig: OauthConfigEntity, redirectUri: string): Promise<OAuthTokenDto> {
-		const payload = this.buildTokenRequestPayload(code, oauthConfig, redirectUri);
+	public async requestToken(
+		code: string,
+		oauthConfig: OauthConfigEntity,
+		redirectUri: string,
+		codeVerifier?: string
+	): Promise<OAuthTokenDto> {
+		const payload = this.buildTokenRequestPayload(code, oauthConfig, redirectUri, codeVerifier);
 
 		const tokenDto = await this.oauthAdapterService.sendTokenRequest(oauthConfig.tokenEndpoint, payload);
 
@@ -243,7 +253,8 @@ export class OAuthService {
 	private buildTokenRequestPayload(
 		code: string,
 		oauthConfig: OauthConfigEntity,
-		redirectUri: string
+		redirectUri: string,
+		codeVerifier?: string
 	): AuthenticationCodeGrantTokenRequest {
 		const decryptedClientSecret: string = this.oAuthEncryptionService.decrypt(oauthConfig.clientSecret);
 
@@ -251,7 +262,8 @@ export class OAuthService {
 			oauthConfig.clientId,
 			decryptedClientSecret,
 			code,
-			redirectUri
+			redirectUri,
+			codeVerifier
 		);
 
 		return tokenRequestPayload;

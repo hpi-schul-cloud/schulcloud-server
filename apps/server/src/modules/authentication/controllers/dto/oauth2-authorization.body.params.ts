@@ -1,5 +1,5 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsMongoId, IsNotEmpty, IsString } from 'class-validator';
+import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
+import { IsMongoId, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class Oauth2AuthorizationBodyParams {
 	@IsString()
@@ -15,4 +15,9 @@ export class Oauth2AuthorizationBodyParams {
 	@IsMongoId()
 	@ApiProperty()
 	systemId!: string;
+
+	@IsString()
+	@IsOptional()
+	@ApiPropertyOptional()
+	codeVerifier?: string;
 }
