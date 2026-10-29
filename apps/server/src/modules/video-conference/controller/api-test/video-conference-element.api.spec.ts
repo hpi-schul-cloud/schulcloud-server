@@ -141,20 +141,6 @@ describe('VideoConferenceController (API)', () => {
 			);
 	};
 
-	const mockBbbEndSuccess = (meetingId: string) => {
-		axiosMock
-			.onGet(new RegExp(`.*/bigbluebutton/api/end?.*meetingID=${meetingId}.*`))
-			.replyOnce<string>(
-				HttpStatus.OK,
-				'<?xml version="1.0"?>\n' +
-					'<response>\n' +
-					'<returncode>SUCCESS</returncode>\n' +
-					'<messageKey>sentEndMeetingRequest</messageKey>\n' +
-					'<message>A request to end the meeting was sent. Please wait a few seconds, and then use the getMeetingInfo or isMeetingRunning API calls to verify that it was ended.</message>\n' +
-					'</response>\n'
-			);
-	};
-
 	describe('[PUT] /videoconference2/:scope/:scopeId/start', () => {
 		describe('when user is unauthorized', () => {
 			it('should return unauthorized', async () => {
