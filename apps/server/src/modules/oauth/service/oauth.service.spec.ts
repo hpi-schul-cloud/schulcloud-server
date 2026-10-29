@@ -163,6 +163,19 @@ describe('OAuthService', () => {
 				});
 			});
 		});
+
+		describe('when it requests a token with a PKCE code verifier', () => {
+			it('should forward the code_verifier in the token request payload', async () => {
+				const { code } = setupRequest();
+
+				await service.requestToken(code, testOauthConfig, 'redirectUri', 'codeVerifier');
+
+				expect(oauthAdapterService.sendTokenRequest).toHaveBeenCalledWith(
+					testOauthConfig.tokenEndpoint,
+					expect.objectContaining({ code_verifier: 'codeVerifier' })
+				);
+			});
+		});
 	});
 
 	describe('validateToken', () => {

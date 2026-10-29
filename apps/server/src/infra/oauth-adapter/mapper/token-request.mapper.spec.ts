@@ -3,7 +3,7 @@ import { OAuthGrantType } from '../types';
 import { TokenRequestMapper } from './token-request.mapper';
 
 describe('TokenRequestMapper', () => {
-	describe('createAuthenticationCodeGrantTokenRequestPayload', () => {
+		describe('createAuthenticationCodeGrantTokenRequestPayload', () => {
 		it('should map the Payload to dto', () => {
 			const result: AuthenticationCodeGrantTokenRequest =
 				TokenRequestMapper.createAuthenticationCodeGrantTokenRequestPayload(
@@ -19,6 +19,27 @@ describe('TokenRequestMapper', () => {
 				client_secret: 'secret',
 				grant_type: OAuthGrantType.AUTHORIZATION_CODE_GRANT,
 				redirect_uri: 'redirectUri',
+				code_verifier: undefined,
+			});
+		});
+
+		it('should include the PKCE code_verifier when provided', () => {
+			const result: AuthenticationCodeGrantTokenRequest =
+				TokenRequestMapper.createAuthenticationCodeGrantTokenRequestPayload(
+					'clientId',
+					'secret',
+					'code',
+					'redirectUri',
+					'codeVerifier'
+				);
+
+			expect(result).toEqual<AuthenticationCodeGrantTokenRequest>({
+				code: 'code',
+				client_id: 'clientId',
+				client_secret: 'secret',
+				grant_type: OAuthGrantType.AUTHORIZATION_CODE_GRANT,
+				redirect_uri: 'redirectUri',
+				code_verifier: 'codeVerifier',
 			});
 		});
 	});
