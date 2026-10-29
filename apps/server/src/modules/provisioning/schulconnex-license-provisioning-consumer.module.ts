@@ -2,7 +2,6 @@ import { ConfigurationModule } from '@infra/configuration';
 import { LoggerModule } from '@infra/logger';
 import { RABBITMQ_CONFIG_TOKEN, RabbitMQConfig, RabbitMQWrapperModule } from '@infra/rabbitmq';
 import { GroupModule } from '@modules/group';
-import { GroupLicenseModule } from '@modules/group-license';
 import { LegacySchoolModule } from '@modules/legacy-school';
 import { MediaSourceSyncModule } from '@modules/media-source-sync';
 import { MediaSourceModule } from '@modules/media-source/media-source.module';
@@ -25,7 +24,6 @@ import {
 		UserLicenseModule,
 		SchoolLicenseModule,
 		GroupModule,
-		GroupLicenseModule,
 		MediaSourceModule,
 		LegacySchoolModule,
 		ToolModule,
