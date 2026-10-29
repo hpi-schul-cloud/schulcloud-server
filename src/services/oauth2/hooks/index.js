@@ -3,9 +3,11 @@ const { MethodNotAllowed } = require('../../../errors');
 const globalHooks = require('../../../hooks');
 
 const properties = 'title="username" style="height: 26px; width: 180px; border: none;"';
-const iframeSubject = (pseudonym, url) => `<iframe src="${url}/oauth2/username/${pseudonym}" ${properties}></iframe>`;
+const iframeSubject = (pseudonym, url) => `<iframe src="${url}/api/v3/pseudonyms/username/${pseudonym}" ${properties}></iframe>`;
+const legacyIframeSubject = (pseudonym, url) => `<iframe src="${url}/oauth2/username/${pseudonym}" ${properties}></iframe>`;
 
 exports.getSubject = iframeSubject;
+exports.getLegacySubject = legacyIframeSubject;
 
 exports.hooks = {
 	introspect: {

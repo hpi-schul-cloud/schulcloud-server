@@ -383,7 +383,7 @@ describe('PseudonymService', () => {
 				const result = service.getIframeSubject(pseudonym);
 
 				expect(result).toEqual(
-					`<iframe src="${host}/oauth2/username/${pseudonym}" title="username" style="height: 26px; width: 180px; border: none;"></iframe>`
+					`<iframe src="${host}/api/v3/pseudonyms/username/${pseudonym}" title="username" style="height: 26px; width: 180px; border: none;"></iframe>`
 				);
 			});
 		});
