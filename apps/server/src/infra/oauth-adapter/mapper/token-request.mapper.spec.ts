@@ -3,7 +3,7 @@ import { OAuthGrantType } from '../types';
 import { TokenRequestMapper } from './token-request.mapper';
 
 describe('TokenRequestMapper', () => {
-		describe('createAuthenticationCodeGrantTokenRequestPayload', () => {
+	describe('createAuthenticationCodeGrantTokenRequestPayload', () => {
 		it('should map the Payload to dto', () => {
 			const result: AuthenticationCodeGrantTokenRequest =
 				TokenRequestMapper.createAuthenticationCodeGrantTokenRequestPayload(

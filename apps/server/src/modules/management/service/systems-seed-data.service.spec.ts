@@ -185,7 +185,8 @@ describe(SystemsSeedDataService.name, () => {
 							provider: 'Brandenburg',
 							jwksEndpoint: 'https://idp.example-brandenburg.test/realms/schullogin/protocol/openid-connect/certs',
 							issuer: 'https://idp.example-brandenburg.test/realms/schullogin',
-							endSessionEndpoint: 'https://idp.example-brandenburg.test/realms/schullogin/protocol/openid-connect/logout',
+							endSessionEndpoint:
+								'https://idp.example-brandenburg.test/realms/schullogin/protocol/openid-connect/logout',
 						}),
 					})
 				);
